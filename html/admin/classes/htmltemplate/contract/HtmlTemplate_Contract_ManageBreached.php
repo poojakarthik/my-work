@@ -140,9 +140,9 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 			echo "
 			<tr class='{$strRowClass}' valign='top'>
 				<td><input type='checkbox' /></td>
-				<td><a onclick='../../admin/flex.php/Account/Overview/?Account.Id={$arrContract['account']}' >{$arrContract['account']}</a><br />{$strAccountName}</td>
-				<td><a onclick='../../admin/flex.php/Service/View/?Service.Id={$arrContract['serviceId']}' >{$arrContract['service']}</a></td>
-				<td><a onclick='../../admin/flex.php/Service/ViewPlan/?Service.Id={$arrContract['serviceId']}' >{$arrContract['ratePlan']}</a><br />({$arrContract['contractTerm']} Months)</td>
+				<td><a onclick='document.location = \"../../admin/flex.php/Account/Overview/?Account.Id={$arrContract['account']}\" >{$arrContract['account']}</a><br />{$strAccountName}</td>
+				<td><a onclick='document.location = \"../../admin/flex.php/Service/View/?Service.Id={$arrContract['serviceId']}\" >{$arrContract['service']}</a></td>
+				<td><a onclick='document.location = \"../../admin/flex.php/Service/ViewPlan/?Service.Id={$arrContract['serviceId']}\" >{$arrContract['ratePlan']}</a><br />({$arrContract['contractTerm']} Months)</td>
 				<td>{$arrContract['contractStarted']}</td>
 				<td>{$arrContract['contractBreached']}<br />({$arrContract['contractInvoices']} Invoices)</td>
 				<td>{$arrContract['breachNature']}</td>
