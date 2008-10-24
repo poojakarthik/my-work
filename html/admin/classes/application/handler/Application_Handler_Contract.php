@@ -41,7 +41,7 @@ class Application_Handler_Contract extends Application_Handler
 			{
 				throw new Exception($selContractTerms->Error());
 			}
-			$arrContractTerms	= $selBreachedContracts->Fetch();
+			$arrContractTerms	= $selContractTerms->Fetch();
 			
 			// Get the list of Contracts to display
 			$arrColumns	= Array(
