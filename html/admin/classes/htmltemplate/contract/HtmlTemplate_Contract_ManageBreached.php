@@ -72,8 +72,7 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 		$this->_arrGETVariables['sort']		= $this->mxdDataToRender['Sort'];
 		
 		// Pagination
-		$strSortColumn		= reset($this->mxdDataToRender['Sort']);
-		$strSort			= ($strSortColumn) ? '&sort["'.$strSortColumn.'"]' : '';
+		$strSort			= (is_array($this->mxdDataToRender['Sort'])) ? '&sort["'.reset($this->mxdDataToRender['Sort']).'"]' : '';
 		$arrPaginationHTML	= Array();
 		if ($this->mxdDataToRender['Pagination']['intCurrent'])
 		{
