@@ -52,15 +52,20 @@ class Application_Handler_Contract extends Application_Handler
 									'contractTerm'		=> "RatePlan.ContractTerm",
 									'contractStarted'	=> "CAST(SRP.StartDatetime AS DATE)",
 									'contractBreached'	=> "SRP.contract_effective_end_datetime",
+									'contractInvoices'	=> "COUNT(ServiceTotal.Id)",
 									'breachNature'		=> "SRP.contract_breach_reason_description",
 									'minMonthly'		=> "RatePlan.MinMonthly",
 									'monthsLeft'		=> "PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m'))",
 									'payout'			=> "CASE " .
 																"WHEN COUNT(ServiceTotal.Id) < {$arrContractTerms['contract_payout_minimum_invoices']} THEN 0.0 " .
+																"ELSE RatePlan.contract_payout_percentage " .
+															"END",
+									'payoutAmount'		=> "CASE " .
+																"WHEN COUNT(ServiceTotal.Id) < {$arrContractTerms['contract_payout_minimum_invoices']} THEN 0.00 " .
 																"ELSE ROUND(RatePlan.MinMonthly * PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m')) * (RatePlan.contract_payout_percentage / 100), 2) " .
 															"END",
 									'exitFee'			=> "CASE " .
-																"WHEN COUNT(ServiceTotal.Id) < {$arrContractTerms['exit_fee_minimum_invoices']} THEN 0.0 " .
+																"WHEN COUNT(ServiceTotal.Id) < {$arrContractTerms['exit_fee_minimum_invoices']} THEN 0.00 " .
 																"ELSE RatePlan.contract_exit_fee " .
 															"END"
 								);

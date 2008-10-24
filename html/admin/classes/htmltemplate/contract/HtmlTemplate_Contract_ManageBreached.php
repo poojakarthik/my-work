@@ -135,21 +135,23 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 			$strRowClass	= ($bolAlternate) ? 'alt' : '';
 			$bolAlternate	= !$bolAlternate;
 			
+			$strAccountName	= Account::getForId($arrContract['account'])->getName();
+			
 			echo "
 			<tr class='{$strRowClass}' valign='top'>
 				<td><input type='checkbox' /></td>
-				<td><a onclick='#' >{$arrContract['intAccount']}</a><br />{$arrContract['strAccountName']}</td>
-				<td><a onclick='#' >{$arrContract['strFNN']}</a></td>
-				<td><a onclick='#' >{$arrContract['strRatePlan']}</a><br />({$arrContract['intContractTerm']} Months)</td>
-				<td>{$arrContract['strContractStartedDate']}</td>
-				<td>{$arrContract['strContractEndDate']}<br />({$arrContract['intContractInvoices']} Invoices)</td>
-				<td>{$arrContract['strBreachReason']}</td>
-				<td>\${$arrContract['strMinMonthly']}</td>
-				<td>{{$arrContract['intMonthsLeft']}}</td>
-				<td><input id='contract_payout_percentage_{$arrContract['intServiceRatePlan']}' type='text' size='1' onkeyup='javascript:ManageContracts.calculatePayout(\"{$arrContract['intServiceRatePlan']}\")' onchange='javascript:ManageContracts.calculatePayout(\"{$arrContract['intServiceRatePlan']}\")' value='{$arrContract['fltPayoutPercentage']}'/>% (\$<span id='contract_payout_charge_{{$arrContract['intServiceRatePlan']}}'>{$arrContract['strContractPayoutCharge']}</span>)</td>
-				<td>\$<input id='contract_exit_fee_{$arrContract['intServiceRatePlan']}' type='text' size='2' value='{$arrContract['strExitFee']}'/></td>
+				<td><a onclick='#' >{$arrContract['account']}</a><br />{$strAccountName}</td>
+				<td><a onclick='#' >{$arrContract['fnn']}</a></td>
+				<td><a onclick='#' >{$arrContract['ratePlan']}</a><br />({$arrContract['contractTerm']} Months)</td>
+				<td>{$arrContract['contractStarted']}</td>
+				<td>{$arrContract['contractBreached']}<br />({$arrContract['contractInvoices']} Invoices)</td>
+				<td>{$arrContract['breachNature']}</td>
+				<td>\${$arrContract['minMonthly']}</td>
+				<td>{{$arrContract['monthsLeft']}}</td>
+				<td><input id='contract_payout_percentage_{$arrContract['id']}' type='text' size='1' onkeyup='javascript:ManageContracts.calculatePayout(\"{$arrContract['id']}\")' onchange='javascript:ManageContracts.calculatePayout(\"{$arrContract['id']}\")' value='{$arrContract['payout']}'/>% (\$<span id='contract_payout_charge_{$arrContract['id']}'>{$arrContract['payoutAmount']}</span>)</td>
+				<td>\$<input id='contract_exit_fee_{$arrContract['id']}' type='text' size='2' value='{$arrContract['exitFee']}'/></td>
 				
-				<td nowrap='nowrap'><a onclick='javascript:ManageContracts.confirm(\"apply\", {$arrContract['intServiceRatePlan']})' ><img alt='Apply' src='img/template/tick.png'></a>&nbsp;<a onclick='javascript:ManageContracts.confirm(\"waive\", {$arrContract['intServiceRatePlan']})' ><img alt='Waive' src='img/template/delete.png'></a></td>
+				<td nowrap='nowrap'><a onclick='javascript:ManageContracts.confirm(\"apply\", {$arrContract['id']})' ><img alt='Apply' src='img/template/tick.png'></a>&nbsp;<a onclick='javascript:ManageContracts.confirm(\"waive\", {$arrContract['id']})' ><img alt='Waive' src='img/template/delete.png'></a></td>
 			</tr>";
 		}
 		
