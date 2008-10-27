@@ -248,7 +248,7 @@
 			$strFileURL	= $arrLine[1];
 			
 			// HACKHACKHACK: Optus are fucking stupid, and are using redirects to link to the actual file, so try to hack the actual address
-			$strCatalogDomain	= substr($strURL, 0, stripos($strURL, 'wholesalenet')+1);
+			$strCatalogDomain	= substr($strURL, 0, stripos($strURL, 'wholesalenet'));
 			$strFileURL			= $strCatalogDomain.substr($strFileURL, stripos($strURL, 'wholesalenet'));
 			
 			// Make sure there are no double-ups
