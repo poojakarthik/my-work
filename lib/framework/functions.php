@@ -4184,25 +4184,13 @@ function GenerateLatePaymentNotices($intAutomaticInvoiceActionType, $intEffectiv
 				break;
 
 			case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE:
-				// Check if the Overdue Notice was built this month, and if so build the suspension notice
-				$intNumRows = $selPriorNotices->Execute(Array("InvoiceId" => $arrAccount['InvoiceId'], "NoticeType" => DOCUMENT_TEMPLATE_TYPE_OVERDUE_NOTICE));
 				$intNoticeType = DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE;
-				if ($intNumRows == 1)
-				{
-					// An "Overdue" notice has been sent for this invoice.  Build the Suspension notice
-					$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
-				}
+				$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
 				break;
 
 			case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND:
-				// Check if the Suspension Notice was built this month, and if so build the final demand notice
-				$intNumRows = $selPriorNotices->Execute(Array("InvoiceId" => $arrAccount['InvoiceId'], "NoticeType" => DOCUMENT_TEMPLATE_TYPE_SUSPENSION_NOTICE));
 				$intNoticeType = DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND;
-				if ($intNumRows == 1)
-				{
-					// A "Suspension" notice has been sent for this invoice.  Build the Final Demand notice
-					$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
-				}
+				$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
 				break;
 		}
 
