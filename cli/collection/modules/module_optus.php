@@ -244,12 +244,17 @@
 		$arrLines = explode("\r\n", trim($strCatalogFile));
 		foreach ($arrLines as $intIndex=>$strLine)
 		{
-			$arrLine = explode("\t", $strLine);
+			$arrLine	= explode("\t", $strLine);
+			$strFileURL	= $arrLine[1];
+			
+			// HACKHACKHACK: Optus are fucking stupid, and are using redirects to link to the actual file, so try to hack the actual address
+			$strCatalogDomain	= substr($strURL, 0, stripos($strURL, 'wholesalenet')+1);
+			$strFileURL			= $strCatalogDomain.substr($strFileURL, stripos($strURL, 'wholesalenet'));
 			
 			// Make sure there are no double-ups
-			if (!in_array(Array('FileName'=>trim($arrLine[0]), 'URL'=>$arrLine[1]), $arrLines))
+			if (!in_array(Array('FileName'=>trim($arrLine[0]), 'URL'=>$strFileURL), $arrLines))
 			{
-				$arrFiles[] = Array('FileName'=>trim($arrLine[0]), 'URL'=>$arrLine[1]);
+				$arrFiles[] = Array('FileName'=>trim($arrLine[0]), 'URL'=>$strFileURL);
 			}
 		}
 		
@@ -270,7 +275,7 @@
 						// No match
 						continue;
 					}
-						
+					
 					// Does this FileType have download uniqueness?
 					if ($arrFileType['DownloadUnique'])
 					{
