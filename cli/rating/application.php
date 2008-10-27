@@ -438,7 +438,7 @@
 	 function Rate($bolOnlyNew = FALSE, $intLimit = 1000)
 	 {
 		// Is there a Bill Run active?
-		if (Invoice_Run::checkTemporary())
+		if (isInvoicing())
 		{
 			CliEcho("WARNING: Rating will not run while there is a Temporary Invoice Run active!");
 			return FALSE;

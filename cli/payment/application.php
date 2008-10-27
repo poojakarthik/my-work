@@ -443,7 +443,7 @@
 	 function Process()
 	 {
 		// Check to see if we're in the middle of a Billing Run
-		if (Invoice_Run::checkTemporary())
+		if (isInvoicing())
 		{
 			// Don't process payments, there is a Temp Invoice Run
 			$this->_rptPaymentReport->AddMessage("WARNING: There is a Billing Run occurring.  No payments will be processed until this is complete.");

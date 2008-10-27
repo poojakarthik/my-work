@@ -3222,6 +3222,7 @@ function AddCreditCardSurcharge($intPayment)
 function IsInvoicing()
 {
 	// Redirect to Invoice_Run::checkTemporary()
+	require_once(FLEX_BASE_PATH.'lib/classes/invoice/Invoice_Run.php');
 	return Invoice_Run::checkTemporary();
 }
 
