@@ -236,6 +236,7 @@
 		elseif (stripos($strCatalogFile, '<html>'))
 		{
 			// Malformed Catalog
+			SendEmail("rdavis@yellowbilling.com.au", "Optus CDR Catalog is Malformed", $strCatalogFile, CUSTOMER_URL_NAME."@yellowbilling.com.au");
 			return "Catalog is malformed";
 		}
 		
