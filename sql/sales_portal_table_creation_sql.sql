@@ -23,7 +23,7 @@ CREATE TABLE product_category
 	CONSTRAINT pk_product_category PRIMARY KEY (id),
 	CONSTRAINT un_product_category_name UNIQUE (name)
 );
-COMMENT ON TABLE product_category IS 'Defines possible product categories such as "Service" and "Hardware"';
+COMMENT ON TABLE product_category IS 'Defines possible product categories such as ''Service'' and ''Hardware''';
 INSERT INTO product_category (id, name, description)
 VALUES 
 (1, 'Service', 'Service'),
@@ -44,7 +44,7 @@ CREATE TABLE product_type
 	CONSTRAINT un_product_type_module UNIQUE (module),
 	CONSTRAINT fk_product_type_product_category_id FOREIGN KEY (product_category_id) REFERENCES product_category(id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
-COMMENT ON TABLE product_type IS 'Defines possible product types such as "Landline (service)" and "Mobile Handset (hardware)"';
+COMMENT ON TABLE product_type IS 'Defines possible product types such as ''Landline (service)'' and ''Mobile Handset (hardware)''';
 COMMENT ON COLUMN product_type.product_category_id IS 'FK into product_category table, defining the product_category that the product_type belongs to';
 COMMENT ON COLUMN product_type.module IS 'reference to the code module that facilitates products of this particular product_type';
 INSERT INTO product_type (id, name, description, product_category_id, module)
@@ -65,7 +65,7 @@ CREATE TABLE product_status
 	CONSTRAINT pk_product_status PRIMARY KEY (id),
 	CONSTRAINT un_product_status_name UNIQUE (name)
 );
-COMMENT ON TABLE product_status IS 'Defines statuses that products can be set to, such as "Active", "Inactive"';
+COMMENT ON TABLE product_status IS 'Defines statuses that products can be set to, such as ''Active'', ''Inactive''';
 INSERT INTO product_status (id, name, description)
 VALUES
 (1, 'Active', 'Active'),
@@ -91,7 +91,7 @@ CREATE TABLE product
 );
 COMMENT ON TABLE product IS 'Defines a purchasable product of a particular product_type, and sold by a particular vendor';
 COMMENT ON COlUMN product.vendor_id IS 'FK into vendor table, defining the vendor who carries the product';
-COMMENT ON COLUMN product.product_type_id IS 'FK into the product_type table, defining the "type" of the product';
+COMMENT ON COLUMN product.product_type_id IS 'FK into the product_type table, defining the ''type'' of the product';
 COMMENT ON COLUMN product.product_status_id IS 'FK into the product_status table, defining the current status of the product';
 COMMENT ON COLUMN product.reference IS 'reference used by any external entities when dealing with this product.  For example, if the product is a service plan, then this value would be the plan''s identifier in the system that models/manages the service';
 
@@ -106,7 +106,7 @@ CREATE TABLE sale_status
 	CONSTRAINT pk_sale_status PRIMARY KEY (id),
 	CONSTRAINT un_sale_status_name UNIQUE (name)
 );
-COMMENT ON TABLE sale_status IS 'Defines statuses that sales can be set to, such as "Submitted", "Verified", "Rejected"';
+COMMENT ON TABLE sale_status IS 'Defines statuses that sales can be set to, such as ''Submitted'', ''Verified'', ''Rejected''';
 INSERT INTO sale_status (id, name, description)
 VALUES
 (1, 'Submitted', 'Submitted'),
@@ -126,7 +126,7 @@ CREATE TABLE sale_item_status
 	CONSTRAINT pk_sale_item_status PRIMARY KEY (id),
 	CONSTRAINT un_sale_item_status_name UNIQUE (name)
 );
-COMMENT ON TABLE sale_item_status IS 'Defines statuses that sales can be set to, such as "Submitted", "Verified", "Rejected"';
+COMMENT ON TABLE sale_item_status IS 'Defines statuses that sales can be set to, such as ''Submitted'', ''Verified'', ''Rejected''';
 INSERT INTO sale_item_status (id, name, description)
 VALUES
 (1, 'Submitted', 'Submitted'),
@@ -147,7 +147,7 @@ CREATE TABLE sale_type
 	CONSTRAINT pk_sale_type PRIMARY KEY (id),
 	CONSTRAINT un_sale_type_name UNIQUE (name)
 );
-COMMENT ON TABLE sale_type IS 'Defines the various types of sales that can be performed, such as "New Customer", "Existing Customer", "Win Back"';
+COMMENT ON TABLE sale_type IS 'Defines the various types of sales that can be performed, such as ''New Customer'', ''Existing Customer'', ''Win Back''';
 INSERT INTO sale_type (id, name, description)
 VALUES
 (1, 'New Customer', 'New Customer'),
@@ -213,7 +213,7 @@ CREATE TABLE contact_title
 	CONSTRAINT pk_contact_title PRIMARY KEY (id),
 	CONSTRAINT un_contact_title_name UNIQUE (name)
 );
-COMMENT ON TABLE contact_title IS 'Defines the various titles/salutations that a contact can have, such as "Mr" or "Mrs"';
+COMMENT ON TABLE contact_title IS 'Defines the various titles/salutations that a contact can have, such as ''Mr'' or ''Mrs''';
 INSERT INTO contact_title (id, name, description)
 VALUES
 (1, 'Dr', 'Doctor'),
@@ -236,7 +236,7 @@ CREATE TABLE contact_status
 	CONSTRAINT pk_contact_status PRIMARY KEY (id),
 	CONSTRAINT un_contact_status_name UNIQUE (name)
 );
-COMMENT ON TABLE contact_status IS 'Defines the various statuses that a contact can have, such as "active" or "inactive"';
+COMMENT ON TABLE contact_status IS 'Defines the various statuses that a contact can have, such as ''active'' or ''inactive''';
 INSERT INTO contact_status (id, name, description)
 VALUES
 (1, 'Active', 'Active'),
@@ -283,7 +283,7 @@ CREATE TABLE contact_method_type
 	CONSTRAINT pk_contact_method_type PRIMARY KEY (id),
 	CONSTRAINT un_contact_method_type_name UNIQUE (name)
 );
-COMMENT ON TABLE contact_method_type IS 'Defines the various methods by which a contact can be contacted, such as "Email", "Phone"';
+COMMENT ON TABLE contact_method_type IS 'Defines the various methods by which a contact can be contacted, such as ''Email'', ''Phone''';
 INSERT INTO contact_method_type (id, name, description)
 VALUES
 (1, 'Email', 'Email'),
@@ -340,7 +340,7 @@ CREATE TABLE dealer_status
 	CONSTRAINT pk_dealer_status PRIMARY KEY (id),
 	CONSTRAINT un_dealer_status_name UNIQUE (name)
 );
-COMMENT ON TABLE dealer_status IS 'Defines the various statuses that a dealer can have assigned to them, such as "Active" or "Inactive"';
+COMMENT ON TABLE dealer_status IS 'Defines the various statuses that a dealer can have assigned to them, such as ''Active'' or ''Inactive''';
 INSERT INTO dealer_status (id, name, description)
 VALUES
 (1, 'Active', 'Active'),
@@ -399,7 +399,7 @@ CREATE TABLE dealer
 	CONSTRAINT fk_dealer_up_line_manager_dealer_id_dealer_id FOREIGN KEY (up_line_manager_dealer_id) REFERENCES dealer(id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 COMMENT ON TABLE dealer IS 'Defines a dealer, who can conduct sales on behalf of the vendors';
-COMMENT ON COLUMN dealer.up_line_manager_dealer_id IS 'FK into the dealer table, defining the direct "up line" manager of the dealer';
+COMMENT ON COLUMN dealer.up_line_manager_dealer_id IS 'FK into the dealer table, defining the direct ''up line'' manager of the dealer';
 COMMENT ON COLUMN dealer.can_verify IS 'TRUE = dealer can verify sales other than those made by dealers under their management; FALSE = dealer can only verify sales made by dealers under their management';
 COMMENT ON COLUMN dealer.title_id IS 'FK into the contact_title table, defining the title/salutation used by the dealer';
 COMMENT ON COLUMN dealer.state_id IS 'FK into the state table, defining the state in which the dealer is primarily located';
@@ -518,7 +518,7 @@ CREATE TABLE bill_payment_type
 	CONSTRAINT pk_bill_payment_type PRIMARY KEY (id),
 	CONSTRAINT un_bill_payment_type_name UNIQUE (name)
 );
-COMMENT ON TABLE bill_payment_type IS 'Defines the various methods of how a bill can be paid, such as "Account" or "Direct Debit"';
+COMMENT ON TABLE bill_payment_type IS 'Defines the various methods of how a bill can be paid, such as ''Account'' or ''Direct Debit''';
 INSERT INTO bill_payment_type (id, name, description)
 VALUES
 (1, 'Account', 'Account'),
@@ -535,7 +535,7 @@ CREATE TABLE bill_delivery_type
 	CONSTRAINT pk_bill_delivery_type PRIMARY KEY (id),
 	CONSTRAINT un_bill_delivery_type_name UNIQUE (name)
 );
-COMMENT ON TABLE bill_delivery_type IS 'Defines the various methods of how a bill can be sent to a customer, such as "Post" or "Email"';
+COMMENT ON TABLE bill_delivery_type IS 'Defines the various methods of how a bill can be sent to a customer, such as ''Post'' or ''Email''';
 INSERT INTO bill_delivery_type (id, name, description)
 VALUES
 (1, 'Post', 'Post'),
@@ -621,9 +621,9 @@ COMMENT ON TABLE sale_account_history IS 'Records the history of particular prop
 COMMENT ON COLUMN sale_account_history.sale_account_id IS 'FK into the sale_account table';
 COMMENT ON COLUMN sale_account_history.changed_on IS 'Time at which the state of the sale_account record was changed. Defaults to NOW()';
 COMMENT ON COLUMN sale_account_history.changed_by IS 'FK into dealer table, defining who made the change to the sale_account record.  This can be set to NULL if the change was automatically performed in an effort to sync the record with details external to this database';
-COMMENT ON COLUMN sale_account_history.bill_payment_type_id IS 'FK into bill_payment_type table. Reflects the state of sale_account.bill_payment_type_id at time "changed_on"';
-COMMENT ON COLUMN sale_account_history.bill_delivery_type_id IS 'FK into bill_delivery_type table. Reflects the state of sale_account.bill_payment_type_id at time "changed_on"';
-COMMENT ON COLUMN sale_account_history.direct_debit_type_id IS 'FK into the direct_debit_type table. Reflects the state of sale_account.direct_debit_type_id at time "changed_on"';
+COMMENT ON COLUMN sale_account_history.bill_payment_type_id IS 'FK into bill_payment_type table. Reflects the state of sale_account.bill_payment_type_id at time ''changed_on''';
+COMMENT ON COLUMN sale_account_history.bill_delivery_type_id IS 'FK into bill_delivery_type table. Reflects the state of sale_account.bill_payment_type_id at time ''changed_on''';
+COMMENT ON COLUMN sale_account_history.direct_debit_type_id IS 'FK into the direct_debit_type table. Reflects the state of sale_account.direct_debit_type_id at time ''changed_on''';
 
 /* sale_account_direct_debit_bank_account table
  */
@@ -660,8 +660,8 @@ CREATE TABLE credit_card_type
 	CONSTRAINT chk_format_credit_card_type_valid_prefixes CHECK (valid_prefixes ~* E'^\\d{1,2}(,(\\d){1,2})*$')
 );
 COMMENT ON TABLE credit_card_type IS 'Defines the various types of credit cards available, such as VISA and AMEX, and their validation properties';
-COMMENT ON COLUMN credit_card_type.valid_lengths IS 'comma separated list of valid lengths of the credit card''s number. i.e. "12,13,14"';
-COMMENT ON COLUMN credit_card_type.valid_prefixes IS 'comma separated list of valid prefixes of the credit card''s number. i.e. "51,52"';
+COMMENT ON COLUMN credit_card_type.valid_lengths IS 'comma separated list of valid lengths of the credit card''s number. i.e. ''12,13,14''';
+COMMENT ON COLUMN credit_card_type.valid_prefixes IS 'comma separated list of valid prefixes of the credit card''s number. i.e. ''51,52''';
 COMMENT ON COLUMN credit_card_type.cvv_length IS 'length in digits, of the card''s cvv number';
 INSERT INTO credit_card_type (id, name, description, valid_lengths, valid_prefixes, cvv_length)
 VALUES
@@ -787,7 +787,7 @@ COMMENT ON COLUMN sale_item_status_history.description IS 'Description as to why
 /************************************************************************************************************************/
 /************************ START OF sale_item_<product_category>_<product_type> TABLES ***********************************/
 /************************************************************************************************************************/
-/* Each Product Type that requires specific details defined, will have a table named "sale_item_<ProductCategory>_<ProductType>"
+/* Each Product Type that requires specific details defined, will have a table named ''sale_item_<ProductCategory>_<ProductType>''
  */
 
 /* sale_item_service_adsl table
@@ -809,7 +809,7 @@ CREATE TABLE sale_item_service_adsl
 	CONSTRAINT fk_sale_item_service_adsl_state_id FOREIGN KEY (state_id) REFERENCES state(id) ON UPDATE CASCADE ON DELETE RESTRICT,
 	CONSTRAINT chk_format_sale_item_service_adsl_fnn CHECK (fnn ~* E'^0[12378]\\d{8}$')
 );
-COMMENT ON TABLE sale_item_service_adsl IS 'Defines specific sale_item details for products based on the "ADSL service" product_type';
+COMMENT ON TABLE sale_item_service_adsl IS 'Defines specific sale_item details for products based on the ''ADSL service'' product_type';
 COMMENT ON COLUMN sale_item_service_adsl.sale_item_id IS 'FK into the sale_item table';
 COMMENT ON COLUMN sale_item_service_adsl.fnn IS 'FNN of the ADSL service';
 COMMENT ON COLUMN sale_item_service_adsl.state_id IS 'FK into state table';
@@ -830,7 +830,7 @@ CREATE TABLE sale_item_service_inbound
 	CONSTRAINT fk_sale_item_service_inbound_sale_item_id FOREIGN KEY (sale_item_id) REFERENCES sale_item(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT chk_format_sale_item_service_inbound_fnn CHECK (fnn ~* E'^((13\\d{4})|(1[389]00\\d{6}))$')
 );
-COMMENT ON TABLE sale_item_service_inbound IS 'Defines specific sale_item details for products based on the "Inbound 13/1300/1800 service" product_type';
+COMMENT ON TABLE sale_item_service_inbound IS 'Defines specific sale_item details for products based on the ''Inbound 13/1300/1800 service'' product_type';
 COMMENT ON COLUMN sale_item_service_inbound.sale_item_id IS 'FK into the sale_item table';
 COMMENT ON COLUMN sale_item_service_inbound.fnn IS 'FNN of the Inbound service';
 COMMENT ON COLUMN sale_item_service_inbound.has_complex_configuration IS 'TRUE = configuration is too complex to define here';
@@ -855,7 +855,7 @@ CREATE TABLE sale_item_service_mobile
 	CONSTRAINT fk_sale_item_service_mobile_sim_state_id_state_id FOREIGN KEY (sim_state_id) REFERENCES state(id) ON UPDATE CASCADE ON DELETE RESTRICT,
 	CONSTRAINT chk_format_sale_item_service_mobile_fnn CHECK (fnn ~* E'^04\\d{8}$')
 );
-COMMENT ON TABLE sale_item_service_mobile IS 'Defines specific sale_item details for products based on the "Mobile phone service" product_type';
+COMMENT ON TABLE sale_item_service_mobile IS 'Defines specific sale_item details for products based on the ''Mobile phone service'' product_type';
 COMMENT ON COLUMN sale_item_service_mobile.sale_item_id IS 'FK into the sale_item table';
 COMMENT ON COLUMN sale_item_service_mobile.fnn IS 'FNN of the mobile service';
 COMMENT ON COLUMN sale_item_service_mobile.sim_puk IS 'The SIM''s Personal Unblocking Key code';
@@ -874,7 +874,7 @@ CREATE TABLE landline_type
 	CONSTRAINT pk_landline_type PRIMARY KEY (id),
 	CONSTRAINT un_landline_type_name UNIQUE (name)
 );
-COMMENT ON TABLE landline_type IS 'Defines the various types of landline services, such as "Business" and "Residential"';
+COMMENT ON TABLE landline_type IS 'Defines the various types of landline services, such as ''Business'' and ''Residential''';
 INSERT INTO landline_type (id, name, description)
 VALUES
 (1, 'Residential', 'Residential Landline Service'),
@@ -1341,7 +1341,7 @@ CREATE TABLE landline_end_user_title
 	CONSTRAINT pk_landline_end_user_title PRIMARY KEY (id),
 	CONSTRAINT un_landline_end_user_title_code UNIQUE (code)
 );
-COMMENT ON TABLE landline_end_user_title IS 'Defines the various "end user title" codes used by the WeBill system when provisioning landline services';
+COMMENT ON TABLE landline_end_user_title IS 'Defines the various ''end user title'' codes used by the WeBill system when provisioning landline services';
 INSERT INTO landline_end_user_title (id, code, description)
 VALUES
 (1, 'DR', 'Dr'),
@@ -1392,7 +1392,7 @@ CREATE TABLE sale_item_service_landline
 	CONSTRAINT chk_format_sale_item_service_landline_fnn CHECK (fnn ~* E'^0[12378]\\d{8}$')
 
 );
-COMMENT ON TABLE sale_item_service_landline IS 'Defines specific sale_item details for products based on the "Landline service" product_type.  All the address details are a requirement of the WeBill provisioning system';
+COMMENT ON TABLE sale_item_service_landline IS 'Defines specific sale_item details for products based on the ''Landline service'' product_type.  All the address details are a requirement of the WeBill provisioning system';
 COMMENT ON COLUMN sale_item_service_landline.sale_item_id IS 'FK into the sale_item table';
 COMMENT ON COLUMN sale_item_service_landline.fnn IS 'FNN used by the landline service';
 COMMENT ON COLUMN sale_item_service_landline.is_indial_100 IS 'TRUE = landline is an indial100 service (the service represents 100 fnns). FALSE = it''s not';
@@ -1422,7 +1422,7 @@ CREATE TABLE sale_item_service_landline_business
 	CONSTRAINT un_sale_item_service_landline_business_sale_item_service_landline_id UNIQUE (sale_item_service_landline_id),
 	CONSTRAINT fk_sale_item_service_landline_business_sale_item_service_landline_id FOREIGN KEY (sale_item_service_landline_id) REFERENCES sale_item_service_landline(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
-COMMENT ON TABLE sale_item_service_landline_business IS 'Details required of WeBill for a landline service of landline_type "Business"';
+COMMENT ON TABLE sale_item_service_landline_business IS 'Details required of WeBill for a landline service of landline_type ''Business''';
 COMMENT ON COLUMN sale_item_service_landline_business.sale_item_service_landline_id IS 'FK into sale_item_service_landline table';
 
 /* sale_item_service_landline_residential table
@@ -1443,7 +1443,7 @@ CREATE TABLE sale_item_service_landline_residential
 	CONSTRAINT fk_sale_item_service_landline_residential_sale_item_service_landline_id FOREIGN KEY (sale_item_service_landline_id) REFERENCES sale_item_service_landline(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT fk_sale_item_service_landline_residential_landline_end_user_title_id FOREIGN KEY (landline_end_user_title_id) REFERENCES landline_end_user_title(id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
-COMMENT ON TABLE sale_item_service_landline_residential IS 'Details required of WeBill for a landline service of landline_type "Residential"';
+COMMENT ON TABLE sale_item_service_landline_residential IS 'Details required of WeBill for a landline service of landline_type ''Residential''';
 COMMENT ON COLUMN sale_item_service_landline_residential.sale_item_service_landline_id IS 'FK into sale_item_service_landline table';
 
 /************************************************************************************************************************/
