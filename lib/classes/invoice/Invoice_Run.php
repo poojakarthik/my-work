@@ -520,6 +520,36 @@ class Invoice_Run
 	}
 	
 	//------------------------------------------------------------------------//
+	// checkForTemporaryInvoiceRun()
+	//------------------------------------------------------------------------//
+	/**
+	 * checkForTemporaryInvoiceRun()
+	 *
+	 * Checks if there are any Gold Temporary Invoice Runs active
+	 *
+	 * Checks if there are any Gold Temporary Invoice Runs active
+	 * 
+	 * @param	integer	$intCustomerGroup		[optional]	The Customer Group to check for
+	 * 
+	 * @return	boolean
+	 *
+	 * @method
+	 */
+	public static function checkTemporaryInvoiceRun($intCustomerGroup=NULL)
+	{
+		$selCheckTemporaryInvoiceRun	= self::_preparedStatement('selCheckTemporaryInvoiceRun');
+		$mixResult						= $selCheckTemporaryInvoiceRun->Execute(Array('CustomerGroup' => $intCustomerGroup));
+		if ($mixResult === FALSE)
+		{
+			throw new Exception($selCheckTemporaryInvoiceRun->Error());
+		}
+		else
+		{
+			return (bool)$mixResult;
+		}
+	}
+	
+	//------------------------------------------------------------------------//
 	// save
 	//------------------------------------------------------------------------//
 	/**
@@ -645,6 +675,9 @@ class Invoice_Run
 					break;
 				case 'selInvoiceBalanceHistory':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id", "SUM(Balance) AS TotalBalance", "invoice_run_id <= <invoice_run_id> AND customer_group_id = <customer_group_id>", "invoice_run_id DESC");
+					break;
+				case 'selCheckTemporaryInvoiceRun':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "Id", "invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." AND invoice_run_status_id IN (".INVOICE_RUN_STATUS_TEMPORARY.", ".INVOICE_RUN_STATUS_GENERATING.") AND (customer_group_id <=> <CustomerGroup> OR <CustomerGroup> IS NULL)");
 					break;
 				
 				// INSERTS
