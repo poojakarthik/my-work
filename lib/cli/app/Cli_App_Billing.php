@@ -33,7 +33,7 @@ class Cli_App_Billing extends Cli
 
 			if ($this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
-				Cli_App_Billing::debug("Running in test mode. All changes will be rolled back.", TRUE);
+				$this->log("Running in test mode. All changes will be rolled back.", TRUE);
 			}
 
 			// Any additional Includes
