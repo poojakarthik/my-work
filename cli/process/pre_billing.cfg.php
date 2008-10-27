@@ -17,7 +17,7 @@ $arrSubscript = Array();
 $arrSubscript['Command']			= 'php collection.php';
 $arrSubscript['Directory']			= BACKEND_BASE_PATH.'collection/';
 $arrSubscript['ChildDie']			= TRUE;
-$arrConfig['Collect']				= $arrSubscript;
+//$arrConfig['Collect']				= $arrSubscript;
 
 // Normalisation
 $arrSubscript = Array();
