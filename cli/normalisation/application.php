@@ -832,6 +832,9 @@
 			// Deliver the reports
 			$this->rptNormalisationReport->Finish();
 			$this->rptDelinquentsReport->Finish();
+		
+			// Commit the Transaction
+			DataAccess::getDataAccess()->TransactionCommit();
 			
 			// Return number normalised or FALSE
 			return ($bolReturn) ? $intNormaliseTotal : FALSE;
@@ -841,9 +844,6 @@
 			DataAccess::getDataAccess()->TransactionRollback();
 			throw $eException;
 		}
-		
-		// Commit the Transaction
-		DataAccess::getDataAccess()->TransactionCommit();
  	}
 	
 	//------------------------------------------------------------------------//
