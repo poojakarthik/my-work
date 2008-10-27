@@ -104,7 +104,7 @@ class Application_Handler_Contract extends Application_Handler
 															'intCurrent'	=> $intOffset,
 															'intPrevious'	=> max($intOffset - self::RECORD_DISPLAY_LIMIT, 0),
 															'intNext'		=> min($intTotal - self::RECORD_DISPLAY_LIMIT - 1, $intOffset + self::RECORD_DISPLAY_LIMIT),
-															'intLast'		=> $intTotal - self::RECORD_DISPLAY_LIMIT,
+															'intLast'		=> $intTotal - 1 - self::RECORD_DISPLAY_LIMIT,
 															'intStart'		=> $intOffset+1,
 															'intEnd'		=> $intOffset+1+$intShown,
 															'intTotal'		=> $intTotal
