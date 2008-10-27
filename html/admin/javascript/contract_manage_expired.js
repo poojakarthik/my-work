@@ -1,4 +1,5 @@
-
+// Class: Contract_ManageExpired
+// Handles the 'Manage Expired Contracts' page in Flex
 var Contract_ManageExpired	= Class.create
 ({
 	// Function: initialize()
@@ -63,10 +64,13 @@ var Contract_ManageExpired	= Class.create
 		{
 			// Confirmed, apply the fees
 			// TODO
+			
+			alert("Confirmed!");
 		}
 		else
 		{
 			// Cancelled, act as if nothing happened
+			alert("Cancelled!");
 			return;
 		}
 	}
