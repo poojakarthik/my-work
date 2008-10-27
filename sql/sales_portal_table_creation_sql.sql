@@ -352,7 +352,7 @@ VALUES
 CREATE TABLE dealer
 (
 	id SERIAL,
-	up_line_manager_dealer_id INTEGER DEFAULT NULL,
+	up_line_id INTEGER DEFAULT NULL,
 	username CHARACTER VARYING NOT NULL,
 	password CHARACTER VARYING NOT NULL,
 	can_verify BOOLEAN DEFAULT FALSE NOT NULL,
@@ -368,13 +368,13 @@ CREATE TABLE dealer
 	suburb CHARACTER VARYING NULL,
 	state_id INTEGER NULL,
 	country_id INTEGER NULL,
-	post_code CHARACTER(4),
+	post_code CHARACTER VARYING,
 	postal_address_line_1 CHARACTER VARYING NULL,
 	postal_address_line_2 CHARACTER VARYING NULL,
 	postal_suburb CHARACTER VARYING NULL,
 	postal_state_id INTEGER NULL,
 	postal_country_id INTEGER NULL,
-	postal_post_code CHARACTER(4) NULL,
+	postal_post_code CHARACTER VARYING NULL,
 	phone CHARACTER VARYING NULL,
 	mobile CHARACTER VARYING NULL,
 	fax CHARACTER VARYING NULL,
@@ -382,7 +382,7 @@ CREATE TABLE dealer
 	commission_scale INTEGER NULL,
 	royalty_scale INTEGER NULL,
 	bank_account_bsb CHARACTER(6) NULL,
-	bank_account_number CHARACTER VARYING(9) NULL,
+	bank_account_number CHARACTER VARYING NULL,
 	bank_account_name CHARACTER VARYING NULL,
 	gst_registered BOOLEAN NULL,
 	termination_date DATE NULL,
@@ -396,7 +396,7 @@ CREATE TABLE dealer
 	CONSTRAINT fk_dealer_postal_state_id_state_id FOREIGN KEY (postal_state_id) REFERENCES state(id) ON UPDATE CASCADE ON DELETE RESTRICT,
 	CONSTRAINT fk_dealer_postal_country_id_country_id FOREIGN KEY (postal_country_id) REFERENCES country(id) ON UPDATE CASCADE ON DELETE RESTRICT,
 	CONSTRAINT fk_dealer_dealer_status_id FOREIGN KEY (dealer_status_id) REFERENCES dealer_status(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-	CONSTRAINT fk_dealer_up_line_manager_dealer_id_dealer_id FOREIGN KEY (up_line_manager_dealer_id) REFERENCES dealer(id) ON UPDATE CASCADE ON DELETE RESTRICT
+	CONSTRAINT fk_dealer_up_line_id_dealer_id FOREIGN KEY (up_line_id) REFERENCES dealer(id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 COMMENT ON TABLE dealer IS 'Defines a dealer, who can conduct sales on behalf of the vendors';
 COMMENT ON COLUMN dealer.up_line_manager_dealer_id IS 'FK into the dealer table, defining the direct ''up line'' manager of the dealer';
