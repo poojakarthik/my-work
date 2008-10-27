@@ -520,7 +520,7 @@ class Invoice_Run
 	}
 	
 	//------------------------------------------------------------------------//
-	// checkForTemporaryInvoiceRun()
+	// checkTemporary()
 	//------------------------------------------------------------------------//
 	/**
 	 * checkForTemporaryInvoiceRun()
@@ -535,7 +535,7 @@ class Invoice_Run
 	 *
 	 * @method
 	 */
-	public static function checkTemporaryInvoiceRun($intCustomerGroup=NULL)
+	public static function checkTemporary($intCustomerGroup=NULL)
 	{
 		$selCheckTemporaryInvoiceRun	= self::_preparedStatement('selCheckTemporaryInvoiceRun');
 		$mixResult						= $selCheckTemporaryInvoiceRun->Execute(Array('CustomerGroup' => $intCustomerGroup));
