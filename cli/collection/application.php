@@ -111,7 +111,7 @@ class ApplicationCollection extends ApplicationBaseClass
 				
 				// Download paths
 				$strCarrierName			= preg_replace("/\W/", '_', GetConstantDescription($intCarrier, 'Carrier'));
-				$strDownloadDirectory	= FILES_BASE_PATH."download/current/{$strCarrierName}/".GetConstantName($intResourceType, 'FileResource').'/';
+				$strDownloadDirectory	= FILES_BASE_PATH."download/current/{$strCarrierName}/".GetConstantName($intResourceType, 'resource_type').'/';
 				@mkdir($strDownloadDirectory, 0777, TRUE);
 				
 				// Connect to the Source
