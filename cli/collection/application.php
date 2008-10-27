@@ -101,6 +101,7 @@ class ApplicationCollection extends ApplicationBaseClass
 		CliEcho("\n[ COLLECTION ]\n");
 		
 		// For each module
+		$arrFiles	= array();
 		foreach ($this->_arrModules as $intCarrier=>&$arrFileTypes)
 		{
 			CliEcho("\t * Provider: ".GetConstantDescription($intCarrier, 'Carrier'));
@@ -139,6 +140,7 @@ class ApplicationCollection extends ApplicationBaseClass
 							$intSize			= ceil(filesize($strDownloadPath) / 1024);
 							
 							CliEcho("\t\t\t\t + $strFileName ({$intSize}KB)\t\t", FALSE);
+							$arrFiles[]			= $strDownloadPath;
 							
 							// Insert into FileDownload table
 							$arrFileDownload	= Array();
@@ -255,62 +257,34 @@ class ApplicationCollection extends ApplicationBaseClass
 		}
 		
 		// TAR-BZ2 all downloaded files
-		$strDownloadDir		= FILES_BASE_PATH."download/";
-		$strTARDir			= $strDownloadDir."archived/";
-		$strExclusionFile	= $strDownloadDir."tar.exclude";
-		$strDownloadDir		= $strDownloadDir."current/";
-		$strTARFile			= $strTARDir.date("Ymdhis").".tar";
-		$strTARBZ2File		= $strTARDir.date("Ymdhis").".tar.bz2";
+		$strDownloadDir			= FILES_BASE_PATH."download/";
+		$strTARDir				= $strDownloadDir."archived/";
+		$strDownloadFilesDir	= $strDownloadDir."current/";
+		$strTARBZ2File			= $strTARDir.date("Ymdhis").".tar.bz2";
+		
+		$intVersion	= 0;
+		while (file_exists($strTARBZ2File))
+		{
+			// Come up with a different name
+			$intVersion++;
+			$strTARBZ2File	= $strTARDir.date("Ymdhis").".{$intVersion}.tar.bz2";
+		}
+		
 		@mkdir($strTARDir, 0777, TRUE);
 		
-		// Create Archive Exclusion File
-		@unlink($strExclusionFile);
-		$arrExclude	= Array();
-		$arrExclude[]	= $strExclusionFile;
-		$arrExclude[]	= $strTARDir;
-		$arrExclude[]	= $strTARFile;
-		file_put_contents($strExclusionFile, implode("\n", $arrExclude));
-		
-		$strTARCommand		= "tar -X $strExclusionFile -cf $strTARFile $strDownloadDir >/dev/null 2>&1";
-		$strBZ2Command		= "bzip2 $strTARFile";
-		
-		CliEcho("\n * Archiving Downloaded Files to '".basename($strTARFile)."'...\t\t", FALSE);
-		$intTARReturn	= NULL;
-		$intBZ2Return	= NULL;
-		$arrOutput		= Array();
-		exec($strTARCommand, $arrOutput, $intTARReturn);
-		if (!$intTARReturn && file_exists($strTARFile))
+		CliEcho("\n * Archiving and compressing Downloaded Files to '{$strTARBZ2File}'...");
+		$resTARchive	= new Archive_Tar($strTARBZ2File, 'bz2');
+		$resTARchive->add($arrFiles);
+		if (filesize($strTARBZ2File))
 		{
-			CliEcho("[   OK   ]");
-			
-			// TAR succeeded, so BZ2 it
-			CliEcho(" * Compressing Archive to '".basename($strTARBZ2File)."'...\t\t\t", FALSE);
-			exec($strBZ2Command, $arrOutput, $intBZ2Return);
-			if (!$intBZ2Return && file_exists($strTARBZ2File))
+			// The archive appears to have been created properly, so delete the raw copies
+			$arrDownloadDirs	= glob($strDownloadFilesDir.'*', GLOB_ONLYDIR);
+			foreach ($arrDownloadDirs as $strDownloadDirPath)
 			{
-				// BZ2 succeeded
-				CliEcho("[   OK   ]");
+				exec("rm -R \"$strDownloadDirPath\"");
 			}
-			else
-			{
-				CliEcho("[ FAILED ]");
-				CliEcho("\t -- Code '$intBZ2Return' returned");
-			}
-			
-			// If we have successfully Archived (even if not compressed), then remove the raw files
-			CliEcho(" * Removing Raw Downloaded Files...\t\t\t\t\t", FALSE);
-			$arrDirectories			= glob($strDownloadDir.'*', GLOB_ONLYDIR);
-			foreach ($arrDirectories as $strDirectory)
-			{
-				exec("rm -R \"$strDirectory\"");
-			}
-			CliEcho("[   OK   ]");
 		}
-		else
-		{
-			CliEcho("[ FAILED ]");
-			CliEcho("\t -- Code '$intTARReturn' returned");
-		}
+		
 		CliEcho();
 	}
 	
