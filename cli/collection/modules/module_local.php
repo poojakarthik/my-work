@@ -145,7 +145,7 @@
 			next($this->_arrDownloadPaths);
 			
 			// Calculate Local Download Path
-			$arrCurrentFile['LocalPath']	= $strDestination.basename($arrCurrentFile['RemotePath']);
+			$arrCurrentFile['LocalPath']	= $strDestination.ltrim(basename($arrCurrentFile['RemotePath']), '/');
 			
 			// Attempt to download this file
 			if (copy($arrCurrentFile['RemotePath'], $arrCurrentFile['LocalPath']))

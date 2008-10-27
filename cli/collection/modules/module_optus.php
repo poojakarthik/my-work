@@ -178,7 +178,7 @@
 			next($this->_arrDownloadPaths);
 			
 			// Calculate Local Download Path
-			$arrCurrentFile['LocalPath']	= $strDestination.$arrCurrentFile['FileName'];
+			$arrCurrentFile['LocalPath']	= $strDestination.ltrim($arrCurrentFile['FileName'], '/');
 			
 			// Attempt to download this file
 			curl_setopt($this->_ptrSession, CURLOPT_URL				, trim($arrCurrentFile['RemotePath']));
