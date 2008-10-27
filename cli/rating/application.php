@@ -438,8 +438,7 @@
 	 function Rate($bolOnlyNew = FALSE, $intLimit = 1000)
 	 {
 		// Is there a Bill Run active?
-		$selInvoiceTemp	= new StatementSelect("Invoice", "Id", "Status = ".INVOICE_TEMP, NULL, 1);
-		if ($selInvoiceTemp->Execute())
+		if (Invoice_Run::checkTemporary())
 		{
 			CliEcho("WARNING: Rating will not run while there is a Temporary Invoice Run active!");
 			return FALSE;
