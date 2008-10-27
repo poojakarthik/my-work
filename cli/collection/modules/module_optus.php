@@ -71,7 +71,7 @@
 		//##----------------------------------------------------------------##//
 		
 		// Mandatory
- 		$this->_arrModuleConfig['URL']			['Default']		= "https://www.optus.com.au/wholesalenet/catalog/catalog.taf?custid=<Config::CustomerId>&check=<Config::CheckId>&_function=catalog&_filetype=Speedi";
+ 		$this->_arrModuleConfig['URL']			['Default']		= "https://ww2.optus.com.au/wholesalenet/catalog/catalog.taf?custid=<Config::CustomerId>&check=<Config::CheckId>&_function=catalog&_filetype=Speedi";
  		$this->_arrModuleConfig['URL']			['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['URL']			['Description']	= "URL to retrieve XML from";
  		
