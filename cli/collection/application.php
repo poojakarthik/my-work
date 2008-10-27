@@ -272,17 +272,25 @@ class ApplicationCollection extends ApplicationBaseClass
 		
 		@mkdir($strTARDir, 0777, TRUE);
 		
-		CliEcho("\n * Archiving and compressing Downloaded Files to '{$strTARBZ2File}'...");
+		CliEcho("\n * Archiving and compressing Downloaded Files to '{$strTARBZ2File}'...\t\t\t", FALSE);
 		$resTARchive	= new Archive_Tar($strTARBZ2File, 'bz2');
-		$resTARchive->add($arrFiles);
-		if (filesize($strTARBZ2File))
+		if ($resTARchive->create($arrFiles) && @filesize($strTARBZ2File))
 		{
+			CliEcho("[   OK   ]");
+			CliEcho(" * Removing Raw Files...\t\t\t\t\t", FALSE);
+			
 			// The archive appears to have been created properly, so delete the raw copies
 			$arrDownloadDirs	= glob($strDownloadFilesDir.'*', GLOB_ONLYDIR);
 			foreach ($arrDownloadDirs as $strDownloadDirPath)
 			{
 				exec("rm -R \"$strDownloadDirPath\"");
 			}
+			
+			CLiEcho("[   OK   ]");
+		}
+		else
+		{
+			CLiEcho("[ FAILED ]");
 		}
 		
 		CliEcho();
