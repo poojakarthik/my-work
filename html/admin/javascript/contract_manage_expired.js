@@ -12,12 +12,13 @@ var Contract_ManageExpired	= Class.create
 		this.arrCheckboxes	= new Array();
 		
 		// Get the list of Checkbox elements
-		for (elmInput in document.getElementsByTagName('input'))
+		var	arrInputElements	= document.getElementsByTagName('input')
+		for (intIndex in arrInputElements)
 		{
-			if (elmInput.type == 'checkbox')
+			if (arrInputElements[intIndex].type == 'checkbox')
 			{
 				// It's a checkbox, so add it to our array
-				this.arrCheckboxes.push(elmInput);
+				this.arrCheckboxes.push(arrInputElements[intIndex]);
 			}
 		}
 		
@@ -29,9 +30,9 @@ var Contract_ManageExpired	= Class.create
 	selectAll	: function()
 	{
 		alert("Selecting All...");
-		for (elmCheckbox in this.arrCheckboxes)
+		for (intIndex in this.arrCheckboxes)
 		{
-			elmCheckbox.checked	= true;
+			this.arrCheckboxes[intIndex].checked	= true;
 		}
 	},
 	
@@ -40,9 +41,9 @@ var Contract_ManageExpired	= Class.create
 	selectNone	: function()
 	{
 		alert("Selecting None...");
-		for (elmCheckbox in this.arrCheckboxes)
+		for (intIndex in this.arrCheckboxes)
 		{
-			elmCheckbox.checked	= false;
+			this.arrCheckboxes[intIndex].checked	= false;
 		}
 	},
 	
