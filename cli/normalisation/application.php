@@ -705,21 +705,26 @@
 					$this->rptNormalisationReport->AddMessageVariables(MSG_LINE, $arrReportLine, FALSE);
 				}
 				
-				// Report
-				$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> '{$arrCDR['CarrierRef']}' THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
+				// Report$strCarrierRef			= ($arrCDR['CarrierRef'] === NULL)		? 'NULL'	: "'{$arrCDR['CarrierRef']}'";
+				$strSource				= ($arrCDR['Source'] === NULL)			? 'NULL'	: "'{$arrCDR['Source']}'";
+				$strDestination			= ($arrCDR['Destination'] === NULL)		? 'NULL'	: "'{$arrCDR['Destination']}'";
+				$strStartDatetime		= ($arrCDR['StartDatetime'] === NULL)	? 'NULL'	: "'{$arrCDR['StartDatetime']}'";
+				$strEndDatetime			= ($arrCDR['EndDatetime'] === NULL)		? 'NULL'	: "'{$arrCDR['EndDatetime']}'";
+				$strDescription			= ($arrCDR['Description'] === NULL)		? 'NULL'	: "'{$arrCDR['Description']}'";
+				$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> {$strCarrierRef} THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
 											FROM CDR 
 											WHERE Id != {$arrCDR['Id']} AND 
 											FNN = '{$arrCDR['FNN']}' AND 
-											Source <=> '{$arrCDR['Source']}' AND 
-											Destination <=> '{$arrCDR['Destination']}' AND 
-											StartDatetime <=> '{$arrCDR['StartDatetime']}' AND 
-											EndDatetime <=> '{$arrCDR['EndDatetime']}' AND 
+											Source <=> {$strSource} AND 
+											Destination <=> {$strDestination} AND 
+											StartDatetime <=> {$strStartDatetime} AND 
+											EndDatetime <=> {$strEndDatetime} AND 
 											Units = {$arrCDR['Units']} AND 
 											Cost = {$arrCDR['Cost']} AND 
 											RecordType = {$arrCDR['RecordType']} AND 
 											RecordType NOT IN (10, 15, 33, 21) AND 
 											Credit = {$arrCDR['Credit']} AND 
-											Description <=> '{$arrCDR['Description']}' AND 
+											Description <=> {$strDescription} AND 
 											Status NOT IN (".CDR_DUPLICATE.", ".CDR_RECHARGE.")
 											ORDER BY Id DESC
 											LIMIT 1";
@@ -748,7 +753,7 @@
 						$mixResult = $qryQuery->Execute($strFindDuplicateSQL);
 						if ($arrDuplicateCDR = $mixResult->fetch_assoc())
 						{
-							$strMatchString			= ($arrDuplicateCDR['Status'] === CDR_DUPLICATE) ? 'duplicate' : 'recharge';
+							$strMatchString			= GetConstantDescription($arrDuplicateCDR['Status'], 'CDR');
 							CliEcho("!!! Bad Owner CDR #{$arrCDR['Id']} is a {$strMatchString} of #{$arrDuplicateCDR['Id']}");
 							$arrCDR['Status']		= $arrDuplicateCDR['Status'];
 						}
@@ -775,8 +780,8 @@
 						$mixResult = $qryQuery->Execute($strFindDuplicateSQL);
 						if ($arrDuplicateCDR = $mixResult->fetch_assoc())
 						{
-							$strMatchString			= ($arrDuplicateCDR['Status'] === CDR_DUPLICATE) ? 'duplicate' : 'recharge';
-							CliEcho("!!! Bad Owner CDR #{$arrCDR['Id']} is a {$strMatchString} of #{$arrDuplicateCDR['Id']}");
+							$strMatchString			= GetConstantDescription($arrDuplicateCDR['Status'], 'CDR');
+							CliEcho("!!! Normalised CDR #{$arrCDR['Id']} is a {$strMatchString} of #{$arrDuplicateCDR['Id']}");
 							$arrCDR['Status']		= $arrDuplicateCDR['Status'];
 						}
 						elseif ($mixResult === FALSE)
