@@ -97,6 +97,7 @@ try
 catch (Exception $eException)
 {
 	DataAccess::getDataAccess()->TransactionRollback();
+	Debug($eException->__toString());
 }
 
 $intTotalTime	= time() - $intStartTime;
