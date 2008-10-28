@@ -18,6 +18,7 @@ $intCurrentTime	= $intStartTime;
 DataAccess::getDataAccess()->TransactionStart();
 try
 {
+	CliEcho("Fetching CDRs...");
 	if (($intTotal = $selCDR->Execute()) === FALSE)
 	{
 		Debug($selCDR->Error());
