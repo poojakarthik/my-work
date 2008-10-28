@@ -74,4 +74,17 @@ var Contract_ManageExpired	= Class.create
 			return;
 		}
 	}
+	
+	// Function: calculatePayout()
+	calculatePayout	: function(intContractId)
+	{
+		// Find the Input to calculate from, and the Span to output it to
+		// TODO
+	}
 });
+
+// Init
+if (Flex.Contract_ManageExpired == undefined)
+{
+	Flex.Contract_ManageExpired	= new Contract_ManageExpired();
+}
