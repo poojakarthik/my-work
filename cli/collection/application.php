@@ -260,23 +260,49 @@ class ApplicationCollection extends ApplicationBaseClass
 		$strDownloadDir			= FILES_BASE_PATH."download/";
 		$strTARDir				= $strDownloadDir."archived/";
 		$strDownloadFilesDir	= $strDownloadDir."current/";
-		$strTARBZ2File			= $strTARDir.date("Ymdhis").".tar.bz2";
+		$strTARFile				= $strTARDir.date("Ymdhis").".tar";
 		
 		$intVersion	= 0;
-		while (file_exists($strTARBZ2File))
+		while (file_exists($strTARFile) || file_exists($strTARFile.'.bz2'))
 		{
 			// Come up with a different name
 			$intVersion++;
-			$strTARBZ2File	= $strTARDir.date("Ymdhis").".{$intVersion}.tar.bz2";
+			$strTARFile	= $strTARDir.date("Ymdhis").".{$intVersion}.tar";
 		}
 		
 		@mkdir($strTARDir, 0777, TRUE);
 		
-		CliEcho("\n * Archiving and compressing Downloaded Files to '{$strTARBZ2File}'...\t\t\t", FALSE);
-		$resTARchive	= new Archive_Tar($strTARBZ2File, 'bz2');
-		if ($resTARchive->create($arrFiles) && @filesize($strTARBZ2File))
+		CliEcho("\n * Archiving Downloaded Files to '{$strTARFile}'...\t\t\t", FALSE);
+		$resTARchive	= new Archive_Tar($strTARFile);
+		$resTARchive->setErrorHandling(PEAR_ERROR_PRINT);
+		if ($resTARchive->create($arrFiles) && @filesize($strTARFile))
 		{
 			CliEcho("[   OK   ]");
+			
+			// Compress
+			$strTARBZ2File	= $strTARFile.'.bz2';
+			CliEcho("\n * Compressing Archive to '{$strTARBZ2File}'...\t\t\t", FALSE);
+			file_put_contents("compress.bzip2://{$strTARBZ2File}.bz2", file_get_contents($strTARFile));
+			if (@filesize($strTARBZ2File))
+			{
+				CliEcho("[   OK   ]");
+				
+				// Remove TAR File
+				CliEcho("\n * Removing Archive '{$strTARFile}'...\t\t\t", FALSE);
+				if (@unlink($strTARFile))
+				{
+					CliEcho("[   OK   ]");
+				}
+				else
+				{
+					CliEcho("[ FAILED ]");
+				}
+			}
+			else
+			{
+				CliEcho("[ FAILED ]");
+			}
+			
 			CliEcho(" * Removing Raw Files...\t\t\t\t\t", FALSE);
 			
 			// The archive appears to have been created properly, so delete the raw copies
@@ -286,11 +312,11 @@ class ApplicationCollection extends ApplicationBaseClass
 				exec("rm -R \"$strDownloadDirPath\"");
 			}
 			
-			CLiEcho("[   OK   ]");
+			CliEcho("[   OK   ]");
 		}
 		else
 		{
-			CLiEcho("[ FAILED ]");
+			CliEcho("[ FAILED ]");
 		}
 		
 		CliEcho();
