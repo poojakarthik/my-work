@@ -282,7 +282,7 @@ class ApplicationCollection extends ApplicationBaseClass
 			// Compress
 			$strTARBZ2File	= $strTARFile.'.bz2';
 			CliEcho("\n * Compressing Archive to '{$strTARBZ2File}'...\t\t\t", FALSE);
-			file_put_contents("compress.bzip2://{$strTARBZ2File}.bz2", file_get_contents($strTARFile));
+			file_put_contents("compress.bzip2://{$strTARBZ2File}", file_get_contents($strTARFile));
 			if (@filesize($strTARBZ2File))
 			{
 				CliEcho("[   OK   ]");
