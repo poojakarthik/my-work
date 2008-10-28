@@ -10,6 +10,10 @@ if (!$intCDR)
 	exit(1);
 }
 
+$selCDR	= new StatementSelect("CDR", "*", "Id = {$intCDR}");
+$selCDR->Execute();
+$arrCDR	= $selCDR->Fetch();
+
 $strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> '{$arrCDR['CarrierRef']}' THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
 											FROM CDR 
 											WHERE Id != {$arrCDR['Id']} AND 
