@@ -38,7 +38,7 @@ try
 			{
 				if ($mixValue === NULL)
 				{
-					$strField	= 'NULL';
+					$mixValue	= 'NULL';
 				}
 				elseif (is_string($mixValue))
 				{
