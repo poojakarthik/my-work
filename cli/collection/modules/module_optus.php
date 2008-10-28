@@ -71,7 +71,7 @@
 		//##----------------------------------------------------------------##//
 		
 		// Mandatory
- 		$this->_arrModuleConfig['URL']			['Default']		= "https://ww2.optus.com.au/wholesalenet/catalog/catalog.taf?custid=<Config::CustomerId>&check=<Config::CheckId>&_function=catalog&_filetype=Speedi";
+ 		$this->_arrModuleConfig['URL']			['Default']		= "https://www.optus.com.au/wholesalenet/catalog/catalog.taf?custid=<Config::CustomerId>&check=<Config::CheckId>&_function=catalog&_filetype=Speedi";
  		$this->_arrModuleConfig['URL']			['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['URL']			['Description']	= "URL to retrieve XML from";
  		
@@ -188,6 +188,7 @@
 			curl_setopt($this->_ptrSession, CURLOPT_RETURNTRANSFER	, TRUE);
 			curl_setopt($this->_ptrSession, CURLOPT_POST			, FALSE);
 			curl_setopt($this->_ptrSession, CURLOPT_BINARYTRANSFER	, FALSE);
+			curl_setopt($this->_ptrSession, CURLOPT_FOLLOWLOCATION	, TRUE);
 			$strDownloadedFile = curl_exec($this->_ptrSession);
 			
 			// Write to download directory
@@ -225,6 +226,7 @@
 		curl_setopt($this->_ptrSession, CURLOPT_RETURNTRANSFER	, TRUE);
 		curl_setopt($this->_ptrSession, CURLOPT_POST			, FALSE);
 		curl_setopt($this->_ptrSession, CURLOPT_BINARYTRANSFER	, FALSE);
+		curl_setopt($this->_ptrSession, CURLOPT_FOLLOWLOCATION	, TRUE);
 		
 		// Get the directory listing for this
 		$strCatalogFile	= curl_exec($this->_ptrSession);
@@ -247,9 +249,9 @@
 			$arrLine	= explode("\t", $strLine);
 			$strFileURL	= $arrLine[1];
 			
-			// HACKHACKHACK: Optus are fucking stupid, and are using redirects to link to the actual file, so try to hack the actual address
+			/*// HACKHACKHACK: Optus are fucking stupid, and are using redirects to link to the actual file, so try to hack the actual address
 			$strCatalogDomain	= substr($strURL, 0, stripos($strURL, 'wholesalenet'));
-			$strFileURL			= $strCatalogDomain.substr($strFileURL, stripos($strURL, 'wholesalenet'));
+			$strFileURL			= $strCatalogDomain.substr($strFileURL, stripos($strURL, 'wholesalenet'));*/
 			
 			// Make sure there are no double-ups
 			if (!in_array(Array('FileName'=>trim($arrLine[0]), 'URL'=>$strFileURL), $arrLines))
