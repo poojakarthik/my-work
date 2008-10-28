@@ -29,6 +29,8 @@ var Contract_ManageExpired	= Class.create
 					this.arrCheckboxes.push(arrInputElements[i]);
 				}
 			}
+			
+			alert("Indexed " + this.arrCheckboxes.length + " Checkboxes");
 		}
 	},
 	
