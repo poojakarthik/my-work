@@ -10,17 +10,16 @@ var Contract_ManageExpired	= Class.create
 		
 		// Properties
 		this.arrCheckboxes		= new Array();
-		this.arrInputElements	= new Array();
 		
 		// Get the list of Checkbox elements
-		alert(document.getElementsByTagName('input'));
-		for (intIndex in arrInputElements)
+		var arrInputElements	= document.getElementsByTagName('input');
+		for (i = 0; i < arrInputElements.length; i++)
 		{
-			alert(intIndex + " is a " + arrInputElements[intIndex].type);	
-			if (arrInputElements[intIndex].type == 'checkbox')
+			alert(i + " is a " + arrInputElements[i].type);	
+			if (arrInputElements[i].type == 'checkbox')
 			{
 				// It's a checkbox, so add it to our array
-				this.arrCheckboxes.push(arrInputElements[intIndex]);
+				this.arrCheckboxes.push(arrInputElements[i]);
 			}
 		}
 	},
