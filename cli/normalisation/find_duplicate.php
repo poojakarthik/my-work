@@ -40,6 +40,10 @@ if ($arrDuplicateCDR = $mixResult->fetch_assoc())
 	CliEcho("!!! CDR #{$arrCDR['Id']} is a {$strMatchString} of #{$arrDuplicateCDR['Id']}");
 	$arrCDR['Status']		= $arrDuplicateCDR['Status'];
 }
+else
+{
+	CliEcho("No Duplicate Found!");
+}
 
 
 ?>
