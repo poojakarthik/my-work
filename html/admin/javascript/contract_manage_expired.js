@@ -6,6 +6,8 @@ var Contract_ManageExpired	= Class.create
 	// Prototype constructor
 	initialize	: function()
 	{
+		alert("Initialising Contract_ManageExpired...");
+		
 		// Properties
 		this.arrCheckboxes	= new Array();
 		
@@ -18,6 +20,8 @@ var Contract_ManageExpired	= Class.create
 				this.arrCheckboxes.push(elmInput);
 			}
 		}
+		
+		alert(this.arrCheckboxes);
 	},
 	
 	// Function: selectAll()
