@@ -38,7 +38,7 @@ var Contract_ManageExpired	= Class.create
 		{
 			elmCheckbox.checked	= false;
 		}
-	}
+	},
 	
 	// Function: confirm()
 	// Verifies that the user wants to Apply/Waive the fees for the selected Contracts
@@ -73,7 +73,7 @@ var Contract_ManageExpired	= Class.create
 			alert("Cancelled!");
 			return;
 		}
-	}
+	},
 	
 	// Function: calculatePayout()
 	calculatePayout	: function(intContractId)
