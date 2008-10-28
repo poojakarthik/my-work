@@ -64,13 +64,21 @@ var Contract_ManageExpired	= Class.create
 		if (intContractId == undefined)
 		{
 			// No, work off the currently checked Contracts
-			// TODO
+			for (intIndex in this.arrCheckboxes)
+			{
+				if (this.arrCheckboxes[intIndex].checked)
+				{
+					arrContractIds.push(this.arrCheckboxes[intIndex]);
+				}
+			}
 		}
 		else
 		{
 			// Yes, only use supplied Contract
 			arrContractIds.push(intContractId);
 		}
+		
+		alert(strAction + "ing " + arrContractIds.length + "Contracts");
 		
 		// Create summary and confirmation popup
 		// TODO
