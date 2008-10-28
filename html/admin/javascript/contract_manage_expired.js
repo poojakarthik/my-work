@@ -32,7 +32,7 @@ var Contract_ManageExpired	= Class.create
 	
 	// Function: selectNone()
 	// Sets all checkboxes to unchecked
-	selectAll	: function()
+	selectNone	: function()
 	{
 		for (elmCheckbox in this.arrCheckboxes)
 		{
