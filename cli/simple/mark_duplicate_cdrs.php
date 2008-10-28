@@ -49,7 +49,7 @@ try
 			$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> {$arrMatchCDR['CarrierRef']} THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
 										FROM CDR 
 										WHERE Id != {$arrMatchCDR['Id']} AND 
-										FNN = '{$arrMatchCDR['FNN']}' AND 
+										FNN = {$arrMatchCDR['FNN']} AND 
 										Source <=> {$arrMatchCDR['Source']} AND 
 										Destination <=> {$arrMatchCDR['Destination']} AND 
 										StartDatetime <=> {$arrMatchCDR['StartDatetime']} AND 
