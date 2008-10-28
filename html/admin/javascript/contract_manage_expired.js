@@ -36,7 +36,6 @@ var Contract_ManageExpired	= Class.create
 	// Sets all checkboxes to checked
 	selectAll	: function()
 	{
-		alert("Selecting All...");
 		this._indexCheckboxes();
 		for (intIndex in this.arrCheckboxes)
 		{
@@ -48,7 +47,6 @@ var Contract_ManageExpired	= Class.create
 	// Sets all checkboxes to unchecked
 	selectNone	: function()
 	{
-		alert("Selecting None...");
 		this._indexCheckboxes();
 		for (intIndex in this.arrCheckboxes)
 		{
