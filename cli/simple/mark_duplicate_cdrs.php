@@ -59,6 +59,10 @@ try
 			
 			// Does this already exist?
 			$mixResult	= $qryQuery->Execute($strFindDuplicateSQL);
+			if (!$mixResult)
+			{
+				throw new Exception($qryQuery->Error());
+			}
 			if ($arrDuplicateCDR = $mixResult->fetch_assoc())
 			{
 				$strMatchString			= GetConstantDescription($arrDuplicateCDR['Status'], 'CDR');
