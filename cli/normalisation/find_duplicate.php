@@ -14,12 +14,12 @@ $selCDR	= new StatementSelect("CDR", "*", "Id = {$intCDR}");
 $selCDR->Execute();
 $arrCDR	= $selCDR->Fetch();
 
-$strCarrierRef			= ($arrCDR['CarrierRef'] === NULL)		? $arrCDR['CarrierRef']		: "'{$arrCDR['CarrierRef']}'";
-$strSource				= ($arrCDR['Source'] === NULL)			? $arrCDR['Source']			: "'{$arrCDR['Source']}'";
-$strDestination			= ($arrCDR['Destination'] === NULL)		? $arrCDR['Destination']	: "'{$arrCDR['Destination']}'";
-$strStartDatetime		= ($arrCDR['StartDatetime'] === NULL)	? $arrCDR['StartDatetime']	: "'{$arrCDR['StartDatetime']}'";
-$strEndDatetime			= ($arrCDR['EndDatetime'] === NULL)		? $arrCDR['EndDatetime']	: "'{$arrCDR['EndDatetime']}'";
-$strDescription			= ($arrCDR['Description'] === NULL)		? $arrCDR['Description']	: "'{$arrCDR['Description']}'";
+$strCarrierRef			= ($arrCDR['CarrierRef'] === NULL)		? 'NULL'	: "'{$arrCDR['CarrierRef']}'";
+$strSource				= ($arrCDR['Source'] === NULL)			? 'NULL'	: "'{$arrCDR['Source']}'";
+$strDestination			= ($arrCDR['Destination'] === NULL)		? 'NULL'	: "'{$arrCDR['Destination']}'";
+$strStartDatetime		= ($arrCDR['StartDatetime'] === NULL)	? 'NULL'	: "'{$arrCDR['StartDatetime']}'";
+$strEndDatetime			= ($arrCDR['EndDatetime'] === NULL)		? 'NULL'	: "'{$arrCDR['EndDatetime']}'";
+$strDescription			= ($arrCDR['Description'] === NULL)		? 'NULL'	: "'{$arrCDR['Description']}'";
 $strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> {$strCarrierRef} THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
 											FROM CDR 
 											WHERE Id != {$arrCDR['Id']} AND 
