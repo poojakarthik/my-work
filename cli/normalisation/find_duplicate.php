@@ -42,7 +42,7 @@ $qryQuery	= new Query();
 $mixResult	= $qryQuery->Execute($strFindDuplicateSQL);
 if ($arrDuplicateCDR = $mixResult->fetch_assoc())
 {
-	$strMatchString			= ($arrDuplicateCDR['Status'] === CDR_DUPLICATE) ? 'duplicate' : 'recharge';
+	$strMatchString			= GetConstantDescription($arrDuplicateCDR['Status'], 'CDR');
 	CliEcho("!!! CDR #{$arrCDR['Id']} is a {$strMatchString} of #{$arrDuplicateCDR['Id']}");
 	$arrCDR['Status']		= $arrDuplicateCDR['Status'];
 }
