@@ -9,10 +9,11 @@ var Contract_ManageExpired	= Class.create
 		alert("Initialising Contract_ManageExpired...");
 		
 		// Properties
-		this.arrCheckboxes	= new Array();
+		this.arrCheckboxes		= new Array();
+		this.arrInputElements	= new Array();
 		
 		// Get the list of Checkbox elements
-		var this.arrInputElements	= document.getElementsByTagName('input');
+		this.arrInputElements	= document.getElementsByTagName('input');
 		for (intIndex in arrInputElements)
 		{
 			alert(intIndex + " is a " + arrInputElements[intIndex].type);	
