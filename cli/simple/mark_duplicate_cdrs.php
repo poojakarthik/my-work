@@ -33,26 +33,33 @@ try
 			$intCount++;
 			CliEcho(" \t + CDR $intCount/$intTotal...\t\t", FALSE);
 			
-			$strCarrierRef			= ($arrCDR['CarrierRef'] === NULL)		? 'NULL'	: "'{$arrCDR['CarrierRef']}'";
-			$strSource				= ($arrCDR['Source'] === NULL)			? 'NULL'	: "'{$arrCDR['Source']}'";
-			$strDestination			= ($arrCDR['Destination'] === NULL)		? 'NULL'	: "'{$arrCDR['Destination']}'";
-			$strStartDatetime		= ($arrCDR['StartDatetime'] === NULL)	? 'NULL'	: "'{$arrCDR['StartDatetime']}'";
-			$strEndDatetime			= ($arrCDR['EndDatetime'] === NULL)		? 'NULL'	: "'{$arrCDR['EndDatetime']}'";
-			$strDescription			= ($arrCDR['Description'] === NULL)		? 'NULL'	: "'{$arrCDR['Description']}'";
-			$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> {$strCarrierRef} THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
+			$arrMatchCDR	= Array();
+			foreach ($arrCDR as $strField=>$mixValue)
+			{
+				if ($mixValue === NULL)
+				{
+					$strField	= 'NULL';
+				}
+				elseif (is_string($mixValue))
+				{
+					$mixValue	= "'".str_replace("'", '\\\'', $mixValue)."'";
+				}
+				$arrMatchCDR[$strField]	= $mixValue;
+			}
+			$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> {$arrMatchCDR['CarrierRef']} THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
 										FROM CDR 
-										WHERE Id != {$arrCDR['Id']} AND 
-										FNN = '{$arrCDR['FNN']}' AND 
-										Source <=> {$strSource} AND 
-										Destination <=> {$strDestination} AND 
-										StartDatetime <=> {$strStartDatetime} AND 
-										EndDatetime <=> {$strEndDatetime} AND 
-										Units = {$arrCDR['Units']} AND 
-										Cost = {$arrCDR['Cost']} AND 
-										RecordType = {$arrCDR['RecordType']} AND 
+										WHERE Id != {$arrMatchCDR['Id']} AND 
+										FNN = '{$arrMatchCDR['FNN']}' AND 
+										Source <=> {$arrMatchCDR['Source']} AND 
+										Destination <=> {$arrMatchCDR['Destination']} AND 
+										StartDatetime <=> {$arrMatchCDR['StartDatetime']} AND 
+										EndDatetime <=> {$arrMatchCDR['EndDatetime']} AND 
+										Units = {$arrMatchCDR['Units']} AND 
+										Cost = {$arrMatchCDR['Cost']} AND 
+										RecordType = {$arrMatchCDR['RecordType']} AND 
 										RecordType NOT IN (10, 15, 33, 21) AND 
-										Credit = {$arrCDR['Credit']} AND 
-										Description <=> {$strDescription} AND 
+										Credit = {$arrMatchCDR['Credit']} AND 
+										Description <=> {$arrMatchCDR['Description']} AND 
 										Status NOT IN (".CDR_DUPLICATE.", ".CDR_RECHARGE.")
 										ORDER BY Id DESC
 										LIMIT 1";
