@@ -70,7 +70,7 @@ var Contract_ManageExpired	= Class.create
 			{
 				if (this.arrCheckboxes[intIndex].checked)
 				{
-					arrContractIds.push(this.arrCheckboxes[intIndex]);
+					arrContractIds.push(this.arrCheckboxes[intIndex].value);
 				}
 			}
 		}
@@ -80,7 +80,7 @@ var Contract_ManageExpired	= Class.create
 			arrContractIds.push(intContractId);
 		}
 		
-		alert(strAction + "ing " + arrContractIds.length + "Contracts");
+		alert(strAction + "ing " + arrContractIds.length + " Contracts");
 		
 		// Create summary and confirmation popup
 		// TODO
