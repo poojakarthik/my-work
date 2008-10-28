@@ -4,7 +4,7 @@
 require_once("../../flex.require.php");
 
 // Statements
-$selCDR		= new StatementSelect("CDR", "*", "Status IN (101, 107, 150, 151) AND StartDatetime >= '2008-07-01 00:00:00'");
+$selCDR		= new StatementSelect("CDR", "*", "Status IN (101, 107, 150, 151)");
 $ubiCDR		= new StatementUpdateById("CDR", Array('Status'=>NULL));
 $qryQuery	= new Query();
 
