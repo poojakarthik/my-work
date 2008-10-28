@@ -7,21 +7,27 @@ var Contract_ManageExpired	= Class.create
 	initialize	: function()
 	{
 		alert("Initialising Contract_ManageExpired...");
-		
-		// Properties
-		this.arrCheckboxes		= new Array();
-		
-		// Get the list of Checkbox elements
-		var arrInputElements	= document.getElementsByTagName('input');
-		alert(document.getElementsByTagName('input').length);
-		alert(arrInputElements.length);
-		for (i = 0; i < arrInputElements.length; i++)
+	},
+	
+	// Function: _indexCheckboxes
+	_indexCheckboxes	: function()
+	{
+		if (this.arrCheckboxes == undefined)
 		{
-			alert(i + " is a " + arrInputElements[i].type);	
-			if (arrInputElements[i].type == 'checkbox')
+			this.arrCheckboxes		= new Array();
+			
+			// Get the list of Checkbox elements
+			var arrInputElements	= document.getElementsByTagName('input');
+			alert(document.getElementsByTagName('input').length);
+			alert(arrInputElements.length);
+			for (i = 0; i < arrInputElements.length; i++)
 			{
-				// It's a checkbox, so add it to our array
-				this.arrCheckboxes.push(arrInputElements[i]);
+				alert(i + " is a " + arrInputElements[i].type);	
+				if (arrInputElements[i].type == 'checkbox')
+				{
+					// It's a checkbox, so add it to our array
+					this.arrCheckboxes.push(arrInputElements[i]);
+				}
 			}
 		}
 	},
@@ -31,6 +37,7 @@ var Contract_ManageExpired	= Class.create
 	selectAll	: function()
 	{
 		alert("Selecting All...");
+		this._indexCheckboxes();
 		for (intIndex in this.arrCheckboxes)
 		{
 			this.arrCheckboxes[intIndex].checked	= true;
@@ -42,6 +49,7 @@ var Contract_ManageExpired	= Class.create
 	selectNone	: function()
 	{
 		alert("Selecting None...");
+		this._indexCheckboxes();
 		for (intIndex in this.arrCheckboxes)
 		{
 			this.arrCheckboxes[intIndex].checked	= false;
