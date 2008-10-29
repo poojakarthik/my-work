@@ -111,7 +111,7 @@ var Contract_ManageExpired	= Class.create
 		
 		if (elmPercentageText && elmPayoutSpan && elmMinMonthlySpan && elmMonthsLeftSpan)
 		{
-			fltPercentage	= (parseFloat(elmPercentageText.value)) ? (parseFloat(elmPercentageText.value) / 100) : 0;
+			fltPercentage	= (parseFloat(elmPercentageText.value) > 0) ? (parseFloat(elmPercentageText.value) / 100) : 0;
 			fltPayout		= new Number(parseFloat(elmMinMonthlySpan.innerHTML) * parseFloat(elmMonthsLeftSpan.innerHTML) * fltPercentage);
 			
 			// Output to the page
