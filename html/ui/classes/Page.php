@@ -712,11 +712,31 @@ class Page
 		}
 		$strSelected = ($mixLastSearchType == "tickets")? "selected='selected'" : "";
 		$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='tickets' $strSelected>Tickets</option>";
+		
+		$mixKbLink = NULL;
+		$mixKbForm = NULL;
+		$mixKbAdmin = NULL;
+		if(AuthenticatedUser()->UserHasPerm(PERMISSION_KB_USER))
+		{
 
+			if(AuthenticatedUser()->UserHasPerm(PERMISSION_KB_ADMIN_USER))
+			{
+				$mixKbAdmin = "<input type=\"hidden\" name=\"strAdmin\" value=\"1\">";
+			}
+			$mixKbForm = 
+			"<form method=\"post\" name=\"kbform\" action=\"/kb/trunk/html/\" target=\"_blank\">
+				<input type=\"hidden\" name=\"mixUsername\" value=\"ryanu\">
+				<input type=\"hidden\" name=\"mixPassword\" value=\"password\">
+				$mixKbAdmin
+			</form>";
+			$mixKbLink = "| <a onclick=\"kbform.submit();\">Knowledge Base</a>";
+		}
 		echo "
+			$mixKbForm
 			<div id='person_search' name='person_search'>
 				<div id='person' name='person'>
 					Logged in as: $strUserName
+					$mixKbLink
 					| <a onclick='$strUserPreferencesLink' >Preferences</a>
 					| <a onclick='Vixen.Logout();'>Logout</a>
 				</div>

@@ -531,8 +531,14 @@ class AppTemplateEmployee extends ApplicationTemplate
 		}
 		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 		{
-			// If the user isn't a SuperAdmin, then don't allow them to change the CustomerGroupAdmin privilege
-			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_CUSTOMER_GROUP_ADMIN));
+			// If the user isn't a SuperAdmin, then don't allow them to change the CustomerGroupAdmin privilege, or the KB_ADMIN_USER privilege
+			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_CUSTOMER_GROUP_ADMIN, PERMISSION_KB_ADMIN_USER));
+			
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_KB_ADMIN_USER))
+			{
+				// The user isn't a SuperAdmin, and also isn't a KB admin, so don't let them change the user's PERMISSION_KB_USER privilege
+				$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_KB_USER));
+			}
 		}
 		
 		DBO()->Employee->Privileges = $proposed;
