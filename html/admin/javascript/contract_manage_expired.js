@@ -60,9 +60,9 @@ var Contract_ManageExpired	= Class.create
 		objContract	= new Object();
 		
 		objContract.intId		= this.arrCheckboxes[intIndex].value;
-		objContract.intAccount	= parseInt(document.getElementById("contract_account_'" + objContract.intId).innerHTML);
-		objContract.fltPayout	= parseFloat(document.getElementById("contract_payout_charge_'" + objContract.intId).innerHTML);
-		objContract.fltExitFee	= parseFloat(document.getElementById("contract_exit_fee_'" + objContract.intId).innerHTML);
+		objContract.intAccount	= parseInt(document.getElementById("contract_account_" + objContract.intId).innerHTML);
+		objContract.fltPayout	= parseFloat(document.getElementById("contract_payout_charge_" + objContract.intId).innerHTML);
+		objContract.fltExitFee	= parseFloat(document.getElementById("contract_exit_fee_" + objContract.intId).innerHTML);
 		
 		return objContract;
 	},
