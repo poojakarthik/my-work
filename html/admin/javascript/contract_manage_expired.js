@@ -71,6 +71,8 @@ var Contract_ManageExpired	= Class.create
 	// Verifies that the user wants to Apply/Waive the fees for the selected Contracts
 	confirm		: function(strAction, intContractId)
 	{
+		this._indexCheckboxes();
+		
 		var	arrContracts	= Array();
 		
 		// Did we get passed a Contract Id?
