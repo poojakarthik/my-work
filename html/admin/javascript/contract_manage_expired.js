@@ -136,19 +136,19 @@ var Contract_ManageExpired	= Class.create
 "				<div class='GroupedContent'>\n" + 
 "					<table class='form-data'>\n" + 
 "						<tr>\n" + 
-"							<td class='title' style='width:20%'>Total Contracts</td>\n" + 
+"							<td class='title'>Total Contracts : </td>\n" + 
 "							<td>" + arrContracts.length + "</td>\n" + 
 "						</tr>\n" + 
 "						<tr>\n" + 
-"							<td class='title' style='width:20%'>Total Accounts</td>\n" + 
+"							<td class='title'>Total Accounts : </td>\n" + 
 "							<td>" + arrAccounts.length + "</td>\n" + 
 "						</tr>\n" + 
 "						<tr>\n" + 
-"							<td class='title' style='width:20%'>Payout Grand Total</td>\n" + 
+"							<td class='title'>Payout Grand Total : </td>\n" + 
 "							<td>$" + (new Number(fltTotalPayout)).toFixed(2) + "</td>\n" + 
 "						</tr>\n" + 
 "						<tr>\n" + 
-"							<td class='title' style='width:20%'>Exit Fee Grand Total</td>\n" + 
+"							<td class='title'>Exit Fee Grand Total : </td>\n" + 
 "							<td>$" + (new Number(fltTotalExitFee)).toFixed(2) + "</td>\n" + 
 "						</tr>\n" + 
 "					</table>\n" + 
