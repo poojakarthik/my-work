@@ -65,7 +65,6 @@ var Contract_ManageExpired	= Class.create
 			// No, work off the currently checked Contracts
 			for (intIndex = 0; intIndex < this.arrCheckboxes.length; intIndex++)
 			{
-				alert("arrCheckboxes Index: " + intIndex);
 				if (this.arrCheckboxes[intIndex].checked)
 				{
 					arrContractIds.push(this.arrCheckboxes[intIndex].value);
