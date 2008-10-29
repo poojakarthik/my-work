@@ -164,7 +164,7 @@ var Contract_ManageExpired	= Class.create
 "				</div>\n" + 
 "			</div>\n" + 
 "			";
-		Vixen.Popup.Create('ContractConfirm', strHtml, 'medium', 'centre', 'modal', 'Apply Contract Fees Confirmation');
+		Vixen.Popup.Create('ContractConfirm', strHtml, 'small', 'centre', 'modal', 'Apply Contract Fees Confirmation');
 	}
 });
 
