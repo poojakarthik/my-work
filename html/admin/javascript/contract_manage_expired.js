@@ -27,7 +27,7 @@ var Contract_ManageExpired	= Class.create
 				}
 			}
 			
-			alert("Indexed " + this.arrCheckboxes.length + " Checkboxes");
+			//alert("Indexed " + this.arrCheckboxes.length + " Checkboxes");
 		}
 	},
 	
@@ -53,11 +53,25 @@ var Contract_ManageExpired	= Class.create
 		}
 	},
 	
+	// Function: _getContractById()
+	// Sets all checkboxes to unchecked
+	_getContractById	: function()
+	{
+		objContract	= new Object();
+		
+		objContract.intId		= this.arrCheckboxes[intIndex].value;
+		objContract.intAccount	= parseInt(document.getElementById("contract_account_'" + objContract.intId).innerHTML);
+		objContract.fltPayout	= parseFloat(document.getElementById("contract_payout_charge_'" + objContract.intId).innerHTML);
+		objContract.fltExitFee	= parseFloat(document.getElementById("contract_exit_fee_'" + objContract.intId).innerHTML);
+		
+		return objContract;
+	},
+	
 	// Function: confirm()
 	// Verifies that the user wants to Apply/Waive the fees for the selected Contracts
 	confirm		: function(strAction, intContractId)
 	{
-		var	arrContractIds	= Array();
+		var	arrContracts	= Array();
 		
 		// Did we get passed a Contract Id?
 		if (intContractId == undefined)
@@ -67,33 +81,20 @@ var Contract_ManageExpired	= Class.create
 			{
 				if (this.arrCheckboxes[intIndex].checked)
 				{
-					arrContractIds.push(this.arrCheckboxes[intIndex].value);
+					arrContracts.push(this._getContractById(this.arrCheckboxes[intIndex].value));
 				}
 			}
 		}
 		else
 		{
 			// Yes, only use supplied Contract
-			arrContractIds.push(intContractId);
+			arrContracts.push(this._getContractById(intContractId));
 		}
 		
-		alert(strAction + "ing " + arrContractIds.length + " Contracts");
+		alert(strAction + "ing " + arrContracts.length + " Contracts");
 		
 		// Create summary and confirmation popup
-		// TODO
-		if (bolResult)
-		{
-			// Confirmed, apply the fees
-			// TODO
-			
-			alert("Confirmed!");
-		}
-		else
-		{
-			// Cancelled, act as if nothing happened
-			alert("Cancelled!");
-			return;
-		}
+		this._buildConfirmationPopup(arrContracts);
 	},
 	
 	// Function: calculatePayout()
@@ -113,6 +114,57 @@ var Contract_ManageExpired	= Class.create
 			// Output to the page
 			elmPayoutSpan.innerHTML	= fltPayout.toFixed(2);
 		}
+	},
+	
+	// Function: calculatePayout()
+	_buildConfirmationPopup	: function(arrContracts)
+	{
+		fltTotalPayout	= 0.0;
+		fltTotalExitFee	= 0.0;
+		arrAccounts	= new Array();
+		for (i = 0; i < arrContracts.length; i++)
+		{
+			fltTotalPayout	+= arrContracts[i].fltPayout;
+			fltTotalExitFee	+= arrContracts[i].fltExitFee;
+			arrAccounts[arrContracts[i].intAccount]	= true;
+		}
+		
+		
+		strHtml = "\n" + 
+"			<div id='PopupPageBody_ContractConfirm'>\n" + 
+"				<div class='GroupedContent'>\n" + 
+"					Are you sure you want to apply the following Contract Fees?\n" + 
+"				</div>\n" + 
+"				<div class='GroupedContent'>\n" + 
+"					<table class='form-data'>\n" + 
+"						<tr>\n" + 
+"							<td class='title' style='width:20%'>Total Contracts</td>\n" + 
+"							<td>" + arrContracts.length + "</td>\n" + 
+"						</tr>\n" + 
+"						<tr>\n" + 
+"							<td class='title' style='width:20%'>Total Accounts</td>\n" + 
+"							<td>" + arrAccounts.length + "</td>\n" + 
+"						</tr>\n" + 
+"						<tr>\n" + 
+"							<td class='title' style='width:20%'>Payout Grand Total</td>\n" + 
+"							<td>$" + fltTotalPayout + "</td>\n" + 
+"						</tr>\n" + 
+"						<tr>\n" + 
+"							<td class='title' style='width:20%'>Exit Fee Grand Total</td>\n" + 
+"							<td>$" + fltTotalExitFee + "</td>\n" + 
+"						</tr>\n" + 
+"					</table>\n" + 
+"				</div>\n" + 
+"				<div style='padding-top:3px;height:auto:width:100%'>\n" + 
+"					<div style='float:right'>\n" + 
+"						<input type='button' id='ContractConfirmPopup_ApplyButton' name='ContractConfirmPopup_ApplyButton' value='Save' onclick='Flex.Contract_ManageBreached.apply()' style='margin-left:3px'></input>\n" + 
+"						<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>\n" + 
+"					</div>\n" + 
+"					<div style='clear:both;float:none'></div>\n" + 
+"				</div>\n" + 
+"			</div>\n" + 
+"			";
+		Vixen.Popup.Create('ContractConfirm', strHtml, 'medium', 'centre', 'modal', 'Apply Contract Fees Confirmation');
 	}
 });
 

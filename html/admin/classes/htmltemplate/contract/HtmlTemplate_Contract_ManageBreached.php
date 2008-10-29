@@ -153,7 +153,7 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 			echo "
 			<tr class='{$strRowClass}' valign='top'>
 				<td><input type='checkbox' value='{$arrContract['id']}' /></td>
-				<td><a href='../../admin/flex.php/Account/Overview/?Account.Id={$arrContract['account']}' target='_blank' >{$arrContract['account']}</a><br />{$strAccountName}</td>
+				<td><a href='../../admin/flex.php/Account/Overview/?Account.Id={$arrContract['account']}' target='_blank' ><span id='contract_account_{$arrContract['id']}'>{$arrContract['account']}</span></a><br />{$strAccountName}</td>
 				<td><a href='../../admin/flex.php/Service/View/?Service.Id={$arrContract['serviceId']}' target='_blank' >{$arrContract['service']}</a></td>
 				<td><a href='../../admin/flex.php/Service/ViewPlan/?Service.Id={$arrContract['serviceId']}' target='_blank' >{$arrContract['ratePlan']}</a><br />({$arrContract['contractTerm']} Months)</td>
 				<td>{$arrContract['contractStarted']}</td>
