@@ -62,7 +62,7 @@ var Contract_ManageExpired	= Class.create
 		objContract.intId		= this.arrCheckboxes[intIndex].value;
 		objContract.intAccount	= parseInt(document.getElementById("contract_account_" + objContract.intId).innerHTML);
 		objContract.fltPayout	= parseFloat(document.getElementById("contract_payout_charge_" + objContract.intId).innerHTML);
-		objContract.fltExitFee	= parseFloat(document.getElementById("contract_exit_fee_" + objContract.intId).innerHTML);
+		objContract.fltExitFee	= parseFloat(document.getElementById("contract_exit_fee_" + objContract.intId).value);
 		
 		return objContract;
 	},
@@ -90,8 +90,6 @@ var Contract_ManageExpired	= Class.create
 			// Yes, only use supplied Contract
 			arrContracts.push(this._getContractById(intContractId));
 		}
-		
-		alert(strAction + "ing " + arrContracts.length + " Contracts");
 		
 		// Create summary and confirmation popup
 		this._buildConfirmationPopup(arrContracts);
@@ -147,11 +145,11 @@ var Contract_ManageExpired	= Class.create
 "						</tr>\n" + 
 "						<tr>\n" + 
 "							<td class='title' style='width:20%'>Payout Grand Total</td>\n" + 
-"							<td>$" + fltTotalPayout + "</td>\n" + 
+"							<td>$" + (new Number(fltTotalPayout)).toFixed(2) + "</td>\n" + 
 "						</tr>\n" + 
 "						<tr>\n" + 
 "							<td class='title' style='width:20%'>Exit Fee Grand Total</td>\n" + 
-"							<td>$" + fltTotalExitFee + "</td>\n" + 
+"							<td>$" + (new Number(fltTotalExitFee)).toFixed(2) + "</td>\n" + 
 "						</tr>\n" + 
 "					</table>\n" + 
 "				</div>\n" + 
