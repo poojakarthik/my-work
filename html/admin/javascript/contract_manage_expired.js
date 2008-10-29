@@ -6,7 +6,7 @@ var Contract_ManageExpired	= Class.create
 	// Prototype constructor
 	initialize	: function()
 	{
-		alert("Initialising Contract_ManageExpired...");
+		
 	},
 	
 	// Function: _indexCheckboxes
