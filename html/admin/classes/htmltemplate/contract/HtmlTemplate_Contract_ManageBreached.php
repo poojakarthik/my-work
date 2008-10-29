@@ -159,8 +159,8 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 				<td>{$arrContract['contractStarted']}</td>
 				<td>{$arrContract['contractBreached']}<br />({$arrContract['contractInvoices']} Invoices)</td>
 				<td>{$arrContract['breachNature']}</td>
-				<td>\${$arrContract['minMonthly']}</td>
-				<td>{$arrContract['monthsLeft']}</td>
+				<td>\$<span id='contract_min_monthly_{$arrContract['id']}'>{$arrContract['minMonthly']}</span></td>
+				<td><span id='contract_months_left_{$arrContract['id']}'>{$arrContract['monthsLeft']}</span></td>
 				<td><input id='contract_payout_percentage_{$arrContract['id']}' type='text' size='1' onkeyup='javascript:Flex.Contract_ManageExpired.calculatePayout(\"{$arrContract['id']}\")' onchange='javascript:Flex.Contract_ManageExpired.calculatePayout(\"{$arrContract['id']}\")' value='{$arrContract['payout']}'/>% (\$<span id='contract_payout_charge_{$arrContract['id']}'>{$arrContract['payoutAmount']}</span>)</td>
 				<td nowrap='nowrap'>\$<input id='contract_exit_fee_{$arrContract['id']}' type='text' size='2' value='{$arrContract['exitFee']}'/></td>
 				

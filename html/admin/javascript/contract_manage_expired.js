@@ -104,7 +104,18 @@ var Contract_ManageExpired	= Class.create
 	calculatePayout	: function(intContractId)
 	{
 		// Find the Input to calculate from, and the Span to output it to
-		// TODO
+		elmPercentageText	= document.getElementById("contract_payout_percentage_" + intContractId);
+		elmPayoutSpan		= document.getElementById("contract_payout_charge_" + intContractId);
+		elmMinMonthlySpan	= document.getElementById("contract_min_monthly_" + intContractId);
+		elmMonthsLeftSpan	= document.getElementById("contract_months_left_" + intContractId);
+		
+		if (elmPercentageText && elmPayoutSpan && elmMinMonthlySpan && elmMonthsLeftSpan)
+		{
+			fltPayout		= parseFloat(elmMinMonthlySpan.value) * parseFloat(elmMonthsLeftSpan.value) * (parseFloat(elmPercentageText.value) / 100);
+			
+			// Output to the page
+			elmPayoutSpan.innerHTML	= fltPayout.toFixed(2);
+		}
 	}
 });
 
