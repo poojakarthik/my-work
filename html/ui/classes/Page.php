@@ -713,32 +713,45 @@ class Page
 		$strSelected = ($mixLastSearchType == "tickets")? "selected='selected'" : "";
 		$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='tickets' $strSelected>Tickets</option>";
 		
-		$mixKbLink = NULL;
-		$mixKbForm = NULL;
-		$mixKbAdmin = NULL;
+		
+		// The default menu links.
+		$mixMenuLinks = "
+		Logged in as: $strUserName
+		| <a onclick='$strUserPreferencesLink' >Preferences</a>
+		| <a onclick='Vixen.Logout();'>Logout</a>";
+
+		// Check kb permissions.
 		if(AuthenticatedUser()->UserHasPerm(PERMISSION_KB_USER))
 		{
-
+			// If the user is a kb_admin an extra flag is added.
 			if(AuthenticatedUser()->UserHasPerm(PERMISSION_KB_ADMIN_USER))
 			{
 				$mixKbAdmin = "<input type=\"hidden\" name=\"strAdmin\" value=\"1\">";
 			}
-			$mixKbForm = 
-			"<form method=\"post\" name=\"kbform\" action=\"http://192.168.2.53/kb/trunk/html/\" target=\"_blank\">
-				<input type=\"hidden\" name=\"mixUsername\" value=\"ryanu\">
-				<input type=\"hidden\" name=\"mixPassword\" value=\"password\">
-				$mixKbAdmin
+			// If the user is allowed to access the kb system the menu links change to below:
+			$mixMenuLinks = "
+			<script>
+			function redirectOutput(kbform)
+			{
+				var w = window.open('" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "','Popup_Window','width=680,height=600,resizable=0,menubar=0,toolbar=0,location=0,directories=0,scrollbars=1,status=1');
+				kbform.target = 'Popup_Window';
+				return true;
+			}
+			</script>
+			<form method=\"post\" name=\"kbform\" action=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "\" OnSubmit=\"redirectOutput(this)\">
+			Logged in as: $strUserName
+			<input type=\"hidden\" name=\"mixUsername\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['User'] . "\">
+			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\">
+			$mixKbAdmin
+			| <a onclick=\"redirectOutput(this);\">Knowledge Base</a>	
+			| <a onclick='$strUserPreferencesLink' >Preferences</a>
+			| <a onclick='Vixen.Logout();'>Logout</a>
 			</form>";
-			$mixKbLink = "| <a onclick=\"kbform.submit();\">Knowledge Base</a>";
 		}
 		echo "
-			$mixKbForm
 			<div id='person_search' name='person_search'>
 				<div id='person' name='person'>
-					Logged in as: $strUserName
-					$mixKbLink
-					| <a onclick='$strUserPreferencesLink' >Preferences</a>
-					| <a onclick='Vixen.Logout();'>Logout</a>
+					$mixMenuLinks
 				</div>
 				<div id='search_bar' name='search_bar'>
 					<form action='#' onsubmit='FlexSearch.quickSearch();return false;'>
