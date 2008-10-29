@@ -724,7 +724,7 @@ class Page
 				$mixKbAdmin = "<input type=\"hidden\" name=\"strAdmin\" value=\"1\">";
 			}
 			$mixKbForm = 
-			"<form method=\"post\" name=\"kbform\" action=\"/kb/trunk/html/\" target=\"_blank\">
+			"<form method=\"post\" name=\"kbform\" action=\"http://192.168.2.53/kb/trunk/html/\" target=\"_blank\">
 				<input type=\"hidden\" name=\"mixUsername\" value=\"ryanu\">
 				<input type=\"hidden\" name=\"mixPassword\" value=\"password\">
 				$mixKbAdmin
