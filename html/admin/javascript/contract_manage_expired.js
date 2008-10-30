@@ -76,21 +76,19 @@ var Contract_ManageExpired	= Class.create
 		var	arrContracts	= Array();
 		
 		// Did we get passed a Contract Id?
-		if (intContractId == undefined)
+		if (intContractId != undefined)
 		{
-			// No, work off the currently checked Contracts
-			for (intIndex = 0; intIndex < this.arrCheckboxes.length; intIndex++)
-			{
-				if (this.arrCheckboxes[intIndex].checked)
-				{
-					arrContracts.push(this._getContractById(this.arrCheckboxes[intIndex].value));
-				}
-			}
+			// Check the Checkbox for this Contract
+			$ID('contract_checkbox_' + intContractId).checked	= true;
 		}
-		else
+		
+		// Work off the currently checked Contracts
+		for (intIndex = 0; intIndex < this.arrCheckboxes.length; intIndex++)
 		{
-			// Yes, only use supplied Contract
-			arrContracts.push(this._getContractById(intContractId));
+			if (this.arrCheckboxes[intIndex].checked)
+			{
+				arrContracts.push(this._getContractById(this.arrCheckboxes[intIndex].value));
+			}
 		}
 		
 		// Create summary and confirmation popup
@@ -205,7 +203,6 @@ var Contract_ManageExpired	= Class.create
 		
 		// Create the Popup
 		Vixen.Popup.Create('ContractConfirm', strHtml, 'medium', 'centre', 'modal', strActionTitle + ' Contract Fees Confirmation');
-		alert("test");
 	}
 });
 
