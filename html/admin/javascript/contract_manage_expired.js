@@ -125,11 +125,11 @@ var Contract_ManageExpired	= Class.create
 			"			<div id='PopupPageBody_ContractConfirmNone'>\n" + 
 			"				<table border='0' width='100%'>\n" +
 			"					<tr>\n" +
-			"						<td valign='center'>There are no Contracts selected</td>\n" +
+			"						<td style='text-align:center'>There are no Contracts selected</td>\n" +
 			"					</tr>\n" + 
 			"					<tr>\n" +
 			"						<td>\n" +
-			"							<div style='padding-top:3px;height:auto:width:100%'>\n" + 
+			"							<div style='padding-top:3px;height:auto:width:100%;text-align:center'>\n" + 
 			"								<div valign='center'>\n" + 
 			"									<input type='button' id='ContractConfirmPopup_OKButton' name='ContractConfirmPopup_OKButton' value='OK' onclick='Vixen.Popup.Close(this)' />\n" + 
 			"								</div>\n" + 
