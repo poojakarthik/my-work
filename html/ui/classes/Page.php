@@ -740,6 +740,7 @@ class Page
 			</script>
 			<form method=\"post\" name=\"kbform\" action=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "\" OnSubmit=\"redirectOutput(this)\">
 			Logged in as: $strUserName
+			<input type=\"hidden\" name=\"strUserName\" value=\"$strUserName\">
 			<input type=\"hidden\" name=\"mixUsername\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['User'] . "\">
 			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\">
 			$mixKbAdmin
