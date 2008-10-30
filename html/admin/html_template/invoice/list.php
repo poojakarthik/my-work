@@ -95,7 +95,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		// Invoices that are older than 1 year will not have CDR records stored in the database
 		$strCDRCutoffDate = date("Y-m-01", strtotime("-1 year"));
 
-/*
+//*
 		$arrSampleInvoices = ListPDFSamples(DBO()->Account->Id->Value);
 		foreach ($arrSampleInvoices as $strInvoiceRun => $strSampleType)
 		{
@@ -119,7 +119,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 											"&nbsp;",
 											"&nbsp;");
 		}
-*/
+//*/
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
 			$bolIsSample = !is_numeric($dboInvoice->Status->Value);
