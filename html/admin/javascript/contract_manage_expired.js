@@ -175,7 +175,7 @@ var Contract_ManageExpired	= Class.create
 			objResponseDebug				= new Object();
 			objResponseDebug.ContractId		= this._arrSelectedContracts[0].intId;
 			objResponseDebug.ErrorMessage	= "DEBUG";
-			/* DEBUG */this._actionSelected(objResponseDebug);
+			/* DEBUG */this._actionNext(objResponseDebug);
 		}
 		else
 		{
@@ -320,15 +320,15 @@ var Contract_ManageExpired	= Class.create
 "					</table>\n" + 
 "				</div>\n" + 
 "				<div style='padding-top:3px;height:auto:width:100%'>\n" + 
-"					<div valign='center'>\n" + 
-"						<input type='button' id='ContractMonitorPopup_OKButton' name='ContractMonitorPopup_OKButton' value='OK' onclick='window.location.reload()' />\n" + 
+"					<div align='center'>\n" + 
+"						<input type='button' style='display:none' id='ContractMonitorPopup_OKButton' name='ContractMonitorPopup_OKButton' value='OK' onclick='window.location.reload()' />\n" + 
 "					</div>\n" + 
 "				</div>\n" + 
 "			</div>\n" + 
 "		";
 		
 		// Create the Popup
-		Vixen.Popup.Create('ContractMonitor', strHtml, 'small', 'centre', 'modal', strActioning + ' Contract Fees...');
+		Vixen.Popup.Create('ContractMonitor', strHtml, 'medium', 'centre', 'modal', strActioning + ' Contract Fees...');
 	}
 });
 
