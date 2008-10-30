@@ -901,14 +901,18 @@ class Invoice extends ORM
 			elseif (!$resResult->num_rows)
 			{
 				// No -- Is this on a Charge-in-Advance Plan?
+				$intLevel	= 0;
 				if ($arrPlanDetails['InAdvance'])
 				{
+					$intLevel	= 1;
 					$resResult	= $qryQuery->Execute("SELECT COUNT(CASE WHEN RatePlan = {$arrPlanDetails['Id']} THEN Id ELSE NULL END) AS SamePlan FROM ServiceTotal WHERE Service IN ({$strServiceIds}) GROUP BY invoice_run_id ORDER BY invoice_run_id DESC LIMIT 1");
 					if ($resResult !== FALSE)
 					{
+						$intLevel	= 2;
 						$arrPlanInvoicedBefore	= $resResult->fetch_assoc();
 						if ($arrPlanInvoicedBefore['SamePlan'] === 0)
 						{
+							$intLevel	= 3;
 							// The this Plan has not been invoiced before, so generate a Charge in Advance
 							$intAdvancePeriodStart	= $this->_objInvoiceRun->intInvoiceDatetime;
 							$intAdvancePeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->_objInvoiceRun->intInvoiceDatetime));
@@ -919,6 +923,11 @@ class Invoice extends ORM
 					{
 						throw new Exception("DB ERROR: ".$selLastPlanInvoiced->Error());
 					}
+				}
+				// DEBUG
+				if ($this->Account === 1000170409)
+				{
+					SendEmail('rdavis@yellowbilling.com.au', 'BILLING TEST', $intLevel);
 				}
 
 				// Prorate the Charges and Usage details in Arrears
