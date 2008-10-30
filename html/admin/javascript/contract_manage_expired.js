@@ -258,7 +258,7 @@ var Contract_ManageExpired	= Class.create
 "				</div>\n" + 
 "				<div style='padding-top:3px;height:auto:width:100%'>\n" + 
 "					<div style='float:right'>\n" + 
-"						<input type='button' id='ContractConfirmPopup_ApplyButton' name='ContractConfirmPopup_ApplyButton' value='" + strActionTitle + "' onclick='Flex.Contract_ManageBreached._actionSelected(\'" + strAction + "\')' style='margin-left:3px'></input>\n" + 
+"						<input type='button' id='ContractConfirmPopup_ApplyButton' name='ContractConfirmPopup_ApplyButton' value='" + strActionTitle + "' onclick='Flex.Contract_ManageBreached._actionSelected(\"" + strAction + "\")' style='margin-left:3px'></input>\n" + 
 "						<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>\n" + 
 "					</div>\n" + 
 "					<div style='clear:both;float:none'></div>\n" + 
