@@ -174,7 +174,11 @@ var Contract_ManageExpired	= Class.create
 			//jsonFunc(this._arrSelectedContracts.intId, this._arrSelectedContracts.intAccount, this._arrSelectedContracts.fltPayout, this._arrSelectedContracts.fltExitFee);
 			objResponseDebug				= new Object();
 			objResponseDebug.ContractId		= this._arrSelectedContracts[0].intId;
-			objResponseDebug.ErrorMessage	= "DEBUG";
+			objResponseDebug.ErrorMessage	= "Success";
+			for (i = 0; i < Number.MAX_VALUE; i++)
+			{
+				// do nothing
+			}
 			/* DEBUG */this._actionNext(objResponseDebug);
 		}
 		else
@@ -298,7 +302,7 @@ var Contract_ManageExpired	= Class.create
 "							<tr>\n" +
 "								<th>Account</th>\n" +
 "								<th>Service</th>\n" +
-"								<th>&nbsp</th>\n" +
+"								<th width='60%'>&nbsp</th>\n" +
 "							</tr>\n" +
 "						</thead>\n" +
 "						<tbody>";
