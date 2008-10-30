@@ -2705,7 +2705,11 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
  */
 function GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId)
 {
-	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, intval($intInvoiceRunId));
+	if (!strpos($intInvoiceRunId, '-')) 
+	{
+		$intInvoiceRunId = intval($intInvoiceRunId);
+	}
+	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId);
 	if (!$mxdInvoicePath)
 	{
 		return FALSE;
