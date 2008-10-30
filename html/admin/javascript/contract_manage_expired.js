@@ -166,13 +166,14 @@ var Contract_ManageExpired	= Class.create
 		if (this._arrSelectedContracts.length)
 		{
 			// Show a pretty little 'loading' icon
-			$elmLastActionedReponseCell				= document.getElementById('contract_action_response_' + this._arrSelectedContracts.intId);
+			$elmLastActionedReponseCell				= document.getElementById('contract_action_response_' + this._arrSelectedContracts[0].intId);
 			$elmLastActionedReponseCell.innerHTML	= "<img src='img/template/loading.gif' width='16' height='16' />";
 			
 			// Send off the AJAX request
 			//jsonFunc = jQuery.json.jsonFunction(this.actionNext.bind(this), this.actionNext.bind(this), "Contract_ManageBreached", this._strAction);
 			//jsonFunc(this._arrSelectedContracts.intId, this._arrSelectedContracts.intAccount, this._arrSelectedContracts.fltPayout, this._arrSelectedContracts.fltExitFee);
 			objResponseDebug				= new Object();
+			objResponseDebug.ContractId		= this._arrSelectedContracts[0].intId;
 			objResponseDebug.ErrorMessage	= "DEBUG";
 			/* DEBUG */this._actionSelected(objResponseDebug);
 		}
