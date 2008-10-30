@@ -63,9 +63,9 @@ var Contract_ManageExpired	= Class.create
 		objContract.intAccount			= parseInt(document.getElementById("contract_account_" + objContract.intId).innerHTML);
 		objContract.strFNN				= document.getElementById("contract_fnn_" + objContract.intId).innerHTML;
 		objContract.intServiceId		= parseInt(document.getElementById("contract_service_id_" + objContract.intId).value);
-		objContract.fltPayoutPercentage	= parseInt(document.getElementById("contract_account_" + objContract.intId).innerHTML);
+		objContract.fltPayoutPercentage	= parseInt(document.getElementById("contract_payout_percentage_" + objContract.intId).value);
 		objContract.fltPayout			= parseFloat(document.getElementById("contract_payout_charge_" + objContract.intId).innerHTML);
-		objContract.fltExitFee			= parseFloat(document.getElementById("contract_payout_percentage_" + objContract.intId).value);
+		objContract.fltExitFee			= parseFloat(document.getElementById("contract_exit_fee_" + objContract.intId).value);
 		
 		return objContract;
 	},
