@@ -2737,7 +2737,11 @@ function GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $intInv
  */
 function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId, $intTargetMedia=0)
 {
-	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, intval($intInvoiceRunId));
+	if (!strpos($intInvoiceRunId, '-')) 
+	{
+		$intInvoiceRunId = intval($intInvoiceRunId);
+	}
+	$mxdInvoicePath = InvoicePDFExists($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId);
 
 	if (!$mxdInvoicePath)
 	{
