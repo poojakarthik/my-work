@@ -114,7 +114,72 @@ var Contract_ManageExpired	= Class.create
 		}
 	},
 	
-	// Function: calculatePayout()
+	// Function: actionAJAX()
+	_actionSelected	: function(strAction)
+	{
+		// Work off the currently checked Contracts
+		arrContracts	= new Array();
+		for (intIndex = 0; intIndex < this.arrCheckboxes.length; intIndex++)
+		{
+			if (this.arrCheckboxes[intIndex].checked)
+			{
+				arrContracts.push(this._getContractById(this.arrCheckboxes[intIndex].value));
+			}
+		}
+		
+		strActioning	= 'WTF';
+		switch (strAction)
+		{
+			case 'apply':
+				strActioning	= 'Applying';
+				break;
+			case 'waive':
+				strActioning	= 'Waiving';
+				break;
+		}
+		
+		// Render the Popup that will monitor the AJAX reponses
+		// TODO
+		
+		// Action the first contract
+		this._actionNext();
+	},
+
+	_actionNext : function(objResponse)
+	{
+		// If objResponse is set, then we have already processed one
+		if (objResponse != undefined)
+		{
+			// Update the last processed Contract Cell
+			$elmLastActionedReponseCell				= document.getElementById('contract_action_response_' + objResponse.ContractId);
+			$elmLastActionedReponseCell.innerHTML	= objResponse.ErrorMessage;
+			
+			// Shift this Contract off the Array
+			this._arrSelectedContracts.shift();
+		}
+		
+		// Action the next Selected Contract
+		if (this._arrSelectedContracts.length)
+		{
+			// Show a pretty little 'loading' icon
+			$elmLastActionedReponseCell				= document.getElementById('contract_action_response_' + this._arrSelectedContracts.intId);
+			$elmLastActionedReponseCell.innerHTML	= "<img src='img/template/loading.gif' width='16' height='16' />";
+			
+			// Send off the AJAX request
+			//jsonFunc = jQuery.json.jsonFunction(this.actionNext.bind(this), this.actionNext.bind(this), "Contract_ManageBreached", this._strAction);
+			//jsonFunc(this._arrSelectedContracts.intId, this._arrSelectedContracts.intAccount, this._arrSelectedContracts.fltPayout, this._arrSelectedContracts.fltExitFee);
+			objResponseDebug				= new Object();
+			objResponseDebug.ErrorMessage	= "DEBUG";
+			/* DEBUG */this._actionSelected(objResponseDebug);
+		}
+		else
+		{
+			// Show the OK button on the monitor popup
+			document.getElementById("ContractMonitorPopup_divOK").style.display	= 'block';
+		}
+	},
+	
+	// Function: _buildConfirmationPopup()
 	_buildConfirmationPopup	: function(strAction, arrContracts)
 	{
 		objActionString	= new String(strAction);
@@ -192,7 +257,7 @@ var Contract_ManageExpired	= Class.create
 "				</div>\n" + 
 "				<div style='padding-top:3px;height:auto:width:100%'>\n" + 
 "					<div style='float:right'>\n" + 
-"						<input type='button' id='ContractConfirmPopup_ApplyButton' name='ContractConfirmPopup_ApplyButton' value='" + strActionTitle + "' onclick='Flex.Contract_ManageBreached.action()' style='margin-left:3px'></input>\n" + 
+"						<input type='button' id='ContractConfirmPopup_ApplyButton' name='ContractConfirmPopup_ApplyButton' value='" + strActionTitle + "' onclick='Flex.Contract_ManageBreached.actionSelected('" + strAction + "')' style='margin-left:3px'></input>\n" + 
 "						<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>\n" + 
 "					</div>\n" + 
 "					<div style='clear:both;float:none'></div>\n" + 
@@ -203,6 +268,64 @@ var Contract_ManageExpired	= Class.create
 		
 		// Create the Popup
 		Vixen.Popup.Create('ContractConfirm', strHtml, 'medium', 'centre', 'modal', strActionTitle + ' Contract Fees Confirmation');
+	},
+	
+	// Function: _buildMonitorPopup()
+	_buildMonitorPopup	: function()
+	{
+		strActioning	= 'WTF';
+		switch (strAction)
+		{
+			case 'apply':
+				strActioning	= 'Applying';
+				break;
+			case 'waive':
+				strActioning	= 'Waiving';
+				break;
+		}
+		
+		// Generate HTML			
+		strHtml = "\n" + 
+"			<div id='PopupPageBody_ContractMonitor'>\n" + 
+"				<div class='GroupedContent'>\n" + 
+"					<table class='form-data'>\n" +
+"						<thead>" +
+"							<tr>\n" +
+"								<th>Account</th>\n" +
+"								<th>Service</th>\n" +
+"								<th>&nbsp</th>\n" +
+"							</tr>\n" +
+"						</thead>\n" +
+"						<tbody>";
+		
+		// Build a Row for each Contract
+		for (i = 0; i < this._arrSelectedContracts.length; i++)
+		{
+			strHtml	+= "\n" + 
+"							<tr>\n" + 
+"								<td>" + this._arrSelectedContracts[i].intAccount + "</td>\n" + 
+"								<td>" + this._arrSelectedContracts[i].strFNN + "</td>\n" + 
+"								<td id='contract_action_response_" + this._arrSelectedContracts[i].intId +"'>&nbsp;</td>\n" + 
+"							</tr>";
+		}
+
+		// Close off the popup
+		strHtml	+= "\n" +
+"						</tbody>" +
+"					</table>\n" + 
+"				</div>\n" + 
+"				<div style='padding-top:3px;height:auto:width:100%'>\n" + 
+"					<div style='float:right'>\n" + 
+"						<input type='button' id='ContractConfirmPopup_ApplyButton' name='ContractConfirmPopup_ApplyButton' value='" + strActionTitle + "' onclick='Flex.Contract_ManageBreached.actionSelected('" + strAction + "')' style='margin-left:3px'></input>\n" + 
+"						<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>\n" + 
+"					</div>\n" + 
+"					<div style='clear:both;float:none'></div>\n" + 
+"				</div>\n" + 
+"			</div>\n" + 
+"		";
+		
+		// Create the Popup
+		Vixen.Popup.Create('ContractMonitor', strHtml, 'medium', 'centre', 'modal', strActioning + ' Contract Fees...');
 	}
 });
 
