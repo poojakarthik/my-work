@@ -156,9 +156,9 @@ var Contract_ManageExpired	= Class.create
 				
 				// Check to see if this Account is already in our Array of Accounts
 				bolFound	= false;
-				for (t in arrAccounts)
+				for (t = 0; t < arrAccounts.length; t++)
 				{
-					bolFound	= (arrAccounts[t] === arrContracts[i].intAccount) ? bolFound : true;
+					bolFound	= (arrAccounts[t] === arrContracts[i].intAccount) ? true : bolFound;
 				}
 				if (!bolFound)
 				{
