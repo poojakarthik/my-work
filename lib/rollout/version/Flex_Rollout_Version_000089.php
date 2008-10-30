@@ -48,8 +48,8 @@ class Flex_Rollout_Version_000089 extends Flex_Rollout_Version
 		$arrExitFeeChargeType['Amount']			= 0.00;
 		$arrExitFeeChargeType['Archived']		= 0;
 		$result = $dbAdmin->query("INSERT INTO ChargeType (ChargeType, Description, Nature, Fixed, automatic_only, Amount, Archived) VALUES " .
-									"({$arrPayoutChargeType['ChargeType']}, {$arrPayoutChargeType['Description']}, {$arrPayoutChargeType['Nature']}, {$arrPayoutChargeType['Fixed']}, {$arrPayoutChargeType['automatic_only']}, {$arrPayoutChargeType['Amount']}, {$arrPayoutChargeType['Archived']}), " .
-									"({$arrExitFeeChargeType['ChargeType']}, {$arrExitFeeChargeType['Description']}, {$arrExitFeeChargeType['Nature']}, {$arrExitFeeChargeType['Fixed']}, {$arrExitFeeChargeType['automatic_only']}, {$arrExitFeeChargeType['Amount']}, {$arrExitFeeChargeType['Archived']});");
+									"('{$arrPayoutChargeType['ChargeType']}', '{$arrPayoutChargeType['Description']}', '{$arrPayoutChargeType['Nature']}', {$arrPayoutChargeType['Fixed']}, {$arrPayoutChargeType['automatic_only']}, {$arrPayoutChargeType['Amount']}, {$arrPayoutChargeType['Archived']}), " .
+									"('{$arrExitFeeChargeType['ChargeType']}', '{$arrExitFeeChargeType['Description']}', '{$arrExitFeeChargeType['Nature']}', {$arrExitFeeChargeType['Fixed']}, {$arrExitFeeChargeType['automatic_only']}, {$arrExitFeeChargeType['Amount']}, {$arrExitFeeChargeType['Archived']});");
 		if (PEAR::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add ChargeTypes for Contract Payout and Exit Fees fields. ' . $result->getMessage());
