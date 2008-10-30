@@ -126,6 +126,8 @@ var Contract_ManageExpired	= Class.create
 				arrContracts.push(this._getContractById(this.arrCheckboxes[intIndex].value));
 			}
 		}
+		this._arrSelectedContracts	= arrContracts;
+		this._strAction				= strAction;
 		
 		strActioning	= 'WTF';
 		switch (strAction)
@@ -275,7 +277,7 @@ var Contract_ManageExpired	= Class.create
 	_buildMonitorPopup	: function()
 	{
 		strActioning	= 'WTF';
-		switch (strAction)
+		switch (this._strAction)
 		{
 			case 'apply':
 				strActioning	= 'Applying';
