@@ -319,7 +319,7 @@ var Contract_ManageExpired	= Class.create
 			strHtml	+= "\n" + 
 "							<tr>\n" + 
 "								<td align='left'><a href='../../admin/flex.php/Account/Overview/?Account.Id=" + this._arrSelectedContracts[i].intAccount + "' target='_blank'>" + this._arrSelectedContracts[i].intAccount + "</a></td>\n" + 
-"								<td align='left'>" + this._arrSelectedContracts[i].strFNN + "</td>\n" + 
+"								<td align='left'><a href='../../admin/flex.php/Service/View/?Service.Id=" + this._arrSelectedContracts[i].intServiceId + "' target='_blank'>" + this._arrSelectedContracts[i].strFNN + "</a></td>\n" + 
 "								<td align='left'>$" + (new Number(this._arrSelectedContracts[i].fltPayout)).toFixed(2) + "</td>\n" + 
 "								<td align='left'>$" + (new Number(this._arrSelectedContracts[i].fltExitFee)).toFixed(2) + "</td>\n" + 
 "								<td align='center' id='contract_action_response_" + this._arrSelectedContracts[i].intId +"'>&nbsp;</td>\n" + 
