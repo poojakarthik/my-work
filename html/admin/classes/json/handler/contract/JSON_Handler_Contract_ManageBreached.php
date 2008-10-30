@@ -66,7 +66,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 			if ($fltExitFee > 0.0)
 			{
 				// Get the ChargeType data for Early Exit Fees
-				$objExitChargeType	= Charge_Type::getExitFee();
+				$objExitChargeType	= Charge_Type::getContractExitFee();
 				
 				// Create the Charge
 				$objExitCharge	= new Charge();
@@ -98,7 +98,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 			if ($fltPayoutFee > 0.0)
 			{
 				// Get the ChargeType data for Early Exit Fees
-				$objPayoutChargeType	= Charge_Type::getPayoutFee();
+				$objPayoutChargeType	= Charge_Type::getContractPayoutFee();
 				
 				// Create the Charge
 				$objPayoutCharge	= new Charge();
