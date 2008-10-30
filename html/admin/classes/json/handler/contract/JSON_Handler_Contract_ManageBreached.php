@@ -6,7 +6,14 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 	// Waives the Contract Fees for a given ServiceRatePlan
 	public function waive($intContractId)
 	{
-		// Check user permissions
+		sleep(1);
+		
+		return array(
+						"Success"		=> TRUE,
+						"ContractId"	=> $intContractId,
+						"ErrorMessage"	=> 'Success'
+					);
+		/*// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		try
@@ -33,11 +40,21 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 							"ErrorMessage"	=> $e->getMessage()
 						);
 		}
+		*/
 	}
 
 	// Waives the Contract Fees for a given ServiceRatePlan
 	public function apply($intContractId, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee)
 	{
+		sleep(2);
+		
+		return array(
+						"Success"		=> TRUE,
+						"ContractId"	=> $intContractId,
+						"ErrorMessage"	=> 'Success'
+					);
+					
+		/*
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
@@ -133,6 +150,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 							"ErrorMessage"	=> $e->getMessage()
 						);
 		}
+		*/
 	}
 }
 

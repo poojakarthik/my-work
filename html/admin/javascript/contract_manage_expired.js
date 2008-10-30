@@ -170,16 +170,18 @@ var Contract_ManageExpired	= Class.create
 			$elmLastActionedReponseCell.innerHTML	= "<img src='img/template/loading.gif' width='16' height='16' />";
 			
 			// Send off the AJAX request
-			//jsonFunc = jQuery.json.jsonFunction(this.actionNext.bind(this), this.actionNext.bind(this), "Contract_ManageBreached", this._strAction);
-			//jsonFunc(this._arrSelectedContracts.intId, this._arrSelectedContracts.intAccount, this._arrSelectedContracts.fltPayout, this._arrSelectedContracts.fltExitFee);
-			objResponseDebug				= new Object();
+			jsonFunc = jQuery.json.jsonFunction(this.actionNext.bind(this), this.actionNext.bind(this), "Contract_ManageBreached", this._strAction);
+			jsonFunc(this._arrSelectedContracts.intId, this._arrSelectedContracts.intAccount, this._arrSelectedContracts.fltPayout, this._arrSelectedContracts.fltExitFee);
+			
+			// DEBUG
+			/*objResponseDebug				= new Object();
 			objResponseDebug.ContractId		= this._arrSelectedContracts[0].intId;
 			objResponseDebug.ErrorMessage	= "Success";
 			for (i = 0; i < 1000000; i++)
 			{
 				// do nothing
 			}
-			/* DEBUG */this._actionNext(objResponseDebug);
+			this._actionNext(objResponseDebug);*/
 		}
 		else
 		{
