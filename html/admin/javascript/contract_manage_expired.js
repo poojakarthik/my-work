@@ -59,7 +59,7 @@ var Contract_ManageExpired	= Class.create
 	{
 		objContract	= new Object();
 		
-		objContract.intId		= intContractId;
+		objContract.intId		= parseInt(intContractId);
 		objContract.intAccount	= parseInt(document.getElementById("contract_account_" + objContract.intId).innerHTML);
 		objContract.strFNN		= document.getElementById("contract_fnn_" + objContract.intId).innerHTML;
 		objContract.fltPayout	= parseFloat(document.getElementById("contract_payout_charge_" + objContract.intId).innerHTML);
