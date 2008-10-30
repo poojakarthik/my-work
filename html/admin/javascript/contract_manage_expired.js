@@ -153,7 +153,7 @@ var Contract_ManageExpired	= Class.create
 			{
 				fltTotalPayout	+= arrContracts[i].fltPayout;
 				fltTotalExitFee	+= arrContracts[i].fltExitFee;
-				arrAccounts[arrContracts[i].intAccount]	= true;
+				arrAccounts[arrContracts[i].intAccount]	+= 1;
 			}
 			
 			// Generate HTML			
