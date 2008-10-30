@@ -186,7 +186,7 @@ var Contract_ManageExpired	= Class.create
 		
 		objActionString	= new String(strAction);
 		strActionTitle	= (new String(objActionString).charAt(0)).toUpperCase() + objActionString.substr(1);
-		Vixen.Popup.Create('ContractConfirm', strHtml, 'small', 'centre', 'modal', strActionTitle + ' Contract Fees Confirmation');
+		Vixen.Popup.Create('ContractConfirm', strHtml, 'medium', 'centre', 'modal', strActionTitle + ' Contract Fees Confirmation');
 	}
 });
 
