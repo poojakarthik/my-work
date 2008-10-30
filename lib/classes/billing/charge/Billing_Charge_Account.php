@@ -107,10 +107,10 @@
 	 *
 	 * @method
 	 */
- 	function Revoke($objInvoiceRun, $objAccount)
+ 	function Revoke($objInvoice, $objAccount)
  	{
  		// Delete the charge
- 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = {$objAccount->Id} AND ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoiceRun->Id}'");
+ 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = {$objAccount->Id} AND ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoice->invoice_run_id}'");
  	}
  	
  	
