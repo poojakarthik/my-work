@@ -62,6 +62,7 @@ var Contract_ManageExpired	= Class.create
 		objContract.intId				= parseInt(intContractId);
 		objContract.intAccount			= parseInt(document.getElementById("contract_account_" + objContract.intId).innerHTML);
 		objContract.strFNN				= document.getElementById("contract_fnn_" + objContract.intId).innerHTML;
+		objContract.intServiceId		= parseInt(document.getElementById("contract_service_id_" + objContract.intId).value);
 		objContract.fltPayoutPercentage	= parseInt(document.getElementById("contract_account_" + objContract.intId).innerHTML);
 		objContract.fltPayout			= parseFloat(document.getElementById("contract_payout_charge_" + objContract.intId).innerHTML);
 		objContract.fltExitFee			= parseFloat(document.getElementById("contract_payout_percentage_" + objContract.intId).value);
@@ -317,7 +318,7 @@ var Contract_ManageExpired	= Class.create
 		{
 			strHtml	+= "\n" + 
 "							<tr>\n" + 
-"								<td align='left'>" + this._arrSelectedContracts[i].intAccount + "</td>\n" + 
+"								<td align='left'><a href='../../admin/flex.php/Account/Overview/?Account.Id=" + this._arrSelectedContracts[i].intAccount + "' target='_blank'>" + this._arrSelectedContracts[i].intAccount + "</a></td>\n" + 
 "								<td align='left'>" + this._arrSelectedContracts[i].strFNN + "</td>\n" + 
 "								<td align='left'>$" + (new Number(this._arrSelectedContracts[i].fltPayout)).toFixed(2) + "</td>\n" + 
 "								<td align='left'>$" + (new Number(this._arrSelectedContracts[i].fltExitFee)).toFixed(2) + "</td>\n" + 
