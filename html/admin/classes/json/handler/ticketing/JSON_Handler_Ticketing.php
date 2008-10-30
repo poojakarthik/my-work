@@ -130,7 +130,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		return $this->contactProps(Ticketing_Contact::getForId($contactId));
 	}
 
-	public function setContactDetails($contactId, $title, $firstName, $lastName, $jobTitle, $email, $fax, $mobile, $phone, $accountId)
+	public function setContactDetails($contactId, $title, $firstName, $lastName, $jobTitle, $email, $fax, $mobile, $phone, $accountId, $autoReply)
 	{
 		if (!Ticketing_User::currentUserIsTicketingUser())
 		{
@@ -147,6 +147,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		if (trim($fax)) 		$properties['fax'] = $fax;
 		if (trim($mobile)) 		$properties['mobile'] = $mobile;
 		if (trim($phone)) 		$properties['phone'] = $phone;
+		$properties['autoReply'] = $autoReply ? ACTIVE_STATUS_ACTIVE : ACTIVE_STATUS_INACTIVE;
 
 		if ((!trim($firstName) && !trim($lastName) && !trim($email)) || (trim($email) && !EmailAddressValid($email)))
 		{
@@ -177,6 +178,7 @@ class JSON_Handler_Ticketing extends JSON_Handler
 			'mobile' 	=> $contact->mobile,
 			'phone' 	=> $contact->phone,
 			'contactId' => $contact->id,
+			'autoReply' => $contact->autoReply(),
 		);
 		return $props;
 	}

@@ -23,10 +23,10 @@ Object.extend(Ticketing_Contact, {
 		Ticketing_Contact.remoteGetDetails(contactId);
 	},
 
-	setContactDetails: function (callback, contactId, title, firstName, lastName, jobTitle, email, fax, mobile, phone, accountId)
+	setContactDetails: function (callback, contactId, title, firstName, lastName, jobTitle, email, fax, mobile, phone, accountId, autoReply)
 	{
 		Ticketing_Contact.callback = callback;
-		Ticketing_Contact.remoteSetDetails(contactId, title, firstName, lastName, jobTitle, email, fax, mobile, phone, accountId);
+		Ticketing_Contact.remoteSetDetails(contactId, title, firstName, lastName, jobTitle, email, fax, mobile, phone, accountId, autoReply);
 	},
 
 	displayContact: function(contactId, accountId, callback)
@@ -87,7 +87,7 @@ Object.extend(Ticketing_Contact.prototype, {
 		}
 		else
 		{
-			var details = { title: null, firstName: null, lastName: null, jobTitle: null, email: null, fax: null, mobile: null, phone: null };
+			var details = { title: null, firstName: null, lastName: null, jobTitle: null, email: null, fax: null, mobile: null, phone: null, autoReply: false };
 			this.displayDetails(details);
 		}
 		this.popup.addCloseButton(this.destroy.bind(this));
@@ -162,6 +162,11 @@ Object.extend(Ticketing_Contact.prototype, {
 		td = tr.insertCell(-1);td.appendChild(input);
 
 		tr = table.insertRow(-1);
+		td = tr.insertCell(-1);td.className = 'title';td.appendChild(document.createTextNode('Auto-reply:'));
+		this.inputs.autoReply = input = document.createElement('input');input.type = 'checkbox'; input.name='autoReply'; input.checked=this.details['autoReply'];
+		td = tr.insertCell(-1);td.appendChild(input);
+
+		tr = table.insertRow(-1);
 		td = tr.insertCell(-1);
 		td.colSpan = 2;
 
@@ -232,6 +237,10 @@ Object.extend(Ticketing_Contact.prototype, {
 		td = tr.insertCell(-1);td.className = 'title';td.appendChild(document.createTextNode('Phone:'));
 		td = tr.insertCell(-1);td.appendChild(document.createTextNode(this.details['phone']));
 
+		tr = table.insertRow(-1);
+		td = tr.insertCell(-1);td.className = 'title';td.appendChild(document.createTextNode('Auto-reply:'));
+		td = tr.insertCell(-1);td.appendChild(document.createTextNode(this.details['autoReply'] ? 'Yes' : 'No'));
+
 
 		var buttons = [];
 
@@ -280,7 +289,8 @@ Object.extend(Ticketing_Contact.prototype, {
 			this.inputs.fax.value, 
 			this.inputs.mobile.value, 
 			this.inputs.phone.value, 
-			this.accountId
+			this.accountId,
+			this.inputs.autoReply.checked
 		);
 	},
 
