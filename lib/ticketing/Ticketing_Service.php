@@ -70,6 +70,11 @@ class Ticketing_Service
 				// Parse the file
 				$details = self::parseXmlFile($xmlFile);
 
+				if ($details === FALSE)
+				{
+					continue;
+				}
+
 				// Check that there is a sender
 				$correspondence = FALSE;
 				if (array_key_exists('from', $details))
@@ -167,6 +172,63 @@ class Ticketing_Service
 			@mkdir($path);
 		}
 	}
+	
+	private static function cleanseXML($strXML)
+	{
+		$arrDodgyChars = array(
+		//  Good char sequence => Bad char sequence
+			'&#161;' => '&iexcl;',
+			'&#224;' => '&agrave;',
+			'&#170;' => '&ordf;',
+			'&#225;' => '&aacute;',
+			'&#186;' => '&ordm;',
+			'&#226;' => '&acirc;',
+			'&#191;' => '&iquest;',
+			'&#232;' => '&egrave;',
+			'&#199;' => '&Ccedil;',
+			'&#233;' => '&eacute;',
+			'&#209;' => '&Ntilde;',
+			'&#234;' => '&ecirc;',
+			'&#231;' => '&ccedil;',
+			'&#238;' => '&icirc;',
+			'&#237;' => '&iacute;',
+			'&#242;' => '&ograve;',
+			'&#241;' => '&ntilde;',
+			'&#244;' => '&ocirc;',
+			'&#243;' => '&oacute;',
+			'&#251;' => '&ucirc;',
+			'&#170;' => '&ordf;',
+			'&#168;' => '&uml;',
+			'&#186;' => '&ordm;',
+			'&#196;' => '&Auml;',
+			'&#192;' => '&Agrave;',
+			'&#203;' => '&Euml;',
+			'&#193;' => '&Aacute;',
+			'&#214;' => '&Ouml;',
+			'&#194;' => '&Acirc;',
+			'&#220;' => '&Uuml;',
+			'&#200;' => '&Egrave;',
+			'&#228;' => '&auml;',
+			'&#201;' => '&Eacute;',
+			'&#235;' => '&euml;',
+			'&#202;' => '&Ecirc;',
+			'&#246;' => '&ouml;',
+			'&#212;' => '&Ocirc;',
+			'&#252;' => '&uuml;',		
+		);
+		
+		$out = array();
+		$in = array();
+		foreach ($arrDodgyChars as $strIn => $strOut)
+		{
+			$in[] = $strIn;
+			$out[] = '/' . preg_quote($strOut) . '/';
+		}
+		
+		$strXML = preg_replace($out, $in, $strXML);
+		
+		return $strXML;
+	}
 
 	private static function parseXmlFile($xmlFilePath)
 	{
@@ -210,8 +272,13 @@ class Ticketing_Service
 		// Resolve to a real path (removing symbolics)
 		$xmlFilePath = realpath($xmlFilePath);
 
+		$xml = self::cleanseXML(file_get_contents($xmlFilePath));
+
 		$dom = new DOMDocument();
-		$dom->load($xmlFilePath);
+		if (!$dom->loadXML($xml))
+		{
+			return false;
+		}
 		$details = array();
 
 		$details['files_to_remove'] = array();
