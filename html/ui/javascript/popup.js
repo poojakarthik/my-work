@@ -152,7 +152,7 @@ function VixenPopupClass()
 		return TRUE;
 	}
 
-	this.Create = function(strId, strContent, strSize, mixPosition, strModal, strTitle, strLocationOnClose)
+	this.Create = function(strId, strContent, strSize, mixPosition, strModal, strTitle, strLocationOnClose, bolCanClose)
 	{
 		// set the location to relocate to, when the popup is closed.
 		// If null, then a page reload is not performed
@@ -184,8 +184,9 @@ function VixenPopupClass()
 				
 		this.strContentCode = strContent;
 		
-		strContent = 	"<div id='VixenPopupTopBar__" + strId + "' class='PopupBoxTopBar'>" +
-						"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(\"" + strId + "\")'>";
+		strContent	= 	"<div id='VixenPopupTopBar__" + strId + "' class='PopupBoxTopBar'>";
+		
+		strContent	+=	(bolCanClose !== true) ? "" : "<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(\"" + strId + "\")'>";
 		
 		// only display the debug button if we are operating in debug mode
 		if (DEBUG_MODE)
