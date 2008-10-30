@@ -85,7 +85,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 				$objExitCharge->Amount				= $fltExitFee;
 				$objExitCharge->Notes				= '';
 				$objExitCharge->Status				= CHARGE_APPROVED;
-				$objExitCharge->global_tax_exempt	= $objExitChargeType->global_tax_exempt;
+				$objExitCharge->global_tax_exempt	= FALSE;
 				
 				$objExitCharge->save();
 				
@@ -117,7 +117,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 				$objPayoutCharge->Amount			= $fltPayoutFee;
 				$objPayoutCharge->Notes				= '';
 				$objPayoutCharge->Status			= CHARGE_APPROVED;
-				$objPayoutCharge->global_tax_exempt	= $objPayoutChargeType->global_tax_exempt;
+				$objPayoutCharge->global_tax_exempt	= FALSE;
 				
 				$objPayoutCharge->save();
 				
