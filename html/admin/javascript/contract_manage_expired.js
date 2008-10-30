@@ -304,7 +304,7 @@ var Contract_ManageExpired	= Class.create
 "							<tr>\n" +
 "								<th align='left'>Account</th>\n" +
 "								<th align='left'>Service</th>\n" +
-"								<th width='60%'>Status</th>\n" +
+"								<th width='30%'>Status</th>\n" +
 "							</tr>\n" +
 "						</thead>\n" +
 "						<tbody>";
