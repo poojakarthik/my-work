@@ -305,6 +305,8 @@ var Contract_ManageExpired	= Class.create
 "							<tr>\n" +
 "								<th align='left'>Account</th>\n" +
 "								<th align='left'>Service</th>\n" +
+"								<th align='left'>Payout Fee</th>\n" +
+"								<th align='left'>Exit Fee</th>\n" +
 "								<th width='30%'>Status</th>\n" +
 "							</tr>\n" +
 "						</thead>\n" +
@@ -317,6 +319,8 @@ var Contract_ManageExpired	= Class.create
 "							<tr>\n" + 
 "								<td align='left'>" + this._arrSelectedContracts[i].intAccount + "</td>\n" + 
 "								<td align='left'>" + this._arrSelectedContracts[i].strFNN + "</td>\n" + 
+"								<td align='left'>$" + this._arrSelectedContracts[i].fltPayout + "</td>\n" + 
+"								<td align='left'>$" + this._arrSelectedContracts[i].fltExitFee + "</td>\n" + 
 "								<td align='center' id='contract_action_response_" + this._arrSelectedContracts[i].intId +"'>&nbsp;</td>\n" + 
 "							</tr>";
 		}
@@ -335,7 +339,7 @@ var Contract_ManageExpired	= Class.create
 "		";
 		
 		// Create the Popup
-		Vixen.Popup.Create('ContractMonitor', strHtml, 'smallmedium', 'centre', 'modal', strActioning + ' Contract Fees...', null, false);
+		Vixen.Popup.Create('ContractMonitor', strHtml, 'medium', 'centre', 'modal', strActioning + ' Contract Fees...', null, false);
 	}
 });
 

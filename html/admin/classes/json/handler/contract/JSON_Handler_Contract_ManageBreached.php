@@ -28,10 +28,14 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 		catch (Exception $e)
 		{
 			DataAccess::getDataAccess()->TransactionRollback();
+			
+			// Send an Email to Devs
+			SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
 			return array(
 							"Success"		=> FALSE,
 							"ContractId"	=> $intContractId,
-							"ErrorMessage"	=> $e->getMessage()
+							"ErrorMessage"	=> 'ERROR'
 						);
 		}
 	}
@@ -132,10 +136,14 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 		catch (Exception $e)
 		{
 			DataAccess::getDataAccess()->TransactionRollback();
+			
+			// Send an Email to Devs
+			SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
 			return array(
 							"Success"		=> FALSE,
 							"ContractId"	=> $intContractId,
-							"ErrorMessage"	=> $e->getMessage()
+							"ErrorMessage"	=> 'ERROR'
 						);
 		}
 	}
