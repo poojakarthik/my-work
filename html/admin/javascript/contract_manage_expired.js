@@ -94,7 +94,7 @@ var Contract_ManageExpired	= Class.create
 		}
 		
 		// Create summary and confirmation popup
-		this._buildConfirmationPopup(arrContracts);
+		this._buildConfirmationPopup(strAction, arrContracts);
 	},
 	
 	// Function: calculatePayout()
@@ -117,23 +117,41 @@ var Contract_ManageExpired	= Class.create
 	},
 	
 	// Function: calculatePayout()
-	_buildConfirmationPopup	: function(arrContracts)
+	_buildConfirmationPopup	: function(strAction, arrContracts)
 	{
-		fltTotalPayout	= 0.0;
-		fltTotalExitFee	= 0.0;
-		arrAccounts	= new Array();
-		for (i = 0; i < arrContracts.length; i++)
+		if (arrContracts.length == 0)
 		{
-			fltTotalPayout	+= arrContracts[i].fltPayout;
-			fltTotalExitFee	+= arrContracts[i].fltExitFee;
-			arrAccounts[arrContracts[i].intAccount]	= true;
+			strHtml = "\n" + 
+			"			<div id='PopupPageBody_ContractConfirmNone'>\n" + 
+			"				<div class='GroupedContent'>\n" + 
+			"					There are no Contracts selected.\n" + 
+			"				</div>\n" + 
+			"				<div style='padding-top:3px;height:auto:width:100%'>\n" + 
+			"					<div style='margin:auto'>\n" + 
+			"						<input type='button' id='ContractConfirmPopup_OKButton' name='ContractConfirmPopup_OKButton' value='OK' onclick='Flex.Popup.Close(this)' />\n" + 
+			"					</div>\n" + 
+			"					<div style='clear:both;float:none'></div>\n" + 
+			"				</div>\n" + 
+			"			</div>\n" + 
 		}
-		
-		
-		strHtml = "\n" + 
+		else
+		{
+			// Determine Totals
+			fltTotalPayout	= 0.0;
+			fltTotalExitFee	= 0.0;
+			arrAccounts	= new Array();
+			for (i = 0; i < arrContracts.length; i++)
+			{
+				fltTotalPayout	+= arrContracts[i].fltPayout;
+				fltTotalExitFee	+= arrContracts[i].fltExitFee;
+				arrAccounts[arrContracts[i].intAccount]	= true;
+			}
+			
+			// Generate HTML
+			strHtml = "\n" + 
 "			<div id='PopupPageBody_ContractConfirm'>\n" + 
 "				<div class='GroupedContent'>\n" + 
-"					Are you sure you want to apply the following Contract Fees?\n" + 
+"					Are you sure you want to <strong>" + strAction + "</strong> the following Contract Fees?\n" + 
 "				</div>\n" + 
 "				<div class='GroupedContent'>\n" + 
 "					<table class='form-data'>\n" + 
@@ -164,7 +182,11 @@ var Contract_ManageExpired	= Class.create
 "				</div>\n" + 
 "			</div>\n" + 
 "			";
-		Vixen.Popup.Create('ContractConfirm', strHtml, 'small', 'centre', 'modal', 'Apply Contract Fees Confirmation');
+		}
+		
+		objActionString	= new String(strAction);
+		strActionTitle	= (new String(objActionString).charAt(0)).toUpperCase() + objActionString.substr(1);
+		Vixen.Popup.Create('ContractConfirm', strHtml, 'small', 'centre', 'modal', strActionTitle + ' Contract Fees Confirmation');
 	}
 });
 
