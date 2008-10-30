@@ -37,7 +37,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			DataAccess::getDataAccess()->TransactionRevoke();
+			DataAccess::getDataAccess()->TransactionRollback();
 			return array(
 							"Success"		=> FALSE,
 							"ContractId"	=> $intContractId,
@@ -141,7 +141,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			DataAccess::getDataAccess()->TransactionRevoke();
+			DataAccess::getDataAccess()->TransactionRollback();
 			return array(
 							"Success"		=> FALSE,
 							"ContractId"	=> $intContractId,
