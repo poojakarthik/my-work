@@ -211,7 +211,7 @@ class Cli_App_Billing extends Cli
 	{
 		static	$bolHasRun	= FALSE;
 			
-		if ($bolHasRun)
+		if (!$bolHasRun)
 		{
 			$strWorkingDirectory	= getcwd();
 			chdir(BACKEND_BASE_PATH.'process/');
