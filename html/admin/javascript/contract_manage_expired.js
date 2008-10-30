@@ -59,11 +59,12 @@ var Contract_ManageExpired	= Class.create
 	{
 		objContract	= new Object();
 		
-		objContract.intId		= parseInt(intContractId);
-		objContract.intAccount	= parseInt(document.getElementById("contract_account_" + objContract.intId).innerHTML);
-		objContract.strFNN		= document.getElementById("contract_fnn_" + objContract.intId).innerHTML;
-		objContract.fltPayout	= parseFloat(document.getElementById("contract_payout_charge_" + objContract.intId).innerHTML);
-		objContract.fltExitFee	= parseFloat(document.getElementById("contract_exit_fee_" + objContract.intId).value);
+		objContract.intId				= parseInt(intContractId);
+		objContract.intAccount			= parseInt(document.getElementById("contract_account_" + objContract.intId).innerHTML);
+		objContract.strFNN				= document.getElementById("contract_fnn_" + objContract.intId).innerHTML;
+		objContract.fltPayoutPercentage	= parseInt(document.getElementById("contract_account_" + objContract.intId).innerHTML);
+		objContract.fltPayout			= parseFloat(document.getElementById("contract_payout_charge_" + objContract.intId).innerHTML);
+		objContract.fltExitFee			= parseFloat(document.getElementById("contract_payout_percentage_" + objContract.intId).value);
 		
 		return objContract;
 	},
@@ -181,7 +182,7 @@ var Contract_ManageExpired	= Class.create
 			
 			// Send off the AJAX request
 			jsonFunc = jQuery.json.jsonFunction(this._actionNext.bind(this), this._actionNext.bind(this), "Contract_ManageBreached", this._strAction);
-			jsonFunc(this._arrSelectedContracts[0].intId, this._arrSelectedContracts[0].intAccount, this._arrSelectedContracts[0].fltPayout, this._arrSelectedContracts[0].fltExitFee);
+			jsonFunc(this._arrSelectedContracts[0].intId, this._arrSelectedContracts[0].fltExitFee, this._arrSelectedContracts[0].fltPayout, this._arrSelectedContracts[0].fltExitFee);
 		}
 		else
 		{
