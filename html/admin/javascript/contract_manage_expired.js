@@ -119,6 +119,9 @@ var Contract_ManageExpired	= Class.create
 	// Function: calculatePayout()
 	_buildConfirmationPopup	: function(strAction, arrContracts)
 	{
+		objActionString	= new String(strAction);
+		strActionTitle	= (new String(objActionString).charAt(0)).toUpperCase() + objActionString.substr(1);
+		
 		if (arrContracts.length == 0)
 		{
 			strHtml = "\n" + 
@@ -153,10 +156,7 @@ var Contract_ManageExpired	= Class.create
 				arrAccounts[arrContracts[i].intAccount]	= true;
 			}
 			
-			// Generate HTML
-			objActionString	= new String(strAction);
-			strActionTitle	= (new String(objActionString).charAt(0)).toUpperCase() + objActionString.substr(1);
-			
+			// Generate HTML			
 			strHtml = "\n" + 
 "			<div id='PopupPageBody_ContractConfirm'>\n" + 
 "				<div class='GroupedContent'>\n" + 
