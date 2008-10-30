@@ -929,7 +929,7 @@ class Invoice extends ORM
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= strtotime($strEarliestCDR);
 				$intPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
-				$this->_addPlanCharge('PCAR', $fltMinimumCharge, $arrPlanDetails['Name'], $this->_objInvoiceRun->intLastInvoiceDatetime, strtotime("-1 day", $this->_objInvoiceRun->intLastInvoiceDatetime), $this->_objAccount->AccountGroup, $this->_objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
+				$this->_addPlanCharge('PCAR', $fltMinimumCharge, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
 			}
 			else
 			{
