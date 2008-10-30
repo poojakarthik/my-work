@@ -161,7 +161,18 @@ var Contract_ManageExpired	= Class.create
 			
 			if (objResponse.Success)
 			{
-				$elmLastActionedReponseCell.innerHTML	= "<b>Success</b>";
+				strActioned	= 'WTF';
+				switch (this._strAction)
+				{
+					case 'apply':
+						strActioned	= 'Applied';
+						break;
+					case 'waive':
+						strActioned	= 'Waived';
+						break;
+				}
+				
+				$elmLastActionedReponseCell.innerHTML	= "<b>" + strActioned + "</b>";
 				$elmLastActionedReponseCell.style.color	= "#008000";
 			}
 			else
