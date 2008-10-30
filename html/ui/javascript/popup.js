@@ -19,7 +19,7 @@ function VixenPopupClass()
 	this.strContentCode						= "";
 	this.strLocationOnClose					= "";
 	this.intTimeoutIdForPageLoadingSplash	= null;
-	this.objSizes = {"small":200, "medium":450, "mediumlarge":575, "large":700, "extralarge":850, "alertsize":470, "defaultsize":450};
+	this.objSizes = {"small":200, 'smallmedium':300, "medium":450, "mediumlarge":575, "large":700, "extralarge":850, "alertsize":470, "defaultsize":450};
 	
 	// This stores a stack of zIndex values of the overlay div for each popup openned modally so 
 	// that we can keep a track of where to place the div overlay, when a modal
