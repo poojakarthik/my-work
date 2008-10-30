@@ -332,7 +332,7 @@ var Contract_ManageExpired	= Class.create
 "		";
 		
 		// Create the Popup
-		Vixen.Popup.Create('ContractMonitor', strHtml, 'medium', 'centre', 'modal', strActioning + ' Contract Fees...', null, false);
+		Vixen.Popup.Create('ContractMonitor', strHtml, 'small', 'centre', 'modal', strActioning + ' Contract Fees...', null, false);
 	}
 });
 
