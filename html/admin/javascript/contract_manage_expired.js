@@ -180,7 +180,7 @@ var Contract_ManageExpired	= Class.create
 		else
 		{
 			// Show the OK button on the monitor popup
-			document.getElementById("ContractMonitorPopup_divOK").style.display	= 'block';
+			document.getElementById("ContractMonitorPopup_OKButton").style.display	= 'block';
 		}
 	},
 	
