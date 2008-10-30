@@ -132,7 +132,7 @@ var Contract_ManageExpired	= Class.create
 			"					</div>\n" + 
 			"					<div style='clear:both;float:none'></div>\n" + 
 			"				</div>\n" + 
-			"			</div>\n" + 
+			"			</div>\n";
 		}
 		else
 		{
