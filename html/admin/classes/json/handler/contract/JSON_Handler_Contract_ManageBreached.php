@@ -47,9 +47,9 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 	public function apply($intContractId, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee)
 	{
 		return array(
-						"Success"		=> TRUE,
+						"Success"		=> (bool)rand(0, 1),
 						"ContractId"	=> $intContractId,
-						"ErrorMessage"	=> 'Success'
+						"ErrorMessage"	=> 'Just a test ;)'
 					);
 					
 		/*

@@ -156,7 +156,17 @@ var Contract_ManageExpired	= Class.create
 		{
 			// Update the last processed Contract Cell
 			$elmLastActionedReponseCell				= document.getElementById('contract_action_response_' + objResponse.ContractId);
-			$elmLastActionedReponseCell.innerHTML	= "<b>" + objResponse.ErrorMessage + "</b>";
+			
+			if (objResponse.Success)
+			{
+				$elmLastActionedReponseCell.innerHTML	= "<b>Success</b>";
+				$elmLastActionedReponseCell.style.color	= "#008000";
+			}
+			else
+			{
+				$elmLastActionedReponseCell.innerHTML	= "<b>" + objResponse.ErrorMessage + "</b>";
+				$elmLastActionedReponseCell.style.color	= "#CC0000";
+			}
 			
 			// Shift this Contract off the Array
 			this._arrSelectedContracts.shift();
@@ -172,16 +182,6 @@ var Contract_ManageExpired	= Class.create
 			// Send off the AJAX request
 			jsonFunc = jQuery.json.jsonFunction(this._actionNext.bind(this), this._actionNext.bind(this), "Contract_ManageBreached", this._strAction);
 			jsonFunc(this._arrSelectedContracts[0].intId, this._arrSelectedContracts[0].intAccount, this._arrSelectedContracts[0].fltPayout, this._arrSelectedContracts[0].fltExitFee);
-			
-			// DEBUG
-			/*objResponseDebug				= new Object();
-			objResponseDebug.ContractId		= this._arrSelectedContracts[0].intId;
-			objResponseDebug.ErrorMessage	= "Success";
-			for (i = 0; i < 1000000; i++)
-			{
-				// do nothing
-			}
-			this._actionNext(objResponseDebug);*/
 		}
 		else
 		{
