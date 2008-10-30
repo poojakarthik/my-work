@@ -59,7 +59,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 			
 			// Build a Contract object using the passed ServiceRatePlan.Id
 			$objServiceRatePlan	= new Service_Rate_Plan(Array('Id'=>$intContractId), TRUE);
-			$objService			= new Service(Array('Id'=>$objServiceRatePlan->Service));
+			$objService			= new Service(Array('Id'=>$objServiceRatePlan->Service), TRUE);
 			
 			// Add Exit Fee Adjustment
 			$fltExitFee	= round((float)$fltExitFee, 2);
