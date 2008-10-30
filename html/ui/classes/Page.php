@@ -714,6 +714,7 @@ class Page
 		$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='tickets' $strSelected>Tickets</option>";
 		
 		
+		$mixKbAdmin = NULL;
 		// The default menu links.
 		$mixMenuLinks = "
 		Logged in as: $strUserName
@@ -726,14 +727,14 @@ class Page
 			// If the user is a kb_admin an extra flag is added.
 			if(AuthenticatedUser()->UserHasPerm(PERMISSION_KB_ADMIN_USER))
 			{
-				$mixKbAdmin = "<input type=\"hidden\" name=\"strAdmin\" value=\"1\">";
+				$mixKbAdmin = "+'&strAdmin=1'";
 			}
 			// If the user is allowed to access the kb system the menu links change to below:
 			$mixMenuLinks = "
 			<script>
 			function redirectOutput(kbform)
 			{
-				var w = window.open('" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "','Popup_Window','width=680,height=600,resizable=0,menubar=0,toolbar=0,location=0,directories=0,scrollbars=1,status=1');
+				var w = window.open('" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "?strUserName='+document.kbform.strUserName.value+'&mixUsername='+document.kbform.mixUsername.value+'&mixPassword='+document.kbform.mixPassword.value$mixKbAdmin,'Popup_Window','width=680,height=600,resizable=0,menubar=0,toolbar=0,location=0,directories=0,scrollbars=1,status=1');
 				kbform.target = 'Popup_Window';
 				return true;
 			}
@@ -743,7 +744,6 @@ class Page
 			<input type=\"hidden\" name=\"strUserName\" value=\"$strUserName\">
 			<input type=\"hidden\" name=\"mixUsername\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['User'] . "\">
 			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\">
-			$mixKbAdmin
 			| <a onclick=\"redirectOutput(this);\">Knowledge Base</a>	
 			| <a onclick='$strUserPreferencesLink' >Preferences</a>
 			| <a onclick='Vixen.Logout();'>Logout</a>
