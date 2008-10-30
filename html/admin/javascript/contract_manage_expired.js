@@ -156,7 +156,7 @@ var Contract_ManageExpired	= Class.create
 		{
 			// Update the last processed Contract Cell
 			$elmLastActionedReponseCell				= document.getElementById('contract_action_response_' + objResponse.ContractId);
-			$elmLastActionedReponseCell.innerHTML	= objResponse.ErrorMessage;
+			$elmLastActionedReponseCell.innerHTML	= "<b>" + objResponse.ErrorMessage + "</b>";
 			
 			// Shift this Contract off the Array
 			this._arrSelectedContracts.shift();
@@ -328,7 +328,7 @@ var Contract_ManageExpired	= Class.create
 "		";
 		
 		// Create the Popup
-		Vixen.Popup.Create('ContractMonitor', strHtml, 'medium', 'centre', 'modal', strActioning + ' Contract Fees...');
+		Vixen.Popup.Create('ContractMonitor', strHtml, 'medium', 'centre', 'modal', strActioning + ' Contract Fees...', null, false);
 	}
 });
 
