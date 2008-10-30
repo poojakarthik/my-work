@@ -739,7 +739,7 @@ class Invoice extends ORM
 		//------------------------------ SERVICE -----------------------------//
 		// Update Service.discount_start_datetime to NULL
 		$strSQL	= "UPDATE (ServiceTotal JOIN service_total_service ON ServiceTotal.Service = service_total_service.service_total_id) JOIN Service ON Service.Id = service_total_service.service_id " .
-					" SET Service.discount_start_datetime = NULL " .
+					" SET Service.discount_start_datetime = NULL, cdr_count = NULL, cdr_amount = NULL " .
 					" WHERE ServiceTotal.Account = {$this->Account} AND invoice_run_id = {$this->invoice_run_id}";
 		if ($qryQuery->Execute($strSQL) === FALSE)
 		{
@@ -828,7 +828,7 @@ class Invoice extends ORM
 		{
 			$qryQuery	= new Query();
 			$resResult	= $qryQuery->Execute("SELECT * FROM tax_type WHERE global = 1 AND '{$strEffectiveDate}' BETWEEN start_datetime AND end_datetime");
-			if ($resResult)
+			if ($resResult->num_rows)
 			{
 				$arrGlobalTax	= $resResult->fetch_assoc();
 			}
@@ -898,7 +898,7 @@ class Invoice extends ORM
 			{
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
-			elseif (!$resResult)
+			elseif (!$resResult->num_rows)
 			{
 				// No -- Is this on a Charge-in-Advance Plan?
 				if ($arrPlanDetails['InAdvance'])
