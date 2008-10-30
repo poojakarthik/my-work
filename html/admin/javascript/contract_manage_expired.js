@@ -114,7 +114,7 @@ var Contract_ManageExpired	= Class.create
 		}
 	},
 	
-	// Function: actionAJAX()
+	// Function: _actionSelected()
 	_actionSelected	: function(strAction)
 	{
 		// Work off the currently checked Contracts
@@ -139,12 +139,13 @@ var Contract_ManageExpired	= Class.create
 		}
 		
 		// Render the Popup that will monitor the AJAX reponses
-		// TODO
+		this._buildMonitorPopup();
 		
 		// Action the first contract
 		this._actionNext();
 	},
 
+	// Function: _actionNext()
 	_actionNext : function(objResponse)
 	{
 		// If objResponse is set, then we have already processed one
