@@ -209,32 +209,41 @@ class Cli_App_Billing extends Cli
 	
 	private function _preGenerateScripts()
 	{
-		$strWorkingDirectory	= getcwd();
-		chdir(BACKEND_BASE_PATH.'process/');
-		
-		// Run the Multi-part script
-		$strCommand				= "php multipart.php pre_billing.cfg.php";
-		$ptrProcess				= popen($strCommand, 'r');
-		$arrBlank				= Array();
-		stream_set_blocking($ptrProcess, 0);
-		while (!feof($ptrProcess))
+		static	$bolHasRun	= FALSE;
+			
+		if ($bolHasRun)
 		{
-			$arrProcess	= Array($ptrProcess);
-			if (stream_select($arrProcess, $arrBlank, $arrBlank, 0, 500000))
+			$strWorkingDirectory	= getcwd();
+			chdir(BACKEND_BASE_PATH.'process/');
+			
+			// Run the Multi-part script
+			$strCommand				= "php multipart.php pre_billing.cfg.php";
+			$ptrProcess				= popen($strCommand, 'r');
+			$arrBlank				= Array();
+			stream_set_blocking($ptrProcess, 0);
+			while (!feof($ptrProcess))
 			{
-				// Check for output every 0.5s
-				self::debug(stream_get_contents($ptrProcess), FALSE);
+				$arrProcess	= Array($ptrProcess);
+				if (stream_select($arrProcess, $arrBlank, $arrBlank, 0, 500000))
+				{
+					// Check for output every 0.5s
+					self::debug(stream_get_contents($ptrProcess), FALSE);
+				}
 			}
+			$intReturnCode = pclose($ptrProcess);
+			
+			chdir($strWorkingDirectory);
+			
+			// Was there an error running a child script?
+			if ($intReturnCode > 0)
+			{
+				throw new Exception("There was an error running one of the pre-Generate Scripts");
+			}
+			
+			// Make sure this doesn't run twice
+			$bolHasRun	= TRUE;
 		}
-		$intReturnCode = pclose($ptrProcess);
-		
-		chdir($strWorkingDirectory);
-		
-		// Was there an error running a child script?
-		if ($intReturnCode > 0)
-		{
-			throw new Exception("There was an error running one of the pre-Generate Scripts");
-		}
+		return;
 	}
 	
 	private function _copyXML($intInvoiceRunId)
@@ -259,12 +268,6 @@ class Cli_App_Billing extends Cli
 			self::debug($strSCPCommand);
 			return shell_exec($strSCPCommand);
 		}
-	}
-	
-	private function _commit()
-	{
-		// TODO
-		
 	}
 
 	public static function debug($mixMessage, $bolNewLine=TRUE)
