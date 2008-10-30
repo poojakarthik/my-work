@@ -123,15 +123,21 @@ var Contract_ManageExpired	= Class.create
 		{
 			strHtml = "\n" + 
 			"			<div id='PopupPageBody_ContractConfirmNone'>\n" + 
-			"				<div class='GroupedContent'>\n" + 
-			"					There are no Contracts selected.\n" + 
-			"				</div>\n" + 
-			"				<div style='padding-top:3px;height:auto:width:100%'>\n" + 
-			"					<div valign='center'>\n" + 
-			"						<input type='button' id='ContractConfirmPopup_OKButton' name='ContractConfirmPopup_OKButton' value='OK' onclick='Vixen.Popup.Close(this)' />\n" + 
-			"					</div>\n" + 
-			"					<div style='clear:both;float:none'></div>\n" + 
-			"				</div>\n" + 
+			"				<table border='0' width='100%'>\n" +
+			"					<tr>\n" +
+			"						<td valign='center'>There are no Contracts selected</td>\n" +
+			"					</tr>\n" + 
+			"					<tr>\n" +
+			"						<td>\n" +
+			"							<div style='padding-top:3px;height:auto:width:100%'>\n" + 
+			"								<div valign='center'>\n" + 
+			"									<input type='button' id='ContractConfirmPopup_OKButton' name='ContractConfirmPopup_OKButton' value='OK' onclick='Vixen.Popup.Close(this)' />\n" + 
+			"								</div>\n" + 
+			"								<div style='clear:both;float:none'></div>\n" + 
+			"							</div>\n" +
+			"						</td>\n" +
+			"					</tr>\n" +
+			"				</table>" + 
 			"			</div>\n";
 		}
 		else
