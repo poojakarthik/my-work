@@ -320,7 +320,7 @@ var Contract_ManageExpired	= Class.create
 "								<td align='left'>" + this._arrSelectedContracts[i].intAccount + "</td>\n" + 
 "								<td align='left'>" + this._arrSelectedContracts[i].strFNN + "</td>\n" + 
 "								<td align='left'>$" + (new Number(this._arrSelectedContracts[i].fltPayout)).toFixed(2) + "</td>\n" + 
-"								<td align='left'>$" + (new Number(this._arrSelectedContracts[i].fltExitFee).toFixed(2) + "</td>\n" + 
+"								<td align='left'>$" + (new Number(this._arrSelectedContracts[i].fltExitFee)).toFixed(2) + "</td>\n" + 
 "								<td align='center' id='contract_action_response_" + this._arrSelectedContracts[i].intId +"'>&nbsp;</td>\n" + 
 "							</tr>";
 		}
