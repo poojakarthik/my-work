@@ -127,8 +127,8 @@ var Contract_ManageExpired	= Class.create
 			"					There are no Contracts selected.\n" + 
 			"				</div>\n" + 
 			"				<div style='padding-top:3px;height:auto:width:100%'>\n" + 
-			"					<div style='margin:auto'>\n" + 
-			"						<input type='button' id='ContractConfirmPopup_OKButton' name='ContractConfirmPopup_OKButton' value='OK' onclick='Flex.Popup.Close(this)' />\n" + 
+			"					<div valign='center'>\n" + 
+			"						<input type='button' id='ContractConfirmPopup_OKButton' name='ContractConfirmPopup_OKButton' value='OK' onclick='Vixen.Popup.Close(this)' />\n" + 
 			"					</div>\n" + 
 			"					<div style='clear:both;float:none'></div>\n" + 
 			"				</div>\n" + 
