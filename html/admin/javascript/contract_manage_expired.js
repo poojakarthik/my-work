@@ -175,7 +175,7 @@ var Contract_ManageExpired	= Class.create
 			objResponseDebug				= new Object();
 			objResponseDebug.ContractId		= this._arrSelectedContracts[0].intId;
 			objResponseDebug.ErrorMessage	= "Success";
-			for (i = 0; i < 100000; i++)
+			for (i = 0; i < 1000000; i++)
 			{
 				// do nothing
 			}
