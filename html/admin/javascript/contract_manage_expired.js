@@ -175,7 +175,7 @@ var Contract_ManageExpired	= Class.create
 			objResponseDebug				= new Object();
 			objResponseDebug.ContractId		= this._arrSelectedContracts[0].intId;
 			objResponseDebug.ErrorMessage	= "Success";
-			for (i = 0; i < 100000000; i++)
+			for (i = 0; i < 10000; i++)
 			{
 				// do nothing
 			}
@@ -314,7 +314,7 @@ var Contract_ManageExpired	= Class.create
 "							<tr>\n" + 
 "								<td align='left'>" + this._arrSelectedContracts[i].intAccount + "</td>\n" + 
 "								<td align='left'>" + this._arrSelectedContracts[i].strFNN + "</td>\n" + 
-"								<td id='contract_action_response_" + this._arrSelectedContracts[i].intId +"'>&nbsp;</td>\n" + 
+"								<td align='center' id='contract_action_response_" + this._arrSelectedContracts[i].intId +"'>&nbsp;</td>\n" + 
 "							</tr>";
 		}
 
