@@ -46,8 +46,6 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 	// Waives the Contract Fees for a given ServiceRatePlan
 	public function apply($intContractId, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee)
 	{
-		sleep(2);
-		
 		return array(
 						"Success"		=> TRUE,
 						"ContractId"	=> $intContractId,
