@@ -70,6 +70,102 @@ class Charge_Type
 	}
 	
 	//------------------------------------------------------------------------//
+	// getByCode()
+	//------------------------------------------------------------------------//
+	/**
+	 * getByCode()
+	 *
+	 * Rerieves the ChargeType by its Code
+	 *
+	 * Rerieves the ChargeType by its Code
+	 * 
+	 * @param	string	$strCode		The ChargeType Code
+	 * 
+	 * @return	mixed					Charge_Type on Success
+	 * 									NULL on Failure
+	 *
+	 * @method
+	 */
+	static public function getByCode($strCode)
+	{
+		$selByCode	= self::_preparedStatement("selByCode");
+		if ($selByCode->Execute(Array('ChargeType'=>$strCode)))
+		{
+			return new Charge_Type($selByCode->Fetch());
+		}
+		elseif ($selByCode->Error())
+		{
+			throw new Exception($selByCode->Error());
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// getContractExitFee()
+	//------------------------------------------------------------------------//
+	/**
+	 * getContractExitFee()
+	 *
+	 * Rerieves the Contract Exit Fee Charge Type
+	 *
+	 * Rerieves the Contract Exit Fee Charge Type
+	 * 
+	 * @return	Charge_Type
+	 *
+	 * @method
+	 */
+	static public function getContractExitFee()
+	{
+		$selContractExitFee	= self::_preparedStatement("selContractExitFee");
+		if ($selContractExitFee->Execute())
+		{
+			return new Charge_Type($selContractExitFee->Fetch());
+		}
+		elseif ($selContractExitFee->Error())
+		{
+			throw new Exception($selContractExitFee->Error());
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// getContractPayoutFee()
+	//------------------------------------------------------------------------//
+	/**
+	 * getContractPayoutFee()
+	 *
+	 * Rerieves the Contract Payout Fee Charge Type
+	 *
+	 * Rerieves the Contract Payout Fee Charge Type
+	 * 
+	 * @return	Charge_Type
+	 *
+	 * @method
+	 */
+	static public function getContractPayoutFee()
+	{
+		$selContractPayoutFee	= self::_preparedStatement("selContractPayoutFee");
+		if ($selContractPayoutFee->Execute())
+		{
+			return new Charge_Type($selContractPayoutFee->Fetch());
+		}
+		elseif ($selContractPayoutFee->Error())
+		{
+			throw new Exception($selContractPayoutFee->Error());
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+	
+	//------------------------------------------------------------------------//
 	// save
 	//------------------------------------------------------------------------//
 	/**
@@ -147,6 +243,15 @@ class Charge_Type
 				// SELECTS
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ChargeType", "*", "Id = <Id>", NULL, 1);
+					break;
+				case 'selByCode':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ChargeType", "*", "ChargeType = <ChargeType> AND Archived = 0", NULL, 1);
+					break;
+				case 'selContractPayoutFee':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"contract_terms JOIN ChargeType ON ChargeType.Id = contract_terms.payout_charge_type_id", "ChargeType.*", "1", NULL, 1);
+					break;
+				case 'selContractExitFee':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"contract_terms JOIN ChargeType ON ChargeType.Id = contract_terms.exit_fee_charge_type_id", "ChargeType.*", "1", NULL, 1);
 					break;
 				
 				// INSERTS
