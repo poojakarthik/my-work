@@ -13,7 +13,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 						"ContractId"	=> $intContractId,
 						"ErrorMessage"	=> 'Success'
 					);
-		/*// Check user permissions
+		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		try
@@ -30,29 +30,25 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			DataAccess::getDataAccess()->TransactionCommit();
 			
-			return array(	"Success"	=> TRUE
+			return array(
+							"Success"		=> TRUE,
+							"ContractId"	=> $intContractId,
 						);
 		}
 		catch (Exception $e)
 		{
 			DataAccess::getDataAccess()->TransactionRevoke();
-			return array(	"Success"		=> FALSE,
+			return array(
+							"Success"		=> FALSE,
+							"ContractId"	=> $intContractId,
 							"ErrorMessage"	=> $e->getMessage()
 						);
 		}
-		*/
 	}
 
 	// Waives the Contract Fees for a given ServiceRatePlan
 	public function apply($intContractId, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee)
 	{
-		return array(
-						"Success"		=> (bool)rand(0, 1),
-						"ContractId"	=> $intContractId,
-						"ErrorMessage"	=> 'Just a test ;)'
-					);
-					
-		/*
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
@@ -138,17 +134,20 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			DataAccess::getDataAccess()->TransactionCommit();
 			
-			return array(	"Success"	=> TRUE
+			return array(
+						"Success"		=> TRUE,
+						"ContractId"	=> $intContractId,
 						);
 		}
 		catch (Exception $e)
 		{
 			DataAccess::getDataAccess()->TransactionRevoke();
-			return array(	"Success"		=> FALSE,
+			return array(
+							"Success"		=> FALSE,
+							"ContractId"	=> $intContractId,
 							"ErrorMessage"	=> $e->getMessage()
 						);
 		}
-		*/
 	}
 }
 
