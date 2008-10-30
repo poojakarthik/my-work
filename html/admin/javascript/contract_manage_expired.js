@@ -153,7 +153,17 @@ var Contract_ManageExpired	= Class.create
 			{
 				fltTotalPayout	+= arrContracts[i].fltPayout;
 				fltTotalExitFee	+= arrContracts[i].fltExitFee;
-				arrAccounts[arrContracts[i].intAccount]	+= 1;
+				
+				// Check to see if this Account is already in our Array of Accounts
+				bolFound	= false;
+				for (t in arrAccounts)
+				{
+					bolFound	= (arrAccounts[t] === arrContracts[i].intAccount) ? bolFound : true;
+				}
+				if (!bolFound)
+				{
+					arrAccounts.push(arrContracts[i].intAccount);
+				}
 			}
 			
 			// Generate HTML			
