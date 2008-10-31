@@ -971,7 +971,7 @@ class Invoice extends ORM
 			$fltUsageLimit		= 0.0;
 		}
 		// DEBUG
-		if ($this->Account === 1000170409)
+		if ($this->Account === 1000170700)
 		{
 			SendEmail('rdavis@yellowbilling.com.au, turdminator@hotmail.com', 'BILLING TEST', $intLevel);
 		}
