@@ -22,7 +22,7 @@ try
 										HAVING ChargeInstances < TotalRecursions");
 	while ($arrRecurringCharge = $resResult->fetch_assoc())
 	{
-		CliEcho("\t + Fixing #{$arrRecurringCharge['Id']}... (LCO: {$arrRecurringCharge['LastChargedOn']};ALCO: {$arrRecurringCharge['ActualLastChargedOn']};", FALSE);
+		CliEcho("\t + Fixing #{$arrRecurringCharge['Id']}... (LCO: {$arrRecurringCharge['LastChargedOn']};ALCO: {$arrRecurringCharge['ActualLastChargedOn']};\t\t", FALSE);
 		
 		// Fix the Last Charged On Date
 		if (strtotime($arrRecurringCharge['LastChargedOn']) > time())
