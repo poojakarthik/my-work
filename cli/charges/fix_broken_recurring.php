@@ -2,6 +2,8 @@
 
 // Framework
 require_once("../../flex.require.php");
+require_once("../../lib/classes/Flex.php");
+Flex::load();
 
 // Start a Transaction
 DataAccess::getDataAccess()->TransactionStart();
