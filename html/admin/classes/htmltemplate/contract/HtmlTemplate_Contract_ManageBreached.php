@@ -63,14 +63,14 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 		parent::__construct($intContext, $strId, $mxdDataToRender);
 		
 		$this->LoadJavascript("contract_manage_expired");
-	}
-
-	public function Render()
-	{
+		
 		BreadCrumb()->Employee_Console();
 		//BreadCrumb()->Contracts();
 		BreadCrumb()->SetCurrentPage("Manage Breached Contracts");
-		
+	}
+
+	public function Render()
+	{		
 		// Init GET variables
 		$this->_arrGETVariables['offset']	= $this->mxdDataToRender['Pagination']['intCurrent'];
 		$this->_arrGETVariables['sort']		= $this->mxdDataToRender['Sort'];
