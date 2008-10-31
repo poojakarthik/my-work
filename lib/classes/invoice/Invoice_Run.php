@@ -65,7 +65,7 @@ class Invoice_Run
 			}
 			else
 			{
-				// Do we want to Debug something?
+				throw new Exception(__CLASS__." with Id {$intId} does not exist!");
 			}
 		}
 		

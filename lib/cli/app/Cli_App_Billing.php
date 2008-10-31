@@ -17,6 +17,7 @@ class Cli_App_Billing extends Cli
 	const	SWITCH_TEST_RUN			= "t";
 	const	SWITCH_MODE				= "m";
 	const	SWITCH_INVOICE_RUN		= "i";
+	const	SWITCH_ACCOUNT_ID		= "a";
 	
 	const	FLEX_FRONTEND_HOST				= "10.50.50.131";
 	const	FLEX_FRONTEND_USERNAME			= "ybs-admin";
@@ -104,6 +105,26 @@ class Cli_App_Billing extends Cli
 					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 					$objInvoiceRun->commit();
 					break;
+
+				case 'REGENERATE':
+					if (!$this->_arrArgs[self::SWITCH_INVOICE_RUN])
+					{
+						throw new Exception("You must supply an Invoice Run Id when running REGENERATE!");
+					}
+					
+					if ($this->_arrArgs[self::SWITCH_ACCOUNT_ID])
+					{
+						$objAccount		= new Account(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID]), FALSE, TRUE);
+						$objInvoiceRun	= new Invoice_Run(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
+						
+						// Regenerate this Account for this Invoice Run
+						$objInvoice	= new Invoice();
+						$objInvoice->generate($objAccount, $objInvoiceRun);
+					}
+					else
+					{
+						throw new Exception("You must supply an Account Id when running REGENERATE!");
+					}
 					break;
 
 				default:
@@ -300,14 +321,22 @@ class Cli_App_Billing extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|EXPORT|REPORTS]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","EXPORT","REPORTS"))'
+				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|EXPORT|REPORTS|REGENERATE]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","EXPORT","REPORTS","REGENERATE"))'
 			),
 
 			self::SWITCH_INVOICE_RUN	=> array(
 				self::ARG_LABEL			=> "INVOICE_RUN_ID",
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "The Invoice Run Id to Commit or Revoke (required for COMMIT, REVOKE, EXPORT, and REPORTS)",
+				self::ARG_DEFAULT		=> NULL,
+				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
+			),
+
+			self::SWITCH_ACCOUNT_ID	=> array(
+				self::ARG_LABEL			=> "ACCOUNT_ID",
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "The Account Id to Regenerate and Invoice for",
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			)
