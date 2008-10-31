@@ -308,6 +308,10 @@ class Cli_App_Billing extends Cli
 		else
 		{
 			// FIXME: Output to normal log
+			if (!is_scalar($mixMessage))
+			{
+				$mixMessage	= print_r($mixMessage, TRUE);
+			}
 			CliEcho($mixMessage, $bolNewLine);
 		}
 	}
