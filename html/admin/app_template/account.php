@@ -511,7 +511,7 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		$strInvoiceWhere = "" .
 			"       I.Account = $intAccountId " .
-			"   AND I.Status == ". INVOICE_TEMP .
+			"   AND I.Status = ". INVOICE_TEMP .
             "   AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_TEMPORARY .
             "   AND ir.invoice_run_type_id IN (". implode(",", $arrPermittedTypes) . ") " . 
 			"   AND ir.Id > (" .
