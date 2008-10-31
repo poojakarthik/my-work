@@ -67,6 +67,10 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 
 	public function Render()
 	{
+		BreadCrumb()->Employee_Console();
+		//BreadCrumb()->Contracts();
+		BreadCrumb()->SetCurrentPage("Manage Breached Contracts");
+		
 		// Init GET variables
 		$this->_arrGETVariables['offset']	= $this->mxdDataToRender['Pagination']['intCurrent'];
 		$this->_arrGETVariables['sort']		= $this->mxdDataToRender['Sort'];
