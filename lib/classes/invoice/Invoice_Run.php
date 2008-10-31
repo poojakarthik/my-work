@@ -225,32 +225,8 @@ class Invoice_Run
 		$this->customer_group_id		= $intCustomerGroup;
 		$this->save();
 		
-		$this->intInvoiceDatetime		= $intInvoiceDatetime;
-		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $intInvoiceDatetime);
-		
-		// Retrieve the Bill Date of the last Invoice Run...
-		Cli_App_Billing::debug(" * Getting Last Invoice Date...", FALSE);
-		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRunByCustomerGroup');
-		if ($selInvoiceRun->Execute(Array('customer_group_id' => $intCustomerGroup)))
-		{
-			// We have an old InvoiceRun
-			$arrLastInvoiceRun	= $selInvoiceRun->Fetch();
-			$this->intLastInvoiceDatetime	= strtotime($arrLastInvoiceRun['BillingDate']);
-			$this->strLastInvoiceDatetime	= $arrLastInvoiceRun['BillingDate'] . ' 00:00:00';
-			Cli_App_Billing::debug(date('Y-m-d H:i:s', $this->intLastInvoiceDatetime)." (retrieved)");
-		}
-		elseif ($selInvoiceRun->Error())
-		{
-			throw new Exception("DB ERROR: ".$selInvoiceRun->Error());
-		}
-		else
-		{
-			// No InvoiceRuns, so lets calculate when it should have been
-			// For now, we will (and can probably always) assume that the Bill was supposed to be run exactly 1 month ago
-			$this->intLastInvoiceDatetime	= strtotime("-1 month", $intInvoiceDatetime);
-			$this->strLastInvoiceDatetime	= date("Y-m-d H:i:s", strtotime("-1 month", $intInvoiceDatetime));
-			Cli_App_Billing::debug(date('Y-m-d H:i:s', $this->intLastInvoiceDatetime)." (calculated)");
-		}
+		// Generate the Billing Period Dates
+		$this->calculateBillingPeriodDates();
 		
 		// Retrieve a list of Accounts to be Invoiced
 		Cli_App_Billing::debug(" * Getting list of Accounts to Invoice...");
@@ -546,6 +522,51 @@ class Invoice_Run
 		else
 		{
 			return (bool)$mixResult;
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// calculateBillingPeriodDates()
+	//------------------------------------------------------------------------//
+	/**
+	 * calculateBillingPeriodDates()
+	 *
+	 * Calculates the Billing Period Dates for this Invoice Run
+	 *
+	 * Calculates the Billing Period Dates for this Invoice Run
+	 * 
+	 * @return	boolean
+	 *
+	 * @method
+	 */
+	public function calculateBillingPeriodDates()
+	{
+		$intInvoiceDatetime				= strtotime($this->BillingDate);
+		$this->intInvoiceDatetime		= $intInvoiceDatetime;
+		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $intInvoiceDatetime);
+		
+		// Retrieve the Bill Date of the last Invoice Run...
+		Cli_App_Billing::debug(" * Getting Last Invoice Date...", FALSE);
+		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRunByCustomerGroup');
+		if ($selInvoiceRun->Execute(Array('customer_group_id' => $this->customer_group_id)))
+		{
+			// We have an old InvoiceRun
+			$arrLastInvoiceRun	= $selInvoiceRun->Fetch();
+			$this->intLastInvoiceDatetime	= strtotime($arrLastInvoiceRun['BillingDate']);
+			$this->strLastInvoiceDatetime	= $arrLastInvoiceRun['BillingDate'] . ' 00:00:00';
+			Cli_App_Billing::debug(date('Y-m-d H:i:s', $this->intLastInvoiceDatetime)." (retrieved)");
+		}
+		elseif ($selInvoiceRun->Error())
+		{
+			throw new Exception("DB ERROR: ".$selInvoiceRun->Error());
+		}
+		else
+		{
+			// No InvoiceRuns, so lets calculate when it should have been
+			// For now, we will (and can probably always) assume that the Bill was supposed to be run exactly 1 month ago
+			$this->intLastInvoiceDatetime	= strtotime("-1 month", $intInvoiceDatetime);
+			$this->strLastInvoiceDatetime	= date("Y-m-d H:i:s", strtotime("-1 month", $intInvoiceDatetime));
+			Cli_App_Billing::debug(date('Y-m-d H:i:s', $this->intLastInvoiceDatetime)." (calculated)");
 		}
 	}
 	
