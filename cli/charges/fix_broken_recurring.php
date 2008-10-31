@@ -52,7 +52,7 @@ try
 		$objCharge->Notes				= '';
 		$objCharge->Status				= CHARGE_APPROVED;
 		$objCharge->global_tax_exempt	= FALSE;
-		$objCharge->Amount	= $arrCharge['RecursionCharge'];
+		$objCharge->Amount				= $arrRecurringCharge['RecursionCharge'];
 		
 		// Save the Charge
 		$objCharge->save();
