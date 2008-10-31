@@ -22,7 +22,7 @@ try
 										HAVING ChargeInstances < TotalRecursions");
 	while ($arrRecurringCharge = $resResult->fetch_assoc())
 	{
-		CliEcho("\t + Fixing #{$arrRecurringCharge['Id']}... (LCO: {$arrRecurringCharge['LastChargedOn']}::", FALSE);
+		CliEcho("\t + Fixing #{$arrRecurringCharge['Id']}... (LCO: {$arrRecurringCharge['LastChargedOn']};ALCO: {$arrRecurringCharge['ActualLastChargedOn']};", FALSE);
 		
 		// Fix the Last Charged On Date
 		if (strtotime($arrRecurringCharge['LastChargedOn']) > time())
@@ -34,7 +34,7 @@ try
 			$arrRecurringCharge['LastChargedOn']	= date("Y-m-d", strtotime("+1 month", strtotime($arrRecurringCharge['LastChargedOn'])));
 		}
 		
-		CliEcho("ACO: {$arrRecurringCharge['LastChargedOn']})", FALSE);
+		CliEcho("NLCO: {$arrRecurringCharge['LastChargedOn']})", FALSE);
 		
 		// Just charge each person once.  Might not be correct, but it will do
 		$objCharge	= new Charge();
