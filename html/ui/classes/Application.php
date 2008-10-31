@@ -160,6 +160,7 @@ class Application
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
+				ContextMenu()->Admin->ManageDealers();
 			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CUSTOMER_GROUP_ADMIN))
 			{
@@ -289,6 +290,7 @@ class Application
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
+				ContextMenu()->Admin->ManageDealers();
 			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CUSTOMER_GROUP_ADMIN))
 			{

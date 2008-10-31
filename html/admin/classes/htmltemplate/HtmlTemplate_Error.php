@@ -41,7 +41,7 @@ class HtmlTemplate_Error extends FlexHtmlTemplate
 		
 		echo "
 <div class='message error'>$strMessage</div>
-<div class='message error' style='white-space:pre'>$strErrorMessage</div>
+<div class='message error'>$strErrorMessage</div>
 ";
 	}
 }

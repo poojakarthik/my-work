@@ -639,6 +639,68 @@ class MenuItems
 		return self::NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewDocumentResources/?CustomerGroup.Id=$intCustomerGroup";
 	}
 	
+	//------------------------------------------------------------------------//
+	// ManageDealers
+	//------------------------------------------------------------------------//
+	/**
+	 * ManageDealers()
+	 *
+	 * Compiles the Href to be executed when the ManageDealers functionality is requested
+	 *
+	 * Compiles the Href to be executed when the ManageDealers functionality is requested
+	 * 
+	 * @return	string						Href to trigger the functionality
+	 * @method
+	 */
+	function ManageDealers()
+	{
+		$this->strLabel				= "Dealers";
+		$this->strContextMenuLabel	= "Manage Dealers";
+		
+		return self::NEW_FRAMEWORK . "reflex.php/Dealer/ListDealers/";
+	}
+	
+	//------------------------------------------------------------------------//
+	// ViewDealer
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewDealer()
+	 *
+	 * Compiles the Href to be executed when the ViewDealer functionality is requested
+	 *
+	 * Compiles the Href to be executed when the ViewDealer functionality is requested
+	 * 
+	 * @return	string						Href to trigger the functionality
+	 * @method
+	 */
+	function ViewDealer($intDealerId)
+	{
+		$this->strLabel				= "View Dealer";
+		$this->strContextMenuLabel	= "View Dealer";
+		
+		return "javascript:Dealer.viewDealer($intDealerId)";
+	}
+	
+	//------------------------------------------------------------------------//
+	// EditDealer
+	//------------------------------------------------------------------------//
+	/**
+	 * EditDealer()
+	 *
+	 * Compiles the Href to be executed when the EditDealer functionality is requested
+	 *
+	 * Compiles the Href to be executed when the EditDealer functionality is requested
+	 * 
+	 * @return	string						Href to trigger the functionality
+	 * @method
+	 */
+	function EditDealer($intDealerId)
+	{
+		$this->strLabel				= "Edit Dealer";
+		$this->strContextMenuLabel	= "Edit Dealer";
+		
+		return "javascript:Dealer.editDealer($intDealerId)";
+	}
 	
 	//------------------------------------------------------------------------//
 	// ViewAllCustomerGroups

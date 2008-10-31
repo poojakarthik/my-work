@@ -579,3 +579,40 @@ table.form-data td.title
 	vertical-align	: top;
 	font-weight		: bold;
 }
+
+/***************************** Tab Collection stuff ***************************/
+div.tab-collection
+{
+}
+
+div.tab-collection div.tab-header-container
+{
+	/*border-bottom	: solid 1px #888;*/
+}
+
+div.tab-collection div.tab-header-container div.tab-header
+{
+	padding			: 0.2em;
+	border-top		: solid 1px #888;
+	border-right	: solid 1px #888;
+	border-left		: solid 1px #888;
+	cursor			: pointer;
+}
+div.tab-collection div.tab-header-container div.tab-header:hover
+{
+	background-color: #EEE;
+}
+div.tab-collection div.tab-header-container div.selected,
+div.tab-collection div.tab-header-container div.selected:hover
+{
+	background-color: #CCC;
+	border-bottom: solid 1px #CCC;
+}
+
+div.tab-collection div.tab-body-container
+{
+	padding: 0.25em;
+	border: solid 1px #888;
+	border-top: none;
+	background-color: #CCC;
+}

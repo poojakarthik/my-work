@@ -392,6 +392,9 @@ function VixenPopupClass()
 				window.location = window.location;
 			}
 		}
+		
+		// return a reference to the popup
+		return elmPopup;
 	}
 	
 	//------------------------------------------------------------------------//

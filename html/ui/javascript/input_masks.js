@@ -36,15 +36,19 @@ if (InputMasks == undefined)
 InputMasks.shortdate = 	{
 							format	: "__/__/____",
 							regex	: /^\d$/
-						}
+						};
 InputMasks.time24hr =	{
 							format	: "__:__:__",
 							regex	: /^\d$/
-						}
+						};
 InputMasks.datetime	=	{
 							format	: "__:__:__ __/__/____",
 							regex	: /^\d$/
-						}
+						};
+InputMasks.digitsOnly = {
+							format	: null,
+							regex	: /^\d$/
+						};
 
 
 // Event handler for all input masks
@@ -103,6 +107,20 @@ function RegisterAllInputMasks()
 		{
 			arrInputs[i].mask = InputMasks[arrInputs[i].getAttribute("inputmask").toLowerCase()];
 			Event.startObserving(arrInputs[i], "keypress", InputMaskListener, true);
+		}
+	}
+}
+
+
+function RegisterAllInputMasksInForm(elmForm)
+{
+	var inputMask;
+	for (var i=0, j=elmForm.elements.length; i<j; i++)
+	{
+		if (elmForm.elements[i].hasAttribute("inputmask") && ((inputMask = InputMasks[elmForm.elements[i].getAttribute("inputmask").toLowerCase()]) != undefined))
+		{
+			elmForm.elements[i].mask = inputMask;
+			Event.startObserving(elmForm.elements[i], "keypress", InputMaskListener, true);
 		}
 	}
 }

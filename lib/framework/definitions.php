@@ -1731,6 +1731,9 @@ $GLOBALS['*arrConstant']	['DatabaseConnection']	['admin']	['Constant']	= 'FLEX_D
 $GLOBALS['*arrConstant']	['DatabaseConnection']	['admin']	['Description']	= 'Admin Database Connection';
 $GLOBALS['*arrConstant']	['DatabaseConnection']	['cdr']		['Constant']	= 'FLEX_DATABASE_CONNECTION_CDR';
 $GLOBALS['*arrConstant']	['DatabaseConnection']	['cdr']		['Description']	= 'CDR Database Connection';
+$GLOBALS['*arrConstant']	['DatabaseConnection']	['sales']	['Constant']	= 'FLEX_DATABASE_CONNECTION_SALES';
+$GLOBALS['*arrConstant']	['DatabaseConnection']	['sales']	['Description']	= 'Sales Database Connection';
+
 
 
 // Search Types
