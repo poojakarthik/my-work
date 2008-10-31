@@ -178,7 +178,7 @@ class Invoice extends ORM
 
 			// Determine and add in Plan Credit
 			//Cli_App_Billing::debug("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
-			$fltPlanCredit	= min(max($fltUsageLimit, $fltMinimumCharge), $fltCDRCappedTotal) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
+			$fltPlanCredit	= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
 			$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
@@ -468,7 +468,7 @@ class Invoice extends ORM
 		if (!$arrPlanDetails['Shared'])
 		{
 			// Determine and add in Plan Credit
-			$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), $fltCDRCappedTotal) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
+			$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
 			Cli_App_Billing::debug("min(max($fltUsageLimit, $fltMinimumCharge), $fltCDRCappedTotal) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
 			$intPeriodStart			= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd			= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
