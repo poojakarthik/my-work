@@ -925,7 +925,7 @@ class Invoice extends ORM
 					if ($resResult !== FALSE)
 					{
 						$arrPlanInvoicedBefore	= $resResult->fetch_assoc();
-						if ($arrPlanInvoicedBefore['SamePlan'] === 0)
+						if ($arrPlanInvoicedBefore['SamePlan'] === 0 || !$resResult->num_rows)
 						{
 							$arrPlanChargeSteps[]	= 'FIRST_INVOICE';
 							// The this Plan has not been invoiced before, so generate a Charge in Advance
