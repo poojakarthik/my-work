@@ -526,7 +526,6 @@ class AppTemplateAccount extends ApplicationTemplate
             "          UNION " .
             "          SELECT 0 " .
             "            FROM database_version " .
-            "           LIMIT 0, 1" .
 			"       ) invoice_run_ids" .
 			")";
 		DBL()->Invoice->SetTable($strInvoiceTables);
