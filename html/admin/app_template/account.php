@@ -511,8 +511,8 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		$strInvoiceWhere = "" .
 			"       I.Account = $intAccountId " .
-			"   AND I.Status != ". INVOICE_TEMP .
-            "   AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED .
+			"   AND I.Status == ". INVOICE_TEMP .
+            "   AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_TEMPORARY .
             "   AND ir.invoice_run_type_id IN (". implode(",", $arrPermittedTypes) . ") " . 
 			"   AND ir.Id > (" .
 			"     SELECT MAX(Id) " .
@@ -521,8 +521,8 @@ class AppTemplateAccount extends ApplicationTemplate
 			"            FROM Invoice AS Inv " .
 			"                 INNER JOIN InvoiceRun AS Irx ON Inv.invoice_run_id = Irx.Id " .
 			"           WHERE Inv.Account = $intAccountId " .
-			"             AND Irx.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED .
-			"             AND Irx.invoice_run_type_id = " . INVOICE_RUN_TYPE_LIVE . 
+			"             AND Irx.invoice_run_status_id = ". INVOICE_RUN_STATUS_TEMPORARY .
+			"             AND Irx.invoice_run_type_id IN (". implode(",", $arrPermittedTypes) . ") " .
             "          UNION " .
             "          SELECT 0 " .
             "            FROM database_version " .
