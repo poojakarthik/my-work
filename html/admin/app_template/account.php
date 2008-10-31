@@ -521,7 +521,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			"            FROM Invoice AS Inv " .
 			"                 INNER JOIN InvoiceRun AS Irx ON Inv.invoice_run_id = Irx.Id " .
 			"           WHERE Inv.Account = $intAccountId " .
-			"             AND Irx.invoice_run_status_id = ". INVOICE_RUN_STATUS_TEMPORARY .
+			"             AND Irx.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED .
 			"             AND Irx.invoice_run_type_id IN (". implode(",", $arrPermittedTypes) . ") " .
             "          UNION " .
             "          SELECT 0 " .
