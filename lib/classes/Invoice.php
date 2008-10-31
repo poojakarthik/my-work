@@ -904,7 +904,7 @@ class Invoice extends ORM
 			$fltUsageStart		= (float)$arrPlanDetails['ChargeCap'];
 			$fltUsageLimit		= (float)$arrPlanDetails['UsageCap'];
 
-			$intLevel	= 1;
+			$arrPlanChargeSteps	= Array();
 			
 			// Yes -- Does this Service have any Invoiced CDRs?
 			$resResult	= $qryQuery->Execute("SELECT Id FROM ServiceTypeTotal WHERE Service IN ({$strServiceIds}) AND Records > 0");
@@ -915,22 +915,25 @@ class Invoice extends ORM
 			elseif (!$resResult->num_rows)
 			{
 				// No -- Is this on a Charge-in-Advance Plan?
-				$intLevel	= 2;
+				$arrPlanChargeSteps[]	= 'INVOICED_CDRS';
 				if ($arrPlanDetails['InAdvance'])
 				{
-					$intLevel	= 3;
+					$arrPlanChargeSteps[]	= 'IN_ADVANCE';
 					$resResult	= $qryQuery->Execute("SELECT COUNT(CASE WHEN RatePlan = {$arrPlanDetails['Id']} THEN Id ELSE NULL END) AS SamePlan FROM ServiceTotal WHERE Service IN ({$strServiceIds}) GROUP BY invoice_run_id ORDER BY invoice_run_id DESC LIMIT 1");
 					if ($resResult !== FALSE)
 					{
-						$intLevel	= 4;
 						$arrPlanInvoicedBefore	= $resResult->fetch_assoc();
 						if ($arrPlanInvoicedBefore['SamePlan'] === 0)
 						{
-							$intLevel	= 5;
+							$arrPlanChargeSteps[]	= 'FIRST_INVOICE';
 							// The this Plan has not been invoiced before, so generate a Charge in Advance
 							$intAdvancePeriodStart	= $this->_objInvoiceRun->intInvoiceDatetime;
 							$intAdvancePeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->_objInvoiceRun->intInvoiceDatetime));
 							$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails['Name'], $intAdvancePeriodStart, $intAdvancePeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
+						}
+						else
+						{
+							$arrPlanChargeSteps[]	= 'INVOICED_BEFORE';
 						}
 					}
 					else
@@ -938,6 +941,8 @@ class Invoice extends ORM
 						throw new Exception("DB ERROR: ".$selLastPlanInvoiced->Error());
 					}
 				}
+				
+				$arrPlanChargeSteps[]	= 'PRORATA';
 
 				// Prorate the Charges and Usage details in Arrears
 				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, strtotime($strEarliestCDR), $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime);
@@ -954,12 +959,16 @@ class Invoice extends ORM
 				// Charge the Standard Plan Charge
 				if ($arrPlanDetails['InAdvance'])
 				{
+					$arrPlanChargeSteps[]	= 'NORMAL_ADVANCE';
+					
 					$strChargeType	= 'PCAD';
 					$intPeriodStart	= $this->_objInvoiceRun->intInvoiceDatetime;
 					$intPeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->_objInvoiceRun->intInvoiceDatetime));
 				}
 				else
 				{
+					$arrPlanChargeSteps[]	= 'NORMAL_ARREARS';
+					
 					$strChargeType	= 'PCAR';
 					$intPeriodStart	= $this->_objInvoiceRun->intLastInvoiceDatetime;
 					$intPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
@@ -969,16 +978,15 @@ class Invoice extends ORM
 		}
 		else
 		{
+			$arrPlanChargeSteps[]	= 'NEVER_TOLLED';
+			
 			// No -- ignore all Plan Charges, because we haven't tolled yet
 			$fltMinimumCharge	= 0.0;
 			$fltUsageStart		= 0.0;
 			$fltUsageLimit		= 0.0;
 		}
 		// DEBUG
-		if ($this->Account === 1000170700)
-		{
-			SendEmail('rdavis@yellowbilling.com.au, turdminator@hotmail.com', 'BILLING TEST', $intLevel);
-		}
+		Cli_App_Billing::debug($arrPlanChargeSteps);
 
 		// Return usage data
 		return Array(
