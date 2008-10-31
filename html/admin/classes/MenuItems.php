@@ -3023,6 +3023,26 @@ class MenuItems
 		$this->strLabel				= "Employees";
 		return self::NEW_FRAMEWORK . "flex.php/Employee/EmployeeList/";
 	}
+
+	//------------------------------------------------------------------------//
+	// ManageBreachedContracts
+	//------------------------------------------------------------------------//
+	/**
+	 * ManageBreachedContracts()
+	 *
+	 * Compiles the Href to be executed when the ManageBreachedContracts menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ManageBreachedContracts menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ManageBreachedContracts()
+	{
+		$this->strContextMenuLabel	= "Manage Breached Contracts";
+		$this->strLabel				= "Manage Breached Contracts";
+		return self::NEW_FRAMEWORK . "reflex.php/Contract/ManageBreached/";
+	}
 	
 	//------------------------------------------------------------------------//
 	// BreadCrumb
