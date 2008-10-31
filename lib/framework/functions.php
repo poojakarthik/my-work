@@ -1888,7 +1888,10 @@ function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE, $loadDbConst
 	}
 	
 	// Init Signal Handler
-	pcntl_signal(SIGTERM, "signalHandler");
+	if (function_exists('pcntl_signal'))
+	{
+		pcntl_signal(SIGTERM, "signalHandler");
+	}
 
 	// Create framework instance
 	$GLOBALS['fwkFramework'] = new Framework($bolBasicsOnly);
