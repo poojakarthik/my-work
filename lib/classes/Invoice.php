@@ -469,6 +469,7 @@ class Invoice extends ORM
 		{
 			// Determine and add in Plan Credit
 			$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), $fltCDRCappedTotal) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
+			Cli_App_Billing::debug("min(max($fltUsageLimit, $fltMinimumCharge), $fltCDRCappedTotal) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
 			$intPeriodStart			= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd			= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
