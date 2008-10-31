@@ -5671,7 +5671,7 @@ function signalHandler($intSignalId)
 	{
 		case SIGTERM:
 			// Rollback any active Transactions
-			DataAccess::getDataAccess->TransactionRollback();
+			DataAccess::getDataAccess()->TransactionRollback();
 			break;
 	}
 }
