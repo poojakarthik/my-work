@@ -630,6 +630,10 @@ class Invoice extends ORM
 			// No, throw an Exception
 			throw new Exception("Invoice '{$this->Id}' is not a Temporary Invoice!");
 		}
+		else
+		{
+			Cli_App_Billing::debug("(Revoking {this->Id})");
+		}
 		
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
