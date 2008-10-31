@@ -25,13 +25,20 @@ try
 		CliEcho("\t + Fixing #{$arrRecurringCharge['Id']}... (LCO: {$arrRecurringCharge['LastChargedOn']};ALCO: {$arrRecurringCharge['ActualLastChargedOn']};", FALSE);
 		
 		// Fix the Last Charged On Date
-		if (strtotime($arrRecurringCharge['LastChargedOn']) > time() || strtotime("+1 month", strtotime($arrRecurringCharge['LastChargedOn'])) > time())
+		if (strtotime($arrRecurringCharge['LastChargedOn']) > time())
 		{
 			$arrRecurringCharge['LastChargedOn']	= date("Y-m-d", strtotime("-1 month", strtotime($arrRecurringCharge['LastChargedOn'])));
 		}
 		elseif ($arrRecurringCharge['LastChargedOn'] === $arrRecurringCharge['ActualLastChargedOn'])
 		{
-			$arrRecurringCharge['LastChargedOn']	= date("Y-m-d", strtotime("+1 month", strtotime($arrRecurringCharge['LastChargedOn'])));
+			if (strtotime("+1 month", strtotime($arrRecurringCharge['LastChargedOn'])) > time())
+			{
+			$arrRecurringCharge['LastChargedOn']	= date("Y-m-d", strtotime("-1 month", strtotime($arrRecurringCharge['LastChargedOn'])));
+			}
+			else
+			{
+				$arrRecurringCharge['LastChargedOn']	= date("Y-m-d", strtotime("+1 month", strtotime($arrRecurringCharge['LastChargedOn'])));
+			}
 		}
 		
 		CliEcho("NLCO: {$arrRecurringCharge['LastChargedOn']})\t\t", FALSE);
