@@ -632,7 +632,7 @@ class Invoice extends ORM
 		}
 		else
 		{
-			Cli_App_Billing::debug("(Revoking {this->Id})");
+			Cli_App_Billing::debug("(Revoking {$this->Id})");
 		}
 		
 		static	$qryQuery;
