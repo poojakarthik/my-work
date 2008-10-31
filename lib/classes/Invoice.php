@@ -624,6 +624,13 @@ class Invoice extends ORM
 	 */
 	public function revoke()
 	{
+		// Is this Invoice Temporary?
+		if ($this->Status !== INVOICE_TEMP)
+		{
+			// No, throw an Exception
+			throw new Exception("Invoice '{$this->Id}' is not a Temporary Invoice!");
+		}
+		
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 
