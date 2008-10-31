@@ -124,6 +124,9 @@ class Cli_App_Billing extends Cli
 						// Regenerate this Account for this Invoice Run
 						$objInvoice	= new Invoice();
 						$objInvoice->generate($objAccount, $objInvoiceRun);
+						
+						// Regenerate Invoice Run Totals
+						// TODO
 					}
 					else
 					{

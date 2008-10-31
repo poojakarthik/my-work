@@ -920,6 +920,7 @@ class Invoice extends ORM
 				if ($arrPlanDetails['InAdvance'])
 				{
 					$arrPlanChargeSteps[]	= 'IN_ADVANCE';
+					Cli_App_Billing::debug("SELECT COUNT(CASE WHEN RatePlan = {$arrPlanDetails['Id']} THEN Id ELSE NULL END) AS SamePlan FROM ServiceTotal WHERE Service IN ({$strServiceIds}) GROUP BY invoice_run_id ORDER BY invoice_run_id DESC LIMIT 1");
 					$resResult	= $qryQuery->Execute("SELECT COUNT(CASE WHEN RatePlan = {$arrPlanDetails['Id']} THEN Id ELSE NULL END) AS SamePlan FROM ServiceTotal WHERE Service IN ({$strServiceIds}) GROUP BY invoice_run_id ORDER BY invoice_run_id DESC LIMIT 1");
 					if ($resResult !== FALSE)
 					{
