@@ -57,6 +57,12 @@ try
 		// Save the Charge
 		$objCharge->save();
 		
+		// Update the LastChargedOn
+		if ($ubiRecurringCharge->Execute($arrRecurringCharge) === FALSE)
+		{
+			throw new Exception($ubiRecurringCharge->Error());
+		}
+		
 		CliEcho("[   OK   ]");
 	}
 	
