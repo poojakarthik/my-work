@@ -1886,6 +1886,9 @@ function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE, $loadDbConst
 		require_once("Mail.php");
 		require_once("Mail/mime.php");
 	}
+	
+	// Init Signal Handler
+	pcntl_signal(SIGTERM, "signalHandler");
 
 	// Create framework instance
 	$GLOBALS['fwkFramework'] = new Framework($bolBasicsOnly);
@@ -5644,4 +5647,32 @@ function FlexModuleActive($strModuleName)
 	}
 }
 
+//------------------------------------------------------------------------//
+// signalHandler
+//------------------------------------------------------------------------//
+/**
+ * signalHandler()
+ * 
+ * Handles POSIX Signals
+ * 
+ * Handles POSIX Signals
+ *
+ * @param	integer	$intSignalId		POSIX Signal Id
+ *
+ * @return	void
+ * 
+ * @function
+ * 
+ */
+function signalHandler($intSignalId)
+{
+	// What Signal did we get passed?
+	switch ((int)$intSignalId)
+	{
+		case SIGTERM:
+			// Rollback any active Transactions
+			DataAccess::getDataAccess->TransactionRollback();
+			break;
+	}
+}
 ?>

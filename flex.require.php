@@ -27,6 +27,8 @@
  *
  */
  
+// Delcare ticks for Signal Handling
+declare(ticks = 1);
 
 // Handle non-session client requests..
 if (!defined('FLEX_SESSION_NAME'))
