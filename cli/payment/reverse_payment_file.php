@@ -13,7 +13,7 @@ if ($intFileImportId < 1 || $intFileImportId === NULL)
 }
 
 // Start a Transaction
-DataAccess::getDataAccess->TransactionStart();
+DataAccess::getDataAccess()->TransactionStart();
 
 try
 {
@@ -36,11 +36,11 @@ try
 	throw new Exception('TEST MODE');
 	
 	// All looks good, commit the Transaction
-	DataAccess::getDataAccess->TransactionCommit();
+	DataAccess::getDataAccess()->TransactionCommit();
 }
 catch (Exception $eException)
 {
-	DataAccess::getDataAccess->TransactionRollback();
+	DataAccess::getDataAccess()->TransactionRollback();
 	throw $eException;
 }
 
