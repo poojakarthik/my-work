@@ -920,28 +920,11 @@ class Invoice extends ORM
 				if ($arrPlanDetails['InAdvance'])
 				{
 					$arrPlanChargeSteps[]	= 'IN_ADVANCE';
-					Cli_App_Billing::debug("SELECT COUNT(CASE WHEN RatePlan = {$arrPlanDetails['Id']} THEN Id ELSE NULL END) AS SamePlan FROM ServiceTotal WHERE Service IN ({$strServiceIds}) GROUP BY invoice_run_id ORDER BY invoice_run_id DESC LIMIT 1");
-					$resResult	= $qryQuery->Execute("SELECT COUNT(CASE WHEN RatePlan = {$arrPlanDetails['Id']} THEN Id ELSE NULL END) AS SamePlan FROM ServiceTotal WHERE Service IN ({$strServiceIds}) GROUP BY invoice_run_id ORDER BY invoice_run_id DESC LIMIT 1");
-					if ($resResult !== FALSE)
-					{
-						$arrPlanInvoicedBefore	= $resResult->fetch_assoc();
-						if ($arrPlanInvoicedBefore['SamePlan'] === 0 || !$resResult->num_rows)
-						{
-							$arrPlanChargeSteps[]	= 'FIRST_INVOICE';
-							// The this Plan has not been invoiced before, so generate a Charge in Advance
-							$intAdvancePeriodStart	= $this->_objInvoiceRun->intInvoiceDatetime;
-							$intAdvancePeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->_objInvoiceRun->intInvoiceDatetime));
-							$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails['Name'], $intAdvancePeriodStart, $intAdvancePeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
-						}
-						else
-						{
-							$arrPlanChargeSteps[]	= 'INVOICED_BEFORE';
-						}
-					}
-					else
-					{
-						throw new Exception("DB ERROR: ".$selLastPlanInvoiced->Error());
-					}
+					
+					// The this Plan has not been invoiced before, so generate a Charge in Advance
+					$intAdvancePeriodStart	= $this->_objInvoiceRun->intInvoiceDatetime;
+					$intAdvancePeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->_objInvoiceRun->intInvoiceDatetime));
+					$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails['Name'], $intAdvancePeriodStart, $intAdvancePeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, ($bolShared) ? NULL : $arrServiceIds[0]);
 				}
 				
 				$arrPlanChargeSteps[]	= 'PRORATA';
@@ -988,7 +971,7 @@ class Invoice extends ORM
 			$fltUsageLimit		= 0.0;
 		}
 		// DEBUG
-		//Cli_App_Billing::debug($arrPlanChargeSteps);
+		Cli_App_Billing::debug($arrPlanChargeSteps);
 
 		// Return usage data
 		return Array(
