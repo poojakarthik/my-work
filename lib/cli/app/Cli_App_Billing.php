@@ -114,6 +114,7 @@ class Cli_App_Billing extends Cli
 					
 					if ($this->_arrArgs[self::SWITCH_ACCOUNT_ID])
 					{
+						// Regenerating a single Invoice
 						$objAccount		= new Account(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID]), FALSE, TRUE);
 						$objInvoiceRun	= new Invoice_Run(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 						$objInvoiceRun->calculateBillingPeriodDates();
@@ -130,7 +131,12 @@ class Cli_App_Billing extends Cli
 					}
 					else
 					{
-						throw new Exception("You must supply an Account Id when running REGENERATE!");
+						// Regenerating an entire InvoiceRun
+						$objOldInvoiceRun	= new Invoice_Run(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
+						
+						$objInvoiceRun	= new Invoice_Run();
+						$objInvoiceRun->generate($objOldInvoiceRun->customer_group_id, $objOldInvoiceRun->invoice_run_type_id, strtotime($objOldInvoiceRun->BillingDate), $objOldInvoiceRun->invoice_run_schedule_id);
+						Cli_App_Billing::debug($this->_copyXML($objInvoiceRun->Id));
 					}
 					break;
 
