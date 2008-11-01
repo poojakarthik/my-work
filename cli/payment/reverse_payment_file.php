@@ -27,7 +27,7 @@ try
 	// Reverse each payment
 	while ($arrPayment = $selPaymentsByFile->Fetch())
 	{
-		CliEcho(" + Reversing Payment #{$arrPayment['Id']} (Account: $arrPayment['Account'])");
+		CliEcho(" + Reversing Payment #{$arrPayment['Id']} (Account: {$arrPayment['Account']})");
 		
 		// Reverse this Payment
 		$GLOBALS['fwkFramework']->ReversePayment($arrPayment['Id'], 0);
