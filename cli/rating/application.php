@@ -188,7 +188,7 @@
 										"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND \n" .
 										"ServiceRateGroup.Service = <Service> AND \n";
 										
-		$strStandardWhere			= 	"ServiceRateGroup.Active = 1 AND <DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime\n";
+		$strStandardWhere			= 	"<DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime\n";
 		$strOldCDRWhere				=	"<DateTime> < ServiceRateGroup.StartDatetime\n";
 		
 		//FAKE : for testing only
@@ -244,7 +244,6 @@
 												"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND \n" .
 												"ServiceRateGroup.Service = <Service> AND \n" .
 												"Rate.Fleet = <Fleet> AND \n" .
-												"ServiceRateGroup.Active = 1 AND \n" .
 												"Destination = <Destination> AND \n" .
 												"(Rate.RecordType = <RecordType> OR <RecordType> = ".DONKEY.") AND \n" .
 												"(<StartDatetime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime OR <ClosestRate> = 1)";
@@ -262,7 +261,7 @@
 		
 		$this->_selRatePlan			= new StatementSelect(	"ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan",
 															"RatePlan.*",
-															"Service = <Service> AND Active = 1 AND <StartDatetime> BETWEEN StartDatetime AND EndDatetime",
+															"Service = <Service> AND <StartDatetime> BETWEEN StartDatetime AND EndDatetime",
 															"ServiceRatePlan.CreatedOn DESC",
 															"1");
 		
