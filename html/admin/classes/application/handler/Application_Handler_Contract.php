@@ -7,6 +7,9 @@ class Application_Handler_Contract extends Application_Handler
 	// View all Breached Contracts which are pending approval
 	public function ManageBreached($subPath)
 	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
 		// Build List of Breached Contracts and their recommended actions
 		try
 		{

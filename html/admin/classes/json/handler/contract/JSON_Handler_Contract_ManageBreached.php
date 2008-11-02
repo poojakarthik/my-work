@@ -6,6 +6,9 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 	// Waives the Contract Fees for a given ServiceRatePlan
 	public function waive($intContractId)
 	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
 		try
 		{
 			// Waive the fees
