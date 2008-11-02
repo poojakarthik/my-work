@@ -166,6 +166,8 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
+			
+			ContextMenu()->Admin->Contracts->ManageBreachedContracts();
 		}
 		
 		
