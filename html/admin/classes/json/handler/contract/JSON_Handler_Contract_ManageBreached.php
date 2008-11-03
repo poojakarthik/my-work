@@ -169,8 +169,8 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 		$objExitChargeType		= Charge_Type::getContractExitFee();
 		$objPayoutChargeType	= Charge_Type::getContractPayoutFee();
 		
-		$strExitFee		= ($fltExitFee > 0.0) ? "\$".round($fltExitFee, 2) : "Waived";
-		$fltPayoutFee	= ($fltPayoutFee > 0.0) ? "\$".round($fltPayoutFee, 2)." ({$fltPayoutPercentage}%)" : "Waived";
+		$strExitFee		= ($fltExitFee > 0.0) ? ("\$".round($fltExitFee, 2)) : "Waived";
+		$strPayoutFee	= ($fltPayoutFee > 0.0) ? ("\$".round($fltPayoutFee, 2)." ({$fltPayoutPercentage}%)") : "Waived";
 		$strNoteContent	= "Contract Breach Fees have been actioned for Service {$objService->FNN} to the following effect:\n" .
 							"Service: {$objService->FNN}\n" .
 							"Rate Plan: {$objRatePlan->Name}\n" .
