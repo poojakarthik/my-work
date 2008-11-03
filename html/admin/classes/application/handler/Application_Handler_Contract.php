@@ -62,8 +62,8 @@ class Application_Handler_Contract extends Application_Handler
 									'breachNature'		=> "SRP.contract_breach_reason_description",
 									'minMonthly'		=> "ROUND(RatePlan.MinMonthly, 2)",
 									'monthsLeft'		=> "CASE " .
-																"WHEN PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m') > RatePlan.ContractTerm THEN RatePlan.ContractTerm " .
-																"ELSE PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m') " .
+																"WHEN PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m')) > RatePlan.ContractTerm THEN RatePlan.ContractTerm " .
+																"ELSE PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m')) " .
 															"END",
 									'payout'			=> "CASE " .
 																"WHEN COUNT(ServiceTotal.Id) < {$arrContractTerms['contract_payout_minimum_invoices']} THEN 0 " .
@@ -73,8 +73,8 @@ class Application_Handler_Contract extends Application_Handler
 																"WHEN COUNT(ServiceTotal.Id) < {$arrContractTerms['contract_payout_minimum_invoices']} THEN 0.00 " .
 																"ELSE ROUND(RatePlan.MinMonthly * " .
 																	"(CASE " .
-																		"WHEN PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m') > RatePlan.ContractTerm THEN RatePlan.ContractTerm " .
-																		"ELSE PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m') " .
+																		"WHEN PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m')) > RatePlan.ContractTerm THEN RatePlan.ContractTerm " .
+																		"ELSE PERIOD_DIFF(DATE_FORMAT(contract_scheduled_end_datetime, '%Y%m'), DATE_FORMAT(contract_effective_end_datetime, '%Y%m')) " .
 																	"END)" .
 																	" * (RatePlan.contract_payout_percentage / 100), 2) " .
 															"END",
