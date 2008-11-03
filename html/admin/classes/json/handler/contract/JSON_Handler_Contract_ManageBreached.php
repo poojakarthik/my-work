@@ -165,7 +165,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 	// Adds a System Note detailing the Charges
 	public function _addFeesNote($objService, $intRatePlan, $strReason, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee)
 	{
-		$objRatePlan			= new RatePlan(Array('Id'=>$intRatePlan), TRUE);
+		$objRatePlan			= new Rate_Plan(Array('Id'=>$intRatePlan), TRUE);
 		$objExitChargeType		= Charge_Type::getContractExitFee();
 		$objPayoutChargeType	= Charge_Type::getContractPayoutFee();
 		
