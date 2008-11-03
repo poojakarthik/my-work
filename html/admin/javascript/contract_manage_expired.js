@@ -285,7 +285,7 @@ var Contract_ManageExpired	= Class.create
 "					<table class='form-data'>\n" +
 "						<tr>\n" +
 "							<td class='title'>Reason</td>\n" +
-"							<td><textarea id='ContractConfirm_Reason' name='ContractConfirm_Reason' wrap='on' style='overflow:auto;width:100%;height:20em;font-family:Courier New, monospace;font-size:1em;border: solid 1px #D1D1D1'></textarea></td>\n" +
+"							<td><textarea id='ContractConfirm_Reason' name='ContractConfirm_Reason' wrap='on' style='overflow:auto;width:100%;height:8em;font-family:Courier New, monospace;font-size:1em;border: solid 1px #D1D1D1'></textarea></td>\n" +
 "						</tr>\n" +
 "					</table>\n" +
 "				</div>\n" + 
