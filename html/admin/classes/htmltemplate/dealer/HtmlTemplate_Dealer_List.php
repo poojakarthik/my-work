@@ -95,8 +95,8 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 		else
 		{
 			$strBodyRows = "
-			<tr colspan='$intColumnCount'>
-				<td>No records to show</td>
+			<tr>
+				<td colspan='$intColumnCount'>No records to show</td>
 			</tr>";
 		}
 		
@@ -159,6 +159,9 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 		<div id='caption_bar' name='caption_bar'>
 			<div id='caption_title' name='caption_title'>
 				$strTitle
+			</div>
+			<div id='caption_options' name='caption_options'>
+				<a onclick='Dealer.loadNewDealerPopup()'>New Dealer</a>
 			</div>
 		</div>
 	</caption>

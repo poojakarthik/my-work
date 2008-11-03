@@ -59,7 +59,7 @@ function VixenValidationClass()
 	this.regexTime24Hr					= /^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2}$/;
 	this.regexMonetaryValue				= /^\d+(\.(\d){0,2})?$/
 	this.regexDateTime					= /^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2} (0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/;
-	this.regexEmailAddress				= /^(\w+@[a-zA-Z_]+(\.[a-zA-Z]{2,6})+)$/;
+	this.regexEmailAddress				= /^[A-z0-9_\-\.]+@[A-z0-9_\-]+(\.[A-z0-9_\-]+)*(\.[A-z]{2,4})$/;
 	this.regexPositiveFloat				= /^\d+(\.(\d)*)?$/;
 
 

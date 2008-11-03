@@ -5,12 +5,61 @@ var Dealer = {
 	objCountryStates : null,
 	controls : null,
 
-	// Loads the "Edit Dealer" popup
-	editDealer : function(intDealer)
+	// Loads the "New Dealer" popup, which allows the user to create a new dealer, or base one on an Employee
+	loadNewDealerPopup : function()
 	{
+		// Display the Popup to select the Dealer/Employee
+		jsonFunc = jQuery.json.jsonFunction(this.loadNewDealerPopupReturnHandler.bind(this), null, "Dealer", "buildNewDealerSelectionPopup");
+		Vixen.Popup.ShowPageLoadingSplash("Loading", null, null, null, 1000);
+		jsonFunc();
+	},
+	
+	loadNewDealerPopupReturnHandler : function(response)
+	{
+		Vixen.Popup.ClosePageLoadingSplash();
+
+		if (response.Success)
+		{
+			// Check if there are any employees who can become dealers
+			if (response.EmployeeCount > 0)
+			{
+				// Display the popup
+				var objPopup = Vixen.Popup.Create(this.POPUP_ID, response.PopupContent, "Medium", "centre", "modal", "New Dealer");
+				this.controls = {};
+				this.controls.newDealerEmployeeIdCombo = $ID("NewDealerPopupEmployeeIdCombo");
+			}
+			else
+			{
+				// There are no eligible employees to base new dealers on, so just open the new dealer popup
+				this.editDealer(null);
+			}
+		}
+		else
+		{
+			$Alert("Loading the New Dealer Popup failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+		}
+	},
+
+	newDealerPopupOkButtonOnClick : function()
+	{
+		// Check if an employee has been selected
+		var intEmployeeId = parseInt(this.controls.newDealerEmployeeIdCombo.value);
+		if (intEmployeeId == 0)
+		{
+			intEmployeeId = null;
+		}
+		this.editDealer(null, intEmployeeId);
+	},
+
+	// Loads the "Edit Dealer" popup
+	editDealer : function(intDealerId, intEmployeeId)
+	{
+		intDealerId		= (intDealerId == undefined)? null : intDealerId;
+		intEmployeeId	= (intEmployeeId == undefined)? null : intEmployeeId;
+	
 		jsonFunc = jQuery.json.jsonFunction(this.editDealerReturnHandler.bind(this), null, "Dealer", "buildEditDealerPopup");
 		Vixen.Popup.ShowPageLoadingSplash("Loading", null, null, null, 100);
-		jsonFunc(intDealer);
+		jsonFunc(intDealerId, intEmployeeId);
 	},
 	
 	editDealerReturnHandler : function(response)
@@ -20,7 +69,7 @@ var Dealer = {
 		if (response.Success)
 		{
 			// Display the popup
-			var objPopup = Vixen.Popup.Create(this.POPUP_ID, response.PopupContent, "Large", "centre", "modal", "Dealer - " + response.Data.DealerName);
+			var objPopup = Vixen.Popup.Create(this.POPUP_ID, response.PopupContent, "Large", "centre", "modal", (response.Data.Dealer.id === null && response.Data.Dealer.employeeId === null)? "New Dealer" : "Dealer - " + response.Data.DealerName);
 			
 			// Initialise the popup
 			this.initialiseEditPopup(response.Data, objPopup);
@@ -97,6 +146,20 @@ var Dealer = {
 		this.controls.postalCountryId.value		= (this.objDealer.postalCountryId != null)? this.objDealer.postalCountryId : 0;
 		this.setUpStatesForCountry(this.controls.postalCountryId, this.controls.postalStateId);
 		this.controls.postalStateId.value		= (this.objDealer.postalStateId != null)? this.objDealer.postalStateId : 0;
+		
+		// Disable the fields that should not be changed if the dealer is an employee
+		if (this.objDealer.employeeId !== null)
+		{
+			this.controls.firstName.disabled = true;
+			this.controls.lastName.disabled = true;
+			this.controls.username.disabled = true;
+			this.controls.password.disabled = true;
+			this.controls.password2.disabled = true;
+			this.controls.phone.disabled = true;
+			this.controls.mobile.disabled = true;
+			this.controls.email.disabled = true;
+		}
+		
 	},
 	
 	// Copies physical address details to the postal address details controls
@@ -151,14 +214,13 @@ var Dealer = {
 		// Collect details to save
 		var objDealer = {};
 		objDealer.id					= this.objDealer.id;
-		objDealer.employee				= this.objDealer.employee;
+		objDealer.employeeId			= this.objDealer.employeeId;
 		
 		objDealer.firstName				= this.controls.firstName.value;
 		objDealer.lastName				= this.controls.lastName.value;
 		objDealer.titleId				= (this.controls.titleId.value != 0)? parseInt(this.controls.titleId.value) : null;
 		objDealer.username				= this.controls.username.value;
 		objDealer.password				= this.controls.password.value;
-		objDealer.password2				= this.controls.password2.value;
 		objDealer.upLineId				= (this.controls.upLineId.value != 0)? parseInt(this.controls.upLineId.value) : null;
 		objDealer.canVerify				= this.controls.canVerify.checked;
 		objDealer.phone					= this.controls.phone.value;
@@ -201,9 +263,13 @@ var Dealer = {
 			var strDate = this.controls.terminationDate.value;
 			objDealer.terminationDate = strDate.substr(6, 4) +"-"+ strDate.substr(3, 2) + "-" + strDate.substr(0, 2);
 		}
+		else
+		{
+			objDealer.terminationDate = null;
+		}
 		
 		jsonFunc = jQuery.json.jsonFunction(this.saveDealerDetailsReturnHandler.bind(this), null, "Dealer", "saveDealerDetails");
-		Vixen.Popup.ShowPageLoadingSplash("Loading", null, null, null, 100);
+		Vixen.Popup.ShowPageLoadingSplash("Saving", null, null, null, 100);
 		jsonFunc(objDealer);
 	},
 
@@ -216,8 +282,8 @@ var Dealer = {
 		{
 			$Alert("The dealer was successfully saved");
 			
-			// Update dealer id
-			this.objDealer.id = response.Data.Dealer.id;
+			// Update dealer object
+			this.objDealer = response.Dealer;
 		}
 		else
 		{
@@ -278,8 +344,4 @@ var Dealer = {
 		return true;
 		
 	}
-	
-	
-	
-	
 };

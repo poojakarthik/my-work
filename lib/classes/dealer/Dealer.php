@@ -30,9 +30,25 @@ class Dealer
 	}
 	
 	// Returns TRUE if the dealer, can use the upline dealer
-	public function canHaveUpLineManager($intManagerDealerId)
+	public static function canHaveUpLineManager($intDealerId, $intManagerDealerId)
 	{
-		//TODO! implement this
+		if ($intDealerId === NULL)
+		{
+			// The dealer is new, and therefor can't possibly cause a recursion problem with the management hierarchy
+			return TRUE;
+		}
+
+		// Find the dealers that are currently under the management of this dealer
+		$arrDealers = self::getDealersUnderManager(self::getForId($intDealerId));
+		
+		// Make sure $intManagerDealerId isn't in this array
+		foreach ($arrDealers as $objDealer)
+		{
+			if ($objDealer->id == $intManagerDealerId)
+			{
+				return FALSE;
+			}
+		}
 		return TRUE;
 	}
 	
@@ -224,6 +240,12 @@ class Dealer
 	// Retrieves all dealers who can safely be made the manager of $intDealerId
 	public static function getAllowableManagersForDealer($intDealerId)
 	{
+		if ($intDealerId === NULL)
+		{
+			// All dealers can potentially be the manager of a new dealer
+			return self::getFor(NULL, "CONCAT(first_name, ' ', last_name) ASC");
+		}
+		
 		// All dealers who aren't decendents of $intDealerId, can be made the manager of $intDealerId
 		$objDealer = self::getForId($intDealerId);
 		$arrExcludedDealers = self::getDealersUnderManager($objDealer);
@@ -258,19 +280,27 @@ class Dealer
 		return $arrDealers;
 	}
 	
-	// Returns array containing all Dealers under the management hierarchy of $objDealer
-	// This will include $objDealer in the array
-	// the array is not associative
-	public static function getDealersUnderManagerOld($objDealer)
+	// Returns an array of employee ids for all those employees who aren't yet dealers
+	// These will be ordered by their name (firstname + last name)
+	public static function getEmployeesWhoArentYetDealers()
 	{
-		$arrDealers = array($objDealer);
+		$strQuery = "SELECT Id FROM Employee WHERE Archived = 0 AND Id NOT IN (SELECT DISTINCT employee_id FROM dealer WHERE employee_id IS NOT NULL) ORDER BY CONCAT(FirstName, ' ', LastName) ASC;";
 		
-		$arrManagedDealers = self::getFor("up_line_id = {$objDealer->id}");
-		foreach ($arrManagedDealers as $objManagedDealer)
+		$objDB = Data_Source::get();
+		
+		$mixResult = $objDB->queryAll($strQuery, NULL, MDB2_FETCHMODE_ASSOC);
+		if (PEAR::isError($mixResult))
 		{
-			$arrDealers = array_merge($arrDealers, self::getDealersUnderManager($objManagedDealer));
+			throw new Exception("Failed to retrieve employees who are eligible to become new dealers, using query: '$strQuery' - ". $mixResult->getMessage());
 		}
-		return $arrDealers;
+		
+		$arrEmployeeIds = array();
+		foreach ($mixResult as $arrRecord)
+		{
+			$arrEmployeeIds[] = intval($arrRecord['Id']);
+		}
+		
+		return $arrEmployeeIds;
 	}
 	
 	public function save()
@@ -282,14 +312,14 @@ class Dealer
 		}
 		
 		// Make sure the dealer's upLineManager does not cause recursion in the management tree
-		if ($this->upLineId !== NULL && !$this->canHaveUpLineManager($this->upLineId))
+		if ($this->upLineId !== NULL && !self::canHaveUpLineManager($this->id, $this->upLineId))
 		{
-			throw new Exception("Setting the upline manager to dealer id: {$this->upLineId} would cause recursion in the management tree");
+			throw new Exception("Setting the upline manager to dealer id: {$this->upLineId} would cause recursion in the management hierarchy");
 		}
 		
 		$arrColumns		= self::getColumns();
 		$arrColumnTypes	= self::getColumnDataTypes();
-		$objDB			= Data_Source::get();
+		$objDb			= Data_Source::get();
 		
 		// Do we have an Id for this instance?
 		if ($this->id !== NULL)
@@ -304,13 +334,16 @@ class Dealer
 				{
 					continue;
 				}
-				$arrSetClauseParts = "{$arrColumns[$strName]} = ". $objDB->quote($mixValue, $arrColumnTypes[$strName]);
+				$arrSetClauseParts[] = "{$arrColumns[$strName]} = ". $objDb->quote($mixValue, $arrColumnTypes[$strName]);
 			}
 			$strSetClause = implode(", ", $arrSetClauseParts);
 			
+			// Make sure the id is an int
+			$this->id = intval($this->id);
+			
 			$strUpdate = "UPDATE dealer SET $strSetClause WHERE id = {$this->id};";
 			
-			$mixResult = $objDB->query($strUpdate);
+			$mixResult = $objDb->query($strUpdate);
 			if (PEAR::isError($mixResult))
 			{
 				throw new Exception("Failed to update dealer record with id: {$this->id}, SQL: '$strUpdate' - ". $mixResult->getMessage());
@@ -322,21 +355,21 @@ class Dealer
 			$arrValuesClauseParts = array();
 			foreach ($this->_arrProperties as $strName=>$mixValue)
 			{
-				$arrValuesClauseParts = $objDB->quote($mixValue, $arrColumnTypes[$strName]);
+				$arrValuesClauseParts[] = $objDb->quote($mixValue, $arrColumnTypes[$strName]);
 			}
 			$strValuesClause	= implode(", ", $arrValuesClauseParts);
 			$strColumns			= implode(", ", $arrColumns);
 			
 			$strInsert = "INSERT INTO dealer ($strColumns) VALUES ($strValuesClause);";
 			
-			$mixResult = $objDB->query($strInsert);
+			$mixResult = $objDb->query($strInsert);
 			if (PEAR::isError($mixResult))
 			{
 				throw new Exception("Failed to insert new dealer record using SQL: '$strInsert' - ". $mixResult->getMessage());
 			}
 			
 			// Store the new value for the id of the dealer
-			$mixResult = $objDB->lastInsertID("database_version", "id");
+			$mixResult = $objDb->lastInsertID("database_version", "id");
 			if (PEAR::isError($mixResult))
 			{
 				throw new Exception("Failed to retrieve the id of the newly inserted dealer record - ". $mixResult->getMessage());
@@ -494,10 +527,135 @@ class Dealer
 		return $this->_arrProperties;
 	}
 	
-	
+	// Returns a Dealer object representing the passed details (if the details are valid)
+	// Returns array of strings defining the problems encountered with the details passed
 	public static function parseDealerDetails($arrDetails)
 	{
+		$arrProblems	= array();
+		$objDb			= Data_Source::get();
 		
+		// Trim all strings, and nullify anything that becomes an empty string
+		foreach ($arrDetails as &$prop)
+		{
+			if (is_string($prop))
+			{
+				$prop = trim($prop);
+				if ($prop == '')
+				{
+					$prop = NULL;
+				}
+			}
+		}
+		
+		$objOldDealer	= NULL;
+		if ($arrDetails['id'] != NULL)
+		{
+			// Existing Dealer
+			$objOldDealer = Dealer::getForId($arrDetails['id']);
+			
+			// Copy across values that should not be changed
+			$arrDetails['createdOn'] = $objOldDealer->createdOn;
+			$arrDetails['employeeId'] = $objOldDealer->employeeId;
+			
+			// Copy over the password, if it wasn't changed
+			if ($arrDetails['password'] === NULL)
+			{
+				// This property has already had the SHA1 hash applied
+				$arrDetails['password'] = $objOldDealer->password;
+			}
+			else
+			{
+				// A new password has been specified.  SHA1 it
+				$arrDetails['password'] = sha1($arrDetails['password']);
+			}
+		}
+		else 
+		{
+			// This is a new dealer
+			$arrDetails['createdOn'] = GetCurrentISODateTime();
+			
+			// SHA1 the password (if one has been applied)
+			if ($arrDetails['password'] !== NULL)
+			{
+				$arrDetails['password'] = sha1($arrDetails['password']);
+			}
+		}
+
+		// If the dealer is an employee then copy accross values that should never differ from their employee record
+		if ($arrDetails['employeeId'] !== NULL)
+		{
+			$objEmployee = Employee::getForId($arrDetails['employeeId']);
+			if ($objEmployee == NULL)
+			{
+				$arrProblems[] = "Could not find employee that this dealer is based on";
+			}
+			else
+			{
+				// Copy across the details that should never differ
+				$arrDetails['firstName']	= $objEmployee->firstName;
+				$arrDetails['lastName']		= $objEmployee->lastName;
+				$arrDetails['username']		= $objEmployee->username;
+				$arrDetails['password']		= $objEmployee->password;
+				$arrDetails['phone']		= $objEmployee->phone;
+				$arrDetails['mobile']		= $objEmployee->mobile;
+				$arrDetails['email']		= $objEmployee->email;
+			}
+		}
+
+		// Check that all manditory fields have been defined
+		if ($arrDetails['firstName'] === NULL)
+		{
+			$arrProblems[] = "First Name was not specified";
+		}
+		if ($arrDetails['lastName'] === NULL)
+		{
+			$arrProblems[] = "Last Name was not specified";
+		}
+		if ($arrDetails['username'] === NULL)
+		{
+			$arrProblems[] = "Username was not specified";
+		}
+		if ($arrDetails['password'] === NULL)
+		{
+			$arrProblems[] = "Password was not specified";
+		}
+		
+		// Check that the username is unique, if the dealer is active
+		if ($arrDetails['dealerStatusId'] == Dealer_Status::ACTIVE)
+		{
+			$strUsername	= $objDb->escape($arrDetails['username'], TRUE);
+			$strWhereId		= ($arrDetails['id'] != NULL)? "AND id != ". intval($arrDetails['id']) : "";
+			$strDealerStatusActive = Dealer_Status::ACTIVE;
+			$arrDealers = self::getFor("username LIKE '$strUsername' $strWhereId AND dealer_status_id = $strDealerStatusActive");
+			
+			if (count($arrDealers) > 0)
+			{
+				$arrProblems[] = 'Username is currently being used by another active dealer';
+			}
+		}
+		
+		// Check that the upLineId can be used, and doesn't form recursion
+		if ($arrDetails['upLineId'] !== NULL && !self::canHaveUpLineManager($arrDetails['id'], $arrDetails['upLineId']))
+		{
+			$arrProblems[] = 'Up Line Manager can not be used (would cause recursion in the management hierarchy)';
+		}
+		
+		// Fix up dependent properties
+		if ($arrDetails['abn'] === NULL)
+		{
+			$arrDetails['abnRegistered'] = NULL;
+		}
+		
+		if (count($arrProblems) > 0)
+		{
+			// Problems were encountered
+			return $arrProblems;
+		}
+		else
+		{
+			// No problems were encountered
+			return new self($arrDetails);
+		}
 	}
 }
 

@@ -1,5 +1,11 @@
 <?php
 
+//TODO! Convert this class so that it uses the original StatementSelect/Update/Insert database connection classes.  It currently uses MDB2
+// This class currently uses the MDB2 database connection classes.  All code that interacts with the Flex database should be using the Orginal "StatementSelect" functionality, so that
+// it can all be used within the one Transaction.  When this class starts getting used to add new Countries, it will have to be updated to use the StatementSelect/Update/Insert 
+// classes
+
+
 //----------------------------------------------------------------------------//
 // State
 //----------------------------------------------------------------------------//

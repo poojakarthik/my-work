@@ -3,20 +3,51 @@
 class JSON_Handler_Dealer extends JSON_Handler
 {
 	// Builds the "Edit Dealer" popup
-	public function buildEditDealerPopup($intDealerId)
+	public function buildEditDealerPopup($intDealerId, $intEmployeeId)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		try
 		{
-			// Retrieve the dealer object
-			$objDealer = Dealer::getForId(intval($intDealerId));
-			if ($objDealer === NULL)
+			// Check if we are editing an existing dealer, or defining a new one
+			if ($intDealerId !== NULL)
 			{
-				// The dealer could not be found
-				throw new Exception("Dealer with id: ". intval($intDealerId) .", could not be found");
+				// We are editing an existing dealer.  Retrieve the dealer object
+				$objDealer = Dealer::getForId(intval($intDealerId));
+				if ($objDealer === NULL)
+				{
+					// The dealer could not be found
+					throw new Exception("Dealer with id: ". intval($intDealerId) .", could not be found");
+				}
 			}
+			else
+			{
+				// We are creating a new dealer
+				$objDealer = new Dealer();
+				
+				// Check if the dealer is an employee
+				if ($intEmployeeId !== NULL)
+				{
+					// The dealer is an employee.  Copy across the employee details
+					$objEmployee = Employee::getForId(intval($intEmployeeId));
+					if ($objEmployee === NULL)
+					{
+						// The employee could not be found
+						throw new Exception("Employee with id: ". intval($intEmployeeId) .", could not be found");
+					}
+					
+					$objDealer->firstName	= $objEmployee->firstName;
+					$objDealer->lastName	= $objEmployee->lastName;
+					$objDealer->username	= $objEmployee->username;
+					$objDealer->password	= $objEmployee->password;
+					$objDealer->phone		= $objEmployee->phone;
+					$objDealer->mobile		= $objEmployee->mobile;
+					$objDealer->email		= $objEmployee->email;
+					$objDealer->employeeId = $objEmployee->id;
+				}
+			}
+			
 			
 			// Build data for the combo boxes
 			
@@ -52,7 +83,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 			}
 			
 			// Dealer Manager combo box
-			$arrPossibleManagers = Dealer::getAllowableManagersForDealer($intDealerId);
+			$arrPossibleManagers = Dealer::getAllowableManagersForDealer($objDealer->id);
 			$strManagerComboOptions = "<option value='0'>&nbsp;</option>";
 			foreach ($arrPossibleManagers as $objPossibleManager)
 			{
@@ -258,7 +289,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 	<div style='padding-top:3px;height:auto:width:100%'>
 		<div style='float:right'>
 			<input type='button' value='Save' onclick='Dealer.saveDealerDetails()'></input>
-			<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
+			<input type='button' value='Close' onclick='Vixen.Popup.Close(this)'></input>
 		</div>
 		<div style='clear:both;float:none'></div>
 	</div>
@@ -284,7 +315,73 @@ class JSON_Handler_Dealer extends JSON_Handler
 		}
 	}
 	
+	public function buildNewDealerSelectionPopup()
+	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
+		try
+		{
+			// Build data for the combo boxes
+			
+			// Dealer/Employee combo box
+			$arrEmployeeIds = Dealer::getEmployeesWhoArentYetDealers();
+			$strEmployeeOptions = "<option value='0'>New Non-Flex Employee Dealer</option>";
+			foreach ($arrEmployeeIds as $intEmployeeId)
+			{
+				$objEmployee = Employee::getForId($intEmployeeId);
+				if ($objEmployee === NULL)
+				{
+					// Couldn't retrieve the employee record for some reason
+					// Not to worry; just move on
+					continue;
+				}
+				
+				$strName = htmlspecialchars($objEmployee->firstName) . " " . htmlspecialchars($objEmployee->lastName);
+				$strEmployeeOptions .= "<option value='{$intEmployeeId}'>$strName</option>";
+			}
+			
+			// Build contents for the popup
+			$strHtml = "
+<div id='PopupPageBody' style='padding:3px'>
+	<form id='NewDealerPopupForm' name='NewDealerPopupForm'>
+		<div class='GroupedContent'>
+			Select the employee to base this dealer on
+			<table class='form-data'>
+				<tr>
+					<td class='title' style='width:20%'>Employee</td>
+					<td><select id='NewDealerPopupEmployeeIdCombo' name='NewDealerPopupEmployeeIdCombo' style='width:100%'>$strEmployeeOptions</select></td>
+				</tr>
+			</table>
+		</div>
+	</form>
+
+	<div style='padding-top:3px;height:auto:width:100%'>
+		<div style='float:right'>
+			<input type='button' value='Ok' onclick='Dealer.newDealerPopupOkButtonOnClick()'></input>
+			<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
+		</div>
+		<div style='clear:both;float:none'></div>
+	</div>
+
+</div>
+";
+			return array(	"Success"		=> TRUE,
+							"PopupContent"	=> $strHtml,
+							"EmployeeCount"	=> count($arrEmployeeIds)
+						);
+		}
+		catch (Exception $e)
+		{
+			return array(	"Success"		=> FALSE,
+							"ErrorMessage"	=> $e->getMessage()
+						);
+		}
+	}
+	
+	
 	// It is a precondition that all properties passed are of their correct data type
+	// Empty strings will be converted to NULLs
 	public function saveDealerDetails($objDetails)
 	{
 		// Check user permissions
@@ -292,39 +389,26 @@ class JSON_Handler_Dealer extends JSON_Handler
 
 		try
 		{
-			// Check if we a dealing with a new Dealer or an existing one
-			// Trim all strings, and nullify anything that becomes an empty string
-			foreach ($objDetails as &$prop)
+			// Convert the details object into an associative array
+			$arrDetails = array();
+			foreach ($objDetails as $strPropName=>$mixPropValue)
 			{
-				if (is_string($prop))
-				{
-					$prop = trim($prop);
-					if ($prop == '')
-					{
-						$prop = NULL;
-					}
-				}
+				$arrDetails[$strPropName] = $mixPropValue;
 			}
 			
-			// Check if the password was changed
-			//TODO!
+			// Validate the details
+			$mixResult = Dealer::parseDealerDetails($arrDetails);
 			
-			return NULL;
-			$objNewDealer = new Dealer($objDetails);
-			
-			if ($objDetails->id != NULL)
+			if (is_array($mixResult))
 			{
-				// Existing Dealer
-				$objOldDealer = Dealer::getForId($objDetails->id);
-				
-				// Copy across values that should not be changed
-				$objNewDealer->createdOn = $objOldDealer->createdOn;
-				$objNewDealer->employeeId = $objOldDealer->employeeId;
+				// $mixResult is an array of strings defining the problems encountered when parsing $arrDetails
+				throw new Exception("The following problems were found in the submitted dealer details: ". implode(", ", $mixResult));
 			}
 			
+			$objDealer = $mixResult;
 			
-			// Retrieve a free (properly type cast) version of the dealer
-			$objDealer = Dealer::getForId($objNewDealer->id);
+			// Save the dealer (if they are new, then this will set the id of the dealer)
+			$objDealer->save();
 			
 			return array(	"Success"		=> TRUE,
 							"Dealer"		=> $objDealer->toArray()

@@ -246,6 +246,10 @@ textarea.valid {
 	border: .1em solid #3d0;
 }
 
+input[type="button"] {
+	cursor: pointer;
+}
+
 div#PopupPageBody {
 	background-color:	#EFEBE7; 
 }
