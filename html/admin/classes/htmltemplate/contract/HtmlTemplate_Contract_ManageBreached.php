@@ -97,6 +97,9 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 		}
 		$strPaginationHTML	= implode('&nbsp;|&nbsp;', $arrPaginationHTML);
 		
+		$this->mxdDataToRender['Pagination']['intStart']	= min($this->mxdDataToRender['Pagination']['intStart'], $this->mxdDataToRender['Pagination']['intTotal']);
+		$this->mxdDataToRender['Pagination']['intEnd']		= min($this->mxdDataToRender['Pagination']['intEnd'], $this->mxdDataToRender['Pagination']['intTotal']);
+		
 		// Render Table Head & Form HTML
 		echo "
 <form method='GET' action='../../admin/reflex.php/Contract/ManageBreached'>
@@ -147,14 +150,16 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 		
 		// Render each contract
 		$bolAlternate	= FALSE;
-		foreach ($this->mxdDataToRender['Contracts'] as $arrContract)
+		if (count($this->mxdDataToRender['Contracts']))
 		{
-			$strRowClass	= ($bolAlternate) ? 'alt' : '';
-			$bolAlternate	= !$bolAlternate;
-			
-			$strAccountName	= Account::getForId($arrContract['account'])->getName();
-			
-			echo "
+			foreach ($this->mxdDataToRender['Contracts'] as $arrContract)
+			{
+				$strRowClass	= ($bolAlternate) ? 'alt' : '';
+				$bolAlternate	= !$bolAlternate;
+				
+				$strAccountName	= Account::getForId($arrContract['account'])->getName();
+				
+				echo "
 			<tr class='{$strRowClass}' valign='top'>
 				<td><input type='checkbox' id='contract_checkbox_{$arrContract['id']}' value='{$arrContract['id']}' /></td>
 				<td><a href='../../admin/flex.php/Account/Overview/?Account.Id={$arrContract['account']}' target='_blank' ><span id='contract_account_{$arrContract['id']}'>{$arrContract['account']}</span></a><br />{$strAccountName}</td>
@@ -169,6 +174,15 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 				<td nowrap='nowrap'>\$<input id='contract_exit_fee_{$arrContract['id']}' type='text' size='2' value='{$arrContract['exitFee']}'/></td>
 				
 				<td nowrap='nowrap'><a onclick='javascript:Flex.Contract_ManageExpired.confirm(\"apply\", {$arrContract['id']})' ><img alt='Apply' src='img/template/tick.png'></a>&nbsp;<a onclick='javascript:Flex.Contract_ManageExpired.confirm(\"waive\", {$arrContract['id']})' ><img alt='Waive' src='img/template/delete.png'></a></td>
+			</tr>";
+			}
+		}
+		else
+		{
+			// No contracts to display
+			echo "
+			<tr class='' valign='top'>
+				<td colspan='12'>No Breached Contracts to display.</td>
 			</tr>";
 		}
 		
