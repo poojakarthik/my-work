@@ -86,7 +86,7 @@ class Application_Handler_Contract extends Application_Handler
 			$selBreachedContractsCount	= new StatementSelect(	"(Service JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service JOIN Account ON Service.Account = Account.Id JOIN RatePlan ON RatePlan.Id = SRP.RatePlan) LEFT JOIN ServiceTotal ON ServiceTotal.service_rate_plan = SRP.Id",
 																$arrColumns,
 																"contract_breach_fees_charged_on IS NULL AND contract_status_id = ".CONTRACT_STATUS_BREACHED." AND Service.Status != ".SERVICE_ARCHIVED,
-																$strOrderBy,
+																NULL,
 																NULL,
 																"SRP.Id");
 															
