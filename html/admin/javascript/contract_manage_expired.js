@@ -196,7 +196,7 @@ var Contract_ManageExpired	= Class.create
 			
 			// Send off the AJAX request
 			jsonFunc = jQuery.json.jsonFunction(this._actionNext.bind(this), this._actionNext.bind(this), "Contract_ManageBreached", this._strAction);
-			jsonFunc(this._arrSelectedContracts[0].intId, this._arrSelectedContracts[0].fltExitFee, this._arrSelectedContracts[0].fltPayout, this._arrSelectedContracts[0].fltExitFee);
+			jsonFunc(this._arrSelectedContracts[0].intId, $ID('ContractConfirm_Reason').value, this._arrSelectedContracts[0].fltExitFee, this._arrSelectedContracts[0].fltPayout, this._arrSelectedContracts[0].fltExitFee);
 		}
 		else
 		{
@@ -280,6 +280,14 @@ var Contract_ManageExpired	= Class.create
 "							<td>$" + (new Number(fltTotalExitFee)).toFixed(2) + "</td>\n" + 
 "						</tr>\n" + 
 "					</table>\n" + 
+"				</div>\n" +
+"				<div class='GroupedContent'>\n" +
+"					<table class='form-data'>\n" +
+"						<tr>\n" +
+"							<td class='title'>Reason</td>\n" +
+"							<td><textarea id='ContractConfirm_Reason' name='ContractConfirm_Reason' wrap='on' style='overflow:auto;width:100%;height:20em;font-family:Courier New, monospace;font-size:1em;border: solid 1px #D1D1D1'></textarea></td>\n" +
+"						</tr>\n" +
+"					</table>\n" +
 "				</div>\n" + 
 "				<div style='padding-top:3px;height:auto:width:100%'>\n" + 
 "					<div style='float:right'>\n" + 

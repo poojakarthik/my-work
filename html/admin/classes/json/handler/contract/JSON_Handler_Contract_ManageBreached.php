@@ -4,7 +4,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 {
 
 	// Waives the Contract Fees for a given ServiceRatePlan
-	public function waive($intContractId)
+	public function waive($intContractId, $strReason)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
@@ -14,11 +14,18 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 			// Waive the fees
 			DataAccess::getDataAccess()->TransactionStart();
 			
-			// Build a Contract object using the passed ServiceRatePlan.Id
+			// Load Relevant Objects
 			$objServiceRatePlan	= new Service_Rate_Plan(Array('Id'=>$intContractId), TRUE);
+			$objService			= new Service(Array('Id'=>$objServiceRatePlan->Service), TRUE);
+			
+			// Save the Contract Details
 			$objServiceRatePlan->contract_breach_fees_charged_on	= date("Y-m-d H:i:s");
 			$objServiceRatePlan->contract_breach_fees_employee_id	= Flex::getUserId();
+			$objServiceRatePlan->contract_breach_fees_reason		= (trim($strReason)) ? trim($strReason) : NULL;
 			$objServiceRatePlan->save();
+			
+			// Add a Service System Note
+			$this->_addFeesNote($objService, $objServiceRatePlan->RatePlan, $strReason, 0, 0, 0);
 			
 			// If no exceptions were thrown, then everything worked
 			DataAccess::getDataAccess()->TransactionCommit();
@@ -43,8 +50,8 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 		}
 	}
 
-	// Waives the Contract Fees for a given ServiceRatePlan
-	public function apply($intContractId, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee)
+	// Applies the Contract Fees for a given ServiceRatePlan
+	public function apply($intContractId, $strReason, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
@@ -126,7 +133,11 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 			$objServiceRatePlan->contract_breach_fees_charged_on	= date("Y-m-d H:i:s");
 			$objServiceRatePlan->contract_breach_fees_employee_id	= Flex::getUserId();
 			$objServiceRatePlan->contract_payout_percentage			= round((float)$fltPayoutPercentage, 2);
+			$objServiceRatePlan->contract_breach_fees_reason		= (trim($strReason)) ? trim($strReason) : NULL;
 			$objServiceRatePlan->save();
+			
+			// Add a Service System Note
+			$this->_addFeesNote($objService, $objServiceRatePlan->RatePlan, $strReason, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee);
 			
 			// If no exceptions were thrown, then everything worked
 			DataAccess::getDataAccess()->TransactionCommit();
@@ -149,6 +160,33 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 							"ErrorMessage"	=> 'ERROR'
 						);
 		}
+	}
+
+	// Adds a System Note detailing the Charges
+	public function _addFeesNote($objService, $intRatePlan, $strReason, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee)
+	{
+		$objRatePlan			= new RatePlan(Array('Id'=>$intRatePlan), TRUE);
+		$objExitChargeType		= Charge_Type::getContractExitFee();
+		$objPayoutChargeType	= Charge_Type::getContractPayoutFee();
+		
+		$strExitFee		= ($fltExitFee > 0.0) ? "\$".round($fltExitFee, 2) : "Waived";
+		$fltPayoutFee	= ($fltPayoutFee > 0.0) ? "\$".round($fltPayoutFee, 2)." ({$fltPayoutPercentage}%)" : "Waived";
+		$strNoteContent	= "Contract Breach Fees have been actioned for Service {$objService->FNN} to the following effect:\n" .
+							"Service: {$objService->FNN}\n" .
+							"Rate Plan: {$objRatePlan->Name}\n" .
+							"{$objExitChargeType->Description}: {$strExitFee}\n" .
+							"{$objPayoutChargeType->Description}: {$strPayoutFee}";
+		$strNoteContent	.= (trim($strReason)) ? "\nReason: {$strReason}" : '';
+		
+		$objNote				= new Note();
+		$objNote->Note			= $strNoteContent;
+		$objNote->AccountGroup	= $objService->AccountGroup;
+		$objNote->Account		= $objService->Account;
+		$objNote->Service		= $objService->Id;
+		$objNote->Employee		= Flex::getUserId();
+		$objNote->Datetime		= date("Y-m-d H:i:s");
+		$objNote->NoteType		= 7;										// System Note
+		$objNote->save();
 	}
 }
 
