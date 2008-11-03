@@ -159,7 +159,7 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 				<td><input type='checkbox' id='contract_checkbox_{$arrContract['id']}' value='{$arrContract['id']}' /></td>
 				<td><a href='../../admin/flex.php/Account/Overview/?Account.Id={$arrContract['account']}' target='_blank' ><span id='contract_account_{$arrContract['id']}'>{$arrContract['account']}</span></a><br />{$strAccountName}</td>
 				<td><input id='contract_service_id_{$arrContract['id']}' type='hidden' value='{$arrContract['serviceId']}'><a href='../../admin/flex.php/Service/View/?Service.Id={$arrContract['serviceId']}' target='_blank' ><span id='contract_fnn_{$arrContract['id']}'>{$arrContract['service']}</span></a></td>
-				<td><a href='../../admin/flex.php/Service/ViewPlan/?Service.Id={$arrContract['serviceId']}' target='_blank' >{$arrContract['ratePlan']}</a><br />({$arrContract['contractTerm']} Months)</td>
+				<td><a href='../../admin/flex.php/Service/ViewPlan/?Service.Id={$arrContract['serviceId']}' target='_blank' >{$arrContract['ratePlan']}</a><br /><span id='contract_term_{$arrContract['id']}'>({$arrContract['contractTerm']} Months)<span></td>
 				<td>{$arrContract['contractStarted']}</td>
 				<td>{$arrContract['contractBreached']}<br />({$arrContract['contractInvoices']} Invoices)</td>
 				<td>{$arrContract['breachNature']}</td>

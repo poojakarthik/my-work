@@ -106,11 +106,13 @@ var Contract_ManageExpired	= Class.create
 		elmPayoutSpan		= document.getElementById("contract_payout_charge_" + intContractId);
 		elmMinMonthlySpan	= document.getElementById("contract_min_monthly_" + intContractId);
 		elmMonthsLeftSpan	= document.getElementById("contract_months_left_" + intContractId);
+		elmContractTermSpan	= document.getElementById("contract_term_" + intContractId);
 		
 		if (elmPercentageText && elmPayoutSpan && elmMinMonthlySpan && elmMonthsLeftSpan)
 		{
+			intMonthsLeft	= (parseInt(elmMonthsLeftSpan.innerHTML) > parseInt(elmContractTermSpan.innerHTML)) ? parseInt(elmContractTermSpan.innerHTML) : parseInt(elmMonthsLeftSpan.innerHTML);
 			fltPercentage	= (parseFloat(elmPercentageText.value) > 0) ? (parseFloat(elmPercentageText.value) / 100) : 0;
-			fltPayout		= new Number(parseFloat(elmMinMonthlySpan.innerHTML) * parseFloat(elmMonthsLeftSpan.innerHTML) * fltPercentage);
+			fltPayout		= new Number(parseFloat(elmMinMonthlySpan.innerHTML) * intMonthsLeft * fltPercentage);
 			
 			// Output to the page
 			elmPayoutSpan.innerHTML	= fltPayout.toFixed(2);
