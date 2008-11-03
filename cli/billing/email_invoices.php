@@ -16,10 +16,10 @@ $arrConfig = LoadApplication();
 // Check Parameters
 $intInvoiceRunId	= (int)$argv[1];
 $bolIncludePDF		= (strtolower($argv[2]) === 'includepdf') ? TRUE : FALSE;
-$selInvoiceRun		= new StatementSelect("InvoiceRun", "*, Id AS invoice_run_id", "InvoiceRun = <invoice_run_id>");
+$selInvoiceRun		= new StatementSelect("InvoiceRun", "*, Id AS invoice_run_id", "Id = <invoice_run_id>");
 if (!$selInvoiceRun->Execute(Array('invoice_run_id' => $intInvoiceRunId)))
 {
-	CliEcho("\n'$strInvoiceRun' is not a valid InvoiceRun Id!\n");
+	CliEcho("\n'{$intInvoiceRunId}' is not a valid InvoiceRun Id!\n");
 	exit(1);
 }
 $arrInvoiceRun	= $selInvoiceRun->Fetch();
