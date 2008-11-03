@@ -105,7 +105,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 		$strPDFDirectory	= FILES_BASE_PATH."invoices/pdf/{$arrInvoiceRun['InvoiceRun']}";
 		if (!is_dir($strPDFDirectory))
 		{
-			CliEcho("Cannot find PDF Path: ''{$strPDFDirectory}'");
+			CliEcho("Cannot find PDF Path: '{$strPDFDirectory}'");
 			$strPDFDirectory	= FILES_BASE_PATH."invoices/pdf/{$arrInvoiceRun['Id']}";
 			if (!is_dir($strPDFDirectory))
 			{
@@ -113,6 +113,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 				return FALSE;
 			}
 		}
+		CliEcho("PDFs found at: '{$strPDFDirectory}'");
 		
 		$arrPDFs		= glob($strPDFDirectory.'/*.pdf');
 		foreach ($arrPDFs as $strPath)
