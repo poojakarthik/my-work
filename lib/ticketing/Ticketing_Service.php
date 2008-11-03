@@ -215,6 +215,7 @@ class Ticketing_Service
 			'&#246;' => '&ouml;',
 			'&#212;' => '&Ocirc;',
 			'&#252;' => '&uuml;',		
+			'&#160;' => '&nbsp;',		
 		);
 		
 		$out = array();
