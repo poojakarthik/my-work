@@ -426,7 +426,284 @@ class Cli_App_Sync_SalesPortal extends Cli
 	// _pullSales()	-- Pulls all new Sales from the Sales Portal
 	protected function _pullSales()
 	{
-		// TODO
+		$dsSalesPortal	= Data_Source::get('sales_portal');
+		$dacFlex		= DataAccess::getDataAccess();
+		
+		// Start a transaction for both Databases
+		$dsSalesPortal->beginTransaction();
+		$dacFlex->TransactionStart();
+		
+		try
+		{
+			$insBankAccount	= new StatementInsert("DirectDebit");
+			$insCreditCard	= new StatementInsert("CreditCard");
+			
+			// Get a list of New Sales from the SP
+			// FIXME: When the sale_status.const_name field is added, use it instead of sale_status.name
+			$resNewSales	= $dsSalesPortal->query("SELECT sale.* " .
+													"FROM sale JOIN sale_status ON sale.sale_status_id = sale_status.id " .
+													"WHERE sale_status.name = 'Ready For Provisioning'");
+			if (PEAR::isError($resNewSales))
+			{
+				throw new Exception($resNewSales->getError()." :: ".$resNewSales->getUserInfo());
+			}
+			while ($arrSale = $resNewSales->fetchRow(MDB2_FETCHMODE_ASSOC))
+			{
+				// Is this for a new Account?
+				if ($arrSale['sale_type_id'] === SALE_TYPE_NEW_CUSTOMER)
+				{
+					//--------------------- ACCOUNT GROUP --------------------//
+					// Yes -- Create a new AccountGroup/Account for this Customer
+					$objAccountGroup			= new Account_Group();
+					$objAccountGroup->CreatedBy	= 0;
+					$objAccountGroup->CreatedOn	= date("Y-m-d");
+					$objAccountGroup->Archived	= 0;
+					$objAccountGroup->save();
+					//--------------------------------------------------------//
+					
+					//------------------------ ACCOUNT -----------------------//
+					// Get sale_account Details for this Sale
+					$resSaleAccount	= $dsSalesPortal->query("SELECT sale_account.*, state_name " .
+															"FROM sale_account JOIN state ON state.id = sale_account.state_id  " .
+															"WHERE sale_id = {$arrSale['id']} " .
+															"LIMIT 1");
+					if (PEAR::isError($resSaleAccount))
+					{
+						throw new Exception($resSaleAccount->getError()." :: ".$resSaleAccount->getUserInfo());
+					}
+					$arrSaleAccount	= $resSaleAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
+					
+					$objAccount						= new Account();
+					$objAccount->BusinessName		= $arrSaleAccount['business_name'];
+					$objAccount->TradingName		= $arrSaleAccount['trading_name'];
+					$objAccount->ABN				= $arrSaleAccount['abn'];
+					$objAccount->ACN				= $arrSaleAccount['acn'];
+					$objAccount->Address1			= $arrSaleAccount['address_line_1'];
+					$objAccount->Address2			= $arrSaleAccount['address_line_2'];
+					$objAccount->Suburb				= $arrSaleAccount['suburb'];
+					$objAccount->Postcode			= $arrSaleAccount['postcode'];
+					$objAccount->State				= $arrSaleAccount['state_name'];
+					$objAccount->Country			= 'AU';
+					$objAccount->BillingType		= $arrSaleAccount['business_name'];
+					$objAccount->CustomerGroup		= $arrSaleAccount['vendor_id'];
+					$objAccount->AccountGroup		= $objAccountGroup->Id;
+					$objAccount->BillingFreq		= BILLING_DEFAULT_FREQ;
+					$objAccount->BillingFreqType	= BILLING_DEFAULT_FREQ_TYPE;
+					$objAccount->BillingMethod		= $this->_convertSalesPortalToFlex('billdeliverytype', $arrSaleAccount['bill_delivery_type_id']);
+					
+					$resPaymentTerms	= $qryQuery->Execute("SELECT * FROM payment_terms WHERE customer_group_id = {$objAccount->CustomerGroup} ORDER BY id DESC LIMIT 1");
+					if ($resPaymentTerms === FALSE)
+					{
+						throw new Exception($resPaymentTerms->Error());
+					}
+					elseif ($arrPaymentTerms = $resPaymentTerms->fetch_assoc())
+					{
+						$objAccount->BillingDate	= $arrPaymentTerms['invoice_day'];
+						$objAccount->PaymentTerms	= $arrPaymentTerms['payment_terms'];
+					}
+					else
+					{
+						$objAccount->BillingDate	= 1;
+						$objAccount->PaymentTerms	= 14;
+					}
+					
+					if ($arrSaleAccount['direct_debit_type_id'])
+					{
+						$objAccount->BillingType		= $this->_convertSalesPortalToFlex('directdebittype', $arrSaleAccount['direct_debit_type_id']);
+					}
+					else
+					{
+						$objAccount->BillingType		= BILLING_TYPE_ACCOUNT;
+					}
+					
+					$objAccount->CreatedBy			= 0;
+					$objAccount->CreatedOn			= date("Y-m-d");
+					$objAccount->DisableDDR			= 0;
+					$objAccount->DisableLatePayment	= 0;
+					$objAccount->Sample				= 0;
+					$objAccount->Archived			= 0;
+					
+					$objAccount->credit_control_status			= CREDIT_CONTROL_STATUS_UP_TO_DATE;
+					$objAccount->last_automatic_invoice_action	= AUTOMATIC_INVOICE_ACTION_NONE;
+					$objAccount->automatic_barring_status		= AUTOMATIC_BARRING_STATUS_NONE;
+					$objAccount->vip							= 0;
+					
+					// Save the Account
+					$objAccount->save();
+					//--------------------------------------------------------//
+					
+					//---------------------- DIRECT DEBIT --------------------//
+					switch ($arrSaleAccount['direct_debit_type_id'])
+					{
+						// Bank Account
+						case 1:
+							// Get additional Bank Account Details
+							$resSPBankAccount	= $dsSalesPortal->query("SELECT * " .
+																	"FROM sale_account_direct_debit_bank_account " .
+																	"WHERE sale_account_id = {$arrSaleAccount['id']} " .
+																	"LIMIT 1");
+							if (PEAR::isError($resSPBankAccount))
+							{
+								throw new Exception($resSPBankAccount->getError()." :: ".$resSPBankAccount->getUserInfo());
+							}
+							$arrSPBankAccount	= $resSPBankAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
+							
+							// Create new DirectDebit record
+							$arrBankAccount	= array();
+							$arrBankAccount['AccountGroup']		= $objAccount->AccountGroup;
+							$arrBankAccount['BankName']			= $arrSPBankAccount['bank_name'];
+							$arrBankAccount['BSB']				= $arrSPBankAccount['bank_bsb'];
+							$arrBankAccount['AccountNumber']	= $arrSPBankAccount['account_number'];
+							$arrBankAccount['AccountName']		= $arrSPBankAccount['account_name'];
+							$arrBankAccount['Archived']			= 0;
+							$arrBankAccount['created_on']		= date("Y-m-d");
+							$arrBankAccount['employee_id']		= 0;
+							$resBankAccountInsert	= $insBankAccount->Execute($arrBankAccount);
+							if ($resBankAccountInsert === FALSE)
+							{
+								throw new Exception($insBankAccount->Error());
+							}
+							
+							$objAccount->DirectDebit	= $resBankAccountInsert;
+							break;
+						
+						// Credit Card
+						case 2:
+							// Get additional Credit Card Details
+							$resSPCreditCard	= $dsSalesPortal->query("SELECT * " .
+																	"FROM sale_account_direct_debit_credit_card " .
+																	"WHERE sale_account_id = {$arrSaleAccount['id']} " .
+																	"LIMIT 1");
+							if (PEAR::isError($resSPCreditCard))
+							{
+								throw new Exception($resSPCreditCard->getError()." :: ".$resSPCreditCard->getUserInfo());
+							}
+							$arrSPCreditCard	= $resSPCreditCard->fetchRow(MDB2_FETCHMODE_ASSOC);
+							
+							// Create new CreditCard record
+							$arrCreditCard	= array();
+							$arrCreditCard['AccountGroup']		= $objAccount->AccountGroup;
+							$arrCreditCard['BankName']			= $arrSPBankAccount['bank_name'];
+							$arrCreditCard['BSB']				= $arrSPBankAccount['bank_bsb'];
+							$arrCreditCard['AccountNumber']	= $arrSPBankAccount['account_number'];
+							$arrCreditCard['AccountName']		= $arrSPBankAccount['account_name'];
+							$arrCreditCard['Archived']			= 0;
+							$arrCreditCard['created_on']		= date("Y-m-d");
+							$arrCreditCard['employee_id']		= 0;
+							$resCreditCardInsert	= $insCreditCard->Execute($arrCreditCard);
+							if ($resCreditCardInsert === FALSE)
+							{
+								throw new Exception($insCreditCard->Error());
+							}
+							
+							$objAccount->CreditCard	= $resCreditCardInsert;
+							break;
+					}
+					
+					// Finalise Account
+					$objAccount->save();
+					
+					// Update the SP Sale Account Remote Reference
+					// TODO
+					//--------------------------------------------------------//
+				}
+				else
+				{
+					// We only support New Customer Sales at the moment
+					throw new Exception(GetConstantDescription($arrSale['sale_type_id'], 'sale_type')." Sales are not supported by Flex!");
+				}
+				
+				//------------------------ CONTACT -----------------------//
+				// Get the new Contacts associated with this Sale
+				$resNewContacts	= $dsSalesPortal->query("SELECT contact.*, contact_title.name AS contact_title_name, contact_sale.contact_association_type_id " .
+														"(FROM contact JOIN contact_sale ON contact.id = contact_sale.contact_id JOIN sale ON sale.id = contact_sale.sale_id) LEFT JOIN contact_title ON contact_title.id = contact.contact_title_id " .
+														"WHERE contact.contact_reference_id IS NULL");
+				if (PEAR::isError($resNewContacts))
+				{
+					throw new Exception($resNewContacts->getError()." :: ".$resNewContacts->getUserInfo());
+				}
+				while ($arrSPContact = $resNewContacts->fetchRow(MDB2_FETCHMODE_ASSOC))
+				{
+					// Add this Contact to Flex
+					$objContact	= new Contact();
+					$objContact->AccountGroup		= $objAccount->AccountGroup;
+					$objContact->Title				= $arrSPContact['contact_title_name'];
+					$objContact->FirstName			= $arrSPContact['first_name'];
+					$objContact->LastName			= $arrSPContact['last_name'];
+					$objContact->DOB				= $arrSPContact['date_of_birth'];
+					$objContact->JobTitle			= $arrSPContact['position_title'];
+					$objContact->Account			= $objAccount->Id;
+					$objContact->CustomerContact	= 0;
+					$objContact->PassWord			= $arrSPContact['password'];
+					$objContact->SessionId			= '';
+					$objContact->SessionExpire		= '0000-00-00 00:00:00';
+					$objContact->Archived			= 0;
+					
+					// Get the Contact Methods from SP
+					$objContact->Phone				= '';
+					$objContact->Mobile				= '';
+					$objContact->Fax				= '';
+					$objContact->Email				= NULL;
+					$resContactMethod	= $dsSalesPortal->query("SELECT * " .
+																"FROM contact_method " .
+																"WHERE contact_id = {$arrSPContact['id']}");
+					if (PEAR::isError($resContactMethod))
+					{
+						throw new Exception($resContactMethod->getError()." :: ".$resContactMethod->getUserInfo());
+					}
+					while ($arrSPContactMethod = $resContactMethod->fetchRow(MDB2_FETCHMODE_ASSOC))
+					{
+						switch ($arrSPContactMethod['contact_method_type_id'])
+						{
+							// Email
+							case 1:
+								$objContact->Email	= $arrSPContactMethod['details'];
+								break;
+								
+							// Fax
+							case 2:
+								$objContact->Fax	= $arrSPContactMethod['details'];
+								break;
+								
+							// Phone
+							case 3:
+								$objContact->Phone	= $arrSPContactMethod['details'];
+								break;
+								
+							// Mobile
+							case 4:
+								$objContact->Mobile	= $arrSPContactMethod['details'];
+								break;
+						}
+					}
+					
+					// Save the Flex Contact
+					$objContact->save();
+					
+					// Update the SP Contact Remote Reference
+					// TODO
+					
+					// Is it the Primary Contact for the Account?
+					if ($arrSPContact['contact_association_type_id'])
+					{
+						$objAccount->PrimaryContact	= $objContact->Id;
+						$objAccount->save();
+					}
+				}
+				//--------------------------------------------------------//
+			}
+			
+			// All seems to have worked fine -- Commit the Transaction
+			$dsSalesPortal->commit();
+			$dacFlex->TransactionCommit();
+		}
+		catch (Exception $eException)
+		{
+			// Rollback the Transaction & passthru the Exception
+			$dsSalesPortal->rollback();
+			$dacFlex->TransactionRollback();
+			throw $eException;
+		}
 	}
 	//------------------------------------------------------------------------//
 	
@@ -461,6 +738,43 @@ class Cli_App_Sync_SalesPortal extends Cli
 														);
 				
 				return $arrConversion['planarchived'][(int)$mixFlexValue];
+				break;
+			
+			default:
+				throw new Exception("Unknown Flex-to-SP Conversion Type: '{$strType}'!");
+				break;
+		}
+	}
+	
+	// _convertSalesPortalToFlex()	-- Converts Values from Sales Portal to Flex Forms
+	protected function _convertSalesPortalToFlex($strType, $mixFlexValue)
+	{
+		static	$arrConversion	= array();
+		
+		static	$dsSalesPortal;
+		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales_portal');
+		
+		$strType	= str_replace('_', '', strtolower($strType));
+		switch ($strType)
+		{		
+			case 'billdeliverytype':
+				// HACK: These should work, at least for now
+				$arrConversion[$strType]	= array(
+														1 	=> DELIVERY_METHOD_POST,
+														2	=> DELIVERY_METHOD_EMAIL
+													);
+				
+				return $arrConversion[$strType][(int)$mixFlexValue];
+				break;
+				
+			case 'directdebittype':
+				// HACK: These should work, at least for now
+				$arrConversion[$strType]	= array(
+														1 	=> BILLING_TYPE_DIRECT_DEBIT,
+														2	=> BILLING_TYPE_CREDIT_CARD
+													);
+				
+				return $arrConversion[$strType][(int)$mixFlexValue];
 				break;
 			
 			default:
