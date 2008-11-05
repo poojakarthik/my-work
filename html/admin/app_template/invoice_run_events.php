@@ -100,7 +100,7 @@ class AppTemplateInvoiceRunEvents extends ApplicationTemplate
 		if (count($ids))
 		{
 			$strWhere = "Id IN (" . implode(',', $ids) . ")";
-			DBL()->InvoiceRun->SetColumns(array('Id', 'InvoiceRun', 'BillingDate'));
+			DBL()->InvoiceRun->SetColumns(array('Id', 'InvoiceRun', 'customer_group_id', 'BillingDate'));
 			DBL()->InvoiceRun->OrderBy("BillingDate DESC");
 			DBL()->InvoiceRun->Load($strWhere, NULL);
 		}
