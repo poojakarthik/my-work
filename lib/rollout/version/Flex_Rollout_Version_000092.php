@@ -17,6 +17,7 @@
  *	12: Creates the sale_type table
  *	13: Populates the sale_type table
  *	14: Creates the dealer_sale_type table
+ *	15: defines the System dealer, in the dealer table (points to system employee)
  */
 
 class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
@@ -385,6 +386,18 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 		
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
 										"SQL"		=> "DROP TABLE dealer_sale_type;");
+
+		// 15: define the System dealer, in the dealer table (points to system employee)
+		$strSQL = "	INSERT INTO dealer (id, first_name, last_name, username, password, can_verify, dealer_status_id, employee_id)
+					VALUES
+					(1, 'System', '', '', '', 1, 1, 0);";
+		
+		$objResult = $dbAdmin->query($strSQL);
+		if (PEAR::isError($objResult))
+		{
+			throw new Exception(__CLASS__ . " Failed to add the System dealer to the dealer table - ". $objResult->getMessage());
+		}
+		// No rollback is required
 
 	}
 	
