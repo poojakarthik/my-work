@@ -53,19 +53,35 @@ var Tabs = {
 	
 	selectTab : function(strTabCollection, tabIndex)
 	{
-		objCollection = this.tabCollections[strTabCollection];
+		var objCollection = this.tabCollections[strTabCollection];
 		
 		// Hide all the tabs
 		for (i in objCollection)
 		{
 			objCollection[i].body.style.display = "none";
 			objCollection[i].header.className = "tab-header";
+			objCollection[i].header.setAttribute("isSelected", false);
 		}
 		
 		// Display the one requested
 		objCollection[tabIndex].header.className = "tab-header selected";
 		objCollection[tabIndex].body.style.display = "block";
-	}
+		objCollection[tabIndex].header.setAttribute("isSelected", true);
+	},
 
+	getSelectedTabIndex : function(strTabCollection)
+	{
+		var objCollection = this.tabCollections[strTabCollection];
+
+		// Hide all the tabs
+		for (i in objCollection)
+		{
+			if (objCollection[i].header.getAttribute("isSelected"))
+			{
+				return i;
+			}
+		}
+		return null;
+	}
 	
 };

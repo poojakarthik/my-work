@@ -1,9 +1,47 @@
 var Dealer = {
-	POPUP_ID		: "Dealer",
+	POPUP_ID : "Dealer",
+	CALLING_PAGE_VIEW_DEALER_POPUP : 1,
+	CALLING_PAGE_DEALER_LIST : 2,
 
 	objDealer : null,
 	objCountryStates : null,
 	controls : null,
+	bolPageNeedsRefresh : false,
+
+	closeViewDealerPopup : function()
+	{
+		// Check if the page needs to be refreshed
+		if (this.bolPageNeedsRefresh == true)
+		{
+			window.location = window.location;
+		}
+		else
+		{
+			// Just close the popup
+			Vixen.Popup.Close(this.POPUP_ID);
+		}
+	},
+	
+	closeEditDealerPopup : function(intCallingPage)
+	{
+		if (intCallingPage == this.CALLING_PAGE_VIEW_DEALER_POPUP)
+		{
+			// Display the View Dealer popup
+			this.viewDealer(this.objDealer.id);
+			return;
+		}
+	
+		// Check if the page needs to be refreshed
+		if (this.bolPageNeedsRefresh == true)
+		{
+			window.location = window.location;
+		}
+		else
+		{
+			// Just close the popup
+			Vixen.Popup.Close(this.POPUP_ID);
+		}
+	},
 
 	// Loads the "New Dealer" popup, which allows the user to create a new dealer, or base one on an Employee
 	loadNewDealerPopup : function()
@@ -18,7 +56,7 @@ var Dealer = {
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.Success)
+		if (response.Success && response.Success == true)
 		{
 			// Check if there are any employees who can become dealers
 			if (response.EmployeeCount > 0)
@@ -51,22 +89,57 @@ var Dealer = {
 		this.editDealer(null, intEmployeeId);
 	},
 
+	viewDealer : function(intDealerId)
+	{
+		jsonFunc = jQuery.json.jsonFunction(this.viewDealerReturnHandler.bind(this), null, "Dealer", "buildViewDealerPopup");
+		Vixen.Popup.ShowPageLoadingSplash("Loading", null, null, null, 100);
+		jsonFunc(intDealerId);
+	},
+	
+	viewDealerReturnHandler : function(response)
+	{
+		Vixen.Popup.ClosePageLoadingSplash();
+
+		if (response.Success && response.Success == true)
+		{
+			// Display the popup
+			var objPopup = Vixen.Popup.Create(this.POPUP_ID, response.PopupContent, "Large", "centre", "modal", "Dealer - " + response.Data.DealerName);
+			
+			// Initialise the popup
+			this.initialiseViewPopup(response.Data, objPopup);
+		}
+		else
+		{
+			$Alert("Loading the ViewDealer Popup failed" + ((response.ErrorMessage != undefined)? "<br />" + response.ErrorMessage : ""));
+		}
+	},
+	
+	initialiseViewPopup : function (objData, objPopup)
+	{
+		Tabs.initialiseTabCollections(objPopup);
+		
+		Vixen.Popup.Centre(this.POPUP_ID);
+		
+		this.objDealer = objData.Dealer;
+	},
+
 	// Loads the "Edit Dealer" popup
-	editDealer : function(intDealerId, intEmployeeId)
+	editDealer : function(intDealerId, intEmployeeId, intCallingPage)
 	{
 		intDealerId		= (intDealerId == undefined)? null : intDealerId;
 		intEmployeeId	= (intEmployeeId == undefined)? null : intEmployeeId;
+		intCallingPage	= (intCallingPage == undefined)? this.CALLING_PAGE_DEALER_LIST : intCallingPage;
 	
 		jsonFunc = jQuery.json.jsonFunction(this.editDealerReturnHandler.bind(this), null, "Dealer", "buildEditDealerPopup");
 		Vixen.Popup.ShowPageLoadingSplash("Loading", null, null, null, 100);
-		jsonFunc(intDealerId, intEmployeeId);
+		jsonFunc(intDealerId, intEmployeeId, intCallingPage);
 	},
 	
 	editDealerReturnHandler : function(response)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.Success)
+		if (response.Success && response.Success == true)
 		{
 			// Display the popup
 			var objPopup = Vixen.Popup.Create(this.POPUP_ID, response.PopupContent, "Large", "centre", "modal", (response.Data.Dealer.id === null && response.Data.Dealer.employeeId === null)? "New Dealer" : "Dealer - " + response.Data.DealerName);
@@ -86,8 +159,11 @@ var Dealer = {
 		
 		Vixen.Popup.Centre(this.POPUP_ID);
 		
-		this.objDealer = objData.Dealer;
-		this.objCountryStates = objData.CountryStates;
+		this.objDealer			= objData.Dealer;
+		this.objSaleTypes		= objData.SaleTypes;
+		this.objCustomerGroups	= objData.CustomerGroups;
+		this.objRatePlans		= objData.RatePlans;
+		this.objCountryStates	= objData.CountryStates;
 		
 		// Store references to all input elements on the EditDealerPopupForm
 		var elmForm = document.getElementById("EditDealerPopupForm");
@@ -115,7 +191,12 @@ var Dealer = {
 		this.controls.mobile.value			= this.objDealer.mobile;
 		this.controls.fax.value				= this.objDealer.fax;
 		this.controls.email.value			= this.objDealer.email;
-		this.controls.terminationDate.value	= this.objDealer.terminationDate;
+		
+		if (this.objDealer.terminationDate != null)
+		{
+			var strDate = this.objDealer.terminationDate;
+			this.controls.terminationDate.value = strDate.substr(8, 2) +"/"+ strDate.substr(5, 2) + "/" + strDate.substr(0, 4);
+		}
 		
 		this.controls.dealerStatusId.value	= this.objDealer.dealerStatusId;
 		
@@ -160,6 +241,201 @@ var Dealer = {
 			this.controls.email.disabled = true;
 		}
 		
+		// Populate the SaleTypes combobox
+		for (i in this.objSaleTypes)
+		{
+			this.controls.saleTypes.appendChild(new Option(this.objSaleTypes[i].name, i, false, false));
+		}
+
+		// Populate the CustomerGroup combobox
+		for (i in this.objCustomerGroups)
+		{
+			this.controls.customerGroups.appendChild(new Option(this.objCustomerGroups[i].name, i, false, false));
+		}
+
+		this.initialiseSalesConstraints();
+
+		Event.startObserving(this.controls.availableRatePlans, "change", this.unselectAllInSelectElement.bind(this, this.controls.selectedRatePlans), true);
+		Event.startObserving(this.controls.selectedRatePlans, "change", this.unselectAllInSelectElement.bind(this, this.controls.availableRatePlans), true);
+		Event.startObserving(this.controls.customerGroups, "change", this.populateRatePlanControls.bind(this), true);
+	},
+	
+	populateRatePlanControls : function()
+	{
+		var elmCustomerGroupOptions = this.controls.customerGroups.options;
+		var customerGroupId;
+		var intRatePlan;
+		for (var i=0, j=elmCustomerGroupOptions.length; i<j; i++)
+		{
+			customerGroupId = elmCustomerGroupOptions[i].value;
+			if (!elmCustomerGroupOptions[i].selected)
+			{
+				// The customer group is not selected, remove all its RatePlans from the RatePlan comboboxes
+				for (intRatePlan in this.objRatePlans)
+				{
+					if (this.objRatePlans[intRatePlan].customerGroup == customerGroupId)
+					{
+						// This RatePlan belongs to this customer group, remove it if it is currently in either of the comboboxes
+						if (this.objRatePlans[intRatePlan].currentOptionElement != null)
+						{
+							this.objRatePlans[intRatePlan].currentOptionElement.parentNode.removeChild(this.objRatePlans[intRatePlan].currentOptionElement);
+							this.objRatePlans[intRatePlan].currentOptionElement = null;
+						}
+					}
+				}
+			}
+			else
+			{
+				// The customer group is selected
+				// Add all its RatePlans to the availableRatePlans combo, if it is not already present in either combobox
+				for (intRatePlan in this.objRatePlans)
+				{
+					if (this.objRatePlans[intRatePlan].customerGroup == customerGroupId)
+					{
+						// This RatePlan belongs to this customer group
+						if (this.objRatePlans[intRatePlan].currentOptionElement == null)
+						{
+							// Add the RatePlan to the availableRatePlans combo
+							this.objRatePlans[intRatePlan].currentOptionElement = new Option(this.objRatePlans[intRatePlan].name, intRatePlan, false, false);
+							//this.controls.availableRatePlans.appendChild(this.objRatePlans[intRatePlan].currentOptionElement);
+							this.addOptionToSelectElement(this.objRatePlans[intRatePlan].currentOptionElement, this.controls.availableRatePlans);
+						}
+					}
+				}
+			}
+		}
+	},
+	
+	initialiseSalesConstraints : function()
+	{
+		// Select the SaleTypes
+		for (var i=0, j=this.controls.saleTypes.options.length; i<j; i++)
+		{
+			this.controls.saleTypes.options[i].selected = (this.objDealer.saleTypeIds[this.controls.saleTypes.options[i].value] != undefined);
+		}
+		
+		// Select the CustomerGroups
+		for (i=0, j=this.controls.customerGroups.options.length; i<j; i++)
+		{
+			this.controls.customerGroups.options[i].selected = (this.objDealer.customerGroupIds[this.controls.customerGroups.options[i].value] != undefined);
+		}
+		
+		// Remove all options from both RatePlan comboboxes
+		while (this.controls.availableRatePlans.options.length != 0)
+		{
+			this.controls.availableRatePlans.removeChild(this.controls.availableRatePlans.options[0]);
+		}
+		while (this.controls.selectedRatePlans.options.length != 0)
+		{
+			this.controls.selectedRatePlans.removeChild(this.controls.selectedRatePlans.options[0]);
+		}
+		
+		// Populate the RatePlan comboboxes
+		for (i in this.objRatePlans)
+		{
+			// Check that the RatePlan belongs to one of the selected CustomerGroups
+			if (this.objDealer.customerGroupIds[this.objRatePlans[i].customerGroup] != undefined)
+			{
+				// Store an reference to the option element that is currently modelling this RatePlan
+				this.objRatePlans[i].currentOptionElement = new Option(this.objRatePlans[i].name, i, false, false);
+				
+				// Work out which combobox the RatePlan should go into
+				if (this.objDealer.ratePlanIds[i] != undefined)
+				{
+					// The dealer currently has this rate group selected
+					//this.controls.selectedRatePlans.appendChild(this.objRatePlans[i].currentOptionElement);
+					this.addOptionToSelectElement(this.objRatePlans[i].currentOptionElement, this.controls.selectedRatePlans);
+				}
+				else
+				{
+					// The dealer currently doesn't have this one selected
+					//this.controls.availableRatePlans.appendChild(this.objRatePlans[i].currentOptionElement);
+					this.addOptionToSelectElement(this.objRatePlans[i].currentOptionElement, this.controls.availableRatePlans);
+				}
+			}
+			else
+			{
+				// It doesn't belong to any of the selected customer groups
+				this.objRatePlans[i].currentOptionElement = null;
+			}
+		}
+	},
+	
+	// This probably shouldn't belong to the Dealer object, but where else should I put it?
+	addOptionToSelectElement : function(elmOption, elmSelect)
+	{
+		// Stick it in the combobox so that the alphabetical order of the options is preserved
+		for (var i=0, j=elmSelect.options.length; i < j; i++)
+		{
+			if (elmOption.text < elmSelect.options[i].text)
+			{
+				elmSelect.insertBefore(elmOption, elmSelect.options[i]);
+				return;
+			}
+		}
+		
+		// If it has gotten this far then add the element to the end of the list of options
+		elmSelect.appendChild(elmOption);
+	},
+	
+	// This should also not be here
+	unselectAllInSelectElement : function(elmSelect)
+	{
+		for (var i=0, j=elmSelect.options.length; i < j; i++)
+		{
+			elmSelect.options[i].selected = false;
+		}
+
+	},
+	
+	ratePlanButtonAddOnClick : function()
+	{
+		var elmOption;
+		// Unselect all selected items in the selectedRatePlans listbox
+		// This can be done with just this.controls.selectedRatePlans.selectedIndes = -1, but I think that will scroll the listbox to the begining
+		// and I don't want it to do that
+		this.unselectAllInSelectElement(this.controls.selectedRatePlans);
+		
+		// Move each selected item in the selectedRatePlans listbox to the availableRatePlans one
+		for (i=0; i < this.controls.availableRatePlans.options.length;)
+		{
+			if (this.controls.availableRatePlans.options[i].selected)
+			{
+				// This option is selected.  Move it
+				elmOption = this.controls.availableRatePlans.options[i];
+				this.controls.availableRatePlans.removeChild(elmOption);
+				this.addOptionToSelectElement(elmOption, this.controls.selectedRatePlans);
+			}
+			else
+			{
+				i++;
+			}
+		}
+	},
+	
+	ratePlanButtonRemoveOnClick : function()
+	{
+		var elmOption;
+		// Unselect all selected items in the selectedRatePlans listbox
+		// This can be done with just this.controls.selectedRatePlans.selectedIndes = -1, but I think that will scroll the listbox to the begining
+		// and I don't want it to do that
+		this.unselectAllInSelectElement(this.controls.availableRatePlans);
+		
+		// Move each selected item in the selectedRatePlans listbox to the availableRatePlans one
+		for (i=0; i < this.controls.selectedRatePlans.options.length;)
+		{
+			if (this.controls.selectedRatePlans.options[i].selected)
+			{
+				// This option is selected.  Move it
+				elmOption = this.controls.selectedRatePlans.options[i];
+				this.controls.selectedRatePlans.removeChild(elmOption);
+				this.addOptionToSelectElement(elmOption, this.controls.availableRatePlans);
+			}
+			else
+			{
+				i++;
+			}
+		}
 	},
 	
 	// Copies physical address details to the postal address details controls
@@ -256,7 +532,6 @@ var Dealer = {
 		objDealer.postalCountryId		= (this.controls.postalCountryId.value != 0)? parseInt(this.controls.postalCountryId.value) : null;
 		objDealer.postalStateId			= (this.controls.postalStateId.value != 0)? parseInt(this.controls.postalStateId.value) : null;
 		
-		
 		// Format the Termination Date
 		if (this.controls.terminationDate.value != '')
 		{
@@ -268,6 +543,33 @@ var Dealer = {
 			objDealer.terminationDate = null;
 		}
 		
+		// Work out which SaleTypes are selected
+		objDealer.saleTypes = new Array();
+		for (var i=0, j=this.controls.saleTypes.options.length; i < j; i++)
+		{
+			if (this.controls.saleTypes.options[i].selected)
+			{
+				objDealer.saleTypes.push(parseInt(this.controls.saleTypes.options[i].value));
+			}
+		}
+
+		// Work out which CustomerGroups are selected
+		objDealer.customerGroups = new Array();
+		for (var i=0, j=this.controls.customerGroups.options.length; i < j; i++)
+		{
+			if (this.controls.customerGroups.options[i].selected)
+			{
+				objDealer.customerGroups.push(parseInt(this.controls.customerGroups.options[i].value));
+			}
+		}
+
+		// Work out which RatePlans are selected
+		objDealer.ratePlans = new Array();
+		for (var i=0, j=this.controls.selectedRatePlans.options.length; i < j; i++)
+		{
+			objDealer.ratePlans.push(parseInt(this.controls.selectedRatePlans.options[i].value));
+		}
+
 		jsonFunc = jQuery.json.jsonFunction(this.saveDealerDetailsReturnHandler.bind(this), null, "Dealer", "saveDealerDetails");
 		Vixen.Popup.ShowPageLoadingSplash("Saving", null, null, null, 100);
 		jsonFunc(objDealer);
@@ -278,12 +580,15 @@ var Dealer = {
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 
-		if (response.Success)
+		if (response.Success && response.Success == true)
 		{
 			$Alert("The dealer was successfully saved");
 			
 			// Update dealer object
 			this.objDealer = response.Dealer;
+			
+			// Flag this page as needing a refresh
+			this.bolPageNeedsRefresh = true;
 		}
 		else
 		{

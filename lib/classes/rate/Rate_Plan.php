@@ -1,4 +1,10 @@
 <?php
+
+//TODO! This class uses the exact column names as the property member variables, instead of tidied names, 
+// which means you have to use $objRatePlan->ContractTerm for the ContractTerm of the record,
+// and $objRatePlan->customer_group for the customer group of the record
+
+
 //----------------------------------------------------------------------------//
 // Rate_Plan
 //----------------------------------------------------------------------------//
@@ -116,6 +122,29 @@ class Rate_Plan
 			}
 		}
 	}
+	
+	
+	// Returns all RatePlan objects in an array where the id of the RatePlan is the key to the array
+	// This array is sorted by RatePlan.Name
+	public static function getAll() 
+	{
+		$selRatePlan = new StatementSelect("RatePlan", "*", "", "Name ASC");
+		
+		if ($selRatePlan->Execute() === FALSE)
+		{
+			throw new Exception("Failed to retrieve all RatePlans - ". $selRatePlan->Error());
+		}
+		
+		$arrRatePlans = array();
+		$arrRecordSet = $selRatePlan->FetchAll();
+		foreach ($arrRecordSet as $arrRecord)
+		{
+			$objRatePlan = new self($arrRecord);
+			$arrRatePlans[$objRatePlan->Id] = $objRatePlan;
+		}
+		return $arrRatePlans;
+	}
+
 	
 	//------------------------------------------------------------------------//
 	// _preparedStatement

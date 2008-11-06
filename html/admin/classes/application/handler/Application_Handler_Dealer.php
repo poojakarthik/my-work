@@ -4,14 +4,14 @@ class Application_Handler_Dealer extends Application_Handler
 {
 	const MAX_RECORDS_PER_PAGE = 24;
 	
-	// Handle a request for the home page of the ticketing system
+	// Handle a request for the home page of the Dealer system
 	public function System($subPath)
 	{
 		return $this->ListDealers($subPath);
 	}
 
 	// Handle a request for the home page of the ticketing system
-	//TODO! Convert this to ajax so I can reload it in the background
+	//TODO! Convert this to ajax so I can reload it in the background without disturbing popups
 	public function ListDealers($subPath)
 	{
 		// Check user permissions

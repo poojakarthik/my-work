@@ -8,6 +8,10 @@ class Dealer
 	// The key to this array will be the tidy names as defined by the getColumns function
 	private	$_arrProperties	= array();
 
+	private $_arrCustomerGroupIds	= NULL;
+	private $_arrRatePlanIds		= NULL;
+	private $_arrSaleTypeIds		= NULL;
+
 	private $_bolSaved = NULL;
 	
 	private static $_arrPaginationDetails = array(	"TotalRecordCount"	=> NULL,
@@ -19,13 +23,14 @@ class Dealer
 													"LastOffset"		=> NULL
 												);
 
+
 	// Tidy names must be used for the keys of $arrProperties
 	public function __construct($arrProperties=array())
 	{
-		$arrTidyNames = array_keys(self::getColumns());
-		foreach ($arrTidyNames as $strTidyName)
+		$this->_arrProperties = self::getColumns();
+		foreach ($this->_arrProperties as $strTidyName=>$mixValue)
 		{
-			$this->_arrProperties[$strTidyName] = (array_key_exists($strTidyName, $arrProperties))? $arrProperties[$strTidyName] : NULL;
+			$this->{$strTidyName} = (array_key_exists($strTidyName, $arrProperties))? $arrProperties[$strTidyName] : NULL;
 		}
 	}
 	
@@ -60,7 +65,7 @@ class Dealer
 		{
 			if (($objTitle = Contact_Title::getForId($this->titleId)) !== NULL)
 			{
-				$strName = $objTitle->name . $strName;
+				$strName = $objTitle->name . " ". $strName;
 			}
 		}
 		return $strName;
@@ -100,16 +105,15 @@ class Dealer
 		
 		$strQuery = "SELECT $strCalcFoundRows $strColumns FROM dealer $strWhere $strOrderBy $strLimit;";
 
-		$objDB = Data_Source::get();
-		
-		$mixResult = $objDB->queryAll($strQuery, self::getColumnDataTypes(), MDB2_FETCHMODE_ASSOC);
-		if (PEAR::isError($mixResult))
+		$qryQuery = new Query();
+		$objRecordSet = $qryQuery->Execute($strQuery);
+		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve dealer records using query: '$strQuery' - ". $mixResult->getMessage());
+			throw new Exception("Failed to retrieve dealer records using query: '$strQuery' - ". $qryQuery->Error());
 		}
 		
 		$arrDealers = array();
-		foreach ($mixResult as $arrRecord)
+		while ($arrRecord = $objRecordSet->fetch_assoc())
 		{
 			$arrDealers[$arrRecord['id']] = new self($arrRecord);
 		}
@@ -129,12 +133,15 @@ class Dealer
 		}
 		else
 		{
-			$mixResult = $objDB->query("SELECT FOUND_ROWS();", array("integer"));
-			if (PEAR::isError($mixResult))
+			$objRecordSet = $qryQuery->Execute("SELECT FOUND_ROWS() AS RowCount;");
+			if (!$objRecordSet)
 			{
-				throw new Exception("Failed to retrieve pagination details for query: '$strQuery' - ". $mixResult->getMessage());
+				throw new Exception("Failed to retrieve pagination details for query: '$strQuery' - ". $qryQuery->Error());
 			}
-			$intTotalRecordCount	= $mixResult->fetchOne();
+			
+			$arrRecord = $objRecordSet->fetch_assoc();
+			
+			$intTotalRecordCount	= $arrRecord['RowCount'];
 			$intPageRecordCount		= count($arrDealers);
 			$intCurrentOffset		= $intOffset;
 			$intFirstOffset			= 0;
@@ -174,7 +181,7 @@ class Dealer
 		$arrOrderByParts	= array();
 		$arrColumns			= self::getColumns();
 		$arrColumnTypes		= self::getColumnDataTypes();
-		$objDB				= Data_Source::get();
+		$objDB				= new Query();
 
 		// Build WHERE clause
 		if (is_array($arrFilter))
@@ -195,19 +202,44 @@ class Dealer
 						{
 							$arrWhereParts[] = $arrColumns[$strColumn] ." IS NULL";
 						}
-						else if (is_array($arrStyle['Value']))
+						elseif (is_array($arrStyle['Value']))
 						{
 							$arrValues = array();
 							foreach ($arrStyle['Value'] as $mixValue)
 							{
-								$arrValues[] = $objDB->quote($mixValue, $strColumnType);
+								// prepare the values for being used in sql code
+								switch ($strColumnType)
+								{
+									case 'integer':
+									case 'boolean':
+										$arrValues[] = intval($mixValue);
+										break;
+									case 'text':
+										$arrValues[] = "'". $objDB->EscapeString($mixValue) ."'";
+										break;
+									default:
+										throw new exception(__CLASS__ ."::". __METHOD__ ." - don't know how to handle data type, '$strColumnType'");
+								}
 							}
 							
 							$arrWhereParts[] = $arrColumns[$strColumn] ." IN (". implode(", ", $arrValues) .")";
 						}
 						else
 						{
-							$arrWhereParts[] = $arrColumns[$strColumn] ." = ". $objDB->quote($arrStyle['Value'], $strColumnType);
+							// prepare the values for being used in sql code
+							switch ($strColumnType)
+							{
+								case 'integer':
+								case 'boolean':
+									$mixValue = intval($arrStyle['Value']);
+									break;
+								case 'text':
+									$mixValue = "'". $objDB->EscapeString($arrStyle['Value']) ."'";
+									break;
+								default:
+									throw new exception(__CLASS__ ."::". __METHOD__ ." - don't know how to handle data type, '$strColumnType'");
+							}
+							$arrWhereParts[] = $arrColumns[$strColumn] ." = $mixValue";
 						}
 				}
 			}
@@ -286,16 +318,16 @@ class Dealer
 	{
 		$strQuery = "SELECT Id FROM Employee WHERE Archived = 0 AND Id NOT IN (SELECT DISTINCT employee_id FROM dealer WHERE employee_id IS NOT NULL) ORDER BY CONCAT(FirstName, ' ', LastName) ASC;";
 		
-		$objDB = Data_Source::get();
+		$qryQuery = new Query();
 		
-		$mixResult = $objDB->queryAll($strQuery, NULL, MDB2_FETCHMODE_ASSOC);
-		if (PEAR::isError($mixResult))
+		$objRecordSet = $qryQuery->Execute($strQuery);
+		if (!$objRecordSet)
 		{
-			throw new Exception("Failed to retrieve employees who are eligible to become new dealers, using query: '$strQuery' - ". $mixResult->getMessage());
+			throw new Exception("Failed to retrieve employees who are eligible to become new dealers, using query: '$strQuery' - " . $qryQuery->Error());
 		}
 		
 		$arrEmployeeIds = array();
-		foreach ($mixResult as $arrRecord)
+		while ($arrRecord = $objRecordSet->fetch_assoc())
 		{
 			$arrEmployeeIds[] = intval($arrRecord['Id']);
 		}
@@ -303,12 +335,102 @@ class Dealer
 		return $arrEmployeeIds;
 	}
 	
+	// Sets the customer groups that this dealer can make sales on behalf of
+	// Note that this does not save this information to the database until Dealer->save() is called
+	// $arrCustomerGroupIds is an array of customer group ids
+	public function setCustomerGroups($arrCustomerGroupIds)
+	{
+		// Set the keys to the customerGroupIds as well, if they aren't already
+		$arrCustomerGroupIds		= array_unique($arrCustomerGroupIds);
+		$this->_arrCustomerGroupIds	= (count($arrCustomerGroupIds) > 0)? array_combine($arrCustomerGroupIds, $arrCustomerGroupIds) : Array();
+		$this->_bolSaved			= FALSE;
+	}
+	
+	// Returns array of customer group ids for the customer groups that this dealer can sell on behalf of
+	public function getCustomerGroups()
+	{
+		if ($this->_arrCustomerGroupIds === NULL)
+		{
+			// The customer groups have not been retrieved from the database yet
+			if ($this->id !== NULL)
+			{
+				$this->_arrCustomerGroupIds = Dealer_Customer_Group::getCustomerGroupsForDealer($this->id);
+			}
+			else
+			{
+				// An id hasn't been declared for this dealer yet
+				$this->_arrCustomerGroupIds = array();
+			}
+		}
+		return $this->_arrCustomerGroupIds;
+	}
+	
+	// Sets the RatePlans that this dealer can sell
+	// Note that this does not save this information to the database until Dealer->save() is called
+	// $arrRatePlanIds is an array of RatePlan ids
+	public function setRatePlans($arrRatePlanIds)
+	{
+		// Set the keys to the ratePlanIds as well, if they aren't already
+		$arrRatePlanIds			= array_unique($arrRatePlanIds);
+		$this->_arrRatePlanIds	= (count($arrRatePlanIds) > 0)? array_combine($arrRatePlanIds, $arrRatePlanIds) : Array();
+		$this->_bolSaved		= FALSE;
+	}
+	
+	// Returns array of RatePlan ids for the RatePlans that this dealer can sell
+	public function getRatePlans()
+	{
+		if ($this->_arrRatePlanIds === NULL)
+		{
+			// The RatePlans have not been retrieved from the database yet
+			if ($this->id !== NULL)
+			{
+				$this->_arrRatePlanIds = Dealer_Rate_Plan::getRatePlansForDealer($this->id);
+			}
+			else
+			{
+				// An id hasn't been declared for this dealer yet
+				$this->_arrRatePlanIds = array();
+			}
+		}
+		return $this->_arrRatePlanIds;
+	}
+	
+	// Sets the SaleTypes that this dealer can sell
+	// Note that this does not save this information to the database until Dealer->save() is called
+	// $arrSaleTypeIds is an array of sale_type ids
+	public function setSaleTypes($arrSaleTypeIds)
+	{
+		// Set the keys to the saleTypeIds as well, if they aren't already
+		$arrSaleTypeIds			= array_unique($arrSaleTypeIds);
+		$this->_arrSaleTypeIds	= (count($arrSaleTypeIds) > 0)? array_combine($arrSaleTypeIds, $arrSaleTypeIds) : Array();
+		$this->_bolSaved		= FALSE;
+	}
+	
+	// Returns array of sale_type ids for the SaleTypes that this dealer can do
+	public function getSaleTypes()
+	{
+		if ($this->_arrSaleTypeIds === NULL)
+		{
+			// The sale Types have not been retrieved from the database yet
+			if ($this->id !== NULL)
+			{
+				$this->_arrSaleTypeIds = Dealer_Sale_Type::getSaleTypesForDealer($this->id);
+			}
+			else
+			{
+				// An id hasn't been declared for this dealer yet
+				$this->_arrSaleTypeIds = array();
+			}
+		}
+		return $this->_arrSaleTypeIds;
+	}
+	
 	public function save()
 	{
 		if ($this->_bolSaved)
 		{
 			// Nothing to save
-			return TRUE;
+			return;
 		}
 		
 		// Make sure the dealer's upLineManager does not cause recursion in the management tree
@@ -319,7 +441,6 @@ class Dealer
 		
 		$arrColumns		= self::getColumns();
 		$arrColumnTypes	= self::getColumnDataTypes();
-		$objDb			= Data_Source::get();
 		
 		// Do we have an Id for this instance?
 		if ($this->id !== NULL)
@@ -327,58 +448,88 @@ class Dealer
 			// Update
 			
 			// Build the SET clause for the UPDATE SQL statement
-			$arrSetClauseParts = array();
-			foreach ($this->_arrProperties as $strName=>$mixValue)
+			$arrUpdate = array();
+			foreach ($arrColumns as $strTidyName=>$strName)
 			{
-				if ($strName == 'id')
-				{
-					continue;
-				}
-				$arrSetClauseParts[] = "{$arrColumns[$strName]} = ". $objDb->quote($mixValue, $arrColumnTypes[$strName]);
+				$arrUpdate[$strName] = $this->{$strTidyName};
 			}
-			$strSetClause = implode(", ", $arrSetClauseParts);
+
+			$updDealer = new StatementUpdateById("dealer", $arrUpdate);
 			
-			// Make sure the id is an int
-			$this->id = intval($this->id);
-			
-			$strUpdate = "UPDATE dealer SET $strSetClause WHERE id = {$this->id};";
-			
-			$mixResult = $objDb->query($strUpdate);
-			if (PEAR::isError($mixResult))
+			if ($updDealer->Execute($arrUpdate) === FALSE)
 			{
-				throw new Exception("Failed to update dealer record with id: {$this->id}, SQL: '$strUpdate' - ". $mixResult->getMessage());
+				throw new Exception("Failed to update dealer record with id: {$this->id} - ". $updDealer->Error());
 			}
 		} 
 		else
 		{
 			// Insert
-			$arrValuesClauseParts = array();
-			foreach ($this->_arrProperties as $strName=>$mixValue)
-			{
-				$arrValuesClauseParts[] = $objDb->quote($mixValue, $arrColumnTypes[$strName]);
-			}
-			$strValuesClause	= implode(", ", $arrValuesClauseParts);
-			$strColumns			= implode(", ", $arrColumns);
 			
-			$strInsert = "INSERT INTO dealer ($strColumns) VALUES ($strValuesClause);";
-			
-			$mixResult = $objDb->query($strInsert);
-			if (PEAR::isError($mixResult))
+			// Build the VALUES clause for the INSERT SQL statement
+			$arrInsert = array();
+			foreach ($arrColumns as $strTidyName=>$strName)
 			{
-				throw new Exception("Failed to insert new dealer record using SQL: '$strInsert' - ". $mixResult->getMessage());
+				$arrInsert[$strName] = $this->{$strTidyName};
 			}
 			
-			// Store the new value for the id of the dealer
-			$mixResult = $objDb->lastInsertID("database_version", "id");
-			if (PEAR::isError($mixResult))
+			$insDealer = new StatementInsert("dealer", $arrInsert);
+
+			$mixResult = $insDealer->Execute($arrInsert);
+			if ($mixResult === FALSE)
 			{
-				throw new Exception("Failed to retrieve the id of the newly inserted dealer record - ". $mixResult->getMessage());
+				throw new Exception("Failed to create new dealer record - ". $insDealer->Error());
 			}
+			
 			$this->id = $mixResult;
 		}
 		
+		// Save the current state of the dealer_rate_plan, dealer_customer_group and dealer_sale_type associations, if they have been set and differ from those already stored
+		if (is_array($this->_arrCustomerGroupIds))
+		{
+			// Check if there are differences between the object and the database
+			$arrCurrentCustomerGroupIds	= Dealer_Customer_Group::getCustomerGroupsForDealer($this->id);
+			
+			$arrThoseNotInTheDatabase	= array_diff($this->_arrCustomerGroupIds, $arrCurrentCustomerGroupIds);
+			$arrThoseNotInTheObject		= array_diff($arrCurrentCustomerGroupIds, $this->_arrCustomerGroupIds);
+
+			if (count($arrThoseNotInTheDatabase) > 0 || count($arrThoseNotInTheObject) > 0)
+			{
+				// There are discrepancies, which means new relationships have been defined, and should be saved to the database
+				Dealer_Customer_Group::setCustomerGroupsForDealer($this->id, $this->_arrCustomerGroupIds);
+			}
+		}
+
+		if (is_array($this->_arrRatePlanIds))
+		{
+			// Check if there are differences between the object and the database
+			$arrCurrentRatePlanIds	= Dealer_Rate_Plan::getRatePlansForDealer($this->id);
+			
+			$arrThoseNotInTheDatabase	= array_diff($this->_arrRatePlanIds, $arrCurrentRatePlanIds);
+			$arrThoseNotInTheObject		= array_diff($arrCurrentRatePlanIds, $this->_arrRatePlanIds);
+			
+			if (count($arrThoseNotInTheDatabase) > 0 || count($arrThoseNotInTheObject) > 0)
+			{
+				// There are discrepancies, which means new relationships have been defined, and should be saved to the database
+				Dealer_Rate_Plan::setRatePlansForDealer($this->id, $this->_arrRatePlanIds);
+			}
+		}
+
+		if (is_array($this->_arrSaleTypeIds))
+		{
+			// Check if there are differences between the object and the database
+			$arrCurrentSaleTypeIds	= Dealer_Sale_Type::getSaleTypesForDealer($this->id);
+			
+			$arrThoseNotInTheDatabase	= array_diff($this->_arrSaleTypeIds, $arrCurrentSaleTypeIds);
+			$arrThoseNotInTheObject		= array_diff($arrCurrentSaleTypeIds, $this->_arrSaleTypeIds);
+			
+			if (count($arrThoseNotInTheDatabase) > 0 || count($arrThoseNotInTheObject) > 0)
+			{
+				// There are discrepancies, which means new relationships have been defined, and should be saved to the database
+				Dealer_Sale_Type::setSaleTypesForDealer($this->id, $this->_arrSaleTypeIds);
+			}
+		}
+		
 		$this->_bolSaved = TRUE;
-		return TRUE;
 	}
 	
 	// The keys are the tidy names and the values are the actual table column names
@@ -434,14 +585,14 @@ class Dealer
 			"upLineId"				=> "integer",
 			"username"				=> "text",
 			"password"				=> "text",
-			"canVerify"				=> "integer",
+			"canVerify"				=> "boolean",
 			"firstName"				=> "text",
 			"lastName"				=> "text",
 			"titleId"				=> "integer",
 			"businessName"			=> "text",
 			"tradingName"			=> "text",
 			"abn"					=> "text",
-			"abnRegistered"			=> "integer",
+			"abnRegistered"			=> "boolean",
 			"addressLine1"			=> "text",
 			"addressLine2"			=> "text",
 			"suburb"				=> "text",
@@ -463,7 +614,7 @@ class Dealer
 			"bankAccountBsb"		=> "text",
 			"bankAccountNumber"		=> "text",
 			"bankAccountName"		=> "text",
-			"gstRegistered"			=> "integer",
+			"gstRegistered"			=> "boolean",
 			"terminationDate"		=> "text",
 			"dealerStatusId"		=> "integer",
 			"createdOn"				=> "text",
@@ -487,6 +638,7 @@ class Dealer
 	// This is only used to set attributes relating to the dealer table
 	// It will throw an exception if it doesn't know of the property to set
 	// $strName should be the tidy name of the property
+	// Note the this properly type casts the value to the correct data type for the property 
 	public function __set($strName, $mixValue)
 	{
 		if (array_key_exists($strName, $this->_arrProperties))
@@ -496,6 +648,24 @@ class Dealer
 			{
 				// This property is being updated
 				$this->_bolSaved = FALSE;
+			}
+			$arrColumnDataTypes = self::getColumnDataTypes();
+			
+			// Type cast the value to the properties correct type
+			if ($mixValue !== NULL)
+			{
+				switch ($arrColumnDataTypes[$strName])
+				{
+					case 'integer':
+						$mixValue = intval($mixValue);
+						break;
+					case 'boolean':
+						$mixValue = (intval($mixValue) == 1)? TRUE : FALSE;
+						break;
+					case 'text':
+					default:
+						// Assume it's a string (don't have to do anything)
+				}
 			}
 			
 			// Set the property
@@ -524,7 +694,11 @@ class Dealer
 	 */
 	public function toArray()
 	{
-		return $this->_arrProperties;
+		$arrDetails = $this->_arrProperties;
+		$arrDetails['customerGroupIds']	= $this->getCustomerGroups();
+		$arrDetails['ratePlanIds']		= $this->getRatePlans();
+		$arrDetails['saleTypeIds']		= $this->getSaleTypes();
+		return $arrDetails;
 	}
 	
 	// Returns a Dealer object representing the passed details (if the details are valid)
@@ -556,7 +730,7 @@ class Dealer
 			// Copy across values that should not be changed
 			$arrDetails['createdOn'] = $objOldDealer->createdOn;
 			$arrDetails['employeeId'] = $objOldDealer->employeeId;
-			
+
 			// Copy over the password, if it wasn't changed
 			if ($arrDetails['password'] === NULL)
 			{
@@ -592,13 +766,13 @@ class Dealer
 			else
 			{
 				// Copy across the details that should never differ
-				$arrDetails['firstName']	= $objEmployee->firstName;
-				$arrDetails['lastName']		= $objEmployee->lastName;
-				$arrDetails['username']		= $objEmployee->username;
-				$arrDetails['password']		= $objEmployee->password;
-				$arrDetails['phone']		= $objEmployee->phone;
-				$arrDetails['mobile']		= $objEmployee->mobile;
-				$arrDetails['email']		= $objEmployee->email;
+				$arrDetails['firstName']	= (($strFirstName = trim($objEmployee->firstName)) == '')? NULL : $strFirstName;
+				$arrDetails['lastName']		= (($strLastName = trim($objEmployee->lastName)) == '')? NULL : $strLastName;
+				$arrDetails['username']		= (($strUsername = trim($objEmployee->username)) == '')? NULL : $strUsername;
+				$arrDetails['password']		= (($strPassword = trim($objEmployee->password)) == '')? NULL : $strPassword;
+				$arrDetails['phone']		= (($strPhone = trim($objEmployee->phone)) == '')? NULL : $strPhone;
+				$arrDetails['mobile']		= (($strMobile = trim($objEmployee->mobile)) == '')? NULL : $strMobile;
+				$arrDetails['email']		= (($strEmail = trim($objEmployee->email)) == '')? NULL : $strEmail;
 			}
 		}
 
@@ -645,7 +819,7 @@ class Dealer
 		{
 			$arrDetails['abnRegistered'] = NULL;
 		}
-		
+
 		if (count($arrProblems) > 0)
 		{
 			// Problems were encountered
@@ -654,7 +828,21 @@ class Dealer
 		else
 		{
 			// No problems were encountered
-			return new self($arrDetails);
+			$objDealer = new self($arrDetails);
+			if (array_key_exists("saleTypes", $arrDetails) && is_array($arrDetails['saleTypes']))
+			{
+				$objDealer->setSaleTypes($arrDetails['saleTypes']);
+			}
+			if (array_key_exists("customerGroups", $arrDetails) && is_array($arrDetails['customerGroups']))
+			{
+				$objDealer->setCustomerGroups($arrDetails['customerGroups']);
+			}
+			if (array_key_exists("ratePlans", $arrDetails) && is_array($arrDetails['ratePlans']))
+			{
+				$objDealer->setRatePlans($arrDetails['ratePlans']);
+			}
+			
+			return $objDealer;
 		}
 	}
 }

@@ -108,7 +108,7 @@ class State
 	public static function getForId($intId)
 	{
 		$arrObjects = self::getFor("id = $intId");
-		return (count($arrObjects) == 1)? $arrObjects[0] : NULL;
+		return (count($arrObjects) == 1)? $arrObjects[$intId] : NULL;
 	}
 	
 	public static function getForCountry($intCountryId, $strOrderBy="name ASC")

@@ -6,29 +6,30 @@
 // classes
 
 //----------------------------------------------------------------------------//
-// Dealer_Status
+// Sale_Type
 //----------------------------------------------------------------------------//
 /**
- * Dealer_Status
+ * Sale_Type
  *
- * Models a dealer status
+ * Models a sale type
  *
- * Models a dealer status
+ * Models a sale type
  *
- * @class	Dealer_Status
+ * @class	Sale_Type
  */
-class Dealer_Status
+class Sale_Type
 {
-	// Constants (these should reflect the state of the dealer_status table)
-	const ACTIVE	= 1;
-	const INACTIVE	= 2;
+	// Constants (these should reflect the state of the Sale_Type table)
+	const NEW_CUSTOMER		= 1;
+	const EXISTING_CUSTOMER	= 2;
+	const WIN_BACK			= 3;
 	
 	private $id				= NULL;
 	private $name			= NULL;
 	private $description	= NULL;
 	
-	private static $_arrCache	= NULL;
-	private static $_arrConstMap = NULL;
+	private static $_arrCache		= NULL;
+	private static $_arrConstMap	= NULL;
 
 	//------------------------------------------------------------------------//
 	// __construct
@@ -58,13 +59,13 @@ class Dealer_Status
 	/**
 	 * getAll()
 	 *
-	 * Returns array of Dealer_Status objects representing each dealer status in Flex
+	 * Returns array of Sale_Type objects representing each Sale Type in Flex
 	 * 
-	 * Returns array of Dealer_Status objects representing each dealer status in Flex
-	 * This is an associative array with the key being the id of dealer status record.
-	 * The array is ordered by dealer status name
+	 * Returns array of Sale_Type objects representing each Sale Type in Flex
+	 * This is an associative array with the key being the id of sale_type record.
+	 * The array is ordered by sale_type.name
 	 *
-	 * @return		array of Dealer_Status objects	
+	 * @return		array of Sale_Type objects	
 	 * @method
 	 */
 	public static function getAll($bolForceRefresh=FALSE)
@@ -75,12 +76,12 @@ class Dealer_Status
 			
 			$strColumns = self::getColumns(TRUE);
 			
-			$strQuery = "SELECT $strColumns FROM dealer_status ORDER BY name ASC";
+			$strQuery = "SELECT $strColumns FROM sale_type ORDER BY name ASC";
 			
-			$mixResult = $objDB->queryAll($strQuery, NULL, MDB2_FETCHMODE_ASSOC);
+			$mixResult = $objDB->queryAll($strQuery, self::getColumnDataTypes(), MDB2_FETCHMODE_ASSOC);
 			if (PEAR::isError($mixResult))
 			{
-				throw new Exception("Failed to retrieve dealer status records. ". $mixResult->getMessage());
+				throw new Exception("Failed to retrieve sale type records. ". $mixResult->getMessage());
 			}
 			
 			self::$_arrCache	= array();
@@ -102,13 +103,13 @@ class Dealer_Status
 	/**
 	 * getForId()
 	 *
-	 * Returns the Dealer_Status object with the id specified
+	 * Returns the Sale_Type object with the id specified
 	 * 
-	 * Returns the Dealer_Status object with the id specified
+	 * Returns the Sale_Type object with the id specified
 	 *
-	 * @param	int 				$intId			id of the dealer_status record to return		
-	 * @return	mixed 				Dealer_Status	: if $intId is a valid dealer_status id
-	 * 								NULL			: if $intId is not a valid dealer_status id	
+	 * @param	int 				$intId		id of the dealer_status record to return		
+	 * @return	mixed 				Sale_Type	: if $intId is a valid sale_type id
+	 * 								NULL		: if $intId is not a valid sale_type id	
 	 * @method
 	 */
 	public static function getForId($intId)
@@ -176,6 +177,17 @@ class Dealer_Status
 		}
 		
 		return $arrColumns;
+	}
+
+
+	// The keys are the tidy names and the values are the actual table column names
+	protected static function getColumnDataTypes()
+	{
+		return array(
+			"id"					=> "integer",
+			"name"					=> "text",
+			"description"			=> "text"
+		);
 	}
 
 	//------------------------------------------------------------------------//

@@ -9,10 +9,12 @@ a:hover {
 	text-decoration: underline;
 }
 
+img[onclick],
 a[onclick]
 {
 	cursor : pointer;
 }
+
 
 div.message {
 	background: #CFFFCD;
