@@ -547,14 +547,27 @@ class Invoice_Run
 		
 		// Retrieve the Bill Date of the last Invoice Run...
 		Cli_App_Billing::debug(" * Getting Last Invoice Date...", FALSE);
+		$this->strLastInvoiceDatetime	= Invoice_Run::getLastInvoiceDate($this->customer_group_id, $this->BillingDate);
+		$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
+	}
+	
+	/**
+	 * getLastInvoiceDate()
+	 *
+	 * Retrieves (or calculates) the Last Invoice Date for a Customer Group 
+	 * 
+	 * @return	string									Date of the last Invoice Run
+	 *
+	 * @method
+	 */
+	public static function getLastInvoiceDate($intCustomerGroup, $strEffectiveDate)
+	{
 		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRunByCustomerGroup');
-		if ($selInvoiceRun->Execute(Array('customer_group_id' => $this->customer_group_id)))
+		if ($selInvoiceRun->Execute(Array('customer_group_id' => $intCustomerGroup)))
 		{
 			// We have an old InvoiceRun
 			$arrLastInvoiceRun	= $selInvoiceRun->Fetch();
-			$this->intLastInvoiceDatetime	= strtotime($arrLastInvoiceRun['BillingDate']);
-			$this->strLastInvoiceDatetime	= $arrLastInvoiceRun['BillingDate'] . ' 00:00:00';
-			Cli_App_Billing::debug(date('Y-m-d H:i:s', $this->intLastInvoiceDatetime)." (retrieved)");
+			return $arrLastInvoiceRun['BillingDate'] . ' 00:00:00';
 		}
 		elseif ($selInvoiceRun->Error())
 		{
@@ -564,10 +577,43 @@ class Invoice_Run
 		{
 			// No InvoiceRuns, so lets calculate when it should have been
 			// For now, we will (and can probably always) assume that the Bill was supposed to be run exactly 1 month ago
-			$this->intLastInvoiceDatetime	= strtotime("-1 month", $intInvoiceDatetime);
-			$this->strLastInvoiceDatetime	= date("Y-m-d H:i:s", strtotime("-1 month", $intInvoiceDatetime));
-			Cli_App_Billing::debug(date('Y-m-d H:i:s', $this->intLastInvoiceDatetime)." (calculated)");
+			return date("Y-m-d H:i:s", strtotime("-1 month", strtotime($strEffectiveDate)));
 		}
+	}
+	
+	/**
+	 * predictNextInvoiceDate()
+	 *
+	 * Predicts the next Invoice Date for a Customer Group 
+	 * 
+	 * @return	string									Date of the next Invoice Run
+	 *
+	 * @method
+	 */
+	public static function predictNextInvoiceDate($intCustomerGroup, $strEffectiveDate)
+	{
+		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
+		if ($selPaymentTerms->Execute(Array('customer_group_id' => $this->customer_group_id)))
+		{
+			$arrPaymentTerms	= $selPaymentTerms->Fetch();
+		}
+		elseif ($selPaymentTerms->Error())
+		{
+			throw new Exception("DB ERROR: ".$selPaymentTerms->Error());
+		}
+		else
+		{
+			throw new Exception("No Payment Terms specified for Customer Group {$intCustomerGroup}");
+		}
+		
+		$strDay				= str_pad($arrPaymentTerms['invoice_day'], 2, '0', STR_PAD_LEFT);
+		$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00", strtotime($strEffectiveDate)));
+		if ((int)date("d") > $arrPaymentTerms['invoice_day'])
+		{
+			// Billing Date is next Month
+			$intInvoiceDatetime	= strtotime("+1 month", $intInvoiceDatetime);
+		}
+		return date("Y-m-d H:i:s", $intInvoiceDatetime);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -701,6 +747,10 @@ class Invoice_Run
 				case 'selCheckTemporaryInvoiceRun':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "Id", "invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." AND invoice_run_status_id IN (".INVOICE_RUN_STATUS_TEMPORARY.", ".INVOICE_RUN_STATUS_GENERATING.") AND (customer_group_id <=> <CustomerGroup> OR <CustomerGroup> IS NULL)");
 					break;
+				case 'selPaymentTerms':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("payment_terms", "*", "customer_group_id = <customer_group_id>", "id DESC", 1);
+					break;
+				
 				
 				// INSERTS
 				case 'insSelf':

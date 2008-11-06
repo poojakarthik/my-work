@@ -202,14 +202,7 @@ class Cli_App_Billing extends Cli
 				Cli_App_Billing::debug("\tCustomer Group: ".GetConstantDescription($arrPaymentTerms['customer_group_id'], 'CustomerGroup'));
 
 				// Predict the next Billing Date
-				$strDay				= str_pad($arrPaymentTerms['invoice_day'], 2, '0', STR_PAD_LEFT);
-				$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00"));
-				if ((int)date("d") > $arrPaymentTerms['invoice_day'])
-				{
-					// Billing Date is next Month
-					$intInvoiceDatetime	= strtotime("+1 month", $intInvoiceDatetime);
-				}
-				$strInvoiceDate	= date("Y-m-d", $intInvoiceDatetime);
+				$strInvoiceDate	= Invoice_Run::predictNextInvoiceDate();
 				Cli_App_Billing::debug("\t\t * Predicted Billing Date\t: {$strInvoiceDate}");
 
 				// Are there any Invoice Runs Scheduled for today?
