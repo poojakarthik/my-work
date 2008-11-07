@@ -526,7 +526,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						
 						//------------------------ ACCOUNT -----------------------//
 						// Get sale_account Details for this Sale
-						$resSaleAccount	= $dsSalesPortal->query("SELECT sale_account.*, state_name " .
+						$resSaleAccount	= $dsSalesPortal->query("SELECT sale_account.*, state.name AS state_name " .
 																"FROM sale_account JOIN state ON state.id = sale_account.state_id  " .
 																"WHERE sale_id = {$arrSale['id']} " .
 																"LIMIT 1");
