@@ -86,7 +86,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 				$resVendors	= $dsSalesPortal->query("SELECT * FROM vendor WHERE id = {$objCustomerGroup->id}");
 				if (PEAR::isError($resVendors))
 				{
-					throw new Exception($resVendors->getError()." :: ".$resVendors->getUserInfo());
+					throw new Exception($resVendors->getMessage()." :: ".$resVendors->getUserInfo());
 				}
 				elseif (!($arrVendor = $resVendors->fetchRow(MDB2_FETCHMODE_ASSOC)))
 				{
@@ -94,7 +94,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					$resVendorInsert	= $dsSalesPortal->query("INSERT INTO vendor (id, name, description) VALUES ({$objCustomerGroup->id}, '{$objCustomerGroup->externalName}', '{$objCustomerGroup->externalName}');");
 					if (PEAR::isError($resVendorInsert))
 					{
-						throw new Exception($resVendorInsert->getError()." :: ".$resVendorInsert->getUserInfo());
+						throw new Exception($resVendorInsert->getMessage()." :: ".$resVendorInsert->getUserInfo());
 					}
 				}
 				else
@@ -103,7 +103,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					$resVendorUpdate	= $dsSalesPortal->query("UPDATE vendor SET id = {$objCustomerGroup->id}, name = '{$objCustomerGroup->externalName}', description = '{$objCustomerGroup->externalName}' WHERE id = {$objCustomerGroup->id};");
 					if (PEAR::isError($resVendorUpdate))
 					{
-						throw new Exception($resVendorUpdate->getError()." :: ".$resVendorUpdate->getUserInfo());
+						throw new Exception($resVendorUpdate->getMessage()." :: ".$resVendorUpdate->getUserInfo());
 					}
 				}
 			}
@@ -154,7 +154,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					$resProduct	= $dsSalesPortal->query("SELECT id FROM product WHERE reference = 'RatePlan.Id={$arrRatePlan['Id']}' LIMIT 1");
 					if (PEAR::isError($resProduct))
 					{
-						throw new Exception($resProduct->getError()." :: ".$resProduct->getUserInfo());
+						throw new Exception($resProduct->getMessage()." :: ".$resProduct->getUserInfo());
 					}
 					if ($resProduct->numRows())
 					{
@@ -165,7 +165,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$resProductUpdate	= $dsSalesPortal->query($strUpdateSQL);
 						if (PEAR::isError($resProductUpdate))
 						{
-							throw new Exception($resProductUpdate->getError()." :: ".$resProductUpdate->getUserInfo());
+							throw new Exception($resProductUpdate->getMessage()." :: ".$resProductUpdate->getUserInfo());
 						}
 					}
 					else
@@ -176,7 +176,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$resProductInsert	= $dsSalesPortal->query($strInsertSQL);
 						if (PEAR::isError($resProductInsert))
 						{
-							throw new Exception($resProductInsert->getError()." :: ".$resProductInsert->getUserInfo());
+							throw new Exception($resProductInsert->getMessage()." :: ".$resProductInsert->getUserInfo());
 						}
 					}
 				}
@@ -224,7 +224,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 				$resSPDealer	= $dsSalesPortal->query("SELECT id FROM dealer WHERE id = {$arrFlexDealer['id']} LIMIT 1");
 				if (PEAR::isError($resSPDealer))
 				{
-					throw new Exception($resSPDealer->getError()." :: ".$resSPDealer->getUserInfo());
+					throw new Exception($resSPDealer->getMessage()." :: ".$resSPDealer->getUserInfo());
 				}
 				if (!($arrSPDealer = $resSPDealer->fetchRow(MDB2_FETCHMODE_ASSOC)))
 				{
@@ -274,7 +274,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					$resDealerInsert	= $dsSalesPortal->query($strInsertSQL);
 					if (PEAR::isError($resDealerInsert))
 					{
-						throw new Exception($resDealerInsert->getError()." :: ".$resDealerInsert->getUserInfo());
+						throw new Exception($resDealerInsert->getMessage()." :: ".$resDealerInsert->getUserInfo());
 					}
 				}
 				else
@@ -323,7 +323,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					$resDealerUpdate	= $dsSalesPortal->query($strUpdateSQL);
 					if (PEAR::isError($resDealerUpdate))
 					{
-						throw new Exception($resDealerUpdate->getError()." :: ".$resDealerUpdate->getUserInfo());
+						throw new Exception($resDealerUpdate->getMessage()." :: ".$resDealerUpdate->getUserInfo());
 					}
 				}
 				//------------------------------------------------------------//
@@ -334,7 +334,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 			$resDealerProductTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_product");
 			if (PEAR::isError($resDealerProductTruncate))
 			{
-				throw new Exception($resDealerProductTruncate->getError()." :: ".$resDealerProductTruncate->getUserInfo());
+				throw new Exception($resDealerProductTruncate->getMessage()." :: ".$resDealerProductTruncate->getUserInfo());
 			}
 			
 			// Recreate the SP Table from Flex Data
@@ -350,7 +350,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																"({$arrDealerRatePlan['dealer_id']}, (SELECT id FROM product WHERE reference = '{$arrDealerRatePlan['rate_plan_id']}'))");
 				if (PEAR::isError($resDealerProductInsert))
 				{
-					throw new Exception($resDealerProductInsert->getError()." :: ".$resDealerProductInsert->getUserInfo());
+					throw new Exception($resDealerProductInsert->getMessage()." :: ".$resDealerProductInsert->getUserInfo());
 				}
 			}
 			//----------------------------------------------------------------//
@@ -360,7 +360,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 			$resDealerSaleTypeTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_sale_type");
 			if (PEAR::isError($resDealerSaleTypeTruncate))
 			{
-				throw new Exception($resDealerSaleTypeTruncate->getError()." :: ".$resDealerSaleTypeTruncate->getUserInfo());
+				throw new Exception($resDealerSaleTypeTruncate->getMessage()." :: ".$resDealerSaleTypeTruncate->getUserInfo());
 			}
 			
 			// Recreate the SP Table from Flex Data
@@ -376,7 +376,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																"({$arrDealerSaleType['dealer_id']}, {$arrDealerSaleType['sale_type_id']})");
 				if (PEAR::isError($resDealerSaleTypeInsert))
 				{
-					throw new Exception($resDealerSaleTypeInsert->getError()." :: ".$resDealerSaleTypeInsert->getUserInfo());
+					throw new Exception($resDealerSaleTypeInsert->getMessage()." :: ".$resDealerSaleTypeInsert->getUserInfo());
 				}
 			}
 			//----------------------------------------------------------------//
@@ -386,7 +386,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 			$resDealerVendorTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_vendor");
 			if (PEAR::isError($resDealerVendorTruncate))
 			{
-				throw new Exception($resDealerVendorTruncate->getError()." :: ".$resDealerVendorTruncate->getUserInfo());
+				throw new Exception($resDealerVendorTruncate->getMessage()." :: ".$resDealerVendorTruncate->getUserInfo());
 			}
 			
 			// Recreate the SP Table from Flex Data
@@ -402,7 +402,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																"({$arrDealerCustomerGroup['dealer_id']}, {$arrDealerCustomerGroup['customer_group_id']})");
 				if (PEAR::isError($resDealerVendorInsert))
 				{
-					throw new Exception($resDealerVendorInsert->getError()." :: ".$resDealerVendorInsert->getUserInfo());
+					throw new Exception($resDealerVendorInsert->getMessage()." :: ".$resDealerVendorInsert->getUserInfo());
 				}
 			}
 			//----------------------------------------------------------------//
@@ -449,7 +449,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 													"WHERE sale_status.name = 'Ready For Provisioning'");
 			if (PEAR::isError($resNewSales))
 			{
-				throw new Exception($resNewSales->getError()." :: ".$resNewSales->getUserInfo());
+				throw new Exception($resNewSales->getMessage()." :: ".$resNewSales->getUserInfo());
 			}
 			while ($arrSale = $resNewSales->fetchRow(MDB2_FETCHMODE_ASSOC))
 			{
@@ -462,7 +462,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 				$resCreateSavepoint	= $dsSalesPortal->query("SAVEPOINT {$strSaleSavePoint}");
 				if (PEAR::isError($resCreateSavepoint))
 				{
-					throw new Exception($resCreateSavepoint->getError()." :: ".$resCreateSavepoint->getUserInfo());
+					throw new Exception($resCreateSavepoint->getMessage()." :: ".$resCreateSavepoint->getUserInfo());
 				}
 				
 				try
@@ -487,7 +487,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																"LIMIT 1");
 						if (PEAR::isError($resSaleAccount))
 						{
-							throw new Exception($resSaleAccount->getError()." :: ".$resSaleAccount->getUserInfo());
+							throw new Exception($resSaleAccount->getMessage()." :: ".$resSaleAccount->getUserInfo());
 						}
 						$arrSaleAccount	= $resSaleAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
 						
@@ -562,7 +562,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																		"LIMIT 1");
 								if (PEAR::isError($resSPBankAccount))
 								{
-									throw new Exception($resSPBankAccount->getError()." :: ".$resSPBankAccount->getUserInfo());
+									throw new Exception($resSPBankAccount->getMessage()." :: ".$resSPBankAccount->getUserInfo());
 								}
 								$arrSPBankAccount	= $resSPBankAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
 								
@@ -594,7 +594,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																		"LIMIT 1");
 								if (PEAR::isError($resSPCreditCard))
 								{
-									throw new Exception($resSPCreditCard->getError()." :: ".$resSPCreditCard->getUserInfo());
+									throw new Exception($resSPCreditCard->getMessage()." :: ".$resSPCreditCard->getUserInfo());
 								}
 								$arrSPCreditCard	= $resSPCreditCard->fetchRow(MDB2_FETCHMODE_ASSOC);
 								
@@ -625,7 +625,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$resSPSaleAccount	= $dsSalesPortal->query("UPDATE sale_account SET reference_id = {$objAccount->Id} WHERE id = {$arrSaleAccount['id']}");
 						if (PEAR::isError($resSPSaleAccount))
 						{
-							throw new Exception($resSPSaleAccount->getError()." :: ".$resSPSaleAccount->getUserInfo());
+							throw new Exception($resSPSaleAccount->getMessage()." :: ".$resSPSaleAccount->getUserInfo());
 						}
 						//--------------------------------------------------------//
 					}
@@ -642,7 +642,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 															"WHERE contact.contact_reference_id IS NULL");
 					if (PEAR::isError($resNewContacts))
 					{
-						throw new Exception($resNewContacts->getError()." :: ".$resNewContacts->getUserInfo());
+						throw new Exception($resNewContacts->getMessage()." :: ".$resNewContacts->getUserInfo());
 					}
 					while ($arrSPContact = $resNewContacts->fetchRow(MDB2_FETCHMODE_ASSOC))
 					{
@@ -671,7 +671,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																	"WHERE contact_id = {$arrSPContact['id']}");
 						if (PEAR::isError($resContactMethod))
 						{
-							throw new Exception($resContactMethod->getError()." :: ".$resContactMethod->getUserInfo());
+							throw new Exception($resContactMethod->getMessage()." :: ".$resContactMethod->getUserInfo());
 						}
 						while ($arrSPContactMethod = $resContactMethod->fetchRow(MDB2_FETCHMODE_ASSOC))
 						{
@@ -706,7 +706,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$resSPContact	= $dsSalesPortal->query("UPDATE contact SET reference_id = {$objContact->Id} WHERE id = {$arrSPContact['id']}");
 						if (PEAR::isError($resSPContact))
 						{
-							throw new Exception($resSPContact->getError()." :: ".$resSPContact->getUserInfo());
+							throw new Exception($resSPContact->getMessage()." :: ".$resSPContact->getUserInfo());
 						}
 						
 						// Is it the Primary Contact for the Account?
@@ -725,7 +725,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 															"WHERE sale_id = {$arrSale['id']} AND sale_item_status_id = 5");
 					if (PEAR::isError($resSPSaleItems))
 					{
-						throw new Exception($resSPSaleItems->getError()." :: ".$resSPSaleItems->getUserInfo());
+						throw new Exception($resSPSaleItems->getMessage()." :: ".$resSPSaleItems->getUserInfo());
 					}
 					while ($arrSPSaleItem = $resSPSaleItems->fetchRow(MDB2_FETCHMODE_ASSOC))
 					{
@@ -738,7 +738,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$resCreateSavepoint	= $dsSalesPortal->query("SAVEPOINT {$strSaleItemSavePoint}");
 						if (PEAR::isError($resCreateSavepoint))
 						{
-							throw new Exception($resCreateSavepoint->getError()." :: ".$resCreateSavepoint->getUserInfo());
+							throw new Exception($resCreateSavepoint->getMessage()." :: ".$resCreateSavepoint->getUserInfo());
 						}
 						
 						try
@@ -772,7 +772,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																						"LIMIT 1");
 									if (PEAR::isError($resSPSaleItemStatusDate))
 									{
-										throw new Exception($resSPSaleItemStatusDate->getError()." :: ".$resSPSaleItemStatusDate->getUserInfo());
+										throw new Exception($resSPSaleItemStatusDate->getMessage()." :: ".$resSPSaleItemStatusDate->getUserInfo());
 									}
 									$arrSPSaleItemStatusDate	= $resSPSaleItemStatusDate->fetchRow(MDB2_FETCHMODE_ASSOC);
 									$objService->CreatedOn		= $arrSPSaleItemStatusDate['changed_on'];
@@ -792,7 +792,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																							"LIMIT 1");
 											if (PEAR::isError($resSPLandLineDetails))
 											{
-												throw new Exception($resSPLandLineDetails->getError()." :: ".$resSPLandLineDetails->getUserInfo());
+												throw new Exception($resSPLandLineDetails->getMessage()." :: ".$resSPLandLineDetails->getUserInfo());
 											}
 											$arrSPLandLineDetails	= $resSPLandLineDetails->fetchRow(MDB2_FETCHMODE_ASSOC);
 											
@@ -865,7 +865,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																							"LIMIT 1");
 											if (PEAR::isError($resSPMobileDetails))
 											{
-												throw new Exception($resSPMobileDetails->getError()." :: ".$resSPMobileDetails->getUserInfo());
+												throw new Exception($resSPMobileDetails->getMessage()." :: ".$resSPMobileDetails->getUserInfo());
 											}
 											$arrSPMobileDetails		= $resSPMobileDetails->fetchRow(MDB2_FETCHMODE_ASSOC);
 											
@@ -894,7 +894,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																							"LIMIT 1");
 											if (PEAR::isError($resSPADSLDetails))
 											{
-												throw new Exception($resSPADSLDetails->getError()." :: ".$resSPADSLDetails->getUserInfo());
+												throw new Exception($resSPADSLDetails->getMessage()." :: ".$resSPADSLDetails->getUserInfo());
 											}
 											$arrSPADSLDetails		= $resSPADSLDetails->fetchRow(MDB2_FETCHMODE_ASSOC);
 											
@@ -913,7 +913,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 																							"LIMIT 1");
 											if (PEAR::isError($resSPInboundDetails))
 											{
-												throw new Exception($resSPInboundDetails->getError()." :: ".$resSPInboundDetails->getUserInfo());
+												throw new Exception($resSPInboundDetails->getMessage()." :: ".$resSPInboundDetails->getUserInfo());
 											}
 											$arrSPInboundDetails	= $resSPInboundDetails->fetchRow(MDB2_FETCHMODE_ASSOC);
 											
@@ -949,7 +949,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 									$resProduct	= $dsSalesPortal->query("SELECT reference FROM product WHERE product_id = {$arrSPSaleItem['product_id']}");
 									if (PEAR::isError($resProduct))
 									{
-										throw new Exception($resProduct->getError()." :: ".$resProduct->getUserInfo());
+										throw new Exception($resProduct->getMessage()." :: ".$resProduct->getUserInfo());
 									}
 									$arrProduct		= $resProduct->fetchRow(MDB2_FETCHMODE_ASSOC);
 									$arrRatePlanId	= explode('=', $arrProduct['reference']);
@@ -1002,7 +1002,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 							$resReleaseSavepoint	= $dsSalesPortal->query("RELEASE SAVEPOINT {$strSaleItemSavePoint}");
 							if (PEAR::isError($resReleaseSavepoint))
 							{
-								throw new Exception($resReleaseSavepoint->getError()." :: ".$resReleaseSavepoint->getUserInfo());
+								throw new Exception($resReleaseSavepoint->getMessage()." :: ".$resReleaseSavepoint->getUserInfo());
 							}
 						}
 						catch(Exception_Sale_Product_Manual_Intervention $eException)
@@ -1024,7 +1024,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					$resReleaseSavepoint	= $dsSalesPortal->query("RELEASE SAVEPOINT {$strSaleSavePoint}");
 					if (PEAR::isError($resReleaseSavepoint))
 					{
-						throw new Exception($resReleaseSavepoint->getError()." :: ".$resReleaseSavepoint->getUserInfo());
+						throw new Exception($resReleaseSavepoint->getMessage()." :: ".$resReleaseSavepoint->getUserInfo());
 					}
 				}
 				catch (Exception_Sale_Manual_Intervention $eException)
@@ -1037,7 +1037,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					$resRollbackSavepoint	= $dsSalesPortal->query("ROLLBACK TO {$strSaleSavePoint}");
 					if (PEAR::isError($resRollbackSavepoint))
 					{
-						throw new Exception($resRollbackSavepoint->getError()." :: ".$resRollbackSavepoint->getUserInfo());
+						throw new Exception($resRollbackSavepoint->getMessage()." :: ".$resRollbackSavepoint->getUserInfo());
 					}
 					
 					// There was an issue with the Sale which needs manual intervention to resolve
@@ -1160,7 +1160,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 			$resSPEnumeration	= $dsSalesPortal->query("SELECT * FROM {$strTable};");
 			if (PEAR::isError($resSPEnumeration))
 			{
-				throw new Exception($resSPEnumeration->getError()." :: ".$resSPEnumeration->getUserInfo());
+				throw new Exception($resSPEnumeration->getMessage()." :: ".$resSPEnumeration->getUserInfo());
 			}
 			else
 			{
@@ -1186,7 +1186,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 												"LIMIT 1");
 		if (PEAR::isError($resSaleUpdate))
 		{
-			throw new Exception($resSaleUpdate->getError()." :: ".$resSaleUpdate->getUserInfo());
+			throw new Exception($resSaleUpdate->getMessage()." :: ".$resSaleUpdate->getUserInfo());
 		}
 		
 		// Update the History
@@ -1195,7 +1195,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 															"SELECT id, sale_status_id, DEFAULT, ".self::SALES_PORTAL_SYSTEM_DEALER_ID.", {$strReasonSQL} FROM sale WHERE id = {$intSPSaleId}");
 		if (PEAR::isError($resSaleStatusInsert))
 		{
-			throw new Exception($resSaleStatusInsert->getError()." :: ".$resSaleStatusInsert->getUserInfo());
+			throw new Exception($resSaleStatusInsert->getMessage()." :: ".$resSaleStatusInsert->getUserInfo());
 		}
 	}
 	
@@ -1210,7 +1210,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 													"LIMIT 1");
 		if (PEAR::isError($resSaleItemUpdate))
 		{
-			throw new Exception($resSaleItemUpdate->getError()." :: ".$resSaleItemUpdate->getUserInfo());
+			throw new Exception($resSaleItemUpdate->getMessage()." :: ".$resSaleItemUpdate->getUserInfo());
 		}
 		
 		// Update the History
@@ -1219,7 +1219,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 															"SELECT id, sale_item_status_id, DEFAULT, ".self::SALES_PORTAL_SYSTEM_DEALER_ID.", {$strReasonSQL} FROM sale_item WHERE id = {$intSPSaleItemId}");
 		if (PEAR::isError($resSaleItemStatusInsert))
 		{
-			throw new Exception($resSaleItemStatusInsert->getError()." :: ".$resSaleItemStatusInsert->getUserInfo());
+			throw new Exception($resSaleItemStatusInsert->getMessage()." :: ".$resSaleItemStatusInsert->getUserInfo());
 		}
 	}
 
