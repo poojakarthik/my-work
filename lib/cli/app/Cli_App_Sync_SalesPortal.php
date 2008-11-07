@@ -239,7 +239,13 @@ class Cli_App_Sync_SalesPortal extends Cli
 			}
 			while ($arrFlexDealer = $resFlexDealers->fetch_assoc())
 			{
-				//-------------------------- DEALERS -------------------------//				
+				//-------------------------- DEALERS -------------------------//		
+				// Escape values
+				foreach ($arrFlexDealer as $strField=>$mixValue)
+				{
+					$arrFlexDealer[$strField]	= self::_toDBValue($mixValue);
+				}
+				
 				// Does this Dealer exist in the Sales Portal?
 				$resSPDealer	= $dsSalesPortal->query("SELECT id FROM dealer WHERE id = {$arrFlexDealer['id']} LIMIT 1");
 				if (PEAR::isError($resSPDealer))
@@ -250,12 +256,6 @@ class Cli_App_Sync_SalesPortal extends Cli
 				{
 					// Doesn't exist -- INSERT
 					$arrSPDealer	= $arrFlexDealer;
-					
-					// Escape values
-					foreach ($arrSPDealer as $strField=>$mixValue)
-					{
-						$arrSPDealer[$strField]	= self::_toDBValue($mixValue);
-					}
 					
 					$strInsertSQL	= "INSERT INTO dealer VALUES " .
 										"( " .
@@ -310,41 +310,41 @@ class Cli_App_Sync_SalesPortal extends Cli
 					
 					$strUpdateSQL	= "UPDATE dealer SET " .
 										"	up_line_id				= {$arrSPDealer['up_line_id']}," .
-										"	username				= '{$arrSPDealer['username']}'," .
-										"	password				= '{$arrSPDealer['password']}'," .
+										"	username				= {$arrSPDealer['username']}," .
+										"	password				= {$arrSPDealer['password']}," .
 										"	can_verify				= {$arrSPDealer['can_verify']}," .
-										"	first_name				= '{$arrSPDealer['first_name']}'," .
-										"	last_name				= '{$arrSPDealer['last_name']}'," .
+										"	first_name				= {$arrSPDealer['first_name']}," .
+										"	last_name				= {$arrSPDealer['last_name']}," .
 										"	title_id				= {$arrSPDealer['title_id']}," .
-										"	business_name			= '{$arrSPDealer['business_name']}'," .
-										"	trading_name			= '{$arrSPDealer['trading_name']}'," .
-										"	abn						= '{$arrSPDealer['abn']}'," .
+										"	business_name			= {$arrSPDealer['business_name']}," .
+										"	trading_name			= {$arrSPDealer['trading_name']}," .
+										"	abn						= {$arrSPDealer['abn']}," .
 										"	abn_registered			= {$arrSPDealer['abn_registered']}," .
-										"	address_line_1			= '{$arrSPDealer['address_line_1']}'," .
-										"	address_line_2			= '{$arrSPDealer['address_line_2']}'," .
-										"	suburb					= '{$arrSPDealer['suburb']}'," .
+										"	address_line_1			= {$arrSPDealer['address_line_1']}," .
+										"	address_line_2			= {$arrSPDealer['address_line_2']}," .
+										"	suburb					= {$arrSPDealer['suburb']}," .
 										"	state_id				= {$arrSPDealer['state_id']}," .
 										"	country_id				= {$arrSPDealer['country_id']}," .
-										"	postcode				= '{$arrSPDealer['postcode']}'," .
-										"	postal_address_line_1	= '{$arrSPDealer['postal_address_line_1']}'," .
-										"	postal_address_line_2	= '{$arrSPDealer['postal_address_line_2']}'," .
-										"	postal_suburb			= '{$arrSPDealer['postal_suburb']}'," .
+										"	postcode				= {$arrSPDealer['postcode']}," .
+										"	postal_address_line_1	= {$arrSPDealer['postal_address_line_1']}," .
+										"	postal_address_line_2	= {$arrSPDealer['postal_address_line_2']}," .
+										"	postal_suburb			= {$arrSPDealer['postal_suburb']}," .
 										"	postal_state_id			= {$arrSPDealer['postal_state_id']}," .
 										"	postal_country_id		= {$arrSPDealer['postal_country_id']}," .
-										"	postal_postcode			= '{$arrSPDealer['postal_postcode']}'," .
-										"	phone					= '{$arrSPDealer['phone']}'," .
-										"	mobile					= '{$arrSPDealer['mobile']}," .
-										"	fax						= '{$arrSPDealer['fax']}'," .
-										"	email					= '{$arrSPDealer['email']}'," .
+										"	postal_postcode			= {$arrSPDealer['postal_postcode']}," .
+										"	phone					= {$arrSPDealer['phone']}," .
+										"	mobile					= {$arrSPDealer['mobile']}," .
+										"	fax						= {$arrSPDealer['fax']}," .
+										"	email					= {$arrSPDealer['email']}," .
 										"	commission_scale		= {$arrSPDealer['commission_scale']}," .
 										"	royalty_scale			= {$arrSPDealer['royalty_scale']}," .
-										"	bank_account_bsb		= '{$arrSPDealer['bank_account_bsb']}'," .
-										"	bank_account_number		= '{$arrSPDealer['bank_account_number']}'," .
-										"	bank_account_name		= '{$arrSPDealer['bank_account_name']}'," .
+										"	bank_account_bsb		= {$arrSPDealer['bank_account_bsb']}," .
+										"	bank_account_number		= {$arrSPDealer['bank_account_number']}," .
+										"	bank_account_name		= {$arrSPDealer['bank_account_name']}," .
 										"	gst_registered			= {$arrSPDealer['gst_registered']}," .
-										"	termination_date		= '{$arrSPDealer['termination_date']}'," .
+										"	termination_date		= {$arrSPDealer['termination_date']}," .
 										"	dealer_status_id		= {$arrSPDealer['dealer_status_id']}," .
-										"	created_on				= '{$arrSPDealer['created_on']}' " .
+										"	created_on				= {$arrSPDealer['created_on']} " .
 										"WHERE id = {$arrSPDealer['id']};";
 					$resDealerUpdate	= $dsSalesPortal->query($strUpdateSQL);
 					if (PEAR::isError($resDealerUpdate))
