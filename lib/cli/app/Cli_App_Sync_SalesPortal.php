@@ -1019,7 +1019,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 									}
 									$arrProduct		= $resProduct->fetchRow(MDB2_FETCHMODE_ASSOC);
 									$arrRatePlanId	= explode('=', $arrProduct['reference']);
-									$objRatePlan	= new Rate_Plan(Array('Id'=>(int)$arrRatePlanId[1]));
+									$objRatePlan	= new Rate_Plan(Array('Id'=>(int)$arrRatePlanId[1]), TRUE);
 									$this->log("\t\t\t\t\t\t+ Setting Plan to '{$objRatePlan->Name}'...");									
 									$objService->changePlan($objRatePlan);
 									
