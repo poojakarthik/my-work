@@ -1067,6 +1067,9 @@ class Cli_App_Sync_SalesPortal extends Cli
 								default:
 									throw new Exception("Product Category '{$arrSPSaleItem['product_category_id']}' is unsupported by Flex!");
 							}
+							
+							// Set Item Status to Provisioned
+							$this->_updateSaleItemStatus($arrSPSaleItem['id'], 'Provisioned');
 						
 							// All seems to have worked, release Sale Item the savepoints
 							if ($qryQuery->Execute("RELEASE SAVEPOINT {$strSaleItemSavePoint}") === FALSE)
@@ -1091,6 +1094,9 @@ class Cli_App_Sync_SalesPortal extends Cli
 						}
 					}
 					//------------------------------------------------------------//
+					
+					// Set Sale Status to Provisioned
+					$this->_updateSaleStatus($arrSale['id'], 'Provisioned');
 					
 					// All seems to have worked, release the Sale savepoints
 					if ($qryQuery->Execute("RELEASE SAVEPOINT {$strSaleSavePoint}") === FALSE)
@@ -1252,7 +1258,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 	}
 	
 	// _updateSaleHistory()	-- Updates the Sale Status (and History) in the Sales Portal
-	private static function _updateSaleStatus($intSPSaleId, $mixNewStatus, $strReason)
+	private static function _updateSaleStatus($intSPSaleId, $mixNewStatus, $strReason=NULL)
 	{
 		// Save the new Status
 		$strSaleStatus	= (is_int($mixNewStatus)) ? $mixNewStatus : "(SELECT id FROM sale_status WHERE name = '{$mixNewStatus}')";
