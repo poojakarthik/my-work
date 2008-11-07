@@ -293,7 +293,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 										"	{$arrSPDealer['bank_account_number']}," .
 										"	{$arrSPDealer['bank_account_name']}," .
 										"	{$arrSPDealer['gst_registered']}," .
-										"	{$arrSPDealer['termination_date']}'," .
+										"	{$arrSPDealer['termination_date']}," .
 										"	{$arrSPDealer['dealer_status_id']}," .
 										"	{$arrSPDealer['created_on']}" .
 										");";
