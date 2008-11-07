@@ -1102,6 +1102,17 @@ class Cli_App_Sync_SalesPortal extends Cli
 						{
 							$this->log("\t\t\t\t\t\t\t! Setting Sale Product Status to Manual Intervention...");
 							
+							// Rollback to the savepoint for this Sale
+							if ($qryQuery->Execute("ROLLBACK TO {$strSaleSavePoint}") === FALSE)
+							{
+								throw new Exception($qryQuery->Error());
+							}
+							$resRollbackSavepoint	= $dsSalesPortal->query("ROLLBACK TO {$strSaleSavePoint}");
+							if (PEAR::isError($resRollbackSavepoint))
+							{
+								throw new Exception($resRollbackSavepoint->getMessage()." :: ".$resRollbackSavepoint->getUserInfo());
+							}
+							
 							// There was an issue with one of the Items which needs manual intervention to resolve
 							$this->_updateSaleItemStatus($arrSPSaleItem['id'], 'Manual Intervention', $eException->getMessage());
 							
@@ -1127,17 +1138,6 @@ class Cli_App_Sync_SalesPortal extends Cli
 				}
 				catch (Exception_Sale_Manual_Intervention $eException)
 				{
-					// Rollback to the savepoint for this Sale
-					if ($qryQuery->Execute("ROLLBACK TO {$strSaleSavePoint}") === FALSE)
-					{
-						throw new Exception($qryQuery->Error());
-					}
-					$resRollbackSavepoint	= $dsSalesPortal->query("ROLLBACK TO {$strSaleSavePoint}");
-					if (PEAR::isError($resRollbackSavepoint))
-					{
-						throw new Exception($resRollbackSavepoint->getMessage()." :: ".$resRollbackSavepoint->getUserInfo());
-					}
-					
 					// There was an issue with the Sale which needs manual intervention to resolve
 					$this->_updateSaleStatus($arrSale['id'], 'Manual Intervention', $eException->getMessage());
 				}
