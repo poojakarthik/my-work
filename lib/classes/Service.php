@@ -182,7 +182,7 @@ class Service extends ORM
 		}
 		
 		// Get the current User
-		$intUserId	= Flex::getUserId();
+		$intUserId	= @Flex::getUserId();
 		$intUserId	= ($intUserId) ? $intUserId : 0;
 		
 		// Declare the new plan for the service
