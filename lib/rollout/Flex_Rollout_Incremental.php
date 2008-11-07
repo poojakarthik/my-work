@@ -204,7 +204,7 @@ class Flex_Rollout_Incremental
 			try
 			{
 				//if ($arrConnectionNames[$i] == FLEX_DATABASE_CONNECTION_CDR) continue;
-				if ($GLOBALS['**arrDatabase'][$arrConnectionNames[$i]]['DataModel'] !== FALSE)
+				if (!array_key_exists('DataModel', $GLOBALS['**arrDatabase'][$arrConnectionNames[$i]]) || $GLOBALS['**arrDatabase'][$arrConnectionNames[$i]]['DataModel'] !== FALSE)
 				{
 					Flex_Data_Model::generateDataModelForDatabase($arrConnectionNames[$i]);
 				}
