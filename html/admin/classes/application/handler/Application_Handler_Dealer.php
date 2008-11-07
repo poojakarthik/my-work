@@ -82,6 +82,9 @@ class Application_Handler_Dealer extends Application_Handler
 			$intUpLineId		= array_key_exists('upLineId', $_REQUEST) ? (strlen($_REQUEST['upLineId']) ? intval($_REQUEST['upLineId']) : NULL) : $intUpLineId;
 	
 			$arrFilter = array();
+			// Never include the system dealer in the list of dealers (Note that we will also have to filter on id for other reasons, so this can be overridden by
+			// another dealer id, or list of dealer ids)
+			$arrFilter['id'] = array('Value' => Dealer::SYSTEM_DEALER_ID, 'Comparison' => '!=');
 			if ($intDealerStatusId !== NULL)
 			{
 				$arrFilter['dealerStatusId'] = array('Value' => $intDealerStatusId, 'Comparison' => '=');
@@ -91,7 +94,6 @@ class Application_Handler_Dealer extends Application_Handler
 			{
 				$filter['upLineId'] = array('Value' => $intUpLineId, 'Comparison' => '=');
 			}
-	
 	
 			$detailsToRender = array();
 			$detailsToRender['Sort']	= $arrSort;

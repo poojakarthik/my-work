@@ -1,11 +1,11 @@
 <?php
 
+
 //----------------------------------------------------------------------------//
 // (c) copyright 2007 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
-
 
 //----------------------------------------------------------------------------//
 // MenuItems.php
@@ -49,8 +49,7 @@
  * @package	ui_app
  * @class	MenuItems
  */
-class MenuItems
-{
+class MenuItems {
 	//------------------------------------------------------------------------//
 	// strLabel
 	//------------------------------------------------------------------------//
@@ -66,7 +65,7 @@ class MenuItems
 	 * @property
 	 */
 	public $strLabel;
-	
+
 	//------------------------------------------------------------------------//
 	// strContextMenuLabel
 	//------------------------------------------------------------------------//
@@ -86,7 +85,6 @@ class MenuItems
 	const OLD_FRAMEWORK = "../management/";
 	const NEW_FRAMEWORK = "../admin/";
 
-	
 	//------------------------------------------------------------------------//
 	// GetLabel
 	//------------------------------------------------------------------------//
@@ -101,15 +99,13 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function GetLabel()
-	{
-		if (isset($this->strLabel))
-		{
+	function GetLabel() {
+		if (isset ($this->strLabel)) {
 			return $this->strLabel;
 		}
 		return NULL;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// EmployeeMessageManagement
 	//------------------------------------------------------------------------//
@@ -128,11 +124,10 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EmployeeMessageManagement()
-	{
+	function EmployeeMessageManagement() {
 		$this->strContextMenuLabel = "Daily Message Management";
 		$this->strLabel = "Daily Message Management";
-		return self::NEW_FRAMEWORK . "reflex.php/Employee/ManageDailyMessages";
+		return self :: NEW_FRAMEWORK . "reflex.php/Employee/ManageDailyMessages";
 	}
 
 	//------------------------------------------------------------------------//
@@ -153,11 +148,10 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function TicketingAdmin()
-	{
+	function TicketingAdmin() {
 		$this->strContextMenuLabel = "Ticketing Administration";
 		$this->strLabel = "Ticketing Administration";
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Admin";
+		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Admin";
 	}
 
 	//------------------------------------------------------------------------//
@@ -178,13 +172,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function TicketingAttachmentTypes()
-	{
+	function TicketingAttachmentTypes() {
 		$this->strContextMenuLabel = "Ticketing Attachment Types";
 		$this->strLabel = "Ticketing Attachment Types";
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/AttachmentTypes";
+		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/AttachmentTypes";
 	}
-	
 
 	/**
 	 * TicketingConsole()
@@ -197,14 +189,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function TicketingConsole($lastQuery=FALSE)
-	{
+	function TicketingConsole($lastQuery = FALSE) {
 		$this->strContextMenuLabel = "View All Tickets";
 		$this->strLabel = "Tickets";
 		$last = $lastQuery ? '/Last' : ($lastQuery === FALSE ? '/All' : '');
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets$last";
+		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets$last";
 	}
-	
 
 	//------------------------------------------------------------------------//
 	// TicketingTicket
@@ -220,11 +210,10 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function TicketingTicket($ticketId)
-	{
+	function TicketingTicket($ticketId) {
 		$this->strContextMenuLabel = "View Ticket $ticketId";
 		$this->strLabel = "View Ticket " . $ticketId;
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/$ticketId/View";
+		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/$ticketId/View";
 	}
 
 	//------------------------------------------------------------------------//
@@ -241,13 +230,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewUserTickets()
-	{
+	function ViewUserTickets() {
 		$this->strContextMenuLabel = "View My Tickets";
 		$this->strLabel = "My Tickets";
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets/Mine";
+		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets/Mine";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// AddTicket
 	//------------------------------------------------------------------------//
@@ -262,11 +250,10 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddTicket()
-	{
+	function AddTicket() {
 		$this->strContextMenuLabel = "Add New Ticket";
 		$this->strLabel = "New Ticket";
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/Create";
+		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/Create";
 	}
 
 	//------------------------------------------------------------------------//
@@ -284,13 +271,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function TicketingSummaryReport($bolRetrieveCachedReport=FALSE)
-	{
+	function TicketingSummaryReport($bolRetrieveCachedReport = FALSE) {
 		$this->strContextMenuLabel = "Summary";
 		$this->strLabel = "Summary";
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/SummaryReport" . (($bolRetrieveCachedReport)? "/GetReport":"");
+		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/SummaryReport" . (($bolRetrieveCachedReport) ? "/GetReport" : "");
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ManageCustomerStatuses
 	//------------------------------------------------------------------------//
@@ -305,13 +291,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ManageCustomerStatuses()
-	{
+	function ManageCustomerStatuses() {
 		$this->strContextMenuLabel = "Customer Statuses";
 		$this->strLabel = "Customer Statuses";
-		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/ViewAll";
+		return self :: NEW_FRAMEWORK . "reflex.php/CustomerStatus/ViewAll";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewCustomerStatus
 	//------------------------------------------------------------------------//
@@ -327,14 +312,13 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewCustomerStatus($intId)
-	{
-		$strName = Customer_Status::getForId($intId)->name;
+	function ViewCustomerStatus($intId) {
+		$strName = Customer_Status :: getForId($intId)->name;
 		$this->strContextMenuLabel = "View Customer Status $strName";
 		$this->strLabel = $strName;
-		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/View/$intId";
+		return self :: NEW_FRAMEWORK . "reflex.php/CustomerStatus/View/$intId";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// EditCustomerStatus
 	//------------------------------------------------------------------------//
@@ -350,12 +334,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EditCustomerStatus($intId)
-	{
-		$strName = Customer_Status::getForId($intId)->name;
+	function EditCustomerStatus($intId) {
+		$strName = Customer_Status :: getForId($intId)->name;
 		$this->strContextMenuLabel = "Edit Customer Status $strName";
 		$this->strLabel = $strName;
-		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/Edit/$intId";
+		return self :: NEW_FRAMEWORK . "reflex.php/CustomerStatus/Edit/$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -372,13 +355,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function CustomerStatusSummaryReport($bolRetrieveCachedReport=FALSE)
-	{
+	function CustomerStatusSummaryReport($bolRetrieveCachedReport = FALSE) {
 		$this->strContextMenuLabel = "Summary Report";
 		$this->strLabel = "Summary Report";
-		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/SummaryReport" . (($bolRetrieveCachedReport)? "/GetReport":"");
+		return self :: NEW_FRAMEWORK . "reflex.php/CustomerStatus/SummaryReport" . (($bolRetrieveCachedReport) ? "/GetReport" : "");
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// CustomerStatusAccountReport
 	//------------------------------------------------------------------------//
@@ -393,13 +375,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function CustomerStatusAccountReport($bolRetrieveCachedReport=FALSE)
-	{
+	function CustomerStatusAccountReport($bolRetrieveCachedReport = FALSE) {
 		$this->strContextMenuLabel = "Account Report";
 		$this->strLabel = "Account Report";
-		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/AccountReport" . (($bolRetrieveCachedReport)? "/GetReport":"");
+		return self :: NEW_FRAMEWORK . "reflex.php/CustomerStatus/AccountReport" . (($bolRetrieveCachedReport) ? "/GetReport" : "");
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// GenerateCustomerStatusAccountReport
 	//------------------------------------------------------------------------//
@@ -414,22 +395,18 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function GenerateCustomerStatusAccountReport($intInvoiceRun, $arrCustomerGroups=NULL, $arrCustomerStatuses=NULL)
-	{
+	function GenerateCustomerStatusAccountReport($intInvoiceRun, $arrCustomerGroups = NULL, $arrCustomerStatuses = NULL) {
 		$strGetVars = "?InvoiceRun=$intInvoiceRun";
-		if (is_array($arrCustomerGroups))
-		{
+		if (is_array($arrCustomerGroups)) {
 			$strGetVars .= implode("&CustomerGroup[]=", $arrCustomerGroups);
 		}
-		if (is_array($arrCustomerStatuses))
-		{
+		if (is_array($arrCustomerStatuses)) {
 			$strGetVars .= implode("&CustomerStatus[]=", $arrCustomerStatuses);
 		}
-		
-		return self::NEW_FRAMEWORK . "reflex.php/CustomerStatus/AccountReport/GenerateReport/$strGetVars";
+
+		return self :: NEW_FRAMEWORK . "reflex.php/CustomerStatus/AccountReport/GenerateReport/$strGetVars";
 	}
-	
-	
+
 	//------------------------------------------------------------------------//
 	// ViewServiceRatePlan
 	//------------------------------------------------------------------------//
@@ -446,11 +423,10 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewServiceRatePlan($intId)
-	{
+	function ViewServiceRatePlan($intId) {
 		$this->strContextMenuLabel = "View Plan";
 		$this->strLabel = "Plan";
-		return self::NEW_FRAMEWORK . "flex.php/Service/ViewPlan/?Service.Id=$intId";
+		return self :: NEW_FRAMEWORK . "flex.php/Service/ViewPlan/?Service.Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -470,13 +446,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewDocumentTemplateHistory($intCustomerGroup, $intTemplateType)
-	{
-		$this->strLabel	= "Template History";
+	function ViewDocumentTemplateHistory($intCustomerGroup, $intTemplateType) {
+		$this->strLabel = "Template History";
 		$this->strContextMenuLabel = "Template History";
-		return self::NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewDocumentTemplateHistory/?CustomerGroup.Id=$intCustomerGroup&DocumentTemplateType.Id=$intTemplateType";
+		return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewDocumentTemplateHistory/?CustomerGroup.Id=$intCustomerGroup&DocumentTemplateType.Id=$intTemplateType";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewCustomerGroup
 	//------------------------------------------------------------------------//
@@ -494,22 +469,19 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewCustomerGroup($intId, $strBreadCrumbLabel=NULL)
-	{
-		$this->strLabel	= "Customer Group";
-		if ($strBreadCrumbLabel !== NULL)
-		{
+	function ViewCustomerGroup($intId, $strBreadCrumbLabel = NULL) {
+		$this->strLabel = "Customer Group";
+		if ($strBreadCrumbLabel !== NULL) {
 			$this->strLabel = $strBreadCrumbLabel;
-			if (strlen($strBreadCrumbLabel) > 15)
-			{
-				$this->strLabel = "<span title='$strBreadCrumbLabel'>". substr($strBreadCrumbLabel, 0, 12) . "...</span>";
+			if (strlen($strBreadCrumbLabel) > 15) {
+				$this->strLabel = "<span title='$strBreadCrumbLabel'>" . substr($strBreadCrumbLabel, 0, 12) . "...</span>";
 			}
 		}
-		
+
 		$this->strContextMenuLabel = "";
-		return self::NEW_FRAMEWORK . "flex.php/CustomerGroup/View/?CustomerGroup.Id=$intId";
+		return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/View/?CustomerGroup.Id=$intId";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewCustomerGroupCreditCardConfig
 	//------------------------------------------------------------------------//
@@ -526,13 +498,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewCustomerGroupCreditCardConfig($intId, $strAction='View')
-	{
-		$this->strLabel	= "Credit Card Configuration";
+	function ViewCustomerGroupCreditCardConfig($intId, $strAction = 'View') {
+		$this->strLabel = "Credit Card Configuration";
 		$this->strContextMenuLabel = "";
-		return self::NEW_FRAMEWORK . "reflex.php/CustomerGroup/CreditCardConfig/$intId/$strAction";
+		return self :: NEW_FRAMEWORK . "reflex.php/CustomerGroup/CreditCardConfig/$intId/$strAction";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// AddDocumentResource
 	//------------------------------------------------------------------------//
@@ -550,12 +521,11 @@ class MenuItems
 	 * @return	string							Href to trigger the functionality
 	 * @method
 	 */
-	function AddDocumentResource($intCustomerGroup, $intResourceType, $strResourceTypeName)
-	{
+	function AddDocumentResource($intCustomerGroup, $intResourceType, $strResourceTypeName) {
 		// Setup data to send
-		$arrData['CustomerGroup']['Id']			= $intCustomerGroup;
-		$arrData['DocumentResourceType']['Id']	= $intResourceType;
-		
+		$arrData['CustomerGroup']['Id'] = $intCustomerGroup;
+		$arrData['DocumentResourceType']['Id'] = $intResourceType;
+
 		$strJsonCode = Json()->encode($arrData);
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddDocumentResourcePopup\", \"large\", \"New Resource - $strResourceTypeName\", \"CustomerGroup\", \"AddDocumentResource\", $strJsonCode, \"modal\")";
 	}
@@ -576,16 +546,14 @@ class MenuItems
 	 * @return	string							Href to trigger the functionality
 	 * @method
 	 */
-	function ViewDocumentTemplateSamplePDF($intCustomerGroup=NULL, $intTemplateType=NULL)
-	{
+	function ViewDocumentTemplateSamplePDF($intCustomerGroup = NULL, $intTemplateType = NULL) {
 		// Setup data to send
-		$arrData['CustomerGroup']['Id']			= $intCustomerGroup;
-		$arrData['DocumentTemplateType']['Id']	= $intTemplateType;
-		
+		$arrData['CustomerGroup']['Id'] = $intCustomerGroup;
+		$arrData['DocumentTemplateType']['Id'] = $intTemplateType;
+
 		$strJsonCode = Json()->encode($arrData);
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewDocumentTemplateSamplePDFPopup\", \"medium\", \"Sample PDF\", \"CustomerGroup\", \"ViewSamplePDF\", $strJsonCode, \"modal\")";
 	}
-
 
 	//------------------------------------------------------------------------//
 	// ViewDocumentResource
@@ -609,16 +577,14 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ViewDocumentResource($intResourceId, $bolDownloadFile=FALSE)
-	{
+	function ViewDocumentResource($intResourceId, $bolDownloadFile = FALSE) {
 		$strDownload = "";
-		if ($bolDownloadFile)
-		{
+		if ($bolDownloadFile) {
 			$strDownload = "&DocumentResource.DownloadFile=TRUE";
 		}
-		return self::NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewDocumentResource/?DocumentResource.Id=$intResourceId{$strDownload}";
+		return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewDocumentResource/?DocumentResource.Id=$intResourceId{$strDownload}";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewDocumentResources
 	//------------------------------------------------------------------------//
@@ -634,11 +600,10 @@ class MenuItems
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
-	function ViewDocumentResources($intCustomerGroup)
-	{
-		return self::NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewDocumentResources/?CustomerGroup.Id=$intCustomerGroup";
+	function ViewDocumentResources($intCustomerGroup) {
+		return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewDocumentResources/?CustomerGroup.Id=$intCustomerGroup";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ManageDealers
 	//------------------------------------------------------------------------//
@@ -652,14 +617,13 @@ class MenuItems
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
-	function ManageDealers()
-	{
-		$this->strLabel				= "Dealers";
-		$this->strContextMenuLabel	= "Manage Dealers";
-		
-		return self::NEW_FRAMEWORK . "reflex.php/Dealer/ListDealers/";
+	function ManageDealers() {
+		$this->strLabel = "Dealers";
+		$this->strContextMenuLabel = "Manage Dealers";
+
+		return self :: NEW_FRAMEWORK . "reflex.php/Dealer/ListDealers/";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewDealer
 	//------------------------------------------------------------------------//
@@ -673,14 +637,13 @@ class MenuItems
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
-	function ViewDealer($intDealerId)
-	{
-		$this->strLabel				= "View Dealer";
-		$this->strContextMenuLabel	= "View Dealer";
-		
+	function ViewDealer($intDealerId) {
+		$this->strLabel = "View Dealer";
+		$this->strContextMenuLabel = "View Dealer";
+
 		return "javascript:Dealer.viewDealer($intDealerId)";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// EditDealer
 	//------------------------------------------------------------------------//
@@ -694,14 +657,13 @@ class MenuItems
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
-	function EditDealer($intDealerId)
-	{
-		$this->strLabel				= "Edit Dealer";
-		$this->strContextMenuLabel	= "Edit Dealer";
-		
+	function EditDealer($intDealerId) {
+		$this->strLabel = "Edit Dealer";
+		$this->strContextMenuLabel = "Edit Dealer";
+
 		return "javascript:Dealer.editDealer($intDealerId)";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewAllCustomerGroups
 	//------------------------------------------------------------------------//
@@ -716,11 +678,10 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewAllCustomerGroups()
-	{
-		$this->strLabel	= "Customer Groups";
+	function ViewAllCustomerGroups() {
+		$this->strLabel = "Customer Groups";
 		$this->strContextMenuLabel = "View Customer Groups";
-		return self::NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewAll/";
+		return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewAll/";
 	}
 
 	//------------------------------------------------------------------------//
@@ -737,11 +698,10 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ManagePaymentTerms($customerGroupId)
-	{
-		$this->strLabel	= "Payment Process";
+	function ManagePaymentTerms($customerGroupId) {
+		$this->strLabel = "Payment Process";
 		$this->strContextMenuLabel = "Manage Payment Process";
-		return self::NEW_FRAMEWORK . "flex.php/PaymentTerms/Manage/?CustomerGroup.Id=$customerGroupId";
+		return self :: NEW_FRAMEWORK . "flex.php/PaymentTerms/Manage/?CustomerGroup.Id=$customerGroupId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -758,14 +718,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddCustomerGroup()
-	{
-		$this->strLabel	= "Add Customer Group";
+	function AddCustomerGroup() {
+		$this->strLabel = "Add Customer Group";
 		$this->strContextMenuLabel = "";
-		return self::NEW_FRAMEWORK . "flex.php/CustomerGroup/Add/";
+		return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/Add/";
 	}
 
-	
 	//------------------------------------------------------------------------//
 	// EmployeeConsole
 	//------------------------------------------------------------------------//
@@ -781,14 +739,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EmployeeConsole()
-	{
-		$this->strLabel	= "Console";
+	function EmployeeConsole() {
+		$this->strLabel = "Console";
 		$this->strContextMenuLabel = "Console";
-		return self::NEW_FRAMEWORK . "reflex.php/Console/View/";
+		return self :: NEW_FRAMEWORK . "reflex.php/Console/View/";
 	}
 
-	
 	//------------------------------------------------------------------------//
 	// EmployeeList
 	//------------------------------------------------------------------------//
@@ -804,13 +760,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EmployeeList()
-	{
-		$this->strLabel	= "List Employees";
+	function EmployeeList() {
+		$this->strLabel = "List Employees";
 		$this->strContextMenuLabel = "";
-		return self::NEW_FRAMEWORK . "flex.php/Employee/EmployeeList/";
+		return self :: NEW_FRAMEWORK . "flex.php/Employee/EmployeeList/";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// AddCustomer
 	//------------------------------------------------------------------------//
@@ -826,13 +781,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddCustomer()
-	{
-		$this->strLabel	= "Add Customer";
+	function AddCustomer() {
+		$this->strLabel = "Add Customer";
 		$this->strContextMenuLabel = "";
-		return self::OLD_FRAMEWORK . "account_add.php";
+		return self :: OLD_FRAMEWORK . "account_add.php";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// FindCustomerOld
 	//------------------------------------------------------------------------//
@@ -848,13 +802,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function FindCustomerOld()
-	{
-		$this->strLabel	= "Find Customer";
+	function FindCustomerOld() {
+		$this->strLabel = "Find Customer";
 		$this->strContextMenuLabel = "Find Customer (Old)";
-		return self::OLD_FRAMEWORK . "contact_verify.php";
+		return self :: OLD_FRAMEWORK . "contact_verify.php";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// CustomerSearch
 	//------------------------------------------------------------------------//
@@ -870,13 +823,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function CustomerSearch()
-	{
-		$this->strLabel	= "Find Customer";
+	function CustomerSearch() {
+		$this->strLabel = "Find Customer";
 		$this->strContextMenuLabel = "Find Customer";
 		return "javascript:FlexSearch.displayPopup()";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// CustomerOverdueList
 	//------------------------------------------------------------------------//
@@ -892,14 +844,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function CustomerOverdueList()
-	{
-		$this->strLabel	= "Overdue Customers";
+	function CustomerOverdueList() {
+		$this->strLabel = "Overdue Customers";
 		$this->strContextMenuLabel = "Overdue Customers";
 		return "javascript:FlexCustomerOverdueList.displayPopup()";
 	}
-	
-	
+
 	//------------------------------------------------------------------------//
 	// AddServices
 	//------------------------------------------------------------------------//
@@ -917,11 +867,10 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddServices($intAccountId)
-	{
-		$this->strLabel	= "Add Services";
+	function AddServices($intAccountId) {
+		$this->strLabel = "Add Services";
 		$this->strContextMenuLabel = "Add Services";
-		return self::NEW_FRAMEWORK . "flex.php/Service/BulkAdd/?Account.Id=$intAccountId";
+		return self :: NEW_FRAMEWORK . "flex.php/Service/BulkAdd/?Account.Id=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -941,13 +890,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddServices2($intAccountId)
-	{
-		$this->strLabel	= "Old Add Services";
+	function AddServices2($intAccountId) {
+		$this->strLabel = "Old Add Services";
 		$this->strContextMenuLabel = "Old Add Services";
-		return self::OLD_FRAMEWORK . "service_addbulk.php?Account=$intAccountId";
+		return self :: OLD_FRAMEWORK . "service_addbulk.php?Account=$intAccountId";
 	}
-	
 
 	//------------------------------------------------------------------------//
 	// EditContact
@@ -966,11 +913,10 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EditContact($intId)
-	{
-		$this->strLabel	= "contact: $intId";
+	function EditContact($intId) {
+		$this->strLabel = "contact: $intId";
 		$this->strContextMenuLabel = "";
-		return self::OLD_FRAMEWORK . "contact_edit.php?Id=$intId";
+		return self :: OLD_FRAMEWORK . "contact_edit.php?Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -989,13 +935,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ExportInvoiceAsCSV($intInvoiceId)
-	{
-		$this->strLabel	= "";
+	function ExportInvoiceAsCSV($intInvoiceId) {
+		$this->strLabel = "";
 		$this->strContextMenuLabel = "";
-		return self::NEW_FRAMEWORK . "flex.php/Invoice/ExportAsCSV/?Invoice.Id=$intInvoiceId";
+		return self :: NEW_FRAMEWORK . "flex.php/Invoice/ExportAsCSV/?Invoice.Id=$intInvoiceId";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewAllConstants
 	//------------------------------------------------------------------------//
@@ -1010,13 +955,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewAllConstants()
-	{
-		$this->strLabel	= "Constants Management";
+	function ViewAllConstants() {
+		$this->strLabel = "Constants Management";
 		$this->strContextMenuLabel = "Manage Constants";
-		return self::NEW_FRAMEWORK . "flex.php/Config/ManageConstants/";
+		return self :: NEW_FRAMEWORK . "flex.php/Config/ManageConstants/";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// SystemSettingsMenu
 	//------------------------------------------------------------------------//
@@ -1031,13 +975,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function SystemSettingsMenu()
-	{
-		$this->strLabel	= "System Settings";
+	function SystemSettingsMenu() {
+		$this->strLabel = "System Settings";
 		$this->strContextMenuLabel = "";
-		return self::NEW_FRAMEWORK . "flex.php/Config/SystemSettingsMenu/";
+		return self :: NEW_FRAMEWORK . "flex.php/Config/SystemSettingsMenu/";
 	}
-
 
 	//------------------------------------------------------------------------//
 	// AddContact
@@ -1056,13 +998,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddContact($intAccountId)
-	{
-		$this->strLabel	= "Add Contact";
+	function AddContact($intAccountId) {
+		$this->strLabel = "Add Contact";
 		$this->strContextMenuLabel = "";
-		return self::OLD_FRAMEWORK . "contact_add.php?Account=$intAccountId";
+		return self :: OLD_FRAMEWORK . "contact_add.php?Account=$intAccountId";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// BugList
 	//------------------------------------------------------------------------//
@@ -1077,14 +1018,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function BugList()
-	{
-		$this->strLabel	= "Bug List";
+	function BugList() {
+		$this->strLabel = "Bug List";
 		$this->strContextMenuLabel = "Bug List";
-		return self::OLD_FRAMEWORK . "bug_list.php";
+		return self :: OLD_FRAMEWORK . "bug_list.php";
 	}
-	
-	
+
 	//------------------------------------------------------------------------//
 	// ChangePaymentMethod
 	//------------------------------------------------------------------------//
@@ -1102,13 +1041,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ChangePaymentMethod($intAccountId)
-	{
-		$this->strLabel	= "Change Payment Method";
+	function ChangePaymentMethod($intAccountId) {
+		$this->strLabel = "Change Payment Method";
 		$this->strContextMenuLabel = "";
-		return self::OLD_FRAMEWORK . "account_payment.php?Id=$intAccountId";
+		return self :: OLD_FRAMEWORK . "account_payment.php?Id=$intAccountId";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewCostCentres
 	//------------------------------------------------------------------------//
@@ -1126,13 +1064,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewCostCentres($intAccountId)
-	{
-		$this->strLabel	= "Cost Centres";
+	function ViewCostCentres($intAccountId) {
+		$this->strLabel = "Cost Centres";
 		$this->strContextMenuLabel = "";
-		return self::OLD_FRAMEWORK . "costcentre_list.php?Account=$intAccountId";
+		return self :: OLD_FRAMEWORK . "costcentre_list.php?Account=$intAccountId";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewRecentCustomers
 	//------------------------------------------------------------------------//
@@ -1147,13 +1084,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewRecentCustomers()
-	{
+	function ViewRecentCustomers() {
 		$this->strContextMenuLabel = "View Recent Customers";
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRecentCustomersId\", \"large\", \"Recent Customers\", \"Employee\", \"ViewRecentCustomers\")";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewRate
 	//------------------------------------------------------------------------//
@@ -1172,20 +1108,19 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewRate($intRateId, $bolModal=TRUE)
-	{
+	function ViewRate($intRateId, $bolModal = TRUE) {
 		$this->strContextMenuLabel = "";
-		
+
 		// Setup data to send
 		$arrData['Rate']['Id'] = $intRateId;
-		
-		$strWindowType = ($bolModal)? "modal" : "nonmodal";
-		
+
+		$strWindowType = ($bolModal) ? "modal" : "nonmodal";
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId_$intRateId\", \"medium\", \"Rate\", \"Rate\", \"View\", $strJsonCode, \"$strWindowType\")";	
-	}	
+
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRatePopupId_$intRateId\", \"medium\", \"Rate\", \"Rate\", \"View\", $strJsonCode, \"$strWindowType\")";
+	}
 
 	//------------------------------------------------------------------------//
 	// ViewProvisioningHistory
@@ -1205,32 +1140,26 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewProvisioningHistory($intServiceId=NULL, $intAccountId=NULL)
-	{
+	function ViewProvisioningHistory($intServiceId = NULL, $intAccountId = NULL) {
 		$this->strContextMenuLabel = "View History";
-		
-		if ($intServiceId == NULL && $intAccountId == NULL)
-		{
+
+		if ($intServiceId == NULL && $intAccountId == NULL) {
 			throw new Exception("Must specify an AccountId or ServiceId");
 		}
-		
-		if ($intServiceId)
-		{
+
+		if ($intServiceId) {
 			$strPopupId = "ProvisioningHistoryPopup{$intServiceId}";
-		}
-		else
-		{
+		} else {
 			$strPopupId = "AccountProvisioningHistoryPopupId";
 		}
-		
-		
+
 		// Setup data to send
 		$arrData['Service']['Id'] = $intServiceId;
 		$arrData['Account']['Id'] = $intAccountId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"$strPopupId\", \"ExtraLarge\", \"History\", \"Provisioning\", \"ViewHistory\", $strJsonCode)";
 	}
 
@@ -1250,19 +1179,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewServiceHistory($intServiceId)
-	{
+	function ViewServiceHistory($intServiceId) {
 		$this->strContextMenuLabel = "View History";
-		
+
 		// Setup data to send
 		$arrData['Service']['Id'] = $intServiceId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ServiceHistory\", \"Large\", \"Service History\", \"Service\", \"ViewHistory\", $strJsonCode)";
 	}
-
 
 	//------------------------------------------------------------------------//
 	// OverrideRateGroup
@@ -1281,18 +1208,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function OverrideRateGroup($intServiceId, $intRecordTypeId)
-	{
+	function OverrideRateGroup($intServiceId, $intRecordTypeId) {
 		$this->strContextMenuLabel = "";
-		
+
 		// Setup data to send
-		$arrData['Service']['Id']	= $intServiceId;
-		$arrData['RecordType']['Id']	= $intRecordTypeId;
-		
+		$arrData['Service']['Id'] = $intServiceId;
+		$arrData['RecordType']['Id'] = $intRecordTypeId;
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupOverridePopupId\", \"medium\", \"Override Rate Group\", \"RateGroup\", \"Override\", $strJsonCode)";	
+
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupOverridePopupId\", \"medium\", \"Override Rate Group\", \"RateGroup\", \"Override\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -1313,18 +1239,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewRateGroup($intRateGroupId, $bolModal=TRUE)
-	{
+	function ViewRateGroup($intRateGroupId, $bolModal = TRUE) {
 		$this->strContextMenuLabel = "";
-		
+
 		// Setup data to send
 		$arrData['RateGroup']['Id'] = $intRateGroupId;
-		
-		$strWindowType = ($bolModal)? "modal" : "nonmodal";
-		
+
+		$strWindowType = ($bolModal) ? "modal" : "nonmodal";
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupViewPopupId_$intRateGroupId\", \"mediumlarge\", \"Rate Group\", \"RateGroup\", \"View\", $strJsonCode, \"$strWindowType\")";
 	}
 
@@ -1344,17 +1269,16 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddConfigConstant($intConstantGroupId)
-	{
+	function AddConfigConstant($intConstantGroupId) {
 		$this->strContextMenuLabel = "";
-		
+
 		// Setup data to send
 		$arrData['ConfigConstantGroup']['Id'] = $intConstantGroupId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddConfigConstantPopupId\", \"medium\", \"Add Constant\", \"Config\", \"EditConstant\", $strJsonCode)";	
+
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddConfigConstantPopupId\", \"medium\", \"Add Constant\", \"Config\", \"EditConstant\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -1373,19 +1297,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EditConfigConstant($intConstantId)
-	{
+	function EditConfigConstant($intConstantId) {
 		$this->strContextMenuLabel = "";
-		
+
 		// Setup data to send
 		$arrData['ConfigConstant']['Id'] = $intConstantId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EditConfigConstantPopupId\", \"medium\", \"Edit Constant\", \"Config\", \"EditConstant\", $strJsonCode)";	
-	}
 
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EditConfigConstantPopupId\", \"medium\", \"Edit Constant\", \"Config\", \"EditConstant\", $strJsonCode)";
+	}
 
 	//------------------------------------------------------------------------//
 	// EditService
@@ -1404,18 +1326,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EditService($intId)
-	{
+	function EditService($intId) {
 		$this->strContextMenuLabel = "Edit Service";
-		
+
 		// Setup data to send
 		$arrData['Service']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EditServicePopupId\", \"medium\", null, \"Service\", \"Edit\", $strJsonCode)";	
-	}	
+
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EditServicePopupId\", \"medium\", null, \"Service\", \"Edit\", $strJsonCode)";
+	}
 
 	//------------------------------------------------------------------------//
 	// AddService
@@ -1434,19 +1355,18 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddService($intId)
-	{
+	function AddService($intId) {
 		$this->strContextMenuLabel = "";
-		
+
 		// Setup data to send
 		$arrData['Account']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddServicePopupId\", \"medium\", null, \"Service\", \"Add\", $strJsonCode)";	
+
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddServicePopupId\", \"medium\", null, \"Service\", \"Add\", $strJsonCode)";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ImportRateGroup
 	//------------------------------------------------------------------------//
@@ -1464,21 +1384,20 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ImportRateGroup($intRecordTypeId, $bolIsFleet)
-	{
+	function ImportRateGroup($intRecordTypeId, $bolIsFleet) {
 		$this->strContextMenuLabel = "";
-		
+
 		// Setup data to send
-		$arrData['RecordType']['Id']		= $intRecordTypeId;
-		$arrData['RateGroup']['Fleet']	= $bolIsFleet;
-		
+		$arrData['RecordType']['Id'] = $intRecordTypeId;
+		$arrData['RateGroup']['Fleet'] = $bolIsFleet;
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ImportRateGroupPopupId\", \"large\", null, \"RateGroup\", \"Import\", $strJsonCode)";	
+
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ImportRateGroupPopupId\", \"large\", null, \"RateGroup\", \"Import\", $strJsonCode)";
 		//return "javascript:Vixen.Popup.Alert(\"RateGroup import functionality has not been implemented yet\")";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ChangePlan
 	//------------------------------------------------------------------------//
@@ -1496,19 +1415,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ChangePlan($intId)
-	{
+	function ChangePlan($intId) {
 		$this->strContextMenuLabel = "";
-		
-		
+
 		// Setup data to send
 		$arrData['Service']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ChangePlanPopupId\", \"medium\", null, \"Service\", \"ChangePlan\", $strJsonCode)";	
-	}	
+
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ChangePlanPopupId\", \"medium\", null, \"Service\", \"ChangePlan\", $strJsonCode)";
+	}
 
 	//------------------------------------------------------------------------//
 	// ViewContact
@@ -1527,14 +1444,13 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewContact($intContactId)
-	{
+	function ViewContact($intContactId) {
 		$this->strContextMenuLabel = "";
-		$this->strLabel	= "Contact: $intContactId";
-		
-		return self::OLD_FRAMEWORK . "contact_view.php?Id={$intContactId}";
+		$this->strLabel = "Contact: $intContactId";
+
+		return self :: OLD_FRAMEWORK . "contact_view.php?Id={$intContactId}";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// AccountOverview
 	//------------------------------------------------------------------------//
@@ -1554,27 +1470,24 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AccountOverview($intAccountId, $bolShowAccountName=FALSE)
-	{
+	function AccountOverview($intAccountId, $bolShowAccountName = FALSE) {
 		$this->strContextMenuLabel = "Overview";
-		
+
 		$strLabel = "Account";
 		if ($bolShowAccountName)
 		{
 			$objAccount = Account::getForId($intAccountId);
-			if ($objAccount !== NULL)
-			{
+			if ($objAccount !== NULL) {
 				$strLabel = htmlspecialchars(trim($objAccount->getName()));
-				$strLabel = ($strLabel == "")? "Account" : $strLabel;
+				$strLabel = ($strLabel == "") ? "Account" : $strLabel;
 			}
 		}
-		
-		$this->strLabel	= $strLabel;
 
-		return self::NEW_FRAMEWORK . "flex.php/Account/Overview/?Account.Id={$intAccountId}";
+		$this->strLabel = $strLabel;
+
+		return self :: NEW_FRAMEWORK . "flex.php/Account/Overview/?Account.Id={$intAccountId}";
 	}
 
-	
 	//------------------------------------------------------------------------//
 	// ListContacts
 	//------------------------------------------------------------------------//
@@ -1592,21 +1505,18 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ListContacts($intAccountId)
-	{
+	function ListContacts($intAccountId) {
 		$this->strContextMenuLabel = "";
-		
+
 		// Setup data to send
 		$arrData['Account']['Id'] = $intAccountId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AccountContactsPopupId\", \"extralarge\", null, \"Account\", \"ViewContacts\", $strJsonCode)";
 	}
-	
-	
-	
+
 	//------------------------------------------------------------------------//
 	// ViewService
 	//------------------------------------------------------------------------//
@@ -1627,25 +1537,24 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewService($intId, $bolShowFNN=FALSE)
-	{
+	function ViewService($intId, $bolShowFNN = FALSE) {
 		$this->strContextMenuLabel = "Service Details";
-		
+
 		$strLabel = "Service";
-		if ($bolShowFNN)
-		{
-			$objService = new Service(array("Id"=>$intId, "FNN"=>NULL), TRUE);
-			if (isset($objService->FNN))
-			{
+		if ($bolShowFNN) {
+			$objService = new Service(array (
+				"id" => $intId
+			), TRUE);
+
+			if ($objService->FNN !== NULL) {
 				$strLabel = htmlspecialchars($objService->FNN);
 			}
 		}
-		
-		$this->strLabel	= $strLabel;
-		return self::NEW_FRAMEWORK . "flex.php/Service/View/?Service.Id=$intId";
+
+		$this->strLabel = $strLabel;
+		return self :: NEW_FRAMEWORK . "flex.php/Service/View/?Service.Id=$intId";
 	}
-	
-	
+
 	//------------------------------------------------------------------------//
 	// ViewServiceAddress
 	//------------------------------------------------------------------------//
@@ -1662,19 +1571,18 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewServiceAddress($intServiceId)
-	{
+	function ViewServiceAddress($intServiceId) {
 		$this->strContextMenuLabel = "View Address Details";
-		
+
 		// Setup data to send
 		$arrData['Service']['Id'] = $intServiceId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ServiceAddressPopupId\", \"MediumLarge\", \"Address Details\", \"Service\", \"ViewAddress\", $strJsonCode)";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// EditServiceAddress
 	//------------------------------------------------------------------------//
@@ -1691,19 +1599,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EditServiceAddress($intServiceId)
-	{
+	function EditServiceAddress($intServiceId) {
 		$this->strContextMenuLabel = "Edit Address Details";
-		
+
 		// Setup data to send
 		$arrData['Service']['Id'] = $intServiceId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ServiceAddressPopupId\", \"ExtraLarge\", \"Address Details\", \"Service\", \"EditAddress\", $strJsonCode)";
 	}
-	
 
 	//------------------------------------------------------------------------//
 	// ViewInvoicedCDR
@@ -1723,15 +1629,14 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewInvoicedCDR($intServiceTotalId, $intInvoiceRunId, $intCdrId)
-	{
+	function ViewInvoicedCDR($intServiceTotalId, $intInvoiceRunId, $intCdrId) {
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel	= "Record";
 
-		return self::NEW_FRAMEWORK . "reflex.php/Invoice/CDR/$intServiceTotalId/$intInvoiceRunId/$intCdrId";
+		$this->strLabel = "Record";
+
+		return self :: NEW_FRAMEWORK . "reflex.php/Invoice/CDR/$intServiceTotalId/$intInvoiceRunId/$intCdrId";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// RecordCustomerInHistory
 	//------------------------------------------------------------------------//
@@ -1751,28 +1656,23 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function RecordCustomerInHistory($bolSupressErrors, $strNextPage, $intAccountId, $intContactId)
-	{
-		$arrGetVars = array();
-		$strSupressErrors = ($bolSupressErrors)? Application_Handler_CustomerHistory::SUPRESS_ERRORS_FLAG ."/": "";
-		
+	function RecordCustomerInHistory($bolSupressErrors, $strNextPage, $intAccountId, $intContactId) {
+		$arrGetVars = array ();
+		$strSupressErrors = ($bolSupressErrors) ? Application_Handler_CustomerHistory :: SUPRESS_ERRORS_FLAG . "/" : "";
+
 		$arrGetVars[] = "NextPage=$strNextPage";
-		if ($intAccountId !== NULL)
-		{
+		if ($intAccountId !== NULL) {
 			$arrGetVars[] = "AccountId=$intAccountId";
 		}
-		
-		if ($intContactId !== NULL)
-		{
+
+		if ($intContactId !== NULL) {
 			$arrGetVars[] = "ContactId=$intContactId";
 		}
 		$strGetVars = implode("&", $arrGetVars);
-		
-		return self::NEW_FRAMEWORK . "reflex.php/CustomerHistory/Record/{$strSupressErrors}?{$strGetVars}";
+
+		return self :: NEW_FRAMEWORK . "reflex.php/CustomerHistory/Record/{$strSupressErrors}?{$strGetVars}";
 	}
-	
-	
-	
+
 	//------------------------------------------------------------------------//
 	// ViewCDR
 	//------------------------------------------------------------------------//
@@ -1790,16 +1690,14 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewCDR($intId)
-	{
+	function ViewCDR($intId) {
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel	= "Record";
 
-		return self::OLD_FRAMEWORK . "cdr_view.php?Id=$intId";
+		$this->strLabel = "Record";
+
+		return self :: OLD_FRAMEWORK . "cdr_view.php?Id=$intId";
 	}
-	
-	
+
 	//------------------------------------------------------------------------//
 	// InvoicesAndPayments
 	//------------------------------------------------------------------------//
@@ -1817,16 +1715,14 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function InvoicesAndPayments($intId)
-	{
+	function InvoicesAndPayments($intId) {
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel	= "Invoices and Payments";
 
-		return self::NEW_FRAMEWORK . "flex.php/Account/InvoicesAndPayments/?Account.Id=$intId";
+		$this->strLabel = "Invoices and Payments";
+
+		return self :: NEW_FRAMEWORK . "flex.php/Account/InvoicesAndPayments/?Account.Id=$intId";
 	}
-	
-	
+
 	//------------------------------------------------------------------------//
 	// EditEmployee
 	//------------------------------------------------------------------------//
@@ -1844,22 +1740,21 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EditEmployee($intId, $strUserName)
-	{
+	function EditEmployee($intId, $strUserName) {
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel	= "emp: $strUserName";
-		
+
+		$this->strLabel = "emp: $strUserName";
+
 		// Setup data to send
 
 		$arrData['Employee']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmployeeEditPopup\", \"medium\", \"Employee\", \"Employee\", \"Edit\", $strJsonCode)";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ViewUserDetails
 	//------------------------------------------------------------------------//
@@ -1875,13 +1770,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewUserDetails()
-	{
+	function ViewUserDetails() {
 		$this->strContextMenuLabel = "View Employee details";
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmployeeEditPopup\", \"medium\", \"Employee\", \"Employee\", \"EmployeeDetails\", null)";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// AddEmployee
 	//------------------------------------------------------------------------//
@@ -1897,23 +1791,21 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddEmployee()
-	{
+	function AddEmployee() {
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel	= "emp: new";
-		
+
+		$this->strLabel = "emp: new";
+
 		// Setup data to send
 
 		$arrData['Employee']['Id'] = -1;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{}AddPopup\", \"medium\", \"Employee\", \"Employee\", \"Create\", $strJsonCode)";
 	}
 
-	
 	//------------------------------------------------------------------------//
 	// AddRatePlan
 	//------------------------------------------------------------------------//
@@ -1932,35 +1824,30 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddRatePlan($intBasePlanId = NULL, $strCallingPageHref = NULL)
-	{
+	function AddRatePlan($intBasePlanId = NULL, $strCallingPageHref = NULL) {
 		$this->strContextMenuLabel = "";
-		
+
 		$this->strLabel = "Add Plan";
-	
+
 		// Setup data to send as GET variables
-		$strBasePlan 	= ($intBasePlanId !== NULL) ? "BaseRatePlan.Id=$intBasePlanId" : "";
+		$strBasePlan = ($intBasePlanId !== NULL) ? "BaseRatePlan.Id=$intBasePlanId" : "";
 		$strCallingPage = ($strCallingPageHref !== NULL) ? "CallingPage.Href=$strCallingPageHref" : "";
 
-		if ($intBasePlanId && $strCallingPageHref)
-		{
+		if ($intBasePlanId && $strCallingPageHref) {
 			// Both parameters are set
 			$strGetVariables = "?$strBasePlan&$strCallingPage";
 		}
-		elseif ($intBasePlanId || $strCallingPageHref)
-		{
+		elseif ($intBasePlanId || $strCallingPageHref) {
 			// Only one of the parameters is specified
 			$strGetVariables = "?" . $strBasePlan . $strCallingPage;
-		}
-		else
-		{
+		} else {
 			// No parameters have been specified
 			$strGetVariables = "";
 		}
 
-		return self::NEW_FRAMEWORK . "flex.php/Plan/Add/$strGetVariables";
+		return self :: NEW_FRAMEWORK . "flex.php/Plan/Add/$strGetVariables";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// EditRatePlan
 	//------------------------------------------------------------------------//
@@ -1979,20 +1866,18 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EditRatePlan($intPlanId, $strCallingPageHref = NULL)
-	{
+	function EditRatePlan($intPlanId, $strCallingPageHref = NULL) {
 		$this->strContextMenuLabel = "";
-		
+
 		$this->strLabel = "Edit Plan";
-	
+
 		// Setup data to send as GET variables
 		$strGetVariables = "RatePlan.Id=$intPlanId";
-		if ($strCallingPageHref !== NULL)
-		{
+		if ($strCallingPageHref !== NULL) {
 			$strGetVariables .= "&CallingPage.Href=$strCallingPageHref";
 		}
 
-		return self::NEW_FRAMEWORK . "flex.php/Plan/Add/?$strGetVariables";
+		return self :: NEW_FRAMEWORK . "flex.php/Plan/Add/?$strGetVariables";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2011,16 +1896,15 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AvailablePlans($intServiceType = 0)
-	{
+	function AvailablePlans($intServiceType = 0) {
 		$this->strContextMenuLabel = "Plans";
-		
+
 		$this->strLabel = "Available Plans";
-		
+
 		// Set up the filter if intServiceType was passed
 		$strFilter = ($intServiceType) ? "?RatePlan.ServiceType=$intServiceType" : "";
-		
-		return self::NEW_FRAMEWORK . "flex.php/Plan/AvailablePlans/$strFilter";
+
+		return self :: NEW_FRAMEWORK . "flex.php/Plan/AvailablePlans/$strFilter";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2039,13 +1923,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewPlan($intRatePlanId)
-	{
+	function ViewPlan($intRatePlanId) {
 		$this->strContextMenuLabel = "";
-		
+
 		$this->strLabel = "Plan Details";
-		
-		return self::NEW_FRAMEWORK . "flex.php/Plan/View/?RatePlan.Id=$intRatePlanId";
+
+		return self :: NEW_FRAMEWORK . "flex.php/Plan/View/?RatePlan.Id=$intRatePlanId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2065,11 +1948,10 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddAssociatedAccount($intAccountId)
-	{
+	function AddAssociatedAccount($intAccountId) {
 		$this->strContextMenuLabel = "";
-		
-		return self::OLD_FRAMEWORK . "account_add.php?Associated=$intAccountId";
+
+		return self :: OLD_FRAMEWORK . "account_add.php?Associated=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2091,12 +1973,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewInvoicePDF($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRun="")
-	{
+	function ViewInvoicePDF($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRun = "") {
 		$this->strContextMenuLabel = "";
 
 		$this->strLabel = "pdf acct: $intAccount, $intInvoiceId/$intInvoiceRun";
-		return self::OLD_FRAMEWORK . "invoice_pdf.php?Account=$intAccount&Invoice=$intInvoiceId&invoice_run_id=$intInvoiceRun&Year=$intYear&Month=$intMonth";
+		return self :: OLD_FRAMEWORK . "invoice_pdf.php?Account=$intAccount&Invoice=$intInvoiceId&invoice_run_id=$intInvoiceRun&Year=$intYear&Month=$intMonth";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2117,12 +1998,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewInvoiceService($intServiceTotal, $strFNN)
-	{
+	function ViewInvoiceService($intServiceTotal, $strFNN) {
 		$this->strContextMenuLabel = "";
-		
+
 		$this->strLabel = "Service: $strFNN";
-		return self::NEW_FRAMEWORK . "reflex.php/Invoice/Service/$intServiceTotal";
+		return self :: NEW_FRAMEWORK . "reflex.php/Invoice/Service/$intServiceTotal";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2142,12 +2022,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewInvoice($intInvoice)
-	{
+	function ViewInvoice($intInvoice) {
 		$this->strContextMenuLabel = "";
-		
+
 		$this->strLabel = "Invoice: $intInvoice";
-		return self::OLD_FRAMEWORK . "invoice_view.php?Invoice=$intInvoice";
+		return self :: OLD_FRAMEWORK . "invoice_view.php?Invoice=$intInvoice";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2167,22 +2046,20 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewAccountNotes($intAccountId)
-	{
+	function ViewAccountNotes($intAccountId) {
 		$this->strContextMenuLabel = "View Notes";
-		
-		$this->strLabel	= "view account notes";
-		
+
+		$this->strLabel = "view account notes";
+
 		// Setup data to send
 		$arrData['Account']['Id'] = $intAccountId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"large\", \"Account Notes\", \"Note\", \"View\", $strJsonCode)";
 	}
-
 
 	//------------------------------------------------------------------------//
 	// ViewServiceDetails
@@ -2202,12 +2079,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewServiceDetails($intId)
-	{
+	function ViewServiceDetails($intId) {
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel	= "acc: $intId";
-		return self::NEW_FRAMEWORK . "flex.php/Service/View/?Service.Id=$intId";
+
+		$this->strLabel = "acc: $intId";
+		return self :: NEW_FRAMEWORK . "flex.php/Service/View/?Service.Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2227,12 +2103,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewUnbilledCharges($intId)
-	{
+	function ViewUnbilledCharges($intId) {
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel	= "view unbilled charges";
-		return self::OLD_FRAMEWORK . "service_unbilled.php?Id=$intId";
+
+		$this->strLabel = "view unbilled charges";
+		return self :: OLD_FRAMEWORK . "service_unbilled.php?Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2252,12 +2127,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ChangeOfLessee($intId)
-	{
+	function ChangeOfLessee($intId) {
 		$this->strContextMenuLabel = "Change Lessee";
-		
-		$this->strLabel	= "change of lessee";
-		return self::OLD_FRAMEWORK . "service_lessee.php?Service=$intId";
+
+		$this->strLabel = "change of lessee";
+		return self :: OLD_FRAMEWORK . "service_lessee.php?Service=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2276,17 +2150,15 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function MoveService($intServiceId)
-	{
+	function MoveService($intServiceId) {
 		$this->strContextMenuLabel = "Move Service";
-		
+
 		// Setup data to send
 		$arrData['Service']['Id'] = $intServiceId;
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MoveServicePopup\", \"mediumlarge\", \"Service Movement\", \"ServiceMovement\", \"DisplayServiceMovementPopup\", $strJsonCode)";
 	}
-
 
 	//------------------------------------------------------------------------//
 	// ViewServiceNotes
@@ -2305,18 +2177,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewServiceNotes($intId, $strNoteType = NULL)
-	{
+	function ViewServiceNotes($intId, $strNoteType = NULL) {
 		$this->strContextMenuLabel = "View Notes";
-		
-		$this->strLabel	= "view service notes";
-		
+
+		$this->strLabel = "view service notes";
+
 		// Setup data to send
 		$arrData['Service']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"large\", \"Service Notes\", \"Note\", \"View\", $strJsonCode)";
 	}
@@ -2338,18 +2209,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewContactNotes($intId)
-	{
+	function ViewContactNotes($intId) {
 		$this->strContextMenuLabel = "View Notes";
-		
-		$this->strLabel	= "view contact notes";
-		
+
+		$this->strLabel = "view contact notes";
+
 		// Setup data to send
 		$arrData['Contact']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"large\", \"Contact Notes\", \"Note\", \"View\", $strJsonCode)";
 	}
@@ -2371,18 +2241,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddContactNote($intId)
-	{
+	function AddContactNote($intId) {
 		$this->strContextMenuLabel = "Add Note";
-		
-		$this->strLabel	= "Add Contact Note";
-		
+
+		$this->strLabel = "Add Contact Note";
+
 		// Setup data to send
 		$arrData['Contact']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Add Contact Note\", \"Note\", \"Add\", $strJsonCode)";
 	}
 
@@ -2403,18 +2272,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddAccountNote($intId)
-	{
+	function AddAccountNote($intId) {
 		$this->strContextMenuLabel = "Add Note";
-		
-		$this->strLabel	= "Add Account Note";
-		
+
+		$this->strLabel = "Add Account Note";
+
 		// Setup data to send
 		$arrData['Account']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Add Account Note\", \"Note\", \"Add\", $strJsonCode)";
 	}
 
@@ -2435,18 +2303,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddServiceNote($intId)
-	{
+	function AddServiceNote($intId) {
 		$this->strContextMenuLabel = "Add Note";
-		
-		$this->strLabel	= "Add Service Note";
-		
+
+		$this->strLabel = "Add Service Note";
+
 		// Setup data to send
 		$arrData['Service']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddServicePopupId\", \"medium\", \"Add Service Note\", \"Note\", \"Add\", $strJsonCode)";
 	}
 
@@ -2468,25 +2335,24 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EmailPDFInvoice($intId, $intYear, $intMonth, $intInvoiceId, $intInvoiceRun)
-	{
+	function EmailPDFInvoice($intId, $intYear, $intMonth, $intInvoiceId, $intInvoiceRun) {
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel	= "email pdf invoice";
-		
+
+		$this->strLabel = "email pdf invoice";
+
 		// Setup data to send
 		$arrData['Account']['Id'] = $intId;
 		$arrData['Invoice']['Id'] = $intInvoiceId;
 		$arrData['Invoice']['invoice_run_id'] = $intInvoiceRun;
 		$arrData['Invoice']['Year'] = $intYear;
 		$arrData['Invoice']['Month'] = $intMonth;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmailPDFInvoicePopupId\", \"medium\", \"Email Invoice PDF\", \"Invoice\", \"EmailPDFInvoice\", $strJsonCode)";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// AddAdjustment
 	//------------------------------------------------------------------------//
@@ -2505,22 +2371,21 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddAdjustment($intAccountId, $intServiceId=NULL)
-	{
+	function AddAdjustment($intAccountId, $intServiceId = NULL) {
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel	= "add adjustment";
-		
+
+		$this->strLabel = "add adjustment";
+
 		// Setup data to send
 		$arrData['Account']['Id'] = $intAccountId;
 		$arrData['Service']['Id'] = $intServiceId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", \"Adjustment\", \"Adjustment\", \"Add\", $strJsonCode)";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// AddRecurringAdjustment
 	//------------------------------------------------------------------------//
@@ -2539,23 +2404,21 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function AddRecurringAdjustment($intAccountId, $intServiceId=NULL)
-	{
+	function AddRecurringAdjustment($intAccountId, $intServiceId = NULL) {
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel	= "add recurring adjustment";
-		
+
+		$this->strLabel = "add recurring adjustment";
+
 		// Setup data to send
 		$arrData['Account']['Id'] = $intAccountId;
 		$arrData['Service']['Id'] = $intServiceId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringAdjustmentPopupId\", \"medium\", \"Recurring Adjustment\", \"Adjustment\", \"AddRecurring\", $strJsonCode)";
 	}
-	
-	
+
 	//------------------------------------------------------------------------//
 	// MakePayment
 	//------------------------------------------------------------------------//
@@ -2573,18 +2436,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function MakePayment($intId)
-	{
+	function MakePayment($intId) {
 		$this->strContextMenuLabel = "";
-		
-		$this->strLabel	= "make payment";
-		
+
+		$this->strLabel = "make payment";
+
 		// Setup data to send
 		$arrData['Account']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MakePaymentPopupId\", \"mediumlarge\", \"Payment\", \"Payment\", \"Add\", $strJsonCode)";
 	}
 
@@ -2605,18 +2467,17 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EditAccount($intId)
-	{
+	function EditAccount($intId) {
 		$this->strContextMenuLabel = "Edit";
-		
-		$this->strLabel	= "edit account";
-		
+
+		$this->strLabel = "edit account";
+
 		// Setup data to send
 		$arrData['Account']['Id'] = $intId;
-		
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewAccountPopupId\", \"large\", null, \"Account\", \"ViewDetails\", $strJsonCode)";
 	}
 
@@ -2637,10 +2498,9 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ListServices($intId)
-	{	
+	function ListServices($intId) {
 		$this->strContextMenuLabel = "";
-		
+
 		/*  The Old Way of open up the list of services in a popup.  Retain this as it will be eventually used again
 		// Setup data to send
 		$arrData['Account']['Id'] = $intId;
@@ -2650,9 +2510,9 @@ class MenuItems
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AccountServicesPopupId\", \"ExtraLarge\", null, \"Account\", \"ViewServices\", $strJsonCode)";
 		*/
-		
+
 		// View the list of Services as a page
-		return self::NEW_FRAMEWORK . "flex.php/Account/ViewServices/?Account.Id=$intId";
+		return self :: NEW_FRAMEWORK . "flex.php/Account/ViewServices/?Account.Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2672,21 +2532,19 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function DeletePayment($intPaymentId)
-	{
-		$this->strLabel	= "delete payment: $intPaymentId";
-		
+	function DeletePayment($intPaymentId) {
+		$this->strLabel = "delete payment: $intPaymentId";
+
 		// Setup data to send
 		$arrData['DeleteRecord']['RecordType'] = "Payment";
 		$arrData['Payment']['Id'] = $intPaymentId;
-		
-				
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeletePaymentPopupId\", \"medium\", \"Reverse Payment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// DeleteAdjustment
 	//------------------------------------------------------------------------//
@@ -2704,20 +2562,19 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function DeleteAdjustment($intAdjustmentId)
-	{
-		$this->strLabel	= "delete adjustment: $intAdjustmentId";
-				
+	function DeleteAdjustment($intAdjustmentId) {
+		$this->strLabel = "delete adjustment: $intAdjustmentId";
+
 		// Setup data to send
 		$arrData['DeleteRecord']['RecordType'] = "Adjustment";
 		$arrData['Charge']['Id'] = $intAdjustmentId;
-				
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteAdjustmentPopupId\", \"medium\", \"Delete Adjustment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// DeleteRecurringAdjustment
 	//------------------------------------------------------------------------//
@@ -2735,17 +2592,16 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function DeleteRecurringAdjustment($intRecurringAdjustmentId)
-	{
-		$this->strLabel	= "delete recurring adjustment: $intRecurringAdjustmentId";
-		
+	function DeleteRecurringAdjustment($intRecurringAdjustmentId) {
+		$this->strLabel = "delete recurring adjustment: $intRecurringAdjustmentId";
+
 		// Setup data to send
 		$arrData['DeleteRecord']['RecordType'] = "RecurringAdjustment";
 		$arrData['RecurringCharge']['Id'] = $intRecurringAdjustmentId;
-				
+
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
-		
+
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteRecurringAdjustmentPopupId\", \"medium\", \"Cancel Recurring Adjustment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
 
@@ -2766,27 +2622,22 @@ class MenuItems
 	 * @return	string				Href to be executed
 	 * @method
 	 */
-	function Provisioning($intServiceId=NULL, $intAccountId=NULL)
-	{
+	function Provisioning($intServiceId = NULL, $intAccountId = NULL) {
 		$this->strContextMenuLabel = "Make Request";
-		
-		if ($intServiceId == NULL && $intAccountId == NULL)
-		{
+
+		if ($intServiceId == NULL && $intAccountId == NULL) {
 			throw new Exception("Must specify an AccountId or ServiceId");
 		}
-		
-		if ($intServiceId)
-		{
+
+		if ($intServiceId) {
 			$strParameter = "Service.Id=$intServiceId";
-		}
-		else
-		{
+		} else {
 			$strParameter = "Account.Id=$intAccountId";
 		}
 
 		$this->strLabel = "Provisioning";
-		return self::NEW_FRAMEWORK . "flex.php/Provisioning/BulkProvisioningRequest/?$strParameter";
-	}	
+		return self :: NEW_FRAMEWORK . "flex.php/Provisioning/BulkProvisioningRequest/?$strParameter";
+	}
 
 	//------------------------------------------------------------------------//
 	// KnowledgeBase
@@ -2803,13 +2654,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function KnowledgeBase()
-	{
+	function KnowledgeBase() {
 		$this->strContextMenuLabel = "";
-		
+
 		$this->strLabel = "Knowledge Base";
-		return self::NEW_FRAMEWORK . "flex.php/KnowledgeBase/ListArticles/";
-	}	
+		return self :: NEW_FRAMEWORK . "flex.php/KnowledgeBase/ListArticles/";
+	}
 
 	//------------------------------------------------------------------------//
 	// ViewKnowledgeBaseArticle
@@ -2828,12 +2678,11 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewKnowledgeBaseArticle($intId)
-	{
+	function ViewKnowledgeBaseArticle($intId) {
 		$this->strContextMenuLabel = "";
-		
+
 		$this->strLabel = "Article";
-		return self::NEW_FRAMEWORK . "flex.php/KnowledgeBase/ViewArticle/?KnowledgeBase.Id=$intId";
+		return self :: NEW_FRAMEWORK . "flex.php/KnowledgeBase/ViewArticle/?KnowledgeBase.Id=$intId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2853,14 +2702,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function EditInvoiceRunEvents($intId)
-	{
+	function EditInvoiceRunEvents($intId) {
 		$this->strContextMenuLabel = "";
-		
+
 		$this->strLabel = "Events";
 		return "javascript:Vixen.InvoiceRunEvents.RenderDetailsForViewing($intId);";
 	}
-
 
 	//------------------------------------------------------------------------//
 	// ManageInvoiceRunEvents
@@ -2877,14 +2724,12 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ManageInvoiceRunEvents()
-	{
+	function ManageInvoiceRunEvents() {
 		$this->strContextMenuLabel = "Manage Invoice Run Events";
-		
-		$this->strLabel = "Invoice Run Events";
-		return self::NEW_FRAMEWORK . "flex.php/InvoiceRunEvents/Manage";
-	}
 
+		$this->strLabel = "Invoice Run Events";
+		return self :: NEW_FRAMEWORK . "flex.php/InvoiceRunEvents/Manage";
+	}
 
 	//------------------------------------------------------------------------//
 	// AdvancedAccountSearch
@@ -2899,11 +2744,10 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function AdvancedAccountSearch()
-	{
-		$this->strContextMenuLabel	= "Advanced Account Search";
-		$this->strLabel				= "Advanced Account Search";
-		return self::OLD_FRAMEWORK . "account_list.php";
+	function AdvancedAccountSearch() {
+		$this->strContextMenuLabel = "Advanced Account Search";
+		$this->strLabel = "Advanced Account Search";
+		return self :: OLD_FRAMEWORK . "account_list.php";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2919,11 +2763,10 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function AdvancedContactSearch()
-	{
-		$this->strContextMenuLabel	= "Advanced Contact Search";
-		$this->strLabel				= "Advanced Contact Search";
-		return self::OLD_FRAMEWORK . "contact_list.php";
+	function AdvancedContactSearch() {
+		$this->strContextMenuLabel = "Advanced Contact Search";
+		$this->strLabel = "Advanced Contact Search";
+		return self :: OLD_FRAMEWORK . "contact_list.php";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2939,11 +2782,10 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function AdvancedServiceSearch()
-	{
-		$this->strContextMenuLabel	= "Advanced Service Search";
-		$this->strLabel				= "Advanced Service Search";
-		return self::OLD_FRAMEWORK . "service_list.php";
+	function AdvancedServiceSearch() {
+		$this->strContextMenuLabel = "Advanced Service Search";
+		$this->strLabel = "Advanced Service Search";
+		return self :: OLD_FRAMEWORK . "service_list.php";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2959,11 +2801,10 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ManageAdjustments()
-	{
-		$this->strContextMenuLabel	= "Approve and Decline Adjustments";
-		$this->strLabel				= "Manage Adjustments";
-		return self::OLD_FRAMEWORK . "charges_approve.php";
+	function ManageAdjustments() {
+		$this->strContextMenuLabel = "Approve and Decline Adjustments";
+		$this->strLabel = "Manage Adjustments";
+		return self :: OLD_FRAMEWORK . "charges_approve.php";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2979,11 +2820,10 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ManageSingleAdjustmentTypes()
-	{
-		$this->strContextMenuLabel	= "Manage Single Adjustment Types";
-		$this->strLabel				= "Manage Single Adjustment Types";
-		return self::OLD_FRAMEWORK . "charges_charge_list.php";
+	function ManageSingleAdjustmentTypes() {
+		$this->strContextMenuLabel = "Manage Single Adjustment Types";
+		$this->strLabel = "Manage Single Adjustment Types";
+		return self :: OLD_FRAMEWORK . "charges_charge_list.php";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2999,11 +2839,10 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ManageRecurringAdjustmentTypes()
-	{
-		$this->strContextMenuLabel	= "Manage Recurring Adjustment Types";
-		$this->strLabel				= "Manage Recurring Adjustment Types";
-		return self::OLD_FRAMEWORK . "charges_recurringcharge_list.php";
+	function ManageRecurringAdjustmentTypes() {
+		$this->strContextMenuLabel = "Manage Recurring Adjustment Types";
+		$this->strLabel = "Manage Recurring Adjustment Types";
+		return self :: OLD_FRAMEWORK . "charges_recurringcharge_list.php";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3019,13 +2858,12 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function PaymentDownload()
-	{
-		$this->strContextMenuLabel	= "Payment Download";
-		$this->strLabel				= "Payment Download";
-		return self::OLD_FRAMEWORK . "payment_download.php";
+	function PaymentDownload() {
+		$this->strContextMenuLabel = "Payment Download";
+		$this->strLabel = "Payment Download";
+		return self :: OLD_FRAMEWORK . "payment_download.php";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// MoveDelinquentCDRs
 	//------------------------------------------------------------------------//
@@ -3039,13 +2877,12 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function MoveDelinquentCDRs()
-	{
-		$this->strContextMenuLabel	= "Delinquent CDRs";
-		$this->strLabel				= "Delinquent CDRs";
-		return self::NEW_FRAMEWORK . "flex.php/Misc/MoveDelinquentCDRs/";
+	function MoveDelinquentCDRs() {
+		$this->strContextMenuLabel = "Delinquent CDRs";
+		$this->strLabel = "Delinquent CDRs";
+		return self :: NEW_FRAMEWORK . "flex.php/Misc/MoveDelinquentCDRs/";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// DataReports
 	//------------------------------------------------------------------------//
@@ -3059,11 +2896,10 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function DataReports()
-	{
-		$this->strContextMenuLabel	= "Data Reports";
-		$this->strLabel				= "Data Reports";
-		return self::OLD_FRAMEWORK . "datareport_list.php";
+	function DataReports() {
+		$this->strContextMenuLabel = "Data Reports";
+		$this->strLabel = "Data Reports";
+		return self :: OLD_FRAMEWORK . "datareport_list.php";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3079,11 +2915,10 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ManageEmployees()
-	{
-		$this->strContextMenuLabel	= "Manage Employees";
-		$this->strLabel				= "Employees";
-		return self::NEW_FRAMEWORK . "flex.php/Employee/EmployeeList/";
+	function ManageEmployees() {
+		$this->strContextMenuLabel = "Manage Employees";
+		$this->strLabel = "Employees";
+		return self :: NEW_FRAMEWORK . "flex.php/Employee/EmployeeList/";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3099,13 +2934,12 @@ class MenuItems
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ManageBreachedContracts()
-	{
-		$this->strContextMenuLabel	= "Manage Breached Contracts";
-		$this->strLabel				= "Manage Breached Contracts";
-		return self::NEW_FRAMEWORK . "reflex.php/Contract/ManageBreached/";
+	function ManageBreachedContracts() {
+		$this->strContextMenuLabel = "Manage Breached Contracts";
+		$this->strLabel = "Manage Breached Contracts";
+		return self :: NEW_FRAMEWORK . "reflex.php/Contract/ManageBreached/";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//
@@ -3128,25 +2962,26 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function BreadCrumb($strName, $arrParams)
-	{
+	function BreadCrumb($strName, $arrParams) {
 		$this->strLabel = NULL;
-		$arrReturn = Array();
+		$arrReturn = Array ();
 		$strName = str_replace('_', '', $strName);
-		
+
 		// call the menu item method specific to $strName
-		$arrReturn['Href'] = call_user_func_array(array($this, $strName), $arrParams);
-		
-		if (!$this->strLabel)
-		{
+		$arrReturn['Href'] = call_user_func_array(array (
+			$this,
+			$strName
+		), $arrParams);
+
+		if (!$this->strLabel) {
 			// the menu item cannot be used as a breadcrumb
 			return FALSE;
 		}
 		$arrReturn['Label'] = $this->strLabel;
-		
+
 		return $arrReturn;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ContextMenuItemLabel
 	//------------------------------------------------------------------------//
@@ -3165,23 +3000,23 @@ class MenuItems
 	 * @return	string				the Context Menu Item Label
 	 * @method
 	 */
-	function ContextMenuItemLabel($strName, $arrParams)
-	{
+	function ContextMenuItemLabel($strName, $arrParams) {
 		$this->strContextMenuLabel = "";
 
 		// call the menu item method specific to $strName
-		call_user_func_array(array($this, $strName), $arrParams);
-		
-		if ($this->strContextMenuLabel == "")
-		{
+		call_user_func_array(array (
+			$this,
+			$strName
+		), $arrParams);
+
+		if ($this->strContextMenuLabel == "") {
 			// The Menu Item function did not specify a Context Menu Label
 			return NULL;
 		}
-		
+
 		return $this->strContextMenuLabel;
 	}
-	
-	
+
 	//------------------------------------------------------------------------//
 	// __call
 	//------------------------------------------------------------------------//
@@ -3199,23 +3034,20 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function __call($strName, $arrParams)
-	{
-		switch ($strName)
-		{
-			case "Logout":
-				return self::NEW_FRAMEWORK . "flex.php/Employee/Logout/";
+	function __call($strName, $arrParams) {
+		switch ($strName) {
+			case "Logout" :
+				return self :: NEW_FRAMEWORK . "flex.php/Employee/Logout/";
 				break;
-			case "AdminConsole":
+			case "AdminConsole" :
 				$this->strLabel = "Admin Console";
-				return self::OLD_FRAMEWORK . "console_admin.php";
+				return self :: OLD_FRAMEWORK . "console_admin.php";
 				break;
 			default;
 				return "[insert generic HREF here]";
-				
+
 				break;
 		}
 	}
 }
-
 ?>

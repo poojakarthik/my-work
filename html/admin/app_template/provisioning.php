@@ -90,7 +90,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 			$this->LoadPage('error');
 			return TRUE;
 		}
-		
+
 		// Retrieve all the services belonging to the account and whether or not they have address details defined
 		//$this->_LoadServiceDetails(DBO()->Account->Id->Value);
 		DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value);

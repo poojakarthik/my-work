@@ -158,7 +158,7 @@ var Dealer = {
 		Tabs.initialiseTabCollections(objPopup);
 		
 		Vixen.Popup.Centre(this.POPUP_ID);
-		
+
 		this.objDealer			= objData.Dealer;
 		this.objSaleTypes		= objData.SaleTypes;
 		this.objCustomerGroups	= objData.CustomerGroups;

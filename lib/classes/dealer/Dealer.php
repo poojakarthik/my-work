@@ -5,6 +5,8 @@
 
 class Dealer
 {
+	const SYSTEM_DEALER_ID = 1;
+	
 	// The key to this array will be the tidy names as defined by the getColumns function
 	private	$_arrProperties	= array();
 
@@ -195,12 +197,14 @@ class Dealer
 				}
 				$strColumnType = $arrColumnTypes[$strColumn];
 				
-				switch($arrStyle['Comparison'])
+				switch ($arrStyle['Comparison'])
 				{
+					case '!=':
 					case '=':
 						if ($arrStyle['Value'] === NULL || (is_array($arrStyle['Value']) && empty($arrStyle['Value'])))
 						{
-							$arrWhereParts[] = $arrColumns[$strColumn] ." IS NULL";
+							$strNegate = ($arrStyle['Comparison'] == '!=')? "NOT" : "";
+							$arrWhereParts[] = $arrColumns[$strColumn] ." IS $strNegate NULL";
 						}
 						elseif (is_array($arrStyle['Value']))
 						{
@@ -222,7 +226,8 @@ class Dealer
 								}
 							}
 							
-							$arrWhereParts[] = $arrColumns[$strColumn] ." IN (". implode(", ", $arrValues) .")";
+							$strNegate = ($arrStyle['Comparison'] == '!=')? "NOT" : "";
+							$arrWhereParts[] = $arrColumns[$strColumn] ." $strNegate IN (". implode(", ", $arrValues) .")";
 						}
 						else
 						{
@@ -239,8 +244,10 @@ class Dealer
 								default:
 									throw new exception(__CLASS__ ."::". __METHOD__ ." - don't know how to handle data type, '$strColumnType'");
 							}
-							$arrWhereParts[] = $arrColumns[$strColumn] ." = $mixValue";
+							$strComparison = ($arrStyle['Comparison'] == '!=')? "!=" : "=";
+							$arrWhereParts[] = $arrColumns[$strColumn] ." $strComparison $mixValue";
 						}
+						break;
 				}
 			}
 		}
@@ -274,8 +281,8 @@ class Dealer
 	{
 		if ($intDealerId === NULL)
 		{
-			// All dealers can potentially be the manager of a new dealer
-			return self::getFor(NULL, "CONCAT(first_name, ' ', last_name) ASC");
+			// All dealers can potentially be the manager of a new dealer (except the system dealer)
+			return self::getFor("id != ". self::SYSTEM_DEALER_ID, "CONCAT(first_name, ' ', last_name) ASC");
 		}
 		
 		// All dealers who aren't decendents of $intDealerId, can be made the manager of $intDealerId
@@ -289,7 +296,7 @@ class Dealer
 		}
 		
 		// $arrExcludedDealerIds should always contain $intDealerId, so we don't have to worry about it being empty
-		$strWhere = "id NOT IN (". implode(", ", $arrExcludedDealerIds) .") AND dealer_status_id = ". Dealer_Status::ACTIVE;
+		$strWhere = "id NOT IN (". implode(", ", $arrExcludedDealerIds) .") AND dealer_status_id = ". Dealer_Status::ACTIVE ." AND id != ". self::SYSTEM_DEALER_ID;
 		
 		return self::getFor($strWhere, "CONCAT(first_name, ' ', last_name) ASC");
 	}

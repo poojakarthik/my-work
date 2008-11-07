@@ -976,9 +976,9 @@ class AppTemplateService extends ApplicationTemplate
 		DBO()->Account->AllRatePlans = $arrRatePlans;
 		
 		// Retrieve all Dealer details
-		$arrColumns = array("id", "first_name", "last_name", "title");
-		$strWhere	= "termination_date > NOW()";
-		$strOrderBy	= "title ASC, first_name ASC, last_name ASC, id ASC";
+		$arrColumns = array("id", "first_name", "last_name");
+		$strWhere	= "dealer_status_id = ". Dealer_Status::ACTIVE ." AND (termination_date IS NULL OR termination_date > NOW()) AND id != ". Dealer::SYSTEM_DEALER_ID;
+		$strOrderBy	= "first_name ASC, last_name ASC, id ASC";
 		$selDealers	= new StatementSelect("dealer", $arrColumns, $strWhere, $strOrderBy);
 		$arrDealers = array();
 		if ($selDealers->Execute())
@@ -986,7 +986,7 @@ class AppTemplateService extends ApplicationTemplate
 			$arrRecordSet = $selDealers->FetchAll();
 			foreach ($arrRecordSet as $arrRecord)
 			{
-				$strName = trim(trim($arrRecord['title']) ." ". trim($arrRecord['first_name']) ." ". trim($arrRecord['last_name']));
+				$strName = trim($arrRecord['first_name'] ." ". $arrRecord['last_name']);
 				$arrDealers[] = array(	"Id"	=> $arrRecord['id'], 
 										"Name"	=> $strName);
 			}
