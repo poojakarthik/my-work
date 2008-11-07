@@ -582,6 +582,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$objAccount->CreatedOn			= $arrSale['created_on'];
 						$objAccount->DisableDDR			= 0;
 						$objAccount->DisableLatePayment	= 0;
+						$objAccount->DisableLateNotices	= 0;
 						$objAccount->Sample				= 0;
 						$objAccount->Archived			= 0;
 						
