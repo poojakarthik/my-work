@@ -251,45 +251,51 @@ class Cli_App_Sync_SalesPortal extends Cli
 					// Doesn't exist -- INSERT
 					$arrSPDealer	= $arrFlexDealer;
 					
+					// Escape values
+					foreach ($arrSPDealer as $strField=>$mixValue)
+					{
+						$arrSPDealer[$strField]	= self::_toDBValue($mixValue);
+					}
+					
 					$strInsertSQL	= "INSERT INTO dealer VALUES " .
 										"( " .
 										"	{$arrSPDealer['id']}, " .
 										"	{$arrSPDealer['up_line_id']}," .
-										"	'{$arrSPDealer['username']}'," .
-										"	'{$arrSPDealer['password']}'," .
+										"	{$arrSPDealer['username']}'," .
+										"	{$arrSPDealer['password']}'," .
 										"	{$arrSPDealer['can_verify']}," .
-										"	'{$arrSPDealer['first_name']}'," .
-										"	'{$arrSPDealer['last_name']}'," .
+										"	{$arrSPDealer['first_name']}'," .
+										"	{$arrSPDealer['last_name']}'," .
 										"	{$arrSPDealer['title_id']}," .
-										"	'{$arrSPDealer['business_name']}'," .
-										"	'{$arrSPDealer['trading_name']}'," .
-										"	'{$arrSPDealer['abn']}'," .
+										"	{$arrSPDealer['business_name']}," .
+										"	{$arrSPDealer['trading_name']}," .
+										"	{$arrSPDealer['abn']}," .
 										"	{$arrSPDealer['abn_registered']}," .
-										"	'{$arrSPDealer['address_line_1']}'," .
-										"	'{$arrSPDealer['address_line_2']}'," .
-										"	'{$arrSPDealer['suburb']}'," .
+										"	{$arrSPDealer['address_line_1']}'," .
+										"	{$arrSPDealer['address_line_2']}'," .
+										"	{$arrSPDealer['suburb']}'," .
 										"	{$arrSPDealer['state_id']}," .
 										"	{$arrSPDealer['country_id']}," .
-										"	'{$arrSPDealer['postcode']}'," .
-										"	'{$arrSPDealer['postal_address_line_1']}'," .
-										"	'{$arrSPDealer['postal_address_line_2']}'," .
-										"	'{$arrSPDealer['postal_suburb']}'," .
+										"	{$arrSPDealer['postcode']}," .
+										"	{$arrSPDealer['postal_address_line_1']}'," .
+										"	{$arrSPDealer['postal_address_line_2']}'," .
+										"	{$arrSPDealer['postal_suburb']}'," .
 										"	{$arrSPDealer['postal_state_id']}," .
 										"	{$arrSPDealer['postal_country_id']}," .
-										"	'{$arrSPDealer['postal_postcode']}'," .
-										"	'{$arrSPDealer['phone']}'," .
-										"	'{$arrSPDealer['mobile']}," .
-										"	'{$arrSPDealer['fax']}'," .
-										"	'{$arrSPDealer['email']}'," .
+										"	{$arrSPDealer['postal_postcode']}," .
+										"	{$arrSPDealer['phone']}," .
+										"	{$arrSPDealer['mobile']}," .
+										"	{$arrSPDealer['fax']}," .
+										"	{$arrSPDealer['email']}," .
 										"	{$arrSPDealer['commission_scale']}," .
 										"	{$arrSPDealer['royalty_scale']}," .
-										"	'{$arrSPDealer['bank_account_bsb']}'," .
-										"	'{$arrSPDealer['bank_account_number']}'," .
-										"	'{$arrSPDealer['bank_account_name']}'," .
+										"	{$arrSPDealer['bank_account_bsb']}," .
+										"	{$arrSPDealer['bank_account_number']}," .
+										"	{$arrSPDealer['bank_account_name']}," .
 										"	{$arrSPDealer['gst_registered']}," .
-										"	'{$arrSPDealer['termination_date']}'," .
+										"	{$arrSPDealer['termination_date']}'," .
 										"	{$arrSPDealer['dealer_status_id']}," .
-										"	'{$arrSPDealer['created_on']}'" .
+										"	{$arrSPDealer['created_on']}" .
 										");";
 					$resDealerInsert	= $dsSalesPortal->query($strInsertSQL);
 					if (PEAR::isError($resDealerInsert))
@@ -1241,6 +1247,27 @@ class Cli_App_Sync_SalesPortal extends Cli
 		{
 			throw new Exception($resSaleItemStatusInsert->getMessage()." :: ".$resSaleItemStatusInsert->getUserInfo());
 		}
+	}
+	
+	// _toDBValue()	-- Converts a variable into its DB-compatible form
+	private static function _toDBValue($mixValue)
+	{
+		// Is it NULL?
+		if ($mixValue === NULL)
+		{
+			$mixValue	= 'NULL';
+		}
+		else
+		{
+			// Escape, etc
+			switch (gettype($mixValue))
+			{
+				case 'string':
+					$mixValue	= "'".str_replace("'", "\\'", $mixValue)."'";
+					break;
+			}
+		}
+		return $mixValue;
 	}
 
 	function getCommandLineArguments()
