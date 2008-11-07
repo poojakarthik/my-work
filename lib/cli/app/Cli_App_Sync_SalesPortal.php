@@ -159,8 +159,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 					$intProductVendor		= $arrRatePlan['customer_group'];
 					$strProductName			= $arrRatePlan['Name'];
 					$strProductDescription	= $arrRatePlan['Description'];
-					$intProductType			= $this->_convertFlexToSalesPortal('service_type', $arrRatePlan['ServiceType']);
-					$intProductStatus		= $this->_convertFlexToSalesPortal('plan_archived', $arrRatePlan['Archived']);
+					$intProductType			= $this->_convertFlexToSalesPortal('servicetype', $arrRatePlan['ServiceType']);
+					$intProductStatus		= $this->_convertFlexToSalesPortal('planarchived', $arrRatePlan['Archived']);
 					
 					// Does it already exist in the SP?
 					$resProduct	= $dsSalesPortal->query("SELECT id FROM product WHERE reference = 'RatePlan.Id={$arrRatePlan['Id']}' LIMIT 1");
@@ -1079,10 +1079,10 @@ class Cli_App_Sync_SalesPortal extends Cli
 		static	$dsSalesPortal;
 		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales');
 		
-		switch (str_replace('_', '', strtolower($strType)))
+		$strType	= str_replace('_', '', strtolower($strType));
+		switch ($strType)
 		{		
 			case 'servicetype':
-			case 'servicetypeid':
 				// HACK: These should work, at least for now
 				$arrConversion[$strType]	= array(
 														100 => 3,
@@ -1091,7 +1091,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 														103 => 4
 													);
 				
-				return $arrConversion['servicetype'][(int)$mixFlexValue];
+				return $arrConversion[$strType][(int)$mixFlexValue];
 				break;
 				
 			case 'planarchived':
@@ -1101,7 +1101,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 														1	=> 2
 													);
 				
-				return $arrConversion['planarchived'][(int)$mixFlexValue];
+				return $arrConversion[$strType][(int)$mixFlexValue];
 				break;
 			
 			default:
