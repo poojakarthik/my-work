@@ -192,5 +192,28 @@ abstract class ORM
 	{
 		return $this->_arrProperties;
 	}
+	
+	//------------------------------------------------------------------------//
+	// _preparedStatement
+	//------------------------------------------------------------------------//
+	/**
+	 * _preparedStatement()
+	 *
+	 * Access a Static Cache of Prepared Statements used by a class that extends this one
+	 *
+	 * Access a Static Cache of Prepared Statements used by a class that extends this one
+	 * 
+	 * @param	string		$strStatement		Name of the statement
+	 * 											Each derived class must handle the values
+	 * 											'selById' (SELECT by id),
+	 * 											'ubiSelf' (UPDATE by id of object),
+	 * 											'insSelf' (INSERT by id of object)
+	 * 
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	abstract protected static function _preparedStatement($strStatement);
+	
 }
 ?>
