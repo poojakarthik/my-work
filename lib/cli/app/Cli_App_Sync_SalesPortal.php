@@ -777,8 +777,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 					$this->log("\t\t\t* Getting list of Items sold...");
 					
 					// Get all items that were sold
-					$resSPSaleItems	= $dsSalesPortal->query("SELECT sale_item.*, product.product_type_id, product.product_category_id " .
-															"FROM sale_item JOIN product ON sale_item.product_id = product.id " .
+					$resSPSaleItems	= $dsSalesPortal->query("SELECT sale_item.*, product.product_type_id, product_type.product_category_id " .
+															"FROM sale_item JOIN product ON sale_item.product_id = product.id JOIN product_type ON product_type.id = product.product_type_id " .
 															"WHERE sale_id = {$arrSale['id']} AND sale_item_status_id = 5");
 					if (PEAR::isError($resSPSaleItems))
 					{
