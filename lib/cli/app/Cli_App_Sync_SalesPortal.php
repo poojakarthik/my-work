@@ -1267,7 +1267,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 		$strSaleStatus	= (is_int($mixNewStatus)) ? $mixNewStatus : "(SELECT id FROM sale_status WHERE name = '{$mixNewStatus}')";
 		$resSaleUpdate	= $dsSalesPortal->query("UPDATE sale " .
 												"SET sale_status_id = {$strSaleStatus} " .
-												"WHERE id = {$intSPSaleItemId}");
+												"WHERE id = {$intSPSaleId}");
 		if (PEAR::isError($resSaleUpdate))
 		{
 			throw new Exception($resSaleUpdate->getMessage()." :: ".$resSaleUpdate->getUserInfo());
