@@ -1267,8 +1267,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 		$strSaleStatus	= (is_int($mixNewStatus)) ? $mixNewStatus : "(SELECT id FROM sale_status WHERE name = '{$mixNewStatus}')";
 		$resSaleUpdate	= $dsSalesPortal->query("UPDATE sale " .
 												"SET sale_status_id = {$strSaleStatus} " .
-												"WHERE id = {$intSPSaleItemId} " .
-												"LIMIT 1");
+												"WHERE id = {$intSPSaleItemId}");
 		if (PEAR::isError($resSaleUpdate))
 		{
 			throw new Exception($resSaleUpdate->getMessage()." :: ".$resSaleUpdate->getUserInfo());
@@ -1294,8 +1293,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 		$strSaleItemStatus	= (is_int($mixNewStatus)) ? $mixNewStatus : "(SELECT id FROM sale_item_status WHERE name = '{$mixNewStatus}')";
 		$resSaleItemUpdate	= $dsSalesPortal->query("UPDATE sale_item " .
 													"SET sale_item_status_id = {$strSaleItemStatus} " .
-													"WHERE id = {$intSPSaleItemId} " .
-													"LIMIT 1");
+													"WHERE id = {$intSPSaleItemId}");
 		if (PEAR::isError($resSaleItemUpdate))
 		{
 			throw new Exception($resSaleItemUpdate->getMessage()." :: ".$resSaleItemUpdate->getUserInfo());
