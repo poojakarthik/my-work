@@ -437,6 +437,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 		
 		try
 		{
+			$qryQuery		= new Query();
 			$insBankAccount	= new StatementInsert("DirectDebit");
 			$insCreditCard	= new StatementInsert("CreditCard");
 			
@@ -451,6 +452,18 @@ class Cli_App_Sync_SalesPortal extends Cli
 			}
 			while ($arrSale = $resNewSales->fetchRow(MDB2_FETCHMODE_ASSOC))
 			{
+				// Created a new Savepoint for this Sale
+				$strSaleSavePoint	= "Flex_SP_Pull_Sale_{$arrSale['id']}";
+				if ($qryQuery->Execute("SAVEPOINT {$strSaleSavePoint}") === FALSE)
+				{
+					throw new Exception($qryQuery->Error());
+				}
+				$resCreateSavepoint	= $dsSalesPortal->query("SAVEPOINT {$strSaleSavePoint}");
+				if (PEAR::isError($resCreateSavepoint))
+				{
+					throw new Exception($resCreateSavepoint->getError()." :: ".$resCreateSavepoint->getUserInfo());
+				}
+				
 				try
 				{
 					// Is this for a new Account?
@@ -715,6 +728,18 @@ class Cli_App_Sync_SalesPortal extends Cli
 					}
 					while ($arrSPSaleItem = $resSPSaleItems->fetchRow(MDB2_FETCHMODE_ASSOC))
 					{
+						// Create a Savepoint for this Sale Item
+						$strSaleItemSavePoint	= "Flex_SP_Pull_Sale_Item_{$arrSPSaleItem['id']}";
+						if ($qryQuery->Execute("SAVEPOINT {$strSaleItemSavePoint}") === FALSE)
+						{
+							throw new Exception($qryQuery->Error());
+						}
+						$resCreateSavepoint	= $dsSalesPortal->query("SAVEPOINT {$strSaleItemSavePoint}");
+						if (PEAR::isError($resCreateSavepoint))
+						{
+							throw new Exception($resCreateSavepoint->getError()." :: ".$resCreateSavepoint->getUserInfo());
+						}
+						
 						try
 						{
 							// What Category of Product is the item?
@@ -853,7 +878,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 											$arrAdditionalDetails['Account']		= $objService->Account;
 											$arrAdditionalDetails['Service']		= $objService->Id;
 											$arrAdditionalDetails['SimPUK']			= ($arrSPMobileDetails['sim_puk']) ? $arrSPMobileDetails['sim_puk'] : '';
-											$arrAdditionalDetails['SimESN']			= ($arrSPMobileDetails['sim_esn']) ? $arrSPMobileDetails['sim_esn'] : '';
+											$arrAdditionalDetails['SimESN']			= '';
 											$arrAdditionalDetails['SimState']		= ($arrSPMobileDetails['sim_state_id']) ? $this->_salesPortalEnum('state', $arrSPMobileDetails['sim_state_id'], 'code') : '';
 											$arrAdditionalDetails['DOB']			= ($arrSPMobileDetails['dob']) ? $arrSPMobileDetails['dob'] : '0000-00-00';
 											$arrAdditionalDetails['Comments']		= ($arrSPMobileDetails['comments']) ? $arrSPMobileDetails['comments'] : '';
@@ -967,6 +992,17 @@ class Cli_App_Sync_SalesPortal extends Cli
 								default:
 									throw new Exception("Product Category '{$arrSPSaleItem['product_category_id']}' is unsupported by Flex!");
 							}
+						
+							// All seems to have worked, release Sale Item the savepoints
+							if ($qryQuery->Execute("RELEASE SAVEPOINT {$strSaleItemSavePoint}") === FALSE)
+							{
+								throw new Exception($qryQuery->Error());
+							}
+							$resReleaseSavepoint	= $dsSalesPortal->query("RELEASE SAVEPOINT {$strSaleItemSavePoint}");
+							if (PEAR::isError($resReleaseSavepoint))
+							{
+								throw new Exception($resReleaseSavepoint->getError()." :: ".$resReleaseSavepoint->getUserInfo());
+							}
 						}
 						catch(Exception_Sale_Product_Manual_Intervention $eException)
 						{
@@ -978,9 +1014,31 @@ class Cli_App_Sync_SalesPortal extends Cli
 						}
 					}
 					//------------------------------------------------------------//
+					
+					// All seems to have worked, release the Sale savepoints
+					if ($qryQuery->Execute("RELEASE SAVEPOINT {$strSaleSavePoint}") === FALSE)
+					{
+						throw new Exception($qryQuery->Error());
+					}
+					$resReleaseSavepoint	= $dsSalesPortal->query("RELEASE SAVEPOINT {$strSaleSavePoint}");
+					if (PEAR::isError($resReleaseSavepoint))
+					{
+						throw new Exception($resReleaseSavepoint->getError()." :: ".$resReleaseSavepoint->getUserInfo());
+					}
 				}
 				catch (Exception_Sale_Manual_Intervention $eException)
 				{
+					// Rollback to the savepoint for this Sale
+					if ($qryQuery->Execute("ROLLBACK TO {$strSaleSavePoint}") === FALSE)
+					{
+						throw new Exception($qryQuery->Error());
+					}
+					$resRollbackSavepoint	= $dsSalesPortal->query("ROLLBACK TO {$strSaleSavePoint}");
+					if (PEAR::isError($resRollbackSavepoint))
+					{
+						throw new Exception($resRollbackSavepoint->getError()." :: ".$resRollbackSavepoint->getUserInfo());
+					}
+					
 					// There was an issue with the Sale which needs manual intervention to resolve
 					$this->_updateSaleStatus($arrSale['id'], 'Manual Intervention', $eException->getMessage());
 				}
