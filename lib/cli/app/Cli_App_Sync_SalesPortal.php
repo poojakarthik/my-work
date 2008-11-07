@@ -1012,7 +1012,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 									}
 									
 									// Set Service Plan
-									$resProduct	= $dsSalesPortal->query("SELECT reference FROM product WHERE product_id = {$arrSPSaleItem['product_id']}");
+									$resProduct	= $dsSalesPortal->query("SELECT reference FROM product WHERE id = {$arrSPSaleItem['product_id']}");
 									if (PEAR::isError($resProduct))
 									{
 										throw new Exception($resProduct->getMessage()." :: ".$resProduct->getUserInfo());
