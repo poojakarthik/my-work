@@ -593,7 +593,7 @@ class Invoice_Run
 	public static function predictNextInvoiceDate($intCustomerGroup, $strEffectiveDate)
 	{
 		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
-		if ($selPaymentTerms->Execute(Array('customer_group_id' => $this->customer_group_id)))
+		if ($selPaymentTerms->Execute(Array('customer_group_id' => $intCustomerGroup)))
 		{
 			$arrPaymentTerms	= $selPaymentTerms->Fetch();
 		}
