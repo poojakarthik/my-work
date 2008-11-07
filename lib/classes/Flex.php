@@ -51,7 +51,7 @@ final class Flex
 
 	public static function getUserId()
 	{
-		if (self::loggedIn())
+		if (isset($_SESSION) && self::loggedIn())
 		{
 			return $_SESSION['User']['Id'];
 		}
