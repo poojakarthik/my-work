@@ -709,7 +709,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$objContact->JobTitle			= $arrSPContact['position_title'];
 						$objContact->Account			= $objAccount->Id;
 						$objContact->CustomerContact	= 0;
-						$objContact->PassWord			= $arrSPContact['password'];
+						$objContact->PassWord			= ($arrSPContact['password']) ? $arrSPContact['password'] : '';
 						$objContact->SessionId			= '';
 						$objContact->SessionExpire		= '0000-00-00 00:00:00';
 						$objContact->Archived			= 0;
