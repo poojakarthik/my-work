@@ -535,6 +535,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 							throw new Exception($resSaleAccount->getMessage()." :: ".$resSaleAccount->getUserInfo());
 						}
 						$arrSaleAccount	= $resSaleAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
+						$this->log("\t\t\t\t* SP Sale Account Id #{$arrSaleAccount['id']}...");
 						
 						$objAccount						= new Account();
 						$objAccount->BusinessName		= ($arrSaleAccount['business_name']) ? $arrSaleAccount['business_name'] : '';
