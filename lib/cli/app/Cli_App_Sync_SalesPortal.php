@@ -996,7 +996,12 @@ class Cli_App_Sync_SalesPortal extends Cli
 									
 									// Is the FNN in use already?
 									$this->log("\t\t\t\t\t\t* Checking if FNN is in use...");
-									if (IsFNNInUse($objService->FNN, $objService->Indial100, $objService->CreatedOn))
+									$mixFNNInUse	= IsFNNInUse($objService->FNN, $objService->Indial100, $objService->CreatedOn);
+									if (is_string($mixFNNInUse))
+									{
+										throw new Exception($mixFNNInUse);
+									}
+									elseif ($mixFNNInUse)
 									{
 										$this->log("\t\t\t\t\t\t\t! FNN is in use!  Aborting Sale...");
 										throw new Exception_Sale_Product_Manual_Intervention("The FNN {$objService->FNN} is already in use.  Please close the existing Service in Flex, or revoke the sale if it a duplicate.");
@@ -1004,6 +1009,15 @@ class Cli_App_Sync_SalesPortal extends Cli
 									
 									// Save the Service
 									$objService->save();
+									
+									// Add in the Addition Details
+									if ($insAdditionalDetails)
+									{
+										if ($insAdditionalDetails->Execute($arrAdditionalDetails) === FALSE)
+										{
+											throw new Exception($insAdditionalDetails->Error());
+										}
+									}
 									
 									// Extension Level Billing
 									if ($objService->Indial100 && $objService->ELB)
