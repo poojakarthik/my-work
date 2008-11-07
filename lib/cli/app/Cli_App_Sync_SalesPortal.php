@@ -537,17 +537,16 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$arrSaleAccount	= $resSaleAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
 						
 						$objAccount						= new Account();
-						$objAccount->BusinessName		= $arrSaleAccount['business_name'];
-						$objAccount->TradingName		= $arrSaleAccount['trading_name'];
+						$objAccount->BusinessName		= ($arrSaleAccount['business_name']) ? $arrSaleAccount['business_name'] : '';
+						$objAccount->TradingName		= ($arrSaleAccount['trading_name']) ? $arrSaleAccount['trading_name'] : '';
 						$objAccount->ABN				= ($arrSaleAccount['abn']) ? $arrSaleAccount['abn'] : '';
 						$objAccount->ACN				= ($arrSaleAccount['acn']) ? $arrSaleAccount['acn'] : '';
 						$objAccount->Address1			= $arrSaleAccount['address_line_1'];
-						$objAccount->Address2			= $arrSaleAccount['address_line_2'];
+						$objAccount->Address2			= ($arrSaleAccount['address_line_2']) ? $arrSaleAccount['address_line_2'] : '';
 						$objAccount->Suburb				= $arrSaleAccount['suburb'];
 						$objAccount->Postcode			= $arrSaleAccount['postcode'];
 						$objAccount->State				= $arrSaleAccount['state_name'];
 						$objAccount->Country			= 'AU';
-						$objAccount->BillingType		= $arrSaleAccount['business_name'];
 						$objAccount->CustomerGroup		= $arrSaleAccount['vendor_id'];
 						$objAccount->AccountGroup		= $objAccountGroup->Id;
 						$objAccount->BillingFreq		= BILLING_DEFAULT_FREQ;
