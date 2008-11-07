@@ -682,7 +682,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					else
 					{
 						// We only support New Customer Sales at the moment
-						throw new Exception(GetConstantDescription($arrSale['sale_type_id'], 'sale_type')." Sales are not supported by Flex!");
+						throw new Exception("'{$arrSale['sale_type_id']}' Sales are not supported by Flex!");
 					}
 					
 					$this->log("\t\t\t* Getting list of new Contacts...");
