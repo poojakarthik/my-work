@@ -466,6 +466,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 	// _pullSales()	-- Pulls all new Sales from the Sales Portal
 	protected function _pullSales()
 	{
+		$this->log("\t* Pulling Sales from the Sales Portal to Flex...");
+		
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
 		
@@ -479,6 +481,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 			$insBankAccount	= new StatementInsert("DirectDebit");
 			$insCreditCard	= new StatementInsert("CreditCard");
 			
+			$this->log("\t\t* Getting a list of New Sales from the Sales Portal...");
+			
 			// Get a list of New Sales from the SP
 			// FIXME: When the sale_status.const_name field is added, use it instead of sale_status.name
 			$resNewSales	= $dsSalesPortal->query("SELECT sale.* " .
@@ -490,6 +494,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 			}
 			while ($arrSale = $resNewSales->fetchRow(MDB2_FETCHMODE_ASSOC))
 			{
+				$this->log("\t\t* Sale Id #{$arrSale['id']}...");
+				
 				// Created a new Savepoint for this Sale
 				$strSaleSavePoint	= "Flex_SP_Pull_Sale_{$arrSale['id']}";
 				if ($qryQuery->Execute("SAVEPOINT {$strSaleSavePoint}") === FALSE)
@@ -507,11 +513,13 @@ class Cli_App_Sync_SalesPortal extends Cli
 					// Is this for a new Account?
 					if ($arrSale['sale_type_id'] === SALE_TYPE_NEW_CUSTOMER)
 					{
+						$this->log("\t\t\t+ Creating new Account...");
+						
 						//--------------------- ACCOUNT GROUP --------------------//
 						// Yes -- Create a new AccountGroup/Account for this Customer
 						$objAccountGroup			= new Account_Group();
 						$objAccountGroup->CreatedBy	= 0;
-						$objAccountGroup->CreatedOn	= date("Y-m-d");
+						$objAccountGroup->CreatedOn	= $arrSale['created_on'];
 						$objAccountGroup->Archived	= 0;
 						$objAccountGroup->save();
 						//--------------------------------------------------------//
@@ -572,7 +580,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						}
 						
 						$objAccount->CreatedBy			= 0;
-						$objAccount->CreatedOn			= date("Y-m-d");
+						$objAccount->CreatedOn			= $arrSale['created_on'];
 						$objAccount->DisableDDR			= 0;
 						$objAccount->DisableLatePayment	= 0;
 						$objAccount->Sample				= 0;
@@ -592,6 +600,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						{
 							// Bank Account
 							case 1:
+								$this->log("\t\t\t\t+ Adding Bank Account...");
 								// Get additional Bank Account Details
 								$resSPBankAccount	= $dsSalesPortal->query("SELECT * " .
 																		"FROM sale_account_direct_debit_bank_account " .
@@ -611,7 +620,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 								$arrBankAccount['AccountNumber']	= $arrSPBankAccount['account_number'];
 								$arrBankAccount['AccountName']		= $arrSPBankAccount['account_name'];
 								$arrBankAccount['Archived']			= 0;
-								$arrBankAccount['created_on']		= date("Y-m-d");
+								$arrBankAccount['created_on']		= $arrSale['created_on'];
 								$arrBankAccount['employee_id']		= 0;
 								$resBankAccountInsert	= $insBankAccount->Execute($arrBankAccount);
 								if ($resBankAccountInsert === FALSE)
@@ -624,6 +633,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 							
 							// Credit Card
 							case 2:
+								$this->log("\t\t\t\t+ Adding Credit Card...");
 								// Get additional Credit Card Details
 								$resSPCreditCard	= $dsSalesPortal->query("SELECT * " .
 																		"FROM sale_account_direct_debit_credit_card " .
@@ -637,14 +647,16 @@ class Cli_App_Sync_SalesPortal extends Cli
 								
 								// Create new CreditCard record
 								$arrCreditCard	= array();
-								$arrCreditCard['AccountGroup']		= $objAccount->AccountGroup;
-								$arrCreditCard['BankName']			= $arrSPBankAccount['bank_name'];
-								$arrCreditCard['BSB']				= $arrSPBankAccount['bank_bsb'];
-								$arrCreditCard['AccountNumber']	= $arrSPBankAccount['account_number'];
-								$arrCreditCard['AccountName']		= $arrSPBankAccount['account_name'];
-								$arrCreditCard['Archived']			= 0;
-								$arrCreditCard['created_on']		= date("Y-m-d");
-								$arrCreditCard['employee_id']		= 0;
+								$arrCreditCard['AccountGroup']	= $objAccount->AccountGroup;
+								$arrCreditCard['CardType']		= $arrSPCreditCard['credit_card_type_id'];
+								$arrCreditCard['Name']			= $arrSPCreditCard['card_name'];
+								$arrCreditCard['CardNumber']	= $arrSPCreditCard['card_number'];
+								$arrCreditCard['ExpMonth']		= str_pad($arrSPCreditCard['expiry_month'], 2, '0', STR_PAD_LEFT);
+								$arrCreditCard['ExpYear']		= (string)$arrSPCreditCard['expiry_year'];
+								$arrCreditCard['CVV']			= $arrSPCreditCard['cvv'];
+								$arrCreditCard['Archived']		= 0;
+								$arrCreditCard['created_on']	= $arrSale['created_on'];
+								$arrCreditCard['employee_id']	= 0;
 								$resCreditCardInsert	= $insCreditCard->Execute($arrCreditCard);
 								if ($resCreditCardInsert === FALSE)
 								{
@@ -658,6 +670,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						// Finalise Account
 						$objAccount->save();
 						
+						$this->log("\t\t\t\t+ Updating Sales Portal Remote Reference to {$objAccount->Id}...");
 						// Update the SP Sale Account Remote Reference
 						$resSPSaleAccount	= $dsSalesPortal->query("UPDATE sale_account SET reference_id = {$objAccount->Id} WHERE id = {$arrSaleAccount['id']}");
 						if (PEAR::isError($resSPSaleAccount))
@@ -672,6 +685,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						throw new Exception(GetConstantDescription($arrSale['sale_type_id'], 'sale_type')." Sales are not supported by Flex!");
 					}
 					
+					$this->log("\t\t\t* Getting list of new Contacts...");
 					//-------------------------- CONTACT -------------------------//
 					// Get the new Contacts associated with this Sale
 					$resNewContacts	= $dsSalesPortal->query("SELECT contact.*, contact_title.name AS contact_title_name, contact_sale.contact_association_type_id " .
@@ -683,6 +697,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 					}
 					while ($arrSPContact = $resNewContacts->fetchRow(MDB2_FETCHMODE_ASSOC))
 					{
+						$this->log("\t\t\t\t+ Adding a new Contact for Account #{$objAccount->Id}...");
+						
 						// Add this Contact to Flex
 						$objContact	= new Contact();
 						$objContact->AccountGroup		= $objAccount->AccountGroup;
@@ -740,6 +756,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$objContact->save();
 						
 						// Update the SP Contact Remote Reference
+						$this->log("\t\t\t\t\t+ Updating Sales Portal Remote Reference to {$objContact->Id}...");
 						$resSPContact	= $dsSalesPortal->query("UPDATE contact SET reference_id = {$objContact->Id} WHERE id = {$arrSPContact['id']}");
 						if (PEAR::isError($resSPContact))
 						{
@@ -749,6 +766,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						// Is it the Primary Contact for the Account?
 						if ($arrSPContact['contact_association_type_id'] === 1)
 						{
+							$this->log("\t\t\t\t\t+ Setting as {$objAccount->Id}'s Primary Contact...");
 							$objAccount->PrimaryContact	= $objContact->Id;
 							$objAccount->save();
 						}
@@ -756,6 +774,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 					//------------------------------------------------------------//
 					
 					//------------------------ SALE ITEMS ------------------------//
+					$this->log("\t\t\t* Getting list of Items sold...");
+					
 					// Get all items that were sold
 					$resSPSaleItems	= $dsSalesPortal->query("SELECT sale_item.*, product.product_type_id, product.product_category_id " .
 															"FROM sale_item JOIN product ON sale_item.product_id = product.id " .
@@ -766,6 +786,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 					}
 					while ($arrSPSaleItem = $resSPSaleItems->fetchRow(MDB2_FETCHMODE_ASSOC))
 					{
+						$this->log("\t\t\t\t* Adding Sale Item #{$arrSPSaleItem['id']}...");
+						
 						// Create a Savepoint for this Sale Item
 						$strSaleItemSavePoint	= "Flex_SP_Pull_Sale_Item_{$arrSPSaleItem['id']}";
 						if ($qryQuery->Execute("SAVEPOINT {$strSaleItemSavePoint}") === FALSE)
@@ -785,6 +807,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 							{
 								// Service
 								case 1:
+									$this->log("\t\t\t\t\t+ Adding new Service to Account {$objAccount->Id}...");
+									
 									// Create a new Service
 									$objService	= new Service();
 									$objService->Account		= $objAccount->Id;
@@ -966,10 +990,14 @@ class Cli_App_Sync_SalesPortal extends Cli
 											$arrAdditionalDetails['Configuration']	= $arrSPInboundDetails['configuration'];
 											break;
 									}
+									$this->log("\t\t\t\t\t\t* FNN: {$objService->FNN}");
+									$this->log("\t\t\t\t\t\t* Service Type: {$objService->ServiceType}");
 									
 									// Is the FNN in use already?
+									$this->log("\t\t\t\t\t\t* Checking if FNN is in use...");
 									if (IsFNNInUse($objService->FNN, $objService->Indial100, $objService->CreatedOn))
 									{
+										$this->log("\t\t\t\t\t\t\t! FNN is in use!  Aborting Sale...");
 										throw new Exception_Sale_Product_Manual_Intervention("The FNN {$objService->FNN} is already in use.  Please close the existing Service in Flex, or revoke the sale if it a duplicate.");
 									}
 									
@@ -979,6 +1007,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 									// Extension Level Billing
 									if ($objService->Indial100 && $objService->ELB)
 									{
+										$this->log("\t\t\t\t\t\t+ Enabling Extension Level Billing...");
 										$GLOBALS['fwkFramework']->EnableELB($objService->Id);
 									}
 									
@@ -991,12 +1020,15 @@ class Cli_App_Sync_SalesPortal extends Cli
 									$arrProduct		= $resProduct->fetchRow(MDB2_FETCHMODE_ASSOC);
 									$arrRatePlanId	= explode('=', $arrProduct['reference']);
 									$objRatePlan	= new Rate_Plan(Array('Id'=>(int)$arrRatePlanId[1]));
+									$this->log("\t\t\t\t\t\t+ Setting Plan to '{$objRatePlan->Name}'...");									
 									$objService->changePlan($objRatePlan);
 									
 									// Perform Automatic Provisioning
+									$this->log("\t\t\t\t\t\t+ Automatically Provisioning...");
 									if ($objService->ServiceType === SERVICE_TYPE_LAND_LINE)
 									{
 										// Full Service
+										$this->log("\t\t\t\t\t\t\t+ Adding Full Service Request...");
 										$objFullServiceRequest	= new Provisioning_Request();
 										$objFullServiceRequest->AccountGroup		= $objService->AccountGroup;
 										$objFullServiceRequest->Account				= $objService->Account;
@@ -1011,6 +1043,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 										$objFullServiceRequest->save();
 										
 										// Preselection
+										$this->log("\t\t\t\t\t\t\t+ Adding Preselection Request...");
 										$objPreselectionRequest	= new Provisioning_Request();
 										$objPreselectionRequest->AccountGroup		= $objService->AccountGroup;
 										$objPreselectionRequest->Account			= $objService->Account;
@@ -1023,6 +1056,10 @@ class Cli_App_Sync_SalesPortal extends Cli
 										$objPreselectionRequest->AuthorisationDate	= $objService->CreatedOn;
 										$objPreselectionRequest->Status				= REQUEST_STATUS_WAITING;
 										$objPreselectionRequest->save();
+									}
+									else
+									{
+										$this->log("\t\t\t\t\t\t\t! Automatic Provisioning is not supported for ".GetConstantDescription($objService->ServiceType, 'service_type')."s");
 									}
 									break;
 								
@@ -1044,6 +1081,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 						}
 						catch(Exception_Sale_Product_Manual_Intervention $eException)
 						{
+							$this->log("\t\t\t\t\t\t\t! Setting Sale Product Status to Manual Intervention...");
+							
 							// There was an issue with one of the Items which needs manual intervention to resolve
 							$this->_updateSaleItemStatus($arrSPSaleItem['id'], 'Manual Intervention', $eException->getMessage());
 							
