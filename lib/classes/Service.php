@@ -11,7 +11,7 @@
  *
  * @class	Service
  */
-class Service
+class Service extends ORM
 {	
 	protected	$_strTableName	= "Service";
 
