@@ -539,8 +539,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$objAccount						= new Account();
 						$objAccount->BusinessName		= $arrSaleAccount['business_name'];
 						$objAccount->TradingName		= $arrSaleAccount['trading_name'];
-						$objAccount->ABN				= $arrSaleAccount['abn'];
-						$objAccount->ACN				= $arrSaleAccount['acn'];
+						$objAccount->ABN				= ($arrSaleAccount['abn']) ? $arrSaleAccount['abn'] : NULL;
+						$objAccount->ACN				= ($arrSaleAccount['acn']) ? $arrSaleAccount['acn'] : NULL;
 						$objAccount->Address1			= $arrSaleAccount['address_line_1'];
 						$objAccount->Address2			= $arrSaleAccount['address_line_2'];
 						$objAccount->Suburb				= $arrSaleAccount['suburb'];
