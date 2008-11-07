@@ -52,6 +52,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 		catch(Exception $exception)
 		{
 			// We can now show the error message
+			$this->log($exception->__toString());
 			$this->showUsage($exception->getMessage());
 			return 1;
 		}
@@ -69,7 +70,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 	// _pushVendors()	-- Synchronises the Flex.CustomerGroup table with SP Vendors 
 	protected function _pushVendors()
 	{
-		$dsSalesPortal	= Data_Source::get('sales_portal');
+		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
 		
 		// Start a transaction for the Sales Portal
@@ -121,7 +122,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 	// _pushProducts()	-- Synchronises the Flex Plans with SP Products 
 	protected function _pushProducts()
 	{
-		$dsSalesPortal	= Data_Source::get('sales_portal');
+		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
 		
 		// Start a transaction for the Sales Portal
@@ -200,7 +201,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 	protected function _pushDealers()
 	{
 		
-		$dsSalesPortal	= Data_Source::get('sales_portal');
+		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
 		
 		// Start a transaction for the Sales Portal
@@ -428,7 +429,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 	// _pullSales()	-- Pulls all new Sales from the Sales Portal
 	protected function _pullSales()
 	{
-		$dsSalesPortal	= Data_Source::get('sales_portal');
+		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
 		
 		// Start a transaction for both Databases
@@ -1064,7 +1065,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 		static	$arrConversion	= array();
 		
 		static	$dsSalesPortal;
-		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales_portal');
+		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales');
 		
 		switch (str_replace('_', '', strtolower($strType)))
 		{		
@@ -1103,7 +1104,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 		static	$arrConversion	= array();
 		
 		static	$dsSalesPortal;
-		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales_portal');
+		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales');
 		
 		$strType	= str_replace('_', '', strtolower($strType));
 		switch ($strType)
@@ -1151,7 +1152,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 	{
 		static	$arrEnumerations	= array();
 		static	$dsSalesPortal;
-		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales_portal');
+		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales');
 		
 		// If it isn't cached, then retrieve the enumeration data
 		if (!isset($arrEnumerations[$strTable]))
