@@ -24,7 +24,7 @@ class Contact extends ORM
 		// Note: Email address should be unique, so only fetch the first record
 		$selContacts = new StatementSelect(
 			"Contact", 
-			self::getColumns(), 
+			"*", 
 			$where);
 		if (($outcome = $selContacts->Execute($arrWhere)) === FALSE)
 		{
@@ -50,8 +50,13 @@ class Contact extends ORM
 		{
 			$contact = new Contact();
 		}
-		$contact->init($properties);
-		$contact->_saved = false;
+		
+		foreach ($properties as $strName=>$mixValue)
+		{
+			// Load from the Database
+			$this->{$strName}	= $mixValue;
+		}
+		
 		$contact->save();
 		return $contact;
 	}
