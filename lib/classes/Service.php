@@ -82,7 +82,7 @@ class Service extends ORM
 	 */
 	public function changePlan($mixRatePlan, $bolStartThisMonth=TRUE)
 	{
-		$objAccount	= new Account(array('Id'=>$this->Account), TRUE);
+		$objAccount	= new Account(array('Id'=>$this->Account), FALSE, TRUE);
 		
 		// Check if the billing/invoice process is being run
 		if (Invoice_Run::checkTemporary())
