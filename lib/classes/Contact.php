@@ -62,28 +62,6 @@ class Contact extends ORM
 		return self::getFor("Id = <Id>", array("Id" => $id));
 	}
 
-	protected static function getColumns()
-	{
-		return array(
-			'id'				=> 'Id',
-			'accountGroup'		=> 'AccountGroup',
-			'title'				=> 'Title',
-			'firstName'			=> 'FirstName',
-			'lastName'			=> 'LastName',
-			'dob'				=> 'DOB',
-			'jobTitle'			=> 'JobTitle',
-			'email'				=> 'Email',
-			'account'			=> 'Account',
-			'customerContact'	=> 'CustomerContact',
-			'fax'				=> 'Fax',
-			'mobile'			=> 'Mobile',
-			'phone'				=> 'Phone',
-			//'Username',
-			'password'			=> 'PassWord',
-			'archived'			=> 'Archived'
-		);
-	}
-
 	public function canAccessAccount($objAccount)
 	{
 		/*
@@ -122,22 +100,6 @@ class Contact extends ORM
 
 		return $arrAccounts;
 	}
-	
-
-	protected function getValuesToSave()
-	{
-		$arrColumns = self::getColumns();
-		$arrValues = array();
-		foreach($arrColumns as $strAlias=>$strColumn)
-		{
-			if ($strAlias == 'id') 
-			{
-				continue;
-			}
-			$arrValues[$strColumn] = $this->{$strAlias};
-		}
-		return $arrValues;
-	} 
 
 	public function passwordIsValid($strPassword)
 	{
