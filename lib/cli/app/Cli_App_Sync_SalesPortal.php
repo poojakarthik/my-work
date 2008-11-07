@@ -511,7 +511,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 				try
 				{
 					// Is this for a new Account?
-					if ($arrSale['sale_type_id'] === SALE_TYPE_NEW_CUSTOMER)
+					if ($arrSale['sale_type_id'] === 1)
 					{
 						$this->log("\t\t\t+ Creating new Account...");
 						
