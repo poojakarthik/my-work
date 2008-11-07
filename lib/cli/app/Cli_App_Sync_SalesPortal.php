@@ -951,7 +951,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 										case 3:
 											// Get the additional ADSL details
 											$resSPADSLDetails		= $dsSalesPortal->query("SELECT * " .
-																							"FROM sale_item_service_inbound " .
+																							"FROM sale_item_service_adsl " .
 																							"WHERE sale_item_id = {$arrSPSaleItem['id']} " .
 																							"LIMIT 1");
 											if (PEAR::isError($resSPADSLDetails))
