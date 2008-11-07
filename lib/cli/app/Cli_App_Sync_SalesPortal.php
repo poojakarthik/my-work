@@ -261,25 +261,25 @@ class Cli_App_Sync_SalesPortal extends Cli
 										"( " .
 										"	{$arrSPDealer['id']}, " .
 										"	{$arrSPDealer['up_line_id']}," .
-										"	{$arrSPDealer['username']}'," .
-										"	{$arrSPDealer['password']}'," .
+										"	{$arrSPDealer['username']}," .
+										"	{$arrSPDealer['password']}," .
 										"	{$arrSPDealer['can_verify']}," .
-										"	{$arrSPDealer['first_name']}'," .
-										"	{$arrSPDealer['last_name']}'," .
+										"	{$arrSPDealer['first_name']}," .
+										"	{$arrSPDealer['last_name']}," .
 										"	{$arrSPDealer['title_id']}," .
 										"	{$arrSPDealer['business_name']}," .
 										"	{$arrSPDealer['trading_name']}," .
 										"	{$arrSPDealer['abn']}," .
 										"	{$arrSPDealer['abn_registered']}," .
-										"	{$arrSPDealer['address_line_1']}'," .
-										"	{$arrSPDealer['address_line_2']}'," .
-										"	{$arrSPDealer['suburb']}'," .
+										"	{$arrSPDealer['address_line_1']}," .
+										"	{$arrSPDealer['address_line_2']}," .
+										"	{$arrSPDealer['suburb']}," .
 										"	{$arrSPDealer['state_id']}," .
 										"	{$arrSPDealer['country_id']}," .
 										"	{$arrSPDealer['postcode']}," .
-										"	{$arrSPDealer['postal_address_line_1']}'," .
-										"	{$arrSPDealer['postal_address_line_2']}'," .
-										"	{$arrSPDealer['postal_suburb']}'," .
+										"	{$arrSPDealer['postal_address_line_1']}," .
+										"	{$arrSPDealer['postal_address_line_2']}," .
+										"	{$arrSPDealer['postal_suburb']}," .
 										"	{$arrSPDealer['postal_state_id']}," .
 										"	{$arrSPDealer['postal_country_id']}," .
 										"	{$arrSPDealer['postal_postcode']}," .
