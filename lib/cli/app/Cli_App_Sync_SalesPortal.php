@@ -1260,6 +1260,9 @@ class Cli_App_Sync_SalesPortal extends Cli
 	// _updateSaleHistory()	-- Updates the Sale Status (and History) in the Sales Portal
 	private static function _updateSaleStatus($intSPSaleId, $mixNewStatus, $strReason=NULL)
 	{
+		static	$dsSalesPortal;
+		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales');
+		
 		// Save the new Status
 		$strSaleStatus	= (is_int($mixNewStatus)) ? $mixNewStatus : "(SELECT id FROM sale_status WHERE name = '{$mixNewStatus}')";
 		$resSaleUpdate	= $dsSalesPortal->query("UPDATE sale " .
@@ -1284,6 +1287,9 @@ class Cli_App_Sync_SalesPortal extends Cli
 	// _updateSaleItemHistory()	-- Updates the Sale Item Status (and History) in the Sales Portal
 	private static function _updateSaleItemStatus($intSPSaleItemId, $mixNewStatus, $strReason=NULL)
 	{
+		static	$dsSalesPortal;
+		$dsSalesPortal	= (isset($dsSalesPortal)) ? $dsSalesPortal : Data_Source::get('sales');
+		
 		// Save the new Status
 		$strSaleItemStatus	= (is_int($mixNewStatus)) ? $mixNewStatus : "(SELECT id FROM sale_item_status WHERE name = '{$mixNewStatus}')";
 		$resSaleItemUpdate	= $dsSalesPortal->query("UPDATE sale_item " .
