@@ -1241,7 +1241,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "Specific action to perform (eg. Dealers, Sales)[optional, default is to perform all actions assoctiated with the specified Sync Operation Mode]",
 				self::ARG_DEFAULT		=> 'ALL',
-				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
+				self::ARG_VALIDATION	=> 'Cli::_validInArray(strtoupper("%1$s"), array("DEALERS","PRODUCTS","VENDORS","SALES","ALL"))'
 			),
 		
 		);
