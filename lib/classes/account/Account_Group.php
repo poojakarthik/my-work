@@ -1,21 +1,15 @@
 <?php
 
-class Account_Group
+class Account_Group extends ORM
 {
-	private $id				= NULL;
-	private $createdBy		= NULL;
-	private $createdOn		= NULL;
-	private $managedBy		= NULL;
-	private $archived		= NULL;
-
-	private function __construct($arrProperties=NULL)
+	protected	$_strTableName	= "AccountGroup";
+	
+	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
 	{
-		if ($arrProperties)
-		{
-			$this->init($arrProperties);
-		}
+		// Parent constructor
+		parent::__construct($arrProperties, $bolLoadById);
 	}
-
+	
 	private static function getFor($strWhere, $arrWhere)
 	{
 		$selAccountGroup = new StatementSelect("AccountGroup", self::getColumns(), $strWhere);
@@ -112,42 +106,55 @@ class Account_Group
 		return $arrContacts;
 	}
 	
-
-	private function init($arrProperties)
+	//------------------------------------------------------------------------//
+	// _preparedStatement
+	//------------------------------------------------------------------------//
+	/**
+	 * _preparedStatement()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 * 
+	 * @param	string		$strStatement						Name of the statement
+	 * 
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	private static function _preparedStatement($strStatement)
 	{
-		foreach($arrProperties as $name => $value)
+		static	$arrPreparedStatements	= Array();
+		if (isset($arrPreparedStatements[$strStatement]))
 		{
-			$this->{$name} = $value;
+			return $arrPreparedStatements[$strStatement];
 		}
-	}
-
-	public function __get($strName)
-	{
-		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
+		else
 		{
-			return $this->{$strName};
-		}
-		return NULL;
-	}
-
-	public function __set($strName, $mixValue)
-	{
-		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
-		{
-			if ($this->{$strName} != $mixValue)
+			switch ($strStatement)
 			{
-				$this->{$strName} = $mixValue;
-				$this->_saved = FALSE;
+				// SELECTS
+				case 'selById':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"AccountGroup", "*", "Id = <Id>", NULL, 1);
+					break;
+				
+				// INSERTS
+				case 'insSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementInsert("AccountGroup");
+					break;
+				
+				// UPDATE BY IDS
+				case 'ubiSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("AccountGroup");
+					break;
+				
+				// UPDATES
+				
+				default:
+					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
+			return $arrPreparedStatements[$strStatement];
 		}
-	}
-
-	private function tidyName($name)
-	{
-		if (preg_match("/^[A-Z]+$/", $name)) $name = strtolower($name);
-		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
-		$tidy[0] = strtolower($tidy[0]);
-		return $tidy;
 	}
 }
 
