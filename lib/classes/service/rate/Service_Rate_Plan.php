@@ -54,7 +54,7 @@ class Service_Rate_Plan extends ORM
 	 *
 	 * @method
 	 */
-	private static function _preparedStatement($strStatement)
+	protected static function _preparedStatement($strStatement)
 	{
 		static	$arrPreparedStatements	= Array();
 		if (isset($arrPreparedStatements[$strStatement]))

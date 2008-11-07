@@ -1097,7 +1097,7 @@ class Invoice extends ORM
 	 *
 	 * @method
 	 */
-	public static function _preparedStatement($strStatement)
+	protected static function _preparedStatement($strStatement)
 	{
 		static	$arrPreparedStatements	= Array();
 		if (isset($arrPreparedStatements[$strStatement]))
