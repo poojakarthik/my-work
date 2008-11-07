@@ -1013,6 +1013,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 									// Add in the Addition Details
 									if ($insAdditionalDetails)
 									{
+										$arrAdditionalDetails['Service']	= $objService->Id;
 										if ($insAdditionalDetails->Execute($arrAdditionalDetails) === FALSE)
 										{
 											throw new Exception($insAdditionalDetails->Error());
