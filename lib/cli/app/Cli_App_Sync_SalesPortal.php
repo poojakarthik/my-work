@@ -80,7 +80,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 		{
 			// Get list of Customer Groups from Flex
 			$arrCustomerGroups	= Customer_Group::getAll();
-			foreach ($dsSalesPortal as $objCustomerGroup)
+			foreach ($arrCustomerGroups as $objCustomerGroup)
 			{
 				// Does this Customer Group exist in the Sales Portal?
 				$resVendors	= $dsSalesPortal->query("SELECT * FROM vendor WHERE id = {$objCustomerGroup->id}");
