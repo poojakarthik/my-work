@@ -129,7 +129,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 		}
 	}
 	
-	// _pushProducts()	-- Synchronises the Flex Plans with SP Products 
+	// _pushProducts()	-- Synchronises the Flex Plans with SP Products
 	protected function _pushProducts()
 	{
 		$this->log("\t* Pushing Customer Groups/Vendors from Flex to the Sales Portal...");
@@ -144,6 +144,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 		{
 			$qryQuery	= new Query();
 			
+			$this->log("\t\t* Getting list of Rate Plans from Flex...");
+			
 			//-------------------------- RATE PLANS --------------------------//
 			// Get list of Rate Plans from Flex
 			$resRatePlans	= $qryQuery->Execute("SELECT * FROM RatePlan WHERE Archived IN (0, 1);");
@@ -155,6 +157,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 			{
 				while ($arrRatePlan = $resRatePlans->fetch_assoc())
 				{
+					$this->log("\t\t\t+ Id# {$arrRatePlan['Id']} ({$arrRatePlan['Name']})...");
+					
 					// Determine the values
 					$intProductVendor		= $arrRatePlan['customer_group'];
 					$strProductName			= $arrRatePlan['Name'];
@@ -170,6 +174,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 					}
 					if ($resProduct->numRows())
 					{
+						$this->log("\t\t\t\t+ Already exists, updating...");
+						
 						// Already Exists -- do an UPDATE
 						$arrProduct			= $resProduct->fetchRow(MDB2_FETCHMODE_ASSOC);
 						$strUpdateSQL		= "UPDATE product SET vendor_id = {$intProductVendor}, name = '{$strProductName}', description = '{$strProductDescription}', product_type_id = {$intProductType}, product_status_id = {$intProductStatus} " .
@@ -182,6 +188,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 					}
 					else
 					{
+						$this->log("\t\t\t\t+ Does not exist, adding...");
+						
 						// Doesn't Exist -- do an INSERT
 						$strInsertSQL		= "INSERT INTO product (	vendor_id			, name					, description					, product_type_id	, product_status_id		, reference) VALUES " .
 																	"(	{$intProductVendor}	, '{$strProductName}'	, '{$strProductDescription}'	, {$intProductType}	, {$intProductStatus}	, 'RatePlan.Id={$arrRatePlan['Id']}')";
