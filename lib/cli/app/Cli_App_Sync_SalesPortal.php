@@ -132,7 +132,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 	// _pushProducts()	-- Synchronises the Flex Plans with SP Products
 	protected function _pushProducts()
 	{
-		$this->log("\t* Pushing Customer Groups/Vendors from Flex to the Sales Portal...");
+		$this->log("\t* Pushing Products from Flex to the Sales Portal...");
 		
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
@@ -220,6 +220,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 	// _pushDealers()	-- Synchronises the Flex Dealers with SP Dealers 
 	protected function _pushDealers()
 	{
+		$this->log("\t* Pushing Dealers from Flex to the Sales Portal...");
 		
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
@@ -231,6 +232,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 		{
 			$qryQuery	= new Query();
 			
+			$this->log("\t\t* Getting list of Flex Dealers...");
+			
 			// Get list of Dealers from Flex
 			$resFlexDealers	= $qryQuery->Execute("SELECT * FROM dealer;");
 			if ($resFlexDealers === FALSE)
@@ -239,6 +242,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 			}
 			while ($arrFlexDealer = $resFlexDealers->fetch_assoc())
 			{
+				$this->log("\t\t\t+ Id #{$arrFlexDealer['id']} ({$arrFlexDealer['first_name']} {$arrFlexDealer['last_name']})...");
+				
 				//-------------------------- DEALERS -------------------------//		
 				// Escape values
 				foreach ($arrFlexDealer as $strField=>$mixValue)
@@ -254,6 +259,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 				}
 				if (!($arrSPDealer = $resSPDealer->fetchRow(MDB2_FETCHMODE_ASSOC)))
 				{
+					$this->log("\t\t\t\t+ Doesn't exit, adding...");
+					
 					// Doesn't exist -- INSERT
 					$arrSPDealer	= $arrFlexDealer;
 					
@@ -305,6 +312,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 				}
 				else
 				{
+					$this->log("\t\t\t\t+ Already exits, updating...");
 					// Does exist -- UPDATE
 					$arrSPDealer	= $arrFlexDealer;
 					
@@ -356,6 +364,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 			}
 			
 			//----------------------- DEALER >> PRODUCTS ---------------------//
+			$this->log("\t\t* Recreating Dealers >> Products relationships...");
 			// Truncate the SP Table
 			$resDealerProductTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_product");
 			if (PEAR::isError($resDealerProductTruncate))
@@ -382,6 +391,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 			//----------------------------------------------------------------//
 			
 			//---------------------- DEALER >> SALE TYPE ---------------------//
+			$this->log("\t\t* Recreating Dealers >> Sale Types relationships...");
 			// Truncate the SP Table
 			$resDealerSaleTypeTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_sale_type");
 			if (PEAR::isError($resDealerSaleTypeTruncate))
@@ -408,6 +418,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 			//----------------------------------------------------------------//
 			
 			//------------------------ DEALER >> VENDOR ----------------------//
+			$this->log("\t\t* Recreating Dealers >> Vendors relationships...");
 			// Truncate the SP Table
 			$resDealerVendorTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_vendor");
 			if (PEAR::isError($resDealerVendorTruncate))
