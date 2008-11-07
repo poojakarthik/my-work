@@ -11,10 +11,10 @@
  *
  * @class	Provisioning_Request
  */
-class Service
-{
+class Provisioning_Request extends ORM
+{	
 	protected	$_strTableName	= "ProvisioningRequest";
-
+	
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -22,14 +22,14 @@ class Service
 	 * __construct()
 	 *
 	 * constructor
-	 *
+	 * 
 	 * constructor
 	 *
-	 * @param	array	$arrProperties 		[optional]	Associative array defining a ProvisioningRequest with keys for each field of the InvoiceRun table
-	 * @param	boolean	$bolLoadById		[optional]	Automatically load the ProvisioningRequest with the passed Id
-	 *
+	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
+	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
+	 * 
 	 * @return	void
-	 *
+	 * 
 	 * @constructor
 	 */
 	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)

@@ -70,6 +70,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 	// _pushVendors()	-- Synchronises the Flex.CustomerGroup table with SP Vendors 
 	protected function _pushVendors()
 	{
+		$this->log("\t* Pushing Customer Groups/Vendors from Flex to the Sales Portal...");
+		
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
 		
@@ -78,10 +80,14 @@ class Cli_App_Sync_SalesPortal extends Cli
 		
 		try
 		{
+			$this->log("\t\t* Retrieving list of Flex Customer Groups...");
+			
 			// Get list of Customer Groups from Flex
 			$arrCustomerGroups	= Customer_Group::getAll();
 			foreach ($arrCustomerGroups as $objCustomerGroup)
 			{
+				$this->log("\t\t\t+ Id #{$objCustomerGroup->id} ({$objCustomerGroup->externalName})...");
+				
 				// Does this Customer Group exist in the Sales Portal?
 				$resVendors	= $dsSalesPortal->query("SELECT * FROM vendor WHERE id = {$objCustomerGroup->id}");
 				if (PEAR::isError($resVendors))
@@ -90,6 +96,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 				}
 				elseif (!($arrVendor = $resVendors->fetchRow(MDB2_FETCHMODE_ASSOC)))
 				{
+					$this->log("\t\t\t+ Does not exist, adding...");
+					
 					// No -- add it
 					$resVendorInsert	= $dsSalesPortal->query("INSERT INTO vendor (id, name, description) VALUES ({$objCustomerGroup->id}, '{$objCustomerGroup->externalName}', '{$objCustomerGroup->externalName}');");
 					if (PEAR::isError($resVendorInsert))
@@ -99,6 +107,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 				}
 				else
 				{
+					$this->log("\t\t\t+ Already exists, updating...");
+					
 					// Yes -- update it
 					$resVendorUpdate	= $dsSalesPortal->query("UPDATE vendor SET id = {$objCustomerGroup->id}, name = '{$objCustomerGroup->externalName}', description = '{$objCustomerGroup->externalName}' WHERE id = {$objCustomerGroup->id};");
 					if (PEAR::isError($resVendorUpdate))
@@ -122,6 +132,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 	// _pushProducts()	-- Synchronises the Flex Plans with SP Products 
 	protected function _pushProducts()
 	{
+		$this->log("\t* Pushing Customer Groups/Vendors from Flex to the Sales Portal...");
+		
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
 		
