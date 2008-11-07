@@ -5,6 +5,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 {
 	const	SWITCH_TEST_RUN		= "t";
 	const	SWITCH_MODE	 		= "m";
+	const	SWITCH_ACTION 		= "a";
 	
 	const	SALES_PORTAL_SYSTEM_DEALER_ID	= 1;
 
@@ -26,17 +27,16 @@ class Cli_App_Sync_SalesPortal extends Cli
 			$this->requireOnce('lib/classes/Flex.php');
 			Flex::load();
 			
-			switch (trim(strtoupper($arrArgs[self::SWITCH_MODE])))
+			$strSpecificAction	= ucwords(trim(strtolower($arrArgs[self::SWITCH_ACTION])));
+			$strMode			= trim(strtolower($arrArgs[self::SWITCH_MODE]));
+			switch ($strMode)
 			{
-				case 'PUSH':
-					$this->_pushAll();
+				case 'push':
+				case 'pull':
+					$this->{'_'.$strMode.$strSpecificAction}();
 					break;
 				
-				case 'PULL':
-					$this->_pullAll();
-					break;
-				
-				case 'SYNC':
+				case 'sync':
 					$this->_pushAll();
 					$this->_pullAll();
 					break;
@@ -1233,10 +1233,15 @@ class Cli_App_Sync_SalesPortal extends Cli
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
 			self::SWITCH_MODE => array(
-				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_REQUIRED		=> TRUE,
 				self::ARG_DESCRIPTION	=> "Synchronisation operation to perform [PUSH|PULL|SYNC]",
-				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("PUSH","PULL","SYNC"))'
+			),
+			self::SWITCH_ACTION => array(
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "Specific action to perform (eg. Dealers, Sales)[optional, default is to perform all actions assoctiated with the specified Sync Operation Mode]",
+				self::ARG_DEFAULT		=> 'ALL',
+				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
 		
 		);
