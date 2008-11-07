@@ -705,8 +705,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$objContact->Title				= $arrSPContact['contact_title_name'];
 						$objContact->FirstName			= $arrSPContact['first_name'];
 						$objContact->LastName			= $arrSPContact['last_name'];
-						$objContact->DOB				= $arrSPContact['date_of_birth'];
-						$objContact->JobTitle			= $arrSPContact['position_title'];
+						$objContact->DOB				= ($arrSPContact['date_of_birth']) ? $arrSPContact['date_of_birth'] : '';
+						$objContact->JobTitle			= ($arrSPContact['position_title']) ? $arrSPContact['position_title'] : '';
 						$objContact->Account			= $objAccount->Id;
 						$objContact->CustomerContact	= 0;
 						$objContact->PassWord			= ($arrSPContact['password']) ? $arrSPContact['password'] : '';
