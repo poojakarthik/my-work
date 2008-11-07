@@ -689,7 +689,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					//-------------------------- CONTACT -------------------------//
 					// Get the new Contacts associated with this Sale
 					$resNewContacts	= $dsSalesPortal->query("SELECT contact.*, contact_title.name AS contact_title_name, contact_sale.contact_association_type_id " .
-															"(FROM contact JOIN contact_sale ON contact.id = contact_sale.contact_id JOIN sale ON sale.id = contact_sale.sale_id) LEFT JOIN contact_title ON contact_title.id = contact.contact_title_id " .
+															"FROM contact JOIN contact_sale ON contact.id = contact_sale.contact_id JOIN sale ON sale.id = contact_sale.sale_id) LEFT JOIN contact_title ON contact_title.id = contact.contact_title_id " .
 															"WHERE contact.contact_reference_id IS NULL");
 					if (PEAR::isError($resNewContacts))
 					{
