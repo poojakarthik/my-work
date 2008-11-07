@@ -1,32 +1,13 @@
 <?php
 
-class Contact
+class Contact extends ORM
 {
-	private $id = NULL;
-	private $accountGroup = NULL;
-	private $title = NULL;
-	private $firstName = NULL;
-	private $lastName = NULL;
-	private $dob = NULL;
-	private $jobTitle = NULL;
-	private $email = NULL;
-	private $account = NULL;
-	private $customerContact = NULL;
-	private $fax = NULL;
-	private $mobile = NULL;
-	private $phone = NULL;
-	//private $username = NULL;
-	private $password = NULL;
-	private $archived = NULL;
+	protected	$_strTableName	= "Contact";
 
-	private $_saved = FALSE;
-
-	private function __construct($arrProperties=NULL)
+	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
 	{
-		if ($arrProperties)
-		{
-			$this->init($arrProperties);
-		}
+		// Parent constructor
+		parent::__construct($arrProperties, $bolLoadById);
 	}
 
 	public function getName()
@@ -162,76 +143,56 @@ class Contact
 	{
 		return $strPassword && sha1($strPassword) == $this->password;
 	}
-
-	public function save()
+	
+	//------------------------------------------------------------------------//
+	// _preparedStatement
+	//------------------------------------------------------------------------//
+	/**
+	 * _preparedStatement()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 * 
+	 * @param	string		$strStatement						Name of the statement
+	 * 
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	protected static function _preparedStatement($strStatement)
 	{
-		if ($this->_saved)
+		static	$arrPreparedStatements	= Array();
+		if (isset($arrPreparedStatements[$strStatement]))
 		{
-			// Nothing to save
-			return TRUE;
+			return $arrPreparedStatements[$strStatement];
 		}
-		$arrValues = $this->getValuesToSave();
-
-		// No id means that this must be a new record
-		if (!$this->id)
-		{
-			$statement = new StatementInsert('Contact', $arrValues);
-		}
-		// This must be an update
 		else
 		{
-			$arrValues['Id'] = $this->id;
-			$statement = new StatementUpdateById('Contact', $arrValues);
-		}
-		if (($outcome = $statement->Execute($arrValues)) === FALSE)
-		{
-			throw new Exception('Failed to save contact details: ' . $statement->Error());
-		}
-		if (!$this->id)
-		{
-			$this->id = $outcome;
-		}
-		$this->_saved = TRUE;
-		return TRUE;
-	}
-
-	private function init($arrProperties)
-	{
-		foreach($arrProperties as $name => $value)
-		{
-			$this->{$name} = $value;
-		}
-		$this->_saved = TRUE;
-		
-	}
-
-	public function __get($strName)
-	{
-		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
-		{
-			return $this->{$strName};
-		}
-		return NULL;
-	}
-
-	public function __set($strName, $mixValue)
-	{
-		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
-		{
-			if ($this->{$strName} != $mixValue)
+			switch ($strStatement)
 			{
-				$this->{$strName} = $mixValue;
-				$this->_saved = FALSE;
+				// SELECTS
+				case 'selById':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Contact", "*", "Id = <Id>", NULL, 1);
+					break;
+				
+				// INSERTS
+				case 'insSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementInsert("Contact");
+					break;
+				
+				// UPDATE BY IDS
+				case 'ubiSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("Contact");
+					break;
+				
+				// UPDATES
+				
+				default:
+					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
+			return $arrPreparedStatements[$strStatement];
 		}
-	}
-
-	private function tidyName($name)
-	{
-		if (preg_match("/^[A-Z]+$/", $name)) $name = strtolower($name);
-		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
-		$tidy[0] = strtolower($tidy[0]);
-		return $tidy;
 	}
 }
 
