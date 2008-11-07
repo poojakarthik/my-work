@@ -988,7 +988,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 											$arrAdditionalDetails['Service']		= $objService->Id;
 											$arrAdditionalDetails['AnswerPoint']	= ($arrSPInboundDetails['answer_point']) ? $arrSPInboundDetails['answer_point'] : '';
 											$arrAdditionalDetails['Complex']		= $arrSPInboundDetails['has_complex_configuration'];
-											$arrAdditionalDetails['Configuration']	= $arrSPInboundDetails['configuration'];
+											$arrAdditionalDetails['Configuration']	= ($arrSPInboundDetails['configuration']) ? $arrSPInboundDetails['configuration'] : '';
 											break;
 									}
 									$this->log("\t\t\t\t\t\t* FNN: {$objService->FNN}");
