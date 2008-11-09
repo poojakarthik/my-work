@@ -167,7 +167,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					$intProductStatus		= $this->_convertFlexToSalesPortal('planarchived', $arrRatePlan['Archived']);
 					
 					// Does it already exist in the SP?
-					$resProduct	= $dsSalesPortal->query("SELECT id FROM product WHERE reference = 'RatePlan.Id={$arrRatePlan['Id']}' LIMIT 1");
+					$resProduct	= $dsSalesPortal->query("SELECT id FROM product WHERE external_reference = 'RatePlan.Id={$arrRatePlan['Id']}' LIMIT 1");
 					if (PEAR::isError($resProduct))
 					{
 						throw new Exception($resProduct->getMessage()." :: ".$resProduct->getUserInfo());
@@ -191,7 +191,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						$this->log("\t\t\t\t+ Does not exist, adding...");
 						
 						// Doesn't Exist -- do an INSERT
-						$strInsertSQL		= "INSERT INTO product (	vendor_id			, name					, description					, product_type_id	, product_status_id		, reference) VALUES " .
+						$strInsertSQL		= "INSERT INTO product (	vendor_id			, name					, description					, product_type_id	, product_status_id		, external_reference) VALUES " .
 																	"(	{$intProductVendor}	, '{$strProductName}'	, '{$strProductDescription}'	, {$intProductType}	, {$intProductStatus}	, 'RatePlan.Id={$arrRatePlan['Id']}')";
 						$resProductInsert	= $dsSalesPortal->query($strInsertSQL);
 						if (PEAR::isError($resProductInsert))
@@ -382,7 +382,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 			{
 				// Insert an SP-equivalent record	
 				$resDealerProductInsert	= $dsSalesPortal->query("INSERT INTO dealer_product (dealer_id, product_id) VALUES " .
-																"({$arrDealerRatePlan['dealer_id']}, (SELECT id FROM product WHERE reference = '{$arrDealerRatePlan['rate_plan_id']}'))");
+																"({$arrDealerRatePlan['dealer_id']}, (SELECT id FROM product WHERE external_reference = '{$arrDealerRatePlan['rate_plan_id']}'))");
 				if (PEAR::isError($resDealerProductInsert))
 				{
 					throw new Exception($resDealerProductInsert->getMessage()." :: ".$resDealerProductInsert->getUserInfo());
@@ -673,7 +673,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						
 						$this->log("\t\t\t\t+ Updating Sales Portal Remote Reference to {$objAccount->Id}...");
 						// Update the SP Sale Account Remote Reference
-						$resSPSaleAccount	= $dsSalesPortal->query("UPDATE sale_account SET reference_id = {$objAccount->Id} WHERE id = {$arrSaleAccount['id']}");
+						$resSPSaleAccount	= $dsSalesPortal->query("UPDATE sale_account SET external_reference = 'Account.Id={$objAccount->Id}' WHERE id = {$arrSaleAccount['id']}");
 						if (PEAR::isError($resSPSaleAccount))
 						{
 							throw new Exception($resSPSaleAccount->getMessage()." :: ".$resSPSaleAccount->getUserInfo());
@@ -691,7 +691,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					// Get the new Contacts associated with this Sale
 					$resNewContacts	= $dsSalesPortal->query("SELECT contact.*, contact_title.name AS contact_title_name, contact_sale.contact_association_type_id " .
 															"FROM (contact JOIN contact_sale ON contact.id = contact_sale.contact_id JOIN sale ON sale.id = contact_sale.sale_id) LEFT JOIN contact_title ON contact_title.id = contact.contact_title_id " .
-															"WHERE contact.contact_reference_id IS NULL AND contact_status_id = 1 AND contact_sale.sale_id = {$arrSale['id']}");
+															"WHERE contact.external_reference IS NULL AND contact_status_id = 1 AND contact_sale.sale_id = {$arrSale['id']}");
 					if (PEAR::isError($resNewContacts))
 					{
 						throw new Exception($resNewContacts->getMessage()." :: ".$resNewContacts->getUserInfo());
@@ -758,7 +758,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						
 						// Update the SP Contact Remote Reference
 						$this->log("\t\t\t\t\t+ Updating Sales Portal Remote Reference to {$objContact->Id}...");
-						$resSPContact	= $dsSalesPortal->query("UPDATE contact SET reference_id = {$objContact->Id} WHERE id = {$arrSPContact['id']}");
+						$resSPContact	= $dsSalesPortal->query("UPDATE contact SET external_reference = 'Contact.Id={$objContact->Id}' WHERE id = {$arrSPContact['id']}");
 						if (PEAR::isError($resSPContact))
 						{
 							throw new Exception($resSPContact->getMessage()." :: ".$resSPContact->getUserInfo());
@@ -1028,13 +1028,13 @@ class Cli_App_Sync_SalesPortal extends Cli
 									}
 									
 									// Set Service Plan
-									$resProduct	= $dsSalesPortal->query("SELECT reference FROM product WHERE id = {$arrSPSaleItem['product_id']}");
+									$resProduct	= $dsSalesPortal->query("SELECT external_reference FROM product WHERE id = {$arrSPSaleItem['product_id']}");
 									if (PEAR::isError($resProduct))
 									{
 										throw new Exception($resProduct->getMessage()." :: ".$resProduct->getUserInfo());
 									}
 									$arrProduct		= $resProduct->fetchRow(MDB2_FETCHMODE_ASSOC);
-									$arrRatePlanId	= explode('=', $arrProduct['reference']);
+									$arrRatePlanId	= explode('=', $arrProduct['external_reference']);
 									$objRatePlan	= new Rate_Plan(Array('Id'=>(int)$arrRatePlanId[1]), TRUE);
 									$this->log("\t\t\t\t\t\t+ Setting Plan to '{$objRatePlan->Name}'...");									
 									$objService->changePlan($objRatePlan);
