@@ -382,7 +382,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 			{
 				// Insert an SP-equivalent record	
 				$resDealerProductInsert	= $dsSalesPortal->query("INSERT INTO dealer_product (dealer_id, product_id) VALUES " .
-																"({$arrDealerRatePlan['dealer_id']}, (SELECT id FROM product WHERE external_reference = '{$arrDealerRatePlan['rate_plan_id']}'))");
+																"({$arrDealerRatePlan['dealer_id']}, (SELECT id FROM product WHERE external_reference = 'RatePlan.Id={$arrDealerRatePlan['rate_plan_id']}'))");
 				if (PEAR::isError($resDealerProductInsert))
 				{
 					throw new Exception($resDealerProductInsert->getMessage()." :: ".$resDealerProductInsert->getUserInfo());
