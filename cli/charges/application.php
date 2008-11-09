@@ -118,7 +118,7 @@
 		$this->Framework->StartWatch();
 		$arrColumns = Array();
 		$arrColumns['Status']	= CDR_TEMP_CREDIT;
-		$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
+		//$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
 		
 		// Get list of charges that need to be generated (1000 at a time)
 		while($arrCharges = $this->_GetCharges())
@@ -245,7 +245,7 @@
 		}
 		
 		// build any CDR based credits
-		
+		/*
 		// change status of CDR Creidts
 		$arrColumns = Array();
 		$arrColumns['Status']	= CDR_TEMP_CREDIT;
@@ -305,7 +305,7 @@
 			// ERROR
 
 		}
-				
+		*/		
 		
 		// Report footer
 		$arrData['<Total>']		= $intTotal;
