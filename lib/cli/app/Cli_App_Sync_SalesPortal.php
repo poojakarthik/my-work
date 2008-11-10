@@ -366,7 +366,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 			//----------------------- DEALER >> PRODUCTS ---------------------//
 			$this->log("\t\t* Recreating Dealers >> Products relationships...");
 			// Truncate the SP Table
-			$resDealerProductTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_product ALTER SEQUENCE dealer_product_id_seq RESTART WITH 1;");
+			$resDealerProductTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_product; ALTER SEQUENCE dealer_product_id_seq RESTART WITH 1;");
 			if (PEAR::isError($resDealerProductTruncate))
 			{
 				throw new Exception($resDealerProductTruncate->getMessage()." :: ".$resDealerProductTruncate->getUserInfo());
@@ -420,7 +420,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 			//------------------------ DEALER >> VENDOR ----------------------//
 			$this->log("\t\t* Recreating Dealers >> Vendors relationships...");
 			// Truncate the SP Table
-			$resDealerVendorTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_vendor ALTER SEQUENCE dealer_vendor_id_seq RESTART WITH 1;");
+			$resDealerVendorTruncate	= $dsSalesPortal->query("TRUNCATE TABLE dealer_vendor; ALTER SEQUENCE dealer_vendor_id_seq RESTART WITH 1;");
 			if (PEAR::isError($resDealerVendorTruncate))
 			{
 				throw new Exception($resDealerVendorTruncate->getMessage()." :: ".$resDealerVendorTruncate->getUserInfo());
