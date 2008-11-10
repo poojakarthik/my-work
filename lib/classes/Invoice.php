@@ -1065,8 +1065,25 @@ class Invoice extends ORM
 			// DEBUG
 			switch ($strName)
 			{
-				case 'Total':
 				case 'Tax':
+					// Is Tax proportionate to Total?
+					$fltCalculatedTax	= $this->Total / 11;
+					$fltDifference		= $this->Tax - $fltCalculatedTax;
+					if ($fltCalculatedTax == $this->Tax)
+					{
+						Cli_App_Billing::debug("*** Tax (\${$this->Tax}) is extactly Total/11");
+					}
+					elseif ($fltDifference > -1 && $fltDifference < 1)
+					{
+						Cli_App_Billing::debug("*** Tax (\${$this->Tax}) is nearly Total/11 ({$fltCalculatedTax})");
+					}
+					else
+					{
+						Cli_App_Billing::debug("*** Tax (\${$this->Tax}) is significantly different to Total/11 ({$fltCalculatedTax})");
+					}
+					break;
+				
+				case 'Total':
 				case 'Debits':
 				case 'Credits':
 					//Cli_App_Billing::debug("*** {$strName} updated to \${$mxdValue}");
