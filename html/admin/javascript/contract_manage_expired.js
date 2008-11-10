@@ -242,7 +242,7 @@ var Contract_ManageExpired	= Class.create
 			for (i = 0; i < arrContracts.length; i++)
 			{
 				fltTotalPayout	+= arrContracts[i].fltPayout;
-				fltTotalExitFee	+= arrContracts[i].fltExitFee;
+				fltTotalExitFee	+= (isNaN(arrContracts[i].fltExitFee)) ? 0 : arrContracts[i].fltExitFee;
 				
 				// Check to see if this Account is already in our Array of Accounts
 				bolFound	= false;
