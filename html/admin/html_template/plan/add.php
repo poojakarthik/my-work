@@ -214,7 +214,13 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "</div>";  // PlanDetailsColumn1
 		echo "<div id='PlanDetailsColumn2' style='width:50%;float:left'>";
 		DBO()->RatePlan->InAdvance->RenderInput(CONTEXT_DEFAULT);
-		DBO()->RatePlan->allow_cdr_hiding->RenderInput(CONTEXT_DEFAULT);
+		
+		// Allow CDR Hiding
+		echo "
+<div class='DefaultElement'>
+	<input type='checkbox' id='RatePlan.allow_cdr_hiding' name='RatePlan.allow_cdr_hiding' $strChecked class='DefaultInputCheckBox2 Default' />
+	<div class='DefaultLabel'>&nbsp;&nbsp;Allow CDR Hiding :</div>
+</div>";
 		
 		// Contract Payout Details (done by Rich, sorry if I fuck this up, haha)
 		$intContractTerm	= DBO()->RatePlan->ContractTerm->Value;
