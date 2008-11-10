@@ -18,6 +18,7 @@ class Cli_App_Billing extends Cli
 	const	SWITCH_MODE				= "m";
 	const	SWITCH_INVOICE_RUN		= "i";
 	const	SWITCH_ACCOUNT_ID		= "a";
+	const	SWITCH_SKIP_PREBILLING	= "k";
 	
 	const	FLEX_FRONTEND_HOST				= "10.50.50.131";
 	const	FLEX_FRONTEND_USERNAME			= "ybs-admin";
@@ -238,7 +239,7 @@ class Cli_App_Billing extends Cli
 	{
 		static	$bolHasRun	= FALSE;
 			
-		if (!$bolHasRun)
+		if (!$bolHasRun && $this->_arrArgs[self::SWITCH_SKIP_PREBILLING])
 		{
 			$strWorkingDirectory	= getcwd();
 			chdir(BACKEND_BASE_PATH.'process/');
@@ -349,7 +350,14 @@ class Cli_App_Billing extends Cli
 				self::ARG_DESCRIPTION	=> "The Account Id to Regenerate and Invoice for",
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
-			)
+			),
+			
+			self::SWITCH_SKIP_PREBILLING => array(
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "Skips the pre-Billing scripts (only applicable to GENERATE)",
+				self::ARG_DEFAULT		=> FALSE,
+				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
+			),
 		);
 	}
 }
