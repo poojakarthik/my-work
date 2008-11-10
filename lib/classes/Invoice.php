@@ -493,6 +493,7 @@ class Invoice extends ORM
 				//Cli_App_Billing::debug("Tax Exempt Overusage: \${$fltTaxExemptOverusage}");
 			}
 			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
+			Cli_App_Billing::debug("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 
 			$fltTotalCharge	= $fltCDRCappedTotal;
 		}
@@ -500,6 +501,7 @@ class Invoice extends ORM
 		// Add in Uncapped Charges & Credits
 		$fltTotalCharge			+= $fltCDRUncappedTotal;
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableUncappedCharge, $this->_objInvoiceRun->intInvoiceDatetime);
+		Cli_App_Billing::debug("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 
 		// Mark all Service Charges as TEMPORARY_INVOICE
 		if ($qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")") === FALSE)
@@ -532,7 +534,9 @@ class Invoice extends ORM
 			//$fltTotalCharge	+= ($arrChargeTotal['Nature'] === 'DR') ? $arrChargeTotal['Total'] : -$arrChargeTotal['Total'];
 		}
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($arrChargeTotals['DR']['IncTax'], $this->_objInvoiceRun->intInvoiceDatetime);
+		Cli_App_Billing::debug("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 		$arrServiceTotal['Tax']	-= self::calculateGlobalTaxComponent($arrChargeTotals['CR']['IncTax'], $this->_objInvoiceRun->intInvoiceDatetime);
+		Cli_App_Billing::debug("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 		$fltServiceCredits		= $arrChargeTotals['CR']['IncTax'] + $arrChargeTotals['CR']['ExTax'];
 		$fltServiceDebits		= $arrChargeTotals['DR']['IncTax'] + $arrChargeTotals['DR']['ExTax'];
 
@@ -1072,8 +1076,8 @@ class Invoice extends ORM
 					//Cli_App_Billing::debug("*** {$strName} updated to \${$mxdValue}");
 					$arrBacktrace	= debug_backtrace();
 					//Cli_App_Billing::debug("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};\t{$strName} @ Line {$arrBacktrace[0]['line']}");
-					// Is Tax proportionate to Total?
 					
+					// Is Tax proportionate to Total?
 					$fltCalculatedTax	= $this->Total / 10;
 					$fltDifference		= $this->Tax - $fltCalculatedTax;
 					if ($fltCalculatedTax == $this->Tax)
@@ -1088,7 +1092,6 @@ class Invoice extends ORM
 					{
 						Cli_App_Billing::debug("*** Tax (\${$this->Tax}) is significantly different to Total/10 ({$fltCalculatedTax})");
 					}
-					break;
 					break;
 			}
 		}
