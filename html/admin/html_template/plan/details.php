@@ -103,6 +103,16 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		}
 		DBO()->RatePlan->CarrierPreselection->RenderArbitrary($strPreselection, RENDER_OUTPUT);
 		DBO()->RatePlan->Shared->RenderOutput();
+		
+		if (DBO()->RatePlan->allow_cdr_hiding->Value)
+		{
+			DBO()->RatePlan->allow_cdr_hiding->RenderArbitrary('Enabled');
+		}
+		else
+		{
+			DBO()->RatePlan->allow_cdr_hiding->RenderArbitrary('Disabled');
+		}
+		
 		DBO()->RatePlan->InAdvance->RenderOutput();
 		if (DBO()->RatePlan->ContractTerm->Value == NULL)
 		{

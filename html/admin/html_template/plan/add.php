@@ -246,7 +246,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "
 <div class='DefaultElement'>
 	<input type='text' id='RatePlan.ContractTerm' name='RatePlan.ContractTerm' onchange='Vixen.RatePlanAdd.ContractTermOnChange()' class='{$strContractTermClass}' value='{$intContractTerm}'/>
-	<div class='DefaultLabel'>&nbsp;&nbsp;Contract Term (months):</div>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Contract Term (months) :</div>
 </div>
 <div id='Contract_ExtraDetailsContainer' style='$strContainerStyle;margin-top:0px'>
 	<div class='DefaultElement'>
