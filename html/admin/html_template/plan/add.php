@@ -217,7 +217,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		// Allow CDR Hiding
 		echo "
-<div class='DefaultElement' style='margin-bottom:1px;'>
+<div class='DefaultElement' style='margin-bottom:2px;'>
 	<input type='checkbox' id='RatePlan.allow_cdr_hiding' name='RatePlan.allow_cdr_hiding' $strChecked class='DefaultInputCheckBox2 Default' />
 	<div class='DefaultLabel'>&nbsp;&nbsp;Allow CDR Hiding :</div>
 </div>";
