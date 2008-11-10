@@ -318,8 +318,17 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			
 			// HACK! HACK! HACK! I'm doing this so it truncates the float to 2 decimal places.  All other properties are "Decimals", and don't have this problem
 			DBO()->Rate->discount_percentage = OutputMask()->FormatFloat(DBO()->Rate->discount_percentage->Value, 2, 2);
-						
+			
 			DBO()->Rate->discount_percentage->RenderInput(CONTEXT_DEFAULT);
+			
+			// Allow CDR Hiding
+			$strChecked	= (DBO()->Rate->allow_cdr_hiding->Value) ? "checked='checked'" : '';
+			echo "
+<div class='DefaultElement' style='margin-bottom:4px;'>
+	<input type='checkbox' id='Rate.allow_cdr_hiding' name='Rate.allow_cdr_hiding' $strChecked class='DefaultInputCheckBox2 Default' />
+	<div class='DefaultLabel'>&nbsp;&nbsp;Allow CDR Hiding :</div>
+</div>";
+
 			echo "</div>\n"; // PassThrough
 
 			echo "<div id='RateDetailDiv' style='display:inline'>\n"; //beginning of the ratedetail DIV
