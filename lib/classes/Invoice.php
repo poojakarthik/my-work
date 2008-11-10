@@ -356,10 +356,10 @@ class Invoice extends ORM
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 
-		$arrServiceTotal			= Array();
-		$arrServiceTotal['Total']	= 0.0;
-		$arrServiceTotal['Tax']		= 0.0;
-		$intServiceId				= $arrServiceDetails['Id'];
+		$arrServiceTotal				= Array();
+		$arrServiceTotal['TotalCharge']	= 0.0;
+		$arrServiceTotal['Tax']			= 0.0;
+		$intServiceId					= $arrServiceDetails['Id'];
 
 		//--------------------------- PLAN CHARGES ---------------------------//
 		// Retrieve Plan Details for the current Service
