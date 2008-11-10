@@ -1067,7 +1067,13 @@ class Invoice extends ORM
 			{
 				case 'Tax':
 				case 'Total':
+				case 'Debits':
+				case 'Credits':
+					//Cli_App_Billing::debug("*** {$strName} updated to \${$mxdValue}");
+					$arrBacktrace	= debug_backtrace();
+					//Cli_App_Billing::debug("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};\t{$strName} @ Line {$arrBacktrace[0]['line']}");
 					// Is Tax proportionate to Total?
+					
 					$fltCalculatedTax	= $this->Total / 10;
 					$fltDifference		= $this->Tax - $fltCalculatedTax;
 					if ($fltCalculatedTax == $this->Tax)
@@ -1083,18 +1089,8 @@ class Invoice extends ORM
 						Cli_App_Billing::debug("*** Tax (\${$this->Tax}) is significantly different to Total/10 ({$fltCalculatedTax})");
 					}
 					break;
-				
-				case 'Debits':
-				case 'Credits':
-					//Cli_App_Billing::debug("*** {$strName} updated to \${$mxdValue}");
-					$arrBacktrace	= debug_backtrace();
-					//Cli_App_Billing::debug("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};\t{$strName} @ Line {$arrBacktrace[0]['line']}");
 					break;
 			}
-		}
-		else
-		{
-			$this->{$strName} = $mxdValue;
 		}
 	}
 
