@@ -106,11 +106,11 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		
 		if (DBO()->RatePlan->allow_cdr_hiding->Value)
 		{
-			DBO()->RatePlan->allow_cdr_hiding->RenderArbitrary('Enabled');
+			DBO()->RatePlan->allow_cdr_hiding->RenderArbitrary('Enabled', RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 		}
 		else
 		{
-			DBO()->RatePlan->allow_cdr_hiding->RenderArbitrary('Disabled');
+			DBO()->RatePlan->allow_cdr_hiding->RenderArbitrary('Disabled', RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 		}
 		
 		DBO()->RatePlan->InAdvance->RenderOutput();
