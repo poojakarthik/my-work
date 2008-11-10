@@ -81,7 +81,8 @@ var Contract_ManageExpired	= Class.create
 		// Did we get passed a Contract Id?
 		if (intContractId != undefined)
 		{
-			// Check the Checkbox for this Contract
+			// Select None, then check the Checkbox for this Contract
+			this.selectNone();
 			$ID('contract_checkbox_' + intContractId).checked	= true;
 		}
 		
