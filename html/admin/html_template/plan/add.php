@@ -216,6 +216,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		DBO()->RatePlan->InAdvance->RenderInput(CONTEXT_DEFAULT);
 		
 		// Allow CDR Hiding
+		$strChecked	= (DBO()->allow_cdr_hiding->Value) ? "checked='checked'" : '';
 		echo "
 <div class='DefaultElement' style='margin-bottom:4px;'>
 	<input type='checkbox' id='RatePlan.allow_cdr_hiding' name='RatePlan.allow_cdr_hiding' $strChecked class='DefaultInputCheckBox2 Default' />
