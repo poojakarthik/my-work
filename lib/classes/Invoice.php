@@ -1066,6 +1066,7 @@ class Invoice extends ORM
 			switch ($strName)
 			{
 				case 'Tax':
+				case 'Total':
 					// Is Tax proportionate to Total?
 					$fltCalculatedTax	= $this->Total / 10;
 					$fltDifference		= $this->Tax - $fltCalculatedTax;
@@ -1083,7 +1084,6 @@ class Invoice extends ORM
 					}
 					break;
 				
-				case 'Total':
 				case 'Debits':
 				case 'Credits':
 					//Cli_App_Billing::debug("*** {$strName} updated to \${$mxdValue}");
