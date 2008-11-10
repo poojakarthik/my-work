@@ -185,15 +185,6 @@ class HtmlTemplateRateView extends HtmlTemplate
 			DBO()->Rate->Prorate->RenderOutput();
 		}
 		DBO()->Rate->Uncapped->RenderOutput();
-		DBO()->Rate->StdMinCharge->RenderOutput();
-		DBO()->Rate->StdFlagfall->RenderOutput();
-		
-		if (DBO()->Rate->discount_percentage->Value != NULL)
-		{
-			// HACK! HACK! HACK! I'm doing this so it truncates the float to 2 decimal places.  All other properties are "Decimals", and don't have this problem
-			DBO()->Rate->discount_percentage = OutputMask()->FormatFloat(DBO()->Rate->discount_percentage->Value, 2, 2);
-			DBO()->Rate->discount_percentage->RenderOutput();
-		}
 		
 		// Allow CDR Hiding
 		if (DBO()->Rate->allow_cdr_hiding->Value)
@@ -203,6 +194,16 @@ class HtmlTemplateRateView extends HtmlTemplate
 		else
 		{
 			DBO()->Rate->allow_cdr_hiding->RenderArbitrary('No', RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+		}
+		
+		DBO()->Rate->StdMinCharge->RenderOutput();
+		DBO()->Rate->StdFlagfall->RenderOutput();
+		
+		if (DBO()->Rate->discount_percentage->Value != NULL)
+		{
+			// HACK! HACK! HACK! I'm doing this so it truncates the float to 2 decimal places.  All other properties are "Decimals", and don't have this problem
+			DBO()->Rate->discount_percentage = OutputMask()->FormatFloat(DBO()->Rate->discount_percentage->Value, 2, 2);
+			DBO()->Rate->discount_percentage->RenderOutput();
 		}
 		
 		if ($bolPassThrough)
