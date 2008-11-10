@@ -214,6 +214,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "</div>";  // PlanDetailsColumn1
 		echo "<div id='PlanDetailsColumn2' style='width:50%;float:left'>";
 		DBO()->RatePlan->InAdvance->RenderInput(CONTEXT_DEFAULT);
+		DBO()->RatePlan->allow_cdr_hiding->RenderInput(CONTEXT_DEFAULT);
 		
 		// Contract Payout Details (done by Rich, sorry if I fuck this up, haha)
 		$intContractTerm	= DBO()->RatePlan->ContractTerm->Value;

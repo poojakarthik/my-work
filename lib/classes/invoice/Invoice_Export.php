@@ -184,10 +184,17 @@ class Invoice_Export
 				
 				// Calculate Rated Total
 				$fltCDRTotal	= 0.0;
-				foreach ($arrRecordType['Itemisation'] as $arrCDR)
+				foreach ($arrRecordType['Itemisation'] as $intIndex=>$arrCDR)
 				{
 					$fltRatedTotal	+= $arrCDR['Charge'];
 					$fltCDRTotal	+= $arrCDR['Charge'];
+					
+					// Should we hide this CDR?
+					if ($arrCDR['allow_cdr_hiding'] && $arrCDR['Charge'] === 0.0 && $arrService['allow_cdr_hiding'])
+					{
+						// Yes -- hide it/remove it from itemisation
+						unset($arrRecordType['Itemisation'][$intIndex]);
+					}
 				}
 				//Cli_App_Billing::debug("CDR Total for {$arrService['FNN']}: \${$fltCDRTotal}");
 			}
@@ -467,12 +474,13 @@ class Invoice_Export
 																					"Extension");
 					break;
 				case 'selServiceDetails':
-					$arrService					= Array();
-					$arrService['CostCentre']	= "(CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END)";
-					$arrService['Indial100']	= "MAX(Service.Indial100)";
-					$arrService['ForceRender']	= "Service.ForceInvoiceRender";
-					$arrService['RatePlan']		= "RatePlan.Name";
-					$arrService['SharedPlan']	= "RatePlan.Shared";
+					$arrService						= Array();
+					$arrService['CostCentre']		= "(CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END)";
+					$arrService['Indial100']		= "MAX(Service.Indial100)";
+					$arrService['ForceRender']		= "Service.ForceInvoiceRender";
+					$arrService['RatePlan']			= "RatePlan.Name";
+					$arrService['SharedPlan']		= "RatePlan.Shared";
+					$arrService['allow_cdr_hiding']	= "RatePlan.allow_cdr_hiding";
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
 																					$arrService,
 																					"ServiceTotal.invoice_run_id = <invoice_run_id> AND ServiceTotal.Service = <CurrentId> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)",
@@ -634,10 +642,11 @@ class Invoice_Export
 					$arrColumns['DisplayType']		= "RecordGroup.DisplayType";
 					$arrColumns['RecordGroup']		= "RecordGroup.Description";
 					$arrColumns['TaxExempt']		= "RecordType.global_tax_exempt";
+					$arrColumns['allow_cdr_hiding']	= "Rate.allow_cdr_hiding";
  					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
  					(	
 						"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id" .
-						", RecordType as RecordGroup",
+						", RecordType as RecordGroup JOIN Rate ON Rate.Id = CDR.Rate",
 						$arrColumns,
 						"$strWhereService AND " .
 						"RecordGroup.Id = RecordType.GroupId AND " .
