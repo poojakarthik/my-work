@@ -1,8 +1,5 @@
 <?php
 
-//NOTE: this uses the MDB2 database connection functionality.  All code that interacts with the Flex database should be using the Orginal "StatementSelect" functionality, so that
-// it can all be used within the one Transaction.
-
 class Dealer
 {
 	const SYSTEM_DEALER_ID = 1;
