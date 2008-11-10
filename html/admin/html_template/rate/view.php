@@ -195,6 +195,16 @@ class HtmlTemplateRateView extends HtmlTemplate
 			DBO()->Rate->discount_percentage->RenderOutput();
 		}
 		
+		// Allow CDR Hiding
+		if (DBO()->Rate->allow_cdr_hiding->Value)
+		{
+			DBO()->Rate->allow_cdr_hiding->RenderArbitrary('Yes', RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+		}
+		else
+		{
+			DBO()->Rate->allow_cdr_hiding->RenderArbitrary('No', RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+		}
+		
 		if ($bolPassThrough)
 		{
 			// No more details are required for PassThrough Rates
