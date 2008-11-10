@@ -171,7 +171,7 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 				<td>\$<span id='contract_min_monthly_{$arrContract['id']}'>{$arrContract['minMonthly']}</span></td>
 				<td><span id='contract_months_left_{$arrContract['id']}'>{$arrContract['monthsLeft']}</span></td>
 				<td><input id='contract_payout_percentage_{$arrContract['id']}' type='text' size='1' onkeyup='javascript:Flex.Contract_ManageExpired.calculatePayout(\"{$arrContract['id']}\")' onchange='javascript:Flex.Contract_ManageExpired.calculatePayout(\"{$arrContract['id']}\")' value='{$arrContract['payout']}'/>% (\$<span id='contract_payout_charge_{$arrContract['id']}'>{$arrContract['payoutAmount']}</span>)</td>
-				<td nowrap='nowrap'>\$<input id='contract_exit_fee_{$arrContract['id']}' type='text' size='2' value='{$arrContract['exitFee']}'/></td>
+				<td nowrap='nowrap'>\$<input id='contract_exit_fee_{$arrContract['id']}' type='text' size='3' value='{$arrContract['exitFee']}'/></td>
 				
 				<td nowrap='nowrap'><a onclick='javascript:Flex.Contract_ManageExpired.confirm(\"apply\", {$arrContract['id']})' ><img alt='Apply' src='img/template/tick.png'></a>&nbsp;<a onclick='javascript:Flex.Contract_ManageExpired.confirm(\"waive\", {$arrContract['id']})' ><img alt='Waive' src='img/template/delete.png'></a></td>
 			</tr>";
