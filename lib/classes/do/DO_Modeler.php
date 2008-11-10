@@ -1069,7 +1069,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		return array('.$strSrcPropMapping.');
 	}
 
-	protected static function getDataSourceObjectName()
+	public static function getDataSourceObjectName()
 	{
 		return \''.$strTableName.'\';
 	}
@@ -1079,7 +1079,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		return \''.$strIdName.'\';
 	}
 
-	protected static function getDataSourceIdName()
+	public static function getDataSourceIdName()
 	{
 		return \''.$strDataSourceIdName.'\';
 	}
