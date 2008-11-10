@@ -356,8 +356,10 @@ class Invoice extends ORM
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 
-		$arrServiceTotal	= Array();
-		$intServiceId		= $arrServiceDetails['Id'];
+		$arrServiceTotal			= Array();
+		$arrServiceTotal['Total']	= 0.0;
+		$arrServiceTotal['Tax']		= 0.0;
+		$intServiceId				= $arrServiceDetails['Id'];
 
 		//--------------------------- PLAN CHARGES ---------------------------//
 		// Retrieve Plan Details for the current Service
@@ -473,6 +475,9 @@ class Invoice extends ORM
 			$intPeriodStart			= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd			= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
+			
+			// HACKHACKHACK: Add inverse tax value of Plan Credit to Service Tax Total, so that everything balances
+			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->_objInvoiceRun->intInvoiceDatetime);
 
 			// Determine Usage
 			$fltTotalCharge			= min($fltCDRCappedTotal, $fltUsageStart);
