@@ -525,7 +525,7 @@ class DO_Field
 			return 'time';
 		}
 		
-		if (preg_match("/(?:boolean)/i", $nativeType) || preg_match("/(?:tinyint\(1\))/i", $nativeType) || (preg_match("/(?:tinyint)/i", $nativeType) && $this->properties['length'] == 1))
+		if (preg_match("/(?:bool)/i", $nativeType) || preg_match("/(?:tinyint\(1\))/i", $nativeType) || (preg_match("/(?:tinyint)/i", $nativeType) && $this->properties['length'] == 1))
 		{
 			return 'boolean';
 		}
@@ -553,7 +553,7 @@ class DO_Field
 			return 'string';
 		}
 		
-		if (preg_match("/(?:boolean)/i", $nativeType) || preg_match("/(?:tinyint\(1\))/i", $nativeType) || (preg_match("/(?:tinyint)/i", $nativeType) && $this->properties['length'] == 1))
+		if (preg_match("/(?:bool)/i", $nativeType) || preg_match("/(?:tinyint\(1\))/i", $nativeType) || (preg_match("/(?:tinyint)/i", $nativeType) && $this->properties['length'] == 1))
 		{
 			return 'boolean';
 		}
@@ -643,6 +643,7 @@ class DO_Field
 					{
 						$value = false;
 					}
+					$returnValue = $value ? 'TRUE' : 'FALSE';
 					
 					break;
 					
@@ -763,7 +764,7 @@ class DO_Field
 			return 'time';
 		}
 		
-		if (preg_match("/(?:boolean)/i", $nativeType))
+		if (preg_match("/(?:bool)/i", $nativeType))
 		{
 			return 'boolean';
 		}
@@ -801,7 +802,7 @@ class DO_Field
 						}
 						else
 						{
-							return '// No conversion needed (integer to integer)';
+							return '$value = ($value === null) ? null : ($value == "" ? 0 : $value);';
 						}
 						break;
 
@@ -880,9 +881,12 @@ class DO_Field
 						}
 						else
 						{
-							return '$value = $value ? "TRUE" : "FALSE"; // boolean to boolean string (true = "TRUE", false = "FALSE")';
+							return 'return $value ? "true" : "false"; // boolean to boolean string (true = "TRUE", false = "FALSE")';
 						}
 						break;
+						
+					default:
+						return '// Boolean conversion??? ' . $this->getInternalType()  . ' => ' . $this->getExternalType();
 				}
 				break;
 				
@@ -1059,7 +1063,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		return array('.$propNames.');
 	}
 	
-	protected static function _getPropertyDataSourceMappings()
+	public static function getPropertyDataSourceMappings()
 	{
 		return array('.$strPropSrcMapping.');
 	}
