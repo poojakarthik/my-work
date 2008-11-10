@@ -1067,19 +1067,19 @@ class Invoice extends ORM
 			{
 				case 'Tax':
 					// Is Tax proportionate to Total?
-					$fltCalculatedTax	= $this->Total / 11;
+					$fltCalculatedTax	= $this->Total / 10;
 					$fltDifference		= $this->Tax - $fltCalculatedTax;
 					if ($fltCalculatedTax == $this->Tax)
 					{
-						Cli_App_Billing::debug("*** Tax (\${$this->Tax}) is extactly Total/11");
+						Cli_App_Billing::debug("*** Tax (\${$this->Tax}) is extactly Total/10");
 					}
-					elseif ($fltDifference > -1 && $fltDifference < 1)
+					elseif ($fltDifference > -0.01 && $fltDifference < 0.01)
 					{
-						Cli_App_Billing::debug("*** Tax (\${$this->Tax}) is nearly Total/11 ({$fltCalculatedTax})");
+						Cli_App_Billing::debug("*** Tax (\${$this->Tax}) is nearly Total/10 ({$fltCalculatedTax})");
 					}
 					else
 					{
-						Cli_App_Billing::debug("*** Tax (\${$this->Tax}) is significantly different to Total/11 ({$fltCalculatedTax})");
+						Cli_App_Billing::debug("*** Tax (\${$this->Tax}) is significantly different to Total/10 ({$fltCalculatedTax})");
 					}
 					break;
 				
