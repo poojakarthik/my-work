@@ -478,6 +478,7 @@ class Invoice extends ORM
 			
 			// HACKHACKHACK: Add inverse tax value of Plan Credit to Service Tax Total, so that everything balances
 			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->_objInvoiceRun->intInvoiceDatetime);
+			Cli_App_Billing::debug("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 
 			// Determine Usage
 			$fltTotalCharge			= min($fltCDRCappedTotal, $fltUsageStart);
