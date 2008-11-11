@@ -90,6 +90,18 @@ class DO_Modeler
 		if ($str) $str[0] = ($bolClassName ? strtoupper($str[0]) : strtolower($str[0]));
 		return $str;
 	}
+
+	public static function labelifyName($str)
+	{
+		$str = str_replace('_', ' ', $str);
+		$str = preg_replace(array(
+				"/([A-Z]+)([A-Z]{1,1}[a-z]+)/",
+				"/([A-Za-z]+)([0-9]+)/",
+				"/([0-9]+)([A-Za-z]+)/",
+				"/([a-z]+)([A-Z]+)/",
+			), "\${1} \${2}", $str);
+		return ucwords($str);
+	}
 }
 
 class DO_Database
@@ -205,6 +217,11 @@ class DO_Table
 	public function getDataSourceName()
 	{
 		return $this->doDatabase->getDataSourceName();
+	}
+	
+	public function getObjectLabel()
+	{
+		return DO_Modeler::labelifyName($this->tableName);
 	}
 	
 	public static function getTable($tableName)
@@ -482,6 +499,11 @@ class DO_Field
 		return $this->propertyName;
 	}
 	
+	public function getPropertyLabel()
+	{
+		return DO_Modeler::labelifyName($this->fieldName);
+	}
+	
 	public function getFieldName()
 	{
 		return $this->fieldName;
@@ -548,7 +570,7 @@ class DO_Field
 		$nativeType = $this->properties['nativetype'];
 		$length = $this->properties['length'];
 		
-		if (preg_match("/(?:char|text|enum|blob)/i", $nativeType))
+		if (preg_match("/(?:date|time|char|text|enum|blob)/i", $nativeType))
 		{
 			return 'string';
 		}
@@ -558,7 +580,7 @@ class DO_Field
 			return 'boolean';
 		}
 		
-		if (preg_match("/(?:date|time|int)/i", $nativeType))
+		if (preg_match("/(?:int)/i", $nativeType))
 		{
 			return 'integer';
 		}
@@ -571,6 +593,33 @@ class DO_Field
 		return 'string';
 	}
 	
+	public function getSetConversion()
+	{
+		$nullable = array_key_exists('notnull', $this->properties) ? !$this->properties['notnull'] : false;
+		$autoIncrement = array_key_exists('autoincrement', $this->properties) ? $this->properties['autoincrement'] : false;
+		$nativeType = $this->properties['nativetype'];
+		$length = $this->properties['length'];
+		$value = array_key_exists('default', $this->properties) ? $this->properties['default'] : null;
+		$fixed = array_key_exists('fixed', $this->properties) ? $this->properties['fixed'] : false;
+
+		switch ($this->getInternalType())
+		{
+				case 'string':
+				
+					switch ($this->getExternalType())
+					{
+							
+						case 'string':
+							
+							if ($nullable) return "if (trim(\$value) == '') \$value = null;";							
+					
+					}
+			
+		}
+		
+		return false;
+	}
+
 	public function getQuotedDefaultValue()
 	{
 		$nullable = array_key_exists('notnull', $this->properties) ? !$this->properties['notnull'] : false;
@@ -579,7 +628,7 @@ class DO_Field
 		$length = $this->properties['length'];
 		$value = array_key_exists('default', $this->properties) ? $this->properties['default'] : null;
 
-		$comment = "\n\t\t// Internal type: ".$this->getInternalType() . "\n\t\t// Native type: " . $nativeType . ($length ? "[$length]" : '') . ($autoIncrement ? ' autoincrement' : '') . ($nullable ? ' nullable' : ' not-null') . ((!$nullable && $value === null) ? ' [no default]' : ($value === null ? ' [default: null]' : "[default: $value]"));
+		$comment = "\n\t\t// Property: ".$this->propertyName."\n\t\t// Internal type: ".$this->getInternalType() . "\n\t\t// Native type: " . $nativeType . ($length ? "[$length]" : '') . ($autoIncrement ? ' autoincrement' : '') . ($nullable ? ' nullable' : ' not-null') . ((!$nullable && $value === null) ? ' [no default]' : ($value === null ? ' [default: null]' : "[default: $value]"));
 
 		if ($value === null)
 		{
@@ -604,21 +653,6 @@ class DO_Field
 					switch ($this->getExternalType())
 					{
 	
-						case 'date':
-							if ($value === '') $value = 'date("Y-m-d", 0)';
-							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'date("Y-m-d")';
-							break;
-	
-						case 'datetime':
-							if ($value === '') $value = 'date("Y-m-d H:i:s", 0)';
-							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'date("Y-m-d H:i:s")';
-							break;
-	
-						case 'time':
-							if ($value === '') $value = 'date("H:i:s", 0)';
-							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'date("H:i:s")';
-							break;
-						
 						case 'integer':
 						default:
 							if ($value === '') $value = 0;
@@ -649,7 +683,29 @@ class DO_Field
 					
 				case 'string':
 				
-					$value = strval($value);
+					switch ($this->getExternalType())
+					{
+	
+						case 'date':
+							if ($value === '') $value = 'date("Y-m-d", 0)';
+							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'date("Y-m-d")';
+							break;
+	
+						case 'datetime':
+							if ($value === '') $value = 'date("Y-m-d H:i:s", 0)';
+							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'date("Y-m-d H:i:s")';
+							break;
+	
+						case 'time':
+							if ($value === '') $value = 'date("H:i:s", 0)';
+							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'date("H:i:s")';
+							break;
+						
+						case 'string':
+						default:
+							if ($value === '') $value = strval($value);
+							break;
+					}
 				
 					break;
 					
@@ -698,22 +754,22 @@ class DO_Field
 
 		if (preg_match("/(?:char|text|enum)/i", $nativeType))
 		{
-			return ($nullable ? '($value === null) || ' : '') . '(is_string($value)' . ($length ? ($fixed ? (' && strlen($value) == ' . $length) : ' && strlen($value) <= ' . $length) : '') . ')';
+			return ($nullable ? '($value === null) || ' : '') . '(is_string($value)' . ($nullable ? '' : ' && trim($value) ') . ($length ? ($fixed ? (' && strlen(trim($value)) == ' . $length) : ' && strlen($value) <= ' . $length) : '') . ')';
 		}
 		
 		if (preg_match("/(?:datetime|timestamp)/i", $nativeType))
 		{
-			return ($nullable ? '($value === null) || ' : '') . '(is_int($value) && $value >= 0)';
+			return ($nullable ? '($value === null) || ' : '') . '(preg_match("/^(2[0-1]|19)[0-9]{2,2}\-((0[469]|11)\-(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])\-(0[1-9]|[12][0-9]|3[01])|02\-(0[1-9]|[12][0-9])) (?:[01][0-9]|2[0-3])\:[0-5][0-9](?:|\:[0-5][0-9](?:|\.[0-9]{1,6}))$/", $value) && (substr($value, 5, 2) != "02" || substr($value, 8, 2) != "29" || date("L", mktime(0,0,0,1,1,substr($value, 0, 4))) == "1"))';
 		}
 		
 		if (preg_match("/(?:date)/i", $nativeType))
 		{
-			return ($nullable ? '($value === null) || ' : '') . '(is_int($value) && $value >= 0)';
+			return ($nullable ? '($value === null) || ' : '') . '(preg_match("/^(2[0-1]|19)[0-9]{2,2}\-((0[469]|11)\-(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])\-(0[1-9]|[12][0-9]|3[01])|02\-(0[1-9]|[12][0-9]))$/", $value) && (substr($value, 5, 2) != "02" || substr($value, 8, 2) != "29" || date("L", mktime(0,0,0,1,1,substr($value, 0, 4))) == "1"))';
 		}
 		
 		if (preg_match("/(?:time)/i", $nativeType))
 		{
-			return ($nullable ? '($value === null) || ' : '') . '(is_int($value) && $value >= 0 && $value < 86400)';
+			return ($nullable ? '($value === null) || ' : '') . 'preg_match("/^(?:[01][0-9]|2[0-3])\:[0-5][0-9](?:|\:[0-5][0-9](?:|\.[0-9]{1,6}))$/", $value)';
 		}
 		
 		if (preg_match("/(?:boolean)/i", $nativeType))
@@ -723,7 +779,7 @@ class DO_Field
 		
 		if (preg_match("/(?:int)/i", $nativeType))
 		{
-			return ($nullable ? '($value === null) || ' : '') . '(is_int($value)' . ($unsigned ? ' && $value >= 0' : '') . ')';
+			return (($nullable || $autoIncrement) ? '($value === null) || ' : '') . ($unsigned ? 'preg_match("/^[0-9]+$/", "$value")' : 'preg_match("/^(\-?[0-9]+|[0-9]+\-?)$/", "$value")');
 		}
 		
 		if (preg_match("/(?:float|decimal)/i", $nativeType))
@@ -892,9 +948,17 @@ class DO_Field
 				
 			case 'string':
 			
+				$length = array_key_exists('length', $this->properties) ? $this->properties['length'] : 0;
+				$fixed = array_key_exists('fixed', $this->properties) ? $this->properties['fixed'] : false;
+				$nullable = array_key_exists('notnull', $this->properties) ? !$this->properties['notnull'] : false;
+
 				switch ($this->getExternalType())
 				{
 					case 'string':
+					case 'datetime':
+					case 'date':
+					case 'time':
+					default:
 						if ($bolInbound)
 						{
 							return '// No conversion needed (string to string)';
@@ -979,6 +1043,8 @@ class DO_File_Base_Class
 		$dsnClassName = "DO_" . $this->doTable->getDODatabase()->getDataSourceClassName();
 		$dsnDirName = $this->doTable->getDODatabase()->getDataSourcePathName();
 		
+		$strObjectName = $this->doTable->getObjectLabel();
+		
 		if (!file_exists("$classesDir/do/$dsnDirName/base"))
 		{
 			mkdir("$classesDir/do/$dsnDirName/base");
@@ -997,7 +1063,9 @@ class DO_File_Base_Class
 		$strDataSourceToInternalCases = '';
 		$strInternalToDataSourceCases = '';
 		$strInternalValidationCases = '';
+		$strPropertyNameCases = '';
 		$strDefaultValues = '';
+		$strSetCases = '';
 		$this->doTable->intMaxPropertyNameLength;
 		$this->doTable->intMaxDataSourceNameLength;
 		if (count($mapping))
@@ -1026,6 +1094,13 @@ class DO_File_Base_Class
 				$strDataSourceToInternalCases .= "\n\n\t\t\tcase '$prop':\n\t\t\t\t" . $obField->getConversionCode(true) . "\n\t\t\t\t\$this->{\$propertyName} = \$value;\n\t\t\t\tbreak;";
 				$strInternalToDataSourceCases .= "\n\n\t\t\tcase '$prop':\n\t\t\t\t" . $obField->getConversionCode(false) . "\n\t\t\t\tbreak;";
 				$strInternalValidationCases .= "\n\n\t\t\tcase '$prop':\n\t\t\t\treturn " . $obField->getValidationCode() . ';';
+				$strPropertyNameCases .= "\n\n\t\t\tcase '$prop':\n\t\t\t\treturn '" . $obField->getPropertyLabel() . '\';';
+				
+				$strSetCase = $obField->getSetConversion();
+				if ($strSetCase)
+				{
+					$strSetCases .= "\n\n\t\t\tcase '$prop':\n\t\t\t\t$strSetCase";
+				}
 				
 				$strDefaultValues .= $obField->getQuotedDefaultValue();
 			}
@@ -1063,6 +1138,28 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		return array('.$propNames.');
 	}
 	
+	public function getObjectLabel()
+	{
+		return \''.$strObjectName.'\';
+	}
+
+	public function getPropertyLabel($propertyName)
+	{
+		switch ($propertyName)
+		{'.$strPropertyNameCases.'
+
+			default:
+				// Not recognised, so just return property name
+				return $propertyName;
+		}
+	}
+
+	public function getPropertyDataSourceName($propertyName)
+	{
+		$dsNames = $this->getPropertyDataSourceMappings();
+		return $dsNames[$propertyName];
+	}
+
 	public static function getPropertyDataSourceMappings()
 	{
 		return array('.$strPropSrcMapping.');
@@ -1136,6 +1233,19 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 
 		}
 	}
+
+	public function __set($name, $value)
+	{
+		switch ($name)
+		{'.$strSetCases.'
+			
+		}
+
+		parent::__set($name, $value);
+	}
+
+
+
 '.$strForeignKeyFunctions.'
 
 

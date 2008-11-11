@@ -24,6 +24,14 @@ abstract class DO_Base
 	abstract protected function setValueFromDataSource($propertyName, $value);
 
 	abstract static function getIdName();
+	
+	abstract protected function _isValidValue($property, $value);
+	
+	abstract function getObjectLabel();
+
+	abstract function getPropertyLabel($property);
+
+	abstract function getPropertyDataSourceName($property);
 
 	public function __construct($initialProperties=null, $fromDataSource=false)
 	{
@@ -162,6 +170,7 @@ abstract class DO_Base
 		{
 			$arrValues[$dsName] = $this->getValueForDataSource($prop, true);
 		}
+		return $arrValues;
 	}
 	
 	public function save()
@@ -186,6 +195,7 @@ abstract class DO_Base
 			$cols = implode(', ', array_keys($arrValues));
 			$vals = implode(', ', $arrValues);
 			$strSQL = 'INSERT INTO ' . $this->getDataSourceObjectName() . ' (' .$cols. ') VALUES (' .$vals. ')';
+			//echo "/*\n\n$strSQL\n\n*/";
 		}
 		// This must be an update
 		else
@@ -238,6 +248,28 @@ abstract class DO_Base
 		$this->setSaved(false);
 	}
 	
+	public function isValid($bolThrowException=false)
+	{
+		$props = $this->getPropertyNames();
+		$errors = array();
+		for ($i = 0, $l = count($props); $i < $l; $i++)
+		{
+			if (!$this->_isValidValue($props[$i], $this->properties[$props[$i]]))
+			{
+				if (!$bolThrowException) 
+				{
+					return false;
+				}
+				$errors[] = "Invalid value specified for '" . $this->getPropertyLabel($props[$i]) . "'.";// . $this->{$props[$i]};
+			}
+		}
+		if (count($errors))
+		{
+			throw new DO_Validation_Exception($this->getObjectLabel() . " is invalid:\n\t" . implode("\n\t", $errors));
+		}
+		return true;
+	}
+
 	public function isSaved()
 	{
 		return $this->_bolSaved;
@@ -297,6 +329,12 @@ abstract class DO_Base
 		
 	}
 	*/
+}
+
+
+class DO_Validation_Exception extends Exception
+{
+	
 }
 
 ?>

@@ -160,7 +160,12 @@ class Application
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
-				ContextMenu()->Admin->ManageDealers();
+				
+				if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
+				{
+					ContextMenu()->Admin->Sales->ManageSales();
+					ContextMenu()->Admin->Sales->ManageDealers();
+				}
 			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CUSTOMER_GROUP_ADMIN))
 			{
@@ -292,7 +297,11 @@ class Application
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
-				ContextMenu()->Admin->ManageDealers();
+				if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
+				{
+					ContextMenu()->Admin->Sales->ManageSales();
+					ContextMenu()->Admin->Sales->ManageDealers();
+				}
 			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CUSTOMER_GROUP_ADMIN))
 			{

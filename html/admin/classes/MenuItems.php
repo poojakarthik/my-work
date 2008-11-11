@@ -605,6 +605,49 @@ class MenuItems {
 	}
 
 	//------------------------------------------------------------------------//
+	// ManageSales
+	//------------------------------------------------------------------------//
+	/**
+	 * ManageSales()
+	 *
+	 * Compiles the Href to be executed when the ManageSales functionality is requested
+	 *
+	 * Compiles the Href to be executed when the ManageSales functionality is requested
+	 * 
+	 * @param	bool	$bolLast			optional, defaults to FALSE. If true, then the Manage Sales functionality will load, reflecting the last
+	 * 										set of boundary conditions
+	 * @return	string						Href to trigger the functionality
+	 * @method
+	 */
+	function ManageSales($bolLast=FALSE) {
+		$this->strLabel = "Sales";
+		$this->strContextMenuLabel = "Manage Sales";
+
+		return self :: NEW_FRAMEWORK . "reflex.php/Sales/ListSales/". ($bolLast ? "Last/" : "");
+	}
+
+	//------------------------------------------------------------------------//
+	// ViewSale
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewSale()
+	 *
+	 * Compiles the Href to be executed when the ViewSale functionality is requested
+	 *
+	 * Compiles the Href to be executed when the ViewSale functionality is requested
+	 * 
+	 * @param	int			$intSaleId		id of the sale to view
+	 * @return	string						Href to trigger the functionality
+	 * @method
+	 */
+	function ViewSale($intSaleId) {
+		$this->strLabel = "Sale";
+		$this->strContextMenuLabel = "View Sale";
+
+		return self :: NEW_FRAMEWORK . "reflex.php/Sales/ViewSale/$intSaleId/";
+	}
+
+	//------------------------------------------------------------------------//
 	// ManageDealers
 	//------------------------------------------------------------------------//
 	/**
