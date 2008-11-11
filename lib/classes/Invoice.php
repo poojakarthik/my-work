@@ -985,7 +985,7 @@ class Invoice extends ORM
 			$fltUsageLimit		= 0.0;
 		}
 		// DEBUG
-		Cli_App_Billing::debug($arrPlanChargeSteps);
+		//Cli_App_Billing::debug($arrPlanChargeSteps);
 
 		// Return usage data
 		return Array(
