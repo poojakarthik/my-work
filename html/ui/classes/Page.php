@@ -734,7 +734,7 @@ class Page
 			<script>
 			function redirectOutput(kbform)
 			{
-				var w = window.open('" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "?strUserName='+document.kbform.strUserName.value+'&mixUsername='+document.kbform.mixUsername.value+'&mixPassword='+document.kbform.mixPassword.value$mixKbAdmin,'Popup_Window','width=680,height=600,resizable=0,menubar=0,toolbar=0,location=0,directories=0,scrollbars=1,status=1');
+				var w = window.open('" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "?strUserName='+document.kbform.strUserName.value+'&mixUsername='+document.kbform.mixUsername.value+'&mixPassword='+document.kbform.mixPassword.value$mixKbAdmin,'Popup_Window','width=680,height=600,resizable=1,menubar=0,toolbar=0,location=0,directories=0,scrollbars=1,status=1');
 				kbform.target = 'Popup_Window';
 				return true;
 			}
