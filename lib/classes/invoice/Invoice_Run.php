@@ -549,6 +549,7 @@ class Invoice_Run
 		Cli_App_Billing::debug(" * Getting Last Invoice Date...", FALSE);
 		$this->strLastInvoiceDatetime	= Invoice_Run::getLastInvoiceDate($this->customer_group_id, $this->BillingDate);
 		$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
+		Cli_App_Billing::debug($this->strLastInvoiceDatetime);
 	}
 	
 	/**
