@@ -454,7 +454,7 @@ class DO_Foreign_Key
  	 */
 	public static function $funcName($strSourceClass \$do, \$strSort=NULL, \$strLimit=0, \$strOffset=0)
 	{
-		return {$strTargetClass}::getFor(\"".$fromFields[0]." = \" . \$do->".$to->getFieldForFieldName($this->map[$fromFields[0]])->getPropertyName().", true, \$strSort, \$strLimit=0, \$strOffset=0);
+		return {$strTargetClass}::getFor(\"".$fromFields[0]." = \" . \$do->".$to->getFieldForFieldName($this->map[$fromFields[0]])->getPropertyName().", true, \$strSort, \$strLimit, \$strOffset);
 	}";
 	
 		return $strForeignKeyFunction;
@@ -1212,7 +1212,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		
 		if ($strLimit)
 		{
-			$strSQL .= " LIMIT " . intval($strOffset) . ", " . intval($strLimit);
+			$strSQL .= " LIMIT " . intval($strLimit) . " OFFSET " . intval($strOffset);
 		}
 
 		$dataSource = '.$obClassName.'::getDataSource();
@@ -1268,7 +1268,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		
 		if ($strLimit)
 		{
-			$strSQL .= " LIMIT " . intval($strOffset) . ", " . intval($strLimit);
+			$strSQL .= " LIMIT " . intval($strLimit) . " OFFSET " . intval($strOffset);
 		}
 
 		$dataSource = '.$obClassName.'::getDataSource();
