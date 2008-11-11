@@ -480,8 +480,7 @@ class Invoice_Export
 					$arrService['ForceRender']		= "Service.ForceInvoiceRender";
 					$arrService['RatePlan']			= "RatePlan.Name";
 					$arrService['SharedPlan']		= "RatePlan.Shared";
-					//$arrService['allow_cdr_hiding']	= "RatePlan.allow_cdr_hiding";;
-					$arrService['allow_cdr_hiding']	= "0";
+					//$arrService['allow_cdr_hiding']	= "RatePlan.allow_cdr_hiding";
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"((((Service JOIN ServiceTotal ON ServiceTotal.Service = Service.Id) JOIN RatePlan ON ServiceTotal.RatePlan = RatePlan.Id) LEFT JOIN CostCentre ON CostCentre.Id = Service.CostCentre) LEFT JOIN ServiceExtension ON (ServiceExtension.Service = Service.Id AND ServiceExtension.Archived = 0)) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id",
 																					$arrService,
 																					"ServiceTotal.invoice_run_id = <invoice_run_id> AND ServiceTotal.Service = <CurrentId> AND (ServiceExtension.Name IS NULL OR ServiceExtension.Name = <Extension>)",
@@ -644,7 +643,6 @@ class Invoice_Export
 					$arrColumns['RecordGroup']		= "RecordGroup.Description";
 					$arrColumns['TaxExempt']		= "RecordType.global_tax_exempt";
 					//$arrColumns['allow_cdr_hiding']	= "Rate.allow_cdr_hiding";
-					$arrColumns['allow_cdr_hiding']	= "0";
  					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
  					(	
 						"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id" .
