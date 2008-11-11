@@ -645,8 +645,8 @@ class Invoice_Export
 					//$arrColumns['allow_cdr_hiding']	= "Rate.allow_cdr_hiding";
  					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
  					(	
-						"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id" .
-						", RecordType as RecordGroup JOIN Rate ON Rate.Id = CDR.Rate",
+						"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id JOIN Rate ON Rate.Id = CDR.Rate" .
+						", RecordType as RecordGroup",
 						$arrColumns,
 						"$strWhereService AND " .
 						"RecordGroup.Id = RecordType.GroupId AND " .
