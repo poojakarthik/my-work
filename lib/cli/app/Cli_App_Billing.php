@@ -239,7 +239,7 @@ class Cli_App_Billing extends Cli
 	{
 		static	$bolHasRun	= FALSE;
 			
-		if (!$bolHasRun && $this->_arrArgs[self::SWITCH_SKIP_PREBILLING])
+		if (!$bolHasRun && !$this->_arrArgs[self::SWITCH_SKIP_PREBILLING])
 		{
 			$strWorkingDirectory	= getcwd();
 			chdir(BACKEND_BASE_PATH.'process/');
