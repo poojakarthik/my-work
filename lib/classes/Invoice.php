@@ -129,7 +129,8 @@ class Invoice extends ORM
 				$this->Debits						+= $arrServiceDetails['ServiceTotal']['TotalCharge'] + $arrServiceDetails['ServiceTotal']['Debit'];
 				$this->Credits						+= $arrServiceDetails['ServiceTotal']['Credit'];
 				$this->Tax							+= $arrServiceDetails['ServiceTotal']['Tax'];
-				Cli_App_Billing::debug("\t Total: \${$arrServiceDetails['ServiceTotal']['TotalCharge']}; Tax: \${$arrServiceDetails['ServiceTotal']['Tax']}");
+				$fltServiceGrandTotal				= $arrServiceDetails['ServiceTotal']['TotalCharge'] + $arrServiceDetails['ServiceTotal']['Debit'] - $arrServiceDetails['ServiceTotal']['Credit'];
+				Cli_App_Billing::debug("\t Total: \${$fltServiceGrandTotal}; Tax: \${$arrServiceDetails['ServiceTotal']['Tax']}");
 
 				// Is this a Shared Plan?
 				if ($arrServiceDetails['ServiceTotal']['Shared'])
