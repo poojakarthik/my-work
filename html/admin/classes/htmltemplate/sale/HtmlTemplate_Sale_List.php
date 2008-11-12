@@ -36,7 +36,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 		}
 		else
 		{
-			$strTitle = "0 Dealers Found";
+			$strTitle = "0 Sales Found";
 		}
 
 		// Define the columns to show
