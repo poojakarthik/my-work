@@ -256,6 +256,26 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		return self::$_arrPaginationDetails;
 	}
 
+	public function getSaleAccount()
+	{
+		$arrSaleAccounts	= DO_Sales_SaleAccount::listForFkSaleAccountSaleId($this);
+		$intCount			= count($arrSaleAccounts);
+		if ($intCount > 1)
+		{
+			// Multiple sale_account records relate to $doSale, which should never happen
+			throw new Exception(__METHOD__ ." multiple accounts are associated with sale: {$this->id}");
+		}
+		elseif ($intCount == 1)
+		{
+			// The sale_account record was found
+			return $arrSaleAccounts[0];
+		}
+		else
+		{
+			// There is no sale_account record
+			return NULL;
+		}
+	}
 	
 }
 

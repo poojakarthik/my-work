@@ -65,7 +65,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 			$bolAlt = FALSE;
 			foreach ($arrSales as $objSale)
 			{
-				$objSaleAccount			= DO_Sales_SaleAccount::getForSale($objSale);
+				$objSaleAccount			= $objSale->getSaleAccount();
 				$arrSaleStatusHistory	= DO_Sales_SaleStatusHistory::listForFkSaleStatusHistorySaleId($objSale, '"changedOn" DESC', 1);
 				$objDealer				= DO_Sales_Dealer::getForId($objSale->createdBy);
 				$arrContactSale			= DO_Sales_ContactSale::listForFkContactSaleSaleId($objSale, "({$arrContactSaleProps['contactAssociationTypeId']} = ". DO_Sales_ContactAssociationType::PRIMARY .") DESC", 1);

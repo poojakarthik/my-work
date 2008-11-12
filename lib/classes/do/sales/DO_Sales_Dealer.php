@@ -26,7 +26,6 @@ class DO_Sales_Dealer extends DO_Sales_Base_Dealer
 	}
 
 	// Returns array containing all Dealers under the management hierarchy of $objDealer
-	// This will NOT include $objDealer in the array
 	// the array is not associative
 	public function getSubordinates()
 	{
@@ -42,6 +41,34 @@ class DO_Sales_Dealer extends DO_Sales_Base_Dealer
 			$arrDealers = array_merge($arrDealers, $doManagedDealer->getSubordinates());
 		}
 		return $arrDealers;
+	}
+	
+	// Returns array of all the DO_Sales_SaleType objects, with the id of the records as the key, that the dealer is associated with
+	public function getSaleTypes()
+	{
+		$arrDoDealerSaleTypes = DO_Sales_DealerSaleType::listForFkDealerSaleTypeDealerId($this);
+		
+		$arrAllSaleTypes = DO_Sales_SaleType::getAll();
+		$arrSaleTypesForDealer = array();
+		foreach ($arrDoDealerSaleTypes as $doDealerSaleType)
+		{
+			$arrSaleTypesForDealer[$doDealerSaleType->saleTypeId] = $arrAllSaleTypes[$doDealerSaleType->saleTypeId];
+		}
+		return $arrSaleTypesForDealer;
+	}
+	
+	// Returns array of all the DO_Sales_Vendor objects, with the id of the records as the key, that the dealer is associated with
+	public function getVendors()
+	{
+		$arrDoDealerVendors = DO_Sales_DealerVendor::listForFkDealerVendorDealerId($this);
+		
+		$arrAllVendors = DO_Sales_Vendor::getAll();
+		$arrVendorsForDealer = array();
+		foreach ($arrDoDealerVendors as $doDealerVendor)
+		{
+			$arrVendorsForDealer[$doDealerVendor->vendorId] = $arrAllVendors[$doDealerVendor->vendorId];
+		}
+		return $arrVendorsForDealer;
 	}
 	
 	

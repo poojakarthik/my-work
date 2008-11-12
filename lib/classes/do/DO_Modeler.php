@@ -1187,7 +1187,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 
 	public function getValueForDataSource($propertyName, $bolQuoted=true)
 	{
-		$value = $this->{$propertyName};
+		$value = array_key_exists($propertyName, $this->properties) ? $this->properties[$propertyName] : null;
 		switch ($propertyName)
 		{'.$strInternalToDataSourceCases.'
 

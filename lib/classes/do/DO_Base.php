@@ -260,7 +260,7 @@ abstract class DO_Base
 				{
 					return false;
 				}
-				$errors[] = "Invalid value specified for '" . $this->getPropertyLabel($props[$i]) . "'.";// . $this->{$props[$i]};
+				$errors[] = "Invalid value specified for '" . $this->getPropertyLabel($props[$i]) . "'.";// . $this->properties[$props[$i]];
 			}
 		}
 		if (count($errors))
