@@ -71,26 +71,35 @@ class Application_Handler_Sales extends Application_Handler
 				throw new Exception("Sales Portal module is not active");
 			}
 			
-			// We need to load all of the sales matching any passed criteria (in $_POST)
+			// We need to load all of the sales matching any passed criteria (in $_REQUEST)
 	
 			$intDefaultLimit = self::MAX_RECORDS_PER_PAGE;
 	
 			$strPathToken = count($subPath) ? strtolower($subPath[0]) : NULL;
 	
 			// Default all search settings to be 'blank'
-			$intOffset		= 0;
-			$intLimit		= $intDefaultLimit;
-			$arrSort		= array();
+			$intOffset			= 0;
+			$intLimit			= $intDefaultLimit;
+			$arrSort			= array();
+			$intDealerId		= NULL;
+			$intManagerId		= NULL;
+			$intSaleStatusId	= NULL;
+			$intSaleTypeId		= NULL;
+			$intVendorId		= NULL;
 	
 			// If this search is based on last search, default all search settings to be those of the last search
 			if (($strPathToken == 'last' || array_key_exists('last', $_REQUEST)) && array_key_exists('Sales', $_SESSION) && array_key_exists('LastSalesList', $_SESSION['Sales']))
 			{
 				$arrLastQuery		= unserialize($_SESSION['Sales']['LastSalesList']);
 				$arrSort			= $arrLastQuery['Sort'];
-				$arrOldFilter		= $arrLastQuery['Filter'];
-				//$intDealerStatusId	= array_key_exists('dealerStatusId', $arrOldFilter) ? $arrOldFilter['dealerStatusId']['Value'] : NULL;
-				//$intUpLineId		= array_key_exists('upLineId', $arrOldFilter) ? $arrOldFilter['upLineId']['Value'] : NULL;
 				$intOffset			= $arrLastQuery['Offset'];
+				$arrOldFilter		= $arrLastQuery['Filter'];
+				$intDealerId		= array_key_exists('dealerId', $arrOldFilter) ? $arrOldFilter['dealerId']['Value'] : NULL;
+				$intManagerId		= array_key_exists('managerId', $arrOldFilter) ? $arrOldFilter['managerId']['Value'] : NULL;
+
+				$intSaleStatusId	= array_key_exists('saleStatusId', $arrOldFilter) ? $arrOldFilter['saleStatusId']['Value'] : NULL;
+				$intSaleTypeId		= array_key_exists('saleTypeId', $arrOldFilter) ? $arrOldFilter['saleTypeId']['Value'] : NULL;
+				$intVendorId		= array_key_exists('vendorId', $arrOldFilter) ? $arrOldFilter['vendorId']['Value'] : NULL;
 			}
 	
 			if (array_key_exists('offset', $_REQUEST))
@@ -126,13 +135,67 @@ class Application_Handler_Sales extends Application_Handler
 				}
 			}
 	
-			//$intDealerStatusId	= array_key_exists('dealerStatusId', $_REQUEST) ? (strlen($_REQUEST['dealerStatusId']) ? intval($_REQUEST['dealerStatusId']) : NULL) : $intDealerStatusId;
-			//$intUpLineId		= array_key_exists('upLineId', $_REQUEST) ? (strlen($_REQUEST['upLineId']) ? intval($_REQUEST['upLineId']) : NULL) : $intUpLineId;
 	
+			// Filtering by manager overrides filtering by dealer
+			$strDealerFilter = (array_key_exists('dealerFilter', $_REQUEST) && strlen($_REQUEST['dealerFilter']))? $_REQUEST['dealerFilter'] : NULL;
+			$arrParts = array();
+			if ($strDealerFilter !== NULL && preg_match("/^(?<filter>\w+)\|(?<value>\d+)$/", $strDealerFilter, $arrParts))
+			{
+				if ($arrParts['filter'] == DO_Sales_Sale::SEARCH_CONSTRAINT_MANAGER_ID)
+				{
+					$intManagerId = intval($arrParts['value']);
+				}
+				elseif ($arrParts['filter'] == DO_Sales_Sale::SEARCH_CONSTRAINT_DEALER_ID)
+				{
+					$intDealerId = intval($arrParts['value']);
+				}
+				else
+				{
+					throw new Exception("Invalid Sale filter: {$arrParts['filter']}");
+				}
+			}
+			// Specifying a manager will override specifying a dealer
+			$intDealerId = ($intManagerId === NULL) ? $intDealerId : NULL;
+			
+			$intSaleStatusId	= array_key_exists('saleStatusId', $_REQUEST) ? (strlen($_REQUEST['saleStatusId']) ? intval($_REQUEST['saleStatusId']) : NULL) : $intSaleStatusId;
+			$intSaleTypeId		= array_key_exists('saleTypeId', $_REQUEST) ? (strlen($_REQUEST['saleTypeId']) ? intval($_REQUEST['saleTypeId']) : NULL) : $intSaleTypeId;
+			$intVendorId		= array_key_exists('vendorId', $_REQUEST) ? (strlen($_REQUEST['vendorId']) ? intval($_REQUEST['vendorId']) : NULL) : $intVendorId;
+				
 			$arrFilter = array();
 			// Never include the system dealer in the list of dealers (Note that we will also have to filter on id for other reasons, so this can be overridden by
 			// another dealer id, or list of dealer ids)
-	
+			
+			if ($intManagerId !== NULL)
+			{
+				$arrFilter['managerId'] = array(	"Type"	=> DO_Sales_Sale::SEARCH_CONSTRAINT_MANAGER_ID,
+													"Value"	=> $intManagerId
+												);
+			}
+			if ($intDealerId !== NULL)
+			{
+				$arrFilter['dealerId'] = array(	"Type"	=> DO_Sales_Sale::SEARCH_CONSTRAINT_DEALER_ID,
+												"Value"	=> $intDealerId
+												);
+			}
+			if ($intSaleStatusId !== NULL)
+			{
+				$arrFilter['saleStatusId'] = array(	"Type"	=> DO_Sales_Sale::SEARCH_CONSTRAINT_SALE_STATUS_ID,
+													"Value"	=> $intSaleStatusId
+													);
+			}
+			if ($intSaleTypeId !== NULL)
+			{
+				$arrFilter['saleTypeId'] = array(	"Type"	=> DO_Sales_Sale::SEARCH_CONSTRAINT_SALE_TYPE_ID,
+													"Value"	=> $intSaleTypeId
+													);
+			}
+			if ($intVendorId !== NULL)
+			{
+				$arrFilter['vendorId'] = array(	"Type"	=> DO_Sales_Sale::SEARCH_CONSTRAINT_VENDOR_ID,
+												"Value"	=> $intVendorId
+											);
+			}
+			
 			$detailsToRender = array();
 			$detailsToRender['Sort']	= $arrSort;
 			$detailsToRender['Filter']	= $arrFilter;
@@ -143,7 +206,12 @@ class Application_Handler_Sales extends Application_Handler
 
 			$detailsToRender['Sales']			= DO_Sales_Sale::searchFor($arrFilter, $arrSort, $intLimit, $intOffset);
 			$detailsToRender['Pagination']		= DO_Sales_Sale::getPaginationDetails();
-
+			$detailsToRender['Dealers']			= DO_Sales_Dealer::listAll();
+			$detailsToRender['Managers']		= DO_Sales_Dealer::listManagers();
+			$detailsToRender['SaleTypes']		= DO_Sales_SaleType::getAll();
+			$detailsToRender['SaleStatuses']	= DO_Sales_SaleStatus::getAll();
+			$detailsToRender['Vendors']			= DO_Sales_Vendor::getAll();
+			
 			$this->LoadPage('sale_list', HTML_CONTEXT_DEFAULT, $detailsToRender);
 		}
 		catch (Exception $e)

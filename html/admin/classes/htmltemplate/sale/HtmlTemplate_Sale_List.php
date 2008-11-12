@@ -11,6 +11,13 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 	{
 		$arrSort	= $this->mxdDataToRender['Sort'];
 		$arrFilter	= $this->mxdDataToRender['Filter'];
+		
+		$arrDealers			= $this->mxdDataToRender['Dealers'];
+		$arrManagers		= $this->mxdDataToRender['Managers'];
+		$arrSaleTypes		= $this->mxdDataToRender['SaleTypes'];
+		$arrSaleStatuses	= $this->mxdDataToRender['SaleStatuses'];
+		$arrVendors			= $this->mxdDataToRender['Vendors'];
+		
 
 		$arrSales			= $this->mxdDataToRender['Sales'];
 		$arrPagination		= $this->mxdDataToRender['Pagination'];
@@ -183,6 +190,59 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 		}
 		$strHeaderRow = "\t\t<tr>\n$strHeaderRow\t\t</tr>";
 
+		// Build filter controls
+		
+		// The Dealer filter
+		$strDealerOptions = "\n\t<option value='' selected='selected'>All Dealers</option>";
+		$intManagerId = array_key_exists("managerId", $arrFilter)? $arrFilter['managerId']['Value'] : NULL;
+		$strManagerFilterName = DO_Sales_Sale::SEARCH_CONSTRAINT_MANAGER_ID;
+		foreach ($arrManagers as $doManager)
+		{
+			$strSelected = ($doManager->id == $intManagerId)? "selected='selected'" : "";
+			$strUsername = htmlspecialchars($doManager->username);
+			$strDealerOptions .= "\n\t<option value='$strManagerFilterName|{$doManager->id}' $strSelected>$strUsername (and subordinates)</option>";
+		}
+		
+		$intDealerId = array_key_exists("dealerId", $arrFilter)? $arrFilter['dealerId']['Value'] : NULL;
+		$strDealerFilterName = DO_Sales_Sale::SEARCH_CONSTRAINT_DEALER_ID;
+		foreach ($arrDealers as $doDealer)
+		{
+			$strSelected = ($doDealer->id == $intDealerId)? "selected='selected'" : "";
+			$strUsername = htmlspecialchars($doDealer->username);
+			$strDealerOptions .= "\n\t<option value='$strDealerFilterName|{$doDealer->id}' $strSelected>$strUsername</option>";
+		}
+		
+		// The Vendor filter
+		$strVendorOptions = "\n\t<option value='' selected='selected'>All Vendors</option>";
+		$intVendorId = array_key_exists("vendorId", $arrFilter)? $arrFilter['vendorId']['Value'] : NULL;
+		foreach ($arrVendors as $doVendor)
+		{
+			$strSelected = ($doVendor->id == $intVendorId)? "selected='selected'" : "";
+			$strVendor = htmlspecialchars($doVendor->name);
+			$strVendorOptions .= "\n\t<option value='{$doVendor->id}' $strSelected>$strVendor</option>";
+		}
+		
+		// The SaleType filter
+		$strSaleTypeOptions = "\n\t<option value='' selected='selected'>All Sale Types</option>";
+		$intSaleTypeId = array_key_exists("saleTypeId", $arrFilter)? $arrFilter['saleTypeId']['Value'] : NULL;
+		foreach ($arrSaleTypes as $doSaleType)
+		{
+			$strSelected = ($doSaleType->id == $intSaleTypeId)? "selected='selected'" : "";
+			$strSaleType = htmlspecialchars($doSaleType->name);
+			$strSaleTypeOptions .= "\n\t<option value='{$doSaleType->id}' $strSelected>$strSaleType</option>";
+		}
+		
+		// The SaleStatus filter
+		$strSaleStatusOptions = "\n\t<option value='' selected='selected'>All Sale Statuses</option>";
+		$intSaleStatusId = array_key_exists("saleStatusId", $arrFilter)? $arrFilter['saleStatusId']['Value'] : NULL;
+		foreach ($arrSaleStatuses as $doSaleStatus)
+		{
+			$strSelected = ($doSaleStatus->id == $intSaleStatusId)? "selected='selected'" : "";
+			$strSaleStatus = htmlspecialchars($doSaleStatus->name);
+			$strSaleStatusOptions .= "\n\t<option value='{$doSaleStatus->id}' $strSelected>$strSaleStatus</option>";
+		}
+				
+		$strSalesListLink = MenuItems::ManageSales();
 
 		// Output the table of dealers
 		echo "
@@ -193,7 +253,17 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				$strTitle
 			</div>
 			<div id='caption_options' name='caption_options'>
-				<!-- INSERT FILTER OPTIONS HERE -->
+				<form method='GET' action='$strSalesListLink'>
+					<select id='dealerFilter' name='dealerFilter'>$strDealerOptions
+					</select>
+					<select id='vendorId' name='vendorId'>$strVendorOptions
+					</select>
+					<select id='saleTypeId' name='saleTypeId'>$strSaleTypeOptions
+					</select>
+					<select id='saleStatusId' name='saleStatusId'>$strSaleStatusOptions
+					</select>
+					<input type='submit' value='Go'></input>
+				</form>
 			</div>
 		</div>
 	</caption>

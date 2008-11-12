@@ -2,11 +2,11 @@
 
 class DO_Sales_Sale extends DO_Sales_Base_Sale
 {
-	const SEARCH_FOR_VENDOR_ID		= 1;
-	const SEARCH_FOR_SALE_TYPE		= 2;
-	const SEARCH_FOR_SALE_STATUS	= 3;
-	const SEARCH_FOR_DEALER_ID		= 4;
-	const SEARCH_FOR_MANAGER_ID		= 5; // includes sales from all dealers under the manager
+	const SEARCH_CONSTRAINT_VENDOR_ID		= "vendor";
+	const SEARCH_CONSTRAINT_SALE_TYPE_ID	= "sale_type";
+	const SEARCH_CONSTRAINT_SALE_STATUS_ID	= "sale_status";
+	const SEARCH_CONSTRAINT_DEALER_ID		= "dealer";
+	const SEARCH_CONSTRAINT_MANAGER_ID		= "manager"; // includes sales from all dealers under the manager
 	
 	
 	const ORDER_BY_CONTACT_NAME		= "contact_name";
@@ -36,8 +36,59 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 		$arrOrderByParts	= array();
 		
 		// Build WHERE clause
-		// TODO!
-		$strWhereClause = "";
+		$arrWhereClauseParts = array();
+		foreach ($arrFilter as $arrConstraint)
+		{
+			if (!(is_array($arrConstraint) && array_key_exists("Type", $arrConstraint)))
+			{
+				// Search constraint declaration is invalid
+				continue;
+			}
+			
+			switch ($arrConstraint['Type'])
+			{
+				case self::SEARCH_CONSTRAINT_MANAGER_ID:
+					$intDealerId = intval($arrConstraint['Value']);
+					if (($doManager = DO_Sales_Dealer::getForId($intDealerId)) === NULL)
+					{
+						throw new Exception(__METHOD__ ." can't find dealer with id: $intDealerId");
+					}
+					
+					$arrDealers = $doManager->getSubordinates();
+					$arrDealerIds = array($intDealerId);
+					foreach ($arrDealers as $doDealer)
+					{
+						$arrDealerIds[] = $doDealer->id;
+					}
+					$arrWhereClauseParts[] = "sale.created_by IN (". implode(", ", $arrDealerIds) .")";
+					break;
+
+				case self::SEARCH_CONSTRAINT_DEALER_ID:
+					$intDealerId = intval($arrConstraint['Value']);
+					$arrWhereClauseParts[] = "sale.created_by = $intDealerId";
+					break;
+					
+				case self::SEARCH_CONSTRAINT_SALE_TYPE_ID:
+					$intSaleTypeId = intval($arrConstraint['Value']);
+					$arrWhereClauseParts[] = "sale.sale_type_id = $intSaleTypeId";
+					break;
+					
+				case self::SEARCH_CONSTRAINT_SALE_STATUS_ID:
+					$intSaleStatusId = intval($arrConstraint['Value']);
+					$arrWhereClauseParts[] = "sale.sale_status_id = $intSaleStatusId";
+					break;
+					
+				case self::SEARCH_CONSTRAINT_VENDOR_ID:
+					$intVendorId = intval($arrConstraint['Value']);
+					$arrWhereClauseParts[] = "sale_account.vendor_id = $intVendorId";
+					break;
+					
+				default:
+					// Unknown Search constraint
+					continue;
+			}
+		}
+		$strWhereClause = (count($arrWhereClauseParts))? "WHERE ". implode(" AND ", $arrWhereClauseParts) : "";
 		
 		// Build OrderBy Clause
 		if (is_array($arrSort))

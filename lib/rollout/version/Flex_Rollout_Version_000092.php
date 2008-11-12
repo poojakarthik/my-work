@@ -390,7 +390,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 		// 15: define the System dealer, in the dealer table (points to system employee)
 		$strSQL = "	INSERT INTO dealer (id, first_name, last_name, username, password, can_verify, dealer_status_id, employee_id)
 					VALUES
-					(1, 'System', '', '', '', 1, 1, 0);";
+					(1, 'System', '', 'system', '', 1, 1, 0);";
 		
 		$objResult = $dbAdmin->query($strSQL);
 		if (PEAR::isError($objResult))
