@@ -179,7 +179,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 		// No rollback is required
 
 		// Delete the old dealer table (The structure has changed substantially)
-		$strSQL = "DROP TABLE IF EXISTS dealer";
+		$strSQL = "DROP TABLE IF EXISTS Dealer";
 		$objResult = $dbAdmin->query($strSQL);
 		if (PEAR::isError($objResult))
 		{
