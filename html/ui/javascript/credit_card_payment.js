@@ -1010,7 +1010,7 @@ alert(outcome);
 			}
 			else
 			{
-				strValidityError = 'The Amount to Pay enetered is invalid. It must must be number greater than 0 (zero).';
+				strValidityError = 'The Amount to Pay entered is invalid. It must must be number greater than 0 (zero).';
 			}
 			bolAmountEntered = true;
 		}
