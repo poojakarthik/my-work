@@ -157,7 +157,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 		}
 		
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
-										"SQL"		=> "DROP TABLE state;");
+										"SQL"		=> "DROP TABLE contact_title;");
 		
 		// 8: Populate the contact_title table
 		$strSQL = "	INSERT INTO contact_title (id, name, description)
@@ -187,7 +187,7 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 		}
 		
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
-										"SQL"		=> "	CREATE TABLE dealer
+										"SQL"		=> "	CREATE TABLE Dealer
 															(
 																id bigint(20) unsigned NOT NULL auto_increment,
 																upline_id bigint(20) unsigned NOT NULL default '0',
