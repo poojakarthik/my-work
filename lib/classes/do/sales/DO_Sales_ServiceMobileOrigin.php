@@ -1,7 +1,8 @@
 <?php
 
-class DO_Sales_BillPaymentType extends DO_Sales_Base_BillPaymentType
+class DO_Sales_ServiceMobileOrigin extends DO_Sales_Base_ServiceMobileOrigin
 {
+
 	static function listAll()
 	{
 		$ds = self::getPropertyDataSourceMappings();
