@@ -134,6 +134,11 @@ class Application_Handler_Sales extends Application_Handler
 					$arrSort[$strColumn] = ($ascDesc[0] == 'a');
 				}
 			}
+			if (count($arrSort) == 0)
+			{
+				// Default to sort by sale.id descending
+				$arrSort[DO_Sales_Sale::ORDER_BY_SALE_ID] = FALSE;
+			}
 	
 	
 			// Filtering by manager overrides filtering by dealer

@@ -258,7 +258,7 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 
 	public function getSaleAccount()
 	{
-		$arrSaleAccounts	= DO_Sales_SaleAccount::listForFkSaleAccountSaleId($this);
+		$arrSaleAccounts	= DO_Sales_SaleAccount::listForSale($this);
 		$intCount			= count($arrSaleAccounts);
 		if ($intCount > 1)
 		{

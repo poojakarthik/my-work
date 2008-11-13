@@ -25,13 +25,14 @@ class DO_Modeler
 	
 	public static function getModelerForDataSource($strDataSourceName)
 	{
-		$strDataSourceClassName = "DO_Modeler_" . self::codifyName($strDataSourceName);
+		$strDataSourceClassName = "DO_Modeler_" . self::codifyName($strDataSourceName, TRUE);
+
 		if (file_exists(dirname(__FILE__)."/$strDataSourceClassName.php"))
 		{
 			return new $strDataSourceClassName($strDataSourceName);
 		}
 		else
-		{
+		{		
 			return new DO_Modeler($strDataSourceName);
 		} 
 	}
@@ -933,7 +934,7 @@ class DO_Field
 					case 'boolean':
 						if ($bolInbound)
 						{
-							return '// No conversion needed (boolean to boolean)';
+							return '$value = is_bool($value) ? $value : (is_string($value) ? (strtolower($value[0]) == "t") : ($value ? true : false));';
 						}
 						else
 						{
@@ -1338,7 +1339,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		$matched = false;
 		foreach($details as $detail)
 		{
-			$instance = new '.$obClassName.'($detail);
+			$instance = new '.$obClassName.'($detail, true);
 			$instance->setSaved(true);
 			$arrInstances[] = $instance;
 			if (!$multiple)

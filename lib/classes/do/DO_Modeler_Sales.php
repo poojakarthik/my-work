@@ -49,7 +49,7 @@ class DO_Foreign_Key_Sales extends DO_Foreign_Key
 		$name = $this->name;
 		
 		$fromFields = array_keys($this->map);
-		
+
 		// If there is only one field and it is in the form of xxx_id, use getXxx()
 		if (count($fromFields) === 1 && preg_match("/_id\$/", $fromFields[0]))
 		{
