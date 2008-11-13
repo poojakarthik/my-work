@@ -67,6 +67,13 @@ class Cli_App_Sync_SalesPortal extends Cli
 		$this->_pushDealers();
 	}
 	
+	// This is so the _pushAll method can be called externally
+	public static function pushAll()
+	{
+		$objSyncSales = new self();
+		$objSyncSales->_pushAll();
+	}
+	
 	// _pushVendors()	-- Synchronises the Flex.CustomerGroup table with SP Vendors 
 	protected function _pushVendors()
 	{

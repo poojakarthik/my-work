@@ -582,7 +582,15 @@ var Dealer = {
 
 		if (response.Success && response.Success == true)
 		{
-			$Alert("The dealer was successfully saved");
+			if (response.Warning)
+			{
+				// The save was successfull, but threw a warning
+				$Alert("<p>The dealer was successfully saved, however the following warning was raised:</p><p>"+ response.Warning +"</p>");
+			}
+			else
+			{
+				$Alert("The dealer was successfully saved");
+			}
 			
 			// Update dealer object
 			this.objDealer = response.Dealer;

@@ -824,9 +824,26 @@ class JSON_Handler_Dealer extends JSON_Handler
 			$objDealer->save();
 			TransactionCommit();
 			
-			return array(	"Success"		=> TRUE,
-							"Dealer"		=> $objDealer->toArray()
-						);
+			// Do a PUSH of all sales related data in flex, to the sales database
+			try
+			{
+				Cli_App_Sync_SalesPortal::pushAll();
+			}
+			catch (Exception $e)
+			{
+				// Pushing the data failed
+				$strWarning = "Pushing the data from Flex to the Sales database, failed. Contact your system administrators to have them manually trigger the data push.  (Error message: ". htmlspecialchars($e->getMessage()) .")";
+			}
+			
+			$arrReturn = array(	"Success"	=> TRUE,
+								"Dealer"	=> $objDealer->toArray()
+								);
+			if (isset($strWarning) && strlen($strWarning))
+			{
+				$arrReturn['Warning'] = $strWarning;
+			}
+			
+			return $arrReturn;
 		}
 		catch (Exception $e)
 		{
