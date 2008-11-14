@@ -54,7 +54,7 @@ class DO_Sales_ContactMethod extends DO_Sales_Base_ContactMethod
 				{
 
 					case 1: // WIP: Code this properly! 1 = Email
-						return preg_match("/^[a-z0-9!#\$%&'\*\+\/=\?\^_`\{\|\}~\-]+(?:\.[a-z0-9!#\$%&'\*\+\/=\?\^_`\{\|\}~\-]+)*@(?:[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$/", $value);
+						return preg_match("/^[a-z0-9!#\$%&'\*\+\/=\?\^_`\{\|\}~\-]+(?:\.[a-z0-9!#\$%&'\*\+\/=\?\^_`\{\|\}~\-]+)*@(?:[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$/i", $value);
 					
 					case 2: // WIP: Code this properly! 2 = Fax
 					case 3: // WIP: Code this properly! 3 = Phone
