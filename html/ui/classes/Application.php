@@ -1015,6 +1015,16 @@ class Application
 		}
 		return NULL;
 	}
+	
+	static function encrypt($value)
+	{
+		return Encrypt($value);
+	}
+	
+	static function decrypt($value)
+	{
+		return Decrypt($value);
+	}
 }
 
 ?>
