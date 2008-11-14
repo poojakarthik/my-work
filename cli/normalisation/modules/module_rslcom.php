@@ -200,8 +200,11 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		{
 			// normal calls
 			$mixRateId 						= $this->_FetchRawCDR('RateId');
-			$mixCallType					= ($mixRateId === '915') ? '915' : $this->_FetchRawCDR('CallType');		// Telstra On-Bill
+			$mixCallType					= $this->_FetchRawCDR('CallType');
 			$strRecordCode 					= $this->FindRecordCode($mixCallType);
+			
+			// Check for Tesltra OnBill with IDD
+			$strRecordCode					= ($strRecordCode === 'IDD' && $mixRateId === '915') ? $this->FindRecordCode('915') : $strRecordCode;
 		}
 		$mixValue 							= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
