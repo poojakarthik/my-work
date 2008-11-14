@@ -486,7 +486,7 @@ class AppTemplateAccount extends ApplicationTemplate
 									);
 		
 		
-		$arrPermittedTypes = array(INVOICE_RUN_TYPE_SAMPLES);
+		$arrPermittedTypes = array(INVOICE_RUN_TYPE_SAMPLES, INVOICE_RUN_TYPE_LIVE);
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 		{
 			$arrPermittedTypes[] = INVOICE_RUN_TYPE_INTERNAL_SAMPLES;
