@@ -125,9 +125,9 @@ Object.extend(Sale.GUIComponent, {
 	createDateGroup: function($value, mixIsMandatory, clbValidationFunction, arrValidationEvents)
 	{
 		// Create Inputs
-		var curDay = parseInt(($value != null && $value.length == 10) ? $value.substr(8, 2) : 0);
-		var curMonth = parseInt(($value != null && $value.length == 10) ? $value.substr(5, 2) : 0);
-		var curYear = parseInt(($value != null && $value.length == 10) ? $value.substr(0, 4) : 0);
+		var curDay   = parseInt("1" + (($value != null && $value.length == 10) ? $value.substr(8, 2) : "00")) - 100;
+		var curMonth = parseInt("1" + (($value != null && $value.length == 10) ? $value.substr(5, 2) : "00")) - 100;
+		var curYear  = parseInt(($value != null && $value.length == 10) ? $value.substr(0, 4) : 0);
 		
 		var intYear = (new Date()).getYear() + 1900;
 		
