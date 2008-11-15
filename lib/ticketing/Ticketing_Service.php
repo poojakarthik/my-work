@@ -292,27 +292,14 @@ class Ticketing_Service
 		$details['subject'] = $dom->getElementsByTagName('subject')->item(0)->textContent;
 
 		$email = $dom->getElementsByTagName('from')->item(0);
-		$emailAddress = $email ? $email->getElementsByTagName('email')->item(0)->textContent : '';
-		$emailAddress = trim($emailAddress);
-		if (substr($emailAddress, 0, 1) == '<') $emailAddress = substr($emailAddress, 1);
-		if (substr($emailAddress, -1) == '>') $emailAddress = substr($emailAddress, 0, -1);
-		if ($emailAddress && EmailAddressValid($emailAddress))
-		{
-			$details['from'] = array(
-				'name' => $email->getElementsByTagName('name')->item(0)->textContent,
-				'address' => $emailAddress,
-			);
-		}
+		$defails['from'] = self::getEmailNameAndAddress($email);
 
 		$details['to'] = array();
 		$emails = $dom->getElementsByTagName('to');
 		for ($x = 0; $x < $emails->length; $x++)
 		{
 			$email = $emails->item($x);
-			$details['to'][] = array(
-				'name' => $email->getElementsByTagName('name')->item(0)->textContent,
-				'address' => $email->getElementsByTagName('email')->item(0)->textContent,
-			);
+			$details['to'][] = self::getEmailNameAndAddress($email); 
 		}
 
 		$details['cc'] = array();
@@ -320,10 +307,7 @@ class Ticketing_Service
 		for ($x = 0; $x < $emails->length; $x++)
 		{
 			$email = $emails->item($x);
-			$details['cc'][] = array(
-				'name' => $email->getElementsByTagName('name')->item(0)->textContent,
-				'address' => $email->getElementsByTagName('email')->item(0)->textContent,
-			);
+			$details['cc'][] = self::getEmailNameAndAddress($email); 
 		}
 
 		$body = $dom->getElementsByTagName('body')->item(0);
@@ -389,6 +373,39 @@ class Ticketing_Service
 			$details['files_to_remove'][] = $attachmentDirPath;
 		}
 
+		return $details;
+	}
+	
+	private function getEmailNameAndAddress($email)
+	{
+		$email = $dom->getElementsByTagName('from')->item(0);
+		$emailAddress = $email ? $email->getElementsByTagName('email')->item(0)->textContent : '';
+		$emailAddress = trim($emailAddress);
+		// &quot;Margaret Munro &quot;&lt;magneticfx@iinet.net.au&gt;
+		$name = array();
+		if (preg_match("/^\"([^\"]*)\" *</", $emailAddress, $name))
+		{
+			$name = $name[1];
+			$emailAddress = trim(substr($emailAddress, strlen($name) + 2));
+		}
+		else
+		{
+			$name = false;
+		}
+		if (substr($emailAddress, 0, 1) == '<') $emailAddress = substr($emailAddress, 1);
+		if (substr($emailAddress, -1) == '>') $emailAddress = substr($emailAddress, 0, -1);
+		$details = array('name' => '', 'address' => '');
+		if ($emailAddress && EmailAddressValid($emailAddress))
+		{
+			$details = array(
+				'name' => trim($email->getElementsByTagName('name')->item(0)->textContent),
+				'address' => $emailAddress,
+			);
+			if ($name && !$details['name'])
+			{
+				$details['name'] = $name;
+			}
+		}
 		return $details;
 	}
 
