@@ -17,7 +17,7 @@ class JSON_Handler_Sale extends JSON_Handler
 	{
 		$intVendorId = intval($intVendorId);
 		
-		$list = DO_Sales_ProductType::getProductTypesVendor($intVendorId);
+		$list = DO_Sales_ProductType::getProductTypesForVendor($intVendorId);
 		
 		$arrModuleProductType = new stdClass();
 		$arrModuleProductType->ids = array();
