@@ -414,3 +414,147 @@ input#online-credit-card-payment-button
 .amount-debit { color: blue !important; }
 th.amount, td.amount { text-align: right; }
 td.attention { color: red !important; }
+
+
+
+/*********************** Sp table stuff **********************/
+table.sp th.sp-unsorted,
+table.sp th.sp-sorted-ascending,
+table.sp th.sp-sorted-descending
+{
+	cursor: pointer;
+	background-position: 0% 50%; 
+	background-repeat: no-repeat; 
+	background-image: url(../img/order_neither.png);
+	padding-left: 0.8em;
+}
+
+table.sp {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	border: .1em solid #333;
+	border-spacing: 0;
+}
+
+table.sp caption div#caption_bar {
+	width: 100%;
+	clear: both;
+}
+
+table.sp caption div#caption_title{
+	float: left;
+	height: 100%;
+	color: #eee;
+	background-color: #333;
+	text-align: center;
+	font-weight: bold;
+	padding: 0.4em 1em;
+}
+
+table.sp caption div#caption_options{
+	float: right;
+	text-align: right;
+	font-weight: bold;
+	padding: .1em .5em;
+}
+
+table.sp thead,
+table.sp tfoot {
+	background-color: #333;
+	color: #eee;
+	text-align: left;
+}
+
+table.sp tfoot {
+	text-align: right;
+}
+
+table.sp thead tr th,
+table.sp tfoot tr th {
+	padding-top: .25em;
+	padding-bottom: .25em;
+}
+
+table.sp th.sp-sorted-ascending
+{
+	background-color: #666;
+	background-image: url(../img/order_asc.png);
+}
+
+table.sp th.sp-sorted-descending
+{
+	background-color: #666;
+	background-image: url(../img/order_desc.png);
+}
+
+table.sp tfoot a,
+table.sp tfoot a:visited,
+table.sp tfoot a:link {
+	color: #ffde05 !important;
+}
+
+
+table.sp td,
+table.sp th {
+	padding: .05em .1em;
+	text-align: left;
+}
+
+table.sp tr td {
+	background-color: #ddd;
+	color: #333
+}
+
+table.sp tr.alt td {
+	background-color: #fff;
+}
+
+table.sp td.title {
+	width: 20%;
+	vertical-align: top;
+	font-weight: bold;
+}
+
+table.highlight-rows tbody tr:hover td
+{
+	background-color: #ffc;
+}
+
+.MediumSpace
+{
+	height: 20px;
+}
+.LargeSpace
+{
+	height: 30px;
+}
+div.Title{
+	color:					#caceda;
+	background-repeat:		repeat;
+	background-image:		url("../img/template/protalk_menu_header_final_012.png");
+	background-position:	0% 50%;
+	height:					25px; 
+	width:					965px; 
+	text-indent:			20px;
+	font-weight:			bold;
+	padding:				0px;
+	margin:					0px;
+	text-align:				left;
+}
+
+div.PartTitle{
+	color:					#caceda;
+	background-repeat:		repeat;
+	background-image:		url("../img/template/protalk_menu_header_final_012.png");
+	background-position:	0% 50%;
+	height:					25px; 
+	width:					470px; 
+	text-indent:			20px;
+	font-weight:			bold;
+	padding:				0px;
+	margin:					0px;
+	padding-right:			0px;
+	margin-right:			0px;
+	text-align:				left;
+}
