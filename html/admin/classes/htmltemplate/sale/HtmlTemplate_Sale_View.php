@@ -9,6 +9,7 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 
 		$this->LoadJavascript('sp/validation');
 		$this->LoadJavascript('sp/sale');
+		$this->LoadJavascript('sp/flex_sale');
 		$this->LoadJavascript('sp/SalesPortal');
 
 		$productTypes = DO_Sales_ProductType::listAll();
@@ -33,7 +34,7 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 		if (count($p))
 		{
 			$saleId = $p[0];
-			$bodyClassName = 'data-display';
+			//$bodyClassName = 'data-display';
 		}
 		else
 		{
@@ -91,8 +92,12 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 
 <div style="width: 100%" id="sale_panel"></div>
 <style>
-	body.data-display .data-entry { display: none !important; }
-	body.data-entry .data-display { display: none !important; }
+	body.data-display .data-entry   { display: none !important; }
+	body.data-entry   .data-display { display: none !important; }
+	body.data-display .read-only .data-entry { display: none !important; }
+	body.data-entry   .read-only .data-entry { display: none !important; }
+	body.data-display .read-only .data-display { display: inline !important; }
+	body.data-entry   .read-only .data-display { display: inline !important; }
 	table.data-table > tbody > tr > td { width: 180px; }
 	table.data-table > tbody > tr > td + td { width: auto; }
 </style>

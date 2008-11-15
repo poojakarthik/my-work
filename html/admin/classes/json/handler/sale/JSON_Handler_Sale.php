@@ -11,6 +11,16 @@ class JSON_Handler_Sale extends JSON_Handler
 		}
 		return Sales_Portal::getStdClassForDOSale($sale);
 	}
+	
+	public function submit($saleDetails)
+	{
+		
+	}
+	
+	public function confirm($saleDetails)
+	{
+		
+	}
 
 	// This is invoked via ajax
 	public function listProductTypesForVendor($intVendorId)

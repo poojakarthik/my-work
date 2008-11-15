@@ -206,12 +206,12 @@ jQuery.json = {
 				Vixen.Popup.ClosePageLoadingSplash();
 			}
 			var success = true;
-			if (arguments[1] != 'success')
+			if (arguments.length > 0 && arguments[1] != 'success')
 			{
 				success = false;
 				arguments[0]['ERROR'] = 'An ajax communication error occurred.';
 			}
-			if (success && arguments[0]['ERROR'] != undefined && arguments[0]['ERROR'] != null && arguments[0]['ERROR'] != '')
+			if (arguments.length > 0 && success && arguments[0] != null && arguments[0]['ERROR'] != undefined && arguments[0]['ERROR'] != null && arguments[0]['ERROR'] != '')
 			{
 				if (arguments[0]['ERROR'] == 'LOGIN')
 				{

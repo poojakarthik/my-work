@@ -419,7 +419,7 @@ Object.extend(Sale.GUIComponent, {
 		input.value = $value;
 		grp.appendChild(input);
 
-		var txtConf = document.createTextNode(' Confirm:');
+		var txtConf = document.createTextNode('Confirm:');
 		grp.appendChild(txtConf);
 
 		var conf = document.createElement('input');
@@ -1069,6 +1069,7 @@ Object.extend(Sale.prototype, {
 		this.setContainers(this.detailsContainer);
 	},
 	
+	// Validates the details client side and then submits the details to the server for validation
 	submit: function()
 	{
 		if (this.isValid())
@@ -1076,6 +1077,7 @@ Object.extend(Sale.prototype, {
 			document.body.className = document.body.originalClassName + " data-display";
 			$ID('submit-button-panel').style.display = 'none';
 			$ID('commit-button-panel').style.display = 'none';	
+			$ID('after-commit-button-panel').style.display = 'none';
 			var submit = SalesPortal.getRemoteFunction('Sale', 'submit', this._submitOK.bind(this), this._submitError.bind(this));
 			submit(this.object);
 		}
@@ -1089,6 +1091,7 @@ Object.extend(Sale.prototype, {
 	{
 		$ID('submit-button-panel').style.display = 'none';
 		$ID('commit-button-panel').style.display = 'inline';
+		$ID('after-commit-button-panel').style.display = 'none';
 	},
 	
 	_submitError: function($return)
@@ -1096,14 +1099,17 @@ Object.extend(Sale.prototype, {
 		document.body.className = document.body.originalClassName + " data-entry";
 		$ID('submit-button-panel').style.display = 'inline';
 		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'none';
 		alert($return['ERROR']);
 	},
 	
+	// Confirms the sale and submits the details to the server to be saved
 	commit: function()
 	{
 		document.body.className = document.body.originalClassName + " data-display";
 		$ID('submit-button-panel').style.display = 'none';
 		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'none';
 		var submit = SalesPortal.getRemoteFunction('Sale', 'confirm', this._commitOK.bind(this), this._submitError.bind(this));
 		submit(this.object);
 	},
@@ -1113,10 +1119,14 @@ Object.extend(Sale.prototype, {
 		document.body.className = document.body.originalClassName + " data-entry";
 		$ID('submit-button-panel').style.display = 'inline';
 		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'none';
 	},
 	
 	_commitOK: function($saleId)
 	{
+		$ID('submit-button-panel').style.display = 'none';
+		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'inline';
 		alert("The sale has been saved. The reference number for this sale is " + $saleId + ".");
 	},
 	
@@ -1211,6 +1221,7 @@ Object.extend(Sale.prototype, {
 		+ '<div class="MediumSpace"></div>'
 		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Submit" onclick="Sale.getInstance().submit()"></span>'
 		+ '<span id="commit-button-panel"><input type="button" value="Commit" onclick="Sale.getInstance().commit()">&nbsp;&nbsp;<input type="button" value="Cancel" onclick="Sale.getInstance().cancel()"></span>'
+		+ '<span id="after-commit-button-panel"><input type="button" value="Add New Sale" onclick="document.location.reload()"></span>'
 		
 		
 		// WIP: This is for debug purposes only!!! Remove it before deployment!
@@ -1221,6 +1232,7 @@ Object.extend(Sale.prototype, {
 		
 		$ID('commit-button-panel').style.display = 'none';
 		$ID('submit-button-panel').style.display = 'inline';
+		$ID('after-commit-button-panel').style.display = 'none';
 		
 		var saleAccount = this.getSaleAccount();
 		saleAccount.setContainers($ID('account_details_holder'));
