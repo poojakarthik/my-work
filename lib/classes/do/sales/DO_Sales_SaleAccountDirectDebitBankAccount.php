@@ -8,7 +8,7 @@ class DO_Sales_SaleAccountDirectDebitBankAccount extends DO_Sales_Base_SaleAccou
 		switch ($name)
 		{
 			case 'accountNumber':
-				$value = Application::decrypt($value);
+				//$value = Application::decrypt($value);
 				$value = substr($value,0,2) 
 						. str_repeat('#',  (strlen($value) < 6) ? 0 : (strlen($value) - 6)) 
 						. substr($value,-4);
@@ -16,7 +16,7 @@ class DO_Sales_SaleAccountDirectDebitBankAccount extends DO_Sales_Base_SaleAccou
 				break;
 			
 			case 'bankBsb':
-				$value = Application::decrypt($value);
+				//$value = Application::decrypt($value);
 				break;
 			
 		}
@@ -31,7 +31,7 @@ class DO_Sales_SaleAccountDirectDebitBankAccount extends DO_Sales_Base_SaleAccou
 			case 'accountNumber':
 			case 'bankBsb':
 				$value = preg_replace("/[^0-9]+/", "", $value);
-				$value = Application::encrypt($value);
+				//$value = Application::encrypt($value);
 				break;
 			
 		}
@@ -54,7 +54,7 @@ class DO_Sales_SaleAccountDirectDebitBankAccount extends DO_Sales_Base_SaleAccou
 
 				// Check the content
 
-				@$value = Application::decrypt($value);
+				//@$value = Application::decrypt($value);
 
 				if (!preg_match("/^\\d*$/", $value))
 				{
@@ -73,7 +73,7 @@ class DO_Sales_SaleAccountDirectDebitBankAccount extends DO_Sales_Base_SaleAccou
 
 				// Check the content
 
-				@$value = Application::decrypt($value);
+				//@$value = Application::decrypt($value);
 
 				if (!preg_match("/^\\d{6}$/", $value))
 				{
