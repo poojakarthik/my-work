@@ -378,7 +378,6 @@ class Ticketing_Service
 	
 	private function getEmailNameAndAddress($email)
 	{
-		$email = $dom->getElementsByTagName('from')->item(0);
 		$emailAddress = $email ? $email->getElementsByTagName('email')->item(0)->textContent : '';
 		$emailAddress = trim($emailAddress);
 		// &quot;Margaret Munro &quot;&lt;magneticfx@iinet.net.au&gt;
