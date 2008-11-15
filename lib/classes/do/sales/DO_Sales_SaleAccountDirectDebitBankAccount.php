@@ -38,6 +38,57 @@ class DO_Sales_SaleAccountDirectDebitBankAccount extends DO_Sales_Base_SaleAccou
 
 		return parent::__set($name, $value);
 	}
+
+	protected function _isValidValue($propertyName, $value)
+	{
+		switch ($propertyName)
+		{
+
+			case 'accountNumber':
+
+				if (!$this->accountNumber)
+				{
+					return false;
+				}
+			
+
+				// Check the content
+
+				@$value = Application::decrypt($value);
+
+				if (!preg_match("/^\\d*$/", $value))
+				{
+					return false;
+				}
+				
+				return true;
+			
+			case 'bankBsb':
+
+				if (!$this->bankBsb)
+				{
+					return false;
+				}
+			
+
+				// Check the content
+
+				@$value = Application::decrypt($value);
+
+				if (!preg_match("/^\\d{6}$/", $value))
+				{
+					return false;
+				}
+				
+				return true;
+
+			default:
+				// No extra validation - assume is correct
+				return parent::_isValidValue($propertyName, $value);
+
+		}
+	}
+
 }
 
 ?>
