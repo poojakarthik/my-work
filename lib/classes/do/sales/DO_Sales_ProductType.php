@@ -32,11 +32,11 @@ class DO_Sales_ProductType extends DO_Sales_Base_ProductType
 	}
 
 	/*
-	 * function getProductTypesForDealerAndVendor()
+	 * function getProductTypesForVendor()
 	 *
-	 * Returns an array, builds a list of products available to the selected($intDealerId) vendor.
+	 * Returns an array, builds a list of products available for the selected vendor.
 	 */
-	static function getProductTypesForDealerAndVendor($intDealerId, $intVendorId)
+	static function getProductTypesVendor($intVendorId)
 	{
 
 		$dataSource = self::getDataSource();
@@ -47,12 +47,7 @@ class DO_Sales_ProductType extends DO_Sales_Base_ProductType
 			WHERE id IN (
 				SELECT product_type_id 
 				FROM product 
-				WHERE vendor_id = '$intVendorId'
-			AND id IN (
-				SELECT product_id 
-				FROM dealer_product 
-				WHERE dealer_id = '$intDealerId'
-			)) ORDER BY name ASC";
+				WHERE vendor_id = '$intVendorId') ORDER BY name ASC";
 
 		$result = $dataSource->query($strSQL);
 

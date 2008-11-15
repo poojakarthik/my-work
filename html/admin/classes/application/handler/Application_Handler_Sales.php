@@ -44,6 +44,7 @@ class Application_Handler_Sales extends Application_Handler
 	
 			$detailsToRender = array();
 			$detailsToRender['Sale']	= $objSale;
+			$detailsToRender['ExtraPath'] = $subPath;
 
 			$this->LoadPage('sale_view', HTML_CONTEXT_DEFAULT, $detailsToRender);
 		}

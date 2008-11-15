@@ -3,7 +3,7 @@
 class DO_Sales_Product extends DO_Sales_Base_Product
 {
 
-	public static function listProductIdAndNameForDealerIdProductTypeIdAndVendorId($dealerId, $productTypeId, $vendorId)
+	public static function listProductIdAndNameForProductTypeIdAndVendorId($productTypeId, $vendorId)
 	{
 
 		$dataSource = self::getDataSource();
@@ -12,11 +12,8 @@ class DO_Sales_Product extends DO_Sales_Base_Product
 
 		$strSQL = "
 		SELECT product.id as \"id\",product.name as \"name\"
-		FROM product, dealer_product
-		WHERE product.id = dealer_product.product_id 
-		AND dealer_product.dealer_id = '$dealerId' 
-		AND product.vendor_id='$vendorId'
-		AND dealer_product.dealer_id = '$dealerId'
+		FROM product
+		WHERE product.vendor_id='$vendorId'
 		AND product.product_type_id = '$productTypeId'
 		AND product.product_status_id = 1; "; // Active // WIP - this should be coded properly!
 
