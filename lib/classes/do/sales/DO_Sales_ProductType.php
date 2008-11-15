@@ -36,7 +36,7 @@ class DO_Sales_ProductType extends DO_Sales_Base_ProductType
 	 *
 	 * Returns an array, builds a list of products available for the selected vendor.
 	 */
-	static function getProductTypesVendor($intVendorId)
+	static function getProductTypesForVendor($intVendorId)
 	{
 
 		$dataSource = self::getDataSource();
@@ -48,6 +48,44 @@ class DO_Sales_ProductType extends DO_Sales_Base_ProductType
 				SELECT product_type_id 
 				FROM product 
 				WHERE vendor_id = '$intVendorId') ORDER BY name ASC";
+
+		$result = $dataSource->query($strSQL);
+
+		if(PEAR::isError($result))
+		{
+			throw new Exception("Failed to build a list of products: " . $result->getMessage());
+
+		}
+
+		$arrProductTypes = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
+
+		return $arrProductTypes;
+
+	}
+
+
+	/*
+	 * function getProductTypesForDealerAndVendor()
+	 *
+	 * Returns an array, builds a list of products available to the selected($intDealerId) vendor.
+	 */
+	static function getProductTypesForDealerAndVendor($intDealerId, $intVendorId)
+	{
+
+		$dataSource = self::getDataSource();
+
+		$strSQL = "
+		SELECT id, description, module, product_category_id, name 
+			FROM product_type 
+			WHERE id IN (
+				SELECT product_type_id 
+				FROM product 
+				WHERE vendor_id = '$intVendorId'
+			AND id IN (
+				SELECT product_id 
+				FROM dealer_product 
+				WHERE dealer_id = '$intDealerId'
+			)) ORDER BY name ASC";
 
 		$result = $dataSource->query($strSQL);
 
