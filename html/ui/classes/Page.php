@@ -721,8 +721,8 @@ class Page
 		| <a onclick='$strUserPreferencesLink' >Preferences</a>
 		| <a onclick='Vixen.Logout();'>Logout</a>";
 
-		// Check kb permissions.
-		if(AuthenticatedUser()->UserHasPerm(PERMISSION_KB_USER))
+		// Check kb permissions and check that the Knowledge Base module is active
+		if(AuthenticatedUser()->UserHasPerm(PERMISSION_KB_USER) && Flex_Module::isActive(FLEX_MODULE_KNOWLEDGE_BASE))
 		{
 			// If the user is a kb_admin an extra flag is added.
 			if(AuthenticatedUser()->UserHasPerm(PERMISSION_KB_ADMIN_USER))

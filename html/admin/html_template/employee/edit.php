@@ -363,13 +363,15 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 
 		echo "
 					<div id='Permissions.View'$strViewDisplay>
-						<table border='0' cellpadding='3' cellspacing='0'>
+						<table border='0' cellpadding='3' cellspacing='0' style='width:100%'>
 							<tr>
 								<th>Permissions</th>
 							</tr>
 							<tr>
 								<td>
-									 $strCurrentPerms
+									<div style='overflow:auto;max-height:10em;width:100%;'>
+										$strCurrentPerms
+									</div>
 								</td>
 							</tr>
 						</table>

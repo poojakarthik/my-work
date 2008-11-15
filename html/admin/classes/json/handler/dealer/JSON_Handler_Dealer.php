@@ -734,7 +734,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 						<tr>
 							<td class='title' style='width:20%'>Sale Types</td>
 							<td>
-								<div style='overflow:auto;max-height:5em;width:100;'>
+								<div style='overflow:auto;max-height:5em;width:100%;'>
 									{$arrDetails['saleTypes']}
 								</div>
 							</td>
@@ -742,7 +742,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 						<tr>
 							<td class='title'>Customer Groups</td>
 							<td>
-								<div style='overflow:auto;max-height:5em;width:100;'>
+								<div style='overflow:auto;max-height:5em;width:100%;'>
 									{$arrDetails['customerGroups']}
 								</div>
 							</td>
@@ -750,7 +750,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 						<tr>
 							<td class='title'>Rate Plans</td>
 							<td>
-								<div style='overflow:auto;max-height:15em;width:100;'>
+								<div style='overflow:auto;max-height:15em;width:100%;'>
 									{$arrDetails['ratePlans']}
 								</div>
 							</td>

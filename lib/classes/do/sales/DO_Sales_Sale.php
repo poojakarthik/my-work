@@ -29,6 +29,25 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 													"LastOffset"		=> NULL
 												);
 	
+	// Note that this currently only handles "prop IS NULL", "prop IN (list of unquoted values)", "prop = unquoted value"
+	private static function _prepareSearchConstraint($strProp, $mixValue)
+	{
+		$strSearch = "";
+		if ($mixValue === NULL)
+		{
+			$strSearch = "$strProp IS NULL";
+		}
+		elseif (is_array($mixValue))
+		{
+			$strSearch = "$strProp IN (". implode(", ", $mixValue) .")";
+		}
+		else
+		{
+			$strSearch = "$strProp = $mixValue";
+		}
+		return $strSearch;
+	}
+	
 	// Performs a sale search based on lots of different things
 	public static function searchFor($arrFilter=NULL, $arrSort=NULL, $intLimit=NULL, $intOffset=NULL)
 	{
@@ -60,27 +79,27 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 					{
 						$arrDealerIds[] = $doDealer->id;
 					}
-					$arrWhereClauseParts[] = "sale.created_by IN (". implode(", ", $arrDealerIds) .")";
+					$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.created_by", $arrDealerIds);
 					break;
 
 				case self::SEARCH_CONSTRAINT_DEALER_ID:
-					$intDealerId = intval($arrConstraint['Value']);
-					$arrWhereClauseParts[] = "sale.created_by = $intDealerId";
+					$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.created_by", $arrConstraint['Value']);
+					//$arrWhereClauseParts[] = "sale.created_by = $intDealerId";
 					break;
 					
 				case self::SEARCH_CONSTRAINT_SALE_TYPE_ID:
-					$intSaleTypeId = intval($arrConstraint['Value']);
-					$arrWhereClauseParts[] = "sale.sale_type_id = $intSaleTypeId";
+					$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.sale_type_id", $arrConstraint['Value']);
+					//$arrWhereClauseParts[] = "sale.sale_type_id = $intSaleTypeId";
 					break;
 					
 				case self::SEARCH_CONSTRAINT_SALE_STATUS_ID:
-					$intSaleStatusId = intval($arrConstraint['Value']);
-					$arrWhereClauseParts[] = "sale.sale_status_id = $intSaleStatusId";
+					$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.sale_status_id", $arrConstraint['Value']);
+					//$arrWhereClauseParts[] = "sale.sale_status_id = $intSaleStatusId";
 					break;
 					
 				case self::SEARCH_CONSTRAINT_VENDOR_ID:
-					$intVendorId = intval($arrConstraint['Value']);
-					$arrWhereClauseParts[] = "sale_account.vendor_id = $intVendorId";
+					$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale_account.vendor_id", $arrConstraint['Value']);
+					//$arrWhereClauseParts[] = "sale_account.vendor_id = $intVendorId";
 					break;
 					
 				default:
