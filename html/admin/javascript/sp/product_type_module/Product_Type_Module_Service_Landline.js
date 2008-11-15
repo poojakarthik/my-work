@@ -160,8 +160,12 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		
 		this.elementGroups.service_address_type_suffix = Sale.GUIComponent.createTextInputGroup(this.getServiceAddressTypeSuffix());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address Type Suffix', this.elementGroups.service_address_type_suffix);
-
-		this.elementGroups.service_street_number_start = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetNumberStart());
+		
+		fncStreetNumberMandatory	= function()
+									{
+										return (Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_name));
+									}
+		this.elementGroups.service_street_number_start = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetNumberStart(), fncStreetNumberMandatory.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Number Start', this.elementGroups.service_street_number_start);
 
 		this.elementGroups.service_street_number_end = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetNumberEnd());
@@ -170,10 +174,11 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		this.elementGroups.service_street_number_suffix = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetNumberSuffix());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Number Suffix', this.elementGroups.service_street_number_suffix);
 
-		this.elementGroups.service_property_name = Sale.GUIComponent.createTextInputGroup(this.getServicePropertyName());
-		Sale.GUIComponent.appendElementGroupToTable(table, 'Property Name', this.elementGroups.service_property_name);
-
-		this.elementGroups.service_street_name = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetName());
+		fncStreeNameMandatory	= function()
+								{
+									return !(Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_property_name) && this.elementGroups.service_property_name.isValid());
+								}
+		this.elementGroups.service_street_name = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetName(), fncStreeNameMandatory.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Name', this.elementGroups.service_street_name);
 
 		this.elementGroups.landline_service_street_type_id = Sale.GUIComponent.createDropDown(
@@ -188,6 +193,13 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 			this.getLandlineServiceStreetTypeSuffixId());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Type Suffix', this.elementGroups.landline_service_street_type_suffix_id);
 
+		fncPropertyNameMandatory	= function()
+								{
+									return !(Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_name) && this.elementGroups.service_street_name.isValid());
+								}
+		this.elementGroups.service_property_name = Sale.GUIComponent.createTextInputGroup(this.getServicePropertyName(), fncPropertyNameMandatory.bind(this));
+		Sale.GUIComponent.appendElementGroupToTable(table, 'Property Name', this.elementGroups.service_property_name);
+		
 		this.elementGroups.service_locality = Sale.GUIComponent.createTextInputGroup(this.getServiceLocality(), true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Locality', this.elementGroups.service_locality);
 		
@@ -614,8 +626,8 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 			this.elementGroups.landline_service_street_type_id.inputs[0].disabled				= false;
 			this.elementGroups.landline_service_street_type_id.inputs[0].removeClassName('disabled');
 			
-			this.elementGroups.service_street_number_suffix.inputs[0].disabled					= false;
-			this.elementGroups.service_street_number_suffix.inputs[0].removeClassName('disabled');
+			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].disabled		= false;
+			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.service_property_name.inputs[0].disabled							= false;
 			this.elementGroups.service_property_name.inputs[0].removeClassName('disabled');
@@ -672,8 +684,8 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 			this.elementGroups.landline_service_street_type_id.inputs[0].disabled				= false;
 			this.elementGroups.landline_service_street_type_id.inputs[0].removeClassName('disabled');
 			
-			this.elementGroups.service_street_number_suffix.inputs[0].disabled					= false;
-			this.elementGroups.service_street_number_suffix.inputs[0].removeClassName('disabled');
+			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].disabled		= false;
+			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.service_property_name.inputs[0].disabled							= false;
 			this.elementGroups.service_property_name.inputs[0].removeClassName('disabled');
@@ -697,6 +709,7 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 				this.elementGroups.service_address_type_suffix.inputs[0].addClassName('disabled');
 			}
 		}
+		this.changeServiceAddressTypeNumber();
 		
 		// ReValidate Everything
 		this.isValid();
@@ -704,8 +717,8 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 	
 	changeServiceAddressTypeNumber	: function()
 	{
-		intValue	= parseInt(Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_address_type_number));
-		if (intValue)
+		intValue	= parseInt(Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_address_type_number));
+		if (intValue && this.elementGroups.service_address_type_number.isValid())
 		{
 			this.elementGroups.service_address_type_suffix.inputs[0].disabled				= false;
 			this.elementGroups.service_address_type_suffix.inputs[0].removeClassName('disabled');
