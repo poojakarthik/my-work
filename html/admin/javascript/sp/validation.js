@@ -52,7 +52,7 @@ Validate	= Class.create(
 	// email(): Checks whether an Email is valid
 	email	: function(strEmail)
 	{
-		var expEmail	= /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+		var expEmail	= /^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
 		return expEmail.test(strEmail);
 	},
 
@@ -67,7 +67,7 @@ Validate	= Class.create(
 		if (expDate.test(strDate))
 		{
 			// Correct number of days in the month?
-			return window._validate.dayInMonthYear(strDate.substr(8, 2), strDate.substr(5, 2), strDate.substr(0, 4));
+			return window._validate.dayInMonthYear(parseInt("1"+strDate.substr(8, 2))-100, parseInt("1"+strDate.substr(5, 2))-100, strDate.substr(0, 4));
 		}
 		
 		// Invalid Date
@@ -296,6 +296,19 @@ Validate	= Class.create(
 		strCVV	= String(strCVV).replace(/\s/g, '');
 		expCVV	= /^\d+$/;
 		return (intCreditCardType != undefined && this._arrCreditCardCVVRegex[intCreditCardType] != undefined && this._arrCreditCardCVVRegex[intCreditCardType].test(strCVV));
+	},
+	
+	// integer()
+	integer			: function(mixValue)
+	{
+		expInteger	= /^\s*(\d+)\s*$/;
+		return expInteger.test(mixValue);
+	},
+	
+	// integerPositive()
+	integerPositive	: function(mixValue)
+	{
+		return (parseInt(mixValue));
 	}
 });
 
