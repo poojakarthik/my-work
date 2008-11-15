@@ -215,7 +215,8 @@ class Ticketing_Service
 			'&#246;' => '&ouml;',
 			'&#212;' => '&Ocirc;',
 			'&#252;' => '&uuml;',		
-			'&#160;' => '&nbsp;',		
+			'&#160;' => '&nbsp;',	
+			'&#163;' => '&pound;',	
 		);
 		
 		$out = array();
