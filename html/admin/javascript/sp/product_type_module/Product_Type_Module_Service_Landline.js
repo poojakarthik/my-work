@@ -87,42 +87,53 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 
 		var table = $ID(id + '-service-details');
 
-		this.elementGroups.fnn = Sale.GUIComponent.createTextInputGroup(this.getFNN());
+		this.elementGroups.fnn = Sale.GUIComponent.createTextInputGroup(this.getFNN(), true, window._validate.fnnLandLine.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Landline Phone Number', this.elementGroups.fnn);
-
-		this.elementGroups.is_indial_100 = Sale.GUIComponent.createCheckboxGroup(this.getIsIndial100());
+		
+		fncIndialIsValid	= function()
+							{
+								if (this.elementGroups.has_extension_level_billing != undefined)
+								{
+									this.elementGroups.has_extension_level_billing.inputs[0].disabled	= !this.elementGroups.is_indial_100.inputs[0].checked;
+									this.elementGroups.has_extension_level_billing.inputs[0].checked	= (this.elementGroups.has_extension_level_billing.inputs[0].disabled) ? false : this.elementGroups.has_extension_level_billing.inputs[0].checked;
+								}
+								return true;
+							}
+		this.elementGroups.is_indial_100 = Sale.GUIComponent.createCheckboxGroup(this.getIsIndial100(), false, fncIndialIsValid.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Is Indial 100', this.elementGroups.is_indial_100);
 
 		this.elementGroups.has_extension_level_billing = Sale.GUIComponent.createCheckboxGroup(this.getHasExtensionLevelBilling());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Has Extension Level Billing', this.elementGroups.has_extension_level_billing);
+		this.elementGroups.is_indial_100.isValid();
 
 		this.elementGroups.landline_type_id = Sale.GUIComponent.createDropDown(
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineType.id, 
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineType.description, 
-			this.getLandlineTypeId());
+			this.getLandlineTypeId(),
+			true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Landline Type', this.elementGroups.landline_type_id);
 
 
 		var onChangeLandlineType = this.changeLandlineType.bind(this);
-		Event.observe(this.elementGroups.landline_type_id.inputs[0], 'change', onChangeLandlineType, true);
+		Event.observe(this.elementGroups.landline_type_id.inputs[0], 'change', onChangeLandlineType);
 		this.changeLandlineType();
 
 
 		var table = $ID(id + '-bill-details');
 
-		this.elementGroups.bill_name = Sale.GUIComponent.createTextInputGroup(this.getBillName());
+		this.elementGroups.bill_name = Sale.GUIComponent.createTextInputGroup(this.getBillName(), true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Name', this.elementGroups.bill_name);
 
-		this.elementGroups.bill_address_line_1 = Sale.GUIComponent.createTextInputGroup(this.getBillAddressLine1());
+		this.elementGroups.bill_address_line_1 = Sale.GUIComponent.createTextInputGroup(this.getBillAddressLine1(), true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address (Line 1)', this.elementGroups.bill_address_line_1);
 
 		this.elementGroups.bill_address_line_2 = Sale.GUIComponent.createTextInputGroup(this.getBillAddressLine2());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address (Line 2)', this.elementGroups.bill_address_line_2);
 
-		this.elementGroups.bill_locality = Sale.GUIComponent.createTextInputGroup(this.getBillLocality());
+		this.elementGroups.bill_locality = Sale.GUIComponent.createTextInputGroup(this.getBillLocality(), true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Suburb', this.elementGroups.bill_locality);
 
-		this.elementGroups.bill_postcode = Sale.GUIComponent.createTextInputGroup(this.getBillPostcode());
+		this.elementGroups.bill_postcode = Sale.GUIComponent.createTextInputGroup(this.getBillPostcode(), true, window._validate.postcode.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Postcode', this.elementGroups.bill_postcode);
 
 
@@ -134,10 +145,19 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineServiceAddressType.description, 
 			this.getLandlineServiceAddressTypeId());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address Type', this.elementGroups.landline_service_address_type_id);
+		Event.observe(this.elementGroups.landline_service_address_type_id.inputs[0], 'change', this.changeLandLineServiceAddressTypeId.bind(this));
+		Event.observe(this.elementGroups.landline_service_address_type_id.inputs[0], 'keyup', this.changeLandLineServiceAddressTypeId.bind(this));
 
-		this.elementGroups.service_address_type_number = Sale.GUIComponent.createTextInputGroup(this.getServiceAddressTypeNumber());
+		fncMandatoryAddressTypeNumber	= function()
+										{
+											return (Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_address_type_id));
+										};
+		this.elementGroups.service_address_type_number = Sale.GUIComponent.createTextInputGroup(this.getServiceAddressTypeNumber(), fncMandatoryAddressTypeNumber.bind(this), window._validate.integerPositive.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address Type Number', this.elementGroups.service_address_type_number);
-
+		
+		Event.observe(this.elementGroups.service_address_type_number.inputs[0], 'change', this.changeServiceAddressTypeNumber.bind(this));
+		Event.observe(this.elementGroups.service_address_type_number.inputs[0], 'keyup', this.changeServiceAddressTypeNumber.bind(this));
+		
 		this.elementGroups.service_address_type_suffix = Sale.GUIComponent.createTextInputGroup(this.getServiceAddressTypeSuffix());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address Type Suffix', this.elementGroups.service_address_type_suffix);
 
@@ -168,85 +188,112 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 			this.getLandlineServiceStreetTypeSuffixId());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Type Suffix', this.elementGroups.landline_service_street_type_suffix_id);
 
-		this.elementGroups.service_locality = Sale.GUIComponent.createTextInputGroup(this.getServiceLocality());
+		this.elementGroups.service_locality = Sale.GUIComponent.createTextInputGroup(this.getServiceLocality(), true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Locality', this.elementGroups.service_locality);
 		
-		this.elementGroups.service_postcode = Sale.GUIComponent.createTextInputGroup(this.getServicePostcode());
+		this.elementGroups.service_postcode = Sale.GUIComponent.createTextInputGroup(this.getServicePostcode(), true, window._validate.postcode.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Postcode', this.elementGroups.service_postcode);
 
 		this.elementGroups.landline_service_state_id = Sale.GUIComponent.createDropDown(
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineServiceState.id, 
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineServiceState.description, 
-			this.getLandlineServiceStateId());
+			this.getLandlineServiceStateId(),
+			true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'State', this.elementGroups.landline_service_state_id);
-	
+		
+		this.isValid();
+		this.changeLandLineServiceAddressTypeId();
 	},
 	
 	isValid: function()
 	{
+		bolValid	= true;
+		
+		bolValid	= (this.elementGroups.fnn.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.fnn);
 		this.object.fnn = value;
 
+		bolValid	= (this.elementGroups.is_indial_100.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.is_indial_100);
 		this.object.is_indial_100 = value;
 
+		bolValid	= (this.elementGroups.has_extension_level_billing.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.has_extension_level_billing);
 		this.object.has_extension_level_billing = value;
 
+		bolValid	= (this.elementGroups.landline_type_id.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_type_id);
 		this.object.landline_type_id = value;
 
+		bolValid	= (this.elementGroups.landline_service_address_type_id.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_address_type_id);
 		this.object.landline_service_address_type_id = value;
 
+		bolValid	= (this.elementGroups.service_address_type_number.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_address_type_number);
 		this.object.service_address_type_number = value;
 
+		bolValid	= (this.elementGroups.service_address_type_suffix.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_address_type_suffix);
 		this.object.service_address_type_suffix = value;
 
+		bolValid	= (this.elementGroups.service_street_number_start.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_number_start);
 		this.object.service_street_number_start = value;
 
+		bolValid	= (this.elementGroups.service_street_number_end.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_number_end);
 		this.object.service_street_number_end = value;
 
+		bolValid	= (this.elementGroups.service_street_number_suffix.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_number_suffix);
 		this.object.service_street_number_suffix = value;
 
+		bolValid	= (this.elementGroups.service_property_name.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_property_name);
 		this.object.service_property_name = value;
 
+		bolValid	= (this.elementGroups.service_street_name.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_name);
 		this.object.service_street_name = value;
 
+		bolValid	= (this.elementGroups.landline_service_street_type_id.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_street_type_id);
 		this.object.landline_service_street_type_id = value;
 
+		bolValid	= (this.elementGroups.landline_service_street_type_suffix_id.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_street_type_suffix_id);
 		this.object.landline_service_street_type_suffix_id = value;
 
+		bolValid	= (this.elementGroups.service_locality.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_locality);
 		this.object.service_locality = value;
 
+		bolValid	= (this.elementGroups.landline_service_state_id.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_state_id);
 		this.object.landline_service_state_id = value;
 
+		bolValid	= (this.elementGroups.service_postcode.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_postcode);
 		this.object.service_postcode = value;
 
+		bolValid	= (this.elementGroups.bill_name.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.bill_name);
 		this.object.bill_name = value;
 
+		bolValid	= (this.elementGroups.bill_address_line_1.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.bill_address_line_1);
 		this.object.bill_address_line_1 = value;
 
+		bolValid	= (this.elementGroups.bill_address_line_2.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.bill_address_line_2);
 		this.object.bill_address_line_2 = value;
 
+		bolValid	= (this.elementGroups.bill_locality.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.bill_locality);
 		this.object.bill_locality = value;
 
+		bolValid	= (this.elementGroups.bill_postcode.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.bill_postcode);
 		this.object.bill_postcode = value;
 
@@ -259,7 +306,7 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 			return false;
 		}
 
-		return true;
+		return bolValid;
 	},
 
 	updateChildObjectsDisplay: function($readOnly)
@@ -536,10 +583,152 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 	getServicePostcode: function()
 	{
 		return this.object.service_postcode;
-	}
+	},
 	
+	changeLandLineServiceAddressTypeId: function()
+	{
+		intValue	= parseInt(Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_address_type_id));
+		
+		// Enable/Disable Inputs
+		if (this.isAllotment())
+		{
+			// Allotment Address
+			this.elementGroups.service_address_type_number.inputs[0].disabled					= false;
+			this.elementGroups.service_address_type_number.inputs[0].removeClassName('disabled');
 			
+			this.elementGroups.service_street_number_start.inputs[0].value						= '';
+			this.elementGroups.service_street_number_start.inputs[0].disabled					= true;
+			this.elementGroups.service_street_number_start.inputs[0].addClassName('disabled');
+			
+			this.elementGroups.service_street_number_end.inputs[0].value						= '';
+			this.elementGroups.service_street_number_end.inputs[0].disabled						= true;
+			this.elementGroups.service_street_number_end.inputs[0].addClassName('disabled');
+			
+			this.elementGroups.service_street_number_suffix.inputs[0].value						= '';
+			this.elementGroups.service_street_number_suffix.inputs[0].disabled					= true;
+			this.elementGroups.service_street_number_suffix.inputs[0].addClassName('disabled');
+			
+			this.elementGroups.service_street_name.inputs[0].disabled							= false;
+			this.elementGroups.service_street_name.inputs[0].removeClassName('disabled');
+			
+			this.elementGroups.landline_service_street_type_id.inputs[0].disabled				= false;
+			this.elementGroups.landline_service_street_type_id.inputs[0].removeClassName('disabled');
+			
+			this.elementGroups.service_street_number_suffix.inputs[0].disabled					= false;
+			this.elementGroups.service_street_number_suffix.inputs[0].removeClassName('disabled');
+			
+			this.elementGroups.service_property_name.inputs[0].disabled							= false;
+			this.elementGroups.service_property_name.inputs[0].removeClassName('disabled');
+		}
+		else if (this.isPostal())
+		{
+			// Postal Address
+			this.elementGroups.service_address_type_number.inputs[0].disabled					= false;
+			this.elementGroups.service_address_type_number.inputs[0].removeClassName('disabled');
+			
+			this.elementGroups.service_street_number_start.inputs[0].value						= '';
+			this.elementGroups.service_street_number_start.inputs[0].disabled					= true;
+			this.elementGroups.service_street_number_start.inputs[0].addClassName('disabled');
+			
+			this.elementGroups.service_street_number_end.inputs[0].value						= '';
+			this.elementGroups.service_street_number_end.inputs[0].disabled						= true;
+			this.elementGroups.service_street_number_end.inputs[0].addClassName('disabled');
+			
+			this.elementGroups.service_street_number_suffix.inputs[0].value						= '';
+			this.elementGroups.service_street_number_suffix.inputs[0].disabled					= true;
+			this.elementGroups.service_street_number_suffix.inputs[0].addClassName('disabled');
+			
+			this.elementGroups.service_street_name.inputs[0].value								= '';
+			this.elementGroups.service_street_name.inputs[0].disabled							= true;
+			this.elementGroups.service_street_name.inputs[0].addClassName('disabled');
+			
+			this.elementGroups.landline_service_street_type_id.inputs[0].selectedIndex			= 0;
+			this.elementGroups.landline_service_street_type_id.inputs[0].disabled				= true;
+			this.elementGroups.landline_service_street_type_id.inputs[0].addClassName('disabled');
+			
+			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].selectedIndex	= 0;
+			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].disabled		= true;
+			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].addClassName('disabled');
+			
+			this.elementGroups.service_property_name.inputs[0].value							= '';
+			this.elementGroups.service_property_name.inputs[0].disabled							= true;
+			this.elementGroups.service_property_name.inputs[0].addClassName('disabled');
+		}
+		else
+		{
+			// Standard Address
+			this.elementGroups.service_street_number_start.inputs[0].disabled					= false;
+			this.elementGroups.service_street_number_start.inputs[0].removeClassName('disabled');
+			
+			this.elementGroups.service_street_number_end.inputs[0].disabled						= false;
+			this.elementGroups.service_street_number_end.inputs[0].removeClassName('disabled');
+			
+			this.elementGroups.service_street_number_suffix.inputs[0].disabled					= false;
+			this.elementGroups.service_street_number_suffix.inputs[0].removeClassName('disabled');
+			
+			this.elementGroups.service_street_name.inputs[0].disabled							= false;
+			this.elementGroups.service_street_name.inputs[0].removeClassName('disabled');
+			
+			this.elementGroups.landline_service_street_type_id.inputs[0].disabled				= false;
+			this.elementGroups.landline_service_street_type_id.inputs[0].removeClassName('disabled');
+			
+			this.elementGroups.service_street_number_suffix.inputs[0].disabled					= false;
+			this.elementGroups.service_street_number_suffix.inputs[0].removeClassName('disabled');
+			
+			this.elementGroups.service_property_name.inputs[0].disabled							= false;
+			this.elementGroups.service_property_name.inputs[0].removeClassName('disabled');
+			
+			if (intValue)
+			{
+				this.elementGroups.service_address_type_number.inputs[0].disabled				= false;
+				this.elementGroups.service_address_type_number.inputs[0].removeClassName('disabled');
 
+				this.elementGroups.service_address_type_suffix.inputs[0].disabled				= false;
+				this.elementGroups.service_address_type_suffix.inputs[0].removeClassName('disabled');
+			}
+			else
+			{
+				this.elementGroups.service_address_type_number.inputs[0].value					= '';
+				this.elementGroups.service_address_type_number.inputs[0].disabled				= true;
+				this.elementGroups.service_address_type_number.inputs[0].addClassName('disabled');
+
+				this.elementGroups.service_address_type_suffix.inputs[0].value					= '';
+				this.elementGroups.service_address_type_suffix.inputs[0].disabled				= true;
+				this.elementGroups.service_address_type_suffix.inputs[0].addClassName('disabled');
+			}
+		}
+		
+		// ReValidate Everything
+		this.isValid();
+	},
+	
+	changeServiceAddressTypeNumber	: function()
+	{
+		intValue	= parseInt(Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_address_type_number));
+		if (intValue)
+		{
+			this.elementGroups.service_address_type_suffix.inputs[0].disabled				= false;
+			this.elementGroups.service_address_type_suffix.inputs[0].removeClassName('disabled');
+		}
+		else
+		{
+			this.elementGroups.service_address_type_suffix.inputs[0].value					= '';
+			this.elementGroups.service_address_type_suffix.inputs[0].disabled				= true;
+			this.elementGroups.service_address_type_suffix.inputs[0].addClassName('disabled');
+		}
+	},
+	
+	// VALIDATION
+	isAllotment	: function()
+	{
+		return (Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_address_type_id) == 1);
+	},
+	
+	isPostal	: function()
+	{
+		intValue	= parseInt(Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_address_type_id));
+		return (intValue >= 2 && intValue <= 14);
+	}
 });
 
 
@@ -590,16 +779,17 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.LineType.Residential.proto
 		this.elementGroups.landline_end_user_title_id = Sale.GUIComponent.createDropDown(
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineEndUserTitle.id, 
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineEndUserTitle.description, 
-			this.getLandlineEndUserTitleId());
+			this.getLandlineEndUserTitleId(),
+			true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Title', this.elementGroups.landline_end_user_title_id);
 
-		this.elementGroups.end_user_given_name = Sale.GUIComponent.createTextInputGroup(this.getEndUserGivenName());
+		this.elementGroups.end_user_given_name = Sale.GUIComponent.createTextInputGroup(this.getEndUserGivenName(), true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Given Name', this.elementGroups.end_user_given_name);
 
-		this.elementGroups.end_user_family_name = Sale.GUIComponent.createTextInputGroup(this.getEndUserFamilyName());
+		this.elementGroups.end_user_family_name = Sale.GUIComponent.createTextInputGroup(this.getEndUserFamilyName(), true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Family Name', this.elementGroups.end_user_family_name);
 
-		this.elementGroups.end_user_dob = Sale.GUIComponent.createDateGroup(this.getEndUserDOB());
+		this.elementGroups.end_user_dob = Sale.GUIComponent.createDateGroup(this.getEndUserDOB(), true, window._validate.date.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Date Of Birth', this.elementGroups.end_user_dob);
 
 		this.elementGroups.end_user_employer = Sale.GUIComponent.createTextInputGroup(this.getEndUserEmployer());
@@ -611,25 +801,33 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.LineType.Residential.proto
 	
 	isValid: function()
 	{
+		bolValid	= true;
+		
+		bolValid	= (this.elementGroups.landline_end_user_title_id.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_end_user_title_id);
 		this.object.landline_end_user_title_id = value;
 
+		bolValid	= (this.elementGroups.end_user_given_name.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.end_user_given_name);
 		this.object.end_user_given_name = value;
 
+		bolValid	= (this.elementGroups.end_user_family_name.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.end_user_family_name);
 		this.object.end_user_family_name = value;
 
+		bolValid	= (this.elementGroups.end_user_dob.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.end_user_dob);
 		this.object.end_user_dob = value;
 
+		bolValid	= (this.elementGroups.end_user_employer.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.end_user_employer);
 		this.object.end_user_employer = value;
 
+		bolValid	= (this.elementGroups.end_user_occupation.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.end_user_occupation);
 		this.object.end_user_occupation = value;
 
-		return true;
+		return bolValid;
 	},
 	
 	showValidationTip: function()
@@ -732,10 +930,10 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.LineType.Business.prototyp
 	{
 		var table = this.detailsContainer;
 		
-		this.elementGroups.company_name = Sale.GUIComponent.createTextInputGroup(this.getCompanyName());
+		this.elementGroups.company_name = Sale.GUIComponent.createTextInputGroup(this.getCompanyName(), true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Company Name', this.elementGroups.company_name);
 
-		this.elementGroups.abn = Sale.GUIComponent.createTextInputGroup(this.getABN());
+		this.elementGroups.abn = Sale.GUIComponent.createTextInputGroup(this.getABN(), true, window._validate.australianBusinessNumber.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'ABN', this.elementGroups.abn);
 
 		this.elementGroups.trading_name = Sale.GUIComponent.createTextInputGroup(this.getTradingName());
@@ -744,16 +942,21 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.LineType.Business.prototyp
 	
 	isValid: function()
 	{
+		bolValid	= true;
+		
+		bolValid	= (this.elementGroups.company_name.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.company_name);
 		this.object.company_name = value;
 
+		bolValid	= (this.elementGroups.abn.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.abn);
 		this.object.abn = value;
 
+		bolValid	= (this.elementGroups.trading_name.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.trading_name);
 		this.object.trading_name = value;
 
-		return true;
+		return bolValid;
 	},
 	
 	showValidationTip: function()
