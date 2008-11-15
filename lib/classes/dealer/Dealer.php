@@ -173,6 +173,13 @@ class Dealer
 		$arrDealers = self::getFor("id = $intId");
 		return (count($arrDealers) == 1) ? current($arrDealers) : NULL;
 	}
+	
+	// Returns the dealer record, based on the employeeId
+	public static function getForEmployeeId($intEmployeeId)
+	{
+		$arrDealers = self::getFor("employee_id = $intEmployeeId");
+		return (count($arrDealers) == 1)? current($arrDealers) : NULL;
+	}
 
 	public static function getAll($arrFilter=NULL, $arrSort=NULL, $intLimit=NULL, $intOffset=NULL)
 	{

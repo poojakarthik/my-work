@@ -5,6 +5,8 @@
  * This version: -
  *	1:	Adds the FLEX_MODULE_KNOWLEDGE_BASE module into the flex_module table (defaults to being turned off)
  *	2:	Updates Employee privileges if they have the SuperAdmin privilege, because The SuperAdmin Privilege has been changed from 0x3FF to 0x7FFFFFFF
+ *	3:	Alter dealer.dealer_status_id so that it is manditory (For some reason I declared it in rollout script 92 as NULLable and defaults to NULL)
+ *	4:	Builds a dealer record for each Employee who has the Sales privilege (0x08)
  */
 
 class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
@@ -61,6 +63,45 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 									SET Privileges = {$arrSuperAdmin['Privileges']}
 									WHERE Id = {$arrSuperAdmin['Id']};";
 		}
+		
+		// 3: Alter dealer.dealer_status_id so that it is manditory (For some reason I declared it in rollout script 92 as NULLable and defaults to NULL)
+		$strSQL = "	ALTER TABLE dealer
+					CHANGE dealer_status_id dealer_status_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK into the dealer_status table, defininng the current status of the dealer';";
+		$result = $dbAdmin->query($strSQL);
+		if (PEAR::isError($result))
+		{
+			throw new Exception(__CLASS__ . ' Failed to alter dealer.dealer_status_id to set it to being manditory (not NULLable). ' . $result->getMessage());
+		}
+		$this->rollbackSQL[] = "ALTER TABLE dealer
+								CHANGE dealer_status_id dealer_status_id BIGINT(20) UNSIGNED NULL DEFAULT NULL COMMENT 'FK into the dealer_status table, defininng the current status of the dealer';";
+		
+		// 4: Build a dealer record for each Employee who has the Sales privilege (0x08) and isn't already set up as a dealer
+		// Only the "System" employee should already be set up as a dealer
+
+		// First get the current highest id of dealers in the dealer table
+		$intHighestId = $dbAdmin->queryOne('SELECT MAX(id) FROM dealer;', 'integer');
+		
+		if (PEAR::isError($intHighestId))
+		{
+			throw new Exception(__CLASS__ . ' Could not find the MAX(id) in dealer table'. $intHighestId->getMessage());
+		}
+		
+		// Insert the records
+		$strSQL = "	INSERT INTO dealer (username, password, can_verify, first_name, last_name, phone, mobile, email, dealer_status_id, created_on, employee_id)
+					SELECT UserName, PassWord, 1, FirstName, LastName, Phone, Mobile, Email, 1, NOW(), Id
+					FROM Employee
+					WHERE (Archived = 0) AND (Privileges & 0x08 = 0x08) AND Id NOT IN (SELECT employee_id FROM dealer WHERE employee_id IS NOT NULL);";
+		
+		$result = $dbAdmin->query($strSQL);
+		if (PEAR::isError($result))
+		{
+			throw new Exception(__CLASS__ . ' Failed to create dealer records for all employees that have the Sales privilege (0x08). ' . $result->getMessage());
+		}
+		$strWhereClause = ($intHighestId !== NULL)? "id > $intHighestId" : "TRUE";
+		$this->rollbackSQL[] = "DELETE FROM dealer WHERE $strWhereClause;";
+		
+		// This will reset the auto_increment property back to what it was before we started to add the employee dealer records
+		$this->rollbackSQL[] = "ALTER TABLE dealer AUTO_INCREMENT = 0;";
 		
 	}
 	
