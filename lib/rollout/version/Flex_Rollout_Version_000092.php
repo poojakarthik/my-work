@@ -178,12 +178,20 @@ class Flex_Rollout_Version_000092 extends Flex_Rollout_Version
 		}
 		// No rollback is required
 
-		// Delete the old dealer table (The structure has changed substantially)
+                // Delete the old dealer table (The structure has changed substantially)
+                $strSQL = "DROP TABLE IF EXISTS dealer";
+                $objResult = $dbAdmin->query($strSQL);
+                if (PEAR::isError($objResult))
+                {
+                        throw new Exception(__CLASS__ . " Failed to drop dealer table (cleansing) - ". $objResult->getMessage());
+                }
+
+		// Delete the old Dealer table (The structure has changed substantially)
 		$strSQL = "DROP TABLE IF EXISTS Dealer";
 		$objResult = $dbAdmin->query($strSQL);
 		if (PEAR::isError($objResult))
 		{
-			throw new Exception(__CLASS__ . " Failed to drop dealer table - ". $objResult->getMessage());
+			throw new Exception(__CLASS__ . " Failed to drop Dealer table - ". $objResult->getMessage());
 		}
 		
 		$this->rollbackSQL[] = array(	"Database"	=> FLEX_DATABASE_CONNECTION_ADMIN,
