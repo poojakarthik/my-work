@@ -13,7 +13,7 @@ class Application_Handler_Sales extends Application_Handler
 	public function ViewSale($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES);
 		
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ManageSales(TRUE);
@@ -60,7 +60,7 @@ class Application_Handler_Sales extends Application_Handler
 	public function ListSales($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES);
 		
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Sales");
