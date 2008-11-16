@@ -380,9 +380,10 @@ class Ticketing_Service
 	{
 		$emailAddress = $email ? $email->getElementsByTagName('email')->item(0)->textContent : '';
 		$emailAddress = trim($emailAddress);
-		// &quot;Margaret Munro &quot;&lt;magneticfx@iinet.net.au&gt;
+		// "Margaret Munro "<magneticfx@iinet.net.au>;
+		// "lenrhonda"<lenrhonda@westnet.com.au>;
 		$name = array();
-		if (preg_match("/^\"([^\"]*)\" *</", $emailAddress, $name))
+		if (preg_match("/^\"([^\"]*)\" *\</", $emailAddress, $name))
 		{
 			$name = $name[1];
 			$emailAddress = trim(substr($emailAddress, strlen($name) + 2));
