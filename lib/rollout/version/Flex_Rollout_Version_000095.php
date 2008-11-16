@@ -104,8 +104,8 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 		// This will reset the auto_increment property back to what it was before we started to add the employee dealer records
 		$this->rollbackSQL[] = "ALTER TABLE dealer AUTO_INCREMENT = 0;";
 	
-		// 5: Updates Employee privileges if they have the old GOD mode value, because the GOD privilege has been changed from 0x7FFFFFFFFFFFFFFF to 0x7FFFFFFFFFFFFF to stop an overflow issue
-		$intNewGodPerm = 0x7FFFFFFFFFFFFF;
+		// 5: Updates Employee privileges if they have the old GOD mode value, because the GOD privilege has been changed from 0x7FFFFFFFFFFFFFFF to 0x7FFFFFFFFFFF to stop an overflow issue
+		$intNewGodPerm = 0x7FFFFFFFFFFF;
 		$strSQL = "	UPDATE Employee
 					SET Privileges = $intNewGodPerm
 					WHERE Privileges > $intNewGodPerm;";

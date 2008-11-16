@@ -199,8 +199,8 @@ define("PERMISSION_SUPER_ADMIN"				, 0x7FFFFFFF);	$arrPermissions[PERMISSION_SUP
 define("PERMISSION_DEBUG"					, 0x80000000);
 //define("USER_PERMISSION_GOD"				, 0x7FFFFFFFFFFFFFFF); // This constant is legacy
 //define("PERMISSION_GOD"						, 0x7FFFFFFFFFFFFFFF);
-define("USER_PERMISSION_GOD"				, 0x7FFFFFFFFFFFFF); // This constant is legacy
-define("PERMISSION_GOD"						, 0x7FFFFFFFFFFFFF);
+define("USER_PERMISSION_GOD"				, 0x7FFFFFFFFFFF); // This constant is legacy
+define("PERMISSION_GOD"						, 0x7FFFFFFFFFFF);
 
 
 $GLOBALS['Permissions']	= $arrPermissions;

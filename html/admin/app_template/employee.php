@@ -415,7 +415,8 @@ class AppTemplateEmployee extends ApplicationTemplate
 									$objDealer = new Dealer();
 									
 									// All employees get the "can verify" flag, initially
-									$objDealer->canVerify = TRUE;
+									$objDealer->canVerify		= TRUE;
+									$objDealer->gstRegistered	= FALSE;
 									$objDealer->createdOn = GetCurrentISODateTime();
 								}
 								
