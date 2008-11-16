@@ -380,6 +380,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 					// This could update multiple tables, so needs to be done within a single transaction
 	
 					//echo "Employee is NOT invalid Employee would be saved";
+
 					if (DBO()->Employee->Save())
 					{
 						VixenRequire('lib/ticketing/Ticketing_User.php');
@@ -396,9 +397,83 @@ class AppTemplateEmployee extends ApplicationTemplate
 						{
 							Ticketing_User::setPermissionForEmployeeId(DBO()->Employee->Id->Value, intval(DBO()->ticketing_user->permission->Value));
 						}
+
+						// If the user has the Sales privilege then create/update their dealer record
+						$intEmployeePerms = DBO()->Employee->Privileges->Value;
+						try
+						{
+							$bolModifiedDealerTable = FALSE;
+							if ($intEmployeePerms & PERMISSION_SALES == PERMISSION_SALES)
+							{
+								// The Employee has the Sales permission
+								// Check if they already have a dealer record
+								$objDealer = Dealer::getForEmployeeId(DBO()->Employee->Id->Value);
+								
+								if ($objDealer === NULL && DBO()->Employee->Archived->Value == 0)
+								{
+									// A dealer record doesn't exist, but the employee is active, so create one
+									$objDealer = new Dealer();
+									
+									// All employees get the "can verify" flag, initially
+									$objDealer->canVerify = TRUE;
+									$objDealer->createdOn = GetCurrentISODateTime();
+								}
+								
+								if ($objDealer !== NULL)
+								{
+									// Update the record
+									$objDealer->firstName		= DBO()->Employee->FirstName->Value;
+									$objDealer->lastName		= DBO()->Employee->LastName->Value;
+									$objDealer->username		= DBO()->Employee->UserName->Value;
+									$objDealer->password		= DBO()->Employee->PassWord->Value;
+									$objDealer->phone			= DBO()->Employee->Phone->Value;
+									$objDealer->mobile			= DBO()->Employee->Mobile->Value;
+									$objDealer->email			= DBO()->Employee->Email->Value;
+									$objDealer->dealerStatusId	= (DBO()->Employee->Archived->Value == 0)? Dealer_Status::ACTIVE : Dealer_Status::INACTIVE;
+									$objDealer->employeeId		= DBO()->Employee->Id->Value;
+									$objDealer->save();
+									$bolModifiedDealerTable = TRUE;
+								}
+							}
+							else
+							{
+								// The employee doesn't have the sales permission
+								// If they have a related dealer record, then de-activate it
+								$objDealer = Dealer::getForEmployeeId(DBO()->Employee->Id->Value);
+								if ($objDealer !== NULL && $objDealer->dealerStatusId != Dealer_Status::INACTIVE)
+								{
+									// A dealer record exists and it isn't set to inactive, so set it
+									$objDealer->dealerStatusId = Dealer_Status::INACTIVE;
+									$objDealer->save();
+									$bolModifiedDealerTable = TRUE;
+								}
+							}
+							
+						}
+						catch (Exception $e)
+						{
+							TransactionRollback();
+							Ajax()->AddCommand("Alert", "Error doing dealer stuff<br />". $e->getMessage());
+							return TRUE;
+						}
 	
 						// All Database interactions were successfull
 						TransactionCommit();
+
+						if (isset($bolModifiedDealerTable) && $bolModifiedDealerTable)
+						{
+							// Dealer table has been modified, trigger the sync operation
+							try
+							{
+								Cli_App_Sync_SalesPortal::pushAll();
+							}
+							catch (Exception $e)
+							{
+								// Pushing the data failed
+								$strWarning = "Pushing the data from Flex to the Sales database, failed. Contact your system administrators to have them manually trigger the data push.  (Error message: ". htmlspecialchars($e->getMessage()) .")";
+							}
+						}
+
 	
 						$scriptInit = "";
 						$scriptOnClose = "";
@@ -418,6 +493,10 @@ class AppTemplateEmployee extends ApplicationTemplate
 	
 						$arrParams = array();
 						$arrParams["Message"] = "The information was successfully saved.";
+						if (isset($strWarning))
+						{
+							$arrParams["Message"] .= "<br />$strWarning";
+						}
 						$arrParams["ScriptInit"] = $scriptInit;
 						$arrParams["ScriptOnClose"] = $scriptOnClose;
 	

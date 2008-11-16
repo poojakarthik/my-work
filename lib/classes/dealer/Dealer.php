@@ -436,6 +436,55 @@ class Dealer
 		return $this->_arrSaleTypeIds;
 	}
 	
+	// Validates the internal state of the object against the DataSource (database).  If valid, then it is considered safe to save the object
+	// Throws an exception on the first validation issue found
+	// This does not currently check datatypes of properties, it checks logically validation issues such as the username being unique if amoungst active dealers, if the dealer
+	// is active. and also checking that the up_line_id property will not cause recursion in the management tree 
+	protected function _validate()
+	{
+		// Make sure all manditory fields have been set
+		$arrManditoryProps = array("username", "password", "firstName", "lastName", "dealerStatusId");
+		
+		foreach ($arrManditoryProps as $strManProp)
+		{
+			if (!array_key_exists($strManProp, $this->_arrProperties) || $this->_arrProperties[$strManProp] === NULL)
+			{
+				throw new Exception("dealer.{$strManProp} is manditory");
+			}
+		}
+		
+		// Make sure the dealer's upLineManager does not cause recursion in the management tree
+		if ($this->upLineId !== NULL && !self::canHaveUpLineManager($this->id, $this->upLineId))
+		{
+			throw new Exception("Setting the upline manager to dealer id: {$this->upLineId} would cause recursion in the management hierarchy");
+		}
+		
+		// If the dealer is active, check that their username isn't currently being used by another dealer
+		if ($this->dealerStatusId == Dealer_Status::ACTIVE)
+		{
+			// Try finding a dealer with the same username
+			$arrDealers = self::getFor("username = '{$this->username}' AND dealer_status_id = ". Dealer_Status::ACTIVE);
+			
+			$intCount = count($arrDealers);
+			
+			if ($intCount > 1)
+			{
+				// There are multiple active dealers with the same username
+				// This should never happen
+				throw new Exception("Multiple active dealers exist with this username.  Please notify your system administrator, to rectify this problem");
+			}
+			elseif ($intCount == 1)
+			{
+				// Check if it is the current dealer
+				$arrDealer = current($arrDealers);
+				if (!array_key_exists('id', $this->_arrProperties) || $this->_arrProperties['id'] === NULL || $this->_arrProperties['id'] != $arrDealer->id)
+				{
+					throw new Exception("Another active dealer in the database is already using this username");
+				}
+			}
+		}
+	}
+	
 	public function save()
 	{
 		if ($this->_bolSaved)
@@ -444,11 +493,8 @@ class Dealer
 			return;
 		}
 		
-		// Make sure the dealer's upLineManager does not cause recursion in the management tree
-		if ($this->upLineId !== NULL && !self::canHaveUpLineManager($this->id, $this->upLineId))
-		{
-			throw new Exception("Setting the upline manager to dealer id: {$this->upLineId} would cause recursion in the management hierarchy");
-		}
+		// Validate the object
+		$this->_validate();
 		
 		$arrColumns		= self::getColumns();
 		$arrColumnTypes	= self::getColumnDataTypes();

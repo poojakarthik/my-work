@@ -7,6 +7,7 @@
  *	2:	Updates Employee privileges if they have the SuperAdmin privilege, because The SuperAdmin Privilege has been changed from 0x3FF to 0x7FFFFFFF
  *	3:	Alter dealer.dealer_status_id so that it is manditory (For some reason I declared it in rollout script 92 as NULLable and defaults to NULL)
  *	4:	Builds a dealer record for each Employee who has the Sales privilege (0x08)
+ *	5:	Updates Employee privileges if they have the old GOD mode value, because the GOD privilege has been changed from 0x7FFFFFFFFFFFFFFF to 0x7FFFFFFFFFFFFF to stop an overflow issue
  */
 
 class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
@@ -102,7 +103,19 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 		
 		// This will reset the auto_increment property back to what it was before we started to add the employee dealer records
 		$this->rollbackSQL[] = "ALTER TABLE dealer AUTO_INCREMENT = 0;";
-		
+	
+		// 5: Updates Employee privileges if they have the old GOD mode value, because the GOD privilege has been changed from 0x7FFFFFFFFFFFFFFF to 0x7FFFFFFFFFFFFF to stop an overflow issue
+		$intNewGodPerm = 0x7FFFFFFFFFFFFF;
+		$strSQL = "	UPDATE Employee
+					SET Privileges = $intNewGodPerm
+					WHERE Privileges > $intNewGodPerm;";
+		$result = $dbAdmin->query($strSQL);
+		if (PEAR::isError($result))
+		{
+			throw new Exception(__CLASS__ . ' Failed to update GOD employees so that they have the new GOD permission. ' . $result->getMessage());
+		}
+		// No Rollback is required
+
 	}
 	
 	function rollback()
