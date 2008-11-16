@@ -461,7 +461,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 						// All Database interactions were successfull
 						TransactionCommit();
 
-						if (isset($bolModifiedDealerTable) && $bolModifiedDealerTable)
+						if (isset($bolModifiedDealerTable) && $bolModifiedDealerTable && Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 						{
 							// Dealer table has been modified, trigger the sync operation
 							try
