@@ -117,6 +117,11 @@ class Application
 		{
 			ContextMenu()->Customer->Add_Customer();
 		}
+		if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL) && AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
+		{
+			ContextMenu()->Customer->ManageSales();
+		}
+		
 		ContextMenu()->Customer->Customer_Overdue_List();
 		
 		ContextMenu()->Available_Plans();
@@ -163,7 +168,6 @@ class Application
 				
 				if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 				{
-					ContextMenu()->Admin->Sales->ManageSales();
 					ContextMenu()->Admin->Sales->ManageDealers();
 				}
 			}
@@ -252,6 +256,10 @@ class Application
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
 			ContextMenu()->Customer->Add_Customer();
+		}
+		if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL) && AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
+		{
+			ContextMenu()->Customer->ManageSales();
 		}
 		ContextMenu()->Customer->Customer_Overdue_List();
 		

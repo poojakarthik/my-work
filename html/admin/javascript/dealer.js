@@ -239,6 +239,7 @@ var Dealer = {
 			this.controls.phone.disabled = true;
 			this.controls.mobile.disabled = true;
 			this.controls.email.disabled = true;
+			this.controls.dealerStatusId.disabled = true;
 		}
 		
 		// Populate the SaleTypes combobox

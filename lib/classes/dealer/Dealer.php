@@ -823,13 +823,14 @@ class Dealer
 			else
 			{
 				// Copy across the details that should never differ
-				$arrDetails['firstName']	= (($strFirstName = trim($objEmployee->firstName)) == '')? NULL : $strFirstName;
-				$arrDetails['lastName']		= (($strLastName = trim($objEmployee->lastName)) == '')? NULL : $strLastName;
-				$arrDetails['username']		= (($strUsername = trim($objEmployee->username)) == '')? NULL : $strUsername;
-				$arrDetails['password']		= (($strPassword = trim($objEmployee->password)) == '')? NULL : $strPassword;
-				$arrDetails['phone']		= (($strPhone = trim($objEmployee->phone)) == '')? NULL : $strPhone;
-				$arrDetails['mobile']		= (($strMobile = trim($objEmployee->mobile)) == '')? NULL : $strMobile;
-				$arrDetails['email']		= (($strEmail = trim($objEmployee->email)) == '')? NULL : $strEmail;
+				$arrDetails['firstName']		= (($strFirstName = trim($objEmployee->firstName)) == '')? NULL : $strFirstName;
+				$arrDetails['lastName']			= (($strLastName = trim($objEmployee->lastName)) == '')? NULL : $strLastName;
+				$arrDetails['username']			= (($strUsername = trim($objEmployee->username)) == '')? NULL : $strUsername;
+				$arrDetails['password']			= (($strPassword = trim($objEmployee->password)) == '')? NULL : $strPassword;
+				$arrDetails['phone']			= (($strPhone = trim($objEmployee->phone)) == '')? NULL : $strPhone;
+				$arrDetails['mobile']			= (($strMobile = trim($objEmployee->mobile)) == '')? NULL : $strMobile;
+				$arrDetails['email']			= (($strEmail = trim($objEmployee->email)) == '')? NULL : $strEmail;
+				$arrDetails['dealerStatusId']	= ($objEmployee->archived == 0)? Dealer_Status::ACTIVE : Dealer_Status::INACTIVE;
 			}
 		}
 

@@ -15,7 +15,7 @@ class Application_Handler_Sales extends Application_Handler
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
-		BreadCrumb()->Admin_Console();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ManageSales(TRUE);
 		BreadCrumb()->SetCurrentPage("Sale");
 		
@@ -62,7 +62,7 @@ class Application_Handler_Sales extends Application_Handler
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
-		BreadCrumb()->Admin_Console();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Sales");
 		
 		try

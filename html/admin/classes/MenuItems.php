@@ -621,7 +621,7 @@ class MenuItems {
 	 */
 	function ManageSales($bolLast=FALSE) {
 		$this->strLabel = "Sales";
-		$this->strContextMenuLabel = "Manage Sales";
+		$this->strContextMenuLabel = "Verify Sales";
 
 		return self :: NEW_FRAMEWORK . "reflex.php/Sales/ListSales/". ($bolLast ? "Last/" : "");
 	}

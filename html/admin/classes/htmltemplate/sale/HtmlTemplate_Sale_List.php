@@ -63,6 +63,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 		{
 			$strBodyRows = "";
 			$bolAlt = FALSE;
+			$strToday = date("d-m-Y");
 			foreach ($arrSales as $objSale)
 			{
 				$objSaleAccount			= $objSale->getSaleAccount();
@@ -100,14 +101,18 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				
 				$strSaleStatus		= htmlspecialchars($arrSaleStatuses[$objSale->saleStatusId]->name);
 				$strSaleType		= htmlspecialchars($arrSaleTypes[$objSale->saleTypeId]->name);
-				if (count($arrSaleStatusHistory) == 1)
+				
+				// $arrSaleStatusHistory should always have just 1 record in it
+				$intChangedOn = strtotime($arrSaleStatusHistory[0]->changedOn);
+				$strChangedOnDate = date("d-m-Y", $intChangedOn);
+				if ($strChangedOnDate == $strToday)
 				{
-					$intChangedOn		= strtotime($arrSaleStatusHistory[0]->changedOn);
-					$strLastActionedOn	= "<span title='". date("g:i:s a", $intChangedOn) ."'>". date("d-m-Y", $intChangedOn) ."</span>";
+					// The sale was last actioned today (server time), so just show the time of day that it happened
+					$strLastActionedOn = "<span title='today'>". date("g:i:s a", $intChangedOn) ."</span>";
 				}
 				else
 				{
-					$strLastActionedOn = "?";
+					$strLastActionedOn	= "<span title='$strChangedOnDate ". date("g:i:s a", $intChangedOn) ."'>$strChangedOnDate</span>";
 				}
 				
 				// Use the username for the dealer
