@@ -176,6 +176,7 @@ class Application
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
 			
+			// TODO: Change this permission to CREDIT_CONTROL
 			ContextMenu()->Admin->Contracts->ManageBreachedContracts();
 		}
 		
@@ -316,7 +317,8 @@ class Application
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
 			
-			
+			// TODO: Change this permission to CREDIT_CONTROL
+			ContextMenu()->Admin->Contracts->ManageBreachedContracts();			
 		}
 
 		
