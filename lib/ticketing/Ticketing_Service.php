@@ -292,7 +292,7 @@ class Ticketing_Service
 		$details['subject'] = $dom->getElementsByTagName('subject')->item(0)->textContent;
 
 		$email = $dom->getElementsByTagName('from')->item(0);
-		$defails['from'] = self::getEmailNameAndAddress($email);
+		$details['from'] = self::getEmailNameAndAddress($email);
 
 		$details['to'] = array();
 		$emails = $dom->getElementsByTagName('to');
