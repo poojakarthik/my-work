@@ -248,6 +248,14 @@ textarea.valid {
 	border: .1em solid #3d0;
 }
 
+input.data-entry[disabled],
+select.data-entry[disabled], 
+textarea.data-entry[disabled]
+{
+	background-color: #DDDDDD;
+}
+
+
 input[type="button"] {
 	cursor: pointer;
 }
@@ -584,6 +592,13 @@ table.form-data td.title
 {
 	vertical-align	: top;
 	font-weight		: bold;
+}
+
+table.form-data input[disabled],
+table.form-data select[disabled],
+table.form-data textarea[disabled]
+{
+	background-color: #DDDDDD;
 }
 
 /***************************** Tab Collection stuff ***************************/

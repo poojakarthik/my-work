@@ -99,11 +99,11 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to create dealer records for all employees that have the Sales privilege (0x08). ' . $result->getMessage());
 		}
 		$strWhereClause = ($intHighestId !== NULL)? "id > $intHighestId" : "TRUE";
-		$this->rollbackSQL[] = "DELETE FROM dealer WHERE $strWhereClause;";
 		
 		// This will reset the auto_increment property back to what it was before we started to add the employee dealer records
 		$this->rollbackSQL[] = "ALTER TABLE dealer AUTO_INCREMENT = 0;";
-	
+		$this->rollbackSQL[] = "DELETE FROM dealer WHERE $strWhereClause;";
+		
 		// 5: Updates Employee privileges if they have the old GOD mode value, because the GOD privilege has been changed from 0x7FFFFFFFFFFFFFFF to 0x7FFFFFFFFFFF to stop an overflow issue
 		$intNewGodPerm = 0x7FFFFFFFFFFF;
 		$strSQL = "	UPDATE Employee
