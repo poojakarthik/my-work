@@ -22,13 +22,19 @@ foreach ($argv as $strArgument)
 }
 
 // Run Direct Debits
-$arrResponse	= $appPayments->RunDirectDebits($bolReportOnly);
+$arrResponses	= $appPayments->RunDirectDebits($bolReportOnly);
 
-if ($arrResponse['Success'] === TRUE || $arrResponse === TRUE)
+$bolPassed	= TRUE;
+foreach ($arrResponses as $arrResponse)
+{
+	$bolPassed	= ($arrResponse['Success'] === TRUE || $arrResponse === TRUE) ? $bolPassed : FALSE;
+}
+
+if ($bolPassed)
 {
 	// Direct Debits run successfully
 	CliEcho("Direct Debits successfully run!");
-	Debug($arrResponse);
+	Debug($arrResponses);
 	exit(0);
 }
 else
