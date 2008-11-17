@@ -945,25 +945,25 @@
 				 		CliEcho("\t\t\t -- There were no Accounts to debit.");
 				 	}
 			 	}
+		
+				// Update automatic_invoice_action_id Entry (only if not forced)
+				if (!$bolForce)
+				{
+					CliEcho("\t\t* Saving Direct Debit State back to DB...");
+					$arrCustomerGroup['actioned_datetime']	= date("Y-m-d H:i:s", $intRunDate);
+					if ($ubiSchedule->Execute($arrCustomerGroup) === FALSE)
+					{
+						// Error
+						$arrReturn[]	= Array('Success' => FALSE, 'Description' => "ERROR: \$ubiSchedule failed: ".$ubiSchedule->Error());
+					}
+				}
 		 	}
 		 	else
 		 	{
-		 		
+		 		CliEho("\t\t! No Direct Debit Modules Configured!");
 		 	}
 	 	}
 	 	CliEcho();
-		
-		// Update automatic_invoice_action_id Entry (only if not forced)
-		if (!$bolForce)
-		{
-			CliEcho("* Saving Direct Debit State back to DB...");
-			$arrSchedule['actioned_datetime']	= date("Y-m-d H:i:s", $intRunDate);
-			if ($ubiSchedule->Execute($arrSchedule) === FALSE)
-			{
-				// Error
-				$arrReturn[]	= Array('Success' => FALSE, 'Description' => "ERROR: \$ubiSchedule failed: ".$ubiSchedule->Error());
-			}
-		}
 	 	
 	 	// Everything appears to have run fine
 	 	$arrReturn[]	= Array('Success' => TRUE, 'AccountsCharged' => $intAccountsCharged);
