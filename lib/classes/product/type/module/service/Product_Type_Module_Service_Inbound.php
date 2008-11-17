@@ -26,8 +26,17 @@ class Product_Type_Module_Service_Inbound extends Product_Type_Module
 
 	public function saveProductDetailsForSaleItem(stdClass $productDetails, DO_Sales_SaleItem $saleItem, $bolValidateOnly=false)
 	{
-		$product = new DO_Sales_SaleItemServiceInbound();
-		$product->saleItemId = $bolValidateOnly ? 0 : $saleItem->id;
+		$products = DO_Sales_SaleItemServiceInbound::listForSaleItem($saleItem);
+		if (!count($products))
+		{
+			$product = new DO_Sales_SaleItemServiceInbound();
+			$product->saleItemId = $bolValidateOnly ? 0 : $saleItem->id;
+		}
+		else
+		{
+			$product = $products[0];
+		}
+
 		$product->fnn = $productDetails->fnn;
 		$product->answerPoint = $productDetails->answer_point;
 		$product->configuration = $productDetails->configuration;

@@ -50,8 +50,17 @@ class Product_Type_Module_Service_Mobile extends Product_Type_Module
 
 	public function saveProductDetailsForSaleItem(stdClass $productDetails, DO_Sales_SaleItem $saleItem, $bolValidateOnly=false)
 	{
-		$product = new DO_Sales_SaleItemServiceMobile();
-		$product->saleItemId = $bolValidateOnly ? 0 : $saleItem->id;
+		$products = DO_Sales_SaleItemServiceMobile::listForSaleItem($saleItem);
+		if (!count($products))
+		{
+			$product = new DO_Sales_SaleItemServiceMobile();
+			$product->saleItemId = $bolValidateOnly ? 0 : $saleItem->id;
+		}
+		else
+		{
+			$product = $products[0];
+		}
+
 		$product->comments = $productDetails->comments;
 		$product->currentAccountNumber = $productDetails->current_account_number;
 		$product->currentProvider = $productDetails->current_provider;

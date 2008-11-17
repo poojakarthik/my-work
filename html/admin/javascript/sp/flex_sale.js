@@ -114,7 +114,7 @@ Object.extend(Sale.prototype, {
 		$ID('commit-button-panel').style.display = 'none';
 		$ID('after-commit-button-panel').style.display = 'inline';
 		alert("The sale has been saved. The reference number for this sale is " + $saleId + ".");
-		document.location = document.location.toString().replace(/\/Sales\/.*/i, '/Sales/ListSales/Last');
+		//document.location = document.location.toString().replace(/\/Sales\/.*/i, '/Sales/ListSales/Last');
 	},
 	
 	rejectSale: function()

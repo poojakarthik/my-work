@@ -28,8 +28,17 @@ class Product_Type_Module_Service_ADSL extends Product_Type_Module
 
 	public function saveProductDetailsForSaleItem(stdClass $productDetails, DO_Sales_SaleItem $saleItem, $bolValidateOnly=false)
 	{
-		$product = new DO_Sales_SaleItemServiceAdsl();
-		$product->saleItemId = $bolValidateOnly ? 0 : $saleItem->id;
+		$products = DO_Sales_SaleItemServiceAdsl::listForSaleItem($saleItem);
+		if (!count($products))
+		{
+			$product = new DO_Sales_SaleItemServiceAdsl();
+			$product->saleItemId = $bolValidateOnly ? 0 : $saleItem->id;
+		}
+		else
+		{
+			$product = $products[0];
+		}
+
 		$product->fnn = $productDetails->fnn;
 		$product->addressLine1 = $productDetails->address_line_1;
 		$product->addressLine2 = $productDetails->address_line_2;

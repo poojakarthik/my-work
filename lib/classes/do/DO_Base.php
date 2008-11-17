@@ -175,7 +175,7 @@ abstract class DO_Base
 	
 	public function save()
 	{
-		if ($this->isSaved())
+		if (!$this->hasUnsavedChanges())
 		{
 			// Nothing to save
 			return true;
@@ -277,7 +277,7 @@ abstract class DO_Base
 	
 	public function hasUnsavedChanges()
 	{
-		return !$this->_bolUnsavedChanges;
+		return $this->_bolUnsavedChanges;
 	}
 	
 	public function __get($name)
@@ -301,7 +301,7 @@ abstract class DO_Base
 		if (array_search($name, $propertyNames) !== false)
 		{
 			// ... record whether or not it has changed
-			$this->_bolUnsavedChanges = $this->_bolUnsavedChanges && ($currentValue === $value);
+			$this->_bolUnsavedChanges = $this->_bolUnsavedChanges || ($currentValue !== $value);
 		}
 
 		// Store the new value of the property

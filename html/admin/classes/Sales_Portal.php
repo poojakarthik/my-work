@@ -117,7 +117,7 @@ class Sales_Portal
 			$saleItemDetails = new stdClass();
 			$saleItemDetails->id = $saleItem->id;
 			$saleItemDetails->product_type_module = $productType->module;
-			$saleItemDetails->product_id = $saleItem->id;
+			$saleItemDetails->product_id = $product->id;
 			$saleItemDetails->product_name = $product->name;
 			$saleItemDetails->product_type = $productType->name;
 			$saleItemDetails->created_on = $saleItem->createdOn;

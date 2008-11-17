@@ -113,9 +113,33 @@ class Product_Type_Module_Service_Landline extends Product_Type_Module
 
 	public function saveProductDetailsForSaleItem(stdClass $productDetails, DO_Sales_SaleItem $saleItem, $bolValidateOnly=false)
 	{
-		$product = new DO_Sales_SaleItemServiceLandline();
-		$product->saleItemId = $bolValidateOnly ? 0 : $saleItem->id;
-
+		$products = DO_Sales_SaleItemServiceLandline::listForSaleItem($saleItem);
+		$new = false;
+		if (!count($products))
+		{
+			$product = new DO_Sales_SaleItemServiceLandline();
+			$product->saleItemId = $bolValidateOnly ? 0 : $saleItem->id;
+			$new = true;
+		}
+		else
+		{
+			$product = $products[0];
+			$oldLandlineTypes = array();
+			// Delete the old landline type details
+			if ($product->landlineTypeId == 1) // WIP - Code this properly! 1 = Residential
+			{
+				$oldLandlineTypes = DO_Sales_SaleItemServiceLandlineResidential::listForSaleItemServiceLandline($product);
+			}
+			else if ($product->landlineTypeId == 2) // WIP - Code this properly! 2 = Business
+			{
+				$oldLandlineTypes = DO_Sales_SaleItemServiceLandlineBusiness::listForSaleItemServiceLandline($product);
+			}
+			foreach ($oldLandlineTypes as $oldLandlineType)
+			{
+				$oldLandlineType->delete();
+			}
+		}
+		
 		$product->fnn = $productDetails->fnn;
 		$product->billAddressLine1 = $productDetails->bill_address_line_1;
 		$product->billAddressLine2 = $productDetails->bill_address_line_2;

@@ -633,6 +633,11 @@ class Dealer
 			"employeeId"			=> "employee_id"
 		);
 	}
+	
+	public function isActive()
+	{
+		return $this->dealerStatusId == Dealer_Status::ACTIVE;
+	}
 
 	// The keys are the tidy names and the values are the actual table column names
 	protected static function getColumnDataTypes()
