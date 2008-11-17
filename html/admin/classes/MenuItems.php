@@ -621,6 +621,29 @@ class MenuItems {
 	 */
 	function ManageSales($bolLast=FALSE) {
 		$this->strLabel = "Sales";
+		$this->strContextMenuLabel = "Manage Sales";
+
+		return self :: NEW_FRAMEWORK . "reflex.php/Sales/ListSales/". ($bolLast ? "Last/" : "");
+	}
+
+	//------------------------------------------------------------------------//
+	// VerifySales
+	//------------------------------------------------------------------------//
+	/**
+	 * VerifySales()
+	 *
+	 * Compiles the Href to be executed when the VerifySales functionality is requested
+	 *
+	 * Compiles the Href to be executed when the VerifySales functionality is requested
+	 * This is currently exactly the same as the ManageSales menu item, just named differently
+	 * 
+	 * @param	bool	$bolLast			optional, defaults to FALSE. If true, then the Verify Sales functionality will load, reflecting the last
+	 * 										set of boundary conditions
+	 * @return	string						Href to trigger the functionality
+	 * @method
+	 */
+	function VerifySales($bolLast=FALSE) {
+		$this->strLabel = "Sales";
 		$this->strContextMenuLabel = "Verify Sales";
 
 		return self :: NEW_FRAMEWORK . "reflex.php/Sales/ListSales/". ($bolLast ? "Last/" : "");
