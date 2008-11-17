@@ -29,7 +29,7 @@ class Flex_Rollout_Version_000095 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "DELETE FROM flex_module WHERE const_name = 'FLEX_MODULE_KNOWLEDGE_BASE';";
 		
-		// 1:	Update Employee privileges if they have the SuperAdmin privilege, because The SuperAdmin Privilege has been changed from 0x3FF to 0x7FFFFFFF
+		// 2:	Update Employee privileges if they have the SuperAdmin privilege, because The SuperAdmin Privilege has been changed from 0x3FF to 0x7FFFFFFF
 		// First record the current Previleges of all Super Admins, as it is not all encompassing
 		$strCurrentSuperAdminPerm	= '0x3FF';
 		$strNewSuperAdminPerm		= '0x7FFFFFFF';

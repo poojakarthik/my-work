@@ -17,7 +17,6 @@ class Application_Handler_Sales extends Application_Handler
 		
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ManageSales(TRUE);
-		BreadCrumb()->SetCurrentPage("Sale");
 		
 		try
 		{
@@ -41,6 +40,8 @@ class Application_Handler_Sales extends Application_Handler
 				throw new Exception("Sale with id: $intSaleId, could not be found");
 			}
 			
+			// Set the final breadcrumb to include the sale id
+			BreadCrumb()->SetCurrentPage("Sale ". $objSale->id);
 	
 			$detailsToRender = array();
 			$detailsToRender['Sale']	= $objSale;
