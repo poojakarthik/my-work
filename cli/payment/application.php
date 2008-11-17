@@ -846,6 +846,10 @@
 		 			// Direct Debits have already been run for this InvoiceRun
 		 			CliEcho("\t\t! Direct Debits have already run for InvoiceRun {$arrSchedule['invoice_run_id']}, on {$arrSchedule['actioned_datetime']}");
 		 		}
+		 		else
+		 		{
+		 			$arrCustomerGroups[]	= $arrSchedule;
+		 		}
 	 		}
 	 	}
 	 	else
