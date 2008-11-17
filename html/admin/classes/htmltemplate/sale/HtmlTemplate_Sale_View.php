@@ -30,7 +30,7 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 		
 
 		$p = $this->mxdDataToRender['ExtraPath'];
-		$bodyClassName = 'data-entry';
+		$bodyClassName = 'data-display';
 		if (count($p))
 		{
 			$saleId = $p[0];

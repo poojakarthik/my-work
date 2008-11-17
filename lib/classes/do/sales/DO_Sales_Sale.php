@@ -287,13 +287,8 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 
 		$return = parent::save();
 		
-		$history = new DO_Sales_SaleStatusHistory();
-		$history->saleId = $this->id;
-		$history->saleStatusId = $this->saleStatusId;
-		$history->changedOn = $new ? $this->createdOn : date('Y-m-d H:i:s');
-		$history->changedBy = $dealerId;
-		$history->description = strval($comment);
-		$history->save();
+		
+		DO_Sales_SaleStatusHistory::recordHistoryForSale($this, $dealerId);
 		
 		return $return;
 	}
@@ -316,6 +311,61 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		{
 			// There is no sale_account record
 			return NULL;
+		}
+	}
+	
+	public function verify()
+	{
+		$dataSource = $this->getDataSource();
+		$strTransactionName = 'VerifySale' . $this->id;
+
+		$dataSource->beginTransaction($strTransactionName);
+		
+		try
+		{
+			$this->saleStatusId = DO_Sales_SaleStatus::VERIFIED;
+			$this->save();
+
+			// We also want to verify all of the sale items
+			$saleItems = DO_Sales_SaleItem::listForSale();
+			foreach ($saleItems as $saleItem)
+			{
+				$saleItem->verify();
+			}
+			
+			$dataSource->commit($strTransactionName);
+		}
+		catch (Exception $e)
+		{
+			$dataSource->rollback($strTransactionName);
+		}
+	}
+	
+	public function reject()
+	{
+		$this->saleStatusId = DO_Sales_SaleStatus::REJECTED;
+		$this->save();
+	}
+	
+	public function cancel()
+	{
+		$dataSource = $this->getDataSource();
+		$strTransactionName = 'CancelSale' . $this->id;
+
+		$dataSource->beginTransaction($strTransactionName);
+		
+		try
+		{
+			$this->saleStatusId = DO_Sales_SaleStatus::CANCELLED;
+			$this->save();
+
+			// We also want to cancel all of the sale items
+			
+			$dataSource->commit($strTransactionName);
+		}
+		catch (Exception $e)
+		{
+			$dataSource->rollback($strTransactionName);
 		}
 	}
 	

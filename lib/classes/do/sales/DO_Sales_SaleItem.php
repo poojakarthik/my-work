@@ -14,15 +14,27 @@ class DO_Sales_SaleItem extends DO_Sales_Base_SaleItem
 
 		$return = parent::save();
 		
-		$history = new DO_Sales_SaleItemStatusHistory();
-		$history->saleItemId = $this->id;
-		$history->changedOn = $new ? $this->createdOn : date('Y-m-d H:i:s');
-		$history->changedBy = $dealerId;
-		$history->saleItemStatusId = $this->saleItemStatusId;
-		$history->description = strval($comment);
-		$history->save();
+		DO_Sales_SaleItemStatusHistory::recordHistoryForSaleItem($this, $dealerId);
 		
 		return $return;
+	}
+	
+	public function verify()
+	{
+		$this->saleItemStatusId = DO_Sales_SaleItemStatus::VERIFIED;
+		$this->save();
+	}
+	
+	public function cancel()
+	{
+		$this->saleItemStatusId = DO_Sales_SaleItemStatus::CANCELLED;
+		$this->save();
+	}
+	
+	public function reject()
+	{
+		$this->saleItemStatusId = DO_Sales_SaleItemStatus::REJECTED;
+		$this->save();
 	}
 }
 

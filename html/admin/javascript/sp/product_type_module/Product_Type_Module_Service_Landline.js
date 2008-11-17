@@ -54,7 +54,7 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 			
 			bill_name: saleAccount.getBusinessName(),
 			bill_address_line_1: saleAccount.getAddressLine1(),
-			bill_address_line_2: saleAccount.getAddressLine1(),
+			bill_address_line_2: saleAccount.getAddressLine2(),
 			bill_locality: saleAccount.getSuburb(),
 			bill_postcode: saleAccount.getPostcode(),
 			
@@ -66,17 +66,22 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		var id = 'service-mobile-table-' + (this.uniqueId);
 
 		this.detailsContainer.innerHTML = ''
-		 + '<table>'
+		 + '<style>'
+		 + 'table.data-display-basic .data-advanced { display: none; }'
+		 + 'table.data-display-advanced tr.data-advanced { display: table-row; }'
+		 + 'table.data-display-advanced span.data-advanced { display: inline; }'
+		 + '</style>'
+		 + '<table style="border-colapse: collapse; margin: 0; padding: 0;">'
 			 + '<tr>'
-				 + '<td style="width: 50%;">'
+				 + '<td style="width: 50%; padding: 0;">'
 					 + '<h3>Service Details</h3>'
 					 + '<table id="' + id + '-service-details" class="data-table"></table>'
-					 + '<div style="height: 150px;"><table id="' + id + '-landline-type" class="data-table"></table></div>'
+					 + '<table id="' + id + '-landline-type" class="data-table"></table>'
 					 + '<h3>Bill Address</h3>'
 					 + '<table id="' + id + '-bill-details" class="data-table"></table>'
 				 + '</td>'
 				 + '<td style="width: 20px;"></td>'
-				 + '<td style="width: 50%;">'
+				 + '<td style="width: 50%; padding: 0;">'
 					 + '<h3>Service Address</h3>'
 					 + '<table id="' + id + '-service-address" class="data-table"></table>'
 				 + '</td>'
@@ -139,6 +144,22 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 
 
 		var table = $ID(id + '-service-address');
+		
+		table.originalClassName = table.className;
+		table.className = table.originalClassName + ' data-display-basic';
+		var tr = table.insertRow(-1);
+		var td = tr.insertCell(-1);
+		td.appendChild(document.createTextNode('View Advanced Options:'));
+		td = tr.insertCell(-1);
+		var cb = document.createElement('input');
+		cb.type = 'checkbox';
+		td.appendChild(cb);
+		var obj = {
+			table: table,
+			checkbox: cb
+		}
+		var func = function() { this.table.className = this.table.originalClassName + (this.checkbox.checked ? ' data-display-advanced' : ' data-display-basic') }
+		Event.observe(cb, 'click', func.bind(obj));
 
 		this.elementGroups.landline_service_address_type_id = Sale.GUIComponent.createDropDown(
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineServiceAddressType.id, 
@@ -147,6 +168,7 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address Type', this.elementGroups.landline_service_address_type_id);
 		Event.observe(this.elementGroups.landline_service_address_type_id.inputs[0], 'change', this.changeLandLineServiceAddressTypeId.bind(this));
 		Event.observe(this.elementGroups.landline_service_address_type_id.inputs[0], 'keyup', this.changeLandLineServiceAddressTypeId.bind(this));
+		table.rows[table.rows.length-1].className += " data-advanced";
 
 		fncMandatoryAddressTypeNumber	= function()
 										{
@@ -154,12 +176,14 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 										};
 		this.elementGroups.service_address_type_number = Sale.GUIComponent.createTextInputGroup(this.getServiceAddressTypeNumber(), fncMandatoryAddressTypeNumber.bind(this), window._validate.integerPositive.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address Type Number', this.elementGroups.service_address_type_number);
+		table.rows[table.rows.length-1].className += " data-advanced";
 		
 		Event.observe(this.elementGroups.service_address_type_number.inputs[0], 'change', this.changeServiceAddressTypeNumber.bind(this));
 		Event.observe(this.elementGroups.service_address_type_number.inputs[0], 'keyup', this.changeServiceAddressTypeNumber.bind(this));
 		
 		this.elementGroups.service_address_type_suffix = Sale.GUIComponent.createTextInputGroup(this.getServiceAddressTypeSuffix());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address Type Suffix', this.elementGroups.service_address_type_suffix);
+		table.rows[table.rows.length-1].className += " data-advanced";
 		
 		fncStreetNumberMandatory	= function()
 									{
@@ -167,19 +191,29 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 									}
 		this.elementGroups.service_street_number_start = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetNumberStart(), fncStreetNumberMandatory.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Number Start', this.elementGroups.service_street_number_start);
+		var cell = table.rows[table.rows.length-1].cells[0];
+		cell.innerHTML = "";
+		cell.appendChild(document.createTextNode('Street Number'));
+		var span = document.createElement('span');
+		span.className = 'data-advanced';
+		cell.appendChild(span);
+		cell.appendChild(document.createTextNode(':'));
+		span.appendChild(document.createTextNode(' Start'));
 
 		this.elementGroups.service_street_number_end = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetNumberEnd());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Number End', this.elementGroups.service_street_number_end);
+		table.rows[table.rows.length-1].className += " data-advanced";
 
 		this.elementGroups.service_street_number_suffix = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetNumberSuffix());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Number Suffix', this.elementGroups.service_street_number_suffix);
+		table.rows[table.rows.length-1].className += " data-advanced";
 
-		fncStreeNameMandatory	= function()
-								{
-									return !(Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_property_name) && this.elementGroups.service_property_name.isValid());
-								}
-		this.elementGroups.service_street_name = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetName(), fncStreeNameMandatory.bind(this));
+		fncStreetNameMandatory	= function(){return !(Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_property_name));};
+		fncStreetNameChange		= function(){this.elementGroups.service_property_name.isValid();};
+		this.elementGroups.service_street_name = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetName(), fncStreetNameMandatory.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Name', this.elementGroups.service_street_name);
+		Element.observe(this.elementGroups.service_street_name.inputs[0], 'change', fncStreetNameChange.bind(this));
+		Element.observe(this.elementGroups.service_street_name.inputs[0], 'keyup', fncStreetNameChange.bind(this));
 
 		this.elementGroups.landline_service_street_type_id = Sale.GUIComponent.createDropDown(
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineServiceStreetType.id, 
@@ -192,16 +226,18 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineServiceStreetTypeSuffix.description, 
 			this.getLandlineServiceStreetTypeSuffixId());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Type Suffix', this.elementGroups.landline_service_street_type_suffix_id);
+		table.rows[table.rows.length-1].className += " data-advanced";
 
-		fncPropertyNameMandatory	= function()
-								{
-									return !(Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_name) && this.elementGroups.service_street_name.isValid());
-								}
+		fncPropertyNameMandatory	= function(){return !(Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_name));};
+		fncPropertyNameChange		= function(){this.elementGroups.service_street_name.isValid();};
 		this.elementGroups.service_property_name = Sale.GUIComponent.createTextInputGroup(this.getServicePropertyName(), fncPropertyNameMandatory.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Property Name', this.elementGroups.service_property_name);
+		Element.observe(this.elementGroups.service_property_name.inputs[0], 'change', fncPropertyNameChange.bind(this));
+		Element.observe(this.elementGroups.service_property_name.inputs[0], 'keyup', fncPropertyNameChange.bind(this));
+		table.rows[table.rows.length-1].className += " data-advanced";
 		
 		this.elementGroups.service_locality = Sale.GUIComponent.createTextInputGroup(this.getServiceLocality(), true);
-		Sale.GUIComponent.appendElementGroupToTable(table, 'Locality', this.elementGroups.service_locality);
+		Sale.GUIComponent.appendElementGroupToTable(table, 'Suburb', this.elementGroups.service_locality);
 		
 		this.elementGroups.service_postcode = Sale.GUIComponent.createTextInputGroup(this.getServicePostcode(), true, window._validate.postcode.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Postcode', this.elementGroups.service_postcode);

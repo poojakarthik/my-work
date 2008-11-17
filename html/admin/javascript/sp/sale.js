@@ -1072,6 +1072,7 @@ Object.extend(Sale.prototype, {
 	// Validates the details client side and then submits the details to the server for validation
 	submit: function()
 	{
+		window.scroll(0,0);
 		if (this.isValid())
 		{
 			document.body.className = document.body.originalClassName + " data-display";
@@ -1089,13 +1090,16 @@ Object.extend(Sale.prototype, {
 	
 	_submitOK: function()
 	{
+		window.scroll(0,0);
 		$ID('submit-button-panel').style.display = 'none';
 		$ID('commit-button-panel').style.display = 'inline';
 		$ID('after-commit-button-panel').style.display = 'none';
+		alert("Please check that all details are correct and then click 'Commit' to save or 'Edit' to make corrections.");
 	},
 	
 	_submitError: function($return)
 	{
+		window.scroll(0,0);
 		document.body.className = document.body.originalClassName + " data-entry";
 		$ID('submit-button-panel').style.display = 'inline';
 		$ID('commit-button-panel').style.display = 'none';
@@ -1106,6 +1110,7 @@ Object.extend(Sale.prototype, {
 	// Confirms the sale and submits the details to the server to be saved
 	commit: function()
 	{
+		window.scroll(0,0);
 		document.body.className = document.body.originalClassName + " data-display";
 		$ID('submit-button-panel').style.display = 'none';
 		$ID('commit-button-panel').style.display = 'none';
@@ -1116,6 +1121,7 @@ Object.extend(Sale.prototype, {
 	
 	cancel: function()
 	{
+		window.scroll(0,0);
 		document.body.className = document.body.originalClassName + " data-entry";
 		$ID('submit-button-panel').style.display = 'inline';
 		$ID('commit-button-panel').style.display = 'none';
@@ -1124,10 +1130,12 @@ Object.extend(Sale.prototype, {
 	
 	_commitOK: function($saleId)
 	{
+		window.scroll(0,0);
 		$ID('submit-button-panel').style.display = 'none';
 		$ID('commit-button-panel').style.display = 'none';
 		$ID('after-commit-button-panel').style.display = 'inline';
 		alert("The sale has been saved. The reference number for this sale is " + $saleId + ".");
+		document.location = document.location.toString().replace(/\/portal\/.*/i, '/portal/sales/view/last');
 	},
 	
 	isNewSale: function()
@@ -1220,7 +1228,7 @@ Object.extend(Sale.prototype, {
 		+ '</div>' 
 		+ '<div class="MediumSpace"></div>'
 		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Submit" onclick="Sale.getInstance().submit()"></span>'
-		+ '<span id="commit-button-panel"><input type="button" value="Commit" onclick="Sale.getInstance().commit()">&nbsp;&nbsp;<input type="button" value="Cancel" onclick="Sale.getInstance().cancel()"></span>'
+		+ '<span id="commit-button-panel"><input type="button" value="Commit" onclick="Sale.getInstance().commit()">&nbsp;&nbsp;<input type="button" value="Edit" onclick="Sale.getInstance().cancel()"></span>'
 		+ '<span id="after-commit-button-panel"><input type="button" value="Add New Sale" onclick="document.location.reload()"></span>'
 		
 		
@@ -1497,6 +1505,11 @@ Object.extend(Sale.prototype, {
 	
 	
 	
+	
+	getId: function()
+	{
+		return this.object.id;
+	},
 	
 	setSaleTypeId: function(sale_type_id)
 	{
@@ -2483,7 +2496,7 @@ Object.extend(Sale.Contact.prototype, {
 		
 		Event.observe(this.elementGroups.primaryContactMethod.inputs[0], 'change', this.changePrimaryContactMethod.bind(this), true);	
 		
-		Sale.GUIComponent.appendElementGroupToTable(table, 'Preferred Contact', this.elementGroups.primaryContactMethod);
+		Sale.GUIComponent.appendElementGroupToTable(table, 'Preferred Contact Method', this.elementGroups.primaryContactMethod);
 	},
 	
 	changePrimaryContactMethod: function()

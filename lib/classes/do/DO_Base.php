@@ -31,7 +31,7 @@ abstract class DO_Base
 
 	abstract function getPropertyLabel($property);
 
-	abstract function getPropertyDataSourceName($property);
+	abstract static function getPropertyDataSourceName($property);
 
 	public function __construct($initialProperties=null, $fromDataSource=false)
 	{

@@ -36,7 +36,7 @@ Object.extend(Sale.ProductTypeModule.Service_Mobile.prototype, {
 	buildGUI: function()
 	{
 		var id = 'service-mobile-table-' + (Sale.ProductTypeModule.Service_Mobile.unique++);
-		this.detailsContainer.innerHTML = '<table id="'+id+'"></table>';
+		this.detailsContainer.innerHTML = '<table id="'+id+'" class="data-table"></table>';
 
 		var table = $ID(id);
 

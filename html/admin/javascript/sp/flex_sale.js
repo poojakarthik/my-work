@@ -62,9 +62,9 @@ Object.extend(Sale.prototype, {
 			+ '<div id="PaymentDetails" style="display: none;"></div>' 
 		+ '</div>' 
 		+ '<div class="MediumSpace"></div>'
-		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Submit" onclick="Sale.getInstance().submit()"></span>'
-		+ '<span id="commit-button-panel"><input type="button" value="Commit" onclick="Sale.getInstance().commit()">&nbsp;&nbsp;<input type="button" value="Cancel" onclick="Sale.getInstance().cancel()"></span>'
-		+ '<span id="after-commit-button-panel"><input type="button" value="Amend Sale" onclick="document.location.reload()">&nbsp;&nbsp;<input type="button" value="Cancel Sale" onclick="document.location.reload()">&nbsp;&nbsp;<input type="button" value="Reject Sale" onclick="document.location.reload()">&nbsp;&nbsp;<input type="button" value="Verify Sale" onclick="document.location.reload()"></span>'
+		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Cancel" onclick="Sale.getInstance().cancelAmend()">&nbsp;&nbsp;<input type="button" value="Submit" onclick="Sale.getInstance().submit()"></span>'
+		+ '<span id="commit-button-panel"><input type="button" value="Commit" onclick="Sale.getInstance().commit()">&nbsp;&nbsp;<input type="button" value="Edit" onclick="Sale.getInstance().cancel()"></span>'
+		+ '<span id="after-commit-button-panel"><input type="button" value="Amend Sale" onclick="Sale.getInstance().amendSale()">&nbsp;&nbsp;<input type="button" value="Cancel Sale" onclick="Sale.getInstance().cancelSale()">&nbsp;&nbsp;<input type="button" value="Reject Sale" onclick="Sale.getInstance().rejectSale()">&nbsp;&nbsp;<input type="button" value="Verify Sale" onclick="Sale.getInstance().verifySale()"></span>'
 		
 		
 		// WIP: This is for debug purposes only!!! Remove it before deployment!
@@ -74,8 +74,8 @@ Object.extend(Sale.prototype, {
 		+ '';
 		
 		$ID('commit-button-panel').style.display = 'none';
-		$ID('submit-button-panel').style.display = 'inline';
-		$ID('after-commit-button-panel').style.display = 'none';
+		$ID('submit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'inline';
 		
 		var saleAccount = this.getSaleAccount();
 		saleAccount.setContainers($ID('account_details_holder'));
@@ -93,6 +93,85 @@ Object.extend(Sale.prototype, {
 		}
 		
 		Event.observe($ID('sale_product_type_list'), 'change', this.changeProductType.bind(this), true);
+	},
+	
+	cancelSale: function()
+	{
+		this._remoteSaleFunctionCall('cancelSale', this._cancelOK);
+	},
+	
+	_cancelOK: function()
+	{
+		window.scroll(0,0);
+		alert("The sale has been cancelled.");
+		document.location = document.location.toString().replace(/\/Sales\/.*/i, '/Sales/ListSales/Last');
+	},
+	
+	_commitOK: function($saleId)
+	{
+		window.scroll(0,0);
+		$ID('submit-button-panel').style.display = 'none';
+		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'inline';
+		alert("The sale has been saved. The reference number for this sale is " + $saleId + ".");
+		document.location = document.location.toString().replace(/\/Sales\/.*/i, '/Sales/ListSales/Last');
+	},
+	
+	rejectSale: function()
+	{
+		this._remoteSaleFunctionCall('rejectSale', this._rejectOK);
+	},
+	
+	_rejectOK: function()
+	{
+		window.scroll(0,0);
+		alert("The sale has been rejected.");
+		document.location = document.location.toString().replace(/\/Sales\/.*/i, '/Sales/ListSales/Last');
+	},
+	
+	verifySale: function()
+	{
+		this._remoteSaleFunctionCall('verifySale', this._verifyOK);
+	},
+	
+	_verifyOK: function()
+	{
+		window.scroll(0,0);
+		alert("The sale has been verified.");
+		document.location = document.location.toString().replace(/\/Sales\/.*/i, '/Sales/ListSales/Last');
+	},
+	
+	_remoteSaleFunctionCall: function($remoteFunName, $okFunc)
+	{
+		window.scroll(0,0);
+		$ID('submit-button-panel').style.display = 'none';
+		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'none';
+		var remote = SalesPortal.getRemoteFunction('Sale', $remoteFunName, $okFunc.bind(this), this._processError.bind(this));
+		remote(Sale.getInstance().getId());
+	},
+	
+	_processError: function($return)
+	{
+		window.scroll(0,0);
+		$ID('submit-button-panel').style.display = 'none';
+		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'inline';
+		alert($return['ERROR']);
+	},
+	
+	amendSale: function()
+	{
+		this.cancel();
+	},
+	
+	cancelAmend: function()
+	{
+		window.scroll(0,0);
+		document.body.className = document.body.originalClassName + " data-display";
+		$ID('submit-button-panel').style.display = 'none';
+		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'inline';
 	}
 });
 

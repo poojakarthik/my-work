@@ -605,6 +605,11 @@ class DO_Field
 
 		switch ($this->getInternalType())
 		{
+				case 'integer':
+				case 'float':
+				
+					return "if (is_string(\$value) && trim(\$value) === '') \$value = null;";
+				
 				case 'string':
 				
 					switch ($this->getExternalType())
@@ -612,7 +617,7 @@ class DO_Field
 							
 						case 'string':
 							
-							if ($nullable) return "if (trim(\$value) == '') \$value = null;";							
+							if ($nullable) return "if (trim(\$value) === '') \$value = null;";							
 					
 					}
 			
@@ -1155,12 +1160,6 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		}
 	}
 
-	public function getPropertyDataSourceName($propertyName)
-	{
-		$dsNames = $this->getPropertyDataSourceMappings();
-		return $dsNames[$propertyName];
-	}
-
 	public static function getPropertyDataSourceMappings()
 	{
 		return array('.$strPropSrcMapping.');
@@ -1273,6 +1272,12 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 	public function getDoBaseFunctions($obClassName)
 	{
 		return '
+	public static function getPropertyDataSourceName($propertyName)
+	{
+		$dsNames = '.$obClassName.'::getPropertyDataSourceMappings();
+		return $dsNames[$propertyName];
+	}
+
 	protected static function whereArrayToString($arrWhere)
 	{
 		$arrDsProps = '.$obClassName.'::getDataSourcePropertyMappings();
