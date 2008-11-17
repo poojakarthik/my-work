@@ -798,21 +798,21 @@
 	 *
 	 * @method
 	 */
-	 function RunDirectDebits($bolForce = FALSE)
+	 function RunDirectDebits($bolForce=FALSE, $bolTestMode=FALSE)
 	 {
 	 	CliEcho("\n[ PERFORMING DIRECT DEBITS ]\n");
 	 	
 	 	$intRunDate	= time();
 	 	
 	 	// Are the Direct Debits due?
+		 CliEcho("* Retrieving list of CustomerGroups...");
 	 	if ($bolForce !== TRUE)
-	 	{
+	 	{		 	
 	 		// Retrieve Direct Debit Scheduling Details, and determine if today is the Invoice Due Date
-	 		$selSchedule	= new StatementSelect(	"InvoiceRun LEFT JOIN automatic_invoice_run_event ON InvoiceRun.Id = automatic_invoice_run_event.invoice_run_id",
-														"InvoiceRun.Id AS Id, InvoiceRun.Id AS invoice_run_id, InvoiceRun.BillingDate, automatic_invoice_run_event.scheduled_datetime, automatic_invoice_run_event.actioned_datetime, automatic_invoice_run_event.id AS id",
+	 		$selSchedule	= new StatementSelect(	"InvoiceRun JOIN automatic_invoice_run_event ON InvoiceRun.Id = automatic_invoice_run_event.invoice_run_id",
+														"InvoiceRun.Id AS Id, InvoiceRun.Id AS invoice_run_id, InvoiceRun.BillingDate, automatic_invoice_run_event.scheduled_datetime, automatic_invoice_run_event.actioned_datetime, automatic_invoice_run_event.id AS id, InvoiceRun.customer_group_id",
 														"scheduled_datetime IS NOT NULL AND actioned_datetime IS NULL AND automatic_invoice_action_id = ". AUTOMATIC_INVOICE_ACTION_DIRECT_DEBIT,
-														"InvoiceRun.BillingDate DESC, automatic_invoice_run_event.id DESC",
-														"1");
+														"InvoiceRun.BillingDate DESC, automatic_invoice_run_event.id DESC");
 			
 			$arrUpdateCols	= Array();
 			$arrUpdateCols['actioned_datetime']	= NULL;
@@ -830,95 +830,121 @@
 	 				return Array('Success' => FALSE, 'Description' => "ERROR: Direct Debits have not been scheduled!");
 	 			}
 	 		}
-	 		$arrSchedule	= $selSchedule->Fetch();
 	 		
-	 		// Determine Direct Debit Payment Date
-	 		if (strtotime($arrSchedule['scheduled_datetime']) > $intRunDate)
+	 		while ($arrSchedule = $selSchedule->Fetch())
 	 		{
-	 			// We haven't reached the Direct Debit date yet
-	 			return Array('Success' => TRUE, 'Description' => "Direct Debits are not due yet, expected on {$arrSchedule['scheduled_datetime']}");
-	 		}
-	 		elseif ($arrSchedule['actioned_datetime'] !== NULL)
-	 		{
-	 			// Direct Debits have already been run for this InvoiceRun
-	 			return Array('Success' => TRUE, 'Description' => "Direct Debits have already run for InvoiceRun {$arrSchedule['invoice_run_id']}, on {$arrSchedule['actioned_datetime']}");
+		 		CliEcho("\t+ ".GetConstantDescription($arrSchedule['customer_group_id'], 'CustomerGroup'));
+		 		
+		 		// Determine Direct Debit Payment Date
+		 		if (strtotime($arrSchedule['scheduled_datetime']) > $intRunDate)
+		 		{
+		 			// We haven't reached the Direct Debit date yet
+		 			CliEcho("\t\t! Direct Debits are not due yet, expected on {$arrSchedule['scheduled_datetime']}");
+		 		}
+		 		elseif ($arrSchedule['actioned_datetime'] !== NULL)
+		 		{
+		 			// Direct Debits have already been run for this InvoiceRun
+		 			CliEcho("\t\t! Direct Debits have already run for InvoiceRun {$arrSchedule['invoice_run_id']}, on {$arrSchedule['actioned_datetime']}");
+		 		}
 	 		}
 	 	}
-	 	
-		// Retrieve Direct Debit Minimum
-		// ... not needed now that we can join onto the payment_terms table for the customer group
-
+	 	else
+	 	{
+	 		// Force Mode -- Get all Customer Groups
+	 		$selCustomerGroups	= new StatementSelect("CustomerGroup", "Id AS customer_group_id", "1");
+	 		if ($selCustomerGroups->Execute() === FALSE)
+	 		{
+	 			return Array('Success' => FALSE, 'Description' => "DB ERROR: ".$selCustomerGroups->Error());
+	 		}
+	 		$arrCustomerGroups	= $selCustomerGroups->FetchAll();
+	 		foreach ($arrCustomerGroups as $arrCustomerGroup)
+	 		{
+		 		CliEcho("\t+ ".GetConstantDescription($arrCustomerGroups['customer_group_id'], 'CustomerGroup'));
+	 		}
+	 	}
+		
+		CliEcho("\n* Processing Customer Groups...");
 	 	$selAccountDebts	= new StatementSelect("(Invoice JOIN Account ON Account.Id = Invoice.Account) JOIN payment_terms ON payment_terms.customer_group_id = Account.CustomerGroup", "Account, SUM(Invoice.Balance) AS Charge, direct_debit_minimum", "CustomerGroup = <CustomerGroup> AND Account.BillingType = <BillingType> AND Account.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.") AND payment_terms.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = <CustomerGroup>)", "Account.Id", NULL, "Account.Id HAVING Charge >= payment_terms.direct_debit_minimum");
 		
-	 	// Process Direct Debits for each Billing Type
+	 	// Process Direct Debits for each Customer Group
+	 	$arrReturn	= Array();
 	 	$intAccountsCharged	= 0;
-	 	foreach ($this->_arrDirectDebitModules as $intCustomerGroup=>&$arrBillingTypes)
+	 	foreach ($arrCustomerGroups as $arrCustomerGroup)
 	 	{
-		 	CliEcho(" * ".GetConstantDescription($intCustomerGroup, 'CustomerGroup'));
+		 	$intCustomerGroup	= $arrCustomerGroup['customer_group_id'];
+		 	CliEcho("\t* ".GetConstantDescription($intCustomerGroup, 'CustomerGroup'));
 		 	
-		 	foreach ($arrBillingTypes as $intBillingType=>&$modModule)
+		 	if (array_key_exists($intCustomerGroup, $this->_arrDirectDebitModules))
 		 	{
-		 		// HACKHACKHACK: Ensure we're only trying to Direct Debit people who should be
-		 		if ($intBillingType === BILLING_TYPE_ACCOUNT)
-		 		{
-		 			// Account Billing is non-Direct Debit, so ignore
-		 			continue;
-		 		}
-		 		
-		 		CliEcho("\t * ".GetConstantDescription($intBillingType, 'BillingType'));
-		 		
-			 	// Get list of AccountGroups and debts to settle
-			 	if ($selAccountDebts->Execute(Array('CustomerGroup' => $intCustomerGroup, 'BillingType' => $intBillingType)))
+			 	// ... and for each Billing Type
+			 	foreach ($this->_arrDirectDebitModules[$intCustomerGroup] as $intBillingType=>&$modModule)
 			 	{
-			 		while ($arrAccount	= $selAccountDebts->Fetch())
+			 		// HACKHACKHACK: Ensure we're only trying to Direct Debit people who should be
+			 		if ($intBillingType === BILLING_TYPE_ACCOUNT)
 			 		{
-				 		CliEcho("\t\t + Debiting Account #{$arrAccount['Account']}...\t\t\t", FALSE);
-				 		
-				 		// Run the Module
-				 		$arrRunResult	= $modModule->Output($arrAccount);
-				 		if ($arrRunResult['Success'] === TRUE || $arrRunResult['Pass'] === TRUE || $arrRunResult === TRUE)
-				 		{
-				 			// Success
-				 			CliEcho("[   OK   ]");
-				 		}
-				 		else
-				 		{
-				 			// An Error Occurred
-				 			CliEcho("[ FAILED ]");
-				 			CliEcho("\t\t\t -- {$arrRunResult['Message']}{$arrRunResult['Description']}");
-				 		}
+			 			// Account Billing is non-Direct Debit, so ignore
+			 			continue;
 			 		}
 			 		
-			 		// Export/Send the module
-		 			$arrExportResult	= $modModule->Export();
-			 		if ($arrExportResult['Pass'] === TRUE)
-			 		{
-				 		if (is_int($arrExportResult['AccountsCharged']))
+			 		CliEcho("\t\t* ".GetConstantDescription($intBillingType, 'BillingType'));
+			 		
+				 	// Get list of AccountGroups and debts to settle
+				 	if ($selAccountDebts->Execute(Array('CustomerGroup' => $intCustomerGroup, 'BillingType' => $intBillingType)))
+				 	{
+				 		while ($arrAccount	= $selAccountDebts->Fetch())
 				 		{
-				 			// Success, Charges Sent
-				 			$intAccountsCharged	+= $arrExportResult['AccountsCharged'];
+					 		CliEcho("\t\t\t+ Debiting Account #{$arrAccount['Account']}...\t\t\t", FALSE);
+					 		
+					 		// Run the Module
+					 		$arrRunResult	= $modModule->Output($arrAccount);
+					 		if ($arrRunResult['Success'] === TRUE || $arrRunResult['Pass'] === TRUE || $arrRunResult === TRUE)
+					 		{
+					 			// Success
+					 			CliEcho("[   OK   ]");
+					 		}
+					 		else
+					 		{
+					 			// An Error Occurred
+					 			CliEcho("[ FAILED ]");
+					 			CliEcho("\t\t\t\t! {$arrRunResult['Message']}{$arrRunResult['Description']}");
+					 		}
+				 		}
+				 		
+				 		// Export/Send the module
+			 			$arrExportResult	= $modModule->Export();
+				 		if ($arrExportResult['Pass'] === TRUE)
+				 		{
+					 		if (is_int($arrExportResult['AccountsCharged']))
+					 		{
+					 			// Success, Charges Sent
+					 			$intAccountsCharged	+= $arrExportResult['AccountsCharged'];
+					 		}
+					 		else
+					 		{
+					 			// Success, no Charges Sent (aka Failed for a sane reason)
+					 			// TODO -- should this ever happen?
+					 		}
 				 		}
 				 		else
 				 		{
-				 			// Success, no Charges Sent (aka Failed for a sane reason)
-				 			// TODO -- should this ever happen?
+				 			$arrReturn[]	= Array('Success' => FALSE, 'Description' => $arrExportResult['Description'], 'arrExportResult' => $arrExportResult);
 				 		}
-			 		}
-			 		else
-			 		{
-			 			return Array('Success' => FALSE, 'Description' => $arrExportResult['Description'], 'arrExportResult' => $arrExportResult);
-			 		}
+				 	}
+				 	elseif ($selAccountDebts->Error())
+				 	{
+				 		// An Error Occurred
+					 	$arrReturn[]	= Array('Success' => FALSE, 'Description' => "ERROR: \$selAccountDebts failed: ".$selAccountDebts->Error());
+				 	}
+				 	else
+				 	{
+				 		// No Matches
+				 		CliEcho("\t\t\t -- There were no Accounts to debit.");
+				 	}
 			 	}
-			 	elseif ($selAccountDebts->Error())
-			 	{
-			 		// An Error Occurred
-				 	return Array('Success' => FALSE, 'Description' => "ERROR: \$selAccountDebts failed: ".$selAccountDebts->Error());
-			 	}
-			 	else
-			 	{
-			 		// No Matches
-			 		CliEcho("\t\t -- There were no Accounts to debit.");
-			 	}
+		 	}
+		 	else
+		 	{
+		 		
 		 	}
 	 	}
 	 	CliEcho();
@@ -931,12 +957,13 @@
 			if ($ubiSchedule->Execute($arrSchedule) === FALSE)
 			{
 				// Error
-				return Array('Success' => FALSE, 'Description' => "ERROR: \$ubiSchedule failed: ".$ubiSchedule->Error());
+				$arrReturn[]	= Array('Success' => FALSE, 'Description' => "ERROR: \$ubiSchedule failed: ".$ubiSchedule->Error());
 			}
 		}
 	 	
 	 	// Everything appears to have run fine
-	 	return Array('Success' => TRUE, 'AccountsCharged' => $intAccountsCharged);
+	 	$arrReturn[]	= Array('Success' => TRUE, 'AccountsCharged' => $intAccountsCharged);
+	 	return $arrReturn;
 	 }
  }
 

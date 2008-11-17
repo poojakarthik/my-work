@@ -722,7 +722,7 @@
 		
 		if (PAYMENTS_DEBUG_MODE === TRUE)
 		{
-	 		$strEmailAddress	= "rich@voiptelsystems.com.au";
+	 		$strEmailAddress	= "rdavis@yellowbilling.com.au";
 		}
 		
 		// Send Email
@@ -770,7 +770,7 @@
 		
 		if (PAYMENTS_DEBUG_MODE === TRUE)
 		{
-	 		$strEmailAddress	= "rich@voiptelsystems.com.au";
+	 		$strEmailAddress	= "rdavis@yellowbilling.com.au";
 		}
 		
 		// Set content
