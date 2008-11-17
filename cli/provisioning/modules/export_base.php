@@ -568,9 +568,20 @@
  		{
 	 		// Update ProvisioningRequest records
 	 		$arrCols	= Array();
-	 		$arrCols['Status']		= REQUEST_STATUS_DELIVERED;
-	 		$arrCols['SentOn']		= new MySQLFunction("NOW()");
-	 		$arrCols['FileExport']	= $this->_intFileExport;
+	 		if ($mixResult['Pass'])
+	 		{
+		 		// File Delivered
+		 		$arrCols['Status']		= REQUEST_STATUS_DELIVERED;
+		 		$arrCols['SentOn']		= new MySQLFunction("NOW()");
+		 		$arrCols['FileExport']	= $this->_intFileExport;
+	 		}
+	 		else
+	 		{
+	 			// Delivery Failed -- Send in next file
+		 		$arrCols['Status']		= REQUEST_STATUS_WAITING;
+		 		$arrCols['SentOn']		= new MySQLFunction("NOW()");
+		 		$arrCols['FileExport']	= $this->_intFileExport;
+	 		}
 	 		$ubiRequest				= new StatementUpdateById("ProvisioningRequest", $arrCols);
 	 		foreach ($this->_arrFileContent as $arrRequest)
 	 		{
@@ -578,8 +589,15 @@
 	 			$ubiRequest->Execute($arrCols);
 	 		}
  		}
- 		 		
-		return Array('Pass' => TRUE, 'Description' => "File Successfully Delivered");
+ 		
+	 	if ($mixResult['Pass'])
+	 	{
+			return Array('Pass' => TRUE, 'Description' => "File Successfully Delivered");
+	 	}
+	 	else
+	 	{
+			return Array('Pass' => FALSE, 'Description' => "File Delivery Failed!");
+	 	}
 	 }
 	
 	
@@ -900,7 +918,7 @@
 	 		$mixResult	= $this->_Render();
 	 		if ($mixResult['Pass'])
 	 		{
-		 		// Update Requests & FileExport 
+		 		// Insert FileExport Record 
 		 		$mixResult	= $this->_UpdateDB();
 		 		if ($mixResult['Pass'])
 		 		{
