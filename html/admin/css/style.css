@@ -534,15 +534,15 @@ div.Title{
 	background-color:		#333333;
 	height:					20px;
 	width:					965px; 
-	text-indent:			30px;
+	text-indent:			10px;
 	font-weight:			bold;
 	padding:				0px;
 	margin:					0px;
 	text-align:				left;
 	padding-top:			5px;
-	background-image:		url('../img/template/salesfolder.png');
-	background-repeat:		no-repeat;
-	background-position:	5px 5px;
+	background-image:		url('../img/template/transparent-bg.png');
+	background-repeat:		repeat;
+	background-position:	0px 0px;
 }
 
 div.PartTitle{
@@ -550,7 +550,7 @@ div.PartTitle{
 	background-color:		#333333;
 	height:					20px;
 	width:					470px; 
-	text-indent:			30px;
+	text-indent:			10px;
 	font-weight:			bold;
 	padding:				0px;
 	margin:					0px;
@@ -559,9 +559,9 @@ div.PartTitle{
 	padding-top:			5px;
 	padding-bottom:			0px;
 	text-align:				left;
-	background-image:		url('../img/template/salesfolder.png');
-	background-repeat:		no-repeat;
-	background-position:	5px 5px;
+	background-image:		url('../img/template/transparent-bg.png');
+	background-repeat:		repeat;
+	background-position:	0px 0px;
 }
 #account_details_holder
 {
@@ -611,4 +611,10 @@ div.PartTitle{
 .maximum-area-body
 {
 	padding-bottom:			15px;
+}
+.Page h3
+{
+	color:					#006599;
+	font-weight:			bold;
+	font-size:				18px;
 }
