@@ -321,6 +321,7 @@
 	 							$strParse	= substr($strDate, -4, 4);
 	 							$strParse	.= substr($strDate, 4, 2);
 	 							$strParse	.= substr($strDate, 0, 2);
+	 							break;
 	 					}
 	 					
 	 					// Is it a valid date?
