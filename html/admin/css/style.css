@@ -540,9 +540,6 @@ div.Title{
 	margin:					0px;
 	text-align:				left;
 	padding-top:			5px;
-	background-image:		url('../img/template/transparent-bg.png');
-	background-repeat:		repeat;
-	background-position:	0px 0px;
 }
 
 div.PartTitle{
@@ -559,9 +556,6 @@ div.PartTitle{
 	padding-top:			5px;
 	padding-bottom:			0px;
 	text-align:				left;
-	background-image:		url('../img/template/transparent-bg.png');
-	background-repeat:		repeat;
-	background-position:	0px 0px;
 }
 #account_details_holder
 {
@@ -611,10 +605,4 @@ div.PartTitle{
 .maximum-area-body
 {
 	padding-bottom:			15px;
-}
-.Page h3
-{
-	color:					#006599;
-	font-weight:			bold;
-	font-size:				18px;
 }
