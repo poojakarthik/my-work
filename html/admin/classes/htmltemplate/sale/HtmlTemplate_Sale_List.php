@@ -102,6 +102,9 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				$strSaleStatus		= htmlspecialchars($arrSaleStatuses[$objSale->saleStatusId]->name);
 				$strSaleType		= htmlspecialchars($arrSaleTypes[$objSale->saleTypeId]->name);
 				
+				$strSaleStatusCssClass = "sale-status-". strtolower($arrSaleStatuses[$objSale->saleStatusId]->name);
+				$strSaleStatus = "<span class='$strSaleStatusCssClass'>$strSaleStatus</span>";
+				
 				// $arrSaleStatusHistory should always have just 1 record in it
 				$intChangedOn = strtotime($arrSaleStatusHistory[0]->changedOn);
 				$strChangedOnDate = date("d-m-Y", $intChangedOn);

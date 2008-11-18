@@ -637,3 +637,26 @@ div.tab-collection div.tab-body-container
 	border-top: none;
 	background-color: #CCC;
 }
+
+/*************************** Sale Status classes ******************************/
+.sale-item-status-submitted,
+.sale-item-status-verified,
+.sale-item-status-ready-for-provisioning,
+.sale-item-status-provisioned,
+.sale-status-submitted,
+.sale-status-verified,
+.sale-status-ready-for-provisioning,
+.sale-status-provisioned
+{
+	color: #060;
+}
+
+.sale-item-status-manual-intervention,
+.sale-item-status-rejected,
+.sale-item-status-cancelled,
+.sale-status-manual-intervention,
+.sale-status-rejected,
+.sale-status-cancelled
+{
+	color: #f00;
+}
