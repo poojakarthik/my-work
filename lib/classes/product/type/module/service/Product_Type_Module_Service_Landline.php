@@ -8,7 +8,8 @@ class Product_Type_Module_Service_Landline extends Product_Type_Module
 		$data = new stdClass();
 
 		$data->landlineType = $this->_toKeyArray(DO_Sales_LandlineType::listAll());
-		$data->landlineServiceStreetType = $this->_toKeyArray(DO_Sales_LandlineServiceStreetType::listAll());
+		
+		$data->landlineServiceStreetType = $this->_toKeyArray(array_merge(DO_Sales_LandlineServiceStreetType::listCommonTypes(), DO_Sales_LandlineServiceStreetType::listAll()));
 		$data->landlineServiceAddressType = $this->_toKeyArray(DO_Sales_LandlineServiceAddressType::listAll(), array('id', 'description', 'landlineServiceAddressTypeCategoryId'));
 		$data->landlineServiceStreetTypeSuffix = $this->_toKeyArray(DO_Sales_LandlineServiceStreetTypeSuffix::listAll());
 		$data->landlineServiceState = $this->_toKeyArray(DO_Sales_LandlineServiceState::listAll());

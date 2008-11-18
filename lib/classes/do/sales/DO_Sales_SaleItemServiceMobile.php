@@ -28,7 +28,7 @@ class DO_Sales_SaleItemServiceMobile extends DO_Sales_Base_SaleItemServiceMobile
 				return true;
 			
 			case 'fnn':
-				if ($value == null) 
+				if ($value == null || $value == '') 
 				{
 					// Required for Existing Post-Paid (3) and Existing Pre-Paid (2)
 					if ($this->serviceMobileOriginId == 2 || $this->serviceMobileOriginId == 3) // WIP - Code this properly!!!

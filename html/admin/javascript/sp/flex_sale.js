@@ -63,7 +63,6 @@ Object.extend(Sale.prototype, {
 		+ '<div class="Page">'
 				+ '<div><TABLE id="bill-details" cellpadding="0" cellspacing="0" border="0" class="data-table"></TABLE></div>' 
 			+ '<table cellpadding="0" cellspacing="0" border="0" id="direct-debit-detail-table" class="data-table read-only"></table>' 
-			+ '<div id="PaymentDetails" style="display: none;"></div>' 
 		+ '</div>' 
 		+ '<div class="MediumSpace"></div>'
 		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Cancel" onclick="Sale.getInstance().cancelAmend()">&nbsp;&nbsp;<input type="button" value="Submit" onclick="Sale.getInstance().submit()"></span>'

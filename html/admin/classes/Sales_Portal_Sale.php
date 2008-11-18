@@ -45,7 +45,8 @@ class Sales_Portal_Sale
 		// Sale can only be moved to verified if it is :-
 		// submitted
 		return array_search(intval($sale->saleStatusId), 
-							array(	DO_Sales_SaleStatus::SUBMITTED), true) !== false;
+							array(	DO_Sales_SaleStatus::SUBMITTED, 
+									DO_Sales_SaleStatus::MANUAL_INTERVENTION), true) !== false;
 		
 	}
 	
