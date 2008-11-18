@@ -1,8 +1,8 @@
 <?php
 
-class Sales_Portal_Sale extends DO_Sales_Sale
+class Sales_Portal_Sale
 {
-	public function canBeCancelled()
+	public static function canBeCancelled(DO_Sales_Sale $sale)
 	{
 		// Sale can only be moved to cancelled if it is :-
 		// submitted
@@ -11,30 +11,41 @@ class Sales_Portal_Sale extends DO_Sales_Sale
 		// provisioned
 		// verified
 		// i.e. pretty much any state except 'ready for provisioning'
-		return array_search($this->saleStatusId, 
+		return array_search(intval($sale->saleStatusId), 
 							array(	DO_Sales_SaleStatus::SUBMITTED, 
 									DO_Sales_SaleStatus::REJECTED, 
 									DO_Sales_SaleStatus::MANUAL_INTERVENTION, 
 									DO_Sales_SaleStatus::PROVISIONED, 
-									DO_Sales_SaleStatus::VERIFIED)) !== false;
+									DO_Sales_SaleStatus::VERIFIED), true) !== false;
 		
 	}
 	
-	public function canBeRejected()
+	public static function canBeAmended(DO_Sales_Sale $sale)
+	{
+		// Sale can only be amended if it is :-
+		// submitted 
+		// manual intervention
+		return array_search(intval($sale->saleStatusId), 
+							array(	DO_Sales_SaleStatus::SUBMITTED, 
+									DO_Sales_SaleStatus::MANUAL_INTERVENTION), true) !== false;
+		
+	}
+	
+	public static function canBeRejected(DO_Sales_Sale $sale)
 	{
 		// Sale can only be moved to rejected if it is :-
 		// submitted
-		return array_search($this->saleStatusId, 
-							array(	DO_Sales_SaleStatus::SUBMITTED)) !== false;
+		return array_search(intval($sale->saleStatusId), 
+							array(	DO_Sales_SaleStatus::SUBMITTED), true) !== false;
 		
 	}
 	
-	public function canBeVerified()
+	public static function canBeVerified(DO_Sales_Sale $sale)
 	{
 		// Sale can only be moved to verified if it is :-
 		// submitted
-		return array_search($this->saleStatusId, 
-							array(	DO_Sales_SaleStatus::SUBMITTED)) !== false;
+		return array_search(intval($sale->saleStatusId), 
+							array(	DO_Sales_SaleStatus::SUBMITTED), true) !== false;
 		
 	}
 	

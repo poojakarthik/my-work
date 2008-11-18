@@ -19,22 +19,22 @@ class DO_Sales_SaleItem extends DO_Sales_Base_SaleItem
 		return $return;
 	}
 	
-	public function verify()
+	public function verify($dealerId)
 	{
 		$this->saleItemStatusId = DO_Sales_SaleItemStatus::VERIFIED;
-		$this->save();
+		$this->save($dealerId, 'Item verified');
 	}
 	
-	public function cancel()
+	public function cancel($dealerId)
 	{
 		$this->saleItemStatusId = DO_Sales_SaleItemStatus::CANCELLED;
-		$this->save();
+		$this->save($dealerId, 'Item cancelled');
 	}
 	
-	public function reject()
+	public function reject($dealerId)
 	{
 		$this->saleItemStatusId = DO_Sales_SaleItemStatus::REJECTED;
-		$this->save();
+		$this->save($dealerId, 'Item rejected');
 	}
 }
 

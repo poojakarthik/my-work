@@ -1,8 +1,17 @@
+Sale.canCancelSale = false;
+Sale.canAmendSale = false;
+Sale.canVerifySale = false;
+Sale.canRejectSale = false;
 
 Object.extend(Sale.prototype, {
 
 	buildGUI: function()
 	{
+		var buttons = (Sale.canAmendSale ? '&nbsp;<input type="button" value="Amend Sale" onclick="Sale.getInstance().amendSale()">&nbsp;' : '') +
+					  (Sale.canCancelSale ? '&nbsp;<input type="button" value="Cancel Sale" onclick="Sale.getInstance().cancelSale()">&nbsp;' : '') +
+					  (Sale.canRejectSale ? '&nbsp;<input type="button" value="Reject Sale" onclick="Sale.getInstance().rejectSale()">&nbsp;' : '') +
+					  (Sale.canVerifySale ? '&nbsp;<input type="button" value="Verify Sale" onclick="Sale.getInstance().verifySale()">&nbsp;' : '');
+		
 		// Add contents to this.detailsContainer
 		this.detailsContainer.innerHTML = '' 
 		+ '<div class="MediumSpace"></div>' 
@@ -64,7 +73,8 @@ Object.extend(Sale.prototype, {
 		+ '<div class="MediumSpace"></div>'
 		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Cancel" onclick="Sale.getInstance().cancelAmend()">&nbsp;&nbsp;<input type="button" value="Submit" onclick="Sale.getInstance().submit()"></span>'
 		+ '<span id="commit-button-panel"><input type="button" value="Commit" onclick="Sale.getInstance().commit()">&nbsp;&nbsp;<input type="button" value="Edit" onclick="Sale.getInstance().cancel()"></span>'
-		+ '<span id="after-commit-button-panel"><input type="button" value="Amend Sale" onclick="Sale.getInstance().amendSale()">&nbsp;&nbsp;<input type="button" value="Cancel Sale" onclick="Sale.getInstance().cancelSale()">&nbsp;&nbsp;<input type="button" value="Reject Sale" onclick="Sale.getInstance().rejectSale()">&nbsp;&nbsp;<input type="button" value="Verify Sale" onclick="Sale.getInstance().verifySale()"></span>'
+		
+		+ '<span id="after-commit-button-panel">' + buttons + '</span>'
 		
 		
 		// WIP: This is for debug purposes only!!! Remove it before deployment!

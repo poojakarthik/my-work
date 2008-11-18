@@ -31,6 +31,8 @@ class JSON_Handler_Sale extends JSON_Handler
 			throw new Exception("You do not have sufficient permissions to perform that action.");
 		}
 
+		// WIP - MAKE SURE THE RECORD IS IN A SUITABLE STATE TO BE AMENDED
+
 		// WIP - NEED TO SAVE THE SALE DETAILS!!!
 		
 		$dataSource = Data_Source::get();
@@ -48,6 +50,15 @@ class JSON_Handler_Sale extends JSON_Handler
 			if ($sale == null)
 			{
 				throw new Exception("Unable to locate sale " . $saleDetails->id);
+			}
+
+
+			// Sale can only be amended if it is: -
+			// submitted 
+			// manual intervention
+			if (!Sales_Portal_Sale::canBeAmended($sale))
+			{
+				throw new Exception("The sale cannot be amended at this time.");
 			}
 
 			$saleAccountDetails = $saleDetails->sale_account;
@@ -406,7 +417,7 @@ class JSON_Handler_Sale extends JSON_Handler
 			throw new Exception("You do not have sufficient permissions to perform that action.");
 		}
 
-		$sale = Sales_Portal_Sale::getForId(intval($saleId));
+		$sale = DO_Sales_Sale::getForId(intval($saleId));
 		if (!$sale)
 		{
 			throw new Exception("The specified sale '$saleId' could not be found.");
@@ -419,9 +430,9 @@ class JSON_Handler_Sale extends JSON_Handler
 		// provisioned
 		// verified
 		// i.e. pretty much any state except 'ready for provisioning'
-		if ($sale->canBeCancelled())
+		if (Sales_Portal_Sale::canBeCancelled($sale))
 		{
-			$sale->cancel();
+			$sale->cancel($dealer->id);
 		}
 		else
 		{
@@ -437,7 +448,7 @@ class JSON_Handler_Sale extends JSON_Handler
 			throw new Exception("You do not have sufficient permissions to perform that action.");
 		}
 
-		$sale = Sales_Portal_Sale::getForId(intval($saleId));
+		$sale = DO_Sales_Sale::getForId(intval($saleId));
 		if (!$sale)
 		{
 			throw new Exception("The specified sale '$saleId' could not be found.");
@@ -445,9 +456,9 @@ class JSON_Handler_Sale extends JSON_Handler
 
 		// Sale can only be moved to rejected if it is :-
 		// submitted
-		if ($sale->canBeRejected())
+		if (Sales_Portal_Sale::canBeRejected($sale))
 		{
-			$sale->reject();
+			$sale->reject($dealer->id);
 		}
 		else
 		{
@@ -463,7 +474,7 @@ class JSON_Handler_Sale extends JSON_Handler
 			throw new Exception("You do not have sufficient permissions to perform that action.");
 		}
 
-		$sale = Sales_Portal_Sale::getForId(intval($saleId));
+		$sale = DO_Sales_Sale::getForId(intval($saleId));
 		if (!$sale)
 		{
 			throw new Exception("The specified sale '$saleId' could not be found.");
@@ -471,9 +482,9 @@ class JSON_Handler_Sale extends JSON_Handler
 
 		// Sale can only be moved to verified if it is :-
 		// submitted
-		if ($sale->canBeVerified())
+		if (Sales_Portal_Sale::canBeVerified($sale))
 		{
-			$sale->verify();
+			$sale->verify($dealer->id);
 		}
 		else
 		{

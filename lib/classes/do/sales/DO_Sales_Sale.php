@@ -288,7 +288,7 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		$return = parent::save();
 		
 		
-		DO_Sales_SaleStatusHistory::recordHistoryForSale($this, $dealerId);
+		DO_Sales_SaleStatusHistory::recordHistoryForSale($this, $dealerId, $comment);
 		
 		return $return;
 	}
@@ -314,7 +314,7 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		}
 	}
 	
-	public function verify()
+	public function verify($dealerId)
 	{
 		$dataSource = $this->getDataSource();
 		$strTransactionName = 'VerifySale' . $this->id;
@@ -324,13 +324,13 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		try
 		{
 			$this->saleStatusId = DO_Sales_SaleStatus::VERIFIED;
-			$this->save();
+			$this->save($dealerId, 'Sale verified');
 
 			// We also want to verify all of the sale items
-			$saleItems = DO_Sales_SaleItem::listForSale();
+			$saleItems = DO_Sales_SaleItem::listForSale($this);
 			foreach ($saleItems as $saleItem)
 			{
-				$saleItem->verify();
+				$saleItem->verify($dealerId);
 			}
 			
 			$dataSource->commit($strTransactionName);
@@ -341,13 +341,13 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		}
 	}
 	
-	public function reject()
+	public function reject($dealerId)
 	{
 		$this->saleStatusId = DO_Sales_SaleStatus::REJECTED;
-		$this->save();
+		$this->save($dealerId, 'Sale rejected');
 	}
 	
-	public function cancel()
+	public function cancel($dealerId)
 	{
 		$dataSource = $this->getDataSource();
 		$strTransactionName = 'CancelSale' . $this->id;
@@ -357,9 +357,14 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		try
 		{
 			$this->saleStatusId = DO_Sales_SaleStatus::CANCELLED;
-			$this->save();
+			$this->save($dealerId, 'Sale cancel');
 
 			// We also want to cancel all of the sale items
+			$saleItems = DO_Sales_SaleItem::listForSale($this);
+			foreach ($saleItems as $saleItem)
+			{
+				$saleItem->cancel($dealerId);
+			}
 			
 			$dataSource->commit($strTransactionName);
 		}
