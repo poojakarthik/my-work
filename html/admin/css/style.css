@@ -530,31 +530,77 @@ table.highlight-rows tbody tr:hover td
 	height: 30px;
 }
 div.Title{
-	color:					#caceda;
-	background-repeat:		repeat;
-	background-image:		url("../img/template/protalk_menu_header_final_012.png");
-	background-position:	0% 50%;
-	height:					25px; 
+	color:					#eeeeee;
+	background-color:		#333333;
+	height:					20px;
 	width:					965px; 
-	text-indent:			20px;
+	text-indent:			10px;
 	font-weight:			bold;
 	padding:				0px;
 	margin:					0px;
 	text-align:				left;
+	padding-top:			5px;
 }
 
 div.PartTitle{
-	color:					#caceda;
-	background-repeat:		repeat;
-	background-image:		url("../img/template/protalk_menu_header_final_012.png");
-	background-position:	0% 50%;
-	height:					25px; 
+	color:					#eeeeee;
+	background-color:		#333333;
+	height:					20px;
 	width:					470px; 
-	text-indent:			20px;
+	text-indent:			10px;
 	font-weight:			bold;
 	padding:				0px;
 	margin:					0px;
 	padding-right:			0px;
 	margin-right:			0px;
+	padding-top:			5px;
+	padding-bottom:			0px;
 	text-align:				left;
+}
+#account_details_holder
+{
+	border:					1px solid #333333;
+	width:					468px;
+}
+#account_details_table
+{
+	border:					1px solid #eeeeee;
+	width:					100%;
+}
+#primary_contact_details_holder
+{
+	border:					1px solid #333333;
+	width:					468px;
+}
+#primary_contact_details_table
+{
+	border:					1px solid #eeeeee;
+	width:					100%;
+}
+.Page
+{
+	width:					963px;
+	border:					1px solid #333333;
+}
+.data-table td
+{
+	text-indent:			10px;
+	padding-top:			2px;
+	padding-bottom:			2px;
+}
+#sale-items-table td
+{
+	text-indent:			10px;
+}
+#sale_panel tr
+{
+	vertical-align:			top;
+}
+#after-commit-button-panel
+{
+	text-align:				right;
+}
+.maximum-area-body
+{
+	padding-bottom:			15px;
 }
