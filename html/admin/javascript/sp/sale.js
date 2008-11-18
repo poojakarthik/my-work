@@ -8,13 +8,8 @@ Object.extend(Sale, {
 	getInstance: function()
 	{
 		return Sale.instance;
-	},
+	}
 
-	canCreateSale: false,
-	canCancelSale: false,
-	canAmendSale: false,
-	canVerifySale: false,
-	canRejectSale: false
 });
 
 Sale.BillPaymentType = Class.create();
@@ -772,15 +767,19 @@ Object.extend(Sale.GUIComponent, {
 			bolValid			= true;
 		}
 		
+		// Apply Styles to all inputs
+		bolDisabled	= true;
 		if (strNewStyle)
 		{
 			for (i = 0; i < objElementGroup.inputs.length; i++)
 			{
 				objElementGroup.inputs[i].addClassName(strNewStyle);
+				bolDisabled	= (objElementGroup.inputs[i].disabled) ? bolDisabled : false;
 			}
 		}
 		
-		return bolValid;
+		// If it's disabled, then it is Valid (all inputs must be disabled)
+		return (bolDisabled) ? true : bolValid;
 	},
 	
 	appendElementGroup: function($container, $group)
@@ -1089,7 +1088,7 @@ Object.extend(Sale.prototype, {
 		}
 		else
 		{
-			alert("Please correct all errors and try again.");
+			alert("Please correct all errors (fields in red) and try again.");
 		}
 	},
 	
@@ -1440,8 +1439,12 @@ Object.extend(Sale.prototype, {
 		// Validate the values and invoke the isValid method of child objects
 		
 		// Validate all the fields ...
-		
-		// WIP
+		bolValid	= true;
+		for (strElementGroup in this.elementGroups)
+		{
+			////alert(strElementGroup);
+			bolValid	= this.elementGroups[strElementGroup];
+		}
 		
 		// And the child objects ...
 		if (!this.getSaleAccount().isValid()) return false;
@@ -1788,7 +1791,23 @@ Object.extend(Sale.SaleAccount.prototype, {
 	{
 		// Validate the values and invoke the isValid method of child objects
 		
+
+		bolValid	= true;
+		for (strElementGroup in this.elementGroups)
+		{
+			//alert(strElementGroup);
+			bolValid	= this.elementGroups[strElementGroup];
+		}
+		
+		
 		// Validate all the fields ...
+		bolValid	= true;
+		for (strElementGroup in this.elementGroups)
+		{
+			//alert(strElementGroup);
+			bolValid	= (this.elementGroups[strElementGroup].isValid()) ? bolValid : false;
+		}
+		
 		var value;
 
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.vendor);
@@ -1850,7 +1869,7 @@ Object.extend(Sale.SaleAccount.prototype, {
 		}
 		
 		
-		return true;
+		return bolValid;
 	},
 
 	updateChildObjectsDisplay: function($readOnly)
@@ -2178,6 +2197,14 @@ Object.extend(Sale.SaleAccount.DirectDebit.CreditCard.prototype, {
 	isValid: function()
 	{
 		// Validate the values and invoke the isValid method of child objects
+
+		bolValid	= true;
+		for (strElementGroup in this.elementGroups)
+		{
+			//alert(strElementGroup);
+			bolValid	= this.elementGroups[strElementGroup];
+		}
+		
 		
 		// Validate all the fields ...
 		var value;
@@ -2200,7 +2227,7 @@ Object.extend(Sale.SaleAccount.DirectDebit.CreditCard.prototype, {
 		
 		// WIP
 		
-		return true;
+		return bolValid;
 	},
 
 
@@ -2326,7 +2353,7 @@ Object.extend(Sale.SaleAccount.DirectDebit.BankAccount.prototype, {
 		this.elementGroups.bank_bsb = Sale.GUIComponent.createTextInputGroup(this.getBankBSB(), fncIsMandatoryFunction.bind(this), window._validate.bsb.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'BSB', this.elementGroups.bank_bsb);
 		
-		this.elementGroups.account_number = Sale.GUIComponent.createTextInputGroup(this.getAccountNumber(), fncIsMandatoryFunction.bind(this));
+		this.elementGroups.account_number = Sale.GUIComponent.createTextInputGroup(this.getAccountNumber(), fncIsMandatoryFunction.bind(this), window._validate.integerPositive.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Account Number', this.elementGroups.account_number);
 		
 		this.elementGroups.account_name = Sale.GUIComponent.createTextInputGroup(this.getAccountName(), fncIsMandatoryFunction.bind(this));
@@ -2338,6 +2365,14 @@ Object.extend(Sale.SaleAccount.DirectDebit.BankAccount.prototype, {
 	{
 		// Validate the values and invoke the isValid method of child objects
 
+		bolValid	= true;
+		for (strElementGroup in this.elementGroups)
+		{
+			//alert(strElementGroup);
+			bolValid	= this.elementGroups[strElementGroup];
+		}
+		
+		
 		// Validate all the fields ...
 		var value;
 
@@ -2355,7 +2390,7 @@ Object.extend(Sale.SaleAccount.DirectDebit.BankAccount.prototype, {
 		
 		// WIP
 		
-		return true;
+		return bolValid;
 	},
 
 

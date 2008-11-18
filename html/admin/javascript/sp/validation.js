@@ -301,14 +301,15 @@ Validate	= Class.create(
 	// integer()
 	integer			: function(mixValue)
 	{
-		expInteger	= /^\s*(\d+)\s*$/;
+		expInteger	= /^\s*[\-]?(\d+)\s*$/;
 		return expInteger.test(mixValue);
 	},
 	
 	// integerPositive()
 	integerPositive	: function(mixValue)
 	{
-		return (parseInt(mixValue));
+		expPositiveInteger	= /^\s*(\d+)\s*$/;
+		return expPositiveInteger.test(mixValue);
 	}
 });
 

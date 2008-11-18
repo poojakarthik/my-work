@@ -158,8 +158,9 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 			table: table,
 			checkbox: cb
 		}
-		var func = function() { this.table.className = this.table.originalClassName + (this.checkbox.checked ? ' data-display-advanced' : ' data-display-basic') }
-		Event.observe(cb, 'click', func.bind(obj));
+		this.isAdvancedAddress	= obj;
+		var func = function() { this.isAdvancedAddress.table.className = this.isAdvancedAddress.table.originalClassName + (this.isAdvancedAddress.checkbox.checked ? ' data-display-advanced' : ' data-display-basic'); this.isValid(); }
+		Event.observe(cb, 'click', func.bind(this));
 
 		this.elementGroups.landline_service_address_type_id = Sale.GUIComponent.createDropDown(
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineServiceAddressType.id, 
@@ -187,9 +188,9 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		
 		fncStreetNumberMandatory	= function()
 									{
-										return (Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_name));
+										return (Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_name) || !this.isAdvancedAddress.checkbox.checked);
 									}
-		this.elementGroups.service_street_number_start = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetNumberStart(), fncStreetNumberMandatory.bind(this));
+		this.elementGroups.service_street_number_start = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetNumberStart(), fncStreetNumberMandatory.bind(this), window._validate.integerPositive.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Number Start', this.elementGroups.service_street_number_start);
 		var cell = table.rows[table.rows.length-1].cells[0];
 		cell.innerHTML = "";
@@ -215,10 +216,15 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		Element.observe(this.elementGroups.service_street_name.inputs[0], 'change', fncStreetNameChange.bind(this));
 		Element.observe(this.elementGroups.service_street_name.inputs[0], 'keyup', fncStreetNameChange.bind(this));
 
+		fncStreetTypeMandatory	= function()
+								{
+									return (Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_name) || !this.isAdvancedAddress.checkbox.checked);
+								}
 		this.elementGroups.landline_service_street_type_id = Sale.GUIComponent.createDropDown(
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineServiceStreetType.id, 
 			Sale.ProductTypeModule.Service_Landline.staticData.landlineServiceStreetType.description, 
-			this.getLandlineServiceStreetTypeId());
+			this.getLandlineServiceStreetTypeId(),
+			fncStreetTypeMandatory.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Type', this.elementGroups.landline_service_street_type_id);
 
 		this.elementGroups.landline_service_street_type_suffix_id = Sale.GUIComponent.createDropDown(
@@ -272,34 +278,44 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		bolValid	= (this.elementGroups.landline_type_id.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_type_id);
 		this.object.landline_type_id = value;
+		
+		// Service Address
+		if (this.isAdvancedAddress.checkbox.checked)
+		{
+			// Advanced -- validate all fields
+			bolValid	= (this.elementGroups.landline_service_address_type_id.isValid()) ? bolValid : false;
+			value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_address_type_id);
+			this.object.landline_service_address_type_id = value;
 
-		bolValid	= (this.elementGroups.landline_service_address_type_id.isValid()) ? bolValid : false;
-		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_address_type_id);
-		this.object.landline_service_address_type_id = value;
+			bolValid	= (this.elementGroups.service_address_type_number.isValid()) ? bolValid : false;
+			value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_address_type_number);
+			this.object.service_address_type_number = value;
 
-		bolValid	= (this.elementGroups.service_address_type_number.isValid()) ? bolValid : false;
-		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_address_type_number);
-		this.object.service_address_type_number = value;
+			bolValid	= (this.elementGroups.service_address_type_suffix.isValid()) ? bolValid : false;
+			value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_address_type_suffix);
+			this.object.service_address_type_suffix = value;
 
-		bolValid	= (this.elementGroups.service_address_type_suffix.isValid()) ? bolValid : false;
-		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_address_type_suffix);
-		this.object.service_address_type_suffix = value;
+			bolValid	= (this.elementGroups.service_street_number_end.isValid()) ? bolValid : false;
+			value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_number_end);
+			this.object.service_street_number_end = value;
 
+			bolValid	= (this.elementGroups.service_street_number_suffix.isValid()) ? bolValid : false;
+			value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_number_suffix);
+			this.object.service_street_number_suffix = value;
+
+			bolValid	= (this.elementGroups.service_property_name.isValid()) ? bolValid : false;
+			value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_property_name);
+			this.object.service_property_name = value;
+
+			bolValid	= (this.elementGroups.landline_service_street_type_suffix_id.isValid()) ? bolValid : false;
+			value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_street_type_suffix_id);
+			this.object.landline_service_street_type_suffix_id = value;
+		}
+		
+		// Validate remaining fields
 		bolValid	= (this.elementGroups.service_street_number_start.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_number_start);
 		this.object.service_street_number_start = value;
-
-		bolValid	= (this.elementGroups.service_street_number_end.isValid()) ? bolValid : false;
-		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_number_end);
-		this.object.service_street_number_end = value;
-
-		bolValid	= (this.elementGroups.service_street_number_suffix.isValid()) ? bolValid : false;
-		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_number_suffix);
-		this.object.service_street_number_suffix = value;
-
-		bolValid	= (this.elementGroups.service_property_name.isValid()) ? bolValid : false;
-		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_property_name);
-		this.object.service_property_name = value;
 
 		bolValid	= (this.elementGroups.service_street_name.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_name);
@@ -308,10 +324,6 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		bolValid	= (this.elementGroups.landline_service_street_type_id.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_street_type_id);
 		this.object.landline_service_street_type_id = value;
-
-		bolValid	= (this.elementGroups.landline_service_street_type_suffix_id.isValid()) ? bolValid : false;
-		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.landline_service_street_type_suffix_id);
-		this.object.landline_service_street_type_suffix_id = value;
 
 		bolValid	= (this.elementGroups.service_locality.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_locality);
@@ -325,6 +337,7 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_postcode);
 		this.object.service_postcode = value;
 
+		// Billing Details
 		bolValid	= (this.elementGroups.bill_name.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.bill_name);
 		this.object.bill_name = value;
@@ -642,107 +655,80 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		{
 			// Allotment Address
 			this.elementGroups.service_address_type_number.inputs[0].disabled					= false;
-			this.elementGroups.service_address_type_number.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.service_street_number_start.inputs[0].value						= '';
 			this.elementGroups.service_street_number_start.inputs[0].disabled					= true;
-			this.elementGroups.service_street_number_start.inputs[0].addClassName('disabled');
 			
 			this.elementGroups.service_street_number_end.inputs[0].value						= '';
 			this.elementGroups.service_street_number_end.inputs[0].disabled						= true;
-			this.elementGroups.service_street_number_end.inputs[0].addClassName('disabled');
 			
 			this.elementGroups.service_street_number_suffix.inputs[0].value						= '';
 			this.elementGroups.service_street_number_suffix.inputs[0].disabled					= true;
-			this.elementGroups.service_street_number_suffix.inputs[0].addClassName('disabled');
 			
 			this.elementGroups.service_street_name.inputs[0].disabled							= false;
-			this.elementGroups.service_street_name.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.landline_service_street_type_id.inputs[0].disabled				= false;
-			this.elementGroups.landline_service_street_type_id.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].disabled		= false;
-			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.service_property_name.inputs[0].disabled							= false;
-			this.elementGroups.service_property_name.inputs[0].removeClassName('disabled');
 		}
 		else if (this.isPostal())
 		{
 			// Postal Address
 			this.elementGroups.service_address_type_number.inputs[0].disabled					= false;
-			this.elementGroups.service_address_type_number.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.service_street_number_start.inputs[0].value						= '';
 			this.elementGroups.service_street_number_start.inputs[0].disabled					= true;
-			this.elementGroups.service_street_number_start.inputs[0].addClassName('disabled');
 			
 			this.elementGroups.service_street_number_end.inputs[0].value						= '';
 			this.elementGroups.service_street_number_end.inputs[0].disabled						= true;
-			this.elementGroups.service_street_number_end.inputs[0].addClassName('disabled');
 			
 			this.elementGroups.service_street_number_suffix.inputs[0].value						= '';
 			this.elementGroups.service_street_number_suffix.inputs[0].disabled					= true;
-			this.elementGroups.service_street_number_suffix.inputs[0].addClassName('disabled');
 			
 			this.elementGroups.service_street_name.inputs[0].value								= '';
 			this.elementGroups.service_street_name.inputs[0].disabled							= true;
-			this.elementGroups.service_street_name.inputs[0].addClassName('disabled');
 			
 			this.elementGroups.landline_service_street_type_id.inputs[0].selectedIndex			= 0;
 			this.elementGroups.landline_service_street_type_id.inputs[0].disabled				= true;
-			this.elementGroups.landline_service_street_type_id.inputs[0].addClassName('disabled');
 			
 			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].selectedIndex	= 0;
 			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].disabled		= true;
-			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].addClassName('disabled');
 			
 			this.elementGroups.service_property_name.inputs[0].value							= '';
 			this.elementGroups.service_property_name.inputs[0].disabled							= true;
-			this.elementGroups.service_property_name.inputs[0].addClassName('disabled');
 		}
 		else
 		{
 			// Standard Address
 			this.elementGroups.service_street_number_start.inputs[0].disabled					= false;
-			this.elementGroups.service_street_number_start.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.service_street_number_end.inputs[0].disabled						= false;
-			this.elementGroups.service_street_number_end.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.service_street_number_suffix.inputs[0].disabled					= false;
-			this.elementGroups.service_street_number_suffix.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.service_street_name.inputs[0].disabled							= false;
-			this.elementGroups.service_street_name.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.landline_service_street_type_id.inputs[0].disabled				= false;
-			this.elementGroups.landline_service_street_type_id.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].disabled		= false;
-			this.elementGroups.landline_service_street_type_suffix_id.inputs[0].removeClassName('disabled');
 			
 			this.elementGroups.service_property_name.inputs[0].disabled							= false;
-			this.elementGroups.service_property_name.inputs[0].removeClassName('disabled');
 			
 			if (intValue)
 			{
 				this.elementGroups.service_address_type_number.inputs[0].disabled				= false;
-				this.elementGroups.service_address_type_number.inputs[0].removeClassName('disabled');
 
 				this.elementGroups.service_address_type_suffix.inputs[0].disabled				= false;
-				this.elementGroups.service_address_type_suffix.inputs[0].removeClassName('disabled');
 			}
 			else
 			{
 				this.elementGroups.service_address_type_number.inputs[0].value					= '';
 				this.elementGroups.service_address_type_number.inputs[0].disabled				= true;
-				this.elementGroups.service_address_type_number.inputs[0].addClassName('disabled');
 
 				this.elementGroups.service_address_type_suffix.inputs[0].value					= '';
 				this.elementGroups.service_address_type_suffix.inputs[0].disabled				= true;
-				this.elementGroups.service_address_type_suffix.inputs[0].addClassName('disabled');
 			}
 		}
 		this.changeServiceAddressTypeNumber();
@@ -757,13 +743,11 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		if (intValue && this.elementGroups.service_address_type_number.isValid())
 		{
 			this.elementGroups.service_address_type_suffix.inputs[0].disabled				= false;
-			this.elementGroups.service_address_type_suffix.inputs[0].removeClassName('disabled');
 		}
 		else
 		{
 			this.elementGroups.service_address_type_suffix.inputs[0].value					= '';
 			this.elementGroups.service_address_type_suffix.inputs[0].disabled				= true;
-			this.elementGroups.service_address_type_suffix.inputs[0].addClassName('disabled');
 		}
 	},
 	
