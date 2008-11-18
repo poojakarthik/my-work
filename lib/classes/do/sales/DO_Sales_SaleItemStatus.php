@@ -6,9 +6,11 @@ class DO_Sales_SaleItemStatus extends DO_Sales_Base_SaleItemStatus
 	const VERIFIED					= 2;
 	const REJECTED					= 3;
 	const CANCELLED					= 4;
-	const READY_FOR_PROVISIONING	= 5;
-	const PROVISIONED				= 6;
+	const AWAITING_DISPATCH			= 5;
+	const DISPATCHED				= 6;
 	const MANUAL_INTERVENTION		= 7;
+	const PROVISIONED				= 8;
+
 }
 
 ?>

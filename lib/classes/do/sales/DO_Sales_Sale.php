@@ -323,14 +323,29 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		
 		try
 		{
-			$this->saleStatusId = DO_Sales_SaleStatus::VERIFIED;
+			$saleItems = null;
+			
+			if ($this->saleStatusId == DO_Sales_SaleStatus::SUBMITTED)
+			{
+				$this->saleStatusId = DO_Sales_SaleStatus::VERIFIED;
+				$this->save($dealerId, 'Sale verified');
+	
+				// We also want to verify all of the sale items
+				$saleItems = DO_Sales_SaleItem::listForSale($this);
+				foreach ($saleItems as $saleItem)
+				{
+					$saleItem->verify($dealerId);
+				}
+			}
+			
+			$this->saleStatusId = DO_Sales_SaleStatus::AWAITING_DISPATCH;
 			$this->save($dealerId, 'Sale verified');
 
 			// We also want to verify all of the sale items
-			$saleItems = DO_Sales_SaleItem::listForSale($this);
+			$saleItems = $saleItems ? $saleItems : DO_Sales_SaleItem::listForSale($this);
 			foreach ($saleItems as $saleItem)
 			{
-				$saleItem->verify($dealerId);
+				$saleItem->setAwaitingDispatch($dealerId);
 			}
 			
 			$dataSource->commit($strTransactionName);

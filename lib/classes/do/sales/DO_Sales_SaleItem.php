@@ -36,6 +36,12 @@ class DO_Sales_SaleItem extends DO_Sales_Base_SaleItem
 		$this->saleItemStatusId = DO_Sales_SaleItemStatus::REJECTED;
 		$this->save($dealerId, 'Item rejected');
 	}
+	
+	public function setAwaitingDispatch($dealerId)
+	{
+		$this->saleItemStatusId = DO_Sales_SaleItemStatus::AWAITING_DISPATCH;
+		$this->save($dealerId, 'Awaiting dispatch');
+	}
 }
 
 ?>
