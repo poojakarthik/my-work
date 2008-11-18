@@ -251,7 +251,11 @@ class DO_Table
 			
 			else if ($con['foreign'])
 			{
-				$this->fks[$constraint] = $this->getDoForeignKey($constraint, $this->tableName, $con['fields'], $con['references']['table'], $con['references']['fields'], $con['references']['onupdate'], $con['references']['ondelete']);
+				$onDelete = array_key_exists('ondelete', $con['references']) ? $con['references']['ondelete'] : null;
+				$onUpdate = array_key_exists('onupdate', $con['references']) ? $con['references']['onupdate'] : null;
+				$table = array_key_exists('table', $con['references']) ? $con['references']['table'] : null;
+				$refFields = array_key_exists('fields', $con['references']) ? $con['references']['fields'] : null;
+				$this->fks[$constraint] = $this->getDoForeignKey($constraint, $this->tableName, $con['fields'], $table, $refFields, $onUpdate, $onDelete);
 			}
 			
 			else if ($con['unique'])
@@ -569,7 +573,7 @@ class DO_Field
 	public function getInternalType()
 	{
 		$nativeType = $this->properties['nativetype'];
-		$length = $this->properties['length'];
+		$length = array_key_exists('length', $this->properties) ? $this->properties['length'] : null;
 		
 		if (preg_match("/(?:date|time|char|text|enum|blob)/i", $nativeType))
 		{
@@ -599,7 +603,7 @@ class DO_Field
 		$nullable = array_key_exists('notnull', $this->properties) ? !$this->properties['notnull'] : false;
 		$autoIncrement = array_key_exists('autoincrement', $this->properties) ? $this->properties['autoincrement'] : false;
 		$nativeType = $this->properties['nativetype'];
-		$length = $this->properties['length'];
+		$length = array_key_exists('length', $this->properties) ? $this->properties['length'] : null;
 		$value = array_key_exists('default', $this->properties) ? $this->properties['default'] : null;
 		$fixed = array_key_exists('fixed', $this->properties) ? $this->properties['fixed'] : false;
 
@@ -631,7 +635,7 @@ class DO_Field
 		$nullable = array_key_exists('notnull', $this->properties) ? !$this->properties['notnull'] : false;
 		$autoIncrement = array_key_exists('autoincrement', $this->properties) ? $this->properties['autoincrement'] : false;
 		$nativeType = $this->properties['nativetype'];
-		$length = $this->properties['length'];
+		$length = array_key_exists('length', $this->properties) ? $this->properties['length'] : null;
 		$value = array_key_exists('default', $this->properties) ? $this->properties['default'] : null;
 
 		$comment = "\n\t\t// Property: ".$this->propertyName."\n\t\t// Internal type: ".$this->getInternalType() . "\n\t\t// Native type: " . $nativeType . ($length ? "[$length]" : '') . ($autoIncrement ? ' autoincrement' : '') . ($nullable ? ' nullable' : ' not-null') . ((!$nullable && $value === null) ? ' [no default]' : ($value === null ? ' [default: null]' : "[default: $value]"));
@@ -804,7 +808,7 @@ class DO_Field
 	public function getExternalType()
 	{
 		$nativeType = $this->properties['nativetype'];
-		$length = $this->properties['length'];
+		$length = array_key_exists('length', $this->properties) ? $this->properties['length'] : null;
 		
 		if (preg_match("/(?:char|text|enum)/i", $nativeType))
 		{
@@ -1204,7 +1208,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 			else
 			{
 				$dataSource = $this->getDataSource();
-				$value = \'\\\'\' . $dataSource->escape($value, true) . \'\\\'\';
+				$value = \'\\\'\' . $dataSource->escape($value, false) . \'\\\'\';
 			}
 		}
 		return $value;

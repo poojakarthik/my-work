@@ -1,8 +1,3 @@
-Sale.canCancelSale = false;
-Sale.canAmendSale = false;
-Sale.canVerifySale = false;
-Sale.canRejectSale = false;
-
 Object.extend(Sale.prototype, {
 
 	buildGUI: function()

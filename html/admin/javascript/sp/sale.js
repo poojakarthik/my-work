@@ -8,8 +8,13 @@ Object.extend(Sale, {
 	getInstance: function()
 	{
 		return Sale.instance;
-	}
+	},
 
+	canCreateSale: false,
+	canCancelSale: false,
+	canAmendSale: false,
+	canVerifySale: false,
+	canRejectSale: false
 });
 
 Sale.BillPaymentType = Class.create();

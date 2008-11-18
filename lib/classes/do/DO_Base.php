@@ -208,6 +208,7 @@ abstract class DO_Base
 			}
 			$updates = implode(', ', $updates);
 			$strSQL = 'UPDATE ' . $this->getDataSourceObjectName() . ' SET ' . $updates . ' WHERE ' . $this->getDataSourceIdName() . ' = ' . $this->{$idName};
+			//echo "/*\n\n$strSQL\n\n*/";
 		}
 
 		if (PEAR::isError($outcome = $dataSource->query($strSQL)))
