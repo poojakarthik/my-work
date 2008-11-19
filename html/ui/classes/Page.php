@@ -696,7 +696,7 @@ class Page
 	 */
 	function RenderSearchField()
 	{
-		$strUsername = Flex::getDisplayName();
+		$strUserName = Flex::getDisplayName();
 		
 		$strUserPreferencesLink = Href()->ViewUserDetails();
 		
@@ -717,7 +717,7 @@ class Page
 		$mixKbAdmin = NULL;
 		// The default menu links.
 		$mixMenuLinks = "
-		Logged in as: $strUsername
+		Logged in as: $strUserName
 		| <a onclick='$strUserPreferencesLink' >Preferences</a>
 		| <a onclick='Vixen.Logout();'>Logout</a>";
 
@@ -739,8 +739,8 @@ class Page
 			}
 			</script>
 			<form method=\"post\" name=\"kbform\" target=\"Knowledg_Base_Popup\" id=\"kbform\" action=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "\">
-			Logged in as: $strUsername
-			$mixKbAdmin<input type=\"hidden\" name=\"strUsername\" value=\"$strUsername\">
+			Logged in as: $strUserName
+			$mixKbAdmin<input type=\"hidden\" name=\"strUsername\" value=\"$strUserName\">
 			<input type=\"hidden\" name=\"mixUsername\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['User'] . "\">
 			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\">
 			| <a onclick=\"redirectOutput(this); var elemform = getElementById('kbform'); elemform.submit();\">Knowledge Base</a>	
