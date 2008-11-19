@@ -128,7 +128,7 @@ class DO_Sales_Dealer extends DO_Sales_Base_Dealer
 		$arrSubDealers = $this->getSubordinates();
 		foreach ($arrSubDealers as $doSubDealer)
 		{
-			if ($doDealer->id == $doSale->createdBy)
+			if ($doSubDealer->id == $doSale->createdBy)
 			{
 				return TRUE;
 			}
