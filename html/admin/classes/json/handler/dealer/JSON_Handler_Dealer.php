@@ -6,7 +6,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 	public function buildEditDealerPopup($intDealerId, $intEmployeeId, $intCallingPage=NULL)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES_ADMIN);
 		
 		try
 		{
@@ -392,7 +392,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 	public function buildNewDealerSelectionPopup()
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES_ADMIN);
 		
 		try
 		{
@@ -457,7 +457,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 	public function buildViewDealerPopup($intDealerId)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES_ADMIN);
 		
 		try
 		{
@@ -796,7 +796,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 	public function saveDealerDetails($objDetails)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES_ADMIN);
 
 		try
 		{

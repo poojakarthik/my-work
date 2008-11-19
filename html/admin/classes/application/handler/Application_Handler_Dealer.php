@@ -15,7 +15,7 @@ class Application_Handler_Dealer extends Application_Handler
 	public function ListDealers($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES_ADMIN);
 		
 		BreadCrumb()->Admin_Console();
 		BreadCrumb()->SetCurrentPage("Dealers");

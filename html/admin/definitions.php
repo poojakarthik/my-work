@@ -194,11 +194,10 @@ define("PERMISSION_CREDIT_CARD"				, 0x40);	$arrPermissions[PERMISSION_CREDIT_CA
 define("PERMISSION_OPERATOR_VIEW"			, 0x80);	$arrPermissions[PERMISSION_OPERATOR_VIEW]	= "Operator View";	// 128
 define("PERMISSION_CUSTOMER_GROUP_ADMIN"	, 0x200);	$arrPermissions[PERMISSION_CUSTOMER_GROUP_ADMIN]	= "Customer Group Admin";	// 512
 define("PERMISSION_KB_USER"					, 0x400);	$arrPermissions[PERMISSION_KB_USER] = "KB User";	// 1024
-define("PERMISSION_KB_ADMIN_USER"			, 0xC00);	$arrPermissions[PERMISSION_KB_ADMIN_USER] = "KB Admin User"; // 3072 (2048 + 1024) 
+define("PERMISSION_KB_ADMIN_USER"			, 0xC00);	$arrPermissions[PERMISSION_KB_ADMIN_USER] = "KB Admin User"; // 3072 (2048 + 1024)
+define("PERMISSION_SALES_ADMIN"				, 0x1000);	$arrPermissions[PERMISSION_SALES_ADMIN] = "Sales Admin"; // 4096
 define("PERMISSION_SUPER_ADMIN"				, 0x7FFFFFFF);	$arrPermissions[PERMISSION_SUPER_ADMIN]		= "Super Admin";	// 2147483647 (All permissions except DEBUG and GOD) 
 define("PERMISSION_DEBUG"					, 0x80000000);
-//define("USER_PERMISSION_GOD"				, 0x7FFFFFFFFFFFFFFF); // This constant is legacy
-//define("PERMISSION_GOD"						, 0x7FFFFFFFFFFFFFFF);
 define("USER_PERMISSION_GOD"				, 0x7FFFFFFFFFFF); // This constant is legacy
 define("PERMISSION_GOD"						, 0x7FFFFFFFFFFF);
 

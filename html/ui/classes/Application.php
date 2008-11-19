@@ -168,7 +168,10 @@ class Application
 				
 				if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 				{
-					ContextMenu()->Admin->Sales->ManageDealers();
+					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES_ADMIN))
+					{
+						ContextMenu()->Admin->Sales->ManageDealers();
+					}
 					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
 					{
 						ContextMenu()->Admin->Sales->ManageSales();
@@ -312,7 +315,10 @@ class Application
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 				if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 				{
-					ContextMenu()->Admin->Sales->ManageDealers();
+					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES_ADMIN))
+					{
+						ContextMenu()->Admin->Sales->ManageDealers();
+					}
 					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
 					{
 						ContextMenu()->Admin->Sales->ManageSales();
