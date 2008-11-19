@@ -353,24 +353,22 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
 			
 			if ($this->_arrExportModules[$arrRequest['Carrier']][$arrRequest['Type']])
 			{
-				if ($this->_arrExportModules[$arrRequest['Carrier']][$arrRequest['Type']]->bolCanRunModule)
+				// Prepare output for this request
+				$arrRequest = $this->_arrExportModules[$arrRequest['Carrier']][$arrRequest['Type']]->Output($arrRequest);
+				
+				if ($arrRequest['Status'] !== REQUEST_STATUS_EXPORTING)
 				{
-					// Prepare output for this request
-					$arrRequest = $this->_arrExportModules[$arrRequest['Carrier']][$arrRequest['Type']]->Output($arrRequest);
-					
-					if ($arrRequest['Status'] !== REQUEST_STATUS_EXPORTING)
-					{
-						CliEcho("[ FAILED ]\n\t\t- {$arrRequest['Description']}");
-					}
-					else
-					{
-						CliEcho("[   OK   ]");
-					}
+					CliEcho("[ FAILED ]\n\t\t- {$arrRequest['Description']}");
 				}
-				else
+				elseif (!$this->_arrExportModules[$arrRequest['Carrier']][$arrRequest['Type']]->bolCanRunModule)
 				{
 					// Too early to run the module
 					CliEcho("[  SKIP  ]");
+					continue;
+				}
+				else
+				{
+					CliEcho("[   OK   ]");
 				}
 			}
 			else
