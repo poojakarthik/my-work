@@ -391,7 +391,7 @@ define("PROVISIONING_DEBUG_MODE",	FALSE);
  		{
 			foreach ($arrModules as $intType=>$prvModule)
 			{
-				if (!$arrModules[$intType]->bolExported)
+				if ($arrModules[$intType]->bolCanRunModule && !$arrModules[$intType]->bolExported)
 				{
 					$strCarrier	= GetConstantDescription($intCarrier, 'Carrier');
 					$strType	= $arrModules[$intType]->strDescription;
