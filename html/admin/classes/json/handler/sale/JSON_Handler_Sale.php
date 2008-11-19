@@ -342,6 +342,7 @@ class JSON_Handler_Sale extends JSON_Handler
 						$item->createdBy = $dealer->id;
 						$item->productId = $itemDetails->product_id;
 						$item->saleId = $bolValidateOnly ? 0 : $sale->id;
+						$item->saleItemStatusId = DO_Sales_SaleItemStatus::SUBMITTED;
 					}
 					$item->isValid(true);
 					if (!$bolValidateOnly) 
