@@ -650,11 +650,11 @@ Object.extend(Sale.GUIComponent, {
 	
 	validateInput: function(objValidator)
 	{
-		if (objValidator == undefined)
+		if (objValidator == undefined || objValidator == null)
 		{
 			objInput	= this;
 		}
-		else if (objValidator instanceof Event)
+		else if (typeof objValidator == 'object' && objValidator.target != undefined)
 		{
 			objInput	= objValidator.currentTarget;
 		}
@@ -705,11 +705,11 @@ Object.extend(Sale.GUIComponent, {
 	
 	validateElementGroup: function(objValidator)
 	{
-		if (objValidator == undefined)
+		if (objValidator == undefined || objValidator == null)
 		{
 			objElementGroup	= this;
 		}
-		else if (objValidator instanceof Event)
+		else if (typeof objValidator == 'object' && objValidator.target != undefined)
 		{
 			objElementGroup	= objValidator.currentTarget.objElementGroup;
 		}
