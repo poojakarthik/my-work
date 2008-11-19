@@ -696,7 +696,7 @@ class Page
 	 */
 	function RenderSearchField()
 	{
-		$strUserName = Flex::getDisplayName();
+		$strUsername = Flex::getDisplayName();
 		
 		$strUserPreferencesLink = Href()->ViewUserDetails();
 		
@@ -717,7 +717,7 @@ class Page
 		$mixKbAdmin = NULL;
 		// The default menu links.
 		$mixMenuLinks = "
-		Logged in as: $strUserName
+		Logged in as: $strUsername
 		| <a onclick='$strUserPreferencesLink' >Preferences</a>
 		| <a onclick='Vixen.Logout();'>Logout</a>";
 
@@ -727,7 +727,7 @@ class Page
 			// If the user is a kb_admin an extra flag is added.
 			if(AuthenticatedUser()->UserHasPerm(PERMISSION_KB_ADMIN_USER))
 			{
-				$mixKbAdmin = "+'&strAdmin=1'";
+				$mixKbAdmin = "<input type=\"hidden\" name=\"strAdmin\" value=\"1\">\n";
 			}
 			// If the user is allowed to access the kb system the menu links change to below:
 			$mixMenuLinks = "
@@ -739,8 +739,8 @@ class Page
 			}
 			</script>
 			<form method=\"post\" name=\"kbform\" target=\"Knowledg_Base_Popup\" id=\"kbform\" action=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "\">
-			Logged in as: $strUserName
-			<input type=\"hidden\" name=\"strUsername\" value=\"$strUsername\">
+			Logged in as: $strUsername
+			$mixKbAdmin<input type=\"hidden\" name=\"strUsername\" value=\"$strUsername\">
 			<input type=\"hidden\" name=\"mixUsername\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['User'] . "\">
 			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\">
 			| <a onclick=\"redirectOutput(this); var elemform = getElementById('kbform'); elemform.submit();\">Knowledge Base</a>	
