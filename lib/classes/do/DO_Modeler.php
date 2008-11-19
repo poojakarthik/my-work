@@ -476,7 +476,7 @@ class DO_Foreign_Key
  	 */
 	public static function $funcName($strSourceClass \$do, \$strSort=NULL, \$strLimit=0, \$strOffset=0)
 	{
-		return {$strTargetClass}::getFor(\"".$fromFields[0]." = \" . \$do->".$to->getFieldForFieldName($this->map[$fromFields[0]])->getPropertyName().", true, \$strSort, \$strLimit, \$strOffset);
+		return {$strTargetClass}::getFor(array(\"".$from->getFieldForFieldName($fromFields[0])->getPropertyName()."\" => \$do->".$to->getFieldForFieldName($this->map[$fromFields[0]])->getPropertyName()."), true, \$strSort, \$strLimit, \$strOffset);
 	}";
 	
 		return $strForeignKeyFunction;
@@ -1189,9 +1189,9 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		return \''.$strDataSourceIdName.'\';
 	}
 
-	public function getValueForDataSource($propertyName, $bolQuoted=true)
+	public function getValueForDataSource($propertyName, $bolQuoted=true, $value="THIS@IS!NOT_A&REAL*VALUE")
 	{
-		$value = array_key_exists($propertyName, $this->properties) ? $this->properties[$propertyName] : null;
+		$value = ($value=="THIS@IS!NOT_A&REAL*VALUE") ? (array_key_exists($propertyName, $this->properties) ? $this->properties[$propertyName] : null) : $value;
 		switch ($propertyName)
 		{'.$strInternalToDataSourceCases.'
 
@@ -1259,7 +1259,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 	//==============================================================================//
 
 
-'.$this->getDoBaseFunctions($obClassName).'
+'.$this->getDoBaseFunctions($obClassName, $strInternalToDataSourceCases).'
 
 
 }
@@ -1273,13 +1273,33 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 	
 	
 	
-	public function getDoBaseFunctions($obClassName)
+	public function getDoBaseFunctions($obClassName, $strInternalToDataSourceCases)
 	{
 		return '
 	public static function getPropertyDataSourceName($propertyName)
 	{
 		$dsNames = '.$obClassName.'::getPropertyDataSourceMappings();
 		return $dsNames[$propertyName];
+	}
+
+	public static function getUserValueForDataSource($propertyName, $value, $bolQuoted=true)
+	{
+		switch ($propertyName)
+		{'.$strInternalToDataSourceCases.'
+
+			default:
+				// No conversion - assume is correct or irrelevant
+
+		}
+		if ($bolQuoted)
+		{
+			if ($value !== null)
+			{
+				$dataSource = '.$obClassName.'::getDataSource();
+				$value = \'\\\'\' . $dataSource->escape($value, false) . \'\\\'\';
+			}
+		}
+		return $value;
 	}
 
 	protected static function whereArrayToString($arrWhere)
@@ -1290,8 +1310,8 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		foreach($arrWhere as $propertyName => $value)
 		{
 			$fieldName = array_search($propertyName, $arrDsProps);
-			$value = $dataSource->escape($value);
-			$arrMatches[] = "$fieldName = \'$value\'";
+			$value = '.$obClassName.'::getUserValueForDataSource($propertyName, $value, true);
+			$arrMatches[] = "$fieldName " . ($value === null ? " IS NULL" : "= $value");
 		}
 		return implode(\' AND \', $arrMatches);
 	}
@@ -1403,7 +1423,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 	
 	public static function getForId($id)
 	{
-		return '.$obClassName.'::getFor('.$obClassName.'::getDataSourceIdName() . " = " . intval($id), false, null, 0, 0);
+		return '.$obClassName.'::getFor(array('.$obClassName.'::getIdName() => intval($id)), false, null, 0, 0);
 	}
 	
 	public static function getDataSource()
