@@ -734,17 +734,16 @@ class Page
 			<script>
 			function redirectOutput(kbform)
 			{
-				var w = window.open('" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "?strUserName='+document.kbform.strUserName.value+'&mixUsername='+document.kbform.mixUsername.value+'&mixPassword='+document.kbform.mixPassword.value$mixKbAdmin,'Popup_Window','width=680,height=600,resizable=1,menubar=0,toolbar=0,location=0,directories=0,scrollbars=1,status=1');
-				kbform.target = 'Popup_Window';
-				return true;
+				var w = window.open('about:blank','Knowledg_Base_Popup','width=680,height=600,resizable=1,menubar=0,toolbar=0,location=0,directories=0,scrollbars=1,status=1');
+				kbform.target = 'Knowledg_Base_Popup';
 			}
 			</script>
-			<form method=\"post\" name=\"kbform\" action=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "\" OnSubmit=\"redirectOutput(this)\">
+			<form method=\"post\" name=\"kbform\" target=\"Knowledg_Base_Popup\" id=\"kbform\" action=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "\">
 			Logged in as: $strUserName
-			<input type=\"hidden\" name=\"strUserName\" value=\"$strUserName\">
+			<input type=\"hidden\" name=\"strUsername\" value=\"$strUsername\">
 			<input type=\"hidden\" name=\"mixUsername\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['User'] . "\">
 			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\">
-			| <a onclick=\"redirectOutput(this);\">Knowledge Base</a>	
+			| <a onclick=\"redirectOutput(this); var elemform = getElementById('kbform'); elemform.submit();\">Knowledge Base</a>	
 			| <a onclick='$strUserPreferencesLink' >Preferences</a>
 			| <a onclick='Vixen.Logout();'>Logout</a>
 			</form>";
