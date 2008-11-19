@@ -1060,6 +1060,7 @@
 		}
 		
 		// ServiceAddress
+		$arrClean['ServiceAddressType']	= $arrAddress['ServiceAddressType'];
 		switch ($arrAddress['ServiceAddressType'])
 		{
 			// LOTs
@@ -1186,6 +1187,15 @@
 			{
 				$arrClean[$strField]	= trim($mixValue);
 			}
+		}
+		
+		// Have we given values for all fields?
+		if (count($arrClean) !== count($arrAddress))
+		{
+			$strError	= "Original Service Address Field Count (".count($arrAddress).") != Cleaned Address Field Count (".count($arrClean).")";
+			Debug($strError);
+			Debug($arrAddress);
+			Debug($arrClean);
 		}
 		
 		// Return Cleaned Array or Error Messages
