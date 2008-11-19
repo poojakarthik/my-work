@@ -125,19 +125,22 @@ class Product_Type_Module_Service_Landline extends Product_Type_Module
 		else
 		{
 			$product = $products[0];
-			$oldLandlineTypes = array();
-			// Delete the old landline type details
-			if ($product->landlineTypeId == 1) // WIP - Code this properly! 1 = Residential
+			if (!$bolValidateOnly)
 			{
-				$oldLandlineTypes = DO_Sales_SaleItemServiceLandlineResidential::listForSaleItemServiceLandline($product);
-			}
-			else if ($product->landlineTypeId == 2) // WIP - Code this properly! 2 = Business
-			{
-				$oldLandlineTypes = DO_Sales_SaleItemServiceLandlineBusiness::listForSaleItemServiceLandline($product);
-			}
-			foreach ($oldLandlineTypes as $oldLandlineType)
-			{
-				$oldLandlineType->delete();
+				$oldLandlineTypes = array();
+				// Delete the old landline type details
+				if ($product->landlineTypeId == 1) // WIP - Code this properly! 1 = Residential
+				{
+					$oldLandlineTypes = DO_Sales_SaleItemServiceLandlineResidential::listForSaleItemServiceLandline($product);
+				}
+				else if ($product->landlineTypeId == 2) // WIP - Code this properly! 2 = Business
+				{
+					$oldLandlineTypes = DO_Sales_SaleItemServiceLandlineBusiness::listForSaleItemServiceLandline($product);
+				}
+				foreach ($oldLandlineTypes as $oldLandlineType)
+				{
+					$oldLandlineType->delete();
+				}
 			}
 		}
 		
