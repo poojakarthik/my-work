@@ -100,6 +100,16 @@ Object.extend(Sale.prototype, {
 		Event.observe($ID('sale_product_type_list'), 'change', this.changeProductType.bind(this), true);
 	},
 	
+	_commitOK: function($saleId)
+	{
+		window.scroll(0,0);
+		$ID('submit-button-panel').style.display = 'none';
+		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'inline';
+		alert("The sale has been saved. The reference number for this sale is " + $saleId + ".");
+		//document.location = document.location.toString().replace(/\/Sales\/.*/i, '/Sales/ListSales/Last');
+	},
+	
 	cancelSale: function()
 	{
 		this._remoteSaleFunctionCall('cancelSale', this._cancelOK);
@@ -110,16 +120,6 @@ Object.extend(Sale.prototype, {
 		window.scroll(0,0);
 		alert("The sale has been cancelled.");
 		document.location = document.location.toString().replace(/\/Sales\/.*/i, '/Sales/ListSales/Last');
-	},
-	
-	_commitOK: function($saleId)
-	{
-		window.scroll(0,0);
-		$ID('submit-button-panel').style.display = 'none';
-		$ID('commit-button-panel').style.display = 'none';
-		$ID('after-commit-button-panel').style.display = 'inline';
-		alert("The sale has been saved. The reference number for this sale is " + $saleId + ".");
-		//document.location = document.location.toString().replace(/\/Sales\/.*/i, '/Sales/ListSales/Last');
 	},
 	
 	rejectSale: function()
