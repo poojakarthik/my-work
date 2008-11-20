@@ -128,17 +128,22 @@
  		//--------------------------------------------------------------------//
  		
  		$arrDefine = Array();
-		$arrDefine['Prefix']		['Start']		= 0;
-		$arrDefine['Prefix']		['Length']		= 3;
-		$arrDefine['Prefix']		['Config']		= 'FileNamePrefix';
+		$arrDefine['UPSName']		['Index']		= 0;
+		$arrDefine['UPSName']		['Config']		= 'SupplierUserName';
 		
-		$arrDefine['Suffix']		['Start']		= 3;
-		$arrDefine['Suffix']		['Length']		= 2;
-		$arrDefine['Suffix']		['Value']		= '00';
+		$arrDefine['Underscore1']	['Index']		= 1;
+		$arrDefine['Underscore1']	['Value']		= '_';
 		
-		$arrDefine['Extension']		['Start']		= 5;
-		$arrDefine['Extension']		['Length']		= 4;
-		$arrDefine['Extension']		['Value']		= ".txt";
+		$arrDefine['FileType']		['Index']		= 2;
+		$arrDefine['FileType']		['Config']		= 'FileDescription';
+		
+		$arrDefine['Underscore1']	['Index']		= 3;
+		$arrDefine['Underscore1']	['Value']		= '_';
+		
+		$arrDefine['Date']			['Index']		= 4;
+		
+		$arrDefine['Extension']		['Index']		= 5;
+		$arrDefine['Extension']		['Value']		= '.txt';
 		
 		$this->_arrDefine['Filename'] = $arrDefine;
  		
@@ -157,7 +162,7 @@
 		
 		$arrDefine['ReelSequence']			['Start']		= 18;
 		$arrDefine['ReelSequence']			['Length']		= 2;
-		$arrDefine['ReelSequence']			['Config']		= 'ReelSequence';
+		$arrDefine['ReelSequence']			['Value']		= '01';
 		$arrDefine['ReelSequence']			['PadChar']		= '0';
 		$arrDefine['ReelSequence']			['PadType']		= STR_PAD_LEFT;
 		
@@ -380,7 +385,7 @@
  		$this->_arrFilename	= Array();
  		$this->_arrFilename['**Type']		= 'Filename';
  		$this->_arrFilename['**Request']	= 'Filename';
- 		// TODO
+ 		$this->_arrFilename['Date']			= date("Ymd");
  		
  		// Generate Header
  		$this->_arrHeader	= Array();
