@@ -1142,7 +1142,12 @@ Object.extend(Sale.prototype, {
 		$ID('amend-button-panel').style.display = 'none';
 	},
 	
-	clickAmend: function()
+	addNewSale: function()
+	{
+		document.location = document.location.toString().replace(/\/portal\/.*/i, '/portal/sale');
+	},
+	
+	amendSale: function()
 	{
 		return this.cancel();
 	},
@@ -1161,16 +1166,77 @@ Object.extend(Sale.prototype, {
 		$ID('commit-button-panel').style.display = 'none';
 		$ID('after-commit-button-panel').style.display = 'inline';
 		alert("The sale has been saved. The reference number for this sale is " + $saleId + ".");
+		if (this.isNewSale()) document.location = document.location.toString().replace(/\/portal\/.*/i, '/portal/sales/view/last');
+	},
+	
+	cancelSale: function()
+	{
+		this._remoteSaleFunctionCall('cancelSale', this._cancelOK);
+	},
+	
+	_cancelOK: function()
+	{
+		window.scroll(0,0);
+		alert("The sale has been cancelled.");
 		document.location = document.location.toString().replace(/\/portal\/.*/i, '/portal/sales/view/last');
 	},
 	
-	isNewSale: function()
+	rejectSale: function()
+	{
+		this._remoteSaleFunctionCall('rejectSale', this._rejectOK);
+	},
+	
+	_rejectOK: function()
+	{
+		window.scroll(0,0);
+		alert("The sale has been rejected.");
+		document.location = document.location.toString().replace(/\/portal\/.*/i, '/portal/sales/view/last');
+	},
+	
+	verifySale: function()
+	{
+		this._remoteSaleFunctionCall('verifySale', this._verifyOK);
+	},
+	
+	_verifyOK: function()
+	{
+		window.scroll(0,0);
+		alert("The sale has been verified.");
+		document.location = document.location.toString().replace(/\/portal\/.*/i, '/portal/sales/view/last');
+	},
+	
+	_remoteSaleFunctionCall: function($remoteFunName, $okFunc)
+	{
+		window.scroll(0,0);
+		$ID('submit-button-panel').style.display = 'none';
+		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'none';
+		var remote = SalesPortal.getRemoteFunction('Sale', $remoteFunName, $okFunc.bind(this), this._processError.bind(this));
+		remote(Sale.getInstance().getId());
+	},
+	
+	_processError: function($return)
+	{
+		window.scroll(0,0);
+		$ID('submit-button-panel').style.display = 'none';
+		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'inline';
+		alert($return['ERROR']);
+	},
+	
+
+ 	isNewSale: function()
 	{
 		return this.newSale;
 	},
 	
 	buildGUI: function()
 	{
+		var buttons = (Sale.canAmendSale ? '&nbsp;<input type="button" value="Amend Sale" onclick="Sale.getInstance().amendSale()">&nbsp;' : '') +
+					  (Sale.canCancelSale ? '&nbsp;<input type="button" value="Cancel Sale" onclick="Sale.getInstance().cancelSale()">&nbsp;' : '') +
+					  (Sale.canRejectSale ? '&nbsp;<input type="button" value="Reject Sale" onclick="Sale.getInstance().rejectSale()">&nbsp;' : '') +
+					  (Sale.canVerifySale ? '&nbsp;<input type="button" value="Verify Sale" onclick="Sale.getInstance().verifySale()">&nbsp;' : '');
+		
 		// Add contents to this.detailsContainer
 		this.detailsContainer.innerHTML = '' 
 		+ '<div class="Page">' 
@@ -1252,12 +1318,12 @@ Object.extend(Sale.prototype, {
 			+ '<table cellpadding="0" cellspacing="0" border="0" id="direct-debit-detail-table" class="data-table' + (Sale.canAmendSale ? ' read-only' : '') + '"></table>' 
 		+ '</div>' 
 		+ '<div class="MediumSpace"></div>'
-		+ '<span id="amend-button-panel" class="data-display"><input type="button" value="Amend Sale" onclick="Sale.getInstance().clickAmend()"></span>'
-		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Submit" onclick="Sale.getInstance().submit()">' 
+		+ '<span id="amend-button-panel" class="data-display">&nbsp;<input type="button" value="Add New Sale" onclick="Sale.getInstance().addNewSale();">&nbsp;' + buttons + '</span>'
+		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Submit" onclick="Sale.getInstance().submit();">' 
 		+ (Sale.canAmendSale ? '&nbsp;&nbsp;<input type="button" value="Cancel" onclick="Sale.getInstance().cancelAmend()">' : '')
 		+ '</span>'
 		+ '<span id="commit-button-panel"><input type="button" value="Commit" onclick="Sale.getInstance().commit()">&nbsp;&nbsp;<input type="button" value="Edit" onclick="Sale.getInstance().cancel()"></span>'
-		+ '<span id="after-commit-button-panel"><input type="button" value="Add New Sale" onclick="document.location.reload()"></span>'
+		+ '<span id="after-commit-button-panel">&nbsp;<input type="button" value="Add New Sale" onclick="Sale.getInstance().addNewSale();">&nbsp;' + buttons + '</span>'
 		
 		
 		// WIP: This is for debug purposes only!!! Remove it before deployment!
