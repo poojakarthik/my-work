@@ -65,7 +65,7 @@ Object.extend(Sale.prototype, {
 			+ '<table cellpadding="0" cellspacing="0" border="0" id="direct-debit-detail-table" class="data-table read-only"></table>' 
 		+ '</div>' 
 		+ '<div class="MediumSpace"></div>'
-		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Cancel" onclick="Sale.getInstance().cancelAmend()">&nbsp;&nbsp;<input type="button" value="Submit" onclick="Sale.getInstance().submit()"></span>'
+		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Submit" onclick="Sale.getInstance().submit()">&nbsp;&nbsp;<input type="button" value="Cancel" onclick="Sale.getInstance().cancelAmend()"></span>'
 		+ '<span id="commit-button-panel"><input type="button" value="Commit" onclick="Sale.getInstance().commit()">&nbsp;&nbsp;<input type="button" value="Edit" onclick="Sale.getInstance().cancel()"></span>'
 		
 		+ '<span id="after-commit-button-panel">' + buttons + '</span>'
@@ -172,11 +172,9 @@ Object.extend(Sale.prototype, {
 	
 	cancelAmend: function()
 	{
-		window.scroll(0,0);
-		document.body.className = document.body.originalClassName + " data-display";
-		$ID('submit-button-panel').style.display = 'none';
-		$ID('commit-button-panel').style.display = 'none';
-		$ID('after-commit-button-panel').style.display = 'inline';
+		// Must reload the page as the sale object may have been amended and we need to show the original version
+		document.location.reload();
+		return;
 	}
 });
 

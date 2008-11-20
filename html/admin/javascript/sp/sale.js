@@ -1149,12 +1149,9 @@ Object.extend(Sale.prototype, {
 	
 	cancelAmend: function()
 	{
-		window.scroll(0,0);
-		document.body.className = document.body.originalClassName + " data-display";
-		$ID('submit-button-panel').style.display = 'none';
-		$ID('commit-button-panel').style.display = 'none';
-		$ID('after-commit-button-panel').style.display = 'none';
-		$ID('amend-button-panel').style.display = Sale.canAmendSale ? 'inline' : 'none';
+		// Must reload the page as the sale object may have been amended and we need to show the original version
+		document.location.reload();
+		return;
 	},
 	
 	_commitOK: function($saleId)
