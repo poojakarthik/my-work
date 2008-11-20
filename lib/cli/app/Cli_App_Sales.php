@@ -1032,7 +1032,7 @@ class Cli_App_Sales extends Cli
 									$this->log("\t\t\t\t\t\t* Service Type: {$objService->ServiceType}");
 									
 									// Is the FNN in use already?
-									$this->log("\t\t\t\t\t\t* Checking if FNN is in use...");
+									$this->log("\t\t\t\t\t\t* Checking if FNN is in use... ({$objService->FNN}; {$objService->Indial100}; {$objService->CreatedOn})");
 									$mixFNNInUse	= IsFNNInUse($objService->FNN, $objService->Indial100, $objService->CreatedOn);
 									if (is_string($mixFNNInUse))
 									{
