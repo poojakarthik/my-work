@@ -1034,6 +1034,7 @@ class Cli_App_Sales extends Cli
 									// Is the FNN in use already?
 									$this->log("\t\t\t\t\t\t* Checking if FNN is in use... ({$objService->FNN}; {$objService->Indial100}; {$objService->CreatedOn})");
 									$mixFNNInUse	= IsFNNInUse($objService->FNN, $objService->Indial100, $objService->CreatedOn);
+									var_dump($objService->Indial100);
 									if (is_string($mixFNNInUse))
 									{
 										throw new Exception($mixFNNInUse);
