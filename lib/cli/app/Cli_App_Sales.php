@@ -880,6 +880,7 @@ class Cli_App_Sales extends Cli
 											$objService->ServiceType	= SERVICE_TYPE_LAND_LINE;
 											$objService->Indial100		= $arrSPLandLineDetails['is_indial_100'];
 											var_dump($arrSPLandLineDetails['is_indial_100']);
+											Debug($arrSPLandLineDetails['is_indial_100']);
 											$objService->ELB			= $arrSPLandLineDetails['has_extension_level_billing'];
 											
 											// Service Address Details
