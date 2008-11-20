@@ -1310,8 +1310,16 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		foreach($arrWhere as $propertyName => $value)
 		{
 			$fieldName = array_search($propertyName, $arrDsProps);
-			$value = '.$obClassName.'::getUserValueForDataSource($propertyName, $value, true);
-			$arrMatches[] = "$fieldName " . ($value === null ? " IS NULL" : "= $value");
+			if (is_array($value))
+			{
+				foreach ($value as $i => $v) $value[$i] = '.$obClassName.'::getUserValueForDataSource($propertyName, $value[$i], true);
+				$arrMatches[] = "$fieldName IN (" . implode(", ", $value) . ")";
+			}
+			else
+			{
+				$value = '.$obClassName.'::getUserValueForDataSource($propertyName, $value, true);
+				$arrMatches[] = "$fieldName " . ($value === null ? " IS NULL" : "= $value");
+			}
 		}
 		return implode(\' AND \', $arrMatches);
 	}

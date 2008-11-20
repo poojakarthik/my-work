@@ -106,7 +106,7 @@ class Sales_Portal
 			$saleDetails->contacts[] = $contactDetails;
 		}
 		
-		$saleItems = DO_Sales_SaleItem::listForSale($sale);
+		$saleItems = DO_Sales_SaleItem::listActiveForSale($sale);
 		
 		$saleDetails->items = array();
 		foreach ($saleItems as $saleItem)

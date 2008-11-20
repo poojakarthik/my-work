@@ -304,9 +304,12 @@ class JSON_Handler_Sale extends JSON_Handler
 					throw new Exception("No preferred contact method selected.");
 				}
 
-				foreach ($arrContactMethods as $unwantedContactMethod)
+				if (!$bolValidateOnly)
 				{
-					$unwantedContactMethod->delete();
+					foreach ($arrContactMethods as $unwantedContactMethod)
+					{
+						$unwantedContactMethod->delete();
+					}
 				}
 			}
 			
@@ -392,11 +395,11 @@ class JSON_Handler_Sale extends JSON_Handler
 				}
 			}
 			
-			if ($bolValidateOnly)
+			if (!$bolValidateOnly)
 			{
 				foreach($arrItems as $removedItem)
 				{
-					$removedItem->cancel();
+					$removedItem->cancel($dealer->id);
 				}
 			}
 
