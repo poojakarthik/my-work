@@ -325,7 +325,7 @@ class JSON_Handler_Sale extends JSON_Handler
 
 			if (!$arrItemDetails || !is_array($arrItemDetails) || !count($arrItemDetails))
 			{
-				throw new Exception("Unable to save a sale with no sale items.");
+				throw new Exception("Unable to save a sale with no sale items. Try cancelling the sale instead.");
 			}
 
 			$tmpArrItems = DO_Sales_SaleItem::listForSale($sale);
