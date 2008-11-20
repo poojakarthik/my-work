@@ -1,7 +1,7 @@
 <?php
 
 
-class Cli_App_Sync_SalesPortal extends Cli
+class Cli_App_Sales extends Cli
 {
 	const	SWITCH_TEST_RUN		= "t";
 	const	SWITCH_MODE	 		= "m";
@@ -494,17 +494,17 @@ class Cli_App_Sync_SalesPortal extends Cli
 			// FIXME: When the sale_status.const_name field is added, use it instead of sale_status.name
 			$resNewSales	= $dsSalesPortal->query("SELECT sale.* " .
 													"FROM sale JOIN sale_status ON sale.sale_status_id = sale_status.id " .
-													"WHERE sale_status.name = 'Ready For Provisioning'");
+													"WHERE sale_status.name = 'Awaiting Dispatch'");
 			if (PEAR::isError($resNewSales))
 			{
 				throw new Exception($resNewSales->getMessage()." :: ".$resNewSales->getUserInfo());
 			}
-			while ($arrSale = $resNewSales->fetchRow(MDB2_FETCHMODE_ASSOC))
+			while ($arrSPSale = $resNewSales->fetchRow(MDB2_FETCHMODE_ASSOC))
 			{
-				$this->log("\t\t* Sale Id #{$arrSale['id']}...");
+				$this->log("\t\t* Sale Id #{$arrSPSale['id']}...");
 				
 				// Created a new Savepoint for this Sale
-				$strSaleSavePoint	= "Flex_SP_Pull_Sale_{$arrSale['id']}";
+				$strSaleSavePoint	= "Flex_SP_Pull_Sale_{$arrSPSale['id']}";
 				if ($qryQuery->Execute("SAVEPOINT {$strSaleSavePoint}") === FALSE)
 				{
 					throw new Exception($qryQuery->Error());
@@ -518,7 +518,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 				try
 				{
 					// Is this for a new Account?
-					if ($arrSale['sale_type_id'] == 1)
+					if ($arrSPSale['sale_type_id'] == 1)
 					{
 						$this->log("\t\t\t+ Creating new Account...");
 						
@@ -526,8 +526,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 						// Yes -- Create a new AccountGroup/Account for this Customer
 						$objAccountGroup			= new Account_Group();
 						$objAccountGroup->CreatedBy	= 0;
-						$objAccountGroup->CreatedOn	= $arrSale['created_on'];
-						$objAccountGroup->Archived	= 0;
+						$objAccountGroup->CreatedOn	= $arrSPSale['created_on'];
+						$objAccountGroup->Archived	= ACCOUNT_STATUS_ACTIVE;
 						$objAccountGroup->save();
 						//--------------------------------------------------------//
 						
@@ -535,31 +535,31 @@ class Cli_App_Sync_SalesPortal extends Cli
 						// Get sale_account Details for this Sale
 						$resSaleAccount	= $dsSalesPortal->query("SELECT sale_account.*, state.name AS state_name " .
 																"FROM sale_account JOIN state ON state.id = sale_account.state_id  " .
-																"WHERE sale_id = {$arrSale['id']} " .
+																"WHERE sale_id = {$arrSPSale['id']} " .
 																"LIMIT 1");
 						if (PEAR::isError($resSaleAccount))
 						{
 							throw new Exception($resSaleAccount->getMessage()." :: ".$resSaleAccount->getUserInfo());
 						}
-						$arrSaleAccount	= $resSaleAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
-						$this->log("\t\t\t\t* SP Sale Account Id #{$arrSaleAccount['id']}...");
+						$arrSPSaleAccount	= $resSaleAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
+						$this->log("\t\t\t\t* SP Sale Account Id #{$arrSPSaleAccount['id']}...");
 						
 						$objAccount						= new Account();
-						$objAccount->BusinessName		= ($arrSaleAccount['business_name']) ? $arrSaleAccount['business_name'] : '';
-						$objAccount->TradingName		= ($arrSaleAccount['trading_name']) ? $arrSaleAccount['trading_name'] : '';
-						$objAccount->ABN				= ($arrSaleAccount['abn']) ? $arrSaleAccount['abn'] : '';
-						$objAccount->ACN				= ($arrSaleAccount['acn']) ? $arrSaleAccount['acn'] : '';
-						$objAccount->Address1			= $arrSaleAccount['address_line_1'];
-						$objAccount->Address2			= ($arrSaleAccount['address_line_2']) ? $arrSaleAccount['address_line_2'] : '';
-						$objAccount->Suburb				= $arrSaleAccount['suburb'];
-						$objAccount->Postcode			= $arrSaleAccount['postcode'];
-						$objAccount->State				= $arrSaleAccount['state_name'];
+						$objAccount->BusinessName		= ($arrSPSaleAccount['business_name']) ? $arrSPSaleAccount['business_name'] : '';
+						$objAccount->TradingName		= ($arrSPSaleAccount['trading_name']) ? $arrSPSaleAccount['trading_name'] : '';
+						$objAccount->ABN				= ($arrSPSaleAccount['abn']) ? $arrSPSaleAccount['abn'] : '';
+						$objAccount->ACN				= ($arrSPSaleAccount['acn']) ? $arrSPSaleAccount['acn'] : '';
+						$objAccount->Address1			= $arrSPSaleAccount['address_line_1'];
+						$objAccount->Address2			= ($arrSPSaleAccount['address_line_2']) ? $arrSPSaleAccount['address_line_2'] : '';
+						$objAccount->Suburb				= $arrSPSaleAccount['suburb'];
+						$objAccount->Postcode			= $arrSPSaleAccount['postcode'];
+						$objAccount->State				= $arrSPSaleAccount['state_name'];
 						$objAccount->Country			= 'AU';
-						$objAccount->CustomerGroup		= $arrSaleAccount['vendor_id'];
+						$objAccount->CustomerGroup		= $arrSPSaleAccount['vendor_id'];
 						$objAccount->AccountGroup		= $objAccountGroup->Id;
 						$objAccount->BillingFreq		= BILLING_DEFAULT_FREQ;
 						$objAccount->BillingFreqType	= BILLING_DEFAULT_FREQ_TYPE;
-						$objAccount->BillingMethod		= $this->_convertSalesPortalToFlex('billdeliverytype', $arrSaleAccount['bill_delivery_type_id']);
+						$objAccount->BillingMethod		= $this->_convertSalesPortalToFlex('billdeliverytype', $arrSPSaleAccount['bill_delivery_type_id']);
 						
 						$resPaymentTerms	= $qryQuery->Execute("SELECT * FROM payment_terms WHERE customer_group_id = {$objAccount->CustomerGroup} ORDER BY id DESC LIMIT 1");
 						if ($resPaymentTerms === FALSE)
@@ -577,9 +577,9 @@ class Cli_App_Sync_SalesPortal extends Cli
 							$objAccount->PaymentTerms	= 14;
 						}
 						
-						if ($arrSaleAccount['direct_debit_type_id'])
+						if ($arrSPSaleAccount['direct_debit_type_id'])
 						{
-							$objAccount->BillingType		= $this->_convertSalesPortalToFlex('directdebittype', $arrSaleAccount['direct_debit_type_id']);
+							$objAccount->BillingType		= $this->_convertSalesPortalToFlex('directdebittype', $arrSPSaleAccount['direct_debit_type_id']);
 						}
 						else
 						{
@@ -587,7 +587,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						}
 						
 						$objAccount->CreatedBy			= 0;
-						$objAccount->CreatedOn			= $arrSale['created_on'];
+						$objAccount->CreatedOn			= $arrSPSale['created_on'];
 						$objAccount->DisableDDR			= 0;
 						$objAccount->DisableLatePayment	= 0;
 						$objAccount->DisableLateNotices	= 0;
@@ -604,7 +604,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						//--------------------------------------------------------//
 						
 						//---------------------- DIRECT DEBIT --------------------//
-						switch ($arrSaleAccount['direct_debit_type_id'])
+						switch ($arrSPSaleAccount['direct_debit_type_id'])
 						{
 							// Bank Account
 							case 1:
@@ -612,7 +612,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 								// Get additional Bank Account Details
 								$resSPBankAccount	= $dsSalesPortal->query("SELECT * " .
 																		"FROM sale_account_direct_debit_bank_account " .
-																		"WHERE sale_account_id = {$arrSaleAccount['id']} " .
+																		"WHERE sale_account_id = {$arrSPSaleAccount['id']} " .
 																		"LIMIT 1");
 								if (PEAR::isError($resSPBankAccount))
 								{
@@ -628,7 +628,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 								$arrBankAccount['AccountNumber']	= $arrSPBankAccount['account_number'];
 								$arrBankAccount['AccountName']		= $arrSPBankAccount['account_name'];
 								$arrBankAccount['Archived']			= 0;
-								$arrBankAccount['created_on']		= $arrSale['created_on'];
+								$arrBankAccount['created_on']		= $arrSPSale['created_on'];
 								$arrBankAccount['employee_id']		= 0;
 								$resBankAccountInsert	= $insBankAccount->Execute($arrBankAccount);
 								if ($resBankAccountInsert === FALSE)
@@ -645,7 +645,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 								// Get additional Credit Card Details
 								$resSPCreditCard	= $dsSalesPortal->query("SELECT * " .
 																		"FROM sale_account_direct_debit_credit_card " .
-																		"WHERE sale_account_id = {$arrSaleAccount['id']} " .
+																		"WHERE sale_account_id = {$arrSPSaleAccount['id']} " .
 																		"LIMIT 1");
 								if (PEAR::isError($resSPCreditCard))
 								{
@@ -663,7 +663,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 								$arrCreditCard['ExpYear']		= (string)$arrSPCreditCard['expiry_year'];
 								$arrCreditCard['CVV']			= $arrSPCreditCard['cvv'];
 								$arrCreditCard['Archived']		= 0;
-								$arrCreditCard['created_on']	= $arrSale['created_on'];
+								$arrCreditCard['created_on']	= $arrSPSale['created_on'];
 								$arrCreditCard['employee_id']	= 0;
 								$resCreditCardInsert	= $insCreditCard->Execute($arrCreditCard);
 								if ($resCreditCardInsert === FALSE)
@@ -680,7 +680,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 						
 						$this->log("\t\t\t\t+ Updating Sales Portal Remote Reference to {$objAccount->Id}...");
 						// Update the SP Sale Account Remote Reference
-						$resSPSaleAccount	= $dsSalesPortal->query("UPDATE sale_account SET external_reference = 'Account.Id={$objAccount->Id}' WHERE id = {$arrSaleAccount['id']}");
+						$resSPSaleAccount	= $dsSalesPortal->query("UPDATE sale_account SET external_reference = 'Account.Id={$objAccount->Id}' WHERE id = {$arrSPSaleAccount['id']}");
 						if (PEAR::isError($resSPSaleAccount))
 						{
 							throw new Exception($resSPSaleAccount->getMessage()." :: ".$resSPSaleAccount->getUserInfo());
@@ -690,15 +690,23 @@ class Cli_App_Sync_SalesPortal extends Cli
 					else
 					{
 						// We only support New Customer Sales at the moment
-						throw new Exception("'{$arrSale['sale_type_id']}' Sales are not supported by Flex!");
+						throw new Exception("'{$arrSPSale['sale_type_id']}' Sales are not supported by Flex!");
 					}
+					
+					// Create a new Sale record in Flex
+					$objSale	= new Sale();
+					$objSale->external_reference	= "sale.id={$arrSPSale['id']}";
+					$objSale->account_id			= $objAccount->Id;
+					$objSale->save();
+					
+					$objSale->intCouldntComplete	= 0;
 					
 					$this->log("\t\t\t* Getting list of new Contacts...");
 					//-------------------------- CONTACT -------------------------//
 					// Get the new Contacts associated with this Sale
 					$resNewContacts	= $dsSalesPortal->query("SELECT contact.*, contact_title.name AS contact_title_name, contact_sale.contact_association_type_id " .
 															"FROM (contact JOIN contact_sale ON contact.id = contact_sale.contact_id JOIN sale ON sale.id = contact_sale.sale_id) LEFT JOIN contact_title ON contact_title.id = contact.contact_title_id " .
-															"WHERE contact.external_reference IS NULL AND contact_status_id = 1 AND contact_sale.sale_id = {$arrSale['id']}");
+															"WHERE contact.external_reference IS NULL AND contact_status_id = 1 AND contact_sale.sale_id = {$arrSPSale['id']}");
 					if (PEAR::isError($resNewContacts))
 					{
 						throw new Exception($resNewContacts->getMessage()." :: ".$resNewContacts->getUserInfo());
@@ -787,7 +795,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 					// Get all items that were sold
 					$resSPSaleItems	= $dsSalesPortal->query("SELECT sale_item.*, product.product_type_id, product_type.product_category_id " .
 															"FROM sale_item JOIN product ON sale_item.product_id = product.id JOIN product_type ON product_type.id = product.product_type_id " .
-															"WHERE sale_id = {$arrSale['id']} AND sale_item_status_id = 5");
+															"WHERE sale_id = {$arrSPSale['id']} AND sale_item_status_id = 5");
 					if (PEAR::isError($resSPSaleItems))
 					{
 						throw new Exception($resSPSaleItems->getMessage()." :: ".$resSPSaleItems->getUserInfo());
@@ -829,8 +837,8 @@ class Cli_App_Sync_SalesPortal extends Cli
 									$objService->CreatedBy			= 0;
 									$objService->NatureOfCreation	= SERVICE_CREATION_NEW;
 									$objService->ForceInvoiceRender	= 0;
-									$objService->Status				= SERVICE_ACTIVE;
-									$objService->Dealer				= $arrSale['dealer_id'];
+									$objService->Status				= SERVICE_PENDING;
+									$objService->Dealer				= $arrSPSale['dealer_id'];
 									$objService->Cost				= 0;
 									
 									// Get the Sale Status Date
@@ -938,9 +946,15 @@ class Cli_App_Sync_SalesPortal extends Cli
 											}
 											$arrSPMobileDetails		= $resSPMobileDetails->fetchRow(MDB2_FETCHMODE_ASSOC);
 											
-											// Service Details
+											// Service Details (Mobiles are automatically set to ACTIVE)
 											$objService->FNN			= $arrSPMobileDetails['fnn'];
 											$objService->ServiceType	= SERVICE_TYPE_MOBILE;
+											
+											// If it's a New mobile, it will have already been provisioned, so set to ACTIVE
+											if ($arrSPMobileDetails['service_mobile_origin_id'] === 1)
+											{
+												$objService->Status			= SERVICE_ACTIVE;
+											}
 											
 											// Mobile Details
 											$arrAdditionalDetails	= array();
@@ -952,6 +966,12 @@ class Cli_App_Sync_SalesPortal extends Cli
 											$arrAdditionalDetails['SimState']		= ($arrSPMobileDetails['sim_state_id']) ? $this->_salesPortalEnum('state', $arrSPMobileDetails['sim_state_id'], 'code') : '';
 											$arrAdditionalDetails['DOB']			= ($arrSPMobileDetails['dob']) ? $arrSPMobileDetails['dob'] : '0000-00-00';
 											$arrAdditionalDetails['Comments']		= ($arrSPMobileDetails['comments']) ? $arrSPMobileDetails['comments'] : '';
+											
+											// Current Account Information
+											$strChurnDetails						= ($arrSPMobileDetails['current_provider']) ? "\nCurrent Provider\t\t: {$arrSPMobileDetails['current_provider']}" : '';
+											$strChurnDetails						.= ($arrSPMobileDetails['current_account_number']) ? "\nCurrent Account Number\t: {$arrSPMobileDetails['current_account_number']}" : '';
+											$arrAdditionalDetails['Comments']		.= ($strChurnDetails) ? "\n{$strChurnDetails}" : '';
+											$arrAdditionalDetails['Comments']		= trim($arrAdditionalDetails['Comments']);
 											break;
 											
 										// ADSL
@@ -998,6 +1018,14 @@ class Cli_App_Sync_SalesPortal extends Cli
 											$arrAdditionalDetails['Configuration']	= ($arrSPInboundDetails['configuration']) ? $arrSPInboundDetails['configuration'] : '';
 											break;
 									}
+									
+									// Was an FNN provided? (new Mobile Services won't have an MSN)
+									if ($objService->FNN === NULL)
+									{
+										$this->log("\t\t\t\t\t\t\t! No FNN has been provided!  Aborting Sale...");
+										throw new Exception_Sale_Product_Manual_Intervention("This Service does not have an FNN assigned.  Please complete any manual provisioning required to determin the FNN, and reset to Awaiting Dispatch.");
+									}
+									
 									$this->log("\t\t\t\t\t\t* FNN: {$objService->FNN}");
 									$this->log("\t\t\t\t\t\t* Service Type: {$objService->ServiceType}");
 									
@@ -1045,7 +1073,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 									$objRatePlan	= new Rate_Plan(Array('Id'=>(int)$arrRatePlanId[1]), TRUE);
 									$this->log("\t\t\t\t\t\t+ Setting Plan to '{$objRatePlan->Name}'...");									
 									$objService->changePlan($objRatePlan);
-									
+									/*
 									// Perform Automatic Provisioning
 									$this->log("\t\t\t\t\t\t+ Automatically Provisioning...");
 									if ($objService->ServiceType === SERVICE_TYPE_LAND_LINE)
@@ -1083,7 +1111,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 									else
 									{
 										$this->log("\t\t\t\t\t\t\t! Automatic Provisioning is not supported for ".GetConstantDescription($objService->ServiceType, 'service_type')."s");
-									}
+									}*/
 									break;
 								
 								// Unknown
@@ -1091,8 +1119,34 @@ class Cli_App_Sync_SalesPortal extends Cli
 									throw new Exception("Product Category '{$arrSPSaleItem['product_category_id']}' is unsupported by Flex!");
 							}
 							
-							// Set Item Status to Provisioned
-							$this->_updateSaleItemStatus($arrSPSaleItem['id'], 'Provisioned');
+							// Create a new Sale_Item record in Flex
+							$objSaleItem	= new Sale_Item();
+							$objSaleItem->external_reference	= "sale_item.id={$arrSPSaleItem['id']}";
+							$objSaleItem->sale_id				= $objSale->id;
+							switch ($arrSPSaleItem['product_category_id'])
+							{
+								// Service
+								case 1:
+									$objSaleItem->service_id	= $objService->Id;
+									break;
+								
+								// Unknown
+								default:
+									throw new Exception("Product Category '{$arrSPSaleItem['product_category_id']}' is unsupported by Flex!");
+							}
+							$objSaleItem->save();
+							
+							// Set Item Status
+							$this->_updateSaleItemStatus($arrSPSaleItem['id'], 'Dispatched');
+							if ($objService->Status === SERVICE_ACTIVE)
+							{
+								$this->_updateSaleItemStatus($arrSPSaleItem['id'], 'Completed');
+							}
+							else
+							{
+								// There is at least one non-Completed Item in this Sale
+								$objSale->intCouldntComplete++;
+							}
 						
 							// All seems to have worked, release Sale Item the savepoints
 							if ($qryQuery->Execute("RELEASE SAVEPOINT {$strSaleItemSavePoint}") === FALSE)
@@ -1129,8 +1183,12 @@ class Cli_App_Sync_SalesPortal extends Cli
 					}
 					//------------------------------------------------------------//
 					
-					// Set Sale Status to Provisioned
-					$this->_updateSaleStatus($arrSale['id'], 'Provisioned');
+					// Set Sale Status
+					$this->_updateSaleStatus($arrSPSale['id'], 'Dispatched');
+					if (!$objSale->intCouldntComplete)
+					{
+						$this->_updateSaleStatus($arrSPSale['id'], 'Completed');
+					}
 					
 					// All seems to have worked, release the Sale savepoints
 					if ($qryQuery->Execute("RELEASE SAVEPOINT {$strSaleSavePoint}") === FALSE)
@@ -1146,7 +1204,7 @@ class Cli_App_Sync_SalesPortal extends Cli
 				catch (Exception_Sale_Manual_Intervention $eException)
 				{
 					// There was an issue with the Sale which needs manual intervention to resolve
-					$this->_updateSaleStatus($arrSale['id'], 'Manual Intervention', $eException->getMessage());
+					$this->_updateSaleStatus($arrSPSale['id'], 'Manual Intervention', $eException->getMessage());
 				}
 			}
 			
@@ -1352,6 +1410,12 @@ class Cli_App_Sync_SalesPortal extends Cli
 		}
 		return $mixValue;
 	}
+	
+	// _automaticProvisioning()	: checks to see if there are any Sales that are ready to be automatically provisioned
+	private function _automaticProvisioning()
+	{
+		
+	} 
 
 	function getCommandLineArguments()
 	{

@@ -1,4 +1,4 @@
 <?php
 require_once dirname(__FILE__) . "/../lib/cli/Cli.php";	
-Cli::execute("Cli_App_Sync_SalesPortal");
+Cli::execute("Cli_App_Sales");
 ?>
