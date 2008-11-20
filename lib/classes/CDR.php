@@ -2,8 +2,61 @@
 
 require_once dirname(__FILE__) . '/data/Data_Source.php';
 
-class CDR
+class CDR extends ORM
 {
+	protected	$_strTableName	= "CDR";
+	
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * constructor
+	 * 
+	 * constructor
+	 *
+	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
+	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
+	 * 
+	 * @return	void
+	 * 
+	 * @constructor
+	 */
+	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
+	{
+		// Parent constructor
+		parent::__construct($arrProperties, $bolLoadById);
+	}
+	
+	/**
+	 * updateQuarantineStatus()
+	 *
+	 * Updates the Quarantine Status for this CDR
+	 * 
+	 * @return	void
+	 * 
+	 * @constructor
+	 */
+	public function updateQuarantineStatus()
+	{
+		// Determine what original CDR this is tied to, and retrieve it
+		// TODO
+		
+		switch ($this->Status)
+		{
+			case CDR_RECHARGE:
+				break;
+			
+			case CDR_CREDIT_QUARANTINE:
+				break;
+			
+			default:
+				// This is not a Quarantined CDR, return nicely
+				return;
+		}
+	}
+	
 	public static function getForInvoice($mxdInvoice)
 	{
 		// Invoiced CDRs will be in the CDR database.
@@ -75,9 +128,56 @@ class CDR
 		return $rows;
 	}
 
-
+	
+	//------------------------------------------------------------------------//
+	// _preparedStatement
+	//------------------------------------------------------------------------//
+	/**
+	 * _preparedStatement()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 * 
+	 * @param	string		$strStatement						Name of the statement
+	 * 
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	protected static function _preparedStatement($strStatement)
+	{
+		static	$arrPreparedStatements	= Array();
+		if (isset($arrPreparedStatements[$strStatement]))
+		{
+			return $arrPreparedStatements[$strStatement];
+		}
+		else
+		{
+			switch ($strStatement)
+			{
+				// SELECTS
+				case 'selById':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Note", "*", "Id = <Id>", NULL, 1);
+					break;
+				
+				// INSERTS
+				case 'insSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementInsert("Note");
+					break;
+				
+				// UPDATE BY IDS
+				case 'ubiSelf':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("Note");
+					break;
+				
+				// UPDATES
+				
+				default:
+					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
+			}
+			return $arrPreparedStatements[$strStatement];
+		}
+	}
 }
-
-
-
 ?>
