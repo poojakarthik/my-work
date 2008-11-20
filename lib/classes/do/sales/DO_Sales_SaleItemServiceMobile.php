@@ -37,8 +37,7 @@ class DO_Sales_SaleItemServiceMobile extends DO_Sales_Base_SaleItemServiceMobile
 					}
 					
 					$saleItem = $this->getSaleItem();
-					// Required for Verified (2), Ready For Provisioning (5) or Provisioned (6)
-					if ($saleItem->saleItemStatusId == 2 || $saleItem->saleItemStatusId == 5 || $saleItem->saleItemStatusId == 6) // WIP - Code this properly!!!
+					if ($saleItem->saleItemStatusId == DO_Sales_SaleItemStatus::DISPATCHED || $saleItem->saleItemStatusId == DO_Sales_SaleItemStatus::PROVISIONED)
 					{
 						return false;
 					}
