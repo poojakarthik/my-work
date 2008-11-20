@@ -482,6 +482,8 @@ class Cli_App_Sales extends Cli
 		$dsSalesPortal->beginTransaction();
 		$dacFlex->TransactionStart();
 		
+		$intPullDatetime	= time();
+		$strPullDatetime	= date("Y-m-d H:i:s", $intPullDatetime);
 		try
 		{
 			$qryQuery		= new Query();
@@ -526,7 +528,7 @@ class Cli_App_Sales extends Cli
 						// Yes -- Create a new AccountGroup/Account for this Customer
 						$objAccountGroup			= new Account_Group();
 						$objAccountGroup->CreatedBy	= 0;
-						$objAccountGroup->CreatedOn	= $arrSPSale['created_on'];
+						$objAccountGroup->CreatedOn	= $strPullDatetime;
 						$objAccountGroup->Archived	= ACCOUNT_STATUS_ACTIVE;
 						$objAccountGroup->save();
 						//--------------------------------------------------------//
@@ -587,7 +589,7 @@ class Cli_App_Sales extends Cli
 						}
 						
 						$objAccount->CreatedBy			= 0;
-						$objAccount->CreatedOn			= $arrSPSale['created_on'];
+						$objAccount->CreatedOn			= $strPullDatetime;
 						$objAccount->DisableDDR			= 0;
 						$objAccount->DisableLatePayment	= 0;
 						$objAccount->DisableLateNotices	= 0;
@@ -852,7 +854,7 @@ class Cli_App_Sales extends Cli
 										throw new Exception($resSPSaleItemStatusDate->getMessage()." :: ".$resSPSaleItemStatusDate->getUserInfo());
 									}
 									$arrSPSaleItemStatusDate	= $resSPSaleItemStatusDate->fetchRow(MDB2_FETCHMODE_ASSOC);
-									$objService->CreatedOn		= $arrSPSaleItemStatusDate['changed_on'];
+									$objService->CreatedOn		= $strPullDatetime;
 									
 									// Additional Details -- What product type is this?
 									$insAdditionalDetails	= NULL;
