@@ -74,6 +74,7 @@ Object.extend(Sale.prototype, {
 		// WIP: This is for debug purposes only!!! Remove it before deployment!
 		//+ '<br/><br/><input type="button" value="Toggle Entry/Display" onclick="$ID(\'submit-button-panel\').style.display = (document.body.className == \'data-display\' ? \'inline\' : \'none\'); $ID(\'commit-button-panel\').style.display = (document.body.className == \'data-display\' ? \'none\' : \'inline\'); document.body.className = (document.body.className == \'data-display\' ? \'data-entry\' : \'data-display\')">'
 		
+		+ '<span id="amend-button-panel" class="data-display"></span>'
 		
 		+ '';
 		

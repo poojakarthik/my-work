@@ -1088,6 +1088,7 @@ Object.extend(Sale.prototype, {
 			$ID('submit-button-panel').style.display = 'none';
 			$ID('commit-button-panel').style.display = 'none';	
 			$ID('after-commit-button-panel').style.display = 'none';
+			$ID('amend-button-panel').style.display = 'none';
 			var submit = SalesPortal.getRemoteFunction('Sale', 'submit', this._submitOK.bind(this), this._submitError.bind(this));
 			submit(this.object);
 		}
@@ -1103,6 +1104,7 @@ Object.extend(Sale.prototype, {
 		$ID('submit-button-panel').style.display = 'none';
 		$ID('commit-button-panel').style.display = 'inline';
 		$ID('after-commit-button-panel').style.display = 'none';
+		$ID('amend-button-panel').style.display = 'none';
 		alert("Please check that all details are correct and then click 'Commit' to save or 'Edit' to make corrections.");
 	},
 	
@@ -1113,6 +1115,7 @@ Object.extend(Sale.prototype, {
 		$ID('submit-button-panel').style.display = 'inline';
 		$ID('commit-button-panel').style.display = 'none';
 		$ID('after-commit-button-panel').style.display = 'none';
+		$ID('amend-button-panel').style.display = 'none';
 		alert($return['ERROR']);
 	},
 	
@@ -1124,6 +1127,7 @@ Object.extend(Sale.prototype, {
 		$ID('submit-button-panel').style.display = 'none';
 		$ID('commit-button-panel').style.display = 'none';
 		$ID('after-commit-button-panel').style.display = 'none';
+		$ID('amend-button-panel').style.display = 'none';
 		var submit = SalesPortal.getRemoteFunction('Sale', 'confirm', this._commitOK.bind(this), this._submitError.bind(this));
 		submit(this.object);
 	},
@@ -1135,6 +1139,22 @@ Object.extend(Sale.prototype, {
 		$ID('submit-button-panel').style.display = 'inline';
 		$ID('commit-button-panel').style.display = 'none';
 		$ID('after-commit-button-panel').style.display = 'none';
+		$ID('amend-button-panel').style.display = 'none';
+	},
+	
+	clickAmend: function()
+	{
+		return this.cancel();
+	},
+	
+	cancelAmend: function()
+	{
+		window.scroll(0,0);
+		document.body.className = document.body.originalClassName + " data-display";
+		$ID('submit-button-panel').style.display = 'none';
+		$ID('commit-button-panel').style.display = 'none';
+		$ID('after-commit-button-panel').style.display = 'none';
+		$ID('amend-button-panel').style.display = Sale.canAmendSale ? 'inline' : 'none';
 	},
 	
 	_commitOK: function($saleId)
@@ -1224,19 +1244,21 @@ Object.extend(Sale.prototype, {
 						+ '<TD>' 
 							+ '<table id="bill-delivery-type-table"></table>' 
 						+ '</TD>' 
-						+ '<TD>' 
+						+ '<TD' + (Sale.canAmendSale ? ' class="read-only"' : '') + '>' 
 							+ '<table id="bill-payment-type-table"></table>' 
 						+ '</TD>' 
-						+ '<TD>' 
+						+ '<TD' + (Sale.canAmendSale ? ' class="read-only"' : '') + '>' 
 							+ '<table id="direct-debit-type-table"></table>'
 						+ '</TD>' 
 					+ '</TR>' 
 				+ '</TABLE></div>' 
-			+ '<table cellpadding="0" cellspacing="0" border="0" id="direct-debit-detail-table" class="data-table"></table>' 
-			+ '<div id="PaymentDetails" style="display: none;"></div>' 
+			+ '<table cellpadding="0" cellspacing="0" border="0" id="direct-debit-detail-table" class="data-table' + (Sale.canAmendSale ? ' read-only' : '') + '"></table>' 
 		+ '</div>' 
 		+ '<div class="MediumSpace"></div>'
-		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Submit" onclick="Sale.getInstance().submit()"></span>'
+		+ '<span id="amend-button-panel" class="data-display"><input type="button" value="Amend Sale" onclick="Sale.getInstance().clickAmend()"></span>'
+		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Submit" onclick="Sale.getInstance().submit()">' 
+		+ (Sale.canAmendSale ? '&nbsp;&nbsp;<input type="button" value="Cancel" onclick="Sale.getInstance().cancelAmend()">' : '')
+		+ '</span>'
 		+ '<span id="commit-button-panel"><input type="button" value="Commit" onclick="Sale.getInstance().commit()">&nbsp;&nbsp;<input type="button" value="Edit" onclick="Sale.getInstance().cancel()"></span>'
 		+ '<span id="after-commit-button-panel"><input type="button" value="Add New Sale" onclick="document.location.reload()"></span>'
 		
@@ -1247,9 +1269,10 @@ Object.extend(Sale.prototype, {
 		
 		+ '';
 		
+		$ID('submit-button-panel').style.display = Sale.canAmendSale ? 'none' : 'inline';
 		$ID('commit-button-panel').style.display = 'none';
-		$ID('submit-button-panel').style.display = 'inline';
 		$ID('after-commit-button-panel').style.display = 'none';
+		$ID('amend-button-panel').style.display = Sale.canAmendSale ? 'inline' : 'none';
 		
 		var saleAccount = this.getSaleAccount();
 		saleAccount.setContainers($ID('account_details_holder'));
@@ -2785,7 +2808,10 @@ Object.extend(Sale.Contact.prototype, {
 	addContactMethod: function(obj)
 	{
 		var contactMethod = new Sale.Contact.Contact_Method(obj);
-		this.object.contact_methods[this.object.contact_methods.length] = contactMethod.object;
+		if (obj == null)
+		{
+			this.object.contact_methods[this.object.contact_methods.length] = contactMethod.object;
+		}
 		return contactMethod;
 	},
 	

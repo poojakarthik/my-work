@@ -243,7 +243,12 @@ class JSON_Handler_Sale extends JSON_Handler
 						if (array_key_exists($contactMethodDetails->contact_method_type_id, $arrContactMethods))
 						{
 							$contactMethod = $arrContactMethods[$contactMethodDetails->contact_method_type_id];
-							unset($arrContactMethods[$contactMethodDetails->contact_method_type_id]);
+							// If the existing contact method should still be used...
+							if ($contactMethodDetails->details != null || trim($contactMethodDetails->details))
+							{
+								// Remove it from the list of methods to be deleted
+								unset($arrContactMethods[$contactMethodDetails->contact_method_type_id]);
+							}
 						}
 						else
 						{
@@ -257,7 +262,8 @@ class JSON_Handler_Sale extends JSON_Handler
 						try
 						{
 							$contactMethod->isValid(true);
-							if (!$bolValidateOnly) 
+							// Only save if not doing validation AND we actually have details to save
+							if (!$bolValidateOnly && ($contactMethod->isPrimary || $contactMethod->details)) 
 							{
 									$contactMethod->save();
 							}
@@ -304,9 +310,12 @@ class JSON_Handler_Sale extends JSON_Handler
 				}
 			}
 			
-			foreach ($arrContactSales as $objContactSale)
+			if (!$bolValidateOnly)
 			{
-				$objContactSale->delete();
+				foreach ($arrContactSales as $objContactSale)
+				{
+					$objContactSale->delete();
+				}
 			}
 
 			$arrItemDetails = $saleDetails->items;
