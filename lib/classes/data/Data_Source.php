@@ -28,7 +28,13 @@ class Data_Source
 
 		if ($bolNewConnection)
 		{
-			return MDB2::connect(self::dsnForName($strDataSourceName), $options);
+			// Don't specify the name of the data source.  It will be anonomous
+			$objMDB2 = MDB2::connect(self::dsnForName($strDataSourceName), $options);
+			if (PEAR::isError($objMDB2))
+			{
+				throw new Exception("Failed to connect to data source $strDataSourceName: " . $objMDB2->getMessage());
+			}
+			return new Data_Source_MDB2_Wrapper($objMDB2, NULL);
 		}
 		else
 		{
@@ -38,7 +44,7 @@ class Data_Source
 			// with the privileges of whichever connected first.
 			if (!array_key_exists($strDataSourceName, $arrRequestedDSNs))
 			{
-				$arrRequestedDSNs[$strDataSourceName] = MDB2::connect(self::dsnForName($strDataSourceName), $options);
+				$arrRequestedDSNs[$strDataSourceName] = new Data_Source_MDB2_Wrapper(MDB2::connect(self::dsnForName($strDataSourceName), $options), $strDataSourceName);
 				if (PEAR::isError($arrRequestedDSNs[$strDataSourceName]))
 				{
 					throw new Exception("Failed to connect to data source $strDataSourceName: " . $arrRequestedDSNs[$strDataSourceName]->getMessage());

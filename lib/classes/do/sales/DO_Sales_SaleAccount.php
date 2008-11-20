@@ -102,7 +102,7 @@ class DO_Sales_SaleAccount extends DO_Sales_Base_SaleAccount
 		
 		$history = new DO_Sales_SaleAccountHistory();
 		$history->saleAccountId = $this->id;
-		$history->changedOn = date('Y-m-d H:i:s');
+		$history->changedOn = Data_Source_Time::currentTimestamp($this->getDataSource());
 		$history->changedBy = $dealerId;
 		$history->billPaymentTypeId = $this->billPaymentTypeId;
 		$history->directDebitTypeId = $this->directDebitTypeId;

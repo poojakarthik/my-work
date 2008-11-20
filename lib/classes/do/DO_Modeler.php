@@ -698,17 +698,17 @@ class DO_Field
 	
 						case 'date':
 							if ($value === '') $value = 'date("Y-m-d", 0)';
-							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'date("Y-m-d")';
+							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'Data_Source_Time::currentDate($this->getDataSource())';
 							break;
 	
 						case 'datetime':
 							if ($value === '') $value = 'date("Y-m-d H:i:s", 0)';
-							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'date("Y-m-d H:i:s")';
+							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'Data_Source_Time::currentTimestamp($this->getDataSource())';
 							break;
 	
 						case 'time':
 							if ($value === '') $value = 'date("H:i:s", 0)';
-							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'date("H:i:s")';
+							elseif ($value === 'CURRENT_TIMESTAMP' || $value === 'now()') $returnValue = 'Data_Source_Time::currentTimeOfDay($this->getDataSource())';
 							break;
 						
 						case 'string':
