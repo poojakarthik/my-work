@@ -96,7 +96,7 @@ abstract class ORM
 	public function save()
 	{
 		// Do we have an Id for this instance?
-		if ($this->Id !== NULL)
+		if ($this->id !== NULL)
 		{
 			// Update
 			$ubiSelf	= $this->_preparedStatement("ubiSelf");
@@ -117,7 +117,7 @@ abstract class ORM
 			}
 			if (is_int($mixResult))
 			{
-				$this->Id	= $mixResult;
+				$this->id	= $mixResult;
 				return TRUE;
 			}
 			else
