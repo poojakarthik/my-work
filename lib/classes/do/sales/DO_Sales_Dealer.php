@@ -118,22 +118,37 @@ class DO_Sales_Dealer extends DO_Sales_Base_Dealer
 	// Returns TRUE if the dealer can View the sale.  The requirements being that the sale is associated with them, or any of their subordinates
 	public function canViewSale($doSale)
 	{
-		if ($this->id == $doSale->createdBy)
+		static $cache;
+		if (!isset($cache)) $cache = array();
+		if (!array_key_exists($doSale->id, $cache))
 		{
-			// The dealer created the sale
-			return TRUE;
-		}
-		
-		// Check if any of the dealer's subordinates created the sale
-		$arrSubDealers = $this->getSubordinates();
-		foreach ($arrSubDealers as $doSubDealer)
-		{
-			if ($doSubDealer->id == $doSale->createdBy)
+			$answer = false;
+			if ($this->id == $doSale->createdBy)
 			{
-				return TRUE;
+				// The dealer created the sale
+				$answer = true;
 			}
+			else
+			{
+				// Check if any of the dealer's subordinates created the sale
+				$arrSubDealers = $this->getSubordinates();
+				foreach ($arrSubDealers as $doSubDealer)
+				{
+					if ($doSubDealer->id == $doSale->createdBy)
+					{
+						$answer = true;
+						break;
+					}
+				}
+			}
+			$cache[$doSale->id] = $answer;
 		}
-		return FALSE;
+		return $cache[$doSale->id];
+	}
+	
+	public function isActive()
+	{
+		return $this->dealerStatusId == DO_Sales_DealerStatus::ACTIVE;
 	}
 	
 }

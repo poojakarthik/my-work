@@ -353,6 +353,7 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		catch (Exception $e)
 		{
 			$dataSource->rollback($strTransactionName);
+			throw $e;
 		}
 	}
 	
@@ -386,6 +387,7 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		catch (Exception $e)
 		{
 			$dataSource->rollback($strTransactionName);
+			throw $e;
 		}
 	}
 	
