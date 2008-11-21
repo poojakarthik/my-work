@@ -472,7 +472,7 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 			$this->log("Adding attachments...");
 			$nl = "\n";
 			$attachments = array();
-			$strOutcome = $arrArgs[self::SWITCH_LIST_RUN] ? '_Services_Proposed_To_Be_Manually_Barred_' : '_Services_To_Be_Manually_Barred_';
+			$strOutcome = $arrArgs[self::SWITCH_LIST_RUN] ? '_Services_Proposed_To_Be_Manually_Staggered_Barred_' : '_Services_To_Be_Manually_Staggered_Barred_';
 			foreach($manualBars as $custGroup => $list)
 			{
 				$custGroup = str_replace(' ', '_', $custGroup);
@@ -489,7 +489,7 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 					fclose($f);
 				}
 			}
-			$strOutcome = $arrArgs[self::SWITCH_LIST_RUN] ? '_Services_That_Would_Be_Automatically_Barred_' : '_Automatically_Barred_Services_';
+			$strOutcome = $arrArgs[self::SWITCH_LIST_RUN] ? '_Services_That_Would_Be_Automatically_Staggered_Barred_' : '_Automatically_Staggered_Barred_Services_';
 			foreach($autoBars as $custGroup => $list)
 			{
 				$custGroup = str_replace(' ', '_', $custGroup);
