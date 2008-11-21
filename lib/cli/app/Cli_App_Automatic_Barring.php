@@ -353,7 +353,7 @@ class Cli_App_Automatic_Barring extends Cli
 					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
 					$attachment[self::EMAIL_ATTACHMENT_CONTENT] = "Account,FNN$nl" . implode($nl, $list);
 					$attachments[] = $attachment;
-					
+
 					fwrite($f =fopen(FILES_BASE_PATH.'/'.$custGroup.$strOutcome . date('Y_m_d_H_i_s') . '.csv', 'w+'), $attachment[self::EMAIL_ATTACHMENT_CONTENT]);
 					fclose($f);
 				}
@@ -369,9 +369,9 @@ class Cli_App_Automatic_Barring extends Cli
 					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
 					$attachment[self::EMAIL_ATTACHMENT_CONTENT] = "Account,FNN$nl" . implode($nl, $list);
 					$attachments[] = $attachment;
-                        
-                                        fwrite($f =fopen(FILES_BASE_PATH.'/'.$custGroup.$strOutcome . date('Y_m_d_H_i_s') . '.csv', 'w+'), $attachment[self::EMAIL_ATTACHMENT_CONTENT]);
-                                        fclose($f);
+
+					fwrite($f =fopen(FILES_BASE_PATH.'/'.$custGroup.$strOutcome . date('Y_m_d_H_i_s') . '.csv', 'w+'), $attachment[self::EMAIL_ATTACHMENT_CONTENT]);
+					fclose($f);
 				}
 			}
 
