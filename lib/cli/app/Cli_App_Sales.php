@@ -703,7 +703,7 @@ class Cli_App_Sales extends Cli
 					
 					// Get the date on which the Sale was Verified
 					$resVerifiedOn	= $dsSalesPortal->query("SELECT changed_on " .
-															"FROM sale_item_status " .
+															"FROM sale_status_history " .
 															"WHERE sale_id = {$arrSPSale['id']} AND sale_status_id = 2 " .
 															"ORDER BY id DESC " .
 															"LIMIT 1");
