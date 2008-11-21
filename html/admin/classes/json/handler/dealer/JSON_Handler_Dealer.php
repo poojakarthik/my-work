@@ -827,7 +827,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 			// Do a PUSH of all sales related data in flex, to the sales database
 			try
 			{
-				Cli_App_Sync_SalesPortal::pushAll();
+				Cli_App_Sales::pushAll();
 			}
 			catch (Exception $e)
 			{
