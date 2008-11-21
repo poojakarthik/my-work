@@ -701,10 +701,23 @@ class Cli_App_Sales extends Cli
 						throw new Exception("'{$arrSPSale['sale_type_id']}' Sales are not supported by Flex!");
 					}
 					
+					// Get the date on which the Sale was Verified
+					$resVerifiedOn	= $dsSalesPortal->query("SELECT changed_on " .
+															"FROM sale_item_status " .
+															"WHERE sale_id = {$arrSPSale['id']} AND sale_status_id = 2 " .
+															"ORDER BY id DESC " .
+															"LIMIT 1");
+					if (PEAR::isError($resVerifiedOn))
+					{
+						throw new Exception($resVerifiedOn->getMessage()." :: ".$resVerifiedOn->getUserInfo());
+					}
+					$arrVerifiedOn = $resVerifiedOn->fetchRow(MDB2_FETCHMODE_ASSOC);
+					
 					// Create a new Sale record in Flex
 					$objSale	= new Sale();
 					$objSale->external_reference	= "sale.id={$arrSPSale['id']}";
 					$objSale->account_id			= $objAccount->Id;
+					$objSale->verified_on			= $arrVerifiedOn['changed_on'];
 					$objSale->save();
 					
 					$objSale->intCouldntComplete	= 0;
