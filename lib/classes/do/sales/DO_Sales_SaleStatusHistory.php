@@ -40,7 +40,7 @@ class DO_Sales_SaleStatusHistory extends DO_Sales_Base_SaleStatusHistory
 		$history = new DO_Sales_SaleStatusHistory();
 		$history->saleId = $sale->id;
 		$history->saleStatusId = $sale->saleStatusId;
-		$history->changedOn = $new ? $sale->createdOn : Data_Source_Time::currentTimestamp($this->getDataSource());
+		$history->changedOn = $new ? $sale->createdOn : Data_Source_Time::currentTimestamp(self::getDataSource());
 		$history->changedBy = $intDealerId;
 		$history->description = strval($comment);
 		$history->save();
