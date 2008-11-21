@@ -96,7 +96,7 @@ class Cli_App_Sales extends Cli
 				$this->log("\t\t\t+ Id #{$objCustomerGroup->id} ({$objCustomerGroup->externalName})...");
 				
 				// Does this Customer Group exist in the Sales Portal?
-				$resVendors	= $dsSalesPortal->query("SELECT * FROM vendor WHERE id = {$objCustomerGroup->id}");
+				$resVendors	= $dsSalesPortal->query("SELECT id FROM vendor WHERE id = {$objCustomerGroup->id}", Array('integer'));
 				if (PEAR::isError($resVendors))
 				{
 					throw new Exception($resVendors->getMessage()." :: ".$resVendors->getUserInfo());
@@ -174,7 +174,7 @@ class Cli_App_Sales extends Cli
 					$intProductStatus		= $this->_convertFlexToSalesPortal('planarchived', $arrRatePlan['Archived']);
 					
 					// Does it already exist in the SP?
-					$resProduct	= $dsSalesPortal->query("SELECT id FROM product WHERE external_reference = 'RatePlan.Id={$arrRatePlan['Id']}' LIMIT 1");
+					$resProduct	= $dsSalesPortal->query("SELECT id FROM product WHERE external_reference = 'RatePlan.Id={$arrRatePlan['Id']}' LIMIT 1", Array('integer'));
 					if (PEAR::isError($resProduct))
 					{
 						throw new Exception($resProduct->getMessage()." :: ".$resProduct->getUserInfo());
@@ -259,7 +259,7 @@ class Cli_App_Sales extends Cli
 				}
 				
 				// Does this Dealer exist in the Sales Portal?
-				$resSPDealer	= $dsSalesPortal->query("SELECT id FROM dealer WHERE id = {$arrFlexDealer['id']} LIMIT 1");
+				$resSPDealer	= $dsSalesPortal->query("SELECT id FROM dealer WHERE id = {$arrFlexDealer['id']} LIMIT 1", Array('integer'));
 				if (PEAR::isError($resSPDealer))
 				{
 					throw new Exception($resSPDealer->getMessage()." :: ".$resSPDealer->getUserInfo());
@@ -878,10 +878,10 @@ class Cli_App_Sales extends Cli
 											// Service Details
 											$objService->FNN			= $arrSPLandLineDetails['fnn'];
 											$objService->ServiceType	= SERVICE_TYPE_LAND_LINE;
-											$objService->Indial100		= $arrSPLandLineDetails['is_indial_100'];
+											$objService->Indial100		= ($arrSPLandLineDetails['is_indial_100'] === 't') ? TRUE : FALSE;
 											var_dump($arrSPLandLineDetails['is_indial_100']);
 											Debug($arrSPLandLineDetails['is_indial_100']);
-											$objService->ELB			= $arrSPLandLineDetails['has_extension_level_billing'];
+											$objService->ELB			= ($arrSPLandLineDetails['has_extension_level_billing'] === 't') ? TRUE : FALSE;
 											
 											// Service Address Details
 											$arrAdditionalDetails	= array();
@@ -1018,7 +1018,7 @@ class Cli_App_Sales extends Cli
 											$arrAdditionalDetails	= array();
 											$arrAdditionalDetails['Service']		= $objService->Id;
 											$arrAdditionalDetails['AnswerPoint']	= ($arrSPInboundDetails['answer_point']) ? $arrSPInboundDetails['answer_point'] : '';
-											$arrAdditionalDetails['Complex']		= $arrSPInboundDetails['has_complex_configuration'];
+											$arrAdditionalDetails['Complex']		= ($arrSPInboundDetails['has_complex_configuration'] === 't') ? TRUE : FALSE;;
 											$arrAdditionalDetails['Configuration']	= ($arrSPInboundDetails['configuration']) ? $arrSPInboundDetails['configuration'] : '';
 											break;
 									}
