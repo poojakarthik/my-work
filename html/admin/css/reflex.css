@@ -641,12 +641,14 @@ div.tab-collection div.tab-body-container
 /*************************** Sale Status classes ******************************/
 .sale-item-status-submitted,
 .sale-item-status-verified,
-.sale-item-status-ready-for-provisioning,
-.sale-item-status-provisioned,
+.sale-item-status-awaiting-dispatch,
+.sale-item-status-dispatched,
+.slae-item-status-completed,
 .sale-status-submitted,
 .sale-status-verified,
-.sale-status-ready-for-provisioning,
-.sale-status-provisioned
+.sale-status-awaiting-dispatch,
+.sale-status-dispatched,
+.slae-status-completed
 {
 	color: #060;
 }
