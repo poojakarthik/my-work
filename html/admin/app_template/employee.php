@@ -466,7 +466,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 							// Dealer table has been modified, trigger the sync operation
 							try
 							{
-								Cli_App_Sync_SalesPortal::pushAll();
+								Cli_App_Sales::pushAll();
 							}
 							catch (Exception $e)
 							{
