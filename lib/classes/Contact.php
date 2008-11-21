@@ -110,6 +110,12 @@ class Contact extends ORM
 	{
 		return $strPassword && sha1($strPassword) == $this->password;
 	}
+
+	public static function isEmailInUse($strEmailAddress)
+	{
+		$selContactByEmail	= self::_preparedStatement('selContactByEmail');
+		return $selContactByEmail->Execute(Array('Email' => trim($strEmailAddress), 'IncludeArchived' => 0));
+	}
 	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
@@ -141,6 +147,9 @@ class Contact extends ORM
 				// SELECTS
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Contact", "*", "Id = <Id>", NULL, 1);
+					break;
+				case 'selContactByEmail':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Contact", "*", "Email LIKE <Email> AND (<IncludeArchived> = 1 OR Archived = 0)", NULL, 1);
 					break;
 				
 				// INSERTS

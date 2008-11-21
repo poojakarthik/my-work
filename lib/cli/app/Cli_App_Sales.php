@@ -750,7 +750,7 @@ class Cli_App_Sales extends Cli
 							{
 								// Email
 								case 1:
-									$objContact->Email	= $arrSPContactMethod['details'];
+									$objContact->Email	= trim($arrSPContactMethod['details']);
 									break;
 									
 								// Fax
@@ -768,6 +768,13 @@ class Cli_App_Sales extends Cli
 									$objContact->Mobile	= $arrSPContactMethod['details'];
 									break;
 							}
+						}
+						
+						// Is there already a Contact with this Email Address?
+						if ($objContact->Email && Contact::isEmailInUse($objContact->Email))
+						{
+							$this->log("\t\t\t\t\t! Contact's Email Address is already in use!  Aborting Sale...");
+							throw new Exception_Sale_Manual_Intervention("Contact {$objContact->FirstName} {$objContact->LastName}'s specified Email Address ({$objContact->Email}) is already in use!");
 						}
 						
 						// Save the Flex Contact
@@ -879,8 +886,6 @@ class Cli_App_Sales extends Cli
 											$objService->FNN			= $arrSPLandLineDetails['fnn'];
 											$objService->ServiceType	= SERVICE_TYPE_LAND_LINE;
 											$objService->Indial100		= ($arrSPLandLineDetails['is_indial_100'] === 't') ? TRUE : FALSE;
-											var_dump($arrSPLandLineDetails['is_indial_100']);
-											Debug($arrSPLandLineDetails['is_indial_100']);
 											$objService->ELB			= ($arrSPLandLineDetails['has_extension_level_billing'] === 't') ? TRUE : FALSE;
 											
 											// Service Address Details
@@ -1036,7 +1041,6 @@ class Cli_App_Sales extends Cli
 									// Is the FNN in use already?
 									$this->log("\t\t\t\t\t\t* Checking if FNN is in use... ({$objService->FNN}; {$objService->Indial100}; {$objService->CreatedOn})");
 									$mixFNNInUse	= IsFNNInUse($objService->FNN, $objService->Indial100, $objService->CreatedOn);
-									var_dump($objService->Indial100);
 									if (is_string($mixFNNInUse))
 									{
 										throw new Exception($mixFNNInUse);
