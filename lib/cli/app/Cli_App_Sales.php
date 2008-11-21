@@ -1316,7 +1316,7 @@ class Cli_App_Sales extends Cli
 			}
 			else
 			{
-				while ($arrPair = $resSPEnumeration->fetchRow())
+				while ($arrPair = $resSPEnumeration->fetchRow(MDB2_FETCHMODE_ASSOC))
 				{
 					$arrEnumerations[$strTable][$arrPair['id']]	= $arrPair;
 				}
