@@ -1318,7 +1318,6 @@ class Cli_App_Sales extends Cli
 			{
 				while ($arrPair = $resSPEnumeration->fetchRow(MDB2_FETCHMODE_ASSOC))
 				{
-					Debug($arrPair);
 					$arrEnumerations[$strTable][$arrPair['id']]	= $arrPair;
 				}
 			}
@@ -1326,11 +1325,11 @@ class Cli_App_Sales extends Cli
 		
 		if ($strMode !== 'name')
 		{
-			Debug($arrEnumerations[$strTable][$arrPair['id']]);
+			Debug($arrEnumerations[$strTable]);
 		}
 		
 		// Return the Value
-		return $arrEnumerations[$strTable][$arrPair['id']][$strMode];
+		return $arrEnumerations[$strTable][$intId][$strMode];
 	}
 	
 	// _updateSaleHistory()	-- Updates the Sale Status (and History) in the Sales Portal
