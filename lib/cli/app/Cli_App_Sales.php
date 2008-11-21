@@ -8,6 +8,8 @@ class Cli_App_Sales extends Cli
 	const	SWITCH_ACTION 		= "a";
 	
 	const	SALES_PORTAL_SYSTEM_DEALER_ID	= 1;
+	
+	const	PROVISIONING_AMNESTY_HOURS		= 72;
 
 	function run()
 	{
@@ -39,6 +41,10 @@ class Cli_App_Sales extends Cli
 				case 'sync':
 					$this->_pushAll();
 					$this->_pullAll();
+					break;
+				
+				case 'provision':
+					$this->_automaticProvisioning();
 					break;
 				
 				default:
@@ -1082,45 +1088,6 @@ class Cli_App_Sales extends Cli
 									$objRatePlan	= new Rate_Plan(Array('Id'=>(int)$arrRatePlanId[1]), TRUE);
 									$this->log("\t\t\t\t\t\t+ Setting Plan to '{$objRatePlan->Name}'...");									
 									$objService->changePlan($objRatePlan);
-									/*
-									// Perform Automatic Provisioning
-									$this->log("\t\t\t\t\t\t+ Automatically Provisioning...");
-									if ($objService->ServiceType === SERVICE_TYPE_LAND_LINE)
-									{
-										// Full Service
-										$this->log("\t\t\t\t\t\t\t+ Adding Full Service Request...");
-										$objFullServiceRequest	= new Provisioning_Request();
-										$objFullServiceRequest->AccountGroup		= $objService->AccountGroup;
-										$objFullServiceRequest->Account				= $objService->Account;
-										$objFullServiceRequest->Service				= $objService->Id;
-										$objFullServiceRequest->FNN					= $objService->FNN;
-										$objFullServiceRequest->Employee			= 0;
-										$objFullServiceRequest->Carrier				= $objRatePlan->CarrierFullService;
-										$objFullServiceRequest->Type				= PROVISIONING_TYPE_FULL_SERVICE;
-										$objFullServiceRequest->RequestedOn			= date("Y-m-d H:i:s");
-										$objFullServiceRequest->AuthorisationDate	= $objService->CreatedOn;
-										$objFullServiceRequest->Status				= REQUEST_STATUS_WAITING;
-										$objFullServiceRequest->save();
-										
-										// Preselection
-										$this->log("\t\t\t\t\t\t\t+ Adding Preselection Request...");
-										$objPreselectionRequest	= new Provisioning_Request();
-										$objPreselectionRequest->AccountGroup		= $objService->AccountGroup;
-										$objPreselectionRequest->Account			= $objService->Account;
-										$objPreselectionRequest->Service			= $objService->Id;
-										$objPreselectionRequest->FNN				= $objService->FNN;
-										$objPreselectionRequest->Employee			= 0;
-										$objPreselectionRequest->Carrier			= $objRatePlan->CarrierPreselection;
-										$objPreselectionRequest->Type				= PROVISIONING_TYPE_PRESELECTION;
-										$objPreselectionRequest->RequestedOn		= date("Y-m-d H:i:s");
-										$objPreselectionRequest->AuthorisationDate	= $objService->CreatedOn;
-										$objPreselectionRequest->Status				= REQUEST_STATUS_WAITING;
-										$objPreselectionRequest->save();
-									}
-									else
-									{
-										$this->log("\t\t\t\t\t\t\t! Automatic Provisioning is not supported for ".GetConstantDescription($objService->ServiceType, 'service_type')."s");
-									}*/
 									break;
 								
 								// Unknown
@@ -1423,8 +1390,120 @@ class Cli_App_Sales extends Cli
 	// _automaticProvisioning()	: checks to see if there are any Sales that are ready to be automatically provisioned
 	private function _automaticProvisioning()
 	{
+		$this->log("\t* Performing Automatic Provisioning...");
 		
-	} 
+		$dsSalesPortal	= Data_Source::get('sales');
+		$dacFlex		= DataAccess::getDataAccess();
+		
+		// Start a transaction for both Databases
+		$dsSalesPortal->beginTransaction();
+		$dacFlex->TransactionStart();
+		
+		try
+		{
+			$qryQuery	= new Query();
+			
+			// Get the list of Services which are Pending Activation, originated from the Sales Portal, and have exceeded the Provisioning Amnesty Period
+			$selPendingServices	= new StatementSelect(	"Service JOIN sale_item ON sale_item.service_id = Service.Id JOIN sale ON sale_item.sale_id = sale.id",
+														"Service.*, sale_id, sale.verified_on, sale_item.id AS sale_item_id",
+														"Service.Status = ".SERVICE_PENDING." AND NOW() > ADDDATE(sale.verified_on, INTERVAL ".self::PROVISIONING_AMNESTY_HOURS." HOUR)");
+			if ($selPendingServices->Execute() === FALSE)
+			{
+				throw new Exception();
+			}
+			else
+			{
+				while ($arrService = $selPendingServices->Fetch())
+				{
+					$objService		= new Service($arrService);
+					$objRatePlan	= $objService->getCurrentPlan();
+					
+					$this->log("\t\t+ {$objService->FNN}...");
+					$this->log("\t\t\t* Sale\t: {$arrService->sale_id}...");
+					$this->log("\t\t\t* Sale Item\t: {$objService->sale_item_id}...");
+					$this->log("\t\t\t* Rate Plan\t: {$objRatePlan->Name}...");
+					
+					// Create 
+					switch ($objService->ServiceType)
+					{
+						case SERVICE_TYPE_LAND_LINE:
+							// Full Service
+							$this->log("\t\t\t+ Adding Full Service Request...");
+							$objFullServiceRequest	= new Provisioning_Request();
+							$objFullServiceRequest->AccountGroup		= $objService->AccountGroup;
+							$objFullServiceRequest->Account				= $objService->Account;
+							$objFullServiceRequest->Service				= $objService->Id;
+							$objFullServiceRequest->FNN					= $objService->FNN;
+							$objFullServiceRequest->Employee			= 0;
+							$objFullServiceRequest->Carrier				= $objRatePlan->CarrierFullService;
+							$objFullServiceRequest->Type				= PROVISIONING_TYPE_FULL_SERVICE;
+							$objFullServiceRequest->RequestedOn			= date("Y-m-d H:i:s");
+							$objFullServiceRequest->AuthorisationDate	= $objService->CreatedOn;
+							$objFullServiceRequest->Status				= REQUEST_STATUS_WAITING;
+							$objFullServiceRequest->save();
+							
+							// Preselection
+							$this->log("\t\t\t+ Adding Preselection Request...");
+							$objPreselectionRequest	= new Provisioning_Request();
+							$objPreselectionRequest->AccountGroup		= $objService->AccountGroup;
+							$objPreselectionRequest->Account			= $objService->Account;
+							$objPreselectionRequest->Service			= $objService->Id;
+							$objPreselectionRequest->FNN				= $objService->FNN;
+							$objPreselectionRequest->Employee			= 0;
+							$objPreselectionRequest->Carrier			= $objRatePlan->CarrierPreselection;
+							$objPreselectionRequest->Type				= PROVISIONING_TYPE_PRESELECTION;
+							$objPreselectionRequest->RequestedOn		= date("Y-m-d H:i:s");
+							$objPreselectionRequest->AuthorisationDate	= $arrService['verified_on'];
+							$objPreselectionRequest->Status				= REQUEST_STATUS_WAITING;
+							$objPreselectionRequest->save();
+							break;
+						
+						default:
+							// This shouldn't happen
+							throw new Exception("Service of Type '".GetConstantDescription($objService->ServiceType, 'service_type')."' are not automatically provisioned by Flex!");
+							break;
+					}
+					
+					// Set this Service to Active in Flex
+					$objService->Status	= SERVICE_ACTIVE;
+					$objService->save();
+					
+					// Set the Sale Item to Completed in the Sales Portal
+					$this->_updateSaleItemStatus($arrService['sale_item_id'], 'Completed');
+				}
+				
+				// Finalise Sales/Accounts
+				$selCompletedPendingAccounts	= new StatementSelect(	"Account JOIN sale ON Account.Id = sale.account_id",
+																		"Account.*, sale.id AS sale_id",
+																		"Account.Archived = ".ACCOUNT_STATUS_PENDING_ACTIVATION." AND 0 < (SELECT COUNT(Id) FROM Service JOIN sale_item ON sale_item.service_id = Service.Id WHERE Account = Account.Id AND Status = ".SERVICE_PENDING.")");
+				if ($selCompletedPendingAccounts->Execute() === FALSE)
+				{
+					throw new Exception($selCompletedPendingAccounts->Error());
+				}
+				while ($arrAccount = $selCompletedPendingAccounts->Fetch())
+				{
+					// Flex: Update Pending Accounts to Active if all of their Services are now Active or Disconnected
+					$objAccount	= new Account($arrAccount, FALSE, TRUE);
+					$objAccount->Status	= ACCOUNT_STATUS_ACTIVE;
+					$objAccount->save();
+					
+					// SP: Update the associated Sale in 
+					$this->_updateSaleItemStatus($arrService['sale_item_id'], 'Completed');
+				}
+			}
+			
+			// All seems to have worked fine -- Commit the Transactions
+			$dsSalesPortal->commit();
+			$dacFlex->TransactionCommit();
+		}
+		catch (Exception $eException)
+		{
+			// Rollback the Transaction & passthru the Exception
+			$dsSalesPortal->rollback();
+			$dacFlex->TransactionRollback();
+			throw $eException;
+		}
+	}
 
 	function getCommandLineArguments()
 	{
@@ -1438,8 +1517,8 @@ class Cli_App_Sales extends Cli
 			),
 			self::SWITCH_MODE => array(
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Synchronisation operation to perform [PUSH|PULL|SYNC]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("PUSH","PULL","SYNC"))'
+				self::ARG_DESCRIPTION	=> "Synchronisation operation to perform [PUSH|PULL|SYNC|PROVISION]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("PUSH","PULL","SYNC","PROVISION"))'
 			),
 			self::SWITCH_ACTION => array(
 				self::ARG_REQUIRED		=> FALSE,
