@@ -92,7 +92,7 @@ class Service extends ORM
 			$strErrorMsg =  "Billing is in progress.  Plans cannot be changed while this is happening.  ".
 							"Please try again in a couple of hours.  If this problem persists, please ".
 							"notify your system administrator";
-			return $strErrorMsg;
+			throw new Exception($strErrorMsg);
 		}
 		
 		// Load the new RatePlan details

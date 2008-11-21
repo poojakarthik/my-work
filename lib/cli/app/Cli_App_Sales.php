@@ -1323,11 +1323,6 @@ class Cli_App_Sales extends Cli
 			}
 		}
 		
-		if ($strMode !== 'name')
-		{
-			Debug($arrEnumerations[$strTable]);
-		}
-		
 		// Return the Value
 		return $arrEnumerations[$strTable][$intId][$strMode];
 	}
