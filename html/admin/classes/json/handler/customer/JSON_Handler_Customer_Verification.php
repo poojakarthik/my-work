@@ -229,17 +229,17 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 					$arrEmail = NULL;
 				}
 				
-				if (strlen($objContact->password) != 0)
+				if (strlen($objContact->passWord) != 0)
 				{
 					// All contacts have a password
-					$arrPassword = array(	"Sha1"		=> $objContact->password,
+					$arrPassword = array(	"Sha1"		=> $objContact->passWord,
 											"Weight"	=> 10
 										);
 				}
 				else
 				{
 					$arrPassword = NULL;
-				}				
+				}
 				$arrCustomer['Contacts'][$objContact->id] = array(	"Id"			=> $objContact->id,
 																	"Name"			=> htmlspecialchars($objContact->getName()),
 																	"Verifiable"	=> array(	"DOB"		=> $arrDOB,
