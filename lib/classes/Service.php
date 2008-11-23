@@ -193,7 +193,7 @@ class Service extends ORM
 		$objServiceRatePlan->CreatedBy 							= $intUserId;
 		$objServiceRatePlan->CreatedOn 							= $strCurrentDateAndTime;
 		$objServiceRatePlan->StartDatetime 						= $strStartDatetime;
-		$objServiceRatePlan->EndDatetime 						= END_OF_TIME;
+		$objServiceRatePlan->EndDatetime 						= '9999-12-31 23:59:59';
 		$objServiceRatePlan->LastChargedOn						= NULL;
 		$objServiceRatePlan->Active								= $intActive;
 		
