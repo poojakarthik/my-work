@@ -3554,7 +3554,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 			";
 	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
-		throw new Exception($result->getMessage());
+		throw new Exception("Failed to create tmp table (1) $tmpTableName: " . $result->getMessage());
 	}
 
 	// Create a temporary ranking table for the results
@@ -3577,7 +3577,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 			";
 	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
-		throw new Exception($result->getMessage());
+		throw new Exception("Failed to create tmp table (2) $tmpRankTableName: " . $result->getMessage());
 	}
 
 
@@ -3646,7 +3646,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	$strSQL = "INSERT INTO $tmpTableName ($tmpCols) SELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\nGROUP BY $strGroupBy\nORDER BY $strOrderBy";
 	if (PEAR::isError($result = $db->query($strSQL)))
 	{
-		throw new Exception($result->getMessage());
+		throw new Exception("Failed to populate tmp table $tmpTableName: " . $result->getMessage());
 	}
 
 	// Apply the ranking to the table for each account
@@ -3704,14 +3704,14 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	";
 	if (PEAR::isError($result = $db->query($strSQL)))
 	{
-		throw new Exception($result->getMessage());
+		throw new Exception("Failed to populate tmp table $tmpRankTableName: " . $result->getMessage());
 	}
 
 	// Load the details from the tmp tables in reverse rank order (worst first)
 	$strSQL = "SELECT $tmpCols, ranking FROM $tmpTableName, $tmpRankTableName WHERE $tmpTableName.AccountId = $tmpRankTableName.account_id ORDER BY ranking DESC";
 	if (PEAR::isError($result = $db->query($strSQL)))
 	{
-		throw new Exception($result->getMessage());
+		throw new Exception("Failed to load data from tmp tables: " . $result->getMessage());
 	}
 	
 	$results = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
@@ -3720,13 +3720,13 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	$strSQL = "DROP TABLE $tmpTableName;";
 	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
-		throw new Exception($result->getMessage());
+		throw new Exception("Failed to drop tmp table (1) $tmpTableName: " . $result->getMessage());
 	}
 	
 	$strSQL = "DROP TABLE $tmpRankTableName;";
 	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
-		throw new Exception($result->getMessage());
+		throw new Exception("Failed to drop tmp table (2) $tmpRankTableName: " . $result->getMessage());
 	}
 
 	// Return the results
