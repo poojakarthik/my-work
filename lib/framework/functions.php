@@ -3646,7 +3646,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	$strSQL = "INSERT INTO $tmpTableName ($tmpCols) SELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\nGROUP BY $strGroupBy\nORDER BY $strOrderBy";
 	if (PEAR::isError($result = $db->query($strSQL)))
 	{
-		throw new Exception("Failed to populate tmp table $tmpTableName: " . $result->getMessage());
+		throw new Exception("Failed to populate tmp table $tmpTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
 	}
 
 	// Apply the ranking to the table for each account
@@ -3704,7 +3704,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	";
 	if (PEAR::isError($result = $db->query($strSQL)))
 	{
-		throw new Exception("Failed to populate tmp table $tmpRankTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
+		throw new Exception("Failed to populate tmp rankings table $tmpRankTableName: " . $result->getMessage());
 	}
 
 	// Load the details from the tmp tables in reverse rank order (worst first)
