@@ -574,11 +574,26 @@ class Invoice_Run
 		{
 			throw new Exception("DB ERROR: ".$selInvoiceRun->Error());
 		}
+		elseif ($selPaymentTerms->Execute(Array('customer_group_id' => $intCustomerGroup)))
+		{
+			$arrPaymentTerms	= $selPaymentTerms->Fetch();
+			
+			// No InvoiceRuns, so lets calculate when it should have been
+			$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00", strtotime($strEffectiveDate)));
+			if ((int)date("d", strtotime($strEffectiveDate)) < $arrPaymentTerms['invoice_day'])
+			{
+				// Billing Date is last Month
+				$intInvoiceDatetime	= strtotime("-1 month", $intInvoiceDatetime);
+			}
+			return date("Y-m-d H:i:s", $intInvoiceDatetime);
+		}
+		elseif ($selPaymentTerms->Error())
+		{
+			throw new Exception("DB ERROR: ".$selPaymentTerms->Error());
+		}
 		else
 		{
-			// No InvoiceRuns, so lets calculate when it should have been
-			// For now, we will (and can probably always) assume that the Bill was supposed to be run exactly 1 month ago
-			return date("Y-m-d H:i:s", strtotime("-1 month", strtotime($strEffectiveDate)));
+			throw new Exception("No Payment Terms specified for Customer Group {$intCustomerGroup}");
 		}
 	}
 	
