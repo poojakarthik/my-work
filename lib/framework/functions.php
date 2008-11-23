@@ -3464,7 +3464,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED, ACCOUNT_STATUS_SUSPENDED));
 
 	$arrColumns = array(
-							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' ELSE Invoice.invoice_run_id END)",
+							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
 							'AccountId'				=> "Invoice.Account",
 							'AccountGroupId'		=> "Account.AccountGroup",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
@@ -3587,7 +3587,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	$strApplicableInvoiceStatuses = implode(", ", array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT));
 
 	$arrColumns = array(
-							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' ELSE Invoice.invoice_run_id END)",
+							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
 							'AccountId'				=> "Invoice.Account",
 							'AccountGroupId'		=> "Account.AccountGroup",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
@@ -3777,7 +3777,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 	$strApplicableInvoiceStatuses = implode(", ", array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT));
 
 	$arrColumns = array(
-							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN '' ELSE Invoice.invoice_run_id END)",
+							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
 							'AccountId'				=> "Invoice.Account",
 							'AccountGroupId'		=> "Account.AccountGroup",
 							'CustomerGroupId'		=> "Account.CustomerGroup",
