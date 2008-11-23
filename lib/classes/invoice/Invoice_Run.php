@@ -563,11 +563,15 @@ class Invoice_Run
 	 */
 	public static function getLastInvoiceDate($intCustomerGroup, $strEffectiveDate)
 	{
+		Debug('CustomerGroup: '.$intCustomerGroup);
+		Debug('EffectiveDate: '.$strEffectiveDate);
+		
 		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRunByCustomerGroup');
 		if ($selInvoiceRun->Execute(Array('customer_group_id' => $intCustomerGroup)))
 		{
 			// We have an old InvoiceRun
 			$arrLastInvoiceRun	= $selInvoiceRun->Fetch();
+			Debug('Old Invoice Run: '.$arrLastInvoiceRun['BillingDate']);
 			return $arrLastInvoiceRun['BillingDate'] . ' 00:00:00';
 		}
 		elseif ($selInvoiceRun->Error())
@@ -577,14 +581,18 @@ class Invoice_Run
 		elseif ($selPaymentTerms->Execute(Array('customer_group_id' => $intCustomerGroup)))
 		{
 			$arrPaymentTerms	= $selPaymentTerms->Fetch();
+			Debug('Invoice Day: '.$arrPaymentTerms['invoice_day']);
 			
 			// No InvoiceRuns, so lets calculate when it should have been
 			$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00", strtotime($strEffectiveDate)));
+			Debug('Day in Effective Date: '.(int)date("d", strtotime($strEffectiveDate)));
 			if ((int)date("d", strtotime($strEffectiveDate)) < $arrPaymentTerms['invoice_day'])
 			{
 				// Billing Date is last Month
+				Debug('LAST MONTH');
 				$intInvoiceDatetime	= strtotime("-1 month", $intInvoiceDatetime);
 			}
+			Debug('Predicted Last Bill: '.date("Y-m-d H:i:s", $intInvoiceDatetime));
 			return date("Y-m-d H:i:s", $intInvoiceDatetime);
 		}
 		elseif ($selPaymentTerms->Error())
