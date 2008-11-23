@@ -3513,12 +3513,11 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	}
 	
 	
-	$dbAdmin = $db = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
-	//$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
+	$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 
 	// If we don't know the customer group id ($intCustomerGroupId===FALSE) than we need to find it for the given invoice_run_id
 	$strSQL = "SELECT distinct(customer_group_id) FROM InvoiceRun WHERE Id IN (" . implode(',', $arrInvoiceRunIds) . ") AND customer_group_id IS NOT NULL";
-	if (PEAR::isError($result = $db->query($strSQL)))
+	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to find customer group ids for invoice runs: \n$strSQL\n" . $result->getMessage());
 	}
@@ -3534,7 +3533,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	$strSQL = "DROP TABLE IF EXISTS $tmpTableName;";
 	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
-		throw new Exception($result->getMessage());
+		throw new Exception("Failed to drop (1) (if exists) $tmpTableName: " . $result->getMessage());
 	}
 	
 
@@ -3563,7 +3562,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	$strSQL = "DROP TABLE IF EXISTS $tmpRankTableName;";
 	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
-		throw new Exception($result->getMessage());
+		throw new Exception("Failed to drop (2) (if exists) $tmpRankTableName: " . $result->getMessage());
 	}
 
 	$strSQL = "
@@ -3643,10 +3642,22 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	$select = array();
 	foreach($arrColumns as $alias => $column) $select[] = "$column AS \"$alias\"";
 	$tmpCols = implode(', ', array_keys($arrColumns));
-	$strSQL = "INSERT INTO $tmpTableName ($tmpCols) SELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\nGROUP BY $strGroupBy\nORDER BY $strOrderBy";
-	if (PEAR::isError($result = $db->query($strSQL)))
+	$strSQL = /*"INSERT INTO $tmpTableName ($tmpCols) ".*/"SELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\nGROUP BY $strGroupBy\nORDER BY $strOrderBy";
+	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to populate tmp table $tmpTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
+	}
+	
+	$rows = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
+	foreach ($rows as $i => $row)
+	{
+		$strSQL = "INSERT INTO $tmpTableName ($tmpCols) 
+					VALUES (" . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " . 
+					$row['CustomerGroupId'] . ", '" . $row['CustomerGroupName'] . "', " . $row['Overdue'] . ", " . $row['minBalanceToPursue'] . ")";
+		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+		{
+			throw new Exception("Failed to populate tmp table (1.$i) $tmpTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
+		}
 	}
 
 	// Apply the ranking to the table for each account
@@ -3702,14 +3713,14 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 			) as AccountRankings
 			GROUP BY account_id
 	";
-	if (PEAR::isError($result = $db->query($strSQL)))
+	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to populate tmp rankings table $tmpRankTableName: " . $result->getMessage());
 	}
 
 	// Load the details from the tmp tables in reverse rank order (worst first)
 	$strSQL = "SELECT $tmpCols, ranking FROM $tmpTableName, $tmpRankTableName WHERE $tmpTableName.AccountId = $tmpRankTableName.account_id ORDER BY ranking DESC";
-	if (PEAR::isError($result = $db->query($strSQL)))
+	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to load data from tmp tables: " . $result->getMessage());
 	}
