@@ -3513,8 +3513,8 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	}
 	
 	
-	$db = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
-	$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
+	$dbAdmin = $db = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
+	//$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 
 	// If we don't know the customer group id ($intCustomerGroupId===FALSE) than we need to find it for the given invoice_run_id
 	$strSQL = "SELECT distinct(customer_group_id) FROM InvoiceRun WHERE Id IN (" . implode(',', $arrInvoiceRunIds) . ") AND customer_group_id IS NOT NULL";
@@ -3704,7 +3704,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	";
 	if (PEAR::isError($result = $db->query($strSQL)))
 	{
-		throw new Exception("Failed to populate tmp table $tmpRankTableName: " . $result->getMessage());
+		throw new Exception("Failed to populate tmp table $tmpRankTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
 	}
 
 	// Load the details from the tmp tables in reverse rank order (worst first)
