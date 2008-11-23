@@ -3662,8 +3662,8 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 
 	// Apply the ranking to the table for each account
 	$strSQL = "
-			INSERT INTO $tmpRankTableName (account_id, ranking)
-			SELECT account_id, CASE WHEN SUM(VIP) < 0 THEN SUM(VIP) WHEN COUNT(late) = 1 THEN 0 WHEN SUM(late) <= 0 THEN 0 ELSE ((SUM(late) / (COUNT(late) - 1))/86400) END AS \"ranking\"
+			"/*INSERT INTO $tmpRankTableName (account_id, ranking)
+			*/."SELECT account_id, CASE WHEN SUM(VIP) < 0 THEN SUM(VIP) WHEN COUNT(late) = 1 THEN 0 WHEN SUM(late) <= 0 THEN 0 ELSE ((SUM(late) / (COUNT(late) - 1))/86400) END AS \"ranking\"
 			FROM
 			(
 			
@@ -3716,6 +3716,17 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to populate tmp rankings table $tmpRankTableName: " . $result->getMessage());
+	}
+	
+	$rows = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
+	foreach ($rows as $i => $row)
+	{
+		$strSQL = "INSERT INTO $tmpRankTableName (account_id, ranking) 
+					VALUES (" . $row['account_id'] . ", " . $row['ranking'] . ")";
+		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
+		{
+			throw new Exception("Failed to populate tmp table (2.$i) $tmpRankTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
+		}
 	}
 
 	// Load the details from the tmp tables in reverse rank order (worst first)
