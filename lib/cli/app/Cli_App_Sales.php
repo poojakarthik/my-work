@@ -488,8 +488,8 @@ class Cli_App_Sales extends Cli
 		$dsSalesPortal->beginTransaction();
 		$dacFlex->TransactionStart();
 		
-		$intPullDatetime	= time();
-		$strPullDatetime	= date("Y-m-d H:i:s", $intPullDatetime);
+		$strPullDatetime	= Data_Source_Time::currentTimestamp();
+		$intPullDatetime	= strtotime($strPullDatetime);
 		try
 		{
 			$qryQuery		= new Query();
@@ -541,7 +541,7 @@ class Cli_App_Sales extends Cli
 						
 						//------------------------ ACCOUNT -----------------------//
 						// Get sale_account Details for this Sale
-						$resSaleAccount	= $dsSalesPortal->query("SELECT sale_account.*, state.name AS state_name " .
+						$resSaleAccount	= $dsSalesPortal->query("SELECT sale_account.*, state.code AS state_name " .
 																"FROM sale_account JOIN state ON state.id = sale_account.state_id  " .
 																"WHERE sale_id = {$arrSPSale['id']} " .
 																"LIMIT 1");
@@ -644,7 +644,7 @@ class Cli_App_Sales extends Cli
 									throw new Exception($insBankAccount->Error());
 								}
 								
-								$objAccount->DirectDebit	= $resBankAccountInsert;
+								$objAccount->DirectDebit	= $insBankAccount->intInsertId;
 								break;
 							
 							// Credit Card
@@ -679,7 +679,7 @@ class Cli_App_Sales extends Cli
 									throw new Exception($insCreditCard->Error());
 								}
 								
-								$objAccount->CreditCard	= $resCreditCardInsert;
+								$objAccount->CreditCard	= $insCreditCard->intInsertId;
 								break;
 						}
 						
@@ -809,7 +809,7 @@ class Cli_App_Sales extends Cli
 						}
 						
 						// Is it the Primary Contact for the Account?
-						if ($arrSPContact['contact_association_type_id'] === 1)
+						if ($arrSPContact['contact_association_type_id'] == 1)
 						{
 							$this->log("\t\t\t\t\t+ Setting as {$objAccount->Id}'s Primary Contact...");
 							$objAccount->PrimaryContact	= $objContact->Id;
@@ -941,18 +941,18 @@ class Cli_App_Sales extends Cli
 													$arrAdditionalDetails['EndUserTitle']		= $arrSPLandLineDetails['bill_name'];
 													$arrAdditionalDetails['EndUserGivenName']	= $arrSPLandLineDetails['bill_name'];
 													$arrAdditionalDetails['EndUserFamilyName']	= $arrSPLandLineDetails['bill_name'];
-													$arrAdditionalDetails['EndUserCompanyName']	= $arrSPLandLineDetails['bill_name'];
-													$arrAdditionalDetails['DateOfBirth']		= $arrSPLandLineDetails['bill_name'];
-													$arrAdditionalDetails['Employer']			= $arrSPLandLineDetails['bill_name'];
-													$arrAdditionalDetails['Occupation']			= $arrSPLandLineDetails['bill_name'];
+													$arrAdditionalDetails['EndUserCompanyName']	= '';
+													$arrAdditionalDetails['DateOfBirth']		= $arrSPLandLineDetails['end_user_dob'];
+													$arrAdditionalDetails['Employer']			= ($arrSPLandLineDetails['end_user_employer']) ? $arrSPLandLineDetails['end_user_employer'] : '';
+													$arrAdditionalDetails['Occupation']			= ($arrSPLandLineDetails['end_user_occupation']) ? $arrSPLandLineDetails['end_user_occupation'] : '';
 													break;
 												
 												// Business
 												case 2:
 													$arrAdditionalDetails['Residential']		= 0;
-													$arrAdditionalDetails['EndUserCompanyName']	= $arrSPLandLineDetails['bill_name'];
-													$arrAdditionalDetails['ABN']				= $arrSPLandLineDetails['bill_name'];
-													$arrAdditionalDetails['TradingName']		= $arrSPLandLineDetails['bill_name'];
+													$arrAdditionalDetails['EndUserCompanyName']	= $arrSPLandLineDetails['company_name'];
+													$arrAdditionalDetails['ABN']				= $arrSPLandLineDetails['abn'];
+													$arrAdditionalDetails['TradingName']		= ($arrSPLandLineDetails['trading_name']) ? $arrSPLandLineDetails['trading_name'] : '';
 													break;
 													
 												default:
@@ -980,7 +980,7 @@ class Cli_App_Sales extends Cli
 											$objService->ServiceType	= SERVICE_TYPE_MOBILE;
 											
 											// If it's a New mobile, it will have already been provisioned, so set to ACTIVE
-											if ($arrSPMobileDetails['service_mobile_origin_id'] === 1)
+											if ($arrSPMobileDetails['service_mobile_origin_id'] == 1)
 											{
 												$objService->Status			= SERVICE_ACTIVE;
 											}
@@ -1451,7 +1451,7 @@ class Cli_App_Sales extends Cli
 							$objFullServiceRequest->Employee			= 0;
 							$objFullServiceRequest->Carrier				= $objRatePlan->CarrierFullService;
 							$objFullServiceRequest->Type				= PROVISIONING_TYPE_FULL_SERVICE;
-							$objFullServiceRequest->RequestedOn			= date("Y-m-d H:i:s");
+							$objFullServiceRequest->RequestedOn			= Data_Source_Time::currentTimestamp();
 							$objFullServiceRequest->AuthorisationDate	= $objService->CreatedOn;
 							$objFullServiceRequest->Status				= REQUEST_STATUS_WAITING;
 							$objFullServiceRequest->save();
@@ -1466,7 +1466,7 @@ class Cli_App_Sales extends Cli
 							$objPreselectionRequest->Employee			= 0;
 							$objPreselectionRequest->Carrier			= $objRatePlan->CarrierPreselection;
 							$objPreselectionRequest->Type				= PROVISIONING_TYPE_PRESELECTION;
-							$objPreselectionRequest->RequestedOn		= date("Y-m-d H:i:s");
+							$objPreselectionRequest->RequestedOn		= Data_Source_Time::currentTimestamp();
 							$objPreselectionRequest->AuthorisationDate	= $arrService['verified_on'];
 							$objPreselectionRequest->Status				= REQUEST_STATUS_WAITING;
 							$objPreselectionRequest->save();
