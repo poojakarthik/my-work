@@ -718,6 +718,7 @@ class Cli_App_Sales extends Cli
 					$objSale->external_reference	= "sale.id={$arrSPSale['id']}";
 					$objSale->account_id			= $objAccount->Id;
 					$objSale->verified_on			= $arrVerifiedOn['changed_on'];
+					$objSale->sale_type_id			= $arrSPSale['sale_type_id'];
 					$objSale->save();
 					
 					$objSale->intCouldntComplete	= 0;
