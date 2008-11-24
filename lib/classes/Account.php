@@ -331,9 +331,10 @@ class Account
 		
 		if (array_key_exists($strName, $this->_arrProperties))
 		{
+			$mixOldValue					= $this->_arrProperties[$strName];
 			$this->_arrProperties[$strName]	= $mxdValue;
 			
-			if ($this->{$strName} !== $mxdValue)
+			if ($mixOldValue !== $mxdValue)
 			{
 				$this->_saved = FALSE;
 			}
