@@ -307,7 +307,7 @@ class Cli_App_Automatic_Unbarring extends Cli
 				{
 					$attachment = array();
 					$attachment[self::EMAIL_ATTACHMENT_NAME] = $custGroup.$strOutcome . date('Y_m_d_H_i_s') . '.csv';
-					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
+					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'application/octet-stream';
 					$attachment[self::EMAIL_ATTACHMENT_CONTENT] = "Account,FNN$nl" . implode($nl, $list);
 					$attachments[] = $attachment;
 				}
@@ -320,7 +320,7 @@ class Cli_App_Automatic_Unbarring extends Cli
 				{
 					$attachment = array();
 					$attachment[self::EMAIL_ATTACHMENT_NAME] = $custGroup.$strOutcome . date('Y_m_d_H_i_s') . '.csv';
-					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
+					$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'application/octet-stream';
 					$attachment[self::EMAIL_ATTACHMENT_CONTENT] = "Account,FNN$nl" . implode($nl, $list);
 					$attachments[] = $attachment;
 				}

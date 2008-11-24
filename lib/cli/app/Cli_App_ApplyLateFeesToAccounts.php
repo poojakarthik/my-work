@@ -115,7 +115,7 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 				$report[] = implode(", ", $arrSummary);
 				$attachment = array();
 				$attachment[self::EMAIL_ATTACHMENT_NAME] = "Automatic_Late_Fee_Accounts.csv";
-				$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'text/csv';
+				$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'application/octet-stream';
 				$attachment[self::EMAIL_ATTACHMENT_CONTENT] = implode("\r\n", $arrSummary);
 				$attachments[] = $attachment;
 			}

@@ -211,7 +211,7 @@ class Cli_App_LateNoticeRunList extends Cli
 						if ($attachment)
 						{
 							$attachments = TRUE;
-							$email->addAttachment($attachment, str_replace(' ', '_', $custGroup) . '_' . str_replace(' ', '_', $letterType) . '.csv', 'text/csv');
+							$email->addAttachment($attachment, str_replace(' ', '_', $custGroup) . '_' . str_replace(' ', '_', $letterType) . '.csv', 'application/octet-stream');
 						}
 					}
 
