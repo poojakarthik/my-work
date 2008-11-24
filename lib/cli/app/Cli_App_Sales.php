@@ -525,6 +525,9 @@ class Cli_App_Sales extends Cli
 				
 				try
 				{
+					$arrContacts	= Array();
+					$arrServices	= Array();
+					
 					// Is this for a new Account?
 					if ($arrSPSale['sale_type_id'] == 1)
 					{
@@ -815,6 +818,8 @@ class Cli_App_Sales extends Cli
 							$objAccount->PrimaryContact	= $objContact->Id;
 							$objAccount->save();
 						}
+						
+						$arrContacts[]	= $objContact;
 					}
 					//------------------------------------------------------------//
 					
@@ -1101,6 +1106,10 @@ class Cli_App_Sales extends Cli
 									$objRatePlan	= new Rate_Plan(Array('Id'=>(int)$arrRatePlanId[1]), TRUE);
 									$this->log("\t\t\t\t\t\t+ Setting Plan to '{$objRatePlan->Name}'...");									
 									$objService->changePlan($objRatePlan);
+									
+									$objService->objRatePlan	= $objRatePlan;
+									
+									$arrServices[]	= $objService;
 									break;
 								
 								// Unknown
@@ -1171,6 +1180,42 @@ class Cli_App_Sales extends Cli
 						}
 					}
 					//------------------------------------------------------------//
+					
+					// Add System Note detailing Account Creation
+					if ((int)$objSale->sale_type_id == 1)
+					{
+						// New Sale
+						$objAccountCreationNote	= new Note();
+						$objAccountCreationNote->AccountGroup	= $objAccount->AccountGroup;
+						$objAccountCreationNote->Account		= $objAccount->Account;
+						$objAccountCreationNote->Employee		= 0;
+						$objAccountCreationNote->Datetime		= $strPullDatetime;
+						$objAccountCreationNote->NoteType		= 7;
+						
+						$strNote  = "This Account has been created from the Sales Portal with the following details:\n\n" .
+									"Sale Reference ID: {$arrSPSale['id']}\n";
+						
+						if (count($arrContacts))
+						{
+							$strNote	.= "Contacts:\n";
+							foreach ($arrContacts as $objContact)
+							{
+								$strNote	.= "{$objContact->FirstName} {$objContact->LastName}" . (($objAccount->PrimaryContact == $objContact->Id) ? "(Primary Contact)" : '') . "\n";								
+							}
+						}
+						
+						foreach ($arrServices as $objService)
+						{
+							$strNote	.= "Services:\n";
+							foreach ($arrContacts as $objContact)
+							{
+								$strNote	.= "{$objService->FNN} ({$objService->objRatePlan->Name})\n";								
+							}
+						}
+						
+						$objAccountCreationNote->Note			= trim($strNote);
+						$objAccountCreationNote->save();
+					}
 					
 					// Set Sale Status
 					$this->_updateSaleStatus($arrSPSale['id'], 'Dispatched');
