@@ -1197,7 +1197,7 @@ class Cli_App_Sales extends Cli
 						
 						if (count($arrContacts))
 						{
-							$strNote	.= "Contacts:\n";
+							$strNote	.= "\nContacts:\n";
 							foreach ($arrContacts as $objContact)
 							{
 								$strNote	.= "\t{$objContact->FirstName} {$objContact->LastName} " . (($objAccount->PrimaryContact == $objContact->Id) ? "(Primary Contact)" : '') . "\n";								
@@ -1206,7 +1206,7 @@ class Cli_App_Sales extends Cli
 						
 						foreach ($arrServices as $objService)
 						{
-							$strNote	.= "Services:\n";
+							$strNote	.= "\nServices:\n";
 							foreach ($arrContacts as $objContact)
 							{
 								$strNote	.= "\t{$objService->FNN} (".trim($objService->objRatePlan->Name).")\n";								
