@@ -919,15 +919,15 @@ class Cli_App_Sales extends Cli
 											$arrAdditionalDetails['BillLocality']	= $arrSPLandLineDetails['bill_locality'];
 											$arrAdditionalDetails['BillPostcode']	= $arrSPLandLineDetails['bill_name'];
 											
-											$arrAdditionalDetails['ServiceAddressType']			= $this->_salesPortalEnum('landline_service_address_type', $arrSPLandLineDetails['landline_service_address_type_id']);
+											$arrAdditionalDetails['ServiceAddressType']			= $this->_salesPortalEnum('landline_service_address_type', $arrSPLandLineDetails['landline_service_address_type_id'], 'code');
 											$arrAdditionalDetails['ServiceAddressTypeNumber']	= $arrSPLandLineDetails['service_address_type_number'];
 											$arrAdditionalDetails['ServiceAddressTypeSuffix']	= $arrSPLandLineDetails['service_address_type_suffix'];
 											$arrAdditionalDetails['ServiceStreetNumberStart']	= $arrSPLandLineDetails['service_street_number_start'];
 											$arrAdditionalDetails['ServiceStreetNumberEnd']		= $arrSPLandLineDetails['service_street_number_end'];
 											$arrAdditionalDetails['ServiceStreetNumberSuffix']	= $arrSPLandLineDetails['service_street_number_suffix'];
 											$arrAdditionalDetails['ServiceStreetName']			= $arrSPLandLineDetails['service_street_name'];
-											$arrAdditionalDetails['ServiceStreetType']			= $this->_salesPortalEnum('landline_service_street_type', $arrSPLandLineDetails['landline_service_street_type_id']);
-											$arrAdditionalDetails['ServiceStreetTypeSuffix']	= $this->_salesPortalEnum('landline_service_street_type_suffix', $arrSPLandLineDetails['landline_service_street_type_suffix_id']);
+											$arrAdditionalDetails['ServiceStreetType']			= $this->_salesPortalEnum('landline_service_street_type', $arrSPLandLineDetails['landline_service_street_type_id'], 'code');
+											$arrAdditionalDetails['ServiceStreetTypeSuffix']	= $this->_salesPortalEnum('landline_service_street_type_suffix', $arrSPLandLineDetails['landline_service_street_type_suffix_id'], 'code');
 											$arrAdditionalDetails['ServicePropertyName']		= $arrSPLandLineDetails['service_property_name'];
 											$arrAdditionalDetails['ServiceLocality']			= $arrSPLandLineDetails['service_locality'];
 											$arrAdditionalDetails['ServiceState']				= $this->_salesPortalEnum('landline_service_state', $arrSPLandLineDetails['landline_service_state_id'], 'code');
@@ -938,10 +938,9 @@ class Cli_App_Sales extends Cli
 												// Residential
 												case 1:
 													$arrAdditionalDetails['Residential']		= 1;
-													$arrAdditionalDetails['EndUserTitle']		= $arrSPLandLineDetails['bill_name'];
-													$arrAdditionalDetails['EndUserGivenName']	= $arrSPLandLineDetails['bill_name'];
-													$arrAdditionalDetails['EndUserFamilyName']	= $arrSPLandLineDetails['bill_name'];
-													$arrAdditionalDetails['EndUserCompanyName']	= '';
+													$arrAdditionalDetails['EndUserTitle']		= $this->_salesPortalEnum('landline_end_user_title', $arrSPLandLineDetails['landline_end_user_title_id'], 'code');
+													$arrAdditionalDetails['EndUserGivenName']	= $arrSPLandLineDetails['end_user_given_name'];
+													$arrAdditionalDetails['EndUserFamilyName']	= $arrSPLandLineDetails['end_user_family_name'];
 													$arrAdditionalDetails['DateOfBirth']		= $arrSPLandLineDetails['end_user_dob'];
 													$arrAdditionalDetails['Employer']			= ($arrSPLandLineDetails['end_user_employer']) ? $arrSPLandLineDetails['end_user_employer'] : '';
 													$arrAdditionalDetails['Occupation']			= ($arrSPLandLineDetails['end_user_occupation']) ? $arrSPLandLineDetails['end_user_occupation'] : '';
