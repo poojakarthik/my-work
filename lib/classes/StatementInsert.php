@@ -34,7 +34,7 @@
 	 * @property
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	private $intInsertId;
+	public $intInsertId;
 	
 	//------------------------------------------------------------------------//
 	// StatementInsert() - Constructor
