@@ -206,7 +206,7 @@ class Service extends ORM
 		
 		// Declare the new RateGroups for the service
 		$strInsertRateGroupsIntoServiceRateGroup  = "INSERT INTO ServiceRateGroup (Id, Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active) ";
-		$strInsertRateGroupsIntoServiceRateGroup .= "SELECT NULL, {$this->Id}, RateGroup, {$intUserId}, '{$strCurrentDateAndTime}', '{$strStartDatetime}', '0000-00-00 00:00:00', {$intActive} ";
+		$strInsertRateGroupsIntoServiceRateGroup .= "SELECT NULL, {$this->Id}, RateGroup, {$intUserId}, '{$strCurrentDateAndTime}', '{$strStartDatetime}', '9999-12-31 11:59:59', {$intActive} ";
 		$strInsertRateGroupsIntoServiceRateGroup .= "FROM RatePlanRateGroup WHERE RatePlan = {$objNewRatePlan->Id} ORDER BY RateGroup";
 		$qryInsertServiceRateGroup = new Query();
 		if ($qryInsertServiceRateGroup->Execute($strInsertRateGroupsIntoServiceRateGroup) === FALSE)
