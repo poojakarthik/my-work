@@ -203,8 +203,8 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 			$arrCustomer['Contacts'] = array();
 			foreach ($arrContacts as $objContact)
 			{
-				$intDOB = strtotime($objContact->dob);
-				if ($objContact->dob == "0000-00-00" || $intDOB === FALSE)
+				$intDOB = strtotime($objContact->dOB);
+				if ($objContact->dOB == "0000-00-00" || $intDOB === FALSE)
 				{
 					// The Address is invalid
 					$arrDOB = NULL;
