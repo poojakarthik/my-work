@@ -273,7 +273,7 @@
 			$this->intInsertId = $this->db->refMysqliConnection->insert_id;	
 			if ((int)$this->db->refMysqliConnection->insert_id < 1)
 			{
-				Debug("WTF! Last Insert Id is apparently '{$this->db->refMysqliConnection->insert_id}'");
+				//Debug("WTF! Last Insert Id is apparently '{$this->db->refMysqliConnection->insert_id}'");
 			}
 			return $this->intInsertId;
 		}
