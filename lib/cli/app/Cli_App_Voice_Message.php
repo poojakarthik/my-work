@@ -14,6 +14,7 @@ class Cli_App_Voice_Message extends Cli
 	const SWITCH_ACCOUNT_ID_FILE = "a";
 	const SWITCH_MESSAGE_FILE = "m";
 	const SWITCH_ACCOUNT_ID_INDEX = "i";
+	const SWITCH_SEND_EMAIL = "e";
 
 	public function run()
 	{
@@ -23,6 +24,8 @@ class Cli_App_Voice_Message extends Cli
 			$arrArgs = $this->getValidatedArguments();
 
 			$arrBadNumbers = array();
+			
+			$message = $this->readMessageFromFile($arrArgs[self::SWITCH_MESSAGE_FILE]);
 
 			$this->writeMessagesToFile(
 										$this->filterPhoneNumbers(
@@ -31,7 +34,7 @@ class Cli_App_Voice_Message extends Cli
 											), 
 											$arrBadNumbers
 										),
-										$this->readMessageFromFile($arrArgs[self::SWITCH_MESSAGE_FILE]),
+										$message,
 										$arrArgs[self::SWITCH_OUTPUT_FILE_PATH_AND_NAME]
 									);
 									
@@ -44,6 +47,38 @@ class Cli_App_Voice_Message extends Cli
 					fwrite($file, "$accountId,$phone\n");
 				}
 				fclose($file);
+			}
+			
+			if ($arrArgs[self::SWITCH_SEND_EMAIL])
+			{
+				$emailNotification = new Email_Notification(EMAIL_NOTIFICATION_VOICE_MAIL);
+				$emailNotification->setSubject("[SUCCESS] Voice message files for accounts in file: " . basename($arrArgs[self::SWITCH_ACCOUNT_ID_FILE]));
+				$emailNotification->setBodyText("The attached file, '" . basename($arrArgs[self::SWITCH_OUTPUT_FILE_PATH_AND_NAME]) . "', contains voice messages." 
+					. "\n\nAccount numbers were extracted from column " . $arrArgs[self::SWITCH_ACCOUNT_ID_INDEX] . " of file '" . basename($arrArgs[self::SWITCH_ACCOUNT_ID_FILE]) . "'." 
+					. "\n\nThe voice message contained in this file reads:\n\n$message\n\n" 
+					. (
+						($arrArgs[self::SWITCH_ERROR_FILE_PATH_AND_NAME] !== null) 
+							? ("NOTE: The other attached file, '" . basename($arrArgs[self::SWITCH_ERROR_FILE_PATH_AND_NAME]) . "', contains a list of phone numbers and accounts to which voice messages could not be sent.\n\n") 
+							: ""
+					  )
+				);
+
+				$emailNotification->addAttachment(file_get_contents($arrArgs[self::SWITCH_OUTPUT_FILE_PATH_AND_NAME]), basename($arrArgs[self::SWITCH_OUTPUT_FILE_PATH_AND_NAME]), "application/octet-stream; " . basename($arrArgs[self::SWITCH_OUTPUT_FILE_PATH_AND_NAME]));
+
+				if ($arrArgs[self::SWITCH_ERROR_FILE_PATH_AND_NAME] !== null)
+				{
+					$emailNotification->addAttachment(file_get_contents($arrArgs[self::SWITCH_ERROR_FILE_PATH_AND_NAME]), basename($arrArgs[self::SWITCH_ERROR_FILE_PATH_AND_NAME]), "application/octet-stream; " . basename($arrArgs[self::SWITCH_ERROR_FILE_PATH_AND_NAME]));
+				}
+
+				try
+				{
+					$emailNotification->send();
+					return TRUE;
+				}
+				catch(Exception $exception)
+				{
+					throw new Exception("Failed to send files via email: " . $exception->getMessage());
+				}
 			}
 		}
 		catch (Exception $e)
@@ -231,8 +266,14 @@ Account.Id IN (" . implode(',', $arrAccountIds) . ")
 				self::ARG_DEFAULT 	=> NULL,
 				self::ARG_VALIDATION 	=> 'Cli::_validWritableFileOrDirectory("%1$s", TRUE)'
 			),
-			
 
+			self::SWITCH_SEND_EMAIL => array(
+				self::ARG_REQUIRED 	=> FALSE,
+				self::ARG_DESCRIPTION => "whether or not to email the generated files",
+				self::ARG_DEFAULT 	=> FALSE,
+				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
+			),
+			
 		);
 		return $commandLineArguments;
 	}
