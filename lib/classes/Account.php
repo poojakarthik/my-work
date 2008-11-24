@@ -263,8 +263,6 @@ class Account
 		}
 		
 		// Record the new state of the account
-		// HACKHACKHACK: Have to wait a second to make sure the the timestamp as changed
-		sleep(2);
 		Account_History::recordCurrentState($this->Id, $intEmployeeId);
 		
 		$this->_saved = TRUE;

@@ -101,7 +101,7 @@ class Account_History
 			}
 			
 			// Check that the requested timestamp > that of the account history record
-			if ($strTimestamp <= $arrAccountHistory['change_timestamp'])
+			if ($strTimestamp < $arrAccountHistory['change_timestamp'])
 			{
 				throw new Exception("Requested Timestamp for recording of account state ($strTimestamp) is less than or equal to the timestamp marked against the current record in the account_history table modelling the current state of the account ({$arrAccountHistory['change_timestamp']}), signifying a breach of data integrity");
 			}
