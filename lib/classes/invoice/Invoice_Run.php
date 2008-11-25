@@ -228,6 +228,16 @@ class Invoice_Run
 		// Generate the Billing Period Dates
 		$this->calculateBillingPeriodDates();
 		
+		// Get CustomerGroup information
+		$selInvoiceCDRCredits	= self::_preparedStatement('selInvoiceCDRCredits');
+		if ($selInvoiceCDRCredits->Execute($this->toArray()) === FALSE)
+		{
+			// Database Error -- throw Exception
+			throw new Exception("DB ERROR: ".$selInvoiceCDRCredits->Error());
+		}
+		$arrInvoiceCDRCredits		= $selInvoiceCDRCredits->Fetch();
+		$this->bolInvoiceCDRCredits	= (bool)$arrInvoiceCDRCredits['invoice_cdr_credits'];
+		
 		// Retrieve a list of Accounts to be Invoiced
 		Cli_App_Billing::debug(" * Getting list of Accounts to Invoice...");
 		$selInvoiceableAccounts	= self::_preparedStatement('selInvoiceableAccounts');
@@ -773,6 +783,9 @@ class Invoice_Run
 					break;
 				case 'selPaymentTerms':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("payment_terms", "*", "customer_group_id = <customer_group_id>", "id DESC", 1);
+					break;
+				case 'selInvoiceCDRCredits':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("CustomerGroup", "invoice_cdr_credits", "customer_group_id = <customer_group_id>");
 					break;
 				
 				
