@@ -872,7 +872,7 @@ class Cli_App_Sales extends Cli
 									$objService->NatureOfCreation	= SERVICE_CREATION_NEW;
 									$objService->ForceInvoiceRender	= 0;
 									$objService->Status				= SERVICE_PENDING;
-									$objService->Dealer				= $arrSPSale['dealer_id'];
+									$objService->Dealer				= $arrSPSaleItem['created_by'];
 									$objService->Cost				= 0;
 									
 									// Get the Sale Status Date
