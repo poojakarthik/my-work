@@ -123,11 +123,11 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				// Use the username for the dealer
 				$strDealerName		= htmlspecialchars($objDealer->username);
 				
-				$arrActions = array();
-				$arrActions[] = "<a href='$strViewSaleLink'>View</a>";
-				$arrActions[] = "<a onclick='SaleHistory.loadPopup($strId)'>History</a>";
-				$strViewSaleLink = Href()->ViewSale($objSale->id);
-				$strActions	= implode(" | ", $arrActions);
+				$strViewSaleLink	= Href()->ViewSale($objSale->id);
+				$arrActions			= array();
+				$arrActions[]		= "<a href='$strViewSaleLink'>View</a>";
+				$arrActions[]		= "<a onclick='SaleHistory.loadPopup($strId)'>History</a>";
+				$strActions			= implode(" | ", $arrActions);
 				
 				$strBodyRows .= "
 			<tr $strRowClass>

@@ -616,7 +616,7 @@ class JSON_Handler_Sale extends JSON_Handler
 					
 					$intTimestamp = strtotime($doHistoryRecord->changedOn);
 					$strDate = date("d-m-Y", $intTimestamp);
-					$strTime = date("H:i:s", $intTimestamp);
+					$strTime = date("g:i:s", $intTimestamp) ."&nbsp;". date("a", $intTimestamp);
 					
 					$strDescription = ($doHistoryRecord->description !== NULL)? htmlspecialchars($doHistoryRecord->description) : "";
 					
@@ -642,7 +642,7 @@ class JSON_Handler_Sale extends JSON_Handler
 					<th colspan='2'>Time</th>
 					<th>Event</th>
 					<th>Description</th>
-					<th>Dealer</th>
+					<th>Changed By</th>
 				</tr>
 			</thead>
 			<tbody>

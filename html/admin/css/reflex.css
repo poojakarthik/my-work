@@ -275,10 +275,11 @@ div#PopupPageBody {
 	line-height: 1.25em;
 	color: #eee;
 	font-weight: bold;
-	background-color: #111;
+	background-color: #000;
+	background-image: url('../img/template/background.png');
+	background-repeat: repeat-x;
 	margin: 0;
 	padding: .25em;
-	cursor: default;
 }
 
 .PopupBoxClose {
