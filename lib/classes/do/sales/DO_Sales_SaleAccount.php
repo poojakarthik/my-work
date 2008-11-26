@@ -2,6 +2,29 @@
 
 class DO_Sales_SaleAccount extends DO_Sales_Base_SaleAccount
 {
+	private static $arrHistoricalProperties = array('billDeliveryTypeId', 'billPaymentTypeId', 'directDebitTypeId');
+	
+	protected function setValueFromDataSource($propertyName, $value)
+	{
+		parent::setValueFromDataSource($propertyName, $value);
+		if (array_search($propertyName, self::$arrHistoricalProperties) !== false)
+		{
+			$this->{'original_'.$propertyName} = $value;
+		}
+	}
+	
+	public function hasHistoricalChange()
+	{
+		foreach (self::$arrHistoricalProperties as $propertyName)
+		{
+			if ($this->{$propertyName} !== $this->{'original_'.$propertyName})
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public function __set($propertyName, $value)
 	{
 		switch ($propertyName)
