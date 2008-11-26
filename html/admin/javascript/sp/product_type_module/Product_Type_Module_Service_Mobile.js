@@ -36,7 +36,8 @@ Object.extend(Sale.ProductTypeModule.Service_Mobile.prototype, {
 
 	updateSummary: function(suggestion)
 	{
-		this.summaryContainer.appendChild(document.createTextNode(suggestion + "; " + (this.isNewService() ? "[New service]" : ("Mobile Phone Number: " + ((this.object.fnn == undefined || this.object.fnn == null || this.object.fnn == '') ? '[Not set]' : this.object.fnn)))));
+		var noFNN = (this.object.fnn == undefined || this.object.fnn == null || this.object.fnn == '');
+		this.summaryContainer.appendChild(document.createTextNode(suggestion + "; " + ((this.isNewService() && noFNN) ? "[New Service - No Mobile Phone Number specified]" : ("Mobile Phone Number: " + (noFNN ? '[Not set]' : this.object.fnn)))));
 	},
 
 	buildGUI: function()
