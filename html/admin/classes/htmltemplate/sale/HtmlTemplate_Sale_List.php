@@ -5,6 +5,8 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
+		
+		$this->LoadJavascript('sp/sale_history');
 	}
 
 	public function Render()
@@ -102,7 +104,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				$strSaleStatus		= htmlspecialchars($arrSaleStatuses[$objSale->saleStatusId]->name);
 				$strSaleType		= htmlspecialchars($arrSaleTypes[$objSale->saleTypeId]->name);
 				
-				$strSaleStatusCssClass = "sale-status-". strtolower($arrSaleStatuses[$objSale->saleStatusId]->name);
+				$strSaleStatusCssClass = "sale-status-". strtolower(str_replace(" ", "-", $arrSaleStatuses[$objSale->saleStatusId]->name));
 				$strSaleStatus = "<span class='$strSaleStatusCssClass'>$strSaleStatus</span>";
 				
 				// $arrSaleStatusHistory should always have just 1 record in it
@@ -121,9 +123,11 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				// Use the username for the dealer
 				$strDealerName		= htmlspecialchars($objDealer->username);
 				
-				
+				$arrActions = array();
+				$arrActions[] = "<a href='$strViewSaleLink'>View</a>";
+				$arrActions[] = "<a onclick='SaleHistory.loadPopup($strId)'>History</a>";
 				$strViewSaleLink = Href()->ViewSale($objSale->id);
-				$strActions	= "<a href='$strViewSaleLink'>View</a>";
+				$strActions	= implode(" | ", $arrActions);
 				
 				$strBodyRows .= "
 			<tr $strRowClass>

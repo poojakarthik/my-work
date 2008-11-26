@@ -559,6 +559,122 @@ class JSON_Handler_Sale extends JSON_Handler
 		return $arrProductIdName;
 		
 	}
+	
+	
+	// Builds the "Sale History" popup, which lists all status changes that the sale has gone through
+	public function buildHistoryPopup($intSaleId)
+	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES);
+		
+		try
+		{
+			$intSaleId = intval($intSaleId);
+			
+			$doSale = DO_Sales_Sale::getForId($intSaleId);
+			
+			if ($doSale === NULL)
+			{
+				throw new Exception("Cannot find sale with id: $intSaleId");
+			}
+			
+			// Retrieve the history
+			$arrPropMap = DO_Sales_SaleStatusHistory::getPropertyDataSourceMappings();
+			$strOrderBy = "{$arrPropMap['changedOn']} DESC, {$arrPropMap['id']} DESC";
+			$arrSaleStatusHistoryObjects = DO_Sales_SaleStatusHistory::listForSale($doSale, $strOrderBy);
+			
+			// cache dealers
+			$arrDealers = array();
+			
+			$arrStatuses = DO_Sales_SaleStatus::getAll();
+			
+			if (count($arrSaleStatusHistoryObjects) == 0)
+			{
+				// This shouldn't ever happen, because if the sale exists, then it should have at least 1 sale_status_history record
+				$strBodyRows = "<tr><td colspan='4'>Now Records</td></tr>";
+			}
+			else
+			{
+				$strBodyRows	= "";
+				$bolAlt			= FALSE;
+				foreach ($arrSaleStatusHistoryObjects as $doHistoryRecord)
+				{
+					if (!array_key_exists($doHistoryRecord->changedBy, $arrDealers))
+					{
+						// We have not encountered this dealer yet.  Cache it
+						$arrDealers[$doHistoryRecord->changedBy] = DO_Sales_Dealer::getForId($doHistoryRecord->changedBy);
+					}
+
+					$strRowClass	= ($bolAlt)? "class='alt'" : "";
+					$bolAlt			= !$bolAlt;
+					
+					$strDealer = ($doHistoryRecord->changedBy == DO_Sales_Dealer::SYSTEM_DEALER_ID)? "System Process" : htmlspecialchars($arrDealers[$doHistoryRecord->changedBy]->username);
+					
+					$strStatus = htmlspecialchars($arrStatuses[$doHistoryRecord->saleStatusId]->name);
+					$strStatusCssClass = "sale-status-". strtolower(str_replace(" ", "-", $arrStatuses[$doHistoryRecord->saleStatusId]->name));
+					$strStatus = "<span class='$strStatusCssClass'>$strStatus</span>";
+					
+					$intTimestamp = strtotime($doHistoryRecord->changedOn);
+					$strDate = date("d-m-Y", $intTimestamp);
+					$strTime = date("H:i:s", $intTimestamp);
+					
+					$strDescription = ($doHistoryRecord->description !== NULL)? htmlspecialchars($doHistoryRecord->description) : "";
+					
+					$strBodyRows .= "
+			<tr $strRowClass>
+				<td>$strDate</td>
+				<td>$strTime</td>
+				<td>$strStatus</td>
+				<td>$strDescription</td>
+				<td>$strDealer</td>
+			</tr>";
+				}
+			}
+			
+			// Build contents for the popup
+			$strHtml = "
+<div id='PopupPageBody' style='padding:3px'>
+
+	<div style='overflow:auto;max-height:25em;width:100%;'>
+		<table class='reflex highlight-rows' id='SaleStatusHistoryTable' name='SaleStatusHistoryTable'>
+			<thead>
+				<tr>
+					<th colspan='2'>Time</th>
+					<th>Event</th>
+					<th>Description</th>
+					<th>Dealer</th>
+				</tr>
+			</thead>
+			<tbody>
+		$strBodyRows
+			</tbody>
+		</table>
+	</div>
+
+	<div style='padding-top:3px;height:auto:width:100%'>
+		<div style='float:right'>
+			<input type='button' value='Close' onclick='Vixen.Popup.Close(this)'></input>
+		</div>
+		<div style='clear:both;float:none'></div>
+	</div>
+
+</div>
+";
+
+			return array(	"Success"		=> TRUE,
+							"PopupContent"	=> $strHtml,
+							"saleId"		=> $intSaleId
+						);
+		}
+		catch (Exception $e)
+		{
+			return array(	"Success"		=> FALSE,
+							"ErrorMessage"	=> $e->getMessage()
+						);
+		}
+	}
+	
+	
 }
 
 
