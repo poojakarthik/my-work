@@ -51,7 +51,7 @@ Object.extend(Sale.prototype, {
 			+ '</div>' 
 		+ '</div>' 
 		+ '<div class="MediumSpace"></div>' 
-		+ '<div class="Title">Sale Items</div>' 
+		+ '<div style="position: relative;" class="Title">Sale Items<input type="button" value="Collapse All" style="width: 80px; position: absolute; right: 0px; bottom: -1px;" onclick="if (this.value == \'Collapse All\') { this.value = \'Expand All\'; Sale.Item.collapseAll();} else { this.value = \'Collapse All\'; Sale.Item.expandAll();} " /></div>' 
 		+ '<div class="Page">' 
 			+ '<div class="FieldContent" style="padding:0; margin:0;">' 
 				+ '<table id="sale-items-table" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; margin: 0; padding: 0; width:100%;">' 

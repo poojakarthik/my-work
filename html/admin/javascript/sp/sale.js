@@ -1290,7 +1290,7 @@ Object.extend(Sale.prototype, {
 			+ '</div>' 
 		+ '</div>' 
 		+ '<div class="MediumSpace"></div>' 
-		+ '<div class="Title">Sale Items</div>' 
+		+ '<div style="position: relative;" class="Title">Sale Items<input type="button" value="Collapse All" style="width: 80px; position: absolute; right: 0px; bottom: -1px;" onclick="if (this.value == \'Collapse All\') { this.value = \'Expand All\'; Sale.Item.collapseAll();} else { this.value = \'Collapse All\'; Sale.Item.expandAll();} " /></div>' 
 		+ '<div class="Page">' 
 			+ '<div class="FieldContent" style="padding:0; margin:0;">' 
 				+ '<table id="sale-items-table" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; margin: 0; padding: 0; width:100%;">' 
@@ -1488,14 +1488,8 @@ Object.extend(Sale.prototype, {
 		expand.value = 'Collapse';
 		expand.id = item.instanceId + '-expand';
 		expand.style.width = '80px';
-		var f = function() 
-				{ 
-					var collapsed = ($ID(this.id + "-body").style.display == 'none'); 
-					this.item.updateSummary(collapsed);
-					$ID(this.id + "-body").style.display = (collapsed ? 'table-row' : 'none'); 
-					$ID(this.id + "-expand").value = (collapsed ? 'Collapse' : 'Expand');
-				}
-		var func = f.bind({ id: item.instanceId, item: item });
+
+		var func = item.toggleExpanso.bind(item);
 		Event.observe(expand, 'click', func, true);
 		controls.appendChild(expand);
 		
@@ -3138,6 +3132,30 @@ Object.extend(Sale.Item, {
 	getInstance: function(instanceId)
 	{
 		return Sale.Item.instances[instanceId];
+	},
+	
+	collapseAll: function()
+	{
+		for (var instanceId in Sale.Item.instances)
+		{
+			if (typeof Sale.Item.instances[instanceId] == 'function')
+			{
+				continue;
+			}
+			Sale.Item.instances[instanceId].collapse();
+		}
+	},
+	
+	expandAll: function()
+	{
+		for (var instanceId in Sale.Item.instances)
+		{
+			if (typeof Sale.Item.instances[instanceId] == 'function')
+			{
+				continue;
+			}
+			Sale.Item.instances[instanceId].expand();
+		}
 	}
 	
 });
@@ -3175,6 +3193,28 @@ Object.extend(Sale.Item.prototype, {
 		Sale.Item.register(this);
 	},
 	
+	collapse: function()
+	{
+		if (this.isExpanded()) this.toggleExpanso();
+	},
+	
+	expand: function()
+	{
+		if (!this.isExpanded()) this.toggleExpanso();
+	},
+	
+	isExpanded: function()
+	{
+		return $ID(this.instanceId + "-body").style.display != 'none';
+	},
+	
+	toggleExpanso: function()
+	{
+		var collapsed = !this.isExpanded(); 
+		this.updateSummary(collapsed);
+		$ID(this.instanceId + "-body").style.display = (collapsed ? 'table-row' : 'none'); 
+		$ID(this.instanceId + "-expand").value = (collapsed ? 'Collapse' : 'Expand');
+	},
 	
 	buildGUI: function()
 	{
