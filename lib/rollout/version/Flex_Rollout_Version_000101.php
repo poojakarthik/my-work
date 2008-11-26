@@ -16,7 +16,7 @@ class Flex_Rollout_Version_000101 extends Flex_Rollout_Version
 		
 		// 1:	Adds the CustomerGroup.invoice_cdr_credits Field
 		$strSQL = "ALTER TABLE CustomerGroup " .
-					"invoice_cdr_credits TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1: CDR Credits are Invoiced; 0: CDR Credits are Suppressed';";
+					"ADD invoice_cdr_credits TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1: CDR Credits are Invoiced; 0: CDR Credits are Suppressed';";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
