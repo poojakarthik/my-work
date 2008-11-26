@@ -9,7 +9,7 @@ class DO_Sales_SaleStatus extends DO_Sales_Base_SaleStatus
 	const AWAITING_DISPATCH			= 5;
 	const DISPATCHED				= 6;
 	const MANUAL_INTERVENTION		= 7;
-	const PROVISIONED				= 8;
+	const COMPLETED					= 8;
 
 	protected static $_cache = NULL;
 	

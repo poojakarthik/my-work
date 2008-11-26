@@ -158,6 +158,11 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 
 		DBO()->CustomerGroup->customer_advert_url->RenderOutput();
 
+		if (DBO()->CustomerGroup->cooling_off_period->Value !== NULL)
+		{
+			DBO()->CustomerGroup->cooling_off_period = DBO()->CustomerGroup->cooling_off_period->Value . " hours";
+		}
+		DBO()->CustomerGroup->cooling_off_period->RenderOutput();
 		
 		echo "</div>\n"; // GroupedContent
 
@@ -267,6 +272,7 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		DBO()->CustomerGroup->business_info_email->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 
 		DBO()->CustomerGroup->customer_advert_url->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->cooling_off_period->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>5, "style:width"=>"100px"));
 		
 		echo "</div>\n"; // GroupedContent
 

@@ -100,6 +100,8 @@ class Cli_App_Sales extends Cli
 			foreach ($arrCustomerGroups as $objCustomerGroup)
 			{
 				$this->log("\t\t\t+ Id #{$objCustomerGroup->id} ({$objCustomerGroup->externalName})...");
+
+				$strCoolingOffPeriod = ($objCustomerGroup->coolingOffPeriod !== NULL)? $objCustomerGroup->coolingOffPeriod : "NULL";
 				
 				// Does this Customer Group exist in the Sales Portal?
 				$resVendors	= $dsSalesPortal->query("SELECT id FROM vendor WHERE id = {$objCustomerGroup->id}", Array('integer'));
@@ -112,7 +114,7 @@ class Cli_App_Sales extends Cli
 					$this->log("\t\t\t+ Does not exist, adding...");
 					
 					// No -- add it
-					$resVendorInsert	= $dsSalesPortal->query("INSERT INTO vendor (id, name, description) VALUES ({$objCustomerGroup->id}, '{$objCustomerGroup->externalName}', '{$objCustomerGroup->externalName}');");
+					$resVendorInsert	= $dsSalesPortal->query("INSERT INTO vendor (id, name, description, cooling_off_period) VALUES ({$objCustomerGroup->id}, '{$objCustomerGroup->externalName}', '{$objCustomerGroup->externalName}', $strCoolingOffPeriod);");
 					if (PEAR::isError($resVendorInsert))
 					{
 						throw new Exception($resVendorInsert->getMessage()." :: ".$resVendorInsert->getUserInfo());
@@ -123,7 +125,7 @@ class Cli_App_Sales extends Cli
 					$this->log("\t\t\t+ Already exists, updating...");
 					
 					// Yes -- update it
-					$resVendorUpdate	= $dsSalesPortal->query("UPDATE vendor SET id = {$objCustomerGroup->id}, name = '{$objCustomerGroup->externalName}', description = '{$objCustomerGroup->externalName}' WHERE id = {$objCustomerGroup->id};");
+					$resVendorUpdate	= $dsSalesPortal->query("UPDATE vendor SET id = {$objCustomerGroup->id}, name = '{$objCustomerGroup->externalName}', description = '{$objCustomerGroup->externalName}', cooling_off_period = $strCoolingOffPeriod WHERE id = {$objCustomerGroup->id};");
 					if (PEAR::isError($resVendorUpdate))
 					{
 						throw new Exception($resVendorUpdate->getMessage()." :: ".$resVendorUpdate->getUserInfo());

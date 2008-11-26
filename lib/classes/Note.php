@@ -13,6 +13,8 @@
  */
 class Note extends ORM
 {	
+	const SYSTEM_NOTE_TYPE_ID = 7;
+	
 	protected	$_strTableName	= "Note";
 	
 	//------------------------------------------------------------------------//
@@ -36,6 +38,52 @@ class Note extends ORM
 	{
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
+	}
+	
+	public static function createSystemNote($strContent, $intEmployee, $intAccountGroup, $intAccount, $intService=NULL, $intContact=NULL)
+	{
+		return self::createNote(self::SYSTEM_NOTE_TYPE_ID, $strContent, $intEmployee, $intAccountGroup, $intAccount, $intService, $intContact);
+	}
+	
+	// Creates the note, and saves it and returns the object
+	// Will throw an Exception on error
+	// Will always return a Note object, if an exception is not thrown
+	public static function createNote($intType, $strContent, $intEmployee, $intAccountGroup, $intAccount, $intService=NULL, $intContact=NULL)
+	{
+	 	if ($intEmployee === NULL)
+	 	{
+	 		// Use the System User Employee Id
+	 		$intEmployee = Employee::SYSTEM_EMPLOYEE_ID;
+	 	}
+	 	
+	 	if ($intType === NULL)
+	 	{
+	 		$intType = self::SYSTEM_NOTE_TYPE_ID;
+	 	}
+	 	
+	 	// Insert the note
+	 	$arrData = Array();
+	 	$arrData['Note']			= $strContent;
+	 	$arrData['AccountGroup']	= $intAccountGroup;
+	 	$arrData['Contact']			= $intContact;
+	 	$arrData['Account']			= $intAccount;
+	 	$arrData['Service']			= $intService;
+	 	$arrData['Employee']		= $intEmployee;
+	 	$arrData['Datetime']		= Data_Source_Time::currentTimestamp();
+	 	$arrData['NoteType']		= $intType;
+
+		$objNote = new self($arrData);
+		
+		try
+		{
+			$objNote->save();
+		}
+		catch (Exception $e)
+		{
+			throw new Exception(__METHOD__ ." Failed to save note - ". $e->getMessage());
+		}
+	 	
+	 	return $objNote;
 	}
 	
 	//------------------------------------------------------------------------//

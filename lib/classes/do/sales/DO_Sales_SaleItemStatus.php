@@ -9,7 +9,7 @@ class DO_Sales_SaleItemStatus extends DO_Sales_Base_SaleItemStatus
 	const AWAITING_DISPATCH			= 5;
 	const DISPATCHED				= 6;
 	const MANUAL_INTERVENTION		= 7;
-	const PROVISIONED				= 8;
+	const COMPLETED					= 8;
 
 }
 

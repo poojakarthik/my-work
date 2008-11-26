@@ -3,7 +3,7 @@
 class DO_Sales_SaleItemStatusHistory extends DO_Sales_Base_SaleItemStatusHistory
 {
 
-	public static function recordHistoryForSaleItem(DO_Sales_SaleItem $saleItem, $intDealerId, $comment="")
+	public static function recordHistoryForSaleItem(DO_Sales_SaleItem $saleItem, $intDealerId, $comment=NULL)
 	{
 		$strSQL = 'SELECT ' . self::getPropertyDataSourceName('saleItemStatusId') . 
 				  '  FROM ' . self::getDataSourceObjectName() . 
@@ -44,6 +44,21 @@ class DO_Sales_SaleItemStatusHistory extends DO_Sales_Base_SaleItemStatusHistory
 		$history->saleItemStatusId = $saleItem->saleItemStatusId;
 		$history->description = strval($comment);
 		$history->save();
+	}
+	
+	// Returns a DO_Sales_SaleItemStatusHistory object representing the first time $doSaleItem was set to $intSaleItemStatusId
+	// Returns NULL, if it has never been set to the status
+	public static function getFirstOccuranceOfStatus($doSaleItem, $intSaleItemStatusId)
+	{
+		$arrPropsMap = self::getPropertyDataSourceMappings();
+		// This should really be sorted by changedOn then id, but id should suffice and is much faster
+		$strOrderBy = "{$arrPropsMap['id']} ASC";
+		
+		$arrWhere = array(	"saleItemId"		=> $doSaleItem->id,
+							"saleItemStatusId"	=> $intSaleItemStatusId
+						);
+		
+		return self::getFor($arrWhere, false, $strOrderBy, 1);
 	}
 }
 

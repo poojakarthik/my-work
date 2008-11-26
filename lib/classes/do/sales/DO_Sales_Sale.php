@@ -275,7 +275,7 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		return self::$_arrPaginationDetails;
 	}
 	
-	public function save($dealerId, $comment)
+	public function save($dealerId, $comment=NULL)
 	{
 		$dealer = DO_Sales_Dealer::getForId($dealerId);
 		if ($dealer == null)
@@ -391,6 +391,67 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		}
 	}
 	
+	// This will set the sale to COMPLETED, if all of its related sale items are either completed or cancelled
+	// It will not do anything if the sale has already been set to completed
+	// It is a precondition that the sale has been saved to the database, as well as all its sale items
+	public function setCompletedOrCancelledBasedOnSaleItems($dealerId)
+	{
+		$arrSaleItems		= DO_Sales_SaleItem::listForSale($this);
+		$intNumSaleItems	= count($arrSaleItems);
+		$intNumCancelled	= 0;
+		$intNumCompleted	= 0;
+		$intNewStatus		= NULL;
+		$strStatusDesc		= NULL;
+		
+		foreach ($arrSaleItems as $doSaleItem)
+		{
+			switch ($doSaleItem->saleItemStatusId)
+			{
+				case DO_Sales_SaleItemStatus::CANCELLED:
+					$intNumCancelled++;
+					break;
+					
+				case DO_Sales_SaleItemStatus::COMPLETED:
+					$intNumCompleted++;
+					break;
+			}
+		}
+		
+		if ($intNumCancelled == $intNumSaleItems)
+		{
+			// All Sale Items have been cancelled
+			// Therefore the sale is cancelled
+			$intNewStatus = DO_Sales_SaleStatus::CANCELLED;
+			$strStatusDesc = "Cancelled because all items have been cancelled";
+		}
+		elseif ($intNumCompleted == $intNumSaleItems)
+		{
+			// All Sale Items have completed
+			// Therefore the sale is completed
+			$intNewStatus = DO_Sales_SaleStatus::COMPLETED;
+			$strStatusDesc = "Completed because all items have been completed";
+		}
+		elseif (($intNumCancelled + $intNumCompleted) == $intNumSaleItems)
+		{
+			// All Sale Items have either been cancelled or completed, but at least one item has been completed
+			// Therefore the sale is completed
+			$intNewStatus = DO_Sales_SaleStatus::COMPLETED;
+			$strStatusDesc = "Completed because all items have been completed or cancelled";
+		}
+		else
+		{
+			// The Sale is neither Completed or Cancelled
+			$intNewStatus = $this->saleStatusId;
+		}
+		
+		if ($intNewStatus != $this->saleStatusId)
+		{
+			// The sale's status needs to be updated
+			$this->saleStatusId = $intNewStatus;
+			$this->save($dealerId, $strStatusDesc);
+		}
+	}
+
 }
 
 ?>

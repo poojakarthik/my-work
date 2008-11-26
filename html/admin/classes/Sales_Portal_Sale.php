@@ -15,7 +15,7 @@ class Sales_Portal_Sale
 							array(	DO_Sales_SaleStatus::SUBMITTED, 
 									DO_Sales_SaleStatus::REJECTED, 
 									DO_Sales_SaleStatus::MANUAL_INTERVENTION, 
-									DO_Sales_SaleStatus::PROVISIONED, 
+									DO_Sales_SaleStatus::COMPLETED, 
 									DO_Sales_SaleStatus::AWAITING_DISPATCH, 
 									DO_Sales_SaleStatus::DISPATCHED, 
 									DO_Sales_SaleStatus::VERIFIED), true) !== false;

@@ -486,15 +486,33 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			return TRUE;
 		}
 
+		DBO()->CustomerGroup->cooling_off_period = (trim(DBO()->CustomerGroup->cooling_off_period->Value) == "")? NULL : intval(DBO()->CustomerGroup->cooling_off_period->Value);
+
 		DBO()->CustomerGroup->customer_primary_color = ereg_replace("[^a-zA-Z0-9]", "", DBO()->CustomerGroup->customer_primary_color->Value);
 		DBO()->CustomerGroup->customer_secondary_color = ereg_replace("[^a-zA-Z0-9]", "", DBO()->CustomerGroup->customer_secondary_color->Value);
-		DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url,external_name_possessive,bill_pay_biller_code,abn,acn,business_phone,business_fax,business_web,business_contact_email,business_info_email,customer_service_phone,customer_service_email,customer_service_contact_name,business_payable_name,business_payable_address,credit_card_payment_phone,faults_phone,customer_advert_url");
+		DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url,external_name_possessive,bill_pay_biller_code,abn,acn,business_phone,business_fax,business_web,business_contact_email,business_info_email,customer_service_phone,customer_service_email,customer_service_contact_name,business_payable_name,business_payable_address,credit_card_payment_phone,faults_phone,customer_advert_url,cooling_off_period");
 		// The CustomerGroup is valid.  Save it
 		if (!DBO()->CustomerGroup->Save())
 		{
 			// The CustomerGroup could not be saved for some unforseen reason
 			Ajax()->AddCommand("Alert", "ERROR: Saving changes to the CustomerGroup failed, unexpectedly");
 			return TRUE;
+		}
+		
+		// If the sales module is active then update the sales database (the vendor table)
+		if (Data_Source::dsnExists(FLEX_DATABASE_CONNECTION_SALES))
+		{
+			try
+			{
+				Cli_App_Sales::pushAll();
+			}
+			catch (Exception $e)
+			{
+				// Pushing the data failed
+				$strWarning = "Pushing the data from Flex to the Sales database, failed. Contact your system administrators to have them manually trigger the data push.  (Error message: ". htmlspecialchars($e->getMessage()) .")";
+				Ajax()->AddCommand("Alert", $strWarning);
+			}
+			
 		}
 		
 		// Fire the OnCustomerGroupDetailsUpdate Event

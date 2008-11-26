@@ -413,37 +413,20 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Calculate the Account's total unbilled adjustments
 		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges($intAccountId);
 		
-		// Load all contacts, with the primary being listed first, and then those belonging to this account specifically, then those belonging to the account group who can access this account
-		if (DBO()->Account->PrimaryContact->Value)
+		// Make sure the contact specified belongs to the AccountGroup
+		$intPrimaryContactId		= DBO()->Account->PrimaryContact->Value;
+		$intAccountGroupId			= DBO()->Account->AccountGroup->Value;
+		$strContactWhereClause		= "Account = $intAccountId OR (CustomerContact = 1 AND AccountGroup = $intAccountGroupId)";
+		$strContactOrderByClause	= "(Account = $intAccountId) DESC, FirstName ASC, LastName ASC";
+		if ($intPrimaryContactId !== NULL)
 		{
-			// Make sure the contact specified belongs to the AccountGroup
-			$intPrimaryContactId	= DBO()->Account->PrimaryContact->Value;
-			$intAccountGroupId		= DBO()->Account->AccountGroup->Value;
-			
-			DBL()->Contact->Where->SetString("Id = $intPrimaryContactId OR Account = $intAccountId OR (CustomerContact = 1 AND AccountGroup = $intAccountGroupId)");
-			DBL()->Contact->OrderBy("(Id = $intPrimaryContactId) DESC, (Account = $intAccountId) DESC, FirstName ASC, LastName ASC");
-			DBL()->Contact->SetLimit(3);
-			DBL()->Contact->Load();
+			$strContactWhereClause		= "Id = $intPrimaryContactId OR " .$strContactWhereClause;
+			$strContactOrderByClause	= "(Id = $intPrimaryContactId) DESC, " .$strContactOrderByClause;
 		}
-		
-		// Load the last looked at contact, if this page was triggered from the Contact View page and the last contact viewed is
-		// different to the Primary Contact
-		// TODO: While this functionality is complete in this method, the contact is not currently displayed in the HtmlTemplate
-		// as I can't work out where the account_view.php link is in the contact_view.php file
-		// This means there is no way of specifying DBO()->LastContact->Id unless you explicitly write it into the browser's address bar
-		// TODO! Save the last contact in the Session data, once we implement sessions properly
-		if ((DBO()->LastContact->Id->Value) && (DBO()->LastContact->Id->Value != DBO()->Account->PrimaryContact->Value))
-		{
-			DBO()->LastContact->SetTable("Contact");
-			DBO()->LastContact->Load();
-			
-			// Make sure this contact is associated with this account
-			if (DBO()->LastContact->Account->Value != DBO()->Account->Id->Value)
-			{
-				// It's not associated with the account
-				DBO()->LastContact->Id = NULL;
-			}
-		}
+		DBL()->Contact->Where->SetString($strContactWhereClause);
+		DBL()->Contact->OrderBy($strContactOrderByClause);
+		DBL()->Contact->SetLimit(3);
+		DBL()->Contact->Load();
 		
 		// Load the List of services
 		// Load all the services belonging to the account, that the user has permission to view (which is currently all of them)

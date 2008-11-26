@@ -41,6 +41,7 @@ class Customer_Group
 	private $businessPayableAddress			= NULL;
 	private $creditCardPaymentPhone			= NULL;
 	private $faultsPhone					= NULL;
+	private $coolingOffPeriod				= NULL;
 	
 	private $value							= NULL;
 	private $name							= NULL;
@@ -147,7 +148,8 @@ class Customer_Group
 						"business_payable_name",
 						"business_payable_address",
 						"credit_card_payment_phone",
-						"faults_phone"
+						"faults_phone",
+						"cooling_off_period"
 					);
 	}
 

@@ -28,6 +28,101 @@ class Sale extends ORM
 		parent::__construct($arrProperties, $bolLoadById);
 	}
 	
+	// This will return a Sale object if found
+	// If a record is not found then it will return NULL if $bolExceptionOnNotFound == FALSE OR throw an exception if $bolExceptionOnNotFound == TRUE
+	// This will also throw an exception if 
+	public static function getForId($intId, $bolExceptionOnNotFound=FALSE)
+	{
+		$selSale = self::_preparedStatement('selById');
+
+		if (($intCount = $selSale->Execute(array('Id'=>$intId))) === FALSE)
+		{
+			throw new Exception("Failed to retrieve sale record with id: $intId. - ". $selSale->Error());
+		}
+		
+		if ($intCount)
+		{
+			return new self($selSale->Fetch());
+		}
+		elseif ($bolExceptionOnNotFound)
+		{
+			throw new Exception("sale record with id $intId could not be found");
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+	
+	// Retrieves the value part from the sale.external_reference string
+	// This string should be of the form "sale.id=123" where 123 is the value 
+	public function getExternalReferenceValue()
+	{
+		return intval(substr($this->externalReference, 8));
+	}
+	
+	// Retrieves the DO_Sales_Sale object related to this object
+	// Throws an Exception on Error, or when the object cannot be found (because the object should always be found)
+	public function getExternalReferenceObject()
+	{
+		try
+		{
+			$doSale = DO_Sales_Sale::getForId($this->getExternalReferenceValue());
+			
+			if ($doSale !== NULL)
+			{
+				return $doSale;
+			}
+			throw new Exception("External Object was not found");
+		}
+		catch (Exception $e)
+		{
+			throw new Exception("Failed to retrieve externally referenced object for sale record with id: {$this->id}, ExternalReference: {$this->externalReference} - ". $e->getMessage());
+		}
+	}
+	
+	// This updates the status of the sale, if it should be set to Completed or Cancelled, and creates a system note if required
+	public function setCompletedOrCancelledBasedOnSaleItems($intDealerId=NULL, $intEmployeeId=NULL)
+	{
+		try
+		{
+			if ($intDealerId === NULL)
+			{
+				$intDealerId = Dealer::SYSTEM_DEALER_ID;
+			}
+			
+			if ($intEmployeeId === NULL)
+			{
+				$intEmployeeId = Employee::SYSTEM_EMPLOYEE_ID;
+			}
+			
+			// Update the status of the sale in the sales database, if it needs updating
+			$doSale = $this->getExternalReferenceObject();
+			$intCurrentSaleStatus = $doSale->saleStatusId;
+			$doSale->setCompletedOrCancelledBasedOnSaleItems($intDealerId);
+			$intNewSaleStatus = $doSale->saleStatusId;
+			
+			// Check if the status was updated
+			if ($intNewSaleStatus != $intCurrentSaleStatus)
+			{
+				// The status has been changed, so create a Note detailing this
+				$arrSaleStatusHistory	= DO_Sales_SaleStatusHistory::listForSale($doSale, "id DESC", 1);
+				$doSaleStatusHistory	= $arrSaleStatusHistory[0];
+				$doStatus				= $doSaleStatusHistory->getSaleStatus();
+				$strNote				= "Sale {$doSale->id} has now been flagged as having been {$doStatus->name} as at {$doSaleStatusHistory->changedOn} in the sales system";
+				$strNote				.= ($doSaleStatusHistory->description !== NULL)? ". ({$doSaleStatusHistory->description})" : "";
+				
+				$objAccount = Account::getForId($this->accountId);
+				
+				Note::createSystemNote($strNote, $intEmployeeId, $objAccount->accountGroup, $this->accountId);
+			}
+		}
+		catch (Exception $e)
+		{
+			throw new Exception(__METHOD__ ." Failed - ". $e->getMessage());
+		}
+	}
+	
 	/**
 	 * _preparedStatement()
 	 *

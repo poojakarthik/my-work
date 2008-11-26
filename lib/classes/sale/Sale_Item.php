@@ -28,6 +28,83 @@ class Sale_Item extends ORM
 		parent::__construct($arrProperties, $bolLoadById);
 	}
 	
+	// Returns the Flex sale_item object relating to $intServiceId (from sale_item table of flex database)
+	// returns NULL if there is no sale_item relating to this record
+	// There should only ever be (at most) 1 sale_item record relating to a service record 
+	public static function getForServiceId($intServiceId, $bolIncludeEarlierServiceRecords=FALSE)
+	{
+		$objQuery = new Query();
+		
+		$intServiceId = intval($intServiceId);
+		
+		if ($bolIncludeEarlierServiceRecords)
+		{
+			// Include all previous service records that modelled the same service as $intServiceId does
+			$strQuery = "	SELECT si.*
+							FROM sale_item AS si INNER JOIN Service AS s ON si.service_id = s.Id
+							WHERE s.FNN = (	SELECT FNN 
+											FROM Service 
+											WHERE Id = $intServiceId)
+							AND si.service_id <= $intServiceId
+							ORDER BY si.service_id DESC
+							LIMIT 1;";
+		}
+		else
+		{
+			// Only find the most recent sale_item related directly to $intServiceId
+			// There should only ever be, at most, one sale_item record relating to a service record, but this can't be gauranteed by the database
+			// (not unless I stuck a uniqueness contraint on sale_item.service_id)
+			$strQuery = "	SELECT *
+							FROM sale_item
+							WHERE service_id = $intServiceId
+							ORDER BY id DESC
+							LIMIT 1;";
+		}
+		
+		if (($mixResult = $objQuery->Execute($strQuery)) === FALSE)
+		{
+			throw new Exception(__METHOD__ ." Failed to retrieve sale_item record using query - $strQuery - ". $objQuery->Error());
+		}
+		
+		$mixRecord = $mixResult->fetch_assoc();
+		
+		if ($mixRecord === NULL)
+		{
+			return NULL;
+		}
+		else
+		{
+			return new self($mixRecord);
+		}
+	}
+	
+	// Retrieves the value part from the sale_item.external_reference string
+	// This string should be of the form "sale_item.id=123" where 123 is the value 
+	public function getExternalReferenceValue()
+	{
+		return intval(substr($this->externalReference, 13));
+	}
+	
+	// Retrieves the DO_Sales_SaleItem object related to this object
+	// Returns NULL if it can't be found
+	public function getExternalReferenceObject()
+	{
+		try
+		{
+			$doSaleItem = DO_Sales_SaleItem::getForId($this->getExternalReferenceValue());
+			
+			if ($doSaleItem !== NULL)
+			{
+				return $doSaleItem;
+			}
+			throw new Exception("External Object was not found");
+		}
+		catch (Exception $e)
+		{
+			throw new Exception("Failed to retrieve externally referenced object for sale_item record with id: {$this->id}, ExternalReference: {$this->externalReference} - ". $e->getMessage());
+		}
+	}
+	
 	/**
 	 * _preparedStatement()
 	 *

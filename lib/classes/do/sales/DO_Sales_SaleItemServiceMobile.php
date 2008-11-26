@@ -37,7 +37,7 @@ class DO_Sales_SaleItemServiceMobile extends DO_Sales_Base_SaleItemServiceMobile
 					}
 					
 					$saleItem = $this->getSaleItem();
-					if ($saleItem->saleItemStatusId == DO_Sales_SaleItemStatus::DISPATCHED || $saleItem->saleItemStatusId == DO_Sales_SaleItemStatus::PROVISIONED)
+					if ($saleItem->saleItemStatusId == DO_Sales_SaleItemStatus::DISPATCHED || $saleItem->saleItemStatusId == DO_Sales_SaleItemStatus::COMPLETED)
 					{
 						return false;
 					}

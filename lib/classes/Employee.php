@@ -14,6 +14,8 @@
  */
 class Employee
 {
+	const SYSTEM_EMPLOYEE_ID = USER_ID;
+	
 	private $id				= NULL;
 	private $firstName		= NULL;
 	private $lastName		= NULL;

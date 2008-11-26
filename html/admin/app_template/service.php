@@ -2241,8 +2241,7 @@ class AppTemplateService extends ApplicationTemplate
 					TransactionRollback();
 					Ajax()->AddCommand("Alert", "ERROR: Changing the Status of the Service failed.<br />". $objService->GetErrorMsg() ."<br />All modifications to the service have been aborted");
 					return TRUE;
-				}
-				
+				}				
 				// The status was successfully changed
 				// Check if a new record was created
 				if ($objService->GetId() > DBO()->Service->Id->Value)
@@ -2287,6 +2286,43 @@ class AppTemplateService extends ApplicationTemplate
 			if ($strChangesNote != "")
 			{
 				SaveSystemNote("Service modified.\n$strChangesNote", DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, (DBO()->NewService->Id->IsSet)? DBO()->NewService->Id->Value : DBO()->Service->Id->Value);
+			}
+
+			// Handle Sale stuff
+			if (DBO()->Service->NewStatus->Value == SERVICE_ACTIVE && DBO()->Service->Status->Value == SERVICE_PENDING && Data_Source::dsnExists(FLEX_DATABASE_CONNECTION_SALES))
+			{
+				// Update the sale details if this service is associated with a sale
+				$objSaleItem = Sale_Item::getForServiceId($intService, TRUE);
+				if ($objSaleItem !== NULL)
+				{
+					// The service was part of a sale
+					// It can be safely assumed that the saleItem is in a state of "Dispatched"
+					// Flag it as having been completed
+					$dsSales = DO_Sales_SaleItem::getDataSource();
+					$dsSales->beginTransaction();
+					try
+					{
+						// Get the employee's dealer object if they are one, else use the system dealer
+						$objDealer = Dealer::getForEmployeeId(Flex::getUserId());
+						$intDealerId = ($objDealer !== NULL)? $objDealer->id : Dealer::SYSTEM_DEALER_ID;
+						
+						$doSaleItem	= $objSaleItem->getExternalReferenceObject();
+						$doSaleItem->setCompleted($intDealerId);
+						
+						// Set the entire sale to completed, if it is
+						$objSale = Sale::getForId($objSaleItem->saleId, TRUE);
+						$objSale->setCompletedOrCancelledBasedOnSaleItems($intDealerId, Flex::getUserId());
+						
+						$dsSales->commit();
+					}
+					catch (Exception $e)
+					{
+						$dsSales->rollback();
+						TransactionRollback();
+						Ajax()->AddCommand("Alert", "ERROR: Failed to update sale details relating to this service.<br />". $e->getMessage() ."<br />All modifications to the service have been aborted");
+						return TRUE;
+					}
+				}
 			}
 
 			// Commit the transaction

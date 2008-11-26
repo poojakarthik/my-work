@@ -180,7 +180,7 @@ class HtmlElements
 		{
 			$strValue = $this->BuildInputValue($arrParams);
 		}
-		$strValue = nl2br($strValue);
+		//$strValue = nl2br($strValue);
 		
 		$arrElementAttributes = Array();
 		

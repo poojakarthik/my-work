@@ -64,6 +64,17 @@ class Data_Source
 			'database'	=> $GLOBALS['**arrDatabase'][$strDataSourceName]['Database'],
 		);
 	}
+	
+	public static function listDataSources()
+	{
+		return array_keys($GLOBALS['**arrDatabase']);
+	}
+	
+	// Returns TRUE if a data source definition exists for $strDataSourceName, else returns FALSE
+	public static function dsnExists($strDataSourceName)
+	{
+		return array_key_exists($strDataSourceName, $GLOBALS['**arrDatabase']);
+	}
 }
 
 ?>

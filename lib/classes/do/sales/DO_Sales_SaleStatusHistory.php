@@ -3,7 +3,7 @@
 class DO_Sales_SaleStatusHistory extends DO_Sales_Base_SaleStatusHistory
 {
 
-	public static function recordHistoryForSale(DO_Sales_Sale $sale, $intDealerId, $comment="")
+	public static function recordHistoryForSale(DO_Sales_Sale $sale, $intDealerId, $comment=NULL)
 	{
 		$strSQL = 'SELECT ' . self::getPropertyDataSourceName('saleStatusId') . 
 				  '  FROM ' . self::getDataSourceObjectName() . 
