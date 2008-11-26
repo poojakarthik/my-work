@@ -458,6 +458,15 @@ abstract class Cli
 		throw new Exception("Invalid integer specified: '$int'");
 	}
 	
+	public static function _validString($string)
+	{
+		if (!$string)
+		{
+			throw new Exception("No string value specified");
+		}
+		return $string;
+	}
+	
 	public static function _validFileName($filename)
 	{
 		$misc = "(){}[]<>&)-+*:_ ";
