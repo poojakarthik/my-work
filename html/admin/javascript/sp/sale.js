@@ -104,7 +104,7 @@ Object.extend(Sale.GUIComponent, {
 		{
 			arrValidationEvents	= new Array('change', 'keyup', 'click');
 		}
-		for (i = 0; i < arrValidationEvents.length; i++)
+		for (var i = 0; i < arrValidationEvents.length; i++)
 		{
 			for (t = 0; t < ret.inputs.length; t++)
 			{
@@ -114,7 +114,7 @@ Object.extend(Sale.GUIComponent, {
 		}
 		
 		// Give each Input a reference to it's Group
-		for (i = 0; i < ret.inputs.length; i++)
+		for (var i = 0; i < ret.inputs.length; i++)
 		{
 			ret.inputs[i].objElementGroup	= ret;
 		}
@@ -197,7 +197,7 @@ Object.extend(Sale.GUIComponent, {
 		{
 			arrValidationEvents	= new Array('change', 'keyup', 'click');
 		}
-		for (i = 0; i < arrValidationEvents.length; i++)
+		for (var i = 0; i < arrValidationEvents.length; i++)
 		{
 			for (t = 0; t < ret.inputs.length; t++)
 			{
@@ -207,7 +207,7 @@ Object.extend(Sale.GUIComponent, {
 		}
 		
 		// Give each Input a reference to it's Group
-		for (i = 0; i < ret.inputs.length; i++)
+		for (var i = 0; i < ret.inputs.length; i++)
 		{
 			ret.inputs[i].objElementGroup	= ret;
 		}
@@ -243,7 +243,7 @@ Object.extend(Sale.GUIComponent, {
 		{
 			arrValidationEvents	= new Array('change', 'keyup', 'click');
 		}
-		for (i = 0; i < arrValidationEvents.length; i++)
+		for (var i = 0; i < arrValidationEvents.length; i++)
 		{
 			strEvent	= arrValidationEvents[i];
 			Event.observe(dropDown, strEvent, this.validateInput.bindAsEventListener(this));
@@ -269,7 +269,7 @@ Object.extend(Sale.GUIComponent, {
 		{
 			arrValidationEvents	= new Array('change', 'keyup');
 		}
-		for (i = 0; i < arrValidationEvents.length; i++)
+		for (var i = 0; i < arrValidationEvents.length; i++)
 		{
 			for (t = 0; t < ret.inputs.length; t++)
 			{
@@ -279,7 +279,7 @@ Object.extend(Sale.GUIComponent, {
 		}
 		
 		// Give each Input a reference to it's Group
-		for (i = 0; i < ret.inputs.length; i++)
+		for (var i = 0; i < ret.inputs.length; i++)
 		{
 			ret.inputs[i].objElementGroup	= ret;
 		}
@@ -327,7 +327,7 @@ Object.extend(Sale.GUIComponent, {
 		{
 			arrValidationEvents	= new Array('change', 'keyup', 'click');
 		}
-		for (i = 0; i < arrValidationEvents.length; i++)
+		for (var i = 0; i < arrValidationEvents.length; i++)
 		{
 			for (t = 0; t < ret.inputs.length; t++)
 			{
@@ -337,7 +337,7 @@ Object.extend(Sale.GUIComponent, {
 		}
 		
 		// Give each Input a reference to it's Group
-		for (i = 0; i < ret.inputs.length; i++)
+		for (var i = 0; i < ret.inputs.length; i++)
 		{
 			ret.inputs[i].objElementGroup	= ret;
 		}
@@ -390,7 +390,7 @@ Object.extend(Sale.GUIComponent, {
 		{
 			arrValidationEvents	= new Array('change', 'keyup');
 		}
-		for (i = 0; i < arrValidationEvents.length; i++)
+		for (var i = 0; i < arrValidationEvents.length; i++)
 		{
 			for (t = 0; t < ret.inputs.length; t++)
 			{
@@ -400,7 +400,7 @@ Object.extend(Sale.GUIComponent, {
 		}
 		
 		// Give each Input a reference to it's Group
-		for (i = 0; i < ret.inputs.length; i++)
+		for (var i = 0; i < ret.inputs.length; i++)
 		{
 			ret.inputs[i].objElementGroup	= ret;
 		}
@@ -453,7 +453,7 @@ Object.extend(Sale.GUIComponent, {
 		{
 			arrValidationEvents	= new Array('change', 'keyup');
 		}
-		for (i = 0; i < arrValidationEvents.length; i++)
+		for (var i = 0; i < arrValidationEvents.length; i++)
 		{
 			for (t = 0; t < ret.inputs.length; t++)
 			{
@@ -463,7 +463,7 @@ Object.extend(Sale.GUIComponent, {
 		}
 		
 		// Give each Input a reference to it's Group
-		for (i = 0; i < ret.inputs.length; i++)
+		for (var i = 0; i < ret.inputs.length; i++)
 		{
 			ret.inputs[i].objElementGroup	= ret;
 		}
@@ -506,7 +506,7 @@ Object.extend(Sale.GUIComponent, {
 		{
 			arrValidationEvents	= new Array('change', 'keyup');
 		}
-		for (i = 0; i < arrValidationEvents.length; i++)
+		for (var i = 0; i < arrValidationEvents.length; i++)
 		{
 			for (t = 0; t < ret.inputs.length; t++)
 			{
@@ -516,7 +516,7 @@ Object.extend(Sale.GUIComponent, {
 		}
 		
 		// Give each Input a reference to it's Group
-		for (i = 0; i < ret.inputs.length; i++)
+		for (var i = 0; i < ret.inputs.length; i++)
 		{
 			ret.inputs[i].objElementGroup	= ret;
 		}
@@ -574,7 +574,7 @@ Object.extend(Sale.GUIComponent, {
 		{
 			arrValidationEvents	= new Array('change', 'keyup');
 		}
-		for (i = 0; i < arrValidationEvents.length; i++)
+		for (var i = 0; i < arrValidationEvents.length; i++)
 		{
 			for (t = 0; t < ret.inputs.length; t++)
 			{
@@ -584,7 +584,7 @@ Object.extend(Sale.GUIComponent, {
 		}
 		
 		// Give each Input a reference to it's Group
-		for (i = 0; i < ret.inputs.length; i++)
+		for (var i = 0; i < ret.inputs.length; i++)
 		{
 			ret.inputs[i].objElementGroup	= ret;
 		}
@@ -625,7 +625,7 @@ Object.extend(Sale.GUIComponent, {
 		{
 			arrValidationEvents	= new Array('change', 'keyup');
 		}
-		for (i = 0; i < arrValidationEvents.length; i++)
+		for (var i = 0; i < arrValidationEvents.length; i++)
 		{
 			for (t = 0; t < ret.inputs.length; t++)
 			{
@@ -635,7 +635,7 @@ Object.extend(Sale.GUIComponent, {
 		}
 		
 		// Give each Input a reference to it's Group
-		for (i = 0; i < ret.inputs.length; i++)
+		for (var i = 0; i < ret.inputs.length; i++)
 		{
 			ret.inputs[i].objElementGroup	= ret;
 		}
@@ -650,6 +650,7 @@ Object.extend(Sale.GUIComponent, {
 	
 	validateInput: function(objValidator)
 	{
+		var objInput, strValue, mixIsMandatory;
 		if (objValidator == undefined || objValidator == null)
 		{
 			objInput	= this;
@@ -675,7 +676,7 @@ Object.extend(Sale.GUIComponent, {
 		mixIsMandatory	= (objInput.objElementGroup.mixIsMandatory == undefined) ? false : objInput.objElementGroup.mixIsMandatory;
 		
 		// Is there a validation method set?
-		bolValid	= (objInput.isValid == undefined) ? true : objInput.isValid(objInput.value);
+		var bolValid	= (objInput.isValid == undefined) ? true : objInput.isValid(objInput.value);
 
 		// Mandatory?
 		if (strValue.length == 0 && mixIsMandatory)
@@ -720,7 +721,7 @@ Object.extend(Sale.GUIComponent, {
 		//alert("Validating ElementGroup "+objElementGroup);
 
 		// Remove any valid/invalid classes from the Inputs
-		for (i = 0; i < objElementGroup.inputs.length; i++)
+		for (var i = 0; i < objElementGroup.inputs.length; i++)
 		{
 			objElementGroup.inputs[i].removeClassName('invalid');
 			objElementGroup.inputs[i].removeClassName('valid');
@@ -731,6 +732,7 @@ Object.extend(Sale.GUIComponent, {
 		strValue	= (mixValue === null) ? '' : String(mixValue).strip();
 		
 		// If mixIsMandatory is a function, then call it
+		var bolIsMandatory;
 		if ((typeof objElementGroup.mixIsMandatory) === 'function')
 		{
 			//alert('mixIsMandatory is a function!');
@@ -746,12 +748,12 @@ Object.extend(Sale.GUIComponent, {
 		}
 		
 		// Is there a validation method set?
-		bolValid	= (objElementGroup.isValidCustom == undefined) ? true : objElementGroup.isValidCustom(strValue);
+		var bolValid	= (objElementGroup.isValidCustom == undefined) ? true : objElementGroup.isValidCustom(strValue);
 		
 		// Mandatory?
-		if ((strValue.length == 0) && bolIsMandatory)
+		if (strValue.length == 0)
 		{
-			bolValid	= false;
+			bolValid = !bolIsMandatory;
 		}
 		
 		// Set Style
@@ -767,16 +769,12 @@ Object.extend(Sale.GUIComponent, {
 				strNewStyle	= 'valid';
 			}
 		}
-		else
-		{
-			bolValid			= true;
-		}
 		
 		// Apply Styles to all inputs
-		bolDisabled	= true;
+		var bolDisabled	= true;
 		if (strNewStyle)
 		{
-			for (i = 0; i < objElementGroup.inputs.length; i++)
+			for (var i = 0; i < objElementGroup.inputs.length; i++)
 			{
 				objElementGroup.inputs[i].addClassName(strNewStyle);
 				bolDisabled	= (objElementGroup.inputs[i].disabled) ? bolDisabled : false;
@@ -1332,10 +1330,12 @@ Object.extend(Sale.prototype, {
 		
 		+ '';
 		
-		$ID('submit-button-panel').style.display = Sale.canAmendSale ? 'none' : 'inline';
+		var startInEditMode = (this.object.id == null);
+		
+		$ID('submit-button-panel').style.display = !startInEditMode ? 'none' : 'inline';
 		$ID('commit-button-panel').style.display = 'none';
 		$ID('after-commit-button-panel').style.display = 'none';
-		$ID('amend-button-panel').style.display = Sale.canAmendSale ? 'inline' : 'none';
+		$ID('amend-button-panel').style.display = !startInEditMode ? 'inline' : 'none';
 		
 		var saleAccount = this.getSaleAccount();
 		saleAccount.setContainers($ID('account_details_holder'));
@@ -1488,8 +1488,14 @@ Object.extend(Sale.prototype, {
 		expand.value = 'Collapse';
 		expand.id = item.instanceId + '-expand';
 		expand.style.width = '80px';
-		var f = function() { var collapsed = ($ID(this.id + "-body").style.display == 'none'); $ID(this.id + "-body").style.display = (collapsed ? 'table-row' : 'none'); $ID(this.id + "-expand").value = (collapsed ? 'Collapse' : 'Expand');}
-		var func = f.bind({ id: item.instanceId });
+		var f = function() 
+				{ 
+					var collapsed = ($ID(this.id + "-body").style.display == 'none'); 
+					this.item.updateSummary(collapsed);
+					$ID(this.id + "-body").style.display = (collapsed ? 'table-row' : 'none'); 
+					$ID(this.id + "-expand").value = (collapsed ? 'Collapse' : 'Expand');
+				}
+		var func = f.bind({ id: item.instanceId, item: item });
 		Event.observe(expand, 'click', func, true);
 		controls.appendChild(expand);
 		
@@ -1530,7 +1536,7 @@ Object.extend(Sale.prototype, {
 		// Validate the values and invoke the isValid method of child objects
 		
 		// Validate all the fields ...
-		bolValid	= true;
+		var bolValid	= true;
 		for (strElementGroup in this.elementGroups)
 		{
 			////alert(strElementGroup);
@@ -1858,7 +1864,7 @@ Object.extend(Sale.SaleAccount.prototype, {
 		
 		// re-Validate the Email field
 		arrContacts	= Sale.getInstance().getContacts();
-		for (i = 0; i < arrContacts.length; i++)
+		for (var i = 0; i < arrContacts.length; i++)
 		{
 			arrContacts[i].elementGroups.email.isValid();
 		}
@@ -1883,7 +1889,7 @@ Object.extend(Sale.SaleAccount.prototype, {
 		// Validate the values and invoke the isValid method of child objects
 		
 
-		bolValid	= true;
+		var bolValid	= true;
 		for (strElementGroup in this.elementGroups)
 		{
 			//alert(strElementGroup);
@@ -2289,7 +2295,7 @@ Object.extend(Sale.SaleAccount.DirectDebit.CreditCard.prototype, {
 	{
 		// Validate the values and invoke the isValid method of child objects
 
-		bolValid	= true;
+		var bolValid	= true;
 		for (strElementGroup in this.elementGroups)
 		{
 			//alert(strElementGroup);
@@ -2456,7 +2462,7 @@ Object.extend(Sale.SaleAccount.DirectDebit.BankAccount.prototype, {
 	{
 		// Validate the values and invoke the isValid method of child objects
 
-		bolValid	= true;
+		var bolValid	= true;
 		for (strElementGroup in this.elementGroups)
 		{
 			//alert(strElementGroup);
@@ -2600,8 +2606,8 @@ Object.extend(Sale.Contact.prototype, {
 
 		var isMandatoryFunction	= function()
 									{
-										bolPreferredContact	= this.getEmailObj().getIsPrimary();
-										bolDeliveryType		= (parseInt(Sale.GUIComponent.getElementGroupValue(Sale.getInstance().getSaleAccount().elementGroups.bill_delivery_type_id)) == Sale.BillDeliveryType.BILL_DELIVERY_TYPE_EMAIL);
+										var bolPreferredContact	= this.getEmailObj().getIsPrimary();
+										var bolDeliveryType		= (parseInt(Sale.GUIComponent.getElementGroupValue(Sale.getInstance().getSaleAccount().elementGroups.bill_delivery_type_id)) == Sale.BillDeliveryType.BILL_DELIVERY_TYPE_EMAIL);
 										return (bolPreferredContact || bolDeliveryType);
 									};
 		this.elementGroups.email = Sale.GUIComponent.createTextInputGroup(this.getEmail(), isMandatoryFunction.bind(this), window._validate.email.bind(this));
@@ -2639,8 +2645,8 @@ Object.extend(Sale.Contact.prototype, {
 	isValid: function()
 	{
 		// Validate the values and invoke the isValid method of child objects
-		bolChildrenValid	= true;
-		for (i = 0; i < this.elementGroups.length; i++)
+		var bolChildrenValid	= true;
+		for (var i = 0; i < this.elementGroups.length; i++)
 		{
 			bolChildrenValid	= (this.elementGroups[i].isValid()) ? bolChildrenValid : false;
 		}
@@ -3185,6 +3191,29 @@ Object.extend(Sale.Item.prototype, {
 		this.summaryContainer.appendChild(document.createTextNode(this.productType + ": " + this.productName));
 		module.setContainers(this.detailsContainer, this.summaryContainer);
 	},
+	
+	updateSummary: function(expanded)
+	{
+		if (expanded)
+		{
+			this.summaryContainer.innerHTML = '';
+			this.summaryContainer.appendChild(document.createTextNode(this.productType + ": " + this.productName));
+		}
+		else
+		{
+			this.summaryContainer.innerHTML = '';
+			var isValid = this.getProductModule().isValid();
+			this.getProductModule().updateSummary(this.productType + ": " + this.productName);
+			if (!isValid)
+			{
+				var span = document.createElement("span");
+				span.appendChild(document.createTextNode(" [INCOMPLETE]"));
+				span.style.color = "#f00";
+				span.style.fontWeight = "bolder";
+				this.summaryContainer.appendChild(span);
+			}
+		}
+	},
 
 
 	isValid: function()
@@ -3433,6 +3462,11 @@ Object.extend(Sale.ProductTypeModule.prototype, {
 	
 	buildGUI: function()
 	{
+	},
+	
+	updateSummary: function(suggestion)
+	{
+		this.summaryContainer.appendChild(document.createTextNode(suggestion));
 	},
 	
 	destroy: function()

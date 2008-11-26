@@ -32,6 +32,11 @@ Object.extend(Sale.ProductTypeModule.Service_ADSL.prototype, {
 		};
 	},
 	
+	updateSummary: function(suggestion)
+	{
+		this.summaryContainer.appendChild(document.createTextNode(suggestion + "; DSL Phone Number: " + ((this.object.fnn == undefined || this.object.fnn == null || this.object.fnn == '') ? '[Not set]' : this.object.fnn)));
+	},
+
 	buildGUI: function()
 	{
 		var id = 'service-adsl-table-' + (Sale.ProductTypeModule.Service_ADSL.unique++);
@@ -39,46 +44,54 @@ Object.extend(Sale.ProductTypeModule.Service_ADSL.prototype, {
 
 		var table = $ID(id);
 
-		this.elementGroups.fnn = Sale.GUIComponent.createTextInputGroup(this.getFNN());
-		Sale.GUIComponent.appendElementGroupToTable(table, 'DSL Phone Number', this.elementGroups.fnn);
+		this.elementGroups.fnn = Sale.GUIComponent.createTextInputGroup(this.getFNN(), true);
+		Sale.GUIComponent.appendElementGroupToTable(table, 'DSL Phone Number', this.elementGroups.fnn, window._validate.fnnLandline.bind(this));
 
-		this.elementGroups.address_line_1 = Sale.GUIComponent.createTextInputGroup(this.getAddressLine1());
+		this.elementGroups.address_line_1 = Sale.GUIComponent.createTextInputGroup(this.getAddressLine1(), true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address (Line 1)', this.elementGroups.address_line_1);
 
-		this.elementGroups.address_line_2 = Sale.GUIComponent.createTextInputGroup(this.getAddressLine2());
+		this.elementGroups.address_line_2 = Sale.GUIComponent.createTextInputGroup(this.getAddressLine2(), false);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address (Line 2)', this.elementGroups.address_line_2);
 
-		this.elementGroups.suburb = Sale.GUIComponent.createTextInputGroup(this.getSuburb());
+		this.elementGroups.suburb = Sale.GUIComponent.createTextInputGroup(this.getSuburb(), false);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Suburb', this.elementGroups.suburb);
 
-		this.elementGroups.postcode = Sale.GUIComponent.createTextInputGroup(this.getPostcode());
+		this.elementGroups.postcode = Sale.GUIComponent.createTextInputGroup(this.getPostcode(), true, window._validate.postcode.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Postcode', this.elementGroups.postcode);
 
-		this.elementGroups.state_id = Sale.GUIComponent.createDropDown(Sale.states.ids, Sale.states.labels, this.getStateId());
+		this.elementGroups.state_id = Sale.GUIComponent.createDropDown(Sale.states.ids, Sale.states.labels, this.getStateId(), true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'State', this.elementGroups.state_id);
 	},
 	
 	isValid: function()
 	{
+		var bolValid = true;
+		
+		bolValid	= (this.elementGroups.fnn.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.fnn);
 		this.object.fnn = value;
 
+		bolValid	= (this.elementGroups.address_line_1.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.address_line_1);
 		this.object.address_line_1 = value;
 
+		bolValid	= (this.elementGroups.address_line_2.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.address_line_2);
 		this.object.address_line_2 = value;
 
+		bolValid	= (this.elementGroups.suburb.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.suburb);
 		this.object.suburb = value;
 
+		bolValid	= (this.elementGroups.postcode.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.postcode);
 		this.object.postcode = value;
 
+		bolValid	= (this.elementGroups.state_id.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.state_id);
 		this.object.state_id = value;
 
-		return true;
+		return bolValid;
 	},
 	
 	showValidationTip: function()

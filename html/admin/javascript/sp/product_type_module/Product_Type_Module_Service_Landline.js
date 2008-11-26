@@ -61,6 +61,12 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 		};
 	},
 	
+	updateSummary: function(suggestion)
+	{
+		this.summaryContainer.appendChild(document.createTextNode(suggestion + "; Landline Phone Number: " + ((this.object.fnn == undefined || this.object.fnn == null || this.object.fnn == '') ? '[Not set]' : this.object.fnn)));
+	},
+
+
 	buildGUI: function()
 	{
 		var id = 'service-mobile-table-' + (this.uniqueId);
@@ -261,7 +267,7 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 	
 	isValid: function()
 	{
-		bolValid	= true;
+		var bolValid = true;
 		
 		bolValid	= (this.elementGroups.fnn.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.fnn);

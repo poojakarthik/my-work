@@ -32,7 +32,13 @@ Object.extend(Sale.ProductTypeModule.Service_Mobile.prototype, {
 			comments: null
 		};
 	},
-	
+
+
+	updateSummary: function(suggestion)
+	{
+		this.summaryContainer.appendChild(document.createTextNode(suggestion + "; " + (this.isNewService() ? "[New service]" : ("Mobile Phone Number: " + ((this.object.fnn == undefined || this.object.fnn == null || this.object.fnn == '') ? '[Not set]' : this.object.fnn)))));
+	},
+
 	buildGUI: function()
 	{
 		var id = 'service-mobile-table-' + (Sale.ProductTypeModule.Service_Mobile.unique++);
@@ -88,7 +94,7 @@ Object.extend(Sale.ProductTypeModule.Service_Mobile.prototype, {
 	
 	isValid: function()
 	{
-		bolValid	= true;
+		var bolValid	= true;
 		
 		bolValid	= (this.elementGroups.service_mobile_origin_id.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_mobile_origin_id);

@@ -30,6 +30,11 @@ Object.extend(Sale.ProductTypeModule.Service_Inbound.prototype, {
 		};
 	},
 	
+	updateSummary: function(suggestion)
+	{
+		this.summaryContainer.appendChild(document.createTextNode(suggestion + "; Inbound Phone Number: " + ((this.object.fnn == undefined || this.object.fnn == null || this.object.fnn == '') ? '[Not set]' : this.object.fnn)));
+	},
+
 	buildGUI: function()
 	{
 		var id = 'service-inbound-table-' + (Sale.ProductTypeModule.Service_Inbound.unique++);
@@ -37,34 +42,40 @@ Object.extend(Sale.ProductTypeModule.Service_Inbound.prototype, {
 
 		var table = $ID(id);
 
-		this.elementGroups.fnn = Sale.GUIComponent.createTextInputGroup(this.getFNN());
+		this.elementGroups.fnn = Sale.GUIComponent.createTextInputGroup(this.getFNN(), true, window._validate.fnnInbound.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Inbound Phone Number', this.elementGroups.fnn);
 
-		this.elementGroups.answer_point = Sale.GUIComponent.createTextInputGroup(this.getAnswerPoint());
+		this.elementGroups.answer_point = Sale.GUIComponent.createTextInputGroup(this.getAnswerPoint(), false);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Answer Point', this.elementGroups.answer_point);
 
-		this.elementGroups.has_complex_configuration = Sale.GUIComponent.createCheckboxGroup(this.getHasComplexConfiguration());
+		this.elementGroups.has_complex_configuration = Sale.GUIComponent.createCheckboxGroup(this.getHasComplexConfiguration(), false);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Has Complex Configuration', this.elementGroups.has_complex_configuration);
 
-		this.elementGroups.configuration = Sale.GUIComponent.createTextInputGroup(this.getConfiguration());
+		this.elementGroups.configuration = Sale.GUIComponent.createTextInputGroup(this.getConfiguration(), false);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Configuration', this.elementGroups.configuration);
 	},
 	
 	isValid: function()
 	{
+		var bolValid = true;
+		
+		bolValid	= (this.elementGroups.fnn.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.fnn);
 		this.object.fnn = value;
 
+		bolValid	= (this.elementGroups.answer_point.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.answer_point);
 		this.object.answer_point = value;
 
+		bolValid	= (this.elementGroups.has_complex_configuration.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.has_complex_configuration);
 		this.object.has_complex_configuration = value;
 
+		bolValid	= (this.elementGroups.configuration.isValid()) ? bolValid : false;
 		value = Sale.GUIComponent.getElementGroupValue(this.elementGroups.configuration);
 		this.object.configuration = value;
 
-		return true;
+		return bolValid;
 	},
 	
 	showValidationTip: function()
