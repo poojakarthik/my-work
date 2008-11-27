@@ -205,6 +205,14 @@ textarea {
 	background-color: #fff;
 }
 
+h3 > input{
+	font-size: 0.8em !important;
+	border: .1em solid #111 !important;
+	color: #111 !important;
+	margin: .1em !important;
+	background-color: #fff !important;
+}
+ 
 input.displayOnly[disabled] {
 	font-size: 1em;
 	border: none;
