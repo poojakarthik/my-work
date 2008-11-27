@@ -1058,7 +1058,7 @@ class Cli_App_Sales extends Cli
 									if ($objService->FNN === NULL)
 									{
 										$this->log("\t\t\t\t\t\t\t! No FNN has been provided!  Aborting Sale...");
-										throw new Exception_Sale_Product_Manual_Intervention("This Service does not have an FNN assigned.  Please complete any manual provisioning required to determin the FNN, and reset to Awaiting Dispatch.");
+										throw new Exception_Sale_Product_Manual_Intervention("This Service does not have an FNN assigned.  Please complete any manual provisioning required to determine the FNN, and reset to Awaiting Dispatch.");
 									}
 									
 									$this->log("\t\t\t\t\t\t* FNN: {$objService->FNN}");
@@ -1074,7 +1074,7 @@ class Cli_App_Sales extends Cli
 									elseif ($mixFNNInUse)
 									{
 										$this->log("\t\t\t\t\t\t\t! FNN is in use!  Aborting Sale...");
-										throw new Exception_Sale_Product_Manual_Intervention("The FNN {$objService->FNN} is already in use.  Please close the existing Service in Flex, or revoke the sale if it a duplicate.");
+										throw new Exception_Sale_Product_Manual_Intervention("The FNN {$objService->FNN} is already in use.  Please close the existing Service in Flex, or revoke the sale if it is a duplicate.");
 									}
 									
 									// Save the Service
