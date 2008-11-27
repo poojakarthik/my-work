@@ -7,6 +7,7 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 		parent::__construct($intContext, $strId, $mxdDataToRender);
 
 
+		$this->LoadJavascript('reflex_popup');
 		$this->LoadJavascript('sp/validation');
 		$this->LoadJavascript('sp/sale');
 		$this->LoadJavascript('sp/flex_sale');
