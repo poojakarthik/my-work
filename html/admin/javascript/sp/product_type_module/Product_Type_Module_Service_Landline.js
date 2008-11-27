@@ -8,7 +8,182 @@ Object.extend(Sale.ProductTypeModule.Service_Landline, {
 	
 	product_type_module: 'Service_Landline',
 	
-	unique: 1
+	unique: 1,
+	
+	copyWindow: null,
+	
+	hideCopyWindow: function()
+	{
+		if (Sale.ProductTypeModule.Service_Landline.copyWindow != null)
+		{
+			Sale.ProductTypeModule.Service_Landline.copyWindow.hide();
+			Sale.ProductTypeModule.Service_Landline.copyWindow = null;
+		}
+	},
+	
+	showCopyWindow: function(uniqueId)
+	{
+		uniqueId = parseInt(uniqueId);
+		
+		Sale.ProductTypeModule.Service_Landline.hideCopyWindow();
+		
+		var landlineServices = [];
+		var target = null;
+		for (var instanceId in Sale.Item.instances)
+		{
+			if (typeof Sale.Item.instances[instanceId] == 'function')
+			{
+				continue;
+			}
+			if (Sale.Item.instances[instanceId].object.product_type_module != Sale.ProductTypeModule.Service_Landline.product_type_module)
+			{
+				continue;
+			}
+			var module = Sale.Item.instances[instanceId].getProductModule();
+			if (module.uniqueId == uniqueId)
+			{
+				target = module;
+			}
+			else
+			{
+				landlineServices[landlineServices.length] = Sale.Item.instances[instanceId];
+			}
+		}
+		if (target == null)
+		{
+			return alert("Failed to find target service for copy.");
+		}
+		if (landlineServices.length == 0)
+		{
+			return alert("There are no other services to copy details from. Enter the details for another service first.");
+		}
+		
+		var copyWindow = Sale.ProductTypeModule.Service_Landline.copyWindow = new Reflex_Popup(60.31);
+		copyWindow.addCloseButton();
+		copyWindow.setTitle('Copy Landline Service Address Details');
+		var button = document.createElement('input');
+		button.type = 'button';
+		button.value = 'Cancel';
+		copyWindow.setFooterButtons([button]);
+		var content = document.createElement('div');
+		var form = document.createElement('form');
+		form.method = "post";
+		form.action = "JavaScript:void(0)";
+		form.id = "json-copy-landline-service-details-form";
+		content.style.textAlign = 'center !important';
+		var table = document.createElement('table');
+		table.style.width = "100%";
+		table.style.margin = "0px 0px 7px 0px";
+		var message = document.createElement('p');
+		message.style.padding = "0px 12px";
+		message.style.textAlign = "left";
+		message.appendChild(document.createTextNode("Select a service to copy the details from."));
+		content.appendChild(message);
+		content.appendChild(form);
+		form.appendChild(table);
+		var tr = table.insertRow(-1);
+		tr.insertCell(-1).appendChild(document.createTextNode('Description'));
+		tr.insertCell(-1).appendChild(document.createTextNode('Action'));
+		tr.cells[0].style.fontWeight = tr.cells[1].style.fontWeight = "bold";
+		tr.cells[0].style.textAlign = "left";
+		tr.cells[1].style.textAlign = "right"; 
+
+		var copyFunc = function() {
+			Sale.ProductTypeModule.Service_Landline.copyDetailsFromOneToOther(this.source, this.target);
+		}
+
+		for (var i = 0, l = landlineServices.length; i < l; i++)
+		{
+			var ls = landlineServices[i];
+			var mod = ls.getProductModule();
+			var tr = table.insertRow(-1);
+			tr.insertCell(-1).appendChild(document.createTextNode(mod.getSummary(ls.productName)));
+			var cpy = document.createElement('input');
+			cpy.type = 'button';
+			cpy.value = 'Copy';
+			tr.insertCell(-1).appendChild(cpy);
+			tr.cells[0].style.textAlign = "left";
+			tr.cells[1].style.textAlign = "right";
+			Event.observe(cpy, 'click', copyFunc.bind({ source: mod.uniqueId, target: uniqueId }), false);
+		}
+
+		Event.observe(button, 'click', Sale.ProductTypeModule.Service_Landline.hideCopyWindow.bind(Sale.ProductTypeModule.Service_Landline), false);
+		
+		copyWindow.setContent(content);
+		
+		copyWindow.display();
+	},
+	
+	copyDetailsFromOneToOther: function(source, target)
+	{
+		Sale.ProductTypeModule.Service_Landline.hideCopyWindow();
+
+		source = parseInt(source);
+		target = parseInt(target);
+		
+		if (source == target)
+		{
+			return alert("The target service cannot be the same as the source service when copying details.");
+		}
+		
+		var t = null, s = null;
+
+		for (var instanceId in Sale.Item.instances)
+		{
+			if (typeof Sale.Item.instances[instanceId] == 'function')
+			{
+				continue;
+			}
+			if (Sale.Item.instances[instanceId].object.product_type_module != Sale.ProductTypeModule.Service_Landline.product_type_module)
+			{
+				continue;
+			}
+			var module = Sale.Item.instances[instanceId].getProductModule();
+			if (module.uniqueId == source)
+			{
+				s = module;
+			}
+			else if (module.uniqueId == target)
+			{
+				t = module;
+			}
+			if (s != null && t != null) break;
+		}
+		
+		if (s == null)
+		{
+			return alert('The source service could not be found.');
+		}
+		
+		if (t == null)
+		{
+			return alert('The target service could not be found.');
+		}
+		
+		// Now we need to copy the details from one to the other
+		t.elementGroups.landline_service_address_type_id.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.landline_service_address_type_id));
+		t.changeLandLineServiceAddressTypeId();
+		
+		t.elementGroups.service_address_type_number.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.service_address_type_number));
+		t.changeServiceAddressTypeNumber();
+		
+		t.elementGroups.service_address_type_suffix.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.service_address_type_suffix));
+		t.elementGroups.service_street_number_start.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.service_street_number_start));
+		t.elementGroups.service_street_number_end.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.service_street_number_end));
+		t.elementGroups.service_street_number_suffix.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.service_street_number_suffix));
+		t.elementGroups.service_property_name.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.service_property_name));
+		t.changePropertyName();
+		t.elementGroups.service_street_name.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.service_street_name));
+		t.changeStreetName();
+		
+		t.elementGroups.landline_service_street_type_id.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.landline_service_street_type_id));
+		t.elementGroups.landline_service_street_type_suffix_id.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.landline_service_street_type_suffix_id));
+		t.elementGroups.service_locality.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.service_locality));
+		t.elementGroups.landline_service_state_id.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.landline_service_state_id));
+		t.elementGroups.service_postcode.setValue(Sale.GUIComponent.getElementGroupValue(s.elementGroups.service_postcode));
+		t.advancedAddressCheckbox.checked = s.advancedAddressCheckbox.checked;
+		t.advancedServiceAddressCheckboxToggle();
+	}
 
 });
 

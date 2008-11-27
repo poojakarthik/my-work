@@ -94,7 +94,12 @@ Object.extend(Sale.GUIComponent, {
 			elements: new Array(wrap),
 			type: 'credit_card_expiry',
 			display: disp,
-			mixIsMandatory: mixIsMandatory
+			mixIsMandatory: mixIsMandatory,
+			
+			setValue: function($values)
+			{
+				alert("Set value for credit card expiry has not been implemented.");
+			}
 		}
 		
 		// Validation
@@ -187,7 +192,12 @@ Object.extend(Sale.GUIComponent, {
 			elements: new Array(wrap),
 			type: 'date',
 			display: disp,
-			mixIsMandatory: mixIsMandatory
+			mixIsMandatory: mixIsMandatory,
+			
+			setValue: function($values)
+			{
+				alert("Set value for date groups has not been implemented.");
+			}
 		}
 		
 		// Validation
@@ -259,7 +269,15 @@ Object.extend(Sale.GUIComponent, {
 			elements: new Array(dropDown),
 			type: 'select',
 			display: disp,
-			mixIsMandatory: mixIsMandatory
+			mixIsMandatory: mixIsMandatory,
+			
+			setValue: function($value)
+			{
+				for (var i = 0, l = this.inputs[0].options.length; i < l; i++)
+				{
+					this.inputs[0].options[i].selected = (this.inputs[0].options[i].value == $value);
+				}
+			}
 		}
 		
 		// Validation
@@ -317,7 +335,19 @@ Object.extend(Sale.GUIComponent, {
 			elements: new Array(dropDown),
 			type: 'select',
 			display: disp,
-			mixIsMandatory: mixIsMandatory
+			mixIsMandatory: mixIsMandatory,
+			
+			setValue: function($values)
+			{
+				for (var j = 0, k = $values.length; j < k; j++)
+				{
+					for (var i = 0, l = this.inputs[0].options.length; i < l; i++)
+					{
+						this.inputs[0].options[i].selected = (this.inputs[0].options[i].value == $values[j]);
+						if (this.inputs[0].options[i].selected) break; 
+					}
+				}
+			}
 		}
 		
 		// Validation
@@ -380,7 +410,12 @@ Object.extend(Sale.GUIComponent, {
 			elements: new Array(input),
 			type: 'text',
 			display: disp,
-			mixIsMandatory: mixIsMandatory
+			mixIsMandatory: mixIsMandatory,
+			
+			setValue: function($value)
+			{
+				this.inputs[0].value = $value;
+			}
 		}
 		
 		// Validation
@@ -443,7 +478,12 @@ Object.extend(Sale.GUIComponent, {
 			elements: new Array(grp),
 			type: 'password',
 			display: disp,
-			mixIsMandatory: mixIsMandatory
+			mixIsMandatory: mixIsMandatory,
+			
+			setValue: function($value)
+			{
+				this.inputs[0].value = $value;
+			}
 		}
 		
 		// Validation
@@ -496,7 +536,12 @@ Object.extend(Sale.GUIComponent, {
 			elements: new Array(textarea),
 			type: 'textarea',
 			display: disp,
-			mixIsMandatory: mixIsMandatory
+			mixIsMandatory: mixIsMandatory,
+			
+			setValue: function($value)
+			{
+				this.inputs[0].value = $value;
+			}
 		}
 		
 		// Validation
@@ -564,7 +609,15 @@ Object.extend(Sale.GUIComponent, {
 			elements: all,
 			type: 'radio',
 			display: disp,
-			mixIsMandatory: mixIsMandatory
+			mixIsMandatory: mixIsMandatory,
+			
+			setValue: function($value)
+			{
+				for (var i = 0, l = $group.inputs.length; i < l; i++)
+				{
+					this.inputs[i].checked = (this.inputs[i].value == $value);
+				}
+			}
 		}
 		
 		// Validation
@@ -615,7 +668,12 @@ Object.extend(Sale.GUIComponent, {
 			elements: new Array(checkbox),
 			type: 'checkbox',
 			display: disp,
-			mixIsMandatory: mixIsMandatory
+			mixIsMandatory: mixIsMandatory,
+			
+			setValue: function($value)
+			{
+				this.inputs[0].checked = $value;
+			}
 		}
 		
 		// Validation
