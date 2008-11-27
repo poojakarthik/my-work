@@ -14,7 +14,23 @@ Object.extend(Sale, {
 	canCancelSale: false,
 	canAmendSale: false,
 	canVerifySale: false,
-	canRejectSale: false
+	canRejectSale: false,
+
+	loading: null,
+	
+	startLoading: function()
+	{
+		if (this.loading != null) return;
+		this.loading = new Reflex_Popup.Loading();
+		this.loading.display();
+	},
+	
+	endLoading: function()
+	{
+		if (this.loading == null) return;
+		this.loading.hide();
+		this.loading = null;
+	}
 });
 
 Sale.BillPaymentType = Class.create();
@@ -1084,6 +1100,8 @@ Object.extend(Sale.prototype, {
 	
 	initialize: function(container, saleId, initialStyle)
 	{
+		Sale.startLoading();
+		
 		this.detailsContainer = container;
 		
 		document.body.originalClassName = document.body.className;
@@ -1411,6 +1429,8 @@ Object.extend(Sale.prototype, {
 		}
 		
 		Event.observe($ID('sale_product_type_list'), 'change', this.changeProductType.bind(this), true);
+
+		Sale.endLoading();
 	},
 
 

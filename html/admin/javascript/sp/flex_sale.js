@@ -98,6 +98,8 @@ Object.extend(Sale.prototype, {
 		}
 		
 		Event.observe($ID('sale_product_type_list'), 'change', this.changeProductType.bind(this), true);
+
+		Sale.endLoading();
 	},
 	
 	_commitOK: function($saleId)

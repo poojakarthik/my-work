@@ -181,3 +181,41 @@ Object.extend(Reflex_Popup.prototype, {
 		Reflex_Popup.hide(this);
 	}
 });
+
+
+Reflex_Popup.Loading = Class.create();
+
+Object.extend(Reflex_Popup.Loading, {
+
+});
+
+
+Object.extend(Reflex_Popup.Loading.prototype, Reflex_Popup.prototype);
+
+Object.extend(Reflex_Popup.Loading.prototype, {
+	parentInitialize: Reflex_Popup.prototype.initialize,
+	
+	loading: null,
+	
+	initialize: function()
+	{
+		this.parentInitialize(20);
+		var loading = this.loading = document.createElement('div');
+		loading.className = "reflex-loading-image";
+		loading.style.height = '8em';
+		p = document.createElement('p');
+		loading.appendChild(p);
+		p.appendChild(document.createTextNode('Loading...'));
+		loading.appendChild(document.createElement('br'));
+		loading.appendChild(document.createElement('br'));
+		loading.appendChild(document.createElement('br'));
+		p = document.createElement('p');
+		loading.appendChild(p);
+		p.appendChild(document.createTextNode('Please wait.'));
+		
+		this.setTitle('Loading...');
+		this.setContent(this.loading);
+		this.setHeaderButtons(new Array());
+		this.setFooterButtons(new Array());
+	}
+});
