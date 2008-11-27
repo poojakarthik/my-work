@@ -142,7 +142,7 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 	<td><a href='$strAccountOverviewLink'>$intAccountId</a></td>
 	<td>$strAccountName</td>
 	<td>$strAccountStatus</td>
-	<td>$strOverdueAmount</td>
+	<td align='right'>$strOverdueAmount</td>
 </tr>";
 				$bolAlt = !$bolAlt;
 			}
@@ -152,10 +152,10 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 <table class='reflex highlight-rows' id='CustomerOverdueListTable' name='CustomerOverdueListTable'>
 	<thead>
 		<tr>
-			<th>Account #</th>
+			<th>Account&nbsp;#</th>
 			<th>Name</th>
 			<th>Status</th>
-			<th>Overdue (\$)</th>
+			<th align='right'>Overdue&nbsp;(\$)</th>
 		</tr>
 	</thead>
 	<tbody>

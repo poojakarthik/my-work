@@ -356,7 +356,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 */
 	private function _RenderForEditing()
 	{
-		$bolIsAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolIsAdminUser			= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolIsSuperAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
 	
 		$this->FormStart("EditAccount", "Account", "SaveDetails");
 		echo "<h2 class='Account'>Account Details</h2>\n";
@@ -370,7 +371,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// Render the details of the Account
 		DBO()->Account->Id->RenderOutput();
 
-		if ($bolIsAdminUser)
+		if ($bolIsSuperAdminUser)
 		{
 			// Render the CustomerGroup combobox
 			DBL()->CustomerGroup->OrderBy("InternalName");

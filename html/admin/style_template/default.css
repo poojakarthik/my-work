@@ -65,6 +65,7 @@ a[onclick],
 span[onclick]
 {
 	cursor : pointer;
+	color: #0000FF;
 }
 
 span[onclick]:hover

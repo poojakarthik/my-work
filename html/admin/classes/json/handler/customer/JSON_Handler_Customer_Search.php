@@ -276,7 +276,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 	<td>$strBusinessName</td>
 	<td>$strTradingName</td>
 	<td>$strStatus</td>
-	<td align='right'><a href='javascript:$strVerifyCustomerLink'>Verify</a></td>
+	<td align='right'><a onclick='$strVerifyCustomerLink'>Verify</a></td>
 </tr>";
 
 				$bolAlt = !$bolAlt;
