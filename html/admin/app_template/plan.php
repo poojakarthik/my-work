@@ -569,7 +569,8 @@ class AppTemplatePlan extends ApplicationTemplate
 		}
 		
 		// Included Data
-		DBO()->RatePlan->included_data	= max(0, (int)DBO()->RatePlan->included_data);
+		DBO()->RatePlan->included_data	= max(0, (int)DBO()->RatePlan->included_data->Value);
+		DBO()->RatePlan->included_data	= (DBO()->RatePlan->included_data->Value > 0) ? DBO()->RatePlan->included_data / 1024 : 0;
 		
 		// V2: ServiceType
 		if (!DBO()->RatePlan->ServiceType->Value)
