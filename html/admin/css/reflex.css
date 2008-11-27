@@ -1,7 +1,8 @@
 a,
 a:link,
 a:visited {
-	color: #FF4200;
+	/*Orange? why? color: #FF4200;*/
+	color: #00F;
 	text-decoration: none;
 }
 

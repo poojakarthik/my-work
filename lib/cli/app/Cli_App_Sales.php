@@ -1192,7 +1192,7 @@ class Cli_App_Sales extends Cli
 						$objAccountCreationNote->Account		= $objAccount->Account;
 						$objAccountCreationNote->Employee		= 0;
 						$objAccountCreationNote->Datetime		= $strPullDatetime;
-						$objAccountCreationNote->NoteType		= 7;
+						$objAccountCreationNote->NoteType		= Note::SYSTEM_NOTE_TYPE_ID;
 						
 						$strNote  = "This Account has been created from the Sales Portal with the following details:\n\n" .
 									"Sale Reference ID: {$arrSPSale['id']}\n";
@@ -1206,9 +1206,9 @@ class Cli_App_Sales extends Cli
 							}
 						}
 						
+						$strNote .= "\nServices:\n";
 						foreach ($arrServices as $objService)
 						{
-							$strNote	.= "\nServices:\n";
 							foreach ($arrContacts as $objContact)
 							{
 								$strNote	.= "\t{$objService->FNN} (".trim($objService->objRatePlan->Name).")\n";								

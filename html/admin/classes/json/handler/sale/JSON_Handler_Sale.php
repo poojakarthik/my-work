@@ -642,7 +642,7 @@ class JSON_Handler_Sale extends JSON_Handler
 					<th colspan='2'>Time</th>
 					<th>Event</th>
 					<th>Description</th>
-					<th>Changed By</th>
+					<th>Changed&nbsp;By</th>
 				</tr>
 			</thead>
 			<tbody>
