@@ -185,7 +185,7 @@ class Invoice extends ORM
 			$fltPlanCredit	= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
 			$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
-			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
+			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
 			
 			// HACKHACKHACK: Add inverse tax value of Plan Credit to the Tax Total, so that everything balances
 			$this->Tax		+= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->_objInvoiceRun->intInvoiceDatetime);
@@ -490,7 +490,7 @@ class Invoice extends ORM
 			//Cli_App_Billing::debug("min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
 			$intPeriodStart			= $intArrearsPeriodStart;
 			$intPeriodEnd			= $intArrearsPeriodEnd;
-			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
+			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
 			
 			// HACKHACKHACK: Add inverse tax value of Plan Credit to Service Tax Total, so that everything balances
 			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->_objInvoiceRun->intInvoiceDatetime);
@@ -955,7 +955,7 @@ class Invoice extends ORM
 					// The this Plan has not been invoiced before, so generate a Charge in Advance
 					$intAdvancePeriodStart	= $this->_objInvoiceRun->intInvoiceDatetime;
 					$intAdvancePeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->_objInvoiceRun->intInvoiceDatetime));
-					$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails['Name'], $intAdvancePeriodStart, $intAdvancePeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, $intPrimaryService);
+					$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails, $intAdvancePeriodStart, $intAdvancePeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, $intPrimaryService);
 				}
 				
 				$arrPlanChargeSteps[]	= 'PRORATA';
@@ -968,7 +968,7 @@ class Invoice extends ORM
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= strtotime($strEarliestCDR);
 				$intPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
-				$this->_addPlanCharge('PCAR', $fltMinimumCharge, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, $intPrimaryService);
+				$this->_addPlanCharge('PCAR', $fltMinimumCharge, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, $intPrimaryService);
 				
 				// Arrears Period
 				$intArrearsPeriodStart	= $intPeriodStart;
@@ -993,7 +993,7 @@ class Invoice extends ORM
 					$intPeriodStart	= $this->_objInvoiceRun->intLastInvoiceDatetime;
 					$intPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
 				}
-				$this->_addPlanCharge($strChargeType, $fltMinimumCharge, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, $intPrimaryService);
+				$this->_addPlanCharge($strChargeType, $fltMinimumCharge, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, $intPrimaryService);
 				
 				// Arrears Period
 				$intArrearsPeriodStart	= $this->_objInvoiceRun->intLastInvoiceDatetime;
@@ -1037,7 +1037,7 @@ class Invoice extends ORM
 	 *
 	 * @param	string	$strChargeType							The ChargeType to Generate
 	 * @param	float	$fltAmount								The value of the Plan Charge
-	 * @param	string	$strPlanName							The Name of the Plan
+	 * @param	array	$arrPlanDetails							Plan Details
 	 * @param	integer	$intPeriodStartDate						The start of the Billing Period
 	 * @param	integer	$intPeriodEndDate						The end of the Billing Period
 	 * @param	integer	$intAccountGroup						Account Group Id
@@ -1048,7 +1048,7 @@ class Invoice extends ORM
 	 *
 	 * @method
 	 */
-	private function _addPlanCharge($strChargeType, $fltAmount, $strPlanName, $intPeriodStartDate, $intPeriodEndDate, $intAccountGroup, $intAccount, $intService=NULL)
+	private function _addPlanCharge($strChargeType, $fltAmount, $arrPlanDetails, $intPeriodStartDate, $intPeriodEndDate, $intAccountGroup, $intAccount, $intService=NULL)
 	{
 		static	$selChargeType;
 		static	$arrChargeTypes;
@@ -1078,6 +1078,14 @@ class Invoice extends ORM
 				throw new Exception("Unable to retrieve details for ChargeType '{$strChargeType}'!");
 			}
 		}
+		
+		// If this is a Plan Data Credit, include the allowance in the Description
+		$strDescription	= $arrChargeTypes[$strChargeType]['Description'];
+		if ($arrPlanDetails['included_data'] > 0)
+		{
+			$intMegaBytes	= $arrPlanDetails['included_data'] / 1024;
+			$strDescription	.= " ({$intMegaBytes}MB)";
+		}
 
 		// Generate Charge
 		$arrPlanCharge						= Array();
@@ -1088,7 +1096,7 @@ class Invoice extends ORM
 		$arrPlanCharge['ChargeType']		= $strChargeType;
 		$arrPlanCharge['charge_type_id']	= $arrChargeTypes[$strChargeType]['Id'];
 		$arrPlanCharge['global_tax_exempt']	= 0;
-		$arrPlanCharge['Description']		= "{$strPlanName} ".$arrChargeTypes[$strChargeType]['Description']." from ".date("d/m/Y", $intPeriodStartDate)." to ".date("d/m/Y", $intPeriodEndDate);
+		$arrPlanCharge['Description']		= "{$arrPlanDetails['Name']} ".$strDescription." from ".date("d/m/Y", $intPeriodStartDate)." to ".date("d/m/Y", $intPeriodEndDate);
 		$arrPlanCharge['ChargedOn']			= date("Y-m-d");
 		$arrPlanCharge['Amount']			= abs($fltAmount);
 		if (!$GLOBALS['fwkFramework']->AddCharge($arrPlanCharge))
@@ -1158,7 +1166,7 @@ class Invoice extends ORM
 			}
 			
 			// Add the Credit
-			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails['Name'], $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intPrimaryService);
+			$this->_addPlanCharge('PDCR', $fltTotalCredit, $arrPlanDetails, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->AccountGroup, $this->Account, $intPrimaryService);
 		}
 	}
 
