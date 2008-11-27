@@ -16,7 +16,7 @@ class Flex_Rollout_Version_000099 extends Flex_Rollout_Version
 		
 		// 1: Add the sale.sale_type_id Field and define it as a foreign key into sale_type table
 		$strSQL = "ALTER TABLE sale ".
-					"ADD sale_type_id BIGINT(20) UNSIGNED NOT NULL COMMENT 'FK into sale_type table', ".
+					"ADD sale_type_id BIGINT(20) UNSIGNED NOT NULL DEFAULT 1 COMMENT 'FK into sale_type table', ".
 					"ADD CONSTRAINT fk_sale_sale_type_id FOREIGN KEY (sale_type_id) REFERENCES sale_type(id) ON UPDATE CASCADE ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
