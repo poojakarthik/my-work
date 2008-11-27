@@ -568,6 +568,9 @@ class AppTemplatePlan extends ApplicationTemplate
 			DBO()->RatePlan->contract_payout_percentage	= 0.0;
 		}
 		
+		// Included Data
+		DBO()->RatePlan->included_data	= max(0, (int)DBO()->RatePlan->included_data);
+		
 		// V2: ServiceType
 		if (!DBO()->RatePlan->ServiceType->Value)
 		{

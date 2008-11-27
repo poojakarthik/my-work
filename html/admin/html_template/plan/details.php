@@ -176,6 +176,18 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			DBO()->RatePlan->discount_cap->RenderOutput();
 		}
 		
+		$intIncludedData	= DBO()->RatePlan->included_data->Value;
+		if ($intIncludedData == 0)
+		{
+			DBO()->RatePlan->included_data->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+		}
+		else
+		{
+			$strUnit				= 'MB';
+			$intIncludedDataInMB	= $intIncludedData / 1024;
+			DBO()->RatePlan->included_data->RenderArbitrary("{$intIncludedData}{$strUnit}", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+		}
+		
 		echo "</td></tr></table>\n";
 		
 		echo "</div>\n";  // GroupedContent

@@ -197,6 +197,18 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 				$dboRatePlan->discount_cap->RenderOutput();
 			}
 			
+			$intIncludedData	= $dboRatePlan->included_data->Value;
+			if ($intIncludedData == 0)
+			{
+				$dboRatePlan->included_data->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+			}
+			else
+			{
+				$strUnit				= 'MB';
+				$intIncludedDataInMB	= $intIncludedData / 1024;
+				$dboRatePlan->included_data->RenderArbitrary("{$intIncludedData}{$strUnit}", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+			}
+			
 			if ($dboRatePlan->StartDatetime->IsSet)
 			{
 				$dboRatePlan->StartDatetime->RenderOutput();

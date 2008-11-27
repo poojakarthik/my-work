@@ -173,6 +173,15 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		DBO()->RatePlan->RecurringCharge->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
 		DBO()->RatePlan->discount_cap->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
 		
+		// Render the 'Included Data' field
+		$strIncludedDataClass	= (DBO()->RatePlan->included_data->IsInvalid())? "DefaultInvalidInputText" : "DefaultInputText";
+		$intIncludedData		= DBO()->RatePlan->ContractTerm->Value;
+		echo "
+<div class='DefaultElement'>
+	<input type='text' id='RatePlan.included_data' name='RatePlan.included_data' class='{$strIncludedDataClass}' value='{$intIncludedData}'/>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Included Data (MB) :</div>
+</div>";
+		
 		// Render the "scalable, minimum_services & maximum_services" input controls
 		if (DBO()->RatePlan->scalable->Value == TRUE)
 		{
