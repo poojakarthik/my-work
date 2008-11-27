@@ -538,7 +538,7 @@ class Cli_App_Sales extends Cli
 						//--------------------- ACCOUNT GROUP --------------------//
 						// Yes -- Create a new AccountGroup/Account for this Customer
 						$objAccountGroup			= new Account_Group();
-						$objAccountGroup->CreatedBy	= 0;
+						$objAccountGroup->CreatedBy	= Employee::SYSTEM_EMPLOYEE_ID;
 						$objAccountGroup->CreatedOn	= $strPullDatetime;
 						$objAccountGroup->Archived	= ACCOUNT_STATUS_ACTIVE;
 						$objAccountGroup->save();
@@ -599,7 +599,7 @@ class Cli_App_Sales extends Cli
 							$objAccount->BillingType		= BILLING_TYPE_ACCOUNT;
 						}
 						
-						$objAccount->CreatedBy			= 0;
+						$objAccount->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
 						$objAccount->CreatedOn			= $strPullDatetime;
 						$objAccount->DisableDDR			= 0;
 						$objAccount->DisableLatePayment	= 0;
@@ -642,7 +642,7 @@ class Cli_App_Sales extends Cli
 								$arrBankAccount['AccountName']		= $arrSPBankAccount['account_name'];
 								$arrBankAccount['Archived']			= 0;
 								$arrBankAccount['created_on']		= $arrSPSale['created_on'];
-								$arrBankAccount['employee_id']		= 0;
+								$arrBankAccount['employee_id']		= Employee::SYSTEM_EMPLOYEE_ID;
 								$resBankAccountInsert	= $insBankAccount->Execute($arrBankAccount);
 								if ($resBankAccountInsert === FALSE)
 								{
@@ -677,7 +677,7 @@ class Cli_App_Sales extends Cli
 								$arrCreditCard['CVV']			= $arrSPCreditCard['cvv'];
 								$arrCreditCard['Archived']		= 0;
 								$arrCreditCard['created_on']	= $arrSPSale['created_on'];
-								$arrCreditCard['employee_id']	= 0;
+								$arrCreditCard['employee_id']	= Employee::SYSTEM_EMPLOYEE_ID;
 								$resCreditCardInsert	= $insCreditCard->Execute($arrCreditCard);
 								if ($resCreditCardInsert === FALSE)
 								{
@@ -1190,7 +1190,7 @@ class Cli_App_Sales extends Cli
 						$objAccountCreationNote	= new Note();
 						$objAccountCreationNote->AccountGroup	= $objAccount->AccountGroup;
 						$objAccountCreationNote->Account		= $objAccount->Account;
-						$objAccountCreationNote->Employee		= 0;
+						$objAccountCreationNote->Employee		= Employee::SYSTEM_EMPLOYEE_ID;
 						$objAccountCreationNote->Datetime		= $strPullDatetime;
 						$objAccountCreationNote->NoteType		= Note::SYSTEM_NOTE_TYPE_ID;
 						
