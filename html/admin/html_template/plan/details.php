@@ -185,7 +185,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		{
 			$strUnit				= 'MB';
 			$intIncludedDataInMB	= $intIncludedData / 1024;
-			DBO()->RatePlan->included_data->RenderArbitrary("{$intIncludedData}{$strUnit}", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+			DBO()->RatePlan->included_data->RenderArbitrary("{$intIncludedDataInMB} {$strUnit}", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 		}
 		
 		echo "</td></tr></table>\n";

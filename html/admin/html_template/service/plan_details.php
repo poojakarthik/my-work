@@ -206,7 +206,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			{
 				$strUnit				= 'MB';
 				$intIncludedDataInMB	= $intIncludedData / 1024;
-				$dboRatePlan->included_data->RenderArbitrary("{$intIncludedData}{$strUnit}", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+				$dboRatePlan->included_data->RenderArbitrary("{$intIncludedDataInMB} {$strUnit}", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 			}
 			
 			if ($dboRatePlan->StartDatetime->IsSet)
