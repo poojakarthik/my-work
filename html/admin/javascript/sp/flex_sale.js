@@ -9,7 +9,8 @@ Object.extend(Sale.prototype, {
 		
 		// Add contents to this.detailsContainer
 		this.detailsContainer.innerHTML = '' 
-		+ '<div class="MediumSpace" style="width: 965px;"><input type="button" value="View History" onclick="Sale.showHistory(' + this.getId() + ')" style="float: right;"/></div>' 
+		+ '<div class="MediumSpace" style="width: 965px;"></div>' 
+		+ '<div class="Title" style="position: relative;">Sale Status<input type="button" value="View History" onclick="Sale.showHistory(' + this.getId() + ')" style="width: 85px; position: absolute; right: 0px; bottom: -1px;"/></div><div class="Page" style="width: 963px;"><table class="data-table" cellpadding="0" cellspacing="0" border="0" style="width: 100%;"><tr><td>Status:</td><td>' + this.getStatus() + '</td></tr><tr><td>Description:</td><td>' + this.getStatusDescription() + '</td></tr></table></div><div class="MediumSpace"></div>' 
 		+ '<table cellpadding="0" cellspacing="0" border="0" width="975">' 
 			+ '<tr>' 
 				+ '<td width="480">' 
@@ -101,7 +102,19 @@ Object.extend(Sale.prototype, {
 
 		Sale.endLoading();
 	},
+
+	getStatus: function()
+	{
+		if (this.isNewSale()) return "New Sale";
+		return this.object.status;
+	},
 	
+	getStatusDescription: function()
+	{
+		if (this.isNewSale()) return "Details not yet submitted.";
+		return this.object.status_description;
+	},
+
 	_commitOK: function($saleId)
 	{
 		window.scroll(0,0);

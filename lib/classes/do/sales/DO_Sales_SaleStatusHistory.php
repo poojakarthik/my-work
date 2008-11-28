@@ -47,6 +47,23 @@ class DO_Sales_SaleStatusHistory extends DO_Sales_Base_SaleStatusHistory
 		
 		
 	}
+	
+	public static function getLatestDescriptionForSale(DO_Sales_Sale $sale)
+	{
+		$strSQL = 'SELECT ' . self::getPropertyDataSourceName('description') . 
+				  '  FROM ' . self::getDataSourceObjectName() . 
+				  ' WHERE ' . self::getPropertyDataSourceName('saleId') . " = " . $sale->id .
+				  ' ORDER BY ' . self::getPropertyDataSourceName('id') . ' DESC' .
+				  ' LIMIT 1 OFFSET 0';
+
+		$dataSource = self::getDataSource();
+		if (PEAR::isError($results = $dataSource->query($strSQL)))
+		{
+			throw new Exception('Failed to get status history description for ' . __CLASS__ . ' :: ' . $results->getMessage());
+		}
+		
+		return $results->fetchOne();
+	}
 }
 
 ?>

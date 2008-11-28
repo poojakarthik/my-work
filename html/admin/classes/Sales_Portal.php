@@ -17,6 +17,8 @@ class Sales_Portal
 		$saleDetails->id = $sale->id;
 		$saleDetails->sale_type_id = $sale->saleTypeId;
 		$saleDetails->sale_status_id = $sale->saleStatusId;
+		$saleDetails->status = $sale->getSaleStatus()->description;
+		$saleDetails->status_description = DO_Sales_SaleStatusHistory::getLatestDescriptionForSale($sale);
 		$saleDetails->created_on = $sale->saleTypeId;
 		$saleDetails->created_by = $sale->saleTypeId;
 		$saleDetails->commission_paid_on = $sale->commissionPaidOn;
