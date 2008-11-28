@@ -9,7 +9,7 @@ Object.extend(Sale.prototype, {
 		
 		// Add contents to this.detailsContainer
 		this.detailsContainer.innerHTML = '' 
-		+ '<div class="MediumSpace"></div>' 
+		+ '<div class="MediumSpace" style="width: 965px;"><input type="button" value="View History" onclick="Sale.showHistory(' + this.getId() + ')" style="float: right;"/></div>' 
 		+ '<table cellpadding="0" cellspacing="0" border="0" width="975">' 
 			+ '<tr>' 
 				+ '<td width="480">' 

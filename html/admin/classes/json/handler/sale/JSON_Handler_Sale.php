@@ -560,6 +560,17 @@ class JSON_Handler_Sale extends JSON_Handler
 		
 	}
 	
+	public function history($intSaleId)
+	{
+		$response = $this->buildHistoryPopup($intSaleId);
+		if (!$response['Success'])
+		{
+			return $response;
+		}
+		$responseHTML = $response['PopupContent'];
+		$responseHTML = str_replace("<input type='button' value='Close' onclick='Vixen.Popup.Close(this)'></input>", "<input type='button' value='Close' onclick='Sale.hideHistory()'></input>", $responseHTML);
+		return $responseHTML;
+	}
 	
 	// Builds the "Sale History" popup, which lists all status changes that the sale has gone through
 	public function buildHistoryPopup($intSaleId)

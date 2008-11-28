@@ -159,6 +159,11 @@ Object.extend(Reflex_Popup.prototype, {
 		if (this.draggedFrom != null) this.drag(event);
 		this.draggedFrom = null;
 	},
+	
+	dragCancel: function(event)
+	{
+		this.draggedFrom = null;
+	},
 
 	addCloseButton: function(callback)
 	{
@@ -181,6 +186,10 @@ Object.extend(Reflex_Popup.prototype, {
 
 	setContent: function(content)
 	{
+		if (content == null) 
+		{
+			content = '';
+		}
 		if (typeof content == 'string')
 		{
 			this.contentPane.innerHTML = content;

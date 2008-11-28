@@ -30,6 +30,40 @@ Object.extend(Sale, {
 		if (this.loading == null) return;
 		this.loading.hide();
 		this.loading = null;
+	},
+	
+	historyPopup: null,
+	
+	hideHistory: function()
+	{
+		if (Sale.historyPopup != null)
+		{
+			Sale.historyPopup.hide();
+		}
+	},
+	
+	showHistory: function(saleId)
+	{
+		Sale.hideHistory();
+		if (saleId == null)
+		{
+			return alert("This is a new sale. It has no history.");
+		}
+		var showHistory = SalesPortal.getRemoteFunction('Sale', 'history', Sale.onHistoryLoad.bind({ saleId: saleId }));
+		showHistory(saleId);
+	},
+	
+	onHistoryLoad: function(historyHTML)
+	{
+		if (Sale.historyPopup == null)
+		{
+			Sale.historyPopup = new Reflex_Popup(72.2);
+			Sale.historyPopup.addCloseButton();
+		}
+		Sale.historyPopup.setTitle("History of Sale " + this.saleId);
+		Sale.historyPopup.setContent(historyHTML);
+		Sale.historyPopup.display();
+		Sale.historyPopup.recentre();
 	}
 });
 
@@ -1314,8 +1348,8 @@ Object.extend(Sale.prototype, {
 		// Add contents to this.detailsContainer
 		this.detailsContainer.innerHTML = '' 
 		+ '<div class="Page">' 
-			+ '<div class="Left">Add a Sale.</div>' 
-			+ '<div class="FieldContent" align="right">' 
+			+ (this.isNewSale() ? '' : '<span onclick="Sale.showHistory(' + this.getId() + ')"><a href="javascript:void(0)">View&nbsp;Sale&nbsp;History</a></span>') 
+			+ '</div><div class="FieldContent" align="right">' 
 				+ 'Sale Type:' 
 				+ '<select name="SaleType">' 
 					+ '<option value="New">New</option>' 
