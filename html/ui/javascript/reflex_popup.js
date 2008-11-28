@@ -123,8 +123,9 @@ Object.extend(Reflex_Popup.prototype, {
 		this.container.appendChild(this.footerPane);
 		
 		Event.observe(tb, "mousedown", this.dragStart.bind(this));
-		Event.observe(document.body, "mouseup", this.dragEnd.bind(this));
 		Event.observe(document.body, "mousemove", this.drag.bind(this));
+		Event.observe(document.body, "mouseup", this.dragEnd.bind(this));
+		Event.observe(document.body, "drag", this.dragCancel.bind(this));
 	},
 	
 	draggedFrom: null,
