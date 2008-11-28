@@ -180,8 +180,15 @@ Object.extend(Reflex_Popup.prototype, {
 
 	setContent: function(content)
 	{
-		this.contentPane.innerHTML = '';
-		this.contentPane.appendChild(content);
+		if (typeof content == 'string')
+		{
+			this.contentPane.innerHTML = content;
+		}
+		else
+		{
+			this.contentPane.innerHTML = '';
+			this.contentPane.appendChild(content);
+		}
 	},
 
 	setHeaderButtons: function(buttons)
