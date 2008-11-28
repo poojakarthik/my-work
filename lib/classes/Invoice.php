@@ -838,12 +838,12 @@ class Invoice extends ORM
 	 *
 	 * @method
 	 */
-	public static function prorate($fltAmount, $intChargeDate, $intPeriodStartDate, $intPeriodEndDate, $strSmallestDenomination=DATE_TRUNCATE_DAY, $bolAllowOverflow=TRUE)
+	public static function prorate($fltAmount, $intChargeDate, $intPeriodStartDate, $intPeriodEndDate, $strSmallestDenomination=DATE_TRUNCATE_DAY, $bolAllowOverflow=TRUE, $intDecimalPlaces=2)
 	{
 		$intProratePeriod			= TruncateTime($intPeriodEndDate, $strSmallestDenomination, 'floor') - TruncateTime($intChargeDate, $strSmallestDenomination, 'floor');
 		$intBillingPeriod			= TruncateTime($intPeriodEndDate, $strSmallestDenomination, 'floor') - TruncateTime($intPeriodStartDate, $strSmallestDenomination, 'floor');
 		$fltProratedAmount			= ($fltAmount / $intBillingPeriod) * $intProratePeriod;
-		$fltProratedAmount			= round($fltProratedAmount, 2);
+		$fltProratedAmount			= round($fltProratedAmount, $intDecimalPlaces);
 		return $fltProratedAmount;
 	}
 
@@ -1145,7 +1145,7 @@ class Invoice extends ORM
 			
 			$intTotalUnits		= 0;
 			$fltTotalCredit		= 0.0;
-			$intAvailableUnits	= $intIncludedData;
+			$intAvailableUnits	= prorate($intIncludedData, $intArrearsPeriodStart, $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime, DATE_TRUNCATE_DAY, TRUE, 0);
 			while (($intAvailableUnits > 0.0) && ($arrDataCDR = $resResult->fetch_assoc()))
 			{
 				// If we haven't gone over our Data Cap yet
