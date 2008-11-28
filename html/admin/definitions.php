@@ -196,6 +196,7 @@ define("PERMISSION_CUSTOMER_GROUP_ADMIN"	, 0x200);	$arrPermissions[PERMISSION_CU
 define("PERMISSION_KB_USER"					, 0x400);	$arrPermissions[PERMISSION_KB_USER] = "KB User";	// 1024
 define("PERMISSION_KB_ADMIN_USER"			, 0x800);	$arrPermissions[PERMISSION_KB_ADMIN_USER] = "KB Admin User"; // 2048
 define("PERMISSION_SALES_ADMIN"				, 0x1000);	$arrPermissions[PERMISSION_SALES_ADMIN] = "Sales Admin"; // 4096
+define("PERMISSION_PROPER_ADMIN"			, 0x2000);	$arrPermissions[PERMISSION_PROPER_ADMIN] = "Proper Admin"; // 8192
 define("PERMISSION_SUPER_ADMIN"				, 0x7FFFFFFF);	$arrPermissions[PERMISSION_SUPER_ADMIN]		= "Super Admin";	// 2147483647 (All permissions except DEBUG and GOD) 
 define("PERMISSION_DEBUG"					, 0x80000000);
 define("USER_PERMISSION_GOD"				, 0x7FFFFFFFFFFF); // This constant is legacy

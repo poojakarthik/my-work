@@ -888,7 +888,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		$bolIsSuperAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
+		$bolIsProperAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 
 		// Accounts can not have their details editted while an invoice run is processing
 		if (IsInvoicing())
@@ -979,9 +979,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			$strChangesNote .= "Billing Method was changed from ". GetConstantDescription(DBO()->CurrentAccount->BillingMethod->Value, 'BillingMethod') ." to " . GetConstantDescription(DBO()->Account->BillingMethod->Value, 'BillingMethod') . "\n";
 		}
-		if (!$bolIsSuperAdminUser)
+		if (!$bolIsProperAdminUser)
 		{
-			// Only Super Admins can change the CustomerGroup of an Account
+			// Only Proper Admins can change the CustomerGroup of an Account
 			DBO()->Account->CustomerGroup->Value = DBO()->CurrentAccount->CustomerGroup->Value;
 		}
 		
