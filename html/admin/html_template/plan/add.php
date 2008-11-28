@@ -176,6 +176,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		// Render the 'Included Data' field
 		$strIncludedDataClass	= (DBO()->RatePlan->included_data->IsInvalid())? "DefaultInvalidInputText" : "DefaultInputText";
 		$intIncludedData		= DBO()->RatePlan->included_data->Value;
+		$intIncludedData		= ($intIncludedData) ? $intIncludedData / 1024 : 0;
 		echo "
 <div class='DefaultElement'>
 	<input type='text' id='RatePlan.included_data' name='RatePlan.included_data' class='{$strIncludedDataClass}' value='{$intIncludedData}'/>
