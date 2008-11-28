@@ -121,6 +121,42 @@ Object.extend(Reflex_Popup.prototype, {
 		this.footerPane = document.createElement('div');
 		this.footerPane.className = 'reflex-popup-footer';
 		this.container.appendChild(this.footerPane);
+		
+		Event.observe(tb, "mousedown", this.dragStart.bind(this));
+		Event.observe(document.body, "mouseup", this.dragEnd.bind(this));
+		Event.observe(document.body, "mousemove", this.drag.bind(this));
+	},
+	
+	draggedFrom: null,
+	
+	dragStart: function(event)
+	{
+		var pointer = Event.pointer(event ? event : window.event);
+		var eventX = pointer.x;
+		var eventY = pointer.y;
+		this.draggedFrom = {
+			originLeft: this.container.offsetLeft,
+			originTop: this.container.offsetTop,
+			eventX: eventX,
+			eventY: eventY
+		}
+		this.drag(event);
+	},
+	
+	drag: function(event)
+	{
+		if (this.draggedFrom == null) return;
+		var pointer = Event.pointer(event ? event : window.event);
+		var eventX = pointer.x;
+		var eventY = pointer.y;
+		this.container.style.left = (this.draggedFrom.originLeft + (eventX - this.draggedFrom.eventX)) + "px";
+		this.container.style.top = (this.draggedFrom.originTop + (eventY - this.draggedFrom.eventY)) + "px";
+	},
+	
+	dragEnd: function(event)
+	{
+		if (this.draggedFrom != null) this.drag(event);
+		this.draggedFrom = null;
 	},
 
 	addCloseButton: function(callback)
