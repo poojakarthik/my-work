@@ -1143,26 +1143,30 @@ class Invoice extends ORM
 				throw new Exception("DB ERROR: ".$selDataCDRs->Error());
 			}
 
-			$intTotalUnits		= 0;
-			$fltTotalCredit		= 0.0;
-			$intAvailableUnits	= self::prorate($intIncludedData, $intArrearsPeriodStart, $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime, DATE_TRUNCATE_DAY, TRUE, 0);
-			while (($intAvailableUnits > 0.0) && ($arrDataCDR = $resResult->fetch_assoc()))
+			// If there are any CDRs
+			if ($resResult->num_rows)
 			{
-				// If we haven't gone over our Data Cap yet
-				if ($intAvailableUnits > 0.0)
+				$intTotalUnits		= 0;
+				$fltTotalCredit		= 0.0;
+				$intAvailableUnits	= self::prorate($intIncludedData, $intArrearsPeriodStart, $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime, DATE_TRUNCATE_DAY, TRUE, 0);
+				while (($intAvailableUnits > 0.0) && ($arrDataCDR = $resResult->fetch_assoc()))
 				{
-					$intAvailableUnits	-= $arrDataCDR['Units'];
-					$fltCharge			= $arrDataCDR['Charge'];
-					if ($intAvailableUnits < 0)
+					// If we haven't gone over our Data Cap yet
+					if ($intAvailableUnits > 0.0)
 					{
-						// Prorate the last session (assumes a consistent rate per unit [KB])
-						$fltRatePerKB	= ($arrDataCDR['Units']) ? ($fltCharge / $arrDataCDR['Units']) : 0;
-						$fltCharge		-= (abs(intAvailableUnits) * $fltRatePerKB);
-					}
+						$intAvailableUnits	-= $arrDataCDR['Units'];
+						$fltCharge			= $arrDataCDR['Charge'];
+						if ($intAvailableUnits < 0)
+						{
+							// Prorate the last session (assumes a consistent rate per unit [KB])
+							$fltRatePerKB	= ($arrDataCDR['Units']) ? ($fltCharge / $arrDataCDR['Units']) : 0;
+							$fltCharge		-= (abs(intAvailableUnits) * $fltRatePerKB);
+						}
 
-					$fltTotalCredit	+= $fltCharge;
+						$fltTotalCredit	+= $fltCharge;
+					}
+					$intTotalUnits	+= $arrDataCDR['Units'];
 				}
-				$intTotalUnits	+= $arrDataCDR['Units'];
 			}
 
 			// Add the Credit
