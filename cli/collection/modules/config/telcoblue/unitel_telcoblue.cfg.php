@@ -9,7 +9,7 @@ $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['FTPMode']		= F
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/cdrbatches/';
 //$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/cdrbatches/archive/';
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/m2/';
-$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/m2/previousbatches/';
+//$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/m2/previousbatches/';
 
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Regex']			= "/^[A-Za-z]{3}(On|Off)netBatch_SE_[A-Z]\d{5}_\d{8}.csv$/";
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
