@@ -3,7 +3,7 @@
 require_once("../../../../../flex.require.php");
 
 // CDR
-$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Regex']		= "/^[A-Za-z]\d{7}\.csv$/";
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Regex']		= "/^([A-Za-z]\d{7}|\d{4}\-\d{2}\-\d{2}\_SP\d{3}_\d{5})\.csv$/";
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['FTPMode']		= FTP_ASCII;
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/cdrbatches/';
@@ -17,7 +17,7 @@ $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['FTPMode']			= F
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['DownloadUnique']	= TRUE;
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Paths']		[]	= '/cdrbatchesoffnet/';
 
-$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE]				['Regex']		= "/^([A-Za-z]\d{7}|\d{4}\-\d{2}\-\d{2}\_SP\d{3}_\d{5})\.csv$/";
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE]				['Regex']		= "/^[A-Za-z]\d{7}\.csv$/";
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE]				['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE]				['FTPMode']		= FTP_ASCII;
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE]				['Paths']		[]	= '/mobilecdrbatches/';
