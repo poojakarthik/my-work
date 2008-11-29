@@ -1008,6 +1008,9 @@ class Invoice extends ORM
 			$fltMinimumCharge	= 0.0;
 			$fltUsageStart		= 0.0;
 			$fltUsageLimit		= 0.0;
+
+			$intArrearsPeriodStart	= $this->_objInvoiceRun->intLastInvoiceDatetime;
+			$intArrearsPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
 		}
 		// DEBUG
 		//Cli_App_Billing::debug($arrPlanChargeSteps);
