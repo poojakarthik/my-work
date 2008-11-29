@@ -67,6 +67,9 @@ class Invoice extends ORM
 		$this->invoice_run_id	= $objInvoiceRun->Id;
 		$this->_objInvoiceRun	= $objInvoiceRun;
 		$this->_objAccount		= $objAccount;
+		$this->AccountGroup		= $objAccount->AccountGroup;
+		$this->Account			= $objAccount->Id;
+		$this->CreatedOn		= $objInvoiceRun->BillingDate;
 		$this->Total			= 0.0;
 		$this->Debits			= 0.0;
 		$this->Credits			= 0.0;
@@ -260,9 +263,6 @@ class Invoice extends ORM
 		$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
 		$this->Balance			= $this->Total + $this->Tax;
 		$this->TotalOwing		= $this->Balance + $this->AccountBalance;
-		$this->AccountGroup		= $objAccount->AccountGroup;
-		$this->Account			= $objAccount->Id;
-		$this->CreatedOn		= $objInvoiceRun->BillingDate;
 		$this->DueOn			= date("Y-m-d", strtotime("+ {$objAccount->PaymentTerms} days", strtotime($objInvoiceRun->BillingDate)));
 		$this->Disputed			= 0.0;
 		$this->Status			= INVOICE_TEMP;
