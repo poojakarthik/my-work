@@ -173,7 +173,7 @@ class Invoice extends ORM
 			$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
 			$fltUsageStart		= $arrUsageDetails['ChargeCap'];
 			$fltUsageLimit		= $arrUsageDetails['UsageCap'];
-			
+
 			$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
 			$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
 
@@ -186,10 +186,10 @@ class Invoice extends ORM
 			$intPeriodStart	= $objInvoiceRun->intLastInvoiceDatetime;
 			$intPeriodEnd	= strtotime("-1 day", $objInvoiceRun->intInvoiceDatetime);
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
-			
+
 			// HACKHACKHACK: Add inverse tax value of Plan Credit to the Tax Total, so that everything balances
 			$this->Tax		+= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->_objInvoiceRun->intInvoiceDatetime);
-			
+
 			// Determine Usage
 			$fltSharedTotal			= min($fltCDRCappedTotal, $fltUsageStart);
 
@@ -208,7 +208,7 @@ class Invoice extends ORM
 			//Cli_App_Billing::debug("Shared Plan Total: \$".$fltSharedTotal);
 			$this->Debits	+= $fltCDRCappedTotal;
 			$this->Tax		+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->_objInvoiceRun->intInvoiceDatetime);
-			
+
 			//----------------------------------------------------------------//
 			// PLAN DATA USAGE
 			$this->_addPlanDataCredit($arrPlanDetails, $arrServiceIds, NULL, $intArrearsPeriodStart, $intArrearsPeriodEnd);
@@ -403,7 +403,7 @@ class Invoice extends ORM
 			$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
 			$fltUsageStart		= $arrUsageDetails['ChargeCap'];
 			$fltUsageLimit		= $arrUsageDetails['UsageCap'];
-			
+
 			$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
 			$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
 		}
@@ -491,7 +491,7 @@ class Invoice extends ORM
 			$intPeriodStart			= $intArrearsPeriodStart;
 			$intPeriodEnd			= $intArrearsPeriodEnd;
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
-			
+
 			// HACKHACKHACK: Add inverse tax value of Plan Credit to Service Tax Total, so that everything balances
 			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->_objInvoiceRun->intInvoiceDatetime);
 			//Cli_App_Billing::debug("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
@@ -518,7 +518,7 @@ class Invoice extends ORM
 			//Cli_App_Billing::debug("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 
 			$fltTotalCharge	= $fltCDRCappedTotal;
-			
+
 			//----------------------------------------------------------------//
 			// PLAN DATA USAGE
 			$this->_addPlanDataCredit($arrPlanDetails, Array($intServiceId), $intServiceId, $intArrearsPeriodStart, $intArrearsPeriodEnd);
@@ -666,7 +666,7 @@ class Invoice extends ORM
 		{
 			Cli_App_Billing::debug("(Revoking {$this->Id})");
 		}
-		
+
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 
@@ -748,7 +748,7 @@ class Invoice extends ORM
 	{
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
-		
+
 		// Ensure that this is a Temporary Invoice
 		if ($this->Status !== INVOICE_TEMP)
 		{
@@ -788,11 +788,11 @@ class Invoice extends ORM
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		
+
 		//------------------------------ INVOICE -----------------------------//
 		// Determine Invoice Status
 		$this->Status	= ($this->Balance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED;
-		
+
 		// Save
 		$this->save();
 	}
@@ -937,7 +937,7 @@ class Invoice extends ORM
 			$fltUsageLimit		= (float)$arrPlanDetails['UsageCap'];
 
 			$arrPlanChargeSteps	= Array();
-			
+
 			// Yes -- Does this Service have any Invoiced CDRs?
 			$resResult	= $qryQuery->Execute("SELECT Id FROM ServiceTypeTotal WHERE Service IN ({$strServiceIds}) AND Records > 0");
 			if ($resResult === FALSE)
@@ -951,13 +951,13 @@ class Invoice extends ORM
 				if ($arrPlanDetails['InAdvance'])
 				{
 					$arrPlanChargeSteps[]	= 'IN_ADVANCE';
-					
+
 					// The this Plan has not been invoiced before, so generate a Charge in Advance
 					$intAdvancePeriodStart	= $this->_objInvoiceRun->intInvoiceDatetime;
 					$intAdvancePeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->_objInvoiceRun->intInvoiceDatetime));
 					$this->_addPlanCharge('PCAD', $fltMinimumCharge, $arrPlanDetails, $intAdvancePeriodStart, $intAdvancePeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, $intPrimaryService);
 				}
-				
+
 				$arrPlanChargeSteps[]	= 'PRORATA';
 
 				// Prorate the Charges and Usage details in Arrears
@@ -969,7 +969,7 @@ class Invoice extends ORM
 				$intPeriodStart	= strtotime($strEarliestCDR);
 				$intPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
 				$this->_addPlanCharge('PCAR', $fltMinimumCharge, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, $intPrimaryService);
-				
+
 				// Arrears Period
 				$intArrearsPeriodStart	= $intPeriodStart;
 				$intArrearsPeriodEnd	= $intPeriodEnd;
@@ -980,7 +980,7 @@ class Invoice extends ORM
 				if ($arrPlanDetails['InAdvance'])
 				{
 					$arrPlanChargeSteps[]	= 'NORMAL_ADVANCE';
-					
+
 					$strChargeType	= 'PCAD';
 					$intPeriodStart	= $this->_objInvoiceRun->intInvoiceDatetime;
 					$intPeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->_objInvoiceRun->intInvoiceDatetime));
@@ -988,13 +988,13 @@ class Invoice extends ORM
 				else
 				{
 					$arrPlanChargeSteps[]	= 'NORMAL_ARREARS';
-					
+
 					$strChargeType	= 'PCAR';
 					$intPeriodStart	= $this->_objInvoiceRun->intLastInvoiceDatetime;
 					$intPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
 				}
 				$this->_addPlanCharge($strChargeType, $fltMinimumCharge, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, $intPrimaryService);
-				
+
 				// Arrears Period
 				$intArrearsPeriodStart	= $this->_objInvoiceRun->intLastInvoiceDatetime;
 				$intArrearsPeriodEnd	= strtotime("-1 day", $this->_objInvoiceRun->intInvoiceDatetime);
@@ -1003,7 +1003,7 @@ class Invoice extends ORM
 		else
 		{
 			$arrPlanChargeSteps[]	= 'NEVER_TOLLED';
-			
+
 			// No -- ignore all Plan Charges, because we haven't tolled yet
 			$fltMinimumCharge	= 0.0;
 			$fltUsageStart		= 0.0;
@@ -1017,7 +1017,7 @@ class Invoice extends ORM
 						'MinMonthly'			=> $fltMinimumCharge,
 						'ChargeCap'				=> $fltUsageStart,
 						'UsageCap'				=> $fltUsageLimit,
-						
+
 						'ArrearsPeriodStart'	=> $intArrearsPeriodStart,
 						'ArrearsPeriodEnd'		=> $intArrearsPeriodEnd
 					);
@@ -1078,7 +1078,7 @@ class Invoice extends ORM
 				throw new Exception("Unable to retrieve details for ChargeType '{$strChargeType}'!");
 			}
 		}
-		
+
 		// If this is a Plan Data Credit, include the allowance in the Description
 		$strDescription	= $arrChargeTypes[$strChargeType]['Description'];
 		if ($arrPlanDetails['included_data'] > 0)
@@ -1105,12 +1105,12 @@ class Invoice extends ORM
 		}
 		return TRUE;
 	}
-	
+
 	/**
 	 * _addPlanDataCredit()
 	 *
 	 * Adds a Plan Credit for Included Data
-	 * 
+	 *
 	 * @param	array		$arrPlanDetails
 	 * @param	array		$arrServiceIds
 	 * @param	integer		$intArrearsPeriodStart
@@ -1125,9 +1125,9 @@ class Invoice extends ORM
 	{
 		static	$qryQuery;
 		$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
-		
+
 		$strServices	= implode(', ', $arrServiceIds);
-		
+
 		// If there is Included Data on this Plan...
 		$intIncludedData	= $arrPlanDetails['included_data'];
 		if ($intIncludedData > 0)
@@ -1142,10 +1142,10 @@ class Invoice extends ORM
 			{
 				throw new Exception("DB ERROR: ".$selDataCDRs->Error());
 			}
-			
+
 			$intTotalUnits		= 0;
 			$fltTotalCredit		= 0.0;
-			$intAvailableUnits	= prorate($intIncludedData, $intArrearsPeriodStart, $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime, DATE_TRUNCATE_DAY, TRUE, 0);
+			$intAvailableUnits	= self::prorate($intIncludedData, $intArrearsPeriodStart, $this->_objInvoiceRun->intLastInvoiceDatetime, $this->_objInvoiceRun->intInvoiceDatetime, DATE_TRUNCATE_DAY, TRUE, 0);
 			while (($intAvailableUnits > 0.0) && ($arrDataCDR = $resResult->fetch_assoc()))
 			{
 				// If we haven't gone over our Data Cap yet
@@ -1159,12 +1159,12 @@ class Invoice extends ORM
 						$fltRatePerKB	= ($arrDataCDR['Units']) ? ($fltCharge / $arrDataCDR['Units']) : 0;
 						$fltCharge		-= (abs(intAvailableUnits) * $fltRatePerKB);
 					}
-					
+
 					$fltTotalCredit	+= $fltCharge;
 				}
 				$intTotalUnits	+= $arrDataCDR['Units'];
 			}
-			
+
 			// Add the Credit
 			$this->_addPlanCharge('PDCR', $fltTotalCredit, $arrPlanDetails, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->AccountGroup, $this->Account, $intPrimaryService);
 		}
@@ -1187,7 +1187,7 @@ class Invoice extends ORM
 					//Cli_App_Billing::debug("*** {$strName} updated to \${$mxdValue}");
 					$arrBacktrace	= debug_backtrace();
 					//Cli_App_Billing::debug("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};\t{$strName} @ Line {$arrBacktrace[0]['line']}");
-					
+
 					// Is Tax proportionate to Total?
 					$fltCalculatedTax	= $this->Total / 10;
 					$fltDifference		= $this->Tax - $fltCalculatedTax;
