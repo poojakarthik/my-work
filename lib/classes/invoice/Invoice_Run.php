@@ -16,12 +16,12 @@ class Invoice_Run
 {
 	private	$_arrTidyNames		= array();
 	private	$_arrProperties		= array();
-	
+
 	public	$intInvoiceDatetime;
 	public	$strInvoiceDatetime;
 	public	$intLastInvoiceDatetime;
 	public	$strLastInvoiceDatetime;
-	
+
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -29,12 +29,12 @@ class Invoice_Run
 	 * __construct()
 	 *
 	 * constructor
-	 * 
+	 *
 	 * constructor
 	 *
 	 * @param	array	$arrProperties 		[optional]	Associative array defining an invoice run with keys for each field of the InvoiceRun table
 	 * @param	boolean	$bolLoadById		[optional]	Automatically load the Invoice with the passed Id
-	 * 
+	 *
 	 * @return	void
 	 * @constructor
 	 */
@@ -49,7 +49,7 @@ class Invoice_Run
 		}
 		$this->_arrProperties[$arrTableDefine['Id']]				= NULL;
 		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $arrTableDefine['Id'];
-		
+
 		// Automatically load the Invoice using the passed Id
 		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : (($arrProperties['id']) ? $arrProperties['id'] : NULL);
 		if ($bolLoadById && $intId)
@@ -68,7 +68,7 @@ class Invoice_Run
 				throw new Exception(__CLASS__." with Id {$intId} does not exist!");
 			}
 		}
-		
+
 		// Set Properties
 		if (is_array($arrProperties))
 		{
@@ -79,7 +79,7 @@ class Invoice_Run
 			}
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// getForId
 	//------------------------------------------------------------------------//
@@ -87,10 +87,10 @@ class Invoice_Run
 	 * getForId()
 	 *
 	 * Returns the Invoice_Run object with the id specified
-	 * 
+	 *
 	 * Returns the Invoice_Run object with the id specified
 	 *
-	 * @param	int 				$intId		id of the InvoiceRun record to retrieve		
+	 * @param	int 				$intId		id of the InvoiceRun record to retrieve
 	 * @return	mixed 							Invoice_Run object	: if it exists
 	 * 											NULL				: if it doesn't exist
 	 * @method
@@ -107,7 +107,7 @@ class Invoice_Run
 		{
 			throw new Exception("Failed to retrieve InvoiceRun details for id: $intId - ". $selInvoiceRun->Error());
 		}
-		
+
 		if ($mixRecCount === 0)
 		{
 			// Could not find the InvoiceRun record
@@ -119,7 +119,7 @@ class Invoice_Run
 			return new self($selInvoiceRun->Fetch());
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// getColumns
 	//------------------------------------------------------------------------//
@@ -127,7 +127,7 @@ class Invoice_Run
 	 * getColumns()
 	 *
 	 * Returns array defining the columns of the InvoiceRun table
-	 * 
+	 *
 	 * Returns array defining the columns of the InvoiceRun table
 	 *
 	 * @return		array
@@ -138,24 +138,24 @@ class Invoice_Run
 		$arrTableDefinition	= DataAccess::getDataAccess()->FetchTableDefine('InvoiceRun');
 		$arrColumns			= array_keys($arrTableDefinition['Column']);
 		array_unshift($arrColumns, $arrTableDefinition['Id']);
-		
+
 		return $arrColumns;
 	}
-	
+
 	public function __get($strName)
 	{
 		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
 		return (array_key_exists($strName, $this->_arrProperties)) ? $this->_arrProperties[$strName] : NULL;
 	}
-	
+
 	protected function __set($strName, $mxdValue)
 	{
 		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
-		
+
 		if (array_key_exists($strName, $this->_arrProperties))
 		{
 			$this->_arrProperties[$strName]	= $mxdValue;
-			
+
 			if ($this->{$strName} !== $mxdValue)
 			{
 				$this->_saved = FALSE;
@@ -166,7 +166,7 @@ class Invoice_Run
 			$this->{$strName} = $mxdValue;
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// tidyName
 	//------------------------------------------------------------------------//
@@ -174,7 +174,7 @@ class Invoice_Run
 	 * tidyName()
 	 *
 	 * Converts a string from xxx_yyy_zzz to xxxYyyZzz
-	 * 
+	 *
 	 * Converts a string from xxx_yyy_zzz to xxxYyyZzz
 	 * If the string is already in the xxxYxxZzz format, then it will not be changed
 	 *
@@ -188,8 +188,8 @@ class Invoice_Run
 		$tidy[0] = strtolower($tidy[0]);
 		return $tidy;
 	}
-	
-	
+
+
 	//------------------------------------------------------------------------//
 	// generate
 	//------------------------------------------------------------------------//
@@ -199,7 +199,7 @@ class Invoice_Run
 	 * Generates an Invoice Run
 	 *
 	 * Generates an Invoice Run
-	 * 
+	 *
 	 * @param	integer	$intCustomerGroup						The Customer Group to generate for
 	 * @param	integer	$intInvoiceRunType						The invoice_run_type (eg. INVOICE_RUN_TYPE_SAMPLES)
 	 * @param	integer	$intInvoiceDatetime						The effective Datetime for this Invoice Run, invoiceable items must have been BEFORE this!
@@ -211,10 +211,10 @@ class Invoice_Run
 	{
 		// Init variables
 		$dbaDB					= DataAccess::getDataAccess();
-		
+
 		// If there are any Temporary InvoiceRuns for this Customer Group, then Revoke them
 		Invoice_Run::revokeByCustomerGroup($intCustomerGroup);
-		
+
 		//------------------- START INVOICE RUN GENERATION -------------------//
 		// Create the initial InvoiceRun record
 		$this->BillingDate				= date("Y-m-d", $intInvoiceDatetime);
@@ -224,10 +224,10 @@ class Invoice_Run
 		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_GENERATING;
 		$this->customer_group_id		= $intCustomerGroup;
 		$this->save();
-		
+
 		// Generate the Billing Period Dates
 		$this->calculateBillingPeriodDates();
-		
+
 		// Get CustomerGroup information
 		$selInvoiceCDRCredits	= self::_preparedStatement('selInvoiceCDRCredits');
 		if ($selInvoiceCDRCredits->Execute($this->toArray()) === FALSE)
@@ -237,7 +237,7 @@ class Invoice_Run
 		}
 		$arrInvoiceCDRCredits		= $selInvoiceCDRCredits->Fetch();
 		$this->bolInvoiceCDRCredits	= (bool)$arrInvoiceCDRCredits['invoice_cdr_credits'];
-		
+
 		// Retrieve a list of Accounts to be Invoiced
 		Cli_App_Billing::debug(" * Getting list of Accounts to Invoice...");
 		$selInvoiceableAccounts	= self::_preparedStatement('selInvoiceableAccounts');
@@ -246,7 +246,7 @@ class Invoice_Run
 			// Database Error -- throw Exception
 			throw new Exception("DB ERROR: ".$selInvoiceableAccounts->Error());
 		}
-		
+
 		// Generate an Invoice for each Account
 		$this->InvoiceCount	= 0;
 		while ($arrAccount = $selInvoiceableAccounts->Fetch())
@@ -257,7 +257,7 @@ class Invoice_Run
 			$objInvoice->generate($objAccount, $this);
 			$this->InvoiceCount++;
 		}
-		
+
 		// Generated Balance Data
 		$selInvoiceTotals	= self::_preparedStatement('selInvoiceTotals');
 		if ($selInvoiceTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
@@ -266,7 +266,7 @@ class Invoice_Run
 			throw new Exception("DB ERROR: ".$selInvoiceTotals->Error());
 		}
 		$arrInvoiceTotals	= $selInvoiceTotals->Fetch();
-		
+
 		$selInvoiceCDRTotals	= self::_preparedStatement('selInvoiceCDRTotals');
 		if ($selInvoiceCDRTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
 		{
@@ -274,7 +274,7 @@ class Invoice_Run
 			throw new Exception("DB ERROR: ".$selInvoiceCDRTotals->Error());
 		}
 		$arrInvoiceCDRTotals	= $selInvoiceCDRTotals->Fetch();
-		
+
 		$selInvoiceBalanceHistory	= self::_preparedStatement('selInvoiceBalanceHistory');
 		if ($selInvoiceBalanceHistory->Execute(Array('invoice_run_id'=>$this->Id, 'customer_group_id'=>$this->customer_group_id)) === FALSE)
 		{
@@ -283,7 +283,7 @@ class Invoice_Run
 		}
 		$arrCurrentBalanceTotal		= $selInvoiceTotals->Fetch();
 		$arrPreviousBalanceTotal	= $selInvoiceTotals->Fetch();
-		
+
 		$fltTotalOutstanding		= 0;
 		while ($arrBalanceTotal = $selInvoiceTotals->Fetch())
 		{
@@ -300,7 +300,7 @@ class Invoice_Run
 												'PreviousBalance'	=> $arrPreviousBalanceTotal['TotalBalance']
 											)
 										);
-		
+
 		// Finalised InvoiceRun record
 		$this->BillCost					= $arrInvoiceCDRTotals['BillCost'];
 		$this->BillRated				= $arrInvoiceCDRTotals['BillRated'];
@@ -310,8 +310,8 @@ class Invoice_Run
 		$this->save();
 		//--------------------------------------------------------------------//
 	}
-	
-	
+
+
 	//------------------------------------------------------------------------//
 	// revokeAll
 	//------------------------------------------------------------------------//
@@ -327,7 +327,7 @@ class Invoice_Run
 	public static function revokeAll()
 	{
 		//Cli_App_Billing::debug(" * ENTERING RevokeAll...");
-		
+
 		// Select all Temporary InvoiceRuns
 		$selTemporaryInvoiceRuns	= self::_preparedStatement('selTemporaryInvoiceRuns');
 		if ($selTemporaryInvoiceRuns->Execute() === FALSE)
@@ -342,9 +342,9 @@ class Invoice_Run
 			$objInvoiceRun->revoke();
 		}
 	}
-	
-	
-	
+
+
+
 	//------------------------------------------------------------------------//
 	// revokeByCustomerGroup
 	//------------------------------------------------------------------------//
@@ -354,7 +354,7 @@ class Invoice_Run
 	 * Revokes all Temporary Invoice Runs for a CustomerGroup
 	 *
 	 * Revokes all Temporary Invoice Runs for a CustomerGroup
-	 * 
+	 *
 	 * @param	integer	$intCustomerGroup				The CustomerGroup to revoke for
 	 *
 	 * @method
@@ -362,7 +362,7 @@ class Invoice_Run
 	public static function revokeByCustomerGroup($intCustomerGroup)
 	{
 		//Cli_App_Billing::debug(" + ENTERING revokeByCustomerGroup({$intCustomerGroup})...");
-		
+
 		// Select all Temporary InvoiceRuns for this CustomerGroup
 		$selTemporaryInvoiceRunsByCustomerGroup	= self::_preparedStatement('selTemporaryInvoiceRunsByCustomerGroup');
 		if ($selTemporaryInvoiceRunsByCustomerGroup->Execute(Array('customer_group_id' => $intCustomerGroup)) === FALSE)
@@ -376,7 +376,7 @@ class Invoice_Run
 			$objInvoiceRun->revoke();
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// revoke
 	//------------------------------------------------------------------------//
@@ -392,18 +392,18 @@ class Invoice_Run
 	public function revoke()
 	{
 		//Cli_App_Billing::debug(" * ENTERING revoke()...");
-		
+
 		// Is this InvoiceRun Temporary?
 		if (!in_array($this->invoice_run_status_id, Array(INVOICE_RUN_STATUS_TEMPORARY, INVOICE_RUN_STATUS_GENERATING)))
 		{
 			// No, throw an Exception
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
-		
+
 		// Init variables
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
-		
+
 		// Get list of Invoices to Revoke
 		Cli_App_Billing::debug(" * Getting list of Invoices to Revoke...");
 		$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
@@ -418,7 +418,7 @@ class Invoice_Run
 			Cli_App_Billing::debug(" * Revoking Invoice with Id {$objInvoice->Id}...");
 			$objInvoice->revoke();
 		}
-		
+
 		// Remove entry from the InvoiceRun table
 		Cli_App_Billing::debug(" * Removing Invoice Run with Id {$this->Id}");
 		if ($qryQuery->Execute("DELETE FROM InvoiceRun WHERE Id = {$this->Id}") === FALSE)
@@ -426,7 +426,7 @@ class Invoice_Run
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// commit
 	//------------------------------------------------------------------------//
@@ -442,18 +442,18 @@ class Invoice_Run
 	public function commit()
 	{
 		Cli_App_Billing::debug(" * ENTERING commit()...");
-		
+
 		// Is this InvoiceRun Temporary?
 		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_TEMPORARY)
 		{
 			// No, throw an Exception
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
-		
+
 		// Init variables
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
-		
+
 		// Get list of Invoices to Commit
 		Cli_App_Billing::debug(" * Getting list of Invoices to Commit...");
 		$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
@@ -468,13 +468,13 @@ class Invoice_Run
 			Cli_App_Billing::debug(" * Committing Invoice with Id {$objInvoice->Id}...");
 			$objInvoice->commit();
 		}
-		
+
 		// Finalise entry in the InvoiceRun table
 		Cli_App_Billing::debug(" * Finalising Invoice Run with Id {$this->Id}");
 		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_COMMITTED;
 		$this->save();
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// export
 	//------------------------------------------------------------------------//
@@ -482,11 +482,11 @@ class Invoice_Run
 	 * export()
 	 *
 	 * Exports an Invoice Run to XML
-	 * 
+	 *
 	 * Exports an Invoice Run to XML.  The path used is [FILES_BASE_PATH]/invoices/xml/[Invoice_Run.Id]/[Invoice.Id].xml
-	 * 
+	 *
 	 * @return		void
-	 * 
+	 *
 	 * @constructor
 	 */
 	public function export()
@@ -504,7 +504,7 @@ class Invoice_Run
 			$objInvoice->export();
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// checkTemporary()
 	//------------------------------------------------------------------------//
@@ -514,9 +514,9 @@ class Invoice_Run
 	 * Checks if there are any Gold Temporary Invoice Runs active
 	 *
 	 * Checks if there are any Gold Temporary Invoice Runs active
-	 * 
+	 *
 	 * @param	integer	$intCustomerGroup		[optional]	The Customer Group to check for
-	 * 
+	 *
 	 * @return	boolean
 	 *
 	 * @method
@@ -534,7 +534,7 @@ class Invoice_Run
 			return (bool)$mixResult;
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// calculateBillingPeriodDates()
 	//------------------------------------------------------------------------//
@@ -544,7 +544,7 @@ class Invoice_Run
 	 * Calculates the Billing Period Dates for this Invoice Run
 	 *
 	 * Calculates the Billing Period Dates for this Invoice Run
-	 * 
+	 *
 	 * @return	boolean
 	 *
 	 * @method
@@ -554,19 +554,19 @@ class Invoice_Run
 		$intInvoiceDatetime				= strtotime($this->BillingDate);
 		$this->intInvoiceDatetime		= $intInvoiceDatetime;
 		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $intInvoiceDatetime);
-		
+
 		// Retrieve the Bill Date of the last Invoice Run...
 		Cli_App_Billing::debug(" * Getting Last Invoice Date...", FALSE);
 		$this->strLastInvoiceDatetime	= Invoice_Run::getLastInvoiceDate($this->customer_group_id, $this->BillingDate);
 		$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
 		Cli_App_Billing::debug($this->strLastInvoiceDatetime);
 	}
-	
+
 	/**
 	 * getLastInvoiceDate()
 	 *
-	 * Retrieves (or calculates) the Last Invoice Date for a Customer Group 
-	 * 
+	 * Retrieves (or calculates) the Last Invoice Date for a Customer Group
+	 *
 	 * @return	string									Date of the last Invoice Run
 	 *
 	 * @method
@@ -575,7 +575,7 @@ class Invoice_Run
 	{
 		//Debug('CustomerGroup: '.$intCustomerGroup);
 		//Debug('EffectiveDate: '.$strEffectiveDate);
-		
+
 		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRunByCustomerGroup');
 		if ($selInvoiceRun->Execute(Array('customer_group_id' => $intCustomerGroup)))
 		{
@@ -592,7 +592,7 @@ class Invoice_Run
 		{
 			$arrPaymentTerms	= $selPaymentTerms->Fetch();
 			//Debug('Invoice Day: '.$arrPaymentTerms['invoice_day']);
-			
+
 			// No InvoiceRuns, so lets calculate when it should have been
 			$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00", strtotime($strEffectiveDate)));
 			//Debug('Day in Effective Date: '.(int)date("d", strtotime($strEffectiveDate)));
@@ -614,12 +614,12 @@ class Invoice_Run
 			throw new Exception("No Payment Terms specified for Customer Group {$intCustomerGroup}");
 		}
 	}
-	
+
 	/**
 	 * predictNextInvoiceDate()
 	 *
-	 * Predicts the next Invoice Date for a Customer Group 
-	 * 
+	 * Predicts the next Invoice Date for a Customer Group
+	 *
 	 * @return	string									Date of the next Invoice Run
 	 *
 	 * @method
@@ -639,7 +639,7 @@ class Invoice_Run
 		{
 			throw new Exception("No Payment Terms specified for Customer Group {$intCustomerGroup}");
 		}
-		
+
 		$strDay				= str_pad($arrPaymentTerms['invoice_day'], 2, '0', STR_PAD_LEFT);
 		$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00", strtotime($strEffectiveDate)));
 		if ((int)date("d") > $arrPaymentTerms['invoice_day'])
@@ -649,7 +649,7 @@ class Invoice_Run
 		}
 		return date("Y-m-d H:i:s", $intInvoiceDatetime);
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// save
 	//------------------------------------------------------------------------//
@@ -659,7 +659,7 @@ class Invoice_Run
 	 * Inserts or Updates the InvoiceRun Record for this instance
 	 *
 	 * Inserts or Updates the InvoiceRun Record for this instance
-	 * 
+	 *
 	 * @return	boolean							Pass/Fail
 	 *
 	 * @method
@@ -699,7 +699,7 @@ class Invoice_Run
 			}
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// toArray()
 	//------------------------------------------------------------------------//
@@ -709,7 +709,7 @@ class Invoice_Run
 	 * Returns an associative array modelling the Database Record
 	 *
 	 * Returns an associative array modelling the Database Record
-	 * 
+	 *
 	 * @return	array										DB Record
 	 *
 	 * @method
@@ -718,8 +718,8 @@ class Invoice_Run
 	{
 		return $this->_arrProperties;
 	}
-	
-	
+
+
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -729,9 +729,9 @@ class Invoice_Run
 	 * Access a Static Cache of Prepared Statements used by InvoiceRun
 	 *
 	 * Access a Static Cache of Prepared Statements used by InvoiceRun
-	 * 
+	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
@@ -762,7 +762,7 @@ class Invoice_Run
 					break;
 				case 'selInvoiceableAccounts':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Account JOIN account_status ON Account.Archived = account_status.id", "Account.*, account_status.deliver_invoice", "CustomerGroup = <customer_group_id> AND Account.CreatedOn < <BillingDate> AND account_status.can_invoice = 1");
-					
+
 					// DEBUG VERSION
 					//$arrPreparedStatements[$strStatement]	= new StatementSelect("Account JOIN account_status ON Account.Archived = account_status.id", "Account.*, account_status.deliver_invoice", "Account.Id = 1000154811 AND CustomerGroup = <customer_group_id> AND Account.CreatedOn < <BillingDate> AND account_status.can_invoice = 1");
 					break;
@@ -785,22 +785,22 @@ class Invoice_Run
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("payment_terms", "*", "customer_group_id = <customer_group_id>", "id DESC", 1);
 					break;
 				case 'selInvoiceCDRCredits':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("CustomerGroup", "invoice_cdr_credits", "customer_group_id = <customer_group_id>");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("CustomerGroup", "invoice_cdr_credits", "Id = <customer_group_id>");
 					break;
-				
-				
+
+
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert("InvoiceRun");
 					break;
-				
+
 				// UPDATE BY IDS
 				case 'ubiSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("InvoiceRun");
 					break;
-				
+
 				// UPDATES
-				
+
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
 			}
