@@ -211,7 +211,7 @@ class Invoice extends ORM
 
 			//----------------------------------------------------------------//
 			// PLAN DATA USAGE
-			$this->_addPlanDataCredit($arrPlanDetails, $arrServiceIds, NULL, $intArrearsPeriodStart, $intArrearsPeriodEnd);
+			$this->_addPlanDataCredit($arrPlanDetails, $arrServiceIds, $intArrearsPeriodStart, $intArrearsPeriodEnd);
 			//----------------------------------------------------------------//
 		}
 		//--------------------------------------------------------------------//
@@ -521,7 +521,7 @@ class Invoice extends ORM
 
 			//----------------------------------------------------------------//
 			// PLAN DATA USAGE
-			$this->_addPlanDataCredit($arrPlanDetails, Array($intServiceId), $intServiceId, $intArrearsPeriodStart, $intArrearsPeriodEnd);
+			$this->_addPlanDataCredit($arrPlanDetails, Array($intServiceId), $intArrearsPeriodStart, $intArrearsPeriodEnd, $intServiceId);
 			//----------------------------------------------------------------//
 		}
 
