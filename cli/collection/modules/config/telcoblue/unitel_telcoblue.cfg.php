@@ -8,6 +8,8 @@ $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Uniqueness']	=
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['FTPMode']		= FTP_ASCII;
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/cdrbatches/';
 //$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/cdrbatches/archive/';
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/m2/';
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/m2/previousbatches/';
 
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Regex']			= "/^[A-Za-z]{3}(On|Off)netBatch_SE_[A-Z]\d{5}_\d{8}.csv$/";
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
@@ -19,8 +21,6 @@ $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE]				['Regex']		= "/^([
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE]				['Uniqueness']	= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE]				['FTPMode']		= FTP_ASCII;
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE]				['Paths']		[]	= '/mobilecdrbatches/';
-$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE]				['Paths']		[]	= '/m2/';
-//$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_MOBILE]				['Paths']		[]	= '/m2/previousbatches/';
 
 // PROVISIONING
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_UNITEL_DAILY_ORDER]	['Regex']		= "/^rsl\d{3}w\d{4}\d{4}[01]\d[0-3]\d.txt$/";
