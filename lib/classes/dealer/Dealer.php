@@ -279,6 +279,12 @@ class Dealer
 	{
 		return self::getFor("id IN (SELECT DISTINCT up_line_id FROM dealer WHERE up_line_id IS NOT NULL)", "first_name ASC, last_name ASC");
 	}
+
+	// Retrieves all top-level Dealers (Call Centres)
+	public static function getCallCentres()
+	{
+		return self::getFor("up_line_id IS NULL");
+	}
 	
 	// Retrieves all dealers who can safely be made the manager of $intDealerId
 	public static function getAllowableManagersForDealer($intDealerId)
