@@ -18,7 +18,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 	{
 		// Render the containing DIV
 		echo	"
-	<div class='Page'>
+	<div class='Page-Part'>
 		<table class='form-data'>
 			<tbody>
 				<tr>
