@@ -24,7 +24,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 				<tr style='vertical-align:top;'>
 					<td>
 						<div class='PartTitle'>File Details:</div>
-						<table>
+						<table class='PartPage'>
 							<tbody>
 								<tr>
 									<td>Dealer:</td>
@@ -57,7 +57,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 					<td></td>
 					<td>
 						<div class='PartTitle'>Washing Progress</div>
-						<table>
+						<table class='PartPage'>
 							<tbody>
 								<tr>
 									TODO
