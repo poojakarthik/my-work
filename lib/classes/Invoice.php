@@ -1136,14 +1136,14 @@ class Invoice extends ORM
 		if ($intIncludedData > 0)
 		{
 			// Get all CDRs which are on Uncapped Data Rates
-			$sqlIncludedData	=	"SELECT CDR.Units, CDR.Charge , CDR.Credit" .
+			$sqlIncludedData	=	"SELECT CDR.Units, CDR.Charge , CDR.Credit " .
 									"FROM CDR JOIN Rate ON Rate.Id = CDR.Rate JOIN RecordType ON RecordType.Id = CDR.RecordType " .
 									"WHERE CDR.Service IN ({$strServices}) AND CDR.invoice_run_id = {$this->invoice_run_id} AND Rate.Uncapped = 1 AND RecordType.DisplayType = ".RECORD_DISPLAY_DATA." " .
 									"ORDER BY CDR.StartDatetime ";
 			$resResult			= $qryQuery->Execute($sqlIncludedData);
 			if ($resResult === FALSE)
 			{
-				throw new Exception("DB ERROR: ".$selDataCDRs->Error());
+				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
 
 			// If there are any CDRs
