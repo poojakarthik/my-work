@@ -16,6 +16,15 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 
 	public function Render()
 	{
+		// Render Dealer List
+		$strDealerListHTML	= '';
+		foreach ($mxdDataToRender['CallCentres'] as $objDealer)
+		{
+			$strDealerListHTML	.= "<option value='{$objDealer->id}'>{$objDealer->firstName} {$objDealer->lastName}</option>\n";
+		}
+		$strDealerListHTML	= trim($strDealerListHTML);
+		
+		
 		// Render the containing DIV
 		echo	"
 	<div>
@@ -30,15 +39,15 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 									<td>Dealer:</td>
 									<td>
 										<select>
-											<option>Insel</option>
-											<option>Yellow Call Centre</option>
+											<option value=''>--None--</option>
+											{$strDealerListHTML}
 										</select>
 									</td>
 								</tr>
 								<tr>
 									<td>Vendor:</td>
 									<td>
-										<select>
+										<select id='Telemarketing_Wash_Dealer' name='Telemarketing_Wash_Dealer'>
 											<option>Protalk Australia</option>
 											<option>Telco Blue</option>
 											<option>Voicetalk</option>
