@@ -57,7 +57,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 									<td>
 										<select id='Telemarketing_Wash_Vendor' name='Telemarketing_Wash_Vendor'>
 											<option value='' selected='selected'>[None]</option>
-											{$strDealerListHTML}
+											{$strVendorListHTML}
 										</select>
 									</td>
 								</tr>
@@ -73,13 +73,24 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 					<td></td>
 					<td>
 						<div class='PartTitle'>Washing Progress</div>
-						<table class='reflex' style='width:100%'>
-							<tbody>
-								<tr>
-									<td>TODO</td>
-								</tr>
-							</tbody>
-						</table>
+						<div class='GroupedContent'>
+							<table class='reflex' style='width:100%'>
+								<tbody>
+									<tr>
+										<td>Importing Dialler List</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Washing FNNs</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Exporting to ACMA Format</td>
+										<td></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</td>
 				</tr>
 			</tbody>
