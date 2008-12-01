@@ -367,7 +367,8 @@ class ApplicationCollection extends ApplicationBaseClass
 	{
 		// Set initial File Status
 		$arrFileImport	= Array();
-		$arrFileImport['Status']		= FILE_COLLECTED;
+		$arrFileImport['Status']					= FILE_COLLECTED;
+		$arrFileImport['compression_algorithm_id']	= COMPRESSION_ALGORITHM_NONE;
 		
 		// Init Statements
  		$insFileImport	= new StatementInsert("FileImport");
