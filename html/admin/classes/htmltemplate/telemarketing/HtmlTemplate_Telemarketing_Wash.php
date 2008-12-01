@@ -18,8 +18,8 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 	{
 		// Render the containing DIV
 		echo	"
-	<div class='Page'>
-		<table class='form-data'>
+	<div>
+		<table>
 			<tbody>
 				<tr style='vertical-align:top;'>
 					<td>
