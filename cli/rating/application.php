@@ -1498,10 +1498,10 @@
 	 function GetMargin($intWarningLevel, $intWarningCount, $strEmailAddress)
 	 {
 	 	// Calculate Margin
-	 	$fltMargin = (($this->_fltTotalCharge - $this->_fltTotalCost) / abs($this->_fltTotalCharge)) * 100;
+	 	$fltMargin = ($this->_fltTotalCharge) ? (($this->_fltTotalCharge - $this->_fltTotalCost) / abs($this->_fltTotalCharge)) * 100 : 0;
 	 	
 	 	// Did we exceed?
-	 	if ($fltMargin >= $intWarningLevel && $this->_intTotalRated >= $intWarningCount)
+	 	/*if ($fltMargin >= $intWarningLevel && $this->_intTotalRated >= $intWarningCount)
 	 	{
 	 		// Email
 			$strContent =	"Rating Profit Margin Warning (".date("Y-m-d H:i:s").")\n\n" .
@@ -1525,7 +1525,7 @@
  				$this->_rptCollectionReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
  				continue;
  			}
-	 	}
+	 	}*/
 
 	 	return $fltMargin;
 	 }
