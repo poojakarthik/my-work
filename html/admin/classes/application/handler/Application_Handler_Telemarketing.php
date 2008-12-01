@@ -3,7 +3,7 @@
 class Application_Handler_Telemarketing extends Application_Handler
 {
 	// View all Breached Contracts which are pending approval
-	public function Start($subPath)
+	public function Wash($subPath)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
