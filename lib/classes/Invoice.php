@@ -1084,7 +1084,7 @@ class Invoice extends ORM
 
 		// If this is a Plan Data Credit, include the allowance in the Description
 		$strDescription	= $arrChargeTypes[$strChargeType]['Description'];
-		if ($arrPlanDetails['included_data'] > 0)
+		if ($arrPlanDetails['included_data'] > 0 && $strChargeType == 'PDCR')
 		{
 			$intMegaBytes	= $arrPlanDetails['included_data'] / 1024;
 			$strDescription	.= " ({$intMegaBytes}MB)";
