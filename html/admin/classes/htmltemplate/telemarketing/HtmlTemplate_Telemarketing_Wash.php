@@ -18,7 +18,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 	{
 		// Render Dealer List
 		$strDealerListHTML	= '';
-		foreach ($mxdDataToRender['CallCentres'] as $objDealer)
+		foreach ($this->mxdDataToRender['CallCentres'] as $objDealer)
 		{
 			$strDealerListHTML	.= "<option value='{$objDealer->id}'>{$objDealer->firstName} {$objDealer->lastName}</option>\n";
 		}
@@ -39,7 +39,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 									<td>Dealer:</td>
 									<td>
 										<select>
-											<option value=''>--None--</option>
+											<option value='' selected='selected'>[None]</option>
 											{$strDealerListHTML}
 										</select>
 									</td>
