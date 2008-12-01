@@ -24,6 +24,14 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 		}
 		$strDealerListHTML	= trim($strDealerListHTML);
 		
+		// Render Vendor List
+		$strVendorListHTML	= '';
+		foreach ($this->mxdDataToRender['Vendors'] as $objCustomerGroup)
+		{
+			$strVendorListHTML	.= "<option value='{$objCustomerGroup->id}'>{$objCustomerGroup->externalName}</option>\n";
+		}
+		$strVendorListHTML	= trim($strVendorListHTML);
+		
 		
 		// Render the containing DIV
 		echo	"
@@ -38,7 +46,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 								<tr>
 									<td>Dealer:</td>
 									<td>
-										<select>
+										<select id='Telemarketing_Wash_Dealer' name='Telemarketing_Wash_Dealer'>
 											<option value='' selected='selected'>[None]</option>
 											{$strDealerListHTML}
 										</select>
@@ -47,10 +55,9 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 								<tr>
 									<td>Vendor:</td>
 									<td>
-										<select id='Telemarketing_Wash_Dealer' name='Telemarketing_Wash_Dealer'>
-											<option>Protalk Australia</option>
-											<option>Telco Blue</option>
-											<option>Voicetalk</option>
+										<select id='Telemarketing_Wash_Vendor' name='Telemarketing_Wash_Vendor'>
+											<option value='' selected='selected'>[None]</option>
+											{$strDealerListHTML}
 										</select>
 									</td>
 								</tr>
