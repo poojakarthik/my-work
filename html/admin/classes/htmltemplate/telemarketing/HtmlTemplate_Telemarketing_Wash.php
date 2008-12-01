@@ -24,7 +24,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 				<tr style='vertical-align:top;'>
 					<td>
 						<div class='PartTitle'>File Details:</div>
-						<table class='PartPage'>
+						<table class='reflex'>
 							<tbody>
 								<tr>
 									<td>Dealer:</td>
@@ -36,7 +36,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 									</td>
 								</tr>
 								<tr>
-									<td>Vendor</td>
+									<td>Vendor:</td>
 									<td>
 										<select>
 											<option>Protalk Australia</option>
@@ -57,7 +57,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 					<td></td>
 					<td>
 						<div class='PartTitle'>Washing Progress</div>
-						<table class='PartPage'>
+						<table class='reflex'>
 							<tbody>
 								<tr>
 									TODO
