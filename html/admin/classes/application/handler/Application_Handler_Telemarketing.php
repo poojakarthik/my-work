@@ -17,7 +17,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			// Get the Customer Groups/Vendors
 			$arrDetailsToRender['Vendors']		= Customer_Group::getAll();
 			
-			$this->LoadPage('sales_fnn_washing_start', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			$this->LoadPage('telemarketing_wash', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 		catch (Exception $e)
 		{
