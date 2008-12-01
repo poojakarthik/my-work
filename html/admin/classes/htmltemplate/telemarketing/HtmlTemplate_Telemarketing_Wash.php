@@ -18,7 +18,8 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 	{
 		// Render the containing DIV
 		echo	"<div class='Page'> \n" .
-				"	Test" .
+				"	<div class='GroupedContent'>\n" .
+				"	</div>\n" .
 				"</div>";
 		
 	}
