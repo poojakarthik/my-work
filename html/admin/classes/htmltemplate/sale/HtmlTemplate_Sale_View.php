@@ -91,7 +91,7 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 		foreach($all as $obj) $arrCreditCardTypeIdName[$obj->id] = '"' . $obj->description . '"';
 ?>
 
-<div style="width: 100%" id="sale_panel"></div>
+<div style="width:975px;margin-left:auto;margin-right:auto" id="sale_panel"></div>
 <style>
 	body.data-display .data-entry   { display: none !important; }
 	body.data-entry   .data-display { display: none !important; }
