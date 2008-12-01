@@ -504,12 +504,12 @@ class Invoice_Export
 				case 'selAccountSummaryCharges':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",
-																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR') AND Service IS NOT NULL");
+																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND Service IS NOT NULL");
 					break;
 				case 'selPlanCharges':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0 END) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0 END) AS PlanDebit, COUNT(Id) AS Records",
-																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR', 'PCR')");
+																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR')");
 					break;
 				case 'selCustomerData':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Account LEFT JOIN Invoice ON Account.Id = Invoice.Account",
@@ -522,7 +522,7 @@ class Invoice_Export
 				case 'selPlanAdjustments':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",
-																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR', 'PCR')",
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR')",
 																					NULL,
 																					NULL,
 																					"Account");
@@ -538,12 +538,12 @@ class Invoice_Export
 				case 'selAccountAdjustments':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"ChargeType, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
-																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND Service IS NULL AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR')");
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND Service IS NULL AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR')");
 					break;
 				case 'selPlanChargeSummary':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"ChargeType, Service, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
-																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR', 'PCR')");
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR')");
 					break;
 				
 				default:
@@ -667,7 +667,7 @@ class Invoice_Export
 					(	
 						"Charge",
 						$arrColumns,
-						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR')"
+						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR')"
 					);
 	 				break;
 	 				
@@ -724,7 +724,7 @@ class Invoice_Export
 					(	
 						"Charge",
 						$arrColumns,
-						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR', 'PCR')"
+						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR')"
 					);
 	 				break;
 	 			
