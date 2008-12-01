@@ -17,10 +17,39 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 	public function Render()
 	{
 		// Render the containing DIV
-		echo	"<div class='Page'> \n" .
-				"	<div class='GroupedContent'>\n" .
-				"	</div>\n" .
-				"</div>";
+		echo	"
+	<div class='Page'>
+		<table class='form-data'>
+			<tbody>
+				<tr>
+					<td>Dealer</td>
+					<td>
+						<select>
+							<option>Insel</option>
+							<option>Yellow Call Centre</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Vendor</td>
+					<td>
+						<select>
+							<option>Protalk Australia</option>
+							<option>Telco Blue</option>
+							<option>Voicetalk</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>File to wash</td>
+					<td>
+						<input type='file' />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+";
 		
 	}
 }
