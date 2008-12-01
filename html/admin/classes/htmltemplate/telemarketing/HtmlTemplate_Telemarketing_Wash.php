@@ -21,13 +21,13 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 	<div class='Page'>
 		<table class='form-data'>
 			<tbody>
-				<tr>
+				<tr style='vertical-align:top;'>
 					<td>
-						<div>File Details</div>
+						<div class='PartTitle'>File Details:</div>
 						<table>
 							<tbody>
 								<tr>
-									<td>Dealer</td>
+									<td>Dealer:</td>
 									<td>
 										<select>
 											<option>Insel</option>
@@ -46,7 +46,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 									</td>
 								</tr>
 								<tr>
-									<td>File to wash</td>
+									<td>File to wash:</td>
 									<td>
 										<input type='file' />
 									</td>
@@ -56,7 +56,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 					</td>
 					<td></td>
 					<td>
-						<div>Washing Progress</div>
+						<div class='PartTitle'>Washing Progress</div>
 						<table>
 							<tbody>
 								<tr>
