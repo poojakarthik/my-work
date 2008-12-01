@@ -9,6 +9,7 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 		$this->LoadJavascript('dealer');
 		$this->LoadJavascript('tab');
 		$this->LoadJavascript('validation');
+		$this->LoadJavascript('reflex_popup');
 	}
 
 	public function Render()
@@ -161,6 +162,7 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 				$strTitle
 			</div>
 			<div id='caption_options' name='caption_options'>
+				<a onclick='DealerManagement.showConfig();'>Dealer Configuartion</a> |
 				<a onclick='Dealer.loadNewDealerPopup()'>New Dealer</a>
 			</div>
 		</div>

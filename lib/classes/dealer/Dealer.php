@@ -181,18 +181,18 @@ class Dealer
 		return (count($arrDealers) == 1)? current($arrDealers) : NULL;
 	}
 
-	public static function getAll($arrFilter=NULL, $arrSort=NULL, $intLimit=NULL, $intOffset=NULL)
+	public static function getAll($mixFilter=NULL, $arrSort=NULL, $intLimit=NULL, $intOffset=NULL)
 	{
-		$arrWhereParts		= array();
 		$arrOrderByParts	= array();
 		$arrColumns			= self::getColumns();
 		$arrColumnTypes		= self::getColumnDataTypes();
 		$objDB				= new Query();
 
 		// Build WHERE clause
-		if (is_array($arrFilter))
+		if (is_array($mixFilter))
 		{
-			foreach ($arrFilter as $strColumn=>$arrStyle)
+			$arrWhereParts = array();
+			foreach ($mixFilter as $strColumn=>$arrStyle)
 			{
 				if (!array_key_exists($strColumn, $arrColumns))
 				{
@@ -254,9 +254,16 @@ class Dealer
 						break;
 				}
 			}
+			$strWhere = (count($arrWhereParts) > 0)? implode(" AND ", $arrWhereParts) : NULL;
 		}
-		
-		$strWhere = (count($arrWhereParts) > 0)? implode(" AND ", $arrWhereParts) : NULL;
+		elseif (is_string($mixFilter))
+		{
+			$strWhere = $mixFilter;
+		}
+		else
+		{
+			$strWhere = NULL;
+		}
 		
 		// Build OrderBy Clause
 		if (is_array($arrSort))
@@ -881,6 +888,17 @@ class Dealer
 		if ($arrDetails['upLineId'] !== NULL && !self::canHaveUpLineManager($arrDetails['id'], $arrDetails['upLineId']))
 		{
 			$arrProblems[] = 'Up Line Manager can not be used (would cause recursion in the management hierarchy)';
+		}
+		
+		// Check that if the dealer is the default Emplyee Dealer, then they are active
+		if ($arrDetails['employeeId'] !== NULL)
+		{
+			$objDealerConfig = Dealer_Config::getConfig();
+			if ($objDealerConfig->defaultEmployeeManagerDealerId !== NULL && $arrDetails['id'] == $objDealerConfig->defaultEmployeeManagerDealerId && $arrDetails['dealerStatusId'] != Dealer_Status::ACTIVE)
+			{
+				// This dealer is the default Employee Manager, but is currently inactive
+				$arrProblems[] = "This dealer is the Default Employee Manager, and must therefore stay active";
+			}
 		}
 		
 		// Fix up dependent properties

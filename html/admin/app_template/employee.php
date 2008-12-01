@@ -403,7 +403,9 @@ class AppTemplateEmployee extends ApplicationTemplate
 						try
 						{
 							$bolModifiedDealerTable = FALSE;
-							if ($intEmployeePerms & PERMISSION_SALES == PERMISSION_SALES)
+							$objDealerConfig = Dealer_Config::getConfig();
+							$objDefaultEmployeeManagerDealer = ($objDealerConfig->defaultEmployeeManagerDealerId !== NULL)? Dealer::getForId($objDealerConfig->defaultEmployeeManagerDealerId) : NULL;
+							if (($intEmployeePerms & PERMISSION_SALES) == PERMISSION_SALES)
 							{
 								// The Employee has the Sales permission
 								// Check if they already have a dealer record
@@ -417,11 +419,22 @@ class AppTemplateEmployee extends ApplicationTemplate
 									// All employees get the "can verify" flag, initially
 									$objDealer->canVerify		= TRUE;
 									$objDealer->gstRegistered	= FALSE;
-									$objDealer->createdOn = GetCurrentISODateTime();
+									$objDealer->createdOn		= GetCurrentISODateTime();
+									$objDealer->upLineId		= $objDealerConfig->defaultEmployeeManagerDealerId;
 								}
 								
 								if ($objDealer !== NULL)
 								{
+									if ($objDealer->id !== NULL && DBO()->Employee->Archived->Value)
+									{
+										// The dealer is already established, but has been archived
+										// Make sure they are not currently set as the default Employee Manager
+										if ($objDefaultEmployeeManagerDealer !== NULL && $objDealer->id === $objDefaultEmployeeManagerDealer->id)
+										{
+											throw new Exception("This employee is currently set up as the Default Manager for employee dealers and therefore can not be archived.  If you wish to archive this employee, then please declare a different Default Manager for employee dealers.");
+										}
+									}
+									
 									// Update the record
 									$objDealer->firstName		= DBO()->Employee->FirstName->Value;
 									$objDealer->lastName		= DBO()->Employee->LastName->Value;
@@ -439,11 +452,18 @@ class AppTemplateEmployee extends ApplicationTemplate
 							else
 							{
 								// The employee doesn't have the sales permission
-								// If they have a related dealer record, then de-activate it
+								// If they have a related dealer record, then de-activate it, but check that they are not currently set as the Default Manager for Employee Dealers
 								$objDealer = Dealer::getForEmployeeId(DBO()->Employee->Id->Value);
 								if ($objDealer !== NULL && $objDealer->dealerStatusId != Dealer_Status::INACTIVE)
 								{
 									// A dealer record exists and it isn't set to inactive, so set it
+									
+									// Check that the dealer isn't currently set as the Default Manager for Employee Dealers
+									if ($objDefaultEmployeeManagerDealer !== NULL && $objDefaultEmployeeManagerDealer->id == $objDealer->id)
+									{
+										throw new Exception("This employee is currently set up as the Default Manager for employee dealers and therefore must keep the sales permission.  If you wish to remove this employee's sales permission, then please declare a different Default Manager for employee dealers.");
+									}
+									
 									$objDealer->dealerStatusId = Dealer_Status::INACTIVE;
 									$objDealer->save();
 									$bolModifiedDealerTable = TRUE;

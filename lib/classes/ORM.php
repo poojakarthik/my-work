@@ -185,13 +185,27 @@ abstract class ORM
 	 *
 	 * Returns an associative array modelling the Database Record
 	 * 
+	 * @param	bool	$bolUseTidyNames	Optional, defaults to FALSE.  If true then the keys of the array will be the tidy names.  If false, then the proper property names will be used
 	 * @return	array										DB Record
 	 *
 	 * @method
 	 */
-	public function toArray()
+	public function toArray($bolUseTidyNames=FALSE)
 	{
-		return $this->_arrProperties;
+		if ($bolUseTidyNames)
+		{
+			$arrProps = array();
+			
+			foreach ($this->_arrTidyNames as $strTidyName=>$strPropName)
+			{
+				$arrProps[$strTidyName] = $this->_arrProperties[$strPropName];
+			}
+			return $arrProps;
+		}
+		else
+		{
+			return $this->_arrProperties;
+		}
 	}
 	
 	//------------------------------------------------------------------------//

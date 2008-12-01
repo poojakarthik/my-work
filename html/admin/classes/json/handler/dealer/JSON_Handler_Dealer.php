@@ -819,7 +819,6 @@ class JSON_Handler_Dealer extends JSON_Handler
 			$objDealer = $mixResult;
 			
 			// Save the dealer (if they are new, then this will set the id of the dealer)
-			
 			TransactionStart();
 			$objDealer->save();
 			TransactionCommit();
@@ -853,6 +852,76 @@ class JSON_Handler_Dealer extends JSON_Handler
 						);
 		}
 	}
+	
+	// Compiles data required of the Dealer Configuration popup
+	public function getDealerConfigDetails()
+	{
+		try
+		{
+			$objDealerConfig	= Dealer_Config::getConfig();
+			$arrDealerObjects	= Dealer_Config::getEligibleEmployeeManagerDealers();
+			
+			$arrDealers = array();
+			foreach ($arrDealerObjects as $objDealer)
+			{
+				$arrDealers[$objDealer->id] = array(id			=> $objDealer->id,
+													username	=> htmlspecialchars($objDealer->username),
+													name		=> htmlspecialchars($objDealer->firstName ." ". $objDealer->lastName)
+													);
+			}
+			
+			return array(	"success"	=> TRUE,
+							"config"	=> $objDealerConfig->toArray(TRUE),
+							"dealers"	=> $arrDealers
+						);
+		}
+		catch (Exception $e)
+		{
+			return array(	"success"		=> FALSE,
+							"errorMessage"	=> $e->getMessage()
+						);
+		}
+	}
+	
+	// Compiles data required of the Dealer Configuration popup
+	public function saveDealerConfig($objConfig)
+	{
+		try
+		{
+			// Convert the details object into an associative array
+			$arrConfig = array();
+			foreach ($objConfig as $strPropName=>$mixPropValue)
+			{
+				$arrConfig[$strPropName] = $mixPropValue;
+			}
+
+			$mixResult = Dealer_Config::parseConfigDetails($arrConfig);
+			
+			if (is_array($mixResult))
+			{
+				// $mixResult is an array of strings defining the problems encountered when parsing $arrConfig
+				throw new Exception("The following problems were found in the submitted config details: ". implode(", ", $mixResult));
+			}
+
+			$objNewConfig = $mixResult;
+			
+			// Save the dealer (if they are new, then this will set the id of the dealer)
+			TransactionStart();
+			$objNewConfig->save();
+			TransactionCommit();
+			
+			$arrReturn = array("success" => TRUE);
+			
+			return $arrReturn;
+		}
+		catch (Exception $e)
+		{
+			return array(	"success"		=> FALSE,
+							"errorMessage"	=> $e->getMessage()
+						);
+		}
+	}
+	
 }
 
 ?>

@@ -10,6 +10,8 @@ class Sale extends ORM
 {
 	protected	$_strTableName	= "sale";
 	
+	protected static $_cache = array();
+	
 	/**
 	 * __construct()
 	 *
@@ -31,8 +33,14 @@ class Sale extends ORM
 	// This will return a Sale object if found
 	// If a record is not found then it will return NULL if $bolExceptionOnNotFound == FALSE OR throw an exception if $bolExceptionOnNotFound == TRUE
 	// This will also throw an exception if 
-	public static function getForId($intId, $bolExceptionOnNotFound=FALSE)
+	public static function getForId($intId, $bolExceptionOnNotFound=FALSE, $bolForceRefresh=FALSE)
 	{
+		if (array_key_exists($intId, self::$_cache) && !$bolForceRefresh)
+		{
+			// The Sale object is cached, and we are not forcing a refresh
+			return self::cache($intId);
+		}
+		
 		$selSale = self::_preparedStatement('selById');
 
 		if (($intCount = $selSale->Execute(array('Id'=>$intId))) === FALSE)
@@ -42,7 +50,9 @@ class Sale extends ORM
 		
 		if ($intCount)
 		{
-			return new self($selSale->Fetch());
+			self::$_cache[$intId] = new self($selSale->Fetch());
+			
+			return self::$_cache[$intId];
 		}
 		elseif ($bolExceptionOnNotFound)
 		{
@@ -52,6 +62,31 @@ class Sale extends ORM
 		{
 			return FALSE;
 		}
+	}
+	
+	public static function getForAccountId($intAccountId, $strOrderBy=NULL, $intLimit=NULL, $intOffset=NULL)
+	{
+		if ($intLimit !== NULL)
+		{
+			$strLimitClause = $intLimit . (($intOffset !== NULL)? ", $intOffset" : "");
+		}
+		
+		$selSales = new StatementSelect("sale", "*", "account_id = <AccountId>", $strOrderBy, $strLimitClause);
+		
+		if ($selSales->Execute(array("AccountId"=>$intAccountId)) === FALSE)
+		{
+			throw new Exception("Failed to retrieve sales belonging to account: $intAccountId - ". $selSales->Error());
+		}
+		
+		$arrSales = array();
+		$arrRecordSet = $selSales->FetchAll();
+		foreach ($arrRecordSet as $arrRecord)
+		{
+			$objSale = new self($arrRecord);
+			$arrSales[$objSale->id] = $objSale;
+		}
+		
+		return $arrSales;
 	}
 	
 	// Retrieves the value part from the sale.external_reference string
