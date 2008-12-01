@@ -73,7 +73,6 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 					<td></td>
 					<td>
 						<div class='PartTitle'>Washing Progress</div>
-						<div class='GroupedContent'>
 							<table class='reflex' style='width:100%'>
 								<tbody>
 									<tr>
