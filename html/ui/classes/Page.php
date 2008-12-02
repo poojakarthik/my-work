@@ -275,16 +275,18 @@ class Page
 	 */
 	function RenderHeaderJS()
 	{
+		// Add direct links to the following files as they are large and this will result in automatic caching of them
+		$strFrameworkDir = Flex::frameworkUrlBase();
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/prototype.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/jquery.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/json.js' ></script>\n";
+		
 		// Include reference to all the standard javascript files, which should be included on every page
 		$arrStandardJsFiles = array("vixen", "popup", "dhtml", "ajax", "event_handler", "login", "search", "customer_verification", "validation", "customer_overdue_list");
 		$strFiles = $this->_GetJsFilesQueryString($arrStandardJsFiles);
 		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 
 		// Add direct links to the following files as they are large and this will result in automatic caching of them
-		$strFrameworkDir = Flex::frameworkUrlBase();
-		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/prototype.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/jquery.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/json.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/sha1.js' ></script>\n";
 
