@@ -3022,7 +3022,7 @@ class MenuItems {
 	function TelemarketUploadProposed() {
 		$this->strContextMenuLabel = "Upload Proposed Dialling List";
 		$this->strLabel = "Upload Proposed Dialling List";
-		return "javascript:Flex.Telemarketing.uploadProposedList()";
+		return "javascript:Flex_Telemarketing.uploadProposedList()";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3041,7 +3041,7 @@ class MenuItems {
 	function TelemarketDownloadDNCR() {
 		$this->strContextMenuLabel = "Download DNCR Wash List";
 		$this->strLabel = "Download DNCR Wash List";
-		return "javascript:Flex.Telemarketing.downloadDNCRList()";
+		return "javascript:Flex_Telemarketing.downloadDNCRList()";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3060,7 +3060,7 @@ class MenuItems {
 	function TelemarketUploadDNCR() {
 		$this->strContextMenuLabel = "Upload Washed DNCR List";
 		$this->strLabel = "Upload Washed DNCR List";
-		return "javascript:Flex.Telemarketing.uploadDNCRList()";
+		return "javascript:Flex_Telemarketing.uploadDNCRList()";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3079,7 +3079,7 @@ class MenuItems {
 	function TelemarketDownloadPermitted() {
 		$this->strContextMenuLabel = "Download Permitted Dialling List";
 		$this->strLabel = "Download Permitted Dialling List";
-		return "javascript:Flex.Telemarketing.downloadPermittedList()";
+		return "javascript:Flex_Telemarketing.downloadPermittedList()";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3098,7 +3098,7 @@ class MenuItems {
 	function TelemarketUploadDiallerReport() {
 		$this->strContextMenuLabel = "Upload Dialler Report";
 		$this->strLabel = "Upload Dialler Report";
-		return "javascript:Flex.Telemarketing.uploadDiallerReport()";
+		return "javascript:Flex_Telemarketing.uploadDiallerReport()";
 	}
 
 	//------------------------------------------------------------------------//
