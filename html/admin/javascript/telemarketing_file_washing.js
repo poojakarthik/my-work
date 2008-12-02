@@ -17,7 +17,7 @@ var Telemarketing	= Class.create
 						};	
 	},
 	
-	renderPopup	: function(objResponse)
+	renderPopup	: function(strPopupName, objResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 		
