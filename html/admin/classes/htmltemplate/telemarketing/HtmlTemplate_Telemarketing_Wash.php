@@ -84,7 +84,19 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 										<td></td>
 									</tr>
 									<tr>
-										<td>Exporting to ACMA Format</td>
+										<td>Exporting to DNCR Format</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Importing DNCR Wash List</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Washing FNNs</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>Exporting to Call Centre Format</td>
 										<td></td>
 									</tr>
 								</tbody>

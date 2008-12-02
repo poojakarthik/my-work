@@ -3007,6 +3007,101 @@ class MenuItems {
 	}
 
 	//------------------------------------------------------------------------//
+	// TelemarketUploadProposed
+	//------------------------------------------------------------------------//
+	/**
+	 * TelemarketUploadProposed()
+	 *
+	 * Compiles the Href to be executed when the TelemarketUploadProposed menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the TelemarketUploadProposed menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function TelemarketUploadProposed() {
+		$this->strContextMenuLabel = "Upload Proposed Dialling List";
+		$this->strLabel = "Upload Proposed Dialling List";
+		return "javascript:Flex.Telemarketing.uploadProposedList()";
+	}
+
+	//------------------------------------------------------------------------//
+	// TelemarketDownloadDNCR
+	//------------------------------------------------------------------------//
+	/**
+	 * TelemarketDownloadDNCR()
+	 *
+	 * Compiles the Href to be executed when the TelemarketDownloadDNCR menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the TelemarketDownloadDNCR menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function TelemarketDownloadDNCR() {
+		$this->strContextMenuLabel = "Download DNCR Wash List";
+		$this->strLabel = "Download DNCR Wash List";
+		return "javascript:Flex.Telemarketing.downloadDNCRList()";
+	}
+
+	//------------------------------------------------------------------------//
+	// TelemarketUploadDNCR
+	//------------------------------------------------------------------------//
+	/**
+	 * TelemarketUploadDNCR()
+	 *
+	 * Compiles the Href to be executed when the TelemarketUploadDNCR menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the TelemarketUploadDNCR menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function TelemarketUploadDNCR() {
+		$this->strContextMenuLabel = "Upload Washed DNCR List";
+		$this->strLabel = "Upload Washed DNCR List";
+		return "javascript:Flex.Telemarketing.uploadDNCRList()";
+	}
+
+	//------------------------------------------------------------------------//
+	// TelemarketDownloadPermitted
+	//------------------------------------------------------------------------//
+	/**
+	 * TelemarketDownloadPermitted()
+	 *
+	 * Compiles the Href to be executed when the TelemarketDownloadPermitted menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the TelemarketDownloadPermitted menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function TelemarketDownloadPermitted() {
+		$this->strContextMenuLabel = "Download Permitted Dialling List";
+		$this->strLabel = "Download Permitted Dialling List";
+		return "javascript:Flex.Telemarketing.downloadPermittedList()";
+	}
+
+	//------------------------------------------------------------------------//
+	// TelemarketUploadDiallerReport
+	//------------------------------------------------------------------------//
+	/**
+	 * TelemarketUploadDiallerReport()
+	 *
+	 * Compiles the Href to be executed when the TelemarketUploadDiallerReport menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the TelemarketUploadDiallerReport menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function TelemarketUploadDiallerReport() {
+		$this->strContextMenuLabel = "Upload Dialler Report";
+		$this->strLabel = "Upload Dialler Report";
+		return "javascript:Flex.Telemarketing.uploadDiallerReport()";
+	}
+
+	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//
 	/**
