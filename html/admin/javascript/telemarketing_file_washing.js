@@ -1,3 +1,5 @@
+alert("Loading telemarketing_file_washing.js");
+
 // Class: Telemarketing
 // Handles the Telemarketing Washing popups in Flex
 var Telemarketing	= Class.create
