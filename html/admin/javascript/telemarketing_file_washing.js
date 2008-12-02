@@ -45,7 +45,7 @@ var Telemarketing	= Class.create
 	{
 		remoteClass		= 'Telemarketing_Wash';
 		remoteMethod	= 'buildProposedUploadPopup';
-		jsonFunc		= jQuery.json.jsonFunction(this.displayPopupReturnHandler.bind(this, 'uploadProposed'), null, remoteClass, remoteMethod);
+		jsonFunc		= jQuery.json.jsonFunction(this.renderPopup.bind(this, 'uploadProposed'), null, remoteClass, remoteMethod);
 		Vixen.Popup.ShowPageLoadingSplash("Please Wait", null, null, null, 100);
 		jsonFunc();
 	}
