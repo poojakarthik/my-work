@@ -1,5 +1,3 @@
-alert("Loading telemarketing_file_washing.js");
-
 // Class: Telemarketing
 // Handles the Telemarketing Washing popups in Flex
 var Telemarketing	= Class.create
@@ -19,7 +17,7 @@ var Telemarketing	= Class.create
 						};	
 	},
 	
-	renderPopup	: function()
+	renderPopup	: function(response)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 
