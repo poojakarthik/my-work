@@ -52,7 +52,7 @@ var Telemarketing	= Class.create
 });
 
 // Init
-if (Flex_Telemarketing == undefined)
+if (Flex.Telemarketing == undefined)
 {
-	Flex_Telemarketing	= new Telemarketing();
+	Flex.Telemarketing	= new Telemarketing();
 }
