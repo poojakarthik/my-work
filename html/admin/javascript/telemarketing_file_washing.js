@@ -21,32 +21,21 @@ var Telemarketing	= Class.create
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 		
-		alert(arguments.length + ' arguments');
-		for (i = 0; i < arguments.length; i++)
-		{
-			alert(i + " = " + arguments[i]);
-		}
-		
-		for (i = 0; i < objResponse.length; i++)
-		{
-			alert('objResponse[' + i + '] = ' + objResponse[i]);
-		}
-
 		if (objResponse.Success)
 		{
 			// Render the popup
 			Vixen.Popup.Create(
-								this._objPopups[arguments[0]].strId, 
+								this._objPopups[strPopupName].strId, 
 								objResponse.PopupContent, 
-								this._objPopups[arguments[0]].strSize, 
-								this._objPopups[arguments[0]].strAlign, 
-								this._objPopups[arguments[0]].strNature, 
-								this._objPopups[arguments[0]].strTitle
+								this._objPopups[strPopupName].strSize, 
+								this._objPopups[strPopupName].strAlign, 
+								this._objPopups[strPopupName].strNature, 
+								this._objPopups[strPopupName].strTitle
 							);
 		}
 		else
 		{
-			$Alert("Failed to open the '" + this._objPopups[arguments[0]].strTitle + "' popup" + ((objResponse.ErrorMessage != undefined)? "<br />" + objResponse.ErrorMessage : ""));
+			$Alert("Failed to open the '" + this._objPopups[strPopupName].strTitle + "' popup" + ((objResponse.ErrorMessage != undefined)? "<br />" + objResponse.ErrorMessage : ""));
 		}
 	},
 	
