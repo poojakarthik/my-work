@@ -26,6 +26,11 @@ var Telemarketing	= Class.create
 		{
 			alert(i + " = " + arguments[i]);
 		}
+		
+		for (i in response)
+		{
+			alert('response.' + i + ' = ' + response[i]);
+		}
 
 		if (response.Success)
 		{
