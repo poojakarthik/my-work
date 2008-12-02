@@ -54,10 +54,10 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 ";
 			
 			// If no exceptions were thrown, then everything worked
-			
 			return array(
 							"Success"		=> TRUE,
 							"PopupContent"	=> $strPopupContent,
+							"Debug"			=> print_r($strPopupContent, true)
 						);
 		}
 		catch (Exception $e)
