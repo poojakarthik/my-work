@@ -57,7 +57,11 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			return array(
 							"Success"		=> TRUE,
 							"PopupContent"	=> $strPopupContent,
-							"Debug"			=> print_r($strPopupContent, true)
+							"Debug"			=> print_r($strPopupContent, true),
+							"boolean"		=> false,
+							"integer"		=> 51,
+							"float"			=> 12.21,
+							"string"		=> "test_string"
 						);
 		}
 		catch (Exception $e)
