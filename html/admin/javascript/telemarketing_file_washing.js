@@ -21,6 +21,11 @@ var Telemarketing	= Class.create
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 		
+		if (!objResponse.PopupContent)
+		{
+			alert(objResponse.Debug);
+		}
+		
 		if (objResponse.Success)
 		{
 			// Render the popup
