@@ -41,14 +41,16 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 				<tr>
 					<td>File to wash:</td>
 					<td>
-						<input type='file' id='Telemarketing_Wash_File' name='Telemarketing_Wash_File' />
+						<input type='file' id='Telemarketing_Wash_File' name='Telemarketing_Wash_File' style='display:none'/>
+						<input type='text' id='Telemarketing_Wash_File_Text' />
+						<input type='button' id='Telemarketing_Wash_File_Button' value='Browse' onclick='\$(Telemarketing_Wash_File.click())' style='padding-left:4px;'/>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
 	<div style='width:100%; margin: 0 auto; text-align:center;'>
-		<input type='button' id='TelemarketingWashProposed_Submit' name='TelemarketingWashProposed_Submit' value='submitted' onclick='Flex.Telemarketing.ProposedList.submit()' style='margin-left:3px'></input> 
+		<input type='button' id='TelemarketingWashProposed_Submit' name='TelemarketingWashProposed_Submit' value='Submit' onclick='Flex.Telemarketing.ProposedList.submit()' style='margin-left:3px'></input> 
 		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>
 	</div>
 ";
@@ -56,12 +58,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"		=> TRUE,
-							"PopupContent"	=> $strPopupContent,
-							"Debug"			=> print_r($strPopupContent, true),
-							"boolean"		=> false,
-							"integer"		=> 51,
-							"float"			=> 12.21,
-							"string"		=> "test_string"
+							"PopupContent"	=> $strPopupContent
 						);
 		}
 		catch (Exception $e)
