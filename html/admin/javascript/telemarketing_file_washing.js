@@ -20,6 +20,11 @@ var Telemarketing	= Class.create
 	renderPopup	: function(response)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
+		
+		for (i in arguments)
+		{
+			alert(i + " = " + arguments[i]);
+		}
 
 		if (response.Success)
 		{
