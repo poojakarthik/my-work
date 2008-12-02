@@ -48,7 +48,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 		</table>
 	</div>
 	<div style='width:100%; margin: 0 auto; text-align:center;'>
-		<input type='button' id='TelemarketingWashProposed_Submit' name='TelemarketingWashProposed_Submit' value='submitted' onclick='Flex.Telemarketing.ProposedList.submit(\"" + strAction + "\")' style='margin-left:3px'></input> 
+		<input type='button' id='TelemarketingWashProposed_Submit' name='TelemarketingWashProposed_Submit' value='submitted' onclick='Flex.Telemarketing.ProposedList.submit()' style='margin-left:3px'></input> 
 		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>
 	</div>
 ";
