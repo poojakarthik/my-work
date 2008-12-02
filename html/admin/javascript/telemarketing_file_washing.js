@@ -22,7 +22,7 @@ var Telemarketing	= Class.create
 		Vixen.Popup.ClosePageLoadingSplash();
 		
 		alert(arguments.length + ' arguments');
-		for (i in arguments)
+		for (i = 0; i < arguments.length; i++)
 		{
 			alert(i + " = " + arguments[i]);
 		}
