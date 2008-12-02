@@ -67,8 +67,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			
 			return array(
 							"Success"		=> FALSE,
-							"ContractId"	=> $intContractId,
-							"ErrorMessage"	=> 'ERROR'
+							"ErrorMessage"	=> 'ERROR: '.$e->getMessage()
 						);
 		}
 	}
