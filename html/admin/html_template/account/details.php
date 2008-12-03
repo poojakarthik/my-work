@@ -113,6 +113,22 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<h2 class='Account'>Account Details</h2>\n";
 		echo "<div class='GroupedContent'>\n";
 
+		// Check if there are any sales associated with the account, that were made in the last 2 months
+		$arrSales = Sale::listForAccountId(DBO()->Account->Id->Value, "verified_on DESC, id DESC");
+		if (count($arrSales))
+		{
+			$objSale = current($arrSales);
+			$strAccountSalesLink = Href()->ViewSalesForAccount(DBO()->Account->Id->Value);
+			if ($objSale->verifiedOn > date("Y-m-d H:i:s", strtotime("- 2 months")))
+			{
+				echo "
+<div class='MsgNotice'>
+	This account has had recent sales associated with it.  To view them click <a onclick=\"$strAccountSalesLink\">here</a>.
+</div>
+";
+			}
+		}
+
 		// Render the details of the Account
 		DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
 		DBO()->CustomerGroup->Load();

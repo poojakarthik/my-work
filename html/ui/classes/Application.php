@@ -594,6 +594,8 @@ class Application
 				// Therefore, we have to store the Authentication
 				$_SESSION['User'] = $currentUser;
 				$_SESSION['LoggedIn'] = TRUE;
+				$_SESSION['LoggedInTimestamp'] = time();
+				setcookie('LoggedInTimestamp', $_SESSION['LoggedInTimestamp']);
 			}
 			else
 			{

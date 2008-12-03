@@ -205,6 +205,11 @@ class AppTemplateService extends ApplicationTemplate
 			ContextMenu()->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 			ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+			if (count(Sale::listForAccountId(DBO()->Account->Id->Value, NULL, 1)))
+			{
+				// The account has sales associated with it
+				ContextMenu()->Account->Sales->ViewSalesForAccount(DBO()->Account->Id->Value);
+			}
 		}
 		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
 
@@ -1003,6 +1008,11 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		if (count(Sale::listForAccountId(DBO()->Account->Id->Value, NULL, 1)))
+		{
+			// The account has sales associated with it
+			ContextMenu()->Account->Sales->ViewSalesForAccount(DBO()->Account->Id->Value);
+		}
 		
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
@@ -2480,6 +2490,11 @@ class AppTemplateService extends ApplicationTemplate
 			ContextMenu()->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 			ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+			if (count(Sale::listForAccountId(DBO()->Account->Id->Value, NULL, 1)))
+			{
+				// The account has sales associated with it
+				ContextMenu()->Account->Sales->ViewSalesForAccount(DBO()->Account->Id->Value);
+			}
 		}
 		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
 		

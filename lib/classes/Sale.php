@@ -64,7 +64,8 @@ class Sale extends ORM
 		}
 	}
 	
-	public static function getForAccountId($intAccountId, $strOrderBy=NULL, $intLimit=NULL, $intOffset=NULL)
+	// Uses the sale record id for the key of the array
+	public static function listForAccountId($intAccountId, $strOrderBy=NULL, $intLimit=NULL, $intOffset=NULL)
 	{
 		if ($intLimit !== NULL)
 		{

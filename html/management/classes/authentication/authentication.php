@@ -191,6 +191,8 @@
 			// Therefore, we have to store the Authentication
 			$_SESSION['User'] = $currentUser;
 			$_SESSION['LoggedIn'] = TRUE;
+			$_SESSION['LoggedInTimestamp'] = time();
+			setcookie('LoggedInTimestamp', $_SESSION['LoggedInTimestamp']);
 
 			// Updating information
 			$_SESSION['SessionDuration'] = ($_SESSION['User']['Privileges'] == USER_PERMISSION_GOD ? (60 * 60 * 24 * 7) : (60 * 20));

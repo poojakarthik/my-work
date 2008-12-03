@@ -117,6 +117,11 @@ class AppTemplateProvisioning extends ApplicationTemplate
 		ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		if (count(Sale::listForAccountId(DBO()->Account->Id->Value, NULL, 1)))
+		{
+			// The account has sales associated with it
+			ContextMenu()->Account->Sales->ViewSalesForAccount(DBO()->Account->Id->Value);
+		}
 
 		if (DBO()->Service->Id->Value)
 		{

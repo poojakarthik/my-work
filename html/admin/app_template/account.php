@@ -101,31 +101,38 @@ class AppTemplateAccount extends ApplicationTemplate
 			return TRUE;
 		}
 		
+		$intAccountId = DBO()->Account->Id->Value;
+		
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->AccountOverview(DBO()->Account->Id->Value, TRUE);
+		BreadCrumb()->AccountOverview($intAccountId, TRUE);
 		BreadCrumb()->SetCurrentPage("Services");
 		
 		// context menu
-		ContextMenu()->Account->Account_Overview(DBO()->Account->Id->Value);
-		ContextMenu()->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Account->Services->List_Services(DBO()->Account->Id->Value);
-		ContextMenu()->Account->Contacts->List_Contacts(DBO()->Account->Id->Value);
-		ContextMenu()->Account->View_Cost_Centres(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Account_Overview($intAccountId);
+		ContextMenu()->Account->Invoices_And_Payments($intAccountId);
+		ContextMenu()->Account->Services->List_Services($intAccountId);
+		ContextMenu()->Account->Contacts->List_Contacts($intAccountId);
+		ContextMenu()->Account->View_Cost_Centres($intAccountId);
 		if ($bolUserHasOperatorPerm)
 		{
-			ContextMenu()->Account->Services->Add_Services(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Contacts->Add_Contact(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Payments->Make_Payment(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Adjustments->Add_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
-			ContextMenu()->Account->Provisioning->Provisioning(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, DBO()->Account->Id->Value);
-			ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
+			ContextMenu()->Account->Services->Add_Services($intAccountId);
+			ContextMenu()->Account->Contacts->Add_Contact($intAccountId);
+			ContextMenu()->Account->Payments->Make_Payment($intAccountId);
+			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
+			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
+			ContextMenu()->Account->Payments->Change_Payment_Method($intAccountId);
+			ContextMenu()->Account->Add_Associated_Account($intAccountId);
+			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
+			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
+			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
+			if (count(Sale::listForAccountId($intAccountId, NULL, 1)))
+			{
+				// The account has sales associated with it
+				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);
+			}
 		}
-		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
 		
 		/*  Currently Operators can view archived services
 		if (!$bolUserHasAdminPerm)
@@ -243,6 +250,11 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
 			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
 			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
+			if (count(Sale::listForAccountId($intAccountId, NULL, 1)))
+			{
+				// The account has sales associated with it
+				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);
+			}
 		}
 		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
 		
@@ -399,6 +411,11 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
 			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
 			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
+			if (count(Sale::listForAccountId($intAccountId, NULL, 1)))
+			{
+				// The account has sales associated with it
+				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);
+			}
 		}
 		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
 

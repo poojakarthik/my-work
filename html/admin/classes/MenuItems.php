@@ -669,6 +669,28 @@ class MenuItems {
 
 		return self :: NEW_FRAMEWORK . "reflex.php/Sales/ViewSale/$intSaleId/";
 	}
+	
+	//------------------------------------------------------------------------//
+	// ViewSalesForAccount
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewSalesForAccount()
+	 *
+	 * Compiles the Href to be executed when the ViewSalesForAccount functionality is requested
+	 *
+	 * Compiles the Href to be executed when the ViewSalesForAccount functionality is requested
+	 * 
+	 * @param	int			$intAccountId		id of the sale to view
+	 * @return	string							Href to trigger the functionality
+	 * @method
+	 */
+	function ViewSalesForAccount($intAccountId)
+	{
+		$this->strLabel = "View Sales";
+		$this->strContextMenuLabel = "View Sales";
+		
+		return "javascript:JsAutoLoader.loadScript('javascript/account_sales.js', function(){AccountSales.showSales($intAccountId);});";
+	}	
 
 	//------------------------------------------------------------------------//
 	// ManageDealers
@@ -913,7 +935,9 @@ class MenuItems {
 	function CustomerOverdueList() {
 		$this->strLabel = "Overdue Customers";
 		$this->strContextMenuLabel = "Overdue Customers";
-		return "javascript:FlexCustomerOverdueList.displayPopup()";
+		
+		//return "javascript:FlexCustomerOverdueList.displayPopup()";
+		return "javascript:JsAutoLoader.loadScript('javascript/customer_overdue_list.js', function(){FlexCustomerOverdueList.displayPopup();});";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3022,7 +3046,9 @@ class MenuItems {
 	function TelemarketUploadProposed() {
 		$this->strContextMenuLabel = "Upload Proposed Dialling List";
 		$this->strLabel = "Upload Proposed Dialling List";
-		return "javascript:Flex.Telemarketing.uploadProposedList()";
+		
+		//return "javascript:Flex.Telemarketing.uploadProposedList()";
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing_file_washing.js', function(){Flex.Telemarketing.uploadProposedList();});";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3041,7 +3067,9 @@ class MenuItems {
 	function TelemarketDownloadDNCR() {
 		$this->strContextMenuLabel = "Download DNCR Wash List";
 		$this->strLabel = "Download DNCR Wash List";
-		return "javascript:Flex.Telemarketing.downloadDNCRList()";
+		
+		//return "javascript:Flex.Telemarketing.downloadDNCRList()";
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing_file_washing.js', function(){Flex.Telemarketing.downloadDNCRList();});";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3060,7 +3088,9 @@ class MenuItems {
 	function TelemarketUploadDNCR() {
 		$this->strContextMenuLabel = "Upload Washed DNCR List";
 		$this->strLabel = "Upload Washed DNCR List";
-		return "javascript:Flex.Telemarketing.uploadDNCRList()";
+		
+		//return "javascript:Flex.Telemarketing.uploadDNCRList()";
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing_file_washing.js', function(){Flex.Telemarketing.uploadDNCRList();});";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3079,7 +3109,9 @@ class MenuItems {
 	function TelemarketDownloadPermitted() {
 		$this->strContextMenuLabel = "Download Permitted Dialling List";
 		$this->strLabel = "Download Permitted Dialling List";
-		return "javascript:Flex.Telemarketing.downloadPermittedList()";
+		
+		//return "javascript:Flex.Telemarketing.downloadPermittedList()";
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing_file_washing.js', function(){Flex.Telemarketing.downloadPermittedList();});";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3098,7 +3130,9 @@ class MenuItems {
 	function TelemarketUploadDiallerReport() {
 		$this->strContextMenuLabel = "Upload Dialler Report";
 		$this->strLabel = "Upload Dialler Report";
-		return "javascript:Flex.Telemarketing.uploadDiallerReport()";
+		
+		//return "javascript:Flex.Telemarketing.uploadDiallerReport()";
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing_file_washing.js', function(){Flex.Telemarketing.uploadDiallerReport();});";
 	}
 
 	//------------------------------------------------------------------------//
