@@ -41,9 +41,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 				<tr>
 					<td>File to wash:</td>
 					<td>
-						<input type='file' id='Telemarketing_Wash_File' name='Telemarketing_Wash_File' style='display:none'/>
-						<input type='text' id='Telemarketing_Wash_File_Text' maxlength='40'/>
-						<input type='button' id='Telemarketing_Wash_File_Button' value='Browse' onclick='\$(\"Telemarketing_Wash_File\").click()' style='padding-left:4px;'/>
+						<input type='file' id='Telemarketing_Wash_File' name='Telemarketing_Wash_File' />
 					</td>
 				</tr>
 			</tbody>
