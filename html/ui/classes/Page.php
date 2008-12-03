@@ -289,7 +289,7 @@ class Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/sha1.js' ></script>\n";
 		
 		// Include reference to all the standard javascript files, which should be included on every page, which depend on Prototype
-		$arrStandardJsFilesPrototype = array();
+		$arrStandardJsFilesPrototype = array("telemarketing_file_washing");
 		if (count($arrStandardJsFilesPrototype))
 		{
 			$strFiles = $this->_GetJsFilesQueryString($arrStandardJsFilesPrototype);
