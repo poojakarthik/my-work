@@ -338,7 +338,14 @@ class Application
 			}
 			
 			// TODO: Change this permission to CREDIT_CONTROL
-			ContextMenu()->Admin->Contracts->ManageBreachedContracts();			
+			ContextMenu()->Admin->Contracts->ManageBreachedContracts();	
+			
+			// TODO: Make a new Permission for this
+			ContextMenu()->Admin->Telemarketing->TelemarketUploadProposed();
+			ContextMenu()->Admin->Telemarketing->TelemarketDownloadDNCR();
+			ContextMenu()->Admin->Telemarketing->TelemarketUploadDNCR();
+			ContextMenu()->Admin->Telemarketing->TelemarketDownloadPermitted();
+			ContextMenu()->Admin->Telemarketing->TelemarketUploadDiallerReport();		
 		}
 
 		
