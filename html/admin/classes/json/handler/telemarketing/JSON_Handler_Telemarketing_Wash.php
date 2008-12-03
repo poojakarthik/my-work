@@ -16,7 +16,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			
 			// Build the innerHTML
 			$strPopupContent	= "
-
+<form method='post' action='' enctype='multipart/form-data'>
 	<div class='GroupedContent'>
 		<table class='form-data' style='width:100%'>
 			<tbody>
@@ -51,6 +51,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 		<input type='button' id='TelemarketingWashProposed_Submit' name='TelemarketingWashProposed_Submit' value='Submit' onclick='Flex.Telemarketing.ProposedList.submit()' style='margin-left:3px'></input> 
 		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>
 	</div>
+</form>
 ";
 			
 			// If no exceptions were thrown, then everything worked
