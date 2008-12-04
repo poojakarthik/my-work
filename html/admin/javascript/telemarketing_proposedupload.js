@@ -118,7 +118,7 @@ var Telemarketing_ProposedUpload	= Class.create
 });
 
 //Init
-if (Flex.Telemarketing.ProposedUpload == undefined)
+if (Flex.Telemarketing != undefined && Flex.Telemarketing.ProposedUpload == undefined)
 {
 	alert("Flex.Telemarketing.ProposedUpload initialised!");
 	Flex.Telemarketing.ProposedUpload	= new Telemarketing_ProposedUpload();
