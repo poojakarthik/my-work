@@ -10,6 +10,11 @@ var JsAutoLoader = {
 		{
 			bolUseJavascriptPhp = false;
 		}
+		
+		if (funcOnLoadEventHandler instanceof String)
+		{
+			alert("'" + strScriptName +"'s Event Handler is a String! (" + funcOnLoadEventHandler + ")");
+		}
 	
 		// Retrieve the timestamp of when the user started their session
 		// This is used as a work around, to stop the browser from using a cached, old version of the script you want
