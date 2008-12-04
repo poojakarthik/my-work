@@ -71,10 +71,10 @@ var Telemarketing_ProposedUpload	= Class.create
 		this._objResponse	= objResponse;
 		
 		var hashCallCentrePermissions	= objResponse.arrCallCentrePermissions;
-		for (i in hashCallCentrePermissions)
+		/*for (i in hashCallCentrePermissions)
 		{
 			alert(hashCallCentrePermissions[i]);
-		}
+		}*/
 		
 		// Generate 
 		

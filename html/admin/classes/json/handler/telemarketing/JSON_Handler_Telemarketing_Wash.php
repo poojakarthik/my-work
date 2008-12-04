@@ -21,7 +21,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"					=> TRUE,
-							"arrCallCentrePermissions"	=> $arrCallCentres
+							"arrCallCentrePermissions"	=> $arrCallCentrePermissions
 						);
 		}
 		catch (Exception $e)
