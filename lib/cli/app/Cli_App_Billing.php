@@ -19,6 +19,7 @@ class Cli_App_Billing extends Cli
 	const	SWITCH_INVOICE_RUN		= "i";
 	const	SWITCH_ACCOUNT_ID		= "a";
 	const	SWITCH_SKIP_PREBILLING	= "k";
+	const	SWITCH_FAKE_DATE		= "d";
 	
 	const	FLEX_FRONTEND_HOST				= "10.50.50.131";
 	const	FLEX_FRONTEND_USERNAME			= "ybs-admin";
@@ -180,6 +181,9 @@ class Cli_App_Billing extends Cli
 
 	private function _generate()
 	{
+		// Was there a Fake Date provided?
+		$strDate = date("Y-m-d H:i:s", (strtotime($this->_arrArgs[self::SWITCH_FAKE_DATE])) ?  strtotime($this->_arrArgs[self::SWITCH_FAKE_DATE]) : time());
+		
 		// Are there any Invoice Runs due?
 		$selPaymentTerms		= new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
 		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "customer_group_id = <customer_group_id> AND <InvoiceDate> = SUBDATE(CURDATE(), INTERVAL invoice_day_offset DAY)");
@@ -203,7 +207,7 @@ class Cli_App_Billing extends Cli
 				Cli_App_Billing::debug("\tCustomer Group: ".GetConstantDescription($arrPaymentTerms['customer_group_id'], 'CustomerGroup'));
 
 				// Predict the next Billing Date
-				$strInvoiceDate		= Invoice_Run::predictNextInvoiceDate($arrPaymentTerms['customer_group_id'], date("Y-m-d H:i:s"));
+				$strInvoiceDate		= Invoice_Run::predictNextInvoiceDate($arrPaymentTerms['customer_group_id'], $strDate);
 				$intInvoiceDatetime	= strtotime($strInvoiceDate);
 				Cli_App_Billing::debug("\t\t * Predicted Billing Date\t: {$strInvoiceDate}");
 
@@ -358,6 +362,13 @@ class Cli_App_Billing extends Cli
 				self::ARG_DESCRIPTION	=> "Skips the pre-Billing scripts (only applicable to GENERATE)",
 				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
+			),
+			
+			self::SWITCH_FAKE_DATE => array(
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "Forces Billing to think that today is a given date",
+				self::ARG_DEFAULT		=> NULL,
+				self::ARG_VALIDATION	=> 'Cli::_validDate("%1$s")'
 			),
 		);
 	}
