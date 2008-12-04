@@ -44,13 +44,13 @@ var JsAutoLoader = {
 					{
 						// This script should be loaded, so run the funcOnLoadEventHandler function, in global scope
 						// wrapping it in a timeout will give it global scope
-						setTimeout(funcOnLoadEventHandler, 1);
+						setTimeout((funcOnLoadEventHandler instanceof String) ? eval(funcOnLoadEventHandler) : funcOnLoadEventHandler, 1);
 					}
 					else
 					{
 						// The script element has been included in the header, but has not finished loading yet
 						// add the funcOnLoadEventHandler to it as an event listener
-						Event.startObserving(scripts[i], "load", funcOnLoadEventHandler, true);
+						Event.startObserving(scripts[i], "load", (funcOnLoadEventHandler instanceof String) ? eval(funcOnLoadEventHandler) : funcOnLoadEventHandler, true);
 					}
 				}
 				return;
@@ -67,7 +67,7 @@ var JsAutoLoader = {
 		// Was an onLoad handler provided?
 		if (funcOnLoadEventHandler != undefined)
 		{
-			Event.startObserving(script, "load", funcOnLoadEventHandler, true);
+			Event.startObserving(script, "load", (funcOnLoadEventHandler instanceof String) ? eval(funcOnLoadEventHandler) : funcOnLoadEventHandler, true);
 		}
 	},
 	

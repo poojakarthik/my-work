@@ -3047,7 +3047,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Upload Proposed Dialling List";
 		$this->strLabel = "Upload Proposed Dialling List";
 		
-		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing_proposedupload.js', function(){Flex.Telemarketing.ProposedUpload.displayPopupUpload();});";
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing_proposedupload.js', 'function(){Flex.Telemarketing.ProposedUpload.displayPopupUpload();}');";
 	}
 
 	//------------------------------------------------------------------------//
