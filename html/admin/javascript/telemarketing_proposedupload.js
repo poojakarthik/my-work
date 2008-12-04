@@ -68,6 +68,8 @@ var Telemarketing_ProposedUpload	= Class.create
 	
 	_renderPopupUpload	: function(objResponse)
 	{
+		this._objResponse	= objResponse;
+		
 		var hashCallCentrePermissions	= objResponse.arrCallCentrePermissions;
 		for (i in hashCallCentrePermissions)
 		{
