@@ -97,6 +97,12 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 		}
 		return trim($strDealerListHTML);
 	}
+	
+	public function getCallCentrePermissions()
+	{
+		// Get list of Call Centres
+		$arrCallCentres	= Dealer::getCallCentres();
+	}
 }
 
 ?>

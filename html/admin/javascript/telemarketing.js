@@ -1,5 +1,5 @@
 // Class: Telemarketing
-// Handles the Telemarketing Washing popups in Flex
+// Handles the Telemarketing File Washing page
 var Telemarketing	= Class.create
 ({
 	// Function: initialize()
@@ -14,7 +14,7 @@ var Telemarketing	= Class.create
 												strNature	: 'modal',
 												strTitle	: 'Upload Proposed Dialling List'
 											}
-						};	
+						};
 	},
 	
 	renderPopup	: function(strPopupName, objResponse)
