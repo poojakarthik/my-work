@@ -37,18 +37,21 @@ var JsAutoLoader = {
 		{
 			if (scripts[i].hasAttribute('src') && scripts[i].getAttribute('src').match(strScriptName) != null)
 			{
-				// The script has been requested
-				if (this.loadedScripts[strScriptName] != undefined)
+				// The script has been requested -- Was an onLoad handler provided?
+				if (funcOnLoadEventHandler != undefined)
 				{
-					// This script should be loaded, so run the funcOnLoadEventHandler function, in global scope
-					// wrapping it in a timeout will give it global scope
-					setTimeout(funcOnLoadEventHandler, 1);
-				}
-				else
-				{
-					// The script element has been included in the header, but has not finished loading yet
-					// add the funcOnLoadEventHandler to it as an event listener
-					Event.startObserving(scripts[i], "load", funcOnLoadEventHandler, true);
+					if (this.loadedScripts[strScriptName] != undefined)
+					{
+						// This script should be loaded, so run the funcOnLoadEventHandler function, in global scope
+						// wrapping it in a timeout will give it global scope
+						setTimeout(funcOnLoadEventHandler, 1);
+					}
+					else
+					{
+						// The script element has been included in the header, but has not finished loading yet
+						// add the funcOnLoadEventHandler to it as an event listener
+						Event.startObserving(scripts[i], "load", funcOnLoadEventHandler, true);
+					}
 				}
 				return;
 			}
@@ -59,8 +62,13 @@ var JsAutoLoader = {
 		script.setAttribute('type', 'text/javascript');
 		script.setAttribute('src', strSource);
 		Event.startObserving(script, "load", this.registerLoadedScript.bind(this, strScriptName), true);
-		Event.startObserving(script, "load", funcOnLoadEventHandler, true);
 		head.appendChild(script);
+		
+		// Was an onLoad handler provided?
+		if (funcOnLoadEventHandler != undefined)
+		{
+			Event.startObserving(script, "load", funcOnLoadEventHandler, true);
+		}
 	},
 	
 	// This is used to register the fact that a script has been loaded into the dom
