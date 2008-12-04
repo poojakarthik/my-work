@@ -57,6 +57,8 @@ var Telemarketing_ProposedUpload	= Class.create
 	
 	displayPopupUpload	: function()
 	{
+		alert("Displaying the Popup");
+		
 		var remoteClass		= 'Telemarketing_Wash';
 		var remoteMethod	= 'getCallCentrePermissions';
 		var jsonFunc		= jQuery.json.jsonFunction(this.renderPopup.bind(this), null, remoteClass, remoteMethod);
