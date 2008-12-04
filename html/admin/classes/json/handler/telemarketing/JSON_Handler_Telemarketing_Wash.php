@@ -11,7 +11,12 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 		try
 		{
 			// Get list of Call Centres
-			$arrCallCentres	= Dealer::getCallCentres();
+			$arrCallCentres				= Dealer::getCallCentres();
+			$arrCallCentrePermissions	= array();
+			foreach ($arrCallCentres as $objDealer)
+			{
+				$arrCallCentrePermissions[$objDealer->id]	= $objDealer->toArray();
+			}
 				
 			// If no exceptions were thrown, then everything worked
 			return array(
