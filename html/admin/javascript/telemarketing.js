@@ -57,5 +57,6 @@ var Telemarketing	= Class.create
 // Init
 if (Flex.Telemarketing == undefined)
 {
+	alert("Flex.Telemarketing initialised!");
 	Flex.Telemarketing	= new Telemarketing();
 }
