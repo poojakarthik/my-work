@@ -3,7 +3,7 @@ JsAutoLoader.loadScript('javascript/telemarketing.js');
 
 // Class: Telemarketing
 // Handles the Telemarketing Proposed FNN Upload page
-var Telemarketing_Import_Proposed	= Class.create
+var Telemarketing_ProposedUpload	= Class.create
 ({
 	objPopupUpload	: {
 						strId		: 'Telemarketing_ProposedUpload',
@@ -25,7 +25,10 @@ var Telemarketing_Import_Proposed	= Class.create
 		intCallCentre	= $('Telemarketing_ProposedUpload_Dealer').value;
 		if (this._arrCallCentrePermissions[intCallCentre])
 		{
-			for (var i = 0; i < this._arrCallCentrePermissions[intCallCentre].length)
+			for (var i = 0; i < this._arrCallCentrePermissions[intCallCentre].length; i++)
+			{
+				
+			}
 		}
 	},
 	
