@@ -116,10 +116,3 @@ var Telemarketing_ProposedUpload	= Class.create
 		this._renderPopup(this.objPopupUpload, strHTML, objResponse);
 	}
 });
-
-//Init
-if (Flex.Telemarketing != undefined && Flex.Telemarketing.ProposedUpload == undefined)
-{
-	alert("Flex.Telemarketing.ProposedUpload initialised!");
-	Flex.Telemarketing.ProposedUpload	= new Telemarketing_ProposedUpload();
-}
