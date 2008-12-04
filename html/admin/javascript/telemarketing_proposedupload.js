@@ -66,7 +66,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		jsonFunc();
 	},
 	
-	_renderPopupUpload	: function(strPopupName, objResponse)
+	_renderPopupUpload	: function(objResponse)
 	{
 		var hashCallCentrePermissions	= objResponse.arrCallCentrePermissions;
 		for (i in hashCallCentrePermissions)
