@@ -61,7 +61,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		var remoteClass		= 'Telemarketing_Wash';
 		var remoteMethod	= 'getCallCentrePermissions';
-		var jsonFunc		= jQuery.json.jsonFunction(this.renderPopup.bind(this), null, remoteClass, remoteMethod);
+		var jsonFunc		= jQuery.json.jsonFunction(this._renderPopup.bind(this), null, remoteClass, remoteMethod);
 		Vixen.Popup.ShowPageLoadingSplash("Please Wait", null, null, null, 100);
 		jsonFunc();
 	},
