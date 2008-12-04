@@ -1,5 +1,5 @@
 // Ensure that telemarketing.js Parent Class has been loaded
-JsAutoLoader.loadScript('javascript/telemarketing.js');
+JsAutoLoader.loadScript('javascript/telemarketing.js', function(){Flex.Telemarketing.ProposedUpload = (Flex.Telemarketing.ProposedUpload == undefined) ? new Flex_Telemarketing_ProposedUpload() : Flex.Telemarketing.ProposedUpload});
 
 // Class: Telemarketing
 // Handles the Telemarketing Proposed FNN Upload page
