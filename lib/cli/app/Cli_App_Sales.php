@@ -1390,10 +1390,12 @@ class Cli_App_Sales extends Cli
 			throw new Exception($resSaleUpdate->getMessage()." :: ".$resSaleUpdate->getUserInfo());
 		}
 		
+		$strCurrentTimestamp = Data_Source_Time::currentTimestamp($dsSalesPortal);
+		
 		// Update the History
 		$strReasonSQL			= ($strReason === NULL) ? 'NULL' : "'".str_replace("'", "\\'", $strReason)."'";
-		$resSaleStatusInsert	= $dsSalesPortal->query("INSERT INTO sale_status_history (sale_id, sale_status_id, changed_by, description) " .
-															"SELECT id, sale_status_id, ".self::SALES_PORTAL_SYSTEM_DEALER_ID.", {$strReasonSQL} FROM sale WHERE id = {$intSPSaleId}");
+		$resSaleStatusInsert	= $dsSalesPortal->query("INSERT INTO sale_status_history (sale_id, sale_status_id, changed_by, changed_on, description) " .
+															"SELECT id, sale_status_id, ".self::SALES_PORTAL_SYSTEM_DEALER_ID.", '{$strCurrentTimestamp}', {$strReasonSQL} FROM sale WHERE id = {$intSPSaleId}");
 		if (PEAR::isError($resSaleStatusInsert))
 		{
 			throw new Exception($resSaleStatusInsert->getMessage()." :: ".$resSaleStatusInsert->getUserInfo());
@@ -1416,10 +1418,12 @@ class Cli_App_Sales extends Cli
 			throw new Exception($resSaleItemUpdate->getMessage()." :: ".$resSaleItemUpdate->getUserInfo());
 		}
 		
+		$strCurrentTimestamp = Data_Source_Time::currentTimestamp($dsSalesPortal);
+		
 		// Update the History
 		$strReasonSQL				= ($strReason === NULL) ? 'NULL' : "'".str_replace("'", "\\'", $strReason)."'";
-		$resSaleItemStatusInsert	= $dsSalesPortal->query("INSERT INTO sale_item_status_history (sale_item_id, sale_item_status_id, changed_by, description) " .
-															"SELECT id, sale_item_status_id, ".self::SALES_PORTAL_SYSTEM_DEALER_ID.", {$strReasonSQL} FROM sale_item WHERE id = {$intSPSaleItemId}");
+		$resSaleItemStatusInsert	= $dsSalesPortal->query("INSERT INTO sale_item_status_history (sale_item_id, sale_item_status_id, changed_by, changed_on, description) " .
+															"SELECT id, sale_item_status_id, ".self::SALES_PORTAL_SYSTEM_DEALER_ID.", '{$strCurrentTimestamp}', {$strReasonSQL} FROM sale_item WHERE id = {$intSPSaleItemId}");
 		if (PEAR::isError($resSaleItemStatusInsert))
 		{
 			throw new Exception($resSaleItemStatusInsert->getMessage()." :: ".$resSaleItemStatusInsert->getUserInfo());
