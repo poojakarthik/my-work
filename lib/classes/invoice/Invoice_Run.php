@@ -575,9 +575,10 @@ class Invoice_Run
 	{
 		//Debug('CustomerGroup: '.$intCustomerGroup);
 		//Debug('EffectiveDate: '.$strEffectiveDate);
+		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
 
 		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRunByCustomerGroup');
-		if ($selInvoiceRun->Execute(Array('customer_group_id' => $intCustomerGroup, 'EffectiveDate')))
+		if ($selInvoiceRun->Execute(Array('customer_group_id' => $intCustomerGroup, 'EffectiveDate' => $strEffectiveDate)))
 		{
 			// We have an old InvoiceRun
 			$arrLastInvoiceRun	= $selInvoiceRun->Fetch();
