@@ -184,6 +184,7 @@ class Cli_App_Billing extends Cli
 		// Was there a Fake Date provided?
 		$strDatetime	= date("Y-m-d H:i:s", ($this->_arrArgs[self::SWITCH_FAKE_DATE]) ?  $this->_arrArgs[self::SWITCH_FAKE_DATE] : time());
 		$strDate		= date("Y-m-d", strtotime($strDatetime));
+		Cli_App_Billing::debug("Today's date\t: {$strDatetime} ({$strDate})");
 		
 		// Are there any Invoice Runs due?
 		$selPaymentTerms		= new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
