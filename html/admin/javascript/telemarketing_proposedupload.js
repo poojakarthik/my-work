@@ -40,7 +40,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		alert(elmDealerCombo);
 		var intCallCentre	= elmDealerCombo.options[elmDealerCombo.selectedIndex].value;
 		alert("dealer.id = " + intCallCentre);
-		if (this._arrCallCentres[intCallCentre])
+		if (this._arrCallCentres[intCallCentre] && this._arrCallCentres[intCallCentre].customerGroupIds.length > 0)
 		{
 			for (intCustomerGroupId in this._arrCallCentres[intCallCentre].customerGroupIds)
 			{
