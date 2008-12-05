@@ -924,17 +924,17 @@ class Cli_App_Sales extends Cli
 											$arrAdditionalDetails['BillAddress1']	= $arrSPLandLineDetails['bill_address_line_1'];
 											$arrAdditionalDetails['BillAddress2']	= $arrSPLandLineDetails['bill_address_line_2'];
 											$arrAdditionalDetails['BillLocality']	= $arrSPLandLineDetails['bill_locality'];
-											$arrAdditionalDetails['BillPostcode']	= $arrSPLandLineDetails['bill_name'];
+											$arrAdditionalDetails['BillPostcode']	= $arrSPLandLineDetails['bill_postcode'];
 											
-											$arrAdditionalDetails['ServiceAddressType']			= $this->_salesPortalEnum('landline_service_address_type', $arrSPLandLineDetails['landline_service_address_type_id'], 'code');
+											$arrAdditionalDetails['ServiceAddressType']			= ($arrSPLandLineDetails['landline_service_address_type_id'] !== NULL)? $this->_salesPortalEnum('landline_service_address_type', $arrSPLandLineDetails['landline_service_address_type_id'], 'code') : NULL;
 											$arrAdditionalDetails['ServiceAddressTypeNumber']	= $arrSPLandLineDetails['service_address_type_number'];
 											$arrAdditionalDetails['ServiceAddressTypeSuffix']	= $arrSPLandLineDetails['service_address_type_suffix'];
 											$arrAdditionalDetails['ServiceStreetNumberStart']	= $arrSPLandLineDetails['service_street_number_start'];
 											$arrAdditionalDetails['ServiceStreetNumberEnd']		= $arrSPLandLineDetails['service_street_number_end'];
 											$arrAdditionalDetails['ServiceStreetNumberSuffix']	= $arrSPLandLineDetails['service_street_number_suffix'];
 											$arrAdditionalDetails['ServiceStreetName']			= $arrSPLandLineDetails['service_street_name'];
-											$arrAdditionalDetails['ServiceStreetType']			= $this->_salesPortalEnum('landline_service_street_type', $arrSPLandLineDetails['landline_service_street_type_id'], 'code');
-											$arrAdditionalDetails['ServiceStreetTypeSuffix']	= $this->_salesPortalEnum('landline_service_street_type_suffix', $arrSPLandLineDetails['landline_service_street_type_suffix_id'], 'code');
+											$arrAdditionalDetails['ServiceStreetType']			= ($arrSPLandLineDetails['landline_service_street_type_id'])? $this->_salesPortalEnum('landline_service_street_type', $arrSPLandLineDetails['landline_service_street_type_id'], 'code') : NULL;
+											$arrAdditionalDetails['ServiceStreetTypeSuffix']	= ($arrSPLandLineDetails['landline_service_street_type_suffix_id'])? $this->_salesPortalEnum('landline_service_street_type_suffix', $arrSPLandLineDetails['landline_service_street_type_suffix_id'], 'code') : NULL;
 											$arrAdditionalDetails['ServicePropertyName']		= $arrSPLandLineDetails['service_property_name'];
 											$arrAdditionalDetails['ServiceLocality']			= $arrSPLandLineDetails['service_locality'];
 											$arrAdditionalDetails['ServiceState']				= $this->_salesPortalEnum('landline_service_state', $arrSPLandLineDetails['landline_service_state_id'], 'code');
@@ -944,21 +944,46 @@ class Cli_App_Sales extends Cli
 											{
 												// Residential
 												case 1:
+													$arrResidentialLandlineDetails	= $dsSalesPortal->queryRow(	"SELECT * ".
+																												"FROM sale_item_service_landline_residential ".
+																												"WHERE sale_item_service_landline_id = {$arrSPLandLineDetails['id']}",
+																												NULL, MDB2_FETCHMODE_ASSOC);
+													if (PEAR::isError($arrResidentialLandlineDetails))
+													{
+														throw new Exception($arrResidentialLandlineDetails->getMessage()." :: ".$arrResidentialLandlineDetails->getUserInfo());
+													}
+													elseif ($arrResidentialLandlineDetails === NULL)
+													{
+														throw new Exception("Could not find sale_item_service_landline_residential record relating to the sale_item_service_landline record having id: {$arrSPLandLineDetails['id']}");
+													}
+													
 													$arrAdditionalDetails['Residential']		= 1;
-													$arrAdditionalDetails['EndUserTitle']		= $this->_salesPortalEnum('landline_end_user_title', $arrSPLandLineDetails['landline_end_user_title_id'], 'code');
-													$arrAdditionalDetails['EndUserGivenName']	= $arrSPLandLineDetails['end_user_given_name'];
-													$arrAdditionalDetails['EndUserFamilyName']	= $arrSPLandLineDetails['end_user_family_name'];
-													$arrAdditionalDetails['DateOfBirth']		= $arrSPLandLineDetails['end_user_dob'];
-													$arrAdditionalDetails['Employer']			= ($arrSPLandLineDetails['end_user_employer']) ? $arrSPLandLineDetails['end_user_employer'] : '';
-													$arrAdditionalDetails['Occupation']			= ($arrSPLandLineDetails['end_user_occupation']) ? $arrSPLandLineDetails['end_user_occupation'] : '';
+													$arrAdditionalDetails['EndUserTitle']		= $this->_salesPortalEnum('landline_end_user_title', $arrResidentialLandlineDetails['landline_end_user_title_id'], 'code');
+													$arrAdditionalDetails['EndUserGivenName']	= $arrResidentialLandlineDetails['end_user_given_name'];
+													$arrAdditionalDetails['EndUserFamilyName']	= $arrResidentialLandlineDetails['end_user_family_name'];
+													$arrAdditionalDetails['DateOfBirth']		= str_replace("-", "", $arrResidentialLandlineDetails['end_user_dob']);
+													$arrAdditionalDetails['Employer']			= $arrResidentialLandlineDetails['end_user_employer'];
+													$arrAdditionalDetails['Occupation']			= $arrResidentialLandlineDetails['end_user_occupation'];
 													break;
 												
 												// Business
 												case 2:
+													$arrBusinessLandlineDetails	= $dsSalesPortal->queryRow(	"SELECT * ".
+																											"FROM sale_item_service_landline_business ".
+																											"WHERE sale_item_service_landline_id = {$arrSPLandLineDetails['id']}",
+																											NULL, MDB2_FETCHMODE_ASSOC);
+													if (PEAR::isError($arrBusinessLandlineDetails))
+													{
+														throw new Exception($arrBusinessLandlineDetails->getMessage()." :: ".$arrBusinessLandlineDetails->getUserInfo());
+													}
+													elseif ($arrBusinessLandlineDetails === NULL)
+													{
+														throw new Exception("Could not find sale_item_service_landline_business record relating to the sale_item_service_landline record having id: {$arrSPLandLineDetails['id']}");
+													}
 													$arrAdditionalDetails['Residential']		= 0;
-													$arrAdditionalDetails['EndUserCompanyName']	= $arrSPLandLineDetails['company_name'];
-													$arrAdditionalDetails['ABN']				= $arrSPLandLineDetails['abn'];
-													$arrAdditionalDetails['TradingName']		= ($arrSPLandLineDetails['trading_name']) ? $arrSPLandLineDetails['trading_name'] : '';
+													$arrAdditionalDetails['EndUserCompanyName']	= $arrBusinessLandlineDetails['company_name'];
+													$arrAdditionalDetails['ABN']				= $arrBusinessLandlineDetails['abn'];
+													$arrAdditionalDetails['TradingName']		= $arrBusinessLandlineDetails['trading_name'];
 													break;
 													
 												default:

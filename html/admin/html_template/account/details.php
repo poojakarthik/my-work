@@ -124,6 +124,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 				echo "
 <div class='MsgNotice'>
 	This account has had recent sales associated with it.  To view them click <a onclick=\"$strAccountSalesLink\">here</a>.
+	<br />Sales associated with the account can always be accessed through the menu, Account &gt; Sales &gt; View Sales.
 </div>
 ";
 			}
