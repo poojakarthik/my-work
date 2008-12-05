@@ -21,7 +21,7 @@ var Telemarketing_ProposedUpload	= Class.create
 	{
 		// Purge all entries in the Vendor combo
 		var elmVendorCombo		= $ID('Telemarketing_ProposedUpload_Vendor');
-		for (i = elmVendorCombo.length; i > 0; i--)
+		for (i = elmVendorCombo.length-1; i >= 0; i--)
 		{
 			// Purge everything but the [None] option
 			if (elmVendorCombo.options[i].text != '[None]')
