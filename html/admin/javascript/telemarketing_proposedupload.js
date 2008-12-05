@@ -58,15 +58,15 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		if ($ID('Telemarketing_ProposedUpload_Dealer').selectedIndex < 1)
 		{
-			arrErrors.push("[!] Please selected a Call Centre");
+			arrErrors.push("[!] Please select a Call Centre");
 		}
 		if ($ID('Telemarketing_ProposedUpload_Vendor').selectedIndex < 1)
 		{
-			arrErrors.push("[!] Please selected a Vendor");
+			arrErrors.push("[!] Please select a Vendor");
 		}
-		if ($ID(!'Telemarketing_ProposedUpload_File').value)
+		if (!$ID('Telemarketing_ProposedUpload_File').value)
 		{
-			arrErrors.push("[!] Please selected a valid Proposed Dialling List file to upload");
+			arrErrors.push("[!] Please select a valid Proposed Dialling List file to upload");
 		}
 		
 		if (arrErrors.length)
