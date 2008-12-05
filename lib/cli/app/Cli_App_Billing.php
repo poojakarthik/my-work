@@ -188,7 +188,7 @@ class Cli_App_Billing extends Cli
 		
 		// Are there any Invoice Runs due?
 		$selPaymentTerms		= new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
-		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "customer_group_id = <customer_group_id> AND <InvoiceDate> = SUBDATE('{$strDate}', INTERVAL invoice_day_offset DAY)");
+		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "customer_group_id = <customer_group_id> AND <InvoiceDate> = SUBDATE('{$strDatetime}', INTERVAL invoice_day_offset DAY)");
 
 		if (!$selPaymentTerms->Execute())
 		{
