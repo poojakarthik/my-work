@@ -42,10 +42,7 @@ var Telemarketing_ProposedUpload	= Class.create
 			for (intCustomerGroupId in this._arrCallCentres[intCallCentre].customerGroupIds)
 			{
 				// Create the element
-				elmOption		= document.createElement('option');
-				elmOption.value	= intCustomerGroupId;
-				elmOption.text	= this._arrVendors[intCustomerGroupId].externalName;
-				$('Telemarketing_ProposedUpload_Dealer').appendChild(elmOption);
+				elmVendorCombo.options[]	= new Option(this._arrVendors[intCustomerGroupId].externalName, intCustomerGroupId);
 			}
 		}
 	},
