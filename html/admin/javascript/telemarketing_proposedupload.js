@@ -19,19 +19,31 @@ var Telemarketing_ProposedUpload	= Class.create
 	
 	updatePermittedVendors	: function()
 	{
-		intCallCentre	= $('Telemarketing_ProposedUpload_Dealer').value;
-		if (this._arrCallCentrePermissions[intCallCentre])
+		// Purge all entries in the Vendor combo
+		var elmVendorCombo		= $('Telemarketing_ProposedUpload_Vendor');
+		var arrVendorChildren	= elmVendorCombo.childElements();
+		for (i = 0; i < arrVendorChildren.length; i++)
 		{
-			for (var i = 0; i < this._arrCallCentrePermissions[intCallCentre].length; i++)
+			// Purge everything but the [None] option
+			if (arrVendorChildren[i].value)
 			{
-				
+				elmVendorCombo.removeChild($(arrVendorChildren[i].id));
+			}
+		}
+		
+		// Add all of this Call Centre's permitted Vendors
+		var intCallCentre	= $('Telemarketing_ProposedUpload_Dealer').value;
+		if (this._arrCallCentres[intCallCentre])
+		{
+			for (intCustomerGroupId in this._arrCallCentres[intCallCentre].customerGroupIds)
+			{
+				this._arrVendors[intCustomerGroupId].externalName;
 			}
 		}
 	},
 	
 	_renderPopup	: function(objPopup, strHTML, objResponse)
 	{
-		
 		// Hide the 'Loading' Splash, and display the popup
 		Vixen.Popup.ClosePageLoadingSplash();
 		if (objResponse.Success)
@@ -66,6 +78,7 @@ var Telemarketing_ProposedUpload	= Class.create
 	_renderPopupUpload	: function(objResponse)
 	{
 		this._arrCallCentres	= objResponse.arrCallCentrePermissions;
+		this._arrVendors		= objResponse.arrVendors;
 		
 		// Generate Call Centre List
 		var strDealerListHTML	= '';
@@ -114,6 +127,11 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		// Render the Popup
 		this._renderPopup(this.objPopupUpload, strHTML, objResponse);
+		
+		// Set an Event Handler for the Dealer Combo
+		Event.observe($('Telemarketing_ProposedUpload_Dealer'), 'change', this.updatePermittedVendors.bind(this));
+		Event.observe($('Telemarketing_ProposedUpload_Dealer'), 'click', this.updatePermittedVendors.bind(this));
+		Event.observe($('Telemarketing_ProposedUpload_Dealer'), 'keyup', this.updatePermittedVendors.bind(this));
 	}
 });
 
