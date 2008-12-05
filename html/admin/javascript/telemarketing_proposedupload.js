@@ -20,7 +20,7 @@ var Telemarketing_ProposedUpload	= Class.create
 	updatePermittedVendors	: function()
 	{
 		// Purge all entries in the Vendor combo
-		var elmVendorCombo		= $('Telemarketing_ProposedUpload_Vendor');
+		var elmVendorCombo		= $ID('Telemarketing_ProposedUpload_Vendor');
 		for (i = 0; i < elmVendorCombo.length; i++)
 		{
 			// Purge everything but the [None] option
@@ -36,7 +36,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		}
 		
 		// Add all of this Call Centre's permitted Vendors
-		var elmDealerCombo	= document.getElementById('Telemarketing_ProposedUpload_Dealer');
+		var elmDealerCombo	= $ID('Telemarketing_ProposedUpload_Dealer');
 		alert(elmDealerCombo);
 		var intCallCentre	= elmDealerCombo.options[elmDealerCombo.selectedIndex].value;
 		alert("dealer.id = " + intCallCentre);
@@ -143,9 +143,9 @@ var Telemarketing_ProposedUpload	= Class.create
 		this._renderPopup(this.objPopupUpload, strHTML, objResponse);
 		
 		// Set an Event Handler for the Dealer Combo
-		/*Event.observe($('Telemarketing_ProposedUpload_Dealer'), 'change', this.updatePermittedVendors.bind(this));
-		Event.observe($('Telemarketing_ProposedUpload_Dealer'), 'click', this.updatePermittedVendors.bind(this));
-		Event.observe($('Telemarketing_ProposedUpload_Dealer'), 'keyup', this.updatePermittedVendors.bind(this));*/
+		/*Event.observe($ID('Telemarketing_ProposedUpload_Dealer'), 'change', this.updatePermittedVendors.bind(this));
+		Event.observe($ID('Telemarketing_ProposedUpload_Dealer'), 'click', this.updatePermittedVendors.bind(this));
+		Event.observe($ID('Telemarketing_ProposedUpload_Dealer'), 'keyup', this.updatePermittedVendors.bind(this));*/
 	}
 });
 
