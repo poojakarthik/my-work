@@ -22,12 +22,17 @@ var Telemarketing_ProposedUpload	= Class.create
 		// Purge all entries in the Vendor combo
 		var elmVendorCombo		= $('Telemarketing_ProposedUpload_Vendor');
 		var arrVendorChildren	= elmVendorCombo.childElements();
+		var elmNone				= null;
 		for (i = 0; i < arrVendorChildren.length; i++)
 		{
 			// Purge everything but the [None] option
 			if (arrVendorChildren[i].value)
 			{
 				elmVendorCombo.removeChild($(arrVendorChildren[i].id));
+			}
+			else
+			{
+				elmNone	= $(arrVendorChildren[i].id);
 			}
 		}
 		
@@ -40,6 +45,9 @@ var Telemarketing_ProposedUpload	= Class.create
 				this._arrVendors[intCustomerGroupId].externalName;
 			}
 		}
+		
+		// Select the [None] option
+		elmNone.selected	= true;
 	},
 	
 	_renderPopup	: function(objPopup, strHTML, objResponse)
@@ -96,7 +104,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		"				<tr>\n" + 
 		"					<td>Dealer:</td>\n" + 
 		"					<td>\n" + 
-		"						<select id='Telemarketing_ProposedUpload_Dealer' name='dealer_id'>\n" + 
+		"						<select id='Telemarketing_ProposedUpload_Dealer' name='dealer_id' onchange='Flex.Telemarketing.ProposedUpload.updatePermittedVendors()'>\n" + 
 		"							<option value='' selected='selected'>[None]</option>\n" + 
 		"							" + strDealerListHTML + "\n" + 
 		"						</select>\n" + 
@@ -129,9 +137,9 @@ var Telemarketing_ProposedUpload	= Class.create
 		this._renderPopup(this.objPopupUpload, strHTML, objResponse);
 		
 		// Set an Event Handler for the Dealer Combo
-		Event.observe($('Telemarketing_ProposedUpload_Dealer'), 'change', this.updatePermittedVendors.bind(this));
+		/*Event.observe($('Telemarketing_ProposedUpload_Dealer'), 'change', this.updatePermittedVendors.bind(this));
 		Event.observe($('Telemarketing_ProposedUpload_Dealer'), 'click', this.updatePermittedVendors.bind(this));
-		Event.observe($('Telemarketing_ProposedUpload_Dealer'), 'keyup', this.updatePermittedVendors.bind(this));
+		Event.observe($('Telemarketing_ProposedUpload_Dealer'), 'keyup', this.updatePermittedVendors.bind(this));*/
 	}
 });
 
