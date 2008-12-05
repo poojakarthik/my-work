@@ -919,14 +919,14 @@ class Invoice extends ORM
 		$qryQuery		= (isset($qryQuery)) ? $qryQuery : new Query();
 		$strServiceIds	= implode(', ', $arrServiceIds);
 
-		// Get Earliest CDR Details
+		// Get Earliest CDR Details (ensuring that the earliest date is not after the Invoice date)
 		$resResult	= $qryQuery->Execute("SELECT MIN(EarliestCDR) AS EarliestCDR FROM Service WHERE Id IN ({$strServiceIds})");
 		if ($resResult === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
 		$arrMinEarliestCDR	= $resResult->fetch_assoc();
-		$strEarliestCDR		= $arrMinEarliestCDR['EarliestCDR'];
+		$strEarliestCDR		= ($arrMinEarliestCDR['EarliestCDR'] !== NULL && $arrMinEarliestCDR['EarliestCDR'] < $this->_objInvoiceRun->intInvoiceDatetime) ? $arrMinEarliestCDR['EarliestCDR'] : NULL;
 
 		// Is the Service tolling?
 		$intLevel	= 0;
