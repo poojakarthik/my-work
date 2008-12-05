@@ -21,7 +21,7 @@ var Telemarketing_ProposedUpload	= Class.create
 	{
 		// Purge all entries in the Vendor combo
 		var elmVendorCombo		= $ID('Telemarketing_ProposedUpload_Vendor');
-		for (i = 0; i < elmVendorCombo.length; i++)
+		for (i = elmVendorCombo.length; i > 0; i--)
 		{
 			// Purge everything but the [None] option
 			if (elmVendorCombo.options[i].text != '[None]')
@@ -37,18 +37,13 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		// Add all of this Call Centre's permitted Vendors
 		var elmDealerCombo	= $ID('Telemarketing_ProposedUpload_Dealer');
-		alert(elmDealerCombo);
 		var intCallCentre	= elmDealerCombo.options[elmDealerCombo.selectedIndex].value;
-		alert("dealer.id = " + intCallCentre);
 		if (this._arrCallCentres[intCallCentre])
 		{
 			for (intCustomerGroupId in this._arrCallCentres[intCallCentre].customerGroupIds)
 			{
 				if (parseInt(intCustomerGroupId))
 				{
-					alert("Adding Option Id "+intCustomerGroupId);
-					alert("Adding Option Value "+this._arrVendors[intCustomerGroupId].externalName);
-					
 					// Create the element
 					elmVendorCombo.add(new Option(this._arrVendors[intCustomerGroupId].externalName, intCustomerGroupId), null);
 				}
