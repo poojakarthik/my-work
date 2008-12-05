@@ -74,9 +74,9 @@ var Telemarketing_ProposedUpload	= Class.create
 			var strError	= "There is an error with your input.  Please satisfy the following requirements before submitting again:\n";
 			for (i = 0; i < arrErrors.length; i++)
 			{
-				strError	+=  "\n" + arrErrors[i];
+				strError	+=  "\n\t" + arrErrors[i];
 			}
-			alert(strError);
+			$Alert(strError);
 			return false;
 		}
 		
