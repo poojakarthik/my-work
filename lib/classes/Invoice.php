@@ -926,7 +926,7 @@ class Invoice extends ORM
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
 		$arrMinEarliestCDR	= $resResult->fetch_assoc();
-		$strEarliestCDR		= ($arrMinEarliestCDR['EarliestCDR'] !== NULL && $arrMinEarliestCDR['EarliestCDR'] < $this->_objInvoiceRun->intInvoiceDatetime) ? $arrMinEarliestCDR['EarliestCDR'] : NULL;
+		$strEarliestCDR		= ($arrMinEarliestCDR['EarliestCDR'] !== NULL && strtotime($arrMinEarliestCDR['EarliestCDR']) < $this->_objInvoiceRun->intInvoiceDatetime) ? $arrMinEarliestCDR['EarliestCDR'] : NULL;
 
 		// Is the Service tolling?
 		$intLevel	= 0;
