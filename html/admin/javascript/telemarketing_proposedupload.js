@@ -25,7 +25,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		for (i = 0; i < elmVendorCombo.length; i++)
 		{
 			// Purge everything but the [None] option
-			if (elmVendorCombo.options[i].value)
+			if (parseInt(elmVendorCombo.options[i].value))
 			{
 				elmVendorCombo.removeChild(elmVendorCombo.options[i]);
 			}
