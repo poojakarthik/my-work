@@ -44,7 +44,8 @@ var Telemarketing_ProposedUpload	= Class.create
 		{
 			for (intCustomerGroupId in this._arrCallCentres[intCallCentre].customerGroupIds)
 			{
-				alert("Adding Option ("+intCustomerGroupId+", "+this._arrVendors[intCustomerGroupId].externalName+")");
+				alert("Adding Option Id "+intCustomerGroupId);
+				alert("Adding Option Value "+this._arrVendors[intCustomerGroupId].externalName);
 				
 				// Create the element
 				elmVendorCombo.add(new Option(this._arrVendors[intCustomerGroupId].externalName, intCustomerGroupId), null);
@@ -80,8 +81,6 @@ var Telemarketing_ProposedUpload	= Class.create
 	
 	displayPopupUpload	: function()
 	{
-		alert("Displaying the Popup");
-		
 		var remoteClass		= 'Telemarketing_Wash';
 		var remoteMethod	= 'getCallCentrePermissions';
 		var jsonFunc		= jQuery.json.jsonFunction(this._renderPopupUpload.bind(this), null, remoteClass, remoteMethod);
