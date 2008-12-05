@@ -42,7 +42,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		{
 			for (intCustomerGroupId in this._arrCallCentres[intCallCentre].customerGroupIds)
 			{
-				if (parseInt(intCustomerGroupId))
+				if (this._arrVendors[intCustomerGroupId].externalName != undefined)
 				{
 					// Create the element
 					elmVendorCombo.add(new Option(this._arrVendors[intCustomerGroupId].externalName, intCustomerGroupId), null);
