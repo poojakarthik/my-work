@@ -30,7 +30,8 @@ var Telemarketing_ProposedUpload	= Class.create
 			}
 			else
 			{
-				var elmNone	= elmVendorCombo.options[i].id;
+				// Set [None] as selected
+				elmVendorCombo.options[i].selected	= true;
 			}
 		}
 		
@@ -43,9 +44,6 @@ var Telemarketing_ProposedUpload	= Class.create
 				this._arrVendors[intCustomerGroupId].externalName;
 			}
 		}
-		
-		// Select the [None] option
-		elmNone.selected	= true;
 	},
 	
 	_renderPopup	: function(objPopup, strHTML, objResponse)
