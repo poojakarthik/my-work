@@ -182,11 +182,12 @@ class Cli_App_Billing extends Cli
 	private function _generate()
 	{
 		// Was there a Fake Date provided?
-		$strDate = date("Y-m-d H:i:s", ($this->_arrArgs[self::SWITCH_FAKE_DATE]) ?  $this->_arrArgs[self::SWITCH_FAKE_DATE] : time());
+		$strDatetime	= date("Y-m-d H:i:s", ($this->_arrArgs[self::SWITCH_FAKE_DATE]) ?  $this->_arrArgs[self::SWITCH_FAKE_DATE] : time());
+		$strDate		= date("Y-m-d", strtotime($strDatetime));
 		
 		// Are there any Invoice Runs due?
 		$selPaymentTerms		= new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
-		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "customer_group_id = <customer_group_id> AND <InvoiceDate> = SUBDATE(CURDATE(), INTERVAL invoice_day_offset DAY)");
+		$selInvoiceRunSchedule	= new StatementSelect("invoice_run_schedule", "*", "customer_group_id = <customer_group_id> AND <InvoiceDate> = SUBDATE({$strDate}, INTERVAL invoice_day_offset DAY)");
 
 		if (!$selPaymentTerms->Execute())
 		{
@@ -207,7 +208,7 @@ class Cli_App_Billing extends Cli
 				Cli_App_Billing::debug("\tCustomer Group: ".GetConstantDescription($arrPaymentTerms['customer_group_id'], 'CustomerGroup'));
 
 				// Predict the next Billing Date
-				$strInvoiceDate		= Invoice_Run::predictNextInvoiceDate($arrPaymentTerms['customer_group_id'], $strDate);
+				$strInvoiceDate		= Invoice_Run::predictNextInvoiceDate($arrPaymentTerms['customer_group_id'], $strDatetime);
 				$intInvoiceDatetime	= strtotime($strInvoiceDate);
 				Cli_App_Billing::debug("\t\t * Predicted Billing Date\t: {$strInvoiceDate}");
 
