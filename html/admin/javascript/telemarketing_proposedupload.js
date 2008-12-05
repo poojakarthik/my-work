@@ -51,10 +51,6 @@ var Telemarketing_ProposedUpload	= Class.create
 				elmVendorCombo.add(new Option(this._arrVendors[intCustomerGroupId].externalName, intCustomerGroupId), null);
 			}
 		}
-		else
-		{
-			alert("Invalid Call Centre!");
-		}
 	},
 	
 	_renderPopup	: function(objPopup, strHTML, objResponse)
