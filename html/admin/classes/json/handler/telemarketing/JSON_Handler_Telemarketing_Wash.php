@@ -17,11 +17,20 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			{
 				$arrCallCentrePermissions[$objDealer->id]	= $objDealer->toArray();
 			}
-				
+			
+			// Get list of Vendors
+			$arrCustomerGroups	= Customer_Group::getAll();
+			$arrVendors			= array();
+			foreach ($arrCustomerGroups as $objCustomerGroup)
+			{
+				$arrVendors[$objCustomerGroup->id]	= array('id' => $objCustomerGroup->id, 'externalName' => $objCustomerGroup->externalName);
+			}
+			
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"					=> TRUE,
-							"arrCallCentrePermissions"	=> $arrCallCentrePermissions
+							"arrCallCentrePermissions"	=> $arrCallCentrePermissions,
+							"arrVendors"				=> $arrVendors
 						);
 		}
 		catch (Exception $e)
