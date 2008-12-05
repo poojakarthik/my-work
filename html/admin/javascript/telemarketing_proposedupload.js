@@ -67,10 +67,15 @@ var Telemarketing_ProposedUpload	= Class.create
 	{
 		this._arrCallCentres	= objResponse.arrCallCentrePermissions;
 		
-		// Generate 
+		// Generate Call Centre List
+		var strDealerListHTML	= '';
+		for (intDealerId in this._arrCallCentres)
+		{
+			strDealerListHTML	+= "<option value='" + intDealerId + "'>" + this._arrCallCentres[intDealerId].firstName + " " + this._arrCallCentres[intDealerId].lastName + "</option>\n";
+		}
 		
 		// Generate Popup HTML
-		strHTML	= "\n" + 
+		var strHTML	= "\n" + 
 		"<form method='post' action='' enctype='multipart/form-data'>\n" + 
 		"	<div class='GroupedContent'>\n" + 
 		"		<table class='form-data' style='width:100%'>\n" + 
