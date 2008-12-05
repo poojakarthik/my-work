@@ -40,15 +40,18 @@ var Telemarketing_ProposedUpload	= Class.create
 		alert(elmDealerCombo);
 		var intCallCentre	= elmDealerCombo.options[elmDealerCombo.selectedIndex].value;
 		alert("dealer.id = " + intCallCentre);
-		if (this._arrCallCentres[intCallCentre] && this._arrCallCentres[intCallCentre].customerGroupIds.length > 0)
+		if (this._arrCallCentres[intCallCentre])
 		{
 			for (intCustomerGroupId in this._arrCallCentres[intCallCentre].customerGroupIds)
 			{
-				alert("Adding Option Id "+intCustomerGroupId);
-				alert("Adding Option Value "+this._arrVendors[intCustomerGroupId].externalName);
-				
-				// Create the element
-				elmVendorCombo.add(new Option(this._arrVendors[intCustomerGroupId].externalName, intCustomerGroupId), null);
+				if (parseInt(intCustomerGroupId))
+				{
+					alert("Adding Option Id "+intCustomerGroupId);
+					alert("Adding Option Value "+this._arrVendors[intCustomerGroupId].externalName);
+					
+					// Create the element
+					elmVendorCombo.add(new Option(this._arrVendors[intCustomerGroupId].externalName, intCustomerGroupId), null);
+				}
 			}
 		}
 	},
