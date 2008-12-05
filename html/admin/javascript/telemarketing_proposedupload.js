@@ -37,13 +37,20 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		// Add all of this Call Centre's permitted Vendors
 		var intCallCentre	= $('Telemarketing_ProposedUpload_Dealer').value;
+		alert("dealer.id = " + intCallCentre);
 		if (this._arrCallCentres[intCallCentre])
 		{
 			for (intCustomerGroupId in this._arrCallCentres[intCallCentre].customerGroupIds)
 			{
+				alert("Adding Option ("+intCustomerGroupId+", "+this._arrVendors[intCustomerGroupId].externalName+")");
+				
 				// Create the element
 				elmVendorCombo.add(Option(this._arrVendors[intCustomerGroupId].externalName, intCustomerGroupId));
 			}
+		}
+		else
+		{
+			alert("Invalid Call Centre!");
 		}
 	},
 	
