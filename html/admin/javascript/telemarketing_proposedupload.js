@@ -1,7 +1,4 @@
-// Ensure that telemarketing.js Parent Class has been loaded
-JsAutoLoader.loadScript('javascript/telemarketing.js', function(){Flex.Telemarketing.ProposedUpload = (Flex.Telemarketing.ProposedUpload == undefined) ? new Telemarketing_ProposedUpload() : Flex.Telemarketing.ProposedUpload});
-
-// Class: Telemarketing
+// Class: Telemarketing_ProposedUpload
 // Handles the Telemarketing Proposed FNN Upload page
 var Telemarketing_ProposedUpload	= Class.create
 ({
@@ -68,13 +65,7 @@ var Telemarketing_ProposedUpload	= Class.create
 	
 	_renderPopupUpload	: function(objResponse)
 	{
-		this._objResponse	= objResponse;
-		
-		var hashCallCentrePermissions	= objResponse.arrCallCentrePermissions;
-		/*for (i in hashCallCentrePermissions)
-		{
-			alert(hashCallCentrePermissions[i]);
-		}*/
+		this._arrCallCentres	= objResponse.arrCallCentrePermissions;
 		
 		// Generate 
 		
@@ -120,3 +111,5 @@ var Telemarketing_ProposedUpload	= Class.create
 		this._renderPopup(this.objPopupUpload, strHTML, objResponse);
 	}
 });
+
+Flex.Telemarketing.ProposedUpload = (Flex.Telemarketing.ProposedUpload == undefined) ? new Telemarketing_ProposedUpload() : Flex.Telemarketing.ProposedUpload;
