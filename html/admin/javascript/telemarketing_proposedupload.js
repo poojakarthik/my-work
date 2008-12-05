@@ -36,7 +36,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		}
 		
 		// Add all of this Call Centre's permitted Vendors
-		var elmDealerCombo	= $('Telemarketing_ProposedUpload_Dealer');
+		var elmDealerCombo	= document.getElementById('Telemarketing_ProposedUpload_Dealer');
 		alert(elmDealerCombo);
 		var intCallCentre	= elmDealerCombo.options[elmDealerCombo.selectedIndex].value;
 		alert("dealer.id = " + intCallCentre);
