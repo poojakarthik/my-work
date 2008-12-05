@@ -51,6 +51,40 @@ var Telemarketing_ProposedUpload	= Class.create
 		}
 	},
 	
+	submit			: function()
+	{
+		// Ensure that all fields are populated
+		var arrErrors	= new Array();
+		
+		if ($ID('Telemarketing_ProposedUpload_Dealer').selectedIndex < 1)
+		{
+			arrErrors.push("[!] Please selected a Call Centre");
+		}
+		if ($ID('Telemarketing_ProposedUpload_Vendor').selectedIndex < 1)
+		{
+			arrErrors.push("[!] Please selected a Vendor");
+		}
+		if ($ID(!'Telemarketing_ProposedUpload_File').value)
+		{
+			arrErrors.push("[!] Please selected a valid Proposed Dialling List file to upload");
+		}
+		
+		if (arrErrors.length)
+		{
+			var strError	= "There is an error with your input.  Please satisfy the following requirements before submitting again:\n";
+			for (i = 0; i < arrErrors.length; i++)
+			{
+				strError	.=  "\n" + arrErrors[i];
+			}
+			alert(strError);
+			return false;
+		}
+		
+		// Perform AJAX query
+		alert("This is where the AJAX voodoo will happen");
+		return true;
+	},
+	
 	_renderPopup	: function(objPopup, strHTML, objResponse)
 	{
 		// Hide the 'Loading' Splash, and display the popup
