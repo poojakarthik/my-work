@@ -21,18 +21,17 @@ var Telemarketing_ProposedUpload	= Class.create
 	{
 		// Purge all entries in the Vendor combo
 		var elmVendorCombo		= $('Telemarketing_ProposedUpload_Vendor');
-		var arrVendorChildren	= elmVendorCombo.childElements();
 		var elmNone				= null;
-		for (i = 0; i < arrVendorChildren.length; i++)
+		for (i = 0; i < elmVendorCombo.options.length; i++)
 		{
 			// Purge everything but the [None] option
-			if (arrVendorChildren[i].value)
+			if (elmVendorCombo.options[i].value)
 			{
-				elmVendorCombo.removeChild($(arrVendorChildren[i].id));
+				elmVendorCombo.removeChild(elmVendorCombo.options[i]);
 			}
 			else
 			{
-				elmNone	= $(arrVendorChildren[i].id);
+				elmNone	= elmVendorCombo.options[i].id;
 			}
 		}
 		
