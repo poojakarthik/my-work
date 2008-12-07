@@ -2,6 +2,8 @@
 
 class Ticketing_Category
 {
+	const TICKETING_CATEGORY_UNCATEGORIZED = 0;
+	
 	protected $arrProperties = array();
 
 	protected function __construct($arrProps)
@@ -15,15 +17,15 @@ class Ticketing_Category
 		{
 			case 'id':
 			case 'value':
-				return $this->arrProperties['Id'];
+				return $this->arrProperties['id'];
 			case 'name':
-				return $this->arrProperties['Name'];
+				return $this->arrProperties['name'];
 			case 'description':
-				return $this->arrProperties['Description'];
+				return $this->arrProperties['description'];
 			case 'constant':
-				return $this->arrProperties['Constant'];
+				return $this->arrProperties['const_name'];
 			case 'cssclass':
-				return str_replace('_', '-', strtolower($this->arrProperties['Constant']));
+				return str_replace('_', '-', strtolower($this->arrProperties['const_name']));
 		}
 	}
 
@@ -42,17 +44,20 @@ class Ticketing_Category
 		static $instances;
 		if (!isset($instances))
 		{
-			$arrNameSort = array();
-			foreach ($GLOBALS['*arrConstant'][strtolower(__CLASS__)] as $id => $props)
+			$db = Data_Source::get();
+			
+			$strSQL = "SELECT id, name, description, const_name FROM ticketing_category ORDER BY name ASC";
+			
+			if (PEAR::isError(($result = $db->query($strSQL))))
 			{
-				$props['Id'] = $id;
-				$arrNameSort[$props['Name']] = $props;
+				throw new Exception("Unable to retrieve the list of available Ticketing Categories: " . $result->getMessage());
 			}
-			ksort($arrNameSort);
+			
+			$arrNameSort = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
 			$instances = array();
 			foreach ($arrNameSort as $props)
 			{
-				$instances[$props['Id']] = new self($props);
+				$instances[$props['id']] = new self($props);
 			}
 		}
 		return $instances;
