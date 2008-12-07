@@ -804,6 +804,8 @@
 	 	
 	 	$intRunDate	= time();
 	 	
+	 	$arrCustomerGroups = array();
+	 	
 	 	// Are the Direct Debits due?
 		 CliEcho("* Retrieving list of CustomerGroups...");
 	 	if ($bolForce !== TRUE)
