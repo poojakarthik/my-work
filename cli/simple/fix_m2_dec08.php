@@ -14,7 +14,7 @@ if (!$resImportFile)
 }
 
 // Start a new Transaction
-Data_Access::getDataAccess()->TransactionStart();
+DataAccess::getDataAccess()->TransactionStart();
 
 $strProcessingDatetime	= date("Y-m-d H:i:s");
 try
@@ -91,11 +91,11 @@ try
 catch (Exception $eException)
 {
 	// Rollback the Transaction
-	Data_Access::getDataAccess()->TransactionRollback();
+	DataAccess::getDataAccess()->TransactionRollback();
 	throw $eException;
 }
 
 // Commit the Transaction
-Data_Access::getDataAccess()->TransactionRollback();
-//Data_Access::getDataAccess()->TransactionCommit();
+DataAccess::getDataAccess()->TransactionRollback();
+//DataAccess::getDataAccess()->TransactionCommit();
 ?>
