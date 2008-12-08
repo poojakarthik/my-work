@@ -42,14 +42,14 @@ var Telemarketing	= Class.create
 			alert('objResponse.' + i + ' = "' + objResponse[i] + '"');
 		}*/
 		
-		// Destroy the Div and Iframe
-		//document.body.removeChild($ID(elmIframe.id + '_div'));
-		
 		// Call the Handler Function (if one was supplied)
 		if (elmIframe.funcResponseHandler != undefined)
 		{
 			elmIframe.funcResponseHandler(objResponse);
 		}
+		
+		// Destroy the Div and Iframe
+		document.body.removeChild($ID(elmIframe.id + '_div'));
 		
 		return;
 	}
