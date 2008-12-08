@@ -28,7 +28,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 	public function UploadProposedDiallingList($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		//AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		// Build List of Breached Contracts and their recommended actions
 		try
