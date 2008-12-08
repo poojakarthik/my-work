@@ -36,8 +36,9 @@ var Telemarketing	= Class.create
 		alert("Iframe loaded!");
 		
 		// Parse Iframe contents for response data (JSON'd PHP Array)
-		var objResponse	= jQuery.json.decode(elmIframe.innerHTML);
-		alert(elmIframe.innerHTML);
+		var strResponse	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
+		var objResponse	= jQuery.json.decode(strResponse);
+		alert(strResponse);
 		
 		for (i in objResponse)
 		{
