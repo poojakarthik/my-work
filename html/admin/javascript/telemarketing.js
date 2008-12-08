@@ -27,21 +27,20 @@ var Telemarketing	= Class.create
 		// Add a target to the form
 		elmForm.setAttribute('target', strIframeId);
 		
+		// Submit the form
 		elmForm.submit();
 	},
 	
 	iframeFormLoaded	: function(elmIframe)
 	{
-		alert("Iframe loaded!");
-		
 		// Parse Iframe contents for response data (JSON'd PHP Array)
 		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		var objResponse			= jQuery.json.decode(objIframeDocument.body.innerHTML);
 		
-		for (i in objResponse)
+		/*for (i in objResponse)
 		{
 			alert('objResponse.' + i + ' = "' + objResponse[i] + '"');
-		}
+		}*/
 		
 		// Destroy the Div and Iframe
 		document.body.removeChild($ID(elmIframe.id + '_div'));

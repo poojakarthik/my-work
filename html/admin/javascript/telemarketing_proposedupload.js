@@ -80,6 +80,11 @@ var Telemarketing_ProposedUpload	= Class.create
 			return false;
 		}
 		
+		// Disable the buttons (including the [X] at in the popup titlebar)
+		$ID('Telemarketing_ProposedUpload_Submit').visible					= false;
+		$ID('Telemarketing_ProposedUpload_Cancel').visible					= false;
+		$ID('VixenPopupTopBarClose__Telemarketing_ProposedUpload').visible	= false;
+		
 		// Show the Loading Splash
 		Vixen.Popup.ShowPageLoadingSplash("Uploading Proposed Dialling List...", null, null, null, 100);
 		
