@@ -82,9 +82,9 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		alert('Start Hiding');
 		// Disable the buttons (including the [X] at in the popup titlebar)
-		$ID('Telemarketing_ProposedUpload_Submit').display					= 'none';
-		$ID('Telemarketing_ProposedUpload_Cancel').display					= 'none';
-		$ID('VixenPopupTopBarClose__Telemarketing_ProposedUpload').display	= 'none';
+		$ID('Telemarketing_ProposedUpload_Submit').style.visibility					= 'hidden';
+		$ID('Telemarketing_ProposedUpload_Cancel').style.visibility					= 'hidden';
+		$ID('VixenPopupTopBarClose__Telemarketing_ProposedUpload').style.visibility	= 'hidden';
 		alert('End Hiding');
 		
 		// Show the Loading Splash
