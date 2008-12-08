@@ -27,7 +27,6 @@ var Telemarketing	= Class.create
 		// Add a target to the form
 		elmForm.setAttribute('target', strIframeId);
 		
-		alert("Submitting Form");
 		elmForm.submit();
 	},
 	
@@ -38,7 +37,6 @@ var Telemarketing	= Class.create
 		// Parse Iframe contents for response data (JSON'd PHP Array)
 		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		var objResponse			= jQuery.json.decode(objIframeDocument.body.innerHTML);
-		alert(objIframeDocument.body.innerHTML);
 		
 		for (i in objResponse)
 		{
@@ -46,7 +44,7 @@ var Telemarketing	= Class.create
 		}
 		
 		// Destroy the Div and Iframe
-		//document.body.removeChild(elmIframe.id + '_div');
+		document.body.removeChild(elmIframe.id + '_div');
 		
 		// Call the Handler Function (if one was supplied)
 		if (elmIframe.funcResponseHandler != undefined)
