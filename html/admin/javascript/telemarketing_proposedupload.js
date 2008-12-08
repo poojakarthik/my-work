@@ -81,6 +81,9 @@ var Telemarketing_ProposedUpload	= Class.create
 		}
 		
 		// Disable the buttons (including the [X] at in the popup titlebar)
+		$ID('Telemarketing_ProposedUpload_Dealer').disabled							= true;
+		$ID('Telemarketing_ProposedUpload_Vendor').disabled							= true;
+		$ID('Telemarketing_ProposedUpload_File').disabled							= true;
 		$ID('Telemarketing_ProposedUpload_Submit').style.display					= 'none';
 		$ID('Telemarketing_ProposedUpload_Cancel').style.display					= 'none';
 		$ID('VixenPopupTopBarClose__Telemarketing_ProposedUpload').style.display	= 'none';
