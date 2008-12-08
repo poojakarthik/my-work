@@ -281,8 +281,8 @@ class Invoice_Run
 			// Database Error -- throw Exception
 			throw new Exception("DB ERROR: ".$selInvoiceBalanceHistory->Error());
 		}
-		$arrCurrentBalanceTotal		= $selInvoiceTotals->Fetch();
-		$arrPreviousBalanceTotal	= $selInvoiceTotals->Fetch();
+		$arrCurrentBalanceTotal		= $selInvoiceBalanceHistory->Fetch();
+		$arrPreviousBalanceTotal	= $selInvoiceBalanceHistory->Fetch();
 
 		$fltTotalOutstanding		= 0;
 		while ($arrBalanceTotal = $selInvoiceTotals->Fetch())
