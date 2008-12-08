@@ -49,7 +49,7 @@ var Telemarketing	= Class.create
 		}
 		
 		// Destroy the Div and Iframe
-		document.body.removeChild(elmIframe);
+		$ID(elmIframe.id + '_div').removeChild(elmIframe);
 		document.body.removeChild($ID(elmIframe.id + '_div'));
 		
 		return;
