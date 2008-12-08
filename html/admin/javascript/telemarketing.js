@@ -44,7 +44,7 @@ var Telemarketing	= Class.create
 		}
 		
 		// Destroy the Div and Iframe
-		document.body.removeChild(elmIframe.id + '_div');
+		document.body.removeChild($ID(elmIframe.id + '_div'));
 		
 		// Call the Handler Function (if one was supplied)
 		if (elmIframe.funcResponseHandler != undefined)
