@@ -100,6 +100,8 @@ var Telemarketing_ProposedUpload	= Class.create
 	uploadReponseHandler	: function(objResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
+		
+		alert("Popup Closed");
 	},
 	
 	_renderPopup	: function(objPopup, strHTML, objResponse)
