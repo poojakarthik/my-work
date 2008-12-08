@@ -72,7 +72,7 @@ class Ticketing_Ticket
 			throw new Exception("Customer group $custGroupId does not exist.");
 		}
 		$objTicket->customerGroupId = $custGroupId;
-		$objTicket->categoryId = TICKETING_CATEGORY_UNCATEGORIZED;
+		$objTicket->categoryId = Ticketing_Category::TICKETING_CATEGORY_UNCATEGORIZED;
 		$objTicket->creationDatetime = $objTicket->modifiedDatetime = date('Y-m-d H-i-s');
 
 		// We can check to see if the contact is associated with just one account. 

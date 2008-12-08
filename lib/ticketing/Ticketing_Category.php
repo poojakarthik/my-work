@@ -22,10 +22,8 @@ class Ticketing_Category
 				return $this->arrProperties['name'];
 			case 'description':
 				return $this->arrProperties['description'];
-			case 'constant':
-				return $this->arrProperties['const_name'];
 			case 'cssclass':
-				return str_replace('_', '-', strtolower($this->arrProperties['const_name']));
+				return str_replace('_', '-', strtolower($this->arrProperties['css_name']));
 		}
 	}
 
@@ -46,7 +44,7 @@ class Ticketing_Category
 		{
 			$db = Data_Source::get();
 			
-			$strSQL = "SELECT id, name, description, const_name FROM ticketing_category ORDER BY name ASC";
+			$strSQL = "SELECT id, name, description, css_name FROM ticketing_category ORDER BY name ASC";
 			
 			if (PEAR::isError(($result = $db->query($strSQL))))
 			{
