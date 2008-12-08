@@ -104,7 +104,6 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		// Display confirmation popup
 		$Alert(objResponse.Message);
-		throw "test";
 		return;
 	},
 	
