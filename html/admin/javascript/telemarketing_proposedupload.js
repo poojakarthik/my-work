@@ -98,7 +98,9 @@ var Telemarketing_ProposedUpload	= Class.create
 	
 	uploadReponseHandler	: function(objResponse)
 	{
+		// Close the Splash and File Upload Prompt
 		Vixen.Popup.ClosePageLoadingSplash();
+		Vixen.Popup.Close(this.objPopupUpload.strId);
 		
 		// Display confirmation popup
 		$Alert(objResponse.Message);
