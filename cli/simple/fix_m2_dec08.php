@@ -2,6 +2,8 @@
 // Load the Framework
 require_once("../../lib/classes/Flex.php");
 
+CliEcho("\n\n[ FIXING M2 CDR FUCKUPS ]\n");
+
 // Open the Import File
 $strImportPath	= '/home/rdavis/fix_m2_dec08.csv';
 $resImportFile	= fopen($strImportPath, 'r');
@@ -17,8 +19,15 @@ $strProcessingDatetime	= date("Y-m-d H:i:s");
 try
 {
 	// Parse each line
+	$intLine	= 0;
 	while ($arrLine = fgetcsv($resImportFile))
 	{
+		$intLine++;
+		if (count($arrLine) != 4)
+		{
+			throw new Exception("Parsing Error! -- Line {$intLine} has an incorrect number of columns");
+		}
+		
 		$intAccount			= (int)$arrLine[0];
 		$fltOldTotal		= (float)$arrLine[1];
 		$fltNewTotal		= (float)$arrLine[2];
@@ -30,6 +39,7 @@ try
 		// Get additional details
 		$objAccount	= new Account(array('Id'=>$intAccount), false, true);
 		
+		CliEcho("\t+ Account {$intAccount}...", false);
 		
 		// Add Charge
 		$objCharge	= new Charge();
@@ -59,6 +69,8 @@ try
 			$objCharge->Notes			= "Account {$intAccount} has been credited \${$fltAmountIncGST} due to an M2 CDR issue affecting the December 2008 Invoice";
 		}
 		$objCharge->save();
+		
+		CliEcho("{$objCharge->Nature} for \${$fltAmountIncGST}");
 		
 		
 		// Add Note
