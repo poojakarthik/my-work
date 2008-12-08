@@ -33,6 +33,11 @@ var Telemarketing	= Class.create
 		// Parse Iframe contents for response data (JSON'd PHP Array)
 		var objResponse	= jQuery.json.decode(elmIframe.innerHTML);
 		
+		for (i in objResponse)
+		{
+			alert('objResponse.' + i + ' = "' + objResponse[i] + '"');
+		}
+		
 		// Destroy the Div and Iframe
 		//document.body.removeChild(elmIframe.id + '_div');
 		
