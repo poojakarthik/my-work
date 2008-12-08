@@ -24,8 +24,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 		}
 	}
 	
-	// Uploads a posted file
-	public function Upload($subPath)
+	// Uploads a Proposed Dialling List file
+	public function UploadProposedDiallingList($subPath)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
@@ -33,17 +33,24 @@ class Application_Handler_Telemarketing extends Application_Handler
 		// Build List of Breached Contracts and their recommended actions
 		try
 		{
+			throw new Exception("Uploading not supported yet!");
+			
 			// Import the File (into FileImport)
+			//$objFileImport	= new File_Import();
 			// TODO
 			
-			$this->LoadPage('sales_fnn_washing_uploaded', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			// Import the Proposed FNNs into the telemarketing_fnn table
+			// TODO
 		}
 		catch (Exception $e)
 		{
-			$arrDetailsToRender['Message']		= "An error occured";
-			$arrDetailsToRender['ErrorMessage']	= $e->getMessage();
-			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			$arrDetailsToRender['Success']	= false;
+			$arrDetailsToRender['Message']	= $e->getMessage();
+			
 		}
+		
+		// Render the JSON'd Array
+		echo JSON_Services::instance()->encode($arrDetailsToRender);
 	}
 }
 

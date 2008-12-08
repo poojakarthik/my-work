@@ -80,9 +80,17 @@ var Telemarketing_ProposedUpload	= Class.create
 			return false;
 		}
 		
+		// Show the Loading Splash
+		Vixen.Popup.ShowPageLoadingSplash("Uploading Proposed Dialling List...", null, null, null, 100);
+		
 		// Perform AJAX query
-		alert("This is where the AJAX voodoo will happen");
+		Flex.Telemarketing.iframeFormSubmit($ID('Telemarketing_ProposedUpload_Form'), this.uploadReponseHandler.bind(this));
 		return true;
+	},
+	
+	uploadReponseHandler	: function(objResponse)
+	{
+		Vixen.Popup.ClosePageLoadingSplash();
 	},
 	
 	_renderPopup	: function(objPopup, strHTML, objResponse)
@@ -130,7 +138,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		// Generate Popup HTML
 		var strHTML	= "\n" + 
-		"<form method='post' action='' enctype='multipart/form-data'>\n" + 
+		"<form id='Telemarketing_ProposedUpload_Form' name='Telemarketing_ProposedUpload_Form' method='post' action='' enctype='multipart/form-data'>\n" + 
 		"	<div class='GroupedContent'>\n" + 
 		"		<table class='form-data' style='width:100%'>\n" + 
 		"			<tbody>\n" + 
