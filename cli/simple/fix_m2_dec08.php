@@ -1,6 +1,7 @@
 <?php
 // Load the Framework
 require_once("../../lib/classes/Flex.php");
+Flex::load();
 
 CliEcho("\n\n[ FIXING M2 CDR FUCKUPS ]\n");
 
