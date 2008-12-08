@@ -50,6 +50,7 @@ var Telemarketing	= Class.create
 		{
 			elmIframe.funcResponseHandler(objResponse);
 		}
+		throw "test";
 	}
 });
 
