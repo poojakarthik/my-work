@@ -90,7 +90,6 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		// Show the Loading Splash
 		Vixen.Popup.ShowPageLoadingSplash("Uploading Proposed Dialling List...", null, null, null, 100);
-		alert("Showing Popup");
 		
 		// Perform AJAX query
 		Flex.Telemarketing.iframeFormSubmit($ID('Telemarketing_ProposedUpload_Form'), this.uploadReponseHandler.bind(this));
@@ -101,7 +100,8 @@ var Telemarketing_ProposedUpload	= Class.create
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
 		
-		alert("Popup Closed");
+		// Display confirmation popup
+		$Alert(objResponse.Message);
 	},
 	
 	_renderPopup	: function(objPopup, strHTML, objResponse)
