@@ -48,11 +48,25 @@ var Telemarketing	= Class.create
 			elmIframe.funcResponseHandler(objResponse);
 		}
 		
-		// Destroy the Div and Iframe
-		var strIframeId	= elmIframe.id;
-		document.body.removeChild($ID(strIframeId + '_div'));
-		alert("Iframe is now :: " + $ID(strIframeId));
-		return;
+		// Schedule Iframe Cleanup
+		setTimeout(this._iframeCleanup(elmIframe).bind(this, elmIframe), 100);
+		
+		elmIframe.bolLoaded	= true;
+	},
+	
+	_iframeCleanup		: function(elmIframe)
+	{
+		// If the IFrame exists and is loaded, then remove it
+		if ($ID(elmIframe.id) && elmIframe.loaded)
+		{
+			// Destroy the Div and Iframe
+			document.body.removeChild($ID(elmIframe.id + '_div'));
+		}
+		else
+		{
+			// Otherwise schedule another cleanup
+			setTimeout(this._iframeCleanup(elmIframe).bind(this, elmIframe), 100);
+		}
 	}
 });
 
