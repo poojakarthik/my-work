@@ -15,10 +15,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			// Include the application... 
 			$this->requireOnce('flex.require.php');
 
-			// !!!HACK HACK HACK!!!
-			// This is always for telcoblue, but it will need changing for other customer groups!
-			$accountLink = 'https://telcoblue.yellowbilling.com.au/management/flex.php/Account/Overview/?Account.Id=';
-			$this->log("WARNING: This script assumes an interface URL of 'https://telcoblue.yellowbilling.com.au/...'.\n         This must be changed before using for new customer groups.", TRUE);
+			$accountLink = '/management/flex.php/Account/Overview/?Account.Id=';
 
 			$strIntro = 'The email addresses for the following accounts were recently found to be invalid. Any recent attempts to send emails to those addresses will have failed. Please check the details are entered correctly for each account.';
 			$strFooter = "Regards,<br/>\n<br/>\nThe Team at Yellow Billing";
@@ -78,8 +75,8 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			}
 
 			$sel = array('TR' => "Concat('<tr><td>', Account.Id, '</td>\t<td>', Contact.FirstName, ' ', Contact.LastName, '</td>\t<td>', Contact.Email, '</td>\t<td>',
-					   '<a href=''$accountLink', Account.Id, '''>https://telcoblue.yellowbilling.com.au/management/flex.php/Account/Overview/?Account.Id=', Account.Id, '</a></td></tr>\n')");
-			$selAccounts = new StatementSelect("Account, Contact", $sel, "Contact.AccountGroup = Account.AccountGroup AND Account.CustomerGroup = <CustomerGroup> AND $strSqlEmailIn");
+					   '<a href=''', CustomerGroup.flex_url, '$accountLink', Account.Id, '''>', CustomerGroup.flex_url, '$accountLink', Account.Id, '</a></td></tr>\n')");
+			$selAccounts = new StatementSelect("Account, Contact, CustomerGroup", $sel, "Contact.AccountGroup = Account.AccountGroup AND Account.CustomerGroup = <CustomerGroup> AND CustomerGroup.Id = Account.CustomerGroup AND $strSqlEmailIn");
 
 			$exitCode = 0;
 
