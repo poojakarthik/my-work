@@ -49,8 +49,9 @@ var Telemarketing	= Class.create
 		}
 		
 		// Destroy the Div and Iframe
-		var test	= document.body.removeChild($ID(elmIframe.id + '_div'));
-		
+		var strIframeId	= elmIframe.id;
+		document.body.removeChild($ID(strIframeId + '_div'));
+		alert("Iframe is now :: " + $ID(strIframeId));
 		return;
 	}
 });
