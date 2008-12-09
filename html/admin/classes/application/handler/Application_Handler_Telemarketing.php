@@ -31,16 +31,28 @@ class Application_Handler_Telemarketing extends Application_Handler
 		//AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		// Build List of Breached Contracts and their recommended actions
+		$arrDetailsToRender	= array();
 		try
 		{
-			throw new Exception("Uploading not supported yet!");
+			throw new Exception("Uploading not supported yet! ".print_r($_FILES['Telemarketing_ProposedUpload_File'], true));
 			
 			// Import the File (into FileImport)
-			//$objFileImport	= new File_Import();
-			// TODO
+			try
+			{
+				$objFileImport	= File_Import::import($_FILES['Telemarketing_ProposedUpload_File']['tmp_name'], $intFileType, $intCarrier, "FileName = <FileName>");
+			}
+			catch (Exception $eException)
+			{
+				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au");
+			}
 			
 			// Import the Proposed FNNs into the telemarketing_fnn table
 			// TODO
+			
+			// Generate Response
+			$arrDetailsToRender['Success']			= true;
+			$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'.";
+			$arrDetailsToRender['file_import_id']	= $objFileImport->Id;
 		}
 		catch (Exception $e)
 		{

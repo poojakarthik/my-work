@@ -61,8 +61,6 @@ var Telemarketing	= Class.create
 		{
 			// Destroy the Div and Iframe
 			document.body.removeChild($ID(elmIframe.id + '_div'));
-			
-			alert("Iframe destroyed!");
 		}
 		else
 		{
