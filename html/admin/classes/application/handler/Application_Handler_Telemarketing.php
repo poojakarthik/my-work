@@ -34,7 +34,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		$arrDetailsToRender	= array();
 		try
 		{
-			throw new Exception("Uploading not supported yet! ".print_r($_FILES, true).print_r($_POST));
+			throw new Exception("Uploading not supported yet! ".print_r($_FILES, true).print_r($_POST, true));
 			
 			// Import the File (into FileImport)
 			try
