@@ -49,7 +49,7 @@ var Telemarketing	= Class.create
 		}
 		
 		// Schedule Iframe Cleanup
-		setTimeout(this._iframeCleanup(elmIframe).bind(this, elmIframe), 100);
+		setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
 		
 		elmIframe.bolLoaded	= true;
 	},
@@ -67,7 +67,7 @@ var Telemarketing	= Class.create
 		else
 		{
 			// Otherwise schedule another cleanup
-			setTimeout(this._iframeCleanup(elmIframe).bind(this, elmIframe), 100);
+			setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
 		}
 	}
 });
