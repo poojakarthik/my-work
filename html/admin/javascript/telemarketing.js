@@ -57,10 +57,12 @@ var Telemarketing	= Class.create
 	_iframeCleanup		: function(elmIframe)
 	{
 		// If the IFrame exists and is loaded, then remove it
-		if ($ID(elmIframe.id) && elmIframe.loaded)
+		if ($ID(elmIframe.id) && elmIframe.bolLoaded)
 		{
 			// Destroy the Div and Iframe
 			document.body.removeChild($ID(elmIframe.id + '_div'));
+			
+			alert("Iframe destroyed!");
 		}
 		else
 		{
