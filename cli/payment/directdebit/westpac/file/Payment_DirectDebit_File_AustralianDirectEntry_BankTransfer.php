@@ -113,6 +113,14 @@
  		$this->_arrModuleConfig['FileDescription']		['Default']		= 'DDBANK';
  		$this->_arrModuleConfig['FileDescription']		['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['FileDescription']		['Description']	= "File Description (eg. 'DDBANK'), limited to 12-characters";
+ 		
+ 		$this->_arrModuleConfig['TraceBSB']				['Default']		= '';
+ 		$this->_arrModuleConfig['TraceBSB']				['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['TraceBSB']				['Description']	= "The BSB for the Account number to trace back to on payment rejection (XXX-XXX)";
+ 		
+ 		$this->_arrModuleConfig['TraceAccount']			['Default']		= '';
+ 		$this->_arrModuleConfig['TraceAccount']			['Type']		= DATA_TYPE_STRING;
+ 		$this->_arrModuleConfig['TraceAccount']			['Description']	= "The Account number to trace back to on payment rejection";
 		
 		//##----------------------------------------------------------------##//
 		// Define File Format
@@ -294,13 +302,13 @@
 		
 		$arrDefine['TraceBSB']			['Start']		= 80;
 		$arrDefine['TraceBSB']			['Length']		= 7;
-		$arrDefine['TraceBSB']			['Config']		= 'BSB';
+		$arrDefine['TraceBSB']			['Config']		= 'TraceBSB';
 		
 		$arrDefine['TraceAccount']		['Start']		= 62;
 		$arrDefine['TraceAccount']		['Length']		= 18;
 		$arrDefine['TraceAccount']		['PadChar']		= ' ';
 		$arrDefine['TraceAccount']		['PadType']		= STR_PAD_RIGHT;
-		$arrDefine['TraceAccount']		['Config']		= 'BankAccountNumber';
+		$arrDefine['TraceAccount']		['Config']		= 'TraceAccount';
 		
 		$arrDefine['Remitter']			['Start']		= 62;
 		$arrDefine['Remitter']			['Length']		= 18;
