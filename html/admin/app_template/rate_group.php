@@ -1385,6 +1385,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 												"Pass through at cost",
 												"Excluded from Cap Plan",
 												"Prorate",
+												"Allow CDR Hiding",
 												"Minimum Charge (\$)",
 												"Discount (%) (1.5 = 1.5%) (optional)",
 												"Standard Flagfall (\$)",
@@ -1420,14 +1421,41 @@ class AppTemplateRateGroup extends ApplicationTemplate
 										DBO()->RateGroup->CapLimit->Value
 									);
 			
-			$arrColumnNames = Array("RateId"=>"R.Id", "Editable"=>"IF(R.Archived = ". RATE_STATUS_DRAFT .", \"Yes\", \"No\")",
-														"DestinationCode"=>"D.Code", "DestinationDescription"=>"D.Description", "RateName"=>"R.Name", "RateDescription"=>"R.Description",
-														"StartTime"=>"R.StartTime", "EndTime"=>"R.EndTime", "Monday"=>"R.Monday", "Tuesday"=>"R.Tuesday", "Wednesday"=>"R.Wednesday",
-														"Thursday"=>"R.Thursday", "Friday"=>"R.Friday", "Saturday"=>"R.Saturday", "Sunday"=>"R.Sunday", "PassThrough"=>"R.PassThrough",
-														"Uncapped"=>"R.Uncapped", "Prorate"=>"R.Prorate", "StdMinCharge"=>"R.StdMinCharge", "discount_percentage"=>"R.discount_percentage", "StdFlagfall"=>"R.StdFlagfall", "StdUnits"=>"R.StdUnits",
-														"StdRatePerUnit"=>"R.StdRatePerUnit", "StdMarkup"=>"R.StdMarkup", "StdPercentage"=>"R.StdPercentage", "CapUnits"=>"R.CapUnits",
-														"CapCost"=>"R.CapCost", "CapUsage"=>"R.CapUsage", "CapLimit"=>"R.CapLimit", "ExsFlagfall"=>"R.ExsFlagfall", "ExsUnits"=>"R.ExsUnits",
-														"ExsRatePerUnit"=>"R.ExsRatePerUnit", "ExsMarkup"=>"R.ExsMarkup","ExsPercentage"=>"R.ExsPercentage");
+			$arrColumnNames = Array("RateId"					=> "R.Id",
+									"Editable"					=> "IF(R.Archived = ". RATE_STATUS_DRAFT .", \"Yes\", \"No\")",
+									"DestinationCode"			=> "D.Code",
+									"DestinationDescription"	=> "D.Description",
+									"RateName"					=> "R.Name",
+									"RateDescription"			=> "R.Description",
+									"StartTime"					=> "R.StartTime",
+									"EndTime"					=> "R.EndTime",
+									"Monday"					=> "R.Monday",
+									"Tuesday"					=> "R.Tuesday",
+									"Wednesday"					=> "R.Wednesday",
+									"Thursday"					=> "R.Thursday",
+									"Friday"					=> "R.Friday",
+									"Saturday"					=> "R.Saturday",
+									"Sunday"					=> "R.Sunday",
+									"PassThrough"				=> "R.PassThrough",
+									"Uncapped"					=> "R.Uncapped",
+									"Prorate"					=> "R.Prorate",
+									"allow_cdr_hiding"			=> "R.allow_cdr_hiding",
+									"StdMinCharge"				=> "R.StdMinCharge",
+									"discount_percentage"		=> "R.discount_percentage",
+									"StdFlagfall"				=> "R.StdFlagfall",
+									"StdUnits"					=> "R.StdUnits",
+									"StdRatePerUnit"			=> "R.StdRatePerUnit",
+									"StdMarkup"					=> "R.StdMarkup",
+									"StdPercentage"				=> "R.StdPercentage",
+									"CapUnits"					=> "R.CapUnits",
+									"CapCost"					=> "R.CapCost",
+									"CapUsage"					=> "R.CapUsage",
+									"CapLimit"					=> "R.CapLimit",
+									"ExsFlagfall"				=> "R.ExsFlagfall",
+									"ExsUnits"					=> "R.ExsUnits",
+									"ExsRatePerUnit"			=> "R.ExsRatePerUnit",
+									"ExsMarkup"					=> "R.ExsMarkup",
+									"ExsPercentage"				=> "R.ExsPercentage");
 			
 			$selRates = new StatementSelect("Rate AS R LEFT OUTER JOIN Destination AS D ON R.Destination = D.Code", $arrColumnNames, "R.Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>)","D.Description, R.Name");
 			
@@ -1456,6 +1484,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 											"PassThrough"			=> 0,
 											"Uncapped"				=> 0,
 											"Prorate"				=> 0,
+											"allow_cdr_hiding"		=> 0,
 											"StdMinCharge"			=> "0.0000",
 											"discount_percentage"	=> NULL,
 											"StdFlagfall"			=> "0.0000",
@@ -1649,7 +1678,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$arrRateGroupKeys	= Array("Id", "Name", "Description", "ServiceType", "RecordType", "Fleet", "CapLimit");
 		$arrRateKeys		= Array("Id", "Editable", "Destination", "DestinationDescription", "Name", "Description", 
 									"StartTime", "EndTime", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
-									"Sunday", "PassThrough", "Uncapped", "Prorate", "StdMinCharge", "discount_percentage", "StdFlagfall", "StdUnits",
+									"Sunday", "PassThrough", "Uncapped", "Prorate", "allow_cdr_hiding", "StdMinCharge", "discount_percentage", "StdFlagfall", "StdUnits",
 									"StdRatePerUnit", "StdMarkup", "StdPercentage", "CapUnits", "CapCost", "CapUsage", "CapLimit",
 									"ExsFlagfall", "ExsUnits", "ExsRatePerUnit", "ExsMarkup", "ExsPercentage");
 
@@ -1855,7 +1884,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			{
 				// The Rate is new
 				$arrRate['Archived'] = ($bolCommit)? RATE_STATUS_ACTIVE : RATE_STATUS_DRAFT;
-				
+
 				$intRateId = $insRate->Execute($arrRate);
 				if (!$intRateId)
 				{
