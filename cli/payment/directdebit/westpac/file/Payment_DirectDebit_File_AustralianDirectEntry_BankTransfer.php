@@ -17,16 +17,6 @@
  * @copyright	2008 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
- */
-
-/**
- * Payment_DirectDebit_File_AustralianDirectEntry_BankTransfer
- *
- * Processes SecurePay Bank Transfer Requests
- *
- * @prefix		exp
- *
- * @package		cli.payment.directdebit
  * @class		Payment_DirectDebit_File_AustralianDirectEntry_BankTransfer
  */
  class Payment_DirectDebit_File_AustralianDirectEntry_BankTransfer extends Payment_DirectDebit_File
