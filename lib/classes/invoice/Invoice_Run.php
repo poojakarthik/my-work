@@ -643,7 +643,7 @@ class Invoice_Run
 
 		$strDay				= str_pad($arrPaymentTerms['invoice_day'], 2, '0', STR_PAD_LEFT);
 		$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00", strtotime($strEffectiveDate)));
-		if ((int)date("d", $intInvoiceDatetime) > $arrPaymentTerms['invoice_day'])
+		if ((int)date("d", strtotime($strEffectiveDate)) > $arrPaymentTerms['invoice_day'])
 		{
 			// Billing Date is next Month
 			$intInvoiceDatetime	= strtotime("+1 month", $intInvoiceDatetime);
