@@ -1463,57 +1463,6 @@ define("PABLO_TIP_SLEAZY"			, 2);
 define("PABLO_TIP_HATES_YOU"		, 3);
 define("PABLO_TIP_DRUNK"			, 4);
 
-// Payments
-// payment status
-$GLOBALS['*arrConstant']	['PaymentStatus']	[100]	['Constant']	= 'PAYMENT_IMPORTED';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[100]	['Description']	= 'Imported';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[101]	['Constant']	= 'PAYMENT_WAITING';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[101]	['Description']	= 'Waiting';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[103]	['Constant']	= 'PAYMENT_PAYING';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[103]	['Description']	= 'Paying';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[150]	['Constant']	= 'PAYMENT_FINISHED';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[150]	['Description']	= 'Finished';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[200]	['Constant']	= 'PAYMENT_BAD_IMPORT';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[200]	['Description']	= 'Import Failed';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[201]	['Constant']	= 'PAYMENT_BAD_PROCESS';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[201]	['Description']	= 'Process Failed';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[202]	['Constant']	= 'PAYMENT_BAD_NORMALISE';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[202]	['Description']	= 'Normalisation Failed';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[203]	['Constant']	= 'PAYMENT_CANT_NORMALISE_HEADER';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[203]	['Description']	= 'Cannot Normalise Header Row';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[204]	['Constant']	= 'PAYMENT_CANT_NORMALISE_FOOTER';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[204]	['Description']	= 'Cannot Normalise Footer Row';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[205]	['Constant']	= 'PAYMENT_CANT_NORMALISE_INVALID';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[205]	['Description']	= 'Cannot Normalise Unrecognised Row';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[206]	['Constant']	= 'PAYMENT_BAD_OWNER';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[206]	['Description']	= 'Cannot Match to an Account';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[207]	['Constant']	= 'PAYMENT_INVALID_CHECK_DIGIT';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[207]	['Description']	= 'Check Digit is Invalid';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[250]	['Constant']	= 'PAYMENT_REVERSED';
-$GLOBALS['*arrConstant']	['PaymentStatus']	[250]	['Description']	= 'Reversed';
-
-
-// payment types
-$GLOBALS['*arrConstant']	['PaymentType']	[1]	['Constant']	= 'PAYMENT_TYPE_BILLEXPRESS';
-$GLOBALS['*arrConstant']	['PaymentType']	[1]	['Description']	= 'BillExpress';
-$GLOBALS['*arrConstant']	['PaymentType']	[2]	['Constant']	= 'PAYMENT_TYPE_BPAY';
-$GLOBALS['*arrConstant']	['PaymentType']	[2]	['Description']	= 'BPay';
-$GLOBALS['*arrConstant']	['PaymentType']	[3]	['Constant']	= 'PAYMENT_TYPE_CHEQUE';
-$GLOBALS['*arrConstant']	['PaymentType']	[3]	['Description']	= 'Cheque';
-$GLOBALS['*arrConstant']	['PaymentType']	[4]	['Constant']	= 'PAYMENT_TYPE_SECUREPAY';
-$GLOBALS['*arrConstant']	['PaymentType']	[4]	['Description']	= 'SecurePay';
-$GLOBALS['*arrConstant']	['PaymentType']	[5]	['Constant']	= 'PAYMENT_TYPE_CREDIT_CARD';
-$GLOBALS['*arrConstant']	['PaymentType']	[5]	['Description']	= 'Credit Card';
-$GLOBALS['*arrConstant']	['PaymentType']	[6]	['Constant']	= 'PAYMENT_TYPE_EFT';
-$GLOBALS['*arrConstant']	['PaymentType']	[6]	['Description']	= 'EFT';
-$GLOBALS['*arrConstant']	['PaymentType']	[7]	['Constant']	= 'PAYMENT_TYPE_CASH';
-$GLOBALS['*arrConstant']	['PaymentType']	[7]	['Description']	= 'Cash';
-$GLOBALS['*arrConstant']	['PaymentType']	[8]	['Constant']	= 'PAYMENT_TYPE_AUSTRAL';
-$GLOBALS['*arrConstant']	['PaymentType']	[8]	['Description']	= 'Austral';
-$GLOBALS['*arrConstant']	['PaymentType']	[9]	['Constant']	= 'PAYMENT_TYPE_CONTRA';
-$GLOBALS['*arrConstant']	['PaymentType']	[9]	['Description']	= 'Contra';
-
-
 // Charge Types/Codes
 define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");
 
