@@ -851,7 +851,12 @@ function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL, $bolUp
 		
 		DBO()->NoteDetails->AccountNotes	= TRUE;
 		$arrWhere							= Array("AccountId" => $intAccountId, "AccountGroupId" => $arrAccountGroup['AccountGroup']);
-		$strWhere							= "(Account = <AccountId> OR (AccountGroup = <AccountGroupId> AND Account IS NULL AND Service IS NULL AND Contact IS NULL))";
+		
+		// The Note table of Flex has an index on AccountGroup but not on Account, 
+		// doing the "AccountGroup = <AccountGroupId> AND " bit should make it use the AccountGroup index
+		//(old method)$strWhere	= "(Account = <AccountId> OR (AccountGroup = <AccountGroupId> AND Account IS NULL AND Service IS NULL AND Contact IS NULL))";
+		$strWhere							= "AccountGroup = <AccountGroupId> AND (Account = <AccountId> OR (Account IS NULL AND Service IS NULL AND Contact IS NULL))";
+		
 		$strCookiePrefix					= "Account";
 	}
 	elseif ($intServiceId)
