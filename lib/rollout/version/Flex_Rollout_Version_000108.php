@@ -22,9 +22,9 @@ class Flex_Rollout_Version_000108 extends Flex_Rollout_Version
 		$strSQL = "CREATE TABLE payment_status " .
 					"(" .
 						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id', " .
-						"name BIGINT(20) NOT NULL COMMENT 'Name of the Payment Status', " .
-						"description DATETIME NOT NULL COMMENT 'Description of the Payment Status', " .
-						"const_name INT(10) NOT NULL COMMENT 'Constant Name for the Payment Status' " .
+						"name VARCHAR(255) NOT NULL COMMENT 'Name of the Payment Status', " .
+						"description VARCHAR(1024) NOT NULL COMMENT 'Description of the Payment Status', " .
+						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Payment Status' " .
 					") ENGINE = innodb;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
@@ -60,9 +60,9 @@ class Flex_Rollout_Version_000108 extends Flex_Rollout_Version
 		$strSQL = "CREATE TABLE payment_type " .
 					"(" .
 						"id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'Unique Id', " .
-						"name BIGINT(20) NOT NULL COMMENT 'Name of the Payment Status', " .
-						"description DATETIME NOT NULL COMMENT 'Description of the Payment Status', " .
-						"const_name INT(10) NOT NULL COMMENT 'Constant Name for the Payment Status' " .
+						"name VARCHAR(255) NOT NULL COMMENT 'Name of the Payment Status', " .
+						"description VARCHAR(1024) NOT NULL COMMENT 'Description of the Payment Status', " .
+						"const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Payment Status' " .
 					") ENGINE = innodb;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
