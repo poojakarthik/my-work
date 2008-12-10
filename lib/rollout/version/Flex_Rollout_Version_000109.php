@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Version 108 of database update.
+ * Version 109 of database update.
  * This version: -
  *	1:	Add the payment_status Table
  *	2:	Populate the payment_status Table
@@ -10,7 +10,7 @@
  *	5:	Rename the 'BPAY Westpac' Carrier to just 'Westpac'
  */
 
-class Flex_Rollout_Version_000108 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000109 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 	
