@@ -183,8 +183,9 @@ var Telemarketing_ProposedUpload	= Class.create
 		"		</table>\n" + 
 		"	</div>\n" + 
 		"	<div style='width:100%; margin: 0 auto; text-align:center;'>\n" + 
-		"		<input type='button' id='Telemarketing_ProposedUpload_Submit' value='Submit' onclick='Flex.Telemarketing.ProposedUpload.submit()' style='margin-left:3px'></input> \n" + 
-		"		<input type='submit' id='Telemarketing_ProposedUpload_Cancel' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>\n" + 
+		"		<input type='submit' id='Telemarketing_ProposedUpload_Submit' value='Submit' style='margin-left:3px'></input> \n" +
+		//"		<input type='button' id='Telemarketing_ProposedUpload_Submit' value='Submit' onclick='Flex.Telemarketing.ProposedUpload.submit()' style='margin-left:3px'></input> \n" + 
+		"		<input type='button' id='Telemarketing_ProposedUpload_Cancel' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>\n" + 
 		"	</div>\n" + 
 		"</form>\n\n";
 		
