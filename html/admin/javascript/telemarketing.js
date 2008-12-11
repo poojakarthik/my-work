@@ -14,7 +14,7 @@ var Telemarketing	= Class.create
 		// Create a hidden IFrame
 		var	strIframeId		= elmForm.id + "_submit_" + Math.floor(Math.random() * 99999);
 		var elmDiv			= document.createElement('div');
-		elmDiv.innerHTML	= "<iframe style='display:none' id='" + strIframeId + "' name='" + strIframeId + "' onload='Flex.Telemarketing.iframeFormLoaded(this)' />";
+		elmDiv.innerHTML	= "<iframe style='display:none' id='" + strIframeId + "' name='" + strIframeId + "_name' onload='Flex.Telemarketing.iframeFormLoaded(this)' />";
 		elmDiv.id			= strIframeId + '_div';
 		document.body.appendChild(elmDiv);
 		
@@ -25,7 +25,7 @@ var Telemarketing	= Class.create
 		}
 		
 		// Add a target to the form
-		elmForm.target			= strIframeId;
+		elmForm.target			= strIframeId+"_name";
 		//alert($ID(strIframeId).target);
 		//alert(elmForm.target);
 		//throw "DONT FUCKING SUBMIT";
