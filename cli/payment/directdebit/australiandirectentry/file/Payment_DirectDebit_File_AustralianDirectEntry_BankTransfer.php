@@ -118,6 +118,7 @@
  		
  		// Delimiter & New Line
  		$this->_strFileFormat	= 'TXT';
+ 		$this->_strDelimiter	= '';
  		
  		$this->_arrDefine		= Array();
  		
