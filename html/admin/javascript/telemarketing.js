@@ -31,7 +31,7 @@ var Telemarketing	= Class.create
 		//alert(elmForm.target);
 		//throw "DONT FUCKING SUBMIT";
 		
-		return false;
+		return true;
 	},
 	
 	iframeFormLoaded	: function(elmIframe)
