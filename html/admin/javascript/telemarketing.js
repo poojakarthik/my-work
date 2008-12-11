@@ -33,7 +33,7 @@ var Telemarketing	= Class.create
 		// Submit the form
 		alert("elmForm.submit = " + elmForm.submit);
 		elmForm.testProperty	= 'test';
-		document.getElementById('Telemarketing_ProposedUpload_Form').submit();
+		elmForm.submit();
 		
 		alert("Form Submitted!");
 	},
