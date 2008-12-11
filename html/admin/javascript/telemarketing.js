@@ -12,26 +12,36 @@ var Telemarketing	= Class.create
 	iframeFormSubmit	: function(elmForm, funcResponseHandler)
 	{
 		// Create a hidden IFrame
-		var	strIframeId		= elmForm.id + "_iframe";
-		var elmDiv			= document.createElement('div');
-		elmDiv.innerHTML	= "<iframe style='visibility:hidden' id='" + strIframeId + "' name='" + strIframeId + "' onload='Flex.Telemarketing.iframeFormLoaded(this)' />";
-		elmDiv.id			= strIframeId + '_div';
+		var	strIframeId			= elmForm.id + "_iframe";
+		
+		var elmDiv				= document.createElement('div');
+		elmDiv.id				= strIframeId + '_div';
+		elmDiv.style.visibility	= 'hidden';
 		document.body.appendChild(elmDiv);
+
+		var elmIframe				= document.createElement('iframe');
+		elmIframe.id				= strIframeId;
+		elmIframe.name				= strIframeId;
+		elmIframe.setAttribute('onload', 'Flex.Telemarketing.iframeFormLoaded(this)');
+		elmIframe.style.visibility	= 'hidden;
+		elmDiv.appendChild(elmIframe);
 		
 		// Attach a Response Handler function
 		if (typeof(funcResponseHandler) == 'function')
 		{
-			$ID(strIframeId).funcResponseHandler	= funcResponseHandler;
+			elmIframe.funcResponseHandler	= funcResponseHandler;
 		}
 		
 		// Add a target to the form
-		elmForm.target			= strIframeId;
+		elmForm.target			= elmIframe.id;
 		//alert($ID(strIframeId).target);
 		//alert(elmForm.target);
 		//throw "DONT FUCKING SUBMIT";
 		
+		
+		
 		elmForm.submit();
-		return true;
+		return false;
 	},
 	
 	iframeFormLoaded	: function(elmIframe)
