@@ -14,7 +14,7 @@ var Telemarketing	= Class.create
 		// Create a hidden IFrame
 		var	strIframeId		= elmForm.id + "_submit_" + Math.floor(Math.random() * 99999);
 		var elmDiv			= document.createElement('div');
-		elmDiv.innerHTML	= "<iframe style='display:none' id='" + strIframeId + "' name='" + strIframeId + "' />";
+		elmDiv.innerHTML	= "<iframe style='display:none' id='" + strIframeId + "' name='" + strIframeId + "' onload='Flex.Telemarketing.iframeFormLoaded(this)' />";
 		elmDiv.id			= strIframeId + '_div';
 		document.body.appendChild(elmDiv);
 		
@@ -26,7 +26,6 @@ var Telemarketing	= Class.create
 		
 		// Add a target to the form
 		elmForm.target			= strIframeId;
-		$ID(strIframeId).onload	= 'Flex.Telemarketing.iframeFormLoaded(this)';
 		//alert($ID(strIframeId).target);
 		//alert(elmForm.target);
 		//throw "DONT FUCKING SUBMIT";
@@ -37,6 +36,8 @@ var Telemarketing	= Class.create
 	
 	iframeFormLoaded	: function(elmIframe)
 	{		
+		alert("LOADED");
+		
 		// Parse Iframe contents for response data (JSON'd PHP Array)
 		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		var objResponse			= jQuery.json.decode(objIframeDocument.body.innerHTML);
