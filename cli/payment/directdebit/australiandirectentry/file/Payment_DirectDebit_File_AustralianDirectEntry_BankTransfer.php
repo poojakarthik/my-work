@@ -32,7 +32,7 @@
 	protected	$_ptrFile;
 	
 	public $intBaseCarrier		= CARRIER_WESTPAC;
-	public $intBaseFileType		= RESOURCE_TYPE_FILE_EXPORT_AUSTRALIAN_DIRECT_ENTRY_BANK_TRANSFER_FILE;
+	public $intBaseFileType		= RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE;
 	public $_strDeliveryType	= 'EmailAttach';
 	
 	public	$strDescription;
