@@ -32,6 +32,7 @@ var Telemarketing	= Class.create
 		
 		// Submit the form
 		alert("elmForm.submit = " + elmForm.submit);
+		elmForm.testProperty	= 'test';
 		elmForm.submit();
 		
 		alert("Form Submitted!");
