@@ -32,6 +32,8 @@ var Telemarketing	= Class.create
 		
 		// Submit the form
 		elmForm.submit();
+		
+		alert("Form Submitted!");
 	},
 	
 	iframeFormLoaded	: function(elmIframe)
