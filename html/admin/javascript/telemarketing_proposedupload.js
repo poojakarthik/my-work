@@ -84,7 +84,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		$ID('Telemarketing_ProposedUpload_Dealer').disabled							= true;
 		$ID('Telemarketing_ProposedUpload_Vendor').disabled							= true;
 		$ID('Telemarketing_ProposedUpload_File').disabled							= true;
-		$ID('Telemarketing_ProposedUpload_Submit').style.display					= 'none';
+		$ID('Telemarketing_ProposedUpload_Upload').style.display					= 'none';
 		$ID('Telemarketing_ProposedUpload_Cancel').style.display					= 'none';
 		$ID('VixenPopupTopBarClose__Telemarketing_ProposedUpload').style.display	= 'none';
 		
@@ -185,7 +185,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		"	</div>\n" + 
 		"	<div style='width:100%; margin: 0 auto; text-align:center;'>\n" + 
 		//"		<input type='submit' id='Telemarketing_ProposedUpload_Submit' value='Submit' style='margin-left:3px'></input> \n" +
-		"		<input type='button' id='Telemarketing_ProposedUpload_Submit' value='Upload' onclick='Flex.Telemarketing.ProposedUpload.submit()' style='margin-left:3px'></input> \n" + 
+		"		<input type='button' id='Telemarketing_ProposedUpload_Upload' value='Upload' onclick='Flex.Telemarketing.ProposedUpload.submit()' style='margin-left:3px'></input> \n" + 
 		"		<input type='button' id='Telemarketing_ProposedUpload_Cancel' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>\n" + 
 		"	</div>\n" + 
 		"</form>\n\n";

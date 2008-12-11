@@ -31,6 +31,7 @@ var Telemarketing	= Class.create
 		alert("Submitting '" + elmForm.id + "'");
 		
 		// Submit the form
+		alert("elmForm.submit = " + elmForm.submit);
 		elmForm.submit();
 		
 		alert("Form Submitted!");
