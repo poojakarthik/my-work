@@ -12,9 +12,9 @@ var Telemarketing	= Class.create
 	iframeFormSubmit	: function(elmForm, funcResponseHandler)
 	{
 		// Create a hidden IFrame
-		var	strIframeId		= elmForm.id + "_submit_" + Math.floor(Math.random() * 99999);
+		var	strIframeId		= elmForm.id + "_iframe;
 		var elmDiv			= document.createElement('div');
-		elmDiv.innerHTML	= "<iframe style='display:none' id='" + strIframeId + "' name='" + strIframeId + "_name' onload='Flex.Telemarketing.iframeFormLoaded(this)' />";
+		elmDiv.innerHTML	= "<iframe style='display:none' id='" + strIframeId + "' name='" + strIframeId + "' onload='Flex.Telemarketing.iframeFormLoaded(this)' />";
 		elmDiv.id			= strIframeId + '_div';
 		document.body.appendChild(elmDiv);
 		

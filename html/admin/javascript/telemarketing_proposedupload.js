@@ -151,14 +151,14 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		// Generate Popup HTML
 		var strHTML	= "\n" + 
-		"<form id='Telemarketing_ProposedUpload_Form' method='post' action='../admin/reflex.php/Telemarketing/UploadProposedDiallingList/' enctype='multipart/form-data' target='_blank'>\n" + 
+		"<form id='Telemarketing_ProposedUpload_Form' name='Telemarketing_ProposedUpload_Form' method='post' action='../admin/reflex.php/Telemarketing/UploadProposedDiallingList/' enctype='multipart/form-data' target='Telemarketing_ProposedUpload_Form_iframe'>\n" + 
 		"	<div class='GroupedContent'>\n" + 
 		"		<table class='form-data' style='width:100%'>\n" + 
 		"			<tbody>\n" + 
 		"				<tr>\n" + 
 		"					<td>Dealer:</td>\n" + 
 		"					<td>\n" + 
-		"						<select id='Telemarketing_ProposedUpload_Dealer' name='dealer_id' onchange='Flex.Telemarketing.ProposedUpload.updatePermittedVendors()'>\n" + 
+		"						<select id='Telemarketing_ProposedUpload_Dealer' name='Telemarketing_ProposedUpload_Dealer' onchange='Flex.Telemarketing.ProposedUpload.updatePermittedVendors()'>\n" + 
 		"							<option value='' selected='selected'>[None]</option>\n" + 
 		"							" + strDealerListHTML + "\n" + 
 		"						</select>\n" + 
@@ -167,7 +167,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		"				<tr>\n" + 
 		"					<td>Vendor:</td>\n" + 
 		"					<td>\n" + 
-		"						<select id='Telemarketing_ProposedUpload_Vendor' name='vendor_id'>\n" + 
+		"						<select id='Telemarketing_ProposedUpload_Vendor' name='Telemarketing_ProposedUpload_Vendor'>\n" + 
 		"							<option value='' selected='selected'>[None]</option>\n" + 
 		"						</select>\n" + 
 		"					</td>\n" + 
@@ -175,7 +175,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		"				<tr>\n" + 
 		"					<td>File to wash:</td>\n" + 
 		"					<td>\n" + 
-		"						<input type='file' id='Telemarketing_ProposedUpload_File' name='file_data' />\n" + 
+		"						<input type='file' id='Telemarketing_ProposedUpload_File' name='Telemarketing_ProposedUpload_File' />\n" + 
 		"					</td>\n" + 
 		"				</tr>\n" + 
 		"			</tbody>\n" + 
