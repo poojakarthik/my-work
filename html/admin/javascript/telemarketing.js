@@ -23,7 +23,7 @@ var Telemarketing	= Class.create
 		elmIframe.id				= strIframeId;
 		elmIframe.name				= strIframeId;
 		elmIframe.setAttribute('onload', 'Flex.Telemarketing.iframeFormLoaded(this)');
-		elmIframe.style.visibility	= 'hidden;
+		elmIframe.style.visibility	= 'hidden';
 		elmDiv.appendChild(elmIframe);
 		
 		// Attach a Response Handler function
