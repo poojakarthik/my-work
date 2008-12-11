@@ -91,8 +91,6 @@ var Telemarketing_ProposedUpload	= Class.create
 		// Show the Loading Splash
 		Vixen.Popup.ShowPageLoadingSplash("Uploading Proposed Dialling List...", null, null, null, 100);
 		
-		alert("Start AJAX Magic!");
-		
 		// Perform AJAX query
 		Flex.Telemarketing.iframeFormSubmit($ID('Telemarketing_ProposedUpload_Form'), this.uploadReponseHandler.bind(this));
 	},
@@ -154,7 +152,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		// Generate Popup HTML
 		var strHTML	= "\n" + 
 		"<form id='Telemarketing_ProposedUpload_Form' method='post' action='../admin/reflex.php/Telemarketing/UploadProposedDiallingList/' enctype='multipart/form-data'>\n" + 
-		//"	<div class='GroupedContent'>\n" + 
+		"	<div class='GroupedContent'>\n" + 
 		"		<table class='form-data' style='width:100%'>\n" + 
 		"			<tbody>\n" + 
 		"				<tr>\n" + 
@@ -182,21 +180,15 @@ var Telemarketing_ProposedUpload	= Class.create
 		"				</tr>\n" + 
 		"			</tbody>\n" + 
 		"		</table>\n" + 
-		//"	</div>\n" + 
-		//"	<div style='width:100%; margin: 0 auto; text-align:center;'>\n" + 
-		//"		<input type='submit' id='Telemarketing_ProposedUpload_Submit' value='Submit' style='margin-left:3px'></input> \n" +
-		"		<input type='button' id='Telemarketing_ProposedUpload_Upload' name='upload' value='Upload' onclick='Flex.Telemarketing.ProposedUpload.submit()' style='margin-left:3px'></input> \n" + 
-		"		<input type='button' id='Telemarketing_ProposedUpload_Cancel' name='cancel' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px'></input>\n" + 
-		//"	</div>\n" + 
+		"	</div>\n" + 
+		"	<div style='width:100%; margin: 0 auto; text-align:center;'>\n" +
+		"		<input type='submit' id='Telemarketing_ProposedUpload_Upload' value='Upload' onsubmit='Flex.Telemarketing.ProposedUpload.submit()' style='margin-left:3px' /> \n" + 
+		"		<input type='button' id='Telemarketing_ProposedUpload_Cancel' value='Cancel' onclick='Vixen.Popup.Close(this)' style='margin-left:3px' /> \n" + 
+		"	</div>\n" + 
 		"</form>\n\n";
 		
 		// Render the Popup
 		this._renderPopup(this.objPopupUpload, strHTML, objResponse);
-		
-		// Set an Event Handler for the Dealer Combo
-		/*Event.observe($ID('Telemarketing_ProposedUpload_Dealer'), 'change', this.updatePermittedVendors.bind(this));
-		Event.observe($ID('Telemarketing_ProposedUpload_Dealer'), 'click', this.updatePermittedVendors.bind(this));
-		Event.observe($ID('Telemarketing_ProposedUpload_Dealer'), 'keyup', this.updatePermittedVendors.bind(this));*/
 	}
 });
 
