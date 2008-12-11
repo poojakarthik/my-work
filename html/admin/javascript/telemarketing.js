@@ -25,7 +25,7 @@ var Telemarketing	= Class.create
 		}
 		
 		// Add a target to the form
-		elmForm.target	= strIframeId;
+		elmForm.setAttribute('target', strIframeId);
 		
 		return true;
 	},
