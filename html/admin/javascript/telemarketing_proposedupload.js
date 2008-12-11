@@ -153,7 +153,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		// Generate Popup HTML
 		var strHTML	= "\n" + 
-		"<form id='Telemarketing_ProposedUpload_Form' name='proposeduploadform' method='post' action='../admin/reflex.php/Telemarketing/UploadProposedDiallingList/' enctype='multipart/form-data'>\n" + 
+		"<form id='Telemarketing_ProposedUpload_Form' method='post' action='../admin/reflex.php/Telemarketing/UploadProposedDiallingList/' enctype='multipart/form-data'>\n" + 
 		"	<div class='GroupedContent'>\n" + 
 		"		<table class='form-data' style='width:100%'>\n" + 
 		"			<tbody>\n" + 
