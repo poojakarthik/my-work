@@ -25,13 +25,13 @@ var Telemarketing	= Class.create
 		}
 		
 		// Add a target to the form
-		//elmForm.setAttribute('target', strIframeId);
-		elmForm.setAttribute('target', '_top');
+		elmForm.target	= strIframeId;
+		//elmForm.setAttribute('target', '_top');
 		
-		alert("Submitting '" + elmForm.id + "' (name="+elmForm.name+"; action="+elmForm.action+"; method="+elmForm.method+")");
+		alert("Submitting '" + elmForm.id + "' (name="+elmForm.name+"; action="+elmForm.action+"; method="+elmForm.method+"; target="++")");
 		
 		// Submit the form
-		alert("elmForm.submit = " + elmForm.submit);
+		//alert("elmForm.submit = " + elmForm.submit);
 		elmForm.testProperty	= 'test';
 		elmForm.submit();
 		
