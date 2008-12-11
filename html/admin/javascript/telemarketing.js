@@ -30,7 +30,7 @@ var Telemarketing	= Class.create
 		alert(elmForm.target);
 		throw "DONT FUCKING SUBMIT";
 		
-		return true;
+		return false;
 	},
 	
 	iframeFormLoaded	: function(elmIframe)
