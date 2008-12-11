@@ -306,7 +306,6 @@
 		$arrDefine['Remitter']			['Config']		= 'SupplierUserName';
 		$arrDefine['Remitter']			['PadChar']		= ' ';
 		$arrDefine['Remitter']			['PadType']		= STR_PAD_RIGHT;
-		$arrDefine['Remitter']			['Config']		= 'Name of the Originator';
 		
 		$this->_arrDefine[BILLING_TYPE_DIRECT_DEBIT] = $arrDefine;
  	}
