@@ -92,7 +92,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		Vixen.Popup.ShowPageLoadingSplash("Uploading Proposed Dialling List...", null, null, null, 100);
 		
 		// Perform AJAX query
-		Flex.Telemarketing.iframeFormSubmit($ID('Telemarketing_ProposedUpload_Form'), this.uploadReponseHandler.bind(this));
+		return Flex.Telemarketing.iframeFormSubmit($ID('Telemarketing_ProposedUpload_Form'), this.uploadReponseHandler.bind(this));
 	},
 	
 	uploadReponseHandler	: function(objResponse)
