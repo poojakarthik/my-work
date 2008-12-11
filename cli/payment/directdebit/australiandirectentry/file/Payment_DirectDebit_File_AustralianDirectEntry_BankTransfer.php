@@ -349,7 +349,7 @@
  		$arrRendered['BSB']				= substr($strBSB, 0, 3).'-'.substr($strBSB, -3);
 		$arrRendered['AccountNumber']	= (int)$arrAccountDetails['DirectDebit']['AccountNumber'];
 		$arrRendered['AmountCents']		= ceil($arrRequest['Charge'] * 100);
-		$arrRendered['AccountName']		= preg_replace("/[^\w\ ]+/misU", '', trim($arrAccountDetails['DirectDebit']['AccountName']));
+		$arrRendered['AccountName']		= substr(preg_replace("/[^\w\ ]+/misU", '', trim($arrAccountDetails['DirectDebit']['AccountName'])), 0, 32);
 		$arrRendered['TranscationRef']	= $arrRequest['Account'].'_'.date("mY");
  		
  		$arrRendered['**Type']			= BILLING_TYPE_DIRECT_DEBIT;
