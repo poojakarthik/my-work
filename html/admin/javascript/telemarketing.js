@@ -26,7 +26,7 @@ var Telemarketing	= Class.create
 		
 		// Add a target to the form
 		//elmForm.setAttribute('target', strIframeId);
-		elmForm.setAttribute('target', '_self');
+		elmForm.setAttribute('target', '_new');
 		
 		alert("Submitting '" + elmForm.id + "'");
 		
