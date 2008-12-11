@@ -295,17 +295,23 @@
 		$arrDefine['TraceBSB']			['Length']		= 7;
 		$arrDefine['TraceBSB']			['Config']		= 'TraceBSB';
 		
-		$arrDefine['TraceAccount']		['Start']		= 62;
-		$arrDefine['TraceAccount']		['Length']		= 18;
+		$arrDefine['TraceAccount']		['Start']		= 87;
+		$arrDefine['TraceAccount']		['Length']		= 9;
 		$arrDefine['TraceAccount']		['PadChar']		= ' ';
 		$arrDefine['TraceAccount']		['PadType']		= STR_PAD_RIGHT;
 		$arrDefine['TraceAccount']		['Config']		= 'TraceAccount';
 		
-		$arrDefine['Remitter']			['Start']		= 62;
-		$arrDefine['Remitter']			['Length']		= 18;
+		$arrDefine['Remitter']			['Start']		= 96;
+		$arrDefine['Remitter']			['Length']		= 16;
 		$arrDefine['Remitter']			['Config']		= 'SupplierUserName';
 		$arrDefine['Remitter']			['PadChar']		= ' ';
 		$arrDefine['Remitter']			['PadType']		= STR_PAD_RIGHT;
+		
+		$arrDefine['WithholdingTax']	['Start']		= 112;
+		$arrDefine['WithholdingTax']	['Length']		= 8;
+		$arrDefine['WithholdingTax']	['Value']		= '0';
+		$arrDefine['WithholdingTax']	['PadChar']		= '0';
+		$arrDefine['WithholdingTax']	['PadType']		= STR_PAD_LEFT;
 		
 		$this->_arrDefine[BILLING_TYPE_DIRECT_DEBIT] = $arrDefine;
  	}
