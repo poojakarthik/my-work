@@ -40,8 +40,8 @@ var Telemarketing	= Class.create
 		
 		
 		
-		elmForm.submit();
-		return false;
+		//elmForm.submit();
+		return true;
 	},
 	
 	iframeFormLoaded	: function(elmIframe)
