@@ -303,6 +303,7 @@
 		
 		$arrDefine['Remitter']			['Start']		= 62;
 		$arrDefine['Remitter']			['Length']		= 18;
+		$arrDefine['Remitter']			['Config']		= 'SupplierUserName';
 		$arrDefine['Remitter']			['PadChar']		= ' ';
 		$arrDefine['Remitter']			['PadType']		= STR_PAD_RIGHT;
 		$arrDefine['Remitter']			['Config']		= 'Name of the Originator';
