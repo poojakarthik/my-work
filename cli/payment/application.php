@@ -857,7 +857,7 @@
 	 	else
 	 	{
 	 		// Force Mode -- Get all Customer Groups
-	 		$selCustomerGroups	= new StatementSelect("CustomerGroup", "Id AS customer_group_id", "1");
+	 		$selCustomerGroups	= new StatementSelect("CustomerGroup", "Id AS customer_group_id, ExternalName", "1");
 	 		if ($selCustomerGroups->Execute() === FALSE)
 	 		{
 	 			return Array('Success' => FALSE, 'Description' => "DB ERROR: ".$selCustomerGroups->Error());
@@ -865,7 +865,7 @@
 	 		$arrCustomerGroups	= $selCustomerGroups->FetchAll();
 	 		foreach ($arrCustomerGroups as $arrCustomerGroup)
 	 		{
-		 		CliEcho("\t+ ".GetConstantDescription($arrCustomerGroups['customer_group_id'], 'CustomerGroup'));
+		 		CliEcho("\t+ ".$arrCustomerGroups['ExternalName']);
 	 		}
 	 	}
 		
@@ -962,7 +962,7 @@
 		 	}
 		 	else
 		 	{
-		 		CliEho("\t\t! No Direct Debit Modules Configured!");
+		 		CliEcho("\t\t! No Direct Debit Modules Configured!");
 		 	}
 	 	}
 	 	CliEcho();
