@@ -188,8 +188,8 @@
 		$arrDefine['FileDescription']		['Start']		= 62;
 		$arrDefine['FileDescription']		['Length']		= 12;
 		$arrDefine['FileDescription']		['Config']		= 'FileDescription';
-		$arrDefine['FileDescription']		['PadChar']		= '0';
-		$arrDefine['FileDescription']		['PadType']		= STR_PAD_LEFT;
+		$arrDefine['FileDescription']		['PadChar']		= ' ';
+		$arrDefine['FileDescription']		['PadType']		= STR_PAD_RIGHT;
 		
 		$arrDefine['TransactionDate']		['Start']		= 74;
 		$arrDefine['TransactionDate']		['Length']		= 6;
