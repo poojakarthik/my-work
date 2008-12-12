@@ -263,6 +263,8 @@
 		
 		$arrDefine['AccountNumber']		['Start']		= 8;
 		$arrDefine['AccountNumber']		['Length']		= 9;
+		$arrDefine['AccountNumber']		['PadChar']		= ' ';
+		$arrDefine['AccountNumber']		['PadType']		= STR_PAD_LEFT;
 		
 		$arrDefine['Indicator']			['Start']		= 17;
 		$arrDefine['Indicator']			['Length']		= 1;
@@ -298,7 +300,7 @@
 		$arrDefine['TraceAccount']		['Start']		= 87;
 		$arrDefine['TraceAccount']		['Length']		= 9;
 		$arrDefine['TraceAccount']		['PadChar']		= ' ';
-		$arrDefine['TraceAccount']		['PadType']		= STR_PAD_RIGHT;
+		$arrDefine['TraceAccount']		['PadType']		= STR_PAD_LEFT;
 		$arrDefine['TraceAccount']		['Config']		= 'TraceAccount';
 		
 		$arrDefine['Remitter']			['Start']		= 96;
@@ -355,7 +357,7 @@
  		$arrRendered['BSB']				= substr($strBSB, 0, 3).'-'.substr($strBSB, -3);
 		$arrRendered['AccountNumber']	= (int)$arrAccountDetails['DirectDebit']['AccountNumber'];
 		$arrRendered['AmountCents']		= ceil($arrRequest['Charge'] * 100);
-		$arrRendered['AccountName']		= substr(preg_replace("/[^\w\ ]+/misU", '', trim($arrAccountDetails['DirectDebit']['AccountName'])), 0, 32);
+		$arrRendered['AccountName']		= strtoupper(substr(preg_replace("/[^\w\ ]+/misU", '', trim($arrAccountDetails['DirectDebit']['AccountName'])), 0, 32));
 		$arrRendered['TranscationRef']	= $arrRequest['Account'].'_'.date("mY");
  		
  		$arrRendered['**Type']			= BILLING_TYPE_DIRECT_DEBIT;
