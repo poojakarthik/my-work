@@ -290,7 +290,7 @@ class Dealer
 	// Retrieves all top-level Dealers (Call Centres)
 	public static function getCallCentres()
 	{
-		return self::getFor("up_line_id IS NULL");
+		return self::getFor("up_line_id IS NULL AND carrier_id IS NOT NULL");
 	}
 	
 	// Retrieves all dealers who can safely be made the manager of $intDealerId
@@ -643,7 +643,8 @@ class Dealer
 			"terminationDate"		=> "termination_date",
 			"dealerStatusId"		=> "dealer_status_id",
 			"createdOn"				=> "created_on",
-			"employeeId"			=> "employee_id"
+			"employeeId"			=> "employee_id",
+			"carrierId"				=> "carrier_id"
 		);
 	}
 	
@@ -693,7 +694,8 @@ class Dealer
 			"terminationDate"		=> "text",
 			"dealerStatusId"		=> "integer",
 			"createdOn"				=> "text",
-			"employeeId"			=> "integer"
+			"employeeId"			=> "integer",
+			"carrierId"				=> "integer"
 		);
 	}
 	
