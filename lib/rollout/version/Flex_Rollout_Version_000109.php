@@ -35,20 +35,20 @@ class Flex_Rollout_Version_000109 extends Flex_Rollout_Version
 		
 		// 2:	Populate the payment_status Table
 		$strSQL = "
-			INSERT INTO payment_status (name, description, const_name) VALUES
-				('Imported', 'Imported', 'PAYMENT_IMPORTED'),
-				('Waiting', 'Waiting', 'PAYMENT_WAITING'),
-				('Paying', 'Paying', 'PAYMENT_PAYING'),
-				('Finished', 'Finished', 'PAYMENT_FINISHED'),
-				('Import Failed', 'Import Failed', 'PAYMENT_BAD_IMPORT'),
-				('Processing Failed', 'Processing Failed', 'PAYMENT_BAD_PROCESS'),
-				('Normalisation Failed', 'Normalisation Failed', 'PAYMENT_BAD_NORMALISE'),
-				('Header', 'File Header (Ignored)', 'PAYMENT_CANT_NORMALISE_HEADER'),
-				('Footer', 'File Footer (Ignored)', 'PAYMENT_CANT_NORMALISE_FOOTER'),
-				('Invalid', 'Invalid Data', 'PAYMENT_CANT_NORMALISE_INVALID'),
-				('Delinquent', 'Delinquent', 'PAYMENT_BAD_OWNER'),
-				('Invalid Check Digit', 'Invalid Check Digit', 'PAYMENT_INVALID_CHECK_DIGIT'),
-				('Reversed', 'Reversed', 'PAYMENT_REVERSED')";
+			INSERT INTO payment_status (id, name, description, const_name) VALUES
+				(100, 'Imported', 'Imported', 'PAYMENT_IMPORTED'),
+				(101, 'Waiting', 'Waiting', 'PAYMENT_WAITING'),
+				(103, 'Paying', 'Paying', 'PAYMENT_PAYING'),
+				(150, 'Finished', 'Finished', 'PAYMENT_FINISHED'),
+				(200, 'Import Failed', 'Import Failed', 'PAYMENT_BAD_IMPORT'),
+				(201, 'Processing Failed', 'Processing Failed', 'PAYMENT_BAD_PROCESS'),
+				(202, 'Normalisation Failed', 'Normalisation Failed', 'PAYMENT_BAD_NORMALISE'),
+				(203, 'Header', 'File Header (Ignored)', 'PAYMENT_CANT_NORMALISE_HEADER'),
+				(204, 'Footer', 'File Footer (Ignored)', 'PAYMENT_CANT_NORMALISE_FOOTER'),
+				(205, 'Invalid', 'Invalid Data', 'PAYMENT_CANT_NORMALISE_INVALID'),
+				(206, 'Delinquent', 'Delinquent', 'PAYMENT_BAD_OWNER'),
+				(207, 'Invalid Check Digit', 'Invalid Check Digit', 'PAYMENT_INVALID_CHECK_DIGIT'),
+				(250, 'Reversed', 'Reversed', 'PAYMENT_REVERSED')";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -73,17 +73,17 @@ class Flex_Rollout_Version_000109 extends Flex_Rollout_Version
 		
 		// 4:	Populate the payment_type Table
 		$strSQL = "
-			INSERT INTO payment_type (name, description, const_name) VALUES
-				('BillExpress', 'BillExpress', 'PAYMENT_TYPE_BILLEXPRESS'),
-				('BPAY', 'BPAY', 'PAYMENT_TYPE_BPAY'),
-				('Cheque', 'Cheque', 'PAYMENT_TYPE_CHEQUE'),
-				('SecurePay', 'SecurePay', 'PAYMENT_TYPE_SECUREPAY'),
-				('Credit Card', 'Credit Card', 'PAYMENT_TYPE_CREDIT_CARD'),
-				('EFT', 'EFT', 'PAYMENT_TYPE_EFT'),
-				('Cash', 'Cash', 'PAYMENT_TYPE_CASH'),
-				('Austral', 'Austral', 'PAYMENT_TYPE_AUSTRAL'),
-				('Contra', 'Contra', 'PAYMENT_TYPE_CONTRA'),
-				('Bank Transfer', 'Bank Transfer', 'PAYMENT_TYPE_BANK_TRANSFER')";
+			INSERT INTO payment_type (id, name, description, const_name) VALUES
+				(1, 'BillExpress', 'BillExpress', 'PAYMENT_TYPE_BILLEXPRESS'),
+				(2, 'BPAY', 'BPAY', 'PAYMENT_TYPE_BPAY'),
+				(3, 'Cheque', 'Cheque', 'PAYMENT_TYPE_CHEQUE'),
+				(4, 'SecurePay', 'SecurePay', 'PAYMENT_TYPE_SECUREPAY'),
+				(5, 'Credit Card', 'Credit Card', 'PAYMENT_TYPE_CREDIT_CARD'),
+				(6, 'EFT', 'EFT', 'PAYMENT_TYPE_EFT'),
+				(7, 'Cash', 'Cash', 'PAYMENT_TYPE_CASH'),
+				(8, 'Austral', 'Austral', 'PAYMENT_TYPE_AUSTRAL'),
+				(9, 'Contra', 'Contra', 'PAYMENT_TYPE_CONTRA'),
+				(10, 'Bank Transfer', 'Bank Transfer', 'PAYMENT_TYPE_BANK_TRANSFER')";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
