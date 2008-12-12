@@ -90,6 +90,32 @@ class Sale extends ORM
 		return $arrSales;
 	}
 	
+	// Returns the sale record which has the external reference
+	public static function getForExternalReference($strExternalReference)
+	{
+		$objQuery = new Query();
+		
+		$strExternalReference = $objQuery->EscapeString($strExternalReference);
+		
+		$strQuery = "SELECT * FROM sale WHERE external_reference = '$strExternalReference' ORDER BY id DESC LIMIT 1;";
+		
+		if (($mixResult = $objQuery->Execute($strQuery)) === FALSE)
+		{
+			throw new Exception(__METHOD__ ." Failed to retrieve sale record using query - $strQuery - ". $objQuery->Error());
+		}
+		
+		$mixRecord = $mixResult->fetch_assoc();
+		
+		if ($mixRecord === NULL)
+		{
+			return NULL;
+		}
+		else
+		{
+			return new self($mixRecord);
+		}
+	}
+	
 	// Retrieves the value part from the sale.external_reference string
 	// This string should be of the form "sale.id=123" where 123 is the value 
 	public function getExternalReferenceValue()

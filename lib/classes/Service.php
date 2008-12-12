@@ -51,13 +51,17 @@ class Service extends ORM
 	 */
 	public function getCurrentPlan($strEffectiveDatetime=NULL)
 	{
-		$strEffectiveDatetime		= (strtotime($strEffectiveDatetime)) ? $strEffectiveDatetime : date("Y-m-d H:i:s");
+		$strEffectiveDatetime		= ($strEffectiveDatetime !== NULL) ? $strEffectiveDatetime : Data_Source_Time::currentTimestamp();
 		$selCurrentServiceRatePlan	= self::_preparedStatement('selCurrentServiceRatePlan');
-		if ($selCurrentServiceRatePlan->Execute() === FALSE)
+		
+		$arrWhere = array(	"service_id"			=> $this->id,
+							"effective_datetime"	=> $strEffectiveDatetime);
+		
+		if ($selCurrentServiceRatePlan->Execute($arrWhere) === FALSE)
 		{
 			throw new Exception($selCurrentServiceRatePlan->Error());
 		}
-		elseif ($arrCurrentServiceRatePlan = $selCurrentServiceRatePlan->Fetch())
+		elseif (($arrCurrentServiceRatePlan = $selCurrentServiceRatePlan->Fetch()) !== FALSE)
 		{
 			return new Rate_Plan(array('Id'=>$arrCurrentServiceRatePlan['RatePlan']), TRUE);
 		}
@@ -138,7 +142,7 @@ class Service extends ORM
 			$strNotePlanStart = "This plan change has come into effect as of the beginning of the current billing period. (". date("d/m/Y", $intStartDatetime) .")";
 		}
 		$strStartDatetime = date("Y-m-d H:i:s", $intStartDatetime);
-		
+
 		// Work out the EndDatetime for the old records of the ServiceRatePlan and ServiceRateGroup tables, which have an EndDatetime
 		// greater than $strStartDatetime
 		// The EndDatetime will be set to 1 second before the StartDatetime of the records relating to the new plan
@@ -147,7 +151,7 @@ class Service extends ORM
 		
 		// Find the current plan (if there is one)
 		$objCurrentRatePlan = $this->getCurrentPlan();
-		
+
 		// Check that the Plan is active and is of the appropriate ServiceType and CustomerGroup
 		if ($objNewRatePlan->Archived != RATE_STATUS_ACTIVE)
 		{
@@ -246,8 +250,121 @@ class Service extends ORM
 		$strCurrentRatePlan	= ($objCurrentRatePlan) ? $objCurrentRatePlan->Name : "undefined";
 		$strNote  = "This service has had its plan changed from '{$strCurrentRatePlan}' to '{$objNewRatePlan->Name}'.  $strNotePlanStart";
 		
-		SaveSystemNote($strNote, $this->AccountGroup, $this->Account, NULL, $this->Id);
+		Note::createSystemNote($strNote, $intUserId, $this->AccountGroup, $this->Account, $this->Id);
 		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// getForId
+	//------------------------------------------------------------------------//
+	/**
+	 * getForId()
+	 *
+	 * Retrieves a Service object, based on the Service record id passed
+	 *
+	 * Retrieves a Service object, based on the Service record id passed
+	 * 
+	 * @param	integer		$intServiceId							id of the service record
+	 * @param	bool		$bolExceptionOnNotFound					if TRUE, it will throw an exception, if the record can't be found
+	 * 																if FALSE, it will return NULL if the record can't be found
+	 * @param	bool		$bolGetNewestRecordModellingService		if TRUE, then the newest record modelling this service (FNN on the Account that $intServiceId is associated with), is the one returned
+	 * 																	Note, that this might not be the newest most record modelling this service, if the service has been moved to another account
+	 * 																	by means of a Change of Lessee, or Change of Account action.
+	 * 																if FALSE, then the record with id = $intServiceId is returned
+	 * 
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	public static function getForId($intServiceId, $bolExceptionOnNotFound=FALSE, $bolGetNewestRecordModellingService=FALSE)
+	{
+		$objQuery = new Query();
+		
+		$intServiceId = intval($intServiceId);
+		
+		if ($bolGetNewestRecordModellingService)
+		{
+			// Retrieve the newest service record modelling this service (FNN) on the account that $intServiceId is associated with
+			$strQuery = "SELECT s.* ". 
+						"FROM Service AS s INNER JOIN Service AS s2 ON (s.FNN = s2.FNN AND s.Account = s2.Account) ".
+						"WHERE s2.Id = $intServiceId ".
+						"ORDER BY s.Id DESC ".
+						"LIMIT 1;";
+		}
+		else
+		{
+			// Retrieve the Service record where id = $intServiceId
+			$strQuery = "SELECT * ".
+						"FROM Service ".
+						"WHERE Id = $intServiceId;";
+		}
+		
+		if (($mixResult = $objQuery->Execute($strQuery)) === FALSE)
+		{
+			throw new Exception(__METHOD__ ." Failed to retrieve Service record using query - $strQuery - ". $objQuery->Error());
+		}
+		
+		$mixRecord = $mixResult->fetch_assoc();
+		
+		if ($mixRecord === NULL)
+		{
+			if ($bolExceptionOnNotFound)
+			{
+				throw new Exception("Could not find Service with Service.Id = $intServiceId");
+			}
+			
+			return NULL;
+		}
+		else
+		{
+			return new self($mixRecord);
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// onSaleItemCancellation
+	//------------------------------------------------------------------------//
+	/**
+	 * onSaleItemCancellation()
+	 *
+	 * Handles Service related tasks that have to be carried out when a sale item associated with the service, is cancelled
+	 *
+	 * Handles Service related tasks that have to be carried out when a sale item associated with the service, is cancelled
+	 * It is assumed the service is currently active or pending activation
+	 * 
+	 * @param	integer		$intEmployeeId		id of the employee who actioned the cancellation
+	 * 
+	 * @return	void
+	 *
+	 * @method
+	 */
+	public function onSaleItemCancellation($intEmployeeId)
+	{
+		/* The following code sets the service to disconnected, however I don't think we should automatically do anything to the service when cancelling a sale,
+		 * because a sale associated with a service, could represent the plan changing on the service, but nothing else.
+		 */
+		 
+		/*if ($this->closedOn !== NULL)
+		{
+			throw new Exception("Cannot cancel a service that isn't currently active or pending activation");
+		}
+
+		$this->closedBy = $intEmployeeId;
+		$this->natureOfClosure = SERVICE_CLOSURE_DISCONNECTED;
+		
+		if ($this->archived == SERVICE_PENDING)
+		{
+			// The service has not been activated yet.  Set the closedOn timestamp to be 1 second before the createdOn timestamp
+			$this->closedOn = date("Y-m-d H:i:s", strtotime("-1 second {$this->createdOn}"));
+		}
+		else
+		{
+			// The service has already been activated.  Set the closedOn timestamp to now
+			$this->closedOn = GetCurrentISODateTime();
+		}
+		
+		$this->save();
+		*/
 	}
 	
 	//------------------------------------------------------------------------//

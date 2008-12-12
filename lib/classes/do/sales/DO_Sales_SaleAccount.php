@@ -134,6 +134,54 @@ class DO_Sales_SaleAccount extends DO_Sales_Base_SaleAccount
 		
 		return $return;
 	}
+	
+	//------------------------------------------------------------------------//
+	// getForSale
+	//------------------------------------------------------------------------//
+	/**
+	 * getForSale()
+	 *
+	 * Returns a DO_Sales_SaleAccount object corresponding to the passed DO_Sales_Sale object
+	 *
+	 * Returns a DO_Sales_SaleAccount object corresponding to the passed DO_Sales_Sale object
+	 * There should only ever be one sale_account record relating to a sale record
+	 * 
+	 * @param	DO_Sales_Sale	$doSale						The sale object
+	 * @param	boolean			$bolExceptionOnNotFound		If TRUE, then throws an exception if the sale_account record can't be found
+	 * 														If FALSE, then returns NULL if the sale_account record can't be found
+	 * 
+	 * @return	mixed				DO_Sales_SaleAccount object when found
+	 * 								NULL when can't be found and $bolExceptionOnNotFound == FALSE
+	 *
+	 * @method
+	 */
+	public static function getForSale(DO_Sales_Sale $doSale, $bolExceptionOnNotFound=FALSE)
+	{
+		$arrSales = self::listForSale($doSale);
+		
+		$intCount = count($arrSales);
+		
+		if ($intCount == 0)
+		{
+			if ($bolExceptionOnNotFound)
+			{
+				throw new Exception("Cannot find SaleAccount object for Sale with id: {$doSale->id}");
+			}
+			else
+			{
+				return NULL;
+			}
+		}
+		elseif ($intCount > 1)
+		{
+			throw new Exception("Found multiple SaleAccount objects ($intCount found) relating to the Sale with id: {$doSale->id}");
+		}
+		else
+		{
+			return current($arrSales);
+		}
+	}
+	
 }
 
 ?>

@@ -65,7 +65,7 @@ class JSON_Handler_Account_Sales extends JSON_Handler
 					
 					$strCurrentStatus = htmlspecialchars($arrSaleStatuses[$doSale->saleStatusId]->name);
 					
-					if ($intVerifiedOn > $intMinVerifiedOnForCoolingOffPeriod)
+					if ($intVerifiedOn > $intMinVerifiedOnForCoolingOffPeriod && $doSale->saleStatusId != DO_Sales_SaleStatus::CANCELLED)
 					{
 						// The sale is still within its cooling off period
 						$strCoolingOff = "Yes";
@@ -83,6 +83,13 @@ class JSON_Handler_Account_Sales extends JSON_Handler
 					$arrActions		= array();
 					$arrActions[]	= "<a href='$strViewLink'>View</a>";
 					$arrActions[]	= "<a onclick='JsAutoLoader.loadScript(\"javascript/sp/sale_history.js\", function(){SaleHistory.loadPopup($intSaleId);});'>History</a>";
+					
+					if ($intVerifiedOn > $intMinVerifiedOnForCoolingOffPeriod && $doSale->saleStatusId != DO_Sales_SaleStatus::CANCELLED)
+					{
+						// The sale is still within its cooling off period
+						$arrActions[] = "<a onclick='JsAutoLoader.loadScript(\"javascript/sp/sale_cancellation_popup.js\", function(){SaleCancellationPopup.load($intSaleId);});'>Cancel</a>";
+					}
+					
 					$strActions		= implode(" | ", $arrActions);
 					
 					$strBodyRows .= "

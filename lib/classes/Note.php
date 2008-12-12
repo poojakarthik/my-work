@@ -40,37 +40,37 @@ class Note extends ORM
 		parent::__construct($arrProperties, $bolLoadById);
 	}
 	
-	public static function createSystemNote($strContent, $intEmployee, $intAccountGroup, $intAccount, $intService=NULL, $intContact=NULL)
+	public static function createSystemNote($strContent, $intEmployeeId, $intAccountGroupId, $intAccountId, $intServiceId=NULL, $intContactId=NULL)
 	{
-		return self::createNote(self::SYSTEM_NOTE_TYPE_ID, $strContent, $intEmployee, $intAccountGroup, $intAccount, $intService, $intContact);
+		return self::createNote(self::SYSTEM_NOTE_TYPE_ID, $strContent, $intEmployeeId, $intAccountGroupId, $intAccountId, $intServiceId, $intContactId);
 	}
 	
 	// Creates the note, and saves it and returns the object
 	// Will throw an Exception on error
 	// Will always return a Note object, if an exception is not thrown
-	public static function createNote($intType, $strContent, $intEmployee, $intAccountGroup, $intAccount, $intService=NULL, $intContact=NULL)
+	public static function createNote($intNoteTypeId, $strContent, $intEmployeeId, $intAccountGroupId, $intAccountId, $intServiceId=NULL, $intContactId=NULL)
 	{
-	 	if ($intEmployee === NULL)
+	 	if ($intEmployeeId === NULL)
 	 	{
 	 		// Use the System User Employee Id
-	 		$intEmployee = Employee::SYSTEM_EMPLOYEE_ID;
+	 		$intEmployeeId = Employee::SYSTEM_EMPLOYEE_ID;
 	 	}
 	 	
-	 	if ($intType === NULL)
+	 	if ($intNoteTypeId === NULL)
 	 	{
-	 		$intType = self::SYSTEM_NOTE_TYPE_ID;
+	 		$intNoteTypeId = self::SYSTEM_NOTE_TYPE_ID;
 	 	}
 	 	
 	 	// Insert the note
 	 	$arrData = Array();
 	 	$arrData['Note']			= $strContent;
-	 	$arrData['AccountGroup']	= $intAccountGroup;
-	 	$arrData['Contact']			= $intContact;
-	 	$arrData['Account']			= $intAccount;
-	 	$arrData['Service']			= $intService;
-	 	$arrData['Employee']		= $intEmployee;
+	 	$arrData['AccountGroup']	= $intAccountGroupId;
+	 	$arrData['Contact']			= $intContactId;
+	 	$arrData['Account']			= $intAccountId;
+	 	$arrData['Service']			= $intServiceId;
+	 	$arrData['Employee']		= $intEmployeeId;
 	 	$arrData['Datetime']		= Data_Source_Time::currentTimestamp();
-	 	$arrData['NoteType']		= $intType;
+	 	$arrData['NoteType']		= $intNoteTypeId;
 
 		$objNote = new self($arrData);
 		

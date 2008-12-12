@@ -744,7 +744,7 @@ class AppTemplatePlan extends ApplicationTemplate
 			// The plan is not being saved as a draft
 			DBO()->RatePlan->Archived = RATE_STATUS_ACTIVE;
 		}
-		
+
 		// S2: Save the plan to the database
 		if (!DBO()->RatePlan->Save())
 		{

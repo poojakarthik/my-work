@@ -368,10 +368,9 @@ function VixenPopupClass()
 				document.removeEventListener('keydown', CloseHandler, TRUE);
 				
 				// load the new location if one was specified
-				if (Vixen.Popup.strLocationOnClose)
+				if (strLocationOnClose)
 				{
-					//FIX IT! I don't know if this will work if there are multiple popups open which set Vixen.Popup.strLocationOnClose
-					window.location = Vixen.Popup.strLocationOnClose;
+					window.location = strLocationOnClose;
 				}
 			}
 		}
@@ -569,7 +568,7 @@ function VixenPopupClass()
 		}
 	
 		// TODO! fix this up so that the paragraph elements are being used properly
-		strContent =	"<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
+		var strContent ="<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
 						"<p></div>\n" +
 						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK' "+ strOkButtonOnClick +"><br></div>" +
 						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";

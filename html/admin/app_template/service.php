@@ -2966,8 +2966,8 @@ class AppTemplateService extends ApplicationTemplate
 		// Check if the billing/invoice process is being run
 		if (IsInvoicing())
 		{
-			// There are currently records in the InvoiceTemp table, which means a bill run is taking place.
-			// Plan Changes cannot be made when a bill run is taking place
+			// A live bill run is taking place.
+			// Plan Changes cannot be made when a live bill run is taking place
 			$strErrorMsg =  "Billing is in progress.  Plans cannot be changed while this is happening.  ".
 							"Please try again in a couple of hours.  If this problem persists, please ".
 							"notify your system administrator";
@@ -2977,208 +2977,53 @@ class AppTemplateService extends ApplicationTemplate
 		
 		if (SubmittedForm("ChangePlan","Change Plan"))
 		{
-			// Work out the StartDatetime for the new records of the ServiceRatePlan and ServiceRateGroup tables
-			$strCurrentDateAndTime						= GetCurrentDateAndTimeForMySQL();
-			$intStartDateTimeForCurrentBillingPeriod	= GetStartDateTimeForBillingPeriod($strCurrentDateAndTime);
-			$intStartDateTimeForNextBillingPeriod		= GetStartDateTimeForNextBillingPeriod($strCurrentDateAndTime);
+
+			$bolStartThisMonth = (DBO()->NewPlan->StartTime->Value == 1)? FALSE : TRUE;
 			DBO()->Service->Load();
 			DBO()->Account->Id = DBO()->Service->Account->Value;
 			DBO()->Account->Load();
 			
-			if (DBO()->NewPlan->StartTime->Value == 1)
+			try
 			{
-				// Get the StartDatetime for the next billing period
-				$intStartDatetime = $intStartDateTimeForNextBillingPeriod;
+				TransactionStart();
+				$objService = Service::getForId(intval(DBO()->Service->Id->Value), TRUE);
 				
-				// The records defining the new plan should have their "Active" property set to 0 (Inactive)
-				$intActive = 0;
+				$mixResult = $objService->changePlan(intval(DBO()->NewPlan->Id->Value), $bolStartThisMonth);
 				
-				// Declare the note part detailing when the Plan Change will come into effect
-				$strNotePlanStart = "This plan change will come into effect as of the start of the next billing period. (". date("d/m/Y", $intStartDatetime) .")";
-			}
-			else
-			{
-				// Get the StartDatetime for the current billing period
-				$intStartDatetime = $intStartDateTimeForCurrentBillingPeriod;
-				
-				// The records defining the new plan should have their "Active" property set to 1 (Active)
-				$intActive = 1;
-				
-				// Declare the note part detailing when the Plan Change will come into effect
-				$strNotePlanStart = "This plan change has come into effect as of the beginning of the current billing period. (". date("d/m/Y", $intStartDatetime) .")";
-			}
-			$strStartDatetime = ConvertUnixTimeToMySQLDateTime($intStartDatetime);
-			
-			// Work out the EndDatetime for the old records of the ServiceRatePlan and ServiceRateGroup tables, which have an EndDatetime
-			// greater than $strStartDatetime
-			// The EndDatetime will be set to 1 second before the StartDatetime of the records relating to the new plan
-			$intOldPlanEndDatetime = $intStartDatetime - 1;
-			$strOldPlanEndDatetime = ConvertUnixTimeToMySQLDateTime($intOldPlanEndDatetime);
-			
-			// Find the current plan (if there is one)
-			DBO()->CurrentRatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
-			if (DBO()->CurrentRatePlan->Id->Value)
-			{
-				DBO()->CurrentRatePlan->SetTable("RatePlan");
-				DBO()->CurrentRatePlan->Load();
-			}
-			
-			// Find the plan scheduled to start for the next billing run (if there is one)
-			DBO()->FutureRatePlan->Id = GetPlanScheduledForNextBillingPeriod(DBO()->Service->Id->Value, $strCurrentDateAndTime);
-			if (DBO()->FutureRatePlan->Id->Value)
-			{
-				DBO()->FutureRatePlan->SetTable("RatePlan");
-				DBO()->FutureRatePlan->Load();
-			}
-			
-			// Retrieve the new plan
-			DBO()->NewPlan->SetTable("RatePlan");
-			DBO()->NewPlan->Load();
-			
-			// Check that the Plan is active and is of the appropriate ServiceType and CustomerGroup
-			if (DBO()->NewPlan->Archived->Value != RATE_STATUS_ACTIVE)
-			{
-				Ajax()->AddCommand("Alert", "ERROR: This Plan is not currently active");
-				return TRUE;
-			}
-			if (DBO()->NewPlan->ServiceType->Value != DBO()->Service->ServiceType->Value)
-			{
-				Ajax()->AddCommand("Alert", "ERROR: This Plan is not of the same ServiceType as the Service");
-				return TRUE;
-			}
-			if (DBO()->NewPlan->customer_group->Value != DBO()->Account->CustomerGroup->Value)
-			{
-				Ajax()->AddCommand("Alert", "ERROR: This Plan does not belong to the CustomerGroup that this account belongs to");
-				return TRUE;
-			}
-			
-			// Start the transaction
-			TransactionStart();
-			
-			// Set the EndDatetime to $strOldPlanEndDatetime for all records in the ServiceRatePlan and ServiceRateGroup tables
-			// which relate this service.  Do not alter the records' "Active" property regardless of what it is.
-			
-			// Update existing ServiceRateGroup records
-			$arrUpdate = Array('EndDatetime' => $strOldPlanEndDatetime);
-			$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime >= <StartDatetime>", $arrUpdate);
-			if ($updServiceRateGroup->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "StartDatetime"=>$strStartDatetime)) === FALSE)
-			{
-				// Could not update records in ServiceRateGroup table. Exit gracefully
-				TransactionRollback();
-				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error updating records in the ServiceRateGroup table)");
-				return TRUE;
-			}
-			
-			// Update existing ServiceRatePlan records
-			$updServiceRatePlan = new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime >= <StartDatetime>", $arrUpdate);
-			if ($updServiceRatePlan->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "StartDatetime"=>$strStartDatetime)) === FALSE)
-			{
-				// Could not update records in ServiceRatePlan table. Exit gracefully
-				TransactionRollback();
-				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error updating records in the ServiceRatePlan table)");
-				return TRUE;
-			}
-			
-			// Declare the new plan for the service
-			// Insert a record into the ServiceRatePlan table
-			DBO()->ServiceRatePlan->Service 						= DBO()->Service->Id->Value;
-			DBO()->ServiceRatePlan->RatePlan 						= DBO()->NewPlan->Id->Value;
-			DBO()->ServiceRatePlan->CreatedBy 						= AuthenticatedUser()->_arrUser['Id'];
-			DBO()->ServiceRatePlan->CreatedOn 						= $strCurrentDateAndTime;
-			DBO()->ServiceRatePlan->StartDatetime 					= $strStartDatetime;
-			DBO()->ServiceRatePlan->EndDatetime 					= END_OF_TIME;
-			DBO()->ServiceRatePlan->LastChargedOn					= NULL;
-			DBO()->ServiceRatePlan->Active							= $intActive;
-			
-			$intContractTerm										= (int)DBO()->NewPlan->ContractTerm->Value;
-			DBO()->ServiceRatePlan->contract_scheduled_end_datetime	= ($intContractTerm > 0) ? date('Y-m-d H:i:s', strtotime("-1 second", strtotime("+{$intContractTerm} months", $intStartDatetime))) : NULL;
-			DBO()->ServiceRatePlan->contract_effective_end_datetime	= NULL;
-			DBO()->ServiceRatePlan->contract_status_id				= ($intContractTerm > 0) ? CONTRACT_STATUS_ACTIVE : NULL;
-			
-			if (!DBO()->ServiceRatePlan->Save())
-			{
-				// Could not save the record. Exit gracefully
-				TransactionRollback();
-				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error adding record to ServiceRatePlan table)");
-				return TRUE;
-			}
-			
-			// Declare the new RateGroups for the service
-			$intServiceId	= DBO()->Service->Id->Value;
-			$intUserId		= AuthenticatedUser()->_arrUser['Id'];
-			$strInsertRateGroupsIntoServiceRateGroup  = "INSERT INTO ServiceRateGroup (Id, Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime, Active) ";
-			$strInsertRateGroupsIntoServiceRateGroup .= "SELECT NULL, $intServiceId, RateGroup, $intUserId, '$strCurrentDateAndTime', '$strStartDatetime', '". END_OF_TIME ."', $intActive ";
-			$strInsertRateGroupsIntoServiceRateGroup .= "FROM RatePlanRateGroup WHERE RatePlan = ". DBO()->NewPlan->Id->Value ." ORDER BY RateGroup";
-			$qryInsertServiceRateGroup = new Query();
-			if ($qryInsertServiceRateGroup->Execute($strInsertRateGroupsIntoServiceRateGroup) === FALSE)
-			{
-				// Inserting the records into the ServiceRateGroup table failed.  Exit gracefully
-				TransactionRollback();
-				Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error adding records to ServiceRateGroup table)");
-				return TRUE;
-			}
-			
-			// If the plan goes into affect at the begining of the current month, then you must rerate all the cdrs which are currently
-			// rated but not billed
-			if (DBO()->NewPlan->StartTime->Value == 0)
-			{
-				// The plan change is retroactive to the start of the current month
-				// Set the status of all CDRs that are currently "rated" (CDR_RATED) to "ready for rating" (CDR_NORMALISED)
-				$arrUpdate	= Array('Status' => CDR_NORMALISED);
-				$updCDRs	= new StatementUpdate("CDR", "Service = <Service> AND Status = <CDRRated>", $arrUpdate);
-				if ($updCDRs->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value, "CDRRated"=>CDR_RATED)) === FALSE)
+				if ($mixResult !== TRUE)
 				{
-					// Could not update records in CDR table. Exit gracefully
-					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error updating records in the CDR table)");
-					return TRUE;
+					if (is_string($mixResult))
+					{
+						throw new exception($mixResult);
+					}
+					else
+					{
+						throw new exception("An unidentified error occurred");
+					}
 				}
 				
-				// Only update the Carrier and CarrierPreselect fields of the Service record, 
-				// if the new plan comes into affect at the beging of the current billing period
-				$arrUpdate = Array(	"Carrier"			=> DBO()->NewPlan->CarrierFullService->Value,
-									"CarrierPreselect"	=> DBO()->NewPlan->CarrierPreselection->Value);
+				TransactionCommit();
 				
-				$updService = new StatementUpdate("Service", "Id = <Service>", $arrUpdate);
-				if ($updService->Execute($arrUpdate, Array("Service" => DBO()->Service->Id->Value)) === FALSE)
-				{
-					// Could not update the service record. Exit gracefully
-					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Saving the plan change to the database failed, unexpectedly<br />(Error updating carrier details in the service record)");
-					return TRUE;
-				}
+				// Close the popup, alert the user
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("Alert", "The service's plan has been successfully changed");
+	
+				// Build event object
+				// The contents of this object should be declared in the doc block of this method
+				$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
+				Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
+	
+				// Since a system note has been added, fire the OnNewNote event
+				Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
+	
+				return TRUE;
 			}
-			
-			//TODO! Do automatic provisioning here
-			
-			// Add a system note describing the change of plan
-			DBO()->Service->Load();
-			if (!DBO()->CurrentRatePlan->Id->Value)
+			catch (Exception $e)
 			{
-				// The Service has not previously had a RatePlan
-				DBO()->CurrentRatePlan->Name = "undefined";
+				TransactionRollback();
+				Ajax()->AddCommand("Alert", "ERROR: ". $e->getMessage());
+				return TRUE;
 			}
-			$strNote  = "This service has had its plan changed from '". DBO()->CurrentRatePlan->Name->Value ."' to '". DBO()->NewPlan->Name->Value ."'.  $strNotePlanStart";
-			
-			SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
-			
-			// All changes to the database, required to define the plan change, have been completed
-			// Commit the transaction
-			TransactionCommit();
-			
-			// Close the popup, alert the user
-			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-			Ajax()->AddCommand("Alert", "The service's plan has been successfully changed");
-
-			// Build event object
-			// The contents of this object should be declared in the doc block of this method
-			$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
-			Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
-
-			// Since a system note has been added, fire the OnNewNote event
-			Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
-
-			return TRUE;
 		}		
 		
 		// Retrieve the service details

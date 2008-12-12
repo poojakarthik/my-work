@@ -49,10 +49,18 @@ class DO_Sales_SaleItem extends DO_Sales_Base_SaleItem
 		$this->save($dealerId, 'Item verified');
 	}
 	
-	public function cancel($dealerId)
+	public function cancel($dealerId, $strReason=NULL)
 	{
+		if ($strReason === NULL)
+		{
+			$strReason = "Item cancelled";
+		}
 		$this->saleItemStatusId = DO_Sales_SaleItemStatus::CANCELLED;
-		$this->save($dealerId, 'Item cancelled');
+		$this->save($dealerId, $strReason);
+		
+		// Do product type specific actions
+		$strModuleClass = Product_Type_Module::getModuleClassNameForProduct($this->getProduct());
+		call_user_func(array($strModuleClass, onSaleItemCancellation), $this, $dealerId);
 	}
 	
 	public function reject($dealerId)
@@ -73,7 +81,6 @@ class DO_Sales_SaleItem extends DO_Sales_Base_SaleItem
 		$this->save($dealerId, 'Completed');
 	}
 	
-	
 	// Returns the time at which the sale item was verified, or the DO_Sales_SaleItemStatusHistory object relating to this status milestone
 	// Returns NULL if the sale item has not been verified
 	public function getVerificationTimestamp($bolAsObject=FALSE)
@@ -87,36 +94,6 @@ class DO_Sales_SaleItem extends DO_Sales_Base_SaleItem
 		
 		return ($bolAsObject) ? $doHistory : $doHistory->changedOn;
 	}
-	
-	// Returns true if the sale_item is within its cooling off period and can therefor be cancelled, if it isn't already
-	public function isWithinCoolingOffPeriod()
-	{
-		// Get the sale and vendor objects
-		$doSale		= DO_Sales_Sale::getForId($doSaleItem->saleId);
-		$doVendor	= DO_Sales_Vendor::getForId($doSale->vendorId);
-		
-		$strVerificationTimestamp = $this->getVerificationTimestamp();
-		
-		if ($strVerificationTimestamp === NULL)
-		{
-			throw new Exception("Checking for cooling off period when sale item (id: {$this->id}) hasn't even been verified yet");
-		}
-		
-		$strCurrentTimestamp = Data_Source_Time::currentTimestamp(self::getDataSource());
-		
-		if ($doVendor->coolingOffPeriod !== NULL)
-		{
-			$strCoolingOffEndTime = date("Y-m-d H:i:s", strtotime("+{$doVendor->coolingOffPeriod} hours {$strVerificationTimestamp}"));
-			
-			return ($strCoolingOffEndTime >= $strCurrentTimestamp);
-		}
-		else
-		{
-			// There is no cooling off period specified for this vendor, therefore the sale item cannot be within the cooling off period
-			return FALSE;
-		}
-	}
-	
 }
 
 ?>

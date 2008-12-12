@@ -8,17 +8,34 @@ class Sales_Portal_Sale
 		// submitted
 		// rejected
 		// manual intervention
-		// provisioned
+		// Dispatched
+		// Awaiting Dispatch
 		// verified
-		// i.e. pretty much any state except 'ready for provisioning'
-		return array_search(intval($sale->saleStatusId), 
-							array(	DO_Sales_SaleStatus::SUBMITTED, 
+		// Completed
+		// i.e. pretty much any state except 'cancelled'
+		
+		$arrAllowableStati = array(	DO_Sales_SaleStatus::SUBMITTED, 
 									DO_Sales_SaleStatus::REJECTED, 
 									DO_Sales_SaleStatus::MANUAL_INTERVENTION, 
 									DO_Sales_SaleStatus::COMPLETED, 
 									DO_Sales_SaleStatus::AWAITING_DISPATCH, 
 									DO_Sales_SaleStatus::DISPATCHED, 
-									DO_Sales_SaleStatus::VERIFIED), true) !== false;
+									DO_Sales_SaleStatus::VERIFIED);
+		
+		// Plus it has to be within the cooling off period, if it has been verified
+		$strVerifiedTimestamp = $sale->getVerificationTimestamp();
+		
+		if ($strVerifiedTimestamp !== NULL)
+		{
+			// The sale has been verified.  Check that it is within the cooling off period
+			$strEndOfCoolingOffTimestamp = $sale->getEndOfCoolingOffPeriodTimestamp();
+			if ($strEndOfCoolingOffTimestamp === NULL || $strEndOfCoolingOffTimestamp < Data_Source_Time::currentTimestamp($sale->getDataSource()))
+			{
+				return FALSE;
+			}
+		}
+		
+		return array_search(intval($sale->saleStatusId), $arrAllowableStati, TRUE) !== FALSE;
 		
 	}
 

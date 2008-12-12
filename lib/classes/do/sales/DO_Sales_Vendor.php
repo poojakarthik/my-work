@@ -16,7 +16,6 @@ class DO_Sales_Vendor extends DO_Sales_Base_Vendor
 			{
 				self::$_cache[$objStatus->id] = $objStatus;
 			}
-			 
 		}
 		
 		return self::$_cache;
@@ -26,6 +25,20 @@ class DO_Sales_Vendor extends DO_Sales_Base_Vendor
 	{
 		$arrStatuses = self::getAll();
 		return (array_key_exists($intId, $arrStatuses))? $arrStatuses[$intId] : NULL;
+	}
+
+	// Returns the time at which the cooling off period ends, based on the verifiedOn Timestamp
+	public function getEndOfCoolingOffPeriodTimestamp($strVerifiedOnTimestamp)
+	{
+		if ($this->coolingOffPeriod === NULL)
+		{
+			// There is no cooling off period for this vendor
+			return NULL;
+		}
+		else
+		{
+			return date("Y-m-d H:i:s", strtotime("+ {$this->coolingOffPeriod} hours $strVerifiedOnTimestamp"));
+		}
 	}
 
 	// THIS should not be used.  Instead use DO_Sales_Dealer->getVendors()
@@ -56,6 +69,7 @@ class DO_Sales_Vendor extends DO_Sales_Base_Vendor
 		return $arrVendorList;
 
 	}
+	
 
 }
 

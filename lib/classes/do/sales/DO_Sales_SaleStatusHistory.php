@@ -64,6 +64,22 @@ class DO_Sales_SaleStatusHistory extends DO_Sales_Base_SaleStatusHistory
 		
 		return $results->fetchOne();
 	}
+
+	// Returns a DO_Sales_SaleStatusHistory object representing the first time $doSale was set to $intSaleStatusId
+	// Returns NULL, if it has never been set to the status
+	public static function getFirstOccuranceOfStatus($doSale, $intSaleStatusId)
+	{
+		$arrPropsMap = self::getPropertyDataSourceMappings();
+		// This should really be sorted by changedOn then id, but id should suffice and is much faster
+		$strOrderBy = "{$arrPropsMap['id']} ASC";
+		
+		$arrWhere = array(	"saleId"		=> $doSale->id,
+							"saleStatusId"	=> $intSaleStatusId
+						);
+		
+		return self::getFor($arrWhere, false, $strOrderBy, 1);
+	}
+
 }
 
 ?>

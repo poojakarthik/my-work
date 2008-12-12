@@ -492,6 +492,7 @@ var Dealer = {
 		var objDealer = {};
 		objDealer.id					= this.objDealer.id;
 		objDealer.employeeId			= this.objDealer.employeeId;
+objDealer.carrierId = this.objDealer.carrierId;
 		
 		objDealer.firstName				= this.controls.firstName.value;
 		objDealer.lastName				= this.controls.lastName.value;

@@ -78,6 +78,32 @@ class Sale_Item extends ORM
 		}
 	}
 	
+	// Returns the sale_item record which has the external reference
+	public static function getForExternalReference($strExternalReference)
+	{
+		$objQuery = new Query();
+		
+		$strExternalReference = $objQuery->EscapeString($strExternalReference);
+		
+		$strQuery = "SELECT * FROM sale_item WHERE external_reference = '$strExternalReference' ORDER BY id DESC LIMIT 1;";
+		
+		if (($mixResult = $objQuery->Execute($strQuery)) === FALSE)
+		{
+			throw new Exception(__METHOD__ ." Failed to retrieve sale_item record using query - $strQuery - ". $objQuery->Error());
+		}
+		
+		$mixRecord = $mixResult->fetch_assoc();
+		
+		if ($mixRecord === NULL)
+		{
+			return NULL;
+		}
+		else
+		{
+			return new self($mixRecord);
+		}
+	}
+	
 	// Retrieves the value part from the sale_item.external_reference string
 	// This string should be of the form "sale_item.id=123" where 123 is the value 
 	public function getExternalReferenceValue()

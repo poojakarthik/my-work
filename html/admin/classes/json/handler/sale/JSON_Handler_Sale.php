@@ -422,7 +422,7 @@ class JSON_Handler_Sale extends JSON_Handler
 		
 	}
 
-	public function cancelSale($saleId)
+	public function cancelSale($saleId, $strReason=NULL)
 	{
 		$dealer = Dealer::getForEmployeeId(Flex::getUserId());
 		if (!$dealer || !$dealer->isActive())
@@ -430,22 +430,48 @@ class JSON_Handler_Sale extends JSON_Handler
 			throw new Exception("You do not have sufficient permissions to perform that action.");
 		}
 
-		$sale = DO_Sales_Sale::getForId(intval($saleId));
+		//$sale = DO_Sales_Sale::getForId(intval($saleId));
+		$sale = Sales_Sale::getForId(intval($saleId));
 		if (!$sale)
 		{
 			throw new Exception("The specified sale '$saleId' could not be found.");
 		}
 
-		// Sale can only be moved to cancelled if it is :-
-		// submitted
-		// rejected
-		// manual intervention
-		// provisioned
-		// verified
-		// i.e. pretty much any state except 'ready for provisioning'
 		if (Sales_Portal_Sale::canBeCancelled($sale))
 		{
-			$sale->cancel($dealer->id);
+			try
+			{
+				// Start Transactions for both the sales data source and the flex one
+				$dsSales = $sale->getDataSource();
+				$dsSales->beginTransaction();
+				TransactionStart(FLEX_DATABASE_CONNECTION_DEFAULT);
+				
+				$sale->cancel($dealer->id, $strReason);
+				
+				$dsSales->commit();
+				TransactionCommit(FLEX_DATABASE_CONNECTION_DEFAULT);
+				
+				try
+				{
+					// Check if there was a flex account associated with this sale, and if so, alert the user that things should be done
+					$objSale = Sale::getForExternalReference("sale.id={$sale->id}");
+					if ($objSale !== NULL)
+					{
+						$strMessage = "Account {$objSale->accountId} is associated with this sale, and may need manual actions performed on it such as reverse churns, service disconnections or even account closure.";
+						return $strMessage;
+					}
+				}
+				catch (Exception $e)
+				{
+					// Don't worry about it
+				}
+			}
+			catch (Exception $e)
+			{
+				$dsSales->rollback();
+				TransactionRollback(FLEX_DATABASE_CONNECTION_DEFAULT);
+				throw new Exception("Cancelling the sale failed - ". $e->getMessage());
+			}
 		}
 		else
 		{
@@ -684,8 +710,131 @@ class JSON_Handler_Sale extends JSON_Handler
 						);
 		}
 	}
+
+	// Builds the data required of the Sale Cancellation popup
+	public function buildSaleCancellationPopup($intSaleId)
+	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES);
+		
+		try
+		{
+			$intSaleId = intval($intSaleId);
+			
+			$doSale = DO_Sales_Sale::getForId($intSaleId);
+			
+			if ($doSale === NULL)
+			{
+				throw new Exception("Cannot find sale with id: $intSaleId");
+			}
+			
+			$strCoolingOffPeriodEndsOn = $doSale->getEndOfCoolingOffPeriodTimestamp();
+			if ($strCoolingOffPeriodEndsOn === NULL || $strCoolingOffPeriodEndsOn <= Data_Source_Time::currentTimestamp($doSale->getDataSource()))
+			{
+				throw new Exception("Cooling off period has transpired for this sale");
+			}
+			
+			$doSaleType							= DO_Sales_SaleType::getForId($doSale->saleTypeId);
+			$doSaleStatus						= DO_Sales_SaleStatus::getForId($doSale->saleStatusId);
+			$objSale							= new stdClass();
+			$objSale->id						= $doSale->id;
+			$objSale->saleType					= htmlspecialchars($doSaleType->name);
+			$objSale->verifiedOn				= date("d-m-Y H:i:s", strtotime($doSale->getVerificationTimestamp()));
+			$objSale->coolingOffPeriodEndsOn	= date("d-m-Y H:i:s", strtotime($strCoolingOffPeriodEndsOn));
+			
+			$objSale->status		= htmlspecialchars($doSaleStatus->name);
+			$objSale->items			= array();
+			$arrDoSaleItems			= DO_Sales_SaleItem::listForSale($doSale, "product_id ASC, sale_item_status_id DESC");
+			$arrDoSaleItemStati		= DO_Sales_SaleItemStatus::getAll();
+			
+			$arrDoProductTypes		= DO_Sales_ProductType::listAll();
+			$arrDoProductTypesIndexed	= array();
+			foreach ($arrDoProductTypes as $doProductType)
+			{
+				$arrDoProductTypesIndexed[$doProductType->id] = $doProductType;
+			}
+
+			$strSaleItems = "";
+			foreach ($arrDoSaleItems as $doSaleItem)
+			{
+				$doProduct						= DO_Sales_Product::getForId($doSaleItem->productId);
+				$strModule 						= Product_Type_Module::getModuleClassNameForProduct($doProduct);
+				$arrDoSaleItemStatusHistory		= DO_Sales_SaleItemStatusHistory::listForSaleItem($doSaleItem, "id DESC", 1);
+				$doCurrentStatusDetails			= current($arrDoSaleItemStatusHistory);
+				$objSaleItem					= new stdClass();
+				$objSaleItem->id				= $doSaleItem->id;
+				$objSaleItem->description		= call_user_func(array($strModule, "getSaleItemDescription"), $doSaleItem, TRUE, TRUE);
+				$objSaleItem->status			= $arrDoSaleItemStati[$doCurrentStatusDetails->saleItemStatusId]->name;
+				$objSaleItem->statusChangedOn	= date("d-m-Y H:i:s", strtotime($doCurrentStatusDetails->changedOn));
+				$objSale->items[]				= $objSaleItem;
+				
+				$strSaleItems .= "
+<tr>
+	<td>{$objSaleItem->description}</td>
+	<td>{$objSaleItem->status}</td>
+	<td>{$objSaleItem->statusChangedOn}</td>
+</tr>";
+			}
+
+			$strHtml = "
+<div id='PopupPageBody' style='padding:3px'>
+	<form id='SaleCancellationForm' name='SaleCancellationForm'>
+		<div class='GroupedContent'>
+			<table class='form-data'>
+				<tr>
+					<td class='title' style='width:20%'>Type of Sale</td>
+					<td>{$objSale->saleType}</td>
+				</tr>
+				<tr>
+					<td class='title'>Verified On</td>
+					<td>{$objSale->verifiedOn}</td>
+				</tr>
+				<tr>
+					<td class='title'>Cooling Off Period Ends</td>
+					<td>{$objSale->coolingOffPeriodEndsOn}</td>
+				</tr>
+				<tr>
+					<td class='title'>Products</td>
+					<td>
+						<div style='overflow:auto;max-height:10em;width:100%;'>
+							<table style='width:100%'>
+								$strSaleItems
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class='title'>Reason for Cancellation</td>
+					<td><textarea class='required' id='reason' name='reason' rows='3' style='width:100%'></textarea></td>
+				</tr>
+			</table>
+		</div>
 	
-	
+		<div style='padding-top:3px;height:auto:width:100%'>
+			<div style='float:right'>
+				<input type='button' value='Ok' id='okButton' name='okButton'></input>
+				<input type='button' value='Close' id='cancelButton' name='cancelButton'></input>
+			</div>
+			<div style='clear:both;float:none'></div>
+		</div>
+	</form>
+
+</div>
+";
+
+			return array(	"success"		=> TRUE,
+							"sale"			=> $objSale,
+							"popupContent"	=> $strHtml
+						);
+		}
+		catch (Exception $e)
+		{
+			return array(	"success"		=> FALSE,
+							"errorMessage"	=> $e->getMessage()
+						);
+		}
+	}
+
 }
 
 

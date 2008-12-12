@@ -198,8 +198,53 @@ class DO_Sales_SaleItemServiceLandline extends DO_Sales_Base_SaleItemServiceLand
 		
 		return (count($arrProblems)) ? FALSE : TRUE;
 	}
-	
 
+	//------------------------------------------------------------------------//
+	// getForSaleItem
+	//------------------------------------------------------------------------//
+	/**
+	 * getForSaleItem()
+	 *
+	 * Returns a DO_Sales_SaleItemServiceLandline object corresponding to the passed DO_Sales_SaleItem object
+	 *
+	 * Returns a DO_Sales_SaleItemServiceLandline object corresponding to the passed DO_Sales_SaleItem object
+	 * There should only ever be one sale_item_service_landline object relating to a sale_item
+	 * 
+	 * @param	DO_Sales_SaleItem	$doSaleItem					The sale item representing an intance of a Landline Service product
+	 * @param	boolean				$bolExceptionOnNotFound		If TRUE, then throws an exception if the sale_item_service_landline record can't be found
+	 * 															If FALSE, then returns NULL if the sale_item_service_landline record can't be found
+	 * 
+	 * @return	mixed				DO_Sales_SaleItemServiceLandline object when found
+	 * 								NULL when can't be found and $bolExceptionOnNotFound == FALSE
+	 *
+	 * @method
+	 */
+	public static function getForSaleItem(DO_Sales_SaleItem $doSaleItem, $bolExceptionOnNotFound=FALSE)
+	{
+		$arrSaleItems = self::listForSaleItem($doSaleItem);
+		
+		$intCount = count($arrSaleItems);
+		
+		if ($intCount == 0)
+		{
+			if ($bolExceptionOnNotFound)
+			{
+				throw new Exception("Cannot find SaleItemServiceLandline object for SaleItem with id: {$doSaleItem->id}");
+			}
+			else
+			{
+				return NULL;
+			}
+		}
+		elseif ($intCount > 1)
+		{
+			throw new Exception("Found multiple SaleItemServiceLandline objects ($intCount found) relating to the SaleItem with id: {$doSaleItem->id}");
+		}
+		else
+		{
+			return current($arrSaleItems);
+		}
+	}
 }
 
 ?>

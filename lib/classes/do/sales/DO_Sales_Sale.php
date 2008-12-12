@@ -363,8 +363,13 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		$this->save($dealerId, 'Sale rejected');
 	}
 	
-	public function cancel($dealerId)
+	public function cancel($dealerId, $strReason=NULL)
 	{
+		if ($strReason === NULL)
+		{
+			$strReason = "Item cancelled";
+		}
+		
 		$dataSource = $this->getDataSource();
 		$strTransactionName = 'CancelSale' . $this->id;
 
@@ -373,13 +378,17 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		try
 		{
 			$this->saleStatusId = DO_Sales_SaleStatus::CANCELLED;
-			$this->save($dealerId, 'Sale cancel');
+			$this->save($dealerId, $strReason);
 
 			// We also want to cancel all of the sale items
 			$saleItems = DO_Sales_SaleItem::listForSale($this);
 			foreach ($saleItems as $saleItem)
 			{
-				$saleItem->cancel($dealerId);
+				if ($saleItem->saleItemStatusId != DO_Sales_SaleItemStatus::CANCELLED)
+				{
+					// The item can be cancelled
+					$saleItem->cancel($dealerId, $strReason);
+				}
 			}
 			
 			$dataSource->commit($strTransactionName);
@@ -450,6 +459,31 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 			$this->saleStatusId = $intNewStatus;
 			$this->save($dealerId, $strStatusDesc);
 		}
+	}
+	
+	// Returns the time at which the sale was verified, or the DO_Sales_SaleStatusHistory object relating to this status milestone
+	// Returns NULL if the sale has not been verified
+	public function getVerificationTimestamp($bolAsObject=FALSE)
+	{
+		$doHistory = DO_Sales_SaleStatusHistory::getFirstOccuranceOfStatus($this, DO_Sales_SaleStatus::VERIFIED);
+		
+		if ($doHistory === NULL)
+		{
+			return NULL;
+		}
+		
+		return ($bolAsObject) ? $doHistory : $doHistory->changedOn;
+	}
+
+	// Returns NULL if there is no cooling off period for the vendor that this sale is with
+	public function getEndOfCoolingOffPeriodTimestamp()
+	{
+		// Get the Sale Account object
+		$doSaleAccount = DO_Sales_SaleAccount::getForSale($this, TRUE);
+		
+		$doVendor = DO_Sales_Vendor::getForId($doSaleAccount->vendorId);
+		
+		return $doVendor->getEndOfCoolingOffPeriodTimestamp($this->getVerificationTimestamp());
 	}
 
 }

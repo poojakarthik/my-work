@@ -168,10 +168,22 @@ class Dealer
 		return self::$_arrPaginationDetails;
 	}
 
-	public static function getForId($intId)
+	public static function getForId($intId, $bolExceptionOnNotFound=FALSE)
 	{
 		$arrDealers = self::getFor("id = $intId");
-		return (count($arrDealers) == 1) ? current($arrDealers) : NULL;
+		
+		if (count($arrDealers) == 1)
+		{
+			return current($arrDealers);
+		}
+		elseif ($bolExceptionOnNotFound)
+		{
+			throw new Exception("Can't find dealer with id: $intId");
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 	
 	// Returns the dealer record, based on the employeeId
@@ -321,17 +333,20 @@ class Dealer
 	// Returns array containing all Dealers under the management hierarchy of $objDealer
 	// This will NOT include $objDealer in the array
 	// the array is not associative
-	public static function getDealersUnderManager($objDealer)
+	public static function getDealersUnderManager($objDealer, $bolImmediateSubordinatesOnly=FALSE)
 	{
 		$arrManagedDealers = self::getFor("up_line_id = {$objDealer->id}");
 		
 		// Add the dealers immediately under $objDealer's management to the array of all dealers under $objDealer's management
 		$arrDealers = $arrManagedDealers;
 		
-		// For each dealer that is immediately under $objDealer's management, find the dealers under their management (the recursion part)
-		foreach ($arrManagedDealers as $objManagedDealer)
+		if (!$bolImmediateSubordinatesOnly)
 		{
-			$arrDealers = array_merge($arrDealers, self::getDealersUnderManager($objManagedDealer));
+			// For each dealer that is immediately under $objDealer's management, find the dealers under their management (the recursion part)
+			foreach ($arrManagedDealers as $objManagedDealer)
+			{
+				$arrDealers = array_merge($arrDealers, self::getDealersUnderManager($objManagedDealer));
+			}
 		}
 		return $arrDealers;
 	}
@@ -500,6 +515,18 @@ class Dealer
 	
 	public function save()
 	{
+		// Set the dealer's carrier_id to that of their upline manager, if they have one
+		if ($this->upLineId !== NULL)
+		{
+			$objManager = self::getForId($this->upLineId, TRUE);
+			
+			if ($this->carrierId !== $objManager->carrierId)
+			{
+				$this->carrierId = $objManager->carrierId;
+				$this->_bolSaved = FALSE;
+			}
+		}
+		
 		if ($this->_bolSaved)
 		{
 			// Nothing to save
@@ -530,7 +557,7 @@ class Dealer
 			{
 				throw new Exception("Failed to update dealer record with id: {$this->id} - ". $updDealer->Error());
 			}
-		} 
+		}
 		else
 		{
 			// Insert
@@ -597,6 +624,15 @@ class Dealer
 				// There are discrepancies, which means new relationships have been defined, and should be saved to the database
 				Dealer_Sale_Type::setSaleTypesForDealer($this->id, $this->_arrSaleTypeIds);
 			}
+		}
+		
+		// Update those fields that should cascade down to subordinates of the dealer, if they have any subordinates
+		$arrSubbies = self::getDealersUnderManager($this, TRUE);
+		foreach ($arrSubbies as $objSubbie)
+		{
+			// The only thing that cascades is the carrier id
+			$objSubbie->carrierId = $this->carrierId;
+			$objSubbie->save();
 		}
 		
 		$this->_bolSaved = TRUE;

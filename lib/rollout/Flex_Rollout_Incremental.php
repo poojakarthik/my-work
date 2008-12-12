@@ -46,7 +46,7 @@ class Flex_Rollout_Incremental
 			}
 			catch(Exception $e)
 			{
-				throw new Exception("Failed to build constants file prior to attempting rollout $intVersion. Current version is $currentVersion.");
+				throw new Exception("Failed to build constants file prior to attempting rollout $intVersion. Current version is $currentVersion.". $e->getMessage());
 			}
 
 
