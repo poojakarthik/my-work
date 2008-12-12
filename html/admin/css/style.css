@@ -269,6 +269,7 @@ div.reflex-popup-opaque {
 	filter				: alpha(opacity=25);
 	-moz-opacity		: .25;
 	opacity				: .25;
+	z-index				: 50;
 }
 
 div.reflex-popup {
@@ -353,6 +354,11 @@ div.reflex-popup-content h1 {
 
 div.reflex-popup-text-content {
 	padding: 0.8em;
+}
+
+
+div.reflex-popup-footer input[type="button"] {
+	margin: 0 .25em;
 }
 
 input.validation-error-tootltip-button {
@@ -605,4 +611,32 @@ div.PartTitle{
 .maximum-area-body
 {
 	padding-bottom:			15px;
+}
+
+
+
+
+tr.hide-if-not-last-child:last-child
+{
+	display: table-row !important;
+}
+
+td.hide-if-not-last-child:last-child
+{
+	display: table-cell !important;
+}
+
+div.hide-if-not-last-child:last-child
+{
+	display: block !important;
+}
+
+span.hide-if-not-last-child:last-child
+{
+	display: inline !important;
+}
+
+.hide-if-not-last-child
+{
+	display: none;
 }
