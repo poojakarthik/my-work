@@ -34,13 +34,7 @@ var Telemarketing	= Class.create
 		
 		// Add a target to the form
 		elmForm.target			= elmIframe.id;
-		//alert($ID(strIframeId).target);
-		//alert(elmForm.target);
-		//throw "DONT FUCKING SUBMIT";
 		
-		
-		
-		//elmForm.submit();
 		return true;
 	},
 	
