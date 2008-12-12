@@ -3943,6 +3943,14 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 	$arrApplicableAccountStatuses = implode(", ", $arrApplicableAccountStatuses);
 	$strApplicableInvoiceStatuses = implode(", ", $arrApplicableInvoiceStatuses);
 
+	// TODO Remove this evil hack any time AFTER December 2008
+	// This is to prevent DD customers being sent notices as, in Dec 2008, late notices will be sent out BEFORE direct debits have been processed (most irregular!)
+	$strIgnoreDDAccounts = '';
+	if (date('Y-m') == '2008-12')
+	{
+		$strIgnoreDDAccounts = ' AND Account.BillingType = ' . BILLING_TYPE_ACCOUNT . ' ';
+	}
+
 	// Find all Accounts that fit the requirements for Late Notice generation
 	$arrColumns = Array(	'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
 							'AccountId'				=> "Invoice.Account",
@@ -3978,7 +3986,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		  ON Invoice.Account = Account.Id 
 		 AND Invoice.Status IN ($strApplicableInvoiceStatuses)
 		 AND Account.Archived IN ($arrApplicableAccountStatuses) 
-		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
+		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
 		JOIN credit_control_status 
 		  ON Account.credit_control_status = credit_control_status.id
 		 AND credit_control_status.send_late_notice = 1
@@ -4002,7 +4010,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		JOIN Account 
 		  ON Account.Id = Invoice.Account
 	         AND Account.Archived IN ($arrApplicableAccountStatuses) $strAccountBillingType
-	         AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
+	         AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
 		JOIN credit_control_status 
 		  ON Account.credit_control_status = credit_control_status.id
 		 AND credit_control_status.send_late_notice = 1
