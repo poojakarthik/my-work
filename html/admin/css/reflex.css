@@ -468,6 +468,7 @@ div.reflex-popup-opaque {
 	filter				: alpha(opacity=25);
 	-moz-opacity		: .25;
 	opacity				: .25;
+	z-index				: 50;
 }
 
 div.reflex-popup {
