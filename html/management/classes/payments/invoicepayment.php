@@ -90,7 +90,7 @@
 					$arrResult['Applied'] = 0;
 				}
 				
-			$arrResult['TypeName'] = GetConstantDescription($arrResult['Type'], 'PaymentType');
+			$arrResult['TypeName'] = GetConstantDescription($arrResult['Type'], 'payment_type');
 			
 			//Insert into the DOM Document
 			$GLOBALS['Style']->InsertDOM($arrResult, 'PaymentDetails');

@@ -77,12 +77,12 @@
 			
 			foreach ($arrResults as $intKey=>$arrResult)
 			{
-				$arrResults[$intKey]['TypeName'] = GetConstantDescription($arrResults[$intKey]['Type'], 'PaymentType');
+				$arrResults[$intKey]['TypeName'] = GetConstantDescription($arrResults[$intKey]['Type'], 'payment_type');
 				// fixing reversed payments
 				if($arrResults[$intKey]['Status'] == 250)
 				{
 					$arrResults[$intKey]['Applied'] = 0;
-					$arrResults[$intKey]['StatusName'] = GetConstantDescription($arrResults[$intKey]['Status'], 'PaymentStatus');
+					$arrResults[$intKey]['StatusName'] = GetConstantDescription($arrResults[$intKey]['Status'], 'payment_status');
 				}
 			}
 			//Insert into the DOM Document

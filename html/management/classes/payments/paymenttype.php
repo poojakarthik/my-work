@@ -94,7 +94,7 @@
 		{
 			parent::__construct ('PaymentType');
 			
-			$strName = GetConstantDescription($intType, 'PaymentType');
+			$strName = GetConstantDescription($intType, 'payment_type');
 			
 			if (!$strName)
 			{

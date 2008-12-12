@@ -384,7 +384,7 @@
 						$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Cannot match to an account");
 						break;
 					default:
-						$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."An unknown error occurred with code ".(int)$arrNormalised." in module ".GetConstantDescription($arrPayment['FileType'], 'PaymentType').".");
+						$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."An unknown error occurred with code ".(int)$arrNormalised." in module ".GetConstantDescription($arrPayment['FileType'], 'payment_type').".");
 						$intStatus = PAYMENT_BAD_NORMALISE;
 				}
 				

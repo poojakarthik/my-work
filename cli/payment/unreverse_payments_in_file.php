@@ -102,7 +102,7 @@ try
 				}
 				else
 				{
-					CliEcho("\t ! Cannot Unreverse Payment #{$arrPayment['Id']} with Status '".GetConstantDescription($arrPayment['Status'], 'PaymentStatus')."'");
+					CliEcho("\t ! Cannot Unreverse Payment #{$arrPayment['Id']} with Status '".GetConstantDescription($arrPayment['Status'], 'payment_status')."'");
 				}
 			}
 		}

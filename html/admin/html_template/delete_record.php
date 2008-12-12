@@ -110,7 +110,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 				DBO()->Payment->PaidOn->RenderOutput();
 				DBO()->Payment->Amount->RenderOutput();
 				DBO()->Payment->Balance->RenderOutput();
-				DBO()->Payment->PaymentType->RenderCallback("GetConstantDescription", Array("PaymentType"), RENDER_OUTPUT);
+				DBO()->Payment->PaymentType->RenderCallback("GetConstantDescription", Array("payment_type"), RENDER_OUTPUT);
 				DBO()->Payment->Id->RenderHidden();
 				break;
 			case "Adjustment":

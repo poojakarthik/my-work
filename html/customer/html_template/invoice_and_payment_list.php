@@ -231,7 +231,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 			}
 
 			// Display the payment type, e.g. Credit Card, BillExpress, etc, etc
-			$mixPaymentType = $GLOBALS['*arrConstant']['PaymentType']["$strPaymentType"]['Description'];
+			$mixPaymentType = $GLOBALS['*arrConstant']['payment_type']["$strPaymentType"]['Description'];
 			$mixRefAndType = "$strRefNum - $mixPaymentType";
 			Table()->InvoicesAndPayments->AddRow($strRecordType, $strDate, $mixRefAndType, $strCredit, $strDebit, $strInvoicePdfLabel);
 			

@@ -144,7 +144,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Payment Type :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='Payment.PaymentType' style='width: 250px' name='Payment.PaymentType' onchange='Vixen.PaymentPopup.DeclarePaymentType(this.value)'>\n";
-		foreach ($GLOBALS['*arrConstant']['PaymentType'] as $intPaymentType=>$arrPaymentType)
+		foreach ($GLOBALS['*arrConstant']['payment_type'] as $intPaymentType=>$arrPaymentType)
 		{
 			$strDescription = $arrPaymentType['Description'];
 

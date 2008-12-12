@@ -111,8 +111,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			$strStatus = "&nbsp;";
 			if ($dboPayment->Status->Value == PAYMENT_REVERSED)
 			{
-				//$strStatus = $dboPayment->Status->AsCallBack("GetConstantDescription", Array("PaymentStatus"));
-				$strStatus = GetConstantDescription($dboPayment->Status->Value, "PaymentStatus");
+				$strStatus = GetConstantDescription($dboPayment->Status->Value, "payment_status");
 			}
 			
 			// Build the Payment Amount cell
@@ -247,7 +246,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			}
 			
 			// Payment Type
-			$strToolTipHtml .= $dboPayment->PaymentType->AsCallBack("GetConstantDescription", Array("PaymentType"), RENDER_OUTPUT);
+			$strToolTipHtml .= $dboPayment->PaymentType->AsCallBack("GetConstantDescription", Array("payment_type"), RENDER_OUTPUT);
 			
 			// If there is a file import date associated with the payment, then include this too
 			if ($dboPayment->ImportedOn->Value)
@@ -262,7 +261,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			}
 			
 			// Status
-			$strToolTipHtml .= $dboPayment->Status->AsCallBack("GetConstantDescription", Array("PaymentStatus"), RENDER_OUTPUT);
+			$strToolTipHtml .= $dboPayment->Status->AsCallBack("GetConstantDescription", Array("payment_status"), RENDER_OUTPUT);
 			
 			// if the payment's status is PAYMENT_REVERSED then AmountApplied = 0 else AmountApplied = Amount - Balance
 			if ($dboPayment->Status->Value != PAYMENT_REVERSED)
