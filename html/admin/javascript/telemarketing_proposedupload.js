@@ -141,9 +141,12 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		// Generate Call Centre List
 		var strDealerListHTML	= '';
-		for (intDealerId in this._arrCallCentres)
+		if (!this._arrCallCentres.each)
 		{
-			strDealerListHTML	+= "<option value='" + intDealerId + "'>" + this._arrCallCentres[intDealerId].firstName + " " + this._arrCallCentres[intDealerId].lastName + "</option>\n";
+			for (intDealerId in this._arrCallCentres)
+			{
+				strDealerListHTML	+= "<option value='" + intDealerId + "'>" + this._arrCallCentres[intDealerId].firstName + " " + this._arrCallCentres[intDealerId].lastName + "</option>\n";
+			}
 		}
 		
 		// Generate Popup HTML
