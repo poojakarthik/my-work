@@ -341,19 +341,17 @@
  			}
  			
 			// Is this fixed-width?
-			if ($arrField['Length'] > 0)
+			if ($arrField['Length'])
 			{
 				if (($intLength = strlen($mixValue)) > $arrField['Length'])
 				{
 					// Field is too long, fail out
-					$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' is $intLength chars, expected max {$arrField['Length']} chars";
-					return Array('Pass' => FALSE, 'Line' => $strMessage);
+					CliEcho("Request #{$arrLine['**Request']}; Field '$strField' is $intLength chars, truncated to max of {$arrField['Length']} chars");
+					//return Array('Pass' => FALSE, 'Line' => $strMessage);
 				}
-				else
-				{
-					// Pad the field
-					$mixValue	= str_pad($mixValue, $arrField['Length'], $arrField['PadChar'], $arrField['PadType']);
-				}
+				
+				// Pad the field
+				$strValue	= str_pad(substr($mixValue, 0, $arrField['Length']), $arrField['Length'], $arrField['PadChar'], $arrField['PadType']);
 			}
 			
 			$arrOutput[]	= $mixValue;
@@ -466,14 +464,11 @@
 				if (($intLength = strlen($mixValue)) > $arrField['Length'])
 				{
 					// Field is too long, fail out
-					$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' is $intLength chars, expected max {$arrField['Length']} chars";
-					return Array('Pass' => FALSE, 'Line' => $strMessage);
+					CliEcho("Request #{$arrLine['**Request']}; Field '$strField' is $intLength chars, truncated to max of {$arrField['Length']} chars");
 				}
-				else
-				{
-					// Pad the field
-					$strValue	= str_pad($mixValue, $arrField['Length'], $arrField['PadChar'], $arrField['PadType']);
-				}
+				
+				// Pad the field
+				$strValue	= str_pad(substr($mixValue, 0, $arrField['Length']), $arrField['Length'], $arrField['PadChar'], $arrField['PadType']);
 			}
 			
 			// Render XLS line
