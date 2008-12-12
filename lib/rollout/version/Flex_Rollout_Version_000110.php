@@ -17,7 +17,7 @@ class Flex_Rollout_Version_000110 extends Flex_Rollout_Version
 		// 1:	Add new Payment File Types
 		$strSQL = "INSERT INTO resource_type (name, description, const_name, resource_type_nature) VALUES
 					('Australian Direct Entry File', 'Australian Direct Entry File', 'RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE', (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_EXPORT_FILE')),
-					('Australian Direct Entry Report', 'Australian Direct Entry Report', 'RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT', (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_EXPORT_FILE'))";
+					('Australian Direct Entry Report', 'Australian Direct Entry Report', 'RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT', (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE'))";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
