@@ -40,7 +40,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		var intCallCentre	= elmDealerCombo.options[elmDealerCombo.selectedIndex].value;
 		if (this._arrCallCentres[intCallCentre])
 		{
-			for (var intCustomerGroupId = 0; this._arrCallCentres[intCallCentre].customerGroupIds.length; intCustomerGroupId++)
+			for (intCustomerGroupId in this._arrCallCentres[intCallCentre].customerGroupIds)
 			{
 				if (this._arrVendors[intCustomerGroupId] != undefined)
 				{
@@ -141,7 +141,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		
 		// Generate Call Centre List
 		var strDealerListHTML	= '';
-		for (var intDealerId = 0; this._arrCallCentres.length; intDealerId++)
+		for (intDealerId in this._arrCallCentres)
 		{
 			strDealerListHTML	+= "<option value='" + intDealerId + "'>" + this._arrCallCentres[intDealerId].firstName + " " + this._arrCallCentres[intDealerId].lastName + "</option>\n";
 		}
