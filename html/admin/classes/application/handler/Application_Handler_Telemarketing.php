@@ -58,7 +58,6 @@ class Application_Handler_Telemarketing extends Application_Handler
 		{
 			$arrDetailsToRender['Success']	= false;
 			$arrDetailsToRender['Message']	= $e->getMessage();
-			
 		}
 		
 		// Render the JSON'd Array
@@ -67,5 +66,4 @@ class Application_Handler_Telemarketing extends Application_Handler
 		die;
 	}
 }
-
 ?>
