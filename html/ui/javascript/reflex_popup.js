@@ -22,6 +22,7 @@ Object.extend(Reflex_Popup, {
 			}
 		}
 		// We can now add the popup container to the overlay
+		Reflex_Popup.overlay.appendChild(Reflex_Popup.opaquePane);
 		Reflex_Popup.overlay.appendChild(popup.container);
 		Reflex_Popup.position(popup.container);
 	},
