@@ -351,7 +351,7 @@
 				}
 				
 				// Pad the field
-				$strValue	= str_pad(substr($mixValue, 0, $arrField['Length']), $arrField['Length'], $arrField['PadChar'], $arrField['PadType']);
+				$mixValue	= str_pad(substr($mixValue, 0, $arrField['Length']), $arrField['Length'], $arrField['PadChar'], $arrField['PadType']);
 			}
 			
 			$arrOutput[]	= $mixValue;
@@ -468,7 +468,7 @@
 				}
 				
 				// Pad the field
-				$strValue	= str_pad(substr($mixValue, 0, $arrField['Length']), $arrField['Length'], $arrField['PadChar'], $arrField['PadType']);
+				$mixValue	= str_pad(substr($mixValue, 0, $arrField['Length']), $arrField['Length'], $arrField['PadChar'], $arrField['PadType']);
 			}
 			
 			// Render XLS line
