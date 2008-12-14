@@ -214,7 +214,7 @@ class Cli_App_Billing extends Cli
 				Cli_App_Billing::debug("\t\t * Predicted Billing Date\t: {$strInvoiceDate}");
 
 				// Are there any Invoice Runs Scheduled for today?
-				if ($selInvoiceRunSchedule->Execute(Array('InvoiceDate' => $strInvoiceDate, 'customer_group_id' => $arrPaymentTerms['customer_group_id'])))
+				if ($selInvoiceRunSchedule->Execute(Array('InvoiceDate' => date('Y-m-d', $intInvoiceDatetime), 'customer_group_id' => $arrPaymentTerms['customer_group_id'])))
 				{
 					// There is at least one scheduled today, so run the pre-Billing Scripts
 					$this->_preGenerateScripts();
