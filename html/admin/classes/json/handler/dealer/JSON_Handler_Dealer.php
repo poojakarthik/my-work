@@ -90,6 +90,14 @@ class JSON_Handler_Dealer extends JSON_Handler
 				$strManagerComboOptions .= "<option value='{$objPossibleManager->id}'>". htmlspecialchars($objPossibleManager->getName()) ."</option>";
 			}
 			
+			// Carrier combo box
+			$arrCarriers = Carrier::listForCarrierTypeId(CARRIER_TYPE_SALES_CALL_CENTRE);
+			$strCarrierComboOptions = "<option value='0'>&nbsp;</option>";
+			foreach ($arrCarriers as $objCarrier)
+			{
+				$strCarrierComboOptions .= "<option value='{$objCarrier->id}'>". htmlspecialchars($objCarrier->name) ."</option>";
+			}
+			
 			// Build SaleType Data
 			$arrObjSaleTypes = Sale_Type::getAll();
 			$arrSaleTypeDetails = array();
@@ -177,6 +185,10 @@ class JSON_Handler_Dealer extends JSON_Handler
 						<tr>
 							<td class='title'>Password Again</td>
 							<td><input type='password' id='password2' name='password2' maxlength='255'></input></td>
+						</tr>
+						<tr>
+							<td class='title'>Group</td>
+							<td><select id='carrierId' name='carrierId' style='width:100%'>$strCarrierComboOptions</select></td>
 						</tr>
 						<tr>
 							<td class='title'>Up Line Manager</td>
@@ -495,6 +507,8 @@ class JSON_Handler_Dealer extends JSON_Handler
 			$arrDetails['status'] = ($objDealerStatus !== NULL)? htmlspecialchars($objDealerStatus->name) : "Status: {$objDealer->dealerStatusId} could not be found";
 			$arrDetails['isEmployee'] = ($objDealer->employeeId !== NULL)? "Yes" : "No";
 			
+			$arrDetails['carrierName'] = ($objDealer->carrierId === NULL)? "[Not Specified]" : htmlspecialchars(Carrier::getForId($objDealer->carrierId, TRUE)->name);
+			
 			$arrDetails['businessName'] = ($objDealer->businessName !== NULL)? htmlspecialchars($objDealer->businessName): "[Not Specified]";
 			$arrDetails['tradingName'] = ($objDealer->tradingName !== NULL)? htmlspecialchars($objDealer->tradingName): "[Not Specified]";
 			if ($objDealer->abn !== NULL)
@@ -597,7 +611,8 @@ class JSON_Handler_Dealer extends JSON_Handler
 				$objRatePlan		= $arrAllRatePlans[$intRatePlanId];
 				$strServiceType		= GetConstantDescription($objRatePlan->ServiceType, "service_type");
 				$strCustomerGroup	= $arrAllCustomerGroups[$objRatePlan->customer_group]->internalName;
-				$arrRatePlanNames[]	= htmlspecialchars("{$strCustomerGroup} - {$strServiceType} - {$objRatePlan->Name}");
+				$strArchived		= ($objRatePlan->archived != RATE_STATUS_ACTIVE)? " (ARCHVIED)" : "";
+				$arrRatePlanNames[]	= htmlspecialchars("{$strCustomerGroup} - {$strServiceType} - {$objRatePlan->Name}{$strArchived}");
 			}
 			$arrDetails['ratePlans'] = (count($arrRatePlanNames) > 0)? implode("<br />", $arrRatePlanNames) : "[None Specified]";
 			
@@ -634,6 +649,10 @@ class JSON_Handler_Dealer extends JSON_Handler
 						<tr>
 							<td class='title'>Username</td>
 							<td>{$arrDetails['username']}</td>
+						</tr>
+						<tr>
+							<td class='title'>Group</td>
+							<td>{$arrDetails['carrierName']}</td>
 						</tr>
 						<tr>
 							<td class='title'>Up Line Manager</td>

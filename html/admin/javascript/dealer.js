@@ -186,6 +186,7 @@ var Dealer = {
 		this.controls.titleId.value			= this.objDealer.titleId;
 		this.controls.username.value		= this.objDealer.username;
 		this.controls.upLineId.value		= (this.objDealer.upLineId != null)? this.objDealer.upLineId : 0;
+		this.controls.carrierId.value		= (this.objDealer.carrierId != null)? this.objDealer.carrierId : 0;
 		this.controls.canVerify.checked		= (this.objDealer.canVerify == 1);
 		this.controls.phone.value			= this.objDealer.phone;
 		this.controls.mobile.value			= this.objDealer.mobile;
@@ -492,7 +493,6 @@ var Dealer = {
 		var objDealer = {};
 		objDealer.id					= this.objDealer.id;
 		objDealer.employeeId			= this.objDealer.employeeId;
-objDealer.carrierId = this.objDealer.carrierId;
 		
 		objDealer.firstName				= this.controls.firstName.value;
 		objDealer.lastName				= this.controls.lastName.value;
@@ -500,6 +500,7 @@ objDealer.carrierId = this.objDealer.carrierId;
 		objDealer.username				= this.controls.username.value;
 		objDealer.password				= this.controls.password.value;
 		objDealer.upLineId				= (this.controls.upLineId.value != 0)? parseInt(this.controls.upLineId.value) : null;
+		objDealer.carrierId				= (this.controls.carrierId.value != 0)? parseInt(this.controls.carrierId.value) : null;
 		objDealer.canVerify				= this.controls.canVerify.checked;
 		objDealer.phone					= this.controls.phone.value;
 		objDealer.mobile				= this.controls.mobile.value;
