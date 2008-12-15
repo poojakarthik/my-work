@@ -187,9 +187,10 @@ class AppTemplatePlan extends ApplicationTemplate
 							"CarrierPreselection"	=> "RP.CarrierPreselection",
 							"customer_group"		=> "RP.customer_group",
 							"Archived"				=> "RP.Archived",
-							"IsDefault"				=> "CASE WHEN drp.Id IS NOT NULL THEN TRUE ELSE FALSE END"
+							"IsDefault"				=> "CASE WHEN drp.Id IS NOT NULL THEN TRUE ELSE FALSE END",
+							"DealerCount"			=> "COALESCE(DRP.DealerCount, 0)"
 							);
-		$strTables		= "RatePlan AS RP LEFT JOIN default_rate_plan AS drp ON RP.Id = drp.rate_plan AND RP.customer_group = drp.customer_group AND RP.ServiceType = drp.service_type";
+		$strTables		= "RatePlan AS RP LEFT JOIN default_rate_plan AS drp ON RP.Id = drp.rate_plan AND RP.customer_group = drp.customer_group AND RP.ServiceType = drp.service_type LEFT OUTER JOIN (SELECT rate_plan_id AS RatePlanId, COUNT(id) AS DealerCount FROM dealer_rate_plan GROUP BY rate_plan_id) AS DRP ON RP.Id = DRP.RatePlanId";
 		$strOrderBy		= "ServiceType, Name, customer_group";
 		$selRatePlans	= new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
 		if ($selRatePlans->Execute($arrWhere) === FALSE)
@@ -266,9 +267,25 @@ class AppTemplatePlan extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: Saving the status change failed, unexpectedly.  Please notify your system administrator");
 			return TRUE;
 		}
-
+		
+		$strSuccessMsg = "Status change was successful";
+		
+		// Update the status of the RatePlan in the Sales database, if there is one
+		if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
+		{
+			try
+			{
+				Cli_App_Sales::pushAll();
+			}
+			catch (Exception $e)
+			{
+				// Pushing the data failed
+				$strSuccessMsg .= "<br /><span class='warning'>WARNING: Pushing the data from Flex to the Sales database, failed. Contact your system administrators to have them manually trigger the data push.<br />Error message: ". htmlspecialchars($e->getMessage()) ."</span>";
+			}
+		}
+		
 		// Everything worked
-		Ajax()->AddCommand("AlertReload", "Status change was successful");
+		Ajax()->AddCommand("AlertReload", $strSuccessMsg);
 		
 		return TRUE;
 	}

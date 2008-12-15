@@ -43,6 +43,7 @@ function VixenAvailablePlansPageClass()
 {
 	var RATE_STATUS_ACTIVE		= 0;
 	var RATE_STATUS_ARCHIVED	= 1;
+	var RATE_STATUS_DRAFT		= 2;
 	
 	this.objRatePlans = null;
 	
@@ -70,35 +71,41 @@ function VixenAvailablePlansPageClass()
 	// Triggers Status toggle between Active and Archived
 	this.TogglePlanStatus = function(intRatePlan, bolConfirmed)
 	{
-		var objRatePlan = this.objRatePlans[intRatePlan];
-		
-		if (objRatePlan == undefined)
-		{
-			return;
-		}
-		
-		var intNewStatus;
-		var strArchiveDescription = "";
-		var strAction;
-		if (objRatePlan.Status == RATE_STATUS_ACTIVE)
-		{
-			intNewStatus			= RATE_STATUS_ARCHIVED;
-			strAction				= "archive";
-			strArchiveDescription	= "<br /><br />Archived Plans cannot be assigned to services that aren't already using them.";
-		}
-		else if (objRatePlan.Status == RATE_STATUS_ARCHIVED)
-		{
-			intNewStatus	= RATE_STATUS_ACTIVE;
-			strAction		= "activate";
-		}
-		else
-		{
-			// Don't do anything
-			return FALSE;
-		}
-		
 		if (!bolConfirmed)
 		{
+			var objRatePlan = this.objRatePlans[intRatePlan];
+			
+			if (objRatePlan == undefined)
+			{
+				return;
+			}
+			
+			var intNewStatus;
+			var strArchiveDescription = "";
+			var strAction;
+			if (objRatePlan.Status == RATE_STATUS_ACTIVE)
+			{
+				intNewStatus			= RATE_STATUS_ARCHIVED;
+				strAction				= "archive";
+				strArchiveDescription	= "  Archived Plans cannot be assigned to services that aren't already using them.";
+
+				if (objRatePlan.DealerCount > 0)
+				{
+					strArchiveDescription += "<br /><span class='warning'>WARNING: This plan is currently assigned to dealers, and can be sold by them.  Archiving the plan will prohibit them from being able to sell it</span>";
+				}
+
+			}
+			else if (objRatePlan.Status == RATE_STATUS_ARCHIVED)
+			{
+				intNewStatus	= RATE_STATUS_ACTIVE;
+				strAction		= "activate";
+			}
+			else
+			{
+				// Don't do anything
+				return FALSE;
+			}
+			
 			var strMsg = "Are you sure you want to <strong>"+ strAction +"</strong> the "+ objRatePlan.CustomerGroup +", "+ objRatePlan.ServiceType +" plan, '"+ objRatePlan.Name +"'?" + strArchiveDescription;
 			
 			Vixen.Popup.Confirm(strMsg, function(){Vixen.AvailablePlansPage.TogglePlanStatus(intRatePlan, true)});

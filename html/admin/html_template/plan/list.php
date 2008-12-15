@@ -215,7 +215,8 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$arrRatePlanDetails[$arrRatePlan['Id']] = array(	"Name"			=> $strName,
 																"CustomerGroup"	=> $strCustomerGroup,
 																"ServiceType"	=> $strServiceType,
-																"Status"		=> $arrRatePlan['Archived']
+																"Status"		=> $arrRatePlan['Archived'],
+																"DealerCount"	=> $arrRatePlan['DealerCount']
 															);
 		}
 		
