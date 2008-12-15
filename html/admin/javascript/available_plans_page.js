@@ -68,8 +68,68 @@ function VixenAvailablePlansPageClass()
 		this.objRatePlans = objRatePlans;
 	}
 	
+	this.TogglePlanStatus = function(intRatePlanId)
+	{
+		if (this.objRatePlans[intRatePlanId] == undefined)
+		{
+			$Alert("Could not find the RatePlan with id: "+ intRatePlanId);
+			return;
+		}
+		
+		if (this.objRatePlans[intRatePlanId].DealerCount == 0 || this.objRatePlans[intRatePlanId].Status != RATE_STATUS_ACTIVE)
+		{
+			// The simple prompt can be used
+			this.PromptForTogglePlanStatus(intRatePlanId);
+			return;
+		}
+		
+		// The RatePlan is associated with dealers and is about to be archived
+		// Notify the user and prompt them to select an alternate RatePlan for the dealers to use
+		this.PromptForAlternatePlan(intRatePlanId);
+	}
+	
+	this.PromptForAlternatePlan = function(intRatePlanId)
+	{
+		var objRatePlan = this.objRatePlans[intRatePlanId];
+		
+		var strAlternateRatePlans = "<option value='0' selected='selected'>No Alternate RatePlan</option>";
+		
+		for (var i in this.objRatePlans)
+		{
+			if (this.objRatePlans[i].CustomerGroup == objRatePlan.CustomerGroup && 
+				this.objRatePlans[i].ServiceType == objRatePlan.ServiceType && 
+				this.objRatePlans[i].Status == RATE_STATUS_ACTIVE &&
+				i != intRatePlanId)
+			{
+				strAlternateRatePlans += "<option value='"+ i +"'>"+ this.objRatePlans[i].Name +"</option>";
+			}
+		}
+		
+		var strPopupContent = 	"<div id='PopupPageBody' style='padding:3px'>" +
+								"	<div class='GroupedContent'>" +
+								"		Are you sure you want to <strong>archive</strong> the "+ objRatePlan.CustomerGroup +", "+ objRatePlan.ServiceType +" plan, '"+ objRatePlan.Name +"'?"+
+								"		<br /><br />Archived Plans cannot be assigned to services that aren't already using them." +
+								"		<br /><br /><span class='warning'>WARNING: This plan is currently assigned to dealers, and can be sold by them.  Archiving the plan will prohibit them from being able to sell it.  You can specify an alternate plan for dealers to sell.</span>" +
+								"		<table class='form-data'>" +
+								"			<tr>" +
+								"				<td class='title' style='width:30%'>Alternate Plan</td>" +
+								"				<td><select id='alternatePlanId' name='alternatePlanId' style='width:100%'>"+ strAlternateRatePlans +"</select></td>" +
+								"			</tr>" +
+								"		</table>" +
+								"	</div>" +
+								"	<div style='padding-top:3px;height:auto:width:100%'>" +
+								"		<div style='float:right'>" +
+								"			<input type='button' value='Archive Plan' onclick='Vixen.AvailablePlansPage.PromptForTogglePlanStatus("+ intRatePlanId +", true, parseInt($ID(\"alternatePlanId\").value)); Vixen.Popup.Close(this);'></input>" +
+								"			<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>" +
+								"		</div>" +
+								"		<div style='clear:both;float:none'></div>" +
+								"	</div>" +
+								"</div>";
+		Vixen.Popup.Create("TogglePlanStatus", strPopupContent, "Medium", "centre", "modal", "Archive Plan");
+	}
+	
 	// Triggers Status toggle between Active and Archived
-	this.TogglePlanStatus = function(intRatePlan, bolConfirmed)
+	this.PromptForTogglePlanStatus = function(intRatePlan, bolConfirmed, intAlternateRatePlan)
 	{
 		if (!bolConfirmed)
 		{
@@ -108,7 +168,7 @@ function VixenAvailablePlansPageClass()
 			
 			var strMsg = "Are you sure you want to <strong>"+ strAction +"</strong> the "+ objRatePlan.CustomerGroup +", "+ objRatePlan.ServiceType +" plan, '"+ objRatePlan.Name +"'?" + strArchiveDescription;
 			
-			Vixen.Popup.Confirm(strMsg, function(){Vixen.AvailablePlansPage.TogglePlanStatus(intRatePlan, true)});
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.AvailablePlansPage.PromptForTogglePlanStatus(intRatePlan, true)});
 			return;
 		}
 		
@@ -116,7 +176,10 @@ function VixenAvailablePlansPageClass()
 		var objData =	{
 							RatePlan :	{	
 											Id : intRatePlan
-										}
+										},
+							AlternateRatePlan :	{
+													Id : (intAlternateRatePlan == 0)? null : intAlternateRatePlan
+												}
 						};
 		
 		Vixen.Ajax.CallAppTemplate("Plan", "TogglePlanStatus", objData, null, true, true);

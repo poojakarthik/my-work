@@ -261,14 +261,43 @@ class AppTemplatePlan extends ApplicationTemplate
 			return TRUE;
 		}
 		
+		TransactionStart();
+		
 		// Save the changes
 		if (!DBO()->RatePlan->Save())
 		{
+			TransactionRollback();
 			Ajax()->AddCommand("Alert", "ERROR: Saving the status change failed, unexpectedly.  Please notify your system administrator");
 			return TRUE;
 		}
 		
 		$strSuccessMsg = "Status change was successful";
+		
+		if (DBO()->AlternateRatePlan->Id->Value && DBO()->RatePlan->Archived == RATE_STATUS_ARCHIVED)
+		{
+			// Associate the Alternate RatePlan with all the dealers that are associated with the rate plan which was just archived
+			$intArchivedPlanId	= DBO()->RatePlan->Id->Value;
+			$intAlternatePlanId	= DBO()->AlternateRatePlan->Id->Value;
+			
+			$objQuery = new Query();
+			
+			$strQuery = "	INSERT INTO dealer_rate_plan (dealer_id, rate_plan_id)
+							SELECT DISTINCT drp.dealer_id, $intAlternatePlanId
+							FROM (	SELECT dealer_id
+									FROM dealer_rate_plan
+									WHERE dealer_id IN (SELECT dealer_id FROM dealer_rate_plan WHERE rate_plan_id = $intArchivedPlanId)
+									AND dealer_id NOT IN (SELECT dealer_id FROM dealer_rate_plan WHERE rate_plan_id = $intAlternatePlanId)
+								) AS drp;
+							";
+			if ($objQuery->Execute($strQuery) === FALSE)
+			{
+				TransactionRollback();
+				Ajax()->AddCommand("Alert", "ERROR: Could not add records to the dealer_rate_plan table to associate the alternate plan");
+				return TRUE;
+			}
+		}
+		
+		TransactionCommit();
 		
 		// Update the status of the RatePlan in the Sales database, if there is one
 		if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
