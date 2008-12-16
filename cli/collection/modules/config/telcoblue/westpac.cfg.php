@@ -11,7 +11,9 @@ $arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_BPAY_WESTPAC]						['Paths']			[
 $arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['Regex']			= "/^AUDES\d+\_\d+\_[A-Za-z]\_\d+\.csv$/i";
 $arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['DownloadUnique']	= TRUE;
-$arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['Paths']			[]	= '/home/telcoblue/Incoming/westpac/ausde_export_reports/';
+$arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['Paths']			[]	= '/home/telcoblue/Incoming/westpac/ausde_export_reports/telcoblue';
+$arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['Paths']			[]	= '/home/telcoblue/Incoming/westpac/ausde_export_reports/voicetalk';
+$arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['Paths']			[]	= '/home/telcoblue/Incoming/westpac/ausde_export_reports/protalk';
 
 // Config
 $arrModuleConfig['FileDefine']		['Value']		= $arrStructure;
