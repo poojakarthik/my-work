@@ -12,9 +12,7 @@ if (!($intPayment = (int)$argv[1]))
 LoadApplication();
 
 // Payment modules
-$arrPaymentModules[PAYMENT_TYPE_BILLEXPRESS]	= new PaymentModuleBillExpress();
-$arrPaymentModules[PAYMENT_TYPE_BPAY]			= new PaymentModuleBPay();
-$arrPaymentModules[PAYMENT_TYPE_SECUREPAY]		= new PaymentModuleSecurePay();
+$arrPaymentModules[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT]	= new PaymentModuleDirectEntryReport();
 
 
 $arrColumns = Array();
@@ -31,11 +29,11 @@ if (!$selPayment->Execute())
 }
 $arrPayment = $selPayment->Fetch();
 
-/*$arrPayment = Array();
-$arrPayment['Payment']		= '"Westpac Banking Corporation","ABN 33 007 457 141","DeskBank Receivables","Remittance Processing",2/03/2007,"File Date","1/03/2007","Total Value",$6,918.72,"Total Items",25,"Reported Value",$6,918.72,"Reported Items",25,"Service Id","0178","Service Name","4TELCO BLUE PTY LTD","Account Number","164100","Account BSB","034010","Client","Item","Transaction","Originating","Tidd Receipt","Voucher","BPay Receipt","Transaction","Name","Amount","Type","System","Number","Trace Number","Number","Type Code","1646864",$39.41,"B","IB","        ","  2   0000000000","WBC280220072427599VRU","9302",1';
-$arrPayment['FileType']		= 2;
+$arrPayment = Array();
+$arrPayment['Payment']		= '1633-000134687961 130000004278MN  JM COMDITSIS                1000168995_122008 032-797   046124TELCO BLUE PTY L00000000G';
+$arrPayment['FileType']		= RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT;
 $arrPayment['File']			= 1337;
-$arrPayment['SequenceNo']	= 80085;*/
+$arrPayment['SequenceNo']	= 80085;
 
 
 Debug($arrPaymentModules[$arrPayment['FileType']]->Normalise($arrPayment['Payment']));
