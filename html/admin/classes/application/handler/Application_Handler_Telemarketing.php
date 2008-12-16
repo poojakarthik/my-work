@@ -27,19 +27,47 @@ class Application_Handler_Telemarketing extends Application_Handler
 	// Uploads a Proposed Dialling List file
 	public function UploadProposedDiallingList($subPath)
 	{
-		// Check user permissions
-		//AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
-		// Build List of Breached Contracts and their recommended actions
 		$arrDetailsToRender	= array();
 		try
 		{
+			$qryQuery	= new Query();
+			
+			// Check user permissions
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			{
+				throw new Exception("You do not have sufficient privileges to upload a Proposed Dialling List");
+			}
+			
 			throw new Exception("Uploading not supported yet! ".print_r($_FILES, true).print_r($_REQUEST, true));
+			
+			// Load the Dealer object
+			$objDealer	= Dealer::getForId($_POST['Telemarketing_ProposedUpload_Dealer']);
+			
+			// Get File Format Details
+			$strSQL		= "SELECT FileType FROM CarrierModule WHERE Carrier = {$objDealer->carrier_id} AND Type = ".MODULE_TYPE_TELEMARKETING_INPUT." AND Active = 1";
+			$resResult	= $qryQuery->Execute($strSQL);
+			if ($resResult === false)
+			{
+				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : '');
+			}
+			if (!($arrCarrierModule = $resResult->fetch_assoc()))
+			{
+				$strDealerName	= $objDealer->FirstName . ($objDealer->LastName) ? ' '.$objDealer->LastName : '';
+				throw new Exception("Flex does not support Proposed Dialling Lists from {$strDealerName}." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : '');
+			}
+			
+			// Check the File Name format
+			if (!Resource_Type::validateFileName($arrCarrierModule['FileType'], $_POST['Telemarketing_ProposedUpload_File']['name']))
+			{
+				throw new Exception("'$_POST['Telemarketing_ProposedUpload_File']['name']' is not a valid file name.  Ensure that you are trying to upload the correct file, and try again.");
+			}
 			
 			// Import the File (into FileImport)
 			try
 			{
-				$objFileImport	= File_Import::import($_FILES['Telemarketing_ProposedUpload_File']['tmp_name'], $intFileType, $intCarrier, "FileName = <FileName>");
+				$objFileImport	= File_Import::import($_FILES['Telemarketing_ProposedUpload_File']['tmp_name'], $arrCarrierModule['FileType'], $objDealer->carrierId, "FileName = <FileName>");
 			}
 			catch (Exception $eException)
 			{
@@ -47,7 +75,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			// Import the Proposed FNNs into the telemarketing_fnn table
-			// TODO
+			
 			
 			// Generate Response
 			$arrDetailsToRender['Success']			= true;

@@ -9,7 +9,7 @@
  *
  * Models a record of the FileImport table
  *
- * @class	Service
+ * @class	File_Import
  */
 class File_Import extends ORM
 {
@@ -113,6 +113,37 @@ class File_Import extends ORM
 		$objFileImport->SHA1			= sha1_file($strFilePath);
 		$objFileImport->file_download	= $intFileDownload;
 		$objFileImport->save();
+	}
+	
+	/**
+	 * fopen()
+	 *
+	 * Opens this file and returns a PHP file resource for use with the f*() functions
+	 * 
+	 * @return	void
+	 *
+	 * @method
+	 */
+	public function fopen($strMode='r')
+	{
+		$arrCompressionAlgorithm	= Compression_Algorithm::getForId($this->compression_algorithm_id, true);
+		$strStreamWrapper			= ($arrCompressionAlgorithm['php_stream_wrapper']) ? $arrCompressionAlgorithm['php_stream_wrapper'] : '';
+		$this->_resFile				= @fopen($strStreamWrapper.$this->Location, $strMode);
+		return $this->_resFile;
+	}
+	
+	/**
+	 * getPHPStreamWrapper()
+	 *
+	 * Gets the PHP Stream Wrapper for this File
+	 * 
+	 * @return	string
+	 *
+	 * @method
+	 */
+	public function getPHPStreamWrapper()
+	{
+		
 	}
 	
 	/**
