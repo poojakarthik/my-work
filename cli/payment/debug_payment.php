@@ -12,7 +12,7 @@ if (!($intPayment = (int)$argv[1]))
 LoadApplication();
 
 // Payment modules
-$arrPaymentModules[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT]	= new PaymentModuleDirectEntryReport();
+$arrPaymentModules[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT]	= new PaymentModuleDirectEntryReport(CARRIER_WESTPAC);
 
 
 $arrColumns = Array();
