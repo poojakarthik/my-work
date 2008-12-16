@@ -3,17 +3,17 @@
 require_once("../../../../../flex.require.php");
 
 // Payments
-$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_BPAY_WESTPAC]						['Regex']			= "/^[a-z]{3}\_\d{1,2}-\d{1,2}-\d{4}\_\d{1,10}\.CSV$/i";
-$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_BPAY_WESTPAC]						['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
-$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_BPAY_WESTPAC]						['DownloadUnique']	= TRUE;
-$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_BPAY_WESTPAC]						['Paths']			[]	= '/home/telcoblue/Incoming/bpay/';
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_BPAY_WESTPAC]					['Regex']			= "/^[a-z]{3}\_\d{1,2}-\d{1,2}-\d{4}\_\d{1,10}\.CSV$/i";
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_BPAY_WESTPAC]					['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_BPAY_WESTPAC]					['DownloadUnique']	= TRUE;
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_BPAY_WESTPAC]					['Paths']			[]	= '/home/telcoblue/Incoming/bpay/';
 
-$arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['Regex']			= "/^AUDES\d+\_\d+\_[A-Za-z]\_\d+\.csv$/i";
-$arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
-$arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['DownloadUnique']	= TRUE;
-$arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['Paths']			[]	= '/home/telcoblue/Incoming/westpac/ausde_export_reports/telcoblue';
-$arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['Paths']			[]	= '/home/telcoblue/Incoming/westpac/ausde_export_reports/voicetalk';
-$arrStructure[RESOURCE_TYPE_FILE_EXPORT_DIRECT_DEBIT_AUSTRALIAN_DIRECT_ENTRY_FILE]	['Paths']			[]	= '/home/telcoblue/Incoming/westpac/ausde_export_reports/protalk';
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT]	['Regex']			= "/^AUDES\d+\_\d+\_[A-Za-z]\_\d+\.csv$/i";
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT]	['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT]	['DownloadUnique']	= TRUE;
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT]	['Paths']			[]	= '/home/telcoblue/Incoming/westpac/ausde_export_reports/telcoblue';
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT]	['Paths']			[]	= '/home/telcoblue/Incoming/westpac/ausde_export_reports/voicetalk';
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_PAYMENT_AUSTRALIAN_DIRECT_ENTRY_REPORT]	['Paths']			[]	= '/home/telcoblue/Incoming/westpac/ausde_export_reports/protalk';
 
 // Config
 $arrModuleConfig['FileDefine']		['Value']		= $arrStructure;
