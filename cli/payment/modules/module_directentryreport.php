@@ -187,10 +187,10 @@
 	 *
 	 * @method
 	 */
- 	function _convertDate($strDate)
+ 	private function _convertDate($strDate)
  	{
-		$strYear		= '20'.substr($strDate, 5, 7);
-		$strMonth		= substr($strDate, 3, 2);
+		$strYear		= '20'.substr($strDate, 4, 2);
+		$strMonth		= substr($strDate, 2, 2);
 		$strDay			= substr($strDate, 0, 2);
 		$strValidDate	= $strYear."-".$strMonth."-".$strDay; 
 		return $strValidDate;
