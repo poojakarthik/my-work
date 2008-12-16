@@ -160,7 +160,8 @@
 			
 			// Recall -- Rejected
 			case 'R':
- 				return PAYMENT_REJECTED;
+ 				return PAYMENT_CANT_NORMALISE_INVALID;
+ 				//return PAYMENT_REJECTED;
 				break;
 		}
  		
