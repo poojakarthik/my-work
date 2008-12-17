@@ -101,22 +101,19 @@ class AppTemplateMisc extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		$strStartDate = ConvertUserDateToMySqlDate($strStartDate);
-		$strEndDate = ConvertUserDateToMySqlDate($strEndDate);
-		
-		$arrColumns = Array("FNN"					=>	"FNN",
-							"ServiceType"			=>	"ServiceType",
-							"Carrier"				=>	"Carrier",
-							"TotalCost"				=>	"SUM(Cost)",
-							"EarliestStartDatetime"	=>	"MIN(StartDatetime)",
-							"LatestStartDatetime"	=>	"MAX(StartDatetime)",
-							"Count"					=>	"Count(Id)");
-		$strWhere = "Status = ". CDR_BAD_OWNER ." AND StartDatetime BETWEEN <StartDate> AND <EndDate>";
-		//$strOrderBy = "FNN, ServiceType, Carrier";
-		$strOrderBy = "LatestStartDatetime DESC, FNN ASC, ServiceType ASC, Carrier ASC";
-		$selDelinquentCDRs = new StatementSelect("CDR", $arrColumns, $strWhere, $strOrderBy, "", "FNN, ServiceType, Carrier");
-		
-		$mixResult = $selDelinquentCDRs->Execute(Array("StartDate" => $strStartDate, "EndDate" => $strEndDate));
+		$strStartDate		= ConvertUserDateToMySqlDate($strStartDate);
+		$strEndDate			= ConvertUserDateToMySqlDate($strEndDate);
+		$arrColumns			= Array("FNN"					=>	"FNN",
+									"ServiceType"			=>	"ServiceType",
+									"Carrier"				=>	"Carrier",
+									"TotalCost"				=>	"SUM(Cost)",
+									"EarliestStartDatetime"	=>	"MIN(StartDatetime)",
+									"LatestStartDatetime"	=>	"MAX(StartDatetime)",
+									"Count"					=>	"Count(Id)");
+		$strWhere			= "Status = ". CDR_BAD_OWNER ." AND StartDatetime BETWEEN <StartDate> AND <EndDate>";
+		$strOrderBy			= "LatestStartDatetime DESC, FNN ASC, ServiceType ASC, Carrier ASC";
+		$selDelinquentCDRs	= new StatementSelect("CDR", $arrColumns, $strWhere, $strOrderBy, "", "FNN, ServiceType, Carrier");
+		$mixResult			= $selDelinquentCDRs->Execute(Array("StartDate" => $strStartDate, "EndDate" => $strEndDate));
 		
 		if ($mixResult === FALSE)
 		{
@@ -124,9 +121,8 @@ class AppTemplateMisc extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		$arrRecordSet = $selDelinquentCDRs->FetchAll();
-		
-		$arrFNNs = Array();
+		$arrRecordSet	= $selDelinquentCDRs->FetchAll();
+		$arrFNNs		= Array();
 		
 		foreach ($arrRecordSet as $arrRecord)
 		{
