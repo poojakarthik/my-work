@@ -112,7 +112,8 @@ class AppTemplateMisc extends ApplicationTemplate
 							"LatestStartDatetime"	=>	"MAX(StartDatetime)",
 							"Count"					=>	"Count(Id)");
 		$strWhere = "Status = ". CDR_BAD_OWNER ." AND StartDatetime BETWEEN <StartDate> AND <EndDate>";
-		$strOrderBy = "FNN, ServiceType, Carrier";
+		//$strOrderBy = "FNN, ServiceType, Carrier";
+		$strOrderBy = "LatestStartDatetime DESC, FNN ASC, ServiceType ASC, Carrier ASC";
 		$selDelinquentCDRs = new StatementSelect("CDR", $arrColumns, $strWhere, $strOrderBy, "", "FNN, ServiceType, Carrier");
 		
 		$mixResult = $selDelinquentCDRs->Execute(Array("StartDate" => $strStartDate, "EndDate" => $strEndDate));
@@ -195,7 +196,7 @@ class AppTemplateMisc extends ApplicationTemplate
 										"Carrier"		=> $intCarrier,
 										"StartDate"		=> $strStartDate,
 										"EndDate"		=> $strEndDate);
-		$selDelinquentCDRs	= new StatementSelect("CDR", "Id, Cost, StartDatetime", $strWhere, "StartDatetime ASC, Id ASC");
+		$selDelinquentCDRs	= new StatementSelect("CDR", "Id, Cost, StartDatetime", $strWhere, "StartDatetime DESC, Id ASC");
 		
 		$mixResult = $selDelinquentCDRs->Execute($arrWhere);
 		
