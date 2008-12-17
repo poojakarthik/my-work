@@ -332,7 +332,7 @@ GROUP BY owner_id, category_id, status_id
 			$strLatestTime = date("H:i:s d/m/Y", strtotime(GetCurrentISODateTime()));
 		}
 		
-		//Tickets that were worked on (ticketing_ticket modified) as at [Latest] and since [Earliest]
+		// Tickets that were worked on (ticketing_ticket modified) as at [Latest] and since [Earliest]
 		$strTitleTemplate = "Tickets worked on by <Owner> as at $strLatestTime";
 		if ($this->_strEarliestTime !== NULL)
 		{
@@ -340,6 +340,8 @@ GROUP BY owner_id, category_id, status_id
 			$strTitleTemplate .= " and since $strEarliestTime";
 		}
 		
+		// Retrieve list of Ticketing Categories
+		$arrCategories = Ticketing_Category::listAll();
 		
 		foreach ($this->_arrTotals as $mixOwner=>$arrOwnerTotals)
 		{
@@ -365,7 +367,7 @@ GROUP BY owner_id, category_id, status_id
 				}
 				else
 				{
-					$strCategoryName = htmlspecialchars(GetConstantDescription($mixCategory, "ticketing_category"));
+					$strCategoryName = htmlspecialchars($arrCategories[$mixCategory]->description);
 				}
 				
 				
