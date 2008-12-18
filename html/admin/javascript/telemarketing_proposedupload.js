@@ -99,7 +99,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		Vixen.Popup.Close(this.objPopupUpload.strId);
 		
 		// Display confirmation popup
-		$Alert("<pre>"+objResponse.Message+"</pre>");
+		$Alert("<pre>"+objResponse.Message+"</pre>", null, null, 'modal');
 		return;
 	},
 	
