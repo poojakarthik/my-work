@@ -42,7 +42,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			// Check user permissions
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
-				throw new Exception("You do not have sufficient privileges to upload a Proposed Dialling List".($bolVerboseErrors) ? 'But you do have GOD mode... wtf' : '');
+				throw new Exception("You do not have sufficient privileges to upload a Proposed Dialling List" . ($bolVerboseErrors) ? ' But you do have GOD mode... wtf' : '');
 			}
 			
 			throw new Exception("Uploading not supported yet! ".print_r($_FILES, true).print_r($_REQUEST, true));
