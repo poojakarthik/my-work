@@ -66,7 +66,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			// Check the File Name format
 			if (!Resource_Type::validateFileName($arrCarrierModule['FileType'], $_POST['Telemarketing_ProposedUpload_File']['name']))
 			{
-				throw new Exception("'$_POST['Telemarketing_ProposedUpload_File']['name']' is not a valid file name.  Ensure that you are trying to upload the correct file, and try again.");
+				throw new Exception("'{$_POST['Telemarketing_ProposedUpload_File']['name']}' is not a valid file name.  Ensure that you are trying to upload the correct file, and try again.");
 			}
 			
 			// Import the File (into FileImport)
