@@ -51,7 +51,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$objDealer	= Dealer::getForId((int)$_POST['Telemarketing_ProposedUpload_Dealer']);
 			
 			// Get File Format Details
-			$strSQL		= "SELECT FileType FROM CarrierModule WHERE Carrier = {$objDealer->carrier_id} AND Type = ".MODULE_TYPE_TELEMARKETING_INPUT." AND Active = 1";
+			$strSQL		= "SELECT * FROM CarrierModule WHERE Carrier = {$objFileImport->Carrier} AND Type = ".MODULE_TYPE_TELEMARKETING_PROPOSED." AND FileType = {$objFileImport->FileType} AND Active = 1";
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === false)
 			{
@@ -78,14 +78,6 @@ class Application_Handler_Telemarketing extends Application_Handler
 			{
 				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au");
 			}
-			
-			// Get the CarrierModule Record for this Carrier/FileType
-			$resResult	= $qryQuery->Execute("SELECT * FROM CarrierModule WHERE Carrier = {$objFileImport->Carrier} AND Type = ".MODULE_TYPE_TELEMARKETING_PROPOSED." AND FileType = {$objFileImport->FileType}");
-			if ($resResult === false)
-			{
-				throw new Exception($qryQuery->Error());
-			}
-			$arrCarrierModule	= $resResult->fetch_assoc();
 			
 			// Import the Proposed FNNs into the telemarketing_fnn table
 			$objNormaliser	= new {$arrCarrierModule['Module']}($objFileImport, (int)$_POST['Telemarketing_ProposedUpload_Vendor'], $objDealer->id);
