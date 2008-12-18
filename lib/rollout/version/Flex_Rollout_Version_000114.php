@@ -188,13 +188,13 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 						
 						CONSTRAINT pk_telemarketing_fnn_proposed PRIMARY KEY (id), 
 						
-						CONSTRAINT fk_telemarketing_fnn_proposed_customer_group_id						FOREIGN KEY (customer_group_id)						REFERENCES CustomerGroup(Id)						ON UPDATE CASCADE	ON DELETE RESTRICT,
-						CONSTRAINT fk_telemarketing_fnn_proposed_proposed_list_file_import_id			FOREIGN KEY (proposed_list_file_import_id)			REFERENCES FileImport(Id)							ON UPDATE CASCADE	ON DELETE CASCADE,
-						CONSTRAINT fk_telemarketing_fnn_proposed_do_not_call_file_export_id				FOREIGN KEY (do_not_call_file_export_id)			REFERENCES FileExport(Id)							ON UPDATE CASCADE	ON DELETE SET NULL,
-						CONSTRAINT fk_telemarketing_fnn_proposed_permitted_list_file_export_id			FOREIGN KEY (permitted_list_file_export_id)			REFERENCES FileExport(Id)							ON UPDATE CASCADE	ON DELETE SET NULL,
-						CONSTRAINT fk_telemarketing_fnn_proposed_dealer_id								FOREIGN KEY (dealer_id)								REFERENCES dealer(id)								ON UPDATE CASCADE	ON DELETE RESTRICT,
-						CONSTRAINT fk_telemarketing_fnn_proposed_telemarketing_fnn_proposed_status_id	FOREIGN KEY (telemarketing_fnn_proposed_status_id)	REFERENCES telemarketing_fnn_proposed_status(id)	ON UPDATE CASCADE	ON DELETE RESTRICT,
-						CONSTRAINT fk_telemarketing_fnn_proposed_telemarketing_fnn_withheld_reason_id	FOREIGN KEY (telemarketing_fnn_withheld_reason_id)	REFERENCES telemarketing_fnn_withheld_reason(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+						CONSTRAINT fk_telemarketing_fnn_proposed_customer_group_id					FOREIGN KEY (customer_group_id)						REFERENCES CustomerGroup(Id)						ON UPDATE CASCADE	ON DELETE RESTRICT,
+						CONSTRAINT fk_telemarketing_fnn_proposed_proposed_list_file_import_id		FOREIGN KEY (proposed_list_file_import_id)			REFERENCES FileImport(Id)							ON UPDATE CASCADE	ON DELETE CASCADE,
+						CONSTRAINT fk_telemarketing_fnn_proposed_do_not_call_file_export_id			FOREIGN KEY (do_not_call_file_export_id)			REFERENCES FileExport(Id)							ON UPDATE CASCADE	ON DELETE SET NULL,
+						CONSTRAINT fk_telemarketing_fnn_proposed_permitted_list_file_export_id		FOREIGN KEY (permitted_list_file_export_id)			REFERENCES FileExport(Id)							ON UPDATE CASCADE	ON DELETE SET NULL,
+						CONSTRAINT fk_telemarketing_fnn_proposed_dealer_id							FOREIGN KEY (dealer_id)								REFERENCES dealer(id)								ON UPDATE CASCADE	ON DELETE RESTRICT,
+						CONSTRAINT fk_telemarketing_fnn_proposed_telemarketing_fnn_proposed_status	FOREIGN KEY (telemarketing_fnn_proposed_status_id)	REFERENCES telemarketing_fnn_proposed_status(id)	ON UPDATE CASCADE	ON DELETE RESTRICT,
+						CONSTRAINT fk_telemarketing_fnn_proposed_telemarketing_fnn_withheld_reason	FOREIGN KEY (telemarketing_fnn_withheld_reason_id)	REFERENCES telemarketing_fnn_withheld_reason(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
