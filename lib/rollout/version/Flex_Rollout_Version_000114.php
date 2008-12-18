@@ -102,10 +102,10 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 						
 						CONSTRAINT pk_telemarketing_fnn_dialled PRIMARY KEY (id), 
 						
-						CONSTRAINT fk_telemarketing_fnn_dialled_customer_group_id				FOREIGN KEY (customer_group_id)				REFERENCES CustomerGroup(Id)				ON UPDATE CASCADE	ON DELETE RESTRICT,
-						CONSTRAINT fk_telemarketing_fnn_dialled_file_import_id					FOREIGN KEY (file_import_id)				REFERENCES FileImport(Id)					ON UPDATE CASCADE	ON DELETE CASCADE,
-						CONSTRAINT fk_telemarketing_fnn_dialled_dealer_id						FOREIGN KEY (dealer_id)						REFERENCES dealer(id)						ON UPDATE CASCADE	ON DELETE RESTRICT,
-						CONSTRAINT fk_telemarketing_fnn_dialled_dealer_fnn_dialled_result_id	FOREIGN KEY (dealer_fnn_dialled_result_id)	REFERENCES dealer_fnn_dialled_result(id)	ON UPDATE CASCADE 	ON DELETE RESTRICT
+						CONSTRAINT fk_telemarketing_fnn_dialled_customer_group_id					FOREIGN KEY (customer_group_id)						REFERENCES CustomerGroup(Id)					ON UPDATE CASCADE	ON DELETE RESTRICT,
+						CONSTRAINT fk_telemarketing_fnn_dialled_file_import_id						FOREIGN KEY (file_import_id)						REFERENCES FileImport(Id)						ON UPDATE CASCADE	ON DELETE CASCADE,
+						CONSTRAINT fk_telemarketing_fnn_dialled_dealer_id							FOREIGN KEY (dealer_id)								REFERENCES dealer(id)							ON UPDATE CASCADE	ON DELETE RESTRICT,
+						CONSTRAINT fk_telemarketing_fnn_dialled_telemarketing_fnn_dialled_result_id	FOREIGN KEY (telemarketing_fnn_dialled_result_id)	REFERENCES telemarketing_fnn_dialled_result(id)	ON UPDATE CASCADE 	ON DELETE RESTRICT
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
