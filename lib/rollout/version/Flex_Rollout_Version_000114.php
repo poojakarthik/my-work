@@ -199,9 +199,9 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_withheld_reason Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_proposed Table. ' . $result->getMessage());
 		}
-		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_withheld_reason;";
+		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_proposed;";
 	}
 	
 	function rollback()
