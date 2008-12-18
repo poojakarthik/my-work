@@ -40,7 +40,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_blacklist_nature Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_blacklist_nature Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_blacklist_nature;";
 		
@@ -51,7 +51,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate telemarketing_fnn_blacklist_nature Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to populate telemarketing_fnn_blacklist_nature Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE telemarketing_fnn_blacklist_nature;";
 		
@@ -69,7 +69,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_blacklist Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_blacklist Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_blacklist;";
 		
@@ -85,7 +85,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_dialled_result Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_dialled_result Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_dialled_result;";
 		
@@ -110,7 +110,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_dialled Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_dialled Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_dialled;";
 		
@@ -126,7 +126,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_proposed_status Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_proposed_status Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_proposed_status;";
 		
@@ -138,7 +138,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate telemarketing_fnn_proposed_status Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to populate telemarketing_fnn_proposed_status Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE telemarketing_fnn_proposed_status;";
 		
@@ -154,7 +154,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_withheld_reason Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_withheld_reason Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_withheld_reason;";
 		
@@ -167,7 +167,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to populate telemarketing_fnn_withheld_reason Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to populate telemarketing_fnn_withheld_reason Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "TRUNCATE TABLE telemarketing_fnn_withheld_reason;";
 		
@@ -199,7 +199,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_proposed Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_proposed Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_proposed;";
 	}
