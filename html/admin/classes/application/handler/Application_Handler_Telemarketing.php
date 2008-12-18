@@ -80,7 +80,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			// Import the Proposed FNNs into the telemarketing_fnn table
-			$objNormaliser	= new {$arrCarrierModule['Module']}($objFileImport, (int)$_POST['Telemarketing_ProposedUpload_Vendor'], $objDealer->id);
+			$objNormaliser	= new $arrCarrierModule['Module']($objFileImport, (int)$_POST['Telemarketing_ProposedUpload_Vendor'], $objDealer->id);
 			$arrErrors		= $objNormaliser->normalise();
 			
 			// Update the FileImport Status to Imported
