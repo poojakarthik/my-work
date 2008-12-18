@@ -114,21 +114,21 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_dialled;";
 		
-		// 6:	Add telemarketing_fnn_status Table
-		$strSQL = "CREATE TABLE IF NOT EXISTS telemarketing_fnn_status (
+		// 6:	Add telemarketing_fnn_proposed_status Table
+		$strSQL = "CREATE TABLE IF NOT EXISTS telemarketing_fnn_proposed_status (
 						id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Unique Identifier',
 						`name` varchar(255) NOT NULL COMMENT 'Short Name for the Status',
 						description varchar(1024) NOT NULL COMMENT 'Long Description for the Status',
 						const_name varchar(512) NOT NULL COMMENT 'Constant Name',
 						
-						CONSTRAINT pk_telemarketing_fnn_status PRIMARY KEY (id)
+						CONSTRAINT pk_telemarketing_fnn_proposed_status PRIMARY KEY (id)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_status Table. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to add telemarketing_fnn_proposed_status Table. ' . $result->getMessage());
 		}
-		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_status;";
+		$this->rollbackSQL[] = "DROP TABLE telemarketing_fnn_proposed_status;";
 		
 		// 7:	Populate telemarketing_fnn_proposed_status Table
 		$strSQL = "INSERT INTO telemarketing_fnn_proposed_status (name, description, const_name) VALUES " .
