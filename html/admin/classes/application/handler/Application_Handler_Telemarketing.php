@@ -32,6 +32,11 @@ class Application_Handler_Telemarketing extends Application_Handler
 		$arrDetailsToRender	= array();
 		try
 		{
+			if (!DataAccess::getDataAccess()->TransactionStart())
+			{
+				throw new Exception("Flex was unable to start a Transaction.  The Upload has been aborted.  Please try again shortly.");
+			}
+			
 			$qryQuery	= new Query();
 			
 			// Check user permissions
@@ -84,19 +89,24 @@ class Application_Handler_Telemarketing extends Application_Handler
 			
 			// Import the Proposed FNNs into the telemarketing_fnn table
 			$objNormaliser	= new {$arrCarrierModule['Module']}($objFileImport, (int)$_POST['Telemarketing_ProposedUpload_Vendor'], $objDealer->id);
-			$objNormaliser->normalise();
+			$arrErrors		= $objNormaliser->normalise();
 			
 			// Update the FileImport Status to Imported
 			$objFileImport->Status;
 			$objFileImport->save();
 			
+			// Commit the transaction
+			DataAccess::getDataAccess()->TransactionCommit();
+			
 			// Generate Response
 			$arrDetailsToRender['Success']			= true;
-			$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'.";
+			$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . ($bolVerboseErrors && $arrErrors) ? "<br />\nThe following non-fatal errors occurred:<br />\n".implode("<br />\n", $arrErrors) : '';
 			$arrDetailsToRender['file_import_id']	= $objFileImport->Id;
 		}
 		catch (Exception $e)
 		{
+			DataAccess::getDataAccess()->TransactionRollback();
+			
 			$arrDetailsToRender['Success']	= false;
 			$arrDetailsToRender['Message']	= $e->getMessage();
 		}
