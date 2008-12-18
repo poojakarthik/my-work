@@ -774,6 +774,7 @@ class Application
 			return TRUE;
 		}
 		
+		throw new Exception(pack('i', $intPerms) . ' vs ' . pack('i', $intPerms) );
 		return FALSE;
 	}
 	
