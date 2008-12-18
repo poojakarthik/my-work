@@ -45,8 +45,6 @@ class Application_Handler_Telemarketing extends Application_Handler
 				throw new Exception("You do not have sufficient privileges to upload a Proposed Dialling List!" . (($bolVerboseErrors) ? ' But you do have GOD mode... wtf' : ''));
 			}
 			
-			throw new Exception("Uploading not supported yet! ".print_r($_FILES, true).print_r($_REQUEST, true));
-			
 			// Load the Dealer object
 			$objDealer	= Dealer::getForId((int)$_POST['Telemarketing_ProposedUpload_Dealer']);
 			
