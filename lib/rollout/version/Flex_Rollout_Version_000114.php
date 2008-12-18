@@ -78,7 +78,7 @@ class Flex_Rollout_Version_000114 extends Flex_Rollout_Version
 						id bigint(20) unsigned NOT NULL auto_increment COMMENT 'Unique Identifier',
 						`name` varchar(255) NOT NULL COMMENT 'Short Name for the Result',
 						description varchar(1024) NOT NULL COMMENT 'Long Description for the Result',
-						const_name varchar(512) NOT NULL COMMENT 'Constant Name'
+						const_name varchar(512) NOT NULL COMMENT 'Constant Name',
 						
 						CONSTRAINT pk_telemarketing_fnn_dialled_result PRIMARY KEY (id)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
