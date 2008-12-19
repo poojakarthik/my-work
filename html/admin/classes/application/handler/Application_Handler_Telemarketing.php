@@ -147,10 +147,23 @@ class Application_Handler_Telemarketing extends Application_Handler
 		{
 			$qryQuery	= new Query();
 			
-			throw new Exception("DNCR Downloading is not supported!");
+			$intFileImportId	= (int)$_REQUEST['Telemarketing_DNCRDownload_File'];
 			
-			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format
+			// Get list of FNNs for this File
+			$arrFNNs	= Telemarketing_FNN_Proposed::getFor("proposed_list_file_import_id = {$intFileImportId} AND telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_IMPORTED, true);
+			foreach ($arrFNNs as $mixIndex=>$arrFNN)
+			{
+				// Wash against the Internal Opt-Out list
+				// TODO
+				
+				// Wash against Active Services in Flex
+				// TODO
+				
+				// Wash against Active Contacts in Flex
+				// TODO
+			}
 			
+			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format			
 			// Create DNCR Export File
 			$objDNCRExport	= new Resource_Type_File_Export_Telemarketing_ACMA_DNCRExport();
 			$objFileExport	= $objDNCRExport->getFileExport();

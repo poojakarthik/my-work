@@ -9,6 +9,7 @@
 class Telemarketing_FNN_Proposed extends ORM
 {
 	protected	$_strTableName	= "telemarketing_fnn_proposed";
+	const		TABLE_NAME		= "telemarketing_fnn_proposed";
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -31,6 +32,42 @@ class Telemarketing_FNN_Proposed extends ORM
 	{
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
+	}
+	
+	/**
+	 * getFor()
+	 *
+	 * constructor
+	 *
+	 * @param	string	$strWhere					WHERE clause (can also include GROUP BY, ORDER BY and LIMIT clauses)
+	 * @param	boolean	$bolAsArray		[optional]	If set to TRUE, will return Associative Arrays instead of objects
+	 * 
+	 * @return	void
+	 * 
+	 * @constructor
+	 */
+	public static function getFor($strWhere, $bolAsArray=false)
+	{
+		static	$qryQuery;
+		$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
+		
+		// Perform Query
+		$strSQL		= "SELECT * FROM ".self::TABLE_NAME." WHERE {$strWhere}";
+		$resResult	= $qryQuery->Execute($strSQL);
+		if ($resResult === false)
+		{
+			throw new Exception($qryQuery->Error());
+		}
+		else
+		{
+			// Return records as an array of either associative arrays, or ORM objects
+			$arrRecords	= array();
+			while ($arrRecord = $resResult->fetch_assoc())
+			{
+				$arrRecords[]	= ($bolAsArray) ? $arrRecord : new Resource_Type($arrRecord);
+			}
+			return $arrRecords;
+		}
 	}
 	
 	//------------------------------------------------------------------------//
