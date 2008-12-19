@@ -1,5 +1,5 @@
 // Class: Telemarketing_DNCRDownload
-// Handles the Telemarketing Proposed FNN Upload page
+// Handles the Telemarketing DNCR Download page
 var Telemarketing_DNCRDownload	= Class.create
 ({
 	objPopupDownload	: {
@@ -41,21 +41,7 @@ var Telemarketing_DNCRDownload	= Class.create
 		// Close the Popup
 		Vixen.Popup.Close(this.objPopupDownload.strId);
 		
-		// Show the Loading Splash
-		Vixen.Popup.ShowPageLoadingSplash("Downloading DNCR Wash List...", null, null, null, 100);
-		
 		return true;
-	},
-	
-	uploadReponseHandler	: function(objResponse)
-	{
-		// Close the Splash and File Upload Prompt
-		Vixen.Popup.ClosePageLoadingSplash();
-		Vixen.Popup.Close(this.objPopupUpload.strId);
-		
-		// Display confirmation popup
-		$Alert("<pre>"+objResponse.Message+"</pre>", null, null, 'modal');
-		return;
 	},
 	
 	_renderPopup	: function(objPopup, strHTML, objResponse)
@@ -80,16 +66,16 @@ var Telemarketing_DNCRDownload	= Class.create
 		}
 	},
 	
-	displayPopupUpload	: function()
+	displayPopupDownload	: function()
 	{
 		var remoteClass		= 'Telemarketing_Wash';
 		var remoteMethod	= 'getImportedFiles';
-		var jsonFunc		= jQuery.json.jsonFunction(this._renderPopupUpload.bind(this), null, remoteClass, remoteMethod);
+		var jsonFunc		= jQuery.json.jsonFunction(this._renderPopupDownload.bind(this), null, remoteClass, remoteMethod);
 		Vixen.Popup.ShowPageLoadingSplash("Please Wait", null, null, null, 100);
 		jsonFunc();
 	},
 	
-	_renderPopupUpload	: function(objResponse)
+	_renderPopupDownload	: function(objResponse)
 	{
 		this._arrImportedFiles	= objResponse.arrImportedFiles;
 		
