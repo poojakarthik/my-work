@@ -44,6 +44,50 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 						);
 		}
 	}
+	
+	public function getImportedFiles()
+	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
+		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+		
+		try
+		{
+			$qryQuery	= new Query();
+			
+			// Get list of Imported Files
+			$resResult	= $qryQuery->Execute("SELECT DISTINCT FileImport.Id as file_import_id, FileImport.FileName AS file_name, FileImport.ImportedOn as file_imported_on, tfp.dealer_id, dealer.first_name AS dealer_first_name, dealer.last_name AS dealer_last_name, tfp.customer_group_id, CustomerGroup.ExternalName AS customer_group_name " .
+												"FROM ((telemarketing_fnn_proposed tfp ON tfp.proposed_list_file_import_id = FileImport.Id) JOIN CustomerGroup ON CustomerGroup.Id = tfp.customer_group_id) JOIN dealer ON dealer_id = tfp.dealer_id " .
+												"WHERE telemarketing_fnn_proposed.do_not_call_file_export_id IS NULL AND telemarketing_fnn_proposed.telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED." " .
+												"ORDER BY file_imported_on DESC, file_import_name ASC");
+			if ($resResult === false)
+			{
+				throw new Exception("There was an error retrieving the required data for this page.  If this problem continues to occur, please notify YBS." . (($bolVerboseErrors) ? "\n".$qryQuery->Error() : ''));
+			}
+			$arrImportedFiles	= array();
+			while ($arrImportedFile = $resResult->fetch_assoc())
+			{
+				$arrImportedFiles[$arrImportedFile['file_import_id']]	= $arrImportedFile;
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							"Success"			=> TRUE,
+							"arrImportedFiles"	=> $arrImportedFiles
+						);
+		}
+		catch (Exception $e)
+		{
+			// Send an Email to Devs
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
+			return array(
+							"Success"		=> FALSE,
+							"ErrorMessage"	=> 'ERROR: '.$e->getMessage()
+						);
+		}
+	}
 }
 
 ?>

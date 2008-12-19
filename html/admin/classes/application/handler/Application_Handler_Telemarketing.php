@@ -136,5 +136,34 @@ class Application_Handler_Telemarketing extends Application_Handler
 		echo JSON_Services::instance()->encode($arrDetailsToRender);
 		die;
 	}
+	
+	// Uploads a Proposed Dialling List file
+	public function DownloadDNCRWashList($subPath)
+	{
+		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+		
+		$arrDetailsToRender	= array();
+		try
+		{
+			$qryQuery	= new Query();
+			
+			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format
+			
+			// Create DNCR Export File
+			$objDNCRExport	= new Resource_Type_File_Export_Telemarketing_ACMA_DNCRExport();
+			$objFileExport	= $objDNCRExport->getFileExport();
+			
+			// Send the File to be downloaded
+			flush();
+			header('content-type: text/csv');
+			echo file_get_contents($objFileExport->Location);
+		}
+		catch (Exception $e)
+		{
+			$arrDetailsToRender['Success']	= false;
+			$arrDetailsToRender['Message']	= $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+		}
+	}
 }
 ?>
