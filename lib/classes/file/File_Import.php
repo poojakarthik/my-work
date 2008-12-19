@@ -126,9 +126,7 @@ class File_Import extends ORM
 	 */
 	public function fopen($strMode='r')
 	{
-		$arrCompressionAlgorithm	= Compression_Algorithm::getForId($this->compression_algorithm_id, true);
-		$strStreamWrapper			= ($arrCompressionAlgorithm['php_stream_wrapper']) ? $arrCompressionAlgorithm['php_stream_wrapper'] : '';
-		$this->_resFile				= @fopen($strStreamWrapper.$this->Location, $strMode);
+		$this->_resFile	= @fopen($this->getPHPStreamWrapper().$this->Location, $strMode);
 		return $this->_resFile;
 	}
 	
@@ -143,7 +141,9 @@ class File_Import extends ORM
 	 */
 	public function getPHPStreamWrapper()
 	{
-		
+		$arrCompressionAlgorithm	= Compression_Algorithm::getForId($this->compression_algorithm_id, true);
+		$strStreamWrapper			= ($arrCompressionAlgorithm['php_stream_wrapper']) ? $arrCompressionAlgorithm['php_stream_wrapper'] : '';
+		return $strStreamWrapper;
 	}
 	
 	/**
