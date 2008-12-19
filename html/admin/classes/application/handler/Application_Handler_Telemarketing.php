@@ -145,7 +145,10 @@ class Application_Handler_Telemarketing extends Application_Handler
 		$arrDetailsToRender	= array();
 		try
 		{
-			$qryQuery	= new Query();
+			$qryQuery				= new Query();
+			$selInternalBlacklist	= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn>", null, 1);
+			$selActiveServices		= new StatementSelect("Service", "Id", "FNN = <fnn> AND Status = ".SERVICE_ACTIVE, null, 1);
+			$selActiveContacts		= new StatementSelect("Contact JOIN Account ON (Contact.Account = Account.Id OR Account.PrimaryContact = Contact.Id)", "Contact.Id", "(Phone = <fnn> OR Mobile = <fnn> OR Fax = <fnn>) AND Account.Archived = 0 AND Contact.Archived = 0", null, 1);
 			
 			$intFileImportId	= (int)$_REQUEST['Telemarketing_DNCRDownload_File'];
 			
@@ -153,15 +156,41 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$arrFNNs	= Telemarketing_FNN_Proposed::getFor("proposed_list_file_import_id = {$intFileImportId} AND telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_IMPORTED, true);
 			foreach ($arrFNNs as $mixIndex=>$arrFNN)
 			{
-				// Wash against the Internal Opt-Out list
-				// TODO
-				
+				// Wash against the Internal Blacklist
+				if ($selInternalBlacklist->Execute($arrFNN) === false)
+				{
+					throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selInternalBlacklist->Error() : '');
+				}
+				elseif ($selInternalBlacklist->Fetch())
+				{
+					// Blacklisted
+					unset($arrFNNs[$mixIndex]);
+				}
+
 				// Wash against Active Services in Flex
-				// TODO
-				
+				elseif ($selActiveServices->Execute($arrFNN) === false)
+				{
+					throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selActiveServices->Error() : '');
+				}
+				elseif ($selActiveServices->Fetch())
+				{
+					// Currently in Flex
+					unset($arrFNNs[$mixIndex]);
+				}
+
 				// Wash against Active Contacts in Flex
-				// TODO
+				elseif ($selActiveContacts->Execute($arrFNN) === false)
+				{
+					throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selActiveContacts->Error() : '');
+				}
+				elseif ($selActiveContacts->Fetch())
+				{
+					// Active Contact in Flex
+					unset($arrFNNs[$mixIndex]);
+				}
 			}
+			
+			throw new Exception(count($arrFNNs)." FNNs are ready to send to ACMA!");
 			
 			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format			
 			// Create DNCR Export File
