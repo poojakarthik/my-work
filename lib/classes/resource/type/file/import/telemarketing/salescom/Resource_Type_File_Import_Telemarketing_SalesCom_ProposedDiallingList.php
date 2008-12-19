@@ -97,7 +97,8 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 	 */
 	protected static function _normaliseLine($strLine)
 	{
-		$arrNormalised	= array();
+		$arrNormalised					= array();
+		$arrNormalised['__ERRORS__']	= array();
 		
 		// Explode the CSV
 		$arrExplode		= explode('","', trim($strLine, '"'));		
@@ -116,7 +117,6 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		$arrNormalised['CallPeriodEnd']		= strtotime("+{self::CALL_PERIOD_LENGTH_DAYS} days", strtotime(date("Y-m-d 00:00:00")));
 		
 		// Validate
-		$arrNormalised['__ERRORS__']	= array();
 		if (!preg_match("/^0[2378]\d{8}$/", $arrNormalised['FNN']))
 		{
 			$arrNormalised['__ERRORS__'][]	= "FNN '{$arrNormalised['FNN']}' is invalid!";
