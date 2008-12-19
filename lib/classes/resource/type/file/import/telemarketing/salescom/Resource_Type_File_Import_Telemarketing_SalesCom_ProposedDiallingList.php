@@ -103,11 +103,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		$arrNormalised['__ERRORS__']	= array();
 		
 		// Explode the CSV
-		$arrExplode		= explode(',', $strLine);
-		foreach ($arrExplode as $mixIndex=>$strField)
-		{
-			$arrExplode[$mixIndex]	= trim($strField, '"');
-		}
+		$arrExplode		= self::parseCSV($strLine);
 		
 		// Ensure that we have the correct number of fields
 		$intActualColumns	= count($arrExplode);
@@ -204,5 +200,54 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		{
 			return $arrFileFormatDefinition;
 		}
+	}
+	
+	public static function parseCSV($strLine, $strDelimiter=',', $strEnclose='"', $strEscape='\\')
+	{
+		$arrCSV			= array();
+		
+		$strField		= '';
+		$bolInEscape	= false;
+		$bolInEnclose	= false;
+		for ($i = 0; $i < strlen($strLine); $i++)
+		{
+			$strChar	= $strLine{$i};
+			
+			switch ($strChar)
+			{
+				case $strEscape:
+					// Escape Character
+					$strField		.= ($bolInEscape) ? $strChar : '';
+					$bolInEscape	= !$bolInEscape;
+					break;
+				
+				case $strEnclose:
+					// Enclose Character
+					$strField		.= ($bolInEscape) ? $strChar : '';
+					$bolInEnclose	= !$bolInEnclose;
+					break;
+				
+				case $strDelimiter:
+					// Delimiter
+					if ($bolInEnclose)
+					{
+						$strField		.= $strChar;
+					}
+					else
+					{
+						// Push this field to the CSV array
+						$arrCSV[]	= $strField;
+						$strField	= '';
+					}
+					break;
+				
+				default:
+					// Normal Character
+					$strField	.= $strChar;
+					break;
+			}
+		}
+		
+		return $arrCSV;
 	}
 }
