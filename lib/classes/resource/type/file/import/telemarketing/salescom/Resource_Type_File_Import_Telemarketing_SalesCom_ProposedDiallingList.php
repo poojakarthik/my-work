@@ -71,6 +71,8 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 					$objProposedFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED;
 					$objProposedFNN->raw_record								= $strLine;
 					
+					throw new Exception(print_r($objProposedFNN->toArray(), true));
+					
 					$objProposedFNN->save();
 				}
 				else
