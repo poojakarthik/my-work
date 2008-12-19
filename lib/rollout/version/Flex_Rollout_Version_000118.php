@@ -15,7 +15,7 @@ class Flex_Rollout_Version_000118 extends Flex_Rollout_Version
 		$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 		
 		// 1:	Add the Active Contact and Active Service Telemarketing Withheld Statuses
-		$strSQL = "INSERT INTO telemarketing_fnn_withheld_reason (name, descroption, const_name) VALUES " .
+		$strSQL = "INSERT INTO telemarketing_fnn_withheld_reason (name, description, const_name) VALUES " .
 					"('Active Contact', 'Active Contact', 'TELEMARKETING_FNN_WITHHELD_REASON_FLEX_CONTACT'), " .
 					"('Active Service', 'Active Service', 'TELEMARKETING_FNN_WITHHELD_REASON_FLEX_SERVICE');";
 		$result = $dbAdmin->query($strSQL);
