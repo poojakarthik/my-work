@@ -99,7 +99,7 @@ var Telemarketing_DNCRDownload	= Class.create
 		{
 			for (i in this._arrImportedFiles)
 			{
-				var strDealerName	= this._arrImportedFiles[i].dealer_first_name + ((this._arrImportedFiles[i].dealer_last_name) ? this._arrImportedFiles[i].dealer_last_name : '');
+				var strDealerName	= this._arrImportedFiles[i].dealer_first_name + ((this._arrImportedFiles[i].dealer_last_name) ? ' ' + this._arrImportedFiles[i].dealer_last_name : '');
 				strFileListHTML	+= "<option value='" + i + "'>(" + this._arrImportedFiles[i].file_imported_on + ") " + strDealerName + " -- " + this._arrImportedFiles[i].file_name + "</option>\n";
 			}
 		}
