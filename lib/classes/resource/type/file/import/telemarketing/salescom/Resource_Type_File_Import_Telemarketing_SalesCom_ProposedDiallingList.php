@@ -104,7 +104,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		$arrExplode		= explode(',', $strLine);
 		foreach ($arrExplode as $mixIndex=>$strField)
 		{
-			$arrExplode[$mixIndex]	= trim('"', $strField);
+			$arrExplode[$mixIndex]	= trim($strField, '"');
 		}
 		
 		// Ensure that we have the correct number of fields
