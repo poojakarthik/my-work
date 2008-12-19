@@ -79,7 +79,7 @@ class Resource_Type extends ORM
 	public function validateFileName($intResourceTypeId, $strFileName)
 	{
 		$intResourceTypeId	= (int)$intResourceTypeId;
-		$arrResourceTypes	= Resource_Type::getFor("id = {$intResourceType}", true);
+		$arrResourceTypes	= Resource_Type::getFor("id = {$intResourceTypeId}", true);
 		
 		if ($arrResourceTypes[0])
 		{
