@@ -146,7 +146,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 		try
 		{
 			$qryQuery				= new Query();
-			$selInternalBlacklist	= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn>", null, 1);
+			$selInternalOptOut		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn>", null, 1);
+			$selInternalDNCR		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn>", null, 1);
 			$selActiveServices		= new StatementSelect("Service", "Id", "FNN = <fnn> AND Status = ".SERVICE_ACTIVE, null, 1);
 			$selActiveContacts		= new StatementSelect("Contact", "Contact.Id", "(Phone = <fnn> OR Mobile = <fnn> OR Fax = <fnn>) AND Contact.Archived = 0 AND 0 = (SELECT Archived FROM Account WHERE PrimaryContact = Contact.Id LIMIT 1)", null, 1);
 			
@@ -156,7 +157,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$arrFNNs	= Telemarketing_FNN_Proposed::getFor("proposed_list_file_import_id = {$intFileImportId} AND telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED, true);
 			foreach ($arrFNNs as $mixIndex=>$arrFNN)
 			{
-				// Wash against the Internal Blacklist
+				// Wash against the Internal Opt-Out
 				if ($selInternalBlacklist->Execute($arrFNN) === false)
 				{
 					throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selInternalBlacklist->Error() : '');
@@ -164,9 +165,11 @@ class Application_Handler_Telemarketing extends Application_Handler
 				elseif ($selInternalBlacklist->Fetch())
 				{
 					// Blacklisted
+					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
+					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_OPTOUT;
 					unset($arrFNNs[$mixIndex]);
 				}
-
+				
 				// Wash against Active Services in Flex
 				elseif ($selActiveServices->Execute($arrFNN) === false)
 				{
@@ -175,9 +178,11 @@ class Application_Handler_Telemarketing extends Application_Handler
 				elseif ($selActiveServices->Fetch())
 				{
 					// Currently in Flex
+					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
+					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_FLEX_SERVICE;
 					unset($arrFNNs[$mixIndex]);
 				}
-
+				
 				// Wash against Active Contacts in Flex
 				elseif ($selActiveContacts->Execute($arrFNN) === false)
 				{
@@ -186,6 +191,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 				elseif ($selActiveContacts->Fetch())
 				{
 					// Active Contact in Flex
+					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
+					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_FLEX_CONTACT;
 					unset($arrFNNs[$mixIndex]);
 				}
 			}
