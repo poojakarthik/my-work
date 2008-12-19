@@ -121,7 +121,7 @@ var Telemarketing_ProposedUpload	= Class.create
 		}
 		else
 		{
-			$Alert("Failed to open the '" + objPopup.strTitle + "' popup" + ((objResponse.ErrorMessage != undefined)? "<br />" + objResponse.ErrorMessage : ""), 'large');
+			$Alert("Failed to open the '" + objPopup.strTitle + "' popup" + ((objResponse.ErrorMessage != undefined)? "<br />" + objResponse.ErrorMessage : ""), 'extralarge');
 		}
 	},
 	
