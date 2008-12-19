@@ -108,7 +108,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		$intRequiredColumns	= count(self::_getFileFormatDefinition(null, '__COLUMNS__'));
 		if ($intActualColumns !== $intRequiredColumns)
 		{
-			$arrNormalised['__ERRORS__'][]	= "Incorrect number of CSV field (Actual: {$intActualColumns};Expected: {$intRequiredColumns})";
+			$arrNormalised['__ERRORS__'][]	= "Incorrect number of CSV fields (Actual: {$intActualColumns};Expected: {$intRequiredColumns})";
 		}
 		
 		// Pull the data
