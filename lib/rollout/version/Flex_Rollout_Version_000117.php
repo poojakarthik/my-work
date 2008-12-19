@@ -3,7 +3,7 @@
 /**
  * Version 117 of database update.
  * This version: -
- *	1:	Add resource_type.file_name_regex Field
+ *	1:	Make telemarketing_fnn_proposed.id Auto Incrememted
  */
 
 class Flex_Rollout_Version_000117 extends Flex_Rollout_Version
@@ -14,12 +14,12 @@ class Flex_Rollout_Version_000117 extends Flex_Rollout_Version
 	{
 		$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 		
-		// 1:	Add resource_type.file_name_regex Field
+		// 1:	Make telemarketing_fnn_proposed.id Auto Incrememted
 		$strSQL = "ALTER TABLE telemarketing_fnn_proposed MODIFY id BIGINT(20) NOT NULL UNSIGNED AUTO_INCREMENT COMMENT 'Unique Identifier';";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . ' Failed to add resource_type.file_name_regex Field. ' . $result->getMessage());
+			throw new Exception(__CLASS__ . ' Failed to make telemarketing_fnn_proposed.id Auto Incrememted. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "ALTER TABLE telemarketing_fnn_proposed MODIFY id BIGINT(20) NOT NULL UNSIGNED COMMENT 'Unique Identifier';";
 	}
