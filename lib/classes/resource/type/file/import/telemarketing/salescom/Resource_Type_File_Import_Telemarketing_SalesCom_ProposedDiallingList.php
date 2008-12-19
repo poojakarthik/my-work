@@ -94,10 +94,20 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 	 */
 	protected static function _normaliseLine($strLine)
 	{
-		$arrExplode		= explode('","', trim($strLine, '"'));
+		$arrNormalised	= array();
+		
+		// Explode the CSV
+		$arrExplode		= explode('","', trim($strLine, '"'));		
+		
+		// Ensure that we have the correct number of fields
+		$intActualColumns	= count($arrExplode);
+		$intRequiredColumns	= count(self::_getFileFormatDefinition('__COLUMNS__'));
+		if ($intActualColumns !== $intRequiredColumns)
+		{
+			$arrNormalised['__ERRORS__'][]	= "Incorrect number of CSV field (Actual: {$intActualColumns};Expected: {$intRequiredColumns})";
+		}
 		
 		// Pull the data
-		$arrNormalised	= array();
 		$arrNormalised['FNN']				= $arrExplode[5];
 		$arrNormalised['CallPeriodStart']	= date("Y-m-d 00:00:00");
 		$arrNormalised['CallPeriodEnd']		= strtotime("+{self::CALL_PERIOD_LENGTH_DAYS} days", strtotime(date("Y-m-d 00:00:00")));
@@ -170,16 +180,16 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		{
 			if ($strProperty !== null)
 			{
-				return $arrFileFormatDefinition[$strField][$strProperty];
+				return $arrFileFormatDefinition['__COLUMNS__'][$strField][$strProperty];
 			}
 			else
 			{
-				return $arrFileFormatDefinition[$strField];
+				return $arrFileFormatDefinition['__COLUMNS__'][$strField];
 			}
 		}
 		elseif($strProperty !== null)
 		{
-			
+			return $arrFileFormatDefinition[$strProperty];
 		}
 		else
 		{
