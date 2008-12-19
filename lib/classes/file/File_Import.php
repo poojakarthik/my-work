@@ -113,6 +113,9 @@ class File_Import extends ORM
 		$objFileImport->SHA1			= sha1_file($strFilePath);
 		$objFileImport->file_download	= $intFileDownload;
 		$objFileImport->_save();
+		
+		// Return the File_Import object
+		return $objFileImport;
 	}
 	
 	/**
