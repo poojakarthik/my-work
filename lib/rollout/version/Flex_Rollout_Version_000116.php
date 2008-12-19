@@ -7,7 +7,7 @@
  *	2:	Add the TELEMARKETING_PROPOSED_IMPORT, TELEMARKETING_DNCR_EXPORT, TELEMARKETING_DNCR_IMPORT, TELEMARKETING_PERMITTED_EXPORT, TELEMARKETING_DIALLER_IMPORT Carrier Module Types
  */
 
-class Flex_Rollout_Version_000115 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000116 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 	
