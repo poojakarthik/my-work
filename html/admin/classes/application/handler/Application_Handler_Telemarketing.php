@@ -76,7 +76,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			catch (Exception $eException)
 			{
-				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au");
+				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "\n".$eException->getMessage() : ''));
 			}
 			unlink($strFriendlyFileName);
 			
