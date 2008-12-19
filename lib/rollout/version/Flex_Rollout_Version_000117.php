@@ -15,7 +15,7 @@ class Flex_Rollout_Version_000117 extends Flex_Rollout_Version
 		$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 		
 		// 1:	Make telemarketing_fnn_proposed.id Auto Incrememted
-		$strSQL = "ALTER TABLE telemarketing_fnn_proposed MODIFY id BIGINT(20) NOT NULL UNSIGNED AUTO_INCREMENT COMMENT 'Unique Identifier';";
+		$strSQL = "ALTER TABLE telemarketing_fnn_proposed MODIFY id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Unique Identifier';";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
