@@ -515,7 +515,7 @@ class Dealer
 	
 	public function save()
 	{
-		// Set the dealer's carrier_id to that of their upline manager, if they have one
+		// Set the dealer properties that should be kept in sync with their upline manager, if they have one
 		if ($this->upLineId !== NULL)
 		{
 			$objManager = self::getForId($this->upLineId, TRUE);
@@ -523,6 +523,11 @@ class Dealer
 			if ($this->carrierId !== $objManager->carrierId)
 			{
 				$this->carrierId = $objManager->carrierId;
+				$this->_bolSaved = FALSE;
+			}
+			if ($this->clawbackPeriod !== $objManager->clawbackPeriod)
+			{
+				$this->clawbackPeriod = $objManager->clawbackPeriod;
 				$this->_bolSaved = FALSE;
 			}
 		}
@@ -630,8 +635,8 @@ class Dealer
 		$arrSubbies = self::getDealersUnderManager($this, TRUE);
 		foreach ($arrSubbies as $objSubbie)
 		{
-			// The only thing that cascades is the carrier id
-			$objSubbie->carrierId = $this->carrierId;
+			$objSubbie->carrierId		= $this->carrierId;
+			$objSubbie->clawbackPeriod	= $this->clawbackPeriod;
 			$objSubbie->save();
 		}
 		
@@ -679,6 +684,7 @@ class Dealer
 			"terminationDate"		=> "termination_date",
 			"dealerStatusId"		=> "dealer_status_id",
 			"createdOn"				=> "created_on",
+			"clawbackPeriod"		=> "clawback_period",
 			"employeeId"			=> "employee_id",
 			"carrierId"				=> "carrier_id"
 		);
@@ -730,6 +736,7 @@ class Dealer
 			"terminationDate"		=> "text",
 			"dealerStatusId"		=> "integer",
 			"createdOn"				=> "text",
+			"clawbackPeriod"		=> "integer",
 			"employeeId"			=> "integer",
 			"carrierId"				=> "integer"
 		);
@@ -926,6 +933,18 @@ class Dealer
 		if ($arrDetails['upLineId'] !== NULL && !self::canHaveUpLineManager($arrDetails['id'], $arrDetails['upLineId']))
 		{
 			$arrProblems[] = 'Up Line Manager can not be used (would cause recursion in the management hierarchy)';
+		}
+		
+		if ($arrDetails['upLineId'] !== NULL)
+		{
+			// The dealer has an manager. Nullify those fields that should be kept in sync with the manager
+			$arrDetails['carrierId']		= NULL;
+			$arrDetails['clawbackPeriod']	= NULL;
+		}
+		else
+		{
+			// The dealer doesn't have a manager.  Force the clawback period to be an integer
+			$arrDetails['clawbackPeriod'] = intval($arrDetails['clawbackPeriod']);
 		}
 		
 		// Check that if the dealer is the default Emplyee Dealer, then they are active

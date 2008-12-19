@@ -317,7 +317,8 @@ class Cli_App_Sales extends Cli
 										"	{$arrSPDealer['gst_registered']}," .
 										"	{$arrSPDealer['termination_date']}," .
 										"	{$arrSPDealer['dealer_status_id']}," .
-										"	{$arrSPDealer['created_on']}" .
+										"	{$arrSPDealer['created_on']}," .
+										"	{$arrSPDealer['clawback_period']}" .
 										");";
 					$resDealerInsert	= $dsSalesPortal->query($strInsertSQL);
 					if (PEAR::isError($resDealerInsert))
@@ -367,7 +368,8 @@ class Cli_App_Sales extends Cli
 										"	gst_registered			= {$arrSPDealer['gst_registered']}," .
 										"	termination_date		= {$arrSPDealer['termination_date']}," .
 										"	dealer_status_id		= {$arrSPDealer['dealer_status_id']}," .
-										"	created_on				= {$arrSPDealer['created_on']} " .
+										"	created_on				= {$arrSPDealer['created_on']}," .
+										"	clawback_period			= {$arrSPDealer['clawback_period']} " .
 										"WHERE id = {$arrSPDealer['id']};";
 					$resDealerUpdate	= $dsSalesPortal->query($strUpdateSQL);
 					if (PEAR::isError($resDealerUpdate))

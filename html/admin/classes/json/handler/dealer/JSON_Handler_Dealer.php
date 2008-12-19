@@ -188,7 +188,14 @@ class JSON_Handler_Dealer extends JSON_Handler
 						</tr>
 						<tr>
 							<td class='title'>Group</td>
-							<td><select id='carrierId' name='carrierId' style='width:100%'>$strCarrierComboOptions</select></td>
+							<td>
+								<div class='EditableManagerDependentField' style='display:none'>
+									<select id='carrierId' name='carrierId' style='width:100%'>$strCarrierComboOptions</select>
+								</div>
+								<div class='RestrictedManagerDependentField' style='display:none'>
+									Synced with Up Line Manager
+								</div>
+							</td>
 						</tr>
 						<tr>
 							<td class='title'>Up Line Manager</td>
@@ -265,6 +272,17 @@ class JSON_Handler_Dealer extends JSON_Handler
 						<tr>
 							<td class='title'>GST Registered</td>
 							<td><input type='checkbox' id='gstRegistered' name='gstRegistered'></input></td>
+						</tr>
+						<tr>
+							<td class='title'>Clawback Period</td>
+							<td>
+								<div class='EditableManagerDependentField' style='display:none'>
+									<input type='text' id='clawbackPeriod' name='clawbackPeriod' maxlength='5'></input> Hours
+								</div>
+								<div class='RestrictedManagerDependentField' style='display:none'>
+									Synced with Up Line Manager
+								</div>
+							</td>
 						</tr>
 					</table>
 				</div>
@@ -526,6 +544,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 			$arrDetails['bankAccountNumber']	= ($objDealer->bankAccountNumber !== NULL)? htmlspecialchars($objDealer->bankAccountNumber) : "[Not Specified]";
 			$arrDetails['bankAccountName']		= ($objDealer->bankAccountName !== NULL)? htmlspecialchars($objDealer->bankAccountName) : "[Not Specified]";
 			$arrDetails['gstRegistered']		= ($objDealer->gstRegistered)? "Yes" : "No";
+			$arrDetails['clawbackPeriod']		= $objDealer->clawbackPeriod;
 			
 			
 			$arrDetails['addressLine1']	= ($objDealer->addressLine1 !== NULL)? htmlspecialchars($objDealer->addressLine1) : "";
@@ -731,8 +750,12 @@ class JSON_Handler_Dealer extends JSON_Handler
 							<td>{$arrDetails['bankAccountName']}</td>
 						</tr>
 						<tr>
-							<td class='title'>gstRegistered</td>
+							<td class='title'>GST Registered</td>
 							<td>{$arrDetails['gstRegistered']}</td>
+						</tr>
+						<tr>
+							<td class='title'>Clawback Period</td>
+							<td>{$arrDetails['clawbackPeriod']} hours</td>
 						</tr>
 					</table>
 				</div>

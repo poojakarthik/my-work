@@ -7,6 +7,7 @@ var Dealer = {
 	objCountryStates : null,
 	controls : null,
 	bolPageNeedsRefresh : false,
+	objManagerDependentContainers : null,
 
 	closeViewDealerPopup : function()
 	{
@@ -212,6 +213,7 @@ var Dealer = {
 		this.controls.bankAccountNumber.value	= this.objDealer.bankAccountNumber;
 		this.controls.bankAccountName.value		= this.objDealer.bankAccountName;
 		this.controls.gstRegistered.value		= this.objDealer.gstRegistered;
+		this.controls.clawbackPeriod.value		= this.objDealer.clawbackPeriod;
 		
 		this.controls.addressLine1.value		= this.objDealer.addressLine1;
 		this.controls.addressLine2.value		= this.objDealer.addressLine2;
@@ -243,6 +245,14 @@ var Dealer = {
 			this.controls.dealerStatusId.disabled = true;
 		}
 		
+		// Retrieve all the ManagerDependentContainer divs
+		this.objManagerDependentContainers = {};
+		this.objManagerDependentContainers.Editable		= objPopup.getElementsByClassName('EditableManagerDependentField');
+		this.objManagerDependentContainers.Restricted	= objPopup.getElementsByClassName('RestrictedManagerDependentField');
+		
+		Event.startObserving(this.controls.upLineId, "change", this.showHideManagerDependentFields.bind(this), true);
+		this.showHideManagerDependentFields();
+		
 		// Populate the SaleTypes combobox
 		for (i in this.objSaleTypes)
 		{
@@ -260,6 +270,24 @@ var Dealer = {
 		Event.startObserving(this.controls.availableRatePlans, "change", this.unselectAllInSelectElement.bind(this, this.controls.selectedRatePlans), true);
 		Event.startObserving(this.controls.selectedRatePlans, "change", this.unselectAllInSelectElement.bind(this, this.controls.availableRatePlans), true);
 		Event.startObserving(this.controls.customerGroups, "change", this.populateRatePlanControls.bind(this), true);
+	},
+	
+	showHideManagerDependentFields : function()
+	{
+		var bolHasManager = (this.controls.upLineId.value != '0');
+
+		var elementsToHide		= (bolHasManager)? this.objManagerDependentContainers.Editable : this.objManagerDependentContainers.Restricted;
+		var elementsToDisplay	= (bolHasManager)? this.objManagerDependentContainers.Restricted : this.objManagerDependentContainers.Editable;
+
+		// Restrict all the manager dependent fields
+		for (i=0, j=elementsToHide.length; i<j; i++)
+		{
+			elementsToHide[i].style.display = "none";
+		}
+		for (i=0, j=elementsToDisplay.length; i<j; i++)
+		{
+			elementsToDisplay[i].style.display = "block";
+		}
 	},
 	
 	populateRatePlanControls : function()
@@ -490,7 +518,8 @@ var Dealer = {
 		}
 		
 		// Collect details to save
-		var objDealer = {};
+		var bolHasManager				= (this.controls.upLineId.value != '0');
+		var objDealer					= {};
 		objDealer.id					= this.objDealer.id;
 		objDealer.employeeId			= this.objDealer.employeeId;
 		
@@ -500,7 +529,6 @@ var Dealer = {
 		objDealer.username				= this.controls.username.value;
 		objDealer.password				= this.controls.password.value;
 		objDealer.upLineId				= (this.controls.upLineId.value != 0)? parseInt(this.controls.upLineId.value) : null;
-		objDealer.carrierId				= (this.controls.carrierId.value != 0)? parseInt(this.controls.carrierId.value) : null;
 		objDealer.canVerify				= this.controls.canVerify.checked;
 		objDealer.phone					= this.controls.phone.value;
 		objDealer.mobile				= this.controls.mobile.value;
@@ -535,6 +563,18 @@ var Dealer = {
 		objDealer.postalCountryId		= (this.controls.postalCountryId.value != 0)? parseInt(this.controls.postalCountryId.value) : null;
 		objDealer.postalStateId			= (this.controls.postalStateId.value != 0)? parseInt(this.controls.postalStateId.value) : null;
 		
+		if (bolHasManager)
+		{
+			objDealer.carrierId			= null;
+			objDealer.clawbackPeriod	= null;
+		}
+		else
+		{
+			objDealer.carrierId			= (this.controls.carrierId.value != 0)? parseInt(this.controls.carrierId.value) : null;
+			objDealer.clawbackPeriod	= parseInt(this.controls.clawbackPeriod.value);
+		}
+
+
 		// Format the Termination Date
 		if (this.controls.terminationDate.value != '')
 		{
@@ -610,6 +650,7 @@ var Dealer = {
 	validateDealerDetails : function()
 	{
 		var strProblemsEncountered = "";
+		var bolHasManager = (this.controls.upLineId.value != '0');
 		
 		if (!$Validate("NotEmptyString", this.controls.firstName.value, false))
 		{
@@ -649,7 +690,12 @@ var Dealer = {
 		}
 		if (!$Validate("PositiveInteger", this.controls.royaltyScale.value, true))
 		{
-			strProblemsEncountered += "<br />Invalid Commission Scale";
+			strProblemsEncountered += "<br />Invalid Royalty Scale";
+		}
+		
+		if (!bolHasManager && !$Validate("PositiveInteger", this.controls.clawbackPeriod.value))
+		{
+			strProblemsEncountered += "<br />Invalid Clawback Period";
 		}
 		
 		if (strProblemsEncountered != "")
