@@ -4,7 +4,7 @@ var Telemarketing_DNCRDownload	= Class.create
 ({
 	objPopupDownload	: {
 							strId		: 'Telemarketing_DNCRDownload',
-							strSize		: 'medium',
+							strSize		: 'large',
 							strAlign	: 'centre',
 							strNature	: 'modal',
 							strTitle	: 'Download DNCR Wash List'

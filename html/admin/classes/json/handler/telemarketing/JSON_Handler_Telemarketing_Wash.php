@@ -57,9 +57,10 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			$qryQuery	= new Query();
 			
 			// Get list of Imported Files
-			$resResult	= $qryQuery->Execute("SELECT DISTINCT FileImport.Id as file_import_id, FileImport.FileName AS file_name, FileImport.ImportedOn as file_imported_on, tfp.dealer_id, dealer.first_name AS dealer_first_name, dealer.last_name AS dealer_last_name, tfp.customer_group_id, CustomerGroup.ExternalName AS customer_group_name " .
+			$resResult	= $qryQuery->Execute("SELECT FileImport.Id as file_import_id, FileImport.FileName AS file_name, FileImport.ImportedOn as file_imported_on, tfp.dealer_id, dealer.first_name AS dealer_first_name, dealer.last_name AS dealer_last_name, tfp.customer_group_id, CustomerGroup.ExternalName AS customer_group_name " .
 												"FROM (( FileImport JOIN telemarketing_fnn_proposed tfp ON tfp.proposed_list_file_import_id = FileImport.Id) JOIN CustomerGroup ON CustomerGroup.Id = tfp.customer_group_id) JOIN dealer ON dealer_id = tfp.dealer_id " .
 												"WHERE tfp.do_not_call_file_export_id IS NULL AND tfp.telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED." " .
+												"GROUP BY FileImport.Id " .
 												"ORDER BY file_imported_on DESC, file_name ASC");
 			if ($resResult === false)
 			{
