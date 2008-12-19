@@ -27,10 +27,10 @@ class Flex_Rollout_Version_000116 extends Flex_Rollout_Version
 								
 		// 2:	Add the TELEMARKETING_PROPOSED_IMPORT, TELEMARKETING_DNCR_EXPORT, TELEMARKETING_DNCR_IMPORT, TELEMARKETING_PERMITTED_EXPORT, TELEMARKETING_DIALLER_IMPORT Carrier Module Types
 		$strSQL = "INSERT INTO carrier_module_type (name, description, const_name) VALUES " .
-					"('Telemarketing Proposed FNN Files'	, 'Telemarketing Proposed FNN Files'	, 'MODULE_TYPE_TELEMARKETING_PROPOSED_IMPORT')" . 
-					"('Telemarketing DNCR Request Files'	, 'Telemarketing DNCR Request Files'	, 'MODULE_TYPE_TELEMARKETING_DNCR_EXPORT')" . 
-					"('Telemarketing DNCR Response Files'	, 'Telemarketing DNCR Response Files'	, 'MODULE_TYPE_TELEMARKETING_DNCR_IMPORT')" . 
-					"('Telemarketing Permitted FNN Files'	, 'Telemarketing Permitted FNN Files'	, 'MODULE_TYPE_TELEMARKETING_PERMITTED_EXPORT')" . 
+					"('Telemarketing Proposed FNN Files'	, 'Telemarketing Proposed FNN Files'	, 'MODULE_TYPE_TELEMARKETING_PROPOSED_IMPORT'), " . 
+					"('Telemarketing DNCR Request Files'	, 'Telemarketing DNCR Request Files'	, 'MODULE_TYPE_TELEMARKETING_DNCR_EXPORT'), " . 
+					"('Telemarketing DNCR Response Files'	, 'Telemarketing DNCR Response Files'	, 'MODULE_TYPE_TELEMARKETING_DNCR_IMPORT'), " . 
+					"('Telemarketing Permitted FNN Files'	, 'Telemarketing Permitted FNN Files'	, 'MODULE_TYPE_TELEMARKETING_PERMITTED_EXPORT'), " . 
 					"('Telemarketing Dialler Report Files'	, 'Telemarketing Dialler Report Files'	, 'MODULE_TYPE_TELEMARKETING_DIALLER_IMPORT)";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
