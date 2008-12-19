@@ -31,7 +31,7 @@ class Flex_Rollout_Version_000116 extends Flex_Rollout_Version
 					"('Telemarketing DNCR Request Files'	, 'Telemarketing DNCR Request Files'	, 'MODULE_TYPE_TELEMARKETING_DNCR_EXPORT'), " . 
 					"('Telemarketing DNCR Response Files'	, 'Telemarketing DNCR Response Files'	, 'MODULE_TYPE_TELEMARKETING_DNCR_IMPORT'), " . 
 					"('Telemarketing Permitted FNN Files'	, 'Telemarketing Permitted FNN Files'	, 'MODULE_TYPE_TELEMARKETING_PERMITTED_EXPORT'), " . 
-					"('Telemarketing Dialler Report Files'	, 'Telemarketing Dialler Report Files'	, 'MODULE_TYPE_TELEMARKETING_DIALLER_IMPORT)";
+					"('Telemarketing Dialler Report Files'	, 'Telemarketing Dialler Report Files'	, 'MODULE_TYPE_TELEMARKETING_DIALLER_IMPORT')";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
