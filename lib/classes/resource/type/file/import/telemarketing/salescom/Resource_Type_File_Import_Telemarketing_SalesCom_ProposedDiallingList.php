@@ -247,6 +247,9 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 					break;
 			}
 		}
+		// Push any remaining field to the CSV array
+		$arrCSV[]	= $strField;
+		$strField	= '';
 		
 		return $arrCSV;
 	}
