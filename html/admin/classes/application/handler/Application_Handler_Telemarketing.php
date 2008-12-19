@@ -68,7 +68,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			// Import the File (into FileImport)
-			throw new Exception($_FILES['Telemarketing_ProposedUpload_File']['tmp_name']);
+			move_uploaded_file($_FILES['Telemarketing_ProposedUpload_File']['tmp_name'], dirname($_FILES['Telemarketing_ProposedUpload_File']['tmp_name']).$_FILES['Telemarketing_ProposedUpload_File']['name']);
 			try
 			{
 				$objFileImport	= File_Import::import($_FILES['Telemarketing_ProposedUpload_File']['tmp_name'], $arrCarrierModule['FileType'], $objDealer->carrierId, "FileName = <FileName>");
