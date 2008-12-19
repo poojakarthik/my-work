@@ -48,32 +48,35 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		// Parse each Line
 		$intLine	= 0;
 		$arrErrors	= array();
-		while ($strLine = trim(fgets($this->_resFile)))
+		while (!feof($this->_resFile))
 		{
 			$intLine++;
 			
-			// Normalise the Line
-			$arrNormalised	= $this->_normaliseLine($strLine);
-			
-			if (!$arrNormalised['__ERRORS__'])
+			if ($strLine = trim(fgets($this->_resFile)))
 			{
-				// Insert the normalised Line into the Database
-				$objProposedFNN	= new Telemarketing_FNN_Proposed();
+				// Normalise the Line
+				$arrNormalised	= $this->_normaliseLine($strLine);
 				
-				$objProposedFNN->fnn									= $arrNormalised['FNN'];
-				$objProposedFNN->customer_group_id						= $this->_intCustomerGroupId;
-				$objProposedFNN->proposed_list_file_import_id			= $this->_objFileImport->Id;
-				$objProposedFNN->call_period_start						= $arrNormalised['CallPeriodStart'];
-				$objProposedFNN->call_period_end						= $arrNormalised['CallPeriodEnd'];
-				$objProposedFNN->dealer_id								= $this->_intDealerId;
-				$objProposedFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED;
-				$objProposedFNN->raw_record								= $strLine;
-				
-				$objProposedFNN->save();
-			}
-			else
-			{
-				$arrErrors[]	= "Line {$intLine} had the following errors: ".implode('; ', $arrNormalised['__ERRORS__']);
+				if (!$arrNormalised['__ERRORS__'])
+				{
+					// Insert the normalised Line into the Database
+					$objProposedFNN	= new Telemarketing_FNN_Proposed();
+					
+					$objProposedFNN->fnn									= $arrNormalised['FNN'];
+					$objProposedFNN->customer_group_id						= $this->_intCustomerGroupId;
+					$objProposedFNN->proposed_list_file_import_id			= $this->_objFileImport->Id;
+					$objProposedFNN->call_period_start						= $arrNormalised['CallPeriodStart'];
+					$objProposedFNN->call_period_end						= $arrNormalised['CallPeriodEnd'];
+					$objProposedFNN->dealer_id								= $this->_intDealerId;
+					$objProposedFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED;
+					$objProposedFNN->raw_record								= $strLine;
+					
+					$objProposedFNN->save();
+				}
+				else
+				{
+					$arrErrors[]	= "Line {$intLine} had the following errors: ".implode('; ', $arrNormalised['__ERRORS__']);
+				}
 			}
 		}
 		
