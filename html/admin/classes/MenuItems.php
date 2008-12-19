@@ -3067,7 +3067,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Download DNCR Wash List";
 		$this->strLabel = "Download DNCR Wash List";
 		
-		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_dncrdownload.js', function(){Flex.Telemarketing.DNCRDownload.displayPopupUpload();})});";
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_dncrdownload.js', function(){Flex.Telemarketing.DNCRDownload.displayPopupDownload();})});";
 	}
 
 	//------------------------------------------------------------------------//
