@@ -120,7 +120,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		// Pull the data
 		$arrNormalised['FNN']				= $arrExplode[5];
 		$arrNormalised['CallPeriodStart']	= date("Y-m-d 00:00:00");
-		$arrNormalised['CallPeriodEnd']		= strtotime("+{self::CALL_PERIOD_LENGTH_DAYS} days", strtotime(date("Y-m-d 00:00:00")));
+		$arrNormalised['CallPeriodEnd']		= strtotime("+".self::CALL_PERIOD_LENGTH_DAYS." days", strtotime(date("Y-m-d 00:00:00")));
 		
 		// Validate
 		if (!preg_match("/^0[2378]\d{8}$/", $arrNormalised['FNN']))
