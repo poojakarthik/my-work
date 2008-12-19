@@ -101,7 +101,11 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		$arrNormalised['__ERRORS__']	= array();
 		
 		// Explode the CSV
-		$arrExplode		= explode('","', trim($strLine, '"'));		
+		$arrExplode		= explode(',', $strLine);
+		foreach ($arrExplode as $mixIndex=>$strField)
+		{
+			$arrExplode[$mixIndex]	= trim('"', $strField);
+		}
 		
 		// Ensure that we have the correct number of fields
 		$intActualColumns	= count($arrExplode);
