@@ -80,29 +80,48 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			unlink($strFriendlyFileName);
 			
-			// Import the Proposed FNNs into the telemarketing_fnn table
-			$objNormaliser	= new $arrCarrierModule['Module']($objFileImport, (int)$_POST['Telemarketing_ProposedUpload_Vendor'], $objDealer->id);
-			$arrErrors		= $objNormaliser->normalise();
-			if ($arrErrors)
+			// If the File was imported OK, then Normalise
+			if ($objFileImport->Status === FILE_IMPORTED)
 			{
-				// Create a log dump
-				$strLogFileName	= FILES_BASE_PATH.'logs/telemarketing/proposed/'.date('YmdHis').'_'.AuthenticatedUser()->GetUserId().'.log';
-				@mkdir(dirname($strLogFileName), 0777, true);
-				@file_put_contents($strLogFileName, implode("\n", $arrErrors));
 				
-				//throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.\nPlease ensure that you have selected the correct file, and try again.\nIf this message appears more than once, please contact YBS.");
+				// Import the Proposed FNNs into the telemarketing_fnn table
+				$objNormaliser	= new $arrCarrierModule['Module']($objFileImport, (int)$_POST['Telemarketing_ProposedUpload_Vendor'], $objDealer->id);
+				$arrErrors		= $objNormaliser->normalise();
+				if ($arrErrors)
+				{
+					// Create a log dump
+					$strLogFileName	= FILES_BASE_PATH.'logs/telemarketing/proposed/'.date('YmdHis').'_'.AuthenticatedUser()->GetUserId().'.log';
+					@mkdir(dirname($strLogFileName), 0777, true);
+					@file_put_contents($strLogFileName, implode("\n", $arrErrors));
+					
+					//throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.\nPlease ensure that you have selected the correct file, and try again.\nIf this message appears more than once, please contact YBS.");
+				}
+				
+				// Update the FileImport Status to Imported
+				$objFileImport->Status	= FILE_NORMALISED;
+				$objFileImport->save();
+				
+				$arrDetailsToRender['Success']			= true;
+				$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nThe following ".count($arrErrors)." non-fatal errors occurred:\n\n".implode("\n", $arrErrors) : '');
 			}
-			
-			// Update the FileImport Status to Imported
-			$objFileImport->Status;
-			$objFileImport->save();
+			else
+			{
+				$arrDetailsToRender['Message']			= "The File could not be Imported";
+				if ($objFileImport->Status === FILE_NOT_UNIQUE)
+				{
+					$arrDetailsToRender['Message']		.= " because a file with this Name already exists in Flex";
+				}
+				else
+				{
+					$arrDetailsToRender['Message']		.= ".  If you receive this error more than once, please notify YBS." . (($bolVerboseErrors) ? "(".GetConstantDescription($objFileImport->Status, 'FileStatus').")" : '');
+				}
+				$arrDetailsToRender['Success']			= false;
+			}
 			
 			// Commit the transaction
 			DataAccess::getDataAccess()->TransactionCommit();
 			
 			// Generate Response
-			$arrDetailsToRender['Success']			= true;
-			$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nThe following ".count($arrErrors)." non-fatal errors occurred:\n\n".implode("\n", $arrErrors) : '');
 			$arrDetailsToRender['file_import_id']	= $objFileImport->Id;
 		}
 		catch (Exception $e)
