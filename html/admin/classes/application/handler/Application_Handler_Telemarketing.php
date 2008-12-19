@@ -53,7 +53,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === false)
 			{
-				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : '');
+				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 			}
 			if (!($arrCarrierModule = $resResult->fetch_assoc()))
 			{
