@@ -57,7 +57,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			if (!($arrCarrierModule = $resResult->fetch_assoc()))
 			{
-				$strDealerName	= $objDealer->FirstName . ($objDealer->LastName) ? ' '.$objDealer->LastName : '';
+				$strDealerName	= $objDealer->firstName . ($objDealer->lastName) ? ' '.$objDealer->lastName : '';
 				throw new Exception("Flex does not support Proposed Dialling Lists from {$strDealerName}." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : '');
 			}
 			
