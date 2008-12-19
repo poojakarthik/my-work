@@ -106,7 +106,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		$arrNormalised['__ERRORS__']	= array();
 		if (!preg_match("/^0[2378]\d{8}$/", $arrNormalised['FNN']))
 		{
-			$arrNormalised['__ERRORS__'][]	= "FNN is invalid!";
+			$arrNormalised['__ERRORS__'][]	= "FNN '{$arrNormalised['FNN']}' is invalid!";
 		}
 		
 		return $arrNormalised;
