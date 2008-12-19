@@ -85,7 +85,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$arrErrors		= $objNormaliser->normalise();
 			if ($arrErrors)
 			{
-				throw new Exception("The uploaded file is invalid.  The following errors prevented importing:\n\n");
+				throw new Exception("The uploaded file is invalid.  The following errors prevented importing:\n\n".implode("\n", $arrErrors));
 			}
 			
 			// Update the FileImport Status to Imported
