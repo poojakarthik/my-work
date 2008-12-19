@@ -153,7 +153,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$intFileImportId	= (int)$_REQUEST['Telemarketing_DNCRDownload_File'];
 			
 			// Get list of FNNs for this File
-			$arrFNNs	= Telemarketing_FNN_Proposed::getFor("proposed_list_file_import_id = {$intFileImportId} AND telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_IMPORTED, true);
+			$arrFNNs	= Telemarketing_FNN_Proposed::getFor("proposed_list_file_import_id = {$intFileImportId} AND telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED, true);
 			foreach ($arrFNNs as $mixIndex=>$arrFNN)
 			{
 				// Wash against the Internal Blacklist
