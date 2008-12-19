@@ -90,7 +90,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				@mkdir(dirname($strLogFileName), 0777, true);
 				@file_put_contents($strLogFileName, implode("\n", $arrErrors));
 				
-				throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.\nPlease ensure that you have selected the correct file, and try again.\nIf this message appears more than once, please contact YBS.");
+				//throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.\nPlease ensure that you have selected the correct file, and try again.\nIf this message appears more than once, please contact YBS.");
 			}
 			
 			// Update the FileImport Status to Imported
@@ -102,7 +102,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			
 			// Generate Response
 			$arrDetailsToRender['Success']			= true;
-			$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . ($bolVerboseErrors && $arrErrors) ? "\nThe following non-fatal errors occurred:\n".implode("\n", $arrErrors) : '';
+			$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . ($bolVerboseErrors && $arrErrors) ? "\nThe following ".count($arrErrors)." non-fatal errors occurred:\n\n".implode("\n", $arrErrors) : '';
 			$arrDetailsToRender['file_import_id']	= $objFileImport->Id;
 		}
 		catch (Exception $e)
