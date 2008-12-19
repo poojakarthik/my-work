@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000117 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to make telemarketing_fnn_proposed.id Auto Incrememted. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
-		$this->rollbackSQL[] = "ALTER TABLE telemarketing_fnn_proposed MODIFY id BIGINT(20) NOT NULL UNSIGNED COMMENT 'Unique Identifier';";
+		$this->rollbackSQL[] = "ALTER TABLE telemarketing_fnn_proposed MODIFY id BIGINT(20) UNSIGNED NOT NULL COMMENT 'Unique Identifier';";
 	}
 	
 	function rollback()
