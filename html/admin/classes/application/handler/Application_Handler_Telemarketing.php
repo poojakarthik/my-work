@@ -49,7 +49,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$objDealer	= Dealer::getForId((int)$_POST['Telemarketing_ProposedUpload_Dealer']);
 			
 			// Get File Format Details
-			$strSQL		= "SELECT * FROM CarrierModule WHERE Carrier = {$objDealer->carrierId} AND Type = ".MODULE_TYPE_TELEMARKETING." AND FileType = {$objFileImport->FileType} AND Active = 1";
+			$strSQL		= "SELECT * FROM CarrierModule WHERE Carrier = {$objDealer->carrierId} AND Type = ".MODULE_TYPE_TELEMARKETING_PROPOSED_IMPORT." AND Active = 1";
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === false)
 			{
