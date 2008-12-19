@@ -147,6 +147,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 		{
 			$qryQuery	= new Query();
 			
+			throw new Exception("DNCR Downloading is not supported!");
+			
 			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format
 			
 			// Create DNCR Export File
