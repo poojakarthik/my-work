@@ -68,15 +68,17 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			// Import the File (into FileImport)
-			move_uploaded_file($_FILES['Telemarketing_ProposedUpload_File']['tmp_name'], dirname($_FILES['Telemarketing_ProposedUpload_File']['tmp_name']).$_FILES['Telemarketing_ProposedUpload_File']['name']);
+			$strFriendlyFileName	= dirname($_FILES['Telemarketing_ProposedUpload_File']['tmp_name']).'/'.$_FILES['Telemarketing_ProposedUpload_File']['name'];
+			move_uploaded_file($_FILES['Telemarketing_ProposedUpload_File']['tmp_name'], $strFriendlyFileName);
 			try
 			{
-				$objFileImport	= File_Import::import($_FILES['Telemarketing_ProposedUpload_File']['tmp_name'], $arrCarrierModule['FileType'], $objDealer->carrierId, "FileName = <FileName>");
+				$objFileImport	= File_Import::import($strFriendlyFileName, $arrCarrierModule['FileType'], $objDealer->carrierId, "FileName = <FileName>");
 			}
 			catch (Exception $eException)
 			{
 				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au");
 			}
+			unlink($strFriendlyFileName);
 			
 			// Import the Proposed FNNs into the telemarketing_fnn table
 			$objNormaliser	= new $arrCarrierModule['Module']($objFileImport, (int)$_POST['Telemarketing_ProposedUpload_Vendor'], $objDealer->id);
