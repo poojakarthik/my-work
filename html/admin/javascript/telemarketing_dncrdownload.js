@@ -38,10 +38,25 @@ var Telemarketing_DNCRDownload	= Class.create
 			return false;
 		}
 		
-		// Close the Popup
+		// Show the Loading Splash
+		Vixen.Popup.ShowPageLoadingSplash("Processing DNCR Wash List...", null, null, null, 100);
+		
+		// Perform AJAX query
+		return Flex.Telemarketing.iframeFormSubmit($ID('Telemarketing_DNCRDownload_Form'), this.downloadReponseHandler.bind(this));
+	},
+	
+	downloadReponseHandler	: function(objResponse)
+	{
+		// Close the Splash and Popup
+		Vixen.Popup.ClosePageLoadingSplash();
 		Vixen.Popup.Close(this.objPopupDownload.strId);
 		
-		return true;
+		// Display confirmation popup
+		if (objResponse.Message)
+		{
+			$Alert("<pre>"+objResponse.Message+"</pre>", null, null, 'modal');
+		}
+		return;
 	},
 	
 	_renderPopup	: function(objPopup, strHTML, objResponse)
