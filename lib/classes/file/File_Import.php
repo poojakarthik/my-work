@@ -65,7 +65,7 @@ class File_Import extends ORM
 		{
 			// Copy to final location
 			$strDestination	= FILES_BASE_PATH."import/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intFileType, 'FileImport').'/';
-			@mkdir($strDestination, 0777, TRUE);
+			mkdir($strDestination, 0777, TRUE);
 			$strNewFileName	= basename($strFilePath);
 			$strNewFileName	.= date("_Ymdhis");
 			$strDestination	.= $strNewFileName;
