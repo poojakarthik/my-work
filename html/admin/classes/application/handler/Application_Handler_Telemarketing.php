@@ -151,7 +151,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			
 			
 			// Get list of washed FNNs for this File
-			$arrFNNs	= self::_washFNNByImportFile($intFileImportId);
+			$arrFNNs	= self::_washFNNsByImportFile($intFileImportId);
 			
 			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format			
 			// Create DNCR Export File
@@ -310,7 +310,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$objFileImport		= new File_Import(array('Id'=>$intFileImportId), true);
 			
 			// Get list of washed FNNs for this File
-			$arrFNNs	= self::_washFNNByImportFile($intFileImportId);
+			$arrFNNs	= self::_washFNNsByImportFile($intFileImportId);
 			
 			// Get File Format Details
 			$strSQL		= "SELECT * FROM CarrierModule WHERE Carrier = {$objFileImport->Carrier} AND Type = ".MODULE_TYPE_TELEMARKETING_PERMITTED_EXPORT." AND Active = 1";
@@ -354,26 +354,67 @@ class Application_Handler_Telemarketing extends Application_Handler
 		die;
 	}
 	
-	private static function _washFNNByImportFile($intFileImportId)
+	private static function _washFNNsByImportFile($intFileImportId)
 	{
 		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
 		$qryQuery				= new Query();
-		$selInternalOptOut		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn> AND expired_on > NOW()", null, 1);
-		$selInternalDNCR		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn> AND expired_on > NOW()", null, 1);
-		$selActiveServices		= new StatementSelect("Service", "Id", "FNN = <fnn> AND Status = ".SERVICE_ACTIVE, null, 1);
-		$selActiveContacts		= new StatementSelect("Contact", "Contact.Id", "(Phone = <fnn> OR Mobile = <fnn> OR Fax = <fnn>) AND Contact.Archived = 0 AND 0 = (SELECT Archived FROM Account WHERE PrimaryContact = Contact.Id LIMIT 1)", null, 1);
+		
+		// Build a Cache of Internal Opt-Out and DNCR FNNs
+		$resResult	= $qryQuery->Execute("SELECT fnn, telemarketing_fnn_blacklist_nature_id FROM telemarketing_fnn_blacklist WHERE expired_on > NOW()");
+		$arrOptOut	= array();
+		$arrDNCR	= array();
+		if ($resResult === false)
+		{
+			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
+		}
+		while ($arrBlacklist = $resResult->fetch_assoc())
+		{
+			switch ($arrBlacklist['telemarketing_fnn_blacklist_nature_id'])
+			{
+				case TELEMARKETING_FNN_BLACKLIST_NATURE_DNCR:
+					$arrDNCR[]		= $arrBlacklist['fnn'];
+					break;
+					
+				case TELEMARKETING_FNN_BLACKLIST_NATURE_OPTOUT:
+					$arrOptOut[]	= $arrBlacklist['fnn'];
+				default:
+					break;
+			}
+		}
+		
+		// Build a Cache of Active Service FNNs
+		$resResult	= $qryQuery->Execute("SELECT FNN FROM Service WHERE Status = ".SERVICE_ACTIVE);
+		$arrServiceCache	= array();
+		if ($resResult === false)
+		{
+			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
+		}
+		while ($arrService = $resResult->fetch_assoc())
+		{
+			$arrServiceCache[]	= $arrService['FNN'];
+		}
+		
+		// Build a Cache of Active Contacts
+		$resResult	= $qryQuery->Execute("SELECT Phone, Fax, Mobile FROM Contact JOIN Account ON Account.PrimaryContact = Contact.Id WHERE Account.Archived = 0 AND Contact.Archived = 0");
+		$arrContactCache	= array();
+		if ($resResult === false)
+		{
+			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
+		}
+		while ($arrContact = $resResult->fetch_assoc())
+		{
+			if ($arrContact['Phone'])	$arrContactCache[] = $arrContact['Phone'];
+			if ($arrContact['Fax'])		$arrContactCache[] = $arrContact['Fax'];
+			if ($arrContact['Mobile'])	$arrContactCache[] = $arrContact['Mobile'];
+		}
 		
 		// Get list of FNNs for this File
 		$arrFNNs	= Telemarketing_FNN_Proposed::getFor("proposed_list_file_import_id = {$intFileImportId} AND telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED, true);
 		foreach ($arrFNNs as $mixIndex=>$arrFNN)
 		{
 			// Wash against the Internal Opt-Out
-			if ($selInternalOptOut->Execute($arrFNN) === false)
-			{
-				throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selInternalOptOut->Error() : '');
-			}
-			elseif ($selInternalOptOut->Fetch())
+			if (in_array($arrFNN['fnn'], $arrOptOut))
 			{
 				// Blacklisted (Opt-Out)
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
@@ -384,11 +425,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			// Wash against the Internal DNCR Cache
-			if ($selInternalDNCR->Execute($arrFNN) === false)
-			{
-				throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selInternalDNCR->Error() : '');
-			}
-			elseif ($selInternalDNCR->Fetch())
+			elseif (in_array($arrFNN['fnn'], $arrDNCR))
 			{
 				// Blacklisted (Opt-Out)
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
@@ -399,11 +436,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			// Wash against Active Services in Flex
-			elseif ($selActiveServices->Execute($arrFNN) === false)
-			{
-				throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selActiveServices->Error() : '');
-			}
-			elseif ($selActiveServices->Fetch())
+			elseif (in_array($arrFNN['fnn'], $arrServiceCache))
 			{
 				// Currently in Flex
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
@@ -413,12 +446,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 				unset($arrFNNs[$mixIndex]);
 			}
 			
-			/*// Wash against Active Contacts in Flex
-			elseif ($selActiveContacts->Execute($arrFNN) === false)
-			{
-				throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selActiveContacts->Error() : '');
-			}
-			elseif ($selActiveContacts->Fetch())
+			// Wash against Active Contacts in Flex
+			elseif (in_array($arrFNN['fnn'], $arrContactCache))
 			{
 				// Active Contact in Flex
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
@@ -426,7 +455,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
-			}*/
+			}
 		}
 		
 		// Return the washed list of FNNs
