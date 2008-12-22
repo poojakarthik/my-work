@@ -5,6 +5,8 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 	
 	public function getCallCentrePermissions()
 	{
+		return AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		
 		try
 		{
 			// Check user permissions
