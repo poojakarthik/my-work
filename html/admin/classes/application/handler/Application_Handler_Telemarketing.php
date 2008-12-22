@@ -270,6 +270,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 				throw new Exception("You do not have sufficient privileges to upload a Proposed Dialling List!" . (($bolVerboseErrors) ? ' But you do have GOD mode... wtf' : ''));
 			}
 			
+			$intFileExportId	= (int)$_POST['Telemarketing_DNCRDownload_File'];
+			
 			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format
 			$intCarrier		= CARRIER_ACMA;
 			$intFileType	= RESOURCE_TYPE_FILE_IMPORT_TELEMARKETING_ACMA_DNCR_RESPONSE;
@@ -316,6 +318,13 @@ class Application_Handler_Telemarketing extends Application_Handler
 				// Update the FileImport Status to Imported
 				$objFileImport->Status	= FILE_NORMALISED;
 				$objFileImport->save();
+				
+				// Update all telemarketing_fnn_proposed records with this file Id
+				$resResult	= $qryQuery->Execute("UPDATE telemarketing_fnn_proposed SET do_not_call_file_import_id = {$objFileImport->Id} WHERE do_not_call_file_export_id = ".$intFileExportId);
+				if ($resResult === false)
+				{
+					throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : '');
+				}
 				
 				$arrDetailsToRender['Success']			= true;
 				$arrDetailsToRender['Message']			= "The DNCR Wash File '".basename($_FILES['Telemarketing_DNCRUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nThe following ".count($arrErrors)." non-fatal errors occurred:\n\n".implode("\n", $arrErrors) : '');
