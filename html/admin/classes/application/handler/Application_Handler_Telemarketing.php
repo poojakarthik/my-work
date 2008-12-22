@@ -302,7 +302,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFileImport->save();
 				
 				$arrDetailsToRender['Success']			= true;
-				$arrDetailsToRender['Message']			= "The DNCR Wash File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nThe following ".count($arrErrors)." non-fatal errors occurred:\n\n".implode("\n", $arrErrors) : '');
+				$arrDetailsToRender['Message']			= "The DNCR Wash File '".basename($_FILES['Telemarketing_DNCRUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nThe following ".count($arrErrors)." non-fatal errors occurred:\n\n".implode("\n", $arrErrors) : '');
 			}
 			else
 			{
