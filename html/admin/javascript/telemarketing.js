@@ -44,11 +44,11 @@ var Telemarketing	= Class.create
 	iframeFormLoaded	: function(elmIframe)
 	{
 		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
+
+		//alert(objIframeDocument.readystate);
 		
 		if (objIframeDocument.readystate !== 4)
 		{
-			alert(objIframeDocument.readystate);
-			
 			// Reschedule Iframe onLoad Polling
 			setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 1000);
 			return false;
