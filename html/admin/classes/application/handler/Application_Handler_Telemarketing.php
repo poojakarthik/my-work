@@ -158,15 +158,28 @@ class Application_Handler_Telemarketing extends Application_Handler
 			foreach ($arrFNNs as $mixIndex=>$arrFNN)
 			{
 				// Wash against the Internal Opt-Out
-				if ($selInternalBlacklist->Execute($arrFNN) === false)
+				if ($selInternalOptOut->Execute($arrFNN) === false)
 				{
-					throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selInternalBlacklist->Error() : '');
+					throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selInternalOptOut->Error() : '');
 				}
-				elseif ($selInternalBlacklist->Fetch())
+				elseif ($selInternalOptOut->Fetch())
 				{
-					// Blacklisted
+					// Blacklisted (Opt-Out)
 					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
 					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_OPTOUT;
+					unset($arrFNNs[$mixIndex]);
+				}
+				
+				// Wash against the Internal DNCR Cache
+				if ($selInternalDNCR->Execute($arrFNN) === false)
+				{
+					throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selInternalDNCR->Error() : '');
+				}
+				elseif ($selInternalDNCR->Fetch())
+				{
+					// Blacklisted (Opt-Out)
+					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
+					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_DNCR;
 					unset($arrFNNs[$mixIndex]);
 				}
 				
