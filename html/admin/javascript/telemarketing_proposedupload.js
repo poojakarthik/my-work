@@ -146,6 +146,8 @@ var Telemarketing_ProposedUpload	= Class.create
 			$Alert("You do not have sufficient privileges to upload a Proposed Dialling List. (second)");
 			//return false;
 		}
+		alert(objResponse);
+		alert(objResponse.Success);
 		
 		this._arrCallCentres	= objResponse.arrCallCentrePermissions;
 		this._arrVendors		= objResponse.arrVendors;
