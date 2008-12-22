@@ -218,7 +218,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$objFileExport	= $objDNCRExport->getFileExport();
 			
 			// Send the File to be downloaded
-			flush();
+			//flush();
 			header('content-type: text/csv');
 			echo file_get_contents($objFileExport->Location);
 		}
