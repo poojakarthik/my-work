@@ -332,7 +332,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			if (!($arrCarrierModule = $resResult->fetch_assoc()))
 			{
 				$strDealerName	= $objDealer->firstName . (($objDealer->lastName) ? ' '.$objDealer->lastName : '');
-				throw new Exception("Flex does not support Permitted Dialling Lists for {$strDealerName}." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
+				throw new Exception("Flex does not support Permitted Dialling Lists for this Dealer." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
 			}			
 			
 			// Create Permitted Dialling List
