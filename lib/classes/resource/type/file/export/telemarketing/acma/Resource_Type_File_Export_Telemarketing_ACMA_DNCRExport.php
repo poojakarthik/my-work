@@ -141,7 +141,7 @@ class Resource_Type_File_Export_Telemarketing_ACMA_DNCRExport
 	}
 	
 	/**
-	 * _getFileExport()
+	 * getFileExport()
 	 *
 	 * Returns the File_Export object associated with this File
 	 * 
@@ -149,7 +149,7 @@ class Resource_Type_File_Export_Telemarketing_ACMA_DNCRExport
 	 * 
 	 * @method
 	 */
-	function _getFileExport()
+	function getFileExport()
 	{
 		return $this->_objFileExport;
 	}
