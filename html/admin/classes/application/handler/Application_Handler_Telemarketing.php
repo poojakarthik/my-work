@@ -181,9 +181,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		{
 			$arrDetailsToRender['Success']	= false;
 			$arrDetailsToRender['Message']	= $e->getMessage();
-			
-			flush();
-			echo JSON_Services::instance()->encode($arrDetailsToRender);
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 		die;
 	}
@@ -359,9 +357,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		{
 			$arrDetailsToRender['Success']	= false;
 			$arrDetailsToRender['Message']	= $e->getMessage();
-			
-			flush();
-			echo JSON_Services::instance()->encode($arrDetailsToRender);
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 		die;
 	}
