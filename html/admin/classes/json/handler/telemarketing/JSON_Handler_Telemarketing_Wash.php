@@ -5,11 +5,14 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 	
 	public function getCallCentrePermissions()
 	{
-		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
-		
 		try
 		{
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			{
+				throw new Exception("You do not have sufficient privileges to perform this action.");
+			}
+			
 			// Get list of Call Centres
 			$arrCallCentres				= Dealer::getCallCentres();
 			$arrCallCentrePermissions	= array();
@@ -36,7 +39,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 		catch (Exception $e)
 		{
 			// Send an Email to Devs
-			SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
 			
 			return array(
 							"Success"		=> FALSE,
@@ -47,13 +50,16 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 	
 	public function getImportedFiles()
 	{
-		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
-		
 		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
 		try
 		{
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			{
+				throw new Exception("You do not have sufficient privileges to perform this action.");
+			}
+			
 			$qryQuery	= new Query();
 			
 			// Get list of Imported Files
@@ -92,13 +98,16 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 	
 	public function getDNCRFiles()
 	{
-		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
-		
 		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
 		try
 		{
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			{
+				throw new Exception("You do not have sufficient privileges to perform this action.");
+			}
+			
 			$qryQuery	= new Query();
 			
 			// Get list of Imported Files
@@ -137,13 +146,16 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 	
 	public function getExportReadyFiles()
 	{
-		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
-		
 		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
 		try
 		{
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			{
+				throw new Exception("You do not have sufficient privileges to perform this action.");
+			}
+			
 			$qryQuery	= new Query();
 			
 			// Get list of Imported Files
