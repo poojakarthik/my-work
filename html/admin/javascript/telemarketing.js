@@ -43,10 +43,11 @@ var Telemarketing	= Class.create
 	
 	iframeFormLoaded	: function(elmIframe)
 	{
+		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		
-		if (window.frames[elmIframe.id].document.ReadyState !== 4)
+		if (objIframeDocument.readystate !== 4)
 		{
-			alert(window.frames[elmIframe.id].document.ReadyState);
+			alert(objIframeDocument.readystate);
 			
 			// Reschedule Iframe onLoad Polling
 			setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 1000);
@@ -54,7 +55,6 @@ var Telemarketing	= Class.create
 		}
 		
 		// Parse Iframe contents for response data (JSON'd PHP Array)
-		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		var objResponse			= jQuery.json.decode(objIframeDocument.body.innerHTML);
 		objResponse				= (objResponse) ? objResponse : {Message: objIframeDocument.body.innerHTML};
 		
