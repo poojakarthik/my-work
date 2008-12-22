@@ -477,7 +477,7 @@ abstract class NormalisationModule extends CarrierModule
 				// delimited fields may have fixed width contents
 				if (isset($strValue['Start']) && $strValue['Length'])
 				{
-					$this->_arrRawData[$strKey] = substr($this->_arrRawData[$strKey], $strValue['Start'], $strValue['Length']);
+					$this->_arrRawData[$strKey] = trim(substr($this->_arrRawData[$strKey], $strValue['Start'], $strValue['Length']));
 				}
 			}
 		}
