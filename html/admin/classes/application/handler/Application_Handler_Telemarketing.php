@@ -413,7 +413,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				unset($arrFNNs[$mixIndex]);
 			}
 			
-			// Wash against Active Contacts in Flex
+			/*// Wash against Active Contacts in Flex
 			elseif ($selActiveContacts->Execute($arrFNN) === false)
 			{
 				throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selActiveContacts->Error() : '');
@@ -426,7 +426,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
-			}
+			}*/
 		}
 		
 		// Return the washed list of FNNs
