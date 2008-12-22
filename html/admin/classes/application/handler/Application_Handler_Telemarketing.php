@@ -264,8 +264,6 @@ class Application_Handler_Telemarketing extends Application_Handler
 				throw new Exception("'{$_POST['Telemarketing_ProposedUpload_File']['name']}' is not a valid file name.  Ensure that you are trying to upload the correct file, and try again.");
 			}
 			
-			throw new Exception("Valid File Name");
-			
 			// Import the File (into FileImport)
 			$strFriendlyFileName	= dirname($_FILES['Telemarketing_DNCRUpload_File']['tmp_name']).'/'.$_FILES['Telemarketing_DNCRUpload_File']['name'];
 			move_uploaded_file($_FILES['Telemarketing_DNCRUpload_File']['tmp_name'], $strFriendlyFileName);
@@ -278,6 +276,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "\n".$eException->getMessage() : ''));
 			}
 			unlink($strFriendlyFileName);
+			
+			throw new Exception("File Imported");
 			
 			// If the File was imported OK, then Normalise
 			if ($objFileImport->Status === FILE_IMPORTED || $objFileImport->Status === FILE_COLLECTED)
