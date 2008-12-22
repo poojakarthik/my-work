@@ -3107,7 +3107,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Download Permitted Dialling List";
 		$this->strLabel = "Download Permitted Dialling List";
 		
-		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing_file_washing.js', function(){Flex.Telemarketing.downloadPermittedList();});";
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_permitteddownload.js', function(){Flex.Telemarketing.PermittedDownload.displayPopupDownload();})});";
 	}
 
 	//------------------------------------------------------------------------//
