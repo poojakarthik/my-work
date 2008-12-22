@@ -13,7 +13,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 				return array(
 								'Success'			=> false,
 								'ErrorMessage'		=> "Insufficient privileges",
-								'HasPermissiosns'	=> false,
+								'HasPermissions'	=> false,
 							);
 			}
 			
@@ -64,7 +64,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 				return array(
 								'Success'			=> false,
 								'ErrorMessage'		=> "Insufficient privileges",
-								'HasPermissiosns'	=> false,
+								'HasPermissions'	=> false,
 							);
 			}
 			
@@ -116,7 +116,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 				return array(
 								'Success'			=> false,
 								'ErrorMessage'		=> "Insufficient privileges",
-								'HasPermissiosns'	=> false,
+								'HasPermissions'	=> false,
 							);
 			}
 			
@@ -168,7 +168,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 				return array(
 								'Success'			=> false,
 								'ErrorMessage'		=> "Insufficient privileges",
-								'HasPermissiosns'	=> false,
+								'HasPermissions'	=> false,
 							);
 			}
 			
