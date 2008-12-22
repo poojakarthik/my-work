@@ -8,7 +8,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 		try
 		{
 			// Check user permissions
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				throw new Exception("You do not have sufficient privileges to perform this action.");
 			}
@@ -55,7 +55,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 		try
 		{
 			// Check user permissions
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				throw new Exception("You do not have sufficient privileges to perform this action.");
 			}
@@ -103,7 +103,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 		try
 		{
 			// Check user permissions
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				throw new Exception("You do not have sufficient privileges to perform this action.");
 			}
@@ -151,7 +151,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 		try
 		{
 			// Check user permissions
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				throw new Exception("You do not have sufficient privileges to perform this action.");
 			}
