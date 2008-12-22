@@ -146,10 +146,6 @@ class Application_Handler_Telemarketing extends Application_Handler
 		try
 		{
 			$qryQuery				= new Query();
-			$selInternalOptOut		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn> AND expired_on > NOW()", null, 1);
-			$selInternalDNCR		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn> AND expired_on > NOW()", null, 1);
-			$selActiveServices		= new StatementSelect("Service", "Id", "FNN = <fnn> AND Status = ".SERVICE_ACTIVE, null, 1);
-			$selActiveContacts		= new StatementSelect("Contact", "Contact.Id", "(Phone = <fnn> OR Mobile = <fnn> OR Fax = <fnn>) AND Contact.Archived = 0 AND 0 = (SELECT Archived FROM Account WHERE PrimaryContact = Contact.Id LIMIT 1)", null, 1);
 			
 			$intFileImportId	= (int)$_REQUEST['Telemarketing_DNCRDownload_File'];
 			
@@ -309,10 +305,6 @@ class Application_Handler_Telemarketing extends Application_Handler
 		try
 		{
 			$qryQuery				= new Query();
-			$selInternalOptOut		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn> AND expired_on > NOW()", null, 1);
-			$selInternalDNCR		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn> AND expired_on > NOW()", null, 1);
-			$selActiveServices		= new StatementSelect("Service", "Id", "FNN = <fnn> AND Status = ".SERVICE_ACTIVE, null, 1);
-			$selActiveContacts		= new StatementSelect("Contact", "Contact.Id", "(Phone = <fnn> OR Mobile = <fnn> OR Fax = <fnn>) AND Contact.Archived = 0 AND 0 = (SELECT Archived FROM Account WHERE PrimaryContact = Contact.Id LIMIT 1)", null, 1);
 			
 			$intFileImportId	= (int)$_REQUEST['Telemarketing_PermittedDownload_File'];
 			$objFileImport		= new File_Import(array('Id'=>$intFileImportId), true);
