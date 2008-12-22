@@ -22,14 +22,14 @@ var Telemarketing	= Class.create
 		var elmIframe				= document.createElement('iframe');
 		elmIframe.id				= strIframeId;
 		elmIframe.name				= strIframeId;
-		//elmIframe.setAttribute('onload', 'Flex.Telemarketing.iframeFormLoaded(this)');
+		elmIframe.setAttribute('onload', 'Flex.Telemarketing.iframeFormLoaded(this)');
 		elmIframe.style.visibility	= 'hidden';
 		elmDiv.appendChild(elmIframe);
 		
 		// Schedule Iframe onLoad Polling
 		//var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		//objIframeDocument.onreadystatechange	= this.iframeFormLoaded.bind(this, elmIframe);
-		setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 100);
+		//setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 100);
 		
 		// Attach a Response Handler function
 		if (typeof(funcResponseHandler) == 'function')
@@ -47,7 +47,7 @@ var Telemarketing	= Class.create
 	{
 		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		
-		alert(objIframeDocument.location);
+		/*alert(objIframeDocument.location);
 		
 		if (!objIframeDocument.body.location)
 		{
@@ -55,7 +55,7 @@ var Telemarketing	= Class.create
 			alert("No content yet");
 			setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 1000);
 			return false;
-		}
+		}*/
 		
 		// Parse Iframe contents for response data (JSON'd PHP Array)
 		var objResponse			= jQuery.json.decode(objIframeDocument.body.innerHTML);
@@ -73,7 +73,7 @@ var Telemarketing	= Class.create
 		}
 		
 		// Schedule Iframe Cleanup
-		//setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
+		setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
 		this._iframeCleanup(elmIframe);
 		
 		elmIframe.bolLoaded	= true;
