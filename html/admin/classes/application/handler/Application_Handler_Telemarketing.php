@@ -356,6 +356,14 @@ class Application_Handler_Telemarketing extends Application_Handler
 	
 	private static function _washFNNsByImportFile($intFileImportId)
 	{
+		$strPath	= FILES_BASE_PATH."logs/telemarketing/wash_cache_".date("YmdHis").".log";
+		@mkdir(dirname($strPath), 0777, true);
+		$resLogFile	= fopen($strPath, 'w');
+		
+		$fltStartTime	= microtime(true);
+		$fltSplit		= $fltStartTime;
+		fwrite($resLogFile, "({$fltStartTime}) Started!");
+		
 		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
 		$qryQuery				= new Query();
@@ -373,15 +381,19 @@ class Application_Handler_Telemarketing extends Application_Handler
 			switch ($arrBlacklist['telemarketing_fnn_blacklist_nature_id'])
 			{
 				case TELEMARKETING_FNN_BLACKLIST_NATURE_DNCR:
-					$arrDNCR[]		= $arrBlacklist['fnn'];
+					$arrDNCR[$arrBlacklist['fnn']]		= true;
 					break;
 					
 				case TELEMARKETING_FNN_BLACKLIST_NATURE_OPTOUT:
-					$arrOptOut[]	= $arrBlacklist['fnn'];
+					$arrOptOut[$arrBlacklist['fnn']]	= true;
 				default:
 					break;
 			}
 		}
+		
+		$fltOldSplit	= $fltSplit;
+		$fltSplit		= microtime(true);
+		fwrite($resLogFile, "({$fltSplit}) Blacklist built! (".($fltSplit-$fltOldSplit)." seconds)");
 		
 		// Build a Cache of Active Service FNNs
 		$resResult	= $qryQuery->Execute("SELECT FNN FROM Service WHERE Status = ".SERVICE_ACTIVE);
@@ -392,8 +404,12 @@ class Application_Handler_Telemarketing extends Application_Handler
 		}
 		while ($arrService = $resResult->fetch_assoc())
 		{
-			$arrServiceCache[]	= $arrService['FNN'];
+			$arrServiceCache[$arrService['FNN']]	= true;
 		}
+		
+		$fltOldSplit	= $fltSplit;
+		$fltSplit		= microtime(true);
+		fwrite($resLogFile, "({$fltSplit}) Active Service Cache built! (".($fltSplit-$fltOldSplit)." seconds)");
 		
 		// Build a Cache of Active Contacts
 		$resResult	= $qryQuery->Execute("SELECT Phone, Fax, Mobile FROM Contact JOIN Account ON Account.PrimaryContact = Contact.Id WHERE Account.Archived = 0 AND Contact.Archived = 0");
@@ -404,17 +420,26 @@ class Application_Handler_Telemarketing extends Application_Handler
 		}
 		while ($arrContact = $resResult->fetch_assoc())
 		{
-			if ($arrContact['Phone'])	$arrContactCache[] = $arrContact['Phone'];
-			if ($arrContact['Fax'])		$arrContactCache[] = $arrContact['Fax'];
-			if ($arrContact['Mobile'])	$arrContactCache[] = $arrContact['Mobile'];
+			if ($arrContact['Phone'])	$arrContactCache[$arrContact['Phone']]	= true;
+			if ($arrContact['Fax'])		$arrContactCache[$arrContact['Fax']]	= true;
+			if ($arrContact['Mobile'])	$arrContactCache[$arrContact['Mobile']]	= true;
 		}
+		
+		$fltOldSplit	= $fltSplit;
+		$fltSplit		= microtime(true);
+		fwrite($resLogFile, "({$fltSplit}) Active Contact Cache built! (".($fltSplit-$fltOldSplit)." seconds)");
 		
 		// Get list of FNNs for this File
 		$arrFNNs	= Telemarketing_FNN_Proposed::getFor("proposed_list_file_import_id = {$intFileImportId} AND telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED, true);
+		$intTotal	= count($arrFNNs);
+		$intCount	= 0;		
 		foreach ($arrFNNs as $mixIndex=>$arrFNN)
 		{
+			$intCount++;
+			$fltLap	= microtime(true);
+			
 			// Wash against the Internal Opt-Out
-			if (in_array($arrFNN['fnn'], $arrOptOut))
+			if ($arrOptOut[$arrFNN['fnn']])
 			{
 				// Blacklisted (Opt-Out)
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
@@ -425,7 +450,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			// Wash against the Internal DNCR Cache
-			elseif (in_array($arrFNN['fnn'], $arrDNCR))
+			elseif ($arrDNCR[$arrFNN['fnn']])
 			{
 				// Blacklisted (Opt-Out)
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
@@ -436,7 +461,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			// Wash against Active Services in Flex
-			elseif (in_array($arrFNN['fnn'], $arrServiceCache))
+			elseif ($arrServiceCache[$arrFNN['fnn']])
 			{
 				// Currently in Flex
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
@@ -447,7 +472,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			// Wash against Active Contacts in Flex
-			elseif (in_array($arrFNN['fnn'], $arrContactCache))
+			elseif ($arrContactCache[$arrFNN['fnn']])
 			{
 				// Active Contact in Flex
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
@@ -456,7 +481,12 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
 			}
+			
+			$fltSplit	= microtime(true);
+			fwrite($resLogFile, "({$fltSplit}) FNN {$intCount}/{$intTotal} completed in ".($fltSplit-$fltLap)." seconds (".GetConstantDescription($objFNN->telemarketing_fnn_withheld_reason_id, 'telemarketing_fnn_withheld_reason').")");
 		}
+		
+		fclose($resLogFile);
 		
 		// Return the washed list of FNNs
 		return $arrFNNs;
