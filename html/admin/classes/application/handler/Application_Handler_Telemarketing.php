@@ -269,10 +269,10 @@ class Application_Handler_Telemarketing extends Application_Handler
 			move_uploaded_file($_FILES['Telemarketing_DNCRUpload_File']['tmp_name'], $strFriendlyFileName);
 			try
 			{
-				
-				throw new Exception("Attempting File Import");
-				
 				$objFileImport	= File_Import::import($strFriendlyFileName, $intFileType, $intCarrier, "FileName = <FileName>");
+				
+			
+				throw new Exception("File Apparently Imported");
 			}
 			catch (Exception $eException)
 			{
