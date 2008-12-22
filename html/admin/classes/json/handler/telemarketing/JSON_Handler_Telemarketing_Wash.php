@@ -89,6 +89,51 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 						);
 		}
 	}
+	
+	public function getDNCRFiles()
+	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		
+		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+		
+		try
+		{
+			$qryQuery	= new Query();
+			
+			// Get list of Imported Files
+			$resResult	= $qryQuery->Execute("SELECT FileExport.Id as file_export_id, FileExport.FileName AS file_name, FileExport.ExportedOn as file_exported_on " .
+												"FROM FileExport JOIN telemarketing_fnn_proposed tfp ON tfp.do_not_call_file_export_id = FileExport.Id " .
+												"WHERE tfp.telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED." " .
+												"GROUP BY FileExport.Id " .
+												"ORDER BY file_exported_on DESC, file_name ASC");
+			if ($resResult === false)
+			{
+				throw new Exception("There was an error retrieving the required data for this page.  If this problem continues to occur, please notify YBS." . (($bolVerboseErrors) ? "\n".$qryQuery->Error() : ''));
+			}
+			$arrExportedFiles	= array();
+			while ($arrExportedFile = $resResult->fetch_assoc())
+			{
+				$arrImportedFiles[$arrExportedFile['file_export_id']]	= $arrExportedFile;
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							"Success"			=> TRUE,
+							"arrExportedFiles"	=> $arrExportedFiles
+						);
+		}
+		catch (Exception $e)
+		{
+			// Send an Email to Devs
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
+			return array(
+							"Success"		=> FALSE,
+							"ErrorMessage"	=> 'ERROR: '.$e->getMessage()
+						);
+		}
+	}
 }
 
 ?>
