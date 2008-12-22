@@ -287,10 +287,10 @@ class Application_Handler_Telemarketing extends Application_Handler
 				{
 					// Create a log dump
 					$strLogFileName	= FILES_BASE_PATH.'logs/telemarketing/dncrupload/'.date('YmdHis').'_'.AuthenticatedUser()->GetUserId().'.log';
-					@mkdir(dirname($strLogFileName), 0777, true);
-					@file_put_contents($strLogFileName, implode("\n", $arrErrors));
+					mkdir(dirname($strLogFileName), 0777, true);
+					file_put_contents($strLogFileName, implode("\n", $arrErrors));
 					
-					//throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.\nPlease ensure that you have selected the correct file, and try again.\nIf this message appears more than once, please contact YBS.");
+					throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.\nPlease ensure that you have selected the correct file, and try again.\nIf this message appears more than once, please contact YBS.");
 				}
 				
 				// Update the FileImport Status to Imported
