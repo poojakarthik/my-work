@@ -212,7 +212,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			
 			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format			
 			// Create DNCR Export File
-			$objDNCRExport	= new Resource_Type_File_Export_Telemarketing_ACMA_DNCRExport();
+			$objDNCRExport	= new Resource_Type_File_Export_Telemarketing_ACMA_DNCRExport(CARRIER_ACMA);
 			$objFileExport	= $objDNCRExport->getFileExport();
 			
 			// Send the File to be downloaded
