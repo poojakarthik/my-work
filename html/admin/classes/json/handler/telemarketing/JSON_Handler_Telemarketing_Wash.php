@@ -114,7 +114,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			$arrExportedFiles	= array();
 			while ($arrExportedFile = $resResult->fetch_assoc())
 			{
-				$arrImportedFiles[$arrExportedFile['file_export_id']]	= $arrExportedFile;
+				$arrExportedFiles[$arrExportedFile['file_export_id']]	= $arrExportedFile;
 			}
 			
 			// If no exceptions were thrown, then everything worked
