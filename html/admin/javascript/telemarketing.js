@@ -27,7 +27,9 @@ var Telemarketing	= Class.create
 		elmDiv.appendChild(elmIframe);
 		
 		// Schedule Iframe onLoad Polling
-		setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 100);
+		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
+		objIframeDocument.onreadystatechange	= this.iframeFormLoaded.bind(this, elmIframe);
+		//setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 100);
 		
 		// Attach a Response Handler function
 		if (typeof(funcResponseHandler) == 'function')
@@ -45,12 +47,12 @@ var Telemarketing	= Class.create
 	{
 		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 
-		//alert(objIframeDocument.readystate);
+		alert(objIframeDocument.readystate);
 		
 		if (objIframeDocument.readystate !== 4)
 		{
 			// Reschedule Iframe onLoad Polling
-			setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 1000);
+			//setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 1000);
 			return false;
 		}
 		
