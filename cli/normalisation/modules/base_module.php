@@ -473,7 +473,7 @@ abstract class NormalisationModule extends CarrierModule
 			$arrRawData = explode($this->_strDelimiter, rtrim($strCDR, "\n"));
 			foreach($this->_arrDefineCarrier as $strKey=>$strValue)
 			{
-				$this->_arrRawData[$strKey] = $arrRawData[$strValue['Index']];
+				$this->_arrRawData[$strKey] = trim($arrRawData[$strValue['Index']]);
 				// delimited fields may have fixed width contents
 				if (isset($strValue['Start']) && $strValue['Length'])
 				{
