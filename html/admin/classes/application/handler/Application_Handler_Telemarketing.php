@@ -362,7 +362,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		
 		$fltStartTime	= microtime(true);
 		$fltSplit		= $fltStartTime;
-		fwrite($resLogFile, "({$fltStartTime}) Started!");
+		fwrite($resLogFile, "({$fltStartTime}) Started!\n");
 		
 		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
 		
@@ -393,7 +393,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		
 		$fltOldSplit	= $fltSplit;
 		$fltSplit		= microtime(true);
-		fwrite($resLogFile, "({$fltSplit}) Blacklist built! (".($fltSplit-$fltOldSplit)." seconds)");
+		fwrite($resLogFile, "({$fltSplit}) Blacklist built! (".($fltSplit-$fltOldSplit)." seconds)\n");
 		
 		// Build a Cache of Active Service FNNs
 		$resResult	= $qryQuery->Execute("SELECT FNN FROM Service WHERE Status = ".SERVICE_ACTIVE);
@@ -409,7 +409,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		
 		$fltOldSplit	= $fltSplit;
 		$fltSplit		= microtime(true);
-		fwrite($resLogFile, "({$fltSplit}) Active Service Cache built! (".($fltSplit-$fltOldSplit)." seconds)");
+		fwrite($resLogFile, "({$fltSplit}) Active Service Cache built! (".($fltSplit-$fltOldSplit)." seconds)\n");
 		
 		// Build a Cache of Active Contacts
 		$resResult	= $qryQuery->Execute("SELECT Phone, Fax, Mobile FROM Contact JOIN Account ON Account.PrimaryContact = Contact.Id WHERE Account.Archived = 0 AND Contact.Archived = 0");
@@ -427,7 +427,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		
 		$fltOldSplit	= $fltSplit;
 		$fltSplit		= microtime(true);
-		fwrite($resLogFile, "({$fltSplit}) Active Contact Cache built! (".($fltSplit-$fltOldSplit)." seconds)");
+		fwrite($resLogFile, "({$fltSplit}) Active Contact Cache built! (".($fltSplit-$fltOldSplit)." seconds)\n");
 		
 		// Get list of FNNs for this File
 		$arrFNNs	= Telemarketing_FNN_Proposed::getFor("proposed_list_file_import_id = {$intFileImportId} AND telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED, true);
@@ -483,7 +483,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			$fltSplit	= microtime(true);
-			fwrite($resLogFile, "({$fltSplit}) FNN {$intCount}/{$intTotal} completed in ".($fltSplit-$fltLap)." seconds (".GetConstantDescription($objFNN->telemarketing_fnn_withheld_reason_id, 'telemarketing_fnn_withheld_reason').")");
+			fwrite($resLogFile, "({$fltSplit}) FNN {$intCount}/{$intTotal} completed in ".($fltSplit-$fltLap)." seconds (".GetConstantDescription($objFNN->telemarketing_fnn_withheld_reason_id, 'telemarketing_fnn_withheld_reason').")\n");
 		}
 		
 		fclose($resLogFile);
