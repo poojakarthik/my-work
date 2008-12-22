@@ -273,7 +273,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 					throw new Exception("Unable to move temporary file");
 				}
 				
-				throw new Exception("<br /><br /> File_Import::import($strFriendlyFileName, $intFileType, $intCarrier, 'FileName = <FileName>')");
+				//throw new Exception("<br /><br /> File_Import::import($strFriendlyFileName, $intFileType, $intCarrier, 'FileName = <FileName>')");
 				$objFileImport	= File_Import::import($strFriendlyFileName, $intFileType, $intCarrier, "FileName = <FileName>");
 			}
 			catch (Exception $eException)
