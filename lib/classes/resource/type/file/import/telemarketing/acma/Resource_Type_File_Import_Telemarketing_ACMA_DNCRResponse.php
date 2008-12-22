@@ -112,8 +112,6 @@ class Resource_Type_File_Import_Telemarketing_ACMA_DNCRResponse
 			$arrNormalised['__ERRORS__'][]	= "Incorrect number of CSV fields (Actual: {$intActualColumns};Expected: {$intRequiredColumns})";
 		}
 		
-		$intCallPeriodLengthDays	= self::CALL_PERIOD_LENGTH_DAYS;
-		
 		// Pull the data
 		$arrNormalised['FNN']				= $arrExplode[0];
 		$arrNormalised['DNCRRegistered']	= $arrExplode[1];
