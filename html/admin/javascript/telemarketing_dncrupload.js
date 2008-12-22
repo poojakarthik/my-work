@@ -4,7 +4,7 @@ var Telemarketing_DNCRUpload	= Class.create
 ({
 	objPopupUpload	: {
 							strId		: 'Telemarketing_DNCRUpload',
-							strSize		: 'large',
+							strSize		: 'medium',
 							strAlign	: 'centre',
 							strNature	: 'modal',
 							strTitle	: 'Upload DNCR Wash List'
@@ -54,7 +54,7 @@ var Telemarketing_DNCRUpload	= Class.create
 		// Display confirmation popup
 		if (objResponse.Message)
 		{
-			$Alert("<pre>"+objResponse.Message+"</pre>", null, null, 'modal');
+			$Alert(objResponse.Message, null, null, 'modal');
 		}
 		return;
 	},
