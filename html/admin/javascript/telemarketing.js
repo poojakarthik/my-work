@@ -43,7 +43,6 @@ var Telemarketing	= Class.create
 	
 	iframeFormLoaded	: function(elmIframe)
 	{
-		alert(window.frames[elmIframe.id].document.readyState);
 		if (window.frames[elmIframe.id].document.readyState != 4)
 		{
 			// Reschedule Iframe onLoad Polling
