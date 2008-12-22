@@ -47,6 +47,7 @@ var Telemarketing	= Class.create
 		{
 			// Reschedule Iframe onLoad Polling
 			setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 100);
+			return false;
 		}
 		
 		// Parse Iframe contents for response data (JSON'd PHP Array)
