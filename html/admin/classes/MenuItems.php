@@ -3087,7 +3087,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Upload Washed DNCR List";
 		$this->strLabel = "Upload Washed DNCR List";
 		
-		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing_file_washing.js', function(){Flex.Telemarketing.uploadDNCRList();});";
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_dncrupload.js', function(){Flex.Telemarketing.DNCRUpload.displayPopupUpload();})});";
 	}
 
 	//------------------------------------------------------------------------//
