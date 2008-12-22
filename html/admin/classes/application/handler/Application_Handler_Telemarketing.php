@@ -167,6 +167,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 					// Blacklisted (Opt-Out)
 					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
 					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_OPTOUT;
+					$objFNN->save();
 					unset($arrFNNs[$mixIndex]);
 				}
 				
@@ -180,6 +181,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 					// Blacklisted (Opt-Out)
 					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
 					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_DNCR;
+					$objFNN->save();
 					unset($arrFNNs[$mixIndex]);
 				}
 				
@@ -193,6 +195,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 					// Currently in Flex
 					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
 					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_FLEX_SERVICE;
+					$objFNN->save();
 					unset($arrFNNs[$mixIndex]);
 				}
 				
@@ -206,6 +209,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 					// Active Contact in Flex
 					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
 					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_FLEX_CONTACT;
+					$objFNN->save();
 					unset($arrFNNs[$mixIndex]);
 				}
 			}
