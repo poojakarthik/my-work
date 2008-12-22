@@ -281,7 +281,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			if ($objFileImport->Status === FILE_IMPORTED || $objFileImport->Status === FILE_COLLECTED)
 			{
 				// Import the Blacklisted FNNs into the telemarketing_fnn_blacklist table
-				$objNormaliser	= new ($objFileImport, (int)$_POST['Telemarketing_ProposedUpload_Vendor'], $objDealer->id);
+				$objNormaliser	= new Resource_Type_File_Import_Telemarketing_ACMA_DNCRResponse($objFileImport);
 				$arrErrors		= $objNormaliser->normalise();
 				if ($arrErrors)
 				{
@@ -298,7 +298,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFileImport->save();
 				
 				$arrDetailsToRender['Success']			= true;
-				$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nThe following ".count($arrErrors)." non-fatal errors occurred:\n\n".implode("\n", $arrErrors) : '');
+				$arrDetailsToRender['Message']			= "The DNCR Wash File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nThe following ".count($arrErrors)." non-fatal errors occurred:\n\n".implode("\n", $arrErrors) : '');
 			}
 			else
 			{
