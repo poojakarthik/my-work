@@ -43,9 +43,10 @@ var Telemarketing	= Class.create
 	
 	iframeFormLoaded	: function(elmIframe)
 	{
-		if (window.frames[elmIframe.id].document.readyState !== 4)
+		
+		if (window.frames[elmIframe.id].document.readystate !== 4)
 		{
-			alert(window.frames[elmIframe.id].document.readyState);
+			alert(window.frames[elmIframe.id].document.readystate);
 			
 			// Reschedule Iframe onLoad Polling
 			setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 1000);
