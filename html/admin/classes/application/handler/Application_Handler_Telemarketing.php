@@ -266,9 +266,13 @@ class Application_Handler_Telemarketing extends Application_Handler
 			
 			// Import the File (into FileImport)
 			$strFriendlyFileName	= dirname($_FILES['Telemarketing_DNCRUpload_File']['tmp_name']).'/'.$_FILES['Telemarketing_DNCRUpload_File']['name'];
-			move_uploaded_file($_FILES['Telemarketing_DNCRUpload_File']['tmp_name'], $strFriendlyFileName);
 			try
 			{
+				if (!move_uploaded_file($_FILES['Telemarketing_DNCRUpload_File']['tmp_name'], $strFriendlyFileName))
+				{
+					throw new Exception("Unable to move temporary file");
+				}
+				
 				throw new Exception("<br /><br /> File_Import::import($strFriendlyFileName, $intFileType, $intCarrier, 'FileName = <FileName>')");
 				$objFileImport	= File_Import::import($strFriendlyFileName, $intFileType, $intCarrier, "FileName = <FileName>");
 			}
