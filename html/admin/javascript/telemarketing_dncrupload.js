@@ -21,10 +21,15 @@ var Telemarketing_DNCRUpload	= Class.create
 	{
 		// Ensure that all fields are populated
 		var arrErrors	= new Array();
+
 		
-		if ($ID('Telemarketing_DNCRUpload_File').selectedIndex < 1)
+		if ($ID('Telemarketing_DNCRDownload_File').selectedIndex < 1)
 		{
-			arrErrors.push("[!] Please select a File to Upload");
+			arrErrors.push("[!] Please select the Exported file that this DNCR Wash List relates to");
+		}
+		if (!$ID('Telemarketing_DNCRUpload_File').value)
+		{
+			arrErrors.push("[!] Please select a valid DNCR Wash List file to upload");
 		}
 		
 		if (arrErrors.length)
@@ -83,17 +88,42 @@ var Telemarketing_DNCRUpload	= Class.create
 	
 	displayPopupUpload	: function()
 	{
-		this._renderPopupUpload({Success: true});
+		var remoteClass		= 'Telemarketing_Wash';
+		var remoteMethod	= 'getDNCRFiles';
+		var jsonFunc		= jQuery.json.jsonFunction(this._renderPopupUpload.bind(this), null, remoteClass, remoteMethod);
+		Vixen.Popup.ShowPageLoadingSplash("Please Wait", null, null, null, 100);
+		jsonFunc();
 	},
 	
 	_renderPopupUpload	: function(objResponse)
-	{		
+	{
+		this._arrExportedFiles	= objResponse.arrExportedFiles;
+		
+		// Generate File List
+		var strFileListHTML	= '';
+		if (!this._arrExportedFiles.each)
+		{
+			for (i in this._arrExportedFiles)
+			{
+				strFileListHTML	+= "<option value='" + i + "'>(" + this._arrExportedFiles[i].file_exported_on + ") " + this._arrExportedFiles[i].file_name + "</option>\n";
+			}
+		}
+		
 		// Generate Popup HTML
 		var strHTML	= "\n" +  
 		"<form id='Telemarketing_DNCRUpload_Form' name='Telemarketing_DNCRUpload_Form' method='post' action='../admin/reflex.php/Telemarketing/UploadDNCRWashList/' enctype='multipart/form-data' onsubmit='return Flex.Telemarketing.DNCRUpload.submit()' >\n" +
 		"	<div class='GroupedContent'>\n" + 
 		"		<table class='form-data' style='width:100%'>\n" + 
 		"			<tbody>\n" + 
+		"				<tr>\n" + 
+		"					<td>File:</td>\n" + 
+		"					<td>\n" + 
+		"						<select id='Telemarketing_DNCRDownload_File' name='Telemarketing_DNCRDownload_File'>\n" + 
+		"							<option value='' selected='selected'>[None]</option>\n" + 
+		"							" + strFileListHTML + "\n" + 
+		"						</select>\n" + 
+		"					</td>\n" + 
+		"				</tr>\n" + 
 		"				<tr>\n" + 
 		"					<td>File to Upload:</td>\n" + 
 		"					<td>\n" + 
