@@ -273,7 +273,6 @@ class Application_Handler_Telemarketing extends Application_Handler
 					throw new Exception("Unable to move temporary file");
 				}
 				
-				//throw new Exception("<br /><br /> File_Import::import($strFriendlyFileName, $intFileType, $intCarrier, 'FileName = <FileName>')");
 				$objFileImport	= File_Import::import($strFriendlyFileName, $intFileType, $intCarrier, "FileName = <FileName>");
 			}
 			catch (Exception $eException)
@@ -281,8 +280,6 @@ class Application_Handler_Telemarketing extends Application_Handler
 				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "\n".$eException->getMessage() : ''));
 			}
 			unlink($strFriendlyFileName);
-			
-			throw new Exception("File Imported");
 			
 			// If the File was imported OK, then Normalise
 			if ($objFileImport->Status === FILE_IMPORTED || $objFileImport->Status === FILE_COLLECTED)
