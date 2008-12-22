@@ -217,6 +217,14 @@ class Application_Handler_Telemarketing extends Application_Handler
 			
 			$objFileExport	= $objDNCRExport->getFileExport();
 			
+			// Update each of the telemarketing_fnn_proposed records that are being exported
+			foreach ($arrFNNs as $mixIndex=>$arrFNN)
+			{
+				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
+				$objFNN->do_not_call_file_export_id	= $objFileExport->Id;
+				$objFNN->save();
+			}
+			
 			// Send the File to be downloaded
 			header('content-type: text/csv');
 			header('content-disposition: attachment; filename="'.$objFileExport->FileName.'"');
