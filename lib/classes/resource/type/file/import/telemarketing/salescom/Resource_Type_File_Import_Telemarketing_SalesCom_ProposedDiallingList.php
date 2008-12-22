@@ -1,10 +1,10 @@
 <?php
 /**
- * Resource_Type
+ * Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
  *
  * Models a record of the resource_type table
  *
- * @class	Service
+ * @class	Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
  */
 class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 {

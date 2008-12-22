@@ -197,8 +197,6 @@ class Application_Handler_Telemarketing extends Application_Handler
 				}
 			}
 			
-			throw new Exception(count($arrFNNs)." FNNs are ready to send to ACMA!");
-			
 			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format			
 			// Create DNCR Export File
 			$objDNCRExport	= new Resource_Type_File_Export_Telemarketing_ACMA_DNCRExport();
