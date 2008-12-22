@@ -22,9 +22,12 @@ var Telemarketing	= Class.create
 		var elmIframe				= document.createElement('iframe');
 		elmIframe.id				= strIframeId;
 		elmIframe.name				= strIframeId;
-		elmIframe.setAttribute('onload', 'Flex.Telemarketing.iframeFormLoaded(this)');
+		//elmIframe.setAttribute('onload', 'Flex.Telemarketing.iframeFormLoaded(this)');
 		elmIframe.style.visibility	= 'hidden';
 		elmDiv.appendChild(elmIframe);
+		
+		// Schedule Iframe onLoad Polling
+		setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 100);
 		
 		// Attach a Response Handler function
 		if (typeof(funcResponseHandler) == 'function')
@@ -40,6 +43,13 @@ var Telemarketing	= Class.create
 	
 	iframeFormLoaded	: function(elmIframe)
 	{
+		alert(window.frames[elmIframe.id].document.readyState);
+		if (window.frames[elmIframe.id].document.readyState != 4)
+		{
+			// Reschedule Iframe onLoad Polling
+			setTimeout(this.iframeFormLoaded.bind(this, elmIframe), 100);
+		}
+		
 		alert(elmIframe.id + ' has loaded');
 		
 		// Parse Iframe contents for response data (JSON'd PHP Array)
@@ -59,7 +69,8 @@ var Telemarketing	= Class.create
 		}
 		
 		// Schedule Iframe Cleanup
-		setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
+		//setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
+		this._iframeCleanup(elmIframe);
 		
 		elmIframe.bolLoaded	= true;
 	},
