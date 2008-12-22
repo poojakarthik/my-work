@@ -51,7 +51,7 @@ class Resource_Type_File_Export_Telemarketing_ACMA_DNCRExport
 		$strFileName	= 'dncr_'.date("YmdHis").'.csv';
 		$strCarrier		= GetConstantName($this->_intCarrier, 'Carrier');
 		$strFilePath	= FILES_BASE_PATH."export/telemarketing/{$strCarrier}/".__CLASS__.'/'.$strFileName;
-		@mkdir(basename($strFilePath), 0777, true);
+		mkdir(basename($strFilePath), 0777, true);
 		file_put_contents($strFilePath, implode(self::NEW_LINE_DELIMITER, $this->_arrOutput));
 		
 		// Create the FileExport entry
