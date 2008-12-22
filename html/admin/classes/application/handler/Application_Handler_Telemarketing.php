@@ -153,70 +153,9 @@ class Application_Handler_Telemarketing extends Application_Handler
 			
 			$intFileImportId	= (int)$_REQUEST['Telemarketing_DNCRDownload_File'];
 			
-			// Get list of FNNs for this File
-			$arrFNNs	= Telemarketing_FNN_Proposed::getFor("proposed_list_file_import_id = {$intFileImportId} AND telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED, true);
-			foreach ($arrFNNs as $mixIndex=>$arrFNN)
-			{
-				// Wash against the Internal Opt-Out
-				if ($selInternalOptOut->Execute($arrFNN) === false)
-				{
-					throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selInternalOptOut->Error() : '');
-				}
-				elseif ($selInternalOptOut->Fetch())
-				{
-					// Blacklisted (Opt-Out)
-					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
-					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_OPTOUT;
-					$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
-					$objFNN->save();
-					unset($arrFNNs[$mixIndex]);
-				}
-				
-				// Wash against the Internal DNCR Cache
-				if ($selInternalDNCR->Execute($arrFNN) === false)
-				{
-					throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selInternalDNCR->Error() : '');
-				}
-				elseif ($selInternalDNCR->Fetch())
-				{
-					// Blacklisted (Opt-Out)
-					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
-					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_DNCR;
-					$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
-					$objFNN->save();
-					unset($arrFNNs[$mixIndex]);
-				}
-				
-				// Wash against Active Services in Flex
-				elseif ($selActiveServices->Execute($arrFNN) === false)
-				{
-					throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selActiveServices->Error() : '');
-				}
-				elseif ($selActiveServices->Fetch())
-				{
-					// Currently in Flex
-					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
-					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_FLEX_SERVICE;
-					$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
-					$objFNN->save();
-					unset($arrFNNs[$mixIndex]);
-				}
-				
-				// Wash against Active Contacts in Flex
-				elseif ($selActiveContacts->Execute($arrFNN) === false)
-				{
-					throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selActiveContacts->Error() : '');
-				}
-				elseif ($selActiveContacts->Fetch())
-				{
-					// Active Contact in Flex
-					$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
-					$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_FLEX_CONTACT;
-					$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
-					$objFNN->save();
-					unset($arrFNNs[$mixIndex]);
-				}
-			}
+			
+			// Get list of washed FNNs for this File
+			$arrFNNs	= self::_washFNNByImportFile($intFileImportId);
 			
 			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format			
 			// Create DNCR Export File
@@ -381,10 +320,23 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$objFileImport		= new File_Import(array('Id'=>$intFileImportId));
 			
 			// Get list of washed FNNs for this File
-			$arrFNNs	= self::_washFNNByImportFile($intFileImportId);			
+			$arrFNNs	= self::_washFNNByImportFile($intFileImportId);
 			
-			// Create DNCR Export File
-			$objDNCRExport	= new Resource_Type_File_Export_Telemarketing_SalesCom_PermittedDiallingList($objFileImport->Carrier);
+			// Get File Format Details
+			$strSQL		= "SELECT * FROM CarrierModule WHERE Carrier = {$objFileImport->Carrier} AND Type = ".MODULE_TYPE_TELEMARKETING_PERMITTED_EXPORT." AND Active = 1";
+			$resResult	= $qryQuery->Execute($strSQL);
+			if ($resResult === false)
+			{
+				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
+			}
+			if (!($arrCarrierModule = $resResult->fetch_assoc()))
+			{
+				$strDealerName	= $objDealer->firstName . (($objDealer->lastName) ? ' '.$objDealer->lastName : '');
+				throw new Exception("Flex does not support Permitted Dialling Lists for {$strDealerName}." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
+			}			
+			
+			// Create Permitted Dialling List
+			$objDNCRExport	= new $arrCarrierModule['Module']($objFileImport->Carrier);
 			$arrErrors		= $objDNCRExport->export($arrFNNs);
 			
 			$objFileExport	= $objDNCRExport->getFileExport();
@@ -393,7 +345,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 			foreach ($arrFNNs as $mixIndex=>$arrFNN)
 			{
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
-				$objFNN->do_not_call_file_export_id	= $objFileExport->Id;
+				$objFNN->permitted_list_file_export_id			= $objFileExport->Id;
+				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_EXPORT;
 				$objFNN->save();
 			}
 			
