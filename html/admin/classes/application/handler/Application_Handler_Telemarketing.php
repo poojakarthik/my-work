@@ -336,7 +336,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		}
 		
 		// Render the JSON'd Array
-		//flush();
+		flush();
 		echo JSON_Services::instance()->encode($arrDetailsToRender);
 		die;
 	}
