@@ -39,10 +39,11 @@ var Telemarketing_DNCRDownload	= Class.create
 		}
 		
 		// Show the Loading Splash
-		Vixen.Popup.ShowPageLoadingSplash("Processing DNCR Wash List...", null, null, null, 100);
+		//Vixen.Popup.ShowPageLoadingSplash("Processing DNCR Wash List...", null, null, null, 100);
 		
 		// Perform AJAX query
-		return Flex.Telemarketing.iframeFormSubmit($ID('Telemarketing_DNCRDownload_Form'), this.downloadReponseHandler.bind(this));
+		return true;
+		//return Flex.Telemarketing.iframeFormSubmit($ID('Telemarketing_DNCRDownload_Form'), this.downloadReponseHandler.bind(this));
 	},
 	
 	downloadReponseHandler	: function(objResponse)
