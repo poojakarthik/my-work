@@ -74,7 +74,7 @@ var Telemarketing	= Class.create
 		
 		// Schedule Iframe Cleanup
 		setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
-		this._iframeCleanup(elmIframe);
+		//this._iframeCleanup(elmIframe);
 		
 		elmIframe.bolLoaded	= true;
 	},
