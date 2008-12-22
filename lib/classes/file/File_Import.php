@@ -65,11 +65,11 @@ class File_Import extends ORM
 		{
 			// Copy to final location
 			$strDestination	= FILES_BASE_PATH."import/".GetConstantDescription($intCarrier, 'Carrier').'/'.GetConstantName($intFileType, 'FileImport').'/';
-			@mkdir($strDestination, 0777, TRUE);
+			mkdir($strDestination, 0777, TRUE);
 			$strNewFileName	= basename($strFilePath);
 			$strNewFileName	.= date("_Ymdhis");
 			$strDestination	.= $strNewFileName;
-			if (!@copy($strFilePath, $strDestination))
+			if (!copy($strFilePath, $strDestination))
 			{
 				// Unable to copy
 				$objFileImport->Status	= FILE_MOVE_FAILED;
@@ -89,7 +89,7 @@ class File_Import extends ORM
 			}
 			
 			// Compress the Imported File using the BZ2 algorithm
-			if (@file_put_contents("compress.bzip2://{$strDestination}.bz2", @file_get_contents($strDestination)))
+			if (file_put_contents("compress.bzip2://{$strDestination}.bz2", file_get_contents($strDestination)))
 			{
 				// Success, remove the uncompressed file
 				unlink($strDestination);
