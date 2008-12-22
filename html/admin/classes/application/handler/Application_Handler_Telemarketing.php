@@ -232,5 +232,107 @@ class Application_Handler_Telemarketing extends Application_Handler
 		}
 		die;
 	}
+	
+	// Uploads a Proposed Dialling List file
+	public function UploadDNCRWashList($subPath)
+	{
+		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+		
+		$arrDetailsToRender	= array();
+		try
+		{
+			if (!DataAccess::getDataAccess()->TransactionStart())
+			{
+				throw new Exception("Flex was unable to start a Transaction.  The Upload has been aborted.  Please try again shortly.");
+			}
+			
+			$qryQuery	= new Query();
+			
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			{
+				throw new Exception("You do not have sufficient privileges to upload a Proposed Dialling List!" . (($bolVerboseErrors) ? ' But you do have GOD mode... wtf' : ''));
+			}
+			
+			// HACKHACKHACK: Assume we are dealing with the ACMA, and using their File Format
+			$intCarrier		= CARRIER_ACMA;
+			$intFileType	= RESOURCE_TYPE_FILE_IMPORT_TELEMARKETING_ACMA_DNCR_RESPONSE;
+			
+			// Check the File Name format
+			if (!Resource_Type::validateFileName($intFileType, $_POST['Telemarketing_DNCRUpload_File']['name']))
+			{
+				throw new Exception("'{$_POST['Telemarketing_ProposedUpload_File']['name']}' is not a valid file name.  Ensure that you are trying to upload the correct file, and try again.");
+			}
+			
+			// Import the File (into FileImport)
+			$strFriendlyFileName	= dirname($_FILES['Telemarketing_DNCRUpload_File']['tmp_name']).'/'.$_FILES['Telemarketing_DNCRUpload_File']['name'];
+			move_uploaded_file($_FILES['Telemarketing_DNCRUpload_File']['tmp_name'], $strFriendlyFileName);
+			try
+			{
+				$objFileImport	= File_Import::import($strFriendlyFileName, $intFileType, $intCarrier, "FileName = <FileName>");
+			}
+			catch (Exception $eException)
+			{
+				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "\n".$eException->getMessage() : ''));
+			}
+			unlink($strFriendlyFileName);
+			
+			// If the File was imported OK, then Normalise
+			if ($objFileImport->Status === FILE_IMPORTED || $objFileImport->Status === FILE_COLLECTED)
+			{
+				// Import the Blacklisted FNNs into the telemarketing_fnn_blacklist table
+				$objNormaliser	= new ($objFileImport, (int)$_POST['Telemarketing_ProposedUpload_Vendor'], $objDealer->id);
+				$arrErrors		= $objNormaliser->normalise();
+				if ($arrErrors)
+				{
+					// Create a log dump
+					$strLogFileName	= FILES_BASE_PATH.'logs/telemarketing/dncrupload/'.date('YmdHis').'_'.AuthenticatedUser()->GetUserId().'.log';
+					@mkdir(dirname($strLogFileName), 0777, true);
+					@file_put_contents($strLogFileName, implode("\n", $arrErrors));
+					
+					//throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.\nPlease ensure that you have selected the correct file, and try again.\nIf this message appears more than once, please contact YBS.");
+				}
+				
+				// Update the FileImport Status to Imported
+				$objFileImport->Status	= FILE_NORMALISED;
+				$objFileImport->save();
+				
+				$arrDetailsToRender['Success']			= true;
+				$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nThe following ".count($arrErrors)." non-fatal errors occurred:\n\n".implode("\n", $arrErrors) : '');
+			}
+			else
+			{
+				$arrDetailsToRender['Message']			= "The File could not be Imported";
+				if ($objFileImport->Status === FILE_NOT_UNIQUE)
+				{
+					$arrDetailsToRender['Message']		.= " because a file with this Name already exists in Flex";
+				}
+				else
+				{
+					$arrDetailsToRender['Message']		.= ".  If you receive this error more than once, please notify YBS." . (($bolVerboseErrors) ? "(".GetConstantDescription($objFileImport->Status, 'FileStatus').")" : '');
+				}
+				$arrDetailsToRender['Success']			= false;
+			}
+			
+			// Commit the transaction
+			DataAccess::getDataAccess()->TransactionCommit();
+			
+			// Generate Response
+			$arrDetailsToRender['file_import_id']	= $objFileImport->Id;
+		}
+		catch (Exception $e)
+		{
+			DataAccess::getDataAccess()->TransactionRollback();
+			
+			$arrDetailsToRender['Success']	= false;
+			$arrDetailsToRender['Message']	= $e->getMessage();
+		}
+		
+		// Render the JSON'd Array
+		flush();
+		echo JSON_Services::instance()->encode($arrDetailsToRender);
+		die;
+	}
+	
 }
 ?>
