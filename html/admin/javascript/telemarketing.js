@@ -47,9 +47,9 @@ var Telemarketing	= Class.create
 	{
 		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		
-		alert(objIframeDocument.readystate);
+		alert(objIframeDocument.location);
 		
-		if (!objIframeDocument.body.innerHTML)
+		if (!objIframeDocument.body.location)
 		{
 			// Reschedule Iframe onLoad Polling
 			alert("No content yet");
