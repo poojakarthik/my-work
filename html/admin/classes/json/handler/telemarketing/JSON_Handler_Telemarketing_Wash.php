@@ -104,7 +104,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			// Get list of Imported Files
 			$resResult	= $qryQuery->Execute("SELECT FileExport.Id as file_export_id, FileExport.FileName AS file_name, FileExport.ExportedOn as file_exported_on " .
 												"FROM FileExport JOIN telemarketing_fnn_proposed tfp ON tfp.do_not_call_file_export_id = FileExport.Id " .
-												"WHERE tfp.telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED." " .
+												"WHERE tfp.do_not_call_file_import_id IS NULL AND tfp.telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED." " .
 												"GROUP BY FileExport.Id " .
 												"ORDER BY file_exported_on DESC, file_name ASC");
 			if ($resResult === false)
