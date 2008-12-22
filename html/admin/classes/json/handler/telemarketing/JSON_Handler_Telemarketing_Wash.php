@@ -153,7 +153,9 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			// Check user permissions
 			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
-				throw new Exception("You do not have sufficient privileges to perform this action.");
+				return array(
+								'Success'	=> DONKEY
+							);
 			}
 			
 			$qryQuery	= new Query();
