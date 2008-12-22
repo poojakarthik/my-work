@@ -83,7 +83,7 @@ var Telemarketing_DNCRUpload	= Class.create
 	
 	displayPopupUpload	: function()
 	{
-		this._renderPopupUpload(null);
+		this._renderPopupUpload({Success: true});
 	},
 	
 	_renderPopupUpload	: function(objResponse)
