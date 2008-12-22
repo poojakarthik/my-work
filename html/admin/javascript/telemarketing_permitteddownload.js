@@ -108,7 +108,7 @@ var Telemarketing_PermittedDownload	= Class.create
 		
 		// Generate Popup HTML
 		var strHTML	= "\n" +  
-		"<form id='Telemarketing_PermittedDownload_Form' name='Telemarketing_PermittedDownload_Form' method='post' action='../admin/reflex.php/Telemarketing/DownloadDNCRWashList/' enctype='multipart/form-data' onsubmit='return Flex.Telemarketing.PermittedDownload.submit()' >\n" +
+		"<form id='Telemarketing_PermittedDownload_Form' name='Telemarketing_PermittedDownload_Form' method='post' action='../admin/reflex.php/Telemarketing/DownloadPermittedDiallingList/' enctype='multipart/form-data' onsubmit='return Flex.Telemarketing.PermittedDownload.submit()' >\n" +
 		"	<div class='GroupedContent'>\n" + 
 		"		<table class='form-data' style='width:100%'>\n" + 
 		"			<tbody>\n" + 

@@ -363,5 +363,133 @@ class Application_Handler_Telemarketing extends Application_Handler
 		die;
 	}
 	
+	// Uploads a Proposed Dialling List file
+	public function DownloadPermittedDiallingList($subPath)
+	{
+		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+		
+		$arrDetailsToRender	= array();
+		try
+		{
+			$qryQuery				= new Query();
+			$selInternalOptOut		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn> AND expired_on > NOW()", null, 1);
+			$selInternalDNCR		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn> AND expired_on > NOW()", null, 1);
+			$selActiveServices		= new StatementSelect("Service", "Id", "FNN = <fnn> AND Status = ".SERVICE_ACTIVE, null, 1);
+			$selActiveContacts		= new StatementSelect("Contact", "Contact.Id", "(Phone = <fnn> OR Mobile = <fnn> OR Fax = <fnn>) AND Contact.Archived = 0 AND 0 = (SELECT Archived FROM Account WHERE PrimaryContact = Contact.Id LIMIT 1)", null, 1);
+			
+			$intFileImportId	= (int)$_REQUEST['Telemarketing_DNCRDownload_File'];
+			$objFileImport		= new File_Import(array('Id'=>$intFileImportId));
+			
+			// Get list of washed FNNs for this File
+			$arrFNNs	= self::_washFNNByImportFile($intFileImportId);			
+			
+			// Create DNCR Export File
+			$objDNCRExport	= new Resource_Type_File_Export_Telemarketing_SalesCom_PermittedDiallingList($objFileImport->Carrier);
+			$arrErrors		= $objDNCRExport->export($arrFNNs);
+			
+			$objFileExport	= $objDNCRExport->getFileExport();
+			
+			// Update each of the telemarketing_fnn_proposed records that are being exported
+			foreach ($arrFNNs as $mixIndex=>$arrFNN)
+			{
+				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
+				$objFNN->do_not_call_file_export_id	= $objFileExport->Id;
+				$objFNN->save();
+			}
+			
+			// Send the File to be downloaded
+			header('content-type: text/csv');
+			header('content-disposition: attachment; filename="'.$objFileExport->FileName.'"');
+			echo file_get_contents($objFileExport->Location);
+		}
+		catch (Exception $e)
+		{
+			$arrDetailsToRender['Success']	= false;
+			$arrDetailsToRender['Message']	= $e->getMessage();
+			
+			flush();
+			echo JSON_Services::instance()->encode($arrDetailsToRender);
+		}
+		die;
+	}
+	
+	private static function _washFNNByImportFile($intFileImportId)
+	{
+		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+		
+		$qryQuery				= new Query();
+		$selInternalOptOut		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn> AND expired_on > NOW()", null, 1);
+		$selInternalDNCR		= new StatementSelect("telemarketing_fnn_blacklist", "Id", "fnn = <fnn> AND expired_on > NOW()", null, 1);
+		$selActiveServices		= new StatementSelect("Service", "Id", "FNN = <fnn> AND Status = ".SERVICE_ACTIVE, null, 1);
+		$selActiveContacts		= new StatementSelect("Contact", "Contact.Id", "(Phone = <fnn> OR Mobile = <fnn> OR Fax = <fnn>) AND Contact.Archived = 0 AND 0 = (SELECT Archived FROM Account WHERE PrimaryContact = Contact.Id LIMIT 1)", null, 1);
+		
+		// Get list of FNNs for this File
+		$arrFNNs	= Telemarketing_FNN_Proposed::getFor("proposed_list_file_import_id = {$intFileImportId} AND telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED, true);
+		foreach ($arrFNNs as $mixIndex=>$arrFNN)
+		{
+			// Wash against the Internal Opt-Out
+			if ($selInternalOptOut->Execute($arrFNN) === false)
+			{
+				throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selInternalOptOut->Error() : '');
+			}
+			elseif ($selInternalOptOut->Fetch())
+			{
+				// Blacklisted (Opt-Out)
+				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
+				$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_OPTOUT;
+				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
+				$objFNN->save();
+				unset($arrFNNs[$mixIndex]);
+			}
+			
+			// Wash against the Internal DNCR Cache
+			if ($selInternalDNCR->Execute($arrFNN) === false)
+			{
+				throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selInternalDNCR->Error() : '');
+			}
+			elseif ($selInternalDNCR->Fetch())
+			{
+				// Blacklisted (Opt-Out)
+				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
+				$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_DNCR;
+				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
+				$objFNN->save();
+				unset($arrFNNs[$mixIndex]);
+			}
+			
+			// Wash against Active Services in Flex
+			elseif ($selActiveServices->Execute($arrFNN) === false)
+			{
+				throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selActiveServices->Error() : '');
+			}
+			elseif ($selActiveServices->Fetch())
+			{
+				// Currently in Flex
+				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
+				$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_FLEX_SERVICE;
+				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
+				$objFNN->save();
+				unset($arrFNNs[$mixIndex]);
+			}
+			
+			// Wash against Active Contacts in Flex
+			elseif ($selActiveContacts->Execute($arrFNN) === false)
+			{
+				throw new Exception("There was an internal error while processing the file.  Please notify YBS of this issue. " . ($bolVerboseErrors) ? "\n\n".$selActiveContacts->Error() : '');
+			}
+			elseif ($selActiveContacts->Fetch())
+			{
+				// Active Contact in Flex
+				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
+				$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_FLEX_CONTACT;
+				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
+				$objFNN->save();
+				unset($arrFNNs[$mixIndex]);
+			}
+		}
+		
+		// Return the washed list of FNNs
+		return $arrFNNs;
+	}
 }
 ?>
