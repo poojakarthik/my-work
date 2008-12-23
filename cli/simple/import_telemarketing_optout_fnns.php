@@ -26,7 +26,7 @@ if ($resInputFile)
 		{
 			$strFNN = trim(fgets($resInputFile));
 			
-			if (preg_match("/^0(23478)\d+$/", $strFNN))
+			if (preg_match("/^0[23478]\d+$/", $strFNN))
 			{
 				CliEcho(" [+] Blacklisting '{$strFNN}'...");
 				
