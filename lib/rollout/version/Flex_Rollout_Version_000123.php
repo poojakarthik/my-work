@@ -5,7 +5,8 @@
  * This version: -
  *	1:	Change PCAD - Plan Charge in Advance to PCAD - Plan Charge and PCAR - Plan Charge in Arrears to PCAR - Plan Charge
  *	2:	Change PCR - Plan Credit in Arrears to PCR - Plan Usage
- *	3:	Change Voicemail Setup & Retrieval to Voicemail Retrieval
+ *	3:	Change PDCR - Plan Data Credit in Arrears to PDCR - Plan Data Usage
+ *	4:	Change Voicemail Setup & Retrieval to Voicemail Retrieval
  */
 
 class Flex_Rollout_Version_000123 extends Flex_Rollout_Version
@@ -35,7 +36,16 @@ class Flex_Rollout_Version_000123 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "UPDATE ChargeType SET Description = 'Plan Credit in Arrears' WHERE ChargeType = 'PCR'";
 		
-		// 3:	Change Voicemail Setup & Retrieval to Voicemail Retrieval
+		// 3:	Change PDCR - Plan Data Credit in Arrears to PDCR - Plan Data Usage
+		$strSQL = "UPDATE ChargeType SET Description = 'Plan Data Usage' WHERE ChargeType = 'PDCR';";
+		$result = $dbAdmin->query($strSQL);
+		if (PEAR::isError($result))
+		{
+			throw new Exception(__CLASS__ . ' Failed to change PDCR - Plan Data Credit in Arrears to PCR - Plan Data Usage ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
+		}
+		$this->rollbackSQL[] = "UPDATE ChargeType SET Description = 'Plan Data Credit in Arrears' WHERE ChargeType = 'PDCR'";
+		
+		// 4:	Change Voicemail Setup & Retrieval to Voicemail Retrieval
 		$strSQL = "UPDATE RecordType SET Description = 'Mobile VoiceMail Retrieval' WHERE Code = 'VoiceMailRetrieval' AND ServiceType = 101;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
