@@ -6,7 +6,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 	public function History($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
 		// Build List of Breached Contracts and their recommended actions
 		try
@@ -40,7 +40,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$qryQuery	= new Query();
 			
 			// Check user permissions
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				throw new Exception("You do not have sufficient privileges to upload a Proposed Dialling List!" . (($bolVerboseErrors) ? ' But you do have GOD mode... wtf' : ''));
 			}
@@ -198,7 +198,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$qryQuery	= new Query();
 			
 			// Check user permissions
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				throw new Exception("You do not have sufficient privileges to upload a Proposed Dialling List!" . (($bolVerboseErrors) ? ' But you do have GOD mode... wtf' : ''));
 			}
