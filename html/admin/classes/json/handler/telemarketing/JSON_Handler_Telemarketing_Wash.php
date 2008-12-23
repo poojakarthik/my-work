@@ -5,6 +5,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 	
 	public function getCallCentrePermissions()
 	{
+		return print_r($_SESSION['User'], true);
 		return $_SESSION['User']['Privileges'];
 		return AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		
