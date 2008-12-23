@@ -112,7 +112,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				}
 				else
 				{
-					$arrDetailsToRender['Message']		.= ".  If you receive this error more than once, please notify YBS." . (($bolVerboseErrors) ? "(".GetConstantDescription($objFileImport->Status, 'FileStatus')." '{$strFriendlyFileName}')" : '');
+					$arrDetailsToRender['Message']		.= ".  If you receive this error more than once, please notify YBS." . (($bolVerboseErrors) ? "(".GetConstantDescription($objFileImport->Status, 'FileStatus')." '{$_FILES['Telemarketing_ProposedUpload_File']['tmp_name']}')" : '');
 				}
 				$arrDetailsToRender['Success']			= false;
 			}
