@@ -44,7 +44,7 @@ if ($resInputFile)
 			}
 		}
 		
-		throw new Exception('TEST MODE');
+		//throw new Exception('TEST MODE');
 		
 		// All looks good -- commit
 		DataAccess::getDataAccess()->TransactionCommit();
