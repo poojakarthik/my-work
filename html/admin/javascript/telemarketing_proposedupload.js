@@ -138,7 +138,7 @@ var Telemarketing_ProposedUpload	= Class.create
 	{
 		for (i in objResponse)
 		{
-			alert(objResponse[i]);
+			alert(i + ' = ' + objResponse[i]);
 		}
 		
 		if (objResponse.Success === -1)
