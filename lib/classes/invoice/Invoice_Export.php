@@ -241,11 +241,11 @@ class Invoice_Export
 					$fltRatedTotal	+= $fltAdjustmentsTotal;
 				}
 				
-				// Get Plan Charges & Credits
+				// Get Plan Charges
 				$fltPlanChargeTotal			= 0.0;
-				$arrPlanAdjustments			= self::_preparedStatementMultiService('selPlanAdjustments', $arrService, $arrInvoice);
+				$arrPlanChargeAdjustments	= self::_preparedStatementMultiService('selPlanChargeAdjustments', $arrService, $arrInvoice);
 				$arrPlanChargeItemisation	= Array();
-				foreach ($arrPlanAdjustments as $arrAdjustment)
+				foreach ($arrPlanChargeAdjustments as $arrAdjustment)
 				{
 					// Format Plan Adjustment as CDR
 					$arrCDR	= Array();
@@ -261,12 +261,40 @@ class Invoice_Export
 				// Add to Service Array
 				if (count($arrPlanChargeItemisation))
 				{
-					$arrCategories['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
-					$arrCategories['Plan Charges & Credits']['TotalCharge']	= $fltPlanChargeTotal;
-					$arrCategories['Plan Charges & Credits']['Records']		= count($arrPlanChargeItemisation);
-					$arrCategories['Plan Charges & Credits']['Itemisation']	= $arrPlanChargeItemisation;
+					$arrCategories['Plan Charges']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+					$arrCategories['Plan Charges']['TotalCharge']	= $fltPlanChargeTotal;
+					$arrCategories['Plan Charges']['Records']		= count($arrPlanChargeItemisation);
+					$arrCategories['Plan Charges']['Itemisation']	= $arrPlanChargeItemisation;
 					
 					$fltRatedTotal							+= $fltPlanChargeTotal;
+				}
+				
+				// Get Plan Usage/Credits
+				$fltPlanCreditTotal			= 0.0;
+				$arrPlanUsageAdjustments	= self::_preparedStatementMultiService('selPlanUsageAdjustments', $arrService, $arrInvoice);
+				$arrPlanCreditItemisation	= Array();
+				foreach ($arrPlanUsageAdjustments as $arrAdjustment)
+				{
+					// Format Plan Adjustment as CDR
+					$arrCDR	= Array();
+					$arrCDR['Charge']			= ($arrAdjustment['Nature'] == 'CR') ? 0 - $arrAdjustment['Charge'] : $arrAdjustment['Charge'];
+					$arrCDR['Units']			= 1;
+					$arrCDR['Description']		= ($arrAdjustment['ChargeType']) ? ($arrAdjustment['ChargeType']." - ".$arrAdjustment['Description']) : $arrAdjustment['Description'];
+					$arrCDR['TaxExempt']		= $arrAdjustment['TaxExempt'];
+					$arrPlanCreditItemisation[]	= $arrCDR;
+					
+					$fltPlanCreditTotal			+= $arrCDR['Charge'];
+				}
+				
+				// Add to Service Array
+				if (count($arrPlanCreditItemisation))
+				{
+					$arrCategories['Plan Usage']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+					$arrCategories['Plan Usage']['TotalCharge']	= $fltPlanCreditTotal;
+					$arrCategories['Plan Usage']['Records']		= count($arrPlanCreditItemisation);
+					$arrCategories['Plan Usage']['Itemisation']	= $arrPlanCreditItemisation;
+					
+					$fltRatedTotal							+= $fltPlanCreditTotal;
 				}
 			}
 			
@@ -394,6 +422,7 @@ class Invoice_Export
 		
 		if ($bolPlanAdjustments)
 		{
+			// Plan Charges
 			$selPlanChargeSummary	= self::_preparedStatement('selPlanChargeSummary');
 			if ($selPlanChargeSummary->Execute($arrInvoice) === FALSE)
 			{
@@ -401,8 +430,8 @@ class Invoice_Export
 			}
 			while ($arrPlanChargeSummary = $selPlanChargeSummary->Fetch())
 			{
-				$arrAccountSummary['Plan Charges & Credits']['TotalCharge']	+= $arrPlanChargeSummary['Amount'];
-				$arrAccountSummary['Plan Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+				$arrAccountSummary['Plan Charges']['TotalCharge']	+= $arrPlanChargeSummary['Amount'];
+				$arrAccountSummary['Plan Charges']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 				
 				if ($arrPlanChargeSummary['Service'] === NULL)
 				{
@@ -412,8 +441,32 @@ class Invoice_Export
 					$arrCDR['Units']												= 1;
 					$arrCDR['Charge']												= $arrPlanChargeSummary['Amount'];
 					$arrCDR['TaxExempt']											= $arrPlanChargeSummary['TaxExempt'];
-					$arrAccountSummary['Plan Charges & Credits']['Itemisation'][]	= $arrCDR;
-					$arrAccountSummary['Plan Charges & Credits']['Records']++;
+					$arrAccountSummary['Plan Charges']['Itemisation'][]	= $arrCDR;
+					$arrAccountSummary['Plan Charges']['Records']++;
+				}
+			}
+			
+			// Plan Usage/Credit
+			$selPlanChargeSummary	= self::_preparedStatement('selPlanUsageSummary');
+			if ($selPlanChargeSummary->Execute($arrInvoice) === FALSE)
+			{
+				throw new Exception($selPlanChargeSummary->Error());
+			}
+			while ($arrPlanChargeSummary = $selPlanChargeSummary->Fetch())
+			{
+				$arrAccountSummary['Plan Usage']['TotalCharge']	+= $arrPlanChargeSummary['Amount'];
+				$arrAccountSummary['Plan Usage']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+				
+				if ($arrPlanChargeSummary['Service'] === NULL)
+				{
+					// Shared Plan Credit -- add to Account Itemisation
+					$arrCDR															= Array();
+					$arrCDR['Description']											= ($arrPlanChargeSummary['ChargeType']) ? ($arrPlanChargeSummary['ChargeType']." - ".$arrPlanChargeSummary['Description']) : $arrPlanChargeSummary['Description'];
+					$arrCDR['Units']												= 1;
+					$arrCDR['Charge']												= $arrPlanChargeSummary['Amount'];
+					$arrCDR['TaxExempt']											= $arrPlanChargeSummary['TaxExempt'];
+					$arrAccountSummary['Plan Usage']['Itemisation'][]	= $arrCDR;
+					$arrAccountSummary['Plan Usage']['Records']++;
 				}
 			}
 		}
@@ -506,11 +559,6 @@ class Invoice_Export
 																					"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",
 																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND Service IS NOT NULL");
 					break;
-				case 'selPlanCharges':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
-																					"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE 0 END) AS PlanCredit, SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0 END) AS PlanDebit, COUNT(Id) AS Records",
-																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR')");
-					break;
 				case 'selCustomerData':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Account LEFT JOIN Invoice ON Account.Id = Invoice.Account",
 																					"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup, COUNT(Invoice.Id) AS InvoiceCount, BillingType",
@@ -518,22 +566,6 @@ class Invoice_Export
 																					NULL,
 																					NULL,
 																					"Account.Id");
-					break;
-				case 'selPlanAdjustments':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
-																					"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",
-																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR')",
-																					NULL,
-																					NULL,
-																					"Account");
-					break;
-				case 'selPlanChargeTotals':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceTotal",
-																					"SUM(PlanCharge) AS PlanChargeTotal, SUM(UncappedCharge + CappedCharge) AS RatedTotal, SUM(TotalCharge) AS GrandServiceTotal, COUNT(Id) AS Records",
-																					"invoice_run_id = <invoice_run_id> AND Account = <Account>",
-																					NULL,
-																					NULL,
-																					"Account");
 					break;
 				case 'selAccountAdjustments':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
@@ -543,7 +575,12 @@ class Invoice_Export
 				case 'selPlanChargeSummary':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"ChargeType, Service, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
-																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR')");
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR')");
+					break;
+				case 'selPlanUsageSummary':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
+																					"ChargeType, Service, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCR', 'PDCR')");
 					break;
 				
 				default:
@@ -714,7 +751,7 @@ class Invoice_Export
 					);
 	 				break;
 	 				
-	 			case 'selPlanAdjustments':
+	 			case 'selPlanChargeAdjustments':
 	 				$arrColumns['Charge']				= "Amount";
 					$arrColumns['Description']			= "Description";
 					$arrColumns['ChargeType']			= "ChargeType";
@@ -724,7 +761,21 @@ class Invoice_Export
 					(	
 						"Charge",
 						$arrColumns,
-						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR')"
+						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR')"
+					);
+	 				break;
+	 				
+	 			case 'selPlanUsageAdjustments':
+	 				$arrColumns['Charge']				= "Amount";
+					$arrColumns['Description']			= "Description";
+					$arrColumns['ChargeType']			= "ChargeType";
+					$arrColumns['Nature']				= "Nature";
+					$arrColumns['TaxExempt']			= "global_tax_exempt";
+					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
+					(	
+						"Charge",
+						$arrColumns,
+						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCR', 'PDCR')"
 					);
 	 				break;
 	 			
