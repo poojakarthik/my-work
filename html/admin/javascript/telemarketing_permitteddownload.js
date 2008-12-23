@@ -55,7 +55,7 @@ var Telemarketing_PermittedDownload	= Class.create
 		// Display confirmation popup
 		if (objResponse.Message)
 		{
-			$Alert("<pre>"+objResponse.Message+"</pre>", null, null, 'modal');
+			$Alert(objResponse.Message, null, null, 'modal');
 		}
 		return;
 	},
