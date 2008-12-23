@@ -101,7 +101,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFileImport->save();
 				
 				$arrDetailsToRender['Success']			= true;
-				$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nThe following ".count($arrErrors)." non-fatal errors occurred:\n\n".implode("\n", $arrErrors) : '');
+				$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nFlex encountered ".count($arrErrors)." non-fatal errors while process the file.  For more information on these errors, please contact YBS." : '');
 			}
 			else
 			{
