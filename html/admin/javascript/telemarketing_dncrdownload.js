@@ -93,6 +93,12 @@ var Telemarketing_DNCRDownload	= Class.create
 	
 	_renderPopupDownload	: function(objResponse)
 	{
+		if (!objResponse.HasPermissions === false)
+		{
+			$Alert("You do not have sufficient privileges to download a DNCR Export List.");
+			return false;
+		}
+		
 		this._arrImportedFiles	= objResponse.arrImportedFiles;
 		
 		// Generate File List

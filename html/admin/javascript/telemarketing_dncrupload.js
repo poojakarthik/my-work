@@ -97,6 +97,12 @@ var Telemarketing_DNCRUpload	= Class.create
 	
 	_renderPopupUpload	: function(objResponse)
 	{
+		if (!objResponse.HasPermissions === false)
+		{
+			$Alert("You do not have sufficient privileges to upload a DNCR Wash List.");
+			return false;
+		}
+		
 		this._arrExportedFiles	= objResponse.arrExportedFiles;
 		
 		// Generate File List
