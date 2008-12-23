@@ -17,7 +17,7 @@ if ($resInputFile)
 {
 	try
 	{
-		DataAccess::getDataAccess->TransactionStart();
+		DataAccess::getDataAccess()->TransactionStart();
 		
 		$strDatetime	= Data_Source_Time::currentTimestamp();
 		
@@ -47,11 +47,11 @@ if ($resInputFile)
 		throw new Exception('TEST MODE');
 		
 		// All looks good -- commit
-		DataAccess::getDataAccess->TransactionCommit();
+		DataAccess::getDataAccess()->TransactionCommit();
 	}
 	catch (Exception $eException)
 	{
-		DataAccess::getDataAccess->TransactionRollback();
+		DataAccess::getDataAccess()->TransactionRollback();
 		throw $eException;
 	}
 }
