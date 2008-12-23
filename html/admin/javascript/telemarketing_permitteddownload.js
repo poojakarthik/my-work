@@ -93,7 +93,7 @@ var Telemarketing_PermittedDownload	= Class.create
 	
 	_renderPopupDownload	: function(objResponse)
 	{
-		if (!objResponse.HasPermissions === false)
+		if (objResponse.HasPermissions === false)
 		{
 			$Alert("You do not have sufficient privileges to download a Permitted Dialling List.");
 			return false;

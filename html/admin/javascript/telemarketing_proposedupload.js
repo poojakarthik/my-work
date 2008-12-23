@@ -136,7 +136,7 @@ var Telemarketing_ProposedUpload	= Class.create
 	
 	_renderPopupUpload	: function(objResponse)
 	{
-		if (!objResponse.HasPermissions === false)
+		if (objResponse.HasPermissions === false)
 		{
 			$Alert("You do not have sufficient privileges to upload a Proposed Dialling List.");
 			return false;
