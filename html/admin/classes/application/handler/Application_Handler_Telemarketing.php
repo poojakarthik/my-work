@@ -53,12 +53,12 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === false)
 			{
-				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "<br /><br />".$qryQuery->Error()."<br /><br />{$strSQL}" : '');
+				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 			}
 			if (!($arrCarrierModule = $resResult->fetch_assoc()))
 			{
 				$strDealerName	= $objDealer->firstName . (($objDealer->lastName) ? ' '.$objDealer->lastName : '');
-				throw new Exception("Flex does not support Proposed Dialling Lists from {$strDealerName}." . (($bolVerboseErrors) ? "<br /><br />".$qryQuery->Error() : ''));
+				throw new Exception("Flex does not support Proposed Dialling Lists from {$strDealerName}." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
 			}
 			
 			// Check the File Name format
@@ -76,7 +76,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			catch (Exception $eException)
 			{
-				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "<br />".$eException->getMessage() : ''));
+				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "\n".$eException->getMessage() : ''));
 			}
 			//unlink($strFriendlyFileName);
 			
@@ -91,9 +91,9 @@ class Application_Handler_Telemarketing extends Application_Handler
 					// Create a log dump
 					$strLogFileName	= FILES_BASE_PATH.'logs/telemarketing/proposed/'.date('YmdHis').'_'.AuthenticatedUser()->GetUserId().'.log';
 					@mkdir(dirname($strLogFileName), 0777, true);
-					@file_put_contents($strLogFileName, implode("<br />", $arrErrors));
+					@file_put_contents($strLogFileName, implode("\n", $arrErrors));
 					
-					//throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.<br />Please ensure that you have selected the correct file, and try again.<br />If this message appears more than once, please contact YBS.");
+					//throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.\nPlease ensure that you have selected the correct file, and try again.\nIf this message appears more than once, please contact YBS.");
 				}
 				
 				// Update the FileImport Status to Imported
@@ -101,7 +101,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFileImport->save();
 				
 				$arrDetailsToRender['Success']			= true;
-				$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "<br />Flex encountered ".count($arrErrors)." non-fatal errors while process the file.  For more information on these errors, please contact YBS." : '');
+				$arrDetailsToRender['Message']			= "The Proposed Dialling File '".basename($_FILES['Telemarketing_ProposedUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nFlex encountered ".count($arrErrors)." non-fatal errors while process the file.  For more information on these errors, please contact YBS." : '');
 			}
 			else
 			{
@@ -228,7 +228,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			catch (Exception $eException)
 			{
-				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "<br />".$eException->getMessage() : ''));
+				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "\n".$eException->getMessage() : ''));
 			}
 			unlink($strFriendlyFileName);
 			
@@ -245,7 +245,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 					@mkdir(dirname($strLogFileName), 0777, true);
 					file_put_contents($strLogFileName, implode("\n", $arrErrors));
 					
-					throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.<br />Please ensure that you have selected the correct file, and try again.<br />If this message appears more than once, please contact YBS.");
+					throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.\nPlease ensure that you have selected the correct file, and try again.\nIf this message appears more than once, please contact YBS.");
 				}
 				
 				// Update the FileImport Status to Imported
@@ -256,11 +256,11 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$resResult	= $qryQuery->Execute("UPDATE telemarketing_fnn_proposed SET do_not_call_file_import_id = {$objFileImport->Id} WHERE do_not_call_file_export_id = ".$intFileExportId);
 				if ($resResult === false)
 				{
-					throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "<br /><br />".$qryQuery->Error() : '');
+					throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : '');
 				}
 				
 				$arrDetailsToRender['Success']			= true;
-				$arrDetailsToRender['Message']			= "The DNCR Wash File '".basename($_FILES['Telemarketing_DNCRUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "<br />The following ".count($arrErrors)." non-fatal errors occurred:<br /><br />".implode("<br />", $arrErrors) : '');
+				$arrDetailsToRender['Message']			= "The DNCR Wash File '".basename($_FILES['Telemarketing_DNCRUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nThe following ".count($arrErrors)." non-fatal errors occurred:\n\n".implode("\n", $arrErrors) : '');
 			}
 			else
 			{
@@ -317,12 +317,12 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === false)
 			{
-				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "<br /><br />".$qryQuery->Error()."<br /><br />{$strSQL}" : '');
+				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 			}
 			if (!($arrCarrierModule = $resResult->fetch_assoc()))
 			{
 				$strDealerName	= $objDealer->firstName . (($objDealer->lastName) ? ' '.$objDealer->lastName : '');
-				throw new Exception("Flex does not support Permitted Dialling Lists for this Dealer." . (($bolVerboseErrors) ? "<br /><br />".$qryQuery->Error() : ''));
+				throw new Exception("Flex does not support Permitted Dialling Lists for this Dealer." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
 			}			
 			
 			// Create Permitted Dialling List
@@ -374,7 +374,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		$arrDNCR	= array();
 		if ($resResult === false)
 		{
-			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "<br /><br />".$qryQuery->Error()."<br /><br />{$strSQL}" : '');
+			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 		}
 		while ($arrBlacklist = $resResult->fetch_assoc())
 		{
@@ -400,7 +400,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		$arrServiceCache	= array();
 		if ($resResult === false)
 		{
-			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "<br /><br />".$qryQuery->Error()."<br /><br />{$strSQL}" : '');
+			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 		}
 		while ($arrService = $resResult->fetch_assoc())
 		{
@@ -416,7 +416,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		$arrContactCache	= array();
 		if ($resResult === false)
 		{
-			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "<br /><br />".$qryQuery->Error()."<br /><br />{$strSQL}" : '');
+			throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
 		}
 		while ($arrContact = $resResult->fetch_assoc())
 		{

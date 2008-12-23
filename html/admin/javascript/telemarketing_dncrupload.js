@@ -59,7 +59,7 @@ var Telemarketing_DNCRUpload	= Class.create
 		// Display confirmation popup
 		if (objResponse.Message)
 		{
-			$Alert(objResponse.Message, null, null, 'modal');
+			$Alert(objResponse.Message.replace("\n", "<br />"), null, null, 'modal');
 		}
 		return;
 	},
