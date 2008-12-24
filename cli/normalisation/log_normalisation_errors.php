@@ -27,8 +27,8 @@ $strLogPath	= FILES_BASE_PATH."/logs/normalisation/cdrerrorlogger/";
 @mkdir($strLogPath, 0777, true);
 $strRunDate	= date("YmdHis");
 
-//$arrStatuses	= array(CDR_BAD_RECORD_TYPE, CDR_BAD_DESTINATION, CDR_CANT_NORMALISE_INVALID);
-$arrStatuses	= array(CDR_BAD_RECORD_TYPE);
+$arrStatuses	= array(CDR_BAD_RECORD_TYPE, CDR_BAD_DESTINATION, CDR_CANT_NORMALISE_INVALID);
+//$arrStatuses	= array(CDR_BAD_RECORD_TYPE);
 $strStatuses	= implode(', ', $arrStatuses);
 
 $intStartTime	= time();
