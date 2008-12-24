@@ -123,7 +123,7 @@ else
 			CliEcho("[ RECORD TYPES ]");
 			foreach ($arrRecordTypeSummary as $intCarrier=>$arrRecordTypes)
 			{
-				CliEcho("\t".GetConstantName($intCarrier, 'Carrier').":");
+				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier').":");
 				foreach ($arrRecordTypes as $mixRecordType=>$intCount)
 				{
 					CliEcho("\t\t{$mixRecordType}\t: {$intCount}");
@@ -133,7 +133,7 @@ else
 			CliEcho("[ DESTINATIONS ]");
 			foreach ($arrDestinationSummary as $intCarrier=>$arrDestinations)
 			{
-				CliEcho("\t".GetConstantName($intCarrier, 'Carrier').":");
+				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier').":");
 				foreach ($arrDestinations as $mixDestination=>$intCount)
 				{
 					CliEcho("\t\t{$mixDestination}\t: {$intCount}");
@@ -143,7 +143,7 @@ else
 			CliEcho("[ INVALID ]");
 			foreach ($arrInvalidSummary as $intCarrier=>$arrFields)
 			{
-				CliEcho("\t".GetConstantName($intCarrier, 'Carrier').":");
+				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier').":");
 				foreach ($arrFields as $strField=>$intCount)
 				{
 					CliEcho("\t\t{$strField}\t: {$intCount}");
