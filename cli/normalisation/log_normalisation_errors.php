@@ -119,8 +119,21 @@ else
 		// Update the on-screen summary
 		$inLastTime		= $intCurrentTime;
 		$intCurrentTime	= time();
-		if ($intCurrentTime-$inLastTime > $intRefreshRate || $intTotal == $intCount)
+		if ($intCurrentTime-$inLastTime > $intRefreshRate)
 		{
+			updateHUD($arrRecordTypeSummary, $arrDestinationSummary, $arrInvalidSummary);
+		}
+	}
+	updateHUD($arrRecordTypeSummary, $arrDestinationSummary, $arrInvalidSummary);
+	
+	fclose($resRecordTypeLog);
+	fclose($resDestinationLog);
+	fclose($resInvalidLog);
+}
+exit(0);
+
+function updateHUD($arrRecordTypeSummary, $arrDestinationSummary, $arrInvalidSummary)
+{
 			// Clear the screen, reposition at 0,0
 			CliEcho("\033[2J");
 			
@@ -153,11 +166,5 @@ else
 					CliEcho("\t\t{$strField}\t: {$intCount}");
 				}
 			}
-		}
-	}
-	
-	fclose($resRecordTypeLog);
-	fclose($resDestinationLog);
-	fclose($resInvalidLog);
 }
 ?>
