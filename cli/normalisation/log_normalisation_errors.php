@@ -47,6 +47,12 @@ else
 	$resDestinationLog	= fopen($strLogPath."{$strRunDate}_destination.log", 'w');
 	$resInvalidLog		= fopen($strLogPath."{$strRunDate}_invalid.log", 'w');
 	
+	if (!$resRecordTypeLog || !$resDestinationLog || !$resInvalidLog)
+	{
+		CliEcho();
+		throw new Exception("One or more files could not be opened for writing");
+	}
+	
 	$arrRecordTypeSummary	= array();
 	$arrDestinationSummary	= array();
 	$arrInvalidSummary		= array();
