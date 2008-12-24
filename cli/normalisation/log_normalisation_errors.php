@@ -4,6 +4,15 @@
 require_once("../../lib/classes/Flex.php");
 Flex::load();
 
+// Normalisation Modules
+require_once("modules/base_module.php");
+require_once("modules/module_aapt.php");
+require_once("modules/module_commander.php");
+require_once("modules/module_iseek.php");
+require_once("modules/module_m2.php");
+require_once("modules/module_optus.php");
+require_once("modules/module_rslcom.php");
+
 // Create an instance of each Normalisation module
 CliEcho(" * NORMALISATION MODULES");
 $selCarrierModules	= new StatementSelect("CarrierModule", "*", "Type = <Type> AND Active = 1");
