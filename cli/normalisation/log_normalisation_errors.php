@@ -72,7 +72,7 @@ else
 				$mixRawRecordType	= $arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']]->RawRecordType();
 				
 				// Add to Summary
-				$arrRecordTypeSummary[$arrCDR['Carrier']][$arrCDR['Carrier']][$mixRawRecordType]++;
+				$arrRecordTypeSummary[$arrCDR['Carrier']][$mixRawRecordType]++;
 				
 				// Add to Itemisation
 				fwrite($resRecordTypeLog, "CDR #{$arrCDR['Id']} from Carrier #{$arrCDR['Carrier']} has a raw Record Type of '{$mixRawRecordType}'\n");
