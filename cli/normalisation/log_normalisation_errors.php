@@ -103,7 +103,7 @@ else
 						// Add to Summary
 						$arrInvalidSummary[$arrCDR['Carrier']][$strField]++;
 						
-						$strInvalidFields	.= "{$strField}: {$arrNormalised[$strField]}; ";
+						$strInvalidFields	.= "{$strField}: '{$arrNormalised[$strField]}'; ";
 					}
 				}
 				
