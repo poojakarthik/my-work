@@ -140,7 +140,7 @@ function updateHUD($arrRecordTypeSummary, $arrDestinationSummary, $arrInvalidSum
 			CliEcho("[ RECORD TYPES ]");
 			foreach ($arrRecordTypeSummary as $intCarrier=>$arrRecordTypes)
 			{
-				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier').":");
+				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrRecordTypes)."):");
 				foreach ($arrRecordTypes as $mixRecordType=>$intCount)
 				{
 					CliEcho("\t\t{$mixRecordType}\t: {$intCount}");
@@ -150,7 +150,7 @@ function updateHUD($arrRecordTypeSummary, $arrDestinationSummary, $arrInvalidSum
 			CliEcho("[ DESTINATIONS ]");
 			foreach ($arrDestinationSummary as $intCarrier=>$arrDestinations)
 			{
-				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier').":");
+				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrDestinations)."):");
 				foreach ($arrDestinations as $mixDestination=>$intCount)
 				{
 					CliEcho("\t\t{$mixDestination}\t: {$intCount}");
@@ -160,7 +160,7 @@ function updateHUD($arrRecordTypeSummary, $arrDestinationSummary, $arrInvalidSum
 			CliEcho("[ INVALID ]");
 			foreach ($arrInvalidSummary as $intCarrier=>$arrFields)
 			{
-				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier').":");
+				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrFields)."):");
 				foreach ($arrFields as $strField=>$intCount)
 				{
 					CliEcho("\t\t{$strField}\t: {$intCount}");
