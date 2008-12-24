@@ -33,7 +33,7 @@ $strStatuses	= implode(', ', $arrStatuses);
 $intStartTime	= time();
 $intCurrentTime	= 0;
 
-$intRefreshRate	= 2;
+$intRefreshRate	= 10;
 
 $qryQuery	= new Query();
 $resResult	= $qryQuery->Execute("SELECT CDR.*, FileImport.FileType FROM CDR JOIN FileImport ON CDR.File = FileImport.Id WHERE CDR.Status IN ({$strStatuses})");
