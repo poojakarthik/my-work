@@ -43,9 +43,9 @@ if ($resResult === false)
 }
 else
 {
-	$resRecordTypeLog	= fopen($strLogPath."{$strRunDate}_recordtype.log");
-	$resDestinationLog	= fopen($strLogPath."{$strRunDate}_destination.log");
-	$resInvalidLog		= fopen($strLogPath."{$strRunDate}_invalid.log");
+	$resRecordTypeLog	= fopen($strLogPath."{$strRunDate}_recordtype.log", 'w');
+	$resDestinationLog	= fopen($strLogPath."{$strRunDate}_destination.log", 'w');
+	$resInvalidLog		= fopen($strLogPath."{$strRunDate}_invalid.log", 'w');
 	
 	$arrRecordTypeSummary	= array();
 	$arrDestinationSummary	= array();
@@ -135,7 +135,7 @@ else
 			}
 			
 			CliEcho("[ INVALID ]");
-			foreach ($arrDestinationSummary as $intCarrier=>$arrFields)
+			foreach ($arrInvalidSummary as $intCarrier=>$arrFields)
 			{
 				CliEcho("\t".GetConstantName($intCarrier, 'Carrier').":");
 				foreach ($arrFields as $strField=>$intCount)
