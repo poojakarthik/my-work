@@ -278,7 +278,7 @@ abstract class NormalisationModule extends CarrierModule
 	 *
 	 * @method
 	 */
-	function Validate()
+	function Validate($bolAsArray=false)
 	{
 		// Validate our normalised data
 		$arrValid = Array();
@@ -350,6 +350,11 @@ abstract class NormalisationModule extends CarrierModule
 		$arrValid['Cost'] = is_numeric($this->_arrNormalisedData["Cost"]);											// 8
 		
 		$this->_arrValid = $arrValid;
+		
+		if ($bolAsArray)
+		{
+			return $arrValid;
+		}
 		
 		$i = 0;
 		foreach ($arrValid as $strKey=>$bolValid)
