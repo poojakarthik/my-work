@@ -118,7 +118,7 @@ else
 		if ($intCurrentTime-$inLastTime > $intRefreshRate)
 		{
 			// Clear the screen, reposition at 0,0
-			CliEcho("\033[2J", false);
+			CliEcho("\033[2J");
 			
 			CliEcho("[ RECORD TYPES ]");
 			foreach ($arrRecordTypeSummary as $intCarrier=>$arrRecordTypes)
