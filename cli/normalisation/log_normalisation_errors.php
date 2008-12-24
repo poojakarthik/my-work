@@ -110,6 +110,9 @@ else
 				// Add to Itemisation
 				fwrite($resInvalidLog, "CDR #{$arrCDR['Id']} from Carrier #{$arrCDR['Carrier']} has the following invalid fields: {$strInvalidFields}\n");
 				break;
+			
+			default:
+				CliEcho("WHAT THE FUCK");
 		}
 		
 		// Update the on-screen summary
