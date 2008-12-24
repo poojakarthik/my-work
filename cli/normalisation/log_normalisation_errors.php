@@ -119,7 +119,7 @@ else
 		// Update the on-screen summary
 		$inLastTime		= $intCurrentTime;
 		$intCurrentTime	= time();
-		if ($intCurrentTime-$inLastTime > $intRefreshRate)
+		if ($intCurrentTime-$inLastTime > $intRefreshRate || $intTotal == $intCount)
 		{
 			// Clear the screen, reposition at 0,0
 			CliEcho("\033[2J");
