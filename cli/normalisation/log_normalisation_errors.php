@@ -24,7 +24,7 @@ while ($arrModule = $selCarrierModules->Fetch())
 }
 
 $strLogPath	= FILES_BASE_PATH."/logs/normalisation/cdrerrorlogger/";
-mkdir($strLogPath, 0777, true);
+@mkdir($strLogPath, 0777, true);
 $strRunDate	= date("YmdHis");
 
 $arrStatuses	= array(CDR_BAD_RECORD_TYPE, CDR_BAD_DESTINATION, CDR_CANT_NORMALISE_INVALID);
@@ -87,7 +87,7 @@ else
 				$arrDestinationSummary[$arrCDR['Carrier']][$mixRawDestination]++;
 				
 				// Add to Itemisation
-				fwrite($resDestinationLog, "CDR #{$arrCDR['Id']} from Carrier #{$arrCDR['Carrier']} has a raw Destination Code of '{$mixRawRecordType}' (Description: '{$mixRawDescription}')\n");
+				fwrite($resDestinationLog, "CDR #{$arrCDR['Id']} from Carrier #{$arrCDR['Carrier']} has a raw Destination Code of '{$mixRawDestination}' (Description: '{$mixRawDescription}')\n");
 				break;
 			
 			case CDR_CANT_NORMALISE_INVALID:
