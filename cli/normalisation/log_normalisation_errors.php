@@ -134,37 +134,37 @@ exit(0);
 
 function updateHUD($arrRecordTypeSummary, $arrDestinationSummary, $arrInvalidSummary)
 {
-			// Clear the screen, reposition at 0,0
-			CliEcho("\033[2J");
-			
-			CliEcho("[ RECORD TYPES ]");
-			foreach ($arrRecordTypeSummary as $intCarrier=>$arrRecordTypes)
-			{
-				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrRecordTypes)."):");
-				foreach ($arrRecordTypes as $mixRecordType=>$intCount)
-				{
-					CliEcho("\t\t{$mixRecordType}\t: {$intCount}");
-				}
-			}
-			
-			CliEcho("[ DESTINATIONS ]");
-			foreach ($arrDestinationSummary as $intCarrier=>$arrDestinations)
-			{
-				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrDestinations)."):");
-				foreach ($arrDestinations as $mixDestination=>$intCount)
-				{
-					CliEcho("\t\t{$mixDestination}\t: {$intCount}");
-				}
-			}
-			
-			CliEcho("[ INVALID ]");
-			foreach ($arrInvalidSummary as $intCarrier=>$arrFields)
-			{
-				CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrFields)."):");
-				foreach ($arrFields as $strField=>$intCount)
-				{
-					CliEcho("\t\t{$strField}\t: {$intCount}");
-				}
-			}
+	// Clear the screen, reposition at 0,0
+	CliEcho("\033[2J");
+	
+	CliEcho("[ RECORD TYPES ]");
+	foreach ($arrRecordTypeSummary as $intCarrier=>$arrRecordTypes)
+	{
+		CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrRecordTypes)."):");
+		foreach ($arrRecordTypes as $mixRecordType=>$intCount)
+		{
+			CliEcho("\t\t{$mixRecordType}\t: {$intCount}");
+		}
+	}
+	
+	CliEcho("[ DESTINATIONS ]");
+	foreach ($arrDestinationSummary as $intCarrier=>$arrDestinations)
+	{
+		CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrDestinations)."):");
+		foreach ($arrDestinations as $mixDestination=>$intCount)
+		{
+			CliEcho("\t\t{$mixDestination}\t: {$intCount}");
+		}
+	}
+	
+	CliEcho("[ INVALID ]");
+	foreach ($arrInvalidSummary as $intCarrier=>$arrFields)
+	{
+		CliEcho("\t".GetConstantDescription($intCarrier, 'Carrier')." (Unique: ".count($arrFields)."):");
+		foreach ($arrFields as $strField=>$intCount)
+		{
+			CliEcho("\t\t{$strField}\t: {$intCount}");
+		}
+	}
 }
 ?>
