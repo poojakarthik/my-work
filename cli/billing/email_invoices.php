@@ -161,7 +161,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  			if ($bolIncludePDF)
  			{
 				// PDF is included
-				$strContent	=	"Please find attached your Invoice for {$strBillingPeriod};\n\n" .
+				$strContent	=	"Please find attached your Invoice for account number {$arrInvoice['Account']} for {$strBillingPeriod};\n\n" .
 								"For your convenience you can view your invoice at any time by going to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and accessing your account.\n\n" .
 								"Additional benefits:\n\n" .
 								"- View unbilled charges.\n" .
