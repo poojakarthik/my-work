@@ -141,6 +141,18 @@ class Cli_App_Billing extends Cli
 						Cli_App_Billing::debug($this->_copyXML($objInvoiceRun->Id));
 					}
 					break;
+				
+				case 'ARCHIVE':
+					$strSQL	= "SELECT * FROM InvoiceRun WHERE CDRArchivedState IS NULL AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED;
+					
+					while ($arrInvoiceRun = $resInvoiceRuns->fetch_assoc())
+					{
+						$objInvoiceRun	= new Invoice_Run($arrInvoiceRun);
+						$objInvoiceRun->archiveToCDRInvoiced();
+					}
+					
+					
+					break;
 
 				default:
 					throw new Exception("Invalid MODE '{$this->_arrArgs[self::SWITCH_MODE]}' specified!");
@@ -331,7 +343,7 @@ class Cli_App_Billing extends Cli
 		return array(
 			self::SWITCH_TEST_RUN => array(
 				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "Revokes the transaction that encapsualtes Billing, and provides debug data",
+				self::ARG_DESCRIPTION	=> "Revokes the transaction that encapsulates Billing, and provides debug data",
 				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
@@ -339,14 +351,14 @@ class Cli_App_Billing extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|EXPORT|REPORTS|REGENERATE]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","EXPORT","REPORTS","REGENERATE"))'
+				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|EXPORT|REPORTS|REGENERATE|ARCHIVE]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","EXPORT","REPORTS","REGENERATE","ARCHIVE"))'
 			),
 
 			self::SWITCH_INVOICE_RUN	=> array(
 				self::ARG_LABEL			=> "INVOICE_RUN_ID",
 				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "The Invoice Run Id to Commit or Revoke (required for COMMIT, REVOKE, EXPORT, and REPORTS)",
+				self::ARG_DESCRIPTION	=> "The Invoice Run Id to Commit or Revoke (required for COMMIT, REVOKE, EXPORT, REGENERATE, and REPORTS)",
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),

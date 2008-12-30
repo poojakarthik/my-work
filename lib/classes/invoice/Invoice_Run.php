@@ -651,6 +651,145 @@ class Invoice_Run
 		return date("Y-m-d H:i:s", $intInvoiceDatetime);
 	}
 
+	/**
+	 * archiveToCDRInvoiced()
+	 *
+	 * Archives a given Invoice Run's CDRs to the cdr_invoiced Table
+	 *
+	 * @return	boolean							Pass/Fail
+	 *
+	 * @method
+	 */
+	public function archiveToCDRInvoiced()
+	{
+		static	$qryQuery;
+		static	$dsCDRInvoiced;
+		$qryQuery		= ($qryQuery) ? $qryQuery : new Query();
+		$dsCDRInvoiced	= ($dsCDRInvoiced) ? $dsCDRInvoiced : Data_Source::get('cdr');
+		
+		// Determine the SQL Dump FileName
+		$strCDRDumpFileName	= "cdr_invoiced_{$this->Id}.sql";
+		$strCDRDumpFilePath	= FILES_BASE_PATH.$strCDRDumpFileName;
+		
+		// Dump the Invoiced CDRs using the mysqldump tool
+		switch ($GLOBALS['**arrDatabase']['flex']['Type'])
+		{
+			case 'mysqli':
+			case 'mysql':
+				$strCommand	= "mysqldump -u {$GLOBALS['**arrDatabase']['flex']['User']} --password={$GLOBALS['**arrDatabase']['flex']['Password']} -h {$GLOBALS['**arrDatabase']['flex']['URL']} {$GLOBALS['**arrDatabase']['flex']['Database']} -t CDR --where='invoice_run_id = {$this->Id}' > {$strCDRDumpFilePath}";
+				break;
+			
+			default:
+				throw new Exception("Flex Databases of type '{$GLOBALS['**arrDatabase']['cdr']['Type']}' are not supported for archiving");
+		}
+		
+		exec($strCommand);
+		if (!@filesize($strCDRDumpFilePath))
+		{
+			throw new Exception("There was an error dumping the Invoiced CDRs (File Not Found/Bad Filesize)"); 
+		}
+		
+		// Import the CDRs into the CDR Invoiced database/table
+		switch ($GLOBALS['**arrDatabase']['cdr']['Type'])
+		{
+			case 'mysqli':
+			case 'mysql':
+				// Make the dump file MySQL-compatible
+				$strMySQLFileName	= dirname($strCDRDumpFileName).'/'.basename($strCDRDumpFileName, 'sql').'mysql';
+				exec("perl -pi -e 's/`cdr`/`CDRInvoiced`/' {$strMySQLFileName}");
+				if (!@filesize($strMySQLFileName))
+				{
+					throw new Exception("There was an error converting the Invoiced CDRs to MySQL (File Not Found/Bad Filesize)"); 
+				}
+				
+				// Import the data
+				$arrOutput	= array();
+				$intReturn	= null;
+				exec("psql -U {$GLOBALS['**arrDatabase']['cdr']['User']} -h {$GLOBALS['**arrDatabase']['cdr']['URL']} {$GLOBALS['**arrDatabase']['cdr']['Database']} < {$strMySQLFileName} ", $arrOutput, $intReturn);
+				
+				if ($intReturn)
+				{
+					throw new Exception("There was an error importing '{$strMySQLFileName}':\n\n ".implode("\n", $arrOutput));
+				}
+				break;
+				
+			case 'pgsql':
+				$dsSalesPortal->beginTransaction();
+				try
+				{
+					// Make the MySQL dump file PGSQL-Compatible
+					$strPGSQLFileName	= dirname($strCDRDumpFileName).'/'.basename($strCDRDumpFileName, 'sql').'pgsql';
+					exec("perl -pi -e 's/`cdr`/cdr_invoiced_{$this->Id}/' {$strPGSQLFileName}");
+					if (!@filesize($strPGSQLFileName))
+					{
+						throw new Exception("There was an error converting the Invoiced CDRs to Postgres (File Not Found/Bad Filesize)"); 
+					}
+					
+					$strTableName	= "cdr_invoiced_{$this->Id}";
+					
+					// Create the cdr_invoiced_* partition table
+					$resCreateTable			= $dsCDRInvoiced->exec("CREATE TABLE {$strTableName} (CHECK (invoice_run_id = {$this->Id})) INHERITS (cdr_invoiced);");
+					if (PEAR::isError($resCreateTable))
+					{
+						throw new Exception($resCreateTable->getMessage()." :: ".$resCreateTable->getUserInfo());
+					}
+					// Set its Owner
+					$resOwner				= $dsCDRInvoiced->exec("ALTER TABLE ONLY {$strTableName} OWNER TO {$GLOBALS['**arrDatabase']['cdr']['User']};");
+					if (PEAR::isError($resOwner))
+					{
+						throw new Exception($resOwner->getMessage()." :: ".$resOwner->getUserInfo());
+					}
+					// Set its Comment
+					$resComment				= $dsCDRInvoiced->exec("COMMENT ON TABLE {$strTableName} IS 'Invoiced CDR Records for Invoice Run {$this->Id} dated {$this->BillingDate}';");
+					if (PEAR::isError($resComment))
+					{
+						throw new Exception($resComment->getMessage()." :: ".$resComment->getUserInfo());
+					}
+					// Create an Index on the account Field
+					$resAccountIndex		= $dsCDRInvoiced->exec("CREATE INDEX in_{$strTableName}_account ON {$strTableName} USING btree (account);");
+					if (PEAR::isError($resAccountIndex))
+					{
+						throw new Exception($resAccountIndex->getMessage()." :: ".$resAccountIndex->getUserInfo());
+					}
+					// Create an Index on the invoice_run_id Field
+					$resInvoiceRunIdIndex	= $dsCDRInvoiced->exec("CREATE INDEX in_{$strTableName}_invoice_run_id ON {$strTableName} USING btree (invoice_run_id);");
+					if (PEAR::isError($resInvoiceRunIdIndex))
+					{
+						throw new Exception($resInvoiceRunIdIndex->getMessage()." :: ".$resInvoiceRunIdIndex->getUserInfo());
+					}
+					
+					// Import the data
+					$arrOutput	= array();
+					$intReturn	= null;
+					exec("psql -U {$GLOBALS['**arrDatabase']['cdr']['User']} -h {$GLOBALS['**arrDatabase']['cdr']['URL']} {$GLOBALS['**arrDatabase']['cdr']['Database']} < {$strPGSQLFileName} ", $arrOutput, $intReturn);
+					
+					if ($intReturn)
+					{
+						throw new Exception("There was an error importing '{$strPGSQLFileName}':\n\n ".implode("\n", $arrOutput));
+					}
+					
+					$dsSalesPortal->commit();
+				}
+				catch (Exception $eException)
+				{
+					$dsSalesPortal->rollback();
+					throw $eException;
+				}
+				break;
+			
+			default:
+				throw new Exception("CDR Databases of type '{$GLOBALS['**arrDatabase']['cdr']['Type']}' are not supported for archiving");
+		}
+		
+		// Delete the CDRs from the CDR table
+		if ($qryQuery->Execute("DELETE FROM CDR WHERE invoice_run_id = {$this->Id}") === false)
+		{
+			throw new Exception($qryQuery->Error());
+		}
+		
+		return true;
+	}
+
 	//------------------------------------------------------------------------//
 	// save
 	//------------------------------------------------------------------------//
