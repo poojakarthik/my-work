@@ -1252,7 +1252,7 @@ class Invoice extends ORM
 				case 'selInvoiceableFNNs':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service JOIN service_status ON Service.Status = service_status.id",
 																					"Service.Id, FNN, Indial100",
-																					"Account = <Account> AND CreatedOn < <InvoiceDatetime> AND service_status.can_invoice = 1 AND (ClosedOn > <InvoiceDatetime> OR ClosedOn IS NULL)");
+																					"Account = <Account> AND CreatedOn < <InvoiceDatetime> AND service_status.can_invoice = 1");
 					break;
 				case 'selPlanDetails':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan",
@@ -1267,10 +1267,10 @@ class Invoice extends ORM
 																					"Id = <RatePlan>");
 					break;
 				case 'selCurrentService':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service",
-																					"*",
-																					"Account = <Account> AND (FNN = <FNN> OR (FNN LIKE <IndialRange> AND Indial100 = 1)) AND (<DateTime> BETWEEN Service.CreatedOn AND Service.ClosedOn OR (Service.ClosedOn IS NULL AND Service.CreatedOn <= <DateTime>)) AND Status IN (".SERVICE_ACTIVE.", ".SERVICE_DISCONNECTED.")",
-																					"Id DESC",
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service JOIN service_status ON Service.Status = service_status.id",
+																					"Service.*",
+																					"Service.Account = <Account> AND (Service.FNN = <FNN> OR (Service.FNN LIKE <IndialRange> AND Service.Indial100 = 1)) AND Service.CreatedOn <= <DateTime> AND service_status.can_invoice = 1",
+																					"Service.Id DESC",
 																					"1");
 					break;
 				case 'selCDRTotals':

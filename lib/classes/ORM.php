@@ -208,6 +208,41 @@ abstract class ORM
 		}
 	}
 	
+	/**
+	 * mysqlToPostgresArray()
+	 *
+	 * Converts an associative array of MySQL fields/values to their Postgres equivalent
+	 * 
+	 * @param	array		$arrMySQL								MySQL version of the array
+	 * @param	array		$bolReturnConversionArray	[optional]	TRUE: Return a conversion array instead of Field=>Value
+	 * 
+	 * @return	array												Postgres version of the array OR Array of Mysql Fields as keys, and Postgres Fields as the values
+	 *
+	 * @method
+	 */
+	public static function mysqlToPostgresArray($arrMySQL, $bolReturnConversionArray=false)
+	{
+		$arrPostgres	= array();
+		
+		foreach ($arrMySQL as $strMySQLField=>$mixValue)
+		{
+			$strPostgresField	= preg_replace('/(([A-Za-z])([A-Z0-9])([a-z]))+/'	, '${2}_${3}${4}'	, $strMySQLField);
+			$strPostgresField	= preg_replace('/(([a-z])([A-Z0-9]))+/'				, '${2}_${3}'		, $strPostgresField);
+			$strPostgresField	= preg_replace('/(([0-9])([A-Za-z]))+/'				, '${2}_${3}'		, $strPostgresField);
+			
+			if ($bolReturnConversionArray)
+			{
+				$arrPostgres[$strMySQLField]	= strtolower(trim($strPostgresField, '_'));
+			}
+			else
+			{
+				$arrPostgres[strtolower(trim($strPostgresField, '_'))]	= $mixValue;
+			}
+		}
+		
+		return $arrPostgres;
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
