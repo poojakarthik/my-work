@@ -696,10 +696,15 @@ class Invoice_Run
 			case 'mysql':
 				// Make the dump file MySQL-compatible
 				$strMySQLFileName	= dirname($strCDRDumpFileName).'/'.basename($strCDRDumpFileName, 'sql').'mysql';
-				exec("perl -pi -e 's/`cdr`/`CDRInvoiced`/' {$strMySQLFileName}");
+				exec("perl -pi -e 's/`cdr`/`CDRInvoiced`/' {$strCDRDumpFilePath}");
+				if (!@filesize($strCDRDumpFilePath))
+				{
+					throw new Exception("There was an error converting the Invoiced CDRs to MySQL (Table Name Conversion)"); 
+				}
+				exec("grep \"INSERT INTO\" {$strCDRDumpFilePath} > {$strMySQLFileName}");
 				if (!@filesize($strMySQLFileName))
 				{
-					throw new Exception("There was an error converting the Invoiced CDRs to MySQL (File Not Found/Bad Filesize)"); 
+					throw new Exception("There was an error converting the Invoiced CDRs to MySQL (Excess Stripping)"); 
 				}
 				
 				// Import the data
@@ -719,10 +724,20 @@ class Invoice_Run
 				{
 					// Make the MySQL dump file PGSQL-Compatible
 					$strPGSQLFileName	= dirname($strCDRDumpFileName).'/'.basename($strCDRDumpFileName, 'sql').'pgsql';
-					exec("perl -pi -e 's/`cdr`/cdr_invoiced_{$this->Id}/' {$strPGSQLFileName}");
-					if (!@filesize($strPGSQLFileName))
+					exec("perl -pi -e 's/`cdr`/cdr_invoiced_{$this->Id}/' {$strCDRDumpFilePath}");
+					if (!@filesize($strCDRDumpFilePath))
 					{
-						throw new Exception("There was an error converting the Invoiced CDRs to Postgres (File Not Found/Bad Filesize)"); 
+						throw new Exception("There was an error converting the Invoiced CDRs to Postgres (Table Name Conversion)"); 
+					}
+					exec("perl ".FLEX_BASE_PATH."../../bin/mysql2pgsql.pl {$strCDRDumpFilePath} {$strPGSQLFileName}");
+					if (!@filesize($strMySQLFileName))
+					{
+						throw new Exception("There was an error converting the Invoiced CDRs to Postgres (mysql2postgres)"); 
+					}
+					exec("grep \"INSERT INTO\" {$strCDRDumpFilePath} > {$strPGSQLFileName}");
+					if (!@filesize($strMySQLFileName))
+					{
+						throw new Exception("There was an error converting the Invoiced CDRs to Postgres (Excess Stripping)"); 
 					}
 					
 					$strTableName	= "cdr_invoiced_{$this->Id}";
