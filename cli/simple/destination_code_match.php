@@ -9,6 +9,10 @@ $qryQuery	= new Query();
 $arrWordFilter	= array('to', 'and', '&', '-', 'is', 'offnet', 'onnet', 'off-net', 'on-net', 'off', 'on', 'net', 'telstra', 'mobile');
 
 $resOutputFile	= fopen(FILES_BASE_PATH."null_destinations.csv");
+if (!$resOutputFile)
+{
+	exit(1);
+}
 
 // Cache Flex Destination Codes
 $resDestinations	= $qryQuery->Execute("SELECT * FROM Destination WHERE Context = 1");
