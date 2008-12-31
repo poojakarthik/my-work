@@ -4,6 +4,8 @@
 require_once("../../lib/classes/Flex.php");
 Flex::load();
 
+$qryQuery	= new Query();
+
 $arrWordFilter	= array('to', '-');
 
 // Cache Flex Destination Codes
@@ -19,7 +21,6 @@ while ($arrDestination = $resDestinations->fetch_assoc())
 }
 
 // Get all DestinationTranslation entries that have a Code of 0
-$qryQuery	= new Query();
 $resDestinationTranslation	= $qryQuery->Execute("SELECT * FROM DestinationTranslation WHERE Code = 0");
 if ($resDestinationTranslation === false)
 {
