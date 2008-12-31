@@ -6,7 +6,7 @@ Flex::load();
 
 $qryQuery	= new Query();
 
-$arrWordFilter	= array('to', 'and', '&', '-', 'is', 'offnet', 'onnet', 'off-net', 'on-net', 'off', 'on', 'net', 'telstra');
+$arrWordFilter	= array('to', 'and', '&', '-', 'is', 'offnet', 'onnet', 'off-net', 'on-net', 'off', 'on', 'net', 'telstra', 'mobile');
 
 // Cache Flex Destination Codes
 $resDestinations	= $qryQuery->Execute("SELECT * FROM Destination WHERE Context = 1");
