@@ -32,7 +32,7 @@ while ($arrDestinationTranslation = $resDestinationTranslation->fetch_assoc())
 	CliEcho("\t[+] ".GetConstantDescription($arrDestinationTranslation['Carrier'], 'Carrier').": ({$arrDestinationTranslation['CarrierCode']}) {$arrDestinationTranslation['Description']}...", false);
 	
 	// Filter out any useless words that will just give us junk matches
-	$arrCarrierDestination	= explode(' ', $arrWordFilter);
+	$arrCarrierDestination	= explode(' ', $arrDestinationTranslation['Description']);
 	foreach ($arrCarrierDestination as $mixIndex=>$strWord)
 	{
 		if (in_array($strWord, $arrWordFilter))
