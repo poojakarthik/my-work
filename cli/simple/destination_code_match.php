@@ -8,6 +8,8 @@ $qryQuery	= new Query();
 
 $arrWordFilter	= array('to', 'and', '&', '-', 'is', 'offnet', 'onnet', 'off-net', 'on-net', 'off', 'on', 'net', 'telstra', 'mobile');
 
+$resOutputFile	= fopen(FILES_BASE_PATH."null_destinations.csv");
+
 // Cache Flex Destination Codes
 $resDestinations	= $qryQuery->Execute("SELECT * FROM Destination WHERE Context = 1");
 if ($resDestinations === false)
@@ -30,6 +32,8 @@ if ($resDestinationTranslation === false)
 while ($arrDestinationTranslation = $resDestinationTranslation->fetch_assoc())
 {
 	CliEcho("\t[+] ".GetConstantDescription($arrDestinationTranslation['Carrier'], 'Carrier').": ({$arrDestinationTranslation['CarrierCode']}) {$arrDestinationTranslation['Description']}...", false);
+	
+	fwrite($resOutputFile, "\"{$arrDestinationTranslation['Carrier']}\",{$arrDestinationTranslation['CarrierCode']},\"{$arrDestinationTranslation['Description']}\"");
 	
 	// Filter out any useless words that will just give us junk matches
 	$arrCarrierDestination	= explode(' ', $arrDestinationTranslation['Description']);
@@ -59,9 +63,13 @@ while ($arrDestinationTranslation = $resDestinationTranslation->fetch_assoc())
 		if ($intWordCount)
 		{
 			CliEcho(" {$arrDestination['Description']}({$intWordCount}/{$intTotalWords})", false);
+			fwrite($resOutputFile, ",{$intCode},\"{$arrDestination['Description']}\"");
 		}
 	}
 	CliEcho();
+	fwrite($resOutputFile, "\n");
 }
+
+fclose($resOutputFile);
 
 ?>
