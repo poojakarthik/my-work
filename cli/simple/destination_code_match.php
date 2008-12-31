@@ -8,7 +8,7 @@ $qryQuery	= new Query();
 
 $arrWordFilter	= array('to', 'and', '&', '-', 'is', 'offnet', 'onnet', 'off-net', 'on-net', 'off', 'on', 'net', 'telstra', 'mobile');
 
-$resOutputFile	= fopen(FILES_BASE_PATH."null_destinations.csv");
+$resOutputFile	= fopen(FILES_BASE_PATH."null_destinations.csv", 'w');
 if (!$resOutputFile)
 {
 	exit(1);
