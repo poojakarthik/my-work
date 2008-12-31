@@ -35,7 +35,7 @@ while ($arrDestinationTranslation = $resDestinationTranslation->fetch_assoc())
 	$arrCarrierDestination	= explode(' ', $arrDestinationTranslation['Description']);
 	foreach ($arrCarrierDestination as $mixIndex=>$strWord)
 	{
-		if (in_array($strWord, $arrWordFilter))
+		if (in_array(strtolower($strWord), $arrWordFilter))
 		{
 			unset($arrCarrierDestination[$mixIndex]);
 		}
@@ -47,9 +47,13 @@ while ($arrDestinationTranslation = $resDestinationTranslation->fetch_assoc())
 	{
 		$intWordCount			= 0;
 		$arrDestinationSplit	= explode(' ', $arrDestination['Description']);
+		foreach ($arrDestinationSplit as $mixIndex=>$strWord)
+		{
+			$arrDestinationSplit[$mixIndex]	= strtolower($strWord);
+		}
 		foreach ($arrCarrierDestination as $strWord)
 		{
-			$intWordCount	+= (in_array($strWord, $arrDestinationSplit)) ? 1 : 0;
+			$intWordCount	+= (in_array(strtolower($strWord), $arrDestinationSplit)) ? 1 : 0;
 		}
 		
 		if ($intWordCount)
