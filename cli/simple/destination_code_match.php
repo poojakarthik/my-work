@@ -45,10 +45,11 @@ while ($arrDestinationTranslation = $resDestinationTranslation->fetch_assoc())
 	$intTotalWords	= count($arrCarrierDestination);
 	foreach ($arrDestinations as $intCode=>$arrDestination)
 	{
-		$intWordCount	= 0;
+		$intWordCount			= 0;
+		$arrDestinationSplit	= explode(' ', $arrDestination['Description']);
 		foreach ($arrCarrierDestination as $strWord)
 		{
-			$intWordCount	+= (stripos($arrDestination['Description'], $strWord) !== false) ? 1 : 0;
+			$intWordCount	+= (in_array($strWord, $arrDestinationSplit)) ? 1 : 0;
 		}
 		
 		if ($intWordCount)
