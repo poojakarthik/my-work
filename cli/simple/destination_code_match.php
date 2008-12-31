@@ -6,7 +6,7 @@ Flex::load();
 
 $qryQuery	= new Query();
 
-$arrWordFilter	= array('to', '-');
+$arrWordFilter	= array('to', '-', 'is', 'offnet', 'onnet', 'off-net', 'on-net', 'off', 'on', 'net');
 
 // Cache Flex Destination Codes
 $resDestinations	= $qryQuery->Execute("SELECT * FROM Destination WHERE Context = 1");
