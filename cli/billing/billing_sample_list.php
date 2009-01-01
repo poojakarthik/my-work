@@ -10,57 +10,44 @@
 //----------------------------------------------------------------------------//
 
 // load application
-require_once("../../flex.require.php");
-$arrConfig = LoadApplication();
+require_once("../../lib/classes/Flex.php");
+Flex::load();
 
-// Application entry point - create an instance of the application object
-$appBilling = new ApplicationBilling($arrConfig);
+Debug("[ GENERATING SAMPLES LIST ]");
 
-// Get Command-line Params
-$bolInternal	= FALSE;
-switch (strtoupper(trim($argv[1])))
+// Look for any Sample Invoice Runs
+$selInvoiceRuns	= new StatementSelect(	"InvoiceRun JOIN invoice_run_schedule ON InvoiceRun.invoice_run_schedule_id = invoice_run_schedule.id", 
+										"InvoiceRun.*, invoice_run_schedule.description", 
+										"invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
+if (!$selInvoiceRuns->Execute())
 {
-	case 'SILVER':
-		$strMode		= "Silver";
-		break;
-	
-	case 'BRONZE':
-		$strMode		= "Bronze";
-		break;
-	
-	case 'GOLD':
-		$strMode		= "Gold";
-		break;
-		
-	case 'INTERNALINITIAL':
-		$bolInternal	= TRUE;
-		$strMode		= "Initial Internal";
-		break;
-		
-	case 'INTERNALFINAL':
-		$bolInternal	= TRUE;
-		$strMode		= "Final Internal";
-		break;
-	
-	default:
-		Debug("No mode specified! ('bronze', 'silver' or 'gold')");
-		die;
+	if ($selInvoiceRuns->Error())
+	{
+		throw new Exception($selInvoiceRuns->Error());
+	}
+	else
+	{
+		throw new Exception("No Temporary Invoice Runs!");
+	}
 }
 
-Debug("[ GENERATING ".strtoupper($strMode)." SAMPLES LIST ]");
-
-// Get list of Accounts
-$arrAccounts		= Array();
-$selSampleAccounts	= new StatementSelect("Account JOIN InvoiceTemp ON Account.Id = InvoiceTemp.Account", "Account.Id, Account.BusinessName", "Account.Sample != 0");
-$selSampleAccounts->Execute();
-while ($arrAccount = $selSampleAccounts->Fetch())
-{
-	$arrAccounts[]	= "<a href='https://telcoblue.yellowbilling.com.au/management/flex.php/Account/Overview/?Account.Id={$arrAccount['Id']}'>{$arrAccount['Id']}: {$arrAccount['BusinessName']}</a>";
+$selSampleAccounts	= new StatementSelect("Account JOIN Invoice ON Account.Id = Invoice.Account", "Account.Id, Account.BusinessName", "Invoice.invoice_run_id = <Id> AND Account.Sample != 0");
+while ($arrInvoiceRun = $selInvoiceRuns->Fetch())
+{	
+	// Get list of Accounts
+	$arrAccounts		= Array();
+	$selSampleAccounts->Execute($arrInvoiceRun);
+	while ($arrAccount = $selSampleAccounts->Fetch())
+	{
+		$arrAccounts[]	= "<a href='https://telcoblue.yellowbilling.com.au/admin/flex.php/Account/Overview/?Account.Id={$arrAccount['Id']}'>{$arrAccount['Id']}: {$arrAccount['BusinessName']}</a>";
+	}
+	
+	$strCustomerGroup	= GetConstantDescription($arrInvoiceRun['customer_group_id'], 'CustomerGroup');
+	
+	$strTo		= "turdminator@hotmail.com, rdavis@yellowbilling.com.au";//, msergeant@yellowbilling.com.au";
+	$strContent	= ($arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_INTERNAL_SAMPLES) ? "NOTE: THIS IS AN INTERNAL SAMPLE RUN -- DO NOT FORWARD TO CUSTOMERS <br/>\n<br/>\n" : "";
+	$strContent	.= implode("<br/>\n", $arrAccounts);
+	SendEmail($strTo, date("F", strtotime("-2 days", strtotime($arrInvoiceRun['BillingDate'])))." {$strCustomerGroup} {$arrInvoiceRun['description']} Samples", date("F", strtotime("-2 days", strtotime($arrInvoiceRun['BillingDate'])))." {$strCustomerGroup} {$arrInvoiceRun['description']} Samples<br>\n<br>\n".$strContent);
 }
-
-$strTo		= "turdminator@hotmail.com, rich@voiptelsystems.com.au, msergeant@yellowbilling.com.au";
-$strContent	= ($bolInternal) ? "NOTE: THIS IS AN INTERNAL SAMPLE RUN -- DO NOT FORWARD TO CUSTOMERS <br/>\n<br/>\n" : "";
-$strContent	.= implode("<br/>\n", $arrAccounts);
-SendEmail($strTo, date("F", strtotime("-2 days", time()))." $strMode Samples", date("F", strtotime("-2 days", time()))." $strMode Samples<br>\n<br>\n".$strContent);
 
 ?>
