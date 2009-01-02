@@ -50,12 +50,7 @@ try
 		// Column 5 is the Flex Destination Description
 		$arrDestination['Description']				= $arrLine[4];
 		
-		if (!$arrDestination['Code'] && !$arrDestination['Description'])
-		{
-			CliEcho("\t\tNo Flex Destination defined");
-			continue;
-		}
-		
+		// Validate
 		if (!($arrDestinationTranslation['Carrier'] > 0))
 		{
 			throw new Exception("Record {$intLine}'s Carrier is invalid ('{$arrLine[0]}')");
@@ -68,16 +63,17 @@ try
 		{
 			throw new Exception("Record {$intLine}'s Carrier Description is invalid ('{$arrLine[2]}')");
 		}
-		if (!($arrDestinationTranslation['Code'] > 0))
+		
+		CliEcho("\t\t".GetConstantDescription($arrDestinationTranslation['Carrier'], 'Carrier').": '{$arrDestinationTranslation['Description']} ({$arrDestinationTranslation['CarrierCode']})'\t==> ", false); 
+		
+		// Is there a Flex Destination defined?
+		if (!$arrDestination['Code'] && !$arrDestination['Description'])
 		{
-			throw new Exception("Record {$intLine}'s Flex Code is invalid ('{$arrLine[3]}')");
-		}
-		if (!$arrDestination['Description'])
-		{
-			throw new Exception("Record {$intLine}'s Flex Description is invalid ('{$arrLine[4]}')");
+			CliEcho("No Flex Destination defined!");
+			continue;
 		}
 		
-		CliEcho("\t\t".GetConstantDescription($arrDestinationTranslation['Carrier'], 'Carrier').": '{$arrDestinationTranslation['Description']} ({$arrDestinationTranslation['CarrierCode']})' ==> '{$arrDestination['Description']}' ({$arrDestination['Code']})");
+		CliEcho("'{$arrDestination['Description']}' ({$arrDestination['Code']})");
 		
 		// Get the DestinationTranslation details
 		if ($selDestinationTranslation->Execute($arrDestinationTranslation))
