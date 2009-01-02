@@ -69,7 +69,7 @@ try
 		// Is there a Flex Destination defined?
 		if (!$arrDestination['Code'] && !$arrDestination['Description'])
 		{
-			CliEcho("No Flex Destination defined!");
+			CliEcho("NO FLEX DESINATION DEFINED!\t[ SKIPPING ]");
 			continue;
 		}
 		
