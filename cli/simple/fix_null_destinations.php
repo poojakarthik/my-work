@@ -66,7 +66,7 @@ try
 		{
 			throw new Exception("Record {$intLine}'s Flex Code is invalid ('{$arrLine[3]}')");
 		}
-		if ($arrDestination['Description'])
+		if (!$arrDestination['Description'])
 		{
 			throw new Exception("Record {$intLine}'s Flex Description is invalid ('{$arrLine[4]}')");
 		}
