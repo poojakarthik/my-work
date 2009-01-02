@@ -50,6 +50,12 @@ try
 		// Column 5 is the Flex Destination Description
 		$arrDestination['Description']				= $arrLine[4];
 		
+		if (!$arrDestination['Code'] && !$arrDestination['Description'])
+		{
+			CliEcho("\t\tNo Flex Destination defined");
+			continue;
+		}
+		
 		if (!($arrDestinationTranslation['Carrier'] > 0))
 		{
 			throw new Exception("Record {$intLine}'s Carrier is invalid ('{$arrLine[0]}')");
