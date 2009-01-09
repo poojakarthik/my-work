@@ -2305,9 +2305,7 @@ class AppTemplateService extends ApplicationTemplate
 				$objSaleItem = Sale_Item::getForServiceId($intService, TRUE);
 				if ($objSaleItem !== NULL)
 				{
-					// The service was part of a sale
-					// It can be safely assumed that the saleItem is in a state of "Dispatched"
-					// Flag it as having been completed
+					// The service was part of a sale, and is a new service
 					$dsSales = DO_Sales_SaleItem::getDataSource();
 					$dsSales->beginTransaction();
 					try
@@ -2317,6 +2315,15 @@ class AppTemplateService extends ApplicationTemplate
 						$intDealerId = ($objDealer !== NULL)? $objDealer->id : Dealer::SYSTEM_DEALER_ID;
 						
 						$doSaleItem	= $objSaleItem->getExternalReferenceObject();
+						
+						// Check that the sale item hasn't been cancelled
+						if ($doSaleItem->saleItemStatusId == DO_Sales_SaleItemStatus::CANCELLED)
+						{
+							// It has been cancelled, which means the service should not be activated
+							throw new Exception("This service cannot be activated, because the sale of this service has been cancelled");
+						}
+					
+						// Flag it as having been completed
 						$doSaleItem->setCompleted($intDealerId);
 						
 						// Set the entire sale to completed, if it is
