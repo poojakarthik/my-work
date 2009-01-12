@@ -721,14 +721,14 @@ class Cli_App_Sales extends Cli
 					$arrVerifiedOn = $resVerifiedOn->fetchRow(MDB2_FETCHMODE_ASSOC);
 					
 					// Create a new Sale record in Flex
-					$objSale	= new Sale();
-					$objSale->external_reference	= "sale.id={$arrSPSale['id']}";
-					$objSale->account_id			= $objAccount->Id;
-					$objSale->verified_on			= $arrVerifiedOn['changed_on'];
-					$objSale->sale_type_id			= $arrSPSale['sale_type_id'];
-					$objSale->save();
+					$objFlexSale	= new FlexSale();
+					$objFlexSale->external_reference	= "sale.id={$arrSPSale['id']}";
+					$objFlexSale->account_id			= $objAccount->Id;
+					$objFlexSale->verified_on			= $arrVerifiedOn['changed_on'];
+					$objFlexSale->sale_type_id			= $arrSPSale['sale_type_id'];
+					$objFlexSale->save();
 					
-					$objSale->intCouldntComplete	= 0;
+					$objFlexSale->intCouldntComplete	= 0;
 					
 					$this->log("\t\t\t* Getting list of new Contacts...");
 					//-------------------------- CONTACT -------------------------//
@@ -1147,21 +1147,21 @@ class Cli_App_Sales extends Cli
 							}
 							
 							// Create a new Sale_Item record in Flex
-							$objSaleItem	= new Sale_Item();
-							$objSaleItem->external_reference	= "sale_item.id={$arrSPSaleItem['id']}";
-							$objSaleItem->sale_id				= $objSale->id;
+							$objFlexSaleItem	= new FlexSaleItem();
+							$objFlexSaleItem->external_reference	= "sale_item.id={$arrSPSaleItem['id']}";
+							$objFlexSaleItem->sale_id				= $objFlexSale->id;
 							switch ($arrSPSaleItem['product_category_id'])
 							{
 								// Service
 								case 1:
-									$objSaleItem->service_id	= $objService->Id;
+									$objFlexSaleItem->service_id	= $objService->Id;
 									break;
 								
 								// Unknown
 								default:
 									throw new Exception("Product Category '{$arrSPSaleItem['product_category_id']}' is unsupported by Flex!");
 							}
-							$objSaleItem->save();
+							$objFlexSaleItem->save();
 							
 							// Set Item Status
 							$this->_updateSaleItemStatus($arrSPSaleItem['id'], 'Dispatched');
@@ -1172,7 +1172,7 @@ class Cli_App_Sales extends Cli
 							else
 							{
 								// There is at least one non-Completed Item in this Sale
-								$objSale->intCouldntComplete++;
+								$objFlexSale->intCouldntComplete++;
 							}
 						
 							// All seems to have worked, release Sale Item the savepoints
@@ -1211,7 +1211,7 @@ class Cli_App_Sales extends Cli
 					//------------------------------------------------------------//
 					
 					// Add System Note detailing Account Creation
-					if ((int)$objSale->sale_type_id == 1)
+					if ((int)$objFlexSale->sale_type_id == 1)
 					{
 						// New Sale
 						$objAccountCreationNote	= new Note();
@@ -1248,7 +1248,7 @@ class Cli_App_Sales extends Cli
 					
 					// Set Sale Status
 					$this->_updateSaleStatus($arrSPSale['id'], 'Dispatched');
-					if (!$objSale->intCouldntComplete)
+					if (!$objFlexSale->intCouldntComplete)
 					{
 						$this->_updateSaleStatus($arrSPSale['id'], 'Completed');
 					}
