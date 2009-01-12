@@ -9,7 +9,7 @@ class Cli_App_Sales extends Cli
 	
 	const	SALES_PORTAL_SYSTEM_DEALER_ID	= 1;
 	
-	const	PROVISIONING_AMNESTY_HOURS		= 0; //72
+	const	PROVISIONING_AMNESTY_HOURS		= 72;
 
 	function run()
 	{
