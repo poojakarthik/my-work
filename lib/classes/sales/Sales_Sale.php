@@ -31,7 +31,7 @@ class Sales_Sale extends DO_Sales_Sale
 	// Returns a Sales_Sale object for the sale that corresponds to the Flex Sale Id (id of a record of the sale table of the flex database)
 	public static function getForFlexSaleId($intFlexSaleId, $bolExceptionOnNotFound=FALSE, $bolForceRefresh=FALSE)
 	{
-		$objFlexSale = Sale::getForId($intFlexSaleId, $bolExceptionOnNotFound, $bolForceRefresh);
+		$objFlexSale = FlexSale::getForId($intFlexSaleId, $bolExceptionOnNotFound, $bolForceRefresh);
 		if ($objFlexSale === NULL)
 		{
 			return NULL;
@@ -172,7 +172,7 @@ class Sales_Sale extends DO_Sales_Sale
 			if ($intNewSaleStatus != $intCurrentSaleStatus)
 			{
 				// The status has been changed.  If the sale has a Flex account associated with it, then add a system note detailing this status change
-				$objFlexSale = Sale::getForExternalReference("sale.id={$this->id}");
+				$objFlexSale = FlexSale::getForExternalReference("sale.id={$this->id}");
 				if ($objFlexSale !== NULL)
 				{
 					$arrSaleStatusHistory	= DO_Sales_SaleStatusHistory::listForSale($this, "id DESC", 1);

@@ -18,7 +18,7 @@ class JSON_Handler_Account_Sales extends JSON_Handler
 				throw new Exception("Account with id: $intAccountId, could not be found");
 			}
 			
-			$arrSaleObjects = Sale::listForAccountId($intAccountId, "verified_on DESC, id DESC");
+			$arrSaleObjects = FlexSale::listForAccountId($intAccountId, "verified_on DESC, id DESC");
 			
 			$arrSaleTypes = Sale_Type::getAll();
 			$arrSaleStatuses = DO_Sales_SaleStatus::getAll();

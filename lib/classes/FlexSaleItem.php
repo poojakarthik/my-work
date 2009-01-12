@@ -1,12 +1,12 @@
 <?php
 /**
- * Sale_Item
+ * FlexSaleItem
  *
- * Models a record of the sale_item table
+ * Models a record of the Flex database's sale_item table, not to be confused with the sales database's sale_item table
  *
- * @class	Sale_Item
+ * @class	FlexSaleItem
  */
-class Sale_Item extends ORM
+class FlexSaleItem extends ORM
 {
 	protected	$_strTableName	= "sale_item";
 	
@@ -28,7 +28,7 @@ class Sale_Item extends ORM
 		parent::__construct($arrProperties, $bolLoadById);
 	}
 	
-	// This will return a flex SaleItem object if found
+	// This will return a FlexSaleItem object if found
 	// If a record is not found then it will return NULL if $bolExceptionOnNotFound == FALSE OR throw an exception if $bolExceptionOnNotFound == TRUE
 	public static function getForId($intId, $bolExceptionOnNotFound=FALSE, $bolForceRefresh=FALSE)
 	{
@@ -53,7 +53,7 @@ class Sale_Item extends ORM
 		}
 	}
 	
-	// Returns the Flex sale_item object relating to $intServiceId (from sale_item table of flex database)
+	// Returns the FlexSaleItem object relating to $intServiceId (from sale_item table of flex database)
 	// returns NULL if there is no sale_item relating to this record
 	// There should only ever be (at most) 1 sale_item record relating to a service record 
 	public static function getForServiceId($intServiceId, $bolIncludeEarlierServiceRecords=FALSE)
@@ -103,7 +103,7 @@ class Sale_Item extends ORM
 		}
 	}
 	
-	// Returns the sale_item record which has the external reference
+	// Returns the FlexSaleItem object which has the external reference
 	public static function getForExternalReference($strExternalReference)
 	{
 		$objQuery = new Query();
@@ -136,13 +136,13 @@ class Sale_Item extends ORM
 		return intval(substr($this->externalReference, 13));
 	}
 	
-	// Retrieves the DO_Sales_SaleItem object related to this object
+	// Retrieves the Sales_SaleItem object related to this object
 	// Returns NULL if it can't be found
 	public function getExternalReferenceObject()
 	{
 		try
 		{
-			$doSaleItem = DO_Sales_SaleItem::getForId($this->getExternalReferenceValue());
+			$doSaleItem = Sales_SaleItem::getForId($this->getExternalReferenceValue());
 			
 			if ($doSaleItem !== NULL)
 			{

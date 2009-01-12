@@ -126,7 +126,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
 			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
 			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
-			if (count(Sale::listForAccountId($intAccountId, NULL, 1)))
+			if (count(FlexSale::listForAccountId($intAccountId, NULL, 1)))
 			{
 				// The account has sales associated with it
 				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);
@@ -250,7 +250,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
 			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
 			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
-			if (count(Sale::listForAccountId($intAccountId, NULL, 1)))
+			if (count(FlexSale::listForAccountId($intAccountId, NULL, 1)))
 			{
 				// The account has sales associated with it
 				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);
@@ -411,7 +411,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
 			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
 			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
-			if (count(Sale::listForAccountId($intAccountId, NULL, 1)))
+			if (count(FlexSale::listForAccountId($intAccountId, NULL, 1)))
 			{
 				// The account has sales associated with it
 				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);

@@ -455,10 +455,10 @@ class JSON_Handler_Sale extends JSON_Handler
 				try
 				{
 					// Check if there was a flex account associated with this sale, and if so, alert the user that things should be done
-					$objSale = Sale::getForExternalReference("sale.id={$sale->id}");
-					if ($objSale !== NULL)
+					$objFlexSale = FlexSale::getForExternalReference("sale.id={$sale->id}");
+					if ($objFlexSale !== NULL)
 					{
-						$strMessage = "Account {$objSale->accountId} is associated with this sale, and may need manual actions performed on it such as reverse churns, service disconnections or even account closure.";
+						$strMessage = "Account {$objFlexSale->accountId} is associated with this sale, and may need manual actions performed on it such as reverse churns, service disconnections or even account closure.";
 						return $strMessage;
 					}
 				}

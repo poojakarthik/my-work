@@ -1,12 +1,12 @@
 <?php
 /**
- * Sale
+ * FlexSale
  *
- * Models a record of the Sale table
+ * Models a record of the Flex database's sale table, not to be confused with the sales database's sale table
  *
- * @class	Sale
+ * @class	FlexSale
  */
-class Sale extends ORM
+class FlexSale extends ORM
 {
 	protected	$_strTableName	= "sale";
 	
@@ -30,7 +30,7 @@ class Sale extends ORM
 		parent::__construct($arrProperties, $bolLoadById);
 	}
 	
-	// This will return a Sale object if found
+	// This will return a FlexSale object if found
 	// If a record is not found then it will return NULL if $bolExceptionOnNotFound == FALSE OR throw an exception if $bolExceptionOnNotFound == TRUE
 	// This will also throw an exception if 
 	public static function getForId($intId, $bolExceptionOnNotFound=FALSE, $bolForceRefresh=FALSE)
@@ -45,7 +45,7 @@ class Sale extends ORM
 
 		if (($intCount = $selSale->Execute(array('Id'=>$intId))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve sale record with id: $intId. - ". $selSale->Error());
+			throw new Exception("Failed to retrieve flex sale record with id: $intId. - ". $selSale->Error());
 		}
 		
 		if ($intCount)
@@ -56,7 +56,7 @@ class Sale extends ORM
 		}
 		elseif ($bolExceptionOnNotFound)
 		{
-			throw new Exception("sale record with id $intId could not be found");
+			throw new Exception("flex sale record with id $intId could not be found");
 		}
 		else
 		{
@@ -90,7 +90,7 @@ class Sale extends ORM
 		return $arrSales;
 	}
 	
-	// Returns the sale record which has the external reference
+	// Returns the FlexSale object which has the external reference
 	public static function getForExternalReference($strExternalReference)
 	{
 		$objQuery = new Query();

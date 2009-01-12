@@ -114,7 +114,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<div class='GroupedContent'>\n";
 
 		// Check if there are any sales associated with the account, that were made in the last 2 months
-		$arrSales = Sale::listForAccountId(DBO()->Account->Id->Value, "verified_on DESC, id DESC");
+		$arrSales = FlexSale::listForAccountId(DBO()->Account->Id->Value, "verified_on DESC, id DESC");
 		if (count($arrSales))
 		{
 			$objSale = current($arrSales);

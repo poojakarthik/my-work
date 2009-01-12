@@ -205,7 +205,7 @@ class AppTemplateService extends ApplicationTemplate
 			ContextMenu()->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 			ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
-			if (count(Sale::listForAccountId(DBO()->Account->Id->Value, NULL, 1)))
+			if (count(FlexSale::listForAccountId(DBO()->Account->Id->Value, NULL, 1)))
 			{
 				// The account has sales associated with it
 				ContextMenu()->Account->Sales->ViewSalesForAccount(DBO()->Account->Id->Value);
@@ -1008,7 +1008,7 @@ class AppTemplateService extends ApplicationTemplate
 		ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
 		ContextMenu()->Account->Notes->View_Account_Notes(DBO()->Account->Id->Value);
-		if (count(Sale::listForAccountId(DBO()->Account->Id->Value, NULL, 1)))
+		if (count(FlexSale::listForAccountId(DBO()->Account->Id->Value, NULL, 1)))
 		{
 			// The account has sales associated with it
 			ContextMenu()->Account->Sales->ViewSalesForAccount(DBO()->Account->Id->Value);
@@ -2302,7 +2302,7 @@ class AppTemplateService extends ApplicationTemplate
 			if (DBO()->Service->NewStatus->Value == SERVICE_ACTIVE && DBO()->Service->Status->Value == SERVICE_PENDING && Data_Source::dsnExists(FLEX_DATABASE_CONNECTION_SALES))
 			{
 				// Update the sale details if this service is associated with a sale
-				$objFlexSaleItem = Sale_Item::getForServiceId($intService, TRUE);
+				$objFlexSaleItem = FlexSaleItem::getForServiceId($intService, TRUE);
 				if ($objFlexSaleItem !== NULL)
 				{
 					// The service was part of a sale, and is a new service
@@ -2497,7 +2497,7 @@ class AppTemplateService extends ApplicationTemplate
 			ContextMenu()->Account->Payments->Change_Payment_Method(DBO()->Account->Id->Value);
 			ContextMenu()->Account->Add_Associated_Account(DBO()->Account->Id->Value);
 			ContextMenu()->Account->Notes->Add_Account_Note(DBO()->Account->Id->Value);
-			if (count(Sale::listForAccountId(DBO()->Account->Id->Value, NULL, 1)))
+			if (count(FlexSale::listForAccountId(DBO()->Account->Id->Value, NULL, 1)))
 			{
 				// The account has sales associated with it
 				ContextMenu()->Account->Sales->ViewSalesForAccount(DBO()->Account->Id->Value);

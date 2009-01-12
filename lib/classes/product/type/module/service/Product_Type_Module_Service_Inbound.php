@@ -72,7 +72,7 @@ class Product_Type_Module_Service_Inbound extends Product_Type_Module
 		$intEmployeeId	= ($objDealer->employeeId)? $objDealer->employeeId : Employee::SYSTEM_EMPLOYEE_ID;
 		
 		// Cancel the service in flex, if it exists
-		$objFlexSaleItem = Sale_Item::getForExternalReference("sale_item.id={$doSaleItem->id}");
+		$objFlexSaleItem = FlexSaleItem::getForExternalReference("sale_item.id={$doSaleItem->id}");
 		if ($objFlexSaleItem !== NULL)
 		{
 			// The sale item has been imported into flex

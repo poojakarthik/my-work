@@ -1540,7 +1540,7 @@ class Cli_App_Sales extends Cli
 			{
 				$objService	= new Service($arrService);
 				
-				$objFlexSaleItem = Sale_Item::getForId($arrService['flex_sale_item_id'], TRUE);
+				$objFlexSaleItem = FlexSaleItem::getForId($arrService['flex_sale_item_id'], TRUE);
 
 				// Check that the service's sale item is currently flagged as being dispatched (as opposed to cancelled or completed, although the only alternative should be cancelled)
 				if (!array_key_exists($objFlexSaleItem->getExternalReferenceValue(), $arrSPEligibleSaleItems))
