@@ -704,6 +704,5 @@ var Dealer = {
 			return false;
 		}
 		return true;
-		
 	}
 };

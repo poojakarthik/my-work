@@ -446,6 +446,7 @@ class JSON_Handler_Sale extends JSON_Handler
 				$dsSales->beginTransaction();
 				TransactionStart(FLEX_DATABASE_CONNECTION_DEFAULT);
 				
+				// This will create a system note if an account is associated with the sale
 				$sale->cancel($dealer->id, $strReason);
 				
 				$dsSales->commit();
@@ -834,6 +835,40 @@ class JSON_Handler_Sale extends JSON_Handler
 						);
 		}
 	}
+
+	// This will run any of the sales reports 
+	public function buildReport($strReportType, $objConstraints)
+	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES_ADMIN);
+
+		try
+		{
+
+			$objReportBuilder = new Customer_Status_Summary_Report();
+			$objReportBuilder->SetBoundaryConditions($arrCustomerGroups, $arrCustomerStatuses, $arrInvoiceRuns);
+	
+			$objReportBuilder->BuildReport();
+	
+			$strReport = $objReportBuilder->GetReport($strRenderMode);
+			
+			$strRenderMode = strtolower($strRenderMode);
+			
+			// Store the report in the user's session
+			$_SESSION['CustomerStatus']['SummaryReport']['Content'] = $strReport;
+			return array(	"Success"			=> TRUE,
+							"ReportLocation"	=> Href()->SalesReport($strReportType, TRUE)
+						);
+		}
+		catch (Exception $e)
+		{
+			return array(	
+							"Success"		=> FALSE,
+							"ErrorMessage"	=> $e
+						);
+		}
+	}
+
 
 }
 

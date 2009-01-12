@@ -298,6 +298,12 @@ class Dealer
 	{
 		return self::getFor("id IN (SELECT DISTINCT up_line_id FROM dealer WHERE up_line_id IS NOT NULL)", "first_name ASC, last_name ASC");
 	}
+	
+	// Retrieves all dealers who have no upline manager
+	public static function getRootLevelDealers($strSort="username ASC")
+	{
+		return self::getFor("up_line_id IS NULL AND id != ". self::SYSTEM_DEALER_ID, $strSort);
+	}
 
 	// Retrieves all top-level Dealers (Call Centres)
 	public static function getCallCentres()

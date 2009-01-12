@@ -7,6 +7,8 @@ class Sales_Sale extends DO_Sales_Sale
 {
 	public static function getForId($intSaleId)
 	{
+		// This is written in this fashion, because if I just did "return parent::getForId(blah)" it would return a DO_Sales_Sale object not a Sales_Sale object
+		// because php's inheritence logic is flawed in this respect
 		$doSale = parent::getForId($intSaleId);
 		
 		if ($doSale !== NULL)
@@ -24,6 +26,18 @@ class Sales_Sale extends DO_Sales_Sale
 		{
 			return NULL;
 		}
+	}
+
+	// Returns a Sales_Sale object for the sale that corresponds to the Flex Sale Id (id of a record of the sale table of the flex database)
+	public static function getForFlexSaleId($intFlexSaleId, $bolExceptionOnNotFound=FALSE, $bolForceRefresh=FALSE)
+	{
+		$objFlexSale = Sale::getForId($intFlexSaleId, $bolExceptionOnNotFound, $bolForceRefresh);
+		if ($objFlexSale === NULL)
+		{
+			return NULL;
+		}
+		
+		return $objFlexSale->getExternalReferenceObject();
 	}
 
 	// Overrides the DO_Sales_Sale->cancel() function to include the flex specific operations that must be carried out, when a sale is cancelled
@@ -130,5 +144,54 @@ class Sales_Sale extends DO_Sales_Sale
 			throw $e;
 		}
 	}
+	
+	// Overrides the DO_Sales_Sale::setCompletedOrCancelledBasedOnSaleItems() method
+	// This updates the status of the sale, if it should be set to Completed or Cancelled, and creates a system note if a flex account is associated with the sale
+	public function setCompletedOrCancelledBasedOnSaleItems($intDealerId=NULL)
+	{
+		try
+		{
+			if ($intDealerId === NULL)
+			{
+				$intDealerId = Dealer::SYSTEM_DEALER_ID;
+			}
+			
+			$intEmployeeId = Flex::getUserId();
+			
+			if ($intEmployeeId === NULL)
+			{
+				$intEmployeeId = Employee::SYSTEM_EMPLOYEE_ID;
+			}
+			
+			// Update the status of the sale in the sales database, if it needs updating
+			$intCurrentSaleStatus = $this->saleStatusId;
+			parent::setCompletedOrCancelledBasedOnSaleItems($intDealerId);
+			$intNewSaleStatus = $this->saleStatusId;
+			
+			// Check if the status was updated
+			if ($intNewSaleStatus != $intCurrentSaleStatus)
+			{
+				// The status has been changed.  If the sale has a Flex account associated with it, then add a system note detailing this status change
+				$objFlexSale = Sale::getForExternalReference("sale.id={$this->id}");
+				if ($objFlexSale !== NULL)
+				{
+					$arrSaleStatusHistory	= DO_Sales_SaleStatusHistory::listForSale($this, "id DESC", 1);
+					$doSaleStatusHistory	= $arrSaleStatusHistory[0];
+					$doStatus				= $doSaleStatusHistory->getSaleStatus();
+					$strNote				= "Sale {$this->id} has now been flagged as having been {$doStatus->name} as at {$doSaleStatusHistory->changedOn} in the sales system";
+					$strNote				.= ($doSaleStatusHistory->description !== NULL)? ". ({$doSaleStatusHistory->description})" : "";
+					
+					$objAccount = Account::getForId($objFlexSale->accountId);
+					
+					Note::createSystemNote($strNote, $intEmployeeId, $objAccount->accountGroup, $this->accountId);
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			throw new Exception(__METHOD__ ." Failed - ". $e->getMessage());
+		}
+	}
+	
 }
 ?>

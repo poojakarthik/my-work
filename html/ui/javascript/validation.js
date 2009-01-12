@@ -51,6 +51,7 @@ String.prototype.Validate = function(strRule, bolNotRequired)
 function VixenValidationClass()
 {
 	this.regexShortDate					= /^(0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/;
+	this.regexDateTime					= /^(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9] (0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19|20)[0-9]{2}$/;
 	this.regexABN						= /^\d{11}$/;
 	this.regexPostCode					= /^\d{4}$/;
 	this.regexPositiveInteger			= /^\d+$/;
@@ -58,7 +59,7 @@ function VixenValidationClass()
 	this.regexLettersOnly				= /^[A-Za-z]+$/;
 	this.regexTime24Hr					= /^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2}$/;
 	this.regexMonetaryValue				= /^\d+(\.(\d){0,2})?$/
-	this.regexDateTime					= /^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2} (0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/;
+//	this.regexDateTime					= /^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2} (0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/;
 	this.regexEmailAddress				= /^[a-z0-9!#\$%&'\*\+\/=\?\^_`\{\|\}~\-]+(?:\.[a-z0-9!#\$%&'\*\+\/=\?\^_`\{\|\}~\-]+)*@(?:[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$/;
 	this.regexPositiveFloat				= /^\d+(\.(\d)*)?$/;
 

@@ -170,32 +170,23 @@ class ContextMenuFramework
 	{
 		$arrReturn = Array();
 
-		foreach ($arrMenu as $strMenu=>$arrSubMenu)
+		foreach ($arrMenu as $strMenuItemLabel=>$mixDetails)
 		{
-			// add menu item
-			$strMenu = str_replace("_", " ", $strMenu);  //replace _'s with spaces
-			
-			if (!is_array(current($arrSubMenu)))
+			if (is_array($mixDetails))
 			{
-				$strMethod = str_replace(" ", "", $strMenu);
-				// add menu link
-				$strAction = call_user_func_array(Array($this->_objMenuItems, $strMethod), $arrSubMenu);
-				$strMenuLabel = $this->_objMenuItems->ContextMenuItemLabel($strMethod, $arrSubMenu);
-				if ($strMenuLabel == NULL)
-				{
-					$strMenuLabel = $strMenu;
-				}
-				$arrReturn[$strMenuLabel] = $strAction;
+				// mixDetails is a submenu
+				$arrReturn[str_replace("_", " ", $strMenuItemLabel)] = $this->_BuildArray($mixDetails);
 			}
 			else
 			{
-				$arrReturn[$strMenu] = $this->_BuildArray($arrSubMenu);
+				// Assume mixDetails is an action string (href or javascript)
+				$arrReturn[$strMenuItemLabel] = $mixDetails;
 			}
 		}
 		
 		return $arrReturn;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// BuildArray
 	//------------------------------------------------------------------------//
@@ -211,12 +202,7 @@ class ContextMenuFramework
 	 */
 	function BuildArray()
 	{
-		$this->_objMenuItems = new MenuItems();
-		
-		$arrOutput = $this->_BuildArray($this->arrProperties);
-		
-		return $arrOutput;
-
+		return $this->_BuildArray($this->arrProperties);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -225,9 +211,9 @@ class ContextMenuFramework
 	/**
 	 * __call()
 	 *
-	 * Creates a new root Menu item with this name
+	 * Creates a new root Menu item with this name (Yes I know this is ugly, considering the code is repeated in the MenuToken class)
 	 *
-	 * Creates a new root Menu item with this name
+	 * Creates a new root Menu item with this name (Yes I know this is ugly, considering the code is repeated in the MenuToken class)
 	 *
 	 * @param	string	$strItem		Item to create
 	 * @param	array	$arrArguments	Passed Arguments where first and only member should be the value
@@ -238,11 +224,22 @@ class ContextMenuFramework
 	 */
 	function __call($strItem, $arrArguments)
 	{
+		static $objMenuItems;
+		if (!isset($objMenuItems))
+		{
+			$objMenuItems = new MenuItems();
+		}
+		
 		// Set item value
-		$this->arrProperties[$strItem]	= $arrArguments;
+		$objMenuItems->strContextMenuLabel = "";
+		$strMethod		= str_replace("_", "", $strItem);
+		$strAction		= call_user_func_array(Array($objMenuItems, $strMethod), $arrArguments);
+		$strActionLabel	= (strlen($objMenuItems->strContextMenuLabel) != 0)? $objMenuItems->strContextMenuLabel : str_replace("_", " ", $strItem);
+		
+		// Set item value
+		$this->arrProperties[$strActionLabel] = $strAction;
 		return TRUE;
 	}
-	
 	
 	//------------------------------------------------------------------------//
 	// Info
@@ -260,8 +257,6 @@ class ContextMenuFramework
 	 */
 	function Info()
 	{
-		$this->_objMenuItems = new MenuItems();
-		
 		return $this->_BuildArray($this->arrProperties);
 	}
 

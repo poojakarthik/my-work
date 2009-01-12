@@ -4,6 +4,7 @@ class Application_Handler_Sales extends Application_Handler
 {
 	const MAX_RECORDS_PER_PAGE = 24;
 	
+	
 	// Handle a request for the home page of the Sales (Flex) system
 	public function System($subPath)
 	{
@@ -228,6 +229,113 @@ class Application_Handler_Sales extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 	}
+
+	// Manages the Reporting functionality
+	public function Report($subPath)
+	{
+		// Check user permissions
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES_ADMIN);
+		
+		BreadCrumb()->EmployeeConsole();
+		BreadCrumb()->ManageSales(TRUE);
+		
+		try
+		{
+			// Work out what report they want
+			if (is_array($subPath) && count($subPath) >= 1)
+			{
+				$strReportType	= array_shift($subPath);
+				$arrReportTypes	= Sales_Report::getReportTypes();
+				
+				if (!array_key_exists($strReportType, $arrReportTypes))
+				{
+					// Unknown report request
+					throw new Exception("Unknown Report Request: {$strReportType}");
+				}
+			}
+			else
+			{
+				// No specific report has been requested
+				throw new Exception("A specific sales report has not been specified");
+			}
+			
+			$strReportName = $arrReportTypes[$strReportType]['Name'];
+			BreadCrumb()->SetCurrentPage($strReportName);
+			
+			if (count($subPath) == 1)
+			{
+				$strAction = strtolower(array_shift($subPath));
+				if ($strAction == "getreport")
+				{
+					// The user wants to retrieve the cached SummaryReport
+					if (	is_array($_SESSION['Sales']) && 
+							is_array($_SESSION['Sales']['Report']) && 
+							array_key_exists("Content", $_SESSION['Sales']['Report'])
+						)
+					{
+						// A report has been cached. Send it to the user
+						header("Content-Type: application/excel");
+						header("Content-Disposition: attachment; filename=\"" . strtolower(str_replace(" ", "_", $strReportName)) ."_". date("Y_m_d") . ".xls" . "\"");
+						echo $_SESSION['Sales']['Report']['Content'];
+						
+						// Remove it from the Session
+						unset($_SESSION['Sales']['Report']['Content']);
+						exit;
+					}
+				}
+			}
+		
+			// Process Dealers
+			$arrObjDealers		= Dealer::getAll("id != ". Dealer::SYSTEM_DEALER_ID, array("username" => TRUE));
+			$arrObjManagers		= Dealer::getManagers();
+			$arrDealers			= array();
+			$arrSortedDealerIds	= array();
+			foreach ($arrObjDealers as $intId=>$objDealer)
+			{
+				$dealer = new stdClass();
+				$dealer->id			= $intId;
+				$dealer->username	= $objDealer->username;
+				$dealer->name		= $objDealer->firstName ." ". $objDealer->lastName;
+				$dealer->upLineId	= $objDealer->upLineId;
+				$dealer->isManager	= array_key_exists($intId, $arrObjManagers);
+				$arrDealers[$intId]	= $dealer;
+				
+				// This is used by javascript so that the order of the dealers is retained (it's current sorted by username ASC)
+				$arrSortedDealerIds[] = $intId;
+			}
+
+			// Find out when the first sale was created (although we should really be looking for the first sale that was verified)
+			$arrSales = DO_Sales_Sale::searchFor(NULL, array(DO_Sales_Sale::ORDER_BY_CREATED_ON=>TRUE), 1);
+			if (count($arrSales) == 1)
+			{
+				$doSale = current($arrSales);
+				$strEarliestTimestamp = date("Y-m-d 00:00:00", strtotime($doSale->createdOn));
+			}
+			else
+			{
+				$strEarliestTimestamp = date("Y-m-d 00:00:00", strtotime("-3 months"));
+			}
+			
+			$arrData = array(	"ReportType"		=> $strReportType,
+								"ReportName"		=> $strReportName,
+								"Dealers"			=> $arrDealers,
+								"SortedDealerIds"	=> $arrSortedDealerIds,
+								"SaleStatuses"		=> DO_Sales_SaleStatus::getAll(),
+								"SaleItemStatuses"	=> DO_Sales_SaleItemStatus::getAll(),
+								"EarliestTimestamp"	=> $strEarliestTimestamp
+							);
+
+			$this->LoadPage('sale_report', HTML_CONTEXT_DEFAULT, $arrData);
+		}
+		catch (Exception $e)
+		{
+			$arrDetailsToRender['Message'] = "An error occured when trying to prepare the Sales Report page";
+			$arrDetailsToRender['ErrorMessage'] = $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+		}
+		
+	}
+
 }
 
 ?>

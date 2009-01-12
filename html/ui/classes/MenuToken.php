@@ -140,6 +140,12 @@ class MenuToken
 	 */
 	function __call($strItem, $arrArguments)
 	{
+		static $objMenuItems;
+		if (!isset($objMenuItems))
+		{
+			$objMenuItems = new MenuItems();
+		}
+		
 		// Dereference the Item
 		$arrMenu = &$this->_objOwner->arrProperties;
 		foreach ($this->_arrPath as $strPathItem)
@@ -152,10 +158,15 @@ class MenuToken
 		}
 		
 		// Set item value
-		$arrMenu[$strItem]	= $arrArguments;
+		$objMenuItems->strContextMenuLabel = "";
+		$strMethod		= str_replace("_", "", $strItem);
+		$strAction		= call_user_func_array(Array($objMenuItems, $strMethod), $arrArguments);
+		$strActionLabel	= (strlen($objMenuItems->strContextMenuLabel) != 0)? $objMenuItems->strContextMenuLabel : str_replace("_", " ", $strItem);
+		
+		$arrMenu[$strActionLabel] = $strAction;
 		return TRUE;
 	}
-
+	
 	//------------------------------------------------------------------------//
 	// Info
 	//------------------------------------------------------------------------//

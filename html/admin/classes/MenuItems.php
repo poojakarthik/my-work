@@ -124,7 +124,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function EmployeeMessageManagement() {
+	function EmployeeMessageManagement()
+	{
 		$this->strContextMenuLabel = "Daily Message Management";
 		$this->strLabel = "Daily Message Management";
 		return self :: NEW_FRAMEWORK . "reflex.php/Employee/ManageDailyMessages";
@@ -148,7 +149,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function TicketingAdmin() {
+	function TicketingAdmin()
+	{
 		$this->strContextMenuLabel = "Ticketing Administration";
 		$this->strLabel = "Ticketing Administration";
 		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Admin";
@@ -172,7 +174,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function TicketingAttachmentTypes() {
+	function TicketingAttachmentTypes()
+	{
 		$this->strContextMenuLabel = "Ticketing Attachment Types";
 		$this->strLabel = "Ticketing Attachment Types";
 		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/AttachmentTypes";
@@ -189,7 +192,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function TicketingConsole($lastQuery = FALSE) {
+	function TicketingConsole($lastQuery = FALSE)
+	{
 		$this->strContextMenuLabel = "View All Tickets";
 		$this->strLabel = "Tickets";
 		$last = $lastQuery ? '/Last' : ($lastQuery === FALSE ? '/All' : '');
@@ -210,7 +214,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function TicketingTicket($ticketId) {
+	function TicketingTicket($ticketId)
+	{
 		$this->strContextMenuLabel = "View Ticket $ticketId";
 		$this->strLabel = "View Ticket " . $ticketId;
 		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/$ticketId/View";
@@ -230,7 +235,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewUserTickets() {
+	function ViewUserTickets()
+	{
 		$this->strContextMenuLabel = "View My Tickets";
 		$this->strLabel = "My Tickets";
 		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets/Mine";
@@ -250,7 +256,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function AddTicket() {
+	function AddTicket()
+	{
 		$this->strContextMenuLabel = "Add New Ticket";
 		$this->strLabel = "New Ticket";
 		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/Create";
@@ -271,7 +278,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function TicketingSummaryReport($bolRetrieveCachedReport = FALSE) {
+	function TicketingSummaryReport($bolRetrieveCachedReport = FALSE)
+	{
 		$this->strContextMenuLabel = "Summary";
 		$this->strLabel = "Summary";
 		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/SummaryReport" . (($bolRetrieveCachedReport) ? "/GetReport" : "");
@@ -291,7 +299,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ManageCustomerStatuses() {
+	function ManageCustomerStatuses()
+	{
 		$this->strContextMenuLabel = "Customer Statuses";
 		$this->strLabel = "Customer Statuses";
 		return self :: NEW_FRAMEWORK . "reflex.php/CustomerStatus/ViewAll";
@@ -312,7 +321,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewCustomerStatus($intId) {
+	function ViewCustomerStatus($intId)
+	{
 		$strName = Customer_Status :: getForId($intId)->name;
 		$this->strContextMenuLabel = "View Customer Status $strName";
 		$this->strLabel = $strName;
@@ -334,7 +344,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function EditCustomerStatus($intId) {
+	function EditCustomerStatus($intId)
+	{
 		$strName = Customer_Status :: getForId($intId)->name;
 		$this->strContextMenuLabel = "Edit Customer Status $strName";
 		$this->strLabel = $strName;
@@ -355,7 +366,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function CustomerStatusSummaryReport($bolRetrieveCachedReport = FALSE) {
+	function CustomerStatusSummaryReport($bolRetrieveCachedReport = FALSE)
+	{
 		$this->strContextMenuLabel = "Summary Report";
 		$this->strLabel = "Summary Report";
 		return self :: NEW_FRAMEWORK . "reflex.php/CustomerStatus/SummaryReport" . (($bolRetrieveCachedReport) ? "/GetReport" : "");
@@ -375,7 +387,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function CustomerStatusAccountReport($bolRetrieveCachedReport = FALSE) {
+	function CustomerStatusAccountReport($bolRetrieveCachedReport = FALSE)
+	{
 		$this->strContextMenuLabel = "Account Report";
 		$this->strLabel = "Account Report";
 		return self :: NEW_FRAMEWORK . "reflex.php/CustomerStatus/AccountReport" . (($bolRetrieveCachedReport) ? "/GetReport" : "");
@@ -395,7 +408,10 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function GenerateCustomerStatusAccountReport($intInvoiceRun, $arrCustomerGroups = NULL, $arrCustomerStatuses = NULL) {
+	function GenerateCustomerStatusAccountReport($intInvoiceRun, $arrCustomerGroups = NULL, $arrCustomerStatuses = NULL)
+	{
+		$this->strContextMenuLabel = "";
+		$this->strLabel = "";
 		$strGetVars = "?InvoiceRun=$intInvoiceRun";
 		if (is_array($arrCustomerGroups)) {
 			$strGetVars .= implode("&CustomerGroup[]=", $arrCustomerGroups);
@@ -423,7 +439,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewServiceRatePlan($intId) {
+	function ViewServiceRatePlan($intId)
+	{
 		$this->strContextMenuLabel = "View Plan";
 		$this->strLabel = "Plan";
 		return self :: NEW_FRAMEWORK . "flex.php/Service/ViewPlan/?Service.Id=$intId";
@@ -446,7 +463,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewDocumentTemplateHistory($intCustomerGroup, $intTemplateType) {
+	function ViewDocumentTemplateHistory($intCustomerGroup, $intTemplateType)
+	{
 		$this->strLabel = "Template History";
 		$this->strContextMenuLabel = "Template History";
 		return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewDocumentTemplateHistory/?CustomerGroup.Id=$intCustomerGroup&DocumentTemplateType.Id=$intTemplateType";
@@ -469,7 +487,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewCustomerGroup($intId, $strBreadCrumbLabel = NULL) {
+	function ViewCustomerGroup($intId, $strBreadCrumbLabel = NULL)
+	{
 		$this->strLabel = "Customer Group";
 		if ($strBreadCrumbLabel !== NULL) {
 			$this->strLabel = $strBreadCrumbLabel;
@@ -498,7 +517,8 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewCustomerGroupCreditCardConfig($intId, $strAction = 'View') {
+	function ViewCustomerGroupCreditCardConfig($intId, $strAction = 'View')
+	{
 		$this->strLabel = "Credit Card Configuration";
 		$this->strContextMenuLabel = "";
 		return self :: NEW_FRAMEWORK . "reflex.php/CustomerGroup/CreditCardConfig/$intId/$strAction";
@@ -521,7 +541,10 @@ class MenuItems {
 	 * @return	string							Href to trigger the functionality
 	 * @method
 	 */
-	function AddDocumentResource($intCustomerGroup, $intResourceType, $strResourceTypeName) {
+	function AddDocumentResource($intCustomerGroup, $intResourceType, $strResourceTypeName)
+	{
+		$this->strContextMenuLabel = "";
+		$this->strLabel = "";
 		// Setup data to send
 		$arrData['CustomerGroup']['Id'] = $intCustomerGroup;
 		$arrData['DocumentResourceType']['Id'] = $intResourceType;
@@ -546,7 +569,10 @@ class MenuItems {
 	 * @return	string							Href to trigger the functionality
 	 * @method
 	 */
-	function ViewDocumentTemplateSamplePDF($intCustomerGroup = NULL, $intTemplateType = NULL) {
+	function ViewDocumentTemplateSamplePDF($intCustomerGroup = NULL, $intTemplateType = NULL)
+	{
+		$this->strContextMenuLabel = "";
+		$this->strLabel = "";
 		// Setup data to send
 		$arrData['CustomerGroup']['Id'] = $intCustomerGroup;
 		$arrData['DocumentTemplateType']['Id'] = $intTemplateType;
@@ -577,7 +603,10 @@ class MenuItems {
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ViewDocumentResource($intResourceId, $bolDownloadFile = FALSE) {
+	function ViewDocumentResource($intResourceId, $bolDownloadFile = FALSE)
+	{
+		$this->strContextMenuLabel = "";
+		$this->strLabel = "";
 		$strDownload = "";
 		if ($bolDownloadFile) {
 			$strDownload = "&DocumentResource.DownloadFile=TRUE";
@@ -600,7 +629,10 @@ class MenuItems {
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
-	function ViewDocumentResources($intCustomerGroup) {
+	function ViewDocumentResources($intCustomerGroup)
+	{
+		$this->strContextMenuLabel = "";
+		$this->strLabel = "";
 		return self :: NEW_FRAMEWORK . "flex.php/CustomerGroup/ViewDocumentResources/?CustomerGroup.Id=$intCustomerGroup";
 	}
 
@@ -619,7 +651,8 @@ class MenuItems {
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
-	function ManageSales($bolLast=FALSE) {
+	function ManageSales($bolLast=FALSE)
+	{
 		$this->strLabel = "Sales";
 		$this->strContextMenuLabel = "Manage Sales";
 
@@ -642,7 +675,8 @@ class MenuItems {
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
-	function VerifySales($bolLast=FALSE) {
+	function VerifySales($bolLast=FALSE)
+	{
 		$this->strLabel = "Sales";
 		$this->strContextMenuLabel = "Verify Sales";
 
@@ -663,11 +697,42 @@ class MenuItems {
 	 * @return	string						Href to trigger the functionality
 	 * @method
 	 */
-	function ViewSale($intSaleId) {
+	function ViewSale($intSaleId)
+	{
 		$this->strLabel = "Sale";
 		$this->strContextMenuLabel = "View Sale";
 
 		return self :: NEW_FRAMEWORK . "reflex.php/Sales/ViewSale/$intSaleId/";
+	}
+	
+	//------------------------------------------------------------------------//
+	// SalesReport
+	//------------------------------------------------------------------------//
+	/**
+	 * SalesReport()
+	 *
+	 * Compiles the Href to be executed when the Sales Reporting functionality is requested
+	 *
+	 * Compiles the Href to be executed when the Sales Reporting functionality is requested
+	 * 
+	 * @param	string	$strReportType		The type of report to generate
+	 * 										
+	 * @return	string						Href to trigger the functionality
+	 * @method
+	 */
+	function SalesReport($strReportType, $bolRetrieveReport=FALSE)
+	{
+		$arrReportTypes = Sales_Report::getReportTypes();
+		if (!array_key_exists($strReportType, $arrReportTypes))
+		{
+			throw new Exception(__METHOD__ ." - Unknown sales report type: $strReportType");
+		}
+		
+		$this->strLabel				= $arrReportTypes[$strReportType]['Name'];
+		$this->strContextMenuLabel	= $this->strLabel;
+		$strRetrieveReport			= $bolRetrieveReport ? "GetReport/" : "";
+
+		return self::NEW_FRAMEWORK . "reflex.php/Sales/Report/{$strReportType}/$strRetrieveReport";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -961,29 +1026,6 @@ class MenuItems {
 		$this->strLabel = "Add Services";
 		$this->strContextMenuLabel = "Add Services";
 		return self :: NEW_FRAMEWORK . "flex.php/Service/BulkAdd/?Account.Id=$intAccountId";
-	}
-
-	//------------------------------------------------------------------------//
-	// AddServices2
-	//------------------------------------------------------------------------//
-	/**
-	 * AddServices2()
-	 *
-	 * Compiles the Href to be executed when the AddServices (service add bulk) menu item is clicked
-	 *
-	 * Compiles the Href to be executed when the AddServices (service add bulk) menu item is clicked
-	 * Also compiles the label to use if it is being used as a BreadCrumb.
-	 * 
-	 * @param 	integer		$intAccountId	Id of the account that the services will be added to
-	 *
-	 * @return	string						Href to be executed when the AddServices menu item is clicked
-	 *
-	 * @method
-	 */
-	function AddServices2($intAccountId) {
-		$this->strLabel = "Old Add Services";
-		$this->strContextMenuLabel = "Old Add Services";
-		return self :: OLD_FRAMEWORK . "service_addbulk.php?Account=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -1747,6 +1789,8 @@ class MenuItems {
 	 * @method
 	 */
 	function RecordCustomerInHistory($bolSupressErrors, $strNextPage, $intAccountId, $intContactId) {
+		$this->strContextMenuLabel = "";
+		$this->strLabel = "";
 		$arrGetVars = array ();
 		$strSupressErrors = ($bolSupressErrors) ? Application_Handler_CustomerHistory :: SUPRESS_ERRORS_FLAG . "/" : "";
 
@@ -2040,6 +2084,7 @@ class MenuItems {
 	 */
 	function AddAssociatedAccount($intAccountId) {
 		$this->strContextMenuLabel = "";
+		$this->strLabel = "";
 
 		return self :: OLD_FRAMEWORK . "account_add.php?Associated=$intAccountId";
 	}
@@ -2242,6 +2287,7 @@ class MenuItems {
 	 */
 	function MoveService($intServiceId) {
 		$this->strContextMenuLabel = "Move Service";
+		$this->strLabel = "";
 
 		// Setup data to send
 		$arrData['Service']['Id'] = $intServiceId;
@@ -2590,7 +2636,8 @@ class MenuItems {
 	 */
 	function ListServices($intId) {
 		$this->strContextMenuLabel = "";
-
+		$this->strLabel = "Services";
+		
 		/*  The Old Way of open up the list of services in a popup.  Retain this as it will be eventually used again
 		// Setup data to send
 		$arrData['Account']['Id'] = $intId;
@@ -2623,6 +2670,7 @@ class MenuItems {
 	 * @method
 	 */
 	function DeletePayment($intPaymentId) {
+		$this->strContextMenuLabel = "";
 		$this->strLabel = "delete payment: $intPaymentId";
 
 		// Setup data to send
@@ -2653,6 +2701,7 @@ class MenuItems {
 	 * @method
 	 */
 	function DeleteAdjustment($intAdjustmentId) {
+		$this->strContextMenuLabel = "";
 		$this->strLabel = "delete adjustment: $intAdjustmentId";
 
 		// Setup data to send
@@ -2683,6 +2732,7 @@ class MenuItems {
 	 * @method
 	 */
 	function DeleteRecurringAdjustment($intRecurringAdjustmentId) {
+		$this->strContextMenuLabel = "";
 		$this->strLabel = "delete recurring adjustment: $intRecurringAdjustmentId";
 
 		// Setup data to send

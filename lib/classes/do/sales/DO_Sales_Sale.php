@@ -56,55 +56,58 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 		
 		// Build WHERE clause
 		$arrWhereClauseParts = array();
-		foreach ($arrFilter as $arrConstraint)
+		if (is_array($arrFilter))
 		{
-			if (!(is_array($arrConstraint) && array_key_exists("Type", $arrConstraint)))
+			foreach ($arrFilter as $arrConstraint)
 			{
-				// Search constraint declaration is invalid
-				continue;
-			}
-			
-			switch ($arrConstraint['Type'])
-			{
-				case self::SEARCH_CONSTRAINT_MANAGER_ID:
-					$intDealerId = intval($arrConstraint['Value']);
-					if (($doManager = DO_Sales_Dealer::getForId($intDealerId)) === NULL)
-					{
-						throw new Exception(__METHOD__ ." can't find dealer with id: $intDealerId");
-					}
-					
-					$arrDealers = $doManager->getSubordinates();
-					$arrDealerIds = array($intDealerId);
-					foreach ($arrDealers as $doDealer)
-					{
-						$arrDealerIds[] = $doDealer->id;
-					}
-					$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.created_by", $arrDealerIds);
-					break;
-
-				case self::SEARCH_CONSTRAINT_DEALER_ID:
-					$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.created_by", $arrConstraint['Value']);
-					//$arrWhereClauseParts[] = "sale.created_by = $intDealerId";
-					break;
-					
-				case self::SEARCH_CONSTRAINT_SALE_TYPE_ID:
-					$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.sale_type_id", $arrConstraint['Value']);
-					//$arrWhereClauseParts[] = "sale.sale_type_id = $intSaleTypeId";
-					break;
-					
-				case self::SEARCH_CONSTRAINT_SALE_STATUS_ID:
-					$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.sale_status_id", $arrConstraint['Value']);
-					//$arrWhereClauseParts[] = "sale.sale_status_id = $intSaleStatusId";
-					break;
-					
-				case self::SEARCH_CONSTRAINT_VENDOR_ID:
-					$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale_account.vendor_id", $arrConstraint['Value']);
-					//$arrWhereClauseParts[] = "sale_account.vendor_id = $intVendorId";
-					break;
-					
-				default:
-					// Unknown Search constraint
+				if (!(is_array($arrConstraint) && array_key_exists("Type", $arrConstraint)))
+				{
+					// Search constraint declaration is invalid
 					continue;
+				}
+				
+				switch ($arrConstraint['Type'])
+				{
+					case self::SEARCH_CONSTRAINT_MANAGER_ID:
+						$intDealerId = intval($arrConstraint['Value']);
+						if (($doManager = DO_Sales_Dealer::getForId($intDealerId)) === NULL)
+						{
+							throw new Exception(__METHOD__ ." can't find dealer with id: $intDealerId");
+						}
+						
+						$arrDealers = $doManager->getSubordinates();
+						$arrDealerIds = array($intDealerId);
+						foreach ($arrDealers as $doDealer)
+						{
+							$arrDealerIds[] = $doDealer->id;
+						}
+						$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.created_by", $arrDealerIds);
+						break;
+	
+					case self::SEARCH_CONSTRAINT_DEALER_ID:
+						$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.created_by", $arrConstraint['Value']);
+						//$arrWhereClauseParts[] = "sale.created_by = $intDealerId";
+						break;
+						
+					case self::SEARCH_CONSTRAINT_SALE_TYPE_ID:
+						$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.sale_type_id", $arrConstraint['Value']);
+						//$arrWhereClauseParts[] = "sale.sale_type_id = $intSaleTypeId";
+						break;
+						
+					case self::SEARCH_CONSTRAINT_SALE_STATUS_ID:
+						$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale.sale_status_id", $arrConstraint['Value']);
+						//$arrWhereClauseParts[] = "sale.sale_status_id = $intSaleStatusId";
+						break;
+						
+					case self::SEARCH_CONSTRAINT_VENDOR_ID:
+						$arrWhereClauseParts[] = self::_prepareSearchConstraint("sale_account.vendor_id", $arrConstraint['Value']);
+						//$arrWhereClauseParts[] = "sale_account.vendor_id = $intVendorId";
+						break;
+						
+					default:
+						// Unknown Search constraint
+						continue;
+				}
 			}
 		}
 		$strWhereClause = (count($arrWhereClauseParts))? "WHERE ". implode(" AND ", $arrWhereClauseParts) : "";

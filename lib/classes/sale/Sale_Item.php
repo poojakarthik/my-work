@@ -28,6 +28,31 @@ class Sale_Item extends ORM
 		parent::__construct($arrProperties, $bolLoadById);
 	}
 	
+	// This will return a flex SaleItem object if found
+	// If a record is not found then it will return NULL if $bolExceptionOnNotFound == FALSE OR throw an exception if $bolExceptionOnNotFound == TRUE
+	public static function getForId($intId, $bolExceptionOnNotFound=FALSE, $bolForceRefresh=FALSE)
+	{
+		$selSaleItem = self::_preparedStatement('selById');
+
+		if (($intCount = $selSaleItem->Execute(array('Id'=>$intId))) === FALSE)
+		{
+			throw new Exception("Failed to retrieve sale_item record with id: $intId. - ". $selSaleItem->Error());
+		}
+		
+		if ($intCount)
+		{
+			return new self($selSaleItem->Fetch());
+		}
+		elseif ($bolExceptionOnNotFound)
+		{
+			throw new Exception("sale_item record with id $intId could not be found");
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+	
 	// Returns the Flex sale_item object relating to $intServiceId (from sale_item table of flex database)
 	// returns NULL if there is no sale_item relating to this record
 	// There should only ever be (at most) 1 sale_item record relating to a service record 

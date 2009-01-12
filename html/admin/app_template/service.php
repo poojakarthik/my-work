@@ -2302,8 +2302,8 @@ class AppTemplateService extends ApplicationTemplate
 			if (DBO()->Service->NewStatus->Value == SERVICE_ACTIVE && DBO()->Service->Status->Value == SERVICE_PENDING && Data_Source::dsnExists(FLEX_DATABASE_CONNECTION_SALES))
 			{
 				// Update the sale details if this service is associated with a sale
-				$objSaleItem = Sale_Item::getForServiceId($intService, TRUE);
-				if ($objSaleItem !== NULL)
+				$objFlexSaleItem = Sale_Item::getForServiceId($intService, TRUE);
+				if ($objFlexSaleItem !== NULL)
 				{
 					// The service was part of a sale, and is a new service
 					$dsSales = DO_Sales_SaleItem::getDataSource();
@@ -2314,7 +2314,7 @@ class AppTemplateService extends ApplicationTemplate
 						$objDealer = Dealer::getForEmployeeId(Flex::getUserId());
 						$intDealerId = ($objDealer !== NULL)? $objDealer->id : Dealer::SYSTEM_DEALER_ID;
 						
-						$doSaleItem	= $objSaleItem->getExternalReferenceObject();
+						$doSaleItem	= $objFlexSaleItem->getExternalReferenceObject();
 						
 						// Check that the sale item hasn't been cancelled
 						if ($doSaleItem->saleItemStatusId == DO_Sales_SaleItemStatus::CANCELLED)
@@ -2327,8 +2327,8 @@ class AppTemplateService extends ApplicationTemplate
 						$doSaleItem->setCompleted($intDealerId);
 						
 						// Set the entire sale to completed, if it is
-						$objSale = Sale::getForId($objSaleItem->saleId, TRUE);
-						$objSale->setCompletedOrCancelledBasedOnSaleItems($intDealerId, Flex::getUserId());
+						$objSale = Sales_Sale::getForFlexSaleId($objFlexSaleItem->saleId, TRUE);
+						$objSale->setCompletedOrCancelledBasedOnSaleItems($intDealerId);
 						
 						$dsSales->commit();
 					}

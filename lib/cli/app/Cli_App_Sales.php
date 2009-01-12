@@ -9,7 +9,7 @@ class Cli_App_Sales extends Cli
 	
 	const	SALES_PORTAL_SYSTEM_DEALER_ID	= 1;
 	
-	const	PROVISIONING_AMNESTY_HOURS		= 72;
+	const	PROVISIONING_AMNESTY_HOURS		= 0; //72
 
 	function run()
 	{
@@ -1437,6 +1437,7 @@ class Cli_App_Sales extends Cli
 		
 		// Save the new Status
 		$strSaleItemStatus	= (is_int($mixNewStatus)) ? $mixNewStatus : "(SELECT id FROM sale_item_status WHERE name = '{$mixNewStatus}')";
+		
 		$resSaleItemUpdate	= $dsSalesPortal->query("UPDATE sale_item " .
 													"SET sale_item_status_id = {$strSaleItemStatus} " .
 													"WHERE id = {$intSPSaleItemId}");
@@ -1486,6 +1487,16 @@ class Cli_App_Sales extends Cli
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
 		
+		$strCurrentTimestamp = Data_Source_Time::currentTimestamp($dsSalesPortal);
+		
+		// The provisioning process may find services that are flagged as pending activation, but their associated SaleItem has been cancelled.
+		// These need to be manually cancelled, or at the very least, brought to the attention of administrative staff
+		$arrServicesToCancel = array();
+		
+		// All Services, other than Landlines, currently need manual provisioning
+		// These need to be brought to the attention of administrative staff
+		$arrServicesNeedingManualProvisioning = array();
+		
 		// Start a transaction for both Databases
 		$dsSalesPortal->beginTransaction();
 		$dacFlex->TransactionStart();
@@ -1495,94 +1506,133 @@ class Cli_App_Sales extends Cli
 			$qryQuery	= new Query();
 			
 			// Get the list of Services which are Pending Activation, originated from the Sales Portal, and have exceeded the Provisioning Amnesty Period
-			$selPendingServices	= new StatementSelect(	"Service JOIN sale_item ON sale_item.service_id = Service.Id JOIN sale ON sale_item.sale_id = sale.id",
-														"Service.*, sale_id, sale.verified_on, sale_item.id AS sale_item_id",
+			// Note that this list can reference sale items that have since been cancelled, and thus should not be auto provisioned
+			$selPendingServices	= new StatementSelect(	"Service INNER JOIN sale_item ON sale_item.service_id = Service.Id INNER JOIN sale ON sale_item.sale_id = sale.id",
+														"Service.*, sale_id AS flex_sale_id, sale.verified_on, sale_item.id AS flex_sale_item_id",
 														"Service.Status = ".SERVICE_PENDING." AND NOW() > ADDDATE(sale.verified_on, INTERVAL ".self::PROVISIONING_AMNESTY_HOURS." HOUR)");
+														
+			// Get list of sale items that currently have a status of dispatched, and are now eligible for auto provisioning (this will not retrieve sale items that have been cancelled)
+			$resSaleItems = $dsSalesPortal->queryAll(	"SELECT si.id AS id ".
+														"FROM sale_item AS si INNER JOIN sale_item_status_history AS sish ON si.id = sish.sale_item_id ".
+														"WHERE si.sale_item_status_id = ". DO_Sales_SaleItemStatus::DISPATCHED ." AND sish.sale_item_status_id = ". DO_Sales_SaleItemStatus::VERIFIED ." AND sish.changed_on < (NOW() - INTERVAL '". self::PROVISIONING_AMNESTY_HOURS ." HOUR');",
+														array("integer"), MDB2_FETCHMODE_ASSOC);
+			
+			// This will store an array of Sales_Sale objects, which have been updated (have had sale items provisioned)
+			$arrProvisionedSales = array();
+			
+			if (PEAR::isError($resSaleItems))
+			{
+				throw new Exception($resSaleItems->getMessage()." :: ".$resSaleItems->getUserInfo());
+			}
+			
+			$arrSPEligibleSaleItems = array();
+			foreach ($resSaleItems as $arrSaleItem)
+			{
+				$arrSPEligibleSaleItems[$arrSaleItem['id']] = $arrSaleItem;
+			}
+			
 			if ($selPendingServices->Execute() === FALSE)
 			{
 				throw new Exception();
 			}
-			else
+
+			while ($arrService = $selPendingServices->Fetch())
 			{
-				while ($arrService = $selPendingServices->Fetch())
+				$objService	= new Service($arrService);
+				
+				$objFlexSaleItem = Sale_Item::getForId($arrService['flex_sale_item_id'], TRUE);
+
+				// Check that the service's sale item is currently flagged as being dispatched (as opposed to cancelled or completed, although the only alternative should be cancelled)
+				if (!array_key_exists($objFlexSaleItem->getExternalReferenceValue(), $arrSPEligibleSaleItems))
 				{
-					$objService		= new Service($arrService);
-					$objRatePlan	= $objService->getCurrentPlan();
+					// The Sale Item associated with this pending service must have been cancelled, but has not yet been 'Closed' in flex
+					$arrServicesToCancel[] = Array(	'Service'		=> $objService,
+													'FlexSaleItem'	=> $objFlexSaleItem
+												);
 					
-					$this->log("\t\t+ {$objService->FNN}...");
-					$this->log("\t\t\t* Sale\t: {$arrService->sale_id}...");
-					$this->log("\t\t\t* Sale Item\t: {$objService->sale_item_id}...");
-					$this->log("\t\t\t* Rate Plan\t: {$objRatePlan->Name}...");
-					
-					// Create 
-					switch ($objService->ServiceType)
-					{
-						case SERVICE_TYPE_LAND_LINE:
-							// Full Service
-							$this->log("\t\t\t+ Adding Full Service Request...");
-							$objFullServiceRequest	= new Provisioning_Request();
-							$objFullServiceRequest->AccountGroup		= $objService->AccountGroup;
-							$objFullServiceRequest->Account				= $objService->Account;
-							$objFullServiceRequest->Service				= $objService->Id;
-							$objFullServiceRequest->FNN					= $objService->FNN;
-							$objFullServiceRequest->Employee			= 0;
-							$objFullServiceRequest->Carrier				= $objRatePlan->CarrierFullService;
-							$objFullServiceRequest->Type				= PROVISIONING_TYPE_FULL_SERVICE;
-							$objFullServiceRequest->RequestedOn			= Data_Source_Time::currentTimestamp();
-							$objFullServiceRequest->AuthorisationDate	= $objService->CreatedOn;
-							$objFullServiceRequest->Status				= REQUEST_STATUS_WAITING;
-							$objFullServiceRequest->save();
-							
-							// Preselection
-							$this->log("\t\t\t+ Adding Preselection Request...");
-							$objPreselectionRequest	= new Provisioning_Request();
-							$objPreselectionRequest->AccountGroup		= $objService->AccountGroup;
-							$objPreselectionRequest->Account			= $objService->Account;
-							$objPreselectionRequest->Service			= $objService->Id;
-							$objPreselectionRequest->FNN				= $objService->FNN;
-							$objPreselectionRequest->Employee			= 0;
-							$objPreselectionRequest->Carrier			= $objRatePlan->CarrierPreselection;
-							$objPreselectionRequest->Type				= PROVISIONING_TYPE_PRESELECTION;
-							$objPreselectionRequest->RequestedOn		= Data_Source_Time::currentTimestamp();
-							$objPreselectionRequest->AuthorisationDate	= $arrService['verified_on'];
-							$objPreselectionRequest->Status				= REQUEST_STATUS_WAITING;
-							$objPreselectionRequest->save();
-							break;
+					// Move on to the next service
+					continue;
+				}
+
+				$objSale		= Sales_Sale::getForFlexSaleId($objFlexSaleItem->saleId, TRUE);
+				$objRatePlan	= $objService->getCurrentPlan();
+
+				$this->log("\t\t+ {$objService->FNN}...");
+				$this->log("\t\t\t* Sale\t: {$objSale->id} ...");
+				$this->log("\t\t\t* Sale Item\t: ". $objFlexSaleItem->getExternalReferenceValue() ." ...");
+				$this->log("\t\t\t* Rate Plan\t: {$objRatePlan->Name} ...");
+				
+				// Create 
+				switch ($objService->ServiceType)
+				{
+					case SERVICE_TYPE_LAND_LINE:
+						// Full Service
+						$this->log("\t\t\t+ Adding Full Service Request...");
+						$objFullServiceRequest	= new Provisioning_Request();
+						$objFullServiceRequest->AccountGroup		= $objService->AccountGroup;
+						$objFullServiceRequest->Account				= $objService->Account;
+						$objFullServiceRequest->Service				= $objService->Id;
+						$objFullServiceRequest->FNN					= $objService->FNN;
+						$objFullServiceRequest->Employee			= 0;
+						$objFullServiceRequest->Carrier				= $objRatePlan->CarrierFullService;
+						$objFullServiceRequest->Type				= PROVISIONING_TYPE_FULL_SERVICE;
+						$objFullServiceRequest->RequestedOn			= Data_Source_Time::currentTimestamp();
+						$objFullServiceRequest->AuthorisationDate	= $objService->CreatedOn;
+						$objFullServiceRequest->Status				= REQUEST_STATUS_WAITING;
+						$objFullServiceRequest->save();
 						
-						default:
-							// This shouldn't happen
-							throw new Exception("Service of Type '".GetConstantDescription($objService->ServiceType, 'service_type')."' are not automatically provisioned by Flex!");
-							break;
-					}
+						// Preselection
+						$this->log("\t\t\t+ Adding Preselection Request...");
+						$objPreselectionRequest	= new Provisioning_Request();
+						$objPreselectionRequest->AccountGroup		= $objService->AccountGroup;
+						$objPreselectionRequest->Account			= $objService->Account;
+						$objPreselectionRequest->Service			= $objService->Id;
+						$objPreselectionRequest->FNN				= $objService->FNN;
+						$objPreselectionRequest->Employee			= 0;
+						$objPreselectionRequest->Carrier			= $objRatePlan->CarrierPreselection;
+						$objPreselectionRequest->Type				= PROVISIONING_TYPE_PRESELECTION;
+						$objPreselectionRequest->RequestedOn		= Data_Source_Time::currentTimestamp();
+						$objPreselectionRequest->AuthorisationDate	= $arrService['verified_on'];
+						$objPreselectionRequest->Status				= REQUEST_STATUS_WAITING;
+						$objPreselectionRequest->save();
+						break;
 					
-					// Set this Service to Active in Flex
-					$objService->Status	= SERVICE_ACTIVE;
-					$objService->save();
-					
-					// Set the Sale Item to Completed in the Sales Portal
-					$this->_updateSaleItemStatus($arrService['sale_item_id'], 'Completed');
+					default:
+						// This case will only occur if a Service is of a type that must be manually provisioned, and the service has not yet been set to ACTIVE in Flex
+						
+						// These services will require manual Provisioning
+						$arrServicesNeedingManualProvisioning[] = Array('Service'		=> $objService,
+																		'FlexSaleItem'	=> $objFlexSaleItem
+																		);
+						continue;
+						//throw new Exception("Service of Type '".GetConstantDescription($objService->ServiceType, 'service_type')."' are not automatically provisioned by Flex!");
+						//break;
 				}
 				
-				// Finalise Sales/Accounts
-				$selCompletedPendingAccounts	= new StatementSelect(	"Account JOIN sale ON Account.Id = sale.account_id",
-																		"Account.*, sale.id AS sale_id",
-																		"Account.Archived = ".ACCOUNT_STATUS_PENDING_ACTIVATION." AND 0 < (SELECT COUNT(Id) FROM Service JOIN sale_item ON sale_item.service_id = Service.Id WHERE Account = Account.Id AND Status = ".SERVICE_PENDING.")");
-				if ($selCompletedPendingAccounts->Execute() === FALSE)
+				// Set this Service to Active in Flex
+				$objService->Status	= SERVICE_ACTIVE;
+				$objService->save();
+				
+				// Set the Sale Item to Completed in the Sales Portal
+				$this->_updateSaleItemStatus($objFlexSaleItem->getExternalReferenceValue(), DO_Sales_SaleItemStatus::COMPLETED);
+				
+				if (!array_key_exists($objSale->id, $arrProvisionedSales))
 				{
-					throw new Exception($selCompletedPendingAccounts->Error());
+					$arrProvisionedSales[$objSale->id] = $objSale;
 				}
-				while ($arrAccount = $selCompletedPendingAccounts->Fetch())
-				{
-					// Flex: Update Pending Accounts to Active if all of their Services are now Active or Disconnected
-					$objAccount	= new Account($arrAccount, FALSE, TRUE);
-					$objAccount->Status	= ACCOUNT_STATUS_ACTIVE;
-					$objAccount->save();
-					
-					// SP: Update the associated Sale in 
-					$this->_updateSaleItemStatus($arrService['sale_item_id'], 'Completed');
-				}
+				
 			}
 			
+			// Finalise Sales/Accounts
+			// Accounts don't need to be finalised as they are set to ACTIVE as soon as the sale is imported
+			foreach ($arrProvisionedSales as $objSale)
+			{
+				$objSale->setCompletedOrCancelledBasedOnSaleItems();
+			}
+			
+			//TODO! I should email the list of Services that should be cancelled, and the list of services that still need to be manually provisioned to the interested parties
+			
+
 			// All seems to have worked fine -- Commit the Transactions
 			$dsSalesPortal->commit();
 			$dacFlex->TransactionCommit();
