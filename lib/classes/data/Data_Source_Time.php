@@ -5,6 +5,11 @@ class Data_Source_Time
 {
 	private static $_arrCachedTimestamps = array();
 	
+	public static function formatTime($strISODateTime, $strFormat)
+	{
+		return date($strFormat, strtotime($strISODateTime));
+	}
+	
 	// Returns the current timestamp from the database, in ISO datetime format, ommiting fractions of a second (YYYY-MM-DD HH:MM:SS)
 	// Note that we only cache the timestamp if $objDataSource->getName() is not NULL
 	public static function currentTimestamp($objDataSource=NULL, $bolForceRefresh=FALSE, $bolUpdateCache=FALSE)

@@ -1980,6 +1980,14 @@ class AppTemplateService extends ApplicationTemplate
 			// Declare the transaction
 			TransactionStart();
 
+			$dsSales = NULL;
+			if (Data_Source::dsnExists(FLEX_DATABASE_CONNECTION_SALES))
+			{
+				// Start a transaction on the Sales DataSource, because this might need modifications
+				$dsSales = DO_Sales_SaleItem::getDataSource();
+				$dsSales->beginTransaction();
+			}
+
 			// Check if the Extension Level Billing property has been updated
 			if (DBO()->Service->ELB->Value !== NULL)
 			{
@@ -2298,52 +2306,12 @@ class AppTemplateService extends ApplicationTemplate
 				SaveSystemNote("Service modified.\n$strChangesNote", DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, (DBO()->NewService->Id->IsSet)? DBO()->NewService->Id->Value : DBO()->Service->Id->Value);
 			}
 
-			// Handle Sale stuff
-			if (DBO()->Service->NewStatus->Value == SERVICE_ACTIVE && DBO()->Service->Status->Value == SERVICE_PENDING && Data_Source::dsnExists(FLEX_DATABASE_CONNECTION_SALES))
-			{
-				// Update the sale details if this service is associated with a sale
-				$objFlexSaleItem = FlexSaleItem::getForServiceId($intService, TRUE);
-				if ($objFlexSaleItem !== NULL)
-				{
-					// The service was part of a sale, and is a new service
-					$dsSales = DO_Sales_SaleItem::getDataSource();
-					$dsSales->beginTransaction();
-					try
-					{
-						// Get the employee's dealer object if they are one, else use the system dealer
-						$objDealer = Dealer::getForEmployeeId(Flex::getUserId());
-						$intDealerId = ($objDealer !== NULL)? $objDealer->id : Dealer::SYSTEM_DEALER_ID;
-						
-						$doSaleItem	= $objFlexSaleItem->getExternalReferenceObject();
-						
-						// Check that the sale item hasn't been cancelled
-						if ($doSaleItem->saleItemStatusId == DO_Sales_SaleItemStatus::CANCELLED)
-						{
-							// It has been cancelled, which means the service should not be activated
-							throw new Exception("This service cannot be activated, because the sale of this service has been cancelled");
-						}
-					
-						// Flag it as having been completed
-						$doSaleItem->setCompleted($intDealerId);
-						
-						// Set the entire sale to completed, if it is
-						$objSale = Sales_Sale::getForFlexSaleId($objFlexSaleItem->saleId, TRUE);
-						$objSale->setCompletedOrCancelledBasedOnSaleItems($intDealerId);
-						
-						$dsSales->commit();
-					}
-					catch (Exception $e)
-					{
-						$dsSales->rollback();
-						TransactionRollback();
-						Ajax()->AddCommand("Alert", "ERROR: Failed to update sale details relating to this service.<br />". $e->getMessage() ."<br />All modifications to the service have been aborted");
-						return TRUE;
-					}
-				}
-			}
-
-			// Commit the transaction
+			// Commit the transactions
 			TransactionCommit();
+			if ($dsSales !== NULL)
+			{
+				$dsSales->commit();
+			}
 			
 			// Close the popup
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);

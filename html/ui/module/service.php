@@ -1718,6 +1718,8 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 	 * If the Service has already closed then a new Service record will be added,
 	 * based on the current Service record in the database
 	 * It will not copy across unbilled CDRs, Charges, recurring charges or the plan details
+	 * If the Service originated from a sale in the SalesPortal, and is currently pending activation, 
+	 * 	then the corresponding sale item will have its status updated to COMPLETE
 	 * 
 	 * @param	string	$strTimeStamp	TimeStamp at which the Activation will be recorded as having been made.
 	 * 									This should not be in the past 
@@ -1759,6 +1761,44 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 			
 			// Update the corresponding record in the _arrServiceRecords array
 			$this->_arrServiceRecords[0]['Status'] = SERVICE_ACTIVE;
+			
+			// Update the corresponding sale_item record in the Sales Portal, if there is one (set it to COMPLETE) 
+			if (Data_Source::dsnExists(FLEX_DATABASE_CONNECTION_SALES))
+			{
+				$objFlexSaleItem = FlexSaleItem::getForServiceId($intService, TRUE);
+				if ($objFlexSaleItem !== NULL)
+				{
+					// The service originated from a sale in the Sales Portal
+					try
+					{
+						// Get the employee's dealer object if they are one, else use the system dealer
+						$objDealer = Dealer::getForEmployeeId(Flex::getUserId());
+						$intDealerId = ($objDealer !== NULL)? $objDealer->id : Dealer::SYSTEM_DEALER_ID;
+						
+						$doSaleItem	= $objFlexSaleItem->getExternalReferenceObject();
+						
+						// Check that the sale item hasn't been cancelled
+						if ($doSaleItem->saleItemStatusId == DO_Sales_SaleItemStatus::CANCELLED)
+						{
+							// It has been cancelled, which means the service should not be activated
+							throw new Exception("This service cannot be activated, because the sale of this service has been cancelled");
+						}
+					
+						// Flag it as having been completed
+						$doSaleItem->setCompleted($intDealerId);
+						
+						// Set the entire sale to completed, if it is
+						$objSale = Sales_Sale::getForFlexSaleId($objFlexSaleItem->saleId, TRUE);
+						$objSale->setCompletedOrCancelledBasedOnSaleItems($intDealerId);
+						
+					}
+					catch (Exception $e)
+					{
+						$this->_strErrorMsg = "Failed to update sale details relating to this service - ". $e->getMessage();
+						return FALSE;
+					}
+				}
+			}
 			
 			// Service was activated successfully
 			return TRUE;
@@ -1889,9 +1929,38 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 
 		if ($this->GetStatus() == SERVICE_PENDING)
 		{
-			// You cannot deactivate a service that is pending activation
-			$this->_strErrorMsg = "Cannot deactivate a service that is pending activation";
-			return FALSE;
+			// You can only deactivate a service that is pending activation, if the service relates to a cancelled sale
+			$objFlexSaleItem = FlexSaleItem::getForServiceId($intService, TRUE);
+			if (Data_Source::dsnExists(FLEX_DATABASE_CONNECTION_SALES) && $objFlexSaleItem !== NULL)
+			{
+				// The service originated from a sale in the Sales Portal
+				try
+				{
+					$doSaleItem	= $objFlexSaleItem->getExternalReferenceObject();
+					
+					if ($doSaleItem->saleItemStatusId != DO_Sales_SaleItemStatus::CANCELLED)
+					{
+						// The corresponding sale item has not been cancelled
+						$this->_strErrorMsg = "Cannot deactivate a service that is pending activation, until the corresponding sale item is cancelled";
+						return FALSE;
+					}
+					else
+					{
+						// The sale item is cancelled, so deactivating the service is ok
+					}
+				}
+				catch (Exception $e)
+				{
+					$this->_strErrorMsg = "Failed to retrieve sale information relating to this service - ". $e->getMessage();
+					return FALSE;
+				}
+			}
+			else
+			{
+				// You cannot deactivate a service that is pending activation, unless it directly relates to a sale_item that has been cancelled
+				$this->_strErrorMsg = "Cannot deactivate a service that is pending activation";
+				return FALSE;
+			}
 		}
 
 		// Work out the nature of the closure

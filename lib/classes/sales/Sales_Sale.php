@@ -178,7 +178,8 @@ class Sales_Sale extends DO_Sales_Sale
 					$arrSaleStatusHistory	= DO_Sales_SaleStatusHistory::listForSale($this, "id DESC", 1);
 					$doSaleStatusHistory	= $arrSaleStatusHistory[0];
 					$doStatus				= $doSaleStatusHistory->getSaleStatus();
-					$strNote				= "Sale {$this->id} has now been flagged as having been {$doStatus->name} as at {$doSaleStatusHistory->changedOn} in the sales system";
+					$strTimestampFormatted	= Data_Source_Time::formatTime($doSaleStatusHistory->changedOn, "H:i:s d-m-Y");
+					$strNote				= "Sale {$this->id} has now been flagged as having been {$doStatus->name} as at $strTimestampFormatted in the sales system";
 					$strNote				.= ($doSaleStatusHistory->description !== NULL)? ". ({$doSaleStatusHistory->description})" : "";
 					
 					$objAccount = Account::getForId($objFlexSale->accountId);

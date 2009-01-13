@@ -138,7 +138,9 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		else
 		{
 			// The service wasn't created today, so they can't change the FNN
-			DBO()->Service->FNN->RenderOutput();
+			$strFNN = DBO()->Service->FNN->Value . (DBO()->Service->Indial100->Value ? " (Indial 100)":"");
+			
+			DBO()->Service->FNN->RenderArbitrary($strFNN, RENDER_OUTPUT);
 			
 			// This shouldn't really be included at all, but if I just render it as a hidden, then I don't have
 			// to worry about updating the logic
@@ -174,9 +176,35 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			}
 			else
 			{
-				// The service is pending activation.  They should not be able to disconnect it or archive it
-				unset($arrStatusOptions[SERVICE_DISCONNECTED]);
-				unset($arrStatusOptions[SERVICE_ARCHIVED]);
+				// The service is pending activation
+				// The user should not be able to disconnect it or archive it, unless it originated from a SalesPortal sale which is now cancelled
+				// I shouldn't need to check for the Sales module, because if it isn't active, then there shouldn't be any records in the flex.sale_item table
+				$objFlexSaleItem = FlexSaleItem::getForServiceId(DBO()->Service->Id->Value);
+				if ($objFlexSaleItem !== NULL)
+				{
+					// The service relates to a sale item created in the SalesPortal
+					$saleItem = $objFlexSaleItem->getExternalReferenceObject();
+					if ($saleItem->saleItemStatusId == DO_Sales_SaleItemStatus::CANCELLED)
+					{
+						// The sale item has been cancelled, which means the service should be 'cancelled'.
+						// Considering it's pending activation, no provisioning should have been done, unless it was manually provisioned
+						unset($arrStatusOptions[SERVICE_ARCHIVED]);
+						unset($arrStatusOptions[SERVICE_ACTIVE]);
+						$arrStatusOptions[SERVICE_DISCONNECTED]['Description'] .= " (Cancelled Sale)";
+					}
+					else
+					{
+						// The sale item has not been cancelled
+						unset($arrStatusOptions[SERVICE_DISCONNECTED]);
+						unset($arrStatusOptions[SERVICE_ARCHIVED]);
+					}
+				}
+				else
+				{
+					// The service did not originate from a sale in the SalesPortal
+					unset($arrStatusOptions[SERVICE_DISCONNECTED]);
+					unset($arrStatusOptions[SERVICE_ARCHIVED]);
+				}
 			}
 		}
 		
@@ -192,7 +220,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 <div class='DefaultElement'>
 	<div class='DefaultLabel'>&nbsp;&nbsp;Status :</div>
 	<div class='DefaultOutput'>
-		<select id='ServiceEditStatusCombo' name='Service.NewStatus' style='width:155px'>$strStatusOptions</select>
+		<select id='ServiceEditStatusCombo' name='Service.NewStatus' style='width:auto'>$strStatusOptions</select>
 	</div>
 </div>
 ";
@@ -248,7 +276,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			DBO()->ServiceMobileDetail->SimESN->RenderInput();
 			
 			echo "<div class='DefaultElement'>\n";
-			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
 			echo "      <select name='ServiceMobileDetail.SimState' >\n";
 			echo "<option value=''><span>&nbsp;</span></option>\n";
@@ -262,7 +290,12 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "</div>\n";
 			
 			DBO()->ServiceMobileDetail->DOB->RenderInput();				
-			DBO()->ServiceMobileDetail->Comments->RenderInput();
+
+			echo "<div class='DefaultElement'>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Comments :</div>\n";
+			echo "   <textarea id='ServiceMobileDetail.Comments' name='ServiceMobileDetail.Comments' class='DefaultInputTextArea' rows='3' style='overflow:auto;width:50%'>". htmlspecialchars(DBO()->ServiceMobileDetail->Comments->Value) ."</textarea>\n";
+			echo "</div>\n";
+
 		}
 		
 		echo "</div>\n";  // GroupedContent

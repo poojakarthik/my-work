@@ -123,17 +123,27 @@ function VixenServiceEditClass()
 						break;
 					
 					case SERVICE_PENDING:
-						// You can only go from SERVICE_PENDING to SERVICE_ACTIVE
-						strMsg += "<br /><br />You have chosen to <strong>activate</strong> this service for the first time.";
-						if (this.bolCanBeProvisioned)
+						// You can only go from SERVICE_PENDING to SERVICE_ACTIVE ( or SERVICE_DISCONNECTED if the service is associated with a cancelled sale item from the SalesPortal)
+						switch (intNewStatus)
 						{
-							// The service can be automatically provisioned
-							strMsg += "<br />Provisioning requests will be automatically sent for Carrier Full Selection and Preselection.";
-						}
-						else
-						{
-							// The service can not be automatically provisioned
-							strMsg += "<br />Provisioning requests can not be automatically sent for this Service.  They must be manually configured.";
+							case SERVICE_ACTIVE:
+								strMsg += "<br /><br />You have chosen to <strong>activate</strong> this service for the first time.";
+								if (this.bolCanBeProvisioned)
+								{
+									// The service can be automatically provisioned
+									strMsg += "<br />Provisioning requests will be automatically sent for Carrier Full Selection and Preselection.";
+								}
+								else
+								{
+									// The service can not be automatically provisioned
+									strMsg += "<br />Provisioning requests can not be automatically sent for this Service.  They must be manually configured.";
+								}
+								break;
+							case SERVICE_DISCONNECTED:
+								// It can be assumed that the service relates to a cancelled sale item.  This will be checked on the server
+								strMsg += 	"<br /><br />You have chosen to <strong>disconnect</strong> this service because it relates to a cancelled sale item." +
+											"<br /><strong>WARNING:</strong> Any manual provisioning, that has been carried out on this service, will need to be manually reversed";
+								break;
 						}
 						break;
 				}
