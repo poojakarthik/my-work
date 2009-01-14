@@ -432,6 +432,8 @@ class Page
 	echo "
 <html>
 	<head>
+		<link rel=\"shortcut icon\" HREF=\"./img/favicon.ico\">
+		<link rel=\"icon\" href=\"./img/favicon.ico\">
 		<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>
 		<title>Flex - {$this->_strPageName}</title>
 		<base href='$strBaseDir'/>\n";
@@ -470,7 +472,7 @@ class Page
 			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
 		}
 		
-		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
+		echo "<html><head><link rel=\"shortcut icon\" HREF=\"./img/favicon.ico\"><link rel=\"icon\" href=\"./img/favicon.ico\"><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
 		echo "<title>Flex - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();

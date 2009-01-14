@@ -313,6 +313,8 @@ class Application_Page extends Page
 		echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\">
 	<head>
+		<link rel=\"shortcut icon\" HREF=\"./img/favicon.ico\">
+		<link rel=\"icon\" href=\"./img/favicon.ico\">
 		<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\" />
 		<meta name=\"generator\" content=\"Flex\" />
 		<title>Flex - $this->_strPageName</title>
@@ -369,7 +371,7 @@ class Application_Page extends Page
 			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
 		}
 		
-		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
+		echo "<html><head><link rel=\"shortcut icon\" HREF=\"./img/favicon.ico\"><link rel=\"icon\" href=\"./img/favicon.ico\"><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
 		echo "<title>Flex - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();
