@@ -683,7 +683,7 @@ class JSON_Handler_Sale extends JSON_Handler
 					<th>Changed&nbsp;By</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody style='vertical-align:top'>
 		$strBodyRows
 			</tbody>
 		</table>

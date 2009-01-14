@@ -49,6 +49,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 							"ContactName"	=> array("Title" => "Contact",			"SortField" => DO_Sales_Sale::ORDER_BY_CONTACT_NAME),
 							"Status"		=> array("Title" => "Status",			"SortField" => DO_Sales_Sale::ORDER_BY_SALE_STATUS_ID),
 							"LastActionedOn"=> array("Title" => "Last Actioned",	"SortField" => DO_Sales_Sale::ORDER_BY_LAST_ACTIONED_ON),
+							"VerifiedOn"	=> array("Title" => "Verified",			"SortField" => DO_Sales_Sale::ORDER_BY_VERIFIED_ON),
 							"CreatedBy"		=> array("Title" => "Dealer",			"SortField" => DO_Sales_Sale::ORDER_BY_CREATED_BY),
 							"Actions"		=> array("Title" => "Actions",			"SortField" => NULL)
 							);
@@ -69,7 +70,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 			foreach ($arrSales as $objSale)
 			{
 				$objSaleAccount			= $objSale->getSaleAccount();
-				$arrSaleStatusHistory	= DO_Sales_SaleStatusHistory::listForSale($objSale, '"changedOn" DESC', 1);
+				$arrSaleStatusHistory	= DO_Sales_SaleStatusHistory::listForSale($objSale, '"changedOn" DESC');
 				$objDealer				= DO_Sales_Dealer::getForId($objSale->createdBy);
 				$arrContactSale			= DO_Sales_ContactSale::listForSale($objSale, "({$arrContactSaleProps['contactAssociationTypeId']} = ". DO_Sales_ContactAssociationType::PRIMARY .") DESC", 1);
 				$objContact				= (count($arrContactSale) == 1)? DO_Sales_Contact::getForId($arrContactSale[0]->id) : NULL;
@@ -107,7 +108,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				$strSaleStatusCssClass = "sale-status-". strtolower(str_replace(" ", "-", $arrSaleStatuses[$objSale->saleStatusId]->name));
 				$strSaleStatus = "<span class='$strSaleStatusCssClass'>$strSaleStatus</span>";
 				
-				// $arrSaleStatusHistory should always have just 1 record in it
+				// $arrSaleStatusHistory[0] should always be set (defining the most recent status change for the sale)
 				$intChangedOn = strtotime($arrSaleStatusHistory[0]->changedOn);
 				$strChangedOnDate = date("d-m-Y", $intChangedOn);
 				if ($strChangedOnDate == $strToday)
@@ -118,6 +119,30 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				else
 				{
 					$strLastActionedOn	= "<span title='$strChangedOnDate ". date("g:i:s a", $intChangedOn) ."'>$strChangedOnDate</span>";
+				}
+				
+				// Find the time at which the sale was verified
+				// (This will find the most recent time it was verified (if at all), but a sale should only ever have been verified once)
+				$strVerifiedOn = "";
+				foreach ($arrSaleStatusHistory as $doSaleStatusChange)
+				{
+					if ($doSaleStatusChange->saleStatusId == DO_Sales_SaleStatus::VERIFIED)
+					{
+						$intVerifiedOn		= strtotime($doSaleStatusChange->changedOn);
+						$strVerifiedOnDate	= date("d-m-Y", $intVerifiedOn);
+						if ($strToday == $strVerifiedOnDate)
+						{
+							// The sale was verified today (server time), so just show the time of day that it happened
+							$strVerifiedOn = "<span title='today'>". date("g:i:s a", $intVerifiedOn) ."</span>";
+						}
+						else
+						{
+							$strVerifiedOn = "<span title='$strVerifiedOnDate ". date("g:i:s a", $intVerifiedOn) ."'>$strVerifiedOnDate</span>";
+						}
+						
+						// Exit the foreach loop
+						break;
+					}
 				}
 				
 				// Use the username for the dealer
@@ -138,6 +163,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				<td>$strContactName</td>
 				<td>$strSaleStatus</td>
 				<td>$strLastActionedOn</td>
+				<td>$strVerifiedOn</td>
 				<td>$strDealerName</td>
 				<td>$strActions</td>
 			</tr>";
@@ -282,7 +308,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 	<thead>
 $strHeaderRow
 	</thead>
-	<tbody>
+	<tbody style='vertical-align:top'>
 $strBodyRows
 	</tbody>
 	<tfoot class='footer'>

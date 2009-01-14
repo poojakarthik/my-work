@@ -18,6 +18,7 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 	const ORDER_BY_CREATED_ON		= "sale|created_on";
 	const ORDER_BY_SALE_TYPE_ID		= "sale|sale_type_id";
 	const ORDER_BY_SALE_ACCOUNT_VENDOR_ID = "sale_account|vendor_id";
+	const ORDER_BY_VERIFIED_ON		= "verified_on";
 	
 	
 	private static $_arrPaginationDetails = array(	"TotalRecordCount"	=> NULL,
@@ -128,6 +129,7 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 					case self::ORDER_BY_CREATED_ON:
 					case self::ORDER_BY_SALE_TYPE_ID:
 					case self::ORDER_BY_SALE_ACCOUNT_VENDOR_ID:
+					case self::ORDER_BY_VERIFIED_ON:
 						$arrOrderByParts[] = str_replace('|', '.', $strColumn) . ($bolAsc ? " ASC" : " DESC");
 						break;
 					default:
@@ -176,6 +178,11 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 		$arrSaleStatusHistoryTableProps	= DO_Sales_SaleStatusHistory::getPropertyDataSourceMappings();
 		$strSaleStatusHistorySaleId		= $strSaleStatusHistoryTableName .".". $arrSaleStatusHistoryTableProps["saleId"];
 		$strSaleStatusHistoryChangedOn	= $strSaleStatusHistoryTableName .".". $arrSaleStatusHistoryTableProps["changedOn"];
+
+		$strVerifiedOnTableName	= $strSaleStatusHistoryTableName ."_verified";
+		$strVerifiedOnChangedOn	= $strVerifiedOnTableName .".". $arrSaleStatusHistoryTableProps["changedOn"];
+		$strVerifiedOnStatusId	= $strVerifiedOnTableName .".". $arrSaleStatusHistoryTableProps["saleStatusId"];
+		$strVerifiedOnSaleId	= $strVerifiedOnTableName .".". $arrSaleStatusHistoryTableProps["saleId"];
 		
 		$strContactSaleTableName				= DO_Sales_ContactSale::getDataSourceObjectName();
 		$arrContactSaleTableProps				= DO_Sales_ContactSale::getPropertyDataSourceMappings();
@@ -190,7 +197,8 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 		$strContactLastName		= $strContactTableName .".". $arrContactTableProps["lastName"];
 		$strContactMiddleNames	= $strContactTableName .".". $arrContactTableProps["middleNames"];
 		
-		$intContactAssociationTypePrimary = DO_Sales_ContactAssociationType::PRIMARY;
+		$intContactAssociationTypePrimary	= DO_Sales_ContactAssociationType::PRIMARY;
+		$intSaleStatusIdVerified			= DO_Sales_SaleStatus::VERIFIED;
 		
 		$strFromClause = "FROM $strSaleTableName 
 INNER JOIN $strSaleAccountTableName ON $strSaleId = $strSaleAccountSaleId
@@ -200,6 +208,7 @@ INNER JOIN (	SELECT $strSaleStatusHistorySaleId, MAX($strSaleStatusHistoryChange
 				) AS $strSaleStatusHistoryTableName ON $strSaleId = $strSaleStatusHistorySaleId
 LEFT JOIN $strContactSaleTableName ON ($strSaleId = $strContactSaleSaleId AND $strContactSaleContactAssociationTypeId = $intContactAssociationTypePrimary)
 LEFT JOIN $strContactTableName ON ($strContactId = $strContactSaleContactId)
+LEFT JOIN $strSaleStatusHistoryTableName AS $strVerifiedOnTableName ON ($strSaleId = $strVerifiedOnSaleId AND $strVerifiedOnStatusId = $intSaleStatusIdVerified)
 ";
 
 		// Create query to find out how many rows there are in total
@@ -209,7 +218,8 @@ LEFT JOIN $strContactTableName ON ($strContactId = $strContactSaleContactId)
 		$strQuery = "SELECT $strSaleId AS sale_id,
 COALESCE($strSaleAccountBusinessName, $strSaleAccountTradingName) AS account_name,
 ($strContactFirstName || COALESCE(' ' || $strContactMiddleNames, '') || ' ' || $strContactLastName) AS contact_name, 
-$strSaleStatusHistoryTableName.last_actioned_on AS last_actioned_on
+$strSaleStatusHistoryTableName.last_actioned_on AS last_actioned_on,
+$strVerifiedOnChangedOn AS verified_on
 $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		
 		$dataSource = self::getDataSource();
