@@ -352,7 +352,7 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 			}
 			
 			$this->saleStatusId = DO_Sales_SaleStatus::AWAITING_DISPATCH;
-			$this->save($dealerId, 'Sale awaiting dispatchment');
+			$this->save($dealerId, 'Sale awaiting dispatch');
 
 			// We also want to verify all of the sale items
 			$saleItems = $saleItems ? $saleItems : DO_Sales_SaleItem::listForSale($this);
