@@ -43,12 +43,13 @@ class Dealer
 		}
 
 		// Find the dealers that are currently under the management of this dealer
-		$arrDealers = self::getDealersUnderManager(self::getForId($intDealerId));
+		$objDealer = self::getForId($intDealerId);
+		$arrSubordinates = $objDealer->getSubordinates();
 		
 		// Make sure $intManagerDealerId isn't in this array
-		foreach ($arrDealers as $objDealer)
+		foreach ($arrSubordinates as $objSubordinate)
 		{
-			if ($objDealer->id == $intManagerDealerId)
+			if ($objSubordinate->id == $intManagerDealerId)
 			{
 				return FALSE;
 			}
@@ -322,7 +323,7 @@ class Dealer
 		
 		// All dealers who aren't decendents of $intDealerId, can be made the manager of $intDealerId
 		$objDealer = self::getForId($intDealerId);
-		$arrExcludedDealers = self::getDealersUnderManager($objDealer);
+		$arrExcludedDealers =  $objDealer->getSubordinates();
 		
 		$arrExcludedDealerIds = array($objDealer->id);
 		foreach ($arrExcludedDealers as $objDealer)
@@ -336,22 +337,21 @@ class Dealer
 		return self::getFor($strWhere, "CONCAT(first_name, ' ', last_name) ASC");
 	}
 	
-	// Returns array containing all Dealers under the management hierarchy of $objDealer
-	// This will NOT include $objDealer in the array
+	// Returns array containing all Dealers under the management hierarchy of the current dealer
 	// the array is not associative
-	public static function getDealersUnderManager($objDealer, $bolImmediateSubordinatesOnly=FALSE)
+	public function getSubordinates($bolImmediateSubordinatesOnly=FALSE)
 	{
-		$arrManagedDealers = self::getFor("up_line_id = {$objDealer->id}");
+		$arrManagedDealers = self::getFor("up_line_id = {$this->id}");
 		
-		// Add the dealers immediately under $objDealer's management to the array of all dealers under $objDealer's management
+		// Add the dealers immediately under this dealer's management to the array of all dealers under this dealer's management
 		$arrDealers = $arrManagedDealers;
 		
 		if (!$bolImmediateSubordinatesOnly)
 		{
-			// For each dealer that is immediately under $objDealer's management, find the dealers under their management (the recursion part)
+			// For each dealer that is immediately under this dealer's management, find the dealers under their management (the recursion part)
 			foreach ($arrManagedDealers as $objManagedDealer)
 			{
-				$arrDealers = array_merge($arrDealers, self::getDealersUnderManager($objManagedDealer));
+				$arrDealers = array_merge($arrDealers, $objManagedDealer->getSubordinates());
 			}
 		}
 		return $arrDealers;
@@ -493,28 +493,26 @@ class Dealer
 			throw new Exception("Setting the upline manager to dealer id: {$this->upLineId} would cause recursion in the management hierarchy");
 		}
 		
-		// If the dealer is active, check that their username isn't currently being used by another dealer
-		if ($this->dealerStatusId == Dealer_Status::ACTIVE)
+		// Check that the username is unique (regardles of the status of the dealer)
+
+		// Try finding a dealer with the same username
+		$arrDealers = self::getFor("username = '{$this->username}' AND dealer_status_id = ". Dealer_Status::ACTIVE);
+			
+		$intCount = count($arrDealers);
+		
+		if ($intCount > 1)
 		{
-			// Try finding a dealer with the same username
-			$arrDealers = self::getFor("username = '{$this->username}' AND dealer_status_id = ". Dealer_Status::ACTIVE);
-			
-			$intCount = count($arrDealers);
-			
-			if ($intCount > 1)
+			// There are multiple dealers with the same username
+			// This should never happen
+			throw new Exception("Multiple dealers exist with this username.  Please notify your system administrator, to rectify this problem");
+		}
+		elseif ($intCount == 1)
+		{
+			// Check if it is the current dealer
+			$objDealer = current($arrDealers);
+			if (!array_key_exists('id', $this->_arrProperties) || $this->_arrProperties['id'] === NULL || $this->_arrProperties['id'] != $objDealer->id)
 			{
-				// There are multiple active dealers with the same username
-				// This should never happen
-				throw new Exception("Multiple active dealers exist with this username.  Please notify your system administrator, to rectify this problem");
-			}
-			elseif ($intCount == 1)
-			{
-				// Check if it is the current dealer
-				$arrDealer = current($arrDealers);
-				if (!array_key_exists('id', $this->_arrProperties) || $this->_arrProperties['id'] === NULL || $this->_arrProperties['id'] != $arrDealer->id)
-				{
-					throw new Exception("Another active dealer in the database is already using this username");
-				}
+				throw new Exception("Another dealer in the database is already using this username");
 			}
 		}
 	}
@@ -638,7 +636,7 @@ class Dealer
 		}
 		
 		// Update those fields that should cascade down to subordinates of the dealer, if they have any subordinates
-		$arrSubbies = self::getDealersUnderManager($this, TRUE);
+		$arrSubbies = $this->getSubordinates(TRUE);
 		foreach ($arrSubbies as $objSubbie)
 		{
 			$objSubbie->carrierId		= $this->carrierId;
@@ -921,18 +919,14 @@ class Dealer
 			$arrProblems[] = "Password was not specified";
 		}
 		
-		// Check that the username is unique, if the dealer is active
-		if ($arrDetails['dealerStatusId'] == Dealer_Status::ACTIVE)
+		// Check that the username is unique
+		$strUsername	= $objDb->escape($arrDetails['username'], TRUE);
+		$strWhereId		= ($arrDetails['id'] != NULL)? "AND id != ". intval($arrDetails['id']) : "";
+		$arrDealers		= self::getFor("username LIKE '$strUsername' $strWhereId");
+		
+		if (count($arrDealers) > 0)
 		{
-			$strUsername	= $objDb->escape($arrDetails['username'], TRUE);
-			$strWhereId		= ($arrDetails['id'] != NULL)? "AND id != ". intval($arrDetails['id']) : "";
-			$strDealerStatusActive = Dealer_Status::ACTIVE;
-			$arrDealers = self::getFor("username LIKE '$strUsername' $strWhereId AND dealer_status_id = $strDealerStatusActive");
-			
-			if (count($arrDealers) > 0)
-			{
-				$arrProblems[] = 'Username is currently being used by another active dealer';
-			}
+			$arrProblems[] = 'Username is currently being used by another dealer';
 		}
 		
 		// Check that the upLineId can be used, and doesn't form recursion
