@@ -455,10 +455,10 @@ ORDER BY sale_id ASC, sale_item_id ASC
 			$strRow = "";
 			foreach ($this->_arrColumns as $strPropName=>$strColumnName)
 			{
-				$strRow .= "<td>{$arrDetails[$strPropName]}</td>";
+				$strRow .= "\t\t\t\t\t<td>{$arrDetails[$strPropName]}</td>\n";
 			}
 			
-			$strRows .= "<tr>$strRow</tr>";
+			$strRows .= "\t\t\t\t<tr>$strRow</tr>";
 		}
 		
 		$arrRenderMode	= Sales_Report::getRenderModeDetails(Sales_Report::RENDER_MODE_EXCEL);
