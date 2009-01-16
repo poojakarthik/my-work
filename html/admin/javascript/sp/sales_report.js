@@ -324,11 +324,28 @@ var FlexSalesReport = {
 		if (response.Success && response.Success == true)
 		{
 			// The report was successfully generated
-			// Retrieve the report from the server by relocating the page
 			if (response.ReportLocation != undefined)
 			{
-				window.location = response.ReportLocation;
+				// Check if there were any records in the report
+				if (response.RecordCount > 0)
+				{
+					// There were records
+					// Retrieve the report from the server by relocating the page
+					window.location = response.ReportLocation;
+				}
+				else
+				{
+					// There weren't any records
+					Vixen.Popup.Confirm("The report was successfully generated, but there aren't any records in it.<br /><br />Do you still want to download the report?", 
+										function(){alert("report location = "+ response.ReportLocation); window.location = response.ReportLocation;});
+				}
 			}
+			else
+			{
+				$Alert("ERROR: No location was given for the report.  Please notify your system administrators");
+			}
+			
+			
 		}
 		else
 		{

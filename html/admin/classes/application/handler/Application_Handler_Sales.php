@@ -274,12 +274,18 @@ class Application_Handler_Sales extends Application_Handler
 						)
 					{
 						// A report has been cached. Send it to the user
-						header("Content-Type: application/excel");
-						header("Content-Disposition: attachment; filename=\"" . strtolower(str_replace(" ", "_", $strReportName)) ."_". date("Y_m_d") . ".xls" . "\"");
-						echo $_SESSION['Sales']['Report']['Content'];
+						$arrRenderMode = Sales_Report::getRenderModeDetails($_SESSION['Sales']['Report']['RenderMode']);
+						
+						$strMimeType = $arrRenderMode['MimeType'];
+						header("Content-Type: $strMimeType");
+						header("Content-Disposition: attachment; filename=\"{$_SESSION['Sales']['Report']['Filename']}\"");
+						
+						$strReport = $_SESSION['Sales']['Report']['Content'];
 						
 						// Remove it from the Session
-						unset($_SESSION['Sales']['Report']['Content']);
+						unset($_SESSION['Sales']['Report']);
+						
+						echo $strReport;
 						exit;
 					}
 				}

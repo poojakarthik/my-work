@@ -844,27 +844,35 @@ class JSON_Handler_Sale extends JSON_Handler
 
 		try
 		{
-
-			$objReportBuilder = new Customer_Status_Summary_Report();
-			$objReportBuilder->SetBoundaryConditions($arrCustomerGroups, $arrCustomerStatuses, $arrInvoiceRuns);
-	
-			$objReportBuilder->BuildReport();
-	
-			$strReport = $objReportBuilder->GetReport($strRenderMode);
+			$strRenderMode = Sales_Report::RENDER_MODE_EXCEL;
 			
-			$strRenderMode = strtolower($strRenderMode);
+			$objReportBuilder = Sales_Report::getNewReport($strReportType);
+
+			$objReportBuilder->setConstraints($objConstraints);
+	
+			$intRecordCount = $objReportBuilder->buildReport();
+	
+			$strReport = $objReportBuilder->getReport(Sales_Report::RENDER_MODE_EXCEL);
+			
+			$arrRenderMode = Sales_Report::getRenderModeDetails($strRenderMode);
+			
+			$strFilename = strtolower(str_replace(" ", "_", $objReportBuilder->getDetailedReportName())) ."_generated_". date("Y_m_d") .".". $arrRenderMode['FileExtension'];
 			
 			// Store the report in the user's session
-			$_SESSION['CustomerStatus']['SummaryReport']['Content'] = $strReport;
+			$_SESSION['Sales']['Report'] = array(	'Content'		=> $strReport,
+													'Filename'		=> $strFilename,
+													'RenderMode'	=> $strRenderMode
+												);
 			return array(	"Success"			=> TRUE,
-							"ReportLocation"	=> Href()->SalesReport($strReportType, TRUE)
+							"ReportLocation"	=> Href()->SalesReport($strReportType, TRUE),
+							"RecordCount"		=> $intRecordCount 
 						);
 		}
 		catch (Exception $e)
 		{
 			return array(	
 							"Success"		=> FALSE,
-							"ErrorMessage"	=> $e
+							"ErrorMessage"	=> $e->getMessage()
 						);
 		}
 	}

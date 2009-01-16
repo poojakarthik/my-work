@@ -23,19 +23,15 @@ abstract class Product_Type_Module
 	 *
 	 * Returns the class name of the Product Type Module corresponding to the product
 	 * 
-	 * @param	DO_Sales_SaleItem	$doSaleItem			The sale item that has been cancelled
-	 * @param	integer				$intDealerId		id of the dealer who actioned the sale item cancellation
-	 * @param	string				$strReason			Reason for the sale item cancellation.  This will be appended to the system note
-	 * @param	bool				$bolCreateNote		if TRUE, then a system note will be created
-	 * 													if FALSE, then a system note will not be created
-	 * @return	void
-	 *
 	 * @method
 	 */
 	public static function getModuleClassNameForProduct(DO_Sales_Product $doProduct)
 	{
-		$doProductType	= $doProduct->getProductType();
-		
+		return self::getModuleClassNameForProductType($doProduct->getProductType());
+	}
+
+	public static function getModuleClassNameForProductType(DO_Sales_ProductType $doProductType)
+	{
 		return __CLASS__ . "_" . $doProductType->module;
 	}
 
