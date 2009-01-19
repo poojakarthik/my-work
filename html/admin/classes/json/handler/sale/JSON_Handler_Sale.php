@@ -849,14 +849,14 @@ class JSON_Handler_Sale extends JSON_Handler
 			$objReportBuilder = Sales_Report::getNewReport($strReportType);
 
 			$objReportBuilder->setConstraints($objConstraints);
-	
+
 			$intRecordCount = $objReportBuilder->buildReport();
 	
 			$strReport = $objReportBuilder->getReport(Sales_Report::RENDER_MODE_EXCEL);
-			
+
 			$arrRenderMode = Sales_Report::getRenderModeDetails($strRenderMode);
 			
-			$strFilename = strtolower(str_replace(" ", "_", $objReportBuilder->getDetailedReportName())) ."_generated_". date("Y_m_d") .".". $arrRenderMode['FileExtension'];
+			$strFilename = strtolower(str_replace(" ", "_", $objReportBuilder->getDetailedReportName())) .".". $arrRenderMode['FileExtension'];
 			
 			// Store the report in the user's session
 			$_SESSION['Sales']['Report'] = array(	'Content'		=> $strReport,
@@ -865,7 +865,7 @@ class JSON_Handler_Sale extends JSON_Handler
 												);
 			return array(	"Success"			=> TRUE,
 							"ReportLocation"	=> Href()->SalesReport($strReportType, TRUE),
-							"RecordCount"		=> $intRecordCount 
+							"RecordCount"		=> $intRecordCount
 						);
 		}
 		catch (Exception $e)

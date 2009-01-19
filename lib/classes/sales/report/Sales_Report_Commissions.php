@@ -357,14 +357,14 @@ ORDER BY sale_id ASC, sale_item_id ASC
 					if ($strCurrentStatusTimestamp < $strEndOfClawbackPeriodTimestamp)
 					{
 						// The sale item was cancelled within the clawback period
-						$strCommissionPayable = "No";
-						$strCommissionReason = "Cancelled within clawback period";
+						$strCommissionPayable	= "No";
+						$strCommissionReason	= "Cancelled within clawback period";
 					}
 					else
 					{
 						// The sale item was cancelled after the clawback period ended
-						$strCommissionPayable = "Yes";
-						$strCommissionReason = "Cancelled after end of clawback period";
+						$strCommissionPayable	= "Yes";
+						$strCommissionReason	= "Cancelled outside of clawback period";
 					}
 				}
 				else
@@ -389,7 +389,7 @@ ORDER BY sale_id ASC, sale_item_id ASC
 						{
 							// The clawback period has not ended yet, and the sale item hasn't yet been cancelled, but it could before the clawback period ends
 							$strCommissionPayable	= "Unknown";
-							$strCommissionReason	= "Clawback period has not transpired yet";
+							$strCommissionReason	= "Clawback period has not yet transpired";
 						}
 					}
 				}
@@ -445,7 +445,7 @@ ORDER BY sale_id ASC, sale_item_id ASC
 		$strHeaderRow = "";
 		foreach ($this->_arrColumns as $strColumnName)
 		{
-			$strHeaderRow .= "<th>$strColumnName</th>";
+			$strHeaderRow .= "\t\t\t\t\t<th>$strColumnName</th>\n";
 		}
 		
 		// Build the rows
@@ -458,7 +458,7 @@ ORDER BY sale_id ASC, sale_item_id ASC
 				$strRow .= "\t\t\t\t\t<td>{$arrDetails[$strPropName]}</td>\n";
 			}
 			
-			$strRows .= "\t\t\t\t<tr>$strRow</tr>";
+			$strRows .= "\t\t\t\t<tr>\n$strRow\t\t\t\t</tr>\n";
 		}
 		
 		$arrRenderMode	= Sales_Report::getRenderModeDetails(Sales_Report::RENDER_MODE_EXCEL);
@@ -473,11 +473,11 @@ ORDER BY sale_id ASC, sale_item_id ASC
 		<table>
 			<thead>
 				<tr>
-					$strHeaderRow
+$strHeaderRow
 				</tr>
 			</thead>
 			<tbody>
-				$strRows
+$strRows
 			</tbody>
 		</table>
 	</body>
