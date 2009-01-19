@@ -8,7 +8,8 @@
 //----------------------------------------------------------------------------//
 // normalisation application
 //----------------------------------------------------------------------------//
-require_once('../../flex.require.php');
+require_once("../../lib/classes/Flex.php");
+//require_once('../../flex.require.php');
 $arrConfig = LoadApplication();
 
 echo "<pre>\n";
