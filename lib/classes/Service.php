@@ -367,6 +367,41 @@ class Service extends ORM
 		*/
 	}
 	
+	/**
+	 * getFNNInstances()
+	 *
+	 * Gets all Services which have the given FNN
+	 * 
+	 * @param	string	$strFNN						The FNN to match
+	 * @param	boolean	[ $bolAsArray ]				*TRUE: Return arrays of Services; FALSE: Return Service Objects 
+	 * 
+	 * @return	array
+	 *
+	 * @method
+	 */
+	public static function getFNNInstances($strFNN, $bolAsArray=true)
+	{
+		$selFNNInstances	= self::_preparedStatement('selFNNInstances');
+		if ($selFNNInstances === false)
+		{
+			throw new Exception($selFNNInstances->Error());
+		}
+		
+		if ($bolAsArray)
+		{
+			return $selFNNInstances->FetchAll();
+		}
+		else
+		{
+			$arrFNNInstances	= array();
+			while ($arrFNNInstance = $selFNNInstances->Fetch())
+			{
+				$arrFNNInstances[]	= new Service($arrFNNInstance);
+			}
+			return $arrFNNInstances;
+		}
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -400,6 +435,9 @@ class Service extends ORM
 					break;
 				case 'selCurrentServiceRatePlan':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan", "RatePlan", "Service = <service_id> AND <effective_datetime> BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", 1);
+					break;
+				case 'selFNNInstances':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service", "*", "FNN = <FNN>");
 					break;
 				
 				// INSERTS

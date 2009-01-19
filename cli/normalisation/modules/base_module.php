@@ -726,6 +726,17 @@ abstract class NormalisationModule extends CarrierModule
 	 		$this->_arrNormalisedData['Service']		= $mixResult['Service'];
 	 		return TRUE;
 		}
+		
+		// Is there only one instance of this FNN?
+		$arrFNNInstances	= Service::getFNNInstances($this->_arrNormalisedData['FNN']);
+		if (count($arrFNNInstances) === 1)
+		{
+	 		// Yes, automatically assume that this is the correct Service
+	 		$this->_arrNormalisedData['AccountGroup']	= $arrFNNInstances[0]['AccountGroup'];
+	 		$this->_arrNormalisedData['Account']		= $arrFNNInstances[0]['Account'];
+	 		$this->_arrNormalisedData['Service']		= $arrFNNInstances[0]['Service'];
+	 		return TRUE;
+		}
 	 	
 		// Return false if there was no match, or more than one match
 		$this->_UpdateStatus(CDR_BAD_OWNER);
