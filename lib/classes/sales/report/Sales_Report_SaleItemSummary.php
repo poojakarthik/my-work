@@ -1,49 +1,44 @@
 <?php
 //----------------------------------------------------------------------------//
-// Sales_Report_Commissions
+// Sales_Report_SaleItemSummary
 //----------------------------------------------------------------------------//
 /**
- * Sales_Report_Commissions
+ * Sales_Report_SaleItemSummary
  *
- * Encapsulates the Sales Report, "Commissions" functionality
+ * Encapsulates the Sales Report, "SaleItem Summary" functionality
  *
- * Encapsulates the Sales Report, "Commissions" functionality
+ * Encapsulates the Sales Report, "SaleItem Summary" functionality
  *
- * @class	Sales_Report_Commissions
+ * @class	Sales_Report_SaleItemSummary
  * @extends	Sales_Report
  */
-class Sales_Report_Commissions extends Sales_Report
+class Sales_Report_SaleItemSummary extends Sales_Report
 {
 	
 	private $_strEarliestTime;
 	private $_strLatestTime;
 	private $_arrDealers;
 	
+	// This will store the tallies for each dealer / product combination
+	// $_arrTotals[dealerId][productId][TotalVerified] = 5 etc
+	private $_arrTotals;
+	
 	// This array defines the columns that will be included in the report
 	protected $_arrColumns = array(
-							"DealerUsername"			=> "Dealer",
-							"DealerCarrier"				=> "Group",
-							"SaleId"					=> "Sale",
-							"VendorName"				=> "Vendor",
-							"SubordinateUsername"		=> "Subordinate",
-							"ProductName"				=> "Product",
-							"ProductTypeName"			=> "Product Type",
-							"ProductDetails"			=> "Details",
-							"AccountName"				=> "Account",
-							"AccountId"					=> "Account Id",
-							"VerifiedOn"				=> "Verified On",
-							"VerifiedBy"				=> "Verified By",
-							"CurrentStatusName"			=> "Current Status",
-							"CurrentStatusTimestamp"	=> "Last Actioned",
-							"CurrentStatusChangedBy"	=> "Last Actioner",
-							"IsCommissionPayable"		=> "Commission Payable",
-							"CommissionReason"			=> "Reason",
-							"SaleItemId"				=> "Sale Item Id",
-							"CurrentStatusDescription"	=> "Current Status Description"
+							"DealerUsername"					=> "Dealer",
+							"DealerCarrier"						=> "Group",
+							"VendorName"						=> "Vendor",
+							"ProductTypeName"					=> "Product Type",
+							"ProductName"						=> "Product",
+							"TotalVerified"						=> "Total Verified",
+							"TotalCompletedAndCooledOff"		=> "Completed and Cooled Off",
+							"TotalCompletedButNotCooledOff"		=> "Completed but Not Cooled Off",
+							"TotalCancelledAndClawedBack"		=> "Cancelled and Clawed Back",
+							"TotalCancelledButNotClawedBack"	=> "Cancelled but Not Clawed Back",
+							"TotalOutstanding"					=> "Total Outstanding"
 							);
 	
-	protected $_reportType = Sales_Report::REPORT_TYPE_COMMISSIONS;
-	
+	protected $_reportType = Sales_Report::REPORT_TYPE_SALE_ITEM_SUMMARY;
 	
 	// Sets the constraints for the report (and validates them)
 	// TODO! define preconditions, such as the timestamps being in their correct format or NULL
@@ -172,6 +167,7 @@ class Sales_Report_Commissions extends Sales_Report
 	public function buildReport()
 	{
 		$this->_arrReportData = array();
+		$this->_arrTotals = array();
 		
 		$strEarliestVerificationTime	= $this->_strEarliestTime;
 		$strLatestVerificationTime		= $this->_strLatestTime;
@@ -183,14 +179,8 @@ SELECT 	si.id AS sale_item_id,
 		si.created_by AS created_by, 
 		si.product_id AS product_id, 
 		verified_details.changed_on AS verified_on,
-		verified_details.changed_by AS verified_by,
 		current_details.sale_item_status_id AS current_status_id,
-		current_details.changed_on AS current_status_changed_on,
-		current_details.changed_by AS current_status_changed_by,
-		current_details.description AS current_status_description,
-		sa.business_name AS business_name,
-		sa.external_reference AS account_external_reference,
-		sa.vendor_id AS vendor_id
+		current_details.changed_on AS current_status_changed_on
 		
 FROM 	sale_item AS si 
 		INNER JOIN sale_item_status_history AS verified_details 
@@ -198,14 +188,17 @@ FROM 	sale_item AS si
 				AND verified_details.sale_item_status_id = $intSaleItemStatusIdVerified
 		INNER JOIN sale AS s
 			ON si.sale_id = s.id
-		INNER JOIN sale_account AS sa
-			ON sa.sale_id = s.id
+		INNER JOIN product AS p
+			ON p.id = si.product_id
+		INNER JOIN vendor AS v
+			ON v.id = p.vendor_id
+		INNER JOIN product_type AS pt
+			ON pt.id = p.product_type_id
 		INNER JOIN 
 			(
 				SELECT	sale_item_status_history.sale_item_status_id AS sale_item_status_id, /* This table defines details of the current state of the sale_item */
 						sale_item_status_history.changed_on AS changed_on,
 						sale_item_status_history.changed_by AS changed_by,
-						sale_item_status_history.description AS description,
 						sale_item_status_history.sale_item_id AS sale_item_id
 				FROM	sale_item_status_history
 						INNER JOIN 
@@ -220,7 +213,8 @@ FROM 	sale_item AS si
 
 WHERE	si.created_by IN (<DealerIds>)
 		AND verified_details.changed_on BETWEEN '$strEarliestVerificationTime' AND '$strLatestVerificationTime'
-ORDER BY sale_id ASC, sale_item_id ASC
+
+ORDER BY v.name ASC, pt.name ASC, p.name ASC
 ";
 
 		// Convert new line chars to spaces, and remove all tabs
@@ -242,19 +236,32 @@ ORDER BY sale_id ASC, sale_item_id ASC
 			}
 		}
 		
-		$arrSaleItemStatuses		= DO_Sales_SaleItemStatus::getAll();
 		$arrProductTypesNotIndexed	= DO_Sales_ProductType::listAll();
 		$arrProductTypes			= array();
 		foreach ($arrProductTypesNotIndexed as $doProductType)
 		{
-			$arrProductTypes[$doProductType->id]					= $doProductType;
-			$arrProductTypes[$doProductType->id]->moduleClassName	= Product_Type_Module::getModuleClassNameForProductType($doProductType);
+			$arrProductTypes[$doProductType->id] = $doProductType;
 		}
 		$arrDealers		= array();
 		$arrProducts	= array();
 		
+		$arrProductTotalsTemplate = array(	"TotalVerified"						=> 0,
+											"TotalCompletedAndCooledOff"		=> 0,
+											"TotalCompletedButNotCooledOff"		=> 0,
+											"TotalCancelledAndClawedBack"		=> 0,
+											"TotalCancelledButNotClawedBack"	=> 0,
+											"TotalOutstanding"					=> 0
+										);
+
+		
 		foreach ($this->_arrDealers as $intDealerId=>$objDealerDetails)
 		{
+			$this->_arrTotals[$intDealerId] = array();
+			
+			// This will store the Sales totals, grouped by product, for the current dealer (and possibly their subordinates)
+			// The key will be the product id
+			$arrProductTotals = array();
+			
 			// Get a reference to the dealer object, (It makes it easier to reference)
 			$objDealer = &$objDealerDetails->dealer;
 			
@@ -271,12 +278,6 @@ ORDER BY sale_id ASC, sale_item_id ASC
 				throw new Exception("Failed to execute Commissions Report Query for dealer {$objDealerDetails->dealer->username}, using query: $strQuery - ". $objResults->getMessage());
 			}
 		
-			// Prepare the default values for the Record
-			$arrDetails = array(	"DealerId"			=> $objDealerDetails->id,
-									"DealerUsername"	=> $objDealer->username,
-									"DealerCarrier"		=> $arrDealerCarriers[$objDealer->carrierId]->name
-								);
-						
 			while ($arrRecord = $objResults->fetchRow(MDB2_FETCHMODE_ASSOC))
 			{
 				// Get Product details
@@ -285,51 +286,16 @@ ORDER BY sale_id ASC, sale_item_id ASC
 					// Cache the product
 					$arrProducts[$arrRecord['product_id']] = DO_Sales_Product::getForId($arrRecord['product_id']);
 				}
-				$doProduct			= $arrProducts[$arrRecord['product_id']];
-				$strModuleClassName	= $arrProductTypes[$doProduct->productTypeId]->moduleClassName;
-				$doSaleItem			= DO_Sales_SaleItem::getForId($arrRecord['sale_item_id']);
 				
-				// Work out the account Id
-				if ($arrRecord['account_external_reference'] !== NULL && preg_match('/^Account.Id=\d+$/', $arrRecord['account_external_reference']))
+				$intVendorId = $arrProducts[$arrRecord['product_id']]->vendorId;
+				
+				if (!array_key_exists($arrRecord['product_id'], $this->_arrTotals[$intDealerId]))
 				{
-					// The account is now in flex, retrieve the id
-					$intAccountId = intval(str_replace('Account.Id=', '', $arrRecord['account_external_reference']));
-				}
-				else
-				{
-					$intAccountId = NULL;
+					// This is the first sale item of this product for this dealer
+					// Initialise the totals
+					$this->_arrTotals[$intDealerId][$arrRecord['product_id']] = $arrProductTotalsTemplate;
 				}
 				
-				// Find out who verified the sale
-				if (!array_key_exists($arrRecord['verified_by'], $arrDealers))
-				{
-					$arrDealers[$arrRecord['verified_by']] = Dealer::getForId($arrRecord['verified_by'], TRUE);
-				}
-				$objVerificationDealer = $arrDealers[$arrRecord['verified_by']];
-
-				// Find out who performed the most recent status change on the sale_item
-				if (!array_key_exists($arrRecord['current_status_changed_by'], $arrDealers))
-				{
-					$arrDealers[$arrRecord['current_status_changed_by']] = Dealer::getForId($arrRecord['current_status_changed_by'], TRUE);
-				}
-				$objLatestChangeDealer = $arrDealers[$arrRecord['current_status_changed_by']];
-				
-				// Find out if a subordinate made the sale
-				if ($arrRecord['created_by'] != $objDealer->id)
-				{
-					// A subordinate must have made the sale
-					if (!array_key_exists($arrRecord['created_by'], $objDealerDetails->subordinates))
-					{
-						throw new Exception("Sale item {$arrRecord['sale_item_id']} was created by {$arrRecord['created_by']} who is not a subordinate of dealer {$objDealer->id}");
-					}
-					$objSubordinate = &$objDealerDetails->subordinates[$arrRecord['created_by']];
-				}
-				else
-				{
-					// the dealer must have made the sale, not a subordinate of the dealer
-					$objSubordinate = NULL;
-				}
-
 				// Calculate the timestamp for the end of the clawback period
 				$strVerifiedOn						= $arrRecord['verified_on'];
 				$strEndOfClawbackPeriodTimestamp	= date("Y-m-d H:i:s", strtotime("+{$objDealer->clawbackPeriod} hour {$strVerifiedOn}"));
@@ -339,83 +305,82 @@ ORDER BY sale_id ASC, sale_item_id ASC
 				}
 				
 				// Calculate the timestamp for the end of the cooling off period
-				$strEndOfCoolingOffTimestamp = date("Y-m-d H:i:s", strtotime("+{$arrVendors[$arrRecord['vendor_id']]->coolingOffPeriod} hour {$strVerifiedOn}"));
+				$strEndOfCoolingOffTimestamp = date("Y-m-d H:i:s", strtotime("+{$arrVendors[$intVendorId]->coolingOffPeriod} hour {$strVerifiedOn}"));
 				if ($strEndOfCoolingOffTimestamp < '2001')
 				{
 					throw new exception("Could not calculate the 'end of cooling off' timestamp for sale item: {$arrRecord['sale_item_id']} - vendor->coolingOffPeriod = {$arrVendors[$arrRecord['vendor_id']]->coolingOffPeriod} hours, saleItem.verifiedOn = {$strVerifiedOn}, resultant cooling off end timestamp = $strEndOfCoolingOffTimestamp");
 				}
 				
-				// Work out if commission is payable or not
+				// Update the tallies appropriately
+				$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalVerified'] += 1;
+				
 				$intCurrentStatus			= $arrRecord['current_status_id'];
 				$strCurrentStatusTimestamp	= $arrRecord['current_status_changed_on'];
-				if ($intCurrentStatus == DO_Sales_SaleItemStatus::CANCELLED)
+				
+				switch ($intCurrentStatus)
 				{
-					// The sale item has been cancelled
-					// Check if this happend before or after the Clawback period ends
-					if ($strCurrentStatusTimestamp > $strEndOfClawbackPeriodTimestamp)
-					{
-						// The sale item was cancelled after the clawback period ended
-						$strCommissionPayable	= "Yes";
-						$strCommissionReason	= "Cancelled outside of clawback period";
-					}
-					else
-					{
-						// The sale item was cancelled within the clawback period
-						$strCommissionPayable	= "No";
-						$strCommissionReason	= "Cancelled within clawback period";
-					}
-				}
-				else
-				{
-					// The sale item has not been cancelled
-					if ($strEndOfCoolingOffTimestamp < $strNowTimestamp)
-					{
-						// The cooling off period has transpired without the sale item being cancelled (this vetos the dealer's clawback period)
-						$strCommissionPayable	= "Yes";
-						$strCommissionReason	= "Cooling off period has transpired";
-					}
-					else
-					{
-						// The cooling off period has not finished yet
-						if ($strEndOfClawbackPeriodTimestamp < $strNowTimestamp)
+					case DO_Sales_SaleItemStatus::CANCELLED:
+						// SaleItem has been cancelled
+						// Check if it happened before or after the clawback period ended
+						if ($strCurrentStatusTimestamp > $strEndOfClawbackPeriodTimestamp)
 						{
-							// The clawback period has ended without the sale item being cancelled
-							$strCommissionPayable	= "Yes";
-							$strCommissionReason	= "Clawback period has transpired";
+							// The SaleItem was cancelled after the end of the clawback period
+							$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalCancelledButNotClawedBack'] += 1;
 						}
 						else
 						{
-							// The clawback period has not ended yet, and the sale item hasn't yet been cancelled, but it could before the clawback period ends
-							$strCommissionPayable	= "Unknown";
-							$strCommissionReason	= "Clawback period has not yet transpired";
+							// The SaleItem was cancelled before the end of the clawback period
+							$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalCancelledAndClawedBack'] += 1;
 						}
-					}
+						break;
+					
+					case DO_Sales_SaleItemStatus::COMPLETED:
+						// SaleItem has been completed
+						// Check if it has cooled off or not
+						if ($strNowTimestamp > $strEndOfCoolingOffTimestamp)
+						{
+							// The SaleItem has cooled off
+							$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalCompletedAndCooledOff'] += 1;
+						}
+						else
+						{
+							// The SaleItem has not cooled off yet
+							$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalCompletedButNotCooledOff'] += 1;
+						}
+						break;
+						
+					default:
+						//  The sale item is outstanding
+						$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalOutstanding'] += 1;
+						break;
 				}
-				
-				// Add all the information to the record
-				$arrDetails['SaleId']					= $arrRecord['sale_id'];
-				$arrDetails['SubordinateId']			= ($objSubordinate !== NULL)? $objSubordinate->id : NULL;
-				$arrDetails['SubordinateUsername']		= ($objSubordinate !== NULL)? $objSubordinate->username : NULL;
-				$arrDetails['SaleItemId']				= $arrRecord['sale_item_id'];
-				$arrDetails['ProductId']				= $doProduct->id;
-				$arrDetails['ProductName']				= $doProduct->name;
-				$arrDetails['ProductTypeName']			= $arrProductTypes[$doProduct->productTypeId]->name;
-				$arrDetails['ProductDetails']			= call_user_func(array($strModuleClassName, "getSaleItemDescription"), $doSaleItem, FALSE, FALSE);
-				$arrDetails['AccountName']				= $arrRecord['business_name'];
-				$arrDetails['AccountId']				= $intAccountId;
-				$arrDetails['VerifiedOn']				= $strVerifiedOn;
-				$arrDetails['VerifiedBy']				= $objVerificationDealer->username;
-				$arrDetails['CurrentStatusName']		= $arrSaleItemStatuses[$intCurrentStatus]->name;
-				$arrDetails['CurrentStatusTimestamp']	= $strCurrentStatusTimestamp;
-				$arrDetails['CurrentStatusChangedBy']	= $objLatestChangeDealer->username;
-				$arrDetails['CurrentStatusDescription']	= $arrRecord['current_status_description'];
-				$arrDetails['IsCommissionPayable']		= $strCommissionPayable;
-				$arrDetails['CommissionReason']			= $strCommissionReason;
-				$arrDetails['VendorName']				= $arrVendors[$arrRecord['vendor_id']]->name;
-
-				$this->_arrReportData[] = $arrDetails;
 			}
 		}
+		
+		// Translate the totals into the report data
+		// In the report, each dealer/product combination is represented by a single row
+		foreach ($this->_arrTotals as $intDealerId=>$arrDealerProductTotals)
+		{
+			$arrRecord = array(	"DealerId"			=> $intDealerId,
+								"DealerUsername"	=> $this->_arrDealers[$intDealerId]->dealer->username,
+								"DealerCarrier"		=> $arrDealerCarriers[$this->_arrDealers[$intDealerId]->dealer->carrierId]->name
+								);
+			foreach ($arrDealerProductTotals as $intProductId=>$arrProductTotals)
+			{
+				$arrRecord['VendorName']						= $arrVendors[$arrProducts[$intProductId]->vendorId]->name;
+				$arrRecord['ProductTypeName']					= $arrProductTypes[$arrProducts[$intProductId]->productTypeId]->name;
+				$arrRecord['ProductName']						= $arrProducts[$intProductId]->name;
+				$arrRecord['TotalVerified']						= $arrProductTotals['TotalVerified'];
+				$arrRecord['TotalCompletedAndCooledOff']		= $arrProductTotals['TotalCompletedAndCooledOff'];
+				$arrRecord['TotalCompletedButNotCooledOff']		= $arrProductTotals['TotalCompletedButNotCooledOff'];
+				$arrRecord['TotalCancelledAndClawedBack']		= $arrProductTotals['TotalCancelledAndClawedBack'];
+				$arrRecord['TotalCancelledButNotClawedBack']	= $arrProductTotals['TotalCancelledButNotClawedBack'];
+				$arrRecord['TotalOutstanding']					= $arrProductTotals['TotalOutstanding'];
+				
+				$this->_arrReportData[] = $arrRecord;
+			}
+		}
+		
 		return count($this->_arrReportData);
 	}
 	
@@ -431,7 +396,7 @@ ORDER BY sale_id ASC, sale_item_id ASC
 		$strEarliestVerificationTime	= date("Y-m-d", strtotime($this->_strEarliestTime));
 		$strLatestVerificationTime		= date("Y-m-d", strtotime($this->_strLatestTime));
 		
-		return "Sales Commissions {$strEarliestVerificationTime} to {$strLatestVerificationTime}";
+		return "Sale Item Summary {$strEarliestVerificationTime} to {$strLatestVerificationTime}";
 	}
 	
 }

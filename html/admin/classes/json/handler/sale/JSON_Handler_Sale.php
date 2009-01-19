@@ -844,19 +844,19 @@ class JSON_Handler_Sale extends JSON_Handler
 
 		try
 		{
-			$strRenderMode = Sales_Report::RENDER_MODE_EXCEL;
+			$strRenderMode		= Sales_Report::RENDER_MODE_EXCEL;
 			
-			$objReportBuilder = Sales_Report::getNewReport($strReportType);
+			$objReportBuilder	= Sales_Report::getNewReport($strReportType);
 
 			$objReportBuilder->setConstraints($objConstraints);
 
-			$intRecordCount = $objReportBuilder->buildReport();
+			$intRecordCount	= $objReportBuilder->buildReport();
 	
-			$strReport = $objReportBuilder->getReport(Sales_Report::RENDER_MODE_EXCEL);
+			$strReport		= $objReportBuilder->getReport(Sales_Report::RENDER_MODE_EXCEL);
 
-			$arrRenderMode = Sales_Report::getRenderModeDetails($strRenderMode);
+			$arrRenderMode	= Sales_Report::getRenderModeDetails($strRenderMode);
 			
-			$strFilename = strtolower(str_replace(" ", "_", $objReportBuilder->getDetailedReportName())) .".". $arrRenderMode['FileExtension'];
+			$strFilename	= strtolower(str_replace(" ", "_", $objReportBuilder->getDetailedReportName())) .".". $arrRenderMode['FileExtension'];
 			
 			// Store the report in the user's session
 			$_SESSION['Sales']['Report'] = array(	'Content'		=> $strReport,

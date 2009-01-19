@@ -27,6 +27,14 @@ abstract class Sales_Report
 	const RENDER_MODE_CSV			= "CSV";
 	const RENDER_MODE_EXCEL			= "Excel";
 	
+	protected $_reportType;
+
+	// Stores the report data, with each element in the array representing a row in the resultant report table
+	protected $_arrReportData;
+
+	// Store the columns of _arrReportData to include in the report, and their labels
+	protected $_arrColumns;
+	
 	protected static $_arrReportTypes = array(	self::REPORT_TYPE_COMMISSIONS		=> array(	"Name"			=> "Commissions Report",
 																								"Description"	=> "Commissions Report"
 																							),
@@ -87,7 +95,7 @@ abstract class Sales_Report
 		{
 			return self::$_arrReportTypes[$strReportType];
 		}
-		throw new Exception(__METHOD__ ." - Invalid ReportType: $strReportType");
+		throw new Exception("Invalid ReportType: $strReportType");
 	}
 	
 	// Returns an array defining all render modes
@@ -103,7 +111,7 @@ abstract class Sales_Report
 		{
 			return self::$_arrRenderModes[$strRenderMode];
 		}
-		throw new Exception(__METHOD__ ." - Invalid RenderMode: $strRenderMode");
+		throw new Exception("Invalid RenderMode: $strRenderMode");
 	}
 
 	
@@ -113,7 +121,7 @@ abstract class Sales_Report
 		// Check that $strReportType is a valid report type
 		if (!array_key_exists($strReportType, self::$_arrReportTypes))
 		{
-			throw new Exception(__METHOD__ ." - Unknown report type: $strReportType");
+			throw new Exception("Unknown report type: $strReportType");
 		}
 		
 		$strReportClassName = __CLASS__ ."_". $strReportType;
@@ -124,7 +132,7 @@ abstract class Sales_Report
 		}
 		else
 		{
-			throw new Exception(__METHOD__ ." - Cannot find report class: $strReportClassName");
+			throw new Exception("Cannot find report class: $strReportClassName");
 		}
 	}
 	
@@ -135,14 +143,83 @@ abstract class Sales_Report
 	// This will return the number of records in the report
 	abstract public function buildReport();
 	
-	// Retrieves the report, in the RenderMode specified, assuming the report can be rendered in this mode
-	abstract public function getReport($strRenderMode);
-	
 	// Returns an array defining the allowable RenderModes for the specific report type
-	abstract public function getAllowableRenderModes();
+	abstract public static function getAllowableRenderModes();
 	
 	// Returns detailed report name, possibly based on the constraints of the report
 	abstract public function getDetailedReportName();
+
+	// Retrieves the report, in the RenderMode specified, assuming the report can be rendered in this mode
+	public function getReport($strRenderMode)
+	{
+		$arrAllowableRenderModes = $this->getAllowableRenderModes();
+		if (!in_array($strRenderMode, $arrAllowableRenderModes))
+		{
+			throw new Exception("Invalid Render Mode, '$strRenderMode', for ". self::$_arrReportTypes[$this->_reportType]['Name']);
+		}
+		
+		switch ($strRenderMode)
+		{
+			case Sales_Report::RENDER_MODE_EXCEL:
+				$strReport = $this->_translateToExcel();
+				break;
+				
+			default:
+				throw new Exception("Generic rendering for Render Mode '$strRenderMode', has not yet been implemented");
+				break;
+		}
+		
+		return $strReport;
+	}
+
+	// Converts _arrReportData into Excel markup (Not real excel format, but instead a very simple html markup, which excel accepts)
+	protected function _translateToExcel()
+	{
+		// Build the header row
+		$strHeaderRow = "";
+		foreach ($this->_arrColumns as $strColumnName)
+		{
+			$strHeaderRow .= "\t\t\t\t\t<th>$strColumnName</th>\n";
+		}
+		
+		// Build the rows
+		$strRows = "";
+		foreach ($this->_arrReportData as $arrDetails)
+		{
+			$strRow = "";
+			foreach ($this->_arrColumns as $strPropName=>$strColumnName)
+			{
+				$strRow .= "\t\t\t\t\t<td>{$arrDetails[$strPropName]}</td>\n";
+			}
+			
+			$strRows .= "\t\t\t\t<tr>\n$strRow\t\t\t\t</tr>\n";
+		}
+		
+		$arrRenderMode	= Sales_Report::getRenderModeDetails(Sales_Report::RENDER_MODE_EXCEL);
+		$strMimeType	= $arrRenderMode['MimeType'];
+
+		// Put it all together
+		$strReport = "<html>
+	<head>
+		<meta http-equiv=\"content-type\" content=\"$strMimeType\">
+	</head>
+	<body>
+		<table>
+			<thead>
+				<tr>
+$strHeaderRow
+				</tr>
+			</thead>
+			<tbody>
+$strRows
+			</tbody>
+		</table>
+	</body>
+</html>";
+
+		return $strReport;
+	}
+
 }
  
 ?>
