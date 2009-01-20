@@ -845,7 +845,7 @@ class JSON_Handler_Sale extends JSON_Handler
 		try
 		{
 			$strRenderMode		= Sales_Report::RENDER_MODE_EXCEL;
-			
+
 			$objReportBuilder	= Sales_Report::getNewReport($strReportType);
 
 			$objReportBuilder->setConstraints($objConstraints);

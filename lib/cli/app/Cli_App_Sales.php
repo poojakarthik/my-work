@@ -801,6 +801,18 @@ class Cli_App_Sales extends Cli
 						if ($objContact->Email && Contact::isEmailInUse($objContact->Email))
 						{
 							$this->log("\t\t\t\t\t! Contact's Email Address is already in use!  Aborting Sale...");
+							
+							// Rollback to the savepoint for this Sale
+							if ($qryQuery->Execute("ROLLBACK TO {$strSaleSavePoint}") === FALSE)
+							{
+								throw new Exception($qryQuery->Error());
+							}
+							$resRollbackSavepoint	= $dsSalesPortal->query("ROLLBACK TO {$strSaleSavePoint}");
+							if (PEAR::isError($resRollbackSavepoint))
+							{
+								throw new Exception($resRollbackSavepoint->getMessage()." :: ".$resRollbackSavepoint->getUserInfo());
+							}
+							
 							throw new Exception_Sale_Manual_Intervention("Contact {$objContact->FirstName} {$objContact->LastName}'s specified Email Address ({$objContact->Email}) is already in use!");
 						}
 						
@@ -1186,7 +1198,7 @@ class Cli_App_Sales extends Cli
 								throw new Exception($resReleaseSavepoint->getMessage()." :: ".$resReleaseSavepoint->getUserInfo());
 							}
 						}
-						catch(Exception_Sale_Product_Manual_Intervention $eException)
+						catch (Exception_Sale_Product_Manual_Intervention $eException)
 						{
 							$this->log("\t\t\t\t\t\t\t! Setting Sale Product Status to Manual Intervention...");
 							
