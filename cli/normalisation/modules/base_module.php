@@ -289,6 +289,7 @@ abstract class NormalisationModule extends CarrierModule
 			// requires a destination code
 			if (!is_numeric($this->_arrNormalisedData["DestinationCode"]))
 			{
+				throw new Exception("No Destination Code @ Validation");
 				$this->_UpdateStatus(CDR_BAD_DESTINATION);
 				return FALSE;
 			}
