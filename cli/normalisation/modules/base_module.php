@@ -953,8 +953,6 @@ abstract class NormalisationModule extends CarrierModule
 	 		return $arrResult;
 	 	}
 	 	
-	 	CliEcho("Searching for Default Destination for Context {$this->_intContext}...");
-	 	
 		// No translation data -- Use the 'Unknown Destination' Destination for this Context
 		$selUnknownDestination	= ($selUnknownDestination) ? $selUnknownDestination : new StatementSelect(	"destination_context JOIN Destination ON destination_context.fallback_destination_id = Destination.Id", 
 																											"Destination.*", 
@@ -969,8 +967,7 @@ abstract class NormalisationModule extends CarrierModule
 			return $arrUnknownDestination;
 		}
 		
-	 	CliEcho("No default found!");
-	 	throw new Exception("No default found!");
+	 	throw new Exception("No Default Destination found for Context {$this->_intContext}!");
 
 		// Set an error status
 		if ($bolDontError !== TRUE)
