@@ -239,21 +239,20 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 				$mixCarrierDestination	 			= $this->_FetchRawCDR('RateId');
 			}
 			
-			$arrDestinationCode 					= $this->FindDestination($mixCarrierDestination, TRUE); // <-- *** Don't error if destination not found ***
-			if ($arrDestinationCode)
+			// Get Flex Destination
+			$arrDestinationCode 					= $this->FindDestination($mixCarrierDestination);
+			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
+			
+			// Determine Description
+			if ($arrDestinationCode['bolUnknownDestination'] === true)
 			{
-				$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
-				// set destination based description here
-				$strDescription = $arrDestinationCode['Description'];
-			}
-			elseif ($intCarrierRecordType == "7" || $intCarrierRecordType == "8")
-			{
-				// Set Destination to 'Other S&E'
-				$this->_AppendCDR('DestinationCode', 80001);
+				// Use the Raw Description
+				$strDescription	= $this->RawDescription();
 			}
 			else
 			{
-				$this->_UpdateStatus(CDR_BAD_DESTINATION);
+				// Use the Destination's Description
+				$strDescription = $arrDestinationCode['Description'];
 			}
 		}
 		

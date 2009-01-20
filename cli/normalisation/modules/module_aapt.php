@@ -138,7 +138,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$arrDefine ['Duration']			['Validate']	= "/^\d+:[0-5]\d:[0-5]\d$/";
 		$arrDefine ['CallCharge']		['Index']		= 11;	// DDDDDDDDCC
 		$arrDefine ['BandStep']			['Index']		= 12;	// 4 digit distance step code  
-		$arrDefine ['GSTFlag']			['Index']		= 13;	// One Character flag contains “N”o or “Y”es
+		$arrDefine ['GSTFlag']			['Index']		= 13;	// One Character flag contains “N�?o or “Y�?es
 		$arrDefine ['RateDate']			['Index']		= 14;	// DD/MM/CCYY
 		
 		$arrDefine ['FNN']				['Index']		= 15;	// FNN (added by pre-processor)
@@ -233,11 +233,19 @@ class NormalisationModuleAAPT extends NormalisationModule
 		{
 			$mixCarrierCode 				= $this->_FetchRawCDR('RateTable');
 			$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
-			if ($arrDestinationCode)
+			
+			// Determine Description
+			if ($arrDestinationCode['bolUnknownDestination'] === true)
 			{
-				$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
-				$this->_AppendCDR('Description', $arrDestinationCode['Description']);
+				// Use the Raw Description
+				$strDescription	= $this->RawDescription();
 			}
+			else
+			{
+				// Use the Destination's Description
+				$strDescription = $arrDestinationCode['Description'];
+			}
+			$this->_AppendCDR('Description', $strDescription);
 		}
 		// CarrierRef
 		$mixValue 						= $this->_GenerateUID($arrCDR["FileName"], $arrCDR["SequenceNo"]);

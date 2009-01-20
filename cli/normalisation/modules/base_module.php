@@ -936,6 +936,9 @@ abstract class NormalisationModule extends CarrierModule
 	 */
 	 protected function FindDestination($mixCarrierCode, $bolDontError=FALSE)
 	 {
+	 	static	$selUnknownDestination;
+	 	
+	 	// See if we have translation data for this destination
 	 	$arrData = Array("Carrier" => $this->intBaseCarrier, "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);
 		$intResult = $this->_selFindDestination->Execute($arrData);
 		
@@ -949,7 +952,19 @@ abstract class NormalisationModule extends CarrierModule
 	 		return $arrResult;
 	 	}
 	 	
-		//TODO!!!! - add this to a report so we can see any missing destinations
+		// No translation data -- Use the 'Unknown Destination' Destination for this Context
+		$selUnknownDestination	= ($selUnknownDestination) ? $selUnknownDestination : new StatementSelect(	"destination_context JOIN Destination ON destination_context.fallback_destination_id = Destination.Id", 
+																											"Destination.*", 
+																											"destination_context = <Context>");
+		if ($selUnknownDestination->Execute(array('Context'=>$this->_intContext)) === false)
+		{
+			throw new Exception($selUnknownDestination->Error());
+		}
+		if ($arrUnknownDestination = $selUnknownDestination->Fetch())
+		{
+			$arrUnknownDestination['bolUnknownDestination']	= true;
+			return $arrUnknownDestination;
+		}
 
 		// Set an error status
 		if ($bolDontError !== TRUE)

@@ -216,11 +216,19 @@ class NormalisationModuleM2 extends NormalisationModule
 		if ($this->_intContext > 0)
 		{
 			$arrDestinationCode 		= $this->FindDestination($mixCarrierCode);
-			if ($arrDestinationCode)
+			
+			// Determine Description
+			if ($arrDestinationCode['bolUnknownDestination'] === true)
 			{
-				$this->_AppendCDR('DestinationCode'	, $arrDestinationCode['Code']);
-				$this->_AppendCDR('Description'		, $arrDestinationCode['Description']);
+				// Use the Raw Description
+				$strDescription	= $this->RawDescription();
 			}
+			else
+			{
+				// Use the Destination's Description
+				$strDescription = $arrDestinationCode['Description'];
+			}
+			$this->_AppendCDR('Description', $strDescription);
 		}
 		
 		// Cost
