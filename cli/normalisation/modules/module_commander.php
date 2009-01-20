@@ -174,7 +174,7 @@ class NormalisationModuleCommander extends NormalisationModule
 		if ($this->_intContext > 0)
 		{
 			$arrDestinationCode 			= $this->FindDestination($mixRateId);
-			$this->_AppendCDR('DestinationCode', $arrDestinationCode);
+			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
 			
 			// Determine Description
 			if ($arrDestinationCode['bolUnknownDestination'] === true)
