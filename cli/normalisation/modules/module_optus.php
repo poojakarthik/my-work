@@ -277,6 +277,7 @@ class NormalisationModuleOptus extends NormalisationModule
 		{
 			$mixCarrierCode 				= (int)$this->_FetchRawCDR('Jurisdiction');
 			$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+			$this->_AppendCDR('DestinationCode', $arrDestinationCode);
 			
 			// Determine Description
 			if ($arrDestinationCode['bolUnknownDestination'] === true)

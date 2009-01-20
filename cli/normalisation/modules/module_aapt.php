@@ -233,6 +233,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		{
 			$mixCarrierCode 				= $this->_FetchRawCDR('RateTable');
 			$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+			$this->_AppendCDR('DestinationCode', $arrDestinationCode);
 			
 			// Determine Description
 			if ($arrDestinationCode['bolUnknownDestination'] === true)
