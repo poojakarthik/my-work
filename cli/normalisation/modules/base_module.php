@@ -969,6 +969,7 @@ abstract class NormalisationModule extends CarrierModule
 		}
 		
 	 	CliEcho("No default found!");
+	 	throw new Exception("No default found!");
 
 		// Set an error status
 		if ($bolDontError !== TRUE)
