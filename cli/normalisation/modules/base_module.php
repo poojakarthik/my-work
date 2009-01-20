@@ -955,7 +955,7 @@ abstract class NormalisationModule extends CarrierModule
 		// No translation data -- Use the 'Unknown Destination' Destination for this Context
 		$selUnknownDestination	= ($selUnknownDestination) ? $selUnknownDestination : new StatementSelect(	"destination_context JOIN Destination ON destination_context.fallback_destination_id = Destination.Id", 
 																											"Destination.*", 
-																											"destination_context = <Context>");
+																											"destination_context.id = <Context>");
 		if ($selUnknownDestination->Execute(array('Context'=>$this->_intContext)) === false)
 		{
 			throw new Exception($selUnknownDestination->Error());
