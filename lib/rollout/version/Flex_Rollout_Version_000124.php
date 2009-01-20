@@ -32,7 +32,7 @@ class Flex_Rollout_Version_000124 extends Flex_Rollout_Version
 						name VARCHAR(255) NOT NULL COMMENT 'Name of the Destination Context', 
 						description VARCHAR(1024) NOT NULL COMMENT 'Description of the Destination Context', 
 						const_name VARCHAR(512) NOT NULL COMMENT 'Constant Name for the Destination Context', 
-						fallback_destination_id BIGINT(20) NULL COMMENT '(FK) Destination Id to use when no valid Destination can be found', 
+						fallback_destination_id BIGINT(20) UNSIGNED NULL COMMENT '(FK) Destination Id to use when no valid Destination can be found', 
 						
 						CONSTRAINT pk_destination_context PRIMARY KEY (id),
 						CONSTRAINT fk_destination_context_fallback_destination_id FOREIGN KEY (fallback_destination_id) REFERENCES Destination(Id) ON UPDATE CASCADE ON DELETE RESTRICT
