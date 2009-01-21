@@ -730,10 +730,10 @@ abstract class NormalisationModule extends CarrierModule
 		
 		// Is there only one instance of this FNN?
 		$arrFNNInstances	= Service::getFNNInstances($this->_arrNormalisedData['FNN']);
-		CliEcho("There are ".count($arrFNNInstances)." instances of {$this->_arrNormalisedData['FNN']}");
+		//CliEcho("There are ".count($arrFNNInstances)." instances of {$this->_arrNormalisedData['FNN']}");
 		if (count($arrFNNInstances) === 1)
 		{
-	 		CliEcho("Only one instance");
+	 		//CliEcho("Only one instance");
 	 		
 	 		// Yes, automatically assume that this is the correct Service
 	 		$this->_arrNormalisedData['AccountGroup']	= $arrFNNInstances[0]['AccountGroup'];
