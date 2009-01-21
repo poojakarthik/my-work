@@ -382,7 +382,7 @@ class Service extends ORM
 	public static function getFNNInstances($strFNN, $bolAsArray=true)
 	{
 		$selFNNInstances	= self::_preparedStatement('selFNNInstances');
-		if ($selFNNInstances === false)
+		if ($selFNNInstances->Execute(array('FNN'=>$strFNN)) === false)
 		{
 			throw new Exception($selFNNInstances->Error());
 		}
