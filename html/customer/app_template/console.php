@@ -2191,7 +2191,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					DBO()->ErrorMessage .= "Error you have already setup your account, if you forget your password: <a href=\"" . Href()->ResetPassword() . "\">go here</a>" . "<br/>";
 
 				}
-				else if($strCustContact->FirstName == "$_POST[mixFirstName]" && $strCustContact->LastName == "$_POST[mixLastName]" && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]")
+				else if(eregi($strCustContact->FirstName, $_POST['mixFirstName']) && eregi($strCustContact->LastName, $_POST['mixLastName']) && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]")
 				{
 					DBO()->Fail = FALSE;
 					DBO()->Contact->Id = $strCustContact->Id;
