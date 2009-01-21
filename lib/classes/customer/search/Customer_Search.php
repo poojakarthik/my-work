@@ -22,6 +22,7 @@ class Customer_Search
 	const CONSTRAINT_TYPE_ABN			= 7;
 	const CONSTRAINT_TYPE_ACN			= 8;
 	const CONSTRAINT_TYPE_EMAIL			= 9;
+	const CONSTRAINT_TYPE_TIO_REF_NUM	= 10;
 	
 	private static $arrConstraintTypes = array(	self::CONSTRAINT_TYPE_ACCOUNT_ID	=> array(	"Name"			=> "Account Id",
 																								"Description"	=> "Account Id"
@@ -49,6 +50,9 @@ class Customer_Search
 																							),
 												self::CONSTRAINT_TYPE_EMAIL			=> array(	"Name"			=> "Email Address",
 																								"Description"	=> "Email Address"
+																							),
+												self::CONSTRAINT_TYPE_TIO_REF_NUM	=> array(	"Name"			=> "T.I.O Ref Num",
+																								"Description"	=> "T.I.O Ref Num"
 																							)
 												);
 	
@@ -68,7 +72,7 @@ class Customer_Search
 							);
 	
 	// Maximum records that a single query can return
-	const MAX_RECORDS					= 1000;
+	const MAX_RECORDS = 1000;
 	
 	public static function getConstraintTypes()
 	{
@@ -88,6 +92,8 @@ class Customer_Search
 				$arrConstraints[self::CONSTRAINT_TYPE_ABN]			= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_ABN];
 				$arrConstraints[self::CONSTRAINT_TYPE_ACN]			= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_ACN];
 				$arrConstraints[self::CONSTRAINT_TYPE_EMAIL]		= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_EMAIL];
+				$arrConstraints[self::CONSTRAINT_TYPE_TIO_REF_NUM]	= self::$arrConstraintTypes[self::CONSTRAINT_TYPE_TIO_REF_NUM];
+
 				break;
 			
 			case self::SEARCH_TYPE_CONTACTS:
@@ -201,6 +207,9 @@ class Customer_Search
 			case self::CONSTRAINT_TYPE_EMAIL:
 				$arrAccounts = self::_findAccountsForEmail($mixConstraint, $bolIncludeArchived);
 				break;
+			case self::CONSTRAINT_TYPE_TIO_REF_NUM:
+				$arrAccounts = self::_findAccountsForTIORefNum($mixConstraint, $bolIncludeArchived);
+				break;
 				
 			default:
 				// We don't know what sort of search it is
@@ -249,6 +258,14 @@ class Customer_Search
 					{
 						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived));
 					}
+					
+					// Check if it is a tio ref num
+					$strConstraintAsTIORefNum = ereg_replace("[^0-9\/]", "", $mixConstraint);
+					if (IsValidTIOReferenceNumber($strConstraintAsTIORefNum))
+					{
+						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForTIORefNum($strConstraintAsTIORefNum, $bolIncludeArchived));
+					}
+					
 					
 					$arrAccounts = array_merge($arrAccounts, self::_findAccountsForEmail($mixConstraint, $bolIncludeArchived));
 				}
@@ -481,6 +498,25 @@ class Customer_Search
 		
 		return self::_find($strQuery, "Id");
 	}
+
+	// Returns array of all Accounts (account ids) that have at some point had the tio reference number associated with them.
+	// If there aren't any, then this will be an empty array
+	private static function _findAccountsForTIORefNum($strTIORefNum, $bolIncludeArchived)
+	{
+		// Strip invalid chars from the tio ref num
+		$strTIORefNum = ereg_replace("[^0-9\/]", "", $strTIORefNum);
+		
+		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
+		
+		$strQuery = "	SELECT DISTINCT a.Id AS AccountId
+						FROM Account AS a INNER JOIN account_history AS ah ON a.Id = ah.account_id
+						WHERE ah.tio_reference_number = '$strTIORefNum' $strArchivedConstraint
+						ORDER BY a.BusinessName ASC, a.TradingName ASC, a.Id DESC
+						LIMIT ". self::MAX_RECORDS;
+		
+		return self::_find($strQuery, "AccountId");
+	}
+
 	
 	// Returns array of all Contacts matching the name passed.  If there aren't any, then this will be an empty array
 	private static function _findContactsForContactName($strContactName, $bolIncludeArchived)

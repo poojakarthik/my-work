@@ -5708,4 +5708,26 @@ function signalHandler($intSignalId)
 			break;
 	}
 }
+
+
+//------------------------------------------------------------------------//
+// IsValidTIOReferenceNumber
+//------------------------------------------------------------------------//
+/**
+ * IsValidTIOReferenceNumber()
+ * 
+ * Check if a TIO reference number is valid
+ * 
+ * Check if a TIO reference number is valid
+ * Valid TIO reference numbers have the format: \d{2}\/\d{6,7}
+ * 
+ * @param	string		$strTIORefNum		The TIO Reference number to check for validity
+ *
+ * @return	boolean
+ */
+function IsValidTIOReferenceNumber($strTIORefNum)
+{
+	return preg_match("/^\d{2}\/\d{6,7}$/", $strTIORefNum);
+}
+
 ?>

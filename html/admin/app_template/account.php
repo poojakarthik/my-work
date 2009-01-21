@@ -914,12 +914,17 @@ class AppTemplateAccount extends ApplicationTemplate
 			return TRUE;
 		}
 
-		if (DBO()->Account->WithTIO->Value == TRUE && trim(DBO()->Account->tio_reference_number->Value) == "")
+		if (DBO()->Account->WithTIO->Value == TRUE)
 		{
-			// The user has specified that the Account is with the TIO, but has not specified a reference number
-			DBO()->Account->tio_reference_number->SetToInvalid();
+			// Validate the tio reference number
+			DBO()->Account->tio_reference_number = str_replace(" ", "", DBO()->Account->tio_reference_number->Value);
+			
+			if (!IsValidTIOReferenceNumber(DBO()->Account->tio_reference_number->Value))
+			{
+				DBO()->Account->tio_reference_number->SetToInvalid();
+			}
 		}
-		if (DBO()->Account->WithTIO->Value == FALSE)
+		else
 		{
 			DBO()->Account->tio_reference_number = NULL;
 		}
