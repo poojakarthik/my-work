@@ -132,9 +132,10 @@ class Product_Type_Module_Service_Mobile extends Product_Type_Module
 	public static function getSaleItemDescription(DO_Sales_SaleItem $doSaleItem, $bolIncludeProductName=FALSE, $bolIncludeProductTypeName=FALSE)
 	{
 		// Try retrieving the associated record from the sale_item_service_mobile table
-		$doSaleItemServiceMobile = DO_Sales_SaleItemServiceMobile::getForSaleItem($doSaleItem, TRUE);
-		
-		$strDescription = ($doSaleItemServiceMobile->fnn !== NULL)? $doSaleItemServiceMobile->fnn : "No MSN Specified";
+		$doSaleItemServiceMobile	= DO_Sales_SaleItemServiceMobile::getForSaleItem($doSaleItem, TRUE);
+		$doOrigin					= DO_Sales_ServiceMobileOrigin::getForId($doSaleItemServiceMobile);
+		$strDescription				= ($doSaleItemServiceMobile->fnn !== NULL)? $doSaleItemServiceMobile->fnn : "No MSN Specified";
+		$strDescription				= "{$strDescription} ({$doOrigin->description})";
 		
 		if ($bolIncludeProductName)
 		{
