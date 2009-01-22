@@ -1487,8 +1487,12 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		}
 		
 		// Copy all valid ServiceRatePlan records across from the old service
-		$strCopyServiceRatePlanRecordsToNewService =	"INSERT INTO ServiceRatePlan (Id, Service, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active) ".
-														"SELECT NULL, $intNewServiceId, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active ".
+		$strCopyServiceRatePlanRecordsToNewService =	"INSERT INTO ServiceRatePlan (Id, Service, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active, contract_scheduled_end_datetime, ".
+														"contract_effective_end_datetime, contract_status_id, contract_breach_reason_id, contract_breach_reason_description, contract_payout_percentage, ".
+														"contract_payout_charge_id, exit_fee_charge_id, contract_breach_fees_charged_on, contract_breach_fees_employee_id, contract_breach_fees_reason) ".
+														"SELECT NULL, $intNewServiceId, RatePlan, CreatedBy, CreatedOn, StartDatetime, EndDatetime, LastChargedOn, Active, contract_scheduled_end_datetime, ".
+														"contract_effective_end_datetime, contract_status_id, contract_breach_reason_id, contract_breach_reason_description, contract_payout_percentage, ".
+														"contract_payout_charge_id, exit_fee_charge_id, contract_breach_fees_charged_on, contract_breach_fees_employee_id, contract_breach_fees_reason ".
 														"FROM ServiceRatePlan WHERE Service = $intOldServiceId $strEndDateTimeCondition AND StartDatetime < EndDatetime";
 		$qryInsertServicePlanDetails = new Query();
 
