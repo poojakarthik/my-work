@@ -3004,7 +3004,7 @@ class AppTemplateService extends ApplicationTemplate
 		// Retrieve the service details
 		if (!DBO()->Service->Load())
 		{
-			Ajax()->AccCommand("Alert", "The Service id: ". DBO()->Service->Id->value ." you were attempting to view could not be found");
+			Ajax()->AddCommand("Alert", "The Service id: ". DBO()->Service->Id->value ." you were attempting to view could not be found");
 			return TRUE;
 		}
 		
@@ -3012,7 +3012,7 @@ class AppTemplateService extends ApplicationTemplate
 		DBO()->Account->Id = DBO()->Service->Account->Value;
 		if (!DBO()->Account->Load())
 		{
-			Ajax()->AccCommand("Alert", "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service");
+			Ajax()->AddCommand("Alert", "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service");
 			return TRUE;
 		}
 		
