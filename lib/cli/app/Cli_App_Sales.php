@@ -1228,7 +1228,7 @@ class Cli_App_Sales extends Cli
 						// New Sale
 						$objAccountCreationNote	= new Note();
 						$objAccountCreationNote->AccountGroup	= $objAccount->AccountGroup;
-						$objAccountCreationNote->Account		= $objAccount->Account;
+						$objAccountCreationNote->Account		= $objAccount->id;
 						$objAccountCreationNote->Employee		= Employee::SYSTEM_EMPLOYEE_ID;
 						$objAccountCreationNote->Datetime		= $strPullDatetime;
 						$objAccountCreationNote->NoteType		= Note::SYSTEM_NOTE_TYPE_ID;
