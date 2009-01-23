@@ -22,37 +22,25 @@ class Sales_Report_SaleItemStatus extends Sales_Report
 	// This array defines the columns that will be included in the report
 	protected $_arrColumns = array(
 							"SaleTypeName"				=> "Sale Type",
-							"SaleId"				=> "",
-							"AccountName"					=> "",
-							"AccountId"					=> "",
+							"SaleId"					=> "Sale",
+							"AccountName"				=> "Account",
+							"AccountId"					=> "Account Id",
 							"ProductName"				=> "Product",
 							"ProductTypeName"			=> "Product Type",
 							"ProductDetails"			=> "Details",
 							"VerifiedOn"				=> "Verified On",
 							"VerifiedBy"				=> "Verified By",
-							"EOTStatusName"					=> "",				// End Of Timeframe Status Name
-							"EOTStatusTimestamp"					=> "",
-							"Status"					=> "",
-							""					=> "",
-							""					=> "",
-							""					=> "",
-							""					=> "",
-							""					=> "",
-							""					=> "",
-							""					=> "",
-							""					=> "",
-							"VerifiedOn"				=> "Verified On",
-							"VerifiedBy"				=> "Verified By",
+							"EOTStatusName"				=> "EOT Status",		// End Of Timeframe Status Name
+							"EOTStatusTimestamp"		=> "Actioned",
+							"EOTStatusSetBy"			=> "Actioner",
+							"EOTStatusDescription"		=> "Description",
 							"CurrentStatusName"			=> "Current Status",
-							"CurrentStatusTimestamp"	=> "Last Actioned",
-							"CurrentStatusChangedBy"	=> "Last Actioner",
-							"IsCommissionPayable"		=> "Commission Payable",
-							"CommissionReason"			=> "Reason",
-							"SaleItemId"				=> "Sale Item Id",
-							"CurrentStatusDescription"	=> "Current Status Description"
+							"CurrentStatusTimestamp"	=> "Actioned",
+							"CurrentStatusSetBy"		=> "Actioner",
+							"CurrentStatusDescription"	=> "Description"
 							);
 	
-	protected $_reportType = Sales_Report::REPORT_TYPE_COMMISSIONS;
+	protected $_reportType = Sales_Report::REPORT_TYPE_SALE_ITEM_STATUS;
 	
 	
 	// Sets the constraints for the report (and validates them)
@@ -81,12 +69,13 @@ class Sales_Report_SaleItemStatus extends Sales_Report
 			}
 			else
 			{
-				$this->_strEarliestTime = $objConstraints->earliestTime;
+				// Make sure it is in a correct format
+				$this->_strEarliestTime = date("Y-m-d H:i:s", strtotime($objConstraints->earliestTime));
 			}
 		}
 		else
 		{
-			throw new Exception("Earliest Verification Time has not been specified");
+			throw new Exception("Earliest Time of Change has not been specified");
 		}
 		
 		// Latest Time
@@ -98,81 +87,42 @@ class Sales_Report_SaleItemStatus extends Sales_Report
 			}
 			else
 			{
-				$this->_strLatestTime = $objConstraints->latestTime;
+				// Make sure it is in a correct format
+				$this->_strLatestTime = date("Y-m-d H:i:s", strtotime($objConstraints->latestTime));
 			}
 		}
 		else
 		{
-			throw new Exception("Latest Verification Time has not been specified");
+			throw new Exception("Latest Time of Change has not been specified");
 		}
 		
 		if ($this->_strLatestTime < $this->_strEarliestTime)
 		{
-			throw new Exception("Earliest Verification Time ({$this->_strEarliestTime}) is greater than the Latest Verification Time ({$this->_strLatestTime})");
+			throw new Exception("Earliest Time of Change ({$this->_strEarliestTime}) is greater than the Latest Time of Change ({$this->_strLatestTime})");
 		}
 		
-		// Dealers
-		$this->_arrDealers = array();
-		if (isset($objConstraints->dealers) && is_array($objConstraints->dealers) && count($objConstraints->dealers))
+		// Statuses
+		$this->_arrStatuses = array();
+		if (isset($objConstraints->statusIds) && is_array($objConstraints->statusIds) && count($objConstraints->statusIds))
 		{
-			// Dealers have been specified
-			foreach ($objConstraints->dealers as $objDealerDetails)
+			$arrAllStatuses = DO_Sales_SaleItemStatus::getAll();
+			
+			// Statuses have been specified
+			foreach ($objConstraints->statusIds as $intSaleItemStatusId)
 			{
-				if (!isset($objDealerDetails->id))
+				if (!array_key_exists($intSaleItemStatusId, $arrAllStatuses))
 				{
-					throw new Exception("Dealer has been defined without an id");
+					throw new Exception("Invalid Sale Item Status Id: $intSaleItemStatusId");
 				}
 				
-				// Check that the dealer isn't already included in the array of dealers for the report
-				if (array_key_exists($objDealerDetails->id, $this->_arrDealers))
-				{
-					throw new Exception("Dealer with id: {$objDealerDetails->id} has been included more than once");
-				}
-				
-				$objDealerDetails->dealer = Dealer::getForId($objDealerDetails->id, TRUE);
-				
-				if (!isset($objDealerDetails->includeSubordinates))
-				{
-					// The includeSubordinates flag has not even been specified, so set it to false
-					$objDealerDetails->includeSubordinates = FALSE;
-				}
-				
-				if ($objDealerDetails->includeSubordinates)
-				{
-					// Build an array of ALL Subordinates that the dealer has
-					$arrSubordinates = $objDealerDetails->dealer->getSubordinates();
-					$objDealerDetails->subordinates = array();
-					
-					foreach($arrSubordinates as $objSubordinate)
-					{
-						$objDealerDetails->subordinates[$objSubordinate->id] = $objSubordinate;
-					}
-				}
-				
-				$this->_arrDealers[$objDealerDetails->id] = $objDealerDetails;
+				$this->_arrStatuses[] = $intSaleItemStatusId;
 			}
 		}
 		else
 		{
-			throw new Exception(__METHOD__ ." - No dealers have been specified");
+			throw new Exception(__METHOD__ ." - No statuses have been specified");
 		}
 		
-		// Make sure there are no dealers listed in the dealer array, which will also be included as a subordinate of another dealer in the dealer array
-		foreach ($this->_arrDealers as $intDealerId=>$objDealerDetails)
-		{
-			if ($objDealerDetails->includeSubordinates)
-			{
-				// The dealer will have its subordinates included
-				foreach ($objDealerDetails->subordinates as $objSubordinate)
-				{
-					if (array_key_exists($objSubordinate->id, $this->_arrDealers))
-					{
-						throw new Exception("Dealer '{$objSubordinate->username}' is a subordinate of dealer '{$objDealerDetails->dealer->username}', and as such cannot be included in this report as their associated sales will be listed under 2 dealers");
-					}
-				}
-			}
-		}
-
 		// Everything must have worked A Okay
 	}
 	
@@ -187,20 +137,28 @@ class Sales_Report_SaleItemStatus extends Sales_Report
 		$strLatestVerificationTime		= $this->_strLatestTime;
 		$intSaleItemStatusIdVerified	= DO_Sales_SaleItemStatus::VERIFIED;
 		
-		$strQueryTemplate = "
+		$strSaleItemStatusesToConsider = implode(", ", $this->_arrStatuses);
+		
+		$strQuery = "
 SELECT 	si.id AS sale_item_id, 
 		si.sale_id AS sale_id, 
-		si.created_by AS created_by, 
+		s.sale_type_id AS sale_type_id,
 		si.product_id AS product_id, 
 		verified_details.changed_on AS verified_on,
 		verified_details.changed_by AS verified_by,
+
+		eot_details.sale_item_status_id AS eot_status_id, /* eot = end of timeframe */
+		eot_details.changed_on AS eot_status_changed_on,
+		eot_details.changed_by AS eot_status_changed_by,
+		eot_details.description AS eot_status_description,
+
 		current_details.sale_item_status_id AS current_status_id,
 		current_details.changed_on AS current_status_changed_on,
 		current_details.changed_by AS current_status_changed_by,
 		current_details.description AS current_status_description,
+
 		sa.business_name AS business_name,
-		sa.external_reference AS account_external_reference,
-		sa.vendor_id AS vendor_id
+		sa.external_reference AS account_external_reference
 		
 FROM 	sale_item AS si 
 		INNER JOIN sale_item_status_history AS verified_details 
@@ -228,22 +186,39 @@ FROM 	sale_item AS si
 			) AS current_details
 				ON si.id = current_details.sale_item_id
 
-WHERE	si.created_by IN (<DealerIds>)
-		AND verified_details.changed_on BETWEEN '$strEarliestVerificationTime' AND '$strLatestVerificationTime'
-ORDER BY sale_id ASC, sale_item_id ASC
+		INNER JOIN 
+			(	/* This finds details of a sale_item status change, but only if it is to one of the statuses we are interested in, and only if it was the last status changed to, within the timeframe specified */
+				SELECT	sale_item_status_history.sale_item_status_id AS sale_item_status_id,
+						sale_item_status_history.changed_on AS changed_on,
+						sale_item_status_history.changed_by AS changed_by,
+						sale_item_status_history.description AS description,
+						sale_item_status_history.sale_item_id AS sale_item_id
+				FROM	sale_item_status_history
+						INNER JOIN 
+							(	/* This finds the id of the most recent sale_item_status_history record created between '$strEarliestVerificationTime' AND '$strLatestVerificationTime', for each sale_item_id */
+								SELECT sale_item_id, MAX(id) AS id 
+								FROM sale_item_status_history
+								WHERE changed_on BETWEEN '$strEarliestVerificationTime' AND '$strLatestVerificationTime'
+								GROUP BY sale_item_id
+							) AS eot_sale_item_status_record
+								ON sale_item_status_history.id = eot_sale_item_status_record.id
+				WHERE sale_item_status_history.sale_item_status_id IN ($strSaleItemStatusesToConsider)
+			) AS eot_details
+				ON si.id = eot_details.sale_item_id
+
+WHERE verified_details.changed_on <= '$strLatestVerificationTime'
+ORDER BY sale_type_id ASC, sale_id ASC, sale_item_id ASC, business_name ASC
 ";
 
 		// Convert new line chars to spaces, and remove all tabs
-		$strQueryTemplate = str_replace("\n", " ", $strQueryTemplate);
-		$strQueryTemplate = str_replace("\t", " ", $strQueryTemplate);
+		$strQuery = str_replace("\n", " ", $strQuery);
+		$strQuery = str_replace("\t", " ", $strQuery);
 		
 		$dsSales = DO_Sales_Sale::getDataSource();
 
-		$strNowTimestamp = Data_Source_Time::currentTimestamp($dsSales);
-
 		// Cache data that will be used repeatedly
-		$arrDealerCarriers			= Carrier::listForCarrierTypeId(CARRIER_TYPE_SALES_CALL_CENTRE);
-		$arrVendors					= DO_Sales_Vendor::getAll();
+		$arrDealerCarriers	= Carrier::listForCarrierTypeId(CARRIER_TYPE_SALES_CALL_CENTRE);
+		$arrVendors			= DO_Sales_Vendor::getAll();
 		foreach ($arrVendors as &$doVendor)
 		{
 			if ($doVender->coolingOffPeriod === NULL)
@@ -253,6 +228,7 @@ ORDER BY sale_id ASC, sale_item_id ASC
 		}
 		
 		$arrSaleItemStatuses		= DO_Sales_SaleItemStatus::getAll();
+		$arrSaleTypes				= DO_Sales_SaleType::getAll();
 		$arrProductTypesNotIndexed	= DO_Sales_ProductType::listAll();
 		$arrProductTypes			= array();
 		foreach ($arrProductTypesNotIndexed as $doProductType)
@@ -260,171 +236,82 @@ ORDER BY sale_id ASC, sale_item_id ASC
 			$arrProductTypes[$doProductType->id]					= $doProductType;
 			$arrProductTypes[$doProductType->id]->moduleClassName	= Product_Type_Module::getModuleClassNameForProductType($doProductType);
 		}
+		
 		$arrDealers		= array();
 		$arrProducts	= array();
 		
-		foreach ($this->_arrDealers as $intDealerId=>$objDealerDetails)
+		// Execute the query
+		if (PEAR::isError($objResults = $dsSales->query($strQuery)))
 		{
-			// Get a reference to the dealer object, (It makes it easier to reference)
-			$objDealer = &$objDealerDetails->dealer;
-			
-			// Work out what dealer ids to use
-			$arrDealerIds = ($objDealerDetails->includeSubordinates && count($objDealerDetails->subordinates))? array_merge(array($intDealerId), array_keys($objDealerDetails->subordinates)) : array($intDealerId);
-			$strDealerIds = implode(", ", $arrDealerIds);
-			
-			// Build the query specific to this dealer, and possibly their subordinates
-			$strQuery = str_replace("<DealerIds>", $strDealerIds, $strQueryTemplate);
-			
-			// Execute the query
-			if (PEAR::isError($objResults = $dsSales->query($strQuery)))
+			throw new Exception("Failed to execute Sale Report Query for dealer {$objDealerDetails->dealer->username}, using query: $strQuery - ". $objResults->getMessage());
+		}
+	
+		while ($arrRecord = $objResults->fetchRow(MDB2_FETCHMODE_ASSOC))
+		{
+			// Get Product details
+			if (!array_key_exists($arrRecord['product_id'], $arrProducts))
 			{
-				throw new Exception("Failed to execute Commissions Report Query for dealer {$objDealerDetails->dealer->username}, using query: $strQuery - ". $objResults->getMessage());
+				// Cache the product
+				$arrProducts[$arrRecord['product_id']] = DO_Sales_Product::getForId($arrRecord['product_id']);
 			}
-		
-			// Prepare the default values for the Record
-			$arrDetails = array(	"DealerId"			=> $objDealerDetails->id,
-									"DealerUsername"	=> $objDealer->username,
-									"DealerCarrier"		=> $arrDealerCarriers[$objDealer->carrierId]->name
-								);
-						
-			while ($arrRecord = $objResults->fetchRow(MDB2_FETCHMODE_ASSOC))
+			$doProduct			= $arrProducts[$arrRecord['product_id']];
+			$strModuleClassName	= $arrProductTypes[$doProduct->productTypeId]->moduleClassName;
+			$doSaleItem			= DO_Sales_SaleItem::getForId($arrRecord['sale_item_id']);
+			
+			// Work out the account Id
+			if ($arrRecord['account_external_reference'] !== NULL && preg_match('/^Account.Id=\d+$/', $arrRecord['account_external_reference']))
 			{
-				// Get Product details
-				if (!array_key_exists($arrRecord['product_id'], $arrProducts))
-				{
-					// Cache the product
-					$arrProducts[$arrRecord['product_id']] = DO_Sales_Product::getForId($arrRecord['product_id']);
-				}
-				$doProduct			= $arrProducts[$arrRecord['product_id']];
-				$strModuleClassName	= $arrProductTypes[$doProduct->productTypeId]->moduleClassName;
-				$doSaleItem			= DO_Sales_SaleItem::getForId($arrRecord['sale_item_id']);
-				
-				// Work out the account Id
-				if ($arrRecord['account_external_reference'] !== NULL && preg_match('/^Account.Id=\d+$/', $arrRecord['account_external_reference']))
-				{
-					// The account is now in flex, retrieve the id
-					$intAccountId = intval(str_replace('Account.Id=', '', $arrRecord['account_external_reference']));
-				}
-				else
-				{
-					$intAccountId = NULL;
-				}
-				
-				// Find out who verified the sale
-				if (!array_key_exists($arrRecord['verified_by'], $arrDealers))
-				{
-					$arrDealers[$arrRecord['verified_by']] = Dealer::getForId($arrRecord['verified_by'], TRUE);
-				}
-				$objVerificationDealer = $arrDealers[$arrRecord['verified_by']];
-
-				// Find out who performed the most recent status change on the sale_item
-				if (!array_key_exists($arrRecord['current_status_changed_by'], $arrDealers))
-				{
-					$arrDealers[$arrRecord['current_status_changed_by']] = Dealer::getForId($arrRecord['current_status_changed_by'], TRUE);
-				}
-				$objLatestChangeDealer = $arrDealers[$arrRecord['current_status_changed_by']];
-				
-				// Find out if a subordinate made the sale
-				if ($arrRecord['created_by'] != $objDealer->id)
-				{
-					// A subordinate must have made the sale
-					if (!array_key_exists($arrRecord['created_by'], $objDealerDetails->subordinates))
-					{
-						throw new Exception("Sale item {$arrRecord['sale_item_id']} was created by {$arrRecord['created_by']} who is not a subordinate of dealer {$objDealer->id}");
-					}
-					$objSubordinate = &$objDealerDetails->subordinates[$arrRecord['created_by']];
-				}
-				else
-				{
-					// the dealer must have made the sale, not a subordinate of the dealer
-					$objSubordinate = NULL;
-				}
-
-				// Calculate the timestamp for the end of the clawback period
-				$strVerifiedOn						= $arrRecord['verified_on'];
-				$strEndOfClawbackPeriodTimestamp	= date("Y-m-d H:i:s", strtotime("+{$objDealer->clawbackPeriod} hour {$strVerifiedOn}"));
-				if ($strEndOfClawbackPeriodTimestamp < '2001')
-				{
-					throw new exception("Could not calculate the 'end of clawback period' timestamp for sale item: {$arrRecord['sale_item_id']} - dealer.clawbackPeriod = {$objDealer->clawbackPeriod} hours, saleItem.verifiedOn = {$strVerifiedOn}, resultant end of clawback period = $strEndOfClawbackPeriodTimestamp");
-				}
-				
-				// Calculate the timestamp for the end of the cooling off period
-				$strEndOfCoolingOffTimestamp = date("Y-m-d H:i:s", strtotime("+{$arrVendors[$arrRecord['vendor_id']]->coolingOffPeriod} hour {$strVerifiedOn}"));
-				if ($strEndOfCoolingOffTimestamp < '2001')
-				{
-					throw new exception("Could not calculate the 'end of cooling off' timestamp for sale item: {$arrRecord['sale_item_id']} - vendor->coolingOffPeriod = {$arrVendors[$arrRecord['vendor_id']]->coolingOffPeriod} hours, saleItem.verifiedOn = {$strVerifiedOn}, resultant cooling off end timestamp = $strEndOfCoolingOffTimestamp");
-				}
-				
-				// Work out if commission is payable or not
-				$intCurrentStatus			= $arrRecord['current_status_id'];
-				$strCurrentStatusTimestamp	= $arrRecord['current_status_changed_on'];
-				if ($intCurrentStatus == DO_Sales_SaleItemStatus::CANCELLED)
-				{
-					// The sale item has been cancelled
-					// Check if this happend before or after the Clawback period ends
-					if ($strCurrentStatusTimestamp > $strEndOfClawbackPeriodTimestamp)
-					{
-						// The sale item was cancelled after the clawback period ended
-						$strCommissionPayable	= "Yes";
-						$strCommissionReason	= "Cancelled outside of clawback period";
-					}
-					else
-					{
-						// The sale item was cancelled within the clawback period
-						$strCommissionPayable	= "No";
-						$strCommissionReason	= "Cancelled within clawback period";
-					}
-				}
-				else
-				{
-					// The sale item has not been cancelled
-					if ($strEndOfCoolingOffTimestamp < $strNowTimestamp)
-					{
-						// The cooling off period has transpired without the sale item being cancelled (this vetos the dealer's clawback period)
-						$strCommissionPayable	= "Yes";
-						$strCommissionReason	= "Cooling off period has transpired";
-					}
-					else
-					{
-						// The cooling off period has not finished yet
-						if ($strEndOfClawbackPeriodTimestamp < $strNowTimestamp)
-						{
-							// The clawback period has ended without the sale item being cancelled
-							$strCommissionPayable	= "Yes";
-							$strCommissionReason	= "Clawback period has transpired";
-						}
-						else
-						{
-							// The clawback period has not ended yet, and the sale item hasn't yet been cancelled, but it could before the clawback period ends
-							$strCommissionPayable	= "Unknown";
-							$strCommissionReason	= "Clawback period has not yet transpired";
-						}
-					}
-				}
-				
-				// Add all the information to the record
-				$arrDetails['SaleId']					= $arrRecord['sale_id'];
-				$arrDetails['SubordinateId']			= ($objSubordinate !== NULL)? $objSubordinate->id : NULL;
-				$arrDetails['SubordinateUsername']		= ($objSubordinate !== NULL)? $objSubordinate->username : NULL;
-				$arrDetails['SaleItemId']				= $arrRecord['sale_item_id'];
-				$arrDetails['ProductId']				= $doProduct->id;
-				$arrDetails['ProductName']				= $doProduct->name;
-				$arrDetails['ProductTypeName']			= $arrProductTypes[$doProduct->productTypeId]->name;
-				$arrDetails['ProductDetails']			= call_user_func(array($strModuleClassName, "getSaleItemDescription"), $doSaleItem, FALSE, FALSE);
-				$arrDetails['AccountName']				= $arrRecord['business_name'];
-				$arrDetails['AccountId']				= $intAccountId;
-				$arrDetails['VerifiedOn']				= $strVerifiedOn;
-				$arrDetails['VerifiedBy']				= $objVerificationDealer->username;
-				$arrDetails['CurrentStatusName']		= $arrSaleItemStatuses[$intCurrentStatus]->name;
-				$arrDetails['CurrentStatusTimestamp']	= $strCurrentStatusTimestamp;
-				$arrDetails['CurrentStatusChangedBy']	= $objLatestChangeDealer->username;
-				$arrDetails['CurrentStatusDescription']	= $arrRecord['current_status_description'];
-				$arrDetails['IsCommissionPayable']		= $strCommissionPayable;
-				$arrDetails['CommissionReason']			= $strCommissionReason;
-				$arrDetails['VendorName']				= $arrVendors[$arrRecord['vendor_id']]->name;
-
-				$this->_arrReportData[] = $arrDetails;
+				// The account is now in flex, retrieve the id
+				$intAccountId = intval(str_replace('Account.Id=', '', $arrRecord['account_external_reference']));
 			}
+			else
+			{
+				$intAccountId = NULL;
+			}
+			
+			// Find out who verified the sale
+			if (!array_key_exists($arrRecord['verified_by'], $arrDealers))
+			{
+				$arrDealers[$arrRecord['verified_by']] = Dealer::getForId($arrRecord['verified_by'], TRUE);
+			}
+			$objVerificationDealer = $arrDealers[$arrRecord['verified_by']];
+
+			// Find out who performed the most recent status change on the sale_item
+			if (!array_key_exists($arrRecord['current_status_changed_by'], $arrDealers))
+			{
+				$arrDealers[$arrRecord['current_status_changed_by']] = Dealer::getForId($arrRecord['current_status_changed_by'], TRUE);
+			}
+			$objLatestChangeDealer = $arrDealers[$arrRecord['current_status_changed_by']];
+
+			// Find out who performed the End Of Timeframe status change on the sale_item
+			if (!array_key_exists($arrRecord['eot_status_changed_by'], $arrDealers))
+			{
+				$arrDealers[$arrRecord['eot_status_changed_by']] = Dealer::getForId($arrRecord['eot_status_changed_by'], TRUE);
+			}
+			$objEOTChangeDealer = $arrDealers[$arrRecord['eot_status_changed_by']];
+			
+			// Add all the information to the record
+			$arrDetails['SaleTypeName']					= $arrSaleTypes[$arrRecord['sale_type_id']]->name;
+			$arrDetails['SaleId']					= $arrRecord['sale_id'];
+			$arrDetails['AccountName']				= $arrRecord['business_name'];
+			$arrDetails['AccountId']				= $intAccountId;
+			$arrDetails['ProductName']				= $doProduct->name;
+			$arrDetails['ProductTypeName']			= $arrProductTypes[$doProduct->productTypeId]->name;
+			$arrDetails['ProductDetails']			= call_user_func(array($strModuleClassName, "getSaleItemDescription"), $doSaleItem, FALSE, FALSE);
+			$arrDetails['VerifiedOn']				= $arrRecord['verified_on'];
+			$arrDetails['VerifiedBy']				= $objVerificationDealer->username;
+
+			$arrDetails['EOTStatusName']			= $arrSaleItemStatuses[$arrRecord['eot_status_id']]->name;
+			$arrDetails['EOTStatusTimestamp']		= $arrRecord['eot_status_changed_on'];
+			$arrDetails['EOTStatusSetBy']			= $objEOTChangeDealer->username;
+			$arrDetails['EOTStatusDescription']		= $arrRecord['eot_status_description'];
+
+			$arrDetails['CurrentStatusName']		= $arrSaleItemStatuses[$arrRecord['current_status_id']]->name;
+			$arrDetails['CurrentStatusTimestamp']	= $arrRecord['current_status_changed_on'];
+			$arrDetails['CurrentStatusSetBy']		= $objLatestChangeDealer->username;
+			$arrDetails['CurrentStatusDescription']	= $arrRecord['current_status_description'];
+
+			$this->_arrReportData[] = $arrDetails;
 		}
 		return count($this->_arrReportData);
 	}
@@ -441,7 +328,7 @@ ORDER BY sale_id ASC, sale_item_id ASC
 		$strEarliestVerificationTime	= date("Y-m-d", strtotime($this->_strEarliestTime));
 		$strLatestVerificationTime		= date("Y-m-d", strtotime($this->_strLatestTime));
 		
-		return "Sales Commissions {$strEarliestVerificationTime} to {$strLatestVerificationTime}";
+		return "SaleItem Status {$strEarliestVerificationTime} to {$strLatestVerificationTime}";
 	}
 	
 }

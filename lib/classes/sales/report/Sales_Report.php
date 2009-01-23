@@ -204,7 +204,7 @@ abstract class Sales_Report
 		<meta http-equiv=\"content-type\" content=\"$strMimeType\">
 	</head>
 	<body>
-		<table>
+		<table border=\"1\">
 			<thead>
 				<tr>
 $strHeaderRow

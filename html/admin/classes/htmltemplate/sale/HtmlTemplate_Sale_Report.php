@@ -28,13 +28,9 @@ class HtmlTemplate_Sale_Report extends FlexHtmlTemplate
 	
 	public function buildDateControl($strName, $strDefaultValue, $strFromYear, $strToYear, $bolIncludeTime=FALSE, $intDefaultYear=NULL, $intDefaultMonth=NULL, $intDefaultDay=NULL, $strFormat=NULL)
 	{
-		if ($bolIncludeTime)
+		if ($strFormat === NULL)
 		{
-			$strFormat		= "H:i:s d/m/Y";
-		}
-		else
-		{
-			$strFormat		= "d/m/Y";
+			$strFormat = ($bolIncludeTime) ? "H:i:s d/m/Y" : "d/m/Y";
 		}
 		
 		$strIncludeTime = $bolIncludeTime ? "true" : "false";
@@ -93,10 +89,10 @@ $strOptions
 											"Control"	=> $this->buildDealerControl("dealers")
 										);
 				$arrConstraints[] = array(	"Label"		=> "Earliest Verification Time",
-											"Control"	=> $this->buildDateControl("earliestTime", $strEarliestTimestampFormatted, $intEarliestYear, $intLatestYear, TRUE, NULL, NULL, NULL, "00:00:00 d/m/Y")
+											"Control"	=> $this->buildDateControl("earliestTime", $strEarliestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "00:00:00 d/m/Y")
 										);
 				$arrConstraints[] = array(	"Label"		=> "Latest Verification Time",
-											"Control"	=> $this->buildDateControl("latestTime", $strLatestTimestampFormatted, $intEarliestYear, $intLatestYear, TRUE, NULL, NULL, NULL, "23:59:59 d/m/Y")
+											"Control"	=> $this->buildDateControl("latestTime", $strLatestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "23:59:59 d/m/Y")
 										);
 				break;
 				
@@ -117,10 +113,10 @@ $strOptions
 											"Control"	=> $this->buildDealerControl("dealers")
 										);
 				$arrConstraints[] = array(	"Label"		=> "Earliest Verification Time",
-											"Control"	=> $this->buildDateControl("earliestTime", $strEarliestTimestampFormatted, $intEarliestYear, $intLatestYear, TRUE, NULL, NULL, NULL, "00:00:00 d/m/Y")
+											"Control"	=> $this->buildDateControl("earliestTime", $strEarliestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "00:00:00 d/m/Y")
 										);
 				$arrConstraints[] = array(	"Label"		=> "Latest Verification Time",
-											"Control"	=> $this->buildDateControl("latestTime", $strLatestTimestampFormatted, $intEarliestYear, $intLatestYear, TRUE, NULL, NULL, NULL, "23:59:59 d/m/Y")
+											"Control"	=> $this->buildDateControl("latestTime", $strLatestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "23:59:59 d/m/Y")
 										);
 				break;
 				
@@ -136,10 +132,10 @@ $strOptions
 											"Control"	=> $this->buildStatusControl("statuses", $arrSaleItemStatuses, $arrStatuses, 7)
 										);
 				$arrConstraints[] = array(	"Label"		=> "Earliest Time of Change",
-											"Control"	=> $this->buildDateControl("earliestTime", $strEarliestTimestampFormatted, $intEarliestYear, $intLatestYear, TRUE, NULL, NULL, NULL, "00:00:00 d/m/Y")
+											"Control"	=> $this->buildDateControl("earliestTime", $strEarliestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "00:00:00 d/m/Y")
 										);
 				$arrConstraints[] = array(	"Label"		=> "Latest Time of Change",
-											"Control"	=> $this->buildDateControl("latestTime", $strLatestTimestampFormatted, $intEarliestYear, $intLatestYear, TRUE, NULL, NULL, NULL, "23:59:59 d/m/Y")
+											"Control"	=> $this->buildDateControl("latestTime", $strLatestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "23:59:59 d/m/Y")
 										);
 				break;
 				
@@ -157,10 +153,10 @@ $strOptions
 											"Control"	=> $this->buildStatusControl("statuses", $arrSaleItemStatuses, $arrStatuses, 9)
 										);
 				$arrConstraints[] = array(	"Label"		=> "Earliest Time of Change",
-											"Control"	=> $this->buildDateControl("earliestTime", $strEarliestTimestampFormatted, $intEarliestYear, $intLatestYear, TRUE, NULL, NULL, NULL, "00:00:00 d/m/Y")
+											"Control"	=> $this->buildDateControl("earliestTime", $strEarliestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "00:00:00 d/m/Y")
 										);
 				$arrConstraints[] = array(	"Label"		=> "Latest Time of Change",
-											"Control"	=> $this->buildDateControl("latestTime", $strLatestTimestampFormatted, $intEarliestYear, $intLatestYear, TRUE, NULL, NULL, NULL, "23:59:59 d/m/Y")
+											"Control"	=> $this->buildDateControl("latestTime", $strLatestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "23:59:59 d/m/Y")
 										);
 				break;
 				
@@ -178,10 +174,10 @@ $strOptions
 											"Control"	=> $this->buildStatusControl("statuses", $arrSaleStatuses, $arrStatuses, 9)
 										);
 				$arrConstraints[] = array(	"Label"		=> "Earliest Time of Change",
-											"Control"	=> $this->buildDateControl("earliestTime", $strEarliestTimestampFormatted, $intEarliestYear, $intLatestYear, TRUE, NULL, NULL, NULL, "00:00:00 d/m/Y")
+											"Control"	=> $this->buildDateControl("earliestTime", $strEarliestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "00:00:00 d/m/Y")
 										);
 				$arrConstraints[] = array(	"Label"		=> "Latest Time of Change",
-											"Control"	=> $this->buildDateControl("latestTime", $strLatestTimestampFormatted, $intEarliestYear, $intLatestYear, TRUE, NULL, NULL, NULL, "23:59:59 d/m/Y")
+											"Control"	=> $this->buildDateControl("latestTime", $strLatestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "23:59:59 d/m/Y")
 										);
 				break;
 		}

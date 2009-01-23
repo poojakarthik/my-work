@@ -66,7 +66,8 @@ class Sales_Report_SaleItemSummary extends Sales_Report
 			}
 			else
 			{
-				$this->_strEarliestTime = $objConstraints->earliestTime;
+				// Make sure it is in a correct format
+				$this->_strEarliestTime = date("Y-m-d H:i:s", strtotime($objConstraints->earliestTime));
 			}
 		}
 		else
@@ -83,7 +84,8 @@ class Sales_Report_SaleItemSummary extends Sales_Report
 			}
 			else
 			{
-				$this->_strLatestTime = $objConstraints->latestTime;
+				// Make sure it is in a correct format
+				$this->_strLatestTime = date("Y-m-d H:i:s", strtotime($objConstraints->latestTime));
 			}
 		}
 		else

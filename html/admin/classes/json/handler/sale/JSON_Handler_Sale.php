@@ -857,7 +857,7 @@ class JSON_Handler_Sale extends JSON_Handler
 			$arrRenderMode	= Sales_Report::getRenderModeDetails($strRenderMode);
 			
 			$strFilename	= strtolower(str_replace(" ", "_", $objReportBuilder->getDetailedReportName())) .".". $arrRenderMode['FileExtension'];
-			
+
 			// Store the report in the user's session
 			$_SESSION['Sales']['Report'] = array(	'Content'		=> $strReport,
 													'Filename'		=> $strFilename,

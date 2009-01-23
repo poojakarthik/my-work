@@ -71,7 +71,8 @@ class Sales_Report_Commissions extends Sales_Report
 			}
 			else
 			{
-				$this->_strEarliestTime = $objConstraints->earliestTime;
+				// Make sure it is in a correct format
+				$this->_strEarliestTime = date("Y-m-d H:i:s", strtotime($objConstraints->earliestTime));
 			}
 		}
 		else
@@ -88,7 +89,8 @@ class Sales_Report_Commissions extends Sales_Report
 			}
 			else
 			{
-				$this->_strLatestTime = $objConstraints->latestTime;
+				// Make sure it is in a correct format
+				$this->_strLatestTime = date("Y-m-d H:i:s", strtotime($objConstraints->latestTime));
 			}
 		}
 		else
@@ -408,7 +410,7 @@ ORDER BY sale_id ASC, sale_item_id ASC
 				$arrDetails['CurrentStatusName']		= $arrSaleItemStatuses[$intCurrentStatus]->name;
 				$arrDetails['CurrentStatusTimestamp']	= $strCurrentStatusTimestamp;
 				$arrDetails['CurrentStatusChangedBy']	= $objLatestChangeDealer->username;
-				$arrDetails['CurrentStatusDescription']	= $arrRecord['current_status_description'];
+				$arrDetails['CurrentStatusDescription']	= (strlen($arrRecord['current_status_description']) > 50)? substr($arrRecord['current_status_description'], 0, 50) . "..." : $arrRecord['current_status_description'];
 				$arrDetails['IsCommissionPayable']		= $strCommissionPayable;
 				$arrDetails['CommissionReason']			= $strCommissionReason;
 				$arrDetails['VendorName']				= $arrVendors[$arrRecord['vendor_id']]->name;
