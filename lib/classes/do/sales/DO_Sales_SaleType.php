@@ -14,11 +14,11 @@ class DO_Sales_SaleType extends DO_Sales_Base_SaleType
 		if (!isset(self::$_cache) || $bolForceRefresh)
 		{
 			$arrProps		= self::getPropertyDataSourceMappings();
-			$arrStatuses	= self::getFor(NULL, TRUE, "{$arrProps['name']} ASC");
+			$arrSaleTypes	= self::getFor(NULL, TRUE, "{$arrProps['name']} ASC");
 			self::$_cache	= array();
-			foreach ($arrStatuses as $objStatus)
+			foreach ($arrSaleTypes as $objSaleType)
 			{
-				self::$_cache[$objStatus->id] = $objStatus;
+				self::$_cache[$objSaleType->id] = $objSaleType;
 			}
 			 
 		}
@@ -28,8 +28,8 @@ class DO_Sales_SaleType extends DO_Sales_Base_SaleType
 	
 	public static function getForId($intId)
 	{
-		$arrStatuses = self::getAll();
-		return (array_key_exists($intId, $arrStatuses))? $arrStatuses[$intId] : NULL;
+		$arrSaleTypes = self::getAll();
+		return (array_key_exists($intId, $arrSaleTypes))? $arrSaleTypes[$intId] : NULL;
 	}
 }
 
