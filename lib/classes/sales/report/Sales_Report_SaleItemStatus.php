@@ -40,7 +40,8 @@ class Sales_Report_SaleItemStatus extends Sales_Report
 							"CurrentStatusDescription"	=> "Description"
 							);
 	
-	protected $_reportType = Sales_Report::REPORT_TYPE_SALE_ITEM_STATUS;
+	protected $_reportType				= Sales_Report::REPORT_TYPE_SALE_ITEM_STATUS;
+	protected $_arrAllowableRenderModes	= array(self::RENDER_MODE_EXCEL);
 	
 	
 	// Sets the constraints for the report (and validates them)
@@ -105,12 +106,19 @@ class Sales_Report_SaleItemStatus extends Sales_Report
 		$this->_arrStatuses = array();
 		if (isset($objConstraints->statusIds) && is_array($objConstraints->statusIds) && count($objConstraints->statusIds))
 		{
-			$arrAllStatuses = DO_Sales_SaleItemStatus::getAll();
+			$arrAllowableStatuses = array(
+											DO_Sales_SaleItemStatus::VERIFIED,
+											DO_Sales_SaleItemStatus::AWAITING_DISPATCH,
+											DO_Sales_SaleItemStatus::MANUAL_INTERVENTION,
+											DO_Sales_SaleItemStatus::DISPATCHED,
+											DO_Sales_SaleItemStatus::COMPLETED,
+											DO_Sales_SaleItemStatus::CANCELLED
+										);
 			
 			// Statuses have been specified
 			foreach ($objConstraints->statusIds as $intSaleItemStatusId)
 			{
-				if (!array_key_exists($intSaleItemStatusId, $arrAllStatuses))
+				if (!in_array($intSaleItemStatusId, $arrAllowableStatuses))
 				{
 					throw new Exception("Invalid Sale Item Status Id: $intSaleItemStatusId");
 				}
@@ -120,7 +128,7 @@ class Sales_Report_SaleItemStatus extends Sales_Report
 		}
 		else
 		{
-			throw new Exception(__METHOD__ ." - No statuses have been specified");
+			throw new Exception("No statuses have been specified");
 		}
 		
 		// Everything must have worked A Okay
@@ -243,7 +251,7 @@ ORDER BY sale_type_id ASC, sale_id ASC, sale_item_id ASC, business_name ASC
 		// Execute the query
 		if (PEAR::isError($objResults = $dsSales->query($strQuery)))
 		{
-			throw new Exception("Failed to execute Sale Report Query for dealer {$objDealerDetails->dealer->username}, using query: $strQuery - ". $objResults->getMessage());
+			throw new Exception("Failed to execute SaleItemStatus Report Query, using query: $strQuery - ". $objResults->getMessage());
 		}
 	
 		while ($arrRecord = $objResults->fetchRow(MDB2_FETCHMODE_ASSOC))
@@ -314,12 +322,6 @@ ORDER BY sale_type_id ASC, sale_id ASC, sale_item_id ASC, business_name ASC
 			$this->_arrReportData[] = $arrDetails;
 		}
 		return count($this->_arrReportData);
-	}
-	
-	// Returns an array defining the allowable RenderModes for the specific report type
-	public static function getAllowableRenderModes()
-	{
-		return array(self::RENDER_MODE_EXCEL);
 	}
 	
 	// Returns detailed report name, possibly based on the constraints of the report

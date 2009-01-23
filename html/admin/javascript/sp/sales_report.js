@@ -1,6 +1,6 @@
 var FlexSalesReport = {
 	REPORT_TYPE_COMMISSIONS			: "Commissions",
-	REPORT_TYPE_OUTSTANDING_SALES	: "Outstanding",
+	REPORT_TYPE_OUTSTANDING_SALES	: "OutstandingSales",
 	REPORT_TYPE_SALE_ITEM_SUMMARY	: "SaleItemSummary",
 	REPORT_TYPE_SALE_ITEM_STATUS	: "SaleItemStatus",
 	REPORT_TYPE_SALE_ITEM_HISTORY	: "SaleItemHistory",

@@ -38,7 +38,8 @@ class Sales_Report_SaleItemSummary extends Sales_Report
 							"TotalOutstanding"					=> "Total Outstanding"
 							);
 	
-	protected $_reportType = Sales_Report::REPORT_TYPE_SALE_ITEM_SUMMARY;
+	protected $_reportType				= Sales_Report::REPORT_TYPE_SALE_ITEM_SUMMARY;
+	protected $_arrAllowableRenderModes	= array(self::RENDER_MODE_EXCEL);
 	
 	// Sets the constraints for the report (and validates them)
 	// TODO! define preconditions, such as the timestamps being in their correct format or NULL
@@ -141,7 +142,7 @@ class Sales_Report_SaleItemSummary extends Sales_Report
 		}
 		else
 		{
-			throw new Exception(__METHOD__ ." - No dealers have been specified");
+			throw new Exception("No dealers have been specified");
 		}
 		
 		// Make sure there are no dealers listed in the dealer array, which will also be included as a subordinate of another dealer in the dealer array
@@ -277,7 +278,7 @@ ORDER BY v.name ASC, pt.name ASC, p.name ASC
 			// Execute the query
 			if (PEAR::isError($objResults = $dsSales->query($strQuery)))
 			{
-				throw new Exception("Failed to execute Commissions Report Query for dealer {$objDealerDetails->dealer->username}, using query: $strQuery - ". $objResults->getMessage());
+				throw new Exception("Failed to execute SaleItemSummary Report Query for dealer {$objDealerDetails->dealer->username}, using query: $strQuery - ". $objResults->getMessage());
 			}
 		
 			while ($arrRecord = $objResults->fetchRow(MDB2_FETCHMODE_ASSOC))
@@ -384,12 +385,6 @@ ORDER BY v.name ASC, pt.name ASC, p.name ASC
 		}
 		
 		return count($this->_arrReportData);
-	}
-	
-	// Returns an array defining the allowable RenderModes for the specific report type
-	public static function getAllowableRenderModes()
-	{
-		return array(self::RENDER_MODE_EXCEL);
 	}
 	
 	// Returns detailed report name, possibly based on the constraints of the report

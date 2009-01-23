@@ -15,7 +15,7 @@
 abstract class Sales_Report
 {
 	const REPORT_TYPE_COMMISSIONS		= "Commissions";
-	const REPORT_TYPE_OUTSTANDING_SALES	= "Outstanding";
+	const REPORT_TYPE_OUTSTANDING_SALES	= "OutstandingSales";
 	const REPORT_TYPE_SALE_ITEM_SUMMARY	= "SaleItemSummary";
 	const REPORT_TYPE_SALE_ITEM_STATUS	= "SaleItemStatus";
 	const REPORT_TYPE_SALE_ITEM_HISTORY	= "SaleItemHistory";
@@ -28,6 +28,7 @@ abstract class Sales_Report
 	const RENDER_MODE_EXCEL			= "Excel";
 	
 	protected $_reportType;
+	protected $_arrAllowableRenderModes = array();
 
 	// Stores the report data, with each element in the array representing a row in the resultant report table
 	protected $_arrReportData;
@@ -143,11 +144,16 @@ abstract class Sales_Report
 	// This will return the number of records in the report
 	abstract public function buildReport();
 	
-	// Returns an array defining the allowable RenderModes for the specific report type
-	abstract public static function getAllowableRenderModes();
-	
 	// Returns detailed report name, possibly based on the constraints of the report
 	abstract public function getDetailedReportName();
+
+	// Returns an array defining the allowable RenderModes for the specific report type
+	// The array will just store the RenderMode constants
+	public function getAllowableRenderModes()
+	{
+		return $this->_arrAllowableRenderModes;
+	}
+
 
 	// Retrieves the report, in the RenderMode specified, assuming the report can be rendered in this mode
 	public function getReport($strRenderMode)
@@ -179,7 +185,7 @@ abstract class Sales_Report
 		$strHeaderRow = "";
 		foreach ($this->_arrColumns as $strColumnName)
 		{
-			$strHeaderRow .= "\t\t\t\t\t<th>$strColumnName</th>\n";
+			$strHeaderRow .= "\t\t\t\t\t<th>". htmlspecialchars($strColumnName) ."</th>\n";
 		}
 		
 		// Build the rows
@@ -189,7 +195,7 @@ abstract class Sales_Report
 			$strRow = "";
 			foreach ($this->_arrColumns as $strPropName=>$strColumnName)
 			{
-				$strRow .= "\t\t\t\t\t<td>{$arrDetails[$strPropName]}</td>\n";
+				$strRow .= "\t\t\t\t\t<td>". htmlspecialchars($arrDetails[$strPropName]). "</td>\n";
 			}
 			
 			$strRows .= "\t\t\t\t<tr>\n$strRow\t\t\t\t</tr>\n";

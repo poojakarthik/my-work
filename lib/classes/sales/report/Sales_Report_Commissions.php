@@ -42,7 +42,8 @@ class Sales_Report_Commissions extends Sales_Report
 							"CurrentStatusDescription"	=> "Current Status Description"
 							);
 	
-	protected $_reportType = Sales_Report::REPORT_TYPE_COMMISSIONS;
+	protected $_reportType				= Sales_Report::REPORT_TYPE_COMMISSIONS;
+	protected $_arrAllowableRenderModes	= array(self::RENDER_MODE_EXCEL);
 	
 	
 	// Sets the constraints for the report (and validates them)
@@ -146,7 +147,7 @@ class Sales_Report_Commissions extends Sales_Report
 		}
 		else
 		{
-			throw new Exception(__METHOD__ ." - No dealers have been specified");
+			throw new Exception("No dealers have been specified");
 		}
 		
 		// Make sure there are no dealers listed in the dealer array, which will also be included as a subordinate of another dealer in the dealer array
@@ -419,12 +420,6 @@ ORDER BY sale_id ASC, sale_item_id ASC
 			}
 		}
 		return count($this->_arrReportData);
-	}
-	
-	// Returns an array defining the allowable RenderModes for the specific report type
-	public static function getAllowableRenderModes()
-	{
-		return array(self::RENDER_MODE_EXCEL);
 	}
 	
 	// Returns detailed report name, possibly based on the constraints of the report
