@@ -133,7 +133,7 @@ class Product_Type_Module_Service_Mobile extends Product_Type_Module
 	{
 		// Try retrieving the associated record from the sale_item_service_mobile table
 		$doSaleItemServiceMobile	= DO_Sales_SaleItemServiceMobile::getForSaleItem($doSaleItem, TRUE);
-		$doOrigin					= DO_Sales_ServiceMobileOrigin::getForId($doSaleItemServiceMobile);
+		$doOrigin					= DO_Sales_ServiceMobileOrigin::getForId($doSaleItemServiceMobile->serviceMobileOriginId);
 		$strDescription				= ($doSaleItemServiceMobile->fnn !== NULL)? $doSaleItemServiceMobile->fnn : "No MSN Specified";
 		$strDescription				= "{$strDescription} ({$doOrigin->description})";
 		
