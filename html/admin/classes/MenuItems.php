@@ -3193,8 +3193,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Generate Final/Interim Invoice";
 		$this->strLabel = "Generate Final/Interim Invoice";
 		
-		//return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.generateInterimInvoice({$intAccount}, {$intInvoiceRunType});});";
-		return "javascript:alert('test');";
+		return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.generateInterimInvoice({$intAccount}, {$intInvoiceRunType});});";
 	}
 
 	/**
