@@ -18,7 +18,8 @@
 	require ('config/application.php');
 	
 	// Payment Type
-	$ptlPaymentTypes = $Style->attachObject (new PaymentTypes);
+	$ptlPaymentTypes	= $Style->attachObject (new PaymentTypes);
+	$cglCustomerGroups	= $Style->attachObject (new CustomerGroups);
 	
 	// Error Handler
 	$oblstrError = $Style->attachObject (new dataString ('Error'));
