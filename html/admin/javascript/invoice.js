@@ -115,7 +115,7 @@ var Invoice	= Class.create
 		Vixen.Popup.Create(
 				'Invoice_InterimInvoiceSummary', 
 				strHTML, 
-				'medium, 
+				'medium', 
 				'centre', 
 				'modal', 
 				strInvoiceRunType + ' Invoice Summary'
