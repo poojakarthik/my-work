@@ -113,6 +113,8 @@ class Ticketing_Ticket
 		$this->save();
 		
 		// Email the new Owner
+		require_once 'Zend/Mail.php';
+		
 		$strUserEmail		= $user->getEmail();
 		if ($strUserEmail)
 		{
@@ -128,7 +130,14 @@ class Ticketing_Ticket
 			$strEmailSubject	= "You have been allocated a new ticket (#{$this->id})";
 			$strEmailContent	=	"You have been allocated ticket number <a href='{$strUrl}'>{$this->id}</a> by {$strManagerName} with the subject of '{$strTicketSubject}'.\n\n" .
 									"<a href='{$strUrl}'>Click here</a> to go to the Ticket Overview page.";
-			SendEmail($strUserEmail, $strEmailSubject, $strEmailContent, "noreply@{$objCustomerGroup->emailDomain}", true);
+			//SendEmail($strUserEmail, $strEmailSubject, $strEmailContent, "noreply@{$objCustomerGroup->emailDomain}", true);
+			
+			$objEmail	= new Zend_Mail();
+			$objEmail->setBodyHtml($strEmailContent);
+			$objEmail->setFrom("noreply@{$objCustomerGroup->emailDomain}");
+			$objEmail->addTo($strUserEmail);
+			$objEmail->setSubject($strEmailSubject);
+			$objEmail->send();
 		}
 	}
 
