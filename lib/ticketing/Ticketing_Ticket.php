@@ -119,7 +119,7 @@ class Ticketing_Ticket
 		if ($strUserEmail)
 		{
 			// DEBUG
-			$strUserEmail	= "rdavis@ybs.net.au";
+			//$strUserEmail	= "rdavis@ybs.net.au";
 			// DEBUG
 			
 			$objCustomerGroup	= Customer_Group::getForId($this->customerGroupId);
