@@ -1,4 +1,4 @@
-// Class: Invoice
+/*// Class: Invoice
 // Handles the Invoices in Flex
 var Invoice	= Class.create
 ({	
@@ -125,4 +125,4 @@ var Invoice	= Class.create
 	},
 });
 
-Flex.Invoice = (Flex.Invoice == undefined) ? new Invoice() : Flex.Invoice;
+Flex.Invoice = (Flex.Invoice == undefined) ? new Invoice() : Flex.Invoice;*/
