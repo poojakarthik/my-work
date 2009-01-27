@@ -503,10 +503,9 @@ class Cli_App_Sales extends Cli
 			$this->log("\t\t* Getting a list of New Sales from the Sales Portal...");
 			
 			// Get a list of New Sales from the SP
-			// FIXME: When the sale_status.const_name field is added, use it instead of sale_status.name
 			$resNewSales	= $dsSalesPortal->query("SELECT sale.* " .
 													"FROM sale JOIN sale_status ON sale.sale_status_id = sale_status.id " .
-													"WHERE sale_status.name = 'Awaiting Dispatch'");
+													"WHERE sale_status.id = ". DO_Sales_SaleStatus::AWAITING_DISPATCH);
 			if (PEAR::isError($resNewSales))
 			{
 				throw new Exception($resNewSales->getMessage()." :: ".$resNewSales->getUserInfo());
@@ -711,7 +710,7 @@ class Cli_App_Sales extends Cli
 					// Get the date on which the Sale was Verified
 					$resVerifiedOn	= $dsSalesPortal->query("SELECT changed_on " .
 															"FROM sale_status_history " .
-															"WHERE sale_id = {$arrSPSale['id']} AND sale_status_id = 2 " .
+															"WHERE sale_id = {$arrSPSale['id']} AND sale_status_id = ". DO_Sales_SaleStatus::VERIFIED ." ".
 															"ORDER BY id DESC " .
 															"LIMIT 1");
 					if (PEAR::isError($resVerifiedOn))
@@ -845,7 +844,7 @@ class Cli_App_Sales extends Cli
 					// Get all items that were sold
 					$resSPSaleItems	= $dsSalesPortal->query("SELECT sale_item.*, product.product_type_id, product_type.product_category_id " .
 															"FROM sale_item JOIN product ON sale_item.product_id = product.id JOIN product_type ON product_type.id = product.product_type_id " .
-															"WHERE sale_id = {$arrSPSale['id']} AND sale_item_status_id = 5");
+															"WHERE sale_id = {$arrSPSale['id']} AND sale_item_status_id = ". DO_Sales_SaleItemStatus::AWAITING_DISPATCH);
 					if (PEAR::isError($resSPSaleItems))
 					{
 						throw new Exception($resSPSaleItems->getMessage()." :: ".$resSPSaleItems->getUserInfo());
@@ -1020,15 +1019,9 @@ class Cli_App_Sales extends Cli
 											}
 											$arrSPMobileDetails		= $resSPMobileDetails->fetchRow(MDB2_FETCHMODE_ASSOC);
 											
-											// Service Details (Mobiles are automatically set to ACTIVE)
+											// Service Details
 											$objService->FNN			= $arrSPMobileDetails['fnn'];
 											$objService->ServiceType	= SERVICE_TYPE_MOBILE;
-											
-											// If it's a New mobile, it will have already been provisioned, so set to ACTIVE
-											if ($arrSPMobileDetails['service_mobile_origin_id'] == 1)
-											{
-												$objService->Status			= SERVICE_ACTIVE;
-											}
 											
 											// Mobile Details
 											$arrAdditionalDetails	= array();
@@ -1187,7 +1180,7 @@ class Cli_App_Sales extends Cli
 								$objFlexSale->intCouldntComplete++;
 							}
 						
-							// All seems to have worked, release Sale Item the savepoints
+							// All seems to have worked, release the Sale Item savepoints
 							if ($qryQuery->Execute("RELEASE SAVEPOINT {$strSaleItemSavePoint}") === FALSE)
 							{
 								throw new Exception($qryQuery->Error());
