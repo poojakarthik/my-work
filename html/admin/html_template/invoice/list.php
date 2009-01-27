@@ -258,19 +258,22 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		switch (DBO()->Account->Archived->Value)
 		{
 			case ACCOUNT_STATUS_ACTIVE:
+				$intInvoiceGenerateType	= INVOICE_RUN_TYPE_INTERIM;
 				$strInvoiceGenerateType	= 'Interim';
 				break;
 			case ACCOUNT_STATUS_CLOSED:
+				$intInvoiceGenerateType	= INVOICE_RUN_TYPE_FINAL;
 				$strInvoiceGenerateType	= 'Final';
 				break;
 			default:
+				$intInvoiceGenerateType	= null;
 				$strInvoiceGenerateType	= null;
 		}
-		if ($strInvoiceGenerateType && $bolUserHasInterimPerm)
+		if ($intInvoiceGenerateType && $bolUserHasInterimPerm)
 		{
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
 			
-			$strGenerateInterimHref	= Href()->GenerateInterimInvoice(DBO()->Account->Id->Value);
+			$strGenerateInterimHref	= Href()->GenerateInterimInvoice(DBO()->Account->Id->Value, $intInvoiceGenerateType);
 			$this->Button("Generate {$strInvoiceGenerateType} Invoice", "window.location='{$strGenerateInterimHref}'");
 			
 			echo "</div></div>";
