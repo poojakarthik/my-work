@@ -130,6 +130,16 @@ class Ticketing_User
 		return $n ? $n : $this->_arrEmployeeDetails['UserName'];
 	}
 
+	public function getEmail()
+	{
+		$this->loadEmployeeDetails();
+		if ($this->_arrEmployeeDetails === NULL)
+		{
+			return NULL;
+		}
+		return $this->_arrEmployeeDetails['Email'];
+	}
+
 	private function loadEmployeeDetails()
 	{
 		if (!$this->_loadedEmployeeDetails)

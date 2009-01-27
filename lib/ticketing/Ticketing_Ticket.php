@@ -111,6 +111,21 @@ class Ticketing_Ticket
 		$this->ownerId = $user->id;
 		$this->_saved = FALSE;
 		$this->save();
+		
+		// Email the new Owner
+		$strUserEmail		= $user->getEmail();
+		if ($strUserEmail)
+		{
+			$objCustomerGroup	= Customer_Group::getForId($this->customerGroupId);
+			
+			$strManagerName		= Flex::getDisplayName();
+			$strUrl				= "../admin/reflex.php/Ticketing/Ticket/{$this->id}/View";
+			$strTicketSubject	= htmlspecialchars($this->subject);
+			$strEmailSubject	= "You have been allocated a new ticket (#{$this->id})";
+			$strEmailContent	=	"You have been allocated ticket number <a href='{$strUrl}'>{$this->id}</a> by {$strManagerName} with the subject of '{$strTicketSubject}'.\n\n" .
+									"<a href='{$strUrl}'>Click here</a> to go to the Ticket Overview page.";
+			SendEmail($strUserEmail, $strEmailSubject, $strEmailContent, "noreply@{$objCustomerGroup->emailDomain}", true);
+		}
 	}
 
 	public function delete()
