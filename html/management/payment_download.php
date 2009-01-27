@@ -48,7 +48,7 @@
 		else
 		{
 			$payPayments = $Style->attachObject (new Payments);
-			$payPayments->Constrain ('EnteredBy',	'EQUALS', $athAuthentication->AuthenticatedEmployee ()->Pull ('Id')->getValue ());
+			//$payPayments->Constrain ('EnteredBy',	'EQUALS', $athAuthentication->AuthenticatedEmployee ()->Pull ('Id')->getValue ());
 			$payPayments->Constrain ('PaymentType',	'EQUALS', $_POST ['PaymentType']);
 			$payPayments->Constrain ('PaidOn',		'EQUALS', $strPaidOn);
 			$oblsamPayments = $payPayments->Sample ();
@@ -56,13 +56,28 @@
 			$arrAccounts = Array ();
 			$oblarrAccounts = $Style->attachObject (new dataArray ('Accounts', 'Account'));
 			
-			foreach ($oblsamPayments as $payPayment)
+			foreach ($oblsamPayments as $mixIndex=>$payPayment)
 			{
-				if (!isset ($arrAccounts [$payPayment->Pull ('Account')->getValue ()]))
+				$intAccount	= $payPayment->Pull('Account')->getValue();
+				if ($intAccount)
 				{
-					$arrAccounts [$payPayment->Pull ('Account')->getValue ()] = $oblarrAccounts->Push (
-						new Account ($payPayment->Pull ('Account')->getValue ())
-					);
+					$accAccount	= new Account($intAccount);
+					
+					// Ensure this is of the correct CustomerGroup
+					$intCustomerGroup	= $accAccount->Pull('CustomerGroup')->getValue();
+					if ($intCustomerGroup != $_POST['CustomerGroup'])
+					{
+						$oblsamPayments->Pop($payPayment);
+					}
+					elseif (!isset($arrAccounts[$intAccount]))
+					{
+						$arrAccounts[$payPayment->Pull('Account')->getValue()]	= $oblarrAccounts->Push ($accAccount);
+					}
+				}
+				else
+				{
+					// Has no Account, and therefore no CustomerGroup
+					$oblsamPayments->Pop($payPayment);
 				}
 			}
 			
@@ -78,6 +93,7 @@
 	
 	// Pull documentation information for an Account
 	$docDocumentation->Explain ('Payment');
+	$docDocumentation->Explain ('CustomerGroup');
 	
 	// Output the Account View
 	$Style->Output ('xsl/content/payment/download.xsl');

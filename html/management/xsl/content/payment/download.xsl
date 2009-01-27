@@ -14,6 +14,27 @@
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('CustomerGroup')" />
+									<xsl:with-param name="field" select="string('CustomerGroup')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<select name="CustomerGroup">
+									<xsl:for-each select="/Response/CustomerGroups/CustomerGroup">
+										<option>
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="./Id" />
+											</xsl:attribute>
+											<xsl:value-of select="./ExternalName" />
+										</option>
+									</xsl:for-each>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Payment')" />
 									<xsl:with-param name="field" select="string('PaymentType')" />
 								</xsl:call-template>
