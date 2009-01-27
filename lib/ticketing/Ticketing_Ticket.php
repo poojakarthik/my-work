@@ -125,17 +125,20 @@ class Ticketing_Ticket
 			$objCustomerGroup	= Customer_Group::getForId($this->customerGroupId);
 			
 			$strManagerName		= Flex::getDisplayName();
+			$strUserName		= $user->getName();
 			$strUrl				= "../admin/reflex.php/Ticketing/Ticket/{$this->id}/View";
 			$strTicketSubject	= htmlspecialchars($this->subject);
 			$strEmailSubject	= "You have been allocated a new ticket (#{$this->id})";
-			$strEmailContent	=	"You have been allocated ticket number <a href='{$strUrl}'>{$this->id}</a> by {$strManagerName} with the subject of '{$strTicketSubject}'.\n\n" .
-									"<a href='{$strUrl}'>Click here</a> to go to the Ticket Overview page.";
+			$strEmailContent	=	"<div style='font-family: Calibri,sans-serif;'>\n" .
+									"You have been allocated ticket number <a href='{$strUrl}'>{$this->id}</a> by {$strManagerName} with the subject of '{$strTicketSubject}'.<br /><br />\n" .
+									"<a href='{$strUrl}'>Click here</a> to go to the Ticket Overview page.\n" .
+									"</div>";
 			//SendEmail($strUserEmail, $strEmailSubject, $strEmailContent, "noreply@{$objCustomerGroup->emailDomain}", true);
 			
 			$objEmail	= new Zend_Mail();
 			$objEmail->setBodyHtml($strEmailContent);
 			$objEmail->setFrom("noreply@{$objCustomerGroup->emailDomain}");
-			$objEmail->addTo($strUserEmail);
+			$objEmail->addTo($strUserEmail, $strUserName);
 			$objEmail->setSubject($strEmailSubject);
 			$objEmail->send();
 		}
