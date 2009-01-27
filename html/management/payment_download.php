@@ -12,14 +12,14 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_PAYMENT;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_PAYMENT | MODULE_CUSTOMER_GROUP;
 	
 	// call application
 	require ('config/application.php');
 	
 	// Payment Type
-	$ptlPaymentTypes	= $Style->attachObject (new PaymentTypes);
-	$cglCustomerGroups	= $Style->attachObject (new CustomerGroups);
+	$ptlPaymentTypes	= $Style->attachObject (new PaymentTypes());
+	$cglCustomerGroups	= $Style->attachObject (new CustomerGroups());
 	
 	// Error Handler
 	$oblstrError = $Style->attachObject (new dataString ('Error'));
