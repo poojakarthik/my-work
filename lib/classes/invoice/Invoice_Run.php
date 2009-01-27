@@ -191,6 +191,97 @@ class Invoice_Run
 
 
 	//------------------------------------------------------------------------//
+	// generateSingle
+	//------------------------------------------------------------------------//
+	/**
+	 * generateSingle()
+	 *
+	 * Generates an Invoice Run for a single Account
+	 *
+	 * Generates an Invoice Run for a single Account
+	 *
+	 * @param	integer	$intCustomerGroup						The Customer Group to generate for
+	 * @param	integer	$intInvoiceRunType						The invoice_run_type (eg. INVOICE_RUN_TYPE_SAMPLES)
+	 * @param	integer	$intInvoiceDatetime						The effective Datetime for this Invoice Run, invoiceable items must have been BEFORE this!
+	 * @param	integer	$intAccount								The Account Id to Invoice
+	 *
+	 * @method
+	 */
+	public function generateSingle($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount)
+	{
+		$intAccount	= (int)$intAccount;
+		
+		// Init variables
+		$dbaDB					= DataAccess::getDataAccess();
+		
+		if ($intInvoiceRunType !== INVOICE_RUN_TYPE_INTERIM && $intInvoiceRunType !== INVOICE_RUN_TYPE_FINAL)
+		{
+			throw new Exception("InvoiceRun::generateSingle() only supports Interim and Final Invoice Runs");
+		}
+		
+		$qryQuery	= new Query();
+		$resAccount	= $qryQuery->Execute("SELECT * FROM Account WHERE Id = {$intAccount}");
+		if ($resAccount === false)
+		{
+			throw new Exception($qryQuery->Error());
+		}
+		if ($arrAccount = $resAccount->fetch_assoc())
+		{
+			$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, array($arrAccount));
+		}
+		else
+		{
+			throw new Exception("There is no Account with Id '{$intAccount}'");
+		}
+	}
+
+
+	//------------------------------------------------------------------------//
+	// generateCustomerGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * generateCustomerGroup()
+	 *
+	 * Generates an Invoice Run for a Customer Group
+	 *
+	 * Generates an Invoice Run for a Customer Group
+	 *
+	 * @param	integer	$intCustomerGroup						The Customer Group to generate for
+	 * @param	integer	$intInvoiceRunType						The invoice_run_type (eg. INVOICE_RUN_TYPE_SAMPLES)
+	 * @param	integer	$intInvoiceDatetime						The effective Datetime for this Invoice Run, invoiceable items must have been BEFORE this!
+	 * @param	integer	$intScheduledInvoiceRun		[optional]	The invoice_run_schedule.id to Run
+	 *
+	 * @method
+	 */
+	public function generateCustomerGroup($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intScheduledInvoiceRun=null)
+	{
+		$intAccount	= (int)$intAccount;
+		
+		// Init variables
+		$dbaDB					= DataAccess::getDataAccess();
+		
+		if ($intInvoiceRunType === INVOICE_RUN_TYPE_INTERIM || $intInvoiceRunType === INVOICE_RUN_TYPE_FINAL)
+		{
+			throw new Exception("InvoiceRun::generateCustomerGroup() does not support Interim or Final Invoice Runs");
+		}
+		
+		$this->BillingDate				= date("Y-m-d", $intInvoiceDatetime);
+		$this->customer_group_id		= $intCustomerGroup;
+		
+		// Retrieve a list of Accounts to be Invoiced
+		Cli_App_Billing::debug(" * Getting list of Accounts to Invoice...");
+		$selInvoiceableAccounts	= self::_preparedStatement('selInvoiceableAccounts');
+		if ($selInvoiceableAccounts->Execute($this->toArray()) === FALSE)
+		{
+			// Database Error -- throw Exception
+			throw new Exception("DB ERROR: ".$selInvoiceableAccounts->Error());
+		}
+		
+		$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $selInvoiceableAccounts->FetchAll(), $intScheduledInvoiceRun);
+	}
+
+
+	//------------------------------------------------------------------------//
 	// generate
 	//------------------------------------------------------------------------//
 	/**
@@ -203,11 +294,12 @@ class Invoice_Run
 	 * @param	integer	$intCustomerGroup						The Customer Group to generate for
 	 * @param	integer	$intInvoiceRunType						The invoice_run_type (eg. INVOICE_RUN_TYPE_SAMPLES)
 	 * @param	integer	$intInvoiceDatetime						The effective Datetime for this Invoice Run, invoiceable items must have been BEFORE this!
+	 * @param	array	$arrAccounts							Array of Accounts to Invoice
 	 * @param	integer	$intScheduledInvoiceRun		[optional]	The invoice_run_schedule.id to Run
 	 *
 	 * @method
 	 */
-	public function generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intScheduledInvoiceRun=NULL)
+	public function generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $arrAccounts, $intScheduledInvoiceRun=NULL)
 	{
 		// Init variables
 		$dbaDB					= DataAccess::getDataAccess();
@@ -238,18 +330,9 @@ class Invoice_Run
 		$arrInvoiceCDRCredits		= $selInvoiceCDRCredits->Fetch();
 		$this->bolInvoiceCDRCredits	= (bool)$arrInvoiceCDRCredits['invoice_cdr_credits'];
 
-		// Retrieve a list of Accounts to be Invoiced
-		Cli_App_Billing::debug(" * Getting list of Accounts to Invoice...");
-		$selInvoiceableAccounts	= self::_preparedStatement('selInvoiceableAccounts');
-		if ($selInvoiceableAccounts->Execute($this->toArray()) === FALSE)
-		{
-			// Database Error -- throw Exception
-			throw new Exception("DB ERROR: ".$selInvoiceableAccounts->Error());
-		}
-
 		// Generate an Invoice for each Account
 		$this->InvoiceCount	= 0;
-		while ($arrAccount = $selInvoiceableAccounts->Fetch())
+		foreach ($arrAccounts as $arrAccount)
 		{
 			$objAccount	= new Account($arrAccount);
 			Cli_App_Billing::debug(" + Generating Invoice for {$objAccount->Id}...");
@@ -922,7 +1005,7 @@ class Invoice_Run
 					//$arrPreparedStatements[$strStatement]	= new StatementSelect("Account JOIN account_status ON Account.Archived = account_status.id", "Account.*, account_status.deliver_invoice", "Account.Id = 1000154811 AND CustomerGroup = <customer_group_id> AND Account.CreatedOn < <BillingDate> AND account_status.can_invoice = 1");
 					break;
 				case 'selLastInvoiceRunByCustomerGroup':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "BillingDate", "(customer_group_id = <customer_group_id> OR customer_group_id IS NULL) AND BillingDate < <EffectiveDate> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED, "BillingDate DESC", 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "BillingDate", "(customer_group_id = <customer_group_id> OR customer_group_id IS NULL) AND BillingDate < <EffectiveDate> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED." AND invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE, "BillingDate DESC", 1);
 					break;
 				case 'selInvoiceTotals':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice", "SUM(Invoice.Total) AS BillInvoiced, SUM(Invoice.Tax) AS BillTax", "invoice_run_id = <invoice_run_id>");

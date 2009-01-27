@@ -3180,6 +3180,36 @@ class MenuItems {
 		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing_file_washing.js', function(){Flex.Telemarketing.uploadDiallerReport();});";
 	}
 
+	/**
+	 * GenerateInterimInvoice()
+	 *
+	 * Compiles the Href to be executed when the GenerateInterimInvoice menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function GenerateInterimInvoice($intAccount, $intInvoiceRunType) {
+		$this->strContextMenuLabel = "Generate Final/Interim Invoice";
+		$this->strLabel = "Generate Final/Interim Invoice";
+		
+		return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.generateInterimInvoice({$intAccount}, {$intInvoiceRunType});});";
+	}
+
+	/**
+	 * CommitInterimInvoice()
+	 *
+	 * Compiles the Href to be executed when the CommitInterimInvoice menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function CommitInterimInvoice($intInvoice) {
+		$this->strContextMenuLabel = "Commit Final/Interim Invoice";
+		$this->strLabel = "Commit Final/Interim Invoice";
+		
+		return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.commitInterimInvoice({$intInvoice});});";
+	}
+
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//

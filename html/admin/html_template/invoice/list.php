@@ -84,9 +84,12 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 	function Render()
 	{	
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolUserHasInterimPerm	= (AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS) || AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN));
 	
 		// Render each of the account invoices
+		echo "<a name='Invoice_List'>";
 		echo "<h2 class='Invoice'>Invoices</h2>\n";
+		echo "</a>";
 		
 		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
 		Table()->InvoiceTable->SetWidth("10%", "12%", "17%", "17%", "17%", "11%", "4%", "4%", "4%", "4%");
@@ -120,6 +123,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 											"&nbsp;");
 		}
 //*/
+		
+		$qryQuery		= new Query();
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
 			$bolIsSample = !is_numeric($dboInvoice->Status->Value);
@@ -132,6 +137,14 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			// Check if a pdf exists for the invoice
 			$strPdfLabel	= "&nbsp;";
 			$strEmailLabel	= "&nbsp;";
+			
+			// Get the Invoice Run Type (plain query is quicker than using DBO)
+			$resInvoiceRun	= $qryQuery->Execute("SELECT * FROM InvoiceRun WHERE Id = {$dboInvoice->invoice_run_id->Value}");
+			if ($resInvoiceRun === false)
+			{
+				throw new Exception($resInvoiceRun->Error());
+			}
+			$arrInvoiceRun	= $resInvoiceRun->fetch_assoc();
 
 			if (InvoicePDFExists($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, intval($dboInvoice->invoice_run_id->Value)))
 			{
@@ -141,10 +154,29 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View PDF Invoice' /></a>";
 				
 				// Build "Email invoice pdf" link, if the user has OPERATOR privileges
-				if (!$bolIsSample && $bolUserHasOperatorPerm)
+				if (!$bolIsSample)
 				{
-					$strEmailHref 	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, $dboInvoice->invoice_run_id->Value);
-					$strEmailLabel = "<img src='img/template/email.png' title='Email PDF Invoice' onclick='$strEmailHref'></img>";
+					if ($bolUserHasOperatorPerm)
+					{
+						$strEmailHref	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, $dboInvoice->invoice_run_id->Value);
+						$strEmailLabel	= "<img src='img/template/email.png' title='Email PDF Invoice' onclick='$strEmailHref'></img>";
+					}
+				}
+				elseif($bolUserHasInterimPerm && ($arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_INTERIM || $arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_FINAL))
+				{
+					switch ($arrInvoiceRun['invoice_run_type_id'])
+					{
+						case INVOICE_RUN_TYPE_INTERIM:
+							$strCommitType	= 'Interim';
+							break;
+						case INVOICE_RUN_TYPE_FINAL:
+							$strCommitType	= 'Final';
+							break;
+					}
+					
+					// If this is an Temporary Interim/Final Invoice and has sufficient privileges, replace the Email button with a Commit button
+					$strCommitHref	= Href()->CommitInterimInvoice($dboInvoice->Id->Value);
+					$strEmailLabel	= "<img src='img/template/invoice_commit.png' title='Commit {$strCommitType} Invoice' onclick='{$strCommitHref}'></img>";
 				}
 			}
 
@@ -221,6 +253,30 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		}
 		
 		Table()->InvoiceTable->Render();
+		
+		// Add in button to Generate a Final/Interim Invoice
+		switch (DBO()->Account->Archived->Value)
+		{
+			case ACCOUNT_STATUS_ACTIVE:
+				$strInvoiceGenerateType	= 'Interim';
+				break;
+			case ACCOUNT_STATUS_CLOSED:
+				$strInvoiceGenerateType	= 'Final';
+				break;
+			default:
+				$strInvoiceGenerateType	= null;
+		}
+		if ($strInvoiceGenerateType && $bolUserHasInterimPerm)
+		{
+			echo "<div class='ButtonContainer'><div class='Right'>\n";
+			
+			$strGenerateInterimHref	= Href()->GenerateInterimInvoice(DBO()->Account->Id->Value);
+			$this->Button("Generate {$strInvoiceGenerateType} Invoice", "window.location='{$strGenerateInterimHref}'");
+			
+			echo "</div></div>";
+			
+			$bolHasButtons	= TRUE;
+		}
 
 		echo "<div class='SmallSeperator'></div>\n";
 	}
