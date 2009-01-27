@@ -27,7 +27,7 @@ var Invoice	= Class.create
 	
 	generateInterimInvoice	: function(intAccount, intInvoiceRunType)
 	{
-		strInvoiceRunType	= this._getInvoiceRunType(intInvoiceRunType)
+		strInvoiceRunType	= this._getInvoiceRunType(intInvoiceRunType);
 		if (!strInvoiceRunType)
 		{
 			$Alert("There was an error when trying to generate the Invoice. ("+intInvoiceRunType+" is not a valid Invoice Run Type)");
