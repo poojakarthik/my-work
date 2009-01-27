@@ -320,7 +320,8 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'serviceId';
 
 					$ticketServices = $ticket->getServiceIds();
-
+					
+					$bolChangeOwner	= false;
 					if (array_key_exists('save', $_REQUEST))
 					{
 						// Validate the passed details and save if valid
@@ -351,10 +352,12 @@ class Application_Handler_Ticketing extends Application_Handler
 									}
 									else if ($currentUser->isAdminUser())
 									{
+										$bolChangeOwner	= ($ticket->ownerId !== $value->id) ? true : false;
 										$ticket->ownerId = $value->id;
 									}
 									else
 									{
+										$bolChangeOwner	= ($ticket->ownerId !== $currentUser->id) ? true : false;
 										$ticket->ownerId = $currentUser->id;
 									}
 									break;
@@ -490,6 +493,12 @@ class Application_Handler_Ticketing extends Application_Handler
 							$ticket->setServices($ticketServices);
 							$detailsToRender['saved'] = TRUE;
 							$action = 'save';
+							
+							// Hacky check to see if we had a change of ownership
+							if ($bolChangeOwner)
+							{
+								$ticket->assignTo($ticket->ownerId);
+							}
 						}
 					}
 					else
