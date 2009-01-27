@@ -38,7 +38,7 @@ var Invoice	= Class.create
 		Vixen.Popup.ShowPageLoadingSplash("Generating "+strInvoiceRunType+" Invoice...", null, null, null, 1);
 		
 		// Perform AJAX query
-		var fncJsonFunc		= jQuery.json.jsonFunction(this.generateInterimInvoiceResponse.bind(this), null, 'Invoice', 'generateInterimInvoice');
+		var fncJsonFunc		= jQuery.json.jsonFunction(this._generateInterimInvoiceResponse.bind(this), null, 'Invoice', 'generateInterimInvoice');
 		fncJsonFunc(intAccount, intInvoiceRunType);
 	},
 	
