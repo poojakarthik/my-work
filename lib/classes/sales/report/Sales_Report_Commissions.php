@@ -14,6 +14,7 @@
  */
 class Sales_Report_Commissions extends Sales_Report
 {
+	protected $_strDescription = "This report lists commission details for each sale item that was verified within the timeframe";
 	
 	private $_strEarliestTime;
 	private $_strLatestTime;
@@ -23,7 +24,7 @@ class Sales_Report_Commissions extends Sales_Report
 	protected $_arrColumns = array(
 							"DealerUsername"			=> "Dealer",
 							"DealerCarrier"				=> "Group",
-							"SaleId"					=> "Sale",
+							"SaleId"					=> "Sale Id",
 							"VendorName"				=> "Vendor",
 							"SubordinateUsername"		=> "Subordinate",
 							"ProductName"				=> "Product",
@@ -43,7 +44,7 @@ class Sales_Report_Commissions extends Sales_Report
 							);
 	
 	protected $_reportType				= Sales_Report::REPORT_TYPE_COMMISSIONS;
-	protected $_arrAllowableRenderModes	= array(self::RENDER_MODE_EXCEL);
+	protected $_arrAllowableRenderModes	= array(self::RENDER_MODE_EXCEL, self::RENDER_MODE_CSV);
 	
 	
 	// Sets the constraints for the report (and validates them)

@@ -310,10 +310,23 @@ var FlexSalesReport = {
 				}
 			}
 		}
+		
+		// Prepare the columns to include in the report
+		var arrColumns = new Array();
+		for (i=0, j=this.controls.selectedColumns.options.length; i<j; i++)
+		{
+			if (this.controls.selectedColumns.options[i].selected)
+			{
+				arrColumns.push(this.controls.selectedColumns.options[i].value)
+			}
+		}
+		
+		// Prepare rendermode
+		var renderMode = this.controls.renderMode.value;
 
 		jsonFunc = jQuery.json.jsonFunction(this.submitReportReturnHandler.bind(this), null, "Sale", "buildReport");
 		Vixen.Popup.ShowPageLoadingSplash("Generating Report", null, null, null, 100);
-		jsonFunc(this.strReportType, objConstraints);
+		jsonFunc(this.strReportType, objConstraints, arrColumns, renderMode);
 	},
 
 
@@ -406,6 +419,24 @@ var FlexSalesReport = {
 		return (strProblemsEncountered == "")? true : strProblemsEncountered;
 	},
 	
+	// Theoretically I should allow them to create a report with no columns, but that would be stupid
+	validateColumnsControl : function()
+	{
+		var i, j;
+		
+		// Check that at least 1 column has been selected, even though a report with just 1 column is pretty dumnb
+		for (i=0, j=this.controls.selectedColumns.options.length; i<j; i++)
+		{
+			if (this.controls.selectedColumns.options[i].selected)
+			{
+				// At least one column is selected
+				return true;
+			}
+		}
+		
+		return "<br />At least one Report Column must be selected";
+	},
+	
 	validateConstraints : function()
 	{
 		var strProblemsEncountered = "";
@@ -485,6 +516,12 @@ var FlexSalesReport = {
 					strProblemsEncountered += mixValid;
 				}
 				break;
+		}
+		
+		mixValid = this.validateColumnsControl();
+		if (mixValid !== true)
+		{
+			strProblemsEncountered += mixValid;
 		}
 	
 		if (strProblemsEncountered != "")

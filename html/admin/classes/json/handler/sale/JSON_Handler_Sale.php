@@ -837,31 +837,34 @@ class JSON_Handler_Sale extends JSON_Handler
 	}
 
 	// This will run any of the sales reports 
-	public function buildReport($strReportType, $objConstraints)
+	public function buildReport($strReportType, $objConstraints, $arrColumns=NULL, $renderMode=Sales_Report::RENDER_MODE_EXCEL)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SALES_ADMIN);
 
 		try
 		{
-			$strRenderMode		= Sales_Report::RENDER_MODE_EXCEL;
-
-			$objReportBuilder	= Sales_Report::getNewReport($strReportType);
+			$objReportBuilder = Sales_Report::getNewReport($strReportType);
 
 			$objReportBuilder->setConstraints($objConstraints);
 
+			if ($arrColumns !== NULL)
+			{
+				$objReportBuilder->setColumns($arrColumns);
+			}
+
 			$intRecordCount	= $objReportBuilder->buildReport();
 	
-			$strReport		= $objReportBuilder->getReport(Sales_Report::RENDER_MODE_EXCEL);
+			$strReport		= $objReportBuilder->getReport($renderMode);
 
-			$arrRenderMode	= Sales_Report::getRenderModeDetails($strRenderMode);
+			$arrRenderMode	= Sales_Report::getRenderModeDetails($renderMode);
 			
 			$strFilename	= strtolower(str_replace(" ", "_", $objReportBuilder->getDetailedReportName())) .".". $arrRenderMode['FileExtension'];
 
 			// Store the report in the user's session
 			$_SESSION['Sales']['Report'] = array(	'Content'		=> $strReport,
 													'Filename'		=> $strFilename,
-													'RenderMode'	=> $strRenderMode
+													'RenderMode'	=> $renderMode
 												);
 			return array(	"Success"			=> TRUE,
 							"ReportLocation"	=> Href()->SalesReport($strReportType, TRUE),

@@ -82,6 +82,11 @@ $strOptions
 		
 		$arrConstraints = array();
 		
+		$objReport = Sales_Report::getNewReport($strReportType);
+		$arrConstraints[] = array(	"Label"		=> "Description",
+									"Control"	=> $objReport->getDescription()
+									);
+		
 		switch ($strReportType)
 		{
 			case Sales_Report::REPORT_TYPE_COMMISSIONS:
@@ -181,6 +186,33 @@ $strOptions
 										);
 				break;
 		}
+		
+		// Build the Columns selector control
+		$arrColumns = $objReport->getAllowableColumns();
+		$strColumnsControl = "<select id='selectedColumns' name='selectedColumns' size='10' multiple='multiple' class='required'>";
+		foreach ($arrColumns as $column=>$strColumnName)
+		{
+			$strColumnsControl .= "\n\t<option value='$column' selected='selected'>". htmlspecialchars($strColumnName) ."</option>";
+		}
+		$strColumnsControl .= "\n</select>\n";
+		
+		$arrConstraints[] = array(	"Label"		=> "Columns to Include",
+									"Control"	=> $strColumnsControl
+									);
+
+		// Build the RenderMode selector control
+		$arrAllowableRenderModes	= $objReport->getAllowableRenderModes();
+		$arrRenderModes				= Sales_Report::getAllRenderModes();
+		$strRenderModeControl		= "<select id='renderMode' name='renderMode' class='required'>";
+		foreach ($arrAllowableRenderModes as $renderMode)
+		{
+			$strRenderModeControl .= "\n\t<option value='$renderMode'>". htmlspecialchars($arrRenderModes[$renderMode]['Name']) ."</option>";
+		}
+		$strRenderModeControl .= "\n</select>";
+
+		$arrConstraints[] = array(	"Label"		=> "Format",
+									"Control"	=> $strRenderModeControl
+								);
 
 		$jsonDealers			= JSON_Services::encode($arrDealers);
 		$jsonSortedDealerIds	= JSON_Services::encode($arrSortedDealerIds);
@@ -189,7 +221,7 @@ $strOptions
 echo "
 <form id='FormReportVariables'>
 	<table class='reflex'>
-		<caption>
+<!--		<caption>
 			<div id='caption_bar' name='caption_bar'>
 				<div id='caption_title' name='caption_title'>
 					$strReportName
@@ -198,9 +230,10 @@ echo "
 				</div>
 			</div>
 		</caption>
+-->
 		<thead class='header'>
 			<tr>
-				<th colspan='2'>Constraints</th>
+				<th colspan='2'>$strReportName</th>
 			</tr>
 		</thead>
 		<tbody>";

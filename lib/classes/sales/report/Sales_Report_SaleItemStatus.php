@@ -14,6 +14,7 @@
  */
 class Sales_Report_SaleItemStatus extends Sales_Report
 {
+	protected $_strDescription = "This report lists details of sale-items that were set to during the specified timeframe, to one of the specified statuses, and were still of that status at the end of the timeframe";
 	
 	private $_strEarliestTime;
 	private $_strLatestTime;
@@ -22,7 +23,7 @@ class Sales_Report_SaleItemStatus extends Sales_Report
 	// This array defines the columns that will be included in the report
 	protected $_arrColumns = array(
 							"SaleTypeName"				=> "Sale Type",
-							"SaleId"					=> "Sale",
+							"SaleId"					=> "Sale Id",
 							"AccountName"				=> "Account",
 							"AccountId"					=> "Account Id",
 							"ProductName"				=> "Product",
@@ -31,17 +32,17 @@ class Sales_Report_SaleItemStatus extends Sales_Report
 							"VerifiedOn"				=> "Verified On",
 							"VerifiedBy"				=> "Verified By",
 							"EOTStatusName"				=> "EOT Status",		// End Of Timeframe Status Name
-							"EOTStatusTimestamp"		=> "Actioned",
-							"EOTStatusSetBy"			=> "Actioner",
-							"EOTStatusDescription"		=> "Description",
+							"EOTStatusTimestamp"		=> "EOT Actioned",
+							"EOTStatusSetBy"			=> "EOT Actioner",
+							"EOTStatusDescription"		=> "EOT Description",
 							"CurrentStatusName"			=> "Current Status",
-							"CurrentStatusTimestamp"	=> "Actioned",
-							"CurrentStatusSetBy"		=> "Actioner",
+							"CurrentStatusTimestamp"	=> "Last Actioned",
+							"CurrentStatusSetBy"		=> "Last Actioner",
 							"CurrentStatusDescription"	=> "Description"
 							);
 	
 	protected $_reportType				= Sales_Report::REPORT_TYPE_SALE_ITEM_STATUS;
-	protected $_arrAllowableRenderModes	= array(self::RENDER_MODE_EXCEL);
+	protected $_arrAllowableRenderModes	= array(self::RENDER_MODE_EXCEL, self::RENDER_MODE_CSV);
 	
 	
 	// Sets the constraints for the report (and validates them)

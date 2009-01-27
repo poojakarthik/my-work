@@ -14,7 +14,8 @@
  */
 class Sales_Report_SaleItemSummary extends Sales_Report
 {
-	
+	protected $_strDescription = "This report tallies the number of products sold by various dealers during the timeframe";
+
 	private $_strEarliestTime;
 	private $_strLatestTime;
 	private $_arrDealers;
@@ -39,7 +40,7 @@ class Sales_Report_SaleItemSummary extends Sales_Report
 							);
 	
 	protected $_reportType				= Sales_Report::REPORT_TYPE_SALE_ITEM_SUMMARY;
-	protected $_arrAllowableRenderModes	= array(self::RENDER_MODE_EXCEL);
+	protected $_arrAllowableRenderModes	= array(self::RENDER_MODE_EXCEL, self::RENDER_MODE_CSV);
 	
 	// Sets the constraints for the report (and validates them)
 	// TODO! define preconditions, such as the timestamps being in their correct format or NULL

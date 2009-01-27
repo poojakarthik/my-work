@@ -27,14 +27,24 @@ abstract class Sales_Report
 	const RENDER_MODE_CSV			= "CSV";
 	const RENDER_MODE_EXCEL			= "Excel";
 	
+	// This should be set to the REPORT_TYPE_ constant specific to the Sales_Report extended class
 	protected $_reportType;
+	
+	// This should store the ids of all the allowable render modes specific to the Sales_Report extended class
 	protected $_arrAllowableRenderModes = array();
 
 	// Stores the report data, with each element in the array representing a row in the resultant report table
 	protected $_arrReportData;
+	
+	// This should store a detailed description of what the specific report does
+	protected $_strDescription = "INSERT REPORT DESCRIPTION HERE";
 
 	// Store the columns of _arrReportData to include in the report, and their labels
+	// All these columns are recorded for each record of the report
 	protected $_arrColumns;
+
+	// This will store the columns to actually use when rendering the report
+	protected $_arrSelectedColumns;
 	
 	protected static $_arrReportTypes = array(	self::REPORT_TYPE_COMMISSIONS		=> array(	"Name"			=> "Commissions Report",
 																								"Description"	=> "Commissions Report"
@@ -47,13 +57,14 @@ abstract class Sales_Report
 																							),
 												self::REPORT_TYPE_SALE_ITEM_STATUS	=> array(	"Name"			=> "Sale Item Status Report",
 																								"Description"	=> "Sale Item Status Report"
-																							),
-												self::REPORT_TYPE_SALE_ITEM_HISTORY	=> array(	"Name"			=> "Sale Item History Report",
+																							)
+												/* self::REPORT_TYPE_SALE_ITEM_HISTORY	=> array(	"Name"			=> "Sale Item History Report",
 																								"Description"	=> "Sale Item History Report"
 																							),
 												self::REPORT_TYPE_SALE_HISTORY		=> array(	"Name"			=> "Sale History Report",
 																								"Description"	=> "Sale History Report"
 																							)
+												*/
 											);
 	
 	protected static $_arrRenderModes = array(	self::RENDER_MODE_IN_PAGE_HTML	=> array(	"Name"				=> "In Page HTML",
@@ -100,7 +111,7 @@ abstract class Sales_Report
 	}
 	
 	// Returns an array defining all render modes
-	public static function getRenderModes()
+	public static function getAllRenderModes()
 	{
 		return self::$_arrRenderModes;
 	}
@@ -154,12 +165,48 @@ abstract class Sales_Report
 		return $this->_arrAllowableRenderModes;
 	}
 
+	public function getDescription()
+	{
+		return $this->_strDescription;
+	}
+
+	// Returns array of allowable columns for the report
+	// The key will be the column constant, and the value will be a description of the field
+	public function getAllowableColumns()
+	{
+		return $this->_arrColumns;
+	}
+	
+	// $arrColumns is an array of the column constants (note that this is not an associative array)
+	public function setColumns($arrColumns)
+	{
+		// Make sure it's an array and there's something in it
+		if (!(is_array($arrColumns) && count($arrColumns)))
+		{
+			throw new Exception("Invalid columns declaration");
+		}
+		
+		$this->_arrSelectedColumns = array();
+		foreach ($arrColumns as $column)
+		{
+			if (!array_key_exists($column, $this->_arrColumns))
+			{
+				throw new Exception("Invalid column, '$column', for ". self::$_arrReportTypes[$this->_reportType]['Name']);
+			}
+			$this->_arrSelectedColumns[] = $column;
+		}
+	}
 
 	// Retrieves the report, in the RenderMode specified, assuming the report can be rendered in this mode
 	public function getReport($strRenderMode)
 	{
-		$arrAllowableRenderModes = $this->getAllowableRenderModes();
-		if (!in_array($strRenderMode, $arrAllowableRenderModes))
+		if (!isset($this->_arrSelectedColumns))
+		{
+			// Specific columns have not been declared
+			$this->_arrSelectedColumns = array_keys($this->_arrColumns);
+		}
+
+		if (!in_array($strRenderMode, $this->_arrAllowableRenderModes))
 		{
 			throw new Exception("Invalid Render Mode, '$strRenderMode', for ". self::$_arrReportTypes[$this->_reportType]['Name']);
 		}
@@ -170,10 +217,72 @@ abstract class Sales_Report
 				$strReport = $this->_translateToExcel();
 				break;
 				
+			case Sales_Report::RENDER_MODE_CSV:
+				$strReport = $this->_translateToCSV();
+				break;
+				
 			default:
-				throw new Exception("Generic rendering for Render Mode '$strRenderMode', has not yet been implemented");
+				throw new Exception("Unknown Render Mode '$strRenderMode'");
 				break;
 		}
+		
+		return $strReport;
+	}
+	
+	protected function _translateToCSV()
+	{
+		$resTempFile = tmpfile();
+		
+		if ($resTempFile === FALSE)
+		{
+			throw new Exception("Error creating temporary csv file");
+		}
+		
+		// Build the header record
+		$arrHeader = array();
+		foreach ($this->_arrSelectedColumns as $column)
+		{
+			$arrHeader[] = $this->_arrColumns[$column];
+		}
+		
+		if (fputcsv($resTempFile, $arrHeader) === FALSE)
+		{
+			throw new Exception("Error writing header row to temporary csv file");
+		}
+		
+		// Now write each of the rows
+		foreach ($this->_arrReportData as $arrDetails)
+		{
+			$arrRow = array();
+			foreach ($this->_arrSelectedColumns as $column)
+			{
+				$arrRow[] = $arrDetails[$column];
+			}
+			
+			if (fputcsv($resTempFile, $arrRow) === FALSE)
+			{
+				throw new Exception("Error writing row to temporary csv file");
+			}
+		}
+		
+		// Move the file pointer to the begining of the file
+		if (rewind($resTempFile) === FALSE)
+		{
+			throw new Exception("Error rewinding temporary csv file");
+		}
+
+		$strBuffer = "";
+		$strReport = "";
+		while (($strBuffer = fread($resTempFile, 100000)) != '')
+		{
+			$strReport .= $strBuffer;
+		}
+		if ($strBuffer === FALSE)
+		{
+			throw new Exception("Error reading temporary csv file");
+		}
+		
+		fclose($resTempFile);
 		
 		return $strReport;
 	}
@@ -183,9 +292,9 @@ abstract class Sales_Report
 	{
 		// Build the header row
 		$strHeaderRow = "";
-		foreach ($this->_arrColumns as $strColumnName)
+		foreach ($this->_arrSelectedColumns as $column)
 		{
-			$strHeaderRow .= "\t\t\t\t\t<th>". htmlspecialchars($strColumnName) ."</th>\n";
+			$strHeaderRow .= "\t\t\t\t\t<th>". htmlspecialchars($this->_arrColumns[$column]) ."</th>\n";
 		}
 		
 		// Build the rows
@@ -193,9 +302,9 @@ abstract class Sales_Report
 		foreach ($this->_arrReportData as $arrDetails)
 		{
 			$strRow = "";
-			foreach ($this->_arrColumns as $strPropName=>$strColumnName)
+			foreach ($this->_arrSelectedColumns as $column)
 			{
-				$strRow .= "\t\t\t\t\t<td>". htmlspecialchars($arrDetails[$strPropName]). "</td>\n";
+				$strRow .= "\t\t\t\t\t<td>". htmlspecialchars($arrDetails[$column]). "</td>\n";
 			}
 			
 			$strRows .= "\t\t\t\t<tr>\n$strRow\t\t\t\t</tr>\n";

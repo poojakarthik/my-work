@@ -14,13 +14,13 @@
  */
 class Sales_Report_OutstandingSales extends Sales_Report
 {
-	
+	protected $_strDescription = "This report lists all outstanding sales.  An outstanding sale is one that has not been set to completed, cancelled or rejected";
 	private $_arrStatuses;
 	
 	// This array defines the columns that will be included in the report
 	protected $_arrColumns = array(
 							"VendorName"				=> "Vendor",
-							"SaleId"					=> "Sale",
+							"SaleId"					=> "Sale Id",
 							"SaleTypeName"				=> "Sale Type",
 							"CreatedBy"					=> "Created By",
 							"DealerCarrier"				=> "Group",
@@ -29,13 +29,13 @@ class Sales_Report_OutstandingSales extends Sales_Report
 							"VerifiedOn"				=> "Verified On",
 							"VerifiedBy"				=> "Verified By",
 							"CurrentStatusName"			=> "Current Status",
-							"CurrentStatusTimestamp"	=> "Actioned",
-							"CurrentStatusSetBy"		=> "Actioner",
-							"CurrentStatusDescription"	=> "Description"
+							"CurrentStatusTimestamp"	=> "Last Actioned",
+							"CurrentStatusSetBy"		=> "Last Actioner",
+							"CurrentStatusDescription"	=> "Status Description"
 							);
 	
 	protected $_reportType				= Sales_Report::REPORT_TYPE_OUTSTANDING_SALES;
-	protected $_arrAllowableRenderModes	= array(self::RENDER_MODE_EXCEL);
+	protected $_arrAllowableRenderModes	= array(self::RENDER_MODE_EXCEL, self::RENDER_MODE_CSV);
 	
 	// Sets the constraints for the report (and validates them)
 	// TODO! define preconditions, such as the timestamps being in their correct format or NULL
