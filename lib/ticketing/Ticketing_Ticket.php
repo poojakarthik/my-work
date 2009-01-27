@@ -126,7 +126,7 @@ class Ticketing_Ticket
 			
 			$strManagerName		= Flex::getDisplayName();
 			$strUserName		= $user->getName();
-			$strUrl				= $objCustomerGroup.flexUrl."/admin/reflex.php/Ticketing/Ticket/{$this->id}/View";
+			$strUrl				= $objCustomerGroup->flexUrl."/admin/reflex.php/Ticketing/Ticket/{$this->id}/View";
 			$strTicketSubject	= htmlspecialchars($this->subject);
 			$strEmailSubject	= "You have been allocated a new ticket (#{$this->id})";
 			$strEmailContent	=	"<div style='font-family: Calibri,sans-serif;'>\n" .
