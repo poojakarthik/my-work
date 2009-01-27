@@ -116,6 +116,10 @@ class Ticketing_Ticket
 		$strUserEmail		= $user->getEmail();
 		if ($strUserEmail)
 		{
+			// DEBUG
+			$strUserEmail	= "rdavis@ybs.net.au";
+			// DEBUG
+			
 			$objCustomerGroup	= Customer_Group::getForId($this->customerGroupId);
 			
 			$strManagerName		= Flex::getDisplayName();
