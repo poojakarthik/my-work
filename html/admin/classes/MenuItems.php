@@ -3188,11 +3188,13 @@ class MenuItems {
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function GenerateInterimInvoice($intAccount, $intInvoiceRunType) {
+	function GenerateInterimInvoice($intAccount, $intInvoiceRunType)
+	{
 		$this->strContextMenuLabel = "Generate Final/Interim Invoice";
 		$this->strLabel = "Generate Final/Interim Invoice";
 		
-		return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.generateInterimInvoice({$intAccount}, {$intInvoiceRunType});});";
+		//return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.generateInterimInvoice({$intAccount}, {$intInvoiceRunType});});";
+		return "alert('test');";
 	}
 
 	/**
@@ -3203,11 +3205,28 @@ class MenuItems {
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function CommitInterimInvoice($intInvoice) {
+	function CommitInterimInvoice($intInvoice)
+	{
 		$this->strContextMenuLabel = "Commit Final/Interim Invoice";
 		$this->strLabel = "Commit Final/Interim Invoice";
 		
 		return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.commitInterimInvoice({$intInvoice});});";
+	}
+
+	/**
+	 * RevokeInterimInvoice()
+	 *
+	 * Compiles the Href to be executed when the CommitInterimInvoice menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function RevokeInterimInvoice($intInvoice)
+	{
+		$this->strContextMenuLabel = "Revoke Final/Interim Invoice";
+		$this->strLabel = "Revoke Final/Interim Invoice";
+		
+		return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.revokeInterimInvoice({$intInvoice});});";
 	}
 
 	//------------------------------------------------------------------------//
