@@ -497,7 +497,7 @@ class Application_Handler_Ticketing extends Application_Handler
 							// Hacky check to see if we had a change of ownership
 							if ($bolChangeOwner)
 							{
-								$ticket->assignTo($ticket->ownerId);
+								$ticket->assignTo(Ticketing_User::getForId($ticket->ownerId));
 							}
 						}
 					}
