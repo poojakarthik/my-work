@@ -54,7 +54,7 @@ var Invoice	= Class.create
 			return;
 		}
 
-		strInvoiceRunType	= this._getInvoiceRunType(intInvoiceRunType)
+		strInvoiceRunType	= this._getInvoiceRunType(intInvoiceRunType);
 		if (!strInvoiceRunType)
 		{
 			$Alert("There was an error when trying to generate the Invoice. ("+objResponse.intInvoiceRunType+" is not a valid Invoice Run Type)");
