@@ -246,6 +246,7 @@ class Application_Handler_Ticketing extends Application_Handler
 			$tid = $ticket ? ' ' . $ticket->id : '';
 			BreadCrumb()->SetCurrentPage("$actionLabel Ticket$tid");
 
+			$bolChangeOwner	= false;
 			switch ($action)
 			{
 				case 'delete':
@@ -289,10 +290,11 @@ class Application_Handler_Ticketing extends Application_Handler
 					break;
 
 				case 'create':
-
 					$ticket = Ticketing_Ticket::createBlank();
 					$ticket->owner = $currentUser;
 					$editableValues[] = 'accountId';
+					
+					$bolChangeOwner	= true;
 
 				case 'edit':
 
@@ -321,7 +323,6 @@ class Application_Handler_Ticketing extends Application_Handler
 
 					$ticketServices = $ticket->getServiceIds();
 					
-					$bolChangeOwner	= false;
 					if (array_key_exists('save', $_REQUEST))
 					{
 						// Validate the passed details and save if valid
@@ -352,12 +353,12 @@ class Application_Handler_Ticketing extends Application_Handler
 									}
 									else if ($currentUser->isAdminUser())
 									{
-										$bolChangeOwner	= ($ticket->ownerId !== $value->id) ? true : false;
+										$bolChangeOwner	= ($bolChangeOwner) ? $bolChangeOwner : ($ticket->ownerId !== $value->id) ? true : false;
 										$ticket->ownerId = $value->id;
 									}
 									else
 									{
-										$bolChangeOwner	= ($ticket->ownerId !== $currentUser->id) ? true : false;
+										$bolChangeOwner	= ($bolChangeOwner) ? $bolChangeOwner : ($ticket->ownerId !== $currentUser->id) ? true : false;
 										$ticket->ownerId = $currentUser->id;
 									}
 									break;
