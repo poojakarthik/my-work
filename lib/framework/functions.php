@@ -3023,6 +3023,9 @@ function WriteOffInvoice($intInvoice, $bolAddNote = TRUE)
  */
 function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='auto@yellowbilling.com.au', $bolHTML = FALSE)
 {
+	require_once("Mail.php");
+	require_once("Mail/mime.php");
+	
 	$arrHeaders = Array	(
 							'From'		=> $strFrom,
 							'Reply-To'	=> $strFrom,
