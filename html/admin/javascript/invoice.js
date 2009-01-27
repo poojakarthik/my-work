@@ -104,7 +104,7 @@ var Invoice	= Class.create
 		"		</tbody>\n" + 
 		"	</table>\n" + 
 		"	<div>\n" + 
-		"		<span>This "+strInvoiceRunType+" Invoice will now appear in the Invoice section on both the <a href='../admin/flex.php/Account/Overview/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Account</a> and <a href='https://telcoblue.yellowbilling.com.au/admin/flex.php/Account/InvoicesAndPayments/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Invoice &amp; Payments</a> screens.</span>\n" + 
+		"		<span>This "+strInvoiceRunType+" Invoice will now appear in the Invoice section on both the <a href='../admin/flex.php/Account/Overview/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Account</a> and <a href='../admin/flex.php/Account/InvoicesAndPayments/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Invoice &amp; Payments</a> screens.</span>\n" + 
 		"	</div>\n" + 
 		"</div>\n" + 
 		"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
