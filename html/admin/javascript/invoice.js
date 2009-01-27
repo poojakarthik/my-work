@@ -57,7 +57,7 @@ var Invoice	= Class.create
 		strInvoiceRunType	= this._getInvoiceRunType(objResponse.intInvoiceRunType);
 		if (!strInvoiceRunType)
 		{
-			$Alert("There was an error when trying to generate the Invoice. ("+objResponse.intInvoiceRunType+" is not a valid Invoice Run Type)");
+			$Alert("There was an error when trying to generate the "+strInvoiceRunType+" Invoice. ("+objResponse.intInvoiceRunType+" is not a valid Invoice Run Type)");
 			return;
 		}
 		
@@ -65,7 +65,7 @@ var Invoice	= Class.create
 		var strHTML	= "\n" + 
 		"<div class='GroupedContent'>\n" + 
 		"	<div>\n" + 
-		"		<span>The Interim Invoice for "+objResponse.intAccountId+" has been successfully generated.</span>\n" + 
+		"		<span>The "+strInvoiceRunType+" Invoice for "+objResponse.intAccountId+" has been successfully generated.</span>\n" + 
 		"	</div>\n" + 
 		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
 		"		<tbody>\n" + 
@@ -104,7 +104,7 @@ var Invoice	= Class.create
 		"		</tbody>\n" + 
 		"	</table>\n" + 
 		"	<div>\n" + 
-		"		<span>This Interim Invoice will now appear in the Invoice section on both the <a href='../admin/flex.php/Account/Overview/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Account</a> and <a href='https://telcoblue.yellowbilling.com.au/admin/flex.php/Account/InvoicesAndPayments/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Invoice &amp; Payments</a> screens.</span>\n" + 
+		"		<span>This "+strInvoiceRunType+" Invoice will now appear in the Invoice section on both the <a href='../admin/flex.php/Account/Overview/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Account</a> and <a href='https://telcoblue.yellowbilling.com.au/admin/flex.php/Account/InvoicesAndPayments/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Invoice &amp; Payments</a> screens.</span>\n" + 
 		"	</div>\n" + 
 		"</div>\n" + 
 		"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
