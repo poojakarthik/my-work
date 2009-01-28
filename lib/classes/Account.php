@@ -166,6 +166,22 @@ class Account
 			}
 		}
 	}
+	
+	public static function getInterimInvoiceType()
+	{
+		switch ($this->Archived)
+		{
+			case ACCOUNT_STATUS_ACTIVE:
+				return INVOICE_RUN_TYPE_INTERIM;
+				break;
+				
+			case ACCOUNT_STATUS_CLOSED:
+			case ACCOUNT_STATUS_DEBT_COLLECTION:
+				return INVOICE_RUN_TYPE_INTERIM;
+				break;
+		}
+		return null;
+	}
 
 	private static function getFor($where, $arrWhere, $bolAsArray=FALSE)
 	{
