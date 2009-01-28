@@ -69,7 +69,7 @@
 					if ($intCustomerGroup != $_POST['CustomerGroup'])
 					{
 						//throw new Exception("Trying to POP index {$mixIndex}");
-						$oblsamPayments->pop($mixIndex);
+						$oblsamPayments->popItem($mixIndex);
 					}
 					elseif (!isset($arrAccounts[$intAccount]))
 					{
@@ -79,10 +79,10 @@
 				else
 				{
 					// Has no Account, and therefore no CustomerGroup
-					$oblsamPayments->pop($mixIndex);
+					$oblsamPayments->popItem($mixIndex);
 				}
 			}
-			throw new Exception(get_class($oblsamPayments));
+			//throw new Exception(get_class($oblsamPayments));
 			
 			header('Content-type: text/csv');
 			header('Content-Disposition: attachment; filename="Payments-' . $strPaidOn . '.csv"');

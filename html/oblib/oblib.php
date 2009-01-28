@@ -1047,7 +1047,7 @@
 			return $this->_DATA->Valid ();
 		}
 		
-		public function pop($mixIndex)
+		public function popItem($mixIndex)
 		{
 			$mixObject	= $this->_DATA->Pop($mixIndex);
 			if ($mixObject)
