@@ -172,14 +172,14 @@ class JSON_Handler_Invoice extends JSON_Handler
 							"bolInvoiceCDRCredits"		=> (bool)$arrInvoiceCDRCredits['invoice_cdr_credits'],
 							
 							"intAdjustmentCreditCount"	=> $arrAdjustmentTotals['CR']['Count'],
-							"intAdjustmentCreditTotal"	=> round($arrAdjustmentTotals['CR']['Total'], 2),
+							"fltAdjustmentCreditTotal"	=> round($arrAdjustmentTotals['CR']['Total'], 2),
 							"intAdjustmentDebitCount"	=> $arrAdjustmentTotals['DR']['Count'],
-							"intAdjustmentDebitTotal"	=> round($arrAdjustmentTotals['DR']['Total'], 2),
+							"fltAdjustmentDebitTotal"	=> round($arrAdjustmentTotals['DR']['Total'], 2),
 							
 							"intCDRCreditCount"			=> $arrCDRTotals['CR']['Count'],
-							"intCDRCreditTotal"			=> round($arrCDRTotals['CR']['Total'], 2),
+							"fltCDRCreditTotal"			=> round($arrCDRTotals['CR']['Total'], 2),
 							"intCDRDebitCount"			=> $arrCDRTotals['DR']['Count'],
-							"intCDRDebitTotal"			=> round($arrCDRTotals['DR']['Total'], 2),
+							"fltCDRDebitTotal"			=> round($arrCDRTotals['DR']['Total'], 2),
 						);
 		}
 		catch (Exception $e)
