@@ -1049,7 +1049,13 @@
 		
 		public function pop($mixIndex)
 		{
-			return $this->_DATA->Pop($mixIndex);
+			$mixObject	= $this->_DATA->Pop($mixIndex);
+			if ($mixObject)
+			{
+				$this->collationLength--;
+				$this->rangeLength--;
+			}
+			return $mixObject;
 		}
 	}
 	
