@@ -26,7 +26,7 @@
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
-											<xsl:value-of select="./ExternalName" />
+											<xsl:value-of select="./Name" />
 										</option>
 									</xsl:for-each>
 								</select>
