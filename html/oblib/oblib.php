@@ -1046,17 +1046,6 @@
 		{
 			return $this->_DATA->Valid ();
 		}
-		
-		public function popItem($mixIndex)
-		{
-			$mixObject	= $this->_DATA->Pop($mixIndex);
-			if ($mixObject)
-			{
-				$this->collationLength--;
-				$this->rangeLength--;
-			}
-			return $mixObject;
-		}
 	}
 	
 //----------------------------------------------------------------------------//
