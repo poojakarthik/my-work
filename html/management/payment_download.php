@@ -56,11 +56,12 @@
 			$payPayments->Constrain('PaidOn',		'EQUALS', $strPaidOn);
 			$oblsamPayments = $payPayments->Sample();*/
 			
-			$intCustomerGroup	= (int)$_POST['CustomerGroup'];
+			$strCustomerGroups	= implode(', ', $_POST['CustomerGroup']);
+			throw new Exception("'{$strCustomerGroups}'");
 			$intPaymentType		= (int)$_POST['PaymentType'];
 			$resPayments		= $qryQuery->Execute(	"SELECT Payment.AccountGroup, Payment.Account, Account.BusinessName, Account.TradingName, Payment.TXNReference, Payment.PaidOn, Payment.Amount " .
 														"FROM Payment JOIN Account ON Payment.Account = Account.Id " .
-														"WHERE PaymentType = {$intPaymentType} AND PaidOn = '{$strPaidOn}' AND Account.CustomerGroup = {$intCustomerGroup}");
+														"WHERE PaymentType = {$intPaymentType} AND PaidOn = '{$strPaidOn}' AND Account.CustomerGroup IN ({$strCustomerGroups})");
 			$arrPayments		= array();
 			while ($arrPayment = $resPayments->fetch_assoc())
 			{
