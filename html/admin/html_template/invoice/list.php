@@ -255,20 +255,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		Table()->InvoiceTable->Render();
 		
 		// Add in button to Generate a Final/Interim Invoice
-		switch (DBO()->Account->Archived->Value)
-		{
-			case ACCOUNT_STATUS_ACTIVE:
-				$intInvoiceGenerateType	= INVOICE_RUN_TYPE_INTERIM;
-				$strInvoiceGenerateType	= 'Interim';
-				break;
-			case ACCOUNT_STATUS_CLOSED:
-				$intInvoiceGenerateType	= INVOICE_RUN_TYPE_FINAL;
-				$strInvoiceGenerateType	= 'Final';
-				break;
-			default:
-				$intInvoiceGenerateType	= null;
-				$strInvoiceGenerateType	= null;
-		}
+		$objAccount				= new Account(array('Id'=>DBO()->Account->Id->Value), false, true);
+		$intInvoiceGenerateType	= $objAccount->getInterimInvoiceType();
 		if ($intInvoiceGenerateType && $bolUserHasInterimPerm)
 		{
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
