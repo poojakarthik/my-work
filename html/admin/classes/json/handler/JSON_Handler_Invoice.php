@@ -102,7 +102,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 												);
 				$resAdjustmentTotals	= $qryQuery->Execute(	"SELECT Charge.Nature, COUNT(Charge.Id) AS Count, SUM(Charge.Amount) AS Total " .
 																"FROM Charge LEFT JOIN Service ON Service.Id = Charge.Service LEFT JOIN service_status ON service_status.id = Service.Status " .
-																"WHERE Charge.Account = {$intAccount} AND Charge.Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND (service_status.can_invoice = 1 OR Charge.Service IS NULL)" .
+																"WHERE Charge.Account = {$intAccount} AND Charge.Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND (service_status.can_invoice = 1 OR Charge.Service IS NULL) AND ChargeType NOT IN ('PCR', 'PCAD', 'PCAR', 'PDCR') " .
 																"GROUP BY Charge.Nature");
 				if ($resAdjustmentTotals === false)
 				{

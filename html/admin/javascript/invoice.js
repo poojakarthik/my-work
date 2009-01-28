@@ -69,22 +69,22 @@ var Invoice	= Class.create
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Debit Adjustments</td>\n" + 
 		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intAdjustmentDebitCount + "</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$" + objResponse.fltAdjustmentDebitTotal + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$" + (new Number(objResponse.fltAdjustmentDebitTotal)).toPrecision(2) + "</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Credit Adjustments</td>\n" + 
 		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intAdjustmentCreditCount + "</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>" + ((objResponse.fltAdjustmentCreditTotal > 0) ? "- " : "") + "$" + objResponse.fltAdjustmentCreditTotal + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>" + ((objResponse.fltAdjustmentCreditTotal > 0) ? "- " : "") + "$" + (new Number(objResponse.fltAdjustmentCreditTotal)).toPrecision(2) + "</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Debit CDRs</td>\n" + 
 		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intCDRDebitCount + "</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$" + objResponse.fltCDRDebitTotal + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$" + (new Number(objResponse.fltCDRDebitTotal)).toPrecision(2) + "</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Credit CDRs" + (objResponse.bolInvoiceCDRCredits ? "&nbsp;<span style='font-weight:bold;color:#E00'>*</span>" : '') + "</td>\n" + 
 		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intCDRCreditCount + "</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>" + ((objResponse.fltCDRCreditTotal > 0) ? "- " : "") + "$" + objResponse.fltCDRCreditTotal + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>" + ((objResponse.fltCDRCreditTotal > 0) ? "- " : "") + "$" + (new Number(objResponse.fltCDRCreditTotal)).toPrecision(2) + "</td>\n" + 
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
