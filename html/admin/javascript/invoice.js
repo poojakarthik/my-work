@@ -28,7 +28,7 @@ var Invoice	= Class.create
 	getPreGenerateValues	: function(intAccount)
 	{
 		// Show the Loading Splash
-		Vixen.Popup.ShowPageLoadingSplash("Getting "+strInvoiceRunType+" Invoice Preliminary Data...", null, null, null, 1);
+		Vixen.Popup.ShowPageLoadingSplash("Getting Invoice Preliminary Data...", null, null, null, 1);
 		
 		// Perform AJAX query
 		var fncJsonFunc		= jQuery.json.jsonFunction(this._getPreGenerateValuesResponse.bind(this), null, 'Invoice', 'getPreGenerateValues');
