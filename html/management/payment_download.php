@@ -69,7 +69,7 @@
 					if ($intCustomerGroup != $_POST['CustomerGroup'])
 					{
 						//throw new Exception("Trying to POP index {$mixIndex}");
-						$oblsamPayments->Pop($mixIndex);
+						$oblsamPayments->pop($mixIndex);
 					}
 					elseif (!isset($arrAccounts[$intAccount]))
 					{
@@ -79,7 +79,7 @@
 				else
 				{
 					// Has no Account, and therefore no CustomerGroup
-					$oblsamPayments->Pop($mixIndex);
+					$oblsamPayments->pop($mixIndex);
 				}
 			}
 			throw new Exception($oblsamPayments->Count());
