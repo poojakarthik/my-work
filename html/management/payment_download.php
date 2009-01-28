@@ -68,7 +68,7 @@
 					$intCustomerGroup	= $accAccount->Pull('CustomerGroup')->getValue();
 					if ($intCustomerGroup != $_POST['CustomerGroup'])
 					{
-						$oblsamPayments->Pop($payPayment);
+						$oblsamPayments->Pop($mixIndex);
 					}
 					elseif (!isset($arrAccounts[$intAccount]))
 					{
@@ -78,7 +78,7 @@
 				else
 				{
 					// Has no Account, and therefore no CustomerGroup
-					$oblsamPayments->Pop($payPayment);
+					$oblsamPayments->Pop($mixIndex);
 				}
 			}
 			
