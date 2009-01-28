@@ -24,6 +24,8 @@
 	// Error Handler
 	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	
+	$qryQuery	= new Query();
+	
 	if ($_POST ['PaymentType'])
 	{
 		// Handle the PaidOn option
