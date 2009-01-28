@@ -102,7 +102,7 @@ var Invoice	= Class.create
 				'medium', 
 				'centre', 
 				'modal', 
-				objResponse.strInvoiceRunType + ' Pre-Invoice Summary'
+				this._getInvoiceRunType(objResponse.intInvoiceRunType) + ' Pre-Invoice Summary'
 			);
 		
 		return;
