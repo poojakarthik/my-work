@@ -82,7 +82,7 @@
 					$oblsamPayments->pop($mixIndex);
 				}
 			}
-			throw new Exception($oblsamPayments->Count());
+			throw new Exception(get_class($oblsamPayments));
 			
 			header('Content-type: text/csv');
 			header('Content-Disposition: attachment; filename="Payments-' . $strPaidOn . '.csv"');
