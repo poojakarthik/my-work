@@ -69,7 +69,7 @@
 					if ($intCustomerGroup != $_POST['CustomerGroup'])
 					{
 						//throw new Exception("Trying to POP index {$mixIndex}");
-						throw new Exception(print_r($oblsamPayments->popItem($mixIndex), true));
+						throw new Exception(print_r($oblsamPayments, true));
 					}
 					elseif (!isset($arrAccounts[$intAccount]))
 					{
