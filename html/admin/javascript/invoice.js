@@ -74,17 +74,17 @@ var Invoice	= Class.create
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Credit Adjustments</td>\n" + 
 		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intAdjustmentCreditCount + "</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>" + ((objResponse.intAdjustmentCreditTotal < 0) ? "- " : "") + "$" + objResponse.intAdjustmentCreditTotal + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>" + ((objResponse.fltAdjustmentCreditTotal < 0) ? "- " : "") + "$" + objResponse.intAdjustmentCreditTotal + "</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Debit CDRs</td>\n" + 
 		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intCDRDebitCount + "</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intCDRDebitTotal + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$" + objResponse.fltCDRDebitTotal + "</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Credit CDRs" + (objResponse.bolInvoiceCDRCredits ? "&nbsp;<span style='font-weight:bold;color:#E00'>*</span>" : '') + "</td>\n" + 
 		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intCDRCreditCount + "</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>" + ((objResponse.intCDRCreditTotal < 0) ? "- " : "") + "$" + objResponse.intCDRCreditTotal + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>" + ((objResponse.fltCDRCreditTotal < 0) ? "- " : "") + "$" + objResponse.intCDRCreditTotal + "</td>\n" + 
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
