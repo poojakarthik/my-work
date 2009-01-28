@@ -6,7 +6,7 @@
  *	1:	Add the 'Invoice Samples' Email Notification
  */
 
-class Flex_Rollout_Version_000124 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000126 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 	
