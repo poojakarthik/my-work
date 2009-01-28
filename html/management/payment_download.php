@@ -48,14 +48,14 @@
 		}
 		else
 		{
-			$payPayments = $Style->attachObject (new Payments);
+			$payPayments = $Style->attachObject(new Payments);
 			//$payPayments->Constrain ('EnteredBy',	'EQUALS', $athAuthentication->AuthenticatedEmployee ()->Pull ('Id')->getValue ());
-			$payPayments->Constrain ('PaymentType',	'EQUALS', $_POST ['PaymentType']);
-			$payPayments->Constrain ('PaidOn',		'EQUALS', $strPaidOn);
-			$oblsamPayments = $payPayments->Sample ();
+			$payPayments->Constrain('PaymentType',	'EQUALS', $_POST ['PaymentType']);
+			$payPayments->Constrain('PaidOn',		'EQUALS', $strPaidOn);
+			$oblsamPayments = $payPayments->Sample();
 			
-			$arrAccounts = Array ();
-			$oblarrAccounts = $Style->attachObject (new dataArray ('Accounts', 'Account'));
+			$arrAccounts	= array();
+			$oblarrAccounts	= $Style->attachObject(new dataArray('Accounts', 'Account'));
 			
 			foreach ($oblsamPayments as $mixIndex=>$payPayment)
 			{
@@ -68,6 +68,7 @@
 					$intCustomerGroup	= $accAccount->Pull('CustomerGroup')->getValue();
 					if ($intCustomerGroup != $_POST['CustomerGroup'])
 					{
+						throw new Exception("Trying to POP index {$mixIndex}");
 						$oblsamPayments->Pop($mixIndex);
 					}
 					elseif (!isset($arrAccounts[$intAccount]))
