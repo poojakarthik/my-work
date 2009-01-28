@@ -23,6 +23,8 @@ class JSON_Handler_Invoice extends JSON_Handler
 				// Start the Transaction
 				DataAccess::getDataAccess()->TransactionStart();
 				
+				throw new Exception("Invoice::generateInterimInvoice() is not implemented yet!");
+				
 				// TODO: Generate the Invoice
 				
 				// Commit the Transaction
