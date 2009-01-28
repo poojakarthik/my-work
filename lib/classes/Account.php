@@ -180,7 +180,6 @@ class Account
 				return INVOICE_RUN_TYPE_INTERIM;
 				break;
 		}
-		throw new Exception("{$this->Archived} is not a valid Account Status");
 		return null;
 	}
 
