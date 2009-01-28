@@ -68,7 +68,7 @@
 					$intCustomerGroup	= $accAccount->Pull('CustomerGroup')->getValue();
 					if ($intCustomerGroup != $_POST['CustomerGroup'])
 					{
-						throw new Exception("Trying to POP index {$mixIndex}");
+						//throw new Exception("Trying to POP index {$mixIndex}");
 						$oblsamPayments->Pop($mixIndex);
 					}
 					elseif (!isset($arrAccounts[$intAccount]))
@@ -82,6 +82,7 @@
 					$oblsamPayments->Pop($mixIndex);
 				}
 			}
+			throw new Exception($oblsamPayments->Count());
 			
 			header('Content-type: text/csv');
 			header('Content-Disposition: attachment; filename="Payments-' . $strPaidOn . '.csv"');
