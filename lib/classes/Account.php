@@ -167,7 +167,7 @@ class Account
 		}
 	}
 	
-	public static function getInterimInvoiceType()
+	public function getInterimInvoiceType()
 	{
 		switch ($this->Archived)
 		{
