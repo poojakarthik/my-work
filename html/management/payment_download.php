@@ -48,12 +48,25 @@
 		}
 		else
 		{
-			$payPayments = $Style->attachObject(new Payments);
+			/*$payPayments = $Style->attachObject(new Payments);
 			//$payPayments->Constrain ('EnteredBy',	'EQUALS', $athAuthentication->AuthenticatedEmployee ()->Pull ('Id')->getValue ());
 			$payPayments->Constrain('PaymentType',	'EQUALS', $_POST ['PaymentType']);
 			$payPayments->Constrain('PaidOn',		'EQUALS', $strPaidOn);
-			$oblsamPayments = $payPayments->Sample();
+			$oblsamPayments = $payPayments->Sample();*/
 			
+			$intCustomerGroup	= (int)$_POST['CustomerGroup'];
+			$intPaymentType		= (int)$_POST['PaymentType'];
+			$resPayments		= $qryQuery->Execute(	"SELECT Payment.AccountGroup, Payment.Account, Account.BusinessName, Account.TradingName, Payment.TXNReference, Payment.PaidOn, Payment.Amount " .
+														"FROM Payment JOIN Account ON Payment.Account = Account.Id",
+														"WHERE PaymentType = {$intPaymentType} AND PaidOn = '{$strPaidOn}' AND Account.CustomerGroup = {$intCustomerGroup}");
+			$arrPayments		= array();
+			while ($arrPayment = $resPayments->fetch_assoc())
+			{
+				$arrPayments[] = $arrPayment;
+			}
+			$GLOBALS['Style']->InsertDOM($arrCreatedByEmployeeResults, 'Payments');
+			
+			/*
 			$arrAccounts	= array();
 			$oblarrAccounts	= $Style->attachObject(new dataArray('Accounts', 'Account'));
 			
@@ -83,7 +96,7 @@
 				}
 			}
 			//throw new Exception(get_class($oblsamPayments));
-			
+			*/
 			header('Content-type: text/csv');
 			header('Content-Disposition: attachment; filename="Payments-' . $strPaidOn . '.csv"');
 			header("Pragma: no-cache");
