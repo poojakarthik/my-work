@@ -19,7 +19,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<select name="CustomerGroup">
+								<select name="CustomerGroup[]" multiple="multiple">
 									<xsl:for-each select="/Response/CustomerGroups/CustomerGroup">
 										<option>
 											<xsl:attribute name="value">
