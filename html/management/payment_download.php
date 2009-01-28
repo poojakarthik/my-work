@@ -59,8 +59,8 @@
 			$strCustomerGroups	= implode(', ', $_POST['CustomerGroup']);
 			//throw new Exception("'{$strCustomerGroups}'");
 			$intPaymentType		= (int)$_POST['PaymentType'];
-			$resPayments		= $qryQuery->Execute(	"SELECT Payment.AccountGroup, Payment.Account, Account.BusinessName, Account.TradingName, Payment.TXNReference, Payment.PaidOn, Payment.Amount " .
-														"FROM Payment JOIN Account ON Payment.Account = Account.Id " .
+			$resPayments		= $qryQuery->Execute(	"SELECT Payment.AccountGroup, Payment.Account, Account.BusinessName, Account.TradingName, CustomerGroup.ExternalName AS CustomerGroup, Payment.TXNReference, Payment.PaidOn, Payment.Amount " .
+														"FROM Payment JOIN Account ON Payment.Account = Account.Id JOIN CustomerGroup ON CustomerGroup.Id = Account.CustomerGroup" .
 														"WHERE PaymentType = {$intPaymentType} AND PaidOn = '{$strPaidOn}' AND Account.CustomerGroup IN ({$strCustomerGroups})");
 			$arrPayments		= array();
 			while ($arrPayment = $resPayments->fetch_assoc())

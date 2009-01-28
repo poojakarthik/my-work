@@ -4,7 +4,7 @@
 	<xsl:output method="text" encoding="utf-8" />
 	
 	<xsl:template match="/">
-		<xsl:text>"Sequence","Account Group","Account Id","Business Name","Trading Name","Reference","Date","Amount"</xsl:text>
+		<xsl:text>"Sequence","Account Group","Account Id","Business Name","Trading Name","Customer Group","Reference","Date","Amount"</xsl:text>
 		<xsl:text>&#10;</xsl:text>
 		
 		<xsl:for-each select="/Response/Payments/Record">
@@ -31,6 +31,11 @@
 			
 			<xsl:text>"</xsl:text>
 			<xsl:value-of select="./TradingName" />
+			<xsl:text>"</xsl:text>
+			<xsl:text>,</xsl:text>
+			
+			<xsl:text>"</xsl:text>
+			<xsl:value-of select="./CustomerGroup" />
 			<xsl:text>"</xsl:text>
 			<xsl:text>,</xsl:text>
 			
