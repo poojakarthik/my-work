@@ -262,7 +262,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
 			
 			$strGenerateInterimHref	= Href()->GenerateInterimInvoice(DBO()->Account->Id->Value, $intInvoiceGenerateType);
-			$this->Button("Generate {$strInvoiceGenerateType} Invoice", $strGenerateInterimHref);
+			$this->Button("Generate ".GetConstantDescription($intInvoiceGenerateType, 'invoice_run_type')." Invoice", $strGenerateInterimHref);
 			
 			echo "</div></div>";
 			
