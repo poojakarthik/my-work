@@ -67,7 +67,7 @@
 				$arrPayments[] = $arrPayment;
 			}
 			//$GLOBALS['Style']->InsertDOM($arrCreatedByEmployeeResults, 'Payments');
-			$Style->InsertDOM($arrCreatedByEmployeeResults, 'Payments');
+			$Style->InsertDOM($arrCreatedByEmployeeResults, 'CustomerGroups');
 			
 			/*
 			$arrAccounts	= array();
