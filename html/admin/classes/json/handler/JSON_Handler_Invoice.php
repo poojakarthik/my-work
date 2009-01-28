@@ -125,10 +125,10 @@ class JSON_Handler_Invoice extends JSON_Handler
 																		'Total'	=> 0.0
 																	)
 												);
-				$resCDRTotals	= $qryQuery->Execute(	"SELECT CASE WHEN Credit = 0 THEN 'DR' ELSE 'CR' END AS Nature, COUNT(Id) AS Count, SUM(Charge) AS Total " .
+				$resCDRTotals	= $qryQuery->Execute(	"SELECT CASE WHEN Credit = 0 THEN 'DR' ELSE 'CR' END AS Nature, COUNT(CDR.Id) AS Count, SUM(CDR.Charge) AS Total " .
 														"FROM CDR LEFT JOIN Service ON Service.Id = CDR.Service LEFT JOIN service_status ON service_status.id = Service.Status " .
-														"WHERE Account = {$intAccount} AND Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND service_status.can_invoice = 1 " .
-														"GROUP BY Nature");
+														"WHERE CDR.Account = {$intAccount} AND CDR.Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND service_status.can_invoice = 1 " .
+														"GROUP BY Credit");
 				if ($resCDRTotals === false)
 				{
 					throw new Exception($qryQuery->Error());
