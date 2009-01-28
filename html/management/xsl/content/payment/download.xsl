@@ -12,13 +12,13 @@
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
-							<th class="JustifiedWidth">
+							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('CustomerGroup')" />
 									<xsl:with-param name="field" select="string('CustomerGroup')" />
 								</xsl:call-template>
 							</th>
-							<td>
+							<td valign="top">
 								<select name="CustomerGroup[]" multiple="multiple">
 									<xsl:for-each select="/Response/CustomerGroups/CustomerGroup">
 										<option>
@@ -33,13 +33,13 @@
 							</td>
 						</tr>
 						<tr>
-							<th class="JustifiedWidth">
+							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Payment')" />
 									<xsl:with-param name="field" select="string('PaymentType')" />
 								</xsl:call-template>
 							</th>
-							<td>
+							<td valign="top">
 								<select name="PaymentType">
 									<xsl:for-each select="/Response/PaymentTypes/PaymentType">
 										<option>
@@ -60,7 +60,7 @@
 									<xsl:with-param name="field" select="string('PaidOn')" />
 								</xsl:call-template>
 							</th>
-							<td>
+							<td valign="top">
 								<table border="0" cellpadding="3" cellspacing="0">
 									<tr>
 										<td>
