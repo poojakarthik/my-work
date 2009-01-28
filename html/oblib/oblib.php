@@ -1046,6 +1046,19 @@
 		{
 			return $this->_DATA->Valid ();
 		}
+		
+		public function pop($mixIndex)
+		{
+			$mixData	= null;
+			if (isset($this->_DATA[$mixIndex]))
+			{
+				$mixData	= $this->_DATA[$mixIndex];
+				unset($this->_DATA[$mixIndex]);
+				
+				$this->collationLength--;
+			}
+			return $mixData;
+		}
 	}
 	
 //----------------------------------------------------------------------------//
