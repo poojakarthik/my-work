@@ -1046,11 +1046,6 @@
 		{
 			return $this->_DATA->Valid ();
 		}
-		
-		public function Pop($mixIndex)
-		{
-			unset($this->_DATA[$mixIndex]);
-		}
 	}
 	
 //----------------------------------------------------------------------------//
