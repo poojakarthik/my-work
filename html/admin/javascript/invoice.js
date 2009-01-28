@@ -50,7 +50,7 @@ var Invoice	= Class.create
 		// Render Invoice Summry Popup
 		var strCDRCreditNotice	=	"	<div>\n" + 
 									"		<span><span style='font-weight:bold;color:#E00'>*</span> : This Account's Customer Group has been configured to suppress all CDR Credits.</span>\n" + 
-									"	</div>\n" + ;
+									"	</div>\n";
 		
 		var strHTML	= "\n" + 
 		"<div class='GroupedContent'>\n" + 
@@ -88,7 +88,9 @@ var Invoice	= Class.create
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
-		"</div>\n" + (objResponse.bolInvoiceCDRCredits ? strCDRCreditNotice : '') + "<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
+		"</div>\n" + 
+		(objResponse.bolInvoiceCDRCredits ? strCDRCreditNotice : '') + 
+		"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
 		"	<input id='Invoice_InterimInvoicePreGenerateSummary_Generate' value='Generate' onclick='Flex.Invoice.generateInterimInvoice(" + objResponse.intAccount + ", " + objResponse.intInvoiceRunType + ");' style='margin-left: 3px;' type='button' /> \n" + 
 		"	<input id='Invoice_InterimInvoicePreGenerateSummary_Cancel' value='Cancel' onclick='Vixen.Popup.Close(this);' style='margin-left: 3px;' type='button' /> \n" + 
 		"</div>\n";
