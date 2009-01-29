@@ -2,6 +2,14 @@
 
 class JSON_Handler_Invoice extends JSON_Handler
 {
+	protected	$_JSONDebug	= '';
+		
+	public function __construct()
+	{
+		// Send Log output to a debug string
+		Log::registerLog('JSON_Handler_Debug', Log::LOG_TYPE_STRING, $this->_JSONDebug);
+		Log::setDefaultLog('JSON_Handler_Debug');
+	}
 	
 	public function generateInterimInvoice($intAccount, $intInvoiceRunType)
 	{
@@ -25,7 +33,14 @@ class JSON_Handler_Invoice extends JSON_Handler
 				
 				throw new Exception("Invoice::generateInterimInvoice() is not implemented yet!");
 				
-				// TODO: Generate the Invoice
+				$objAccount	= new Account(array('Id'=>$intAccount), false, true);
+				
+				// Calculate Billing Date
+				$intInvoiceDatetime	= strtotime(date('Y-m-d', strtotime('+1 day')));
+				
+				// Generate the Invoice
+				$objInvoiceRun	= new Invoice_Run();
+				$objInvoiceRun->generateSingle($objAccount->CustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount);
 				
 				// Commit the Transaction
 				DataAccess::getDataAccess()->TransactionCommit();

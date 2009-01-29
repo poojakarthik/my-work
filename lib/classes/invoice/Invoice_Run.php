@@ -269,7 +269,7 @@ class Invoice_Run
 		$this->customer_group_id		= $intCustomerGroup;
 		
 		// Retrieve a list of Accounts to be Invoiced
-		Cli_App_Billing::debug(" * Getting list of Accounts to Invoice...");
+		Log::getLog()->log(" * Getting list of Accounts to Invoice...");
 		$selInvoiceableAccounts	= self::_preparedStatement('selInvoiceableAccounts');
 		if ($selInvoiceableAccounts->Execute($this->toArray()) === FALSE)
 		{
@@ -335,7 +335,7 @@ class Invoice_Run
 		foreach ($arrAccounts as $arrAccount)
 		{
 			$objAccount	= new Account($arrAccount);
-			Cli_App_Billing::debug(" + Generating Invoice for {$objAccount->Id}...");
+			Log::getLog()->log(" + Generating Invoice for {$objAccount->Id}...");
 			$objInvoice	= new Invoice();
 			$objInvoice->generate($objAccount, $this);
 			$this->InvoiceCount++;
@@ -409,7 +409,7 @@ class Invoice_Run
 	 */
 	public static function revokeAll()
 	{
-		//Cli_App_Billing::debug(" * ENTERING RevokeAll...");
+		//Log::getLog()->log(" * ENTERING RevokeAll...");
 
 		// Select all Temporary InvoiceRuns
 		$selTemporaryInvoiceRuns	= self::_preparedStatement('selTemporaryInvoiceRuns');
@@ -421,7 +421,7 @@ class Invoice_Run
 		{
 			// Revoke each Invoice Run
 			$objInvoiceRun = new Invoice_Run($arrInvoiceRun);
-			Cli_App_Billing::debug(" + Revoking Invoice Run with Id {$objInvoiceRun->Id}...");
+			Log::getLog()->log(" + Revoking Invoice Run with Id {$objInvoiceRun->Id}...");
 			$objInvoiceRun->revoke();
 		}
 	}
@@ -444,7 +444,7 @@ class Invoice_Run
 	 */
 	public static function revokeByCustomerGroup($intCustomerGroup)
 	{
-		//Cli_App_Billing::debug(" + ENTERING revokeByCustomerGroup({$intCustomerGroup})...");
+		//Log::getLog()->log(" + ENTERING revokeByCustomerGroup({$intCustomerGroup})...");
 
 		// Select all Temporary InvoiceRuns for this CustomerGroup
 		$selTemporaryInvoiceRunsByCustomerGroup	= self::_preparedStatement('selTemporaryInvoiceRunsByCustomerGroup');
@@ -474,7 +474,7 @@ class Invoice_Run
 	 */
 	public function revoke()
 	{
-		//Cli_App_Billing::debug(" * ENTERING revoke()...");
+		//Log::getLog()->log(" * ENTERING revoke()...");
 
 		// Is this InvoiceRun Temporary?
 		if (!in_array($this->invoice_run_status_id, Array(INVOICE_RUN_STATUS_TEMPORARY, INVOICE_RUN_STATUS_GENERATING)))
@@ -488,7 +488,7 @@ class Invoice_Run
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 
 		// Get list of Invoices to Revoke
-		Cli_App_Billing::debug(" * Getting list of Invoices to Revoke...");
+		Log::getLog()->log(" * Getting list of Invoices to Revoke...");
 		$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
 		if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
 		{
@@ -498,12 +498,12 @@ class Invoice_Run
 		{
 			// Revoke each Invoice
 			$objInvoice = new Invoice($arrInvoice);
-			Cli_App_Billing::debug(" * Revoking Invoice with Id {$objInvoice->Id}...");
+			Log::getLog()->log(" * Revoking Invoice with Id {$objInvoice->Id}...");
 			$objInvoice->revoke();
 		}
 
 		// Remove entry from the InvoiceRun table
-		Cli_App_Billing::debug(" * Removing Invoice Run with Id {$this->Id}");
+		Log::getLog()->log(" * Removing Invoice Run with Id {$this->Id}");
 		if ($qryQuery->Execute("DELETE FROM InvoiceRun WHERE Id = {$this->Id}") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
@@ -524,7 +524,7 @@ class Invoice_Run
 	 */
 	public function commit()
 	{
-		Cli_App_Billing::debug(" * ENTERING commit()...");
+		Log::getLog()->log(" * ENTERING commit()...");
 
 		// Is this InvoiceRun Temporary?
 		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_TEMPORARY)
@@ -538,7 +538,7 @@ class Invoice_Run
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 
 		// Get list of Invoices to Commit
-		Cli_App_Billing::debug(" * Getting list of Invoices to Commit...");
+		Log::getLog()->log(" * Getting list of Invoices to Commit...");
 		$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
 		if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
 		{
@@ -548,12 +548,12 @@ class Invoice_Run
 		{
 			// Commit each Invoice
 			$objInvoice	= new Invoice($arrInvoice);
-			Cli_App_Billing::debug(" * Committing Invoice with Id {$objInvoice->Id}...");
+			Log::getLog()->log(" * Committing Invoice with Id {$objInvoice->Id}...");
 			$objInvoice->commit();
 		}
 
 		// Finalise entry in the InvoiceRun table
-		Cli_App_Billing::debug(" * Finalising Invoice Run with Id {$this->Id}");
+		Log::getLog()->log(" * Finalising Invoice Run with Id {$this->Id}");
 		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_COMMITTED;
 		$this->save();
 	}
@@ -639,10 +639,10 @@ class Invoice_Run
 		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $intInvoiceDatetime);
 
 		// Retrieve the Bill Date of the last Invoice Run...
-		Cli_App_Billing::debug(" * Getting Last Invoice Date...", FALSE);
+		Log::getLog()->log(" * Getting Last Invoice Date...", FALSE);
 		$this->strLastInvoiceDatetime	= Invoice_Run::getLastInvoiceDate($this->customer_group_id, $this->BillingDate);
 		$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
-		Cli_App_Billing::debug($this->strLastInvoiceDatetime);
+		Log::getLog()->log($this->strLastInvoiceDatetime);
 	}
 
 	/**
@@ -887,6 +887,50 @@ class Invoice_Run
 		
 		return true;
 	}
+	
+	/**
+	 * generateSampleList()
+	 * 
+	 * Generates a list of Samples for this Invoice Run, and emails out to admins
+	 * 
+	 * @return	boolean
+	 */
+	public function generateSampleList()
+	{
+		$strInvoiceRunBlurb	= date("F", strtotime("-1 day", strtotime($this->BillingDate)))." {$strCustomerGroup} {$arrInvoiceRun['description']} Samples for ".GetConstantDescription($this->customer_group_id, 'CustomerGroup');
+		
+		$strTextContent	= '';
+		$strHTMLContent	=	"<div style='font-family: Calibri, sans-serif;'>\n";
+		
+		// Generate Email Content
+		$selSampleList	= self::_preparedStatement('selSampleList');
+		if ($selSampleList->Execute($this->toArray()) === false)
+		{
+			throw new Exception($selSampleList->Error());
+		}
+		while ($arrSample = $selSampleList->Fetch())
+		{
+			$strTextContent	.= "{$arrSample['Id']} | {$arrSample['BusinessName']} : {$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}\n";
+			$strHTMLContent	.= "<a href='{$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}'>{$arrSample['Id']} | {$arrSample['BusinessName']}</a><br />\n";
+		}
+		
+		$strHTMLContent	.= "</div>\n";
+		
+		// Email to Admins
+		$intEmailNotificationType	= ($this->invoice_run_type_id === INVOICE_RUN_TYPE_INTERNAL_SAMPLES) ? EMAIL_NOTIFICATION_INVOICE_SAMPLES_INTERNAL : EMAIL_NOTIFICATION_INVOICE_SAMPLES;
+		$objEmailNotification		= new Email_Notification($intEmailNotificationType, $this->customer_group_id);
+		
+		$objEmailNotification->addHeader("X-Priority", "1 (Highest)");
+		$objEmailNotification->addHeader("X-MSMail-Priority", "High");
+		$objEmailNotification->addHeader("Importance", "High");
+		
+		$objEmailNotification->subject	= $strInvoiceRunBlurb;
+		
+		$objEmailNotification->text	= $strTextContent;
+		$objEmailNotification->html	= $strHTMLContent;
+		
+		return $objEmailNotification->send();
+	}
 
 	//------------------------------------------------------------------------//
 	// save
@@ -908,7 +952,7 @@ class Invoice_Run
 		if ($this->Id !== NULL)
 		{
 			// Update
-			Cli_App_Billing::debug(" * Updating Invoice Run with Id {$this->Id}...");
+			Log::getLog()->log(" * Updating Invoice Run with Id {$this->Id}...");
 			$ubiSelf	= self::_preparedStatement("ubiSelf");
 			if ($ubiSelf->Execute($this->toArray()) === FALSE)
 			{
@@ -919,7 +963,7 @@ class Invoice_Run
 		else
 		{
 			// Insert
-			Cli_App_Billing::debug(" * Inserting Invoice Run...");
+			Log::getLog()->log(" * Inserting Invoice Run...");
 			$insSelf	= self::_preparedStatement("insSelf");
 			$mixResult	= $insSelf->Execute($this->toArray());
 			if ($mixResult === FALSE)
@@ -1024,6 +1068,9 @@ class Invoice_Run
 					break;
 				case 'selInvoiceCDRCredits':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("CustomerGroup", "invoice_cdr_credits", "Id = <customer_group_id>");
+					break;
+				case 'selSampleList':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id", "Account.*, CustomerGroup.flex_url", "Account.Sample != 0 AND invoice_run_id = <Id>");
 					break;
 
 

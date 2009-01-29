@@ -50,10 +50,14 @@ class Cli_App_Billing extends Cli
 				define('BILLING_TEST_MODE'	, TRUE);
 			}
 			define('INVOICE_XML_PATH', FILES_BASE_PATH.'invoices/xml/');
-
+			
+			// Set the default Log() to redirect to Cli_App_Billing::debug()
+			Log::registerFunctionLog('Cli_App_Billing', 'debug', 'Cli_App_Billing');
+			Log::setDefaultLog('Cli_App_Billing');
+			
 			// Start a new Transcation
 			$bolTransactionResult	= DataAccess::getDataAccess()->TransactionStart();
-			Cli_App_Billing::debug("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully started!");
+			Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully started!");
 
 			// Perform the operation
 			switch ($this->_arrArgs[self::SWITCH_MODE])
@@ -72,7 +76,7 @@ class Cli_App_Billing extends Cli
 					// Revoke Temporary Invoice Runs
 					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 					$objInvoiceRun->export();
-					Cli_App_Billing::debug($this->_copyXML($objInvoiceRun->Id));
+					Log::getLog()->log($this->_copyXML($objInvoiceRun->Id));
 					break;
 				
 				case 'REPORTS':
@@ -138,7 +142,7 @@ class Cli_App_Billing extends Cli
 						
 						$objInvoiceRun	= new Invoice_Run();
 						$objInvoiceRun->generate($objOldInvoiceRun->customer_group_id, $objOldInvoiceRun->invoice_run_type_id, strtotime($objOldInvoiceRun->BillingDate), $objOldInvoiceRun->invoice_run_schedule_id);
-						Cli_App_Billing::debug($this->_copyXML($objInvoiceRun->Id));
+						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id));
 					}
 					break;
 				
@@ -162,19 +166,19 @@ class Cli_App_Billing extends Cli
 			if (!$this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
 				$bolTransactionResult	= DataAccess::getDataAccess()->TransactionCommit();
-				Cli_App_Billing::debug("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully committed!");
+				Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully committed!");
 			}
 			else
 			{
 				$bolTransactionResult	= DataAccess::getDataAccess()->TransactionRollback();
-				Cli_App_Billing::debug("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully revoked!");
+				Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully revoked!");
 			}
 			return 0;
 		}
 		catch(Exception $exception)
 		{
 			$bolTransactionResult	= DataAccess::getDataAccess()->TransactionRollback();
-			Cli_App_Billing::debug("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully revoked!");
+			Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully revoked!");
 
 			if ($this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
@@ -196,7 +200,7 @@ class Cli_App_Billing extends Cli
 		// Was there a Fake Date provided?
 		$strDatetime	= date("Y-m-d H:i:s", ($this->_arrArgs[self::SWITCH_FAKE_DATE]) ?  $this->_arrArgs[self::SWITCH_FAKE_DATE] : time());
 		$strDate		= date("Y-m-d", strtotime($strDatetime));
-		Cli_App_Billing::debug("Today's date\t: {$strDatetime} ({$strDate})");
+		Log::getLog()->log("Today's date\t: {$strDatetime} ({$strDate})");
 		
 		// Are there any Invoice Runs due?
 		$selPaymentTerms		= new StatementSelect("payment_terms", "customer_group_id, invoice_day, payment_terms", "id = (SELECT MAX(id) FROM payment_terms pt2 WHERE customer_group_id = payment_terms.customer_group_id)", "customer_group_id");
@@ -218,12 +222,12 @@ class Cli_App_Billing extends Cli
 			// Process each set of current Payment Terms
 			while ($arrPaymentTerms = $selPaymentTerms->Fetch())
 			{
-				Cli_App_Billing::debug("\tCustomer Group: ".GetConstantDescription($arrPaymentTerms['customer_group_id'], 'CustomerGroup'));
+				Log::getLog()->log("\tCustomer Group: ".GetConstantDescription($arrPaymentTerms['customer_group_id'], 'CustomerGroup'));
 
 				// Predict the next Billing Date
 				$strInvoiceDate		= Invoice_Run::predictNextInvoiceDate($arrPaymentTerms['customer_group_id'], $strDatetime);
 				$intInvoiceDatetime	= strtotime($strInvoiceDate);
-				Cli_App_Billing::debug("\t\t * Predicted Billing Date\t: {$strInvoiceDate}");
+				Log::getLog()->log("\t\t * Predicted Billing Date\t: {$strInvoiceDate}");
 
 				// Are there any Invoice Runs Scheduled for today?
 				if ($selInvoiceRunSchedule->Execute(Array('InvoiceDate' => date('Y-m-d', $intInvoiceDatetime), 'customer_group_id' => $arrPaymentTerms['customer_group_id'])))
@@ -233,12 +237,15 @@ class Cli_App_Billing extends Cli
 					
 					while ($arrInvoiceRunSchedule = $selInvoiceRunSchedule->Fetch())
 					{
-						Cli_App_Billing::debug("\t\t + Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".GetConstantDescription($arrInvoiceRunSchedule['customer_group_id'], 'CustomerGroup')."\n");
+						Log::getLog()->log("\t\t + Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".GetConstantDescription($arrInvoiceRunSchedule['customer_group_id'], 'CustomerGroup')."\n");
 
 						// Yes, so lets Generate!
 						$objInvoiceRun	= new Invoice_Run();
 						$objInvoiceRun->generate($arrPaymentTerms['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
-						Cli_App_Billing::debug($this->_copyXML($objInvoiceRun->Id));
+						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id));
+						
+						// Generate Invoice Sample Email
+						$objInvoiceRun->generateSampleList();
 					}
 				}
 				elseif ($selInvoiceRunSchedule->Error())
@@ -247,7 +254,7 @@ class Cli_App_Billing extends Cli
 				}
 				else
 				{
-					Cli_App_Billing::debug("\t\t ! No Invoice Runs Scheduled for today");
+					Log::getLog()->log("\t\t ! No Invoice Runs Scheduled for today");
 					continue;
 				}
 			}
