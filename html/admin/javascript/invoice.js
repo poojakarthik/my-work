@@ -133,7 +133,6 @@ var Invoice	= Class.create
 	_generateInterimInvoiceResponse	: function(objResponse)
 	{
 		// Close the Splash and display the Summary
-		Vixen.Popup.Close('Invoice_InterimInvoicePreGenerateSummary');
 		Vixen.Popup.ClosePageLoadingSplash();
 		
 		// Did we succeed?
@@ -200,7 +199,8 @@ var Invoice	= Class.create
 		"	<input id='Invoice_InterimInvoiceSummary_OK' value='    OK    ' onclick='window.location.href=window.location.href' style='margin-left: 3px;' type='button' /> \n" + 
 		"</div>\n";
 		
-		
+		// Destroy the pre-Generate Summary Popup, and replace it with the actual Invoice Summary
+		Vixen.Popup.Close('Invoice_InterimInvoicePreGenerateSummary');
 		Vixen.Popup.Create(
 				'Invoice_InterimInvoiceSummary', 
 				strHTML, 
