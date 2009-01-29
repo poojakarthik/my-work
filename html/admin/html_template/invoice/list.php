@@ -162,22 +162,26 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 						$strEmailLabel	= "<img src='img/template/email.png' title='Email PDF Invoice' onclick='$strEmailHref'></img>";
 					}
 				}
-				elseif($bolUserHasInterimPerm && ($arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_INTERIM || $arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_FINAL))
+			}
+			
+			// Build Approve/Reject Buttons for Samples
+			if ($bolIsSample && $bolUserHasInterimPerm && ($arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_INTERIM || $arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_FINAL))
+			{
+				switch ($arrInvoiceRun['invoice_run_type_id'])
 				{
-					switch ($arrInvoiceRun['invoice_run_type_id'])
-					{
-						case INVOICE_RUN_TYPE_INTERIM:
-							$strCommitType	= 'Interim';
-							break;
-						case INVOICE_RUN_TYPE_FINAL:
-							$strCommitType	= 'Final';
-							break;
-					}
-					
-					// If this is an Temporary Interim/Final Invoice and has sufficient privileges, replace the Email button with a Commit button
-					$strCommitHref	= Href()->CommitInterimInvoice($dboInvoice->Id->Value);
-					$strEmailLabel	= "<img src='img/template/invoice_commit.png' title='Commit {$strCommitType} Invoice' onclick='{$strCommitHref}'></img>";
+					case INVOICE_RUN_TYPE_INTERIM:
+						$strCommitType	= 'Interim';
+						break;
+					case INVOICE_RUN_TYPE_FINAL:
+						$strCommitType	= 'Final';
+						break;
 				}
+				
+				// If this is an Temporary Interim/Final Invoice and has sufficient privileges, replace the Email button with a Commit button
+				$strCommitHref	= Href()->CommitInterimInvoice($dboInvoice->Id->Value);
+				$strRevokeHref	= Href()->RevokeInterimInvoice($dboInvoice->Id->Value);
+				$strEmailLabel	= "<img src='img/template/invoice_commit.png' title='Approve {$strCommitType} Invoice' onclick='{$strCommitHref}'></img>";
+				$strEmailLabel	.= "<img src='img/template/invoice_revoke.png' title='Reject {$strCommitType} Invoice' onclick='{$strRevokeHref}'></img>";
 			}
 
 			$strViewInvoiceLabel	= "&nbsp;";
