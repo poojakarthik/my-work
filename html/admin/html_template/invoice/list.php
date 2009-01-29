@@ -188,7 +188,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				$strEmailLabel	.= "\n";
 				$strEmailLabel	.= ($bolIsSample) ? 'S' : '!S';
 				$strEmailLabel	.= ($bolUserHasInterimPerm) ? 'P' : '!P';
-				$strEmailLabel	.= ($arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_INTERIM || $arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_FINAL) ? 'T' : '!T';
+				$strEmailLabel	.= ($arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_INTERIM || $arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_FINAL) ? 'T' : "!T({$arrInvoiceRun['invoice_run_type_id']})";
 			}
 
 			$strViewInvoiceLabel	= "&nbsp;";
