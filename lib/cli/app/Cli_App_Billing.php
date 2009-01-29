@@ -52,9 +52,7 @@ class Cli_App_Billing extends Cli
 			define('INVOICE_XML_PATH', FILES_BASE_PATH.'invoices/xml/');
 			
 			// Set the default Log() to redirect to Cli_App_Billing::debug()
-			//Log::registerFunctionLog('Cli_App_Billing', 'debug', 'Cli_App_Billing');
-			$strLog	= '';
-			Log::registerLog('Cli_App_Billing', Log::LOG_TYPE_STRING, $strLog);
+			Log::registerFunctionLog('Cli_App_Billing', 'debug', 'Cli_App_Billing');
 			Log::setDefaultLog('Cli_App_Billing');
 			
 			// Start a new Transcation
@@ -190,11 +188,6 @@ class Cli_App_Billing extends Cli
 			{
 				$strMessage	= $exception->getMessage();
 			}
-			
-			// Debug the log
-			$this->log("__LOG DEBUG__");
-			$this->log($strLog);
-			$this->log("__LOG DEBUG__");
 
 			// We can now show the error message
 			$this->showUsage($strMessage);
