@@ -13,6 +13,7 @@ var Invoice	= Class.create
 	{
 		switch (intInvoiceRunType)
 		{
+			var strInvoiceRunType;	
 			case 4:
 				strInvoiceRunType	= 'Interim';
 				break;
@@ -47,6 +48,8 @@ var Invoice	= Class.create
 			return;
 		}
 		
+		var strInvoiceRunType	= this._getInvoiceRunType(objResponse.intInvoiceRunType);
+		
 		// Render Invoice Summry Popup
 		var strCDRCreditNotice	=	"	<div>\n" + 
 									"		<span><span style='font-weight:bold;color:#E00'>*</span> : This Account's Customer Group has been configured to suppress all CDR Credits.</span>\n" + 
@@ -55,7 +58,7 @@ var Invoice	= Class.create
 		var strHTML	= "\n" + 
 		"<div class='GroupedContent'>\n" + 
 		"	<div>\n" + 
-		"		<span>The following charges will be included in the Interim Invoice.  Please note that this does not include any charges or credits (eg. Plan Charges) which are calculated duing Invoicing.</span>\n" + 
+		"		<span>The following charges will be included in the " + strInvoiceRunType + " Invoice.  Please note that this does not include any charges or credits (eg. Plan Charges) which are calculated duing Invoicing.</span>\n" + 
 		"	</div>\n" + 
 		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
 		"		<thead >\n" + 
@@ -102,7 +105,7 @@ var Invoice	= Class.create
 				'medium', 
 				'centre', 
 				'modal', 
-				this._getInvoiceRunType(objResponse.intInvoiceRunType) + ' Pre-Invoice Summary'
+				strInvoiceRunType + ' Pre-Invoice Summary'
 			);
 		
 		return;
@@ -110,7 +113,7 @@ var Invoice	= Class.create
 	
 	generateInterimInvoice	: function(intAccount, intInvoiceRunType)
 	{
-		strInvoiceRunType	= this._getInvoiceRunType(intInvoiceRunType);
+		var strInvoiceRunType	= this._getInvoiceRunType(intInvoiceRunType);
 		if (!strInvoiceRunType)
 		{
 			$Alert("There was an error when trying to generate the Invoice. ("+intInvoiceRunType+" is not a valid Invoice Run Type)");
@@ -123,6 +126,8 @@ var Invoice	= Class.create
 		// Perform AJAX query
 		var fncJsonFunc		= jQuery.json.jsonFunction(this._generateInterimInvoiceResponse.bind(this), null, 'Invoice', 'generateInterimInvoice');
 		fncJsonFunc(intAccount, intInvoiceRunType);
+		
+		return;
 	},
 	
 	_generateInterimInvoiceResponse	: function(objResponse)
@@ -137,7 +142,7 @@ var Invoice	= Class.create
 			return;
 		}
 
-		strInvoiceRunType	= this._getInvoiceRunType(objResponse.intInvoiceRunType);
+		var strInvoiceRunType	= this._getInvoiceRunType(objResponse.intInvoiceRunType);
 		if (!strInvoiceRunType)
 		{
 			$Alert("There was an error when trying to generate the "+strInvoiceRunType+" Invoice. ("+objResponse.intInvoiceRunType+" is not a valid Invoice Run Type)");
