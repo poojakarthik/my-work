@@ -73,7 +73,7 @@ class Log
 			case self::LOG_TYPE_FUNCTION:
 				$strFunction	= (($this->_arrConfig['Class']) ? $this->_arrConfig['Class'].'::' : '') . $this->_arrConfig['Function'];
 				$arrFuncArgs	= func_get_args();
-				call_user_func($strFunction, $arrFuncArgs);
+				call_user_func_array($strFunction, $arrFuncArgs);
 				break;
 			
 			default:
@@ -264,7 +264,7 @@ class Log
 	 */
 	private static function echoMessage($strMessage, $bolAddNewLine=true)
 	{
-		echo $strMessage . ($bolAddNewLine ? "\n" : '');
+		echo ($strMessage . ($bolAddNewLine ? "\n" : ''));
 	}
 }
 ?>
