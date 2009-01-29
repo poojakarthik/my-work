@@ -241,7 +241,7 @@ class Cli_App_Billing extends Cli
 
 						// Yes, so lets Generate!
 						$objInvoiceRun	= new Invoice_Run();
-						$objInvoiceRun->generate($arrPaymentTerms['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
+						$objInvoiceRun->generateCustomerGroup($arrPaymentTerms['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
 						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id));
 						
 						// Generate Invoice Sample Email
