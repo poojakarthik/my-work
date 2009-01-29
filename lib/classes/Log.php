@@ -261,9 +261,9 @@ class Log
 	 *
 	 * @method
 	 */
-	private static function echoMessage($strMessage)
+	private static function echoMessage($strMessage, $bolAddNewLine=true)
 	{
-		echo $strMessage;
+		echo $strMessage . ($bolAddNewLine ? "\n" : '');
 	}
 }
 ?>
