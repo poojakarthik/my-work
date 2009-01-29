@@ -227,6 +227,21 @@ class Invoice_Run
 		}
 		if ($arrAccount = $resAccount->fetch_assoc())
 		{
+			// If there are any Temporary InvoiceRuns with only this Account in them, then Revoke
+			$resSoloInvoiceRuns	= $qryQuery->Execute(	"SELECT InvoiceRun.* " .
+														"FROM Invoice JOIN InvoiceRun ON Invoice.invoice_run_id = InvoiceRun.Id " .
+														"WHERE Invoice.Account = {$intAccount} AND InvoiceRun.invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.") AND InvoiceRun.invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
+			if ($resSoloInvoiceRuns === false)
+			{
+				throw new Exception($qryQuery->Error());
+			}
+			while ($arrSoloInvoiceRun = $resSoloInvoiceRuns->fetch_assoc())
+			{
+				$objSoloInvoiceRun	= new Invoice_Run($arrSoloInvoiceRun);
+				$objSoloInvoiceRun->revoke();
+			}
+			
+			// Generate the Single Invoice
 			$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, array($arrAccount));
 		}
 		else
@@ -276,6 +291,9 @@ class Invoice_Run
 			// Database Error -- throw Exception
 			throw new Exception("DB ERROR: ".$selInvoiceableAccounts->Error());
 		}
+
+		// If there are any Temporary InvoiceRuns for this Customer Group, then Revoke them
+		Invoice_Run::revokeByCustomerGroup($intCustomerGroup);
 		
 		$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $selInvoiceableAccounts->FetchAll(), $intScheduledInvoiceRun);
 	}
@@ -303,9 +321,6 @@ class Invoice_Run
 	{
 		// Init variables
 		$dbaDB					= DataAccess::getDataAccess();
-
-		// If there are any Temporary InvoiceRuns for this Customer Group, then Revoke them
-		Invoice_Run::revokeByCustomerGroup($intCustomerGroup);
 
 		//------------------- START INVOICE RUN GENERATION -------------------//
 		// Create the initial InvoiceRun record
