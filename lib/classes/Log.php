@@ -72,7 +72,8 @@ class Log
 				
 			case self::LOG_TYPE_FUNCTION:
 				$strFunction	= (($this->_arrConfig['Class']) ? $this->_arrConfig['Class'].'::' : '') . $this->_arrConfig['Function'];
-				call_user_func($strFunction, func_get_args());
+				$arrFuncArgs	= func_get_args();
+				call_user_func($strFunction, $arrFuncArgs);
 				break;
 			
 			default:
