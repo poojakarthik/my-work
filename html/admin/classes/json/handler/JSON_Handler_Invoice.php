@@ -31,7 +31,7 @@ class JSON_Handler_Invoice extends JSON_Handler
 				// Start the Transaction
 				DataAccess::getDataAccess()->TransactionStart();
 				
-				throw new Exception("Invoice::generateInterimInvoice() is not implemented yet!");
+				//throw new Exception("Invoice::generateInterimInvoice() is not implemented yet!");
 				
 				$objAccount	= new Account(array('Id'=>$intAccount), false, true);
 				
