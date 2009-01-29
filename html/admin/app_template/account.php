@@ -506,7 +506,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->InvoicedInvoice->Load();
 
 
-		$strInvoiceTables .= " LEFT OUTER JOIN invoice_run_schedule irs ON ir.invoice_run_schedule_id = irs.id LEFT JOIN invoice_run_type ON InvoiceRun.invoice_run_type_id = invoice_run_type.id";
+		$strInvoiceTables .= " LEFT OUTER JOIN invoice_run_schedule irs ON ir.invoice_run_schedule_id = irs.id LEFT JOIN invoice_run_type ON ir.invoice_run_type_id = invoice_run_type.id";
 		$arrInvoiceColumns['Status'] = 'CASE WHEN irs.description IS NULL THEN CASE WHEN invoice_run_type.description LIKE "%Sample%" THEN invoice_run_type.description ELSE CONCAT(invoice_run_type.description, " Sample") END ELSE irs.description END';
 
 		$strInvoiceWhere = "" .
