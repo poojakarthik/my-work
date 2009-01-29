@@ -164,6 +164,11 @@ OR
 		return $objAccount->hadAutomaticInvoiceAction(AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE);
 	}
 	
+	private static function testAccountSentFriendlyReminder(&$objAccount)
+	{
+		return $objAccount->hadAutomaticInvoiceAction(AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER);
+	}
+	
 	// An account is in a 24 month contract if the customer has at least 1 service that has an outstanding 24 month contract
 	private static function testNotIn24MonthContractAndNotYetSentOverdueNotice(&$objAccount)
 	{
