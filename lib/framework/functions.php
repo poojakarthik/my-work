@@ -5411,7 +5411,7 @@ function ChangeAccountAutomaticBarringStatus($intAccount, $intAccountGroup, $int
 	return TRUE;
 }
 
-function ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $strDateTime=NULL, $mxdInvoiceRun=NULL)
+function ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $strDateTime=NULL, $intInvoiceRunId)
 {
 	$error = '';
 
@@ -5426,22 +5426,11 @@ function ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $str
 		$intFrom = "(SELECT last_automatic_invoice_action FROM Account WHERE Id = $intAccount)";
 	}
 
-	// If mxdInvoiceRun is onot an int, we should assume that it is the InvoiceRun string value of an InvoiceRun record
-	if (!is_int($mxdInvoiceRun))
-	{
-		$invoiceRunId = "(SELECT Id FROM InvoiceRun WHERE InvoiceRun = '$mxdInvoiceRun')";
-	}
-	// Else we can assume that an invoice run id has been passed
-	else
-	{
-		$invoiceRunId = $mxdInvoiceRun;
-	}
-
 	// Creating an automatic_invoice_action_history entry.
 	$qryQuery = new Query();
 	$strReason = $qryQuery->EscapeString($strReason);
 	$strSQL = "INSERT INTO automatic_invoice_action_history (account, from_action, to_action, reason, change_datetime, invoice_run_id)
-				VALUES ($intAccount, $intFrom, $intTo, '$strReason', '$strDateTime', $invoiceRunId)";
+				VALUES ($intAccount, $intFrom, $intTo, '$strReason', '$strDateTime', $intInvoiceRunId)";
 //echo "\n\n$strSQL\n\n";
 	if (!$outcome = $qryQuery->Execute($strSQL))
 	{
