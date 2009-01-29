@@ -133,6 +133,7 @@ var Invoice	= Class.create
 	_generateInterimInvoiceResponse	: function(objResponse)
 	{
 		// Close the Splash and display the Summary
+		Vixen.Popup.Close('Invoice_InterimInvoicePreGenerateSummary');
 		Vixen.Popup.ClosePageLoadingSplash();
 		
 		// Did we succeed?
