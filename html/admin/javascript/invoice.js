@@ -11,9 +11,9 @@ var Invoice	= Class.create
 	
 	_getInvoiceRunType		: function(intInvoiceRunType)
 	{
+		var strInvoiceRunType;
 		switch (intInvoiceRunType)
 		{
-			var strInvoiceRunType;	
 			case 4:
 				strInvoiceRunType	= 'Interim';
 				break;
