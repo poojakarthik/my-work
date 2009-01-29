@@ -88,8 +88,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 	
 		// Render each of the account invoices
 		echo "<a name='Invoice_List'>";
-		echo "<h2 class='Invoice'>Invoices</h2>\n";
 		echo "</a>";
+		echo "<h2 class='Invoice'>Invoices</h2>\n";
 		
 		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
 		Table()->InvoiceTable->SetWidth("10%", "12%", "17%", "17%", "17%", "11%", "4%", "4%", "4%", "4%");
