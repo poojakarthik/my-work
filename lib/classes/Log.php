@@ -8,9 +8,10 @@
  */
 class Log
 {
-	const	LOG_TYPE_STRING		= 'string';
-	const	LOG_TYPE_FILE		= 'file';
-	const	LOG_TYPE_FUNCTION	= 'function';
+	const	LOG_TYPE_STRING				= 'string';
+	const	LOG_TYPE_STRING_NEW_LINE	= 'string_new_line';
+	const	LOG_TYPE_FILE				= 'file';
+	const	LOG_TYPE_FUNCTION			= 'function';
 	
 	const	SYSTEM_ALIAS		= '**default';
 	
@@ -64,6 +65,10 @@ class Log
 		{
 			case self::LOG_TYPE_STRING:
 				$this->_arrConfig['Reference']	.= $strMessage;
+				break;
+			
+			case self::LOG_TYPE_STRING_NEW_LINE:
+				$this->_arrConfig['Reference']	.= $strMessage . ((substr($strMessage, -1) === "\n") ? $strMessage."\n" : $strMessage);
 				break;
 				
 			case self::LOG_TYPE_FILE:
