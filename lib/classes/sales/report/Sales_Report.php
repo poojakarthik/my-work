@@ -197,6 +197,12 @@ abstract class Sales_Report
 		}
 	}
 
+	// Retrieves the unformated report data
+	public function getReportData()
+	{
+		return $this->_arrReportData;
+	}
+
 	// Retrieves the report, in the RenderMode specified, assuming the report can be rendered in this mode
 	public function getReport($strRenderMode)
 	{

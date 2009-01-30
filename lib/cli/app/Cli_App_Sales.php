@@ -9,7 +9,10 @@ class Cli_App_Sales extends Cli
 	
 	const	SALES_PORTAL_SYSTEM_DEALER_ID	= 1;
 	
-	const	PROVISIONING_AMNESTY_HOURS		= 72;
+	const	PROVISIONING_AMNESTY_HOURS		= 120; //72;
+	
+	const	PAYMENT_TERMS_DEFAULT = 14;
+	const	BILLING_DATE_DEFAULT = 1;
 
 	function run()
 	{
@@ -587,8 +590,8 @@ class Cli_App_Sales extends Cli
 						}
 						else
 						{
-							$objAccount->BillingDate	= 1;
-							$objAccount->PaymentTerms	= 14;
+							$objAccount->BillingDate	= self::BILLING_DATE_DEFAULT;
+							$objAccount->PaymentTerms	= self::PAYMENT_TERMS_DEFAULT;
 						}
 						
 						if ($arrSPSaleAccount['direct_debit_type_id'])
@@ -1511,15 +1514,27 @@ class Cli_App_Sales extends Cli
 			$qryQuery	= new Query();
 			
 			// Get the list of Services which are Pending Activation, originated from the Sales Portal, and have exceeded the Provisioning Amnesty Period
-			// Note that this list can reference sale items that have since been cancelled, and thus should not be auto provisioned
+			// NOTE that this list can reference sale items that have since been cancelled, and thus should not be auto provisioned
+
+			// NOTE that we are currently defining the start of the Provisioning Amnesty Period as the timestamp of when the sale_item was first submitted.
+			//			At some point it should be swapped back to being the timestamp of when the sale_item was verified
+			// $strPendingServicesWhereClause = "Service.Status = ".SERVICE_PENDING." AND NOW() > ADDDATE(sale.verified_on, INTERVAL ".self::PROVISIONING_AMNESTY_HOURS." HOUR)";
+			$strPendingServicesWhereClause = "Service.Status = ". SERVICE_PENDING;
 			$selPendingServices	= new StatementSelect(	"Service INNER JOIN sale_item ON sale_item.service_id = Service.Id INNER JOIN sale ON sale_item.sale_id = sale.id",
 														"Service.*, sale_id AS flex_sale_id, sale.verified_on, sale_item.id AS flex_sale_item_id",
-														"Service.Status = ".SERVICE_PENDING." AND NOW() > ADDDATE(sale.verified_on, INTERVAL ".self::PROVISIONING_AMNESTY_HOURS." HOUR)");
+														$strPendingServicesWhereClause);
 														
 			// Get list of sale items that currently have a status of dispatched, and are now eligible for auto provisioning (this will not retrieve sale items that have been cancelled)
+			
+			// NOTE that we are currently defining the start of the Provisioning Amnesty Period as the timestamp of when the sale_item was first submitted (sale_item.created_on).
+			//			At some point it should be swapped back to being the timestamp of when the sale_item was verified
+			// $strEligibleSaleItemsFromClause	= "sale_item AS si INNER JOIN sale_item_status_history AS sish ON si.id = sish.sale_item_id";
+			// $strEligibleSaleItemsWhereClause = "si.sale_item_status_id = ". DO_Sales_SaleItemStatus::DISPATCHED ." AND sish.sale_item_status_id = ". DO_Sales_SaleItemStatus::VERIFIED ." AND sish.changed_on < (NOW() - INTERVAL '". self::PROVISIONING_AMNESTY_HOURS ." HOUR')";
+			$strEligibleSaleItemsFromClause		= "sale_item AS si";
+			$strEligibleSaleItemsWhereClause	= "si.sale_item_status_id = ". DO_Sales_SaleItemStatus::DISPATCHED ." AND si.created_on < (NOW() - INTERVAL '". self::PROVISIONING_AMNESTY_HOURS ." HOUR')";
 			$resSaleItems = $dsSalesPortal->queryAll(	"SELECT si.id AS id ".
-														"FROM sale_item AS si INNER JOIN sale_item_status_history AS sish ON si.id = sish.sale_item_id ".
-														"WHERE si.sale_item_status_id = ". DO_Sales_SaleItemStatus::DISPATCHED ." AND sish.sale_item_status_id = ". DO_Sales_SaleItemStatus::VERIFIED ." AND sish.changed_on < (NOW() - INTERVAL '". self::PROVISIONING_AMNESTY_HOURS ." HOUR');",
+														"FROM $strEligibleSaleItemsFromClause ".
+														"WHERE $strEligibleSaleItemsWhereClause ;",
 														array("integer"), MDB2_FETCHMODE_ASSOC);
 			
 			// This will store an array of Sales_Sale objects, which have been updated (have had sale items provisioned)
@@ -1529,7 +1544,7 @@ class Cli_App_Sales extends Cli
 			{
 				throw new Exception($resSaleItems->getMessage()." :: ".$resSaleItems->getUserInfo());
 			}
-			
+
 			$arrSPEligibleSaleItems = array();
 			foreach ($resSaleItems as $arrSaleItem)
 			{
@@ -1540,9 +1555,10 @@ class Cli_App_Sales extends Cli
 			{
 				throw new Exception();
 			}
-
+$i = 0;
 			while ($arrService = $selPendingServices->Fetch())
 			{
+$i++;
 				$objService	= new Service($arrService);
 				
 				$objFlexSaleItem = FlexSaleItem::getForId($arrService['flex_sale_item_id'], TRUE);
@@ -1609,7 +1625,8 @@ class Cli_App_Sales extends Cli
 						$arrServicesNeedingManualProvisioning[] = Array('Service'		=> $objService,
 																		'FlexSaleItem'	=> $objFlexSaleItem
 																		);
-						continue;
+						// Note that php considers a switch block to be a looping structure, so we have to do a continue 2 instead of just a continue, which I think is retarded because that's what the motherfucking break construct is for (unless you had a loop within a switch)
+						continue 2;
 						//throw new Exception("Service of Type '".GetConstantDescription($objService->ServiceType, 'service_type')."' are not automatically provisioned by Flex!");
 						//break;
 				}
@@ -1627,7 +1644,7 @@ class Cli_App_Sales extends Cli
 				}
 				
 			}
-			
+
 			// Finalise Sales/Accounts
 			// Accounts don't need to be finalised as they are set to ACTIVE as soon as the sale is imported
 			foreach ($arrProvisionedSales as $objSale)
