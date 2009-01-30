@@ -159,6 +159,20 @@
 				$intDirectDebit = $ddrDirectDebit->Pull ('Id')->getValue ();
 			}
 			
+			// Establish the payment terms for this customer group
+			require_once("../../lib/classes/ORM.php");
+			require_once("../../lib/classes/payment/Payment_Terms.php");
+			
+			$objPaymentTerms = Payment_Terms::getCurrentForCustomerGroup($arrDetails ['Account']['CustomerGroup']);
+			
+			if ($objPaymentTerms === NULL)
+			{
+				throw new Exception("Payment Terms have not been defined for this Customer Group");
+			}
+			
+			$intPaymentTerms	= $objPaymentTerms->paymentTerms;
+			$intBillingDate		= $objPaymentTerms->invoiceDay;
+			
 			// Add the Account
 			$arrAccount = Array (
 				'BusinessName'			=> $arrDetails ['Account']['BusinessName'],
@@ -178,11 +192,11 @@
 				'DirectDebit'			=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT) ? $intDirectDebit : null, 
 				'AccountGroup'			=> $acgAccountGroup->Pull ('Id')->getValue (),
 				'LastBilled'			=> null,
-				'BillingDate'			=> BILLING_DEFAULT_DATE, 
+				'BillingDate'			=> $intBillingDate, 
 				'BillingFreq'			=> BILLING_DEFAULT_FREQ,
 				'BillingFreqType'		=> BILLING_DEFAULT_FREQ_TYPE,
 				'BillingMethod'			=> $arrDetails ['Account']['BillingMethod'],		// (CONSTANT) post or email.
-				'PaymentTerms'			=> PAYMENT_TERMS_DEFAULT,
+				'PaymentTerms'			=> $intPaymentTerms,
 				'CreatedOn'				=> new MySQLFunction ("NOW()"),
 				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				'DisableDDR'			=> ($arrDetails ['Account']['DisableDDR']) ? $arrDetails ['Account']['DisableDDR'] : 0,
