@@ -157,7 +157,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  									'Subject'	=> "Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for $strBillingPeriod"
  								);
  			
-			$strInvoiceDate	= date('F dS, Y', strtotime($arrInvoice['CreatedOn']));
+			$strInvoiceDate	= date('F jS, Y', strtotime($arrInvoice['CreatedOn']));
  			// Email Content
  			if ($bolIncludePDF)
  			{
