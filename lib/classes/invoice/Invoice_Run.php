@@ -210,15 +210,15 @@ class Invoice_Run
 	public function generateSingle($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount)
 	{
 		$intAccount	= (int)$intAccount;
-		
+
 		// Init variables
 		$dbaDB					= DataAccess::getDataAccess();
-		
+
 		if ($intInvoiceRunType !== INVOICE_RUN_TYPE_INTERIM && $intInvoiceRunType !== INVOICE_RUN_TYPE_FINAL)
 		{
 			throw new Exception("InvoiceRun::generateSingle() only supports Interim and Final Invoice Runs");
 		}
-		
+
 		$qryQuery	= new Query();
 		$resAccount	= $qryQuery->Execute("SELECT * FROM Account WHERE Id = {$intAccount}");
 		if ($resAccount === false)
@@ -240,7 +240,7 @@ class Invoice_Run
 				$objSoloInvoiceRun	= new Invoice_Run($arrSoloInvoiceRun);
 				$objSoloInvoiceRun->revoke();
 			}
-			
+
 			// Generate the Single Invoice
 			$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, array($arrAccount));
 		}
@@ -271,18 +271,18 @@ class Invoice_Run
 	public function generateCustomerGroup($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intScheduledInvoiceRun=null)
 	{
 		$intAccount	= (int)$intAccount;
-		
+
 		// Init variables
 		$dbaDB					= DataAccess::getDataAccess();
-		
+
 		if ($intInvoiceRunType === INVOICE_RUN_TYPE_INTERIM || $intInvoiceRunType === INVOICE_RUN_TYPE_FINAL)
 		{
 			throw new Exception("InvoiceRun::generateCustomerGroup() does not support Interim or Final Invoice Runs");
 		}
-		
+
 		$this->BillingDate				= date("Y-m-d", $intInvoiceDatetime);
 		$this->customer_group_id		= $intCustomerGroup;
-		
+
 		// Retrieve a list of Accounts to be Invoiced
 		Log::getLog()->log(" * Getting list of Accounts to Invoice...");
 		$selInvoiceableAccounts	= self::_preparedStatement('selInvoiceableAccounts');
@@ -294,7 +294,7 @@ class Invoice_Run
 
 		// If there are any Temporary InvoiceRuns for this Customer Group, then Revoke them
 		Invoice_Run::revokeByCustomerGroup($intCustomerGroup);
-		
+
 		$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $selInvoiceableAccounts->FetchAll(), $intScheduledInvoiceRun);
 	}
 
@@ -383,9 +383,9 @@ class Invoice_Run
 		$arrPreviousBalanceTotal	= $selInvoiceBalanceHistory->Fetch();
 
 		$fltTotalOutstanding		= 0;
-		while ($arrBalanceTotal = $selInvoiceTotals->Fetch())
+		while ($arrBalanceTotal = $selInvoiceBalanceHistory->Fetch())
 		{
-			$fltTotalOutstanding	+= $arrCurrentBalanceTotal['TotalBalance'];
+			$fltTotalOutstanding	+= $arrBalanceTotal['TotalBalance'];
 		}
 		$fltTotalOutstanding		+= ($arrPreviousBalanceTotal['TotalBalance']) ? $arrPreviousBalanceTotal['TotalBalance'] : 0;
 		$fltTotalOutstanding		+= $arrCurrentBalanceTotal['TotalBalance'];
@@ -764,11 +764,11 @@ class Invoice_Run
 		static	$dsCDRInvoiced;
 		$qryQuery		= ($qryQuery) ? $qryQuery : new Query();
 		$dsCDRInvoiced	= ($dsCDRInvoiced) ? $dsCDRInvoiced : Data_Source::get('cdr');
-		
+
 		// Determine the SQL Dump FileName
 		$strCDRDumpFileName	= "cdr_invoiced_{$this->Id}.sql";
 		$strCDRDumpFilePath	= FILES_BASE_PATH.$strCDRDumpFileName;
-		
+
 		// Dump the Invoiced CDRs using the mysqldump tool
 		switch ($GLOBALS['**arrDatabase']['flex']['Type'])
 		{
@@ -776,17 +776,17 @@ class Invoice_Run
 			case 'mysql':
 				$strCommand	= "mysqldump -u {$GLOBALS['**arrDatabase']['flex']['User']} --password={$GLOBALS['**arrDatabase']['flex']['Password']} -h {$GLOBALS['**arrDatabase']['flex']['URL']} {$GLOBALS['**arrDatabase']['flex']['Database']} -t CDR --where='invoice_run_id = {$this->Id}' > {$strCDRDumpFilePath}";
 				break;
-			
+
 			default:
 				throw new Exception("Flex Databases of type '{$GLOBALS['**arrDatabase']['cdr']['Type']}' are not supported for archiving");
 		}
-		
+
 		exec($strCommand);
 		if (!@filesize($strCDRDumpFilePath))
 		{
-			throw new Exception("There was an error dumping the Invoiced CDRs (File Not Found/Bad Filesize)"); 
+			throw new Exception("There was an error dumping the Invoiced CDRs (File Not Found/Bad Filesize)");
 		}
-		
+
 		// Import the CDRs into the CDR Invoiced database/table
 		switch ($GLOBALS['**arrDatabase']['cdr']['Type'])
 		{
@@ -797,25 +797,25 @@ class Invoice_Run
 				exec("perl -pi -e 's/`cdr`/`CDRInvoiced`/' {$strCDRDumpFilePath}");
 				if (!@filesize($strCDRDumpFilePath))
 				{
-					throw new Exception("There was an error converting the Invoiced CDRs to MySQL (Table Name Conversion)"); 
+					throw new Exception("There was an error converting the Invoiced CDRs to MySQL (Table Name Conversion)");
 				}
 				exec("grep \"INSERT INTO\" {$strCDRDumpFilePath} > {$strMySQLFileName}");
 				if (!@filesize($strMySQLFileName))
 				{
-					throw new Exception("There was an error converting the Invoiced CDRs to MySQL (Excess Stripping)"); 
+					throw new Exception("There was an error converting the Invoiced CDRs to MySQL (Excess Stripping)");
 				}
-				
+
 				// Import the data
 				$arrOutput	= array();
 				$intReturn	= null;
 				exec("psql -U {$GLOBALS['**arrDatabase']['cdr']['User']} -h {$GLOBALS['**arrDatabase']['cdr']['URL']} {$GLOBALS['**arrDatabase']['cdr']['Database']} < {$strMySQLFileName} ", $arrOutput, $intReturn);
-				
+
 				if ($intReturn)
 				{
 					throw new Exception("There was an error importing '{$strMySQLFileName}':\n\n ".implode("\n", $arrOutput));
 				}
 				break;
-				
+
 			case 'pgsql':
 				$dsSalesPortal->beginTransaction();
 				try
@@ -825,21 +825,21 @@ class Invoice_Run
 					exec("perl -pi -e 's/`cdr`/cdr_invoiced_{$this->Id}/' {$strCDRDumpFilePath}");
 					if (!@filesize($strCDRDumpFilePath))
 					{
-						throw new Exception("There was an error converting the Invoiced CDRs to Postgres (Table Name Conversion)"); 
+						throw new Exception("There was an error converting the Invoiced CDRs to Postgres (Table Name Conversion)");
 					}
 					exec("perl ".FLEX_BASE_PATH."../../bin/mysql2pgsql.pl {$strCDRDumpFilePath} {$strPGSQLFileName}");
 					if (!@filesize($strMySQLFileName))
 					{
-						throw new Exception("There was an error converting the Invoiced CDRs to Postgres (mysql2postgres)"); 
+						throw new Exception("There was an error converting the Invoiced CDRs to Postgres (mysql2postgres)");
 					}
 					exec("grep \"INSERT INTO\" {$strCDRDumpFilePath} > {$strPGSQLFileName}");
 					if (!@filesize($strMySQLFileName))
 					{
-						throw new Exception("There was an error converting the Invoiced CDRs to Postgres (Excess Stripping)"); 
+						throw new Exception("There was an error converting the Invoiced CDRs to Postgres (Excess Stripping)");
 					}
-					
+
 					$strTableName	= "cdr_invoiced_{$this->Id}";
-					
+
 					// Create the cdr_invoiced_* partition table
 					$resCreateTable			= $dsCDRInvoiced->exec("CREATE TABLE {$strTableName} (CHECK (invoice_run_id = {$this->Id})) INHERITS (cdr_invoiced);");
 					if (PEAR::isError($resCreateTable))
@@ -870,17 +870,17 @@ class Invoice_Run
 					{
 						throw new Exception($resInvoiceRunIdIndex->getMessage()." :: ".$resInvoiceRunIdIndex->getUserInfo());
 					}
-					
+
 					// Import the data
 					$arrOutput	= array();
 					$intReturn	= null;
 					exec("psql -U {$GLOBALS['**arrDatabase']['cdr']['User']} -h {$GLOBALS['**arrDatabase']['cdr']['URL']} {$GLOBALS['**arrDatabase']['cdr']['Database']} < {$strPGSQLFileName} ", $arrOutput, $intReturn);
-					
+
 					if ($intReturn)
 					{
 						throw new Exception("There was an error importing '{$strPGSQLFileName}':\n\n ".implode("\n", $arrOutput));
 					}
-					
+
 					$dsSalesPortal->commit();
 				}
 				catch (Exception $eException)
@@ -889,34 +889,34 @@ class Invoice_Run
 					throw $eException;
 				}
 				break;
-			
+
 			default:
 				throw new Exception("CDR Databases of type '{$GLOBALS['**arrDatabase']['cdr']['Type']}' are not supported for archiving");
 		}
-		
+
 		// Delete the CDRs from the CDR table
 		if ($qryQuery->Execute("DELETE FROM CDR WHERE invoice_run_id = {$this->Id}") === false)
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * generateSampleList()
-	 * 
+	 *
 	 * Generates a list of Samples for this Invoice Run, and emails out to admins
-	 * 
+	 *
 	 * @return	boolean
 	 */
 	public function generateSampleList()
 	{
 		$strInvoiceRunBlurb	= date("F", strtotime("-1 day", strtotime($this->BillingDate)))." {$strCustomerGroup} {$arrInvoiceRun['description']} Samples for ".GetConstantDescription($this->customer_group_id, 'CustomerGroup');
-		
+
 		$strTextContent	= '';
 		$strHTMLContent	=	"<div style='font-family: Calibri, sans-serif;'>\n";
-		
+
 		// Generate Email Content
 		$selSampleList	= self::_preparedStatement('selSampleList');
 		if ($selSampleList->Execute($this->toArray()) === false)
@@ -928,22 +928,22 @@ class Invoice_Run
 			$strTextContent	.= "{$arrSample['Id']} | {$arrSample['BusinessName']} : {$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}\n";
 			$strHTMLContent	.= "<a href='{$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}'>{$arrSample['Id']} | {$arrSample['BusinessName']}</a><br />\n";
 		}
-		
+
 		$strHTMLContent	.= "</div>\n";
-		
+
 		// Email to Admins
 		$intEmailNotificationType	= ($this->invoice_run_type_id === INVOICE_RUN_TYPE_INTERNAL_SAMPLES) ? EMAIL_NOTIFICATION_INVOICE_SAMPLES_INTERNAL : EMAIL_NOTIFICATION_INVOICE_SAMPLES;
 		$objEmailNotification		= new Email_Notification($intEmailNotificationType, $this->customer_group_id);
-		
+
 		$objEmailNotification->addHeader("X-Priority", "1 (Highest)");
 		$objEmailNotification->addHeader("X-MSMail-Priority", "High");
 		$objEmailNotification->addHeader("Importance", "High");
-		
+
 		$objEmailNotification->subject	= $strInvoiceRunBlurb;
-		
+
 		$objEmailNotification->text	= $strTextContent;
 		$objEmailNotification->html	= $strHTMLContent;
-		
+
 		return $objEmailNotification->send();
 	}
 
