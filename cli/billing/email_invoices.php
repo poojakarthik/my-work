@@ -157,11 +157,12 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  									'Subject'	=> "Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for $strBillingPeriod"
  								);
  			
+			$email_sent_date = date('F dS, Y');
  			// Email Content
  			if ($bolIncludePDF)
  			{
 				// PDF is included
-				$strContent	=	"Please find attached your Invoice for account number {$arrInvoice['Account']} for {$strBillingPeriod};\n\n" .
+				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated $email_sent_date is now available;\n\n" .
 								"For your convenience you can view your invoice at any time by going to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and accessing your account.\n\n" .
 								"Additional benefits:\n\n" .
 								"- View unbilled charges.\n" .
@@ -170,15 +171,21 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 								"- Sign up to new services.\n" .
 								"- Report faults directly at your own convenience.\n\n" .
 								"If you are yet to setup your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']} or call our Customer Care Team for assistance.\n\n" .
-								"N.B. We don't want to clog your email box up each month, so as of February 2009 we will simply send you a link to download your latest invoice.\n\n" .
 								"Regards,\n\n" .
 								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";
  			}
  			else
  			{
 				// PDF is not included, only reference the Customer Portal
-				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice, for Account Number {$arrInvoice['Account']}, is now ready for viewing via the online customer portal.  To access the portal please go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and enter your username & password.\n\n" .
-								"If you are yet to setup your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “Setup Account” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']}.\n\n" .
+				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated $email_sent_date is now available;\n\n" .
+								"For your convenience you can view your invoice at any time by going to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and accessing your account.\n\n" .
+								"Additional benefits:\n\n" .
+								"- View unbilled charges.\n" .
+								"- Pay your bill online.\n" .
+								"- Make changes to your account or services.\n" .
+								"- Sign up to new services.\n" .
+								"- Report faults directly at your own convenience.\n\n" .
+								"If you are yet to setup your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']} or call our Customer Care Team for assistance.\n\n" .
 								"Regards,\n\n" .
 								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";
  			}
@@ -225,11 +232,13 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 	 			$emlMail =& Mail::factory('mail');
 	 			
 	 			// Uncomment this to Debug
-	 			$strEmail			= 'rich@voiptelsystems.com.au';
+				/*
+				$strEmail			= 'rich@voiptelsystems.com.au';
 	 			$arrDebugEmails		= Array();
-	 			$arrDebugEmails[]	= 'rdavis@yellowbilling.com.au';
-	 			$arrDebugEmails[]	= 'turdminator@hotmail.com';
+	 			$arrDebugEmails[]	= 'msergeant@ybs.net.au';
+	 			$arrDebugEmails[]	= 'msergeant@gmail.com';
 	 			$strEmail	= (count($arrDebugEmails)) ? implode(', ', $arrDebugEmails) : $strEmail;
+				*/
 	 				 			
 	 			// Send the email
 	 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
@@ -239,7 +248,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 	 			}
 	 			
 	 			// Uncomment this to Debug
-	 			die;
+	 			//die;
 				
 				// Update DeliveryMethod
 				$arrWhere					= Array();
