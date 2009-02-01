@@ -231,14 +231,14 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 				$strHeaders = $mimMime->headers($arrHeaders);
 	 			$emlMail =& Mail::factory('mail');
 	 			
-	 			// Uncomment this to Debug
-				/*
-				$strEmail			= 'rich@voiptelsystems.com.au';
+	 			// Uncomment this to Debug				
+				//$strEmail			= 'rdavis@ybs.net.au';
+				
 	 			$arrDebugEmails		= Array();
-	 			$arrDebugEmails[]	= 'msergeant@ybs.net.au';
-	 			$arrDebugEmails[]	= 'msergeant@gmail.com';
+	 			$arrDebugEmails[]	= 'rdavis@ybs.net.au';
+	 			$arrDebugEmails[]	= 'turdminator@hotmail.com';
 	 			$strEmail	= (count($arrDebugEmails)) ? implode(', ', $arrDebugEmails) : $strEmail;
-				*/
+				
 	 				 			
 	 			// Send the email
 	 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
@@ -248,7 +248,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 	 			}
 	 			
 	 			// Uncomment this to Debug
-	 			//die;
+	 			die;
 				
 				// Update DeliveryMethod
 				$arrWhere					= Array();
