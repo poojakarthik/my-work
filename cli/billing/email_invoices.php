@@ -157,12 +157,12 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  									'Subject'	=> "Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for $strBillingPeriod"
  								);
  			
-			$email_sent_date = date('F dS, Y');
+			$strInvoiceDate	= date('F dS, Y', strtotime($arrInvoice['CreatedOn']));
  			// Email Content
  			if ($bolIncludePDF)
  			{
 				// PDF is included
-				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated $email_sent_date is now available;\n\n" .
+				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strInvoiceDate} is now available;\n\n" .
 								"For your convenience you can view your invoice at any time by going to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and accessing your account.\n\n" .
 								"Additional benefits:\n\n" .
 								"- View unbilled charges.\n" .
@@ -177,7 +177,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  			else
  			{
 				// PDF is not included, only reference the Customer Portal
-				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated $email_sent_date is now available;\n\n" .
+				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strInvoiceDate} is now available;\n\n" .
 								"For your convenience you can view your invoice at any time by going to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and accessing your account.\n\n" .
 								"Additional benefits:\n\n" .
 								"- View unbilled charges.\n" .
