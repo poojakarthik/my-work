@@ -2168,11 +2168,11 @@ class AppTemplateConsole extends ApplicationTemplate
 				$strCustContact = $dbConnection->fetchone("SELECT Id,FirstName,LastName,DOB,LastLogin,Email,Account FROM `Contact` WHERE Account = \"" . ereg_replace("[^0-9]", "", $_POST['mixAccountNumber']) . "\" AND FirstName LIKE \"" . trim($_POST['mixFirstName']) . "\" AND LastName LIKE \"" . trim($_POST['mixLastName']) . "\" LIMIT 1");
 
 				// we can check the database for a record. 2
-				$strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"" . ereg_replace("[^0-9]", "", $_POST['mixAccountNumber']) . "\" LIMIT 1");
+				// $strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"" . ereg_replace("[^0-9]", "", $_POST['mixAccountNumber']) . "\" LIMIT 1");
 
 
-				$intCustomerEnteredABN = $_POST['mixABN'];
-				$intABNInDB = $strCustAccount->ABN;
+				// $intCustomerEnteredABN = $_POST['mixABN'];
+				// $intABNInDB = $strCustAccount->ABN;
 
 				/* 
 				 * Format the ABN in the database and the users input so it contains numbers only! no spaces or dashs..
@@ -2182,8 +2182,8 @@ class AppTemplateConsole extends ApplicationTemplate
 				 * 2. So no level of security is lost, whatever they enter must match whatever is in the database. e.g. blank or a number.
 				 *
 				 */
-				$intCustomerEnteredABN = ereg_replace("[^0-9]", "", $intCustomerEnteredABN);
-				$intABNInDB = ereg_replace("[^0-9]", "", $intABNInDB);
+				// $intCustomerEnteredABN = ereg_replace("[^0-9]", "", $intCustomerEnteredABN);
+				// $intABNInDB = ereg_replace("[^0-9]", "", $intABNInDB);
 
 				if($strCustContact->LastLogin != NULL)
 				{
@@ -2199,7 +2199,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					DBO()->Contact->FirstName = $strCustContact->FirstName;
 					DBO()->Contact->LastName = $strCustContact->LastName;
 					DBO()->Contact->DOB = $strCustContact->DOB;
-					DBO()->Account->ABN = $strCustAccount->ABN;
+					// DBO()->Account->ABN = $strCustAccount->ABN;
 					DBO()->Contact->Account = $strCustContact->Account;
 					DBO()->OK = TRUE;
 				}

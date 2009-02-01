@@ -127,14 +127,6 @@
 			</tr>
 			<tr>
 				<td>
-					<label for=\"UserName\" style='font-size: 10pt;'>ABN:</label>
-				</td>
-				<td>
-					<input type=\"text\" name=\"mixABN\" class=\"LoginBox\" maxlength=\"21\" size=\"30\"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
 					<label for=\"UserName\" style='font-size: 10pt;'>Type a new password:</label>
 				</td>
 				<td>
@@ -185,7 +177,6 @@
 			<input type=\"hidden\" name=\"mixBirthDay\" value=\"$_POST[mixBirthDay]\">
 			<input type=\"hidden\" name=\"mixBirthMonth\" value=\"$_POST[mixBirthMonth]\">
 			<input type=\"hidden\" name=\"mixBirthYear\" value=\"$_POST[mixBirthYear]\">
-			<input type=\"hidden\" name=\"mixABN\" value=\"$_POST[mixABN]\">
 			<input type=\"hidden\" name=\"mixNewPass1\" value=\"$_POST[mixNewPass1]\">
 			<input type=\"hidden\" name=\"mixNewPass2\" value=\"$_POST[mixNewPass2]\">
 			The details entered appear valid, please confirm your email address.<br/><br/>";
@@ -231,12 +222,6 @@
 					<label for=\"UserName\" style='font-size: 10pt;'>Birth date:</label>
 				</td>
 				<td>" . DBO()->Contact->DOB->Value . "</td>
-			</tr>
-			<tr>
-				<td>
-					<label for=\"UserName\" style='font-size: 10pt;'>ABN:</label>
-				</td>
-				<td>" . DBO()->Account->ABN->Value . "</td>
 			</tr>
 			<tr>
 				<td>
