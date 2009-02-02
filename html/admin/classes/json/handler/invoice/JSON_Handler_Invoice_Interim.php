@@ -42,6 +42,17 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$objInvoiceRun	= new Invoice_Run();
 				$objInvoiceRun->generateSingle($objAccount->CustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount);
 				
+				// Force the Invoice to be an eBill
+				$qryQuery	= new Query();
+				$resInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND invoice_run_id = {$objInvoiceRun->Id} LIMIT 1");
+				if ($resInvoice === false)
+				{
+					throw new Exception($qryQuery->Error());
+				}
+				$objInvoice	= new Invoice($resInvoice->fetch_assoc());
+				$objInvoice->DeliveryMethod	= DELIVERY_METHOD_EMAIL;
+				$objInvoice->save();
+				
 				$strInvoiceDate		= date("j M y", strtotime($objInvoiceRun->BillingDate));
 				$strBillingPeriod	= "";
 				
@@ -201,6 +212,160 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 							"fltCDRCreditTotal"			=> round($arrCDRTotals['CR']['Total'], 2),
 							"intCDRDebitCount"			=> $arrCDRTotals['DR']['Count'],
 							"fltCDRDebitTotal"			=> round($arrCDRTotals['DR']['Total'], 2),
+						);
+		}
+		catch (Exception $e)
+		{
+			// Send an Email to Devs
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
+			return array(
+							"Success"		=> false,
+							"ErrorMessage"	=> 'ERROR: '.$e->getMessage()
+						);
+		}
+	}
+	
+	public function revokeInterimInvoice($intInvoice)
+	{
+		try
+		{
+			// Check user permissions
+			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS)))
+			{
+				return array(
+								'Success'			=> false,
+								'ErrorMessage'		=> "Insufficient privileges",
+								'HasPermissions'	=> false,
+							);
+			}
+			
+			// Attempt to revoke the interim/final Invoice
+			try
+			{
+				// Start the Transaction
+				DataAccess::getDataAccess()->TransactionStart();
+				
+				$objInvoice		= new Invoice(array('Id'=>$intInvoice), true);
+				$objInvoiceRun	= new Invoice_Run(array('Id'=>$objInvoice->invoice_run_id), true);
+				
+				// Ensure that this Invoice Run is either Interim or Final, and is Temporary
+				$arrAllowableInvoiceRunTypes	= array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL);
+				if ($objInvoiceRun->invoice_run_status_id === INVOICE_RUN_STATUS_TEMPORARY)
+				{
+					if (in_array($objInvoiceRun->invoice_run_type_id, $arrAllowableInvoiceRunTypes))
+					{
+						// Revoke the Invoice Run
+						$objInvoiceRun->revoke();
+					}
+					else
+					{
+						throw new Exception("Invoice Run {$objInvoiceRun->Id} is not an Interim or Final Invoice Run");
+					}
+				}
+				else
+				{
+					throw new Exception("Invoice Run {$objInvoiceRun->Id} is not a Temporary Invoice Run");
+				}
+				
+				// Commit the Transaction
+				DataAccess::getDataAccess()->TransactionCommit();
+			}
+			catch (Exception $eException)
+			{
+				DataAccess::getDataAccess()->TransactionRollback();
+				
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+				{
+					throw $eException;
+				}
+				else
+				{
+					throw new Exception("There was an internal error in Flex.  Please try again.");
+				}
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							"Success"					=> true,
+							"objInvoiceRun"				=> $objInvoiceRun
+						);
+		}
+		catch (Exception $e)
+		{
+			// Send an Email to Devs
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
+			return array(
+							"Success"		=> false,
+							"ErrorMessage"	=> 'ERROR: '.$e->getMessage()
+						);
+		}
+	}
+	
+	public function commitInterimInvoice($intInvoice)
+	{
+		try
+		{
+			// Check user permissions
+			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS)))
+			{
+				return array(
+								'Success'			=> false,
+								'ErrorMessage'		=> "Insufficient privileges",
+								'HasPermissions'	=> false,
+							);
+			}
+			
+			// Attempt to commit the interim/final Invoice
+			try
+			{
+				// Start the Transaction
+				DataAccess::getDataAccess()->TransactionStart();
+				
+				$objInvoice		= new Invoice(array('Id'=>$intInvoice), true);
+				$objInvoiceRun	= new Invoice_Run(array('Id'=>$objInvoice->invoice_run_id), true);
+				
+				// Ensure that this Invoice Run is either Interim or Final, and is Temporary
+				$arrAllowableInvoiceRunTypes	= array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL);
+				if ($objInvoiceRun->invoice_run_status_id === INVOICE_RUN_STATUS_TEMPORARY)
+				{
+					if (in_array($objInvoiceRun->invoice_run_type_id, $arrAllowableInvoiceRunTypes))
+					{
+						// Revoke the Invoice Run
+						$objInvoiceRun->commit();
+					}
+					else
+					{
+						throw new Exception("Invoice Run {$objInvoiceRun->Id} is not an Interim or Final Invoice Run");
+					}
+				}
+				else
+				{
+					throw new Exception("Invoice Run {$objInvoiceRun->Id} is not a Temporary Invoice Run");
+				}
+				
+				// Commit the Transaction
+				DataAccess::getDataAccess()->TransactionCommit();
+			}
+			catch (Exception $eException)
+			{
+				DataAccess::getDataAccess()->TransactionRollback();
+				
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+				{
+					throw $eException;
+				}
+				else
+				{
+					throw new Exception("There was an internal error in Flex.  Please try again.");
+				}
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							"Success"					=> true,
+							"objInvoiceRun"				=> $objInvoiceRun
 						);
 		}
 		catch (Exception $e)
