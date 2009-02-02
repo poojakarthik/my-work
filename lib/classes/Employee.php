@@ -152,7 +152,29 @@ class Employee
 		}
 		
 		// The employee must exist
-		return new Employee($selEmployee->Fetch());
+		return new self($selEmployee->Fetch());
+	}
+	
+	// Returns all employees that have the permissions passed
+	// Multiple permissions can be bitwise ORed together
+	// This will always return an array, however the array can be empty
+	public static function getAllWithPermissions($intPermissions)
+	{
+		$selEmployee = new StatementSelect("Employee", self::getColumns(), "Privileges & $intPermissions = $intPermissions");
+		
+		if ($selEmployee->Execute() === FALSE)
+		{
+			throw new Exception("Failed to retrieve Employees with permissions: $intPermissions - ". $selEmployee->Error());
+		}
+		
+		$arrRecordSet	= $selEmployee->FetchAll();
+		$arrEmployees	= array();
+
+		foreach ($arrRecordSet as $arrRecord)
+		{
+			$arrEmployees[$arrRecord['id']] = new self($arrRecord);
+		}
+		return $arrEmployees;
 	}
 	
 	//------------------------------------------------------------------------//

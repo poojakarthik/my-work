@@ -13,6 +13,8 @@ class Cli_App_Sales extends Cli
 	
 	const	PAYMENT_TERMS_DEFAULT = 14;
 	const	BILLING_DATE_DEFAULT = 1;
+	
+	const	PERMISSION_SALES_ADMIN = 0x1000;
 
 	function run()
 	{
@@ -487,6 +489,7 @@ class Cli_App_Sales extends Cli
 	protected function _pullSales()
 	{
 		$this->log("\t* Pulling Sales from the Sales Portal to Flex...");
+		$arrManualInterventionSales = array();
 		
 		$dsSalesPortal	= Data_Source::get('sales');
 		$dacFlex		= DataAccess::getDataAccess();
@@ -506,9 +509,7 @@ class Cli_App_Sales extends Cli
 			$this->log("\t\t* Getting a list of New Sales from the Sales Portal...");
 			
 			// Get a list of New Sales from the SP
-			$resNewSales	= $dsSalesPortal->query("SELECT sale.* " .
-													"FROM sale JOIN sale_status ON sale.sale_status_id = sale_status.id " .
-													"WHERE sale_status.id = ". DO_Sales_SaleStatus::AWAITING_DISPATCH);
+			$resNewSales = $dsSalesPortal->query("SELECT * FROM sale WHERE sale_status_id = ". DO_Sales_SaleStatus::AWAITING_DISPATCH ." ORDER BY id ASC");
 			if (PEAR::isError($resNewSales))
 			{
 				throw new Exception($resNewSales->getMessage()." :: ".$resNewSales->getUserInfo());
@@ -1276,6 +1277,13 @@ class Cli_App_Sales extends Cli
 				{
 					// There was an issue with the Sale which needs manual intervention to resolve
 					$this->_updateSaleStatus($arrSPSale['id'], 'Manual Intervention', $eException->getMessage());
+					
+					// Append Details to the list of sales that have been set to Manual Intervention
+					$arrManualInterventionSales[] = array(
+															"SaleId"		=> $arrSPSale['id'],
+															"BusinessName"	=> $arrSPSaleAccount['business_name'],
+															"Reason"		=> $eException->getMessage()
+														);
 				}
 			}
 			
@@ -1289,6 +1297,39 @@ class Cli_App_Sales extends Cli
 			$dsSalesPortal->rollback();
 			$dacFlex->TransactionRollback();
 			throw $eException;
+		}
+		
+		// Compile email detailing Sales set to manual intervention and send to the registered parties (found in email_notification_address table)
+		// But only if there were sales that require manual intervention
+		// This batch process is being run every 5 minutes, so we only want to notify people when manual intervention is required
+		if (count($arrManualInterventionSales))
+		{
+			$this->log("Sending Manual Intervention report");
+			
+			$strEmailSubject = "Sales requiring manual intervention for sale import run ". Data_Source_Time::currentTimestamp();
+			
+			$arrReport		= array();
+			$arrReport[]	= "The following sales require manual intervention so that they can be imported into flex.";
+			$arrReport[]	= "";
+			
+			foreach ($arrManualInterventionSales as $arrDetails)
+			{
+				$arrReport[] = "Sale {$arrDetails['SaleId']} - {$arrDetails['BusinessName']}";
+				$arrReport[] = $arrDetails['Reason'];
+				$arrReport[] = "";
+			}
+			
+			$arrReport[]	= "";
+			$arrReport[]	= "Regards";
+			$arrReport[]	= "Flexor";
+			$strEmailBody	= implode("\r\n", $arrReport);
+
+			$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_SALE_IMPORT_REPORT);
+			
+			$objEmailNotification->setSubject($strEmailSubject);
+			$objEmailNotification->setBodyText($strEmailBody);
+			$objEmailNotification->send();
+			$this->log("Sent successfully");
 		}
 	}
 	//------------------------------------------------------------------------//
