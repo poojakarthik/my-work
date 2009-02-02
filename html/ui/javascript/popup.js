@@ -629,8 +629,7 @@ function VixenPopupClass()
 						"	<input type='button' id='"+strPopupId+"_No'		value='No'>" +
 						strCancel +
 						"	<br />" +
-						"</div>" +
-						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
+						"</div>\n";
 		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', 'modal', strTitle, null, bolAllowCancel);
 		
 		// Set the Button onclick Events
