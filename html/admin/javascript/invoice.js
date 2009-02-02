@@ -178,7 +178,7 @@ var Invoice	= Class.create
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>This Invoice</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+(objResponse.objInvoice.Amount + objResponse.objInvoice.Tax)+"</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$"+(objResponse.objInvoice.Total + objResponse.objInvoice.Tax)+"</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr style='font-weight:bold;'>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Total Owing</td>\n" + 
