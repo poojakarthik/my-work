@@ -162,19 +162,9 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  			if ($bolIncludePDF)
  			{
 				// PDF is included
-			//	$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is now available for viewing;\n\n" .
-			//					"To view your invoice go to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and enter your log in information.\n\n" .
-			//					"If you are yet to set up your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']} or call our Customer Care Team for assistance.\n\n" .
-			//					"Additional benefits:\n\n" .
-			//					"- View unbilled charges.\n" .
-			//					"- Pay your bill online.\n" .
-			//					"- Make changes to your account or services.\n" .
-			//					"- Sign up to new services.\n" .
-			//					"- Report faults directly at your own convenience.\n\n" .
-			//					"Regards,\n\n" .
-			//					"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";
 				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.\n\n" .
-								"Please disregard the previous email you received on the 2nd of February, 2009.\n\n" .
+								"You have the option of accessing your invoice online via our customer online website {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} which is designed to make viewing, paying and making changes to your account more cost and time effective. You can view previous invoices and payments, make changes to your account details and even report a fault with your service. We encourage you to log on and register if you haven't already.\n\n" .
+								"In the meantime, we will continue to send your monthly invoice via email as a PDF file.\n\n" .
 								"Regards,\n\n" .
 								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";
  			}
