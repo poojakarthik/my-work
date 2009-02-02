@@ -154,7 +154,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  			// Set email details based on Customer Group
  			$arrHeaders = Array	(
  									'From'		=> $arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail'],
- 									'Subject'	=> "Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for $strBillingPeriod"
+ 									'Subject'	=> "Your {$strBillingPeriod} {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for Account #{$arrInvoice['Account']}"
  								);
  			
 			$strFullInvoiceDate	= date('F jS, Y', strtotime($arrInvoice['CreatedOn']));
