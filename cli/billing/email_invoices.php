@@ -164,7 +164,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 				// PDF is included
 				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strInvoiceDate} is now available for viewing;\n\n" .
 								"To view your invoice go to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and enter your log in information.\n\n" .
-								"If you are yet to setup your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']} or call our Customer Care Team for assistance.\n\n" .
+								"If you are yet to set up your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']} or call our Customer Care Team for assistance.\n\n" .
 								"Additional benefits:\n\n" .
 								"- View unbilled charges.\n" .
 								"- Pay your bill online.\n" .
@@ -179,7 +179,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 				// PDF is not included, only reference the Customer Portal
 				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strInvoiceDate} is now available for viewing;\n\n" .
 								"To view your invoice go to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and enter your log in information.\n\n" .
-								"If you are yet to setup your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']} or call our Customer Care Team for assistance.\n\n" .
+								"If you are yet to set up your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']} or call our Customer Care Team for assistance.\n\n" .
 								"Additional benefits:\n\n" .
 								"- View unbilled charges.\n" .
 								"- Pay your bill online.\n" .
