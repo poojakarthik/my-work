@@ -3209,7 +3209,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Commit Final/Interim Invoice";
 		$this->strLabel = "Commit Final/Interim Invoice";
 		
-		return "JsAutoLoader.loadScript(\"javascript/invoice.js\", function(){Flex.Invoice.commitInterimInvoiceConfim({$intInvoice});});";
+		return "JsAutoLoader.loadScript(\"javascript/invoice.js\", function(){Flex.Invoice.commitInterimInvoiceConfirm({$intInvoice});});";
 	}
 
 	/**
