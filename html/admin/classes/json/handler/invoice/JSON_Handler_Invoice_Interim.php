@@ -31,6 +31,8 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				// Start the Transaction
 				DataAccess::getDataAccess()->TransactionStart();
 				
+				$qryQuery	= new Query();
+				
 				//throw new Exception("Invoice::generateInterimInvoice() is not implemented yet!");
 				
 				$objAccount	= new Account(array('Id'=>$intAccount), false, true);
@@ -43,7 +45,6 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$objInvoiceRun->generateSingle($objAccount->CustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount);
 				
 				// Force the Invoice to be an eBill
-				$qryQuery	= new Query();
 				$resInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND invoice_run_id = {$objInvoiceRun->Id} LIMIT 1");
 				if ($resInvoice === false)
 				{
@@ -55,6 +56,15 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				
 				$strInvoiceDate		= date("j M y", strtotime($objInvoiceRun->BillingDate));
 				$strBillingPeriod	= "";
+				
+				// Get the last Invoice to determine Payments
+				$resLastInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND Id < {$objInvoice->Id}");
+				if ($resLastInvoice === false)
+				{
+					throw new Exception($qryQuery->Error());
+				}
+				$arrLastInvoice	= $resLastInvoice->fetch_assoc();
+				$fltPayments	= ($arrLastInvoice) ? max(0.0, (float)$arrLastInvoice['TotalOwing'] - $objInvoice->AccountBalance) : 0.0;
 				
 				// Commit the Transaction
 				DataAccess::getDataAccess()->TransactionCommit();
@@ -76,9 +86,11 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"					=> true,
-							"objInvoiceRun"				=> $objInvoiceRun,
+							"objInvoiceRun"				=> $objInvoiceRun->toArray(),
+							"objInvoice"				=> $objInvoice->toArray(),
 							"strBillingPeriod"			=> $strBillingPeriod,
-							"strInvoiceDate"			=> $strInvoiceDate
+							"strInvoiceDate"			=> $strInvoiceDate,
+							"fltPayments"				=> $fltPayments
 						);
 		}
 		catch (Exception $e)
