@@ -77,9 +77,8 @@ class Invoice extends ORM
 		
 		// Calculate Billing Period
 		$intAccountLastInvoiceDatetime	= $objAccount->getLastInvoiceDate($objInvoiceRun->BillingDate);
-		$arrLastInvoiceDatetime			= $selLastInvoiceDatetime->Fetch();
 		$this->intInvoiceDatetime		= $objInvoiceRun->intInvoiceDatetime;
-		$this->intLastInvoiceDatetime	= ($arrLastInvoiceDatetime) ? strtotime($arrLastInvoiceDatetime['BillingDate']) : $objInvoiceRun->intLastInvoiceDatetime;
+		$this->intLastInvoiceDatetime	= ($intAccountLastInvoiceDatetime) ? $intAccountLastInvoiceDatetime : $objInvoiceRun->intLastInvoiceDatetime;
 		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $this->intInvoiceDatetime);
 
 		//----------------- INVOICEABLE SERVICE PREPROCESSING ----------------//
