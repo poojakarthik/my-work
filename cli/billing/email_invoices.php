@@ -163,7 +163,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  			{
 				// PDF is included
 				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.\n\n" .
-								"You have the option of accessing your Invoice online via our Customer Online Website {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} which is designed to make viewing, paying and making changes to your Account more cost and time effective. You can view previous Invoices and Payments, make changes to your Account details and even report a fault with your Service. We encourage you to log on and register if you haven't already.  Should you have any difficulties accessing the Customer Portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']}.\n\n" .
+								"As per our email earlier today, you have the option of accessing your Invoice online via our Customer Online Website {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} which is designed to make viewing, paying and making changes to your Account more cost and time effective. You can view previous Invoices and Payments, make changes to your Account details and even report a fault with your Service. We encourage you to log on and register if you haven't already.  Should you have any difficulties accessing the Customer Portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']}.\n\n" .
 								"In the meantime, we will continue to send your monthly Invoice via email as a PDF file.\n\n" .
 								"Regards,\n\n" .
 								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";
