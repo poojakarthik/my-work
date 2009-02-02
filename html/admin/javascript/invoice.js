@@ -338,8 +338,8 @@ var Invoice	= Class.create
 		Vixen.Popup.ShowPageLoadingSplash("Revoking Invoice...", null, null, null, 1);
 		
 		// Perform AJAX query
-		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Invoice._generateInterimInvoiceResponse.bind(this), null, 'Invoice_Interim', 'generateInterimInvoice');
-		fncJsonFunc(intAccount, intInvoiceRunType);
+		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Invoice._generateInterimInvoiceResponse.bind(this), null, 'Invoice_Interim', 'revokeInterimInvoice');
+		fncJsonFunc(intInvoice);
 		
 		return;
 	},
