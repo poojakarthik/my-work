@@ -3193,7 +3193,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Generate Final/Interim Invoice";
 		$this->strLabel = "Generate Final/Interim Invoice";
 		
-		return "JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.getPreGenerateValues({$intAccount});});";
+		return "JsAutoLoader.loadScript(\\'javascript/invoice.js\\', function(){Flex.Invoice.getPreGenerateValues({$intAccount});});";
 	}
 
 	/**
@@ -3209,7 +3209,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Commit Final/Interim Invoice";
 		$this->strLabel = "Commit Final/Interim Invoice";
 		
-		return "JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.commitInterimInvoiceConfim({$intInvoice});});";
+		return "JsAutoLoader.loadScript(\\'javascript/invoice.js\\', function(){Flex.Invoice.commitInterimInvoiceConfim({$intInvoice});});";
 	}
 
 	/**
@@ -3225,7 +3225,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Revoke Final/Interim Invoice";
 		$this->strLabel = "Revoke Final/Interim Invoice";
 		
-		return "JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.revokeInterimInvoiceConfirm({$intInvoice});});";
+		return "JsAutoLoader.loadScript(\\'javascript/invoice.js\\', function(){Flex.Invoice.revokeInterimInvoiceConfirm({$intInvoice});});";
 	}
 
 	//------------------------------------------------------------------------//
