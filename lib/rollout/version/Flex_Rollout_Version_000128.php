@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000128 extends Flex_Rollout_Version
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
-			throw new Exception(__CLASS__ . " Failed to update the customer_status 'D' record, to test for FriendlyReminder instead of OverdueNotcie" . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
+			throw new Exception(__CLASS__ . " Failed to update the customer_status 'D' record, to test for FriendlyReminder instead of OverdueNotice - " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "UPDATE customer_status
 								SET description = 'Overdue Notice has been sent', test = 'AccountSentOverdueNotice'
