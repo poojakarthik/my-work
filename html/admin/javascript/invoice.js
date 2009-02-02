@@ -222,10 +222,6 @@ var Invoice	= Class.create
 	
 	commitInterimInvoice	: function(intInvoice)
 	{
-		// DEBUG
-		alert("WORKS ("+intInvoice+")");
-		return;
-		
 		// Show the Loading Splash
 		Vixen.Popup.ShowPageLoadingSplash("Committing Invoice...", null, null, null, 1);
 		
