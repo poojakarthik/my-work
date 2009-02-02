@@ -157,12 +157,12 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  									'Subject'	=> "Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for $strBillingPeriod"
  								);
  			
-			$strInvoiceDate	= date('F jS, Y', strtotime($arrInvoice['CreatedOn']));
+			$strFullInvoiceDate	= date('F jS, Y', strtotime($arrInvoice['CreatedOn']));
  			// Email Content
  			if ($bolIncludePDF)
  			{
 				// PDF is included
-			//	$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strInvoiceDate} is now available for viewing;\n\n" .
+			//	$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is now available for viewing;\n\n" .
 			//					"To view your invoice go to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and enter your log in information.\n\n" .
 			//					"If you are yet to set up your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']} or call our Customer Care Team for assistance.\n\n" .
 			//					"Additional benefits:\n\n" .
@@ -173,7 +173,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 			//					"- Report faults directly at your own convenience.\n\n" .
 			//					"Regards,\n\n" .
 			//					"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";
-				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strInvoiceDate} is attached.\n\n" .
+				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.\n\n" .
 								"Please disregard the previous email you received on the 2nd of February, 2009.\n\n" .
 								"Regards,\n\n" .
 								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']}.";
@@ -181,7 +181,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  			else
  			{
 				// PDF is not included, only reference the Customer Portal
-				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strInvoiceDate} is now available for viewing;\n\n" .
+				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['ExternalName']} Invoice for account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is now available for viewing;\n\n" .
 								"To view your invoice go to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and enter your log in information.\n\n" .
 								"If you are yet to set up your customer account go to: {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} and click on “First Time User?” and follow the prompts. Should you have any difficulties accessing the customer portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['OutboundEmail']} or call our Customer Care Team for assistance.\n\n" .
 								"Additional benefits:\n\n" .
