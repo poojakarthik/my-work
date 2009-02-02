@@ -227,6 +227,7 @@ var Invoice	= Class.create
 	{
 		// DEBUG
 		alert("WORKS ("+intInvoice+")");
+		return
 		
 		// Show the Loading Splash
 		Vixen.Popup.ShowPageLoadingSplash("Committing "+strInvoiceRunType+" Invoice...", null, null, null, 1);
