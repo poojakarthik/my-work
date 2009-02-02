@@ -90,10 +90,20 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset=0{$strSort}'>First</a>";
 			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intPrevious']}{$strSort}'>Previous</a>";
 		}
+		else
+		{
+			$arrPaginationHTML[]	= "First";
+			$arrPaginationHTML[]	= "Previous";
+		}
 		if ($this->mxdDataToRender['Pagination']['intCurrent'] < $this->mxdDataToRender['Pagination']['intNext'])
 		{
 			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intNext']}{$strSort}'>Next</a>";
 			$arrPaginationHTML[]	= "<a href='../../admin/reflex.php/Contract/ManageBreached/?offset={$this->mxdDataToRender['Pagination']['intLast']}{$strSort}'>Last</a>";
+		}
+		else
+		{
+			$arrPaginationHTML[]	= "Next";
+			$arrPaginationHTML[]	= "Last";
 		}
 		$strPaginationHTML	= implode('&nbsp;|&nbsp;', $arrPaginationHTML);
 		
