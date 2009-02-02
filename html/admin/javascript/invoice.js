@@ -247,80 +247,12 @@ var Invoice	= Class.create
 		// Did we succeed?
 		if (objResponse.Success === false)
 		{
-			$Alert(objResponse.ErrorMessage);
-			return;
-		}
-
-		var strInvoiceRunType	= Flex.Invoice._getInvoiceRunType(objResponse.intInvoiceRunType);
-		if (!strInvoiceRunType)
-		{
-			$Alert("There was an error when trying to Commit the Invoice. ("+objResponse.intInvoiceRunType+" is not a valid Invoice Run Type)");
+			$Alert(objResponse.ErrorMessage, null, null, 'autohide-reload', "Invoice Committed");
 			return;
 		}
 		
-		// Render Invoice Summry Popup
-		var strHTML	= "\n" + 
-		"<div class='GroupedContent'>\n" + 
-		"	<div>\n" + 
-		"		<span>The "+strInvoiceRunType+" Invoice for "+objResponse.intAccountId+" has been successfully generated.</span>\n" + 
-		"	</div>\n" + 
-		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
-		"		<tbody>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Billing Period</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>"+objResponse.strBillingPeriod+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Account No.</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>"+objResponse.intAccountId+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Invoice No.</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>"+objResponse.intInvoiceId+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Invoice Date</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>"+objResponse.strInvoiceDate+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Opening Balance</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+objResponse.fltOpeningBalance+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Payments</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+objResponse.fltPayments+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>This Invoice</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+objResponse.fltInvoiceTotal+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr style='font-weight:bold;'>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Total Owing</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+objResponse.fltTotalOwing+"</td>\n" + 
-		"			</tr>\n" + 
-		"		</tbody>\n" + 
-		"	</table>\n" + 
-		"	<div>\n" + 
-		"		<span>This "+strInvoiceRunType+" Invoice will now appear in the Invoice section on both the <a href='../admin/flex.php/Account/Overview/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Account</a> and <a href='../admin/flex.php/Account/InvoicesAndPayments/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Invoice &amp; Payments</a> screens.</span>\n" + 
-		"	</div>\n" + 
-		"</div>\n" + 
-		"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
-		"	<input id='Invoice_InterimInvoiceSummary_OK' value='    OK    ' onclick='window.location.href=window.location.href' style='margin-left: 3px;' type='button' /> \n" + 
-		"</div>\n";
-		
-		// Destroy the pre-Generate Summary Popup, and replace it with the actual Invoice Summary
-		Vixen.Popup.Close('Invoice_InterimInvoicePreGenerateSummary');
-		Vixen.Popup.Create(
-				'Invoice_InterimInvoiceSummary', 
-				strHTML, 
-				'medium', 
-				'centre', 
-				'modal', 
-				strInvoiceRunType + ' Invoice Summary',
-				null,
-				false
-			);
-		
+		// Show confirmation Alert{
+		$Alert("The Invoice has been successfully Committed.", null, null, 'autohide-reload', "Invoice Committed");
 		return;
 	},
 	
@@ -338,7 +270,7 @@ var Invoice	= Class.create
 		Vixen.Popup.ShowPageLoadingSplash("Revoking Invoice...", null, null, null, 1);
 		
 		// Perform AJAX query
-		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Invoice._generateInterimInvoiceResponse.bind(this), null, 'Invoice_Interim', 'revokeInterimInvoice');
+		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Invoice._revokeInterimInvoiceResponse.bind(this), null, 'Invoice_Interim', 'revokeInterimInvoice');
 		fncJsonFunc(intInvoice);
 		
 		return;
@@ -352,80 +284,12 @@ var Invoice	= Class.create
 		// Did we succeed?
 		if (objResponse.Success === false)
 		{
-			$Alert(objResponse.ErrorMessage);
-			return;
-		}
-
-		var strInvoiceRunType	= Flex.Invoice._getInvoiceRunType(objResponse.intInvoiceRunType);
-		if (!strInvoiceRunType)
-		{
-			$Alert("There was an error when trying to generate the "+strInvoiceRunType+" Invoice. ("+objResponse.intInvoiceRunType+" is not a valid Invoice Run Type)");
+			$Alert(objResponse.ErrorMessage, null, null, 'autohide-reload');
 			return;
 		}
 		
-		// Render Invoice Summry Popup
-		var strHTML	= "\n" + 
-		"<div class='GroupedContent'>\n" + 
-		"	<div>\n" + 
-		"		<span>The "+strInvoiceRunType+" Invoice for "+objResponse.intAccountId+" has been successfully generated.</span>\n" + 
-		"	</div>\n" + 
-		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
-		"		<tbody>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Billing Period</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>"+objResponse.strBillingPeriod+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Account No.</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>"+objResponse.intAccountId+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Invoice No.</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>"+objResponse.intInvoiceId+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Invoice Date</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>"+objResponse.strInvoiceDate+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Opening Balance</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+objResponse.fltOpeningBalance+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Payments</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+objResponse.fltPayments+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>This Invoice</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+objResponse.fltInvoiceTotal+"</td>\n" + 
-		"			</tr>\n" + 
-		"			<tr style='font-weight:bold;'>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Total Owing</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+objResponse.fltTotalOwing+"</td>\n" + 
-		"			</tr>\n" + 
-		"		</tbody>\n" + 
-		"	</table>\n" + 
-		"	<div>\n" + 
-		"		<span>This "+strInvoiceRunType+" Invoice will now appear in the Invoice section on both the <a href='../admin/flex.php/Account/Overview/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Account</a> and <a href='../admin/flex.php/Account/InvoicesAndPayments/?Account.Id="+objResponse.intAccountId+"#Invoice_List'>Invoice &amp; Payments</a> screens.</span>\n" + 
-		"	</div>\n" + 
-		"</div>\n" + 
-		"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
-		"	<input id='Invoice_InterimInvoiceSummary_OK' value='    OK    ' onclick='window.location.href=window.location.href' style='margin-left: 3px;' type='button' /> \n" + 
-		"</div>\n";
-		
-		// Destroy the pre-Generate Summary Popup, and replace it with the actual Invoice Summary
-		Vixen.Popup.Close('Invoice_InterimInvoicePreGenerateSummary');
-		Vixen.Popup.Create(
-				'Invoice_InterimInvoiceSummary', 
-				strHTML, 
-				'medium', 
-				'centre', 
-				'modal', 
-				strInvoiceRunType + ' Invoice Summary',
-				null,
-				false
-			);
-		
+		// Show confirmation Alert{
+		$Alert("The Invoice has been successfully Revoked.", null, null, 'autohide-reload', "Invoice Revoked");
 		return;
 	}
 });

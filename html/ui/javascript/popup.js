@@ -152,7 +152,7 @@ function VixenPopupClass()
 		return TRUE;
 	}
 
-	this.Create = function(strId, strContent, strSize, mixPosition, strModal, strTitle, strLocationOnClose, bolCanClose)
+	this.Create = function(strId, strContent, strSize, mixPosition, strModal, strTitle, strLocationOnClose, bolCanClose, fncAutohideCallback)
 	{
 		// set the location to relocate to, when the popup is closed.
 		// If null, then a page reload is not performed
@@ -275,6 +275,8 @@ function VixenPopupClass()
 			}
 			case "autohide":
 			{
+				
+				
 				// clicking ANYWHERE will close the div
 				//  what about on the div itself?
 				document.addEventListener('mousedown', CloseHandler, TRUE);
@@ -282,7 +284,6 @@ function VixenPopupClass()
 
 				// flag this popup as being autohide
 				elmPopup.setAttribute("autohide", "autohide");
-
 				break;
 			}
 			case "autohide-reload":
@@ -371,6 +372,10 @@ function VixenPopupClass()
 				if (strLocationOnClose)
 				{
 					window.location = strLocationOnClose;
+				}
+				else if (fncAutohideCallback)
+				{
+					fncAutohideCallback();
 				}
 			}
 		}
@@ -533,21 +538,22 @@ function VixenPopupClass()
 	 *
 	 * Replicates the functionality of the standard javascript "alert" function
 	 * 
-	 * @param	string	strMessage			message to display
-	 * @param	string	strSize				optional, size of the popup box ("small|medium|large")
+	 * @param	string		strMessage			message to display
+	 * @param	string		strSize				optional, size of the popup box ("small|medium|large")
 	 *										Defaults to "alertsize"
-	 * @param	string	strPopupId			optional, Id for the popup.  Defaults to "VixenAlertBox"
-	 * @param	string	strWindowType		optional, defaults to 'autohide', but can be modal, or nonmodal
+	 * @param	string		strPopupId			optional, Id for the popup.  Defaults to "VixenAlertBox"
+	 * @param	string		strWindowType		optional, defaults to 'autohide', but can be modal, or nonmodal
+	 * 
 	 * @return	void
 	 *
 	 * @method
 	 */
-	this.Alert = function(strMessage, strSize, strPopupId, strWindowType, strTitle)
+	this.Alert = function(strMessage, strSize, strPopupId, strWindowType, strTitle, fncCallback)
 	{
 		if (strWindowType == null)
 		{
-			var strWindowType = "autohide";
-			var strOkButtonOnClick = "";
+			var strWindowType		= "autohide";
+			var strOkButtonOnClick	= "";
 		}
 		else
 		{
@@ -566,13 +572,15 @@ function VixenPopupClass()
 		{
 			strTitle = VIXEN_APPLICATION_NAME;
 		}
-	
+		
 		// TODO! fix this up so that the paragraph elements are being used properly
 		var strContent ="<p><div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + 
 						"<p></div>\n" +
 						"<div align='center' style='margin-bottom: 10px'><input type='button' id='VixenAlertOkButton' value='OK' "+ strOkButtonOnClick +"><br></div>" +
 						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
-		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', strWindowType, strTitle);
+		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', strWindowType, strTitle, null, false, fncCallback);
+		
+		$ID("VixenAlertOkButton").onclick	= function(){Vixen.Popup.Close(strPopupId); fncCallback()};
 	}
 	
 	/**
