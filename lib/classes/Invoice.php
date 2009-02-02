@@ -76,11 +76,7 @@ class Invoice extends ORM
 		$this->Tax				= 0.0;
 		
 		// Calculate Billing Period
-		$selLastInvoiceDatetime	= self::_preparedStatement('selLastInvoiceDatetime');
-		if ($selLastInvoiceDatetime->Execute() === false)
-		{
-			throw new Exception($selLastInvoiceDatetime->Error());
-		}
+		$intAccountLastInvoiceDatetime	= $objAccount->getLastInvoiceDate($objInvoiceRun->BillingDate);
 		$arrLastInvoiceDatetime			= $selLastInvoiceDatetime->Fetch();
 		$this->intInvoiceDatetime		= $objInvoiceRun->intInvoiceDatetime;
 		$this->intLastInvoiceDatetime	= ($arrLastInvoiceDatetime) ? strtotime($arrLastInvoiceDatetime['BillingDate']) : $objInvoiceRun->intLastInvoiceDatetime;

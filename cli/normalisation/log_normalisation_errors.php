@@ -129,6 +129,18 @@ else
 	fclose($resRecordTypeLog);
 	fclose($resDestinationLog);
 	fclose($resInvalidLog);
+	
+	// Write a Destination Summary for each Carrier
+	foreach ($arrDestinationSummary as $intCarrier=>$arrDestinations)
+	{
+		$strCarrier						= strtolower(str_replace(' ', '', GetConstantDescription($intCarrier, 'Carrier')));
+		$resCarrierDestinationSummary	= fopen($strLogPath."{$strRunDate}_destination_{$strCarrier}.csv", 'w');
+		
+		foreach ($arrDestinations as $mixDestination=>$intCount)
+		{
+			CliEcho("\t\t{$mixDestination}\t: {$intCount}");
+		}
+	}
 }
 exit(0);
 

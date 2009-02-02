@@ -575,6 +575,81 @@ function VixenPopupClass()
 		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', strWindowType, strTitle);
 	}
 	
+	/**
+	 * YesNoCancel()
+	 *
+	 * Replicates a Yes/No/Cancel dialog.  The fncCancelCallback function can be set to null to omit the Cancel option
+	 * 
+	 * @param	string		strMessage			message to display
+	 * @param	function	fncYesCallback		Function to call when the YES option is selected
+	 * @param	function	fncNoCallback		Function to call when the YES option is selected
+	 * @param	function	fncCancelCallback	optional, Function to call when the CANCEL option is selected. null: No Cancel Button
+	 * 											Default: Closes the Popup
+	 * @param	string		strSize				optional, size of the popup box ("small|medium|large")
+	 *											Defaults to "alertsize"
+	 * @param	string		strPopupId			optional, Id for the popup.  Defaults to "YesNoCancel"
+	 * 
+	 * @return	void
+	 *
+	 * @method
+	 */
+	this.YesNoCancel = function(strMessage, fncYesCallback, fncNoCallback, fncCancelCallback, strSize, strPopupId, strTitle)
+	{
+		bolAllowCancel		= !(fncCancelCallback === null);
+		
+		if (strWindowType == null)
+		{
+			var strWindowType = "autohide";
+			var strOkButtonOnClick = "";
+		}
+		else
+		{
+			var strOkButtonOnClick = "onclick='Vixen.Popup.Close(this)'";
+		}
+		// set a default value for strSize
+		if (strSize == null)
+		{
+			strSize = "AlertSize";
+		}
+		if (strPopupId == null)
+		{
+			strPopupId = "YesNoCancel";
+		}
+		if (strTitle == null)
+		{
+			strTitle = VIXEN_APPLICATION_NAME;
+		}
+		
+		var strCancel	= (!bolAllowCancel) ? '' : "<input type='button' id='"+strPopupId+"_Cancel' value='Cancel' onclick=''>";
+		
+		// Render the Popup
+		var strContent ="<div align='center' style='margin: 5px 10px 10px 10px'>" + strMessage + "</div>\n" +
+						"<div align='center' style='margin-bottom: 10px'>" +
+						"	<input type='button' id='"+strPopupId+"_Yes'	value='Yes'>" +
+						"	<input type='button' id='"+strPopupId+"_No'		value='No'>" +
+						strCancel +
+						"	<br />" +
+						"</div>" +
+						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
+		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', 'modal', strTitle, null, bolAllowCancel);
+		
+		// Set the Button onclick Events
+		$ID(strPopupId+"_Yes").onclick	= function(){Vixen.Popup.Close(strPopupId); fncYesCallback()};
+		$ID(strPopupId+"_No").onclick	= function(){Vixen.Popup.Close(strPopupId); fncNoCallback()};
+		
+		if (bolAllowCancel)
+		{
+			if (fncCancelCallback === null)
+			{
+				$ID(strPopupId+"_Cancel").onclick	= function(){Vixen.Popup.Close(strPopupId); fncCancelCallback();};
+			}
+			else
+			{
+				$ID(strPopupId+"_Cancel").onclick	= Vixen.Popup.Close.curry(strPopupId);
+			}
+		}
+	}
+	
 	//------------------------------------------------------------------------//
 	// Confirm
 	//------------------------------------------------------------------------//

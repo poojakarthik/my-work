@@ -183,6 +183,64 @@ class Account
 		return null;
 	}
 
+	/**
+	 * getLastInvoiceDate()
+	 *
+	 * Retrieves (or calculates) the Last Invoice Date for this Account
+	 *
+	 * @param	[string	$strEffectiveDate]				Only include Invoice Runs from before this date (defaults to Today)
+	 *
+	 * @return	string									Date of the last Invoice Run
+	 *
+	 * @method
+	 */
+	public function getLastInvoiceDate($strEffectiveDate=null)
+	{
+		$strEffectiveDate	= strtotime($strEffectiveDate) ? date("Y-m-d", strtotime($strEffectiveDate)) : date("Y-m-d"); 
+		
+		//Debug('CustomerGroup: '.$intCustomerGroup);
+		//Debug('EffectiveDate: '.$strEffectiveDate);
+		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
+
+		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRun');
+		if ($selInvoiceRun->Execute(Array('Account' => $this->Id, 'EffectiveDate' => $strEffectiveDate)))
+		{
+			// We have an old InvoiceRun
+			$arrLastInvoiceRun	= $selInvoiceRun->Fetch();
+			//Debug('Old Invoice Run: '.$arrLastInvoiceRun['BillingDate']);
+			return $arrLastInvoiceRun['BillingDate'] . ' 00:00:00';
+		}
+		elseif ($selInvoiceRun->Error())
+		{
+			throw new Exception("DB ERROR: ".$selInvoiceRun->Error());
+		}
+		elseif ($selPaymentTerms->Execute(Array('customer_group_id' => $this->CustomerGroup)))
+		{
+			$arrPaymentTerms	= $selPaymentTerms->Fetch();
+			//Debug('Invoice Day: '.$arrPaymentTerms['invoice_day']);
+
+			// No InvoiceRuns, so lets calculate when it should have been
+			$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00", strtotime($strEffectiveDate)));
+			//Debug('Day in Effective Date: '.(int)date("d", strtotime($strEffectiveDate)));
+			if ((int)date("d", strtotime($strEffectiveDate)) < $arrPaymentTerms['invoice_day'])
+			{
+				// Billing Date is last Month
+				//Debug('LAST MONTH');
+				$intInvoiceDatetime	= strtotime("-1 month", $intInvoiceDatetime);
+			}
+			//Debug('Predicted Last Bill: '.date("Y-m-d H:i:s", $intInvoiceDatetime));
+			return date("Y-m-d H:i:s", $intInvoiceDatetime);
+		}
+		elseif ($selPaymentTerms->Error())
+		{
+			throw new Exception("DB ERROR: ".$selPaymentTerms->Error());
+		}
+		else
+		{
+			throw new Exception("No Payment Terms specified for Customer Group {$intCustomerGroup}");
+		}
+	}
+
 	private static function getFor($where, $arrWhere, $bolAsArray=FALSE)
 	{
 		$selUsers = new StatementSelect(
@@ -418,6 +476,12 @@ class Account
 				// SELECTS
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Account", "*", "Id = <Id>", NULL, 1);
+					break;
+				case 'selLastInvoiceRun':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON Invoice.invoice_run_id = InvoiceRun.Id", "BillingDate", "Invoice.Account = <Account> AND BillingDate < <EffectiveDate> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED, "BillingDate DESC", 1);
+					break;
+				case 'selPaymentTerms':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("payment_terms", "*", "customer_group_id = <customer_group_id>", "id DESC", 1);
 					break;
 				
 				// INSERTS

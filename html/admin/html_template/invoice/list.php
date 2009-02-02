@@ -180,8 +180,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				// If this is an Temporary Interim/Final Invoice and has sufficient privileges, replace the Email button with a Commit button
 				$strCommitHref	= Href()->CommitInterimInvoice($dboInvoice->Id->Value);
 				$strRevokeHref	= Href()->RevokeInterimInvoice($dboInvoice->Id->Value);
-				$strEmailLabel	= "<img src='img/template/invoice_commit.png' title='Approve {$strCommitType} Invoice' onclick='{$strCommitHref}'></img>";
-				$strEmailLabel	.= "<img src='img/template/invoice_revoke.png' title='Reject {$strCommitType} Invoice' onclick='{$strRevokeHref}'></img>";
+				$strEmailLabel	= "<img src='img/template/invoice_commit.png' title='Approve {$strCommitType} Invoice' onclick='{$strCommitHref}' />";
+				$strEmailLabel	.= "<img src='img/template/invoice_revoke.png' title='Reject {$strCommitType} Invoice' onclick='{$strRevokeHref}' />";
 			}
 			else
 			{

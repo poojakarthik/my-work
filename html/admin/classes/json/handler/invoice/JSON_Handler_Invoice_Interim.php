@@ -1,6 +1,6 @@
 <?php
 
-class JSON_Handler_Invoice extends JSON_Handler
+class JSON_Handler_Invoice_Interim extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
 		
@@ -42,6 +42,9 @@ class JSON_Handler_Invoice extends JSON_Handler
 				$objInvoiceRun	= new Invoice_Run();
 				$objInvoiceRun->generateSingle($objAccount->CustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount);
 				
+				$strInvoiceDate		= date("j M y", strtotime($objInvoiceRun->BillingDate));
+				$strBillingPeriod	= "";
+				
 				// Commit the Transaction
 				DataAccess::getDataAccess()->TransactionCommit();
 			}
@@ -62,8 +65,9 @@ class JSON_Handler_Invoice extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"					=> true,
-							"intInvoiceRunType"			=> $intInvoiceRunType,
-							"intAccountId"				=> $intAccount
+							"objInvoiceRun"				=> $objInvoiceRun,
+							"strBillingPeriod"			=> $strBillingPeriod,
+							"strInvoiceDate"			=> $strInvoiceDate
 						);
 		}
 		catch (Exception $e)

@@ -240,7 +240,10 @@ class Invoice_Run
 				$objSoloInvoiceRun	= new Invoice_Run($arrSoloInvoiceRun);
 				$objSoloInvoiceRun->revoke();
 			}
-
+			
+			// Calculate Billing Period
+			$this->calculateBillingPeriodDates($intAccount);
+			
 			// Generate the Single Invoice
 			$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, array($arrAccount));
 		}
@@ -294,6 +297,9 @@ class Invoice_Run
 
 		// If there are any Temporary InvoiceRuns for this Customer Group, then Revoke them
 		Invoice_Run::revokeByCustomerGroup($intCustomerGroup);
+		
+		// Generate the Billing Period Dates
+		$this->calculateBillingPeriodDates();
 
 		$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $selInvoiceableAccounts->FetchAll(), $intScheduledInvoiceRun);
 	}
@@ -331,9 +337,6 @@ class Invoice_Run
 		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_GENERATING;
 		$this->customer_group_id		= $intCustomerGroup;
 		$this->save();
-
-		// Generate the Billing Period Dates
-		$this->calculateBillingPeriodDates();
 
 		// Get CustomerGroup information
 		$selInvoiceCDRCredits	= self::_preparedStatement('selInvoiceCDRCredits');
@@ -633,21 +636,18 @@ class Invoice_Run
 		}
 	}
 
-	//------------------------------------------------------------------------//
-	// calculateBillingPeriodDates()
-	//------------------------------------------------------------------------//
 	/**
 	 * calculateBillingPeriodDates()
 	 *
 	 * Calculates the Billing Period Dates for this Invoice Run
-	 *
-	 * Calculates the Billing Period Dates for this Invoice Run
+	 * 
+	 * @param	[integer	$intAccount]				
 	 *
 	 * @return	boolean
 	 *
 	 * @method
 	 */
-	public function calculateBillingPeriodDates()
+	public function calculateBillingPeriodDates($intAccount=null)
 	{
 		$intInvoiceDatetime				= strtotime($this->BillingDate);
 		$this->intInvoiceDatetime		= $intInvoiceDatetime;
@@ -655,13 +655,23 @@ class Invoice_Run
 
 		// Retrieve the Bill Date of the last Invoice Run...
 		Log::getLog()->log(" * Getting Last Invoice Date...", FALSE);
-		$this->strLastInvoiceDatetime	= Invoice_Run::getLastInvoiceDate($this->customer_group_id, $this->BillingDate);
+		
+		if ($intAccount > 0)
+		{
+			$objAccount						= new Account(array('Id'=>$intAccount), false, true);
+			$this->strLastInvoiceDatetime	= $objAccount->getLastInvoiceDate($this->BillingDate);
+		}
+		else
+		{
+			$this->strLastInvoiceDatetime	= Invoice_Run::getLastInvoiceDateByCustomerGroup($this->customer_group_id, $this->BillingDate);
+		}
+		
 		$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
 		Log::getLog()->log($this->strLastInvoiceDatetime);
 	}
 
 	/**
-	 * getLastInvoiceDate()
+	 * getLastInvoiceDateByCustomerGroup()
 	 *
 	 * Retrieves (or calculates) the Last Invoice Date for a Customer Group
 	 *
@@ -669,7 +679,7 @@ class Invoice_Run
 	 *
 	 * @method
 	 */
-	public static function getLastInvoiceDate($intCustomerGroup, $strEffectiveDate)
+	public static function getLastInvoiceDateByCustomerGroup($intCustomerGroup, $strEffectiveDate)
 	{
 		//Debug('CustomerGroup: '.$intCustomerGroup);
 		//Debug('EffectiveDate: '.$strEffectiveDate);
