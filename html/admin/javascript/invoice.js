@@ -227,10 +227,10 @@ var Invoice	= Class.create
 	{
 		// DEBUG
 		alert("WORKS ("+intInvoice+")");
-		return
+		return;
 		
 		// Show the Loading Splash
-		Vixen.Popup.ShowPageLoadingSplash("Committing "+strInvoiceRunType+" Invoice...", null, null, null, 1);
+		Vixen.Popup.ShowPageLoadingSplash("Committing Invoice...", null, null, null, 1);
 		
 		// Perform AJAX query
 		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Invoice._commitInterimInvoiceResponse.bind(this), null, 'Invoice_Interim', 'commitInterimInvoice');
@@ -334,15 +334,8 @@ var Invoice	= Class.create
 	
 	revokeInterimInvoice	: function(intInvoice)
 	{
-		var strInvoiceRunType	= Flex.Invoice._getInvoiceRunType(intInvoiceRunType);
-		if (!strInvoiceRunType)
-		{
-			$Alert("There was an error when trying to generate the Invoice. ("+intInvoiceRunType+" is not a valid Invoice Run Type)");
-			return;
-		}
-		
 		// Show the Loading Splash
-		Vixen.Popup.ShowPageLoadingSplash("Generating "+strInvoiceRunType+" Invoice...", null, null, null, 1);
+		Vixen.Popup.ShowPageLoadingSplash("Revoking Invoice...", null, null, null, 1);
 		
 		// Perform AJAX query
 		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Invoice._generateInterimInvoiceResponse.bind(this), null, 'Invoice_Interim', 'generateInterimInvoice');
