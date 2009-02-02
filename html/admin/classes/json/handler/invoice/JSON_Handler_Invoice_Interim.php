@@ -58,7 +58,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$strBillingPeriod	= "";
 				
 				// Get the last Invoice to determine Payments
-				$resLastInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND Id < {$objInvoice->Id}");
+				$resLastInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND Id < {$objInvoice->Id} ORDER BY Id DESC LIMIT 1");
 				if ($resLastInvoice === false)
 				{
 					throw new Exception($qryQuery->Error());
