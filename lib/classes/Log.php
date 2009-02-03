@@ -68,7 +68,7 @@ class Log
 				break;
 			
 			case self::LOG_TYPE_STRING_NEW_LINE:
-				$this->_arrConfig['Reference']	.= $strMessage . ((substr($strMessage, -1) === "\n") ? $strMessage."\n" : $strMessage);
+				$this->_arrConfig['Reference']	.= $strMessage . ((substr($strMessage, -1) === "\n") ? $strMessage : $strMessage."\n");
 				break;
 				
 			case self::LOG_TYPE_FILE:
