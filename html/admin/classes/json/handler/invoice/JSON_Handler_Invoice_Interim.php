@@ -55,7 +55,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$objInvoice->save();
 				
 				$strInvoiceDate		= date("j M y", strtotime($objInvoiceRun->BillingDate));
-				$strBillingPeriod	= "";
+				$strBillingPeriod	= date("j M y", strtotime($objInvoice->billing_period_start_datetime)) . " - " . date("j M y", strtotime($objInvoice->billing_period_end_datetime));
 				
 				// Get the last Invoice to determine Payments
 				$resLastInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND Id < {$objInvoice->Id} ORDER BY Id DESC LIMIT 1");
