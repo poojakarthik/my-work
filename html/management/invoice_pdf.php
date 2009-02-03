@@ -42,6 +42,9 @@
 	}
 	catch (Exception $e)
 	{
+		echo $e->getMessage();
+		exit;
+		
 		// Dispaly Error
 		$Style->Output (
 			'xsl/content/invoice/pdf_notfound.xsl',
