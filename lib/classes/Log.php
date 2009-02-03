@@ -9,7 +9,6 @@
 class Log
 {
 	const	LOG_TYPE_STRING				= 'string';
-	const	LOG_TYPE_STRING_NEW_LINE	= 'string_new_line';
 	const	LOG_TYPE_FILE				= 'file';
 	const	LOG_TYPE_FUNCTION			= 'function';
 	
@@ -50,25 +49,29 @@ class Log
 	/**
 	 * log()
 	 *
-	 * Echo wrapper
+	 * Writes a message to the Log.  First parameter must be the message to output.  Function-based logs can
+	 * accept any number of succeeding parameters, where other types can accept a second parameter which
+	 * specifies whether a \n should be automatically appended
 	 *
-	 * @param	string	$strMessage				Message to output
+	 * @param	string		$strMessage				Message to output
+	 * @param	[boolean	$bolAddNewLine]			
 	 *
 	 * @return	void
 	 *
 	 * @method
 	 */
-	public function log($strMessage)
+	public function log($strMessage, $bolAddNewLine=true)
 	{
+		if ($this->_strLogType !== self::LOG_TYPE_FUNCTION && $bolAddNewLine)
+		{
+			$strMessage	.= "\n";
+		}
+		
 		// Output the Message
 		switch ($this->_strLogType)
 		{
 			case self::LOG_TYPE_STRING:
 				$this->_arrConfig['Reference']	.= $strMessage;
-				break;
-			
-			case self::LOG_TYPE_STRING_NEW_LINE:
-				$this->_arrConfig['Reference']	.= ((substr($strMessage, -1) === "\n") ? $strMessage : $strMessage."\n");
 				break;
 				
 			case self::LOG_TYPE_FILE:
