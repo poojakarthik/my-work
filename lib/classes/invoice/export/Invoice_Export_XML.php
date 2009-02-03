@@ -187,10 +187,9 @@
 		//--------------------------------------------------------------------//
 		// Statement
 		//--------------------------------------------------------------------//
-		// HACKHACKHACK: These dates work off the "Bill every month on the 1st" premise
 		$intBillingDate			= strtotime($arrInvoice['CreatedOn']);
-		$strBillingPeriodStart	= date("j M y", strtotime("-1 month", $intBillingDate));
-		$strBillingPeriodEnd	= date("j M y", strtotime("-1 day", $intBillingDate));
+		$strBillingPeriodStart	= date("j M y", strtotime($arrInvoice['billing_period_start_datetime']));
+		$strBillingPeriodEnd	= date("j M y", strtotime($arrInvoice['billing_period_end_datetime']));
 		
 		// Add to XML schema
 		$arrLastInvoice	= Invoice_Export::getOldInvoice($arrInvoice, 1);

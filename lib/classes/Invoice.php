@@ -77,8 +77,12 @@ class Invoice extends ORM
 		
 		// Calculate Billing Period
 		$this->intInvoiceDatetime		= $objInvoiceRun->intInvoiceDatetime;
-		$this->intLastInvoiceDatetime	= $objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate);
+		$this->strLastInvoiceDatetime	= $objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate);
+		$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
 		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $this->intInvoiceDatetime);
+		
+		$this->billing_period_start_datetime	= $this->strLastInvoiceDatetime;
+		$this->billing_period_end_datetime		= $objInvoiceRun->billing_period_end_datetime;
 
 		//----------------- INVOICEABLE SERVICE PREPROCESSING ----------------//
 		// Retrieve a list of Invoiceable FNNs for this Account
