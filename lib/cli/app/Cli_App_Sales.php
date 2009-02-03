@@ -9,7 +9,7 @@ class Cli_App_Sales extends Cli
 	
 	const	SALES_PORTAL_SYSTEM_DEALER_ID	= 1;
 	
-	const	PROVISIONING_AMNESTY_HOURS		= 120; //72;
+	const	PROVISIONING_AMNESTY_HOURS		= 72;
 	
 	const	PAYMENT_TERMS_DEFAULT = 14;
 	const	BILLING_DATE_DEFAULT = 1;
@@ -1538,12 +1538,22 @@ class Cli_App_Sales extends Cli
 		
 		$strCurrentTimestamp = Data_Source_Time::currentTimestamp($dsSalesPortal);
 		
+		// This will store all Service objects that are eligible for provisioning, and their related FlexSaleItem records
+		$arrServices = array();
+		
+		$arrAccounts = array();
+		
+		// This will store the ids of all services that were successfully provisioned
+		$arrServicesSuccessfullyProvisioned = array();
+		
 		// The provisioning process may find services that are flagged as pending activation, but their associated SaleItem has been cancelled.
 		// These need to be manually cancelled, or at the very least, brought to the attention of administrative staff
+		// This will store the ids of the services that need to be cancelled in flex
 		$arrServicesToCancel = array();
 		
 		// All Services, other than Landlines, currently need manual provisioning
 		// These need to be brought to the attention of administrative staff
+		// This will store the ids of the services that need to be manually provisioned in flex
 		$arrServicesNeedingManualProvisioning = array();
 		
 		// Start a transaction for both Databases
@@ -1563,8 +1573,8 @@ class Cli_App_Sales extends Cli
 			$strPendingServicesWhereClause = "Service.Status = ". SERVICE_PENDING;
 			$selPendingServices	= new StatementSelect(	"Service INNER JOIN sale_item ON sale_item.service_id = Service.Id INNER JOIN sale ON sale_item.sale_id = sale.id",
 														"Service.*, sale_id AS flex_sale_id, sale.verified_on, sale_item.id AS flex_sale_item_id",
-														$strPendingServicesWhereClause);
-														
+														$strPendingServicesWhereClause, "Service.Account ASC, Service.ServiceType ASC, Service.FNN ASC");
+
 			// Get list of sale items that currently have a status of dispatched, and are now eligible for auto provisioning (this will not retrieve sale items that have been cancelled)
 			
 			// NOTE that we are currently defining the start of the Provisioning Amnesty Period as the timestamp of when the sale_item was first submitted (sale_item.created_on).
@@ -1596,21 +1606,26 @@ class Cli_App_Sales extends Cli
 			{
 				throw new Exception();
 			}
-$i = 0;
+
 			while ($arrService = $selPendingServices->Fetch())
 			{
-$i++;
-				$objService	= new Service($arrService);
-				
-				$objFlexSaleItem = FlexSaleItem::getForId($arrService['flex_sale_item_id'], TRUE);
+				$objService			= new Service($arrService);
+				$objFlexSaleItem	= FlexSaleItem::getForId($arrService['flex_sale_item_id'], TRUE);
 
+				$arrServices[$objService->id]	= array("Service"		=> $objService,
+														"FlexSaleItem"	=> $objFlexSaleItem
+														);
+				// Store a reference to the account
+				if (!array_key_exists($objService->account, $arrAccounts))
+				{
+					$arrAccounts[$objService->account] = Account::getForId($objService->account);
+				}
+				
 				// Check that the service's sale item is currently flagged as being dispatched (as opposed to cancelled or completed, although the only alternative should be cancelled)
 				if (!array_key_exists($objFlexSaleItem->getExternalReferenceValue(), $arrSPEligibleSaleItems))
 				{
 					// The Sale Item associated with this pending service must have been cancelled, but has not yet been 'Closed' in flex
-					$arrServicesToCancel[] = Array(	'Service'		=> $objService,
-													'FlexSaleItem'	=> $objFlexSaleItem
-												);
+					$arrServicesToCancel[] = $objService->id;
 					
 					// Move on to the next service
 					continue;
@@ -1663,13 +1678,10 @@ $i++;
 						// This case will only occur if a Service is of a type that must be manually provisioned, and the service has not yet been set to ACTIVE in Flex
 						
 						// These services will require manual Provisioning
-						$arrServicesNeedingManualProvisioning[] = Array('Service'		=> $objService,
-																		'FlexSaleItem'	=> $objFlexSaleItem
-																		);
+						$arrServicesNeedingManualProvisioning[] = $objService->id;
+						
 						// Note that php considers a switch block to be a looping structure, so we have to do a continue 2 instead of just a continue, which I think is retarded because that's what the motherfucking break construct is for (unless you had a loop within a switch)
 						continue 2;
-						//throw new Exception("Service of Type '".GetConstantDescription($objService->ServiceType, 'service_type')."' are not automatically provisioned by Flex!");
-						//break;
 				}
 				
 				// Set this Service to Active in Flex
@@ -1678,6 +1690,8 @@ $i++;
 				
 				// Set the Sale Item to Completed in the Sales Portal
 				$this->_updateSaleItemStatus($objFlexSaleItem->getExternalReferenceValue(), DO_Sales_SaleItemStatus::COMPLETED);
+				
+				$arrServicesSuccessfullyProvisioned[] = $objService->id;
 				
 				if (!array_key_exists($objSale->id, $arrProvisionedSales))
 				{
@@ -1693,20 +1707,104 @@ $i++;
 				$objSale->setCompletedOrCancelledBasedOnSaleItems();
 			}
 			
-			//TODO! I should email the list of Services that should be cancelled, and the list of services that still need to be manually provisioned to the interested parties
-			
-
 			// All seems to have worked fine -- Commit the Transactions
 			$dsSalesPortal->commit();
 			$dacFlex->TransactionCommit();
 		}
 		catch (Exception $eException)
 		{
-			// Rollback the Transaction & passthru the Exception
+			// Rollback the Transaction
 			$dsSalesPortal->rollback();
 			$dacFlex->TransactionRollback();
+			
+			// Send Email Notification
+			$strEmailSubject = "[FAILURE] Automatic Provisioning of Sales - $strCurrentTimestamp";
+			$arrReport = array();
+			$arrReport[] = "Automatic provisioning of services originating from sales failed unexpectedly due to...";
+			$arrReport[] = "";
+			$arrReport[] = $eException->getMessage();
+			$arrReport[] = "";
+			$arrReport[] = "Regards";
+			$arrReport[] = "Flexor";
+			
+			$strEmailBody = implode("\r\n", $arrReport);
+			
+			$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_SALE_AUTOMATIC_PROVISIONING_REPORT);
+			$objEmailNotification->setSubject($strEmailSubject);
+			$objEmailNotification->setBodyText($strEmailBody);
+			$objEmailNotification->send();
 			throw $eException;
 		}
+		
+		// Email the EMAIL_NOTIFICATION_SALE_AUTOMATIC_PROVISIONING_REPORT to the registered recipients
+		$arrReport			= array();
+		$strEmailSubject	= "[SUCCESS] Automatic Provisioning of Sales - $strCurrentTimestamp";
+		
+		$intTotalAccounts						= count($arrAccounts);
+		$intTotalServices						= count($arrServices);
+		$intTotalProvisionedServices			= count($arrServicesSuccessfullyProvisioned);
+		$intTotalServicesToCancel				= count($arrServicesToCancel);
+		$intTotalServicesToManuallyProvision	= count($arrServicesNeedingManualProvisioning);
+		
+		$arrReport[]	= "Summary of Automatic Provisioning of Sales - $strCurrentTimestamp";
+		$arrReport[]	= "";
+		
+		$arrReport[]	= "Accounts affected: $intTotalAccounts";
+		$arrReport[]	= "Services affected: $intTotalServices";
+		$arrReport[]	= "Services successfully activated and provisioned: $intTotalProvisionedServices";
+		$arrReport[]	= "Services requiring manual provisioning: $intTotalServicesToManuallyProvision";
+		$arrReport[]	= "Services to cancel: $intTotalServicesToCancel";
+		$arrReport[]	= "";
+		
+		$arrReport[]	= "The following services are pending activation, but have had their related sale-items cancelled.  These services should be set to disconnected:";
+		$intAccountId	= NULL;
+		foreach ($arrServicesToCancel as $intServiceId)
+		{
+			if ($intAccountId != $arrServices[$intServiceId]['Service']->account)
+			{
+				$intAccountId	= $arrServices[$intServiceId]['Service']->account;
+				$arrReport[]	= "";
+				$arrReport[]	= "Account: {$arrAccounts[$intAccountId]->id} - ". $arrAccounts[$intAccountId]->getName();
+			}
+			$arrReport[] = "\t". $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
+		}
+		$arrReport[]	= "";
+		
+		$arrReport[]	= "Breakdown of services requiring manual provisioning:";
+		$intAccountId	= NULL;
+		foreach ($arrServicesNeedingManualProvisioning as $intServiceId)
+		{
+			if ($intAccountId != $arrServices[$intServiceId]['Service']->account)
+			{
+				$intAccountId	= $arrServices[$intServiceId]['Service']->account;
+				$arrReport[]	= "";
+				$arrReport[]	= "Account: {$arrAccounts[$intAccountId]->id} - ". $arrAccounts[$intAccountId]->getName();
+			}
+			$arrReport[] = "\t". $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
+		}
+		$arrReport[]	= "";
+		
+		$arrReport[]	= "Breakdown of services that were successfully activated and provisioned:";
+		$intAccountId	= NULL;
+		foreach ($arrServicesSuccessfullyProvisioned as $intServiceId)
+		{
+			if ($intAccountId != $arrServices[$intServiceId]['Service']->account)
+			{
+				$intAccountId	= $arrServices[$intServiceId]['Service']->account;
+				$arrReport[]	= "";
+				$arrReport[]	= "Account: {$arrAccounts[$intAccountId]->id} - ". $arrAccounts[$intAccountId]->getName();
+			}
+			$arrReport[] = "\t". $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
+		}
+		$arrReport[]	= "";
+		$arrReport[]	= "Regards";
+		$arrReport[]	= "Flexor";
+		
+		$strEmailBody	= implode("\r\n", $arrReport);
+		$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_SALE_AUTOMATIC_PROVISIONING_REPORT);
+		$objEmailNotification->setSubject($strEmailSubject);
+		$objEmailNotification->setBodyText($strEmailBody);
+		$objEmailNotification->send();
 	}
 
 	function getCommandLineArguments()
