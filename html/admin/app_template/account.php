@@ -493,7 +493,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		$strInvoiceTables = "Invoice AS I INNER JOIN InvoiceRun AS ir ON I.invoice_run_id = ir.Id";
 		
-		$strInvoiceWhere = "I.Account = $intAccountId AND I.Status != ". INVOICE_TEMP ." AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ." AND ir.invoice_run_type_id = ". INVOICE_RUN_TYPE_LIVE;
+		$strInvoiceWhere = "I.Account = $intAccountId AND I.Status != ". INVOICE_TEMP ." AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ." AND ir.invoice_run_type_id IN (". INVOICE_RUN_TYPE_LIVE.", ".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.")";
 
 		DBL()->InvoicedInvoice->SetTable($strInvoiceTables);
 		DBL()->InvoicedInvoice->SetColumns($arrInvoiceColumns);
