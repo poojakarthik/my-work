@@ -146,6 +146,13 @@ var Invoice	= Class.create
 		
 		var fltInvoiceTotal		= (new Number(objResponse.objInvoice.Total)) + (new Number(objResponse.objInvoice.Tax));
 		
+		var strDebugButton			= '';
+		if (objResponse.strDebug)
+		{
+			var strDebugContent	= "<div style='overflow: auto;'>"+objResponse.strDebug+"</div>";
+			strDebugButton		= "	<input id='Invoice_InterimInvoiceSummary_Debug' value='View Debugging Output' style='margin-left: 3px;' type='button' /> \n";
+		}
+		
 		// Render Invoice Summry Popup
 		var strHTML	= "\n" + 
 		"<div class='GroupedContent'>\n" + 
@@ -193,8 +200,14 @@ var Invoice	= Class.create
 		"	</div>\n" + 
 		"</div>\n" + 
 		"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
-		"	<input id='Invoice_InterimInvoiceSummary_OK' value='    OK    ' onclick='window.location.href=window.location.href' style='margin-left: 3px;' type='button' /> \n" + 
+		"	<input id='Invoice_InterimInvoiceSummary_OK' value='    OK    ' onclick='window.location.href=window.location.href' style='margin-left: 3px;' type='button' /> \n" +
+		strDebugButton + 
 		"</div>\n";
+		
+		if (objResponse.strDebug)
+		{
+			$ID("Invoice_InterimInvoiceSummary_Debug").onclick	= $Alert.curry(strDebugContent, 'large', null, 'modal');
+		}
 		
 		// Destroy the pre-Generate Summary Popup, and replace it with the actual Invoice Summary
 		Vixen.Popup.Close('Invoice_InterimInvoicePreGenerateSummary');

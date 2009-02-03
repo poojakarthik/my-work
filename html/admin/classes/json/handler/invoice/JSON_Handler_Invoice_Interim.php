@@ -90,7 +90,8 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 							"objInvoice"				=> $objInvoice->toArray(),
 							"strBillingPeriod"			=> $strBillingPeriod,
 							"strInvoiceDate"			=> $strInvoiceDate,
-							"fltPayments"				=> $fltPayments
+							"fltPayments"				=> $fltPayments,
+							"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 		catch (Exception $e)
@@ -100,7 +101,8 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			
 			return array(
 							"Success"		=> false,
-							"ErrorMessage"	=> 'ERROR: '.$e->getMessage()
+							"ErrorMessage"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 	}
@@ -211,6 +213,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"					=> true,
+							"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
 							"intInvoiceRunType"			=> $intInvoiceRunType,
 							"intAccountId"				=> $intAccount,
 							"bolInvoiceCDRCredits"		=> (bool)$arrInvoiceCDRCredits['invoice_cdr_credits'],
@@ -233,7 +236,8 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			
 			return array(
 							"Success"		=> false,
-							"ErrorMessage"	=> 'ERROR: '.$e->getMessage()
+							"ErrorMessage"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 	}
@@ -300,7 +304,8 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"					=> true,
-							"objInvoiceRun"				=> $objInvoiceRun
+							"objInvoiceRun"				=> $objInvoiceRun,
+							"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 		catch (Exception $e)
@@ -310,7 +315,8 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			
 			return array(
 							"Success"		=> false,
-							"ErrorMessage"	=> 'ERROR: '.$e->getMessage()
+							"ErrorMessage"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 	}
@@ -377,7 +383,8 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"					=> true,
-							"objInvoiceRun"				=> $objInvoiceRun
+							"objInvoiceRun"				=> $objInvoiceRun,
+							"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 		catch (Exception $e)
@@ -387,7 +394,8 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			
 			return array(
 							"Success"		=> false,
-							"ErrorMessage"	=> 'ERROR: '.$e->getMessage()
+							"ErrorMessage"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 	}
