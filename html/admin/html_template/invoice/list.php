@@ -183,15 +183,6 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				$strEmailLabel	= "<img src='img/template/invoice_commit.png' title='Approve {$strCommitType} Invoice' onclick='{$strCommitHref}' />";
 				$strEmailLabel	.= "<img src='img/template/invoice_revoke.png' title='Reject {$strCommitType} Invoice' onclick='{$strRevokeHref}' />";
 			}
-			else
-			{
-				/*
-				$strEmailLabel	.= "\n";
-				$strEmailLabel	.= ($bolIsSample) ? 'S' : '!S';
-				$strEmailLabel	.= ($bolUserHasInterimPerm) ? 'P' : '!P';
-				$strEmailLabel	.= ($arrInvoiceRun['invoice_run_type_id'] == INVOICE_RUN_TYPE_INTERIM || $arrInvoiceRun['invoice_run_type_id'] == INVOICE_RUN_TYPE_FINAL) ? 'T' : "!T({$arrInvoiceRun['invoice_run_type_id']})";
-				*/
-			}
 
 			$strViewInvoiceLabel	= "&nbsp;";
 			$strExportCSV			= "&nbsp;";
