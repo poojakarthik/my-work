@@ -123,7 +123,7 @@ class Cli_App_Billing extends Cli
 						// Regenerating a single Invoice
 						$objAccount		= new Account(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID]), FALSE, TRUE);
 						$objInvoiceRun	= new Invoice_Run(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
-						$objInvoiceRun->calculateBillingPeriodDates();
+						$objInvoiceRun->calculateBillingPeriodDates($objInvoiceRun->BillingDate);
 						
 						//$this->debug($objAccount->toArray());
 						//$this->debug($objInvoiceRun->toArray());

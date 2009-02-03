@@ -242,7 +242,7 @@ class Invoice_Run
 			}
 			
 			// Calculate Billing Period
-			$this->calculateBillingPeriodDates($intAccount);
+			$this->calculateBillingPeriodDates(date("Y-m-d", $intInvoiceDatetime), $intAccount);
 			
 			// Generate the Single Invoice
 			$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, array($arrAccount));
@@ -299,7 +299,7 @@ class Invoice_Run
 		Invoice_Run::revokeByCustomerGroup($intCustomerGroup);
 		
 		// Generate the Billing Period Dates
-		$this->calculateBillingPeriodDates();
+		$this->calculateBillingPeriodDates(date("Y-m-d", $intInvoiceDatetime));
 
 		$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $selInvoiceableAccounts->FetchAll(), $intScheduledInvoiceRun);
 	}
@@ -647,20 +647,20 @@ class Invoice_Run
 	 *
 	 * @method
 	 */
-	public function calculateBillingPeriodDates($intAccount=null)
+	public function calculateBillingPeriodDates($strInvoiceDate=null, $intAccount=null)
 	{
-		$intInvoiceDatetime				= strtotime($this->BillingDate);
+		$intInvoiceDatetime				= strtotime($strInvoiceDate);
 		$this->intInvoiceDatetime		= $intInvoiceDatetime;
 		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $intInvoiceDatetime);
 		
 
 		// Retrieve the Bill Date of the last Invoice Run...
-		Log::getLog()->log(" * Billing Period Start Date\t: ", FALSE);
+		Log::getLog()->log(" * Billing Period Start Date\t: ", false);
 		
 		if ($intAccount > 0)
 		{
 			$objAccount						= new Account(array('Id'=>$intAccount), false, true);
-			$this->strLastInvoiceDatetime	= $objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate);
+			$this->strLastInvoiceDatetime	= $objAccount->getBillingPeriodStart($strInvoiceDate);
 		}
 		else
 		{
@@ -670,7 +670,7 @@ class Invoice_Run
 		$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
 		Log::getLog()->log($this->strLastInvoiceDatetime);
 		
-		Log::getLog()->log(" * Billing Period End Date\t: {$this->strInvoiceDatetime}", FALSE);
+		Log::getLog()->log(" * Billing Period End Date\t: {$this->strInvoiceDatetime}");
 	}
 
 	/**
