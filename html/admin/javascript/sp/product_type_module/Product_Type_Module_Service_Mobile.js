@@ -64,7 +64,7 @@ Object.extend(Sale.ProductTypeModule.Service_Mobile.prototype, {
 		this.elementGroups.sim_state_id = Sale.GUIComponent.createDropDown(Sale.states.ids, Sale.states.labels, this.getSimStateId());
 		Sale.GUIComponent.appendElementGroupToTable(table, 'SIM State', this.elementGroups.sim_state_id);
 
-		this.elementGroups.dob = Sale.GUIComponent.createDateGroup(this.getDOB(), this.isExistingPrePaid(), window._validate.date.bind(this));
+		this.elementGroups.dob = Sale.GUIComponent.createDateGroup(this.getDOB(), this.isExistingPrePaid.bind(this), window._validate.date.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Date of Birth', this.elementGroups.dob);
 		
 		fncMandatoryCurrentProvider	= function()
@@ -80,6 +80,7 @@ Object.extend(Sale.ProductTypeModule.Service_Mobile.prototype, {
 											//alert(this.isExistingPostPaid() + " || (" + this.isExistingPrePaid() + " && " + Sale.GUIComponent.getElementGroupValue(this.elementGroups.current_provider) + ")");
 											return (this.isExistingPostPaid() || (this.isExistingPrePaid() && Sale.GUIComponent.getElementGroupValue(this.elementGroups.current_provider)))
 										};
+										
 		this.elementGroups.current_account_number = Sale.GUIComponent.createTextInputGroup(this.getExistingAccountNumber(), fncMandatoryCurrentAccount.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Existing Account Number', this.elementGroups.current_account_number);
 

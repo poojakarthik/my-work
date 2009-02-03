@@ -13,6 +13,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 		BreadCrumb()->System_Settings_Menu();
 		BreadCrumb()->SetCurrentPage("Customer Statuses");
 
+		ContextMenu()->Customer_Statuses->ManageCustomerStatuses();
 		ContextMenu()->Customer_Statuses->CustomerStatusSummaryReport();
 		ContextMenu()->Customer_Statuses->CustomerStatusAccountReport();
 		
@@ -116,6 +117,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 		BreadCrumb()->SetCurrentPage("Summary Report");
 		
 		ContextMenu()->Customer_Statuses->ManageCustomerStatuses();
+		ContextMenu()->Customer_Statuses->CustomerStatusSummaryReport();
 		ContextMenu()->Customer_Statuses->CustomerStatusAccountReport();
 
 		if (is_array($subPath) && count($subPath) == 1)
@@ -129,13 +131,17 @@ class Application_Handler_CustomerStatus extends Application_Handler
 						array_key_exists("Content", $_SESSION['CustomerStatus']['SummaryReport'])
 					)
 				{
-					// A report has been cached. Send it to the user
-					header("Content-Type: application/excel");
-					header("Content-Disposition: attachment; filename=\"" . "customer_status_summary_report_". date("Y_m_d") . ".xls" . "\"");
-					echo $_SESSION['CustomerStatus']['SummaryReport']['Content'];
+					// A report has been cached
+					$strReport = $_SESSION['CustomerStatus']['SummaryReport']['Content'];
 					
 					// Remove it from the Session
 					unset($_SESSION['CustomerStatus']['SummaryReport']['Content']);
+					
+					// Send it to the user
+					header("Content-Type: application/excel");
+					header("Content-Disposition: attachment; filename=\"" . "customer_status_summary_report_". date("Y_m_d") . ".xls" . "\"");
+					echo $strReport;
+					
 					exit;
 				}
 			}
@@ -221,6 +227,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 		
 		ContextMenu()->Customer_Statuses->ManageCustomerStatuses();
 		ContextMenu()->Customer_Statuses->CustomerStatusSummaryReport();
+		ContextMenu()->Customer_Statuses->CustomerStatusAccountReport();
 
 		if (is_array($subPath) && count($subPath) == 1)
 		{
@@ -233,13 +240,17 @@ class Application_Handler_CustomerStatus extends Application_Handler
 						array_key_exists("Content", $_SESSION['CustomerStatus']['AccountReport'])
 					)
 				{
-					// A report has been cached. Send it to the user
-					header("Content-Type: application/excel");
-					header("Content-Disposition: attachment; filename=\"" . "customer_status_account_report_". date("Y_m_d") . ".xls" . "\"");
-					echo $_SESSION['CustomerStatus']['AccountReport']['Content'];
+					// A report has been cached 
+					$strReport = $_SESSION['CustomerStatus']['AccountReport']['Content'];
 					
 					// Remove it from the Session
 					unset($_SESSION['CustomerStatus']['AccountReport']['Content']);
+					
+					// Send it to the user
+					header("Content-Type: application/excel");
+					header("Content-Disposition: attachment; filename=\"" . "customer_status_account_report_". date("Y_m_d") . ".xls" . "\"");
+					echo $strReport;
+					
 					exit;
 				}
 			}

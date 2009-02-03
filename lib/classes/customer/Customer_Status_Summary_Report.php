@@ -167,7 +167,7 @@ GROUP BY customer_group, invoice_run_id, customer_status_id
 	private function GenerateAsHtml($bolRenderLinks)
 	{
 		// Build the header (this doesn't change)
-		$strHeaderColumns = "<th>Invoice Date</th>\n";
+		$strHeaderColumns = "<th>Invoice</th>\n";
 		
 		$arrCustomerStatusIds = array();
 		foreach ($this->_arrCustomerStatusIds as $intId)
@@ -184,6 +184,8 @@ GROUP BY customer_group, invoice_run_id, customer_status_id
 			$arrCustomerStatusIds[] = $intId;
 		}
 		
+		$arrCustomerGroups = Customer_Group::getAll();
+		
 		// Build Invoice Run information
 		$arrInvoiceRuns = array();
 		foreach ($this->_arrInvoiceRunIds as $intInvoiceRunId)
@@ -197,8 +199,9 @@ GROUP BY customer_group, invoice_run_id, customer_status_id
 			}
 			
 			$arrInvoiceRuns[$intInvoiceRunId] = array(	"id"			=> $objInvoiceRun->id,
-														"billingDate"	=> date("d/m/Y", strtotime($objInvoiceRun->billingDate))
+														"billingDate"	=> date("d-m-Y", strtotime($objInvoiceRun->billingDate))
 													);
+			$arrInvoiceRuns[$intInvoiceRunId]['name'] = "{$arrInvoiceRuns[$intInvoiceRunId]['billingDate']} - Id: {$arrInvoiceRuns[$intInvoiceRunId]['id']}". (array_key_exists($objInvoiceRun->customerGroupId, $arrCustomerGroups)? " - {$arrCustomerGroups[$objInvoiceRun->customerGroupId]->internalName}" : ""); 
 		}
 		
 		// This stores data for the link to the Account Summary functionality, if links will be present in the html
@@ -232,7 +235,7 @@ GROUP BY customer_group, invoice_run_id, customer_status_id
 			$bolAlternateRow = FALSE;
 			foreach ($arrInvoiceRuns as $intInvoiceRunId=>$arrInvoiceRun)
 			{
-				$strRows .= "\t\t<tr ". (($bolAlternateRow)? "class='alt'":"") .">\n\t\t\t<td class='row-title'>{$arrInvoiceRun['billingDate']}</td>\n";
+				$strRows .= "\t\t<tr ". (($bolAlternateRow)? "class='alt'":"") .">\n\t\t\t<td class='row-title'>{$arrInvoiceRun['name']}</td>\n";
 
 				$arrAccountSummaryData['InvoiceRun'] = $intInvoiceRunId;
 	

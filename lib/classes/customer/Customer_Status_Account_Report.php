@@ -104,10 +104,13 @@ class Customer_Status_Account_Report
 			$strInvoiceRunConstraint = "";
 		}
 		
-		// Build the query
+		// Build the query (It is assumed that there is at most 1 invoice for any given invoice_run_id / account id combination)
 		$strQuery = "
-SELECT a.CustomerGroup AS customer_group, csh.invoice_run_id AS invoice_run_id, csh.customer_status_id AS customer_status_id, a.Id AS account_id, a.BusinessName AS business_name, a.TradingName AS trading_name
-FROM Account AS a INNER JOIN customer_status_history AS csh ON a.Id = csh.account_id
+SELECT a.CustomerGroup AS customer_group, csh.invoice_run_id AS invoice_run_id, csh.customer_status_id AS customer_status_id, a.Id AS account_id, COALESCE(a.BusinessName, a.TradingName, '') AS account_name, 
+c.Title AS contact_title, c.FirstName AS contact_first_name, c.LastName AS contact_last_name, c.Email AS contact_email, c.Phone AS contact_phone, c.Mobile AS contact_mobile, c.Fax AS contact_fax,
+i.TotalOwing AS invoice_total_owing, i.Balance AS invoice_balance, i.Disputed AS invoice_disputed
+FROM Account AS a INNER JOIN customer_status_history AS csh ON a.Id = csh.account_id LEFT JOIN Contact AS c ON a.PrimaryContact = c.Id 
+LEFT JOIN Invoice AS i ON i.invoice_run_id = csh.invoice_run_id AND i.Account = a.Id
 WHERE TRUE $strCustomerGroupConstraint $strCustomerStatusConstraint $strInvoiceRunConstraint
 ORDER BY invoice_run_id DESC, customer_group ASC, customer_status_id DESC, account_id ASC
 ";
@@ -177,6 +180,12 @@ ORDER BY invoice_run_id DESC, customer_group ASC, customer_status_id DESC, accou
 		$bolAlternateRow = FALSE;
 		foreach ($this->_arrRecords as $arrRecord)
 		{
+			$strContactName = trim(trim($arrRecord['contact_title']) ." ". trim($arrRecord['contact_first_name']) ." ". trim($arrRecord['contact_last_name']));
+			
+			$strInvoiceTotalOwing	= ($arrRecord['invoice_total_owing'] !== NULL)?	number_format($arrRecord['invoice_total_owing'], 2, '.', '')	: NULL;
+			$strInvoiceBalance		= ($arrRecord['invoice_balance'] !== NULL)?		number_format($arrRecord['invoice_balance'], 2, '.', '')		: NULL;
+			$strInvoiceDisputed		= ($arrRecord['invoice_disputed'] !== NULL)?	number_format($arrRecord['invoice_disputed'], 2, '.', '')		: NULL;
+			
 			$strRows .= "
 <tr ". (($bolAlternateRow)? "class='alt'":"") .">
 	<td>{$arrRecord['invoice_run_id']}</td>
@@ -184,8 +193,15 @@ ORDER BY invoice_run_id DESC, customer_group ASC, customer_status_id DESC, accou
 	<td>{$arrCustomerGroupObjects[$arrRecord['customer_group']]->name}</td>
 	<td>{$arrCustomerStatusObjects[$arrRecord['customer_status_id']]->name}</td>
 	<td>{$arrRecord['account_id']}</td>
-	<td>". htmlspecialchars($arrRecord['business_name']) ."</td>
-	<td>". htmlspecialchars($arrRecord['trading_name']) ."</td>
+	<td>". htmlspecialchars($arrRecord['account_name']) ."</td>
+	<td>$strInvoiceTotalOwing</td>
+	<td>$strInvoiceBalance</td>
+	<td>$strInvoiceDisputed</td>
+	<td>". htmlspecialchars($strContactName) ."</td>
+	<td>{$arrRecord['contact_email']}</td>
+	<td>{$arrRecord['contact_phone']}</td>
+	<td>{$arrRecord['contact_mobile']}</td>
+	<td>{$arrRecord['contact_fax']}</td>
 </tr>";
 		}
 		
@@ -198,8 +214,15 @@ ORDER BY invoice_run_id DESC, customer_group ASC, customer_status_id DESC, accou
 			<th>Customer Group</th>
 			<th>Customer Status</th>
 			<th>Account</th>
-			<th>Business Name</th>
-			<th>Trading Name</th>
+			<th>Account Name</th>
+			<th>Invoiced Amount</th>
+			<th>Balance</th>
+			<th>Disputed</th>
+			<th>Primary Contact</th>
+			<th>Email</th>
+			<th>Phone</th>
+			<th>Mobile</th>
+			<th>Fax</th>
 		</tr>
 	</thead>
 	<tbody>
