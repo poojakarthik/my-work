@@ -116,7 +116,7 @@ class Service extends ORM
 		
 		// Work out the StartDatetime for the new records of the ServiceRatePlan and ServiceRateGroup tables
 		$strCurrentDateAndTime						= Data_Source_Time::currentTimestamp();
-		$intStartDateTimeForCurrentBillingPeriod	= strtotime(Invoice_Run::getLastInvoiceDate($objAccount->CustomerGroup, $strCurrentDateAndTime));
+		$intStartDateTimeForCurrentBillingPeriod	= strtotime($objAccount->getBillingPeriodStart($objAccount->CustomerGroup, $strCurrentDateAndTime));
 		$intStartDateTimeForNextBillingPeriod		= strtotime(Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $strCurrentDateAndTime));
 		
 		if (!$bolStartThisMonth)
