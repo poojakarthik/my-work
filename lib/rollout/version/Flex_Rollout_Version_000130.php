@@ -31,7 +31,7 @@ class Flex_Rollout_Version_000130 extends Flex_Rollout_Version
 								"DROP billing_period_end_datetime;";
 		
 		// 2:	Populate the Invoice.billing_period_start_datetime and billing_period_end_datetime Fields
-		$strSQL = "UPDATE Invoice SET billing_period_start_datetime = SUBDATE(CAST(CreatedOn AS DATETIME) INTERVAL 1 MONTH), billing_period_end_datetime = SUBDATE(CAST(CreatedOn AS DATETIME) INTERVAL 1 SECOND)";
+		$strSQL = "UPDATE Invoice SET billing_period_start_datetime = SUBDATE(CAST(CreatedOn AS DATETIME), INTERVAL 1 MONTH), billing_period_end_datetime = SUBDATE(CAST(CreatedOn AS DATETIME), INTERVAL 1 SECOND)";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -53,7 +53,7 @@ class Flex_Rollout_Version_000130 extends Flex_Rollout_Version
 								"DROP billing_period_end_datetime;";
 		
 		// 4:	Populate the InvoiceRun.billing_period_start_datetime and billing_period_end_datetime Fields
-		$strSQL = "UPDATE InvoiceRun SET billing_period_start_datetime = SUBDATE(CAST(BillingDate AS DATETIME) INTERVAL 1 MONTH), billing_period_end_datetime = SUBDATE(CAST(BillingDate AS DATETIME) INTERVAL 1 SECOND)";
+		$strSQL = "UPDATE InvoiceRun SET billing_period_start_datetime = SUBDATE(CAST(BillingDate AS DATETIME), INTERVAL 1 MONTH), billing_period_end_datetime = SUBDATE(CAST(BillingDate AS DATETIME), INTERVAL 1 SECOND)";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
