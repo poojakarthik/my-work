@@ -673,7 +673,7 @@ class Invoice_Run
 		
 		// Set the Billing Period
 		$this->billing_period_start_datetime	= $this->strLastInvoiceDatetime;
-		$this->billing_period_end_datetime		= strtotime("-1 second", $this->intInvoiceDatetime);
+		$this->billing_period_end_datetime		= date("Y-m-d H:i:s", strtotime("-1 second", $this->intInvoiceDatetime));
 	}
 
 	/**
