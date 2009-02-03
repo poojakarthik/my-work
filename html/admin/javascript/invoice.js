@@ -204,11 +204,6 @@ var Invoice	= Class.create
 		strDebugButton + 
 		"</div>\n";
 		
-		if (objResponse.strDebug)
-		{
-			$ID("Invoice_InterimInvoiceSummary_Debug").onclick	= $Alert.curry(strDebugContent, 'large', null, 'modal');
-		}
-		
 		// Destroy the pre-Generate Summary Popup, and replace it with the actual Invoice Summary
 		Vixen.Popup.Close('Invoice_InterimInvoicePreGenerateSummary');
 		Vixen.Popup.Create(
@@ -221,6 +216,11 @@ var Invoice	= Class.create
 				null,
 				false
 			);
+		
+		if (objResponse.strDebug)
+		{
+			$ID("Invoice_InterimInvoiceSummary_Debug").onclick	= $Alert.curry(strDebugContent, 'large', null, 'modal');
+		}
 		
 		return;
 	},
