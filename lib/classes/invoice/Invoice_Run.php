@@ -659,7 +659,7 @@ class Invoice_Run
 		if ($intAccount > 0)
 		{
 			$objAccount						= new Account(array('Id'=>$intAccount), false, true);
-			$this->strLastInvoiceDatetime	= $objAccount->getLastInvoiceDate($this->BillingDate);
+			$this->strLastInvoiceDatetime	= $objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate);
 		}
 		else
 		{
