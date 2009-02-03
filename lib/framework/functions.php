@@ -2632,7 +2632,6 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 	{
 		return $arrPDFs[0];
 	}
-	return "FAKED:".$strGlob;
 
 	if ($intInvoiceId)
 	{
@@ -2757,10 +2756,6 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 	if (!$mxdInvoicePath)
 	{
 		return FALSE;
-	}
-	elseif (substr($mxdInvoicePath, 0, 6) === 'FAKED:')
-	{
-		throw new Exception(substr($mxdInvoicePath, 6));
 	}
 	else
 	{
