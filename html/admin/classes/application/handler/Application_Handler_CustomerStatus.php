@@ -185,7 +185,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 							);
 			$strTables = "InvoiceRun AS ir INNER JOIN (SELECT DISTINCT invoice_run_id FROM customer_status_history) AS csh ON ir.Id = csh.invoice_run_id LEFT JOIN CustomerGroup AS cg ON ir.customer_group_id = cg.Id";
 			$strWhere = "ir.invoice_run_type_id = ". INVOICE_RUN_TYPE_LIVE ." AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED;
-			$selInvoiceRuns = new StatementSelect($strTables, $arrColumns, $strWhere, "BillingDate DESC");
+			$selInvoiceRuns = new StatementSelect($strTables, $arrColumns, $strWhere, "BillingDate DESC, Id DESC");
 			if (($intRecCount = $selInvoiceRuns->Execute()) === FALSE)
 			{
 				// Error occurred when trying to retrieve the invoice runs
@@ -383,7 +383,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 							);
 			$strTables	= "InvoiceRun AS ir INNER JOIN (SELECT DISTINCT invoice_run_id FROM customer_status_history) AS csh ON ir.Id = csh.invoice_run_id LEFT JOIN CustomerGroup AS cg ON ir.customer_group_id = cg.Id";
 			$strWhere	= "ir.invoice_run_type_id = ". INVOICE_RUN_TYPE_LIVE ." AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED;
-			$selInvoiceRuns = new StatementSelect($strTables, $arrColumns, $strWhere, "BillingDate DESC");
+			$selInvoiceRuns = new StatementSelect($strTables, $arrColumns, $strWhere, "BillingDate DESC, Id DESC");
 			if (($intRecCount = $selInvoiceRuns->Execute()) === FALSE)
 			{
 				// Error occurred when trying to retrieve the invoice runs
