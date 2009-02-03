@@ -144,7 +144,7 @@ var Invoice	= Class.create
 
 		var strInvoiceRunType	= Flex.Invoice._getInvoiceRunType(objResponse.objInvoiceRun.invoice_run_type_id);
 		
-		var fltInvoiceTotal		= objResponse.objInvoice.Total + objResponse.objInvoice.Tax;
+		var fltInvoiceTotal		= (new Number(objResponse.objInvoice.Total)) + (new Number(objResponse.objInvoice.Tax));
 		
 		// Render Invoice Summry Popup
 		var strHTML	= "\n" + 
@@ -172,19 +172,19 @@ var Invoice	= Class.create
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Opening Balance</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+objResponse.objInvoice.AccountBalance+"</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$"+(new Number(objResponse.objInvoice.AccountBalance)).toFixed(2)+"</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Payments</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+objResponse.fltPayments+"</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$"+(new Number(objResponse.fltPayments)).toFixed(2)+"</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>This Invoice</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+fltInvoiceTotal+"</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$"+(new Number(fltInvoiceTotal)).toFixed(2)+"</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr style='font-weight:bold;'>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Total Owing</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$"+objResponse.objInvoice.TotalOwing+"</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$"+(new Number(objResponse.objInvoice.TotalOwing)).toFixed(2)+"</td>\n" + 
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
