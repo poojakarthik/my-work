@@ -149,7 +149,6 @@ var Invoice	= Class.create
 		var strDebugButton			= '';
 		if (objResponse.strDebug)
 		{
-			alert(objResponse.strDebug.indexOf("\n"));
 			var strDebugContent	= "<textarea rows='25' cols='80' readonly='readonly'>"+objResponse.strDebug+"</textarea>";
 			strDebugButton		= "	<input id='Invoice_InterimInvoiceSummary_Debug' value='View Debugging Output' style='margin-left: 3px;' type='button' /> \n";
 		}
