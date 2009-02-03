@@ -652,9 +652,10 @@ class Invoice_Run
 		$intInvoiceDatetime				= strtotime($this->BillingDate);
 		$this->intInvoiceDatetime		= $intInvoiceDatetime;
 		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $intInvoiceDatetime);
+		
 
 		// Retrieve the Bill Date of the last Invoice Run...
-		Log::getLog()->log(" * Getting Last Invoice Date...", FALSE);
+		Log::getLog()->log(" * Billing Period Start Date\t: ", FALSE);
 		
 		if ($intAccount > 0)
 		{
@@ -668,6 +669,8 @@ class Invoice_Run
 		
 		$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
 		Log::getLog()->log($this->strLastInvoiceDatetime);
+		
+		Log::getLog()->log(" * Billing Period End Date\t: {$this->strInvoiceDatetime}", FALSE);
 	}
 
 	/**
