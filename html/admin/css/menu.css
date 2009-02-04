@@ -44,6 +44,13 @@
 	background-repeat: no-repeat;
 }
 
+#nav a.dropright {
+	background-attachment: fixed;
+	background-image: url('../img/template/menu_open_right.png');
+	background-position: 80% 50%;
+	background-repeat: no-repeat;
+}
+
 #nav li {
 	float: left;
 	background-color: #111;
@@ -60,7 +67,7 @@
 	width: 10em;
 	font-weight: normal;
 	margin: 0;
-	/*background-color: transparent;*/
+	background-color: transparent;
 }
 
 #nav li li {
@@ -86,13 +93,13 @@
 
 #nav li:hover ul ul, #nav li:hover ul ul ul, #nav li.sfhover ul ul, #nav li.sfhover ul ul ul {
 	left: -999em;
-	/*background-color: transparent;*/
+	background-color: transparent;
 	color: #ffde05;
 }
 
 #nav li:hover ul, #nav li li:hover ul, #nav li li li:hover ul, #nav li.sfhover ul, #nav li li.sfhover ul, #nav li li li.sfhover ul {
 	left: auto;
-	/*background-color: transparent;*/
+	background-color: transparent;
 	color: #ffde05;
 }
 
