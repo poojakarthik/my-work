@@ -824,6 +824,7 @@ class Page
 				echo "$strIndent\t<li class='dropdown'><a>" . htmlspecialchars($strLabel, ENT_QUOTES) . "</a>\n";
 				self::renderMenuLevel($mixValue, $intLevel + 1);
 				echo "$strIndent\t</li>\n";
+				echo "<script>alert('Dropright should work!  Label: ".htmlspecialchars($strLabel, ENT_QUOTES)."; Level: {$intLevel}');</script>";
 			}
 		}
 		echo "$strIndent</ul>\n";
