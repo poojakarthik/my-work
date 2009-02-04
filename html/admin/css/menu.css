@@ -37,6 +37,12 @@
 	background-repeat: no-repeat;
 }
 
+#nav li.dropright {
+	background-image: url('../img/template/menu_open_right.png');
+	background-position: 80% 50%;
+	background-repeat: no-repeat;
+}
+
 #nav li {
 	float: left;
 	background-color: #111;
