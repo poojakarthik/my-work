@@ -42,6 +42,7 @@
 	background-image: url('../img/template/menu_open_right.png');
 	background-position: 80% 50%;
 	background-repeat: no-repeat;
+	background-color: #ccc;
 }
 
 #nav a.dropright {
@@ -49,6 +50,7 @@
 	background-image: url('../img/template/menu_open_right.png');
 	background-position: 80% 50%;
 	background-repeat: no-repeat;
+	background-color: #ccc;
 }
 
 #nav li {
