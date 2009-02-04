@@ -135,6 +135,34 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				// Invoice Run Type
 				$intInvoiceRunType	= $objAccount->getInterimInvoiceType();
 				
+				$strTodaysDate			= date("Y-m-d");
+				$strTodaysDatetime		= $strTodaysDate." 00:00:00";
+				
+				// Check if there is a scheduled LIVE Invoice Run today or tomorrow
+				$strScheduledDatetime	= Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup);
+				if ($strTodaysDatetime === $strScheduledDatetime)
+				{
+					throw new Exception("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there is an Invoice Run scheduled to run today.");
+				}
+				elseif (date("Y-m-d 00:00:00", strtotime("+1 day", strtotime($strTodaysDatetime))))
+				{
+					throw new Exception("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there is an Invoice Run scheduled to run tomorrow.");
+				}
+				
+				// Check if there has already been a Committed Interim/Final Invoice today (well, with tomorrow's date)
+				$resInterimInvoiceRuns	= $qryQuery->Execute(	"SELECT Id, invoice_run_type_id " .
+																"FROM InvoiceRun JOIN Account ON InvoiceRun.Id = Invoice.invoice_run_id " .
+																"WHERE InvoiceRun.BillingDate = {$strTodaysDate} AND Invoice.Account = {$objAccount->Id} AND invoice_run_status_id IN (".INVOICE_RUN_STATUS_COMMITTING.", ".INVOICE_RUN_STATUS_COMMITTED.") AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.") " .
+																"LIMIT 1");
+				if ($resInterimInvoiceRuns === false)
+				{
+					throw new Exception($qryQuery->Error());
+				}
+				if ($arrInterimInvoiceRun = $resInterimInvoiceRuns->fetch_assoc())
+				{
+					throw new Exception("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there there has already been ".(($arrInterimInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_FINAL) ? 'a ' : 'an ').GetConstantDescription($arrInterimInvoiceRun['invoice_run_type_id'], 'invoice_run_type')." generated today.");
+				}
+				
 				// Adjustment Totals
 				$arrAdjustmentTotals	= array(
 													'CR'	=> array(

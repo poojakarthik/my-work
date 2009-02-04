@@ -734,13 +734,19 @@ class Invoice_Run
 	 * predictNextInvoiceDate()
 	 *
 	 * Predicts the next Invoice Date for a Customer Group
+	 * 
+	 * @param	integer	$intCustomerGroup				Customer Group to predict for
+	 * @param	[string	$strDate			]			Date to predict from (Default: Today)
 	 *
 	 * @return	string									Date of the next Invoice Run
 	 *
 	 * @method
 	 */
-	public static function predictNextInvoiceDate($intCustomerGroup, $strEffectiveDate)
+	public static function predictNextInvoiceDate($intCustomerGroup, $strEffectiveDate=null)
 	{
+		// Set default Date
+		$strEffectiveDate	= (strtotime($strEffectiveDate)) ? $strEffectiveDate : date("Y-m-d");
+		
 		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
 		if ($selPaymentTerms->Execute(Array('customer_group_id' => $intCustomerGroup)))
 		{

@@ -85,7 +85,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 	{	
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$bolUserHasInterimPerm	= (AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS) || AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN));
-	
+		
 		// Render each of the account invoices
 		echo "<a name='Invoice_List'>";
 		echo "</a>";
@@ -261,16 +261,21 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		// Add in button to Generate a Final/Interim Invoice
 		$objAccount				= new Account(array('Id'=>DBO()->Account->Id->Value), false, true);
 		$intInvoiceGenerateType	= $objAccount->getInterimInvoiceType();
-		if ($intInvoiceGenerateType && $bolUserHasInterimPerm)
+		
+		// FIXME: Temporarily restricting to Final Invoices only
+		if ($intInvoiceGenerateType === INVOICE_RUN_TYPE_FINAL)
 		{
-			echo "<div class='ButtonContainer'><div class='Right'>\n";
-			
-			$strGenerateInterimHref	= Href()->GenerateInterimInvoice(DBO()->Account->Id->Value, $intInvoiceGenerateType);
-			$this->Button("Generate ".GetConstantDescription($intInvoiceGenerateType, 'invoice_run_type'), $strGenerateInterimHref);
-			
-			echo "</div></div>";
-			
-			$bolHasButtons	= TRUE;
+			if ($intInvoiceGenerateType && $bolUserHasInterimPerm)
+			{
+				echo "<div class='ButtonContainer'><div class='Right'>\n";
+				
+				$strGenerateInterimHref	= Href()->GenerateInterimInvoice(DBO()->Account->Id->Value, $intInvoiceGenerateType);
+				$this->Button("Generate ".GetConstantDescription($intInvoiceGenerateType, 'invoice_run_type'), $strGenerateInterimHref);
+				
+				echo "</div></div>";
+				
+				$bolHasButtons	= TRUE;
+			}
 		}
 
 		echo "<div class='SmallSeperator'></div>\n";
