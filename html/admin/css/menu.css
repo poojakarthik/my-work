@@ -50,7 +50,7 @@
 	background-image: url('../img/template/menu_open_right.png');
 	background-position: 80% 50%;
 	background-repeat: no-repeat;
-	background-color: #ccc;
+	/*background-color: #ccc;*/
 }
 
 #nav li {
