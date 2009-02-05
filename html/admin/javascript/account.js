@@ -80,6 +80,7 @@ var Account	= Class.create
 								"			</tr>\n";
 		}
 		
+		elmTableBody.innerHTML	= strInnerHTML;
 		return;
 	}
 });
