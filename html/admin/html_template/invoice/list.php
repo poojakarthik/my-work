@@ -263,8 +263,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		$intInvoiceGenerateType	= $objAccount->getInterimInvoiceType();
 		
 		// FIXME: Temporarily restricting to Final Invoices only
-		//if ($intInvoiceGenerateType === INVOICE_RUN_TYPE_FINAL)
-		//{
+		if ($intInvoiceGenerateType === INVOICE_RUN_TYPE_FINAL)
+		{
 			if ($intInvoiceGenerateType && $bolUserHasInterimPerm)
 			{
 				echo "<div class='ButtonContainer'><div class='Right'>\n";
@@ -276,7 +276,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				
 				$bolHasButtons	= TRUE;
 			}
-		//}
+		}
 
 		echo "<div class='SmallSeperator'></div>\n";
 	}
