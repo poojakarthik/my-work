@@ -44,11 +44,11 @@ var Account	= Class.create
 				'medium', 
 				'centre', 
 				'modal', 
-				strInvoiceRunType + ' Pre-Invoice Summary'
+				'Debt Collection Account - Please Refer'
 			);
 		
 		// Perform AJAX query
-		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Invoice._generateInterimInvoiceResponse.bind(this), null, 'Account', 'getAccountsReferees');
+		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Account._displayReferAccountsPopupResponse.bind(this), null, 'Account', 'getAccountsReferees');
 		fncJsonFunc(intAccount, intInvoiceRunType);
 		
 		return;
@@ -84,4 +84,4 @@ var Account	= Class.create
 	}
 });
 
-Flex.Invoice = (Flex.Invoice == undefined) ? new Invoice() : Flex.Invoice;
+Flex.Account = (Flex.Account == undefined) ? new Account() : Flex.Account;
