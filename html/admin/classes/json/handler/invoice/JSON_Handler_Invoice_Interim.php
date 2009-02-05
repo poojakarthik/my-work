@@ -16,7 +16,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 		try
 		{
 			// Check user permissions
-			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS)))
+			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CARD)))
 			{
 				return array(
 								'Success'			=> false,
@@ -181,7 +181,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 		try
 		{
 			// Check user permissions
-			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS)))
+			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CARD)))
 			{
 				return array(
 								'Success'			=> false,
@@ -280,7 +280,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 		try
 		{
 			// Check user permissions
-			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS)))
+			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CARD)))
 			{
 				return array(
 								'Success'			=> false,
@@ -359,7 +359,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 		try
 		{
 			// Check user permissions
-			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS)))
+			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CARD)))
 			{
 				return array(
 								'Success'			=> false,

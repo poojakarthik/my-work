@@ -94,6 +94,18 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 				$this->_RenderForEditing();
 				break;
 		}
+		
+		// Is this Account on Debt Collection?
+		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_DEBT_COLLECTION)
+		{
+			// Only allow Super Admins and Accounts/Credit Control to access this page
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CARD))
+			{
+				$strJS	= "JsAutoLoader.loadScript(\"javascript/account.js\", function(){Flex.Account.displayReferAccountsPopup({DBO()->Account->Id->Value}, \"".GetConstantDescription(DBO()->Account->Archived->Value, 'account_status')."\");});";
+				echo "\n<!-- User doesn't have permission to view these Accounts -->\n";
+				echo "<script type='text/javascript'>{$strJS}</script>\n\n";
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------//

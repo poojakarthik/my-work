@@ -71,5 +71,4 @@ if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 
 $this->Page->AddObject('NoteList', COLUMN_TWO, HTML_CONTEXT_PAGE, "NoteListDiv");
 $this->Page->AddObject('AccountServicesList', COLUMN_THREE, HTML_CONTEXT_PAGE, "AccountServicesDiv");
-
 ?>
