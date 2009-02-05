@@ -49,7 +49,7 @@ var Account	= Class.create
 		
 		// Perform AJAX query
 		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Account._displayReferAccountsPopupResponse.bind(this), null, 'Account', 'getAccountsReferees');
-		fncJsonFunc(intAccount, intInvoiceRunType);
+		fncJsonFunc();
 		
 		return;
 	},
