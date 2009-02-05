@@ -62,6 +62,8 @@ div#logo {
 	display: block;
 	background-image: url("../img/template/yellow_billing_logo_small.png");
 	background-repeat: no-repeat;
+	
+	cursor: pointer;
 }
 
 div#logo div#blurb {
