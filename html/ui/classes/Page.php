@@ -820,8 +820,8 @@ class Page
 			else
 			{
 				// $mixValue is a submenu
-				$strClass	= ($intLevel === 0) ? "dropdown" : "dropright";
-				echo "$strIndent\t<li class='{$strClass}'><a class='{$strClass}'>" . htmlspecialchars($strLabel, ENT_QUOTES) . "</a>\n";
+				$strClass	= ($intLevel === 0) ? '' : "class='dropright'";
+				echo "$strIndent\t<li class='dropdown'><a {$strClass}>" . htmlspecialchars($strLabel, ENT_QUOTES) . "</a>\n";
 				self::renderMenuLevel($mixValue, $intLevel + 1);
 				echo "$strIndent\t</li>\n";
 			}

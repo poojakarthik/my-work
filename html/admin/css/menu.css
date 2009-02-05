@@ -36,18 +36,11 @@
 	background-position: 0% 50%;
 	background-repeat: no-repeat;
 }
-/*
-#nav li.dropright {
-	background-image: url('../img/template/menu_open_right.png');
-	background-position: 80% 50%;
-	background-repeat: no-repeat;
-}*/
 
 #nav a.dropright {
 	background-image: url('../img/template/menu_open_right.png');
-	background-position: 90% 50%;
+	background-position: 100% 50%;
 	background-repeat: no-repeat;
-	/*background-color: #ccc;*/
 }
 
 #nav li {
