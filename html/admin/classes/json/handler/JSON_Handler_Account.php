@@ -11,7 +11,7 @@ class JSON_Handler_Account extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getAccountsReferees($intAccount)
+	public function getAccountsReferees()
 	{
 		try
 		{
