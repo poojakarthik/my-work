@@ -38,17 +38,6 @@ var Account	= Class.create
 		"	</div>\n" +
 		"</div>\n";
 		
-		/*Vixen.Popup.Create(
-				'Account_ReferAccounts', 
-				strHTML, 
-				'medium', 
-				'centre', 
-				'modal', 
-				'Debt Collection Account - Please Refer',
-				null,
-				false
-			);*/
-		
 		var pupPopup	= new Reflex_Popup(40);
 		pupPopup.setTitle('Debt Collection Account - Please Refer');
 		pupPopup.setContent(strHTML);
