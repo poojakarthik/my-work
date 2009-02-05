@@ -91,7 +91,7 @@ var Invoice	= Class.create
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
-		(objResponse.bolInvoiceCDRCredits ? strCDRCreditNotice : '') + 
+		(!objResponse.bolInvoiceCDRCredits ? strCDRCreditNotice : '') + 
 		"</div>\n" + 
 		"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
 		"	<input id='Invoice_InterimInvoicePreGenerateSummary_Generate' value='Generate' onclick='Flex.Invoice.generateInterimInvoice(" + objResponse.intAccountId + ", " + objResponse.intInvoiceRunType + ");' style='margin-left: 3px;' type='button' /> \n" + 
