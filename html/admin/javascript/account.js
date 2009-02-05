@@ -33,10 +33,10 @@ var Account	= Class.create
 		"			</tr>\n" +
 		"		</tbody>\n" + 
 		"	</table>\n" + 
+		"	<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
+		"		<input id='Account_ReferAccounts_OK' value='Return to Console' onclick='window.location.href=\"../admin/reflex.php/Console/View/\"' style='margin-left: 3px;' type='button' /> \n" + 
+		"	</div>\n";
 		"</div>\n" + 
-		"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
-		"	<input id='Account_ReferAccounts_OK' value='Return to Console' onclick='window.location.href=\"../admin/reflex.php/Console/View/\"' style='margin-left: 3px;' type='button' /> \n" + 
-		"</div>\n";
 		
 		/*Vixen.Popup.Create(
 				'Account_ReferAccounts', 
