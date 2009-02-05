@@ -66,7 +66,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				}
 				if ($arrInterimInvoiceRun = $resInterimInvoiceRuns->fetch_assoc())
 				{
-					throw new Exception("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there there has already been ".(($arrInterimInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_FINAL) ? 'a ' : 'an ').GetConstantDescription($arrInterimInvoiceRun['invoice_run_type_id'], 'invoice_run_type')." generated today.");
+					throw new Exception("You are not permitted to generate ".(($intInvoiceRunType === INVOICE_RUN_TYPE_FINAL) ? 'a ' : 'an ').GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there there has already been ".(($arrInterimInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_FINAL) ? 'a ' : 'an ').GetConstantDescription($arrInterimInvoiceRun['invoice_run_type_id'], 'invoice_run_type')." generated today.");
 				}
 				
 				// Adjustment Totals
