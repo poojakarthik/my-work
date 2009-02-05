@@ -48,11 +48,11 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$strScheduledDatetime	= Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup);
 				if ($strScheduledDatetime === $strTodaysDatetime)
 				{
-					throw new Exception("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there is an Invoice Run scheduled to run today.");
+					throw new Exception_Invoice_Interim_NotAllowed("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there is an Invoice Run scheduled to run today.");
 				}
 				elseif ($strScheduledDatetime === $strTomorrowsDatetime)
 				{
-					throw new Exception("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there is an Invoice Run scheduled to run tomorrow.");
+					throw new Exception_Invoice_Interim_NotAllowed("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there is an Invoice Run scheduled to run tomorrow.");
 				}
 				
 				// Check if there has already been a Committed Interim/Final Invoice today (well, with tomorrow's date)
@@ -66,7 +66,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				}
 				if ($arrInterimInvoiceRun = $resInterimInvoiceRuns->fetch_assoc())
 				{
-					throw new Exception("You are not permitted to generate ".(($intInvoiceRunType === INVOICE_RUN_TYPE_FINAL) ? 'a ' : 'an ').GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there there has already been ".(($arrInterimInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_FINAL) ? 'a ' : 'an ').GetConstantDescription($arrInterimInvoiceRun['invoice_run_type_id'], 'invoice_run_type')." generated today.");
+					throw new Exception_Invoice_Interim_NotAllowed("You are not permitted to generate ".(($intInvoiceRunType === INVOICE_RUN_TYPE_FINAL) ? 'a ' : 'an ').GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there there has already been ".(($arrInterimInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_FINAL) ? 'a ' : 'an ').GetConstantDescription($arrInterimInvoiceRun['invoice_run_type_id'], 'invoice_run_type')." generated today.");
 				}
 				
 				// Adjustment Totals
@@ -134,7 +134,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			{
 				DataAccess::getDataAccess()->TransactionRollback();
 				
-				if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+				if ($eException instanceof Exception_Invoice_Interim_NotAllowed || AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 				{
 					throw $eException;
 				}
@@ -431,4 +431,5 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 	}
 }
 
+class Exception_Invoice_Interim_NotAllowed extends Exception{}
 ?>
