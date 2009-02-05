@@ -177,7 +177,7 @@ class Account
 				
 			case ACCOUNT_STATUS_CLOSED:
 			case ACCOUNT_STATUS_DEBT_COLLECTION:
-				return INVOICE_RUN_TYPE_INTERIM;
+				return INVOICE_RUN_TYPE_FINAL;
 				break;
 		}
 		return null;
