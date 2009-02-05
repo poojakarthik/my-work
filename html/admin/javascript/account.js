@@ -38,7 +38,7 @@ var Account	= Class.create
 		"	<input id='Account_ReferAccounts_OK' value='Return to Console' onclick='window.location.href=\"../admin/reflex.php/Console/View/\"' style='margin-left: 3px;' type='button' /> \n" + 
 		"</div>\n";
 		
-		Vixen.Popup.Create(
+		/*Vixen.Popup.Create(
 				'Account_ReferAccounts', 
 				strHTML, 
 				'medium', 
@@ -47,7 +47,12 @@ var Account	= Class.create
 				'Debt Collection Account - Please Refer',
 				null,
 				false
-			);
+			);*/
+		
+		var pupPopup	= new Reflex_Popup(80);
+		pupPopup.setTitle('Debt Collection Account - Please Refer');
+		pupPopup.setContent(strHTML);
+		pupPopup.display();
 		
 		// Perform AJAX query
 		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Account._displayReferAccountsPopupResponse.bind(this), null, 'Account', 'getAccountsReferees');
