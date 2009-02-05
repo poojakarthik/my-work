@@ -144,7 +144,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				{
 					throw new Exception("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there is an Invoice Run scheduled to run today.");
 				}
-				elseif (date("Y-m-d 00:00:00", strtotime("+1 day", strtotime($strTodaysDatetime))))
+				elseif ($strTodaysDatetime === date("Y-m-d 00:00:00", strtotime("+1 day", strtotime($strTodaysDatetime))))
 				{
 					throw new Exception("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there is an Invoice Run scheduled to run tomorrow.");
 				}
