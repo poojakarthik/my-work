@@ -219,6 +219,9 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$objInvoice->DeliveryMethod	= DELIVERY_METHOD_EMAIL;
 				$objInvoice->save();
 				
+				// Regenerate the XML to account for forced Delivery Method
+				$objInvoice->export();
+				
 				$strInvoiceDate		= date("j M y", strtotime($objInvoiceRun->BillingDate));
 				$strBillingPeriod	= date("j M y", strtotime($objInvoice->billing_period_start_datetime)) . " - " . date("j M y", strtotime($objInvoice->billing_period_end_datetime));
 				
