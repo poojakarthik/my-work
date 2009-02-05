@@ -660,7 +660,7 @@ class Page
 	{
 		echo "
 		<div id='header' name='header'>
-			<div id='logo'>
+			<div id='logo' onclick='window.location.href=\"../admin/reflex.php/Console/View/\"'>
 				<div id='blurb' name='blurb'>Flex Customer Management System</div>
 			</div>\n";
 

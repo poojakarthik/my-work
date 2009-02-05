@@ -103,7 +103,7 @@ class Application
 		$this->objAppTemplate->SetMode(HTML_MODE);
 		$this->objAppTemplate->SetModal($bolModal);
 
-		ContextMenu()->Employee_Console();
+		//ContextMenu()->Employee_Console();
 		
 		// Run AppTemplate
 		$fltStart = microtime(TRUE);		
