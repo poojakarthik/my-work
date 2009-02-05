@@ -49,7 +49,7 @@ var Account	= Class.create
 				false
 			);*/
 		
-		var pupPopup	= new Reflex_Popup(80);
+		var pupPopup	= new Reflex_Popup(40);
 		pupPopup.setTitle('Debt Collection Account - Please Refer');
 		pupPopup.setContent(strHTML);
 		pupPopup.display();
