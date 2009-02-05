@@ -44,7 +44,9 @@ var Account	= Class.create
 				'medium', 
 				'centre', 
 				'modal', 
-				'Debt Collection Account - Please Refer'
+				'Debt Collection Account - Please Refer',
+				null,
+				false
 			);
 		
 		// Perform AJAX query
