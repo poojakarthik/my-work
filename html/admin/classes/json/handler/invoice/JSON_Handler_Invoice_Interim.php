@@ -58,7 +58,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				// Check if there has already been a Committed Interim/Final Invoice today (well, with tomorrow's date)
 				$resInterimInvoiceRuns	= $qryQuery->Execute(	"SELECT InvoiceRun.Id, invoice_run_type_id " .
 																"FROM InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id " .
-																"WHERE InvoiceRun.BillingDate = {$strTomorrowsDate} AND Invoice.Account = {$objAccount->Id} AND invoice_run_status_id IN (".INVOICE_RUN_STATUS_COMMITTING.", ".INVOICE_RUN_STATUS_COMMITTED.") AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.") " .
+																"WHERE InvoiceRun.BillingDate = '{$strTomorrowsDate}' AND Invoice.Account = {$objAccount->Id} AND invoice_run_status_id IN (".INVOICE_RUN_STATUS_COMMITTING.", ".INVOICE_RUN_STATUS_COMMITTED.") AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL.") " .
 																"LIMIT 1");
 				if ($resInterimInvoiceRuns === false)
 				{
