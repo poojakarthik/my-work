@@ -11,102 +11,6 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function generateInterimInvoice($intAccount, $intInvoiceRunType)
-	{
-		try
-		{
-			// Check user permissions
-			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS)))
-			{
-				return array(
-								'Success'			=> false,
-								'ErrorMessage'		=> "Insufficient privileges",
-								'HasPermissions'	=> false,
-							);
-			}
-			
-			// Attempt to generate the interim/final Invoice
-			try
-			{
-				// Start the Transaction
-				DataAccess::getDataAccess()->TransactionStart();
-				
-				$qryQuery	= new Query();
-				
-				//throw new Exception("Invoice::generateInterimInvoice() is not implemented yet!");
-				
-				$objAccount	= new Account(array('Id'=>$intAccount), false, true);
-				
-				// Calculate Billing Date
-				$intInvoiceDatetime	= strtotime(date('Y-m-d', strtotime('+1 day')));
-				
-				// Generate the Invoice
-				$objInvoiceRun	= new Invoice_Run();
-				$objInvoiceRun->generateSingle($objAccount->CustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount);
-				
-				// Force the Invoice to be an eBill
-				$resInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND invoice_run_id = {$objInvoiceRun->Id} LIMIT 1");
-				if ($resInvoice === false)
-				{
-					throw new Exception($qryQuery->Error());
-				}
-				$objInvoice	= new Invoice($resInvoice->fetch_assoc());
-				$objInvoice->DeliveryMethod	= DELIVERY_METHOD_EMAIL;
-				$objInvoice->save();
-				
-				$strInvoiceDate		= date("j M y", strtotime($objInvoiceRun->BillingDate));
-				$strBillingPeriod	= date("j M y", strtotime($objInvoice->billing_period_start_datetime)) . " - " . date("j M y", strtotime($objInvoice->billing_period_end_datetime));
-				
-				// Get the last Invoice to determine Payments
-				$resLastInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND Id < {$objInvoice->Id} ORDER BY Id DESC LIMIT 1");
-				if ($resLastInvoice === false)
-				{
-					throw new Exception($qryQuery->Error());
-				}
-				$arrLastInvoice	= $resLastInvoice->fetch_assoc();
-				$fltPayments	= ($arrLastInvoice) ? max(0.0, (float)$arrLastInvoice['TotalOwing'] - $objInvoice->AccountBalance) : 0.0;
-				
-				// Commit the Transaction
-				DataAccess::getDataAccess()->TransactionCommit();
-			}
-			catch (Exception $eException)
-			{
-				DataAccess::getDataAccess()->TransactionRollback();
-				
-				if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
-				{
-					throw $eException;
-				}
-				else
-				{
-					throw new Exception("There was an internal error in Flex.  Please try again.");
-				}
-			}
-			
-			// If no exceptions were thrown, then everything worked
-			return array(
-							"Success"					=> true,
-							"objInvoiceRun"				=> $objInvoiceRun->toArray(),
-							"objInvoice"				=> $objInvoice->toArray(),
-							"strBillingPeriod"			=> $strBillingPeriod,
-							"strInvoiceDate"			=> $strInvoiceDate,
-							"fltPayments"				=> $fltPayments,
-							"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
-						);
-		}
-		catch (Exception $e)
-		{
-			// Send an Email to Devs
-			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
-			
-			return array(
-							"Success"		=> false,
-							"ErrorMessage"	=> 'ERROR: '.$e->getMessage(),
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
-						);
-		}
-	}
-	
 	public function getPreGenerateValues($intAccount)
 	{
 		try
@@ -255,6 +159,102 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 							"fltCDRCreditTotal"			=> round($arrCDRTotals['CR']['Total'], 2),
 							"intCDRDebitCount"			=> $arrCDRTotals['DR']['Count'],
 							"fltCDRDebitTotal"			=> round($arrCDRTotals['DR']['Total'], 2),
+						);
+		}
+		catch (Exception $e)
+		{
+			// Send an Email to Devs
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
+			return array(
+							"Success"		=> false,
+							"ErrorMessage"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+	}
+	
+	public function generateInterimInvoice($intAccount, $intInvoiceRunType)
+	{
+		try
+		{
+			// Check user permissions
+			if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS)))
+			{
+				return array(
+								'Success'			=> false,
+								'ErrorMessage'		=> "Insufficient privileges",
+								'HasPermissions'	=> false,
+							);
+			}
+			
+			// Attempt to generate the interim/final Invoice
+			try
+			{
+				// Start the Transaction
+				DataAccess::getDataAccess()->TransactionStart();
+				
+				$qryQuery	= new Query();
+				
+				//throw new Exception("Invoice::generateInterimInvoice() is not implemented yet!");
+				
+				$objAccount	= new Account(array('Id'=>$intAccount), false, true);
+				
+				// Calculate Billing Date
+				$intInvoiceDatetime	= strtotime(date('Y-m-d', strtotime('+1 day')));
+				
+				// Generate the Invoice
+				$objInvoiceRun	= new Invoice_Run();
+				$objInvoiceRun->generateSingle($objAccount->CustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount);
+				
+				// Force the Invoice to be an eBill
+				$resInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND invoice_run_id = {$objInvoiceRun->Id} LIMIT 1");
+				if ($resInvoice === false)
+				{
+					throw new Exception($qryQuery->Error());
+				}
+				$objInvoice	= new Invoice($resInvoice->fetch_assoc());
+				$objInvoice->DeliveryMethod	= DELIVERY_METHOD_EMAIL;
+				$objInvoice->save();
+				
+				$strInvoiceDate		= date("j M y", strtotime($objInvoiceRun->BillingDate));
+				$strBillingPeriod	= date("j M y", strtotime($objInvoice->billing_period_start_datetime)) . " - " . date("j M y", strtotime($objInvoice->billing_period_end_datetime));
+				
+				// Get the last Invoice to determine Payments
+				$resLastInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND Id < {$objInvoice->Id} ORDER BY Id DESC LIMIT 1");
+				if ($resLastInvoice === false)
+				{
+					throw new Exception($qryQuery->Error());
+				}
+				$arrLastInvoice	= $resLastInvoice->fetch_assoc();
+				$fltPayments	= ($arrLastInvoice) ? max(0.0, (float)$arrLastInvoice['TotalOwing'] - $objInvoice->AccountBalance) : 0.0;
+				
+				// Commit the Transaction
+				DataAccess::getDataAccess()->TransactionCommit();
+			}
+			catch (Exception $eException)
+			{
+				DataAccess::getDataAccess()->TransactionRollback();
+				
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+				{
+					throw $eException;
+				}
+				else
+				{
+					throw new Exception("There was an internal error in Flex.  Please try again.");
+				}
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							"Success"					=> true,
+							"objInvoiceRun"				=> $objInvoiceRun->toArray(),
+							"objInvoice"				=> $objInvoice->toArray(),
+							"strBillingPeriod"			=> $strBillingPeriod,
+							"strInvoiceDate"			=> $strInvoiceDate,
+							"fltPayments"				=> $fltPayments,
+							"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 		catch (Exception $e)
