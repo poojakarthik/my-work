@@ -85,13 +85,13 @@ var Invoice	= Class.create
 		"				<td style='vertical-align:top;text-align:right;'>$" + (new Number(objResponse.fltCDRDebitTotal)).toFixed(2) + "</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Credit CDRs" + (objResponse.bolInvoiceCDRCredits ? "&nbsp;<span style='font-weight:bold;color:#E00'>*</span>" : '') + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:left;'>Credit CDRs" + ((!objResponse.bolInvoiceCDRCredits) ? "&nbsp;<span style='font-weight:bold;color:#E00'>*</span>" : '') + "</td>\n" + 
 		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intCDRCreditCount + "</td>\n" + 
 		"				<td style='vertical-align:top;text-align:right;'>" + ((objResponse.fltCDRCreditTotal > 0) ? "- " : "") + "$" + (new Number(objResponse.fltCDRCreditTotal)).toFixed(2) + "</td>\n" + 
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
-		(!objResponse.bolInvoiceCDRCredits ? strCDRCreditNotice : '') + 
+		((!objResponse.bolInvoiceCDRCredits) ? strCDRCreditNotice : '') + 
 		"</div>\n" + 
 		"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
 		"	<input id='Invoice_InterimInvoicePreGenerateSummary_Generate' value='Generate' onclick='Flex.Invoice.generateInterimInvoice(" + objResponse.intAccountId + ", " + objResponse.intInvoiceRunType + ");' style='margin-left: 3px;' type='button' /> \n" + 
