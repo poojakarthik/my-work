@@ -1,4 +1,4 @@
-// Class: Invoice
+// Class: InternalContactList
 // Handles the Internal Contact List in Flex
 var InternalContactList	= Class.create
 ({	
@@ -18,8 +18,8 @@ var InternalContactList	= Class.create
 		Vixen.Popup.ShowPageLoadingSplash(null, null, null, null, 1);
 		
 		// Perform AJAX query
-		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Invoice._renderViewPopupHTML.bind(this), null, 'InternalContactList', 'getContactListHTML');
-		//var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Invoice._renderViewPopup.bind(this), null, 'InternalContactList', 'getContactList');
+		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.InternalContactList._renderViewPopupHTML.bind(this), null, 'InternalContactList', 'getContactListHTML');
+		//var fncJsonFunc		= jQuery.json.jsonFunction(Flex.InternalContactList._renderViewPopup.bind(this), null, 'InternalContactList', 'getContactList');
 		fncJsonFunc();
 	},
 	
