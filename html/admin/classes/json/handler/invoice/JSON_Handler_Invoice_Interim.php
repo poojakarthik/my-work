@@ -396,6 +396,12 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 					throw new Exception("Invoice Run {$objInvoiceRun->Id} is not a Temporary Invoice Run");
 				}
 				
+				// Add a System Note
+				$fltGrandTotal	= round($objInvoice->Total + $objInvoice->Tax, 2);
+				$strAn			= ($objInvoiceRun->invoice_run_type_id === INVOICE_RUN_TYPE_INTERIM) ? 'an' : 'a';
+				$strContent		= $strAn." ".GetConstantDescription($objInvoiceRun->invoice_run_type_id, 'invoice_run_type') . " has been generated to the value of \${$fltGrandTotal}";
+				Note::createSystemNote($strContent, Flex::getUserId(), $objInvoice->AccountGroup, $objInvoice->Account);
+				
 				// Commit the Transaction
 				DataAccess::getDataAccess()->TransactionCommit();
 			}
