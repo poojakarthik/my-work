@@ -40,8 +40,8 @@ var InternalContactList	= Class.create
 		}
 		
 		// Render the popup
-		pupPopup.setContent(objResponse.strHTML);
-		pupPopup.display();
+		this.pupPopup.setContent(objResponse.strHTML);
+		this.pupPopup.display();
 		
 		return;
 	}
