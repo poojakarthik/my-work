@@ -6,7 +6,7 @@ var InternalContactList	= Class.create
 	// Prototype constructor
 	initialize	: function()
 	{
-		this.pupPopup	= new Reflex_Popup(100);
+		this.pupPopup	= new Reflex_Popup(90);
 		this.pupPopup.setTitle('Internal Contact List');
 		this.pupPopup.addCloseButton();
 		
