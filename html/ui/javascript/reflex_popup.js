@@ -221,7 +221,7 @@ Object.extend(Reflex_Popup.prototype, {
 		
 		if (bolCentred != undefined && bolCentred === true)
 		{
-			this.footerPane.align	= 'center';
+			this.footerPane.style.textAlign	= 'center';
 		}
 	},
 

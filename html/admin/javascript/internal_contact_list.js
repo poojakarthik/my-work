@@ -10,10 +10,10 @@ var InternalContactList	= Class.create
 		this.pupPopup.setTitle('Internal Contact List');
 		this.pupPopup.addCloseButton();
 		
-		var elmCloseButton		= document.createElement('input');
-		elmCloseButton.type		= 'button';
-		elmCloseButton.value	= 'Close';
-		elmCloseButton.onclick	= this.pupPopup.hide.bind(this.pupPopup);
+		var elmCloseButton			= document.createElement('input');
+		elmCloseButton.type			= 'button';
+		elmCloseButton.value		= 'Close';
+		elmCloseButton.onclick		= this.pupPopup.hide.bind(this.pupPopup);
 		this.pupPopup.setFooterButtons(new Array(elmCloseButton), true);
 	},
 	
