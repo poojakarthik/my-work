@@ -144,7 +144,7 @@
 								<a>
 									<xsl:attribute name="href">
 										<xsl:text>../management/charges_approve.php?p=</xsl:text>
-										<xsl:value-of select="/Response/Charges-Unapproved/Results/rangePage + /Response/Charges-Unapproved/Results/rangePages" />
+										<xsl:value-of select="/Response/Charges-Unapproved/Results/rangePages" />
 									</xsl:attribute>
 									Last
 								</a>
