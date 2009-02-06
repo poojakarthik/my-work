@@ -8,8 +8,13 @@ var InternalContactList	= Class.create
 	{
 		this.pupPopup	= new Reflex_Popup(40);
 		this.pupPopup.setTitle('Internal Contact List');
-		this.pupPopup.addCloseButton();		
-		//this.pupPopup.setFooterButtons(new Array("<input id='Flex_InternalContactList_Popup_Close' type='button' onclick='Flex.InternalContactList.pupPopup.hide();' />"));
+		this.pupPopup.addCloseButton();
+		
+		var elmCloseButton		= document.createElement('input');
+		elmCloseButton.id		= 'Flex_InternalContactList_Popup_Close';
+		elmCloseButton.type		= 'button';
+		elmCloseButton.onclick	= Flex.InternalContactList.pupPopup.hide.bind(Flex.InternalContactList.pupPopup);
+		this.pupPopup.setFooterButtons(new Array(elmCloseButton));
 	},
 	
 	renderViewPopup	: function()

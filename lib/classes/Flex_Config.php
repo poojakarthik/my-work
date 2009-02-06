@@ -24,7 +24,7 @@ class Flex_Config extends ORM
 	 * 
 	 * @constructor
 	 */
-	private function __construct($arrProperties)
+	protected function __construct($arrProperties)
 	{
 		// Parent constructor
 		parent::__construct($arrProperties, false);
