@@ -6,12 +6,13 @@ var InternalContactList	= Class.create
 	// Prototype constructor
 	initialize	: function()
 	{
-		this.pupPopup	= new Reflex_Popup(80);
+		this.pupPopup	= new Reflex_Popup(100);
 		this.pupPopup.setTitle('Internal Contact List');
 		this.pupPopup.addCloseButton();
 		
 		var elmCloseButton		= document.createElement('input');
 		elmCloseButton.type		= 'button';
+		elmCloseButton.value	= 'Close';
 		elmCloseButton.onclick	= this.pupPopup.hide.bind(this.pupPopup);
 		this.pupPopup.setFooterButtons(new Array(elmCloseButton));
 	},
