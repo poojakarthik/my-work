@@ -507,6 +507,7 @@ div.reflex-popup-title {
 div.reflex-popup-title-bar-buttons {
 	float : right;
 	width : 20%;
+	cursor: pointer;
 }
 
 div.reflex-popup-content {

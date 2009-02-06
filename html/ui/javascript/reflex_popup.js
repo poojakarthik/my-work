@@ -211,12 +211,17 @@ Object.extend(Reflex_Popup.prototype, {
 		}
 	},
 
-	setFooterButtons: function(buttons)
+	setFooterButtons: function(buttons, bolCentred)
 	{
 		this.footerPane.innerHTML = '';
 		for (var i = 0, l = buttons.length; i < l; i++)
 		{
 			this.footerPane.appendChild(buttons[i]);
+		}
+		
+		if (bolCentred != undefined && bolCentred === true)
+		{
+			this.footerPane.align	= 'center';
 		}
 	},
 

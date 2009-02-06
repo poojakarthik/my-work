@@ -14,7 +14,7 @@ var InternalContactList	= Class.create
 		elmCloseButton.type		= 'button';
 		elmCloseButton.value	= 'Close';
 		elmCloseButton.onclick	= this.pupPopup.hide.bind(this.pupPopup);
-		this.pupPopup.setFooterButtons(new Array(elmCloseButton));
+		this.pupPopup.setFooterButtons(new Array(elmCloseButton), true);
 	},
 	
 	renderViewPopup	: function()
