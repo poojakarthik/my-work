@@ -39,7 +39,7 @@ var FlexSearch = {
 		else
 		{
 			this.bolVerifyIfOneResult = true;
-			this.customerSearch(parseInt(mixSearchType), strConstraint, null, null, 0, true);
+			this.customerSearch(parseInt(mixSearchType), strConstraint, null, true, 0, true);
 		}
 	},
 	
