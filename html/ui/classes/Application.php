@@ -200,6 +200,9 @@ class Application
 				//ContextMenu()->Admin->Telemarketing->TelemarketUploadDiallerReport();
 			}
 		}
+		
+		// Internal Contact List
+		ContextMenu()->ViewInternalContactList();
 
 		// Render Page
 		//ob_start();
@@ -360,7 +363,9 @@ class Application
 				//ContextMenu()->Admin->Telemarketing->TelemarketUploadDiallerReport();
 			}
 		}
-
+		
+		// Internal Contact List
+		ContextMenu()->ViewInternalContactList();
 		
 		// Render Page
 		//ob_start();

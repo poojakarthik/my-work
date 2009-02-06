@@ -3227,7 +3227,23 @@ class MenuItems {
 		
 		return "JsAutoLoader.loadScript(\"javascript/invoice.js\", function(){Flex.Invoice.revokeInterimInvoiceConfirm({$intInvoice});});";
 	}
-
+	
+	/**
+	 * ViewContactList()
+	 *
+	 * Compiles the Href to be executed when the ViewContactList menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ViewInternalContactList()
+	{
+		$this->strContextMenuLabel = "Contact List";
+		$this->strLabel = "Revoke Final/Interim Invoice";
+		
+		return "javascript:JsAutoLoader.loadScript(\"javascript/internal_contact_list.js\", function(){Flex.InternalContactList.renderViewPopup();});";
+	}
+	
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//
