@@ -40,7 +40,7 @@ var InternalContactList	= Class.create
 			return;
 		}
 		
-		var strHTML	= "<div style='height: 500px; overflow: auto; margin-left: auto; margin-right: auto;'>\n" + objResponse.strHTML + "\n</div>\n";
+		var strHTML	= "<div style='height: 500px; overflow: auto;'><div align='center'>\n" + objResponse.strHTML + "\n</div></div>\n";
 		
 		// Render the popup
 		this.pupPopup.setContent(strHTML);
