@@ -131,7 +131,8 @@ class Flex_Rollout_Version_000133 extends Flex_Rollout_Version
 						CONSTRAINT fk_document_content_document_id FOREIGN KEY (document_id) REFERENCES document(id) ON UPDATE CASCADE ON DELETE CASCADE,
 						CONSTRAINT fk_document_content_file_type_id FOREIGN KEY (file_type_id) REFERENCES file_type(id) ON UPDATE CASCADE ON DELETE RESTRICT,
 						CONSTRAINT fk_document_content_employee_id FOREIGN KEY (employee_id) REFERENCES Employee(Id) ON UPDATE CASCADE ON DELETE RESTRICT,
-						CONSTRAINT fk_document_content_status_id FOREIGN KEY (status_id) REFERENCES status(id) ON UPDATE CASCADE ON DELETE RESTRICT
+						CONSTRAINT fk_document_content_status_id FOREIGN KEY (status_id) REFERENCES status(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+						CONSTRAINT fk_document_content_parent_document_id FOREIGN KEY (parent_document_id) REFERENCES document(id) ON UPDATE CASCADE ON DELETE CASCADE
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
