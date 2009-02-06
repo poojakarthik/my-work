@@ -122,6 +122,7 @@ class Flex_Rollout_Version_000133 extends Flex_Rollout_Version
 						description			VARCHAR(1024)				NULL					COMMENT 'Description of the Document',
 						file_type_id		BIGINT(20)		UNSIGNED	NOT NULL				COMMENT '(FK) The Document\'s File Type',
 						content				MEDIUMBLOB					NOT NULL				COMMENT 'Binary content of the Document',
+						parent_document_id	BIGINT(20)		UNSIGNED	NULL					COMMENT '(FK) The Document this is a child of',
 						changed_on			TIMESTAMP					NOT NULL				COMMENT 'Date the Document was changed',
 						employee_id			BIGINT(20)		UNSIGNED	NOT NULL				COMMENT '(FK) Employee who modified the Document',
 						status_id			BIGINT(20)		UNSIGNED	NOT NULL				COMMENT '(FK) Active Status of the Document',
