@@ -4,8 +4,8 @@
  * Version 133 of database update.
  * This version: -
  *	1:	Add the status Table
- *	2:	Add the file_type Table
- *	3:	Add the mime_type Table
+ *	2:	Add the mime_type Table
+ *	3:	Add the file_type Table
  *	4:	Add the document_nature Table
  *	5:	Add the document Table
  *	6:	Add the document_content Table
@@ -39,7 +39,25 @@ class Flex_Rollout_Version_000133 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] = "DROP TABLE status;";
 		
-		// 2:	Add the file_type Table
+		// 2:	Add the mime_type Table
+		$strSQL =	"CREATE TABLE mime_type 
+					(
+						id					BIGINT(20)		UNSIGNED	NOT NULL AUTO_INCREMENT	COMMENT 'Unique Identifier',
+						name				VARCHAR(255)				NOT NULL				COMMENT 'Name of the Mime Type',
+						description			VARCHAR(1024)				NOT NULL				COMMENT 'Description of the Mime Type',
+						mime_content_type	VARCHAR(255)				NOT NULL				COMMENT 'Mime Content Type',
+						const_name			VARCHAR(512)				NOT NULL				COMMENT 'Constant Name of the Mime Type',
+						
+						CONSTRAINT pk_mime_type_id PRIMARY KEY (id)
+					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
+		$result = $dbAdmin->query($strSQL);
+		if (PEAR::isError($result))
+		{
+			throw new Exception(__CLASS__ . ' Failed to add mime_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
+		}
+		$this->rollbackSQL[] = "DROP TABLE mime_type;";
+		
+		// 3:	Add the file_type Table
 		$strSQL =	"CREATE TABLE file_type 
 					(
 						id				BIGINT(20)		UNSIGNED	NOT NULL AUTO_INCREMENT	COMMENT 'Unique Identifier',
@@ -60,24 +78,6 @@ class Flex_Rollout_Version_000133 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to add file_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] = "DROP TABLE file_type;";
-		
-		// 3:	Add the mime_type Table
-		$strSQL =	"CREATE TABLE mime_type 
-					(
-						id					BIGINT(20)		UNSIGNED	NOT NULL AUTO_INCREMENT	COMMENT 'Unique Identifier',
-						name				VARCHAR(255)				NOT NULL				COMMENT 'Name of the Mime Type',
-						description			VARCHAR(1024)				NOT NULL				COMMENT 'Description of the Mime Type',
-						mime_content_type	VARCHAR(255)				NOT NULL				COMMENT 'Mime Content Type',
-						const_name			VARCHAR(512)				NOT NULL				COMMENT 'Constant Name of the Mime Type',
-						
-						CONSTRAINT pk_mime_type_id PRIMARY KEY (id)
-					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
-		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
-		{
-			throw new Exception(__CLASS__ . ' Failed to add mime_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
-		}
-		$this->rollbackSQL[] = "DROP TABLE mime_type;";
 		
 		// 4:	Add the document_nature Table
 		$strSQL =	"CREATE TABLE document_nature 
