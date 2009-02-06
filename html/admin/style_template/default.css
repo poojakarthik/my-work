@@ -1284,6 +1284,7 @@ input.time
 	text-align: right;
 	height: 14px;
 	padding: 3px;
+	cursor: pointer;
 }
 
 .PopupMedium,
