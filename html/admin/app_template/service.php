@@ -1690,7 +1690,7 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Check that none of these new numbers are already in the database
-		$strNow		= GetCurrentDateForMySQL();
+		$strNow		= Data_Source_Time::currentTimestamp();
 		$arrFNNs	= Array();
 		foreach ($arrServices as $objService)
 		{
