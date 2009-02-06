@@ -14,8 +14,6 @@ class Cli_App_Sales extends Cli
 	const	PAYMENT_TERMS_DEFAULT = 14;
 	const	BILLING_DATE_DEFAULT = 1;
 	
-	const	PERMISSION_SALES_ADMIN = 0x1000;
-
 	function run()
 	{
 		try
