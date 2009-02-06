@@ -502,7 +502,7 @@ div.reflex-popup-title {
 	color : #EEEEEE;
 	float : left;
 	width : 79%;
-	
+	font-weight: bold;
 }
 
 div.reflex-popup-title-bar-buttons {
