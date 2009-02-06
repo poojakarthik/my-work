@@ -11,7 +11,6 @@
 
 		<h2 class="Adjustment">Adjustment Details</h2>
 		<form method="post" action="charges_approve.php">
-			<!--TODO!bash! [  DONE  ]		This needs to have a 'Nature' column!!-->
 			<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 				<tr class="First">
 					<th width="30">#</th>
@@ -65,12 +64,10 @@
 									<xsl:text>account_view.php?Id=</xsl:text>
 									<xsl:value-of select="./Account" />
 								</xsl:attribute>
-								<!--TODO!bash! [  DONE  ]		make this be the account number !!-->
 								<xsl:text></xsl:text>
 								<xsl:value-of select="./Account" />
 							</a>
 						</td>
-						<!--TODO!bash! [  DONE  ]		Make this the name of the employee, not their #!!-->
 						<td>
 							<xsl:value-of select="$CreatedBy/FirstName" />
 							<xsl:text> </xsl:text>
@@ -114,16 +111,53 @@
 					<div class="Clear" />
 					<div class="Seperator"></div>
 					
-					<table width="100%" border="0" cellpadding="0" cellspacing="0">
-						<tr>
-							<td width="33%"></td>
-							<td width="34%" align="center">
-								Page <xsl:value-of select="/Response/Charges-Unapproved/Results/rangePage" />
-								of <xsl:value-of select="/Response/Charges-Unapproved/Results/rangePages" />
-							</td>
-							<td width="33%"></td>
-						</tr>
-					</table>
+					<div style='text-align: center;'>
+						<xsl:choose>
+							<xsl:when test='/Response/Charges-Unapproved/Results/rangePage &gt; 1'>
+								<a href='../management/charges_approve.php?p=1'>
+									First
+								</a>
+								|
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>../management/charges_approve.php?p=</xsl:text>
+										<xsl:value-of select="/Response/Charges-Unapproved/Results/rangePage - 1" />
+									</xsl:attribute>
+									Previous
+								</a>
+							</xsl:when>
+							<xsl:otherwise>
+								First | Previous
+							</xsl:otherwise>
+						</xsl:choose>
+						|
+						<xsl:choose>
+							<xsl:when test='/Response/Charges-Unapproved/Results/rangePage &lt; /Response/Charges-Unapproved/Results/rangePages'>
+								<a href='../management/charges_approve.php?p=1'>
+									<xsl:attribute name="href">
+										<xsl:text>../management/charges_approve.php?p=</xsl:text>
+										<xsl:value-of select="/Response/Charges-Unapproved/Results/rangePage + 1" />
+									</xsl:attribute>
+									Next
+								</a>
+								|
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>../management/charges_approve.php?p=</xsl:text>
+										<xsl:value-of select="/Response/Charges-Unapproved/Results/rangePage + /Response/Charges-Unapproved/Results/rangePages" />
+									</xsl:attribute>
+									Next
+									Last
+								</a>
+							</xsl:when>
+							<xsl:otherwise>
+								Next | Last
+							</xsl:otherwise>
+						</xsl:choose>
+						<br />
+						Page <xsl:value-of select="/Response/Charges-Unapproved/Results/rangePage" />
+						of <xsl:value-of select="/Response/Charges-Unapproved/Results/rangePages" />
+					</div>
 				</xsl:otherwise>
 			</xsl:choose>
 		</form>
