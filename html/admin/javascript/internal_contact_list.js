@@ -11,9 +11,8 @@ var InternalContactList	= Class.create
 		this.pupPopup.addCloseButton();
 		
 		var elmCloseButton		= document.createElement('input');
-		elmCloseButton.id		= 'Flex_InternalContactList_Popup_Close';
 		elmCloseButton.type		= 'button';
-		elmCloseButton.onclick	= Flex.InternalContactList.pupPopup.hide.bind(Flex.InternalContactList.pupPopup);
+		elmCloseButton.onclick	= this.pupPopup.hide.bind(this.pupPopup);
 		this.pupPopup.setFooterButtons(new Array(elmCloseButton));
 	},
 	
