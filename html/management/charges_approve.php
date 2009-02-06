@@ -51,7 +51,7 @@
 	$intPage		= ((int)$_GET['p'] > 0) ? (int)$_GET['p'] : 1;
 	
 	$uchUnapprovedCharges = $Style->attachObject (new Charges_Unapproved);
-	$oblsamCharges = $uchUnapprovedCharges->Sample ((($intPage - 1) * $intPageLimit) + 1, $intPageLimit);
+	$oblsamCharges = $uchUnapprovedCharges->Sample ($intPage, $intPageLimit);
 	
 	$arrEmployees = Array ();
 	$oblarrEmployees = $Style->attachObject (new dataArray ('Employees', 'Employee'));
