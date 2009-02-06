@@ -854,9 +854,16 @@ class Invoice extends ORM
 	{
 		$intProratePeriod			= TruncateTime($intPeriodEndDate, $strSmallestDenomination, 'floor') - TruncateTime($intChargeDate, $strSmallestDenomination, 'floor');
 		$intBillingPeriod			= TruncateTime($intPeriodEndDate, $strSmallestDenomination, 'floor') - TruncateTime($intPeriodStartDate, $strSmallestDenomination, 'floor');
-		$fltProratedAmount			= ($fltAmount / $intBillingPeriod) * $intProratePeriod;
-		$fltProratedAmount			= round($fltProratedAmount, $intDecimalPlaces);
-		return $fltProratedAmount;
+		if ($intBillingPeriod)
+		{			
+			$fltProratedAmount			= ($fltAmount / $intBillingPeriod) * $intProratePeriod;
+			$fltProratedAmount			= round($fltProratedAmount, $intDecimalPlaces);
+			return $fltProratedAmount;
+		}
+		else
+		{
+			return 0.0;
+		}
 	}
 
 	//------------------------------------------------------------------------//
