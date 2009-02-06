@@ -219,10 +219,7 @@ Object.extend(Reflex_Popup.prototype, {
 			this.footerPane.appendChild(buttons[i]);
 		}
 		
-		if (bolCentred != undefined && bolCentred === true)
-		{
-			this.footerPane.style.textAlign	= 'center';
-		}
+		this.footerPane.style.textAlign	= (bolCentred != undefined && bolCentred) ? 'center' : 'right';
 	},
 
 	recentre: function()
