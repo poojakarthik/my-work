@@ -46,7 +46,6 @@ class Flex_Rollout_Version_000133 extends Flex_Rollout_Version
 						name				VARCHAR(255)				NOT NULL				COMMENT 'Name of the Mime Type',
 						description			VARCHAR(1024)				NOT NULL				COMMENT 'Description of the Mime Type',
 						mime_content_type	VARCHAR(255)				NOT NULL				COMMENT 'Mime Content Type',
-						const_name			VARCHAR(512)				NOT NULL				COMMENT 'Constant Name of the Mime Type',
 						
 						CONSTRAINT pk_mime_type_id PRIMARY KEY (id)
 					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
@@ -67,7 +66,6 @@ class Flex_Rollout_Version_000133 extends Flex_Rollout_Version
 						mime_type_id	BIGINT(20)		UNSIGNED	NOT NULL				COMMENT '(FK) Reference to the mime_type_id Table',
 						icon_16x16		MEDIUMBLOB					NULL					COMMENT 'Small Icon for the File Type',
 						icon_64x64		MEDIUMBLOB					NULL					COMMENT 'Large Icon for the File Type',
-						const_name		VARCHAR(512)				NOT NULL				COMMENT 'Constant Name of the File Type',
 						
 						CONSTRAINT pk_file_type_id PRIMARY KEY (id),
 						CONSTRAINT fk_file_type_mime_type_id FOREIGN KEY (mime_type_id) REFERENCES mime_type(id) ON UPDATE CASCADE ON DELETE RESTRICT
