@@ -3241,7 +3241,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Contact List";
 		$this->strLabel = "Revoke Final/Interim Invoice";
 		
-		return "JsAutoLoader.loadScript('javascript/internal_contact_list.js', function(){Flex.InternalContactList.renderViewPopup();});";
+		return "javascript:JsAutoLoader.loadScript('javascript/internal_contact_list.js', function(){Flex.InternalContactList.renderViewPopup();});";
 	}
 	
 	//------------------------------------------------------------------------//
