@@ -133,9 +133,9 @@
 		self::_addElement($xmlAccount, 'Addressee', $arrCustomer['BusinessName']);
 		self::_addElement($xmlAccount, 'AddressLine1', $arrCustomer['Address1']);
 		self::_addElement($xmlAccount, 'AddressLine2', $arrCustomer['Address2']);
-		self::_addElement($xmlAccount, 'Suburb', $arrCustomer['Suburb']);
-		self::_addElement($xmlAccount, 'Postcode', $arrCustomer['Postcode']);
-		self::_addElement($xmlAccount, 'State', $arrCustomer['State']);
+		self::_addElement($xmlAccount, 'Suburb', strtoupper($arrCustomer['Suburb']));
+		self::_addElement($xmlAccount, 'Postcode', strtoupper($arrCustomer['Postcode']));
+		self::_addElement($xmlAccount, 'State', strtoupper($arrCustomer['State']));
 		
 		//--------------------------------------------------------------------//
 		// Account Summary & Itemisation
