@@ -934,21 +934,41 @@ class Invoice_Run
 	 */
 	public function generateSampleList()
 	{
-		$strInvoiceRunBlurb	= date("F", strtotime("-1 day", strtotime($this->BillingDate)))." {$strCustomerGroup} {$arrInvoiceRun['description']} Samples for ".GetConstantDescription($this->customer_group_id, 'CustomerGroup');
+		$selInvoiceRunSchedule	= self::_preparedStatement('selInvoiceRunSchedule');
+		if ($selInvoiceRunSchedule->Execute($this->toArray()) === false)
+		{
+			throw new Exception($selInvoiceRunSchedule->Error());
+		}
+		$arrInvoiceRunSchedule	= $selInvoiceRunSchedule->Fetch();
+		$strSampleType			= (isset($arrInvoiceRunSchedule['description'])) ? $arrInvoiceRunSchedule['description'] : '';
+		$strSampleType			= trim($strSampleType . ((stripos($strSampleType, 'sample')) ? $arrInvoiceRunSchedule['description'] : ' Samples'));
+		
+		//$strInvoiceRunBlurb	= date("F Y", strtotime("-1 day", strtotime($this->BillingDate)))." {$strCustomerGroup} {$arrInvoiceRun['description']} Samples for ".GetConstantDescription($this->customer_group_id, 'CustomerGroup');
+		$strInvoiceRunBlurb	= GetConstantDescription($this->customer_group_id, 'CustomerGroup')." {$strSampleType} for ".date("F Y", strtotime("-1 day", strtotime($this->BillingDate)));
 
 		$strTextContent	= '';
 		$strHTMLContent	=	"<div style='font-family: Calibri, sans-serif;'>\n";
 
 		// Generate Email Content
 		$selSampleList	= self::_preparedStatement('selSampleList');
-		if ($selSampleList->Execute($this->toArray()) === false)
+		$mixResult		= $selSampleList->Execute($this->toArray());
+		if ($mixResult === false)
 		{
 			throw new Exception($selSampleList->Error());
 		}
-		while ($arrSample = $selSampleList->Fetch())
+		elseif ($mixResult)
 		{
-			$strTextContent	.= "{$arrSample['Id']} | {$arrSample['BusinessName']} : {$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}\n";
-			$strHTMLContent	.= "<a href='{$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}'>{$arrSample['Id']} | {$arrSample['BusinessName']}</a><br />\n";
+			while ($arrSample = $selSampleList->Fetch())
+			{
+				$strTextContent	.= "{$arrSample['Id']} | {$arrSample['BusinessName']} : {$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}\n";
+				$strHTMLContent	.= "<a href='{$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}'>{$arrSample['Id']} | {$arrSample['BusinessName']}</a><br />\n";
+			}
+		}
+		else
+		{
+			// No Sample Accounts
+			$strHTMLContent	.= "There are no Accounts set to Sample in Flex.  However, you can still view sample PDFs for all Accounts on the Account Overview and Invoices & Payments screens.";
+			$strTextContent	.= "There are no Accounts set to Sample in Flex.  However, you can still view sample PDFs for all Accounts on the Account Overview and Invoices & Payments screens.";
 		}
 
 		$strHTMLContent	.= "</div>\n";
@@ -1108,6 +1128,9 @@ class Invoice_Run
 					break;
 				case 'selSampleList':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id", "Account.*, CustomerGroup.flex_url", "Account.Sample != 0 AND invoice_run_id = <Id>");
+					break;
+				case 'selInvoiceRunSchedule':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun LEFT JOIN invoice_run_schedule ON InvoiceRun.invoice_run_schedule_id = invoice_run_schedule.id", "invoice_run_schedule.*", "InvoiceRun.Id = <Id>", null, 1);
 					break;
 
 
