@@ -32,6 +32,63 @@ class Document extends ORM
 	/**
 	 * getContent()
 	 *
+	 * Retrieves the Content for this Document
+	 * 
+	 * @param	[mixed			$mixRevision]						Revision of the Content to retrieve
+	 * 																TRUE|0		: Latest Revision (default)
+	 * 																FALSE		: Earliest Revision
+	 * 																-ve integer	: X Revisions ago (eg. -3 = 3 revisions ago)
+	 * 																+ve integer	: Revision number X (eg. 2 = second revision)
+	 * 
+	 * @return	Document_Content									The requested Statement
+	 *
+	 * @method
+	 */
+	public function getContent($mixRevision=true)
+	{
+		static	$qryQuery;
+		static	$arrRevisionCache	= array();
+		$qryQuery	= (isset($qryQuery) && $qryQuery instanceof Query) ? $qryQuery : new Query();
+		
+		$mixRevision	= (is_bool($mixRevision)) ? $mixRevision : (int)$mixRevision;
+		if ($mixRevision === false)
+		{
+			// FALSE -- First Revision
+			$strLimit	= "1";
+			$strOrderBy	= "id ASC";
+		}
+		elseif ($mixRevision > 0)
+		{
+			// Positive Integer -- Revision number $mixRevision
+			$strLimit	= "1 OFFSET ".($mixRevision-1);
+			$strOrderBy	= "id ASC";
+		}
+		elseif ($mixRevision < 0)
+		{
+			// Negative Integer -- $mixRevision Revisions ago
+			$strLimit	= "1 OFFSET ".(abs($mixRevision));
+			$strOrderBy	= "id DESC";
+		}
+		else//if ($mixRevision === true)
+		{
+			// Default -- to Current Revision
+			$strLimit	= "1";
+			$strOrderBy	= "id DESC";
+		}
+		
+		// Retrieve and return the content
+		$strQuery		= "SELECT * FROM document_content WHERE document_id = {$this->id} ORDER BY {$strOrderBy} LIMIT {$strLimit}";
+		$resRevision	= $qryQuery->Execute($strQuery);
+		if ($resRevision === false)
+		{
+			throw new Exception($qryQuery->Error());
+		}
+		return ($resRevision->num_rows) ? $resRevision->fetch_assoc() : null;
+	}
+	
+	/**
+	 * getPath()
+	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 * 
 	 * @param	[mixed			$mixRevision]						Revision of the Content to retrieve
@@ -43,7 +100,7 @@ class Document extends ORM
 	 *
 	 * @method
 	 */
-	public function getContent($mixRevision=true)
+	public function getPath($mixRevision=true)
 	{
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery) && $qryQuery instanceof Query) ? $qryQuery : new Query();
@@ -70,6 +127,25 @@ class Document extends ORM
 		{
 			throw new Exception($qryQuery->Error());
 		}
+	}
+	
+	/**
+	 * getForPath()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 * 
+	 * @param	[mixed			$mixRevision]						Revision of the Content to retrieve
+	 * 																TRUE	: Latest Revision (default)
+	 * 																FALSE	: Earliest Revision
+	 * 																integer	: X Revisions ago (0 = current)
+	 * 
+	 * @return	Document_Content									The requested Statement
+	 *
+	 * @method
+	 */
+	public static function getForPath($strPath)
+	{
+		
 	}
 	
 	/**
