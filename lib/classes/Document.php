@@ -83,7 +83,7 @@ class Document extends ORM
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		return ($resRevision->num_rows) ? $resRevision->fetch_assoc() : null;
+		return ($resRevision->num_rows) ? new Document_Content($resRevision->fetch_assoc()) : null;
 	}
 	
 	/**
