@@ -8,8 +8,10 @@
  */
 class Document extends ORM
 {
-	protected			$_strTableName			= "document";
-	protected static	$_strStaticTableName	= "document";
+	const				PATH_DIRECTORY_DELIMITER	= '/';
+	
+	protected			$_strTableName				= "document";
+	protected static	$_strStaticTableName		= "document";
 	
 	/**
 	 * __construct()
@@ -102,35 +104,11 @@ class Document extends ORM
 	 */
 	public function getPath($mixRevision=true)
 	{
-		static	$qryQuery;
-		$qryQuery	= (isset($qryQuery) && $qryQuery instanceof Query) ? $qryQuery : new Query();
 		
-		if ($mixRevision === true)
-		{
-			$strLimit	= "1";
-			$strOrderBy	= "id DESC";
-		}
-		elseif ($mixRevision === false)
-		{
-			$strLimit	= "1";
-			$strOrderBy	= "id ASC";
-		}
-		else
-		{
-			$strLimit	= "1 OFFSET ".((int)$mixRevision);
-			$strOrderBy	= "id DESC";
-		}
-		
-		$strQuery		= "SELECT * FROM document_content WHERE document_id = {$this->id} ORDER BY {$strOrderBy} LIMIT {$strLimit}";
-		$resRevision	= $qryQuery->Execute($strQuery);
-		if ($resRevision === false)
-		{
-			throw new Exception($qryQuery->Error());
-		}
 	}
 	
 	/**
-	 * getForPath()
+	 * getByPath()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 * 
@@ -143,9 +121,14 @@ class Document extends ORM
 	 *
 	 * @method
 	 */
-	public static function getForPath($strPath)
+	public static function getByPath($strPath)
 	{
+		$arrPath	= explode(self::PATH_DIRECTORY_DELIMITER, $strPath);
 		
+		foreach ($arrPath as $strNode)
+		{
+			
+		}
 	}
 	
 	/**

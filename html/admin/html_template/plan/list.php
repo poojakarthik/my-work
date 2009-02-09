@@ -120,20 +120,11 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 <div class='SmallSeparator'></div>
 ";
 
-		// Render the header of the Plan Table.  This depends on the privileges of the user
-		if ($bolHasPlanEditPerm)
-		{
-			Table()->PlanTable->SetHeader("&nbsp;", "Name", "&nbsp;", "Customer Group", "Carrier Full Service", "Carrier Pre Selection", "Status", "&nbsp;");
-			Table()->PlanTable->SetWidth("4%", "36%", "4%", "20%", "10%", "10%", "12%", "4%");
-			Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left", "Right");
-		}
-		else
-		{
-			Table()->PlanTable->SetHeader("&nbsp;", "Name", "&nbsp;", "Customer Group", "Carrier Full Service", "Carrier Pre Selection", "Status");
-			Table()->PlanTable->SetWidth("4%", "40%", "4%", "20%", "10%", "10%", "12%");
-			Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left");
-		}
-
+		// Render the header of the Plan Table
+		Table()->PlanTable->SetHeader("&nbsp;", "Name", "&nbsp;", "Customer Group", "Carrier Full Service", "Carrier Pre Selection", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+		Table()->PlanTable->SetWidth("4%", "36%", "4%", "20%", "10%", "10%", "12%", "4%");
+		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left", "Centre", "Centre", "Centre", "Centre");
+		
 		// This array will store the details required for the javascript code that archives a RatePlan
 		$arrRatePlanDetails = array();
 		
@@ -179,38 +170,56 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strServiceTypeCell	= "<div class='$strServiceTypeClass'></div>";
 						
 			// Add the Rate Plan to the VixenTable
+			
+			if ((!$arrRatePlan['IsDefault']) && ($arrRatePlan['Archived'] == RATE_STATUS_ACTIVE || $arrRatePlan['Archived'] == RATE_STATUS_ARCHIVED))
+			{
+				// The user can toggle the status between Active and Archived
+				$strStatusCell = "<span title='Toggle Status' onclick='Vixen.AvailablePlansPage.TogglePlanStatus({$arrRatePlan['Id']})'>$strStatusCell</span>";
+			}
+			
+			// Build the Plan Brochure link
+			$strBrochureCell	= '';
+			if ($arrRatePlan['brochure_document_id'])
+			{
+				$objBrochureDocument		= new Document($arrRatePlan['brochure_document_id'], true);
+				$objBrochureDocumentContent	= $objBrochureDocument->getContent();
+				$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+				
+				$strImageSrc	= "../admin/reflex.php/Image/FileType/{$objBrochureIcon->id}/16x16";
+			}
+			
+			// Build the Voice Auth Script link
+			$strVoiceAuthCell	= '';
+			if ($arrRatePlan['auth_script_document_id'])
+			{
+				$objAuthScriptDocument			= new Document($arrRatePlan['auth_script_document_id'], true);
+				$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContent();
+				$objAuthScriptIcon					= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
+				
+				$strImageSrc	= "../admin/reflex.php/File/Image/FileTypeIcon/{$objAuthScriptIcon->id}/16x16";
+			}
+			
+			// Build the "Add Rate Plan Based On Existing" link
 			if ($bolHasPlanEditPerm)
 			{
-				// User can add and edit Rate Plans
-				// Build the Edit Rate Plan link, if the RatePlan is currently a draft
-				$strEdit = "";
+				$strEditCell = "";
 				if ($arrRatePlan['Archived'] == RATE_STATUS_DRAFT)
 				{
 					$strEditPlanLink	= Href()->EditRatePlan($arrRatePlan['Id']);
-					$strEdit			= "<a href='$strEditPlanLink' title='Edit'><img src='img/template/edit.png'></img></a>";
+					$strEditCell		= "<a href='$strEditPlanLink' title='Edit'><img src='img/template/edit.png'></img></a>";
 				}
-				
-				if ((!$arrRatePlan['IsDefault']) && ($arrRatePlan['Archived'] == RATE_STATUS_ACTIVE || $arrRatePlan['Archived'] == RATE_STATUS_ARCHIVED))
+				else
 				{
-					// The user can toggle the status between Active and Archived
-					$strStatusCell = "<span title='Toggle Status' onclick='Vixen.AvailablePlansPage.TogglePlanStatus({$arrRatePlan['Id']})'>$strStatusCell</span>";
+					// Limited Edit Popup
+					// TODO
 				}
-				
-				// Build the "Add Rate Plan Based On Existing" link
 				$strAddPlanLink	= Href()->AddRatePlan($arrRatePlan['Id']);
-				$strAdd			= "<a href='$strAddPlanLink' title='Create a new plan based on this one'><img src='img/template/new.png'></img></a>";
+				$strAddCell		= "<a href='$strAddPlanLink' title='Create a new plan based on this one'><img src='img/template/new.png'></img></a>";
 				$strActionCell	= "{$strEdit}{$strAdd}";
-				
-				// Add the row
-				Table()->PlanTable->AddRow($strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroup, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strActionCell);
 			}
-			else
-			{
-				
-				// User can not Add or Edit Rate Plans
-				// Add the Row
-				Table()->PlanTable->AddRow($strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroup, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell);
-			}
+			
+			// Add the row
+			Table()->PlanTable->AddRow($strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroup, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
 			
 			$arrRatePlanDetails[$arrRatePlan['Id']] = array(	"Name"			=> $strName,
 																"CustomerGroup"	=> $strCustomerGroup,
