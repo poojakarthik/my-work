@@ -69,6 +69,7 @@ class Application_Handler_File extends Application_Handler
 		
 		$strField		= "icon_{$arrSubPath[2]}";
 		$strIconData	= $objFileType->{$strField};
+		echo "{$strField}";
 		
 		return array('raw_data'=>$strIconData, 'mime_content_type'=>'image/png');
 	}
