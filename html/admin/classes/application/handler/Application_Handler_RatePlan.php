@@ -28,7 +28,7 @@ class Application_Handler_RatePlan extends Application_Handler
 			
 			// Check the File Name format
 			$strFileName	= $_POST['Plan_SetBrochure_File']['name'];
-			$arrFileName	= explode($strFileName);
+			$arrFileName	= explode('.', $strFileName);
 			$strMIME		= $_POST['Plan_SetBrochure_File']['type'];
 			if (!strcasecmp(end($arrFileName), self::PLAN_BROCHURE_FILE_EXTENSION) || $strMIME !== self::PLAN_BROCHURE_MIME_CONTENT_TYPE)
 			{
