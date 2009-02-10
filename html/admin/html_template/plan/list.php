@@ -208,7 +208,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			}
 			else
 			{
-				$strBrochureCell	= "A!";
+				$strVoiceAuthCell	= "A!";
 			}
 			
 			// Build the "Add Rate Plan Based On Existing" link
