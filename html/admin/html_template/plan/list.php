@@ -185,7 +185,9 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				$objBrochureDocumentContent	= $objBrochureDocument->getContent();
 				$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
 				
-				$strImageSrc	= "../admin/reflex.php/Image/FileType/{$objBrochureIcon->id}/16x16";
+				$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
+				$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
+				$strBrochureCell	= "<a href='{$strBrochureLink}' title='Edit'><img src='{$strImageSrc}' alt='Plan Brochure'></img></a>";
 			}
 			
 			// Build the Voice Auth Script link
@@ -194,9 +196,11 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			{
 				$objAuthScriptDocument			= new Document($arrRatePlan['auth_script_document_id'], true);
 				$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContent();
-				$objAuthScriptIcon					= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
+				$objAuthScriptIcon				= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
 				
-				$strImageSrc	= "../admin/reflex.php/File/Image/FileTypeIcon/{$objAuthScriptIcon->id}/16x16";
+				$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objAuthScriptIcon->id}/16x16";
+				$strVoiceAuthLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
+				$strVoiceAuthCell	= "<a href='{$strVoiceAuthLink}' title='Edit'><img src='{$strImageSrc}' alt='Plan Brochure'></img></a>";
 			}
 			
 			// Build the "Add Rate Plan Based On Existing" link
