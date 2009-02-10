@@ -30,6 +30,41 @@ class File_Type extends ORM
 	}
 	
 	/**
+	 * getForExtensionAndMimeType()
+	 *
+	 * Returns a File_Type based on the file extension and mime type
+	 *
+	 * @param	string		$strExtension 			File Extension
+	 * @param	string		$strMimeType 			MIME Content Type
+	 * @param	[boolean	$bolAsArray			]	TRUE	: Return an associative array
+	 * 												FALSE	: Return a File_Type object (default)
+	 * 
+	 * @return	mixed								Associative Array or File_Type object
+	 * 
+	 * @method
+	 */
+	public static function getForExtensionAndMimeType($strExtension, $strMimeType, $bolAsArray=false)
+	{
+		$selByExtensionMimeType	= self::_preparedStatement('selByExtensionMimeType');
+		$mixResult				= $selByExtensionMimeType->Execute(array('extension'=>trim($strExtension, '.'), 'mime_content_type'=>$strMimeType));
+		
+		if ($mixResult === false)
+		{
+			throw new Exception($selByExtensionMimeType->Error());
+		}
+		elseif (!$mixResult)
+		{
+			return null;
+		}
+		else
+		{
+			$arrFileType	= $selByExtensionMimeType->Fetch();
+			
+			return ($bolAsArray) ? $arrFileType : new File_Type($arrFileType);
+		}
+	}
+	
+	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
@@ -54,6 +89,9 @@ class File_Type extends ORM
 				// SELECTS
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selByExtensionMimeType':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("file_type JOIN mime_type ON file_type.mime_type_id = mime_type.id", "file_type.*", "file_type.extension = <extension> AND mime_type.mime_content_type = <mime_content_type>", NULL, 1);
 					break;
 				
 				// INSERTS

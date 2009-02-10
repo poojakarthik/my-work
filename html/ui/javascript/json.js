@@ -279,6 +279,72 @@ jQuery.json = {
 		});
 
 		return responseHandler.funcRemote;
+	},
+	
+
+	// Iframe-basd AJAX
+	jsonIframeFormSubmit	: function(elmForm, funcResponseHandler)
+	{
+		// Create a hidden IFrame
+		var	strIframeId			= elmForm.id + "_iframe";
+		
+		var elmDiv				= document.createElement('div');
+		elmDiv.id				= strIframeId + '_div';
+		elmDiv.style.visibility	= 'hidden';
+		document.body.appendChild(elmDiv);
+		
+		var elmIframe				= document.createElement('iframe');
+		elmIframe.id				= strIframeId;
+		elmIframe.name				= strIframeId;
+		elmIframe.setAttribute('onload', 'jQuery.json.jsonIframeFormLoaded(this)');
+		elmIframe.style.visibility	= 'hidden';
+		elmDiv.appendChild(elmIframe);
+		
+		// Attach a Response Handler function
+		if (typeof(funcResponseHandler) == 'function')
+		{
+			elmIframe.funcResponseHandler	= funcResponseHandler;
+		}
+		
+		// Add a target to the form
+		elmForm.target			= elmIframe.id;
+		
+		return true;
+	},
+	
+	jsonIframeFormLoaded	: function(elmIframe)
+	{
+		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
+		
+		// Parse Iframe contents for response data (JSON'd PHP Array)
+		var objResponse			= jQuery.json.decode(objIframeDocument.body.innerHTML);
+		objResponse				= (objResponse) ? objResponse : {Message: objIframeDocument.body.innerHTML};
+		
+		// Call the Handler Function (if one was supplied)
+		if (elmIframe.funcResponseHandler != undefined)
+		{
+			elmIframe.funcResponseHandler(objResponse);
+		}
+		
+		// Schedule Iframe Cleanup
+		setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
+		
+		elmIframe.bolLoaded	= true;
+	},
+	
+	_jsonIframeCleanup		: function(elmIframe)
+	{
+		// If the IFrame exists and is loaded, then remove it
+		if ($ID(elmIframe.id) && elmIframe.bolLoaded)
+		{
+			// Destroy the Div and Iframe
+			document.body.removeChild($ID(elmIframe.id + '_div'));
+		}
+		else
+		{
+			// Otherwise schedule another cleanup
+			setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
+		}
 	}
 
 };

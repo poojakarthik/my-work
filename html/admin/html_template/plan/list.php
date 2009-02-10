@@ -193,7 +193,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Plan Brochure'><img src='{$strImageSrc}' alt='Plan Brochure' /></a>";
 				}
 			}
-			else
+			elseif ($bolHasPlanEditPerm)
 			{
 				// Add Brochure link
 				$strImageSrc		= "../admin/img/template/brochure_add.png";
@@ -216,11 +216,14 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strVoiceAuthLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
 					$strVoiceAuthCell	= "<a href='{$strVoiceAuthLink}' title='Authorisation Script'><img src='{$strImageSrc}' alt='Authorisation Script' /></a>";
 				}
-			}/*
-			else
+			}
+			elseif ($bolHasPlanEditPerm)
 			{
-				$strVoiceAuthCell	= "A!";
-			}*/
+				// Add Voice Auth link
+				//$strImageSrc			= "../admin/img/template/auth_script_add.png";
+				//$strVoiceAuthOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setAuthScript({$arrRatePlan['Id']});});";
+				//$strVoiceAuthCell		= "<a onclick='{$strBrochureOnClick}' title='Add Plan Brochure'><img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
+			}
 			
 			// Build the "Add Rate Plan Based On Existing" link
 			if ($bolHasPlanEditPerm)

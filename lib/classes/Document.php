@@ -115,7 +115,7 @@ class Document extends ORM
 	/**
 	 * getByPath()
 	 *
-	 * Access a Static Cache of Prepared Statements used by this Class
+	 * Retrieves
 	 * 
 	 * @param	[mixed			$mixRevision]						Revision of the Content to retrieve
 	 * 																TRUE	: Latest Revision (default)
@@ -126,14 +126,32 @@ class Document extends ORM
 	 *
 	 * @method
 	 */
-	public static function getByPath($strPath)
+	public static function getByPath($strPath, $bolAsArray=false)
 	{
 		$arrPath	= explode(self::PATH_DIRECTORY_DELIMITER, $strPath);
 		
+		$intParentId	= null;
 		foreach ($arrPath as $strNode)
 		{
+			// Check if this node exists
+			// FIXME: Handle [CustomerGroup=1] style Names
+			$selByNameAndParent	= self::_preparedStatement('selByNameAndParent');
+			$mixResult			= $selByNameAndParent->Execute(array('name'=>$strNode, 'parent_document_id'=>$intParentId));
+			if ($mixResult === false)
+			{
+				throw new Exception($selByNameAndParent->Error());
+			}
+			elseif (!$mixResult)
+			{
+				// TODO: Do we want to throw a custom exception?
+				return null;
+			}
 			
+			$arrDocument	= $selByNameAndParent->Fetch();
+			$intParentId	= $arrDocument['id'];
 		}
+		
+		return ($bolAsArray) ? $arrDocument : new Document($arrDocument);
 	}
 	
 	/**
@@ -161,6 +179,9 @@ class Document extends ORM
 				// SELECTS
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selByNameAndParent':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("document JOIN document_content ON document.id = document_content.document_id", "document.*", "parent_document_id <=> <parent_document_id> AND name = <name> AND document_content.id = (SELECT Id FROM document_content WHERE document_id = document.id ORDER BY id DESC LIMIT 1)", NULL, 1);
 					break;
 				
 				// INSERTS
