@@ -126,6 +126,10 @@ class Rate_Plan extends ORM
 			$objBrochureDocument->document_nature_id	= DOCUMENT_NATURE_FILE;
 			$objBrochureDocument->employee_id			= Flex::getUserId();
 			$objBrochureDocument->save();
+			
+			// Set this as the new Brochure
+			$this->brochure_document_id	= $objBrochureDocument;
+			$this->save();
 		}
 		
 		$arrFileType	= File_Type::getForExtensionAndMimeType('pdf', 'application/pdf', true);
