@@ -106,6 +106,10 @@ class Rate_Plan extends ORM
 				$objBrochureDirContent->status_id	= STATUS_ACTIVE;
 				$objBrochureDirContent->save();
 			}
+			else
+			{
+				$objBrochureDirContent	= $objBrochureDir->getContent();
+			}
 			if (!($objCustomerGroupDir = Document::getByPath("/Plan Brochures/{$this->customer_group}/")))
 			{
 				//throw new Exception("/Plan Brochures/customer_group/ not found!");
@@ -124,6 +128,10 @@ class Rate_Plan extends ORM
 				$objCustomerGroupDirContent->employee_id		= Employee::SYSTEM_EMPLOYEE_ID;
 				$objCustomerGroupDirContent->status_id			= STATUS_ACTIVE;
 				$objCustomerGroupDirContent->save();
+			}
+			else
+			{
+				$objCustomerGroupDirContent	= $objCustomerGroupDir->getContent();
 			}
 			
 			// Create a Document
