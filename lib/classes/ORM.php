@@ -65,6 +65,7 @@ abstract class ORM
 			else
 			{
 				// Do we want to Debug something?
+				throw new Exception("Unable to load {$this->_strTableName} with Id '{$intId}'");
 			}
 		}
 		
