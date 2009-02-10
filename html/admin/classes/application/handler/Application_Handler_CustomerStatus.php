@@ -7,7 +7,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 	public function ViewAll($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
 		BreadCrumb()->Admin_Console();
 		BreadCrumb()->System_Settings_Menu();
@@ -27,7 +27,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 	public function View($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
 		BreadCrumb()->Admin_Console();
 		BreadCrumb()->System_Settings_Menu();
@@ -109,7 +109,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 	public function SummaryReport($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
 		BreadCrumb()->Admin_Console();
 		BreadCrumb()->System_Settings_Menu();
@@ -218,7 +218,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 	public function AccountReport($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
 		BreadCrumb()->Admin_Console();
 		BreadCrumb()->System_Settings_Menu();
