@@ -192,11 +192,14 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
 					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Plan Brochure'><img src='{$strImageSrc}' alt='Plan Brochure' /></a>";
 				}
-			}/*
+			}
 			else
 			{
-				$strBrochureCell	= "B!";
-			}*/
+				// Add Brochure link
+				$strImageSrc		= "../admin/img/template/brochure_add.png";
+				$strBrochureOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setBrochure({$arrRatePlan['Id']});});";
+				$strBrochureCell	= "<a onclick='{$strBrochureOnClick}' title='Add Plan Brochure'><img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
+			}
 			
 			// Build the Voice Auth Script link
 			$strVoiceAuthCell	= '';
