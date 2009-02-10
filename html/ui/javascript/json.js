@@ -327,7 +327,7 @@ jQuery.json = {
 		}
 		
 		// Schedule Iframe Cleanup
-		setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
+		setTimeout(this._jsonIframeCleanup.bind(this, elmIframe), 100);
 		
 		elmIframe.bolLoaded	= true;
 	},
@@ -343,7 +343,7 @@ jQuery.json = {
 		else
 		{
 			// Otherwise schedule another cleanup
-			setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
+			setTimeout(this._jsonIframeCleanup.bind(this, elmIframe), 100);
 		}
 	}
 
