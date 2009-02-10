@@ -6,7 +6,7 @@ var Plan	= Class.create
 	// Prototype constructor
 	initialize	: function()
 	{
-		this.pupSetBrochure	= new Reflex_Popup(85);
+		this.pupSetBrochure	= new Reflex_Popup(40);
 		this.pupSetBrochure.setTitle('Internal Contact List');
 		this.pupSetBrochure.addCloseButton();
 		/*
@@ -30,8 +30,8 @@ var Plan	= Class.create
 		"		<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
 		"			<tbody>\n" + 
 		"				<tr>\n" + 
-		"					<td style='vertical-align:top;text-align:left;'>Brochure PDF File</td>\n" + 
-		"					<td style='vertical-align:top;text-align:right;'><input type='file' id='Plan_SetBrochure_File' name='Plan_SetBrochure_File' /></td>\n" +  
+		"					<td style='text-align:left;'>Brochure PDF File</td>\n" + 
+		"					<td style='text-align:right;'><input type='file' id='Plan_SetBrochure_File' name='Plan_SetBrochure_File' /></td>\n" +  
 		"				</tr>\n" + 
 		"			</tbody>\n" + 
 		"		</table>\n" +  
