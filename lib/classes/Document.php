@@ -48,6 +48,11 @@ class Document extends ORM
 	 */
 	public function getContent($mixRevision=true)
 	{
+		if (!$this->id)
+		{
+			throw new Exception("Document Id has not been defined!");
+		}
+		
 		static	$qryQuery;
 		static	$arrRevisionCache	= array();
 		$qryQuery	= (isset($qryQuery) && $qryQuery instanceof Query) ? $qryQuery : new Query();
