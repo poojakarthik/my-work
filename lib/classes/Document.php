@@ -129,7 +129,7 @@ class Document extends ORM
 	public static function getByPath($strPath, $bolAsArray=false)
 	{
 		$arrPath	= explode(self::PATH_DIRECTORY_DELIMITER, $strPath);
-		throw new Exception(print_r($arrPath, true));
+		//throw new Exception(print_r($arrPath, true));
 		
 		$intParentId	= null;
 		foreach ($arrPath as $strNode)
