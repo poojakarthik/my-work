@@ -16,14 +16,14 @@ class Flex_Rollout_Version_000135 extends Flex_Rollout_Version
 		
 		// 1:	Add the RatePlan.brochure_document_id and auth_script_document_id Fields
 		$strSQL =	"ALTER TABLE document_content " .
-					"MODIFY content MEDIUMBLOB NULL;";
+					"MODIFY content MEDIUMBLOB NULL COMMENT 'Binary content of the Document';";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to make the document_content.content Field NULLable. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] =	"ALTER TABLE document_content " .
-								"MODIFY content MEDIUMBLOB NOT NULL;";
+								"MODIFY content MEDIUMBLOB NOT NULL COMMENT 'Binary content of the Document';";
 	}
 	
 	function rollback()
