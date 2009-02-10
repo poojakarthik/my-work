@@ -34,7 +34,7 @@ class Application_Handler_File extends Application_Handler
 										);
 			
 			$strFileName	= "{$objDocumentContent->name}.{$objDocumentFileType->extension}";
-			$this->_render($arrDetailsToRender, $objDocumentContent);
+			$this->_render($arrDetailsToRender, $strFileName);
 		}
 		catch (Exception $eException)
 		{
