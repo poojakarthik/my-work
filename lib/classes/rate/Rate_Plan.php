@@ -141,13 +141,14 @@ class Rate_Plan extends ORM
 		
 		// Create the new Content object
 		$objBrochureDocumentContent	= new Document_Content();
-		$objBrochureDocumentContent->document_id	= $objBrochureDocument->id;
-		$objBrochureDocumentContent->name			= $this->name;
-		$objBrochureDocumentContent->description	= $this->name . " Plan Brochure";
-		$objBrochureDocumentContent->file_type_id	= $arrFileType['id'];
-		$objBrochureDocumentContent->content		= file_get_contents($strFilePath);
-		$objBrochureDocumentContent->employee_id	= Flex::getUserId();
-		$objBrochureDocumentContent->status_id		= STATUS_ACTIVE;
+		$objBrochureDocumentContent->document_id		= $objBrochureDocument->id;
+		$objBrochureDocumentContent->name				= $this->name;
+		$objBrochureDocumentContent->description		= $this->name . " Plan Brochure";
+		$objBrochureDocumentContent->file_type_id		= $arrFileType['id'];
+		$objBrochureDocumentContent->content			= file_get_contents($strFilePath);
+		$objBrochureDocumentContent->parent_document_id	= $objCustomerGroupDirContent->id;
+		$objBrochureDocumentContent->employee_id		= Flex::getUserId();
+		$objBrochureDocumentContent->status_id			= STATUS_ACTIVE;
 		$objBrochureDocumentContent->save();
 		
 		return true;
