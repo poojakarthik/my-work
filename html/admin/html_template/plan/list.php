@@ -187,7 +187,11 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				
 				$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
 				$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
-				$strBrochureCell	= "<a href='{$strBrochureLink}' title='Edit'><img src='{$strImageSrc}' alt='Plan Brochure'></img></a>";
+				$strBrochureCell	= "<a href='{$strBrochureLink}' title='Edit'><img src='{$strImageSrc}' alt='Plan Brochure' /></a>";
+			}
+			else
+			{
+				$strBrochureCell	= "B!";
 			}
 			
 			// Build the Voice Auth Script link
@@ -200,7 +204,11 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				
 				$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objAuthScriptIcon->id}/16x16";
 				$strVoiceAuthLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
-				$strVoiceAuthCell	= "<a href='{$strVoiceAuthLink}' title='Edit'><img src='{$strImageSrc}' alt='Plan Brochure'></img></a>";
+				$strVoiceAuthCell	= "<a href='{$strVoiceAuthLink}' title='Edit'><img src='{$strImageSrc}' alt='Plan Brochure' /></a>";
+			}
+			else
+			{
+				$strBrochureCell	= "A!";
 			}
 			
 			// Build the "Add Rate Plan Based On Existing" link
@@ -210,7 +218,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				if ($arrRatePlan['Archived'] == RATE_STATUS_DRAFT)
 				{
 					$strEditPlanLink	= Href()->EditRatePlan($arrRatePlan['Id']);
-					$strEditCell		= "<a href='$strEditPlanLink' title='Edit'><img src='img/template/edit.png'></img></a>";
+					$strEditCell		= "<a href='$strEditPlanLink' title='Edit'><img src='img/template/edit.png' /></a>";
 				}
 				else
 				{
@@ -218,7 +226,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					// TODO
 				}
 				$strAddPlanLink	= Href()->AddRatePlan($arrRatePlan['Id']);
-				$strAddCell		= "<a href='$strAddPlanLink' title='Create a new plan based on this one'><img src='img/template/new.png'></img></a>";
+				$strAddCell		= "<a href='$strAddPlanLink' title='Create a new plan based on this one'><img src='img/template/new.png' /></a>";
 				$strActionCell	= "{$strEdit}{$strAdd}";
 			}
 			
