@@ -30,9 +30,10 @@ class Application_Handler_RatePlan extends Application_Handler
 			$strFileName	= $_FILES['Plan_SetBrochure_File']['name'];
 			$arrFileName	= explode('.', $strFileName);
 			$strMIME		= $_FILES['Plan_SetBrochure_File']['type'];
-			if (!strcasecmp(end($arrFileName), self::PLAN_BROCHURE_FILE_EXTENSION) || $strMIME !== self::PLAN_BROCHURE_MIME_CONTENT_TYPE)
+			$strExtension	= end($arrFileName);
+			if (!strcasecmp($strExtension, self::PLAN_BROCHURE_FILE_EXTENSION) || $strMIME !== self::PLAN_BROCHURE_MIME_CONTENT_TYPE)
 			{
-				throw new Exception("'{$strFileName}' is not a valid PDF file.  Ensure that you are trying to upload the correct file, and try again.");
+				throw new Exception("'{$strFileName}' is not a valid PDF file (Extension: '{$strExtension}'; MIME: '{$strMIME}').  Ensure that you are trying to upload the correct file, and try again.");
 			}
 			
 			// Set this as the Plan's new Brochure
