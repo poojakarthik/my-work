@@ -181,7 +181,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strBrochureCell	= '';
 			if ($arrRatePlan['brochure_document_id'])
 			{
-				$objBrochureDocument		= new Document($arrRatePlan['brochure_document_id'], true);
+				$objBrochureDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
 				$objBrochureDocumentContent	= $objBrochureDocument->getContent();
 				$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
 				
@@ -198,7 +198,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strVoiceAuthCell	= '';
 			if ($arrRatePlan['auth_script_document_id'])
 			{
-				$objAuthScriptDocument			= new Document($arrRatePlan['auth_script_document_id'], true);
+				$objAuthScriptDocument			= new Document(array('id'=>$arrRatePlan['auth_script_document_id']), true);
 				$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContent();
 				$objAuthScriptIcon				= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
 				
