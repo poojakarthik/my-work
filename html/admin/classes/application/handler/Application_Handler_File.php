@@ -65,7 +65,7 @@ class Application_Handler_File extends Application_Handler
 			throw new Exception("No valid subpath field 2 (Icon Dimensions): ".print_r($arrSubPath, true));
 		}
 		
-		$objFileType	= new FileType(array('id'=>(int)$arrSubPath[1]), true);
+		$objFileType	= new File_Type(array('id'=>(int)$arrSubPath[1]), true);
 		
 		$strField		= "icon_{$arrSubPath[2]}";
 		$strIconData	= $objFileType->{$strField};
