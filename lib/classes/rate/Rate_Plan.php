@@ -102,7 +102,7 @@ class Rate_Plan extends ORM
 				$objBrochureDirContent->name		= "Plan Brochures";
 				$objBrochureDirContent->employee_id	= Employee::SYSTEM_EMPLOYEE_ID;
 				$objBrochureDirContent->status_id	= STATUS_ACTIVE;
-				$objBrochureDirContent-save();
+				$objBrochureDirContent->save();
 			}
 			if (!($objCustomerGroupDir = Document::getByPath("/Plan Brochures/{$this->customer_group}/")))
 			{
