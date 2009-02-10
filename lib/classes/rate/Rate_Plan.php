@@ -161,6 +161,108 @@ class Rate_Plan extends ORM
 		
 		return true;
 	}
+
+	/**
+	 * setAuthorisationScript()
+	 *
+	 * Sets the provided file as the Rate Plan's Authorisation Script
+	 * 
+	 * @param	string		$strFilePath						Path to the file to use
+	 * 
+	 * @return	boolean
+	 *
+	 * @method
+	 */
+	public function setAuthorisationScript($strFilePath)
+	{
+		// Ensure the File is usable
+		if (!is_file($strFilePath))
+		{
+			throw new Exception("Unable to open file '{$strFilePath}' to set as Plan Authorisation Script");
+		}
+		
+		// Is there already an existing Auth Script?
+		if ($this->auth_script_document_id)
+		{
+			// YES
+			$objAuthScriptDocument	= new Document(array('id'=>$this->auth_script_document_id), true);
+		}
+		else
+		{
+			// NO
+			// Ensure that the Document Path /Authorisation Scripts/[CustomerGroup]/ exists
+			if (!($objAuthScriptDir = Document::getByPath("/Authorisation Scripts/")))
+			{
+				//throw new Exception("/Authorisation Scripts/ not found!");
+				
+				// Create the Plan Brochures node
+				$objAuthScriptDir	= new Document();
+				$objAuthScriptDir->document_nature_id	= DOCUMENT_NATURE_FOLDER;
+				$objAuthScriptDir->employee_id			= Employee::SYSTEM_EMPLOYEE_ID;
+				$objAuthScriptDir->save();
+				
+				$objAuthScriptDirContent	= new Document_Content();
+				$objAuthScriptDirContent->document_id	= $objAuthScriptDir->id;
+				$objAuthScriptDirContent->name			= "Authorisation Scripts";
+				$objAuthScriptDirContent->employee_id	= Employee::SYSTEM_EMPLOYEE_ID;
+				$objAuthScriptDirContent->status_id		= STATUS_ACTIVE;
+				$objAuthScriptDirContent->save();
+			}
+			else
+			{
+				$objAuthScriptDirContent	= $objAuthScriptDir->getContent();
+			}
+			if (!($objCustomerGroupDir = Document::getByPath("/Authorisation Scripts/{$this->customer_group}/")))
+			{
+				//throw new Exception("/Authorisation Scripts/customer_group/ not found!");
+				
+				// Create the CustomerGroup node
+				$objCustomerGroupDir	= new Document();
+				$objCustomerGroupDir->document_nature_id	= DOCUMENT_NATURE_FOLDER;
+				$objCustomerGroupDir->employee_id			= Employee::SYSTEM_EMPLOYEE_ID;
+				$objCustomerGroupDir->save();
+				
+				$objCustomerGroupDirContent	= new Document_Content();
+				$objCustomerGroupDirContent->document_id		= $objCustomerGroupDir->id;
+				$objCustomerGroupDirContent->name				= "{$this->customer_group}";
+				$objCustomerGroupDirContent->constant_group		= "CustomerGroup";
+				$objCustomerGroupDirContent->parent_document_id	= $objAuthScriptDir->id;
+				$objCustomerGroupDirContent->employee_id		= Employee::SYSTEM_EMPLOYEE_ID;
+				$objCustomerGroupDirContent->status_id			= STATUS_ACTIVE;
+				$objCustomerGroupDirContent->save();
+			}
+			else
+			{
+				$objCustomerGroupDirContent	= $objCustomerGroupDir->getContent();
+			}
+			
+			// Create a Document
+			$objAuthScriptDocument	= new Document();
+			$objAuthScriptDocument->document_nature_id	= DOCUMENT_NATURE_FILE;
+			$objAuthScriptDocument->employee_id			= Flex::getUserId();
+			$objAuthScriptDocument->save();
+			
+			// Set this as the new Brochure
+			$this->auth_script_document_id	= $objAuthScriptDocument->id;
+			$this->save();
+		}
+		
+		$arrFileType	= File_Type::getForExtensionAndMimeType('html', 'text/html', true);
+		
+		// Create the new Content object
+		$objAuthScriptDocumentContent	= new Document_Content();
+		$objAuthScriptDocumentContent->document_id			= $objAuthScriptDocument->id;
+		$objAuthScriptDocumentContent->name					= $this->name;
+		$objAuthScriptDocumentContent->description			= $this->name . " Authorisation Script";
+		$objAuthScriptDocumentContent->file_type_id			= $arrFileType['id'];
+		$objAuthScriptDocumentContent->content				= file_get_contents($strFilePath);
+		$objAuthScriptDocumentContent->parent_document_id	= $objCustomerGroupDir->id;
+		$objAuthScriptDocumentContent->employee_id			= Flex::getUserId();
+		$objAuthScriptDocumentContent->status_id			= STATUS_ACTIVE;
+		$objAuthScriptDocumentContent->save();
+		
+		return true;
+	}
 	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
