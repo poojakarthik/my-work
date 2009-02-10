@@ -25,12 +25,12 @@ class Application_Handler_File extends Application_Handler
 		{
 			// Get Document Id from Sub Path
 			$objDocument			= new Document(array('id'=>(int)$arrSubPath[0]), true);
-			$objDocumentContent		= $objBrochureDocument->getContent();
-			$objDocumentFileType	= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+			$objDocumentContent		= $objDocument->getContent();
+			$objDocumentFileType	= new File_Type(array('id'=>$objDocumentContent->file_type_id), true);
 			
 			$arrDetailsToRender	= array(
-											'raw_data'=>$objDocumentContent->content, 
-											'mime_content_type'=>$objDocumentFileType->mime_content_type
+											'raw_data'			=> $objDocumentContent->content, 
+											'mime_content_type'	=> $objDocumentFileType->mime_content_type
 										);
 			
 			$strFileName	= "{$objDocumentContent->name}.{$objDocumentFileType->extension}";
