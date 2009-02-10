@@ -59,13 +59,13 @@ class Document extends ORM
 			$strLimit	= "1";
 			$strOrderBy	= "id ASC";
 		}
-		elseif ($mixRevision > 0)
+		elseif (!is_bool($mixRevision) && $mixRevision > 0)
 		{
 			// Positive Integer -- Revision number $mixRevision
 			$strLimit	= "1 OFFSET ".($mixRevision-1);
 			$strOrderBy	= "id ASC";
 		}
-		elseif ($mixRevision < 0)
+		elseif (!is_bool($mixRevision) && $mixRevision < 0)
 		{
 			// Negative Integer -- $mixRevision Revisions ago
 			$strLimit	= "1 OFFSET ".(abs($mixRevision));
