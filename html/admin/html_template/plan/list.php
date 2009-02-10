@@ -187,7 +187,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				
 				$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
 				$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
-				$strBrochureCell	= "<a href='{$strBrochureLink}' title='Edit'><img src='{$strImageSrc}' alt='Plan Brochure' /></a>";
+				$strBrochureCell	= "<a href='{$strBrochureLink}' title='Edit'><img src='{$strImageSrc}' /></a>";
 			}
 			else
 			{
@@ -204,7 +204,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				
 				$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objAuthScriptIcon->id}/16x16";
 				$strVoiceAuthLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
-				$strVoiceAuthCell	= "<a href='{$strVoiceAuthLink}' title='Edit'><img src='{$strImageSrc}' alt='Plan Brochure' /></a>";
+				$strVoiceAuthCell	= "<a href='{$strVoiceAuthLink}' title='Edit'><img src='{$strImageSrc}' /></a>";
 			}
 			else
 			{
