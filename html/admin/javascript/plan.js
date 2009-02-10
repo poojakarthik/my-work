@@ -22,7 +22,8 @@ var Plan	= Class.create
 	{
 		// Render Brochure Upload Popup
 		var strHTML	= "\n" +
-		"<form id='Plan_SetBrochure_Form' name='Plan_SetBrochure_Form' method='post' action='../admin/reflex.php/RatePlan/SetBrochure/' enctype='multipart/form-data' onsubmit='return Flex.Plan._setBrochureSubmit()' >\n" + 
+		"<form id='Plan_SetBrochure_Form' name='Plan_SetBrochure_Form' method='post' action='../admin/reflex.php/RatePlan/SetBrochure/' enctype='multipart/form-data' onsubmit='return Flex.Plan._setBrochureSubmit()' >\n" +
+		"	<input name='Plan_SetBrochure_RatePlanId' type='hidden' value='"+intRatePlanId+"' />\n" + 
 		"	<div class='GroupedContent'>\n" + 
 		"		<div>\n" + 
 		"			<span>Please select the PDF brochure for '"+strRatePlanName+"' for "+strCustomerGroup+":</span>\n" + 
