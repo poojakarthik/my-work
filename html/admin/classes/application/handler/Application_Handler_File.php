@@ -26,6 +26,12 @@ class Application_Handler_File extends Application_Handler
 			// Get Document Id from Sub Path
 			$objDocument			= new Document(array('id'=>(int)$arrSubPath[0]), true);
 			$objDocumentContent		= $objDocument->getContent();
+			
+			if (!$objDocumentContent || !$objDocumentContent->content)
+			{
+				throw new Exception();
+			}
+			
 			$objDocumentFileType	= new File_Type(array('id'=>$objDocumentContent->file_type_id), true);
 			
 			$arrDetailsToRender	= array(
