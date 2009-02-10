@@ -178,7 +178,7 @@ class AppTemplatePlan extends ApplicationTemplate
 							"Status"		=> $_SESSION['AvailablePlansPage']['Filter']['Status']
 						);
 		
-		$arrColumns = array(
+		/*$arrColumns = array(
 							"Id"					=> "RP.Id",
 							"ServiceType"			=> "RP.ServiceType",
 							"Name"					=> "RP.Name",
@@ -189,10 +189,11 @@ class AppTemplatePlan extends ApplicationTemplate
 							"Archived"				=> "RP.Archived",
 							"IsDefault"				=> "CASE WHEN drp.Id IS NOT NULL THEN TRUE ELSE FALSE END",
 							"DealerCount"			=> "COALESCE(DRP.DealerCount, 0)"
-							);
+							);*/
+		$strColumns		= "RatePlan.*, CASE WHEN drp.Id IS NOT NULL THEN TRUE ELSE FALSE END AS IsDefault, COALESCE(DRP.DealerCount, 0) AS DealerCount";
 		$strTables		= "RatePlan AS RP LEFT JOIN default_rate_plan AS drp ON RP.Id = drp.rate_plan AND RP.customer_group = drp.customer_group AND RP.ServiceType = drp.service_type LEFT OUTER JOIN (SELECT rate_plan_id AS RatePlanId, COUNT(id) AS DealerCount FROM dealer_rate_plan GROUP BY rate_plan_id) AS DRP ON RP.Id = DRP.RatePlanId";
 		$strOrderBy		= "ServiceType, Name, customer_group";
-		$selRatePlans	= new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
+		$selRatePlans	= new StatementSelect($strTables, $strColumns, $strWhere, $strOrderBy);
 		if ($selRatePlans->Execute($arrWhere) === FALSE)
 		{
 			DBO()->Error->Message = "Unexpected database error occurred when trying to retrieve RatePlans.  Please notify your system administrator";
