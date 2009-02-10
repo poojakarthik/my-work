@@ -9,12 +9,13 @@ var Plan	= Class.create
 		this.pupSetBrochure	= new Reflex_Popup(85);
 		this.pupSetBrochure.setTitle('Internal Contact List');
 		this.pupSetBrochure.addCloseButton();
-		
+		/*
 		var elmCloseButton			= document.createElement('input');
 		elmCloseButton.type			= 'button';
 		elmCloseButton.value		= 'Close';
 		elmCloseButton.onclick		= this.pupSetBrochure.hide.bind(this.pupSetBrochure);
 		this.pupSetBrochure.setFooterButtons(new Array(elmCloseButton), true);
+		*/
 	},
 	
 	setBrochure	: function(intRatePlanId, strRatePlanName, strCustomerGroup)
