@@ -82,8 +82,6 @@ class Rate_Plan extends ORM
 		// Is there already an existing Brochure?
 		if ($this->brochure_document_id)
 		{
-			throw new Exception("Brochure already!");
-			
 			// YES
 			$objBrochureDocument	= new Document(array('id'=>$this->brochure_document_id), true);
 		}
