@@ -4,11 +4,15 @@
 require_once("../../lib/classes/Flex.php");
 Flex::load();
 
-$strTable		= "file_type";
-$strField		= "icon_16x16";
-$strConstraint	= "name = 'PDF'";
+//$strTable		= "file_type";
+//$strField		= "icon_16x16";
+//$strConstraint	= "name = 'PDF'";
+$strTable		= "document_content";
+$strField		= "content";
+$strConstraint	= "id = 1";
 
-$strFilePath	= "../../html/admin/img/template/pdf_small.png";
+//$strFilePath	= "../../html/admin/img/template/pdf_small.png";
+$strFilePath	= "/home/rdavis/telcoblue/document_management/Brochures/Telco\ Blue/69\ Cap.pdf";
 
 $strFileContents	= @file_get_contents($strFilePath);
 if ($strFileContents === false)
