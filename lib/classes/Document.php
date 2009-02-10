@@ -129,12 +129,12 @@ class Document extends ORM
 	public static function getByPath($strPath, $bolAsArray=false)
 	{
 		$arrPath	= explode(self::PATH_DIRECTORY_DELIMITER, $strPath);
+		throw new Exception(print_r($strPath, true));
 		
 		$intParentId	= null;
 		foreach ($arrPath as $strNode)
 		{
 			// Check if this node exists
-			// FIXME: Handle [CustomerGroup=1] style Names
 			$selByNameAndParent	= self::_preparedStatement('selByNameAndParent');
 			$mixResult			= $selByNameAndParent->Execute(array('name'=>$strNode, 'parent_document_id'=>$intParentId));
 			if ($mixResult === false)
