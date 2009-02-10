@@ -314,8 +314,8 @@ class Application_Page extends Page
 		echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\">
 	<head>
-		<link rel=\"shortcut icon\" HREF=\"./img/favicon.ico\">
-		<link rel=\"icon\" href=\"./img/favicon.ico\">
+		<link rel=\"shortcut icon\" HREF=\"{$strBaseDir}img/favicon.ico\">
+		<link rel=\"icon\" href=\"{$strBaseDir}img/favicon.ico\">
 		<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\" />
 		<meta name=\"generator\" content=\"Flex\" />
 		<title>Flex - $this->_strPageName</title>
