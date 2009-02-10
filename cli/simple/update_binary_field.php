@@ -18,7 +18,7 @@ if ($strFileContents === false)
 
 $arrColumns	= array($strField=>$strFileContents);
 $updUpdateBinary	= new StatementUpdate($strTable, $strConstraint, $arrColumns, 1);
-if ($updUpdateBinary->Execute() === false)
+if ($updUpdateBinary->Execute($arrColumns, array()) === false)
 {
 	throw new Exception($updUpdateBinary->Error());
 }
