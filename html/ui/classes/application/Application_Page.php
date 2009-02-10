@@ -329,23 +329,6 @@ class Application_Page extends Page
 		<div id='VixenTooltip' style='display: none;' class='VixenTooltip'></div>\n";
 	}
 
-	function RenderSearchField_REDUNDANT()
-	{
-		$usename = Flex::getDisplayName();
-		echo "
-			<div id=\"person_search\" name=\"person_search\">
-				<div id=\"person\" name=\"person\">
-					Logged in as: $usename
-				<!--	| <a href=\"#\">Preferences</a> -->
-					| <a href=\"logout.php\">Logout</a>
-				</div>
-				<div id=\"search_bar\" name=\"search_bar\">
-					Search: 
-					<input type=\"text\" id=\"search_string\" name=\"search_string\" />
-				</div>
-			</div>\n";
-	}
-
 	//------------------------------------------------------------------------//
 	// RenderHeaderFlexModal
 	//------------------------------------------------------------------------//
@@ -380,57 +363,6 @@ class Application_Page extends Page
 		echo "</head>\n";
 		echo "<body class='flexModalWindow'>\n";
 	}
-
-	//------------------------------------------------------------------------//
-	// RenderContextMenu
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderContextMenu()
-	 *
-	 * Renders the context menu
-	 *
-	 * Renders the context menu
-	 * 
-	 * @method
-	 */
-	function RenderContextMenu_REDUNDANT()
-	{
-		// build array
-		$arrContextMenu = ContextMenu()->BuildArray();
-		echo "
-			<div id=\"nav\" name=\"nav\">\n";
-		self::renderMenuLevel($arrContextMenu);
-		echo "
-			</div>
-		</div>\n"; // Close the header
-		return;
-	}
-
-	private function renderMenuLevel2_REDUNDANT($items, $level=0)
-	{
-		$indent = str_repeat("\t", 4 + (2 * $level));
-		if (!is_array($items) || empty($items))
-		{
-			return;
-		}
-		echo "$indent<ul>\n";
-		foreach ($items as $label => $value)
-		{
-			if (is_string($value))
-			{
-				echo "$indent\t<li><a href=\"" . addslashes($value) . "\">" . htmlspecialchars($label) . "</a></li>\n";
-			}
-			else
-			{
-				echo "$indent\t<li><span>" . htmlspecialchars($label) . "</span>\n";
-				self::renderMenuLevel($value, $level + 1);
-				echo "$indent\t</li>\n";
-			}
-		}
-		echo "$indent</ul>\n";
-	}
-
-
 }
 
 ?>
