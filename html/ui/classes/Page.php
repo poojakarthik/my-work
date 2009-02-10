@@ -433,8 +433,8 @@ class Page
 	echo "
 <html>
 	<head>
-		<link rel=\"shortcut icon\" HREF=\"./img/favicon.ico\">
-		<link rel=\"icon\" href=\"./img/favicon.ico\">
+		<link rel=\"shortcut icon\" HREF=\"{$strBaseDir}img/favicon.ico\">
+		<link rel=\"icon\" href=\"{$strBaseDir}img/favicon.ico\">
 		<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>
 		<title>Flex - {$this->_strPageName}</title>
 		<base href='$strBaseDir'/>\n";
