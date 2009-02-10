@@ -18,7 +18,37 @@ class Application_Handler_File extends Application_Handler
 		exit;
 	}
 	
-	// Shows a history of Proposed Dialling Lists and their associated data
+	public function Document($arrSubPath)
+	{
+		// Get raw data for an image and return it to the browser
+		try
+		{
+			// Get Document Id from Sub Path
+			$objDocument			= new Document(array('id'=>(int)$arrSubPath[0]), true);
+			$objDocumentContent		= $objBrochureDocument->getContent();
+			$objDocumentFileType	= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+			
+			$arrDetailsToRender	= array(
+											'raw_data'=>$objDocumentContent->content, 
+											'mime_content_type'=>$objDocumentFileType->mime_content_type
+										);
+			
+			$strFileName	= "{$objDocumentContent->name}.{$objDocumentFileType->extension}";
+			$this->_render($arrDetailsToRender, $objDocumentContent);
+		}
+		catch (Exception $eException)
+		{
+			// Force a 404
+			header("HTTP/1.0 404 Not Found");
+			exit;
+			/*
+			$arrDetailsToRender['Message']		= "An error occured";
+			$arrDetailsToRender['ErrorMessage']	= $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			*/
+		}
+	}
+	
 	public function Image($arrSubPath)
 	{
 		// Get raw data for an image and return it to the browser
@@ -34,7 +64,7 @@ class Application_Handler_File extends Application_Handler
 			$arrDetailsToRender	= $this->{$strMethod}($arrSubPath);
 			if ($arrDetailsToRender)
 			{
-				$this->_render($arrDetailsToRender, false);
+				$this->_render($arrDetailsToRender);
 			}
 			else
 			{
