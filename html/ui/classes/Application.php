@@ -161,10 +161,13 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->View_All_Constants();
 			}
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			{
+				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
+			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
-				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 				
 				if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 				{
@@ -325,10 +328,13 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->View_All_Constants();
 			}
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			{
+				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
+			}
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
-				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 				if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 				{
 					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
