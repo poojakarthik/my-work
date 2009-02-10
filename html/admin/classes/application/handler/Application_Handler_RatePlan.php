@@ -13,6 +13,8 @@ class Application_Handler_RatePlan extends Application_Handler
 		$arrDetailsToRender	= array();
 		try
 		{
+			throw new Exception(print_r($_POST, true));
+			
 			if (!DataAccess::getDataAccess()->TransactionStart())
 			{
 				throw new Exception("Flex was unable to start a Transaction.  The Upload has been aborted.  Please try again shortly.");
