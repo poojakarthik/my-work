@@ -154,7 +154,7 @@ class Rate_Plan extends ORM
 		$objBrochureDocumentContent->description		= $this->name . " Plan Brochure";
 		$objBrochureDocumentContent->file_type_id		= $arrFileType['id'];
 		$objBrochureDocumentContent->content			= file_get_contents($strFilePath);
-		$objBrochureDocumentContent->parent_document_id	= $objCustomerGroupDirContent->id;
+		$objBrochureDocumentContent->parent_document_id	= $objCustomerGroupDir->id;
 		$objBrochureDocumentContent->employee_id		= Flex::getUserId();
 		$objBrochureDocumentContent->status_id			= STATUS_ACTIVE;
 		$objBrochureDocumentContent->save();
