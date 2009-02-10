@@ -183,11 +183,15 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			{
 				$objBrochureDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
 				$objBrochureDocumentContent	= $objBrochureDocument->getContent();
-				$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
 				
-				$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
-				$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
-				$strBrochureCell	= "<a href='{$strBrochureLink}' title='Plan Brochure'><img src='{$strImageSrc}' alt='Plan Brochure' /></a>";
+				if ($objBrochureDocumentContent && $objBrochureDocumentContent->content)
+				{
+					$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+					
+					$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
+					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
+					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Plan Brochure'><img src='{$strImageSrc}' alt='Plan Brochure' /></a>";
+				}
 			}/*
 			else
 			{
@@ -200,11 +204,15 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			{
 				$objAuthScriptDocument			= new Document(array('id'=>$arrRatePlan['auth_script_document_id']), true);
 				$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContent();
-				$objAuthScriptIcon				= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
 				
-				$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objAuthScriptIcon->id}/16x16";
-				$strVoiceAuthLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
-				$strVoiceAuthCell	= "<a href='{$strVoiceAuthLink}' title='Authorisation Script'><img src='{$strImageSrc}' alt='Authorisation Script' /></a>";
+				if ($objAuthScriptDocumentContent && $objAuthScriptDocumentContent->content)
+				{
+					$objAuthScriptIcon				= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
+					
+					$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objAuthScriptIcon->id}/16x16";
+					$strVoiceAuthLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
+					$strVoiceAuthCell	= "<a href='{$strVoiceAuthLink}' title='Authorisation Script'><img src='{$strImageSrc}' alt='Authorisation Script' /></a>";
+				}
 			}/*
 			else
 			{
