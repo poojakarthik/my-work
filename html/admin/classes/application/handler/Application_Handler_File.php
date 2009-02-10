@@ -34,7 +34,7 @@ class Application_Handler_File extends Application_Handler
 			$arrDetailsToRender	= $this->{$strMethod}($arrSubPath);
 			if ($arrDetailsToRender)
 			{
-				this->_render($arrDetailsToRender, false);
+				$this->_render($arrDetailsToRender, false);
 			}
 			else
 			{
