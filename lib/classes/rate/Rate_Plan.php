@@ -161,7 +161,7 @@ class Rate_Plan extends ORM
 		
 		return true;
 	}
-
+	
 	/**
 	 * setAuthorisationScript()
 	 *
