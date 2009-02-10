@@ -115,7 +115,7 @@ class Document extends ORM
 	/**
 	 * getByPath()
 	 *
-	 * Retrieves
+	 * Retrieves a Document based on a passed pseudo-path
 	 * 
 	 * @param	[mixed			$mixRevision]						Revision of the Content to retrieve
 	 * 																TRUE	: Latest Revision (default)

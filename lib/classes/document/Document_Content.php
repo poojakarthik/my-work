@@ -30,6 +30,21 @@ class Document_Content extends ORM
 	}
 	
 	/**
+	 * getFriendlyName()
+	 *
+	 * Retrieves the 'friendly' name for a Document.  If none is set, it will return the regular name.
+	 * 
+	 * @return	mixed									Friendly Name
+	 *
+	 * @method
+	 */
+	public function getFriendlyName()
+	{
+		$mixFriendlyName	= ($this->constant_group) ? GetConstantDescription($this->name, $this->constant_group) : $this->name;
+		return ($mixFriendlyName) ? $mixFriendlyName : new $this->name;
+	}
+	
+	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
