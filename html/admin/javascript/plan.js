@@ -79,7 +79,7 @@ var Plan	= Class.create
 	_setBrochureResponse	: function(objResponse)
 	{
 		// Close the Loading Splash & Popup
-		Vixen.Popup.Close();
+		Vixen.Popup.ClosePageLoadingSplash();
 		this.pupSetBrochure.hide();
 		
 		// Display response message
