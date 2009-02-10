@@ -138,7 +138,7 @@ class JSON_Handler_Customer_Status extends JSON_Handler
 	public function buildSummaryReport($arrCustomerGroups, $arrCustomerStatuses, $arrInvoiceRuns, $strRenderMode)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
 		$objReportBuilder = new Customer_Status_Summary_Report();
 		$objReportBuilder->SetBoundaryConditions($arrCustomerGroups, $arrCustomerStatuses, $arrInvoiceRuns);
@@ -183,7 +183,7 @@ class JSON_Handler_Customer_Status extends JSON_Handler
 		$strRenderMode = "excel";
 		
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
 		if (is_array($arrInvoiceRuns) && count($arrInvoiceRuns) > 1)
 		{
