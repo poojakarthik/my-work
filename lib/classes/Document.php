@@ -134,21 +134,24 @@ class Document extends ORM
 		$intParentId	= null;
 		foreach ($arrPath as $strNode)
 		{
-			// Check if this node exists
-			$selByNameAndParent	= self::_preparedStatement('selByNameAndParent');
-			$mixResult			= $selByNameAndParent->Execute(array('name'=>$strNode, 'parent_document_id'=>$intParentId));
-			if ($mixResult === false)
+			if ($strNode)
 			{
-				throw new Exception($selByNameAndParent->Error());
+				// Check if this node exists
+				$selByNameAndParent	= self::_preparedStatement('selByNameAndParent');
+				$mixResult			= $selByNameAndParent->Execute(array('name'=>$strNode, 'parent_document_id'=>$intParentId));
+				if ($mixResult === false)
+				{
+					throw new Exception($selByNameAndParent->Error());
+				}
+				elseif (!$mixResult)
+				{
+					// TODO: Do we want to throw a custom exception?
+					return null;
+				}
+				
+				$arrDocument	= $selByNameAndParent->Fetch();
+				$intParentId	= $arrDocument['id'];
 			}
-			elseif (!$mixResult)
-			{
-				// TODO: Do we want to throw a custom exception?
-				return null;
-			}
-			
-			$arrDocument	= $selByNameAndParent->Fetch();
-			$intParentId	= $arrDocument['id'];
 		}
 		
 		return ($bolAsArray) ? $arrDocument : new Document($arrDocument);
