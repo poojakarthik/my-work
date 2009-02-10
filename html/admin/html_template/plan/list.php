@@ -261,6 +261,8 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		echo "<script type='text/javascript'>Vixen.AvailablePlansPage.Initialise($objRatePlans);</script>";
 		
 		echo "<div class='SmallSeparator'></div>";
+		
+		echo "<div class='GroupedContent'>".str_replace("\n", "\n<br />", print_r($arrRatePlans, true))."</div>";
 	}
 }
 
