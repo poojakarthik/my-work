@@ -31,7 +31,7 @@ class Application_Handler_RatePlan extends Application_Handler
 			$arrFileName	= explode('.', $strFileName);
 			$strMIME		= $_FILES['Plan_SetBrochure_File']['type'];
 			$strExtension	= end($arrFileName);
-			if (!strcasecmp($strExtension, self::PLAN_BROCHURE_FILE_EXTENSION) || $strMIME !== self::PLAN_BROCHURE_MIME_CONTENT_TYPE)
+			if (strtolower($strExtension) !== strtolower(self::PLAN_BROCHURE_FILE_EXTENSION) || $strMIME !== self::PLAN_BROCHURE_MIME_CONTENT_TYPE)
 			{
 				throw new Exception("'{$strFileName}' is not a valid PDF file (Extension: '{$strExtension}'; MIME: '{$strMIME}').  Ensure that you are trying to upload the correct file, and try again.");
 			}
