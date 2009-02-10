@@ -198,7 +198,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				// Add Brochure link
 				$strImageSrc		= "../admin/img/template/brochure_add.png";
 				$strCustomerGroup	= GetConstantDescription($arrRatePlan['customer_group'], 'CustomerGroup');
-				$strBrochureOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setBrochure({$arrRatePlan['Id']}, \"{$arrRatePlan['Name']}\", \"{$strCustomerGroup}\"');});";
+				$strBrochureOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setBrochure({$arrRatePlan['Id']}, \"{$arrRatePlan['Name']}\", \"{$strCustomerGroup}\");});";
 				$strBrochureCell	= "<a onclick='{$strBrochureOnClick}' title='Add Plan Brochure'><img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
 			}
 			
