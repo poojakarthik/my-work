@@ -1304,6 +1304,15 @@ class Cli_App_Sales extends Cli
 		{
 			$this->log("Sending Manual Intervention report");
 			
+			// To create the links to the sales, use the first customer group's flex URL, in the hope that that is the one most users log into
+			$arrCustomerGroups		= Customer_Group::getAll();
+			$objFirstCustomerGroup	= current($arrCustomerGroups);
+			$strBaseUrl				= NULL;
+			if ($objFirstCustomerGroup !== FALSE && is_string($objFirstCustomerGroup->flexUrl))
+			{
+				$strBaseUrl = $objFirstCustomerGroup->flexUrl;
+			}
+			
 			$strEmailSubject = "Sales requiring manual intervention for sale import run ". Data_Source_Time::currentTimestamp();
 			
 			$arrReport		= array();
@@ -1312,20 +1321,23 @@ class Cli_App_Sales extends Cli
 			
 			foreach ($arrManualInterventionSales as $arrDetails)
 			{
-				$arrReport[] = "Sale {$arrDetails['SaleId']} - {$arrDetails['BusinessName']}";
-				$arrReport[] = $arrDetails['Reason'];
-				$arrReport[] = "";
+				$strSale		= ($strBaseUrl !== NULL)? "<a href='{$strBaseUrl}/admin/reflex.php/Sales/ViewSale/{$arrDetails['SaleId']}/'>{$arrDetails['SaleId']}</a>" : $arrDetails['SaleId'];
+				$strName		= htmlspecialchars($arrDetails['BusinessName']);
+				$strReason		= htmlspecialchars($arrDetails['Reason']);
+				$arrReport[]	= "Sale $strSale - $strName";
+				$arrReport[]	= $strReason;
+				$arrReport[]	= "";
 			}
 			
 			$arrReport[]	= "";
 			$arrReport[]	= "Regards";
 			$arrReport[]	= "Flexor";
-			$strEmailBody	= implode("\r\n", $arrReport);
+			$strEmailBody	= "<div style='font-family: Calibri,sans-serif;'>\n" . implode("\n<br />", $arrReport) . "</div>";
 
 			$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_SALE_IMPORT_REPORT);
 			
 			$objEmailNotification->setSubject($strEmailSubject);
-			$objEmailNotification->setBodyText($strEmailBody);
+			$objEmailNotification->setBodyHtml($strEmailBody);
 			$objEmailNotification->send();
 			$this->log("Sent successfully");
 		}
