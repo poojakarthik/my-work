@@ -276,7 +276,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 						$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
 						
 						$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
-						$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
+						$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrService['CurrentPlan']['brochure_document_id']}";
 						$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					}
 				}
@@ -302,7 +302,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 						$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
 						
 						$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
-						$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
+						$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrService['FuturePlan']['brochure_document_id']}";
 						$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					}
 				}
