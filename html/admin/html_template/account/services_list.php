@@ -279,6 +279,14 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 						$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
 						$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					}
+					else
+					{
+						$strPlanCell		.= "No brochure content";
+					}
+				}
+				else
+				{
+					$strPlanCell			.= "No brochure: ".print_r($arrService['CurrentPlan'], true);
 				}
 			}
 			else
