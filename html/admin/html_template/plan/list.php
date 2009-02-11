@@ -196,7 +196,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			elseif ($bolHasPlanEditPerm)
 			{
 				// Add Brochure link
-				$strImageSrc		= "../admin/img/template/brochure_add.png";
+				$strImageSrc		= "../admin/img/template/pdf_add.png";
 				$strCustomerGroup	= GetConstantDescription($arrRatePlan['customer_group'], 'CustomerGroup');
 				$strBrochureOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setBrochure({$arrRatePlan['Id']}, \"{$arrRatePlan['Name']}\", \"{$strCustomerGroup}\");});";
 				$strBrochureCell	= "<a onclick='{$strBrochureOnClick}' title='Add Plan Brochure'><img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
@@ -213,7 +213,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				{
 					$objAuthScriptIcon				= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
 					
-					$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objAuthScriptIcon->id}/16x16";
+					$strImageSrc		= "../admin/img/template/script.png";
 					$strVoiceAuthLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
 					$strVoiceAuthCell	= "<a href='{$strVoiceAuthLink}' title='Authorisation Script'><img src='{$strImageSrc}' alt='Authorisation Script' /></a>";
 				}
@@ -221,7 +221,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			elseif ($bolHasPlanEditPerm)
 			{
 				// Add Voice Auth link
-				//$strImageSrc			= "../admin/img/template/auth_script_add.png";
+				//$strImageSrc			= "../admin/img/template/script_add.png";
 				//$strVoiceAuthOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setAuthScript({$arrRatePlan['Id']});});";
 				//$strVoiceAuthCell		= "<a onclick='{$strBrochureOnClick}' title='Add Plan Brochure'><img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
 			}

@@ -247,7 +247,7 @@ class Rate_Plan extends ORM
 			$this->save();
 		}
 		
-		$arrFileType	= File_Type::getForExtensionAndMimeType('html', 'text/html', true);
+		$arrFileType	= File_Type::getForExtensionAndMimeType('txt', 'text/plain', true);
 		
 		// Create the new Content object
 		$objAuthScriptDocumentContent	= new Document_Content();
