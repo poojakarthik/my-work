@@ -657,8 +657,10 @@ class AppTemplateAccount extends ApplicationTemplate
 							"NextOwner"					=> "S.NextOwner",
 							"CurrentPlanId" 			=> "RP1.Id",
 							"CurrentPlanName"			=> "RP1.Name",
+							"CurrentPlanBrochureId"		=> "RP1.brochure_document_id",
 							"FuturePlanId"				=> "RP2.Id",
 							"FuturePlanName"			=> "RP2.Name",
+							"FuturePlanBrochureId"		=> "RP2.brochure_document_id",
 							"FuturePlanStartDatetime"	=> "SRP3.StartDatetime");
 		$strWhere	= "S.Account = <AccountId> AND (S.ClosedOn IS NULL OR S.CreatedOn <= S.ClosedOn)";
 		$arrWhere	= Array("AccountId" => $intAccount);
@@ -686,8 +688,9 @@ class AppTemplateAccount extends ApplicationTemplate
 			if ($arrRecord['CurrentPlanId'] != NULL)
 			{
 				$arrService['CurrentPlan'] = Array	(
-														"Id"	=> $arrRecord['CurrentPlanId'],
-														"Name"	=> $arrRecord['CurrentPlanName']
+														"Id"					=> $arrRecord['CurrentPlanId'],
+														"Name"					=> $arrRecord['CurrentPlanName'],
+														"brochure_document_id"	=> $arrRecord['CurrentPlanBrochureId']
 													);
 			}
 			else
@@ -699,9 +702,10 @@ class AppTemplateAccount extends ApplicationTemplate
 			if ($arrRecord['FuturePlanId'] != NULL)
 			{
 				$arrService['FuturePlan'] = Array	(
-														"Id"	=> $arrRecord['FuturePlanId'],
-														"Name"	=> $arrRecord['FuturePlanName'],
-														"StartDatetime"	=> $arrRecord['FuturePlanStartDatetime']
+														"Id"					=> $arrRecord['FuturePlanId'],
+														"Name"					=> $arrRecord['FuturePlanName'],
+														"brochure_document_id"	=> $arrRecord['FuturePlanBrochureId'],
+														"StartDatetime"			=> $arrRecord['FuturePlanStartDatetime']
 													);
 			}
 			else
