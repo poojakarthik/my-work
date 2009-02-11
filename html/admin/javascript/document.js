@@ -18,7 +18,7 @@ var Document	= Class.create
 		this.arrPredefinedEmails	= new Array();
 		if (arrEmailAddresses != undefined)
 		{
-			for (var i = 0, var l = arrEmailAddresses.length; i++)
+			for (var i = 0, var l = arrEmailAddresses.length; i < l; i++)
 			{
 				objEmail		= arrEmailAddresses[i];
 				objEmail.name	= (objEmail.name == undefined) ? '&nbsp;' : objEmail.name;
