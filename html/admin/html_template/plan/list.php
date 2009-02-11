@@ -221,9 +221,9 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			elseif ($bolHasPlanEditPerm)
 			{
 				// Add Voice Auth link
-				//$strImageSrc			= "../admin/img/template/script_add.png";
-				//$strVoiceAuthOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setAuthScript({$arrRatePlan['Id']});});";
-				//$strVoiceAuthCell		= "<a onclick='{$strBrochureOnClick}' title='Add Plan Brochure'><img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
+				$strImageSrc			= "../admin/img/template/script_add.png";
+				$strVoiceAuthOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setAuthScript({$arrRatePlan['Id']});});";
+				$strVoiceAuthCell		= "<a onclick='{$strBrochureOnClick}' title='Add Plan Brochure'><img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
 			}
 			
 			// Build the "Add Rate Plan Based On Existing" link
