@@ -265,6 +265,21 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			{
 				// The Service has a current plan
 				$strPlanCell = "<a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['CurrentPlan']['Name']}</a>";
+				
+				if ($arrService['CurrentPlan']['brochure_document_id'])
+				{
+					$objBrochureDocument		= new Document(array('id'=>$arrService['CurrentPlan']['brochure_document_id']), true);
+					$objBrochureDocumentContent	= $objBrochureDocument->getContent();
+					
+					if ($objBrochureDocumentContent && $objBrochureDocumentContent->content)
+					{
+						$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+						
+						$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
+						$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
+						$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
+					}
+				}
 			}
 			else
 			{
