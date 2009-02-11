@@ -129,7 +129,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
 					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'>Download <img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					
-					$strEmailOnClick	= "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument({$arrRatePlan['brochure_document_id']});";
+					$strEmailOnClick	= "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument({$arrRatePlan['brochure_document_id']}, 'Plan Brochure for {$arrRatePlan['Name']}');";
 					$strBrochureCell	.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
 				}
 			}
