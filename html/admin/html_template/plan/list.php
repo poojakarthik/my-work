@@ -177,6 +177,8 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				$strStatusCell = "<span title='Toggle Status' onclick='Vixen.AvailablePlansPage.TogglePlanStatus({$arrRatePlan['Id']})'>$strStatusCell</span>";
 			}
 			
+			$strCustomerGroup	= GetConstantDescription($arrRatePlan['customer_group'], 'CustomerGroup');
+			
 			// Build the Plan Brochure link
 			$strBrochureCell	= '';
 			if ($arrRatePlan['brochure_document_id'])
@@ -190,16 +192,15 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					
 					$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
 					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
-					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Plan Brochure'><img src='{$strImageSrc}' alt='Plan Brochure' /></a>";
+					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 				}
 			}
 			elseif ($bolHasPlanEditPerm)
 			{
 				// Add Brochure link
 				$strImageSrc		= "../admin/img/template/pdf_add.png";
-				$strCustomerGroup	= GetConstantDescription($arrRatePlan['customer_group'], 'CustomerGroup');
 				$strBrochureOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setBrochure({$arrRatePlan['Id']}, \"{$arrRatePlan['Name']}\", \"{$strCustomerGroup}\");});";
-				$strBrochureCell	= "<a onclick='{$strBrochureOnClick}' title='Add Plan Brochure'><img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
+				$strBrochureCell	= "<a onclick='{$strBrochureOnClick}' title='Attach Plan Brochure'><img src='{$strImageSrc}' alt='Attach Plan Brochure' /></a>";
 			}
 			
 			// Build the Voice Auth Script link
@@ -215,15 +216,15 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					
 					$strImageSrc		= "../admin/img/template/script.png";
 					$strVoiceAuthLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
-					$strVoiceAuthCell	= "<a href='{$strVoiceAuthLink}' title='Authorisation Script'><img src='{$strImageSrc}' alt='Authorisation Script' /></a>";
+					$strVoiceAuthCell	= "<a href='{$strVoiceAuthLink}' title='Download Authorisation Script'><img src='{$strImageSrc}' alt='Download Authorisation Script' /></a>";
 				}
 			}
 			elseif ($bolHasPlanEditPerm)
 			{
 				// Add Voice Auth link
 				$strImageSrc			= "../admin/img/template/script_add.png";
-				$strVoiceAuthOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setAuthScript({$arrRatePlan['Id']});});";
-				$strVoiceAuthCell		= "<a onclick='{$strBrochureOnClick}' title='Add Plan Brochure'><img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
+				$strAuthScriptOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setBrochure({$arrRatePlan['Id']}, \"{$arrRatePlan['Name']}\", \"{$strCustomerGroup}\");});";
+				$strVoiceAuthCell		= "<a onclick='{$strAuthScriptOnClick}' title='Attach Authorisation Script'><img src='{$strImageSrc}' alt='Attach Authorisation Script' /></a>";
 			}
 			
 			// Build the "Add Rate Plan Based On Existing" link

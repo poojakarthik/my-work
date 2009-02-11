@@ -109,7 +109,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			else
 			{
 				// Add Brochure link
-				$strBrochureCell	= "<a onclick='{$strOnClick}' title='Add Plan Brochure'>Attach a Plan Brochure <img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
+				$strBrochureCell	= "<a onclick='{$strOnClick}' title='Attach Plan Brochure'>Attach a Plan Brochure <img src='{$strImageSrc}' alt='Attach Plan Brochure' /></a>";
 			}
 		}
 		if (!$strBrochureCell)
@@ -154,7 +154,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			else
 			{
 				// Add Auth Script link
-				$strAuthScriptCell	= "<a onclick='{$strOnClick}' title='Add Authorisation Script'>Attach an Authorisation Script <img src='{$strImageSrc}' alt='Add Authorisation Script' /></a>";
+				$strAuthScriptCell	= "<a onclick='{$strOnClick}' title='Attach Authorisation Script'>Attach an Authorisation Script <img src='{$strImageSrc}' alt='Attach Authorisation Script' /></a>";
 			}
 		}
 		if (!$strAuthScriptCell)
