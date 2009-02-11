@@ -107,4 +107,4 @@ var Document	= Class.create
 	}
 });
 
-Flex.Plan = (Flex.Plan == undefined) ? new Plan() : Flex.Plan;
+Flex.Document = (Flex.Document == undefined) ? new Document() : Flex.Document;
