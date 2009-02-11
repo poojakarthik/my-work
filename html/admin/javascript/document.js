@@ -42,7 +42,7 @@ var Document	= Class.create
 		"		<tbody>\n" + 
 		strPredefinedEmails + 
 		"			<tr>\n" +
-		"				<td colspan='2' style='text-align:right;'>Other Email Address(es) : </td>\n" +
+		"				<td colspan='2' style='text-align:right; width='33%''>Other Email Address(es) : </td>\n" +
 		"				<td><input id='Document_Email_OtherAddress' type='text' /></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
