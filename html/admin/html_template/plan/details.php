@@ -104,12 +104,12 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			if ($strBrochureCell)
 			{
 				// Replace Brochure link
-				$strBrochureCell	.= " | <a onclick='{$strOnClick}' title='Replace Plan Brochure'>Replace this Plan Brochure<img src='{$strImageSrc}' alt='Replace Plan Brochure' /></a>";
+				$strBrochureCell	.= " | <a onclick='{$strOnClick}' title='Replace Plan Brochure'>Replace this Plan Brochure <img src='{$strImageSrc}' alt='Replace Plan Brochure' /></a>";
 			}
 			else
 			{
 				// Add Brochure link
-				$strBrochureCell	= "<a onclick='{$strOnClick}' title='Add Plan Brochure'>Attach a Plan Brochure<img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
+				$strBrochureCell	= "<a onclick='{$strOnClick}' title='Add Plan Brochure'>Attach a Plan Brochure <img src='{$strImageSrc}' alt='Add Plan Brochure' /></a>";
 			}
 		}
 		if (!$strBrochureCell)
@@ -122,7 +122,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		echo "		{$strBrochureCell}\n";
 		echo "	</div>\n";
 		echo "	<div id='RatePlan.brochure_document_id.Label' class='DefaultLabel'>\n";
-		echo "		<span id='RatePlan.brochure_document_id.Label.Text'>{$strAuthScriptCell}</span>\n";
+		echo "		<span id='RatePlan.brochure_document_id.Label.Text'>Brochure : </span>\n";
 		echo "	</div>\n";
 		echo "</div>";
 		
@@ -149,12 +149,12 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			if ($strAuthScriptCell)
 			{
 				// Replace Auth Script link
-				$strAuthScriptCell	.= " | <a onclick='{$strOnClick}' title='Replace Authorisation Script'>Replace this Authorisation Script<img src='{$strImageSrc}' alt='Replace Authorisation Script' /></a>";
+				$strAuthScriptCell	.= " | <a onclick='{$strOnClick}' title='Replace Authorisation Script'>Replace this Authorisation Script <img src='{$strImageSrc}' alt='Replace Authorisation Script' /></a>";
 			}
 			else
 			{
 				// Add Auth Script link
-				$strAuthScriptCell	= "<a onclick='{$strOnClick}' title='Add Authorisation Script'>Attach a Authorisation Script<img src='{$strImageSrc}' alt='Add Authorisation Script' /></a>";
+				$strAuthScriptCell	= "<a onclick='{$strOnClick}' title='Add Authorisation Script'>Attach an Authorisation Script <img src='{$strImageSrc}' alt='Add Authorisation Script' /></a>";
 			}
 		}
 		if (!$strAuthScriptCell)
@@ -167,7 +167,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		echo "		{$strAuthScriptCell}\n";
 		echo "	</div>\n";
 		echo "	<div id='RatePlan.auth_script_document_id.Label' class='DefaultLabel'>\n";
-		echo "		<span id='RatePlan.auth_script_document_id.Label.Text'>{$strAuthScriptCell}</span>\n";
+		echo "		<span id='RatePlan.auth_script_document_id.Label.Text'>Authorisation Script :</span>\n";
 		echo "	</div>\n";
 		echo "</div>";
 		
