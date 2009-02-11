@@ -223,7 +223,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			{
 				// Add Voice Auth link
 				$strImageSrc			= "../admin/img/template/script_add.png";
-				$strAuthScriptOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setBrochure({$arrRatePlan['Id']}, \"{$arrRatePlan['Name']}\", \"{$strCustomerGroup}\");});";
+				$strAuthScriptOnClick	= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setAuthScript({$arrRatePlan['Id']}, \"{$arrRatePlan['Name']}\", \"{$strCustomerGroup}\");});";
 				$strVoiceAuthCell		= "<a onclick='{$strAuthScriptOnClick}' title='Attach Authorisation Script'><img src='{$strImageSrc}' alt='Attach Authorisation Script' /></a>";
 			}
 			
