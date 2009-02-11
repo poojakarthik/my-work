@@ -15,6 +15,7 @@ var Document	= Class.create
 	{
 		strDescription	= (strDescription != undefined) ? strDescription : 'Document';
 		
+		var strPredefinedEmails	= ''; 
 		this.arrPredefinedEmails	= new Array();
 		if (arrEmailAddresses != undefined)
 		{
