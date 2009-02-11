@@ -140,6 +140,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			echo "		{$strBrochureCell}\n";
 			echo "	</div>\n";
 			echo "	<div id='RatePlan.brochure_document_id.Label' class='DefaultLabel'>\n";
+			echo "		<span>&nbsp;</span>\n";
 			echo "		<span id='RatePlan.brochure_document_id.Label.Text'>Brochure : </span>\n";
 			echo "	</div>\n";
 			echo "</div>";
@@ -170,6 +171,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			echo "		{$strAuthScriptCell}\n";
 			echo "	</div>\n";
 			echo "	<div id='RatePlan.auth_script_document_id.Label' class='DefaultLabel'>\n";
+			echo "		<span>&nbsp;</span>\n";
 			echo "		<span id='RatePlan.auth_script_document_id.Label.Text'>Authorisation Script :</span>\n";
 			echo "	</div>\n";
 			echo "</div>";
