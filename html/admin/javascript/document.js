@@ -50,7 +50,7 @@ var Document	= Class.create
 		"</div>\n" + 
 		"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
 		"	<input id='Plan_SetBrochure_Submit' value='Send' type='button' onclick='Flex.Document._emailDocumentSubmit();' /> \n" + 
-		"	<input id='Plan_SetBrochure_Cancel' value='Cancel' onclick='Flex.Plan.pupEmail.hide();' style='margin-left: 3px;' type='button' /> \n" + 
+		"	<input id='Plan_SetBrochure_Cancel' value='Cancel' onclick='Flex.Document.pupEmail.hide();' style='margin-left: 3px;' type='button' /> \n" + 
 		"</div>\n";
 		
 		this.pupEmail.setContent(strHTML);
