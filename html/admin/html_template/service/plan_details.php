@@ -110,6 +110,71 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 		
 			$dboRatePlan->Name->RenderArbitrary($strPlanSummaryLink, RENDER_OUTPUT);
 			$dboRatePlan->Description->RenderOutput();
+			
+			$arrRatePlan		= $dboRatePlan->AsArray();
+			$strCustomerGroup	= GetConstantDescription($arrRatePlan['customer_group'], 'CustomerGroup');
+			
+			// Build the Plan Brochure link
+			$strBrochureCell	= '';
+			if ($arrRatePlan['brochure_document_id'])
+			{
+				$objBrochureDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
+				$objBrochureDocumentContent	= $objBrochureDocument->getContent();
+				
+				if ($objBrochureDocumentContent && $objBrochureDocumentContent->content)
+				{
+					$objFileType		= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+					
+					$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objFileType->id}/16x16";
+					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
+					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'>Download <img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
+				}
+			}
+			if (!$strBrochureCell)
+			{
+				$strBrochureCell	= "No Brochure Attached";
+			}
+			
+			echo "<div class='DefaultElement'>";
+			echo "	<div id='RatePlan.brochure_document_id.Output' class='DefaultOutput Default' name='RatePlan.brochure_document_id'>\n";
+			echo "		{$strBrochureCell}\n";
+			echo "	</div>\n";
+			echo "	<div id='RatePlan.brochure_document_id.Label' class='DefaultLabel'>\n";
+			echo "		<span id='RatePlan.brochure_document_id.Label.Text'>Brochure : </span>\n";
+			echo "	</div>\n";
+			echo "</div>";
+			
+			// Build the Voice Auth Script link
+			$strAuthScriptCell	= '';
+			if ($arrRatePlan['voice_auth_document_id'])
+			{
+				$objAuthScriptDocument			= new Document(array('id'=>$arrRatePlan['voice_auth_document_id']), true);
+				$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContent();
+				
+				if ($objAuthScriptDocumentContent && $objAuthScriptDocumentContent->content)
+				{
+					$objFileType		= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
+					
+					$strImageSrc		= "../admin/img/template/script.png";
+					$strAuthScriptLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['voice_auth_document_id']}";
+					$strAuthScriptCell	= "<a href='{$strAuthScriptLink}' title='Download Authorisation Script'>Download <img src='{$strImageSrc}' alt='Download Authorisation Script' /></a>";
+				}
+			}
+			if (!$strAuthScriptCell)
+			{
+				$strAuthScriptCell	= "No Authorisation Script Attached";
+			}
+			
+			echo "<div class='DefaultElement'>";
+			echo "	<div id='RatePlan.auth_script_document_id.Output' class='DefaultOutput Default' name='RatePlan.auth_script_document_id'>\n";
+			echo "		{$strAuthScriptCell}\n";
+			echo "	</div>\n";
+			echo "	<div id='RatePlan.auth_script_document_id.Label' class='DefaultLabel'>\n";
+			echo "		<span id='RatePlan.auth_script_document_id.Label.Text'>Authorisation Script :</span>\n";
+			echo "	</div>\n";
+			echo "</div>";
+			
+			// PLAN DETAILS
 			$dboRatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);	
 			$dboRatePlan->CustomerGroup = $dboRatePlan->customer_group->Value;
 			$dboRatePlan->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
