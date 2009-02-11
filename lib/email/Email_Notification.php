@@ -121,11 +121,11 @@ class Email_Notification extends Zend_Mail
 	{
 		if (!count($this->_to))
 		{
-			$this->addTo('ybs-admin@yellowbilling.com.au', 'Yellow Billing Services');
+			$this->addTo('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		}
 		if (!$this->_from)
 		{
-			$this->setFrom('ybs-admin@yellowbilling.com.au', 'Yellow Billing Services');
+			$this->setFrom('ybs-admin@ybs.net.au', 'Yellow Billing Services');
 		}
 		parent::send($transport);
 	}
