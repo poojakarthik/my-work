@@ -195,6 +195,10 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
 					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					
+					$strDocuments		=	"new Array({" .
+											"strIconSrc: \"{$strImageSrc}\"," .
+											"strFileName: \"".$objBrochureDocumentContent->getFileName()."\"," .
+											"})";
 					$objEmployee		= Employee::getForId(Flex::getUserId());
 					//$strToEmails		= "new Array({name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"})";
 					$strFromEmails		=	"new Array({" .

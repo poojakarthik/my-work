@@ -26,7 +26,7 @@ var Document	= Class.create
 													};
 	},
 	
-	emailDocument	: function(intDocumentId, strDescription, arrFrom, strSubject, strContent, arrEmailAddresses)
+	emailDocument	: function(arrDocuments, strDescription, arrFrom, strSubject, strContent, arrEmailAddresses)
 	{
 		// DEBUG
 		/**/
@@ -89,6 +89,29 @@ var Document	= Class.create
 			throw Exception("No FROM addresses have been specified");
 		}
 		
+		// Attachments
+		var strAttachments	= '';
+		if (arrDocuments.length)
+		{
+			strAttachments	= "\n" +
+			"				<tr>\n" +
+			"					<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>Attachments : </nobr></td>\n" +
+			"					<td>";  
+			
+			for (var i = 0; i < arrDocuments.length; i++)
+			{
+				objDocument	= arrDocuments[i];
+				
+				strAttachments	+= "<nobr><span><img src='"+objDocument.strIconSrc+"'>&nbsp;"+objDocument.strFileName+"&nbsp;("+objDocument.intFileSizeKB+"KB)</span>;</nobr> ";
+			}
+			
+			strAttachments	+= "</td>\n" +
+			"				</tr>\n";
+		}
+		else
+		{
+			throw Exception("There are no Documents to send!");
+		}
 		
 		// Render Email Popup
 		var strHTML	= "\n" + 
