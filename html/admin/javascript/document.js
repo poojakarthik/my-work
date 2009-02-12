@@ -73,7 +73,7 @@ var Document	= Class.create
 				if (objEmail.is_primary_content != undefined && objEmail.is_primary_contact === true)
 				{
 					strChecked			= 'checked';
-					Flex.Document.emailAddressAdd(, , strCheckboxId);
+					Flex.Document.emailAddressAdd(objEmail.address, objEmail.name, strCheckboxId);
 				}
 				
 				strPredefinedEmails	+= "			<tr>\n";
