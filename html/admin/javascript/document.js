@@ -184,7 +184,7 @@ var Document	= Class.create
 		if (strAddress && Vixen.Validation.EmailAddress(strAddress));
 		{
 			// Valid -- Add
-			this._arrEmailAddresses
+			//this._arrEmailAddresses
 			
 			return true;
 		}
