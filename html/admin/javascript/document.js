@@ -193,7 +193,9 @@ var Document	= Class.create
 			else
 			{
 				// No -- add
-				this._arrEmailAddresses.push(strAddress);
+				this._arrEmailAddresses.push({
+												address: strAddress
+											});
 				this._updateEmailTo();
 				$ID('Document_Email_OtherAddress').value	= '';
 				return true;
@@ -210,18 +212,20 @@ var Document	= Class.create
 	emailAddressRemove	: function(strAddress)
 	{
 		// Check if this address exists in the array
-		var intIndex	= this._arrEmailAddresses.indexOf(strAddress);
-		if (intIndex > 0)
+		for (var i = 0; i < this._arrEmailAddresses.length; i++)
 		{
-			// Exists -- remove
-			this._arrEmailAddresses.splice(intIndex, 1);
-			this._updateEmailTo();
-			return true;
-		}
-		else
-		{
-			$Alert("Email '"+strAddress+"' does not exist!");
-			return true;
+			if (this._arrEmailAddresses[i].address == strAddress)
+			{
+				// Exists -- remove
+				this._arrEmailAddresses.splice(i, 1);
+				this._updateEmailTo();
+				return true;
+			}
+			else
+			{
+				$Alert("Email '"+strAddress+"' does not exist!");
+				return true;
+			}
 		}
 	},
 	
