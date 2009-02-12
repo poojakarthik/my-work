@@ -86,7 +86,7 @@ var Document	= Class.create
 		}
 		else
 		{
-			throw Exception("No FROM addresses have been specified");
+			throw "No FROM addresses have been specified";
 		}
 		
 		// Attachments
@@ -110,7 +110,7 @@ var Document	= Class.create
 		}
 		else
 		{
-			throw Exception("There are no Documents to send!");
+			throw "There are no Documents to send!";
 		}
 		
 		// Render Email Popup

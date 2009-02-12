@@ -195,9 +195,11 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
 					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					
+					$intFileSizeKB		= round($objBrochureDocumentContent->content / 1024);
 					$strDocuments		=	"new Array({" .
 											"strIconSrc: \"{$strImageSrc}\"," .
 											"strFileName: \"".$objBrochureDocumentContent->getFileName()."\"," .
+											"intFileSizeKB: {$intFileSizeKB}" .
 											"})";
 					$objEmployee		= Employee::getForId(Flex::getUserId());
 					//$strToEmails		= "new Array({name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"})";
@@ -211,7 +213,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 											"})";
 					$strSubject			= "{$strCustomerGroup} Plan Brochures";
 					$strContent			= "Dear <Addressee>\\n\\nPlease find attached the Plan Brochures you requested.\\n\\nRegards\\n<Sender>";
-					$strEmailOnClick	= "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument({$arrRatePlan['brochure_document_id']}, \"Plan Brochure for {$arrRatePlan['Name']}\", {$strFromEmails}, \"{$strSubject}\", \"{$strContent}\")});";
+					$strEmailOnClick	= "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan Brochure for {$arrRatePlan['Name']}\", {$strFromEmails}, \"{$strSubject}\", \"{$strContent}\")});";
 					$strBrochureCell	.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
 				}
 			}
