@@ -60,7 +60,7 @@ var Document	= Class.create
 		"		<tbody>\n" + 
 		strPredefinedEmails + 
 		"			<tr>\n" +
-		"				<th colspan='2' style='font-size: 10pt;text-align:right;'>Other Email Address(es) : </td>\n" +
+		"				<td colspan='2' style='font-weight: bold;font-size: 10pt;text-align:right;'>Other Email Address(es) : </td>\n" +
 		"				<td><input id='Document_Email_OtherAddress' type='text' size='40' /></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
