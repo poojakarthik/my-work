@@ -1755,11 +1755,32 @@ class Cli_App_Sales extends Cli
 		$arrReport[]	= "<strong>Summary of Automatic Provisioning of Sales - $strCurrentTimestamp</strong>";
 		$arrReport[]	= "";
 		
-		$arrReport[]	= "<strong>Accounts affected:</strong> $intTotalAccounts";
-		$arrReport[]	= "<strong>Services affected:</strong> $intTotalServices";
-		$arrReport[]	= "<strong>Services successfully activated and provisioned:</strong> $intTotalProvisionedServices";
-		$arrReport[]	= "<strong>Services requiring manual provisioning:</strong> $intTotalServicesToManuallyProvision";
-		$arrReport[]	= "<strong>Services to cancel:</strong> $intTotalServicesToCancel";
+		$arrReport[]	= "
+<table>
+	<tbody style='vertical-align:top'>
+		<tr>
+			<td><strong>Accounts affected:</strong></td>
+			<td>$intTotalAccounts</td>
+		</tr>
+		<tr>
+			<td><strong>Services affected:</strong></td>
+			<td>$intTotalServices</td>
+		</tr>
+		<tr>
+			<td><strong>Services successfully activated and provisioned:</strong></td>
+			<td>$intTotalProvisionedServices</td>
+		</tr>
+		<tr>
+			<td><strong>Services requiring manual provisioning:</strong></td>
+			<td>$intTotalServicesToManuallyProvision</td>
+		</tr>
+		<tr>
+			<td><strong>Services to cancel:</strong></td>
+			<td>$intTotalServicesToCancel</td>
+		</tr>
+	</tbody>
+</table>";
+		
 		$arrReport[]	= "";
 		
 		if (count($arrServicesToCancel))
@@ -1776,7 +1797,7 @@ class Cli_App_Sales extends Cli
 				}
 				$arrReport[] = $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
 			}
-			$arrReport[]	= "";
+			$arrReport[] = "";
 		}
 		
 		if (count($arrServicesNeedingManualProvisioning))
