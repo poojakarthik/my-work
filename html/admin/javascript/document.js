@@ -196,7 +196,7 @@ var Document	= Class.create
 		strAddress.strip();
 		
 		// Validate the Email Address
-		if (strAddress.length)
+		if (!strAddress.length)
 		{
 			return false;
 		}
