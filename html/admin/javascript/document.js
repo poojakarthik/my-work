@@ -196,7 +196,11 @@ var Document	= Class.create
 		strAddress.strip();
 		
 		// Validate the Email Address
-		if (strAddress && Vixen.Validation.EmailAddress(strAddress))
+		if (strAddress.length)
+		{
+			return false;
+		}
+		else if (strAddress && Vixen.Validation.EmailAddress(strAddress))
 		{
 			// Valid -- Is the Address already in our list?
 			if (this._arrEmailAddresses.indexOfAddress(strAddress) > -1)
