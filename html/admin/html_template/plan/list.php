@@ -212,9 +212,9 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 											"name: \"{$strCustomerGroup} Customer Care\", " .
 											"address: \"contact@{$objCustomerGroup->emailDomain}\"" .
 											"})";
-					$strSubject			= "{$strCustomerGroup} Plan Brochures";
+					$strSubject			= "Requested {$strCustomerGroup} Plan Brochure";
 					$strPlans			= " - {$arrRatePlan['Name']}\\n";					
-					$strContent			= "Dear <Addressee>,\\n\\nPlease find the Plan Brochure:\\n\\n{$strPlans}\\nAs per your request.\\n\\nRegards,\\n\\nThe Team at ".$strCustomerGroup;
+					$strContent			= "Dear <Addressee>,\\n\\nPlease attached find the Plan Brochure:\\n\\n{$strPlans}\\nAs per your request.\\n\\nRegards,\\n\\nThe Team at ".$strCustomerGroup;
 					$strEmailOnClick	= "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan Brochure for {$arrRatePlan['Name']}\", {$strFromEmails}, \"{$strSubject}\", \"{$strContent}\")});";
 					$strBrochureCell	.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
 				}
