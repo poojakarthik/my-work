@@ -14,7 +14,7 @@ var Document	= Class.create
 	emailDocument	: function(intDocumentId, strDescription, arrFrom, strSubject, strContent, arrEmailAddresses)
 	{
 		// DEBUG
-		/**/
+		/*
 		arrEmailAddresses	= new Array();
 		
 		arrEmailAddresses.push(	{
@@ -37,6 +37,7 @@ var Document	= Class.create
 		
 		this.pupEmail.setTitle('Email '+strDescription);
 		
+		// Predefined To's
 		var strPredefinedEmails	= ''; 
 		this.arrPredefinedEmails	= new Array();
 		if (arrEmailAddresses != undefined)
@@ -53,6 +54,25 @@ var Document	= Class.create
 				strPredefinedEmails	+= "			</tr>\n";
 			}
 		}
+		
+		// From Options
+		var strFromOptions	= '';
+		if (arrFrom != undefined)
+		{
+			for (var i = 0; i < arrFrom.length; i++)
+			{
+				objEmail		= arrFrom[i];
+				objEmail.name	= (objEmail.name == undefined) ? '' : objEmail.name;
+				
+				var strLabel	= (objEmail.name) ? objEmail.name+" ("+objEmail.address+")" ? objEmail.address;
+				strFromOptions	+= "<option value='"+objEmail.address+"'>"+strLabel+"</option>\n";
+			}
+		}
+		else
+		{
+			throw Exception("No FROM addresses have been specified");
+		}
+		
 		
 		// Render Email Popup
 		var strHTML	= "\n" + 
@@ -79,7 +99,11 @@ var Document	= Class.create
 		"			</tr>\n" +
 		"			<tr>\n" +
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' >From : </td>\n" +
-		"				<td><span style='vertical-align: top;'></span></td>\n" +  
+		"				<td>\n" +
+		"					<select id='Document_Email_From'>\n" +
+		strFromOptions +
+		"					</select>\n" +
+		"				</td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' >Subject : </td>\n" +

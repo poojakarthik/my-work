@@ -177,7 +177,8 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				$strStatusCell = "<span title='Toggle Status' onclick='Vixen.AvailablePlansPage.TogglePlanStatus({$arrRatePlan['Id']})'>$strStatusCell</span>";
 			}
 			
-			$strCustomerGroup	= GetConstantDescription($arrRatePlan['customer_group'], 'CustomerGroup');
+			$objCustomerGroup	= CustomerGroup::getForId($arrRatePlan['customer_group']);
+			$strCustomerGroup	= $objCustomerGroup->externalName;
 			
 			// Build the Plan Brochure link
 			$strBrochureCell	= '';
@@ -195,10 +196,18 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					
 					$objEmployee		= Employee::getForId(Flex::getUserId());
-					$strEmails			= "new Array({name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"})";
+					//$strToEmails		= "new Array({name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"})";
+					$strFromEmails		=	"new Array({" .
+											"				name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", " .
+											"				address: \"{$objEmployee->Email}\"" .
+											"			}," .
+											"			{" .
+											"				name: \"{$strCustomerGroup} Customer Care\", " .
+											"				address: \"contact@{$objCustomerGroup->emailDomain}\"" .
+											"			})";
 					$strSubject			= "{$strCustomerGroup} Plan Brochures";
 					$strContent			= "Dear <Addressee>\\n\\nPlease find attached the Plan Brochures you requested.\\n\\nRegards\\n<Sender>";
-					$strEmailOnClick	= "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument({$arrRatePlan['brochure_document_id']}, \"Plan Brochure for {$arrRatePlan['Name']}\", {$strEmails}, \"{$strSubject}\", \"{$strContent}\")});";
+					$strEmailOnClick	= "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument({$arrRatePlan['brochure_document_id']}, \"Plan Brochure for {$arrRatePlan['Name']}\", \"{$strFromEmails}\", \"{$strSubject}\", \"{$strContent}\")});";
 					$strBrochureCell	.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
 				}
 			}
