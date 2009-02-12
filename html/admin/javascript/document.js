@@ -43,7 +43,7 @@ var Document	= Class.create
 				objEmail.name	= (objEmail.name == undefined) ? '&nbsp;' : objEmail.name;
 				
 				strPredefinedEmails	+= "			<tr>\n";
-				strPredefinedEmails	+= "				<td style='width:5em'><input id='Document_Email_Checkbox_"+(i+1)+"' type='checkbox' /></td>\n";
+				strPredefinedEmails	+= "				<td style='width:2em'><input id='Document_Email_Checkbox_"+(i+1)+"' type='checkbox' /></td>\n";
 				strPredefinedEmails	+= "				<td>"+objEmail.name+"</td>\n";
 				strPredefinedEmails	+= "				<td>"+objEmail.address+"</td>\n";
 				strPredefinedEmails	+= "			</tr>\n";
