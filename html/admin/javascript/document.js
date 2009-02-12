@@ -249,6 +249,7 @@ var Document	= Class.create
 		{
 			$Alert(objResponse.Message);
 		}
+		Flex.Document.initialize();
 	},
 	
 	emailAddressAdd	: function(strAddress, strName, strCheckboxId)
