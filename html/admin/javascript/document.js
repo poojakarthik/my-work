@@ -13,6 +13,7 @@ var Document	= Class.create
 		this._arrDocuments		= null;
 		this._arrEmailAddresses	= new Array();
 		this._arrFromAddresses	= new Array();
+		this._intAccountId		= null;
 		
 		this._arrEmailAddresses.indexOfAddress	=	function(strAddress)
 													{
@@ -28,7 +29,7 @@ var Document	= Class.create
 													};
 	},
 	
-	emailDocument	: function(arrDocuments, strDescription, arrFrom, strSubject, strContent, arrEmailAddresses)
+	emailDocument	: function(arrDocuments, strDescription, arrFrom, strSubject, strContent, arrEmailAddresses, intAccount)
 	{
 		// DEBUG
 		/*
@@ -48,6 +49,8 @@ var Document	= Class.create
 								});
 		/**/
 		
+		this._intAccountId	= (intAccount != undefined) ? intAccount : null;
+		
 		strSubject		= (strSubject == undefined) ? '' : strSubject;
 		strContent		= (strContent == undefined) ? '' : strContent;
 		strDescription	= (strDescription == undefined) ? 'Document' : strDescription;
@@ -65,8 +68,16 @@ var Document	= Class.create
 				objEmail.name			= (objEmail.name == undefined) ? '' : objEmail.name;
 				var strNameParameter	= (objEmail.name.length) ? '"'+objEmail.name+'"' : 'null';
 				
+				var strCheckboxId		= "Document_Email_Checkbox_"+(i+1);
+				var strChecked			= '';
+				if (objEmail.is_primary_content != undefined && objEmail.is_primary_contact === true)
+				{
+					strChecked			= 'checked';
+					Flex.Document.emailAddressAdd(, , strCheckboxId);
+				}
+				
 				strPredefinedEmails	+= "			<tr>\n";
-				strPredefinedEmails	+= "				<td style='width:5%; text-align:right;'><input id='Document_Email_Checkbox_"+(i+1)+"' type='checkbox' value='"+objEmail.address+"' onchange='(this.checked) ? Flex.Document.emailAddressAdd(this.value, "+strNameParameter+", this.id) : Flex.Document.emailAddressRemove(this.value);' /></td>\n";
+				strPredefinedEmails	+= "				<td style='width:5%; text-align:right;'><input id='"+strCheckboxId+"' type='checkbox' checked='"+strChecked+"' value='"+objEmail.address+"' onchange='(this.checked) ? Flex.Document.emailAddressAdd(this.value, "+strNameParameter+", this.id) : Flex.Document.emailAddressRemove(this.value);' /></td>\n";
 				strPredefinedEmails	+= "				<td style='width:30%'>"+objEmail.name+"</td>\n";
 				strPredefinedEmails	+= "				<td>"+objEmail.address+"</td>\n";
 				strPredefinedEmails	+= "			</tr>\n";
@@ -223,15 +234,12 @@ var Document	= Class.create
 			return false;
 		}
 		
-		/*$Alert("Not implemented yet!");
-		return false;*/
-		
 		// Show the Loading Splash
 		Vixen.Popup.ShowPageLoadingSplash("Delivering Email...", null, null, null, 1);
-
+		
 		// Perform AJAX query
 		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Document._emailDocumentResponse.bind(this), null, 'Document', 'sendEmail');
-		fncJsonFunc(this._arrEmailAddresses, this._arrFromAddresses[$ID('Document_Email_From').value], $ID('Document_Email_Subject').value, $ID('Document_Email_Content').value, this._arrDocuments);
+		fncJsonFunc(this._arrEmailAddresses, this._arrFromAddresses[$ID('Document_Email_From').value], $ID('Document_Email_Subject').value, $ID('Document_Email_Content').value, this._arrDocuments, this._intAccountId);
 	},
 	
 	_emailDocumentResponse	: function(objResponse)
