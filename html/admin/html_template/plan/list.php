@@ -197,7 +197,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$objEmployee		= Employee::getForId(Flex::getUserId());
 					$strEmails			= "new Array({name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"})";
 					$strSubject			= "{$strCustomerGroup} Plan Brochures";
-					$strContent			= "Dear <Addressee>\\n\\nPlease find attached the Plan Brochures you requested.\n\nRegards\n<Sender>";
+					$strContent			= "Dear <Addressee>\\n\\nPlease find attached the Plan Brochures you requested.\\n\\nRegards\\n<Sender>";
 					$strEmailOnClick	= "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument({$arrRatePlan['brochure_document_id']}, \"Plan Brochure for {$arrRatePlan['Name']}\", {$strEmails}, \"{$strSubject}\", \"{$strContent}\")});";
 					$strBrochureCell	.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
 				}
