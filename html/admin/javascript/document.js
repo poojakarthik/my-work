@@ -68,21 +68,21 @@ var Document	= Class.create
 		"</div>\n" + 
 		"<div class='GroupedContent'>\n" + 
 		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
-		"		<tbody style='font-size: medium;'>\n" + 
+		"		<tbody style=''>\n" + 
 		"			<tr>\n" +
-		"				<th valign='top' style='text-align: right;' >To : </td>\n" +
+		"				<th valign='top' style='font-size: medium;text-align: right;' >To : </td>\n" +
 		"				<td valign='top'><span id='Document_Email_To'></span></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
-		"				<th valign='top' style='text-align: right;' >From : </td>\n" +
+		"				<th valign='top' style='font-size: medium;text-align: right;' >From : </td>\n" +
 		"				<td><span style='vertical-align: top;'></span></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
-		"				<th valign='top' style='text-align: right;' >Subject : </td>\n" +
+		"				<th valign='top' style='font-size: medium;text-align: right;' >Subject : </td>\n" +
 		"				<td><input type='text' style='vertical-align: top;' size='50' /></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
-		"				<th valign='top' style='text-align: right;' >Content : </td>\n" +
+		"				<th valign='top' style='font-size: medium;text-align: right;' >Content : </td>\n" +
 		"				<td><textarea style='vertical-align: top;' rows='10' cols='40'></textarea></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
