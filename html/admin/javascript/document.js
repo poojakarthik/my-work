@@ -29,7 +29,7 @@ var Document	= Class.create
 	emailDocument	: function(intDocumentId, strDescription, arrFrom, strSubject, strContent, arrEmailAddresses)
 	{
 		// DEBUG
-		/**/
+		/*
 		arrEmailAddresses	= new Array();
 		
 		arrEmailAddresses.push(	{
