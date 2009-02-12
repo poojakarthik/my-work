@@ -61,7 +61,7 @@ var Document	= Class.create
 		strPredefinedEmails + 
 		"			<tr>\n" +
 		"				<td colspan='2' style='font-weight: bold;font-size: 10pt;text-align:right;'>Other Email Address(es) : </td>\n" +
-		"				<td valign='top'><input id='Document_Email_OtherAddress' type='text' size='40' />&nbsp;<img src='../admin/img/template/add.png' onclick='Flex.Document.emailAddAddress()' /></td>\n" +  
+		"				<td valign='top'><input id='Document_Email_OtherAddress' type='text' size='40' />&nbsp;<img src='../admin/img/template/new.png' onclick='Flex.Document.emailAddAddress()' /></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
