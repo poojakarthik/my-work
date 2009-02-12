@@ -65,7 +65,7 @@ var Document	= Class.create
 				var strNameParameter	= (objEmail.name.length) ? '"'+objEmail.name+'"' : 'null';
 				
 				strPredefinedEmails	+= "			<tr>\n";
-				strPredefinedEmails	+= "				<td style='width:5%; text-align:right;'><input id='Document_Email_Checkbox_"+(i+1)+"' type='checkbox' value='"+objEmail.address+"' onchange='(this.checked) ? Flex.Document.emailAddressAdd(this.value, "+strNameParameter+", this) : Flex.Document.emailAddressRemove(this.value);' /></td>\n";
+				strPredefinedEmails	+= "				<td style='width:5%; text-align:right;'><input id='Document_Email_Checkbox_"+(i+1)+"' type='checkbox' value='"+objEmail.address+"' onchange='(this.checked) ? Flex.Document.emailAddressAdd(this.value, "+strNameParameter+", this.id) : Flex.Document.emailAddressRemove(this.value);' /></td>\n";
 				strPredefinedEmails	+= "				<td style='width:30%'>"+objEmail.name+"</td>\n";
 				strPredefinedEmails	+= "				<td>"+objEmail.address+"</td>\n";
 				strPredefinedEmails	+= "			</tr>\n";
@@ -238,7 +238,7 @@ var Document	= Class.create
 		}
 	},
 	
-	emailAddressAdd	: function(strAddress, strName, elmCheckbox)
+	emailAddressAdd	: function(strAddress, strName, strCheckboxId)
 	{
 		strAddress	= strAddress.replace(/(^\s+|\s+$)/g, '');
 		
@@ -260,9 +260,9 @@ var Document	= Class.create
 			{
 				// No -- add
 				this._arrEmailAddresses.push({
-												name		: (strName == undefined) ? '' : strName,
-												address		: strAddress,
-												elmCheckbox	: (elmCheckbox == undefined) ? null : elmCheckbox
+												name			: (strName == undefined) ? '' : strName,
+												address			: strAddress,
+												strCheckboxId	: (strCheckboxId == undefined) ? null : strCheckboxId
 											});
 				this._updateEmailTo();
 				$ID('Document_Email_OtherAddress').value	= '';
@@ -284,9 +284,9 @@ var Document	= Class.create
 		if (intIndex > -1)
 		{
 			// Exists -- remove
-			if (this._arrEmailAddresses[intIndex].elmCheckbox != undefined)
+			if (this._arrEmailAddresses[intIndex].strCheckboxId != undefined)
 			{
-				this._arrEmailAddresses[intIndex].elmCheckbox.checked	= false;
+				$ID(this._arrEmailAddresses[intIndex].strCheckboxId).checked	= false;
 			}
 			this._arrEmailAddresses.splice(intIndex, 1);
 			this._updateEmailTo();
