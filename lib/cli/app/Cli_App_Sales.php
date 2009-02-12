@@ -1278,9 +1278,10 @@ class Cli_App_Sales extends Cli
 					
 					// Append Details to the list of sales that have been set to Manual Intervention
 					$arrManualInterventionSales[] = array(
-															"SaleId"		=> $arrSPSale['id'],
-															"BusinessName"	=> $arrSPSaleAccount['business_name'],
-															"Reason"		=> $eException->getMessage()
+															"SaleId"			=> $arrSPSale['id'],
+															"BusinessName"		=> $arrSPSaleAccount['business_name'],
+															"Reason"			=> $eException->getMessage(),
+															"CustomerGroupId"	=> $arrSPSaleAccount['vendor_id']	// vendor_id in sales db is kept in sync with the corresponding CustomerGroup.Id in flex db
 														);
 				}
 			}
@@ -1305,15 +1306,9 @@ class Cli_App_Sales extends Cli
 			$this->log("Sending Manual Intervention report");
 			
 			// To create the links to the sales, use the first customer group's flex URL, in the hope that that is the one most users log into
-			$arrCustomerGroups		= Customer_Group::getAll();
-			$objFirstCustomerGroup	= current($arrCustomerGroups);
-			$strBaseUrl				= NULL;
-			if ($objFirstCustomerGroup !== FALSE && is_string($objFirstCustomerGroup->flexUrl))
-			{
-				$strBaseUrl = $objFirstCustomerGroup->flexUrl;
-			}
+			$arrCustomerGroups	= Customer_Group::getAll();
 			
-			$strEmailSubject = "Sales requiring manual intervention for sale import run ". Data_Source_Time::currentTimestamp();
+			$strEmailSubject	= "Sales requiring manual intervention for sale import run ". Data_Source_Time::currentTimestamp();
 			
 			$arrReport		= array();
 			$arrReport[]	= "The following sales require manual intervention so that they can be imported into flex.";
@@ -1321,7 +1316,7 @@ class Cli_App_Sales extends Cli
 			
 			foreach ($arrManualInterventionSales as $arrDetails)
 			{
-				$strSale		= ($strBaseUrl !== NULL)? "<a href='{$strBaseUrl}/admin/reflex.php/Sales/ViewSale/{$arrDetails['SaleId']}/'>{$arrDetails['SaleId']}</a>" : $arrDetails['SaleId'];
+				$strSale		= (array_key_exists($arrDetails['CustomerGroupId'], $arrCustomerGroups) &&  is_string($arrCustomerGroups[$arrDetails['CustomerGroupId']]->flexUrl))? "<a href='{$arrCustomerGroups[$arrDetails['CustomerGroupId']]->flexUrl}/admin/reflex.php/Sales/ViewSale/{$arrDetails['SaleId']}/'>{$arrDetails['SaleId']}</a>" : $arrDetails['SaleId'];
 				$strName		= htmlspecialchars($arrDetails['BusinessName']);
 				$strReason		= htmlspecialchars($arrDetails['Reason']);
 				$arrReport[]	= "Sale $strSale - $strName";
@@ -1747,6 +1742,7 @@ class Cli_App_Sales extends Cli
 		}
 		
 		// Email the EMAIL_NOTIFICATION_SALE_AUTOMATIC_PROVISIONING_REPORT to the registered recipients
+		$arrCustomerGroups	= Customer_Group::getAll();
 		$arrReport			= array();
 		$strEmailSubject	= "[SUCCESS] Automatic Provisioning of Sales - $strCurrentTimestamp";
 		
@@ -1774,9 +1770,9 @@ class Cli_App_Sales extends Cli
 			{
 				$intAccountId	= $arrServices[$intServiceId]['Service']->account;
 				$arrReport[]	= "";
-				$arrReport[]	= "Account: {$arrAccounts[$intAccountId]->id} - ". $arrAccounts[$intAccountId]->getName();
+				$arrReport[]	= "Account: <a href='". $arrCustomerGroups[$arrAccounts[$intAccountId]->customerGroup]->flexUrl . "/admin/flex.php/Account/Overview/?Account.Id=$intAccountId' >$intAccountId</a> - ". htmlspecialchars($arrAccounts[$intAccountId]->getName());
 			}
-			$arrReport[] = "\t". $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
+			$arrReport[] = $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
 		}
 		$arrReport[]	= "";
 		
@@ -1788,9 +1784,9 @@ class Cli_App_Sales extends Cli
 			{
 				$intAccountId	= $arrServices[$intServiceId]['Service']->account;
 				$arrReport[]	= "";
-				$arrReport[]	= "Account: {$arrAccounts[$intAccountId]->id} - ". $arrAccounts[$intAccountId]->getName();
+				$arrReport[]	= "Account: <a href='". $arrCustomerGroups[$arrAccounts[$intAccountId]->customerGroup]->flexUrl . "/admin/flex.php/Account/Overview/?Account.Id=$intAccountId' >$intAccountId</a> - ". htmlspecialchars($arrAccounts[$intAccountId]->getName());
 			}
-			$arrReport[] = "\t". $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
+			$arrReport[] = $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
 		}
 		$arrReport[]	= "";
 		
@@ -1802,18 +1798,18 @@ class Cli_App_Sales extends Cli
 			{
 				$intAccountId	= $arrServices[$intServiceId]['Service']->account;
 				$arrReport[]	= "";
-				$arrReport[]	= "Account: {$arrAccounts[$intAccountId]->id} - ". $arrAccounts[$intAccountId]->getName();
+				$arrReport[]	= "Account: <a href='". $arrCustomerGroups[$arrAccounts[$intAccountId]->customerGroup]->flexUrl . "/admin/flex.php/Account/Overview/?Account.Id=$intAccountId' >$intAccountId</a> - ". htmlspecialchars($arrAccounts[$intAccountId]->getName());
 			}
-			$arrReport[] = "\t". $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
+			$arrReport[] = $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
 		}
 		$arrReport[]	= "";
 		$arrReport[]	= "Regards";
 		$arrReport[]	= "Flexor";
 		
-		$strEmailBody	= implode("\r\n", $arrReport);
+		$strEmailBody	= implode("\n<br />", $arrReport);
 		$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_SALE_AUTOMATIC_PROVISIONING_REPORT);
 		$objEmailNotification->setSubject($strEmailSubject);
-		$objEmailNotification->setBodyText($strEmailBody);
+		$objEmailNotification->setBodyHtml($strEmailBody);
 		$objEmailNotification->send();
 	}
 
