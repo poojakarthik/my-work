@@ -59,11 +59,12 @@ var Document	= Class.create
 		{
 			for (var i = 0; i < arrEmailAddresses.length; i++)
 			{
-				objEmail		= arrEmailAddresses[i];
-				objEmail.name	= (objEmail.name == undefined) ? '' : objEmail.name;
+				objEmail				= arrEmailAddresses[i];
+				objEmail.name			= (objEmail.name == undefined) ? '' : objEmail.name;
+				var strNameParameter	= (objEmail.name.length) ? '"'+objEmail.name+'"' : 'null';
 				
 				strPredefinedEmails	+= "			<tr>\n";
-				strPredefinedEmails	+= "				<td style='width:5%; text-align:right;'><input id='Document_Email_Checkbox_"+(i+1)+"' type='checkbox' value='"+objEmail.address+"' onchange='(this.checked) ? Flex.Document.emailAddressAdd(this.value) : Flex.Document.emailAddressRemove(this.value);' /></td>\n";
+				strPredefinedEmails	+= "				<td style='width:5%; text-align:right;'><input id='Document_Email_Checkbox_"+(i+1)+"' type='checkbox' value='"+objEmail.address+"' onchange='(this.checked) ? Flex.Document.emailAddressAdd(this.value, "+strNameParameter+", this) : Flex.Document.emailAddressRemove(this.value);' /></td>\n";
 				strPredefinedEmails	+= "				<td style='width:30%'>"+objEmail.name+"</td>\n";
 				strPredefinedEmails	+= "				<td>"+objEmail.address+"</td>\n";
 				strPredefinedEmails	+= "			</tr>\n";
@@ -207,8 +208,8 @@ var Document	= Class.create
 			{
 				// No -- add
 				this._arrEmailAddresses.push({
-												name		: (strName == undefined) ? '' : strName
-												address		: strAddress
+												name		: (strName == undefined) ? '' : strName,
+												address		: strAddress,
 												elmCheckbox	: (elmCheckbox == undefined) ? null : elmCheckbox
 											});
 				this._updateEmailTo();
@@ -224,7 +225,7 @@ var Document	= Class.create
 		}
 	},
 	
-	emailAddressRemove	: function(strAddress, strName)
+	emailAddressRemove	: function(strAddress)
 	{
 		// Check if this address exists in the array
 		var intIndex	= this._arrEmailAddresses.indexOfAddress(strAddress);
