@@ -13,8 +13,8 @@ class JSON_Handler_Document extends JSON_Handler
 	
 	public function sendEmail($arrTo, $strFrom, $strSubject, $strContent, $arrDocuments)
 	{
-		set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(str_replace('/', DIRECTORY_SEPARATOR, FLEX_BASE_PATH."lib"))));
-		require_once(FLEX_BASE_PATH.'lib/Zend/Mail.php');
+		set_include_path(get_include_path() . PATH_SEPARATOR . realpath(str_replace('/', DIRECTORY_SEPARATOR, FLEX_BASE_PATH."lib")));
+		require_once('Zend/Mail.php');
 		
 		try
 		{
