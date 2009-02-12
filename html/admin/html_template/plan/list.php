@@ -195,27 +195,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
 					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					
-					$intFileSizeKB		= round(mb_strlen($objBrochureDocumentContent->content) / 1024);
-					$strDocuments		=	"new Array({" .
-											"id: {$objBrochureDocument->id}," .
-											"strIconSrc: \"{$strImageSrc}\"," .
-											"strFileName: \"".$objBrochureDocumentContent->getFileName()."\"," .
-											"intFileSizeKB: {$intFileSizeKB}" .
-											"})";
-					$objEmployee		= Employee::getForId(Flex::getUserId());
-					//$strToEmails		= "new Array({name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"})";
-					$strFromEmails		=	"new Array({" .
-											"name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", " .
-											"address: \"{$objEmployee->Email}\"" .
-											"}," .
-											"{" .
-											"name: \"{$strCustomerGroup} Customer Care\", " .
-											"address: \"contact@{$objCustomerGroup->emailDomain}\"" .
-											"})";
-					$strSubject			= "Requested {$strCustomerGroup} Plan Brochure";
-					$strPlans			= " - {$arrRatePlan['Name']}\\n";					
-					$strContent			= "Dear <Addressee>,\\n\\nPlease attached find the Plan Brochure:\\n\\n{$strPlans}\\nAs per your request.\\n\\nRegards,\\n\\nThe Team at ".$strCustomerGroup;
-					$strEmailOnClick	= "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan Brochure for {$arrRatePlan['Name']}\", {$strFromEmails}, \"{$strSubject}\", \"{$strContent}\")});";
+					$strEmailOnClick	= RatePlan::generateEmailButtonOnClick($arrRatePlan['customer_group'], $arrRatePlan);
 					$strBrochureCell	.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
 				}
 			}

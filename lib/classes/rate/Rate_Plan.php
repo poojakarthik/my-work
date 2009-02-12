@@ -264,6 +264,89 @@ class Rate_Plan extends ORM
 		return true;
 	}
 	
+	/**
+	 * generateEmailButtonOnClick()
+	 *
+	 * Retrieves a Document based on a passed pseudo-path
+	 * 
+	 * @param	[mixed			$mixRevision]						Revision of the Content to retrieve
+	 * 																TRUE	: Latest Revision (default)
+	 * 																FALSE	: Earliest Revision
+	 * 																integer	: X Revisions ago (0 = current)
+	 * 
+	 * @return	Document_Content									The requested Statement
+	 *
+	 * @method
+	 */
+	public static function generateEmailButtonOnClick($intCustomerGroup, $arrRatePlans, $intAccountId=null)
+	{
+		$objCustomerGroup	= CustomerGroup::getForId($intCustomerGroup);
+		
+		$strPlans		= '';
+		
+		// Documents
+		$arrDocuments	= array();
+		foreach ($arrRatePlans as $mixRatePlan)
+		{
+			$arrRatePlan	= ($mixRatePlan instanceof Rate_Plan) ? $mixRatePlan->toArray() : $mixRatePlan;
+			
+			$objDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
+			$objDocumentContent	= $objDocument->getContent();
+			
+			$intFileSizeKB	= round(mb_strlen($objDocumentContent->content) / 1024);
+			$arrDocuments[]	= "{id: {$objDocument->id}, strFileName: \"".$objDocumentContent->getFileName()."\", intFileSizeKB: {$intFileSizeKB}}";
+			
+			$strPlans	.= " - {$arrRatePlan['Name']}\\n";
+		}
+		$strDocuments	= "new Array(".implode(",\n", $arrDocuments).")";
+		
+		// Recipients
+		if ($intAccountId)
+		{
+			$objAccount	= new Account(array('Id'=>$intAccountId), false, true);
+			$arrContacts	= $objAccount->getContacts(false);
+			
+			$arrRecipients	= array();
+			foreach ($arrContacts as $arrContact)
+			{
+				if ($arrContact['Archived'] === 0 && trim($arrContact['Email']) && stripos($arrContact['Email'], 'noemail@') === false)
+				{
+					$arrRecipients[]	= "{name: \"{$arrContact['FirstName']} {$arrContact['LastName']}\", address: \"{$arrContact['Email']}\"}";
+				}
+			}
+			$strRecipients	= "new Array(".implode(",\n", $arrRecipients).")";
+		}
+		else
+		{
+			$strRecipients	= 'null';
+		}
+		
+		// Senders
+		$arrSenders		= array();
+		$objEmployee		= Employee::getForId(Flex::getUserId());
+		if (trim($objEmployee->Email))
+		{
+			$arrRecipients[]	= "{name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"}";
+		}
+		$arrSenders[]	= "{name: \"{$objCustomerGroup->externalName} Customer Care\", address: \"{$objCustomerGroup->emailDomain}\"}";
+		$strSenders		= "new Array(".implode(",\n", $arrSenders).")";
+		
+		if (count($arrDocuments) > 1)
+		{
+			$strBrochurePlural	= "Brochure";
+		}
+		else
+		{
+			$strBrochurePlural	= "Brochures";
+		}
+		
+		// Generate HTML
+		$strSubject			= "Requested {$strCustomerGroup} Plan Brochure";
+		$strContent			= "Dear <Addressee>,\\n\\nPlease attached find the Plan {$strBrochurePlural}:\\n\\n{$strPlans}\\nAs per your request.\\n\\nRegards,\\n\\nThe Team at {$objCustomerGroup->externalName}";
+		
+		return "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan {$strBrochurePlural}\", {$strSenders}, \"{$strSubject}\", \"{$strContent}\", {$strRecipients})});";
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//

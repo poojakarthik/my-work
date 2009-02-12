@@ -105,7 +105,7 @@ var Document	= Class.create
 			{
 				objDocument	= arrDocuments[i];
 				
-				strAttachments	+= "<nobr><span><img src='"+objDocument.strIconSrc+"' style='vertical-align: text-top;' />&nbsp;"+objDocument.strFileName+"&nbsp;("+objDocument.intFileSizeKB+"KB)</span>;</nobr> ";
+				strAttachments	+= "<nobr><span><img src='../admin/reflex.php/File/Image/FileTypeIcon/"+objDocument.id+"/16x16' style='vertical-align: text-top;' />&nbsp;"+objDocument.strFileName+"&nbsp;("+objDocument.intFileSizeKB+"KB)</span>;</nobr> ";
 			}
 			
 			strAttachments	+= "</td>\n" +
@@ -179,6 +179,17 @@ var Document	= Class.create
 		{
 			arrErrors.push("[!] Please add at least one TO email address");
 		}
+		else
+		{
+			for (var i = 0; i < this._arrEmailAddresses.length; i++)
+			{
+				if (!Vixen.Validation.EmailAddress(this._arrEmailAddresses[i].address))
+				{
+					arrErrors.push("[!] '"+this._arrEmailAddresses[i].address+"' is not a valid email address!");
+				}
+			}
+		}
+		
 		if (!$ID('Document_Email_From').value)
 		{
 			arrErrors.push("[!] Please select the FROM email address");
