@@ -207,8 +207,8 @@ var Document	= Class.create
 			return false;
 		}
 		
-		$Alert("Not implemented yet!");
-		return false;
+		/*$Alert("Not implemented yet!");
+		return false;*/
 		
 		// Show the Loading Splash
 		Vixen.Popup.ShowPageLoadingSplash("Delivering Email...", null, null, null, 1);
