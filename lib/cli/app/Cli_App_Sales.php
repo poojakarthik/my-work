@@ -1593,7 +1593,7 @@ class Cli_App_Sales extends Cli
 			// $strEligibleSaleItemsWhereClause = "si.sale_item_status_id = ". DO_Sales_SaleItemStatus::DISPATCHED ." AND sish.sale_item_status_id = ". DO_Sales_SaleItemStatus::VERIFIED ." AND sish.changed_on < (NOW() - INTERVAL '". self::PROVISIONING_AMNESTY_HOURS ." HOUR')";
 			$strEligibleSaleItemsFromClause		= "sale_item AS si";
 			$strEligibleSaleItemsWhereClause	= "si.sale_item_status_id = ". DO_Sales_SaleItemStatus::DISPATCHED;
-			$resSaleItems = $dsSalesPortal->queryAll(	"SELECT si.id AS id, CASE WHEN (si.created_on < (NOW() - INTERVAL '". self::PROVISIONING_AMNESTY_HOURS ." HOUR')) THEN true ELSE false END AS waiting_period_transpired".
+			$resSaleItems = $dsSalesPortal->queryAll(	"SELECT si.id AS id, CASE WHEN (si.created_on < (NOW() - INTERVAL '". self::PROVISIONING_AMNESTY_HOURS ." HOUR')) THEN true ELSE false END AS waiting_period_transpired ".
 														"FROM $strEligibleSaleItemsFromClause ".
 														"WHERE $strEligibleSaleItemsWhereClause ;",
 														array("integer", "boolean"), MDB2_FETCHMODE_ASSOC);
