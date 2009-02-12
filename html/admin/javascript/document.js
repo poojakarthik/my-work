@@ -60,7 +60,7 @@ var Document	= Class.create
 		"		<tbody>\n" + 
 		strPredefinedEmails + 
 		"			<tr>\n" +
-		"				<td colspan='2' style='font-weight: bold;font-size: 10pt;text-align:right;'>Other Email Address(es) : </td>\n" +
+		"				<td colspan='2' style='font-weight: bold;font-size: 10pt;text-align:right;'>Other Email Address : </td>\n" +
 		"				<td valign='top'><input id='Document_Email_OtherAddress' type='text' size='40' />&nbsp;<img src='../admin/img/template/new.png' title='Add Address' alt='Add Address' onclick='Flex.Document.emailAddAddress()' style='vertical-align: text-top;' /></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
@@ -71,7 +71,7 @@ var Document	= Class.create
 		"		<tbody style=''>\n" + 
 		"			<tr>\n" +
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' >To : </td>\n" +
-		"				<td valign='top'><span id='Document_Email_To'></span></td>\n" +  
+		"				<td valign='top'><span id='Document_Email_To'>&lt; No addresses specified &gt;</span></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' >From : </td>\n" +
