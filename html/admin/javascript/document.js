@@ -11,6 +11,19 @@ var Document	= Class.create
 		this.pupEmail.addCloseButton();
 		
 		this._arrEmailAddresses	= new Array();
+		
+		this._arrEmailAddresses.indexOfAddress	=	function(strAddress)
+													{
+														for (var i = 0; i < this.length; i++)
+														{
+															if (this[i].address === strAddress)
+															{
+																// Exists -- return Index
+																return i;
+															}
+														}
+														return -1;
+													};
 	},
 	
 	emailDocument	: function(intDocumentId, strDescription, arrFrom, strSubject, strContent, arrEmailAddresses)
@@ -177,7 +190,7 @@ var Document	= Class.create
 		}
 	},
 	
-	emailAddressAdd	: function(strAddress)
+	emailAddressAdd	: function(strAddress, strName, elmCheckbox)
 	{
 		strAddress.strip();
 		
@@ -185,7 +198,7 @@ var Document	= Class.create
 		if (strAddress && Vixen.Validation.EmailAddress(strAddress))
 		{
 			// Valid -- Is the Address already in our list?
-			if (this._arrEmailAddresses.indexOf(strAddress) > -1)
+			if (this._arrEmailAddresses.indexOfAddress(strAddress) > -1)
 			{
 				// Yes -- don't add, but return true
 				return true;
@@ -194,7 +207,9 @@ var Document	= Class.create
 			{
 				// No -- add
 				this._arrEmailAddresses.push({
-												address: strAddress
+												name		: (strName == undefined) ? '' : strName
+												address		: strAddress
+												elmCheckbox	: (elmCheckbox == undefined) ? null : elmCheckbox
 											});
 				this._updateEmailTo();
 				$ID('Document_Email_OtherAddress').value	= '';
@@ -209,18 +224,20 @@ var Document	= Class.create
 		}
 	},
 	
-	emailAddressRemove	: function(strAddress)
+	emailAddressRemove	: function(strAddress, strName)
 	{
 		// Check if this address exists in the array
-		for (var i = 0; i < this._arrEmailAddresses.length; i++)
+		var intIndex	= this._arrEmailAddresses.indexOfAddress(strAddress);
+		if (intIndex > -1)
 		{
-			if (this._arrEmailAddresses[i].address == strAddress)
+			// Exists -- remove
+			if (this._arrEmailAddresses[intIndex].elmCheckbox != undefined)
 			{
-				// Exists -- remove
-				this._arrEmailAddresses.splice(i, 1);
-				this._updateEmailTo();
-				return true;
+				this._arrEmailAddresses[intIndex].elmCheckbox.checked	= false;
 			}
+			this._arrEmailAddresses.splice(intIndex, 1);
+			this._updateEmailTo();
+			return true;
 		}
 		
 		// No matches
