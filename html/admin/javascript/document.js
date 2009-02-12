@@ -13,6 +13,24 @@ var Document	= Class.create
 	
 	emailDocument	: function(intDocumentId, strDescription, arrEmailAddresses)
 	{
+		// DEBUG
+		/**/
+		arrEmailAddresses	= new Array();
+		
+		arrEmailAddresses.push(	{
+									name	: 'Rich Davis',
+									address	: 'rdavis@ybs.net.au'
+								});
+		arrEmailAddresses.push(	{
+									name	: 'Mark Sergeant',
+									address	: 'msergeant@ybs.net.au'
+								});
+		arrEmailAddresses.push(	{
+									name	: 'Rich Davis',
+									address	: 'turdminator@hotmail.com'
+								});
+		/**/
+		
 		strDescription	= (strDescription != undefined) ? strDescription : 'Document';
 		
 		var strPredefinedEmails	= ''; 
@@ -43,7 +61,7 @@ var Document	= Class.create
 		strPredefinedEmails + 
 		"			<tr>\n" +
 		"				<td colspan='2' style='text-align:right; width='33%''>Other Email Address(es) : </td>\n" +
-		"				<td><input id='Document_Email_OtherAddress' type='text' /></td>\n" +  
+		"				<td><input id='Document_Email_OtherAddress' type='text' maxlength='40' /></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
