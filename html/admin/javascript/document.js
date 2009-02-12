@@ -9,6 +9,8 @@ var Document	= Class.create
 		this.pupEmail	= new Reflex_Popup(40);
 		this.pupEmail.setTitle('Email Document');
 		this.pupEmail.addCloseButton();
+		
+		this._arrEmailAddresses	= new Array();
 	},
 	
 	emailDocument	: function(intDocumentId, strDescription, arrFrom, strSubject, strContent, arrEmailAddresses)
