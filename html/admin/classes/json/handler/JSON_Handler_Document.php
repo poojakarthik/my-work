@@ -13,6 +13,7 @@ class JSON_Handler_Document extends JSON_Handler
 	
 	public function sendEmail($arrTo, $strFrom, $strSubject, $strContent, $arrDocuments)
 	{
+		set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(FLEX_BASE_PATH) . "lib" . DIRECTORY_SEPARATOR));
 		require_once(FLEX_BASE_PATH.'lib/Zend/Mail.php');
 		
 		try
