@@ -101,7 +101,7 @@ var Document	= Class.create
 		strPredefinedEmails + 
 		"			<tr>\n" +
 		"				<td colspan='2' style='font-weight: bold;font-size: 10pt;text-align:right;'>Add Email Address : </td>\n" +
-		"				<td valign='top'><input id='Document_Email_OtherAddress' type='text' size='35' />&nbsp;<img src='../admin/img/template/new.png' title='Add Address' alt='Add Address' onclick='Flex.Document.emailAddressAdd($ID(\"Document_Email_OtherAddress\").value)' style='vertical-align: text-top;' /></td>\n" +  
+		"				<td valign='top'><input id='Document_Email_OtherAddress' type='text' size='30' />&nbsp;<img src='../admin/img/template/new.png' title='Add Address' alt='Add Address' onclick='Flex.Document.emailAddressAdd($ID(\"Document_Email_OtherAddress\").value)' style='vertical-align: text-top;' /></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
