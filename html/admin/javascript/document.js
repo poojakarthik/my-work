@@ -182,7 +182,7 @@ var Document	= Class.create
 	emailAddressRemove	: function(strAddress)
 	{
 		// Validate the Email Address
-		if (strAddress && Vixen.Validation.EmailAddress(strAddress));
+		if (strAddress && Vixen.Validation.EmailAddress(strAddress))
 		{
 			// Valid -- Add
 			//this._arrEmailAddresses
