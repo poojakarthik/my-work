@@ -60,8 +60,30 @@ var Document	= Class.create
 		"		<tbody>\n" + 
 		strPredefinedEmails + 
 		"			<tr>\n" +
-		"				<td colspan='2' style='text-align:right; width='33%''>Other Email Address(es) : </td>\n" +
+		"				<td colspan='2' style='text-align:right;'>Other Email Address(es) : </td>\n" +
 		"				<td><input id='Document_Email_OtherAddress' type='text' size='40' /></td>\n" +  
+		"			</tr>\n" + 
+		"		</tbody>\n" + 
+		"	</table>\n" + 
+		"</div>\n" + 
+		"<div class='GroupedContent'>\n" + 
+		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
+		"		<tbody>\n" + 
+		"			<tr>\n" +
+		"				<th><span style='vertical-align: top;'>To : </span></td>\n" +
+		"				<td><span style='vertical-align: top;'></span></td>\n" +  
+		"			</tr>\n" +
+		"			<tr>\n" +
+		"				<th><span style='vertical-align: top;'>From : </span></td>\n" +
+		"				<td><span style='vertical-align: top;'></span></td>\n" +  
+		"			</tr>\n" +
+		"			<tr>\n" +
+		"				<th><span style='vertical-align: top;'>Subject : </span></td>\n" +
+		"				<td><input type='text' style='vertical-align: top;' size='50' /></td>\n" +  
+		"			</tr>\n" +
+		"			<tr>\n" +
+		"				<th><span style='vertical-align: top;'>To : </span></td>\n" +
+		"				<td><textarea style='vertical-align: top;' rows='10' cols='50' /></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
