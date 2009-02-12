@@ -294,7 +294,7 @@ class Rate_Plan extends ORM
 			$objDocumentContent	= $objDocument->getContent();
 			
 			$intFileSizeKB	= round(mb_strlen($objDocumentContent->content) / 1024);
-			$arrDocuments[]	= "{id: {$objDocument->id}, strFileName: \"".$objDocumentContent->getFileName()."\", intFileSizeKB: {$intFileSizeKB}}";
+			$arrDocuments[]	= "{id: {$objDocument->id}, strFileName: \"".$objDocumentContent->getFileName()."\", intFileSizeKB: {$intFileSizeKB}}, file_type_id: {$objDocumentContent->file_type_id}";
 			
 			$strPlans	.= " - {$arrRatePlan['Name']}\\n";
 		}
