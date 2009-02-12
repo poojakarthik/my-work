@@ -280,7 +280,7 @@ class Rate_Plan extends ORM
 	 */
 	public static function generateEmailButtonOnClick($intCustomerGroup, $arrRatePlans, $intAccountId=null)
 	{
-		$objCustomerGroup	= CustomerGroup::getForId($intCustomerGroup);
+		$objCustomerGroup	= Customer_Group::getForId($intCustomerGroup);
 		
 		$strPlans		= '';
 		
