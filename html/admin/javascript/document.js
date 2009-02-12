@@ -70,19 +70,19 @@ var Document	= Class.create
 		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
 		"		<tbody>\n" + 
 		"			<tr>\n" +
-		"				<th><span style='vertical-align: top;'>To : </span></td>\n" +
+		"				<th valign='top' style='text-align: right;' >To : </td>\n" +
+		"				<td valign='top'><span id='Document_Email_To'></span></td>\n" +  
+		"			</tr>\n" +
+		"			<tr>\n" +
+		"				<th valign='top' style='text-align: right;' >From : </td>\n" +
 		"				<td><span style='vertical-align: top;'></span></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
-		"				<th><span style='vertical-align: top;'>From : </span></td>\n" +
-		"				<td><span style='vertical-align: top;'></span></td>\n" +  
-		"			</tr>\n" +
-		"			<tr>\n" +
-		"				<th><span style='vertical-align: top;'>Subject : </span></td>\n" +
+		"				<th valign='top' style='text-align: right;' >Subject : </td>\n" +
 		"				<td><input type='text' style='vertical-align: top;' size='50' /></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
-		"				<th><span style='vertical-align: top;'>To : </span></td>\n" +
+		"				<th valign='top' style='text-align: right;' >Content : </td>\n" +
 		"				<td><textarea style='vertical-align: top;' rows='10' cols='40'></textarea></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
