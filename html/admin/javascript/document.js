@@ -105,7 +105,7 @@ var Document	= Class.create
 			{
 				objDocument	= arrDocuments[i];
 				
-				strAttachments	+= "<nobr><span><img src='../admin/reflex.php/File/Image/FileTypeIcon/"+objDocument.id+"/16x16' style='vertical-align: text-top;' />&nbsp;"+objDocument.strFileName+"&nbsp;("+objDocument.intFileSizeKB+"KB)</span>;</nobr> ";
+				strAttachments	+= "<nobr><span><img src='../admin/reflex.php/File/Image/FileTypeIcon/"+objDocument.file_type_id+"/16x16' style='vertical-align: text-top;' />&nbsp;"+objDocument.strFileName+"&nbsp;("+objDocument.intFileSizeKB+"KB)</span>;</nobr> ";
 			}
 			
 			strAttachments	+= "</td>\n" +
