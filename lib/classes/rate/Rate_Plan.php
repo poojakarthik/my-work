@@ -301,19 +301,18 @@ class Rate_Plan extends ORM
 		$strDocuments	= "new Array(".implode(",\n", $arrDocuments).")";
 		
 		// Recipients
-		throw new Exception($intAccountId);
 		if ($intAccountId)
 		{
-			$objAccount	= new Account(array('Id'=>$intAccountId), false, true);
+			$objAccount		= new Account(array('Id'=>$intAccountId), false, true);
 			$arrContacts	= $objAccount->getContacts(false);
 			
 			$arrRecipients	= array();
 			foreach ($arrContacts as $arrContact)
 			{
-				if ($arrContact['Archived'] === 0 && trim($arrContact['Email']) && stripos($arrContact['Email'], 'noemail@') === false)
-				{
+				//if ($arrContact['Archived'] === 0 && trim($arrContact['Email']) && stripos($arrContact['Email'], 'noemail@') === false)
+				//{
 					$arrRecipients[]	= "{name: \"{$arrContact['FirstName']} {$arrContact['LastName']}\", address: \"{$arrContact['Email']}\"}";
-				}
+				//}
 			}
 			$strRecipients	= "new Array(".implode(",\n", $arrRecipients).")";
 		}
