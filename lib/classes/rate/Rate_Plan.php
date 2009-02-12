@@ -301,6 +301,7 @@ class Rate_Plan extends ORM
 		$strDocuments	= "new Array(".implode(",\n", $arrDocuments).")";
 		
 		// Recipients
+		throw new Exception($intAccountId);
 		if ($intAccountId)
 		{
 			$objAccount	= new Account(array('Id'=>$intAccountId), false, true);
