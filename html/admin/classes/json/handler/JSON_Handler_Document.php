@@ -45,7 +45,9 @@ class JSON_Handler_Document extends JSON_Handler
 			{
 				foreach ($arrDocuments as $jobDocument)
 				{
-					$objDocument		= new Document($jobDocument['id'], true);
+					throw new Exception(print_r($jobDocument, true));
+					
+					$objDocument		= new Document($jobDocument->id, true);
 					$objDocumentContent	= $objDocument->getContent();
 					$objFileType		= new File_Type(array('id'=>$objDocumentContent->file_type_id), true);
 					$objMimeType		= new Mime_Type(array('id'=>$objFileType->mime_type_id), true);
