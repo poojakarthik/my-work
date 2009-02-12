@@ -41,7 +41,28 @@ class Document_Content extends ORM
 	public function getFriendlyName()
 	{
 		$mixFriendlyName	= ($this->constant_group) ? GetConstantDescription($this->name, $this->constant_group) : $this->name;
-		return ($mixFriendlyName) ? $mixFriendlyName : new $this->name;
+		return ($mixFriendlyName) ? $mixFriendlyName : $this->name;
+	}
+	
+	/**
+	 * getFileName()
+	 *
+	 * Retrieves the file name for this Document Content
+	 * 
+	 * @return	mixed									Friendly Name
+	 *
+	 * @method
+	 */
+	public function getFileName()
+	{
+		$strFriendlyName	= $this->getFriendlyName();
+		
+		if ($this->file_type_id)
+		{
+			$objFileType		= new File_Type(array('id'=>$this->file_type_id), true);
+			$strFriendlyName	.= ".{$objFileType->extension}";
+		}
+		return $strFriendlyName;
 	}
 	
 	/**
