@@ -308,6 +308,10 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 						$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
 						$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrService['FuturePlan']['brochure_document_id']}";
 						$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
+						
+						$arrRatePlan		= $arrService['FuturePlan'];
+						$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick(DBO()->Account->CustomerGroup->Value, array($arrRatePlan), DBO()->Account->Id->Value);
+						$strPlanCell		.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
 					}
 				}
 			}
