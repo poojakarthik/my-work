@@ -60,7 +60,7 @@ var Document	= Class.create
 		"		<tbody>\n" + 
 		strPredefinedEmails + 
 		"			<tr>\n" +
-		"				<td colspan='2' style='text-align:right;'>Other Email Address(es) : </td>\n" +
+		"				<th colspan='2' style='text-align:right;'>Other Email Address(es) : </td>\n" +
 		"				<td><input id='Document_Email_OtherAddress' type='text' size='40' /></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
@@ -68,7 +68,7 @@ var Document	= Class.create
 		"</div>\n" + 
 		"<div class='GroupedContent'>\n" + 
 		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
-		"		<tbody>\n" + 
+		"		<tbody style='font-size: medium;'>\n" + 
 		"			<tr>\n" +
 		"				<th valign='top' style='text-align: right;' >To : </td>\n" +
 		"				<td valign='top'><span id='Document_Email_To'></span></td>\n" +  
