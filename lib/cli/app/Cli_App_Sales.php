@@ -1752,61 +1752,70 @@ class Cli_App_Sales extends Cli
 		$intTotalServicesToCancel				= count($arrServicesToCancel);
 		$intTotalServicesToManuallyProvision	= count($arrServicesNeedingManualProvisioning);
 		
-		$arrReport[]	= "Summary of Automatic Provisioning of Sales - $strCurrentTimestamp";
+		$arrReport[]	= "<strong>Summary of Automatic Provisioning of Sales - $strCurrentTimestamp</strong>";
 		$arrReport[]	= "";
 		
-		$arrReport[]	= "Accounts affected: $intTotalAccounts";
-		$arrReport[]	= "Services affected: $intTotalServices";
-		$arrReport[]	= "Services successfully activated and provisioned: $intTotalProvisionedServices";
-		$arrReport[]	= "Services requiring manual provisioning: $intTotalServicesToManuallyProvision";
-		$arrReport[]	= "Services to cancel: $intTotalServicesToCancel";
+		$arrReport[]	= "<strong>Accounts affected:</strong> $intTotalAccounts";
+		$arrReport[]	= "<strong>Services affected:</strong> $intTotalServices";
+		$arrReport[]	= "<strong>Services successfully activated and provisioned:</strong> $intTotalProvisionedServices";
+		$arrReport[]	= "<strong>Services requiring manual provisioning:</strong> $intTotalServicesToManuallyProvision";
+		$arrReport[]	= "<strong>Services to cancel:</strong> $intTotalServicesToCancel";
 		$arrReport[]	= "";
 		
-		$arrReport[]	= "The following services are pending activation, but have had their related sale-items cancelled.  These services should be set to disconnected:";
-		$intAccountId	= NULL;
-		foreach ($arrServicesToCancel as $intServiceId)
+		if (count($arrServicesToCancel))
 		{
-			if ($intAccountId != $arrServices[$intServiceId]['Service']->account)
+			$arrReport[]	= "<strong>The following services are pending activation, but have had their related sale-items cancelled.  These services should be set to disconnected:</strong>";
+			$intAccountId	= NULL;
+			foreach ($arrServicesToCancel as $intServiceId)
 			{
-				$intAccountId	= $arrServices[$intServiceId]['Service']->account;
-				$arrReport[]	= "";
-				$arrReport[]	= "Account: <a href='". $arrCustomerGroups[$arrAccounts[$intAccountId]->customerGroup]->flexUrl . "/admin/flex.php/Account/Overview/?Account.Id=$intAccountId' >$intAccountId</a> - ". htmlspecialchars($arrAccounts[$intAccountId]->getName());
+				if ($intAccountId != $arrServices[$intServiceId]['Service']->account)
+				{
+					$intAccountId	= $arrServices[$intServiceId]['Service']->account;
+					$arrReport[]	= "";
+					$arrReport[]	= "Account: <a href='". $arrCustomerGroups[$arrAccounts[$intAccountId]->customerGroup]->flexUrl . "/admin/flex.php/Account/Overview/?Account.Id=$intAccountId' >$intAccountId</a> - ". htmlspecialchars($arrAccounts[$intAccountId]->getName());
+				}
+				$arrReport[] = $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
 			}
-			$arrReport[] = $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
+			$arrReport[]	= "";
 		}
-		$arrReport[]	= "";
 		
-		$arrReport[]	= "Breakdown of services requiring manual provisioning:";
-		$intAccountId	= NULL;
-		foreach ($arrServicesNeedingManualProvisioning as $intServiceId)
+		if (count($arrServicesNeedingManualProvisioning))
 		{
-			if ($intAccountId != $arrServices[$intServiceId]['Service']->account)
+			$arrReport[]	= "<strong>Breakdown of services requiring manual provisioning:</strong>";
+			$intAccountId	= NULL;
+			foreach ($arrServicesNeedingManualProvisioning as $intServiceId)
 			{
-				$intAccountId	= $arrServices[$intServiceId]['Service']->account;
-				$arrReport[]	= "";
-				$arrReport[]	= "Account: <a href='". $arrCustomerGroups[$arrAccounts[$intAccountId]->customerGroup]->flexUrl . "/admin/flex.php/Account/Overview/?Account.Id=$intAccountId' >$intAccountId</a> - ". htmlspecialchars($arrAccounts[$intAccountId]->getName());
+				if ($intAccountId != $arrServices[$intServiceId]['Service']->account)
+				{
+					$intAccountId	= $arrServices[$intServiceId]['Service']->account;
+					$arrReport[]	= "";
+					$arrReport[]	= "Account: <a href='". $arrCustomerGroups[$arrAccounts[$intAccountId]->customerGroup]->flexUrl . "/admin/flex.php/Account/Overview/?Account.Id=$intAccountId' >$intAccountId</a> - ". htmlspecialchars($arrAccounts[$intAccountId]->getName());
+				}
+				$arrReport[] = $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
 			}
-			$arrReport[] = $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
+			$arrReport[]	= "";
 		}
-		$arrReport[]	= "";
 		
-		$arrReport[]	= "Breakdown of services that were successfully activated and provisioned:";
-		$intAccountId	= NULL;
-		foreach ($arrServicesSuccessfullyProvisioned as $intServiceId)
+		if (count($arrServicesSuccessfullyProvisioned))
 		{
-			if ($intAccountId != $arrServices[$intServiceId]['Service']->account)
+			$arrReport[]	= "<strong>Breakdown of services that were successfully activated and provisioned:</strong>";
+			$intAccountId	= NULL;
+			foreach ($arrServicesSuccessfullyProvisioned as $intServiceId)
 			{
-				$intAccountId	= $arrServices[$intServiceId]['Service']->account;
-				$arrReport[]	= "";
-				$arrReport[]	= "Account: <a href='". $arrCustomerGroups[$arrAccounts[$intAccountId]->customerGroup]->flexUrl . "/admin/flex.php/Account/Overview/?Account.Id=$intAccountId' >$intAccountId</a> - ". htmlspecialchars($arrAccounts[$intAccountId]->getName());
+				if ($intAccountId != $arrServices[$intServiceId]['Service']->account)
+				{
+					$intAccountId	= $arrServices[$intServiceId]['Service']->account;
+					$arrReport[]	= "";
+					$arrReport[]	= "Account: <a href='". $arrCustomerGroups[$arrAccounts[$intAccountId]->customerGroup]->flexUrl . "/admin/flex.php/Account/Overview/?Account.Id=$intAccountId' >$intAccountId</a> - ". htmlspecialchars($arrAccounts[$intAccountId]->getName());
+				}
+				$arrReport[] = $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
 			}
-			$arrReport[] = $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'];
+			$arrReport[]	= "";
 		}
-		$arrReport[]	= "";
 		$arrReport[]	= "Regards";
 		$arrReport[]	= "Flexor";
 		
-		$strEmailBody	= implode("\n<br />", $arrReport);
+		$strEmailBody	= "<div style='font-family: Calibri,sans-serif;'>\n" . implode("\n<br />", $arrReport) . "</div>";
 		$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_SALE_AUTOMATIC_PROVISIONING_REPORT);
 		$objEmailNotification->setSubject($strEmailSubject);
 		$objEmailNotification->setBodyHtml($strEmailBody);
