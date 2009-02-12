@@ -198,13 +198,13 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$objEmployee		= Employee::getForId(Flex::getUserId());
 					//$strToEmails		= "new Array({name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"})";
 					$strFromEmails		=	"new Array({" .
-											"				name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", " .
-											"				address: \"{$objEmployee->Email}\"" .
-											"			}," .
-											"			{" .
-											"				name: \"{$strCustomerGroup} Customer Care\", " .
-											"				address: \"contact@{$objCustomerGroup->emailDomain}\"" .
-											"			})";
+											"name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", " .
+											"address: \"{$objEmployee->Email}\"" .
+											"}," .
+											"{" .
+											"name: \"{$strCustomerGroup} Customer Care\", " .
+											"address: \"contact@{$objCustomerGroup->emailDomain}\"" .
+											"})";
 					$strSubject			= "{$strCustomerGroup} Plan Brochures";
 					$strContent			= "Dear <Addressee>\\n\\nPlease find attached the Plan Brochures you requested.\\n\\nRegards\\n<Sender>";
 					$strEmailOnClick	= "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument({$arrRatePlan['brochure_document_id']}, \"Plan Brochure for {$arrRatePlan['Name']}\", \"{$strFromEmails}\", \"{$strSubject}\", \"{$strContent}\")});";
