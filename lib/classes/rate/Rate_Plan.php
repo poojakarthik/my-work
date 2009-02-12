@@ -304,11 +304,12 @@ class Rate_Plan extends ORM
 		if ($intAccountId)
 		{
 			$objAccount		= new Account(array('Id'=>$intAccountId), false, true);
-			$arrContacts	= $objAccount->getContacts(false);
+			$arrContacts	= $objAccount->getContacts(true);
 			
 			$arrRecipients	= array();
-			foreach ($arrContacts as $arrContact)
+			foreach ($arrContacts as $objContact)
 			{
+				$arrContact	= $objContact->toArray();
 				//if ($arrContact['Archived'] === 0 && trim($arrContact['Email']) && stripos($arrContact['Email'], 'noemail@') === false)
 				//{
 					$arrRecipients[]	= "{name: \"{$arrContact['FirstName']} {$arrContact['LastName']}\", address: \"{$arrContact['Email']}\"}";
