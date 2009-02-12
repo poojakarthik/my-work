@@ -44,7 +44,7 @@ class Flex_Rollout_Version_000115 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the ACMA Carrier. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
-		$this->rollbackSQL[] = "DELETE FROM Carrier WHERE const_name = 'MODULE_TYPE_TELEMARKETING';";		
+		$this->rollbackSQL[] = "DELETE FROM Carrier WHERE const_name = 'CARRIER_ACMA';";		
 	}
 	
 	function rollback()
