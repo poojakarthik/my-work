@@ -97,7 +97,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 				$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'>Download <img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 				
 				$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick($arrRatePlan['customer_group'], array($arrRatePlan));
-				$strBrochureCell	.= "&nbsp;|&nbsp; Email this Brochure <a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
+				$strBrochureCell	.= "&nbsp;|&nbsp; <a onclick='{$strEmailOnClick}' title='Email Plan Brochure'>Email this Brochure <img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
 			}
 		}
 		if ($bolHasPlanEditPerm)
