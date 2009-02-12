@@ -31,7 +31,10 @@ var Document	= Class.create
 								});
 		/**/
 		
-		strDescription	= (strDescription != undefined) ? strDescription : 'Document';
+		strSubject		= (strSubject == undefined) ? '' : strSubject;
+		strContent		= (strContent == undefined) ? '' : strContent;
+		strDescription	= (strDescription == undefined) ? 'Document' : strDescription;
+		
 		this.pupEmail.setTitle('Email '+strDescription);
 		
 		var strPredefinedEmails	= ''; 
