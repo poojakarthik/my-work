@@ -310,10 +310,10 @@ class Rate_Plan extends ORM
 			foreach ($arrContacts as $objContact)
 			{
 				$arrContact	= $objContact->toArray();
-				//if ($arrContact['Archived'] === 0 && trim($arrContact['Email']) && stripos($arrContact['Email'], 'noemail@') === false)
-				//{
+				if ($arrContact['Archived'] === 0 && trim($arrContact['Email']) && stripos($arrContact['Email'], 'noemail@') === false)
+				{
 					$arrRecipients[]	= "{name: \"{$arrContact['FirstName']} {$arrContact['LastName']}\", address: \"{$arrContact['Email']}\"}";
-				//}
+				}
 			}
 			$strRecipients	= "new Array(".implode(",\n", $arrRecipients).")";
 		}
