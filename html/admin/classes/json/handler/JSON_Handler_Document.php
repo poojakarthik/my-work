@@ -17,7 +17,7 @@ class JSON_Handler_Document extends JSON_Handler
 		{
 			$qryQuery	= new Query();
 			
-			throw new Exception(print_r($arrTo, true));
+			//throw new Exception(print_r($arrTo, true));
 			
 			// Build the Email
 			$objEmail	= new Zend_Mail();
