@@ -96,7 +96,7 @@ var Document	= Class.create
 			strAttachments	= "\n" +
 			"				<tr>\n" +
 			"					<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>Attachments : </nobr></td>\n" +
-			"					<td>";  
+			"					<td valign='top'>";  
 			
 			for (var i = 0; i < arrDocuments.length; i++)
 			{
