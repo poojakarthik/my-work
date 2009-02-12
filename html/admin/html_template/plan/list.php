@@ -195,7 +195,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
 					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					
-					$intFileSizeKB		= round($objBrochureDocumentContent->content / 1024);
+					$intFileSizeKB		= round(strlen($objBrochureDocumentContent->content) / 1024);
 					$strDocuments		=	"new Array({" .
 											"strIconSrc: \"{$strImageSrc}\"," .
 											"strFileName: \"".$objBrochureDocumentContent->getFileName()."\"," .
