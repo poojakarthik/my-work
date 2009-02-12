@@ -186,11 +186,14 @@ var Document	= Class.create
 			arrErrors.push("[!] Please enter Content for the email");
 		}
 		var arrTags	= $ID('Document_Email_Content').value.match(/<[\d\w]+>/mig);
-		for (var i = 0; i < arrTags.length; i++)
+		if (arrTags)
 		{
-			var strTag	= arrTags[i].replace(/>/mig, '&gt;');
-			strTag		= strTag.replace(/</mig, '&lt;');
-			arrErrors.push("[!] The placeholder tag '"+strTag+"' appears in the Content.  Please replace it with its respective value or remove it altogether.");
+			for (var i = 0; i < arrTags.length; i++)
+			{
+				var strTag	= arrTags[i].replace(/>/mig, '&gt;');
+				strTag		= strTag.replace(/</mig, '&lt;');
+				arrErrors.push("[!] The placeholder tag '"+strTag+"' appears in the Content.  Please replace it with its respective value or remove it altogether.");
+			}
 		}
 		
 		if (arrErrors.length)
