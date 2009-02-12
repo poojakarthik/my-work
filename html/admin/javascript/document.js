@@ -12,6 +12,7 @@ var Document	= Class.create
 		
 		this._arrDocuments		= null;
 		this._arrEmailAddresses	= new Array();
+		this._arrFromAddresses	= new Array();
 		
 		this._arrEmailAddresses.indexOfAddress	=	function(strAddress)
 													{
@@ -76,13 +77,14 @@ var Document	= Class.create
 		var strFromOptions	= '';
 		if (arrFrom != undefined)
 		{
-			for (var i = 0; i < arrFrom.length; i++)
+			this._arrFromAddresses	= arrFrom;
+			for (var i = 0; i < this._arrFromAddresses.length; i++)
 			{
-				objEmail		= arrFrom[i];
+				objEmail		= this._arrFromAddresses[i];
 				objEmail.name	= (objEmail.name == undefined) ? '' : objEmail.name;
 				
 				var strLabel	= (objEmail.name) ? objEmail.name+" ("+objEmail.address+")" : objEmail.address;
-				strFromOptions	+= "<option value='"+objEmail.address+"'>"+strLabel+"</option>\n";
+				strFromOptions	+= "<option value='"+i+"'>"+strLabel+"</option>\n";
 			}
 		}
 		else
@@ -229,7 +231,7 @@ var Document	= Class.create
 
 		// Perform AJAX query
 		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Document._emailDocumentResponse.bind(this), null, 'Document', 'sendEmail');
-		fncJsonFunc(this._arrEmailAddresses, $ID('Document_Email_From').value, $ID('Document_Email_Subject').value, $ID('Document_Email_Content').value, this._arrDocuments);
+		fncJsonFunc(this._arrEmailAddresses, this._arrFromAddresses[$ID('Document_Email_From').value], $ID('Document_Email_Subject').value, $ID('Document_Email_Content').value, this._arrDocuments);
 	},
 	
 	_emailDocumentResponse	: function(objResponse)

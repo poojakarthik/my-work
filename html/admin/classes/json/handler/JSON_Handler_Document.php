@@ -11,7 +11,7 @@ class JSON_Handler_Document extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function sendEmail($arrTo, $strFrom, $strSubject, $strContent, $arrDocuments)
+	public function sendEmail($arrTo, $jobFrom, $strSubject, $strContent, $arrDocuments)
 	{
 		set_include_path(get_include_path() . PATH_SEPARATOR . realpath(str_replace('/', DIRECTORY_SEPARATOR, FLEX_BASE_PATH."lib")));
 		require_once('Zend/Mail.php');
@@ -25,7 +25,7 @@ class JSON_Handler_Document extends JSON_Handler
 			// Build the Email
 			$objEmail	= new Zend_Mail();
 			$objEmail->setBodyText($strContent);
-			$objEmail->setFrom($strFrom);
+			$objEmail->setFrom($jobFrom->address, $jobFrom->name);
 			$objEmail->setSubject($strSubject);
 			
 			if (is_array($arrTo) && count($arrTo))
