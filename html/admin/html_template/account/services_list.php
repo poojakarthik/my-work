@@ -280,7 +280,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 						$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 						
 						$arrRatePlan		= $arrService['CurrentPlan'];
-						$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick($arrRatePlan['customer_group'], array($arrRatePlan), DBO()->Account->Id->Value);
+						$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick(DBO()->Account->CustomerGroup->Value, array($arrRatePlan), DBO()->Account->Id->Value);
 						$strPlanCell		.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
 					}
 				}
