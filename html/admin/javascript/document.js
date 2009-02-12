@@ -6,7 +6,7 @@ var Document	= Class.create
 	// Prototype constructor
 	initialize	: function()
 	{
-		this.pupEmail	= new Reflex_Popup(40);
+		this.pupEmail	= new Reflex_Popup(50);
 		this.pupEmail.setTitle('Email Document');
 		this.pupEmail.addCloseButton();
 		
