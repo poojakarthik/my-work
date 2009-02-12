@@ -201,7 +201,8 @@ var Document	= Class.create
 			// Valid -- Is the Address already in our list?
 			if (this._arrEmailAddresses.indexOfAddress(strAddress) > -1)
 			{
-				// Yes -- don't add, but return true
+				// Yes -- don't add, but return true;
+				$ID('Document_Email_OtherAddress').value	= '';
 				return true;
 			}
 			else
