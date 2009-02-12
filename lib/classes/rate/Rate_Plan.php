@@ -341,7 +341,7 @@ class Rate_Plan extends ORM
 		}
 		
 		// Generate HTML
-		$strSubject			= "Requested {$strCustomerGroup} Plan {$strBrochurePlural}";
+		$strSubject			= "Requested {$objCustomerGroup->externalName} Plan {$strBrochurePlural}";
 		$strContent			= "Dear <Addressee>,\\n\\nPlease attached find the Plan {$strBrochurePlural}:\\n\\n{$strPlans}\\nAs per your request.\\n\\nRegards,\\n\\nThe Team at {$objCustomerGroup->externalName}";
 		
 		return "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan {$strBrochurePlural}\", {$strSenders}, \"{$strSubject}\", \"{$strContent}\", {$strRecipients})});";
