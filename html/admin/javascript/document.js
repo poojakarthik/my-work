@@ -185,7 +185,7 @@ var Document	= Class.create
 		{
 			arrErrors.push("[!] Please enter Content for the email");
 		}
-		var arrTags	= $ID('Document_Email_Content').value.match(/<([\d\w]+)>/misU, '');
+		var arrTags	= $ID('Document_Email_Content').value.match(/<([\d\w]+)>/mig, '');
 		for (var i = 0; i < arrTags.length; i++)
 		{
 			arrErrors.push("[!] The placeholder tag '"+arrTags[i]+"' appears in the Content.  Please replace it with the respective value or remove it altogether.");
