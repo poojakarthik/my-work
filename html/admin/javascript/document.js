@@ -64,7 +64,7 @@ var Document	= Class.create
 				objEmail		= arrFrom[i];
 				objEmail.name	= (objEmail.name == undefined) ? '' : objEmail.name;
 				
-				var strLabel	= (objEmail.name) ? objEmail.name+" ("+objEmail.address+")" ? objEmail.address;
+				var strLabel	= (objEmail.name) ? objEmail.name+" ("+objEmail.address+")" : objEmail.address;
 				strFromOptions	+= "<option value='"+objEmail.address+"'>"+strLabel+"</option>\n";
 			}
 		}
