@@ -177,7 +177,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				$strStatusCell = "<span title='Toggle Status' onclick='Vixen.AvailablePlansPage.TogglePlanStatus({$arrRatePlan['Id']})'>$strStatusCell</span>";
 			}
 			
-			$objCustomerGroup	= CustomerGroup::getForId($arrRatePlan['customer_group']);
+			$objCustomerGroup	= Customer_Group::getForId($arrRatePlan['customer_group']);
 			$strCustomerGroup	= $objCustomerGroup->externalName;
 			
 			// Build the Plan Brochure link
