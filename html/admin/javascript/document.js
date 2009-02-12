@@ -179,6 +179,8 @@ var Document	= Class.create
 	
 	emailAddressAdd	: function(strAddress)
 	{
+		strAddress.strip();
+		
 		// Validate the Email Address
 		if (strAddress && Vixen.Validation.EmailAddress(strAddress))
 		{
@@ -219,7 +221,11 @@ var Document	= Class.create
 			this._updateEmailTo();
 			return true;
 		}
-		return true;
+		else
+		{
+			$Alert("Email '"+strAddress+"' does not exist!");
+			return true;
+		}
 	},
 	
 	_updateEmailTo	: function()
