@@ -10,6 +10,7 @@ var Document	= Class.create
 		this.pupEmail.setTitle('Email Document');
 		this.pupEmail.addCloseButton();
 		
+		this._arrDocuments		= null;
 		this._arrEmailAddresses	= new Array();
 		
 		this._arrEmailAddresses.indexOfAddress	=	function(strAddress)
@@ -93,6 +94,8 @@ var Document	= Class.create
 		var strAttachments	= '';
 		if (arrDocuments.length)
 		{
+			this._arrDocuments	= arrDocuments;
+			
 			strAttachments	= "\n" +
 			"				<tr>\n" +
 			"					<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>Attachments : </nobr></td>\n" +
@@ -146,7 +149,7 @@ var Document	= Class.create
 		"			</tr>\n" +
 		"			<tr>\n" +
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>Subject : </nobr></td>\n" +
-		"				<td><input type='text' style='vertical-align: top;' size='35' value='"+strSubject+"' /></td>\n" +  
+		"				<td><input id='Document_Email_Subject' type='text' style='vertical-align: top;' size='35' value='"+strSubject+"' /></td>\n" +  
 		"			</tr>\n" +
 		strAttachments +
 		"			<tr>\n" +
@@ -215,7 +218,7 @@ var Document	= Class.create
 
 		// Perform AJAX query
 		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Document._emailDocumentResponse.bind(this), null, 'Document', 'sendEmail');
-		fncJsonFunc(strTo, strFrom, strSubject, strContent, arrDocuments);
+		fncJsonFunc(this._arrEmailAddresses, $ID('Document_Email_From').value, $ID('Document_Email_Subject').value, $ID('Document_Email_Content').value, this._arrDocuments);
 	},
 	
 	_emailDocumentResponse	: function(objResponse)
