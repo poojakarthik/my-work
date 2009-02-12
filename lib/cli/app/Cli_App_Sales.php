@@ -1561,6 +1561,11 @@ class Cli_App_Sales extends Cli
 		// This will store the ids of the services that need to be manually provisioned in flex
 		$arrServicesNeedingManualProvisioning = array();
 		
+		// This will store details of all other scenarios that can't be easily categorised
+		$arrOddServiceCases = array();
+		
+		$arrSaleItemStatuses = DO_Sales_SaleItemStatus::getAll();
+		
 		// Start a transaction for both Databases
 		$dsSalesPortal->beginTransaction();
 		$dacFlex->TransactionStart();
@@ -1587,11 +1592,11 @@ class Cli_App_Sales extends Cli
 			// $strEligibleSaleItemsFromClause	= "sale_item AS si INNER JOIN sale_item_status_history AS sish ON si.id = sish.sale_item_id";
 			// $strEligibleSaleItemsWhereClause = "si.sale_item_status_id = ". DO_Sales_SaleItemStatus::DISPATCHED ." AND sish.sale_item_status_id = ". DO_Sales_SaleItemStatus::VERIFIED ." AND sish.changed_on < (NOW() - INTERVAL '". self::PROVISIONING_AMNESTY_HOURS ." HOUR')";
 			$strEligibleSaleItemsFromClause		= "sale_item AS si";
-			$strEligibleSaleItemsWhereClause	= "si.sale_item_status_id = ". DO_Sales_SaleItemStatus::DISPATCHED ." AND si.created_on < (NOW() - INTERVAL '". self::PROVISIONING_AMNESTY_HOURS ." HOUR')";
-			$resSaleItems = $dsSalesPortal->queryAll(	"SELECT si.id AS id ".
+			$strEligibleSaleItemsWhereClause	= "si.sale_item_status_id = ". DO_Sales_SaleItemStatus::DISPATCHED;
+			$resSaleItems = $dsSalesPortal->queryAll(	"SELECT si.id AS id, CASE WHEN (si.created_on < (NOW() - INTERVAL '". self::PROVISIONING_AMNESTY_HOURS ." HOUR')) THEN true ELSE false END AS waiting_period_transpired".
 														"FROM $strEligibleSaleItemsFromClause ".
 														"WHERE $strEligibleSaleItemsWhereClause ;",
-														array("integer"), MDB2_FETCHMODE_ASSOC);
+														array("integer", "boolean"), MDB2_FETCHMODE_ASSOC);
 			
 			// This will store an array of Sales_Sale objects, which have been updated (have had sale items provisioned)
 			$arrProvisionedSales = array();
@@ -1616,7 +1621,15 @@ class Cli_App_Sales extends Cli
 			{
 				$objService			= new Service($arrService);
 				$objFlexSaleItem	= FlexSaleItem::getForId($arrService['flex_sale_item_id'], TRUE);
+				$intSPSaleItemId	= $objFlexSaleItem->getExternalReferenceValue();
 
+				// Check that the service doesn't relate to a sale-item that is currently set to DISPATCHED, but is not yet eligible for activation because the waiting period has not transpired
+				if (array_key_exists($intSPSaleItemId, $arrSPEligibleSaleItems) && $arrSPEligibleSaleItems[$intSPSaleItemId]['waiting_period_transpired'] === FALSE)
+				{
+					// The service is not yet eligible for activation
+					continue;
+				}
+				
 				$arrServices[$objService->id]	= array("Service"		=> $objService,
 														"FlexSaleItem"	=> $objFlexSaleItem
 														);
@@ -1626,11 +1639,31 @@ class Cli_App_Sales extends Cli
 					$arrAccounts[$objService->account] = Account::getForId($objService->account);
 				}
 				
-				// Check that the service's sale item is currently flagged as being dispatched (as opposed to cancelled or completed, although the only alternative should be cancelled)
-				if (!array_key_exists($objFlexSaleItem->getExternalReferenceValue(), $arrSPEligibleSaleItems))
+				// Check that the service's sale item is currently flagged as being dispatched (as opposed to cancelled or completed)
+				if (!array_key_exists($intSPSaleItemId, $arrSPEligibleSaleItems))
 				{
-					// The Sale Item associated with this pending service must have been cancelled, but has not yet been 'Closed' in flex
-					$arrServicesToCancel[] = $objService->id;
+					// Retrieve the sp sale item
+					$doSPSaleItem = Sales_SaleItem::getForId($intSPSaleItemId);
+					
+					if ($doSPSaleItem === NULL)
+					{
+						// Could not find the service's corresponding sale-item
+						$arrOddServiceCases[] = array(	"ServiceId"		=> $objService->id,
+														"Description"	=> "Could not find service's corresponding sale-item. External Reference: {$objFlexSaleItem->externalReference}");
+						continue;
+					}
+					
+					if ($doSPSaleItem->saleItemStatusId == DO_Sales_SaleItemStatus::CANCELLED)
+					{
+						// The Sale Item associated with this pending service has been cancelled, but has not yet been 'Closed' in flex
+						$arrServicesToCancel[] = $objService->id;
+					}
+					else 
+					{
+						// The Sale Item probably has the status COMPLETED, but the corresponding service is still pending activation
+						$arrOddServiceCases[] = array(	"ServiceId"		=> $objService->id,
+														"Description"	=> "Sale-item (External Reference: {$objFlexSaleItem->externalReference}) is currently flagged as '{$arrSaleItemStatuses[$doSPSaleItem->saleItemStatusId]->description}', but the service is pending activation");
+					}
 					
 					// Move on to the next service
 					continue;
@@ -1751,6 +1784,20 @@ class Cli_App_Sales extends Cli
 		$intTotalProvisionedServices			= count($arrServicesSuccessfullyProvisioned);
 		$intTotalServicesToCancel				= count($arrServicesToCancel);
 		$intTotalServicesToManuallyProvision	= count($arrServicesNeedingManualProvisioning);
+		$intOddCases							= count($arrOddServiceCases);
+		
+		if ($intOddCases > 0)
+		{
+			// There were some odd cases
+			$strOddCases = "\t\t<tr>
+			<td><em>Odd service cases:</em></td>
+			<td><em>$intOddCases</em></td>
+		</tr>\n";
+		}
+		else
+		{
+			$strOddCases = "";
+		}
 		
 		$arrReport[]	= "<strong>Summary of Automatic Provisioning of Sales - $strCurrentTimestamp</strong>";
 		$arrReport[]	= "";
@@ -1766,6 +1813,7 @@ class Cli_App_Sales extends Cli
 			<td><strong>Services affected:</strong></td>
 			<td>$intTotalServices</td>
 		</tr>
+$strOddCases
 		<tr>
 			<td><strong>Services successfully activated and provisioned:</strong></td>
 			<td>$intTotalProvisionedServices</td>
@@ -1782,6 +1830,25 @@ class Cli_App_Sales extends Cli
 </table>";
 		
 		$arrReport[]	= "";
+		
+		if (count($arrServicesToCancel))
+		{
+			$arrReport[]	= "<em>The following services are out of sync with their corresponding sale-items.  These cases should be investigated and rectified</em>";
+			$intAccountId	= NULL;
+			foreach ($arrOddServiceCases as $arrDetails)
+			{
+				$intServiceId	= $arrDetails['ServiceId'];
+				$strDescription	= $arrDetails['Description'];
+				if ($intAccountId != $arrServices[$intServiceId]['Service']->account)
+				{
+					$intAccountId	= $arrServices[$intServiceId]['Service']->account;
+					$arrReport[]	= "";
+					$arrReport[]	= "Account: <a href='". $arrCustomerGroups[$arrAccounts[$intAccountId]->customerGroup]->flexUrl . "/admin/flex.php/Account/Overview/?Account.Id=$intAccountId' >$intAccountId</a> - ". htmlspecialchars($arrAccounts[$intAccountId]->getName());
+				}
+				$arrReport[] = $arrServices[$intServiceId]['Service']->fNN ." - ". $GLOBALS['*arrConstant']['service_type'][$arrServices[$intServiceId]['Service']->serviceType]['Name'] ." - $strDescription";
+			}
+			$arrReport[] = "";
+		}
 		
 		if (count($arrServicesToCancel))
 		{
