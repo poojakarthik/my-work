@@ -32,6 +32,7 @@ var Document	= Class.create
 		/**/
 		
 		strDescription	= (strDescription != undefined) ? strDescription : 'Document';
+		this.pupEmail.setTitle('Email '+strDescription);
 		
 		var strPredefinedEmails	= ''; 
 		this.arrPredefinedEmails	= new Array();
@@ -61,7 +62,7 @@ var Document	= Class.create
 		strPredefinedEmails + 
 		"			<tr>\n" +
 		"				<td colspan='2' style='font-weight: bold;font-size: 10pt;text-align:right;'>Other Email Address : </td>\n" +
-		"				<td valign='top'><input id='Document_Email_OtherAddress' type='text' size='40' />&nbsp;<img src='../admin/img/template/new.png' title='Add Address' alt='Add Address' onclick='Flex.Document.emailAddAddress()' style='vertical-align: text-top;' /></td>\n" +  
+		"				<td valign='top'><input id='Document_Email_OtherAddress' type='text' size='40' />&nbsp;<img src='../admin/img/template/new.png' title='Add Address' alt='Add Address' onclick='Flex.Document.emailAddressAdd(this.value)' style='vertical-align: text-top;' /></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
@@ -145,7 +146,57 @@ var Document	= Class.create
 		{
 			$Alert(objResponse.Message);
 		}
-	}
+	},
+	
+	emailAddressAdd	: function(strAddress)
+	{
+		// Validate the Email Address
+		if (strAddress && Vixen.Validation.EmailAddress(strAddress));
+		{
+			// Valid -- Is the Address already in our list?
+			if ()
+			{
+				// Yes -- don't add, but return true
+				return true;
+			}
+			else
+			{
+				// No -- add
+				this._arrEmailAddresses.push({
+												name	: '',
+												address	: strAddress
+											});
+				this._updateEmailTo();
+				return true;
+			}
+		}
+		else
+		{
+			// Invalid -- Alert the user
+			$Alert("'"+strAddress+"' is not a valid email address.");
+			return false;
+		}
+	},
+	
+	emailAddressRemove	: function(strAddress)
+	{
+		// Validate the Email Address
+		if (strAddress && Vixen.Validation.EmailAddress(strAddress));
+		{
+			// Valid -- Add
+			this._arrEmailAddresses
+			
+			return true;
+		}
+		else
+		{
+			// Invalid -- Alert the user
+			$Alert("'"+strAddress+"' is not a valid email address.");
+			return false;
+		}
+	},
+	
+	
 });
 
 Flex.Document = (Flex.Document == undefined) ? new Document() : Flex.Document;
