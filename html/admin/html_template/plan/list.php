@@ -195,7 +195,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
 					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					
-					$strEmailOnClick	= RatePlan::generateEmailButtonOnClick($arrRatePlan['customer_group'], $arrRatePlan);
+					$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick($arrRatePlan['customer_group'], $arrRatePlan);
 					$strBrochureCell	.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
 				}
 			}
