@@ -60,7 +60,7 @@ var Document	= Class.create
 		"		<tbody>\n" + 
 		strPredefinedEmails + 
 		"			<tr>\n" +
-		"				<th colspan='2' style='text-align:right;'>Other Email Address(es) : </td>\n" +
+		"				<th colspan='2' style='font-size: 10pt;text-align:right;'>Other Email Address(es) : </td>\n" +
 		"				<td><input id='Document_Email_OtherAddress' type='text' size='40' /></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
@@ -70,19 +70,19 @@ var Document	= Class.create
 		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
 		"		<tbody style=''>\n" + 
 		"			<tr>\n" +
-		"				<th valign='top' style='font-size: 10px;text-align: right;' >To : </td>\n" +
+		"				<th valign='top' style='font-size: 10pt;text-align: right;' >To : </td>\n" +
 		"				<td valign='top'><span id='Document_Email_To'></span></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
-		"				<th valign='top' style='font-size: medium;text-align: right;' >From : </td>\n" +
+		"				<th valign='top' style='font-size: 10pt;text-align: right;' >From : </td>\n" +
 		"				<td><span style='vertical-align: top;'></span></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
-		"				<th valign='top' style='font-size: medium;text-align: right;' >Subject : </td>\n" +
+		"				<th valign='top' style='font-size: 10pt;text-align: right;' >Subject : </td>\n" +
 		"				<td><input type='text' style='vertical-align: top;' size='50' /></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
-		"				<th valign='top' style='font-size: medium;text-align: right;' >Content : </td>\n" +
+		"				<th valign='top' style='font-size: 10pt;text-align: right;' >Content : </td>\n" +
 		"				<td><textarea style='vertical-align: top;' rows='10' cols='40'></textarea></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
