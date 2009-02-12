@@ -11,7 +11,7 @@ var Document	= Class.create
 		this.pupEmail.addCloseButton();
 	},
 	
-	emailDocument	: function(intDocumentId, strDescription, arrEmailAddresses)
+	emailDocument	: function(intDocumentId, strDescription, arrFrom, strSubject, strContent, arrEmailAddresses)
 	{
 		// DEBUG
 		/**/
