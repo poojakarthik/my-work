@@ -83,11 +83,11 @@ var Document	= Class.create
 		"			</tr>\n" +
 		"			<tr>\n" +
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' >Subject : </td>\n" +
-		"				<td><input type='text' style='vertical-align: top;' size='50' /></td>\n" +  
+		"				<td><input type='text' style='vertical-align: top;' size='50' value='"+strSubject+"' /></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' >Content : </td>\n" +
-		"				<td><textarea style='vertical-align: top;' rows='10' cols='46'></textarea></td>\n" +  
+		"				<td><textarea style='vertical-align: top;' rows='10' cols='46'>"+strContent+"</textarea></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
