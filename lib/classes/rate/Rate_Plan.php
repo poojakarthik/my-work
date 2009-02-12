@@ -323,10 +323,10 @@ class Rate_Plan extends ORM
 		
 		// Senders
 		$arrSenders		= array();
-		$objEmployee		= Employee::getForId(Flex::getUserId());
+		$objEmployee	= Employee::getForId(Flex::getUserId());
 		if (trim($objEmployee->Email))
 		{
-			$arrRecipients[]	= "{name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"}";
+			$arrSenders[]	= "{name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"}";
 		}
 		$arrSenders[]	= "{name: \"{$objCustomerGroup->externalName} Customer Care\", address: \"{$objCustomerGroup->emailDomain}\"}";
 		$strSenders		= "new Array(".implode(",\n", $arrSenders).")";
