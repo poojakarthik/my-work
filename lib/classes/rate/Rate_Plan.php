@@ -328,7 +328,7 @@ class Rate_Plan extends ORM
 		{
 			$arrSenders[]	= "{name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"}";
 		}
-		$arrSenders[]	= "{name: \"{$objCustomerGroup->externalName} Customer Care\", address: \"{$objCustomerGroup->emailDomain}\"}";
+		$arrSenders[]	= "{name: \"{$objCustomerGroup->externalName} Customer Care\", address: \"contact@{$objCustomerGroup->emailDomain}\"}";
 		$strSenders		= "new Array(".implode(",\n", $arrSenders).")";
 		
 		if (count($arrDocuments) > 1)
