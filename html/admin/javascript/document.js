@@ -193,10 +193,7 @@ var Document	= Class.create
 			else
 			{
 				// No -- add
-				this._arrEmailAddresses.push({
-												name	: '',
-												address	: strAddress
-											});
+				this._arrEmailAddresses.push(strAddress);
 				this._updateEmailTo();
 				$ID('Document_Email_OtherAddress').value	= '';
 				return true;
