@@ -70,7 +70,7 @@ var Document	= Class.create
 		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
 		"		<tbody style=''>\n" + 
 		"			<tr>\n" +
-		"				<th valign='top' style='font-size: medium;text-align: right;' >To : </td>\n" +
+		"				<th valign='top' style='font-size: 10px;text-align: right;' >To : </td>\n" +
 		"				<td valign='top'><span id='Document_Email_To'></span></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
