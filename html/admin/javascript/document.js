@@ -151,7 +151,7 @@ var Document	= Class.create
 	emailAddressAdd	: function(strAddress)
 	{
 		// Validate the Email Address
-		if (strAddress && Vixen.Validation.EmailAddress(strAddress));
+		if (strAddress && Vixen.Validation.EmailAddress(strAddress))
 		{
 			// Valid -- Is the Address already in our list?
 			if (this._arrEmailAddresses.indexOf(strAddress) > -1)
