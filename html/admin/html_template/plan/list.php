@@ -194,7 +194,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
 					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					
-					$objEmployee		= new Employee(array('Id'=>Flex::getUserId()), true);
+					$objEmployee		= Employee::getForId(Flex::getUserId());
 					$strEmails			= "new Array(\"{$objEmployee->Email}\")";
 					$strSubject			= "{$strCustomerGroup} Plan Brochures";
 					$strContent			= "Dear <Addressee>\\n\\nPlease find attached the Plan Brochures you requested.\n\nRegards\n<Sender>";
