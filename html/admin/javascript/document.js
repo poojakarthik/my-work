@@ -16,7 +16,7 @@ var Document	= Class.create
 	emailDocument	: function(intDocumentId, strDescription, arrFrom, strSubject, strContent, arrEmailAddresses)
 	{
 		// DEBUG
-		/*
+		/**/
 		arrEmailAddresses	= new Array();
 		
 		arrEmailAddresses.push(	{
@@ -86,7 +86,7 @@ var Document	= Class.create
 		"		<tbody>\n" + 
 		strPredefinedEmails + 
 		"			<tr>\n" +
-		"				<td colspan='2' style='font-weight: bold;font-size: 10pt;text-align:right;'>Other Email Address : </td>\n" +
+		"				<td colspan='2' style='font-weight: bold;font-size: 10pt;text-align:right;'>Add Email Address : </td>\n" +
 		"				<td valign='top'><input id='Document_Email_OtherAddress' type='text' size='40' />&nbsp;<img src='../admin/img/template/new.png' title='Add Address' alt='Add Address' onclick='Flex.Document.emailAddressAdd($ID(\"Document_Email_OtherAddress\").value)' style='vertical-align: text-top;' /></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
@@ -96,11 +96,11 @@ var Document	= Class.create
 		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
 		"		<tbody style=''>\n" + 
 		"			<tr>\n" +
-		"				<th valign='top' style='font-size: 10pt;text-align: right;' >To : </td>\n" +
+		"				<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>To : </nobr></td>\n" +
 		"				<td valign='top'><span id='Document_Email_To'>&lt; No addresses specified &gt;</span></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
-		"				<th valign='top' style='font-size: 10pt;text-align: right;' >From : </td>\n" +
+		"				<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>From : </nobr></td>\n" +
 		"				<td>\n" +
 		"					<select id='Document_Email_From'>\n" +
 		strFromOptions +
@@ -108,11 +108,11 @@ var Document	= Class.create
 		"				</td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
-		"				<th valign='top' style='font-size: 10pt;text-align: right;' >Subject : </td>\n" +
+		"				<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>Subject : </nobr></td>\n" +
 		"				<td><input type='text' style='vertical-align: top;' size='50' value='"+strSubject+"' /></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
-		"				<th valign='top' style='font-size: 10pt;text-align: right;' >Content : </td>\n" +
+		"				<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>Content : </nobr></td>\n" +
 		"				<td><textarea style='vertical-align: top;' rows='10' cols='46'>"+strContent+"</textarea></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
