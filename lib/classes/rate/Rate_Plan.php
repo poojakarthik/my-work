@@ -333,15 +333,15 @@ class Rate_Plan extends ORM
 		
 		if (count($arrDocuments) > 1)
 		{
-			$strBrochurePlural	= "Brochure";
+			$strBrochurePlural	= "Brochures";
 		}
 		else
 		{
-			$strBrochurePlural	= "Brochures";
+			$strBrochurePlural	= "Brochure";
 		}
 		
 		// Generate HTML
-		$strSubject			= "Requested {$strCustomerGroup} Plan Brochure";
+		$strSubject			= "Requested {$strCustomerGroup} Plan {$strBrochurePlural}";
 		$strContent			= "Dear <Addressee>,\\n\\nPlease attached find the Plan {$strBrochurePlural}:\\n\\n{$strPlans}\\nAs per your request.\\n\\nRegards,\\n\\nThe Team at {$objCustomerGroup->externalName}";
 		
 		return "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan {$strBrochurePlural}\", {$strSenders}, \"{$strSubject}\", \"{$strContent}\", {$strRecipients})});";
