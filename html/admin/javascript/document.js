@@ -148,6 +148,7 @@ var Document	= Class.create
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>Subject : </nobr></td>\n" +
 		"				<td><input type='text' style='vertical-align: top;' size='35' value='"+strSubject+"' /></td>\n" +  
 		"			</tr>\n" +
+		strAttachments +
 		"			<tr>\n" +
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>Content : </nobr></td>\n" +
 		"				<td><textarea style='vertical-align: top;' rows='10' cols='46'>"+strContent+"</textarea></td>\n" +  
