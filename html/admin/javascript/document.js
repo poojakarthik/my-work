@@ -151,7 +151,7 @@ var Document	= Class.create
 		strAttachments +
 		"			<tr>\n" +
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>Content : </nobr></td>\n" +
-		"				<td><textarea style='vertical-align: top;' rows='10' cols='46'>"+strContent+"</textarea></td>\n" +  
+		"				<td><textarea id='Document_Email_Content' style='vertical-align: top;' rows='10' cols='46'>"+strContent+"</textarea></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
@@ -168,16 +168,27 @@ var Document	= Class.create
 	},
 	
 	_emailDocumentSubmit	: function()
-	{
-		$Alert("Not implemented yet!");
-		return false;
-		
+	{	
 		// Ensure that all fields are populated
 		var arrErrors	= new Array();
-		
-		if (!$ID('Plan_SetBrochure_File').value)
+
+		if (!this._arrEmailAddresses.length)
 		{
-			arrErrors.push("[!] Please select a valid PDF Brochure file to upload");
+			arrErrors.push("[!] Please add at least one TO email address");
+		}
+		if (!$ID('Document_Email_From').value)
+		{
+			arrErrors.push("[!] Please select the FROM email address");
+		}
+		var strContent	= $ID('Document_Email_Content').value.replace(/(^\s+|\s+$)/g, '');
+		if (!strContent.length)
+		{
+			arrErrors.push("[!] Please enter Content for the email");
+		}
+		var arrTags	= $ID('Document_Email_Content').value.match(/<([\d\w]+)>/misU, '');
+		for (var i = 0; i < arrTags.length; i++)
+		{
+			arrErrors.push("[!] The placeholder tag '"+arrTags[i]+"' appears in the Content.  Please replace it with the respective value or remove it altogether.");
 		}
 		
 		if (arrErrors.length)
@@ -190,6 +201,9 @@ var Document	= Class.create
 			$Alert(strError);
 			return false;
 		}
+		
+		$Alert("Not implemented yet!");
+		return false;
 		
 		// Show the Loading Splash
 		Vixen.Popup.ShowPageLoadingSplash("Uploading Plan Brochure...", null, null, null, 100);
