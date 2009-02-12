@@ -197,7 +197,10 @@ var Document	= Class.create
 		}
 	},
 	
-	
+	_updateEmailTo	: function()
+	{
+		// TODO
+	}
 });
 
 Flex.Document = (Flex.Document == undefined) ? new Document() : Flex.Document;
