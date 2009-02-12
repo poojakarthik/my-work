@@ -1831,7 +1831,7 @@ $strOddCases
 		
 		$arrReport[]	= "";
 		
-		if (count($arrServicesToCancel))
+		if (count($arrOddServiceCases))
 		{
 			$arrReport[]	= "<strong style='color: #F00'>The following services are out of sync with their corresponding sale-items.  These cases should be investigated and rectified</strong>";
 			$intAccountId	= NULL;
