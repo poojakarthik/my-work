@@ -236,7 +236,7 @@ var Document	= Class.create
 			objEmail.name	= (objEmail.name == undefined) ? '&nbsp;' : objEmail.name;
 			
 			var strLabel	= (objEmail.name) ? objEmail.name+" ("+objEmail.address+")" : objEmail.address;
-			var strImg		= "<img onclick='Flex.Document.emailAddressRemove(\""+objEmail.address+"\");' alt='Remove this Address' title='Remove this Address' src='../admin/img/template/delete.png' />";
+			var strImg		= "<img onclick='Flex.Document.emailAddressRemove(\""+objEmail.address+"\");' alt='Remove this Address' title='Remove this Address' src='../admin/img/template/delete.png' style='vertical-align: text-top;' />";
 			strToEmails	+= "<nobr>"+strLabel+"&nbsp;"+strImg+"</nobr>; \n";
 		}
 		
