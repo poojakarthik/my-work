@@ -102,7 +102,7 @@ var Document	= Class.create
 			{
 				objDocument	= arrDocuments[i];
 				
-				strAttachments	+= "<nobr><span><img src='"+objDocument.strIconSrc+"'>&nbsp;"+objDocument.strFileName+"&nbsp;("+objDocument.intFileSizeKB+"KB)</span>;</nobr> ";
+				strAttachments	+= "<nobr><span><img src='"+objDocument.strIconSrc+"' style='vertical-align: text-top;' />&nbsp;"+objDocument.strFileName+"&nbsp;("+objDocument.intFileSizeKB+"KB)</span>;</nobr> ";
 			}
 			
 			strAttachments	+= "</td>\n" +
