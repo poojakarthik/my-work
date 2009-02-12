@@ -13,6 +13,8 @@ class JSON_Handler_Document extends JSON_Handler
 	
 	public function sendEmail($arrTo, $strFrom, $strSubject, $strContent, $arrDocuments)
 	{
+		require_once(FLEX_BASE_PATH.'lib/Zend/Mail.php');
+		
 		try
 		{
 			$qryQuery	= new Query();
