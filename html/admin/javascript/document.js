@@ -120,7 +120,7 @@ var Document	= Class.create
 		var strHTML	= "\n" + 
 		"<div class='GroupedContent'>\n" + 
 		"	<div>\n" + 
-		"		<span>Please specify the email addresses to send this "+strDescription+" to:</span>\n" + 
+		"		<span>Please specify the email addresses to send the "+strDescription+" to:</span>\n" + 
 		"	</div>\n" + 
 		"	<table class='reflex' style='margin-top: 8px; margin-bottom: 8px;' width='100%'>\n" + 
 		"		<tbody>\n" + 
