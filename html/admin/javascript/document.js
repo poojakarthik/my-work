@@ -211,10 +211,11 @@ var Document	= Class.create
 		return false;
 		
 		// Show the Loading Splash
-		Vixen.Popup.ShowPageLoadingSplash("Uploading Plan Brochure...", null, null, null, 100);
+		Vixen.Popup.ShowPageLoadingSplash("Delivering Email...", null, null, null, 1);
 
 		// Perform AJAX query
-		return jQuery.json.jsonIframeFormSubmit($ID('Plan_SetBrochure_Form'), Flex.Plan._setBrochureResponse.bind(this));
+		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Document._emailDocumentResponse.bind(this), null, 'Document', 'sendEmail');
+		fncJsonFunc(strTo, strFrom, strSubject, strContent, arrDocuments);
 	},
 	
 	_emailDocumentResponse	: function(objResponse)
@@ -226,7 +227,7 @@ var Document	= Class.create
 		// Display response message
 		if (objResponse.Success)
 		{
-			$Alert("The Brochure was successfully uploaded", null, null, 'autohide-reload');
+			$Alert("Email delivered!");
 		}
 		else
 		{
