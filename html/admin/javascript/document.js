@@ -193,7 +193,7 @@ var Document	= Class.create
 	
 	emailAddressAdd	: function(strAddress, strName, elmCheckbox)
 	{
-		strAddress.strip();
+		strAddress.replace(/(^\s|\s$)/, '');
 		
 		// Validate the Email Address
 		if (!strAddress.length)
