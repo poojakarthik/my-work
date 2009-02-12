@@ -47,7 +47,7 @@ var Document	= Class.create
 			for (var i = 0; i < arrEmailAddresses.length; i++)
 			{
 				objEmail		= arrEmailAddresses[i];
-				objEmail.name	= (objEmail.name == undefined) ? '&nbsp;' : objEmail.name;
+				objEmail.name	= (objEmail.name == undefined) ? '' : objEmail.name;
 				
 				strPredefinedEmails	+= "			<tr>\n";
 				strPredefinedEmails	+= "				<td style='width:5%; text-align:right;'><input id='Document_Email_Checkbox_"+(i+1)+"' type='checkbox' /></td>\n";
@@ -237,9 +237,9 @@ var Document	= Class.create
 		for (var i = 0; i < this._arrEmailAddresses.length; i++)
 		{
 			objEmail		= this._arrEmailAddresses[i];
-			objEmail.name	= (objEmail.name == undefined) ? '&nbsp;' : objEmail.name;
+			objEmail.name	= (objEmail.name == undefined) ? '' : objEmail.name;
 			
-			var strLabel	= (objEmail.name) ? objEmail.name+" ("+objEmail.address+")" : objEmail.address;
+			var strLabel	= (objEmail.name.length) ? objEmail.name+" ("+objEmail.address+")" : objEmail.address;
 			var strImg		= "<img onclick='Flex.Document.emailAddressRemove(\""+objEmail.address+"\");' alt='Remove this Address' title='Remove this Address' src='../admin/img/template/delete.png' style='vertical-align: text-top;' />";
 			strToEmails	+= "<nobr>"+strLabel+"&nbsp;"+strImg+"</nobr>; \n";
 		}
