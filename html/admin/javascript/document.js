@@ -154,7 +154,7 @@ var Document	= Class.create
 		if (strAddress && Vixen.Validation.EmailAddress(strAddress));
 		{
 			// Valid -- Is the Address already in our list?
-			if ()
+			if (this._arrEmailAddresses.indexOf(strAddress) > -1)
 			{
 				// Yes -- don't add, but return true
 				return true;
@@ -167,6 +167,7 @@ var Document	= Class.create
 												address	: strAddress
 											});
 				this._updateEmailTo();
+				$ID('Document_Email_OtherAddress').value	= '';
 				return true;
 			}
 		}
