@@ -221,12 +221,11 @@ var Document	= Class.create
 				this._updateEmailTo();
 				return true;
 			}
-			else
-			{
-				$Alert("Email '"+strAddress+"' does not exist!");
-				return true;
-			}
 		}
+		
+		// No matches
+		$Alert("Email '"+strAddress+"' does not exist!");
+		return true;
 	},
 	
 	_updateEmailTo	: function()
