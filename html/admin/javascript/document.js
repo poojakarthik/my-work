@@ -224,7 +224,7 @@ var Document	= Class.create
 		}
 		
 		// No matches
-		$Alert("Email '"+strAddress+"' does not exist!");
+		//$Alert("Email '"+strAddress+"' does not exist!");
 		return true;
 	},
 	
