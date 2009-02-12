@@ -197,6 +197,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					
 					$intFileSizeKB		= round(mb_strlen($objBrochureDocumentContent->content) / 1024);
 					$strDocuments		=	"new Array({" .
+											"id: {$objBrochureDocument->id}," .
 											"strIconSrc: \"{$strImageSrc}\"," .
 											"strFileName: \"".$objBrochureDocumentContent->getFileName()."\"," .
 											"intFileSizeKB: {$intFileSizeKB}" .
