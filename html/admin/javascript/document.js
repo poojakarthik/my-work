@@ -189,7 +189,9 @@ var Document	= Class.create
 		arrErrors.push(arrTags);
 		for (var i = 0; i < arrTags.length; i++)
 		{
-			arrErrors.push("[!] The placeholder tag '"+arrTags[i]+"' appears in the Content.  Please replace it with its respective value or remove it altogether.");
+			var strTag	= arrTags[i].replace(/>/mig, '&gt;');
+			strTag		= strTag.replace(/</mig, '&lt;');
+			arrErrors.push("[!] The placeholder tag '"+strTag+"' appears in the Content.  Please replace it with its respective value or remove it altogether.");
 		}
 		
 		if (arrErrors.length)
