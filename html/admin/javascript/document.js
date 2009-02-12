@@ -83,7 +83,7 @@ var Document	= Class.create
 		"			</tr>\n" +
 		"			<tr>\n" +
 		"				<th><span style='vertical-align: top;'>To : </span></td>\n" +
-		"				<td><textarea style='vertical-align: top;' rows='10' cols='50' /></td>\n" +  
+		"				<td><textarea style='vertical-align: top;' rows='10' cols='50'></textarea></td>\n" +  
 		"			</tr>\n" + 
 		"		</tbody>\n" + 
 		"	</table>\n" + 
