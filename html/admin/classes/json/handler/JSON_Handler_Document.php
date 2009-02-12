@@ -71,9 +71,9 @@ class JSON_Handler_Document extends JSON_Handler
 			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
 			
 			return array(
-							"Success"		=> false,
-							"ErrorMessage"	=> 'ERROR: '.$e->getMessage(),
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"Success"	=> false,
+							"Message"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 	}
