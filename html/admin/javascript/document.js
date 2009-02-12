@@ -186,7 +186,6 @@ var Document	= Class.create
 			arrErrors.push("[!] Please enter Content for the email");
 		}
 		var arrTags	= $ID('Document_Email_Content').value.match(/<[\d\w]+>/mig);
-		arrErrors.push(arrTags);
 		for (var i = 0; i < arrTags.length; i++)
 		{
 			var strTag	= arrTags[i].replace(/>/mig, '&gt;');
