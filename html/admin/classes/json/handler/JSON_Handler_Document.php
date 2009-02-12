@@ -17,7 +17,7 @@ class JSON_Handler_Document extends JSON_Handler
 		{
 			$qryQuery	= new Query();
 			
-			throw new Exception(print_r($arrDocuments, true));
+			throw new Exception(print_r($arrTo, true));
 			
 			// Build the Email
 			$objEmail	= new Zend_Mail();
@@ -27,9 +27,9 @@ class JSON_Handler_Document extends JSON_Handler
 			
 			if (is_array($arrTo) && count($arrTo))
 			{
-				foreach ($arrTo as $arrToAddress)
+				foreach ($arrTo as $jobToAddress)
 				{
-					$objEmail->addTo($arrToAddress['address'], $arrToAddress['name']);
+					$objEmail->addTo($jobToAddress->address, $jobToAddress->name);
 				}
 			}
 			else
@@ -40,9 +40,9 @@ class JSON_Handler_Document extends JSON_Handler
 			// Add attachments
 			if (is_array($arrDocuments) && count($arrDocuments))
 			{
-				foreach ($arrDocuments as $arrDocument)
+				foreach ($arrDocuments as $jobDocument)
 				{
-					$objDocument		= new Document($arrDocument['id'], true);
+					$objDocument		= new Document($jobDocument->id, true);
 					$objDocumentContent	= $objDocument->getContent();
 					$objFileType		= new File_Type(array('id'=>$objDocumentContent->file_type_id), true);
 					$objMimeType		= new Mime_Type(array('id'=>$objFileType->mime_type_id), true);
