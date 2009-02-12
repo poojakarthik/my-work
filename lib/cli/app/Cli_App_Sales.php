@@ -1790,8 +1790,8 @@ class Cli_App_Sales extends Cli
 		{
 			// There were some odd cases
 			$strOddCases = "\t\t<tr>
-			<td><em>Odd service cases:</em></td>
-			<td><em>$intOddCases</em></td>
+			<td><strong>Odd service cases:</strong></td>
+			<td><strong>$intOddCases</strong></td>
 		</tr>\n";
 		}
 		else
@@ -1833,7 +1833,7 @@ $strOddCases
 		
 		if (count($arrServicesToCancel))
 		{
-			$arrReport[]	= "<em>The following services are out of sync with their corresponding sale-items.  These cases should be investigated and rectified</em>";
+			$arrReport[]	= "<strong>The following services are out of sync with their corresponding sale-items.  These cases should be investigated and rectified</strong>";
 			$intAccountId	= NULL;
 			foreach ($arrOddServiceCases as $arrDetails)
 			{
