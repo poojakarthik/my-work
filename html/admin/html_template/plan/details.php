@@ -94,10 +94,10 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 				
 				$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objFileType->id}/16x16";
 				$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
-				$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'>Download <img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
+				$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /> Download</a>";
 				
 				$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick($arrRatePlan['customer_group'], array($arrRatePlan));
-				$strBrochureCell	.= "&nbsp;|&nbsp; <a onclick='{$strEmailOnClick}' title='Email Plan Brochure'>Email this Brochure <img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
+				$strBrochureCell	.= "&nbsp;|&nbsp; <a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email this Brochure</a>";
 			}
 		}
 		if ($bolHasPlanEditPerm)
@@ -107,12 +107,12 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			if ($strBrochureCell)
 			{
 				// Replace Brochure link
-				$strBrochureCell	.= " | <a onclick='{$strOnClick}' title='Replace Plan Brochure'>Replace this Plan Brochure <img src='{$strImageSrc}' alt='Replace Plan Brochure' /></a>";
+				$strBrochureCell	.= " | <a onclick='{$strOnClick}' title='Replace Plan Brochure'><img src='{$strImageSrc}' alt='Replace Plan Brochure' /> Replace this Plan Brochure</a>";
 			}
 			else
 			{
 				// Add Brochure link
-				$strBrochureCell	= "<a onclick='{$strOnClick}' title='Attach Plan Brochure'>Attach a Plan Brochure <img src='{$strImageSrc}' alt='Attach Plan Brochure' /></a>";
+				$strBrochureCell	= "<a onclick='{$strOnClick}' title='Attach Plan Brochure'><img src='{$strImageSrc}' alt='Attach Plan Brochure' /> Attach a Plan Brochure</a>";
 			}
 		}
 		if (!$strBrochureCell)
@@ -143,7 +143,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 				
 				$strImageSrc		= "../admin/img/template/script.png";
 				$strAuthScriptLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['voice_auth_document_id']}";
-				$strAuthScriptCell	= "<a href='{$strAuthScriptLink}' title='Download Authorisation Script'>Download <img src='{$strImageSrc}' alt='Download Authorisation Script' /></a>";
+				$strAuthScriptCell	= "<a href='{$strAuthScriptLink}' title='Download Authorisation Script'><img src='{$strImageSrc}' alt='Download Authorisation Script' /> Download</a>";
 			}
 		}
 		if ($bolHasPlanEditPerm)
@@ -153,12 +153,12 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			if ($strAuthScriptCell)
 			{
 				// Replace Auth Script link
-				$strAuthScriptCell	.= " | <a onclick='{$strOnClick}' title='Replace Authorisation Script'>Replace this Authorisation Script <img src='{$strImageSrc}' alt='Replace Authorisation Script' /></a>";
+				$strAuthScriptCell	.= " | <a onclick='{$strOnClick}' title='Replace Authorisation Script'><img src='{$strImageSrc}' alt='Replace Authorisation Script' /> Replace this Authorisation Script</a>";
 			}
 			else
 			{
 				// Add Auth Script link
-				$strAuthScriptCell	= "<a onclick='{$strOnClick}' title='Attach Authorisation Script'>Attach an Authorisation Script <img src='{$strImageSrc}' alt='Attach Authorisation Script' /></a>";
+				$strAuthScriptCell	= "<a onclick='{$strOnClick}' title='Attach Authorisation Script'><img src='{$strImageSrc}' alt='Attach Authorisation Script' /> Attach an Authorisation Script</a>";
 			}
 		}
 		if (!$strAuthScriptCell)
