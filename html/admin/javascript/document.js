@@ -326,19 +326,26 @@ var Document	= Class.create
 	{
 		elmSpan	= $ID('Document_Email_To');
 		
-		var strToEmails	= '';
-		for (var i = 0; i < this._arrEmailAddresses.length; i++)
+		if (elmSpan)
 		{
-			objEmail		= this._arrEmailAddresses[i];
-			objEmail.name	= (objEmail.name == undefined) ? '' : objEmail.name;
+			var strToEmails	= '';
+			for (var i = 0; i < this._arrEmailAddresses.length; i++)
+			{
+				objEmail		= this._arrEmailAddresses[i];
+				objEmail.name	= (objEmail.name == undefined) ? '' : objEmail.name;
+				
+				var strLabel	= (objEmail.name.length) ? objEmail.name+" ("+objEmail.address+")" : objEmail.address;
+				var strImg		= "<img onclick='Flex.Document.emailAddressRemove(\""+objEmail.address+"\");' alt='Remove this Address' title='Remove this Address' src='../admin/img/template/delete.png' style='vertical-align: text-top;' />";
+				strToEmails	+= "<nobr>"+strLabel+"&nbsp;"+strImg+"</nobr>; \n";
+			}
 			
-			var strLabel	= (objEmail.name.length) ? objEmail.name+" ("+objEmail.address+")" : objEmail.address;
-			var strImg		= "<img onclick='Flex.Document.emailAddressRemove(\""+objEmail.address+"\");' alt='Remove this Address' title='Remove this Address' src='../admin/img/template/delete.png' style='vertical-align: text-top;' />";
-			strToEmails	+= "<nobr>"+strLabel+"&nbsp;"+strImg+"</nobr>; \n";
+			elmSpan.innerHTML	= (strToEmails.length > 0) ? strToEmails : '&lt; No addresses specified &gt;';
+			return true;
 		}
-		
-		elmSpan.innerHTML	= (strToEmails.length > 0) ? strToEmails : '&lt; No addresses specified &gt;';
-		return true;
+		else
+		{
+			return false;
+		}
 	}
 });
 
