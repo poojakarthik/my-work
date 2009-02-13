@@ -150,7 +150,7 @@ var Document	= Class.create
 		"		<tbody style=''>\n" + 
 		"			<tr>\n" +
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>To : </nobr></td>\n" +
-		"				<td valign='top'><span id='Document_Email_To'>&lt; No addresses specified &gt;</span></td>\n" +  
+		"				<td valign='top'><span id='Document_Email_To'></span></td>\n" +  
 		"			</tr>\n" +
 		"			<tr>\n" +
 		"				<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>From : </nobr></td>\n" +
@@ -179,6 +179,8 @@ var Document	= Class.create
 		
 		this.pupEmail.setContent(strHTML);
 		this.pupEmail.display();
+		
+		this._updateEmailTo();
 		
 		return;
 	},
@@ -287,7 +289,7 @@ var Document	= Class.create
 												strCheckboxId	: (strCheckboxId == undefined) ? null : strCheckboxId
 											});
 				this._updateEmailTo();
-				$ID('Document_Email_OtherAddress').value	= '';
+				$ID('Document_Email_OtherAddress').value	= (strCheckboxId == undefined) ? '' : $ID('Document_Email_OtherAddress').value;
 				return true;
 			}
 		}
