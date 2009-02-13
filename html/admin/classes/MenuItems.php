@@ -2025,20 +2025,38 @@ class MenuItems {
 	 * Compiles the Href to be executed when the AvailablePlans menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intServiceType	optional, ServiceType used to filter the list of Rate Plans
-	 * @return	string					Href to be executed when the AvailablePlans menu item is clicked
+	 * @param	int		$intCustomerGroupId	optional, Will filter one customerGroup, defaults to NULL.  This will override the 
+	 * @param	bool	$bolGetLast			optional, If set to TRUE, then the cached filter options will be used
+	 * @return	string						Href to be executed when the AvailablePlans menu item is clicked
 	 *
 	 * @method
 	 */
-	function AvailablePlans($intServiceType = 0) {
-		$this->strContextMenuLabel = "Plans";
+	function AvailablePlans($bolGetLast=FALSE)
+	{
+		$strFilter = ($bolGetLast)? "?RatePlan.GetLast=1" : "";
+		
+		$this->strContextMenuLabel	= "Plans";
+		$this->strLabel				= "Available Plans";
+		return self::NEW_FRAMEWORK . "flex.php/Plan/AvailablePlans/$strFilter";
+	}
+	
+	function ListPlans($intCustomerGroupId=NULL)
+	{
+		if ($intCustomerGroupId == NULL)
+		{
+			$strFilter					= "?RatePlan.CustomerGroup=0&RatePlan.ServiceType=0&RatePlan.Status=0";
+			$this->strContextMenuLabel	= "All Plans";
+			$this->strLabel				= "Available Plans";
+		}
+		else
+		{
+			$objCustomerGroup			= Customer_Group::getForId($intCustomerGroupId);
+			$strFilter					= "?RatePlan.CustomerGroup=". $objCustomerGroup->id ."&RatePlan.ServiceType=0&RatePlan.Status=0";
+			$this->strContextMenuLabel	= htmlspecialchars($objCustomerGroup->internalName) ." Plans";
+			$this->strLabel				= $this->strContextMenuLabel;
+		}
 
-		$this->strLabel = "Available Plans";
-
-		// Set up the filter if intServiceType was passed
-		$strFilter = ($intServiceType) ? "?RatePlan.ServiceType=$intServiceType" : "";
-
-		return self :: NEW_FRAMEWORK . "flex.php/Plan/AvailablePlans/$strFilter";
+		return self::NEW_FRAMEWORK . "flex.php/Plan/AvailablePlans/$strFilter";
 	}
 
 	//------------------------------------------------------------------------//

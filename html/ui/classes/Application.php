@@ -124,7 +124,23 @@ class Application
 		
 		ContextMenu()->Customer->Customer_Overdue_List();
 		
-		ContextMenu()->Available_Plans();
+		$arrCustomerGroups = Customer_Group::listAll();
+		if (count($arrCustomerGroups) > 1)
+		{
+			// There are multiple customer groups
+			ContextMenu()->Plans->ListPlans();
+			
+			foreach ($arrCustomerGroups as $objCustomerGroup)
+			{
+				ContextMenu()->Plans->ListPlans($objCustomerGroup->id);
+			}
+		}
+		else
+		{
+			// There is only one customer group, so you don't need to break them down
+			ContextMenu()->Available_Plans();
+		}
+
 		require_once dirname(__FILE__).'/../../../lib/ticketing/Ticketing_User.php';
 		if (Ticketing_User::currentUserIsTicketingUser())
 		{
@@ -290,7 +306,23 @@ class Application
 		}
 		ContextMenu()->Customer->Customer_Overdue_List();
 		
-		ContextMenu()->Available_Plans();
+		$arrCustomerGroups = Customer_Group::listAll();
+
+		if (count($arrCustomerGroups) > 1)
+		{
+			// There are multiple customer groups
+			ContextMenu()->Plans->ListPlans();
+			
+			foreach ($arrCustomerGroups as $objCustomerGroup)
+			{
+				ContextMenu()->Plans->ListPlans($objCustomerGroup->id);
+			}
+		}
+		else
+		{
+			// There is only one customer group, so you don't need to break them down
+			ContextMenu()->Available_Plans();
+		}
 		
 		require_once dirname(__FILE__).'/../../../lib/ticketing/Ticketing_User.php';
 		if (Ticketing_User::currentUserIsTicketingUser())

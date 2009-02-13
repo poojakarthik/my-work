@@ -92,6 +92,12 @@ class AppTemplatePlan extends ApplicationTemplate
 		Breadcrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Available Plans");
 		
+		if (!(DBO()->RatePlan->GetLast->IsSet && DBO()->RatePlan->GetLast->Value))
+		{
+			// Don't base the plan retrieval on the constraints stored in the session
+			unset($_SESSION['AvailablePlansPage']['Filter']);
+		}
+		
 		// Update the Session details with the current filter, if one has been specified
 		if (DBO()->RatePlan->ServiceType->IsSet)
 		{
@@ -351,7 +357,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->AvailablePlans();
+		BreadCrumb()->AvailablePlans(TRUE);
 		BreadCrumb()->SetCurrentPage("Add Rate Plan");
 		
 		// Handle form submittion
