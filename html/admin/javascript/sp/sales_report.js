@@ -125,16 +125,22 @@ var FlexSalesReport = {
 			// The "show dealers with no upline manager" checkbox is ticked, hide all options except for the root level dealers
 			for (i in this.rootLevelDealers)
 			{
-				for (j in this.rootLevelDealers[i].immediateSubordinates)
+				if (this.rootLevelDealers[i].isManager)
 				{
-					this.hideDealer(this.rootLevelDealers[i].immediateSubordinates[j], true);
+					for (j in this.rootLevelDealers[i].immediateSubordinates)
+					{
+						this.hideDealer(this.rootLevelDealers[i].immediateSubordinates[j], true);
+					}
 				}
 			}
 		}
 		
 		for (i in this.rootLevelDealers)
 		{
-			this.updateOptionsForManager(this.rootLevelDealers[i])
+			if (this.rootLevelDealers[i].isManager)
+			{
+				this.updateOptionsForManager(this.rootLevelDealers[i]);
+			}
 		}
 		
 	},
