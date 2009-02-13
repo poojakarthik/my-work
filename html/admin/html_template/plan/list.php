@@ -119,6 +119,9 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 </div>
 <div class='SmallSeparator'></div>
 ";
+		
+		$strWithSelectedEmailOnClick	= "Vixen.AvailablePlansPage.emailSelectedBrochures();";
+		echo "<div class='GroupedContent'><span style='font-weight:bold;'>With Selected : </span><a onclick='{$strWithSelectedEmailOnClick}'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email Brochures</a></div>";
 
 		// Render the header of the Plan Table
 		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "&nbsp;", "Customer Group", "Carrier Full Service", "Carrier Pre Selection", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
@@ -257,7 +260,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			
 			if ($bolCanEmail)
 			{
-				$strCheckboxCell	.= "<input id='RatePlan_Brochure_Id' type='hidden' value='{$arrRatePlan['brochure_document_id']}' />";
+				$strCheckboxCell	.= "<input id='RatePlan_{$arrRatePlan['Id']}_Brochure_Id' type='hidden' value='{$arrRatePlan['brochure_document_id']}' />";
 			}
 			
 			// Add the row
@@ -292,8 +295,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		
 		echo "<div class='SmallSeparator'></div>";
 		
-		$strEmailOnClick	= "Vixen.AvailablePlansPage.emailSelectedBrochures();";
-		echo "<div class='GroupedContent'><span style='font-weight:bold;'>With Selected : </span><a onclick='{$strEmailOnClick}'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email Brochures</a></div>";
+		echo "<div class='GroupedContent'><span style='font-weight:bold;'>With Selected : </span><a onclick='{$strWithSelectedEmailOnClick}'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email Brochures</a></div>";
 		
 		echo "<div class='SmallSeparator'></div>";
 		//echo "<div class='GroupedContent'>".str_replace("\n", "\n<br />", print_r($arrRatePlans, true))."</div>";
