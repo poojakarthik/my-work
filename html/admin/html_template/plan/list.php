@@ -123,6 +123,8 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		$strWithSelectedEmailOnClick	= "Vixen.AvailablePlansPage.emailSelectedBrochures();";
 		echo "<div class='GroupedContent'><span style='font-weight:bold;'>With Selected : </span><a onclick='{$strWithSelectedEmailOnClick}'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email Brochures</a></div>";
 
+		echo "<div class='SmallSeparator'></div>";
+		
 		// Render the header of the Plan Table
 		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "&nbsp;", "Customer Group", "Carrier Full Service", "Carrier Pre Selection", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
 		Table()->PlanTable->SetWidth("4%", "4%", "30%", "4%", "18%", "10%", "10%", "12%", "2%", "2%", "2%", "2%");
