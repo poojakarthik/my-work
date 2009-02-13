@@ -121,9 +121,9 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 ";
 
 		// Render the header of the Plan Table
-		Table()->PlanTable->SetHeader("&nbsp;", "Name", "&nbsp;", "Customer Group", "Carrier Full Service", "Carrier Pre Selection", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
-		Table()->PlanTable->SetWidth("4%", "34%", "4%", "18%", "10%", "10%", "12%", "2%", "2%", "2%", "2%");
-		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center", "Center");
+		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "&nbsp;", "Customer Group", "Carrier Full Service", "Carrier Pre Selection", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+		Table()->PlanTable->SetWidth("4%", "4%", "30%", "4%", "18%", "10%", "10%", "12%", "2%", "2%", "2%", "2%");
+		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center", "Center");
 		
 		// This array will store the details required for the javascript code that archives a RatePlan
 		$arrRatePlanDetails = array();
@@ -250,8 +250,10 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				$strActionCell	= "{$strEdit}{$strAdd}";
 			}
 			
+			$strCheckboxCell	= "<input id='RatePlan_Checkbox_{$arrRatePlan['Id']}' type='checkbox' checked='' value='{$arrRatePlan['Id']}' />";
+			
 			// Add the row
-			Table()->PlanTable->AddRow($strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroup, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
+			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroup, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
 			
 			$arrRatePlanDetails[$arrRatePlan['Id']] = array(	"Name"			=> $strName,
 																"CustomerGroup"	=> $strCustomerGroup,
