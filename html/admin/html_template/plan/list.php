@@ -285,8 +285,9 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		echo "<div class='SmallSeparator'></div>";
 		
 		$strEmailOnClick	= "Vixen.AvailablePlansPage.emailSelectedBrochures();";
-		echo "<div class='GroupedContent'><span style='font-weight:bold;'>With Selected : <a onclick='{$strEmailOnClick}'>Email Brochures <img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a></div>";
+		echo "<div class='GroupedContent'><span style='font-weight:bold;'>With Selected : <a onclick='{$strEmailOnClick}'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email Brochures</a></div>";
 		
+		echo "<div class='SmallSeparator'></div>";
 		//echo "<div class='GroupedContent'>".str_replace("\n", "\n<br />", print_r($arrRatePlans, true))."</div>";
 	}
 }
