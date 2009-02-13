@@ -189,31 +189,81 @@ function VixenAvailablePlansPageClass()
 	this.emailSelectedBrochures()
 	{
 		// Determine the Plans that are Selected
-		var arrDocuments;
-		var arrRatePlanIds	= document.getElementsByName('RatePlan_Checkbox');
-		if (arrRatePlanIds.length)
+		var arrNoBrochures;
+		var arrHaveBrochures;
+		var arrRatePlanIds;
+		var arrCheckboxes	= document.getElementsByName('RatePlan_Checkbox');
+		if (arrCheckboxes.length)
 		{
-			for (var i = 0; i < arrRatePlanIds.length; i++)
+			for (var i = 0; i < arrCheckboxes.length; i++)
 			{
-				var elmCheckbox	= arrRatePlanIds[i];
+				var elmCheckbox	= arrCheckboxes[i];
 				
-				if ()
+				if (elmCheckbox.checked)
 				{
-					
+					var elmRatePlanId	= $ID('RatePlan_'+elmCheckbox.value+'_BrochureId');
+					if (elmRatePlanId)
+					{
+						// Add to list
+						arrRatePlanIds.push(elmCheckbox.value);
+						arrHaveBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name'));
+					}
+					else
+					{
+						// No Brochure
+						arrNoBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name'));
+					}
 				}
 			}
 		}
 		else
 		{
-			$Alert("There are no Plans selected.  Please select the Plans whose Brochures you wish to email.");
+			// No checkboxes
+			$Alert("There are no Rate Plans available to email");
 			return false;
 		}
 		
-		// Are there Plans selected from multiple Customer Groups?
-		// TODO
+		// Check we have Rate Plans selected
+		if (arrRatePlanIds.length < 1)
+		{
+			if (arrNoBrochures.length < 1)
+			{
+				$Alert("There are no Plans selected.  Please select the Plans whose Brochures you wish to email.");
+				return false;
+			}
+			else
+			{
+				$Alert("The Plans you have selected do not have associated Brochures.");
+				return false;
+			}
+		}
 		
-		// Display Popup
-		// TODO
+		// Check if every selected Plan has a Brochure
+		if (arrNoBrochures.length)
+		{
+			for (var i = 0; i < arrNoBrochures.length; i++)
+			{
+				
+			}
+		}
+		
+		var fncResponseHandler	=	function(objResponse)
+									{
+										// Render the popup
+										if (objResponse.Success)
+										{
+											return eval(objResponse.strEval);
+										}
+										else
+										{
+											$Alert(objResponse.Message);
+											return false;
+										}
+									};
+		
+		// Get JS code to load the Popup
+		var fncJsonFunc		= jQuery.json.jsonFunction(fncResponseHandler, null, 'Rate_Plan', 'generateEmailButtonOnClick');
+		fncJsonFunc(arrRatePlanIds);
 	}
 }
 

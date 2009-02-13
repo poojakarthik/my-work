@@ -258,15 +258,18 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				$strActionCell	= "{$strEdit}{$strAdd}";
 			}
 			
-			$strCheckboxCell	= "<input id='RatePlan_Checkbox_{$arrRatePlan['Id']}' name='RatePlan_Checkbox' type='checkbox' value='{$arrRatePlan['Id']}' />";
+			$strCheckboxCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_Checkbox' name='RatePlan_Checkbox' type='checkbox' value='{$arrRatePlan['Id']}' />";
+			$strCheckboxCell	.= "<input id='RatePlan_{$arrRatePlan['Id']}_Name' type='hidden' value='{$arrRatePlan['Name']}' />";
 			
 			if ($bolCanEmail)
 			{
-				$strCheckboxCell	.= "<input id='RatePlan_{$arrRatePlan['Id']}_Brochure_Id' type='hidden' value='{$arrRatePlan['brochure_document_id']}' />";
+				$strCheckboxCell	.= "<input id='RatePlan_{$arrRatePlan['Id']}_BrochureId' type='hidden' value='{$arrRatePlan['brochure_document_id']}' />";
 			}
 			
+			$strCustomerGroupCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup' type='hidden' value='{$arrRatePlan['customer_group']}' />".$strCustomerGroup;
+			
 			// Add the row
-			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroup, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
+			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroupCell, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
 			
 			$arrRatePlanDetails[$arrRatePlan['Id']] = array(	"Name"			=> $strName,
 																"CustomerGroup"	=> $strCustomerGroup,
