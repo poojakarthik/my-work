@@ -46,7 +46,7 @@ class Ticketing_Category
 			
 			$strSQL = "SELECT id, name, description, css_name FROM ticketing_category ORDER BY name ASC";
 			
-			if (PEAR::isError(($result = $db->query($strSQL))))
+			if (PEAR::isError(($result = $db->query($strSQL, array("integer", "text", "text", "text")))))
 			{
 				throw new Exception("Unable to retrieve the list of available Ticketing Categories: " . $result->getMessage());
 			}

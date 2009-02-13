@@ -140,7 +140,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 		?>
 <form method="GET" action="<?=$target?>">
-	<table id="ticketing" name="ticketing" class="reflex">
+	<table id="ticketing" name="ticketing" class="reflex highlight-rows">
 		<caption>
 			<div id="caption_bar" name="caption_bar">
 				<div id="caption_title" name="caption_title">
@@ -336,12 +336,13 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 				<th colspan="<?=(8+$nrPossibleActions)?>" align=right>&nbsp;<div id='refreshPanel'></div><?=$navLinks?></th>
 			</tr>
 		</tfoot>
-		<tbody>
+		<tbody style='vertical-align:top'>
 
 		<?php
 
 		$i = 0;
 		$noRecords = TRUE;
+		$strToday = date("d-m-Y", strtotime(Data_Source_Time::currentDate()));
 		foreach ($this->mxdDataToRender['tickets'] as $ticket) 
 		{
 			$noRecords = FALSE;
@@ -367,20 +368,37 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 				$actionCells[] = "<td>$actionLink</td>";
 			}
 
-			foreach ($actions as $a => $action)
+			$intModifiedOn		= strtotime($ticket->modifiedDatetime);
+			$strModifiedOnDate	= date("d-m-Y", $intModifiedOn);
+			if ($strModifiedOnDate == $strToday)
 			{
-				$actions[$a] = "<a href='$base$action'>" . htmlspecialchars($action) . "</a>";
+				// The ticket was last modified today
+				$strModifiedOn = "<span title='today'>". date("g:i:sa", $intModifiedOn) ."</span>";
 			}
-
-			$actions = implode(' ', $actions);
-			$actions = $actions ? $actions : '&nbsp;';
+			else
+			{
+				$strModifiedOn = "<span title='$strModifiedOnDate ". date("g:i:s a", $intModifiedOn) ."'>$strModifiedOnDate</span>";
+			}
+			
+			$intCreatedOn		= strtotime($ticket->creationDatetime);
+			$strCreatedOnDate	= date("d-m-Y", $intCreatedOn);
+			if ($strCreatedOnDate == $strToday)
+			{
+				// The ticket was Created today
+				$strCreatedOn = "<span title='today'>". date("g:i:sa", $intCreatedOn) ."</span>";
+			}
+			else
+			{
+				$strCreatedOn = "<span title='$strCreatedOnDate ". date("g:i:s a", $intCreatedOn) ."'>$strCreatedOnDate</span>";
+			}
+			
 		?>
 
 			<tr class="<?=$tr_alt?>">
 				<td><a href="reflex.php/Ticketing/Ticket/<?=$ticket->id?>/View"><?php echo $ticket->id; ?></a></td>
 				<td><?php echo htmlspecialchars(trim($ticket->subject) ? $ticket->subject : '<em>[No Subject]</em>'); ?></td>
-				<td><?php echo $ticket->modifiedDatetime; ?></td>
-				<td><?php echo $ticket->creationDatetime; ?></td>
+				<td><?php echo $strModifiedOn; ?></td>
+				<td><?php echo $strCreatedOn; ?></td>
 				<td><?php echo $ownerName; ?></td>
 				<td class="<?=$category->cssClass?>"><?php echo $category->name; ?></td>
 				<td class="<?=$status->cssClass?>"><?php echo $status->name; ?></td>

@@ -69,7 +69,8 @@ class Ticketing_Status
 			case TICKETING_STATUS_WITH_CARRIER:
 			case TICKETING_STATUS_WITH_INTERNAL:
 			case TICKETING_STATUS_COMPLETED:
-				return TRUE;
+				// A ticket cannot be assigned any of these statuses if it has not yet been assigned to someone
+				return ($ticket && $ticket->ownerId != NULL);
 			case TICKETING_STATUS_UNASSIGNED:
 				return ($ticket && !$ticket->isAssigned());
 			case TICKETING_STATUS_DELETED:

@@ -438,7 +438,11 @@ class Application_Handler_Ticketing extends Application_Handler
 									}
 									else
 									{
-										if (!$value->validForUserAndTicket($currentUser, $ticket))
+										if (($ticket->ownerId == NULL) && ($value->id != TICKETING_STATUS_UNASSIGNED))
+										{
+											$invalidValues[$editableValue] = "Unassigned tickets cannot have their status changed.";
+										}
+										elseif (!$value->validForUserAndTicket($currentUser, $ticket))
 										{
 											$ticket->statusId = NULL;
 											$invalidValues[$editableValue] = 'You are not allowed to select that status.';
@@ -471,7 +475,8 @@ class Application_Handler_Ticketing extends Application_Handler
 
 						if (!empty($invalidValues))
 						{
-							$detailsToRender['error'] = 'Please complete all mandatory fields.';
+							//$detailsToRender['error'] = 'Please complete all mandatory fields.';
+							$detailsToRender['error'] = "Please fix the following issues...\n". implode("\n", $invalidValues);
 							$detailsToRender['saved'] = FALSE;
 							if ($ticket)
 							{

@@ -210,6 +210,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		if ($message)
 		{
+			$message = str_replace("\n", "<br />", htmlspecialchars($message));
 			?>
 		<div class="message error"><?=$message?></div><?php
 		}
@@ -431,7 +432,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								$invalid = array_key_exists('subject', $invalidValues) ? 'invalid' : '';
 								if (array_search('subject', $editableValues) !== FALSE)
 								{
-									?><input type="text" id="subject" name="subject" class="<?=$invalid?>" size="50" value="<?=htmlspecialchars($ticket->subject)?>" /><?php
+									?><input type="text" id="subject" name="subject" class="<?=$invalid?>" style='width:100%' value="<?=htmlspecialchars($ticket->subject)?>" /><?php
 								}
 								else
 								{
