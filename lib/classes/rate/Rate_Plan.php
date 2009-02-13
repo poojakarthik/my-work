@@ -332,7 +332,7 @@ class Rate_Plan extends ORM
 				$arrContact	= $objContact->toArray();
 				if ($arrContact['Archived'] === 0 && trim($arrContact['Email']) && stripos($arrContact['Email'], 'noemail@') === false)
 				{
-					$strPrimaryContact	= ($objAccount->PrimaryContact === $objContact->Id) ? 'true' : 'false';
+					$strPrimaryContact	= ($objAccount->PrimaryContact === $objContact->id) ? 'true' : 'false';
 					$arrRecipients[]	= "{name: \"{$arrContact['FirstName']} {$arrContact['LastName']}\", address: \"{$arrContact['Email']}\", is_primary_contact: {$strPrimaryContact}}";
 				}
 			}
