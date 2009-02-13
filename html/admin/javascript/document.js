@@ -72,12 +72,12 @@ var Document	= Class.create
 				var strChecked			= '';
 				if (objEmail.is_primary_content != undefined && objEmail.is_primary_contact === true)
 				{
-					strChecked			= 'checked';
+					strChecked			= "checked='checked'";
 					Flex.Document.emailAddressAdd(objEmail.address, objEmail.name, strCheckboxId);
 				}
 				
 				strPredefinedEmails	+= "			<tr>\n";
-				strPredefinedEmails	+= "				<td style='width:5%; text-align:right;'><input id='"+strCheckboxId+"' type='checkbox' checked='"+strChecked+"' value='"+objEmail.address+"' onchange='(this.checked) ? Flex.Document.emailAddressAdd(this.value, "+strNameParameter+", this.id) : Flex.Document.emailAddressRemove(this.value);' /></td>\n";
+				strPredefinedEmails	+= "				<td style='width:5%; text-align:right;'><input id='"+strCheckboxId+"' type='checkbox' "+strChecked+" value='"+objEmail.address+"' onchange='(this.checked) ? Flex.Document.emailAddressAdd(this.value, "+strNameParameter+", this.id) : Flex.Document.emailAddressRemove(this.value);' /></td>\n";
 				strPredefinedEmails	+= "				<td style='width:30%'>"+objEmail.name+"</td>\n";
 				strPredefinedEmails	+= "				<td>"+objEmail.address+"</td>\n";
 				strPredefinedEmails	+= "			</tr>\n";
