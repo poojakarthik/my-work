@@ -288,7 +288,23 @@ class Rate_Plan extends ORM
 		$arrDocuments	= array();
 		foreach ($arrRatePlans as $mixRatePlan)
 		{
-			$arrRatePlan	= ($mixRatePlan instanceof Rate_Plan) ? $mixRatePlan->toArray() : $mixRatePlan;
+			if ($mixRatePlan instanceof Rate_Plan)
+			{
+				$arrRatePlan	= $mixRatePlan->toArray();
+			}
+			elseif (is_array($mixRatePlan))
+			{
+				$arrRatePlan	= $mixRatePlan;
+			}
+			elseif ((int)$mixRatePlan > 1)
+			{
+				$objRatePlan	= new Rate_Plan(array('Id'=>$mixRatePlan), true);
+				$arrRatePlan	= $mixRatePlan->toArray();
+			}
+			else
+			{
+				// We will just skip
+			}
 			
 			$objDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
 			$objDocumentContent	= $objDocument->getContent();
@@ -298,6 +314,10 @@ class Rate_Plan extends ORM
 			
 			$strPlans	.= " - {$arrRatePlan['Name']}\\n";
 		}
+		if (!count($arrDocuments))
+		{
+			throw new Exception("There are no Documents to attach!");
+		}		
 		$strDocuments	= "new Array(".implode(",\n", $arrDocuments).")";
 		
 		// Recipients
@@ -312,7 +332,8 @@ class Rate_Plan extends ORM
 				$arrContact	= $objContact->toArray();
 				if ($arrContact['Archived'] === 0 && trim($arrContact['Email']) && stripos($arrContact['Email'], 'noemail@') === false)
 				{
-					$arrRecipients[]	= "{name: \"{$arrContact['FirstName']} {$arrContact['LastName']}\", address: \"{$arrContact['Email']}\"}";
+					$strPrimaryContact	= ($objAccount->PrimaryContact === $objContact->Id) ? 'true' : 'false';
+					$arrRecipients[]	= "{name: \"{$arrContact['FirstName']} {$arrContact['LastName']}\", address: \"{$arrContact['Email']}\", is_primary_contact: {$strPrimaryContact}}";
 				}
 			}
 			$strRecipients	= "new Array(".implode(",\n", $arrRecipients).")";
@@ -325,11 +346,11 @@ class Rate_Plan extends ORM
 		// Senders
 		$arrSenders		= array();
 		$objEmployee	= Employee::getForId(Flex::getUserId());
+		$arrSenders[]	= "{name: \"{$objCustomerGroup->externalName} Customer Care\", address: \"contact@{$objCustomerGroup->emailDomain}\"}";
 		if (trim($objEmployee->Email))
 		{
 			$arrSenders[]	= "{name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"}";
 		}
-		$arrSenders[]	= "{name: \"{$objCustomerGroup->externalName} Customer Care\", address: \"contact@{$objCustomerGroup->emailDomain}\"}";
 		$strSenders		= "new Array(".implode(",\n", $arrSenders).")";
 		
 		if (count($arrDocuments) > 1)
@@ -341,11 +362,13 @@ class Rate_Plan extends ORM
 			$strBrochurePlural	= "Brochure";
 		}
 		
+		$strAccount			= ((int)$intAccountId > 0) ? "{$intAccountId}" : "null";
+		
 		// Generate HTML
 		$strSubject			= "Requested {$objCustomerGroup->externalName} Plan {$strBrochurePlural}";
 		$strContent			= "Dear <Addressee>,\\n\\nPlease attached find the Plan {$strBrochurePlural}:\\n\\n{$strPlans}\\nAs per your request.\\n\\nRegards,\\n\\nThe Team at {$objCustomerGroup->externalName}";
 		
-		return "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan {$strBrochurePlural}\", {$strSenders}, \"{$strSubject}\", \"{$strContent}\", {$strRecipients})});";
+		return "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan {$strBrochurePlural}\", {$strSenders}, \"{$strSubject}\", \"{$strContent}\", {$strRecipients}, {$strAccount})});";
 	}
 	
 	//------------------------------------------------------------------------//
