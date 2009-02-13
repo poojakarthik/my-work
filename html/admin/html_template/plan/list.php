@@ -130,6 +130,8 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		
 		foreach ($arrRatePlans as $arrRatePlan)
 		{
+			$bolCanEmail		= false;
+			
 			// Format the Name and Description (The title attribute of the Name will be set to the description)
 			$strDescription		= htmlspecialchars($arrRatePlan['Description'], ENT_QUOTES);
 			$strName			= htmlspecialchars($arrRatePlan['Name'], ENT_QUOTES);
@@ -166,7 +168,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			{
 				$strDefaultCell = "<img src='img/template/flag.png' title='Default plan for $strCustomerGroup, $strServiceType services'></img>";
 			}
-						
+			
 			$strServiceTypeCell	= "<div class='$strServiceTypeClass'></div>";
 						
 			// Add the Rate Plan to the VixenTable
@@ -195,6 +197,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
 					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
 					
+					$bolCanEmail		= true;
 					$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick($arrRatePlan['customer_group'], array($arrRatePlan));
 					$strBrochureCell	.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
 				}
@@ -250,7 +253,12 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				$strActionCell	= "{$strEdit}{$strAdd}";
 			}
 			
-			$strCheckboxCell	= "<input id='RatePlan_Checkbox_{$arrRatePlan['Id']}' type='checkbox' value='{$arrRatePlan['Id']}' />";
+			$strCheckboxCell	= "<input id='RatePlan_Checkbox_{$arrRatePlan['Id']}' name='RatePlan_Checkbox' type='checkbox' value='{$arrRatePlan['Id']}' />";
+			
+			if ($bolCanEmail)
+			{
+				$strCheckboxCell	.= "<input id='RatePlan_Brochure_Id' type='hidden' value='{$arrRatePlan['brochure_document_id']}' />";
+			}
 			
 			// Add the row
 			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroup, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);

@@ -127,10 +127,10 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 					
 					$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objFileType->id}/16x16";
 					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
-					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'>Download <img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
+					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /> Download</a>";
 					
 					$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick($arrRatePlan['customer_group'], array($arrRatePlan), DBO()->Account->Id->Value);
-					$strBrochureCell	.= "&nbsp;|&nbsp; <a onclick='{$strEmailOnClick}' title='Email Plan Brochure'>Email this Brochure <img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
+					$strBrochureCell	.= "&nbsp;|&nbsp; <a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email this Brochure</a>";
 				}
 			}
 			if (!$strBrochureCell)
@@ -161,7 +161,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 					
 					$strImageSrc		= "../admin/img/template/script.png";
 					$strAuthScriptLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['voice_auth_document_id']}";
-					$strAuthScriptCell	= "<a href='{$strAuthScriptLink}' title='Download Authorisation Script'>Download <img src='{$strImageSrc}' alt='Download Authorisation Script' /></a>";
+					$strAuthScriptCell	= "<a href='{$strAuthScriptLink}' title='Download Authorisation Script'><img src='{$strImageSrc}' alt='Download Authorisation Script' /> Download</a>";
 				}
 			}
 			if (!$strAuthScriptCell)

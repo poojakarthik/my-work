@@ -184,6 +184,37 @@ function VixenAvailablePlansPageClass()
 		
 		Vixen.Ajax.CallAppTemplate("Plan", "TogglePlanStatus", objData, null, true, true);
 	}
+	
+	// Emails Plan Brochures
+	this.emailSelectedBrochures()
+	{
+		// Determine the Plans that are Selected
+		var arrDocuments;
+		var arrRatePlanIds	= document.getElementsByName('RatePlan_Checkbox');
+		if (arrRatePlanIds.length)
+		{
+			for (var i = 0; i < arrRatePlanIds.length; i++)
+			{
+				var elmCheckbox	= arrRatePlanIds[i];
+				
+				if ()
+				{
+					
+				}
+			}
+		}
+		else
+		{
+			$Alert("There are no Plans selected.  Please select the Plans whose Brochures you wish to email.");
+			return false;
+		}
+		
+		// Are there Plans selected from multiple Customer Groups?
+		// TODO
+		
+		// Display Popup
+		// TODO
+	}
 }
 
 // instanciate the objects
