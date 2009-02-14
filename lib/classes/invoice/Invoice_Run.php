@@ -240,10 +240,10 @@ class Invoice_Run
 				$objSoloInvoiceRun	= new Invoice_Run($arrSoloInvoiceRun);
 				$objSoloInvoiceRun->revoke();
 			}
-			
+
 			// Calculate Billing Period
 			$this->calculateBillingPeriodDates(date("Y-m-d", $intInvoiceDatetime), $intAccount);
-			
+
 			// Generate the Single Invoice
 			$this->generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, array($arrAccount));
 		}
@@ -297,7 +297,7 @@ class Invoice_Run
 
 		// If there are any Temporary InvoiceRuns for this Customer Group, then Revoke them
 		Invoice_Run::revokeByCustomerGroup($intCustomerGroup);
-		
+
 		// Generate the Billing Period Dates
 		$this->calculateBillingPeriodDates(date("Y-m-d", $intInvoiceDatetime));
 
@@ -640,8 +640,8 @@ class Invoice_Run
 	 * calculateBillingPeriodDates()
 	 *
 	 * Calculates the Billing Period Dates for this Invoice Run
-	 * 
-	 * @param	[integer	$intAccount]				
+	 *
+	 * @param	[integer	$intAccount]
 	 *
 	 * @return	boolean
 	 *
@@ -651,11 +651,11 @@ class Invoice_Run
 	{
 		$intInvoiceDatetime				= strtotime($strInvoiceDate);
 		$this->intInvoiceDatetime		= $intInvoiceDatetime;
-		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $intInvoiceDatetime);		
+		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $intInvoiceDatetime);
 
 		// Retrieve the Bill Date of the last Invoice Run...
 		Log::getLog()->log(" * Billing Period Start Date\t: ", false);
-		
+
 		if ($intAccount > 0)
 		{
 			$objAccount						= new Account(array('Id'=>$intAccount), false, true);
@@ -665,12 +665,12 @@ class Invoice_Run
 		{
 			$this->strLastInvoiceDatetime	= Invoice_Run::getLastInvoiceDateByCustomerGroup($this->customer_group_id, $this->BillingDate);
 		}
-		
+
 		$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
 		Log::getLog()->log($this->strLastInvoiceDatetime);
-		
+
 		Log::getLog()->log(" * Billing Period End Date\t: {$this->strInvoiceDatetime}");
-		
+
 		// Set the Billing Period
 		$this->billing_period_start_datetime	= $this->strLastInvoiceDatetime;
 		$this->billing_period_end_datetime		= date("Y-m-d H:i:s", strtotime("-1 second", $this->intInvoiceDatetime));
@@ -734,7 +734,7 @@ class Invoice_Run
 	 * predictNextInvoiceDate()
 	 *
 	 * Predicts the next Invoice Date for a Customer Group
-	 * 
+	 *
 	 * @param	integer	$intCustomerGroup				Customer Group to predict for
 	 * @param	[string	$strDate			]			Date to predict from (Default: Today)
 	 *
@@ -746,7 +746,7 @@ class Invoice_Run
 	{
 		// Set default Date
 		$strEffectiveDate	= (strtotime($strEffectiveDate)) ? $strEffectiveDate : date("Y-m-d");
-		
+
 		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
 		if ($selPaymentTerms->Execute(Array('customer_group_id' => $intCustomerGroup)))
 		{
@@ -941,8 +941,8 @@ class Invoice_Run
 		}
 		$arrInvoiceRunSchedule	= $selInvoiceRunSchedule->Fetch();
 		$strSampleType			= (isset($arrInvoiceRunSchedule['description'])) ? $arrInvoiceRunSchedule['description'] : '';
-		$strSampleType			= trim($strSampleType . ((stripos($strSampleType, 'sample')) ? $arrInvoiceRunSchedule['description'] : ' Samples'));
-		
+		$strSampleType			= trim($strSampleType . ((stripos($strSampleType, 'sample')) ? '' : ' Samples'));
+
 		//$strInvoiceRunBlurb	= date("F Y", strtotime("-1 day", strtotime($this->BillingDate)))." {$strCustomerGroup} {$arrInvoiceRun['description']} Samples for ".GetConstantDescription($this->customer_group_id, 'CustomerGroup');
 		$strInvoiceRunBlurb	= GetConstantDescription($this->customer_group_id, 'CustomerGroup')." {$strSampleType} for ".date("F Y", strtotime("-1 day", strtotime($this->BillingDate)));
 
@@ -961,7 +961,7 @@ class Invoice_Run
 			while ($arrSample = $selSampleList->Fetch())
 			{
 				$strTotalOwing	= number_format($arrSample['TotalOwing'], 2, '.', '');
-				
+
 				$strTextContent	.= "{$arrSample['Id']} | {$arrSample['BusinessName']} | Total Owing: \${$strTotalOwing} | Account Overview : {$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}\n";
 				$strHTMLContent	.= "<a href='{$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}'>{$arrSample['Id']} | {$arrSample['BusinessName']} | Total Owing: \${$strTotalOwing}</a><br />\n";
 			}
@@ -1129,7 +1129,7 @@ class Invoice_Run
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("CustomerGroup", "invoice_cdr_credits", "Id = <customer_group_id>");
 					break;
 				case 'selSampleList':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id", "Account.*, CustomerGroup.flex_url", "Account.Sample != 0 AND invoice_run_id = <Id>");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id", "Account.*, CustomerGroup.flex_url, Invoice.TotalOwing", "Account.Sample != 0 AND invoice_run_id = <Id>");
 					break;
 				case 'selInvoiceRunSchedule':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun LEFT JOIN invoice_run_schedule ON InvoiceRun.invoice_run_schedule_id = invoice_run_schedule.id", "invoice_run_schedule.*", "InvoiceRun.Id = <Id>", null, 1);
