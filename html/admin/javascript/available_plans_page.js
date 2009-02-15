@@ -204,7 +204,7 @@ function VixenAvailablePlansPageClass()
 				
 				if (elmCheckbox.checked)
 				{
-					var elmRatePlanId	= $ID('RatePlan_'+elmCheckbox.value+'_BrochureId').value;
+					var elmRatePlanId	= $ID('RatePlan_'+elmCheckbox.value+'_BrochureId');
 					if (elmRatePlanId)
 					{
 						// Add to list
