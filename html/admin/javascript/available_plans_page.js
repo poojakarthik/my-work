@@ -210,13 +210,13 @@ function VixenAvailablePlansPageClass()
 						// Add to list
 						arrRatePlanIds.push(elmCheckbox.value);
 						arrHaveBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
-						strHaveBrochures	+= " + "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
+						strHaveBrochures	+= "&nbsp;&nbsp;&nbsp;&nbsp;+ "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
 					}
 					else
 					{
 						// No Brochure
 						arrNoBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
-						strNoBrochures		+= " - "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
+						strNoBrochures		+= "&nbsp;&nbsp;&nbsp;&nbsp;- "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
 					}
 				}
 			}
@@ -243,15 +243,6 @@ function VixenAvailablePlansPageClass()
 			}
 		}
 		
-		// Check if every selected Plan has a Brochure
-		if (arrNoBrochures.length)
-		{
-			for (var i = 0; i < arrNoBrochures.length; i++)
-			{
-				
-			}
-		}
-		
 		var fncResponseHandler	=	function(objResponse)
 									{
 										// Render the popup
@@ -266,9 +257,28 @@ function VixenAvailablePlansPageClass()
 										}
 									};
 		
-		// Get JS code to load the Popup
-		var fncJsonFunc		= jQuery.json.jsonFunction(fncResponseHandler, null, 'Rate_Plan', 'generateEmailButtonOnClick');
-		fncJsonFunc(arrRatePlanIds);
+		var	fncJSONRequest		=	function(arrRatePlanIds)
+									{
+										// Get JS code to load the Popup
+										var fncJsonFunc		= jQuery.json.jsonFunction(fncResponseHandler, null, 'Rate_Plan', 'generateEmailButtonOnClick');
+										fncJsonFunc(arrRatePlanIds);
+									};
+		
+		// Check if every selected Plan has a Brochure
+		if (arrNoBrochures.length)
+		{
+			var strYesNoHTML	= "Some of the selected Plans do not have associated brochures.\n\n";			
+			strYesNoHTML		+= "The following Plans have brochures:\n"+strHaveBrochures+"\n";
+			strYesNoHTML		+= "The following Plans do not have brochures:\n"+strNoBrochures+"\n";
+			strYesNoHTML		+= "Do you want to continue ignoring the Plans without brochures?";
+			
+			var strPopupId	= "RatePlan_Email_YesNo";
+			Vixen.YesNoCancel(strYesNoHTML, fncJSONRequest, function(){Vixen.Popup.Close}, null, null, strPopupId, "Plans without Brochures");
+		}
+		else
+		{
+			fncJSONRequest(arrRatePlanIds);
+		}
 	}
 }
 
