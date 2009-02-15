@@ -209,13 +209,13 @@ function VixenAvailablePlansPageClass()
 						// Add to list
 						arrRatePlanIds.push(elmCheckbox.value);
 						arrHaveBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
-						strHaveBrochures	.= " + "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
+						strHaveBrochures	+= " + "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
 					}
 					else
 					{
 						// No Brochure
 						arrNoBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
-						strNoBrochures		.= " - "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
+						strNoBrochures		+= " - "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
 					}
 				}
 			}
