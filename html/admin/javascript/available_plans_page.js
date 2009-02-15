@@ -186,11 +186,13 @@ function VixenAvailablePlansPageClass()
 	}
 	
 	// Emails Plan Brochures
-	this.emailSelectedBrochures()
+	this.emailSelectedBrochures	= function ()
 	{
 		// Determine the Plans that are Selected
 		var arrNoBrochures;
+		var strNoBrochures;
 		var arrHaveBrochures;
+		var strHaveBrochures;
 		var arrRatePlanIds;
 		var arrCheckboxes	= document.getElementsByName('RatePlan_Checkbox');
 		if (arrCheckboxes.length)
@@ -201,17 +203,19 @@ function VixenAvailablePlansPageClass()
 				
 				if (elmCheckbox.checked)
 				{
-					var elmRatePlanId	= $ID('RatePlan_'+elmCheckbox.value+'_BrochureId');
+					var elmRatePlanId	= $ID('RatePlan_'+elmCheckbox.value+'_BrochureId').value;
 					if (elmRatePlanId)
 					{
 						// Add to list
 						arrRatePlanIds.push(elmCheckbox.value);
-						arrHaveBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name'));
+						arrHaveBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
+						strHaveBrochures	.= " + "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
 					}
 					else
 					{
 						// No Brochure
-						arrNoBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name'));
+						arrNoBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
+						strNoBrochures		.= " - "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
 					}
 				}
 			}
