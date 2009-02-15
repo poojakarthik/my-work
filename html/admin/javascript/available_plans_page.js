@@ -189,12 +189,13 @@ function VixenAvailablePlansPageClass()
 	this.emailSelectedBrochures	= function ()
 	{
 		// Determine the Plans that are Selected
-		var arrNoBrochures;
-		var strNoBrochures;
-		var arrHaveBrochures;
-		var strHaveBrochures;
-		var arrRatePlanIds;
-		var arrCheckboxes	= document.getElementsByName('RatePlan_Checkbox');
+		var arrNoBrochures		= new Array();
+		var strNoBrochures		= '';
+		var arrHaveBrochures	= new Array();
+		var strHaveBrochures	= '';
+		var arrRatePlanIds		= new Array();
+		
+		var arrCheckboxes		= document.getElementsByName('RatePlan_Checkbox');
 		if (arrCheckboxes.length)
 		{
 			for (var i = 0; i < arrCheckboxes.length; i++)
