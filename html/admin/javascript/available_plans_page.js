@@ -241,7 +241,7 @@ function VixenAvailablePlansPageClass()
 		}
 		
 		// Are there Plans from more than 1 Customer Group?
-		$Alert(intCustomerGroupCount);
+		$Alert(objCustomerGroups.inspect());
 		return false;
 		if (intCustomerGroupCount > 1)
 		{
