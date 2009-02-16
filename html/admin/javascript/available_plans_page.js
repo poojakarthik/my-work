@@ -210,25 +210,23 @@ function VixenAvailablePlansPageClass()
 				
 				if (elmCheckbox.checked)
 				{
-					var elmRatePlanId	= $ID('RatePlan_'+elmCheckbox.value+'_BrochureId');
-					if (elmRatePlanId)
+					intCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup').value;
+					var strCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup_Name').innerHTML;
+					
+					if (objCustomerGroups[intCustomerGroup] == undefined)
+					{
+						objCustomerGroups[intCustomerGroup]	= {arrPlans: new Array(), strName: strCustomerGroup};
+						intCustomerGroupCount++;
+					}
+					objCustomerGroups[intCustomerGroup].arrPlans.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
+					
+					var elmBrochureId	= $ID('RatePlan_'+elmCheckbox.value+'_BrochureId');
+					if (elmBrochureId)
 					{
 						// Add to list
 						arrRatePlanIds.push(elmCheckbox.value);
 						arrHaveBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
 						strHaveBrochures	+= "&nbsp;&nbsp;&nbsp;&nbsp;+ "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"<br />\n";
-						
-						intCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup').value;
-						var strCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup_Name').innerHTML;
-						
-						if (objCustomerGroups[intCustomerGroup] == undefined)
-						{
-							objCustomerGroups[intCustomerGroup]	= {arrPlans: new Array(), strName: strCustomerGroup};
-							intCustomerGroupCount++;
-						}
-						objCustomerGroups[intCustomerGroup].arrPlans.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value); 
-						
-						strDebug	+= intCustomerGroup+', ';
 					}
 					else
 					{
@@ -245,9 +243,6 @@ function VixenAvailablePlansPageClass()
 			$Alert("There are no Rate Plans available to email");
 			return false;
 		}
-
-		//$Alert(strDebug);
-		//return false;
 		
 		// Check we have Rate Plans selected
 		if (arrRatePlanIds.length < 1)
