@@ -243,10 +243,11 @@ function VixenAvailablePlansPageClass()
 			$Alert("There are no Rate Plans available to email");
 			return false;
 		}
+
+		$Alert(strDebug);
+		return false;
 		
 		// Are there Plans from more than 1 Customer Group?
-		$Alert(objCustomerGroups);
-		return false;
 		if (intCustomerGroupCount > 1)
 		{
 			var strPopupHTML	= 'You have selected Plans from multiple Customer Groups:';
