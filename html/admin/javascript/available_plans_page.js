@@ -281,6 +281,8 @@ function VixenAvailablePlansPageClass()
 		
 		var fncResponseHandler	=	function(objResponse)
 									{
+										Vixen.Popup.ClosePageLoadingSplash();
+										
 										// Render the popup
 										if (objResponse.Success)
 										{
@@ -297,6 +299,8 @@ function VixenAvailablePlansPageClass()
 		
 		var	fncJSONRequest		=	function(intCustomerGroup, arrRatePlanIds)
 									{
+										Vixen.Popup.ShowPageLoadingSplash();
+										
 										// Get JS code to load the Popup
 										var fncJsonFunc		= jQuery.json.jsonFunction(fncResponseHandler, null, 'Rate_Plan', 'generateEmailButtonOnClick');
 										fncJsonFunc(intCustomerGroup, arrRatePlanIds);
