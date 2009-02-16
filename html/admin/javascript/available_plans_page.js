@@ -198,6 +198,8 @@ function VixenAvailablePlansPageClass()
 		var arrRatePlanIds			= new Array();
 		var objCustomerGroups		= {};
 		var intCustomerGroupCount	= 0;
+
+		var intCustomerGroup		= null;
 		
 		var arrCheckboxes		= document.getElementsByName('RatePlan_Checkbox');
 		if (arrCheckboxes.length)
@@ -216,7 +218,7 @@ function VixenAvailablePlansPageClass()
 						arrHaveBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
 						strHaveBrochures	+= "&nbsp;&nbsp;&nbsp;&nbsp;+ "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"<br />\n";
 						
-						var intCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup').value;
+						intCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup').value;
 						var strCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup_Name').innerHTML;
 						
 						if (objCustomerGroups[intCustomerGroup] == undefined)
@@ -224,7 +226,7 @@ function VixenAvailablePlansPageClass()
 							objCustomerGroups[intCustomerGroup]	= {arrPlans: new Array(), strName: strCustomerGroup};
 							intCustomerGroupCount++;
 						}
-						objCustomerGroups[intCustomerGroup].arrPlans.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
+						objCustomerGroups[intCustomerGroup].arrPlans.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value); 
 						
 						strDebug	+= intCustomerGroup+', ';
 					}
@@ -247,6 +249,21 @@ function VixenAvailablePlansPageClass()
 		//$Alert(strDebug);
 		//return false;
 		
+		// Check we have Rate Plans selected
+		if (arrRatePlanIds.length < 1)
+		{
+			if (arrNoBrochures.length < 1)
+			{
+				$Alert("There are no Plans selected.  Please select the Plans whose Brochures you wish to email.");
+				return false;
+			}
+			else
+			{
+				$Alert("The Plans you have selected do not have associated Brochures.");
+				return false;
+			}
+		}
+		
 		// Are there Plans from more than 1 Customer Group?
 		if (intCustomerGroupCount > 1)
 		{
@@ -265,21 +282,6 @@ function VixenAvailablePlansPageClass()
 			strPopupHTML	+= "</div>\nPlease ensure you have selected Plans from only one Customer Group.";
 			$Alert(strPopupHTML);
 			return false;
-		}
-		
-		// Check we have Rate Plans selected
-		if (arrRatePlanIds.length < 1)
-		{
-			if (arrNoBrochures.length < 1)
-			{
-				$Alert("There are no Plans selected.  Please select the Plans whose Brochures you wish to email.");
-				return false;
-			}
-			else
-			{
-				$Alert("The Plans you have selected do not have associated Brochures.");
-				return false;
-			}
 		}
 		
 		var fncResponseHandler	=	function(objResponse)
@@ -314,11 +316,11 @@ function VixenAvailablePlansPageClass()
 			strYesNoHTML		+= "Do you want to continue by ignoring the Plans without brochures?";
 			
 			var strPopupId	= "RatePlan_Email_YesNo";
-			Vixen.Popup.YesNoCancel(strYesNoHTML, fncJSONRequest.curry(arrRatePlanIds), function(){Vixen.Popup.Close}, null, null, strPopupId, "Plans without Brochures");
+			Vixen.Popup.YesNoCancel(strYesNoHTML, fncJSONRequest.curry(intCustomerGroup, arrRatePlanIds), function(){Vixen.Popup.Close}, null, null, strPopupId, "Plans without Brochures");
 		}
 		else
 		{
-			fncJSONRequest(arrRatePlanIds);
+			fncJSONRequest(intCustomerGroup, arrRatePlanIds);
 		}
 	}
 }
