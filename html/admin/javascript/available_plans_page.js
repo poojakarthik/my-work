@@ -300,7 +300,7 @@ function VixenAvailablePlansPageClass()
 										}
 									};
 		
-		var	fncJSONRequest		=	function(arrRatePlanIds)
+		var	fncJSONRequest		=	function(intCustomerGroup, arrRatePlanIds)
 									{
 										// Get JS code to load the Popup
 										var fncJsonFunc		= jQuery.json.jsonFunction(fncResponseHandler, null, 'Rate_Plan', 'generateEmailButtonOnClick');
