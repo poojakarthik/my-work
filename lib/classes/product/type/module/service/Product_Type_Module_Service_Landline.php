@@ -18,6 +18,11 @@ class Product_Type_Module_Service_Landline extends Product_Type_Module
 		$data->landlineServiceAddressTypeCategory = array_combine($data->landlineServiceAddressType->id, $data->landlineServiceAddressType->landlineServiceAddressTypeCategoryId);
 		unset($data->landlineServiceAddressType->landlineServiceAddressTypeCategoryId);
 
+		$data->lengths = array(	"landline"				=> DO_Sales_SaleItemServiceLandline::getLengths(),
+								"landlineResidential"	=> DO_Sales_SaleItemServiceLandlineResidential::getLengths(),
+								"landlineBusiness"		=> DO_Sales_SaleItemServiceLandlineBusiness::getLengths()
+								);
+
 		return $data;
 	}
 	

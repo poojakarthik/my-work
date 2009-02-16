@@ -598,6 +598,19 @@ class DO_Field
 		return 'string';
 	}
 	
+	// Returns the MDB2 Type as a string
+	public function getMDB2Type()
+	{
+		return $this->properties['mdb2type'];
+	}
+	
+	// Note that for numerical properties this will return the number of bytes used to store the value 
+	public function getLength()
+	{
+		return array_key_exists('length', $this->properties) ? $this->properties['length'] : null;
+	}
+	
+	
 	public function getSetConversion()
 	{
 		$nullable = array_key_exists('notnull', $this->properties) ? !$this->properties['notnull'] : false;
@@ -1076,14 +1089,20 @@ class DO_File_Base_Class
 		$strPropertyNameCases = '';
 		$strDefaultValues = '';
 		$strSetCases = '';
+		$strPropMDB2TypeMapping = '';
+		$strPropLengths = '';
 		$this->doTable->intMaxPropertyNameLength;
 		$this->doTable->intMaxDataSourceNameLength;
 		if (count($mapping))
 		{
 			foreach ($mapping as $prop => $field)
 			{
+				$obField = $this->doTable->getFieldForProperty($prop);
+				
 				$strSrcPropMapping .= $strSrcPropMapping ? "\n\t\t\t" : "\n\t\t\t";
 				$strPropSrcMapping .= $strPropSrcMapping ? "\n\t\t\t" : "\n\t\t\t";
+				$strPropMDB2TypeMapping .= "\n\t\t\t";
+				$strPropLengths .= "\n\t\t\t";
 				
 				$m = $this->doTable->intMaxDataSourceNameLength + 2;
 				$v = (ceil(floatval($m) / 4) * 4) + (($m % 4) ? 0 : 4);
@@ -1099,8 +1118,11 @@ class DO_File_Base_Class
 				$tabs = str_repeat("\t", $x);
 				$strPropSrcMapping .= "'$prop'$tabs=> '$field',";
 				
-				$obField = $this->doTable->getFieldForProperty($prop);
-				
+				$intLength = $obField->getLength();
+				$strLength = ($intLength !== NULL)? $intLength : "NULL";
+
+				$strPropLengths .= "'$prop'$tabs=> $strLength,";
+				$strPropMDB2TypeMapping .= "'$prop'$tabs=> '". $obField->getMDB2Type() ."',";
 				$strDataSourceToInternalCases .= "\n\n\t\t\tcase '$prop':\n\t\t\t\t" . $obField->getConversionCode(true) . "\n\t\t\t\t\$this->{\$propertyName} = \$value;\n\t\t\t\tbreak;";
 				$strInternalToDataSourceCases .= "\n\n\t\t\tcase '$prop':\n\t\t\t\t" . $obField->getConversionCode(false) . "\n\t\t\t\tbreak;";
 				$strInternalValidationCases .= "\n\n\t\t\tcase '$prop':\n\t\t\t\treturn " . $obField->getValidationCode() . ';';
@@ -1113,9 +1135,12 @@ class DO_File_Base_Class
 				}
 				
 				$strDefaultValues .= $obField->getQuotedDefaultValue();
+				
 			}
 			$strSrcPropMapping .= "\n\t\t";
 			$strPropSrcMapping .= "\n\t\t";
+			$strPropMDB2TypeMapping .= "\n\t\t";
+			$strPropLengths .= "\n\t\t";
 		}
 		
 		// TODO - This only allows for a single column PK - Extend to support composite PKs!
@@ -1172,6 +1197,16 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 	public static function getDataSourcePropertyMappings()
 	{
 		return array('.$strSrcPropMapping.');
+	}
+
+	public static function getMDB2Types()
+	{
+		return array('. $strPropMDB2TypeMapping .');
+	}
+
+	public static function getLengths()
+	{
+		return array('. $strPropLengths .');
 	}
 
 	public static function getDataSourceObjectName()
@@ -1330,6 +1365,8 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 
 		$arrDsProps = '.$obClassName.'::getDataSourcePropertyMappings();
 
+		$arrMDB2Types = '.$obClassName.'::getMDB2Types();
+
 		if (is_array($mxdWhere))
 		{
 			$strWhere = '.$obClassName.'::whereArrayToString($mxdWhere);
@@ -1365,7 +1402,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 
 		$dataSource = '.$obClassName.'::getDataSource();
 
-		if (PEAR::isError($results = $dataSource->query($strSQL)))
+		if (PEAR::isError($results = $dataSource->query($strSQL, $arrMDB2Types)))
 		{
 			throw new Exception(\'Failed to load records for \' . __CLASS__ . \' :: \' . $results->getMessage());
 		}
@@ -1421,7 +1458,7 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 
 		$dataSource = '.$obClassName.'::getDataSource();
 
-		if (PEAR::isError($results = $dataSource->query($strSQL)))
+		if (PEAR::isError($results = $dataSource->query($strSQL, array(\'integer\'))))
 		{
 			throw new Exception(\'Failed to count records for \' . __CLASS__ . \' :: \' . $results->getMessage());
 		}

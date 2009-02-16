@@ -857,7 +857,14 @@ Object.extend(Sale.GUIComponent, {
 		
 		// Is there a validation method set?
 		var bolValid	= (objElementGroup.isValidCustom == undefined) ? true : objElementGroup.isValidCustom(strValue);
-		
+
+		if (Sale.GUIComponent.isElementGroupDisabled(objElementGroup))
+		{
+			// Something can't be considered manditory if it is disabled, right?
+			// I can't help but think this bold generalisation will bite me in the arse
+			bolIsMandatory = false;
+		}
+
 		// Mandatory?
 		if (strValue.length == 0)
 		{
@@ -1063,6 +1070,136 @@ Object.extend(Sale.GUIComponent, {
 				return null;
 			default:
 				return null;
+		}
+	},
+	
+	// if a group has multiple input elements, it is considered to only be disabled if ALL of the input elements are disabled
+	isElementGroupDisabled: function(group)
+	{
+		switch (group.type)
+		{
+			case 'checkbox':
+			case 'radio':
+			case 'text':
+			case 'textarea':
+			case 'select':
+			case 'multiple':
+			case 'password':
+			case 'date':
+			case 'credit_card_expiry':
+				for (var i=0, l=group.inputs.length; i<l; i++)
+				{
+					if (!group.inputs[i].disabled) 
+					{
+						return false;
+					}
+				}
+				return true;
+
+			default:
+				return null;
+		}
+	},
+	
+	disableElementGroup: function(group, bolNullifyValue)
+	{
+		if (bolNullifyValue == undefined)
+		{
+			bolNullifyValue = false;
+		}
+		
+		switch (group.type)
+		{
+			case 'checkbox':
+				if (bolNullifyValue)
+				{
+					group.inputs[0].checked = false;
+				}
+				group.inputs[0].disabled = true;
+				break;
+			case 'text':
+			case 'textarea':
+				if (bolNullifyValue)
+				{
+					group.inputs[0].value = '';
+				}
+				group.inputs[0].disabled = true;
+				break;
+			case 'select':
+				if (bolNullifyValue)
+				{
+					group.inputs[0].selectedIndex = 0;
+				}
+				group.inputs[0].disabled = true;
+				break;
+			case 'multiple':
+				if (bolNullifyValue)
+				{
+					group.inputs[0].selectedIndex = -1;
+				}
+				group.inputs[0].disabled = true;
+				break;
+			case 'password':
+				if (bolNullifyValue)
+				{
+					group.inputs[0].value = '';
+					group.inputs[1].value = '';
+				}
+				group.inputs[0].disabled = true;
+				group.inputs[1].disabled = true;
+				break;
+			case 'date':
+				if (bolNullifyValue)
+				{
+					group.inputs[0].selectedIndex = 0;
+					group.inputs[1].selectedIndex = 0;
+					group.inputs[2].selectedIndex = 0;
+				}
+				group.inputs[0].disabled = true;
+				group.inputs[1].disabled = true;
+				group.inputs[2].disabled = true;
+				break;
+			
+			case 'credit_card_expiry':
+				if (bolNullifyValue)
+				{
+					group.inputs[0].selectedIndex = 0;
+					group.inputs[1].selectedIndex = 0;
+				}
+				group.inputs[0].disabled = true;
+				group.inputs[1].disabled = true;
+				break;
+			case 'radio':
+				for (var i=0, l=group.inputs.length; i<l; i++)
+				{
+					if (bolNullifyValue)
+					{
+						group.inputs[i].checked = false;
+					}
+					group.inputs[i].disabled = true;
+				}
+				break;
+		}
+	},
+	
+	enableElementGroup: function(group)
+	{
+		switch (group.type)
+		{
+			case 'checkbox':
+			case 'text':
+			case 'textarea':
+			case 'select':
+			case 'multiple':
+			case 'password':
+			case 'date':
+			case 'credit_card_expiry':
+			case 'radio':
+				for (var i=0, l=group.inputs.length; i<l; i++)
+				{
+					group.inputs[i].disabled = false;
+				}
+				break;
 		}
 	}
 });

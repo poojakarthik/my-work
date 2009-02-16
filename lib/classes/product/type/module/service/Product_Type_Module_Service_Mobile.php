@@ -9,6 +9,8 @@ class Product_Type_Module_Service_Mobile extends Product_Type_Module
 
 		$data->serviceMobileOrigin = $this->_toKeyArray(DO_Sales_ServiceMobileOrigin::listAll());
 
+		$data->lengths = DO_Sales_SaleItemServiceMobile::getLengths();
+
 		return $data;
 	}
 	

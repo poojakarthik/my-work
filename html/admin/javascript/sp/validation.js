@@ -130,7 +130,7 @@ Validate	= Class.create(
 	{
 		// SEE: http://www.ato.gov.au/businesses/content.asp?doc=/content/13187.htm&pc=001/003/021/002/001&mnu=610&mfp=001/003&st=&cy=1
 		// Define Digit Weights
-		arrWeights		= new Array(11);
+		var arrWeights	= new Array(11);
 		arrWeights[0]	= 10;
 		arrWeights[1]	= 1;
 		arrWeights[2]	= 3;
@@ -144,21 +144,21 @@ Validate	= Class.create(
 		arrWeights[10]	= 19;
 		
 		// Ensure that the ABN is of decent length
-		strABN	= String(mixABN).replace(/\s/g, '');
+		var strABN	= String(mixABN).replace(/\s/g, '');
 		if (strABN.length != 11)
 		{
 			return false;
 		}
 		
 		// Perform the calculation
-		arrDigits	= strABN.toArray();
+		var arrDigits	= strABN.toArray();
 
 		// 1. Subtract 1 from the first (left) digit to give a new eleven digit number
 		arrDigits[0]	= parseInt(arrDigits[0]) - 1;
 		
 		// 2. Multiply each of the digits in this new number by its weighting factor
 		// 3. Sum the resulting 11 products
-		intSum	= 0;
+		var intSum	= 0;
 		for (i = 0; i < 11; i++)
 		{
 			arrDigits[i]	= parseInt(arrDigits[i]) * arrWeights[i];
@@ -166,8 +166,8 @@ Validate	= Class.create(
 		}
 		
 		// 4. Divide the total by 89, noting the remainder
-		intQuotient		= intSum / 89;
-		intRemainder	= intSum % 89;
+		var intQuotient		= intSum / 89;
+		var intRemainder	= intSum % 89;
 		
 		// 5. If the remainder is zero the number is valid
 		return (intRemainder === 0) ? true : false;
@@ -178,7 +178,7 @@ Validate	= Class.create(
 	{
 		// SEE: http://www.asic.gov.au/asic/asic.nsf/byheadline/Australian+Company+Number+(ACN)+Check+Digit?opendocument
 		// Define Digit Weights
-		arrWeights		= new Array(8);
+		var arrWeights	= new Array(8);
 		arrWeights[0]	= 8;
 		arrWeights[1]	= 7;
 		arrWeights[2]	= 6;
@@ -189,18 +189,18 @@ Validate	= Class.create(
 		arrWeights[7]	= 1;
 		
 		// Ensure that the ACN is of decent length
-		strACN	= String(mixACN).replace(/\s/g, '');
+		var strACN	= String(mixACN).replace(/\s/g, '');
 		if (strACN.length != 9)
 		{
 			return false;
 		}
 		
 		// Perform the calculation
-		arrDigits	= strACN.toArray();
+		var arrDigits	= strACN.toArray();
 		
 		// 1. Apply weighting to digits 1 to 8
 		// 2. Sum the Products
-		intSum	= 0;
+		var intSum	= 0;
 		for (i = 0; i < 8; i++)
 		{
 			arrDigits[i]	= parseInt(arrDigits[i]) * arrWeights[i];
@@ -208,11 +208,11 @@ Validate	= Class.create(
 		}
 		
 		// 3. Divide by 10 to obtain remainder (aka intSum mod 10)
-		intQuotient		= intSum / 10;
-		intRemainder	= intSum % 10;
+		var intQuotient		= intSum / 10;
+		var intRemainder	= intSum % 10;
 		
 		// 4. Subtract the remainder from 10
-		intDifference	= 10 - intRemainder;
+		var intDifference	= 10 - intRemainder;
 		
 		// 5. If the difference equals the check digit (digit 9), then it is valid
 		return (intDifference == parseInt(arrDigits[8])) ? true : false;
@@ -231,6 +231,28 @@ Validate	= Class.create(
 		strBSB		= String(strBSB).replace(/\s/g, '');
 		var	expBSB	= /^\d{3}[-]?\d{3}$/;
 		return expBSB.test(strBSB);
+	},
+	
+	// string() - primarly used to check that a string does not exceed the maximum length
+	// An empty string is a valid string
+	string : function(strString, intMaxLength)
+	{
+		if (intMaxLength == undefined)
+		{
+			return true;
+		}
+		strString = String(strString);
+		return (strString.length <= intMaxLength);
+	},
+	
+	// Creates a function that can just be passed a string, and it will run the string validation with the appropriate length
+	getStringLengthValidationFunc : function(intLength)
+	{
+		var strLength = (intLength == undefined)? "null" : String(intLength);
+
+		var fncStringValidation;
+		eval("fncStringValidation = function(strValue){return window._validate.string(strValue, "+ strLength +");};");
+		return fncStringValidation;
 	},
 	
 	// creditCardNumber()

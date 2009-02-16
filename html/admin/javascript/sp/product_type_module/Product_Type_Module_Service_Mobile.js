@@ -58,7 +58,7 @@ Object.extend(Sale.ProductTypeModule.Service_Mobile.prototype, {
 		this.elementGroups.fnn = Sale.GUIComponent.createTextInputGroup(this.getFNN(), this.isExistingService.bind(this), window._validate.fnnMobile.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Mobile Phone Number', this.elementGroups.fnn);
 
-		this.elementGroups.sim_puk = Sale.GUIComponent.createTextInputGroup(this.getSimPUK());
+		this.elementGroups.sim_puk = Sale.GUIComponent.createTextInputGroup(this.getSimPUK(), false, window._validate.getStringLengthValidationFunc(Sale.ProductTypeModule.Service_Mobile.staticData.lengths.simPuk));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'SIM PUK', this.elementGroups.sim_puk);
 
 		this.elementGroups.sim_state_id = Sale.GUIComponent.createDropDown(Sale.states.ids, Sale.states.labels, this.getSimStateId());
