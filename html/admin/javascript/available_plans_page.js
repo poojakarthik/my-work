@@ -194,6 +194,7 @@ function VixenAvailablePlansPageClass()
 		var arrHaveBrochures	= new Array();
 		var strHaveBrochures	= '';
 		var arrRatePlanIds		= new Array();
+		var objCustomerGroups	= {};
 		
 		var arrCheckboxes		= document.getElementsByName('RatePlan_Checkbox');
 		if (arrCheckboxes.length)
@@ -211,6 +212,11 @@ function VixenAvailablePlansPageClass()
 						arrRatePlanIds.push(elmCheckbox.value);
 						arrHaveBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
 						strHaveBrochures	+= "&nbsp;&nbsp;&nbsp;&nbsp;+ "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
+						
+						var intCustomerGroup	= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup').value;
+						var strCustomerGroup	= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup_Name').innerHTML;
+						objCustomerGroups		= (objCustomerGroups[intCustomerGroup] == undefined) ? {intCount:0; strName:strCustomerGroup} : objCustomerGroups[intCustomerGroup];
+						objCustomerGroups[intCustomerGroup].arrPlans.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
 					}
 					else
 					{
@@ -225,6 +231,25 @@ function VixenAvailablePlansPageClass()
 		{
 			// No checkboxes
 			$Alert("There are no Rate Plans available to email");
+			return false;
+		}
+		
+		// Are there Plans from more than 1 Customer Group?
+		if (objCustomerGroups.length > 1)
+		{
+			var strPopupHTML	= 'You have selected Plans from multiple Customer Groups:';
+			for (var i = 0; i < objCustomerGroups.length; i++)
+			{
+				strPopupHTML	+= objCustomerGroups[i].strName+":\n";
+				for (var t = 0; t < objCustomerGroups[i].arrPlans.length; t++)
+				{
+					strPopupHTML	+= "&nbsp;&nbsp;&nbsp;&nbsp;- "+objCustomerGroups[i].arrPlans[t]+"\n";
+				}
+				strPopupHTML	+= "\n";
+			}
+			
+			strPopupHTML	+= "Please ensure you have selected Plans from only one Customer Group.";
+			$Alert(strPopupHTML);
 			return false;
 		}
 		
