@@ -244,8 +244,8 @@ function VixenAvailablePlansPageClass()
 			return false;
 		}
 
-		$Alert(strDebug);
-		return false;
+		//$Alert(strDebug);
+		//return false;
 		
 		// Are there Plans from more than 1 Customer Group?
 		if (intCustomerGroupCount > 1)
