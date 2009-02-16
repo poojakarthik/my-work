@@ -396,7 +396,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		fwrite($resLogFile, "({$fltSplit}) Blacklist built! (".($fltSplit-$fltOldSplit)." seconds)\n");
 		
 		// Build a Cache of Active Service FNNs
-		$resResult	= $qryQuery->Execute("SELECT FNN FROM Service WHERE Status = ".SERVICE_ACTIVE);
+		$resResult	= $qryQuery->Execute("SELECT FNN, Indial100 FROM Service WHERE Status = ".SERVICE_ACTIVE);
 		$arrServiceCache	= array();
 		if ($resResult === false)
 		{
@@ -405,6 +405,14 @@ class Application_Handler_Telemarketing extends Application_Handler
 		while ($arrService = $resResult->fetch_assoc())
 		{
 			$arrServiceCache[$arrService['FNN']]	= true;
+			if ($arrService['Indial100'])
+			{
+				$strPrefix	= substr($arrService['FNN'], 0, -2);
+				for ($intExtension = 0; $intExtension < 100; $intExtension++)
+				{
+					$arrServiceCache[$strPrefix.str_pad($intExtension, 2, '0', STR_PAD_LEFT)]	= true;
+				}
+			}
 		}
 		
 		$fltOldSplit	= $fltSplit;
