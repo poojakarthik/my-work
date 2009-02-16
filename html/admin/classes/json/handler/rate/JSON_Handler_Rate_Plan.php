@@ -15,11 +15,12 @@ class JSON_Handler_Rate_Plan extends JSON_Handler
 	{
 		try
 		{
-			Rate_Plan::generateEmailButtonOnClick($intCustomerGroup, $arrRatePlanIds);
+			$strEval	= Rate_Plan::generateEmailButtonOnClick($intCustomerGroup, $arrRatePlanIds);
 			
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"		=> true,
+							"strEval"		=> $strEval,
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
