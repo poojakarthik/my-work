@@ -194,7 +194,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				$objBrochureDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
 				$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
 				
-				if ($objBrochureDocumentContent && $objBrochureDocumentContent->content)
+				if ($objBrochureDocumentContent && $objBrochureDocumentContent->bolHasContent)
 				{
 					$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
 					
