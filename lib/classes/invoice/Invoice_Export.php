@@ -561,7 +561,7 @@ class Invoice_Export
 					break;
 				case 'selCustomerData':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Account LEFT JOIN Invoice ON Account.Id = Invoice.Account",
-																					"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup, COUNT(CASE WHEN Invoice.Status != ".INVOICE_TEMP." AND CreatedOn < <CreatedOn> THEN Invoice.Id ELSE NULL END) AS InvoiceCount, BillingType",
+																					"BusinessName, Address1, Address2, Suburb, Postcode, State, CustomerGroup, COUNT(CASE WHEN Invoice.Status != ".INVOICE_TEMP." THEN Invoice.Id ELSE NULL END) AS InvoiceCount, BillingType",
 																					"Account.Id = <Account>",
 																					NULL,
 																					NULL,
