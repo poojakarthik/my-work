@@ -189,12 +189,13 @@ function VixenAvailablePlansPageClass()
 	this.emailSelectedBrochures	= function ()
 	{
 		// Determine the Plans that are Selected
-		var arrNoBrochures		= new Array();
-		var strNoBrochures		= '';
-		var arrHaveBrochures	= new Array();
-		var strHaveBrochures	= '';
-		var arrRatePlanIds		= new Array();
-		var objCustomerGroups	= {};
+		var arrNoBrochures			= new Array();
+		var strNoBrochures			= '';
+		var arrHaveBrochures		= new Array();
+		var strHaveBrochures		= '';
+		var arrRatePlanIds			= new Array();
+		var objCustomerGroups		= {};
+		var intCustomerGroupCount	= 0;
 		
 		var arrCheckboxes		= document.getElementsByName('RatePlan_Checkbox');
 		if (arrCheckboxes.length)
@@ -215,7 +216,12 @@ function VixenAvailablePlansPageClass()
 						
 						var intCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup').value;
 						var strCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup_Name').innerHTML;
-						objCustomerGroups[intCustomerGroup]	= (objCustomerGroups[intCustomerGroup] == undefined) ? {arrPlans: new Array(), strName: strCustomerGroup} : objCustomerGroups[intCustomerGroup];
+						
+						if (objCustomerGroups[intCustomerGroup])
+						{
+							objCustomerGroups[intCustomerGroup]	= {arrPlans: new Array(), strName: strCustomerGroup};
+							intCustomerGroupCount++;							
+						}
 						objCustomerGroups[intCustomerGroup].arrPlans.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
 					}
 					else
@@ -235,10 +241,10 @@ function VixenAvailablePlansPageClass()
 		}
 		
 		// Are there Plans from more than 1 Customer Group?
-		if (objCustomerGroups.length > 1)
+		if (intCustomerGroupCount > 1)
 		{
 			var strPopupHTML	= 'You have selected Plans from multiple Customer Groups:';
-			for (var i = 0; i < objCustomerGroups.length; i++)
+			for (var i = 0; i < intCustomerGroupCount; i++)
 			{
 				strPopupHTML	+= objCustomerGroups[i].strName+":<br />\n";
 				for (var t = 0; t < objCustomerGroups[i].arrPlans.length; t++)
