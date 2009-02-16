@@ -124,14 +124,15 @@ class Document extends ORM
 			$strOrderBy	= "id DESC";
 		}
 		
+		$objEmptyDocumentContent	= new Document_Content();
+		$arrColumns					= $objEmptyDocumentContent->toArray();
+		unset($objEmptyDocumentContent);
+		
 		if ($bolDetailsOnly)
 		{
-			$objEmptyDocumentContent	= new Document_Content();
-			$arrColumns					= $objEmptyDocumentContent->toArray();
-			unset($objEmptyDocumentContent);
 			unset($arrColumns['content']);
-			$strColumns					= implode(', ', array_keys($arrColumns));
 		}
+		$strColumns					= implode(', ', array_keys($arrColumns));
 		
 		// Retrieve and return the content
 		$strQuery		= "SELECT {$strColumns}, CASE WHEN content IS NULL THEN 0 ELSE 1 END AS has_content, LENGTH(content) AS content_size FROM document_content WHERE document_id = {$this->id} ORDER BY {$strOrderBy} LIMIT {$strLimit}";
