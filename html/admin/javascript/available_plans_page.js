@@ -248,10 +248,10 @@ function VixenAvailablePlansPageClass()
 		//return false;
 		
 		// Are there Plans from more than 1 Customer Group?
-		if (intCustomerGroupCount > 1)
+		if (objCustomerGroups.length > 1)
 		{
 			var strPopupHTML	= 'You have selected Plans from multiple Customer Groups:';
-			for (var i = 0; i < intCustomerGroupCount; i++)
+			for (var i = 0; i < objCustomerGroups.length; i++)
 			{
 				strPopupHTML	+= objCustomerGroups[i].strName+":<br />\n";
 				for (var t = 0; t < objCustomerGroups[i].arrPlans.length; t++)
