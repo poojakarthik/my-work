@@ -20,19 +20,19 @@ class JSON_Handler_Document extends JSON_Handler
 		{
 			$qryQuery	= new Query();
 			
-			//throw new Exception(print_r($arrTo, true));
-			
 			// Build the Email
 			$objEmail	= new Zend_Mail();
 			$objEmail->setBodyText($strContent);
 			$objEmail->setFrom($jobFrom->address, $jobFrom->name);
 			$objEmail->setSubject($strSubject);
 			
+			$arrToContent	= array();
 			if (is_array($arrTo) && count($arrTo))
 			{
 				foreach ($arrTo as $jobToAddress)
 				{
 					$objEmail->addTo($jobToAddress->address, $jobToAddress->name);
+					$arrToContent[]	= ($jobToAddress->name) ? "{$jobToAddress->name} ($jobToAddress->address)" : $jobToAddress->address;
 				}
 			}
 			else
@@ -41,6 +41,7 @@ class JSON_Handler_Document extends JSON_Handler
 			}
 			
 			// Add attachments
+			$arrAttachmentContent	= array();
 			if (is_array($arrDocuments) && count($arrDocuments))
 			{
 				foreach ($arrDocuments as $jobDocument)
@@ -53,6 +54,8 @@ class JSON_Handler_Document extends JSON_Handler
 					$attAttachment				= $objEmail->createAttachment($objDocumentContent->content);
 					$attAttachment->type		= $objMimeType->mime_content_type;
 					$attAttachment->filename	= $objDocumentContent->getFileName();
+					
+					$arrAttachmentContent[]	= " - ".$objDocumentContent->description;
 				}
 			}
 			else
@@ -60,6 +63,29 @@ class JSON_Handler_Document extends JSON_Handler
 				throw new Exception("No Documents specified");
 			}
 			
+			// Add in a System Note if this is sent to a particular Account
+			if ($intAccount > 0)
+			{
+				try
+				{
+					$objAccount	= new Account(array('id'=>$intAccount), false, true);
+					
+					$strNoteContent	=	"Flex Documents have been emailed with the following details:\n" .
+										"\n" .
+										"To: ".implode('; ', $arrToContent)."\n".
+										"Subject: {$strSubject}\n" .
+										"Documents:\n" .
+										implode("\n", $arrAttachmentContent);
+					Note::createSystemNote($strNoteContent, Flex::getUserId(), $objAccount->AccountGroup, $objAccount->Id);
+				}
+				catch (Exception_ORM_LoadById $eException)
+				{
+					throw new Exception("Unable to create a System Note for Account #{$intAccount}.  The email has not been sent.");
+				}
+				
+			}
+			
+			// The System Note has been added -- Send off the email!
 			$objEmail->send();
 			
 			// If no exceptions were thrown, then everything worked

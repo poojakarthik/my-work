@@ -192,7 +192,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			if ($arrRatePlan['brochure_document_id'])
 			{
 				$objBrochureDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
-				$objBrochureDocumentContent	= $objBrochureDocument->getContent();
+				$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
 				
 				if ($objBrochureDocumentContent && $objBrochureDocumentContent->content)
 				{

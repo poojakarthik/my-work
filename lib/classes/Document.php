@@ -32,11 +32,31 @@ class Document extends ORM
 	}
 	
 	/**
+	 * getContentDetails()
+	 *
+	 * Retrieves the details of the Content for this Document
+	 * 
+	 * @param	[mixed			$mixRevision				]		Revision of the Content to retrieve
+	 * 																TRUE|0		: Latest Revision (default)
+	 * 																FALSE		: Earliest Revision
+	 * 																-ve integer	: X Revisions ago (eg. -3 = 3 revisions ago)
+	 * 																+ve integer	: Revision number X (eg. 2 = second revision)
+	 * 
+	 * @return	Document_Content									The requested Statement
+	 *
+	 * @method
+	 */
+	public function getContentDetails($mixRevision=true)
+	{
+		return new Document_Content($this->_getContent(true, true));
+	}
+	
+	/**
 	 * getContent()
 	 *
 	 * Retrieves the Content for this Document
 	 * 
-	 * @param	[mixed			$mixRevision]						Revision of the Content to retrieve
+	 * @param	[mixed			$mixRevision				]		Revision of the Content to retrieve
 	 * 																TRUE|0		: Latest Revision (default)
 	 * 																FALSE		: Earliest Revision
 	 * 																-ve integer	: X Revisions ago (eg. -3 = 3 revisions ago)
@@ -47,6 +67,27 @@ class Document extends ORM
 	 * @method
 	 */
 	public function getContent($mixRevision=true)
+	{
+		// Return the Content including the Binary Data
+		return new Document_Content($this->_getContent(false, true));
+	}
+	
+	/**
+	 * _getContent()
+	 *
+	 * Retrieves the Content for this Document
+	 * 
+	 * @param	[mixed			$mixRevision				]		Revision of the Content to retrieve
+	 * 																TRUE|0		: Latest Revision (default)
+	 * 																FALSE		: Earliest Revision
+	 * 																-ve integer	: X Revisions ago (eg. -3 = 3 revisions ago)
+	 * 																+ve integer	: Revision number X (eg. 2 = second revision)
+	 * 
+	 * @return	Document_Content									The requested Statement
+	 *
+	 * @method
+	 */
+	private function _getContent($bolDetailsOnly=false, $mixRevision=true)
 	{
 		if (!$this->id)
 		{
@@ -83,14 +124,30 @@ class Document extends ORM
 			$strOrderBy	= "id DESC";
 		}
 		
+		$objEmptyDocumentContent	= new Document_Content();
+		$arrColumns					= $objEmptyDocumentContent->toArray();
+		unset($objEmptyDocumentContent);
+		unset($arrColumns['content']);
+		$strColumns					= implode(', ', array_keys($arrColumns));
+		
 		// Retrieve and return the content
-		$strQuery		= "SELECT * FROM document_content WHERE document_id = {$this->id} ORDER BY {$strOrderBy} LIMIT {$strLimit}";
+		$strQuery		= "SELECT {$strColumns}, CASE WHEN content IS NULL THEN 0 ELSE 1 END AS has_content FROM document_content WHERE document_id = {$this->id} ORDER BY {$strOrderBy} LIMIT {$strLimit}";
 		$resRevision	= $qryQuery->Execute($strQuery);
 		if ($resRevision === false)
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		return ($resRevision->num_rows) ? new Document_Content($resRevision->fetch_assoc()) : null;
+		
+		if ($resRevision->num_rows)
+		{
+			$arrDocumentContent	= $resRevision->fetch_assoc();
+			$objDocumentContent	= new Document_Content($arrDocumentContent, false, $bolDetailsOnly);
+			$objDocumentContent->bolHasContent	= (bool)$arrDocumentContent['has_content'];
+		}
+		else
+		{
+			return null;
+		}
 	}
 	
 	/**

@@ -11,22 +11,32 @@ class Document_Content extends ORM
 	protected			$_strTableName			= "document_content";
 	protected static	$_strStaticTableName	= "document_content";
 	
+	protected			$_bolCanSave			= true;
+	
+	public				$bolHasContent;
+	
 	/**
 	 * __construct()
 	 *
 	 * constructor
 	 *
-	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
-	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
+	 * @param	array	$arrProperties 				[optional]	Associative array defining the class with keys for each field of the table
+	 * @param	boolean	$bolLoadById				[optional]	Automatically load the object with the passed Id
+	 * @param	boolean	$bolDetailsOnly				[optional]	TRUE	: Does not load Binary Data and is unsaveable
+	 * 															FALSE	: Loads Binary Data (Default)
 	 * 
 	 * @return	void
 	 * 
 	 * @constructor
 	 */
-	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
+	public function __construct($arrProperties=Array(), $bolLoadById=false, $bolDetailsOnly=false)
 	{
+		$this->_bolCanSave	= !$bolDetailsOnly;
+		
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
+		
+		$this->bolHasContent	= ($this->content) ? true : false;
 	}
 	
 	/**
@@ -63,6 +73,30 @@ class Document_Content extends ORM
 			$strFriendlyName	.= ".{$objFileType->extension}";
 		}
 		return $strFriendlyName;
+	}
+	
+	/**
+	 * save()
+	 *
+	 * Access a Static Cache of Prepared Statements used by this Class
+	 * 
+	 * @param	string		$strStatement						Name of the statement
+	 * 
+	 * @return	Statement										The requested Statement
+	 *
+	 * @method
+	 */
+	public function save()
+	{
+		if ($this->_bolCanSave)
+		{
+			parent::save();
+		}
+		else
+		{
+			// You cannot save a Details-only Document_Content
+			throw new Exception("You cannot save a Document_Content object which has been loaded in Details-Only Mode");
+		}
 	}
 	
 	/**
