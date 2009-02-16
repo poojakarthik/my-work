@@ -49,6 +49,11 @@ abstract class ORM
 		$this->_arrProperties[$arrTableDefine['Id']]				= NULL;
 		$this->_arrTidyNames[self::tidyName($arrTableDefine['Id'])]	= $arrTableDefine['Id'];
 		
+		if ($arrProperties instanceof ORM)
+		{
+			throw new Exception("\$arrProperties is an ORM object!");
+		}
+		
 		// Automatically load the Record using the passed Id
 		$intId	= ($arrProperties['Id']) ? $arrProperties['Id'] : (($arrProperties['id']) ? $arrProperties['id'] : NULL);
 		if ($bolLoadById && $intId)
