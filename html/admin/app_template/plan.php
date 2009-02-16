@@ -485,7 +485,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		
 		// Breadcrumb menu
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->AvailablePlans();
+		BreadCrumb()->AvailablePlans(TRUE);
 		BreadCrumb()->SetCurrentPage("Rate Plan");
 		
 		if (!DBO()->RatePlan->Load())
