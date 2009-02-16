@@ -304,7 +304,7 @@ function VixenAvailablePlansPageClass()
 									{
 										// Get JS code to load the Popup
 										var fncJsonFunc		= jQuery.json.jsonFunction(fncResponseHandler, null, 'Rate_Plan', 'generateEmailButtonOnClick');
-										fncJsonFunc(arrRatePlanIds);
+										fncJsonFunc(intCustomerGroup, arrRatePlanIds);
 									};
 		
 		// Check if every selected Plan has a Brochure
