@@ -258,7 +258,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				$strActionCell	= "{$strEdit}{$strAdd}";
 			}
 			
-			$strCheckboxCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_Checkbox' name='RatePlan_Checkbox' type='checkbox' value='{$arrRatePlan['Id']}' />";
+			$strCheckboxCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_Checkbox' name='RatePlan_Checkbox' type='checkbox' onclick='this.checked = !this.checked;' value='{$arrRatePlan['Id']}' />";
 			$strCheckboxCell	.= "<input id='RatePlan_{$arrRatePlan['Id']}_Name' type='hidden' value='{$arrRatePlan['Name']}' />";
 			
 			if ($bolCanEmail)
