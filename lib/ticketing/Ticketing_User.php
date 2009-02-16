@@ -92,6 +92,36 @@ class Ticketing_User
 		}
 		return $records;
 	}
+	
+	public static function listAllActiveWithTickets()
+	{
+		$cols = self::getColumns();
+		$selCols = array();
+		foreach ($cols as $col) 
+		{
+			$selCols[$col] = "ticketing_user.$col";
+		}
+		$selUsers = new StatementSelect(
+			"ticketing_user INNER JOIN Employee ON ticketing_user.employee_id = Employee.Id", 
+			$selCols, 
+			"Employee.Archived = 0 AND (NOT ticketing_user.permission_id = " . TICKETING_USER_PERMISSION_NONE .") AND ticketing_user.id IN (SELECT distinct(owner_id) FROM ticketing_ticket)",
+			"Employee.FirstName ASC");
+		if (($outcome = $selUsers->Execute()) === FALSE)
+		{
+			throw new Exception("Failed to check for active users with tickets: " . $selUsers->Error());
+		}
+
+		$records = array();
+		while ($props = $selUsers->Fetch())
+		{
+			if (!array_key_exists($props['id'], self::$cache))
+			{
+				self::$cache[$props['id']] = new Ticketing_User($props);
+			}
+			$records[] = self::$cache[$props['id']];
+		}
+		return $records;
+	}
 
 	public static function setPermissionForEmployeeId($employeeId, $permission=TICKETING_USER_PERMISSION_NONE)
 	{
