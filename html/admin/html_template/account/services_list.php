@@ -299,9 +299,9 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				if ($arrService['FuturePlan']['brochure_document_id'])
 				{
 					$objBrochureDocument		= new Document(array('id'=>$arrService['FuturePlan']['brochure_document_id']), true);
-					$objBrochureDocumentContent	= $objBrochureDocument->getContent();
+					$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
 					
-					if ($objBrochureDocumentContent && $objBrochureDocumentContent->content)
+					if ($objBrochureDocumentContent && $objBrochureDocumentContent->bolHasContent)
 					{
 						$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
 						
