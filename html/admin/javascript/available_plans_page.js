@@ -220,7 +220,7 @@ function VixenAvailablePlansPageClass()
 						if (objCustomerGroups[intCustomerGroup] == undefined)
 						{
 							objCustomerGroups[intCustomerGroup]	= {arrPlans: new Array(), strName: strCustomerGroup};
-							intCustomerGroupCount++;							
+							intCustomerGroupCount++;
 						}
 						objCustomerGroups[intCustomerGroup].arrPlans.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
 					}
@@ -241,6 +241,7 @@ function VixenAvailablePlansPageClass()
 		}
 		
 		// Are there Plans from more than 1 Customer Group?
+		$Alert(intCustomerGroupCount);
 		if (intCustomerGroupCount > 1)
 		{
 			var strPopupHTML	= 'You have selected Plans from multiple Customer Groups:';
