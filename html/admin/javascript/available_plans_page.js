@@ -188,6 +188,8 @@ function VixenAvailablePlansPageClass()
 	// Emails Plan Brochures
 	this.emailSelectedBrochures	= function ()
 	{
+		var strDebug	= '';
+		
 		// Determine the Plans that are Selected
 		var arrNoBrochures			= new Array();
 		var strNoBrochures			= '';
@@ -223,6 +225,8 @@ function VixenAvailablePlansPageClass()
 							intCustomerGroupCount++;
 						}
 						objCustomerGroups[intCustomerGroup].arrPlans.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
+						
+						strDebug	+= intCustomerGroup+', ';
 					}
 					else
 					{
