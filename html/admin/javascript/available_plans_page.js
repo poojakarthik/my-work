@@ -295,7 +295,7 @@ function VixenAvailablePlansPageClass()
 			var strYesNoHTML	= "Some of the selected Plans do not have associated brochures.<br />\n<br />\n";			
 			strYesNoHTML		+= "The following Plans have brochures:<br />\n"+strHaveBrochures+"<br />\n";
 			strYesNoHTML		+= "The following Plans do not have brochures:<br />\n"+strNoBrochures+"<br />\n";
-			strYesNoHTML		+= "Do you want to continue ignoring the Plans without brochures?";
+			strYesNoHTML		+= "Do you want to continue by ignoring the Plans without brochures?";
 			
 			var strPopupId	= "RatePlan_Email_YesNo";
 			Vixen.Popup.YesNoCancel(strYesNoHTML, fncJSONRequest, function(){Vixen.Popup.Close}, null, null, strPopupId, "Plans without Brochures");
