@@ -119,9 +119,9 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			if ($arrRatePlan['brochure_document_id'])
 			{
 				$objBrochureDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
-				$objBrochureDocumentContent	= $objBrochureDocument->getContent();
+				$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
 				
-				if ($objBrochureDocumentContent && $objBrochureDocumentContent->content)
+				if ($objBrochureDocumentContent && $objBrochureDocumentContent->bolHasContent)
 				{
 					$objFileType		= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
 					

@@ -135,9 +135,9 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		if ($arrRatePlan['voice_auth_document_id'])
 		{
 			$objAuthScriptDocument			= new Document(array('id'=>$arrRatePlan['voice_auth_document_id']), true);
-			$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContent();
+			$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContentDetails();
 			
-			if ($objAuthScriptDocumentContent && $objAuthScriptDocumentContent->content)
+			if ($objAuthScriptDocumentContent && $objAuthScriptDocumentContent->bolHasContent)
 			{
 				$objFileType		= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
 				
