@@ -480,6 +480,11 @@ class Cli_App_Sales extends Cli
 	// _pullAll()	-- Pulls all shared Data from the Sales Portal to Flex 
 	protected function _pullAll()
 	{
+		if (Invoice_Run::checkTemporary())
+		{
+			throw new Exception("Billing is in progress.  The PULL operation cannot be run at this time.");
+		}
+		
 		$this->_pullSales();
 	}
 	
