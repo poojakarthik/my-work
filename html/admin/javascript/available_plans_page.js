@@ -251,7 +251,8 @@ function VixenAvailablePlansPageClass()
 		if (objCustomerGroups.length > 1)
 		{
 			var strPopupHTML	= 'You have selected Plans from multiple Customer Groups:';
-			for (var i = 0; i < objCustomerGroups.length; i++)
+			//for (var i = 0; i < objCustomerGroups.length; i++)
+			for (var i in objCustomerGroups)
 			{
 				strPopupHTML	+= objCustomerGroups[i].strName+":<br />\n";
 				for (var t = 0; t < objCustomerGroups[i].arrPlans.length; t++)
