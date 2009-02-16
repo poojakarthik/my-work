@@ -277,7 +277,9 @@ function VixenAvailablePlansPageClass()
 										}
 										else
 										{
-											$Alert(objResponse.Message);
+											var strMessage	= (objResponse.Message) ? objResponse.Message : objResponse;
+											
+											$Alert(strMessage);
 											return false;
 										}
 									};
