@@ -270,6 +270,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			
 			// Add the row
 			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroupCell, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
+			Table()->PlanTable->SetOnClick("\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked = !\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked;");
 			
 			$arrRatePlanDetails[$arrRatePlan['Id']] = array(	"Name"			=> $strName,
 																"CustomerGroup"	=> $strCustomerGroup,
