@@ -48,7 +48,7 @@ class Document extends ORM
 	 */
 	public function getContentDetails($mixRevision=true)
 	{
-		return new Document_Content($this->_getContent(true, true));
+		return $this->_getContent(true, true);
 	}
 	
 	/**
@@ -69,7 +69,7 @@ class Document extends ORM
 	public function getContent($mixRevision=true)
 	{
 		// Return the Content including the Binary Data
-		return new Document_Content($this->_getContent(false, true));
+		return $this->_getContent(false, true);
 	}
 	
 	/**
@@ -140,8 +140,8 @@ class Document extends ORM
 		
 		if ($resRevision->num_rows)
 		{
-			$arrDocumentContent	= $resRevision->fetch_assoc();
-			$objDocumentContent	= new Document_Content($arrDocumentContent, false, $bolDetailsOnly);
+			$arrDocumentContent					= $resRevision->fetch_assoc();
+			$objDocumentContent					= new Document_Content($arrDocumentContent, false, $bolDetailsOnly);
 			$objDocumentContent->bolHasContent	= (bool)$arrDocumentContent['has_content'];
 			
 			return $objDocumentContent;
