@@ -297,7 +297,7 @@ class Rate_Plan extends ORM
 			elseif ((int)$mixRatePlan > 1)
 			{
 				$objRatePlan	= new Rate_Plan(array('Id'=>$mixRatePlan), true);
-				$arrRatePlan	= $mixRatePlan->toArray();
+				$arrRatePlan	= $objRatePlan->toArray();
 			}
 			else
 			{
