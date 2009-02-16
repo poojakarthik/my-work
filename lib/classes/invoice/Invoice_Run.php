@@ -618,7 +618,7 @@ class Invoice_Run
 	 *
 	 * @param	integer	$intCustomerGroup		[optional]	The Customer Group to check for
 	 *
-	 * @return	boolean
+	 * @return	boolean							TRUE if there is, FALSE if there isn't
 	 *
 	 * @method
 	 */
