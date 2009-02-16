@@ -213,9 +213,9 @@ function VixenAvailablePlansPageClass()
 						arrHaveBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
 						strHaveBrochures	+= "&nbsp;&nbsp;&nbsp;&nbsp;+ "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
 						
-						var intCustomerGroup	= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup').value;
-						var strCustomerGroup	= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup_Name').innerHTML;
-						objCustomerGroups		= (objCustomerGroups[intCustomerGroup] == undefined) ? {intCount:0; strName:strCustomerGroup} : objCustomerGroups[intCustomerGroup];
+						var intCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup').value;
+						var strCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup_Name').innerHTML;
+						objCustomerGroups[intCustomerGroup]	= (objCustomerGroups[intCustomerGroup] == undefined) ? {intCount: 0, strName: strCustomerGroup} : objCustomerGroups[intCustomerGroup];
 						objCustomerGroups[intCustomerGroup].arrPlans.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
 					}
 					else
