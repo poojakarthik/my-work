@@ -215,7 +215,7 @@ function VixenAvailablePlansPageClass()
 						
 						var intCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup').value;
 						var strCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup_Name').innerHTML;
-						objCustomerGroups[intCustomerGroup]	= (objCustomerGroups[intCustomerGroup] == undefined) ? {intCount: 0, strName: strCustomerGroup} : objCustomerGroups[intCustomerGroup];
+						objCustomerGroups[intCustomerGroup]	= (objCustomerGroups[intCustomerGroup] == undefined) ? {arrPlans: new Array(), strName: strCustomerGroup} : objCustomerGroups[intCustomerGroup];
 						objCustomerGroups[intCustomerGroup].arrPlans.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
 					}
 					else
