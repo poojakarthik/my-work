@@ -266,7 +266,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 				$strCheckboxCell	.= "<input id='RatePlan_{$arrRatePlan['Id']}_BrochureId' type='hidden' value='{$arrRatePlan['brochure_document_id']}' />";
 			}
 			
-			$strCustomerGroupCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup' type='hidden' value='{$arrRatePlan['customer_group']}' />".$strCustomerGroup;
+			$strCustomerGroupCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup' type='hidden' value='{$arrRatePlan['customer_group']}' /><span id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup_Name'>".$strCustomerGroup."</span>";
 			
 			// Add the row
 			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroupCell, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);

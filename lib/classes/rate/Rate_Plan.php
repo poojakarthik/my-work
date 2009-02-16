@@ -280,12 +280,10 @@ class Rate_Plan extends ORM
 	 */
 	public static function generateEmailButtonOnClick($intCustomerGroup, $arrRatePlans, $intAccountId=null)
 	{
-		$objCustomerGroup	= Customer_Group::getForId($intCustomerGroup);
-		
 		$strPlans		= '';
 		
 		// Documents
-		$arrDocuments	= array();
+		$arrDocuments		= array();
 		foreach ($arrRatePlans as $mixRatePlan)
 		{
 			if ($mixRatePlan instanceof Rate_Plan)
@@ -304,6 +302,7 @@ class Rate_Plan extends ORM
 			else
 			{
 				// We will just skip
+				continue;
 			}
 			
 			$objDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
@@ -342,6 +341,8 @@ class Rate_Plan extends ORM
 		{
 			$strRecipients	= 'null';
 		}
+		
+		$objCustomerGroup	= Customer_Group::getForId($intCustomerGroup);
 		
 		// Senders
 		$arrSenders		= array();
