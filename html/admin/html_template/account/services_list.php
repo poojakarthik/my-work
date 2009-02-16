@@ -393,7 +393,8 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			
 			$strViewServiceLink	= Href()->ViewService($arrService['Id']);
 			$strFnnDescription	= ($arrService['FNN'] != NULL)? $arrService['FNN'] : "[not specified]";
-			$strFnnCell			= "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription</a>";
+			$strIndial100Flag	= ($arrService['Indial100'])? " (Indial&nbsp;100&nbsp;range)" : "";
+			$strFnnCell			= "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription{$strIndial100Flag}</a>";
 			
 			
 			switch ($arrService['ServiceType'])

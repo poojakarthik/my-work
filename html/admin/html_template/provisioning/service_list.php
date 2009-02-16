@@ -161,7 +161,9 @@ class HtmlTemplateProvisioningServiceList extends HtmlTemplate
 				// The service has an FNN
 				$strFnn = $arrService['FNN'];
 			}
-			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnn</a>"; 
+			$strIndial100Flag = ($arrService['Indial100'])? " (Indial&nbsp;100&nbsp;range)": "";
+			
+			$strFnnCell = "<a href='$strViewServiceLink' title='View Service Details'>$strFnn{$strIndial100Flag}</a>"; 
 
 			// This is no longer used (but they might want to use it again in the future)
 			// Work out the Date to display along with the status

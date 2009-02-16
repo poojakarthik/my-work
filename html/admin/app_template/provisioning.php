@@ -852,6 +852,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
 		$arrColumns	= Array("Id" 						=> "S.Id",
 							"FNN"						=> "S.FNN",
+							"Indial100"					=> "S.Indial100",
 							"ServiceType"				=> "S.ServiceType", 
 							"Status"		 			=> "S.Status",
 							"LineStatus"				=> "S.LineStatus",
@@ -889,6 +890,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 			$arrService = Array (
 									"Id"	=> $arrRecord['Id'],
 									"FNN"	=> $arrRecord['FNN'],
+									"Indial100"		=> $arrRecord['Indial100'],
 									"ServiceType"	=> $arrRecord['ServiceType'],
 									"AddressId"		=> $arrRecord['AddressId']
 								);
