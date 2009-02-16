@@ -124,14 +124,17 @@ class Document extends ORM
 			$strOrderBy	= "id DESC";
 		}
 		
-		$objEmptyDocumentContent	= new Document_Content();
-		$arrColumns					= $objEmptyDocumentContent->toArray();
-		unset($objEmptyDocumentContent);
-		unset($arrColumns['content']);
-		$strColumns					= implode(', ', array_keys($arrColumns));
+		if ($bolDetailsOnly)
+		{
+			$objEmptyDocumentContent	= new Document_Content();
+			$arrColumns					= $objEmptyDocumentContent->toArray();
+			unset($objEmptyDocumentContent);
+			unset($arrColumns['content']);
+			$strColumns					= implode(', ', array_keys($arrColumns));
+		}
 		
 		// Retrieve and return the content
-		$strQuery		= "SELECT {$strColumns}, CASE WHEN content IS NULL THEN 0 ELSE 1 END AS has_content FROM document_content WHERE document_id = {$this->id} ORDER BY {$strOrderBy} LIMIT {$strLimit}";
+		$strQuery		= "SELECT {$strColumns}, CASE WHEN content IS NULL THEN 0 ELSE 1 END AS has_content, LENGTH(content) AS content_size FROM document_content WHERE document_id = {$this->id} ORDER BY {$strOrderBy} LIMIT {$strLimit}";
 		$resRevision	= $qryQuery->Execute($strQuery);
 		if ($resRevision === false)
 		{
@@ -143,6 +146,7 @@ class Document extends ORM
 			$arrDocumentContent					= $resRevision->fetch_assoc();
 			$objDocumentContent					= new Document_Content($arrDocumentContent, false, $bolDetailsOnly);
 			$objDocumentContent->bolHasContent	= (bool)$arrDocumentContent['has_content'];
+			$objDocumentContent->intContentSize	= (int)$arrDocumentContent['content_size'];
 			
 			return $objDocumentContent;
 		}

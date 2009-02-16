@@ -14,6 +14,7 @@ class Document_Content extends ORM
 	protected			$_bolCanSave			= true;
 	
 	public				$bolHasContent;
+	public				$intContentSize;
 	
 	/**
 	 * __construct()
@@ -37,6 +38,7 @@ class Document_Content extends ORM
 		parent::__construct($arrProperties, $bolLoadById);
 		
 		$this->bolHasContent	= ($this->content) ? true : false;
+		$this->intContentSize	= ($this->content) ? mb_strlen($this->content) : 0;
 	}
 	
 	/**
