@@ -211,7 +211,7 @@ function VixenAvailablePlansPageClass()
 						// Add to list
 						arrRatePlanIds.push(elmCheckbox.value);
 						arrHaveBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
-						strHaveBrochures	+= "&nbsp;&nbsp;&nbsp;&nbsp;+ "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
+						strHaveBrochures	+= "&nbsp;&nbsp;&nbsp;&nbsp;+ "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"<br />\n";
 						
 						var intCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup').value;
 						var strCustomerGroup				= $ID('RatePlan_'+elmCheckbox.value+'_CustomerGroup_Name').innerHTML;
@@ -222,7 +222,7 @@ function VixenAvailablePlansPageClass()
 					{
 						// No Brochure
 						arrNoBrochures.push($ID('RatePlan_'+elmCheckbox.value+'_Name').value);
-						strNoBrochures		+= "&nbsp;&nbsp;&nbsp;&nbsp;- "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"\n";
+						strNoBrochures		+= "&nbsp;&nbsp;&nbsp;&nbsp;- "+$ID('RatePlan_'+elmCheckbox.value+'_Name').value+"<br />\n";
 					}
 				}
 			}
@@ -240,12 +240,12 @@ function VixenAvailablePlansPageClass()
 			var strPopupHTML	= 'You have selected Plans from multiple Customer Groups:';
 			for (var i = 0; i < objCustomerGroups.length; i++)
 			{
-				strPopupHTML	+= objCustomerGroups[i].strName+":\n";
+				strPopupHTML	+= objCustomerGroups[i].strName+":<br />\n";
 				for (var t = 0; t < objCustomerGroups[i].arrPlans.length; t++)
 				{
-					strPopupHTML	+= "&nbsp;&nbsp;&nbsp;&nbsp;- "+objCustomerGroups[i].arrPlans[t]+"\n";
+					strPopupHTML	+= "&nbsp;&nbsp;&nbsp;&nbsp;- "+objCustomerGroups[i].arrPlans[t]+"<br />\n";
 				}
-				strPopupHTML	+= "\n";
+				strPopupHTML	+= "<br />\n";
 			}
 			
 			strPopupHTML	+= "Please ensure you have selected Plans from only one Customer Group.";
@@ -292,9 +292,9 @@ function VixenAvailablePlansPageClass()
 		// Check if every selected Plan has a Brochure
 		if (arrNoBrochures.length)
 		{
-			var strYesNoHTML	= "Some of the selected Plans do not have associated brochures.\n\n";			
-			strYesNoHTML		+= "The following Plans have brochures:\n"+strHaveBrochures+"\n";
-			strYesNoHTML		+= "The following Plans do not have brochures:\n"+strNoBrochures+"\n";
+			var strYesNoHTML	= "Some of the selected Plans do not have associated brochures.<br />\n<br />\n";			
+			strYesNoHTML		+= "The following Plans have brochures:<br />\n"+strHaveBrochures+"<br />\n";
+			strYesNoHTML		+= "The following Plans do not have brochures:<br />\n"+strNoBrochures+"<br />\n";
 			strYesNoHTML		+= "Do you want to continue ignoring the Plans without brochures?";
 			
 			var strPopupId	= "RatePlan_Email_YesNo";
