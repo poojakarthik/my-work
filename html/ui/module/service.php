@@ -50,6 +50,7 @@ abstract class ModuleService
 	
 	protected $_strFNN					= NULL;
 	protected $_intServiceType			= NULL;
+	protected $_bolResidential			= NULL;
 	protected $_intCostCentre			= NULL;
 	protected $_intAccount				= NULL;
 	protected $_intAccountGroup			= NULL;
@@ -159,6 +160,7 @@ abstract class ModuleService
 		$arrRecord						= $selServices->Fetch();
 		$this->_strFNN 					= $arrRecord['FNN'];
 		$this->_intServiceType			= $arrRecord['ServiceType'];
+		$this->_bolResidential			= (bool)$arrRecord['residential'];
 		$this->_intCostCentre			= $arrRecord['CostCentre'];
 		$this->_intAccount				= $arrRecord['Account'];
 		$this->_intAccountGroup			= $arrRecord['AccountGroup'];
@@ -189,7 +191,10 @@ abstract class ModuleService
 											"CappedCharge"			=> $arrRecord['CappedCharge'],
 											"UncappedCharge"		=> $arrRecord['UncappedCharge'],
 											"Carrier"				=> $arrRecord['Carrier'],
-											"CarrierPreselect"		=> $arrRecord['CarrierPreselect']
+											"CarrierPreselect"		=> $arrRecord['CarrierPreselect'],
+											"CDRCount"				=> $arrRecord['cdr_count'],
+											"CDRAmount"				=> $arrRecord['cdr_amount'],
+											"DiscountStartDatetime"	=> $arrRecord['discount_start_datetime']
 										);
 			$arrRecord = $selServices->Fetch();
 		} while ($arrRecord !== FALSE);
@@ -1081,6 +1086,7 @@ abstract class ModuleService
 			
 			$arrServiceRecord = array(	"FNN"					=> $this->_strFNN,
 										"ServiceType"			=> $this->_intServiceType,
+										"residential"			=> $this->_bolResidential,
 										"Indial100"				=> $this->_bolIndial100,
 										"AccountGroup"			=> $this->_intAccountGroup,
 										"Account"				=> $this->_intAccount,
@@ -1091,8 +1097,14 @@ abstract class ModuleService
 										"ClosedOn"				=> $strEffectiveDateTime,
 										"ClosedBy"				=> $intEmployee,
 										"NatureOfClosure"		=> $intNatureOfClosure,
-										"Carrier"				=> $this->_arrServiceRecords[0]['Carrier'],
-										"CarrierPreselect"		=> $this->_arrServiceRecords[0]['CarrierPreselect'],
+										"Carrier"					=> $this->_arrServiceRecords[0]['Carrier'],
+										"CarrierPreselect"			=> $this->_arrServiceRecords[0]['CarrierPreselect'],
+										"EarliestCDR"				=> $this->_arrServiceRecords[0]['EarliestCDR'],
+										"LatestCDR"					=> $this->_arrServiceRecords[0]['LatestCDR'],
+										"LineStatus"				=> $this->_arrServiceRecords[0]['LineStatus'],
+										"LineStatusDate"			=> $this->_arrServiceRecords[0]['LineStatusDate'],
+										"PreselectionStatus"		=> $this->_arrServiceRecords[0]['PreselectionStatus'],
+										"PreselectionStatusDate"	=> $this->_arrServiceRecords[0]['PreselectionStatusDate'],
 										"ForceInvoiceRender"	=> $this->_bolForceInvoiceRender,
 										"LastOwner"				=> $this->_arrServiceRecords[0]['LastOwner'],
 										"NextOwner"				=> $intNewOwningAccount,
@@ -1152,14 +1164,21 @@ abstract class ModuleService
 		$arrNewService = array(
 								"FNN"					=> $this->_strFNN,
 								"ServiceType"			=> $this->_intServiceType,
+								"residential"			=> $this->_bolResidential,
 								"Indial100"				=> $this->_bolIndial100,
 								"AccountGroup"			=> $arrNewAccount['AccountGroup'],
 								"Account"				=> $intNewOwningAccount,
 								"CreatedOn"				=> $strEffectiveDateTime,
 								"CreatedBy"				=> $intEmployee,
 								"NatureOfCreation"		=> ($bolChangeOfLessee)? SERVICE_CREATION_LESSEE_CHANGED : SERVICE_CREATION_ACCOUNT_CHANGED,
-								"Carrier"				=> $this->_arrServiceRecords[0]['Carrier'],
-								"CarrierPreselect"		=> $this->_arrServiceRecords[0]['CarrierPreselect'],
+								"Carrier"					=> $this->_arrServiceRecords[0]['Carrier'],
+								"CarrierPreselect"			=> $this->_arrServiceRecords[0]['CarrierPreselect'],
+								"EarliestCDR"				=> $this->_arrServiceRecords[0]['EarliestCDR'],
+								"LatestCDR"					=> $this->_arrServiceRecords[0]['LatestCDR'],
+								"LineStatus"				=> $this->_arrServiceRecords[0]['LineStatus'],
+								"LineStatusDate"			=> $this->_arrServiceRecords[0]['LineStatusDate'],
+								"PreselectionStatus"		=> $this->_arrServiceRecords[0]['PreselectionStatus'],
+								"PreselectionStatusDate"	=> $this->_arrServiceRecords[0]['PreselectionStatusDate'],
 								"ForceInvoiceRender"	=> $this->_bolForceInvoiceRender,
 								"LastOwner"				=> $this->_intAccount,
 								"Status"				=> SERVICE_ACTIVE
@@ -1330,14 +1349,21 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		$arrNewService = array(
 								"FNN"					=> $this->_strFNN,
 								"ServiceType"			=> $this->_intServiceType,
+								"residential"			=> $this->_bolResidential,
 								"Indial100"				=> $this->_bolIndial100,
 								"AccountGroup"			=> $arrIncomingOwner['AccountGroup'],
 								"Account"				=> $arrIncomingOwner['Id'],
 								"CreatedOn"				=> $strTimeOfAcquisition,
 								"CreatedBy"				=> $intEmployee,
 								"NatureOfCreation"		=> ($intNatureOfAcquisition == SERVICE_CREATION_LESSEE_CHANGED)? SERVICE_CREATION_LESSEE_CHANGE_REVERSED : SERVICE_CREATION_ACCOUNT_CHANGE_REVERSED,
-								"Carrier"				=> $this->_arrServiceRecords[0]['Carrier'],
-								"CarrierPreselect"		=> $this->_arrServiceRecords[0]['CarrierPreselect'],
+								"Carrier"					=> $this->_arrServiceRecords[0]['Carrier'],
+								"CarrierPreselect"			=> $this->_arrServiceRecords[0]['CarrierPreselect'],
+								"EarliestCDR"				=> $this->_arrServiceRecords[0]['EarliestCDR'],
+								"LatestCDR"					=> $this->_arrServiceRecords[0]['LatestCDR'],
+								"LineStatus"				=> $this->_arrServiceRecords[0]['LineStatus'],
+								"LineStatusDate"			=> $this->_arrServiceRecords[0]['LineStatusDate'],
+								"PreselectionStatus"		=> $this->_arrServiceRecords[0]['PreselectionStatus'],
+								"PreselectionStatusDate"	=> $this->_arrServiceRecords[0]['PreselectionStatusDate'],
 								"ForceInvoiceRender"	=> $this->_bolForceInvoiceRender,
 								"LastOwner"				=> $arrIncomingOwner['LastOwner'],
 								"Status"				=> SERVICE_ACTIVE
@@ -1874,6 +1900,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		
 		$arrServiceRecordData = Array(	"FNN"						=> $this->_strFNN,
 										"ServiceType"				=> $this->_intServiceType,
+										"residential"				=> $this->_bolResidential,
 										"Indial100"					=> $this->_bolIndial100,
 										"AccountGroup"				=> $this->_intAccountGroup,
 										"Account"					=> $this->_intAccount,
@@ -1883,6 +1910,12 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 										"NatureOfCreation"			=> SERVICE_CREATION_ACTIVATED,
 										"Carrier"					=> $this->_arrServiceRecords[0]['Carrier'],
 										"CarrierPreselect"			=> $this->_arrServiceRecords[0]['CarrierPreselect'],
+										"EarliestCDR"				=> $this->_arrServiceRecords[0]['EarliestCDR'],
+										"LatestCDR"					=> $this->_arrServiceRecords[0]['LatestCDR'],
+										"LineStatus"				=> $this->_arrServiceRecords[0]['LineStatus'],
+										"LineStatusDate"			=> $this->_arrServiceRecords[0]['LineStatusDate'],
+										"PreselectionStatus"		=> $this->_arrServiceRecords[0]['PreselectionStatus'],
+										"PreselectionStatusDate"	=> $this->_arrServiceRecords[0]['PreselectionStatusDate'],
 										"ForceInvoiceRender"		=> $this->_bolForceInvoiceRender,
 										"LastOwner"					=> $this->_arrServiceRecords[0]['LastOwner'],
 										"NextOwner"					=> $this->_arrServiceRecords[0]['NextOwner'],
@@ -2021,6 +2054,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		$intOldServiceId = $intService;
 		$arrServiceRecordData = Array(	"FNN"						=> $this->_strFNN,
 										"ServiceType"				=> $this->_intServiceType,
+										"residential"				=> $this->_bolResidential,
 										"Indial100"					=> $this->_bolIndial100,
 										"AccountGroup"				=> $this->_intAccountGroup,
 										"Account"					=> $this->_intAccount,
@@ -2033,6 +2067,12 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 										"NatureOfClosure"			=> $intNatureOfClosure,
 										"Carrier"					=> $this->_arrServiceRecords[0]['Carrier'],
 										"CarrierPreselect"			=> $this->_arrServiceRecords[0]['CarrierPreselect'],
+										"EarliestCDR"				=> $this->_arrServiceRecords[0]['EarliestCDR'],
+										"LatestCDR"					=> $this->_arrServiceRecords[0]['LatestCDR'],
+										"LineStatus"				=> $this->_arrServiceRecords[0]['LineStatus'],
+										"LineStatusDate"			=> $this->_arrServiceRecords[0]['LineStatusDate'],
+										"PreselectionStatus"		=> $this->_arrServiceRecords[0]['PreselectionStatus'],
+										"PreselectionStatusDate"	=> $this->_arrServiceRecords[0]['PreselectionStatusDate'],
 										"ForceInvoiceRender"		=> $this->_bolForceInvoiceRender,
 										"LastOwner"					=> $this->_arrServiceRecords[0]['LastOwner'],
 										"NextOwner"					=> $this->_arrServiceRecords[0]['NextOwner'],
