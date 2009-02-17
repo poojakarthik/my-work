@@ -162,7 +162,7 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 				$strTitle
 			</div>
 			<div id='caption_options' name='caption_options'>
-				<a onclick='DealerManagement.showConfig();'>Dealer Configuartion</a> |
+				<a onclick='DealerManagement.showConfig();'>Dealer Configuration</a> |
 				<a onclick='Dealer.loadNewDealerPopup()'>New Dealer</a>
 			</div>
 		</div>
