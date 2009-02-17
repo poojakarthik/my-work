@@ -87,7 +87,7 @@ class AppTemplateInvoiceRunEvents extends ApplicationTemplate
 		);
 		$strTables = "automatic_invoice_run_event e JOIN InvoiceRun r on e.invoice_run_id = r.Id AND e.actioned_datetime IS NULL";
 		$strGroupBy = 'e.invoice_run_id';
-		$qryQuery = new StatementSelect($strTables, $arrColumns, "", "", "", $strGroupBy);
+		$qryQuery = new StatementSelect($strTables, $arrColumns, "invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE, "", "", $strGroupBy);
 		$ids = array();
 		if ($qryQuery->Execute())
 		{
