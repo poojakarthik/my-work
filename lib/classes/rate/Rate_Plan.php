@@ -372,6 +372,36 @@ class Rate_Plan extends ORM
 		return "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan {$strBrochurePlural}\", {$strSenders}, \"{$strSubject}\", \"{$strContent}\", {$strRecipients}, {$strAccount})});";
 	}
 	
+	/**
+	 * parseAuthenticationScript()
+	 *
+	 * Retrieves a Document based on a passed pseudo-path
+	 * 
+	 * @param	[Document	$objDocument	]				Document to merge with (will pull from DB if none is passed)
+	 * 
+	 * @return	string										Merged template
+	 *
+	 * @method
+	 */
+	public function parseAuthenticationScript(Document $objDocument=null, $intAccountId)
+	{
+		/*$objDocument	= ($objDocument) ? $objDocument : new Document(array('id'=>$this->brochure_document_id), true);
+		
+		// Get the current Template
+		$objTemplate		= Document::getByPath("/Authentication Scripts/Template");
+		$objTemplateContent	= $objTemplateDocument->getContent();
+		
+		$objEmployee	= Employee::getForId(Flex::getUserId());
+		
+		$arrVariables	= array();
+		$arrVariables['employee_name']	= $objEmployee->firstName.' '.$objEmployee->lastName;
+		$arrVariables['customer_group']	= Customer_Group::getForId($this->customer_group)->externalName;
+		$arrVariables['business_name']	= Customer_Group::getForId($this->customer_group)->externalName;
+		
+		// Parse the Template, replacing the placeholders with valid data
+		return Document_Template::parse($objTemplateContent->content, $arrVariables);*/
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
