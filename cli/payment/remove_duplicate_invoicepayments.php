@@ -10,7 +10,7 @@ try
 	
 	$qryQuery	= new Query();
 	
-	$strSQL	= "	SELECT Payment. * , (Payment.Amount - Payment.Balance), SUM( InvoicePayment.Amount ) AS ActualAmount, invoice_run_id
+	$strSQL	= "	SELECT Payment. * , (Payment.Amount - Payment.Balance), SUM( InvoicePayment.Amount ) AS ActualAmount, InvoicePayment.invoice_run_id
 				FROM Payment JOIN InvoicePayment ON Payment.Id = InvoicePayment.Payment
 				GROUP BY Payment.Id, InvoicePayment.invoice_run_id
 				HAVING ActualAmount > ( Payment.Amount - Payment.Balance )
