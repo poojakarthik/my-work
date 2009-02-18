@@ -71,13 +71,13 @@ $strOptions
 		$strReportName			= $this->mxdDataToRender['ReportName'];
 		$arrSaleStatuses		= $this->mxdDataToRender['SaleStatuses'];
 		$arrSaleItemStatuses	= $this->mxdDataToRender['SaleItemStatuses'];
-		$strEarliestTimestamp	= $this->mxdDataToRender['EarliestTimestamp'];
+		$strEarliestTimestampPossible	= $this->mxdDataToRender['EarliestTimestampPossible'];
 		
-		$intEarliestYear	= date("Y", strtotime($strEarliestTimestamp));
+		$intEarliestYear	= date("Y", strtotime($strEarliestTimestampPossible));
 		$intLatestYear		= date("Y");
 		
 		
-		$strEarliestTimestampFormatted	= date("H:i:s d/m/Y", strtotime($strEarliestTimestamp));
+		$strEarliestTimestampFormatted	= date("00:00:00 d/m/Y");
 		$strLatestTimestampFormatted	= date("23:59:59 d/m/Y");
 		
 		$arrConstraints = array();

@@ -315,11 +315,11 @@ class Application_Handler_Sales extends Application_Handler
 			if (count($arrSales) == 1)
 			{
 				$doSale = current($arrSales);
-				$strEarliestTimestamp = date("Y-m-d 00:00:00", strtotime($doSale->createdOn));
+				$strEarliestTimestampPossible = date("Y-m-d 00:00:00", strtotime($doSale->createdOn));
 			}
 			else
 			{
-				$strEarliestTimestamp = date("Y-m-d 00:00:00", strtotime("-3 months"));
+				$strEarliestTimestampPossible = date("Y-m-d 00:00:00");
 			}
 			
 			$arrData = array(	"ReportType"		=> $strReportType,
@@ -328,7 +328,7 @@ class Application_Handler_Sales extends Application_Handler
 								"SortedDealerIds"	=> $arrSortedDealerIds,
 								"SaleStatuses"		=> DO_Sales_SaleStatus::getAll(),
 								"SaleItemStatuses"	=> DO_Sales_SaleItemStatus::getAll(),
-								"EarliestTimestamp"	=> $strEarliestTimestamp
+								"EarliestTimestampPossible"	=> $strEarliestTimestampPossible
 							);
 
 			$this->LoadPage('sale_report', HTML_CONTEXT_DEFAULT, $arrData);
