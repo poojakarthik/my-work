@@ -25,8 +25,8 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
- 
+
+
 //----------------------------------------------------------------------------//
 // FUNCTIONS
 //----------------------------------------------------------------------------//
@@ -109,7 +109,7 @@ function Debug($mixOutput, $strMode="html")
 		// not in debug mode, exit
 		return FALSE;
 	}
-	
+
 	// If we're logging, add to that too
 	if (LOG_TO_FILE && isset($GLOBALS['fwkFramework']))
 	{
@@ -119,55 +119,55 @@ function Debug($mixOutput, $strMode="html")
 	{
 		$bolLog = FALSE;
 	}
-	
+
 	// output debug info in required format
 	switch (strtolower($strMode))
 	{
-		case 'txt':
-		case 'text':
-			echo "\n";
-			print_r($mixOutput);
-			echo "\n";
-			if($bolLog)
-			{
-				$strData = "\n";
-				$strData .= print_r($mixOutput, TRUE);
-				$strData .= "\n";
-				$GLOBALS['fwkFramework']->AddToLog($strData, FALSE);
-			}
-			break;
+	case 'txt':
+	case 'text':
+		echo "\n";
+		print_r($mixOutput);
+		echo "\n";
+		if($bolLog)
+		{
+			$strData = "\n";
+			$strData .= print_r($mixOutput, TRUE);
+			$strData .= "\n";
+			$GLOBALS['fwkFramework']->AddToLog($strData, FALSE);
+		}
+		break;
 
-		case 'report':
-		case 'rpt':
-		case 'console':
-		case 'terminal':
-			echo $mixOutput;
-			if ($bolLog)
-			{
-				$GLOBALS['fwkFramework']->AddToLog($mixOutput, FALSE);
-			}
-			break;
-
-		case 'log':
+	case 'report':
+	case 'rpt':
+	case 'console':
+	case 'terminal':
+		echo $mixOutput;
+		if ($bolLog)
+		{
 			$GLOBALS['fwkFramework']->AddToLog($mixOutput, FALSE);
-			break;
-			
-		default:
-			$strPrintR = print_r($mixOutput, TRUE);
-			$strOutput = ($_SERVER['TERM']) ? "\n$strPrintR\n" : "\n<pre>\n$strPrintR\n</pre>\n";
-			echo $strOutput;
-			if($bolLog)
-			{
-				$strData = "\n";
-				$strData .= print_r($mixOutput, TRUE);
-				$strData .= "\n";
-				$GLOBALS['fwkFramework']->AddToLog($strData, FALSE);
-			}
+		}
+		break;
+
+	case 'log':
+		$GLOBALS['fwkFramework']->AddToLog($mixOutput, FALSE);
+		break;
+
+	default:
+		$strPrintR = print_r($mixOutput, TRUE);
+		$strOutput = ($_SERVER['TERM']) ? "\n$strPrintR\n" : "\n<pre>\n$strPrintR\n</pre>\n";
+		echo $strOutput;
+		if($bolLog)
+		{
+			$strData = "\n";
+			$strData .= print_r($mixOutput, TRUE);
+			$strData .= "\n";
+			$GLOBALS['fwkFramework']->AddToLog($strData, FALSE);
+		}
 	}
-	
+
 	// Flush the output to screen/client
 	ob_flush();
-	
+
 	return TRUE;
 }
 
@@ -195,21 +195,21 @@ function DebugBacktrace($strMode="html")
 		// not in debug mode, exit
 		return FALSE;
 	}
-	
+
 	// output debug info in required format
 	switch (strtolower($strMode))
 	{
-		case 'txt':
-		case 'text':
-			echo "\n";
-			debug_print_backtrace();
-			echo "\n";
-			break;
-			
-		default:
-			echo "\n<pre>\n";
-			debug_print_backtrace();
-			echo "\n</pre>\n";
+	case 'txt':
+	case 'text':
+		echo "\n";
+		debug_print_backtrace();
+		echo "\n";
+		break;
+
+	default:
+		echo "\n<pre>\n";
+		debug_print_backtrace();
+		echo "\n</pre>\n";
 
 	}
 	return TRUE;
@@ -234,13 +234,13 @@ function SystemDebug()
 {
 	// set up debug string
 	$strDebug = "";
-	
+
 	// trace log
 	$strDebug .= $GLOBALS['TraceLog']['Debug'];
-	
+
 	// MySQL
 	$strDebug .= $GLOBALS['TraceLog']['MySQL'];
-	
+
 	// return string
 	return $strDebug;
 }
@@ -269,12 +269,12 @@ function Trace($strString, $strLogname = 'Debug')
 	{
 		$GLOBALS['TraceLog'] = Array ();
 	}
-	
+
 	if (!isset ($GLOBALS['TraceLog'][$strLogname]))
 	{
 		$GLOBALS['TraceLog'][$strLogname] = "";
 	}
-	
+
 	$GLOBALS['TraceLog'][$strLogname] .= $strString."\n";
 	return TRUE;
 }
@@ -305,7 +305,7 @@ function Backtrace($backtrace = NULL)
 	{
 		$backtrace = debug_backtrace();
 	}
-	
+
 	foreach ($backtrace as $key=>$bt)
 	{
 		$args = '';
@@ -319,31 +319,31 @@ function Backtrace($backtrace = NULL)
 				}
 				switch (gettype($a))
 				{
-					case 'integer':
-					case 'double':
-						$args .= $a;
-						break;
-					case 'string':
-						$a = htmlspecialchars(substr($a, 0, 64)).((strlen($a) > 64) ? '...' : '');
-						$args .= "\"$a\"";
-						break;
-					case 'array':
-						$args .= 'Array('.count($a).')';
-						break;
-					case 'object':
-						$args .= 'Object('.get_class($a).')';
-						break;
-					case 'resource':
-						$args .= 'Resource('.strstr($a, '#').')';
-						break;
-					case 'boolean':
-						$args .= $a ? 'TRUE' : 'FALSE';
-						break;
-					case 'NULL':
-						$args .= 'NULL';
-						break;
-					default:
-						$args .= 'Unknown';
+				case 'integer':
+				case 'double':
+					$args .= $a;
+					break;
+				case 'string':
+					$a = htmlspecialchars(substr($a, 0, 64)).((strlen($a) > 64) ? '...' : '');
+					$args .= "\"$a\"";
+					break;
+				case 'array':
+					$args .= 'Array('.count($a).')';
+					break;
+				case 'object':
+					$args .= 'Object('.get_class($a).')';
+					break;
+				case 'resource':
+					$args .= 'Resource('.strstr($a, '#').')';
+					break;
+				case 'boolean':
+					$args .= $a ? 'TRUE' : 'FALSE';
+					break;
+				case 'NULL':
+					$args .= 'NULL';
+					break;
+				default:
+					$args .= 'Unknown';
 				}
 			}
 		}
@@ -380,7 +380,7 @@ function TruncateName($strText, $intLength)
 	// Get the basename
 	$strBase		= basename($strText);
 	$intMaxLength	= $intLength - 4;
-	
+
 	if (strlen($strText) <= $intLength)
 	{
 		// If the whole path can be displayed
@@ -523,30 +523,30 @@ function CleanFNN($strFNN, $strAreaCode=NULL)
 	{
 		$strFNN = "$strAreaCode$strFNN";
 	}
-	
+
 	// trim the FNN
 	$strFNN = Trim($strFNN);
-	
+
 	// keep the i from the end of an ADSL service
 	$strSuffix = strtolower(substr($strFNN, -1, 1));
 	if ($strSuffix != 'i' && $strSuffix != 'd')
 	{
 		$strSuffix = '';
 	}
-	
+
 	// clean any leading zeros from the fnn
 	$intFNN = (int)$strFNN;
 	$strFNN = "$intFNN";
-	
+
 	// get the FNN length
 	$intLength = strlen($strFNN);
-	
+
 	// add leading zeros if needed
 	if ($intLength == 9)
 	{
 		$strFNN = "0$strFNN";
 	}
-	
+
 	return $strFNN.$strSuffix;
 }
 
@@ -574,13 +574,13 @@ function ServiceType($strFNN)
 	$strPrefix 	= substr($strFNN, 0, 2);
 	$intNine	= (int)"9$strFNN";
 	$strNine	= "9$strFNN";
-	
+
 	// Land Line
 	if ("$intNine" === $strNine && ($strPrefix == '02' || $strPrefix == '03' || $strPrefix == '07' || $strPrefix == '08' || $strPrefix == '09'))
 	{
 		return SERVICE_TYPE_LAND_LINE;
 	}
-	
+
 	// Mobile
 	if ($strPrefix == '04')
 	{
@@ -592,22 +592,22 @@ function ServiceType($strFNN)
 	{
 		return SERVICE_TYPE_INBOUND;
 	}
-	
+
 	// get the suffix
 	$strSuffix	= strtolower(substr($strFNN, -1, 1));
-	
+
 	// ADSL
 	if ($strSuffix == 'i')
 	{
 		return SERVICE_TYPE_ADSL;
 	}
-	
+
 	// Dialup
 	if ($strSuffix == 'd')
 	{
 		return SERVICE_TYPE_DIALUP;
 	}
-	
+
 	// NFI what this service is
 	return FALSE;
 }
@@ -702,10 +702,10 @@ function EvalReturn ($strCode)
 	{
 		return FALSE;
 	}
-	
+
 	// by default we return FALSE
 	$return = FALSE;
-	
+
 	$code = "$return = $strCode;";
 	try
 	{
@@ -715,7 +715,7 @@ function EvalReturn ($strCode)
 	{
 		$return = FALSE;
 	}
-	
+
 	return $return; 
 }
 
@@ -770,10 +770,10 @@ function RemovePermission($intUser, $intPermission)
 {
 	// add the permission (Bitwise OR)
 	$intUser = (int)$intUser | (int)$intPermission;
-	
+
 	// remove the permission (Bitwise XOR)
 	$intUser = (int)$intUser ^ (int)$intPermission;
-	
+
 	// return the users permissions
 	return $intUser;
 }
@@ -806,7 +806,7 @@ function HasPermission($mixUser, $mixPermission)
 	{
 		$arrPermission = Array($mixPermission);
 	}
-	
+
 	if (is_array($mixUser))
 	{
 		$arrUser = $mixUser;
@@ -815,7 +815,7 @@ function HasPermission($mixUser, $mixPermission)
 	{
 		$arrUser = Array($mixUser);
 	}
-	
+
 	foreach ($arrPermission AS $intPermission)
 	{
 		foreach ($arrUser AS $intUser)
@@ -918,7 +918,7 @@ function ListPDF($intAccount)
 
 	// GLOB for year directories - This is old school! Should be removed once updates are complete!!
 	$arrYears = glob(PATH_INVOICE_PDFS ."*", GLOB_ONLYDIR);
-	
+
 	foreach($arrYears as $strYear)
 	{
 		// GLOB for month directories
@@ -963,19 +963,19 @@ function ListPDF($intAccount)
 function GetPDF($intAccount, $intYear, $intMonth)
 {
 	$arrReturn = Array();
-	
+
 	// GLOB for account filename
 	$arrInvoices = glob(PATH_INVOICE_PDFS . $intYear ."/". $intMonth ."/". $intAccount ."_*.pdf");
-	
+
 	if (count($arrInvoices) == 0 || $arrInvoices === FALSE)
 	{
 		// Either glob had an error, or the filename doesn't exist
 		return FALSE;
 	}
-	
+
 	// Read the file contents into a string
 	$strReturn = file_get_contents($arrInvoices[0]);
-	
+
 	return $strReturn;
 }
 
@@ -1010,14 +1010,14 @@ function CSVRow($strTable, $arrData, $strSeparator=';', $strTerminator="\n")
 	{
 		return FALSE;
 	}
-	
+
 	$strReturn = $strSeparator; // Id
 	foreach($arrModel['Column'] AS $strKey => $arrValue)
 	{
 		$strReturn .= $arrData[$strKey].$strSeparator;
 	}
 	$strReturn .= $strTerminator;
-	
+
 	return $strReturn;
 }
 
@@ -1047,14 +1047,14 @@ function CSVHeader($strTable, $strSeparator=';', $strTerminator="\n")
 	{
 		return FALSE;
 	}
-	
+
 	$strReturn = "Id".$strSeparator;
 	foreach($arrModel['Column'] AS $strKey => $arrValue)
 	{
 		$strReturn .= "$strKey".$strSeparator;
 	}
 	$strReturn .= $strTerminator;
-	
+
 	return $strReturn;
 }
 
@@ -1080,39 +1080,39 @@ function CSVStatementSelect (StatementSelect $selStatement, $strSeparator=';', $
 {
 	// Start with a Blank Result
 	$strResult = "";
-	
+
 	// Pull the Meta Data for the Statement
 	$objMetaData = $selStatement->MetaData ();
-	
-	
+
+
 	// Get all the Fields and write a Heading row
 	$arrFields = $objMetaData->fetch_fields ();
 	$arrLabels = Array ();
-	
+
 	foreach ($arrFields as $intIndex => $objField)
 	{
 		$arrLabels [$intIndex] = str_replace ('"', '""', $objField->name);
 	}
-	
+
 	$strResult .= '"' . implode ('"' . $strSeparator . '"', $arrLabels) . '"' . $strTerminator;
-	
+
 	// Get the results one by one and write them up
 	while ($arrRow = $selStatement->Fetch ())
 	{
 		$arrFields = Array ();
-		
+
 		foreach ($arrRow as $intIndex => $mixField)
 		{
 			$mixCorrectedField = $mixField;
 			$mixCorrectedField = str_replace	('"',				'""',	$mixCorrectedField);
 			$mixCorrectedField = preg_replace	('/[\r\n]/misU',	' ',	$mixCorrectedField);
-			
+
 			$arrFields [$intIndex] = $mixCorrectedField;
 		}
-		
+
 		$strResult .= '"' . implode ('"' . $strSeparator . '"', $arrFields) . '"' . $strTerminator;
 	}
-	
+
 	return $strResult;
 }
 
@@ -1138,20 +1138,20 @@ function XLSStatementSelect (StatementSelect $selStatement)
 {
 	// Create new instance of PsXLSGen
 	$xlsExcelDoc = new PhpSimpleXlsGen();
-	
+
 	// Pull the Meta Data for the Statement
 	$objMetaData = $selStatement->MetaData ();
-	
-	
+
+
 	// Get all the Fields and write a Heading row
 	$arrFields = $objMetaData->fetch_fields ();
 	$xlsExcelDoc->totalcol = count($arrFields);
-	
+
 	foreach ($arrFields as $intIndex => $objField)
 	{
 		$xlsExcelDoc->InsertText($objField->name);
 	}
-	
+
 	// Get the results one by one and write them up
 	while ($arrRow = $selStatement->Fetch ())
 	{
@@ -1168,7 +1168,7 @@ function XLSStatementSelect (StatementSelect $selStatement)
 			}
 		}
 	}
-	
+
 	return $xlsExcelDoc->GetFileStream();
 }
 
@@ -1222,7 +1222,7 @@ function CheckLuhn($mixNumber)
 	$card = (string)$mixNumber;
 	$card = strrev($card);
 	$total = 0;
-	
+
 	for ($n=0; $n<strlen($card); $n++)
 	{
 		$digit = substr($card,$n,1);
@@ -1281,9 +1281,9 @@ function MakeLuhn($mixNumber)
 		}
 		$intCheckDigit += $digit;
 	}
-	
+
 	$intCheckDigit = $intCheckDigit % 10;
-	
+
 	if($intCheckDigit > 0)
 	{
 		$intCheckDigit = 10 - $intCheckDigit;
@@ -1347,51 +1347,51 @@ function expdate($month,$year)
 function CheckCC($mixNumber, $intCreditCardType)
 {
 	$strNumber = str_replace (" ", "", $mixNumber);
-	
+
 	// Check the LUHN of the Credit Card
 	if (!CheckLuhn ($strNumber))
 	{
 		return FALSE;
 	}
-	
+
 	// Load up the values allowed for Prefixes and Lengths of each Credit Card Type
 	switch ($intCreditCardType)
 	{
-		case CREDIT_CARD_VISA:
-			$arrPrefixes	= Array (4);
-			$arrLengths		= Array (13, 16);
-			
-			break;
-			
-		case CREDIT_CARD_MASTERCARD:
-			$arrPrefixes	= Array (51, 52, 53, 54, 55);
-			$arrLengths		= Array (16);
-			
-			break;
-			
-		case CREDIT_CARD_BANKCARD:
-			$arrPrefixes	= Array (56);
-			$arrLengths = Array (16);
-			
-			break;
-			
-		case CREDIT_CARD_AMEX:
-			$arrPrefixes	= Array (34, 37);
-			$arrLengths = Array (15);
-			break;
-			
-		case CREDIT_CARD_DINERS:
-			$arrPrefixes	= Array (30, 36, 38);
-			$arrLengths = Array (14);
-			break;
-			
-		default:
-			return FALSE;
+	case CREDIT_CARD_VISA:
+		$arrPrefixes	= Array (4);
+		$arrLengths		= Array (13, 16);
+
+		break;
+
+	case CREDIT_CARD_MASTERCARD:
+		$arrPrefixes	= Array (51, 52, 53, 54, 55);
+		$arrLengths		= Array (16);
+
+		break;
+
+	case CREDIT_CARD_BANKCARD:
+		$arrPrefixes	= Array (56);
+		$arrLengths = Array (16);
+
+		break;
+
+	case CREDIT_CARD_AMEX:
+		$arrPrefixes	= Array (34, 37);
+		$arrLengths = Array (15);
+		break;
+
+	case CREDIT_CARD_DINERS:
+		$arrPrefixes	= Array (30, 36, 38);
+		$arrLengths = Array (14);
+		break;
+
+	default:
+		return FALSE;
 	}
-	
+
 	// Check the Length is Correct
 	$bolLengthFound = FALSE;
-	
+
 	foreach ($arrLengths as $intLength)
 	{
 		if (strlen ($strNumber) == $intLength)
@@ -1399,17 +1399,17 @@ function CheckCC($mixNumber, $intCreditCardType)
 			$bolLengthFound = TRUE;
 		}
 	}
-	
+
 	if (!$bolLengthFound)
 	{
 		return FALSE;
 	}
-	
+
 	// If we have a prefix, check it's correct
 	if (count ($arrPrefixes) <> 0)
 	{
 		$bolPrefixFound = FALSE;
-		
+
 		foreach ($arrPrefixes as $intPrefix)
 		{
 			if (substr ($strNumber, 0, strlen ($intPrefix)) == $intPrefix)
@@ -1417,13 +1417,13 @@ function CheckCC($mixNumber, $intCreditCardType)
 				$bolPrefixFound = TRUE;
 			}
 		}
-		
+
 		if (!$bolPrefixFound)
 		{
 			return FALSE;
 		}
 	}
-	
+
 	return TRUE;
 }
 
@@ -1443,7 +1443,7 @@ function CheckCC($mixNumber, $intCreditCardType)
  * 
  * @function
  */
- 
+
 // check valid email address
 // comes from: http://www.ilovejackdaniels.com/php/email-address-validation/
 
@@ -1456,43 +1456,43 @@ function EmailAddressValid ($strEmail)
 	//TODO!flame! Fix this p.o.s up
 	// First we split on ',' to allow multiple email addresses
 	$arrEmails = explode(',', $strEmail);
-	
+
 	foreach ($arrEmails as $strEmailAddress)
 	{
 		// trim
 		$strEmailAddress = trim($strEmailAddress);
-		
+
 		// First, we check that there's one @ symbol, and that the lengths are right
-		
+
 		// The "local-part" of an email address must be between 1 and 64 characters
-		
+
 		// The most common form is a domain name, which is made up of a number of 
 		// "labels", each separated by a period and between 1 and 63 characters in 
 		// length. Labels may contain letters, digits and hyphens, however must not 
 		// begin or end with a hyphen
-		
+
 		if (!ereg("^[^@]{1,64}@[^@]{1,255}$", $strEmailAddress)) {
 			// Email invalid because wrong number of characters in one section, or wrong number of @ symbols.
 			return false;
 		}
-		
+
 		// Split it into sections to make life easier
 		$arrEmail = explode("@", $strEmailAddress);
 		$arrLocal = explode(".", $arrEmail [0]);
-		
+
 		for ($i = 0; $i < sizeof($arrLocal); $i++) {
 			if (!ereg("^(([A-Za-z0-9!#$%&'*+/=?^_`{|}~-][A-Za-z0-9!#$%&'*+/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$", $arrLocal [$i])) {
 				return false;
 			}
 		}
-	
+
 		if (!ereg("^\[?[0-9\.]+\]?$", $arrEmail [1])) { // Check if domain is IP. If not, it should be valid domain name
 			$arrDomain = explode(".", $arrEmail [1]);
-			
+
 			if (sizeof ($arrDomain) < 2) {
 				return false; // Not enough parts to domain
 			}
-			
+
 			for ($i = 0; $i < sizeof($arrDomain); $i++) {
 				if (!ereg("^(([A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9])|([A-Za-z0-9]+))$", $arrDomain [$i])) {
 					return false;
@@ -1500,7 +1500,7 @@ function EmailAddressValid ($strEmail)
 			}
 		}
 	}
-	
+
 	return true;
 }
 
@@ -1644,7 +1644,7 @@ function CliEcho($strOutput='', $bolNewLine=TRUE)
 	$stdout = $GLOBALS['**stdout'];
 	$strOutput .= ($bolNewLine) ? "\n" : "";
 	fwrite($stdout, $strOutput);
-	
+
 	return $strOutput;
 }
 
@@ -1673,7 +1673,7 @@ function RoundCurrency($fltValue, $intPlaces = 4)
 		// Bad parameter list
 		return FALSE;
 	}
-	
+
 	$fltMultiple = (float)("1".str_repeat("0", $intPlaces));
 	return round($fltValue * $fltMultiple) / $fltMultiple;
 }
@@ -1773,7 +1773,7 @@ function VixenRequire($strFilename)
 	{
 		GetVixenBase();
 	}
-	
+
 	require_once($GLOBALS['**strVixenBasePath'].$strFilename);
 	return TRUE;
 }
@@ -1806,7 +1806,7 @@ function GetVixenBase()
 		{
 			// DIE
 			echo "FLEX_BASE_PATH is not defined!\n";
-			die;
+die;
 		}
 	}
 	return $GLOBALS['**strVixenBasePath'];
@@ -1836,7 +1836,7 @@ function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE, $loadDbConst
 		$strFrameworkDir = GetVixenBase();
 		$strFrameworkDir .= 'lib/framework/';
 	}
-	
+
 	// Load the viXen/Flex Global Config File (defining database and path constants)
 	require_once($strFrameworkDir."config.php");
 
@@ -1857,21 +1857,21 @@ function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE, $loadDbConst
 	{
 		require_once($strFrameworkDir."db_access.php");
 	}
-	
-	
+
+
 	// Retrieve all constants stored in the database
 	// Note that this will not override constants that have already been defined
 	if ($loadDbConstants)
 	{
 		BuildConstantsFromDB();
 	}
-	
+
 	// Load viXen/Flex customer config file
 	$strPath = dirname(dirname(dirname(__FILE__))) . "/customer.cfg.php";
 	if (!@include_once($strPath))
 	{
 		echo "\nFATAL ERROR: Unable to find Flex customer configuration file at location '$strPath'\n\n";
-		die;
+die;
 	}
 
 	if (!$bolBasicsOnly)
@@ -1879,14 +1879,14 @@ function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE, $loadDbConst
 		require_once($strFrameworkDir."report.php");
 		require_once($strFrameworkDir."error.php");
 		require_once($strFrameworkDir."exception_vixen.php");
-	
+
 		// PEAR Packages
 		require_once("Console/Getopt.php");
 		require_once("Spreadsheet/Excel/Writer.php");
 		require_once("Mail.php");
 		require_once("Mail/mime.php");
 	}
-	
+
 	// Init Signal Handler
 	if (function_exists('pcntl_signal'))
 	{
@@ -1920,7 +1920,7 @@ function LoadApplication($strApplication=NULL)
 	{
 		LoadFramework();
 	}
-	
+
 	// application specified
 	$strApplicationDir = $GLOBALS['**strVixenBasePath'];
 	if ($strApplication)
@@ -1940,10 +1940,10 @@ function LoadApplication($strApplication=NULL)
 		require_once("config.php");
 		return $arrConfig;
 	}
-	
+
 	// set application dir
 	$strApplicationDir = $strApplication."/";
-	
+
 	// require application
 	VixenRequire($strApplicationDir."require.php");
 	VixenRequire($strApplicationDir."application.php");
@@ -2055,20 +2055,20 @@ function CorrectPartialAccountNum($intPartialAccNum)
 		// the argument is not numeric so return false
 		return FALSE;
 	}
-	
+
 	// check if $intPartialAccNum is already 10 digits long
 	if (strlen($intPartialAccNum) == 10)
 	{
 		// return the account number, unchanged
 		return $intPartialAccNum;
 	}
-	
+
 	// if the partial account number is longer than 10 digits, return false
 	if (strlen($intPartialAccNum) > 10)
-    {
+	{
 		return FALSE;
 	}
-	
+
 	// The partial number is less than 10 digits long so add 1000000000 to it
 	return $intPartialAccNum + 1000000000;
 }
@@ -2138,14 +2138,14 @@ function RemoveGST($fltAmount)
  *
  * @function
  */
- function ClearScreen($bolReturn = FALSE)
- {
- 	if ($bolReturn)
- 	{
- 		return chr(27)."[H".chr(27)."[2J";
- 	}
- 	echo chr(27)."[H".chr(27)."[2J";
- }
+function ClearScreen($bolReturn = FALSE)
+{
+	if ($bolReturn)
+	{
+		return chr(27)."[H".chr(27)."[2J";
+	}
+	echo chr(27)."[H".chr(27)."[2J";
+}
 
 
 //------------------------------------------------------------------------//
@@ -2169,7 +2169,7 @@ function ParseArguments($arrConfig)
 	// Use Console_Getopt to parse arguments
 	$argGetOpt	= new Console_Getopt();
 	$arrArgV	= $argGetOpt->readPHPArgv();
-	
+
 	// Get list of options
 	$strAllowedOptions = "";
 	foreach ($arrConfig['Option'] as $strName=>$arrDefinition)
@@ -2178,27 +2178,27 @@ function ParseArguments($arrConfig)
 		$strAllowedOptions .= (isset($arrDefinition['Value']))			? ":" : "";	// Value optional
 		$strAllowedOptions .= (isset($arrDefinition['MandatoryValue']))	? ":" : "";	// Value mandatory
 	}
-	
+
 	// Parse arguments and check for error
 	$arrArguments = $argGetOpt->getopt($arrArgV, $strAllowedOptions);
 	if (PEAR::isError($arrArguments))
 	{
 		Debug("Fatal Error: Unsupported command line argument ('".$arrArguments->getMessage()."')");
-		die;
+die;
 	}
-	
+
 	// Check for -? switch
 	if (in_array(Array('?', ''), $arrArguments[0]))
 	{
 		// FIXME: Remove this when HELP is implemented
 		echo "\nHELP function currently unavailable\n\n";
 		return FALSE;
-		
+
 		// Print the command line options
 		// TODO
 		//return FALSE;
 	}
-	
+
 	// Convert options to meaningful variables
 	$arrReturn = Array();
 	foreach ($arrConfig['Option'] as $strName=>$arrDefinition)
@@ -2211,7 +2211,7 @@ function ParseArguments($arrConfig)
 			}
 		}
 	}
-	
+
 	// Any additional arguments
 	$strCurrent = reset($arrArguments[1]);
 	foreach ($arrConfig['Arguments'] as $strName=>$arrDefinition)
@@ -2222,7 +2222,7 @@ function ParseArguments($arrConfig)
 			break;
 		}
 	}
-	
+
 	return $arrReturn;
 }
 
@@ -2255,26 +2255,26 @@ function Donkey()
 ?>
 
 
-                          /\          /\
-                         ( \\        // )
-                          \ \\      // /
-                           \_\\||||//_/ 
-                            \/ _  _ \ 
-                           \/|(O)(O)|
-                          \/ |      |  
-      ___________________\/  \      /
-     //                //     |____|      
-    //                ||     /      \
+						  /\          /\
+						 ( \\        // )
+						  \ \\      // /
+						   \_\\||||//_/ 
+							\/ _  _ \ 
+						   \/|(O)(O)|
+						  \/ |      |  
+	  ___________________\/  \      /
+	 //                //     |____|      
+	//                ||     /      \
    //|                \|     \ 0  0 /
   // \       )         V    / \____/ 
  //   \     /        (     /
 ""     \   /_________|  |_/
-       /  /\   /     |  ||
-      /  / /  /      \  ||
-      | |  | |        | ||
-      | |  | |        | ||  
-      |_|  |_|        |_||       
-       \_\  \_\        \_\\
+	   /  /\   /     |  ||
+	  /  / /  /      \  ||
+	  | |  | |        | ||
+	  | |  | |        | ||  
+	  |_|  |_|        |_||       
+	   \_\  \_\        \_\\
 
 <?php
 }
@@ -2301,7 +2301,7 @@ function ArchiveAccounts($arrAccounts)
 	{
 		return 0;
 	}
-	
+
 	$strIn = implode(', ', $arrAccounts);
 	$updAccounts = new StatementUpdate("Account", "Id IN ($strIn)", Array('Archived' => 1));
 	return $updAccounts->Execute(Array('Archived' => 1), Array());
@@ -2333,7 +2333,7 @@ function TransactionStart($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 		// Can't start a new transaction if not connected
 		return FALSE;
 	}
-	
+
 	// Start Transaction
 	return DataAccess::getDataAccess($strConnectionType)->TransactionStart();
 }
@@ -2361,7 +2361,7 @@ function TransactionRollback($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT
 		// Can't start a new transaction if not connected
 		return FALSE;
 	}
-	
+
 	// Rollback Transaction
 	return DataAccess::getDataAccess($strConnectionType)->TransactionRollback();
 }
@@ -2389,7 +2389,7 @@ function TransactionCommit($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 		// Can't start a new transaction if not connected
 		return FALSE;
 	}
-	
+
 	// Commit Transaction
 	return DataAccess::getDataAccess($strConnectionType)->TransactionCommit();
 }
@@ -2422,13 +2422,13 @@ function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPasswor
 		// Can't override if already connected
 		return FALSE;
 	}
-	
+
 	// Override
 	$GLOBALS['**arrDatabase'][$strDatabaseConnection]['URL']		= ($strURL)			? $strURL		: $GLOBALS['**arrDatabase'][$strDatabaseConnection]['URL'];
 	$GLOBALS['**arrDatabase'][$strDatabaseConnection]['Database']	= ($strDatabase)	? $strDatabase	: $GLOBALS['**arrDatabase'][$strDatabaseConnection]['Database'];
 	$GLOBALS['**arrDatabase'][$strDatabaseConnection]['User']		= ($strUser)		? $strUser		: $GLOBALS['**arrDatabase'][$strDatabaseConnection]['User'];
 	$GLOBALS['**arrDatabase'][$strDatabaseConnection]['Password']	= ($strPassword)	? $strPassword	: $GLOBALS['**arrDatabase'][$strDatabaseConnection]['Password'];
-	
+
 	return TRUE;
 }
 
@@ -2466,12 +2466,12 @@ function UnbilledServiceCDRTotal($intService, $bolDontIncludeCreditCDRs = FALSE)
 		$strColumns 	= "SUM(CASE WHEN Credit = 1 THEN 0 - Charge ELSE Charge END) AS TotalCharged";
 		$strWhereClause = "Service = <Service> AND (Status = ". CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .")";
 	}
-	
+
 	// Get CDR Total
 	$selCDRTotal = new StatementSelect("CDR", $strColumns, $strWhereClause);
 	$selCDRTotal->Execute(Array('Service' => $intService));
 	$arrCDRTotal = $selCDRTotal->Fetch();
-	
+
 	return $arrCDRTotal['TotalCharged'];
 }
 
@@ -2497,7 +2497,7 @@ function UnbilledServiceChargeTotal($intService)
 	$selChargeTotal = new StatementSelect("Charge", "SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS TotalCharged", "Service = <Service> AND Status = ".CHARGE_APPROVED);
 	$selChargeTotal->Execute(Array('Service' => $intService));
 	$selChargeTotal = $selChargeTotal->Fetch();
-	
+
 	return $selChargeTotal['TotalCharged'];
 }
 
@@ -2537,7 +2537,7 @@ function UnbilledAccountCDRTotal($intAccount, $bolDontIncludeCreditCDRs = FALSE)
 	$selCDRTotal = new StatementSelect("CDR", $strColumns, $strWhereClause);
 	$selCDRTotal->Execute(Array('Account' => $intAccount));
 	$arrCDRTotal = $selCDRTotal->Fetch();
-	
+
 	return $arrCDRTotal['TotalCharged'];
 }
 
@@ -2763,105 +2763,105 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 
 		switch ($ext)
 		{
-			case '.bz2':
-				// Load the xml from the bz2 file
-				$xml = '';
-				$bz = bzopen($mxdInvoicePath, 'r');
-				$line = TRUE;
-				while (!feof($bz) && $line)
+		case '.bz2':
+			// Load the xml from the bz2 file
+			$xml = '';
+			$bz = bzopen($mxdInvoicePath, 'r');
+			$line = TRUE;
+			while (!feof($bz) && $line)
+			{
+				$line = bzread($bz, 8192);
+				$xml .= $line;
+			}
+			bzclose($bz);
+
+		case '.xml':
+			// Load the xml from the xml file
+			if ($ext == '.xml')
+			{
+				$xml = file_get_contents($mxdInvoicePath);
+			}
+
+			// Get the document properties from the file
+			$parts = array();
+			preg_match_all("/(?:\<(DocumentType|CustomerGroup|CreationDate|DeliveryMethod)\>([^\<]*)\<)/", $xml, $parts);
+
+			// Check that we have a full set
+			if (count($parts) != 3 || count($parts[1]) != 4 || count($parts[2]) != 4)
+			{
+				throw new Exception("Unable to identify document properties.");
+			}
+
+			// Create a [name=>value,...] arrray...
+			$docProps = array();
+			for($i = 0; $i < 4; $i++)
+			{
+				$docProps[$parts[1][$i]] = $parts[2][$i]; 
+			}
+
+			// If no target media has been specified, get the default media type for the file
+			if (!$intTargetMedia)
+			{
+				$targetMedia = $docProps["DeliveryMethod"];
+				switch($targetMedia)
 				{
-					$line = bzread($bz, 8192);
-					$xml .= $line;
+				case 'DELIVERY_METHOD_EMAIL':
+				case 'DELIVERY_METHOD_EMAIL_SENT':
+				case 'DELIVERY_METHOD_DO_NOT_SEND':
+					$intTargetMedia = DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL;
+					break;
+				case 'DELIVERY_METHOD_POST':
+				case 'DELIVERY_METHOD_PRINT':
+					$intTargetMedia = DOCUMENT_TEMPLATE_MEDIA_TYPE_PRINT;
+					break;
+				default:
+					return FALSE;
 				}
-				bzclose($bz);
+			}
 
-			case '.xml':
-				// Load the xml from the xml file
-				if ($ext == '.xml')
-				{
-					$xml = file_get_contents($mxdInvoicePath);
-				}
+			// Take the effective date to be the document Creation Date
+			$effectiveDate = $docProps["CreationDate"];
 
-				// Get the document properties from the file
-				$parts = array();
-				preg_match_all("/(?:\<(DocumentType|CustomerGroup|CreationDate|DeliveryMethod)\>([^\<]*)\<)/", $xml, $parts);
+			// Take the customer group from the file - this should be the same as the one for the invoice
+			$custGroupId = constant($docProps["CustomerGroup"]);
 
-				// Check that we have a full set
-				if (count($parts) != 3 || count($parts[1]) != 4 || count($parts[2]) != 4)
-				{
-					throw new Exception("Unable to identify document properties.");
-				}
+			VixenRequire('lib/pdf/Flex_Pdf.php');
 
-				// Create a [name=>value,...] arrray...
-				$docProps = array();
-				for($i = 0; $i < 4; $i++)
-				{
-					$docProps[$parts[1][$i]] = $parts[2][$i]; 
-				}
-
-				// If no target media has been specified, get the default media type for the file
-				if (!$intTargetMedia)
-				{
-					$targetMedia = $docProps["DeliveryMethod"];
-					switch($targetMedia)
-					{
-						case 'DELIVERY_METHOD_EMAIL':
-						case 'DELIVERY_METHOD_EMAIL_SENT':
-						case 'DELIVERY_METHOD_DO_NOT_SEND':
-							$intTargetMedia = DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL;
-							break;
-						case 'DELIVERY_METHOD_POST':
-						case 'DELIVERY_METHOD_PRINT':
-							$intTargetMedia = DOCUMENT_TEMPLATE_MEDIA_TYPE_PRINT;
-							break;
-						default:
-							return FALSE;
-					}
-				}
-
-				// Take the effective date to be the document Creation Date
-				$effectiveDate = $docProps["CreationDate"];
-
-				// Take the customer group from the file - this should be the same as the one for the invoice
-				$custGroupId = constant($docProps["CustomerGroup"]);
-
-				VixenRequire('lib/pdf/Flex_Pdf.php');
-
-				try
-				{
+			try
+			{
 				// Generate the pdf document on the fly
 				$pdfTemplate = new Flex_Pdf_Template(
-								$custGroupId, 
-								$effectiveDate, 
-								DOCUMENT_TEMPLATE_TYPE_INVOICE, 
-								$xml, 
-								$intTargetMedia, 
-								TRUE);
+					$custGroupId, 
+					$effectiveDate, 
+					DOCUMENT_TEMPLATE_TYPE_INVOICE, 
+					$xml, 
+					$intTargetMedia, 
+					TRUE);
 
 				$pdfDocument = $pdfTemplate->createDocument();
 
 				$pdf = $pdfDocument->render();
-				}
-				catch (Exception $e)
-				{
-					throw $e;
-				}
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 
-				break;
+			break;
 
-			case '.pdf':
-				$pdf = file_get_contents($mxdInvoicePath);
-				break;
+		case '.pdf':
+			$pdf = file_get_contents($mxdInvoicePath);
+			break;
 
-			default:
-				$pdf = FALSE;
+		default:
+			$pdf = FALSE;
 		}
 		return $pdf;
 	}
 }
 
- 
- 
+
+
 //------------------------------------------------------------------------//
 // FindFNNOwner
 //------------------------------------------------------------------------//
@@ -2913,7 +2913,7 @@ function IsFNNInUse($strFNN, $bolIsIndial, $strDate)
 
 
 
- 
+
 //------------------------------------------------------------------------//
 // WriteOffAccount
 //------------------------------------------------------------------------//
@@ -2944,7 +2944,7 @@ function WriteOffAccount($intAccount)
 			$fltTotal			+= WriteOffInvoice($arrInvoice['Id'], FALSE);
 			$intAccountGroup	= $arrInvoice['AccountGroup'];
 		}
-		
+
 		// Add System Note
 		$strContent	= "$intInvoices Invoices written off for the value of \${$fltTotal}";
 		$GLOBALS['fwkFramework']->AddNote($strContent, 7, NULL, $intAccountGroup, $intAccount);
@@ -2985,14 +2985,14 @@ function WriteOffInvoice($intInvoice, $bolAddNote = TRUE)
 	{
 		// Write off Invoice
 		$ubiInvoice->Execute($arrData);
-		
+
 		// Add System Note
 		if ($bolAddNote)
 		{
 			$strContent	= "1 Invoice written off for the value of \${$arrInvoice['Balance']}";
 			$GLOBALS['fwkFramework']->AddNote($strContent, 7, NULL, $arrInvoice['AccountGroup'], $arrInvoice['Account']);
 		}
-		
+
 		return $arrInvoice['Balance'];
 	}
 	else
@@ -3025,14 +3025,14 @@ function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='auto@yello
 {
 	require_once("Mail.php");
 	require_once("Mail/mime.php");
-	
+
 	$arrHeaders = Array	(
-							'From'		=> $strFrom,
-							'Reply-To'	=> $strFrom,
-							'Subject'	=> $strSubject
-						);
+		'From'		=> $strFrom,
+		'Reply-To'	=> $strFrom,
+		'Subject'	=> $strSubject
+	);
 	$mimMime = new Mail_mime("\n");
-	
+
 	if ($bolHTML)
 	{
 		$mimMime->setTXTBody($strContent);
@@ -3041,11 +3041,11 @@ function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='auto@yello
 	{
 		$mimMime->setHTMLBody($strContent);
 	}
-	
+
 	$strBody = $mimMime->get();
 	$strHeaders = $mimMime->headers($arrHeaders);
 	$emlMail =& Mail::factory('mail');
-	
+
 	// Send the email
 	return (bool)$emlMail->send($strAddresses, $strHeaders, $strBody);
 }
@@ -3072,60 +3072,60 @@ function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='auto@yello
  */
 function GetCCType($mixNumber, $bolAsString = FALSE)
 {
-	
+
 	// Find Card Type
 	switch ((int)substr(trim($mixNumber), 0, 2))
 	{
 		// VISA
-		case 40:
-		case 41:
-		case 42:
-		case 43:
-		case 44:
-		case 45:
-		case 46:
-		case 47:
-		case 48:
-		case 49:
-			$strType	= "VISA";
-			$intType	= CREDIT_CARD_VISA;
-			break;
-		
+	case 40:
+	case 41:
+	case 42:
+	case 43:
+	case 44:
+	case 45:
+	case 46:
+	case 47:
+	case 48:
+	case 49:
+		$strType	= "VISA";
+		$intType	= CREDIT_CARD_VISA;
+		break;
+
 		// Mastercard
-		case 51:
-		case 52:
-		case 53:
-		case 54:
-		case 55:
-			$strType	= "MasterCard";
-			$intType	= CREDIT_CARD_MASTERCARD;
-			break;
-		
+	case 51:
+	case 52:
+	case 53:
+	case 54:
+	case 55:
+		$strType	= "MasterCard";
+		$intType	= CREDIT_CARD_MASTERCARD;
+		break;
+
 		// Bankcard
-		case 56:
-			$strType	= "Bankcard";
-			$intType	= CREDIT_CARD_BANKCARD;
-			break;
-		
+	case 56:
+		$strType	= "Bankcard";
+		$intType	= CREDIT_CARD_BANKCARD;
+		break;
+
 		// AMEX
-		case 34:
-		case 37:
-			$strType	= "American Express";
-			$intType	= CREDIT_CARD_AMEX;
-			break;
-		
+	case 34:
+	case 37:
+		$strType	= "American Express";
+		$intType	= CREDIT_CARD_AMEX;
+		break;
+
 		// Diners
-		case 30:
-		case 36:
-		case 38:
-			$strType	= "Diners Club";
-			$intType	= CREDIT_CARD_DINERS;
-			break;
-		
-		default:
-			return FALSE;
+	case 30:
+	case 36:
+	case 38:
+		$strType	= "Diners Club";
+		$intType	= CREDIT_CARD_DINERS;
+		break;
+
+	default:
+		return FALSE;
 	}
-	
+
 	// Return requested value
 	if ($bolAsString)
 	{
@@ -3161,14 +3161,14 @@ function AddCreditCardSurcharge($intPayment)
 	$selPayment	= new StatementSelect("Payment", "*", "Id = <Payment>");
 	$insCharge	= new StatementInsert("Charge");
 	$selCCSRate	= new StatementSelect(	"Config",
-										"Value",
-										"Application = ".APPLICATION_PAYMENTS." AND Module = <Module> AND Name = 'Surcharge'");
-	
+		"Value",
+		"Application = ".APPLICATION_PAYMENTS." AND Module = <Module> AND Name = 'Surcharge'");
+
 	// Get Payment details
 	if ($selPayment->Execute(Array('Payment' => $intPayment)))
 	{
 		$arrPayment = $selPayment->Fetch();
-		
+
 		// Find Credit Card Type and Rate
 		$strType	= GetCCType($arrPayment['OriginId'], TRUE);
 		if (!$selCCSRate->Execute(Array('Module' => $strType)))
@@ -3182,7 +3182,7 @@ function AddCreditCardSurcharge($intPayment)
 		$strPC				= round($fltPC * 100, 2);
 		$fltPaymentAmount	= number_format($arrPayment['Amount'], 2, ".", "");
 		$fltAmount			= RemoveGST(((float)$arrPayment['Amount'] / (1 + $fltPC)) * $fltPC);
-		
+
 		// Insert Charge
 		$arrCharge	= Array();
 		if (!$arrPayment['Account'])
@@ -3197,7 +3197,7 @@ function AddCreditCardSurcharge($intPayment)
 			// Account Payment
 			$arrCharge['Account']		= $arrPayment['Account'];
 		}
-		
+
 		$arrCharge['AccountGroup']		= $arrPayment['AccountGroup'];
 		$arrCharge['CreatedBy']			= $arrPayment['EnteredBy'];
 		$arrCharge['CreatedOn']			= date("Y-m-d");
@@ -3221,7 +3221,7 @@ function AddCreditCardSurcharge($intPayment)
 		return FALSE;
 	}
 }
-	
+
 //------------------------------------------------------------------------//
 // IsInvoicing
 //------------------------------------------------------------------------//
@@ -3307,15 +3307,15 @@ function GetCurrentISODateTime($bolForceRefresh=FALSE, $bolUpdateCache=FALSE)
 			// The "Current" timestamp isn't cached yet, do it now
 			$GLOBALS['CurrentISODateTime'] = GetCurrentDateAndTimeForMySQL();
 		}
-		
+
 		$strTime = $GLOBALS['CurrentISODateTime'];
 	}
-	
+
 	if ($bolUpdateCache)
 	{
 		$GLOBALS['CurrentISODateTime'] = $strTime;
 	}
-	
+
 	return $strTime;
 }
 
@@ -3406,7 +3406,7 @@ function EnsureLatestInvoiceRunEventsAreDefined()
 		LEFT OUTER JOIN (SELECT DISTINCT(invoice_run_id) FROM automatic_invoice_run_event) existing
 		ON last_invoice_run.invoice_run_id = existing.invoice_run_id
 		HAVING processed IS NULL
-	";
+		";
 
 	$selInvoiceRun = new StatementSelect($strTables, $arrColumns, "");
 
@@ -3428,7 +3428,7 @@ function EnsureLatestInvoiceRunEventsAreDefined()
 	{
 		$invoiceRunId = $invoiceRun['invoice_run_id'];
 		$customerGroupId = $invoiceRun['customer_group_id'];
-	
+
 		// Load up the automatic invoice actions
 		$strTables = 'automatic_invoice_action_config';
 		$arrColumns = array(
@@ -3467,28 +3467,28 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 	$strApplicableAccountStatuses = implode(", ", array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED, ACCOUNT_STATUS_SUSPENDED));
 
 	$arrColumns = array(
-							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
-							'AccountId'				=> "Invoice.Account",
-							'AccountGroupId'		=> "Account.AccountGroup",
-							'CustomerGroupId'		=> "Account.CustomerGroup",
-							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
-							'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
+		'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
+		'AccountId'				=> "Invoice.Account",
+		'AccountGroupId'		=> "Account.AccountGroup",
+		'CustomerGroupId'		=> "Account.CustomerGroup",
+		'CustomerGroupName'		=> "CustomerGroup.ExternalName",
+		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
+		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
 	);
 
 	$strTables = "
-			 Invoice
+		Invoice
 		JOIN Account 
-		  ON Invoice.Account = Account.Id
-		 AND Account.Archived IN ($strApplicableAccountStatuses) 
-		 AND Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
+		ON Invoice.Account = Account.Id
+		AND Account.Archived IN ($strApplicableAccountStatuses) 
+		AND Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
 		JOIN Service 
-		  ON Account.Id = Service.Account
+		ON Account.Id = Service.Account
 		JOIN CustomerGroup
-		  ON CustomerGroup.Id = Account.CustomerGroup
+		ON CustomerGroup.Id = Account.CustomerGroup
 		JOIN payment_terms 
-		  ON payment_terms.customer_group_id = Account.CustomerGroup
-	";
+		ON payment_terms.customer_group_id = Account.CustomerGroup
+		";
 
 	$strWhere	= "";
 
@@ -3514,8 +3514,8 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	{
 		$intEffectiveTime = time();
 	}
-	
-	
+
+
 	$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 
 	// If we don't know the customer group id ($intCustomerGroupId===FALSE) than we need to find it for the given invoice_run_id
@@ -3525,11 +3525,11 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		throw new Exception("Failed to find customer group ids for invoice runs: \n$strSQL\n" . $result->getMessage());
 	}
 	$arrCustomerGroupIds = $result->fetchCol(0);
-	
+
 	$strCustomerGroupRestriction = count($arrCustomerGroupIds) ? "OR customer_group_id IN (" . implode(",", $arrCustomerGroupIds) . ")" : '';
 
 	$time = time();
-	
+
 	// Create a temporary table for the results
 	$tmpTableName = "tmp_staggered_barring_accounts_$time";
 
@@ -3538,22 +3538,22 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	{
 		throw new Exception("Failed to drop (1) (if exists) $tmpTableName: " . $result->getMessage());
 	}
-	
+
 
 	$strSQL = "
-			CREATE TABLE $tmpTableName
-			(
-				id bigint(20) UNSIGNED NOT NULL auto_increment,
-				invoice_run_id bigint(20) unsigned NOT NULL,
-				AccountId bigint(20) unsigned NOT NULL,
-				AccountGroupId bigint(20) unsigned NOT NULL,
-				CustomerGroupId bigint(20) unsigned NOT NULL,
-				CustomerGroupName VARCHAR(255) DEFAULT '',
-				Overdue decimal(13,4) NOT NULL,
-				minBalanceToPursue decimal(13,4) NOT NULL,
-				PRIMARY KEY (id)
-			) ENGINE=InnoDB AUTO_INCREMENT=0;
-			";
+		CREATE TABLE $tmpTableName
+		(
+			id bigint(20) UNSIGNED NOT NULL auto_increment,
+			invoice_run_id bigint(20) unsigned NOT NULL,
+			AccountId bigint(20) unsigned NOT NULL,
+			AccountGroupId bigint(20) unsigned NOT NULL,
+			CustomerGroupId bigint(20) unsigned NOT NULL,
+			CustomerGroupName VARCHAR(255) DEFAULT '',
+			Overdue decimal(13,4) NOT NULL,
+			minBalanceToPursue decimal(13,4) NOT NULL,
+			PRIMARY KEY (id)
+		) ENGINE=InnoDB AUTO_INCREMENT=0;
+	";
 	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to create tmp table (1) $tmpTableName: " . $result->getMessage());
@@ -3569,14 +3569,14 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	}
 
 	$strSQL = "
-			CREATE TABLE $tmpRankTableName
-			(
-				id bigint(20) UNSIGNED NOT NULL auto_increment,
-				account_id bigint(20) unsigned NOT NULL,
-				ranking decimal(13,4) NOT NULL,
-				PRIMARY KEY (id)
-			) ENGINE=InnoDB AUTO_INCREMENT=0;
-			";
+		CREATE TABLE $tmpRankTableName
+		(
+			id bigint(20) UNSIGNED NOT NULL auto_increment,
+			account_id bigint(20) unsigned NOT NULL,
+			ranking decimal(13,4) NOT NULL,
+			PRIMARY KEY (id)
+		) ENGINE=InnoDB AUTO_INCREMENT=0;
+	";
 	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to create tmp table (2) $tmpRankTableName: " . $result->getMessage());
@@ -3590,53 +3590,53 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	$strApplicableInvoiceStatuses = implode(", ", array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT));
 
 	$arrColumns = array(
-							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
-							'AccountId'				=> "Invoice.Account",
-							'AccountGroupId'		=> "Account.AccountGroup",
-							'CustomerGroupId'		=> "Account.CustomerGroup",
-							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
-							'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
+		'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
+		'AccountId'				=> "Invoice.Account",
+		'AccountGroupId'		=> "Account.AccountGroup",
+		'CustomerGroupId'		=> "Account.CustomerGroup",
+		'CustomerGroupName'		=> "CustomerGroup.ExternalName",
+		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
+		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
 	);
 
 	$strTables	= "
-			 Invoice 
+		Invoice 
 		JOIN Account 
-		  ON Invoice.Account = Account.Id
-		 AND Account.Archived IN ($strApplicableAccountStatuses) 
-		 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
-		 AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
-		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
+		ON Invoice.Account = Account.Id
+		AND Account.Archived IN ($strApplicableAccountStatuses) 
+		AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
+		AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
+		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 		JOIN credit_control_status 
-		  ON Account.credit_control_status = credit_control_status.id
-		 AND credit_control_status.can_bar = 1
+		ON Account.credit_control_status = credit_control_status.id
+		AND credit_control_status.can_bar = 1
 		JOIN account_status 
-		  ON Account.Archived = account_status.id
-		 AND account_status.can_bar = 1
+		ON Account.Archived = account_status.id
+		AND account_status.can_bar = 1
 		JOIN CustomerGroup 
-		  ON Account.CustomerGroup = CustomerGroup.Id
+		ON Account.CustomerGroup = CustomerGroup.Id
 		JOIN payment_terms
-		  ON payment_terms.customer_group_id = Account.CustomerGroup";
+		ON payment_terms.customer_group_id = Account.CustomerGroup";
 
 	$strWhere	= "Account.Id IN (
 		SELECT DISTINCT(Account.Id) 
 		FROM InvoiceRun 
 		JOIN Invoice
-		  ON InvoiceRun.Id IN (" . implode(', ', $arrInvoiceRunIds) . ")
-		 AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
-		 AND InvoiceRun.Id = Invoice.invoice_run_id
+		ON InvoiceRun.Id IN (" . implode(', ', $arrInvoiceRunIds) . ")
+		AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
+		AND InvoiceRun.Id = Invoice.invoice_run_id
 		JOIN Account 
-		  ON Account.Id = Invoice.Account
-		 AND Account.Archived IN ($strApplicableAccountStatuses) 
-		 AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
-		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
-		 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
+		ON Account.Id = Invoice.Account
+		AND Account.Archived IN ($strApplicableAccountStatuses) 
+		AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
+		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
+		AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
 		JOIN credit_control_status 
-		  ON Account.credit_control_status = credit_control_status.id
-		 AND credit_control_status.can_bar = 1
+		ON Account.credit_control_status = credit_control_status.id
+		AND credit_control_status.can_bar = 1
 		JOIN account_status 
-		  ON Account.Archived = account_status.id
-		 AND account_status.can_bar = 1
+		ON Account.Archived = account_status.id
+		AND account_status.can_bar = 1
 	)";
 
 	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND invoice_run_id IN (" . implode(', ', $arrInvoiceRunIds) . ")";
@@ -3650,13 +3650,13 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	{
 		throw new Exception("Failed to populate tmp table $tmpTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
 	}
-	
+
 	$rows = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
 	foreach ($rows as $i => $row)
 	{
 		$strSQL = "INSERT INTO $tmpTableName ($tmpCols) 
-					VALUES (" . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " . 
-					$row['CustomerGroupId'] . ", '" . $row['CustomerGroupName'] . "', " . $row['Overdue'] . ", " . $row['minBalanceToPursue'] . ")";
+			VALUES (" . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " . 
+			$row['CustomerGroupId'] . ", '" . $row['CustomerGroupName'] . "', " . $row['Overdue'] . ", " . $row['minBalanceToPursue'] . ")";
 		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 		{
 			throw new Exception("Failed to populate tmp table (1.$i) $tmpTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
@@ -3665,67 +3665,67 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 
 	// Apply the ranking to the table for each account
 	$strSQL = "
-			"/*INSERT INTO $tmpRankTableName (account_id, ranking)
-			*/."SELECT account_id, CASE WHEN SUM(VIP) < 0 THEN SUM(VIP) WHEN COUNT(late) = 1 THEN 0 WHEN SUM(late) <= 0 THEN 0 ELSE ((SUM(late) / (COUNT(late) - 1))/86400) END AS \"ranking\"
-			FROM
-			(
-			
-				SELECT InvoicePayment.Account AS \"account_id\", 0 AS \"VIP\", InvoicePayment.invoice_run_id AS \"invoice_run_id\", UNIX_TIMESTAMP(MAX(Payment.PaidOn)) - UNIX_TIMESTAMP(Invoice.CreatedOn) AS \"late\" 
-				FROM 
-					Payment, 
-					InvoicePayment, 
-					Invoice, 
-					$tmpTableName,
-						(
-						SELECT id AS \"invoice_run_id\"
-						FROM InvoiceRun
-						WHERE customer_group_id IS NULL $strCustomerGroupRestriction
-						ORDER BY id DESC
-						LIMIT 1, 6
-					) PreviousSixInvoiceRuns
-				WHERE Payment.Id = InvoicePayment.Payment
-				    AND InvoicePayment.invoice_run_id = PreviousSixInvoiceRuns.invoice_run_id
-				    AND Invoice.Account = $tmpTableName.AccountId 
-				    AND Invoice.Account = InvoicePayment.Account
-				    AND Invoice.invoice_run_id = InvoicePayment.invoice_run_id
-				    AND Invoice.Total > 0.10
-				    AND Invoice.Balance <= 0.10
-				GROUP BY InvoicePayment.Account, InvoicePayment.invoice_run_id, Invoice.CreatedOn
-			
-			UNION
-				SELECT Invoice.Account AS \"account_id\", 0 AS \"VIP\", Invoice.invoice_run_id AS \"invoice_run_id\", UNIX_TIMESTAMP() - UNIX_TIMESTAMP(Invoice.CreatedOn) AS \"late\"
-				FROM 
-					Invoice, $tmpTableName,
-					(
-						SELECT id AS \"invoice_run_id\"
-						FROM InvoiceRun
-						WHERE customer_group_id IS NULL $strCustomerGroupRestriction
-						ORDER BY id DESC
-						LIMIT 1, 6
-					) PreviousSixInvoiceRuns
-				WHERE Invoice.Account = $tmpTableName.AccountId 
-				    AND Invoice.Balance > 0.10
-				    AND Invoice.Total > 0.10
-				    AND Invoice.invoice_run_id = PreviousSixInvoiceRuns.invoice_run_id
-			
-			UNION	
-				SELECT Account.Id AS \"account_id\", CASE WHEN SUM(vip) > 0 THEN -2 WHEN SUM(Invoice.Id) > 0 THEN 0 ELSE -1 END AS \"VIP\", 0 AS \"invoice_run_id\", 0 AS \"late\" 
-				FROM Account INNER JOIN $tmpTableName ON Account.Id = $tmpTableName.AccountId LEFT OUTER JOIN Invoice ON Account.Id = Invoice.Account
-				GROUP BY Account.Id
-			
-			) as AccountRankings
-			GROUP BY account_id
-	";
+		"/*INSERT INTO $tmpRankTableName (account_id, ranking)
+	 */."SELECT account_id, CASE WHEN SUM(VIP) < 0 THEN SUM(VIP) WHEN COUNT(late) = 1 THEN 0 WHEN SUM(late) <= 0 THEN 0 ELSE ((SUM(late) / (COUNT(late) - 1))/86400) END AS \"ranking\"
+	 FROM
+	 (
+
+		 SELECT InvoicePayment.Account AS \"account_id\", 0 AS \"VIP\", InvoicePayment.invoice_run_id AS \"invoice_run_id\", UNIX_TIMESTAMP(MAX(Payment.PaidOn)) - UNIX_TIMESTAMP(Invoice.CreatedOn) AS \"late\" 
+		 FROM 
+		 Payment, 
+		 InvoicePayment, 
+		 Invoice, 
+		 $tmpTableName,
+		 (
+			 SELECT id AS \"invoice_run_id\"
+			 FROM InvoiceRun
+			 WHERE customer_group_id IS NULL $strCustomerGroupRestriction
+			 ORDER BY id DESC
+			 LIMIT 1, 6
+		 ) PreviousSixInvoiceRuns
+		 WHERE Payment.Id = InvoicePayment.Payment
+		 AND InvoicePayment.invoice_run_id = PreviousSixInvoiceRuns.invoice_run_id
+		 AND Invoice.Account = $tmpTableName.AccountId 
+		 AND Invoice.Account = InvoicePayment.Account
+		 AND Invoice.invoice_run_id = InvoicePayment.invoice_run_id
+		 AND Invoice.Total > 0.10
+		 AND Invoice.Balance <= 0.10
+		 GROUP BY InvoicePayment.Account, InvoicePayment.invoice_run_id, Invoice.CreatedOn
+
+		 UNION
+		 SELECT Invoice.Account AS \"account_id\", 0 AS \"VIP\", Invoice.invoice_run_id AS \"invoice_run_id\", UNIX_TIMESTAMP() - UNIX_TIMESTAMP(Invoice.CreatedOn) AS \"late\"
+		 FROM 
+		 Invoice, $tmpTableName,
+		 (
+			 SELECT id AS \"invoice_run_id\"
+			 FROM InvoiceRun
+			 WHERE customer_group_id IS NULL $strCustomerGroupRestriction
+			 ORDER BY id DESC
+			 LIMIT 1, 6
+		 ) PreviousSixInvoiceRuns
+		 WHERE Invoice.Account = $tmpTableName.AccountId 
+		 AND Invoice.Balance > 0.10
+		 AND Invoice.Total > 0.10
+		 AND Invoice.invoice_run_id = PreviousSixInvoiceRuns.invoice_run_id
+
+		 UNION	
+		 SELECT Account.Id AS \"account_id\", CASE WHEN SUM(vip) > 0 THEN -2 WHEN SUM(Invoice.Id) > 0 THEN 0 ELSE -1 END AS \"VIP\", 0 AS \"invoice_run_id\", 0 AS \"late\" 
+		 FROM Account INNER JOIN $tmpTableName ON Account.Id = $tmpTableName.AccountId LEFT OUTER JOIN Invoice ON Account.Id = Invoice.Account
+		 GROUP BY Account.Id
+
+	 ) as AccountRankings
+	 GROUP BY account_id
+	 ";
 	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
 		throw new Exception("Failed to populate tmp rankings table $tmpRankTableName: " . $result->getMessage());
 	}
-	
+
 	$rows = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
 	foreach ($rows as $i => $row)
 	{
 		$strSQL = "INSERT INTO $tmpRankTableName (account_id, ranking) 
-					VALUES (" . $row['account_id'] . ", " . $row['ranking'] . ")";
+			VALUES (" . $row['account_id'] . ", " . $row['ranking'] . ")";
 		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 		{
 			throw new Exception("Failed to populate tmp table (2.$i) $tmpRankTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
@@ -3738,7 +3738,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	{
 		throw new Exception("Failed to load data from tmp tables: " . $result->getMessage());
 	}
-	
+
 	$results = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
 
 	// Drop the temp tables
@@ -3747,7 +3747,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	{
 		throw new Exception("Failed to drop tmp table (1) $tmpTableName: " . $result->getMessage());
 	}
-	
+
 	$strSQL = "DROP TABLE $tmpRankTableName;";
 	if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 	{
@@ -3780,51 +3780,51 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 	$strApplicableInvoiceStatuses = implode(", ", array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT));
 
 	$arrColumns = array(
-							'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
-							'AccountId'				=> "Invoice.Account",
-							'AccountGroupId'		=> "Account.AccountGroup",
-							'CustomerGroupId'		=> "Account.CustomerGroup",
-							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
-							'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
+		'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
+		'AccountId'				=> "Invoice.Account",
+		'AccountGroupId'		=> "Account.AccountGroup",
+		'CustomerGroupId'		=> "Account.CustomerGroup",
+		'CustomerGroupName'		=> "CustomerGroup.ExternalName",
+		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
+		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
 	);
 
 	$strTables	= "
-			 Invoice 
+		Invoice 
 		JOIN Account 
-		  ON Invoice.Account = Account.Id
-		 AND Account.Archived IN ($strApplicableAccountStatuses) 
-		 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
-		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
+		ON Invoice.Account = Account.Id
+		AND Account.Archived IN ($strApplicableAccountStatuses) 
+		AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
+		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 		JOIN credit_control_status 
-		  ON Account.credit_control_status = credit_control_status.id
-		 AND credit_control_status.can_bar = 1
+		ON Account.credit_control_status = credit_control_status.id
+		AND credit_control_status.can_bar = 1
 		JOIN account_status 
-		  ON Account.Archived = account_status.id
-		 AND account_status.can_bar = 1
+		ON Account.Archived = account_status.id
+		AND account_status.can_bar = 1
 		JOIN CustomerGroup 
-		  ON Account.CustomerGroup = CustomerGroup.Id
+		ON Account.CustomerGroup = CustomerGroup.Id
 		JOIN payment_terms
-		  ON payment_terms.customer_group_id = Account.CustomerGroup";
+		ON payment_terms.customer_group_id = Account.CustomerGroup";
 
 	$strWhere	= "Account.Id IN (
 		SELECT DISTINCT(Account.Id) 
 		FROM InvoiceRun 
 		JOIN Invoice
-		  ON InvoiceRun.Id IN ($strInvoiceRunIds)
-		 AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
-		 AND InvoiceRun.Id = Invoice.invoice_run_id
+		ON InvoiceRun.Id IN ($strInvoiceRunIds)
+		AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
+		AND InvoiceRun.Id = Invoice.invoice_run_id
 		JOIN Account 
-		  ON Account.Id = Invoice.Account
-		 AND Account.Archived IN ($strApplicableAccountStatuses) 
-		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
-		 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
+		ON Account.Id = Invoice.Account
+		AND Account.Archived IN ($strApplicableAccountStatuses) 
+		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
+		AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
 		JOIN credit_control_status 
-		  ON Account.credit_control_status = credit_control_status.id
-		 AND credit_control_status.can_bar = 1
+		ON Account.credit_control_status = credit_control_status.id
+		AND credit_control_status.can_bar = 1
 		JOIN account_status 
-		  ON Account.Archived = account_status.id
-		 AND account_status.can_bar = 1
+		ON Account.Archived = account_status.id
+		AND account_status.can_bar = 1
 	)";
 
 	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue";
@@ -3855,26 +3855,26 @@ function ListInvoiceRunsForAutomaticInvoiceActionAndDate($intAutomaticInvoiceAct
 		LEFT OUTER JOIN 
 		(
 			SELECT invoice_run_id, count(*) nr
-			  FROM automatic_invoice_run_event aire
-			 WHERE actioned_datetime IS NULL
-			   AND automatic_invoice_action_id IN 
-				(
-					SELECT prerequisite_automatic_invoice_action_id 
-					  FROM automatic_invoice_action_dependency 
-					 WHERE dependent_automatic_invoice_action_id = $intAutomaticInvoiceActionType
-				)
+			FROM automatic_invoice_run_event aire
+			WHERE actioned_datetime IS NULL
+			AND automatic_invoice_action_id IN 
+			(
+				SELECT prerequisite_automatic_invoice_action_id 
+				FROM automatic_invoice_action_dependency 
+				WHERE dependent_automatic_invoice_action_id = $intAutomaticInvoiceActionType
+			)
 			GROUP BY invoice_run_id
 		) unsatisfied_dependencies
 		ON automatic_invoice_action_id = $intAutomaticInvoiceActionType
 		AND unsatisfied_dependencies.invoice_run_id = automatic_invoice_run_event.invoice_run_id
-	";
+		";
 
 	$strWhere = "
-			actioned_datetime IS NULL
+		actioned_datetime IS NULL
 		AND scheduled_datetime IS NOT NULL
 		AND scheduled_datetime <= $strEffectiveDate
 		AND automatic_invoice_action_id = $intAutomaticInvoiceActionType
-	";
+		";
 
 	$strGroupBy = " automatic_invoice_run_event.invoice_run_id HAVING (unsatisfied IS NULL OR unsatisfied = 0)";
 
@@ -3918,30 +3918,30 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 
 	switch ($intAutomaticInvoiceActionType)
 	{
-		case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER_LIST:
-		case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER:
-		case AUTOMATIC_INVOICE_ACTION_LATE_FEES:
-		case AUTOMATIC_INVOICE_ACTION_LATE_FEES_LIST:
-		case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE:
-		case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE_LIST:
-			$strAccountBillingType = "AND Account.BillingType = " . BILLING_TYPE_ACCOUNT;
-			$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED);
-			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
-			break;
-		case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE:
-		case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE_LIST:
-			$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED);
-			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
-			break;
-		case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND:
-		case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND_LIST:
-			$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED, ACCOUNT_STATUS_SUSPENDED);
-			$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
-			break;
-		default:
-			// Unrecognised notice type
-			return FALSE;
-			break;
+	case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER_LIST:
+	case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER:
+	case AUTOMATIC_INVOICE_ACTION_LATE_FEES:
+	case AUTOMATIC_INVOICE_ACTION_LATE_FEES_LIST:
+	case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE:
+	case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE_LIST:
+		$strAccountBillingType = "AND Account.BillingType = " . BILLING_TYPE_ACCOUNT;
+		$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED);
+		$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
+		break;
+	case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE:
+	case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE_LIST:
+		$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED);
+		$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
+		break;
+	case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND:
+	case AUTOMATIC_INVOICE_ACTION_FINAL_DEMAND_LIST:
+		$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED, ACCOUNT_STATUS_SUSPENDED);
+		$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
+		break;
+	default:
+		// Unrecognised notice type
+		return FALSE;
+		break;
 	}
 	$arrApplicableAccountStatuses = implode(", ", $arrApplicableAccountStatuses);
 	$strApplicableInvoiceStatuses = implode(", ", $arrApplicableInvoiceStatuses);
@@ -3956,70 +3956,70 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 
 	// Find all Accounts that fit the requirements for Late Notice generation
 	$arrColumns = Array(	'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
-							'AccountId'				=> "Invoice.Account",
-							'AccountGroup'			=> "Account.AccountGroup",
-							'BusinessName'			=> "Account.BusinessName",
-							'TradingName'			=> "Account.TradingName",
-							'CustomerGroup'			=> "Account.CustomerGroup",
-							'AccountStatus'			=> "Account.Archived",
-							'automatic_invoice_action'=> "Account.last_automatic_invoice_action",
-							'LatePaymentAmnesty'	=> "Account.LatePaymentAmnesty",
-							'DeliveryMethod'		=> "Account.BillingMethod",
-							'FirstName'				=> "Contact.FirstName",
-							'LastName'				=> "Contact.LastName",
-							'Email'					=> "Contact.Email",
-							'EmailFrom'				=> "CustomerGroup.OutboundEmail",
-							'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-							'Title'					=> "Contact.Title",
-							'AddressLine1'			=> "Account.Address1",
-							'AddressLine2'			=> "Account.Address2",
-							'Suburb'				=> "UPPER(Account.Suburb)",
-							'Postcode'				=> "Account.Postcode",
-							'State'					=> "Account.State",
-							'DisableLatePayment'	=> "Account.DisableLatePayment",
-							'InvoiceId'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Id END)",
-							'CreatedOn'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.CreatedOn END)",
-							'OutstandingNotOverdue'	=> "SUM(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN Invoice.Balance END)",
-							'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
-							'TotalOutstanding'		=> "SUM(Invoice.Balance)",
-							'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue");
+		'AccountId'				=> "Invoice.Account",
+		'AccountGroup'			=> "Account.AccountGroup",
+		'BusinessName'			=> "Account.BusinessName",
+		'TradingName'			=> "Account.TradingName",
+		'CustomerGroup'			=> "Account.CustomerGroup",
+		'AccountStatus'			=> "Account.Archived",
+		'automatic_invoice_action'=> "Account.last_automatic_invoice_action",
+		'LatePaymentAmnesty'	=> "Account.LatePaymentAmnesty",
+		'DeliveryMethod'		=> "Account.BillingMethod",
+		'FirstName'				=> "Contact.FirstName",
+		'LastName'				=> "Contact.LastName",
+		'Email'					=> "Contact.Email",
+		'EmailFrom'				=> "CustomerGroup.OutboundEmail",
+		'CustomerGroupName'		=> "CustomerGroup.ExternalName",
+		'Title'					=> "Contact.Title",
+		'AddressLine1'			=> "Account.Address1",
+		'AddressLine2'			=> "Account.Address2",
+		'Suburb'				=> "UPPER(Account.Suburb)",
+		'Postcode'				=> "Account.Postcode",
+		'State'					=> "Account.State",
+		'DisableLatePayment'	=> "Account.DisableLatePayment",
+		'InvoiceId'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Id END)",
+		'CreatedOn'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.CreatedOn END)",
+		'OutstandingNotOverdue'	=> "SUM(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN Invoice.Balance END)",
+		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
+		'TotalOutstanding'		=> "SUM(Invoice.Balance)",
+		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue");
 
 	$strTables	= "Invoice 
 		JOIN Account 
-		  ON Invoice.Account = Account.Id 
-		 AND Invoice.Status IN ($strApplicableInvoiceStatuses)
-		 AND Account.Archived IN ($arrApplicableAccountStatuses) 
-		 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
+		ON Invoice.Account = Account.Id 
+		AND Invoice.Status IN ($strApplicableInvoiceStatuses)
+		AND Account.Archived IN ($arrApplicableAccountStatuses) 
+		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
 		JOIN credit_control_status 
-		  ON Account.credit_control_status = credit_control_status.id
-		 AND credit_control_status.send_late_notice = 1
+		ON Account.credit_control_status = credit_control_status.id
+		AND credit_control_status.send_late_notice = 1
 		JOIN account_status 
-		  ON Account.Archived = account_status.id
-		 AND account_status.send_late_notice = 1
+		ON Account.Archived = account_status.id
+		AND account_status.send_late_notice = 1
 		JOIN Contact 
-		  ON Account.PrimaryContact = Contact.Id 
+		ON Account.PrimaryContact = Contact.Id 
 		JOIN CustomerGroup 
-		  ON Account.CustomerGroup = CustomerGroup.Id
+		ON Account.CustomerGroup = CustomerGroup.Id
 		JOIN payment_terms
-		  ON payment_terms.customer_group_id = Account.CustomerGroup";
+		ON payment_terms.customer_group_id = Account.CustomerGroup";
 
 	$strWhere	= "Account.Id IN (
 		SELECT DISTINCT(Account.Id) 
 		FROM InvoiceRun 
 		JOIN Invoice
-		  ON InvoiceRun.Id IN ($strInvoiceRunIds)
-	     AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
-		 AND InvoiceRun.Id = Invoice.invoice_run_id
+		ON InvoiceRun.Id IN ($strInvoiceRunIds)
+		AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
+		AND InvoiceRun.Id = Invoice.invoice_run_id
 		JOIN Account 
-		  ON Account.Id = Invoice.Account
-	         AND Account.Archived IN ($arrApplicableAccountStatuses) $strAccountBillingType
-	         AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
+		ON Account.Id = Invoice.Account
+		AND Account.Archived IN ($arrApplicableAccountStatuses) $strAccountBillingType
+		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
 		JOIN credit_control_status 
-		  ON Account.credit_control_status = credit_control_status.id
-		 AND credit_control_status.send_late_notice = 1
+		ON Account.credit_control_status = credit_control_status.id
+		AND credit_control_status.send_late_notice = 1
 		JOIN account_status 
-		  ON Account.Archived = account_status.id
-		 AND account_status.send_late_notice = 1
+		ON Account.Archived = account_status.id
+		AND account_status.send_late_notice = 1
 	)";
 
 	$strOrderBy	= "Invoice.Account ASC";
@@ -4102,7 +4102,7 @@ function GetPaymentTerms($customerGroupId)
 function CreateDefaultPaymentTerms($customerGroupId)
 {
 	TransactionStart();
-	
+
 	// Create the default payment terms
 	$arrPaymentTerms = array(
 		'customer_group_id' => $customerGroupId,
@@ -4122,18 +4122,18 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	}
 
 	// Create the default automatic_invoice_action_config entries
-	
+
 	// Load up the automatic invoice action configs for the NULL customer_group_id
 	$selAutoInvActions = new StatementSelect('automatic_invoice_action_config', 
-							array('automatic_invoice_action_id', 'days_from_invoice', 'can_schedule', 'response_days'), 
-							'customer_group_id IS NULL');
+		array('automatic_invoice_action_id', 'days_from_invoice', 'can_schedule', 'response_days'), 
+		'customer_group_id IS NULL');
 	if (($result = $selAutoInvActions->Execute()) === FALSE)
 	{
 		TransactionRollback();
 		throw new Exception('Failed to load default automatic invoice action configurations: ' . $selAutoInvActions->Error());
 	}
 	$automaticInvoiceActions = $selAutoInvActions->FetchAll();
-	
+
 	$insAutoInvAction = NULL;
 	foreach ($automaticInvoiceActions as $automaticInvoiceAction)
 	{
@@ -4150,7 +4150,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	}
 
 	TransactionCommit();
-	
+
 	return $id;
 }
 
@@ -4171,51 +4171,51 @@ function CreateDefaultPaymentTerms($customerGroupId)
  *									returns	Array['Successful']	= number of successfully generated notices of the NoticeType
  *											Array['Failed'] 	= number of notices that failed to generate, of the NoticeType
  * @function
- */
-function GenerateLatePaymentNotices($intAutomaticInvoiceActionType, $intEffectiveDate=0, $strBasePath=FILES_BASE_PATH)
-{
-	$selPriorNotices = new StatementSelect("AccountLetterLog", "Id", "Invoice = <InvoiceId> AND LetterType = <NoticeType>", "", 1);
-
-	// Append a backslash to the path, if it doesn't already end in one
-	if (substr($strBasePath, -1) != "/")
+	 */
+	function GenerateLatePaymentNotices($intAutomaticInvoiceActionType, $intEffectiveDate=0, $strBasePath=FILES_BASE_PATH)
 	{
-		$strBasePath .= "/";
-	}
+		$selPriorNotices = new StatementSelect("account_letter_log", "1d", "invoice = <InvoiceId> AND letter_type = <NoticeType>", "", 1);
 
-	// Retrieve the list of CustomerGroups
-	$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, InternalName, ExternalName");
-	$selCustomerGroups->Execute();
-	$arrCustomerGroups = Array();
-	while (($arrCustomerGroup = $selCustomerGroups->Fetch()) !== FALSE)
-	{
-		$arrCustomerGroups[$arrCustomerGroup['Id']] = $arrCustomerGroup;
-	}
-
-	$intEffectiveDate = $intEffectiveDate ? $intEffectiveDate : time();
-
-	// Find all Accounts that fit the requirements for Late Notice generation
-	$arrAccounts = ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDate);
-
-	if ($arrAccounts === FALSE)
-	{
-		// Failed to retrieve the data from the database
-		return FALSE;
-	}
-	
-	// Store a running total of how many were successfully generated, and how many failed, for each notice type
-	$arrGeneratedNotices = Array("Successful" => 0, "Failed" => 0, "Details" => array());
-	$arrSummary = Array();
-
-	VixenRequire('lib/dom/Flex_Dom_Document.php');
-	$dom = new Flex_Dom_Document();
-
-	// For each account retrieved, build the late payment notice for it
-	foreach ($arrAccounts as $arrAccount)
-	{
-		$mxdSuccess = NULL;
-
-		switch ($intAutomaticInvoiceActionType)
+		// Append a backslash to the path, if it doesn't already end in one
+		if (substr($strBasePath, -1) != "/")
 		{
+			$strBasePath .= "/";
+		}
+
+		// Retrieve the list of CustomerGroups
+		$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, InternalName, ExternalName");
+		$selCustomerGroups->Execute();
+		$arrCustomerGroups = Array();
+		while (($arrCustomerGroup = $selCustomerGroups->Fetch()) !== FALSE)
+		{
+			$arrCustomerGroups[$arrCustomerGroup['Id']] = $arrCustomerGroup;
+		}
+
+		$intEffectiveDate = $intEffectiveDate ? $intEffectiveDate : time();
+
+		// Find all Accounts that fit the requirements for Late Notice generation
+		$arrAccounts = ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDate);
+
+		if ($arrAccounts === FALSE)
+		{
+			// Failed to retrieve the data from the database
+			return FALSE;
+		}
+
+		// Store a running total of how many were successfully generated, and how many failed, for each notice type
+		$arrGeneratedNotices = Array("Successful" => 0, "Failed" => 0, "Details" => array());
+		$arrSummary = Array();
+
+		VixenRequire('lib/dom/Flex_Dom_Document.php');
+		$dom = new Flex_Dom_Document();
+
+		// For each account retrieved, build the late payment notice for it
+		foreach ($arrAccounts as $arrAccount)
+		{
+			$mxdSuccess = NULL;
+
+			switch ($intAutomaticInvoiceActionType)
+			{
 			case AUTOMATIC_INVOICE_ACTION_FRIENDLY_REMINDER:
 				// If the account has a status of "Active" or "Closed", then they are eligible for recieving late notices
 				// This condition is forced in the WHERE clause of the $selOverdue StatementSelect object
@@ -4239,189 +4239,189 @@ function GenerateLatePaymentNotices($intAutomaticInvoiceActionType, $intEffectiv
 				$intNoticeType = DOCUMENT_TEMPLATE_TYPE_FINAL_DEMAND;
 				$mxdSuccess = BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath, $intEffectiveDate, $intAutomaticInvoiceActionType);
 				break;
-		}
-
-		if ($mxdSuccess !== NULL)
-		{
-			if ($mxdSuccess !== FALSE)
-			{
-				$arrGeneratedNotices['Successful'] += 1;
-				$i = count($arrGeneratedNotices['Details']);
-				$arrGeneratedNotices['Details'][$i]['Account'] = $arrAccount;
-				$arrGeneratedNotices['Details'][$i]['XMLFilePath'] = $mxdSuccess;
-				$bolSuccess = TRUE;
-			}
-			else 
-			{
-				$arrGeneratedNotices['Failed'] += 1;
-				$bolSuccess = FALSE;
 			}
 
-			$arrSummary[] = Array(	"AccountId"					=> $arrAccount['AccountId'], 
-									"Outcome"					=> ($bolSuccess ? "Successful":"Failed"),
-									"BusinessName"				=> $arrAccount['BusinessName'],
-									"TradingName"				=> $arrAccount['TradingName'],
-									"CustomerGroupInternalName"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['InternalName'],
-									"CustomerGroupExternalName"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['ExternalName'],
-									"OutstandingNotOverdue"		=> $arrAccount['OutstandingNotOverdue'],
-									"Overdue"					=> $arrAccount['Overdue'],
-									"TotalOutstanding"			=> $arrAccount['TotalOutstanding']);
-		}
-	}
-	// Build the summary file
-	$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))). 
-					"_summary_". date("Y_m_d") .".csv";
-	$ptrSummaryFile = fopen($strBasePath . $strFilename, 'wt');
-	if ($ptrSummaryFile !== FALSE)
-	{
-		fputcsv($ptrSummaryFile, Array("Account Id", "Outcome", "Business Name", "Trading Name", "Customer Group (internal)", "Customer Group (external)", "Outstanding Not Overdue", "Overdue", "Total Outstanding"), ";");
-		foreach ($arrSummary as $arrAccount)
-		{
-			fputcsv($ptrSummaryFile, $arrAccount, ";");
-		}
-		
-		fclose($ptrSummaryFile);
-	}
-	
-	// Record the summary file in the FileExport table
-	//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
-	$arrFileLog = Array(	'FileName'		=>	$strFilename,
-							'Location'		=>	ltrim($strBasePath, "."),
-							'Carrier'		=>	0,
-							'ExportedOn'	=>	date("Y-m-d H:i:s"),
-							'Status'		=>	0,
-							'FileType'		=>	0,
-							'SHA1'			=>	sha1($strFilename));
-
-	$insFileExport = new StatementInsert("FileExport", $arrFileLog);
-	$insFileExport->Execute($arrFileLog);
-	
-	return $arrGeneratedNotices;
-}
-
-
-//------------------------------------------------------------------------//
-// RecursiveMkdir
-//------------------------------------------------------------------------//
-/**
- * RecursiveMkdir()
- *
- * Performs the mkdir function recursively to allow construction of an entire directory path in one go
- *
- * Performs the mkdir function recursively to allow construction of an entire directory path in one go
- *
- * @param	string	$strPath		path to make ie "./This/is/a/path"
- * @param	integer	$intMode		permissions for the directories
- *									
- * @return	bool					TRUE on success, else FALSE
- *
- * @function
- */
-function RecursiveMkdir($strPath, $intMode = 0777)
-{
-    // Remove leading / on absolute paths
-    $strCumulativePath = "";
-    if (substr($strPath, 0, 1) == '/')
-    {
-    	$strPath			= substr($strPath, 1);
-    	$strCumulativePath	= '/';
-    }
-    
-    $arrDirs = explode('/' , $strPath);
-    foreach ($arrDirs as $strDir)
-	{
-        $strCumulativePath .= $strDir;
-        if (!is_dir($strCumulativePath) && !mkdir($strCumulativePath, $intMode))
-		{
-            return FALSE;
-        }
-		
-		$strCumulativePath .= '/';
-    }
-    return TRUE;
-}
-
-function GetAutomaticInvoiceActionResponseTime($intActionId, $intCustomerGroupId)
-{
-	static $cache;
-	if (!isset($cache))
-	{
-		$cache = array();
-	}
-	if (!array_key_exists($intActionId, $cache))
-	{
-		$arrColumns = array('response_days' => 'response_days');
-		$strTables = "automatic_invoice_action_config";
-		$strWhere = "automatic_invoice_action_id = $intActionId AND " . ($intCustomerGroupId ? "customer_group_id = $intCustomerGroupId" : " IS NULL");
-		$selDays = new StatementSelect($strTables, $arrColumns, $strWhere);
-		$mxdReturn = $selDays->Execute();
-		$result = FALSE;
-		if ($mxdReturn !== FALSE)
-		{
-			$days = $selDays->Fetch();
-			if ($days)
+			if ($mxdSuccess !== NULL)
 			{
-				$result = $days['response_days'];
+				if ($mxdSuccess !== FALSE)
+				{
+					$arrGeneratedNotices['Successful'] += 1;
+					$i = count($arrGeneratedNotices['Details']);
+					$arrGeneratedNotices['Details'][$i]['Account'] = $arrAccount;
+					$arrGeneratedNotices['Details'][$i]['XMLFilePath'] = $mxdSuccess;
+					$bolSuccess = TRUE;
+				}
+				else 
+				{
+					$arrGeneratedNotices['Failed'] += 1;
+					$bolSuccess = FALSE;
+				}
+
+				$arrSummary[] = Array(	"AccountId"					=> $arrAccount['AccountId'], 
+					"Outcome"					=> ($bolSuccess ? "Successful":"Failed"),
+					"BusinessName"				=> $arrAccount['BusinessName'],
+					"TradingName"				=> $arrAccount['TradingName'],
+					"CustomerGroupInternalName"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['InternalName'],
+					"CustomerGroupExternalName"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['ExternalName'],
+					"OutstandingNotOverdue"		=> $arrAccount['OutstandingNotOverdue'],
+					"Overdue"					=> $arrAccount['Overdue'],
+					"TotalOutstanding"			=> $arrAccount['TotalOutstanding']);
 			}
 		}
-		$cache[$intActionId] = $result;
-	}
-	return $cache[$intActionId];
-}
+		// Build the summary file
+		$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))). 
+			"_summary_". date("Y_m_d") .".csv";
+		$ptrSummaryFile = fopen($strBasePath . $strFilename, 'wt');
+		if ($ptrSummaryFile !== FALSE)
+		{
+			fputcsv($ptrSummaryFile, Array("Account Id", "Outcome", "Business Name", "Trading Name", "Customer Group (internal)", "Customer Group (external)", "Outstanding Not Overdue", "Overdue", "Total Outstanding"), ";");
+			foreach ($arrSummary as $arrAccount)
+			{
+				fputcsv($ptrSummaryFile, $arrAccount, ";");
+			}
 
-//------------------------------------------------------------------------//
-// BuildLatePaymentNotice
-//------------------------------------------------------------------------//
-/**
- * BuildLatePaymentNotice()
- *
- * Generates the chosen Late Payment Notice for an Account
- *
- * Generates the chosen Late Payment Notice for an Account
- *
- * @param	integer	$intNoticeType	Type of notice to generate DOCUMENT_TEMPLATE_TYPE_[OVERDUE_NOTICE|SUSPENSION_NOTICE|FINAL_DEMAND|FRIENDLY_REMINDER]
- * @param	array	$arrAccount		All Account, Contact and Invoice data required for the notice
- * @param	string	$strBasePath	optional, base path where the generated notices will be placed. Must end with a '/'
- *									
- * @return	bool					TRUE if the notice was successfully generated, else FALSE
- *
- * @function
- */
-function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $intEffectiveDate, $intAutomaticInvoiceActionType)
-{
-	// Static instances of the db access objects used to add records to the AccountNotice and FileExport tables
-	// are used so that the same objects don't have to be built for each individual Late Payment Notice that gets
-	// made in a run
-	static $insNotice;
-	static $insFileExport;
+			fclose($ptrSummaryFile);
+		}
 
-	// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
-	$strFullPath = 	$strBasePath . str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))) . "/xml/" . date("Ymd");
-	
-	// Make the directory structure if it hasn't already been made
-	if (!is_dir($strFullPath))
-	{
-		RecursiveMkdir($strFullPath);
+		// Record the summary file in the FileExport table
+		//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
+		$arrFileLog = Array(	'FileName'		=>	$strFilename,
+			'Location'		=>	ltrim($strBasePath, "."),
+			'Carrier'		=>	0,
+			'ExportedOn'	=>	date("Y-m-d H:i:s"),
+			'Status'		=>	0,
+			'FileType'		=>	0,
+			'SHA1'			=>	sha1($strFilename));
+
+		$insFileExport = new StatementInsert("FileExport", $arrFileLog);
+		$insFileExport->Execute($arrFileLog);
+
+		return $arrGeneratedNotices;
 	}
 
-	// Create the filename
-	$strFilename = $arrAccount['AccountId'] . ".xml";
 
-	// Build XML for the data...
-	VixenRequire('lib/dom/Flex_Dom_Document.php');
-	$dom = new Flex_Dom_Document();
-
-	// Set up all values required of the notice, which have not been defined yet
-	$dom->Document->DocumentType->setValue(GetConstantName($intNoticeType, 'DocumentTemplateType'));
-
-	$responseDays = GetAutomaticInvoiceActionResponseTime($intAutomaticInvoiceActionType, $arrAccount['CustomerGroup']);
-	$actionDate = ($responseDays * 24 * 60 * 60) + $intEffectiveDate;
-
-	// Always issue on the scheduled date!
-	$dom->Document->DateIssued = date("d M Y", $intEffectiveDate);
-
-	switch($arrAccount['DeliveryMethod'])
+	//------------------------------------------------------------------------//
+	// RecursiveMkdir
+	//------------------------------------------------------------------------//
+	/**
+	 * RecursiveMkdir()
+	 *
+	 * Performs the mkdir function recursively to allow construction of an entire directory path in one go
+	 *
+	 * Performs the mkdir function recursively to allow construction of an entire directory path in one go
+	 *
+	 * @param	string	$strPath		path to make ie "./This/is/a/path"
+	 * @param	integer	$intMode		permissions for the directories
+	 *									
+	 * @return	bool					TRUE on success, else FALSE
+	 *
+	 * @function
+	 */
+	function RecursiveMkdir($strPath, $intMode = 0777)
 	{
+		// Remove leading / on absolute paths
+		$strCumulativePath = "";
+		if (substr($strPath, 0, 1) == '/')
+		{
+			$strPath			= substr($strPath, 1);
+			$strCumulativePath	= '/';
+		}
+
+		$arrDirs = explode('/' , $strPath);
+		foreach ($arrDirs as $strDir)
+		{
+			$strCumulativePath .= $strDir;
+			if (!is_dir($strCumulativePath) && !mkdir($strCumulativePath, $intMode))
+			{
+				return FALSE;
+			}
+
+			$strCumulativePath .= '/';
+		}
+		return TRUE;
+	}
+
+	function GetAutomaticInvoiceActionResponseTime($intActionId, $intCustomerGroupId)
+	{
+		static $cache;
+		if (!isset($cache))
+		{
+			$cache = array();
+		}
+		if (!array_key_exists($intActionId, $cache))
+		{
+			$arrColumns = array('response_days' => 'response_days');
+			$strTables = "automatic_invoice_action_config";
+			$strWhere = "automatic_invoice_action_id = $intActionId AND " . ($intCustomerGroupId ? "customer_group_id = $intCustomerGroupId" : " IS NULL");
+			$selDays = new StatementSelect($strTables, $arrColumns, $strWhere);
+			$mxdReturn = $selDays->Execute();
+			$result = FALSE;
+			if ($mxdReturn !== FALSE)
+			{
+				$days = $selDays->Fetch();
+				if ($days)
+				{
+					$result = $days['response_days'];
+				}
+			}
+			$cache[$intActionId] = $result;
+		}
+		return $cache[$intActionId];
+	}
+
+	//------------------------------------------------------------------------//
+	// BuildLatePaymentNotice
+	//------------------------------------------------------------------------//
+	/**
+	 * BuildLatePaymentNotice()
+	 *
+	 * Generates the chosen Late Payment Notice for an Account
+	 *
+	 * Generates the chosen Late Payment Notice for an Account
+	 *
+	 * @param	integer	$intNoticeType	Type of notice to generate DOCUMENT_TEMPLATE_TYPE_[OVERDUE_NOTICE|SUSPENSION_NOTICE|FINAL_DEMAND|FRIENDLY_REMINDER]
+	 * @param	array	$arrAccount		All Account, Contact and Invoice data required for the notice
+	 * @param	string	$strBasePath	optional, base path where the generated notices will be placed. Must end with a '/'
+	 *									
+	 * @return	bool					TRUE if the notice was successfully generated, else FALSE
+	 *
+	 * @function
+	 */
+	function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $intEffectiveDate, $intAutomaticInvoiceActionType)
+	{
+		// Static instances of the db access objects used to add records to the AccountNotice and FileExport tables
+		// are used so that the same objects don't have to be built for each individual Late Payment Notice that gets
+		// made in a run
+		static $insNotice;
+		static $insFileExport;
+
+		// Directory structure = BasePath/CustomerGroup/NoticeType/YYYY/MM/DD/
+		$strFullPath = 	$strBasePath . str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))) . "/xml/" . date("Ymd");
+
+		// Make the directory structure if it hasn't already been made
+		if (!is_dir($strFullPath))
+		{
+			RecursiveMkdir($strFullPath);
+		}
+
+		// Create the filename
+		$strFilename = $arrAccount['AccountId'] . ".xml";
+
+		// Build XML for the data...
+		VixenRequire('lib/dom/Flex_Dom_Document.php');
+		$dom = new Flex_Dom_Document();
+
+		// Set up all values required of the notice, which have not been defined yet
+		$dom->Document->DocumentType->setValue(GetConstantName($intNoticeType, 'DocumentTemplateType'));
+
+		$responseDays = GetAutomaticInvoiceActionResponseTime($intAutomaticInvoiceActionType, $arrAccount['CustomerGroup']);
+		$actionDate = ($responseDays * 24 * 60 * 60) + $intEffectiveDate;
+
+		// Always issue on the scheduled date!
+		$dom->Document->DateIssued = date("d M Y", $intEffectiveDate);
+
+		switch($arrAccount['DeliveryMethod'])
+		{
 		case DELIVERY_METHOD_POST:
 			$strDeliveryMethod='DELIVERY_METHOD_POST';
 			break;
@@ -4430,303 +4430,305 @@ function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_
 			$strDeliveryMethod='DELIVERY_METHOD_EMAIL';
 			break;
 		case DELIVERY_METHOD_DO_NOT_SEND:
-		default;
-			$strDeliveryMethod='DELIVERY_METHOD_DO_NOT_SEND';
-			break;
+default;
+$strDeliveryMethod='DELIVERY_METHOD_DO_NOT_SEND';
+break;
+		}
+
+		$dom->Document->CustomerGroup->setValue(GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup'));
+		$dom->Document->CreationDate->setValue(date("Y-m-d H:i:s"));
+		$dom->Document->DeliveryMethod->setValue($strDeliveryMethod);
+
+		$dom->Document->Currency->Symbol->Location = 'Prefix';
+		$dom->Document->Currency->Symbol->setValue('$');
+		$dom->Document->Currency->Negative->Location = 'Suffix';
+		$dom->Document->Currency->Negative->setValue('CR');
+
+		$dom->Document->Account->Id = $arrAccount['AccountId'];
+		$dom->Document->Account->Name = $arrAccount['BusinessName'];
+		$dom->Document->Account->CustomerGroup = GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup');
+		$dom->Document->Account->Email->setValue($arrAccount['Email']);
+		$dom->Document->Account->Addressee->setValue($arrAccount['BusinessName']);
+		$dom->Document->Account->AddressLine1;
+		if (trim($arrAccount['AddressLine1']))
+		{
+			$dom->Document->Account->AddressLine1->setValue(trim($arrAccount['AddressLine1']));
+		}
+		$dom->Document->Account->AddressLine2;
+		if (trim($arrAccount['AddressLine2']))
+		{
+			$dom->Document->Account->AddressLine2->setValue(trim($arrAccount['AddressLine2']));
+		}
+		$dom->Document->Account->Suburb->setValue(strtoupper($arrAccount['Suburb']));
+		$dom->Document->Account->Postcode->setValue($arrAccount['Postcode']);
+		$dom->Document->Account->State->setValue(strtoupper($arrAccount['State']));
+
+		$dom->Document->PrimaryContact->FirstName->setValue($arrAccount['FirstName']);
+		$dom->Document->PrimaryContact->LastName->setValue($arrAccount['LastName']);
+		$dom->Document->PrimaryContact->Title->setValue($arrAccount['Title']);
+		$dom->Document->PrimaryContact->FullName->setValue(
+			($arrAccount['Title'] ? $arrAccount['Title'] . ' ' : '') .
+			($arrAccount['FirstName'] ? $arrAccount['FirstName'] . ' ' : '') .
+			$arrAccount['LastName']);
+
+		$dom->Document->Payment->BPay->CustomerReference->setValue($arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']));
+		$dom->Document->Payment->BillExpress->CustomerReference->setValue($arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']));
+
+		$dom->Document->Outstanding->Overdue->setValue(number_format($arrAccount['Overdue'], 2, ".", ""));
+		$dom->Document->Outstanding->NotOverdue->setValue(number_format($arrAccount['OutstandingNotOverdue'], 2, ".", ""));
+		$dom->Document->Outstanding->Total->setValue(number_format($arrAccount['TotalOutstanding'], 2, ".", ""));
+		$dom->Document->Outstanding->CurrentInvoiceId->setValue($arrAccount['InvoiceId']);
+
+		$dom->Document->Outstanding->ActionDate->setValue(date("d M Y", $actionDate));
+
+		$strXML = $dom->saveXML();
+
+		$return = $strFullPath ."/". $strFilename;
+
+		// Open the file in text mode
+		$ptrNoticeFile = fopen($return, 'wt');
+
+		if ($ptrNoticeFile === FALSE)
+		{
+			// The file could not be opened
+			return FALSE;
+		}
+
+		fwrite($ptrNoticeFile, $strXML);
+		fclose($ptrNoticeFile);
+
+		$strNow = date("Y-m-d H:i:s");
+		// Log the Notice in the account_letter_log Table
+		$arrLetterLog = Array(	
+			'account_id'		=> $arrAccount['AccountId'],
+			'invoice_id'		=> $arrAccount['InvoiceId'],
+			'letter_type_id'	=> $intNoticeType,
+			'created_on'		=> $strNow
+		);
+
+		// Only define the StatementInsert object if it hasn't already been defined				
+		if (!isset($insNotice))
+		{
+			$insNotice = new StatementInsert("account_letter_log", $arrLetterLog);
+		}
+		$insNotice->Execute($arrLetterLog);
+
+		// Record the File in the FileExport table
+		//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
+		$arrFileLog = Array(	'FileName'		=>	$strFilename,
+			'Location'		=>	ltrim($strFullPath, ".") . "/",
+			'Carrier'		=>	0,
+			'ExportedOn'	=>	$strNow,
+			'Status'		=>	0,
+			'FileType'		=>	0,
+			'SHA1'			=>	sha1($strXML));
+
+		// Only define the StatementInsert object if it hasn't already been defined				
+		if (!isset($insFileExport))
+		{
+			$insFileExport = new StatementInsert("FileExport", $arrFileLog);
+		}
+		$insFileExport->Execute($arrFileLog);
+
+		// Create a system note for the account
+		$strNote = 	GetConstantDescription($intNoticeType, "DocumentTemplateType") . " has been generated\n".
+			"Outstanding Overdue: \$" . number_format($arrAccount['Overdue'], 2, '.', '') . "\n".
+			"Outstanding Not Overdue: \$" . number_format($arrAccount['OutstandingNotOverdue'], 2, '.', '');
+
+		$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, NULL, $arrAccount['AccountGroup'], $arrAccount['AccountId']);
+
+		return $return;
 	}
 
-	$dom->Document->CustomerGroup->setValue(GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup'));
-	$dom->Document->CreationDate->setValue(date("Y-m-d H:i:s"));
-	$dom->Document->DeliveryMethod->setValue($strDeliveryMethod);
 
-	$dom->Document->Currency->Symbol->Location = 'Prefix';
-	$dom->Document->Currency->Symbol->setValue('$');
-	$dom->Document->Currency->Negative->Location = 'Suffix';
-	$dom->Document->Currency->Negative->setValue('CR');
-
-	$dom->Document->Account->Id = $arrAccount['AccountId'];
-	$dom->Document->Account->Name = $arrAccount['BusinessName'];
-	$dom->Document->Account->CustomerGroup = GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup');
-	$dom->Document->Account->Email->setValue($arrAccount['Email']);
-	$dom->Document->Account->Addressee->setValue($arrAccount['BusinessName']);
-	$dom->Document->Account->AddressLine1;
-	if (trim($arrAccount['AddressLine1']))
+	//------------------------------------------------------------------------//
+	// SaveConstantGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * SaveConstantGroup()
+	 *
+	 * Inserts a ConstantGroup into the ConfigConstant and ConfigConstantGroup tables of the database
+	 *
+	 * Inserts a ConstantGroup into the ConfigConstant and ConfigConstantGroup tables of the database
+	 *
+	 * @param	array	$arrConstGroup	constant group array.  This must be in the format of ConstantGroups
+	 * 									defined within $GLOBALS['*arrConstant'] array
+	 * @param	string	$strName		name of the constant group
+	 * @param	integer	$intDataType	the DatatType of the constants within the constant group.  This must be a constant
+	 * 									from the DATA_TYPE_ constant group
+	 * @param	string	$strDescription optional, description of the constant group.  Defaults to NULL
+	 *									
+	 * @return	mix						int  : Id of the ConstantGroup on success
+	 * 									bool : FALSE on failure
+	 *
+	 * @function
+	 */
+	function SaveConstantGroup($arrConstGroup, $strName, $intDataType, $strDescription=NULL)
 	{
-		$dom->Document->Account->AddressLine1->setValue(trim($arrAccount['AddressLine1']));
-	}
-	$dom->Document->Account->AddressLine2;
-	if (trim($arrAccount['AddressLine2']))
-	{
-		$dom->Document->Account->AddressLine2->setValue(trim($arrAccount['AddressLine2']));
-	}
-	$dom->Document->Account->Suburb->setValue(strtoupper($arrAccount['Suburb']));
-	$dom->Document->Account->Postcode->setValue($arrAccount['Postcode']);
-	$dom->Document->Account->State->setValue(strtoupper($arrAccount['State']));
+		static $insConstGroup;
 
-	$dom->Document->PrimaryContact->FirstName->setValue($arrAccount['FirstName']);
-	$dom->Document->PrimaryContact->LastName->setValue($arrAccount['LastName']);
-	$dom->Document->PrimaryContact->Title->setValue($arrAccount['Title']);
-	$dom->Document->PrimaryContact->FullName->setValue(
-		($arrAccount['Title'] ? $arrAccount['Title'] . ' ' : '') .
-		($arrAccount['FirstName'] ? $arrAccount['FirstName'] . ' ' : '') .
-		$arrAccount['LastName']);
+		// If the StatementInsert objects have not yet been created, create them now
+		if (!isset($insConstGroup))
+		{
+			$insConstGroup	= new StatementInsert("ConfigConstantGroup");
+		}
 
-	$dom->Document->Payment->BPay->CustomerReference->setValue($arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']));
-	$dom->Document->Payment->BillExpress->CustomerReference->setValue($arrAccount['AccountId'] . MakeLuhn($arrAccount['AccountId']));
+		// Set up the data for the ConfigConstantGroup record
+		$arrConstGroupData = Array("Name" => $strName, "Description" => $strDescription, "Type" => $intDataType);
 
-	$dom->Document->Outstanding->Overdue->setValue(number_format($arrAccount['Overdue'], 2, ".", ""));
-	$dom->Document->Outstanding->NotOverdue->setValue(number_format($arrAccount['OutstandingNotOverdue'], 2, ".", ""));
-	$dom->Document->Outstanding->Total->setValue(number_format($arrAccount['TotalOutstanding'], 2, ".", ""));
-	$dom->Document->Outstanding->CurrentInvoiceId->setValue($arrAccount['InvoiceId']);
+		TransactionStart();
 
-	$dom->Document->Outstanding->ActionDate->setValue(date("d M Y", $actionDate));
-
-	$strXML = $dom->saveXML();
-
-	$return = $strFullPath ."/". $strFilename;
-
-	// Open the file in text mode
-	$ptrNoticeFile = fopen($return, 'wt');
-
-	if ($ptrNoticeFile === FALSE)
-	{
-		// The file could not be opened
-		return FALSE;
-	}
-
-	fwrite($ptrNoticeFile, $strXML);
-	fclose($ptrNoticeFile);
-
-	$strNow = date("Y-m-d H:i:s");
-	// Log the Notice in the AccountLetterLog Table
-	$arrLetterLog = Array(	'Account'		=> $arrAccount['AccountId'],
-							'Invoice'		=> $arrAccount['InvoiceId'],
-							'LetterType'	=> $intNoticeType,
-							'CreatedOn'		=> $strNow);
-
-	// Only define the StatementInsert object if it hasn't already been defined				
-	if (!isset($insNotice))
-	{
-		$insNotice = new StatementInsert("AccountLetterLog", $arrLetterLog);
-	}
-	$insNotice->Execute($arrLetterLog);
-
-	// Record the File in the FileExport table
-	//TODO! Fix up the Carrier, Status and FileType values so that they are meaningful
-	$arrFileLog = Array(	'FileName'		=>	$strFilename,
-							'Location'		=>	ltrim($strFullPath, ".") . "/",
-							'Carrier'		=>	0,
-							'ExportedOn'	=>	$strNow,
-							'Status'		=>	0,
-							'FileType'		=>	0,
-							'SHA1'			=>	sha1($strXML));
-
-	// Only define the StatementInsert object if it hasn't already been defined				
-	if (!isset($insFileExport))
-	{
-		$insFileExport = new StatementInsert("FileExport", $arrFileLog);
-	}
-	$insFileExport->Execute($arrFileLog);
-
-	// Create a system note for the account
-	$strNote = 	GetConstantDescription($intNoticeType, "DocumentTemplateType") . " has been generated\n".
-				"Outstanding Overdue: \$" . number_format($arrAccount['Overdue'], 2, '.', '') . "\n".
-				"Outstanding Not Overdue: \$" . number_format($arrAccount['OutstandingNotOverdue'], 2, '.', '');
-
-	$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, NULL, $arrAccount['AccountGroup'], $arrAccount['AccountId']);
-
-	return $return;
-}
-
-
-//------------------------------------------------------------------------//
-// SaveConstantGroup
-//------------------------------------------------------------------------//
-/**
- * SaveConstantGroup()
- *
- * Inserts a ConstantGroup into the ConfigConstant and ConfigConstantGroup tables of the database
- *
- * Inserts a ConstantGroup into the ConfigConstant and ConfigConstantGroup tables of the database
- *
- * @param	array	$arrConstGroup	constant group array.  This must be in the format of ConstantGroups
- * 									defined within $GLOBALS['*arrConstant'] array
- * @param	string	$strName		name of the constant group
- * @param	integer	$intDataType	the DatatType of the constants within the constant group.  This must be a constant
- * 									from the DATA_TYPE_ constant group
- * @param	string	$strDescription optional, description of the constant group.  Defaults to NULL
- *									
- * @return	mix						int  : Id of the ConstantGroup on success
- * 									bool : FALSE on failure
- *
- * @function
- */
-function SaveConstantGroup($arrConstGroup, $strName, $intDataType, $strDescription=NULL)
-{
-	static $insConstGroup;
-	
-	// If the StatementInsert objects have not yet been created, create them now
-	if (!isset($insConstGroup))
-	{
-		$insConstGroup	= new StatementInsert("ConfigConstantGroup");
-	}
-	
-	// Set up the data for the ConfigConstantGroup record
-	$arrConstGroupData = Array("Name" => $strName, "Description" => $strDescription, "Type" => $intDataType);
-	
-	TransactionStart();
-	
-	// Insert the ConfigConstantGroup record
-	$mixConstGroupId = $insConstGroup->Execute($arrConstGroupData);
-	if ($mixConstGroupId === FALSE)
-	{
-		TransactionRollback();
-		return FALSE;
-	}
-	
-	// Insert each constant of the ConstantGroup, into the ConfigConstant table
-	foreach ($arrConstGroup as $mixValue=>$arrValue)
-	{
-		$mixResult = SaveConstant($arrValue['Constant'], $mixValue, $intDataType, $arrValue['Description'], $mixConstGroupId);
-		if ($mixResult === FALSE)
+		// Insert the ConfigConstantGroup record
+		$mixConstGroupId = $insConstGroup->Execute($arrConstGroupData);
+		if ($mixConstGroupId === FALSE)
 		{
 			TransactionRollback();
 			return FALSE;
 		}
-	}
-	
-	TransactionCommit();
-	return $mixConstGroupId;
-}
 
-//------------------------------------------------------------------------//
-// SaveConstant
-//------------------------------------------------------------------------//
-/**
- * SaveConstant()
- *
- * Inserts a Constant into the ConfigConstant table of the database
- *
- * Inserts a Constant into the ConfigConstant table of the database
- *
- * @param	string	$strName			name of the constant (ie CONST_NAME)
- * @param	mix		$mixValue			value of the constant (either a string, int, float or bool)
- * @param	integer	$intDataType		optional, the DatatType of the constants within the constant group.  
- * 										This must be a constant from the DATA_TYPE_ constant group.  If
- * 										$intConstantGroupId is declared, then $intDataType is considered NULL.
- * 										Defaults to NULL
- * @param	string	$strDescription 	optional, description of the constant.  Defaults to NULL
- * @param	integer	$intConstantGroupId	optional, Id of the ConstantGroup that this constant belongs to.
- * 										Defaults to NULL
- *									
- * @return	mix							int  : Id of the Constant on success
- * 										bool : FALSE on failure
- *
- * @function
- */
-function SaveConstant($strName, $mixValue, $intDataType=NULL, $strDescription=NULL, $intConstantGroupId=NULL)
-{
-	static $insConst;
-	
-	if (!isset($insConst))
-	{
-		$insConst = new StatementInsert("ConfigConstant");
-	}
-		
-	if ($intConstantGroupId !== NULL)
-	{
-		// A constant group has been specified
-		$intDataType = NULL; 
-	}
-	if ($intConstantGroupId === NULL && $intDataType === NULL)
-	{
-		// We cannot work out the data type for the constant.  Assume it is a string
-		$intDataType = DATA_TYPE_STRING;
-	}
-	
-	if ($intDataType == DATA_TYPE_BOOLEAN)
-	{
-		$mixValue = ($mixValue)? "1" : "0";
-	}
-	
-	$arrConst = Array(	"ConstantGroup" => $intConstantGroupId, "Name" => $strName,
-						"Description" => $strDescription, "Value" => "$mixValue",
-						"Type" => $intDataType);
-	
-	$mixResult = $insConst->Execute($arrConst);
-	return $mixResult;
-}
-
-//------------------------------------------------------------------------//
-// BuildConstantsFromDB
-//------------------------------------------------------------------------//
-/**
- * BuildConstantsFromDB()
- *
- * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
- *
- * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
- * If a constant declared in the database, has aleady been declared in the php process, 
- * then it will not be changed.  All ConstantGroups defined in the database are also loaded into the 
- * $GLOBALS['*arrConstant'][ConstantGroupName] structure
- *
- * @param	boolean		$bolExceptionOnError			optional, if TRUE then an exception is thrown if 
- * 														it cannot resolve the data type of the constant
- * 														or if it is declaring a constant in a ConstantGroup
- * 														with a value that is already used by another constant
- * 														within the constant group. Defaults to FALSE
- * @param	booleab		$bolExceptionOnRedefinition		optional, if TRUE then an exception is thrown if
- * 														a constant in the database has already been defined
- * 														in the php global namespace. Defaults to FALSE
- *
- * @return	boolean								TRUE on success, else FALSE
- *
- * @function
- */
-function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefinition=FALSE)
-{
-	$strTables	= "ConfigConstant AS CC INNER JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
-	$arrColumns	= Array("Id"				=> "CC.Id", 
-						"Name"				=> "CC.Name", 
-						"Value"				=> "CC.Value", 
-						"ConstDesc"			=> "CC.Description",
-						"Type"				=> "CASE WHEN CCG.Special THEN CCG.Type ELSE CC.Type END",
-						"ConstGroupName"	=> "CCG.Name",
-						"Special" 			=> "CCG.Special");
-	$strOrderBy	= "CC.ConstantGroup, CC.Id";
-	$strWhere	= "TRUE"; 
-	$selConstants = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
-	
-	$selConstants->Execute();
-	$arrConstants = $selConstants->FetchAll();
-	
-	foreach ($arrConstants as $arrConstant)
-	{
-		// Check if the constant has already been defined
-		if (defined($arrConstant['Name']))
+		// Insert each constant of the ConstantGroup, into the ConfigConstant table
+		foreach ($arrConstGroup as $mixValue=>$arrValue)
 		{
-			// The constant has already been defined.  
-			if ($bolExceptionOnRedefinition)
+			$mixResult = SaveConstant($arrValue['Constant'], $mixValue, $intDataType, $arrValue['Description'], $mixConstGroupId);
+			if ($mixResult === FALSE)
 			{
-				// Throw an exception
-				$strMsg = "Error: Attempting to declare constant: {$arrConstant['Name']} with value: {$arrConstant['Value']}, but this has already been declared within the php global namespace with value: ". constant($arrConstant['Name']);
-				throw new Exception($strMsg);
+				TransactionRollback();
+				return FALSE;
 			}
-			
-			// Move on to the next constant
-			continue;
 		}
 
-		// Type cast the constant's value to its data type
-		if ($arrConstant['Value'] === NULL)
+		TransactionCommit();
+		return $mixConstGroupId;
+	}
+
+	//------------------------------------------------------------------------//
+	// SaveConstant
+	//------------------------------------------------------------------------//
+	/**
+	 * SaveConstant()
+	 *
+	 * Inserts a Constant into the ConfigConstant table of the database
+	 *
+	 * Inserts a Constant into the ConfigConstant table of the database
+	 *
+	 * @param	string	$strName			name of the constant (ie CONST_NAME)
+	 * @param	mix		$mixValue			value of the constant (either a string, int, float or bool)
+	 * @param	integer	$intDataType		optional, the DatatType of the constants within the constant group.  
+	 * 										This must be a constant from the DATA_TYPE_ constant group.  If
+	 * 										$intConstantGroupId is declared, then $intDataType is considered NULL.
+	 * 										Defaults to NULL
+	 * @param	string	$strDescription 	optional, description of the constant.  Defaults to NULL
+	 * @param	integer	$intConstantGroupId	optional, Id of the ConstantGroup that this constant belongs to.
+	 * 										Defaults to NULL
+	 *									
+	 * @return	mix							int  : Id of the Constant on success
+	 * 										bool : FALSE on failure
+	 *
+	 * @function
+	 */
+	function SaveConstant($strName, $mixValue, $intDataType=NULL, $strDescription=NULL, $intConstantGroupId=NULL)
+	{
+		static $insConst;
+
+		if (!isset($insConst))
 		{
-			// Don't bother type casting it if it is equal to NULL
-			$mixValue = NULL;
+			$insConst = new StatementInsert("ConfigConstant");
 		}
-		else
+
+		if ($intConstantGroupId !== NULL)
 		{
-			switch ($arrConstant['Type'])
+			// A constant group has been specified
+			$intDataType = NULL; 
+		}
+		if ($intConstantGroupId === NULL && $intDataType === NULL)
+		{
+			// We cannot work out the data type for the constant.  Assume it is a string
+			$intDataType = DATA_TYPE_STRING;
+		}
+
+		if ($intDataType == DATA_TYPE_BOOLEAN)
+		{
+			$mixValue = ($mixValue)? "1" : "0";
+		}
+
+		$arrConst = Array(	"ConstantGroup" => $intConstantGroupId, "Name" => $strName,
+			"Description" => $strDescription, "Value" => "$mixValue",
+			"Type" => $intDataType);
+
+		$mixResult = $insConst->Execute($arrConst);
+		return $mixResult;
+	}
+
+	//------------------------------------------------------------------------//
+	// BuildConstantsFromDB
+	//------------------------------------------------------------------------//
+	/**
+	 * BuildConstantsFromDB()
+	 *
+	 * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
+	 *
+	 * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
+	 * If a constant declared in the database, has aleady been declared in the php process, 
+	 * then it will not be changed.  All ConstantGroups defined in the database are also loaded into the 
+	 * $GLOBALS['*arrConstant'][ConstantGroupName] structure
+	 *
+	 * @param	boolean		$bolExceptionOnError			optional, if TRUE then an exception is thrown if 
+	 * 														it cannot resolve the data type of the constant
+	 * 														or if it is declaring a constant in a ConstantGroup
+	 * 														with a value that is already used by another constant
+	 * 														within the constant group. Defaults to FALSE
+	 * @param	booleab		$bolExceptionOnRedefinition		optional, if TRUE then an exception is thrown if
+	 * 														a constant in the database has already been defined
+	 * 														in the php global namespace. Defaults to FALSE
+	 *
+	 * @return	boolean								TRUE on success, else FALSE
+	 *
+	 * @function
+	 */
+	function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefinition=FALSE)
+	{
+		$strTables	= "ConfigConstant AS CC INNER JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
+		$arrColumns	= Array("Id"				=> "CC.Id", 
+			"Name"				=> "CC.Name", 
+			"Value"				=> "CC.Value", 
+			"ConstDesc"			=> "CC.Description",
+			"Type"				=> "CASE WHEN CCG.Special THEN CCG.Type ELSE CC.Type END",
+			"ConstGroupName"	=> "CCG.Name",
+			"Special" 			=> "CCG.Special");
+		$strOrderBy	= "CC.ConstantGroup, CC.Id";
+		$strWhere	= "TRUE"; 
+		$selConstants = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
+
+		$selConstants->Execute();
+		$arrConstants = $selConstants->FetchAll();
+
+		foreach ($arrConstants as $arrConstant)
+		{
+			// Check if the constant has already been defined
+			if (defined($arrConstant['Name']))
 			{
+				// The constant has already been defined.  
+				if ($bolExceptionOnRedefinition)
+				{
+					// Throw an exception
+					$strMsg = "Error: Attempting to declare constant: {$arrConstant['Name']} with value: {$arrConstant['Value']}, but this has already been declared within the php global namespace with value: ". constant($arrConstant['Name']);
+					throw new Exception($strMsg);
+				}
+
+				// Move on to the next constant
+				continue;
+			}
+
+			// Type cast the constant's value to its data type
+			if ($arrConstant['Value'] === NULL)
+			{
+				// Don't bother type casting it if it is equal to NULL
+				$mixValue = NULL;
+			}
+			else
+			{
+				switch ($arrConstant['Type'])
+				{
 				case 1: //DATA_TYPE_STRING:
 					$mixValue = (string)$arrConstant['Value']; 
 					break;
@@ -4747,39 +4749,39 @@ function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefin
 						$strMsg = "Error: Constant: {$arrConstant['Name']} with value: {$arrConstant['Value']}, has unknown datatype {$arrConstant['Type']}";
 						throw new Exception($strMsg);
 					}
-					
+
 					return FALSE;
 					break;
-			}
-		}
-
-		// If the constant is part of a special ConstantGroup then add it to the $GLOBALS['*arrConstant'] array
-		if ($arrConstant['Special'])
-		{
-			// Check that the value is not already in use by another constant within the ConstantGroup
-			if (isset($GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]))
-			{
-				// This value is already being used
-				if ($bolExceptionOnRedefinition)
-				{
-					// Throw an exception
-					$strMsg = 	"Error: ConstantGroup: {$arrConstant['ConstGroupName']} already has constant ". 
-								$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant'] .
-								" set to $mixValue so it cannot also contain the constant {$arrConstant['Name']} which ".
-								"is also set to $mixValue";
-					throw new Exception($strMsg);
 				}
-				continue;
 			}
-			
-			$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant']		= $arrConstant['Name'];
-			$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Description']	= $arrConstant['ConstDesc'];
-		}
 
-		// Declare the constant
-		define($arrConstant['Name'], $mixValue);
+			// If the constant is part of a special ConstantGroup then add it to the $GLOBALS['*arrConstant'] array
+			if ($arrConstant['Special'])
+			{
+				// Check that the value is not already in use by another constant within the ConstantGroup
+				if (isset($GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]))
+				{
+					// This value is already being used
+					if ($bolExceptionOnRedefinition)
+					{
+						// Throw an exception
+						$strMsg = 	"Error: ConstantGroup: {$arrConstant['ConstGroupName']} already has constant ". 
+							$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant'] .
+							" set to $mixValue so it cannot also contain the constant {$arrConstant['Name']} which ".
+							"is also set to $mixValue";
+						throw new Exception($strMsg);
+					}
+					continue;
+				}
 
-		//Debug stuff
+				$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant']		= $arrConstant['Name'];
+				$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Description']	= $arrConstant['ConstDesc'];
+			}
+
+			// Declare the constant
+			define($arrConstant['Name'], $mixValue);
+
+			//Debug stuff
 		/*
 		if ($arrConstant['ConstGroupName'] !== NULL)
 		{
@@ -4790,381 +4792,381 @@ function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefin
 		{
 			echo "define('{$arrConstant['Name']}', $mixValue)<br />";
 		}
-		*/
-	}
-	
-	//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
-	// Load in the CustomerGroup constants from the CustomerGroup table.
-	// These constants are now only used by the backend.  The frontend always refers to the database
-	// when dealing with customer groups
-	// This block of code can be removed when the backend no longer relies on them
-	$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, InternalName", "TRUE", "Id");
-	$selCustomerGroup->Execute();
-	$arrCustomerGroups = $selCustomerGroup->FetchAll();
-	foreach ($arrCustomerGroups as $arrCustomerGroup)
-	{
-		// Build the constant name
-		$strConstant		= "CUSTOMER_GROUP_" . strtoupper(str_replace(" ", "_", $arrCustomerGroup['InternalName']));
-		$strDescription		= $arrCustomerGroup['InternalName'];
-		$intCustomerGroup	= $arrCustomerGroup['Id'];
-		
-		define($strConstant, $intCustomerGroup);
-		$GLOBALS['*arrConstant']['CustomerGroup'][$intCustomerGroup]['Constant']	= $strConstant;
-		$GLOBALS['*arrConstant']['CustomerGroup'][$intCustomerGroup]['Description']	= $strDescription;
-	}
-	//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
-}
-
-
-
-
-//------------------------------------------------------------------------//
-// GetCustomerName
-//------------------------------------------------------------------------//
-/**
- * GetCustomerName()
- *
- * Returns the customer (eg. TelcoBlue) name
- *
- * Returns the customer (eg. TelcoBlue) name
- *
- * @return	string		Customer Name (eg. "telcoblue")
- *
- * @function
- */
-function GetCustomerName()
-{
-	return $GLOBALS['**arrCustomerConfig']['Customer'];
-}
-
-
-//------------------------------------------------------------------------//
-// TruncateTime()
-//------------------------------------------------------------------------//
-/**
- * TruncateTime()
- *
- * Truncates a Unix Timestamp to a specified degree of accuracy
- *
- * Truncates a Unix Timestamp to a specified degree of accuracy.
- * 
- * @param	integer	$intTime					The timestamp to truncate
- * @param	string	$strAccuracy				Where to truncate the timestamp.  Accepts 'y', 'm', 'd', 'h', 'i', or 's'.
- * @param	string	$strRound					'floor': Rounded Down; 'ceil': Rounded Up
- *
- * @return	integer								Truncated Timestamp
- *
- * @function
- */
-function TruncateTime($intTime, $strAccuracy, $strRound)
-{
-	// Set up default values
-	$arrParts		= Array();
-	if ($strRound == 'ceil')
-	{
-		$arrParts['Y']	= 2037;
-		$arrParts['m']	= 12;
-		$arrParts['d']	= 31;
-		$arrParts['H']	= 23;
-		$arrParts['i']	= 59;
-		$arrParts['s']	= 59;
-	}
-	else
-	{
-		$arrParts['Y']	= 1970;
-		$arrParts['m']	= 1;
-		$arrParts['d']	= 1;
-		$arrParts['H']	= 0;
-		$arrParts['i']	= 0;
-		$arrParts['s']	= 0;
-	}
-	
-	// Truncate time
-	$bolTruncated	= FALSE;
-	foreach ($arrParts as $strPart=>$intValue)
-	{
-		// If we're already truncated
-		if ($bolTruncated)
-		{
-			// Use default
-			continue;
+	 */
 		}
-		elseif (strtolower($strPart) === strtolower($strAccuracy))
+
+		//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
+		// Load in the CustomerGroup constants from the CustomerGroup table.
+		// These constants are now only used by the backend.  The frontend always refers to the database
+		// when dealing with customer groups
+		// This block of code can be removed when the backend no longer relies on them
+		$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, InternalName", "TRUE", "Id");
+		$selCustomerGroup->Execute();
+		$arrCustomerGroups = $selCustomerGroup->FetchAll();
+		foreach ($arrCustomerGroups as $arrCustomerGroup)
 		{
-			// Truncate from here onwards
-			$bolTruncated	= TRUE;
+			// Build the constant name
+			$strConstant		= "CUSTOMER_GROUP_" . strtoupper(str_replace(" ", "_", $arrCustomerGroup['InternalName']));
+			$strDescription		= $arrCustomerGroup['InternalName'];
+			$intCustomerGroup	= $arrCustomerGroup['Id'];
+
+			define($strConstant, $intCustomerGroup);
+			$GLOBALS['*arrConstant']['CustomerGroup'][$intCustomerGroup]['Constant']	= $strConstant;
+			$GLOBALS['*arrConstant']['CustomerGroup'][$intCustomerGroup]['Description']	= $strDescription;
 		}
-		
-		// Set passed value
-		$arrParts[$strPart]	= (int)date($strPart, $intTime);
+		//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
 	}
-	
-	return mktime($arrParts['H'], $arrParts['i'], $arrParts['s'], $arrParts['m'], $arrParts['d'], $arrParts['Y']);
-}
 
 
 
-//------------------------------------------------------------------------//
-// FlexCast()
-//------------------------------------------------------------------------//
-/**
- * FlexCast()
- *
- * Casts a variable to a type defined by Flex DataType constants
- *
- * Casts a variable to a type defined by Flex DataType constants
- * 
- * @param	mixed	$mixVariable				The variable to cast
- * @param	integer	$intDataType				The Flex DataType constant to cast to
- *
- * @return	mixed								Cast variable
- *
- * @function
- */
-function FlexCast($mixVariable, $intDataType)
-{
-	switch ($intDataType)
+
+	//------------------------------------------------------------------------//
+	// GetCustomerName
+	//------------------------------------------------------------------------//
+	/**
+	 * GetCustomerName()
+	 *
+	 * Returns the customer (eg. TelcoBlue) name
+	 *
+	 * Returns the customer (eg. TelcoBlue) name
+	 *
+	 * @return	string		Customer Name (eg. "telcoblue")
+	 *
+	 * @function
+	 */
+	function GetCustomerName()
 	{
+		return $GLOBALS['**arrCustomerConfig']['Customer'];
+	}
+
+
+	//------------------------------------------------------------------------//
+	// TruncateTime()
+	//------------------------------------------------------------------------//
+	/**
+	 * TruncateTime()
+	 *
+	 * Truncates a Unix Timestamp to a specified degree of accuracy
+	 *
+	 * Truncates a Unix Timestamp to a specified degree of accuracy.
+	 * 
+	 * @param	integer	$intTime					The timestamp to truncate
+	 * @param	string	$strAccuracy				Where to truncate the timestamp.  Accepts 'y', 'm', 'd', 'h', 'i', or 's'.
+	 * @param	string	$strRound					'floor': Rounded Down; 'ceil': Rounded Up
+	 *
+	 * @return	integer								Truncated Timestamp
+	 *
+	 * @function
+	 */
+	function TruncateTime($intTime, $strAccuracy, $strRound)
+	{
+		// Set up default values
+		$arrParts		= Array();
+		if ($strRound == 'ceil')
+		{
+			$arrParts['Y']	= 2037;
+			$arrParts['m']	= 12;
+			$arrParts['d']	= 31;
+			$arrParts['H']	= 23;
+			$arrParts['i']	= 59;
+			$arrParts['s']	= 59;
+		}
+		else
+		{
+			$arrParts['Y']	= 1970;
+			$arrParts['m']	= 1;
+			$arrParts['d']	= 1;
+			$arrParts['H']	= 0;
+			$arrParts['i']	= 0;
+			$arrParts['s']	= 0;
+		}
+
+		// Truncate time
+		$bolTruncated	= FALSE;
+		foreach ($arrParts as $strPart=>$intValue)
+		{
+			// If we're already truncated
+			if ($bolTruncated)
+			{
+				// Use default
+				continue;
+			}
+			elseif (strtolower($strPart) === strtolower($strAccuracy))
+			{
+				// Truncate from here onwards
+				$bolTruncated	= TRUE;
+			}
+
+			// Set passed value
+			$arrParts[$strPart]	= (int)date($strPart, $intTime);
+		}
+
+		return mktime($arrParts['H'], $arrParts['i'], $arrParts['s'], $arrParts['m'], $arrParts['d'], $arrParts['Y']);
+	}
+
+
+
+	//------------------------------------------------------------------------//
+	// FlexCast()
+	//------------------------------------------------------------------------//
+	/**
+	 * FlexCast()
+	 *
+	 * Casts a variable to a type defined by Flex DataType constants
+	 *
+	 * Casts a variable to a type defined by Flex DataType constants
+	 * 
+	 * @param	mixed	$mixVariable				The variable to cast
+	 * @param	integer	$intDataType				The Flex DataType constant to cast to
+	 *
+	 * @return	mixed								Cast variable
+	 *
+	 * @function
+	 */
+	function FlexCast($mixVariable, $intDataType)
+	{
+		switch ($intDataType)
+		{
 		case DATA_TYPE_INTEGER:
 			return (int)$mixVariable;
-			
+
 		case DATA_TYPE_FLOAT:
 			return (float)$mixVariable;
-			
+
 		case DATA_TYPE_BOOLEAN:
 			return (bool)$mixVariable;
-			
+
 		case DATA_TYPE_STRING:
 			return (string)$mixVariable;
-			
+
 		case DATA_TYPE_SERIALISED:
 			return unserialize($mixVariable);
-		
+
 		default:
 			// If we don't recognise the type, return in its original value
 			return $mixVariable;
-	}
-}
-
-//------------------------------------------------------------------------//
-// EscapeXML()
-//------------------------------------------------------------------------//
-/**
- * EscapeXML()
- *
- * Escapes a string for use in XML
- *
- * Escapes a string for use in XML
- * 
- * @param	string	$strText					The string to escape
- * @param	boolean	$bolAttribute				TRUE	: This string is for use in an Attribute (only escape quotes)
- * 												FALSE	: This string is for general XML use (escape everything)
- *
- * @return	string								Escaped string
- *
- * @function
- */
-function EscapeXML($strText, $bolAttribute = FALSE)
-{
-	if (!$bolAttribute)
-	{
-		$strText	= str_replace('&', '&amp;', $strText);
-		$strText	= str_replace('<', '&lt;', $strText);
-		$strText	= str_replace('>', '&gt;', $strText);
-	}
-	
-	$strText	= str_replace('"', '&quot;', $strText);
-	$strText	= str_replace("'", '&apos;', $strText);
-	
-	return $strText;
-}
-
-//------------------------------------------------------------------------//
-// Encrypt($strKey, $strDecryptedString)
-//------------------------------------------------------------------------//
-/**
- * Encrypt($strKey, $strDecryptedString)
- *
- * Encrypts a string
- *
- * Encrypts a string
- * 
- * @param	boolean	$strDecryptedString	The string to encrypt
- *
- * @return	string						Encrypted string base 64 encoded
- *
- * @function
- */
-function Encrypt($strDecryptedString)
-{
-	if (!array_key_exists('**arrCustomerConfig', $GLOBALS) || !array_key_exists('Key', $GLOBALS['**arrCustomerConfig']))
-	{
-		throw new Exception("Encryption key has not been configurred in customer configuration.");
-	}
-	$strKey = $GLOBALS['**arrCustomerConfig']['Key'];
-	if ($strDecryptedString === '' || $strDecryptedString === NULL) return '';
-	$cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CFB, '');
-	$iv = substr(sha1($strKey), 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB));
-	$ks = mcrypt_enc_get_key_size($cipher);
-	$key = substr($strKey.sha1($strKey), 0, $ks);
-	mcrypt_generic_init($cipher, $key, $iv);
-	$strEncryptedString = mcrypt_generic($cipher, $strDecryptedString);
-	mcrypt_generic_deinit($cipher);
-	mcrypt_module_close($cipher);
-	return base64_encode($strEncryptedString);
-}
-
-//------------------------------------------------------------------------//
-// Decrypt($strKey, $strBase64EncodedEncryptedString)
-//------------------------------------------------------------------------//
-/**
- * Decrypt($strKey, $strBase64EncodedEncryptedString)
- *
- * Decrypts a string
- *
- * Decrypts a string
- * 
- * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
- * 														(as returned by Encrypt() function)
- *
- * @return	string										Decrypted string
- *
- * @function
- */
-function Decrypt($strBase64EncodedEncryptedString)
-{
-	if (!array_key_exists('**arrCustomerConfig', $GLOBALS) || !array_key_exists('Key', $GLOBALS['**arrCustomerConfig']))
-	{
-		throw new Exception("Encryption key has not been configurred in customer configuration.");
-	}
-	$strKey = $GLOBALS['**arrCustomerConfig']['Key'];
-	if ($strBase64EncodedEncryptedString === '' || $strBase64EncodedEncryptedString === NULL) return '';
-	$strEncryptedString = base64_decode($strBase64EncodedEncryptedString);
-	$cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CFB, '');
-	$iv = substr(sha1($strKey), 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB));
-	$ks = mcrypt_enc_get_key_size($cipher);
-	$key = substr($strKey.sha1($strKey), 0, $ks);
-	mcrypt_generic_init($cipher, $key, $iv);
-	$strDecryptedString = mdecrypt_generic($cipher, $strEncryptedString);
-	mcrypt_generic_deinit($cipher);
-	mcrypt_module_close($cipher);
-	return $strDecryptedString;
-}
-
-//------------------------------------------------------------------------//
-// Decrypt($strKey, $strBase64EncodedEncryptedString)
-//------------------------------------------------------------------------//
-/**
- * DecryptAndStripSpaces($strKey, $strBase64EncodedEncryptedString)
- *
- * Decrypts a string and strips spaces from it
- *
- * Decrypts a string and strips spaces from it. Used by the "Credit Card Payments Report"
- * 
- * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
- * 														(as returned by Encrypt() function and 
- * 														stored in the database)
- *
- * @return	string										Decrypted string with spaces removed
- *
- * @function
- */
-function DecryptAndStripSpaces($strBase64EncodedEncryptedString)
-{
-	return str_replace(' ', '', Decrypt($strBase64EncodedEncryptedString));
-}
-
-	
-//------------------------------------------------------------------------//
-// UnpackArchive
-//------------------------------------------------------------------------//
-/**
- * UnpackArchive()
- *
- * Unpacks an Archive
- *
- * Unpacks an Archive to a given location.  Accepted Force Types are 'zip', 'tar', 'tar.bz2'
- * 
- * @param	string	$strSourcePath						Full path to the Source Archive
- * @param	string	$strDestinationPath		[optional]	Full path to where the Archive should be extracted. (Default: NULL - Current Working Directory)
- * @param	boolean	$bolJunkPaths			[optional]	TRUE: Do not recreate Archive directory structure. (Default: FALSE)
- * @param	string	$strPassword			[optional]	Archive password. (Default: NULL)
- * @param	string	$strType				[optional]	Archive is of this type. (Default: NULL)
- *
- * @return	mixed										Array: full paths to the files extracted; string: Error Message
- *
- * @method
- */
-function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths = FALSE, $strPassword = NULL, $strType = NULL)
-{
-	$arrHandledTypes			= Array();
-	
-	// ZIP types
-	$arrHandledTypes['zip']		= 'zip';
-	
-	// TAR types
-	$arrHandledTypes['tar']		= 'tar';
-	$arrHandledTypes['tar.bz2']	= 'tar';
-	$arrHandledTypes['tbz']		= 'tar';
-	$arrHandledTypes['tbz2']	= 'tar';
-	$arrHandledTypes['tb2']		= 'tar';
-	$arrHandledTypes['tar.gz']	= 'tar';
-	$arrHandledTypes['tgz']		= 'tar';
-	
-	// Source and Destination manipulation
-	$strBasename	= basename($strSourcePath);
-	$strDirname		= dirname($strSourcePath);
-	if (!file_exists($strSourcePath))
-	{
-		// Source file does not exist
-		return "Unable to locate Source file '$strSourcePath'";
-	}
-	if (!(file_exists($strDestinationPath) && is_dir($strDestinationPath)))
-	{
-		if (!@mkdir($strDestinationPath, 0644, TRUE))
-		{
-			// Unable to create the Destination Path
-			return "Unable to create Destination path '$strDestinationPath'";
 		}
 	}
-	
-	// Get the type
-	$strExtension	= '';
-	if ($strType === NULL)
+
+	//------------------------------------------------------------------------//
+	// EscapeXML()
+	//------------------------------------------------------------------------//
+	/**
+	 * EscapeXML()
+	 *
+	 * Escapes a string for use in XML
+	 *
+	 * Escapes a string for use in XML
+	 * 
+	 * @param	string	$strText					The string to escape
+	 * @param	boolean	$bolAttribute				TRUE	: This string is for use in an Attribute (only escape quotes)
+	 * 												FALSE	: This string is for general XML use (escape everything)
+	 *
+	 * @return	string								Escaped string
+	 *
+	 * @function
+	 */
+	function EscapeXML($strText, $bolAttribute = FALSE)
 	{
-		foreach ($arrHandledTypes as $strHandledExtension=>$strBaseType)
+		if (!$bolAttribute)
 		{
-			if ($strHandledExtension === strtolower(substr($strBasename, strripos($strBasename, $strHandledExtension))))
+			$strText	= str_replace('&', '&amp;', $strText);
+			$strText	= str_replace('<', '&lt;', $strText);
+			$strText	= str_replace('>', '&gt;', $strText);
+		}
+
+		$strText	= str_replace('"', '&quot;', $strText);
+		$strText	= str_replace("'", '&apos;', $strText);
+
+		return $strText;
+	}
+
+	//------------------------------------------------------------------------//
+	// Encrypt($strKey, $strDecryptedString)
+	//------------------------------------------------------------------------//
+	/**
+	 * Encrypt($strKey, $strDecryptedString)
+	 *
+	 * Encrypts a string
+	 *
+	 * Encrypts a string
+	 * 
+	 * @param	boolean	$strDecryptedString	The string to encrypt
+	 *
+	 * @return	string						Encrypted string base 64 encoded
+	 *
+	 * @function
+	 */
+	function Encrypt($strDecryptedString)
+	{
+		if (!array_key_exists('**arrCustomerConfig', $GLOBALS) || !array_key_exists('Key', $GLOBALS['**arrCustomerConfig']))
+		{
+			throw new Exception("Encryption key has not been configurred in customer configuration.");
+		}
+		$strKey = $GLOBALS['**arrCustomerConfig']['Key'];
+		if ($strDecryptedString === '' || $strDecryptedString === NULL) return '';
+		$cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CFB, '');
+		$iv = substr(sha1($strKey), 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB));
+		$ks = mcrypt_enc_get_key_size($cipher);
+		$key = substr($strKey.sha1($strKey), 0, $ks);
+		mcrypt_generic_init($cipher, $key, $iv);
+		$strEncryptedString = mcrypt_generic($cipher, $strDecryptedString);
+		mcrypt_generic_deinit($cipher);
+		mcrypt_module_close($cipher);
+		return base64_encode($strEncryptedString);
+	}
+
+	//------------------------------------------------------------------------//
+	// Decrypt($strKey, $strBase64EncodedEncryptedString)
+	//------------------------------------------------------------------------//
+	/**
+	 * Decrypt($strKey, $strBase64EncodedEncryptedString)
+	 *
+	 * Decrypts a string
+	 *
+	 * Decrypts a string
+	 * 
+	 * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
+	 * 														(as returned by Encrypt() function)
+	 *
+	 * @return	string										Decrypted string
+	 *
+	 * @function
+	 */
+	function Decrypt($strBase64EncodedEncryptedString)
+	{
+		if (!array_key_exists('**arrCustomerConfig', $GLOBALS) || !array_key_exists('Key', $GLOBALS['**arrCustomerConfig']))
+		{
+			throw new Exception("Encryption key has not been configurred in customer configuration.");
+		}
+		$strKey = $GLOBALS['**arrCustomerConfig']['Key'];
+		if ($strBase64EncodedEncryptedString === '' || $strBase64EncodedEncryptedString === NULL) return '';
+		$strEncryptedString = base64_decode($strBase64EncodedEncryptedString);
+		$cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CFB, '');
+		$iv = substr(sha1($strKey), 0, mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CFB));
+		$ks = mcrypt_enc_get_key_size($cipher);
+		$key = substr($strKey.sha1($strKey), 0, $ks);
+		mcrypt_generic_init($cipher, $key, $iv);
+		$strDecryptedString = mdecrypt_generic($cipher, $strEncryptedString);
+		mcrypt_generic_deinit($cipher);
+		mcrypt_module_close($cipher);
+		return $strDecryptedString;
+	}
+
+	//------------------------------------------------------------------------//
+	// Decrypt($strKey, $strBase64EncodedEncryptedString)
+	//------------------------------------------------------------------------//
+	/**
+	 * DecryptAndStripSpaces($strKey, $strBase64EncodedEncryptedString)
+	 *
+	 * Decrypts a string and strips spaces from it
+	 *
+	 * Decrypts a string and strips spaces from it. Used by the "Credit Card Payments Report"
+	 * 
+	 * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
+	 * 														(as returned by Encrypt() function and 
+	 * 														stored in the database)
+	 *
+	 * @return	string										Decrypted string with spaces removed
+	 *
+	 * @function
+	 */
+	function DecryptAndStripSpaces($strBase64EncodedEncryptedString)
+	{
+		return str_replace(' ', '', Decrypt($strBase64EncodedEncryptedString));
+	}
+
+
+	//------------------------------------------------------------------------//
+	// UnpackArchive
+	//------------------------------------------------------------------------//
+	/**
+	 * UnpackArchive()
+	 *
+	 * Unpacks an Archive
+	 *
+	 * Unpacks an Archive to a given location.  Accepted Force Types are 'zip', 'tar', 'tar.bz2'
+	 * 
+	 * @param	string	$strSourcePath						Full path to the Source Archive
+	 * @param	string	$strDestinationPath		[optional]	Full path to where the Archive should be extracted. (Default: NULL - Current Working Directory)
+	 * @param	boolean	$bolJunkPaths			[optional]	TRUE: Do not recreate Archive directory structure. (Default: FALSE)
+	 * @param	string	$strPassword			[optional]	Archive password. (Default: NULL)
+	 * @param	string	$strType				[optional]	Archive is of this type. (Default: NULL)
+	 *
+	 * @return	mixed										Array: full paths to the files extracted; string: Error Message
+	 *
+	 * @method
+	 */
+	function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths = FALSE, $strPassword = NULL, $strType = NULL)
+	{
+		$arrHandledTypes			= Array();
+
+		// ZIP types
+		$arrHandledTypes['zip']		= 'zip';
+
+		// TAR types
+		$arrHandledTypes['tar']		= 'tar';
+		$arrHandledTypes['tar.bz2']	= 'tar';
+		$arrHandledTypes['tbz']		= 'tar';
+		$arrHandledTypes['tbz2']	= 'tar';
+		$arrHandledTypes['tb2']		= 'tar';
+		$arrHandledTypes['tar.gz']	= 'tar';
+		$arrHandledTypes['tgz']		= 'tar';
+
+		// Source and Destination manipulation
+		$strBasename	= basename($strSourcePath);
+		$strDirname		= dirname($strSourcePath);
+		if (!file_exists($strSourcePath))
+		{
+			// Source file does not exist
+			return "Unable to locate Source file '$strSourcePath'";
+		}
+		if (!(file_exists($strDestinationPath) && is_dir($strDestinationPath)))
+		{
+			if (!@mkdir($strDestinationPath, 0644, TRUE))
 			{
-				$strType		= $strBaseType;
-				$strExtension	= $strHandledExtension;
-				break;
+				// Unable to create the Destination Path
+				return "Unable to create Destination path '$strDestinationPath'";
 			}
 		}
-	}
-	
-	// Unpack
-	$arrOutput	= Array();
-	$intReturn	= NULL;
-	$strCommand	= NULL;
-	$arrFiles	= Array($strSourcePath);
-	switch (strtolower($strType))
-	{
+
+		// Get the type
+		$strExtension	= '';
+		if ($strType === NULL)
+		{
+			foreach ($arrHandledTypes as $strHandledExtension=>$strBaseType)
+			{
+				if ($strHandledExtension === strtolower(substr($strBasename, strripos($strBasename, $strHandledExtension))))
+				{
+					$strType		= $strBaseType;
+					$strExtension	= $strHandledExtension;
+					break;
+				}
+			}
+		}
+
+		// Unpack
+		$arrOutput	= Array();
+		$intReturn	= NULL;
+		$strCommand	= NULL;
+		$arrFiles	= Array($strSourcePath);
+		switch (strtolower($strType))
+		{
 		case 'zip':
 			$strCommand		= "unzip ";
 			$strCommand		.= ($bolJunkPaths) ? '-j ' : '';
 			$strCommand		.= ($strPassword !== NULL) ? "-P {$strPassword} " : '';
 			$strCommand		.= "$strSourcePath ";
 			$strCommand		.= ($strDestinationPath !== NULL) ? "-d $strDestinationPath" : "-d $strDirname";
-			
+
 			$strLastLine	= exec($strCommand, $arrOutput, $intReturn);
-			
+
 			if ($intReturn > 0)
 			{
 				// An error occurred
 				return "Unable to unzip archive '$strSourcePath'";
 			}
-			
+
 			// Get list of files extracted
 			$arrFiles	= Array();
 			foreach ($arrOutput as $strLine)
@@ -5179,7 +5181,7 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 				}
 			}
 			break;
-			
+
 		case 'tar':
 			$strCommand		= "tar";
 			$strCommand		.= ($bolJunkPaths) ? " --transform='s,\/?(\w+\/)*,,x'" : '';
@@ -5189,15 +5191,15 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 			$strCommand		.= "-f $strSourcePath";
 			$strCommand		.= ($strDestinationPath !== NULL) ? " -C $strDestinationPath" : '';
 			$strCommand		.= ($bolJunkPaths) ? " --show-transformed-names" : '';
-			
+
 			$strLastLine	= exec($strCommand, $arrOutput, $intReturn);
-			
+
 			if ($intReturn > 0)
 			{
 				// An error occurred
 				return "Unable to untar file '$strSourcePath'";
 			}
-			
+
 			// Get list of files extracted
 			$arrFiles		= $arrOutput;
 			foreach ($arrFiles as &$strFile)
@@ -5210,188 +5212,188 @@ function UnpackArchive($strSourcePath, $strDestinationPath = NULL, $bolJunkPaths
 				{
 					$strFile	= getcwd().'/'.$strFile;
 				}
-				
+
 				if (!is_file($strFile))
 				{
 					unset($strFile);
 				}
 			}
 			break;
-			
+
 		default:
 			return Array('Files' => Array($strSourcePath));
+		}
+
+		//Debug("Command\t: '$strCommand'");
+		//Debug("Last Line\t: '$strLastLine'");
+		return Array('Files' => $arrFiles, 'Processed' => TRUE);
 	}
-	
-	//Debug("Command\t: '$strCommand'");
-	//Debug("Last Line\t: '$strLastLine'");
-	return Array('Files' => $arrFiles, 'Processed' => TRUE);
-}
 
-function BarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
-{
-	// Throw exception if fails
-
-	// Bar the account
-
-	$arrAccountServices = ListServicesAndCarriersForAccount($intAccountId);
-
-	$arrAutomaticallyBarrableCarriers = ListAutomaticallyBarrableCarriers();
-
-	$arrUnbarrableAccountServices = array();
-	$arrBarrableAccountServices = array();
-
-	$bolBarred = FALSE;
-
-	$bolBarredFNNs = array();
-
-	foreach($arrAccountServices as $intServiceId => $arrDetails)
+	function BarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
 	{
-		if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyBarrableCarriers) !== FALSE)
+		// Throw exception if fails
+
+		// Bar the account
+
+		$arrAccountServices = ListServicesAndCarriersForAccount($intAccountId);
+
+		$arrAutomaticallyBarrableCarriers = ListAutomaticallyBarrableCarriers();
+
+		$arrUnbarrableAccountServices = array();
+		$arrBarrableAccountServices = array();
+
+		$bolBarred = FALSE;
+
+		$bolBarredFNNs = array();
+
+		foreach($arrAccountServices as $intServiceId => $arrDetails)
 		{
-			// Write the record to bar the service
-			$arrColumns = array(
-				'AccountGroup' 		=> $intAccountGroup,
-				'Account'			=> $intAccountId,
-				'Service'			=> $intServiceId,
-				'FNN'				=> $arrDetails['FNN'],
-				'Employee'			=> USER_ID,
-				'Carrier'			=> $arrDetails['CarrierId'],
-				'Type'				=> PROVISIONING_TYPE_BAR,
-				'RequestedOn'		=> new MySQLFunction('NOW()'),
-				'AuthorisationDate'	=> new MySQLFunction('NOW()'),
-				'Status'			=> REQUEST_STATUS_WAITING,
-			);
-			$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
-			$mxdResult = $insProvisioningRequest->Execute($arrColumns);
-			if ($mxdResult === FALSE)
+			if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyBarrableCarriers) !== FALSE)
 			{
-				throw new Exception('Failed to create provisioning request for barring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
+				// Write the record to bar the service
+				$arrColumns = array(
+					'AccountGroup' 		=> $intAccountGroup,
+					'Account'			=> $intAccountId,
+					'Service'			=> $intServiceId,
+					'FNN'				=> $arrDetails['FNN'],
+					'Employee'			=> USER_ID,
+					'Carrier'			=> $arrDetails['CarrierId'],
+					'Type'				=> PROVISIONING_TYPE_BAR,
+					'RequestedOn'		=> new MySQLFunction('NOW()'),
+					'AuthorisationDate'	=> new MySQLFunction('NOW()'),
+					'Status'			=> REQUEST_STATUS_WAITING,
+				);
+				$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
+				$mxdResult = $insProvisioningRequest->Execute($arrColumns);
+				if ($mxdResult === FALSE)
+				{
+					throw new Exception('Failed to create provisioning request for barring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
+				}
+
+				// Add a note to the service
+				$GLOBALS['fwkFramework']->AddNote('Service automatically barred.', SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, NULL, $intServiceId);
+
+				$bolBarred = TRUE;
+				$bolBarredFNNs[] = $arrDetails['FNN'];
+				$arrBarrableAccountServices[$intServiceId] = $arrDetails;
 			}
-
-			// Add a note to the service
-			$GLOBALS['fwkFramework']->AddNote('Service automatically barred.', SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, NULL, $intServiceId);
-
-			$bolBarred = TRUE;
-			$bolBarredFNNs[] = $arrDetails['FNN'];
-			$arrBarrableAccountServices[$intServiceId] = $arrDetails;
-		}
-		else
-		{
-			$arrUnbarrableAccountServices[$intServiceId] = $arrDetails;
-		}
-	}
-
-	// If automatic, change auto_barring_status for the account
-	if ($bolAutomatic && $bolBarred)
-	{
-		$strReason = 'Automatically barred the following services: ' . implode(', ', $bolBarredFNNs) . '. ';
-		ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_BARRED, $strReason);
-		ChangeAccountAutomaticInvoiceAction($intAccountId, NULL, AUTOMATIC_INVOICE_ACTION_BARRING, $strReason, NULL, $invoiceRun);
-	}
-
-	$outcome = array('BARRED' => $arrBarrableAccountServices, 'NOT_BARRED' => $arrUnbarrableAccountServices);
-
-	// Return a list of services that could and could not be barred
-	return $outcome;
-}
-
-function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
-{
-	// Throw exception if fails
-
-	// Bar the account
-
-	$arrAccountServices = ListServicesAndCarriersForAccount($intAccountId);
-
-	$arrAutomaticallyUnbarrableCarriers = ListAutomaticallyUnbarrableCarriers();
-
-	$arrNonUnbarrableAccountServices = array();
-	$arrUnbarrableAccountServices = array();
-
-	$bolUnbarred = FALSE;
-	$bolManualUnbars = FALSE;
-
-	$bolUnbarredFNNs = array();
-
-	foreach($arrAccountServices as $intServiceId => $arrDetails)
-	{
-		if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyUnbarrableCarriers) !== FALSE)
-		{
-			// Write the record to unbar the service
-			$arrColumns = array(
-				'AccountGroup' 		=> $intAccountGroup,
-				'Account'			=> $intAccountId,
-				'Service'			=> $intServiceId,
-				'FNN'				=> $arrDetails['FNN'],
-				'Employee'			=> USER_ID,
-				'Carrier'			=> $arrDetails['CarrierId'],
-				'Type'				=> PROVISIONING_TYPE_UNBAR,
-				'RequestedOn'		=> new MySQLFunction('NOW()'),
-				'AuthorisationDate'	=> new MySQLFunction('NOW()'),
-				'Status'			=> REQUEST_STATUS_WAITING,
-			);
-			$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
-			$mxdResult = $insProvisioningRequest->Execute($arrColumns);
-			if ($mxdResult === FALSE)
+			else
 			{
-				throw new Exception('Failed to create provisioning request for unbarring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
+				$arrUnbarrableAccountServices[$intServiceId] = $arrDetails;
 			}
-
-			// Add a note to the service
-			$GLOBALS['fwkFramework']->AddNote('Service automatically unbarred.', SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, NULL, $intServiceId);
-
-			$bolUnbarred = TRUE;
-			$bolUnbarredFNNs[] = $arrDetails['FNN'];
-			$arrUnbarrableAccountServices[$intServiceId] = $arrDetails;
 		}
-		else
+
+		// If automatic, change auto_barring_status for the account
+		if ($bolAutomatic && $bolBarred)
 		{
-			$arrNonUnbarrableAccountServices[$intServiceId] = $arrDetails;
-			$bolManualUnbars = TRUE;
+			$strReason = 'Automatically barred the following services: ' . implode(', ', $bolBarredFNNs) . '. ';
+			ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_BARRED, $strReason);
+			ChangeAccountAutomaticInvoiceAction($intAccountId, NULL, AUTOMATIC_INVOICE_ACTION_BARRING, $strReason, NULL, $invoiceRun);
 		}
+
+		$outcome = array('BARRED' => $arrBarrableAccountServices, 'NOT_BARRED' => $arrUnbarrableAccountServices);
+
+		// Return a list of services that could and could not be barred
+		return $outcome;
 	}
 
-	// If automatic, change auto_barring_status for the account
-	// Note: We do this regardless of whether any services were unbarred automatically, manuall or even if there were no services
-	if ($bolAutomatic)
+	function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
 	{
-		$strReason = 'Automatically unbarred the following services: ' . implode(', ', $bolUnbarredFNNs) . '. ';
-		ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_UNBARRED, $strReason);
-		ChangeAccountAutomaticInvoiceAction($intAccountId, NULL, AUTOMATIC_INVOICE_ACTION_UNBARRING, $strReason, NULL, $invoiceRun);
+		// Throw exception if fails
+
+		// Bar the account
+
+		$arrAccountServices = ListServicesAndCarriersForAccount($intAccountId);
+
+		$arrAutomaticallyUnbarrableCarriers = ListAutomaticallyUnbarrableCarriers();
+
+		$arrNonUnbarrableAccountServices = array();
+		$arrUnbarrableAccountServices = array();
+
+		$bolUnbarred = FALSE;
+		$bolManualUnbars = FALSE;
+
+		$bolUnbarredFNNs = array();
+
+		foreach($arrAccountServices as $intServiceId => $arrDetails)
+		{
+			if ($arrDetails['CarrierId'] !== NULL && array_search($arrDetails['CarrierId'], $arrAutomaticallyUnbarrableCarriers) !== FALSE)
+			{
+				// Write the record to unbar the service
+				$arrColumns = array(
+					'AccountGroup' 		=> $intAccountGroup,
+					'Account'			=> $intAccountId,
+					'Service'			=> $intServiceId,
+					'FNN'				=> $arrDetails['FNN'],
+					'Employee'			=> USER_ID,
+					'Carrier'			=> $arrDetails['CarrierId'],
+					'Type'				=> PROVISIONING_TYPE_UNBAR,
+					'RequestedOn'		=> new MySQLFunction('NOW()'),
+					'AuthorisationDate'	=> new MySQLFunction('NOW()'),
+					'Status'			=> REQUEST_STATUS_WAITING,
+				);
+				$insProvisioningRequest = new StatementInsert('ProvisioningRequest', $arrColumns, FALSE);
+				$mxdResult = $insProvisioningRequest->Execute($arrColumns);
+				if ($mxdResult === FALSE)
+				{
+					throw new Exception('Failed to create provisioning request for unbarring service ' . $arrDetails['FNN'] . '(' . $intServiceId . '): ' . $insProvisioningRequest->Error());
+				}
+
+				// Add a note to the service
+				$GLOBALS['fwkFramework']->AddNote('Service automatically unbarred.', SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, NULL, $intServiceId);
+
+				$bolUnbarred = TRUE;
+				$bolUnbarredFNNs[] = $arrDetails['FNN'];
+				$arrUnbarrableAccountServices[$intServiceId] = $arrDetails;
+			}
+			else
+			{
+				$arrNonUnbarrableAccountServices[$intServiceId] = $arrDetails;
+				$bolManualUnbars = TRUE;
+			}
+		}
+
+		// If automatic, change auto_barring_status for the account
+		// Note: We do this regardless of whether any services were unbarred automatically, manuall or even if there were no services
+		if ($bolAutomatic)
+		{
+			$strReason = 'Automatically unbarred the following services: ' . implode(', ', $bolUnbarredFNNs) . '. ';
+			ChangeAccountAutomaticBarringStatus($intAccountId, $intAccountGroup, AUTOMATIC_BARRING_STATUS_UNBARRED, $strReason);
+			ChangeAccountAutomaticInvoiceAction($intAccountId, NULL, AUTOMATIC_INVOICE_ACTION_UNBARRING, $strReason, NULL, $invoiceRun);
+		}
+
+		$outcome = array('UNBARRED' => $arrUnbarrableAccountServices, 'NOT_UNBARRED' => $arrNonUnbarrableAccountServices);
+
+		// Return a list of services that could and could not be unbarred
+		return $outcome;
 	}
 
-	$outcome = array('UNBARRED' => $arrUnbarrableAccountServices, 'NOT_UNBARRED' => $arrNonUnbarrableAccountServices);
-
-	// Return a list of services that could and could not be unbarred
-	return $outcome;
-}
-
-function ChangeAccountAutomaticBarringStatus($intAccount, $intAccountGroup, $intTo, $strReason)
-{
-	$error = '';
-
-	$strDate = date('Y-m-d H:i:s');
-	
-	// Need to find out the current status of the account
-	$selQuery = new StatementSelect('Account', array('automatic_barring_status' => 'automatic_barring_status'), 'Id=<Id>');
-	if (!$outcome = $selQuery->Execute(array('Id' => $intAccount)))
+	function ChangeAccountAutomaticBarringStatus($intAccount, $intAccountGroup, $intTo, $strReason)
 	{
-		throw new Exception('Failed to retreive current automatic barring status for account $intAccount. ' .  $qryQuery->Error());
-	}
-	$arrFrom =  $selQuery->Fetch();
-	$intFrom = intval($arrFrom['automatic_barring_status']);
+		$error = '';
 
-	$qryQuery = new Query();
-	$strSQL = 'UPDATE Account SET automatic_barring_status = ' . $intTo . ', automatic_barring_datetime = \'' . $strDate . '\' WHERE Id = ' . $intAccount;
-	if (!$outcome = $qryQuery->Execute($strSQL))
-	{
-		$message = ' Failed to update Account ' . $intAccount . ' automatic_barring_status from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
-		throw new Exception($message);
-	}
+		$strDate = date('Y-m-d H:i:s');
 
-	// and creating a corresponding automatic_barring_status_history entry.
-	$qryQuery = new Query();
-	$strSQL = 'INSERT INTO automatic_barring_status_history (account, from_status, to_status, reason, change_datetime) ' .
+		// Need to find out the current status of the account
+		$selQuery = new StatementSelect('Account', array('automatic_barring_status' => 'automatic_barring_status'), 'Id=<Id>');
+		if (!$outcome = $selQuery->Execute(array('Id' => $intAccount)))
+		{
+			throw new Exception('Failed to retreive current automatic barring status for account $intAccount. ' .  $qryQuery->Error());
+		}
+		$arrFrom =  $selQuery->Fetch();
+		$intFrom = intval($arrFrom['automatic_barring_status']);
+
+		$qryQuery = new Query();
+		$strSQL = 'UPDATE Account SET automatic_barring_status = ' . $intTo . ', automatic_barring_datetime = \'' . $strDate . '\' WHERE Id = ' . $intAccount;
+		if (!$outcome = $qryQuery->Execute($strSQL))
+		{
+			$message = ' Failed to update Account ' . $intAccount . ' automatic_barring_status from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
+			throw new Exception($message);
+		}
+
+		// and creating a corresponding automatic_barring_status_history entry.
+		$qryQuery = new Query();
+		$strSQL = 'INSERT INTO automatic_barring_status_history (account, from_status, to_status, reason, change_datetime) ' .
 			' VALUES (' .
 			$intAccount . ', ' .
 			$intFrom . ', ' .
@@ -5399,105 +5401,105 @@ function ChangeAccountAutomaticBarringStatus($intAccount, $intAccountGroup, $int
 			'\'' . $qryQuery->EscapeString($strReason) . '\', ' .
 			'\'' . $strDate . '\'' .
 			')';
-	if (!$outcome = $qryQuery->Execute($strSQL))
-	{
-		$message = ' Failed to create automatic_barring_status_history entry for ' . $intAccount . ' change from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
-		throw new Exception($message);
+		if (!$outcome = $qryQuery->Execute($strSQL))
+		{
+			$message = ' Failed to create automatic_barring_status_history entry for ' . $intAccount . ' change from ' . $intFrom . ' to ' . $intTo . '. '. $qryQuery->Error();
+			throw new Exception($message);
+		}
+
+		// Add a note to the account
+		$GLOBALS['fwkFramework']->AddNote($strReason, SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, $intAccount);
+
+		return TRUE;
 	}
 
-	// Add a note to the account
-	$GLOBALS['fwkFramework']->AddNote($strReason, SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, $intAccount);
-
-	return TRUE;
-}
-
-function ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $strDateTime=NULL, $intInvoiceRunId)
-{
-	$error = '';
-
-	if ($strDateTime == NULL)
+	function ChangeAccountAutomaticInvoiceAction($intAccount, $intFrom, $intTo, $strReason, $strDateTime=NULL, $intInvoiceRunId)
 	{
-		$strDateTime = date("Y-m-d H:i:s");
+		$error = '';
+
+		if ($strDateTime == NULL)
+		{
+			$strDateTime = date("Y-m-d H:i:s");
+		}
+
+		if ($intFrom === NULL)
+		{
+			// Need to find the current status for the account (do this as part of the other queries)
+			$intFrom = "(SELECT last_automatic_invoice_action FROM Account WHERE Id = $intAccount)";
+		}
+
+		// Creating an automatic_invoice_action_history entry.
+		$qryQuery = new Query();
+		$strReason = $qryQuery->EscapeString($strReason);
+		$strSQL = "INSERT INTO automatic_invoice_action_history (account, from_action, to_action, reason, change_datetime, invoice_run_id)
+			VALUES ($intAccount, $intFrom, $intTo, '$strReason', '$strDateTime', $intInvoiceRunId)";
+		//echo "\n\n$strSQL\n\n";
+		if (!$outcome = $qryQuery->Execute($strSQL))
+		{
+			return ' Failed to create automatic_invoice_action_history entry for ' . $intAccount . ' change to ' . $intTo . '. '. $qryQuery->Error();
+		}
+
+		$qryQuery = new Query();
+		$strSQL = "UPDATE Account SET last_automatic_invoice_action = $intTo, last_automatic_invoice_action_datetime = '$strDateTime' WHERE Id = $intAccount";
+		if (!$outcome = $qryQuery->Execute($strSQL))
+		{
+			return ' Failed to update Account ' . $intAccount . ' last_automatic_invoice_action to ' . $intTo . '. '. $qryQuery->Error();
+		}
+
+		return TRUE;
 	}
 
-	if ($intFrom === NULL)
+
+
+	function ListServicesAndCarriersForAccount($accountId)
 	{
-		// Need to find the current status for the account (do this as part of the other queries)
-		$intFrom = "(SELECT last_automatic_invoice_action FROM Account WHERE Id = $intAccount)";
+		$arrServices = ListAccountServices($accountId);
+
+		// Build an array of service ids
+		$arrServiceIds = array();
+		$arrServicesById = array();
+		foreach($arrServices as $arrService)
+		{
+			$arrServiceIds[] = $arrService['Id'];
+			$arrServicesById[$arrService['Id']] = $arrService;
+			$arrServicesById[$arrService['Id']]['CarrierId'] = NULL;
+			$arrServicesById[$arrService['Id']]['CarrierName'] = NULL;
+		}
+
+		// Retreive the carriers for the services
+		$arrCarriersForServices = ListCarriersForServices($arrServiceIds);
+
+		foreach($arrCarriersForServices as $serviceId => $carrierDetails)
+		{
+			$arrServicesById[$serviceId]['CarrierId'] = $carrierDetails['CarrierId'];
+			$arrServicesById[$serviceId]['CarrierName'] = $carrierDetails['CarrierName'];
+		}
+
+		return $arrServicesById;
 	}
 
-	// Creating an automatic_invoice_action_history entry.
-	$qryQuery = new Query();
-	$strReason = $qryQuery->EscapeString($strReason);
-	$strSQL = "INSERT INTO automatic_invoice_action_history (account, from_action, to_action, reason, change_datetime, invoice_run_id)
-				VALUES ($intAccount, $intFrom, $intTo, '$strReason', '$strDateTime', $intInvoiceRunId)";
-//echo "\n\n$strSQL\n\n";
-	if (!$outcome = $qryQuery->Execute($strSQL))
+	function ListAccountServices($accountId)
 	{
-		return ' Failed to create automatic_invoice_action_history entry for ' . $intAccount . ' change to ' . $intTo . '. '. $qryQuery->Error();
-	}
+		$strServiceStatuses = implode(', ', array(SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_ARCHIVED));
+		$arrColumns = array('Id' => 'Service.Id', 'FNN' => 'Service.FNN');
+		$strTables = "Service
+			INNER JOIN (
+				SELECT MAX(Service.Id) serviceId
+				FROM Service
+				WHERE 
+				(
+					Service.ClosedOn IS NULL
+					OR NOW() < Service.ClosedOn
+				)
+				AND Service.CreatedOn < NOW()
+				AND Service.FNN IN (SELECT FNN FROM Service WHERE Account = $accountId)
+				GROUP BY Service.FNN
+			) CurrentService
+			ON Service.Account = $accountId
+			AND Service.Id = CurrentService.serviceId
+			AND Service.Status IN ($strServiceStatuses)";
 
-	$qryQuery = new Query();
-	$strSQL = "UPDATE Account SET last_automatic_invoice_action = $intTo, last_automatic_invoice_action_datetime = '$strDateTime' WHERE Id = $intAccount";
-	if (!$outcome = $qryQuery->Execute($strSQL))
-	{
-		return ' Failed to update Account ' . $intAccount . ' last_automatic_invoice_action to ' . $intTo . '. '. $qryQuery->Error();
-	}
-
-	return TRUE;
-}
-
-
-
-function ListServicesAndCarriersForAccount($accountId)
-{
-	$arrServices = ListAccountServices($accountId);
-
-	// Build an array of service ids
-	$arrServiceIds = array();
-	$arrServicesById = array();
-	foreach($arrServices as $arrService)
-	{
-		$arrServiceIds[] = $arrService['Id'];
-		$arrServicesById[$arrService['Id']] = $arrService;
-		$arrServicesById[$arrService['Id']]['CarrierId'] = NULL;
-		$arrServicesById[$arrService['Id']]['CarrierName'] = NULL;
-	}
-
-	// Retreive the carriers for the services
-	$arrCarriersForServices = ListCarriersForServices($arrServiceIds);
-
-	foreach($arrCarriersForServices as $serviceId => $carrierDetails)
-	{
-		$arrServicesById[$serviceId]['CarrierId'] = $carrierDetails['CarrierId'];
-		$arrServicesById[$serviceId]['CarrierName'] = $carrierDetails['CarrierName'];
-	}
-
-	return $arrServicesById;
-}
-
-function ListAccountServices($accountId)
-{
-	$strServiceStatuses = implode(', ', array(SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_ARCHIVED));
-	$arrColumns = array('Id' => 'Service.Id', 'FNN' => 'Service.FNN');
-	$strTables = "Service
-  INNER JOIN (
-    SELECT MAX(Service.Id) serviceId
-      FROM Service
-     WHERE 
-     (
-       Service.ClosedOn IS NULL
-       OR NOW() < Service.ClosedOn
-     )
-     AND Service.CreatedOn < NOW()
-     AND Service.FNN IN (SELECT FNN FROM Service WHERE Account = $accountId)
-     GROUP BY Service.FNN
-   ) CurrentService
-   ON Service.Account = $accountId
-   AND Service.Id = CurrentService.serviceId
-   AND Service.Status IN ($strServiceStatuses)";
-
-	$strOrderBy = "Service.FNN ASC";
+		$strOrderBy = "Service.FNN ASC";
 
 	/*
 	// DEBUG: Output the query that gets run
@@ -5514,45 +5516,45 @@ function ListAccountServices($accountId)
 		throw new Exception("Failed to list services for account $accountId: " . $qryQuery->Error());
 	}
 	return $selServices->FetchAll();
-}
+	}
 
-/*
- * Returns an array of carrier details indexed by Service Id
- * [ServiceId] = array('ServiceId'=>$serviceId, 'CarrierId'=>$carrierId, 'CarrierName'=>$carrierName);
- */
-function ListCarriersForServices($arrServiceIds)
-{
-	$carriers = array();
-	if (count($arrServiceIds))
+	/*
+	 * Returns an array of carrier details indexed by Service Id
+	 * [ServiceId] = array('ServiceId'=>$serviceId, 'CarrierId'=>$carrierId, 'CarrierName'=>$carrierName);
+	 */
+	function ListCarriersForServices($arrServiceIds)
 	{
-		// We also want the carriers for these services
-		$strServiceIds = implode(', ', $arrServiceIds);
-		$arrColumns = array('ServiceId' => 'Services.Id', 'CarrierId' => ' Carrier.Id', 'CarrierName' => 'Carrier.Name');
-		$strTables = "
-				   (SELECT Service.Id FROM Service WHERE Service.Id IN ($strServiceIds)) Services
-				   LEFT JOIN (SELECT MAX(Id) Id, ServiceRatePlan.Service Service
-					  FROM ServiceRatePlan 
-					 WHERE ServiceRatePlan.Service IN ($strServiceIds)
-					   AND ServiceRatePlan.Active = 1
-					   AND ServiceRatePlan.StartDateTime < ServiceRatePlan.EndDateTime
-					   AND NOW() BETWEEN ServiceRatePlan.StartDateTime AND ServiceRatePlan.EndDateTime
-					 GROUP BY ServiceRatePlan.Service
-					) ServiceRatePlans
-					ON ServiceRatePlans.Service = Services.Id
-					LEFT JOIN ServiceRatePlan
-					  ON ServiceRatePlan.Id = ServiceRatePlans.Id
-					LEFT JOIN RatePlan
-					  ON ServiceRatePlan.RatePlan = RatePlan.Id
-					LEFT JOIN Carrier
-					  ON RatePlan.CarrierPreselection = Carrier.Id
-		";
+		$carriers = array();
+		if (count($arrServiceIds))
+		{
+			// We also want the carriers for these services
+			$strServiceIds = implode(', ', $arrServiceIds);
+			$arrColumns = array('ServiceId' => 'Services.Id', 'CarrierId' => ' Carrier.Id', 'CarrierName' => 'Carrier.Name');
+			$strTables = "
+				(SELECT Service.Id FROM Service WHERE Service.Id IN ($strServiceIds)) Services
+				LEFT JOIN (SELECT MAX(Id) Id, ServiceRatePlan.Service Service
+				FROM ServiceRatePlan 
+				WHERE ServiceRatePlan.Service IN ($strServiceIds)
+				AND ServiceRatePlan.Active = 1
+				AND ServiceRatePlan.StartDateTime < ServiceRatePlan.EndDateTime
+				AND NOW() BETWEEN ServiceRatePlan.StartDateTime AND ServiceRatePlan.EndDateTime
+				GROUP BY ServiceRatePlan.Service
+			) ServiceRatePlans
+			ON ServiceRatePlans.Service = Services.Id
+			LEFT JOIN ServiceRatePlan
+			ON ServiceRatePlan.Id = ServiceRatePlans.Id
+			LEFT JOIN RatePlan
+			ON ServiceRatePlan.RatePlan = RatePlan.Id
+			LEFT JOIN Carrier
+			ON RatePlan.CarrierPreselection = Carrier.Id
+			";
 
 		/*
 		// DEBUG: Output the query that gets run
 		$select = array();
 		foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
 		echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\n\n";
-		//*/
+	//*/
 
 
 		$selCarriers = new StatementSelect($strTables, $arrColumns);
@@ -5566,160 +5568,160 @@ function ListCarriersForServices($arrServiceIds)
 		{
 			$carriers[$carrier['ServiceId']] = $carrier;
 		}
-	}
-	return $carriers;
-}
-
-function ListAutomaticallyBarrableCarriers()
-{
-	return ListAutomatableCarriers(PROVISIONING_TYPE_BAR, FALSE, TRUE);
-}
-
-function ListAutomaticallyUnbarrableCarriers()
-{
-	return ListAutomatableCarriers(PROVISIONING_TYPE_UNBAR, FALSE, TRUE);
-}
-
-function ListAutomatableCarriers($intProvisioningTypeConstant, $bolInbound=FALSE, $bolOutbound=FALSE)
-{
-	// The result of this query is highly unlikely to change, so cache the result statically
-	static $carriers;
-	if (!isset($carriers))
-	{
-		$carriers = array();
-	}
-	$key = $intProvisioningTypeConstant . '|' . $bolInbound . '|' . $bolOutbound;
-	if (!array_key_exists($key, $carriers))
-	{
-		$strInbound = $bolInbound ? ' AND provisioning_type.inbound = 1' : '';
-		$strOutbound = $bolInbound ? ' AND provisioning_type.outbound = 1' : '';
-		$arrColumns = array("Id" => "DISTINCT(Carrier.Id)");
-		$strTables = "
-			Carrier
-			  JOIN carrier_provisioning_support
-			    ON carrier_provisioning_support.carrier_id = Carrier.Id
-			  JOIN active_status
-			    ON carrier_provisioning_support.status_id = active_status.id
-			   AND active_status.active = 1
-			  JOIN provisioning_type
-			    ON provisioning_type.id = $intProvisioningTypeConstant
-			   AND provisioning_type.id = carrier_provisioning_support.provisioning_type_id	";
-	
-		$selCarriers = new StatementSelect($strTables, $arrColumns);
-		$mxdResult = $selCarriers->Execute();
-		if ($mxdResult === FALSE)
-		{
-			throw new Exception("Failed to load automatable carriers for provisioning type $intProvisioningTypeConstant (inbound: $bolInbound, outbound: $bolOutbound): " . $qryQuery->Error());
 		}
-		$arrResults = $selCarriers->FetchAll();
-		foreach($arrResults as $arrCarrier)
+		return $carriers;
+	}
+
+	function ListAutomaticallyBarrableCarriers()
+	{
+		return ListAutomatableCarriers(PROVISIONING_TYPE_BAR, FALSE, TRUE);
+	}
+
+	function ListAutomaticallyUnbarrableCarriers()
+	{
+		return ListAutomatableCarriers(PROVISIONING_TYPE_UNBAR, FALSE, TRUE);
+	}
+
+	function ListAutomatableCarriers($intProvisioningTypeConstant, $bolInbound=FALSE, $bolOutbound=FALSE)
+	{
+		// The result of this query is highly unlikely to change, so cache the result statically
+		static $carriers;
+		if (!isset($carriers))
 		{
-			$carriers[$key][] = intval($arrCarrier['Id']);
+			$carriers = array();
 		}
-	}
-	return $carriers[$key];
-}
-
-
-//------------------------------------------------------------------------//
-// FlexModuleActive
-//------------------------------------------------------------------------//
-/**
- * FlexModuleActive()
- * 
- * Determines whether a Flex Module is activated or not
- * 
- * Determines whether a Flex Module is activated or not.  If the module doesn't exist
- * in the database, it returns NULL (and should be treated as inactive)
- *
- * @param	string	$strModuleName		The name of the Module to Check
- *
- * @return	mixed						TRUE: Active; FALSE: Inactive; NULL: Not present
- * 
- * @function
- * 
- */
-function FlexModuleActive($strModuleName)
-{
-	// Init Statement
-	static	$selFlexModule;
-	$selFlexModule	= (isset($selFlexModule)) ? $selFlexModule : new StatementSelect("flex_module", "status_id", "name = <Name>");
-	
-	// Check Module Status
-	if ($selFlexModule->Execute(Array('Name' => $strModuleName)) === FALSE)
-	{
-		// DB Error
-		throw new Exception("DB ERROR: ".$selFlexModule->Error());
-	}
-	elseif ($arrModule = $selFlexModule->Fetch())
-	{
-		// Module Exists - is it active?
-		if ($arrModule['status_id'] === ACTIVE_STATUS_ACTIVE)
+		$key = $intProvisioningTypeConstant . '|' . $bolInbound . '|' . $bolOutbound;
+		if (!array_key_exists($key, $carriers))
 		{
-			// Active
-			return TRUE;
+			$strInbound = $bolInbound ? ' AND provisioning_type.inbound = 1' : '';
+			$strOutbound = $bolInbound ? ' AND provisioning_type.outbound = 1' : '';
+			$arrColumns = array("Id" => "DISTINCT(Carrier.Id)");
+			$strTables = "
+				Carrier
+				JOIN carrier_provisioning_support
+				ON carrier_provisioning_support.carrier_id = Carrier.Id
+				JOIN active_status
+				ON carrier_provisioning_support.status_id = active_status.id
+				AND active_status.active = 1
+				JOIN provisioning_type
+				ON provisioning_type.id = $intProvisioningTypeConstant
+				AND provisioning_type.id = carrier_provisioning_support.provisioning_type_id	";
+
+			$selCarriers = new StatementSelect($strTables, $arrColumns);
+			$mxdResult = $selCarriers->Execute();
+			if ($mxdResult === FALSE)
+			{
+				throw new Exception("Failed to load automatable carriers for provisioning type $intProvisioningTypeConstant (inbound: $bolInbound, outbound: $bolOutbound): " . $qryQuery->Error());
+			}
+			$arrResults = $selCarriers->FetchAll();
+			foreach($arrResults as $arrCarrier)
+			{
+				$carriers[$key][] = intval($arrCarrier['Id']);
+			}
+		}
+		return $carriers[$key];
+	}
+
+
+	//------------------------------------------------------------------------//
+	// FlexModuleActive
+	//------------------------------------------------------------------------//
+	/**
+	 * FlexModuleActive()
+	 * 
+	 * Determines whether a Flex Module is activated or not
+	 * 
+	 * Determines whether a Flex Module is activated or not.  If the module doesn't exist
+	 * in the database, it returns NULL (and should be treated as inactive)
+	 *
+	 * @param	string	$strModuleName		The name of the Module to Check
+	 *
+	 * @return	mixed						TRUE: Active; FALSE: Inactive; NULL: Not present
+	 * 
+	 * @function
+	 * 
+	 */
+	function FlexModuleActive($strModuleName)
+	{
+		// Init Statement
+		static	$selFlexModule;
+		$selFlexModule	= (isset($selFlexModule)) ? $selFlexModule : new StatementSelect("flex_module", "status_id", "name = <Name>");
+
+		// Check Module Status
+		if ($selFlexModule->Execute(Array('Name' => $strModuleName)) === FALSE)
+		{
+			// DB Error
+			throw new Exception("DB ERROR: ".$selFlexModule->Error());
+		}
+		elseif ($arrModule = $selFlexModule->Fetch())
+		{
+			// Module Exists - is it active?
+			if ($arrModule['status_id'] === ACTIVE_STATUS_ACTIVE)
+			{
+				// Active
+				return TRUE;
+			}
+			else
+			{
+				// Inactive
+				return FALSE;
+			}
 		}
 		else
 		{
-			// Inactive
-			return FALSE;
+			// Module doesn't exist
+			return NULL;
 		}
 	}
-	else
-	{
-		// Module doesn't exist
-		return NULL;
-	}
-}
 
-//------------------------------------------------------------------------//
-// signalHandler
-//------------------------------------------------------------------------//
-/**
- * signalHandler()
- * 
- * Handles POSIX Signals
- * 
- * Handles POSIX Signals
- *
- * @param	integer	$intSignalId		POSIX Signal Id
- *
- * @return	void
- * 
- * @function
- * 
- */
-function signalHandler($intSignalId)
-{
-	// What Signal did we get passed?
-	switch ((int)$intSignalId)
+	//------------------------------------------------------------------------//
+	// signalHandler
+	//------------------------------------------------------------------------//
+	/**
+	 * signalHandler()
+	 * 
+	 * Handles POSIX Signals
+	 * 
+	 * Handles POSIX Signals
+	 *
+	 * @param	integer	$intSignalId		POSIX Signal Id
+	 *
+	 * @return	void
+	 * 
+	 * @function
+	 * 
+	 */
+	function signalHandler($intSignalId)
 	{
+		// What Signal did we get passed?
+		switch ((int)$intSignalId)
+		{
 		case SIGTERM:
 			// Rollback any active Transactions
 			DataAccess::getDataAccess()->TransactionRollback();
 			break;
+		}
 	}
-}
 
 
-//------------------------------------------------------------------------//
-// IsValidTIOReferenceNumber
-//------------------------------------------------------------------------//
-/**
- * IsValidTIOReferenceNumber()
- * 
- * Check if a TIO reference number is valid
- * 
- * Check if a TIO reference number is valid
- * Valid TIO reference numbers have the format: \d{2}\/\d{6,7}
- * 
- * @param	string		$strTIORefNum		The TIO Reference number to check for validity
- *
- * @return	boolean
- */
-function IsValidTIOReferenceNumber($strTIORefNum)
-{
-	return preg_match("/^\d{2}\/\d{6,7}$/", $strTIORefNum);
-}
+	//------------------------------------------------------------------------//
+	// IsValidTIOReferenceNumber
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidTIOReferenceNumber()
+	 * 
+	 * Check if a TIO reference number is valid
+	 * 
+	 * Check if a TIO reference number is valid
+	 * Valid TIO reference numbers have the format: \d{2}\/\d{6,7}
+	 * 
+	 * @param	string		$strTIORefNum		The TIO Reference number to check for validity
+	 *
+	 * @return	boolean
+	 */
+	function IsValidTIOReferenceNumber($strTIORefNum)
+	{
+		return preg_match("/^\d{2}\/\d{6,7}$/", $strTIORefNum);
+	}
 
 ?>
