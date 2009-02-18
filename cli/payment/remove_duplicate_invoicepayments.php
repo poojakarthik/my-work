@@ -12,7 +12,7 @@ try
 	
 	$strSQL	= "	SELECT Payment. * , (Payment.Amount - Payment.Balance), SUM( InvoicePayment.Amount ) AS ActualAmount, InvoicePayment.invoice_run_id
 				FROM Payment JOIN InvoicePayment ON Payment.Id = InvoicePayment.Payment
-				GROUP BY Payment.Id, InvoicePayment.invoice_run_id
+				GROUP BY Payment.Id, Account, InvoicePayment.invoice_run_id
 				HAVING ActualAmount > ( Payment.Amount - Payment.Balance )
 				AND ActualAmount = ( Payment.Amount - Payment.Balance ) * 2";
 	$resPayments	= $qryQuery->Execute($strSQL);
@@ -34,7 +34,7 @@ try
 	
 	Log::getLog()->log("Actioned {$resPayments->num_rows} erroneous Payments.");
 	
-	throw new Exception("TEST MODE");
+	//throw new Exception("TEST MODE");
 }
 catch (Exception $eException)
 {
