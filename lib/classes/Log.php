@@ -14,15 +14,15 @@ class Log
 	
 	const	SYSTEM_ALIAS		= '**default';
 	
-	static protected	$_strSystemAlias	= SYSTEM_ALIAS;
-	static protected	$_strSystemLogType	= LOG_TYPE_FUNCTION;
+	static protected	$_strSystemAlias	= self::SYSTEM_ALIAS;
+	static protected	$_strSystemLogType	= self::LOG_TYPE_FUNCTION;
 	static protected	$_strSystemConfig	=	array
 												(
 													'Class'		=> 'echoMessage',
 													'Function'	=> 'Log'
 												);
 	
-	static protected	$_strDefaultAlias	= SYSTEM_ALIAS;
+	static protected	$_strDefaultAlias	= self::SYSTEM_ALIAS;
 	
 	static protected	$_arrLogs		= array();
 	
