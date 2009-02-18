@@ -34,7 +34,7 @@ try
 	
 	Log::getLog()->log("Actioned {$resPayments->num_rows} erroneous Payments.");
 	
-	//throw new Exception("TEST MODE");
+	throw new Exception("TEST MODE");
 }
 catch (Exception $eException)
 {
