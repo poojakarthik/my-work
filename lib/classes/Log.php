@@ -137,7 +137,7 @@ class Log
 			
 			if (!self::logExists($strLogAlias))
 			{
-				if (self::$_strDefaultLogType === self::LOG_TYPE_FUNCTION)
+				if (self::$_strSystemLogType === self::LOG_TYPE_FUNCTION)
 				{
 					// Function-based Log
 					$strClass	= (self::$_strSystemConfig['Class']) ? $_strSystemConfig['Class'] : null;
