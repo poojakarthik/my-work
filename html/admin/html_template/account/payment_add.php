@@ -177,12 +177,12 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		DBO()->Payment->ChargeSurcharge->RenderInput();
 		
 		// Load the surcharges for the various Credit Card Types
-		DBL()->Config->Application = APPLICATION_PAYMENTS;
-		DBL()->Config->Load();
-		foreach (DBL()->Config as $dboConfig)
+		$objCreditCardTypes = Credit_Card_Type::listAll();
+		
+		foreach ($objCreditCardTypes as $objCreditCardType)
 		{
 			// This will build an array specifying the the surcharge for each Credit Card type, with the Description of the Credit Card as the key
-			$arrCCSurcharges[$dboConfig->Module->Value] = $dboConfig->Value->Value;
+			$arrCCSurcharges[$objCreditCardType->id] = $objCreditCardType->surcharge;
 		}
 		
 		// CreditCardType combobox
@@ -190,17 +190,17 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Credit Card Type :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='Payment.CreditCardType' style='width:250px' name='Payment.CreditCardType' onchange='Vixen.PaymentPopup.DeclareCreditCardType()'>\n";
-		foreach ($GLOBALS['*arrConstant']['CreditCard'] as $intCreditCard=>$arrCreditCard)
+		foreach ($GLOBALS['*arrConstant']['credit_card_type'] as $intCreditCard=>$arrCreditCard)
 		{
 			// Check if this Credit Card Type was the last one selected
 			$strSelected = "";
 			if (DBO()->Payment->CreditCardType->Value == $intCreditCard)
 			{
 				$strSelected = "selected='selected'";
-				$fltCurrentSurcharge = $arrCCSurcharges[$arrCreditCard['Description']];
+				$fltCurrentSurcharge = $arrCCSurcharges[$intCreditCard];
 			}
 			
-			$fltSurcharge = $arrCCSurcharges[$arrCreditCard['Description']];
+			$fltSurcharge = $arrCCSurcharges[$intCreditCard];
 			
 			echo "         <option value='$intCreditCard' surcharge='$fltSurcharge' $strSelected>{$arrCreditCard['Description']}</option>\n";
 		}
