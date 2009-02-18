@@ -22,7 +22,7 @@ try
 	}
 	while ($arrPayment = $resPayments->fetch_assoc())
 	{
-		Log::log("Deleting duplicate of #{{$arrPayment['Id']}}...");
+		Log::getLog()->log("Deleting duplicate of #{{$arrPayment['Id']}}...");
 		
 		// Delete one of the InvoicePayment duplicates
 		$resDelete	= $qryQuery->Execute("DELETE FROM InvoicePayment WHERE Payment = {$arrPayment['Id']} AND invoice_run_id = {$arrPayment['invoice_run_id']} AND Account = {$arrPayment['Account']} AND Amount = {$arrPayment['Amount']} LIMIT 1");
@@ -32,7 +32,7 @@ try
 		}
 	}
 	
-	Log::log("Actioned {$resPayments->num_rows} erroneous Payments.");
+	Log::getLog()->log("Actioned {$resPayments->num_rows} erroneous Payments.");
 	
 	throw new Exception("TEST MODE");
 }
