@@ -217,19 +217,6 @@ class HtmlTemplateConsole extends HtmlTemplate
 
               <tr>
                 <td>
-                  <a href="bug_list.php">
-                    <img src="img/template/lady-debug.png" title="View Bug Reports" class="MenuIcon" />
-                  </a>
-                </td>
-                <td><strong>
-						View Bug Reports
-					</strong><br />
-
-					View details of Bug Reports.
-				</td>
-              </tr>
-              <tr>
-                <td>
                   <a href="logout.php" onclick="debug( Vixen.Logout()); return false;">
                     <img src="img/template/logout.png" title="Logout" class="MenuIcon" />
                   </a>

@@ -897,7 +897,6 @@ h2.Employees,
 h2.Employee,
 h2.Email,
 h2.Permissions,
-h2.Bug,
 h2.Article,
 h2.CustomerGroup,
 h2.ConstantGroup,
@@ -1049,11 +1048,6 @@ h2.Report
 h2.CostCentre
 {
 	background-image:              url('img/template/shoppingcart.png');
-}
-
-h2.Bug
-{
-	background-image:              url('img/template/lady-debug.png');
 }
 
 h2.Article,

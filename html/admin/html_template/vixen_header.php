@@ -104,11 +104,6 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 				<div class='Left' style='padding:12px 0px 0px 5px'>
 					Flex Customer Management System
 				</div>
-				<div class='Right' style='padding-top:15px'>
-					<div class='Menu_Button'>
-						<a href='#' onclick=''>
-							<img src='img/template/bug.png' alt='Report Bug' title='Report Bug' border='0' />
-						</a>\n";
 
 			// Add debug button, which doesnt do much yet, just set debug to true;
 			//  eventually move this somewhere more appropriate

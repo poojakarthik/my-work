@@ -153,25 +153,6 @@
 				</td>
 			</tr>
 			-->
-			<!-- Bugs -->
-			<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
-				<!-- User needs OPERATOR privileges to view the bug report -->
-			
-				<tr>
-					<td>
-						<a href="bug_list.php">
-							<img src="img/template/lady-debug.png" title="View Bug Reports" class="MenuIcon" />
-						</a>
-					</td>
-					<td>
-						<strong>
-							View Bug Reports
-						</strong>
-						<br />
-						View details of Bug Reports.
-					</td>
-				</tr>
-			</xsl:if>
 			<!-- Logout -->
 			<tr>
 				<td>

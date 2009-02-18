@@ -1523,8 +1523,7 @@ span.IncorrectLogin
 	h2.Employee,
 	h2.Email,
 	h2.Permissions,
-	h2.Console,
-	h2.Bug
+	h2.Console
 	{
 		background-repeat:		no-repeat;
 		background-position:	center left;
@@ -1661,11 +1660,6 @@ span.IncorrectLogin
 	h2.CostCentre
 	{
 		background-image:		url('img/template/icon-shoppingcart_small.jpg');
-	}
-	
-	h2.Bug
-	{
-		background-image:		url('img/template/lady-debug.gif');
 	}
 	
 	h2.Console

@@ -737,8 +737,7 @@
 	h2.Invoice,
 	h2.Admin,
 	h2.Report,
-	h2.CostCentre,
-	h2.Bug
+	h2.CostCentre
 	{
 		background-repeat:		no-repeat;
 		background-position:	bottom left;
@@ -856,11 +855,6 @@
 		background-image:              url('../img/template/shoppingcart.png');
 	}
 	
-	h2.Bug
-	{
-		background-image:              url('../img/template/lady-debug_small.png');
-	}
-	
 	.Menu_Button
 	{
 		display:                       inline;
@@ -878,16 +872,6 @@
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	#modalContent-ReportBug,
 	#modalContent-systemDebug,
 	#modalContent-domDebug,
 	#modalContent-recentCustomers,

@@ -33,60 +33,6 @@
 						Flex Customer Management System
 					</div>
 					<div class="Right"  style='padding-top:12px'>
-						<!-- Report Bug Button & PopUp -->
-						<div class="Menu_Button">
-							<a href="#" onclick="return ModalDisplay ('#modalContent-ReportBug')">
-								<img src="img/template/bug.png" border="0" alt="Report Bug" title="Report Bug" />
-							</a>
-						</div>
-						<div id="modalContent-ReportBug">
-							<div class="modalContainer">
-								<div class="modalContent">
-									<form method="post" name="bugreport" id="bugreport" action="bug_report.php" onsubmit="return BugSubmit(this)">
-										<input type="hidden" name="SerialisedGET">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/DataSerialised/GET" />
-											</xsl:attribute>
-										</input>
-										<input type="hidden" name="SerialisedPOST">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/DataSerialised/POST" />
-											</xsl:attribute>
-										</input>
-										<table border="0" cellpadding="0" cellspacing="0">
-											<tr>
-												<td valign="top" width="100%">
-													<h1>Bug Report</h1>
-													Please describe the problem that occurred :
-													
-													<textarea name="Comment" style="width: 725px; height: 225px;" class="input-summary-note" />
-													
-													<div class="Right">
-														<input type="button" value="Report Bug &#0187;" onclick="javascript:document.forms['bugreport'].submit()" class="input-submit" />
-													</div>
-												</td>
-											</tr>
-										</table>
-									</form>
-								</div>
-								<div class="modalTitle">
-									<div class="modalIcon Left">
-										<img src="img/template/lady-debug.png" />
-									</div>
-									<div class="modalLabel Left">
-										<strong>Report a System Bug</strong><br />
-										Let us know when something isn't working the way you expect
-									</div>
-									<div class="modalClose Right">
-										<img src="img/template/closelabel.gif" class="close" />
-									</div>
-									<div class="Clear"></div>
-								</div>
-							</div>
-						</div>
-						
 						<!-- System Debug Button & PopUp -->
 						<xsl:if test="/Response/SystemDebug">
 							<span class="Debug_Button">

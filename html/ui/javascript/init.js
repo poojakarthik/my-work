@@ -59,17 +59,6 @@ alert("init.js is being used");
 		return false;
 	}
 	
-	function BugSubmit (form)
-	{
-		var PageDetails = document.createElement ("INPUT");
-		PageDetails.setAttribute ("type", "hidden");
-		PageDetails.setAttribute ("name", "PageDetails");
-		PageDetails.setAttribute ("value", document.getElementsByTagName ("HTML").item (0).innerHTML);
-		form.appendChild (PageDetails);
-		
-		return true;
-	}
-	
 	function Logout ()
 	{
 		var x = window.confirm ("Are you sure you would like to Logout?");

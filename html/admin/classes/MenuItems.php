@@ -1137,26 +1137,6 @@ class MenuItems {
 	}
 
 	//------------------------------------------------------------------------//
-	// BugList
-	//------------------------------------------------------------------------//
-	/**
-	 * BugList
-	 *
-	 * Compiles the Href to be executed when the BugList functionality is requested
-	 *
-	 * Compiles the Href to be executed when the BugList functionality is requested
-	 * 
-	 * @return	string		Href
-	 *
-	 * @method
-	 */
-	function BugList() {
-		$this->strLabel = "Bug List";
-		$this->strContextMenuLabel = "Bug List";
-		return self :: OLD_FRAMEWORK . "bug_list.php";
-	}
-
-	//------------------------------------------------------------------------//
 	// ChangePaymentMethod
 	//------------------------------------------------------------------------//
 	/**
