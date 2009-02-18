@@ -10,9 +10,9 @@ try
 	
 	$qryQuery	= new Query();
 	
-	$strSQL	= "	SELECT Payment. * , (Payment.Amount - Payment.Balance), SUM( InvoicePayment.Amount ) AS ActualAmount
+	$strSQL	= "	SELECT Payment. * , (Payment.Amount - Payment.Balance), SUM( InvoicePayment.Amount ) AS ActualAmount, invoice_run_id
 				FROM Payment JOIN InvoicePayment ON Payment.Id = InvoicePayment.Payment
-				GROUP BY Payment.Id
+				GROUP BY Payment.Id, InvoicePayment.invoice_run_id
 				HAVING ActualAmount > ( Payment.Amount - Payment.Balance )
 				AND ActualAmount = ( Payment.Amount - Payment.Balance ) * 2";
 	$resPayments	= $qryQuery->Execute($strSQL);
@@ -22,7 +22,7 @@ try
 	}
 	while ($arrPayment = $resPayments->fetch_assoc())
 	{
-		Log::getLog()->log("Deleting duplicate of #{{$arrPayment['Id']}}...");
+		Log::getLog()->log("Deleting duplicate of #{$arrPayment['Id']}...");
 		
 		// Delete one of the InvoicePayment duplicates
 		$resDelete	= $qryQuery->Execute("DELETE FROM InvoicePayment WHERE Payment = {$arrPayment['Id']} AND invoice_run_id = {$arrPayment['invoice_run_id']} AND Account = {$arrPayment['Account']} AND Amount = '{$arrPayment['Amount']}' LIMIT 1");
