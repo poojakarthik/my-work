@@ -18,7 +18,7 @@ class Log
 	static protected	$_strSystemLogType	= self::LOG_TYPE_FUNCTION;
 	static protected	$_strSystemConfig	=	array
 												(
-													'Class'		=> 'Log',
+													'Class'		=> 'self',
 													'Function'	=> 'echoMessage'
 												);
 	
