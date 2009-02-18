@@ -3103,7 +3103,6 @@ function GetCCType($mixNumber, $bolAsString = FALSE)
 	}
 }
 
-
 //------------------------------------------------------------------------//
 // AddCreditCardSurcharge
 //------------------------------------------------------------------------//
@@ -3126,24 +3125,23 @@ function AddCreditCardSurcharge($intPayment)
 	$selAccount	= new StatementSelect("Account", "Id AS Account", "AccountGroup = <AccountGroup>", "(Archived != 1) DESC, Archived ASC, Account DESC", "1");
 	$selPayment	= new StatementSelect("Payment", "*", "Id = <Payment>");
 	$insCharge	= new StatementInsert("Charge");
-	$selCCSRate	= new StatementSelect(	"Config",
-		"Value",
-		"Application = ".APPLICATION_PAYMENTS." AND Module = <Module> AND Name = 'Surcharge'");
-
+	$selCCSRate	= new StatementSelect(	"credit_card_type",
+										"surcharge",
+										"id = <Type>");
 	// Get Payment details
 	if ($selPayment->Execute(Array('Payment' => $intPayment)))
 	{
 		$arrPayment = $selPayment->Fetch();
 
 		// Find Credit Card Type and Rate
-		$strType	= GetCCType($arrPayment['OriginId'], TRUE);
-		if (!$selCCSRate->Execute(Array('Module' => $strType)))
+		$intType	= GetCCType($arrPayment['OriginId']);
+		if (!$selCCSRate->Execute(Array('Type' => $intType)))
 		{
 			// Cannot find Surcharge Rate
 			return FALSE;
 		}
 		$arrCSSRate			= $selCCSRate->Fetch();
-		$fltPC				= (float)$arrCSSRate['Value'];
+		$fltPC				= (float)$arrCSSRate['surcharge'];
 		$strDate			= date("d/m/Y", strtotime($arrPayment['PaidOn']));
 		$strPC				= round($fltPC * 100, 2);
 		$fltPaymentAmount	= number_format($arrPayment['Amount'], 2, ".", "");
