@@ -16,7 +16,7 @@ class Log
 	
 	static protected	$_strSystemAlias	= self::SYSTEM_ALIAS;
 	static protected	$_strSystemLogType	= self::LOG_TYPE_FUNCTION;
-	static protected	$_strSystemConfig	=	array
+	static protected	$_arrSystemConfig	=	array
 												(
 													'Class'		=> 'self',
 													'Function'	=> 'echoMessage'
@@ -141,14 +141,14 @@ class Log
 				if (self::$_strSystemLogType === self::LOG_TYPE_FUNCTION)
 				{
 					// Function-based Log
-					$strClass	= (self::$_strSystemConfig['Class']) ? $_strSystemConfig['Class'] : null;
+					$strClass	= (self::$_arrSystemConfig['Class']) ? self::$_arrSystemConfig['Class'] : null;
 					CliEcho($strClass);
-					self::registerFunctionLog($strLogAlias, self::$_strSystemConfig['Function'], $strClass);
+					self::registerFunctionLog($strLogAlias, self::$_arrSystemConfig['Function'], $strClass);
 				}
 				else
 				{
 					// Reference-based Log
-					self::registerLog($strLogAlias, self::$_strSystemLogType, &self::$_strSystemConfig['Reference']);
+					self::registerLog($strLogAlias, self::$_strSystemLogType, &self::$_arrSystemConfig['Reference']);
 				}
 			}
 		}
