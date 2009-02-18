@@ -140,13 +140,13 @@ class Log
 				if (self::$_strDefaultLogType === self::LOG_TYPE_FUNCTION)
 				{
 					// Function-based Log
-					$strClass	= (self::$_strDefaultConfig['Class']) ? $_strDefaultConfig['Class'] : null;
-					self::registerFunctionLog($strLogAlias, self::$_strDefaultConfig['Function'], $strClass);
+					$strClass	= (self::$_strSystemConfig['Class']) ? $_strSystemConfig['Class'] : null;
+					self::registerFunctionLog($strLogAlias, self::$_strSystemConfig['Function'], $strClass);
 				}
 				else
 				{
 					// Reference-based Log
-					self::registerLog($strLogAlias, self::$_strDefaultLogType, &self::$_strDefaultConfig['Reference']);
+					self::registerLog($strLogAlias, self::$_strSystemLogType, &self::$_strSystemConfig['Reference']);
 				}
 			}
 		}
