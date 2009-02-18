@@ -91,7 +91,7 @@ class Service extends ORM
 		// Check if the billing/invoice process is being run
 		if (Invoice_Run::checkTemporary())
 		{
-			// There are currently records in the InvoiceTemp table, which means a bill run is taking place.
+			// A bill run is taking place.
 			// Plan Changes cannot be made when a bill run is taking place
 			$strErrorMsg =  "Billing is in progress.  Plans cannot be changed while this is happening.  ".
 							"Please try again in a couple of hours.  If this problem persists, please ".
