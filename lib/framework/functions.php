@@ -2249,36 +2249,6 @@ function IsAssociativeArray($arrArray)
 	return (is_array($arrArray) && !is_numeric(implode(array_keys($arrArray))));
 }
 
-
-function Donkey()
-{
-?>
-
-
-						  /\          /\
-						 ( \\        // )
-						  \ \\      // /
-						   \_\\||||//_/ 
-							\/ _  _ \ 
-						   \/|(O)(O)|
-						  \/ |      |  
-	  ___________________\/  \      /
-	 //                //     |____|      
-	//                ||     /      \
-   //|                \|     \ 0  0 /
-  // \       )         V    / \____/ 
- //   \     /        (     /
-""     \   /_________|  |_/
-	   /  /\   /     |  ||
-	  /  / /  /      \  ||
-	  | |  | |        | ||
-	  | |  | |        | ||  
-	  |_|  |_|        |_||       
-	   \_\  \_\        \_\\
-
-<?php
-}
-
 //------------------------------------------------------------------------//
 // ArchiveAccounts()
 //------------------------------------------------------------------------//
@@ -2301,14 +2271,10 @@ function ArchiveAccounts($arrAccounts)
 	{
 		return 0;
 	}
-
 	$strIn = implode(', ', $arrAccounts);
 	$updAccounts = new StatementUpdate("Account", "Id IN ($strIn)", Array('Archived' => 1));
 	return $updAccounts->Execute(Array('Archived' => 1), Array());
 }
-
-
-
 
 //------------------------------------------------------------------------//
 // TransactionStart
