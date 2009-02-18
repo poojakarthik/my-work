@@ -26,7 +26,7 @@ try
 		
 		// Delete one of the InvoicePayment duplicates
 		$strDeleteSQL	= "DELETE FROM InvoicePayment WHERE Payment = {$arrPayment['Id']} AND invoice_run_id = {$arrPayment['invoice_run_id']} AND Account = {$arrPayment['Account']} LIMIT 1";
-		Log::getLog()->log($strDeleteSQL);
+		//Log::getLog()->log($strDeleteSQL);
 		$resDelete	= $qryQuery->Execute($strDeleteSQL);
 		if ($resDelete === false)
 		{
