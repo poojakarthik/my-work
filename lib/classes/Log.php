@@ -79,7 +79,6 @@ class Log
 				break;
 				
 			case self::LOG_TYPE_FUNCTION:
-				CliEcho($this->_arrConfig['Class']);
 				$strFunction	= (($this->_arrConfig['Class']) ? $this->_arrConfig['Class'].'::' : '') . $this->_arrConfig['Function'];
 				$arrFuncArgs	= func_get_args();
 				call_user_func_array($strFunction, $arrFuncArgs);
@@ -142,7 +141,6 @@ class Log
 				{
 					// Function-based Log
 					$strClass	= (self::$_arrSystemConfig['Class']) ? self::$_arrSystemConfig['Class'] : null;
-					CliEcho($strClass);
 					self::registerFunctionLog($strLogAlias, self::$_arrSystemConfig['Function'], $strClass);
 				}
 				else
@@ -228,8 +226,6 @@ class Log
 		{
 			throw new Exception("A log with alias '{$strLogAlias}' already exists");
 		}
-		
-		CliEcho($strClass);
 		
 		// Config
 		$arrConfig				= array();
