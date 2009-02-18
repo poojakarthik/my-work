@@ -1454,24 +1454,8 @@ $GLOBALS['*arrConstant']	['DisplayType']	[4]	['Description']	= 'SMS';
 define("NATURE_CR"					, 'CR');
 define("NATURE_DR"					, 'DR');
 
-// Pablo's Tips
-define("PABLO_TIP_POLITE"			, 1);
-define("PABLO_TIP_SLEAZY"			, 2);
-define("PABLO_TIP_HATES_YOU"		, 3);
-define("PABLO_TIP_DRUNK"			, 4);
-
 // Charge Types/Codes
 define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");
-
-// Bug Type
-$GLOBALS['*arrConstant']	['BugStatus']	[100]	['Constant']	= 'BUG_UNREAD';
-$GLOBALS['*arrConstant']	['BugStatus']	[100]	['Description']	= 'New';
-$GLOBALS['*arrConstant']	['BugStatus']	[101]	['Constant']	= 'BUG_UNASSIGNED';
-$GLOBALS['*arrConstant']	['BugStatus']	[101]	['Description']	= 'Unassigned';
-$GLOBALS['*arrConstant']	['BugStatus']	[102]	['Constant']	= 'BUG_UNRESOLVED';
-$GLOBALS['*arrConstant']	['BugStatus']	[102]	['Description']	= 'Unresolved';
-$GLOBALS['*arrConstant']	['BugStatus']	[103]	['Constant']	= 'BUG_RESOLVED';
-$GLOBALS['*arrConstant']	['BugStatus']	[103]	['Description']	= 'Resolved';
 
 //Report Result Types
 define("REPORT_RESULT_TYPE_CSV"		, "CSV");
