@@ -498,16 +498,20 @@ class Invoice extends ORM
 		if (!$arrPlanDetails['Shared'])
 		{
 			// Determine and add in Plan Credit
-			$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
-			Log::getLog()->log("min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
-			$intPeriodStart			= $intArrearsPeriodStart;
-			$intPeriodEnd			= $intArrearsPeriodEnd;
-			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
-
-			// HACKHACKHACK: Add inverse tax value of Plan Credit to Service Tax Total, so that everything balances
-			$fltCreditTax			= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->intInvoiceDatetime);
-			$arrServiceTotal['Tax']	+= $fltCreditTax;
-			Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
+			if ($fltUsageLimit > $fltMinimumCharge)
+			{
+				$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
+				Log::getLog()->log("min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
+				$intPeriodStart			= $intArrearsPeriodStart;
+				$intPeriodEnd			= $intArrearsPeriodEnd;
+				$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
+				
+				
+				// HACKHACKHACK: Add inverse tax value of Plan Credit to Service Tax Total, so that everything balances
+				$fltCreditTax			= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->intInvoiceDatetime);
+				$arrServiceTotal['Tax']	+= $fltCreditTax;
+				Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
+			}
 
 			// Determine Usage
 			$fltTotalCharge			= min($fltCDRCappedTotal, $fltUsageStart);
