@@ -418,6 +418,11 @@ class AppTemplateAccount extends ApplicationTemplate
 			}
 		}
 		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
+		if (Ticketing_User::currentUserIsTicketingUser() && Flex_Module::isActive(FLEX_MODULE_TICKETING))
+		{
+			ContextMenu()->Account->Tickets->ViewTicketsForAccount($intAccountId);
+			ContextMenu()->Account->Tickets->AddTicket($intAccountId);
+		}
 
 		$this->loadInvoices(3);
 

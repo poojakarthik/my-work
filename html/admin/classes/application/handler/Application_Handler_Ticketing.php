@@ -294,6 +294,11 @@ class Application_Handler_Ticketing extends Application_Handler
 					$ticket->owner = $currentUser;
 					$editableValues[] = 'accountId';
 					
+					if (array_key_exists('accountId', $_REQUEST))
+					{
+						$ticket->accountId = intval($_REQUEST['accountId']);
+					}
+					
 					$bolChangeOwner	= true;
 
 				case 'edit':

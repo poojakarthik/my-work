@@ -201,12 +201,12 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			$ticket = $this->mxdDataToRender['ticket'];
 		}
 
-		$owner = $ticket->getOwner();
-		$ownerName = htmlspecialchars($owner ? $owner->getName() : '['.Ticketing_Status::getForId(TICKETING_STATUS_UNASSIGNED)->name.']');
-		$contact = $ticket->getContact();
-		$contactName = htmlspecialchars($contact ? $contact->getName() : '[No associated contact]');
+		$owner			= $ticket->getOwner();
+		$ownerName		= htmlspecialchars($owner ? $owner->getName() : '['.Ticketing_Status::getForId(TICKETING_STATUS_UNASSIGNED)->name.']');
+		$contact		= $ticket->getContact();
+		$contactName	= htmlspecialchars($contact ? $contact->getName() : '[No associated contact]');
 
-		$message = array_key_exists('error', $this->mxdDataToRender) ? $this->mxdDataToRender['error'] : '';
+		$message		= array_key_exists('error', $this->mxdDataToRender) ? $this->mxdDataToRender['error'] : '';
 
 		if ($message)
 		{
@@ -416,14 +416,6 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							<th colspan="2">&nbsp;</th>
 						</tr>
 					</thead>
-					<tfoot>
-						<tr>
-							<th colspan="2">
-								<input type="button" class="reflex-button" value="Cancel" onclick="document.location='<?=$cancel?>'" />
-								<input type="button" class="reflex-button" value="Save" onclick="$ID('edit_ticket').submit()" />
-							</th>
-						</tr>
-					</tfoot>
 					<tbody>
 						<tr class="alt">
 							<td class="title">Subject: </td>
@@ -632,13 +624,20 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								{
 									echo "<select id=\"serviceId\" multiple=\"multiple\" name=\"serviceId[]\" size=\"5\" class=\"$invalid\">";
 									$services = $this->mxdDataToRender['services'];
-									$ticketServices = $ticket->getServices();
+									if (array_key_exists('serviceId', $_REQUEST))
+									{
+										$ticketServices = (is_array($_REQUEST['serviceId']))? array_combine($_REQUEST['serviceId'], $_REQUEST['serviceId']) : array($_REQUEST['serviceId']=>$_REQUEST['serviceId']);
+									}
+									else
+									{
+										$ticketServices = $ticket->getServices();
+									}
 									foreach ($services as $service)
 									{
 										$serviceId = $service['service_id'];
 										$fnn = $service['fnn'];
 										$selected = array_key_exists($serviceId, $ticketServices) ? ' selected="selected"' : '';
-										echo "<option value=\"$serviceId\"$selected\">" . htmlspecialchars($fnn) . "</option>";
+										echo "<option value=\"$serviceId\"$selected>" . htmlspecialchars($fnn) . "</option>";
 									}
 									echo "</select>";
 									if (array_search('accountId', $editableValues) !== FALSE)
@@ -676,6 +675,14 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		}
 		?>
 					</tbody>
+					<tfoot>
+						<tr>
+							<th colspan="2">
+								<input type="button" class="reflex-button" value="Cancel" onclick="document.location='<?=$cancel?>'" />
+								<input type="button" class="reflex-button" value="Save" onclick="$ID('edit_ticket').submit()" />
+							</th>
+						</tr>
+					</tfoot>
 				</table>
 			</form>
 	

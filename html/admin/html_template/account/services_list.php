@@ -207,15 +207,18 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	 */
 	function RenderTable()
 	{
-		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-		$arrServices			= DBO()->Account->Services->Value;
-		$intCurrentDate			= strtotime(GetCurrentISODate());
+		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$arrServices				= DBO()->Account->Services->Value;
+		$intCurrentDate				= strtotime(GetCurrentISODate());
+		$bolUserIsTicketingUser 	= Ticketing_User::currentUserIsTicketingUser();
+		$intAccountId				= DBO()->Account->Id->Value;
+		$bolTicketingModuleIsActive	= Flex_Module::isActive(FLEX_MODULE_TICKETING);
+		
 		
 		Table()->Services->SetHeader("&nbsp;", "FNN", "Plan", "&nbsp;", "&nbsp;", "Actions");
 		
 		// These were the column widths used when we included the "Opened/Closed dd/mm/yyyy" in the table
-		//Table()->Services->SetWidth("3%", "10%", "44%", "7%", "11%", "15%", "10%");
-		Table()->Services->SetWidth("3%", "10%", "50%", "7%", "20%", "10%");
+//		Table()->Services->SetWidth("3%", "10%", "50%", "7%", "20%", "10%");
 		Table()->Services->SetAlignment("Left", "Left", "Left", "Right", "Left", "Left");
 		
 		$strStatusTitles = "Status :<br />Line :";
@@ -227,6 +230,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strChangePlan				= "";
 			$strProvisioning			= "";
 			$strViewProvisioningHistory	= "";
+			$strCreateTicket			= "";
 			if ($bolUserHasOperatorPerm)
 			{
 				// The user can edit stuff
@@ -248,6 +252,11 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 					$strViewProvisioningHistoryLink = Href()->ViewProvisioningHistory($arrService['Id']);
 					$strViewProvisioningHistory		= "<img src='img/template/provisioning_history.png' title='View Provisioning History' onclick='$strViewProvisioningHistoryLink'/>";
 				}
+				
+				if ($bolTicketingModuleIsActive && $bolUserIsTicketingUser && $arrService['History'][0]['Status'] == SERVICE_ACTIVE)
+				{
+					$strCreateTicket = "<a href='". Href()->AddTicket($intAccountId, $arrService['Id']) ."' title='Create Ticket'><img src='img/template/create_ticket.png'></img></a>";
+				}
 			}
 			
 			$strViewServiceNotesLink	= Href()->ViewServiceNotes($arrService['Id']);
@@ -256,7 +265,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($arrService['Id']);
 			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";
 			
-			$strActionsCell				= "{$strViewServiceNotes} {$strEditService} {$strChangePlan} {$strViewUnbilledCharges} {$strMoveService} {$strProvisioning} {$strViewProvisioningHistory}";
+			$strActionsCell				= "{$strViewServiceNotes} {$strEditService} {$strChangePlan} {$strViewUnbilledCharges} {$strMoveService} {$strProvisioning} {$strViewProvisioningHistory} {$strCreateTicket}";
 
 			// Create a link to the View Plan for Service page
 			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($arrService['Id']);

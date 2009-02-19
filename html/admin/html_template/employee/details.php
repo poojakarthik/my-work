@@ -51,10 +51,6 @@ class HtmlTemplateEmployeeDetails extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -71,22 +67,7 @@ class HtmlTemplateEmployeeDetails extends HtmlTemplate
 	 */
 	function Render()
 	{
-		switch ($this->_intContext)
-		{
-			/*case HTML_CONTEXT_SEANS_DETAIL:
-				$this->_RenderSeansDetail();
-				break;
-			case HTML_CONTEXT_LEDGER_DETAIL:
-				$this->_RenderLedgerDetail();
-				break;
-			case HTML_CONTEXT_FULL_DETAIL:
-		
-				$this->_RenderFullDetail();
-				break;*/
-			default:
-				$this->_RenderFullDetail();
-				break;
-		}
+		$this->_RenderFullDetail();
 	}
 
 	//------------------------------------------------------------------------//

@@ -197,9 +197,33 @@ class MenuItems {
 		$this->strContextMenuLabel = "View All Tickets";
 		$this->strLabel = "Tickets";
 		$last = $lastQuery ? '/Last' : ($lastQuery === FALSE ? '/All' : '');
-		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets$last";
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets$last";
 	}
-
+	
+	/**
+	 * ViewTicketsForAccount()
+	 *
+	 * Compiles the Href to be executed when the ViewTicketsForAccount functionality is triggered
+	 *
+	 * Compiles the Href to be executed when the ViewTicketsForAccount functionality is triggered
+	 * This is currently implemented in a hack way, by doing a normal ticket quickSearch using the account id as the search string
+	 * It can return tickets not associated with the account 
+	 * 
+	 * @return	string				Href to be executed when the TicketingConsole menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewTicketsForAccount($intAccountId)
+	{
+		$this->strContextMenuLabel = "View All";
+		$this->strLabel = "Tickets";
+		// This SHOULD be how this functionality is triggered
+		//return self::NEW_FRAMEWORK ."reflex.php/Ticketing/Tickets?accountId=$intAccountId";
+		
+		//HACK! HACK! HACK! just use the account id as
+		return self::NEW_FRAMEWORK ."reflex.php/Ticketing/Tickets?quickSearch=$intAccountId";
+	}
+	
 	//------------------------------------------------------------------------//
 	// TicketingTicket
 	//------------------------------------------------------------------------//
@@ -248,19 +272,34 @@ class MenuItems {
 	/**
 	 * AddTicket()
 	 *
-	 * Compiles the Href to be executed when the "Add Ticket" menu item is clicked
+	 * Compiles the Href to be executed when the "Add Ticket" functionality is triggered
 	 *
-	 * Compiles the Href to be executed when the "Add Ticket" menu item is clicked
+	 * Compiles the Href to be executed when the "Add Ticket" functionality is triggered
 	 * 
-	 * @return	string				Href to be executed
+	 * @param	int			$intAccountId	OPTIONAL(defaults to NULL) - id of the account to associate the ticket with
+	 * @param	int			$intServiceId	OPTIONAL(defaults to NULL) - id of the service to associate the ticket with
+	 * @return	string						Href to be executed
 	 *
 	 * @method
 	 */
-	function AddTicket()
+	function AddTicket($intAccountId=NULL, $intServiceId=NULL)
 	{
+		$strAccountId = ($intAccountId)? "":"";
+		$arrGetVars = array();
+		if ($intAccountId)
+		{
+			$arrGetVars[] = "accountId={$intAccountId}";
+		}
+		if ($intServiceId)
+		{
+			$arrGetVars[] = "serviceId[]={$intServiceId}";
+		}
+		
+		$strGetVars = count($arrGetVars)? "?". implode('&', $arrGetVars) : "";
+		
 		$this->strContextMenuLabel = "Add New Ticket";
 		$this->strLabel = "New Ticket";
-		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/Create";
+		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/Create/{$strGetVars}";
 	}
 
 	//------------------------------------------------------------------------//

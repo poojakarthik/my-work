@@ -337,14 +337,6 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 						<th colspan="2">&nbsp;</th>
 					</tr>
 				</thead>
-				<tfoot class="footer">
-					<tr>
-						<th colspan="2">
-							<input type="button" class="reflex-button" value="Cancel" onclick="document.location='<?=$cancel?>'" />
-							<input type="button" class="reflex-button" value="Save" onclick="this.form.submit()" />
-						</th>
-					</tr>
-				</tfoot>
 				<tbody>
 <?php
 	if ($correspondence->isSaved())
@@ -555,6 +547,14 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 						</td>
 					</tr>
 				</tbody>
+				<tfoot class="footer">
+					<tr>
+						<th colspan="2">
+							<input type="button" class="reflex-button" value="Cancel" onclick="document.location='<?=$cancel?>'" />
+							<input type="button" class="reflex-button" value="Save" onclick="this.form.submit()" />
+						</th>
+					</tr>
+				</tfoot>
 			</table>
 
 		<?php

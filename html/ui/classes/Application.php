@@ -141,14 +141,13 @@ class Application
 			ContextMenu()->Available_Plans();
 		}
 
-		require_once dirname(__FILE__).'/../../../lib/ticketing/Ticketing_User.php';
-		if (Ticketing_User::currentUserIsTicketingUser())
+		if (Ticketing_User::currentUserIsTicketingUser() && Flex_Module::isActive(FLEX_MODULE_TICKETING))
 		{
 			ContextMenu()->Ticketing->TicketingConsole();
 			ContextMenu()->Ticketing->ViewUserTickets();
 			ContextMenu()->Ticketing->AddTicket();
 		}
-		if (Ticketing_User::currentUserIsTicketingAdminUser())
+		if (Ticketing_User::currentUserIsTicketingAdminUser() && Flex_Module::isActive(FLEX_MODULE_TICKETING))
 		{
 			ContextMenu()->Ticketing->Reports->TicketingSummaryReport();
 			ContextMenu()->Ticketing->Administration->TicketingAdmin();
@@ -324,14 +323,13 @@ class Application
 			ContextMenu()->Available_Plans();
 		}
 		
-		require_once dirname(__FILE__).'/../../../lib/ticketing/Ticketing_User.php';
-		if (Ticketing_User::currentUserIsTicketingUser())
+		if (Ticketing_User::currentUserIsTicketingUser() && Flex_Module::isActive(FLEX_MODULE_TICKETING))
 		{
 			ContextMenu()->Ticketing->TicketingConsole();
 			ContextMenu()->Ticketing->ViewUserTickets();
 			ContextMenu()->Ticketing->AddTicket();
 		}
-		if (Ticketing_User::currentUserIsTicketingAdminUser())
+		if (Ticketing_User::currentUserIsTicketingAdminUser() && Flex_Module::isActive(FLEX_MODULE_TICKETING))
 		{
 			ContextMenu()->Ticketing->Reports->TicketingSummaryReport();
 			ContextMenu()->Ticketing->Administration->TicketingAdmin();

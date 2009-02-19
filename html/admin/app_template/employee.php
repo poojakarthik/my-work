@@ -383,19 +383,21 @@ class AppTemplateEmployee extends ApplicationTemplate
 
 					if (DBO()->Employee->Save())
 					{
-						VixenRequire('lib/ticketing/Ticketing_User.php');
-						$currentUserTicketingPermission = Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId());
-						if ($bolUserIsSelf)
+						if (Flex_Module::isActive(FLEX_MODULE_TICKETING))
 						{
-							$displayUserTicketingPermission = $currentUserTicketingPermission;
-						}
-						else
-						{
-							$displayUserTicketingPermission = Ticketing_User::getPermissionForEmployeeId(DBO()->Employee->Id->Value);
-						}
-						if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || (!$bolUserIsSelf && $currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN))
-						{
-							Ticketing_User::setPermissionForEmployeeId(DBO()->Employee->Id->Value, intval(DBO()->ticketing_user->permission->Value));
+							$currentUserTicketingPermission = Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId());
+							if ($bolUserIsSelf)
+							{
+								$displayUserTicketingPermission = $currentUserTicketingPermission;
+							}
+							else
+							{
+								$displayUserTicketingPermission = Ticketing_User::getPermissionForEmployeeId(DBO()->Employee->Id->Value);
+							}
+							if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || (!$bolUserIsSelf && $currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN))
+							{
+								Ticketing_User::setPermissionForEmployeeId(DBO()->Employee->Id->Value, intval(DBO()->ticketing_user->permission->Value));
+							}
 						}
 
 						// If the user has the Sales privilege then create/update their dealer record

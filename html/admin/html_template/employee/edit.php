@@ -89,7 +89,6 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 
 		$bolUserIsSelf	= DBO()->Employee->Id->Value == AuthenticatedUser()->GetUserId();
 
-		VixenRequire('lib/ticketing/Ticketing_User.php');
 		$currentUserTicketingPermission = Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId());
 		if ($bolUserIsSelf)
 		{
@@ -162,10 +161,12 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			DBO()->Employee->Archived->RenderInput();
 		}
 
-		// If the current user is super admin OR (a ticketing admin and not editing self), allow modification
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || (!$bolUserIsSelf && $currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN))
+		if (Flex_Module::isActive(FLEX_MODULE_TICKETING))
 		{
-			echo "
+			// If the current user is super admin OR (a ticketing admin and not editing self), allow modification
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || (!$bolUserIsSelf && $currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN))
+			{
+				echo "
 <div class=\"DefaultElement\">
 	<select id=\"ticketing_user.permission\" name=\"ticketing_user.permission\" class=\"DefaultInputText Default\">
 		<option value='".TICKETING_USER_PERMISSION_NONE ."'".($displayUserTicketingPermission == TICKETING_USER_PERMISSION_NONE  ? ' SELECTED' : '').">" . GetConstantDescription(TICKETING_USER_PERMISSION_NONE, 'ticketing_user_permission') . "</option>
@@ -178,13 +179,13 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 
    </div>
 </div>
-			";
-		}
-		// Else, just display an output
-		else
-		{
-			$description = htmlspecialchars(GetConstantDescription($displayUserTicketingPermission, 'ticketing_user_permission'));
-			echo "
+				";
+			}
+			else
+			{
+				// Else, just display an output
+				$description = htmlspecialchars(GetConstantDescription($displayUserTicketingPermission, 'ticketing_user_permission'));
+				echo "
 <div class=\"DefaultElement\">
    <div id=\"ticketing_user.permission.Output\" name=\"ticketing_user.permission.id\" class=\"DefaultOutput Default\">$description</div>
    <div id=\"ticketing_user.permission.Label\" class=\"DefaultLabel\">
@@ -194,6 +195,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
    </div>
 </div>
 			";
+			}
 		}
 		
 		if (!$bolEditSelf && $bolAdminUser)
@@ -255,16 +257,19 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			DBO()->Employee->Archived->RenderOutput();
 		}
 
-		$description = htmlspecialchars(GetConstantDescription($displayUserTicketingPermission, 'ticketing_user_permission'));
-		echo "
-<div class=\"DefaultElement\">
-   <div id=\"ticketing_user.permission.Output\" name=\"ticketing_user.permission.id\" class=\"DefaultOutput Default\">$description</div>
-   <div id=\"ticketing_user.permission.Label\" class=\"DefaultLabel\">
-      <span> &nbsp;</span>
-      <span id=\"ticketing_user.permission.Label.Text\">Ticketing System : </span>
-   </div>
-</div>
-		";
+		if (Flex_Module::isActive(FLEX_MODULE_TICKETING))
+		{
+			$description = htmlspecialchars(GetConstantDescription($displayUserTicketingPermission, 'ticketing_user_permission'));
+			echo "
+	<div class=\"DefaultElement\">
+	   <div id=\"ticketing_user.permission.Output\" name=\"ticketing_user.permission.id\" class=\"DefaultOutput Default\">$description</div>
+	   <div id=\"ticketing_user.permission.Label\" class=\"DefaultLabel\">
+	      <span> &nbsp;</span>
+	      <span id=\"ticketing_user.permission.Label.Text\">Ticketing System : </span>
+	   </div>
+	</div>
+			";
+		}
 		
 		echo "
 <div class='DefaultElement'>
