@@ -203,7 +203,7 @@ class Invoice extends ORM
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
 
 			// HACKHACKHACK: Add inverse tax value of Plan Credit to the Tax Total, so that everything balances
-			$this->Tax		+= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->intInvoiceDatetime);
+			//$this->Tax		+= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->intInvoiceDatetime);
 
 			// Determine Usage
 			$fltSharedTotal			= min($fltCDRCappedTotal, $fltUsageStart);
