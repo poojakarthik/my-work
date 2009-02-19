@@ -561,6 +561,7 @@ class Invoice extends ORM
 										"FROM Charge " .
 										"WHERE Charge.Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND Charge.invoice_run_id = {$this->invoice_run_id} " .
 										"GROUP BY Charge.Nature, Charge.global_tax_exempt";
+		Log::getLog()->log($strServiceChargeTotalSQL);
 		$resResult	= $qryQuery->Execute($strServiceChargeTotalSQL);
 		if ($resResult === FALSE)
 		{
