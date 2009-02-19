@@ -134,7 +134,7 @@ class Invoice extends ORM
 		$arrSharedPlans	= Array();
 		foreach ($arrServices as $intServiceId=>&$arrServiceDetails)
 		{
-			Log::getLog()->log("\t + Generating Service Total Data for Service with Id {$intServiceId}...", FALSE);
+			Log::getLog()->log("\n\t + Generating Service Total Data for Service with Id {$intServiceId}...", FALSE);
 
 			// Generate Service Total Data
 			$mixServiceTotal	= $this->_generateService($arrServiceDetails, $objAccount, $objInvoiceRun);
