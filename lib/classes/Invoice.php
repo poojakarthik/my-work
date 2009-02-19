@@ -196,7 +196,7 @@ class Invoice extends ORM
 			$fltTaxableCappedCharge	= $arrDetails['fltTaxableCappedCharge'];
 
 			// Determine and add in Plan Credit
-			//Log::getLog()->log("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
+			Log::getLog()->log("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
 			$fltPlanCredit	= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
 			$intPeriodStart	= $this->intLastInvoiceDatetime;
 			$intPeriodEnd	= strtotime("-1 day", $this->intInvoiceDatetime);
@@ -220,7 +220,7 @@ class Invoice extends ORM
 			$fltSharedTotal			+= $fltTaxExemptOverusage;
 
 			// Add to Invoice Totals
-			//Log::getLog()->log("Shared Plan Total: \$".$fltSharedTotal);
+			Log::getLog()->log("Shared Plan Total: \$".$fltSharedTotal);
 			$this->Debits	+= $fltCDRCappedTotal;
 			$this->Tax		+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->intInvoiceDatetime);
 
@@ -257,14 +257,14 @@ class Invoice extends ORM
 		while ($arrAccountChargeTotal = $selAccountChargeTotals->Fetch())
 		{
 			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']][$arrAccountChargeTotal['global_tax_exempt']]	= $arrAccountChargeTotal['Total'];
-			//Log::getLog()->log($arrAccountChargeTotal);
+			Log::getLog()->log($arrAccountChargeTotal);
 		}
-		//Log::getLog()->log("Preliminary Account Charges START");
+		Log::getLog()->log("Preliminary Account Charges START");
 		$this->Debits	+= $arrAccountChargeTotals['DR'][0] + $arrAccountChargeTotals['DR'][1];
 		$this->Credits	+= $arrAccountChargeTotals['CR'][0] + $arrAccountChargeTotals['CR'][1];
 		$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->intInvoiceDatetime);
-		//Log::getLog()->log("Preliminary Account Charges END");
-		//Log::getLog()->log($arrAccountChargeTotals);
+		Log::getLog()->log("Preliminary Account Charges END");
+		Log::getLog()->log($arrAccountChargeTotals);
 
 		// Calculate Preliminary Invoice Values
 		$this->AccountBalance	= $GLOBALS['fwkFramework']->GetAccountBalance($objAccount->Id);
@@ -303,13 +303,13 @@ class Invoice extends ORM
 		while ($arrAccountChargeTotal = $selAccountChargeTotals->Fetch())
 		{
 			$arrAccountChargeTotals[$arrAccountChargeTotal['Nature']][$arrAccountChargeTotal['global_tax_exempt']]	= $arrAccountChargeTotal['Total'];
-			//Log::getLog()->log($arrAccountChargeTotal);
+			Log::getLog()->log($arrAccountChargeTotal);
 		}
-		//Log::getLog()->log("Final Account Charges START");
+		Log::getLog()->log("Final Account Charges START");
 		$this->Debits	+= $arrAccountChargeTotals['DR'][0] + $arrAccountChargeTotals['DR'][1];
 		$this->Credits	+= $arrAccountChargeTotals['CR'][0] + $arrAccountChargeTotals['CR'][1];
 		$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->intInvoiceDatetime);
-		//Log::getLog()->log("Final Account Charges END");
+		Log::getLog()->log("Final Account Charges END");
 
 		// Recalculate Final Invoice Values
 		$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
@@ -489,8 +489,8 @@ class Invoice extends ORM
 		$fltTaxExemptCharge	= $fltTaxExemptCappedCharge + $fltTaxExemptUncappedCharge;
 		if ($fltTaxExemptCost || $fltTaxExemptCharge)
 		{
-			//Log::getLog()->log("TAX EXEMPT CHARGES!");
-			//Log::getLog()->log($arrCDRTotals);
+			Log::getLog()->log("TAX EXEMPT CHARGES!");
+			Log::getLog()->log($arrCDRTotals);
 		}
 
 		// Calculate Service Plan Usage for non-Shared Services
@@ -499,14 +499,14 @@ class Invoice extends ORM
 		{
 			// Determine and add in Plan Credit
 			$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
-			//Log::getLog()->log("min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
+			Log::getLog()->log("min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
 			$intPeriodStart			= $intArrearsPeriodStart;
 			$intPeriodEnd			= $intArrearsPeriodEnd;
 			$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
 
 			// HACKHACKHACK: Add inverse tax value of Plan Credit to Service Tax Total, so that everything balances
 			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->intInvoiceDatetime);
-			//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
+			Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 
 			// Determine Usage
 			$fltTotalCharge			= min($fltCDRCappedTotal, $fltUsageStart);
@@ -524,10 +524,10 @@ class Invoice extends ORM
 
 			if ($fltTaxExemptOverusage)
 			{
-				//Log::getLog()->log("Tax Exempt Overusage: \${$fltTaxExemptOverusage}");
+				Log::getLog()->log("Tax Exempt Overusage: \${$fltTaxExemptOverusage}");
 			}
 			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->intInvoiceDatetime);
-			//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
+			Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 
 			$fltTotalCharge	= $fltCDRCappedTotal;
 
@@ -540,7 +540,7 @@ class Invoice extends ORM
 		// Add in Uncapped Charges & Credits
 		$fltTotalCharge			+= $fltCDRUncappedTotal;
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableUncappedCharge, $this->intInvoiceDatetime);
-		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
+		Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 
 		// Mark all Service Charges as TEMPORARY_INVOICE
 		if ($qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")") === FALSE)
@@ -573,9 +573,9 @@ class Invoice extends ORM
 			//$fltTotalCharge	+= ($arrChargeTotal['Nature'] === 'DR') ? $arrChargeTotal['Total'] : -$arrChargeTotal['Total'];
 		}
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($arrChargeTotals['DR']['IncTax'], $this->intInvoiceDatetime);
-		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
+		Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 		$arrServiceTotal['Tax']	-= self::calculateGlobalTaxComponent($arrChargeTotals['CR']['IncTax'], $this->intInvoiceDatetime);
-		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
+		Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 		$fltServiceCredits		= $arrChargeTotals['CR']['IncTax'] + $arrChargeTotals['CR']['ExTax'];
 		$fltServiceDebits		= $arrChargeTotals['DR']['IncTax'] + $arrChargeTotals['DR']['ExTax'];
 
@@ -1017,7 +1017,7 @@ class Invoice extends ORM
 			$fltUsageLimit		= 0.0;
 		}
 		// DEBUG
-		//Log::getLog()->log($arrPlanChargeSteps);
+		Log::getLog()->log($arrPlanChargeSteps);
 
 		// Return usage data
 		return Array(
@@ -1198,9 +1198,9 @@ class Invoice extends ORM
 				case 'Debits':
 				case 'Credits':
 					break;
-					//Log::getLog()->log("*** {$strName} updated to \${$mxdValue}");
+					Log::getLog()->log("*** {$strName} updated to \${$mxdValue}");
 					$arrBacktrace	= debug_backtrace();
-					//Log::getLog()->log("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};\t{$strName} @ Line {$arrBacktrace[0]['line']}");
+					Log::getLog()->log("*** Total: {$this->Total}; Tax: {$this->Tax}; Debits: {$this->Debits}; Credits: {$this->Credits};\t{$strName} @ Line {$arrBacktrace[0]['line']}");
 
 					// Is Tax proportionate to Total?
 					$fltCalculatedTax	= $this->Total / 10;
