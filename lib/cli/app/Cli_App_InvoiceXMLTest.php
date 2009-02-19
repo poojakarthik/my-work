@@ -364,7 +364,6 @@ class Cli_App_InvoiceXMLTest extends Cli
 		{
 			$categoryName = $categories->item($i)->getAttribute('Name');
 			$categoryTotal = round(round(floatval($categories->item($i)->getAttribute('GrandTotal')), 2)*100);
-			$chargesTotal += $categoryTotal;
 			$categoryRecords = intval($categories->item($i)->getAttribute('Records'));
 
 			if (array_key_exists($categoryName, $cache['charges']))
@@ -384,10 +383,13 @@ class Cli_App_InvoiceXMLTest extends Cli
 			// This must be an account charge
 			if ($categoryName == 'GST Total')
 			{
-				// Ignore it!
+				// Check that this is not more than 10% of the Invoice Total
+				$fltTaxTotal	= $categoryTotal;
 			}
 			else if ($nrRecords)
 			{
+				$chargesTotal += $categoryTotal;
+				
 				$itemDescs = array();
 				$total = 0;
 				for ($j = 0; $j < $items->length; $j++)
@@ -428,13 +430,20 @@ class Cli_App_InvoiceXMLTest extends Cli
 				}
 			}
 		}
-
-		if (!$this->precisionEquals($cache['statementNewCharges'], $chargesTotal, $charges->length))
+		
+		// Check that the Tax is not higher than 10% of the bill
+		$fltMaximumTax	= $fltTaxTotal * 10;
+		if ($fltMaximumTax > $chargesTotal)
 		{
-			throw new Exception("Statement claims new charges of " . $cache['statementNewCharges'] . " but Charges in summary total " . $chargesTotal . ".");
+			throw new Exception("GST charges of {$fltTaxTotal} accounts for more than 10% of the summary total of {$chargesTotal}");
 		}
 
-		$cache['chargesTotal'] = $chargesTotal;
+		if (!$this->precisionEquals($cache['statementNewCharges'], $chargesTotal+$fltTaxTotal, $charges->length))
+		{
+			throw new Exception("Statement claims new charges of " . $cache['statementNewCharges'] . " but Charges in summary total " . $chargesTotal+$fltTaxTotal . ".");
+		}
+
+		$cache['chargesTotal'] = $chargesTotal+$fltTaxTotal;
 	}
 
 	function testCostCentres(&$dom, &$cache)
