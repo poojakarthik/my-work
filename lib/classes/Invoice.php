@@ -557,10 +557,11 @@ class Invoice extends ORM
 		}
 
 		// Retrieve Charge Totals
-		$resResult	= $qryQuery->Execute(	"SELECT Charge.Nature, Charge.global_tax_exempt, SUM(Charge.Amount) AS Total " .
-											"FROM Charge " .
-											"WHERE Charge.Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND Charge.invoice_run_id = {$this->invoice_run_id} " .
-											"GROUP BY Charge.Nature, Charge.global_tax_exempt");
+		$strServiceChargeTotalSQL	=	"SELECT Charge.Nature, Charge.global_tax_exempt, SUM(Charge.Amount) AS Total " .
+										"FROM Charge " .
+										"WHERE Charge.Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND Charge.invoice_run_id = {$this->invoice_run_id} " .
+										"GROUP BY Charge.Nature, Charge.global_tax_exempt";
+		$resResult	= $qryQuery->Execute($strServiceChargeTotalSQL);
 		if ($resResult === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$resResult->Error());
@@ -569,7 +570,7 @@ class Invoice extends ORM
 		while ($arrChargeTotal = $resResult->fetch_assoc())
 		{
 			$arrChargeTotals[$arrChargeTotal['Nature']][($arrChargeTotal['global_tax_exempt'])	? 'ExTax' : 'IncTax']	= $arrChargeTotal['Total'];
-
+			
 			//$fltTotalCharge	+= ($arrChargeTotal['Nature'] === 'DR') ? $arrChargeTotal['Total'] : -$arrChargeTotal['Total'];
 		}
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($arrChargeTotals['DR']['IncTax'], $this->intInvoiceDatetime);
