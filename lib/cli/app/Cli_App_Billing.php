@@ -134,6 +134,9 @@ class Cli_App_Billing extends Cli
 						
 						// Regenerate Invoice Run Totals
 						// TODO
+						
+						// Copy XML
+						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id, (int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID]));
 					}
 					else
 					{
@@ -300,11 +303,24 @@ class Cli_App_Billing extends Cli
 		return;
 	}
 	
-	private function _copyXML($intInvoiceRunId)
+	private function _copyXML($intInvoiceRunId, $intAccountId=null)
 	{
 		$strFlexXMLPath	= FLEX_BASE_PATH."files/invoices/xml/";
 		
-		$strSCPCommand	= "scp -i ".self::FLEX_FRONTEND_SHARED_KEY_FILE." -r {$strFlexXMLPath}{$intInvoiceRunId} ".self::FLEX_FRONTEND_USERNAME."@".self::FLEX_FRONTEND_HOST.":{$strFlexXMLPath}";
+		if ($intAccountId > 0)
+		{
+			$strInvoicePath			= "/{$intAccountId}.xml";
+			$strFlexXMLRemotePath	= "{$strFlexXMLPath}{$intInvoiceRunId}";
+			$strOptions				= '';
+		}
+		else
+		{
+			$strInvoicePath			= '';
+			$strFlexXMLRemotePath	= $strFlexXMLPath;
+			$strOptions				= '-r';
+		}
+		
+		$strSCPCommand	= "scp -i ".self::FLEX_FRONTEND_SHARED_KEY_FILE." {$strOptions} {$strFlexXMLPath}{$intInvoiceRunId}{$strInvoicePath} ".self::FLEX_FRONTEND_USERNAME."@".self::FLEX_FRONTEND_HOST.":{$strFlexXMLRemotePath}";
 		
 		self::debug($strSCPCommand);
 		return shell_exec($strSCPCommand);
