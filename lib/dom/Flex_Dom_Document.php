@@ -119,7 +119,7 @@ class Flex_Dom_Document extends Flex_Dom_Object
 	 * 
 	 * @return DOMDocument to which the wrapped DOMNode object belongs
 	 */
-	protected function _getDomDocument()
+	public function getDomDocument()
 	{
 		return $this->_objDomDocument;
 	}

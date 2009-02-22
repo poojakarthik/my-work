@@ -40,7 +40,7 @@ abstract class Flex_Dom_Object
 	 * 
 	 * @abstract
 	 */
-	abstract protected function _getDomDocument();
+	abstract public function getDomDocument();
 
 	/**
 	 * Magic function that creates and/or accesses a child element of a given name.
@@ -58,7 +58,7 @@ abstract class Flex_Dom_Object
 		if (!array_key_exists($strChildName, $this->_arrChildren))
 		{
 			// It doesn't, so create and add it to the cache
-			$childNode = $this->_getDomDocument()->createElement($strChildName);
+			$childNode = $this->getDomDocument()->createElement($strChildName);
 			$this->_getDomNode()->appendChild($childNode);
 			$this->_arrChildren[$strChildName] = new Flex_Dom_Element($childNode, $this);
 		}
@@ -125,7 +125,7 @@ abstract class Flex_Dom_Object
 		if (!array_key_exists($index, $this->_arrChildren[$strChildName]))
 		{
 			// It doesn't, so create it...
-			$childNode = $this->_getDomDocument()->createElement($strChildName);
+			$childNode = $this->getDomDocument()->createElement($strChildName);
 			$this->_getDomNode()->appendChild($childNode);
 			// ... and cache it.
 			$this->_arrChildren[$strChildName][$index] = new Flex_Dom_Element($childNode, $this);

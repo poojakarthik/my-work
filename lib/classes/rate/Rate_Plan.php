@@ -367,7 +367,7 @@ class Rate_Plan extends ORM
 		
 		// Generate HTML
 		$strSubject			= "Requested {$objCustomerGroup->externalName} Plan {$strBrochurePlural}";
-		$strContent			= "Dear <Addressee>,\\n\\nPlease attached find the Plan {$strBrochurePlural}:\\n\\n{$strPlans}\\nAs per your request.\\n\\nRegards,\\n\\nThe Team at {$objCustomerGroup->externalName}";
+		$strContent			= "Dear <Addressee>,\\n\\nPlease find attached the Plan {$strBrochurePlural}:\\n\\n{$strPlans}\\nAs per your request.\\n\\nRegards,\\n\\nThe Team at {$objCustomerGroup->externalName}";
 		
 		return "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan {$strBrochurePlural}\", {$strSenders}, \"{$strSubject}\", \"{$strContent}\", {$strRecipients}, {$strAccount})});";
 	}
@@ -383,23 +383,37 @@ class Rate_Plan extends ORM
 	 *
 	 * @method
 	 */
-	public function parseAuthenticationScript(Document $objDocument=null, $intAccountId)
+	public function parseAuthenticationScript(Account $objAccount, Service_Rate_Plan $objRatePlanPrevious)
 	{
-		/*$objDocument	= ($objDocument) ? $objDocument : new Document(array('id'=>$this->brochure_document_id), true);
-		
 		// Get the current Template
 		$objTemplate		= Document::getByPath("/Authentication Scripts/Template");
 		$objTemplateContent	= $objTemplateDocument->getContent();
 		
-		$objEmployee	= Employee::getForId(Flex::getUserId());
+		$objEmployee		= Employee::getForId(Flex::getUserId());
+		$objCustomerGroup	= Customer_Group::getForId($this->customer_group)->externalName;
+		$intTime			= time();
 		
-		$arrVariables	= array();
-		$arrVariables['employee_name']	= $objEmployee->firstName.' '.$objEmployee->lastName;
-		$arrVariables['customer_group']	= Customer_Group::getForId($this->customer_group)->externalName;
-		$arrVariables['business_name']	= Customer_Group::getForId($this->customer_group)->externalName;
+		$objVariables	= new Flex_Dom_Document();
+		
+		// Employee
+		$objVariables->employee->name->setValue($objEmployee->firstName.' '.$objEmployee->lastName);
+		
+		// Customer Group
+		$objVariables->customer_group->name->setValue($objCustomerGroup->externalName);
+		
+		// Dates
+		$objVariables->datetime->today->date->setValue(date("jS F, Y"), $intTime);
+		$objVariables->datetime->today->time->setValue(date("h:i:s a"), $intTime);
+		
+		// Account
+		$objVariables->account->business_name->setValue($objAccount->BusinessName);
+		
+		// Plans
+		$objVariables->plan->previous->name->setValue($objRatePlanPrevious->Name);
+		$objVariables->plan->previous->is_contracted->setValue($objRatePlanPrevious->Name);
 		
 		// Parse the Template, replacing the placeholders with valid data
-		return Document_Template::parse($objTemplateContent->content, $arrVariables);*/
+		return Document_Template::parse($objTemplateContent->content, $objVariables);
 	}
 	
 	//------------------------------------------------------------------------//

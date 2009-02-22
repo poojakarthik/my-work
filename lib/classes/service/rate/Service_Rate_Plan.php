@@ -38,6 +38,38 @@ class Service_Rate_Plan extends ORM
 		parent::__construct($arrProperties, $bolLoadById);
 	}
 	
+	/**
+	 * contractMonthsRemaining()
+	 *
+	 * Calculates the number of months remaining on this contract
+	 *
+	 * @param	[boolean	$bolLoadById		]	TRUE	: The months remaining is rounded up (includes this month) (Default)
+	 * 												FALSE	: The months remaining is rounded down (excludes this month)
+	 * 
+	 * @return	integer
+	 * 
+	 * @method
+	 */
+	public function contractMonthsRemaining($bolInclusive=true)
+	{
+		$intScheduledEndDatetime		= strtotime($this->contract_scheduled_end_datetime);
+		
+		if ($intScheduledEndDatetime)
+		{
+			$intCurrentDate		= time();
+			$strEndDate			= date("Y-m-d", $intScheduledEndDatetime);
+			
+			Flex_Date::difference($strEndDate, date('Y-m-d', $intCurrentDate));
+			
+			//$intCurrentMonths	= self::_dateToMonths($strCurrentDate, $bolInclusive);
+			//$intEndMonths		= self::_dateToMonths($strEndDate, $bolInclusive);
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//

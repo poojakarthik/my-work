@@ -105,10 +105,10 @@ class Flex_Dom_Element extends Flex_Dom_Object
 	 * 
 	 * @return DOMDocument to which the wrapped DOMNode object belongs
 	 */
-	protected function _getDomDocument()
+	public function getDomDocument()
 	{
 		// Escalate this responsibility to the parent... 
-		return $this->_objDomParent->_getDomDocument();
+		return $this->_objDomParent->getDomDocument();
 	}
 
 	/**
@@ -150,7 +150,7 @@ class Flex_Dom_Element extends Flex_Dom_Object
 		$this->_arrChildren = array();
 		
 		// Create a DOMTextNode for the given value
-		$objTextNode = $this->_getDomDocument()->createTextNode(strval($mxdValue));
+		$objTextNode = $this->getDomDocument()->createTextNode(strval($mxdValue));
 		// Append the DOMTextNode to the wrapped DOMElement
 		$this->_getDomNode()->appendChild($objTextNode);
 	}
