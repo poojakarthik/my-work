@@ -48,6 +48,6 @@ if (!in_array($strInterval, array_keys($arrIntervals)))
 
 $intDifference	= Flex_Date::difference($strEarlierDate, $strLaterDate, $strInterval, $bolCeil);
 
-echo "The difference is {$intDifference}".$arrIntervals[$strInterval].(($intDifference) > 1 ? 's' : '')."\n";
+echo "The difference is {$intDifference} ".$arrIntervals[$strInterval].(($intDifference) != 1 ? 's' : '')."\n";
 
 ?>
