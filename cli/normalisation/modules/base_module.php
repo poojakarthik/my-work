@@ -738,7 +738,7 @@ abstract class NormalisationModule extends CarrierModule
 	 		// Yes, automatically assume that this is the correct Service
 	 		$this->_arrNormalisedData['AccountGroup']	= $arrFNNInstances[0]['AccountGroup'];
 	 		$this->_arrNormalisedData['Account']		= $arrFNNInstances[0]['Account'];
-	 		$this->_arrNormalisedData['Service']		= $arrFNNInstances[0]['Service'];
+	 		$this->_arrNormalisedData['Service']		= $arrFNNInstances[0]['Id'];
 	 		return TRUE;
 		}
 	 	
