@@ -17,17 +17,7 @@ $strEarlierDate	= $argv[1];
 $strLaterDate	= $argv[2];
 $strInterval	= strtolower($argv[3]);
 
-switch (strtolower($argv[4]))
-{
-	case 'ceil':
-		$strRound	= 'ceil';
-		break;
-		
-	case 'floor':
-	default:
-		$strRound	= 'floor';
-		break;
-}
+$strRound	= (strtolower($argv[4]) === 'ceil') ? 'ceil' : 'floor';
 
 if (!strtotime($strEarlierDate))
 {
