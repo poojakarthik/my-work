@@ -103,17 +103,17 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 				</div>
 				<div class='Left' style='padding:12px 0px 0px 5px'>
 					Flex Customer Management System
-				</div>
+				</div>";
 
 			// Add debug button, which doesnt do much yet, just set debug to true;
 			//  eventually move this somewhere more appropriate
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_DEBUG))
+			/*if (AuthenticatedUser()->UserHasPerm(PERMISSION_DEBUG))
 			{	
 				echo "
 						<a href='javascript: Vixen.debug^=TRUE;alert(\"Vixen.debug now is: \" + Vixen.debug );window.location = window.location + \"&Debug=1\"'>
 						<img src='img/template/debug.png' alt='Debug' title='Debug' border='0' ></a>
 						<script type='text/javascript'>Vixen.debug = TRUE;</script>\n";
-			}
+			}*/
 			echo "
 					</div>
 				</div>
