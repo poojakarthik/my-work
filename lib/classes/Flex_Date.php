@@ -26,19 +26,20 @@ class Flex_Date
 	/**
 	 * difference()
 	 *
-	 * Calculates the difference between two dates.  All values are rounded down to the nearest unit.
+	 * Calculates the difference between two dates.
 	 * 
 	 * @param	string	$strEarlierDate				Earlier Date 
 	 * @param	string	$strLaterDate				Later Date
 	 * @param	string	$strAccuracy				Difference units.  Accepts 'y', 'm', 'd', 'h', 'i', or 's'. (Default: 's')
+	 * @param	[string	$strRound				]	Rounding function to use. [ceil|floor (Default)]
 	 *
 	 * @return	mixed								Integer for rounded result, otherwise float
 	 *
 	 * @method
 	 */
-	public static function difference($strEarlierDate, $strLaterDate, $strInterval='s')
+	public static function difference($strEarlierDate, $strLaterDate, $strInterval='s', $strRound='floor')
 	{
-		$strRoundingFunction	= 'floor';
+		$strRoundingFunction	= (strtolower($strRound) === 'ceil') ? 'ceil' : 'floor';
 		
 		$intEarlierTime	= strtotime($strEarlierDate);
 		if ($intEarlierTime === false)
@@ -89,7 +90,10 @@ class Flex_Date
 		// Months
 		$intMonthDifference	= (($intYearLater - $intYearEarlier) * self::MONTHS_IN_YEAR);
 		$intMonthDifference	+= ($intMonthLater - $intMonthEarlier);
-		$intMonthDifference	= ((int)date("dHis", $intLaterTime) >= (int)date("dHis", $intEarlierTime)) ? $intMonthDifference : $intMonthDifference - 1;
+		if ((int)date("dHis", $intLaterTime) >= (int)date("dHis", $intEarlierTime) && $strRoundingFunction === 'floor')
+		{
+			$intMonthDifference--;
+		}
 		if ($strInterval === 'm')
 		{
 			return call_user_func($strRoundingFunction, $intMonthDifference);
@@ -97,7 +101,7 @@ class Flex_Date
 		
 		// Years
 		$intYearDifference	= $intYearLater - $intYearEarlier;
-		if ((int)date("mdHis", $intLaterTime) < (int)date("mdHis", $intEarlierTime))
+		if ((int)date("mdHis", $intLaterTime) < (int)date("mdHis", $intEarlierTime) && $strRoundingFunction === 'floor')
 		{
 			$intYearDifference--;
 		}
