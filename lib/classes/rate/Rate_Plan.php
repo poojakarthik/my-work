@@ -387,11 +387,17 @@ class Rate_Plan extends ORM
 	{
 		// Get the current Template
 		$objTemplate		= Document::getByPath("/Authentication Scripts/Template");
-		$objTemplateContent	= $objTemplateDocument->getContent();
+		$objTemplateContent	= $objTemplate->getContent();
+		
+		// Get the Current Auth Script Blurb
+		$objBlurb			= new Document(array('id'=>$this->auth_script_document_id));
+		$objBlurbContent	= $objBlurb->getContent();
 		
 		$objEmployee		= Employee::getForId(Flex::getUserId());
 		$objCustomerGroup	= Customer_Group::getForId($this->customer_group)->externalName;
 		$intTime			= time();
+		$strDateFormat		= "jS F, Y";
+		$strTimeFormat		= "h:i:s a";
 		
 		$objVariables	= new Flex_Dom_Document();
 		
@@ -402,16 +408,21 @@ class Rate_Plan extends ORM
 		$objVariables->customer_group->name->setValue($objCustomerGroup->externalName);
 		
 		// Dates
-		$objVariables->datetime->today->date->setValue(date("jS F, Y"), $intTime);
-		$objVariables->datetime->today->time->setValue(date("h:i:s a"), $intTime);
+		$objVariables->datetime->today->date->setValue(date($strDateFormat, $intTime));
+		$objVariables->datetime->today->time->setValue(date($strTimeFormat, $intTime));
 		
 		// Account
 		$objVariables->account->business_name->setValue($objAccount->BusinessName);
 		
-		// Plans
+		// Previous Plan
 		$objVariables->plan->previous->name->setValue($objRatePlanPrevious->Name);
-		$objVariables->plan->previous->is_contracted->setValue($objRatePlanPrevious->Name);
+		$objVariables->plan->previous->is_contracted->setValue($objRatePlanPrevious->contract_scheduled_end_datetime !== null && $objRatePlanPrevious->contract_effective_end_datetime === null);
+		$objVariables->plan->previous->months_remaining->setValue(Flex_Date::difference($objRatePlanPrevious->contract_scheduled_end_datetime, date("Y-m-d", $intTime), 'm', 'ceil')+1);
+		$objVariables->plan->previous->start_date->setValue(date($strDateFormat, strtotime($objRatePlanPrevious->StartDatetime)));
 		
+		// New Plan
+		$objVariables->plan->new->name->setValue($this->Name);
+				
 		// Parse the Template, replacing the placeholders with valid data
 		return Document_Template::parse($objTemplateContent->content, $objVariables);
 	}
