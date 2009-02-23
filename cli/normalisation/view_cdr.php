@@ -1,7 +1,9 @@
 <?php
 
 // require stuff
-require_once('../../flex.require.php');
+require_once("../../lib/classes/Flex.php");
+Flex::load();
+
 require_once('require.php');
 
 echo "<pre>";
