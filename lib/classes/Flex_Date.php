@@ -97,9 +97,9 @@ class Flex_Date
 		
 		// Years
 		$intYearDifference	= $intYearLater - $intYearEarlier;
-		if ((int)date("mdHis", $intLaterTime) >= (int)date("mdHis", $intEarlierTime))
+		if ((int)date("mdHis", $intLaterTime) < (int)date("mdHis", $intEarlierTime))
 		{
-			$intYearDifference++;
+			$intYearDifference--;
 		}
 		if ($strInterval === 'y')
 		{
