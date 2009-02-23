@@ -41,6 +41,19 @@ class Flex_Date
 	 */
 	public static function difference($strEarlierDate, $strLaterDate, $strInterval='s', $bolCeil=null)
 	{
+		if ($bolCeil === true)
+		{
+			$strRoundingFunction	= 'ceil';
+		}
+		elseif ($bolCeil === false)
+		{
+			$strRoundingFunction	= 'floor';
+		}
+		else
+		{
+			$strRoundingFunction	= 'round';
+		}
+		
 		$intEarlierTime	= strtotime($strEarlierDate);
 		if ($intEarlierTime === false)
 		{
@@ -52,70 +65,102 @@ class Flex_Date
 			throw new Exception("'{$strLaterDate}' is not a valid UNIX Date");
 		}
 		
-		$arrAccuracyConversion	= array();
+		// Determine total difference in seconds
+		$intTotalDifferenceInSeconds	= $intLaterTime - $intEarlierTime;
+		
+		if ($strInterval === 's')
+		{
+			return $intTotalDifferenceInSeconds;
+		}
+		
+		// Minutes
+		$fltTotalDifferenceInMinutes	= $intTotalDifferenceInSeconds / self::SECONDS_IN_MINUTE;
+		if ($strInterval === 'i')
+		{
+			return call_user_func($strRoundingFunction, $fltTotalDifferenceInMinutes);
+		}
+		
+		// Hours
+		$fltTotalDifferenceInHours	= $intTotalDifferenceInSeconds / self::SECONDS_IN_HOUR;
+		if ($strInterval === 'h')
+		{
+			return call_user_func($strRoundingFunction, $fltTotalDifferenceInHours);
+		}
+		
+		// Days
+		$fltTotalDifferenceInDays	= $intTotalDifferenceInSeconds / self::SECONDS_IN_DAY;
+		if ($strInterval === 'd')
+		{
+			return call_user_func($strRoundingFunction, $fltTotalDifferenceInDays);
+		}
+		
+		$intYearEarlier			= (int)date("Y", $intEarlierTime);
+		$intYearLater			= (int)date("Y", $intLaterTime);
+		
+		$intMonthEarlier		= (int)date("m", $intEarlierTime);
+		$intMonthLater			= (int)date("m", $intLaterTime);
+		
+		$intEarlierMonthDays	= (int)date('t', mktime(0, 0, 0, $intMonthEarlier, 1, $intYearEarlier));
+		$intLaterMonthDays		= (int)date('t', mktime(0, 0, 0, $intMonthLater, 1, $intYearLater));
+		
+		$intEarlierTimeOffset	= strtotime(date("1970-01-01 H:i:s", $intEarlierTime));
+		$intLaterTimeOffset		= strtotime(date("1970-01-01 H:i:s", $intLaterTime));
+		
+		// Months
+		$intMonths				= 0;
+		$intMonthsInDays		= 0;
+		$intEarlierMonthOffset	= ($intYearEarlier * 12)	+ $intMonthEarlier;
+		$intLaterMonthOffset	= ($intYearLater * 12)		+ $intMonthLater;
+		$arrMonthOffsets		= range($intEarlierMonthOffset, $intLaterMonthOffset);
+		foreach ($arrMonthOffsets as $intMonthOffset)
+		{
+			$intMonths++;
+			$intYear			= floor($intMonthOffset / 12);
+			$intMonth			= $intMonthOffset % 12;
+			$intDaysInMonth		= (int)date('t', mktime(0, 0, 0, $intMonth, 1, $intYear));
+			$intMonthsInDays	+= $intDaysInMonth;
+		}
+		$intTotalDifferenceInSeconds % self::SECONDS_IN_DAY;
+		$intMonthsInSeconds	= $intMonthsInDays * self::SECONDS_IN_DAY;
+		
+		
+		// Interval Conversion multi-dimensional array
+		//	$arrIntervalConversion['m']['y']	= 36
+		//	This means that the difference in years, converted to months, is 36 (ie. 3 years = 36 months)
+		$arrIntervalConversion	= array();
 		
 		// Seconds
 		$intSecondEarlier		= (int)date("s", $intEarlierTime);
 		$intSecondLater			= (int)date("s", $intLaterTime);
 		$intSecondDifference	= $intSecondLater - $intSecondEarlier;
-		$intSecondDifference	= ($intSecondDifference > 0) ? $intSecondDifference : self::SECONDS_IN_MINUTE - $intSecondDifference;
+		$intSecondDifference	= ($intSecondDifference > 0) ? $intSecondDifference : self::SECONDS_IN_MINUTE + $intSecondDifference;
 		
 		// Minutes
 		$intMinuteEarlier		= (int)date("i", $intEarlierTime);
 		$intMinuteLater			= (int)date("i", $intLaterTime);
 		$intMinuteDifference	= $intMinuteLater - $intMinuteEarlier;
-		$intMinuteDifference	= ($intMinuteDifference > 0) ? $intMinuteDifference : self::MINUTES_IN_HOUR - $intMinuteDifference;
+		$intMinuteDifference	= ($intMinuteDifference > 0) ? $intMinuteDifference : self::MINUTES_IN_HOUR + $intMinuteDifference;
 		
-		$arrAccuracyConversion['s']['s']	= $intSecondDifference;
-		$arrAccuracyConversion['s']['i']	= $intSecondDifference;
-		$arrAccuracyConversion['s']['h']	= $intSecondDifference;
-		$arrAccuracyConversion['s']['s']	= $intSecondDifference;
-		$arrAccuracyConversion['s']['s']	= $intSecondDifference;
-		$arrAccuracyConversion['s']['s']	= $intSecondDifference;
+		// Hours
+		$intHourEarlier			= (int)date("H", $intEarlierTime);
+		$intHourLater			= (int)date("H", $intLaterTime);
+		$intHourDifference		= $intHourEarlier - $intHourEarlier;
+		$intHourDifference		= ($intHourDifference > 0) ? $intHourDifference : self::HOURS_IN_DAY + $intHourDifference;
 		
-		
-		
-		
-		$arrAccuracyConversion['y']['s']	= $intSecondDifference;
-		$arrAccuracyConversion['y']['i']	= $intSecondDifference;
-		$arrAccuracyConversion['y']['h']	= $intSecondDifference;
-		$arrAccuracyConversion['y']['d']	= $intSecondDifference;
-		$arrAccuracyConversion['y']['m']	= $intSecondDifference;
-		$arrAccuracyConversion['y']['y']	= $intSecondDifference;
-		
-		
-		
-		
-		
-		// Years
-		$intYearEarlier			= (int)date("Y", $intEarlierTime);
-		$intYearLater			= (int)date("Y", $intLaterTime);
-		$intYearDifference		= max(0, $intYearLater-$intYearEarlier);
-		
-		// Years in Days
-		$arrAccuracyConversion['d']['y']	= 0;
-		$arrYears		= range($intYearEarlier, $intYearLater);
-		foreach ($arrYears as $intYear)
-		{
-			if ($intYear % 4 === 0)
-			{
-				$arrAccuracyConversion['d']['y']	+= 365;
-			}
-			else
-			{
-				$arrAccuracyConversion['d']['y']	+= 366;
-			}
-		}
-		$arrAccuracyConversion['y']['y']	= $intYearDifference;
-		$arrAccuracyConversion['m']['y']	= $intYearDifference * self::MONTHS_IN_YEAR;
-		$arrAccuracyConversion['h']['y']	= $arrAccuracyConversion['d']['y'] * self::HOURS_IN_DAY;
-		$arrAccuracyConversion['i']['y']	= $arrAccuracyConversion['d']['y'] * self::MINUTES_IN_DAY;
-		$arrAccuracyConversion['s']['y']	= $arrAccuracyConversion['d']['y'] * self::SECONDS_IN_DAY;
+		// Days
+		$intDayEarlier			= (int)date("d", $intEarlierTime);
+		$intDayLater			= (int)date("d", $intLaterTime);
+		$intDayDifference		= max(0, $intDayLater-$intDayEarlier);
 		
 		// Months
 		$intMonthEarlier		= (int)date("m", $intEarlierTime);
 		$intMonthLater			= (int)date("m", $intLaterTime);
 		$intMonthDifference		= max(0, $intMonthLater-$intMonthEarlier);
+				
+		// Years
+		$intYearEarlier			= (int)date("Y", $intEarlierTime);
+		$intYearLater			= (int)date("Y", $intLaterTime);
+		$intYearDifference		= max(0, $intYearLater-$intYearEarlier);
 		
 		// Months in Days
 		$intMonthsInDays		= 0;
@@ -130,29 +175,49 @@ class Flex_Date
 			$intMonthsInDays	+= $intDaysInMonth;
 		}
 		
-		$arrAccuracyConversion['y']['m']	= ($bolCeil) ? self::MONTHS_IN_YEAR : (($bolCeil === false) ? 0 : round($intMonthDifference / 100) * 100);
-		$arrAccuracyConversion['m']['m']	= $intMonthDifference;
-		$arrAccuracyConversion['d']['m']	= $intMonthsInDays;
-		$arrAccuracyConversion['h']['m']	= $intMonthsInDays * self::HOURS_IN_DAY;
-		$arrAccuracyConversion['i']['m']	= $intMonthsInDays * self::MINUTES_IN_DAY;
-		$arrAccuracyConversion['s']['m']	= $intMonthsInDays * self::SECONDS_IN_DAY;
+		// Years in Days
+		$arrIntervalConversion['d']['y']	= 0;
+		$arrYears		= range($intYearEarlier, $intYearLater);
+		foreach ($arrYears as $intYear)
+		{
+			if ($intYear % 4 === 0 && ($intYear % 100 || $intYear % 400 === 0))
+			{
+				$arrIntervalConversion['d']['y']	+= 365;
+			}
+			else
+			{
+				$arrIntervalConversion['d']['y']	+= 366;
+			}
+		}
 		
-		// Days
-		$intDayEarlier			= (int)date("d", $intEarlierTime);
-		$intDayLater			= (int)date("d", $intLaterTime);
-		$intDayDifference		= max(0, $intDayLater-$intDayEarlier);
 		
-		$arrAccuracyConversion['y']['d']	= (int)($intMonthDifference / self::MONTHS_IN_YEAR);
-		$arrAccuracyConversion['m']['d']	= $intMonthDifference;
-		$arrAccuracyConversion['d']['d']	= $intMonthsInDays;
-		$arrAccuracyConversion['h']['d']	= $intMonthsInDays * self::HOURS_IN_DAY;
-		$arrAccuracyConversion['i']['d']	= $intMonthsInDays * self::MINUTES_IN_DAY;
-		$arrAccuracyConversion['s']['d']	= $intMonthsInDays * self::SECONDS_IN_DAY;
 		
-		// Hours
-		$intHourEarlier			= (int)date("H", $intEarlierTime);
-		$intHourLater			= (int)date("H", $intLaterTime);
-		$intHourDifference		= max(0, $intHourLater-$intHourEarlier);
+		/*
+		
+		$arrIntervalConversion['y']['s']	= $intSecondDifference;
+		$arrIntervalConversion['y']['i']	= $intSecondDifference;
+		$arrIntervalConversion['y']['h']	= $intSecondDifference;
+		$arrIntervalConversion['y']['d']	= $intSecondDifference;
+		$arrIntervalConversion['y']['m']	= $intSecondDifference;
+		$arrIntervalConversion['y']['y']	= $intSecondDifference;
+		
+		
+		
+		
+		
+		$arrIntervalConversion['y']['y']	= $intYearDifference;
+		$arrIntervalConversion['m']['y']	= $intYearDifference * self::MONTHS_IN_YEAR;
+		$arrIntervalConversion['h']['y']	= $arrIntervalConversion['d']['y'] * self::HOURS_IN_DAY;
+		$arrIntervalConversion['i']['y']	= $arrIntervalConversion['d']['y'] * self::MINUTES_IN_DAY;
+		$arrIntervalConversion['s']['y']	= $arrIntervalConversion['d']['y'] * self::SECONDS_IN_DAY;
+		
+		
+		$arrIntervalConversion['y']['m']	= ($bolCeil) ? self::MONTHS_IN_YEAR : (($bolCeil === false) ? 0 : round($intMonthDifference / 100) * 100);
+		$arrIntervalConversion['m']['m']	= $intMonthDifference;
+		$arrIntervalConversion['d']['m']	= $intMonthsInDays;
+		$arrIntervalConversion['h']['m']	= $intMonthsInDays * self::HOURS_IN_DAY;
+		$arrIntervalConversion['i']['m']	= $intMonthsInDays * self::MINUTES_IN_DAY;
+		$arrIntervalConversion['s']['m']	= $intMonthsInDays * self::SECONDS_IN_DAY;
 		
 		// Minutes
 		$intMinuteEarlier		= (int)date("i", $intEarlierTime);
@@ -160,13 +225,13 @@ class Flex_Date
 		$intMinuteDifference	= max(0, $intMinuteLater-$intMinuteEarlier);
 		
 		$intSecondsInMinutes	= ($bolCeil) ? self::SECONDS_IN_MINUTE : (($bolCeil === false) ? 0 : round($intSecondDifference / 100) * 100);
-		
-		return	$arrAccuracyConversion[strtolower($strAccuracy)]['y'] + 
-				$arrAccuracyConversion[strtolower($strAccuracy)]['m'] + 
-				$arrAccuracyConversion[strtolower($strAccuracy)]['d'] + 
-				$arrAccuracyConversion[strtolower($strAccuracy)]['h'] + 
-				$arrAccuracyConversion[strtolower($strAccuracy)]['i'] + 
-				$arrAccuracyConversion[strtolower($strAccuracy)]['s'];
+		*/
+		return	$arrIntervalConversion[strtolower($strInterval)]['y'] + 
+				$arrIntervalConversion[strtolower($strInterval)]['m'] + 
+				$arrIntervalConversion[strtolower($strInterval)]['d'] + 
+				$arrIntervalConversion[strtolower($strInterval)]['h'] + 
+				$arrIntervalConversion[strtolower($strInterval)]['i'] + 
+				$arrIntervalConversion[strtolower($strInterval)]['s'];
 	}
 	
 	/**
