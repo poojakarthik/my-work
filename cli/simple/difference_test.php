@@ -20,16 +20,12 @@ $strInterval	= strtolower($argv[3]);
 switch (strtolower($argv[4]))
 {
 	case 'ceil':
-		$bolCeil	= true;
+		$strRound	= 'ceil';
 		break;
 		
 	case 'floor':
-		$bolCeil	= false;
-		break;
-		
-	case 'round':
 	default:
-		$bolCeil	= null;
+		$strRound	= 'floor';
 		break;
 }
 
@@ -46,7 +42,7 @@ if (!in_array($strInterval, array_keys($arrIntervals)))
 	throw new Exception("Interval '{$strInterval}' is not a valid Date Interval (expected y|m|d|h|i|s)");
 }
 
-$intDifference	= Flex_Date::difference($strEarlierDate, $strLaterDate, $strInterval, $bolCeil);
+$intDifference	= Flex_Date::difference($strEarlierDate, $strLaterDate, $strInterval, $strRound);
 
 echo "The difference is {$intDifference} ".$arrIntervals[$strInterval].(($intDifference) != 1 ? 's' : '')."\n";
 
