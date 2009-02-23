@@ -90,7 +90,7 @@ class Flex_Date
 		// Months
 		$intMonthDifference	= (($intYearLater - $intYearEarlier) * self::MONTHS_IN_YEAR);
 		$intMonthDifference	+= ($intMonthLater - $intMonthEarlier);
-		if ((int)date("dHis", $intLaterTime) >= (int)date("dHis", $intEarlierTime) && $strRoundingFunction === 'floor')
+		if ((int)date("dHis", $intLaterTime) < (int)date("dHis", $intEarlierTime) && $strRoundingFunction === 'floor')
 		{
 			$intMonthDifference--;
 		}
