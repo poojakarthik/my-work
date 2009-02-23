@@ -420,6 +420,8 @@ class Cli_App_InvoiceXMLTest extends Cli
 			// This must be a service charge - check it is itemised and that the totals add up
 			else
 			{
+				$chargesTotal += $categoryTotal;
+				
 				if ($categoryTotal > 0 && !array_key_exists($categoryName, $cache['serviceCharges']))
 				{
 					throw new Exception("Document/Invoice/Charges/Category '$categoryName' appears to be a service charge but has no corresponding service itemisation.");
