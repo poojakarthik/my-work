@@ -435,7 +435,7 @@ class Cli_App_InvoiceXMLTest extends Cli
 		
 		// Check that the Tax is not higher than 10% of the bill
 		$fltMaximumTax	= ceil($chargesTotal / 10);
-		if ($fltMaximumTax > $chargesTotal)
+		if ($fltMaximumTax < $fltTaxTotal)
 		{
 			throw new Exception("GST charges of {$fltTaxTotal} accounts for more than 10% of the summary total of {$chargesTotal}");
 		}
