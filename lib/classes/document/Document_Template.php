@@ -49,10 +49,11 @@ class Document_Template
 		$objXSLTProcessor	= new XSLTProcessor();
 		$objXSLTProcessor->importStylesheet($objXSLTemplate);
 		
+		throw new Exception("DEATH 3");
+		
 		$strXML	= $objXSLTProcessor->transformToXML($objDomDocument->getDomDocument());
 		
 		
-		throw new Exception("DEATH 3");
 		
 		return $strXML;
 	}
