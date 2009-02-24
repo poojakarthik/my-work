@@ -44,31 +44,42 @@ do
 	{
 		$objDocumentContent->name	= $strName;
 	}
+	
+	// Does this Document already exist?
+	$objDocumentExists = Document::getByPath($strPath);
+	if (!$objDocumentExists)
+	{
+		// Yes -- add a new version
+		$objDocument	= $objDocumentExists;
+	}
 }
 while (!$objDocumentContent->name);
 
-// Document Nature (File/Folder)
-do
+// Document Nature (File/Folder) (only for new Documents)
+if (!$objDocument->id)
 {
-	$strNature		= trim(getUserInput("What is the nature of the document [FILE|FOLDER] ? "));
-	switch (strtoupper($strNature))
+	do
 	{
-		case 'FILE':
-			$objDocument->document_nature_id	= DOCUMENT_NATURE_FILE;
-			break;
-			
-		case 'FOLDER':
-			$objDocument->document_nature_id	= DOCUMENT_NATURE_FOLDER;
-			break;
+		$strNature		= trim(getUserInput("What is the nature of the document [FILE|FOLDER] ? "));
+		switch (strtoupper($strNature))
+		{
+			case 'FILE':
+				$objDocument->document_nature_id	= DOCUMENT_NATURE_FILE;
+				break;
+				
+			case 'FOLDER':
+				$objDocument->document_nature_id	= DOCUMENT_NATURE_FOLDER;
+				break;
+		}
 	}
+	while (!$objDocument->document_nature_id);
 }
-while (!$objDocument->document_nature_id);
 
 // Description (optional)
 $strDescription		= trim(getUserInput("Please enter the Description for the Documents (optional): "));
 if ($strDescription)
 {
-	$objDocumentContent->description;
+	$objDocumentContent->description	= $strDescription;
 }
 
 // Files Only
@@ -113,8 +124,12 @@ if ($objDocument->document_nature_id === DOCUMENT_NATURE_FILE)
 DataAccess::getDataAccess()->TransactionStart();
 try
 {
-	$objDocument->employee_id	= Employee::SYSTEM_EMPLOYEE_ID;
-	$objDocument->save();
+	// Only save the Document if it's new
+	if (!$objDocument->id)
+	{
+		$objDocument->employee_id	= Employee::SYSTEM_EMPLOYEE_ID;
+		$objDocument->save();
+	}
 	
 	$objDocumentContent->document_id	= $objDocument->id;
 	$objDocumentContent->employee_id	= Employee::SYSTEM_EMPLOYEE_ID;
