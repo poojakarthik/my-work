@@ -53,8 +53,8 @@ class Application_Handler_Invoice extends Application_Handler
 			BreadCrumb()->InvoicesAndPayments($intAccountId);
 			BreadCrumb()->ViewInvoice($intInvoiceId);
 			BreadCrumb()->SetCurrentPage("Service: $fnn");
-			AppTemplateAccount::BuildContextMenu($intAccountId);
-	
+			//AppTemplateAccount::BuildContextMenu($intAccountId);
+			
 			$arrDetailsToRender = array();
 	
 			$arrDetailsToRender['Invoice'] = $serviceDetails;
@@ -239,7 +239,7 @@ class Application_Handler_Invoice extends Application_Handler
 			BreadCrumb()->ViewInvoice($intInvoiceId);
 			BreadCrumb()->ViewInvoiceService($intServiceTotal, $fnn);
 			BreadCrumb()->SetCurrentPage("Record Id: " . $intCdrId);
-			AppTemplateAccount::BuildContextMenu($intAccountId);
+			//AppTemplateAccount::BuildContextMenu($intAccountId);
 
 			if ($dataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
 			{
