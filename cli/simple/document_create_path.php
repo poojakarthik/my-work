@@ -43,19 +43,20 @@ do
 	if (preg_match("/^[^\r\n\t\/]+$/i", $strName))
 	{
 		$objDocumentContent->name	= $strName;
-	}
-	
-	// Does this Document already exist?
-	$objDocumentExists = Document::getByPath($strPath);
-	if (!$objDocumentExists)
-	{
-		// Yes -- add a new version
-		$objDocument	= $objDocumentExists;
-		CliEcho("Modifying '{$strPath}'...");
-	}
-	else
-	{
-		CliEcho("Creating '{$strPath}'...");
+		
+		// Does this Document already exist?
+		$objDocumentExists = Document::getByPath($strPath);
+		if ($objDocumentExists)
+		{
+			// Yes -- add a new version
+			$objDocument	= $objDocumentExists;
+			CliEcho("Modifying '{$strPath}'...");
+		}
+		else
+		{
+			// No -- create a new Document
+			CliEcho("Creating '{$strPath}'...");
+		}
 	}
 }
 while (!$objDocumentContent->name);
