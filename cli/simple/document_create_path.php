@@ -118,7 +118,7 @@ if ($objDocument->document_nature_id === DOCUMENT_NATURE_FILE)
 			}
 			
 			// Set Document Content
-			$objDocumentContent->content	= file_get_contents($strContentPath);
+			$objDocumentContent->content	= str_replace("\r\n", "\n", file_get_contents($strContentPath));
 		}
 	}
 	while (!$objDocumentContent->file_type_id || !$objDocumentContent->mime_type_id);
