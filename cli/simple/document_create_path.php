@@ -24,6 +24,7 @@ do
 	
 	// Check the directory
 	$strParentPath	= dirname($strPath);
+	$strParentPath	= ($strParentPath === '.') ? $strParentPath = '' : $strParentPath;
 	if ($strParentPath)
 	{
 		$objParentDocument = Document::getByPath($strParentPath);
