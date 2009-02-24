@@ -162,7 +162,8 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		// Make this utilise a confirm box which details what happens when they change the plan.  If one is scheduled for a future date
 		// And they declare a new plan for the current month, then the scheduled plan will be removed.  Also notify them that all Rate overrides
 		// will be removed.
-		$this->Button("Change Plan", "Vixen.PlanChange.ChangePlan();");
+		//$this->Button("Change Plan", "Vixen.PlanChange.ChangePlan();");
+		$this->Button("Authorise", "Vixen.PlanChange.requestAuthScript();");
 		
 		//$this->AjaxSubmit("Change Plan");
 		echo "</div></div>\n";
