@@ -414,7 +414,7 @@ class Rate_Plan extends ORM
 		$objVariables->datetime->today->time->setValue(date($strTimeFormat, $intTime));
 		
 		// Account
-		$objVariables->account->business_name->setValue("<strong>".$objAccount->BusinessName."</strong>");
+		$objVariables->account->business_name->setValue($objAccount->BusinessName);
 		
 		// Previous Plan
 		$objVariables->plan->previous->name->setValue($objOldRatePlan->Name);
@@ -423,7 +423,7 @@ class Rate_Plan extends ORM
 		$objVariables->plan->previous->start_date->setValue(date($strDateFormat, strtotime($objRatePlanPrevious->StartDatetime)));
 		
 		// New Plan
-		$objVariables->plan->new->name->setValue("<em>".$this->Name."</em>");
+		$objVariables->plan->new->name->setValue($this->Name);
 		$objVariables->plan->new->blurb->setValue(str_replace("\n", "<br />\n", $objBlurbContent->content));
 		
 		// Parse the Template, replacing the placeholders with valid data
