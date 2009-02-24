@@ -386,7 +386,7 @@ class Rate_Plan extends ORM
 	public function parseAuthenticationScript(Account $objAccount, Service_Rate_Plan $objRatePlanPrevious)
 	{
 		// Get the current Template
-		$objTemplate		= Document::getByPath("/Authentication Scripts/Template");
+		$objTemplate		= Document::getByPath("/Authorisation Scripts/Template");
 		$objTemplateContent	= $objTemplate->getContent();
 		
 		// Get the Current Auth Script Blurb
