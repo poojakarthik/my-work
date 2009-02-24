@@ -394,7 +394,7 @@ class Rate_Plan extends ORM
 		$objBlurbContent	= $objBlurb->getContent();
 		
 		$objEmployee		= Employee::getForId(Flex::getUserId());
-		$objCustomerGroup	= Customer_Group::getForId($this->customer_group)->externalName;
+		$objCustomerGroup	= Customer_Group::getForId($this->customer_group);
 		$intTime			= time();
 		$strDateFormat		= "jS F, Y";
 		$strTimeFormat		= "h:i:s a";
