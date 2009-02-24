@@ -52,7 +52,7 @@ class Document_Template
 		$strXML	= $objXSLTProcessor->transformToXML($objDomDocument->getDomDocument());
 		
 		
-		throw new Exception("DEATH3");
+		throw new Exception("DEATH 3");
 		
 		return $strXML;
 	}
