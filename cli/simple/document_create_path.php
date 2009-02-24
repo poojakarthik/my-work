@@ -51,6 +51,11 @@ do
 	{
 		// Yes -- add a new version
 		$objDocument	= $objDocumentExists;
+		CliEcho("Modifying '{$strPath}'...");
+	}
+	else
+	{
+		CliEcho("Creating '{$strPath}'...");
 	}
 }
 while (!$objDocumentContent->name);
