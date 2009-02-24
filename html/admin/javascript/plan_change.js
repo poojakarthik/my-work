@@ -45,8 +45,7 @@ function VixenPlanChangeClass()
 	this.strPopupId			= null;
 	this.elmViewPlanLink	= null;
 
-	this.pupVoiceAuth		= new Reflex_Popup(50);
-	this.pupVoiceAuth.setTitle('Plan Change Authorisation Script');
+	this.strVoiceAuthPopupId	= "ChangePlan_Auth_Popup";
 	
 	//------------------------------------------------------------------------//
 	// Initialise
@@ -108,12 +107,11 @@ function VixenPlanChangeClass()
 							"	Clicking the <span style='font-weight: bold;'>Agree</span> button will continue with the Plan Change.  Clicking the <span style='font-weight: bold;'>Disagree</span> button will abort the Plan Change." +
 							"</div>\n" +
 							"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
-							"	<input id='Plan_AuthScript_Agree' value='Agree' type='button' onclick='Vixen.PlanChange.pupVoiceAuth.hide(); Vixen.PlanChange.ChangePlan();' /> \n" + 
-							"	<input id='Plan_AuthScript_Disagree' value='Disagree' onclick='Vixen.PlanChange.pupVoiceAuth.hide();' style='margin-left: 3px;' type='button' /> \n" + 
+							"	<input id='Plan_AuthScript_Agree' value='Agree' type='button' onclick='Vixen.Popup.Close(Vixen.PlanChange.strVoiceAuthPopupId); Vixen.PlanChange.ChangePlan();' /> \n" + 
+							"	<input id='Plan_AuthScript_Disagree' value='Disagree' onclick='Vixen.Popup.Close(Vixen.PlanChange.strVoiceAuthPopupId);' style='margin-left: 3px;' type='button' /> \n" + 
 							"</div>\n";
 			
-			Vixen.PlanChange.pupVoiceAuth.setContent(strHTML);
-			Vixen.PlanChange.pupVoiceAuth.display();
+			Vixen.Popup.Create(Vixen.PlanChange.strVoiceAuthPopupId, strHTML, 'large', 'centre', 'modal', "Plan Change Authorisation Script");
 		}
 		
 		// Call AJAX function to return Script HTML
