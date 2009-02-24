@@ -45,15 +45,11 @@ class Document_Template
 		$objXSLTemplate	= new DOMDocument();
 		$objXSLTemplate->loadXML($strTemplate);
 		
-		
 		// Process the XSL template and return the rendered document
 		$objXSLTProcessor	= new XSLTProcessor();
 		$objXSLTProcessor->importStylesheet($objXSLTemplate);
 		
 		$strXML	= $objXSLTProcessor->transformToXML($objDomDocument->getDomDocument());
-		
-		
-		
 		return $strXML;
 	}
 }
