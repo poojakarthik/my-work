@@ -34,7 +34,7 @@ do
 		}
 		else
 		{
-			$objDocumentContent->parent_brochure_id	= $objParentDocument->id;
+			$objDocumentContent->parent_document_id	= $objParentDocument->id;
 		}
 	}
 	
