@@ -393,11 +393,13 @@ class Rate_Plan extends ORM
 		$objBlurb			= new Document(array('id'=>$this->auth_script_document_id));
 		$objBlurbContent	= $objBlurb->getContent();
 		
+		$objOldRatePlan		= new Rate_Plan(array('Id'=>$objRatePlanPrevious->RatePlan), true);
+		
 		$objEmployee		= Employee::getForId(Flex::getUserId());
 		$objCustomerGroup	= Customer_Group::getForId($this->customer_group);
 		$intTime			= time();
 		$strDateFormat		= "jS F, Y";
-		$strTimeFormat		= "h:i:s a";
+		$strTimeFormat		= "h:i a";
 		
 		$objVariables	= new Flex_Dom_Document();
 		
@@ -412,16 +414,16 @@ class Rate_Plan extends ORM
 		$objVariables->datetime->today->time->setValue(date($strTimeFormat, $intTime));
 		
 		// Account
-		$objVariables->account->business_name->setValue($objAccount->BusinessName);
+		$objVariables->account->business_name->setValue("<strong>".$objAccount->BusinessName."</strong>");
 		
 		// Previous Plan
-		$objVariables->plan->previous->name->setValue($objRatePlanPrevious->Name);
+		$objVariables->plan->previous->name->setValue($objOldRatePlan->Name);
 		$objVariables->plan->previous->is_contracted->setValue($objRatePlanPrevious->contract_scheduled_end_datetime !== null && $objRatePlanPrevious->contract_effective_end_datetime === null);
 		$objVariables->plan->previous->months_remaining->setValue(Flex_Date::difference($objRatePlanPrevious->contract_scheduled_end_datetime, date("Y-m-d", $intTime), 'm', 'ceil')+1);
 		$objVariables->plan->previous->start_date->setValue(date($strDateFormat, strtotime($objRatePlanPrevious->StartDatetime)));
 		
 		// New Plan
-		$objVariables->plan->new->name->setValue($this->Name);
+		$objVariables->plan->new->name->setValue("<em>".$this->Name."</em>");
 		$objVariables->plan->new->blurb->setValue(str_replace("\n", "<br />\n", $objBlurbContent->content));
 		
 		// Parse the Template, replacing the placeholders with valid data
