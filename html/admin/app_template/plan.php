@@ -798,6 +798,12 @@ class AppTemplatePlan extends ApplicationTemplate
 			DBO()->RatePlan->Archived = RATE_STATUS_ACTIVE;
 		}
 
+		// If the RatePlan has already been saved as a draft then load in the details that don't get edited here, so they don't get erased
+		if (DBO()->RatePlan->Id->Value)
+		{
+			DBO()->RatePlan->LoadMerge();
+		}
+
 		// S2: Save the plan to the database
 		if (!DBO()->RatePlan->Save())
 		{
