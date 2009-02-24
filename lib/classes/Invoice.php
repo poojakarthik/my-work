@@ -248,7 +248,7 @@ class Invoice extends ORM
 
 		// Mark Account Adjustments
 		$arrWhere	= Array('Account' => $objAccount->Id);
-		$arrData	= Array('Status' => CHARGE_TEMP_INVOICE, 'invoice_run_id' => $this->invoice_run_id);
+		$arrData	= Array('Status' => CHARGE_TEMP_INVOICE, 'invoice_run_id' => $this->invoice_run_id, 'BillingPeriodEnd'=>$this->billing_period_end_datetime);
 		$updMarkAccountCharges	= self::_preparedStatement('updMarkAccountCharges');
 		if ($updMarkAccountCharges->Execute($arrData, $arrWhere) === FALSE)
 		{
@@ -398,7 +398,7 @@ class Invoice extends ORM
 		//--------------------------- PLAN CHARGES ---------------------------//
 		// Retrieve Plan Details for the current Service
 		$selPlanDetails	= $this->_preparedStatement('selPlanDetails');
-		if ($selPlanDetails->Execute(Array('Service' => $intServiceId, 'EffectiveDate' => $this->strInvoiceDatetime)) === FALSE)
+		if ($selPlanDetails->Execute(Array('Service' => $intServiceId, 'EffectiveDate' => $this->billing_period_end_datetime)) === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$selPlanDetails->Error());
 		}
@@ -433,7 +433,7 @@ class Invoice extends ORM
 
 		//--------------------------- SERVICE TOTALS -------------------------//
 		// Mark all CDRs for this Service as TEMPORARY_INVOICE
-		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")";
+		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND StartDatetime <= '{$this->billing_period_end_datetime}'";
 		$strSQL		.= (!$this->objInvoiceRun->bolInvoiceCDRCredits) ? " AND Credit = 0" : '';
 		$resResult	= $qryQuery->Execute($strSQL);
 		if ($resResult === FALSE)
@@ -559,7 +559,7 @@ class Invoice extends ORM
 		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 
 		// Mark all Service Charges as TEMPORARY_INVOICE
-		if ($qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).")") === FALSE)
+		if ($qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND ChargedOn <= '{$this->billing_period_end_datetime}'") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
@@ -1341,7 +1341,7 @@ class Invoice extends ORM
 
 				// UPDATES
 				case 'updMarkAccountCharges':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND Service IS NULL AND Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.")", Array('Status'=>NULL, 'invoice_run_id'=>NULL));
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "Account = <Account> AND Service IS NULL AND Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND ChargedOn <= <BillingPeriodEnd>", Array('Status'=>NULL, 'invoice_run_id'=>NULL));
 					break;
 				case 'updCDRRevoke':
 					$arrPreparedStatements[$strStatement]	= new StatementUpdate("CDR", "Account = <Account> AND (invoice_run_id = <invoice_run_id> OR Status = ".CDR_TEMP_INVOICE.")", Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED));
