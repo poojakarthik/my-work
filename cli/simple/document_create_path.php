@@ -4,11 +4,11 @@
 require_once("../../lib/classes/Flex.php");
 Flex::load();
 
-$resFileInfoDB		= new finfo(FILEINFO_MIME);
+/*$resFileInfoDB		= new finfo(FILEINFO_MIME);
 if (!$resFileInfoDB)
 {
 	throw new Exception("Unable to load MIME Database");
-}
+}*/
 
 $objDocument		= new Document();
 $objDocumentContent	= new Document_Content();
@@ -84,7 +84,8 @@ if ($objDocument->document_nature_id === DOCUMENT_NATURE_FILE)
 			$strExtension	= substr($strBaseName, strripos($strBaseName, '.') + 1);
 			
 			// Mime Type
-			$strMimeContentType	= $resFileInfoDB->file($strContentPath);
+			//$strMimeContentType	= $resFileInfoDB->file($strContentPath);
+			$strMimeContentType	= mime_content_type($strContentPath);
 			
 			// Find File/Mime Type Combination in Flex
 			$objFileType	= File_Type::getForExtensionAndMimeType($strExtension, $strMimeContentType);
