@@ -41,11 +41,11 @@ class Document_Template
 			throw new Exception("Dataset is in an unhandled format '{$strType}'");
 		}
 		
-		throw new Exception("DEATH 3");
+		//throw new Exception("DEATH 3");
 		
 		// Load the Template into a DOMDocument
 		$objXSLTemplate	= new DOMDocument();
-		$objXSLTemplate->load($strTemplate);
+		$objXSLTemplate->loadXML($strTemplate);
 		
 		
 		// Process the XSL template and return the rendered document
