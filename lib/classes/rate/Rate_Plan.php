@@ -422,7 +422,7 @@ class Rate_Plan extends ORM
 		
 		// New Plan
 		$objVariables->plan->new->name->setValue($this->Name);
-		$objVariables->plan->new->blurb->setValue($objBlurbContent->content);
+		$objVariables->plan->new->blurb->setValue(str_replace("\n", "<br />\n", $objBlurbContent->content));
 		
 		// Parse the Template, replacing the placeholders with valid data
 		return Document_Template::render($objTemplateContent->content, $objVariables);
