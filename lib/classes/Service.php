@@ -39,17 +39,17 @@ class Service extends ORM
 	}
 	
 	/**
-	 * getCurrentPlan()
+	 * getCurrentServiceRatePlan()
 	 *
-	 * Gets the current Rate Plan for this Service
+	 * Gets the current Service Rate Plan for this Service
 	 *
 	 * @param	string	$strEffectiveDatetime		[optional]	The date to check against
 	 *
-	 * @return	Rate_Plan
+	 * @return	Service_Rate_Plan
 	 *
 	 * @method
 	 */
-	public function getCurrentPlan($strEffectiveDatetime=NULL)
+	public function getCurrentServiceRatePlan($strEffectiveDatetime=NULL)
 	{
 		$strEffectiveDatetime		= ($strEffectiveDatetime !== NULL) ? $strEffectiveDatetime : Data_Source_Time::currentTimestamp();
 		$selCurrentServiceRatePlan	= self::_preparedStatement('selCurrentServiceRatePlan');
@@ -63,12 +63,37 @@ class Service extends ORM
 		}
 		elseif (($arrCurrentServiceRatePlan = $selCurrentServiceRatePlan->Fetch()) !== FALSE)
 		{
-			return new Rate_Plan(array('Id'=>$arrCurrentServiceRatePlan['RatePlan']), TRUE);
+			return new Service_Rate_Plan($arrCurrentServiceRatePlan);
 		}
 		else
 		{
 			// No Current Plan
 			return NULL;
+		}
+	}
+	
+	/**
+	 * getCurrentPlan()
+	 *
+	 * Gets the current Rate Plan for this Service
+	 *
+	 * @param	string	$strEffectiveDatetime		[optional]	The date to check against
+	 *
+	 * @return	Rate_Plan
+	 *
+	 * @method
+	 */
+	public function getCurrentPlan($strEffectiveDatetime=NULL)
+	{
+		$objServiceRatePlan	= $this->getCurrentServiceRatePlan($strEffectiveDatetime);
+		if ($objServiceRatePlan instanceof Service_Rate_Plan)
+		{
+			return new Rate_Plan(array('Id'=>$objServiceRatePlan->RatePlan), true);
+		}
+		else
+		{
+			// No Current Plan
+			return null;
 		}
 	}
 	
@@ -434,7 +459,7 @@ class Service extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service", "*", "Id = <Id>", NULL, 1);
 					break;
 				case 'selCurrentServiceRatePlan':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan", "RatePlan", "Service = <service_id> AND <effective_datetime> BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan", "*", "Service = <service_id> AND <effective_datetime> BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", 1);
 					break;
 				case 'selFNNInstances':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service", "*", "FNN = <FNN>");
