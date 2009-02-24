@@ -117,7 +117,7 @@ function VixenPlanChangeClass()
 		}
 		
 		// Call AJAX function to return Script HTML
-		var fncJsonFunc	= jQuery.json.jsonFunction(renderAuthScript.bind(this), null, 'Plan', 'renderAuthScript');
+		var fncJsonFunc	= jQuery.json.jsonFunction(renderAuthScript.bind(this), null, 'Rate_Plan', 'renderAuthScript');
 		fncJsonFunc($ID('Service.Id').value, $ID('Combo_NewPlan.Id').value, $ID('Combo_NewPlan.StartTime').value);
 	}
 }
