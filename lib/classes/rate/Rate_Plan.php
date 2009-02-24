@@ -423,8 +423,6 @@ class Rate_Plan extends ORM
 		// New Plan
 		$objVariables->plan->new->name->setValue($this->Name);
 		
-		throw new Exception("DEATH");
-		
 		// Parse the Template, replacing the placeholders with valid data
 		return Document_Template::render($objTemplateContent->content, $objVariables);
 	}

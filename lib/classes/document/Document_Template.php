@@ -41,6 +41,8 @@ class Document_Template
 			throw new Exception("Dataset is in an unhandled format '{$strType}'");
 		}
 		
+		throw new Exception("DEATH2");
+		
 		// Load the Template into a DOMDocument
 		$objXSLTemplate	= new DOMDocument();
 		$objXSLTemplate->load($strTemplate);
@@ -48,7 +50,9 @@ class Document_Template
 		// Process the XSL template and return the rendered document
 		$objXSLTProcessor	= new XSLTProcessor();
 		$objXSLTProcessor->importStylesheet($objXSLTemplate);
-		return $objXSLTProcessor->transformToXML($objDomDocument->getDomDocument());
+		
+		$strXML	= $objXSLTProcessor->transformToXML($objDomDocument->getDomDocument());
+		return $strXML;
 	}
 }
 ?>
