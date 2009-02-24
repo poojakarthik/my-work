@@ -62,6 +62,8 @@ class JSON_Handler_Rate_Plan extends JSON_Handler
 			// Send an Email to Devs
 			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
 			
+			$this->_JSONDebug	.= $e->__toString();
+			
 			return array(
 							"Success"	=> false,
 							"Message"	=> 'ERROR: '.$e->getMessage(),
