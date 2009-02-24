@@ -45,11 +45,12 @@ class Document_Template
 		$objXSLTemplate	= new DOMDocument();
 		$objXSLTemplate->load($strTemplate);
 		
+		
+		throw new Exception("DEATH 3");
+		
 		// Process the XSL template and return the rendered document
 		$objXSLTProcessor	= new XSLTProcessor();
 		$objXSLTProcessor->importStylesheet($objXSLTemplate);
-		
-		throw new Exception("DEATH 3");
 		
 		$strXML	= $objXSLTProcessor->transformToXML($objDomDocument->getDomDocument());
 		
