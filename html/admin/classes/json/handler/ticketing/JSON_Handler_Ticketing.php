@@ -28,7 +28,20 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		{
 			$response['contacts'][] = array('id' => $contact->id, 'name' => $contact->getName());
 		}
-
+		
+		$response['customerGroupEmails'] = array();
+		if ($account !== NULL)
+		{
+			$customerGroupEmails = Ticketing_Customer_Group_Email::listForCustomerGroupId($account->customerGroup);
+			$customerGroupConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($account->customerGroup);
+			foreach ($customerGroupEmails as $customerGroupEmail)
+			{
+				$response['customerGroupEmails'][] = array(	'id'		=> $customerGroupEmail->id,
+															'name'		=> htmlspecialchars("{$customerGroupEmail->name} ({$customerGroupEmail->email})"),
+															'isDefault'	=> (bool)($customerGroupEmail->id == $customerGroupConfig->defaultEmailId)
+														);
+			}
+		}
 		// If an account exists, we need to return a list of services and contacts for it
 		$response['services'] = $account ? $account->listServices() : array();
 

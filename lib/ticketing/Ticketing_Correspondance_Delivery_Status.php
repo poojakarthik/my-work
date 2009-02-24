@@ -27,7 +27,7 @@ class Ticketing_Correspondance_Delivery_Status
 		}
 	}
 
-	public static function getAvailableSourcesForUser($user=NULL)
+	public static function getAvailableStatusesForUser($user=NULL)
 	{
 		if (!$user)
 		{

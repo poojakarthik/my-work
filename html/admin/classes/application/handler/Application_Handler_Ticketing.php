@@ -235,6 +235,7 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		try
 		{
+			TransactionStart();
 			if (!$ticket && $action != 'create')
 			{
 				$detailsToRender['error'] = 'Unable to perform action';
@@ -293,6 +294,13 @@ class Application_Handler_Ticketing extends Application_Handler
 					$ticket = Ticketing_Ticket::createBlank();
 					$ticket->owner = $currentUser;
 					$editableValues[] = 'accountId';
+
+					// Initial correspondence
+					$correspondence = Ticketing_Correspondance::createBlank();
+					$editableValues[] = 'customerGroupEmailId';
+					$editableValues[] = 'sourceId';
+					$editableValues[] = 'deliveryStatusId';
+					$editableValues[] = 'details';
 					
 					if (array_key_exists('accountId', $_REQUEST))
 					{
@@ -332,7 +340,27 @@ class Application_Handler_Ticketing extends Application_Handler
 					{
 						// Validate the passed details and save if valid
 						$validatedValues = array();
+						
+						// Order the editable values so that they are in the same order as the 
+						$editableValuesOrdered = array();
+						foreach ($_REQUEST as $key=>$value)
+						{
+							if (array_search($key, $editableValues) !== FALSE)
+							{
+								$editableValuesOrdered[$key] = $key;
+							}
+						}
+						// Now append any editableValues that weren't present in $_REQUEST
 						foreach ($editableValues as $editableValue)
+						{
+							if (!array_key_exists($editableValue, $editableValuesOrdered))
+							{
+								$editableValuesOrdered[$editableValue] = $editableValue;
+							}
+						}
+						
+						// Looping through $_REQUEST instead of $editableValues, will ensure the order of the properties will match how they appear on the form
+						foreach ($editableValuesOrdered as $editableValue)
 						{
 							$value = array_key_exists($editableValue, $_REQUEST) ? $_REQUEST[$editableValue] : NULL;
 							if ($value !== NULL && !is_array($value))
@@ -475,6 +503,92 @@ class Application_Handler_Ticketing extends Application_Handler
 								case 'serviceId':
 									$ticketServices = is_array($value) ? $value : array();
 									break;
+									
+								case 'customerGroupEmailId':
+									// It is assumed $ticket->accountId has already been processed
+									// Note that if the account has been specified, subsequent calls to $ticket->getAccount will retrieve a cached version of the account object
+									$account = $ticket->getAccount();
+									if ($account !== NULL)
+									{
+										$objEmail = Ticketing_Customer_Group_Email::getForId(intval($value));
+										$arrCustEmails = Ticketing_Customer_Group_Email::listForCustomerGroupId($account->customerGroup);
+										if ($objEmail === NULL)
+										{
+											$invalidValues[$editableValue] = 'You must specify a Customer Group email address to use, for the initial correspondence';
+											break;
+										}
+										
+										// Check that the email is valid for the customer group that the account belongs to
+										foreach ($arrCustEmails as $objCustEmail)
+										{
+											if ($objCustEmail->id == $objEmail->id)
+											{
+												// The email is valid
+												$correspondence->customerGroupEmailId = $objEmail->id;
+												break 2;
+											}
+										}
+										
+										// The Email is not valid for the customer group
+										$invalidValues[$editableValue] = 'You must specify a Customer Group email address to use, for the initial correspondence';
+									}
+									break;
+									
+								case 'sourceId':
+									$objSource				= Ticketing_Correspondance_Source::getForId(intval($value));
+									$arrAvailableSources	= Ticketing_Correspondance_Source::getAvailableSourcesForUser();
+									if ($objSource === NULL)
+									{
+										$invalidValues[$editableValue] = 'You must specify a Source, for the initial correspondence';
+										break;
+									}
+									foreach ($arrAvailableSources as $objAvailableSource)
+									{
+										if ($objAvailableSource->id == $objSource->id)
+										{
+											// The source is valid
+											$correspondence->sourceId = $objSource->id;
+											break 2;
+										}
+									}
+									
+									// The Source is not valid
+									$invalidValues[$editableValue] = "You do not have permission to specify the correspondence source, {$objSource->name}";
+									break;
+									
+								case 'deliveryStatusId':
+									$objStatus				= Ticketing_Correspondance_Delivery_Status::getForId(intval($value));
+									$arrAvailableStatuses	= Ticketing_Correspondance_Delivery_Status::getAvailableStatusesForUser();
+									if ($objStatus === NULL)
+									{
+										$invalidValues[$editableValue] = 'You must specify a delivery status, for the initial correspondence';
+										break;
+									}
+									foreach ($arrAvailableStatuses as $objAvailableStatus)
+									{
+										if ($objAvailableStatus->id == $objStatus->id)
+										{
+											// The status is valid
+											$correspondence->deliveryStatusId = $objStatus->id;
+											break 2;
+										}
+									}
+									
+									// The Status is not valid
+									$invalidValues[$editableValue] = "You do not have permission to specify the correspondence delivery status, {$objStatus->name}";
+									break;
+									
+								case 'details':
+									$strDetails = trim($value);
+									if ($strDetails == "")
+									{
+										$invalidValues[$editableValue] = "The initial correspondence can't be empty";
+									}
+									else
+									{
+										$correspondence->details = $strDetails;
+									}
+									break;
 							}
 						}
 
@@ -489,6 +603,12 @@ class Application_Handler_Ticketing extends Application_Handler
 								if ($account)
 								{
 									$detailsToRender['services'] = $account->listServices();
+									if ($ticket->id == NULL)
+									{
+										// The ticket is being created for the first time, so the form will include the original correspondence
+										$detailsToRender['customerGroupEmails'] = Ticketing_Customer_Group_Email::listForCustomerGroupId($account->customerGroup);
+										$detailsToRender['customerGroupConfig']	= Ticketing_Customer_Group_Config::getForCustomerGroupId($account->customerGroup);
+									}
 								}
 							}
 						}
@@ -502,6 +622,37 @@ class Application_Handler_Ticketing extends Application_Handler
 
 							$ticket->save();
 							$ticket->setServices($ticketServices);
+							
+							// Handle initial correspondence
+							if (isset($correspondence))
+							{
+								// Set default values from the ticket
+								$correspondence->ticketId			= $ticket->id;
+								$correspondence->summary			= $ticket->subject;
+								$correspondence->contactId			= $ticket->contactId;
+								$correspondence->userId				= $ticket->ownerId;
+								$correspondence->creationDatetime	= $ticket->creationDatetime;
+								
+								$initialCorrespondenceCouldNotBeSent = FALSE;
+								if ($correspondence->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT && $correspondence->isEmail() && $correspondence->isOutgoing())
+								{
+									$correspondence->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
+									$initialCorrespondenceCouldNotBeSent = TRUE;
+								}
+								if (!$correspondence->deliveryDatetime && $correspondence->deliveryStatusId != TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT)
+								{
+									// Set the deliveryDatetime to the current timestamp
+									$correspondence->deliveryDatetime = GetCurrentISODateTime();
+								}
+								$correspondence->save();
+								
+								if ($initialCorrespondenceCouldNotBeSent)
+								{
+									// This will notify the user that their initial correspondence could not be sent
+									$detailsToRender['initialCorrespondenceCouldNotBeSent'] = TRUE;
+								}
+							}
+							
 							$detailsToRender['saved'] = TRUE;
 							$action = 'save';
 							
@@ -520,6 +671,12 @@ class Application_Handler_Ticketing extends Application_Handler
 							if ($account)
 							{
 								$detailsToRender['services'] = $account->listServices();
+								if ($ticket->id == NULL)
+								{
+									// The ticket is being created for the first time, so the form will include the original correspondence
+									$detailsToRender['customerGroupEmails'] = Ticketing_Customer_Group_Email::listForCustomerGroupId($account->customerGroup);
+									$detailsToRender['customerGroupConfig']	= Ticketing_Customer_Group_Config::getForCustomerGroupId($account->customerGroup);
+								}
 							}
 						}
 						$detailsToRender['saved'] = FALSE;
@@ -531,9 +688,11 @@ class Application_Handler_Ticketing extends Application_Handler
 				case 'view':
 				default:
 			}
+			TransactionCommit();
 		}
 		catch(Exception $exception)
 		{
+			TransactionRollback();
 			$action = 'error';
 			$detailsToRender['error'] .= ($detailsToRender['error'] ? ': ' : '') . $exception->getMessage();
 		}
@@ -820,7 +979,7 @@ class Application_Handler_Ticketing extends Application_Handler
 							}
 							if (!$correspondence->deliveryDatetime && (!$correspondence->isOutgoing() || $correspondence->isSent()))
 							{
-								$correspondence->deliveryDatetime = date('Y-m-d H:i:s');;
+								$correspondence->deliveryDatetime = GetCurrentISODateTime();
 							}
 							$correspondence->save();
 							if ($sendAfterSave)

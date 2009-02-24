@@ -73,7 +73,7 @@ class Ticketing_Ticket
 		}
 		$objTicket->customerGroupId = $custGroupId;
 		$objTicket->categoryId = Ticketing_Category::TICKETING_CATEGORY_UNCATEGORIZED;
-		$objTicket->creationDatetime = $objTicket->modifiedDatetime = date('Y-m-d H-i-s');
+		$objTicket->creationDatetime = $objTicket->modifiedDatetime = GetCurrentISODateTime();
 
 		// We can check to see if the contact is associated with just one account. 
 		// If so, should we set that account on this correspondence by default?
@@ -198,7 +198,7 @@ class Ticketing_Ticket
 		}
 		$arrValues = $this->getValuesToSave();
 
-		$now = date('Y-m-d H:i:s');
+		$now = GetCurrentISODateTime();
 
 		// No id means that this must be a new record
 		if (!$this->id)
@@ -606,7 +606,7 @@ class Ticketing_Ticket
 
 	public function addCorrespondence($strSubject, $strMessage, $arrAttchments=NULL, $intSource=TICKETING_CORRESPONDANCE_SOURCE_PHONE, $bolInbound=FALSE, $bolAlreadyCommunicated=TRUE, $defaultGroupEmail=NULL, $contactOrUserId=NULL)
 	{
-		$now = date('Y-m-d H:i:s');
+		$now = GetCurrentISODateTime();
 		$arrDetails = array(
 			'source_id' 	=>	$intSource, 	// The source id (TICKETING_CORRESPONDANCE_SOURCE_xxx)
 			'summary'		=>	$strSubject, 	// String summary (single line) (eg: Email subject) of the correspondence

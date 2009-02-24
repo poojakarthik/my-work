@@ -44,6 +44,42 @@
  */
 class AppTemplateAccount extends ApplicationTemplate
 {
+	public static function BuildContextMenu($intAccountId)
+	{
+		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		
+		ContextMenu()->Account->Account_Overview($intAccountId);
+		ContextMenu()->Account->Invoices_And_Payments($intAccountId);
+		ContextMenu()->Account->Services->List_Services($intAccountId);
+		ContextMenu()->Account->Contacts->List_Contacts($intAccountId);
+		ContextMenu()->Account->View_Cost_Centres($intAccountId);
+		if ($bolUserHasOperatorPerm)
+		{
+			ContextMenu()->Account->Services->Add_Services($intAccountId);
+			ContextMenu()->Account->Contacts->Add_Contact($intAccountId);
+			ContextMenu()->Account->Payments->Make_Payment($intAccountId);
+			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
+			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
+			ContextMenu()->Account->Payments->Change_Payment_Method($intAccountId);
+			ContextMenu()->Account->Add_Associated_Account($intAccountId);
+			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
+			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
+			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
+			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL) && count(FlexSale::listForAccountId($intAccountId, NULL, 1)))
+			{
+				// The account has sales associated with it
+				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);
+			}
+		}
+		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
+		if (Flex_Module::isActive(FLEX_MODULE_TICKETING) && Ticketing_User::currentUserIsTicketingUser())
+		{
+			ContextMenu()->Account->Tickets->ViewTicketsForAccount($intAccountId);
+			ContextMenu()->Account->Tickets->AddTicket($intAccountId);
+		}
+		
+	}
+	
 	//------------------------------------------------------------------------//
 	// ViewServices
 	//------------------------------------------------------------------------//
@@ -109,44 +145,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		BreadCrumb()->SetCurrentPage("Services");
 		
 		// context menu
-		ContextMenu()->Account->Account_Overview($intAccountId);
-		ContextMenu()->Account->Invoices_And_Payments($intAccountId);
-		ContextMenu()->Account->Services->List_Services($intAccountId);
-		ContextMenu()->Account->Contacts->List_Contacts($intAccountId);
-		ContextMenu()->Account->View_Cost_Centres($intAccountId);
-		if ($bolUserHasOperatorPerm)
-		{
-			ContextMenu()->Account->Services->Add_Services($intAccountId);
-			ContextMenu()->Account->Contacts->Add_Contact($intAccountId);
-			ContextMenu()->Account->Payments->Make_Payment($intAccountId);
-			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
-			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
-			ContextMenu()->Account->Payments->Change_Payment_Method($intAccountId);
-			ContextMenu()->Account->Add_Associated_Account($intAccountId);
-			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
-			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
-			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
-			if (count(FlexSale::listForAccountId($intAccountId, NULL, 1)))
-			{
-				// The account has sales associated with it
-				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);
-			}
-		}
-		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
-		
-		/*  Currently Operators can view archived services
-		if (!$bolUserHasAdminPerm)
-		{
-			// User does not have admin privileges and therefore cannot view archived services
-			$strWhere = "Account = <Account> AND Status != ". SERVICE_ARCHIVED;
-		}
-		else
-		{
-			// User has admin privileges and can view all services regardless of their status
-			$strWhere = "Account = <Account>";
-		}
-		*/
-		$strWhere = "Account = <Account>";
+		self::BuildContextMenu($intAccountId);
 		
 		// Load all the services belonging to the account, that the user has permission to view
 		DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value, SERVICE_ACTIVE);
@@ -233,30 +232,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$intAccountId = DBO()->Account->Id->Value;
 		
 		// context menu
-		ContextMenu()->Account->Account_Overview($intAccountId);
-		ContextMenu()->Account->Invoices_And_Payments($intAccountId);
-		ContextMenu()->Account->Services->List_Services($intAccountId);
-		ContextMenu()->Account->Contacts->List_Contacts($intAccountId);
-		ContextMenu()->Account->View_Cost_Centres($intAccountId);
-		if ($bolUserHasOperatorPerm)
-		{
-			ContextMenu()->Account->Services->Add_Services($intAccountId);
-			ContextMenu()->Account->Contacts->Add_Contact($intAccountId);
-			ContextMenu()->Account->Payments->Make_Payment($intAccountId);
-			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
-			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
-			ContextMenu()->Account->Payments->Change_Payment_Method($intAccountId);
-			ContextMenu()->Account->Add_Associated_Account($intAccountId);
-			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
-			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
-			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
-			if (count(FlexSale::listForAccountId($intAccountId, NULL, 1)))
-			{
-				// The account has sales associated with it
-				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);
-			}
-		}
-		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
+		self::BuildContextMenu($intAccountId);
 		
 		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list
@@ -394,35 +370,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$intAccountId = DBO()->Account->Id->Value;
 		
 		// context menu
-		ContextMenu()->Account->Account_Overview($intAccountId);
-		ContextMenu()->Account->Invoices_And_Payments($intAccountId);
-		ContextMenu()->Account->Services->List_Services($intAccountId);
-		ContextMenu()->Account->Contacts->List_Contacts($intAccountId);
-		ContextMenu()->Account->View_Cost_Centres($intAccountId);
-		if ($bolUserHasOperatorPerm)
-		{
-			ContextMenu()->Account->Services->Add_Services($intAccountId);
-			ContextMenu()->Account->Contacts->Add_Contact($intAccountId);
-			ContextMenu()->Account->Payments->Make_Payment($intAccountId);
-			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
-			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
-			ContextMenu()->Account->Payments->Change_Payment_Method($intAccountId);
-			ContextMenu()->Account->Add_Associated_Account($intAccountId);
-			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
-			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
-			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
-			if (count(FlexSale::listForAccountId($intAccountId, NULL, 1)))
-			{
-				// The account has sales associated with it
-				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);
-			}
-		}
-		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
-		if (Ticketing_User::currentUserIsTicketingUser() && Flex_Module::isActive(FLEX_MODULE_TICKETING))
-		{
-			ContextMenu()->Account->Tickets->ViewTicketsForAccount($intAccountId);
-			ContextMenu()->Account->Tickets->AddTicket($intAccountId);
-		}
+		self::BuildContextMenu($intAccountId);
 
 		$this->loadInvoices(3);
 

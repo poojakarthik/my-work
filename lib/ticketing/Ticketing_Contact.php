@@ -54,9 +54,9 @@ class Ticketing_Contact
 		if ($ticket)
 		{
 			$ticketContact = $ticket->getContact();
-			if ($ticketContact)
+			if ($ticketContact && !array_key_exists($ticketContact->id, $contacts))
 			{
-				array_unshift($contacts, $ticketContact);
+				$contacts[$ticketContact->id] = $ticketContact;
 			}
 		}
 		return $contacts;
@@ -92,7 +92,7 @@ class Ticketing_Contact
 		$arrContacts = array();
 		while ($arrContact = $selContacts->Fetch())
 		{
-			$arrContacts[] = new self($arrContact);
+			$arrContacts[$arrContact['id']] = new self($arrContact);
 		}
 
 		return $arrContacts;

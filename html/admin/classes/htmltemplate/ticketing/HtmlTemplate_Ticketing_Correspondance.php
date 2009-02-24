@@ -492,7 +492,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								{
 									?><select id="deliveryStatusId" name='deliveryStatusId' class="<?=$invalid?>"><?php
 									$deliveryStatusId = $correspondence->deliveryStatusId ? $correspondence->deliveryStatusId : NULL;
-									$deliveryStatuses = Ticketing_Correspondance_Delivery_Status::getAvailableSourcesForUser();
+									$deliveryStatuses = Ticketing_Correspondance_Delivery_Status::getAvailableStatusesForUser();
 									foreach ($deliveryStatuses as $deliveryStatus)
 									{
 										$selected = $deliveryStatusId == $deliveryStatus->id ? ' selected="selected"' : '';

@@ -22,7 +22,13 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 	private function render_save($ticket)
 	{
-		$this->render_view($ticket, "The ticket has been saved.");
+		// Check if the initial correspondence was an email that couldn't be sent
+		$strWarning = "";
+		if (array_key_exists("initialCorrespondenceCouldNotBeSent", $this->mxdDataToRender) && $this->mxdDataToRender['initialCorrespondenceCouldNotBeSent'])
+		{
+			$strWarning = "<br />WARNING: The initial correspondence has not been sent";
+		}
+		$this->render_view($ticket, "The ticket has been saved.{$strWarning}");
 	}
 
 	private function render_delete($ticket)
@@ -248,6 +254,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					var accountId = $ID('accountId');
 					var ticketId = $ID('ticketId');
 					var serviceId = $ID('serviceId');
+
 					if (accountId.value.length != 10) // WIP: HACK
 					{
 						accountId.className = 'invalid';
@@ -275,6 +282,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					}
 					populateContactList(response['contacts']);
 					populateServiceList(response['services']);
+					populateCustomerGroupEmailList(response['customerGroupEmails']);
 				}
 	
 				function populateContactList(contacts)
@@ -308,6 +316,25 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					}
 				}
 	
+				function populateCustomerGroupEmailList(customerGroupEmails)
+				{
+					var customerGroupEmailId = $ID('customerGroupEmailId');
+					if (customerGroupEmailId != undefined)
+					{
+						emptyElement(customerGroupEmailId);
+						for (var i = 0, l = customerGroupEmails.length; i < l; i++)
+						{
+							var id = customerGroupEmails[i].id;
+							var name = customerGroupEmails[i].name;
+							var option = document.createElement('option');
+							option.value = id;
+							option.selected = customerGroupEmails[i].isDefault;
+							option.appendChild(document.createTextNode(name));
+							customerGroupEmailId.appendChild(option);
+						}
+					}
+				}
+				
 				function emptyElement(el)
 				{
 					for (var i = el.length - 1; i >= 0; i--)
@@ -383,6 +410,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					{
 						return;
 					}
+					
+					accountId.lastAjax = accountId.value;
 	
 					remoteClass = 'Ticketing';
 					remoteMethod = 'validateAccount';
@@ -395,6 +424,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 				}
 			
 				Event.observe(window, 'load', onTicketingLoad, false);
+				
 				//-->
 			</script>
 			<form id="edit_ticket" method="POST" name="edit_ticket" action="<?php echo Flex::getUrlBase() . "reflex.php/Ticketing/Ticket/" . ($ticket->isSaved() ? $ticket->id . '/' : '') . $requestedAction; ?>">
@@ -673,6 +703,92 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						</tr>
 		<?php
 		}
+		if ($requestedAction == "Create")
+		{
+			// Include fields for the initial correspondence object
+			?>
+						<tr class="alt">
+							<td class="title" colspan='2'>Initial Correspondence: </td>
+						</tr>
+						<tr class="alt">
+							<td class="title">Customer Group Email: </td>
+							<td>
+								<?php
+									$invalid = array_key_exists('customerGroupEmailId', $invalidValues) ? 'invalid' : '';
+									?><select id="customerGroupEmailId" name='customerGroupEmailId' class="<?=$invalid?>"><?php
+									$arrCustomerGroupEmails	= array_key_exists('customerGroupEmails', $this->mxdDataToRender)? $this->mxdDataToRender['customerGroupEmails'] : array();
+									$objCustomerGroupConfig	= array_key_exists('customerGroupConfig', $this->mxdDataToRender)? $this->mxdDataToRender['customerGroupConfig'] : NULL;
+									$intCustomerGroupEmailId = NULL;
+									if (array_key_exists('customerGroupEmailId', $_REQUEST))
+									{
+										$intCustomerGroupEmailId = $_REQUEST['customerGroupEmailId'];
+									}
+									elseif ($objCustomerGroupConfig != NULL)
+									{
+										$intCustomerGroupEmailId = $objCustomerGroupConfig->defaultEmailId;
+									}
+									
+									foreach ($arrCustomerGroupEmails as $objCustomerGroupEmail)
+									{
+										$selected = $intCustomerGroupEmailId == $objCustomerGroupEmail->id ? ' selected="selected"' : '';
+										?><option value="<?=$objCustomerGroupEmail->id?>"<?=$selected?>><?=htmlspecialchars($objCustomerGroupEmail->name . ' (' . $objCustomerGroupEmail->email . ')')?></option><?php
+									}
+									?></select>
+							</td>
+						</tr>
+						<tr class="alt">
+							<td class="title">Source: </td>
+							<td>
+								<?php
+									$invalid = array_key_exists('sourceId', $invalidValues) ? 'invalid' : '';
+									?><select id="sourceId" name='sourceId' class="<?=$invalid?>"><?php
+									$intSourceId = NULL;
+									if (array_key_exists('sourceId', $_REQUEST))
+									{
+										$intSourceId = $_REQUEST['sourceId'];
+									}
+									
+									$arrSources = Ticketing_Correspondance_Source::getAvailableSourcesForUser();
+									foreach ($arrSources as $objSource)
+									{
+										$selected = $intSourceId == $objSource->id ? ' selected="selected"' : '';
+										?><option class="<?=$objSource->cssClass?>" value="<?=$objSource->id?>"<?=$selected?>><?=htmlspecialchars($objSource->name)?></option><?php
+									}
+									?></select>
+							</td>
+						</tr>
+						<tr class="alt">
+							<td class="title">Delivery Status: </td>
+							<td>
+								<?php
+									$invalid = array_key_exists('deliveryStatusId', $invalidValues) ? 'invalid' : '';
+									?><select id="deliveryStatusId" name='deliveryStatusId' class="<?=$invalid?>"><?php
+									$intDeliveryStatusId = NULL;
+									if (array_key_exists('deliveryStatusId', $_REQUEST))
+									{
+										$intDeliveryStatusId = $_REQUEST['deliveryStatusId'];
+									}
+									$arrDeliveryStatuses = Ticketing_Correspondance_Delivery_Status::getAvailableStatusesForUser();
+									foreach ($arrDeliveryStatuses as $objDeliveryStatus)
+									{
+										$selected = $intDeliveryStatusId == $objDeliveryStatus->id ? ' selected="selected"' : '';
+										?><option class="<?=$objDeliveryStatus->cssClass?>" value="<?=$objDeliveryStatus->id?>"<?=$selected?>><?=htmlspecialchars($objDeliveryStatus->name)?></option><?php
+									}
+									?></select>
+							</td>
+						</tr>
+						<tr class="alt">
+							<td class="title">Details: </td>
+							<td>
+								<?php
+									$invalid = array_key_exists('details', $invalidValues) ? 'invalid' : '';
+									$strDetails = array_key_exists("details", $_REQUEST)? $_REQUEST['details'] : "";
+									?><textarea id="details" name="details" class="<?=$invalid?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($strDetails)?></textarea>
+							</td>
+						</tr>
+			<?php
+		}
+		
 		?>
 					</tbody>
 					<tfoot>
@@ -742,7 +858,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		?>
 		<br/>
-		<table class="reflex">
+		<table class="reflex highlight-rows">
 			<caption>
 				<div id="caption_bar" name="caption_bar">
 				<div id="caption_title" name="caption_title">
@@ -761,13 +877,9 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					<th>Delivery Status</th>
 					<th>Delivery Date/Time</th>
 					<th>Creation Date/Time</th>
+					<th>Actions</th>
 				</tr>
 			</thead>
-			<tfoot class="footer">
-				<tr>
-					<th colspan="6">&nbsp;</th>
-				</tr>
-			</tfoot>
 			<tbody>
 		<?php
 					if ($noCorrespondences)
@@ -790,6 +902,15 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							$sourceName = $correspondence->getSource()->name;
 							$deliveryStatusName = $correspondence->getDeliveryStatus()->name;
 							$link = Flex::getUrlBase() . 'reflex.php/Ticketing/Correspondence/' . $correspondence->id . '/View';
+							
+							$arrActions = array();
+							if ($correspondence->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT && $correspondence->isEmail() && $correspondence->isOutgoing())
+							{
+								// The user can send the email
+								$arrActions[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/Send\">Send</a>";
+							}
+							$strActions = implode(" | ", $arrActions);
+							
 		?>
 				<tr<?=$altClass?>>
 					<td><a href="<?=$link?>"><?=$correspondence->summary ? $correspondence->summary : '<em>[No Subject]</em>'?></a></td>
@@ -798,12 +919,18 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					<td><?=$deliveryStatusName?></td>
 					<td><?=$correspondence->deliveryDatetime?></td>
 					<td><?=$correspondence->creationDatetime?></td>
+					<td><?=$strActions?></td>
 				</tr>
 		<?php
 						}
 					}
 		?>
 			</tbody>
+			<tfoot class="footer">
+				<tr>
+					<th colspan="7">&nbsp;</th>
+				</tr>
+			</tfoot>
 		</table>
 
 		<?php

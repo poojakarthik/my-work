@@ -168,7 +168,7 @@ class Ticketing_Correspondance
 		
 		if (!array_key_exists('creation_datetime', $arrDetails) || !$arrDetails['creation_datetime'])
 		{
-			$objCorrespondence->creationDatetime = date('Y-m-d H:i:s');
+			$objCorrespondence->creationDatetime = GetCurrentISODateTime();
 		}
 		else
 		{
@@ -540,7 +540,7 @@ class Ticketing_Correspondance
 		$email->send();
 
 		$this->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT;
-		$this->deliveryDatetime = date("Y-m-d H:i:s");
+		$this->deliveryDatetime = GetCurrentISODateTime();
 		$this->_saved = FALSE;
 		$this->save();
 	}
@@ -571,8 +571,8 @@ class Ticketing_Correspondance
 			return TRUE;
 		}
 		$arrValues = $this->getValuesToSave();
-
-		$now = date('Y-m-d H:i:s');
+		
+		$now = GetCurrentISODateTime();
 
 		// No id means that this must be a new record
 		if (!$this->id)
