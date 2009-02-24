@@ -101,8 +101,8 @@ function VixenPlanChangeClass()
 	{
 		renderAuthScript	= function(objResponse)
 		{
-			var strHTML	=	"<div class='GroupedContent'>\n" +
-							objResponse.strHTML
+			var strHTML	=	"<div class='GroupedContent' style='height:50em; overflow-y:scroll;'>\n" +
+							objResponse.strHTML +
 							"</div>\n" + 
 							"<div class='GroupedContent'>\n" +
 							"	Clicking the <span style='font-weight: bold;'>Agree</span> button will continue with the Plan Change.  Clicking the <span style='font-weight: bold;'>Disagree</span> button will abort the Plan Change." +
