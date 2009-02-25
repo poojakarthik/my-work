@@ -49,6 +49,49 @@ class Application_Handler_Ticketing extends Application_Handler
 			$ownerId = $user->id;
 		}
 
+		// Handle viewing the ticket functionality in the context of a single declared account
+		if (array_key_exists("Account", $_REQUEST))
+		{
+			$objAccount = Account::getForId(intval($_REQUEST['Account']));
+			if ($objAccount == NULL)
+			{
+				// Account cannot be found so assume the user wants to view all accounts
+				$_SESSION['ticketing']['accountId'] = NULL;
+				unset($_SESSION['ticketing']['accountId']);
+			}
+			else
+			{
+				// All ticketing functionality should be limitted to this account.  Update it in the session
+				$_SESSION['ticketing']['accountId'] = $objAccount->id;
+			}
+		}
+		if (array_key_exists('ticketing', $_SESSION) && is_array($_SESSION['ticketing']) && array_key_exists('accountId', $_SESSION['ticketing']))
+		{
+			// Grab a reference to the account
+			$objAccount = Account::getForId($_SESSION['ticketing']['accountId']);
+		}
+		else
+		{
+			// Set it as being null
+			$objAccount = NULL;
+		}
+
+		if ($objAccount != NULL)
+		{
+			// Set up the breadcrumb menu and the context menu, specific to the account
+			BreadCrumb()->EmployeeConsole();
+			BreadCrumb()->AccountOverview($objAccount->id, TRUE);
+			BreadCrumb()->SetCurrentPage("Tickets");
+			
+			AppTemplateAccount::BuildContextMenu($objAccount->id);
+		}
+		else
+		{
+			// Generic breadcrumb menu and context menu
+			BreadCrumb()->EmployeeConsole();
+			BreadCrumb()->SetCurrentPage($bolOwnTickets ? "My Tickets" : "Tickets");
+		}
+
 		// If this search is based on last search, default all search settings to be those of the last search
 		if (($pathToken == 'last' || array_key_exists('last', $_REQUEST)) && array_key_exists('ticketing', $_SESSION) && array_key_exists('lastTicketList', $_SESSION['ticketing']))
 		{
@@ -151,7 +194,11 @@ class Application_Handler_Ticketing extends Application_Handler
 		{
 			$filter['categoryId'] = array('value' => $categoryId, 'comparison' => '=');
 		}
-
+		if ($objAccount !== NULL)
+		{
+			// This list of tickets should only include those associated with $objAccount
+			$filter['accountId'] = array('value' => $objAccount->id, 'comparison' => '=');
+		}
 
 		$detailsToRender = array();
 		$detailsToRender['columns'] = $columns;
@@ -174,10 +221,6 @@ class Application_Handler_Ticketing extends Application_Handler
 
 		$detailsToRender['quickSearch'] = $quickSearch;
 		
-		BreadCrumb()->EmployeeConsole();
-		BreadCrumb()->SetCurrentPage($bolOwnTickets ? "My Tickets" : "Tickets");
-
-
 		$detailsToRender['offset'] = $offset;
 		$detailsToRender['limit'] = $limit;
 

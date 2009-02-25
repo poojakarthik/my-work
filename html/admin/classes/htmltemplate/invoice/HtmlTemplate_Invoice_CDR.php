@@ -11,6 +11,9 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 
 	public function Render()
 	{
+		$strUnitType = array_key_exists($this->mxdDataToRender['DisplayType'], $GLOBALS['*arrConstant']['DisplayTypeSuffix'])? $GLOBALS['*arrConstant']['DisplayTypeSuffix'][$this->mxdDataToRender['DisplayType']]['Description'] : "Unit(s)";
+		$strUnits = intval($this->mxdDataToRender['Units']) ." ". $strUnitType;
+		
 		echo "
 <table class='reflex'>
 	<caption>
@@ -68,14 +71,10 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 			<td>End Date/Time: </td>
 			<td>". htmlspecialchars($this->tidyDateTime($this->mxdDataToRender['EndDatetime'])) . "</td>
 		</tr>
-		" . 
-		
-		(Flex::authenticatedUserIsGod() ? ("<tr>
-			<td>Cost: </td>
-			<td>". htmlspecialchars($this->tidyAmount($this->mxdDataToRender['Cost'])) . "</td>
-		</tr>") : "")
-		
-		. "
+		<tr>
+			<td>Total Units: </td>
+			<td>". htmlspecialchars($strUnits) . "</td>
+		</tr>
 		<tr>
 			<td>Status: </td>
 			<td>". htmlspecialchars($this->mxdDataToRender['Status']) . "</td>
@@ -92,6 +91,14 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 			<td>Record Type: </td>
 			<td>". htmlspecialchars($this->mxdDataToRender['RecordType']) . "</td>
 		</tr>
+		" . 
+		
+		(Flex::authenticatedUserIsGod() ? ("<tr>
+			<td>Cost: </td>
+			<td>". htmlspecialchars($this->tidyAmount($this->mxdDataToRender['Cost'])) . "</td>
+		</tr>") : "")
+		
+		. "
 		<tr>
 			<td>Charge: </td>
 			<td>". htmlspecialchars($this->tidyAmount($this->mxdDataToRender['Charge'])) . "</td>
