@@ -459,9 +459,9 @@ class Rate_Plan extends ORM
 								GetConstantDescription($objServiceAddress->ServiceStreetType, 'ServiceStreetType'). " " .
 								"{$objServiceAddress->ServiceStreetTypeSuffix}\n";
 			
-			$strFullAddress	=	(trim($strProperty)		? $strProperty.'<br />'		: '') . 
-								(trim($strAddressType)	? $strAddressType.'<br />'	: '') . 
-								(trim($strAddress)		? $strAddress.'<br />'		: '') . 
+			$strFullAddress	=	(trim($strProperty)		? $strProperty				: '') . 
+								(trim($strAddressType)	? $strAddressType			: '') . 
+								(trim($strAddress)		? $strAddress				: '') . 
 								"{$objServiceAddress->ServiceLocality}   " .
 								"{$objServiceAddress->ServiceState}   " .
 								"{$objServiceAddress->ServicePostcode}";
