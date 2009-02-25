@@ -439,8 +439,8 @@ class Rate_Plan extends ORM
 		// Previous Plan
 		$objVariables->plan->previous->name->setValue($objOldRatePlan->Name);
 		$objVariables->plan->previous->is_contracted->setValue($objRatePlanPrevious->contract_scheduled_end_datetime !== null && $objRatePlanPrevious->contract_effective_end_datetime === null);
-		$objVariables->plan->previous->months_remaining->setValue(Flex_Date::difference($objRatePlanPrevious->contract_scheduled_end_datetime, date("Y-m-d", $intTime), 'm', 'ceil')+1);
-		$objVariables->plan->previous->start_date->setValue(date($strDateFormat, strtotime($objRatePlanPrevious->StartDatetime)));
+		$objVariables->plan->previous->contract->months_remaining->setValue(Flex_Date::difference($objRatePlanPrevious->contract_scheduled_end_datetime, date("Y-m-d", $intTime), 'm', 'ceil')+1);
+		$objVariables->plan->previous->contract->start_date->setValue(date($strDateFormat, strtotime($objRatePlanPrevious->StartDatetime)));
 		
 		// New Plan
 		$objVariables->plan->new->name->setValue($this->Name);
@@ -456,14 +456,14 @@ class Rate_Plan extends ORM
 								($objServiceAddress->ServiceStreetNumberEnd ? "-{$objServiceAddress->ServiceStreetNumberEnd}" : '').
 								"{$objServiceAddress->ServiceStreetNumberSuffix} " .
 								"{$objServiceAddress->ServiceStreetName} " .
-								"{$objServiceAddress->ServiceStreetType} " .
+								GetConstantDescription($objServiceAddress->ServiceStreetType, 'ServiceStreetType'). " " .
 								"{$objServiceAddress->ServiceStreetTypeSuffix}\n";
 			
 			$strFullAddress	=	(trim($strProperty)		? $strProperty.'<br />'		: '') . 
 								(trim($strAddressType)	? $strAddressType.'<br />'	: '') . 
 								(trim($strAddress)		? $strAddress.'<br />'		: '') . 
-								"{$objServiceAddress->ServiceLocality}&#160;&#160;&#160;" .
-								"{$objServiceAddress->ServiceState}&#160;&#160;&#160;" .
+								"{$objServiceAddress->ServiceLocality}   " .
+								"{$objServiceAddress->ServiceState}   " .
 								"{$objServiceAddress->ServicePostcode}";
 		}
 		$objVariables->service->has_address->setValue(in_array($objService->ServiceType, array(SERVICE_TYPE_LAND_LINE)));
