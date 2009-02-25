@@ -244,7 +244,7 @@ class Application_Handler_Invoice extends Application_Handler
 			if ($dataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
 			{
 				$sqlCdr = "
-					SELECT t.Name as \"RecordType\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.EndDatetime as \"EndDatetime\", c.StartDatetime as \"StartDatetime\", c.Units as \"Currency\", c.Charge as \"Charge\",
+					SELECT t.Name as \"RecordType\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.EndDatetime as \"EndDatetime\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", t.DisplayType as \"DisplayType\", c.Charge as \"Charge\",
 						   c.File as \"FileId\", c.Carrier as \"CarrierId\", c.CarrierRef as \"CarrierRef\", c.Cost as \"Cost\", c.Status as \"Status\", c.DestinationCode as \"DestinationCode\", c.Rate as \"RateId\", c.NormalisedOn as \"NormalisedOn\", c.RatedOn as \"RatedOn\", c.SequenceNo as \"SequenceNo\", c.Credit as \"Credit\", c.CDR as \"RawCDR\"
 					  FROM CDR c INNER JOIN RecordType t ON c.RecordType = t.Id
 					 WHERE invoice_run_id = $intInvoiceRunId
@@ -254,7 +254,7 @@ class Application_Handler_Invoice extends Application_Handler
 			else
 			{
 				$sqlCdr = "
-					SELECT t.name as \"RecordType\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.end_date_time as \"EndDatetime\", c.start_date_time as \"StartDatetime\", c.units as \"Currency\", c.charge as \"Charge\",
+					SELECT t.name as \"RecordType\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.end_date_time as \"EndDatetime\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", t.display_type as \"DisplayType\", c.charge as \"Charge\",
 						   c.file as \"FileId\", c.carrier as \"CarrierId\", c.carrier_ref as \"CarrierRef\", c.cost as \"Cost\", c.status as \"Status\", c.destination_code as \"DestinationCode\", c.rate as \"RateId\", c.normalised_on as \"NormalisedOn\", c.rated_on as \"RatedOn\", c.sequence_no as \"SequenceNo\", c.credit as \"Credit\", c.cdr as \"RawCDR\"
 					  FROM cdr_invoiced c INNER JOIN record_type t ON c.record_type = t.id
 					 WHERE invoice_run_id = $intInvoiceRunId
@@ -362,6 +362,9 @@ class Application_Handler_Invoice extends Application_Handler
 			$arrDetailsToRender['SequenceNo'] 		= $arrCDR['SequenceNo'];
 			$arrDetailsToRender['Credit'] 			= $arrCDR['Credit'];
 			$arrDetailsToRender['RawCDR'] 			= $arrCDR['RawCDR'];
+			$arrDetailsToRender['Units'] 			= $arrCDR['Units'];
+			$arrDetailsToRender['DisplayType'] 		= $arrCDR['DisplayType'];
+			
 
 
 			$this->LoadPage('Invoice_CDR', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
