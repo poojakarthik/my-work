@@ -71,14 +71,7 @@ class Flex_Rollout_Version_000143 extends Flex_Rollout_Version
 								"CHANGE description		Description	VARCHAR(255)				NOT NULL					COMMENT 'Carrier Call Type Description';";
 		
 		// 3:	Rename DocumentResourceTypeFileType and its Fields to underscored naming convention
-		$strSQL =	"ALTER TABLE DocumentResourceTypeFileType " .
-					"RENAME document_resource_type_file_type, " .
-					"CHANGE Id				id							BIGINT(20)	UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier', " .
-					"CHANGE ResourceType	document_resource_type_id	BIGINT(20)	UNSIGNED	NOT NULL					COMMENT '(FK) Document Resource Type', " .
-					"CHANGE FileType		file_type_id				BIGINT(20)	UNSIGNED	NOT NULL					COMMENT '(FK) File Type', " .
-					"\n" .
-					"ADD CONSTRAINT fk_document_resource_type_file_type_document_resource_type_id	FOREIGN KEY	(document_resource_type_id) REFERENCES DocumentResourceType(Id)	ON UPDATE CASCADE ON DELETE CASCADE, " .
-					"ADD CONSTRAINT fk_document_resource_type_file_type_file_type_id				FOREIGN KEY	(file_type_id) 				REFERENCES FileType(Id)				ON UPDATE CASCADE ON DELETE RESTRICT;" .
+		$strSQL =	"ALTER TABLE DocumentResourceTypeFileType RENAME document_resource_type_file_type, CHANGE Id				id							BIGINT(20)	UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier', CHANGE ResourceType	document_resource_type_id	BIGINT(20)	UNSIGNED	NOT NULL					COMMENT '(FK) Document Resource Type', CHANGE FileType		file_type_id				BIGINT(20)	UNSIGNED	NOT NULL					COMMENT '(FK) File Type', ADD CONSTRAINT fk_document_resource_type_file_type_document_resource_type_id	FOREIGN KEY	(document_resource_type_id) REFERENCES DocumentResourceType(Id)	ON UPDATE CASCADE ON DELETE CASCADE, ADD CONSTRAINT fk_document_resource_type_file_type_file_type_id				FOREIGN KEY	(file_type_id) 				REFERENCES FileType(Id)				ON UPDATE CASCADE ON DELETE RESTRICT;" .
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
