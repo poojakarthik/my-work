@@ -142,7 +142,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 				$objFileType		= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
 				
 				$strImageSrc		= "../admin/img/template/script.png";
-				$strAuthScriptLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['voice_auth_document_id']}";
+				$strAuthScriptLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
 				$strAuthScriptCell	= "<a href='{$strAuthScriptLink}' title='Download Authorisation Script'><img src='{$strImageSrc}' alt='Download Authorisation Script' /> Download</a>";
 			}
 		}
