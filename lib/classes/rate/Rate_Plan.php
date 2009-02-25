@@ -390,8 +390,12 @@ class Rate_Plan extends ORM
 		$objTemplateContent	= $objTemplate->getContent();
 		
 		// Get the Current Auth Script Blurb
-		$objBlurb			= new Document(array('id'=>$this->auth_script_document_id));
-		$objBlurbContent	= $objBlurb->getContent();
+		$strBlurb	= "There are no additional details specified in Flex for this Plan.";
+		if ($objBlurb = new Document(array('id'=>$this->auth_script_document_id)))
+		{
+			$objBlurbContent	= $objBlurb->getContent();
+			$strBlurb			= trim($objBlurbContent->content);
+		}
 		
 		$objOldRatePlan		= new Rate_Plan(array('Id'=>$objRatePlanPrevious->RatePlan), true);
 		
@@ -434,7 +438,7 @@ class Rate_Plan extends ORM
 		
 		// New Plan
 		$objVariables->plan->new->name->setValue($this->Name);
-		$objVariables->plan->new->blurb->setValue(str_replace("\n", "<br />\n", $objBlurbContent->content));
+		$objVariables->plan->new->blurb->setValue(str_replace("\n", "<br />\n", $strBlurb));
 		
 		// Service
 		$strFullAddress	= "No Address Specified in Flex.";
