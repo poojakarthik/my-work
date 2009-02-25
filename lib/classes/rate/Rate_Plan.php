@@ -437,9 +437,10 @@ class Rate_Plan extends ORM
 		$objVariables->account->contact->email->setValue($objContact->email);
 		
 		// Previous Plan
+		$bolIsContracted	= $objRatePlanPrevious->contract_scheduled_end_datetime !== null && $objRatePlanPrevious->contract_effective_end_datetime === null;
 		$objVariables->plan->previous->name->setValue($objOldRatePlan->Name);
-		$objVariables->plan->previous->is_contracted->setValue($objRatePlanPrevious->contract_scheduled_end_datetime !== null && $objRatePlanPrevious->contract_effective_end_datetime === null);
-		if ($objVariables->plan->previous->is_contracted)
+		$objVariables->plan->previous->is_contracted->setValue($bolIsContracted);
+		if ($bolIsContracted)
 		{
 			$objVariables->plan->previous->contract->months_remaining->setValue(Flex_Date::difference(date("Y-m-d", $intTime), $objRatePlanPrevious->contract_scheduled_end_datetime, 'm', 'ceil') + 1);
 			$objVariables->plan->previous->contract->start_date->setValue(date($strDateFormat, strtotime($objRatePlanPrevious->StartDatetime)));
