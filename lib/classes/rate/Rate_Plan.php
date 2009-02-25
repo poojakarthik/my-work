@@ -398,7 +398,7 @@ class Rate_Plan extends ORM
 		$objEmployee		= Employee::getForId(Flex::getUserId());
 		$objCustomerGroup	= Customer_Group::getForId($this->customer_group);
 		$objService			= new Service(array('Id' => $objRatePlanPrevious->Service), true);
-		$objServiceAddress	= $objServiceAddress->getServiceAddress();
+		$objServiceAddress	= $objService->getServiceAddress();
 		
 		$intTime			= time();
 		$strDateFormat		= "jS F, Y";
