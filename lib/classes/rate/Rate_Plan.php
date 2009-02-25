@@ -383,7 +383,7 @@ class Rate_Plan extends ORM
 	 *
 	 * @method
 	 */
-	public function parseAuthenticationScript(Account $objAccount, Service_Rate_Plan $objRatePlanPrevious)
+	public function parseAuthenticationScript(Account $objAccount, Contact $objContact, Service_Rate_Plan $objRatePlanPrevious)
 	{
 		// Get the current Template
 		$objTemplate		= Document::getByPath("/Authorisation Scripts/Template");
@@ -397,6 +397,9 @@ class Rate_Plan extends ORM
 		
 		$objEmployee		= Employee::getForId(Flex::getUserId());
 		$objCustomerGroup	= Customer_Group::getForId($this->customer_group);
+		$objService			= new Service(array('Id' => $objRatePlanPrevious->Service), true);
+		$objServiceAddress	= $objServiceAddress->getServiceAddress();
+		
 		$intTime			= time();
 		$strDateFormat		= "jS F, Y";
 		$strTimeFormat		= "h:i a";
@@ -414,7 +417,14 @@ class Rate_Plan extends ORM
 		$objVariables->datetime->today->time->setValue(date($strTimeFormat, $intTime));
 		
 		// Account
+		$objVariables->account->id->setValue($objAccount->Id);
 		$objVariables->account->business_name->setValue($objAccount->BusinessName);
+		
+		// Contact
+		$dtDOB	= new DateTime($objContact->DOB);
+		$objVariables->account->contact->name->setValue($objContact->firstName . ' ' . $objContact->lastName);
+		$objVariables->account->contact->date_of_birth->setValue($dtDOB->format("d/m/Y"));
+		$objVariables->account->contact->email->setValue($objContact->email);
 		
 		// Previous Plan
 		$objVariables->plan->previous->name->setValue($objOldRatePlan->Name);
@@ -425,6 +435,29 @@ class Rate_Plan extends ORM
 		// New Plan
 		$objVariables->plan->new->name->setValue($this->Name);
 		$objVariables->plan->new->blurb->setValue(str_replace("\n", "<br />\n", $objBlurbContent->content));
+		
+		// Service
+		$strFullAddress	= "No Address Specified in Flex.";
+		if ($objServiceAddress)
+		{
+			$strAddressType	= GetConstantDescription($objServiceAddress->ServiceAddressType, 'ServiceAddrType')." {$objServiceAddress->ServiceAddressTypeNumber}{$objServiceAddress->ServiceAddressTypeSuffix}\n";
+			$strProperty	= "{$objServiceAddress->ServicePropertyName}\n";
+			$strAddress		=	"{$objServiceAddress->ServiceStreetNumberStart} ".
+								($objServiceAddress->ServiceStreetNumberEnd ? "-{$objServiceAddress->ServiceStreetNumberEnd}" : '').
+								"{$objServiceAddress->ServiceStreetNumberSuffix} " .
+								"{$objServiceAddress->ServiceStreetName} " .
+								"{$objServiceAddress->ServiceStreetType} " .
+								"{$objServiceAddress->ServiceStreetTypeSuffix}\n";
+			
+			$strFullAddress	=	(trim($strProperty)		? $strProperty.'<br />'		: '') . 
+								(trim($strAddressType)	? $strAddressType.'<br />'	: '') . 
+								(trim($strAddress)		? $strAddress.'<br />'		: '') . 
+								"{$objServiceAddress->ServiceLocality}&#160;&#160;&#160;" .
+								"{$objServiceAddress->ServiceState}&#160;&#160;&#160;" .
+								"{$objServiceAddress->ServicePostcode}";
+		}
+		$objVariables->service->has_address->setValue(in_array($objService->ServiceType, array(SERVICE_TYPE_LAND_LINE)));
+		$objVariables->service->full_address->setValue($strFullAddress);
 		
 		// Parse the Template, replacing the placeholders with valid data
 		return Document_Template::render($objTemplateContent->content, $objVariables);

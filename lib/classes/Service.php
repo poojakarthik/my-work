@@ -427,6 +427,34 @@ class Service extends ORM
 		}
 	}
 	
+	/**
+	 * getServiceAddress()
+	 *
+	 * Gets the Service Address details for this Service
+	 * 
+	 * @return	Service_Address
+	 *
+	 * @method
+	 */
+	public function getServiceAddress()
+	{
+		$selServiceAddress	= self::_preparedStatement("selServiceAddress");
+		$mixResult			= $selServiceAddress->Execute($this->toArray());
+		if ($mixResult === false)
+		{
+			throw new Exception($selServiceAddress->Error());
+		}
+		elseif ($arrServiceAddress = $selServiceAddress->Fetch())
+		{
+			return new Service_Address($arrServiceAddress);
+		}
+		else
+		{
+			// No Service Address Data
+			return null;
+		}
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -463,6 +491,9 @@ class Service extends ORM
 					break;
 				case 'selFNNInstances':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service", "*", "FNN = <FNN>");
+					break;
+				case 'selServiceAddress':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceAddress", "*", "Service = <Id>");
 					break;
 				
 				// INSERTS

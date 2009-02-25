@@ -37,18 +37,19 @@ class JSON_Handler_Rate_Plan extends JSON_Handler
 		}
 	}
 	
-	public function renderAuthScript($intServiceId, $intNewPlanId, $bolStartNextMonth)
+	public function renderAuthScript($intServiceId, $intNewPlanId, $bolStartNextMonth, $intContactId)
 	{
 		try
 		{
-			// Load the Plan, Service, and Account
+			// Load the Plan, Service, Account, and Contact
 			$objNewPlan			= new Rate_Plan(array('Id'=>(int)$intNewPlanId), true);
 			$objService			= new Service(array('Id'=>(int)$intServiceId), true);
 			$objAccount			= new Account(array('Id'=>$objService->Account), false, true);
+			$objContact			= Contact::getForId($intContactId);
 			$objServiceRatePlan	= $objService->getCurrentServiceRatePlan();
 			
 			// Parse the Auth Script
-			$strHTML	= $objNewPlan->parseAuthenticationScript($objAccount, $objServiceRatePlan);
+			$strHTML	= $objNewPlan->parseAuthenticationScript($objAccount, $objContact, $objServiceRatePlan);
 			
 			// If no exceptions were thrown, then everything worked
 			return array(

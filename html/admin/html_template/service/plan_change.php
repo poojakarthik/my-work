@@ -73,6 +73,21 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		}
 		
 		DBO()->Service->FNN->RenderOutput();
+		
+		// Build the Contacts combobox
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Authorising Contact :</div>\n";
+		echo "   <div class='DefaultOutput'>\n";
+		echo "      <select id='Combo_Contact.Id' name='Contact.Id' style='width:90%'>\n";
+		foreach (DBL()->Contact as $dboContact)
+		{
+			$strSelected = (DBO()->Account->PrimaryContact->Value == $dboContact->Id->Value) ? 'selected' : '';
+			echo "<option value='{$dboContact->Id->Value}' $strSelected>{$dboContact->FirstName->Value} {$dboContact->LastName->Value}</option>\n";
+		}
+		echo "      </select>\n";
+		echo "   </div>\n";
+		echo "</div>\n";
+		
 		DBO()->Service->Status->RenderCallback("GetConstantDescription", Array("service_status"), RENDER_OUTPUT);		
 		
 		

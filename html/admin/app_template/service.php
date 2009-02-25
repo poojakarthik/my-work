@@ -2954,6 +2954,11 @@ class AppTemplateService extends ApplicationTemplate
 		DBL()->RatePlan->OrderBy("Name");
 		DBL()->RatePlan->Load();
 		
+		// Retrieve all active Contacts for this Account
+		DBL()->Contact->Where->Set("Account = <Account> AND Archived = 0", array('Account' => DBO()->Account->Id->Value));
+		DBL()->Contact->OrderBy("FirstName, LastName");
+		DBL()->Contact->Load();
+		
 		// Set the default for the scheduled start time of the new plan
 		// Defaults to "Start billing at begining of next billing period"
 		DBO()->NewPlan->StartTime = 1;
