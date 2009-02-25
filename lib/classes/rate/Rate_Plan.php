@@ -442,7 +442,8 @@ class Rate_Plan extends ORM
 		$objVariables->plan->previous->is_contracted->setValue($bolIsContracted);
 		if ($bolIsContracted)
 		{
-			$objVariables->plan->previous->contract->months_remaining->setValue(Flex_Date::difference(date("Y-m-d", $intTime), $objRatePlanPrevious->contract_scheduled_end_datetime, 'm', 'ceil') + 1);
+			$intMonthsRemaining	= Flex_Date::difference(date("Y-m-d", $intTime), $objRatePlanPrevious->contract_scheduled_end_datetime, 'm', 'ceil') + 1;
+			$objVariables->plan->previous->contract->months_remaining->setValue($intMonthsRemaining . " month" . (($intMonthsRemaining == 1) ? '' : 's'));
 			$objVariables->plan->previous->contract->start_date->setValue(date($strDateFormat, strtotime($objRatePlanPrevious->StartDatetime)));
 		}
 		
