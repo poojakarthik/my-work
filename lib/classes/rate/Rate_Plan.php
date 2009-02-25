@@ -385,6 +385,11 @@ class Rate_Plan extends ORM
 	 */
 	public function parseAuthenticationScript(Account $objAccount, Contact $objContact, Service_Rate_Plan $objRatePlanPrevious)
 	{
+		$strOriginalTimezone	= date_default_timezone_get();
+		date_default_timezone_set("Australia/Brisbane");
+		$intTime			= time();
+		date_default_timezone_set($strOriginalTimezone);
+		
 		// Get the current Template
 		$objTemplate		= Document::getByPath("/Authorisation Scripts/Template");
 		$objTemplateContent	= $objTemplate->getContent();
@@ -405,7 +410,6 @@ class Rate_Plan extends ORM
 		$objService			= new Service(array('Id' => $objRatePlanPrevious->Service), true);
 		$objServiceAddress	= $objService->getServiceAddress();
 		
-		$intTime			= time();
 		$strDateFormat		= "jS F, Y";
 		$strTimeFormat		= "h:i a";
 		
