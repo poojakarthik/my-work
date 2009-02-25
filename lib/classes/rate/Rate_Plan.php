@@ -395,7 +395,7 @@ class Rate_Plan extends ORM
 		$objTemplateContent	= $objTemplate->getContent();
 		
 		// Get the Current Auth Script Blurb
-		$strBlurb	= "There are no additional details specified in Flex for this Plan.";
+		$strBlurb	= "[ There are no additional details specified in Flex for this Plan ]";
 		if ($this->auth_script_document_id)
 		{
 			$objBlurb 			= new Document(array('id'=>$this->auth_script_document_id));
@@ -433,7 +433,7 @@ class Rate_Plan extends ORM
 		// Contact
 		$dtDOB	= new DateTime($objContact->DOB);
 		$objVariables->account->contact->name->setValue($objContact->firstName . ' ' . $objContact->lastName);
-		$objVariables->account->contact->date_of_birth->setValue($dtDOB->format("d/m/Y"));
+		$objVariables->account->contact->date_of_birth->setValue(($objContact->DOB) ? $dtDOB->format("d/m/Y") : '[ No DOB Specified ]');
 		$objVariables->account->contact->email->setValue($objContact->email);
 		
 		// Previous Plan
@@ -452,7 +452,7 @@ class Rate_Plan extends ORM
 		$objVariables->plan->new->blurb->setValue(str_replace("\n", "<br />\n", $strBlurb));
 		
 		// Service
-		$strFullAddress	= "No Address Specified in Flex.";
+		$strFullAddress	= "[ No Address Specified in Flex ]";
 		if ($objServiceAddress)
 		{
 			$strAddressType	= GetConstantDescription($objServiceAddress->ServiceAddressType, 'ServiceAddrType')." {$objServiceAddress->ServiceAddressTypeNumber}{$objServiceAddress->ServiceAddressTypeSuffix}\n";
