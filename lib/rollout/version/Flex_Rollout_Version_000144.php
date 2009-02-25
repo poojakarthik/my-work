@@ -31,10 +31,10 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 		// 1:	Add the product_type_nature Table
 		$strSQL = "	CREATE TABLE product_type_nature
 					(
-						id			BIGINT(20)		NOT NULL	UNSIGNED	AUTO_INCREMENT	COMMENT 'Unique Indentifier',
-						name		VARCHAR(255)	NOT NULL								COMMENT 'Name of the Product Type Nature',
-						description	VARCHAR(1024)	NOT NULL								COMMENT 'Description of the Product Type Nature',
-						const_name	VARCHAR(512)	NOT NULL								COMMENT 'Constant Name of the Product Type Nature',
+						id			BIGINT(20)		UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Indentifier',
+						name		VARCHAR(255)				NOT NULL					COMMENT 'Name of the Product Type Nature',
+						description	VARCHAR(1024)				NOT NULL					COMMENT 'Description of the Product Type Nature',
+						const_name	VARCHAR(512)				NOT NULL					COMMENT 'Constant Name of the Product Type Nature',
 						
 						CONSTRAINT	pk_product_type_nature_id	PRIMARY KEY	(id)
 					);";
@@ -59,11 +59,11 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 		// 3:	Add the product_type Table
 		$strSQL = "	CREATE TABLE product_type
 					(
-						id						BIGINT(20)		NOT NULL	UNSIGNED	AUTO_INCREMENT	COMMENT 'Unique Indentifier',
-						name					VARCHAR(255)	NOT NULL								COMMENT 'Name of the Product Type',
-						description				VARCHAR(1024)	NOT NULL								COMMENT 'Description of the Product Type',
-						const_name				VARCHAR(512)	NOT NULL								COMMENT 'Constant Name of the Product Type',
-						product_type_nature_id	BIGINT(20)		NOT NULL	UNSIGNED					COMMENT '(FK) Nature of this Product Type',
+						id						BIGINT(20)		UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Indentifier',
+						name					VARCHAR(255)				NOT NULL					COMMENT 'Name of the Product Type',
+						description				VARCHAR(1024)				NOT NULL					COMMENT 'Description of the Product Type',
+						const_name				VARCHAR(512)				NOT NULL					COMMENT 'Constant Name of the Product Type',
+						product_type_nature_id	BIGINT(20)		UNSIGNED	NOT NULL					COMMENT '(FK) Nature of this Product Type',
 						
 						CONSTRAINT	pk_product_type__id						PRIMARY KEY	(id),
 						CONSTRAINT	fk_product_type_product_type_nature_id	FOREIGN KEY	(product_type_nature_id)	REFERENCES product_type_nature(id)	ON UPDATE CASCADE ON DELETE RESTRICT
@@ -92,10 +92,10 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 		// 5:	Add the product_status Table
 		$strSQL = "	CREATE TABLE product_status
 					(
-						id			BIGINT(20)		NOT NULL	UNSIGNED	AUTO_INCREMENT	COMMENT 'Unique Indentifier',
-						name		VARCHAR(255)	NOT NULL								COMMENT 'Name of the Product Status',
-						description	VARCHAR(1024)	NOT NULL								COMMENT 'Description of the Product Status',
-						const_name	VARCHAR(512)	NOT NULL								COMMENT 'Constant Name of the Product Status',
+						id			BIGINT(20)		UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Indentifier',
+						name		VARCHAR(255)				NOT NULL					COMMENT 'Name of the Product Status',
+						description	VARCHAR(1024)				NOT NULL					COMMENT 'Description of the Product Status',
+						const_name	VARCHAR(512)				NOT NULL					COMMENT 'Constant Name of the Product Status',
 						
 						CONSTRAINT	pk_product_status_id	PRIMARY KEY	(id)
 					);";
@@ -121,10 +121,10 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 		// 7:	Add the product_sale_priority Table
 		$strSQL = "	CREATE TABLE product_sale_priority
 					(
-						id			BIGINT(20)		NOT NULL	UNSIGNED	AUTO_INCREMENT	COMMENT 'Unique Indentifier',
-						name		VARCHAR(255)	NOT NULL								COMMENT 'Name of the Product Priority',
-						description	VARCHAR(1024)	NOT NULL								COMMENT 'Description of the Product Priority',
-						const_name	VARCHAR(512)	NOT NULL								COMMENT 'Constant Name of the Product Priority',
+						id			BIGINT(20)		UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Indentifier',
+						name		VARCHAR(255)				NOT NULL					COMMENT 'Name of the Product Priority',
+						description	VARCHAR(1024)				NOT NULL					COMMENT 'Description of the Product Priority',
+						const_name	VARCHAR(512)				NOT NULL					COMMENT 'Constant Name of the Product Priority',
 						
 						CONSTRAINT	pk_product_priority_id	PRIMARY KEY	(id)
 					);";
@@ -149,15 +149,15 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 		// 9:	Add the product Table
 		$strSQL = "	CREATE TABLE product
 					(
-						id							BIGINT(20)		NOT NULL	UNSIGNED	AUTO_INCREMENT	COMMENT 'Unique Indentifier',
-						name						VARCHAR(255)	NOT NULL								COMMENT 'Name of the Product',
-						description					VARCHAR(1024)	NULL									COMMENT 'Description of the Product',
-						product_type_id				BIGINT(20)		NOT NULL	UNSIGNED					COMMENT '(FK) Type of the Product',
-						customer_group_id			BIGINT(20)		NULL									COMMENT '(FK) Customer Group this Product belongs to',
-						employee_id					BIGINT(20)		NOT NULL	UNSIGNED					COMMENT '(FK) The Employee who created the Product',
-						created_on					TIMESTAMP		NOT NULL	DEFAULT CURRENT_TIMESTAMP	COMMENT 'Creation timestamp for the Product',
-						product_sale_priority_id	BIGINT(20)		NOT NULL	UNSIGNED					COMMENT '(FK) How actively the Product is being sold',
-						product_status_id			BIGINT(20)		NOT NULL	UNSIGNED					COMMENT '(FK) The Status of the Product',
+						id							BIGINT(20)		UNSIGNED	NOT NULL	AUTO_INCREMENT				COMMENT 'Unique Indentifier',
+						name						VARCHAR(255)				NOT NULL								COMMENT 'Name of the Product',
+						description					VARCHAR(1024)				NULL									COMMENT 'Description of the Product',
+						product_type_id				BIGINT(20)		UNSIGNED	NOT NULL								COMMENT '(FK) Type of the Product',
+						customer_group_id			BIGINT(20)					NULL									COMMENT '(FK) Customer Group this Product belongs to',
+						employee_id					BIGINT(20)		UNSIGNED	NOT NULL								COMMENT '(FK) The Employee who created the Product',
+						created_on					TIMESTAMP					NOT NULL	DEFAULT CURRENT_TIMESTAMP	COMMENT 'Creation timestamp for the Product',
+						product_sale_priority_id	BIGINT(20)		UNSIGNED	NOT NULL								COMMENT '(FK) How actively the Product is being sold',
+						product_status_id			BIGINT(20)		UNSIGNED	NOT NULL								COMMENT '(FK) The Status of the Product',
 						
 						CONSTRAINT	pk_product_id						PRIMARY KEY	(id),
 						CONSTRAINT	fk_product_product_type_id			FOREIGN KEY	(product_type_id)			REFERENCES product_type(id)				ON UPDATE CASCADE ON DELETE RESTRICT,
@@ -175,7 +175,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 		
 		// 10:	Add the RatePlan.product_id Field
 		$strSQL = "	ALTER TABLE RatePlan
-					ADD product_id		BIGINT(20)		NULL		UNSIGNED					COMMENT '(FK) Product that this defines',
+					ADD product_id		BIGINT(20)		UNSIGNED	NULL				COMMENT '(FK) Product that this defines',
 					
 					ADD CONSTRAINT	fk_rate_plan_product_id	FOREIGN KEY (product_id)	REFERENCES product(id)	ON UPDATE CASCADE ON DELETE SET NULL;";
 		$result = $dbAdmin->query($strSQL);
