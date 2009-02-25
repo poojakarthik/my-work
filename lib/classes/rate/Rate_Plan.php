@@ -439,7 +439,7 @@ class Rate_Plan extends ORM
 		// Previous Plan
 		$objVariables->plan->previous->name->setValue($objOldRatePlan->Name);
 		$objVariables->plan->previous->is_contracted->setValue($objRatePlanPrevious->contract_scheduled_end_datetime !== null && $objRatePlanPrevious->contract_effective_end_datetime === null);
-		$objVariables->plan->previous->contract->months_remaining->setValue(Flex_Date::difference($objRatePlanPrevious->contract_scheduled_end_datetime, date("Y-m-d", $intTime), 'm', 'ceil')+1);
+		$objVariables->plan->previous->contract->months_remaining->setValue(Flex_Date::difference(date("Y-m-d", $intTime), 'm', 'ceil', $objRatePlanPrevious->contract_scheduled_end_datetime)+1);
 		$objVariables->plan->previous->contract->start_date->setValue(date($strDateFormat, strtotime($objRatePlanPrevious->StartDatetime)));
 		
 		// New Plan
@@ -454,7 +454,7 @@ class Rate_Plan extends ORM
 			$strProperty	= "{$objServiceAddress->ServicePropertyName}\n";
 			$strAddress		=	"{$objServiceAddress->ServiceStreetNumberStart} ".
 								($objServiceAddress->ServiceStreetNumberEnd ? "-{$objServiceAddress->ServiceStreetNumberEnd}" : '').
-								"{$objServiceAddress->ServiceStreetNumberSuffix} " .
+								($objServiceAddress->ServiceStreetNumberSuffix ? "-{$objServiceAddress->ServiceStreetNumberSuffix}" : '').
 								"{$objServiceAddress->ServiceStreetName} " .
 								GetConstantDescription($objServiceAddress->ServiceStreetType, 'ServiceStreetType'). " " .
 								"{$objServiceAddress->ServiceStreetTypeSuffix}\n";
@@ -462,7 +462,7 @@ class Rate_Plan extends ORM
 			$strFullAddress	=	(trim($strProperty)		? $strProperty				: '') . 
 								(trim($strAddressType)	? $strAddressType			: '') . 
 								(trim($strAddress)		? $strAddress				: '') . 
-								"{$objServiceAddress->ServiceLocality}   " .
+								strtoupper("{$objServiceAddress->ServiceLocality}   ") .
 								"{$objServiceAddress->ServiceState}   " .
 								"{$objServiceAddress->ServicePostcode}";
 		}
