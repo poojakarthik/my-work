@@ -16,6 +16,20 @@ a[onclick]
 	cursor : pointer;
 }
 
+.DefaultHiddenElement,
+.DefaultElement,
+.DefaultInvalidElement
+{
+	position:			relative;
+	overflow:			visible;
+	height:				auto;
+	clear:				both;
+}
+
+.DefaultHiddenElement
+{
+	display: none;
+}
 
 div.message {
 	background: #CFFFCD;

@@ -98,7 +98,7 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 		</tr>
 		<tr>
 			<td>Rate: </td>
-			<td>". htmlspecialchars($this->mxdDataToRender['Rate']) . "</td>
+			<td><a onclick='". Href()->ViewRate($this->mxdDataToRender['RateId']) ."' title='View Rate'>". htmlspecialchars($this->mxdDataToRender['Rate']) . "</a></td>
 		</tr>
 		<tr>
 			<td>Normalised On: </td>
@@ -118,11 +118,11 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 		</tr>
 		<tr>
 			<td>Credit: </td>
-			<td class='" . ($this->mxdDataToRender['Credit'] = 1 ? 'amount-debit' : 'amount-credit') . "'>". htmlspecialchars($this->mxdDataToRender['Credit'] = 1 ? 'Credit' : 'Debit') . "</td>
+			<td class='" . ($this->mxdDataToRender['Credit'] == 1 ? 'amount-debit' : 'amount-credit') . "'>". htmlspecialchars($this->mxdDataToRender['Credit'] == 1 ? 'Credit' : 'Debit') . "</td>
 		</tr>
 		<tr>
 			<td>Raw CDR: </td>
-			<td><textarea>". htmlspecialchars($this->mxdDataToRender['CDR']) . "</textarea></td>
+			<td><code>". htmlspecialchars($this->mxdDataToRender['RawCDR']) . "</code></td>
 		</tr>
 	</tbody>
 </table>

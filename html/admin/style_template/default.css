@@ -492,6 +492,7 @@ height:		44px;
 	position:			relative;
 	overflow:			visible;
 	height:				auto;
+	clear:				both;
 }
 
 .DefaultHiddenElement
