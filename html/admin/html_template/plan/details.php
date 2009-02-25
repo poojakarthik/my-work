@@ -132,9 +132,9 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		
 		// Build the Voice Auth Script link
 		$strAuthScriptCell	= '';
-		if ($arrRatePlan['voice_auth_document_id'])
+		if ($arrRatePlan['auth_script_document_id'])
 		{
-			$objAuthScriptDocument			= new Document(array('id'=>$arrRatePlan['voice_auth_document_id']), true);
+			$objAuthScriptDocument			= new Document(array('id'=>$arrRatePlan['auth_script_document_id']), true);
 			$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContentDetails();
 			
 			if ($objAuthScriptDocumentContent && $objAuthScriptDocumentContent->bolHasContent)
