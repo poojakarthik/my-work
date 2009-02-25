@@ -391,8 +391,9 @@ class Rate_Plan extends ORM
 		
 		// Get the Current Auth Script Blurb
 		$strBlurb	= "There are no additional details specified in Flex for this Plan.";
-		if ($objBlurb = new Document(array('id'=>$this->auth_script_document_id)))
+		if ($this->auth_script_document_id)
 		{
+			$objBlurb 			= new Document(array('id'=>$this->auth_script_document_id));
 			$objBlurbContent	= $objBlurb->getContent();
 			$strBlurb			= trim($objBlurbContent->content);
 		}
