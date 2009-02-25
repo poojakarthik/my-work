@@ -78,7 +78,7 @@ class Flex_Rollout_Version_000143 extends Flex_Rollout_Version
 					"CHANGE FileType		file_type_id				BIGINT(20)	UNSIGNED	NOT NULL					COMMENT '(FK) File Type', " .
 					"\n" .
 					"ADD CONSTRAINT fk_document_resource_type_file_type_document_resource_type_id	FOREIGN KEY	(document_resource_type_id) REFERENCES DocumentResourceType(Id)	ON UPDATE CASCADE ON DELETE CASCADE, " .
-					"ADD CONSTRAINT fk_document_resource_type_file_type_file_type_id				FOREIGN KEY	(file_type_id) 				REFERENCES FileType(Id)				ON UPDATE CASCADE ON DELETE RESTRICT, " .
+					"ADD CONSTRAINT fk_document_resource_type_file_type_file_type_id				FOREIGN KEY	(file_type_id) 				REFERENCES FileType(Id)				ON UPDATE CASCADE ON DELETE RESTRICT " .
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
