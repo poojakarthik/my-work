@@ -387,7 +387,7 @@ class Rate_Plan extends ORM
 	{
 		$strOriginalTimezone	= date_default_timezone_get();
 		date_default_timezone_set("Australia/Brisbane");
-		$intTime			= time();
+		$strDate				= date("Y-m-d H:i:s");
 		date_default_timezone_set($strOriginalTimezone);
 		
 		// Get the current Template
@@ -410,6 +410,7 @@ class Rate_Plan extends ORM
 		$objService			= new Service(array('Id' => $objRatePlanPrevious->Service), true);
 		$objServiceAddress	= $objService->getServiceAddress();
 		
+		$intTime			= strtotime($strDate);
 		$strDateFormat		= "jS F, Y";
 		$strTimeFormat		= "h:i a";
 		
