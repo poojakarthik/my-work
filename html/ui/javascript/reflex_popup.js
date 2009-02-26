@@ -121,6 +121,7 @@ Object.extend(Reflex_Popup.prototype, {
 
 		this.footerPane = document.createElement('div');
 		this.footerPane.className = 'reflex-popup-footer';
+		this.footerPane.style.display	= 'none';
 		this.container.appendChild(this.footerPane);
 		
 		Event.observe(tb, "mousedown", this.dragStart.bind(this));
@@ -218,6 +219,8 @@ Object.extend(Reflex_Popup.prototype, {
 		{
 			this.footerPane.appendChild(buttons[i]);
 		}
+		
+		this.footerPane.style.display	= (buttons.length) ? 'block' : 'none';
 		
 		this.footerPane.style.textAlign	= (bolCentred != undefined && bolCentred) ? 'center' : 'right';
 	},
