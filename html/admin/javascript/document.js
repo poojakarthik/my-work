@@ -112,7 +112,8 @@ var Document	= Class.create
 			strAttachments	= "\n" +
 			"				<tr>\n" +
 			"					<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>Attachments : </nobr></td>\n" +
-			"					<td valign='top'>";  
+			"					<td valign='top'>\n" +
+			"						<div style='max-height:10em; overflow-y:scroll;'>\n";  
 			
 			for (var i = 0; i < arrDocuments.length; i++)
 			{
@@ -121,7 +122,9 @@ var Document	= Class.create
 				strAttachments	+= "<nobr><span><img src='../admin/reflex.php/File/Image/FileTypeIcon/"+objDocument.file_type_id+"/16x16' style='vertical-align: text-top;' />&nbsp;"+objDocument.strFileName+"&nbsp;("+objDocument.intFileSizeKB+"KB)</span>;</nobr> ";
 			}
 			
-			strAttachments	+= "</td>\n" +
+			strAttachments	+= "\n" +
+			"						</div>" +
+			"					</td>\n" +
 			"				</tr>\n";
 		}
 		else
