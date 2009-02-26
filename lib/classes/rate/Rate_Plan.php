@@ -427,9 +427,10 @@ class Rate_Plan extends ORM
 		$objVariables->datetime->today->time->setValue(date($strTimeFormat, $intTime));
 		
 		// Account
+		$strABN	= (trim($objAccount->ABN)) ? $objAccount->ABN : '[ No ABN Specified ]';
 		$objVariables->account->id->setValue($objAccount->Id);
 		$objVariables->account->business_name->setValue($objAccount->BusinessName);
-		$objVariables->account->abn->setValue((trim($objAccount->ABN)) ? $objAccount->ABN : '[ No ABN Specified ]');
+		$objVariables->account->abn->setValue($strABN);
 		
 		// Contact
 		$dtDOB	= new DateTime($objContact->DOB);
