@@ -70,6 +70,36 @@ class Telemarketing_FNN_Blacklist extends ORM
 		}
 	}
 	
+	/**
+	 * getForTypeAndFNN()
+	 *
+	 * constructor
+	 *
+	 * @param	string	$strFNN							WHERE clause (can also include GROUP BY, ORDER BY and LIMIT clauses)
+	 * @param	[boolean	$bolAsArray				]	If set to TRUE, will return an Associative Array instead of an Object
+	 * 
+	 * @return	mixed
+	 * 
+	 * @constructor
+	 */
+	public static function getForTypeAndFNN($intType, $strFNN, $bolAsArray=false)
+	{
+		$selByTypeAndFNN	= self::_preparedStatement('selByTypeAndFNN');
+		$resResult			= $selByTypeAndFNN->Execute(array('telemarketing_fnn_blacklist_nature_id'=>$intType, 'fnn'=>$strFNN));
+		if ($resResult === false)
+		{
+			throw new Exception();
+		}
+		elseif ($arrMatch = $selByTypeAndFNN->Fetch())
+		{
+			return ($bolAsArray) ? $arrMatch : new Telemarketing_FNN_Blacklist($arrMatch);
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -100,6 +130,9 @@ class Telemarketing_FNN_Blacklist extends ORM
 				// SELECTS
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"telemarketing_fnn_blacklist", "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selByTypeAndFNN':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"telemarketing_fnn_blacklist", "*", "telemarketing_fnn_blacklist_nature_id = <telemarketing_fnn_blacklist_nature_id> AND fnn = <fnn> AND expired_on >= NOW()", "id DESC", 1);
 					break;
 				
 				// INSERTS

@@ -124,12 +124,37 @@ var Telemarketing	= Class.create
 			// Validate
 			if (Vixen.Validation.fnn(strFNN))
 			{
-				// Valid
-				$Alert("FNN is valid");
+				var fncResponseHandler	= function(objResponse)
+				{
+					Flex.Telemarketing.pupBlackListAdd.hide();
+					Vixen.Popup.CloseLoadingSplash();
+					
+					if (objResponse.Success)
+					{
+						$Alert("The Service Number '"+objResponse.strFNN+"' has been successfully added to the Flex Telemarketing Blacklist.");
+						return true;
+					}
+					else if (objResponse.Success == undefined)
+					{
+						$Alert("Unknown Error: "+objResponse);
+						return false;
+					}
+					else
+					{
+						$Alert(objResponse.ErrorMessage);
+						return false;
+					}
+				}
+				
+				Vixen.Popup.ShowLoadingSplash();
+				
+				// Valid -- Run AJAX
+				var fncJsonFunc		= jQuery.json.jsonFunction(fncResponseHandler, null, 'Document', 'sendEmail');
+				fncJsonFunc(strFNN);
 			}
 			else
 			{
-				$Alert("FNN is invalid");
+				$Alert("The Service FNN '"+strFNN+"' is invalid.");
 			}
 		}
 	}
