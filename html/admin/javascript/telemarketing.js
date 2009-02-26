@@ -101,9 +101,9 @@ var Telemarketing	= Class.create
 		{
 			// Display the input popup
 			var strHTML	=	"<div class='GroupedContent'>\n" +
-							"	<table>\n" +
+							"	<table class='relfex'>\n" +
 							"		<tr>\n" +
-							"			<th>Service Number (FNN) : </th>\n" +
+							"			<th style='font-size:10pt'>Service Number (FNN) : </th>\n" +
 							"			<td><input type='text' maxlength='10' size='10' /></td>\n" +
 							"		</tr>\n" +
 							"	</table>\n" +
