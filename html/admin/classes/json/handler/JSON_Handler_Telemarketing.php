@@ -47,6 +47,7 @@ class JSON_Handler_Telemarketing extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"		=> true,
+							"strFNN"		=> $strFNN,
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
