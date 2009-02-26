@@ -475,6 +475,7 @@ class Rate_Plan extends ORM
 		}
 		$objVariables->service->has_address->setValue(in_array($objService->ServiceType, array(SERVICE_TYPE_LAND_LINE)));
 		$objVariables->service->full_address->setValue($strFullAddress);
+		$objVariables->service->full_address->setValue($objService->FNN);
 		
 		// Parse the Template, replacing the placeholders with valid data
 		return Document_Template::render($objTemplateContent->content, $objVariables);
