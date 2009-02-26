@@ -429,12 +429,13 @@ class Rate_Plan extends ORM
 		// Account
 		$objVariables->account->id->setValue($objAccount->Id);
 		$objVariables->account->business_name->setValue($objAccount->BusinessName);
+		$objVariables->account->abn->setValue((trim($objAccount->ABN)) ? $objAccount->ABN : '[ No ABN Specified ]');
 		
 		// Contact
 		$dtDOB	= new DateTime($objContact->DOB);
 		$objVariables->account->contact->name->setValue($objContact->firstName . ' ' . $objContact->lastName);
 		$objVariables->account->contact->date_of_birth->setValue(($objContact->DOB && $objContact->DOB != '0000-00-00') ? $dtDOB->format("d/m/Y") : '[ No DOB Specified ]');
-		$objVariables->account->contact->email->setValue($objContact->email);
+		$objVariables->account->contact->email->setValue((trim($objContact->email)) ? $objContact->email : '[ No Email Specified ]');
 		
 		// Previous Plan
 		$bolIsContracted	= $objRatePlanPrevious->contract_scheduled_end_datetime !== null && $objRatePlanPrevious->contract_effective_end_datetime === null;
