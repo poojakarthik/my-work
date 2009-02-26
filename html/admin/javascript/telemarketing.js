@@ -114,10 +114,10 @@ var Telemarketing	= Class.create
 							"</div>\n";
 			
 			this.pupBlackListAdd	= new Reflex_Popup(25);
-			this.pupBlackListAdd->setTitle("Add FNN to Telemarketing Blacklist");
-			this.pupBlackListAdd->addCloseButton();
-			this.pupBlackListAdd->setContent(strHTML);
-			this.pupBlackListAdd->display();
+			this.pupBlackListAdd.setTitle("Add FNN to Telemarketing Blacklist");
+			this.pupBlackListAdd.addCloseButton();
+			this.pupBlackListAdd.setContent(strHTML);
+			this.pupBlackListAdd.display();
 		}
 		else
 		{
