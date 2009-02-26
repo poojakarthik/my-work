@@ -24,11 +24,17 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 	{
 		// Check if the initial correspondence was an email that couldn't be sent
 		$strWarning = "";
-		if (array_key_exists("initialCorrespondenceCouldNotBeSent", $this->mxdDataToRender) && $this->mxdDataToRender['initialCorrespondenceCouldNotBeSent'])
+		if (array_key_exists("notes", $this->mxdDataToRender) && count($this->mxdDataToRender['notes']))
 		{
-			$strWarning = "<br />WARNING: The initial correspondence has not been sent";
+			$arrNotes = $this->mxdDataToRender['notes'];
+			foreach ($arrNotes as &$strNote)
+			{
+				$strNote = htmlspecialchars($strNote);
+			}
+			
+			$strNotes = count($arrNotes)? ("<br />". implode("<br />", $arrNotes)) : "";
 		}
-		$this->render_view($ticket, "The ticket has been saved.{$strWarning}");
+		$this->render_view($ticket, "The ticket has been saved.{$strNotes}");
 	}
 
 	private function render_delete($ticket)
@@ -260,6 +266,9 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			//<!--
 				$validateAccounts = null;
 				$selectedContactValue = null;
+				
+				objTicketCategoryNotesRows = {};
+				elmCategory = null;
 	
 				function accountNumberChange()
 				{
@@ -414,9 +423,53 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					return false;
 				}
 	
+				function categoryChange()
+				{
+					if (elmCategory.value == elmCategory.lastCategoryId)
+					{
+						// The category hasn't changed
+						return;
+					}
+					
+					// The category has changed.  Hide all the category notes rows
+					for (var i in objTicketCategoryNotesRows)
+					{
+						objTicketCategoryNotesRows[i].style.display = 'none';
+					}
+					
+					// Show the notes specific to this category, if there is one
+					if (objTicketCategoryNotesRows[elmCategory.value] != undefined)
+					{
+						objTicketCategoryNotesRows[i].style.display = 'table-row';
+					}
+					
+					elmCategory.lastCategoryId = elmCategory.value;
+				}	
+	
 				function onTicketingLoad()
 				{
-					var accountId = $ID('accountId');
+					var ticketId	= $ID('ticketId').value;
+					var accountId	= $ID('accountId');
+	
+					if (ticketId == '')
+					{
+						// This is a new ticket, will include the form elements for the initial correspondence
+						var arrSpecificNotes = document.getElementsByClassName('TicketCategoryNotes');
+						for (var i=0,j=arrSpecificNotes.length; i<j; i++)
+						{
+							objTicketCategoryNotesRows[arrSpecificNotes[i].id] = arrSpecificNotes[i];
+						}
+						
+						if (arrSpecificNotes.length > 0)
+						{
+							// Add listeners
+							elmCategory = $ID('categoryId');
+							elmCategory.lastCategoryId = null;
+							Event.observe(elmCategory, 'blur', categoryChange);
+							Event.observe(elmCategory, 'keyup', categoryChange);
+							Event.observe(elmCategory, 'change', categoryChange);
+						}
+					}
 	
 					if (accountId == undefined || accountId == null)
 					{
@@ -436,6 +489,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 				}
 			
 				Event.observe(window, 'load', onTicketingLoad, false);
+				
 				
 				//-->
 			</script>
@@ -653,7 +707,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								$invalid = array_key_exists('categoryId', $invalidValues) ? 'invalid' : '';
 								if (array_search('categoryId', $editableValues) !== FALSE)
 								{
-									echo "<select name='categoryId' class=\"$invalid\">";
+									echo "<select name='categoryId' id='categoryId' class=\"$invalid\">";
 									$categories = Ticketing_Category::getAvailableCategoriesForUser(Ticketing_User::getCurrentUser());
 									foreach ($categories as $category)
 									{
@@ -801,13 +855,42 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 									?></select>
 							</td>
 						</tr>
+						<?php
+							// Handle the displaying of notes specific to the Category (but only for new tickets)
+							// We currently only have notes for the "Fault" category
+							$strDisplay = ($ticket->categoryId == TICKETING_CATEGORY_FAULTS)? "display:table-row;" : "display:none";
+						?>
+						<tr class="alt TicketCategoryNotes" style='<?=$strDisplay?>' id='<?=TICKETING_CATEGORY_FAULTS?>'>
+							<td class="title">Details to Record: </td>
+							<td style='width:100%'>
+								<ul>
+									<li>Fault Description - What is the issue the customer is experiencing?</li>
+									<li>Has an isoloation test been completed?</li>
+									<li>Has a VA been completed for incorrect call out fee?</li>
+									<li>Does the customer require a diversion?
+										<ul>
+											<li>To which number?</li>
+											<li>Have you advised customer of applicable diversion call charges</li>
+										</ul>
+									</li>
+									<li>Is this number in a line hunt?
+										<ul>
+											<li>Do we need to isolate the number from the line hunt?</li>
+										</ul>
+									</li>
+									<li>What is the contact's availability if a technician is required to attend onsite?</li>
+									<li>Advise customer that the Estimated Time of Restoration is 2 business days and we will provide updates as they become available.</li>
+								</ul>
+							</td>
+						</tr>
 						<tr class="alt">
 							<td class="title">Details: </td>
-							<td>
+							<td style='width:100%'>
 								<?php
 									$invalid = array_key_exists('details', $invalidValues) ? 'invalid' : '';
 									$strDetails = array_key_exists("details", $_REQUEST)? $_REQUEST['details'] : "";
-									?><textarea id="details" name="details" class="<?=$invalid?>" style="position: relative; width: 100%; height: 16em;"><?=htmlspecialchars($strDetails)?></textarea>
+									?>
+									<textarea id="details" name="details" class="<?=$invalid?>" style="width:100%;position:relative; min-height: 16em"><?=htmlspecialchars($strDetails)?></textarea>
 							</td>
 						</tr>
 			<?php

@@ -260,6 +260,8 @@ class Application_Handler_Ticketing extends Application_Handler
 			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
+		$detailsToRender['notes'] = array();
+
 		// Handle viewing the ticket functionality in the context of a single declared account
 		$objCurrentAccount = (array_key_exists("Account", $_REQUEST)) ? Account::getForId(intval($_REQUEST['Account'])) : NULL;
 
@@ -675,9 +677,15 @@ class Application_Handler_Ticketing extends Application_Handler
 							}
 						}
 
+						// HACK! If it's a new ticket, and its category is TICKETING_CATEGORY_FAULTS, then set its priority to HIGH
+						if ($ticket->id == NULL && $ticket->categoryId == TICKETING_CATEGORY_FAULTS && $ticket->priorityId != TICKETING_PRIORITY_HIGH)
+						{
+							$ticket->priorityId = TICKETING_PRIORITY_HIGH;
+							$detailsToRender['notes'][] = "Because the ticket is for a new fault, the priority has been set to high";
+						}
+
 						if (!empty($invalidValues))
 						{
-							//$detailsToRender['error'] = 'Please complete all mandatory fields.';
 							$detailsToRender['error'] = "Please fix the following issues...\n". implode("\n", $invalidValues);
 							$detailsToRender['saved'] = FALSE;
 							if ($ticket)
@@ -701,6 +709,15 @@ class Application_Handler_Ticketing extends Application_Handler
 							if (!$ticket->ownerId)
 							{
 								$ticket->statusId = TICKETING_STATUS_UNASSIGNED;
+							}
+							
+							// HACK! If it's a new ticket, and its category is TICKETING_CATEGORY_FAULTS, then set its Owner to unassigned and its status to unassigned;
+							if ($ticket->id == NULL && $ticket->categoryId == TICKETING_CATEGORY_FAULTS)
+							{
+								$ticket->ownerId	= NULL;
+								$ticket->statusId	= TICKETING_STATUS_UNASSIGNED;
+								$bolChangeOwner		= FALSE;
+								$detailsToRender['notes'][] = "Because the ticket is for a new fault, the owner has been unassigned";
 							}
 
 							$ticket->save();
@@ -732,7 +749,7 @@ class Application_Handler_Ticketing extends Application_Handler
 								if ($initialCorrespondenceCouldNotBeSent)
 								{
 									// This will notify the user that their initial correspondence could not be sent
-									$detailsToRender['initialCorrespondenceCouldNotBeSent'] = TRUE;
+									$detailsToRender['notes'][] = "WARNING: The initial correspondence has not been sent";
 								}
 							}
 							
