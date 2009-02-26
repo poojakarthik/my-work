@@ -6,7 +6,7 @@ var Telemarketing	= Class.create
 	// Prototype constructor
 	initialize	: function()
 	{
-		
+		this.pupBlackListAdd	= null;
 	},
 	
 	iframeFormSubmit	: function(elmForm, funcResponseHandler)
@@ -91,6 +91,46 @@ var Telemarketing	= Class.create
 		{
 			// Otherwise schedule another cleanup
 			setTimeout(this._iframeCleanup.bind(this, elmIframe), 100);
+		}
+	},
+	
+	// addFNNToBlacklist
+	addFNNToBlacklist	: function(strFNN)
+	{
+		if (strFNN == undefined)
+		{
+			// Display the input popup
+			var strHTML	=	"<div class='GroupedContent'>\n" +
+							"	<table>\n" +
+							"		<tr>\n" +
+							"			<th>Service Number (FNN) : </th>\n" +
+							"			<td><input type='text' maxlength='10' size='10' /></td>\n" +
+							"		</tr>\n" +
+							"	</table>\n" +
+							"</div>\n" + 
+							"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
+							"	<input id='Telemarketing_Blacklist_Add' value='Add' type='button' onclick='Flex.Telemarketing.addToFnnBlacklist($ID(\"Telemarketing_Blacklist_FNN\").value)' /> \n" + 
+							"	<input id='Telemarketing_Blacklist_Cancel' value='Cancel' onclick='Flex.Telemarketing.pupBlackListAdd.hide();' style='margin-left: 3px;' type='button' /> \n" + 
+							"</div>\n";
+			
+			this.pupBlackListAdd	= new Reflex_Popup(25);
+			this.pupBlackListAdd->setTitle("Add FNN to Telemarketing Blacklist");
+			this.pupBlackListAdd->addCloseButton();
+			this.pupBlackListAdd->setContent(strHTML);
+			this.pupBlackListAdd->display();
+		}
+		else
+		{
+			// Validate
+			if (Vixen.Validation.fnn(strFNN))
+			{
+				// Valid
+				$Alert("FNN is valid");
+			}
+			else
+			{
+				$Alert("FNN is invalid");
+			}
 		}
 	}
 });

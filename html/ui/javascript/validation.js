@@ -62,6 +62,7 @@ function VixenValidationClass()
 //	this.regexDateTime					= /^(0[0-9]|[1][0-9]|2[0-3])(:(0[0-9]|[1-5][0-9])){2} (0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[012])[\/](19|20)[0-9]{2}$/;
 	this.regexEmailAddress				= /^[a-z0-9!#\$%&'\*\+\/=\?\^_`\{\|\}~\-]+(?:\.[a-z0-9!#\$%&'\*\+\/=\?\^_`\{\|\}~\-]+)*@(?:[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$/i;
 	this.regexPositiveFloat				= /^\d+(\.(\d)*)?$/;
+	this.regexFNN						= /^((0[123478]\d{8}[i]?)|(13\d{4})|(1[389]00\d{6}))$/;
 
 
 	// Wrapper for the individual validation functions.  This is used
@@ -207,6 +208,11 @@ function VixenValidationClass()
 	this.PositiveFloat = function(strValue)
 	{
 		return this.regexPositiveFloat.test(strValue);
+	}
+	
+	this.fnn	= function(strValue)
+	{
+		return this.regexFNN.test(strValue);
 	}
 
 }

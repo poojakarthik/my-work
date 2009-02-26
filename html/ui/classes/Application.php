@@ -211,11 +211,13 @@ class Application
 			
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
-				ContextMenu()->Admin->Telemarketing->TelemarketUploadProposed();
-				ContextMenu()->Admin->Telemarketing->TelemarketDownloadDNCR();
-				ContextMenu()->Admin->Telemarketing->TelemarketUploadDNCR();
-				ContextMenu()->Admin->Telemarketing->TelemarketDownloadPermitted();
-				//ContextMenu()->Admin->Telemarketing->TelemarketUploadDiallerReport();
+				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadProposed();
+				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadDNCR();
+				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDNCR();
+				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadPermitted();
+				//ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDiallerReport();
+				
+				ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
 			}
 		}
 		

@@ -4394,9 +4394,9 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			$strDeliveryMethod='DELIVERY_METHOD_EMAIL';
 			break;
 		case DELIVERY_METHOD_DO_NOT_SEND:
-default;
-$strDeliveryMethod='DELIVERY_METHOD_DO_NOT_SEND';
-break;
+		default;
+			$strDeliveryMethod='DELIVERY_METHOD_DO_NOT_SEND';
+			break;
 		}
 
 		$dom->Document->CustomerGroup->setValue(GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup'));

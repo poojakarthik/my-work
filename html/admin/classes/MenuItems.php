@@ -3280,6 +3280,22 @@ class MenuItems {
 		return "javascript:JsAutoLoader.loadScript('javascript/internal_contact_list.js', function(){Flex.InternalContactList.renderViewPopup();});";
 	}
 	
+	/**
+	 * TelemarketingBlacklistAddFNN()
+	 *
+	 * Compiles the Href to be executed when the TelemarketingBlacklistAddFNN menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function TelemarketingBlacklistAddFNN()
+	{
+		$this->strContextMenuLabel = "Add FNN to Blacklist";
+		$this->strLabel = "Add FNN to Blacklist";
+		
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){Flex.Telemarketing.addFNNToBlacklist();});";
+	}
+	
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//
