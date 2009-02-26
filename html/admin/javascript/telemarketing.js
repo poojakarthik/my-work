@@ -109,7 +109,7 @@ var Telemarketing	= Class.create
 							"	</table>\n" +
 							"</div>\n" + 
 							"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
-							"	<input id='Telemarketing_Blacklist_Add' value='Add' type='button' onclick='Flex.Telemarketing.addToFnnBlacklist($ID(\"Telemarketing_Blacklist_FNN\").value)' /> \n" + 
+							"	<input id='Telemarketing_Blacklist_Add' value='Add' type='button' onclick='Flex.Telemarketing.addFNNToBlacklist($ID(\"Telemarketing_Blacklist_FNN\").value)' /> \n" + 
 							"	<input id='Telemarketing_Blacklist_Cancel' value='Cancel' onclick='Flex.Telemarketing.pupBlackListAdd.hide();' style='margin-left: 3px;' type='button' /> \n" + 
 							"</div>\n";
 			
