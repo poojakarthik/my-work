@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 						const_name	VARCHAR(512)				NOT NULL					COMMENT 'Constant Name of the Product Type Nature',
 						
 						CONSTRAINT	pk_product_type_nature_id	PRIMARY KEY	(id)
-					);";
+					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -67,7 +67,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 						
 						CONSTRAINT	pk_product_type__id						PRIMARY KEY	(id),
 						CONSTRAINT	fk_product_type_product_type_nature_id	FOREIGN KEY	(product_type_nature_id)	REFERENCES product_type_nature(id)	ON UPDATE CASCADE ON DELETE RESTRICT
-					);";
+					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -98,7 +98,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 						const_name	VARCHAR(512)				NOT NULL					COMMENT 'Constant Name of the Product Status',
 						
 						CONSTRAINT	pk_product_status_id	PRIMARY KEY	(id)
-					);";
+					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -127,7 +127,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 						const_name	VARCHAR(512)				NOT NULL					COMMENT 'Constant Name of the Product Priority',
 						
 						CONSTRAINT	pk_product_priority_id	PRIMARY KEY	(id)
-					);";
+					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -165,7 +165,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 						CONSTRAINT	fk_product_employee_id				FOREIGN KEY	(employee_id)				REFERENCES Employee(Id)					ON UPDATE CASCADE ON DELETE RESTRICT,
 						CONSTRAINT	fk_product_product_sale_priority_id	FOREIGN KEY	(product_sale_priority_id)	REFERENCES product_sale_priority(id)	ON UPDATE CASCADE ON DELETE RESTRICT,
 						CONSTRAINT	fk_product_product_status_id		FOREIGN KEY	(product_status_id)			REFERENCES product_status(id)			ON UPDATE CASCADE ON DELETE RESTRICT
-					);";
+					) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -174,14 +174,16 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 		$this->rollbackSQL[] = "DROP TABLE product ";
 		
 		// 10:	Add the RatePlan.product_id Field
-		$strSQL =	"ALTER TABLE RatePlan " .
-					"ADD product_id		BIGINT(20)	UNSIGNED NULL	COMMENT '(FK) The Product that this defines';";
+		$strSQL = "	ALTER TABLE RatePlan
+					ADD product_id		BIGINT(20)		NULL		UNSIGNED					COMMENT '(FK) Product that this defines',
+					ADD CONSTRAINT	fk_rate_plan_product_id	FOREIGN KEY (product_id)	REFERENCES product(id)	ON UPDATE CASCADE ON DELETE SET NULL;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the RatePlan.product_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] =	"ALTER TABLE RatePlan " .
+								"DROP FOREIGN KEY fk_rate_plan_product_id, " .
 								"DROP product_id;";
 	}
 	
