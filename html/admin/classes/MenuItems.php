@@ -135,11 +135,7 @@ class MenuItems {
 	// TicketingAdmin
 	//------------------------------------------------------------------------//
 	/**
-	//------------------------------------------------------------------------//
-	// TicketingAdmin
-	//------------------------------------------------------------------------//
-	/**
-	 * TicketingConsole()
+	 * TicketingAdmin()
 	 *
 	 * Compiles the Href to be executed when the TicketingConsole menu item is clicked
 	 *
@@ -196,8 +192,8 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "View All Tickets";
 		$this->strLabel = "Tickets";
-		$last = $lastQuery ? '/Last' : ($lastQuery === FALSE ? '/All' : '');
-		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets$last";
+		$last = $lastQuery ? '/Last' : ($lastQuery === FALSE ? '/All/' : '/');
+		return self::NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets{$last}";
 	}
 	
 	/**
@@ -213,15 +209,13 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewTicketsForAccount($intAccountId)
+	function ViewTicketsForAccount($intAccountId, $bolLastQuery=FALSE)
 	{
 		$this->strContextMenuLabel = "View All";
 		$this->strLabel = "Tickets";
-		// This SHOULD be how this functionality is triggered
-		//return self::NEW_FRAMEWORK ."reflex.php/Ticketing/Tickets?accountId=$intAccountId";
+		$strLast = ($bolLastQuery)? "/Last" : "";
 		
-		//HACK! HACK! HACK! just use the account id as
-		return self::NEW_FRAMEWORK ."reflex.php/Ticketing/Tickets?quickSearch=$intAccountId";
+		return self::NEW_FRAMEWORK ."reflex.php/Ticketing/Tickets{$strLast}/?Account=$intAccountId";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -234,15 +228,19 @@ class MenuItems {
 	 *
 	 * Compiles the Href to be executed when the TicketingTicket menu item is clicked
 	 * 
+	 * @param	int		$ticketId		id of the ticket to view
+	 * @param	int		$intAccountId	(Optional, defaults to NULL, meaning no account context), if you want to view the ticket, in the context of a particular account, (should be the account that the ticket belongs to)
+	 * 
 	 * @return	string				Href to be executed when the TicketingTicket menu item is clicked
 	 *
 	 * @method
 	 */
-	function TicketingTicket($ticketId)
+	function TicketingTicket($ticketId, $intAccountId=NULL)
 	{
 		$this->strContextMenuLabel = "View Ticket $ticketId";
-		$this->strLabel = "View Ticket " . $ticketId;
-		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/$ticketId/View";
+		$this->strLabel = "Ticket " . $ticketId;
+		
+		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Ticket/$ticketId/View/?Account=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -263,7 +261,7 @@ class MenuItems {
 	{
 		$this->strContextMenuLabel = "View My Tickets";
 		$this->strLabel = "My Tickets";
-		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets/Mine";
+		return self :: NEW_FRAMEWORK . "reflex.php/Ticketing/Tickets/Mine/";
 	}
 
 	//------------------------------------------------------------------------//
@@ -289,6 +287,7 @@ class MenuItems {
 		if ($intAccountId)
 		{
 			$arrGetVars[] = "accountId={$intAccountId}";
+			$arrGetVars[] = "Account={$intAccountId}";
 		}
 		if ($intServiceId)
 		{

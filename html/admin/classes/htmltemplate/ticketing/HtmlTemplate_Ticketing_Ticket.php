@@ -78,6 +78,9 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 	private function render_view($ticket, $message=NULL, $bolIsError=FALSE)
 	{
+		$objCurrentAccount			= $this->mxdDataToRender['currentAccount'];
+		$strCurrentAccountGetVar	= ($objCurrentAccount)? "Account={$objCurrentAccount->id}" : "";
+		
 		// If there is no ticket, we need to tell the user as much
 		if (!$ticket)
 		{
@@ -105,13 +108,19 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			}
 			$action[0] = strtoupper($action[0]);
 			$action = htmlspecialchars($action);
-			$actionLinks[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Ticket/$id$action\">$action</a>";
+			$actionLinks[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Ticket/$id$action/?{$strCurrentAccountGetVar}\">$action</a>";
 		}
 		$actionLinks = implode(' | ', $actionLinks);
 
 		?>
 
 		<form id="view_ticket" name="view_ticket" method="POST">
+		<?php
+			if ($objCurrentAccount)
+			{
+				echo "\t\t\t<input type='hidden' name='Account' value='{$objCurrentAccount->id}'></input>";
+			}
+		?>
 			<table id="ticketing" name="ticketing" class="reflex">
 				<caption>
 					<div id="caption_bar" name="caption_bar">
@@ -202,6 +211,9 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 	private function render_edit($ticket=FALSE, $requestedAction="Edit")
 	{
+		$objCurrentAccount			= $this->mxdDataToRender['currentAccount'];
+		$strCurrentAccountGetVar	= ($objCurrentAccount)? "Account={$objCurrentAccount->id}" : "";
+		
 		if($ticket === FALSE)
 		{
 			$ticket = $this->mxdDataToRender['ticket'];
@@ -233,7 +245,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			}
 			$action[0] = strtoupper($action[0]);
 			$action = htmlspecialchars($action);
-			$actionLinks[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Ticket/$id$action\">$action</a>";
+			$actionLinks[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Ticket/$id$action/?{$strCurrentAccountGetVar}\">$action</a>";
 		}
 		$actionLinks = implode(' | ', $actionLinks);
 
@@ -241,7 +253,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		$invalidValues = $this->mxdDataToRender['invalid_values'];
 
-		$cancel = Flex::getUrlBase() . '/reflex.php/Ticketing/' . ($ticket->isSaved() ? 'Ticket/' . $ticket->id . '/View' : 'System/?last=true');
+		$cancel = Flex::getUrlBase() . '/reflex.php/Ticketing/' . ($ticket->isSaved() ? "Ticket/{$ticket->id}/View/?{$strCurrentAccountGetVar}" : "System/Last/?{$strCurrentAccountGetVar}");
 
 		?>
 			<script>
@@ -428,6 +440,12 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 				//-->
 			</script>
 			<form id="edit_ticket" method="POST" name="edit_ticket" action="<?php echo Flex::getUrlBase() . "reflex.php/Ticketing/Ticket/" . ($ticket->isSaved() ? $ticket->id . '/' : '') . $requestedAction; ?>">
+				<?php
+					if ($objCurrentAccount)
+					{
+						echo "\t\t\t\t<input type='hidden' name='Account' value='{$objCurrentAccount->id}'></input>";
+					}
+				?>
 				<input type="hidden" name="save" value="1" />
 				<input type="hidden" id="ticketId" value="<?php echo $ticket->id ? $ticket->id : ''; ?>" />
 				<table id="ticketing" name="ticketing" class="reflex">
@@ -542,7 +560,14 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								<?php
 								$allowCreation = FALSE;
 								$invalid = array_key_exists('accountId', $invalidValues) ? 'invalid' : '';
-								if (array_search('accountId', $editableValues) !== FALSE)
+								if ($objCurrentAccount)
+								{
+									// Don't allow them to change the account
+									echo "<a href='". Href()->AccountOverview($objCurrentAccount->id) . "'>{$objCurrentAccount->id}</a>\n";
+									echo "<input type='hidden' id='accountId' name='accountId' value='{$objCurrentAccount->id}' />";
+									$allowCreation = TRUE;
+								}
+								elseif (array_search('accountId', $editableValues) !== FALSE)
 								{
 									$accountId = $ticket && $ticket->accountId ?$ticket->accountId : ''; 
 									?><input type="text" id="accountId" name="accountId" class="<?=$invalid?>" size="50" value="<?=$accountId?>" /><?php
@@ -551,7 +576,6 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								else
 								{
 									echo $ticket->accountId ? ('<a href="' . Href()->AccountOverview($ticket->accountId) . '">' . $ticket->accountId . '</a>') : '[Not matched to an account]';
-									//echo $ticket->accountId ? $ticket->accountId : '[Not matched to an account]';
 									if ($ticket->accountId)
 									{
 										echo '<input type="hidden" id="accountId" value="' . $ticket->accountId . '" />';
@@ -846,6 +870,9 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 	private function render_correspondences($ticket)
 	{
+		$objCurrentAccount			= $this->mxdDataToRender['currentAccount'];
+		$strCurrentAccountGetVar	= ($objCurrentAccount)? "Account={$objCurrentAccount->id}" : "";
+		
 		if (!$ticket || !$ticket->isSaved())
 		{
 			return;
@@ -854,7 +881,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		$correspondences = $ticket->getCorrespondences();
 		$noCorrespondences = count($correspondences) == 0;
 
-		$actionLinks = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/Create/" . $ticket->id . "\">Create</a>";
+		$actionLinks = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/Create/{$ticket->id}/?{$strCurrentAccountGetVar}\">Create</a>";
 
 		?>
 		<br/>
@@ -901,13 +928,13 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							$contactName = $contact ? $contact->getName() : '[No contact]';
 							$sourceName = $correspondence->getSource()->name;
 							$deliveryStatusName = $correspondence->getDeliveryStatus()->name;
-							$link = Flex::getUrlBase() . 'reflex.php/Ticketing/Correspondence/' . $correspondence->id . '/View';
+							$link = Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/View/?{$strCurrentAccountGetVar}";
 							
 							$arrActions = array();
 							if ($correspondence->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT && $correspondence->isEmail() && $correspondence->isOutgoing())
 							{
 								// The user can send the email
-								$arrActions[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/Send\">Send</a>";
+								$arrActions[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/Send/?{$strCurrentAccountGetVar}\">Send</a>";
 							}
 							$strActions = implode(" | ", $arrActions);
 							

@@ -86,7 +86,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		$recordTypes .= '</select></span></form>';
 
 		echo "
-<table class='reflex'>
+<table class='reflex highlight-rows'>
 	<caption>
 		<div id='caption_bar' name='caption_bar'>
 			<div id='caption_title' name='caption_title'>

@@ -11,12 +11,16 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 	public function Render()
 	{
-		$nrTickets = $this->mxdDataToRender['ticket_count'];
-		$count = count($this->mxdDataToRender['tickets']);
-		$startOffset = ($this->mxdDataToRender['offset'] + ($count ? 1 : 0));
-		$endOffset = $this->mxdDataToRender['offset'] + $count;
-		$limit = $this->mxdDataToRender['limit'];
-		$quickSearch = $this->mxdDataToRender['quickSearch'];
+		$nrTickets		= $this->mxdDataToRender['ticket_count'];
+		$count			= count($this->mxdDataToRender['tickets']);
+		$startOffset	= ($this->mxdDataToRender['offset'] + ($count ? 1 : 0));
+		$endOffset		= $this->mxdDataToRender['offset'] + $count;
+		$limit			= $this->mxdDataToRender['limit'];
+		$quickSearch	= $this->mxdDataToRender['quickSearch'];
+		$objAccount		= $this->mxdDataToRender['account'];
+		
+		$strAccountGetVar = ($objAccount)? "Account={$objAccount->id}" : "";
+		
 		if ($quickSearch === NULL)
 		{
 			$quickSearch = '';
@@ -50,10 +54,10 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 		if ($this->mxdDataToRender['offset'] > 0)
 		{
-			$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=0\">First</a>";
+			$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=0&{$strAccountGetVar}\">First</a>";
 			$offset = $this->mxdDataToRender['offset'] - $limit;
 			$offset = $offset < 0 ? 0 : $offset;
-			$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=$offset\">Previous</a>";
+			$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=$offset&{$strAccountGetVar}\">Previous</a>";
 		}
 
 		if ($nrTickets > $endOffset)
@@ -63,8 +67,8 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 			if ($nrLastPage)
 			{
 				$offset = $nrTickets - $nrLastPage;
-				$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=$endOffset\">Next</a>";
-				$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=$offset\">Last</a>";
+				$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=$endOffset&{$strAccountGetVar}\">Next</a>";
+				$arrNavLinks[] = "<a href=\"reflex.php/Ticketing/Tickets/Last/?offset=$offset&{$strAccountGetVar}\">Last</a>";
 			}
 		}
 
@@ -140,6 +144,12 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 		?>
 <form method="GET" action="<?=$target?>">
+	<?php
+		if ($objAccount)
+		{
+			echo "\t<input type='hidden' name='Account' value='{$objAccount->id}'></input>";
+		}
+	?>
 	<table id="ticketing" name="ticketing" class="reflex highlight-rows">
 		<caption>
 			<div id="caption_bar" name="caption_bar">
@@ -213,7 +223,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					{
 						echo " class=\"reflex-unsorted\"";
 					}
-					$link = Flex::getUrlBase() . "reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					$link = Flex::getUrlBase() . "reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>ID</th>
 				<th<?php 
@@ -229,7 +239,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					{
 						echo " class=\"reflex-unsorted\"";
 					}
-					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Subject</th>
 				<th<?php 
@@ -245,7 +255,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					{
 						echo " class=\"reflex-unsorted\"";
 					}
-					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Last Actioned</th>
 				<th<?php 
@@ -261,7 +271,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					{
 						echo " class=\"reflex-unsorted\"";
 					}
-					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Received</th>
 				<th<?php 
@@ -277,7 +287,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					{
 						echo " class=\"reflex-unsorted\"";
 					}
-					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Owner</th>
 				<th<?php 
@@ -293,7 +303,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					{
 						echo " class=\"reflex-unsorted\"";
 					}
-					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Category</th>
 				<th<?php 
@@ -309,7 +319,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					{
 						echo " class=\"reflex-unsorted\"";
 					}
-					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Status</th>
 				<th<?php 
@@ -325,7 +335,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 					{
 						echo " class=\"reflex-unsorted\"";
 					}
-					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection";
+					$link = Flex::getUrlBase() . "/reflex.php/Ticketing/Tickets/Last/?sort[\\'$col\\']=$sortDirection&{$strAccountGetVar}";
 					echo ' onclick="document.location = \''. $link . '\'"';
 				?>>Priority</th>
 				<th colspan="<?=$nrPossibleActions?>">Actions</th>
@@ -359,11 +369,11 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 			foreach($possibleActions as $action)
 			{
-				$actionLink = $actions[$action] ? "<a href='$base$action'>" . htmlspecialchars($action) . "</a>" : "&nbsp;";
+				$actionLink = $actions[$action] ? "<a href='$base$action/?{$strAccountGetVar}'>" . htmlspecialchars($action) . "</a>" : "&nbsp;";
 				if ($action == 'Assign' && !$actions[$action])
 				{
 					$action = 'Reassign';
-					$actionLink = $actions[$action] ? "<a href='$base$action'>" . htmlspecialchars($action) . "</a>" : "&nbsp;";
+					$actionLink = $actions[$action] ? "<a href='$base$action/?{$strAccountGetVar}'>" . htmlspecialchars($action) . "</a>" : "&nbsp;";
 				}
 				$actionCells[] = "<td>$actionLink</td>";
 			}
@@ -395,7 +405,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		?>
 
 			<tr class="<?=$tr_alt?>">
-				<td><a href="reflex.php/Ticketing/Ticket/<?=$ticket->id?>/View"><?php echo $ticket->id; ?></a></td>
+				<td><a href="reflex.php/Ticketing/Ticket/<?=$ticket->id?>/View/<?php echo "?{$strAccountGetVar}"?>"><?php echo $ticket->id; ?></a></td>
 				<td><?php echo htmlspecialchars(trim($ticket->subject) ? $ticket->subject : '<em>[No Subject]</em>'); ?></td>
 				<td><?php echo $strModifiedOn; ?></td>
 				<td><?php echo $strCreatedOn; ?></td>

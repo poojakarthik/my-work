@@ -50,31 +50,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		}
 
 		// Handle viewing the ticket functionality in the context of a single declared account
-		if (array_key_exists("Account", $_REQUEST))
-		{
-			$objAccount = Account::getForId(intval($_REQUEST['Account']));
-			if ($objAccount == NULL)
-			{
-				// Account cannot be found so assume the user wants to view all accounts
-				$_SESSION['ticketing']['accountId'] = NULL;
-				unset($_SESSION['ticketing']['accountId']);
-			}
-			else
-			{
-				// All ticketing functionality should be limitted to this account.  Update it in the session
-				$_SESSION['ticketing']['accountId'] = $objAccount->id;
-			}
-		}
-		if (array_key_exists('ticketing', $_SESSION) && is_array($_SESSION['ticketing']) && array_key_exists('accountId', $_SESSION['ticketing']))
-		{
-			// Grab a reference to the account
-			$objAccount = Account::getForId($_SESSION['ticketing']['accountId']);
-		}
-		else
-		{
-			// Set it as being null
-			$objAccount = NULL;
-		}
+		$objAccount = (array_key_exists("Account", $_REQUEST)) ? Account::getForId(intval($_REQUEST['Account'])) : NULL;
 
 		if ($objAccount != NULL)
 		{
@@ -93,18 +69,40 @@ class Application_Handler_Ticketing extends Application_Handler
 		}
 
 		// If this search is based on last search, default all search settings to be those of the last search
-		if (($pathToken == 'last' || array_key_exists('last', $_REQUEST)) && array_key_exists('ticketing', $_SESSION) && array_key_exists('lastTicketList', $_SESSION['ticketing']))
+		if (($pathToken == 'last' || array_key_exists('last', $_REQUEST)) && array_key_exists('ticketing', $_SESSION) && array_key_exists('lastTicketList', $_SESSION['ticketing']) && is_array($_SESSION['ticketing']['lastTicketList']))
 		{
-			$lastQuery = unserialize($_SESSION['ticketing']['lastTicketList']);
-			$sort = $lastQuery['sort'];
-			$columns = $lastQuery['columns'];
-			$quickSearch = $lastQuery['quickSearch'];
-			$oldFilter = $lastQuery['filter'];
-			$ownerId = array_key_exists('ownerId', $oldFilter) ? $oldFilter['ownerId']['value'] : NULL;
-			$statusId = array_key_exists('statusId', $oldFilter) ? $oldFilter['statusId']['value'] : NULL;
-			$categoryId = array_key_exists('categoryId', $oldFilter) ? $oldFilter['categoryId']['value'] : NULL;
-			$limit = $lastQuery['limit'];
-			$offset = $lastQuery['offset'];
+			// The last ticket list query has been requested
+			// Check if one exists for the specified account or if we want to view tickets for any account
+			$lastQuery = NULL;
+			if ($objAccount && array_key_exists($objAccount->id, $_SESSION['ticketing']['lastTicketList']))
+			{
+				// A query has been cached for this account
+				$lastQuery = unserialize($_SESSION['ticketing']['lastTicketList'][$objAccount->id]);
+			}
+			elseif ($objAccount === NULL && array_key_exists("AllTickets", $_SESSION['ticketing']['lastTicketList']))
+			{
+				// A query has been cahced for the AllTickets context
+				$lastQuery = unserialize($_SESSION['ticketing']['lastTicketList']["AllTickets"]);
+			}
+			
+			if ($lastQuery !== NULL)
+			{
+				$sort			= $lastQuery['sort'];
+				$columns		= $lastQuery['columns'];
+				$quickSearch	= $lastQuery['quickSearch'];
+				$oldFilter		= $lastQuery['filter'];
+				$ownerId		= array_key_exists('ownerId', $oldFilter) ? $oldFilter['ownerId']['value'] : NULL;
+				$statusId		= array_key_exists('statusId', $oldFilter) ? $oldFilter['statusId']['value'] : NULL;
+				$categoryId		= array_key_exists('categoryId', $oldFilter) ? $oldFilter['categoryId']['value'] : NULL;
+				$limit			= $lastQuery['limit'];
+				$offset			= $lastQuery['offset'];
+			}
+			
+		} 
+		{
+			// Do the last query
+			
+			
 		}
 
 		if (array_key_exists('offset', $_REQUEST))
@@ -225,13 +223,31 @@ class Application_Handler_Ticketing extends Application_Handler
 		$detailsToRender['limit'] = $limit;
 
 		$lastTicketList = serialize($detailsToRender);
-		$_SESSION['ticketing']['lastTicketList'] = $lastTicketList;
-
-		$detailsToRender['tickets'] = Ticketing_Ticket::findMatching($columns, $sort, $filter, $offset, $limit, $quickSearch);
-		$detailsToRender['users'] = Ticketing_User::listAllActiveWithTickets();
 		
-		$detailsToRender['statuses'] = array_merge(Ticketing_Status_Type_Conglomerate::listAll(), Ticketing_Status::listAll());
-		$detailsToRender['categories'] = Ticketing_Category::listAll();
+		// Store the query details in the session (but only store the details of the last 10 queries)
+		$strLastQueryKey = ($objAccount)? $objAccount->id : "AllTickets";
+		if (array_key_exists('ticketing', $_SESSION) && is_array($_SESSION['ticketing']) && array_key_exists('lastTicketList', $_SESSION['ticketing']) && is_array($_SESSION['ticketing']['lastTicketList']) && array_key_exists($strLastQueryKey, $_SESSION['ticketing']['lastTicketList']))
+		{
+			// A query for this account (or for AllTickets) is already in the session
+			// By removing it before adding it again, the array will work like a stack
+			unset($_SESSION['ticketing']['lastTicketList'][$strLastQueryKey]);
+		}
+		// Now add the query
+		$_SESSION['ticketing']['lastTicketList'][$strLastQueryKey] = $lastTicketList;
+		
+		if (count($_SESSION['ticketing']['lastTicketList']) > 10)
+		{
+			// There are now more than 10 "last queries" in the session
+			// Remove the oldest one
+			reset($_SESSION['ticketing']['lastTicketList']);
+			unset($_SESSION['ticketing']['lastTicketList'][key($_SESSION['ticketing']['lastTicketList'])]);
+		}
+
+		$detailsToRender['tickets']		= Ticketing_Ticket::findMatching($columns, $sort, $filter, $offset, $limit, $quickSearch);
+		$detailsToRender['users']		= Ticketing_User::listAllActiveWithTickets();
+		$detailsToRender['statuses']	= array_merge(Ticketing_Status_Type_Conglomerate::listAll(), Ticketing_Status::listAll());
+		$detailsToRender['categories']	= Ticketing_Category::listAll();
+		$detailsToRender['account']		= $objAccount;
 
 		$this->LoadPage('ticketing_tickets', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
@@ -244,8 +260,21 @@ class Application_Handler_Ticketing extends Application_Handler
 			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
+		// Handle viewing the ticket functionality in the context of a single declared account
+		$objCurrentAccount = (array_key_exists("Account", $_REQUEST)) ? Account::getForId(intval($_REQUEST['Account'])) : NULL;
+
 		BreadCrumb()->EmployeeConsole();
-		BreadCrumb()->TicketingConsole(TRUE);
+		if ($objCurrentAccount)
+		{
+			BreadCrumb()->AccountOverview($objCurrentAccount->id, TRUE);
+			BreadCrumb()->ViewTicketsForAccount($objCurrentAccount->id, TRUE);
+			
+			AppTemplateAccount::BuildContextMenu($objCurrentAccount->id);
+		}
+		else
+		{
+			BreadCrumb()->TicketingConsole(TRUE);
+		}
 
 		$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
 
@@ -283,6 +312,11 @@ class Application_Handler_Ticketing extends Application_Handler
 			{
 				$detailsToRender['error'] = 'Unable to perform action';
 				throw new Exception('No ticket selected.');
+			}
+			elseif ($ticket && $objCurrentAccount && $ticket->accountId != $objCurrentAccount->id)
+			{
+				// The page is being viewed in the context of a specific account ($objCurrentAccount) but the ticket is not associated with this account
+				throw new Exception("Ticket is not associated with account: ". $objCurrentAccount->getName());
 			}
 
 			$actionLabel = $action;
@@ -486,6 +520,12 @@ class Application_Handler_Ticketing extends Application_Handler
 									}
 									else
 									{
+										// The account number is valid
+										if ($objCurrentAccount && $value->id != $objCurrentAccount->id)
+										{
+											$invalidValues[$editableValue] = 'The account number is not for the current account.';
+										}
+										
 										$ticket->accountId = $value->id;
 										$ticket->customerGroupId = $value->customerGroup;
 									}
@@ -746,6 +786,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		$detailsToRender['permitted_actions'] = $this->getPermittedTicketActions($currentUser, $ticket);
 		$detailsToRender['editable_values'] = $editableValues;
 		$detailsToRender['invalid_values'] = $invalidValues;
+		$detailsToRender['currentAccount'] = $objCurrentAccount;
 
 		$this->LoadPage('ticketing_ticket', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
@@ -805,6 +846,9 @@ class Application_Handler_Ticketing extends Application_Handler
 			AuthenticatedUser()->InsufficientPrivilegeDie();
 		}
 
+		// Handle viewing the ticket functionality in the context of a single declared account
+		$objCurrentAccount = (array_key_exists("Account", $_REQUEST)) ? Account::getForId(intval($_REQUEST['Account'])) : NULL;
+
 		$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
 
 		if (is_numeric($action))
@@ -843,6 +887,25 @@ class Application_Handler_Ticketing extends Application_Handler
 			}
 
 			$sendError = '';
+			
+			// Check that the correspondence's ticket is associated with the current account, if the page is being viewed in the context of a single account 
+			if ($objCurrentAccount)
+			{
+				if ($correspondence)
+				{
+					$ticketId = $correspondence->ticketId;
+				}
+				if ($ticketId)
+				{
+					$objTicket = Ticketing_Ticket::getForId($ticketId);
+					
+					if ($objTicket && $objTicket->accountId != $objCurrentAccount->id)
+					{
+						throw new Exception("This item of correspondence relates to ticket {$ticketId} which is not associated with account: ". $objCurrentAccount->getName());
+					}
+				}
+			}
+			
 
 			switch ($action)
 			{
@@ -1055,23 +1118,33 @@ class Application_Handler_Ticketing extends Application_Handler
 		}
 
 		BreadCrumb()->EmployeeConsole();
-		BreadCrumb()->TicketingConsole(TRUE);
-		if ($ticketId) 
+		if ($objCurrentAccount)
 		{
+			BreadCrumb()->AccountOverview($objCurrentAccount->id, TRUE);
+			BreadCrumb()->ViewTicketsForAccount($objCurrentAccount->id, TRUE);
+			BreadCrumb()->TicketingTicket($ticketId, $objCurrentAccount->id);
+			
+			AppTemplateAccount::BuildContextMenu($objCurrentAccount->id);
+		}
+		else
+		{
+			BreadCrumb()->TicketingConsole(TRUE);
 			BreadCrumb()->TicketingTicket($ticketId);
 		}
+
 		$actionLabel = $action;
 		$actionLabel[0] = strtoupper($actionLabel[0]);
 		BreadCrumb()->SetCurrentPage("$actionLabel Correspondence");
 
 
-		$detailsToRender['correspondence'] = $correspondence;
-		$detailsToRender['action'] = $action;
-		$detailsToRender['send_error'] = $sendError;
-		$detailsToRender['permitted_actions'] = $this->getPermittedCorrespondenceActions($currentUser, $correspondence);
-		$detailsToRender['ticketId'] = $ticketId;
-		$detailsToRender['editable_values'] = $editableValues;
-		$detailsToRender['invalid_values'] = $invalidValues;
+		$detailsToRender['correspondence']		= $correspondence;
+		$detailsToRender['action']				= $action;
+		$detailsToRender['send_error']			= $sendError;
+		$detailsToRender['permitted_actions']	= $this->getPermittedCorrespondenceActions($currentUser, $correspondence);
+		$detailsToRender['ticketId']			= $ticketId;
+		$detailsToRender['editable_values']		= $editableValues;
+		$detailsToRender['invalid_values']		= $invalidValues;
+		$detailsToRender['currentAccount']		= $objCurrentAccount;
 
 		$this->LoadPage('ticketing_correspondance', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
