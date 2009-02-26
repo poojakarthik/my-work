@@ -87,12 +87,6 @@
  		
  		$this->_selRequestByFNN			= new StatementSelect("ProvisioningRequest", "Id", 
 												"FNN = <FNN> AND Type = <Type> AND Status = ".REQUEST_STATUS_PENDING);
- 		
- 		$this->_selSequenceNumber		= new StatementSelect(	"Config",
-																"Value",
-																"Application = ".APPLICATION_PROVISIONING .
-																	" AND Module = '" . get_class($this) . "'" .
-																	" AND Name = <Name>");
 		
  		$this->_selServiceAddress		= new StatementSelect("ServiceAddress", "*", "Service = <Service>");
  		
