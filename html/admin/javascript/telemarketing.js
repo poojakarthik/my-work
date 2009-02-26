@@ -103,7 +103,7 @@ var Telemarketing	= Class.create
 			var strHTML	=	"<div class='GroupedContent'>\n" +
 							"	<table class='relfex'>\n" +
 							"		<tr>\n" +
-							"			<th style='font-size:10pt; vertical-align:top;'>Service FNN : </th>\n" +
+							"			<th style='font-size:10pt; vertical-align:text-top;'>Service FNN : </th>\n" +
 							"			<td><input id='Telemarketing_Blacklist_FNN' type='text' maxlength='10' size='20' /></td>\n" +
 							"		</tr>\n" +
 							"	</table>\n" +
