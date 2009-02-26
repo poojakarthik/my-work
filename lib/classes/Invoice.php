@@ -247,8 +247,8 @@ class Invoice extends ORM
 		$fltPreChargeTaxTotal		= $this->Tax;
 
 		// Mark Account Adjustments
-		$arrWhere	= Array('Account' => $objAccount->Id);
-		$arrData	= Array('Status' => CHARGE_TEMP_INVOICE, 'invoice_run_id' => $this->invoice_run_id, 'BillingPeriodEnd'=>$this->billing_period_end_datetime);
+		$arrWhere	= Array('Account' => $objAccount->Id, 'BillingPeriodEnd'=>$this->billing_period_end_datetime);
+		$arrData	= Array('Status' => CHARGE_TEMP_INVOICE, 'invoice_run_id' => $this->invoice_run_id);
 		$updMarkAccountCharges	= self::_preparedStatement('updMarkAccountCharges');
 		if ($updMarkAccountCharges->Execute($arrData, $arrWhere) === FALSE)
 		{
