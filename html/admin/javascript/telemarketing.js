@@ -149,7 +149,7 @@ var Telemarketing	= Class.create
 				Vixen.Popup.ShowPageLoadingSplash();
 				
 				// Valid -- Run AJAX
-				var fncJsonFunc		= jQuery.json.jsonFunction(fncResponseHandler, null, 'Document', 'sendEmail');
+				var fncJsonFunc		= jQuery.json.jsonFunction(fncResponseHandler, null, 'Telemarketing', 'addFNNToBlacklist');
 				fncJsonFunc(strFNN);
 			}
 			else
