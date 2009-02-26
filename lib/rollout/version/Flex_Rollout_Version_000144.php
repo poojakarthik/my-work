@@ -175,7 +175,7 @@ class Flex_Rollout_Version_000144 extends Flex_Rollout_Version
 		
 		// 10:	Add the RatePlan.product_id Field
 		$strSQL = "	ALTER TABLE RatePlan
-					ADD product_id		BIGINT(20)		NULL		UNSIGNED					COMMENT '(FK) Product that this defines',
+					ADD product_id		BIGINT(20)	UNSIGNED	NULL	COMMENT '(FK) Product that this defines',
 					ADD CONSTRAINT	fk_rate_plan_product_id	FOREIGN KEY (product_id)	REFERENCES product(id)	ON UPDATE CASCADE ON DELETE SET NULL;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
