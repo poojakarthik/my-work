@@ -60,6 +60,14 @@ if (count($objAccountGroup->getAccounts()) > 1)
 	$this->Page->AddObject('AccountGroupDetails', COLUMN_TWO);
 }
 
+
+if (Flex_Module::isActive(FLEX_MODULE_TICKETING) && Ticketing_User::currentUserIsTicketingUser())
+{
+	// I'm passing the account id as the "context"
+	$this->Page->AddObject(AccountTicketList, COLUMN_TWO, DBO()->Account->Id->Value);
+}
+
+
 $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_VIEW, "AccountDetailsDiv");
 $this->Page->AddObject('AccountContactsList', COLUMN_ONE, HTML_CONTEXT_PAGE);
 $this->Page->AddObject('InvoiceList', COLUMN_ONE, HTML_CONTEXT_DEFAULT);

@@ -49,9 +49,9 @@ class Ticketing_Status_Type_Conglomerate extends Ticketing_Status_Type
 		{
 			$instances = parent::listAll();
 			$instances[self::TICKETING_STATUS_TYPE_CONGLOMERATE_OPEN_OR_PENDING] =  
-				new Ticketing_Status_Type_Conglomerate(self::TICKETING_STATUS_TYPE_CONGLOMERATE_OPEN_OR_PENDING, 
-														$instances[TICKETING_STATUS_TYPE_OPEN], 
-														$instances[TICKETING_STATUS_TYPE_PENDING]);
+				new self(	self::TICKETING_STATUS_TYPE_CONGLOMERATE_OPEN_OR_PENDING, 
+							$instances[TICKETING_STATUS_TYPE_OPEN], 
+							$instances[TICKETING_STATUS_TYPE_PENDING]);
 		}
 		return $instances;
 	}

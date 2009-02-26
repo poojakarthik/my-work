@@ -902,7 +902,8 @@ h2.Article,
 h2.CustomerGroup,
 h2.ConstantGroup,
 h2.Carrier,
-h2.CustomerStatus
+h2.CustomerStatus,
+h2.Tickets
 {
 	background-repeat:		no-repeat;
 	background-position:	center left;
@@ -1065,6 +1066,11 @@ h2.CustomerGroup
 h2.CustomerStatus
 {
 	background-image:				url('img/template/customer_status.png');
+}
+
+h2.Tickets
+{
+	background-image:				url('img/template/tickets.png');
 }
 
 /**************************************************************************/
