@@ -42,6 +42,7 @@ class JSON_Handler_Telemarketing extends JSON_Handler
 			catch (Exception $eException)
 			{
 				DataAccess::getDataAccess()->TransactionRollback();
+				throw $eException;
 			}
 			
 			// If no exceptions were thrown, then everything worked
