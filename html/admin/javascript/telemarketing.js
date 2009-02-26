@@ -127,7 +127,7 @@ var Telemarketing	= Class.create
 				var fncResponseHandler	= function(objResponse)
 				{
 					Flex.Telemarketing.pupBlackListAdd.hide();
-					Vixen.Popup.CloseLoadingSplash();
+					Vixen.Popup.ClosePageLoadingSplash();
 					
 					if (objResponse.Success)
 					{
@@ -146,7 +146,7 @@ var Telemarketing	= Class.create
 					}
 				}
 				
-				Vixen.Popup.ShowLoadingSplash();
+				Vixen.Popup.ShowPageLoadingSplash();
 				
 				// Valid -- Run AJAX
 				var fncJsonFunc		= jQuery.json.jsonFunction(fncResponseHandler, null, 'Document', 'sendEmail');
