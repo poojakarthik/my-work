@@ -113,7 +113,7 @@ var Document	= Class.create
 			"				<tr>\n" +
 			"					<th valign='top' style='font-size: 10pt;text-align: right;' ><nobr>Attachments : </nobr></td>\n" +
 			"					<td valign='top'>\n" +
-			"						<div style='max-height:10em; overflow-y:scroll;'>\n";  
+			"						<div style='max-height:5em; overflow-y:scroll;'>\n";  
 			
 			for (var i = 0; i < arrDocuments.length; i++)
 			{
