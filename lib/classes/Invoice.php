@@ -196,7 +196,7 @@ class Invoice extends ORM
 			$fltTaxableCappedCharge	= $arrDetails['fltTaxableCappedCharge'];
 
 			// Determine and add in Plan Credit
-			if ($fltUsageLimit > $fltMinimumCharge)
+			if ($fltUsageLimit >= $fltMinimumCharge && $fltUsageLimit > 0)
 			{
 				Log::getLog()->log("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
 				$fltPlanCredit	= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
@@ -508,7 +508,7 @@ class Invoice extends ORM
 		if (!$arrPlanDetails['Shared'])
 		{
 			// Determine and add in Plan Credit
-			if ($fltUsageLimit > $fltMinimumCharge)
+			if ($fltUsageLimit >= $fltMinimumCharge && $fltUsageLimit > 0)
 			{
 				$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
 				Log::getLog()->log("min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
