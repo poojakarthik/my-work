@@ -173,16 +173,18 @@ class Document extends ORM
 	public function getPath($bolAsArray=false)
 	{
 		// Recursively work our way back up the Directory Tree
-		$objDocumentContent	= $this->_getContent(true, true);
+		$objDocumentContent	= $this->getContentDetails();
 		if ($objDocumentContent->parent_brochure_id)
 		{
 			// We have a Parent, get its path
-			$objParent	= new Document(array('id'=>$objDocumentContent->parent_brochure_id));
+			$objParent			= new Document(array('id'=>$objDocumentContent->parent_brochure_id));
+			$objParentContent	= $objParent->getContentDetails();
+			$strFriendlyName	= $objParentContent->getFriendlyName();
 			
 			if ($bolAsArray)
 			{
 				$arrPathStack	= $objParent->getPath(true);
-				$arrPathStack[]	= array('name'=>$this->name, 'document_id'=>$this->id);
+				$arrPathStack[]	= array('name'=>$objDocumentContent->name, 'document_id'=>$this->id, 'friendly_name'=>$strFriendlyName);
 				return $arrPathStack;
 			}
 			else
@@ -193,7 +195,7 @@ class Document extends ORM
 		else
 		{
 			// We are at the root directory
-			return ($bolAsArray) ? array(array('name'=>'', 'document_id'=>0)) : '';
+			return ($bolAsArray) ? array(array('name'=>'', 'document_id'=>0, 'friendly_name'=>self::ROOT_DIRECTORY_NAME)) : '';
 		}
 	}
 	

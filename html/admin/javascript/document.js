@@ -10,6 +10,10 @@ var Document	= Class.create
 		this.pupEmail.setTitle('Email Document');
 		this.pupEmail.addCloseButton();
 		
+		this.pupExplorer	= new Reflex_Popup(80);
+		this.pupExplorer.setTitle('Document Explorer');
+		this.pupExplorer.addCloseButton();
+		
 		this._arrDocuments		= null;
 		this._arrEmailAddresses	= new Array();
 		this._arrFromAddresses	= new Array();
@@ -349,7 +353,98 @@ var Document	= Class.create
 		{
 			return false;
 		}
+	},
+	
+	initExplorerPopup	: function()
+	{
+		// Render the Explorer popup at the Root Directory
+		this.updateExplorerPopup(null);
+		
+		this.pupExplorer.display();
+	},
+	
+	updateExplorerPopup	: function(intDocumentId)
+	{
+		// Retrieve the children data for this Document
+		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Document._emailDocumentResponse.bind(this), null, 'Document', 'getDirectoryListing');
+		fncJsonFunc(intDocumentId);
+	},
+	
+	_renderExplorerPopup	: function(objResponse)
+	{
+		if (objResponse.Success)
+		{
+			// Build Breadcrumb Menu
+			var strBreadcrumbMenu	= '';
+			for (var i = 0; i < objResponse.arrPath.length; i++)
+			{
+				if (i != 0)
+				{
+					strBreadcrumbMenu	+= '&nbsp;>&nbsp;';
+				}
+				
+				var strOnClick	= (i < objResponse.arrPath.length - 1) ? "onclick='Flex.Document.updateExplorerPopup("+objResponse.arrPath[i].document_id+");'" : '';
+				strBreadcrumbMenu	+= "<span "+strOnClick+">"+objResponse.arrPath[i].friendly_name+"</span>";
+			}
+			
+			// Render the new Popup Contents
+			var strHTML	= "\n" +
+			"<div>\n" +
+			"	<div>\n" +
+			"		"+objResponse.strFriendlyName+"\n" +
+			"	</div>\n" +
+			"	<div>\n" +
+			"		"+objResponse.strDescription+"\n" +
+			"	</div>\n" +
+			"	<div>\n" +
+			"		"+strBreadcrumbMenu+"\n" +
+			"	</div>\n" +
+			"	<div>\n" +
+			"		\n" +
+			"	</div>\n" +
+			"</div>\n";
+			
+			this.pupExplorer.setContent(strHTML);
+		}
+		else if (objResponse.Success == undefined)
+		{
+			this.pupExplorer.hide();
+			$Alert(objResponse.Message);
+			return false;
+		}
+		else
+		{
+			this.pupExplorer.hide();
+			$Alert(objResponse);
+			return false;
+		}
 	}
 });
 
 Flex.Document = (Flex.Document == undefined) ? new Document() : Flex.Document;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

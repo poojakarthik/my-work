@@ -3296,6 +3296,22 @@ class MenuItems {
 		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){Flex.Telemarketing.addFNNToBlacklist();});";
 	}
 	
+	/**
+	 * ShowDocumentExplorer()
+	 *
+	 * Compiles the Href to be executed when the ShowDocumentExplorer menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ShowDocumentExplorer()
+	{
+		$this->strContextMenuLabel = "Documents";
+		$this->strLabel = "Document Explorer";
+		
+		return "javascript:JsAutoLoader.loadScript('javascript/document.js', function(){Flex.Document.initExplorerPopup();});";
+	}
+	
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//

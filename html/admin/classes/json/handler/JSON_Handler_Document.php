@@ -112,7 +112,6 @@ class JSON_Handler_Document extends JSON_Handler
 		try
 		{
 			$qryQuery	= new Query();
-			
 			$arrRootDir	= array('name'=>Document::ROOT_DIRECTORY_NAME, 'document_id'=>0);
 			
 			// If we have a document, load its children
@@ -120,20 +119,21 @@ class JSON_Handler_Document extends JSON_Handler
 			if ($intDocumentId)
 			{
 				// Load the Document
-				$objDocument			= new Document(array('id'=>$intDocumentId));
-				$objDocumentOutput->strName			= $objDocument->name;
-				$objDocumentOutput->strDescription	= $objDocument->description;
+				$objDocument		= new Document(array('id'=>$intDocumentId));
+				$objDocumentContent	= $objDocument->getContentDetails();
 				
-				$arrPath	= $objDocument->getPath();
-				array_shift($arrPath);
-				array_unshift($arrPath, $arrRootDir);
-				$objDocumentOutput->arrPath			= $arrPath;
+				$objDocumentOutput->strName			= $objDocumentContent->name;
+				$objDocumentOutput->strDescription	= $objDocumentContent->description;
+				$objDocumentOutput->strFriendlyName	= $objDocumentContent->getFriendlyName();
+				
+				$objDocumentOutput->arrPath			= $objDocument->getPath(true);
 			}
 			else
 			{
 				// Assume we are viewing the root directory
 				$objDocumentOutput->strName			= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->strDescription	= Document::ROOT_DIRECTORY_NAME;
+				$objDocumentOutput->strFriendlyName	= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->arrPath			= array($arrRootDir);
 			}
 			
