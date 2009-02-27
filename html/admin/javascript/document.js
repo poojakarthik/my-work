@@ -398,9 +398,9 @@ var Document	= Class.create
 			else
 			{
 				// No children
-				strDocumentListing	=	"<tr>\n" +
-										"	<td colspan='2' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
-										"</tr>\n";
+				strDocumentListing	=	"				<tr>\n" +
+										"					<td colspan='2' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
+										"				</tr>\n";
 			}
 			
 			// Render the new Popup Contents
@@ -417,11 +417,15 @@ var Document	= Class.create
 			"	</div>\n" +
 			"	<div>\n" +
 			"		<table class='reflex'>\n" +
-			"			<tr style='font-size:10pt;'>\n" +
-			"				<th>Name</td>\n" +
-			"				<th>Description</td>" +
-			"			</tr>\n" +
-			"			"+strDocumentListing+"\n" +
+			"			<thead>\n" +
+			"				<tr style='font-size:10pt;'>\n" +
+			"					<th>Name</td>\n" +
+			"					<th>Description</td>" +
+			"				</tr>\n" +
+			"			</thead>\n" +
+			"			<tbody>\n" +
+			strDocumentListing +
+			"			</tbody>\n" +
 			"		</table>\n" +
 			"	</div>\n" +
 			"</div>\n";
