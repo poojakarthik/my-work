@@ -222,7 +222,7 @@ class Document extends ORM
 		
 		// Get the list of children
 		$selChildren	= self::_preparedStatement('selChildren');
-		if ($selChildren->Execute($this->toArray()) === false)
+		if ($selChildren->Execute(array('id'=>$intDocumentId)) === false)
 		{
 			throw new Exception($selChildren->Error());
 		}
