@@ -376,25 +376,25 @@ var Document	= Class.create
 		{
 			// Build Breadcrumb Menu
 			var strBreadcrumbMenu	= '';
-			for (var i = 0; i < objResponse.arrPath.length; i++)
+			for (var i = 0; i < objResponse.objDocument.arrPath.length; i++)
 			{
 				if (i != 0)
 				{
 					strBreadcrumbMenu	+= '&nbsp;>&nbsp;';
 				}
 				
-				var strOnClick	= (i < objResponse.arrPath.length - 1) ? "onclick='Flex.Document.updateExplorerPopup("+objResponse.arrPath[i].document_id+");'" : '';
-				strBreadcrumbMenu	+= "<span "+strOnClick+">"+objResponse.arrPath[i].friendly_name+"</span>";
+				var strOnClick	= (i < objResponse.objDocument.arrPath.length - 1) ? "onclick='Flex.Document.updateExplorerPopup("+objResponse.objDocument.arrPath[i].document_id+");'" : '';
+				strBreadcrumbMenu	+= "<span "+strOnClick+">"+objResponse.objDocument.arrPath[i].friendly_name+"</span>";
 			}
 			
 			// Render the new Popup Contents
 			var strHTML	= "\n" +
 			"<div>\n" +
 			"	<div>\n" +
-			"		"+objResponse.strFriendlyName+"\n" +
+			"		"+objResponse.objDocument.strFriendlyName+"\n" +
 			"	</div>\n" +
 			"	<div>\n" +
-			"		"+objResponse.strDescription+"\n" +
+			"		"+objResponse.objDocument.strDescription+"\n" +
 			"	</div>\n" +
 			"	<div>\n" +
 			"		"+strBreadcrumbMenu+"\n" +
