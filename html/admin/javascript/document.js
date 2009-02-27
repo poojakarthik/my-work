@@ -13,7 +13,7 @@ var Document	= Class.create
 		this.pupExplorer	= new Reflex_Popup(50);
 		this.pupExplorer.setTitle('Document Explorer');
 		this.pupExplorer.addCloseButton();
-		this.pupExplorer.setIcon("../admin/img/template/account.png");
+		//this.pupExplorer.setIcon("../admin/img/template/account.png");
 		
 		this._arrDocuments		= null;
 		this._arrEmailAddresses	= new Array();
