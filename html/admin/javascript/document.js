@@ -395,8 +395,18 @@ var Document	= Class.create
 				for (var i = 0; i < objResponse.objDocument.arrChildren.length; i++)
 				{
 					var objChild	= objResponse.objDocument.arrChildren[i];
+					
+					var strIcon	= '../admin/img/template/article.png';
+					if (objChild.nature == 'DOCUMENT_NATURE_FOLDER')
+					{
+						strIcon	= '../admin/img/template/folder.png';
+					}
+					else if (objChild.file_type_id)
+					{
+						strIcon	= '../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/16x16';
+					}
 					strDocumentListing	+=	"				<tr>\n" +
-											"					<td><img src='../admin/reflex.php/File/Image/FileTypeIcon/"+objChild.file_type_id+"/16x16' />&nbsp;<span>"+objChild.friendly_name+"</span></td>\n" +
+											"					<td><img src='"+strIcon+"' />&nbsp;<span>"+objChild.friendly_name+"</span></td>\n" +
 											"					<td><em>"+objChild.description+"</em></td>\n" +
 											"					<td>&nbsp;</td>\n" +
 											"				</tr>\n";
