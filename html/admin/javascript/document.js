@@ -412,7 +412,7 @@ var Document	= Class.create
 			"	<div class='GroupedContent'>\n" +
 			"		"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
-			"	<div class='GroupedContent'>\n" +
+			"	<div>\n" +
 			"		<table class='reflex'>\n" +
 			"			<thead>\n" +
 			"				<tr style='font-size:10pt;'>\n" +
