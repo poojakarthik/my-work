@@ -215,9 +215,9 @@ class Document extends ORM
 	 */
 	public static function getChildrenForId($intDocumentId, $bolAsArray=false)
 	{
-		if ($intDocumentId !== null || (int)$intDocumentId <= 0)
+		if ($intDocumentId !== null && (int)$intDocumentId <= 0)
 		{
-			throw new Exception("Document::getChildrenForId(".var_dump($intDocumentId).") paramter 1 is neither NULL nor a positive integer");
+			throw new Exception("Document::getChildrenForId({$intDocumentId}) paramter 1 is neither NULL nor a positive integer");
 		}
 		
 		// Get the list of children
