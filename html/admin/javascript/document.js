@@ -409,10 +409,10 @@ var Document	= Class.create
 			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
 			"		<em>"+objResponse.objDocument.strDescription+"</em>\n" +
 			"	</div>\n" +
-			"	<div>\n" +
+			"	<div class='GroupedContent'>\n" +
 			"		"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
-			"	<div>\n" +
+			"	<div class='GroupedContent'>\n" +
 			"		<table class='reflex'>\n" +
 			"			<thead>\n" +
 			"				<tr style='font-size:10pt;'>\n" +
