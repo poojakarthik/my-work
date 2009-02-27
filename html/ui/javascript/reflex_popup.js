@@ -101,6 +101,9 @@ Object.extend(Reflex_Popup.prototype, {
 		var tb = document.createElement('div');
 		tb.className = 'reflex-popup-title-bar';
 		this.container.appendChild(tb);
+		
+		this.icon	= document.createElement('img');
+		this.icon.style.display	= 'none';
 
 		this.titlePane = document.createElement('div');
 		this.titlePane.className = 'reflex-popup-title';
@@ -223,6 +226,19 @@ Object.extend(Reflex_Popup.prototype, {
 		this.footerPane.style.display	= (buttons.length) ? 'block' : 'none';
 		
 		this.footerPane.style.textAlign	= (bolCentred != undefined && bolCentred) ? 'center' : 'right';
+	},
+	
+	setIcon	: function(strImageSource)
+	{
+		if (strImageSource)
+		{
+			this.icon.src	= strImageSource;
+			this.icon.style.display	= 'inline';
+		}
+		else
+		{
+			this.icon.style.display	= 'none';
+		}
 	},
 
 	recentre: function()
