@@ -315,7 +315,7 @@ class Document extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"document JOIN document_content ON document.id = document_content.document_id", 
 																					"document.*", 
 																					"parent_document_id <=> <id> AND document_content.id = (SELECT MAX(id) FROM document_content dc2 WHERE document_id = document_content.document_id)",
-																					"document.document_type_nature_id ASC, document_content.name ASC");
+																					"document.document_nature_id ASC, document_content.name ASC");
 					break;
 				
 				// INSERTS
