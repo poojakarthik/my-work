@@ -149,6 +149,7 @@ class JSON_Handler_Document extends JSON_Handler
 				
 				$objChildOutput->id				= $objChild->id;
 				$objChildOutput->name			= $objChildContent->name;
+				$objChildOutput->friendly_name	= $objChildContent->getFriendlyName();
 				$objChildOutput->description	= $objChildContent->description;
 				$objChildOutput->nature			= GetConstantName($objChild->document_nature_id, 'document_nature');
 				$objChildOutput->file_type_id	= $objChildContent->file_type_id;
