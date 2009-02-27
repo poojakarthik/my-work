@@ -13,6 +13,7 @@ var Document	= Class.create
 		this.pupExplorer	= new Reflex_Popup(50);
 		this.pupExplorer.setTitle('Document Explorer');
 		this.pupExplorer.addCloseButton();
+		this.pupExplorer.setIcon("../admin/img/template/account.png");
 		
 		this._arrDocuments		= null;
 		this._arrEmailAddresses	= new Array();
@@ -396,7 +397,7 @@ var Document	= Class.create
 				{
 					var objChild	= objResponse.objDocument.arrChildren[i];
 					
-					var strIcon	= '../admin/img/template/article.png';
+					var strIcon	= '../admin/img/template/file.png';
 					if (objChild.nature == 'DOCUMENT_NATURE_FOLDER')
 					{
 						strIcon	= '../admin/img/template/folder.png';
