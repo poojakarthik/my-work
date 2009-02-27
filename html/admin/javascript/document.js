@@ -405,10 +405,8 @@ var Document	= Class.create
 			// Render the new Popup Contents
 			var strHTML	= "\n" +
 			"<div>\n" +
-			"	<div>\n" +
+			"	<div class='GroupedContent'>\n" +
 			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
-			"	</div>\n" +
-			"	<div>\n" +
 			"		<em>"+objResponse.objDocument.strDescription+"</em>\n" +
 			"	</div>\n" +
 			"	<div>\n" +
