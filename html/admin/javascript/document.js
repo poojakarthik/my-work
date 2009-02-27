@@ -407,7 +407,7 @@ var Document	= Class.create
 					}
 					strDocumentListing	+=	"				<tr>\n" +
 											"					<td><img src='"+strIcon+"' />&nbsp;<span>"+objChild.friendly_name+"</span></td>\n" +
-											"					<td><em>"+objChild.description+"</em></td>\n" +
+											"					<td><em>"+(objChild.description ? objChild.description : '')+"</em></td>\n" +
 											"					<td>&nbsp;</td>\n" +
 											"				</tr>\n";
 				}
