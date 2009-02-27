@@ -398,7 +398,7 @@ var Document	= Class.create
 			{
 				// No children
 				strDocumentListing	=	"				<tr>\n" +
-										"					<td colspan='2' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
+										"					<td colspan='3' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
 										"				</tr>\n";
 			}
 			
