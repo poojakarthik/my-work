@@ -418,8 +418,9 @@ var Document	= Class.create
 			"		<table class='reflex'>\n" +
 			"			<thead>\n" +
 			"				<tr style='font-size:10pt;'>\n" +
-			"					<th>Name</td>\n" +
-			"					<th>Description</td>" +
+			"					<th>Name</th>\n" +
+			"					<th>Description</th>" +
+			"					<th>&nbsp;</th>" +
 			"				</tr>\n" +
 			"			</thead>\n" +
 			"			<tbody>\n" +
