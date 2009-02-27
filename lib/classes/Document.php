@@ -314,7 +314,7 @@ class Document extends ORM
 				case 'selChildren':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"document JOIN document_content ON document.id = document_content.document_id", 
 																					"document.*", 
-																					"parent_document_id = <id> AND document_content.id = (SELECT MAX(id) FROM document_content dc2 WHERE document_id = document_content.document_id))");
+																					"parent_document_id = <id> AND document_content.id = (SELECT MAX(id) FROM document_content dc2 WHERE document_id = document_content.document_id)");
 					break;
 				
 				// INSERTS
