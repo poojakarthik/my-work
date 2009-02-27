@@ -10,7 +10,7 @@ var Document	= Class.create
 		this.pupEmail.setTitle('Email Document');
 		this.pupEmail.addCloseButton();
 		
-		this.pupExplorer	= new Reflex_Popup(80);
+		this.pupExplorer	= new Reflex_Popup(50);
 		this.pupExplorer.setTitle('Document Explorer');
 		this.pupExplorer.addCloseButton();
 		
@@ -388,20 +388,41 @@ var Document	= Class.create
 				alert(strBreadcrumbMenu);
 			}
 			
+			// Build Document Listing
+			var strDocumentListing	= '';
+			if (objResponse.objDocument.arrChildren.length)
+			{
+				// Have children, render each entry
+				// TODO
+			}
+			else
+			{
+				// No children
+				strDocumentListing	=	"<tr>\n" +
+										"	<td colspan='2' style='text-align:center;'>There are no Documents in this Folder.</td>\n" +
+										"</tr>\n";
+			}
+			
 			// Render the new Popup Contents
 			var strHTML	= "\n" +
 			"<div>\n" +
 			"	<div>\n" +
-			"		"+objResponse.objDocument.strFriendlyName+"\n" +
+			"		<h1>"+objResponse.objDocument.strFriendlyName+"</h1>\n" +
 			"	</div>\n" +
 			"	<div>\n" +
-			"		"+objResponse.objDocument.strDescription+"\n" +
+			"		<em>"+objResponse.objDocument.strDescription+"</em>\n" +
 			"	</div>\n" +
 			"	<div>\n" +
 			"		"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
 			"	<div>\n" +
-			"		\n" +
+			"		<table class='reflex'>\n" +
+			"			<tr style='font-size:10pt;'>\n" +
+			"				<td>Name</td>\n" +
+			"				<td>Description</td>" +
+			"			</tr>\n" +
+			"			"+strDocumentListing+"\n" +
+			"		</table>\n" +
 			"	</div>\n" +
 			"</div>\n";
 			
