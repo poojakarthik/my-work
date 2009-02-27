@@ -366,7 +366,7 @@ var Document	= Class.create
 	updateExplorerPopup	: function(intDocumentId)
 	{
 		// Retrieve the children data for this Document
-		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Document._emailDocumentResponse.bind(this), null, 'Document', 'getDirectoryListing');
+		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Document._renderExplorerPopup.bind(this), null, 'Document', 'getDirectoryListing');
 		fncJsonFunc(intDocumentId);
 	},
 	
