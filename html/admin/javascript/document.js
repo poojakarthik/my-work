@@ -385,6 +385,7 @@ var Document	= Class.create
 				
 				var strOnClick	= (i < objResponse.objDocument.arrPath.length - 1) ? "onclick='Flex.Document.updateExplorerPopup("+objResponse.objDocument.arrPath[i].document_id+");'" : '';
 				strBreadcrumbMenu	+= "<span "+strOnClick+">"+objResponse.objDocument.arrPath[i].friendly_name+"</span>";
+				alert(strBreadcrumbMenu);
 			}
 			
 			// Render the new Popup Contents
