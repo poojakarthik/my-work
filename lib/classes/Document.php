@@ -9,6 +9,7 @@
 class Document extends ORM
 {
 	const				PATH_DIRECTORY_DELIMITER	= '/';
+	const				ROOT_DIRECTORY_NAME			= "Home";
 	
 	protected			$_strTableName				= "document";
 	protected static	$_strStaticTableName		= "document";
@@ -160,20 +161,78 @@ class Document extends ORM
 	/**
 	 * getPath()
 	 *
-	 * Access a Static Cache of Prepared Statements used by this Class
+	 * Returns the pseudo-Path to this Document
 	 * 
-	 * @param	[mixed			$mixRevision]						Revision of the Content to retrieve
-	 * 																TRUE	: Latest Revision (default)
-	 * 																FALSE	: Earliest Revision
-	 * 																integer	: X Revisions ago (0 = current)
+	 * @return	[boolean	$bolAsArray			]	TRUE	: Returns a directory 'stack' array, where index 0 is Root
+	 * 												FALSE	: Returns a Path String (default)
 	 * 
-	 * @return	Document_Content									The requested Statement
+	 * @return	string								Path to this Document
 	 *
 	 * @method
 	 */
-	public function getPath($mixRevision=true)
+	public function getPath($bolAsArray=false)
 	{
+		// Recursively work our way back up the Directory Tree
+		$objDocumentContent	= $this->_getContent(true, true);
+		if ($objDocumentContent->parent_brochure_id)
+		{
+			// We have a Parent, get its path
+			$objParent	= new Document(array('id'=>$objDocumentContent->parent_brochure_id));
+			
+			if ($bolAsArray)
+			{
+				$arrPathStack	= $objParent->getPath(true);
+				$arrPathStack[]	= array('name'=>$this->name, 'document_id'=>$this->id);
+				return $arrPathStack;
+			}
+			else
+			{
+				return $objParent->getPath(false).self::PATH_DIRECTORY_DELIMITER.$objDocumentContent->name;
+			}
+		}
+		else
+		{
+			// We are at the root directory
+			return ($bolAsArray) ? array(array('name'=>'', 'document_id'=>0)) : '';
+		}
+	}
+	
+	/**
+	 * getChildrenForId()
+	 *
+	 * Returns an array of Children Documents for a given parent Document
+	 * 
+	 * @param	integer		$intDocumentId			integer	: Parent Document Id
+	 * 												NULL	: Get children in the Root Directory
+	 * @param	[boolean	$bolAsArray			]	TRUE	: Returns Documents as associative arrays
+	 * 												FALSE	: Returns Documents as Document objects (default)
+	 * 
+	 * @return	string								Path to this Document
+	 *
+	 * @method
+	 */
+	public static function getChildrenForId($intDocumentId, $bolAsArray=false)
+	{
+		if ($intDocumentId !== null || (int)$intDocumentId <= 0)
+		{
+			throw new Exception("Document::getChildrenForId() paramter 1 is neither NULL nor a positive integer");
+		}
 		
+		// Get the list of children
+		$selChildren	= self::_preparedStatement('selChildren');
+		if ($selChildren->Execute($this->toArray()) === false)
+		{
+			throw new Exception($selChildren->Error());
+		}
+		else
+		{
+			$arrChildren	= array();
+			while ($arrChild = $selChildren->Fetch())
+			{
+				$arrChildren[]	= ($bolAsArray) ? $arrChild : new Document($arrChild);
+			}
+			return $arrChildren;
+		}
 	}
 	
 	/**
@@ -249,6 +308,11 @@ class Document extends ORM
 					break;
 				case 'selByNameAndParent':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("document JOIN document_content ON document.id = document_content.document_id", "document.*", "parent_document_id <=> <parent_document_id> AND name = <name> AND document_content.id = (SELECT Id FROM document_content WHERE document_id = document.id ORDER BY id DESC LIMIT 1)", NULL, 1);
+					break;
+				case 'selChildren':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"document JOIN document_content ON document.id = document_content.document_id", 
+																					"document.*", 
+																					"parent_document_id = <id> AND document_content.id = (SELECT MAX(id) FROM document_content dc2 WHERE document_id = document_content.document_id))");
 					break;
 				
 				// INSERTS

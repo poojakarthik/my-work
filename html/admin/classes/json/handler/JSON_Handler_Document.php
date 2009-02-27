@@ -106,5 +106,101 @@ class JSON_Handler_Document extends JSON_Handler
 						);
 		}
 	}
+	
+	public function getDirectoryListing($intDocumentId=null)
+	{
+		try
+		{
+			$qryQuery	= new Query();
+			
+			$arrRootDir	= array('name'=>Document::ROOT_DIRECTORY_NAME, 'document_id'=>0);
+			
+			// If we have a document, load its children
+			$objDocumentOutput	= new stdClass();
+			if ($intDocumentId)
+			{
+				// Load the Document
+				$objDocument			= new Document(array('id'=>$intDocumentId));
+				$objDocumentOutput->strName			= $objDocument->name;
+				$objDocumentOutput->strDescription	= $objDocument->description;
+				
+				$arrPath	= $objDocument->getPath();
+				array_shift($arrPath);
+				array_unshift($arrPath, $arrRootDir);
+				$objDocumentOutput->arrPath			= $arrPath;
+			}
+			else
+			{
+				// Assume we are viewing the root directory
+				$objDocumentOutput->strName			= Document::ROOT_DIRECTORY_NAME;
+				$objDocumentOutput->strDescription	= Document::ROOT_DIRECTORY_NAME;
+				$objDocumentOutput->arrPath			= array($arrRootDir);
+			}
+			
+			// Load the children
+			$arrChildren					= Document::getChildrenForId($intDocumentId, true);
+			$objDocumentOutput->arrChildren	= array();
+			foreach ($arrChildren as $arrChild)
+			{
+				$objChild			= new Document($arrChild);
+				$objChildContent	= $objChild->getContentDetails();
+				
+				$objChildOutput	= new stdClass();
+				
+				$objChildOutput->id				= $objChild->id;
+				$objChildOutput->name			= $objChildContent->name;
+				$objChildOutput->description	= $objChildContent->description;
+				$objChildOutput->nature			= GetConstantName($objChild->document_nature_id, 'document_nature');
+				$objChildOutput->file_type_id	= $objChildContent->file_type_id;
+				
+				$objDocumentOutput->arrChildren[]	= $objChildOutput;
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							"Success"		=> true,
+							"objDocument"	=> $objDocumentOutput,
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+		catch (Exception $e)
+		{
+			// Send an Email to Devs
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
+			return array(
+							"Success"	=> false,
+							"Message"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+	}
+	
+	public function buildEditPopup($intDocumentId=null)
+	{
+		try
+		{
+			$qryQuery	= new Query();
+			
+			
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							"Success"		=> true,
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+		catch (Exception $e)
+		{
+			// Send an Email to Devs
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
+			return array(
+							"Success"	=> false,
+							"Message"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+	}
 }
 ?>
