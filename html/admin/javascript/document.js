@@ -399,7 +399,7 @@ var Document	= Class.create
 			{
 				// No children
 				strDocumentListing	=	"<tr>\n" +
-										"	<td colspan='2' style='text-align:center;'>There are no Documents in this Folder.</td>\n" +
+										"	<td colspan='2' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
 										"</tr>\n";
 			}
 			
@@ -407,7 +407,7 @@ var Document	= Class.create
 			var strHTML	= "\n" +
 			"<div>\n" +
 			"	<div>\n" +
-			"		<h1>"+objResponse.objDocument.strFriendlyName+"</h1>\n" +
+			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
 			"	</div>\n" +
 			"	<div>\n" +
 			"		<em>"+objResponse.objDocument.strDescription+"</em>\n" +
@@ -418,8 +418,8 @@ var Document	= Class.create
 			"	<div>\n" +
 			"		<table class='reflex'>\n" +
 			"			<tr style='font-size:10pt;'>\n" +
-			"				<td>Name</td>\n" +
-			"				<td>Description</td>" +
+			"				<th>Name</td>\n" +
+			"				<th>Description</td>" +
 			"			</tr>\n" +
 			"			"+strDocumentListing+"\n" +
 			"		</table>\n" +
