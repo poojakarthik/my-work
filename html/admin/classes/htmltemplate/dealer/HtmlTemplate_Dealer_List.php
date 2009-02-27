@@ -68,7 +68,7 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 				$strLastName	= htmlspecialchars($objDealer->lastName);
 				$strUsername	= htmlspecialchars($objDealer->username);
 				$strIsManager	= (array_key_exists($objDealer->id, $arrManagers))? "Yes" : "No";
-				$strManager		= ($objDealer->upLineId !== NULL && array_key_exists($objDealer->upLineId, $arrManagers))? htmlspecialchars($arrManagers[$objDealer->upLineId]->getName()) : "";
+				$strManager		= ($objDealer->upLineId !== NULL && array_key_exists($objDealer->upLineId, $arrManagers))? htmlspecialchars($arrManagers[$objDealer->upLineId]->username) : "";
 				$strCanVerify	= ($objDealer->canVerify)? "Yes" : "No";
 				$strStatus		= htmlspecialchars(Dealer_Status::getForId($objDealer->dealerStatusId)->name);
 				$strIsEmployee	= ($objDealer->employeeId !== NULL)? "Yes" : "No";
