@@ -392,7 +392,15 @@ var Document	= Class.create
 			if (objResponse.objDocument.arrChildren.length)
 			{
 				// Have children, render each entry
-				// TODO
+				for (var i = 0; i < objResponse.objDocument.arrChildren.length; i++)
+				{
+					var objChild	= objResponse.objDocument.arrChildren[i];
+					strDocumentListing	+=	"				<tr>\n" +
+											"					<td><img src='../admin/reflex.php/File/Image/FileTypeIcon/"+objChild.file_type_id+"/16x16' />&nbsp;<span>"+objChild.friendly_name+"</span></td>\n" +
+											"					<td><em>"+objChild.description+"</em></td>\n" +
+											"					<td>&nbsp;</td>\n" +
+											"				</tr>\n";
+				}
 			}
 			else
 			{
