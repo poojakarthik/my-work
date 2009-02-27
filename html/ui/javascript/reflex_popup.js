@@ -104,6 +104,7 @@ Object.extend(Reflex_Popup.prototype, {
 		
 		this.icon	= document.createElement('img');
 		this.icon.style.display	= 'none';
+		tb.appendChild(this.icon);
 
 		this.titlePane = document.createElement('div');
 		this.titlePane.className = 'reflex-popup-title';
