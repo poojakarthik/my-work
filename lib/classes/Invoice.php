@@ -74,16 +74,16 @@ class Invoice extends ORM
 		$this->Debits			= 0.0;
 		$this->Credits			= 0.0;
 		$this->Tax				= 0.0;
-		
+
 		// Calculate Billing Period
 		$this->intInvoiceDatetime		= $objInvoiceRun->intInvoiceDatetime;
 		$this->strLastInvoiceDatetime	= $objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate);
 		$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
 		$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $this->intInvoiceDatetime);
-		
+
 		Log::getLog()->log("\t* {$objAccount->Id} Billing Period Start: {$this->strLastInvoiceDatetime} ($this->intLastInvoiceDatetime)");
 		Log::getLog()->log("\t* {$objAccount->Id} Billing Period End: {$objInvoiceRun->billing_period_end_datetime}");
-		
+
 		$this->billing_period_start_datetime	= $this->strLastInvoiceDatetime;
 		$this->billing_period_end_datetime		= $objInvoiceRun->billing_period_end_datetime;
 
@@ -203,7 +203,7 @@ class Invoice extends ORM
 				$intPeriodStart	= $this->intLastInvoiceDatetime;
 				$intPeriodEnd	= strtotime("-1 day", $this->intInvoiceDatetime);
 				$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
-	
+
 				// HACKHACKHACK: Add inverse tax value of Plan Credit to the Tax Total, so that everything balances
 				$this->Tax		+= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->intInvoiceDatetime);
 			}
@@ -219,7 +219,7 @@ class Invoice extends ORM
 			$fltSharedTotal			+= $fltTaxableOverusage;
 
 			Log::getLog()->log("Taxable Overusage: \${$fltTaxableOverusage}");
-			
+
 			// Add in Tax exempt over-usage
 			$fltTaxExemptOverusage	= max(0, $fltCDRCappedTotal - $fltUsageLimit) - $fltTaxableOverusage;
 			$fltSharedTotal			+= $fltTaxExemptOverusage;
@@ -228,7 +228,7 @@ class Invoice extends ORM
 			{
 				Log::getLog()->log("Tax Exempt Overusage: \${$fltTaxExemptOverusage}");
 			}
-			
+
 			// Add to Invoice Totals
 			Log::getLog()->log("Shared Plan Total: \$".$fltSharedTotal);
 			$this->Debits	+= $fltCDRCappedTotal;
@@ -515,8 +515,8 @@ class Invoice extends ORM
 				$intPeriodStart			= $intArrearsPeriodStart;
 				$intPeriodEnd			= $intArrearsPeriodEnd;
 				$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
-				
-				
+
+
 				// HACKHACKHACK: Add inverse tax value of Plan Credit to Service Tax Total, so that everything balances
 				$fltCreditTax			= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->intInvoiceDatetime);
 				$arrServiceTotal['Tax']	+= $fltCreditTax;
@@ -587,7 +587,7 @@ class Invoice extends ORM
 		while ($arrChargeTotal = $resResult->fetch_assoc())
 		{
 			$arrChargeTotals[$arrChargeTotal['Nature']][($arrChargeTotal['global_tax_exempt'])	? 'ExTax' : 'IncTax']	= $arrChargeTotal['Total'];
-			
+
 			//$fltTotalCharge	+= ($arrChargeTotal['Nature'] === 'DR') ? $arrChargeTotal['Total'] : -$arrChargeTotal['Total'];
 		}
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($arrChargeTotals['DR']['IncTax'], $this->intInvoiceDatetime);
@@ -873,7 +873,7 @@ class Invoice extends ORM
 		$intProratePeriod			= TruncateTime($intPeriodEndDate, $strSmallestDenomination, 'floor') - TruncateTime($intChargeDate, $strSmallestDenomination, 'floor');
 		$intBillingPeriod			= TruncateTime($intPeriodEndDate, $strSmallestDenomination, 'floor') - TruncateTime($intPeriodStartDate, $strSmallestDenomination, 'floor');
 		if ($intBillingPeriod)
-		{			
+		{
 			$fltProratedAmount			= ($fltAmount / $intBillingPeriod) * $intProratePeriod;
 			$fltProratedAmount			= round($fltProratedAmount, $intDecimalPlaces);
 			return $fltProratedAmount;
@@ -964,11 +964,11 @@ class Invoice extends ORM
 		}
 		$arrMinEarliestCDR	= $resResult->fetch_assoc();
 		$strEarliestCDR		= ($arrMinEarliestCDR['EarliestCDR'] !== NULL && strtotime($arrMinEarliestCDR['EarliestCDR']) < $this->intInvoiceDatetime) ? $arrMinEarliestCDR['EarliestCDR'] : NULL;
-		
+
 		// Default Arrears Period
 		$intArrearsPeriodStart	= $this->intLastInvoiceDatetime;
 		$intArrearsPeriodEnd	= strtotime("-1 day", $this->intInvoiceDatetime);
-		
+
 		// Is the Service tolling?
 		$intLevel	= 0;
 		if ($strEarliestCDR)
@@ -989,7 +989,7 @@ class Invoice extends ORM
 			{
 				$bolFirstInvoice	= true;
 				$arrPlanChargeSteps[]	= 'FIRST INVOICE';
-				
+
 				// Alternate Arrears Period
 				$intArrearsPeriodStart	= strtotime($strEarliestCDR);
 			}
@@ -1008,7 +1008,7 @@ class Invoice extends ORM
 				$intPeriodEnd	= strtotime("-1 day", strtotime("+1 month", $this->intInvoiceDatetime));
 				$this->_addPlanCharge($strChargeType, $fltMinimumCharge, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $this->_objAccount->AccountGroup, $this->_objAccount->Id, $intPrimaryService);
 			}
-			
+
 			// Charge in Arrears
 			if (!$arrPlanDetails['InAdvance'] || $bolFirstInvoice)
 			{
@@ -1018,7 +1018,7 @@ class Invoice extends ORM
 				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart, $this->intLastInvoiceDatetime, $intArrearsPeriodEnd);
 				$fltUsageStart		= Invoice::prorate($fltUsageStart		, $intArrearsPeriodStart, $this->intLastInvoiceDatetime, $intArrearsPeriodEnd);
 				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, $intArrearsPeriodStart, $this->intLastInvoiceDatetime, $intArrearsPeriodEnd);
-				
+
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= $intArrearsPeriodStart;
 				$intPeriodEnd	= $intArrearsPeriodEnd;
@@ -1035,7 +1035,7 @@ class Invoice extends ORM
 			$fltUsageLimit		= 0.0;
 		}
 		// DEBUG
-		//Log::getLog()->log($arrPlanChargeSteps);
+		Log::getLog()->log($arrPlanChargeSteps);
 
 		// Return usage data
 		return Array(
@@ -1181,7 +1181,7 @@ class Invoice extends ORM
 					{
 						$arrDataCDR['Units']	= ($arrDataCDR['Credit']) ? 0-$arrDataCDR['Units'] : $arrDataCDR['Units'];
 						$arrDataCDR['Charge']	= ($arrDataCDR['Charge']) ? 0-$arrDataCDR['Charge'] : $arrDataCDR['Charge'];
-						
+
 						$intAvailableUnits	-= $arrDataCDR['Units'];
 						$fltCharge			= $arrDataCDR['Charge'];
 						if ($intAvailableUnits < 0)
@@ -1321,7 +1321,7 @@ class Invoice extends ORM
 				case 'selLastInvoiceDatetime':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN InvoiceRun ON Invoice.invoice_run_id = InvoiceRun.Id", "InvoiceRun.BillingDate", "Invoice.Account = <Account>", "InvoiceRun.BillingDate DESC, InvoiceRun.Id DESC", 1);
 					break;
-				
+
 
 				// INSERTS
 				case 'insServiceTotal':
