@@ -1035,7 +1035,7 @@ class Invoice extends ORM
 			$fltUsageLimit		= 0.0;
 		}
 		// DEBUG
-		Log::getLog()->log($arrPlanChargeSteps);
+		//Log::getLog()->log($arrPlanChargeSteps);
 
 		// Return usage data
 		return Array(
@@ -1124,6 +1124,8 @@ class Invoice extends ORM
 		$arrPlanCharge['Description']		= "{$arrPlanDetails['Name']} ".$strDescription." from ".date("d/m/Y", $intPeriodStartDate)." to ".date("d/m/Y", $intPeriodEndDate);
 		$arrPlanCharge['ChargedOn']			= date("Y-m-d");
 		$arrPlanCharge['Amount']			= abs($fltAmount);
+		$arrPlanCharge['invoice_run_id']	= $this->invoice_run_id;
+		$arrPlanCharge['Status']			= CHARGE_TEMP_INVOICE;
 		if (!$GLOBALS['fwkFramework']->AddCharge($arrPlanCharge))
 		{
 			throw new Exception("Unable to create '{$arrPlanCharge['Description']}' for {$intAccount}::{$intService}!");
