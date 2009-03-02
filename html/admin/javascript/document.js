@@ -397,16 +397,23 @@ var Document	= Class.create
 				{
 					var objChild	= objResponse.objDocument.arrChildren[i];
 					
-					var strIcon	= '../admin/img/template/file.png';
-					var strLink	= 'window.location.href="../admin/reflex.php/File/Document/'+objChild.id+'"';
+					var strIcon			= '../admin/img/template/file.png';
+					var strLink			= 'window.location.href="../admin/reflex.php/File/Document/'+objChild.id+'"';
+					var strFriendlyName	= objChild.friendly_name;
 					if (objChild.nature == 'DOCUMENT_NATURE_FOLDER')
 					{
+						// Folder
 						strIcon	= '../admin/img/template/folder.png';
 						strLink	= 'Flex.Document.updateExplorerPopup('+objChild.id+');';
 					}
-					else if (objChild.has_icon)
+					else
 					{
-						strIcon	= '../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/16x16';
+						// File
+						if (objChild.has_icon)
+						{
+							strIcon	= '../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/16x16';
+						}
+						strFriendlyName	+= '.' + objChild.extension;
 					}
 					strDocumentListing	+=	"				<tr onmouseover='this.className=\"alt-hover\"' onmouseout='this.className=\"\"' onclick='"+strLink+"'>\n" +
 											"					<td><img src='"+strIcon+"' />&nbsp;<span>"+objChild.friendly_name+"</span></td>\n" +
