@@ -779,7 +779,7 @@ table.document-explorer tr[onclick]
 	
 }
 
-tr:hover
+table.document-explorer tbody tr:hover
 {
 	background-color	: #fff;
 	text-decoration		: underline;
