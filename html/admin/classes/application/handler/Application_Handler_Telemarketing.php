@@ -511,6 +511,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		}
 		
 		// Totals
+		fwrite($resLogFile, "\n".print_r($arrResult, true)."\n");
 		
 		fclose($resLogFile);
 		
