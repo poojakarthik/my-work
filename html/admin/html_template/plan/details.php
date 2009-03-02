@@ -57,7 +57,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		
 		echo "<div class='GroupedContent'>\n";
 		
-		$bolHasPlanEditPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
+		$bolHasPlanEditPerm = (AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT) ||  AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN));
 		$arrRatePlan		= DBO()->RatePlan->AsArray();
 		
 		// Handle the Archived property

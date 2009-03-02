@@ -57,7 +57,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 	function Render()
 	{
 		// If the user has Rate Management permissions then they can add and edit Plans
-		$bolHasPlanEditPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
+		$bolHasPlanEditPerm = (AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT) ||  AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN));
 	
 		$arrRatePlans			= DBO()->RatePlans->AsArray->Value;
 		$intServiceTypeFilter	= $_SESSION['AvailablePlansPage']['Filter']['ServiceType'];
