@@ -455,7 +455,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
-				fwrite($resLogFile, " -- FNN {$arrFNN['fnn']} has been washed due to [BLACKLISTING/OPTOUT]\n");
+				$strDescription	= "--OPTOUT";
 			}
 			
 			// Wash against the Internal DNCR Cache
@@ -467,7 +467,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
-				fwrite($resLogFile, " -- FNN {$arrFNN['fnn']} has been washed due to [DNCR]\n");
+				$strDescription	= "--DNCR";
 			}
 			
 			// Wash against Active Services in Flex
@@ -479,7 +479,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
-				fwrite($resLogFile, " -- FNN {$arrFNN['fnn']} has been washed due to [FLEX SERVICE]\n");
+				$strDescription	= "--FLEX SERVICE";
 			}
 			
 			// Wash against Active Contacts in Flex
@@ -491,17 +491,17 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
-				fwrite($resLogFile, " -- FNN {$arrFNN['fnn']} has been washed due to [FLEX CONTACT]\n");
+				$strDescription	= "--FLEX CONTACT";
 			}
 			
 			else
 			{
 				// Ok to Call
-				fwrite($resLogFile, " ++ FNN {$arrFNN['fnn']} been permitted to dial\n");
+				$strDescription	= "++ALLOWED";
 			}
 			
 			$fltSplit	= microtime(true);
-			fwrite($resLogFile, "({$fltSplit}) FNN {$intCount}/{$intTotal} completed in ".($fltSplit-$fltLap)." seconds (".GetConstantDescription($objFNN->telemarketing_fnn_withheld_reason_id, 'telemarketing_fnn_withheld_reason').")\n");
+			fwrite($resLogFile, "({$fltSplit}) FNN {$intCount}/{$intTotal} completed in ".($fltSplit-$fltLap)." seconds ({$strDescription})\n");
 		}
 		
 		fclose($resLogFile);
