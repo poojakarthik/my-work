@@ -447,7 +447,7 @@ var Document	= Class.create
 			"	<div class='document-explorer'>\n" +
 			"		<table class='reflex document-explorer'>\n" +
 			"			<thead>\n" +
-			"				<tr style='font-size:10pt;'>\n" +
+			"				<tr>\n" +
 			"					<th>Name</th>\n" +
 			"					<th>Description</th>" +
 			"					<th>Size</th>" +
