@@ -408,7 +408,7 @@ var Document	= Class.create
 					{
 						strIcon	= '../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/16x16';
 					}
-					strDocumentListing	+=	"				<tr onmouseover='this.style.class=\"alt\"' onmouseout='this.style.class=\"\"'>\n" +
+					strDocumentListing	+=	"				<tr onmouseover='this.class=\"alt\"' onmouseout='this.class=\"\"'>\n" +
 											"					<td onclick=''><img src='"+strIcon+"' />&nbsp;<span>"+objChild.friendly_name+"</span></td>\n" +
 											"					<td><em>"+(objChild.description ? objChild.description : '')+"</em></td>\n" +
 											"					<td>&nbsp;</td>\n" +
