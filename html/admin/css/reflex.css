@@ -779,7 +779,7 @@ table.document-explorer tr[onclick]
 	
 }
 
-table.document-explorer tbody tr:hover
+table.document-explorer tbody tr
 {
 	cursor				: pointer;
 }
