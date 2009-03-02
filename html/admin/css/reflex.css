@@ -716,8 +716,12 @@ div.document-explorer-address
 
 span.document-explorer-address-node
 {
-	color			: #00F;
 	vertical-align	: middle;
+}
+
+span.document-explorer-address-node[onclick]
+{
+	color			: #00F;
 }
 
 span.document-explorer-address-node[onclick]:hover
