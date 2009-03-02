@@ -221,11 +221,11 @@ class Application
 			}
 		}
 		
-		// Internal Contact List
-		ContextMenu()->ViewInternalContactList();
-		
 		// Document Management
 		ContextMenu()->ShowDocumentExplorer();
+		
+		// Internal Contact List
+		ContextMenu()->ViewInternalContactList();
 
 		// Render Page
 		//ob_start();
@@ -407,11 +407,11 @@ class Application
 			}
 		}
 		
-		// Internal Contact List
-		ContextMenu()->ViewInternalContactList();
-		
 		// Document Management
 		ContextMenu()->ShowDocumentExplorer();
+		
+		// Internal Contact List
+		ContextMenu()->ViewInternalContactList();
 		
 		// Render Page
 		//ob_start();
