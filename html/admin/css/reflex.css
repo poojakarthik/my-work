@@ -810,19 +810,19 @@ table.document-explorer td
 
 table.document-explorer .field-name
 {
-	width	: 35em;
+	width	: 30em;
 }
 table.document-explorer .field-size
 {
-	width	: 10em;
+	width	: 5em;
 }
 table.document-explorer .field-date
 {
-	width	: 15em;
+	width	: 10em;
 }
 table.document-explorer .field-user
 {
-	width	: 15em;
+	width	: 10em;
 }
 table.document-explorer .field-actions
 {
