@@ -461,9 +461,9 @@ var Document	= Class.create
 			"		</table>\n" +
 			"	</div>\n" +
 			"	<div class='GroupedContent'>\n" +
-			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
-			"		<em>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</em><br />\n" +
-					"<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n" +
+			"		<span class='document-explorer-status-name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
+			"		<span class='document-explorer-status-description'>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</span><br />\n" +
+			/*"		<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n" +*/
 			"	</div>\n" +
 			"</div>\n";
 			
