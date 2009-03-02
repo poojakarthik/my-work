@@ -727,8 +727,9 @@ table.document-explorer-list
 
 img.document-explorer-icon
 {
-	height	: 16px;
-	width	: 16px;
+	height			: 16px;
+	width			: 16px;
+	vertical-align	: middle;
 }
 
 thead.document-explorer-list
