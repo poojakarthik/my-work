@@ -741,7 +741,7 @@ div.document-explorer
 	padding			: 0px;
 }
 
-div.document-explorer table.document-explorer
+div.reflex-popup div.document-explorer table.document-explorer
 {
 	margin			: 0px;
 }
