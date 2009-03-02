@@ -720,7 +720,7 @@ span.document-explorer-address-node
 	vertical-align	: middle;
 }
 
-span.document-explorer-address-node:hover
+span.document-explorer-address-node[onclick]:hover
 {
 	text-decoration	: underline;
 	cursor			: pointer;
