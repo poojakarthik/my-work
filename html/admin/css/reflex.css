@@ -706,9 +706,6 @@ div.tab-collection div.tab-body-container
 	color: #f00;
 }
 
-
-
-
 /****************************** Document Explorer *****************************/
 div.document-explorer-address
 {
@@ -741,11 +738,13 @@ div.document-explorer
 {
 	border-left		: 0.1em solid #333;;
 	border-right	: 0.1em solid #333;
+	padding			: 0px;
 }
 
 table.document-explorer
 {
-	/*width			: 100%;*/
+	width			: 100%;
+	margin			: 0px;
 }
 
 img.document-explorer-icon
