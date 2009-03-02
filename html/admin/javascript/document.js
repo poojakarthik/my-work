@@ -455,7 +455,7 @@ var Document	= Class.create
 			"					<th>&nbsp;</th>" +
 			"				</tr>\n" +
 			"			</thead>\n" +
-			"			<tbody style='min-height: 20em; max-height: 20em; overflow-y: scroll; overflow-x: hidden;'>\n" +
+			"			<tbody style='min-height: 10em; max-height: 10em; overflow-y: scroll; overflow-x: hidden;'>\n" +
 			strDocumentListing +
 			"			</tbody>\n" +
 			"		</table>\n" +
