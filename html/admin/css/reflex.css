@@ -815,8 +815,8 @@ table.document-explorer .field-name
 }
 table.document-explorer .field-size
 {
-	min-width	: 8em;
-	max-width	: 8em;
+	min-width	: 5em;
+	max-width	: 5em;
 }
 table.document-explorer .field-date
 {
