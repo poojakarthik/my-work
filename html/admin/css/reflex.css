@@ -745,6 +745,7 @@ table.document-explorer-list
 	width			: 100%;
 	border			: none;
 	border-spacing	: 0px;
+	border			: .1em solid #333;
 }
 
 img.document-explorer-icon
@@ -756,6 +757,13 @@ img.document-explorer-icon
 }
 
 table.document-explorer-list thead
+{
+	background-color: #333;
+	color: #eee;
+	text-align: left;
+}
+
+table.document-explorer-list tbody
 {
 	background-color: #333;
 	color: #eee;
