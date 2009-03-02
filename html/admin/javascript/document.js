@@ -445,7 +445,7 @@ var Document	= Class.create
 			"		"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
 			"	<div class='document-explorer-list'>\n" +
-			"		<table class='document-explorer-list'>\n" +
+			"		<table class='reflex'>\n" +
 			"			<thead>\n" +
 			"				<tr style='font-size:10pt;'>\n" +
 			"					<th>Name</th>\n" +
