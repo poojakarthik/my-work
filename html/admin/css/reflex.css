@@ -755,7 +755,9 @@ img.document-explorer-icon
 
 thead.document-explorer-list
 {
-	
+	background-color: #333;
+	color: #eee;
+	text-align: left;
 }
 
 th.document-explorer-list
