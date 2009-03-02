@@ -523,7 +523,6 @@ div.reflex-popup-title {
 	float : left;
 	width : 79%;
 	font-weight: bold;
-	vertical-align: text-bottom;
 }
 
 div.reflex-popup-title-text {
@@ -531,7 +530,7 @@ div.reflex-popup-title-text {
 }
 
 div.reflex-popup-title-icon {
-	vertical-align: text-top;
+	vertical-align: top;
 }
 
 div.reflex-popup-title-bar-buttons {
