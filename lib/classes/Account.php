@@ -65,7 +65,6 @@ class Account
 	 * 
 	 * @return	array of Service objects
 	 */
-
 	public function listActiveServices()
 	{
 		return $this->listServices(array(SERVICE_ACTIVE));
