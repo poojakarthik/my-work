@@ -379,13 +379,19 @@ var Document	= Class.create
 			var strBreadcrumbMenu	= '';
 			for (var i = 0; i < objResponse.objDocument.arrPath.length; i++)
 			{
+				var strIcon	= '';
 				if (i != 0)
 				{
 					strBreadcrumbMenu	+= '&nbsp;>&nbsp;';
+					strIcon				= '../admin/img/template/folder.png';
+				}
+				else
+				{
+					strIcon				= '../admin/img/template/home.png';
 				}
 				
 				var strOnClick	= (i < objResponse.objDocument.arrPath.length - 1) ? "onclick='Flex.Document.updateExplorerPopup("+objResponse.objDocument.arrPath[i].document_id+");'" : '';
-				strBreadcrumbMenu	+= "<span "+strOnClick+">"+objResponse.objDocument.arrPath[i].friendly_name+"</span>";
+				strBreadcrumbMenu	+= "<span onclick='"+strOnClick"'><img class='document-explorer-icon' src='"+strIcon+"' />"+objResponse.objDocument.arrPath[i].friendly_name+"</span>";
 			}
 			
 			// Build Document Listing
@@ -434,12 +440,8 @@ var Document	= Class.create
 			
 			// Render the new Popup Contents
 			var strHTML	= "\n" +
-			"<div style='margin: 0.5em;'>\n" +/*
-			"	<div class='GroupedContent'>\n" +
-			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
-			"		<em>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</em>\n" +
-			"	</div>\n" +*/
-			"	<div class='GroupedContent'>\n" +
+			"<div style='margin: 0.5em;'>\n" +
+			"	<div class='document-explorer-address'>\n" +
 			"		<strong>Location:</strong>&nbsp;"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
 			"	<div style='min-height: 20em; max-height: 20em; overflow-y: scroll;'>\n" +
