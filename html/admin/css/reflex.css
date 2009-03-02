@@ -739,7 +739,9 @@ img.document-explorer-address-separator
 
 div.document-explorer
 {
-	width	: 100%;
+	width			: 100%;
+	border-left		: 0.1em solid #333;;
+	border-right	: 0.1em solid #333;
 }
 
 table.document-explorer
