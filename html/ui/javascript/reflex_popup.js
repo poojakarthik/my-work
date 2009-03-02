@@ -101,14 +101,14 @@ Object.extend(Reflex_Popup.prototype, {
 		var tb = document.createElement('div');
 		tb.className = 'reflex-popup-title-bar';
 		this.container.appendChild(tb);
-		
-		this.icon	= document.createElement('img');
-		this.icon.style.display	= 'none';
-		tb.appendChild(this.icon);
 
 		this.titlePane = document.createElement('div');
 		this.titlePane.className = 'reflex-popup-title';
 		tb.appendChild(this.titlePane);
+		
+		this.icon	= document.createElement('img');
+		this.icon.style.display	= 'none';
+		this.titlePane.appendChild(this.icon);
 
 		this.titleButtonPane = document.createElement('div');
 		this.titleButtonPane.className = 'reflex-popup-title-bar-buttons';
