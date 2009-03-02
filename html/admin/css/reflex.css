@@ -730,7 +730,7 @@ img.document-explorer-address-separator
 {
 	max-height		: 16px;
 	max-width		: 16px;
-	vertical-align	: text-bottom;
+	vertical-align	: middle;
 	margin-left		: 0.25em;
 	margin-right	: 0.25em;
 }
