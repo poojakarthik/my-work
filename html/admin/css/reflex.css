@@ -797,6 +797,28 @@ table.document-explorer td
 	
 }
 
+table.document-explorer .field-name
+{
+	width	: 25%;
+}
+table.document-explorer .field-description
+{
+	width	: 25%;
+}
+table.document-explorer .field-size
+{
+	width	: 10%;
+}
+table.document-explorer .field-type
+{
+	width	: 10%;
+}
+table.document-explorer .field-actions
+{
+	
+}
+
+
 
 table.document-explorer tr[onclick]
 {
