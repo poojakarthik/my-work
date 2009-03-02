@@ -461,7 +461,7 @@ var Document	= Class.create
 			"	<div class='GroupedContent'>\n" +
 			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
 			"		<em>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</em><br />\n" +
-					"<span>"+objResponse.objDocument.arrChildren.length+" objects</span>\n" +
+					"<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n" +
 			"	</div>\n" +
 			"</div>\n";
 			
