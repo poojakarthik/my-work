@@ -656,3 +656,111 @@ span.hide-if-not-last-child:last-child
 {
 	display: none;
 }
+
+
+/****************************** Document Explorer *****************************/
+div.document-explorer-address
+{
+	/*font-weight	: bold;*/
+}
+
+span.document-explorer-address-node
+{
+	vertical-align	: middle;
+}
+
+span.document-explorer-address-node[onclick]:hover
+{
+	text-decoration	: underline;
+	cursor			: pointer;
+}
+
+img.document-explorer-address-separator
+{
+	max-height		: 16px;
+	max-width		: 16px;
+	vertical-align	: middle;
+	margin-left		: 0.25em;
+	margin-right	: 0.25em;
+}
+
+div.document-explorer
+{
+	width	: 100%;
+}
+
+table.document-explorer
+{
+	width			: 100%;
+}
+
+img.document-explorer-icon
+{
+	max-height		: 16px;
+	max-width		: 16px;
+	vertical-align	: text-bottom;
+	margin-right	: 0.25em;
+}
+
+table.document-explorer thead
+{
+	
+}
+
+table.document-explorer tbody
+{
+	
+}
+
+table.document-explorer th
+{
+	font-size	: 10pt;
+}
+
+table.document-explorer td
+{
+	
+}
+
+
+table.document-explorer tr[onclick]
+{
+	
+}
+
+table.document-explorer tbody tr[onclick]:hover
+{
+	/*cursor				: pointer;*/
+	background-color	: #fff;
+}
+
+table.document-explorer tbody tr[onclick]:hover td
+{
+	cursor				: pointer;
+	text-decoration		: underline;
+	background-color	: #fff;
+}
+
+table.document-explorer td.description
+{
+	font-size	: 9pt;
+	font-style	: italic;
+}
+
+div.document-explorer-status
+{
+	font-size	: 9pt;
+	font-style	: italic;
+}
+
+span.document-explorer-status-name
+{
+	font-size	: 10pt;
+	font-weight	: bold;
+}
+
+span.document-explorer-status-description
+{
+	font-size	: 9pt;
+	font-style	: italic;
+}
