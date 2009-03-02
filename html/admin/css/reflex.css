@@ -755,21 +755,17 @@ img.document-explorer-icon
 
 table.document-explorer thead
 {
-	background-color: #333;
-	color: #eee;
-	text-align: left;
+	
 }
 
 table.document-explorer tbody
 {
-	background-color: #333;
-	color: #eee;
-	text-align: left;
+	
 }
 
 table.document-explorer th
 {
-	
+	font-size	: 10pt;
 }
 
 table.document-explorer td
@@ -778,19 +774,19 @@ table.document-explorer td
 }
 
 
-table.document-explorer tr.record
+table.document-explorer tr[onclick]
 {
 	
 }
 
-tr.document-explorer-record:hover
+table.document-explorer tr[onclick]:hover
 {
 	background-color	: #fff;
 	text-decoration		: underline;
 	cursor				: pointer;
 }
 
-td.document-explorer-record-description
+table.document-explorer tr.record td.description
 {
 	font-size	: 9pt;
 	font-style	: italic;
