@@ -767,6 +767,7 @@ table.document-explorer
 {
 	width			: 100%;
 	margin			: 0px;
+	font-size		: 10pt;
 }
 
 img.document-explorer-icon
@@ -784,22 +785,12 @@ table.document-explorer thead
 
 table.document-explorer tbody
 {
-	/*max-height	: 20em;
-	min-height	: 20em;
-	height		: 20em;
-	overflow-y	: scroll;
-	overflow-x	: hidden;*/
-}
-
-table.document-explorer tbody tr.clear
-{
-	height		: 30em;
-	min-height	: 30em;
+	
 }
 
 table.document-explorer th
 {
-	font-size	: 10pt;
+	
 }
 
 table.document-explorer td
@@ -842,7 +833,6 @@ table.document-explorer tr[onclick]
 
 table.document-explorer tbody tr[onclick]:hover
 {
-	/*cursor				: pointer;*/
 	background-color	: #fff;
 }
 
@@ -851,12 +841,6 @@ table.document-explorer tbody tr[onclick]:hover td
 	cursor				: pointer;
 	text-decoration		: underline;
 	background-color	: #fff;
-}
-
-table.document-explorer td.description
-{
-	font-size	: 9pt;
-	font-style	: italic;
 }
 
 div.document-explorer-status
