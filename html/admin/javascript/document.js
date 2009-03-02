@@ -10,7 +10,7 @@ var Document	= Class.create
 		this.pupEmail.setTitle('Email Document');
 		this.pupEmail.addCloseButton();
 		
-		this.pupExplorer	= new Reflex_Popup(60);
+		this.pupExplorer	= new Reflex_Popup(70);
 		this.pupExplorer.setTitle('Document Explorer');
 		this.pupExplorer.addCloseButton();
 		this.pupExplorer.setIcon("../admin/img/template/account.png");
