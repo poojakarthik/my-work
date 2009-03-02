@@ -731,8 +731,8 @@ span.document-explorer-address-separator
 	height			: 16px;
 	width			: 16px;
 	vertical-align	: text-bottom;
-	margin-left		: 0.25em;
-	margin-right	: 0.25em;
+	margin-left		: 0.5em;
+	margin-right	: 0.5em;
 }
 
 div.document-explorer-footer
