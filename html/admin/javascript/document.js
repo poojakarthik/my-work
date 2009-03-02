@@ -360,9 +360,6 @@ var Document	= Class.create
 	{
 		// Render the Explorer popup at the Root Directory
 		this.updateExplorerPopup(null);
-
-		this.pupExplorer.display();
-		this.pupExplorer.recentre();
 	},
 	
 	updateExplorerPopup	: function(intDocumentId)
@@ -473,6 +470,7 @@ var Document	= Class.create
 			"</div>\n";
 			
 			this.pupExplorer.setContent(strHTML);
+			this.pupExplorer.display();
 		}
 		else if (objResponse.Success == undefined)
 		{
