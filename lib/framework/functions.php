@@ -3450,8 +3450,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 		ON Account.Id = Service.Account
 		JOIN CustomerGroup
 		ON CustomerGroup.Id = Account.CustomerGroup
-		JOIN payment_terms 
-		ON payment_terms.customer_group_id = Account.CustomerGroup
+		JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)";
 		";
 
 	$strWhere	= "";
@@ -3579,8 +3578,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		AND account_status.can_bar = 1
 		JOIN CustomerGroup 
 		ON Account.CustomerGroup = CustomerGroup.Id
-		JOIN payment_terms
-		ON payment_terms.customer_group_id = Account.CustomerGroup";
+		JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)";
 
 	$strWhere	= "Account.Id IN (
 		SELECT DISTINCT(Account.Id) 
@@ -3768,8 +3766,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 		AND account_status.can_bar = 1
 		JOIN CustomerGroup 
 		ON Account.CustomerGroup = CustomerGroup.Id
-		JOIN payment_terms
-		ON payment_terms.customer_group_id = Account.CustomerGroup";
+		JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)";
 
 	$strWhere	= "Account.Id IN (
 		SELECT DISTINCT(Account.Id) 
@@ -3964,8 +3961,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		ON Account.PrimaryContact = Contact.Id 
 		JOIN CustomerGroup 
 		ON Account.CustomerGroup = CustomerGroup.Id
-		JOIN payment_terms
-		ON payment_terms.customer_group_id = Account.CustomerGroup";
+		JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)";
 
 	$strWhere	= "Account.Id IN (
 		SELECT DISTINCT(Account.Id) 
