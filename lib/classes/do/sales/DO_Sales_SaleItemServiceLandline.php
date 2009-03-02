@@ -121,7 +121,7 @@ class DO_Sales_SaleItemServiceLandline extends DO_Sales_Base_SaleItemServiceLand
 				if ($this->serviceStreetNumberStart === null)
 				{
 					// Street Number Start has not been specified
-					if ($this->serviceStreetName)
+					if ($this->serviceStreetName && !$this->servicePropertyName)
 					{
 						$arrProblems[] = "Street Number Start must be declared";
 					}

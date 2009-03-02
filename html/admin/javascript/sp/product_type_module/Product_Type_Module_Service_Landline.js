@@ -309,6 +309,7 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 	changePropertyName: function()
 	{
 		this.elementGroups.service_street_name.isValid();
+		this.elementGroups.service_street_number_start.isValid();
 	},
 
 	buildGUI: function()
@@ -446,7 +447,12 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 
 		fncStreetNumberMandatory	= function()
 									{
-										return ((!this.isAllotment() && String(Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_name)).strip()) || (!this.isAdvancedAddress.checkbox.checked));
+										return (	(   this.isAdvancedAddress.checkbox.checked 
+														&& !this.isAllotment() 
+														&& String(Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_street_name)).strip()
+														&& !String(Sale.GUIComponent.getElementGroupValue(this.elementGroups.service_property_name)).strip()
+													) 
+													|| (!this.isAdvancedAddress.checkbox.checked));
 									}
 		this.elementGroups.service_street_number_start = Sale.GUIComponent.createTextInputGroup(this.getServiceStreetNumberStart(), fncStreetNumberMandatory.bind(this), window._validate.integerPositive.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Street Number Start', this.elementGroups.service_street_number_start);
