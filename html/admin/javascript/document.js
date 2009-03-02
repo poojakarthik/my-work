@@ -426,7 +426,7 @@ var Document	= Class.create
 											"					<td class='field-name'><img src='"+strIcon+"' />&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
 											"					<td class='field-description description'>"+(objChild.description ? objChild.description : '')+"</td>\n" +
 											"					<td class='field-size'>"+(objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size+' KB' : '')+"</td>\n" +
-											"					<td class='field-type'></td>\n" +
+											"					<td class='field-date'>"+objChild.date_modified+"</td>\n" +
 											"					<td class='field-actions'></td>\n" +
 											"				</tr>\n";
 				}
@@ -452,7 +452,7 @@ var Document	= Class.create
 			"					<th class='field-name'>Name</th>\n" +
 			"					<th class='field-description'>Description</th>" +
 			"					<th class='field-size'>Size</th>" +
-			"					<th class='field-type'>Type</th>" +
+			"					<th class='field-date'>Type</th>" +
 			"					<th class='field-actions'>&nbsp;</th>" +
 			"				</tr>\n" +
 			"			</thead>\n" +
