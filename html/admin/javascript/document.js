@@ -461,7 +461,6 @@ var Document	= Class.create
 			"			<table class='reflex document-explorer'>\n" +
 			"				<tbody>\n" +
 			strDocumentListing +
-			"					<tr><td class='clear' colspan='5'>&nbsp;</td></tr>\n" +
 			"				</tbody>\n" +
 			"			</table>\n" +
 			"		</div>" +
