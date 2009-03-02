@@ -814,15 +814,15 @@ table.document-explorer .field-name
 }
 table.document-explorer .field-size
 {
-	width	: 5em;
+	width	: 8em;
 }
 table.document-explorer .field-date
 {
-	width	: 10em;
+	width	: 12em;
 }
 table.document-explorer .field-user
 {
-	width	: 10em;
+	width	: 12em;
 }
 table.document-explorer .field-actions
 {
