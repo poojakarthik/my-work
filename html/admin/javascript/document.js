@@ -409,7 +409,7 @@ var Document	= Class.create
 						strIcon	= '../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/16x16';
 					}
 					strDocumentListing	+=	"				<tr onmouseover='this.className=\"alt\"' onmouseout='this.className=\"\"'>\n" +
-											"					<td onmouseover='alert(\"test\")' onclick='"+strLink+"'><img src='"+strIcon+"' />&nbsp;<span>"+objChild.friendly_name+"</span></td>\n" +
+											"					<td onmouseover='this.className=\"hover\"' onclick='"+strLink+"'><img src='"+strIcon+"' />&nbsp;<span>"+objChild.friendly_name+"</span></td>\n" +
 											"					<td><em>"+(objChild.description ? objChild.description : '')+"</em></td>\n" +
 											"					<td>&nbsp;</td>\n" +
 											"				</tr>\n";
