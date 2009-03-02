@@ -728,8 +728,8 @@ span.document-explorer-address-node[onclick]:hover
 
 img.document-explorer-address-separator
 {
-	height			: 16px;
-	width			: 16px;
+	max-height		: 16px;
+	max-width		: 16px;
 	vertical-align	: text-bottom;
 	margin-left		: 0.25em;
 	margin-right	: 0.25em;
@@ -747,8 +747,8 @@ table.document-explorer-list
 
 img.document-explorer-icon
 {
-	height			: 16px;
-	width			: 16px;
+	max-height		: 16px;
+	max-width		: 16px;
 	vertical-align	: text-bottom;
 	margin-right	: 0.25em;
 }
