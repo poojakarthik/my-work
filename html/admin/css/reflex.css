@@ -810,19 +810,23 @@ table.document-explorer td
 
 table.document-explorer .field-name
 {
-	width	: 25em;
+	min-width	: 25em;
+	max-width	: 25em;
 }
 table.document-explorer .field-size
 {
-	width	: 8em;
+	min-width	: 8em;
+	max-width	: 8em;
 }
 table.document-explorer .field-date
 {
-	width	: 12em;
+	min-width	: 12em;
+	max-width	: 12em;
 }
 table.document-explorer .field-user
 {
-	width	: 12em;
+	min-width	: 12em;
+	max-width	: 12em;
 }
 table.document-explorer .field-actions
 {
