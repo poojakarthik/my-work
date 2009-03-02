@@ -235,7 +235,6 @@ Object.extend(Reflex_Popup.prototype, {
 		{
 			this.icon.src	= strImageSource;
 			this.icon.style.display	= 'inline';
-			this.icon.style.float	= 'left';
 		}
 		else
 		{
