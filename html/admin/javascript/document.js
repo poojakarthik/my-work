@@ -402,7 +402,7 @@ var Document	= Class.create
 					if (objChild.nature == 'DOCUMENT_NATURE_FOLDER')
 					{
 						strIcon	= '../admin/img/template/folder.png';
-						strLink	= 'Flex.Document.updateExplorerPopup('+objResponse.objDocument.arrPath[i].document_id+');';
+						strLink	= 'Flex.Document.updateExplorerPopup('+objChild.id+');';
 					}
 					else if (objChild.file_type_id)
 					{
