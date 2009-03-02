@@ -735,17 +735,14 @@ img.document-explorer-address-separator
 	margin-right	: 0.25em;
 }
 
-div.document-explorer-list
+div.document-explorer
 {
 	width	: 100%;
 }
 
-table.document-explorer-list
+table.document-explorer
 {
 	width			: 100%;
-	border			: none;
-	border-spacing	: 0px;
-	border			: .1em solid #333;
 }
 
 img.document-explorer-icon
@@ -756,44 +753,44 @@ img.document-explorer-icon
 	margin-right	: 0.25em;
 }
 
-table.document-explorer-list thead
+table.document-explorer thead
 {
 	background-color: #333;
 	color: #eee;
 	text-align: left;
 }
 
-table.document-explorer-list tbody
+table.document-explorer tbody
 {
 	background-color: #333;
 	color: #eee;
 	text-align: left;
 }
 
-table.document-explorer-list th
+table.document-explorer th
 {
 	
 }
 
-table.document-explorer-list td
+table.document-explorer td
 {
 	
 }
 
 
-table.document-explorer-list tr.record
+table.document-explorer tr.record
 {
 	
 }
 
-tr.document-explorer-list-record:hover
+tr.document-explorer-record:hover
 {
 	background-color	: #fff;
 	text-decoration		: underline;
 	cursor				: pointer;
 }
 
-td.document-explorer-list-record-description
+td.document-explorer-record-description
 {
 	font-size	: 9pt;
 	font-style	: italic;
