@@ -720,6 +720,12 @@ span.document-explorer-address-node
 	vertical-align	: middle;
 }
 
+span.document-explorer-address-node[hover]
+{
+	text-decoration	: underline;
+	cursor			: pointer;
+}
+
 div.document-explorer-footer
 {
 	
