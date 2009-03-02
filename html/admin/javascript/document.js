@@ -420,10 +420,10 @@ var Document	= Class.create
 						strFriendlyName	+= '.' + objChild.extension;
 					}
 					strDocumentListing	+=	"				<tr valign='top' onclick='"+strLink+"'>\n" +
-											"					<td class='field-name'><img src='"+strIcon+"' />&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
-											"					<td class='field-description description'>"+(objChild.description ? objChild.description : '')+"</td>\n" +
+											"					<td class='field-name' title='"+objChild.description+"'><img src='"+strIcon+"' />&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
 											"					<td class='field-size'>"+(objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size+' KB' : '')+"</td>\n" +
 											"					<td class='field-date'>"+objChild.date_modified+"</td>\n" +
+											"					<td class='field-date'>"+objChild.modified_by+"</td>\n" +
 											"					<td class='field-actions'></td>\n" +
 											"				</tr>\n";
 				}
@@ -447,9 +447,9 @@ var Document	= Class.create
 			"			<thead>\n" +
 			"				<tr>\n" +
 			"					<th class='field-name'>Name</th>\n" +
-			"					<th class='field-description'>Description</th>" +
 			"					<th class='field-size'>Size</th>" +
 			"					<th class='field-date'>Date Modified</th>" +
+			"					<th class='field-user'>Modified By</th>" +
 			"					<th class='field-actions'>&nbsp;</th>" +
 			"				</tr>\n" +
 			"			</thead>\n" +

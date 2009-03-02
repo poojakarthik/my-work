@@ -808,17 +808,17 @@ table.document-explorer td
 
 table.document-explorer .field-name
 {
-	width	: 35%;
-}
-table.document-explorer .field-description
-{
-	width	: 30%;
+	width	: 50%;
 }
 table.document-explorer .field-size
 {
 	width	: 10%;
 }
 table.document-explorer .field-date
+{
+	width	: 20%;
+}
+table.document-explorer .field-user
 {
 	width	: 20%;
 }

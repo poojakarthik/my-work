@@ -149,6 +149,8 @@ class JSON_Handler_Document extends JSON_Handler
 				
 				$objFileType	= ($objChildContent->file_type_id) ? new File_Type(array('id'=>$objChildContent->file_type_id), true) : null;
 				
+				$objModifiedBy	= Employee::getForId($objChildContent->employee_id);
+				
 				$objChildOutput->id				= $objChild->id;
 				$objChildOutput->name			= $objChildContent->name;
 				$objChildOutput->friendly_name	= $objChildContent->getFriendlyName();
@@ -159,6 +161,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objChildOutput->has_icon		= ($objChildContent->file_type_id) ? File_Type::hasIcon($objChildContent->file_type_id, 16) : false;
 				$objChildOutput->file_size		= round($objChildContent->intContentSize / 1024, 1);
 				$objChildOutput->date_modified	= date("j/n/Y g:i A", strtotime($objChildContent->changed_on));
+				$objChildOutput->modified_by	= $objModifiedBy->firstName.' '.$objModifiedBy->lastName;
 				
 				$objDocumentOutput->arrChildren[]	= $objChildOutput;
 			}
