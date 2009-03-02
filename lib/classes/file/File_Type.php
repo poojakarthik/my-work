@@ -11,7 +11,7 @@ class File_Type extends ORM
 	protected			$_strTableName				= "file_type";
 	protected static	$_strStaticTableName		= "file_type";
 	
-	protected static final	$_arrAllowableResolutions	= array(16, 64);
+	protected static 	$_arrAllowableResolutions	= array(16, 64);
 	
 	/**
 	 * __construct()
