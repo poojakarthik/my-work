@@ -807,21 +807,22 @@ table.document-explorer td
 	overflow: hidden;
 }
 
+
 table.document-explorer .field-name
 {
-	width	: 50%;
+	width	: 35em;
 }
 table.document-explorer .field-size
 {
-	width	: 10%;
+	width	: 10em;
 }
 table.document-explorer .field-date
 {
-	width	: 20%;
+	width	: 15em;
 }
 table.document-explorer .field-user
 {
-	width	: 20%;
+	width	: 15em;
 }
 table.document-explorer .field-actions
 {
