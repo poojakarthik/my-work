@@ -444,7 +444,7 @@ var Document	= Class.create
 			"	<div class='document-explorer-address'>\n" +
 			"		"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
-			"	<div style='min-height: 20em; max-height: 20em; overflow-y: scroll;'>\n" +
+			"	<div >\n" +
 			"		<table class='reflex'>\n" +
 			"			<thead>\n" +
 			"				<tr style='font-size:10pt;'>\n" +
@@ -455,7 +455,7 @@ var Document	= Class.create
 			"					<th>&nbsp;</th>" +
 			"				</tr>\n" +
 			"			</thead>\n" +
-			"			<tbody>\n" +
+			"			<tbody style='min-height: 20em; max-height: 20em; overflow-y: scroll;'>\n" +
 			strDocumentListing +
 			"			</tbody>\n" +
 			"		</table>\n" +
