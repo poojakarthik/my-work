@@ -777,8 +777,9 @@ tr.document-explorer-list-record
 
 tr.document-explorer-list-record:hover
 {
-	text-decoration	: underline;
-	cursor			: pointer;
+	background-color	: #fff;
+	text-decoration		: underline;
+	cursor				: pointer;
 }
 
 td.document-explorer-list-record-description
