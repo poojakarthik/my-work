@@ -785,6 +785,12 @@ table.document-explorer tbody tr[onclick]:hover
 	background-color	: #fff;
 }
 
+table.document-explorer tbody tr[onclick]:hover td
+{
+	/*cursor				: pointer;*/
+	background-color	: #fff;
+}
+
 table.document-explorer td.description
 {
 	font-size	: 9pt;
