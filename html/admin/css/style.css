@@ -306,7 +306,6 @@ div.reflex-popup-title-bar {
 	background-repeat	: repeat-x;
 }
 
-
 div.reflex-popup-title {
 	color : #EEEEEE;
 	float : left;
@@ -314,6 +313,13 @@ div.reflex-popup-title {
 	font-weight: bold;
 }
 
+span.reflex-popup-title-text {
+	vertical-align: middle;
+}
+
+img.reflex-popup-title-icon {
+	vertical-align: middle;
+}
 div.reflex-popup-title-bar-buttons {
 	float : right;
 	width : 20%;
