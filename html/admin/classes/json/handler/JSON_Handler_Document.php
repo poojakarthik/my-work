@@ -157,7 +157,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objChildOutput->file_type_id	= $objChildContent->file_type_id;
 				$objChildOutput->extension		= ($objChildContent->file_type_id) ? $objFileType->extension : '';
 				$objChildOutput->has_icon		= ($objChildContent->file_type_id) ? File_Type::hasIcon($objChildContent->file_type_id, 16) : false;
-				$objChildOutput->file_size		= $objChildContent->intContentSize / 1024;
+				$objChildOutput->file_size		= round($objChildContent->intContentSize / 1024, 1);
 				
 				$objDocumentOutput->arrChildren[]	= $objChildOutput;
 			}
