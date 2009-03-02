@@ -423,7 +423,7 @@ var Document	= Class.create
 											"					<td class='field-name' title='"+(objChild.description ? objChild.description : objChild.friendly_name)+"'><img src='"+strIcon+"' />&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
 											"					<td class='field-size'>"+(objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size+' KB' : '')+"</td>\n" +
 											"					<td class='field-date'>"+objChild.date_modified+"</td>\n" +
-											"					<td class='field-date'>"+objChild.modified_by+"</td>\n" +
+											"					<td class='field-user'>"+objChild.modified_by+"</td>\n" +
 											"					<td class='field-actions'></td>\n" +
 											"				</tr>\n";
 				}
