@@ -398,7 +398,7 @@ var Document	= Class.create
 					var objChild	= objResponse.objDocument.arrChildren[i];
 					
 					var strIcon	= '../admin/img/template/file.png';
-					var strLink	= 'window.location.href="../admin/reflex.php/File/Document/'+objChild.document_id+'"';
+					var strLink	= 'window.location.href="../admin/reflex.php/File/Document/'+objChild.id+'"';
 					if (objChild.nature == 'DOCUMENT_NATURE_FOLDER')
 					{
 						strIcon	= '../admin/img/template/folder.png';
