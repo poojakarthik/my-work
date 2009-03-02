@@ -458,6 +458,7 @@ var Document	= Class.create
 			"			</thead>\n" +
 			"			<tbody>\n" +
 			strDocumentListing +
+			"				<tr><td class='clear' colspan='5'>&nbsp;</td></tr>\n" +
 			"			</tbody>\n" +
 			"		</table>\n" +
 			"	</div>\n" +
