@@ -425,11 +425,11 @@ var Document	= Class.create
 			
 			// Render the new Popup Contents
 			var strHTML	= "\n" +
-			"<div style='margin: 0.5em;'>\n" +
+			"<div style='margin: 0.5em;'>\n" +/*
 			"	<div class='GroupedContent'>\n" +
 			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
 			"		<em>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</em>\n" +
-			"	</div>\n" +
+			"	</div>\n" +*/
 			"	<div class='GroupedContent'>\n" +
 			"		"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
@@ -446,6 +446,10 @@ var Document	= Class.create
 			strDocumentListing +
 			"			</tbody>\n" +
 			"		</table>\n" +
+			"	</div>\n" +
+			"	<div class='GroupedContent'>\n" +
+			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
+			"		<em>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</em>\n" +
 			"	</div>\n" +
 			"</div>\n";
 			
