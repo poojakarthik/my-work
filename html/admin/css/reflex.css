@@ -744,6 +744,8 @@ div.document-explorer
 div.reflex-popup div.document-explorer table.document-explorer
 {
 	margin			: 0px;
+	width			: 100%
+	border			: none;
 }
 
 table.document-explorer
