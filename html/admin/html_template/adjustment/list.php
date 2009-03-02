@@ -87,11 +87,11 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		echo "<h2 class='Adjustment'>Adjustments</h2>\n";
 
 		// Check if the user has admin privileges
-		$bolHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		$bolUserIsGod		= AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD);
+		$bolHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolUserIsGod			= AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD);
 		
 		// define the table's header
-		if ($bolHasAdminPerm)
+		if ($bolHasProperAdminPerm)
 		{
 			// User has admin permisions and can therefore delete an adjustment
 			Table()->AdjustmentTable->SetHeader("Date", "Code", "&nbsp;","Amount ($)", "&nbsp;");
@@ -120,7 +120,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			}
 			
 			// add the row
-			if ($bolHasAdminPerm)
+			if ($bolHasProperAdminPerm)
 			{
 				// Only charges having status = waiting or approved can be deleted
 				if (($dboCharge->Status->Value == CHARGE_WAITING) || ($dboCharge->Status->Value == CHARGE_APPROVED))
@@ -209,7 +209,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			// There are no adjustments to stick in this table
 			Table()->AdjustmentTable->AddRow("<span class='DefaultOutputSpan Default'>No adjustments to display</span>");
 			Table()->AdjustmentTable->SetRowAlignment("left");
-			if ($bolHasAdminPerm)
+			if ($bolHasProperAdminPerm)
 			{
 				Table()->AdjustmentTable->SetRowColumnSpan(5);
 			}
@@ -233,7 +233,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		Table()->AdjustmentTable->Render();
 		
 		// Button to add an adjustment
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		if ($bolHasProperAdminPerm)
 		{
 			// The user can add adjustments
 			$strHref = Href()->AddAdjustment(DBO()->Account->Id->Value);

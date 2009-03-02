@@ -63,7 +63,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -458,7 +458,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord'))
