@@ -808,15 +808,15 @@ table.document-explorer td
 
 table.document-explorer .field-name
 {
-	width	: 30%;
+	width	: 35%;
 }
 table.document-explorer .field-description
 {
-	width	: 30%;
+	width	: 35%;
 }
 table.document-explorer .field-size
 {
-	width	: 10%;
+	width	: 5%;
 }
 table.document-explorer .field-date
 {

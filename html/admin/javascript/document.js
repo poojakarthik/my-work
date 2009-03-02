@@ -452,7 +452,7 @@ var Document	= Class.create
 			"					<th class='field-name'>Name</th>\n" +
 			"					<th class='field-description'>Description</th>" +
 			"					<th class='field-size'>Size</th>" +
-			"					<th class='field-date'>Type</th>" +
+			"					<th class='field-date'>Date Modified</th>" +
 			"					<th class='field-actions'>&nbsp;</th>" +
 			"				</tr>\n" +
 			"			</thead>\n" +
