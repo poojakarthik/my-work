@@ -774,7 +774,8 @@ table.document-explorer thead
 
 table.document-explorer tbody
 {
-	max-height	: 10em;
+	max-height	: 20em;
+	min-height	: 20em;
 }
 
 table.document-explorer th
