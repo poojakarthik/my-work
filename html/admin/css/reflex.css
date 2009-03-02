@@ -772,7 +772,8 @@ td.document-explorer-list
 
 tr.document-explorer-list-record
 {
-	
+	text-decoration	: underline;
+	cursor			: pointer;
 }
 
 tr.document-explorer-list-record:hover
