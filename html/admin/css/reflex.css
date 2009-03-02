@@ -735,14 +735,14 @@ img.document-explorer-address-separator
 	margin-right	: 0.25em;
 }
 
-div.document-explorer-footer
+div.document-explorer-list
 {
-	
+	width	: 100%;
 }
 
 table.document-explorer-list
 {
-	
+	width	: 100%;
 }
 
 img.document-explorer-icon
@@ -781,6 +781,12 @@ tr.document-explorer-list-record:hover
 }
 
 td.document-explorer-list-record-description
+{
+	font-size	: 9pt;
+	font-style	: italic;
+}
+
+div.document-explorer-status
 {
 	font-size	: 9pt;
 	font-style	: italic;
