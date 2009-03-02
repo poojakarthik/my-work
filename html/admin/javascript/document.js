@@ -450,7 +450,7 @@ var Document	= Class.create
 			"					<th class='field-size'>Size</th>" +
 			"					<th class='field-date'>Date Modified</th>" +
 			"					<th class='field-user'>Modified By</th>" +
-			"					<th class='field-actions'>&nbsp;</th>" +
+			"					<th class='field-actions'></th>" +
 			"				</tr>\n" +
 			"			</thead>\n" +
 			"		</table>\n" +
