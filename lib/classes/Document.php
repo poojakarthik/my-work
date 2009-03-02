@@ -174,10 +174,10 @@ class Document extends ORM
 	{
 		// Recursively work our way back up the Directory Tree
 		$objDocumentContent	= $this->getContentDetails();
-		if ($objDocumentContent->parent_brochure_id)
+		if ($objDocumentContent->parent_document_id)
 		{
 			// We have a Parent, get its path
-			$objParent			= new Document(array('id'=>$objDocumentContent->parent_brochure_id));
+			$objParent			= new Document(array('id'=>$objDocumentContent->parent_document_id));
 			$objParentContent	= $objParent->getContentDetails();
 			$strFriendlyName	= $objParentContent->getFriendlyName();
 			
