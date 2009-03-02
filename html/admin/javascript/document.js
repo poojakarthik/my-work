@@ -433,7 +433,7 @@ var Document	= Class.create
 			"	<div class='GroupedContent'>\n" +
 			"		"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
-			"	<div style='min-height: 20em; max-height: 20em; overflow-y: scroll;'>\n" +
+			"	<div class='GroupedContent' style='min-height: 20em; max-height: 20em; overflow-y: scroll;'>\n" +
 			"		<table class='reflex'>\n" +
 			"			<thead>\n" +
 			"				<tr style='font-size:10pt;'>\n" +
@@ -446,6 +446,10 @@ var Document	= Class.create
 			strDocumentListing +
 			"			</tbody>\n" +
 			"		</table>\n" +
+			"	</div>\n" +
+			"	<div class='GroupedContent'>\n" +
+			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
+			"		<em>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</em>\n" +
 			"	</div>\n" +
 			"	<div class='GroupedContent'>\n" +
 			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
