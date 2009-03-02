@@ -658,10 +658,14 @@ span.hide-if-not-last-child:last-child
 }
 
 
+
+
 /****************************** Document Explorer *****************************/
 div.document-explorer-address
 {
-	/*font-weight	: bold;*/
+	background-color	: #f9f9f9;
+	padding				: 0.5em;
+	border				: 0.1em solid #333;
 }
 
 span.document-explorer-address-node
@@ -686,12 +690,13 @@ img.document-explorer-address-separator
 
 div.document-explorer
 {
-	width	: 100%;
+	border-left		: 0.1em solid #333;;
+	border-right	: 0.1em solid #333;
 }
 
 table.document-explorer
 {
-	width			: 100%;
+	/*width			: 100%;*/
 }
 
 img.document-explorer-icon
@@ -749,17 +754,18 @@ table.document-explorer td.description
 
 div.document-explorer-status
 {
-	font-size	: 9pt;
-	font-style	: italic;
+	background-color	: #f9f9f9;
+	padding				: 0.5em;
+	border				: 0.1em solid #333;
 }
 
-span.document-explorer-status-name
+div.document-explorer-status span.name
 {
 	font-size	: 10pt;
 	font-weight	: bold;
 }
 
-span.document-explorer-status-description
+div.document-explorer-status span.description
 {
 	font-size	: 9pt;
 	font-style	: italic;
