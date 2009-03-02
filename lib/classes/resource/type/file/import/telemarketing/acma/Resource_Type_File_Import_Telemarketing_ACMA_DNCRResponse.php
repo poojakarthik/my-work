@@ -148,7 +148,7 @@ class Resource_Type_File_Import_Telemarketing_ACMA_DNCRResponse
 								'FNN'				=>	array
 														(
 															'Index'			=> 0,
-															'Validation'	=> "/^0[2378]\d{8}$/"
+															'Validation'	=> "/^0[23478]\d{8}$/"
 														),
 								'DNCRRegistered'	=>	array
 														(
