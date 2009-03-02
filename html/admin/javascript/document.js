@@ -450,10 +450,7 @@ var Document	= Class.create
 			"	<div class='GroupedContent'>\n" +
 			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
 			"		<em>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</em>\n" +
-			"	</div>\n" +
-			"	<div class='GroupedContent'>\n" +
-			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
-			"		<em>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</em>\n" +
+					"<span>"+objResponse.objDocument.arrChildren.length+" objects</span>\n" +
 			"	</div>\n" +
 			"</div>\n";
 			
