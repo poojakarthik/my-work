@@ -112,7 +112,7 @@ class JSON_Handler_Document extends JSON_Handler
 		try
 		{
 			$qryQuery	= new Query();
-			$arrRootDir	= array('name'=>Document::ROOT_DIRECTORY_NAME, 'document_id'=>0, 'friendly_name'=>Document::ROOT_DIRECTORY_NAME);
+			$arrRootDir	= array('name'=>Document::ROOT_DIRECTORY_NAME, 'document_id'=>null, 'friendly_name'=>Document::ROOT_DIRECTORY_NAME);
 			
 			// If we have a document, load its children
 			$objDocumentOutput	= new stdClass();

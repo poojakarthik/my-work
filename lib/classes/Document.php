@@ -186,7 +186,7 @@ class Document extends ORM
 		else
 		{
 			// We are at the root directory
-			$arrPathStack	= array(array('name'=>'', 'document_id'=>0, 'friendly_name'=>self::ROOT_DIRECTORY_NAME));
+			$arrPathStack	= array(array('name'=>'', 'document_id'=>null, 'friendly_name'=>self::ROOT_DIRECTORY_NAME));
 			$strPath		= '';
 		}
 		
