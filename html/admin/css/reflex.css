@@ -776,6 +776,9 @@ table.document-explorer tbody
 {
 	max-height	: 20em;
 	min-height	: 20em;
+	height		: 20em;
+	overflow-y	: scroll;
+	overflow-x	: hidden;
 }
 
 table.document-explorer th
