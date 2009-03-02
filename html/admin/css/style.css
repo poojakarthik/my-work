@@ -209,6 +209,12 @@ table.reflex tr.alt td {
 	background-color: #fff;
 }
 
+table.reflex tr.alt-hover td {
+	background-color: #fff;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
 table.reflex td.title {
 	width: 20%;
 	vertical-align: top;
