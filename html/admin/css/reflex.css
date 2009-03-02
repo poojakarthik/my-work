@@ -742,7 +742,9 @@ div.document-explorer-list
 
 table.document-explorer-list
 {
-	width	: 100%;
+	width			: 100%;
+	border			: none;
+	cell-spacing	: 0px;
 }
 
 img.document-explorer-icon
