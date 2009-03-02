@@ -11,7 +11,8 @@ a:hover {
 }
 
 img[onclick],
-a[onclick]
+a[onclick],
+span[onclick]
 {
 	cursor : pointer;
 }
@@ -703,4 +704,74 @@ div.tab-collection div.tab-body-container
 .sale-status-cancelled
 {
 	color: #f00;
+}
+
+
+
+
+/****************************** Document Explorer *****************************/
+div.document-explorer-address
+{
+	font-weight	: bold;
+}
+
+div.document-explorer-footer
+{
+	
+}
+
+table.document-explorer-list
+{
+	
+}
+
+img.document-explorer-icon
+{
+	height	: 16px;
+	width	: 16px;
+}
+
+thead.document-explorer-list
+{
+	
+}
+
+th.document-explorer-list
+{
+	
+}
+
+
+td.document-explorer-list
+{
+	
+}
+
+
+tr.document-explorer-list-record
+{
+	
+}
+
+tr.document-explorer-list-record:hover
+{
+	text-decoration	: underline;
+}
+
+td.document-explorer-list-record-description
+{
+	font-size	: 9pt;
+	font-style	: italic;
+}
+
+span.document-explorer-status-name
+{
+	font-size	: 10pt;
+	font-weight	: bold;
+}
+
+span.document-explorer-status-description
+{
+	font-size	: 9pt;
+	font-style	: italic;
 }
