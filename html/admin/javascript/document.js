@@ -421,9 +421,9 @@ var Document	= Class.create
 						}
 						strFriendlyName	+= '.' + objChild.extension;
 					}
-					strDocumentListing	+=	"				<tr class='document-explorer-record' onclick='"+strLink+"'>\n" +
+					strDocumentListing	+=	"				<tr class='record' onclick='"+strLink+"'>\n" +
 											"					<td><img src='"+strIcon+"' />&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
-											"					<td><em>"+(objChild.description ? objChild.description : '')+"</em></td>\n" +
+											"					<td class='description'>"+(objChild.description ? objChild.description : '')+"</td>\n" +
 											"					<td>"+(objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size+' KB' : '')+"</td>\n" +
 											"					<td></td>\n" +
 											"					<td></td>\n" +
