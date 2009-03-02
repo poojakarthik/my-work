@@ -781,6 +781,11 @@ table.document-explorer tbody
 	overflow-x	: hidden;
 }
 
+table.document-explorer tbody tr.clear
+{
+	height		: 20em;
+}
+
 table.document-explorer th
 {
 	font-size	: 10pt;
