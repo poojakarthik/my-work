@@ -782,6 +782,7 @@ table.document-explorer tr[onclick]
 table.document-explorer tbody tr[onclick]:hover
 {
 	/*cursor				: pointer;*/
+	background-color	: #fff;
 }
 
 table.document-explorer td.description
