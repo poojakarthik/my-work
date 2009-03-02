@@ -147,12 +147,15 @@ class JSON_Handler_Document extends JSON_Handler
 				
 				$objChildOutput	= new stdClass();
 				
+				$objFileType	= ($objChildContent->file_type_id) ? new File_Type(array('id'=>$objChildContent->file_type_id), true) : null;
+				
 				$objChildOutput->id				= $objChild->id;
 				$objChildOutput->name			= $objChildContent->name;
 				$objChildOutput->friendly_name	= $objChildContent->getFriendlyName();
 				$objChildOutput->description	= $objChildContent->description;
 				$objChildOutput->nature			= GetConstantName($objChild->document_nature_id, 'document_nature');
 				$objChildOutput->file_type_id	= $objChildContent->file_type_id;
+				$objChildOutput->extension		= ($objChildContent->file_type_id) ? $objFileType->extension : '';
 				$objChildOutput->has_icon		= ($objChildContent->file_type_id) ? File_Type::hasIcon($objChildContent->file_type_id, 16) : false;
 				
 				$objDocumentOutput->arrChildren[]	= $objChildOutput;
