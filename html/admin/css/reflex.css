@@ -748,9 +748,10 @@ div.document-explorer
 
 div.document-explorer-list
 {
-	min-height	: 20em;
-	max-height	: 20em;
-	overflow-y	: scroll;
+	min-height			: 20em;
+	max-height			: 20em;
+	overflow-y			: scroll;{
+	background-color	: #ddd;
 }
 
 
