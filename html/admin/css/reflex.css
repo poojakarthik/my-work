@@ -802,8 +802,9 @@ table.document-explorer td.description
 
 div.document-explorer-status
 {
-	font-size	: 9pt;
-	font-style	: italic;
+	background-color	: #f9f9f9;
+	padding				: 0.5em;
+	border				: 0.1em solid #333;
 }
 
 div.document-explorer-status span.name
