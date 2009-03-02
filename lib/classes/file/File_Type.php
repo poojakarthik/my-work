@@ -11,6 +11,8 @@ class File_Type extends ORM
 	protected			$_strTableName				= "file_type";
 	protected static	$_strStaticTableName		= "file_type";
 	
+	protected static final	$_arrAllowableResolutions	= array(16, 64);
+	
 	/**
 	 * __construct()
 	 *
@@ -23,10 +25,12 @@ class File_Type extends ORM
 	 * 
 	 * @constructor
 	 */
-	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
+	public function __construct($arrProperties=Array(), $bolLoadById=FALSE, $bolDetailsOnly=false)
 	{
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
+		
+		
 	}
 	
 	/**
@@ -61,6 +65,62 @@ class File_Type extends ORM
 			$arrFileType	= $selByExtensionMimeType->Fetch();
 			
 			return ($bolAsArray) ? $arrFileType : new File_Type($arrFileType);
+		}
+	}
+	
+	/**
+	 * hasIcon()
+	 *
+	 * Returns whether a given File Type has an icon
+	 *
+	 * @param	integer		$intFileTypeId					File Type to check
+	 * @param	[integer	$intResolution				]	Only check RxR resolution (Default: null)
+	 * 
+	 * @return	boolean
+	 * 
+	 * @method
+	 */
+	public static function hasIcon($intFileTypeId, $intResolution=null)
+	{
+		static	$qryQuery;
+		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
+		
+		$intFileTypeId	= (int)$intFileTypeId;
+		
+		if ($intResolution > 0)
+		{
+			if (!in_array($intResolution, self::$_arrAllowableResolutions))
+			{
+				throw new Exception("Unsupported File_Type Icon Resolution: {$intResolution}x{$intResolution}");
+			}
+			else
+			{
+				$strColumn	= "(icon_{$intResolution}x{$intResolution} IS NOT NULL)";
+			}
+		}
+		else
+		{
+			$arrWhere	= array();
+			foreach (self::$_arrAllowableResolutions as $intSupportedResolution)
+			{
+				$arrWhere[]	 = "(icon_{$intSupportedResolution}x{$intSupportedResolution} IS NOT NULL)";
+			}
+			$strColumn	= "(".implode(' OR ', $arrWhere).")";
+		}
+		
+		$strColumn	.= " AS has_icon";
+		$resHasIcon	= $qryQuery->Execute("SELECT {$strColumn} FROM file_type WHERE id = {$intFileTypeId} LIMIT 1");
+		if ($resHasIcon === false)
+		{
+			throw new Exception($qryQuery->Error());
+		}
+		elseif ($arrHasIcon = $resHasIcon->fetch_assoc())
+		{
+			return (bool)$arrHasIcon['has_icon'];
+		}
+		else
+		{
+			throw new Exception("Unknown File Type with Id '{$intFileTypeId}'");
 		}
 	}
 	
