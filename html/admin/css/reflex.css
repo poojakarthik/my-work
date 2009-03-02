@@ -806,13 +806,13 @@ div.document-explorer-status
 	font-style	: italic;
 }
 
-span.document-explorer-status-name
+div.document-explorer-status span.name
 {
 	font-size	: 10pt;
 	font-weight	: bold;
 }
 
-span.document-explorer-status-description
+div.document-explorer-status span.description
 {
 	font-size	: 9pt;
 	font-style	: italic;
