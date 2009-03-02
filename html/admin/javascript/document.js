@@ -404,7 +404,7 @@ var Document	= Class.create
 						strIcon	= '../admin/img/template/folder.png';
 						strLink	= 'Flex.Document.updateExplorerPopup('+objChild.id+');';
 					}
-					else if (objChild.file_type_id)
+					else if (objChild.has_icon)
 					{
 						strIcon	= '../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/16x16';
 					}
