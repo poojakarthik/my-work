@@ -421,7 +421,7 @@ var Document	= Class.create
 						}
 						strFriendlyName	+= '.' + objChild.extension;
 					}
-					strDocumentListing	+=	"				<tr onmouseover='this.className=\"alt-hover\"' onmouseout='this.className=\"\"' onclick='"+strLink+"'>\n" +
+					strDocumentListing	+=	"				<tr class='document-explorer-list-record' onclick='"+strLink+"'>\n" +
 											"					<td><img src='"+strIcon+"' />&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
 											"					<td><em>"+(objChild.description ? objChild.description : '')+"</em></td>\n" +
 											"					<td>"+(objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size+' KB' : '')+"</td>\n" +
