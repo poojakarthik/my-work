@@ -440,7 +440,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 		// Get list of FNNs for this File
 		$arrFNNs	= Telemarketing_FNN_Proposed::getFor("proposed_list_file_import_id = {$intFileImportId} AND telemarketing_fnn_proposed_status_id = ".TELEMARKETING_FNN_PROPOSED_STATUS_IMPORTED, true);
 		$intTotal	= count($arrFNNs);
-		$intCount	= 0;		
+		$intCount	= 0;
+		$arrResult	= array();
 		foreach ($arrFNNs as $mixIndex=>$arrFNN)
 		{
 			$intCount++;
@@ -456,6 +457,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
 				$strDescription	= "--OPTOUT";
+				$arrResult['OPTOUT']++;
 			}
 			
 			// Wash against the Internal DNCR Cache
@@ -468,6 +470,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
 				$strDescription	= "--DNCR";
+				$arrResult['DNCR']++;
 			}
 			
 			// Wash against Active Services in Flex
@@ -480,6 +483,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
 				$strDescription	= "--FLEX SERVICE";
+				$arrResult['FLEX_SERVICE']++;
 			}
 			
 			// Wash against Active Contacts in Flex
@@ -492,17 +496,21 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
 				$strDescription	= "--FLEX CONTACT";
+				$arrResult['FLEX_CONTACT']++;
 			}
 			
 			else
 			{
 				// Ok to Call
 				$strDescription	= "++ALLOWED";
+				$arrResult['ALLOWED']++;
 			}
 			
 			$fltSplit	= microtime(true);
 			fwrite($resLogFile, "({$fltSplit}) FNN {$intCount}/{$intTotal} completed in ".($fltSplit-$fltLap)." seconds ({$strDescription})\n");
 		}
+		
+		// Totals
 		
 		fclose($resLogFile);
 		
