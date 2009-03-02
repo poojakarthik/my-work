@@ -99,12 +99,20 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 	 */
 	function Render()
 	{	
+		$bolUserHasProperAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		
 		// Only apply the output mask if the DBO()->Charge is not invalid
 		$bolApplyOutputMask = !DBO()->Charge->IsInvalid();
 
 		$this->FormStart("AddAdjustment", "Adjustment", "Add");
 		
-		echo "<div class='WideForm'>\n";
+		if (!$bolUserHasProperAdminPerm)
+		{
+			// The user cannot create credit adjustments because they don't have the required permissions
+			echo "<div class='MsgNotice'>You do not have the required permissions to create credit adjustments</div>";
+		}
+		
+		echo "<div class='GroupedContent'>\n";
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		if (DBO()->Service->Id->Value)
@@ -116,6 +124,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		}
 
 		DBO()->Account->Id->RenderHidden();
+
 		
 		// Display account details
 		DBO()->Account->Id->RenderOutput();

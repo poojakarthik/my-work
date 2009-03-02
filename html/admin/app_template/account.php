@@ -47,7 +47,6 @@ class AppTemplateAccount extends ApplicationTemplate
 	public static function BuildContextMenu($intAccountId)
 	{
 		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		
 		ContextMenu()->Account->Account_Overview($intAccountId);
 		ContextMenu()->Account->Invoices_And_Payments($intAccountId);
@@ -59,10 +58,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account->Services->Add_Services($intAccountId);
 			ContextMenu()->Account->Contacts->Add_Contact($intAccountId);
 			ContextMenu()->Account->Payments->Make_Payment($intAccountId);
-			if ($bolUserHasProperAdminPerm)
-			{
-				ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
-			}
+			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
 			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
 			ContextMenu()->Account->Payments->Change_Payment_Method($intAccountId);
 			ContextMenu()->Account->Add_Associated_Account($intAccountId);

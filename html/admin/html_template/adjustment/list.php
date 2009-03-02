@@ -89,6 +89,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		// Check if the user has admin privileges
 		$bolHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolUserIsGod			= AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD);
+		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		
 		// define the table's header
 		if ($bolHasProperAdminPerm)
@@ -233,7 +234,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		Table()->AdjustmentTable->Render();
 		
 		// Button to add an adjustment
-		if ($bolHasProperAdminPerm)
+		if ($bolUserHasOperatorPerm)
 		{
 			// The user can add adjustments
 			$strHref = Href()->AddAdjustment(DBO()->Account->Id->Value);

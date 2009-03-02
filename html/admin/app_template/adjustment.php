@@ -44,7 +44,6 @@
  */
 class AppTemplateAdjustment extends ApplicationTemplate
 {
-
 	//------------------------------------------------------------------------//
 	// Add
 	//------------------------------------------------------------------------//
@@ -63,7 +62,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasProperAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -107,6 +107,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Load all charge types that aren't archived and aren't flagged as automatic_only
 		DBL()->ChargeTypesAvailable->Archived = 0;
 		DBL()->ChargeTypesAvailable->automatic_only = 0;
+		
+		// Only proper admins can create credit adjustments
+		if (!$bolUserHasProperAdminPerm)
+		{
+			// The user can only create debit adjustments
+			DBL()->ChargeTypesAvailable->Nature = 'DR';
+		}
 		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
 		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
 		DBL()->ChargeTypesAvailable->Load();
@@ -137,6 +144,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// if the charge amount has a leading dollar sign then strip it off
 				DBO()->Charge->Amount = ltrim(trim(DBO()->Charge->Amount->Value), '$');
 				
+				// Check that the charge amount is not negative
+				if (floatval(DBO()->Charge->Amount->Value < 0))
+				{
+					Ajax()->AddCommand("Alert", "ERROR: The Adjustment cannot be a negative value");
+					return TRUE;
+				}
+				
 				// Remove GST from this amount
 				DBO()->Charge->Amount = RemoveGST(DBO()->Charge->Amount->Value);
 				
@@ -164,6 +178,14 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->Charge->Description	= DBO()->ChargeType->Description->Value;
 				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
 				
+				// Only ProperAdmins can create credit adjustments
+				if (DBO()->Charge->Nature->Value == 'CR' && !$bolUserHasProperAdminPerm)
+				{
+					// The user is not a proper admin but is trying to create a credit adjustment
+					Ajax()->AddCommand("Alert", "ERROR: You do not have permission to create credit adjustments");
+					return TRUE;
+				}
+				
 				// if DBO()->Charge->Invoice->Value == 0 then set it to NULL;
 				if (!DBO()->Charge->Invoice->Value)
 				{
@@ -175,12 +197,14 @@ class AppTemplateAdjustment extends ApplicationTemplate
 
 				$arrData = DBO()->Charge->AsArray();
 
+				TransactionStart();
 				$intChargeId = Framework()->AddCharge($arrData);
 
 				// Save the adjustment to the charge table of the vixen database
 				if ($intChargeId === FALSE)
 				{
 					// The adjustment did not save
+					TransactionRollback();
 					Ajax()->AddCommand("Alert", "ERROR: Saving the adjustment failed, unexpectedly");
 					return TRUE;
 				}
@@ -188,6 +212,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				{
 					DBO()->Charge->Id = $intChargeId;
 					// The adjustment was successfully saved
+					TransactionCommit();
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 					Ajax()->AddCommand("AlertReload", "The Adjustment has been successfully added");
 					return TRUE;

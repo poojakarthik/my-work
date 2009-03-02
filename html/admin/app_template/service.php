@@ -78,7 +78,6 @@ class AppTemplateService extends ApplicationTemplate
 	public static function BuildContextMenu($intAccountId, $intServiceId, $intServiceType)
 	{
 		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		
 		ContextMenu()->Service->View_Unbilled_Charges($intServiceId);	
 		ContextMenu()->Service->View_Service_History($intServiceId);
@@ -88,10 +87,7 @@ class AppTemplateService extends ApplicationTemplate
 			ContextMenu()->Service->Edit_Service($intServiceId);
 			ContextMenu()->Service->Plan->Change_Plan($intServiceId);	
 			ContextMenu()->Service->Move_Service($intServiceId);
-			if ($bolUserHasProperAdminPerm)
-			{	
-				ContextMenu()->Service->Adjustments->Add_Adjustment($intAccountId, $intServiceId);
-			}
+			ContextMenu()->Service->Adjustments->Add_Adjustment($intAccountId, $intServiceId);
 			ContextMenu()->Service->Adjustments->Add_Recurring_Adjustment($intAccountId, $intServiceId);
 			if ($intServiceType == SERVICE_TYPE_LAND_LINE)
 			{
