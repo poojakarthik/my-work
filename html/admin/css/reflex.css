@@ -755,26 +755,25 @@ img.document-explorer-icon
 	margin-right	: 0.25em;
 }
 
-thead.document-explorer-list
+table.document-explorer-list thead
 {
 	background-color: #333;
 	color: #eee;
 	text-align: left;
 }
 
-th.document-explorer-list
+table.document-explorer-list th
+{
+	
+}
+
+table.document-explorer-list td
 {
 	
 }
 
 
-td.document-explorer-list
-{
-	
-}
-
-
-tr.document-explorer-list-record
+table.document-explorer-list tr.record
 {
 	
 }
