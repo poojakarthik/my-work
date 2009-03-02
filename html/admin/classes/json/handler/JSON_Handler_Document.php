@@ -158,7 +158,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objChildOutput->extension		= ($objChildContent->file_type_id) ? $objFileType->extension : '';
 				$objChildOutput->has_icon		= ($objChildContent->file_type_id) ? File_Type::hasIcon($objChildContent->file_type_id, 16) : false;
 				$objChildOutput->file_size		= round($objChildContent->intContentSize / 1024, 1);
-				$objChildOutput->date_modified	= date("d/m/Y H:i:s", strtotime($objChildContent->changed_on));
+				$objChildOutput->date_modified	= date("j/n/Y g:i A", strtotime($objChildContent->changed_on));
 				
 				$objDocumentOutput->arrChildren[]	= $objChildOutput;
 			}
