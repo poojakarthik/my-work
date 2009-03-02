@@ -382,7 +382,7 @@ var Document	= Class.create
 				var strIcon	= '';
 				if (i != 0)
 				{
-					strBreadcrumbMenu	+= '&nbsp;>&nbsp;';
+					strBreadcrumbMenu	+= '&nbsp;<img src="../img/template/menu_open_right.png" />&nbsp;';
 					strIcon				= '../admin/img/template/folder.png';
 				}
 				else
