@@ -428,7 +428,7 @@ var Document	= Class.create
 			"<div style='margin: 0.5em;'>\n" +
 			"	<div class='GroupedContent'>\n" +
 			"		<h2>"+objResponse.objDocument.strFriendlyName+"</h2>\n" +
-			"		<em>"+objResponse.objDocument.strDescription+"</em>\n" +
+			"		<em>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</em>\n" +
 			"	</div>\n" +
 			"	<div class='GroupedContent'>\n" +
 			"		"+strBreadcrumbMenu+"\n" +
