@@ -525,11 +525,11 @@ div.reflex-popup-title {
 	font-weight: bold;
 }
 
-div.reflex-popup-title-text {
+span.reflex-popup-title-text {
 	vertical-align: middle;
 }
 
-div.reflex-popup-title-icon {
+img.reflex-popup-title-icon {
 	vertical-align: middle;
 }
 
