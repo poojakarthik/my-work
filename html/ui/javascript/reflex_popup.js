@@ -234,7 +234,7 @@ Object.extend(Reflex_Popup.prototype, {
 		if (strImageSource)
 		{
 			this.icon.src	= strImageSource;
-			this.icon.style.display	= 'inline';
+			this.icon.style.display	= 'inline-block';
 		}
 		else
 		{
