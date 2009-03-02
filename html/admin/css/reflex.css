@@ -746,6 +746,12 @@ div.document-explorer
 	padding			: 0px;
 }
 
+div.document-explorer-list
+{
+	overflow-y	: scroll;
+}
+
+
 div.reflex-popup div.document-explorer table.document-explorer
 {
 	margin			: 0px;
