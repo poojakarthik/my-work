@@ -422,7 +422,7 @@ var Document	= Class.create
 						}
 						strFriendlyName	+= '.' + objChild.extension;
 					}
-					strDocumentListing	+=	"				<tr onclick='"+strLink+"'>\n" +
+					strDocumentListing	+=	"				<tr valign='top' onclick='"+strLink+"'>\n" +
 											"					<td class='field-name'><img src='"+strIcon+"' />&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
 											"					<td class='field-description description'>"+(objChild.description ? objChild.description : '')+"</td>\n" +
 											"					<td class='field-size'>"+(objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size+' KB' : '')+"</td>\n" +
