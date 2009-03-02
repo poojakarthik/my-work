@@ -442,7 +442,7 @@ var Document	= Class.create
 			var strHTML	= "\n" +
 			"<div style='margin: 0.5em;'>\n" +
 			"	<div class='document-explorer-address'>\n" +
-			"		<strong>Location:</strong>&nbsp;"+strBreadcrumbMenu+"\n" +
+			"		"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
 			"	<div style='min-height: 20em; max-height: 20em; overflow-y: scroll;'>\n" +
 			"		<table class='reflex'>\n" +
