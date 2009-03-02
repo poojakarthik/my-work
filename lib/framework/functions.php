@@ -3451,7 +3451,6 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 		JOIN CustomerGroup
 		ON CustomerGroup.Id = Account.CustomerGroup
 		JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)";
-		";
 
 	$strWhere	= "";
 
