@@ -179,24 +179,19 @@ class Document extends ORM
 		{
 			// We have a Parent, get its path
 			$objParent			= new Document(array('id'=>$objDocumentContent->parent_document_id));
-			$objParentContent	= $objParent->getContentDetails();
 			
-			if ($bolAsArray)
-			{
-				$arrPathStack	= $objParent->getPath(true);
-				$arrPathStack[]	= array('name'=>$objDocumentContent->name, 'document_id'=>$this->id, 'friendly_name'=>$strFriendlyName);
-				return $arrPathStack;
-			}
-			else
-			{
-				return $objParent->getPath(false).self::PATH_DIRECTORY_DELIMITER.$objDocumentContent->name;
-			}
+			$arrPathStack	= $objParent->getPath(true);
+			$strPath		= $objParent->getPath(false).self::PATH_DIRECTORY_DELIMITER.$objDocumentContent->name;
 		}
 		else
 		{
 			// We are at the root directory
-			return ($bolAsArray) ? array(array('name'=>'', 'document_id'=>0, 'friendly_name'=>self::ROOT_DIRECTORY_NAME)) : '';
+			$arrPathStack	= array(array('name'=>'', 'document_id'=>0, 'friendly_name'=>self::ROOT_DIRECTORY_NAME));
+			$strPath		= '';
 		}
+		
+		$arrPathStack[]	= array('name'=>$objDocumentContent->name, 'document_id'=>$this->id, 'friendly_name'=>$strFriendlyName);
+		return ($bolAsArray) ? $arrPathStack : $strPath;
 	}
 	
 	/**
