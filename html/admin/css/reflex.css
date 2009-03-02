@@ -149,6 +149,11 @@ table.reflex tr.alt td {
 	background-color: #fff;
 }
 
+table.reflex td.hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
 a.button {
 	cursor: default;
 	border: .1em solid #111;
