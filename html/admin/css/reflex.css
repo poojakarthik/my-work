@@ -786,7 +786,7 @@ table.document-explorer tbody tr:hover
 	cursor				: pointer;
 }
 
-table.document-explorer tr.record td.description
+table.document-explorer td.description
 {
 	font-size	: 9pt;
 	font-style	: italic;
