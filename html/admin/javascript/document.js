@@ -418,6 +418,8 @@ var Document	= Class.create
 					strDocumentListing	+=	"				<tr onmouseover='this.className=\"alt-hover\"' onmouseout='this.className=\"\"' onclick='"+strLink+"'>\n" +
 											"					<td><img src='"+strIcon+"' />&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
 											"					<td><em>"+(objChild.description ? objChild.description : '')+"</em></td>\n" +
+											"					<td>"+(objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size'KB' : '')+"</td>\n" +
+											"					<td></td>\n" +
 											"					<td></td>\n" +
 											"				</tr>\n";
 				}
@@ -426,7 +428,7 @@ var Document	= Class.create
 			{
 				// No children
 				strDocumentListing	=	"				<tr>\n" +
-										"					<td colspan='3' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
+										"					<td colspan='5' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
 										"				</tr>\n";
 			}
 			
@@ -446,6 +448,8 @@ var Document	= Class.create
 			"				<tr style='font-size:10pt;'>\n" +
 			"					<th>Name</th>\n" +
 			"					<th>Description</th>" +
+			"					<th>Size</th>" +
+			"					<th>Type</th>" +
 			"					<th>&nbsp;</th>" +
 			"				</tr>\n" +
 			"			</thead>\n" +
