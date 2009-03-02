@@ -89,6 +89,8 @@ Object.extend(Reflex_Popup.prototype, {
 	titleButtonPane	: null,
 	contentPane		: null,
 	footerPane		: null,
+	titleText		: null,
+	icon			: null,
 
 	// intWidth should be specified in units of em
 	initialize: function(intWidth)
@@ -109,6 +111,9 @@ Object.extend(Reflex_Popup.prototype, {
 		this.icon	= document.createElement('img');
 		this.icon.style.display	= 'none';
 		this.titlePane.appendChild(this.icon);
+		
+		this.titleText	= document.createElement('span');
+		this.titlePane.appendChild(this.titleText);
 
 		this.titleButtonPane = document.createElement('div');
 		this.titleButtonPane.className = 'reflex-popup-title-bar-buttons';
@@ -186,8 +191,8 @@ Object.extend(Reflex_Popup.prototype, {
 
 	setTitle: function(title)
 	{
-		this.titlePane.innerHTML = '';
-		this.titlePane.appendChild(document.createTextNode(title));
+		this.titleText.innerHTML = '';
+		this.titleText.appendChild(document.createTextNode(title));
 	},
 
 	setContent: function(content)
