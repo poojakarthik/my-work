@@ -446,7 +446,7 @@ var Document	= Class.create
 			"		"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
 			"	<div class='document-explorer'>\n" +
-			"		<table class='reflex document-explorer'>\n" +
+			"		<table class='document-explorer reflex'>\n" +
 			"			<thead>\n" +
 			"				<tr>\n" +
 			"					<th>Name</th>\n" +
@@ -462,8 +462,8 @@ var Document	= Class.create
 			"		</table>\n" +
 			"	</div>\n" +
 			"	<div class='document-explorer-status'>\n" +
-			"		<span class='document-explorer-status-name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
-			"		<span class='document-explorer-status-description'>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</span><br />\n" +
+			"		<span class='name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
+			"		<span class='description'>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</span><br />\n" +
 			/*"		<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n" +*/
 			"	</div>\n" +
 			"</div>\n";
