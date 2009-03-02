@@ -382,7 +382,7 @@ var Document	= Class.create
 				var strIcon	= '';
 				if (i != 0)
 				{
-					strBreadcrumbMenu	+= '&nbsp;<img src="../admin/img/template/menu_open_right.png" />&nbsp;';
+					strBreadcrumbMenu	+= '<img class="document-explorer-address-separator" src="../admin/img/template/menu_open_right.png" />';
 					strIcon				= '../admin/img/template/folder.png';
 				}
 				else

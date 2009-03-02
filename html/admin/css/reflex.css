@@ -726,6 +726,15 @@ span.document-explorer-address-node[onclick]:hover
 	cursor			: pointer;
 }
 
+span.document-explorer-address-separator
+{
+	height			: 16px;
+	width			: 16px;
+	vertical-align	: text-bottom;
+	margin-left		: 0.25em;
+	margin-right	: 0.25em;
+}
+
 div.document-explorer-footer
 {
 	
