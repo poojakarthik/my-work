@@ -734,7 +734,7 @@ img.document-explorer-icon
 {
 	height			: 16px;
 	width			: 16px;
-	vertical-align	: middle;
+	vertical-align	: text-bottom;
 }
 
 thead.document-explorer-list
