@@ -146,10 +146,10 @@ table.reflex tr td {
 }
 
 table.reflex tr.alt td {
-	background-color: #fff;
+	background-color: #0099FF;
 }
 
-table.reflex tr.hover td {
+table.reflex tr.alt-hover td {
 	background-color: #fff;
 	text-decoration: underline;
 	cursor: pointer;
