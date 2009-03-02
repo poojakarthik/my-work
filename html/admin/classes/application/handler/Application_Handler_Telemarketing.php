@@ -455,17 +455,19 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
+				fwrite($resLogFile, " -- FNN {$arrFNN['fnn']} has been washed due to [BLACKLISTING/OPTOUT]\n");
 			}
 			
 			// Wash against the Internal DNCR Cache
 			elseif ($arrDNCR[$arrFNN['fnn']])
 			{
-				// Blacklisted (Opt-Out)
+				// ACMA DNCR
 				$objFNN	= new Telemarketing_FNN_Proposed($arrFNN);
 				$objFNN->telemarketing_fnn_withheld_reason_id	= TELEMARKETING_FNN_WITHHELD_REASON_DNCR;
 				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
+				fwrite($resLogFile, " -- FNN {$arrFNN['fnn']} has been washed due to [DNCR]\n");
 			}
 			
 			// Wash against Active Services in Flex
@@ -477,6 +479,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
+				fwrite($resLogFile, " -- FNN {$arrFNN['fnn']} has been washed due to [FLEX SERVICE]\n");
 			}
 			
 			// Wash against Active Contacts in Flex
@@ -488,6 +491,13 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
+				fwrite($resLogFile, " -- FNN {$arrFNN['fnn']} has been washed due to [FLEX CONTACT]\n");
+			}
+			
+			else
+			{
+				// Ok to Call
+				fwrite($resLogFile, " ++ FNN {$arrFNN['fnn']} been permitted to dial\n");
 			}
 			
 			$fltSplit	= microtime(true);
