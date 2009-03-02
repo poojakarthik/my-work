@@ -26,7 +26,7 @@ class Application_Handler_RatePlan extends Application_Handler
 			$qryQuery	= new Query();
 			
 			// Check user permissions
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT | PERMISSION_PROPER_ADMIN))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT) && !AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				throw new Exception("You do not have sufficient privileges to upload a Plan Brochure!" . (($bolVerboseErrors) ? ' But you do have GOD mode... wtf' : ''));
 			}
@@ -83,7 +83,7 @@ class Application_Handler_RatePlan extends Application_Handler
 			$qryQuery	= new Query();
 			
 			// Check user permissions
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT | PERMISSION_PROPER_ADMIN))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT) && !AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				throw new Exception("You do not have sufficient privileges to upload an Authorisation Script!" . (($bolVerboseErrors) ? ' But you do have GOD mode... wtf' : ''));
 			}
