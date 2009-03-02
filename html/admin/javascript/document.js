@@ -440,7 +440,7 @@ var Document	= Class.create
 			"		<em>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</em>\n" +
 			"	</div>\n" +*/
 			"	<div class='GroupedContent'>\n" +
-			"		"+strBreadcrumbMenu+"\n" +
+			"		<strong>Location :</strong>&nbsp;"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
 			"	<div style='min-height: 20em; max-height: 20em; overflow-y: scroll;'>\n" +
 			"		<table class='reflex'>\n" +
