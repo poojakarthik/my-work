@@ -442,7 +442,7 @@ var Document	= Class.create
 			"	<div class='GroupedContent'>\n" +
 			"		"+strBreadcrumbMenu+"\n" +
 			"	</div>\n" +
-			"	<div class='GroupedContent' style='min-height: 20em; max-height: 20em; overflow-y: scroll;'>\n" +
+			"	<div style='min-height: 20em; max-height: 20em; overflow-y: scroll;'>\n" +
 			"		<table class='reflex'>\n" +
 			"			<thead>\n" +
 			"				<tr style='font-size:10pt;'>\n" +
