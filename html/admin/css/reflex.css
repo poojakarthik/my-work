@@ -780,11 +780,11 @@ table.document-explorer thead
 
 table.document-explorer tbody
 {
-	max-height	: 20em;
+	/*max-height	: 20em;
 	min-height	: 20em;
 	height		: 20em;
 	overflow-y	: scroll;
-	overflow-x	: hidden;
+	overflow-x	: hidden;*/
 }
 
 table.document-explorer tbody tr.clear
