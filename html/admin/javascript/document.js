@@ -361,8 +361,8 @@ var Document	= Class.create
 		// Render the Explorer popup at the Root Directory
 		this.updateExplorerPopup(null);
 
-		this.pupExplorer.recentre();
 		this.pupExplorer.display();
+		this.pupExplorer.recentre();
 	},
 	
 	updateExplorerPopup	: function(intDocumentId)
