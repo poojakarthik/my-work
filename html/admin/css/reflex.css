@@ -526,11 +526,11 @@ div.reflex-popup-title {
 }
 
 div.reflex-popup-title-text {
-	/*vertical-align: middle;*/
+	vertical-align: middle;
 }
 
 div.reflex-popup-title-icon {
-	vertical-align: top;
+	vertical-align: middle;
 }
 
 div.reflex-popup-title-bar-buttons {
