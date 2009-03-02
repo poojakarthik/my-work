@@ -192,7 +192,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							$output = array();
 							foreach ($ticketServices as $service)
 							{
-								$output[] = htmlspecialchars($service->getFNN());
+								$strLink = Href()->ViewService($service->serviceId);
+								$output[] = "<a href='$strLink' title='View Service'>". htmlspecialchars($service->getFNN()) ."</a>";
 							}
 							$output = implode('<br/>', $output);
 							echo $output ? $output : '[No related services]';
@@ -329,7 +330,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					for (var i = 0, l = services.length; i < l; i++)
 					{
 						var id = services[i]['service_id'];
-						var name = services[i]['fnn'];
+						var name = services[i]['fnn'] +" ("+ services[i]['status_description'] +")";
 						var option = document.createElement('option');
 						option.value = id;
 						option.appendChild(document.createTextNode(name));
@@ -742,10 +743,11 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 									}
 									foreach ($services as $service)
 									{
-										$serviceId = $service['service_id'];
-										$fnn = $service['fnn'];
-										$selected = array_key_exists($serviceId, $ticketServices) ? ' selected="selected"' : '';
-										echo "<option value=\"$serviceId\"$selected>" . htmlspecialchars($fnn) . "</option>";
+										$serviceId					= $service['service_id'];
+										$fnn						= $service['fnn'];
+										$serviceStatusDescription	= $service['status_description'];
+										$selected					= array_key_exists($serviceId, $ticketServices) ? ' selected="selected"' : '';
+										echo "<option value=\"$serviceId\"$selected>" . htmlspecialchars($fnn ." (". $serviceStatusDescription .")") ."</option>";
 									}
 									echo "</select>";
 									if (array_search('accountId', $editableValues) !== FALSE)

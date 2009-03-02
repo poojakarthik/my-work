@@ -693,7 +693,7 @@ class Application_Handler_Ticketing extends Application_Handler
 								$account = $ticket->getAccount();
 								if ($account)
 								{
-									$detailsToRender['services'] = $account->listServices();
+									$arrAccountServices = $account->listServices(array(SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_PENDING));
 									if ($ticket->id == NULL)
 									{
 										// The ticket is being created for the first time, so the form will include the original correspondence
@@ -770,7 +770,7 @@ class Application_Handler_Ticketing extends Application_Handler
 							$account = $ticket->getAccount();
 							if ($account)
 							{
-								$detailsToRender['services'] = $account->listServices();
+								$arrAccountServices = $account->listServices(array(SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_PENDING));
 								if ($ticket->id == NULL)
 								{
 									// The ticket is being created for the first time, so the form will include the original correspondence
@@ -804,7 +804,20 @@ class Application_Handler_Ticketing extends Application_Handler
 		$detailsToRender['editable_values'] = $editableValues;
 		$detailsToRender['invalid_values'] = $invalidValues;
 		$detailsToRender['currentAccount'] = $objCurrentAccount;
-
+		
+		// Convert the services into associative arrays
+		if (isset($arrAccountServices) && is_array($arrAccountServices))
+		{
+			$detailsToRender['services'] = array();
+			
+			foreach ($arrAccountServices as $objService)
+			{
+				$detailsToRender['services'][] = array(	"service_id"			=> $objService->id,
+														"fnn"					=> $objService->fNN,
+														"status_description"	=> $GLOBALS['*arrConstant']['service_status'][$objService->status]['Description']
+														);
+			}
+		}
 		$this->LoadPage('ticketing_ticket', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
 

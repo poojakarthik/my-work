@@ -213,6 +213,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		$bolUserIsTicketingUser 	= Ticketing_User::currentUserIsTicketingUser();
 		$intAccountId				= DBO()->Account->Id->Value;
 		$bolTicketingModuleIsActive	= Flex_Module::isActive(FLEX_MODULE_TICKETING);
+		$arrAllowableServiceStatusesForTickets = array(SERVICE_ACTIVE, SERVICE_PENDING, SERVICE_DISCONNECTED);
 		
 		
 		Table()->Services->SetHeader("&nbsp;", "FNN", "Plan", "&nbsp;", "&nbsp;", "Actions");
@@ -253,7 +254,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 					$strViewProvisioningHistory		= "<img src='img/template/provisioning_history.png' title='View Provisioning History' onclick='$strViewProvisioningHistoryLink'/>";
 				}
 				
-				if ($bolTicketingModuleIsActive && $bolUserIsTicketingUser && $arrService['History'][0]['Status'] == SERVICE_ACTIVE)
+				if ($bolTicketingModuleIsActive && $bolUserIsTicketingUser && array_search($arrService['History'][0]['Status'], $arrAllowableServiceStatusesForTickets) !== FALSE)
 				{
 					$strCreateTicket = "<a href='". Href()->AddTicket($intAccountId, $arrService['Id']) ."' title='Create Ticket'><img src='img/template/create_ticket.png'></img></a>";
 				}

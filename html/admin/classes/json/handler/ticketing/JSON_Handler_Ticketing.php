@@ -43,7 +43,15 @@ class JSON_Handler_Ticketing extends JSON_Handler
 			}
 		}
 		// If an account exists, we need to return a list of services and contacts for it
-		$response['services'] = $account ? $account->listServices() : array();
+		$arrServices			= $account ? $account->listServices(array(SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_PENDING)) : array();
+		$response['services']	= array();
+		foreach ($arrServices as $objService)
+		{
+			$response['services'][] = array("service_id"			=> $objService->id,
+											"fnn"					=> $objService->fNN,
+											"status_description"	=> $GLOBALS['*arrConstant']['service_status'][$objService->status]['Description']
+											);
+		}
 
 		return $response;
 	}

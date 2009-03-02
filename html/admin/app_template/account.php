@@ -522,6 +522,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Load all the services belonging to the account, that the user has permission to view
 		DBO()->Account->Services = $this->GetServices(DBO()->ServiceList->Account->Value, DBO()->ServiceList->Filter->Value);
+		DBO()->Account->Id = DBO()->ServiceList->Account->Value;
 		
 		//Render the AccountServices table
 		Ajax()->RenderHtmlTemplate("AccountServicesList", HTML_CONTEXT_DEFAULT, DBO()->ServiceList->ContainerDivId->Value);

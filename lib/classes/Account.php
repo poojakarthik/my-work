@@ -56,17 +56,76 @@ class Account
 		return $framework->GetAccountBalance($this->id);
 	}
 
-	// This is a dirty hack. It returns an array of array('id'=>x, 'fnn'=>x)
-	public function listServices()
+	/**
+	 * listServices
+	 *
+	 * returns array of Service objects defining the current service records associated with this account, for active services (based on the status)
+	 *
+	 * returns array of Service objects defining the current service records associated with this account, for active services (based on the status)
+	 * 
+	 * @return	array of Service objects
+	 */
+
+	public function listActiveServices()
 	{
-		$selServices = new StatementSelect('account_services', array('service_id' => 'service_id', 'fnn' => 'fnn'), 'account_id = <ACCOUNT_ID>');
-		$arrWhere = array('ACCOUNT_ID' => $this->id);
-		if (($outcome = $selServices->Execute($arrWhere)) === FALSE)
-		{
-			throw new Exception('Failed to load services for account: ' . $selServices->Error());
-		}
-		return $selServices->FetchAll();
+		return $this->listServices(array(SERVICE_ACTIVE));
 	}
+
+	/**
+	 * listServices
+	 *
+	 * returns array of Service objects defining the current service records associated with this account
+	 *
+	 * returns array of Service objects defining the current service records associated with this account
+	 * 
+	 * @param	array	$arrStatuses	Defines the services to retrieve based on the statuses
+	 * 									(Optional, defaults to NULL, in which services of all statuses will be retrieved)
+	 *
+	 * @return	array of Service objects
+	 */
+	public function listServices($arrStatuses=NULL)
+	{
+		if (is_array($arrStatuses) && count($arrStatuses))
+		{
+			$strStatusConstraint = "AND Status IN (". implode(", ", $arrStatuses) .")";
+		}
+		else
+		{
+			$strStatusConstraint = "";
+		}
+		
+		$qryQuery = new Query();
+		$strQuery = "
+SELECT *
+FROM Service
+WHERE Id IN (
+	/* Find the maximum id for each FNN associated with the account, as this record defines the current state of the service for this account */
+	SELECT Max(Id)
+	FROM Service
+	WHERE Account = {$this->id}
+	GROUP BY Account, FNN
+)
+AND Account = {$this->id}
+AND (ClosedOn IS NULL OR ClosedOn >= CreatedOn)
+$strStatusConstraint
+ORDER BY FNN;";
+		
+		$objRecordSet = $qryQuery->Execute($strQuery);
+		if (!$objRecordSet)
+		{
+			throw new Exception("Failed to retrieve services for Account: {$this->id} - " . $qryQuery->Error() ." - Query: $strQuery");
+		}
+
+		$arrServices = array();
+
+		while ($arrRecord = $objRecordSet->fetch_assoc())
+		{
+			$arrServices[$arrRecord['Id']] = new Service($arrRecord, FALSE);
+		}
+
+		return $arrServices;
+	}
+
 
 	public function getName()
 	{
