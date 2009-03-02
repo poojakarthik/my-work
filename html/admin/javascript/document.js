@@ -423,11 +423,11 @@ var Document	= Class.create
 						strFriendlyName	+= '.' + objChild.extension;
 					}
 					strDocumentListing	+=	"				<tr onclick='"+strLink+"'>\n" +
-											"					<td><img src='"+strIcon+"' />&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
-											"					<td class='description'>"+(objChild.description ? objChild.description : '')+"</td>\n" +
-											"					<td>"+(objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size+' KB' : '')+"</td>\n" +
-											"					<td></td>\n" +
-											"					<td></td>\n" +
+											"					<td class='field-name'><img src='"+strIcon+"' />&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
+											"					<td class='field-description description'>"+(objChild.description ? objChild.description : '')+"</td>\n" +
+											"					<td class='field-size'>"+(objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size+' KB' : '')+"</td>\n" +
+											"					<td class='field-type'></td>\n" +
+											"					<td class='field-actions'></td>\n" +
 											"				</tr>\n";
 				}
 			}
@@ -449,18 +449,22 @@ var Document	= Class.create
 			"		<table class='reflex document-explorer'>\n" +
 			"			<thead>\n" +
 			"				<tr>\n" +
-			"					<th>Name</th>\n" +
-			"					<th>Description</th>" +
-			"					<th>Size</th>" +
-			"					<th>Type</th>" +
-			"					<th>&nbsp;</th>" +
+			"					<th class='field-name'>Name</th>\n" +
+			"					<th class='field-description'>Description</th>" +
+			"					<th class='field-size'>Size</th>" +
+			"					<th class='field-type'>Type</th>" +
+			"					<th class='field-actions'>&nbsp;</th>" +
 			"				</tr>\n" +
 			"			</thead>\n" +
-			"			<tbody>\n" +
-			strDocumentListing +
-			"				<tr><td class='clear' colspan='5'>&nbsp;</td></tr>\n" +
-			"			</tbody>\n" +
 			"		</table>\n" +
+			"		<div class='document-explorer-list'>\n" +
+			"			<table class='reflex document-explorer'>\n" +
+			"				<tbody>\n" +
+			strDocumentListing +
+			"					<tr><td class='clear' colspan='5'>&nbsp;</td></tr>\n" +
+			"				</tbody>\n" +
+			"			</table>\n" +
+			"		</div>" +
 			"	</div>\n" +
 			"	<div class='document-explorer-status'>\n" +
 			"		<span class='name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
