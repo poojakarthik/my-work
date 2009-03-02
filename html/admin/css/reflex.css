@@ -802,7 +802,7 @@ table.document-explorer th
 
 table.document-explorer td
 {
-	
+	overflow: hidden;
 }
 
 table.document-explorer .field-name
@@ -817,9 +817,9 @@ table.document-explorer .field-size
 {
 	width	: 10%;
 }
-table.document-explorer .field-type
+table.document-explorer .field-date
 {
-	width	: 10%;
+	width	: 20%;
 }
 table.document-explorer .field-actions
 {
