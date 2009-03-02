@@ -812,7 +812,7 @@ table.document-explorer .field-name
 }
 table.document-explorer .field-description
 {
-	width	: 35%;
+	width	: 30%;
 }
 table.document-explorer .field-size
 {
@@ -820,7 +820,7 @@ table.document-explorer .field-size
 }
 table.document-explorer .field-date
 {
-	width	: 15%;
+	width	: 20%;
 }
 table.document-explorer .field-actions
 {
