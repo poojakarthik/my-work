@@ -787,7 +787,8 @@ table.document-explorer tbody tr[onclick]:hover
 
 table.document-explorer tbody tr[onclick]:hover td
 {
-	/*cursor				: pointer;*/
+	cursor				: pointer;
+	text-decoration		: underline;
 	background-color	: #fff;
 }
 
