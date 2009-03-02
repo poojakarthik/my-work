@@ -712,8 +712,9 @@ div.tab-collection div.tab-body-container
 /****************************** Document Explorer *****************************/
 div.document-explorer-address
 {
-	padding	: 0.5em;
-	border	: 0.1em solid #333;
+	background-color	: #ccc;
+	padding				: 0.5em;
+	border				: 0.1em solid #333;
 }
 
 span.document-explorer-address-node
