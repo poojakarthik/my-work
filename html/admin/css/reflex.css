@@ -781,7 +781,7 @@ table.document-explorer tr[onclick]
 
 table.document-explorer tbody tr
 {
-	cursor				: pointer;
+	/*cursor				: pointer;*/
 }
 
 table.document-explorer td.description
