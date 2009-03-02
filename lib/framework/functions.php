@@ -4138,7 +4138,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 */
 	function GenerateLatePaymentNotices($intAutomaticInvoiceActionType, $intEffectiveDate=0, $strBasePath=FILES_BASE_PATH)
 	{
-		$selPriorNotices = new StatementSelect("account_letter_log", "1d", "invoice = <InvoiceId> AND letter_type = <NoticeType>", "", 1);
+		$selPriorNotices = new StatementSelect("account_letter_log", "id", "invoice_id = <InvoiceId> AND document_template_type_id = <NoticeType>", "", 1);
 
 		// Append a backslash to the path, if it doesn't already end in one
 		if (substr($strBasePath, -1) != "/")
@@ -4466,7 +4466,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		$arrLetterLog = Array(	
 			'account_id'		=> $arrAccount['AccountId'],
 			'invoice_id'		=> $arrAccount['InvoiceId'],
-			'letter_type_id'	=> $intNoticeType,
+			'document_template_type_id'	=> $intNoticeType,
 			'created_on'		=> $strNow
 		);
 
