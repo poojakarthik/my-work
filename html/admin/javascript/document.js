@@ -460,7 +460,7 @@ var Document	= Class.create
 			"			</tbody>\n" +
 			"		</table>\n" +
 			"	</div>\n" +
-			"	<div class='GroupedContent'>\n" +
+			"	<div class='document-explorer-status'>\n" +
 			"		<span class='document-explorer-status-name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
 			"		<span class='document-explorer-status-description'>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</span><br />\n" +
 			/*"		<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n" +*/
