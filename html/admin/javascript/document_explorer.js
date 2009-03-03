@@ -44,9 +44,9 @@ var Document_Explorer	= Class.create
 		this.elmContentDIV				= document.createElement('div');
 		this.elmContentDIV.className	= "document-explorer-list";
 		this.elmDocumentExplorerDIV.appendChild(this.elmContentDIV);
-		this.elmContentDIV.setAttribute('onclick', "Flex.Document.Explorer.canvasClick()");
+		//this.elmContentDIV.setAttribute('onclick', "Flex.Document.Explorer.canvasClick()");
+		this.elmContentDIV.addEventListener('click', this.canvasClick.bindAsEventListener(this), false);
 		
-		this.elmContentDIV.addEventListener('click', this.canvasClick.bind(this), false);
 		
 		this.elmContentTable			= document.createElement('table');
 		this.elmContentTable.className	= "reflex document-explorer";
