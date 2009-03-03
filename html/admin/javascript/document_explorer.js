@@ -251,7 +251,7 @@ var Document_Explorer	= Class.create
 			// Shift focus to the clicked Record
 			this.arrSelected		= new Array();
 			
-			if (intDocumentIndex > 0)
+			if (intDocumentIndex != null)
 			{
 				this.arrSelected.push(intDocumentIndex);
 				this.intLastSelected	= intDocumentIndex;
