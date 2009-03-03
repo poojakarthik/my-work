@@ -422,7 +422,7 @@ var Document	= Class.create
 					
 					if (objChild.system)
 					{
-						strIcon	+= '<img class="document-explorer-icon overlay" src="../admin/img/template/system_object.png" />';
+						strIcon	+= '<img class="document-explorer-icon-overlay" src="../admin/img/template/system_object.png" />';
 					}
 					
 					strDocumentListing	+=	"				<tr valign='top' onclick='"+strLink+"'>\n" +

@@ -777,10 +777,11 @@ img.document-explorer-icon
 	vertical-align	: text-bottom;
 }
 
-img.document-explorer-icon img.overlay
+img.document-explorer-icon-overlay
 {
 	max-height		: 16px;
 	max-width		: 16px;
+	vertical-align	: text-bottom;
 	position		: relative;
 	left			: -16px;
 }
