@@ -743,6 +743,7 @@ div.document-explorer-address-node[onclick]
 div.document-explorer-address-node[onclick]:hover
 {
 	background-color	: #fff;
+	border-color		: #888;
 	text-decoration		: underline;
 	cursor				: pointer;
 }
