@@ -183,39 +183,6 @@ var Document_Explorer	= Class.create
 			this.arrChildren	= objResponse.objDocument.arrChildren;
 			this.arrSelected	= Array();
 
-			// Render the new Popup Contents
-			var strHTML	= "\n" +
-			"<div style='margin: 0.5em;'>\n" +
-			"	<div class='document-explorer-address'>\n" +
-			/*"		"+strBreadcrumbMenu+"\n" +*/
-			"	</div>\n" +
-			"	<div class='document-explorer'>\n" +
-			"		<table class='reflex document-explorer'>\n" +
-			"			<thead>\n" +
-			"				<tr>\n" +
-			"					<th class='field-name'>Name</th>\n" +
-			"					<th class='field-size'>Size</th>" +
-			"					<th class='field-date'>Date Modified</th>" +
-			"					<th class='field-user'>Modified By</th>" +
-			"					<th class='field-actions'></th>" +
-			"				</tr>\n" +
-			"			</thead>\n" +
-			"		</table>\n" +
-			"		<div class='document-explorer-list'>\n" +
-			"			<table class='reflex document-explorer'>\n" +
-			"				<tbody>\n" +
-			/*strDocumentListing +*/
-			"				</tbody>\n" +
-			"			</table>\n" +
-			"		</div>" +
-			"	</div>\n" +
-			"	<div class='document-explorer-status'>\n" +
-			"		<span class='name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
-			"		<span class='description'>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</span><br />\n" +
-			/*"		<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n" +*/
-			"	</div>\n" +
-			"</div>\n";
-
 			this._updateStatusBar();
 			
 			this._registerEventHandlers();
@@ -367,8 +334,11 @@ var Document_Explorer	= Class.create
 			}
 			
 			strDetails	=	"<span class='name'>"+strFriendlyName+"</span><br />\n" +
+							"<span class='description'>"+(objChild.description ? objChild.description : objChild.friendly_name)+"</span><br />\n" +
 							"<span>"+strType+"</span><br />\n" +
-							"<span class='description'>"+(objChild.description ? objChild.description : objChild.friendly_name)+"</span>\n";
+							"<span>Date Modified:&nbsp;"+objChild.date_modified+" ("+objChild.modified_by+")</span><br />\n" +
+							"<span>Size:&nbsp;"+objChild.file_size+" ("+objChild.modified_by+")</span><br />\n" +
+							"";
 		}
 		else
 		{
@@ -378,10 +348,6 @@ var Document_Explorer	= Class.create
 		}
 		
 		this.elmStatusDIV.innerHTML	= strDetails;
-		
-		/*this.elmStatusDIV.innerHTML	=	"		<span class='name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
-										"		<span class='description'>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</span><br />\n";
-										/*"		<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n";*/
 	}
 });
 
