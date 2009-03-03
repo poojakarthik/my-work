@@ -235,6 +235,7 @@ var Document_Explorer	= Class.create
 	
 	recordClick	: function(eEvent, intDocumentIndex)
 	{
+		alert(eEvent);
 		alert(intDocumentIndex);
 		if (eEvent.ctrlKey)
 		{
