@@ -74,7 +74,6 @@ var Document_Explorer	= Class.create
 		// Unregister any outstanding Event Handlers
 		this._unregisterEventHandlers();
 
-		alert("Test");
 		if (objResponse.Success)
 		{
 			// Build Breadcrumb Menu
@@ -95,7 +94,8 @@ var Document_Explorer	= Class.create
 				var strOnClick	= (i < objResponse.objDocument.arrPath.length - 1) ? "onclick='Flex.Document.Explorer.update("+objResponse.objDocument.arrPath[i].document_id+");'" : '';
 				this.elmBreadcrumbDIV.innerHTML	+= "<div class='document-explorer-address-node' "+strOnClick+"><img class='document-explorer-icon' src='"+strIcon+"' /><span class='node-label'>"+objResponse.objDocument.arrPath[i].friendly_name+"</span></div>";
 			}
-			
+
+			alert("Test");
 			// Build Document Listing
 			this.elmContentTableBody.innerHTML	= '';
 			if (objResponse.objDocument.arrChildren.length)
