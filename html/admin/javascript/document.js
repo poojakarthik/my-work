@@ -401,13 +401,13 @@ var Document	= Class.create
 				{
 					var objChild	= objResponse.objDocument.arrChildren[i];
 					
-					var strIcon			= '../admin/img/template/file.png';
+					var strIcon			= '<img class="document-explorer-icon" src="../admin/img/template/file.png" />';
 					var strLink			= 'window.location.href="../admin/reflex.php/File/Document/'+objChild.id+'"';
 					var strFriendlyName	= objChild.friendly_name;
 					if (objChild.nature == 'DOCUMENT_NATURE_FOLDER')
 					{
 						// Folder
-						strIcon	= '../admin/img/template/folder.png';
+						strIcon	= '<img class="document-explorer-icon" src="../admin/img/template/folder.png" />';
 						strLink	= 'Flex.Document.updateExplorerPopup('+objChild.id+');';
 					}
 					else
