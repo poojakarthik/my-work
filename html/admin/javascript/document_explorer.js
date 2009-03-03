@@ -233,10 +233,10 @@ var Document_Explorer	= Class.create
 		}
 	},
 	
-	recordClick	: function(eEvent, intDocumentIndex)
+	recordClick	: function(intDocumentIndex, eEvent)
 	{
-		alert(eEvent);
-		alert(intDocumentIndex);
+		//alert(eEvent);
+		//alert(intDocumentIndex);
 		if (eEvent.ctrlKey)
 		{
 			// Select/deselect this Record in addition to the currently Selected Records
@@ -282,7 +282,7 @@ var Document_Explorer	= Class.create
 		}
 	},
 	
-	recordDoubleClick	: function(eEvent, intDocumentIndex)
+	recordDoubleClick	: function(intDocumentIndex, eEvent)
 	{
 		var objChild	= this.arrDocuments[intDocumentIndex];
 		if (objChild.nature == 'DOCUMENT_NATURE_FOLDER')
