@@ -255,23 +255,7 @@ var Document_Explorer	= Class.create
 			this.intLastSelected	= intDocumentIndex;
 		}
 		
-		//alert("Update TR Classes ["+this.arrSelected+"]");
-		
-		// Update the TR Classes
-		for (var i = 0; i < this.arrChildren.length; i++)
-		{
-			if (this.arrSelected.indexOf(i) >= 0)
-			{
-				//alert("Index "+i+" is selected");
-				this.arrChildren[i].elmTR.addClassName('selected');
-			}
-			else
-			{
-				//alert("Index "+i+" is unselected");
-				this.arrChildren[i].elmTR.removeClassName('selected');
-			}
-		}
-		
+		this._updateRecordClasses();
 		this._updateStatusBar();
 		this._updateActionBar();
 	},
@@ -297,7 +281,8 @@ var Document_Explorer	= Class.create
 		{
 			this.arrSelected	= new Array();
 			alert("Selected Purged!");
-			
+
+			this._updateRecordClasses();
 			this._updateStatusBar();
 			this._updateActionBar();
 		}
@@ -318,6 +303,24 @@ var Document_Explorer	= Class.create
 		{
 			this.arrChildren[i].elmTR.removeEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i), false);
 			this.arrChildren[i].elmTR.removeEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i), false);
+		}
+	},
+	
+	_updateRecordClasses	: function()
+	{
+		// Update the TR Classes
+		for (var i = 0; i < this.arrChildren.length; i++)
+		{
+			if (this.arrSelected.indexOf(i) >= 0)
+			{
+				//alert("Index "+i+" is selected");
+				this.arrChildren[i].elmTR.addClassName('selected');
+			}
+			else
+			{
+				//alert("Index "+i+" is unselected");
+				this.arrChildren[i].elmTR.removeClassName('selected');
+			}
 		}
 	},
 	
