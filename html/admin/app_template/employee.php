@@ -628,8 +628,8 @@ class AppTemplateEmployee extends ApplicationTemplate
 		// If user is not an admin, don't allow them to change the rate management, credit card or admin privileges
 		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
-			//$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_CREDIT_CARD | PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
-			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_CREDIT_CARD, PERMISSION_RATE_MANAGEMENT, PERMISSION_ADMIN));
+			//$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_CREDIT_MANAGEMENT | PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
+			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_CREDIT_MANAGEMENT, PERMISSION_RATE_MANAGEMENT, PERMISSION_ADMIN));
 		}
 		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 		{

@@ -99,7 +99,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		/*if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_DEBT_COLLECTION)
 		{
 			// Only allow Super Admins and Accounts/Credit Control to access this page
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CARD))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
 			{
 				$strJS	= "JsAutoLoader.loadScript(\"javascript/account.js\", function(){Flex.Account.displayReferAccountsPopup(".DBO()->Account->Id->Value.", \"".htmlspecialchars(DBO()->Account->BusinessName->Value, ENT_QUOTES)."\", \"".GetConstantDescription(DBO()->Account->Archived->Value, 'account_status')."\");});";
 				echo "\n<!-- User doesn't have permission to view these Accounts -->\n";
@@ -592,7 +592,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 
 
 
-	if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CARD))
+	if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
 	{
 ?>
 <div class="DefaultElement">

@@ -17,7 +17,7 @@ class JSON_Handler_Account extends JSON_Handler
 		{
 			$qryQuery	= new Query();
 			
-			// Get list of referees (everyone with PERMISSION_CREDIT_CARD and without PERMISSION_GOD)
+			// Get list of referees (everyone with PERMISSION_CREDIT_MANAGEMENT and without PERMISSION_GOD)
 			$arrReferees	= array();
 			$resReferees	= $qryQuery->Execute("SELECT * FROM Employee WHERE user_role_id = ".USER_ROLE_CREDIT_CONTROL_MANAGER." AND Archived = 0");
 			if ($resReferees === false)

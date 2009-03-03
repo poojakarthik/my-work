@@ -953,7 +953,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			$strChangesNote .= "State was changed from ". DBO()->CurrentAccount->State->Value ." to " . DBO()->Account->State->Value . "\n";
 		}
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CARD) && DBO()->Account->vip->Value != DBO()->CurrentAccount->vip->Value)
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) && DBO()->Account->vip->Value != DBO()->CurrentAccount->vip->Value)
 		{
 			$strChangesNote .= "VIP status was changed from ". (DBO()->CurrentAccount->vip->Value ? '' :  'in') ."active to " . (DBO()->Account->vip->Value ? '' :  'in') . "active\n";
 		}
@@ -1110,7 +1110,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// Set the columns to save
-		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, credit_control_status, LatePaymentAmnesty, tio_reference_number" . (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CARD) ? ", vip" : ""));
+		DBO()->Account->SetColumns("BusinessName, TradingName, ABN, ACN, Address1, Address2, Suburb, Postcode, State, BillingMethod, CustomerGroup, DisableLatePayment, Archived, DisableDDR, Sample, credit_control_status, LatePaymentAmnesty, tio_reference_number" . (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) ? ", vip" : ""));
 														
 		if (!DBO()->Account->Save())
 		{
