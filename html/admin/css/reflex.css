@@ -745,6 +745,13 @@ div.document-explorer-address-node[onclick]:hover
 	cursor				: pointer;
 }
 
+div.document-explorer-address-node[onclick]:hover
+{
+	background-color	: #eee;
+	border-color		: #888;
+	cursor				: pointer;
+}
+
 div.document-explorer-address-separator
 {
 	max-height		: 16px;
@@ -868,9 +875,14 @@ table.document-explorer tr[onclick]
 	
 }
 
-table.document-explorer tbody tr[onclick]:hover
+table.document-explorer tr[onclick] .selected
 {
 	background-color	: #fff;
+}
+
+table.document-explorer tbody tr[onclick]:hover
+{
+	background-color	: #ccc;
 }
 
 table.document-explorer tbody tr[onclick]:hover td
