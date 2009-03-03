@@ -260,7 +260,7 @@ var Document_Explorer	= Class.create
 			var j	= (this.intLastSelected > intDocumentIndex) ? this.intLastSelected : intDocumentIndex;
 			
 			this.arrSelected		= new Array();
-			for (i; i < j; i++)
+			for (i; i <= j; i++)
 			{
 				this.arrSelected.push(i);
 			}
