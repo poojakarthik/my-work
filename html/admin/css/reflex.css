@@ -889,7 +889,7 @@ table.document-explorer tbody tr[onclick]:hover td
 {
 	cursor				: pointer;
 	text-decoration		: underline;
-	background-color	: #fff;
+	background-color	: #999;
 }
 
 div.document-explorer-status
