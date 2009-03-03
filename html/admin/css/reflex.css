@@ -717,6 +717,7 @@ div.document-explorer-address
 	padding				: 0.5em;
 	border				: 0.1em solid #333;
 	/*height				: 5em;*/
+	clear				: both;
 }
 
 div.document-explorer-address-node
