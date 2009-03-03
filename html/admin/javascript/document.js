@@ -407,7 +407,7 @@ var Document	= Class.create
 					if (objChild.nature == 'DOCUMENT_NATURE_FOLDER')
 					{
 						// Folder
-						strIcon	= '<img class="document-explorer-icon" src="../admin/img/template/folder.png" />';
+						strIcon	= '<img title="Folder" class="document-explorer-icon" src="../admin/img/template/folder.png" />';
 						strLink	= 'Flex.Document.updateExplorerPopup('+objChild.id+');';
 					}
 					else
@@ -415,14 +415,15 @@ var Document	= Class.create
 						// File
 						if (objChild.has_icon)
 						{
-							strIcon	= '<img class="document-explorer-icon" src="../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/16x16" />';
+							strIcon	= '<img title="File" class="document-explorer-icon" src="../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/16x16" />';
 						}
 						strFriendlyName	+= '.' + objChild.extension;
 					}
 					
 					if (objChild.system)
 					{
-						strIcon	+= '<img class="document-explorer-icon-overlay" src="../admin/img/template/system_object.png" />';
+						var strType	= (objChild.nature == 'DOCUMENT_NATURE_FOLDER') ? 'Folder' : 'File';
+						strIcon	+= '<img title="'+strType+'" class="document-explorer-icon-overlay" src="../admin/img/template/system_object.png" />';
 					}
 					
 					strDocumentListing	+=	"				<tr valign='top' onclick='"+strLink+"'>\n" +
