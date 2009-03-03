@@ -269,7 +269,7 @@ var Document_Explorer	= Class.create
 			this.intLastSelected	= intDocumentIndex;
 		}
 		
-		alert("Update TR Classes");
+		alert("Update TR Classes ["+this.arrSelected+"]");
 		
 		// Update the TR Classes
 		for (var i = 0; i < this.arrDocuments.length; i++)
