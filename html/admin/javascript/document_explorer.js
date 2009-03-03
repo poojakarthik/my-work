@@ -255,6 +255,11 @@ var Document_Explorer	= Class.create
 			{
 				this.arrSelected.push(intDocumentIndex);
 				this.intLastSelected	= intDocumentIndex;
+				alert("SELECT'D");
+			}
+			else
+			{
+				alert("PURGE'D");
 			}
 		}
 		
@@ -312,6 +317,7 @@ var Document_Explorer	= Class.create
 				this.arrChildren[i].elmTR.removeClassName('selected');
 			}
 		}
+		alert("CLASS'D");
 	},
 	
 	_updateStatusBar	: function()
