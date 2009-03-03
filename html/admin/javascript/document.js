@@ -382,12 +382,13 @@ var Document	= Class.create
 			var fltConvertTemp	= fltConvert / 1024;
 			if (Math.round(fltConvertTemp) < 1)
 			{
-				return Math.round(fltConvert);
+				return Math.round(fltConvert).toString()+" "+arrPowers[i];
 			}
 			else if (i == arrPowers.length-1)
 			{
 				return Math.round(fltConvertTemp).toString()+" "+arrPowers[i];
 			}
+			fltConvert	= fltConvertTemp;
 		}
 		throw "Unknown power of Bytes: '"+strPower+"'";
 	}
