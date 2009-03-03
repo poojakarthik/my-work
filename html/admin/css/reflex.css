@@ -749,6 +749,8 @@ div.document-explorer-address-separator
 {
 	max-height		: 16px;
 	max-width		: 16px;
+	display			: inline-block;
+	float			: left;
 }
 
 div.document-explorer-address-separator img
