@@ -850,8 +850,7 @@ table.document-explorer th img.icon
 
 table.document-explorer th img.icon img.overlay
 {
-	position		: relative;
-	left			: -16px;
+	margin-left		: -16px;
 	margin-right	: -16px;
 }
 
