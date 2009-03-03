@@ -20,7 +20,7 @@ var Document_Explorer	= Class.create
 		this.elmEncapsulator.style.margin	= "0.5em";
 		
 		this.elmBreadcrumbDIV			= document.createElement('div');
-		this.elmBreadcrumbDIV.className	= "document-explorer-address-separator";
+		this.elmBreadcrumbDIV.className	= "document-explorer-address";
 		this.elmEncapsulator.appendChild(this.elmBreadcrumbDIV);
 		
 		this.elmDocumentExplorerDIV				= document.createElement('div');
