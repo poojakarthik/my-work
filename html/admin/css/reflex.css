@@ -832,6 +832,12 @@ table.document-explorer th
 	
 }
 
+table.document-explorer th.notice-normal
+{
+	font-weight	: normal;
+	font-style	: italic;
+}
+
 table.document-explorer th span[onclick]
 {
 	color				: #ffde05;
