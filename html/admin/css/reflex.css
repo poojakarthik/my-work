@@ -722,7 +722,6 @@ div.document-explorer-address-node
 {
 	background-color	: #f9f9f9;
 	border				: 0.1em solid #333;
-	vertical-align		: middle;
 	display				: inline-block;
 	float				: left;
 	margin				: 1em;
@@ -730,30 +729,33 @@ div.document-explorer-address-node
 
 div.document-explorer-address-node span.node-label
 {
-	margin-left		: 0.25em;
+	margin-left			: 0.25em;
+	vertical-align		: middle;
 }
 
 div.document-explorer-address-node[onclick]
 {
-	color			: #00F;
+	color				: #00F;
 }
 
 div.document-explorer-address-node[onclick]:hover
 {
 	background-color	: #fff;
-	text-decoration	: underline;
-	cursor			: pointer;
+	text-decoration		: underline;
+	cursor				: pointer;
 }
 
-img.document-explorer-address-separator
+div.document-explorer-address-separator
+{
+	max-height		: 16px;
+	max-width		: 16px;
+}
+
+div.document-explorer-address-separator img
 {
 	max-height		: 16px;
 	max-width		: 16px;
 	vertical-align	: middle;
-	margin-left		: 0.25em;
-	margin-right	: 0.25em;
-	display			: inline-block;
-	float			: left;
 }
 
 div.document-explorer
