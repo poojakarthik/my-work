@@ -95,7 +95,6 @@ var Document_Explorer	= Class.create
 				this.elmBreadcrumbDIV.innerHTML	+= "<div class='document-explorer-address-node' "+strOnClick+"><img class='document-explorer-icon' src='"+strIcon+"' /><span class='node-label'>"+objResponse.objDocument.arrPath[i].friendly_name+"</span></div>";
 			}
 
-			alert("Test");
 			// Build Document Listing
 			this.elmContentTableBody.innerHTML	= '';
 			if (objResponse.objDocument.arrChildren.length)
@@ -148,10 +147,8 @@ var Document_Explorer	= Class.create
 														"				</tr>\n";
 			}
 
-			alert("Test");
 			this.arrDocuments	= objResponse.objDocument.arrChildren;
 
-			alert("Test");
 			// Render the new Popup Contents
 			var strHTML	= "\n" +
 			"<div style='margin: 0.5em;'>\n" +
@@ -189,9 +186,7 @@ var Document_Explorer	= Class.create
 											"		<span class='description'>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</span><br />\n";
 											/*"		<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n";*/
 
-			alert("Test");
 			this._registerEventHandlers();
-			alert("Test");
 			this.pupExplorer.display();
 		}
 		else if (objResponse.Success == undefined)
@@ -274,8 +269,8 @@ var Document_Explorer	= Class.create
 	{
 		for (var i = 0; i < this.arrDocuments.length; i++)
 		{
-			this.arrDocuments[i].elmTR.addEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i));
-			this.arrDocuments[i].elmTR.addEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i));
+			this.arrDocuments[i].elmTR.addEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i), false);
+			this.arrDocuments[i].elmTR.addEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i), false);
 		}
 	},
 	
@@ -283,8 +278,8 @@ var Document_Explorer	= Class.create
 	{
 		for (var i = 0; i < this.arrDocuments.length; i++)
 		{
-			this.arrDocuments[i].elmTR.removeEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i));
-			this.arrDocuments[i].elmTR.removeEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i));
+			this.arrDocuments[i].elmTR.removeEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i), false);
+			this.arrDocuments[i].elmTR.removeEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i), false);
 		}
 	}
 });
