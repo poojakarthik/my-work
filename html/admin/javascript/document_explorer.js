@@ -41,6 +41,17 @@ var Document_Explorer	= Class.create
 											"			</thead>\n";
 		this.elmDocumentExplorerDIV.appendChild(this.elmHeaderTable);
 		
+		this.elmHeaderTHEAD				= document.createElement('thead');
+		this.elmHeaderTable.appendChild(this.elmHeaderTHEAD);
+		
+		this.elmHeaderTitlesRow				= document.createElement('tr');
+		this.elmHeaderTitlesRow.innerHTML	=	"<th class='field-name'>Name</th>\n" +
+												"<th class='field-size'>Size</th>" +
+												"<th class='field-date'>Date Modified</th>" +
+												"<th class='field-user'>Modified By</th>" +
+												"<th class='field-actions'></th>";
+		this.elmHeaderTHEAD.appendChild(this.elmHeaderTitlesRow);
+		
 		this.elmContentDIV				= document.createElement('div');
 		this.elmContentDIV.className	= "document-explorer-list";
 		this.elmDocumentExplorerDIV.appendChild(this.elmContentDIV);
@@ -57,11 +68,11 @@ var Document_Explorer	= Class.create
 		this.elmFooterTable.className	= "reflex document-explorer";
 		this.elmDocumentExplorerDIV.appendChild(this.elmFooterTable);
 		
-		this.elmFooterTHEAD	= document.createElement('tfoot');
-		this.elmFooterTable.appendChild(this.elmFooterTHEAD);
+		this.elmFooterTFOOT	= document.createElement('tfoot');
+		this.elmFooterTable.appendChild(this.elmFooterTFOOT);
 		
 		this.elmFooterActionsSelectedRow	= document.createElement('tr');
-		this.elmFooterTHEAD.appendChild(this.elmFooterActionsSelectedRow);
+		this.elmFooterTFOOT.appendChild(this.elmFooterActionsSelectedRow);
 		
 		this.elmFooterActionsSelectedCell					= document.createElement('th');
 		this.elmFooterActionsSelectedCell.style.textAlign	= 'left';
@@ -69,7 +80,8 @@ var Document_Explorer	= Class.create
 		this.elmFooterActionsSelectedRow.appendChild(this.elmFooterActionsSelectedCell);
 		
 		this.elmFooterActionsGeneralRow	= document.createElement('tr');
-		this.elmFooterTHEAD.appendChild(this.elmFooterActionsGeneralRow);
+		//this.elmFooterTHEAD.appendChild(this.elmFooterActionsGeneralRow);
+		this.elmHeaderTHEAD.insertBefore(this.elmFooterActionsGeneralRow, this.elmHeaderTitlesRow);
 		
 		this.elmFooterActionsGeneralCell					= document.createElement('th');
 		this.elmFooterActionsGeneralCell.style.textAlign	= 'left';
