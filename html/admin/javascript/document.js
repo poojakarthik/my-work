@@ -415,12 +415,18 @@ var Document	= Class.create
 						// File
 						if (objChild.has_icon)
 						{
-							strIcon	= '../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/16x16';
+							strIcon	= '<img class="document-explorer-icon" src="../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/16x16" />';
 						}
 						strFriendlyName	+= '.' + objChild.extension;
 					}
+					
+					if (objChild.system)
+					{
+						strIcon	+= '<img class="document-explorer-icon overlay" src="../admin/img/template/system_object.png" />';
+					}
+					
 					strDocumentListing	+=	"				<tr valign='top' onclick='"+strLink+"'>\n" +
-											"					<td class='field-name' title='"+(objChild.description ? objChild.description : objChild.friendly_name)+"'><img src='"+strIcon+"' />&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
+											"					<td class='field-name' title='"+(objChild.description ? objChild.description : objChild.friendly_name)+"'>"+strIcon+"&nbsp;<span>"+strFriendlyName+"</span></td>\n" +
 											"					<td class='field-size'>"+(objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size+' KB' : '')+"</td>\n" +
 											"					<td class='field-date'>"+objChild.date_modified+"</td>\n" +
 											"					<td class='field-user'>"+objChild.modified_by+"</td>\n" +

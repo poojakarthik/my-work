@@ -97,6 +97,7 @@ class Rate_Plan extends ORM
 				$objBrochureDir	= new Document();
 				$objBrochureDir->document_nature_id	= DOCUMENT_NATURE_FOLDER;
 				$objBrochureDir->employee_id		= Employee::SYSTEM_EMPLOYEE_ID;
+				$objBrochureDir->is_system_document	= true;
 				$objBrochureDir->save();
 				
 				$objBrochureDirContent	= new Document_Content();
@@ -118,6 +119,7 @@ class Rate_Plan extends ORM
 				$objCustomerGroupDir	= new Document();
 				$objCustomerGroupDir->document_nature_id	= DOCUMENT_NATURE_FOLDER;
 				$objCustomerGroupDir->employee_id			= Employee::SYSTEM_EMPLOYEE_ID;
+				$objCustomerGroupDir->is_system_document	= true;
 				$objCustomerGroupDir->save();
 				
 				$objCustomerGroupDirContent	= new Document_Content();

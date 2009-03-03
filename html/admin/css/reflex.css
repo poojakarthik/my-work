@@ -775,7 +775,15 @@ img.document-explorer-icon
 	max-height		: 16px;
 	max-width		: 16px;
 	vertical-align	: text-bottom;
-	margin-right	: 0.25em;
+	position		: relative;
+}
+
+img.document-explorer-icon .overlay
+{
+	max-height		: 16px;
+	max-width		: 16px;
+	position		: relative;
+	left			: -16px;
 }
 
 table.document-explorer thead

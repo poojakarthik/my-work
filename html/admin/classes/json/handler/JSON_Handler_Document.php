@@ -145,25 +145,31 @@ class JSON_Handler_Document extends JSON_Handler
 				$objChild			= new Document($arrChild);
 				$objChildContent	= $objChild->getContentDetails();
 				
-				$objChildOutput	= new stdClass();
-				
-				$objFileType	= ($objChildContent->file_type_id) ? new File_Type(array('id'=>$objChildContent->file_type_id), true) : null;
-				
-				$objModifiedBy	= Employee::getForId($objChildContent->employee_id);
-				
-				$objChildOutput->id				= $objChild->id;
-				$objChildOutput->name			= $objChildContent->name;
-				$objChildOutput->friendly_name	= $objChildContent->getFriendlyName();
-				$objChildOutput->description	= $objChildContent->description;
-				$objChildOutput->nature			= GetConstantName($objChild->document_nature_id, 'document_nature');
-				$objChildOutput->file_type_id	= $objChildContent->file_type_id;
-				$objChildOutput->extension		= ($objChildContent->file_type_id) ? $objFileType->extension : '';
-				$objChildOutput->has_icon		= ($objChildContent->file_type_id) ? File_Type::hasIcon($objChildContent->file_type_id, 16) : false;
-				$objChildOutput->file_size		= round($objChildContent->intContentSize / 1024, 1);
-				$objChildOutput->date_modified	= date("j/n/Y g:i A", strtotime($objChildContent->changed_on));
-				$objChildOutput->modified_by	= $objModifiedBy->firstName.' '.$objModifiedBy->lastName;
-				
-				$objDocumentOutput->arrChildren[]	= $objChildOutput;
+				// Hide system documents from general users
+				if (!(bool)$objChild->is_system_document || AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+				{
+					$objChildOutput	= new stdClass();
+					
+					$objFileType	= ($objChildContent->file_type_id) ? new File_Type(array('id'=>$objChildContent->file_type_id), true) : null;
+					
+					$objModifiedBy	= Employee::getForId($objChildContent->employee_id);
+					
+					$objChildOutput->id				= $objChild->id;
+					$objChildOutput->name			= $objChildContent->name;
+					$objChildOutput->friendly_name	= $objChildContent->getFriendlyName();
+					$objChildOutput->description	= $objChildContent->description;
+					$objChildOutput->nature			= GetConstantName($objChild->document_nature_id, 'document_nature');
+					$objChildOutput->file_type_id	= $objChildContent->file_type_id;
+					$objChildOutput->extension		= ($objChildContent->file_type_id) ? $objFileType->extension : '';
+					$objChildOutput->has_icon		= ($objChildContent->file_type_id) ? File_Type::hasIcon($objChildContent->file_type_id, 16) : false;
+					$objChildOutput->file_size		= round($objChildContent->intContentSize / 1024, 1);
+					$objChildOutput->date_modified	= date("j/n/Y g:i A", strtotime($objChildContent->changed_on));
+					$objChildOutput->modified_by	= $objModifiedBy->firstName.' '.$objModifiedBy->lastName;
+					$objChildOutput->editable		= (!(bool)$objChild->is_system_document || AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? true : false;	// Only GODs can edit System Documents
+					$objChildOutput->system			= (bool)$objChild->is_system_document;
+					
+					$objDocumentOutput->arrChildren[]	= $objChildOutput;
+				}
 			}
 			
 			// If no exceptions were thrown, then everything worked
