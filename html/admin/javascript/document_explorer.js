@@ -54,7 +54,13 @@ var Document_Explorer	= Class.create
 		
 		this.elmFooterTable				= document.createElement('table');
 		this.elmFooterTable.className	= "reflex document-explorer";
-		//this.elmDocumentExplorerDIV.appendChild(this.elmFooterTable);
+		this.elmFooterTable.innerHTML	= 	"			<thead>\n" +
+											"				<tr>\n" +
+											"					<th style='width: 10em;'>With Selected: </th>\n" +
+											"					<th></th>\n" +
+											"				</tr>\n" +
+											"			</thead>\n";
+		this.elmDocumentExplorerDIV.appendChild(this.elmFooterTable);
 		
 		this.elmStatusDIV			= document.createElement('div');
 		this.elmStatusDIV.className	= "document-explorer-status";
