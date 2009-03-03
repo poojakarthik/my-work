@@ -30,15 +30,6 @@ var Document_Explorer	= Class.create
 		
 		this.elmHeaderTable				= document.createElement('table');
 		this.elmHeaderTable.className	= "reflex document-explorer";
-		this.elmHeaderTable.innerHTML	= 	"			<thead>\n" +
-											"				<tr>\n" +
-											"					<th class='field-name'>Name</th>\n" +
-											"					<th class='field-size'>Size</th>" +
-											"					<th class='field-date'>Date Modified</th>" +
-											"					<th class='field-user'>Modified By</th>" +
-											"					<th class='field-actions'></th>" +
-											"				</tr>\n" +
-											"			</thead>\n";
 		this.elmDocumentExplorerDIV.appendChild(this.elmHeaderTable);
 		
 		this.elmHeaderTHEAD				= document.createElement('thead');
