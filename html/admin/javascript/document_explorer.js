@@ -181,6 +181,7 @@ var Document_Explorer	= Class.create
 			
 			this.objDocument	= objResponse.objDocument;
 			this.arrChildren	= objResponse.objDocument.arrChildren;
+			this.arrSelected	= Array();
 
 			// Render the new Popup Contents
 			var strHTML	= "\n" +
@@ -365,7 +366,7 @@ var Document_Explorer	= Class.create
 				strIcon	+= '<img title="'+strType+'" class="document-explorer-icon-large-overlay" src="../admin/img/template/system_object_large.png" />';
 			}
 			
-			strDetails	=	"<span class='name'>"+objChild.friendly_name+"</span><br />\n" +
+			strDetails	=	"<span class='name'>"+strFriendlyName+"</span><br />\n" +
 							"<span>"+strType+"</span><br />\n" +
 							"<span class='description'>"+(objChild.description ? objChild.description : objChild.friendly_name)+"</span>\n";
 		}
