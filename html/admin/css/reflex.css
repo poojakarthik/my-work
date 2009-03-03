@@ -899,25 +899,18 @@ div.document-explorer-status
 	border				: 0.1em solid #333;
 }
 
-div.document-explorer-status div.icon
+div.document-explorer-status
 {
-	float	: left;
-	width	: 32px;
-	height	: 32px;
+	font-size	: 10pt;
 }
 
-div.document-explorer-status div.details
-{
-	float	: right;
-}
-
-div.document-explorer-status div.details span.name
+div.document-explorer-status span.name
 {
 	font-size	: 10pt;
 	font-weight	: bold;
 }
 
-div.document-explorer-status div.details span.description
+div.document-explorer-status span.description
 {
 	font-size	: 9pt;
 	font-style	: italic;

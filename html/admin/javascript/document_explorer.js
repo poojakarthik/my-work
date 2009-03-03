@@ -60,14 +60,6 @@ var Document_Explorer	= Class.create
 		this.elmStatusDIV.className	= "document-explorer-status";
 		this.elmEncapsulator.appendChild(this.elmStatusDIV);
 		
-		this.elmStatusIconDIV		= document.createElement('div');
-		this.elmStatusIconDIV.className	= "icon";
-		this.elmStatusDIV.appendChild(this.elmStatusIconDIV);
-		
-		this.elmStatusDetailsDIV		= document.createElement('div');
-		this.elmStatusDetailsDIV.className	= "details";
-		this.elmStatusDIV.appendChild(this.elmStatusDetailsDIV);
-		
 		this.pupExplorer.setContent(this.elmEncapsulator);
 	},
 	
@@ -380,8 +372,8 @@ var Document_Explorer	= Class.create
 							"<span class='description'>"+(this.objDocument.strDescription ? this.objDocument.strDescription : this.objDocument.strFriendlyName)+"</span><br />\n";
 		}
 		
-		this.elmStatusIconDIV.innerHTML		= strIcon;
-		this.elmStatusDetailsDIV.innerHTML	= strDetails;
+		this.elmStatusDIV.innerHTML		= strIcon;
+		this.elmStatusDIV.innerHTML	= strDetails;
 		
 		/*this.elmStatusDIV.innerHTML	=	"		<span class='name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
 										"		<span class='description'>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</span><br />\n";
