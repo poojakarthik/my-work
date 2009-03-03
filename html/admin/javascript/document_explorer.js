@@ -295,7 +295,7 @@ var Document_Explorer	= Class.create
 	{
 		if (!eEvent.ctrlKey && !eEvent.shiftKey)
 		{
-			this.arrChildren	= new Array();
+			this.arrSelected	= new Array();
 			
 			this._updateStatusBar();
 			this._updateActionBar();
