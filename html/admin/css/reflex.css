@@ -845,6 +845,14 @@ table.document-explorer th span[onclick]:hover
 table.document-explorer th img.icon
 {
 	vertical-align	: text-bottom;
+	
+}
+
+table.document-explorer th img.icon img.overlay
+{
+	position		: relative;
+	left			: -16px;
+	margin-right	: -16px;
 }
 
 table.document-explorer td
