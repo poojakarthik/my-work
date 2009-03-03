@@ -875,7 +875,7 @@ table.document-explorer tr[onclick]
 	
 }
 
-table.document-explorer tr.selected
+table.document-explorer tr.selected[onclick] td
 {
 	background-color	: #fff;
 }
