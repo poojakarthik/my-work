@@ -882,7 +882,7 @@ table.document-explorer tr[onclick] .selected
 
 table.document-explorer tbody tr[onclick]:hover
 {
-	background-color	: #ccc;
+	background-color	: #999;
 }
 
 table.document-explorer tbody tr[onclick]:hover td
