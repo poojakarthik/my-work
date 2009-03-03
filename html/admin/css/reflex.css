@@ -904,6 +904,7 @@ div.document-explorer-status
 	min-height	: 7em;
 	max-height	: 7em;
 	font-size	: 9pt;
+	overflow	: hidden;
 }
 
 div.document-explorer-status span.name
