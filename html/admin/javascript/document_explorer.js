@@ -37,10 +37,10 @@ var Document_Explorer	= Class.create
 		
 		this.elmHeaderTitlesRow				= document.createElement('tr');
 		this.elmHeaderTitlesRow.innerHTML	=	"<th class='field-name'>Name</th>\n" +
-												"<th class='field-size'>Size</th>" +
-												"<th class='field-date'>Date Modified</th>" +
-												"<th class='field-user'>Modified By</th>" +
-												"<th class='field-actions'></th>";
+												"<th class='field-size'>Size</th>\n" +
+												"<th class='field-date'>Date Modified</th>\n" +
+												"<th class='field-user'>Modified By</th>\n" +
+												"<th class='field-actions'></th>\n";
 		this.elmHeaderTHEAD.appendChild(this.elmHeaderTitlesRow);
 		
 		this.elmContentDIV				= document.createElement('div');
