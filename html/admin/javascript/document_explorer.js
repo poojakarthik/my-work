@@ -241,7 +241,7 @@ var Document_Explorer	= Class.create
 		if (eEvent.ctrlKey)
 		{
 			// Select/deselect this Record in addition to the currently Selected Records
-			var intExistingIndex	= this.arrSelected.indexOf();
+			var intExistingIndex	= this.arrSelected.indexOf(intDocumentIndex);
 			if (intExistingIndex >= 0)
 			{
 				// Already exists -- remove
