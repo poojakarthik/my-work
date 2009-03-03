@@ -131,6 +131,7 @@ var Document_Explorer	= Class.create
 					
 					var elmTR	= document.createElement('tr');
 					elmTR.setAttribute('valign', 'top');
+					elmTR.setAttribute('onclick', 'return true;');
 					
 					var elmTDName	= document.createElement('td');
 					elmTDName.className	= 'field-name';
