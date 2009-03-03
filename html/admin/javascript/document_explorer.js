@@ -152,7 +152,7 @@ var Document_Explorer	= Class.create
 					
 					var elmTDUser	= document.createElement('td');
 					elmTDUser.className	= 'field-user';
-					elmTDUser.innerHTML	= objChild.date_modified;
+					elmTDUser.innerHTML	= objChild.modified_by;
 					elmTR.appendChild(elmTDUser);
 					
 					var elmTDActions	= document.createElement('td');

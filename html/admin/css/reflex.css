@@ -901,6 +901,7 @@ div.document-explorer-status
 
 div.document-explorer-status
 {
+	min-height	: 4em;
 	font-size	: 10pt;
 }
 
