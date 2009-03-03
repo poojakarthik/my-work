@@ -767,6 +767,7 @@ div.document-explorer
 	border-left		: 0.1em solid #333;;
 	border-right	: 0.1em solid #333;
 	padding			: 0px;
+	clear			: both;
 }
 
 div.document-explorer-list
