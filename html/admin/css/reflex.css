@@ -726,7 +726,7 @@ div.document-explorer-address-node
 	border				: 0.1em solid #333;
 	display				: inline-block;
 	/*float				: left;*/
-	padding				: 1em;
+	padding				: 0.25em;
 }
 
 div.document-explorer-address-node span.node-label
