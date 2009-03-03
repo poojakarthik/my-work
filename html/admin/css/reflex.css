@@ -737,7 +737,7 @@ div.document-explorer-address-node span.node-label
 
 div.document-explorer-address-node[onclick]
 {
-	color				: #00F;
+	color				: #FF4200;
 }
 
 div.document-explorer-address-node[onclick]:hover
