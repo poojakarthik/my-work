@@ -341,10 +341,12 @@ var Document_Explorer	= Class.create
 			
 			// Single Selected
 			var strFriendlyName	= objChild.friendly_name;
+			var strType;
 			if (objChild.nature == 'DOCUMENT_NATURE_FOLDER')
 			{
 				// Folder
 				strIcon	= '<img title="Folder" class="document-explorer-icon-large" src="../admin/img/template/folder_64x64.png" />';
+				strType	= "Folder";
 			}
 			else
 			{
@@ -354,11 +356,12 @@ var Document_Explorer	= Class.create
 					strIcon	= '<img title="File" class="document-explorer-icon-large" src="../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/64x64" />';
 				}
 				strFriendlyName	+= '.' + objChild.extension;
+				strType			= "File";
 			}
 			
 			if (objChild.system)
 			{
-				var strType	= (objChild.nature == 'DOCUMENT_NATURE_FOLDER') ? 'Folder' : 'File';
+				strType	= "System "+strType;
 				strIcon	+= '<img title="'+strType+'" class="document-explorer-icon-large-overlay" src="../admin/img/template/system_object_large.png" />';
 			}
 			
@@ -372,7 +375,6 @@ var Document_Explorer	= Class.create
 							"<span class='description'>"+(this.objDocument.strDescription ? this.objDocument.strDescription : this.objDocument.strFriendlyName)+"</span><br />\n";
 		}
 		
-		this.elmStatusDIV.innerHTML		= strIcon;
 		this.elmStatusDIV.innerHTML	= strDetails;
 		
 		/*this.elmStatusDIV.innerHTML	=	"		<span class='name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
