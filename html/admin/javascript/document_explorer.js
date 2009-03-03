@@ -71,10 +71,10 @@ var Document_Explorer	= Class.create
 	
 	_render	: function(objResponse)
 	{
-		alert("Test");
 		// Unregister any outstanding Event Handlers
 		this._unregisterEventHandlers();
-		
+
+		alert("Test");
 		if (objResponse.Success)
 		{
 			// Build Breadcrumb Menu
@@ -242,11 +242,11 @@ var Document_Explorer	= Class.create
 		{
 			if (this.arrSelected.indexOf(i) >= 0)
 			{
-				//this.arrDocuments[i].elmTR.addClassName('selected');
+				this.arrDocuments[i].elmTR.addClassName('selected');
 			}
 			else
 			{
-				//this.arrDocuments[i].elmTR.removeClassName('selected');
+				this.arrDocuments[i].elmTR.removeClassName('selected');
 			}
 		}
 	},
