@@ -142,7 +142,7 @@ var Document_Explorer	= Class.create
 					
 					var elmTDSize	= document.createElement('td');
 					elmTDSize.className	= 'field-size';
-					elmTDSize.innerHTML	= (objChild.nature == 'DOCUMENT_NATURE_FILE' ? Flex.Document.byteRound(objChild.file_size) : '');
+					elmTDSize.innerHTML	= (objChild.nature == 'DOCUMENT_NATURE_FILE' ? Flex.Document.byteRound(objChild.file_size, 1) : '');
 					elmTR.appendChild(elmTDSize);
 					
 					var elmTDDate	= document.createElement('td');
@@ -337,7 +337,7 @@ var Document_Explorer	= Class.create
 							"<span class='description'>"+(objChild.description ? objChild.description : objChild.friendly_name)+"</span><br />\n" +
 							"<span>"+strType+"</span><br />\n" +
 							"<span>Last Modified:&nbsp;"+objChild.date_modified+" by "+objChild.modified_by+"</span><br />\n" +
-							(objChild.nature == 'DOCUMENT_NATURE_FOLDER' ? '' : "<span>Size:&nbsp;"+Flex.Document.byteRound(objChild.file_size)+"</span><br />\n") +
+							(objChild.nature == 'DOCUMENT_NATURE_FOLDER' ? '' : "<span>Size:&nbsp;"+Flex.Document.byteRound(objChild.file_size, 2)+"</span><br />\n") +
 							"";
 		}
 		else
