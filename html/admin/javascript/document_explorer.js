@@ -269,15 +269,19 @@ var Document_Explorer	= Class.create
 			this.intLastSelected	= intDocumentIndex;
 		}
 		
+		alert("Update TR Classes");
+		
 		// Update the TR Classes
 		for (var i = 0; i < this.arrDocuments.length; i++)
 		{
 			if (this.arrSelected.indexOf(i) >= 0)
 			{
+				alert("Index "+i+" is selected");
 				this.arrDocuments[i].elmTR.addClassName('selected');
 			}
 			else
 			{
+				alert("Index "+i+" is unselected");
 				this.arrDocuments[i].elmTR.removeClassName('selected');
 			}
 		}
