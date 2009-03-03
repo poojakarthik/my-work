@@ -155,7 +155,7 @@ var Document_Explorer	= Class.create
 					
 					var elmTDActions	= document.createElement('td');
 					elmTDActions.className	= 'field-actions';
-					elmTDActions.innerHTML	= ';
+					elmTDActions.innerHTML	= '';
 					elmTR.appendChild(elmTDActions);
 					
 					objResponse.objDocument.arrChildren[i].elmTR	= elmTR;
