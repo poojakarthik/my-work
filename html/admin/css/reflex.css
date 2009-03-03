@@ -784,6 +784,7 @@ img.document-explorer-icon-overlay
 	vertical-align	: text-bottom;
 	position		: relative;
 	left			: -16px;
+	margin-right	: -16px;
 }
 
 table.document-explorer thead
