@@ -71,6 +71,7 @@ var Document_Explorer	= Class.create
 	
 	_render	: function(objResponse)
 	{
+		alert("Test");
 		// Unregister any outstanding Event Handlers
 		this._unregisterEventHandlers();
 		
