@@ -376,19 +376,20 @@ var Document	= Class.create
 	byteRound	: function(intBytes, intDecimalPlaces)
 	{
 		intDecimalPlaces	= (intDecimalPlaces > 0) ? intDecimalPlaces : 0;
+		intRoundFactor		= Math.pow(10, intDecimalPlaces);
 		
 		var fltConvert	= intBytes;
 		var arrPowers	= new Array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 		for (var i = 0; i < arrPowers.length; i++)
 		{
-			var fltConvertTemp	= fltConvert / 1024;
+			var fltConvertTemp	= fltConvert / 1024;			
 			if (fltConvertTemp < 1)
 			{
-				return (new Number(fltConvert)).toFixed(intDecimalPlaces).toString()+" "+arrPowers[i];
+				return (Math.round(fltConvert*intRoundFactor)/intRoundFactor).toString()+" "+arrPowers[i];
 			}
 			else if (i == arrPowers.length-1)
 			{
-				return (new Number(fltConvertTemp)).toFixed(intDecimalPlaces).toString()+" "+arrPowers[i];
+				return (Math.round(fltConvertTemp*intRoundFactor)/intRoundFactor).toString()+" "+arrPowers[i];
 			}
 			fltConvert	= fltConvertTemp;
 		}
