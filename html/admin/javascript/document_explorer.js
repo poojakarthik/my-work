@@ -256,8 +256,21 @@ var Document_Explorer	= Class.create
 		else if (eEvent.shiftKey)
 		{
 			// Select everything between the last clicked Record and this Record
+			if ()
+			{
+				var i	= this.intLastSelected;
+				var j	= intDocumentIndex;
+			}
+			else
+			{
+				var j	= this.intLastSelected;
+				var i	= intDocumentIndex;
+			}
+			var i	= (this.intLastSelected > intDocumentIndex) ? intDocumentIndex : this.intLastSelected;
+			var j	= (this.intLastSelected > intDocumentIndex) ? this.intLastSelected : intDocumentIndex;
+			
 			this.arrSelected		= new Array();
-			for (var i = this.intLastSelected; i < intDocumentIndex; i++)
+			for (i; i < j; i++)
 			{
 				this.arrSelected.push(i);
 			}
