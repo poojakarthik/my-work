@@ -169,6 +169,8 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			$strAddEmployee = Href()->AddEmployee();
 		}
 
+		$bolCanCreateEmployees = AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+
 		$strUpdateOtherCheckBox = "";
 		$strCheckBoxID = "";
 		if (!$formRendered)
@@ -186,7 +188,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		echo "<div class='ButtonContainer' style='width: 100%; position: relative;'>\n";
 		echo "<input type='checkbox' $strCheckBoxID name='Archived' value=1 $strArchivedValue onClick='$strUpdateOtherCheckBox EmployeeView.Update();'>Show Archived Employees</input>";
 
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+		if ($bolCanCreateEmployees)
 		{
 			echo "<div style='position: absolute; right: 0px; top: 3px;'>";
 			$this->Button("Add Employee", "window.location='$strAddEmployee'");

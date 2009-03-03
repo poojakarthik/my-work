@@ -138,8 +138,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
 		// Context menu
 		// (Nothing to add)
@@ -184,11 +183,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		
-		// Context menu
-		// (Nothing to add)
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
 		// Breadcrumb menu
 		Breadcrumb()->Employee_Console();
@@ -247,12 +242,13 @@ class AppTemplateEmployee extends ApplicationTemplate
 	function Edit($bolEditSelf = FALSE)
 	{
 		AuthenticatedUser()->CheckAuth();
-		$bolAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		$bolUserIsSelf = FALSE;
+		$bolAdminUser		= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolProperAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolUserIsSelf		= FALSE;
 
 		if (DBO()->Employee->Id->Value != AuthenticatedUser()->GetUserId())
 		{
-			AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+			AuthenticatedUser()->PermissionOrDie($bolProperAdminUser);
 		}
 		else
 		{
@@ -624,23 +620,10 @@ class AppTemplateEmployee extends ApplicationTemplate
 		//$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_SUPER_ADMIN | PERMISSION_DEBUG);
 		$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, Array(PERMISSION_SUPER_ADMIN, PERMISSION_DEBUG, USER_PERMISSION_GOD));
 		
-		
-		// If user is not an admin, don't allow them to change the rate management, credit card or admin privileges
-		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
-		{
-			//$proposed = $this->_PreservePrivileges($originalPrivileges, $proposedPrivileges, PERMISSION_CREDIT_MANAGEMENT | PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
-			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_CREDIT_MANAGEMENT, PERMISSION_RATE_MANAGEMENT, PERMISSION_ADMIN));
-		}
 		if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 		{
-			// If the user isn't a SuperAdmin, then don't allow them to change the CustomerGroupAdmin privilege, or the KB_ADMIN_USER privilege
-			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_CUSTOMER_GROUP_ADMIN, PERMISSION_KB_ADMIN_USER));
-			
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_KB_ADMIN_USER))
-			{
-				// The user isn't a SuperAdmin, and also isn't a KB admin, so don't let them change the user's PERMISSION_KB_USER privilege
-				$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_KB_USER));
-			}
+			// The user isn't a SuperAdmin, so don't allow them to change the CustomerGroupAdmin privilege, or the KB_ADMIN_USER privilege or the Credit Management privilege
+			$proposed = $this->_PreservePrivileges($originalPrivileges, $proposed, Array(PERMISSION_CUSTOMER_GROUP_ADMIN, PERMISSION_KB_ADMIN_USER, PERMISSION_CREDIT_MANAGEMENT));
 		}
 		
 		DBO()->Employee->Privileges = $proposed;

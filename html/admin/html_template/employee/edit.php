@@ -82,7 +82,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		$strUserRole = ($objUserRole != NULL)? $objUserRole->name : "[Not Specified]";
 		
 		echo "<!-- START HtmlTemplateEmployeeEdit -->\n";
-		$bolAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolProperAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolAdding		= FALSE;
 		$strEditDisplay	= " style='display: none;'";
 		$strViewDisplay	= "";
@@ -123,7 +123,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		echo "<div id='Employee.Edit'$strEditDisplay>";
 		
 		DBO()->Employee->Id->RenderHidden();
-		if ($bolAdding && !$bolEditSelf && $bolAdminUser)
+		if ($bolAdding && !$bolEditSelf && $bolProperAdminUser)
 		{
 			DBO()->Employee->DOB->Value = "";
 			DBO()->Employee->UserName->RenderInput(CONTEXT_DEFAULT, TRUE);
@@ -133,7 +133,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			DBO()->Employee->UserName->RenderOutput(CONTEXT_DEFAULT, TRUE);
 		}
 		
-		if (!$bolEditSelf && $bolAdminUser)
+		if (!$bolEditSelf && $bolProperAdminUser)
 		{
 			DBO()->Employee->FirstName->RenderInput(CONTEXT_DEFAULT, TRUE);
 			DBO()->Employee->LastName->RenderInput(CONTEXT_DEFAULT, TRUE);
@@ -198,7 +198,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			}
 		}
 		
-		if (!$bolEditSelf && $bolAdminUser)
+		if (!$bolEditSelf && $bolProperAdminUser)
 		{
 			// The user can change the role of the employee
 			$arrUserRoles = User_Role::getAll();
@@ -333,7 +333,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			  <div class='GroupedContent'>
 				  <div class='SmallSeperator'></div>";
 		
-		if ($bolAdminUser && !$bolEditSelf)
+		if ($bolProperAdminUser && !$bolEditSelf)
 		{
 			echo "
 					<div id='Permissions.Edit'$strEditDisplay>
@@ -406,7 +406,12 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			if (!$bolAdding)
 			{
 				echo "<div class='ButtonContainer' id='EmployeeButtons.View'$strViewDisplay><div class='right'>\n";
-				$this->Button("Edit", "EmployeeEdit.toggle();");
+
+				if ($bolProperAdminUser || $bolEditSelf)
+				{
+					$this->Button("Edit", "EmployeeEdit.toggle();");
+				}
+				
 				$this->Button("Close", "Vixen.Popup.Close(" . ($this->IsModal() ? "'CloseFlexModalWindow'" : "this") . ");");
 				echo "</div></div>";
 			}
