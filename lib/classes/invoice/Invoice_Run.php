@@ -616,16 +616,17 @@ class Invoice_Run
 	 *
 	 * Checks if there are any Gold Temporary Invoice Runs active
 	 *
-	 * @param	integer	$intCustomerGroup		[optional]	The Customer Group to check for
+	 * @param	integer	$intCustomerGroupId		[optional]	The Customer Group to check for
+	 * @param	integer	$intAccountId			[optional]	The Account to check for
 	 *
 	 * @return	boolean							TRUE if there is, FALSE if there isn't
 	 *
 	 * @method
 	 */
-	public static function checkTemporary($intCustomerGroup=NULL)
+	public static function checkTemporary($intCustomerGroupId=null, $intAccountId=null)
 	{
 		$selCheckTemporaryInvoiceRun	= self::_preparedStatement('selCheckTemporaryInvoiceRun');
-		$mixResult						= $selCheckTemporaryInvoiceRun->Execute(Array('CustomerGroup' => $intCustomerGroup));
+		$mixResult						= $selCheckTemporaryInvoiceRun->Execute(Array('CustomerGroup'=>$intCustomerGroupId, 'Account'=>$intAccountId));
 		if ($mixResult === FALSE)
 		{
 			throw new Exception($selCheckTemporaryInvoiceRun->Error());
@@ -1120,7 +1121,11 @@ class Invoice_Run
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id", "SUM(Balance) AS TotalBalance", "invoice_run_id <= <invoice_run_id> AND customer_group_id = <customer_group_id>", "invoice_run_id DESC");
 					break;
 				case 'selCheckTemporaryInvoiceRun':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "Id", "invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." AND invoice_run_status_id IN (".INVOICE_RUN_STATUS_TEMPORARY.", ".INVOICE_RUN_STATUS_GENERATING.") AND (customer_group_id <=> <CustomerGroup> OR <CustomerGroup> IS NULL)");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"InvoiceRun", 
+																					"Id", 
+																					"(invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." OR (<Account> IS NOT NULL AND <Account> IN (SELECT Account FROM Invoice WHERE invoice_run_id = InvoiceRun.Id) AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL."))) AND invoice_run_status_id != ".INVOICE_RUN_STATUS_COMMITTED." AND (customer_group_id <=> <CustomerGroup> OR <CustomerGroup> IS NULL)", 
+																					null,
+																					1);
 					break;
 				case 'selPaymentTerms':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("payment_terms", "*", "customer_group_id = <customer_group_id>", "id DESC", 1);
