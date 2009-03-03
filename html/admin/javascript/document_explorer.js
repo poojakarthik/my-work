@@ -290,7 +290,7 @@ var Document_Explorer	= Class.create
 		}
 	},
 	
-	canvasClick	: function (eEvent)
+	canvasClick	: function(eEvent)
 	{
 		if (!eEvent.ctrlKey && !eEvent.shiftKey)
 		{
