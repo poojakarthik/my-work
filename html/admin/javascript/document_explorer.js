@@ -255,11 +255,11 @@ var Document_Explorer	= Class.create
 			{
 				this.arrSelected.push(intDocumentIndex);
 				this.intLastSelected	= intDocumentIndex;
-				alert("SELECT'D");
+				//alert("SELECT'D");
 			}
 			else
 			{
-				alert("PURGE'D");
+				//alert("PURGE'D");
 			}
 		}
 		
@@ -317,7 +317,7 @@ var Document_Explorer	= Class.create
 				this.arrChildren[i].elmTR.removeClassName('selected');
 			}
 		}
-		alert("CLASS'D");
+		//alert("CLASS'D");
 	},
 	
 	_updateStatusBar	: function()
