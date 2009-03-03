@@ -123,14 +123,17 @@ class DO_Sales_SaleAccount extends DO_Sales_Base_SaleAccount
 		
 		$return = parent::save();
 		
-		$history = new DO_Sales_SaleAccountHistory();
-		$history->saleAccountId = $this->id;
-		$history->changedOn = Data_Source_Time::currentTimestamp($this->getDataSource());
-		$history->changedBy = $dealerId;
-		$history->billPaymentTypeId = $this->billPaymentTypeId;
-		$history->directDebitTypeId = $this->directDebitTypeId;
-		$history->billDeliveryTypeId = $this->billDeliveryTypeId;
-		$history->save();
+		if ($this->hasHistoricalChange())
+		{
+			$history = new DO_Sales_SaleAccountHistory();
+			$history->saleAccountId = $this->id;
+			$history->changedOn = Data_Source_Time::currentTimestamp($this->getDataSource());
+			$history->changedBy = $dealerId;
+			$history->billPaymentTypeId = $this->billPaymentTypeId;
+			$history->directDebitTypeId = $this->directDebitTypeId;
+			$history->billDeliveryTypeId = $this->billDeliveryTypeId;
+			$history->save();
+		}
 		
 		return $return;
 	}
@@ -182,6 +185,12 @@ class DO_Sales_SaleAccount extends DO_Sales_Base_SaleAccount
 		}
 	}
 	
+	// Retrieves the value part from the sale_account.external_reference string
+	// This string should be of the form "Account.Id=123" where 123 is the value 
+	public function getExternalReferenceValue()
+	{
+		return intval(substr($this->externalReference, 11));
+	}
 }
 
 ?>

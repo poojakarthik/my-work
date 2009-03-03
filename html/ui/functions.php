@@ -950,7 +950,7 @@ function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL, $bolUp
 	$intMaxNotes = DBO()->NoteDetails->MaxNotes->Value;
 	
 	DBL()->Note->Where->Set($strWhere, $arrWhere);
-	DBL()->Note->OrderBy("Datetime DESC");
+	DBL()->Note->OrderBy("Datetime DESC, Id DESC");
 	DBL()->Note->SetLimit($intMaxNotes);
 	
 	// Load the notes

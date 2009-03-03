@@ -539,7 +539,7 @@ class Cli_App_Sales extends Cli
 					$arrServices	= Array();
 					
 					// Is this for a new Account?
-					if ($arrSPSale['sale_type_id'] == 1)
+					if ($arrSPSale['sale_type_id'] == DO_Sales_SaleType::NEW_CUSTOMER)
 					{
 						$this->log("\t\t\t+ Creating new Account...");
 						
@@ -708,9 +708,34 @@ class Cli_App_Sales extends Cli
 						}
 						//--------------------------------------------------------//
 					}
+					elseif ($arrSPSale['sale_type_id'] == DO_Sales_SaleType::EXISTING_CUSTOMER)
+					{
+						// We will not be updating account details or bill_payment_type details or bill_delivery_type details
+						$this->log("\t\t\t+ Finding existing Account...");
+						
+						// Grab the associated sale_account record
+						// HACK! The list of sales that we are looping through, to import, should be DO_Sales_Sale objects, but for now, grab it here
+						// This is efectively doubling up on the number of times we retrieve each EXISTING_CUSTOMER sale, but it's not that much of an issue
+						$doSale = DO_Sales_Sale::getForId($arrSPSale['id']);
+						$arrSaleAccounts = DO_Sales_SaleAccount::listForSale($doSale);
+						
+						if (count($arrSaleAccounts) == 0)
+						{
+							throw new Exception("Sale {$arrSPSale['id']} (sale to an existing customer) has no sale_account record associated with it");
+						}
+						$doSaleAccount = $arrSaleAccounts[0];
+						
+						// Retrieve the Account Record
+						$objAccount = Account::getForId($doSaleAccount->getExternalReferenceValue());
+						
+						if ($objAccount === NULL)
+						{
+							throw new Exception("Can't find account: ". $doSaleAccount->getExternalReferenceValue() ." referenced by the 'Existing Customer' sale {$arrSPSale['id']}");
+						}
+					}
 					else
 					{
-						// We only support New Customer Sales at the moment
+						//// We only support New Customer Sales at the moment
 						throw new Exception("'{$arrSPSale['sale_type_id']}' Sales are not supported by Flex!");
 					}
 					
@@ -1223,41 +1248,59 @@ class Cli_App_Sales extends Cli
 					//------------------------------------------------------------//
 					
 					// Add System Note detailing Account Creation
-					if ((int)$objFlexSale->sale_type_id == 1)
+					if ((int)$objFlexSale->sale_type_id == DO_Sales_SaleType::NEW_CUSTOMER)
 					{
 						// New Sale
-						$objAccountCreationNote	= new Note();
-						$objAccountCreationNote->AccountGroup	= $objAccount->AccountGroup;
-						$objAccountCreationNote->Account		= $objAccount->id;
-						$objAccountCreationNote->Employee		= Employee::SYSTEM_EMPLOYEE_ID;
-						$objAccountCreationNote->Datetime		= $strPullDatetime;
-						$objAccountCreationNote->NoteType		= Note::SYSTEM_NOTE_TYPE_ID;
-						
 						$strNote  = "This Account has been created from the Sales Portal with the following details:\n\n" .
 									"Sale Reference ID: {$arrSPSale['id']}\n";
 						
 						if (count($arrContacts))
 						{
-							$strNote	.= "\nContacts:\n";
+							$strNote .= "\nContacts:\n";
 							foreach ($arrContacts as $objContact)
 							{
-								$strNote	.= "\t{$objContact->FirstName} {$objContact->LastName} " . (($objAccount->PrimaryContact == $objContact->Id) ? "(Primary Contact)" : '') . "\n";								
+								$strNote .= "\t{$objContact->FirstName} {$objContact->LastName} " . (($objAccount->PrimaryContact == $objContact->Id) ? "(Primary Contact)" : '') . "\n";								
 							}
 						}
 						
-						$strNote .= "\nServices:\n";
-						foreach ($arrServices as $objService)
+						if (count($arrServices))
 						{
-							foreach ($arrContacts as $objContact)
+							$strNote .= "\nServices:\n";
+							foreach ($arrServices as $objService)
 							{
-								$strNote	.= "\t{$objService->FNN} (".trim($objService->objRatePlan->Name).")\n";								
+								$strNote .= "\t{$objService->FNN} (".trim($objService->objRatePlan->Name).")\n";								
 							}
 						}
 						
-						$objAccountCreationNote->Note			= trim($strNote);
-						$objAccountCreationNote->save();
+						Note::createSystemNote(trim($strNote), NULL, $objAccount->accountGroup, $objAccount->id);
 					}
-					
+					elseif ((int)$objFlexSale->sale_type_id == DO_Sales_SaleType::EXISTING_CUSTOMER)
+					{
+						// Existing Sale
+						$strNote  = "Sale imported from the Sales Portal with the following details:\n\n" .
+									"Sale Reference ID: {$arrSPSale['id']}\n";
+						
+						if (count($arrContacts))
+						{
+							$strNote .= "\nContacts:\n";
+							foreach ($arrContacts as $objContact)
+							{
+								$strNote .= "\t{$objContact->FirstName} {$objContact->LastName} " . (($objAccount->PrimaryContact == $objContact->Id) ? "(Primary Contact)" : '') . "\n";								
+							}
+						}
+						
+						if (count($arrServices))
+						{
+							$strNote .= "\nServices:\n";
+							foreach ($arrServices as $objService)
+							{
+								$strNote .= "\t{$objService->FNN} (".trim($objService->objRatePlan->Name).")\n";								
+							}
+						}
+						
+						Note::createSystemNote(trim($strNote), NULL, $objAccount->accountGroup, $objAccount->id);
+					}
+
 					// Set Sale Status
 					$this->_updateSaleStatus($arrSPSale['id'], 'Dispatched');
 					if (!$objFlexSale->intCouldntComplete)
