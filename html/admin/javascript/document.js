@@ -357,6 +357,21 @@ var Document	= Class.create
 	{
 		JsAutoLoader.loadScript('javascript/document.js', function(){Flex.Document._objDocumentExplorer	= new Document_Explorer();});
 	},
+	
+	byteConvert : function(intBytes, strPower)
+	{
+		var fltConvert	= intBytes;
+		var arrPowers	= new Array('B', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y');
+		for (var i = 0; i < arrPowers.length; i++)
+		{
+			if (arrPowers[i] == strPower.charAt(0).toUpperCase())
+			{
+				return fltConvert;
+			}
+			fltConvert	= fltConvert / 1024;
+		}
+		throw "Unknown power of Bytes: '"+strPower+"'";
+	}
 });
 
 Flex.Document = (Flex.Document == undefined) ? new Document() : Flex.Document;
