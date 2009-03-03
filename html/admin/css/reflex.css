@@ -715,7 +715,7 @@ div.document-explorer-address
 {
 	background-color	: #eee;
 	padding				: 0.5em;
-	border				: 0.1em solid #ccc;
+	border				: 0.1em solid #333;
 	/*height				: 5em;*/
 	clear				: both;
 }
@@ -723,7 +723,7 @@ div.document-explorer-address
 div.document-explorer-address-node
 {
 	background-color	: #f9f9f9;
-	border				: 0.1em solid #333;
+	border				: 0.1em solid #ccc;
 	display				: inline-block;
 	/*float				: left;*/
 	padding				: 0.25em;
