@@ -128,7 +128,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objDocumentOutput->strName			= $objDocumentContent->name;
 				$objDocumentOutput->strDescription	= $objDocumentContent->description;
 				$objDocumentOutput->strFriendlyName	= $objDocumentContent->getFriendlyName();
-				$objDocumentOutput->editable		= (!(bool)$objDocument->is_system_document || $bolGOD) ? true : false;	// Only GODs can edit System Folders
+				$objDocumentOutput->editable		= ((!$objDocument->is_system_document && $bolSuperAdmin) || $bolGOD) ? true : false;
 				
 				$objDocumentOutput->arrPath			= $objDocument->getPath(true);
 			}
@@ -138,7 +138,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objDocumentOutput->strName			= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->strDescription	= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->strFriendlyName	= Document::ROOT_DIRECTORY_NAME;
-				$objDocumentOutput->editable		= true;
+				$objDocumentOutput->editable		= $bolSuperAdmin;
 				$objDocumentOutput->arrPath			= array($arrRootDir);
 			}
 			
@@ -171,7 +171,7 @@ class JSON_Handler_Document extends JSON_Handler
 					$objChildOutput->file_size		= $objChildContent->intContentSize;
 					$objChildOutput->date_modified	= date("j/n/Y g:i A", strtotime($objChildContent->changed_on));
 					$objChildOutput->modified_by	= $objModifiedBy->firstName.' '.$objModifiedBy->lastName;
-					$objChildOutput->editable		= (!(bool)$objChild->is_system_document || $bolGOD) ? true : false;	// Only GODs can edit System Documents
+					$objChildOutput->editable		= ((!$objChild->is_system_document && $bolSuperAdmin) || $bolGOD) ? true : false;
 					$objChildOutput->system			= (bool)$objChild->is_system_document;
 					$objChildOutput->mime			= ($objChildContent->file_type_id) ? $objMimeType->mime_content_type : '';
 					$objChildOutput->file_type		= ($objChildContent->file_type_id) ? $objFileType->description : '';
