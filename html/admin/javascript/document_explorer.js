@@ -86,19 +86,20 @@ var Document_Explorer	= Class.create
 		this.elmFooterTFOOT.appendChild(this.elmFooterActionsSelectedRow);
 		
 		this.elmFooterActionsSelectedCell					= document.createElement('th');
-		this.elmFooterActionsSelectedCell.style.textAlign	= 'left';
+		this.elmFooterActionsSelectedCell.style.textAlign	= 'right';
 		this.elmFooterActionsSelectedCell.innerHTML			= '&nbsp;';
 		this.elmFooterActionsSelectedRow.appendChild(this.elmFooterActionsSelectedCell);
 		
-		this.elmFooterActionsGeneralRow	= document.createElement('tr');
-		//this.elmFooterTHEAD.appendChild(this.elmFooterActionsGeneralRow);
-		this.elmHeaderTHEAD.insertBefore(this.elmFooterActionsGeneralRow, this.elmHeaderTitlesRow);
+		/*this.elmFooterActionsGeneralRow	= document.createElement('tr');
+		this.elmFooterTHEAD.appendChild(this.elmFooterActionsGeneralRow);
+		this.elmHeaderTHEAD.insertBefore(this.elmFooterActionsGeneralRow, this.elmHeaderTitlesRow);*/
 		
 		this.elmFooterActionsGeneralCell					= document.createElement('th');
 		this.elmFooterActionsGeneralCell.colSpan			= 5;
 		this.elmFooterActionsGeneralCell.style.textAlign	= 'left';
 		this.elmFooterActionsGeneralCell.innerHTML			= '&nbsp;';
-		this.elmFooterActionsGeneralRow.appendChild(this.elmFooterActionsGeneralCell);
+		//this.elmFooterActionsGeneralRow.appendChild(this.elmFooterActionsGeneralCell);
+		this.elmFooterActionsSelectedRow.insertBefore(this.elmFooterActionsGeneralCell, this.elmFooterActionsSelectedCell);
 		
 		this.elmStatusDIV			= document.createElement('div');
 		this.elmStatusDIV.className	= "document-explorer-status";
