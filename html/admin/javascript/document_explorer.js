@@ -366,6 +366,7 @@ var Document_Explorer	= Class.create
 			}
 			
 			strDetails	=	"<span class='name'>"+objChild.friendly_name+"</span><br />\n" +
+							"<span>"+strType+"</span>\n" +
 							"<span class='description'>"+(objChild.description ? objChild.description : objChild.friendly_name)+"</span>\n";
 		}
 		else
