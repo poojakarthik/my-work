@@ -356,7 +356,7 @@ var Document_Explorer	= Class.create
 					strIcon	= '<img title="File" class="document-explorer-icon-large" src="../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/64x64" />';
 				}
 				strFriendlyName	+= '.' + objChild.extension;
-				strType			= objChild.file_type+"File ("+objChild.mime+")";
+				strType			= objChild.file_type+" File ("+objChild.mime+")";
 			}
 			
 			if (objChild.system)
