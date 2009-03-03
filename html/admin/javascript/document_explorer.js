@@ -36,12 +36,32 @@ var Document_Explorer	= Class.create
 		this.elmHeaderTable.appendChild(this.elmHeaderTHEAD);
 		
 		this.elmHeaderTitlesRow				= document.createElement('tr');
-		this.elmHeaderTitlesRow.innerHTML	=	"<th class='field-name'>Name</th>\n" +
-												"<th class='field-size'>Size</th>\n" +
-												"<th class='field-date'>Date Modified</th>\n" +
-												"<th class='field-user'>Modified By</th>\n" +
-												"<th class='field-actions'></th>\n";
 		this.elmHeaderTHEAD.appendChild(this.elmHeaderTitlesRow);
+		
+		this.elmHeaderTitleName				= document.createElement('th');
+		this.elmHeaderTitleName.className	= "field-name";
+		this.elmHeaderTitleName.innerHTML	= "Name";
+		this.elmHeaderTitlesRow.appendChild(this.elmHeaderTitleName);
+		
+		this.elmHeaderTitleSize				= document.createElement('th');
+		this.elmHeaderTitleSize.className	= "field-size";
+		this.elmHeaderTitleSize.innerHTML	= "Size";
+		this.elmHeaderTitlesRow.appendChild(this.elmHeaderTitleSize);
+		
+		this.elmHeaderTitleDate				= document.createElement('th');
+		this.elmHeaderTitleDate.className	= "field-date";
+		this.elmHeaderTitleDate.innerHTML	= "Date Modified";
+		this.elmHeaderTitlesRow.appendChild(this.elmHeaderTitleDate);
+		
+		this.elmHeaderTitleUser				= document.createElement('th');
+		this.elmHeaderTitleUser.className	= "field-user";
+		this.elmHeaderTitleUser.innerHTML	= "Modified By";
+		this.elmHeaderTitlesRow.appendChild(this.elmHeaderTitleUser);
+		
+		this.elmHeaderTitleActions				= document.createElement('th');
+		this.elmHeaderTitleActions.className	= "field-actions";
+		this.elmHeaderTitleActions.innerHTML	= "";
+		this.elmHeaderTitlesRow.appendChild(this.elmHeaderTitleActions);
 		
 		this.elmContentDIV				= document.createElement('div');
 		this.elmContentDIV.className	= "document-explorer-list";
