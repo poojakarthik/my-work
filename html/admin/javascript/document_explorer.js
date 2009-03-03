@@ -336,8 +336,8 @@ var Document_Explorer	= Class.create
 			strDetails	=	"<span class='name'>"+strFriendlyName+"</span><br />\n" +
 							"<span class='description'>"+(objChild.description ? objChild.description : objChild.friendly_name)+"</span><br />\n" +
 							"<span>"+strType+"</span><br />\n" +
-							"<span>Date Modified:&nbsp;"+objChild.date_modified+" ("+objChild.modified_by+")</span><br />\n" +
-							"<span>Size:&nbsp;"+objChild.file_size+" ("+objChild.modified_by+")</span><br />\n" +
+							"<span>Last Modified:&nbsp;"+objChild.date_modified+" by "+objChild.modified_by+"</span><br />\n" +
+							(objChild.nature == 'DOCUMENT_NATURE_FOLDER' ? '' : "<span>Size:&nbsp;"+objChild.file_size+" ("+objChild.modified_by+")</span><br />\n") +
 							"";
 		}
 		else
