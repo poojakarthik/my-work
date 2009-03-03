@@ -436,7 +436,7 @@ var Document_Explorer	= Class.create
 	_updateActionBar	: function()
 	{
 		var strActions;
-		alert(this.arrSelected);
+		alert(this.arrSelected.length);
 		if (this.arrSelected.length > 1)
 		{
 			// Many Selected
