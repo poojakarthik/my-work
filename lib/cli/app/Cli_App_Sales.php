@@ -491,6 +491,8 @@ class Cli_App_Sales extends Cli
 	// _pullSales()	-- Pulls all new Sales from the Sales Portal
 	protected function _pullSales()
 	{
+		// HACK! HACK! HACK! This function should be converted to use the DO_Sales_ classes instead of directly querying the sales database
+		
 		$this->log("\t* Pulling Sales from the Sales Portal to Flex...");
 		$arrManualInterventionSales = array();
 		
@@ -1324,12 +1326,29 @@ class Cli_App_Sales extends Cli
 					// There was an issue with the Sale which needs manual intervention to resolve
 					$this->_updateSaleStatus($arrSPSale['id'], 'Manual Intervention', $eException->getMessage());
 					
+					
+					if (isset($doSaleAccount))
+					{
+						$strBusinessName	= $doSaleAccount->businessName;
+						$intVendorId		= $doSaleAccount->vendorId;
+					}
+					elseif (isset($arrSPSaleAccount) && is_array($arrSPSaleAccount))
+					{
+						$strBusinessName	= $arrSPSaleAccount['business_name'];
+						$intVendorId		= $arrSPSaleAccount['vendor_id'];
+					}
+					else
+					{
+						$strBusinesName	= NULL;
+						$intVendorId	= NULL;
+					}
+					
 					// Append Details to the list of sales that have been set to Manual Intervention
 					$arrManualInterventionSales[] = array(
 															"SaleId"			=> $arrSPSale['id'],
-															"BusinessName"		=> $arrSPSaleAccount['business_name'],
+															"BusinessName"		=> $strBusinessName,
 															"Reason"			=> $eException->getMessage(),
-															"CustomerGroupId"	=> $arrSPSaleAccount['vendor_id']	// vendor_id in sales db is kept in sync with the corresponding CustomerGroup.Id in flex db
+															"CustomerGroupId"	=> $intVendorId	// vendor_id in sales db is kept in sync with the corresponding CustomerGroup.Id in flex db
 														);
 				}
 			}
