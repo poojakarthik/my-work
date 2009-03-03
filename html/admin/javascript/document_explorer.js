@@ -412,7 +412,7 @@ var Document_Explorer	= Class.create
 			if (objTypeTotals.length > 1)
 			{
 				// More than one document nature selected
-				this.elmFooterCell.innerHTML	= '&nbsp;';
+				this.elmFooterActionsSelectedCell.innerHTML	= '&nbsp;';
 				return;
 			}
 			else
@@ -446,11 +446,11 @@ var Document_Explorer	= Class.create
 		else
 		{
 			// Nothing Selected
-			this.elmFooterCell.innerHTML	= '&nbsp;';
+			this.elmFooterActionsSelectedCell.innerHTML	= '&nbsp;';
 			return;
 		}
 		
-		this.elmFooterCell.innerHTML	= "With Selected: "+strActions;
+		this.elmFooterActionsSelectedCell.innerHTML	= "With Selected: "+strActions;
 	}
 });
 
