@@ -45,7 +45,7 @@ var Document_Explorer	= Class.create
 		this.elmContentDIV.className	= "document-explorer-list";
 		this.elmDocumentExplorerDIV.appendChild(this.elmContentDIV);
 		//this.elmContentDIV.setAttribute('onclick', "Flex.Document.Explorer.canvasClick()");
-		this.elmContentDIV.addEventListener('click', this.canvasClick.bindAsEventListener(this), false);
+		this.elmContentDIV.addEventListener('click', Flex.Document.Explorer.recordClick.bind(this, null), false);
 		
 		
 		this.elmContentTable			= document.createElement('table');
@@ -251,8 +251,12 @@ var Document_Explorer	= Class.create
 		{
 			// Shift focus to the clicked Record
 			this.arrSelected		= new Array();
-			this.arrSelected.push(intDocumentIndex);
-			this.intLastSelected	= intDocumentIndex;
+			
+			if (intDocumentIndex > 0)
+			{
+				this.arrSelected.push(intDocumentIndex);
+				this.intLastSelected	= intDocumentIndex;
+			}
 		}
 		
 		this._updateRecordClasses();
@@ -272,19 +276,6 @@ var Document_Explorer	= Class.create
 		{
 			// Download the file
 			window.location.href	= '../admin/reflex.php/File/Document/'+objChild.id;
-		}
-	},
-	
-	canvasClick	: function(eEvent)
-	{
-		if (!eEvent.ctrlKey && !eEvent.shiftKey)
-		{
-			this.arrSelected	= new Array();
-			alert("Selected Purged!");
-
-			this._updateRecordClasses();
-			this._updateStatusBar();
-			this._updateActionBar();
 		}
 	},
 	
