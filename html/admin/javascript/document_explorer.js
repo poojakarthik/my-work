@@ -373,7 +373,7 @@ var Document_Explorer	= Class.create
 	
 	_updateActionBar	: function()
 	{
-		var strDetails;
+		var strActions;
 		if (this.arrSelected.length > 1)
 		{
 			// Many Selected
@@ -425,7 +425,7 @@ var Document_Explorer	= Class.create
 			return;
 		}
 		
-		this.elmFooterCell.innerHTML	= "With Selected: "+strDetails;
+		this.elmFooterCell.innerHTML	= "With Selected: "+strActions;
 	}
 });
 
