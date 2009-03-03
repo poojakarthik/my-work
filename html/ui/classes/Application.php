@@ -103,8 +103,6 @@ class Application
 		$this->objAppTemplate->SetMode(HTML_MODE);
 		$this->objAppTemplate->SetModal($bolModal);
 
-		//ContextMenu()->Employee_Console();
-		
 		// Run AppTemplate
 		$fltStart = microtime(TRUE);		
 		$this->objAppTemplate->{$strHandlerMethod}($subPath);
@@ -183,21 +181,20 @@ class Application
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
-				
-				if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
+			}
+			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
+			{
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
 				{
-					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
+					ContextMenu()->Admin->Sales->ManageSales();
+				}
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES_ADMIN))
+				{
+					ContextMenu()->Admin->Sales->ManageDealers();
+					$arrSalesReportTypes = Sales_Report::getReportTypes();
+					foreach ($arrSalesReportTypes as $strReportType=>$arrReportType)
 					{
-						ContextMenu()->Admin->Sales->ManageSales();
-					}
-					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES_ADMIN))
-					{
-						ContextMenu()->Admin->Sales->ManageDealers();
-						$arrSalesReportTypes = Sales_Report::getReportTypes();
-						foreach ($arrSalesReportTypes as $strReportType=>$arrReportType)
-						{
-							ContextMenu()->Admin->Sales->SalesReport($strReportType);
-						}
+						ContextMenu()->Admin->Sales->SalesReport($strReportType);
 					}
 				}
 			}
@@ -289,8 +286,6 @@ class Application
 		$this->objAppTemplate->SetMode(HTML_MODE);
 		$this->objAppTemplate->SetModal($bolModal);
 	
-		//ContextMenu()->Employee_Console();
-		
 		// Run AppTemplate
 		$fltStart = microtime(TRUE);		
 		$this->objAppTemplate->{$strMethod}();
@@ -370,20 +365,20 @@ class Application
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
-				if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
+			}
+			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
+			{
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
 				{
-					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
+					ContextMenu()->Admin->Sales->ManageSales();
+				}
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES_ADMIN))
+				{
+					ContextMenu()->Admin->Sales->ManageDealers();
+					$arrSalesReportTypes = Sales_Report::getReportTypes();
+					foreach ($arrSalesReportTypes as $strReportType=>$arrReportType)
 					{
-						ContextMenu()->Admin->Sales->ManageSales();
-					}
-					if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES_ADMIN))
-					{
-						ContextMenu()->Admin->Sales->ManageDealers();
-						$arrSalesReportTypes = Sales_Report::getReportTypes();
-						foreach ($arrSalesReportTypes as $strReportType=>$arrReportType)
-						{
-							ContextMenu()->Admin->Sales->SalesReport($strReportType);
-						}
+						ContextMenu()->Admin->Sales->SalesReport($strReportType);
 					}
 				}
 			}
