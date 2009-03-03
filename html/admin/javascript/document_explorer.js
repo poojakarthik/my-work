@@ -302,6 +302,15 @@ var Document_Explorer	= Class.create
 		if (this.arrSelected.length > 1)
 		{
 			// Many Selected
+			var fltTotalFileSize	= 0;
+			for (var i = 0; i < this.arrSelected.length; i++)
+			{
+				fltTotalFileSize	+= this.arrChildren[this.arrSelected[i]].file_size;
+			}
+			
+			strDetails	=	"<span>"+this.arrSelected.length+" items selected</span><br />\n" +
+							"<span>Total File Size: "+Flex.Document.byteRound(fltTotalFileSize, 2)+"</span><br />\n" +
+							"";
 		}
 		else if (this.arrSelected.length == 1)
 		{
