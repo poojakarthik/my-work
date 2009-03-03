@@ -54,13 +54,16 @@ var Document_Explorer	= Class.create
 		
 		this.elmFooterTable				= document.createElement('table');
 		this.elmFooterTable.className	= "reflex document-explorer";
-		this.elmFooterTable.innerHTML	= 	"			<thead>\n" +
-											"				<tr>\n" +
-											"					<th style='width: 10em;'>With Selected: </th>\n" +
-											"					<th></th>\n" +
-											"				</tr>\n" +
-											"			</thead>\n";
 		this.elmDocumentExplorerDIV.appendChild(this.elmFooterTable);
+		
+		this.elmFooterTHEAD	= document.createElement('tfoot');
+		this.elmFooterTable.appendChild(this.elmFooterTHEAD);
+		
+		this.elmFooterRow	= document.createElement('tr');
+		this.elmFooterTHEAD.appendChild(this.elmFooterRow);
+		
+		this.elmFooterCell	= document.createElement('th');
+		this.elmFooterRow.appendChild(this.elmFooterCell);
 		
 		this.elmStatusDIV			= document.createElement('div');
 		this.elmStatusDIV.className	= "document-explorer-status";
@@ -363,6 +366,63 @@ var Document_Explorer	= Class.create
 		}
 		
 		this.elmStatusDIV.innerHTML	= strDetails;
+	},
+	
+	_updateActionBar	: function()
+	{
+		var strDetails;
+		if (this.arrSelected.length > 1)
+		{
+			// Many Selected
+			var fltTotalFileSize	= 0;
+			var objTypeTotals		= {};
+			for (var i = 0; i < this.arrSelected.length; i++)
+			{
+				objTypeTotals[this.arrChildren[this.arrSelected[i]].nature]	= true;
+			}
+			
+			if (objTypeTotals.length > 1)
+			{
+				// More than one document nature selected
+				this.elmFooterCell.innerHTML	= '';
+				return;
+			}
+			else
+			{
+				var arrActions	= new Array();
+				
+				if (this.arrChildren[this.arrSelected[i]].nature == 'DOCUMENT_NATURE_FILE')
+				{
+					arrActions.push("<span onclick='alert(\"Email some docs!\")'><img src='../admin/img/template/email.png' />&nbsp;Email</span>");
+				}
+				
+				arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
+				
+				strActions	= arrActions.join('&nbsp;|&nbsp;');
+			}
+		}
+		else if (this.arrSelected.length == 1)
+		{
+			objChild	= this.arrChildren[this.arrSelected[0]];
+			var arrActions	= new Array();
+			
+			if (objChild.nature == 'DOCUMENT_NATURE_FILE')
+			{
+				arrActions.push("<span onclick='alert(\"Email some docs!\")'><img src='../admin/img/template/email.png' />&nbsp;Email</span>");
+			}
+			
+			arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
+			
+			strActions	= arrActions.join('&nbsp;|&nbsp;');
+		}
+		else
+		{
+			// Nothing Selected
+			this.elmFooterCell.innerHTML	= '';
+			return;
+		}
+		
+		this.elmFooterCell.innerHTML	= "With Selected: "+strDetails;
 	}
 });
 
