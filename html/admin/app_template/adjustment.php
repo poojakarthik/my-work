@@ -63,7 +63,10 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		$bolUserHasProperAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+
+		$bolCanCreateCreditAdjustments = ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -108,8 +111,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		DBL()->ChargeTypesAvailable->Archived = 0;
 		DBL()->ChargeTypesAvailable->automatic_only = 0;
 		
-		// Only proper admins can create credit adjustments
-		if (!$bolUserHasProperAdminPerm)
+		// Only proper admins and credit management can create credit adjustments
+		if (!$bolCanCreateCreditAdjustments)
 		{
 			// The user can only create debit adjustments
 			DBL()->ChargeTypesAvailable->Nature = 'DR';
@@ -179,9 +182,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
 				
 				// Only ProperAdmins can create credit adjustments
-				if (DBO()->Charge->Nature->Value == 'CR' && !$bolUserHasProperAdminPerm)
+				if (DBO()->Charge->Nature->Value == 'CR' && !$bolCanCreateCreditAdjustments)
 				{
-					// The user is not a proper admin but is trying to create a credit adjustment
+					// The user does not have the required permissions to create a credit adjustment
 					Ajax()->AddCommand("Alert", "ERROR: You do not have permission to create credit adjustments");
 					return TRUE;
 				}
@@ -483,7 +486,17 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		
+		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+		
+		$bolCanDeleteAdjustments	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		
+		if (!$bolCanDeleteAdjustments)
+		{
+			Ajax()->AddCommand("Alert", "You do not have the required permissions to delete an adjustment");
+			return TRUE;
+		}
 		
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord'))

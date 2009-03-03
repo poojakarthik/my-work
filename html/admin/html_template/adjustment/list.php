@@ -87,12 +87,13 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		echo "<h2 class='Adjustment'>Adjustments</h2>\n";
 
 		// Check if the user has admin privileges
-		$bolHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
-		$bolUserIsGod			= AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD);
-		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolHasProperAdminPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+		$bolUserIsGod				= AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD);
+		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		
 		// define the table's header
-		if ($bolHasProperAdminPerm)
+		if ($bolHasProperAdminPerm || $bolHasCreditManagementPerm)
 		{
 			// User has admin permisions and can therefore delete an adjustment
 			Table()->AdjustmentTable->SetHeader("Date", "Code", "&nbsp;","Amount ($)", "&nbsp;");
@@ -121,7 +122,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			}
 			
 			// add the row
-			if ($bolHasProperAdminPerm)
+			if ($bolHasProperAdminPerm || $bolHasCreditManagementPerm)
 			{
 				// Only charges having status = waiting or approved can be deleted
 				if (($dboCharge->Status->Value == CHARGE_WAITING) || ($dboCharge->Status->Value == CHARGE_APPROVED))

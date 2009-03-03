@@ -1385,7 +1385,13 @@ class AppTemplateAccount extends ApplicationTemplate
 	{
 		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+		$bolHasAdminPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		
+		$bolCanDeleteAdjustments			= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		$bolCanReversePayments				= $bolHasAdminPerm;
+		$bolCanCancelRecurringAdjustments	= $bolHasAdminPerm;
 
 		// Non of these records can be deleted/cancelled/reversed while the invoicing process is running
 		$bolIsInvoicing = IsInvoicing();
@@ -1394,6 +1400,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		switch (DBO()->DeleteRecord->RecordType->Value)
 		{
 			case "Payment":
+				if (!$bolCanReversePayments)
+				{
+					Ajax()->AddCommand("Alert", "You do not have the required permissions to reverse payments");
+					return TRUE;
+				}
 				if ($bolIsInvoicing)
 				{
 					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Payments cannot be reversed at this time.  Please try again later";
@@ -1404,6 +1415,11 @@ class AppTemplateAccount extends ApplicationTemplate
 				DBO()->Payment->Load();
 				break;
 			case "Adjustment":
+				if (!$bolCanDeleteAdjustments)
+				{
+					Ajax()->AddCommand("Alert", "You do not have the required permissions to delete an adjustment");
+					return TRUE;
+				}
 				if ($bolIsInvoicing)
 				{
 					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Adjustments cannot be deleted at this time.  Please try again later";
@@ -1414,6 +1430,11 @@ class AppTemplateAccount extends ApplicationTemplate
 				DBO()->Charge->Load();
 				break;
 			case "RecurringAdjustment":
+				if (!$bolCanCancelRecurringAdjustments)
+				{
+					Ajax()->AddCommand("Alert", "You do not have the required permissions to cancel a recurring adjustment");
+					return TRUE;
+				}
 				if ($bolIsInvoicing)
 				{
 					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Recurring Adjustments cannot be cancelled at this time.  Please try again later";
@@ -1425,14 +1446,14 @@ class AppTemplateAccount extends ApplicationTemplate
 				break;
 			default:
 				Ajax()->AddCommand("Alert", "ERROR: No record type has been declared to be deleted");
-				return FALSE;
+				return TRUE;
 		}
 		
 		if ($bolIsInvoicing)
 		{
 			// Records cannot be deleted while the Invoicing process is running
 			Ajax()->AddCommand("Alert", $strErrorMsg);
-			return FALSE;
+			return TRUE;
 		}
 		
 		// All required data has been retrieved from the database so now load the page template

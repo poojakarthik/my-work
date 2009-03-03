@@ -99,14 +99,15 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		$bolUserHasProperAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		
 		// Only apply the output mask if the DBO()->Charge is not invalid
 		$bolApplyOutputMask = !DBO()->Charge->IsInvalid();
 
 		$this->FormStart("AddAdjustment", "Adjustment", "Add");
 		
-		if (!$bolUserHasProperAdminPerm)
+		if (!($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm))
 		{
 			// The user cannot create credit adjustments because they don't have the required permissions
 			echo "<div class='MsgNotice'>You do not have the required permissions to create credit adjustments</div>";
