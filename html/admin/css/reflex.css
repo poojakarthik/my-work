@@ -832,6 +832,16 @@ table.document-explorer th
 	
 }
 
+table.document-explorer th span[onclick]
+{
+	color				: #FF4200;
+}
+
+table.document-explorer th span[onclick]:hover
+{
+	text-decoration		: underline;
+}
+
 table.document-explorer th img.icon
 {
 	vertical-align	: middle;
