@@ -63,7 +63,8 @@ var Document_Explorer	= Class.create
 		this.elmFooterTHEAD.appendChild(this.elmFooterRow);
 		
 		this.elmFooterCell	= document.createElement('th');
-		this.elmFooterCell.innerHTML	= '&nbsp;';
+		this.elmFooterCell.style.textAlign	= 'left';
+		this.elmFooterCell.innerHTML		= '&nbsp;';
 		this.elmFooterRow.appendChild(this.elmFooterCell);
 		
 		this.elmStatusDIV			= document.createElement('div');
