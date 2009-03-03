@@ -382,7 +382,7 @@ var Document	= Class.create
 		for (var i = 0; i < arrPowers.length; i++)
 		{
 			var fltConvertTemp	= fltConvert / 1024;
-			if (Math.round(fltConvertTemp) < 1)
+			if (fltConvertTemp < 1)
 			{
 				return (new Number(fltConvert)).toFixed(intDecimalPlaces).toString()+" "+arrPowers[i];
 			}
