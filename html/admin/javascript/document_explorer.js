@@ -129,14 +129,44 @@ var Document_Explorer	= Class.create
 						strIcon	+= '<img title="'+strType+'" class="document-explorer-icon-overlay" src="../admin/img/template/system_object.png" />';
 					}
 					
-					objResponse.objDocument.arrChildren[i].elmTR	= document.createElement('tr');
-					objResponse.objDocument.arrChildren[i].elmTR.setAttribute('valign', 'top');
+					var elmTR	= document.createElement('tr');
+					elmTR.setAttribute('valign', 'top');
+					
+					var elmTDName	= document.createElement('td');
+					elmTDName.className	= 'field-name';
+					elmTDName.title		= (objChild.description ? objChild.description : objChild.friendly_name);
+					elmTDName.innerHTML	= strIcon+"<span class='record-label'>"+strFriendlyName+"</span>";
+					elmTR.appendChild(elmTDName);
+					
+					var elmTDSize	= document.createElement('td');
+					elmTDSize.className	= 'field-size';
+					elmTDSize.innerHTML	= (objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size+' KB' : '');
+					elmTR.appendChild(elmTDSize);
+					
+					var elmTDDate	= document.createElement('td');
+					elmTDDate.className	= 'field-date';
+					elmTDDate.innerHTML	= objChild.date_modified;
+					elmTR.appendChild(elmTDDate);
+					
+					var elmTDUser	= document.createElement('td');
+					elmTDUser.className	= 'field-user';
+					elmTDUser.innerHTML	= objChild.date_modified;
+					elmTR.appendChild(elmTDUser);
+					
+					var elmTDActions	= document.createElement('td');
+					elmTDActions.className	= 'field-actions';
+					elmTDActions.innerHTML	= ';
+					elmTR.appendChild(elmTDActions);
+					
+					objResponse.objDocument.arrChildren[i].elmTR	= elmTR;
+					this.elmContentTableBody.appendChild(objResponse.objDocument.arrChildren[i].elmTR);
+					/*
 					objResponse.objDocument.arrChildren[i].elmTR.innerHTML	=	"					<td class='field-name' title='"+(objChild.description ? objChild.description : objChild.friendly_name)+"'>"+strIcon+"<span class='record-label'>"+strFriendlyName+"</span></td>\n" +
 																				"					<td class='field-size'>"+(objChild.nature == 'DOCUMENT_NATURE_FILE' ? objChild.file_size+' KB' : '')+"</td>\n" +
 																				"					<td class='field-date'>"+objChild.date_modified+"</td>\n" +
 																				"					<td class='field-user'>"+objChild.modified_by+"</td>\n" +
 																				"					<td class='field-actions'></td>\n";
-					this.elmContentTableBody.appendChild(objResponse.objDocument.arrChildren[i].elmTR);
+					*/
 				}
 			}
 			else
