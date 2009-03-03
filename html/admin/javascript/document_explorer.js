@@ -147,9 +147,11 @@ var Document_Explorer	= Class.create
 														"					<td colspan='5' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
 														"				</tr>\n";
 			}
-			
+
+			alert("Test");
 			this.arrDocuments	= objResponse.objDocument.arrChildren;
-			
+
+			alert("Test");
 			// Render the new Popup Contents
 			var strHTML	= "\n" +
 			"<div style='margin: 0.5em;'>\n" +
@@ -186,8 +188,10 @@ var Document_Explorer	= Class.create
 			this.elmStatusDIV.innerHTML	=	"		<span class='name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
 											"		<span class='description'>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</span><br />\n";
 											/*"		<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n";*/
-			
+
+			alert("Test");
 			this._registerEventHandlers();
+			alert("Test");
 			this.pupExplorer.display();
 		}
 		else if (objResponse.Success == undefined)
