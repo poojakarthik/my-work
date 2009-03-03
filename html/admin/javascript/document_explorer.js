@@ -296,6 +296,7 @@ var Document_Explorer	= Class.create
 		if (!eEvent.ctrlKey && !eEvent.shiftKey)
 		{
 			this.arrSelected	= new Array();
+			alert("Selected Purged!");
 			
 			this._updateStatusBar();
 			this._updateActionBar();
