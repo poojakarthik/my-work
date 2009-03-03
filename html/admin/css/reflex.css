@@ -851,7 +851,7 @@ table.document-explorer th img.icon
 table.document-explorer th img.icon.overlay
 {
 	margin-left		: -16px;
-	/*margin-right	: -16px;*/
+	opacity			: 0.75;
 }
 
 table.document-explorer td
