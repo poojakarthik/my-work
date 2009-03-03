@@ -713,23 +713,33 @@ div.tab-collection div.tab-body-container
 /****************************** Document Explorer *****************************/
 div.document-explorer-address
 {
-	background-color	: #f9f9f9;
+	background-color	: #eee;
 	padding				: 0.5em;
 	border				: 0.1em solid #333;
 }
 
-span.document-explorer-address-node
+div.document-explorer-address-node
 {
-	vertical-align	: middle;
+	background-color	: #f9f9f9;
+	border				: 0.1em solid #333;
+	vertical-align		: middle;
+	display				: inline-block;
+	float				: left;
 }
 
-span.document-explorer-address-node[onclick]
+div.document-explorer-address-node span.node-label
+{
+	margin-left		: 0.25em;
+}
+
+div.document-explorer-address-node[onclick]
 {
 	color			: #00F;
 }
 
-span.document-explorer-address-node[onclick]:hover
+div.document-explorer-address-node[onclick]:hover
 {
+	background-color	: #fff;
 	text-decoration	: underline;
 	cursor			: pointer;
 }
@@ -741,6 +751,8 @@ img.document-explorer-address-separator
 	vertical-align	: middle;
 	margin-left		: 0.25em;
 	margin-right	: 0.25em;
+	display			: inline-block;
+	float			: left;
 }
 
 div.document-explorer
