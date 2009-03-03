@@ -343,7 +343,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		</thead>
 		<tfoot>
 			<tr>
-				<th colspan="<?=(8+$nrPossibleActions)?>" align=right>&nbsp;<div id='refreshPanel'></div><?=$navLinks?></th>
+				<th colspan="<?=(8+$nrPossibleActions)?>" align=right>&nbsp;<div id='refreshPanel'></div><div style='display: inline-block;float:right;'><?=$navLinks?></div></th>
 			</tr>
 		</tfoot>
 		<tbody style='vertical-align:top'>

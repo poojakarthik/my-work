@@ -565,10 +565,12 @@ div.clear {
 div#refreshPanel
 {
 	color: #ffde05;
-	position: absolute;
-	left: 10px;
+	/*position: absolute;
+	left: 10px;*/
 	bottom: 15px;
 	padding: 0 0.3em 0.2em 0;
+	display	: inline-block;
+	float	: left;
 }
 
 
