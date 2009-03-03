@@ -725,6 +725,7 @@ div.document-explorer-address-node
 	vertical-align		: middle;
 	display				: inline-block;
 	float				: left;
+	margin				: 1em;
 }
 
 div.document-explorer-address-node span.node-label
