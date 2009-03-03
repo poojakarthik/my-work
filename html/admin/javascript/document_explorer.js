@@ -200,8 +200,8 @@ var Document_Explorer	= Class.create
 			}
 			
 			// General Actions Bar
-			var strNewFolder			= "<span><img class='icon' src='../admin/img/template/folder_add.png' />New Folder</span>";
-			var strNewDocument			= "<span><img class='icon' src='../admin/img/template/document_add.png' />New Document</span>";
+			var strNewFolder			= "<span onclick='alert(\"Add a Folder!\");'><img class='icon' src='../admin/img/template/folder_add.png' />New Folder</span>";
+			var strNewDocument			= "<span onclick='alert(\"Add a Document!\");'><img class='icon' src='../admin/img/template/document_add.png' />New Document</span>";
 			this.elmFooterActionsGeneralCell.innerHTML	= objResponse.objDocument.editable ? strNewFolder + '&nbsp;|&nbsp;' + strNewDocument : 'This Folder is Read-Only';
 			
 			this.objDocument	= objResponse.objDocument;
