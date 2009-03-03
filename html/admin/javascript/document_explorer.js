@@ -143,8 +143,8 @@ var Document_Explorer	= Class.create
 			{
 				// No children
 				this.elmContentTableBody.innerHTML	=	"				<tr>\n" +
-												"					<td colspan='5' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
-												"				</tr>\n";
+														"					<td colspan='5' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
+														"				</tr>\n";
 			}
 			
 			this.arrDocuments	= objResponse.objDocument.arrChildren;
@@ -269,8 +269,8 @@ var Document_Explorer	= Class.create
 	{
 		for (var i = 0; i < this.arrDocuments.length; i++)
 		{
-			this.arrDocuments.elmTR.addEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i));
-			this.arrDocuments.elmTR.addEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i));
+			this.arrDocuments[i].elmTR.addEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i));
+			this.arrDocuments[i].elmTR.addEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i));
 		}
 	},
 	
@@ -278,8 +278,8 @@ var Document_Explorer	= Class.create
 	{
 		for (var i = 0; i < this.arrDocuments.length; i++)
 		{
-			this.arrDocuments.elmTR.removeEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i));
-			this.arrDocuments.elmTR.removeEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i));
+			this.arrDocuments[i].elmTR.removeEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i));
+			this.arrDocuments[i].elmTR.removeEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i));
 		}
 	}
 });
