@@ -832,6 +832,11 @@ table.document-explorer th
 	
 }
 
+table.document-explorer th img.icon
+{
+	vertical-align	: middle;
+}
+
 table.document-explorer td
 {
 	overflow: hidden;
