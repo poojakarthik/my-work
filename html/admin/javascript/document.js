@@ -373,8 +373,10 @@ var Document	= Class.create
 		throw "Unknown power of Bytes: '"+strPower+"'";
 	},
 	
-	byteRound	: function(intBytes)
+	byteRound	: function(intBytes, intDecimalPlaces)
 	{
+		intDecimalPlaces	= (intDecimalPlaces > 0) ? intDecimalPlaces : 0;
+		
 		var fltConvert	= intBytes;
 		var arrPowers	= new Array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 		for (var i = 0; i < arrPowers.length; i++)
@@ -382,15 +384,14 @@ var Document	= Class.create
 			var fltConvertTemp	= fltConvert / 1024;
 			if (Math.round(fltConvertTemp) < 1)
 			{
-				return Math.round(fltConvert).toString()+" "+arrPowers[i];
+				return (new Number(fltConvert)).toFixed(intDecimalPlaces).toString()+" "+arrPowers[i];
 			}
 			else if (i == arrPowers.length-1)
 			{
-				return Math.round(fltConvertTemp).toString()+" "+arrPowers[i];
+				return (new Number(fltConvertTemp)).toFixed(intDecimalPlaces).toString()+" "+arrPowers[i];
 			}
 			fltConvert	= fltConvertTemp;
 		}
-		throw "Unknown power of Bytes: '"+strPower+"'";
 	}
 });
 
