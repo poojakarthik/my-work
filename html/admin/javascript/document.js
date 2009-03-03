@@ -371,6 +371,25 @@ var Document	= Class.create
 			fltConvert	= fltConvert / 1024;
 		}
 		throw "Unknown power of Bytes: '"+strPower+"'";
+	},
+	
+	byteRound	: function(intBytes)
+	{
+		var fltConvert	= intBytes;
+		var arrPowers	= new Array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+		for (var i = 0; i < arrPowers.length; i++)
+		{
+			var fltConvertTemp	= fltConvert / 1024;
+			if (Math.round(fltConvertTemp) < 1)
+			{
+				return Math.round(fltConvert);
+			}
+			else if (i == arrPowers.length-1)
+			{
+				return Math.round(fltConvertTemp).toString()+" "+arrPowers[i];
+			}
+		}
+		throw "Unknown power of Bytes: '"+strPower+"'";
 	}
 });
 
