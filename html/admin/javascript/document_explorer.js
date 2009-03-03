@@ -396,10 +396,10 @@ var Document_Explorer	= Class.create
 				
 				if (this.arrChildren[this.arrSelected[i]].nature == 'DOCUMENT_NATURE_FILE')
 				{
-					arrActions.push("<span onclick='alert(\"Email some docs!\")'><img src='../admin/img/template/email.png' />&nbsp;Email</span>");
+					arrActions.push("<span onclick='alert(\"Email some docs!\")'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
 				}
 				
-				arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
+				arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
 				
 				strActions	= arrActions.join('&nbsp;|&nbsp;');
 			}
@@ -411,10 +411,10 @@ var Document_Explorer	= Class.create
 			
 			if (objChild.nature == 'DOCUMENT_NATURE_FILE')
 			{
-				arrActions.push("<span onclick='alert(\"Email some docs!\")'><img src='../admin/img/template/email.png' />&nbsp;Email</span>");
+				arrActions.push("<span onclick='alert(\"Email some docs!\")'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
 			}
 			
-			arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
+			arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
 			
 			strActions	= arrActions.join('&nbsp;|&nbsp;');
 		}
