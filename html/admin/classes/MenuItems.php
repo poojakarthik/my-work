@@ -3309,7 +3309,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Documents";
 		$this->strLabel = "Document Explorer";
 		
-		return "javascript:JsAutoLoader.loadScript('javascript/document.js', function(){Flex.Document.initExplorerPopup();});";
+		return "javascript:JsAutoLoader.loadScript('javascript/document.js', function(){JsAutoLoader.loadScript('javascript/document_explorer.js', function(){Flex.Document.Explorer.update(null);})});";
 	}
 	
 	//------------------------------------------------------------------------//
