@@ -60,13 +60,21 @@ var Document_Explorer	= Class.create
 		this.elmFooterTHEAD	= document.createElement('tfoot');
 		this.elmFooterTable.appendChild(this.elmFooterTHEAD);
 		
-		this.elmFooterRow	= document.createElement('tr');
-		this.elmFooterTHEAD.appendChild(this.elmFooterRow);
+		this.elmFooterActionsSelectedRow	= document.createElement('tr');
+		this.elmFooterTHEAD.appendChild(this.elmFooterActionsSelectedRow);
 		
-		this.elmFooterCell	= document.createElement('th');
-		this.elmFooterCell.style.textAlign	= 'left';
-		this.elmFooterCell.innerHTML		= '&nbsp;';
-		this.elmFooterRow.appendChild(this.elmFooterCell);
+		this.elmFooterActionsSelectedCell					= document.createElement('th');
+		this.elmFooterActionsSelectedCell.style.textAlign	= 'left';
+		this.elmFooterActionsSelectedCell.innerHTML			= '&nbsp;';
+		this.elmFooterActionsSelectedRow.appendChild(this.elmFooterActionsSelectedCell);
+		
+		this.elmFooterActionsGeneralRow	= document.createElement('tr');
+		this.elmFooterTHEAD.appendChild(this.elmFooterActionsGeneralRow);
+		
+		this.elmFooterActionsGeneralCell					= document.createElement('th');
+		this.elmFooterActionsGeneralCell.style.textAlign	= 'left';
+		this.elmFooterActionsGeneralCell.innerHTML			= '&nbsp;';
+		this.elmFooterActionsGeneralRow.appendChild(this.elmFooterActionsGeneralCell);
 		
 		this.elmStatusDIV			= document.createElement('div');
 		this.elmStatusDIV.className	= "document-explorer-status";
@@ -191,10 +199,14 @@ var Document_Explorer	= Class.create
 														"				</tr>\n";
 			}
 			
+			// General Actions Bar
+			var strNewFolder			= "<span><img class='icon' src='../admin/img/template/folder_add.png' />New Folder</span>";
+			var strNewDocument			= "<span><img class='icon' src='../admin/img/template/document_add.png' />New Document</span>";
+			this.elmFooterActionsGeneralCell.innerHTML	= objResponse.objDocument.editable ? strNewFolder + '&nbsp;|&nbsp;' + strNewDocument : 'This Folder is Read-Only';
+			
 			this.objDocument	= objResponse.objDocument;
 			this.arrChildren	= objResponse.objDocument.arrChildren;
 			this.arrSelected	= Array();
-
 			this._updateStatusBar();
 			
 			this._registerEventHandlers();

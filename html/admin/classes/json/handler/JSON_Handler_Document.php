@@ -114,6 +114,9 @@ class JSON_Handler_Document extends JSON_Handler
 			$qryQuery	= new Query();
 			$arrRootDir	= array('name'=>Document::ROOT_DIRECTORY_NAME, 'document_id'=>null, 'friendly_name'=>Document::ROOT_DIRECTORY_NAME);
 			
+			$bolSuperAdmin	= AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
+			$bolGOD			= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+			
 			// If we have a document, load its children
 			$objDocumentOutput	= new stdClass();
 			if ($intDocumentId)
@@ -125,6 +128,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objDocumentOutput->strName			= $objDocumentContent->name;
 				$objDocumentOutput->strDescription	= $objDocumentContent->description;
 				$objDocumentOutput->strFriendlyName	= $objDocumentContent->getFriendlyName();
+				$objDocumentOutput->editable		= (!(bool)$objDocument->is_system_document || $bolGOD) ? true : false;	// Only GODs can edit System Folders
 				
 				$objDocumentOutput->arrPath			= $objDocument->getPath(true);
 			}
@@ -134,6 +138,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objDocumentOutput->strName			= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->strDescription	= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->strFriendlyName	= Document::ROOT_DIRECTORY_NAME;
+				$objDocumentOutput->editable		= true;
 				$objDocumentOutput->arrPath			= array($arrRootDir);
 			}
 			
@@ -146,7 +151,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objChildContent	= $objChild->getContentDetails();
 				
 				// Hide system documents from general users
-				if (!(bool)$objChild->is_system_document || AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+				if (!(bool)$objChild->is_system_document || $bolSuperAdmin)
 				{
 					$objChildOutput	= new stdClass();
 					
@@ -166,7 +171,7 @@ class JSON_Handler_Document extends JSON_Handler
 					$objChildOutput->file_size		= $objChildContent->intContentSize;
 					$objChildOutput->date_modified	= date("j/n/Y g:i A", strtotime($objChildContent->changed_on));
 					$objChildOutput->modified_by	= $objModifiedBy->firstName.' '.$objModifiedBy->lastName;
-					$objChildOutput->editable		= (!(bool)$objChild->is_system_document || AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? true : false;	// Only GODs can edit System Documents
+					$objChildOutput->editable		= (!(bool)$objChild->is_system_document || $bolGOD) ? true : false;	// Only GODs can edit System Documents
 					$objChildOutput->system			= (bool)$objChild->is_system_document;
 					$objChildOutput->mime			= ($objChildContent->file_type_id) ? $objMimeType->mime_content_type : '';
 					$objChildOutput->file_type		= ($objChildContent->file_type_id) ? $objFileType->description : '';
@@ -179,7 +184,7 @@ class JSON_Handler_Document extends JSON_Handler
 			return array(
 							"Success"		=> true,
 							"objDocument"	=> $objDocumentOutput,
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"strDebug"		=> ($bolGOD) ? $this->_JSONDebug : ''
 						);
 		}
 		catch (Exception $e)
@@ -190,7 +195,7 @@ class JSON_Handler_Document extends JSON_Handler
 			return array(
 							"Success"	=> false,
 							"Message"	=> 'ERROR: '.$e->getMessage(),
-							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"strDebug"	=> ($bolGOD) ? $this->_JSONDebug : ''
 						);
 		}
 	}
