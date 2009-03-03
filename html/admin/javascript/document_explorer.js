@@ -26,7 +26,6 @@ var Document_Explorer	= Class.create
 		
 		this.elmDocumentExplorerDIV				= document.createElement('div');
 		this.elmDocumentExplorerDIV.className	= "document-explorer";
-		this.elmDocumentExplorerDIV.setAttribute('onclick', "Flex.Document.Explorer.canvasClick()");
 		this.elmEncapsulator.appendChild(this.elmDocumentExplorerDIV);
 		
 		this.elmHeaderTable				= document.createElement('table');
@@ -44,6 +43,7 @@ var Document_Explorer	= Class.create
 		
 		this.elmContentDIV				= document.createElement('div');
 		this.elmContentDIV.className	= "document-explorer-list";
+		this.elmContentDIV.setAttribute('onclick', "Flex.Document.Explorer.canvasClick()");
 		this.elmDocumentExplorerDIV.appendChild(this.elmContentDIV);
 		
 		this.elmContentTable			= document.createElement('table');
