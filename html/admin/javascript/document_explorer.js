@@ -28,6 +28,8 @@ var Document_Explorer	= Class.create
 		this.elmDocumentExplorerDIV.className	= "document-explorer";
 		this.elmEncapsulator.appendChild(this.elmDocumentExplorerDIV);
 		
+		elmDocumentExplorerDIV.addEventListener('click', this.canvasClick.bind(this), false);
+		
 		this.elmHeaderTable				= document.createElement('table');
 		this.elmHeaderTable.className	= "reflex document-explorer";
 		this.elmHeaderTable.innerHTML	= 	"			<thead>\n" +
@@ -285,6 +287,17 @@ var Document_Explorer	= Class.create
 		{
 			// Download the file
 			window.location.href	= '../admin/reflex.php/File/Document/'+objChild.id;
+		}
+	},
+	
+	canvasClick	: function (eEvent)
+	{
+		if (!eEvent.ctrlKey && !eEvent.shiftKey)
+		{
+			this.arrChildren	= new Array();
+			
+			this._updateStatusBar();
+			this._updateActionBar();
 		}
 	},
 	
