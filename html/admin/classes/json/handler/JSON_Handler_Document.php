@@ -151,6 +151,7 @@ class JSON_Handler_Document extends JSON_Handler
 					$objChildOutput	= new stdClass();
 					
 					$objFileType	= ($objChildContent->file_type_id) ? new File_Type(array('id'=>$objChildContent->file_type_id), true) : null;
+					$objMimeType	= ($objChildContent->file_type_id) ? new Mime_Type(array('id'=>$objFileType->mime_type_id), true) : null;
 					
 					$objModifiedBy	= Employee::getForId($objChildContent->employee_id);
 					
@@ -167,6 +168,8 @@ class JSON_Handler_Document extends JSON_Handler
 					$objChildOutput->modified_by	= $objModifiedBy->firstName.' '.$objModifiedBy->lastName;
 					$objChildOutput->editable		= (!(bool)$objChild->is_system_document || AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? true : false;	// Only GODs can edit System Documents
 					$objChildOutput->system			= (bool)$objChild->is_system_document;
+					$objChildOutput->mime			= ($objChildContent->file_type_id) ? $objMimeType->mime_content_type : '';
+					$objChildOutput->file_type		= ($objChildContent->file_type_id) ? $objFileType->description : '';
 					
 					$objDocumentOutput->arrChildren[]	= $objChildOutput;
 				}

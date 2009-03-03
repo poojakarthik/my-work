@@ -356,7 +356,7 @@ var Document_Explorer	= Class.create
 					strIcon	= '<img title="File" class="document-explorer-icon-large" src="../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/64x64" />';
 				}
 				strFriendlyName	+= '.' + objChild.extension;
-				strType			= "File";
+				strType			= objChild.file_type+"File ("+objChild.mime+")";
 			}
 			
 			if (objChild.system)
@@ -366,7 +366,7 @@ var Document_Explorer	= Class.create
 			}
 			
 			strDetails	=	"<span class='name'>"+objChild.friendly_name+"</span><br />\n" +
-							"<span>"+strType+"</span>\n" +
+							"<span>"+strType+"</span><br />\n" +
 							"<span class='description'>"+(objChild.description ? objChild.description : objChild.friendly_name)+"</span>\n";
 		}
 		else
