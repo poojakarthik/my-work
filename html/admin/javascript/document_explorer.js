@@ -96,7 +96,7 @@ var Document_Explorer	= Class.create
 			}
 			
 			// Build Document Listing
-			this.elmTableBody.innerHTML	= '';
+			this.elmContentTableBody.innerHTML	= '';
 			if (objResponse.objDocument.arrChildren.length)
 			{
 				// Have children, render each entry
@@ -136,13 +136,13 @@ var Document_Explorer	= Class.create
 																				"					<td class='field-date'>"+objChild.date_modified+"</td>\n" +
 																				"					<td class='field-user'>"+objChild.modified_by+"</td>\n" +
 																				"					<td class='field-actions'></td>\n";
-					this.elmTableBody.appendChild(objResponse.objDocument.arrChildren[i].elmTR);
+					this.elmContentTableBody.appendChild(objResponse.objDocument.arrChildren[i].elmTR);
 				}
 			}
 			else
 			{
 				// No children
-				this.elmTableBody.innerHTML	=	"				<tr>\n" +
+				this.elmContentTableBody.innerHTML	=	"				<tr>\n" +
 												"					<td colspan='5' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
 												"				</tr>\n";
 			}
