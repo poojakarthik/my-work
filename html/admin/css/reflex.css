@@ -808,6 +808,11 @@ table.document-explorer td
 }
 
 
+table.document-explorer span.record-label
+{
+	margin-left	: 0.25em;
+}
+
 table.document-explorer .field-name
 {
 	min-width	: 25em;
