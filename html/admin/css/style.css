@@ -209,12 +209,6 @@ table.reflex tr.alt td {
 	background-color: #fff;
 }
 
-table.reflex tr.alt-hover td {
-	background-color: #fff;
-	text-decoration: underline;
-	cursor: pointer;
-}
-
 table.reflex td.title {
 	width: 20%;
 	vertical-align: top;
@@ -256,171 +250,394 @@ div.reflex-popup-footer input.reflex-button {
 }
 
 /*********************** Start Of Popup stuff *********************************/
-div.document-explorer-address
-{
-	background-color	: #f9f9f9;
-	padding				: 0.5em;
-	border				: 0.1em solid #333;
+
+div.reflex-popup-overlay {
+	position			: fixed;
+	top					: 0em;
+	left				: 0em;
+	width				: 100%;
+	height				: 100%;
+	
+	z-index: 45;
 }
 
-span.document-explorer-address-node
-{
-	vertical-align	: middle;
+div.reflex-popup-opaque {
+	position			: absolute;
+	top					: 0;
+	left				: 0;
+	width				: 100%;
+	height				: 100%;
+	background-color	: #000000;
+	filter				: alpha(opacity=25);
+	-moz-opacity		: .25;
+	opacity				: .25;
+	z-index				: 50;
 }
 
-span.document-explorer-address-node[onclick]
-{
-	color			: #00F;
+div.reflex-popup {
+	margin				: auto;
+	border				: 0.1em solid #000000;
+	background-color	: #efefef;
+	z-index				: 50;
+	position			: absolute;
 }
 
-span.document-explorer-address-node[onclick]:hover
-{
-	text-decoration	: underline;
-	cursor			: pointer;
+div.reflex-popup table.reflex {
+	width: 98%;
+	margin-left: 1%;
+	margin-right: 1%;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	border: .1em solid #333;
+	border-spacing: 0;
 }
 
-img.document-explorer-address-separator
-{
-	max-height		: 16px;
-	max-width		: 16px;
-	vertical-align	: middle;
-	margin-left		: 0.25em;
-	margin-right	: 0.25em;
+div.reflex-popup-title-bar {
+	height				: auto;
+	background-color	: #000000;
+	padding				: 3px;
 }
 
-div.document-explorer
-{
-	border-left		: 0.1em solid #333;;
-	border-right	: 0.1em solid #333;
-	padding			: 0px;
+div.reflex-popup-title {
+	color : #EEEEEE;
+	float : left;
+	width : 79%;
+	
 }
 
-div.document-explorer-list
-{
-	min-height			: 30em;
-	max-height			: 30em;
-	overflow-y			: scroll;
-	background-color	: #DDD;
+div.reflex-popup-title-bar-buttons {
+	float : right;
+	width : 20%;
+}
+
+div.reflex-popup-content {
+}
+
+div.reflex-popup-footer {
+	position	: relative;
+	text-align	: right;
+	bottom		: 0;
+	right		: 0;
+	padding-right: 1%;
+	padding-left: 1%;
+	padding-top: 0;
+	padding-bottom: 0.5em;
+}
+
+input.displayOnly[disabled] {
+	font-size: 1em;
+	border: none;
+	color: #000 !important;
+	margin: .2em;
+	background-color: #eee;
+	text-align: right;
+}
+
+div.reflex-loading-image {
+	background-repeat: no-repeat;
+	background-image: url("../img/template/loading.gif");
+	background-position: 50% 50%;
+	margin: auto;
+	display: block;
+	position: default;
+	text-align: center;
+}
+
+div.reflex-loading-image p {
+	text-align: center;
+}
+
+div.reflex-popup-content h1 {
+	font-size: 1.5em;
+	color: #000;
+	text-align: center;
+	padding: 0.2em;
+}
+
+div.reflex-popup-text-content {
+	padding: 0.8em;
 }
 
 
-div.reflex-popup div.document-explorer table.document-explorer
-{
-	margin			: 0px;
-	width			: 100%;
-	border			: none;
+div.reflex-popup-footer input[type="button"] {
+	margin: 0 .25em;
 }
 
-table.document-explorer
-{
-	width			: 100%;
-	margin			: 0px;
-	font-size		: 10pt;
+input.validation-error-tootltip-button {
+	visibility: hidden;
+	width: 18px;
+	height: 18px;
+	border: none;
+	cursor: pointer;
+	margin-left: 0.2em;
+	background-color: inherit;
+	background-repeat: no-repeat;
+	background-image: url("../img/template/tooltip_error.gif");
+	background-position: 50% 50%;
 }
 
-img.document-explorer-icon
-{
-	max-height		: 16px;
-	max-width		: 16px;
-	vertical-align	: text-bottom;
+td[contains-invalid-input=true] input.validation-error-tootltip-button {
+	visibility: visible;
 }
 
-img.document-explorer-icon-overlay
-{
-	max-height		: 16px;
-	max-width		: 16px;
-	vertical-align	: text-bottom;
-	position		: relative;
-	left			: -16px;
-	margin-right	: -16px;
-	opacity			: 0.75;
+div.validation-error-tootltip {
+	position: absolute;
+	top: 0;
+	left: 0;
+	color: black;
+	background: white;
+	border: 0.1em solid black;
+	z-index: 10000;
+	padding: 0.4em;
+	max-width: 20em;
 }
 
-table.document-explorer thead
+div.cvv-image-tooltip {
+	position: absolute;
+	z-index: 10000;
+}
+
+div.cvv-image-tooltip img {
+	clear: both;
+	margin: 0.2em;
+	float: left;
+}
+
+.tooltip-source-element {
+	color: #00f;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+/*********************** End Of Popup stuff ***********************************/
+
+/*********************** End of reflex stuff *********************************/
+
+input#online-credit-card-payment-button
 {
 	
 }
 
-table.document-explorer tbody
-{
-	
-}
-
-table.document-explorer th
-{
-	
-}
-
-table.document-explorer td
-{
-	overflow: hidden;
-}
-
-
-table.document-explorer span.record-label
-{
-	margin-left	: 0.25em;
-}
-
-table.document-explorer .field-name
-{
-	min-width	: 25em;
-	max-width	: 25em;
-}
-table.document-explorer .field-size
-{
-	min-width	: 5em;
-	max-width	: 5em;
-}
-table.document-explorer .field-date
-{
-	min-width	: 8em;
-	max-width	: 8em;
-}
-table.document-explorer .field-user
-{
-	min-width	: 8em;
-	max-width	: 8em;
-}
-table.document-explorer .field-actions
-{
-	width	: auto;
-}
+.amount-credit { color: green !important; }
+.amount-debit { color: blue !important; }
+th.amount, td.amount { text-align: right; }
+td.attention { color: red !important; }
 
 
 
-table.document-explorer tr[onclick]
+/*********************** Sp table stuff **********************/
+table.sp th.sp-unsorted,
+table.sp th.sp-sorted-ascending,
+table.sp th.sp-sorted-descending
 {
-	
+	cursor: pointer;
+	background-position: 0% 50%; 
+	background-repeat: no-repeat; 
+	background-image: url(../img/order_neither.png);
+	padding-left: 0.8em;
 }
 
-table.document-explorer tbody tr[onclick]:hover
-{
-	background-color	: #fff;
+table.sp {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	border: .1em solid #333;
+	border-spacing: 0;
 }
 
-table.document-explorer tbody tr[onclick]:hover td
-{
-	cursor				: pointer;
-	text-decoration		: underline;
-	background-color	: #fff;
+table.sp caption div#caption_bar {
+	width: 100%;
+	clear: both;
 }
 
-div.document-explorer-status
-{
-	background-color	: #f9f9f9;
-	padding				: 0.5em;
-	border				: 0.1em solid #333;
+table.sp caption div#caption_title{
+	float: left;
+	height: 100%;
+	color: #eee;
+	background-color: #333;
+	text-align: center;
+	font-weight: bold;
+	padding: 0.4em 1em;
 }
 
-div.document-explorer-status span.name
-{
-	font-size	: 10pt;
-	font-weight	: bold;
+table.sp caption div#caption_options{
+	float: right;
+	text-align: right;
+	font-weight: bold;
+	padding: .1em .5em;
 }
 
-div.document-explorer-status span.description
+table.sp thead,
+table.sp tfoot {
+	background-color: #333;
+	color: #eee;
+	text-align: left;
+}
+
+table.sp tfoot {
+	text-align: right;
+}
+
+table.sp thead tr th,
+table.sp tfoot tr th {
+	padding-top: .25em;
+	padding-bottom: .25em;
+}
+
+table.sp th.sp-sorted-ascending
 {
-	font-size	: 9pt;
-	font-style	: italic;
+	background-color: #666;
+	background-image: url(../img/order_asc.png);
+}
+
+table.sp th.sp-sorted-descending
+{
+	background-color: #666;
+	background-image: url(../img/order_desc.png);
+}
+
+table.sp tfoot a,
+table.sp tfoot a:visited,
+table.sp tfoot a:link {
+	color: #ffde05 !important;
+}
+
+
+table.sp td,
+table.sp th {
+	padding: .05em .1em;
+	text-align: left;
+}
+
+table.sp tr td {
+	background-color: #ddd;
+	color: #333
+}
+
+table.sp tr.alt td {
+	background-color: #fff;
+}
+
+table.sp td.title {
+	width: 20%;
+	vertical-align: top;
+	font-weight: bold;
+}
+
+table.highlight-rows tbody tr:hover td
+{
+	background-color: #ffc;
+}
+
+.MediumSpace
+{
+	height: 20px;
+}
+.LargeSpace
+{
+	height: 30px;
+}
+div.Title{
+	color:					#eeeeee;
+	background-color:		#333333;
+	height:					20px;
+	width:					965px; 
+	text-indent:			10px;
+	font-weight:			bold;
+	padding:				0px;
+	margin:					0px;
+	text-align:				left;
+	padding-top:			5px;
+}
+
+div.PartTitle{
+	color:					#eeeeee;
+	background-color:		#333333;
+	height:					20px;
+	width:					470px; 
+	text-indent:			10px;
+	font-weight:			bold;
+	padding:				0px;
+	margin:					0px;
+	padding-right:			0px;
+	margin-right:			0px;
+	padding-top:			5px;
+	padding-bottom:			0px;
+	text-align:				left;
+}
+#account_details_holder
+{
+	border:					1px solid #333333;
+	width:					468px;
+	background-color:		#eeeeee;
+}
+#account_details_table
+{
+	border:					1px solid #eeeeee;
+	width:					100%;
+}
+#primary_contact_details_holder
+{
+	border:					1px solid #333333;
+	width:					468px;
+	background-color:		#eeeeee;
+}
+#primary_contact_details_table
+{
+	border:					1px solid #eeeeee;
+	width:					100%;
+}
+.Page
+{
+	width:					963px;
+	border:					1px solid #333333;
+	background-color:		#eeeeee;
+}
+.data-table td
+{
+	padding-top:			2px;
+	padding-bottom:			2px;
+}
+#sale-items-table td
+{
+	text-indent:			10px;
+}
+#sale_panel tr
+{
+	vertical-align:			top;
+}
+#after-commit-button-panel
+{
+}
+.maximum-area-body
+{
+	padding-bottom:			15px;
+}
+
+
+
+
+tr.hide-if-not-last-child:last-child
+{
+	display: table-row !important;
+}
+
+td.hide-if-not-last-child:last-child
+{
+	display: table-cell !important;
+}
+
+div.hide-if-not-last-child:last-child
+{
+	display: block !important;
+}
+
+span.hide-if-not-last-child:last-child
+{
+	display: inline !important;
+}
+
+.hide-if-not-last-child
+{
+	display: none;
 }
