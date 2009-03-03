@@ -63,6 +63,7 @@ var Document_Explorer	= Class.create
 		this.elmFooterTHEAD.appendChild(this.elmFooterRow);
 		
 		this.elmFooterCell	= document.createElement('th');
+		this.elmFooterCell.innerHTML	= '&nbsp;';
 		this.elmFooterRow.appendChild(this.elmFooterCell);
 		
 		this.elmStatusDIV			= document.createElement('div');
@@ -384,7 +385,7 @@ var Document_Explorer	= Class.create
 			if (objTypeTotals.length > 1)
 			{
 				// More than one document nature selected
-				this.elmFooterCell.innerHTML	= '';
+				this.elmFooterCell.innerHTML	= '&nbsp;';
 				return;
 			}
 			else
@@ -418,7 +419,7 @@ var Document_Explorer	= Class.create
 		else
 		{
 			// Nothing Selected
-			this.elmFooterCell.innerHTML	= '';
+			this.elmFooterCell.innerHTML	= '&nbsp;';
 			return;
 		}
 		
