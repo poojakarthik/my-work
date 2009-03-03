@@ -235,6 +235,7 @@ var Document_Explorer	= Class.create
 	
 	recordClick	: function(eEvent, intDocumentIndex)
 	{
+		alert(intDocumentIndex);
 		if (eEvent.ctrlKey)
 		{
 			// Select/deselect this Record in addition to the currently Selected Records
