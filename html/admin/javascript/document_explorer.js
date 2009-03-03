@@ -13,7 +13,8 @@ var Document_Explorer	= Class.create
 		
 		this.arrSelected		= new Array();
 		this.intLastSelected	= null;
-		this.arrDocuments		= new Array();
+		this.arrChildren		= new Array();
+		this.objDocument		= null;
 		
 		// Popup Contents
 		this.elmEncapsulator				= document.createElement('div');
@@ -58,6 +59,14 @@ var Document_Explorer	= Class.create
 		this.elmStatusDIV			= document.createElement('div');
 		this.elmStatusDIV.className	= "document-explorer-status";
 		this.elmEncapsulator.appendChild(this.elmStatusDIV);
+		
+		this.elmStatusIconDIV		= document.createElement('div');
+		this.elmStatusIconDIV.className	= "icon";
+		this.elmStatusDIV.appendChild(this.elmStatusIconDIV);
+		
+		this.elmStatusDetailsDIV		= document.createElement('div');
+		this.elmStatusDetailsDIV.className	= "details";
+		this.elmStatusDIV.appendChild(this.elmStatusDetailsDIV);
 		
 		this.pupExplorer.setContent(this.elmEncapsulator);
 	},
@@ -177,8 +186,9 @@ var Document_Explorer	= Class.create
 														"					<td colspan='5' style='text-align:center;'><em>There are no Documents in this Folder.</em></td>\n" +
 														"				</tr>\n";
 			}
-
-			this.arrDocuments	= objResponse.objDocument.arrChildren;
+			
+			this.objDocument	= objResponse.objDocument;
+			this.arrChildren	= objResponse.objDocument.arrChildren;
 
 			// Render the new Popup Contents
 			var strHTML	= "\n" +
@@ -212,11 +222,9 @@ var Document_Explorer	= Class.create
 			/*"		<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n" +*/
 			"	</div>\n" +
 			"</div>\n";
-			
-			this.elmStatusDIV.innerHTML	=	"		<span class='name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
-											"		<span class='description'>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</span><br />\n";
-											/*"		<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n";*/
 
+			this._updateStatusBar();
+			
 			this._registerEventHandlers();
 			this.pupExplorer.display();
 		}
@@ -276,24 +284,26 @@ var Document_Explorer	= Class.create
 		//alert("Update TR Classes ["+this.arrSelected+"]");
 		
 		// Update the TR Classes
-		for (var i = 0; i < this.arrDocuments.length; i++)
+		for (var i = 0; i < this.arrChildren.length; i++)
 		{
 			if (this.arrSelected.indexOf(i) >= 0)
 			{
 				//alert("Index "+i+" is selected");
-				this.arrDocuments[i].elmTR.addClassName('selected');
+				this.arrChildren[i].elmTR.addClassName('selected');
 			}
 			else
 			{
 				//alert("Index "+i+" is unselected");
-				this.arrDocuments[i].elmTR.removeClassName('selected');
+				this.arrChildren[i].elmTR.removeClassName('selected');
 			}
 		}
+		
+		this._updateStatusBar();
 	},
 	
 	recordDoubleClick	: function(intDocumentIndex, eEvent)
 	{
-		var objChild	= this.arrDocuments[intDocumentIndex];
+		var objChild	= this.arrChildren[intDocumentIndex];
 		if (objChild.nature == 'DOCUMENT_NATURE_FOLDER')
 		{
 			// Explore the folder
@@ -308,20 +318,74 @@ var Document_Explorer	= Class.create
 	
 	_registerEventHandlers	: function()
 	{
-		for (var i = 0; i < this.arrDocuments.length; i++)
+		for (var i = 0; i < this.arrChildren.length; i++)
 		{
-			this.arrDocuments[i].elmTR.addEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i), false);
-			this.arrDocuments[i].elmTR.addEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i), false);
+			this.arrChildren[i].elmTR.addEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i), false);
+			this.arrChildren[i].elmTR.addEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i), false);
 		}
 	},
 	
 	_unregisterEventHandlers	: function()
 	{
-		for (var i = 0; i < this.arrDocuments.length; i++)
+		for (var i = 0; i < this.arrChildren.length; i++)
 		{
-			this.arrDocuments[i].elmTR.removeEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i), false);
-			this.arrDocuments[i].elmTR.removeEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i), false);
+			this.arrChildren[i].elmTR.removeEventListener('click', Flex.Document.Explorer.recordClick.bind(this, i), false);
+			this.arrChildren[i].elmTR.removeEventListener('dblclick', Flex.Document.Explorer.recordDoubleClick.bind(this, i), false);
 		}
+	},
+	
+	_updateStatusBar	: function()
+	{
+		var strIcon		= '';
+		var strDetails	= '';
+		
+		if (this.arrSelected.length > 1)
+		{
+			// Many Selected
+		}
+		else if (this.arrSelected.length == 1)
+		{
+			objChild	= this.arrChildren[this.arrSelected[0]];
+			
+			// Single Selected
+			var strFriendlyName	= objChild.friendly_name;
+			if (objChild.nature == 'DOCUMENT_NATURE_FOLDER')
+			{
+				// Folder
+				strIcon	= '<img title="Folder" class="document-explorer-icon-large" src="../admin/img/template/folder_64x64.png" />';
+			}
+			else
+			{
+				// File
+				if (objChild.has_icon_large)
+				{
+					strIcon	= '<img title="File" class="document-explorer-icon-large" src="../admin/reflex.php/File/Image/FileTypeIcon/'+objChild.file_type_id+'/64x64" />';
+				}
+				strFriendlyName	+= '.' + objChild.extension;
+			}
+			
+			if (objChild.system)
+			{
+				var strType	= (objChild.nature == 'DOCUMENT_NATURE_FOLDER') ? 'Folder' : 'File';
+				strIcon	+= '<img title="'+strType+'" class="document-explorer-icon-large-overlay" src="../admin/img/template/system_object_large.png" />';
+			}
+			
+			strDetails	=	"<span class='name'>"+objChild.friendly_name+"</span><br />\n" +
+							"<span class='description'>"+(objChild.description ? objChild.description : objChild.friendly_name)+"</span>\n";
+		}
+		else
+		{
+			// Nothing Selected
+			strDetails	=	"<span class='name'>"+this.objDocument.strFriendlyName+"</span><br />\n" +
+							"<span class='description'>"+(this.objDocument.strDescription ? this.objDocument.strDescription : this.objDocument.strFriendlyName)+"</span><br />\n";
+		}
+		
+		this.elmStatusIconDIV.innerHTML		= strIcon;
+		this.elmStatusDetailsDIV.innerHTML	= strDetails;
+		
+		/*this.elmStatusDIV.innerHTML	=	"		<span class='name'>"+objResponse.objDocument.strFriendlyName+"</span><br />\n" +
+										"		<span class='description'>"+(objResponse.objDocument.strDescription ? objResponse.objDocument.strDescription : objResponse.objDocument.strFriendlyName)+"</span><br />\n";
+										/*"		<span>"+objResponse.objDocument.arrChildren.length+" object"+((objResponse.objDocument.arrChildren.length == 1) ? '' : 's')+"</span>\n";*/
 	}
 });
 
