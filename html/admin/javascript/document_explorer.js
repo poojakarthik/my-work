@@ -269,6 +269,7 @@ var Document_Explorer	= Class.create
 		}
 		
 		this._updateStatusBar();
+		this._updateActionBar();
 	},
 	
 	recordDoubleClick	: function(intDocumentIndex, eEvent)
