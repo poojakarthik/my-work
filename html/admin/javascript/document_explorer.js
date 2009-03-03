@@ -308,7 +308,7 @@ var Document_Explorer	= Class.create
 				fltTotalFileSize	+= this.arrChildren[this.arrSelected[i]].file_size;
 			}
 			
-			strDetails	=	"<span>"+this.arrSelected.length+" items selected</span><br />\n" +
+			strDetails	=	"<span class='name'>"+this.arrSelected.length+" items selected</span><br />\n" +
 							"<span>Total File Size: "+Flex.Document.byteRound(fltTotalFileSize, 2)+"</span><br />\n" +
 							"";
 		}
