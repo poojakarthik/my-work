@@ -716,14 +716,14 @@ div.document-explorer-address
 	background-color	: #eee;
 	padding				: 0.5em;
 	border				: 0.1em solid #333;
-	height				: 5em;
+	/*height				: 5em;*/
 }
 
 div.document-explorer-address-node
 {
 	background-color	: #f9f9f9;
 	border				: 0.1em solid #333;
-	display				: inline-block;
+	/*display				: inline-block;*/
 	float				: left;
 	margin				: 1em;
 }
@@ -750,7 +750,7 @@ div.document-explorer-address-separator
 {
 	max-height		: 16px;
 	max-width		: 16px;
-	display			: inline-block;
+	/*display			: inline-block;*/
 	float			: left;
 }
 
