@@ -265,7 +265,8 @@ var Document_Explorer	= Class.create
 		else
 		{
 			// Shift focus to the clicked Record
-			this.arrSelected		= new Array(intDocumentIndex);
+			this.arrSelected		= new Array();
+			this.arrSelected.push(intDocumentIndex);
 			this.intLastSelected	= intDocumentIndex;
 		}
 		
