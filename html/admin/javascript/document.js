@@ -380,7 +380,7 @@ var Document	= Class.create
 				var strIcon	= '';
 				if (i != 0)
 				{
-					strBreadcrumbMenu	+= '<img class="document-explorer-address-separator" src="../admin/img/template/menu_open_right.png" />';
+					strBreadcrumbMenu	+= '<div class="document-explorer-address-separator"><img src="../admin/img/template/menu_open_right.png" /></div>';
 					strIcon				= '../admin/img/template/folder.png';
 				}
 				else
@@ -389,7 +389,7 @@ var Document	= Class.create
 				}
 				
 				var strOnClick	= (i < objResponse.objDocument.arrPath.length - 1) ? "onclick='Flex.Document.updateExplorerPopup("+objResponse.objDocument.arrPath[i].document_id+");'" : '';
-				strBreadcrumbMenu	+= "<div class='document-explorer-address-node' "+strOnClick+"><img class='document-explorer-icon' src='"+strIcon+"' /><span class='node-label'>"+objResponse.objDocument.arrPath[i].friendly_name+"</span></div>";
+				strBreadcrumbMenu	+= "<div class='document-explorer-address-node' "+strOnClick+"><div><img class='document-explorer-icon' src='"+strIcon+"' /><span class='node-label'>"+objResponse.objDocument.arrPath[i].friendly_name+"</span></div>";
 			}
 			
 			// Build Document Listing
