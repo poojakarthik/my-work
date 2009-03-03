@@ -775,10 +775,9 @@ img.document-explorer-icon
 	max-height		: 16px;
 	max-width		: 16px;
 	vertical-align	: text-bottom;
-	position		: relative;
 }
 
-img.document-explorer-icon .overlay
+img.document-explorer-icon img.overlay
 {
 	max-height		: 16px;
 	max-width		: 16px;
