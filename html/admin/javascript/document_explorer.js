@@ -460,10 +460,18 @@ var Document_Explorer	= Class.create
 			
 			if (objChild.nature == 'DOCUMENT_NATURE_FILE')
 			{
-				arrActions.push("<span onclick='alert(\"Email some docs!\")'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
+				arrActions.push("<span onclick='alert(\"Email a doc!\")'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
 			}
 			
-			arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
+			if (objChild.editable)
+			{
+				arrActions.push("<span onclick='alert(\"Edit a doc!\")'><img class='icon' src='../admin/img/template/page_white_edit.png' />&nbsp;Edit</span>");
+			}
+			
+			if (objChild.editable)
+			{
+				arrActions.push("<span onclick='alert(\"Delete a doc!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
+			}
 			
 			strActions	= arrActions.join('&nbsp;|&nbsp;');
 		}
