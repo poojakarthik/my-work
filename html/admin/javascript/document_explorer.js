@@ -242,7 +242,9 @@ var Document_Explorer	= Class.create
 			this.objDocument	= objResponse.objDocument;
 			this.arrChildren	= objResponse.objDocument.arrChildren;
 			this.arrSelected	= Array();
+
 			this._updateStatusBar();
+			this._updateActionBar();
 			
 			this._registerEventHandlers();
 			this.pupExplorer.display();
