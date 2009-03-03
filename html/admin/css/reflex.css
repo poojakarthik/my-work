@@ -562,15 +562,16 @@ div.clear {
 	clear:	both;
 }
 
-div#refreshPanel
+th#refreshPanel
 {
-	color: #ffde05;
+	color		: #ffde05;
+	margin-left	: 0.25em;
 	/*position: absolute;
 	left: 10px;*/
-	bottom: 15px;
+	/*bottom: 15px;
 	padding: 0 0.3em 0.2em 0;
 	display	: inline-block;
-	float	: left;
+	float	: left;*/
 }
 
 
