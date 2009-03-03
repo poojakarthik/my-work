@@ -28,7 +28,7 @@ var Document_Explorer	= Class.create
 		this.elmDocumentExplorerDIV.className	= "document-explorer";
 		this.elmEncapsulator.appendChild(this.elmDocumentExplorerDIV);
 		
-		elmDocumentExplorerDIV.addEventListener('click', this.canvasClick.bind(this), false);
+		/*elmDocumentExplorerDIV.addEventListener('click', this.canvasClick.bind(this), false);*/
 		
 		this.elmHeaderTable				= document.createElement('table');
 		this.elmHeaderTable.className	= "reflex document-explorer";
