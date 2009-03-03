@@ -80,6 +80,7 @@ var Document_Explorer	= Class.create
 		this.elmFooterActionsSelectedRow.appendChild(this.elmFooterActionsSelectedCell);
 		
 		this.elmFooterActionsGeneralRow	= document.createElement('tr');
+		this.elmFooterActionsGeneralRow.colSpan	= 5;
 		//this.elmFooterTHEAD.appendChild(this.elmFooterActionsGeneralRow);
 		this.elmHeaderTHEAD.insertBefore(this.elmFooterActionsGeneralRow, this.elmHeaderTitlesRow);
 		
