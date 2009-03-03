@@ -785,6 +785,7 @@ img.document-explorer-icon-overlay
 	position		: relative;
 	left			: -16px;
 	margin-right	: -16px;
+	opacity			: 0.8;
 }
 
 table.document-explorer thead
