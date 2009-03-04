@@ -369,7 +369,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		$qryQuery				= new Query();
 		
 		// Build a Cache of Internal Opt-Out and DNCR FNNs
-		$resResult	= $qryQuery->Execute("SELECT fnn, telemarketing_fnn_blacklist_nature_id FROM telemarketing_fnn_blacklist WHERE expired_on > NOW()");
+		$resResult	= $qryQuery->Execute("SELECT fnn, telemarketing_fnn_blacklist_nature_id, cached_on, expired_on FROM telemarketing_fnn_blacklist WHERE expired_on > NOW()");
 		$arrOptOut	= array();
 		$arrDNCR	= array();
 		if ($resResult === false)
@@ -381,7 +381,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			switch ($arrBlacklist['telemarketing_fnn_blacklist_nature_id'])
 			{
 				case TELEMARKETING_FNN_BLACKLIST_NATURE_DNCR:
-					$arrDNCR[$arrBlacklist['fnn']]		= true;
+					$arrDNCR[$arrBlacklist['fnn']]		= array('cached_on'=>$arrBlacklist['cached_on'], 'expired_on'=>$arrBlacklist['expired_on']);
 					break;
 					
 				case TELEMARKETING_FNN_BLACKLIST_NATURE_OPTOUT:
@@ -469,7 +469,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$objFNN->telemarketing_fnn_proposed_status_id	= TELEMARKETING_FNN_PROPOSED_STATUS_WITHHELD;
 				$objFNN->save();
 				unset($arrFNNs[$mixIndex]);
-				$strDescription	= "--DNCR";
+				$strDescription	= "--DNCR {$arrDNCR[$arrFNN['fnn']]['cached_on']} >> {$arrDNCR[$arrFNN['fnn']]['expired_on']}";
 				$arrResult['DNCR']++;
 			}
 			
@@ -507,7 +507,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			}
 			
 			$fltSplit	= microtime(true);
-			fwrite($resLogFile, "({$fltSplit}) FNN {$intCount}/{$intTotal} completed in ".($fltSplit-$fltLap)." seconds ({$strDescription})\n");
+			fwrite($resLogFile, "({$fltSplit}) FNN {$arrFNN['fnn']} ({$intCount}/{$intTotal}) completed in ".($fltSplit-$fltLap)." seconds ({$strDescription})\n");
 		}
 		
 		// Totals
