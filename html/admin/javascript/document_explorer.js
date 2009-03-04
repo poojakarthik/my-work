@@ -436,10 +436,10 @@ var Document_Explorer	= Class.create
 	_updateActionBar	: function()
 	{
 		var strActions;
-		alert(this.arrSelected.length);
+		//alert(this.arrSelected.length);
 		if (this.arrSelected.length > 1)
 		{
-			alert('Many Selected!');
+			//alert('Many Selected!');
 			
 			// Many Selected
 			var fltTotalFileSize	= 0;
@@ -498,6 +498,7 @@ var Document_Explorer	= Class.create
 			return;
 		}
 		
+		alert(strActions);
 		this.elmFooterActionsSelectedCell.innerHTML	= "With Selected: "+strActions;
 	}
 });
