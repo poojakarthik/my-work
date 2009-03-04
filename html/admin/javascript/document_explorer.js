@@ -520,13 +520,14 @@ var Document_Explorer	= Class.create
 										);
 		
 		var strDocuments	= "new Array("+arrDocuments.toSource().substring(1, arrDocuments.toSource().length-1)+")";
+		var strDescription	= "Document"+((arrDocuments.length > 1) ? 's' : '');
 		var strFrom			= "new Array("+arrFrom.toSource().substring(1, arrFrom.toSource().length-1)+")";
 		var strSubject		= "";
 		var strContent		= "";
 		var strTo			= 'null';
 		var intAccountId	= 'null';
 		
-		return "Flex.Document.emailDocument("+strDocuments+", null, "+strFrom+", \""+strSubject+"\", \""+strContent+"\", "+strTo+", "+intAccountId+");";
+		return "Flex.Document.emailDocument("+strDocuments+", \""+strDescription+"\", "+strFrom+", \""+strSubject+"\", \""+strContent+"\", "+strTo+", "+intAccountId+");";
 	}
 });
 
