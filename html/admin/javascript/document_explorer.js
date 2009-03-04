@@ -538,13 +538,11 @@ var Document_Explorer	= Class.create
 		}
 		else if (objResponse.Success == undefined)
 		{
-			this.pupExplorer.hide();
 			$Alert(objResponse);
 			return false;
 		}
 		else
 		{
-			this.pupExplorer.hide();
 			$Alert(objResponse.Message);
 			return false;
 		}
