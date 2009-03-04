@@ -213,7 +213,7 @@ class JSON_Handler_Document extends JSON_Handler
 	{
 		try
 		{
-			$objDocument		= new Document(array('id'=>$intDocumentId));
+			$objDocument		= new Document(array('id'=>$intDocumentId), true);
 			$objDocumentContent	= $objDocument->getContentDetails();
 			
 			$arrDocument						= $objDocument->toArray();
