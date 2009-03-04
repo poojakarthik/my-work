@@ -1551,7 +1551,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		
 		$strFNN = ($this->_bolIndial100)? substr($this->_strFNN, 0, 8) . "__" : $this->_strFNN;
 		
-		$arrExemptCDRs = array(CDR_READY, CDR_INVOICED, CDR_TEMP_INVOICE);
+		$arrExemptCDRs = array(CDR_READY, CDR_INVOICED, CDR_DUPLICATE, CDR_RECHARGE);
 		$strExemptCDRs = implode(", ", $arrExemptCDRs);
 		
 		if ($strEffectiveDateTime !== NULL)

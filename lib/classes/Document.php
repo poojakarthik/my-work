@@ -237,10 +237,6 @@ class Document extends ORM
 	 *
 	 * Retrieves a Document based on a passed pseudo-path
 	 * 
-	 * @param	[mixed			$mixRevision]						Revision of the Content to retrieve
-	 * 																TRUE	: Latest Revision (default)
-	 * 																FALSE	: Earliest Revision
-	 * 																integer	: X Revisions ago (0 = current)
 	 * 
 	 * @return	Document_Content									The requested Statement
 	 *

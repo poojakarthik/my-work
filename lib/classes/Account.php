@@ -285,7 +285,7 @@ ORDER BY FNN;";
 		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
 
 		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRun');
-		if ($selInvoiceRun->Execute(Array('Account' => $this->Id, 'EffectiveDate' => $strEffectiveDate)))
+		if ($selInvoiceRun->Execute(Array('Account' => $this->Id)))
 		{
 			// We have an old InvoiceRun
 			$arrLastInvoiceRun	= $selInvoiceRun->Fetch();
@@ -555,7 +555,7 @@ ORDER BY FNN;";
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Account", "*", "Id = <Id>", NULL, 1);
 					break;
 				case 'selLastInvoiceRun':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON Invoice.invoice_run_id = InvoiceRun.Id", "BillingDate", "Invoice.Account = <Account> AND BillingDate < <EffectiveDate> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED, "BillingDate DESC", 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON Invoice.invoice_run_id = InvoiceRun.Id", "BillingDate", "Invoice.Account = <Account> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED, "BillingDate DESC", 1);
 					break;
 				case 'selPaymentTerms':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("payment_terms", "*", "customer_group_id = <customer_group_id>", "id DESC", 1);

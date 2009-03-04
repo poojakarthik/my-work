@@ -64,18 +64,6 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
-		// Check if the billing/invoice process is being run
-		if (IsInvoicing())
-		{
-			// A bill run is taking place.
-			// Lessee Changes cannot be made when a bill run is taking place
-			$strErrorMsg =  "Billing is in progress.  Services cannot be moved while this is happening.  ".
-							"Please try again in a couple of hours.  If this problem persists, please ".
-							"notify your system administrator";
-			Ajax()->AddCommand("Alert", $strErrorMsg);
-			return TRUE;
-		}
-		
 		// Create the Service Object
 		$intService = DBO()->Service->Id->Value;
 		$objService = ModuleService::GetServiceById($intService);
@@ -117,7 +105,14 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		DBO()->ServiceMove->ServiceObject	= $objService;
 		DBO()->Account->Id					= $objService->GetAccount();
 		DBO()->Account->Load();
-		
+
+		// Lessee Changes cannot be made when a bill run is taking place
+		if (Invoice_Run::checkTemporary(DBO()->Account->CustomerGroup->Value, DBO()->Account->Id->Value))
+		{
+			Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
+			return TRUE;
+		}
+
 		// Check if there are Session details relating to this functionality
 		DBO()->ServiceMove->ProbableActionDetails = NULL;
 		if (isset($_SESSION['ServiceMove']['CurrentAccount']) && $_SESSION['ServiceMove']['CurrentAccount'] == $objService->GetAccount())

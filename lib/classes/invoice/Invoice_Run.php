@@ -610,11 +610,11 @@ class Invoice_Run
 	// checkTemporary()
 	//------------------------------------------------------------------------//
 	/**
-	 * checkForTemporaryInvoiceRun()
+	 * checkTemporary()
 	 *
-	 * Checks if there are any Gold Temporary Invoice Runs active
+	 * Checks if there are any Gold Temporary Invoice Runs active (or an Interim or Final invoice run specific to an account)
 	 *
-	 * Checks if there are any Gold Temporary Invoice Runs active
+	 * Checks if there are any Gold Temporary Invoice Runs active (or an Interim or Final invoice run specific to an account)
 	 *
 	 * @param	integer	$intCustomerGroupId		[optional]	The Customer Group to check for
 	 * @param	integer	$intAccountId			[optional]	The Account to check for
@@ -693,7 +693,7 @@ class Invoice_Run
 		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
 
 		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRunByCustomerGroup');
-		if ($selInvoiceRun->Execute(Array('customer_group_id' => $intCustomerGroup, 'EffectiveDate' => $strEffectiveDate)))
+		if ($selInvoiceRun->Execute(Array('customer_group_id' => $intCustomerGroup)))
 		{
 			// We have an old InvoiceRun
 			$arrLastInvoiceRun	= $selInvoiceRun->Fetch();
@@ -710,6 +710,7 @@ class Invoice_Run
 			//Debug('Invoice Day: '.$arrPaymentTerms['invoice_day']);
 
 			// No InvoiceRuns, so lets calculate when it should have been
+			$strDay = $arrPaymentTerms['invoice_day'];
 			$intInvoiceDatetime	= strtotime(date("Y-m-{$strDay} 00:00:00", strtotime($strEffectiveDate)));
 			//Debug('Day in Effective Date: '.(int)date("d", strtotime($strEffectiveDate)));
 			if ((int)date("d", strtotime($strEffectiveDate)) < $arrPaymentTerms['invoice_day'])
@@ -1109,7 +1110,7 @@ class Invoice_Run
 					//$arrPreparedStatements[$strStatement]	= new StatementSelect("Account JOIN account_status ON Account.Archived = account_status.id", "Account.*, account_status.deliver_invoice", "Account.Id = 1000154811 AND CustomerGroup = <customer_group_id> AND Account.CreatedOn < <BillingDate> AND account_status.can_invoice = 1");
 					break;
 				case 'selLastInvoiceRunByCustomerGroup':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "BillingDate", "(customer_group_id = <customer_group_id> OR customer_group_id IS NULL) AND BillingDate < <EffectiveDate> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED." AND invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE, "BillingDate DESC", 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "BillingDate", "(customer_group_id = <customer_group_id> OR customer_group_id IS NULL) AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED." AND invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE, "BillingDate DESC", 1);
 					break;
 				case 'selInvoiceTotals':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice", "SUM(Invoice.Total) AS BillInvoiced, SUM(Invoice.Tax) AS BillTax", "invoice_run_id = <invoice_run_id>");
@@ -1123,7 +1124,7 @@ class Invoice_Run
 				case 'selCheckTemporaryInvoiceRun':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"InvoiceRun", 
 																					"Id", 
-																					"(invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." OR (<Account> IS NOT NULL AND <Account> IN (SELECT Account FROM Invoice WHERE invoice_run_id = InvoiceRun.Id) AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL."))) AND invoice_run_status_id != ".INVOICE_RUN_STATUS_COMMITTED." AND (customer_group_id <=> <CustomerGroup> OR <CustomerGroup> IS NULL)", 
+																					"(invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." OR (<Account> IS NOT NULL AND (SELECT COUNT(Id) FROM Invoice WHERE invoice_run_id = InvoiceRun.Id AND Account = <Account>) > 0 AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL."))) AND invoice_run_status_id != ".INVOICE_RUN_STATUS_COMMITTED." AND (customer_group_id <=> <CustomerGroup> OR <CustomerGroup> IS NULL)", 
 																					null,
 																					1);
 					break;

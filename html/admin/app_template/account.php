@@ -828,15 +828,15 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
-		// Accounts can not have their details editted while an invoice run is processing
-		if (IsInvoicing())
-		{
-			Ajax()->AddCommand("Alert", "Billing is in progress.  Accounts cannot be modified while this is happening.  Please try again in a couple of hours.  If this problem persists, please notify your system administrator");
-			return TRUE;
-		}
-
 		// Load the account
 		DBO()->Account->LoadMerge();
+		
+		// Accounts can not have their details editted while an invoice run is processing
+		if (Invoice_Run::checkTemporary(DBO()->Account->CustomerGroup->Value, DBO()->Account->Id->Value))
+		{
+			Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
+			return TRUE;
+		}
 		
 		// Render the AccountDetails HtmlTemplate for Editing
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_EDIT, DBO()->Container->Id->Value);
@@ -868,9 +868,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		$bolIsSuperAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
 
 		// Accounts can not have their details editted while an invoice run is processing
-		if (IsInvoicing())
+		if (Invoice_Run::checkTemporary(DBO()->Account->CustomerGroup->Value, DBO()->Account->Id->Value))
 		{
-			Ajax()->AddCommand("Alert", "Billing is in progress.  Accounts cannot be modified while this is happening.  Please try again in a couple of hours.  If this problem persists, please notify your system administrator");
+			Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			return TRUE;
 		}
 
@@ -969,6 +969,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		if (DBO()->Account->CustomerGroup->Value != DBO()->CurrentAccount->CustomerGroup->Value)
 		{
+			// Check the current CustomerGroup does not have a live invoice run outstanding
+			if (Invoice_Run::checkTemporary(DBO()->CurrentAccount->CustomerGroup->Value, DBO()->Account->Id->Value))
+			{
+				Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
+				return TRUE;
+			}
+			
 			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, InternalName", "Id = <Id>");
 			$selCustomerGroup->Execute(Array("Id" => DBO()->CurrentAccount->CustomerGroup->Value));
 			$arrCurrentCustomerGroup = $selCustomerGroup->Fetch();
@@ -1393,8 +1400,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		$bolCanReversePayments				= $bolHasAdminPerm;
 		$bolCanCancelRecurringAdjustments	= $bolHasAdminPerm;
 
-		// Non of these records can be deleted/cancelled/reversed while the invoicing process is running
-		$bolIsInvoicing = IsInvoicing();
 
 		// Check what sort of record is being deleted
 		switch (DBO()->DeleteRecord->RecordType->Value)
@@ -1405,14 +1410,10 @@ class AppTemplateAccount extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "You do not have the required permissions to reverse payments");
 					return TRUE;
 				}
-				if ($bolIsInvoicing)
-				{
-					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Payments cannot be reversed at this time.  Please try again later";
-					break;
-				}
 				DBO()->DeleteRecord->Application = "Payment";
 				DBO()->DeleteRecord->Method = "Delete";
 				DBO()->Payment->Load();
+				DBO()->Account->Id = DBO()->Payment->Account->Value;
 				break;
 			case "Adjustment":
 				if (!$bolCanDeleteAdjustments)
@@ -1420,14 +1421,10 @@ class AppTemplateAccount extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "You do not have the required permissions to delete an adjustment");
 					return TRUE;
 				}
-				if ($bolIsInvoicing)
-				{
-					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Adjustments cannot be deleted at this time.  Please try again later";
-					break;
-				}
 				DBO()->DeleteRecord->Application = "Adjustment";
 				DBO()->DeleteRecord->Method = "DeleteAdjustment";
 				DBO()->Charge->Load();
+				DBO()->Account->Id = DBO()->Charge->Account->Value;
 				break;
 			case "RecurringAdjustment":
 				if (!$bolCanCancelRecurringAdjustments)
@@ -1435,24 +1432,32 @@ class AppTemplateAccount extends ApplicationTemplate
 					Ajax()->AddCommand("Alert", "You do not have the required permissions to cancel a recurring adjustment");
 					return TRUE;
 				}
-				if ($bolIsInvoicing)
-				{
-					$strErrorMsg = "ERROR: The Invoicing process is currently running.  Recurring Adjustments cannot be cancelled at this time.  Please try again later";
-					break;
-				}
 				DBO()->DeleteRecord->Application = "Adjustment";
 				DBO()->DeleteRecord->Method = "DeleteRecurringAdjustment";
 				DBO()->RecurringCharge->Load();
+				DBO()->Account->Id = DBO()->RecurringCharge->Account->Value;
 				break;
 			default:
 				Ajax()->AddCommand("Alert", "ERROR: No record type has been declared to be deleted");
 				return TRUE;
 		}
 		
-		if ($bolIsInvoicing)
+		if (DBO()->Account->Id->Value && DBO()->Account->Load())
+		{
+			$intCustomerGroupId	= DBO()->Account->CustomerGroup->Value;
+			$intAccountId		= DBO()->Account->Id->Value;
+		}
+		else
+		{
+			$intCustomerGroupId	= NULL;
+			$intAccountId		= NULL;
+		}
+		
+		
+		if (Invoice_Run::checkTemporary($intCustomerGroupId, $intAccountId))
 		{
 			// Records cannot be deleted while the Invoicing process is running
-			Ajax()->AddCommand("Alert", $strErrorMsg);
+			Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			return TRUE;
 		}
 		

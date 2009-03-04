@@ -103,25 +103,20 @@ class Service extends ORM
 	 * Changes the Rate Plan for this Service
 	 *
 	 * @param	mixed	$mixRatePlan					Rate_Plan object, or the Id of the new Rate Plan
-	 * @param	boolean	$bolStartThisMonth	[optional]	TRUE: Starts the new Plan this month; FALSE: Starts the new Plan next month
+	 * @param	boolean	$bolStartThisBillingPeriod	[optional]	TRUE: Starts the new Plan this month; FALSE: Starts the new Plan next month
 	 *
 	 * @return	void
 	 *
 	 * @method
 	 */
-	public function changePlan($mixRatePlan, $bolStartThisMonth=TRUE)
+	public function changePlan($mixRatePlan, $bolStartThisBillingPeriod=TRUE)
 	{
 		$objAccount	= new Account(array('Id'=>$this->Account), FALSE, TRUE);
 		
 		// Check if the billing/invoice process is being run
-		if (Invoice_Run::checkTemporary())
+		if (Invoice_Run::checkTemporary($objAccount->customerGroup, $objAccount->id))
 		{
-			// A bill run is taking place.
-			// Plan Changes cannot be made when a bill run is taking place
-			$strErrorMsg =  "Billing is in progress.  Plans cannot be changed while this is happening.  ".
-							"Please try again in a couple of hours.  If this problem persists, please ".
-							"notify your system administrator";
-			throw new Exception($strErrorMsg);
+			throw new Exception("The Plan Change action is temporarily unavailable because a related, live invoice run is currently outstanding");
 		}
 		
 		// Load the new RatePlan details
@@ -141,11 +136,19 @@ class Service extends ORM
 		
 		// Work out the StartDatetime for the new records of the ServiceRatePlan and ServiceRateGroup tables
 		$strCurrentDateAndTime						= Data_Source_Time::currentTimestamp();
-		$intStartDateTimeForCurrentBillingPeriod	= strtotime($objAccount->getBillingPeriodStart($objAccount->CustomerGroup, $strCurrentDateAndTime));
+		$intStartDateTimeForCurrentBillingPeriod	= strtotime($objAccount->getBillingPeriodStart($strCurrentDateAndTime));
 		$intStartDateTimeForNextBillingPeriod		= strtotime(Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $strCurrentDateAndTime));
-		
-		if (!$bolStartThisMonth)
+
+		if (!$bolStartThisBillingPeriod)
 		{
+			// Snap the plan change to the begining of the next billing period
+			
+			// First make sure the start of the current billing period isn't in the future (IF an interim or final invoice was produced today for the account, then this could be the case, because the BillingDate will be set to tomorrow)
+			if ($intStartDateTimeForCurrentBillingPeriod > strtotime($strCurrentDateAndTime))
+			{
+				throw new Exception("The start of the current billing period (". date("H:i:s d-m-Y", $intStartDateTimeForCurrentBillingPeriod) .") is greater than the current timestamp (". date("H:i:s d-m-Y", strtotime($strCurrentDateAndTime)) .")");
+			}
+			
 			// Get the StartDatetime for the next billing period
 			$intStartDatetime = $intStartDateTimeForNextBillingPeriod;
 			
@@ -157,6 +160,8 @@ class Service extends ORM
 		}
 		else
 		{
+			// Snap the plan change to the begining of the current billing period
+
 			// Get the StartDatetime for the current billing period
 			$intStartDatetime = $intStartDateTimeForCurrentBillingPeriod;
 			
@@ -246,13 +251,15 @@ class Service extends ORM
 		
 		// If the plan goes into affect at the begining of the current month, then you must rerate all the cdrs which are currently
 		// rated but not billed
-		if ($bolStartThisMonth)
+		if ($bolStartThisBillingPeriod)
 		{
 			// The plan change is retroactive to the start of the current month
-			// Set the status of all CDRs that are currently "rated" (CDR_RATED) to "ready for rating" (CDR_NORMALISED)
-			$arrUpdate	= Array('Status' => CDR_NORMALISED);
-			$updCDRs	= new StatementUpdate("CDR", "Service = <Service> AND Status = <CDRRated>", $arrUpdate);
-			if ($updCDRs->Execute($arrUpdate, Array("Service"=>$this->Id, "CDRRated"=>CDR_RATED)) === FALSE)
+			// Set the status of all CDRs that are currently Rated, RateNotFound, ReRate or TempInvoice (CDR_RATED, CDR_RATE_NOT_FOUND, CDR_RERATE, CDR_TEMP_INVOICE)
+			// to "ready for rating" (CDR_NORMALISED)
+			$arrUpdate				= Array('Status' => CDR_NORMALISED);
+			$strCDRStatusesToRerate	= implode(", ", array(CDR_RATED, CDR_RATE_NOT_FOUND, CDR_RERATE, CDR_TEMP_INVOICE));
+			$updCDRs				= new StatementUpdate("CDR", "Service = <Service> AND Status IN ({$strCDRStatusesToRerate})", $arrUpdate);
+			if ($updCDRs->Execute($arrUpdate, Array("Service"=>$this->Id)) === FALSE)
 			{
 				throw new Exception($updCDRs->Error());
 			}

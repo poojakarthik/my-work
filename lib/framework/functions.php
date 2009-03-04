@@ -3200,11 +3200,11 @@ function AddCreditCardSurcharge($intPayment)
  *
  * @function
  */
-function IsInvoicing()
+function IsInvoicing($intCustomerGroupId=null, $intAccountId=null)
 {
 	// Redirect to Invoice_Run::checkTemporary()
 	require_once(FLEX_BASE_PATH.'lib/classes/invoice/Invoice_Run.php');
-	return Invoice_Run::checkTemporary();
+	return Invoice_Run::checkTemporary($intCustomerGroupId, $intAccountId);
 }
 
 //------------------------------------------------------------------------//

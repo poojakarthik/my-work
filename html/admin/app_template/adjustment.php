@@ -501,16 +501,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord'))
 		{
-			// Deleting Adjustments can not be done while billing is in progress
-			if (IsInvoicing())
-			{
-				$strErrorMsg =  "Billing is in progress.  Adjustments cannot be deleted while this is happening.  ".
-								"Please try again in a couple of hours.  If this problem persists, please ".
-								"notify your system administrator";
-				Ajax()->AddCommand("Alert", $strErrorMsg);
-				return TRUE;
-			}
-			
 			$strNoteMsg = "";
 			$strSystemNoteMsg = "";
 		
@@ -518,6 +508,14 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			{
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 				Ajax()->AddCommand("Reload", "The adjustment with id: ". DBO()->Charge->Id->Value ." could not be found");
+				return TRUE;
+			}
+
+			// Deleting Adjustments can not be done while a live invoice run is outstanding
+			$objAccount = Account::getForId(DBO()->Charge->Account->Value);
+			if (Invoice_Run::checkTemporary($objAccount->customerGroup, $objAccount->id))
+			{
+				Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 				return TRUE;
 			}
 			
@@ -617,16 +615,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord'))
 		{
-			// Deleting Recurring Adjustments can not be done while billing is in progress
-			if (IsInvoicing())
-			{
-				$strErrorMsg =  "Billing is in progress.  Adjustments cannot be deleted while this is happening.  ".
-								"Please try again in a couple of hours.  If this problem persists, please ".
-								"notify your system administrator";
-				Ajax()->AddCommand("Alert", $strErrorMsg);
-				return TRUE;
-			}
-			
 			$strNoteMsg = "";
 			$strSystemNoteMsg = "";
 			
@@ -636,18 +624,18 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "The recurring adjustment with id: ". DBO()->RecurringCharge->Id->Value ." could not be found");
 				return TRUE;
 			}
+
+			// Deleting Recurring Adjustments can not be done while billing is in progress
+			$objAccount = Account::getForId(DBO()->RecurringCharge->Account->Value);
+			if (Invoice_Run::checkTemporary($objAccount->customerGroup, $objAccount->id))
+			{
+				Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
+				return TRUE;
+			}
 			
 			// The recurring charge can only be deleted if it is not currently archived
 			if (DBO()->RecurringCharge->Archived->Value == 0)
 			{
-				// Recurring charges cannot be deleted during the Invoicing Process
-				if (IsInvoicing())
-				{
-					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("Alert", "ERROR: The Invoicing process is currently running.  Recurring adjustments cannot be cancelled at this time.  Please try again later.");
-					return TRUE;
-				}
-			
 				// Declare the transaction
 				TransactionStart();
 				

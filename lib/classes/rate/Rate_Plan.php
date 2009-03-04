@@ -394,6 +394,10 @@ class Rate_Plan extends ORM
 		
 		// Get the current Template
 		$objTemplate		= Document::getByPath("/Authorisation Scripts/Template");
+		if (!$objTemplate)
+		{
+			throw new Exception("Could not find the document /Authorisation Scripts/Template");
+		}
 		$objTemplateContent	= $objTemplate->getContent();
 		
 		// Get the Current Auth Script Blurb

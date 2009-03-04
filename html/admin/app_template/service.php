@@ -1806,13 +1806,6 @@ class AppTemplateService extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		$bolUserHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 
-		// Services can not be editted while an invoice run is processing
-		if (IsInvoicing())
-		{
-			Ajax()->AddCommand("Alert", "Billing is in progress.  Services cannot be modified while this is happening.  Please try again in a couple of hours.  If this problem persists, please notify your system administrator");
-			return TRUE;
-		}
-
 		if (SubmittedForm("EditService","Apply Changes"))
 		{
 			if (DBO()->Service->IsInvalid())
@@ -1825,6 +1818,14 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// Retrieve properties of the Service record that arent already set
 			DBO()->Service->LoadMerge();
+
+			// Services can not be editted while an invoice run is processing
+			$objAccount = Account::getForId(DBO()->Service->Account->Value);
+			if (Invoice_Run::checkTemporary($objAccount->customerGroup, $objAccount->id))
+			{
+				Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
+				return TRUE;
+			}
 			
 			DBO()->Service->FNN = trim(DBO()->Service->FNN->Value);
 			DBO()->Service->FNNConfirm = trim(DBO()->Service->FNNConfirm->Value);
@@ -2331,7 +2332,14 @@ class AppTemplateService extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "ERROR: The account with id: ". DBO()->Account->Id->Value ." could not be found");
 			return FALSE;
 		}
-	
+
+		// Services can not be editted while an invoice run is processing
+		if (Invoice_Run::checkTemporary(DBO()->Account->CustomerGroup->Value, DBO()->Account->Id->Value))
+		{
+			Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
+			return TRUE;
+		}
+
 		// Check that the user has permission to edit this service
 		if ((DBO()->Service->Status->Value == SERVICE_ARCHIVED) && (!$bolUserHasAdminPerm))
 		{
@@ -2645,193 +2653,6 @@ class AppTemplateService extends ApplicationTemplate
 		// Currently don't allow the user to use this functionality
 		Ajax()->AddCommand("Alert", "ERROR: This functionality has been prohibited, as it currently compromises the integrity and accuracy of the history of the Service's plan details");
 		return TRUE;
-/*
-		// Removing RateGroups can not be done while billing is in progress
-		if (IsInvoicing())
-		{
-			$strErrorMsg =  "Billing is in progress.  Plan details cannot be changed while this is happening.  ".
-							"Please try again in a couple of hours.  If this problem persists, please ".
-							"notify your system administrator";
-			Ajax()->AddCommand("Alert", $strErrorMsg);
-			return TRUE;
-		}
- 
- 		$bolCanRemoveRateGroup = FALSE;
- 		
-		// Load the ServiceRateGroup record to remove, and its RateGroup details 
-		DBO()->ServiceRateGroup->Load();
-		DBO()->RateGroup->Id = DBO()->ServiceRateGroup->RateGroup->Value;
-		DBO()->RateGroup->Load();
-		
-		if (DBO()->RateGroup->Fleet->Value == TRUE)
-		{
-			// Fleet RateGroups can always be removed
-			$bolCanRemoveRateGroup = TRUE;
-		}
-		else
-		{
-			// Retrieve the current RatePlan Record if there is one
-			$selCurrentRatePlan	= new StatementSelect("ServiceRatePlan", "*", "Service = <Service> AND StartDatetime < EndDatetime AND NOW() BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", "1");
-			$intRecordCount		= $selCurrentRatePlan->Execute(Array("Service"=>DBO()->ServiceRateGroup->Service->Value));
-			if ($intRecordCount != 1)
-			{
-				// The Service Does not have a current RatePlan
-				// Check if it has a future plan
-				$selFutureRatePlan	= new StatementSelect("ServiceRatePlan", "*", "Service = <Service> AND StartDatetime < EndDatetime AND StartDatetime > NOW()", "CreatedOn DESC", "1");
-				$intRecordCount		= $selFutureRatePlan->Execute(Array("Service"=>DBO()->ServiceRateGroup->Service->Value));
-				if ($intRecordCount != 1)
-				{
-					// There is no current or future Plan for the service
-					// Removing the RateGroup should be safe
-					$bolCanRemoveRateGroup = TRUE;
-				}
-				else
-				{
-					// Found a future plan
-					$arrServiceRatePlan = $selFutureRatePlan->Fetch();
-				}
-			}
-			else
-			{
-				// Found a current plan
-				$arrServiceRatePlan = $selCurrentRatePlan->Fetch();
-			}
-			
-			if (isset($arrServiceRatePlan))
-			{
-				$strEarliestCreatedOnDate = $arrServiceRatePlan['CreatedOn'];
-				
-				// Find all ServiceRateGroup records that were created at or after $strEarliestCreatedOnDate
-				$arrColumns	= Array("Id"			=> "SRG.Id",
-									"CreatedOn"		=> "SRG.CreatedOn",
-									"StartDatetime"	=> "SRG.StartDatetime",
-									"EndDatetime"	=> "SRG.EndDatetime",
-									"RateGroupId"	=> "RG.Id",
-									"RecordType"	=> "RG.RecordType",
-									"Fleet"			=> "RG.Fleet",
-									"Archived"		=> "RG.Archived"	
-									);
-				$strWhere	= "SRG.Service=<Service> AND RG.RecordType=<RecordType> AND ADDTIME(SRG.CreatedOn, SEC_TO_TIME(5)) > <EarliestCreatedOn> AND SRG.StartDatetime < SRG.EndDatetime AND SRG.Id != <RateGroupToRemove> AND RG.Fleet = 0 AND RG.Archived = 0";
-				$strTables	= "ServiceRateGroup AS SRG INNER JOIN RateGroup AS RG ON SRG.RateGroup = RG.Id";
-				$strOrderBy	= "SRG.StartDatetime ASC";
-				$selServiceRateGroups = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
-				$intRecCount = $selServiceRateGroups->Execute(Array(	"Service"			=> DBO()->ServiceRateGroup->Service->Value,
-																		"RecordType"		=> DBO()->RateGroup->RecordType->Value,
-																		"EarliestCreatedOn"	=> $strEarliestCreatedOnDate,
-																		"RateGroupToRemove"	=> DBO()->ServiceRateGroup->Id->Value));
-				if ($intRecCount)
-				{
-					// Check that the ServiceRateGroup records retrieved cover the time range of the one being removed.
-					// One of them has to start before the one to remove, and then there has to be no gaps
-					// until after the one to remove ends
-					$arrServiceRateGroups = $selServiceRateGroups->FetchAll();
-					
-					$bolFoundStart = FALSE;
-					$strCoveredUntilEndDatetime = DBO()->ServiceRateGroup->StartDatetime->Value;
-					
-					// Find the first record that starts before and ends after the one to remove starts
-					foreach ($arrServiceRateGroups as $arrServiceRateGroup)
-					{
-						if (!$bolFoundStart)
-						{
-							if (($arrServiceRateGroup['StartDatetime'] <= DBO()->ServiceRateGroup->StartDatetime->Value) &&
-								($arrServiceRateGroup['EndDatetime'] > DBO()->ServiceRateGroup->StartDatetime->Value))
-							{
-								// Found the earliest record that encompases the start of the record to remove
-								$bolFoundStart = TRUE;
-								$strCoveredUntilEndDatetime = $arrServiceRateGroup['EndDatetime'];
-							}
-							else
-							{
-								// We still have not found the earliest record which covers the Start of the record to remove
-								continue;
-							}
-						}
-						else
-						{
-							if ((date("Y-m-d H:i:s", strtotime($arrServiceRateGroup['StartDatetime'])-1) <= $strCoveredUntilEndDatetime) &&
-								($arrServiceRateGroup['EndDatetime'] > $strCoveredUntilEndDatetime))
-							{
-								$strCoveredUntilEndDatetime = $arrServiceRateGroup['EndDatetime']; 
-							}
-						}
-						
-						// Check if the ServiceRateGroup record to be removed, is already covered
-						if ($strCoveredUntilEndDatetime >= DBO()->ServiceRateGroup->EndDatetime->Value)
-						{
-							// ServiceRateGroup records exist to cover the loss of the one being removed
-							// The user is allowed to remove the ServiceRateGroup record
-							$bolCanRemoveRateGroup = TRUE;
-							break; 
-						}
-					}
-				}
-			}
-		}
-		
-		if (!$bolCanRemoveRateGroup)
-		{
-			// The RateGroup cannot be removed
-			Ajax()->AddCommand("Alert", "ERROR: The RateGroup cannot be removed, as it would leave a whole in the Service's Plan");
-			return TRUE;
-		}
-		
-		TransactionStart();
-		
-		// Remove the ServiceRateGroup record by setting its EndDatetime to 1 second before its StartDatetime
-		$strNewEndDatetime = date("Y-m-d H:i:s", (strtotime(DBO()->ServiceRateGroup->StartDatetime->Value)-1));
-		$strOldEndDatetime = DBO()->ServiceRateGroup->EndDatetime->Value; 
-		DBO()->ServiceRateGroup->EndDatetime = $strNewEndDatetime;
-		if (!DBO()->ServiceRateGroup->Save())
-		{
-			// Updating the record failed
-			TransactionRollback();
-			Ajax()->AddCommand("Alert", "ERROR: Removing the RateGroup failed, unexpectedly<br />(Error updating the record to remove)");
-			return TRUE;
-		}
-		
-		// Rerate all the Rated CDRs in the CDR table
-		$arrUpdate = Array('Status' => CDR_NORMALISED);
-		$updCDRs = new StatementUpdate("CDR", "Service = <Service> AND Status = <CDRRated> AND RecordType = <RecordType>", $arrUpdate);
-		$arrWhere = Array("Service"=>DBO()->ServiceRateGroup->Service->Value, "CDRRated"=>CDR_RATED, "RecordType"=>DBO()->RateGroup->RecordType->Value);
-		if ($updCDRs->Execute($arrUpdate, $arrWhere) === FALSE)
-		{
-			// Could not update records in CDR table. Exit gracefully
-			TransactionRollback();
-			Ajax()->AddCommand("Alert", "ERROR: Removing the RateGroup failed, unexpectedly<br />(Error updating records in the CDR table)");
-			return TRUE;
-		}
-		
-		TransactionCommit();
-		
-		// Load the RecordType record as we need the name for the SystemNote
-		DBO()->RecordType->Id = DBO()->RateGroup->RecordType->Value;
-		DBO()->RecordType->Load();
-		
-		// Add a system note
-		$strNote = 	"RateGroup removed from service\n".
-					"RecordType: ". DBO()->RecordType->Description->Value ."\n".
-					"Name: ". DBO()->RateGroup->Name->Value ."\n".
-					"Desc: ". DBO()->RateGroup->Description->Value ."\n".
-					"Created: ". date("H:i:s d/m/Y", strtotime(DBO()->ServiceRateGroup->CreatedOn->Value)) ."\n".
-					"Start: ". date("H:i:s d/m/Y", strtotime(DBO()->ServiceRateGroup->StartDatetime->Value)) ."\n".
-					"Finish: ". (($strOldEndDatetime == END_OF_TIME)? "Indefinite" : date("H:i:s d/m/Y", strtotime($strOldEndDatetime))) ."\n".
-					"Fleet: ". DBO()->RateGroup->Fleet->FormattedValue() ."\n".
-					"ServiceRateGroupId: ". DBO()->ServiceRateGroup->Id->Value;
-		DBO()->Service->Id = DBO()->ServiceRateGroup->Service->Value;
-		DBO()->Service->Load();
-		SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
-		
-		// Don't bother firing an OnNewNote event because no notes are displayed on the page where this functionality is accessed
-		
-		// Fire the EVENT_ON_SERVICE_RATE_GROUPS_UPDATE Event
-		$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
-		$arrEvent['RecordType']['Id'] = DBO()->RateGroup->RecordType->Value;
-		Ajax()->FireEvent(EVENT_ON_SERVICE_RATE_GROUPS_UPDATE, $arrEvent);
-
-		Ajax()->AddCommand("Alert", "The RateGroup has been successfully removed");
-		return TRUE;
-*/
 	}
 	
 	//------------------------------------------------------------------------//
@@ -2867,15 +2688,24 @@ class AppTemplateService extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
-		// Check if the billing/invoice process is being run
-		if (IsInvoicing())
+		// Retrieve the service details
+		if (!DBO()->Service->Load())
 		{
-			// A live bill run is taking place.
-			// Plan Changes cannot be made when a live bill run is taking place
-			$strErrorMsg =  "Billing is in progress.  Plans cannot be changed while this is happening.  ".
-							"Please try again in a couple of hours.  If this problem persists, please ".
-							"notify your system administrator";
-			Ajax()->AddCommand("Alert", $strErrorMsg);
+			Ajax()->AddCommand("Alert", "The Service id: ". DBO()->Service->Id->value ." you were attempting to view could not be found");
+			return TRUE;
+		}
+		
+		// Retrieve the Account Details
+		DBO()->Account->Id = DBO()->Service->Account->Value;
+		if (!DBO()->Account->Load())
+		{
+			Ajax()->AddCommand("Alert", "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service");
+			return TRUE;
+		}
+		
+		if (Invoice_Run::checkTemporary(DBO()->Account->CustomerGroup->Value, DBO()->Account->Id->Value))
+		{
+			Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			return TRUE;
 		}
 		
@@ -2883,9 +2713,6 @@ class AppTemplateService extends ApplicationTemplate
 		{
 
 			$bolStartThisMonth = (DBO()->NewPlan->StartTime->Value == 1)? FALSE : TRUE;
-			DBO()->Service->Load();
-			DBO()->Account->Id = DBO()->Service->Account->Value;
-			DBO()->Account->Load();
 			
 			try
 			{
@@ -2930,32 +2757,18 @@ class AppTemplateService extends ApplicationTemplate
 			}
 		}		
 		
-		// Retrieve the service details
-		if (!DBO()->Service->Load())
-		{
-			Ajax()->AddCommand("Alert", "The Service id: ". DBO()->Service->Id->value ." you were attempting to view could not be found");
-			return TRUE;
-		}
-		
-		// Retrieve the Account Details
-		DBO()->Account->Id = DBO()->Service->Account->Value;
-		if (!DBO()->Account->Load())
-		{
-			Ajax()->AddCommand("Alert", "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service");
-			return TRUE;
-		}
 		
 		// Retrieve all available plans for this ServiceType/CustomerGroup
 		$strWhere	= "ServiceType = <ServiceType> AND customer_group = <CustomerGroup> AND Archived = <ActiveStatus>";
-		$arrWhere	= array("ServiceType"	=>DBO()->Service->ServiceType->Value,
-							"CustomerGroup"	=>DBO()->Account->CustomerGroup->Value,
+		$arrWhere	= array("ServiceType"	=> DBO()->Service->ServiceType->Value,
+							"CustomerGroup"	=> DBO()->Account->CustomerGroup->Value,
 							"ActiveStatus"	=> RATE_STATUS_ACTIVE);
 		DBL()->RatePlan->Where->Set($strWhere, $arrWhere);
 		DBL()->RatePlan->OrderBy("Name");
 		DBL()->RatePlan->Load();
 		
 		// Retrieve all active Contacts for this Account
-		DBL()->Contact->Where->Set("Account = <Account> AND Archived = 0", array('Account' => DBO()->Account->Id->Value));
+		DBL()->Contact->Where->Set("Archived = 0 AND (Account = <Account> OR (Id = (SELECT PrimaryContact FROM Account WHERE Id = <Account>)) OR (CustomerContact = 1 AND AccountGroup = (SELECT AccountGroup FROM Account WHERE Id = <Account>)))", array('Account' => DBO()->Account->Id->Value));
 		DBL()->Contact->OrderBy("FirstName, LastName");
 		DBL()->Contact->Load();
 		

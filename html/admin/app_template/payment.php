@@ -278,16 +278,6 @@ class AppTemplatePayment extends ApplicationTemplate
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord'))
 		{
-			// Reversing Payments can not be done while billing is in progress
-			if (IsInvoicing())
-			{
-				$strErrorMsg =  "Billing is in progress.  Payments cannot be reversed while this is happening.  ".
-								"Please try again in a couple of hours.  If this problem persists, please ".
-								"notify your system administrator";
-				Ajax()->AddCommand("Alert", $strErrorMsg);
-				return TRUE;
-			}
-			
 			$strNoteMsg = "";
 			
 			// Make sure the payment can be retrieved from the database
@@ -297,7 +287,16 @@ class AppTemplatePayment extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "The payment with id: ". DBO()->Payment->Id->Value ." could not be found");
 				return TRUE;
 			}
-			
+
+			// Reversing Payments can not be done while a live invoice run is outstanding
+			$objAccount = Account::getForId(DBO()->Payment->Account->Value);
+			if (($objAccount !== NULL && Invoice_Run::checkTemporary($objAccount->customerGroup, $objAccount->id)) || ($objAccount === NULL && Invoice_Run::checkTemporary()))
+			{
+				Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
+				return TRUE;
+			}
+
+
 			// Make sure the payment can be reversed
 			$intPaymentStatus = DBO()->Payment->Status->Value;
 			if (($intPaymentStatus != PAYMENT_WAITING) && ($intPaymentStatus != PAYMENT_PAYING) && ($intPaymentStatus != PAYMENT_FINISHED))
@@ -315,15 +314,6 @@ class AppTemplatePayment extends ApplicationTemplate
 				
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 				Ajax()->AddCommand("Alert", $strErrorMsg);
-				return TRUE;
-			}
-			
-			// Check that the Invoicing process is not currently running, as payments cannot be reversed when this is happening
-			if (IsInvoicing())
-			{
-				// Invoicing is currently running
-				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("Alert", "ERROR: The Invoicing process is currently running.  Payments cannot be reversed at this time.  Please try again later.");
 				return TRUE;
 			}
 			
