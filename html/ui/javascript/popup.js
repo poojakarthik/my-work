@@ -590,7 +590,7 @@ function VixenPopupClass()
 	 * 
 	 * @param	string		strMessage			message to display
 	 * @param	function	fncYesCallback		Function to call when the YES option is selected
-	 * @param	function	fncNoCallback		Function to call when the YES option is selected
+	 * @param	function	fncNoCallback		Function to call when the NO option is selected
 	 * @param	function	fncCancelCallback	optional, Function to call when the CANCEL option is selected. null: No Cancel Button
 	 * 											Default: Closes the Popup
 	 * @param	string		strSize				optional, size of the popup box ("small|medium|large")
