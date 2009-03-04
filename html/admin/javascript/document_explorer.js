@@ -457,7 +457,7 @@ var Document_Explorer	= Class.create
 				// Only one Document Nature selected -- allow multi-actions
 				alert("One Document Nature Selected");
 				
-				if (this.arrChildren[this.arrSelected[i]].nature == 'DOCUMENT_NATURE_FILE')
+				if (this.arrChildren[this.arrSelected[0]].nature == 'DOCUMENT_NATURE_FILE')
 				{
 					arrActions.push("<span onclick='alert(\"Email some docs!\")'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
 				}
