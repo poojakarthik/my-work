@@ -489,7 +489,7 @@ var Document_Explorer	= Class.create
 					var strTo			= 'null';
 					var intAccountId	= 'null';
 					
-					var strEmailDocuments	= "Flex.Document.emailDocument("+strDocuments+", "+strFrom+", \""+strSubject+"\", \""+strContent+"\", "+strTo+", "+intAccountId+");";
+					var strEmailDocuments	= "Flex.Document.emailDocument("+strDocuments+", null, "+strFrom+", \""+strSubject+"\", \""+strContent+"\", "+strTo+", "+intAccountId+");";
 					
 					arrActions.push("<span onclick='"+strEmailDocuments+"'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
 				}
