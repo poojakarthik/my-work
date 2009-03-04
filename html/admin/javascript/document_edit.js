@@ -101,7 +101,7 @@ var Document_Edit	= Class.create
 			this.elmInputsTableBody.appendChild(this.elmInputsTRFile);
 			
 			this.elmInputsTHFile				= document.createElement('th');
-			this.elmInputsTHFile.innerHTML		= "Description :";
+			this.elmInputsTHFile.innerHTML		= "File :";
 			this.elmInputsTRFile.appendChild(this.elmInputsTHFile);
 			
 			this.elmInputsTDFile				= document.createElement('th');
