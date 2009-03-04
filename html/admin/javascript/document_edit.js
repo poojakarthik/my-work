@@ -40,7 +40,7 @@ var Document_Edit	= Class.create
 		this.elmForm.enctype		= 'multipart/form-data';
 		this.elmForm.action			= '../admin/reflex.php/Document/Save';
 		this.elmEncapsulator.appendChild(this.elmForm);
-		this.elmForm.addEventListener('submit', this._submit.bind(this), false);
+		this.elmForm.addEventListener('submit', this._submit.bindAsEventListener(this), false);
 		
 		this.elmInputsDIV			= document.createElement('div');
 		this.elmForm.appendChild(this.elmInputsDIV);
@@ -88,7 +88,7 @@ var Document_Edit	= Class.create
 		this.elmCancel.name			= "Document_Edit_Cancel";
 		this.elmCancel.type			= "button";
 		this.elmCancel.value		= "Cancel";
-		this.elmCancel.addEventListener('click', this._cancel.bind(this), false);
+		this.elmCancel.addEventListener('click', this._cancel.bindAsEventListener(this), false);
 		this.elmButtonsDIV.appendChild(this.elmCancel);
 		
 		this.pupEdit.setContent(this.elmEncapsulator);
@@ -101,21 +101,21 @@ var Document_Edit	= Class.create
 		return false;
 	},
 	
-	_cancel	: function(bolConfirmed)
+	_cancel	: function(eEvent, bolConfirmed)
 	{
 		alert(bolConfirmed);
 		if (bolConfirmed)
 		{
 			// Confirmed
-			this.elmForm.removeEventListener('submit', this._submit.bind(this), false);
-			this.elmCancel.removeEventListener('click', this._cancel.bind(this), false);
+			this.elmForm.removeEventListener('submit', this._submit.bindAsEventListener(this), false);
+			this.elmCancel.removeEventListener('click', this._cancel.bindAsEventListener(this), false);
 			this.pupEdit.hide();
 		}
 		else if (bolConfirmed == undefined)
 		{
 			// Prompt
 			var strPopupId	= 'Flex_Document_Edit_Cancel';
-			Vixen.Popup.YesNoCancel("Are you sure you want to cancel and revert all changes?", this._cancel.bind(this, true), Vixen.Popup.Close.curry(strPopupId), null, null, strPopupId, "Revert Changes");
+			Vixen.Popup.YesNoCancel("Are you sure you want to cancel and revert all changes?", this._cancel.bind(this, null, true), Vixen.Popup.Close.curry(strPopupId), null, null, strPopupId, "Revert Changes");
 		}
 		else
 		{
