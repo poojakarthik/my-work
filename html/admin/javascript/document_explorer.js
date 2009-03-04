@@ -441,16 +441,19 @@ var Document_Explorer	= Class.create
 		{
 			// Many Documents Selected
 			var fltTotalFileSize	= 0;
-			var objTypeTotals		= {};
+			var arrTypeTotals		= new Array();
 			for (var i = 0; i < this.arrSelected.length; i++)
 			{
-				alert(this.arrChildren[this.arrSelected[i]].nature+"++");
-				objTypeTotals[this.arrChildren[this.arrSelected[i]].nature]	= true;
+				var strNature	= this.arrChildren[this.arrSelected[i]].nature;
+				if (arrTypeTotals.indexOf(strNature) == -1)
+				{
+					arrTypeTotals.push(strNature);
+				}
 			}
 			
-			alert(objTypeTotals);
+			alert(arrTypeTotals);
 			
-			if (objTypeTotals.length > 1)
+			if (arrTypeTotals.length > 1)
 			{
 				// More than one document nature selected -- no actions
 				alert("Multiple Document Natures Selected!");
@@ -471,8 +474,6 @@ var Document_Explorer	= Class.create
 		else if (this.arrSelected.length == 1)
 		{
 			// Single Document Selected
-			alert("Single Selected");
-			
 			objChild	= this.arrChildren[this.arrSelected[0]];
 			
 			if (objChild.nature == 'DOCUMENT_NATURE_FILE')
