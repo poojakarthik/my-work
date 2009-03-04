@@ -99,14 +99,25 @@ var Document_Edit	= Class.create
 		// FILE
 		if (strDocumentNature === 'DOCUMENT_NATURE_FILE')
 		{
+			this.elmFileDIV			= document.createElement('div');
+			this.elmForm.appendChild(this.elmFileDIV);
+			
+			this.elmFileTable					= document.createElement('table');
+			this.elmFileTable.className		= "reflex";
+			this.elmFileTable.style.textAlign	= "left";
+			this.elmFileDIV.appendChild(this.elmFileTable);
+			
+			this.elmFileTableBody		= document.createElement('tbody');
+			this.elmFileTable.appendChild(this.elmFileTableBody);
+			
 			this.elmInputsTRFile				= document.createElement('tr');
-			this.elmInputsTableBody.appendChild(this.elmInputsTRFile);
+			this.elmFileTableBody.appendChild(this.elmInputsTRFile);
 			
 			this.elmInputsTHFile				= document.createElement('th');
 			this.elmInputsTHFile.innerHTML		= "File :";
 			this.elmInputsTRFile.appendChild(this.elmInputsTHFile);
 			
-			this.elmInputsTDFile				= document.createElement('th');
+			this.elmInputsTDFile				= document.createElement('td');
 			this.elmInputsTRFile.appendChild(this.elmInputsTDFile);
 			
 			this.elmInputFile					= document.createElement('input');
@@ -162,5 +173,10 @@ var Document_Edit	= Class.create
 		{
 			// Do nothing
 		}
+	},
+	
+	_setFileVisible	: function()
+	{
+		
 	}
 });
