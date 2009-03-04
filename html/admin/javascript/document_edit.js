@@ -54,26 +54,66 @@ var Document_Edit	= Class.create
 			this.elmInputsDIV.appendChild(this.elmInputName);
 		}
 		
-		this.elmInputName			= document.createElement('input');
-		this.elmInputName.name		= "Document_Edit_Name";
-		this.elmInputName.type		= 'text';
-		this.elmInputName.maxLength	= 255;
-		this.elmInputsDIV.appendChild(this.elmInputName);
+		this.elmInputsTable			= document.createElement('table');
+		this.elmInputsDIV.appendChild(this.elmInputsTable);
 		
-		this.elmInputDescription			= document.createElement('input');
-		this.elmInputDescription.name		= "Document_Edit_Description";
-		this.elmInputDescription.type		= 'text';
-		this.elmInputDescription.maxLength	= 1024;
-		this.elmInputsDIV.appendChild(this.elmInputDescription);
+		this.elmInputsTableBody		= document.createElement('tbody');
+		this.elmInputsTable.appendChild(this.elmInputsTableBody);
 		
+		// NAME
+		this.elmInputsTRName			= document.createElement('tr');
+		this.elmInputsTableBody.appendChild(this.elmInputsTRName);
+		
+		this.elmInputsTHName			= document.createElement('th');
+		this.elmInputsTHName.innerHTML	= "Name :";
+		this.elmInputsTRName.appendChild(this.elmInputsTHName);
+		
+		this.elmInputsTDName			= document.createElement('th');
+		this.elmInputsTRName.appendChild(this.elmInputsTDName);
+		
+		this.elmInputName				= document.createElement('input');
+		this.elmInputName.name			= "Document_Edit_Name";
+		this.elmInputName.type			= 'text';
+		this.elmInputName.maxLength		= 255;
+		this.elmInputsTDName.appendChild(this.elmInputName);
+		
+		// DESCRIPTION
+		this.elmInputsTRDescription				= document.createElement('tr');
+		this.elmInputsTableBody.appendChild(this.elmInputsTRDescription);
+		
+		this.elmInputsTHDescription				= document.createElement('th');
+		this.elmInputsTHDescription.innerHTML	= "Description :";
+		this.elmInputsTRDescription.appendChild(this.elmInputsTHDescription);
+		
+		this.elmInputsTDDescription				= document.createElement('th');
+		this.elmInputsTRDescription.appendChild(this.elmInputsTDDescription);
+		
+		this.elmInputDescription				= document.createElement('input');
+		this.elmInputDescription.name			= "Document_Edit_Description";
+		this.elmInputDescription.type			= 'text';
+		this.elmInputDescription.maxLength		= 1024;
+		this.elmInputsTDDescription.appendChild(this.elmInputDescription);
+		
+		// FILE
 		if (strDocumentNature === 'DOCUMENT_NATURE_FILE')
 		{
-			this.elmInputFile			= document.createElement('input');
-			this.elmInputFile.name		= "Document_Edit_File";
-			this.elmInputFile.type		= 'file';
-			this.elmInputsDIV.appendChild(this.elmInputFile);
+			this.elmInputsTRFile				= document.createElement('tr');
+			this.elmInputsTableBody.appendChild(this.elmInputsTRFile);
+			
+			this.elmInputsTHFile				= document.createElement('th');
+			this.elmInputsTHFile.innerHTML		= "Description :";
+			this.elmInputsTRFile.appendChild(this.elmInputsTHFile);
+			
+			this.elmInputsTDFile				= document.createElement('th');
+			this.elmInputsTRFile.appendChild(this.elmInputsTDFile);
+			
+			this.elmInputFile					= document.createElement('input');
+			this.elmInputFile.name				= "Document_Edit_File";
+			this.elmInputFile.type				= 'file';
+			this.elmInputsTDFile.appendChild(this.elmInputFile);
 		}
 		
+		// BUTTONS
 		this.elmButtonsDIV					= document.createElement('div');
 		this.elmButtonsDIV.style.textAlign	= 'center';
 		this.elmForm.appendChild(this.elmButtonsDIV);
