@@ -72,7 +72,7 @@ var Document_Edit	= Class.create
 		this.elmInputsTRName.appendChild(this.elmInputsTHName);
 		
 		this.elmInputsTDName			= document.createElement('td');
-		this.elmInputsTHName.className	= "input";
+		this.elmInputsTDName.className	= "input";
 		this.elmInputsTRName.appendChild(this.elmInputsTDName);
 		
 		this.elmInputName				= document.createElement('input');
