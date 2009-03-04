@@ -64,11 +64,11 @@ var Document_Edit	= Class.create
 		this.elmForm.appendChild(this.elmButtonsDIV);
 		
 		this.elmSubmit				= document.createElement('submit');
-		this.elmSubmit.name			= "Save";
+		this.elmSubmit.value		= "Save";
 		this.elmButtonsDIV.appendChild(this.elmSubmit);
 		
 		this.elmCancel				= document.createElement('cancel');
-		this.elmCancel.name			= "Cancel";
+		this.elmCancel.value		= "Cancel";
 		this.elmCancel.addEventListener('click', this._cancel.bind(this), false);
 		this.elmButtonsDIV.appendChild(this.elmCancel);
 		
