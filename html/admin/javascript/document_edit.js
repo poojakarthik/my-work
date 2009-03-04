@@ -67,10 +67,12 @@ var Document_Edit	= Class.create
 		this.elmInputsTableBody.appendChild(this.elmInputsTRName);
 		
 		this.elmInputsTHName			= document.createElement('th');
+		this.elmInputsTHName.className	= "label";
 		this.elmInputsTHName.innerHTML	= "Name :";
 		this.elmInputsTRName.appendChild(this.elmInputsTHName);
 		
 		this.elmInputsTDName			= document.createElement('td');
+		this.elmInputsTHName.className	= "input";
 		this.elmInputsTRName.appendChild(this.elmInputsTDName);
 		
 		this.elmInputName				= document.createElement('input');
@@ -84,10 +86,12 @@ var Document_Edit	= Class.create
 		this.elmInputsTableBody.appendChild(this.elmInputsTRDescription);
 		
 		this.elmInputsTHDescription				= document.createElement('th');
+		this.elmInputsTHDescription.className	= "label";
 		this.elmInputsTHDescription.innerHTML	= "Description :";
 		this.elmInputsTRDescription.appendChild(this.elmInputsTHDescription);
 		
 		this.elmInputsTDDescription				= document.createElement('td');
+		this.elmInputsTDDescription.className	= "input";
 		this.elmInputsTRDescription.appendChild(this.elmInputsTDDescription);
 		
 		this.elmInputDescription				= document.createElement('input');
@@ -114,10 +118,12 @@ var Document_Edit	= Class.create
 			this.elmFileTableBody.appendChild(this.elmInputsTRFile);
 			
 			this.elmInputsTHFile				= document.createElement('th');
+			this.elmInputsTHFile.className		= "label";
 			this.elmInputsTHFile.innerHTML		= "File :";
 			this.elmInputsTRFile.appendChild(this.elmInputsTHFile);
 			
 			this.elmInputsTDFile				= document.createElement('td');
+			this.elmInputsTDFile.className		= "input";
 			this.elmInputsTRFile.appendChild(this.elmInputsTDFile);
 			
 			this.elmInputFile					= document.createElement('input');
