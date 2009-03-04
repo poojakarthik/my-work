@@ -116,6 +116,7 @@ class JSON_Handler_Document extends JSON_Handler
 			
 			$bolSuperAdmin	= AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
 			$bolGOD			= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+			$bolProperAdmin	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 			
 			// If we have a document, load its children
 			$objDocumentOutput	= new stdClass();
@@ -128,7 +129,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objDocumentOutput->strName			= $objDocumentContent->name;
 				$objDocumentOutput->strDescription	= $objDocumentContent->description;
 				$objDocumentOutput->strFriendlyName	= $objDocumentContent->getFriendlyName();
-				$objDocumentOutput->editable		= ((!$objDocument->is_system_document && $bolSuperAdmin) || $bolGOD) ? true : false;
+				$objDocumentOutput->editable		= ((!$objDocument->is_system_document && $bolProperAdmin) || $bolGOD) ? true : false;
 				
 				$objDocumentOutput->arrPath			= $objDocument->getPath(true);
 			}
@@ -138,7 +139,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objDocumentOutput->strName			= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->strDescription	= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->strFriendlyName	= Document::ROOT_DIRECTORY_NAME;
-				$objDocumentOutput->editable		= $bolSuperAdmin;
+				$objDocumentOutput->editable		= $bolProperAdmin;
 				$objDocumentOutput->arrPath			= array($arrRootDir);
 			}
 			
@@ -171,7 +172,7 @@ class JSON_Handler_Document extends JSON_Handler
 					$objChildOutput->file_size		= $objChildContent->intContentSize;
 					$objChildOutput->date_modified	= date("j/n/Y g:i A", strtotime($objChildContent->changed_on));
 					$objChildOutput->modified_by	= $objModifiedBy->firstName.' '.$objModifiedBy->lastName;
-					$objChildOutput->editable		= ((!$objChild->is_system_document && $bolSuperAdmin) || $bolGOD) ? true : false;
+					$objChildOutput->editable		= ((!$objChild->is_system_document && $bolProperAdmin) || $bolGOD) ? true : false;
 					$objChildOutput->system			= (bool)$objChild->is_system_document;
 					$objChildOutput->mime			= ($objChildContent->file_type_id) ? $objMimeType->mime_content_type : '';
 					$objChildOutput->file_type		= ($objChildContent->file_type_id) ? $objFileType->description : '';
