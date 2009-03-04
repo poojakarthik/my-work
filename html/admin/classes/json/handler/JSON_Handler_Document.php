@@ -222,7 +222,7 @@ class JSON_Handler_Document extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"		=> true,
-							"objDocument"	=> $objDocument,
+							"objDocument"	=> $arrDocument,
 							"nature"		=> GetConstantName($objDocument->document_nature_id, 'document_nature'),
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
