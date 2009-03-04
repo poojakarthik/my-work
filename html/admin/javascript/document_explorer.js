@@ -483,7 +483,7 @@ var Document_Explorer	= Class.create
 			{
 				var strEditCall	= "(jQuery.json.jsonFunction(Flex.Document.Explorer.renderEditPopup.bind(Flex.Document.Explorer), null, \"Document\", \"getDetails\"))("+objChild.id+")";
 				
-				arrActions.push("<span onclick='alert(\"Edit a doc!\")'><img class='icon' src='../admin/img/template/page_white_edit.png' />&nbsp;Edit</span>");
+				arrActions.push("<span onclick='"+strEditCall+"'><img class='icon' src='../admin/img/template/page_white_edit.png' />&nbsp;Edit</span>");
 				arrActions.push("<span onclick='alert(\"Delete a doc!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
 			}
 		}
