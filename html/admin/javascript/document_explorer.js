@@ -534,9 +534,7 @@ var Document_Explorer	= Class.create
 	{
 		if (objResponse.Success)
 		{
-			alert("CALLING");
 			JsAutoLoader.loadScript("javascript/document_edit.js", (function(strNature, objDocument){return new Document_Edit(strNature, objDocument);}).curry(objResponse.nature, objResponse.objDocument));
-			alert("WAITING");
 		}
 		else if (objResponse.Success == undefined)
 		{
@@ -548,11 +546,6 @@ var Document_Explorer	= Class.create
 			$Alert(objResponse.Message);
 			return false;
 		}
-	},
-	
-	_renderEditPopup	: function(strNature, objDocument)
-	{
-		alert('IN HERE');return new Document_Edit(strNature, objDocument);
 	}
 });
 
