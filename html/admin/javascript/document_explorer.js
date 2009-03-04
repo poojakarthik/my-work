@@ -240,7 +240,6 @@ var Document_Explorer	= Class.create
 				this.elmFooterActionsGeneralCell.innerHTML	= 'This Folder is Read-Only';
 			}
 			
-			alert(objResponse.objEmployee.toSource());
 			this.objUser		= objResponse.objEmployee;
 			this.objDocument	= objResponse.objDocument;
 			this.arrChildren	= objResponse.objDocument.arrChildren;
@@ -483,12 +482,14 @@ var Document_Explorer	= Class.create
 														}
 													);
 					
+					var strDocuments	= arrDocuments.toSource().substring(1, arrDocuments.toSource().length-2);
+					var strFrom			= arrFrom.toSource().substring(1, arrDocuments.toSource().length-2);
 					var strSubject		= "";
 					var strContent		= "";
 					var strTo			= 'null';
 					var intAccountId	= 'null';
 					
-					var strEmailDocuments	= "Flex.Document.emailDocument("+arrDocuments.toSource()+", "+arrFrom.toSource()+", '"+strSubject+"', '"+strContent+"', "+strTo+", "+intAccountId+");";
+					var strEmailDocuments	= "Flex.Document.emailDocument("+strDocuments+", "+strFrom+", '"+strSubject+"', '"+strContent+"', "+strTo+", "+intAccountId+");";
 					
 					arrActions.push("<span onclick='"+strEmailDocuments+"'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
 				}
