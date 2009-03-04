@@ -6,8 +6,6 @@ var Document_Edit	= Class.create
 	// Prototype constructor
 	initialize	: function(strDocumentNature, objDocument)
 	{
-		alert(arguments.toSource());
-		
 		var strFriendlyNature	= '';
 		switch (strDocumentNature)
 		{
