@@ -458,7 +458,7 @@ var Document_Explorer	= Class.create
 			}
 			else
 			{
-				
+				alert("One Document Nature Selected");
 				var arrActions	= new Array();
 				
 				if (this.arrChildren[this.arrSelected[i]].nature == 'DOCUMENT_NATURE_FILE')
