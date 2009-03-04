@@ -106,6 +106,16 @@ table.reflex tfoot tr th {
 	padding-bottom: .25em;
 }
 
+table.reflex tbody tr th.label
+{
+	text-align	: left;
+}
+
+table.reflex tbody tr td.input
+{
+	text-align	: left;
+}
+
 table.reflex th.reflex-unsorted, 
 table.reflex th.reflex-sorted-ascending, 
 table.reflex th.reflex-sorted-descending

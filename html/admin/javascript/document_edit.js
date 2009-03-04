@@ -54,8 +54,9 @@ var Document_Edit	= Class.create
 			this.elmInputsDIV.appendChild(this.elmInputName);
 		}
 		
-		this.elmInputsTable				= document.createElement('table');
-		this.elmInputsTable.className	= "reflex";
+		this.elmInputsTable					= document.createElement('table');
+		this.elmInputsTable.className		= "reflex";
+		this.elmInputsTable.style.textAlign	= "left";
 		this.elmInputsDIV.appendChild(this.elmInputsTable);
 		
 		this.elmInputsTableBody		= document.createElement('tbody');
