@@ -185,6 +185,7 @@ class JSON_Handler_Document extends JSON_Handler
 			return array(
 							"Success"		=> true,
 							"objDocument"	=> $objDocumentOutput,
+							"objEmployee"	=> Employee::getForId(Flex::getUserId()),
 							"strDebug"		=> ($bolGOD) ? $this->_JSONDebug : ''
 						);
 		}

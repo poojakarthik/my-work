@@ -15,6 +15,7 @@ var Document_Explorer	= Class.create
 		this.intLastSelected	= null;
 		this.arrChildren		= new Array();
 		this.objDocument		= null;
+		this.objUser			= null;
 		
 		// Popup Contents
 		this.elmEncapsulator				= document.createElement('div');
@@ -239,6 +240,7 @@ var Document_Explorer	= Class.create
 				this.elmFooterActionsGeneralCell.innerHTML	= 'This Folder is Read-Only';
 			}
 			
+			this.objUser		= objResponse.objEmployee;
 			this.objDocument	= objResponse.objDocument;
 			this.arrChildren	= objResponse.objDocument.arrChildren;
 			this.arrSelected	= Array();
@@ -460,7 +462,34 @@ var Document_Explorer	= Class.create
 				// Only one Document Nature selected -- allow multi-actions
 				if (this.arrChildren[this.arrSelected[0]].nature == 'DOCUMENT_NATURE_FILE')
 				{
-					arrActions.push("<span onclick='alert(\"Email some docs!\")'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
+					// EMAIL
+					var arrDocuments	= new Array();
+					for (var i = 0; i < this.arrSelected.length; i++)
+					{
+						var objChild		= this.arrChildren[this.arrSelected[i]];
+						objEmailDocument	=	{
+													strFileName		: objChild.name+'.'+objChild.extension,
+													file_type_id	: objChild.file_type_id, 
+													intFileSizeKB	: Math.round(objChild.file_size / 1024)
+												};
+						arrDocuments.push(objEmailDocument);
+					}
+					
+					var arrFrom			= new Array	(
+														{
+															name	: this.objUser.firstName+' '+this.objUser.lastName,
+															address	: this.objUser.email
+														}
+													);
+					
+					var strSubject		= "";
+					var strContent		= "";
+					var arrTo			= new Array();
+					var intAccountId	= 'null';
+					
+					var strEmailDocuments	= "Flex.Document.emailDocument("+arrDocuments.toSource()+", "+arrFrom.toSource()+", '"+strSubject+"', '"+strContent+"', "+arrTo.toSource()+", "+intAccountId+");";
+					
+					arrActions.push("<span onclick='"+strEmailDocuments+"'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
 				}
 				
 				arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
