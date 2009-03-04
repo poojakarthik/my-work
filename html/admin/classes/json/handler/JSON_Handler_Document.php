@@ -217,7 +217,7 @@ class JSON_Handler_Document extends JSON_Handler
 			$objDocumentContent	= $objDocument->getContentDetails();
 			
 			$arrDocument						= $objDocument->toArray();
-			$objDocument['objDocumentContent']	= $objDocumentContent->toArray();
+			$arrDocument['objDocumentContent']	= $objDocumentContent->toArray();
 			
 			// If no exceptions were thrown, then everything worked
 			return array(
