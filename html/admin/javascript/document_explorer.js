@@ -226,8 +226,8 @@ var Document_Explorer	= Class.create
 			}
 			
 			// General Actions Bar
-			var strNewFolder			= "<span onclick='alert(\"Add a Folder!\");'><img class='icon' src='../admin/img/template/folder.png' /><img class='icon overlay' src='../admin/img/template/overlay_add.png' />&nbsp;New Folder</span>";
-			var strNewDocument			= "<span onclick='alert(\"Add a Document!\");'><img class='icon' src='../admin/img/template/file.png' /><img class='icon overlay' src='../admin/img/template/overlay_add.png' />&nbsp;New Document</span>";
+			var strNewFolder			= "<span onclick='Flex.Document.Explorer.renderEditPopup({objResponse:{Success:true; nature:\"DOCUMENT_NATURE_FOLDER\"}})'><img class='icon' src='../admin/img/template/folder.png' /><img class='icon overlay' src='../admin/img/template/overlay_add.png' />&nbsp;New Folder</span>";
+			var strNewDocument			= "<span onclick='Flex.Document.Explorer.renderEditPopup({objResponse:{Success:true; nature:\"DOCUMENT_NATURE_FILE\"}})'><img class='icon' src='../admin/img/template/file.png' /><img class='icon overlay' src='../admin/img/template/overlay_add.png' />&nbsp;New Document</span>";
 			
 			if (objResponse.objDocument.editable)
 			{
@@ -254,13 +254,13 @@ var Document_Explorer	= Class.create
 		else if (objResponse.Success == undefined)
 		{
 			this.pupExplorer.hide();
-			$Alert(objResponse.Message);
+			$Alert(objResponse);
 			return false;
 		}
 		else
 		{
 			this.pupExplorer.hide();
-			$Alert(objResponse);
+			$Alert(objResponse.Message);
 			return false;
 		}
 	},
@@ -528,6 +528,26 @@ var Document_Explorer	= Class.create
 		var intAccountId	= 'null';
 		
 		return "Flex.Document.emailDocument("+strDocuments+", \""+strDescription+"\", "+strFrom+", \""+strSubject+"\", \""+strContent+"\", "+strTo+", "+intAccountId+");";
+	},
+	
+	renderEditPopup	: function(objResponse)
+	{
+		if (objResponse.Success)
+		{
+			JsAutoLoader.loadScript("document_edit.js", (function(){return new Document_Edit()}).curry(objResponse.nature, objResponse.objDocument));
+		}
+		else if (objResponse.Success == undefined)
+		{
+			this.pupExplorer.hide();
+			$Alert(objResponse);
+			return false;
+		}
+		else
+		{
+			this.pupExplorer.hide();
+			$Alert(objResponse.Message);
+			return false;
+		}
 	}
 });
 
