@@ -451,8 +451,6 @@ var Document_Explorer	= Class.create
 				}
 			}
 			
-			alert(arrTypeTotals);
-			
 			if (arrTypeTotals.length > 1)
 			{
 				// More than one document nature selected -- no actions
