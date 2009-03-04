@@ -55,9 +55,12 @@ var Document_Edit	= Class.create
 		this.elmInputDescription.maxLength	= 1024;
 		this.elmInputsDIV.appendChild(this.elmInputDescription);
 		
-		this.elmInputFile			= document.createElement('input');
-		this.elmInputFile.type		= 'file';
-		this.elmInputsDIV.appendChild(this.elmInputFile);
+		if (strDocumentNature === 'DOCUMENT_NATURE_FILE')
+		{
+			this.elmInputFile			= document.createElement('input');
+			this.elmInputFile.type		= 'file';
+			this.elmInputsDIV.appendChild(this.elmInputFile);
+		}
 		
 		this.elmButtonsDIV					= document.createElement('div');
 		this.elmButtonsDIV.style.textAlign	= 'center';
