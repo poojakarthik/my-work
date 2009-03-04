@@ -534,7 +534,9 @@ var Document_Explorer	= Class.create
 	{
 		if (objResponse.Success)
 		{
+			alert("CALLING");
 			JsAutoLoader.loadScript("document_edit.js", (function(){return new Document_Edit()}).curry(objResponse.nature, objResponse.objDocument));
+			alert("WAITING");
 		}
 		else if (objResponse.Success == undefined)
 		{

@@ -26,5 +26,6 @@ var Document_Edit	= Class.create
 		
 		this.pupEdit.setContent(this.elmEncapsulator);
 		this.pupEdit.display();
+		alert("DONE");
 	},
 });
