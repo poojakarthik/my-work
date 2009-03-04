@@ -83,7 +83,7 @@ class Application
 	{
 		// Check that the user's browser is supported.  This will die if the user's browser is not supported
 		$this->_CheckBrowser();
-		
+
 		// Split template name
 		$strClass 		= 'Application_Handler_'.$strHandlerName;
 
@@ -93,21 +93,21 @@ class Application
 		$objSubmit->Post();
 
 		// Validate all submitted objects
-		// Note that while $objSubmit->Get() and ->Post set up the submitted objects,  
+		// Note that while $objSubmit->Get() and ->Post set up the submitted objects,
 		// they have not actually been loaded from the database
 		DBO()->Validate();
 
 		// Create AppTemplate Object (autoloaded from /html/ui/app_template/
 		$this->objAppTemplate = new $strClass();
-		
+
 		$this->objAppTemplate->SetMode(HTML_MODE);
 		$this->objAppTemplate->SetModal($bolModal);
 
 		// Run AppTemplate
-		$fltStart = microtime(TRUE);		
+		$fltStart = microtime(TRUE);
 		$this->objAppTemplate->{$strHandlerMethod}($subPath);
 		$fltAppTemplateTime = microtime(TRUE) - $fltStart;
-		
+
 		// Append default options to the Context Menu
 		ContextMenu()->Customer->View_Recent_Customers();
 		ContextMenu()->Customer->Customer_Search();
@@ -119,15 +119,15 @@ class Application
 		{
 			ContextMenu()->Customer->VerifySales();
 		}
-		
+
 		ContextMenu()->Customer->Customer_Overdue_List();
-		
+
 		$arrCustomerGroups = Customer_Group::listAll();
 		if (count($arrCustomerGroups) > 1)
 		{
 			// There are multiple customer groups
 			ContextMenu()->Plans->ListPlans();
-			
+
 			foreach ($arrCustomerGroups as $objCustomerGroup)
 			{
 				ContextMenu()->Plans->ListPlans($objCustomerGroup->id);
@@ -151,25 +151,25 @@ class Application
 			ContextMenu()->Ticketing->Administration->TicketingAdmin();
 			ContextMenu()->Ticketing->Administration->TicketingAttachmentTypes();
 		}
-		
+
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
 			//ContextMenu()->Admin_Console();
 			ContextMenu()->Admin->AdvancedAccountSearch();
 			ContextMenu()->Admin->AdvancedContactSearch();
 			ContextMenu()->Admin->AdvancedServiceSearch();
-			
+
 			ContextMenu()->Admin->Adjustments->ManageAdjustments();
 			ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
 			ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
-			
+
 			ContextMenu()->Admin->PaymentDownload();
 			ContextMenu()->Admin->MoveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
-			
+
 			ContextMenu()->Admin->Employees->ManageEmployees();
 			ContextMenu()->Admin->ManageInvoiceRunEvents();
-			
+
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 			{
 				ContextMenu()->Admin->System_Settings->View_All_Constants();
@@ -202,10 +202,10 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
-			
+
 			// TODO: Change this permission to CREDIT_CONTROL
 			ContextMenu()->Admin->Contracts->ManageBreachedContracts();
-			
+
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadProposed();
@@ -213,22 +213,28 @@ class Application
 				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDNCR();
 				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadPermitted();
 				//ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDiallerReport();
-				
+
 				ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
 			}
 		}
-		
+
 		// Document Management
-		ContextMenu()->ShowDocumentExplorer();
-		
+		if (Flex_Module::isActive(FLEX_MODULE_DOCUMENT_MANAGEMENT))
+		{
+			ContextMenu()->ShowDocumentExplorer();
+		}
+
 		// Internal Contact List
-		ContextMenu()->ViewInternalContactList();
+		if (Flex_Module::isActive(FLEX_MODULE_CONTACT_LIST))
+		{
+			ContextMenu()->ViewInternalContactList();
+		}
 
 		// Render Page
 		//ob_start();
-		$fltStart = microtime(TRUE);				
+		$fltStart = microtime(TRUE);
 		$this->objAppTemplate->Page->Render();
-		$fltRenderTime = microtime(TRUE) - $fltStart;		
+		$fltRenderTime = microtime(TRUE) - $fltStart;
 
 		// Check if this is being rendered in Debug mode
 		if ($GLOBALS['bolDebugMode'])
@@ -264,37 +270,37 @@ class Application
 	{
 		// Check that the user's browser is supported.  This will die if the user's browser is not supported
 		$this->_CheckBrowser();
-		
+
 		// Split template name
 		$arrTemplate 	= explode ('.', $strTemplateName);
 		$strClass 		= 'AppTemplate'.$arrTemplate[0];
 		$strMethod 		= $arrTemplate[1];
-		
+
 		// Get submitted data
 		$objSubmit = new SubmittedData();
 		$objSubmit->Get();
 		$objSubmit->Post();
-	
+
 		// Validate all submitted objects
-		// Note that while $objSubmit->Get() and ->POST set up the submitted objects,  
+		// Note that while $objSubmit->Get() and ->POST set up the submitted objects,
 		// they have not actually been loaded from the database
 		DBO()->Validate();
 
 		// Create AppTemplate Object (autoloaded from /html/ui/app_template/
 		$this->objAppTemplate = new $strClass;
-		
+
 		$this->objAppTemplate->SetMode(HTML_MODE);
 		$this->objAppTemplate->SetModal($bolModal);
-	
+
 		// Run AppTemplate
-		$fltStart = microtime(TRUE);		
+		$fltStart = microtime(TRUE);
 		$this->objAppTemplate->{$strMethod}();
-		$fltAppTemplateTime = microtime(TRUE) - $fltStart;		
-		
+		$fltAppTemplateTime = microtime(TRUE) - $fltStart;
+
 		// Append default options to the Context Menu
 		ContextMenu()->Customer->View_Recent_Customers();
 		ContextMenu()->Customer->Customer_Search();
-		
+
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
 			ContextMenu()->Customer->Add_Customer();
@@ -304,14 +310,14 @@ class Application
 			ContextMenu()->Customer->VerifySales();
 		}
 		ContextMenu()->Customer->Customer_Overdue_List();
-		
+
 		$arrCustomerGroups = Customer_Group::listAll();
 
 		if (count($arrCustomerGroups) > 1)
 		{
 			// There are multiple customer groups
 			ContextMenu()->Plans->ListPlans();
-			
+
 			foreach ($arrCustomerGroups as $objCustomerGroup)
 			{
 				ContextMenu()->Plans->ListPlans($objCustomerGroup->id);
@@ -322,7 +328,7 @@ class Application
 			// There is only one customer group, so you don't need to break them down
 			ContextMenu()->Available_Plans();
 		}
-		
+
 		if (Ticketing_User::currentUserIsTicketingUser() && Flex_Module::isActive(FLEX_MODULE_TICKETING))
 		{
 			ContextMenu()->Ticketing->TicketingConsole();
@@ -335,22 +341,22 @@ class Application
 			ContextMenu()->Ticketing->Administration->TicketingAdmin();
 			ContextMenu()->Ticketing->Administration->TicketingAttachmentTypes();
 		}
-		
+
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
 			//ContextMenu()->Admin_Console();
 			ContextMenu()->Admin->AdvancedAccountSearch();
 			ContextMenu()->Admin->AdvancedContactSearch();
 			ContextMenu()->Admin->AdvancedServiceSearch();
-			
+
 			ContextMenu()->Admin->Adjustments->ManageAdjustments();
 			ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
 			ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
-			
+
 			ContextMenu()->Admin->PaymentDownload();
 			ContextMenu()->Admin->MoveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
-			
+
 			ContextMenu()->Admin->Employees->ManageEmployees();
 			ContextMenu()->Admin->ManageInvoiceRunEvents();
 
@@ -386,10 +392,10 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
-			
+
 			// TODO: Change this permission to CREDIT_CONTROL
 			ContextMenu()->Admin->Contracts->ManageBreachedContracts();
-			
+
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadProposed();
@@ -397,25 +403,31 @@ class Application
 				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDNCR();
 				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadPermitted();
 				//ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDiallerReport();
-				
+
 				ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
 			}
 		}
-		
+
 		// Document Management
-		ContextMenu()->ShowDocumentExplorer();
-		
+		if (Flex_Module::isActive(FLEX_MODULE_DOCUMENT_MANAGEMENT))
+		{
+			ContextMenu()->ShowDocumentExplorer();
+		}
+
 		// Internal Contact List
-		ContextMenu()->ViewInternalContactList();
-		
+		if (Flex_Module::isActive(FLEX_MODULE_CONTACT_LIST))
+		{
+			ContextMenu()->ViewInternalContactList();
+		}
+
 		// Render Page
 		//ob_start();
-		$fltStart = microtime(TRUE);				
+		$fltStart = microtime(TRUE);
 		$this->objAppTemplate->Page->Render();
-		$fltRenderTime = microtime(TRUE) - $fltStart;		
-		
+		$fltRenderTime = microtime(TRUE) - $fltStart;
+
 		//ob_end_flush();
-		
+
 		// Check if this is being rendered in Debug mode
 		if ($GLOBALS['bolDebugMode'])
 		{
@@ -423,20 +435,20 @@ class Application
 			echo "Time taken to do the page render: ". number_format($fltRenderTime, 4, ".", "") ." seconds<br />";
 		}
 	}
-	
+
 	function LoadModal($strTemplateName)
 	{
 		return $this->Load($strTemplateName, TRUE);
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// AjaxLoad
 	//------------------------------------------------------------------------//
 	/**
 	 * AjaxLoad()
 	 *
-	 * Loads an Ajax Template 
-	 * 
+	 * Loads an Ajax Template
+	 *
 	 * Loads an Ajax Template
 	 *
 	 * @return		void
@@ -452,20 +464,20 @@ class Application
 		$objAjax		= $objSubmit->Ajax();
 		$strClass 		= 'AppTemplate' . $objAjax->Class;
 		$strMethod 		= $objAjax->Method;
-		
+
 		// Validate all submitted objects
-		// Note that while $objSubmit->Get() and ->POST set up the submitted objects, they have not actually 
+		// Note that while $objSubmit->Get() and ->POST set up the submitted objects, they have not actually
 		// been loaded from the database, so validating them at this stage should always return TRUE
 		DBO()->Validate();
 
 		// Create AppTemplate Object
 		$this->objAppTemplate = new $strClass;
-		
+
 		$this->objAppTemplate->SetMode($objSubmit->Mode, $objAjax);
 
 		// Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
-		
+
 		// Render Page
 		if (Ajax()->HasCommands())
 		{
@@ -480,7 +492,7 @@ class Application
 			$this->objAppTemplate->Page->Render();
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// WebLoad
 	//------------------------------------------------------------------------//
@@ -512,38 +524,38 @@ class Application
 		// TODO! I don't know if we should bother doing this, because eventually we will want this to be compatable with
 		// as many browsers as possible
 		$this->_CheckBrowser();
-		
+
 		//TODO! Authenticate the user and redirect them to the appropriate login screen if they aren't currently logged in
 		// Currently Authentication is done from within the requested AppTemplate method, but it should be done here
-	
+
 		// Split template name
 		$arrTemplate 	= explode ('.', $strTemplateName);
 		$strClass 		= 'AppTemplate'.$arrTemplate[0];
 		$strMethod 		= $arrTemplate[1];
-		
+
 		// Get submitted data
 		$objSubmit = new SubmittedData();
 		$objSubmit->Get();
 		$objSubmit->Post();
-	
+
 		// Validate all submitted objects
 		DBO()->Validate();
 
 		// Create AppTemplate Object
 		$this->objAppTemplate = new $strClass;
-		
+
 		$this->objAppTemplate->SetMode(HTML_MODE);
-	
+
 		// Run AppTemplate
-		$fltStart = microtime(TRUE);		
+		$fltStart = microtime(TRUE);
 		$this->objAppTemplate->{$strMethod}();
-		$fltAppTemplateTime = microtime(TRUE) - $fltStart;		
-		
+		$fltAppTemplateTime = microtime(TRUE) - $fltStart;
+
 		// Render Page
-		$fltStart = microtime(TRUE);				
+		$fltStart = microtime(TRUE);
 		$this->objAppTemplate->Page->Render();
-		$fltRenderTime = microtime(TRUE) - $fltStart;		
-		
+		$fltRenderTime = microtime(TRUE) - $fltStart;
+
 		// Check if this is being rendered in Debug mode
 		if ($GLOBALS['bolDebugMode'])
 		{
@@ -551,7 +563,7 @@ class Application
 			echo "Time taken to do the page render: ". number_format($fltRenderTime, 4, ".", "") ." seconds<br />";
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// _CheckBrowser
 	//------------------------------------------------------------------------//
@@ -578,7 +590,7 @@ class Application
 			*/
 		}
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// CheckAuth
 	//------------------------------------------------------------------------//
@@ -586,7 +598,7 @@ class Application
 	 * CheckAuth()
 	 *
 	 * Checks user authentication
-	 * 
+	 *
 	 * Checks user authentication
 	 * This function is also responsible for setting $GLOBALS['bolDebugMode']
 	 *
@@ -629,10 +641,10 @@ class Application
 		{
 			// user has just logged in. Get the Id of the Employee (Identified by UserName and PassWord combination)
 			$selSelectStatement = new StatementSelect (
-				"Employee", 
-				"*", 
-				"UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", 
-				null, 
+				"Employee",
+				"*",
+				"UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0",
+				null,
 				"1"
 			);
 
@@ -681,29 +693,29 @@ class Application
 					AjaxReply(array("Success" => FALSE));
 					die;
 				}
-				
+
 				// The user needs to log in.  Show the login popup
 				Ajax()->AddCommand("VerifyUser");
 				Ajax()->Reply();
 				die;
 			}
 			else
-			{				
+			{
 				require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
 				die;
-			}	
+			}
 		}
 
 		// by default set user as local
 		$_SESSION['User']['IsLocal'] = TRUE;
-		
+
 		// user is logged in at this point
-		
+
 		// check for a server forced login
 		if (array_key_exists('PHP_AUTH_USER', $_SERVER) && $_SERVER['PHP_AUTH_USER'])
 		{
 			$arrServerLogin = explode('@', $_SERVER['PHP_AUTH_USER']);
-			
+
 			// check for username match
 			if (strtolower($arrServerLogin[0]) != strtolower($_SESSION['User']['UserName']))
 			{
@@ -712,7 +724,7 @@ class Application
 				header('HTTP/1.0 401 Unauthorized');
 				die;
 			}
-			
+
 			// check for customer match
 			/*
 			//TODO!flame! Make this work
@@ -723,19 +735,19 @@ class Application
 				die;
 			}
 			*/
-			
+
 			//TODO!flame! Ban Users/IP Addresses that try to hack the system
-			
+
 			// Remove all the user's privileges except for PERMISSION_OPERATOR, PERMISSION_PUBLIC and PERMISSION_OPERATOR_VIEW
 			$intAllowableRemotePerms = PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR | PERMISSION_PUBLIC;
 			$_SESSION['User']['Privileges'] = $_SESSION['User']['Privileges'] & ($intAllowableRemotePerms);
-			
+
 			// Set user as remote
 			$_SESSION['User']['IsLocal'] = FALSE;
 		}
-		
+
 		// Work out if we are in Debug Mode or not
-		$bolDebugMode = (isset($_COOKIE['DebugMode']))? $_COOKIE['DebugMode'] : 0; 
+		$bolDebugMode = (isset($_COOKIE['DebugMode']))? $_COOKIE['DebugMode'] : 0;
 		if (isset($_GET['Debug']))
 		{
 			// Change the value of the DebugMode cookie
@@ -743,7 +755,7 @@ class Application
 			setcookie("DebugMode", $bolDebugMode, 0, "/");
 		}
 		$GLOBALS['bolDebugMode'] = ($bolDebugMode && $this->UserHasPerm(PERMISSION_DEBUG)) ? TRUE : FALSE;
-		
+
 		// Check if the user has just successfully logged in via Ajax
 		if ($this->_intMode == AJAX_MODE && $bolAttemptingLogIn && $_SESSION['LoggedIn'])
 		{
@@ -752,8 +764,8 @@ class Application
 			die;
 		}
 	}
-	
-	
+
+
 	//------------------------------------------------------------------------//
 	// PermissionOrDie
 	//------------------------------------------------------------------------//
@@ -761,7 +773,7 @@ class Application
 	 * PermissionOrDie()
 	 *
 	 * Checks the user's permissions against the permissions required to view the current page
-	 * 
+	 *
 	 * Checks the user's permissions against the permissions required to view the current page
 	 * If the user does not have the required permissions then the login screen is loaded
 	 *
@@ -783,7 +795,7 @@ class Application
 			$this->InsufficientPrivilegeDie();
 		}
 	}
-	
+
 	function InsufficientPrivilegeDie()
 	{
 		// ask user to login, then return to page
@@ -797,7 +809,7 @@ class Application
 		{
 			require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
 			die;
-		}	
+		}
 	}
 
 	//------------------------------------------------------------------------//
@@ -807,13 +819,13 @@ class Application
 	 * UserHasPerm()
 	 *
 	 * Checks the user's permissions against the permissions passed in
-	 * 
+	 *
 	 * Checks the user's permissions against the permissions passed in
-	 * 
+	 *
 	 *
 	 * @param		int		$intPerms			permissions to check the user's permissions against
 	 * @param		bool	$bolRequireLocal	require the user to be local
-	 * @return		bool				
+	 * @return		bool
 	 * @method
 	 *
 	 */
@@ -826,16 +838,16 @@ class Application
 		}
 		// Do a binary 'AND' between the user's privilages and the paramerter
 		$intChecked = $_SESSION['User']['Privileges'] & $intPerms;
-		
+
 		// If the user has all the privileges defined in $intPerms, then $intChecked will equal $intPerms
 		if ($intChecked == $intPerms)
 		{
 			return TRUE;
 		}
-		
+
 		return FALSE;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// CheckClientAuth
 	//------------------------------------------------------------------------//
@@ -843,7 +855,7 @@ class Application
 	 * CheckClientAuth()
 	 *
 	 * Checks user authentication for clients (used by web_app)
-	 * 
+	 *
 	 * Checks user authentication for clients (used by web_app)
 	 *
 	 * @return		void
@@ -869,15 +881,15 @@ class Application
 		{
 			// user has just logged in. Get the Id of the contact (Identified by UserName and PassWord combination)
 			$selSelectStatement = new StatementSelect (
-				"Contact", 
-				"*", 
-				"Email = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", 
-				null, 
+				"Contact",
+				"*",
+				"Email = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0",
+				null,
 				"1"
 			);
-			
+
 			$selSelectStatement->Execute(Array("UserName"=>$_POST['VixenUserName'], "PassWord"=>$_POST['VixenPassword']));
-			
+
 			// Check if the contact was found
 			if ($selSelectStatement->Count() == 1)
 			{
@@ -890,7 +902,7 @@ class Application
 				// Get the CustomerGroup table.
 				DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
 				DBO()->CustomerGroup->Load();
-				
+
 				// Get the Account table.
 				DBO()->Contact->Id = $currentUser['Id'];
 				DBO()->Contact->Load();
@@ -917,7 +929,7 @@ class Application
 				{
 					$_SESSION = array();
 				}
-				
+
 				// The session is authenticated.
 				// Therefore, we have to store the Authentication
 				$_SESSION['User'] = $currentUser;
@@ -936,13 +948,13 @@ class Application
 
 			// user is already logged in. Get the CustomerGroup
 			$selSelectStatement = new StatementSelect (
-				"Contact", 
-				"*", 
-				"Email = <UserName> AND PassWord = <PassWord> AND Archived = 0", 
-				null, 
+				"Contact",
+				"*",
+				"Email = <UserName> AND PassWord = <PassWord> AND Archived = 0",
+				null,
 				"1"
 			);
-			
+
 			$selSelectStatement->Execute(Array("UserName"=>$_SESSION['User']['Email'], "PassWord"=>$_SESSION['User']['PassWord']));
 			$currentUser = $selSelectStatement->Fetch();
 
@@ -973,7 +985,7 @@ class Application
 				die;
 			}
 			else
-			{	
+			{
 				// If the location you are loading doesn't render a page, the user can get stuck on the login screen
 				// This can happen if the user's session has timed out, and they try and download a pdf
 				if ($bolLinkBackToConsole)
@@ -982,7 +994,7 @@ class Application
 				}
 				require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
 				die;
-			}	
+			}
 		}
 	}
 
@@ -993,7 +1005,7 @@ class Application
 	 * Logout()
 	 *
 	 * Logs out the current flex intranet user
-	 * 
+	 *
 	 * Logs out the current flex intranet user
 	 *
 	 * @return		bool		TRUE if the logging out process was successful, else FALSE
@@ -1016,7 +1028,7 @@ class Application
 	 * LogoutClient()
 	 *
 	 * Logs out the current "client" user (used by web_app.  users are defined in the Contact table of Vixen)
-	 * 
+	 *
 	 * Logs out the current "client" user (used by web_app.  users are defined in the Contact table of Vixen)
 	 *
 	 * @return		void
@@ -1031,13 +1043,13 @@ class Application
 		{
 			// user is already logged in. Get the CustomerGroup
 			$selSelectStatement = new StatementSelect (
-				"Contact", 
-				"*", 
-				"Email = <UserName> AND PassWord = <PassWord> AND Archived = 0", 
-				null, 
+				"Contact",
+				"*",
+				"Email = <UserName> AND PassWord = <PassWord> AND Archived = 0",
+				null,
 				"1"
 			);
-			
+
 			$selSelectStatement->Execute(Array("UserName"=>$_SESSION['User']['UserName'], "PassWord"=>$_SESSION['User']['PassWord']));
 			$currentUser = $selSelectStatement->Fetch();
 
@@ -1071,16 +1083,16 @@ class Application
 			}
 		}
 	}
-	
-	
+
+
 	//----------------------------------------------------------------------------//
 	// GetUserId
 	//----------------------------------------------------------------------------//
 	/**
 	 * GetUserId()
-	 * 
+	 *
 	 * @param	void
-	 * 
+	 *
 	 * @return	int	Id of current user (from COOKIE[])
 	 */
 	function GetUserId()
@@ -1098,11 +1110,11 @@ class Application
 	//----------------------------------------------------------------------------//
 	/**
 	 * __get()
-	 * 
+	 *
 	 * This function os here for backwards compatibility only!
-	 * 
+	 *
 	 * @param	String $propName of property to be retreived. MUST BE '_arrUser'
-	 * 
+	 *
 	 * @return	array $_SESSION['User'] if $propName == '_arrUser', otherwise NULL
 	 */
 	function __get($propName)
@@ -1113,12 +1125,12 @@ class Application
 		}
 		return NULL;
 	}
-	
+
 	static function encrypt($value)
 	{
 		return Encrypt($value);
 	}
-	
+
 	static function decrypt($value)
 	{
 		return Decrypt($value);
