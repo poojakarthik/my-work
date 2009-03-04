@@ -458,6 +458,7 @@ var Document_Explorer	= Class.create
 			}
 			else
 			{
+				
 				var arrActions	= new Array();
 				
 				if (this.arrChildren[this.arrSelected[i]].nature == 'DOCUMENT_NATURE_FILE')
@@ -472,6 +473,8 @@ var Document_Explorer	= Class.create
 		}
 		else if (this.arrSelected.length == 1)
 		{
+			alert("Single Selected");
+			
 			objChild	= this.arrChildren[this.arrSelected[0]];
 			var arrActions	= new Array();
 			
