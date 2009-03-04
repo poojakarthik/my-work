@@ -106,7 +106,7 @@ var Document_Edit	= Class.create
 		if (bolConfirmed)
 		{
 			// Confirmed
-			this.elmForm.removeEventListener('submit', this._submit().bind(this), false);
+			this.elmForm.removeEventListener('submit', this._submit.bind(this), false);
 			this.elmCancel.removeEventListener('click', this._cancel.bind(this), false);
 			this.pupEdit.hide();
 		}
