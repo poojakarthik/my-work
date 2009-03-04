@@ -26,7 +26,7 @@ var Document_Edit	= Class.create
 		this.strMode			= (objDocument) ? 'Edit' : 'New';
 		
 		this.pupEdit	= new Reflex_Popup(30);
-		this.pupEdit.setTitle(this.strMode+' Document');
+		this.pupEdit.setTitle(this.strMode+' '+strFriendlyNature);
 		this.pupEdit.setIcon("../admin/img/template/page_white_edit.png");
 		
 		this.objDocument		= (objDocument) ? objDocument : null;
