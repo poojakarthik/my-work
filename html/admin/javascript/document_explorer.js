@@ -444,8 +444,11 @@ var Document_Explorer	= Class.create
 			var objTypeTotals		= {};
 			for (var i = 0; i < this.arrSelected.length; i++)
 			{
+				alert(this.arrChildren[this.arrSelected[i]].nature+"++");
 				objTypeTotals[this.arrChildren[this.arrSelected[i]].nature]	= true;
 			}
+			
+			alert(objTypeTotals);
 			
 			if (objTypeTotals.length > 1)
 			{
