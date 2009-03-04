@@ -114,7 +114,7 @@ var Document_Edit	= Class.create
 		{
 			// Prompt
 			var strPopupId	= 'Flex_Document_Edit_Cancel_'+(Math.round(Math.random()*100));
-			Vixen.Popup.YesNoCancel("Are you sure you want to cancel and revert all changes?", this._cancel.bind(this, null, true), Vixen.Popup.Close.curry(strPopupId), null, null, strPopupId, "Revert Changes");
+			Vixen.Popup.YesNoCancel("Are you sure you want to cancel and revert all changes?", this._cancel.bind(this, null, true), Vixen.Popup.Close.bind(Vixen.Popup, strPopupId), null, null, strPopupId, "Revert Changes");
 		}
 		else
 		{
