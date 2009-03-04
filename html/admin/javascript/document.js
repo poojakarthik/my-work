@@ -214,6 +214,11 @@ var Document	= Class.create
 		{
 			arrErrors.push("[!] Please select the FROM email address");
 		}
+		var strSubject	= $ID('Document_Email_Subject').value.replace(/(^\s+|\s+$)/g, '');
+		if (!strSubject.length)
+		{
+			arrErrors.push("[!] Please enter a Subject for the email");
+		}
 		var strContent	= $ID('Document_Email_Content').value.replace(/(^\s+|\s+$)/g, '');
 		if (!strContent.length)
 		{
