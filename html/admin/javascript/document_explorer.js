@@ -439,6 +439,8 @@ var Document_Explorer	= Class.create
 		alert(this.arrSelected.length);
 		if (this.arrSelected.length > 1)
 		{
+			alert('Many Selected!');
+			
 			// Many Selected
 			var fltTotalFileSize	= 0;
 			var objTypeTotals		= {};
