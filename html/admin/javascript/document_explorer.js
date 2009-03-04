@@ -468,6 +468,7 @@ var Document_Explorer	= Class.create
 					{
 						var objChild		= this.arrChildren[this.arrSelected[i]];
 						objEmailDocument	=	{
+													id				: objChild.id,
 													strFileName		: objChild.name+'.'+objChild.extension,
 													file_type_id	: objChild.file_type_id, 
 													intFileSizeKB	: Math.round(objChild.file_size / 1024)
