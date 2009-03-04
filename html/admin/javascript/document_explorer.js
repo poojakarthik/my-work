@@ -451,6 +451,7 @@ var Document_Explorer	= Class.create
 			
 			if (objTypeTotals.length > 1)
 			{
+				alert("Multiple Document Natures Selected!");
 				// More than one document nature selected
 				this.elmFooterActionsSelectedCell.innerHTML	= '&nbsp;';
 				return;
