@@ -45,12 +45,23 @@ var Document_Edit	= Class.create
 		this.elmInputsDIV			= document.createElement('div');
 		this.elmForm.appendChild(this.elmInputsDIV);
 		
+		if (objDocument)
+		{
+			this.elmInputName			= document.createElement('input');
+			this.elmInputName.name		= "Document_Edit_Id";
+			this.elmInputName.type		= 'hidden';
+			this.elmInputName.value		= objDocument.id;
+			this.elmInputsDIV.appendChild(this.elmInputName);
+		}
+		
 		this.elmInputName			= document.createElement('input');
+		this.elmInputName.name		= "Document_Edit_Name";
 		this.elmInputName.type		= 'text';
 		this.elmInputName.maxLength	= 255;
 		this.elmInputsDIV.appendChild(this.elmInputName);
 		
 		this.elmInputDescription			= document.createElement('input');
+		this.elmInputDescription.name		= "Document_Edit_Description";
 		this.elmInputDescription.type		= 'text';
 		this.elmInputDescription.maxLength	= 1024;
 		this.elmInputsDIV.appendChild(this.elmInputDescription);
@@ -58,6 +69,7 @@ var Document_Edit	= Class.create
 		if (strDocumentNature === 'DOCUMENT_NATURE_FILE')
 		{
 			this.elmInputFile			= document.createElement('input');
+			this.elmInputFile.name		= "Document_Edit_File";
 			this.elmInputFile.type		= 'file';
 			this.elmInputsDIV.appendChild(this.elmInputFile);
 		}
@@ -66,11 +78,15 @@ var Document_Edit	= Class.create
 		this.elmButtonsDIV.style.textAlign	= 'center';
 		this.elmForm.appendChild(this.elmButtonsDIV);
 		
-		this.elmSubmit				= document.createElement('submit');
+		this.elmSubmit				= document.createElement('input');
+		this.elmSubmit.name			= "Document_Edit_Submit";
+		this.elmSubmit.type			= "submit";
 		this.elmSubmit.value		= "Save";
 		this.elmButtonsDIV.appendChild(this.elmSubmit);
 		
-		this.elmCancel				= document.createElement('cancel');
+		this.elmCancel				= document.createElement('input');
+		this.elmCancel.name			= "Document_Edit_Cancel";
+		this.elmCancel.type			= "button";
 		this.elmCancel.value		= "Cancel";
 		this.elmCancel.addEventListener('click', this._cancel.bind(this), false);
 		this.elmButtonsDIV.appendChild(this.elmCancel);
