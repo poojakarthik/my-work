@@ -70,7 +70,7 @@ var Document_Edit	= Class.create
 		this.elmInputsTHName.innerHTML	= "Name :";
 		this.elmInputsTRName.appendChild(this.elmInputsTHName);
 		
-		this.elmInputsTDName			= document.createElement('th');
+		this.elmInputsTDName			= document.createElement('td');
 		this.elmInputsTRName.appendChild(this.elmInputsTDName);
 		
 		this.elmInputName				= document.createElement('input');
@@ -87,7 +87,7 @@ var Document_Edit	= Class.create
 		this.elmInputsTHDescription.innerHTML	= "Description :";
 		this.elmInputsTRDescription.appendChild(this.elmInputsTHDescription);
 		
-		this.elmInputsTDDescription				= document.createElement('th');
+		this.elmInputsTDDescription				= document.createElement('td');
 		this.elmInputsTRDescription.appendChild(this.elmInputsTDDescription);
 		
 		this.elmInputDescription				= document.createElement('input');
