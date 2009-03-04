@@ -16,9 +16,9 @@ class Flex_Rollout_Version_000147 extends Flex_Rollout_Version
 		$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 
 		// 1:	Add the Document Management & Contact List Flex Modules
-		$strSQL = "	INSERT INTO flex_module (name, description, const_name, active) VALUES" .
-				"	('Document Management', 'Document Management Module', 'FLEX_MODULE_DOCUMENT_MANAGEMENT', 0), " .
-				"	('Contact List', 'Internal Contact List Module', 'FLEX_MODULE_CONTACT_LIST', 0);";
+		$strSQL = "	INSERT INTO flex_module (id, name, description, const_name, active) VALUES" .
+				"	(6, 'Document Management', 'Document Management Module', 'FLEX_MODULE_DOCUMENT_MANAGEMENT', 0), " .
+				"	(7, 'Contact List', 'Internal Contact List Module', 'FLEX_MODULE_CONTACT_LIST', 0);";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
