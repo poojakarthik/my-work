@@ -435,13 +435,11 @@ var Document_Explorer	= Class.create
 	
 	_updateActionBar	: function()
 	{
-		var strActions;
-		//alert(this.arrSelected.length);
+		var arrActions	= new Array();
+		
 		if (this.arrSelected.length > 1)
 		{
-			//alert('Many Selected!');
-			
-			// Many Selected
+			// Many Documents Selected
 			var fltTotalFileSize	= 0;
 			var objTypeTotals		= {};
 			for (var i = 0; i < this.arrSelected.length; i++)
@@ -451,15 +449,13 @@ var Document_Explorer	= Class.create
 			
 			if (objTypeTotals.length > 1)
 			{
+				// More than one document nature selected -- no actions
 				alert("Multiple Document Natures Selected!");
-				// More than one document nature selected
-				this.elmFooterActionsSelectedCell.innerHTML	= '&nbsp;';
-				return;
 			}
 			else
 			{
+				// Only one Document Nature selected -- allow multi-actions
 				alert("One Document Nature Selected");
-				var arrActions	= new Array();
 				
 				if (this.arrChildren[this.arrSelected[i]].nature == 'DOCUMENT_NATURE_FILE')
 				{
@@ -467,16 +463,14 @@ var Document_Explorer	= Class.create
 				}
 				
 				arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
-				
-				strActions	= arrActions.join('&nbsp;|&nbsp;');
 			}
 		}
 		else if (this.arrSelected.length == 1)
 		{
+			// Single Document Selected
 			alert("Single Selected");
 			
 			objChild	= this.arrChildren[this.arrSelected[0]];
-			var arrActions	= new Array();
 			
 			if (objChild.nature == 'DOCUMENT_NATURE_FILE')
 			{
@@ -492,18 +486,9 @@ var Document_Explorer	= Class.create
 			{
 				arrActions.push("<span onclick='alert(\"Delete a doc!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
 			}
-			
-			strActions	= arrActions.join('&nbsp;|&nbsp;');
-		}
-		else
-		{
-			// Nothing Selected
-			this.elmFooterActionsSelectedCell.innerHTML	= '&nbsp;';
-			return;
 		}
 		
-		alert(strActions);
-		this.elmFooterActionsSelectedCell.innerHTML	= "With Selected: "+strActions;
+		this.elmFooterActionsSelectedCell.innerHTML	= (arrActions.length ? '&nbsp;' : "With Selected: "+arrActions.join('&nbsp;|&nbsp;'));
 	}
 });
 
