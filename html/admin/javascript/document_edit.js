@@ -42,26 +42,35 @@ var Document_Edit	= Class.create
 		this.elmEncapsulator.appendChild(this.elmForm);
 		this.elmForm.addEventListener('submit', this._submit.bind(this), false);
 		
+		this.elmInputsDIV			= document.createElement('div');
+		this.elmForm.appendChild(this.elmInputsDIV);
+		
 		this.elmInputName			= document.createElement('input');
 		this.elmInputName.type		= 'text';
 		this.elmInputName.maxLength	= 255;
-		this.elmForm.appendChild(this.elmInputName);
+		this.elmInputsDIV.appendChild(this.elmInputName);
 		
 		this.elmInputDescription			= document.createElement('input');
 		this.elmInputDescription.type		= 'text';
 		this.elmInputDescription.maxLength	= 1024;
-		this.elmForm.appendChild(this.elmInputDescription);
+		this.elmInputsDIV.appendChild(this.elmInputDescription);
 		
 		this.elmInputFile			= document.createElement('input');
 		this.elmInputFile.type		= 'file';
-		this.elmForm.appendChild(this.elmInputFile);
+		this.elmInputsDIV.appendChild(this.elmInputFile);
+		
+		this.elmButtonsDIV					= document.createElement('div');
+		this.elmButtonsDIV.style.textAlign	= 'center';
+		this.elmForm.appendChild(this.elmButtonsDIV);
 		
 		this.elmSubmit				= document.createElement('submit');
 		this.elmSubmit.name			= "Save";
+		this.elmButtonsDIV.appendChild(this.elmSubmit);
 		
 		this.elmCancel				= document.createElement('cancel');
 		this.elmCancel.name			= "Cancel";
 		this.elmCancel.addEventListener('click', this._cancel.bind(this), false);
+		this.elmButtonsDIV.appendChild(this.elmCancel);
 		
 		this.pupEdit.setFooterButtons(new Array(this.elmSubmit, this.elmCancel), true);
 		
