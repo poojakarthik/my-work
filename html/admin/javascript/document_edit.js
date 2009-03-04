@@ -40,7 +40,7 @@ var Document_Edit	= Class.create
 		this.elmForm.enctype		= 'multipart/form-data';
 		this.elmForm.action			= '../admin/reflex.php/Document/Save';
 		this.elmEncapsulator.appendChild(this.elmForm);
-		this.elmForm.addEventListener('submit', this._submit().bind(this), false);
+		this.elmForm.addEventListener('submit', this._submit.bind(this), false);
 		
 		this.elmInputName			= document.createElement('input');
 		this.elmInputName.type		= 'text';
