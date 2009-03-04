@@ -226,8 +226,8 @@ var Document_Explorer	= Class.create
 			}
 			
 			// General Actions Bar
-			var strNewFolder			= "<span onclick='Flex.Document.Explorer.renderEditPopup({objResponse:{Success:true, nature:\"DOCUMENT_NATURE_FOLDER\"}})'><img class='icon' src='../admin/img/template/folder.png' /><img class='icon overlay' src='../admin/img/template/overlay_add.png' />&nbsp;New Folder</span>";
-			var strNewDocument			= "<span onclick='Flex.Document.Explorer.renderEditPopup({objResponse:{Success:true, nature:\"DOCUMENT_NATURE_FILE\"}})'><img class='icon' src='../admin/img/template/file.png' /><img class='icon overlay' src='../admin/img/template/overlay_add.png' />&nbsp;New Document</span>";
+			var strNewFolder			= "<span onclick='Flex.Document.Explorer.renderEditPopup({Success:true, nature:\"DOCUMENT_NATURE_FOLDER\"})'><img class='icon' src='../admin/img/template/folder.png' /><img class='icon overlay' src='../admin/img/template/overlay_add.png' />&nbsp;New Folder</span>";
+			var strNewDocument			= "<span onclick='Flex.Document.Explorer.renderEditPopup({Success:true, nature:\"DOCUMENT_NATURE_FILE\"})'><img class='icon' src='../admin/img/template/file.png' /><img class='icon overlay' src='../admin/img/template/overlay_add.png' />&nbsp;New Document</span>";
 			
 			if (objResponse.objDocument.editable)
 			{
