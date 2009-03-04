@@ -72,8 +72,6 @@ var Document_Edit	= Class.create
 		this.elmCancel.addEventListener('click', this._cancel.bind(this), false);
 		this.elmButtonsDIV.appendChild(this.elmCancel);
 		
-		this.pupEdit.setFooterButtons(new Array(this.elmSubmit, this.elmCancel), true);
-		
 		this.pupEdit.setContent(this.elmEncapsulator);
 		this.pupEdit.display();
 	},
