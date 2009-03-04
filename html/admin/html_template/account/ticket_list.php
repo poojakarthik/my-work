@@ -64,13 +64,19 @@ class HtmlTemplateAccountTicketList extends HtmlTemplate
 		Table()->Tickets->SetAlignment("Left", "Left");
 		echo "<h2 class='Tickets'>Tickets</h2>\n";
 		
-		// Retrieve the last 3 Open or Pending tickets associated with this account
+		// Retrieve the last 3 tickets (that aren't deleted) associated with this account
 		try
 		{
-			// Only find tickets that are (open or pending) and belong to the account
+			// Only find tickets that aren't deleted and belong to the account
 			$arrFilter				= array();
-			$objOpenPending			= Ticketing_Status_Type_Conglomerate::getForId(Ticketing_Status_Type_Conglomerate::TICKETING_STATUS_TYPE_CONGLOMERATE_OPEN_OR_PENDING);
-			$arrTicketStatusIds		= $objOpenPending->listStatusIds();
+			
+			// The following 2 lines have been commented out, incase management want this list to only show Open or Pending tickets
+			//$objOpenPending			= Ticketing_Status_Type_Conglomerate::getForId(Ticketing_Status_Type_Conglomerate::TICKETING_STATUS_TYPE_CONGLOMERATE_OPEN_OR_PENDING);
+			//$arrTicketStatusIds		= $objOpenPending->listStatusIds();
+			
+			$arrTicketStatuses		= Ticketing_Status::listAll();
+			unset($arrTicketStatuses[TICKETING_STATUS_DELETED]);
+			$arrTicketStatusIds		= array_keys($arrTicketStatuses);
 			$arrFilter['statusId']	= array('value' => $arrTicketStatusIds, 'comparison' => '=');
 			$arrFilter['accountId']	= array('value' => $intAccountId, 'comparison' => '=');
 			
