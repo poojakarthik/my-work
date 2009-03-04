@@ -103,7 +103,6 @@ var Document_Edit	= Class.create
 	
 	_cancel	: function(eEvent, bolConfirmed)
 	{
-		alert(bolConfirmed);
 		if (bolConfirmed)
 		{
 			// Confirmed
