@@ -209,17 +209,21 @@ class JSON_Handler_Document extends JSON_Handler
 		}
 	}
 	
-	public function buildEditPopup($intDocumentId=null)
+	public function getDetails($intDocumentId)
 	{
 		try
 		{
-			$qryQuery	= new Query();
+			$objDocument		= new Document(array('id'=>$intDocumentId));
+			$objDocumentContent	= $objDocument->getDetails();
 			
-			
+			$arrDocument						= $objDocument->toArray();
+			$objDocument['objDocumentContent']	= $objDocumentContent->toArray();
 			
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"		=> true,
+							"objDocument"	=> $objDocument,
+							"nature"		=> GetConstantName($objDocument->document_nature_id, 'document_nature'),
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
