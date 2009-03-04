@@ -108,13 +108,15 @@ table.reflex tfoot tr th {
 
 table.reflex tbody tr th.label
 {
+	vertical-align	: top;
 	text-align		: right;
 	/*padding-right	: 1em;*/
 }
 
 table.reflex tbody tr td.input
 {
-	text-align	: left;
+	vertical-align	: top;
+	text-align		: left;
 }
 
 table.reflex th.reflex-unsorted, 
