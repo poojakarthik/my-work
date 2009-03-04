@@ -463,36 +463,7 @@ var Document_Explorer	= Class.create
 				if (this.arrChildren[this.arrSelected[0]].nature == 'DOCUMENT_NATURE_FILE')
 				{
 					// EMAIL
-					var arrDocuments	= new Array();
-					for (var i = 0; i < this.arrSelected.length; i++)
-					{
-						var objChild		= this.arrChildren[this.arrSelected[i]];
-						objEmailDocument	=	{
-													id				: objChild.id,
-													strFileName		: objChild.name+'.'+objChild.extension,
-													file_type_id	: objChild.file_type_id, 
-													intFileSizeKB	: Math.round(objChild.file_size / 1024)
-												};
-						arrDocuments.push(objEmailDocument);
-					}
-					
-					var arrFrom			= new Array	(
-														{
-															name	: this.objUser.firstName+' '+this.objUser.lastName,
-															address	: this.objUser.email
-														}
-													);
-					
-					var strDocuments	= "new Array("+arrDocuments.toSource().substring(1, arrDocuments.toSource().length-1)+")";
-					var strFrom			= "new Array("+arrFrom.toSource().substring(1, arrFrom.toSource().length-1)+")";
-					var strSubject		= "";
-					var strContent		= "";
-					var strTo			= 'null';
-					var intAccountId	= 'null';
-					
-					var strEmailDocuments	= "Flex.Document.emailDocument("+strDocuments+", null, "+strFrom+", \""+strSubject+"\", \""+strContent+"\", "+strTo+", "+intAccountId+");";
-					
-					arrActions.push("<span onclick='"+strEmailDocuments+"'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
+					arrActions.push("<span onclick='"+this._generateEmailCall()+"'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
 				}
 				
 				arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
@@ -505,7 +476,7 @@ var Document_Explorer	= Class.create
 			
 			if (objChild.nature == 'DOCUMENT_NATURE_FILE')
 			{
-				arrActions.push("<span onclick='alert(\"Email a doc!\")'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
+				arrActions.push("<span onclick='"+this._generateEmailCall()+"'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
 			}
 			
 			if (objChild.editable)
@@ -524,6 +495,38 @@ var Document_Explorer	= Class.create
 		}
 		
 		this.elmFooterActionsSelectedCell.innerHTML	= (arrActions.length ? "With Selected: "+arrActions.join('&nbsp;|&nbsp;') : '');
+	},
+	
+	_generateEmailCall	: function()
+	{
+		var arrDocuments	= new Array();
+		for (var i = 0; i < this.arrSelected.length; i++)
+		{
+			var objChild		= this.arrChildren[this.arrSelected[i]];
+			objEmailDocument	=	{
+										id				: objChild.id,
+										strFileName		: objChild.name+'.'+objChild.extension,
+										file_type_id	: objChild.file_type_id, 
+										intFileSizeKB	: Math.round(objChild.file_size / 1024)
+									};
+			arrDocuments.push(objEmailDocument);
+		}
+		
+		var arrFrom			= new Array	(
+											{
+												name	: this.objUser.firstName+' '+this.objUser.lastName,
+												address	: this.objUser.email
+											}
+										);
+		
+		var strDocuments	= "new Array("+arrDocuments.toSource().substring(1, arrDocuments.toSource().length-1)+")";
+		var strFrom			= "new Array("+arrFrom.toSource().substring(1, arrFrom.toSource().length-1)+")";
+		var strSubject		= "";
+		var strContent		= "";
+		var strTo			= 'null';
+		var intAccountId	= 'null';
+		
+		return "Flex.Document.emailDocument("+strDocuments+", null, "+strFrom+", \""+strSubject+"\", \""+strContent+"\", "+strTo+", "+intAccountId+");";
 	}
 });
 
