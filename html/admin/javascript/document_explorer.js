@@ -482,8 +482,8 @@ var Document_Explorer	= Class.create
 														}
 													);
 					
-					var strDocuments	= arrDocuments.toSource().substring(1, arrDocuments.toSource().length-2);
-					var strFrom			= arrFrom.toSource().substring(1, arrFrom.toSource().length-2);
+					var strDocuments	= "new Array("+arrDocuments.toSource().substring(1, arrDocuments.toSource().length-1)+")";
+					var strFrom			= "new Array("+arrFrom.toSource().substring(1, arrFrom.toSource().length-1)+")";
 					var strSubject		= "";
 					var strContent		= "";
 					var strTo			= 'null';
