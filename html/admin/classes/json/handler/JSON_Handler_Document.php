@@ -181,11 +181,18 @@ class JSON_Handler_Document extends JSON_Handler
 				}
 			}
 			
+			// Flex User
+			$objEmployee		= Employee::getForId(Flex::getUserId());
+			$objUser			= new stdClass();
+			$objUser->firstName	= $objEmployee->firstName;
+			$objUser->lastName	= $objEmployee->lastName;
+			$objUser->email		= $objEmployee->email;
+			
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"		=> true,
 							"objDocument"	=> $objDocumentOutput,
-							"objEmployee"	=> Employee::getForId(Flex::getUserId()),
+							"objEmployee"	=> $objUser,
 							"strDebug"		=> ($bolGOD) ? $this->_JSONDebug : ''
 						);
 		}
