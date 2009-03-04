@@ -456,13 +456,10 @@ var Document_Explorer	= Class.create
 			if (arrTypeTotals.length > 1)
 			{
 				// More than one document nature selected -- no actions
-				alert("Multiple Document Natures Selected!");
 			}
 			else
 			{
 				// Only one Document Nature selected -- allow multi-actions
-				alert("One Document Nature Selected");
-				
 				if (this.arrChildren[this.arrSelected[0]].nature == 'DOCUMENT_NATURE_FILE')
 				{
 					arrActions.push("<span onclick='alert(\"Email some docs!\")'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
@@ -490,6 +487,10 @@ var Document_Explorer	= Class.create
 			{
 				arrActions.push("<span onclick='alert(\"Delete a doc!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
 			}
+		}
+		else
+		{
+			// Nothing selected -- no actions
 		}
 		
 		this.elmFooterActionsSelectedCell.innerHTML	= (arrActions.length ? "With Selected: "+arrActions.join('&nbsp;|&nbsp;') : '');
