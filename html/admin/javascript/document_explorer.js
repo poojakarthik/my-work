@@ -488,7 +488,7 @@ var Document_Explorer	= Class.create
 			}
 		}
 		
-		this.elmFooterActionsSelectedCell.innerHTML	= (arrActions.length ? '&nbsp;' : "With Selected: "+arrActions.join('&nbsp;|&nbsp;'));
+		this.elmFooterActionsSelectedCell.innerHTML	= (arrActions.length ? "With Selected: "+arrActions.join('&nbsp;|&nbsp;') : '');
 	}
 });
 
