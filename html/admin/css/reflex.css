@@ -108,15 +108,16 @@ table.reflex tfoot tr th {
 
 table.reflex tbody tr th.label
 {
-	vertical-align	: top;
+	vertical-align	: middle;
 	text-align		: right;
-	width			: 8em;
-	/*padding-right	: 1em;*/
+	max-width		: 8em;
+	min-width		: 8em;
+	overflow		: hidden;
 }
 
 table.reflex tbody tr td.input
 {
-	vertical-align	: top;
+	vertical-align	: middle;
 	text-align		: left;
 }
 
