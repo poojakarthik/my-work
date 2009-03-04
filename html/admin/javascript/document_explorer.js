@@ -535,7 +535,7 @@ var Document_Explorer	= Class.create
 		if (objResponse.Success)
 		{
 			alert("CALLING");
-			JsAutoLoader.loadScript("document_edit.js", this._renderEditPopup.curry(objResponse.nature, objResponse.objDocument));
+			JsAutoLoader.loadScript("javascript/document_edit.js", this._renderEditPopup.curry(objResponse.nature, objResponse.objDocument));
 			alert("WAITING");
 		}
 		else if (objResponse.Success == undefined)
