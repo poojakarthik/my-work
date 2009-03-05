@@ -40,7 +40,6 @@ var Document_Edit	= Class.create
 		this.elmForm.enctype		= 'multipart/form-data';
 		this.elmForm.action			= '../admin/reflex.php/Document/Save';
 		this.elmEncapsulator.appendChild(this.elmForm);
-		this.elmForm.addEventListener('submit', this._submit.bindAsEventListener(this), false);
 		
 		this.elmInputsDIV			= document.createElement('div');
 		this.elmForm.appendChild(this.elmInputsDIV);
@@ -177,8 +176,9 @@ var Document_Edit	= Class.create
 		this.elmCancel.name			= "Document_Edit_Cancel";
 		this.elmCancel.type			= "button";
 		this.elmCancel.value		= "Cancel";
-		this.elmCancel.addEventListener('click', this._cancel.bindAsEventListener(this), false);
 		this.elmButtonsDIV.appendChild(this.elmCancel);
+		
+		this._registerEventHandlers();
 		
 		this.pupEdit.setContent(this.elmEncapsulator);
 		this.pupEdit.display();
@@ -195,8 +195,7 @@ var Document_Edit	= Class.create
 		if (bolConfirmed)
 		{
 			// Confirmed
-			this.elmForm.removeEventListener('submit', this._submit.bindAsEventListener(this), false);
-			this.elmCancel.removeEventListener('click', this._cancel.bindAsEventListener(this), false);
+			this._unregisterEventHandlers();
 			this.pupEdit.hide();
 		}
 		else if (bolConfirmed == undefined)
@@ -230,6 +229,29 @@ var Document_Edit	= Class.create
 		{
 			this.elmInputsDIVFile.style.display	= 'block';
 			this.elmInputFile.disabled			= false;
+		}
+	},
+	
+	_registerEventHandlers	: function()
+	{
+		this.elmInputFileReplaceNo.addEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+		this.elmInputFileReplaceYes.addEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+
+		this.elmForm.addEventListener('submit', this._submit.bindAsEventListener(this), false);
+		
+		this.elmCancel.addEventListener('click', this._cancel.bindAsEventListener(this), false);
+	},
+	
+	_unregisterEventHandlers	: function()
+	{
+		for (var i = 0; i < this.arrChildren.length; i++)
+		{
+			this.elmInputFileReplaceNo.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+			this.elmInputFileReplaceYes.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+			
+			this.elmForm.removeEventListener('submit', this._submit.bindAsEventListener(this), false);
+			
+			this.elmCancel.removeEventListener('click', this._cancel.bindAsEventListener(this), false);
 		}
 	}
 });
