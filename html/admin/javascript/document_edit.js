@@ -218,10 +218,28 @@ var Document_Edit	= Class.create
 		Vixen.Popup.ShowPageLoadingSplash("Saving "+this.strFriendlyNature+"...", null, null, null, 1);
 		
 		// Perform AJAX query
-		return false;
+		return jQuery.json.jsonIframeFormSubmit(this.elmForm, this._submitResponse.bind(this));
 	},
 	
-	_cancel	: function(eEvent, bolConfirmed)
+	_submitResponse	: function(objResponse)
+	{
+		if (objResponse.Success)
+		{
+			
+		}
+		else if (objResponse.Success == undefined)
+		{
+			$Alert(objResponse);
+			return false;
+		}
+		else
+		{
+			$Alert(objResponse.Message);
+			return false;
+		}
+	},
+	
+	_close	: function(eEvent, bolConfirmed)
 	{
 		if (bolConfirmed)
 		{
@@ -233,7 +251,7 @@ var Document_Edit	= Class.create
 		{
 			// Prompt
 			var strPopupId	= 'Flex_Document_Edit_Cancel_'+(Math.round(Math.random()*100));
-			Vixen.Popup.YesNoCancel("Are you sure you want to cancel and revert all changes?", this._cancel.bind(this, null, true), Vixen.Popup.Close.bind(Vixen.Popup, strPopupId), null, null, strPopupId, "Revert Changes");
+			Vixen.Popup.YesNoCancel("Are you sure you want to cancel and revert all changes?", this._close.bind(this, null, true), Vixen.Popup.Close.bind(Vixen.Popup, strPopupId), null, null, strPopupId, "Revert Changes");
 		}
 		else
 		{
@@ -272,7 +290,7 @@ var Document_Edit	= Class.create
 		}
 		
 		this.elmSubmit.addEventListener('click', this._submit.bindAsEventListener(this), false);
-		this.elmCancel.addEventListener('click', this._cancel.bindAsEventListener(this), false);
+		this.elmCancel.addEventListener('click', this._close.bindAsEventListener(this), false);
 	},
 	
 	_unregisterEventHandlers	: function()
@@ -284,6 +302,6 @@ var Document_Edit	= Class.create
 		}
 
 		this.elmSubmit.removeEventListener('click', this._submit.bindAsEventListener(this), false);
-		this.elmCancel.removeEventListener('click', this._cancel.bindAsEventListener(this), false);
+		this.elmCancel.removeEventListener('click', this._close.bindAsEventListener(this), false);
 	}
 });
