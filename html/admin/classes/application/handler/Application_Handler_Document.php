@@ -10,7 +10,7 @@ class Application_Handler_Document extends Application_Handler
 		$arrDetailsToRender	= array();
 		try
 		{
-			throw new Exception(var_export($_POST, true));
+			//throw new Exception(var_export($_POST, true));
 			
 			if (!DataAccess::getDataAccess()->TransactionStart())
 			{
