@@ -490,7 +490,7 @@ var Document_Explorer	= Class.create
 				var strDeleteCall	= "Flex.Document.Explorer._deleteDocument("+objChild.id+");";
 				
 				
-				arrActions.push("<span onclick='"+strEditCall+"'><img class='icon' src='../admin/img/template/page_white_edit.png' />&nbsp;Edit</span>");
+				arrActions.push("<span onclick='"+strEditCall+"'><img class='icon' src='../admin/img/template/file.png' />&nbsp;Edit</span>");
 				arrActions.push("<span onclick='"+strDeleteCall+"'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
 			}
 		}
