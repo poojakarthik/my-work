@@ -218,7 +218,15 @@ var Document_Edit	= Class.create
 		Vixen.Popup.ShowPageLoadingSplash("Saving "+this.strFriendlyNature+"...", null, null, null, 1);
 		
 		// Perform AJAX query
-		return jQuery.json.jsonIframeFormSubmit(this.elmForm, this._submitResponse.bind(this));
+		if (jQuery.json.jsonIframeFormSubmit(this.elmForm, this._submitResponse.bind(this)))
+		{
+			this.elmForm.submit();
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	},
 	
 	_submitResponse	: function(objResponse)
@@ -226,7 +234,7 @@ var Document_Edit	= Class.create
 		Vixen.Popup.ClosePageLoadingSplash();
 		if (objResponse.Success)
 		{
-			
+			$Alert("The "+this.strFriendlyNature+" '"+this.elmInputName.value.replace(/(^\s+|\s+$)/g, '')+"' has been successfully saved.", null, null, null, "Save Successful", this._close.bind(this, null, true));
 		}
 		else if (objResponse.Success == undefined)
 		{
