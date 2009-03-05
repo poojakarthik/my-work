@@ -9,7 +9,7 @@ var Document_Explorer	= Class.create
 		this.pupExplorer	= new Reflex_Popup(70);
 		this.pupExplorer.setTitle('Document Explorer');
 		this.pupExplorer.addCloseButton();
-		this.pupExplorer.setIcon("../admin/img/template/document_explore.png");
+		this.pupExplorer.setIcon("../admin/img/template/folder_explore.png");
 		
 		this.arrSelected		= new Array();
 		this.intLastSelected	= null;
