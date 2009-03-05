@@ -130,7 +130,7 @@ table.reflex tbody tr td.input input[type="password"],
 table.reflex tbody tr td.input textarea,
 table.reflex tbody tr td.input select
 {
-	width			: 90%
+	width			: 100%
 }
 
 table.reflex th.reflex-unsorted, 
