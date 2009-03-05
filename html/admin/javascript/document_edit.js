@@ -55,6 +55,14 @@ var Document_Edit	= Class.create
 			this.elmInputName.value		= objDocument.id;
 			this.elmInputsDIV.appendChild(this.elmInputName);
 		}
+		else
+		{
+			this.elmInputNature			= document.createElement('input');
+			this.elmInputNature.name	= "Document_Edit_Nature";
+			this.elmInputNature.type	= 'hidden';
+			this.elmInputNature.value	= strDocumentNature;
+			this.elmInputsDIV.appendChild(this.elmInputNature);
+		}
 		
 		this.elmInputsTable					= document.createElement('table');
 		this.elmInputsTable.className		= "reflex";
