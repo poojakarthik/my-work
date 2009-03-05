@@ -78,6 +78,7 @@ var Document_Edit	= Class.create
 		this.elmInputName.name			= "Document_Edit_Name";
 		this.elmInputName.type			= 'text';
 		this.elmInputName.maxLength		= 255;
+		this.elmInputName.value			= (objDocument) ? objDocument.name : '';
 		this.elmInputsTDName.appendChild(this.elmInputName);
 		
 		// DESCRIPTION
@@ -97,6 +98,7 @@ var Document_Edit	= Class.create
 		this.elmInputDescription.name			= "Document_Edit_Description";
 		this.elmInputDescription.type			= 'text';
 		this.elmInputDescription.maxLength		= 1024;
+		this.elmInputDescription.value			= (objDocument.description) ? objDocument.description : '';
 		this.elmInputsTDDescription.appendChild(this.elmInputDescription);
 		
 		// FILE
