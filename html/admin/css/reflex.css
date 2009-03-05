@@ -814,7 +814,6 @@ div.document-explorer-list
 	min-height			: 30em;
 	max-height			: 30em;
 	overflow-y			: scroll;
-	/*background-color	: #DDD;*/
 	background-color	: #efefef;
 }
 
@@ -853,19 +852,9 @@ img.document-explorer-icon-overlay
 	opacity			: 0.75;
 }
 
-table.document-explorer thead
-{
-	
-}
-
 table.document-explorer tbody
 {
 	-moz-user-select	: none;
-}
-
-table.document-explorer th
-{
-	
 }
 
 table.document-explorer th.notice-normal
@@ -931,8 +920,6 @@ table.document-explorer .field-actions
 {
 	width	: auto;
 }
-
-
 
 table.document-explorer tbody tr td
 {

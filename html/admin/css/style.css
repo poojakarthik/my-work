@@ -165,6 +165,39 @@ table.reflex tfoot tr th {
 	padding-bottom: .25em;
 }
 
+table.reflex tbody tr th.label
+{
+	min-height		: 1.5em;
+	max-height		: 1.5em;
+	
+	vertical-align	: middle;
+	text-align		: right;
+	overflow		: hidden;
+}
+
+table.reflex tbody tr td.input
+{
+	min-height		: 1.5em;
+	max-height		: 1.5em;
+	
+	vertical-align	: middle;
+	text-align		: left;
+}
+
+table.reflex tbody tr td.input input[type="text"],
+table.reflex tbody tr td.input input[type="password"],
+table.reflex tbody tr td.input textarea,
+table.reflex tbody tr td.input select
+{
+	width			: 98%;
+}
+
+table.reflex tbody tr td.input input[type="checkbox"]
+{
+	margin-right	: 0.25em;
+	vertical-align	: text-bottom;
+}
+
 table.reflex th.reflex-unsorted, 
 table.reflex th.reflex-sorted-ascending, 
 table.reflex th.reflex-sorted-descending
@@ -640,4 +673,235 @@ span.hide-if-not-last-child:last-child
 .hide-if-not-last-child
 {
 	display: none;
+}
+
+/****************************** Document Explorer *****************************/
+div.document-explorer-address
+{
+	background-color	: #eee;
+	padding				: 0.5em;
+	border				: 0.1em solid #333;
+	clear				: both;
+}
+
+div.document-explorer-address-node
+{
+	background-color	: #f9f9f9;
+	border				: 0.1em solid #ccc;
+	display				: inline-block;
+	padding				: 0.25em;
+}
+
+div.document-explorer-address-node span.node-label
+{
+	margin-left			: 0.25em;
+	vertical-align		: middle;
+}
+
+div.document-explorer-address-node[onclick]
+{
+	color				: #FF4200;
+}
+
+div.document-explorer-address-node[onclick]:hover
+{
+	background-color	: #eee;
+	border-color		: #888;
+	cursor				: pointer;
+}
+
+div.document-explorer-address-node[onclick]:hover
+{
+	background-color	: #eee;
+	border-color		: #888;
+	cursor				: pointer;
+}
+
+div.document-explorer-address-separator
+{
+	max-height		: 16px;
+	max-width		: 16px;
+	display			: inline-block;
+	margin-left		: 0.25em;
+	margin-right	: 0.25em;
+}
+
+div.document-explorer-address-separator img
+{
+	max-height		: 16px;
+	max-width		: 16px;
+	vertical-align	: middle;
+}
+
+div.document-explorer
+{
+	border-left		: 0.1em solid #333;;
+	border-right	: 0.1em solid #333;
+	padding			: 0px;
+	clear			: both;
+}
+
+div.document-explorer-list
+{
+	min-height			: 30em;
+	max-height			: 30em;
+	overflow-y			: scroll;
+	background-color	: #efefef;
+}
+
+
+div.reflex-popup div.document-explorer table.document-explorer
+{
+	margin			: 0px;
+	width			: 100%;
+	border			: none;
+}
+
+table.document-explorer
+{
+	width			: 100%;
+	margin			: 0px;
+	font-size		: 10pt;
+	
+	background-color	: #fff;
+}
+
+img.document-explorer-icon
+{
+	max-height		: 16px;
+	max-width		: 16px;
+	vertical-align	: text-bottom;
+}
+
+img.document-explorer-icon-overlay
+{
+	max-height		: 16px;
+	max-width		: 16px;
+	vertical-align	: text-bottom;
+	position		: relative;
+	left			: -16px;
+	margin-right	: -16px;
+	opacity			: 0.75;
+}
+
+table.document-explorer tbody
+{
+	-moz-user-select	: none;
+}
+
+table.document-explorer th.notice-normal
+{
+	font-weight	: normal;
+	font-style	: italic;
+}
+
+table.document-explorer th span[onclick]
+{
+	color				: #ffde05;
+}
+
+table.document-explorer th span[onclick]:hover
+{
+	text-decoration		: underline;
+}
+
+table.document-explorer th img.icon
+{
+	vertical-align	: text-bottom;
+	
+}
+
+table.document-explorer th img.icon.overlay
+{
+	margin-left		: -16px;
+	opacity			: 0.75;
+}
+
+table.document-explorer td
+{
+	overflow: hidden;
+}
+
+
+table.document-explorer span.record-label
+{
+	margin-left	: 0.25em;
+}
+
+table.document-explorer .field-name
+{
+	min-width	: 25em;
+	max-width	: 25em;
+}
+table.document-explorer .field-size
+{
+	min-width	: 5em;
+	max-width	: 5em;
+}
+table.document-explorer .field-date
+{
+	min-width	: 8em;
+	max-width	: 8em;
+}
+table.document-explorer .field-user
+{
+	min-width	: 8em;
+	max-width	: 8em;
+}
+table.document-explorer .field-actions
+{
+	width	: auto;
+}
+
+table.document-explorer tbody tr td
+{
+	background-color	: #efefef;
+}
+
+table.document-explorer tr.selected[onclick] td
+{
+	background-color	: #bbb;
+}
+
+table.document-explorer tr.selected[onclick]:hover td
+{
+	background-color	: #ccc;
+}
+
+table.document-explorer tbody tr[onclick]:hover
+{
+	background-color	: #ddd;
+}
+
+table.document-explorer tbody tr[onclick]:hover td
+{
+	cursor				: pointer;
+	text-decoration		: underline;
+	background-color	: #ddd;
+}
+
+div.document-explorer-status
+{
+	background-color	: #f9f9f9;
+	padding				: 0.5em;
+	border				: 0.1em solid #333;
+}
+
+div.document-explorer-status
+{
+	min-height	: 7em;
+	max-height	: 7em;
+	font-size	: 9pt;
+	overflow	: hidden;
+}
+
+div.document-explorer-status span.name
+{
+	font-size	: 10pt;
+	font-weight	: bold;
+}
+
+div.document-explorer-status span.description
+{
+	font-style	: italic;
 }
