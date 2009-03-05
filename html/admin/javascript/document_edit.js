@@ -182,11 +182,11 @@ var Document_Edit	= Class.create
 			
 			this.elmInputsTHSystem				= document.createElement('th');
 			this.elmInputsTHSystem.className	= "label";
-			this.elmInputsTHSystem.innerHTML	= "&nbsp;";
+			this.elmInputsTHSystem.innerHTML	= "Attributes :";
 			this.elmInputsTRSystem.appendChild(this.elmInputsTHSystem);
 			
 			this.elmInputsTDSystem				= document.createElement('td');
-			this.elmInputsTDSystem.className		= "input";
+			this.elmInputsTDSystem.className	= "input";
 			this.elmInputsTRSystem.appendChild(this.elmInputsTDSystem);
 			
 			this.elmInputSystem			= document.createElement('input');
@@ -198,7 +198,7 @@ var Document_Edit	= Class.create
 			
 			this.elmLabelSystem				= document.createElement('label');
 			this.elmLabelSystem.setAttribute('for', this.elmInputSystem.id); 
-			this.elmLabelSystem.innerHTML	= "This is a System "+this.strFriendlyName;
+			this.elmLabelSystem.innerHTML	= "This is a System "+this.strFriendlyNature;
 			this.elmInputsTDSystem.appendChild(this.elmLabelSystem);
 		}
 		
