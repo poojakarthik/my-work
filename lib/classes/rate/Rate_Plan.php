@@ -150,6 +150,11 @@ class Rate_Plan extends ORM
 		
 		$arrFileType	= File_Type::getForExtensionAndMimeType('pdf', 'application/pdf', true);
 		
+		if (!$objCustomerGroupDir->id)
+		{
+			throw new Exception(print_r($objCustomerGroupDir->toArray(), true));
+		}
+		
 		// Create the new Content object
 		$objBrochureDocumentContent	= new Document_Content();
 		$objBrochureDocumentContent->document_id		= $objBrochureDocument->id;
