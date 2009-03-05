@@ -812,6 +812,8 @@ table.document-explorer
 	width			: 100%;
 	margin			: 0px;
 	font-size		: 10pt;
+	
+	background-color	: #fff;
 }
 
 img.document-explorer-icon
@@ -920,19 +922,26 @@ table.document-explorer tr[onclick]
 
 table.document-explorer tr.selected[onclick] td
 {
-	background-color	: #fff;
+	/*background-color	: #fff;*/
+	background-color	: #aaa;
+}
+
+table.document-explorer tr.selected[onclick]:hover td
+{
+	/*background-color	: #fff;*/
+	background-color	: #bbb;
 }
 
 table.document-explorer tbody tr[onclick]:hover
 {
-	background-color	: #999;
+	background-color	: #ddd;
 }
 
 table.document-explorer tbody tr[onclick]:hover td
 {
 	cursor				: pointer;
 	text-decoration		: underline;
-	background-color	: #999;
+	background-color	: #ddd;
 }
 
 div.document-explorer-status
