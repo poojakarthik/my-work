@@ -89,7 +89,8 @@ class Rate_Plan extends ORM
 		{
 			// NO
 			// Ensure that the Document Path /Plan Brochures/[CustomerGroup]/ exists
-			if (!($objBrochureDir = Document::getByPath("/Plan Brochures/")))
+			$objBrochureDir = Document::getByPath("/Plan Brochures/");
+			if (!$objBrochureDir)
 			{
 				//throw new Exception("/Plan Brochures/ not found!");
 				
@@ -111,7 +112,8 @@ class Rate_Plan extends ORM
 			{
 				$objBrochureDirContent	= $objBrochureDir->getContent();
 			}
-			if (!($objCustomerGroupDir = Document::getByPath("/Plan Brochures/{$this->customer_group}/")))
+			$objCustomerGroupDir = Document::getByPath("/Plan Brochures/{$this->customer_group}/");
+			if (!$objCustomerGroupDir)
 			{
 				throw new Exception("/Plan Brochures/customer_group/ not found!");
 				
