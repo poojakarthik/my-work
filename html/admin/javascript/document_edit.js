@@ -25,7 +25,7 @@ var Document_Edit	= Class.create
 		this.strDocumentNature	= strDocumentNature;
 		this.strMode			= (objDocument) ? 'Edit' : 'New';
 		
-		this.pupEdit	= new Reflex_Popup(30);
+		this.pupEdit	= new Reflex_Popup(35);
 		this.pupEdit.setTitle(this.strMode+' '+strFriendlyNature);
 		this.pupEdit.setIcon("../admin/img/template/page_white_edit.png");
 		
@@ -103,19 +103,45 @@ var Document_Edit	= Class.create
 		// FILE
 		if (strDocumentNature === 'DOCUMENT_NATURE_FILE')
 		{
-			this.elmFileDIV			= document.createElement('div');
-			this.elmForm.appendChild(this.elmFileDIV);
-			
-			this.elmFileTable					= document.createElement('table');
-			this.elmFileTable.className		= "reflex";
-			this.elmFileTable.style.textAlign	= "left";
-			this.elmFileDIV.appendChild(this.elmFileTable);
-			
-			this.elmFileTableBody		= document.createElement('tbody');
-			this.elmFileTable.appendChild(this.elmFileTableBody);
+			if (objDocument)
+			{
+				this.elmInputsTRFileReplace			= document.createElement('tr');
+				this.elmFileTableBody.appendChild(this.elmInputsTRFileReplace);
+				
+				this.elmInputsTDFileReplace				= document.createElement('td');
+				this.elmInputsTDFileReplace.className	= "label";
+				this.elmInputsTDFileReplace.innerHTML	= "Do you want to replace the existing Document Content?";
+				this.elmInputsTRFileReplace.appendChild(this.elmInputsTDFileReplace);
+				
+				this.elmInputFileReplaceNo			= document.createElement('input');
+				this.elmInputFileReplaceNo.checked	= true;
+				this.elmInputFileReplaceNo.type		= 'radio';
+				this.elmInputFileReplaceNo.id		= 'Document_Edit_File_Replace_No';
+				this.elmInputFileReplaceNo.name		= 'Document_Edit_File_Replace';
+				this.elmInputFileReplaceNo.value	= 'false';
+				this.elmInputsTDFileReplace.appendChild(this.elmInputFileReplaceNo);
+				
+				this.elmLabelFileReplaceNo				= document.createElement('label');
+				this.elmLabelFileReplaceNo.setAttribute('for', this.elmInputFileReplaceNo.id);
+				this.elmLabelFileReplaceNo.innerHTML	= "Keep the existing Document Content";
+				this.elmInputsTDFileReplace.appendChild(this.elmLabelFileReplaceNo);
+				
+				this.elmInputFileReplaceYes			= document.createElement('input');
+				this.elmInputFileReplaceYes.type	= 'radio';
+				this.elmInputFileReplaceYes.id		= 'Document_Edit_File_Replace_Yes';
+				this.elmInputFileReplaceYes.name	= 'Document_Edit_File_Replace';
+				this.elmInputFileReplaceYes.value	= 'true';
+				this.elmInputsTDFileReplace.appendChild(this.elmInputFileReplaceYes);
+				
+				this.elmLabelFileReplaceYes			= document.createElement('label');
+				this.elmLabelFileReplaceYes.setAttribute('for', this.elmInputFileReplaceYes.id); 
+				this.elmLabelFileReplaceNo.innerHTML	= "Replace the Document Content";
+				this.elmInputsTDFileReplace.appendChild(this.elmLabelFileReplaceYes);
+			}
 			
 			this.elmInputsTRFile				= document.createElement('tr');
-			this.elmFileTableBody.appendChild(this.elmInputsTRFile);
+			this.elmInputsTRFile.style.display	= strFileInputDisplay;
+			this.elmInputsTableBody.appendChild(this.elmInputsTRFile);
 			
 			this.elmInputsTHFile				= document.createElement('th');
 			this.elmInputsTHFile.className		= "label";
@@ -130,6 +156,8 @@ var Document_Edit	= Class.create
 			this.elmInputFile.name				= "Document_Edit_File";
 			this.elmInputFile.type				= 'file';
 			this.elmInputsTDFile.appendChild(this.elmInputFile);
+			
+			this._updateFileUpload();
 		}
 		
 		// BUTTONS
@@ -181,8 +209,25 @@ var Document_Edit	= Class.create
 		}
 	},
 	
-	_setFileVisible	: function()
+	_updateFileUpload	: function()
 	{
-		
+		if (this.elmInputsTDFileReplace != undefined)
+		{
+			if (this.elmForm.Document_Edit_File_Replace.value == 'true')
+			{
+				this.elmInputsTRFile.style.display	= 'table-row';
+				this.elmInputFile.disabled			= false;
+			}
+			else
+			{
+				this.elmInputsTRFile.style.display	= 'none';
+				this.elmInputFile.disabled			= true;
+			}
+		}
+		else
+		{
+			this.elmInputsTRFile.style.display	= 'table-row';
+			this.elmInputFile.disabled			= false;
+		}
 	}
 });
