@@ -34,7 +34,7 @@ class Document extends ORM
 		// Set default values
 		if (!$bolLoadById)
 		{
-			$this->is_system_document	= false;
+			$this->is_system_document	= ($this->is_system_document === null) ? false : $this->is_system_document;
 		}
 	}
 	
