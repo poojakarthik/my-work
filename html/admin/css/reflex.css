@@ -916,7 +916,7 @@ table.document-explorer .field-actions
 
 
 
-table.reflex table.document-explorer tr td
+table.document-explorer tbody tr td
 {
 	background-color	: #efefef;
 }
