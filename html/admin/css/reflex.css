@@ -918,7 +918,7 @@ table.document-explorer .field-actions
 
 table.document-explorer tr td
 {
-	background-color	: #efefef;
+	background-color	: #efefef !important;
 }
 
 table.document-explorer tr.selected[onclick] td
