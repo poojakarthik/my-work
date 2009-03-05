@@ -214,7 +214,7 @@ var Document_Edit	= Class.create
 		}
 		
 		// Show the Loading Splash
-		Vixen.Popup.ShowPageLoadingSplash("Delivering Email...", null, null, null, 1);
+		Vixen.Popup.ShowPageLoadingSplash("Saving Document...", null, null, null, 1);
 		
 		// Perform AJAX query
 		return false;
