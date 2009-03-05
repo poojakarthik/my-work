@@ -99,11 +99,6 @@ class Application_Handler_Ticketing extends Application_Handler
 			}
 			
 		} 
-		{
-			// Do the last query
-			
-			
-		}
 
 		if (array_key_exists('offset', $_REQUEST))
 		{
@@ -372,7 +367,6 @@ class Application_Handler_Ticketing extends Application_Handler
 				case 'create':
 					$ticket = Ticketing_Ticket::createBlank();
 					$ticket->owner = $currentUser;
-					$editableValues[] = 'accountId';
 
 					// Initial correspondence
 					$correspondence = Ticketing_Correspondance::createBlank();
@@ -380,6 +374,7 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'sourceId';
 					$editableValues[] = 'deliveryStatusId';
 					$editableValues[] = 'details';
+					$editableValues[] = 'ownerId';
 					
 					if (array_key_exists('accountId', $_REQUEST))
 					{
@@ -390,18 +385,13 @@ class Application_Handler_Ticketing extends Application_Handler
 
 				case 'edit':
 
-					if ($action == 'edit')
-					{
-						if (!$ticket->accountId)
-						{
-							$editableValues[] = 'accountId';
-						}
-					}
+					$editableValues[] = 'accountId';
 
-					if ($currentUser->isAdminUser())
+					if (array_search('assign', $permittedActions) !== FALSE)
 					{
 						$editableValues[] = 'ownerId';
 					}
+
 					$editableValues[] = 'priorityId';
 					$editableValues[] = 'subject';
 					$editableValues[] = 'contactId';
@@ -409,7 +399,7 @@ class Application_Handler_Ticketing extends Application_Handler
 					{
 						$editableValues[] = 'statusId';
 					}
-					//$editableValues[] = 'customerGroupId'; // Customer group should come from account
+
 					$editableValues[] = 'categoryId';
 					$editableValues[] = 'serviceId';
 
@@ -420,7 +410,7 @@ class Application_Handler_Ticketing extends Application_Handler
 						// Validate the passed details and save if valid
 						$validatedValues = array();
 						
-						// Order the editable values so that they are in the same order as the 
+						// Order the editable values so that they are in the same order as the fields on the ticket form
 						$editableValuesOrdered = array();
 						foreach ($_REQUEST as $key=>$value)
 						{
@@ -438,7 +428,6 @@ class Application_Handler_Ticketing extends Application_Handler
 							}
 						}
 						
-						// Looping through $_REQUEST instead of $editableValues, will ensure the order of the properties will match how they appear on the form
 						foreach ($editableValuesOrdered as $editableValue)
 						{
 							$value = array_key_exists($editableValue, $_REQUEST) ? $_REQUEST[$editableValue] : NULL;
@@ -449,29 +438,28 @@ class Application_Handler_Ticketing extends Application_Handler
 							switch ($editableValue)
 							{
 								case 'ownerId':
-									$value =  $currentUser->isAdminUser() ? Ticketing_User::getForId(intval($value)) : NULL;
-									if (!$value && $currentUser->isAdminUser())
+									$value = Ticketing_User::getForId(intval($value));
+									if (!$value)
 									{
 										if ($action == 'edit' && $ticket->ownerId)
 										{
 											$ticket->ownerId = NULL;
 											$invalidValues[$editableValue] = 'You cannot unassign a ticket. Please specify an owner for the ticket.';
 										}
-										else if ($action == 'create')
+										elseif ($action == 'create')
 										{
 											$ticket->ownerId = NULL;
 											$invalidValues[$editableValue] = 'Please specify an owner for the ticket.';
 										}
-									}
-									else if ($currentUser->isAdminUser())
-									{
-										$bolChangeOwner	= ($bolChangeOwner) ? $bolChangeOwner : ($ticket->ownerId !== $value->id) ? true : false;
-										$ticket->ownerId = $value->id;
+										else
+										{
+											// The ticket doesn't currently have an owner, but it doesn't matter
+										}
 									}
 									else
 									{
-										$bolChangeOwner	= ($bolChangeOwner) ? $bolChangeOwner : ($ticket->ownerId !== $currentUser->id) ? true : false;
-										$ticket->ownerId = $currentUser->id;
+										$bolChangeOwner	= ($bolChangeOwner) ? $bolChangeOwner : ($ticket->ownerId !== $value->id) ? true : false;
+										$ticket->ownerId = $value->id;
 									}
 									break;
 
@@ -712,6 +700,7 @@ class Application_Handler_Ticketing extends Application_Handler
 							}
 							
 							// HACK! If it's a new ticket, and its category is TICKETING_CATEGORY_FAULTS, then set its Owner to unassigned and its status to unassigned;
+							/* We don't currently do this
 							if ($ticket->id == NULL && $ticket->categoryId == TICKETING_CATEGORY_FAULTS)
 							{
 								$ticket->ownerId	= NULL;
@@ -719,6 +708,7 @@ class Application_Handler_Ticketing extends Application_Handler
 								$bolChangeOwner		= FALSE;
 								$detailsToRender['notes'][] = "Because the ticket is for a new fault, the owner has been unassigned";
 							}
+							*/
 
 							$ticket->save();
 							$ticket->setServices($ticketServices);
@@ -830,22 +820,36 @@ class Application_Handler_Ticketing extends Application_Handler
 			$permittedActions[] = 'view';
 			$permittedActions[] = 'edit';
 
-			if ($user->isAdminUser() && !$ticket->isAssignedTo($user))
-			{
-				$permittedActions[] = 'take';
-			}
-
 			if ($user->isAdminUser())
 			{
+				// Admin user
+				// Admins can take/assign any ticket
+				
 				if ($ticket->isAssigned())
 				{
+					if (!$ticket->isAssignedTo($user))
+					{
+						$permittedActions[] = 'take';
+					}
+					
 					$permittedActions[] = 'reassign';
 				}
 				else
 				{
+					$permittedActions[] = 'take';
 					$permittedActions[] = 'assign';
 				}
 				$permittedActions[] = 'delete';
+			}
+			else
+			{
+				// Normal User
+				// Normals can only take/assign a ticket that is unassigned
+				if (!$ticket->isAssigned())
+				{
+					$permittedActions[] = 'take';
+					$permittedActions[] = 'assign';
+				}
 			}
 		}
 

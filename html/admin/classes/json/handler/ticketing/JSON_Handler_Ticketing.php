@@ -16,8 +16,15 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		$account = Account::getForId($accountId);
 		if ($account)
 		{
-			// The account is valid. Now we need to list the services for it.
+			// The account is valid. Now we need to list the services/contacts for it.
 			$response['isValid'] = TRUE;
+			
+			$customerGroup = Customer_Group::getForId($account->customerGroup);
+			$response['customerGroupName'] = ($customerGroup)? $customerGroup->name : '';
+		}
+		else
+		{
+			$response['customerGroupName'] = '';
 		}
 
 		$ticket = Ticketing_Ticket::getForId($ticketId);

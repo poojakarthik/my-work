@@ -93,10 +93,10 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			return $this->no_ticket();
 		}
 
-		$owner = $ticket->getOwner();
-		$ownerName = htmlspecialchars($owner ? $owner->getName() : '['.Ticketing_Status::getForId(TICKETING_STATUS_UNASSIGNED)->name.']');
-		$contact = $ticket->getContact();
-		$contactName = htmlspecialchars($contact ? $contact->getName() : '[No associated contact]');
+		$owner			= $ticket->getOwner();
+		$ownerName		= htmlspecialchars($owner ? $owner->getName() : '['.Ticketing_Status::getForId(TICKETING_STATUS_UNASSIGNED)->name.']');
+		$contact		= $ticket->getContact();
+		$contactName	= htmlspecialchars($contact ? $contact->getName() : '[No associated contact]');
 
 		if ($message)
 		{
@@ -304,6 +304,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					}
 					populateContactList(response['contacts']);
 					populateServiceList(response['services']);
+					setCustomerGroup(response['customerGroupName']);
 					populateCustomerGroupEmailList(response['customerGroupEmails']);
 				}
 	
@@ -323,6 +324,16 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					}
 				}
 	
+				function setCustomerGroup(strCustomerGroupName)
+				{
+					var customerGroup = $ID('customerGroupName');
+					while (customerGroup.firstChild)
+					{
+						customerGroup.removeChild(customerGroup.firstChild)
+					}
+					customerGroup.appendChild(document.createTextNode(strCustomerGroupName));
+				}
+				
 				function populateServiceList(services)
 				{
 					var serviceId = $ID('serviceId');
@@ -590,22 +601,9 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							<td class="title">Customer Group: </td>
 							<td>
 								<?php
-								$invalid = array_key_exists('customerGroupId', $invalidValues) ? 'invalid' : '';
-								if (array_search('customerGroupId', $editableValues) !== FALSE)
-								{
-									?><select name='customerGroupId' class="<?=$invalid?>"><?php
-									$customerGroups = Customer_Group::listAll();
-									foreach ($customerGroups as $customerGroup)
-									{
-										$selected = $ticket->customerGroupId == $customerGroup->id ? ' selected="selected"' : '';
-										?><option value="<?=$customerGroup->id?>"<?=$selected?>><?=$customerGroup->name?></option><?php
-									}
-									?></select><?php
-								}
-								else
-								{
-									echo $ticket->getCustomerGroup()->name;
-								}
+								$objCustomerGroup		= $ticket->getCustomerGroup();
+								$strCustomerGroupName	= ($objCustomerGroup)? $objCustomerGroup->name : "";
+								echo "<span id='customerGroupName'>$strCustomerGroupName</span>";
 								?>
 							</td>
 						</tr>
