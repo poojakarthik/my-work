@@ -152,7 +152,7 @@ class Rate_Plan extends ORM
 		
 		if (!$objCustomerGroupDir->id)
 		{
-			throw new Exception(print_r($objCustomerGroupDir->toArray(), true));
+			throw new Exception(print_r($objCustomerGroupDir, true));
 		}
 		
 		// Create the new Content object
