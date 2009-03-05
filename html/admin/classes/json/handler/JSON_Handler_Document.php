@@ -187,6 +187,7 @@ class JSON_Handler_Document extends JSON_Handler
 			$objUser->firstName	= $objEmployee->firstName;
 			$objUser->lastName	= $objEmployee->lastName;
 			$objUser->email		= $objEmployee->email;
+			$objUser->isGOD		= $bolGOD;
 			
 			// If no exceptions were thrown, then everything worked
 			return array(
