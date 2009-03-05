@@ -175,7 +175,7 @@ var Document_Edit	= Class.create
 		}
 		
 		// SYSTEM
-		if (Flex.Document.Explorer.objUser.bolGOD && !objDocument)
+		if (Flex.Document.Explorer.objUser.isGOD && !objDocument)
 		{
 			this.elmInputsTRSystem				= document.createElement('tr');
 			this.elmInputsTableBody.appendChild(this.elmInputsTRSystem);
