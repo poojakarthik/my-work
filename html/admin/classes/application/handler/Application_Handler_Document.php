@@ -27,24 +27,26 @@ class Application_Handler_Document extends Application_Handler
 			
 			$intParentDocumentId	= ($_POST['Document_Edit_Parent'] === '') ? null : (int)$_POST['Document_Edit_Parent'];
 			$strDocumentName		= trim($_POST['Document_Edit_Name']);
+			$intDocumentId			= (int)$_POST['Document_Edit_Id'];
 			
-			if (!($intDocumentId = (int)$_POST['Document_Edit_Id']))
+			// Does a Document exist at this path?
+			if ($intParentDocumentId)
 			{
-				// Does a Document exist at this path?
-				if ($intParentDocumentId)
-				{
-					$objParentDocument		= new Document(array('id'=>$intParentDocumentId), true);
-					$strPath				= $objParentDocument->getPath().'/';
-				}
-				else
-				{
-					$strPath				= '/';
-				}
-				if ($objExistingDocument = Document::getByPath($strPath.$strDocumentName))
-				{
-					throw new Exception("There is already an item with the Name '{$strDocumentName}' in this Folder".($bolVerboseErrors ? " ({$strPath}{$strDocumentName})" : ''));
-				}
-				
+				$objParentDocument		= new Document(array('id'=>$intParentDocumentId), true);
+				$strPath				= $objParentDocument->getPath().'/';
+			}
+			else
+			{
+				$strPath				= '/';
+			}
+			$objExistingDocument = Document::getByPath($strPath.$strDocumentName);
+			if ($objExistingDocument && (!$intDocumentId || ($intDocumentId && $objExistingDocument->id != $intDocumentId)))
+			{
+				throw new Exception("There is already an item with the Name '{$strDocumentName}' in this Folder".($bolVerboseErrors ? " ({$strPath}{$strDocumentName})" : ''));
+			}
+			
+			if (!$intDocumentId)
+			{
 				// Create the Document
 				$objDocument						= new Document();
 				$objDocument->employee_id			= Flex::getUserId();
