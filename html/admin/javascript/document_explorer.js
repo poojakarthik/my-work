@@ -532,7 +532,7 @@ var Document_Explorer	= Class.create
 	{
 		if (objResponse.Success)
 		{
-			JsAutoLoader.loadScript("javascript/document_edit.js", (function(strNature, objDocument){return new Document_Edit(strNature, objDocument);}).curry(objResponse.nature, objResponse.objDocument));
+			JsAutoLoader.loadScript("javascript/document_edit.js", (function(intParentDocumentId, strNature, objDocument){return new Document_Edit(intParentDocumentId, strNature, objDocument);}).curry(this.objDocument.intId, objResponse.nature, objResponse.objDocument));
 		}
 		else if (objResponse.Success == undefined)
 		{

@@ -4,7 +4,7 @@ var Document_Edit	= Class.create
 ({
 	// Function: initialize()
 	// Prototype constructor
-	initialize	: function(strDocumentNature, objDocument)
+	initialize	: function(intParentDocumentId, strDocumentNature, objDocument)
 	{
 		var strFriendlyNature	= '';
 		switch (strDocumentNature)
@@ -46,6 +46,12 @@ var Document_Edit	= Class.create
 		
 		this.elmInputsDIV			= document.createElement('div');
 		this.elmForm.appendChild(this.elmInputsDIV);
+		
+		this.elmInputParent			= document.createElement('input');
+		this.elmInputParent.name	= "Document_Edit_Parent";
+		this.elmInputParent.type	= 'hidden';
+		this.elmInputParent.value	= intParentDocumentId;
+		this.elmInputsDIV.appendChild(this.elmInputParent);
 		
 		if (objDocument)
 		{

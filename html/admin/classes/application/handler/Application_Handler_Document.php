@@ -10,7 +10,7 @@ class Application_Handler_Document extends Application_Handler
 		$arrDetailsToRender	= array();
 		try
 		{
-			throw new Exception(print_r($_POST, true));
+			throw new Exception(var_export($_POST, true));
 			
 			if (!DataAccess::getDataAccess()->TransactionStart())
 			{
@@ -20,24 +20,60 @@ class Application_Handler_Document extends Application_Handler
 			$qryQuery	= new Query();
 			
 			// Check user permissions
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT) && !AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
-				throw new Exception("You do not have sufficient privileges to upload a Plan Brochure!" . (($bolVerboseErrors) ? ' But you do have GOD mode... wtf' : ''));
+				throw new Exception("You do not have sufficient privileges to create a "+GetConstantDescription($objDocument->document_nature_id, 'document_nature')+"!");
 			}
 			
-			// Check the File Name format
-			$strFileName	= $_FILES['Plan_SetBrochure_File']['name'];
-			$arrFileName	= explode('.', $strFileName);
-			$strMIME		= $_FILES['Plan_SetBrochure_File']['type'];
-			$strExtension	= end($arrFileName);
-			if (strtolower($strExtension) !== strtolower(self::PLAN_BROCHURE_FILE_EXTENSION) || $strMIME !== self::PLAN_BROCHURE_MIME_CONTENT_TYPE)
+			if ($intDocumentId = (int)$_POST['Document_Edit_Id'])
 			{
-				throw new Exception("'{$strFileName}' is not a valid PDF file (Extension: '{$strExtension}'; MIME: '{$strMIME}').  Ensure that you are trying to upload the correct file, and try again.");
+				// Create the Document
+				$objDocument						= new Document();
+				$objDocument->employee_id			= Flex::getUserId();
+				$objDocument->is_system_document	= ($_POST['Document_Edit_System'] === true) ? true : false;
+				
+				if (GetConstantName(constant($_POST['Document_Edit_Nature']), 'document_nature') !== $_POST['Document_Edit_Nature'])
+				{
+					throw new Exception("Document Nature '{$_POST['Document_Edit_Nature']}' is invalid!");
+				}
+				$objDocument->document_nature_id	= constant($_POST['Document_Edit_Nature']);
+				
+				// Check special permissions for System Documents
+				if ($objDocument->is_system_document && !AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+				{
+					throw new Exception("You do not have sufficient privileges to create a System "+GetConstantDescription($objDocument->document_nature_id, 'document_nature')+"!");
+				}
+				
+				$objDocument->save();
+				
+				// Create the Document Content
+				$objDocumentContent					= new Document_Content();
+				$objDocumentContent->document_id	= $objDocument->id;
+			}
+			else
+			{
+				// Load the Document & its Content
+				$objDocument			= new Document(array('id'=>$intDocumentId), true);
+				$objDocumentContent		= $objDocument->getContent();
+				$objDocumentContent->id	= null;
 			}
 			
-			// Set this as the Plan's new Brochure
-			$objRatePlan	= new Rate_Plan(array('Id'=>$_POST['Plan_SetBrochure_RatePlanId']), true);
-			$objRatePlan->setBrochure($_FILES['Plan_SetBrochure_File']['tmp_name']);
+			// Populate new Content Version
+			$objDocumentContent->employee_id	= Flex::getUserId();
+			$objDocumentContent->status_id		= STATUS_ACTIVE;
+			
+			switch ($objDocument->document_nature_id)
+			{
+				case DOCUMENT_NATURE_FILE:
+					
+					break;
+					
+				case DOCUMENT_NATURE_FOLDER:
+					
+					break;
+			}
+			
+			$objDocumentContent->save();
 			
 			// Commit the transaction
 			DataAccess::getDataAccess()->TransactionCommit();

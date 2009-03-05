@@ -126,6 +126,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objDocument		= new Document(array('id'=>$intDocumentId));
 				$objDocumentContent	= $objDocument->getContentDetails();
 				
+				$objDocumentOutput->intId			= $objDocument->id;
 				$objDocumentOutput->strName			= $objDocumentContent->name;
 				$objDocumentOutput->strDescription	= $objDocumentContent->description;
 				$objDocumentOutput->strFriendlyName	= $objDocumentContent->getFriendlyName();
@@ -135,7 +136,8 @@ class JSON_Handler_Document extends JSON_Handler
 			}
 			else
 			{
-				// Assume we are viewing the root directory
+				// Assume we are viewing the root directory	
+				$objDocumentOutput->intId			= null;
 				$objDocumentOutput->strName			= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->strDescription	= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->strFriendlyName	= Document::ROOT_DIRECTORY_NAME;
