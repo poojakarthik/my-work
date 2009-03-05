@@ -140,6 +140,7 @@ class Rate_Plan extends ORM
 			$objBrochureDocument	= new Document();
 			$objBrochureDocument->document_nature_id	= DOCUMENT_NATURE_FILE;
 			$objBrochureDocument->employee_id			= Flex::getUserId();
+			$objBrochureDocument->is_system_document	= true;
 			$objBrochureDocument->save();
 			
 			// Set this as the new Brochure
@@ -201,6 +202,7 @@ class Rate_Plan extends ORM
 				$objAuthScriptDir	= new Document();
 				$objAuthScriptDir->document_nature_id	= DOCUMENT_NATURE_FOLDER;
 				$objAuthScriptDir->employee_id			= Employee::SYSTEM_EMPLOYEE_ID;
+				$objAuthScriptDir->is_system_document	= true;
 				$objAuthScriptDir->save();
 				
 				$objAuthScriptDirContent	= new Document_Content();
@@ -222,6 +224,7 @@ class Rate_Plan extends ORM
 				$objCustomerGroupDir	= new Document();
 				$objCustomerGroupDir->document_nature_id	= DOCUMENT_NATURE_FOLDER;
 				$objCustomerGroupDir->employee_id			= Employee::SYSTEM_EMPLOYEE_ID;
+				$objCustomerGroupDir->is_system_document	= true;
 				$objCustomerGroupDir->save();
 				
 				$objCustomerGroupDirContent	= new Document_Content();
@@ -242,6 +245,7 @@ class Rate_Plan extends ORM
 			$objAuthScriptDocument	= new Document();
 			$objAuthScriptDocument->document_nature_id	= DOCUMENT_NATURE_FILE;
 			$objAuthScriptDocument->employee_id			= Flex::getUserId();
+			$objAuthScriptDocument->is_system_document	= true;
 			$objAuthScriptDocument->save();
 			
 			// Set this as the new Brochure
