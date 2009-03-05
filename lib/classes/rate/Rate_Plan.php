@@ -113,7 +113,7 @@ class Rate_Plan extends ORM
 			}
 			if (!($objCustomerGroupDir = Document::getByPath("/Plan Brochures/{$this->customer_group}/")))
 			{
-				//throw new Exception("/Plan Brochures/customer_group/ not found!");
+				throw new Exception("/Plan Brochures/customer_group/ not found!");
 				
 				// Create the CustomerGroup node
 				$objCustomerGroupDir	= new Document();
