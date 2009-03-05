@@ -170,6 +170,8 @@ table.reflex tbody tr th.label
 	min-height		: 1.5em;
 	max-height		: 1.5em;
 	
+	font-size		: 10pt;
+	
 	vertical-align	: middle;
 	text-align		: right;
 	overflow		: hidden;
