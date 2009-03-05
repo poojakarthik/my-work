@@ -133,6 +133,7 @@ class Rate_Plan extends ORM
 			}
 			else
 			{
+				throw new Exception("CUSTOMER GROUP EXISTS");
 				$objCustomerGroupDirContent	= $objCustomerGroupDir->getContent();
 			}
 			
