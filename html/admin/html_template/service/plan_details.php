@@ -116,68 +116,74 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			
 			// Build the Plan Brochure link
 			$strBrochureCell	= '';
-			if ($arrRatePlan['brochure_document_id'])
+			if (Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
 			{
-				$objBrochureDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
-				$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
-				
-				if ($objBrochureDocumentContent && $objBrochureDocumentContent->bolHasContent)
+				if ($arrRatePlan['brochure_document_id'])
 				{
-					$objFileType		= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+					$objBrochureDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
+					$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
 					
-					$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objFileType->id}/16x16";
-					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
-					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /> Download</a>";
-					
-					$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick($arrRatePlan['customer_group'], array($arrRatePlan), DBO()->Account->Id->Value);
-					$strBrochureCell	.= "&nbsp;|&nbsp; <a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email this Brochure</a>";
+					if ($objBrochureDocumentContent && $objBrochureDocumentContent->bolHasContent)
+					{
+						$objFileType		= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+						
+						$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objFileType->id}/16x16";
+						$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
+						$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /> Download</a>";
+						
+						$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick($arrRatePlan['customer_group'], array($arrRatePlan), DBO()->Account->Id->Value);
+						$strBrochureCell	.= "&nbsp;|&nbsp; <a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email this Brochure</a>";
+					}
 				}
+				if (!$strBrochureCell)
+				{
+					$strBrochureCell	= "No Brochure Attached";
+				}
+				
+				echo "<div class='DefaultElement'>";
+				echo "	<div id='RatePlan.brochure_document_id.Output' class='DefaultOutput Default' name='RatePlan.brochure_document_id'>\n";
+				echo "		{$strBrochureCell}\n";
+				echo "	</div>\n";
+				echo "	<div id='RatePlan.brochure_document_id.Label' class='DefaultLabel'>\n";
+				echo "		<span>&nbsp;</span>\n";
+				echo "		<span id='RatePlan.brochure_document_id.Label.Text'>Brochure : </span>\n";
+				echo "	</div>\n";
+				echo "</div>";
 			}
-			if (!$strBrochureCell)
-			{
-				$strBrochureCell	= "No Brochure Attached";
-			}
-			
-			echo "<div class='DefaultElement'>";
-			echo "	<div id='RatePlan.brochure_document_id.Output' class='DefaultOutput Default' name='RatePlan.brochure_document_id'>\n";
-			echo "		{$strBrochureCell}\n";
-			echo "	</div>\n";
-			echo "	<div id='RatePlan.brochure_document_id.Label' class='DefaultLabel'>\n";
-			echo "		<span>&nbsp;</span>\n";
-			echo "		<span id='RatePlan.brochure_document_id.Label.Text'>Brochure : </span>\n";
-			echo "	</div>\n";
-			echo "</div>";
 			
 			// Build the Voice Auth Script link
 			$strAuthScriptCell	= '';
-			if ($arrRatePlan['auth_script_document_id'])
+			if (Flex_Module::isActive(FLEX_MODULE_PLAN_AUTH_SCRIPT))
 			{
-				$objAuthScriptDocument			= new Document(array('id'=>$arrRatePlan['auth_script_document_id']), true);
-				$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContentDetails();
-				
-				if ($objAuthScriptDocumentContent && $objAuthScriptDocumentContent->bolHasContent)
+				if ($arrRatePlan['auth_script_document_id'])
 				{
-					$objFileType		= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
+					$objAuthScriptDocument			= new Document(array('id'=>$arrRatePlan['auth_script_document_id']), true);
+					$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContentDetails();
 					
-					$strImageSrc		= "../admin/img/template/script.png";
-					$strAuthScriptLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
-					$strAuthScriptCell	= "<a href='{$strAuthScriptLink}' title='Download Authorisation Script'><img src='{$strImageSrc}' alt='Download Authorisation Script' /> Download</a>";
+					if ($objAuthScriptDocumentContent && $objAuthScriptDocumentContent->bolHasContent)
+					{
+						$objFileType		= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
+						
+						$strImageSrc		= "../admin/img/template/script.png";
+						$strAuthScriptLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
+						$strAuthScriptCell	= "<a href='{$strAuthScriptLink}' title='Download Authorisation Script'><img src='{$strImageSrc}' alt='Download Authorisation Script' /> Download</a>";
+					}
 				}
+				if (!$strAuthScriptCell)
+				{
+					$strAuthScriptCell	= "No Authorisation Script Attached";
+				}
+				
+				echo "<div class='DefaultElement'>";
+				echo "	<div id='RatePlan.auth_script_document_id.Output' class='DefaultOutput Default' name='RatePlan.auth_script_document_id'>\n";
+				echo "		{$strAuthScriptCell}\n";
+				echo "	</div>\n";
+				echo "	<div id='RatePlan.auth_script_document_id.Label' class='DefaultLabel'>\n";
+				echo "		<span>&nbsp;</span>\n";
+				echo "		<span id='RatePlan.auth_script_document_id.Label.Text'>Authorisation Script :</span>\n";
+				echo "	</div>\n";
+				echo "</div>";
 			}
-			if (!$strAuthScriptCell)
-			{
-				$strAuthScriptCell	= "No Authorisation Script Attached";
-			}
-			
-			echo "<div class='DefaultElement'>";
-			echo "	<div id='RatePlan.auth_script_document_id.Output' class='DefaultOutput Default' name='RatePlan.auth_script_document_id'>\n";
-			echo "		{$strAuthScriptCell}\n";
-			echo "	</div>\n";
-			echo "	<div id='RatePlan.auth_script_document_id.Label' class='DefaultLabel'>\n";
-			echo "		<span>&nbsp;</span>\n";
-			echo "		<span id='RatePlan.auth_script_document_id.Label.Text'>Authorisation Script :</span>\n";
-			echo "	</div>\n";
-			echo "</div>";
 			
 			// PLAN DETAILS
 			$dboRatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);	
