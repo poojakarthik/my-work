@@ -331,13 +331,25 @@ div.reflex-popup-title-bar {
 	height				: auto;
 	background-color	: #000000;
 	padding				: 3px;
+	background-image	: url('../img/template/background.png');
+	background-repeat	: repeat-x;
 }
 
 div.reflex-popup-title {
 	color : #EEEEEE;
 	float : left;
 	width : 79%;
+	font-weight: bold;
 	
+}
+
+span.reflex-popup-title-text {
+	vertical-align: middle;
+}
+
+img.reflex-popup-title-icon {
+	vertical-align: middle;
+	margin-right: 0.25em;
 }
 
 div.reflex-popup-title-bar-buttons {
