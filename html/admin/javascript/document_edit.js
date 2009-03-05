@@ -193,7 +193,7 @@ var Document_Edit	= Class.create
 			this.elmInputSystem.id		= "Document_Edit_System";
 			this.elmInputSystem.name	= "Document_Edit_System";
 			this.elmInputSystem.type	= 'checkbox';
-			this.elmInputSystem.value	= strDocumentNature;
+			this.elmInputSystem.value	= true;
 			this.elmInputsTDSystem.appendChild(this.elmInputSystem);
 			
 			this.elmLabelSystem				= document.createElement('label');
