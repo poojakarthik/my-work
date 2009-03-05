@@ -34,7 +34,7 @@ class Application_Handler_Document extends Application_Handler
 			}
 			$intDocumentNature		= constant($_POST['Document_Edit_Nature']);
 			
-			if ($intDocumentId = (int)$_POST['Document_Edit_Id'])
+			if (!($intDocumentId = (int)$_POST['Document_Edit_Id']))
 			{
 				// Does a Document exist at this path?
 				if ($intParentDocumentId)
