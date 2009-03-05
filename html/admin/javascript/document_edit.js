@@ -214,8 +214,8 @@ var Document_Edit	= Class.create
 	{
 		if (this.elmInputsDIVFileReplace != undefined)
 		{
-			alert(this.elmForm.Document_Edit_File_Replace.value);
-			if (this.elmForm.Document_Edit_File_Replace.value == 'true')
+			alert(this.elmForm.Document_Edit_File_Replace);
+			if (this.elmForm.Document_Edit_File_Replace == 'true')
 			{
 				this.elmInputsDIVFile.style.display	= 'block';
 				this.elmInputFile.disabled			= false;
