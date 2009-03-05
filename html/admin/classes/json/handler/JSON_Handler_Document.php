@@ -131,6 +131,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objDocumentOutput->strDescription	= $objDocumentContent->description;
 				$objDocumentOutput->strFriendlyName	= $objDocumentContent->getFriendlyName();
 				$objDocumentOutput->editable		= ((!$objDocument->is_system_document && $bolProperAdmin) || $bolGOD) ? true : false;
+				$objDocumentOutput->system			= $objDocument->is_system_document;
 				
 				$objDocumentOutput->arrPath			= $objDocument->getPath(true);
 			}
@@ -142,6 +143,8 @@ class JSON_Handler_Document extends JSON_Handler
 				$objDocumentOutput->strDescription	= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->strFriendlyName	= Document::ROOT_DIRECTORY_NAME;
 				$objDocumentOutput->editable		= $bolProperAdmin;
+				$objDocumentOutput->system			= $objDocument->is_system_document;
+				
 				$objDocumentOutput->arrPath			= array($arrRootDir);
 			}
 			
