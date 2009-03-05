@@ -140,7 +140,7 @@ var Document_Explorer	= Class.create
 				}
 				else
 				{
-					strIcon							= "<img class='document-explorer-icon' src=''../admin/img/template/home.png' />";
+					strIcon							= "<img class='document-explorer-icon' src='../admin/img/template/home.png' />";
 				}
 				
 				var strOnClick	= (i < objResponse.objDocument.arrPath.length - 1) ? "onclick='Flex.Document.Explorer.update("+objResponse.objDocument.arrPath[i].document_id+");'" : '';
