@@ -210,7 +210,7 @@ var Document_Edit	= Class.create
 	
 	_updateFileUpload	: function()
 	{
-		if (this.elmInputsTDFileReplace != undefined)
+		if (this.elmInputsDIVFileReplace != undefined)
 		{
 			if (this.elmForm.Document_Edit_File_Replace.value == 'true')
 			{
