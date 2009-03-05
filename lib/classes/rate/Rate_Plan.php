@@ -79,8 +79,6 @@ class Rate_Plan extends ORM
 			throw new Exception("Unable to open file '{$strFilePath}' to set as Plan Brochure");
 		}
 		
-		$objCustomerGroupDir	= null;
-		
 		// Is there already an existing Brochure?
 		if ($this->brochure_document_id)
 		{
@@ -152,11 +150,6 @@ class Rate_Plan extends ORM
 		}
 		
 		$arrFileType	= File_Type::getForExtensionAndMimeType('pdf', 'application/pdf', true);
-		
-		if (!$objCustomerGroupDir->id)
-		{
-			throw new Exception(print_r($objCustomerGroupDir, true));
-		}
 		
 		// Create the new Content object
 		$objBrochureDocumentContent	= new Document_Content();
