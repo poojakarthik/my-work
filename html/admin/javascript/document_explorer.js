@@ -136,15 +136,15 @@ var Document_Explorer	= Class.create
 				if (i != 0)
 				{
 					this.elmBreadcrumbDIV.innerHTML	+= '<div class="document-explorer-address-separator"><img src="../admin/img/template/menu_open_right.png" /></div>';
-					strIcon							= '../admin/img/template/folder.png';
+					strIcon							= "<img class='document-explorer-icon' src='../admin/img/template/folder.png' />";
 				}
 				else
 				{
-					strIcon							= '../admin/img/template/home.png';
+					strIcon							= "<img class='document-explorer-icon' src=''../admin/img/template/home.png' />";
 				}
 				
 				var strOnClick	= (i < objResponse.objDocument.arrPath.length - 1) ? "onclick='Flex.Document.Explorer.update("+objResponse.objDocument.arrPath[i].document_id+");'" : '';
-				this.elmBreadcrumbDIV.innerHTML	+= "<div class='document-explorer-address-node' "+strOnClick+"><img class='document-explorer-icon' src='"+strIcon+"' /><span class='node-label'>"+objResponse.objDocument.arrPath[i].friendly_name+"</span></div>";
+				this.elmBreadcrumbDIV.innerHTML	+= "<div class='document-explorer-address-node' "+strOnClick+">"+strIcon+"<span class='node-label'>"+objResponse.objDocument.arrPath[i].friendly_name+"</span></div>";
 			}
 
 			// Build Document Listing
