@@ -182,7 +182,7 @@ var Document_Edit	= Class.create
 			
 			this.elmInputsTHSystem				= document.createElement('th');
 			this.elmInputsTHSystem.className	= "label";
-			this.elmInputsTHSystem.innerHTML	= "Attributes :";
+			this.elmInputsTHSystem.innerHTML	= "&nbsp;";
 			this.elmInputsTRSystem.appendChild(this.elmInputsTHSystem);
 			
 			this.elmInputsTDSystem				= document.createElement('td');
