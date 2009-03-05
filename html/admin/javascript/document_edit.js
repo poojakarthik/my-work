@@ -140,7 +140,6 @@ var Document_Edit	= Class.create
 			}
 			
 			this.elmInputsTRFile				= document.createElement('tr');
-			this.elmInputsTRFile.style.display	= strFileInputDisplay;
 			this.elmInputsTableBody.appendChild(this.elmInputsTRFile);
 			
 			this.elmInputsTHFile				= document.createElement('th');
