@@ -190,7 +190,33 @@ var Document_Edit	= Class.create
 	
 	_submit	: function()
 	{
-		alert("SUBMIT'D");
+		// Ensure that all fields are populated
+		var arrErrors	= new Array();
+
+		if (!this.elmInputsTDName.value.replace(/(^\s+|\s+$)/g, '').length)
+		{
+			arrErrors.push("[!] Please enter a Name for the Document");
+		}
+		if (this.elmInputFile && this.elmInputFile.disabled == false && !this.elmInputFile.value)
+		{
+			arrErrors.push("[!] Please select a File to upload");
+		}
+		
+		if (arrErrors.length)
+		{
+			var strError	= "There is an error with your input.  Please satisfy the following requirements before submitting again:<br />";
+			for (i = 0; i < arrErrors.length; i++)
+			{
+				strError	+=  "<br />" + arrErrors[i];
+			}
+			$Alert(strError);
+			return false;
+		}
+		
+		// Show the Loading Splash
+		Vixen.Popup.ShowPageLoadingSplash("Delivering Email...", null, null, null, 1);
+		
+		// Perform AJAX query
 		return false;
 	},
 	
