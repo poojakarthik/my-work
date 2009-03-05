@@ -193,7 +193,7 @@ var Document_Edit	= Class.create
 		// Ensure that all fields are populated
 		var arrErrors	= new Array();
 
-		if (!this.elmInputsTDName.value.replace(/(^\s+|\s+$)/g, '').length)
+		if (!this.elmInputName.value.replace(/(^\s+|\s+$)/g, '').length)
 		{
 			arrErrors.push("[!] Please enter a Name for the Document");
 		}
