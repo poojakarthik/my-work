@@ -223,6 +223,7 @@ var Document_Edit	= Class.create
 	
 	_submitResponse	: function(objResponse)
 	{
+		Vixen.Popup.ClosePageLoadingSplash();
 		if (objResponse.Success)
 		{
 			
