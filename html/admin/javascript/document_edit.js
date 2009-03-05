@@ -199,7 +199,7 @@ var Document_Edit	= Class.create
 			this.elmLabelSystem				= document.createElement('label');
 			this.elmLabelSystem.setAttribute('for', this.elmInputSystem.id); 
 			this.elmLabelSystem.innerHTML	= "This is a System "+this.strFriendlyName;
-			this.elmInputsDIVFileReplace.appendChild(this.elmLabelSystem);
+			this.elmInputsTDSystem.appendChild(this.elmLabelSystem);
 		}
 		
 		// BUTTONS
