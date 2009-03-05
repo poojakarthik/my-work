@@ -103,42 +103,6 @@ var Document_Edit	= Class.create
 		// FILE
 		if (strDocumentNature === 'DOCUMENT_NATURE_FILE')
 		{
-			if (objDocument)
-			{
-				this.elmInputsTRFileReplace			= document.createElement('tr');
-				this.elmInputsTableBody.appendChild(this.elmInputsTRFileReplace);
-				
-				this.elmInputsTDFileReplace				= document.createElement('td');
-				this.elmInputsTDFileReplace.className	= "label";
-				this.elmInputsTDFileReplace.innerHTML	= "Do you want to replace the existing Document Content?";
-				this.elmInputsTRFileReplace.appendChild(this.elmInputsTDFileReplace);
-				
-				this.elmInputFileReplaceNo			= document.createElement('input');
-				this.elmInputFileReplaceNo.checked	= true;
-				this.elmInputFileReplaceNo.type		= 'radio';
-				this.elmInputFileReplaceNo.id		= 'Document_Edit_File_Replace_No';
-				this.elmInputFileReplaceNo.name		= 'Document_Edit_File_Replace';
-				this.elmInputFileReplaceNo.value	= 'false';
-				this.elmInputsTDFileReplace.appendChild(this.elmInputFileReplaceNo);
-				
-				this.elmLabelFileReplaceNo				= document.createElement('label');
-				this.elmLabelFileReplaceNo.setAttribute('for', this.elmInputFileReplaceNo.id);
-				this.elmLabelFileReplaceNo.innerHTML	= "Keep the existing Document Content";
-				this.elmInputsTDFileReplace.appendChild(this.elmLabelFileReplaceNo);
-				
-				this.elmInputFileReplaceYes			= document.createElement('input');
-				this.elmInputFileReplaceYes.type	= 'radio';
-				this.elmInputFileReplaceYes.id		= 'Document_Edit_File_Replace_Yes';
-				this.elmInputFileReplaceYes.name	= 'Document_Edit_File_Replace';
-				this.elmInputFileReplaceYes.value	= 'true';
-				this.elmInputsTDFileReplace.appendChild(this.elmInputFileReplaceYes);
-				
-				this.elmLabelFileReplaceYes			= document.createElement('label');
-				this.elmLabelFileReplaceYes.setAttribute('for', this.elmInputFileReplaceYes.id); 
-				this.elmLabelFileReplaceNo.innerHTML	= "Replace the Document Content";
-				this.elmInputsTDFileReplace.appendChild(this.elmLabelFileReplaceYes);
-			}
-			
 			this.elmInputsTRFile				= document.createElement('tr');
 			this.elmInputsTableBody.appendChild(this.elmInputsTRFile);
 			
@@ -151,10 +115,46 @@ var Document_Edit	= Class.create
 			this.elmInputsTDFile.className		= "input";
 			this.elmInputsTRFile.appendChild(this.elmInputsTDFile);
 			
+			if (objDocument)
+			{
+				this.elmInputsDIVFileReplace		= document.createElement('div');
+				this.elmInputsTDFile.appendChild(this.elmInputsDIVFileReplace);
+				
+				this.elmInputFileReplaceNo			= document.createElement('input');
+				this.elmInputFileReplaceNo.checked	= true;
+				this.elmInputFileReplaceNo.type		= 'radio';
+				this.elmInputFileReplaceNo.id		= 'Document_Edit_File_Replace_No';
+				this.elmInputFileReplaceNo.name		= 'Document_Edit_File_Replace';
+				this.elmInputFileReplaceNo.value	= 'false';
+				this.elmInputsDIVFileReplace.appendChild(this.elmInputFileReplaceNo);
+				
+				this.elmLabelFileReplaceNo				= document.createElement('label');
+				this.elmLabelFileReplaceNo.setAttribute('for', this.elmInputFileReplaceNo.id);
+				this.elmLabelFileReplaceNo.innerHTML	= "Keep the existing Document Content";
+				this.elmInputsDIVFileReplace.appendChild(this.elmLabelFileReplaceNo);
+				
+				this.elmInputsDIVFileReplace.appendChild(document.createElement('br'));
+				
+				this.elmInputFileReplaceYes			= document.createElement('input');
+				this.elmInputFileReplaceYes.type	= 'radio';
+				this.elmInputFileReplaceYes.id		= 'Document_Edit_File_Replace_Yes';
+				this.elmInputFileReplaceYes.name	= 'Document_Edit_File_Replace';
+				this.elmInputFileReplaceYes.value	= 'true';
+				this.elmInputsDIVFileReplace.appendChild(this.elmInputFileReplaceYes);
+				
+				this.elmLabelFileReplaceYes			= document.createElement('label');
+				this.elmLabelFileReplaceYes.setAttribute('for', this.elmInputFileReplaceYes.id); 
+				this.elmLabelFileReplaceNo.innerHTML	= "Replace the Document Content";
+				this.elmInputsDIVFileReplace.appendChild(this.elmLabelFileReplaceYes);
+			}
+			
+			this.elmInputsDIVFile				= document.createElement('div');
+			this.elmInputsTDFile.appendChild(this.elmInputsDIVFile);
+			
 			this.elmInputFile					= document.createElement('input');
 			this.elmInputFile.name				= "Document_Edit_File";
 			this.elmInputFile.type				= 'file';
-			this.elmInputsTDFile.appendChild(this.elmInputFile);
+			this.elmInputsDIVFile.appendChild(this.elmInputFile);
 			
 			this._updateFileUpload();
 		}
@@ -214,18 +214,18 @@ var Document_Edit	= Class.create
 		{
 			if (this.elmForm.Document_Edit_File_Replace.value == 'true')
 			{
-				this.elmInputsTRFile.style.display	= 'table-row';
+				this.elmInputsDIVFile.style.display	= 'block';
 				this.elmInputFile.disabled			= false;
 			}
 			else
 			{
-				this.elmInputsTRFile.style.display	= 'none';
+				this.elmInputsDIVFile.style.display	= 'none';
 				this.elmInputFile.disabled			= true;
 			}
 		}
 		else
 		{
-			this.elmInputsTRFile.style.display	= 'table-row';
+			this.elmInputsDIVFile.style.display	= 'block';
 			this.elmInputFile.disabled			= false;
 		}
 	}
