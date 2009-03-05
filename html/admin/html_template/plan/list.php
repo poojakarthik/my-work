@@ -310,7 +310,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		
 		echo "<div class='SmallSeparator'></div>";
 		
-		if (Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURES))
+		if (Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
 		{
 			echo "<div class='GroupedContent'><span style='font-weight:bold;'>With Selected : </span><a onclick='{$strWithSelectedEmailOnClick}'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email Brochures</a></div>";
 		}
