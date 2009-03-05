@@ -135,7 +135,8 @@ table.reflex tbody tr td.input select
 
 table.reflex tbody tr td.input input[type="checkbox"]
 {
-	margin-right	: 0.5em;
+	margin-right	: 0.25em;
+	vertical-align	: text-bottom;
 }
 
 table.reflex th.reflex-unsorted, 
