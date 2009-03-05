@@ -79,6 +79,8 @@ class Rate_Plan extends ORM
 			throw new Exception("Unable to open file '{$strFilePath}' to set as Plan Brochure");
 		}
 		
+		$objCustomerGroupDir	= null;
+		
 		// Is there already an existing Brochure?
 		if ($this->brochure_document_id)
 		{
