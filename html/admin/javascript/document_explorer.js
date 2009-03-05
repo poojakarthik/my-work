@@ -471,7 +471,7 @@ var Document_Explorer	= Class.create
 					arrActions.push("<span onclick='"+this._generateEmailCall()+"'><img class='icon' src='../admin/img/template/email.png' />&nbsp;Email</span>");
 				}
 				
-				arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
+				//arrActions.push("<span onclick='alert(\"Delete some docs!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
 			}
 		}
 		else if (this.arrSelected.length == 1)
@@ -486,10 +486,12 @@ var Document_Explorer	= Class.create
 			
 			if (objChild.editable)
 			{
-				var strEditCall	= "(jQuery.json.jsonFunction(Flex.Document.Explorer.renderEditPopup.bind(Flex.Document.Explorer), null, \"Document\", \"getDetails\"))("+objChild.id+")";
+				var strEditCall		= "(jQuery.json.jsonFunction(Flex.Document.Explorer.renderEditPopup.bind(Flex.Document.Explorer), null, \"Document\", \"getDetails\"))("+objChild.id+")";
+				var strDeleteCall	= "(jQuery.json.jsonFunction(Flex.Document.Explorer._responseRefresh.bind(Flex.Document.Explorer), null, \"Document\", \"delete\"))("+objChild.id+");";
+				
 				
 				arrActions.push("<span onclick='"+strEditCall+"'><img class='icon' src='../admin/img/template/page_white_edit.png' />&nbsp;Edit</span>");
-				arrActions.push("<span onclick='alert(\"Delete a doc!\")'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
+				arrActions.push("<span onclick='"+strDeleteCall+"'><img class='icon' src='../admin/img/template/delete.png' />&nbsp;Delete</span>");
 			}
 		}
 		else
@@ -531,6 +533,49 @@ var Document_Explorer	= Class.create
 		var intAccountId	= 'null';
 		
 		return "Flex.Document.emailDocument("+strDocuments+", \""+strDescription+"\", "+strFrom+", \""+strSubject+"\", \""+strContent+"\", "+strTo+", "+intAccountId+");";
+	},
+	
+	_deleteDocument	: function(eEvent, bolConfirmed)
+	{
+		var objChild	= this.arrChildren[this.arrSelected[0]];
+		if (bolConfirmed)
+		{
+			// Confirmed
+			(jQuery.json.jsonFunction(Flex.Document.Explorer._responseRefresh.bind(Flex.Document.Explorer), null, "Document", "delete"))(objChild.id);
+		}
+		else if (bolConfirmed == undefined)
+		{
+			// Prompt
+			var strPopupId	= 'Flex_Document_Delete_Cancel_'+(Math.round(Math.random()*100));
+			Vixen.Popup.YesNoCancel("Are you sure you want to delete '"+objChild.friendly_name+"'?", this._deleteDocument.bind(this, null, true), Vixen.Popup.Close.bind(Vixen.Popup, strPopupId), null, null, strPopupId, "Delete Confirmation");
+		}
+		else
+		{
+			// Do nothing
+		}
+	},
+	
+	_responseRefresh	: function(objResponse)
+	{
+		if (objResponse.Success)
+		{
+			this.refresh();
+			if (objResponse.Message)
+			{
+				$Alert(objResponse.Message);
+			}
+			return true;
+		}
+		else if (objResponse.Success == undefined)
+		{
+			$Alert(objResponse);
+			return false;
+		}
+		else
+		{
+			$Alert(objResponse.Message);
+			return false;
+		}
 	},
 	
 	renderEditPopup	: function(objResponse)

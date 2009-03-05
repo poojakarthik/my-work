@@ -242,5 +242,52 @@ class JSON_Handler_Document extends JSON_Handler
 						);
 		}
 	}
+	
+	public function delete($intDocumentId)
+	{
+		try
+		{
+			try
+			{
+				if (!DataAccess::getDataAccess()->TransactionStart())
+				{
+					throw new Exception("Flex was unable to start a Transaction.  The Deletion has been aborted.  Please try again shortly.");
+				}
+				
+				$objDocument					= new Document(array('id'=>$intDocumentId), true);
+				$objDocumentContent				= $objDocument->getContent();
+				$objDocumentContent->id			= null;
+				$objDocumentContent->changed_on	= null;
+				$objDocumentContent->content	= null;
+				$objDocumentContent->status_id	= STATUS_INACTIVE;
+				$objDocumentContent->save();
+				
+				DataAccess::getDataAccess()->TransactionCommit();
+			}
+			catch (Exception $eException)
+			{
+				DataAccess::getDataAccess()->TransactionRollback();
+				throw $eException;
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							"Success"		=> true,
+							"Message"		=> "The ".GetConstantDescription($objDocument->document_nature_id, 'document_nature')." '{$objDocumentContent->name}' has been successfully deleted",
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+		catch (Exception $e)
+		{
+			// Send an Email to Devs
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
+			return array(
+							"Success"	=> false,
+							"Message"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+	}
 }
 ?>
