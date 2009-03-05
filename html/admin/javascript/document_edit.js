@@ -174,6 +174,34 @@ var Document_Edit	= Class.create
 			this._updateFileUpload();
 		}
 		
+		// SYSTEM
+		if (Flex.Document.objUser.bolGOD && !objDocument)
+		{
+			this.elmInputsTRSystem				= document.createElement('tr');
+			this.elmInputsTableBody.appendChild(this.elmInputsTRSystem);
+			
+			this.elmInputsTHSystem				= document.createElement('th');
+			this.elmInputsTHSystem.className	= "label";
+			this.elmInputsTHSystem.innerHTML	= "&nbsp;";
+			this.elmInputsTRSystem.appendChild(this.elmInputsTHSystem);
+			
+			this.elmInputsTDSystem				= document.createElement('td');
+			this.elmInputsTDSystem.className		= "input";
+			this.elmInputsTRSystem.appendChild(this.elmInputsTDSystem);
+			
+			this.elmInputSystem			= document.createElement('input');
+			this.elmInputSystem.id		= "Document_Edit_System";
+			this.elmInputSystem.name	= "Document_Edit_System";
+			this.elmInputSystem.type	= 'checkbox';
+			this.elmInputSystem.value	= strDocumentNature;
+			this.elmInputsTDSystem.appendChild(this.elmInputSystem);
+			
+			this.elmLabelSystem				= document.createElement('label');
+			this.elmLabelSystem.setAttribute('for', this.elmInputSystem.id); 
+			this.elmLabelSystem.innerHTML	= "This is a System "+this.strFriendlyName;
+			this.elmInputsDIVFileReplace.appendChild(this.elmLabelSystem);
+		}
+		
 		// BUTTONS
 		this.elmButtonsDIV					= document.createElement('div');
 		this.elmButtonsDIV.style.textAlign	= 'center';
