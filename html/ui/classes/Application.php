@@ -203,18 +203,23 @@ class Application
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
 
-			// TODO: Change this permission to CREDIT_CONTROL
-			ContextMenu()->Admin->Contracts->ManageBreachedContracts();
-
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			if (Flex_Module::isActive(FLEX_MODULE_CONTRACT_MANAGEMENT))
 			{
-				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadProposed();
-				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadDNCR();
-				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDNCR();
-				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadPermitted();
-				//ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDiallerReport();
+				ContextMenu()->Admin->Contracts->ManageBreachedContracts();
+			}
 
-				ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
+			if (Flex_Module::isActive(FLEX_MODULE_TELEMARKETING))
+			{
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+				{
+					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadProposed();
+					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadDNCR();
+					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDNCR();
+					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadPermitted();
+					//ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDiallerReport();
+	
+					ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
+				}
 			}
 		}
 
@@ -393,18 +398,23 @@ class Application
 				ContextMenu()->Admin->System_Settings->ViewAllCustomerGroups();
 			}
 
-			// TODO: Change this permission to CREDIT_CONTROL
-			ContextMenu()->Admin->Contracts->ManageBreachedContracts();
-
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			if (Flex_Module::isActive(FLEX_MODULE_CONTRACT_MANAGEMENT))
 			{
-				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadProposed();
-				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadDNCR();
-				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDNCR();
-				ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadPermitted();
-				//ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDiallerReport();
+				ContextMenu()->Admin->Contracts->ManageBreachedContracts();
+			}
 
-				ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
+			if (Flex_Module::isActive(FLEX_MODULE_TELEMARKETING))
+			{
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+				{
+					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadProposed();
+					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadDNCR();
+					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDNCR();
+					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadPermitted();
+					//ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDiallerReport();
+	
+					ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
+				}
 			}
 		}
 
