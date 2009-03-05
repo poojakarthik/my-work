@@ -797,7 +797,7 @@ div.document-explorer-list
 	max-height			: 30em;
 	overflow-y			: scroll;
 	/*background-color	: #DDD;*/
-	background-color	: #aaa;
+	background-color	: #efefef;
 }
 
 
@@ -918,7 +918,7 @@ table.document-explorer .field-actions
 
 table.document-explorer tr[onclick]
 {
-	
+	background-color	: #efefef;
 }
 
 table.document-explorer tr.selected[onclick] td
