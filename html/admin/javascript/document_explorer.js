@@ -487,7 +487,7 @@ var Document_Explorer	= Class.create
 			if (objChild.editable)
 			{
 				var strEditCall		= "(jQuery.json.jsonFunction(Flex.Document.Explorer.renderEditPopup.bind(Flex.Document.Explorer), null, \"Document\", \"getDetails\"))("+objChild.id+")";
-				var strDeleteCall	= "(jQuery.json.jsonFunction(Flex.Document.Explorer._responseRefresh.bind(Flex.Document.Explorer), null, \"Document\", \"delete\"))("+objChild.id+");";
+				var strDeleteCall	= "Flex.Document.Explorer._deleteDocument("+objChild.id+");";
 				
 				
 				arrActions.push("<span onclick='"+strEditCall+"'><img class='icon' src='../admin/img/template/page_white_edit.png' />&nbsp;Edit</span>");
@@ -547,7 +547,14 @@ var Document_Explorer	= Class.create
 		{
 			// Prompt
 			var strPopupId	= 'Flex_Document_Delete_Cancel_'+(Math.round(Math.random()*100));
-			Vixen.Popup.YesNoCancel("Are you sure you want to delete '"+objChild.friendly_name+"'?", this._deleteDocument.bind(this, null, true), Vixen.Popup.Close.bind(Vixen.Popup, strPopupId), null, null, strPopupId, "Delete Confirmation");
+			
+			var strMessage	= "Are you sure you want to delete '"+objChild.friendly_name+"'?";
+			if (objChild.nature === 'DOCUMENT_NATURE_FOLDER')
+			{
+				strMessage	+= "<br />WARNING: This will also delete all Documents and Folders contained within this Folder!";
+			}
+			
+			Vixen.Popup.YesNoCancel(strMessage, this._deleteDocument.bind(this, null, true), Vixen.Popup.Close.bind(Vixen.Popup, strPopupId), null, null, strPopupId, "Delete Confirmation");
 		}
 		else
 		{
