@@ -106,7 +106,7 @@ var Document_Edit	= Class.create
 			if (objDocument)
 			{
 				this.elmInputsTRFileReplace			= document.createElement('tr');
-				this.elmFileTableBody.appendChild(this.elmInputsTRFileReplace);
+				this.elmInputsTableBody.appendChild(this.elmInputsTRFileReplace);
 				
 				this.elmInputsTDFileReplace				= document.createElement('td');
 				this.elmInputsTDFileReplace.className	= "label";
