@@ -269,7 +269,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				$bolInterimAllowed	= Flex_Module::isActive(FLEX_MODULE_INVOICE_FINAL);
 				break;
 			case INVOICE_RUN_TYPE_INTERIM:
-				$bolInterimAllowed	= Flex_Module::isActive(INVOICE_RUN_TYPE_INTERIM);
+				$bolInterimAllowed	= Flex_Module::isActive(FLEX_MODULE_INVOICE_INTERIM);
 				break;
 		}
 		
