@@ -117,6 +117,8 @@ var Document_Edit	= Class.create
 			
 			if (objDocument)
 			{
+				this.elmInputsTHFile.style.verticalAlign	= "top";
+				
 				this.elmInputsDIVFileReplace		= document.createElement('div');
 				this.elmInputsTDFile.appendChild(this.elmInputsDIVFileReplace);
 				
