@@ -154,7 +154,7 @@ class JSON_Handler_Document extends JSON_Handler
 				$objChildContent	= $objChild->getContentDetails();
 				
 				// Hide system documents from general users
-				if (!(bool)$objChild->is_system_document || $bolSuperAdmin)
+				if ($objChildContent->status_id == STATUS_ACTIVE && (!(bool)$objChild->is_system_document || $bolSuperAdmin))
 				{
 					$objChildOutput	= new stdClass();
 					
