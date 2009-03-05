@@ -930,7 +930,7 @@ table.document-explorer tr.selected[onclick] td
 table.document-explorer tr.selected[onclick]:hover td
 {
 	/*background-color	: #fff;*/
-	background-color	: #bbb;
+	background-color	: #ccc;
 }
 
 table.document-explorer tbody tr[onclick]:hover
