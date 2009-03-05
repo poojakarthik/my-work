@@ -260,19 +260,6 @@ class Application_Handler_Ticketing extends Application_Handler
 		// Handle viewing the ticket functionality in the context of a single declared account
 		$objCurrentAccount = (array_key_exists("Account", $_REQUEST)) ? Account::getForId(intval($_REQUEST['Account'])) : NULL;
 
-		BreadCrumb()->EmployeeConsole();
-		if ($objCurrentAccount)
-		{
-			BreadCrumb()->AccountOverview($objCurrentAccount->id, TRUE);
-			BreadCrumb()->ViewTicketsForAccount($objCurrentAccount->id, TRUE);
-			
-			AppTemplateAccount::BuildContextMenu($objCurrentAccount->id);
-		}
-		else
-		{
-			BreadCrumb()->TicketingConsole(TRUE);
-		}
-
 		$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
 
 		if (is_numeric($action))
@@ -502,22 +489,24 @@ class Application_Handler_Ticketing extends Application_Handler
 										break;
 									}
 									// Need to check that the account exists
-									$value = Account::getForId(intval($value));
-									if (!$value)
+									$account = Account::getForId(intval($value));
+									if (!$account)
 									{
-										$ticket->accountId = $value->id;
+										// return the invalid value
+										$ticket->accountId = $value;
+										
 										$invalidValues[$editableValue] = 'The account number is invalid.';
 									}
 									else
 									{
 										// The account number is valid
-										if ($objCurrentAccount && $value->id != $objCurrentAccount->id)
+										if ($objCurrentAccount && $account->id != $objCurrentAccount->id)
 										{
 											$invalidValues[$editableValue] = 'The account number is not for the current account.';
 										}
 										
-										$ticket->accountId = $value->id;
-										$ticket->customerGroupId = $value->customerGroup;
+										$ticket->accountId = $account->id;
+										$ticket->customerGroupId = $account->customerGroup;
 									}
 									break;
 
@@ -751,6 +740,14 @@ class Application_Handler_Ticketing extends Application_Handler
 							{
 								$ticket->assignTo(Ticketing_User::getForId($ticket->ownerId));
 							}
+							
+							// Handle the possible changing of account context
+							/*if ($objCurrentAccount)
+							{
+								// The page is being viewed in the context of a single account, but if the ticket's associated account changed, 
+								// then we want to change this account context to that of the ticket
+								$objCurrentAccount = Account::getForId($ticket->accountId);
+							}*/
 						}
 					}
 					else
@@ -808,6 +805,21 @@ class Application_Handler_Ticketing extends Application_Handler
 														);
 			}
 		}
+		
+		// Build breadcrumb and dropdown menus
+		BreadCrumb()->EmployeeConsole();
+		if ($objCurrentAccount)
+		{
+			BreadCrumb()->AccountOverview($objCurrentAccount->id, TRUE);
+			BreadCrumb()->ViewTicketsForAccount($objCurrentAccount->id, TRUE);
+			
+			AppTemplateAccount::BuildContextMenu($objCurrentAccount->id);
+		}
+		else
+		{
+			BreadCrumb()->TicketingConsole(TRUE);
+		}
+		
 		$this->LoadPage('ticketing_ticket', HTML_CONTEXT_DEFAULT, $detailsToRender);
 	}
 

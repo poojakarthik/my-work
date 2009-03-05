@@ -284,6 +284,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					}
 					if (accountId.lastAjax == accountId.value)
 					{
+						accountId.className = '';
 						return;
 					}
 					accountId.lastAjax = accountId.value;
@@ -344,6 +345,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						var name = services[i]['fnn'] +" ("+ services[i]['status_description'] +")";
 						var option = document.createElement('option');
 						option.value = id;
+						option.selected = services[i]['selected'];
 						option.appendChild(document.createTextNode(name));
 						serviceId.appendChild(option);
 					}
@@ -457,6 +459,33 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					
 					elmCategory.lastCategoryId = elmCategory.value;
 				}	
+
+				function revertTicketDetails(ticketId)
+				{
+					var remoteFunction = jQuery.json.jsonFunction(revertTicketDetailsReturnHandler, null, 'Ticketing', 'getTicketDetails');
+					remoteFunction(ticketId);
+				}
+
+				function revertTicketDetailsReturnHandler(response)
+				{
+					var accountId = $ID('accountId');
+					if (!response['isValid'])
+					{
+						accountId.className = 'invalid';
+					}
+					else
+					{
+						accountId.className = '';
+					}
+					accountId.value = response['accountId'];
+					accountId.lastAjax = accountId.value;
+					$selectedContactValue = response['selectedContactId'];
+					
+					populateContactList(response['contacts']);
+					populateServiceList(response['services']);
+					setCustomerGroup(response['customerGroupName']);
+				}
+
 	
 				function onTicketingLoad()
 				{
@@ -621,9 +650,14 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 									$allowCreation = TRUE;
 								}
 								elseif (array_search('accountId', $editableValues) !== FALSE)
+								/*if (array_search('accountId', $editableValues) !== FALSE)*/
 								{
 									$accountId = $ticket && $ticket->accountId ?$ticket->accountId : ''; 
 									?><input type="text" id="accountId" name="accountId" class="<?=$invalid?>" size="50" value="<?=$accountId?>" /><?php
+									if ($ticket && $ticket->id)
+									{
+										echo "<input type='button' class='reflex-button' onclick='revertTicketDetails({$ticket->id})' value='Revert to saved account details' />";
+									}
 									$allowCreation = TRUE;
 								}
 								else

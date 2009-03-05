@@ -63,6 +63,69 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		return $response;
 	}
 
+	// Currently returns account / contact / service details for a given ticket
+	public function getTicketDetails($ticketId)
+	{
+		if (!Ticketing_User::currentUserIsTicketingUser())
+		{
+			return array('ERROR' => "You are not authorised to perform this action.");
+		}
+
+		$response = array();
+
+		$ticket = Ticketing_Ticket::getForId($ticketId);
+
+		if (!$ticket)
+		{
+			$response['isValid'] = FALSE;
+			return $response;
+		}
+
+		$response['isValid'] = TRUE;
+		
+		$account = Account::getForId($ticket->accountId);
+		if ($account)
+		{
+			// An account was found
+			$customerGroup = Customer_Group::getForId($account->customerGroup);
+			$response['customerGroupName'] = ($customerGroup)? $customerGroup->name : '';
+			$response['accountId'] = $account->id;
+		}
+		else
+		{
+			$response['customerGroupName'] = '';
+			$response['accountId'] = '';
+		}
+		
+		// Retrieve all services associated with the account, and flag the ones that are associated with the ticket
+		$arrServices			= $account ? $account->listServices(array(SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_PENDING)) : array();
+		$arrTicketServices		= $ticket->getServices();
+		$response['services']	= array();
+		foreach ($arrServices as $objService)
+		{
+			$response['services'][] = array("service_id"			=> $objService->id,
+											"fnn"					=> $objService->fNN,
+											"status_description"	=> $GLOBALS['*arrConstant']['service_status'][$objService->status]['Description'],
+											"selected"				=> array_key_exists($objService->id, $arrTicketServices)
+											);
+		}
+		
+		// Contacts
+		// Retrieve all contacts associated with the account and ticket, and flag the one that is selected (if one is select, but one always should be)
+		$contacts = Ticketing_Contact::listForAccountAndTicket($account, $ticket);
+		$response['contacts'] = array();
+		foreach ($contacts as $contact)
+		{
+			$response['contacts'][] = array('id'		=> $contact->id, 
+											'name'		=> $contact->getName(),
+											'selected'	=> (bool)($ticket->contactId == $contact->id));
+		}
+		$response['selectedContactId'] = $ticket->contactId;
+
+		return $response;
+	}
+
+
 	// This will run the report, 
 	public function buildSummaryReport($arrOwners, $arrCategories, $arrStatusTypes, $arrStatuses, $strEarliestTime, $strLatestTime, $strRenderMode)
 	{

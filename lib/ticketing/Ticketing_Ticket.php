@@ -491,6 +491,7 @@ class Ticketing_Ticket
 		return Ticketing_Status::getForId($this->statusId);
 	}
 
+	// Returns an array of Ticketing_Ticket_Service objects with each record's service_id as its key
 	public function getServices($forceReset=FALSE)
 	{
 		if (!$this->id)
