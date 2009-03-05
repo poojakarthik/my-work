@@ -144,7 +144,7 @@ var Document_Edit	= Class.create
 				
 				this.elmLabelFileReplaceYes			= document.createElement('label');
 				this.elmLabelFileReplaceYes.setAttribute('for', this.elmInputFileReplaceYes.id); 
-				this.elmLabelFileReplaceNo.innerHTML	= "Replace the Document Content";
+				this.elmLabelFileReplaceYes.innerHTML	= "Replace the Document Content";
 				this.elmInputsDIVFileReplace.appendChild(this.elmLabelFileReplaceYes);
 			}
 			
