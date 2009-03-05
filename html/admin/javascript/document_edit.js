@@ -172,7 +172,7 @@ var Document_Edit	= Class.create
 		
 		this.elmSubmit				= document.createElement('input');
 		this.elmSubmit.name			= "Document_Edit_Submit";
-		this.elmSubmit.type			= "submit";
+		this.elmSubmit.type			= "button";
 		this.elmSubmit.value		= "Save";
 		this.elmButtonsDIV.appendChild(this.elmSubmit);
 		
@@ -244,9 +244,7 @@ var Document_Edit	= Class.create
 			this.elmInputFileReplaceYes.addEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
 		}
 		
-		//this.elmForm.addEventListener('submit', this._submit.bindAsEventListener(this), false);
-		this.elmForm.addEventListener('submit', function(){return false;}, false);
-		
+		this.elmSubmit.addEventListener('click', this._submit.bindAsEventListener(this), false);
 		this.elmCancel.addEventListener('click', this._cancel.bindAsEventListener(this), false);
 	},
 	
@@ -257,9 +255,8 @@ var Document_Edit	= Class.create
 			this.elmInputFileReplaceNo.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
 			this.elmInputFileReplaceYes.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
 		}
-		
-		this.elmForm.removeEventListener('submit', this._submit.bindAsEventListener(this), false);
-		
+
+		this.elmSubmit.removeEventListener('click', this._submit.bindAsEventListener(this), false);
 		this.elmCancel.removeEventListener('click', this._cancel.bindAsEventListener(this), false);
 	}
 });
