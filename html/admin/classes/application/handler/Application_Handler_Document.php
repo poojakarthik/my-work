@@ -54,7 +54,7 @@ class Application_Handler_Document extends Application_Handler
 				// Create the Document
 				$objDocument						= new Document();
 				$objDocument->employee_id			= Flex::getUserId();
-				$objDocument->is_system_document	= ($_POST['Document_Edit_System'] === true) ? true : false;
+				$objDocument->is_system_document	= ($_POST['Document_Edit_System'] === 'true') ? true : false;
 				
 				if (GetConstantName(constant($_POST['Document_Edit_Nature']), 'document_nature') !== $_POST['Document_Edit_Nature'])
 				{
