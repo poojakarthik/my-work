@@ -83,98 +83,104 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		
 		// Build the Plan Brochure link
 		$strBrochureCell	= '';
-		if ($arrRatePlan['brochure_document_id'])
+		if (Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
 		{
-			$objBrochureDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
-			$objBrochureDocumentContent	= $objBrochureDocument->getContent();
+			if ($arrRatePlan['brochure_document_id'])
+			{
+				$objBrochureDocument		= new Document(array('id'=>$arrRatePlan['brochure_document_id']), true);
+				$objBrochureDocumentContent	= $objBrochureDocument->getContent();
+				
+				if ($objBrochureDocumentContent && $objBrochureDocumentContent->content)
+				{
+					$objFileType		= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+					
+					$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objFileType->id}/16x16";
+					$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
+					$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /> Download</a>";
+					
+					$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick($arrRatePlan['customer_group'], array($arrRatePlan));
+					$strBrochureCell	.= "&nbsp;|&nbsp; <a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email this Brochure</a>";
+				}
+			}
+			if ($bolHasPlanEditPerm)
+			{
+				$strImageSrc	= "../admin/img/template/pdf_add.png";
+				$strOnClick		= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setBrochure({$arrRatePlan['Id']}, \"{$arrRatePlan['Name']}\", \"{$strCustomerGroup}\");});";
+				if ($strBrochureCell)
+				{
+					// Replace Brochure link
+					$strBrochureCell	.= " | <a onclick='{$strOnClick}' title='Replace Plan Brochure'><img src='{$strImageSrc}' alt='Replace Plan Brochure' /> Replace this Plan Brochure</a>";
+				}
+				else
+				{
+					// Add Brochure link
+					$strBrochureCell	= "<a onclick='{$strOnClick}' title='Attach Plan Brochure'><img src='{$strImageSrc}' alt='Attach Plan Brochure' /> Attach a Plan Brochure</a>";
+				}
+			}
+			if (!$strBrochureCell)
+			{
+				$strBrochureCell	= "No Brochure Attached";
+			}
 			
-			if ($objBrochureDocumentContent && $objBrochureDocumentContent->content)
-			{
-				$objFileType		= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
-				
-				$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objFileType->id}/16x16";
-				$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['brochure_document_id']}";
-				$strBrochureCell	= "<a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /> Download</a>";
-				
-				$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick($arrRatePlan['customer_group'], array($arrRatePlan));
-				$strBrochureCell	.= "&nbsp;|&nbsp; <a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /> Email this Brochure</a>";
-			}
+			echo "<div class='DefaultElement'>";
+			echo "	<div id='RatePlan.brochure_document_id.Output' class='DefaultOutput Default' name='RatePlan.brochure_document_id'>\n";
+			echo "		{$strBrochureCell}\n";
+			echo "	</div>\n";
+			echo "	<div id='RatePlan.brochure_document_id.Label' class='DefaultLabel'>\n";
+			echo "		<span>&nbsp;</span>\n";
+			echo "		<span id='RatePlan.brochure_document_id.Label.Text'>Brochure : </span>\n";
+			echo "	</div>\n";
+			echo "</div>";
 		}
-		if ($bolHasPlanEditPerm)
-		{
-			$strImageSrc	= "../admin/img/template/pdf_add.png";
-			$strOnClick		= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setBrochure({$arrRatePlan['Id']}, \"{$arrRatePlan['Name']}\", \"{$strCustomerGroup}\");});";
-			if ($strBrochureCell)
-			{
-				// Replace Brochure link
-				$strBrochureCell	.= " | <a onclick='{$strOnClick}' title='Replace Plan Brochure'><img src='{$strImageSrc}' alt='Replace Plan Brochure' /> Replace this Plan Brochure</a>";
-			}
-			else
-			{
-				// Add Brochure link
-				$strBrochureCell	= "<a onclick='{$strOnClick}' title='Attach Plan Brochure'><img src='{$strImageSrc}' alt='Attach Plan Brochure' /> Attach a Plan Brochure</a>";
-			}
-		}
-		if (!$strBrochureCell)
-		{
-			$strBrochureCell	= "No Brochure Attached";
-		}
-		
-		echo "<div class='DefaultElement'>";
-		echo "	<div id='RatePlan.brochure_document_id.Output' class='DefaultOutput Default' name='RatePlan.brochure_document_id'>\n";
-		echo "		{$strBrochureCell}\n";
-		echo "	</div>\n";
-		echo "	<div id='RatePlan.brochure_document_id.Label' class='DefaultLabel'>\n";
-		echo "		<span>&nbsp;</span>\n";
-		echo "		<span id='RatePlan.brochure_document_id.Label.Text'>Brochure : </span>\n";
-		echo "	</div>\n";
-		echo "</div>";
 		
 		// Build the Voice Auth Script link
 		$strAuthScriptCell	= '';
-		if ($arrRatePlan['auth_script_document_id'])
+		if (Flex_Module::isActive(FLEX_MODULE_PLAN_AUTH_SCRIPT))
 		{
-			$objAuthScriptDocument			= new Document(array('id'=>$arrRatePlan['auth_script_document_id']), true);
-			$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContentDetails();
-			
-			if ($objAuthScriptDocumentContent && $objAuthScriptDocumentContent->bolHasContent)
+			if ($arrRatePlan['auth_script_document_id'])
 			{
-				$objFileType		= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
+				$objAuthScriptDocument			= new Document(array('id'=>$arrRatePlan['auth_script_document_id']), true);
+				$objAuthScriptDocumentContent	= $objAuthScriptDocument->getContentDetails();
 				
-				$strImageSrc		= "../admin/img/template/script.png";
-				$strAuthScriptLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
-				$strAuthScriptCell	= "<a href='{$strAuthScriptLink}' title='Download Authorisation Script'><img src='{$strImageSrc}' alt='Download Authorisation Script' /> Download</a>";
+				if ($objAuthScriptDocumentContent && $objAuthScriptDocumentContent->bolHasContent)
+				{
+					$objFileType		= new File_Type(array('id'=>$objAuthScriptDocumentContent->file_type_id), true);
+					
+					$strImageSrc		= "../admin/img/template/script.png";
+					$strAuthScriptLink	= "../admin/reflex.php/File/Document/{$arrRatePlan['auth_script_document_id']}";
+					$strAuthScriptCell	= "<a href='{$strAuthScriptLink}' title='Download Authorisation Script'><img src='{$strImageSrc}' alt='Download Authorisation Script' /> Download</a>";
+				}
 			}
-		}
-		if ($bolHasPlanEditPerm)
-		{
-			$strImageSrc	= "../admin/img/template/script_add.png";
-			$strOnClick		= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setAuthScript({$arrRatePlan['Id']}, \"{$arrRatePlan['Name']}\", \"{$strCustomerGroup}\");});";
-			if ($strAuthScriptCell)
+			if ($bolHasPlanEditPerm)
 			{
-				// Replace Auth Script link
-				$strAuthScriptCell	.= " | <a onclick='{$strOnClick}' title='Replace Authorisation Script'><img src='{$strImageSrc}' alt='Replace Authorisation Script' /> Replace this Authorisation Script</a>";
+				$strImageSrc	= "../admin/img/template/script_add.png";
+				$strOnClick		= "JsAutoLoader.loadScript(\"javascript/plan.js\", function(){Flex.Plan.setAuthScript({$arrRatePlan['Id']}, \"{$arrRatePlan['Name']}\", \"{$strCustomerGroup}\");});";
+				if ($strAuthScriptCell)
+				{
+					// Replace Auth Script link
+					$strAuthScriptCell	.= " | <a onclick='{$strOnClick}' title='Replace Authorisation Script'><img src='{$strImageSrc}' alt='Replace Authorisation Script' /> Replace this Authorisation Script</a>";
+				}
+				else
+				{
+					// Add Auth Script link
+					$strAuthScriptCell	= "<a onclick='{$strOnClick}' title='Attach Authorisation Script'><img src='{$strImageSrc}' alt='Attach Authorisation Script' /> Attach an Authorisation Script</a>";
+				}
 			}
-			else
+			if (!$strAuthScriptCell)
 			{
-				// Add Auth Script link
-				$strAuthScriptCell	= "<a onclick='{$strOnClick}' title='Attach Authorisation Script'><img src='{$strImageSrc}' alt='Attach Authorisation Script' /> Attach an Authorisation Script</a>";
+				$strAuthScriptCell	= "No Authorisation Script Attached";
 			}
+			
+			echo "<div class='DefaultElement'>";
+			echo "	<div id='RatePlan.auth_script_document_id.Output' class='DefaultOutput Default' name='RatePlan.auth_script_document_id'>\n";
+			echo "		{$strAuthScriptCell}\n";
+			echo "	</div>\n";
+			echo "	<div id='RatePlan.auth_script_document_id.Label' class='DefaultLabel'>\n";
+			echo "		<span>&nbsp;</span>\n";
+			echo "		<span id='RatePlan.auth_script_document_id.Label.Text'>Authorisation Script :</span>\n";
+			echo "	</div>\n";
+			echo "</div>";
 		}
-		if (!$strAuthScriptCell)
-		{
-			$strAuthScriptCell	= "No Authorisation Script Attached";
-		}
-		
-		echo "<div class='DefaultElement'>";
-		echo "	<div id='RatePlan.auth_script_document_id.Output' class='DefaultOutput Default' name='RatePlan.auth_script_document_id'>\n";
-		echo "		{$strAuthScriptCell}\n";
-		echo "	</div>\n";
-		echo "	<div id='RatePlan.auth_script_document_id.Label' class='DefaultLabel'>\n";
-		echo "		<span>&nbsp;</span>\n";
-		echo "		<span id='RatePlan.auth_script_document_id.Label.Text'>Authorisation Script :</span>\n";
-		echo "	</div>\n";
-		echo "</div>";
 		
 		// PLAN DETAILS
 		echo "<div class='ContentSeparator' ></div>\n";
