@@ -25,8 +25,32 @@ class Application_Handler_Document extends Application_Handler
 				throw new Exception("You do not have sufficient privileges to create a "+GetConstantDescription($objDocument->document_nature_id, 'document_nature')+"!");
 			}
 			
+			$intParentDocumentId	= ($_POST['Document_Edit_Parent'] === '') ? null : (int)$_POST['Document_Edit_Parent'];
+			$strDocumentName		= trim($_POST['Document_Edit_Name']);
+			
+			if (GetConstantName(constant($_POST['Document_Edit_Nature']), 'document_nature') !== $_POST['Document_Edit_Nature'])
+			{
+				throw new Exception("Document Nature '{$_POST['Document_Edit_Nature']}' is invalid!");
+			}
+			$intDocumentNature		= constant($_POST['Document_Edit_Nature']);
+			
 			if ($intDocumentId = (int)$_POST['Document_Edit_Id'])
 			{
+				// Does a Document exist at this path?
+				if ($intParentDocumentId)
+				{
+					$objParentDocument		= new Document(array('id'=>$intParentDocumentId), true);
+					$strPath				= $objParentDocument->getPath().'/';
+				}
+				else
+				{
+					$strPath				= '/';
+				}
+				if ($objExistingDocument = Document::getByPath($strPath.$strDocumentName))
+				{
+					throw new Exception("There is already an item with the Name '{$strDocumentName}' in this Folder".($bolVerboseErrors ? " ({$strPath}{$strDocumentName})" : ''));
+				}
+				
 				// Create the Document
 				$objDocument						= new Document();
 				$objDocument->employee_id			= Flex::getUserId();
@@ -59,18 +83,24 @@ class Application_Handler_Document extends Application_Handler
 			}
 			
 			// Populate new Content Version
-			$objDocumentContent->employee_id	= Flex::getUserId();
-			$objDocumentContent->status_id		= STATUS_ACTIVE;
+			$objDocumentContent->employee_id		= Flex::getUserId();
+			$objDocumentContent->status_id			= STATUS_ACTIVE;
+			$objDocumentContent->parent_document_id	= $intParentDocumentId;
+			$objDocumentContent->name				= $strDocumentName;
+			$objDocumentContent->description		= trim($_POST['Document_Edit_Description']);
 			
-			switch ($objDocument->document_nature_id)
+			if ($objDocument->document_nature_id === DOCUMENT_NATURE_FILE && $_FILES['Document_Edit_File'])
 			{
-				case DOCUMENT_NATURE_FILE:
-					
-					break;
-					
-				case DOCUMENT_NATURE_FOLDER:
-					
-					break;
+				// Determine File Type
+				$strExtension	= array_pop(explode('.', $_FILES['Document_Edit_File']['name']));
+				$arrFileType	= getForExtensionAndMimeType($strExtension, $_FILES['Document_Edit_File']['type'], true);
+				if (!$arrFileType)
+				{
+					throw new Exception("The File you have uploaded is not permitted by Flex".($bolVerboseErrors ? " ({$strExtension}|{$_FILES['Document_Edit_File']['type']})" : ''));
+				}
+				$objDocumentContent->file_type_id	= $arrFileType['id'];
+				
+				$objDocumentContent->content		= file_get_contents($_FILES['Document_Edit_File']['tmp_name']);
 			}
 			
 			$objDocumentContent->save();

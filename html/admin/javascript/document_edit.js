@@ -240,6 +240,10 @@ var Document_Edit	= Class.create
 		{
 			arrErrors.push("[!] Please enter a Name for the "+this.strFriendlyNature);
 		}
+		if (!this.elmInputName.value.indexOf('/') > -1)
+		{
+			arrErrors.push("[!] The specified Name contains illegal '/' characters");
+		}
 		if (this.elmInputFile && this.elmInputFile.disabled == false && !this.elmInputFile.value)
 		{
 			arrErrors.push("[!] Please select a File to upload");
