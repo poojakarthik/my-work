@@ -30,6 +30,12 @@ class Document extends ORM
 	{
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
+		
+		// Set default values
+		if (!$bolLoadById)
+		{
+			$this->is_system_document	= false;
+		}
 	}
 	
 	/**
