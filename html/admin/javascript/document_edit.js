@@ -31,7 +31,7 @@ var Document_Edit	= Class.create
 		
 		this.objDocument		= (objDocument) ? objDocument : null;
 		
-		alert(objDocument.toSource());
+		//alert(objDocument.toSource());
 		
 		// Popup Contents
 		this.elmEncapsulator				= document.createElement('div');
@@ -80,7 +80,7 @@ var Document_Edit	= Class.create
 		this.elmInputName.name			= "Document_Edit_Name";
 		this.elmInputName.type			= 'text';
 		this.elmInputName.maxLength		= 255;
-		this.elmInputName.value			= (objDocument) ? objDocument.name : '';
+		this.elmInputName.value			= (objDocument) ? objDocument.objDocumentContent.name : '';
 		this.elmInputsTDName.appendChild(this.elmInputName);
 		
 		// DESCRIPTION
@@ -100,7 +100,7 @@ var Document_Edit	= Class.create
 		this.elmInputDescription.name			= "Document_Edit_Description";
 		this.elmInputDescription.type			= 'text';
 		this.elmInputDescription.maxLength		= 1024;
-		this.elmInputDescription.value			= (objDocument.description) ? objDocument.description : '';
+		this.elmInputDescription.value			= (objDocument.objDocumentContent.description) ? objDocument.objDocumentContent.description : '';
 		this.elmInputsTDDescription.appendChild(this.elmInputDescription);
 		
 		// FILE
