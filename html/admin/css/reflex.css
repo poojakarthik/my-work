@@ -916,7 +916,7 @@ table.document-explorer .field-actions
 
 
 
-table.document-explorer tr[onclick]
+table.document-explorer tr td
 {
 	background-color	: #efefef;
 }
