@@ -281,6 +281,8 @@ var Document_Edit	= Class.create
 		if (objResponse.Success)
 		{
 			$Alert("The "+this.strFriendlyNature+" '"+this.elmInputName.value.replace(/(^\s+|\s+$)/g, '')+"' has been successfully saved.", null, null, null, "Save Successful", this._close.bind(this, null, true));
+			Flex.Document.Explorer.refresh();
+			return true;
 		}
 		else if (objResponse.Success == undefined)
 		{

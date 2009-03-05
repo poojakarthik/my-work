@@ -116,6 +116,11 @@ var Document_Explorer	= Class.create
 		fncJsonFunc(intDocumentId);
 	},
 	
+	refresh	: function()
+	{
+		this.update(this.objDocument ? this.objDocument.intId : null);
+	},
+	
 	_render	: function(objResponse)
 	{
 		// Unregister any outstanding Event Handlers
