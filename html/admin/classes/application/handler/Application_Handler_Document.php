@@ -76,7 +76,7 @@ class Application_Handler_Document extends Application_Handler
 				$objDocument						= new Document(array('id'=>$intDocumentId), true);
 				$objDocumentContent					= $objDocument->getContent();
 				$objDocumentContent->id				= null;
-				$objDocumentContent->modified_on	= null;
+				$objDocumentContent->changed_on		= null;
 			}
 			
 			// Populate new Content Version
