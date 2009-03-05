@@ -100,7 +100,7 @@ var Document_Edit	= Class.create
 		this.elmInputDescription.name			= "Document_Edit_Description";
 		this.elmInputDescription.type			= 'text';
 		this.elmInputDescription.maxLength		= 1024;
-		this.elmInputDescription.value			= (objDocument.objDocumentContent.description) ? objDocument.objDocumentContent.description : '';
+		this.elmInputDescription.value			= (objDocument && objDocument.objDocumentContent.description) ? objDocument.objDocumentContent.description : '';
 		this.elmInputsTDDescription.appendChild(this.elmInputDescription);
 		
 		// FILE
