@@ -572,11 +572,11 @@
 	 	}
 	 	
 		// remove disputed balance from overdue balance
-	 	$arrDisputedBalance = $this->_selDisputedBalance->Fetch();
+	 	/*$arrDisputedBalance = $this->_selDisputedBalance->Fetch();
 		if ($arrDisputedBalance)
 		{
 	 		$fltOverdueBalance -= (float)$arrDisputedBalance['DisputedBalance'];
-		}
+		}*/
 
 		// get balance of unbilled debits & unbilled approved credits (does NOT include tax)
 		$this->_selAccountUnbilledCharges->Execute(Array('Account' => $intAccount));
