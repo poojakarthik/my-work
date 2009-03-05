@@ -28,12 +28,6 @@ class Application_Handler_Document extends Application_Handler
 			$intParentDocumentId	= ($_POST['Document_Edit_Parent'] === '') ? null : (int)$_POST['Document_Edit_Parent'];
 			$strDocumentName		= trim($_POST['Document_Edit_Name']);
 			
-			if (GetConstantName(constant($_POST['Document_Edit_Nature']), 'document_nature') !== $_POST['Document_Edit_Nature'])
-			{
-				throw new Exception("Document Nature '{$_POST['Document_Edit_Nature']}' is invalid!");
-			}
-			$intDocumentNature		= constant($_POST['Document_Edit_Nature']);
-			
 			if (!($intDocumentId = (int)$_POST['Document_Edit_Id']))
 			{
 				// Does a Document exist at this path?
