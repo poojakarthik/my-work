@@ -234,8 +234,11 @@ var Document_Edit	= Class.create
 	
 	_registerEventHandlers	: function()
 	{
-		this.elmInputFileReplaceNo.addEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
-		this.elmInputFileReplaceYes.addEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+		if (this.elmInputsDIVFileReplace != undefined)
+		{
+			this.elmInputFileReplaceNo.addEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+			this.elmInputFileReplaceYes.addEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+		}
 
 		this.elmForm.addEventListener('submit', this._submit.bindAsEventListener(this), false);
 		
@@ -244,8 +247,11 @@ var Document_Edit	= Class.create
 	
 	_unregisterEventHandlers	: function()
 	{
-		this.elmInputFileReplaceNo.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
-		this.elmInputFileReplaceYes.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+		if (this.elmInputsDIVFileReplace != undefined)
+		{
+			this.elmInputFileReplaceNo.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+			this.elmInputFileReplaceYes.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+		}
 		
 		this.elmForm.removeEventListener('submit', this._submit.bindAsEventListener(this), false);
 		
