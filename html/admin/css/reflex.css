@@ -108,15 +108,19 @@ table.reflex tfoot tr th {
 
 table.reflex tbody tr th.label
 {
+	min-height		: 1.5em;
+	max-height		: 1.5em;
+	
 	vertical-align	: middle;
 	text-align		: right;
-	max-width		: 8em;
-	min-width		: 8em;
 	overflow		: hidden;
 }
 
 table.reflex tbody tr td.input
 {
+	min-height		: 1.5em;
+	max-height		: 1.5em;
+	
 	vertical-align	: middle;
 	text-align		: left;
 }
@@ -923,13 +927,11 @@ table.document-explorer tbody tr td
 
 table.document-explorer tr.selected[onclick] td
 {
-	/*background-color	: #fff;*/
 	background-color	: #bbb;
 }
 
 table.document-explorer tr.selected[onclick]:hover td
 {
-	/*background-color	: #fff;*/
 	background-color	: #ccc;
 }
 
