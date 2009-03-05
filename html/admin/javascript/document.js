@@ -33,23 +33,10 @@ var Document	= Class.create
 	
 	emailDocument	: function(arrDocuments, strDescription, arrFrom, strSubject, strContent, arrEmailAddresses, intAccount)
 	{
-		// DEBUG
-		/*
-		arrEmailAddresses	= new Array();
-		
-		arrEmailAddresses.push(	{
-									name	: 'Rich Davis',
-									address	: 'rdavis@ybs.net.au'
-								});
-		arrEmailAddresses.push(	{
-									name	: 'Mark Sergeant',
-									address	: 'msergeant@ybs.net.au'
-								});
-		arrEmailAddresses.push(	{
-									name	: 'Rich Davis',
-									address	: 'turdminator@hotmail.com'
-								});
-		/**/
+		/*if (arrEmailAddresses == null || arrEmailAddresses == undefined)
+		{
+			this._scourPageForAccountDetails();
+		}*/
 		
 		this._intAccountId	= (intAccount != undefined) ? intAccount : null;
 		
@@ -397,6 +384,53 @@ var Document	= Class.create
 				return (Math.round(fltConvertTemp*intRoundFactor)/intRoundFactor).toString()+" "+arrPowers[i];
 			}
 			fltConvert	= fltConvertTemp;
+		}
+	},
+	
+	_scourPageForAccountDetails	: function()
+	{
+		// Attempt to find Account information on this page
+		var intServiceId	= null;
+		
+		if (Vixen.AccountDetails)
+		{
+			intAccountId	= Vixen.AccountDetails.intAccountId;
+		}
+		else if (Vixen.AccountContactsList)
+		{
+			intAccountId	= Vixen.AccountContacts.intAccountId;
+		}
+		else if (Vixen.AccountServices)
+		{
+			intAccountId	= Vixen.AccountServices.intAccountId;
+		}
+		else if (Vixen.ServiceBulkAdd)
+		{
+			intAccountId	= Vixen.ServiceBulkAdd.intAccountId;
+		}
+		else if (Vixen.ProvisioningPage)
+		{
+			intAccountId	= Vixen.ProvisioningPage.intAccountId;
+		}
+		else if (Vixen.ProvisioningHistoryList)
+		{
+			intAccountId	= Vixen.ProvisioningHistoryList.intAccountId;
+		}
+		else if (Vixen.NoteList)
+		{
+			intAccountId	= (Vixen.NoteList.intAccountId) ? Vixen.NoteList.intAccountId : 'null';
+			intServiceId	= (Vixen.NoteList.intServiceId) ? Vixen.NoteList.intServiceId : null;
+		}
+		
+		// Retrieve Account Details
+		if (intAccountId != 'null')
+		{
+			// Retrieve Contact Details by Account Id
+			//(jQuery.json.jsonFunction(Flex.Document.emailDocument.bind(Flex.Document.Explorer), null, "Document", "delete"))(objChild.id);
+		}
+		else if (intServiceId)
+		{
+			// Retrieve Contact Details by Service Id
 		}
 	}
 });
