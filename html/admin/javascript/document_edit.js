@@ -230,7 +230,7 @@ var Document_Edit	= Class.create
 		}
 		else if (objResponse.Success == undefined)
 		{
-			$Alert(objResponse);
+			$Alert(objResponse.toSource());
 			return false;
 		}
 		else
