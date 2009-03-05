@@ -93,7 +93,7 @@ class Application_Handler_Document extends Application_Handler
 			{
 				// Determine File Type
 				$strExtension	= array_pop(explode('.', $_FILES['Document_Edit_File']['name']));
-				$arrFileType	= getForExtensionAndMimeType($strExtension, $_FILES['Document_Edit_File']['type'], true);
+				$arrFileType	= File_Type::getForExtensionAndMimeType($strExtension, $_FILES['Document_Edit_File']['type'], true);
 				if (!$arrFileType)
 				{
 					throw new Exception("The File you have uploaded is not permitted by Flex".($bolVerboseErrors ? " ({$strExtension}|{$_FILES['Document_Edit_File']['type']})" : ''));
