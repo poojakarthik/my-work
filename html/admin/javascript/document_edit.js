@@ -240,7 +240,7 @@ var Document_Edit	= Class.create
 		{
 			arrErrors.push("[!] Please enter a Name for the "+this.strFriendlyNature);
 		}
-		if (!this.elmInputName.value.indexOf('/') > -1)
+		if (this.elmInputName.value.indexOf('/') > -1)
 		{
 			arrErrors.push("[!] The specified Name contains illegal '/' characters");
 		}
