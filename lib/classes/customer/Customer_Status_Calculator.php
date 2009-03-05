@@ -139,14 +139,14 @@ OR
 		return ($objAccount->invoiceDisputed > 0);
 	}
 	
-	private static function testAccountWithAustral(&$objAccount)
+	private static function testAccountWithDebtCollection(&$objAccount)
 	{
-		return ($objAccount->creditControlStatus == CREDIT_CONTROL_STATUS_WITH_AUSTRAL);
+		return ($objAccount->creditControlStatus == CREDIT_CONTROL_STATUS_WITH_DEBT_COLLECTION);
 	}
 	
-	private static function testAccountReadyForAustral(&$objAccount)
+	private static function testAccountReadyForDebtCollection(&$objAccount)
 	{
-		return ($objAccount->creditControlStatus == CREDIT_CONTROL_STATUS_SENDING_TO_AUSTRAL);
+		return ($objAccount->creditControlStatus == CREDIT_CONTROL_STATUS_SENDING_TO_DEBT_COLLECTION);
 	}
 	
 	private static function testAccountSentFinalDemand(&$objAccount)
