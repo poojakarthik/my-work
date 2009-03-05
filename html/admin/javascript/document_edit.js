@@ -31,6 +31,8 @@ var Document_Edit	= Class.create
 		
 		this.objDocument		= (objDocument) ? objDocument : null;
 		
+		alert(objDocument.toSource());
+		
 		// Popup Contents
 		this.elmEncapsulator				= document.createElement('div');
 		this.elmEncapsulator.style.margin	= "0.5em";
