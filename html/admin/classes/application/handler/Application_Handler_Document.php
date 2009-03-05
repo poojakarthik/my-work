@@ -116,7 +116,7 @@ class Application_Handler_Document extends Application_Handler
 			DataAccess::getDataAccess()->TransactionRollback();
 			
 			$arrDetailsToRender['Success']	= false;
-			$arrDetailsToRender['Message']	= $e->getMessage().($bolVerboseErrors ? " ('".$e->getFile()."' @ Line ".$e->getLine().")" : '');
+			$arrDetailsToRender['Message']	= $e->getMessage().($bolVerboseErrors ? " ('".$e->getFile()."' @ Line ".$e->getLine().") ".$e->getTraceAsString() : '');
 		}
 		
 		// Render the JSON'd Array
