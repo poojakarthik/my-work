@@ -22,14 +22,14 @@ class Flex_Rollout_Version_000149 extends Flex_Rollout_Version
 				"	(10, 'Interim Invoices', 'Interim Invoices Module', 'FLEX_MODULE_INVOICE_INTERIM', 0), " .
 				"	(11, 'Final Invoices', 'Final Invoices Module', 'FLEX_MODULE_INVOICE_FINAL', 0), " .
 				"	(12, 'Telemarketing', 'Telemarketing Module', 'FLEX_MODULE_TELEMARKETING', 0), " .
-				"	(13, 'Contract Management', 'Contract Management Module', 'FLEX_MODULE_CONTACT_MANAGEMENT', 0);";
+				"	(13, 'Contract Management', 'Contract Management Module', 'FLEX_MODULE_CONTRACT_MANAGEMENT', 0);";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the Plan Brochure/Sripts, Interim/Final Invoice, Telemarketing, and Contract Management Flex Modules. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] =	"DELETE FROM flex_module " .
-								"WHERE const_name IN ('FLEX_MODULE_PLAN_BROCHURE', 'FLEX_MODULE_PLAN_AUTH_SCRIPT', 'FLEX_MODULE_INVOICE_INTERIM', 'FLEX_MODULE_INVOICE_FINAL', 'FLEX_MODULE_TELEMARKETING', 'FLEX_MODULE_CONTACT_MANAGEMENT');";
+								"WHERE const_name IN ('FLEX_MODULE_PLAN_BROCHURE', 'FLEX_MODULE_PLAN_AUTH_SCRIPT', 'FLEX_MODULE_INVOICE_INTERIM', 'FLEX_MODULE_INVOICE_FINAL', 'FLEX_MODULE_TELEMARKETING', 'FLEX_MODULE_CONTRACT_MANAGEMENT');";
 	}
 
 	function rollback()
