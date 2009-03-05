@@ -216,18 +216,18 @@ var Document_Edit	= Class.create
 		{
 			if (this.elmInputFileReplaceYes.checked)
 			{
-				this.elmInputsDIVFile.style.display	= 'block';
+				//this.elmInputsDIVFile.style.display	= 'block';
 				this.elmInputFile.disabled			= false;
 			}
 			else
 			{
-				this.elmInputsDIVFile.style.display	= 'hidden';
+				//this.elmInputsDIVFile.style.display	= 'none';
 				this.elmInputFile.disabled			= true;
 			}
 		}
 		else
 		{
-			this.elmInputsDIVFile.style.display	= 'block';
+			//this.elmInputsDIVFile.style.display	= 'block';
 			this.elmInputFile.disabled			= false;
 		}
 	},
