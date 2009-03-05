@@ -21,6 +21,7 @@ var Document_Edit	= Class.create
 				throw "'"+strDocumentNature+"' is not a valid Document Nature";
 				break;
 		}
+		this.strFriendlyNature	= strFriendlyNature;
 		
 		this.strDocumentNature	= strDocumentNature;
 		this.strMode			= (objDocument) ? 'Edit' : 'New';
@@ -195,7 +196,7 @@ var Document_Edit	= Class.create
 
 		if (!this.elmInputName.value.replace(/(^\s+|\s+$)/g, '').length)
 		{
-			arrErrors.push("[!] Please enter a Name for the Document");
+			arrErrors.push("[!] Please enter a Name for the "+this.strFriendlyNature);
 		}
 		if (this.elmInputFile && this.elmInputFile.disabled == false && !this.elmInputFile.value)
 		{
@@ -214,7 +215,7 @@ var Document_Edit	= Class.create
 		}
 		
 		// Show the Loading Splash
-		Vixen.Popup.ShowPageLoadingSplash("Saving Document...", null, null, null, 1);
+		Vixen.Popup.ShowPageLoadingSplash("Saving "+this.strFriendlyNature+"...", null, null, null, 1);
 		
 		// Perform AJAX query
 		return false;
