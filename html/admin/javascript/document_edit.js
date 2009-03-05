@@ -214,7 +214,6 @@ var Document_Edit	= Class.create
 	{
 		if (this.elmInputsDIVFileReplace != undefined)
 		{
-			alert(this.elmForm.Document_Edit_File_Replace);
 			if (this.elmInputFileReplaceYes.checked)
 			{
 				this.elmInputsDIVFile.style.display	= 'block';
@@ -222,7 +221,7 @@ var Document_Edit	= Class.create
 			}
 			else
 			{
-				this.elmInputsDIVFile.style.display	= 'none';
+				this.elmInputsDIVFile.style.display	= 'hidden';
 				this.elmInputFile.disabled			= true;
 			}
 		}
