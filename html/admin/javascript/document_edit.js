@@ -245,14 +245,11 @@ var Document_Edit	= Class.create
 	
 	_unregisterEventHandlers	: function()
 	{
-		for (var i = 0; i < this.arrChildren.length; i++)
-		{
-			this.elmInputFileReplaceNo.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
-			this.elmInputFileReplaceYes.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
-			
-			this.elmForm.removeEventListener('submit', this._submit.bindAsEventListener(this), false);
-			
-			this.elmCancel.removeEventListener('click', this._cancel.bindAsEventListener(this), false);
-		}
+		this.elmInputFileReplaceNo.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+		this.elmInputFileReplaceYes.removeEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
+		
+		this.elmForm.removeEventListener('submit', this._submit.bindAsEventListener(this), false);
+		
+		this.elmCancel.removeEventListener('click', this._cancel.bindAsEventListener(this), false);
 	}
 });
