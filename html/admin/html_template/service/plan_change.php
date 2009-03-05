@@ -178,7 +178,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		// And they declare a new plan for the current month, then the scheduled plan will be removed.  Also notify them that all Rate overrides
 		// will be removed.
 		
-		if (Flex_Module::isActive(FLEX_MODULE_PLAN_AUTH_SCRIPTS))
+		if (Flex_Module::isActive(FLEX_MODULE_PLAN_AUTH_SCRIPT))
 		{
 			$this->Button("Authorise", "Vixen.PlanChange.requestAuthScript();");
 		}
