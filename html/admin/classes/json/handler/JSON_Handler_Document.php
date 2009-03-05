@@ -123,7 +123,7 @@ class JSON_Handler_Document extends JSON_Handler
 			if ($intDocumentId)
 			{
 				// Load the Document
-				$objDocument		= new Document(array('id'=>$intDocumentId));
+				$objDocument		= new Document(array('id'=>$intDocumentId), true);
 				$objDocumentContent	= $objDocument->getContentDetails();
 				
 				$objDocumentOutput->intId			= $objDocument->id;
