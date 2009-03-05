@@ -243,8 +243,9 @@ var Document_Edit	= Class.create
 			this.elmInputFileReplaceNo.addEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
 			this.elmInputFileReplaceYes.addEventListener('change', this._updateFileUpload.bindAsEventListener(this), false);
 		}
-
-		this.elmForm.addEventListener('submit', this._submit.bindAsEventListener(this), false);
+		
+		//this.elmForm.addEventListener('submit', this._submit.bindAsEventListener(this), false);
+		this.elmForm.addEventListener('submit', function(){return false;}, false);
 		
 		this.elmCancel.addEventListener('click', this._cancel.bindAsEventListener(this), false);
 	},
