@@ -130,7 +130,12 @@ table.reflex tbody tr td.input input[type="password"],
 table.reflex tbody tr td.input textarea,
 table.reflex tbody tr td.input select
 {
-	width			: 98%
+	width			: 98%;
+}
+
+table.reflex tbody tr td.input input[type="checkbox"]
+{
+	margin-right	: 0.5em;
 }
 
 table.reflex th.reflex-unsorted, 
