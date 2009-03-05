@@ -796,7 +796,8 @@ div.document-explorer-list
 	min-height			: 30em;
 	max-height			: 30em;
 	overflow-y			: scroll;
-	background-color	: #DDD;
+	/*background-color	: #DDD;*/
+	background-color	: #aaa;
 }
 
 
