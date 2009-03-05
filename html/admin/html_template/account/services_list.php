@@ -276,22 +276,25 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				// The Service has a current plan
 				$strPlanCell = "<a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['CurrentPlan']['Name']}</a>";
 				
-				if ($arrService['CurrentPlan']['brochure_document_id'])
+				if (Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
 				{
-					$objBrochureDocument		= new Document(array('id'=>$arrService['CurrentPlan']['brochure_document_id']), true);
-					$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
-					
-					if ($objBrochureDocumentContent && $objBrochureDocumentContent->bolHasContent)
+					if ($arrService['CurrentPlan']['brochure_document_id'])
 					{
-						$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+						$objBrochureDocument		= new Document(array('id'=>$arrService['CurrentPlan']['brochure_document_id']), true);
+						$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
 						
-						$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
-						$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrService['CurrentPlan']['brochure_document_id']}";
-						$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
-						
-						$arrRatePlan		= $arrService['CurrentPlan'];
-						$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick(DBO()->Account->CustomerGroup->Value, array($arrRatePlan), DBO()->Account->Id->Value);
-						$strPlanCell		.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
+						if ($objBrochureDocumentContent && $objBrochureDocumentContent->bolHasContent)
+						{
+							$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+							
+							$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
+							$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrService['CurrentPlan']['brochure_document_id']}";
+							$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
+							
+							$arrRatePlan		= $arrService['CurrentPlan'];
+							$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick(DBO()->Account->CustomerGroup->Value, array($arrRatePlan), DBO()->Account->Id->Value);
+							$strPlanCell		.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
+						}
 					}
 				}
 			}
@@ -306,22 +309,25 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				$strStartDate = OutputMask()->ShortDate($arrService['FuturePlan']['StartDatetime']); 
 				$strPlanCell .= "<br />As from $strStartDate : <a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['FuturePlan']['Name']}</a>";
 				
-				if ($arrService['FuturePlan']['brochure_document_id'])
+				if (Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
 				{
-					$objBrochureDocument		= new Document(array('id'=>$arrService['FuturePlan']['brochure_document_id']), true);
-					$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
-					
-					if ($objBrochureDocumentContent && $objBrochureDocumentContent->bolHasContent)
+					if ($arrService['FuturePlan']['brochure_document_id'])
 					{
-						$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+						$objBrochureDocument		= new Document(array('id'=>$arrService['FuturePlan']['brochure_document_id']), true);
+						$objBrochureDocumentContent	= $objBrochureDocument->getContentDetails();
 						
-						$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
-						$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrService['FuturePlan']['brochure_document_id']}";
-						$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
-						
-						$arrRatePlan		= $arrService['FuturePlan'];
-						$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick(DBO()->Account->CustomerGroup->Value, array($arrRatePlan), DBO()->Account->Id->Value);
-						$strPlanCell		.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
+						if ($objBrochureDocumentContent && $objBrochureDocumentContent->bolHasContent)
+						{
+							$objBrochureIcon			= new File_Type(array('id'=>$objBrochureDocumentContent->file_type_id), true);
+							
+							$strImageSrc		= "../admin/reflex.php/File/Image/FileTypeIcon/{$objBrochureIcon->id}/16x16";
+							$strBrochureLink	= "../admin/reflex.php/File/Document/{$arrService['FuturePlan']['brochure_document_id']}";
+							$strPlanCell		.= " <a href='{$strBrochureLink}' title='Download Plan Brochure'><img src='{$strImageSrc}' alt='Download Plan Brochure' /></a>";
+							
+							$arrRatePlan		= $arrService['FuturePlan'];
+							$strEmailOnClick	= Rate_Plan::generateEmailButtonOnClick(DBO()->Account->CustomerGroup->Value, array($arrRatePlan), DBO()->Account->Id->Value);
+							$strPlanCell		.= "&nbsp;<a onclick='{$strEmailOnClick}' title='Email Plan Brochure'><img src='../admin/img/template/pdf_email.png' alt='Email Plan Brochure' /></a>";
+						}
 					}
 				}
 			}
