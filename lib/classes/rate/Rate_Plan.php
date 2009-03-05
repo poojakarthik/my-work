@@ -79,6 +79,9 @@ class Rate_Plan extends ORM
 			throw new Exception("Unable to open file '{$strFilePath}' to set as Plan Brochure");
 		}
 		
+		$objBrochureDir			= Document::getByPath("/Plan Brochures/");
+		$objCustomerGroupDir	= Document::getByPath("/Plan Brochures/{$this->customer_group}/");
+		
 		// Is there already an existing Brochure?
 		if ($this->brochure_document_id)
 		{
@@ -89,7 +92,6 @@ class Rate_Plan extends ORM
 		{
 			// NO
 			// Ensure that the Document Path /Plan Brochures/[CustomerGroup]/ exists
-			$objBrochureDir = Document::getByPath("/Plan Brochures/");
 			if (!$objBrochureDir)
 			{
 				//throw new Exception("/Plan Brochures/ not found!");
@@ -112,11 +114,8 @@ class Rate_Plan extends ORM
 			{
 				$objBrochureDirContent	= $objBrochureDir->getContent();
 			}
-			$objCustomerGroupDir = Document::getByPath("/Plan Brochures/{$this->customer_group}/");
 			if (!$objCustomerGroupDir)
 			{
-				throw new Exception("/Plan Brochures/customer_group/ not found!");
-				
 				// Create the CustomerGroup node
 				$objCustomerGroupDir	= new Document();
 				$objCustomerGroupDir->document_nature_id	= DOCUMENT_NATURE_FOLDER;
@@ -135,7 +134,6 @@ class Rate_Plan extends ORM
 			}
 			else
 			{
-				throw new Exception("CUSTOMER GROUP EXISTS");
 				$objCustomerGroupDirContent	= $objCustomerGroupDir->getContent();
 			}
 			
@@ -187,6 +185,9 @@ class Rate_Plan extends ORM
 			throw new Exception("Unable to open file '{$strFilePath}' to set as Plan Authorisation Script");
 		}
 		
+		$objAuthScriptDir		= Document::getByPath("/Authorisation Scripts/");
+		$objCustomerGroupDir	= Document::getByPath("/Authorisation Scripts/{$this->customer_group}/");
+		
 		// Is there already an existing Auth Script?
 		if ($this->auth_script_document_id)
 		{
@@ -197,7 +198,7 @@ class Rate_Plan extends ORM
 		{
 			// NO
 			// Ensure that the Document Path /Authorisation Scripts/[CustomerGroup]/ exists
-			if (!($objAuthScriptDir = Document::getByPath("/Authorisation Scripts/")))
+			if (!$objAuthScriptDir)
 			{
 				//throw new Exception("/Authorisation Scripts/ not found!");
 				
@@ -219,7 +220,7 @@ class Rate_Plan extends ORM
 			{
 				$objAuthScriptDirContent	= $objAuthScriptDir->getContent();
 			}
-			if (!($objCustomerGroupDir = Document::getByPath("/Authorisation Scripts/{$this->customer_group}/")))
+			if (!$objCustomerGroupDir)
 			{
 				//throw new Exception("/Authorisation Scripts/customer_group/ not found!");
 				
