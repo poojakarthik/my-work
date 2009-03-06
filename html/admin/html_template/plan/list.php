@@ -130,7 +130,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		
 		// Render the header of the Plan Table
 		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "Customer Group", "Attributes", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
-		Table()->PlanTable->SetWidth("2%", "2%", "50%", "20%", "6%", "12%", "2%", "2%", "2%", "2%");
+		Table()->PlanTable->SetWidth("2%", "2%", "60%", "20%", "6%", "2%", "2%", "2%", "2%", "2%");
 		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center", "Center");
 		
 		// This array will store the details required for the javascript code that archives a RatePlan
