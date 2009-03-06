@@ -187,7 +187,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			}
 			if ($arrRatePlan['ContractTerm'] >= 1)
 			{
-				$strAttributesCell	.= "<img src='../admin/img/template/contract.png' alt='Contracted' title='{$arrRatePlan['ContactTerm']}-month Contract' />";
+				$strAttributesCell	.= "<img src='../admin/img/template/contract.png' alt='Contracted' title='{$arrRatePlan['ContractTerm']}-month Contract' />";
 			}
 			if ($arrRatePlan['locked'])
 			{
