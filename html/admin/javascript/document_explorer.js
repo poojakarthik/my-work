@@ -111,6 +111,11 @@ var Document_Explorer	= Class.create
 	
 	update	: function(intDocumentId)
 	{
+		this.elmContentTableBody.innerHTML	=	"				<tr>\n" +
+												"					<td colspan='5' style='text-align:center;'><em>Loading</em>&nbsp;<img style='width: 16px; height: 16px;' src='../admin/img/template/loading.gif' /></td>\n" +
+												"				</tr>\n";
+		this.pupExplorer.display();
+		
 		// Retrieve the children data for this Document
 		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Document.Explorer._render.bind(this), null, 'Document', 'getDirectoryListing');
 		fncJsonFunc(intDocumentId);
@@ -254,7 +259,7 @@ var Document_Explorer	= Class.create
 			this._updateActionBar();
 			
 			this._registerEventHandlers();
-			this.pupExplorer.display();
+			//this.pupExplorer.recentre();
 		}
 		else if (objResponse.Success == undefined)
 		{
