@@ -153,13 +153,13 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			switch ($arrRatePlan['Archived'])
 			{
 				case RATE_STATUS_ARCHIVED:
-					$strStatusCell	.= "src='../admin/img/template/indiactor_inactive.png' alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
+					$strStatusCell	.= "src='../admin/img/template/indicator_inactive.png' alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
 					break;
 				case RATE_STATUS_DRAFT:
-					$strStatusCell	.= "src='../admin/img/template/indiactor_draft.png' alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
+					$strStatusCell	.= "src='../admin/img/template/indicator_draft.png' alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
 					break;
 				case RATE_STATUS_ACTIVE:
-					$strStatusCell	.= "src='../admin/img/template/indiactor_active.png' alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
+					$strStatusCell	.= "src='../admin/img/template/indicator_active.png' alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
 					break;
 			}
 			
