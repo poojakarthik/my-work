@@ -116,6 +116,8 @@ var Document_Explorer	= Class.create
 												"				</tr>\n";
 		this.pupExplorer.display();
 		
+		this.elmEncapsulator.style.cursor	= "wait";
+		
 		// Retrieve the children data for this Document
 		var fncJsonFunc		= jQuery.json.jsonFunction(Flex.Document.Explorer._render.bind(this), null, 'Document', 'getDirectoryListing');
 		fncJsonFunc(intDocumentId);
