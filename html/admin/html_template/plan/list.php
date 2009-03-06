@@ -129,8 +129,8 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		echo "<div class='SmallSeparator'></div>";
 		
 		// Render the header of the Plan Table
-		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "&nbsp;", "Customer Group", "Attributes", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
-		Table()->PlanTable->SetWidth("2%", "2%", "50%", "2%", "18%", "6%", "12%", "2%", "2%", "2%", "2%");
+		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "Customer Group", "Attributes", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+		Table()->PlanTable->SetWidth("2%", "2%", "50%", "20%", "6%", "12%", "2%", "2%", "2%", "2%");
 		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center", "Center");
 		
 		// This array will store the details required for the javascript code that archives a RatePlan
@@ -187,16 +187,14 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					break;
 			}
 			
-			$strDefaultCell = "";
-			if ($arrRatePlan['IsDefault'] == TRUE)
-			{
-				$strDefaultCell = "<img src='img/template/flag.png' title='Default plan for $strCustomerGroup, $strServiceType services'></img>";
-			}
-			
 			$strServiceTypeCell	= "<div class='$strServiceTypeClass'></div>";
 			
 			// Attributes
 			$strAttributesCell	= '';
+			if ($arrRatePlan['IsDefault'] == TRUE)
+			{
+				$strAttributesCell	.= "<img src='img/template/flag.png' title='Default plan for $strCustomerGroup, $strServiceType services' />";
+			}
 			if ($arrRatePlan['InAdvance'])
 			{
 				$strAttributesCell	.= "<img src='../admin/img/template/charge_in_advance.png' alt='In Advance' title='Plan Charges are in Advance' />";
