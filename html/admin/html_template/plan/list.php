@@ -129,9 +129,9 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		echo "<div class='SmallSeparator'></div>";
 		
 		// Render the header of the Plan Table
-		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "&nbsp;", "Customer Group", "Attributes", "Carrier Full Service", "Carrier Pre Selection", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
-		Table()->PlanTable->SetWidth("2%", "2%", "30%", "2%", "18%", "6%", "10%", "10%", "12%", "2%", "2%", "2%", "2%");
-		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center", "Center");
+		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "&nbsp;", "Customer Group", "Attributes", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+		Table()->PlanTable->SetWidth("2%", "2%", "50%", "2%", "18%", "6%", "12%", "2%", "2%", "2%", "2%");
+		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center", "Center");
 		
 		// This array will store the details required for the javascript code that archives a RatePlan
 		$arrRatePlanDetails = array();
@@ -156,10 +156,10 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 					$strStatusCell	.= "src='../admin/img/template/indiactor_inactive' alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
 					break;
 				case RATE_STATUS_DRAFT:
-					$strStatusCell	.= "../admin/img/template/indiactor_draft alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
+					$strStatusCell	.= "src='../admin/img/template/indiactor_draft' alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
 					break;
 				case RATE_STATUS_ACTIVE:
-					$strStatusCell	.= "../admin/img/template/indiactor_active alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
+					$strStatusCell	.= "src='../admin/img/template/indiactor_active' alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
 					break;
 			}
 			
