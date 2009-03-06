@@ -185,7 +185,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			{
 				$strAttributesCell	.= "<img src='../admin/img/template/charge_in_advance.png' alt='In Advance' title='Plan Charges are in Advance' />";
 			}
-			if ($arrRatePlan['ContactTerm'] >= 1)
+			if ($arrRatePlan['ContractTerm'] >= 1)
 			{
 				$strAttributesCell	.= "<img src='../admin/img/template/contract.png' alt='Contracted' title='{$arrRatePlan['ContactTerm']}-month Contract' />";
 			}
