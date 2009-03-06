@@ -28,10 +28,10 @@ try
 		$objBrochureDocument	= new Document(array('id'=>$objRatePlan->brochure_document_id), true);
 		$objBrochureContent		= $objBrochureDocument->getContent();
 		
-		$objCustomerGroupDir	= Document::getByPath("/Plan Brochures/{$this->customer_group}/");
+		$objCustomerGroupDir	= Document::getByPath("/Plan Brochures/{$objRatePlan->customer_group}/");
 		if (!$objCustomerGroupDir)
 		{
-			throw new Exception("'/Plan Brochures/{$this->customer_group}/' doesn't exist yet!");
+			throw new Exception("'/Plan Brochures/{$objRatePlan->customer_group}/' doesn't exist yet!");
 		}
 		
 		// Replace the Brochure with itself
@@ -39,6 +39,8 @@ try
 		$objBrochureContent->parent_document_id	= $objCustomerGroupDir->id;
 		$objBrochureContent->save();
 	}
+	
+	throw new Exception();
 	
 	if (!DataAccess::getDataAccess()->TransactionCommit())
 	{
