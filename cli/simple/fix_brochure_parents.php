@@ -22,7 +22,7 @@ try
 	}
 	while ($arrPlan = $resPlansWithBrochures->fetch_assoc())
 	{
-		Log::getLog()->log(" [+] ".GetConstantDescription($arrPlan['customer_group'], 'CustomerGroup')."::{$arrPlan['']}...");
+		Log::getLog()->log(" [+] ".GetConstantDescription($arrPlan['customer_group'], 'CustomerGroup')."::{$arrPlan['Name']}...");
 		
 		$objRatePlan			= new Rate_Plan($arrPlan);
 		$objBrochureDocument	= new Document(array('id'=>$objRatePlan->brochure_document_id), true);
@@ -40,7 +40,7 @@ try
 		$objBrochureContent->save();
 	}
 	
-	throw new Exception();
+	throw new Exception("TEST MODE");
 	
 	if (!DataAccess::getDataAccess()->TransactionCommit())
 	{
