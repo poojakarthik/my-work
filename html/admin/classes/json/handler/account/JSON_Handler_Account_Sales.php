@@ -76,7 +76,7 @@ class JSON_Handler_Account_Sales extends JSON_Handler
 					{
 						// The cooling off period has expired for the sale
 						$strCoolingOff				= "No";
-						$strCoolingOffEndTimestamp	= "";
+						$strCoolingOffEndTimestamp	= "Expired";
 					}
 					
 					$strViewLink	= Href()->ViewSale($intSaleId);
@@ -98,7 +98,6 @@ class JSON_Handler_Account_Sales extends JSON_Handler
 				<td>$strSaleType</td>
 				<td>$strVerifiedOnFormatted</td>
 				<td>$strCurrentStatus</td>
-				<td>$strCoolingOff</td>
 				<td>$strCoolingOffEndTimestamp</td>
 				<td>$strActions</td>
 			</tr>";
@@ -116,8 +115,7 @@ class JSON_Handler_Account_Sales extends JSON_Handler
 					<th>Type</th>
 					<th>Verified&nbsp;On</th>
 					<th>Status</th>
-					<th>Cooling&nbsp;Off</th>
-					<th>Cooling&nbsp;Off&nbsp;Ends</th>
+					<th>Cooling&nbsp;Off&nbsp;Expires</th>
 					<th>Actions</th>
 				</tr>
 			</thead>
