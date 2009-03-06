@@ -147,7 +147,23 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strNameCell		= "<a href='$strViewPlanHref' title='$strDescription'>$strName</a>";
 			$strServiceType		= htmlspecialchars(GetConstantDescription($arrRatePlan['ServiceType'], "service_type"), ENT_QUOTES);
 			$strCustomerGroup	= htmlspecialchars(GetConstantDescription($arrRatePlan['customer_group'], "CustomerGroup"), ENT_QUOTES);
-			$strStatusCell		= GetConstantDescription($arrRatePlan['Archived'], "RateStatus");
+			//$strStatusCell		= GetConstantDescription($arrRatePlan['Archived'], "RateStatus");
+			
+			$strStatusCell		= "<img ";
+			switch ($arrRatePlan['Archived'])
+			{
+				case RATE_STATUS_ARCHIVED:
+					$strStatusCell	.= "src='../admin/img/template/indiactor_inactive' alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
+					break;
+				case RATE_STATUS_DRAFT:
+					$strStatusCell	.= "../admin/img/template/indiactor_draft alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
+					break;
+				case RATE_STATUS_ACTIVE:
+					$strStatusCell	.= "../admin/img/template/indiactor_active alt='".GetConstantDescription($arrRatePlan['Archived'], "RateStatus")."'";
+					break;
+			}
+			
+			$strStatusCell	.= " />";
 			
 			$strCarrierFullServiceCell	= GetConstantDescription($arrRatePlan['CarrierFullService'], "Carrier");
 			$strCarrierPreselectionCell	= GetConstantDescription($arrRatePlan['CarrierPreselection'], "Carrier");
@@ -303,7 +319,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strCustomerGroupCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup' type='hidden' value='{$arrRatePlan['customer_group']}' /><span id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup_Name'>".$strCustomerGroup."</span>";
 			
 			// Add the row
-			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroupCell, $strAttributesCell, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
+			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strCustomerGroupCell, $strAttributesCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
 			Table()->PlanTable->SetOnClick("\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked = !\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked;");
 			
 			$arrRatePlanDetails[$arrRatePlan['Id']] = array(	"Name"			=> $strName,
