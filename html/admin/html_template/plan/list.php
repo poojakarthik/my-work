@@ -129,9 +129,9 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		echo "<div class='SmallSeparator'></div>";
 		
 		// Render the header of the Plan Table
-		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "&nbsp;", "Customer Group", "Carrier Full Service", "Carrier Pre Selection", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
-		Table()->PlanTable->SetWidth("4%", "4%", "30%", "4%", "18%", "10%", "10%", "12%", "2%", "2%", "2%", "2%");
-		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center", "Center");
+		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "&nbsp;", "Customer Group", "Attributes", "Carrier Full Service", "Carrier Pre Selection", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+		Table()->PlanTable->SetWidth("2%", "2%", "30%", "2%", "18%", "6%", "10%", "10%", "12%", "2%", "2%", "2%", "2%");
+		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center", "Center");
 		
 		// This array will store the details required for the javascript code that archives a RatePlan
 		$arrRatePlanDetails = array();
@@ -178,8 +178,33 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			}
 			
 			$strServiceTypeCell	= "<div class='$strServiceTypeClass'></div>";
-						
-			// Add the Rate Plan to the VixenTable
+			
+			// Attributes
+			$strAttributesCell	= '';
+			if ($arrRatePlan['InAdvance'])
+			{
+				$strAttributesCell	.= "<img src='../admin/img/template/charge_in_advance.png' alt='In Advance' title='Plan Charges are in Advance' />";
+			}
+			if ($arrRatePlan['ContactTerm'] >= 1)
+			{
+				$strAttributesCell	.= "<img src='../admin/img/template/contract.png' alt='Contracted' title='{$arrRatePlan['ContactTerm']}-month Contract' />";
+			}
+			if ($arrRatePlan['locked'])
+			{
+				$strAttributesCell	.= "<img src='../admin/img/template/btn_locked.png' alt='Locked' title='Plan Changes are Locked' />";
+			}
+			if ($arrRatePlan['cdr_required'])
+			{
+				$strAttributesCell	.= "<img src='../admin/img/template/cdr_required.png' alt='CDRs Required' title='Only charge Plan Charge if Service has tolled' />";
+			}
+			if ($arrRatePlan['Shared'])
+			{
+				$strAttributesCell	.= "<img src='../admin/img/template/plan_shared.png' alt='Shared' title='Shared Plan' />";
+			}
+			if ($arrRatePlan['allow_cdr_hiding'])
+			{
+				$strAttributesCell	.= "<img src='../admin/img/template/cdr_hiding.png' alt='CDRs Hiding' title='Zero-Rated CDRs can be hidden on the Invoice' />";
+			}
 			
 			if ((!$arrRatePlan['IsDefault']) && ($arrRatePlan['Archived'] == RATE_STATUS_ACTIVE || $arrRatePlan['Archived'] == RATE_STATUS_ARCHIVED))
 			{
@@ -278,7 +303,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strCustomerGroupCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup' type='hidden' value='{$arrRatePlan['customer_group']}' /><span id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup_Name'>".$strCustomerGroup."</span>";
 			
 			// Add the row
-			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroupCell, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
+			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strDefaultCell, $strCustomerGroupCell, $strAttributesCell, $strCarrierFullServiceCell, $strCarrierPreselectionCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
 			Table()->PlanTable->SetOnClick("\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked = !\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked;");
 			
 			$arrRatePlanDetails[$arrRatePlan['Id']] = array(	"Name"			=> $strName,
