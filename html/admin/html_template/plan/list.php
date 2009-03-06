@@ -129,9 +129,9 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 		echo "<div class='SmallSeparator'></div>";
 		
 		// Render the header of the Plan Table
-		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "Customer Group", "Attributes", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
-		Table()->PlanTable->SetWidth("2%", "2%", "60%", "20%", "6%", "2%", "2%", "2%", "2%", "2%");
-		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center", "Center", "Center");
+		Table()->PlanTable->SetHeader("&nbsp;", "&nbsp;", "Name", "Customer Group", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+		Table()->PlanTable->SetWidth("2%", "2%", "60%", "20%", "2%", "2%", "2%", "2%", "2%", "2%", "2%", "2%", "2%", "2%", "2%", "2%");
+		Table()->PlanTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left","Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center", "Center", "Center");
 		
 		// This array will store the details required for the javascript code that archives a RatePlan
 		$arrRatePlanDetails = array();
@@ -190,35 +190,13 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strServiceTypeCell	= "<div class='$strServiceTypeClass'></div>";
 			
 			// Attributes
-			$strAttributesCell	= '';
-			if ($arrRatePlan['IsDefault'] == TRUE)
-			{
-				$strAttributesCell	.= "<img src='img/template/flag.png' title='Default plan for $strCustomerGroup, $strServiceType services' />";
-			}
-			if ($arrRatePlan['InAdvance'])
-			{
-				$strAttributesCell	.= "<img src='../admin/img/template/charge_in_advance.png' alt='In Advance' title='Plan Charges are in Advance' />";
-			}
-			if ($arrRatePlan['ContractTerm'] >= 1)
-			{
-				$strAttributesCell	.= "<img src='../admin/img/template/contract.png' alt='Contracted' title='{$arrRatePlan['ContractTerm']}-month Contract' />";
-			}
-			if ($arrRatePlan['locked'])
-			{
-				$strAttributesCell	.= "<img src='../admin/img/template/btn_locked.png' alt='Locked' title='Plan Changes are Locked' />";
-			}
-			if ($arrRatePlan['cdr_required'])
-			{
-				$strAttributesCell	.= "<img src='../admin/img/template/cdr_required.png' alt='CDRs Required' title='Only charge Plan Charge if Service has tolled' />";
-			}
-			if ($arrRatePlan['Shared'])
-			{
-				$strAttributesCell	.= "<img src='../admin/img/template/plan_shared.png' alt='Shared' title='Shared Plan' />";
-			}
-			if ($arrRatePlan['allow_cdr_hiding'])
-			{
-				$strAttributesCell	.= "<img src='../admin/img/template/cdr_hiding.png' alt='CDRs Hiding' title='Zero-Rated CDRs can be hidden on the Invoice' />";
-			}
+			$strDefaultCell		= ($arrRatePlan['IsDefault'])			? "<img src='img/template/flag.png' title='Default plan for $strCustomerGroup, $strServiceType services' />"						: '&nbsp;';
+			$strAdvanceCell		= ($arrRatePlan['InAdvance'])			? "<img src='../admin/img/template/charge_in_advance.png' alt='In Advance' title='Plan Charges are in Advance' />"					: '&nbsp;';
+			$strContractCell	= ($arrRatePlan['ContractTerm'] >= 1)	? "<img src='../admin/img/template/contract.png' alt='Contracted' title='{$arrRatePlan['ContractTerm']}-month Contract' />"			: '&nbsp;'; 
+			$strLockedCell		= ($arrRatePlan['locked'])				? "<img src='../admin/img/template/btn_locked.png' alt='Locked' title='Plan Changes are Locked' />"									: '&nbsp;'; 
+			$strCDRRequiredCell	= ($arrRatePlan['cdr_required'])		? "<img src='../admin/img/template/cdr_required.png' alt='CDRs Required' title='Only charge Plan Charge if Service has tolled' />"	: '&nbsp;';
+			$strSharedCell		= ($arrRatePlan['Shared'])				? "<img src='../admin/img/template/plan_shared.png' alt='Shared' title='Shared Plan' />"											: '&nbsp;';
+			$strCDRHiding		= ($arrRatePlan['allow_cdr_hiding'])	? "<img src='../admin/img/template/cdr_hiding.png' alt='CDRs Hiding' title='Zero-Rated CDRs can be hidden on the Invoice' />"		: '&nbsp;'; 
 			
 			if ((!$arrRatePlan['IsDefault']) && ($arrRatePlan['Archived'] == RATE_STATUS_ACTIVE || $arrRatePlan['Archived'] == RATE_STATUS_ARCHIVED))
 			{
@@ -317,7 +295,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strCustomerGroupCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup' type='hidden' value='{$arrRatePlan['customer_group']}' /><span id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup_Name'>".$strCustomerGroup."</span>";
 			
 			// Add the row
-			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strCustomerGroupCell, $strAttributesCell, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
+			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strCustomerGroupCell, $strDefaultCell, $strAdvanceCell, $strContractCell, $strLockedCell, $strCDRRequiredCell, $strSharedCell, $strCDRHiding, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
 			Table()->PlanTable->SetOnClick("\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked = !\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked;");
 			
 			$arrRatePlanDetails[$arrRatePlan['Id']] = array(	"Name"			=> $strName,
