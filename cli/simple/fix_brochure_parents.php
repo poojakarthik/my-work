@@ -15,7 +15,7 @@ try
 	$arrCustomerGroupDocuments	= array();
 	
 	// Select all Plans with a Plan Brochure which has no parent
-	$resPlansWithBrochures	= $qryQuery->Execute("SELECT RatePlan.* FROM RatePlan JOIN document_content ON RatePlan.brochure_document_id = document_content.document_id WHERE parent_document_id IS NULL");
+	$resPlansWithBrochures	= $qryQuery->Execute("SELECT DISTINCT RatePlan.* FROM RatePlan JOIN document_content ON RatePlan.brochure_document_id = document_content.document_id WHERE parent_document_id IS NULL");
 	if (!$resPlansWithBrochures)
 	{
 		throw new Exception($qryQuery->Error());
