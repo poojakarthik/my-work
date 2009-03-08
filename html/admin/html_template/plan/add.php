@@ -225,7 +225,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "<div id='PlanDetailsColumn2' style='width:50%;float:left'>";
 		
 		// Plan Change Locking
-		$strChecked	= (DBO()->RatePlan->cdr_required->Value == 0) ? '' : "checked='checked'";
+		$strChecked	= (DBO()->RatePlan->locked->Value) ? "checked='checked'" : '';
 		echo "
 <div class='DefaultElement' style='margin-bottom:4px;'>
 	<input type='checkbox' id='RatePlan.locked' name='RatePlan.locked' value='1' $strChecked class='DefaultInputCheckBox2 Default' />
@@ -233,11 +233,11 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 </div>";
 		
 		// CDR Required
-		$strChecked	= (DBO()->RatePlan->cdr_required->Isset || DBO()->RatePlan->cdr_required->Value) ? "checked='checked'" : '';
+		$strChecked	= (DBO()->RatePlan->cdr_required->Value == 0) ? '' : "checked='checked'";
 		echo "
 <div class='DefaultElement' style='margin-bottom:4px;'>
 	<input type='checkbox' id='RatePlan.cdr_required' name='RatePlan.cdr_required' value='1' $strChecked class='DefaultInputCheckBox2 Default' />
-	<div class='DefaultLabel'>&nbsp;&nbsp;Wait for Call Data :</div>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Wait for CDRs :</div>
 </div>";
 		
 		// In Advance
