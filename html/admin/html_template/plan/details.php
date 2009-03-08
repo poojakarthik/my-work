@@ -295,6 +295,22 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			DBO()->RatePlan->included_data->RenderArbitrary("{$intIncludedDataInMB} {$strUnit}", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 		}
 		
+		echo '<div class="DefaultElement">
+   <div class="DefaultOutput Default" name="RatePlan.locked" id="RatePlan.locked.Output">'.(DBO()->RatePlan->locked->Value ? 'Yes' : 'No').'</div>
+   <div class="DefaultLabel" id="RatePlan.locked.Label">
+      <span>  </span>
+      <span id="RatePlan.locked.Label.Text">Restrict Plan Changes : </span>
+   </div>
+</div>';
+		
+		echo '<div class="DefaultElement">
+   <div class="DefaultOutput Default" name="RatePlan.cdr_required" id="RatePlan.cdr_required.Output">'.(DBO()->RatePlan->cdr_required->Value ? 'Yes' : 'No').'</div>
+   <div class="DefaultLabel" id="RatePlan.cdr_required.Label">
+      <span>  </span>
+      <span id="RatePlan.cdr_required.Label.Text">Wait for Call Data : </span>
+   </div>
+</div>';
+		
 		echo "</td></tr></table>\n";
 		
 		echo "</div>\n";  // GroupedContent
