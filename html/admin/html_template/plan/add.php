@@ -237,7 +237,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "
 <div class='DefaultElement' style='margin-bottom:4px;'>
 	<input type='checkbox' id='RatePlan.cdr_required' name='RatePlan.cdr_required' value='1' $strChecked class='DefaultInputCheckBox2 Default' />
-	<div class='DefaultLabel'>&nbsp;&nbsp;Wait for CDRs :</div>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Wait for Call Data :</div>
 </div>";
 		
 		// In Advance
