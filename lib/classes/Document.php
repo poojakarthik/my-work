@@ -306,7 +306,7 @@ class Document extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
 				case 'selByNameAndParent':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("document JOIN document_content ON document.id = document_content.document_id", "document.*", "parent_document_id <=> <parent_document_id> AND name = <name> AND document_content.id = (SELECT Id FROM document_content WHERE document_id = document.id ORDER BY id DESC LIMIT 1)", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("document JOIN document_content ON document.id = document_content.document_id", "document.*", "parent_document_id <=> <parent_document_id> AND name = <name> AND document_content.status_id = ".STATUS_ACTIVE." AND document_content.id = (SELECT Id FROM document_content WHERE document_id = document.id ORDER BY id DESC LIMIT 1)", NULL, 1);
 					break;
 				case 'selChildren':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"document JOIN document_content ON document.id = document_content.document_id", 
