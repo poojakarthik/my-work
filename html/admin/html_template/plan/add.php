@@ -233,7 +233,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 </div>";
 		
 		// CDR Required
-		$strChecked	= (!DBO()->RatePlan->cdr_required->Isset || DBO()->RatePlan->cdr_required->Value) ? "checked='checked'" : '';
+		$strChecked	= (isset(DBO()->RatePlan->cdr_required) || DBO()->RatePlan->cdr_required->Value) ? "checked='checked'" : '';
 		echo "
 <div class='DefaultElement' style='margin-bottom:4px;'>
 	<input type='checkbox' id='RatePlan.cdr_required' name='RatePlan.cdr_required' value='1' $strChecked class='DefaultInputCheckBox2 Default' />
