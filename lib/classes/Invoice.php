@@ -876,7 +876,7 @@ class Invoice extends ORM
 		{
 			$fltProratedAmount			= ($fltAmount / $intBillingPeriod) * $intProratePeriod;
 			Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / {$intBillingPeriod}) * {$intProratePeriod};");
-			Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / ".($intBillingPeriod / Flex_Date::SECONDS_IN_DAY).") * ".($intBillingPeriod / Flex_Date::SECONDS_IN_DAY).";");
+			Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / ".($intBillingPeriod / Flex_Date::SECONDS_IN_DAY).") * ".($intProratePeriod / Flex_Date::SECONDS_IN_DAY).";");
 			
 			$fltProratedAmount			= round($fltProratedAmount, $intDecimalPlaces);
 			return $fltProratedAmount;
