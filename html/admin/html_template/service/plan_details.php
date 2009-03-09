@@ -284,6 +284,22 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 				$intIncludedDataInMB	= $intIncludedData / 1024;
 				$dboRatePlan->included_data->RenderArbitrary("{$intIncludedDataInMB} {$strUnit}", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 			}
+		
+		echo '<div class="DefaultElement">
+   <div class="DefaultOutput Default" name="RatePlan.locked" id="RatePlan.locked.Output">'.($dboRatePlan->locked->Value ? 'Yes' : 'No').'</div>
+   <div class="DefaultLabel" id="RatePlan.locked.Label">
+      <span> &nbsp;</span>
+      <span id="RatePlan.locked.Label.Text">Restrict Plan Changes : </span>
+   </div>
+</div>';
+		
+		echo '<div class="DefaultElement">
+   <div class="DefaultOutput Default" name="RatePlan.cdr_required" id="RatePlan.cdr_required.Output">'.($dboRatePlan->cdr_required->Value ? 'Yes' : 'No').'</div>
+   <div class="DefaultLabel" id="RatePlan.cdr_required.Label">
+      <span> &nbsp;</span>
+      <span id="RatePlan.cdr_required.Label.Text">Wait for Call Data : </span>
+   </div>
+</div>';
 			
 			if ($dboRatePlan->StartDatetime->IsSet)
 			{
