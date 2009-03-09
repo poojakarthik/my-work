@@ -1065,7 +1065,7 @@ class Invoice extends ORM
 			$fltUsageLimit		= 0.0;
 		}
 		// DEBUG
-		Log::getLog()->log($arrPlanChargeSteps);
+		Log::getLog()->log(print_r($arrPlanChargeSteps, true));
 
 		// Return usage data
 		return Array(
