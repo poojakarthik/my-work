@@ -19,16 +19,16 @@ class Flex_Rollout_Version_000151 extends Flex_Rollout_Version
 
 		// 1:	Add the RatePlan.locked and cdr_required Fields
 		$strSQL =	"ALTER TABLE CustomerGroup " .
-					"CHANGE ExternalName external_name varchar(255)" .
-                    "CHANGE InternalName internal_name varchar(255)";
+					"CHANGE ExternalName	external_name	VARCHAR(255)	NOT NULL	COMMENT 'Name of the Customer Group, as used within the Telco', " .
+                    "CHANGE InternalName	internal_name	VARCHAR(255)	NOT NULL	COMMENT 'Name of the Customer Group as the customers know it to be';";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to rename the ExternalName and InternalName Fields. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] =	"ALTER TABLE CustomerGroup " .
-					"CHANGE external_name ExternalName varchar(255)" .
-                    "CHANGE internal_name InternalName varchar(255)";
+					"CHANGE external_name	ExternalName	VARCHAR(255)	NOT NULL	COMMENT 'Name of the Customer Group, as used within the Telco', " .
+                    "CHANGE internal_name	InternalName	VARCHAR(255)	NOT NULL	COMMENT 'Name of the Customer Group as the customers know it to be';";
 	}
 
 	function rollback()
