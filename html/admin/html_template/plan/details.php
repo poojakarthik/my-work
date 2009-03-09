@@ -299,7 +299,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
    <div class="DefaultOutput Default" name="RatePlan.locked" id="RatePlan.locked.Output">'.(DBO()->RatePlan->locked->Value ? 'Yes' : 'No').'</div>
    <div class="DefaultLabel" id="RatePlan.locked.Label">
       <span> &nbsp;</span>
-      <span id="RatePlan.locked.Label.Text">&nbsp;&nbsp;Restrict Plan Changes : </span>
+      <span id="RatePlan.locked.Label.Text">Restrict Plan Changes : </span>
    </div>
 </div>';
 		
@@ -307,7 +307,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
    <div class="DefaultOutput Default" name="RatePlan.cdr_required" id="RatePlan.cdr_required.Output">'.(DBO()->RatePlan->cdr_required->Value ? 'Yes' : 'No').'</div>
    <div class="DefaultLabel" id="RatePlan.cdr_required.Label">
       <span> &nbsp;</span>
-      <span id="RatePlan.cdr_required.Label.Text">&nbsp;&nbsp;Wait for Call Data : </span>
+      <span id="RatePlan.cdr_required.Label.Text">Wait for Call Data : </span>
    </div>
 </div>';
 		
