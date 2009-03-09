@@ -283,7 +283,7 @@
 						'ApprovedBy'	=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 						'ChargeType'	=> '',
 						'Description'	=> 'Invoice Dispute (Invoice: #' . $this->Pull ('Id')->getValue () . ')',
-						'ChargedOn'		=> NULL,
+						'ChargedOn'		=> date('Y-m-d'),
 						'Nature'		=> NATURE_CR,
 						'Amount'		=> $this->Pull ('Disputed')->getValue () - $fltAmount,
 						'Status'		=> CHARGE_APPROVED
@@ -309,7 +309,7 @@
 						'ApprovedBy'	=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 						'ChargeType'	=> '',
 						'Description'	=> 'Invoice Dispute (Invoice: #' . $this->Pull ('Id')->getValue () . ')',
-						'ChargedOn'		=> NULL,
+						'ChargedOn'		=> date('Y-m-d'),
 						'Nature'		=> NATURE_CR,
 						'Amount'		=> $this->Pull ('Disputed')->getValue (),
 						'Status'		=> CHARGE_APPROVED
