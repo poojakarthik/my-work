@@ -3436,7 +3436,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 		'AccountGroupId'		=> "Account.AccountGroup",
 		'CustomerGroupId'		=> "Account.CustomerGroup",
 		'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
+		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
 		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
 	);
 
@@ -3454,7 +3454,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 
 	$strWhere	= "";
 
-	$strGroupBy	= "Invoice.Account HAVING Overdue < minBalanceToPursue";
+	$strGroupBy	= "Invoice.Account HAVING Overdue < minBalanceToPursue OR Overdue < (Invoice.Total * 0.25)";
 	$strOrderBy	= "Invoice.Account ASC";
 
 	/*
@@ -3557,50 +3557,30 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		'AccountGroupId'		=> "Account.AccountGroup",
 		'CustomerGroupId'		=> "Account.CustomerGroup",
 		'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
+		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
 		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
 	);
 
 	$strTables	= "
 		Invoice 
-		JOIN Account 
-		ON Invoice.Account = Account.Id
-		AND Account.Archived IN ($strApplicableAccountStatuses) 
-		AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
-		AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
-		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
-		JOIN credit_control_status 
-		ON Account.credit_control_status = credit_control_status.id
-		AND credit_control_status.can_bar = 1
-		JOIN account_status 
-		ON Account.Archived = account_status.id
-		AND account_status.can_bar = 1
-		JOIN CustomerGroup 
-		ON Account.CustomerGroup = CustomerGroup.Id
+		JOIN Account ON Invoice.Account = Account.Id AND Account.Archived IN ($strApplicableAccountStatuses) AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . " AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
+		JOIN credit_control_status ON Account.credit_control_status = credit_control_status.id AND credit_control_status.can_bar = 1
+		JOIN account_status ON Account.Archived = account_status.id AND account_status.can_bar = 1
+		JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id
 		JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)";
 
 	$strWhere	= "Account.Id IN (
 		SELECT DISTINCT(Account.Id) 
 		FROM InvoiceRun 
-		JOIN Invoice
-		ON InvoiceRun.Id IN (" . implode(', ', $arrInvoiceRunIds) . ")
-		AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
-		AND InvoiceRun.Id = Invoice.invoice_run_id
-		JOIN Account 
-		ON Account.Id = Invoice.Account
-		AND Account.Archived IN ($strApplicableAccountStatuses) 
-		AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
+		JOIN Invoice ON InvoiceRun.Id IN (" . implode(', ', $arrInvoiceRunIds) . ") AND Invoice.Status IN ($strApplicableInvoiceStatuses) AND InvoiceRun.Id = Invoice.invoice_run_id
+		JOIN Account ON Account.Id = Invoice.Account AND Account.Archived IN ($strApplicableAccountStatuses) AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
 		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 		AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
-		JOIN credit_control_status 
-		ON Account.credit_control_status = credit_control_status.id
-		AND credit_control_status.can_bar = 1
-		JOIN account_status 
-		ON Account.Archived = account_status.id
-		AND account_status.can_bar = 1
+		JOIN credit_control_status ON Account.credit_control_status = credit_control_status.id AND credit_control_status.can_bar = 1
+		JOIN account_status ON Account.Archived = account_status.id AND account_status.can_bar = 1
 	)";
 
-	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND invoice_run_id IN (" . implode(', ', $arrInvoiceRunIds) . ")";
+	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (Invoice.Total * 0.25) AND invoice_run_id IN (" . implode(', ', $arrInvoiceRunIds) . ")";
 	$strOrderBy	= "Invoice.Account ASC";
 
 	$select = array();
@@ -3746,7 +3726,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 		'AccountGroupId'		=> "Account.AccountGroup",
 		'CustomerGroupId'		=> "Account.CustomerGroup",
 		'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
+		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
 		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
 	);
 
@@ -3787,7 +3767,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 		AND account_status.can_bar = 1
 	)";
 
-	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue";
+	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (Invoice.Total * 0.25)";
 	$strOrderBy	= "Invoice.Account ASC";
 
 	/*
@@ -3939,9 +3919,9 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		'DisableLatePayment'	=> "Account.DisableLatePayment",
 		'InvoiceId'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Id END)",
 		'CreatedOn'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.CreatedOn END)",
-		'OutstandingNotOverdue'	=> "SUM(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN Invoice.Balance END)",
-		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance END)",
-		'TotalOutstanding'		=> "SUM(Invoice.Balance)",
+		'OutstandingNotOverdue'	=> "SUM(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
+		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
+		'TotalOutstanding'		=> "SUM(Invoice.Balance - Invoice.Disputed)",
 		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue");
 
 	$strTables	= "Invoice 
@@ -3982,7 +3962,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 	)";
 
 	$strOrderBy	= "Invoice.Account ASC";
-	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue";
+	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (Invoice.Total * 0.25)";
 
 	/*
 	// DEBUG: Output the query that gets run
