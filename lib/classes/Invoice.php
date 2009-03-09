@@ -972,6 +972,8 @@ class Invoice extends ORM
 		}
 		else
 		{
+			Log::getLog()->log("Non-CDR Service");
+			
 			// Otherwise use the Service Creation Date
 			$resResult	= $qryQuery->Execute("SELECT MIN(CreatedOn) AS EarliestCreatedOn FROM Service WHERE Id IN ({$strServiceIds})");
 			if ($resResult === FALSE)
@@ -988,6 +990,7 @@ class Invoice extends ORM
 
 		// Is the Service tolling?
 		$intLevel	= 0;
+		Log::getLog()->log("Earliest CDR: {$strEarliestCDR}");
 		if ($strEarliestCDR)
 		{
 			$fltMinimumCharge	= (float)$arrPlanDetails['MinMonthly'];
