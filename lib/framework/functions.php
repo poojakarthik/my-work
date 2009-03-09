@@ -3578,6 +3578,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
 		JOIN credit_control_status ON Account.credit_control_status = credit_control_status.id AND credit_control_status.can_bar = 1
 		JOIN account_status ON Account.Archived = account_status.id AND account_status.can_bar = 1
+		AND Account.tio_reference_number IS NULL
 	)";
 
 	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (Invoice.Total * 0.25) AND invoice_run_id IN (" . implode(', ', $arrInvoiceRunIds) . ")";
@@ -3765,6 +3766,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 		JOIN account_status 
 		ON Account.Archived = account_status.id
 		AND account_status.can_bar = 1
+		AND Account.tio_reference_number IS NULL
 	)";
 
 	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (Invoice.Total * 0.25)";
