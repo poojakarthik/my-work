@@ -3432,12 +3432,13 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 
 	$arrColumns = array(
 		'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
-		'AccountId'				=> "Invoice.Account",
-		'AccountGroupId'		=> "Account.AccountGroup",
-		'CustomerGroupId'		=> "Account.CustomerGroup",
-		'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
-		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
+		'AccountId'					=> "Invoice.Account",
+		'AccountGroupId'			=> "Account.AccountGroup",
+		'CustomerGroupId'			=> "Account.CustomerGroup",
+		'CustomerGroupName'			=> "CustomerGroup.ExternalName",
+		'Overdue'					=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
+		'TotalFromOverdueInvoices'	=> "SUM(CASE WHEN ($strEffectiveDate > Invoice.DueOn) AND ((Invoice.Balance - Invoice.Disputed) > 0) THEN Invoice.Total END)",
+		'minBalanceToPursue'		=> "payment_terms.minimum_balance_to_pursue",
 	);
 
 	$strTables = "
@@ -3454,7 +3455,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 
 	$strWhere	= "";
 
-	$strGroupBy	= "Invoice.Account HAVING Overdue < minBalanceToPursue OR Overdue < (Invoice.Total * 0.25)";
+	$strGroupBy	= "Invoice.Account HAVING Overdue < minBalanceToPursue OR Overdue < (TotalFromOverdueInvoices * 0.25)";
 	$strOrderBy	= "Invoice.Account ASC";
 
 	/*
@@ -3553,12 +3554,13 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 
 	$arrColumns = array(
 		'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
-		'AccountId'				=> "Invoice.Account",
-		'AccountGroupId'		=> "Account.AccountGroup",
-		'CustomerGroupId'		=> "Account.CustomerGroup",
-		'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
-		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
+		'AccountId'					=> "Invoice.Account",
+		'AccountGroupId'			=> "Account.AccountGroup",
+		'CustomerGroupId'			=> "Account.CustomerGroup",
+		'CustomerGroupName'			=> "CustomerGroup.ExternalName",
+		'Overdue'					=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
+		'TotalFromOverdueInvoices'	=> "SUM(CASE WHEN ($strEffectiveDate > Invoice.DueOn) AND ((Invoice.Balance - Invoice.Disputed) > 0) THEN Invoice.Total END)",
+		'minBalanceToPursue'		=> "payment_terms.minimum_balance_to_pursue",
 	);
 
 	$strTables	= "
@@ -3581,7 +3583,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		AND Account.tio_reference_number IS NULL
 	)";
 
-	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (Invoice.Total * 0.25) AND invoice_run_id IN (" . implode(', ', $arrInvoiceRunIds) . ")";
+	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (TotalFromOverdueInvoices * 0.25) AND invoice_run_id IN (" . implode(', ', $arrInvoiceRunIds) . ")";
 	$strOrderBy	= "Invoice.Account ASC";
 
 	$select = array();
@@ -3723,12 +3725,13 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 
 	$arrColumns = array(
 		'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
-		'AccountId'				=> "Invoice.Account",
-		'AccountGroupId'		=> "Account.AccountGroup",
-		'CustomerGroupId'		=> "Account.CustomerGroup",
-		'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
-		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue",
+		'AccountId'					=> "Invoice.Account",
+		'AccountGroupId'			=> "Account.AccountGroup",
+		'CustomerGroupId'			=> "Account.CustomerGroup",
+		'CustomerGroupName'			=> "CustomerGroup.ExternalName",
+		'Overdue'					=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
+		'TotalFromOverdueInvoices'	=> "SUM(CASE WHEN ($strEffectiveDate > Invoice.DueOn) AND ((Invoice.Balance - Invoice.Disputed) > 0) THEN Invoice.Total END)",
+		'minBalanceToPursue'		=> "payment_terms.minimum_balance_to_pursue",
 	);
 
 	$strTables	= "
@@ -3769,7 +3772,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 		AND Account.tio_reference_number IS NULL
 	)";
 
-	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (Invoice.Total * 0.25)";
+	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (TotalFromOverdueInvoices * 0.25)";
 	$strOrderBy	= "Invoice.Account ASC";
 
 	/*
@@ -3898,33 +3901,34 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 
 	// Find all Accounts that fit the requirements for Late Notice generation
 	$arrColumns = Array(	'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
-		'AccountId'				=> "Invoice.Account",
-		'AccountGroup'			=> "Account.AccountGroup",
-		'BusinessName'			=> "Account.BusinessName",
-		'TradingName'			=> "Account.TradingName",
-		'CustomerGroup'			=> "Account.CustomerGroup",
-		'AccountStatus'			=> "Account.Archived",
-		'automatic_invoice_action'=> "Account.last_automatic_invoice_action",
-		'LatePaymentAmnesty'	=> "Account.LatePaymentAmnesty",
-		'DeliveryMethod'		=> "Account.BillingMethod",
-		'FirstName'				=> "Contact.FirstName",
-		'LastName'				=> "Contact.LastName",
-		'Email'					=> "Contact.Email",
-		'EmailFrom'				=> "CustomerGroup.OutboundEmail",
-		'CustomerGroupName'		=> "CustomerGroup.ExternalName",
-		'Title'					=> "Contact.Title",
-		'AddressLine1'			=> "Account.Address1",
-		'AddressLine2'			=> "Account.Address2",
-		'Suburb'				=> "UPPER(Account.Suburb)",
-		'Postcode'				=> "Account.Postcode",
-		'State'					=> "Account.State",
-		'DisableLatePayment'	=> "Account.DisableLatePayment",
-		'InvoiceId'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Id END)",
-		'CreatedOn'				=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.CreatedOn END)",
-		'OutstandingNotOverdue'	=> "SUM(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
-		'Overdue'				=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
-		'TotalOutstanding'		=> "SUM(Invoice.Balance - Invoice.Disputed)",
-		'minBalanceToPursue'	=> "payment_terms.minimum_balance_to_pursue");
+		'AccountId'					=> "Invoice.Account",
+		'AccountGroup'				=> "Account.AccountGroup",
+		'BusinessName'				=> "Account.BusinessName",
+		'TradingName'				=> "Account.TradingName",
+		'CustomerGroup'				=> "Account.CustomerGroup",
+		'AccountStatus'				=> "Account.Archived",
+		'automatic_invoice_action'	=> "Account.last_automatic_invoice_action",
+		'LatePaymentAmnesty'		=> "Account.LatePaymentAmnesty",
+		'DeliveryMethod'			=> "Account.BillingMethod",
+		'FirstName'					=> "Contact.FirstName",
+		'LastName'					=> "Contact.LastName",
+		'Email'						=> "Contact.Email",
+		'EmailFrom'					=> "CustomerGroup.OutboundEmail",
+		'CustomerGroupName'			=> "CustomerGroup.ExternalName",
+		'Title'						=> "Contact.Title",
+		'AddressLine1'				=> "Account.Address1",
+		'AddressLine2'				=> "Account.Address2",
+		'Suburb'					=> "UPPER(Account.Suburb)",
+		'Postcode'					=> "Account.Postcode",
+		'State'						=> "Account.State",
+		'DisableLatePayment'		=> "Account.DisableLatePayment",
+		'InvoiceId'					=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Id END)",
+		'CreatedOn'					=> "MAX(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.CreatedOn END)",
+		'OutstandingNotOverdue'		=> "SUM(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
+		'Overdue'					=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
+		'TotalOutstanding'			=> "SUM(Invoice.Balance - Invoice.Disputed)",
+		'TotalFromOverdueInvoices'	=> "SUM(CASE WHEN ($strEffectiveDate > Invoice.DueOn) AND ((Invoice.Balance - Invoice.Disputed) > 0) THEN Invoice.Total END)",
+		'minBalanceToPursue'		=> "payment_terms.minimum_balance_to_pursue");
 
 	$strTables	= "Invoice 
 		JOIN Account 
@@ -3964,7 +3968,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 	)";
 
 	$strOrderBy	= "Invoice.Account ASC";
-	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (Invoice.Total * 0.25)";
+	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (TotalFromOverdueInvoices * 0.25)";
 
 	/*
 	// DEBUG: Output the query that gets run
