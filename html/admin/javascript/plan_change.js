@@ -104,20 +104,21 @@ function VixenPlanChangeClass()
 			{
 				var strHTML	=	"<div class='GroupedContent' style='height:40em; overflow-y:scroll;'>\n" +
 								objResponse.strHTML +
-								"</div>\n" + 
-								"<div style='margin: 0.5em;'>\n" +
-								"	Clicking the <span style='font-weight: bold;'>Agree</span> button will continue with the Plan Change.  Clicking the <span style='font-weight: bold;'>Disagree</span> button will abort the Plan Change." +
-								"</div>\n" +
-								"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n";
+								"</div>\n";
 				
 				if (objResponse.bolPermitted)
 				{
-					strHTML	+=	"	<input id='Plan_AuthScript_Agree' value='Agree' type='button' onclick='Vixen.Popup.Close(Vixen.PlanChange.strVoiceAuthPopupId); Vixen.PlanChange.ChangePlan();' /> \n" + 
+					strHTML	+=	"<div style='margin: 0.5em;'>\n" +
+								"	Clicking the <span style='font-weight: bold;'>Agree</span> button will continue with the Plan Change.  Clicking the <span style='font-weight: bold;'>Disagree</span> button will abort the Plan Change." +
+								"</div>\n" +
+								"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" + 
+								"	<input id='Plan_AuthScript_Agree' value='Agree' type='button' onclick='Vixen.Popup.Close(Vixen.PlanChange.strVoiceAuthPopupId); Vixen.PlanChange.ChangePlan();' /> \n" + 
 								"	<input id='Plan_AuthScript_Disagree' value='Disagree' onclick='Vixen.Popup.Close(Vixen.PlanChange.strVoiceAuthPopupId);' style='margin-left: 3px;' type='button' /> \n";
 				}
 				else
 				{
-					strHTML	+=	"	input id='Plan_AuthScript_Disagree' value='    OK    ' onclick='Vixen.Popup.Close(Vixen.PlanChange.strVoiceAuthPopupId);' style='margin-left: 3px;' type='button' /> \n";
+					strHTML	+=	"<div style='margin: 0pt auto; margin-top: 4px; margin-bottom: 4px; width: 100%; text-align: center;'>\n" +  
+								"	<input id='Plan_AuthScript_Disagree' value='    OK    ' onclick='Vixen.Popup.Close(Vixen.PlanChange.strVoiceAuthPopupId);' style='margin-left: 3px;' type='button' /> \n";
 				}
 				strHTML	+= "</div>\n";
 				
