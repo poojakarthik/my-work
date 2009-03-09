@@ -102,7 +102,7 @@ class Cli_App_Sales extends Cli
 			$arrCustomerGroups	= Customer_Group::getAll();
 			foreach ($arrCustomerGroups as $objCustomerGroup)
 			{
-				$this->log("\t\t\t+ Id #{$objCustomerGroup->id} ({$objCustomerGroup->externalName})...");
+				$this->log("\t\t\t+ Id #{$objCustomerGroup->id} ({$objCustomerGroup->external_name})...");
 
 				$strCoolingOffPeriod = ($objCustomerGroup->coolingOffPeriod !== NULL)? $objCustomerGroup->coolingOffPeriod : "NULL";
 				
@@ -117,7 +117,7 @@ class Cli_App_Sales extends Cli
 					$this->log("\t\t\t+ Does not exist, adding...");
 					
 					// No -- add it
-					$resVendorInsert	= $dsSalesPortal->query("INSERT INTO vendor (id, name, description, cooling_off_period) VALUES ({$objCustomerGroup->id}, '{$objCustomerGroup->externalName}', '{$objCustomerGroup->externalName}', $strCoolingOffPeriod);");
+					$resVendorInsert	= $dsSalesPortal->query("INSERT INTO vendor (id, name, description, cooling_off_period) VALUES ({$objCustomerGroup->id}, '{$objCustomerGroup->external_name}', '{$objCustomerGroup->external_name}', $strCoolingOffPeriod);");
 					if (PEAR::isError($resVendorInsert))
 					{
 						throw new Exception($resVendorInsert->getMessage()." :: ".$resVendorInsert->getUserInfo());
@@ -128,7 +128,7 @@ class Cli_App_Sales extends Cli
 					$this->log("\t\t\t+ Already exists, updating...");
 					
 					// Yes -- update it
-					$resVendorUpdate	= $dsSalesPortal->query("UPDATE vendor SET id = {$objCustomerGroup->id}, name = '{$objCustomerGroup->externalName}', description = '{$objCustomerGroup->externalName}', cooling_off_period = $strCoolingOffPeriod WHERE id = {$objCustomerGroup->id};");
+					$resVendorUpdate	= $dsSalesPortal->query("UPDATE vendor SET id = {$objCustomerGroup->id}, name = '{$objCustomerGroup->external_name}', description = '{$objCustomerGroup->external_name}', cooling_off_period = $strCoolingOffPeriod WHERE id = {$objCustomerGroup->id};");
 					if (PEAR::isError($resVendorUpdate))
 					{
 						throw new Exception($resVendorUpdate->getMessage()." :: ".$resVendorUpdate->getUserInfo());

@@ -66,8 +66,8 @@ class HtmlTemplateCustomerGroupList extends HtmlTemplate
 		{
 			$strViewCustomerGroupHref = Href()->ViewCustomerGroup($dboCustomerGroup->Id->Value);
 
-			Table()->CustomerGroups->AddRow($dboCustomerGroup->InternalName->AsValue(),
-											$dboCustomerGroup->ExternalName->AsValue()
+			Table()->CustomerGroups->AddRow($dboCustomerGroup->internal_name->AsValue(),
+											$dboCustomerGroup->external_name->AsValue()
 											);
 			Table()->CustomerGroups->SetOnClick("window.location = '$strViewCustomerGroupHref'");
 		}

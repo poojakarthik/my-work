@@ -33,7 +33,7 @@
 	// Load the common layout for this app
 	require_once dirname(__FILE__) . "/../layout_template/common_layout.php";
 	
-	// CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console"), "$ExternalName Customer System");
+	// CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console"), "$external_name Customer System");
 	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console",1=>"ResetPassword",2=>"SetupAccount"), "");
 	
 	echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
@@ -82,7 +82,7 @@
 		{
 		print "
 		<br/><br/>
-		<center><div class='customer-standard-table-style-menu-options-login'>$ExternalName Customer System - Reset Password Success</div></center>
+		<center><div class='customer-standard-table-style-menu-options-login'>$external_name Customer System - Reset Password Success</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";
@@ -100,7 +100,7 @@
 		{
 		print "
 		<br/><br/>
-		<center><div class='customer-standard-table-style-menu-options-login'>$ExternalName Customer System - Reset Password Failure</div></center>
+		<center><div class='customer-standard-table-style-menu-options-login'>$external_name Customer System - Reset Password Failure</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD>";

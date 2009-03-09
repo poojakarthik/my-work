@@ -60,14 +60,14 @@
 			parent::__construct ('CustomerGroups');
 			
 			// Retrieve all CustomerGroups from the database
-			$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, InternalName", "TRUE", "InternalName");
+			$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, internal_name", "TRUE", "internal_name");
 			$selCustomerGroups->Execute();
 			$arrCustomerGroups = $selCustomerGroups->FetchAll();
 			
 			foreach ($arrCustomerGroups as $arrCustomerGroup)
 			{
 				$strVarName = "_{$arrCustomerGroup['Id']}";
-				$this->$strVarName = $this->Push(new CustomerGroup($arrCustomerGroup['Id'], $arrCustomerGroup['InternalName']));
+				$this->$strVarName = $this->Push(new CustomerGroup($arrCustomerGroup['Id'], $arrCustomerGroup['internal_name']));
 			}
 			
 			$this->setValue ($intCustomerGroup);

@@ -64,7 +64,7 @@ class Cli_App_Calculate_Customer_Statuses extends Cli
 								"InvoiceRun"		=> "IR.InvoiceRun",
 								"BillingDate"		=> "IR.BillingDate",
 								"CustomerGroupId"	=> "CG.Id",
-								"CustomerGroupName"	=> "CG.InternalName"
+								"CustomerGroupName"	=> "CG.internal_name"
 								);
 			$strTables = "InvoiceRun AS IR LEFT JOIN CustomerGroup AS CG ON IR.customer_group_id = CG.Id";
 			

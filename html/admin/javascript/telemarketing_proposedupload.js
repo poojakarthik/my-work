@@ -45,7 +45,7 @@ var Telemarketing_ProposedUpload	= Class.create
 				if (this._arrVendors[intCustomerGroupId] != undefined)
 				{
 					// Create the element
-					elmVendorCombo.add(new Option(this._arrVendors[intCustomerGroupId].externalName, intCustomerGroupId), null);
+					elmVendorCombo.add(new Option(this._arrVendors[intCustomerGroupId].external_name, intCustomerGroupId), null);
 				}
 			}
 		}

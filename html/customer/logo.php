@@ -24,7 +24,7 @@ DBO()->customer_style_configuration->Array = $arrFetchCustomerStyleConfiguration
 # I couldnt find the style for the URL you are using?
 if($arrFetchCustomerStyleConfiguration == "")
 {
-	$ExternalName = DEFAULT_CUSTOMER_EXTERNAL_NAME;
+	$external_name = DEFAULT_CUSTOMER_EXTERNAL_NAME;
 	$customer_primary_color = DEFAULT_CUSTOMER_PRIMARY_COLOR;
 	$customer_secondary_color = DEFAULT_CUSTOMER_SECONDARY_COLOR;
 	$customer_logo = DEFAULT_CUSTOMER_LOGO;

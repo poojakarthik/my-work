@@ -127,10 +127,10 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		echo "<div class='GroupedContent'>\n";
 
 		// Render the details of the CustomerGroup
-		DBO()->CustomerGroup->InternalName->RenderOutput();
-		DBO()->CustomerGroup->ExternalName->RenderOutput();
+		DBO()->CustomerGroup->internal_name->RenderOutput();
+		DBO()->CustomerGroup->external_name->RenderOutput();
 		DBO()->CustomerGroup->external_name_possessive->RenderOutput();
-		DBO()->CustomerGroup->OutboundEmail->RenderOutput();
+		DBO()->CustomerGroup->outbound_email->RenderOutput();
 		DBO()->CustomerGroup->flex_url->RenderOutput();
 		DBO()->CustomerGroup->email_domain->RenderOutput();
 		DBO()->CustomerGroup->customer_primary_color->RenderOutput();
@@ -240,12 +240,12 @@ class HtmlTemplateCustomerGroupDetails extends HtmlTemplate
 		DBO()->CustomerGroup->Id->RenderHidden();
 		
 		// Render the details of the CustomerGroup
-		DBO()->CustomerGroup->InternalName->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
-		DBO()->CustomerGroup->ExternalName->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->internal_name->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->external_name->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		
 		DBO()->CustomerGroup->external_name_possessive->RenderInput(CONTEXT_DEFAULT, FALSE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		
-		DBO()->CustomerGroup->OutboundEmail->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
+		DBO()->CustomerGroup->outbound_email->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->flex_url->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->email_domain->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));
 		DBO()->CustomerGroup->customer_primary_color->RenderInput(CONTEXT_DEFAULT, TRUE, TRUE, Array("attribute:maxlength"=>255, "style:width"=>"650px"));

@@ -26,7 +26,7 @@
  */
 
 // Set the page title
-$this->Page->SetName("Document Resources - ". DBO()->CustomerGroup->InternalName->Value);
+$this->Page->SetName("Document Resources - ". DBO()->CustomerGroup->internal_name->Value);
 
 //Sset the layout template for the page.
 $this->Page->SetLayout('1Column');

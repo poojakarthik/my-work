@@ -6,7 +6,7 @@ require_once("../../flex.require.php");
 // Statements
 $arrAccounts						= Array();
 $arrAccounts['Account']				= "Account.Id";
-$arrAccounts['CustomerGroup']		= "CustomerGroup.ExternalName";
+$arrAccounts['CustomerGroup']		= "CustomerGroup.external_name";
 $arrAccounts['AccountName']			= "Account.BusinessName";
 $arrAccounts['ContactName']			= "CONCAT(Contact.FirstName, ' ', Contact.LastName)";
 $arrAccounts['ContactPhone']		= "LPAD(Contact.Phone, 10, '0')";

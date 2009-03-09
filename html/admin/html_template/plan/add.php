@@ -362,7 +362,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "</div>\n"; // DefaultElement
 		
 		// Build the CustomerGroup combo box
-		$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, InternalName", "TRUE", "InternalName");
+		$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, internal_name", "TRUE", "internal_name");
 		$selCustomerGroups->Execute();
 		$arrCustomerGroups = $selCustomerGroups->FetchAll();
 		echo "<div class='DefaultElement'>\n";
@@ -372,7 +372,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		{
 			// Flag the option as being selected if it is the currently selected CustomerGroup
 			$strSelected = (DBO()->RatePlan->customer_group->Value == $arrCustomerGroup['Id']) ? "selected='selected'" : "";
-			echo "         <option value='{$arrCustomerGroup['Id']}' $strSelected>{$arrCustomerGroup['InternalName']}</option>\n";
+			echo "         <option value='{$arrCustomerGroup['Id']}' $strSelected>{$arrCustomerGroup['internal_name']}</option>\n";
 		}
 		echo "      </select>\n";
 		echo "</div>\n"; // DefaultElement

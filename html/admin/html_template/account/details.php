@@ -145,7 +145,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// Render the details of the Account
 		DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
 		DBO()->CustomerGroup->Load();
-		$strCustomerGroup = DBO()->CustomerGroup->InternalName->Value;
+		$strCustomerGroup = DBO()->CustomerGroup->internal_name->Value;
 		DBO()->Account->CustomerGroup->RenderArbitrary($strCustomerGroup, RENDER_OUTPUT);
 		
 		DBO()->Account->Archived->RenderCallback("GetConstantDescription", Array("account_status"), RENDER_OUTPUT);
@@ -403,7 +403,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		if ($bolIsSuperAdminUser)
 		{
 			// Render the CustomerGroup combobox
-			DBL()->CustomerGroup->OrderBy("InternalName");
+			DBL()->CustomerGroup->OrderBy("internal_name");
 			DBL()->CustomerGroup->Load();
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Customer Group :</div>\n";
@@ -412,7 +412,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			foreach (DBL()->CustomerGroup as $dboCustomerGroup)
 			{
 				$intCustomerGroupId		= $dboCustomerGroup->Id->Value;
-				$strCustomerGroupName	= $dboCustomerGroup->InternalName->Value;
+				$strCustomerGroupName	= $dboCustomerGroup->internal_name->Value;
 				$strSelected = (DBO()->Account->CustomerGroup->Value == $intCustomerGroupId) ? "selected='selected'" : "";
 				echo "		<option value='$intCustomerGroupId' $strSelected>$strCustomerGroupName</option>\n";
 			}
@@ -425,7 +425,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			// The user does not have permission to edit this property
 			DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
 			DBO()->CustomerGroup->Load();
-			$strCustomerGroupName = DBO()->CustomerGroup->InternalName->Value;
+			$strCustomerGroupName = DBO()->CustomerGroup->internal_name->Value;
 			DBO()->Account->CustomerGroup->RenderArbitrary($strCustomerGroupName, RENDER_OUTPUT);
 		}
 		

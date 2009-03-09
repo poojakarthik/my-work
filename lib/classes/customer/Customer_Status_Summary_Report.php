@@ -201,7 +201,7 @@ GROUP BY customer_group, invoice_run_id, customer_status_id
 			$arrInvoiceRuns[$intInvoiceRunId] = array(	"id"			=> $objInvoiceRun->id,
 														"billingDate"	=> date("d-m-Y", strtotime($objInvoiceRun->billingDate))
 													);
-			$arrInvoiceRuns[$intInvoiceRunId]['name'] = "{$arrInvoiceRuns[$intInvoiceRunId]['billingDate']} - Id: {$arrInvoiceRuns[$intInvoiceRunId]['id']}". (array_key_exists($objInvoiceRun->customerGroupId, $arrCustomerGroups)? " - {$arrCustomerGroups[$objInvoiceRun->customerGroupId]->internalName}" : ""); 
+			$arrInvoiceRuns[$intInvoiceRunId]['name'] = "{$arrInvoiceRuns[$intInvoiceRunId]['billingDate']} - Id: {$arrInvoiceRuns[$intInvoiceRunId]['id']}". (array_key_exists($objInvoiceRun->customerGroupId, $arrCustomerGroups)? " - {$arrCustomerGroups[$objInvoiceRun->customerGroupId]->internal_name}" : ""); 
 		}
 		
 		// This stores data for the link to the Account Summary functionality, if links will be present in the html

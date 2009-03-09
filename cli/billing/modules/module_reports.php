@@ -1860,7 +1860,7 @@ class BillingModuleReports
 		//--------------------------------------------------------------------//
 		
 		// Statements
-		$selCustomerGroups		= new StatementSelect("CustomerGroup", "Id AS CustomerGroup, InternalName");
+		$selCustomerGroups		= new StatementSelect("CustomerGroup", "Id AS CustomerGroup, internal_name");
 		
 		$selTempInvoice			= new StatementSelect("InvoiceTemp", "Id", "InvoiceRun = <InvoiceRun>", NULL, 1);
 		
@@ -1945,7 +1945,7 @@ class BillingModuleReports
 					// Get Customer Group data
 					foreach ($arrCustomerGroups as $arrCustomerGroup)
 					{
-						CliEcho("++ {$arrCustomerGroup['InternalName']} ++");
+						CliEcho("++ {$arrCustomerGroup['internal_name']} ++");
 						
 						// Get Profit Summary
 						CliEcho("Getting Profit Summary...");
@@ -2122,7 +2122,7 @@ class BillingModuleReports
 			{
 				foreach (Array("This Month", "Last Month") as $strPeriod)
 				{
-					$wksWorksheet->writeString($intLine, $intCol++, $arrCustomerGroup['InternalName']." ({$strPeriod})", $arrFormat['TitleItalic']);
+					$wksWorksheet->writeString($intLine, $intCol++, $arrCustomerGroup['internal_name']." ({$strPeriod})", $arrFormat['TitleItalic']);
 				}
 			}
 		}

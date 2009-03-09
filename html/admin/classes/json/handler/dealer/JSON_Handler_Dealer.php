@@ -115,7 +115,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 			foreach ($arrObjCustomerGroups as $objCustomerGroup)
 			{
 				$arrCustomerGroupDetails[$objCustomerGroup->id] = array("id"	=> $objCustomerGroup->id,
-																		"name"	=> htmlspecialchars($objCustomerGroup->internalName)
+																		"name"	=> htmlspecialchars($objCustomerGroup->internal_name)
 																		);
 			}
 			
@@ -618,7 +618,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 			$arrCustomerGroupNames	= Array();
 			foreach ($arrCustomerGroupIds as $intCustomerGroupId)
 			{
-				$arrCustomerGroupNames[] = htmlspecialchars($arrAllCustomerGroups[$intCustomerGroupId]->internalName);
+				$arrCustomerGroupNames[] = htmlspecialchars($arrAllCustomerGroups[$intCustomerGroupId]->internal_name);
 			}
 			$arrDetails['customerGroups'] = (count($arrCustomerGroupNames) > 0)? implode("<br />", $arrCustomerGroupNames) : "[None Specified]";
 			
@@ -629,7 +629,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 			{
 				$objRatePlan		= $arrAllRatePlans[$intRatePlanId];
 				$strServiceType		= GetConstantDescription($objRatePlan->ServiceType, "service_type");
-				$strCustomerGroup	= $arrAllCustomerGroups[$objRatePlan->customer_group]->internalName;
+				$strCustomerGroup	= $arrAllCustomerGroups[$objRatePlan->customer_group]->internal_name;
 				$strArchived		= ($objRatePlan->archived != RATE_STATUS_ACTIVE)? " (ARCHVIED)" : "";
 				$arrRatePlanNames[]	= htmlspecialchars("{$strCustomerGroup} - {$strServiceType} - {$objRatePlan->Name}{$strArchived}");
 			}

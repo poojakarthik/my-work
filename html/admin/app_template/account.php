@@ -976,13 +976,13 @@ class AppTemplateAccount extends ApplicationTemplate
 				return TRUE;
 			}
 			
-			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, InternalName", "Id = <Id>");
+			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, internal_name", "Id = <Id>");
 			$selCustomerGroup->Execute(Array("Id" => DBO()->CurrentAccount->CustomerGroup->Value));
 			$arrCurrentCustomerGroup = $selCustomerGroup->Fetch();
 			$selCustomerGroup->Execute(Array("Id" => DBO()->Account->CustomerGroup->Value));
 			$arrNewCustomerGroup = $selCustomerGroup->Fetch();
 			
-			$strChangesNote .= "Customer Group was changed from {$arrCurrentCustomerGroup['InternalName']} to {$arrNewCustomerGroup['InternalName']}\n";
+			$strChangesNote .= "Customer Group was changed from {$arrCurrentCustomerGroup['internal_name']} to {$arrNewCustomerGroup['internal_name']}\n";
 		}
 		DBO()->Account->DisableDDR = !(DBO()->Account->ChargeAdminFee->Value);
 		if (DBO()->Account->DisableDDR->Value != DBO()->CurrentAccount->DisableDDR->Value)

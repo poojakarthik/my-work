@@ -42,7 +42,7 @@
 	# I couldnt find the style for the URL you are using?
 	if($arrFetchCustomerStyleConfiguration == "")
 	{
-		$ExternalName = DEFAULT_CUSTOMER_EXTERNAL_NAME;
+		$external_name = DEFAULT_CUSTOMER_EXTERNAL_NAME;
 	}
 	# I could find something?
 	if($arrFetchCustomerStyleConfiguration != "")
@@ -54,8 +54,8 @@
 		}
 	}
 	// Open the pageBody container
-	 // CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ManagementConsole"), "$ExternalName Customer System");
-	// CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ResetPassword"), "$ExternalName Customer System");
+	 // CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ManagementConsole"), "$external_name Customer System");
+	// CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"ResetPassword"), "$external_name Customer System");
 	CommonLayout::OpenPageBody(NULL, FALSE, FALSE, array(0=>"Console",1=>"ResetPassword",2=>"SetupAccount"), "");
 	
 	echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
@@ -84,7 +84,7 @@
 	// Render the login table
 		print "
 		<br/><br/>
-		<center><div class='customer-standard-table-style-menu-options-login'>$ExternalName Customer System - Login</div></center>
+		<center><div class='customer-standard-table-style-menu-options-login'>$external_name Customer System - Login</div></center>
 		<TABLE align=center class=login-table-style-main>
 		<TR VALIGN=\"TOP\">
 			<TD align=\"center\">";

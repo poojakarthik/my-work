@@ -97,10 +97,10 @@
 			if ($strName === NULL)
 			{
 				// The CustomerGroup's name was not supplied, retrieve it from the database
-				$selCustomerGroup	= new StatementSelect("CustomerGroup", "InternalName", "Id = <Id>");
+				$selCustomerGroup	= new StatementSelect("CustomerGroup", "internal_name", "Id = <Id>");
 				$selCustomerGroup->Execute(Array("Id" => $intType));
 				$arrCustomerGroup	= $selCustomerGroup->Fetch();
-				$strName			= $arrCustomerGroup['InternalName'];
+				$strName			= $arrCustomerGroup['internal_name'];
 			}
 			
 			$this->oblintType		= $this->Push (new dataInteger	('Id',		$intType));

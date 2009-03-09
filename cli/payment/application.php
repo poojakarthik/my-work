@@ -857,7 +857,7 @@
 	 	else
 	 	{
 	 		// Force Mode -- Get all Customer Groups
-	 		$selCustomerGroups	= new StatementSelect("CustomerGroup", "Id AS customer_group_id, ExternalName", "1");
+	 		$selCustomerGroups	= new StatementSelect("CustomerGroup", "Id AS customer_group_id, external_name", "1");
 	 		if ($selCustomerGroups->Execute() === FALSE)
 	 		{
 	 			return Array('Success' => FALSE, 'Description' => "DB ERROR: ".$selCustomerGroups->Error());
@@ -865,7 +865,7 @@
 	 		$arrCustomerGroups	= $selCustomerGroups->FetchAll();
 	 		foreach ($arrCustomerGroups as $arrCustomerGroup)
 	 		{
-		 		CliEcho("\t+ ".$arrCustomerGroups['ExternalName']);
+		 		CliEcho("\t+ ".$arrCustomerGroups['external_name']);
 	 		}
 	 	}
 		

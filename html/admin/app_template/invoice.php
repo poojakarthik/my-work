@@ -118,7 +118,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 
 			// Load account details for sending the email
 			$strTables	= "Account AS A INNER JOIN CustomerGroup AS CG ON A.CustomerGroup = CG.Id";
-			$arrColumns	= Array("CustomerGroup" => "CG.ExternalName", "OutboundEmail" => "CG.OutboundEmail");
+			$arrColumns	= Array("CustomerGroup" => "CG.external_name", "outbound_email" => "CG.outbound_email");
 			$strWhere	= "A.Id = <AccountId>";
 			$selAccount = new StatementSelect($strTables, $arrColumns, $strWhere);
 			$selAccount->Execute(Array("AccountId" => DBO()->Account->Id->Value));
@@ -127,7 +127,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 			// Set up the email message
 			$strBillingPeriod = date("F", strtotime("$intYear-$intMonth-01")) . " " . $intYear; // eg 'May 2007'
 			$strCustomerGroup = $arrAccount['CustomerGroup'];
-			$strFromAddress = $arrAccount['OutboundEmail'];
+			$strFromAddress = $arrAccount['outbound_email'];
 			$strContent = str_replace("<custgrp>", $strCustomerGroup, INVOICE_EMAIL_CONTENT);
 			$strSubject = str_replace("<billperiod>", $strBillingPeriod, INVOICE_EMAIL_SUBJECT);
 			$arrHeaders = Array('From' => $strFromAddress, 'Subject' => $strSubject);

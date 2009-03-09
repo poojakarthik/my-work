@@ -215,10 +215,10 @@
 			$intAccountGroup	= $arrAccount['AccountGroup'];
 			
 			// Retrieve the CustomerGroup from the database
-			$selCustomerGroup	= new StatementSelect("CustomerGroup", "InternalName", "Id = <Id>");
+			$selCustomerGroup	= new StatementSelect("CustomerGroup", "internal_name", "Id = <Id>");
 			$selCustomerGroup->Execute(Array("Id" => $arrAccount['CustomerGroup']));
 			$arrCustomerGroup	= $selCustomerGroup->Fetch();
-			$strCustomerGroup	= $arrCustomerGroup['InternalName'];
+			$strCustomerGroup	= $arrCustomerGroup['internal_name'];
 		
 			$strBillingType		= GetConstantDescription($arrAccount['BillingType'], "BillingType");
 			$strBillingMethod	= GetConstantDescription($arrAccount['BillingMethod'], "BillingMethod");			

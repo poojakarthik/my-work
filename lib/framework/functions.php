@@ -3435,7 +3435,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 		'AccountId'					=> "Invoice.Account",
 		'AccountGroupId'			=> "Account.AccountGroup",
 		'CustomerGroupId'			=> "Account.CustomerGroup",
-		'CustomerGroupName'			=> "CustomerGroup.ExternalName",
+		'CustomerGroupName'			=> "CustomerGroup.external_name",
 		'Overdue'					=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
 		'TotalFromOverdueInvoices'	=> "SUM(CASE WHEN ($strEffectiveDate > Invoice.DueOn) AND ((Invoice.Balance - Invoice.Disputed) > 0) THEN Invoice.Total END)",
 		'minBalanceToPursue'		=> "payment_terms.minimum_balance_to_pursue",
@@ -3557,7 +3557,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		'AccountId'					=> "Invoice.Account",
 		'AccountGroupId'			=> "Account.AccountGroup",
 		'CustomerGroupId'			=> "Account.CustomerGroup",
-		'CustomerGroupName'			=> "CustomerGroup.ExternalName",
+		'CustomerGroupName'			=> "CustomerGroup.external_name",
 		'Overdue'					=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
 		'TotalFromOverdueInvoices'	=> "SUM(CASE WHEN ($strEffectiveDate > Invoice.DueOn) AND ((Invoice.Balance - Invoice.Disputed) > 0) THEN Invoice.Total END)",
 		'minBalanceToPursue'		=> "payment_terms.minimum_balance_to_pursue",
@@ -3728,7 +3728,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 		'AccountId'					=> "Invoice.Account",
 		'AccountGroupId'			=> "Account.AccountGroup",
 		'CustomerGroupId'			=> "Account.CustomerGroup",
-		'CustomerGroupName'			=> "CustomerGroup.ExternalName",
+		'CustomerGroupName'			=> "CustomerGroup.external_name",
 		'Overdue'					=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
 		'TotalFromOverdueInvoices'	=> "SUM(CASE WHEN ($strEffectiveDate > Invoice.DueOn) AND ((Invoice.Balance - Invoice.Disputed) > 0) THEN Invoice.Total END)",
 		'minBalanceToPursue'		=> "payment_terms.minimum_balance_to_pursue",
@@ -3913,8 +3913,8 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		'FirstName'					=> "Contact.FirstName",
 		'LastName'					=> "Contact.LastName",
 		'Email'						=> "Contact.Email",
-		'EmailFrom'					=> "CustomerGroup.OutboundEmail",
-		'CustomerGroupName'			=> "CustomerGroup.ExternalName",
+		'EmailFrom'					=> "CustomerGroup.outbound_email",
+		'CustomerGroupName'			=> "CustomerGroup.external_name",
 		'Title'						=> "Contact.Title",
 		'AddressLine1'				=> "Account.Address1",
 		'AddressLine2'				=> "Account.Address2",
@@ -4128,7 +4128,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		}
 
 		// Retrieve the list of CustomerGroups
-		$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, InternalName, ExternalName");
+		$selCustomerGroups = new StatementSelect("CustomerGroup", "Id, internal_name, external_name");
 		$selCustomerGroups->Execute();
 		$arrCustomerGroups = Array();
 		while (($arrCustomerGroup = $selCustomerGroups->Fetch()) !== FALSE)
@@ -4206,8 +4206,8 @@ function CreateDefaultPaymentTerms($customerGroupId)
 					"Outcome"					=> ($bolSuccess ? "Successful":"Failed"),
 					"BusinessName"				=> $arrAccount['BusinessName'],
 					"TradingName"				=> $arrAccount['TradingName'],
-					"CustomerGroupInternalName"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['InternalName'],
-					"CustomerGroupExternalName"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['ExternalName'],
+					"CustomerGroupinternal_name"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['internal_name'],
+					"CustomerGroupexternal_name"	=> $arrCustomerGroups[$arrAccount['CustomerGroup']]['external_name'],
 					"OutstandingNotOverdue"		=> $arrAccount['OutstandingNotOverdue'],
 					"Overdue"					=> $arrAccount['Overdue'],
 					"TotalOutstanding"			=> $arrAccount['TotalOutstanding']);
@@ -4745,14 +4745,14 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		// These constants are now only used by the backend.  The frontend always refers to the database
 		// when dealing with customer groups
 		// This block of code can be removed when the backend no longer relies on them
-		$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, InternalName", "TRUE", "Id");
+		$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, internal_name", "TRUE", "Id");
 		$selCustomerGroup->Execute();
 		$arrCustomerGroups = $selCustomerGroup->FetchAll();
 		foreach ($arrCustomerGroups as $arrCustomerGroup)
 		{
 			// Build the constant name
-			$strConstant		= "CUSTOMER_GROUP_" . strtoupper(str_replace(" ", "_", $arrCustomerGroup['InternalName']));
-			$strDescription		= $arrCustomerGroup['InternalName'];
+			$strConstant		= "CUSTOMER_GROUP_" . strtoupper(str_replace(" ", "_", $arrCustomerGroup['internal_name']));
+			$strDescription		= $arrCustomerGroup['internal_name'];
 			$intCustomerGroup	= $arrCustomerGroup['Id'];
 
 			define($strConstant, $intCustomerGroup);

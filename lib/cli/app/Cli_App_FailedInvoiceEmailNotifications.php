@@ -50,7 +50,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			$strSqlEmailIn = str_replace('no email', ' i-g-n-o-r-e ', $strSqlEmailIn);
 
 			// Find the affected customer groups
-			$sel = array('CG.Id', 'CG.OutboundEmail');
+			$sel = array('CG.Id', 'CG.outbound_email');
 			$selCustGroups = new StatementSelect('CustomerGroup CG', $sel, "CG.Id IN (
 					SELECT distinct(CustomerGroup.Id)
 					  FROM CustomerGroup, Account, Contact
@@ -84,7 +84,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			foreach($affectedCustomerGroups as $arrCustomerGroup)
 			{
 				$intCustomerGroup = $arrCustomerGroup['Id'];
-				$strNoticationEmail = $arrCustomerGroup['OutboundEmail'];
+				$strNoticationEmail = $arrCustomerGroup['outbound_email'];
 
 				// Retrieve the result rows for the relevant email addresses
 				$where = array('CustomerGroup' => $intCustomerGroup);

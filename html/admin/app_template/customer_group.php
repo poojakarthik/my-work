@@ -74,7 +74,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		BreadCrumb()->SetCurrentPage("Customer Groups");
 		
 		// Retrieve the list of customer groups
-		DBL()->CustomerGroup->OrderBy("InternalName");
+		DBL()->CustomerGroup->OrderBy("internal_name");
 		DBL()->CustomerGroup->Load();
 		
 		// All required data has been retrieved from the database so now load the page template
@@ -114,18 +114,18 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				return TRUE;
 			}
 			
-			// Check that the CustomerGroup's InternalName is not being used by another CustomerGroup
-			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id", "InternalName LIKE <Name>", "", "1");
-			$intRecordFound = $selCustomerGroup->Execute(Array("Name"=> DBO()->CustomerGroup->InternalName->Value));
+			// Check that the CustomerGroup's internal_name is not being used by another CustomerGroup
+			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id", "internal_name LIKE <Name>", "", "1");
+			$intRecordFound = $selCustomerGroup->Execute(Array("Name"=> DBO()->CustomerGroup->internal_name->Value));
 			if ($intRecordFound)
 			{
-				// The CustomerGroup's InternalName is already in use by another CustomerGroup
-				DBO()->CustomerGroup->InternalName->SetToInvalid();
+				// The CustomerGroup's internal_name is already in use by another CustomerGroup
+				DBO()->CustomerGroup->internal_name->SetToInvalid();
 				Ajax()->AddCommand("Alert", "ERROR: This name is already in use by another Customer Group");
 				Ajax()->RenderHtmlTemplate("CustomerGroupNew", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 				return TRUE;
 			}
-			// DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail");
+			// DBO()->CustomerGroup->SetColumns("Id,internal_name,external_name,outbound_email");
 			// The CustomerGroup is valid.  Save it
 			if (!DBO()->CustomerGroup->Save())
 			{
@@ -327,7 +327,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			BreadCrumb()->System_Settings_Menu();
 		}
 		BreadCrumb()->ViewAllCustomerGroups();
-		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->SetCurrentPage("Credit Card Config");
 
 		// Declare which Page Template to use
@@ -473,14 +473,14 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		// Check that the CustomerGroup's InternalName is not being used by another CustomerGroup
-		$selCustomerGroup	= new StatementSelect("CustomerGroup", "Id", "InternalName LIKE <Name> AND Id != <Id>", "", "1");
-		$intRecordFound		= $selCustomerGroup->Execute(Array(	"Name"=> DBO()->CustomerGroup->InternalName->Value, 
+		// Check that the CustomerGroup's internal_name is not being used by another CustomerGroup
+		$selCustomerGroup	= new StatementSelect("CustomerGroup", "Id", "internal_name LIKE <Name> AND Id != <Id>", "", "1");
+		$intRecordFound		= $selCustomerGroup->Execute(Array(	"Name"=> DBO()->CustomerGroup->internal_name->Value, 
 																"Id"=> DBO()->CustomerGroup->Id->Value));
 		if ($intRecordFound)
 		{
-			// The CustomerGroup's new InternalName is already in use by another CustomerGroup
-			DBO()->CustomerGroup->InternalName->SetToInvalid();
+			// The CustomerGroup's new internal_name is already in use by another CustomerGroup
+			DBO()->CustomerGroup->internal_name->SetToInvalid();
 			Ajax()->AddCommand("Alert", "ERROR: This name is already in use by another Customer Group");
 			Ajax()->RenderHtmlTemplate("CustomerGroupDetails", HTML_CONTEXT_EDIT, $this->_objAjax->strContainerDivId, $this->_objAjax);
 			return TRUE;
@@ -490,7 +490,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 
 		DBO()->CustomerGroup->customer_primary_color = ereg_replace("[^a-zA-Z0-9]", "", DBO()->CustomerGroup->customer_primary_color->Value);
 		DBO()->CustomerGroup->customer_secondary_color = ereg_replace("[^a-zA-Z0-9]", "", DBO()->CustomerGroup->customer_secondary_color->Value);
-		DBO()->CustomerGroup->SetColumns("Id,InternalName,ExternalName,OutboundEmail,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url,external_name_possessive,bill_pay_biller_code,abn,acn,business_phone,business_fax,business_web,business_contact_email,business_info_email,customer_service_phone,customer_service_email,customer_service_contact_name,business_payable_name,business_payable_address,credit_card_payment_phone,faults_phone,customer_advert_url,cooling_off_period");
+		DBO()->CustomerGroup->SetColumns("Id,internal_name,external_name,outbound_email,flex_url,email_domain,customer_primary_color,customer_secondary_color,customer_exit_url,external_name_possessive,bill_pay_biller_code,abn,acn,business_phone,business_fax,business_web,business_contact_email,business_info_email,customer_service_phone,customer_service_email,customer_service_contact_name,business_payable_name,business_payable_address,credit_card_payment_phone,faults_phone,customer_advert_url,cooling_off_period");
 		// The CustomerGroup is valid.  Save it
 		if (!DBO()->CustomerGroup->Save())
 		{
@@ -609,7 +609,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			BreadCrumb()->System_Settings_Menu();
 		}
 		BreadCrumb()->ViewAllCustomerGroups();
-		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->SetCurrentPage("Template History");
 		
 		$this->LoadPage('document_template_history');
@@ -661,7 +661,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			if (DBO()->BaseTemplate->CustomerGroup->Value != DBO()->CustomerGroup->Id->Value)
 			{
 				// The base template does not belong to the CustomerGroup
-				DBO()->Error->Message = "The DocumentTemplate of which to base the new template on, is not owned by the ". DBO()->CustomerGroup->InternalName->Value ." customer group";
+				DBO()->Error->Message = "The DocumentTemplate of which to base the new template on, is not owned by the ". DBO()->CustomerGroup->internal_name->Value ." customer group";
 				$this->LoadPage('error');
 				return TRUE;
 			}
@@ -698,7 +698,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		
 
 		// Set a default description
-		DBO()->DocumentTemplate->Description = "Version ". DBO()->DocumentTemplate->Version->Value ." for ". DBO()->CustomerGroup->InternalName->Value ." ". DBO()->DocumentTemplateType->Name->Value ." Template";		
+		DBO()->DocumentTemplate->Description = "Version ". DBO()->DocumentTemplate->Version->Value ." for ". DBO()->CustomerGroup->internal_name->Value ." ". DBO()->DocumentTemplateType->Name->Value ." Template";		
 
 		if (DBO()->BaseTemplate->Id->Value)
 		{
@@ -717,7 +717,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		BreadCrumb()->Admin_Console();
 		BreadCrumb()->SystemSettingsMenu();
 		BreadCrumb()->ViewAllCustomerGroups();
-		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
 		BreadCrumb()->SetCurrentPage("Template");
 		
@@ -767,7 +767,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		BreadCrumb()->Admin_Console();
 		BreadCrumb()->SystemSettingsMenu();
 		BreadCrumb()->ViewAllCustomerGroups();
-		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplate->TemplateType->Value);
 		BreadCrumb()->SetCurrentPage("Template");
 		
@@ -816,7 +816,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			BreadCrumb()->System_Settings_Menu();
 		}
 		BreadCrumb()->ViewAllCustomerGroups();
-		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplate->TemplateType->Value);
 		BreadCrumb()->SetCurrentPage("Template");
 		
@@ -892,7 +892,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			DBO()->CustomerGroup->Load();
 			DBO()->DocumentTemplateType->Id = DBO()->Template->TemplateType->Value;
 			DBO()->DocumentTemplateType->Load();
-			DBO()->Template->Description = "Version ". DBO()->Template->Version->Value ." for ". DBO()->CustomerGroup->InternalName->Value ." ". DBO()->DocumentTemplateType->Name->Value;
+			DBO()->Template->Description = "Version ". DBO()->Template->Version->Value ." for ". DBO()->CustomerGroup->internal_name->Value ." ". DBO()->DocumentTemplateType->Name->Value;
 		}
 		
 		switch (DBO()->Template->EffectiveOnType->Value)
@@ -1034,7 +1034,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			BreadCrumb()->System_Settings_Menu();
 		}
 		BreadCrumb()->ViewAllCustomerGroups();
-		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->SetCurrentPage("Document Resources");
 
 		// Load the page template
@@ -1270,7 +1270,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		// Load all Customer Groups
-		DBL()->CustomerGroup->OrderBy("InternalName ASC");
+		DBL()->CustomerGroup->OrderBy("internal_name ASC");
 		DBL()->CustomerGroup->Load();
 		
 		// Load all the Document Template Types
@@ -1373,7 +1373,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			}
 			if ($mixResult == 0)
 			{
-				echo "ERROR: Could not find an appropriate DocumentTemplate for CustomerGroup: ". DBO()->CustomerGroup->InternalName->Value .", TemplateType: ". DBO()->DocumentTemplateType->Name->Value .", for generation on $strGenerationDate";
+				echo "ERROR: Could not find an appropriate DocumentTemplate for CustomerGroup: ". DBO()->CustomerGroup->internal_name->Value .", TemplateType: ". DBO()->DocumentTemplateType->Name->Value .", for generation on $strGenerationDate";
 				exit;
 			}
 			
@@ -1418,7 +1418,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		
 		// The pdf was successfully created
-		$strFilename = "Sample_". str_replace(" ", "_", DBO()->CustomerGroup->InternalName->Value) ."_". str_replace(" ", "_", DBO()->DocumentTemplateType->Name->Value) ."_". str_replace("-", "_", $strDate) ."_". str_replace(":", "_", DBO()->Generation->Time->Value) .".pdf";
+		$strFilename = "Sample_". str_replace(" ", "_", DBO()->CustomerGroup->internal_name->Value) ."_". str_replace(" ", "_", DBO()->DocumentTemplateType->Name->Value) ."_". str_replace("-", "_", $strDate) ."_". str_replace(":", "_", DBO()->Generation->Time->Value) .".pdf";
 		header("Content-type: application/pdf;");
 		header("Content-Disposition: attachment; filename=\"$strFilename\"");
 		echo $strPdf;
@@ -1508,7 +1508,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			}
 			if ($mixResult == 0)
 			{
-				Ajax()->AddCommand("Alert", "ERROR: Could not find an appropriate DocumentTemplate for CustomerGroup: ". DBO()->CustomerGroup->InternalName->Value .", TemplateType: ". DBO()->DocumentTemplateType->Name->Value .", for generation on $strGenerationDate");
+				Ajax()->AddCommand("Alert", "ERROR: Could not find an appropriate DocumentTemplate for CustomerGroup: ". DBO()->CustomerGroup->internal_name->Value .", TemplateType: ". DBO()->DocumentTemplateType->Name->Value .", for generation on $strGenerationDate");
 				return TRUE;
 			}
 			
@@ -1555,7 +1555,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 
 		// The pdf was successfully built
 		// Save it to the session, so that we can both report on the process, and let the user retrieve it as a file
-		$strFilename = "Sample_". str_replace(" ", "_", DBO()->CustomerGroup->InternalName->Value) ."_". str_replace(" ", "_", DBO()->DocumentTemplateType->Name->Value) ."_". str_replace("-", "_", $strDate) ."_". str_replace(":", "_", DBO()->Generation->Time->Value) .".pdf";
+		$strFilename = "Sample_". str_replace(" ", "_", DBO()->CustomerGroup->internal_name->Value) ."_". str_replace(" ", "_", DBO()->DocumentTemplateType->Name->Value) ."_". str_replace("-", "_", $strDate) ."_". str_replace(":", "_", DBO()->Generation->Time->Value) .".pdf";
 		$_SESSION['DocumentTemplateSamplePdf'] = $strPdf;
 		$_SESSION['DocumentTemplateSamplePdfFilename'] = $strFilename;
 		

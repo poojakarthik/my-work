@@ -205,7 +205,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			}
 			
 			$objCustomerGroup	= Customer_Group::getForId($arrRatePlan['customer_group']);
-			$strCustomerGroup	= $objCustomerGroup->externalName;
+			$strCustomerGroup	= $objCustomerGroup->external_name;
 			
 			// Build the Plan Brochure link
 			$strBrochureCell	= '';

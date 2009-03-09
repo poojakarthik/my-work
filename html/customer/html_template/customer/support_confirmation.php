@@ -306,7 +306,7 @@
 							<TABLE class=\"customer-standard-table-style\">
 							<TR>
 								<TD width=\"160\"></TD>
-								<TD>If you are crossing Telephone Exchange boundaries and are unable to keep your current numbers, do you allow " . DBO()->CustomerGroup->ExternalName->Value . " to connect a new service for you.</TD>
+								<TD>If you are crossing Telephone Exchange boundaries and are unable to keep your current numbers, do you allow " . DBO()->CustomerGroup->external_name->Value . " to connect a new service for you.</TD>
 							</TR>							
 							<TR>
 								<TD width=\"160\">Selected Option: </TD>
@@ -489,7 +489,7 @@
 							<TABLE class=\"customer-standard-table-style\">
 							<TR>
 								<TD width=\"160\"></TD>
-								<TD>If you are crossing Telephone Exchange boundaries and are unable to keep your current numbers, do you allow " . DBO()->CustomerGroup->ExternalName->Value . " to connect a new service for you.</TD>
+								<TD>If you are crossing Telephone Exchange boundaries and are unable to keep your current numbers, do you allow " . DBO()->CustomerGroup->external_name->Value . " to connect a new service for you.</TD>
 							</TR>							
 							<TR>
 								<TD width=\"160\">Selected Option: </TD>

@@ -100,9 +100,9 @@ class HtmlTemplateCustomerGroupNew extends HtmlTemplate
 
 		echo "<div class='WideForm'>\n";
 
-		DBO()->CustomerGroup->InternalName->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->ExternalName->RenderInput(CONTEXT_DEFAULT, TRUE);
-		DBO()->CustomerGroup->OutboundEmail->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->CustomerGroup->internal_name->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->CustomerGroup->external_name->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->CustomerGroup->outbound_email->RenderInput(CONTEXT_DEFAULT, TRUE);
 		DBO()->CustomerGroup->flex_url->RenderInput(CONTEXT_DEFAULT, TRUE);
 		DBO()->CustomerGroup->email_domain->RenderInput(CONTEXT_DEFAULT, TRUE);
 		

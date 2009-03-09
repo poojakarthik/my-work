@@ -15,9 +15,9 @@
 class Customer_Group 
 {
 	private $id								= NULL;
-	private $internalName					= NULL;
-	private $externalName					= NULL;
-	private $outboundEmail					= NULL;
+	private $internal_name					= NULL;
+	private $external_name					= NULL;
+	private $outbound_email					= NULL;
 	private $flexUrl						= NULL;
 	private $emailDomain					= NULL;
 	private $customerPrimaryColor			= NULL;
@@ -85,7 +85,7 @@ class Customer_Group
 		{
 			$arrCustomerGroups = array();
 			
-			$selCustomerGroups = new StatementSelect("CustomerGroup", self::getColumns(), "", "InternalName ASC");
+			$selCustomerGroups = new StatementSelect("CustomerGroup", self::getColumns(), "", "internal_name ASC");
 			if (($outcome = $selCustomerGroups->Execute()) === FALSE)
 			{
 				throw new Exception("Failed to retrieve all Customer Groups: ". $selCustomerGroups->Error());
@@ -123,9 +123,9 @@ class Customer_Group
 	{
 		return array(
 						"Id",
-						"InternalName",
-						"ExternalName",
-						"OutboundEmail",
+						"internal_name",
+						"external_name",
+						"outbound_email",
 						"flex_url",
 						"email_domain",
 						"customer_primary_color",
@@ -175,9 +175,9 @@ class Customer_Group
 		}
 
 		// Constant Group stuff
-		$this->name			= $this->internalName;
-		$this->description	= $this->internalName;
-		$this->constant		= "CUSTOMER_GROUP_" . strtoupper(str_replace(" ", "_", $this->internalName));
+		$this->name			= $this->internal_name;
+		$this->description	= $this->internal_name;
+		$this->constant		= "CUSTOMER_GROUP_" . strtoupper(str_replace(" ", "_", $this->internal_name));
 		$this->value		= $this->id;
 	}
 

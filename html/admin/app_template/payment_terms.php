@@ -58,7 +58,7 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 		BreadCrumb()->Admin_Console();
 		BreadCrumb()->System_Settings_Menu();
 		BreadCrumb()->ViewAllCustomerGroups();
-		BreadCrumb()->ViewCustomerGroup($customerGroupId, DBO()->CustomerGroup->InternalName->Value);
+		BreadCrumb()->ViewCustomerGroup($customerGroupId, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->SetCurrentPage("Payment Terms");
 
 		$qryQuery = new StatementSelect('payment_terms', array('id' => 'MAX(id)'), 'customer_group_id = <CustomerGroupId>');

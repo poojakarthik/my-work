@@ -389,8 +389,8 @@ class Flex_Rollout_Version_000017 extends Flex_Rollout_Version
 
 		$strSQL = "
 			UPDATE CustomerGroup SET 
-				email_domain = SUBSTRING_INDEX(OutboundEmail, '@', -1),
-				flex_url = CONCAT('https://', SUBSTRING_INDEX(SUBSTRING_INDEX(OutboundEmail, '@', -1), '.', 1), '.yellowbilling.com.au')
+				email_domain = SUBSTRING_INDEX(outbound_email, '@', -1),
+				flex_url = CONCAT('https://', SUBSTRING_INDEX(SUBSTRING_INDEX(outbound_email, '@', -1), '.', 1), '.yellowbilling.com.au')
 		";
 		if (!$qryQuery->Execute($strSQL))
 		{

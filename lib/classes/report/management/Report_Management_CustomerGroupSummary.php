@@ -34,7 +34,7 @@ class Report_Management_CustomerGroupSummary extends Report_Management
 		//--------------------------------------------------------------------//
 		
 		// Statements
-		$selCustomerGroups	= new StatementSelect("CustomerGroup", "Id AS CustomerGroup, InternalName", "1");
+		$selCustomerGroups	= new StatementSelect("CustomerGroup", "Id AS CustomerGroup, internal_name", "1");
 		
 		$selProfitSummary	= new StatementSelect(	"Invoice JOIN Account ON Invoice.Account = Account.Id", 
 													"SUM(Invoice.Total) AS TotalInvoiced, SUM(Invoice.Tax) AS TotalTaxed, SUM(Invoice.Total + Invoice.Tax) AS GrandTotalInvoiced",
@@ -76,7 +76,7 @@ class Report_Management_CustomerGroupSummary extends Report_Management
 				// Get Customer Group data
 				foreach ($arrCustomerGroups as $arrCustomerGroup)
 				{
-					CliEcho("++ {$arrCustomerGroup['InternalName']} ++");
+					CliEcho("++ {$arrCustomerGroup['internal_name']} ++");
 					
 					// Get Profit Summary
 					CliEcho("Getting Profit Summary...");
@@ -246,7 +246,7 @@ class Report_Management_CustomerGroupSummary extends Report_Management
 			{
 				foreach (Array("This Month", "Last Month") as $strPeriod)
 				{
-					$wksWorksheet->writeString($intLine, $intCol++, $arrCustomerGroup['InternalName']." ({$strPeriod})", $arrFormat['TitleItalic']);
+					$wksWorksheet->writeString($intLine, $intCol++, $arrCustomerGroup['internal_name']." ({$strPeriod})", $arrFormat['TitleItalic']);
 				}
 			}
 		}

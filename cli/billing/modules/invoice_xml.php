@@ -418,7 +418,7 @@
  	function SendOutput($strInvoiceRun, $arrModes = NULL, $bolGeneratePDFs = TRUE)
  	{
 		// Get list of CustomerGroups
-		$selCustomerGroups	= new StatementSelect("CustomerGroup", "InternalName", "1");
+		$selCustomerGroups	= new StatementSelect("CustomerGroup", "internal_name", "1");
 		$selCustomerGroups->Execute();
 		$arrCustomerGroups	= $selCustomerGroups->FetchAll();
 		
@@ -453,18 +453,18 @@
 			{
 				foreach ($arrCustomerGroups as $strName=>&$arrCustomerGroup)
 				{
-					$strCustomerGroup	= str_replace(' ', '_', strtoupper($arrCustomerGroup['InternalName']));
-					$strTARName			= str_replace(' ', '', strtolower($arrCustomerGroup['InternalName']))."-invoice-{$strInvoiceRun}.tar";
+					$strCustomerGroup	= str_replace(' ', '_', strtoupper($arrCustomerGroup['internal_name']));
+					$strTARName			= str_replace(' ', '', strtolower($arrCustomerGroup['internal_name']))."-invoice-{$strInvoiceRun}.tar";
 					$strTARPath			= ($arrOptions['Archive']) ? "-f ".$strXMLPath.$strTARName : "";
 					$strCommand			= "cd {$strCommandDir}; php pdf.php -c $strCustomerGroup -x $strXMLPath {$strTARPath} -m $strMode";
-					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['FilePath']			= $strTARPath;
+					$arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['FilePath']			= $strTARPath;
 					
 					// Start the PDF generation process
-					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes']			= Array();
-					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][0]	= Array('pipe', 'r');
-					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][1]	= Array('pipe', 'w');
-					$arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'][2]	= Array('pipe', 'w');
-					if (!($arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Process']	= proc_open($strCommand, $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Descriptor'], $arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes'])))
+					$arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['Pipes']			= Array();
+					$arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['Descriptor'][0]	= Array('pipe', 'r');
+					$arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['Descriptor'][1]	= Array('pipe', 'w');
+					$arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['Descriptor'][2]	= Array('pipe', 'w');
+					if (!($arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['Process']	= proc_open($strCommand, $arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['Descriptor'], $arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['Pipes'])))
 					{
 						// There was an error starting the child process
 						CliEcho("Unable to start child process ('$strCommand') for $strName::$strMode!");
@@ -473,8 +473,8 @@
 					{
 						$arrCustomerGroup['StartDatetime']	= time();
 						$arrStatus							= proc_get_status($arrCustomerGroup['Process']);
-						CliEcho("{$arrCustomerGroup['InternalName']}::$strMode process started successfully with PID {$arrStatus['pid']}!");
-						stream_set_blocking($arrOptions['CustomerGroup'][$arrCustomerGroup['InternalName']]['Pipes'][1], 0);
+						CliEcho("{$arrCustomerGroup['internal_name']}::$strMode process started successfully with PID {$arrStatus['pid']}!");
+						stream_set_blocking($arrOptions['CustomerGroup'][$arrCustomerGroup['internal_name']]['Pipes'][1], 0);
 						$intRunning++;
 					}
 				}
@@ -495,7 +495,7 @@
 							{
 								// Close the process
 								$intTotalTime	= time() - $arrCustomerGroup['StartDatetime'];
-								CliEcho("{$arrCustomerGroup['InternalName']}::$strMode process has completed in $intTotalTime seconds");
+								CliEcho("{$arrCustomerGroup['internal_name']}::$strMode process has completed in $intTotalTime seconds");
 								@pclose($arrCustomerGroup['Pipes'][0]);
 								@pclose($arrCustomerGroup['Pipes'][1]);
 								@pclose($arrCustomerGroup['Pipes'][2]);
@@ -585,7 +585,7 @@
 						
 						// Is this Invoice set to be Emailed?
 						$selAccountEmail	= new StatementSelect(	"((Invoice JOIN Account ON Invoice.Account = Account.Id) JOIN Contact ON Contact.Account = Account.Id) JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id",
-																	"Invoice.Id AS InvoiceNumber, Invoice.Account, CustomerGroup.ExternalName, CustomerGroup.OutboundEmail, Email, FirstName",
+																	"Invoice.Id AS InvoiceNumber, Invoice.Account, CustomerGroup.external_name, CustomerGroup.outbound_email, Email, FirstName",
 																	"Email != '' AND Contact.Archived = 0 AND InvoiceRun = <InvoiceRun> AND Invoice.Account = <Account> AND Invoice.DeliveryMethod = ".DELIVERY_METHOD_EMAIL);
 						$updDeliveryMethod	= new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>", Array('DeliveryMethod' => NULL));
 						
@@ -607,10 +607,10 @@
 			 			{
 				 			// Set email headers
 				 			$arrHeaders = Array	(
-				 									'From'		=> $arrDetail['OutboundEmail'],
+				 									'From'		=> $arrDetail['outbound_email'],
 				 									'Subject'	=> "Telephone Billing for $strBillingPeriod"
 				 								);
-		 					$strContent	=	str_replace('<CustomerGroup>', $arrDetail['ExternalName'], $strContentTemplate);
+		 					$strContent	=	str_replace('<CustomerGroup>', $arrDetail['external_name'], $strContentTemplate);
 					 		
 					 		// Does the customer have a first name?
 					 		if (trim($arrDetail['FirstName']))
