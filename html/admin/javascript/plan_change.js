@@ -113,13 +113,13 @@ function VixenPlanChangeClass()
 				if (objResponse.bolPermitted)
 				{
 					strHTML	+=	"	<input id='Plan_AuthScript_Agree' value='Agree' type='button' onclick='Vixen.Popup.Close(Vixen.PlanChange.strVoiceAuthPopupId); Vixen.PlanChange.ChangePlan();' /> \n" + 
-								"	<input id='Plan_AuthScript_Disagree' value='Disagree' onclick='Vixen.Popup.Close(Vixen.PlanChange.strVoiceAuthPopupId);' style='margin-left: 3px;' type='button' /> \n" +
+								"	<input id='Plan_AuthScript_Disagree' value='Disagree' onclick='Vixen.Popup.Close(Vixen.PlanChange.strVoiceAuthPopupId);' style='margin-left: 3px;' type='button' /> \n";
 				}
 				else
 				{
 					strHTML	+=	"	input id='Plan_AuthScript_Disagree' value='    OK    ' onclick='Vixen.Popup.Close(Vixen.PlanChange.strVoiceAuthPopupId);' style='margin-left: 3px;' type='button' /> \n";
 				}
-				"</div>\n";
+				strHTML	+= "</div>\n";
 				
 				Vixen.Popup.Create(Vixen.PlanChange.strVoiceAuthPopupId, strHTML, 'large', 'centre', 'modal', "Plan Change Authorisation Script");
 			}
