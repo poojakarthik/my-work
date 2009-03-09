@@ -204,70 +204,10 @@
 		$arrColumns['Description']			= "Description";
 		$arrColumns['ChargeType']			= "ChargeType";
 		$arrColumns['Nature']				= "Nature";
-		/*$this->_selItemisedServiceCharges	= new StatementSelect(	"Charge",
-																	$arrColumns,
-																	"Service = <Service> AND InvoiceRun = <InvoiceRun>");*/
 		
 		$this->_selItemisedAccountCharges	= new StatementSelect(	"Charge",
 																	$arrColumns,
 																	"Account = <Account> AND Service IS NULL AND InvoiceRun = <InvoiceRun>");
-		
-		/*$arrColumns = Array();
-		$arrColumns['Charge']			= "CDR.Charge";
-		$arrColumns['FNN']				= "CDR.FNN";
-		$arrColumns['Source']			= "CDR.Source";
-		$arrColumns['Destination']		= "CDR.Destination";
-		$arrColumns['StartDatetime']	= "CDR.StartDatetime";
-		$arrColumns['EndDatetime']		= "CDR.EndDatetime";
-		$arrColumns['Units']			= "CDR.Units";
-		$arrColumns['Description']		= "CDR.Description";
-		$arrColumns['DestinationCode']	= "CDR.DestinationCode";
-		$arrColumns['RecordTypeName']	= "RType.Name";
-		$arrColumns['DisplayType']		= "RType.DisplayType";
-		$this->_selItemisedCalls		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
-																"RecordType AS RType",
-																$arrColumns,
-																"RType.Itemised = 1 AND CDR.Account = <Account> AND RecordType.GroupId = RType.Id AND CDR.Credit = 0 AND CDR.InvoiceRun = <InvoiceRun> AND Status = ".CDR_TEMP_INVOICE,
-																"CDR.FNN, RType.Name, CDR.StartDatetime");*/
-		/*$arrColumns = Array();
-		$arrColumns['Charge']			= "CDR.Charge";
-		$arrColumns['Source']			= "CDR.Source";
-		$arrColumns['Destination']		= "CDR.Destination";
-		$arrColumns['StartDatetime']	= "CDR.StartDatetime";
-		$arrColumns['EndDatetime']		= "CDR.EndDatetime";
-		$arrColumns['Units']			= "CDR.Units";
-		$arrColumns['Description']		= "CDR.Description";
-		$arrColumns['DestinationCode']	= "CDR.DestinationCode";
-		$arrColumns['DisplayType']		= "RecordGroup.DisplayType";
-		$arrColumns['RecordGroup']		= "RecordGroup.Description";
- 		$this->_selItemisedCalls	= new StatementSelect(	"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id" .
- 															", RecordType as RecordGroup",
- 															$arrColumns,
- 															"CDR.Service = <Service> AND " .
- 															"RecordGroup.Id = RecordType.GroupId AND " .
- 															"RecordGroup.Id = <RecordGroup> AND " .
- 															"RecordGroup.Itemised = 1 AND " .
- 															"CDR.InvoiceRun = <InvoiceRun> AND " .
- 															"FNN BETWEEN <RangeStart> AND <RangeEnd>",
- 															"CDR.StartDatetime");*/
- 															
-		/*$this->_selItemisedRecordTypes = new StatementSelect(	"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
-																"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
-	 															"Service = <Service> AND " .
-	 															"RecordGroup.Id = RecordType.GroupId AND " .
-	 															"RecordGroup.Itemised = 1 AND " .
-	 															"CDR.InvoiceRun = <InvoiceRun> AND " .
- 																"FNN BETWEEN <RangeStart> AND <RangeEnd>",
-	 															"RecordGroup.Description",
-	 															NULL,
-	 															"RecordGroup.Id");*/
-																
-		/*$this->_selRecordTypeTotal		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id," .
-																"RecordType AS RType",
-																"ServiceTypeTotal.Charge AS Charge",
-																"RecordType.GroupId = RType.Id AND RType.Name = <RecordTypeName> AND ServiceTypeTotal.FNN BETWEEN <RangeStart> AND <RangeEnd> AND ServiceTypeTotal.InvoiceRun = <InvoiceRun>",
-																NULL,
-																"1");*/
 		
 		$this->_selWeReceived			= new StatementSelect(	"InvoicePayment",
 																"SUM(Amount) AS WeReceived",
@@ -1644,7 +1584,7 @@
 	 			case BILL_FACTORY_ITEMISE_RECORD_TYPES:
 	 				$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
 						(	
-							"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
+							"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
 							"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
 							"$strWhereService AND " .
 							"RecordGroup.Id = RecordType.GroupId AND " .
@@ -1671,7 +1611,7 @@
 					$arrColumns['RecordGroup']		= "RecordGroup.Description";
  					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
  					(	
-						"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id" .
+						"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id" .
 						", RecordType as RecordGroup",
 						$arrColumns,
 						"$strWhereService AND " .

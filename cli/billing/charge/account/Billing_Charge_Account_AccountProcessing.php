@@ -89,7 +89,7 @@
  		parent::__construct($intModuleId, self::$_arrConfigDefinition);
  		
  		// Statements		
-		$this->_selTollingAccounts = new StatementSelect(	"CDR USE INDEX (Account_2)",
+		$this->_selTollingAccounts = new StatementSelect(	"CDR",
 															"CDR.Id AS Id",
 															"CDR.Account = <Account> AND " .
 															"CDR.Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND " .

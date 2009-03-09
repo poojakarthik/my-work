@@ -643,7 +643,7 @@
 		$selNDDRAccounts = new StatementSelect(	'Account', 
 												'*', 
 												'Archived = 0 AND DisableDDR = 0 AND BillingType = '.BILLING_TYPE_ACCOUNT);
-		$selTollingAccounts = new StatementSelect(	"CDR USE INDEX (Account_2)",
+		$selTollingAccounts = new StatementSelect(	"CDR",
 													"CDR.Id AS Id",
 													"CDR.Account = <Account> AND " .
 													"CDR.Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND " .

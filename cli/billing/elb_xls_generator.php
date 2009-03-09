@@ -15,13 +15,13 @@ $intSpacerWidth		= 2;
 $selExtensions		= new StatementSelect(	"Service",
 											"Id AS Service, FNN",
 											"Indial100 = 1 AND Account = <Account>");
-$selRecordGroups	= new StatementSelect(	"(CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id) JOIN RecordType RecordGroup ON RecordType.GroupId = RecordGroup.Id",
+$selRecordGroups	= new StatementSelect(	"(CDR JOIN RecordType ON CDR.RecordType = RecordType.Id) JOIN RecordType RecordGroup ON RecordType.GroupId = RecordGroup.Id",
 											"RecordGroup.DisplayType AS DisplayType, RecordGroup.Description AS Description, RecordGroup.Id AS RecordGroup, COUNT(CDR.Id) AS CallCount, RecordGroup.Itemised AS Itemised",
 											"CDR.FNN LIKE <FNN> AND CDR.Service = <Service> AND CDR.Status = 199 AND CDR.InvoiceRun = '$strInvoiceRun'",
 											"RecordGroup.Description DESC",
 											NULL,
 											"RecordGroup.Id");
-$selCDR				= new StatementSelect(	"CDR USE INDEX (FNN_2) JOIN RecordType ON CDR.RecordType = RecordType.Id",
+$selCDR				= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id",
 											"CDR.*",
 											"CDR.InvoiceRun = '$strInvoiceRun' AND CDR.Service = <Service> AND CDR.FNN LIKE <FNN> AND RecordType.GroupId = <RecordGroup>",
 											"CDR.StartDatetime");

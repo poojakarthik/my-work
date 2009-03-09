@@ -315,7 +315,7 @@ abstract class BillingModuleInvoice
 	 			case BILL_FACTORY_ITEMISE_RECORD_TYPES:
 	 				$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
 						(	
-							"{$this->_strCDRTable} USE INDEX (Service_3) JOIN RecordType ON {$this->_strCDRTable}.RecordType = RecordType.Id, RecordType AS RecordGroup",
+							"{$this->_strCDRTable} JOIN RecordType ON {$this->_strCDRTable}.RecordType = RecordType.Id, RecordType AS RecordGroup",
 							"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
 							"$strWhereService AND " .
 							"RecordGroup.Id = RecordType.GroupId AND " .
@@ -343,7 +343,7 @@ abstract class BillingModuleInvoice
 					//$arrColumns['GSTFree']			= "(RecordType.tax_rate_percentage = 0.0 OR RecordType.tax_rate_percentage IS NULL)";
  					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
  					(	
-						"{$this->_strCDRTable} USE INDEX (Service_3) JOIN RecordType ON {$this->_strCDRTable}.RecordType = RecordType.Id" .
+						"{$this->_strCDRTable} JOIN RecordType ON {$this->_strCDRTable}.RecordType = RecordType.Id" .
 						", RecordType as RecordGroup",
 						$arrColumns,
 						"$strWhereService AND " .

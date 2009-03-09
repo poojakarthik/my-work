@@ -27,7 +27,7 @@ $selServices	= new StatementSelect(	"ServiceTotal JOIN RatePlan ON RatePlan.Id =
 										$arrServiceColumns,
 										"ServiceTotal.Account = <Account> AND ServiceTotal.InvoiceRun = '$strInvoiceRun'");
 
-$selCDRTotals		= new StatementSelect(	"CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)",
+$selCDRTotals		= new StatementSelect(	"CDR JOIN Rate ON (CDR.Rate = Rate.Id)",
 											"Rate.Uncapped AS Uncapped, SUM(CDR.Charge) AS Charge",
 											"CDR.Service = <Service> AND " .
 											"CDR.Credit = 0".
@@ -36,7 +36,7 @@ $selCDRTotals		= new StatementSelect(	"CDR USE INDEX (Service_2) JOIN Rate ON (C
 											NULL,
 											NULL,
 											"Rate.Uncapped");
-$selFuckedCDRs		= new StatementSelect(	"CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)",
+$selFuckedCDRs		= new StatementSelect(	"CDR JOIN Rate ON (CDR.Rate = Rate.Id)",
 											"CDR.*, Rate.Uncapped AS Uncapped", 
 											"CDR.Service = <Service> AND CDR.InvoiceRun = '$strInvoiceRun' AND CDR.RatedOn > '2007-05-31'");
 

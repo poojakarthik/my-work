@@ -653,7 +653,7 @@ class Invoice_Export
 	 			case 'selItemisedRecordTypes':
 	 				$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
 						(	
-							"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
+							"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
 							"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
 							"$strWhereService AND " .
 							"RecordGroup.Id = RecordType.GroupId AND " .
@@ -682,7 +682,7 @@ class Invoice_Export
 					//$arrColumns['allow_cdr_hiding']	= "Rate.allow_cdr_hiding";
  					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
  					(	
-						"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id JOIN Rate ON Rate.Id = CDR.Rate" .
+						"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id JOIN Rate ON Rate.Id = CDR.Rate" .
 						", RecordType as RecordGroup",
 						$arrColumns,
 						"$strWhereService AND " .
