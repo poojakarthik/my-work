@@ -958,15 +958,29 @@ class Invoice extends ORM
 		static	$qryQuery;
 		$qryQuery		= (isset($qryQuery)) ? $qryQuery : new Query();
 		$strServiceIds	= implode(', ', $arrServiceIds);
-
-		// Get Earliest CDR Details (ensuring that the earliest date is not after the Invoice date)
-		$resResult	= $qryQuery->Execute("SELECT MIN(EarliestCDR) AS EarliestCDR FROM Service WHERE Id IN ({$strServiceIds})");
-		if ($resResult === FALSE)
+		
+		// If this Plan requires CDRs, get the Earliest CDR Details (ensuring that the earliest date is not after the Invoice date)
+		if ($arrPlanDetails['cdr_required'])
 		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
+			$resResult	= $qryQuery->Execute("SELECT MIN(EarliestCDR) AS EarliestCDR FROM Service WHERE Id IN ({$strServiceIds})");
+			if ($resResult === FALSE)
+			{
+				throw new Exception("DB ERROR: ".$qryQuery->Error());
+			}
+			$arrMinEarliestCDR	= $resResult->fetch_assoc();
+			$strEarliestCDR		= ($arrMinEarliestCDR['EarliestCDR'] !== NULL && strtotime($arrMinEarliestCDR['EarliestCDR']) < $this->intInvoiceDatetime) ? $arrMinEarliestCDR['EarliestCDR'] : NULL;
 		}
-		$arrMinEarliestCDR	= $resResult->fetch_assoc();
-		$strEarliestCDR		= ($arrMinEarliestCDR['EarliestCDR'] !== NULL && strtotime($arrMinEarliestCDR['EarliestCDR']) < $this->intInvoiceDatetime) ? $arrMinEarliestCDR['EarliestCDR'] : NULL;
+		else
+		{
+			// Otherwise use the Service Creation Date
+			$resResult	= $qryQuery->Execute("SELECT MIN(CreatedOn) AS EarliestCreatedOn FROM Service WHERE Id IN ({$strServiceIds})");
+			if ($resResult === FALSE)
+			{
+				throw new Exception("DB ERROR: ".$qryQuery->Error());
+			}
+			$arrMinCreatedOn	= $resResult->fetch_assoc();
+			$strEarliestCDR		= ($arrMinCreatedOn['CreatedOn'] !== NULL && strtotime($arrMinCreatedOn['EarliestCDR']) < $this->intInvoiceDatetime) ? $arrMinCreatedOn['EarliestCDR'] : NULL;
+		}
 
 		// Default Arrears Period
 		$intArrearsPeriodStart	= $this->intLastInvoiceDatetime;
@@ -979,11 +993,19 @@ class Invoice extends ORM
 			$fltMinimumCharge	= (float)$arrPlanDetails['MinMonthly'];
 			$fltUsageStart		= (float)$arrPlanDetails['ChargeCap'];
 			$fltUsageLimit		= (float)$arrPlanDetails['UsageCap'];
-
+			
 			$arrPlanChargeSteps	= Array();
-
-			// Yes -- Does this Service have any Invoiced CDRs?
-			$resResult	= $qryQuery->Execute("SELECT Id FROM ServiceTypeTotal WHERE Service IN ({$strServiceIds}) AND Records > 0");
+			
+			// Yes -- Does this Service have any Invoiced CDRs (or Plan Charges for non-CDR Plans)?
+			if ($arrPlanDetails['cdr_required'])
+			{
+				$strSQL	= "SELECT Id FROM ServiceTypeTotal WHERE Service IN ({$strServiceIds}) AND Records > 0";
+			}
+			else
+			{
+				$strSQL	= "SELECT Id FROM Charge WHERE Service IN ({$strServiceIds}) AND ChargeType IN ('PCAR', 'PCAD') LIMIT 1";
+			}
+			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
@@ -1000,6 +1022,8 @@ class Invoice extends ORM
 			{
 				$bolFirstInvoice	= false;
 			}
+			
+			Log::getLog()->log("Arrears period start: ".date("Y-m-d H:i:s", $intArrearsPeriodStart));
 
 			// Charge In Advance (only if this is not an interim Invoice Run)
 			if ($arrPlanDetails['InAdvance'] && !in_array($this->_objInvoiceRun->invoice_run_type_id, array(INVOICE_RUN_TYPE_FINAL, INVOICE_RUN_TYPE_INTERIM)))
