@@ -981,7 +981,7 @@ class Invoice extends ORM
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
 			$arrMinCreatedOn	= $resResult->fetch_assoc();
-			$strEarliestCDR		= ($arrMinCreatedOn['CreatedOn'] !== NULL && strtotime($arrMinCreatedOn['EarliestCDR']) < $this->intInvoiceDatetime) ? $arrMinCreatedOn['EarliestCDR'] : NULL;
+			$strEarliestCDR		= ($arrMinCreatedOn['EarliestCreatedOn'] !== NULL && strtotime($arrMinCreatedOn['EarliestCreatedOn']) < $this->intInvoiceDatetime) ? $arrMinCreatedOn['EarliestCreatedOn'] : NULL;
 		}
 
 		// Default Arrears Period
