@@ -401,10 +401,10 @@ class Rate_Plan extends ORM
 		date_default_timezone_set($strOriginalTimezone);
 		
 		// Get the current Template
-		$objTemplate		= Document::getByPath("/Authorisation Scripts/Template");
+		$objTemplate		= Document::getByPath("/Authorisation Scripts/Templates/Authorisation Script Template");
 		if (!$objTemplate)
 		{
-			throw new Exception("Could not find the document /Authorisation Scripts/Template");
+			throw new Exception("Could not find the document /Authorisation Scripts/Templates/Authorisation Script Template");
 		}
 		$objTemplateContent	= $objTemplate->getContent();
 		
@@ -490,6 +490,42 @@ class Rate_Plan extends ORM
 		$objVariables->service->has_address->setValue(in_array($objService->ServiceType, array(SERVICE_TYPE_LAND_LINE)));
 		$objVariables->service->full_address->setValue($strFullAddress);
 		$objVariables->service->fnn->setValue($objService->FNN);
+		
+		// Parse the Template, replacing the placeholders with valid data
+		return Document_Template::render($objTemplateContent->content, $objVariables);
+	}
+	
+	/**
+	 * parseRejectionScript()
+	 *
+	 * Retrieves a Document based on a passed pseudo-path
+	 * 
+	 * @param	[Document	$objDocument	]				Document to merge with (will pull from DB if none is passed)
+	 * 
+	 * @return	string										Merged template
+	 *
+	 * @method
+	 */
+	public function parseRejectionScript(Account $objAccount, Contact $objContact, Service_Rate_Plan $objRatePlanPrevious)
+	{
+		$strOriginalTimezone	= date_default_timezone_get();
+		date_default_timezone_set("Australia/Brisbane");
+		$strDate				= date("Y-m-d H:i:s");
+		date_default_timezone_set($strOriginalTimezone);
+		
+		// Get the current Template
+		$objTemplate		= Document::getByPath("/Authorisation Scripts/Templates/Rejection Script Template");
+		if (!$objTemplate)
+		{
+			throw new Exception("Could not find the document /Authorisation Scripts/Templates/Rejection Script Template");
+		}
+		$objTemplateContent	= $objTemplate->getContent();
+		
+		$intTime			= strtotime($strDate);
+		$strDateFormat		= "jS F, Y";
+		$strTimeFormat		= "h:i a";
+		
+		$objVariables	= new Flex_Dom_Document();
 		
 		// Parse the Template, replacing the placeholders with valid data
 		return Document_Template::render($objTemplateContent->content, $objVariables);

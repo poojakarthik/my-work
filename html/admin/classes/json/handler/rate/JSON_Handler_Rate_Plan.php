@@ -48,12 +48,25 @@ class JSON_Handler_Rate_Plan extends JSON_Handler
 			$objContact			= Contact::getForId($intContactId);
 			$objServiceRatePlan	= $objService->getCurrentServiceRatePlan();
 			
-			// Parse the Auth Script
-			$strHTML	= $objNewPlan->parseAuthenticationScript($objAccount, $objContact, $objServiceRatePlan);
+			// Are we allowed to change plans?
+			$objOldPlan			= new Rate_Plan(array('id'=>$objServiceRatePlan->RatePlan), true);
+			if ($objOldPlan->locked && !AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT))
+			{
+				// Not permitted -- use the Rejection Script
+				$strHTML		= $objNewPlan->parseRejectionScript($objAccount, $objContact, $objServiceRatePlan);
+				$bolPermitted	= false;
+			}
+			else
+			{
+				// Permitted -- use the Authorisation Script
+				$strHTML		= $objNewPlan->parseAuthenticationScript($objAccount, $objContact, $objServiceRatePlan);
+				$bolPermitted	= true;
+			}
 			
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"		=> true,
+							"bolPermitted"	=> $bolPermitted,
 							"strHTML"		=> $strHTML,
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
