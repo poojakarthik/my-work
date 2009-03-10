@@ -254,7 +254,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		}
 		
 		// COMMISSIONABLE VALUE
-		DBO()->RatePlan->commissionable_value->RenderArbitrary(number_format(DBO()->RatePlan->commissionable_value->Value, 2, '.', '').'%', RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+		DBO()->RatePlan->commissionable_value->RenderArbitrary('$'.number_format(DBO()->RatePlan->commissionable_value->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 		
 		if (DBO()->RatePlan->scalable->Value == TRUE)
 		{
