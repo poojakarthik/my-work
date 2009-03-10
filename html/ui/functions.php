@@ -792,7 +792,7 @@ function SaveSystemNote($strNote, $intAccountGroup, $intAccount=NULL, $intContac
 		'Service'		=> $intService,
 		'Employee'		=> AuthenticatedUser()->_arrUser['Id'],
 		'Datetime'		=> GetCurrentISODateTime(),
-		'NoteType'		=> SYSTEM_NOTE_TYPE
+		'NoteType'		=> Note::SYSTEM_NOTE_TYPE_ID
 	);
 
 	$insNote = new StatementInsert("Note", $arrNote);
@@ -930,10 +930,10 @@ function LoadNotes($intAccountId, $intServiceId=NULL, $intContactId=NULL, $bolUp
 	switch (DBO()->NoteDetails->FilterOption->Value)
 	{
 		case NOTE_FILTER_USER:
-			$strFilterWhereClause = "AND NoteType != ". SYSTEM_NOTE_TYPE;
+			$strFilterWhereClause = "AND NoteType != ". Note::SYSTEM_NOTE_TYPE_ID;
 			break;
 		case NOTE_FILTER_SYSTEM:
-			$strFilterWhereClause = "AND NoteType = ". SYSTEM_NOTE_TYPE;
+			$strFilterWhereClause = "AND NoteType = ". Note::SYSTEM_NOTE_TYPE_ID;
 			break;
 		case NOTE_FILTER_ALL:
 		default:

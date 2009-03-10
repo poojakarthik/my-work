@@ -208,7 +208,7 @@ class Cli_App_Merge_Contacts extends Cli
 						"Status: ". (($objDeprecatedContact->archived)? "archived" : "active");
 			if (!$bolTestMode)
 			{
-				$intNoteId = $GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, USER_ID, $objReceivingContact->accountGroup, $objReceivingContact->account, NULL, $objReceivingContact->id, TRUE);
+				$intNoteId = $GLOBALS['fwkFramework']->AddNote($strNote, Note::SYSTEM_NOTE_TYPE_ID, USER_ID, $objReceivingContact->accountGroup, $objReceivingContact->account, NULL, $objReceivingContact->id, TRUE);
 				if ($intNoteId === FALSE)
 				{
 					throw new Exception("Could not add note to receiving contact, defining the contact's contact details that could not be merged (ie phone, mobile, email, etc)");

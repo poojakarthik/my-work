@@ -1671,6 +1671,9 @@ $GLOBALS['*arrConstant']	['SearchType']	[8]	['Description']	= 'Account Name';
 $GLOBALS['*arrConstant']	['SearchType']	[8]	['Name']		= 'Account Name';
 
 
+// CONSTANTS THAT SHOULD BE REMOVED WITH FRAMEWORK 1 UI
+define("GENERAL_NOTE_TYPE"				, 1);
+define("SYSTEM_NOTE_TYPE"				, 7);
 
 
 // Special paths

@@ -272,12 +272,12 @@ class AjaxFramework
 	 * @return	void
 	 * @method
 	 */
-	function FireOnNewNoteEvent($intAccountId, $intServiceId=NULL, $intContactId=NULL, $intNoteType=SYSTEM_NOTE_TYPE)
+	function FireOnNewNoteEvent($intAccountId, $intServiceId=NULL, $intContactId=NULL, $intNoteType=null)
 	{
 		$arrData['Account']['Id']		= $intAccountId;
 		$arrData['Service']['Id']		= $intServiceId;
 		$arrData['Contact']['Id']		= $intContactId;
-		$arrData['Note']['NoteType']	= $intNoteType;
+		$arrData['Note']['NoteType']	= ($intNoteType === null) ? Note::SYSTEM_NOTE_TYPE_ID : $intNoteType;
 		
 		$this->AddCommand("FireEvent", Array("Event"=>EVENT_ON_NEW_NOTE, "EventData"=>$arrData));
 	}

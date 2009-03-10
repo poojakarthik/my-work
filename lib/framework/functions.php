@@ -4472,7 +4472,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			"Outstanding Overdue: \$" . number_format($arrAccount['Overdue'], 2, '.', '') . "\n".
 			"Outstanding Not Overdue: \$" . number_format($arrAccount['OutstandingNotOverdue'], 2, '.', '');
 
-		$GLOBALS['fwkFramework']->AddNote($strNote, SYSTEM_NOTE_TYPE, NULL, $arrAccount['AccountGroup'], $arrAccount['AccountId']);
+		$GLOBALS['fwkFramework']->AddNote($strNote, Note::SYSTEM_NOTE_TYPE_ID, NULL, $arrAccount['AccountGroup'], $arrAccount['AccountId']);
 
 		return $return;
 	}
@@ -5187,7 +5187,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 				}
 
 				// Add a note to the service
-				$GLOBALS['fwkFramework']->AddNote('Service automatically barred.', SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, NULL, $intServiceId);
+				$GLOBALS['fwkFramework']->AddNote('Service automatically barred.', Note::SYSTEM_NOTE_TYPE_ID, USER_ID, $intAccountGroup, NULL, $intServiceId);
 
 				$bolBarred = TRUE;
 				$bolBarredFNNs[] = $arrDetails['FNN'];
@@ -5256,7 +5256,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 				}
 
 				// Add a note to the service
-				$GLOBALS['fwkFramework']->AddNote('Service automatically unbarred.', SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, NULL, $intServiceId);
+				$GLOBALS['fwkFramework']->AddNote('Service automatically unbarred.', Note::SYSTEM_NOTE_TYPE_ID, USER_ID, $intAccountGroup, NULL, $intServiceId);
 
 				$bolUnbarred = TRUE;
 				$bolUnbarredFNNs[] = $arrDetails['FNN'];
@@ -5324,7 +5324,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		}
 
 		// Add a note to the account
-		$GLOBALS['fwkFramework']->AddNote($strReason, SYSTEM_NOTE_TYPE, USER_ID, $intAccountGroup, $intAccount);
+		$GLOBALS['fwkFramework']->AddNote($strReason, Note::SYSTEM_NOTE_TYPE_ID, USER_ID, $intAccountGroup, $intAccount);
 
 		return TRUE;
 	}

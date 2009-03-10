@@ -153,7 +153,7 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 			$strNoteTypeLabel	= $dboNoteType->TypeLabel->Value;
 			$intNoteTypeId		= $dboNoteType->Id->Value;
 			
-			if ($intNoteTypeId == SYSTEM_NOTE_TYPE)
+			if ($intNoteTypeId == Note::SYSTEM_NOTE_TYPE_ID)
 			{
 				// The user cannot choose the System note type
 				continue;

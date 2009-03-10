@@ -12,8 +12,9 @@
  * @class	Note
  */
 class Note extends ORM
-{	
-	const SYSTEM_NOTE_TYPE_ID = 7;
+{
+	const GENERAL_NOTE_TYPE_ID	= 1;
+	const SYSTEM_NOTE_TYPE_ID	= 7;
 	
 	protected	$_strTableName	= "Note";
 	

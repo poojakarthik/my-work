@@ -268,7 +268,7 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 		else
 		{
 			$this->log('Adding a note to account ' . $arrAccount['AccountId'] . '.');
-			$GLOBALS['fwkFramework']->AddNote("Late Payment Fee of \${$lateFee} automatically applied to account.", SYSTEM_NOTE_TYPE, USER_ID, $arrAccount['AccountGroup'], $arrAccount['AccountId']);
+			$GLOBALS['fwkFramework']->AddNote("Late Payment Fee of \${$lateFee} automatically applied to account.", Note::SYSTEM_NOTE_TYPE_ID, USER_ID, $arrAccount['AccountGroup'], $arrAccount['AccountId']);
 
 			$strReason = "Overdue balance of $" . $arrAccount['Overdue'] . " remained unpaid";
 			ChangeAccountAutomaticInvoiceAction($arrAccount['AccountId'], $arrAccount['AccountStatus'], AUTOMATIC_INVOICE_ACTION_LATE_FEES, $strReason, $this->runDateTime, $arrAccount['invoice_run_id']);
