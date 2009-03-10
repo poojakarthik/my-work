@@ -7,6 +7,7 @@
  *	1:	Add the delivery_method Table
  *	2:	Populate the delivery_method Table
  *	3:	Add the customer_group_delivery_method Table
+ *	4:	Populate the customer_group_delivery_method Table
  */
 
 class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
@@ -37,10 +38,10 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 
 		// 2:	Populate the delivery_method Table
 		$strSQL =	"INSERT INTO delivery_method (id, name, description, const_name, account_setting) VALUES " .
-					"(0	, 'Post'		, 'Post'		, 'DELIVERY_METHOD_POST'		, 1), " .
-					"(1	, 'Email'		, 'Email'		, 'DELIVERY_METHOD_EMAIL'		, 1), " .
-					"(2	, 'Withheld'	, 'Do Not Send'	, 'DELIVERY_METHOD_DO_NOT_SEND'	, 0), " .
-					"(3	, 'Email Sent'	, 'Email Sent'	, 'DELIVERY_METHOD_EMAIL_SENT'	, 0)";
+					"(0	, 'Post'		, 'Post'			, 'DELIVERY_METHOD_POST'		, 1), " .
+					"(1	, 'Email'		, 'Email'			, 'DELIVERY_METHOD_EMAIL'		, 1), " .
+					"(2	, 'Withheld'	, 'Do Not Send'		, 'DELIVERY_METHOD_DO_NOT_SEND'	, 0), " .
+					"(3	, 'Email Sent'	, 'Email (Sent)'	, 'DELIVERY_METHOD_EMAIL_SENT'	, 0)";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -69,6 +70,24 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to add the customer_group_delivery_method Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] =	"DROP TABLE customer_group_delivery_method;";
+
+		// 4:	Populate the customer_group_delivery_method Table
+		$arrCustomerGroups	= Customer_Group::getAll();
+		$arrDeliveryMethods	= Delivery_Method::getAll();
+		foreach ($arrCustomerGroups as $objCustomerGroup)
+		{
+			foreach ($arrDeliveryMethods as $objDeliveryMethod)
+			{
+				$strSQL =	"INSERT INTO customer_group_delivery_method (customer_group_id, delivery_method_id, employee_id) VALUES " .
+							"({$objCustomerGroup->id}, {$objDeliveryMethod->id}, ".Employee::SYSTEM_EMPLOYEE_ID.")";
+				$result = $dbAdmin->query($strSQL);
+				if (PEAR::isError($result))
+				{
+					throw new Exception(__CLASS__ . ' Failed to populate the customer_group_delivery_method Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
+				}
+				$this->rollbackSQL[] =	"TRUNCATE TABLE customer_group_delivery_method;";
+			}
+		}
 	}
 
 	function rollback()
