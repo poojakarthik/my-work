@@ -8,11 +8,13 @@
  */
 class Customer_Group_Delivery_Method extends ORM
 {
-	protected			$_strTableName				= "customer_group_delivery_method";
-	protected static	$_strStaticTableName		= "customer_group_delivery_method";
+	protected			$_strTableName					= "customer_group_delivery_method";
+	protected static	$_strStaticTableName			= "customer_group_delivery_method";
 	
-	protected static	$_arrStaticCache			= array();
+	protected static	$_arrStaticCache				= array();
 	
+	const				DEFAULT_MINIMUM_INVOICE_VALUE	= 0.00;
+	 	
 	/**
 	 * __construct()
 	 *
