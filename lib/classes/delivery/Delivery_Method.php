@@ -66,7 +66,6 @@ class Delivery_Method extends ORM
 	 *
 	 * Returns an array of Delivery_Method objects or arrays
 	 *
-	 * @param	integer		$intId						The Id of the Record to return
 	 * @param	[boolean	$bolForceRecache		]	TRUE	: Refresh the Enumeration cache
 	 * 													FALSE	: Use the existing cache if available (default)
 	 * 
@@ -74,7 +73,7 @@ class Delivery_Method extends ORM
 	 * 
 	 * @constructor
 	 */
-	public static function getAll($intId, $bolForceRecache=false)
+	public static function getAll($bolForceRecache=false)
 	{
 		if (!self::$_arrStaticCache || $bolForceRecache)
 		{
