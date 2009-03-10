@@ -6,7 +6,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
-		$this->LoadJavascript('reflex_popup');
+		
+		$this->LoadJavascript('ticketing_ticket');
 		$this->LoadJavascript('ticketing_contact');
 	}
 
@@ -119,7 +120,6 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		$actionLinks = implode(' | ', $actionLinks);
 
 		?>
-
 		<form id="view_ticket" name="view_ticket" method="POST">
 		<?php
 			if ($objCurrentAccount)
@@ -263,277 +263,6 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		$cancel = Flex::getUrlBase() . '/reflex.php/Ticketing/' . ($ticket->isSaved() ? "Ticket/{$ticket->id}/View/?{$strCurrentAccountGetVar}" : "System/Last/?{$strCurrentAccountGetVar}");
 
 		?>
-			<script>
-			//<!--
-				$validateAccounts = null;
-				$selectedContactValue = null;
-				
-				objTicketCategoryNotesRows = {};
-				elmCategory = null;
-	
-				function accountNumberChange()
-				{
-					var accountId = $ID('accountId');
-					var ticketId = $ID('ticketId');
-					var serviceId = $ID('serviceId');
-
-					if (accountId.value.length != 10) // WIP: HACK
-					{
-						accountId.className = 'invalid';
-						return;
-					}
-					if (accountId.lastAjax == accountId.value)
-					{
-						accountId.className = '';
-						return;
-					}
-					accountId.lastAjax = accountId.value;
-					accountId.className = '';
-					$validateAccounts(accountId.value, ticketId.value);
-				}
-	
-				function validatedAccount(response)
-				{
-					var accountId = $ID('accountId');
-					if (!response['isValid'])
-					{
-						accountId.className = 'invalid';
-					}
-					else
-					{
-						accountId.className = 'valid';
-					}
-					populateContactList(response['contacts']);
-					populateServiceList(response['services']);
-					setCustomerGroup(response['customerGroupName']);
-					populateCustomerGroupEmailList(response['customerGroupEmails']);
-				}
-	
-				function populateContactList(contacts)
-				{
-					var contactId = $ID('contactId');
-					emptyElement(contactId);
-					for (var i = 0, l = contacts.length; i < l; i++)
-					{
-						var id = contacts[i]['id'];
-						var name = contacts[i]['name'];
-						var option = document.createElement('option');
-						option.value = id;
-						option.selected = id == $selectedContactValue;
-						option.appendChild(document.createTextNode(name));
-						contactId.appendChild(option);
-					}
-				}
-	
-				function setCustomerGroup(strCustomerGroupName)
-				{
-					var customerGroup = $ID('customerGroupName');
-					while (customerGroup.firstChild)
-					{
-						customerGroup.removeChild(customerGroup.firstChild)
-					}
-					customerGroup.appendChild(document.createTextNode(strCustomerGroupName));
-				}
-				
-				function populateServiceList(services)
-				{
-					var serviceId = $ID('serviceId');
-					emptyElement(serviceId);
-					for (var i = 0, l = services.length; i < l; i++)
-					{
-						var id = services[i]['service_id'];
-						var name = services[i]['fnn'] +" ("+ services[i]['status_description'] +")";
-						var option = document.createElement('option');
-						option.value = id;
-						option.selected = services[i]['selected'];
-						option.appendChild(document.createTextNode(name));
-						serviceId.appendChild(option);
-					}
-				}
-	
-				function populateCustomerGroupEmailList(customerGroupEmails)
-				{
-					var customerGroupEmailId = $ID('customerGroupEmailId');
-					if (customerGroupEmailId != undefined)
-					{
-						emptyElement(customerGroupEmailId);
-						for (var i = 0, l = customerGroupEmails.length; i < l; i++)
-						{
-							var id = customerGroupEmails[i].id;
-							var name = customerGroupEmails[i].name;
-							var option = document.createElement('option');
-							option.value = id;
-							option.selected = customerGroupEmails[i].isDefault;
-							option.appendChild(document.createTextNode(name));
-							customerGroupEmailId.appendChild(option);
-						}
-					}
-				}
-				
-				function emptyElement(el)
-				{
-					for (var i = el.length - 1; i >= 0; i--)
-					{
-						el.removeChild(el.childNodes[i]);
-					}
-				}
-	
-				function viewContactDetails()
-				{
-					var accountIdInput = $ID('accountId');
-					var accountId = null;
-					if (accountIdInput.className != 'invalid')
-					{
-						accountId = accountIdInput.value;;
-					}
-	
-					var contactIdInput = $ID('contactId');
-					var contactId = null;
-					if (contactIdInput.tagName == 'SELECT')
-					{
-						var selectedIndex = contactIdInput.selectedIndex;
-						if (selectedIndex >= 0 && selectedIndex < contactIdInput.childNodes.length)
-						{
-							contactId = contactIdInput.childNodes[selectedIndex].value;
-						}
-					}
-					else
-					{
-						contactId = contactIdInput.value;
-					}
-	
-					if (contactId == null)
-					{
-						alert('Please select a contact.');
-						return false;
-					}
-	
-					Ticketing_Contact.displayContact(contactId, accountId);
-					return false;
-				}
-	
-				function addContactCallBack(newContact)
-				{
-					$selectedContactValue = newContact['contactId'];
-					$ID('accountId').lastAjax = null;
-					$updateContacts($ID('accountId').value, $ID('ticketId').value);
-				}
-	
-				function updatedContacts(response)
-				{
-					populateContactList(response['contacts']);
-				}
-	
-				function addContact()
-				{
-					var accountIdInput = $ID('accountId');
-					if (accountIdInput.className == 'invalid' || accountIdInput.value == '')
-					{
-						alert('Please enter a valid account number.');
-						return false;
-					}
-					var accountId = accountIdInput.value;
-					Ticketing_Contact.displayContact(null, accountId, addContactCallBack);
-					return false;
-				}
-	
-				function categoryChange()
-				{
-					if (elmCategory.value == elmCategory.lastCategoryId)
-					{
-						// The category hasn't changed
-						return;
-					}
-					
-					// The category has changed.  Hide all the category notes rows
-					for (var i in objTicketCategoryNotesRows)
-					{
-						objTicketCategoryNotesRows[i].style.display = 'none';
-					}
-					
-					// Show the notes specific to this category, if there is one
-					if (objTicketCategoryNotesRows[elmCategory.value] != undefined)
-					{
-						objTicketCategoryNotesRows[i].style.display = 'table-row';
-					}
-					
-					elmCategory.lastCategoryId = elmCategory.value;
-				}	
-
-				function revertTicketDetails(ticketId)
-				{
-					var remoteFunction = jQuery.json.jsonFunction(revertTicketDetailsReturnHandler, null, 'Ticketing', 'getTicketDetails');
-					remoteFunction(ticketId);
-				}
-
-				function revertTicketDetailsReturnHandler(response)
-				{
-					var accountId = $ID('accountId');
-					if (!response['isValid'])
-					{
-						accountId.className = 'invalid';
-					}
-					else
-					{
-						accountId.className = '';
-					}
-					accountId.value = response['accountId'];
-					accountId.lastAjax = accountId.value;
-					$selectedContactValue = response['selectedContactId'];
-					
-					populateContactList(response['contacts']);
-					populateServiceList(response['services']);
-					setCustomerGroup(response['customerGroupName']);
-				}
-
-	
-				function onTicketingLoad()
-				{
-					var ticketId	= $ID('ticketId').value;
-					var accountId	= $ID('accountId');
-	
-					if (ticketId == '')
-					{
-						// This is a new ticket, will include the form elements for the initial correspondence
-						var arrSpecificNotes = document.getElementsByClassName('TicketCategoryNotes');
-						for (var i=0,j=arrSpecificNotes.length; i<j; i++)
-						{
-							objTicketCategoryNotesRows[arrSpecificNotes[i].id] = arrSpecificNotes[i];
-						}
-						
-						if (arrSpecificNotes.length > 0)
-						{
-							// Add listeners
-							elmCategory = $ID('categoryId');
-							elmCategory.lastCategoryId = null;
-							Event.observe(elmCategory, 'blur', categoryChange);
-							Event.observe(elmCategory, 'keyup', categoryChange);
-							Event.observe(elmCategory, 'change', categoryChange);
-						}
-					}
-	
-					if (accountId == undefined || accountId == null)
-					{
-						return;
-					}
-					
-					accountId.lastAjax = accountId.value;
-	
-					remoteClass = 'Ticketing';
-					remoteMethod = 'validateAccount';
-					$validateAccounts = jQuery.json.jsonFunction(validatedAccount, null, remoteClass, remoteMethod);
-					$updateContacts = jQuery.json.jsonFunction(updatedContacts, null, remoteClass, remoteMethod);
-	
-					Event.observe(accountId, 'blur', accountNumberChange);
-					Event.observe(accountId, 'keyup', accountNumberChange);
-					Event.observe(accountId, 'change', accountNumberChange);
-				}
-			
-				Event.observe(window, 'load', onTicketingLoad, false);
-				
-				
-				//-->
-			</script>
 			<form id="edit_ticket" method="POST" name="edit_ticket" action="<?php echo Flex::getUrlBase() . "reflex.php/Ticketing/Ticket/" . ($ticket->isSaved() ? $ticket->id . '/' : '') . $requestedAction; ?>">
 				<?php
 					if ($objCurrentAccount)
@@ -1000,9 +729,15 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		$actionLinks = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/Create/{$ticket->id}/?{$strCurrentAccountGetVar}\">Create</a>";
 
+		$strGenericAttachmentLink = Flex::getUrlBase() . "reflex.php/Ticketing/Attachment/";
+
+		$arrAttachmentStatuses = Ticketing_Attachment_Blacklist_Status::listAll();
+		
+		$bolIsTicketingAdminUser = Ticketing_User::currentUserIsTicketingAdminUser();
+
 		?>
 		<br/>
-		<table class="reflex highlight-rows">
+		<table class="reflex" id='ticket_correspondence_table'>
 			<caption>
 				<div id="caption_bar" name="caption_bar">
 				<div id="caption_title" name="caption_title">
@@ -1019,9 +754,10 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					<th>Contact</th>
 					<th>Source</th>
 					<th>Delivery Status</th>
-					<th>Delivery Date/Time</th>
-					<th>Creation Date/Time</th>
+					<th>Delivered</th>
+					<th>Created</th>
 					<th>Actions</th>
+					<th><input type='button' onclick='toggleShowAllCorrespondenceDetails(this)' class='expand-button-expanded' style='float:right'></input></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -1030,22 +766,34 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					{
 		?>
 				<tr class="alt">
-					<td colspan="6">There are no correspondences for this ticket.</td>
+					<td colspan="8">There are no correspondences for this ticket.</td>
 				</tr>
 		<?php
 					}
 					else
 					{
 						$alt = FALSE;
+						$bolFirst = TRUE;
 						foreach($correspondences as $correspondence)
 						{
-							$altClass = $alt ? ' class="alt"' : '';
+							$altClass = $alt ? 'alt' : '';
+							
+							$strContentClass = ($bolFirst)? "displayed-ticket-correspondence-content" : "hidden-ticket-correspondence-content";
+							$strExpandButtonClass = ($bolFirst)? "expand-button-expanded" : "expand-button-retracted";
+							$bolFirst = FALSE;
+							
 							$alt = !$alt;
-							$contact = $correspondence->getContact();
-							$contactName = $contact ? $contact->getName() : '[No contact]';
-							$sourceName = $correspondence->getSource()->name;
-							$deliveryStatusName = $correspondence->getDeliveryStatus()->name;
-							$link = Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/View/?{$strCurrentAccountGetVar}";
+							
+							$contact			= $correspondence->getContact();
+							$contactName		= $contact ? $contact->getName() : '[No contact]';
+							$sourceName			= $correspondence->getSource()->name;
+							$deliveryStatusName	= $correspondence->getDeliveryStatus()->name;
+							$link				= Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/View/?{$strCurrentAccountGetVar}";
+							
+							$strDeliveryTimestamp	= ($correspondence->deliveryDatetime === NULL)? "" : date("g:i:s a d-m-Y", strtotime($correspondence->deliveryDatetime));
+							$strCreationTimestamp	= ($correspondence->creationDatetime === NULL)? "" : date("g:i:s a d-m-Y", strtotime($correspondence->creationDatetime));
+							
+							$strExpandButton = "<input type='button' onclick='toggleShowCorrespondenceDetails({$correspondence->id}, this)' class='$strExpandButtonClass' style='float:right'></input>";
 							
 							$arrActions = array();
 							if ($correspondence->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT && $correspondence->isEmail() && $correspondence->isOutgoing())
@@ -1055,15 +803,67 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							}
 							$strActions = implode(" | ", $arrActions);
 							
+							$strDetails = "<em>Content:</em><br />". nl2br(htmlspecialchars(trim($correspondence->details)));
+							
+							// Grab the Attachments (minus the actual file so as not to unneccessarily slow things down)
+							$arrAttachments = Ticketing_Attachment::listForCorrespondence($correspondence);
+							$attachmentTypes = Ticketing_Attachment_Type::listAll();
+							$arrAttachmentRows = array();
+							foreach ($arrAttachments as $attachment)
+							{
+								$strFilename	= htmlspecialchars($attachment->fileName);
+								$attachmentType	= $attachmentTypes[$attachment->attachmentTypeId];
+								$strType		= htmlspecialchars($attachmentType->mimeType);
+								$status			= $arrAttachmentStatuses[$attachmentType->blacklistStatusId];
+								
+								$bolIsDownloadable		= (!$status->isBlacklisted() || $attachment->allowBlacklistOverride()) ? TRUE : FALSE;
+								$strFilenameGroupClass	= ($bolIsDownloadable) ? "downloadable-attachment" : "blocked-downloadable-attachment";
+								
+								if ($status->isBlacklisted() && $bolIsTicketingAdminUser)
+								{
+									// The ticket is blacklisted and the user can toggle whether or not to override this
+									$strToggleLabel = ($bolIsDownloadable)? "Block Download" : "Unblock Download";
+									$strToggleOverrideButtton = "<input type='button' id='correspondence_attachment_toggle_{$attachment->id}' class='reflex-button' attachmentId='{$attachment->id}' onclick='toggleAttachmentBlacklistOverride(this)' value='$strToggleLabel'></input>";
+								}
+								else
+								{
+									$strToggleOverrideButtton = "";
+								}
+								
+								$strFilenameGroup = "<span id='correspondence_attachment_{$attachment->id}' class='{$strFilenameGroupClass}'>
+														<a class='active' href='{$strGenericAttachmentLink}{$attachment->id}'>$strFilename</a>
+														<span class='inactive'>$strFilename</span>
+													</span>";
+													
+								$arrAttachmentRows[] = "$strFilenameGroup - $strType - {$status->name} $strToggleOverrideButtton\n";
+							}
+							
+							if (count($arrAttachmentRows))
+							{
+								$strAttachments = "<br /><em>Attachments:</em><br />". implode('<br />', $arrAttachmentRows);
+							}
+							else
+							{
+								$strAttachments = "";
+							}
+							
+							
 		?>
-				<tr<?=$altClass?>>
+				<tr class="<?=$altClass?>">
 					<td><a href="<?=$link?>"><?=$correspondence->summary ? $correspondence->summary : '<em>[No Subject]</em>'?></a></td>
 					<td><?=$contactName?></td>
 					<td><?=$sourceName?></td>
 					<td><?=$deliveryStatusName?></td>
-					<td><?=$correspondence->deliveryDatetime?></td>
-					<td><?=$correspondence->creationDatetime?></td>
+					<td><?=$strDeliveryTimestamp?></td>
+					<td><?=$strCreationTimestamp?></td>
 					<td><?=$strActions?></td>
+					<td><?=$strExpandButton?></td>
+				</tr>
+				<tr class='<?=$strContentClass?> <?=$altClass?>' altClass='<?=$altClass?>' id='ticket_correspondence_content_<?=$correspondence->id?>'>
+					<td colspan='8' class='ticket-correspondence-content'>
+						<?=$strDetails?>
+						<?=$strAttachments?>
+					</td>
 				</tr>
 		<?php
 						}
@@ -1072,7 +872,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			</tbody>
 			<tfoot class="footer">
 				<tr>
-					<th colspan="7">&nbsp;</th>
+					<th colspan="8">&nbsp;</th>
 				</tr>
 			</tfoot>
 		</table>

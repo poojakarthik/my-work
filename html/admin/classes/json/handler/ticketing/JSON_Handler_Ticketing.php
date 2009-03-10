@@ -93,7 +93,9 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		}
 		else
 		{
-			$response['customerGroupName'] = '';
+			// An account was not found, but there could possibly be a customer group associated with the ticket
+			$customerGroup = Customer_Group::getForId($ticket->customerGroupId);
+			$response['customerGroupName'] = ($customerGroup)? $customerGroup->name : '';
 			$response['accountId'] = '';
 		}
 		

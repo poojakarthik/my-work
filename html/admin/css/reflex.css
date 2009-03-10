@@ -208,6 +208,8 @@ table.reflex td.title {
 	font-weight: bold;
 }
 
+/******************************** Ticket Stuff ************************/
+
 table.reflex tr td.ticketing-status-in-progress,
 table.reflex tr td.ticketing-status-completed,
 table.reflex tr td.ticketing-priority-low,
@@ -250,6 +252,60 @@ option.ticketing-priority-urgent {
 	color: #d30;
 	text-decoration: underline;
 }
+
+tr.displayed-ticket-correspondence-content
+{
+	display: default;
+}
+
+tr.hidden-ticket-correspondence-content
+{
+	display: none;
+}
+
+tr.hidden-ticket-correspondence-content
+{
+	display: none;
+}
+
+
+.ticket-correspondence-content
+{
+	border-top: dashed 1px #000;
+}
+
+.blocked-downloadable-attachment .active,
+.downloadable-attachment .inactive
+{
+	display: none;
+}
+
+.blocked-downloadable-attachment .inactive
+.downloadable-attachment .active
+{
+	display: default;
+}
+
+input[type='button'].expand-button-expanded
+{
+	background-image: url('../img/template/retract.png');
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	background-color: inherit;
+	border: none;
+}
+
+input[type='button'].expand-button-retracted
+{
+	background-image: url('../img/template/expand.png');
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	background-color: inherit;
+	border: none;
+}
+
+
+/******************************** Ticket Stuff ************************/
 
 input, 
 select, 

@@ -215,6 +215,7 @@ class Ticketing_Attachment
 		
 	}
 
+	// Note that this does not retrieve the file_content field from the database
 	public static function listForCorrespondence(Ticketing_Correspondance $correspondence)
 	{
 		$arrWhere = array('CorrespondenceId' => $correspondence->id);
@@ -230,6 +231,9 @@ class Ticketing_Attachment
 		}
 		return $arrAttchments;
 	}
+	
+	
+	
 
 	public function getFileContent()
 	{

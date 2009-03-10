@@ -111,10 +111,6 @@ pre {
 
 
 /*********************** Start of reflex stuff *********************************/
-
-
-
-
 table.reflex {
 	width: 99%; /* This was previously set to 90%*/
 	margin-left: auto;
@@ -163,6 +159,11 @@ table.reflex thead tr th,
 table.reflex tfoot tr th {
 	padding-top: .25em;
 	padding-bottom: .25em;
+}
+
+table.reflex tbody
+{
+	vertical-align: top;
 }
 
 table.reflex tbody tr th.label
@@ -255,6 +256,10 @@ table.highlight-rows tbody tr:hover td
 	background-color: #ffc;
 }
 
+tr.highlight-row:hover td
+{
+	background-color: #fcc;
+}
 
 input.required, 
 select.required, 

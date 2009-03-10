@@ -176,10 +176,10 @@ class Ticketing_Attachment_Type
 		$arrInstances = array();
 		while($details = $selMatches->Fetch())
 		{
-			$arrInstances[] = new Ticketing_Attachment_Type($details);
+			$arrInstances[$details['id']] = new Ticketing_Attachment_Type($details);
 			if (!$multiple)
 			{
-				return $arrInstances[0];
+				return current($arrInstances);
 			}
 		}
 		return $arrInstances;
