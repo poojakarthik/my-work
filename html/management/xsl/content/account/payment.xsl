@@ -265,10 +265,17 @@
 								<span>
 									<xsl:choose>
 										<xsl:when test="./CVV != ''">
-											<xsl:attribute name="class">
-												<xsl:text>Green</xsl:text>
-											</xsl:attribute>
-											CVV Exists
+											<xsl:choose>
+												<xsl:when test="/Response/CanSeeCVV = 1">
+													<xsl:value-of select="./CVV" />
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:attribute name="class">
+														<xsl:text>Green</xsl:text>
+													</xsl:attribute>
+													CVV Exists
+												</xsl:otherwise>
+											</xsl:choose>
 										</xsl:when>
 										<xsl:otherwise>
 											<xsl:attribute name="class">
