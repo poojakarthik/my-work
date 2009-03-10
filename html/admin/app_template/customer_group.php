@@ -127,9 +127,9 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			}
 			// DBO()->CustomerGroup->SetColumns("Id,internal_name,external_name,outbound_email");
 			// The CustomerGroup is valid.  Save it
+			$qryQuery	= new Query();
 			if (!DBO()->CustomerGroup->Save())
 			{
-				$qryQuery	= new Query();
 				
 				// The CustomerGroup could not be saved for some unforseen reason
 				Ajax()->AddCommand("Alert", "ERROR: Saving the CustomerGroup failed, unexpectedly (".$qryQuery->Error().")");
