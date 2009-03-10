@@ -21,10 +21,10 @@ if (strtoupper($strCustomerGroup) === 'ALL')
 	$intCustomerGroup				= NULL;
 	$strCustomerGroupDescription	= "All/Default";
 } 
-elseif (GetConstantDescription((int)$strCustomerGroup, 'CustomerGroup'))
+elseif (Customer_Group::getForId((int)$strCustomerGroup, 'CustomerGroup'))
 {
 	$intCustomerGroup				= (int)$strCustomerGroup;
-	$strCustomerGroupDescription	= GetConstantDescription($intCustomerGroup, 'CustomerGroup');
+	$strCustomerGroupDescription	= Customer_Group::getForId((int)$strCustomerGroup, 'CustomerGroup')->externalName;
 }
 else
 {

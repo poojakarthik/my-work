@@ -846,20 +846,20 @@
 			if ($arrAccount['Archived'] === ACCOUNT_STATUS_DEBT_COLLECTION)
 			{
 				// Debt Collection Accounts are generated, but never sent
-				$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
+				$intDeliveryMethod	= DELIVERY_METHOD_DO_NOT_SEND;
 			}
 			else
 			{
 				switch($arrAccount['BillingMethod'])
 				{
-					case BILLING_METHOD_EMAIL:
+					case DELIVERY_METHOD_EMAIL:
 						if ($fltTotal+$fltTax != 0 || ($fltTotalOwing != 0 && $arrAccount['Status'] == ACCOUNT_STATUS_ACTIVE))
 						{
 							$intDeliveryMethod	= $arrAccount['BillingMethod'];
 						}
 						else
 						{
-							$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
+							$intDeliveryMethod	= DELIVERY_METHOD_DO_NOT_SEND;
 						}
 						break;
 						
@@ -870,19 +870,19 @@
 						}
 						else
 						{
-							$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
+							$intDeliveryMethod	= DELIVERY_METHOD_DO_NOT_SEND;
 						}
 						break;
 				}
 			}
 			
-			/*if ($fltTotal+$fltTax >= BILLING_MINIMUM_TOTAL || $fltTotalOwing >= BILLING_MINIMUM_TOTAL || $arrAccount['BillingMethod'] == BILLING_METHOD_EMAIL)
+			/*if ($fltTotal+$fltTax >= BILLING_MINIMUM_TOTAL || $fltTotalOwing >= BILLING_MINIMUM_TOTAL || $arrAccount['BillingMethod'] == DELIVERY_METHOD_EMAIL)
 			{
 				$intDeliveryMethod	= $arrAccount['BillingMethod'];
 			}
 			else
 			{
-				$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
+				$intDeliveryMethod	= DELIVERY_METHOD_DO_NOT_SEND;
 			}*/
 			
 			// get new values, and write to temporary invoice table
@@ -2599,7 +2599,7 @@
 					// Update DeliveryMethod
 					$arrUpdateData	= Array();
 					$arrWhere		= Array();
-					$arrUpdateData['DeliveryMethod']	= BILLING_METHOD_EMAIL_SENT;
+					$arrUpdateData['DeliveryMethod']	= DELIVERY_METHOD_EMAIL_SENT;
 					$arrWhere['invoice_run_id']	= $arrInvoiceRun['invoice_run_id'];
 					$arrWhere['Account']		= $arrDetail['Account'];
 					if ($updDeliveryMethod->Execute($arrUpdateData, $arrWhere))
@@ -2879,7 +2879,7 @@
 	 		// Output to XLS file
 	 		$itfInterface->ConsoleRedrawLine("$strConsoleText Writing to XLS Document...");
 			$wksProfitReport->writeNumber($intRow, 0, $arrInvoice['Account']);
-			$wksProfitReport->writeString($intRow, 1, GetConstantDescription($arrDetails['CustomerGroup'], 'CustomerGroup'));
+			$wksProfitReport->writeString($intRow, 1, Customer_Group::getForId($arrDetails['CustomerGroup'])->externalName);
 			$wksProfitReport->writeString($intRow, 2, $arrDetails['BusinessName']);
 			$wksProfitReport->writeNumber($intRow, 3, $arrCDRTotals['CostNLD']				, $fmtCurrency);
 			$wksProfitReport->writeNumber($intRow, 4, $arrCDRTotals['ChargeNLD']			, $fmtCurrency);

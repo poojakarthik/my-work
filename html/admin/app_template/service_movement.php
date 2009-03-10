@@ -141,7 +141,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 				$arrProbableAction['Status']			= $arrRecord['Status'];
 				$arrProbableAction['StatusDesc']		= GetConstantDescription($arrRecord['Status'], "account_status");
 				$arrProbableAction['CustomerGroup']		= $arrRecord['CustomerGroup'];
-				$arrProbableAction['CustomerGroupName']	= GetConstantDescription($arrRecord['CustomerGroup'], "CustomerGroup");
+				$arrProbableAction['CustomerGroupName']	= Customer_Group::getForId($arrRecord['CustomerGroup'])->externalName;
 				
 				DBO()->ServiceMove->ProbableActionDetails = $arrProbableAction;
 			}
@@ -174,7 +174,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 														"Status"			=> $arrAccount['Status'],
 														"StatusDesc"		=> GetConstantDescription($arrAccount['Status'], "account_status"),
 														"CustomerGroup"		=> $arrAccount['CustomerGroup'],
-														"CustomerGroupName"	=> GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup"),
+														"CustomerGroupName"	=> Customer_Group::getForId($arrAccount['CustomerGroup'])->externalName,
 													);
 		}
 		
@@ -238,7 +238,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		
 		// Send the retrieved record
 		$arrAccount['StatusDesc']			= GetConstantDescription($arrAccount['Status'], "account_status");
-		$arrAccount['CustomerGroupName']	= GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
+		$arrAccount['CustomerGroupName']	= Customer_Group::getForId($arrAccount['CustomerGroup'])->externalName;
 		AjaxReply($arrAccount);
 		return TRUE;
 	}

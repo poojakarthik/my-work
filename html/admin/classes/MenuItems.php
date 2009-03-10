@@ -2070,7 +2070,7 @@ class MenuItems {
 		{
 			$objCustomerGroup			= Customer_Group::getForId($intCustomerGroupId);
 			$strFilter					= "?RatePlan.CustomerGroup=". $objCustomerGroup->id ."&RatePlan.ServiceType=0&RatePlan.Status=0";
-			$this->strContextMenuLabel	= htmlspecialchars($objCustomerGroup->internal_name) ." Plans";
+			$this->strContextMenuLabel	= htmlspecialchars($objCustomerGroup->internalName) ." Plans";
 			$this->strLabel				= $this->strContextMenuLabel;
 		}
 

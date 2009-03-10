@@ -47,7 +47,7 @@ abstract class Report_Management
  		$arrProfitData	= self::_retrieveProfitData($objInvoiceRun);
 		
 		// Customer Name
- 		$strCustomerName	= GetConstantDescription($objInvoiceRun->customer_group_id, 'CustomerGroup');
+ 		$strCustomerName	= Customer_Group::getForId($objInvoiceRun->customer_group_id)->externalName;
 		Cli_App_Billing::debug("Customer Name\t: {$strCustomerName}");
  		
  		// Billing Period

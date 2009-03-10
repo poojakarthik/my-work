@@ -241,7 +241,7 @@ class Module_Config
 						switch (strtolower($strAction))
 						{
 							case 'customergroup':
-								$strReplace	= GetConstantDescription($this->_intModuleCustomerGroup, 'CustomerGroup');
+								$strReplace	= Customer_Group::getForId($this->_intModuleCustomerGroup)->externalName;
 								break;
 							
 							case 'carrier':

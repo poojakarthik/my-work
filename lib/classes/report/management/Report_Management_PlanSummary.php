@@ -136,7 +136,7 @@ class Report_Management_PlanSummary extends Report_Management
 				$wksWorksheet->writeString(3, 8, "Billing Period"	, $arrFormat['TextBold']);
 				$wksWorksheet->writeString(4, 8, "Invoice Run"		, $arrFormat['TextBold']);
 				
-				$wksWorksheet->writeString(2, 1, ($arrRatePlan['CustomerGroup'] === NULL) ? 'All' : GetConstantDescription($arrRatePlan['CustomerGroup'], 'CustomerGroup'));
+				$wksWorksheet->writeString(2, 1, ($arrRatePlan['CustomerGroup'] === NULL) ? 'All' : Customer_Group::getForId($arrRatePlan['CustomerGroup'])->externalName);
 				$wksWorksheet->writeString(3, 1, GetConstantDescription($arrRatePlan['ServiceType'], 'service_type'));
 				$wksWorksheet->writeString(4, 1, $arrRatePlan['Description']);
 				$wksWorksheet->writeString(2, 9, date("d/m/Y", strtotime($arrProfitData['ThisMonth']['BillingDate'])));

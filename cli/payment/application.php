@@ -128,7 +128,7 @@
  			$modModule	= new $arrModule['Module']($arrModule['Carrier'], $arrModule['customer_group']);
  			$this->_arrDirectDebitModules[$arrModule['customer_group']][$modModule->intBillingType]	= $modModule;
  			
- 			CliEcho("\t + ".GetConstantDescription($arrModule['customer_group'], 'CustomerGroup')." : ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".GetConstantDescription($modModule->intBillingType, 'BillingType'));	
+ 			CliEcho("\t + ".Customer_Group::getForId($arrModule['customer_group'])->externalName." : ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".GetConstantDescription($modModule->intBillingType, 'BillingType'));	
  		}
  		
  		CliEcho();
@@ -835,7 +835,7 @@
 	 		
 	 		while ($arrSchedule = $selSchedule->Fetch())
 	 		{
-		 		CliEcho("\t+ ".GetConstantDescription($arrSchedule['customer_group_id'], 'CustomerGroup'));
+		 		CliEcho("\t+ ".Customer_Group::getForId($arrSchedule['customer_group_id'])->externalName);
 		 		
 		 		// Determine Direct Debit Payment Date
 		 		if (strtotime($arrSchedule['scheduled_datetime']) > $intRunDate)
@@ -878,7 +878,7 @@
 	 	foreach ($arrCustomerGroups as $arrCustomerGroup)
 	 	{
 		 	$intCustomerGroup	= $arrCustomerGroup['customer_group_id'];
-		 	CliEcho("\t* ".GetConstantDescription($intCustomerGroup, 'CustomerGroup'));
+		 	CliEcho("\t* ".Customer_Group::getForId($intCustomerGroup)->externalName);
 		 	
 		 	if (array_key_exists($intCustomerGroup, $this->_arrDirectDebitModules))
 		 	{

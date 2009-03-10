@@ -42,7 +42,7 @@ while ($arrInvoiceRun = $selInvoiceRuns->Fetch())
 		$arrAccounts[]	= "<a href='https://telcoblue.yellowbilling.com.au/admin/flex.php/Account/Overview/?Account.Id={$arrAccount['Id']}'>{$arrAccount['Id']}: {$arrAccount['BusinessName']}</a>";
 	}
 	
-	$strCustomerGroup	= GetConstantDescription($arrInvoiceRun['customer_group_id'], 'CustomerGroup');
+	$strCustomerGroup	= Customer_Group::getForId($arrInvoiceRun['customer_group_id'])->externalName;
 	
 	$strTo		= "turdminator@hotmail.com, rdavis@yellowbilling.com.au";//, msergeant@yellowbilling.com.au";
 	$strContent	= ($arrInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_INTERNAL_SAMPLES) ? "NOTE: THIS IS AN INTERNAL SAMPLE RUN -- DO NOT FORWARD TO CUSTOMERS <br/>\n<br/>\n" : "";

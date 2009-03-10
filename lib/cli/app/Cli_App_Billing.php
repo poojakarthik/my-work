@@ -225,7 +225,7 @@ class Cli_App_Billing extends Cli
 			// Process each set of current Payment Terms
 			while ($arrPaymentTerms = $selPaymentTerms->Fetch())
 			{
-				Log::getLog()->log("\tCustomer Group: ".GetConstantDescription($arrPaymentTerms['customer_group_id'], 'CustomerGroup'));
+				Log::getLog()->log("\tCustomer Group: ".Customer_Group::getForId($arrPaymentTerms['customer_group_id'])->externalName);
 
 				// Predict the next Billing Date
 				$strInvoiceDate		= Invoice_Run::predictNextInvoiceDate($arrPaymentTerms['customer_group_id'], $strDatetime);
@@ -240,7 +240,7 @@ class Cli_App_Billing extends Cli
 					
 					while ($arrInvoiceRunSchedule = $selInvoiceRunSchedule->Fetch())
 					{
-						Log::getLog()->log("\t\t + Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".GetConstantDescription($arrInvoiceRunSchedule['customer_group_id'], 'CustomerGroup')."\n");
+						Log::getLog()->log("\t\t + Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".Customer_Group::getForId($arrInvoiceRunSchedule['customer_group_id'])->externalName."\n");
 
 						// Yes, so lets Generate!
 						$objInvoiceRun	= new Invoice_Run();

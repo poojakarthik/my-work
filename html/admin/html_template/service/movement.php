@@ -88,7 +88,7 @@ class HtmlTemplateServiceMovement extends HtmlTemplate
 		$arrAccount			= DBO()->Account->_arrProperties;
 		$arrPreviousOwner	= DBO()->ServiceMove->PreviousOwner->Value;
 		
-		$strCustomerGroup	= GetConstantDescription($arrAccount['CustomerGroup'], "CustomerGroup");
+		$strCustomerGroup	= Customer_Group::getForId($arrAccount['CustomerGroup'])->externalName;
 		$intAccountId		= $arrAccount['Id'];
 		if ($arrAccount['BusinessName'])
 		{

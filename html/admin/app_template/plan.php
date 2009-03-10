@@ -672,7 +672,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		{
 			// The Name is already being used by another rate plan
 			$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, "service_type");
-			$strCustomerGroup = GetConstantDescription(DBO()->RatePlan->customer_group->Value, "CustomerGroup");
+			$strCustomerGroup = Customer_Group::getForId(DBO()->RatePlan->customer_group->Value)->externalName;
 			DBO()->RatePlan->Name->SetToInvalid();
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 			return "ERROR: The $strCustomerGroup customer group already has a plan with this name, for $strServiceType services<br />Please choose a unique name";

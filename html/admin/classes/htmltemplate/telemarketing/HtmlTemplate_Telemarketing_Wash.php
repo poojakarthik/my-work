@@ -28,7 +28,7 @@ class HtmlTemplate_Telemarketing_Wash extends FlexHtmlTemplate
 		$strVendorListHTML	= '';
 		foreach ($this->mxdDataToRender['Vendors'] as $objCustomerGroup)
 		{
-			$strVendorListHTML	.= "<option value='{$objCustomerGroup->id}'>{$objCustomerGroup->external_name}</option>\n";
+			$strVendorListHTML	.= "<option value='{$objCustomerGroup->id}'>{$objCustomerGroup->externalName}</option>\n";
 		}
 		$strVendorListHTML	= trim($strVendorListHTML);
 		

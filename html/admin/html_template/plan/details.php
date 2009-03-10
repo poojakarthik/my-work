@@ -79,7 +79,7 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		DBO()->RatePlan->Name->RenderOutput();
 		DBO()->RatePlan->Description->RenderOutput();
 		
-		$strCustomerGroup	= GetConstantDescription($arrRatePlan['customer_group'], 'CustomerGroup');
+		$strCustomerGroup	= Customer_Group::getForId($arrRatePlan['customer_group'])->externalName;
 		
 		// Build the Plan Brochure link
 		$strBrochureCell	= '';

@@ -329,34 +329,12 @@ class Invoice extends ORM
 		// Determine Delivery Method
 		if ($objAccount->deliver_invoice === 0)
 		{
-			$this->DeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
+			$this->DeliveryMethod	= DELIVERY_METHOD_DO_NOT_SEND;
 		}
 		else
 		{
-			switch($objAccount->BillingMethod)
-			{
-				case BILLING_METHOD_EMAIL:
-					if ($this->Balance != 0 || ($this->TotalOwing != 0 && $objAccount->Status == ACCOUNT_STATUS_ACTIVE))
-					{
-						$this->DeliveryMethod	= $objAccount->BillingMethod;
-					}
-					else
-					{
-						$this->DeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
-					}
-					break;
-
-				default:
-					if ($this->Balance >= BILLING_MINIMUM_TOTAL || $this->TotalOwing >= BILLING_MINIMUM_TOTAL)
-					{
-						$this->DeliveryMethod	= $objAccount->BillingMethod;
-					}
-					else
-					{
-						$this->DeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
-					}
-					break;
-			}
+			// Have we met the requirements for this Delivery Method?
+			$objDeliveryMethod	= Delivery_Method::getForId($objAccount->BillingMethod);
 		}
 
 		// Insert the Invoice Data

@@ -15,9 +15,9 @@
 class Customer_Group 
 {
 	private $id								= NULL;
-	private $internal_name					= NULL;
-	private $external_name					= NULL;
-	private $outbound_email					= NULL;
+	private $internalName					= NULL;
+	private $externalName					= NULL;
+	private $outboundEmail					= NULL;
 	private $flexUrl						= NULL;
 	private $emailDomain					= NULL;
 	private $customerPrimaryColor			= NULL;
@@ -175,9 +175,9 @@ class Customer_Group
 		}
 
 		// Constant Group stuff
-		$this->name			= $this->internal_name;
-		$this->description	= $this->internal_name;
-		$this->constant		= "CUSTOMER_GROUP_" . strtoupper(str_replace(" ", "_", $this->internal_name));
+		$this->name			= $this->internalName;
+		$this->description	= $this->internalName;
+		$this->constant		= "CUSTOMER_GROUP_" . strtoupper(str_replace(" ", "_", $this->internalName));
 		$this->value		= $this->id;
 	}
 

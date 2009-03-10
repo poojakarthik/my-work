@@ -146,7 +146,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strViewPlanHref	= Href()->ViewPlan($arrRatePlan['Id']);
 			$strNameCell		= "<a href='$strViewPlanHref' title='$strDescription'>$strName</a>";
 			$strServiceType		= htmlspecialchars(GetConstantDescription($arrRatePlan['ServiceType'], "service_type"), ENT_QUOTES);
-			$strCustomerGroup	= htmlspecialchars(GetConstantDescription($arrRatePlan['customer_group'], "CustomerGroup"), ENT_QUOTES);
+			$strCustomerGroup	= htmlspecialchars(Customer_Group::getForId($arrRatePlan['customer_group'])->externalName, ENT_QUOTES);
 			//$strStatusCell		= GetConstantDescription($arrRatePlan['Archived'], "RateStatus");
 			
 			$strStatusCell		= "<img ";
@@ -205,7 +205,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			}
 			
 			$objCustomerGroup	= Customer_Group::getForId($arrRatePlan['customer_group']);
-			$strCustomerGroup	= $objCustomerGroup->external_name;
+			$strCustomerGroup	= $objCustomerGroup->externalName;
 			
 			// Build the Plan Brochure link
 			$strBrochureCell	= '';

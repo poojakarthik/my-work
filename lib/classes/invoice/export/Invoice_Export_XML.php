@@ -103,7 +103,7 @@
 		self::_addElement($xmlDocument, 'DocumentType', 'DOCUMENT_TYPE_INVOICE');
 		self::_addElement($xmlDocument, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
 		self::_addElement($xmlDocument, 'CreationDate', date('Y-m-d H:i:s', strtotime($arrInvoice['CreatedOn'])));
-		self::_addElement($xmlDocument, 'DeliveryMethod', GetConstantName($arrInvoice['DeliveryMethod'], 'DeliveryMethod'));
+		self::_addElement($xmlDocument, 'DeliveryMethod', GetConstantName($arrInvoice['DeliveryMethod'], 'delivery_method'));
 		self::_addAttribute($xmlDocument, 'DateIssued', date('j M y', strtotime($arrInvoice['CreatedOn'])));
 		
 		//--------------------------------------------------------------------//
@@ -111,7 +111,6 @@
 		//--------------------------------------------------------------------//
 		$xmlInvoice	= self::_addElement($xmlDocument, 'Invoice');
 		self::_addAttribute($xmlInvoice, 'Id', $arrInvoice['Id']);
-		//self::_addAttribute($xmlInvoice, 'DeliveryMethod'	, GetConstantName($arrInvoice['DeliveryMethod'], 'BillingMethod'));
 		
 		//--------------------------------------------------------------------//
 		// Currency Symbol (at the moment, we always use AUD, so $)
@@ -588,7 +587,7 @@
 					 			
 									// Update DeliveryMethod
 									$arrUpdateData						= Array();
-									$arrUpdateData['DeliveryMethod']	= BILLING_METHOD_EMAIL_SENT;
+									$arrUpdateData['DeliveryMethod']	= DELIVERY_METHOD_EMAIL_SENT;
 									$arrWhere				= Array();
 									$arrWhere['InvoiceRun']	= $strInvoiceRun;
 									$arrWhere['Account']	= $arrDetail['Account'];

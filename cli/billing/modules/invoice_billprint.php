@@ -310,7 +310,7 @@
 		$arrInserts = array_fill(0, 6, '0');
 		
 		$intLastBillDate	= strtotime("-1 month", date("Y-m-01", strtotime($arrInvoiceDetails['CreatedOn'])));
-		if (($arrCustomerData['CustomerGroup'] == CUSTOMER_GROUP_VOICETALK) && (strtotime($arrCustomerData['CreatedOn']) >= $intLastBillDate) && ($arrInvoiceDetails['DeliveryMethod'] == BILLING_METHOD_POST))
+		if (($arrCustomerData['CustomerGroup'] == CUSTOMER_GROUP_VOICETALK) && (strtotime($arrCustomerData['CreatedOn']) >= $intLastBillDate) && ($arrInvoiceDetails['DeliveryMethod'] == DELIVERY_METHOD_POST))
 		{
 				$arrInserts[0]	= '1';
 		}

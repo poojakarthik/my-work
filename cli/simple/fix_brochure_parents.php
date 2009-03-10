@@ -22,7 +22,7 @@ try
 	}
 	while ($arrPlan = $resPlansWithBrochures->fetch_assoc())
 	{
-		Log::getLog()->log(" [+] ".GetConstantDescription($arrPlan['customer_group'], 'CustomerGroup')."::{$arrPlan['Name']}...");
+		Log::getLog()->log(" [+] ".Customer_Group::getForId($arrPlan['customer_group'])->externalName."::{$arrPlan['Name']}...");
 		
 		$objRatePlan			= new Rate_Plan($arrPlan);
 		$objBrochureDocument	= new Document(array('id'=>$objRatePlan->brochure_document_id), true);

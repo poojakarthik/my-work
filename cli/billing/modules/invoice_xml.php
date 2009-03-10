@@ -125,7 +125,7 @@
 		$this->_AddElement($xmlDocument, 'DocumentType', 'DOCUMENT_TYPE_INVOICE');
 		$this->_AddElement($xmlDocument, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
 		$this->_AddElement($xmlDocument, 'CreationDate', date('Y-m-d H:i:s', strtotime($arrInvoice['CreatedOn'])));
-		$this->_AddElement($xmlDocument, 'DeliveryMethod', GetConstantName($arrInvoice['DeliveryMethod'], 'DeliveryMethod'));
+		$this->_AddElement($xmlDocument, 'DeliveryMethod', GetConstantName($arrInvoice['DeliveryMethod'], 'delivery_method'));
 		$this->_AddAttribute($xmlDocument, 'DateIssued', date('j M y', strtotime($arrInvoice['CreatedOn'])));
 		
 		//--------------------------------------------------------------------//
@@ -133,7 +133,6 @@
 		//--------------------------------------------------------------------//
 		$xmlInvoice	= $this->_AddElement($xmlDocument, 'Invoice');
 		$this->_AddAttribute($xmlInvoice, 'Id', ($this->_strInvoiceTable == 'Invoice') ? $arrInvoice['Id'] : 'SAMPLE');
-		//$this->_AddAttribute($xmlInvoice, 'DeliveryMethod'	, GetConstantName($arrInvoice['DeliveryMethod'], 'BillingMethod'));
 		
 		//--------------------------------------------------------------------//
 		// Currency Symbol (at the moment, we always use AUD, so $)
@@ -656,7 +655,7 @@
 					 			
 									// Update DeliveryMethod
 									$arrUpdateData						= Array();
-									$arrUpdateData['DeliveryMethod']	= BILLING_METHOD_EMAIL_SENT;
+									$arrUpdateData['DeliveryMethod']	= DELIVERY_METHOD_EMAIL_SENT;
 									$arrWhere				= Array();
 									$arrWhere['InvoiceRun']	= $strInvoiceRun;
 									$arrWhere['Account']	= $arrDetail['Account'];

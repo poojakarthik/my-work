@@ -357,7 +357,7 @@ class Rate_Plan extends ORM
 		// Senders
 		$arrSenders		= array();
 		$objEmployee	= Employee::getForId(Flex::getUserId());
-		$arrSenders[]	= "{name: \"{$objCustomerGroup->external_name} Customer Care\", address: \"contact@{$objCustomerGroup->emailDomain}\"}";
+		$arrSenders[]	= "{name: \"{$objCustomerGroup->externalName} Customer Care\", address: \"contact@{$objCustomerGroup->emailDomain}\"}";
 		if (trim($objEmployee->Email))
 		{
 			$arrSenders[]	= "{name: \"{$objEmployee->FirstName} {$objEmployee->LastName}\", address: \"{$objEmployee->Email}\"}";
@@ -376,8 +376,8 @@ class Rate_Plan extends ORM
 		$strAccount			= ((int)$intAccountId > 0) ? "{$intAccountId}" : "null";
 		
 		// Generate HTML
-		$strSubject			= "Requested {$objCustomerGroup->external_name} Plan {$strBrochurePlural}";
-		$strContent			= "Dear <Addressee>,\\n\\nPlease find attached the Plan {$strBrochurePlural}:\\n\\n{$strPlans}\\nAs per your request.\\n\\nRegards,\\n\\nThe Team at {$objCustomerGroup->external_name}";
+		$strSubject			= "Requested {$objCustomerGroup->externalName} Plan {$strBrochurePlural}";
+		$strContent			= "Dear <Addressee>,\\n\\nPlease find attached the Plan {$strBrochurePlural}:\\n\\n{$strPlans}\\nAs per your request.\\n\\nRegards,\\n\\nThe Team at {$objCustomerGroup->externalName}";
 		
 		return "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan {$strBrochurePlural}\", {$strSenders}, \"{$strSubject}\", \"{$strContent}\", {$strRecipients}, {$strAccount})});";
 	}
@@ -434,7 +434,7 @@ class Rate_Plan extends ORM
 		$objVariables->employee->name->setValue($objEmployee->firstName.' '.$objEmployee->lastName);
 		
 		// Customer Group
-		$objVariables->customer_group->name->setValue($objCustomerGroup->external_name);
+		$objVariables->customer_group->name->setValue($objCustomerGroup->externalName);
 		
 		// Dates
 		$objVariables->datetime->today->date->setValue(date($strDateFormat, $intTime));

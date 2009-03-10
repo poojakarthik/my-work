@@ -77,7 +77,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 		$strBillingPeriod			.= " {$strBillingPeriodStartYear}";
 	}
 	
-	$selInvoices		= new StatementSelect(	"Invoice", "*", "invoice_run_id = <invoice_run_id> AND DeliveryMethod = 1");
+	$selInvoices		= new StatementSelect(	"Invoice", "*", "invoice_run_id = <invoice_run_id> AND DeliveryMethod = ".DELIVERY_METHOD_EMAIL);
 	
 	$selAccountEmail	= new StatementSelect(	"Account JOIN Contact USING (AccountGroup)",
 												"Contact.Account, CustomerGroup, Email, FirstName",
@@ -252,7 +252,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 				$arrWhere['Account']		= $arrDetail['Account'];
 				
 				$arrUpdateData						= Array();
-				$arrUpdateData['DeliveryMethod']	= BILLING_METHOD_EMAIL_SENT;
+				$arrUpdateData['DeliveryMethod']	= DELIVERY_METHOD_EMAIL_SENT;
 				
 				if ($updDeliveryMethod->Execute($arrUpdateData, $arrWhere))
 				{

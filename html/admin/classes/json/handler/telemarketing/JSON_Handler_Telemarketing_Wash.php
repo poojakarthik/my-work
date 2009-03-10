@@ -30,7 +30,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			$arrVendors			= array();
 			foreach ($arrCustomerGroups as $objCustomerGroup)
 			{
-				$arrVendors[$objCustomerGroup->id]	= array('id' => $objCustomerGroup->id, 'external_name' => $objCustomerGroup->external_name);
+				$arrVendors[$objCustomerGroup->id]	= array('id' => $objCustomerGroup->id, 'external_name' => $objCustomerGroup->externalName);
 			}
 			
 			// If no exceptions were thrown, then everything worked
