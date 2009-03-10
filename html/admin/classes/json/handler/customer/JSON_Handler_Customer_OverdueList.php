@@ -17,6 +17,7 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 								'BusinessName'			=> "Account.BusinessName",
 								'TradingName'			=> "Account.TradingName",
 								'AccountStatus'			=> "Account.Archived",
+								'CustomerGroup'			=> "Account.CustomerGroup",
 								'Overdue'				=> "SUM(CASE WHEN '$strEffectiveDate' > Invoice.DueOn THEN Invoice.Balance END)",
 								'TotalOutstanding'		=> "SUM(Invoice.Balance)");
 	
@@ -44,7 +45,7 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 		//$pt = GetPaymentTerms(NULL);
 	
 		$strOrderBy	= "Account.Archived ASC, Invoice.Account ASC";
-		$strGroupBy	= "Invoice.Account HAVING Overdue >= (SELECT minimum_balance_to_pursue FROM payment_terms WHERE customer_group_id = Account.CustomerGroup ORDER BY id DESC LIMIT 1)";/*. $pt['minimum_balance_to_pursue'];*/
+		$strGroupBy	= "Invoice.Account HAVING Overdue >= (SELECT minimum_balance_to_pursue FROM payment_terms WHERE customer_group_id = CustomerGroup ORDER BY id DESC LIMIT 1)";/*. $pt['minimum_balance_to_pursue'];*/
 	
 		
 		// DEBUG: Output the query that gets run
