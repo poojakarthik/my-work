@@ -307,16 +307,19 @@ Event.observe(window, 'load', onTicketingAttachmentListLoad, false);
 function toggleShowCorrespondenceDetails(correspondenceId, button)
 {
 	var elmDetails = $ID('ticket_correspondence_content_'+ correspondenceId);
+	var elmSummary = $ID('ticket_correspondence_'+ correspondenceId);
 	if (button.className == 'expand-button-expanded')
 	{
 		// Retract the details
 		elmDetails.className	= elmDetails.getAttribute('altClass') +' hidden-ticket-correspondence-content';
+		elmSummary.className	= elmSummary.getAttribute('altClass') +' ticket-correspondence-summary-without-content';
 		button.className		= 'expand-button-retracted';
 	}
 	else
 	{
 		// Expand the details
 		elmDetails.className	= elmDetails.getAttribute('altClass') +' displayed-ticket-correspondence-content';
+		elmSummary.className	= elmSummary.getAttribute('altClass') +' ticket-correspondence-summary-with-content';
 		button.className		= 'expand-button-expanded';
 	}
 }
@@ -324,32 +327,43 @@ function toggleShowCorrespondenceDetails(correspondenceId, button)
 function toggleShowAllCorrespondenceDetails(button)
 {
 	var elmTable = $ID('ticket_correspondence_table');
-	var arrRows;
+	var arrContentRows;
+	var arrSummaryRows;
 	var arrButtons;
-	var strNewClassForRows;
+	var strNewClassForContentRows;
+	var strNewClassForSummaryRows;
 	var strNewClassForButtons;
 	var i, j;
 	
 	if (button.className == 'expand-button-expanded')
 	{
 		// Retract all rows that are currently expanded
-		arrRows					= elmTable.getElementsByClassName('displayed-ticket-correspondence-content');
-		arrButtons				= elmTable.getElementsByClassName('expand-button-expanded');
-		strNewClassForRows  = 'hidden-ticket-correspondence-content';
-		strNewClassForButtons   = 'expand-button-retracted';
+		arrContentRows				= elmTable.getElementsByClassName('displayed-ticket-correspondence-content');
+		arrSummaryRows				= elmTable.getElementsByClassName('ticket-correspondence-summary-with-content');
+		arrButtons					= elmTable.getElementsByClassName('expand-button-expanded');
+		strNewClassForContentRows   = 'hidden-ticket-correspondence-content';
+		strNewClassForSummaryRows   = 'ticket-correspondence-summary-without-content';
+		strNewClassForButtons		= 'expand-button-retracted';
 	}
 	else
 	{
 		// Expand all rows that are currently retracted
-		arrRows					= elmTable.getElementsByClassName('hidden-ticket-correspondence-content');
-		arrButtons				= elmTable.getElementsByClassName('expand-button-retracted');
-		strNewClassForRows  = 'displayed-ticket-correspondence-content';
-		strNewClassForButtons   = 'expand-button-expanded';
+		arrContentRows				= elmTable.getElementsByClassName('hidden-ticket-correspondence-content');
+		arrSummaryRows				= elmTable.getElementsByClassName('ticket-correspondence-summary-without-content');
+		arrButtons					= elmTable.getElementsByClassName('expand-button-retracted');
+		strNewClassForContentRows   = 'displayed-ticket-correspondence-content';
+		strNewClassForSummaryRows   = 'ticket-correspondence-summary-with-content';
+		strNewClassForButtons		= 'expand-button-expanded';
 	}
 	
-	while (arrRows.length > 0)
+	while (arrContentRows.length > 0)
 	{
-		arrRows[0].className = arrRows[0].getAttribute('altClass') +' '+ strNewClassForRows;
+		arrContentRows[0].className = arrContentRows[0].getAttribute('altClass') +' '+ strNewClassForContentRows;
+	}
+
+	while (arrSummaryRows.length > 0)
+	{
+		arrSummaryRows[0].className = arrSummaryRows[0].getAttribute('altClass') +' '+ strNewClassForSummaryRows;
 	}
 	
 	while (arrButtons.length > 0)

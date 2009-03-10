@@ -263,21 +263,22 @@ tr.hidden-ticket-correspondence-content
 	display: none;
 }
 
-tr.hidden-ticket-correspondence-content
-{
-	display: none;
-}
-
-
-.ticket-correspondence-content
+td.ticket-correspondence-content
 {
 	border-top: dashed 1px #000;
+	border-bottom: solid 1px #000;
 }
 
 .blocked-downloadable-attachment .active,
 .downloadable-attachment .inactive
 {
 	display: none;
+}
+
+/* Only show the solid border at the top of the ticket-correspondence-summary-with-content, if the content, of the record above this one, is hidden */
+tr.hidden-ticket-correspondence-content + tr.ticket-correspondence-summary-with-content td
+{
+	border-top: solid 1px #000;
 }
 
 .blocked-downloadable-attachment .inactive

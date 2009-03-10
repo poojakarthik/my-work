@@ -779,6 +779,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							$altClass = $alt ? 'alt' : '';
 							
 							$strContentClass = ($bolFirst)? "displayed-ticket-correspondence-content" : "hidden-ticket-correspondence-content";
+							$strCorrespondenceClass = ($bolFirst)? "ticket-correspondence-summary-with-content" : "ticket-correspondence-summary-without-content";
 							$strExpandButtonClass = ($bolFirst)? "expand-button-expanded" : "expand-button-retracted";
 							$bolFirst = FALSE;
 							
@@ -849,7 +850,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							
 							
 		?>
-				<tr class="<?=$altClass?>">
+				<tr class="<?=$strCorrespondenceClass?> <?=$altClass?>" altClass='<?=$altClass?>' id='ticket_correspondence_<?=$correspondence->id?>'>
 					<td><a href="<?=$link?>"><?=$correspondence->summary ? $correspondence->summary : '<em>[No Subject]</em>'?></a></td>
 					<td><?=$contactName?></td>
 					<td><?=$sourceName?></td>
