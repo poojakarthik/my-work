@@ -145,7 +145,15 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				$objCustomerGroupDeliveryMethod->minimum_invoice_value	= Customer_Group_Delivery_Method::DEFAULT_MINIMUM_INVOICE_VALUE;
 				$objCustomerGroupDeliveryMethod->employee_id			= Flex::getUserId();
 				
-				$objCustomerGroupDeliveryMethod->save();
+				try
+				{
+					$objCustomerGroupDeliveryMethod->save();
+				}
+				catch (Exception $eException)
+				{
+					Ajax()->AddCommand("Alert", "ERROR: Saving the Customer Group Delivery Method details failed, unexpectedly");
+					return TRUE;
+				}
 			}
 			
 			// The CustomerGroup has now been saved
