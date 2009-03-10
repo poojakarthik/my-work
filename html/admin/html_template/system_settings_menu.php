@@ -71,14 +71,14 @@ class HtmlTemplateSystemSettingsMenu extends HtmlTemplate
 		// I'm going to try an use CSS properly for this menu
 		
 		// Render the link the the "Constants Management" page
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+		/*if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 		{
 			$strImage = "img/template/constants_management_menu_item.png";
 			$strItemName = "Manage Constants";
 			$strItemDescription = "Manage various dynamic constants";
 			$strHref = Href()->ViewAllConstants();
 			$this->_RenderMenuItem($strImage, $strItemName, $strItemDescription, $strHref);
-		}
+		}*/
 		
 		// Render the link the the "CustomerGroups Management" page
 		$strImage = "img/template/customer_groups_menu_item.png";
