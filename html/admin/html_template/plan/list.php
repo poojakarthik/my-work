@@ -74,10 +74,11 @@ class HtmlTemplatePlanList extends HtmlTemplate
 
 		// Build the contents for the CustomerGroup filter combobox
 		$strCustomerGroupFilterOptions = "<option value='0' ". (($intCustomerGroupFilter == 0)? "selected='selected'" : "") .">All Customer Groups</option>\n";
-		foreach ($GLOBALS['*arrConstant']['CustomerGroup'] as $intCustomerGroup=>$arrCustomerGroup)
+		$arrCustomerGroups	= Customer_Group::getAll();
+		foreach ($arrCustomerGroups as $intCustomerGroup=>$objCustomerGroup)
 		{
 			$strSelected					= ($intCustomerGroupFilter == $intCustomerGroup) ? "selected='selected'" : "";
-			$strCustomerGroupFilterOptions	.= "<option value='$intCustomerGroup' $strSelected>{$arrCustomerGroup['Description']}</option>\n";
+			$strCustomerGroupFilterOptions	.= "<option value='$intCustomerGroup' $strSelected>{$objCustomerGroup->externalName}</option>\n";
 		}
 		
 		// Build the contents for the Status filter combobox

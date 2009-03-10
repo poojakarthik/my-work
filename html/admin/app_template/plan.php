@@ -122,7 +122,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		
 		if (DBO()->RatePlan->CustomerGroup->IsSet)
 		{
-			if (array_key_exists(DBO()->RatePlan->CustomerGroup->Value, $GLOBALS['*arrConstant']['CustomerGroup']))
+			if (array_key_exists(DBO()->RatePlan->CustomerGroup->Value, Customer_Group::getAll()))
 			{
 				// A specific CustomerGroup filter has been specified
 				$_SESSION['AvailablePlansPage']['Filter']['CustomerGroup'] = DBO()->RatePlan->CustomerGroup->Value;
