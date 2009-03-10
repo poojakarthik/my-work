@@ -6,8 +6,9 @@
  *
  *	1:	Add the delivery_method Table
  *	2:	Populate the delivery_method Table
- *	3:	Add the customer_group_delivery_method Table
- *	4:	Populate the customer_group_delivery_method Table
+ *	3:	Make delivery_method.id AUTO_INCREMENT
+ *	4:	Add the customer_group_delivery_method Table
+ *	5:	Populate the customer_group_delivery_method Table
  */
 
 class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
@@ -21,14 +22,14 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 		// 1:	Add the delivery_method Table
 		$strSQL =	"CREATE TABLE delivery_method " .
 					"(" .
-					"	id				BIGINT(20)		UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier', " .
+					"	id				BIGINT(20)		UNSIGNED	NOT NULL					COMMENT 'Unique Identifier', " .
 					"	name			VARCHAR(255)				NOT NULL					COMMENT 'Name of the Delivery Method', " .
 					"	description		VARCHAR(1024)				NOT NULL					COMMENT 'Description of the Delivery Method', " .
 					"	const_name		VARCHAR(512)				NOT NULL					COMMENT 'Constant Name for this Delivery Method', " .
 					"	account_setting	TINYINT(1)					NOT NULL					COMMENT '1: Can be used as an Account setting; 0: System-only setting', " .
 					"	" .
 					"	CONSTRAINT	pk_delivery_method_id	PRIMARY KEY (id)" .
-					") ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=0;";
+					") ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -47,9 +48,17 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to populate the delivery_method Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
-		$this->rollbackSQL[] =	"TRUNCATE TABLE delivery_method;";
 
-		// 3:	Add the customer_group_delivery_method Table
+		// 3:	Make delivery_method.id AUTO_INCREMENT
+		$strSQL =	"ALTER TABLE delivery_method " .
+					"CHANGE id	id	BIGINT(20)		UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier';";
+		$result = $dbAdmin->query($strSQL);
+		if (PEAR::isError($result))
+		{
+			throw new Exception(__CLASS__ . ' Failed to add the delivery_method Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
+		}
+
+		// 4:	Add the customer_group_delivery_method Table
 		$strSQL =	"CREATE TABLE customer_group_delivery_method " .
 					"(" .
 					"	id						BIGINT(20)		UNSIGNED	NOT NULL	AUTO_INCREMENT				COMMENT 'Unique Identifier', " .
@@ -71,7 +80,7 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] =	"DROP TABLE customer_group_delivery_method;";
 
-		// 4:	Populate the customer_group_delivery_method Table
+		// 5:	Populate the customer_group_delivery_method Table
 		$arrCustomerGroups	= Customer_Group::getAll();
 		$arrDeliveryMethods	= Delivery_Method::getAll();
 		foreach ($arrCustomerGroups as $objCustomerGroup)
