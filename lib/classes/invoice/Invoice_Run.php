@@ -962,10 +962,10 @@ class Invoice_Run
 		{
 			while ($arrSample = $selSampleList->Fetch())
 			{
-				$strTotalOwing	= number_format($arrSample['TotalOwing'], 2, '.', '');
+				$strBalance	= number_format($arrSample['Balance'], 2, '.', '');
 
-				$strTextContent	.= "{$arrSample['Id']} | {$arrSample['BusinessName']} | Total Owing: \${$strTotalOwing} | Account Overview : {$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}\n";
-				$strHTMLContent	.= "<a href='{$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}'>{$arrSample['Id']} | {$arrSample['BusinessName']} | Total Owing: \${$strTotalOwing}</a><br />\n";
+				$strTextContent	.= "{$arrSample['Id']} | {$arrSample['BusinessName']} | Invoice Total: \${$strBalance} | Account Overview : {$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}\n";
+				$strHTMLContent	.= "<a href='{$arrSample['flex_url']}/admin/flex.php/Account/Overview/?Account.Id={$arrSample['Id']}'>{$arrSample['Id']} | {$arrSample['BusinessName']} | Invoice Total: \${$strBalance}</a><br />\n";
 			}
 		}
 		else
