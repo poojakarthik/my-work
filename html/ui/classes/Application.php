@@ -155,9 +155,9 @@ class Application
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
 			//ContextMenu()->Admin_Console();
-			ContextMenu()->Admin->AdvancedAccountSearch();
+			/*ContextMenu()->Admin->AdvancedAccountSearch();
 			ContextMenu()->Admin->AdvancedContactSearch();
-			ContextMenu()->Admin->AdvancedServiceSearch();
+			ContextMenu()->Admin->AdvancedServiceSearch();*/
 
 			ContextMenu()->Admin->Adjustments->ManageAdjustments();
 			ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
@@ -350,9 +350,9 @@ class Application
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
 			//ContextMenu()->Admin_Console();
-			ContextMenu()->Admin->AdvancedAccountSearch();
+			/*ContextMenu()->Admin->AdvancedAccountSearch();
 			ContextMenu()->Admin->AdvancedContactSearch();
-			ContextMenu()->Admin->AdvancedServiceSearch();
+			ContextMenu()->Admin->AdvancedServiceSearch();*/
 
 			ContextMenu()->Admin->Adjustments->ManageAdjustments();
 			ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
