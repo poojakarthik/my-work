@@ -114,6 +114,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				return TRUE;
 			}
 			
+			DBO()->CustomerGroup->invoice_cdr_credits	= 0;
+			
 			// Check that the CustomerGroup's internal_name is not being used by another CustomerGroup
 			$selCustomerGroup = new StatementSelect("CustomerGroup", "Id", "internal_name LIKE <Name>", "", "1");
 			$intRecordFound = $selCustomerGroup->Execute(Array("Name"=> DBO()->CustomerGroup->internal_name->Value));
