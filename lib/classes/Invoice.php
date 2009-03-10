@@ -154,6 +154,7 @@ class Invoice extends ORM
 					$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['Services'][$intServiceId]		= &$arrServiceDetails;
 					$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxExemptCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxExemptCappedCharge'];
 					$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxableCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxableCappedCharge'];
+					$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['bolDisconnectedAndNoCDRs']		= ($arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['bolDisconnectedAndNoCDRs'] === false) ? false : ($arrServiceDetails['ServiceTotal']['bolDisconnectedAndNoCDRs']);
 				}
 			}
 			else
@@ -181,13 +182,22 @@ class Invoice extends ORM
 			}
 
 			$arrServiceIds		= array_keys($arrDetails['Services']);
-
-			// Add Plan Charges
-			$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, $arrServiceIds, NULL);
-
-			$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
-			$fltUsageStart		= $arrUsageDetails['ChargeCap'];
-			$fltUsageLimit		= $arrUsageDetails['UsageCap'];
+			
+			if ($arrDetails['bolDisconnectedAndNoCDRs'])
+			{
+				$fltMinimumCharge	= 0.0;
+				$fltUsageStart		= 0.0;
+				$fltUsageLimit		= 0.0;
+			}
+			else
+			{
+				// Add Plan Charges
+				$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, $arrServiceIds, NULL);
+	
+				$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
+				$fltUsageStart		= $arrUsageDetails['ChargeCap'];
+				$fltUsageLimit		= $arrUsageDetails['UsageCap'];
+			}
 
 			$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
 			$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
@@ -378,6 +388,20 @@ class Invoice extends ORM
 		$arrServiceTotal['TotalCharge']	= 0.0;
 		$arrServiceTotal['Tax']			= 0.0;
 		$intServiceId					= $arrServiceDetails['Id'];
+		
+		
+		// Mark all CDRs for this Service as TEMPORARY_INVOICE
+		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND StartDatetime <= '{$this->billing_period_end_datetime}'";
+		$strSQL		.= (!$this->objInvoiceRun->bolInvoiceCDRCredits) ? " AND Credit = 0" : '';
+		$resResult	= $qryQuery->Execute($strSQL);
+		if ($resResult === FALSE)
+		{
+			throw new Exception("DB ERROR: ".$qryQuery->Error());
+		}
+		
+		// CDR Count
+		$intCDRCount									= DataAccess::getDataAccess()->refMysqliConnection->affected_rows;
+		$arrServiceTotal['bolDisconnectedAndNoCDRs']	= (!$intCDRCount && $arrServiceDetails['Status'] === SERVICE_DISCONNECTED);
 
 		//--------------------------- PLAN CHARGES ---------------------------//
 		// Retrieve Plan Details for the current Service
@@ -395,10 +419,10 @@ class Invoice extends ORM
 		}
 
 		// Determine & Add in Plan Charge & Usage Limit Details
-		if ($arrPlanDetails['Shared'])
+		$arrServiceTotal['Shared']	= (bool)$arrPlanDetails['Shared'];
+		if ($arrServiceTotal['Shared'] || $arrServiceTotal['bolDisconnectedAndNoCDRs'])
 		{
-			// This is a Shared Plan --  skip the Plan Charge and Usage Stage
-			$arrServiceTotal['Shared']	= TRUE;
+			// This is either a Shared Plan or is Disconnected and has no CDRs -- don't charge any Plan Charges
 			$fltMinimumCharge	= 0.0;
 			$fltUsageStart		= 0.0;
 			$fltUsageLimit		= 0.0;
@@ -409,22 +433,10 @@ class Invoice extends ORM
 			$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
 			$fltUsageStart		= $arrUsageDetails['ChargeCap'];
 			$fltUsageLimit		= $arrUsageDetails['UsageCap'];
-
-			$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
-			$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
 		}
 		//--------------------------------------------------------------------//
 
 		//--------------------------- SERVICE TOTALS -------------------------//
-		// Mark all CDRs for this Service as TEMPORARY_INVOICE
-		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND StartDatetime <= '{$this->billing_period_end_datetime}'";
-		$strSQL		.= (!$this->objInvoiceRun->bolInvoiceCDRCredits) ? " AND Credit = 0" : '';
-		$resResult	= $qryQuery->Execute($strSQL);
-		if ($resResult === FALSE)
-		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
-		}
-
 		// Generate ServiceTypeTotals
 		$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, RecordType, Charge, Units, Records, RateGroup, Cost, invoice_run_id)";
 		$strExtensionsQuery .= " SELECT CDR.FNN, CDR.AccountGroup, CDR.Account, {$intServiceId} AS Service,";
@@ -491,6 +503,9 @@ class Invoice extends ORM
 		$fltTotalCharge	= 0.0;
 		if (!$arrPlanDetails['Shared'])
 		{
+			$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
+			$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
+			
 			// Determine and add in Plan Credit
 			if ($fltUsageLimit >= $fltMinimumCharge && $fltUsageLimit > 0)
 			{
