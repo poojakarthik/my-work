@@ -169,7 +169,7 @@
 	$ddrDirectDebits	= $Style->attachObject ($acgAccountGroup->getDirectDebits ());
 	$crcCreditCards		= $Style->attachObject ($acgAccountGroup->getCreditCards ());
 	
-	Debug(PERMISSION_CREDIT_MANAGEMENT.' vs '.$athAuthentication->AuthenticatedEmployee()->Pull('Privileges')->Value());
+	Debug(PERMISSION_CREDIT_MANAGEMENT.' vs '.$athAuthentication->AuthenticatedEmployee()->Pull('Privileges')->getValue());
 	exit;
 	$Style->attachObject(new dataBoolean('CanSeeCVV', (PERMISSION_CREDIT_MANAGEMENT & $athAuthentication->AuthenticatedEmployee()->Privileges())));
 	
