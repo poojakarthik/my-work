@@ -87,7 +87,7 @@ class Delivery_Method extends ORM
 			}
 			while ($arrEnum = $selAll->Fetch())
 			{
-				self::$_arrStaticCache[$arrEnum['id']]	= $arrEnum;
+				self::$_arrStaticCache[$arrEnum['id']]	= new self($arrEnum);
 			}
 		}
 		
