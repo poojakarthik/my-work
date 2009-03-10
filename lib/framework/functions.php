@@ -1861,10 +1861,10 @@ function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE, $loadDbConst
 
 	// Retrieve all constants stored in the database
 	// Note that this will not override constants that have already been defined
-	if ($loadDbConstants)
+	/*if ($loadDbConstants)
 	{
 		BuildConstantsFromDB();
-	}
+	}*/
 
 	// Load viXen/Flex customer config file
 	$strPath = dirname(dirname(dirname(__FILE__))) . "/customer.cfg.php";
@@ -4502,7 +4502,10 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 */
 	function SaveConstantGroup($arrConstGroup, $strName, $intDataType, $strDescription=NULL)
 	{
-		static $insConstGroup;
+		// THIS IS DEPRECATED
+		return false;
+		
+		/*static $insConstGroup;
 
 		// If the StatementInsert objects have not yet been created, create them now
 		if (!isset($insConstGroup))
@@ -4535,7 +4538,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		}
 
 		TransactionCommit();
-		return $mixConstGroupId;
+		return $mixConstGroupId;*/
 	}
 
 	//------------------------------------------------------------------------//
@@ -4565,7 +4568,10 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 */
 	function SaveConstant($strName, $mixValue, $intDataType=NULL, $strDescription=NULL, $intConstantGroupId=NULL)
 	{
-		static $insConst;
+		// THIS IS DEPRECATED
+		return false;
+		
+		/*static $insConst;
 
 		if (!isset($insConst))
 		{
@@ -4593,7 +4599,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			"Type" => $intDataType);
 
 		$mixResult = $insConst->Execute($arrConst);
-		return $mixResult;
+		return $mixResult;*/
 	}
 
 	//------------------------------------------------------------------------//
@@ -4624,7 +4630,10 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 */
 	function BuildConstantsFromDB($bolExceptionOnError=FALSE, $bolExceptionOnRedefinition=FALSE)
 	{
-		$strTables	= "ConfigConstant AS CC INNER JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
+		// THIS IS DEPRECATED
+		return false;
+		
+		/*$strTables	= "ConfigConstant AS CC INNER JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
 		$arrColumns	= Array("Id"				=> "CC.Id", 
 			"Name"				=> "CC.Name", 
 			"Value"				=> "CC.Value", 
@@ -4730,7 +4739,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			echo "define('{$arrConstant['Name']}', $mixValue)<br />";
 		}
 	 */
-		}
+		//}
 	}
 
 
