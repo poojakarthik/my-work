@@ -51,12 +51,12 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 		// 3:	Add the customer_group_delivery_method Table
 		$strSQL =	"CREATE TABLE customer_group_delivery_method " .
 					"(" .
-					"	id						BIGINT(20)		UNSIGNED	NOT NULL						COMMENT 'Unique Identifier', " .
-					"	customer_group_id		BIGINT(20)					NOT NULL						COMMENT '(FK) Customer Group', " .
-					"	delivery_method_id		BIGINT(20)		UNSIGNED	NOT NULL						COMMENT '(FK) Delivery Method', " .
-					"	minimum_invoice_value	DECIMAL(13, 4)				NOT NULL						COMMENT 'Minimum Invoice value for this Delivery Method to apply', " .
-					"	employee_id				BIGINT(20)		UNSIGNED	NOT NULL						COMMENT '(FK) Employee who defined this setting', " .
-					"	created_on				TIMESTAMP					NOT NULL	CURRENT_TIMESTAMP	COMMENT 'Creation Timestamp', " .
+					"	id						BIGINT(20)		UNSIGNED	NOT NULL							COMMENT 'Unique Identifier', " .
+					"	customer_group_id		BIGINT(20)					NOT NULL							COMMENT '(FK) Customer Group', " .
+					"	delivery_method_id		BIGINT(20)		UNSIGNED	NOT NULL							COMMENT '(FK) Delivery Method', " .
+					"	minimum_invoice_value	DECIMAL(13, 4)				NOT NULL							COMMENT 'Minimum Invoice value for this Delivery Method to apply', " .
+					"	employee_id				BIGINT(20)		UNSIGNED	NOT NULL							COMMENT '(FK) Employee who defined this setting', " .
+					"	created_on				TIMESTAMP					NOT NULL DEFAULT CURRENT_TIMESTAMP	COMMENT 'Creation Timestamp', " .
 					"	" .
 					"	CONSTRAINT	pk_customer_group_delivery_method_id					PRIMARY KEY (id), " .
 					"	CONSTRAINT	fk_customer_group_delivery_method_customer_group_id		FOREIGN KEY (customer_group_id)		REFERENCES CustomerGroup(Id)	ON UPDATE CASCADE ON DELETE CASCADE, " .
