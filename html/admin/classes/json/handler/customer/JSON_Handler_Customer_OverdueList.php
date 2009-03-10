@@ -41,10 +41,10 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 									)";
 		*/
 		$strWhere = "Account.Archived IN ($strApplicableAccountStatuses) AND Invoice.Status IN ($strApplicableInvoiceStatuses)";
-		$pt = GetPaymentTerms(NULL);
+		//$pt = GetPaymentTerms(NULL);
 	
 		$strOrderBy	= "Account.Archived ASC, Invoice.Account ASC";
-		$strGroupBy	= "Invoice.Account HAVING Overdue >= ". $pt['minimum_balance_to_pursue'];
+		$strGroupBy	= "Invoice.Account HAVING Overdue >= (SELECT minimum_balance_to_pursue FROM payment_terms WHERE customer_group_id = Account.CustomerGroup ORDER BY id DESC LIMIT 1)";/*. $pt['minimum_balance_to_pursue'];*/
 	
 		
 		// DEBUG: Output the query that gets run
