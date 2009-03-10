@@ -21,14 +21,14 @@ class Flex_Rollout_Version_000152 extends Flex_Rollout_Version
 		// 1:	Add the delivery_method Table
 		$strSQL =	"CREATE TABLE delivery_method " .
 					"(" .
-					"	id				BIGINT(20)		UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier', " .
+					"	id				BIGINT(20)		UNSIGNED	NOT NULL					COMMENT 'Unique Identifier', " .
 					"	name			VARCHAR(255)				NOT NULL					COMMENT 'Name of the Delivery Method', " .
 					"	description		VARCHAR(1024)				NOT NULL					COMMENT 'Description of the Delivery Method', " .
 					"	const_name		VARCHAR(512)				NOT NULL					COMMENT 'Constant Name for this Delivery Method', " .
 					"	account_setting	TINYINT(1)					NOT NULL					COMMENT '1: Can be used as an Account setting; 0: System-only setting', " .
 					"	" .
 					"	CONSTRAINT	pk_delivery_method_id	PRIMARY KEY (id)" .
-					") ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
+					") ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=0;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
