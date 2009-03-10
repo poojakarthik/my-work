@@ -129,8 +129,10 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			// The CustomerGroup is valid.  Save it
 			if (!DBO()->CustomerGroup->Save())
 			{
+				$qryQuery	= new Query();
+				
 				// The CustomerGroup could not be saved for some unforseen reason
-				Ajax()->AddCommand("Alert", "ERROR: Saving the CustomerGroup failed, unexpectedly (".DataAccess::getDataAccess()->Error().")");
+				Ajax()->AddCommand("Alert", "ERROR: Saving the CustomerGroup failed, unexpectedly (".$qryQuery->Error().")");
 				return TRUE;
 			}
 			
