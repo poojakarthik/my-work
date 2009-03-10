@@ -130,7 +130,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			if (!DBO()->CustomerGroup->Save())
 			{
 				// The CustomerGroup could not be saved for some unforseen reason
-				Ajax()->AddCommand("Alert", "ERROR: Saving the CustomerGroup failed, unexpectedly (".DataAccess::getDataAccess()->refMysqliConnection->error.")");
+				Ajax()->AddCommand("Alert", "ERROR: Saving the CustomerGroup failed, unexpectedly (".(DataAccess::getDataAccess()->refMysqliConnection->error).")");
 				return TRUE;
 			}
 			
