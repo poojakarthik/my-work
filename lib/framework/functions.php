@@ -3891,14 +3891,6 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 	$arrApplicableAccountStatuses = implode(", ", $arrApplicableAccountStatuses);
 	$strApplicableInvoiceStatuses = implode(", ", $arrApplicableInvoiceStatuses);
 
-	// TODO Remove this evil hack any time AFTER December 2008
-	// This is to prevent DD customers being sent notices as, in Dec 2008, late notices will be sent out BEFORE direct debits have been processed (most irregular!)
-	$strIgnoreDDAccounts = '';
-	if (date('Y-m') == '2008-12')
-	{
-		$strIgnoreDDAccounts = ' AND Account.BillingType = ' . BILLING_TYPE_ACCOUNT . ' ';
-	}
-
 	// Find all Accounts that fit the requirements for Late Notice generation
 	$arrColumns = Array(	'invoice_run_id'			=> "MAX(CASE WHEN $strEffectiveDate <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
 		'AccountId'					=> "Invoice.Account",

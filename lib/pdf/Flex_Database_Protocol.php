@@ -811,8 +811,6 @@ class Flex_Database_Protocol
 		$this->fileType
 		*/
 
-
-		// TODO
 		return FALSE;
 
 
