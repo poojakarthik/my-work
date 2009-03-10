@@ -13,6 +13,8 @@ class Delivery_Method extends ORM
 	
 	protected static	$_arrStaticCache			= array();
 	
+	protected			$_arrCustomerGroupSettings;
+	
 	/**
 	 * __construct()
 	 *
@@ -109,15 +111,27 @@ class Delivery_Method extends ORM
 	 */
 	public function getCustomerGroupSettings($intCustomerGroupId, $bolAsArray=false, $bolForceRecache=false)
 	{
-		// Retrieve the Data
-		$selCustomerGroupDeliveryMethod	= self::_preparedStatement('selCustomerGroupDeliveryMethod');
-		if ($selAll->Execute(array('id'=>$this->id, 'customer_group_id'=>$intCustomerGroupId)) === false)
+		// Cache if necessary
+		if (!$this->_arrCustomerGroupSettings || $bolForceRecache)
 		{
-			throw new Exception($selAll->Error());
+			$this->_arrCustomerGroupSettings	= array();
+			
+			// Cache the Enumeration
+			$selCustomerGroupDeliveryMethod	= self::_preparedStatement('selCustomerGroupDeliveryMethod');
+			if ($selCustomerGroupDeliveryMethod->Execute() === false)
+			{
+				throw new Exception($selCustomerGroupDeliveryMethod->Error());
+			}
+			while ($arrCustomerGroupDeliveryMethod = $selCustomerGroupDeliveryMethod->Fetch())
+			{
+				$this->_arrCustomerGroupSettings[$arrCustomerGroupDeliveryMethod['customer_group_id']]	= new Delivery_Method_Customer_Group($arrCustomerGroupDeliveryMethod);
+			}
 		}
-		if ($arrCustomerGroupDeliveryMethod = $selCustomerGroupDeliveryMethod->Fetch())
+		
+		// Retrieve the Data
+		if (array_key_exists($intCustomerGroupId, $this->_arrCustomerGroupSettings))
 		{
-			return ($bolAsArray) ? $arrCustomerGroupDeliveryMethod : new Delivery_Method_Customer_Group($arrCustomerGroupDeliveryMethod);
+			return ($bolAsArray) ? $this->_arrCustomerGroupSettings[$intCustomerGroupId]->toArray() : $this->_arrCustomerGroupSettings[$intCustomerGroupId];
 		}
 		else
 		{
@@ -155,7 +169,7 @@ class Delivery_Method extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
 					break;
 				case 'selCustomerGroupDeliveryMethod':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("customer_group_delivery_method", "*", "customer_group_id = <customer_group_id> AND delivery_method_id = <id>", "id DESC", 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("customer_group_delivery_method", "*", "delivery_method_id = <id> AND id = (SELECT id FROM customer_group_delivery_method cgdm2 WHERE delivery_method_id = <id> AND customer_group_id = customer_group_delivery_method.customer_group_id ORDER BY id DESC LIMIT 1)");
 					break;
 				
 				// INSERTS
