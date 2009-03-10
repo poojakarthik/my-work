@@ -228,7 +228,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			}
 			
 			DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("BillingType"), RENDER_OUTPUT);
-			DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("BillingMethod"), RENDER_OUTPUT);
+			DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("delivery_method"), RENDER_OUTPUT);
 		}
 		
 ?>
