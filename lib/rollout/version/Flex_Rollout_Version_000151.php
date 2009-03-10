@@ -20,7 +20,8 @@ class Flex_Rollout_Version_000151 extends Flex_Rollout_Version
 		// 1:	Add the RatePlan.locked and cdr_required Fields
 		$strSQL =	"ALTER TABLE CustomerGroup " .
 					"CHANGE ExternalName	external_name	VARCHAR(255)	NOT NULL	COMMENT 'Name of the Customer Group as the customers know it to be', " .
-                    "CHANGE InternalName	internal_name	VARCHAR(255)	NOT NULL	COMMENT 'Name of the Customer Group, as used within the Telco';";
+                    "CHANGE InternalName	internal_name	VARCHAR(255)	NOT NULL	COMMENT 'Name of the Customer Group, as used within the Telco', ".
+					"CHANGE OutboundEmail	outbound_email	VARCHAR(255)	NOT NULL	COMMENT 'Email Address for outgoing email correspondance from this CustomerGroup';";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -28,7 +29,8 @@ class Flex_Rollout_Version_000151 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] =	"ALTER TABLE CustomerGroup " .
 					"CHANGE external_name	ExternalName	VARCHAR(255)	NOT NULL	COMMENT 'Name of the Customer Group as the customers know it to be', " .
-                    "CHANGE internal_name	InternalName	VARCHAR(255)	NOT NULL	COMMENT 'Name of the Customer Group, as used within the Telco';";
+                    "CHANGE internal_name	InternalName	VARCHAR(255)	NOT NULL	COMMENT 'Name of the Customer Group, as used within the Telco', ".
+					"CHANGE outbound_email	OutboundEmail	VARCHAR(255)	NOT NULL	COMMENT 'Email Address for outgoing email correspondance from this CustomerGroup';";
 	}
 
 	function rollback()
