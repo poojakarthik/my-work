@@ -134,6 +134,20 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				return TRUE;
 			}
 			
+			// Create default customer_group_delivery_method entries
+			$arrDeliveryMethods	= Delivery_Method::getAll();
+			foreach ($arrDeliveryMethods as $objDeliveryMethod)
+			{
+				$objCustomerGroupDeliveryMethod	= new Customer_Group_Delivery_Method();
+				
+				$objCustomerGroupDeliveryMethod->customer_group_id		= DBO()->CustomerGroup->Id->Value;
+				$objCustomerGroupDeliveryMethod->delivery_method_id		= $objDeliveryMethod->id;
+				$objCustomerGroupDeliveryMethod->minimum_invoice_value	= Customer_Group_Delivery_Method::DEFAULT_MINIMUM_INVOICE_VALUE;
+				$objCustomerGroupDeliveryMethod->employee_id			= Flex::getUserId();
+				
+				$objCustomerGroupDeliveryMethod->save();
+			}
+			
 			// The CustomerGroup has now been saved
 			Ajax()->AddCommand("AlertAndRelocate", Array("Alert"=>"The new Customer Group has been successfully created", "Location"=>Href()->ViewAllCustomerGroups()));
 			return TRUE;
