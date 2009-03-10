@@ -4,7 +4,7 @@
  * Version 153 of database update.
  * This version: -
  *
- *	1:	Drop the Master table
+ *	1:	Drop the MasterState table
  *	2:	Drop the MasterInstructions table
  *	3:	Drop the InvoiceOutput table
  *	4:	Drop the InvoiceOutputArchive table
@@ -20,8 +20,8 @@ class Flex_Rollout_Version_000153 extends Flex_Rollout_Version
 	{
 		$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 
-		// 1:	Drop the Master table
-		$strSQL =	"DROP TABLE IF EXISTS Master;";
+		// 1:	Drop the MasterState table
+		$strSQL =	"DROP TABLE IF EXISTS MasterState;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
