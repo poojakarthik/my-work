@@ -236,7 +236,9 @@ class DataAccessUI extends DatabaseAccess
 		}
 		$insInsert	= new StatementInsert($strTable, $arrColumns);
 		$mixResult	= $insInsert->Execute($arrData);
+		return $mixResult;
 		
+		/*
 		if ($mixResult === false)
 		{
 			throw new Exception($insInsert->Error());
@@ -248,7 +250,7 @@ class DataAccessUI extends DatabaseAccess
 		else
 		{
 			throw new Exception("Non-standard error: '".print_r($mixResult, true)."'");
-		}
+		}*/
 	}
 }
 

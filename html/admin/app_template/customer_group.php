@@ -114,6 +114,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 				return TRUE;
 			}
 			
+			// Default Values
 			DBO()->CustomerGroup->invoice_cdr_credits	= 0;
 			
 			// Check that the CustomerGroup's internal_name is not being used by another CustomerGroup
@@ -132,7 +133,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			if (!DBO()->CustomerGroup->Save())
 			{
 				// The CustomerGroup could not be saved for some unforseen reason
-				Ajax()->AddCommand("Alert", "ERROR: Saving the CustomerGroup failed, unexpectedly (".(DataAccess::getDataAccess()->refMysqliConnection->error).")");
+				Ajax()->AddCommand("Alert", "ERROR: Saving the CustomerGroup failed, unexpectedly");
 				return TRUE;
 			}
 			
