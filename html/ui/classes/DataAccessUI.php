@@ -234,8 +234,21 @@ class DataAccessUI extends DatabaseAccess
 		{
 			$arrColumns = NULL;
 		}
-		$insInsert = new StatementInsert($strTable, $arrColumns);
-		return $insInsert->Execute($arrData);
+		$insInsert	= new StatementInsert($strTable, $arrColumns);
+		$mixResult	= $insInsert->Execute($arrData);
+		
+		if ($mixResult === false)
+		{
+			throw new Exception($insInsert->Error());
+		}
+		elseif ($mixResult > 0)
+		{
+			return $mixResult;
+		}
+		else
+		{
+			throw new Exception("Non-standard error: '".print_r($mixResult, true)."'");
+		}
 	}
 }
 
