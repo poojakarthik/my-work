@@ -245,6 +245,9 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 					$dboRatePlan->contract_payout->RenderArbitrary("[Not Specified]", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 				}
 			}
+		
+			// COMMISSIONABLE VALUE
+			$dboRatePlan->commissionable_value->RenderArbitrary(number_format($dboRatePlan->commissionable_value->Value, 2, '.', '').'%', RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 			
 			if ($dboRatePlan->scalable->Value == TRUE)
 			{

@@ -289,6 +289,14 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 </div>
 ";
 		
+		$strCommissionClass		= (DBO()->RatePlan->commissionable_value->IsInvalid())? "DefaultInvalidInputText" : "DefaultInputText";
+		echo "
+<div class='DefaultElement'>
+	<input type='text' id='RatePlan.commissionable_value' name='RatePlan.commissionable_value' class='{$strCommissionClass}' value='".DBO()->RatePlan->commissionable_value->Value."'/>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Commissionable Value (\$) :</div>
+</div>
+";
+		
 		// Build the list of carriers
 		$arrCarriers = Array();
 		DBL()->Carrier->SetColumns("Id, Name, carrier_type");

@@ -625,6 +625,16 @@ class AppTemplatePlan extends ApplicationTemplate
 		DBO()->RatePlan->included_data	= max(0, (int)DBO()->RatePlan->included_data->Value);
 		DBO()->RatePlan->included_data	= (DBO()->RatePlan->included_data->Value > 0) ? DBO()->RatePlan->included_data->Value * 1024 : 0;
 		
+		// Commissionable Value
+		$fltCommissionableValue	= (float)DBO()->RatePlan->commissionable_value->Value;
+		if ($fltCommissionableValue < 0)
+		{
+			DBO()->RatePlan->commissionable_value->SetToInvalid();
+			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+			return "ERROR: The Commissionable Value must be greater than or equal to \$0.00";
+		}
+		DBO()->RatePlan->commissionable_value	= $fltCommissionableValue;
+		
 		// V2: ServiceType
 		if (!DBO()->RatePlan->ServiceType->Value)
 		{
@@ -796,6 +806,13 @@ class AppTemplatePlan extends ApplicationTemplate
 		{
 			// The plan is not being saved as a draft
 			DBO()->RatePlan->Archived = RATE_STATUS_ACTIVE;
+		}
+		
+		DBO()->RatePlan->modified_employee_id	= Flex::getUserId();
+		if (!DBO()->RatePlan->Id->Value)
+		{
+			// Plan has not been saved before
+			DBO()->RatePlan->created_employee_id	= Flex::getUserId();
 		}
 
 		// If the RatePlan has already been saved as a draft then load in the details that don't get edited here, so they don't get erased
