@@ -221,7 +221,7 @@
 			$strCustomerGroup	= $arrCustomerGroup['internal_name'];
 		
 			$strBillingType		= GetConstantDescription($arrAccount['BillingType'], "BillingType");
-			$strBillingMethod	= GetConstantDescription($arrAccount['BillingMethod'], "BillingMethod");			
+			$strBillingMethod	= GetConstantDescription($arrAccount['BillingMethod'], "delivery_method");			
 
 			$strNote  = "Account created with the following details:\n";
 			$strNote .= "Business Name: {$arrAccount['BusinessName']}\n";

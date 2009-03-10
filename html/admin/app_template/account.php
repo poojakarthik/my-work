@@ -959,7 +959,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		if (DBO()->Account->BillingMethod->Value != DBO()->CurrentAccount->BillingMethod->Value)
 		{
-			$strChangesNote .= "Billing Method was changed from ". GetConstantDescription(DBO()->CurrentAccount->BillingMethod->Value, 'BillingMethod') ." to " . GetConstantDescription(DBO()->Account->BillingMethod->Value, 'BillingMethod') . "\n";
+			$strChangesNote .= "Billing Method was changed from ". GetConstantDescription(DBO()->CurrentAccount->BillingMethod->Value, 'delivery_method') ." to " . GetConstantDescription(DBO()->Account->BillingMethod->Value, 'delivery_method') . "\n";
 		}
 		if (!$bolIsSuperAdminUser)
 		{
