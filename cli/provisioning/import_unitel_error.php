@@ -27,7 +27,7 @@ while (!feof($ptrFile))
 		$arrLine[$intIndex]	= trim(trim(trim($strValue), '"'));
 	}
 	
-	$arrCode['Context']		= PROVISIONING_CONTEXT_LOSS_UNITEL;
+	$arrCode['Context']		= PROVISIONING_CONTEXT_REJECT_UNITEL;
 	$arrCode['CarrierCode']	= str_pad($arrLine[0], 3, '0', STR_PAD_LEFT);
 	$arrCode['flex_code']	= $arrLine[1];
 	CliEcho("Code: {$arrCode['CarrierCode']};\tValue: {$arrCode['Description']}...\t\t\t", FALSE);

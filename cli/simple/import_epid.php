@@ -37,7 +37,7 @@ while (!feof($ptrFile))
 			die;
 		}
 		
-		$arrEPID	= Array('Context' => PROVISIONING_CONTEXT_EPID, 'CarrierCode' => (string)(int)$arrMatches[4][0]);
+		$arrEPID	= Array('Context' => CARRIER_TRANSLATION_CONTEXT_EPID, 'CarrierCode' => (string)(int)$arrMatches[4][0]);
 	}
 	else
 	{

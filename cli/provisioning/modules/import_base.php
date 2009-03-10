@@ -253,7 +253,7 @@
 	 *
 	 * Translates a Carrier Code using the ProvisioningTranslation table
 	 * 
-	 * @param	integer	$intContext		Context Group for the Constant (eg. PROVISIONING_CONTEXT_EPID)
+	 * @param	integer	$intContext		Context Group for the Constant (eg. CARRIER_TRANSLATION_CONTEXT_EPID)
 	 * @param	mixed	$mixValue		The Code to Translate
 	 * 
 	 * @return	mixed					string	: Description

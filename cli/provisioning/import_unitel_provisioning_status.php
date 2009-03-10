@@ -25,7 +25,7 @@ while ($arrLine = fgetcsv($resFile))
 	
 	// Parse Line
 	$arrTranslation					= Array();
-	$arrTranslation['Context']		= PROVISIONING_CONTEXT_UNITEL_PRESELECTION_STATUS;
+	$arrTranslation['Context']		= CARRIER_TRANSLATION_CONTEXT_UNITEL_PRESELECTION_STATUS;
 	$arrTranslation['flex_code']	= Array('provisioning_type' => (int)$arrLine[0], 'provisioning_request_status' => (int)$arrLine[1]);
 	$arrTranslation['CarrierCode']	= trim($arrLine[2]);
 	if ($insProvisioningTranslation->Execute($arrTranslation))

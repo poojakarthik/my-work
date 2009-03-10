@@ -215,7 +215,7 @@
 			switch ($arrData['LossCode'])
 			{
 				case '01':
-					$strLostTo						= $this->TranslateCarrierCode(PROVISIONING_CONTEXT_EPID, $arrPDR['LossPSD']);
+					$strLostTo						= $this->TranslateCarrierCode(CARRIER_TRANSLATION_CONTEXT_EPID, $arrPDR['LossPSD']);
 					$arrPDR['Description']			= "Churned to ".(($strLostTo) ? $strLostTo : 'Unknown Carrier');
 					$arrPDR['request_status']		= REQUEST_STATUS_COMPLETED;
 					break;
@@ -262,7 +262,7 @@
 					break;
 					
 				case 'UNSUCCESSFUL':
-					$strRejected					= $this->TranslateCarrierCode(PROVISIONING_CONTEXT_REJECT, $arrPDR['LossCode']);
+					$strRejected					= $this->TranslateCarrierCode(CARRIER_TRANSLATION_CONTEXT_REJECT, $arrPDR['LossCode']);
 					$arrPDR['Description']			= "Churn Rejected ($strRejected)";
 					$arrPDR['request_status']		= REQUEST_STATUS_REJECTED;
 					break;
