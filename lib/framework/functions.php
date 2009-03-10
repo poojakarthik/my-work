@@ -4739,27 +4739,6 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		}
 	 */
 		}
-
-		//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
-		// Load in the CustomerGroup constants from the CustomerGroup table.
-		// These constants are now only used by the backend.  The frontend always refers to the database
-		// when dealing with customer groups
-		// This block of code can be removed when the backend no longer relies on them
-		$selCustomerGroup = new StatementSelect("CustomerGroup", "Id, internal_name", "TRUE", "Id");
-		$selCustomerGroup->Execute();
-		$arrCustomerGroups = $selCustomerGroup->FetchAll();
-		foreach ($arrCustomerGroups as $arrCustomerGroup)
-		{
-			// Build the constant name
-			$strConstant		= "CUSTOMER_GROUP_" . strtoupper(str_replace(" ", "_", $arrCustomerGroup['internal_name']));
-			$strDescription		= $arrCustomerGroup['internal_name'];
-			$intCustomerGroup	= $arrCustomerGroup['Id'];
-
-			define($strConstant, $intCustomerGroup);
-			$GLOBALS['*arrConstant']['CustomerGroup'][$intCustomerGroup]['Constant']	= $strConstant;
-			$GLOBALS['*arrConstant']['CustomerGroup'][$intCustomerGroup]['Description']	= $strDescription;
-		}
-		//HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK!
 	}
 
 
