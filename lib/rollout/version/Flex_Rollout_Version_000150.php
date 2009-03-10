@@ -24,7 +24,7 @@ class Flex_Rollout_Version_000150 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the RatePlan.locked and cdr_required Fields. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
-		$this->rollbackSQL[] =	"ALTER TABLE " .
+		$this->rollbackSQL[] =	"ALTER TABLE RatePlan " .
 								"DROP locked, " .
 								"DROP cdr_required;";
 	}
