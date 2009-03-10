@@ -101,7 +101,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);		
 		
 		// Check if the form was submitted
 		if (SubmittedForm('NewCustomerGroup', 'Ok'))
@@ -130,7 +130,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			if (!DBO()->CustomerGroup->Save())
 			{
 				// The CustomerGroup could not be saved for some unforseen reason
-				Ajax()->AddCommand("Alert", "ERROR: Saving the CustomerGroup failed, unexpectedly");
+				Ajax()->AddCommand("Alert", "ERROR: Saving the CustomerGroup failed, unexpectedly (".DataAccess::getDataAccess()->Error().")");
 				return TRUE;
 			}
 			
