@@ -169,7 +169,7 @@
 	$ddrDirectDebits	= $Style->attachObject ($acgAccountGroup->getDirectDebits ());
 	$crcCreditCards		= $Style->attachObject ($acgAccountGroup->getCreditCards ());
 	
-	$Style->Push(new dataBoolean('CanSeeCVV', (PERMISSION_CREDIT_MANAGEMENT & $athAuthentication->AuthenticatedEmployee()->Privileges())));
+	$Style->attachObject(new dataBoolean('CanSeeCVV', (PERMISSION_CREDIT_MANAGEMENT & $athAuthentication->AuthenticatedEmployee()->Privileges())));
 	
 	// Pull documentation information for an Account
 	$docDocumentation->Explain ('Account');
