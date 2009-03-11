@@ -1352,15 +1352,17 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			$objEmailNotification	= new Email_Notification(EMAIL_NOTIFICATION_CREDIT_CONTROL_STATUS_CHANGE, DBO()->Account->CustomerGroup);
 			
+			$objCCStatuses	= Constant_Group::getConstantGroup('credit_control_status');
+			
 			$objNewEmployee			= Employee::getForId(Flex::getUserId());
 			$strNewEmployeeName		= $objNewEmployee->firstName . (($objNewEmployee->lastName) ? " {$objNewEmployee->lastname}" : '');
 			$strNewTimestamp		= date("H:i:s \o\n d/m/Y", strtotime(GetCurrentISODateTime()));
-			$strNewCCStatus			= GetConstantDescription(DBO()->Account->credit_control_status->Value, 'credit_control_status');
+			$strNewCCStatus			= $objCCStatuses->getConstantName(DBO()->Account->credit_control_status->Value);
 			
 			$objPreviousEmployee		= Employee::getForId(DBO()->credit_control_status_original->employee->Value);
 			$strPreviousEmployeeName	= $objPreviousEmployee->firstName . (($objPreviousEmployee->lastName) ? " {$objPreviousEmployee->lastname}" : '');
 			$strPreviousTimestamp		= DBO()->credit_control_status_original->change_datetime->Value;
-			$strPreviousCCStatus		= GetConstantDescription(DBO()->CurrentAccount->credit_control_status->Value, 'credit_control_status');
+			$strPreviousCCStatus		= $objCCStatuses->getConstantName(DBO()->CurrentAccount->credit_control_status->Value);
 			
 			$strMessage			= "{$strNewEmployeeName} changed the Credit Control Status for Account number ".DBO()->Account->Id->Value." from '{$strPreviousCCStatus}' to '{$strNewCCStatus}' at {$strNewTimestamp}.";
 			
