@@ -1381,7 +1381,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			$strTDStyle			= "text-align: left; color: #333; background-color: #eee;";
 			$strTDWidthStyle	= "min-width: 15em; max-width: 15em;";
 			$strHTMLContent	=	"<body>\n" .
-								"	<div style='font-family: calibri arial sans-serif;'>\n" .
+								"	<div style='font-family: Calibri, Arial, sans-serif;'>\n" .
 								"		{$strMessage}<br /><br />\n" .
 								"		<table style='width=99%; border: .1em solid #333; border-spacing: 0; border-collapse: collapse;' >\n" .
 								"			<tr>\n" .
@@ -1406,7 +1406,7 @@ class AppTemplateAccount extends ApplicationTemplate
 								"				<td style='{$strTDStyle}'>{$strNewCCStatus}</td>\n" .
 								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>set on {$strNewTimestamp} on {$strNewDatestamp} by {$strNewEmployeeName}</td>\n" .
 								"			</tr>\n" .
-								"		</table><br /><br />\n" .
+								"		</table><br />\n" .
 								"		Regards<br />\n" .
 								"		<strong>Flexor</strong>\n" .
 								"	</div>\n" .
