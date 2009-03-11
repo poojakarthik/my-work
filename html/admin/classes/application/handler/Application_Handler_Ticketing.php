@@ -832,36 +832,30 @@ class Application_Handler_Ticketing extends Application_Handler
 			$permittedActions[] = 'view';
 			$permittedActions[] = 'edit';
 
+			if ($ticket->isAssigned())
+			{
+				if (!$ticket->isAssignedTo($user))
+				{
+					$permittedActions[] = 'take';
+				}
+				
+				$permittedActions[] = 'reassign';
+			}
+			else
+			{
+				$permittedActions[] = 'take';
+				$permittedActions[] = 'assign';
+			}
+
 			if ($user->isAdminUser())
 			{
 				// Admin user
-				// Admins can take/assign any ticket
-				
-				if ($ticket->isAssigned())
-				{
-					if (!$ticket->isAssignedTo($user))
-					{
-						$permittedActions[] = 'take';
-					}
-					
-					$permittedActions[] = 'reassign';
-				}
-				else
-				{
-					$permittedActions[] = 'take';
-					$permittedActions[] = 'assign';
-				}
 				$permittedActions[] = 'delete';
 			}
 			else
 			{
 				// Normal User
-				// Normals can only take/assign a ticket that is unassigned
-				if (!$ticket->isAssigned())
-				{
-					$permittedActions[] = 'take';
-					$permittedActions[] = 'assign';
-				}
+				// Nothing to add here
 			}
 		}
 

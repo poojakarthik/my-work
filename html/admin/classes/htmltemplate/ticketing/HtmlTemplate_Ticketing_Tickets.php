@@ -439,35 +439,29 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 			$permittedActions['View'] = TRUE;
 			$permittedActions['Edit'] = TRUE;
 
+			if ($ticket->isAssigned())
+			{
+				if (!$ticket->isAssignedTo($user))
+				{
+					$permittedActions['Take'] = TRUE;
+				}
+				$permittedActions['Reassign'] = TRUE;
+			}
+			else
+			{
+				$permittedActions['Take'] = TRUE;
+				$permittedActions['Assign'] = TRUE;
+			}
+
 			if ($user->isAdminUser())
 			{
 				// Admin users
-				// Admins can take/assign any ticket
-				
-				if ($ticket->isAssigned())
-				{
-					if (!$ticket->isAssignedTo($user))
-					{
-						$permittedActions['Take'] = TRUE;
-					}
-					$permittedActions['Reassign'] = TRUE;
-				}
-				else
-				{
-					$permittedActions['Take'] = TRUE;
-					$permittedActions['Assign'] = TRUE;
-				}
 				$permittedActions['Delete'] = TRUE;
 			}
 			else
 			{
 				// Normal Users
-				// Normals can only take/assign a ticket that is unassigned
-				if (!$ticket->isAssigned())
-				{
-					$permittedActions['Take'] = TRUE;
-					$permittedActions['Assign'] = TRUE;
-				}
+				// Nother to add
 			}
 		}
 
