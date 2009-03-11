@@ -1357,7 +1357,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			$objCCStatuses	= Constant_Group::getConstantGroup('credit_control_status');
 			
 			$objNewEmployee			= Employee::getForId(Flex::getUserId());
-			$strNewEmployeeName		= $objNewEmployee->firstName . (($objNewEmployee->lastName) ? " {$objNewEmployee->lastname}" : '');
+			$strNewEmployeeName		= $objNewEmployee->firstName . (($objNewEmployee->lastName) ? " {$objNewEmployee->lastName}" : '');
 			$strNewTimestamp		= date("H:i:s", strtotime(GetCurrentISODateTime()));
 			$strNewDatestamp		= date("d/m/Y", strtotime(GetCurrentISODateTime()));
 			$strNewCCStatus			= $objCCStatuses->getConstantName(DBO()->Account->credit_control_status->Value);
@@ -1370,7 +1370,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			$arrPreviousCCHistory	= $resPreviousCCHistory->fetch_assoc();
 			
 			$objPreviousEmployee		= Employee::getForId($arrPreviousCCHistory['employee']);
-			$strPreviousEmployeeName	= $objPreviousEmployee->firstName . (($objPreviousEmployee->lastName) ? " {$objPreviousEmployee->lastname}" : '');
+			$strPreviousEmployeeName	= $objPreviousEmployee->firstName . (($objPreviousEmployee->lastName) ? " {$objPreviousEmployee->lastName}" : '');
 			$strPreviousTimestamp		= date("H:i:s", strtotime($arrPreviousCCHistory['change_datetime']));
 			$strPreviousDatestamp		= date("d/m/Y", strtotime($arrPreviousCCHistory['change_datetime']));
 			$strPreviousCCStatus		= $objCCStatuses->getConstantName(DBO()->CurrentAccount->credit_control_status->Value);
