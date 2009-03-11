@@ -457,8 +457,8 @@ class Flex_Rollout_Incremental
 					
 					// Add the constant to the ConstantGroup
 					$arrConstantGroup[$arrRecord['id']] = array(	'Constant'		=> $arrRecord['const_name'],
-																	'Description'	=> $arrRecord['description'],
-																	'Name'			=> $arrRecord['name']
+																	'Description'	=> addslashes($arrRecord['description']),
+																	'Name'			=> addslashes($arrRecord['name'])
 																);
 					
 					// Add the constant name to the list of constant names already used by this ConstantGroup
