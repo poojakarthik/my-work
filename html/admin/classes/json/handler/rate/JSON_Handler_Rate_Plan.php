@@ -53,13 +53,13 @@ class JSON_Handler_Rate_Plan extends JSON_Handler
 			if (($objOldPlan !== NULL) && $objOldPlan->locked && !AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT))
 			{
 				// Not permitted -- use the Rejection Script
-				$strHTML		= $objNewPlan->parseRejectionScript($objAccount, $objContact, $objServiceRatePlan);
+				$strHTML		= $objNewPlan->parseRejectionScript($objAccount, $objContact, $objService, $objServiceRatePlan);
 				$bolPermitted	= false;
 			}
 			else
 			{
 				// Permitted -- use the Authorisation Script
-				$strHTML		= $objNewPlan->parseAuthenticationScript($objAccount, $objContact, $objServiceRatePlan);
+				$strHTML		= $objNewPlan->parseAuthenticationScript($objAccount, $objContact, $objService, $objServiceRatePlan);
 				$bolPermitted	= true;
 			}
 			

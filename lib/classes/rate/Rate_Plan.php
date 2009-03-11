@@ -385,15 +385,18 @@ class Rate_Plan extends ORM
 	/**
 	 * parseAuthenticationScript()
 	 *
-	 * Retrieves a Document based on a passed pseudo-path
+	 * Returns a rendered Authentication Script for changing a plan for a service
 	 * 
-	 * @param	[Document	$objDocument	]				Document to merge with (will pull from DB if none is passed)
+	 * @param	Account				$objAccount				Account that the service belongs to
+	 * @param	Contact				$objContact				Contact authorising the plan change
+	 * @param	Service				$objService				Service having the plan change made to it
+	 * @param	Service_Rate_Plan	$objRatePlanPrevious	(Optional, defaults to NULL) Current RatePlan associated with the service, if there is one
 	 * 
-	 * @return	string										Merged template
+	 * @return	string								Rendered Authentication script
 	 *
 	 * @method
 	 */
-	public function parseAuthenticationScript(Account $objAccount, Contact $objContact, Service_Rate_Plan $objRatePlanPrevious)
+	public function parseAuthenticationScript(Account $objAccount, Contact $objContact, Service $objService, Service_Rate_Plan $objRatePlanPrevious=NULL)
 	{
 		$strOriginalTimezone	= date_default_timezone_get();
 		date_default_timezone_set("Australia/Brisbane");
@@ -417,11 +420,10 @@ class Rate_Plan extends ORM
 			$strBlurb			= trim($objBlurbContent->content);
 		}
 		
-		$objOldRatePlan		= new Rate_Plan(array('Id'=>$objRatePlanPrevious->RatePlan), true);
+		$objOldRatePlan		= ($objRatePlanPrevious !== NULL)? new Rate_Plan(array('Id'=>$objRatePlanPrevious->RatePlan), true) : NULL;
 		
 		$objEmployee		= Employee::getForId(Flex::getUserId());
 		$objCustomerGroup	= Customer_Group::getForId($this->customer_group);
-		$objService			= new Service(array('Id' => $objRatePlanPrevious->Service), true);
 		$objServiceAddress	= $objService->getServiceAddress();
 		
 		$intTime			= strtotime($strDate);
@@ -453,14 +455,18 @@ class Rate_Plan extends ORM
 		$objVariables->account->contact->email->setValue((trim($objContact->email)) ? $objContact->email : '[ No Email Specified ]');
 		
 		// Previous Plan
-		$bolIsContracted	= $objRatePlanPrevious->contract_scheduled_end_datetime !== null && $objRatePlanPrevious->contract_effective_end_datetime === null;
-		$objVariables->plan->previous->name->setValue($objOldRatePlan->Name);
-		$objVariables->plan->previous->is_contracted->setValue($bolIsContracted);
-		if ($bolIsContracted)
+		if ($objOldRatePlan)
 		{
-			$intMonthsRemaining	= Flex_Date::difference(date("Y-m-d", $intTime), $objRatePlanPrevious->contract_scheduled_end_datetime, 'm', 'ceil') + 1;
-			$objVariables->plan->previous->contract->months_remaining->setValue($intMonthsRemaining . " month" . (($intMonthsRemaining == 1) ? '' : 's'));
-			$objVariables->plan->previous->contract->start_date->setValue(date($strDateFormat, strtotime($objRatePlanPrevious->StartDatetime)));
+			// The Service has a current plan
+			$bolIsContracted	= $objRatePlanPrevious->contract_scheduled_end_datetime !== null && $objRatePlanPrevious->contract_effective_end_datetime === null;
+			$objVariables->plan->previous->name->setValue($objOldRatePlan->Name);
+			$objVariables->plan->previous->is_contracted->setValue($bolIsContracted);
+			if ($bolIsContracted)
+			{
+				$intMonthsRemaining	= Flex_Date::difference(date("Y-m-d", $intTime), $objRatePlanPrevious->contract_scheduled_end_datetime, 'm', 'ceil') + 1;
+				$objVariables->plan->previous->contract->months_remaining->setValue($intMonthsRemaining . " month" . (($intMonthsRemaining == 1) ? '' : 's'));
+				$objVariables->plan->previous->contract->start_date->setValue(date($strDateFormat, strtotime($objRatePlanPrevious->StartDatetime)));
+			}
 		}
 		
 		// New Plan
@@ -506,7 +512,7 @@ class Rate_Plan extends ORM
 	 *
 	 * @method
 	 */
-	public function parseRejectionScript(Account $objAccount, Contact $objContact, Service_Rate_Plan $objRatePlanPrevious)
+	public function parseRejectionScript(Account $objAccount, Contact $objContact, Service $objService, Service_Rate_Plan $objRatePlanPrevious=NULL)
 	{
 		$strOriginalTimezone	= date_default_timezone_get();
 		date_default_timezone_set("Australia/Brisbane");
