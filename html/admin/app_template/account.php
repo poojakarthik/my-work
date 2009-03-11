@@ -1380,7 +1380,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			$strTHStyle			= "text-align: right; color: #eee; background-color: #333; width: 15em;";
 			$strTDStyle			= "text-align: left; color: #333; background-color: #eee;";
 			$strTDAutoStyle		= "";
-			$strTDWidthStyle	= "min-width: 20em; max-width: 20em;";
+			$strTDWidthStyle	= "min-width: 15em; max-width: 15em;";
 			$strHTMLContent	=	"<body>\n" .
 								"	<div style='font-family: Calibri, Arial, sans-serif;'>\n" .
 								"		{$strMessage}<br /><br />\n" .
