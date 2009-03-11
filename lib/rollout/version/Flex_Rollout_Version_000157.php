@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Version 156 of database update.
+ * Version 157 of database update.
  * This version: -
  *
  *	1:	Add the Credit Control Status Change Email Notification
  */
 
-class Flex_Rollout_Version_000156 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000157 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 
