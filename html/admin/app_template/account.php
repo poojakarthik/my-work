@@ -1350,7 +1350,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Email the Credit Control Manager about any Credit Control Status Changes
 		if (DBO()->Account->credit_control_status->Value != DBO()->CurrentAccount->credit_control_status->Value)
 		{
-			$objEmailNotification	= new Email_Nofication(EMAIL_NOTIFICATION_CREDIT_CONTROL_STATUS_CHANGE, DBO()->Account->CustomerGroup);
+			$objEmailNotification	= new Email_Notification(EMAIL_NOTIFICATION_CREDIT_CONTROL_STATUS_CHANGE, DBO()->Account->CustomerGroup);
 			
 			$objNewEmployee			= Employee::getForId(Flex::getUserId());
 			$strNewEmployeeName		= $objNewEmployee->firstName . (($objNewEmployee->lastName) ? " {$objNewEmployee->lastname}" : '');
