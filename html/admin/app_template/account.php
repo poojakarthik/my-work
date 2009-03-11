@@ -1383,7 +1383,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			$strHTMLContent	=	"<body>\n" .
 								"	<div style='font-family: Calibri, Arial, sans-serif;'>\n" .
 								"		{$strMessage}<br /><br />\n" .
-								"		<table style='width=99%; border: .1em solid #333; border-spacing: 0; border-collapse: collapse;' >\n" .
+								"		<table style='font-family: Calibri, Arial, sans-serif; width:99%; border: .1em solid #333; border-spacing: 0; border-collapse: collapse;' >\n" .
 								"			<tr>\n" .
 								"				<th style='{$strTHStyle}'>Account Number : </th>\n" .
 								"				<td colspan='2' style='{$strTDStyle}'>".DBO()->Account->Id->Value."</td>\n" .
