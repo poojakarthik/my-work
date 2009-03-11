@@ -791,8 +791,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							$deliveryStatusName	= $correspondence->getDeliveryStatus()->name;
 							$link				= Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/View/?{$strCurrentAccountGetVar}";
 							
-							$strDeliveryTimestamp	= ($correspondence->deliveryDatetime === NULL)? "" : date("g:i:s a d-m-Y", strtotime($correspondence->deliveryDatetime));
-							$strCreationTimestamp	= ($correspondence->creationDatetime === NULL)? "" : date("g:i:s a d-m-Y", strtotime($correspondence->creationDatetime));
+							$strDeliveryTimestamp	= ($correspondence->deliveryDatetime === NULL)? "" : date("H:i:s d-m-Y", strtotime($correspondence->deliveryDatetime));
+							$strCreationTimestamp	= ($correspondence->creationDatetime === NULL)? "" : date("H:i:s d-m-Y", strtotime($correspondence->creationDatetime));
 							
 							$strExpandButton = "<input type='button' onclick='toggleShowCorrespondenceDetails({$correspondence->id}, this)' class='$strExpandButtonClass' style='float:right'></input>";
 							
@@ -804,7 +804,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							}
 							$strActions = implode(" | ", $arrActions);
 							
-							$strDetails = "<em>Content:</em><br />". nl2br(htmlspecialchars(trim($correspondence->details)));
+							$strDetails = "<em>Content:</em><div class='details'>". nl2br(htmlspecialchars(trim($correspondence->details))) ."</div>";
 							
 							// Grab the Attachments (minus the actual file so as not to unneccessarily slow things down)
 							$arrAttachments = Ticketing_Attachment::listForCorrespondence($correspondence);
@@ -841,7 +841,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							
 							if (count($arrAttachmentRows))
 							{
-								$strAttachments = "<br /><em>Attachments:</em><br />". implode('<br />', $arrAttachmentRows);
+								$strAttachments = "<em>Attachments:</em><div class='attachments'>". implode('<br />', $arrAttachmentRows) ."</div>";
 							}
 							else
 							{

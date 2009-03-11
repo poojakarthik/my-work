@@ -269,6 +269,12 @@ td.ticket-correspondence-content
 	border-bottom: solid 1px #000;
 }
 
+td.ticket-correspondence-content .details,
+td.ticket-correspondence-content .attachments
+{
+	padding-left: 3em;
+}
+
 .blocked-downloadable-attachment .active,
 .downloadable-attachment .inactive
 {
