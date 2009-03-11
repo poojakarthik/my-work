@@ -261,31 +261,35 @@
 							</strong>
 						</td>
 						<td>
-							<strong>
-								<span>
-									<xsl:choose>
-										<xsl:when test="./CVV != ''">
-											<xsl:choose>
-												<xsl:when test="/Response/CanSeeCVV = 1">
-													<xsl:value-of select="./CVV" />
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:attribute name="class">
-														<xsl:text>Green</xsl:text>
-													</xsl:attribute>
-													CVV Exists
-												</xsl:otherwise>
-											</xsl:choose>
-										</xsl:when>
-										<xsl:otherwise>
-											<xsl:attribute name="class">
-												<xsl:text>Red</xsl:text>
-											</xsl:attribute>
-											No CVV Entered
-										</xsl:otherwise>
-									</xsl:choose>
-								</span>
-							</strong>
+							<span>
+								<xsl:choose>
+									<xsl:when test="./CVV != ''">
+										<xsl:choose>
+											<xsl:when test="/Response/CanSeeCVV = 1">
+												<xsl:value-of select="./CVV" />
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:attribute name="class">
+													<xsl:text>Green</xsl:text>
+												</xsl:attribute>
+												<xsl:attribute name="style">
+													<xsl:text>font-weight: bold;</xsl:text>
+												</xsl:attribute>
+												CVV Exists
+											</xsl:otherwise>
+										</xsl:choose>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:attribute name="class">
+											<xsl:text>Red</xsl:text>
+										</xsl:attribute>
+										<xsl:attribute name="style">
+											<xsl:text>font-weight: bold;</xsl:text>
+										</xsl:attribute>
+										No CVV Entered
+									</xsl:otherwise>
+								</xsl:choose>
+							</span>
 						</td>
 						<td>
 							<xsl:attribute name="title">
