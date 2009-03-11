@@ -1377,8 +1377,9 @@ class AppTemplateAccount extends ApplicationTemplate
 			
 			$strMessage			= "{$strNewEmployeeName} changed the Credit Control Status for Account number ".DBO()->Account->Id->Value." from '{$strPreviousCCStatus}' to '{$strNewCCStatus}' at {$strNewTimestamp} on {$strNewDatestamp}.";
 			
-			$strTHStyle			= "text-align: right; color: #eee; background-color: #333; width: 20em;";
+			$strTHStyle			= "text-align: right; color: #eee; background-color: #333; width: 15em;";
 			$strTDStyle			= "text-align: left; color: #333; background-color: #eee;";
+			$strTDAutoStyle		= "width: auto;";
 			$strTDWidthStyle	= "min-width: 20em; max-width: 20em;";
 			$strHTMLContent	=	"<body>\n" .
 								"	<div style='font-family: Calibri, Arial, sans-serif;'>\n" .
@@ -1398,12 +1399,12 @@ class AppTemplateAccount extends ApplicationTemplate
 								"			</tr>\n" .
 								"			<tr>\n" .
 								"				<th style='{$strTHStyle}'>Previous Credit Control Status : </th>\n" .
-								"				<td style='{$strTDStyle}'>{$strPreviousCCStatus}</td>\n" .
+								"				<td style='{$strTDStyle}{$strTDAutoStyle}'>{$strPreviousCCStatus}</td>\n" .
 								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>set on {$strPreviousTimestamp} on {$strPreviousDatestamp} by {$strPreviousEmployeeName}</td>\n" .
 								"			</tr>\n" .
 								"			<tr>\n" .
 								"				<th style='{$strTHStyle}'>New Credit Control Status : </th>\n" .
-								"				<td style='{$strTDStyle}'>{$strNewCCStatus}</td>\n" .
+								"				<td style='{$strTDStyle}{$strTDAutoStyle}'>{$strNewCCStatus}</td>\n" .
 								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>set on {$strNewTimestamp} on {$strNewDatestamp} by {$strNewEmployeeName}</td>\n" .
 								"			</tr>\n" .
 								"		</table><br />\n" .
