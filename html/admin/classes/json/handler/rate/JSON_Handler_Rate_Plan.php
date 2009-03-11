@@ -49,8 +49,8 @@ class JSON_Handler_Rate_Plan extends JSON_Handler
 			$objServiceRatePlan	= $objService->getCurrentServiceRatePlan();
 			
 			// Are we allowed to change plans?
-			$objOldPlan			= new Rate_Plan(array('id'=>$objServiceRatePlan->RatePlan), true);
-			if ($objOldPlan->locked && !AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT))
+			$objOldPlan			= ($objServiceRatePlan !== NULL)? new Rate_Plan(array('id'=>$objServiceRatePlan->RatePlan), true) : NULL;
+			if (($objOldPlan !== NULL) && $objOldPlan->locked && !AuthenticatedUser()->UserHasPerm(PERMISSION_RATE_MANAGEMENT))
 			{
 				// Not permitted -- use the Rejection Script
 				$strHTML		= $objNewPlan->parseRejectionScript($objAccount, $objContact, $objServiceRatePlan);
