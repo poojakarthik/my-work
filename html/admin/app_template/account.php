@@ -1377,9 +1377,9 @@ class AppTemplateAccount extends ApplicationTemplate
 			
 			$strMessage			= "{$strNewEmployeeName} changed the Credit Control Status for Account number ".DBO()->Account->Id->Value." from '{$strPreviousCCStatus}' to '{$strNewCCStatus}' at {$strNewTimestamp} on {$strNewDatestamp}.";
 			
-			$strTHStyle			= "text-align: right; color: #eee; background-color: #333; width: 15em;";
+			$strTHStyle			= "text-align: right; color: #eee; background-color: #333; width: 20em;";
 			$strTDStyle			= "text-align: left; color: #333; background-color: #eee;";
-			$strTDWidthStyle	= "min-width: 15em; max-width: 15em;";
+			$strTDWidthStyle	= "min-width: 20em; max-width: 20em;";
 			$strHTMLContent	=	"<body>\n" .
 								"	<div style='font-family: Calibri, Arial, sans-serif;'>\n" .
 								"		{$strMessage}<br /><br />\n" .
