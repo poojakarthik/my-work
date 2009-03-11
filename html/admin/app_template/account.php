@@ -1391,7 +1391,7 @@ class AppTemplateAccount extends ApplicationTemplate
 								"			</tr>\n" .
 								"			<tr>\n" .
 								"				<th style='{$strTHStyle}'>Business Name : </th>\n" .
-								"				<td colspan='2' style='{$strTDStyle}'>".DBO()->Account->Id->Value."</td>\n" .
+								"				<td colspan='2' style='{$strTDStyle}'>".DBO()->Account->BusinessName->Value."</td>\n" .
 								"			</tr>\n" .
 								"			<tr>\n" .
 								"				<th style='{$strTHStyle}'>Account Status : </th>\n" .
