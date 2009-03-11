@@ -1236,7 +1236,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		$intResourceType = DBO()->DocumentResource->Type->Value;
 		
 		$strWhere = "Id IN (SELECT file_type_id FROM document_resource_type_file_type WHERE document_resource_type_id = $intResourceType)";
-		$selFileTypes = new StatementSelect("document_resource_type_file_type", "*", $strWhere);
+		$selFileTypes = new StatementSelect("FileType", "*", $strWhere);
 		$selFileTypes->Execute();
 		$arrFileTypes = $selFileTypes->FetchAll();
 		DBO()->FileTypes->AsArray = $arrFileTypes;
