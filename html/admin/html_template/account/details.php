@@ -387,6 +387,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{
 		$bolIsAdminUser			= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		$bolIsSuperAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
+		$bolIsProperAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 	
 		$this->FormStart("EditAccount", "Account", "SaveDetails");
 		echo "<h2 class='Account'>Account Details</h2>\n";
@@ -446,7 +447,11 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		{
 			$strSelected		= (DBO()->Account->Archived->Value == $intStatus)? "selected='selected'" : "";
 			$strStatus			= GetConstantDescription($intStatus, "account_status");
-			$strStatusOptions	.= "<option value='$intStatus' $strSelected>$strStatus</option>";
+			
+			if ($bolIsProperAdminUser || $strSelected)
+			{
+				$strStatusOptions	.= "<option value='$intStatus' $strSelected>$strStatus</option>";
+			}
 		}
 		
 		// Render the Account Status Combobox

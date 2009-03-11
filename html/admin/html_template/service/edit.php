@@ -84,6 +84,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	function Render()
 	{
 		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
+		$bolIsProperAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$intCurrentSatatus		= DBO()->Service->CurrentStatus->Value;
 		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
 		
@@ -212,7 +213,11 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		foreach ($arrStatusOptions as $intStatus=>$arrStatus)
 		{
 			$strSelected		= (DBO()->Service->NewStatus->Value == $intStatus) ? "selected='selected'" : "";
-			$strStatusOptions	.= "<option value='$intStatus' $strSelected>{$arrStatus['Description']}</option>";
+			
+			if ($bolIsProperAdminUser || $strSelected)
+			{
+				$strStatusOptions	.= "<option value='$intStatus' $strSelected>{$arrStatus['Description']}</option>";
+			}
 		}
 		
 		// Render the Service Status Combobox
