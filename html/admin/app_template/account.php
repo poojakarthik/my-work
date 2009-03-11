@@ -1346,11 +1346,73 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		// All Database interactions were successfull
 		TransactionCommit();
+		
+		// Email the Credit Control Manager about any Credit Control Status Changes
+		if (DBO()->Account->credit_control_status->Value != DBO()->CurrentAccount->credit_control_status->Value)
+		{
+			$objEmailNotification	= new Email_Nofication(EMAIL_NOTIFICATION_CREDIT_CONTROL_STATUS_CHANGE, DBO()->Account->CustomerGroup);
+			
+			$objNewEmployee			= Employee::getForId(Flex::getUserId());
+			$strNewEmployeeName		= $objNewEmployee->firstName . (($objNewEmployee->lastName) ? " {$objNewEmployee->lastname}" : '');
+			$strNewTimestamp		= date("H:i:s \o\n d/m/Y", strtotime(GetCurrentISODateTime()));
+			$strNewCCStatus			= GetConstantDescription(DBO()->Account->credit_control_status->Value, 'credit_control_status');
+			
+			$objPreviousEmployee		= Employee::getForId(DBO()->credit_control_status_original->employee->Value);
+			$strPreviousEmployeeName	= $objPreviousEmployee->firstName . (($objPreviousEmployee->lastName) ? " {$objPreviousEmployee->lastname}" : '');
+			$strPreviousTimestamp		= DBO()->credit_control_status_original->change_datetime->Value;
+			$strPreviousCCStatus		= GetConstantDescription(DBO()->CurrentAccount->credit_control_status->Value, 'credit_control_status');
+			
+			$strMessage			= "{$strNewEmployeeName} changed the Credit Control Status for Account number ".DBO()->Account->Id->Value." from '{$strPreviousCCStatus}' to '{$strNewCCStatus}' at {$strNewTimestamp}.";
+			
+			$strTHStyle			= "text-align: right; color: #eee; background-color: #333; width: 15em;";
+			$strTDStyle			= "text-align: left; color: #333; background-color: #eee; width: auto;";
+			$strTDWidthStyle	= "min-width: 15em; max-width: 15em;";
+			$strHTMLContent	=	"<body>\n" .
+								"	<div>\n" .
+								"		{$strMessage}<br /><br />\n" .
+								"		<table style='width=99%; border: .1em solid #333; border-spacing: 0;' >\n" .
+								"			<tr>\n" .
+								"				<th style='{$strTHStyle}'>Account Number : </th>\n" .
+								"				<td colspan='2' style='{$strTDStyle}'>".DBO()->Account->Id->Value."</td>\n" .
+								"			</tr>\n" .
+								"			<tr>\n" .
+								"				<th style='{$strTHStyle}'>Business Name : </th>\n" .
+								"				<td colspan='2' style='{$strTDStyle}'>".DBO()->Account->Id->Value."</td>\n" .
+								"			</tr>\n" .
+								"			<tr>\n" .
+								"				<th style='{$strTHStyle}'>Account Status : </th>\n" .
+								"				<td colspan='2' style='{$strTDStyle}'>".GetConstantDescription(DBO()->Account->Archived->Value, 'account_status')."</td>\n" .
+								"			</tr>\n" .
+								"			<tr>\n" .
+								"				<th style='{$strTHStyle}'>Previous Credit Control Status : </th>\n" .
+								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>{$strPreviousCCStatus}</td>\n" .
+								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>set on {$strPreviousTimestamp} by {$strPreviousEmployeeName}</td>\n" .
+								"			</tr>\n" .
+								"			<tr>\n" .
+								"				<th style='{$strTHStyle}'>New Credit Control Status : </th>\n" .
+								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>{$strNewCCStatus}</td>\n" .
+								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>set on {$strNewTimestamp} by {$strNewEmployeeName}</td>\n" .
+								"			</tr>\n" .
+								"		</table><br /><br />\n" .
+								"		Regards<br />\n" .
+								"		<strong>Flexor</strong>\n" .
+								"	</div>\n" .
+								"</body>";
+			$objEmailNotification->setBodyHtml($strHTMLContent);
+			
+			$strTextContent	=	"{$strMessage}\n\n" .
+								"Regards\n" .
+								"Flexor";
+			$objEmailNotification->setBodyText($strTextContent);
+			
+			$objEmailNotification->setSubject("[NOTICE] Flex Account #".DBO()->Account->Id->Value." Credit Control Status changed from {$strPreviousCCStatus} to {$strNewCCStatus}");
+			$objEmailNotification->send();
+		}
 
 		// Handle cascading for values that can cascade
 		if (count($arrCascadingFields) > 0)
 		{
-			$strAlertMsg = "The account details were successfully updated.<br />The following modified fields could compromise the integrety of the Address details defined for the services belonging to this account.<br />Please update these address details accordingly.";
+			$strAlertMsg = "The account details were successfully updated.<br />The following modified fields could compromise the integrity of the Address details defined for the services belonging to this account.<br />Please update these address details accordingly.";
 			$strAlertMsg .= "<br />Fields: ". implode(", ", $arrCascadingFields);
 			Ajax()->AddCommand("Alert", $strAlertMsg);
 		}
