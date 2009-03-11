@@ -39,15 +39,15 @@ class Constant_Group
 	 */
 	public function getConstantName($mixIndex)
 	{
-		if (array_key_exists($mixIndex, $GLOBALS['**arrConstant'][$this->_strConstantGroupName]))
+		if (array_key_exists($mixIndex, $GLOBALS['*arrConstant'][$this->_strConstantGroupName]))
 		{
-			if (array_key_exists('Name', $GLOBALS['**arrConstant'][$this->_strConstantGroupName][$mixIndex]))
+			if (array_key_exists('Name', $GLOBALS['*arrConstant'][$this->_strConstantGroupName][$mixIndex]))
 			{
-				return $GLOBALS['**arrConstant'][$this->_strConstantGroupName][$mixIndex]['Name'];
+				return $GLOBALS['*arrConstant'][$this->_strConstantGroupName][$mixIndex]['Name'];
 			}
 			else
 			{
-				return $GLOBALS['**arrConstant'][$this->_strConstantGroupName][$mixIndex]['Description'];
+				return $GLOBALS['*arrConstant'][$this->_strConstantGroupName][$mixIndex]['Description'];
 			}
 		}
 		else
@@ -69,9 +69,9 @@ class Constant_Group
 	 */
 	public function getConstantDescription($mixIndex)
 	{
-		if (array_key_exists($mixIndex, $GLOBALS['**arrConstant'][$this->_strConstantGroupName]))
+		if (array_key_exists($mixIndex, $GLOBALS['*arrConstant'][$this->_strConstantGroupName]))
 		{
-			return $GLOBALS['**arrConstant'][$this->_strConstantGroupName][$mixIndex]['Description'];
+			return $GLOBALS['*arrConstant'][$this->_strConstantGroupName][$mixIndex]['Description'];
 		}
 		else
 		{
@@ -92,9 +92,9 @@ class Constant_Group
 	 */
 	public function getConstantAlias($mixIndex)
 	{
-		if (array_key_exists($mixIndex, $GLOBALS['**arrConstant'][$this->_strConstantGroupName]))
+		if (array_key_exists($mixIndex, $GLOBALS['*arrConstant'][$this->_strConstantGroupName]))
 		{
-			return $GLOBALS['**arrConstant'][$this->_strConstantGroupName][$mixIndex]['Constant'];
+			return $GLOBALS['*arrConstant'][$this->_strConstantGroupName][$mixIndex]['Constant'];
 		}
 		else
 		{
@@ -115,7 +115,7 @@ class Constant_Group
 	 */
 	public static function getConstantGroup($strConstantGroupName)
 	{
-		if (array_key_exists($strConstantGroupName, $GLOBALS['**arrConstant']))
+		if (array_key_exists($strConstantGroupName, $GLOBALS['*arrConstant']))
 		{
 			return new self($strConstantGroupName);
 		}
