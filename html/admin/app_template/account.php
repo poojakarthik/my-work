@@ -867,6 +867,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		$bolIsSuperAdminUser = AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN);
 
+		$qryQuery	= new Query();
+		
 		// Accounts can not have their details editted while an invoice run is processing
 		if (Invoice_Run::checkTemporary(DBO()->Account->CustomerGroup->Value, DBO()->Account->Id->Value))
 		{
@@ -1356,15 +1358,24 @@ class AppTemplateAccount extends ApplicationTemplate
 			
 			$objNewEmployee			= Employee::getForId(Flex::getUserId());
 			$strNewEmployeeName		= $objNewEmployee->firstName . (($objNewEmployee->lastName) ? " {$objNewEmployee->lastname}" : '');
-			$strNewTimestamp		= date("H:i:s \o\n d/m/Y", strtotime(GetCurrentISODateTime()));
+			$strNewTimestamp		= date("H:i:s", strtotime(GetCurrentISODateTime()));
+			$strNewDatestamp		= date("d/m/Y", strtotime(GetCurrentISODateTime()));
 			$strNewCCStatus			= $objCCStatuses->getConstantName(DBO()->Account->credit_control_status->Value);
 			
-			$objPreviousEmployee		= Employee::getForId(DBO()->credit_control_status_original->employee->Value);
+			$resPreviousCCHistory	= $qryQuery->Execute("SELECT * FROM credit_control_status_history WHERE account = ".DBO()->Account->Id->Value." ORDER BY id DESC LIMIT 1 OFFSET 1");
+			if ($resPreviousCCHistory === false)
+			{
+				throw new Exception($qryQuery->Error());
+			}
+			$arrPreviousCCHistory	= $resPreviousCCHistory->fetch_assoc();
+			
+			$objPreviousEmployee		= Employee::getForId($arrPreviousCCHistory['employee']);
 			$strPreviousEmployeeName	= $objPreviousEmployee->firstName . (($objPreviousEmployee->lastName) ? " {$objPreviousEmployee->lastname}" : '');
-			$strPreviousTimestamp		= DBO()->credit_control_status_original->change_datetime->Value;
+			$strPreviousTimestamp		= date("H:i:s", strtotime($arrPreviousCCHistory['change_datetime']));
+			$strPreviousDatestamp		= date("d/m/Y", strtotime($arrPreviousCCHistory['change_datetime']));
 			$strPreviousCCStatus		= $objCCStatuses->getConstantName(DBO()->CurrentAccount->credit_control_status->Value);
 			
-			$strMessage			= "{$strNewEmployeeName} changed the Credit Control Status for Account number ".DBO()->Account->Id->Value." from '{$strPreviousCCStatus}' to '{$strNewCCStatus}' at {$strNewTimestamp}.";
+			$strMessage			= "{$strNewEmployeeName} changed the Credit Control Status for Account number ".DBO()->Account->Id->Value." from '{$strPreviousCCStatus}' to '{$strNewCCStatus}' at {$strNewTimestamp} on {$strNewDatestamp}.";
 			
 			$strTHStyle			= "text-align: right; color: #eee; background-color: #333; width: 15em;";
 			$strTDStyle			= "text-align: left; color: #333; background-color: #eee;";
@@ -1388,12 +1399,12 @@ class AppTemplateAccount extends ApplicationTemplate
 								"			<tr>\n" .
 								"				<th style='{$strTHStyle}'>Previous Credit Control Status : </th>\n" .
 								"				<td style='{$strTDStyle}'>{$strPreviousCCStatus}</td>\n" .
-								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>set on {$strPreviousTimestamp} by {$strPreviousEmployeeName}</td>\n" .
+								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>set on {$strPreviousTimestamp} on {$strPreviousDatestamp} by {$strPreviousEmployeeName}</td>\n" .
 								"			</tr>\n" .
 								"			<tr>\n" .
 								"				<th style='{$strTHStyle}'>New Credit Control Status : </th>\n" .
 								"				<td style='{$strTDStyle}'>{$strNewCCStatus}</td>\n" .
-								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>set on {$strNewTimestamp} by {$strNewEmployeeName}</td>\n" .
+								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>set on {$strNewTimestamp} on {$strNewDatestamp} by {$strNewEmployeeName}</td>\n" .
 								"			</tr>\n" .
 								"		</table><br /><br />\n" .
 								"		Regards<br />\n" .
