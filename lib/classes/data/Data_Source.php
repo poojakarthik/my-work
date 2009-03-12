@@ -18,7 +18,7 @@ class Data_Source
 			$arrRequestedDSNs = array();
 		}
 
-		$unwantedPortabilityOptions = MDB2_PORTABILITY_FIX_CASE;
+		$unwantedPortabilityOptions = MDB2_PORTABILITY_FIX_CASE |  MDB2_PORTABILITY_EMPTY_TO_NULL;
 
 		$options = array(
 			'debug'       => 2,
