@@ -54,11 +54,11 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		
 		// 1:	Add the Account.payment_method_id and direct_debit_id Fields
 		$strSQL =	"ALTER TABLE Account " .
-					"ADD payment_method_id	BIGINT(20)		UNSIGNED	NOT NULL	COMMENT '(FK) Account\'s Payment Method', " .
-					"ADD direct_debit_id	BIGINT(20)		UNSIGNED	NULL		COMMENT '(FK) Current Direct Debit Details', " .
+					"ADD payment_method_id	BIGINT(20)		UNSIGNED	NOT NULL	DEFAULT 1	COMMENT '(FK) Account\'s Payment Method', " .
+					"ADD direct_debit_id	BIGINT(20)		UNSIGNED	NULL					COMMENT '(FK) Current Direct Debit Details', " .
 					" " .
-					"ADD CONSTRAINT fk_account_payment_method_id	FOREIGN KEY (payment_method_id)	REFERENCES payment_method(id)	ON UPDATE CASCADE ON DELETE RESTRICT, " .
-					"ADD CONSTRAINT fk_account_direct_debit_id		FOREIGN KEY (direct_debit_id)	REFERENCES direct_debit(id)		ON UPDATE CASCADE ON DELETE SET NULL;";
+					"ADD CONSTRAINT fk_account_payment_method_id	FOREIGN KEY (payment_method_id)	REFERENCES payment_method(id)		ON UPDATE CASCADE ON DELETE RESTRICT, " .
+					"ADD CONSTRAINT fk_account_direct_debit_id		FOREIGN KEY (direct_debit_id)	REFERENCES direct_debit_type(id)	ON UPDATE CASCADE ON DELETE SET NULL;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
