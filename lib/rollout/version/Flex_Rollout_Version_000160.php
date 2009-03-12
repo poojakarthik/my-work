@@ -142,7 +142,15 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 				$objCreditCard->expiry_year		= 2000 + (int)$arrCreditCard['ExpYear'];
 			}
 			$objCreditCard->cvv					= $arrCreditCard['Name'];
-			$objCreditCard->save();
+			
+			try
+			{
+				$objCreditCard->save();
+			}
+			catch (Exception $eException)
+			{
+				throw new Exception("Unable to convert CreditCard with Id '{$arrCreditCard['Id']}':\n".$eException->getMessage());
+			}
 			
 			// Add to CreditCard.id=>direct_debit.id conversion array
 			$arrDirectDebitConvert['CreditCard'][(int)$arrCreditCard['Id']]	= $objDirectDebit->id;
@@ -178,7 +186,15 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 			$objBankAccount->bank_bsb			= $arrDirectDebit['BSB'];
 			$objBankAccount->account_number		= $arrDirectDebit['AccountNumber'];
 			$objBankAccount->account_name		= $arrDirectDebit['AccountName'];
-			$objBankAccount->save();
+			
+			try
+			{
+				$objBankAccount->save();
+			}
+			catch (Exception $eException)
+			{
+				throw new Exception("Unable to convert DirectDebit with Id '{$arrDirectDebit['Id']}':\n".$eException->getMessage());
+			}
 			
 			// Add to CreditCard.id=>direct_debit.id conversion array
 			$arrDirectDebitConvert['DirectDebit'][(int)$arrDirectDebit['Id']]	= $objDirectDebit->id;
