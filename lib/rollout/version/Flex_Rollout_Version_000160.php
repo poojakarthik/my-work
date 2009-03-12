@@ -338,7 +338,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		{
 			self::$arrCreditCardTypes	= array();
 			
-			// Load the Payment Methods
+			// Load the Credit Card Types
 			$result = $dbAdmin->query("SELECT * FROM credit_card_type WHERE 1");
 			if (PEAR::isError($result))
 			{
@@ -353,19 +353,19 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		switch ($intCreditCardType)
 		{
 			case 1:	// VISA
-				return (int)self::$arrPaymentMethods['CREDIT_CARD_TYPE_VISA']['id'];
+				return (int)self::$arrCreditCardTypes['CREDIT_CARD_TYPE_VISA']['id'];
 				break;
 				
 			case 2:	// MasterCard
-				return (int)self::$arrPaymentMethods['CREDIT_CARD_TYPE_MASTERCARD']['id'];
+				return (int)self::$arrCreditCardTypes['CREDIT_CARD_TYPE_MASTERCARD']['id'];
 				break;
 			
 			case 4:	// AMEX
-				return (int)self::$arrPaymentMethods['CREDIT_CARD_TYPE_AMEX']['id'];
+				return (int)self::$arrCreditCardTypes['CREDIT_CARD_TYPE_AMEX']['id'];
 				break;
 			
 			case 5:	// Diners
-				return (int)self::$arrPaymentMethods['CREDIT_CARD_TYPE_DINERS']['id'];
+				return (int)self::$arrCreditCardTypes['CREDIT_CARD_TYPE_DINERS']['id'];
 				break;
 				
 			default:
