@@ -30,6 +30,8 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		$arrAccounts			= array();
 		$arrDirectDebitConvert	= array('CreditCard'=>array(), 'DirectDebit'=>array());
 		
+		Log::getLog()->log("Retrieving direct_debit_type Constants...");
+		
 		$arrDirectDebitTypes	= array();
 		$resDirectDebitTypes = $dbAdmin->query("SELECT * FROM direct_debit_type WHERE 1");
 		if (PEAR::isError($resDirectDebitTypes))
@@ -41,8 +43,10 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 			$arrDirectDebitTypes[$arrDirectDebitType['const_name']]	= $arrDirectDebitType;
 		}
 		
+		Log::getLog()->log("Retrieving status Constants...");
+		
 		$arrStatuses	= array();
-		$resStatuses = $dbAdmin->query("SELECT * FROM direct_debit_type WHERE 1");
+		$resStatuses = $dbAdmin->query("SELECT * FROM status WHERE 1");
 		if (PEAR::isError($resStatuses))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of status Constants. ' . $resStatuses->getMessage() . " (DB Error: " . $resStatuses->getUserInfo() . ")");
@@ -51,6 +55,8 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		{
 			$arrStatuses[$arrStatus['const_name']]	= $arrStatus;
 		}
+		
+		Log::getLog()->log("Adding Account Fields...");
 		
 		// 1:	Add the Account.payment_method_id and direct_debit_id Fields
 		$strSQL =	"ALTER TABLE Account " .
@@ -69,11 +75,13 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 								"DROP FOREIGN KEY fk_account_payment_method_id, " .
 								"DROP direct_debit_id, " .
 								"DROP payment_method_id;";
+								
+		Log::getLog()->log("Adding account_history Fields...");
 		
 		// 2:	Add the account_history.payment_method_id and new_direct_debit_id Fields
 		$strSQL =	"ALTER TABLE account_history " .
-					"ADD payment_method_id		BIGINT(20)		UNSIGNED	NOT NULL	COMMENT '(FK) Account\'s Payment Method', " .
-					"ADD new_direct_debit_id	BIGINT(20)		UNSIGNED	NULL		COMMENT '(FK) Direct Debit Method Details', " .
+					"ADD payment_method_id		BIGINT(20)		UNSIGNED	NOT NULL	DEFAULT 1	COMMENT '(FK) Account\'s Payment Method', " .
+					"ADD new_direct_debit_id	BIGINT(20)		UNSIGNED	NULL					COMMENT '(FK) Direct Debit Method Details', " .
 					" " .
 					"ADD CONSTRAINT fk_account_history_payment_method_id	FOREIGN KEY (payment_method_id)	REFERENCES payment_method(id)	ON UPDATE CASCADE ON DELETE RESTRICT, " .
 					"ADD CONSTRAINT fk_account_history_direct_debit_id		FOREIGN KEY (direct_debit_id)	REFERENCES direct_debit(id)		ON UPDATE CASCADE ON DELETE SET NULL;";
@@ -91,12 +99,14 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		//--------------------------------------------------------------------//
 		// Retrieve a list of CreditCard records
 		//--------------------------------------------------------------------//
+		Log::getLog()->log("Retrieving list of Credit Cards...");
 		$strCreditCardSQL	=	"SELECT CreditCard.*, Account.Id AS account_id FROM CreditCard JOIN Account USING (AccountGroup) WHERE 1;";
 		$resCreditCards		= $dbAdmin->query($strCreditCardSQL);
 		if (PEAR::isError($resCreditCards))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Credit Cards. ' . $resCreditCards->getMessage() . " (DB Error: " . $resCreditCards->getUserInfo() . ")");
 		}
+		Log::getLog()->log("Converting Credit Cards...");
 		while ($arrCreditCard = $resCreditCards->fetchRow(MDB2_FETCHMODE_ASSOC))
 		{
 			// 3:	Convert CreditCard records to direct_debit + direct_debit_credit_card records
@@ -134,12 +144,14 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		//--------------------------------------------------------------------//
 		// Retrieve a list of DirectDebit records
 		//--------------------------------------------------------------------//
+		Log::getLog()->log("Retrieving list of Direct Debits...");
 		$strDirectDebitSQL	=	"SELECT DirectDebit.*, Account.Id AS account_id FROM DirectDebit JOIN Account USING (AccountGroup) WHERE 1;";
 		$resDirectDebits	= $dbAdmin->query($strDirectDebitSQL);
 		if (PEAR::isError($resDirectDebits))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Direct Debits. ' . $resDirectDebits->getMessage() . " (DB Error: " . $resDirectDebits->getUserInfo() . ")");
 		}
+		Log::getLog()->log("Converting Direct Debits...");
 		while ($arrDirectDebit = $resDirectDebits->fetchRow(MDB2_FETCHMODE_ASSOC))
 		{
 			// 3:	Convert CreditCard records to direct_debit + direct_debit_credit_card records
@@ -168,12 +180,14 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		//--------------------------------------------------------------------//
 		// Retrieve a list of Accounts
 		//--------------------------------------------------------------------//
+		Log::getLog()->log("Retrieving list of Accounts...");
 		$strAccountSQL	=	"SELECT Id, BillingType, CreditCard, DirectDebit FROM Account WHERE 1;";
 		$resAccounts	= $dbAdmin->query($strAccountSQL);
 		if (PEAR::isError($resAccounts))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of Accounts. ' . $resAccounts->getMessage() . " (DB Error: " . $resAccounts->getUserInfo() . ")");
 		}
+		Log::getLog()->log("Converting Accounts...");
 		while ($arrAccount = $resAccounts->fetchRow(MDB2_FETCHMODE_ASSOC))
 		{
 			// 5:	Convert Account.BillingType to Account.payment_method_id
@@ -212,12 +226,14 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		//--------------------------------------------------------------------//
 		// Retrieve a list of account_history Records
 		//--------------------------------------------------------------------//
+		Log::getLog()->log("Retrieving list of account_history Records...");
 		$strAccountHistorySQL	=	"SELECT id, billing_type, credit_card_id, direct_debit_id FROM account_history WHERE 1;";
 		$resAccountHistories	= $dbAdmin->query($strAccountHistorySQL);
 		if (PEAR::isError($resAccountHistories))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of account_history Records. ' . $resAccountHistories->getMessage() . " (DB Error: " . $resAccountHistories->getUserInfo() . ")");
 		}
+		Log::getLog()->log("Converting account_history Records...");
 		while ($arrAccountHistory = $resAccountHistories->fetchRow(MDB2_FETCHMODE_ASSOC))
 		{
 			// 6:	Convert account_history.billing_type to account_history.payment_method_id
@@ -254,7 +270,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		}
 		
 		// TEST MODE
-		throw new Exception("TEST MODE");
+		//throw new Exception("TEST MODE");
 	}
 
 	function rollback()
