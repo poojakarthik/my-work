@@ -64,7 +64,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 					"ADD direct_debit_id	BIGINT(20)		UNSIGNED	NULL					COMMENT '(FK) Current Direct Debit Details', " .
 					" " .
 					"ADD CONSTRAINT fk_account_payment_method_id	FOREIGN KEY (payment_method_id)	REFERENCES payment_method(id)		ON UPDATE CASCADE ON DELETE RESTRICT, " .
-					"ADD CONSTRAINT fk_account_direct_debit_id		FOREIGN KEY (direct_debit_id)	REFERENCES direct_debit_type(id)	ON UPDATE CASCADE ON DELETE SET NULL;";
+					"ADD CONSTRAINT fk_account_direct_debit_id		FOREIGN KEY (direct_debit_id)	REFERENCES direct_debit(id)	ON UPDATE CASCADE ON DELETE SET NULL;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -83,8 +83,8 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 					"ADD payment_method_id		BIGINT(20)		UNSIGNED	NOT NULL	DEFAULT 1	COMMENT '(FK) Account\'s Payment Method', " .
 					"ADD new_direct_debit_id	BIGINT(20)		UNSIGNED	NULL					COMMENT '(FK) Direct Debit Method Details', " .
 					" " .
-					"ADD CONSTRAINT fk_account_history_payment_method_id	FOREIGN KEY (payment_method_id)	REFERENCES payment_method(id)	ON UPDATE CASCADE ON DELETE RESTRICT, " .
-					"ADD CONSTRAINT fk_account_history_direct_debit_id		FOREIGN KEY (direct_debit_id)	REFERENCES direct_debit(id)		ON UPDATE CASCADE ON DELETE SET NULL;";
+					"ADD CONSTRAINT fk_account_history_payment_method_id	FOREIGN KEY (payment_method_id)		REFERENCES payment_method(id)	ON UPDATE CASCADE ON DELETE RESTRICT, " .
+					"ADD CONSTRAINT fk_account_history_direct_debit_id		FOREIGN KEY (new_direct_debit_id)	REFERENCES direct_debit(id)		ON UPDATE CASCADE ON DELETE SET NULL;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
