@@ -110,6 +110,12 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		Log::getLog()->log("Converting Credit Cards...");
 		while ($arrCreditCard = $resCreditCards->fetchRow(MDB2_FETCHMODE_ASSOC))
 		{
+			// Ignore Credit Cards with invalid Types
+			if (self::_convertCreditCardType((int)$arrCreditCard['CardType']) === null)
+			{
+				continue;
+			}
+			
 			// 3:	Convert CreditCard records to direct_debit + direct_debit_credit_card records
 			$objDirectDebit							= new Direct_Debit();
 			$objDirectDebit->account_id				= (int)$arrCreditCard['account_id'];
@@ -369,7 +375,8 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 				break;
 				
 			default:
-				throw new Exception("Unable to convert CreditCard type of '{$intCreditCardType}' to credit_card_type equivalent");
+				return null;
+				//throw new Exception("Unable to convert CreditCard type of '{$intCreditCardType}' to credit_card_type equivalent");
 				break;
 		}
 	}
