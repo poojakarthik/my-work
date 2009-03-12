@@ -94,7 +94,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		$this->rollbackSQL[] =	"ALTER TABLE account_history " .
 								"DROP FOREIGN KEY fk_account_history_direct_debit_id, " .
 								"DROP FOREIGN KEY fk_account_history_payment_method_id, " .
-								"DROP direct_debit_id, " .
+								"DROP new_direct_debit_id, " .
 								"DROP payment_method_id;";
 		
 		//--------------------------------------------------------------------//
