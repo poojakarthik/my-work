@@ -19,6 +19,7 @@ class Ticketing_Ticket
 	protected $categoryId = NULL;
 	protected $creationDatetime = NULL;
 	protected $modifiedDatetime = NULL;
+	protected $modifiedByUserId = NULL;
 	protected $arrServices = NULL;
 
 	protected $_saved = FALSE;
@@ -166,6 +167,7 @@ class Ticketing_Ticket
 			'category_id',
 			'creation_datetime',
 			'modified_datetime',
+			'modified_by_user_id'
 		);
 	}
 
@@ -196,15 +198,21 @@ class Ticketing_Ticket
 			// Nothing to save
 			return TRUE;
 		}
+		
+		// Set the user who modified the ticket (if not instigated by a user, this will set it to NULL)
+		$objCurrentTicketUser = Ticketing_User::getCurrentUser();
+		$this->modifiedByUserId = $objCurrentTicketUser->id;
+		
 		$arrValues = $this->getValuesToSave();
 
 		$now = GetCurrentISODateTime();
-
+ 		
 		// No id means that this must be a new record
 		if (!$this->id)
 		{
+			$this->creationDatetime = $arrValues['creation_datetime'] = $now;
+			$this->modifiedDatetime = $arrValues['modified_datetime'] = $now;
 			$statement = new StatementInsert($this->getTableName(), $arrValues);
-			$this->creationDatetime = $this->modifiedDatetime = $now;
 		}
 		// This must be an update
 		else
@@ -213,6 +221,7 @@ class Ticketing_Ticket
 			$this->modifiedDatetime = $arrValues['modified_datetime'] = $now;
 			$statement = new StatementUpdateById($this->getTableName(), $arrValues);
 		}
+
 		if (($outcome = $statement->Execute($arrValues)) === FALSE)
 		{
 			throw new Exception('Failed to save ' . (str_replace('_', ' ', $this->getTableName())) . ' details: ' . $statement->Error());

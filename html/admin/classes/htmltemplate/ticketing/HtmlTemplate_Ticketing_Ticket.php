@@ -99,6 +99,8 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		$contact		= $ticket->getContact();
 		$contactName	= htmlspecialchars($contact ? $contact->getName() : '[No associated contact]');
 
+		$lastModifiedByUser = Ticketing_User::getForId($ticket->modifiedByUserId);
+
 		if ($message)
 		{
 			?>
@@ -195,17 +197,21 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								$strLink = Href()->ViewService($service->serviceId);
 								$output[] = "<a href='$strLink' title='View Service'>". htmlspecialchars($service->getFNN()) ."</a>";
 							}
-							$output = implode('<br/>', $output);
+							$output = implode(', ', $output);
 							echo $output ? $output : '[No related services]';
 						?></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Created: </td>
-						<td><?=$ticket->creationDatetime?></td>
+						<td><?=date('H:i:s M j, Y', strtotime($ticket->creationDatetime))?></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Last Modified: </td>
-						<td><?=$ticket->modifiedDatetime?></td>
+						<td><?=date('H:i:s M j, Y', strtotime($ticket->modifiedDatetime))?></td>
+					</tr>
+					<tr class="alt">
+						<td class="title">Last Modified By: </td>
+						<td><?=($lastModifiedByUser !== NULL? htmlspecialchars($lastModifiedByUser->getName()) : "System")?></td>
 					</tr>
 				</tbody>
 			</table>
@@ -230,6 +236,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		$ownerName		= htmlspecialchars($owner ? $owner->getName() : '['.Ticketing_Status::getForId(TICKETING_STATUS_UNASSIGNED)->name.']');
 		$contact		= $ticket->getContact();
 		$contactName	= htmlspecialchars($contact ? $contact->getName() : '[No associated contact]');
+		$lastModifiedByUser = Ticketing_User::getForId($ticket->modifiedByUserId);
 
 		$message		= array_key_exists('error', $this->mxdDataToRender) ? $this->mxdDataToRender['error'] : '';
 
@@ -541,6 +548,10 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						<tr class="alt">
 							<td class="title">Last Modified: </td>
 							<td><?=$ticket->modifiedDatetime?></td>
+						</tr>
+						<tr class="alt">
+							<td class="title">Last Modified By: </td>
+							<td><?=($lastModifiedByUser !== NULL? htmlspecialchars($lastModifiedByUser->getName()) : "System")?></td>
 						</tr>
 		<?php
 		}

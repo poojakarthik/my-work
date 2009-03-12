@@ -265,6 +265,12 @@ class Ticketing_User
 			throw new Exception("Failed to check for existing user: " . $selUsers->Error());
 		}
 
+		if (!$bolAsArray && $outcome == 0)
+		{
+			// The user only wants 1 object returned, but there isn't one
+			return NULL;
+		}
+
 		$records = array();
 		while ($props = $selUsers->Fetch())
 		{
@@ -278,6 +284,7 @@ class Ticketing_User
 				return $records[0];
 			}
 		}
+		
 		return $records;
 	}
 
