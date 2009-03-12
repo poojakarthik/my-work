@@ -73,8 +73,8 @@ class Flex_Rollout_Version_000159 extends Flex_Rollout_Version
 
 		// 4:	Populate the direct_debit_type Table
 		$strSQL = "	INSERT INTO direct_debit_type (name, description, const_name) VALUES 
-					('Account'		, 'Account Billing'	, 'PAYMENT_METHOD_ACCOUNT'), 
-					('Direct Debit'	, 'Direct Debit'	, 'PAYMENT_METHOD_DIRECT_DEBIT');";
+					('Credit Card'	, 'Credit Card'		, 'DIRECT_DEBIT_TYPE_CREDIT_CARD'), 
+					('Bank Account'	, 'Bank Account'	, 'DIRECT_DEBIT_TYPE_BANK_ACCOUNT');";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
