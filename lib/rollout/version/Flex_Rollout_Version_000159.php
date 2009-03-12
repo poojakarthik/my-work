@@ -119,7 +119,7 @@ class Flex_Rollout_Version_000159 extends Flex_Rollout_Version
 						card_name				VARCHAR(512)				NOT NULL								COMMENT 'Customer Name on the Credit Card',
 						card_number				VARCHAR(24)					NOT NULL								COMMENT 'Credit Card Number',
 						expiry_month			TINYINT(2)		UNSIGNED	NOT NULL								COMMENT 'Month in which the Credit Card expires',
-						expiry_year				TINYINT(4)		UNSIGNED	NOT NULL								COMMENT 'Year in which the Credit Card expires',
+						expiry_year				SMALLINT(4)		UNSIGNED	NOT NULL								COMMENT 'Year in which the Credit Card expires',
 						cvv						VARCHAR(8)					NOT NULL								COMMENT 'Card Verification Value for the Credit Card',
 						
 						CONSTRAINT	pk_direct_debit_credit_card_id					PRIMARY KEY (id),
