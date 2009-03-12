@@ -68,7 +68,7 @@ class Document_Content extends ORM
 			{
 				throw new Exception($qryQuery->Error());
 			}
-			elseif ($arrLookup = $resLookup->Fetch())
+			elseif ($arrLookup = $resLookup->fetch_assoc())
 			{
 				$mixFriendlyName	= $arrLookup['friendly_name'];
 			}
