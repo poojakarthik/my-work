@@ -117,7 +117,7 @@ class HtmlTemplateDocumentResourceManagement extends HtmlTemplate
 		Table()->ResourceType->SetAlignment("Left", "Left");
 		Table()->ResourceType->SetSortable(TRUE);
 		Table()->ResourceType->SetSortFields("PlaceHolder", "Description");
-		Table()->ResourceType->SetPageSize(8);
+		Table()->ResourceType->SetPageSize(20);
 		Table()->ResourceType->RowHighlighting = TRUE;
 		
 		foreach ($arrResourceTypes as $arrResourceType)
@@ -178,7 +178,7 @@ class HtmlTemplateDocumentResourceManagement extends HtmlTemplate
 		// if sorting is turned on
 		Table()->Resources->SetSortable(TRUE);
 		Table()->Resources->SetSortFields(NULL, NULL, NULL, NULL, NULL);
-		Table()->Resources->SetPageSize(10);
+		Table()->Resources->SetPageSize(20);
 		
 		foreach ($arrResources as $arrResource)
 		{
@@ -229,6 +229,7 @@ class HtmlTemplateDocumentResourceManagement extends HtmlTemplate
 				
 		Table()->Resources->Render();
 		
+		echo "\n<div class='Separator'></div>";
 		echo "\n<!-- END HtmlTemplateDocumentResourceManagement (ResourceType History Component) -->\n";
 		return ob_get_clean();
 	}

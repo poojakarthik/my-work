@@ -43,7 +43,7 @@
 function VixenDelinquentCDRsClass()
 {
 	// Used for paginating the table of delinquent CDRs
-	this.intMaxRowsToShow	= 10;
+	this.intMaxRowsToShow	= 20;
 	this.intFirstRowShown	= null;
 
 	this.elmStartDate	= null;

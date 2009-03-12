@@ -126,7 +126,7 @@ class HtmlTemplateDelinquentCDRs extends HtmlTemplate
 	<div class='SmallSeparator'></div>
 				
 	<span style='white-space:pre;font-family:Courier New, monospace;padding-left:4px'>FNN          Carrier                          Cost     Count     Earliest       Latest</span>
-	<select id='FNNSelector' size='8' style='width:100%; border-color:#D1D1D1;font-family:Courier New, monospace' onChange='Vixen.DelinquentCDRs.GetCDRs()'></select>
+	<select id='FNNSelector' size='20' style='width:100%; border-color:#D1D1D1;font-family:Courier New, monospace' onChange='Vixen.DelinquentCDRs.GetCDRs()'></select>
 
 </div>		
 <div class='SmallSeparator'></div>
