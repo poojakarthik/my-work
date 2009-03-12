@@ -126,7 +126,7 @@ class Rate_Plan extends ORM
 				$objCustomerGroupDirContent	= new Document_Content();
 				$objCustomerGroupDirContent->document_id		= $objCustomerGroupDir->id;
 				$objCustomerGroupDirContent->name				= "{$this->customer_group}";
-				$objCustomerGroupDirContent->constant_group		= "CustomerGroup";
+				$objCustomerGroupDirContent->constant_group		= "CustomerGroup:id,external_name";
 				$objCustomerGroupDirContent->parent_document_id	= $objBrochureDir->id;
 				$objCustomerGroupDirContent->employee_id		= Employee::SYSTEM_EMPLOYEE_ID;
 				$objCustomerGroupDirContent->status_id			= STATUS_ACTIVE;
@@ -234,7 +234,7 @@ class Rate_Plan extends ORM
 				$objCustomerGroupDirContent	= new Document_Content();
 				$objCustomerGroupDirContent->document_id		= $objCustomerGroupDir->id;
 				$objCustomerGroupDirContent->name				= "{$this->customer_group}";
-				$objCustomerGroupDirContent->constant_group		= "CustomerGroup";
+				$objCustomerGroupDirContent->constant_group		= "CustomerGroup:id,external_name";
 				$objCustomerGroupDirContent->parent_document_id	= $objAuthScriptDir->id;
 				$objCustomerGroupDirContent->employee_id		= Employee::SYSTEM_EMPLOYEE_ID;
 				$objCustomerGroupDirContent->status_id			= STATUS_ACTIVE;
