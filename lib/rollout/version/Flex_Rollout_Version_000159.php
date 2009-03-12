@@ -15,9 +15,6 @@
  *	6:	Add the direct_debit_credit_card Table
  *
  *	7:	Add the direct_debit_bank_account Table
- *
- *	8:	Add the Account.payment_method_id and direct_debit_id Fields
- *	9:	Add the account_history.payment_method_id and new_direct_debit_id Fields (new_direct_debit_id will be renamed in a later rollout)
  */
 
 class Flex_Rollout_Version_000159 extends Flex_Rollout_Version
