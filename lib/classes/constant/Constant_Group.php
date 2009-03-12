@@ -113,11 +113,15 @@ class Constant_Group
 	 *
 	 * @method
 	 */
-	public static function getConstantGroup($strConstantGroupName)
+	public static function getConstantGroup($strConstantGroupName, $bolSilentFail=false)
 	{
 		if (array_key_exists($strConstantGroupName, $GLOBALS['*arrConstant']))
 		{
 			return new self($strConstantGroupName);
+		}
+		elseif ($bolSilentFail)
+		{
+			return null;
 		}
 		else
 		{

@@ -52,8 +52,33 @@ class Document_Content extends ORM
 	 */
 	public function getFriendlyName()
 	{
-		$mixFriendlyName	= ($this->constant_group) ? GetConstantDescription($this->name, $this->constant_group) : $this->name;
-		return ($mixFriendlyName) ? $mixFriendlyName : $this->name;
+		static	$qryQuery;
+		$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
+		
+		$mixFriendlyName	= null;
+		
+		$strConstantGroup	= trim($this->constant_group);
+		$arrMatch			= array();
+		if (preg_match("/^(\w+)\:(\w+)\,(\w+)$/", $this->constant_group, $arrMatch))
+		{
+			// Database lookup (format -- 'table_name:id_field,name_field')
+			$strLookupSQL	= "SELECT {$arrMatch[3]} AS friendly_name FROM {$arrMatch[1]} WHERE {$arrMatch[2]} = ".((int)$this->name)." LIMIT 1";
+			$resLookup		= $qryQuery->Execute($strLookupSQL);
+			if ($resLookup === false)
+			{
+				throw new Exception($qryQuery->Error());
+			}
+			elseif ($arrLookup = $resLookup->Fetch())
+			{
+				$mixFriendlyName	= $arrLookup['friendly_name'];
+			}
+		}
+		elseif ($objConstantGroup = Constant_Group::getConstantGroup($this->constant_group, true))
+		{
+			// Constant Group
+			$mixFriendlyName	= $objConstantGroup->getConstantDescription($this->name);
+		}
+		return ($mixFriendlyName !== null) ? $mixFriendlyName : $this->name;
 	}
 	
 	/**
