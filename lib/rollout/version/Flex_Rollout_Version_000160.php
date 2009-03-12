@@ -259,7 +259,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 			// 6:	Convert account_history.billing_type to account_history.payment_method_id
 			//		Convert account_history.credit_card_id/account_history.direct_debit_id to account_history.new_direct_debit_id
 			$arrAccountHistory['payment_method_id']	= self::_convertBillingTypeToPaymentMethod((int)$arrAccountHistory['billing_type']);
-			switch ($arrAccountHistory['BillingType'])
+			switch ($arrAccountHistory['billing_type'])
 			{
 				case 1:	// Direct Debit
 					$arrAccountHistory['new_direct_debit_id']	= $arrDirectDebitConvert['DirectDebit'][$arrAccountHistory['direct_debit_id']];
