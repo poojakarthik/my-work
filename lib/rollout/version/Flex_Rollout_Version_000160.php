@@ -149,7 +149,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 			}
 			catch (Exception $eException)
 			{
-				throw new Exception("Unable to convert CreditCard with Id '{$arrCreditCard['Id']}':\n".print_r($arrCreditCard)."\n".$eException->getMessage());
+				throw new Exception("Unable to convert CreditCard with Id '{$arrCreditCard['Id']}':\n".serialize($arrCreditCard)."\n".$eException->getMessage());
 			}
 			
 			// Add to CreditCard.id=>direct_debit.id conversion array
