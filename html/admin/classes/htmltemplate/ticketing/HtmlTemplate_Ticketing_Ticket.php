@@ -744,7 +744,13 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		$arrAttachmentStatuses = Ticketing_Attachment_Blacklist_Status::listAll();
 		
-		$bolIsTicketingAdminUser = Ticketing_User::currentUserIsTicketingAdminUser();
+		$user = Ticketing_User::getCurrentUser();
+		
+		$bolIsTicketingAdminUser = $user->isAdminUser();
+
+		// Define All Allowable actions for this page 
+		$arrAllowableActionsForPage = array('edit', 'send');
+		$intNumActions = count($arrAllowableActionsForPage);
 
 		?>
 		<br/>
@@ -767,7 +773,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					<th>Delivery Status</th>
 					<th>Delivered</th>
 					<th>Created</th>
-					<th>Actions</th>
+					<th colspan="<?=$intNumActions?>">Actions</th>
 					<th><input type='button' onclick='toggleShowAllCorrespondenceDetails(this)' class='expand-button-expanded' style='float:right'></input></th>
 				</tr>
 			</thead>
@@ -777,7 +783,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					{
 		?>
 				<tr class="alt">
-					<td colspan="8">There are no correspondences for this ticket.</td>
+					<td colspan="<?=(7+$intNumActions)?>">There are no correspondences for this ticket.</td>
 				</tr>
 		<?php
 					}
@@ -785,6 +791,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					{
 						$alt = FALSE;
 						$bolFirst = TRUE;
+						
 						foreach($correspondences as $correspondence)
 						{
 							$altClass = $alt ? 'alt' : '';
@@ -807,13 +814,26 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 							
 							$strExpandButton = "<input type='button' onclick='toggleShowCorrespondenceDetails({$correspondence->id}, this)' class='$strExpandButtonClass' style='float:right'></input>";
 							
+							$arrPossibleActions = Application_Handler_Ticketing::getPermittedCorrespondenceActions($user, $correspondence);
 							$arrActions = array();
-							if ($correspondence->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT && $correspondence->isEmail() && $correspondence->isOutgoing())
+							foreach ($arrAllowableActionsForPage as $strAction)
 							{
-								// The user can send the email
-								$arrActions[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/Send/?{$strCurrentAccountGetVar}\">Send</a>";
+								if (in_array($strAction, $arrPossibleActions))
+								{
+									$strAction = ucfirst($strAction);
+									$arrActions[] = "<td><a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/{$strAction}/?{$strCurrentAccountGetVar}\">{$strAction}</a></td>";
+								}
+								elseif ($strAction == 'send' && in_array('resend', $arrPossibleActions))
+								{
+									$arrActions[] = "<td><a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/Resend/?{$strCurrentAccountGetVar}\">Resend</a></td>";
+								}
+								else
+								{
+									$arrActions[] = "<td>&nbsp;</td>";
+								}
 							}
-							$strActions = implode(" | ", $arrActions);
+							
+							$strActions = implode("\n", $arrActions);
 							
 							$strDetails = "<em>Content:</em><div class='details'>". nl2br(htmlspecialchars(trim($correspondence->details))) ."</div>";
 							
@@ -868,11 +888,11 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					<td><?=$deliveryStatusName?></td>
 					<td><?=$strDeliveryTimestamp?></td>
 					<td><?=$strCreationTimestamp?></td>
-					<td><?=$strActions?></td>
+					<?=$strActions?>
 					<td><?=$strExpandButton?></td>
 				</tr>
 				<tr class='<?=$strContentClass?> <?=$altClass?>' altClass='<?=$altClass?>' id='ticket_correspondence_content_<?=$correspondence->id?>'>
-					<td colspan='8' class='ticket-correspondence-content'>
+					<td colspan='<?=(7+$intNumActions)?>' class='ticket-correspondence-content'>
 						<?=$strDetails?>
 						<?=$strAttachments?>
 					</td>
@@ -884,7 +904,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 			</tbody>
 			<tfoot class="footer">
 				<tr>
-					<th colspan="8">&nbsp;</th>
+					<th colspan="<?=(7+$intNumActions)?>">&nbsp;</th>
 				</tr>
 			</tfoot>
 		</table>

@@ -1190,7 +1190,7 @@ class Application_Handler_Ticketing extends Application_Handler
 	}
 
 
-	private function getPermittedCorrespondenceActions($user, $correspondence)
+	public static function getPermittedCorrespondenceActions($user, $correspondence)
 	{
 		$permittedActions = array();
 
