@@ -141,7 +141,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 			{
 				$objCreditCard->expiry_year		= 2000 + (int)$arrCreditCard['ExpYear'];
 			}
-			$objCreditCard->cvv					= $arrCreditCard['Name'];
+			$objCreditCard->cvv					= ($arrCreditCard['CVV']) ? $arrCreditCard['CVV'] : Encrypt(str_repeat('0', 3));
 			
 			try
 			{
@@ -149,7 +149,7 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 			}
 			catch (Exception $eException)
 			{
-				throw new Exception("Unable to convert CreditCard with Id '{$arrCreditCard['Id']}':\n".$eException->getMessage());
+				throw new Exception("Unable to convert CreditCard with Id '{$arrCreditCard['Id']}':\n".print_r($arrCreditCard)."\n".$eException->getMessage());
 			}
 			
 			// Add to CreditCard.id=>direct_debit.id conversion array
