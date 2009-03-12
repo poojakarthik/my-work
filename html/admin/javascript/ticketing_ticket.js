@@ -56,6 +56,8 @@ function populateContactList(contacts)
 		option.appendChild(document.createTextNode(name));
 		contactId.appendChild(option);
 	}
+	
+	contactId.className = '';
 }
 
 function setCustomerGroup(strCustomerGroupName)

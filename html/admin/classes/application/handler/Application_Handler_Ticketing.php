@@ -757,6 +757,12 @@ class Application_Handler_Ticketing extends Application_Handler
 							$account = $ticket->getAccount();
 							if ($account)
 							{
+								if (!$ticket->customerGroupId)
+								{
+									// An accout has been specified, but a customer group hasn't
+									$ticket->customerGroupId = $account->customerGroup;
+								}
+								
 								$arrAccountServices = $account->listServices(array(SERVICE_ACTIVE, SERVICE_DISCONNECTED, SERVICE_PENDING));
 								if ($ticket->id == NULL)
 								{
