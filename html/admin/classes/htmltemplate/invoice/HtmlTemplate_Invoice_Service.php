@@ -148,7 +148,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 					echo "
 			<td>" . htmlspecialchars($this->tidyDateTime($cdr['StartDatetime'])) . "</td>
 			<td>" . htmlspecialchars(($arrInvoice['ServiceType'] == SERVICE_TYPE_INBOUND) ? $cdr['Source'] : $cdr['Destination']) . "</td>
-			<td>" . htmlspecialchars($cdr['Duration']) . "</td>";
+			<td>" . htmlspecialchars(number_format($cdr['Duration'], 0)) . "</td>";
 					break;
 			}
 
