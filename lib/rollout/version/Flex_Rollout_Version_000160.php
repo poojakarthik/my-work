@@ -19,7 +19,8 @@
 
 class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 {
-	static public	$arrPaymentMethods		= null;
+	static public	$arrPaymentMethods	= null;
+	static public	$arrCreditCardTypes	= null;
 	
 	private $rollbackSQL = array();
 
@@ -324,6 +325,51 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 				
 			default:
 				throw new Exception("Unable to convert BillingType of '{$intBillingType}' to payment_method equivalent");
+				break;
+		}
+	}
+	
+	private static function _convertCreditCardType($intCreditCardType)
+	{
+		static	$dbAdmin;
+		$dbAdmin	= (isset($dbAdmin)) ? $dbAdmin : Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
+		
+		if (self::$arrCreditCardTypes === null)
+		{
+			self::$arrCreditCardTypes	= array();
+			
+			// Load the Payment Methods
+			$result = $dbAdmin->query("SELECT * FROM credit_card_type WHERE 1");
+			if (PEAR::isError($result))
+			{
+				throw new Exception(__CLASS__ . ' Failed to retrieve the credit_card_type Constants. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
+			}
+			while ($arrCreditCardType = $result->fetchRow(MDB2_FETCHMODE_ASSOC))
+			{
+				self::$arrCreditCardTypes[$arrCreditCardType['const_name']]	= $arrCreditCardType;
+			}
+		}
+		
+		switch ($intCreditCardType)
+		{
+			case 1:	// VISA
+				return (int)self::$arrPaymentMethods['CREDIT_CARD_TYPE_VISA']['id'];
+				break;
+				
+			case 2:	// MasterCard
+				return (int)self::$arrPaymentMethods['CREDIT_CARD_TYPE_MASTERCARD']['id'];
+				break;
+			
+			case 4:	// AMEX
+				return (int)self::$arrPaymentMethods['CREDIT_CARD_TYPE_AMEX']['id'];
+				break;
+			
+			case 5:	// Diners
+				return (int)self::$arrPaymentMethods['CREDIT_CARD_TYPE_DINERS']['id'];
+				break;
+				
+			default:
+				throw new Exception("Unable to convert CreditCard type of '{$intCreditCardType}' to credit_card_type equivalent");
 				break;
 		}
 	}
