@@ -268,11 +268,8 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 				case 2:	// Credit Card
 					$arrAccountHistory['new_direct_debit_id']	= $arrDirectDebitConvert['CreditCard'][$arrAccountHistory['credit_card_id']];
 					break;
-				
-				default:
-					$arrAccountHistory['new_direct_debit_id']	= 'NULL';
-					break;
 			}
+			$arrAccountHistory['new_direct_debit_id']	= ($arrAccountHistory['new_direct_debit_id']) ? $arrAccountHistory['new_direct_debit_id'] : 'NULL';
 			
 			// Save the Account History record back to the DB
 			$strAccountHistorySaveSQL	=	"UPDATE account_history " .
