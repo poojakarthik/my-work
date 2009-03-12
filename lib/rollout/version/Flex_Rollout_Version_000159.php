@@ -88,10 +88,10 @@ class Flex_Rollout_Version_000159 extends Flex_Rollout_Version
 						account_id				BIGINT(20)	UNSIGNED	NOT NULL								COMMENT '(FK) Account this Direct Debit belongs to',
 						direct_debit_type_id	BIGINT(20)	UNSIGNED	NOT NULL								COMMENT '(FK) Direct Debit Type (eg. Credit Card, Bank Account)',
 						created_employee_id		BIGINT(20)	UNSIGNED	NOT NULL								COMMENT '(FK) Employee who created this Direct Debit',
-						created_on				TIMESTAMP				NOT NULL	DEFAULT	CURRENT_TIMESTAMP	COMMENT 'Creation Timestamp',
+						created_on				TIMESTAMP				NOT NULL								COMMENT 'Creation Timestamp',
 						dealer_id				BIGINT(20)	UNSIGNED	NULL									COMMENT '(FK) Dealer who obtained the Direct Debit details',
 						modified_employee_id	BIGINT(20)	UNSIGNED	NOT NULL								COMMENT '(FK) Employee who last modified this Direct Debit',
-						modified_on				TIMESTAMP				NOT NULL	DEFAULT	CURRENT_TIMESTAMP	COMMENT 'Last Modification Timestamp',
+						modified_on				TIMESTAMP				NOT NULL								COMMENT 'Last Modification Timestamp',
 						status_id				BIGINT(20)	UNSIGNED	NOT NULL								COMMENT '(FK) Active/Inactive Status of this Direct Debit',
 						
 						CONSTRAINT	pk_direct_debit_id						PRIMARY KEY (id),
