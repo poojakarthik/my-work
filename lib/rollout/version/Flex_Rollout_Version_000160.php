@@ -225,11 +225,8 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 				case 2:	// Credit Card
 					$arrAccount['direct_debit_id']	= $arrDirectDebitConvert['CreditCard'][(int)$arrAccount['CreditCard']];
 					break;
-				
-				default:
-					$arrAccount['direct_debit_id']	= 'NULL';
-					break;
 			}
+			$arrAccount['direct_debit_id']	= ($arrAccount['direct_debit_id']) ? $arrAccount['direct_debit_id'] : 'NULL';
 			
 			// Save the Account back to the DB
 			$strAccountSaveSQL	=	"UPDATE Account " .
