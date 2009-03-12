@@ -1200,6 +1200,7 @@
 					break;
 				
 				case CHARGE_APPROVED:
+				case CHARGE_TEMP_INVOICE:
 					// Set the charge status to Deleted
 					$arrSurcharge['Status']	= CHARGE_DELETED;
 					$ubiSurcharge->Execute($arrSurcharge);

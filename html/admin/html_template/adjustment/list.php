@@ -92,8 +92,10 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		$bolUserIsGod				= AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD);
 		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		
+		$bolUserCanDeleteCharges	= ($bolHasProperAdminPerm || $bolHasCreditManagementPerm);
+		
 		// define the table's header
-		if ($bolHasProperAdminPerm || $bolHasCreditManagementPerm)
+		if ($bolUserCanDeleteCharges)
 		{
 			// User has admin permisions and can therefore delete an adjustment
 			Table()->AdjustmentTable->SetHeader("Date", "Code", "&nbsp;","Amount ($)", "&nbsp;");
@@ -122,10 +124,10 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			}
 			
 			// add the row
-			if ($bolHasProperAdminPerm || $bolHasCreditManagementPerm)
+			if ($bolUserCanDeleteCharges)
 			{
 				// Only charges having status = waiting or approved can be deleted
-				if (($dboCharge->Status->Value == CHARGE_WAITING) || ($dboCharge->Status->Value == CHARGE_APPROVED))
+				if (($dboCharge->Status->Value == CHARGE_WAITING) || ($dboCharge->Status->Value == CHARGE_APPROVED) || ($dboCharge->Status->Value == CHARGE_TEMP_INVOICE))
 				{
 					// build the "Delete Adjustment" link
 					$strDeleteAdjustmentHref  = Href()->DeleteAdjustment($dboCharge->Id->Value);

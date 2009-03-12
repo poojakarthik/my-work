@@ -519,8 +519,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				return TRUE;
 			}
 			
-			// The charge can only be deleted if its status is CHARGE_WAITING or CHARGE_APPROVED
-			if ((DBO()->Charge->Status->Value == CHARGE_WAITING) || (DBO()->Charge->Status->Value == CHARGE_APPROVED))
+			// The charge can only be deleted if its status is CHARGE_WAITING or CHARGE_APPROVED or CHARGE_TEMP_INVOICE
+			if ((DBO()->Charge->Status->Value == CHARGE_WAITING) || (DBO()->Charge->Status->Value == CHARGE_APPROVED) || (DBO()->Charge->Status->Value == CHARGE_TEMP_INVOICE))
 			{
 				// Delete the charge
 				DBO()->Charge->Status = CHARGE_DELETED;
