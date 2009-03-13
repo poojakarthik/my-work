@@ -296,7 +296,7 @@ window.location				= \"$strAvailablePlansLink?RatePlan.ServiceType=\"+ elmServic
 			$strCustomerGroupCell	= "<input id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup' type='hidden' value='{$arrRatePlan['customer_group']}' /><span id='RatePlan_{$arrRatePlan['Id']}_CustomerGroup_Name'>".$strCustomerGroup."</span>";
 			
 			// Add the row
-			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strCustomerGroupCell, $strDefaultCell, $strAdvanceCell, $strContractCell, $strLockedCell, $strCDRRequiredCell, $strSharedCell, $strCDRHiding, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strActionCell);
+			Table()->PlanTable->AddRow($strCheckboxCell, $strServiceTypeCell, $strNameCell, $strCustomerGroupCell, $strDefaultCell, $strAdvanceCell, $strContractCell, $strLockedCell, $strCDRRequiredCell, $strSharedCell, $strCDRHiding, $strStatusCell, $strBrochureCell, $strVoiceAuthCell, $strEditCell, $strAddCell);
 			Table()->PlanTable->SetOnClick("\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked = !\$ID('RatePlan_{$arrRatePlan['Id']}_Checkbox').checked;");
 			
 			$arrRatePlanDetails[$arrRatePlan['Id']] = array(	"Name"			=> $strName,
