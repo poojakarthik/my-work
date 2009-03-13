@@ -566,8 +566,9 @@ class Rate_Plan extends ORM
 		$objVariables->admin_managers->setValue($strAdminManagers);
 		
 		// Early Exit Fee
-		$objVariables->early_exit_fee_inc_gst->setValue(round($objRatePlanPrevious->contract_exit_fee * 1.1, 2));
-		$objVariables->half_early_exit_fee_inc_gst->setValue(round($objVariables->early_exit_fee_inc_gst / 2, 2));
+		$fltEarlyExitFee	= round($objRatePlanPrevious->contract_exit_fee * 1.1, 2);
+		$objVariables->early_exit_fee_inc_gst->setValue(number_format($fltEarlyExitFee, 2, '.', ''));
+		$objVariables->half_early_exit_fee_inc_gst->setValue(number_format(round($fltEarlyExitFee / 2, 2), 2, '.', ''));
 		
 		// Parse the Template, replacing the placeholders with valid data
 		return Document_Template::render($objTemplateContent->content, $objVariables);
