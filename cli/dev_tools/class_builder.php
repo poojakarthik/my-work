@@ -19,11 +19,6 @@
  * @license	NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
-//TODO!Andrew! add support for building javascript classes
-//TODO!Andrew! add support for building class properties
-
-
 
 class ClassBuilderJS
 {
@@ -133,8 +128,6 @@ class ClassBuilderPHP
 			$this->strOutput .= $strLine;
 			$this->strOutput .= "\n";
 		}
-		
-		
 		
 		return $this->strOutput;
 	}
