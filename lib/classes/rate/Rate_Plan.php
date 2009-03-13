@@ -512,7 +512,7 @@ class Rate_Plan extends ORM
 	 *
 	 * @method
 	 */
-	public function parseRejectionScript(Account $objAccount, Contact $objContact, Service $objService, Service_Rate_Plan $objRatePlanPrevious=NULL)
+	public function parseRejectionScript(Account $objAccount, Contact $objContact, Service $objService, Service_Rate_Plan $objRatePlanPrevious)
 	{
 		$strOriginalTimezone	= date_default_timezone_get();
 		date_default_timezone_set("Australia/Brisbane");
@@ -531,7 +531,42 @@ class Rate_Plan extends ORM
 		$strDateFormat		= "jS F, Y";
 		$strTimeFormat		= "h:i a";
 		
+		$qryQuery	= new Query();
+		
 		$objVariables	= new Flex_Dom_Document();
+		
+		// Admin Managers
+		$objVariables->admin_managers	= '';
+		$resAdminManagers				= $qryQuery->Execute("SELECT * FROM Employee WHERE user_role_id = ".USER_ROLE_ADMIN_MANAGER);
+		if ($resAdminManagers === false)
+		{
+			throw new Exception($qryQuery->Error());
+		}
+		elseif ($resAdminManagers->num_rows)
+		{
+			$intAdminManagerCount	= 0;
+			while ($arrAdminManager = $resAdminManagers->fetch_assoc())
+			{
+				$intAdminManagerCount++;
+				$objVariables->admin_managers	.= $arrAdminManager['FirstName'] . (($arrAdminManager['LastName']) ? ' '.$arrAdminManager['LastName'] : "");
+				if ($intAdminManagerCount == ($resAdminManagers->num_rows - 1))
+				{
+					$objVariables->admin_managers	.= ', or ';
+				}
+				elseif ($intAdminManagerCount < ($resAdminManagers->num_rows - 1))
+				{
+					$objVariables->admin_managers	.= ', ';
+				}
+			}
+		}
+		else
+		{
+			$objVariables->admin_managers	= "your Admin Manager";
+		}
+		
+		// Early Exit Fee
+		$objVariables->early_exit_fee_inc_gst		= round($objRatePlanPrevious->contract_exit_fee * 1.1, 2);
+		$objVariables->half_early_exit_fee_inc_gst	= round($objVariables->early_exit_fee_inc_gst / 2, 2);
 		
 		// Parse the Template, replacing the placeholders with valid data
 		return Document_Template::render($objTemplateContent->content, $objVariables);
