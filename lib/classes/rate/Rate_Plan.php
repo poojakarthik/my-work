@@ -553,7 +553,7 @@ class Rate_Plan extends ORM
 				$strAdminManagers	.= $arrAdminManager['FirstName'] . (($arrAdminManager['LastName']) ? ' '.$arrAdminManager['LastName'] : "");
 				if ($intAdminManagerCount == ($resAdminManagers->num_rows - 1))
 				{
-					$strAdminManagers	.= ', or ';
+					$strAdminManagers	.= ' or ';
 				}
 				elseif ($intAdminManagerCount < ($resAdminManagers->num_rows - 1))
 				{
