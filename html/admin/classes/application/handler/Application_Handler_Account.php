@@ -29,7 +29,7 @@ class Application_Handler_Account extends Application_Handler
 			while ($arrCountry = $resCountries->fetch_assoc())
 			{
 				// States
-				$resStates	= $qryQuery->Execute("SELECT * FROM state WHERE country_id = {$arrCountry['id'])");
+				$resStates	= $qryQuery->Execute("SELECT * FROM state WHERE country_id = {$arrCountry['id']})");
 				if ($resStates === false)
 				{
 					throw new Exception($resStates->Error());
