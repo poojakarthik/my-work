@@ -536,8 +536,8 @@ class Rate_Plan extends ORM
 		$objVariables	= new Flex_Dom_Document();
 		
 		// Admin Managers
-		$objVariables->admin_managers	= '';
-		$resAdminManagers				= $qryQuery->Execute("SELECT * FROM Employee WHERE user_role_id = ".USER_ROLE_ADMIN_MANAGER);
+		$strAdminManagers	= '';
+		$resAdminManagers	= $qryQuery->Execute("SELECT * FROM Employee WHERE user_role_id = ".USER_ROLE_ADMIN_MANAGER);
 		if ($resAdminManagers === false)
 		{
 			throw new Exception($qryQuery->Error());
@@ -548,25 +548,26 @@ class Rate_Plan extends ORM
 			while ($arrAdminManager = $resAdminManagers->fetch_assoc())
 			{
 				$intAdminManagerCount++;
-				$objVariables->admin_managers	.= $arrAdminManager['FirstName'] . (($arrAdminManager['LastName']) ? ' '.$arrAdminManager['LastName'] : "");
+				$strAdminManagers	.= $arrAdminManager['FirstName'] . (($arrAdminManager['LastName']) ? ' '.$arrAdminManager['LastName'] : "");
 				if ($intAdminManagerCount == ($resAdminManagers->num_rows - 1))
 				{
-					$objVariables->admin_managers	.= ', or ';
+					$strAdminManagers	.= ', or ';
 				}
 				elseif ($intAdminManagerCount < ($resAdminManagers->num_rows - 1))
 				{
-					$objVariables->admin_managers	.= ', ';
+					$strAdminManagers	.= ', ';
 				}
 			}
 		}
 		else
 		{
-			$objVariables->admin_managers	= "your Admin Manager";
+			$strAdminManagers	= "your Admin Manager";
 		}
+		$objVariables->admin_managers->setValue($strAdminManagers);
 		
 		// Early Exit Fee
-		$objVariables->early_exit_fee_inc_gst		= round($objRatePlanPrevious->contract_exit_fee * 1.1, 2);
-		$objVariables->half_early_exit_fee_inc_gst	= round($objVariables->early_exit_fee_inc_gst / 2, 2);
+		$objVariables->early_exit_fee_inc_gst->setValue(round($objRatePlanPrevious->contract_exit_fee * 1.1, 2));
+		$objVariables->half_early_exit_fee_inc_gst->setValue(round($objVariables->early_exit_fee_inc_gst / 2, 2));
 		
 		// Parse the Template, replacing the placeholders with valid data
 		return Document_Template::render($objTemplateContent->content, $objVariables);
