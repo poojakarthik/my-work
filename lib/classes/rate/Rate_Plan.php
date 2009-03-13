@@ -531,6 +531,8 @@ class Rate_Plan extends ORM
 		$strDateFormat		= "jS F, Y";
 		$strTimeFormat		= "h:i a";
 		
+		$objOldRatePlan		= ($objRatePlanPrevious !== NULL)? new Rate_Plan(array('Id'=>$objRatePlanPrevious->RatePlan), true) : NULL;
+		
 		$qryQuery	= new Query();
 		
 		$objVariables	= new Flex_Dom_Document();
@@ -566,7 +568,7 @@ class Rate_Plan extends ORM
 		$objVariables->admin_managers->setValue($strAdminManagers);
 		
 		// Early Exit Fee
-		$fltEarlyExitFee	= round($objRatePlanPrevious->contract_exit_fee * 1.1, 2);
+		$fltEarlyExitFee	= round($objOldRatePlan->contract_exit_fee * 1.1, 2);
 		$objVariables->early_exit_fee_inc_gst->setValue(number_format($fltEarlyExitFee, 2, '.', ''));
 		$objVariables->half_early_exit_fee_inc_gst->setValue(number_format(round($fltEarlyExitFee / 2, 2), 2, '.', ''));
 		
