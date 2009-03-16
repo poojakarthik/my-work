@@ -216,7 +216,7 @@
  		$arrUpdateColumns['Status']	= '';
  		$this->_ubiCDRStatus = new StatementUpdateById("CDR", $arrUpdateColumns);
 		
-		$this->_insCreditLink = new StatementInsert("CDRCreditLink");
+		$this->_insCreditLink = new StatementInsert("cdr_credit_link");
 		
 		// Update CDR Query
 		$arrDefine = $this->db->FetchClean("CDR");
@@ -983,8 +983,8 @@
 	 		
 	 		// Add to the link table
 			$arrInsertColumns = Array();
-	 		$arrInsertColumns['CreditCDR']	= $arrCreditCDR['Id'];
-	 		$arrInsertColumns['DebitCDR']	= $arrDebitCDR['Id'];
+	 		$arrInsertColumns['credit_cdr_id']	= $arrCreditCDR['Id'];
+	 		$arrInsertColumns['debit_cdr_id']	= $arrDebitCDR['Id'];
 	 		$this->_insCreditLink->Execute($arrInsertColumns);
 	 		
 	 		// Update the Credit CDR
