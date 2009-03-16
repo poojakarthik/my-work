@@ -60,7 +60,7 @@ class Service_Rate_Plan extends ORM
 			$intCurrentDate		= time();
 			$strEndDate			= date("Y-m-d", $intScheduledEndDatetime);
 			
-			return Flex_Date::difference($strEndDate, date('Y-m-d', $intCurrentDate)) + 1;
+			return Flex_Date::difference(date('Y-m-d', $intCurrentDate), $strEndDate) + 1;
 		}
 		else
 		{
