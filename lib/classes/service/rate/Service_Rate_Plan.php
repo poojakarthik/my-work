@@ -41,9 +41,9 @@ class Service_Rate_Plan extends ORM
 	/**
 	 * contractMonthsRemaining()
 	 *
-	 * Calculates the number of months remaining on this contract
+	 * Calculates the number of months remaining on this Contract
 	 *
-	 * @param	[boolean	$bolLoadById		]	TRUE	: The months remaining is rounded up (includes this month) (Default)
+	 * @param	[boolean	$bolInclusive		]	TRUE	: The months remaining is rounded up (includes this month) (Default)
 	 * 												FALSE	: The months remaining is rounded down (excludes this month)
 	 * 
 	 * @return	integer
@@ -64,6 +64,63 @@ class Service_Rate_Plan extends ORM
 		else
 		{
 			return false;
+		}
+	}
+	
+	/**
+	 * calculatePayout()
+	 *
+	 * Calculates the Payout figure for this Contract (excluding global tax)
+	 *
+	 * @param	[boolean	$bolInclusive		]	TRUE	: The months remaining is rounded up (includes this month) (Default)
+	 * 												FALSE	: The months remaining is rounded down (excludes this month)
+	 * 
+	 * @return	integer
+	 * 
+	 * @method
+	 */
+	public function calculatePayout($bolInclusive=true)
+	{
+		$objContractTerms	= Contract_Terms::getCurrent();
+		$objRatePlan		= new Rate_Plan(array('id'=>$this->RatePlan), true);
+		
+		$fltTotalPayout		= 0.0;
+		
+		$intInvoiceCount	= $this->getInvoiceCount();
+		
+		$intContractMonthsRemaining	= $this->contractMonthsRemaining($bolInclusive);
+		
+		if ($intContractMonthsRemaining)
+		{
+			// Payout
+			$fltTotalPayout	+= ($intInvoiceCount >= $objContractTerms->contact_payout_minimum_invoices) ? (($intContractMonthsRemaining * $objRatePlan->MinMonthly) * ($objRatePlan->contract_payout_percentage / 100)) : 0.0;
+			
+			// Early Exit Fee
+			$fltTotalPayout	+= ($intInvoiceCount >= $objContractTerms->exit_fee_minimum_invoices) ? $fltTotalPayout : 0.0;
+		}
+		return round($fltTotalPayout, 2);
+	}
+	
+	/**
+	 * getInvoiceCount()
+	 *
+	 * Gets the number of Invoices this Service Rate Plan record has been included in
+	 * 
+	 * @return	integer
+	 * 
+	 * @method
+	 */
+	public function getInvoiceCount($bolInclusive=true)
+	{
+		$selInvoiceCount	= self::_preparedStatement('selInvoiceCount');
+		if ($selInvoiceCount->Execute($this->toArray()) === false)
+		{
+			throw new Exception($selInvoiceCount->Error());
+		}
+		else
+		{
+			$arrInvoiceCount	= $selInvoiceCount->Fetch();
+			return $arrInvoiceCount['invoice_count'];
 		}
 	}
 	
@@ -97,6 +154,9 @@ class Service_Rate_Plan extends ORM
 				// SELECTS
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan", "*", "Id = <Id>", NULL, 1);
+					break;
+				case 'selInvoiceCount':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceTotal JOIN InvoiceRun ON InvoiceRun.Id = ServiceTotal.invoice_run_id", "COUNT(ServiceTotal.Id) AS invoice_count", "service_rate_plan = <id> AND InvoiceRun.invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED);
 					break;
 				
 				// INSERTS
