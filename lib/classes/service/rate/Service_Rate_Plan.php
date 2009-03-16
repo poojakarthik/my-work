@@ -89,7 +89,6 @@ class Service_Rate_Plan extends ORM
 		$intInvoiceCount	= $this->getInvoiceCount();
 		
 		$intContractMonthsRemaining	= $this->contractMonthsRemaining($bolInclusive);
-		throw new Exception("Months Remaining: {$intContractMonthsRemaining}");
 		
 		if ($intContractMonthsRemaining)
 		{
