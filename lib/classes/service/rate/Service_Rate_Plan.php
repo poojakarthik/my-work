@@ -84,6 +84,8 @@ class Service_Rate_Plan extends ORM
 		$objContractTerms	= Contract_Terms::getCurrent();
 		$objRatePlan		= new Rate_Plan(array('id'=>$this->RatePlan), true);
 		
+		throw new Exception("Payout Invoices: {$objContractTerms->contact_payout_minimum_invoices}; Exit Fee Invoices: {$objContractTerms->exit_fee_minimum_invoices}");
+		
 		$fltTotalPayout		= 0.0;
 		
 		$intInvoiceCount	= $this->getInvoiceCount();
