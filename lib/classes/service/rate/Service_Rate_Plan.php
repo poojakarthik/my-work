@@ -84,7 +84,7 @@ class Service_Rate_Plan extends ORM
 		$objContractTerms	= Contract_Terms::getCurrent();
 		$objRatePlan		= new Rate_Plan(array('id'=>$this->RatePlan), true);
 		
-		throw new Exception("Payout Invoices: {$objContractTerms->contact_payout_minimum_invoices}; Exit Fee Invoices: {$objContractTerms->exit_fee_minimum_invoices}");
+		throw new Exception("Payout Invoices: {$objContractTerms->contract_payout_minimum_invoices}; Exit Fee Invoices: {$objContractTerms->exit_fee_minimum_invoices}");
 		
 		$fltTotalPayout		= 0.0;
 		
@@ -95,10 +95,10 @@ class Service_Rate_Plan extends ORM
 		if ($intContractMonthsRemaining)
 		{
 			// Payout
-			$fltTotalPayout	+= ($intInvoiceCount >= $objContractTerms->contact_payout_minimum_invoices) ? (($intContractMonthsRemaining * $objRatePlan->MinMonthly) * ($objRatePlan->contract_payout_percentage / 100)) : 0.0;
+			$fltTotalPayout	+= ($intInvoiceCount >= $objContractTerms->contract_payout_minimum_invoices) ? (($intContractMonthsRemaining * $objRatePlan->MinMonthly) * ($objRatePlan->contract_payout_percentage / 100)) : 0.0;
 			
 			// Early Exit Fee
-			$fltTotalPayout	+= ($intInvoiceCount >= $objContractTerms->exit_fee_minimum_invoices) ? $fltTotalPayout : 0.0;
+			$fltTotalPayout	+= ($intInvoiceCount >= $objContractTerms->exit_fee_minimum_invoices) ? $objRatePlan->contact_exit_fee : 0.0;
 		}
 		return round($fltTotalPayout, 2);
 	}
