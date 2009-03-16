@@ -87,6 +87,7 @@ class Service_Rate_Plan extends ORM
 		$fltTotalPayout		= 0.0;
 		
 		$intInvoiceCount	= $this->getInvoiceCount();
+		throw new Exception("Invoice Count: {$intInvoiceCount}");
 		
 		$intContractMonthsRemaining	= $this->contractMonthsRemaining($bolInclusive);
 		
