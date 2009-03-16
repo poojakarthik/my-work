@@ -53,7 +53,6 @@ class Service_Rate_Plan extends ORM
 	public function contractMonthsRemaining($bolInclusive=true)
 	{
 		$intScheduledEndDatetime		= strtotime($this->contract_scheduled_end_datetime);
-		throw new Exception("Scheduled End Datetime: {$this->contract_scheduled_end_datetime}");
 		
 		if ($intScheduledEndDatetime)
 		{
