@@ -158,7 +158,7 @@ class Service_Rate_Plan extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan", "*", "Id = <Id>", NULL, 1);
 					break;
 				case 'selInvoiceCount':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceTotal JOIN InvoiceRun ON InvoiceRun.Id = ServiceTotal.invoice_run_id", "COUNT(ServiceTotal.Id) AS invoice_count", "service_rate_plan = <id> AND InvoiceRun.invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceTotal JOIN InvoiceRun ON InvoiceRun.Id = ServiceTotal.invoice_run_id", "COUNT(ServiceTotal.Id) AS invoice_count", "service_rate_plan = <Id> AND InvoiceRun.invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED);
 					break;
 				
 				// INSERTS
