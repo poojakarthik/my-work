@@ -218,8 +218,6 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		</form>
 
 		<?php
-
-		$this->render_correspondences($ticket);
 	}
 
 	private function render_edit($ticket=FALSE, $requestedAction="Edit")
@@ -543,11 +541,11 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		?>
 						<tr class="alt">
 							<td class="title">Created: </td>
-							<td><?=$ticket->creationDatetime?></td>
+							<td><?=date('H:i:s M j, Y', strtotime($ticket->creationDatetime))?></td>
 						</tr>
 						<tr class="alt">
 							<td class="title">Last Modified: </td>
-							<td><?=$ticket->modifiedDatetime?></td>
+							<td><?=date('H:i:s M j, Y', strtotime($ticket->modifiedDatetime))?></td>
 						</tr>
 						<tr class="alt">
 							<td class="title">Last Modified By: </td>
@@ -686,8 +684,6 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 
 		<?php
-
-		$this->render_correspondences($ticket);
 	}
 
 	private function no_ticket($header='Error', $message='No ticket selected.')
@@ -719,194 +715,6 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 					<td colspan="2" class="title"><?=htmlspecialchars($message)?></td>
 				</tr>
 			</tbody>
-		</table>
-
-		<?php
-	}
-
-
-	private function render_correspondences($ticket)
-	{
-		$objCurrentAccount			= $this->mxdDataToRender['currentAccount'];
-		$strCurrentAccountGetVar	= ($objCurrentAccount)? "Account={$objCurrentAccount->id}" : "";
-		
-		if (!$ticket || !$ticket->isSaved())
-		{
-			return;
-		}
-
-		$correspondences = $ticket->getCorrespondences();
-		$noCorrespondences = count($correspondences) == 0;
-
-		$actionLinks = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/Create/{$ticket->id}/?{$strCurrentAccountGetVar}\">Create</a>";
-
-		$strGenericAttachmentLink = Flex::getUrlBase() . "reflex.php/Ticketing/Attachment/";
-
-		$arrAttachmentStatuses = Ticketing_Attachment_Blacklist_Status::listAll();
-		
-		$user = Ticketing_User::getCurrentUser();
-		
-		$bolIsTicketingAdminUser = $user->isAdminUser();
-
-		// Define All Allowable actions for this page 
-		$arrAllowableActionsForPage = array('edit', 'send');
-		$intNumActions = count($arrAllowableActionsForPage);
-
-		?>
-		<br/>
-		<table class="reflex" id='ticket_correspondence_table'>
-			<caption>
-				<div id="caption_bar" name="caption_bar">
-				<div id="caption_title" name="caption_title">
-					Correspondences
-				</div>
-				<div id="caption_options" name="caption_options">
-					<?=$actionLinks?>
-				</div>
-				</div>
-			</caption>
-			<thead class="header">
-				<tr>
-					<th>Subject</th>
-					<th>Contact</th>
-					<th>Source</th>
-					<th>Delivery Status</th>
-					<th>Delivered</th>
-					<th>Created</th>
-					<th colspan="<?=$intNumActions?>">Actions</th>
-					<th><input type='button' onclick='toggleShowAllCorrespondenceDetails(this)' class='expand-button-expanded' style='float:right'></input></th>
-				</tr>
-			</thead>
-			<tbody>
-		<?php
-					if ($noCorrespondences)
-					{
-		?>
-				<tr class="alt">
-					<td colspan="<?=(7+$intNumActions)?>">There are no correspondences for this ticket.</td>
-				</tr>
-		<?php
-					}
-					else
-					{
-						$alt = FALSE;
-						$bolFirst = TRUE;
-						
-						foreach($correspondences as $correspondence)
-						{
-							$altClass = $alt ? 'alt' : '';
-							
-							$strContentClass = ($bolFirst)? "displayed-ticket-correspondence-content" : "hidden-ticket-correspondence-content";
-							$strCorrespondenceClass = ($bolFirst)? "ticket-correspondence-summary-with-content" : "ticket-correspondence-summary-without-content";
-							$strExpandButtonClass = ($bolFirst)? "expand-button-expanded" : "expand-button-retracted";
-							$bolFirst = FALSE;
-							
-							$alt = !$alt;
-							
-							$contact			= $correspondence->getContact();
-							$contactName		= $contact ? $contact->getName() : '[No contact]';
-							$sourceName			= $correspondence->getSource()->name;
-							$deliveryStatusName	= $correspondence->getDeliveryStatus()->name;
-							$link				= Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/View/?{$strCurrentAccountGetVar}";
-							
-							$strDeliveryTimestamp	= ($correspondence->deliveryDatetime === NULL)? "" : date("H:i:s d-m-Y", strtotime($correspondence->deliveryDatetime));
-							$strCreationTimestamp	= ($correspondence->creationDatetime === NULL)? "" : date("H:i:s d-m-Y", strtotime($correspondence->creationDatetime));
-							
-							$strExpandButton = "<input type='button' onclick='toggleShowCorrespondenceDetails({$correspondence->id}, this)' class='$strExpandButtonClass' style='float:right'></input>";
-							
-							$arrPossibleActions = Application_Handler_Ticketing::getPermittedCorrespondenceActions($user, $correspondence);
-							$arrActions = array();
-							foreach ($arrAllowableActionsForPage as $strAction)
-							{
-								if (in_array($strAction, $arrPossibleActions))
-								{
-									$strAction = ucfirst($strAction);
-									$arrActions[] = "<td><a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/{$strAction}/?{$strCurrentAccountGetVar}\">{$strAction}</a></td>";
-								}
-								elseif ($strAction == 'send' && in_array('resend', $arrPossibleActions))
-								{
-									$arrActions[] = "<td><a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/Resend/?{$strCurrentAccountGetVar}\">Resend</a></td>";
-								}
-								else
-								{
-									$arrActions[] = "<td>&nbsp;</td>";
-								}
-							}
-							
-							$strActions = implode("\n", $arrActions);
-							
-							$strDetails = "<em>Content:</em><div class='details'>". nl2br(htmlspecialchars(trim($correspondence->details))) ."</div>";
-							
-							// Grab the Attachments (minus the actual file so as not to unneccessarily slow things down)
-							$arrAttachments = Ticketing_Attachment::listForCorrespondence($correspondence);
-							$attachmentTypes = Ticketing_Attachment_Type::listAll();
-							$arrAttachmentRows = array();
-							foreach ($arrAttachments as $attachment)
-							{
-								$strFilename	= htmlspecialchars($attachment->fileName);
-								$attachmentType	= $attachmentTypes[$attachment->attachmentTypeId];
-								$strType		= htmlspecialchars($attachmentType->mimeType);
-								$status			= $arrAttachmentStatuses[$attachmentType->blacklistStatusId];
-								
-								$bolIsDownloadable		= (!$status->isBlacklisted() || $attachment->allowBlacklistOverride()) ? TRUE : FALSE;
-								$strFilenameGroupClass	= ($bolIsDownloadable) ? "downloadable-attachment" : "blocked-downloadable-attachment";
-								
-								if ($status->isBlacklisted() && $bolIsTicketingAdminUser)
-								{
-									// The ticket is blacklisted and the user can toggle whether or not to override this
-									$strToggleLabel = ($bolIsDownloadable)? "Block Download" : "Unblock Download";
-									$strToggleOverrideButtton = "<input type='button' id='correspondence_attachment_toggle_{$attachment->id}' class='reflex-button' attachmentId='{$attachment->id}' onclick='toggleAttachmentBlacklistOverride(this)' value='$strToggleLabel'></input>";
-								}
-								else
-								{
-									$strToggleOverrideButtton = "";
-								}
-								
-								$strFilenameGroup = "<span id='correspondence_attachment_{$attachment->id}' class='{$strFilenameGroupClass}'>
-														<a class='active' href='{$strGenericAttachmentLink}{$attachment->id}'>$strFilename</a>
-														<span class='inactive'>$strFilename</span>
-													</span>";
-													
-								$arrAttachmentRows[] = "$strFilenameGroup - $strType - {$status->name} $strToggleOverrideButtton\n";
-							}
-							
-							if (count($arrAttachmentRows))
-							{
-								$strAttachments = "<em>Attachments:</em><div class='attachments'>". implode('<br />', $arrAttachmentRows) ."</div>";
-							}
-							else
-							{
-								$strAttachments = "";
-							}
-							
-							
-		?>
-				<tr class="<?=$strCorrespondenceClass?> <?=$altClass?>" altClass='<?=$altClass?>' id='ticket_correspondence_<?=$correspondence->id?>'>
-					<td><a href="<?=$link?>"><?=$correspondence->summary ? $correspondence->summary : '<em>[No Subject]</em>'?></a></td>
-					<td><?=$contactName?></td>
-					<td><?=$sourceName?></td>
-					<td><?=$deliveryStatusName?></td>
-					<td><?=$strDeliveryTimestamp?></td>
-					<td><?=$strCreationTimestamp?></td>
-					<?=$strActions?>
-					<td><?=$strExpandButton?></td>
-				</tr>
-				<tr class='<?=$strContentClass?> <?=$altClass?>' altClass='<?=$altClass?>' id='ticket_correspondence_content_<?=$correspondence->id?>'>
-					<td colspan='<?=(7+$intNumActions)?>' class='ticket-correspondence-content'>
-						<?=$strDetails?>
-						<?=$strAttachments?>
-					</td>
-				</tr>
-		<?php
-						}
-					}
-		?>
-			</tbody>
-			<tfoot class="footer">
-				<tr>
-					<th colspan="<?=(7+$intNumActions)?>">&nbsp;</th>
-				</tr>
-			</tfoot>
 		</table>
 
 		<?php

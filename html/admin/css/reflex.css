@@ -253,38 +253,33 @@ option.ticketing-priority-urgent {
 	text-decoration: underline;
 }
 
-tr.displayed-ticket-correspondence-content
+tr.ticket-history-details-row-displayed
 {
 	display: default;
 }
 
-tr.hidden-ticket-correspondence-content
+tr.ticket-history-details-row-hidden
 {
 	display: none;
 }
 
-td.ticket-correspondence-content
+td.ticket-history-record-details
 {
 	border-top: dashed 1px #000;
 	border-bottom: solid 1px #000;
 }
 
-td.ticket-correspondence-content .details,
-td.ticket-correspondence-content .attachments
+
+/* Only show the solid border at the top of the ticket-history-summary-row-displaying-detail-row, if the details, of the record above this one, is hidden */
+tr.ticket-history-details-row-hidden + tr.ticket-history-summary-row-displaying-detail-row td
 {
-	padding-left: 3em;
+	border-top: solid 1px #000;
 }
 
 .blocked-downloadable-attachment .active,
 .downloadable-attachment .inactive
 {
 	display: none;
-}
-
-/* Only show the solid border at the top of the ticket-correspondence-summary-with-content, if the content, of the record above this one, is hidden */
-tr.hidden-ticket-correspondence-content + tr.ticket-correspondence-summary-with-content td
-{
-	border-top: solid 1px #000;
 }
 
 .blocked-downloadable-attachment .inactive

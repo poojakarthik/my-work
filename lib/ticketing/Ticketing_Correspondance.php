@@ -229,7 +229,7 @@ class Ticketing_Correspondance
 			$objCorrespondence->ticketId = $arrDetails['ticket_id'];
 		}
 
-		// Load the ticket for this correspondence (if a ticket does not exist, one will be creation)
+		// Load the ticket for this correspondence (if a ticket does not exist, one will be created)
 		// Note: If this record has a ticket number that does not exist, a new ticket will be created.
 		$ticket = Ticketing_Ticket::forCorrespondence($objCorrespondence);
 
@@ -358,7 +358,7 @@ class Ticketing_Correspondance
 
 	public static function getForTicket(Ticketing_Ticket $ticket)
 	{
-		return self::getFor('ticket_id = <TicketId>', array('TicketId' => $ticket->id), TRUE);
+		return self::getFor('ticket_id = <TicketId>', array('TicketId' => $ticket->id), TRUE, 'creation_datetime DESC, id DESC');
 	}
 
 	public static function getForId($intCorrespondenceId)
@@ -410,7 +410,7 @@ class Ticketing_Correspondance
 		// Note: Email address should be unique, so only fetch the first record
 		if (!$strSort || empty($strSort))
 		{
-			$strSort = 'creation_datetime DESC';
+			$strSort = 'creation_datetime DESC, id DESC';
 		}
 		$selMatches = new StatementSelect(
 			strtolower(__CLASS__), 

@@ -61,7 +61,7 @@ class Ticketing_Ticket
 		// At this point, about all we will know is the subject, the 
 		// contact (which we might know nothing about other than email address)
 		// and the customer group id (which might be null)
-		// Set the rest of thye properties top defaults
+		// Set the rest of the properties to defaults
 		$objTicket = new Ticketing_Ticket();
 		$objTicket->subject = $strSubject;
 		$objTicket->priorityId = TICKETING_PRIORITY_MEDIUM;
@@ -452,7 +452,7 @@ class Ticketing_Ticket
 		// Note: Email address should be unique, so only fetch the first record
 		if (!$strSort || empty($strSort))
 		{
-			$strSort = 'creation_datetime DESC';
+			$strSort = 'creation_datetime DESC, id DESC';
 		}
 		$selMatches = new StatementSelect(
 			strtolower(__CLASS__), 
@@ -612,6 +612,11 @@ class Ticketing_Ticket
 	public function getCorrespondences()
 	{
 		return Ticketing_Correspondance::getForTicket($this);
+	}
+	
+	public function getHistory()
+	{
+		return Ticketing_Ticket_History::getForTicket($this);
 	}
 
 	public function addCorrespondence($strSubject, $strMessage, $arrAttchments=NULL, $intSource=TICKETING_CORRESPONDANCE_SOURCE_PHONE, $bolInbound=FALSE, $bolAlreadyCommunicated=TRUE, $defaultGroupEmail=NULL, $contactOrUserId=NULL)
