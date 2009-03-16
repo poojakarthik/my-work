@@ -568,7 +568,7 @@ class Rate_Plan extends ORM
 		$objVariables->admin_managers->setValue($strAdminManagers);
 		
 		// Early Exit Fee
-		$fltPayout	= round($objRatePlanPrevious->getContractPayout() * 1.1, 2);
+		$fltPayout	= round($objRatePlanPrevious->calculatePayout() * 1.1, 2);
 		$objVariables->payout_inc_gst->setValue(number_format($fltPayout, 2, '.', ''));
 		$objVariables->half_payout_inc_gst->setValue(number_format(round($fltPayout / 2, 2), 2, '.', ''));
 		
