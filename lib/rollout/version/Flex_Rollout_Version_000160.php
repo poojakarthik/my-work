@@ -33,8 +33,8 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		
 		$strSQL =	"ALTER TABLE cdr_credit_link " .
 					"CHANGE Id id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, " .
-                    "CHANGE CreditCDR credit_cdr BIGINT(20) UNSIGNED NOT NULL, ".
-					"CHANGE DebitCDR debit_cdr BIGINT(20) UNSIGNED NOT NULL;";
+                    "CHANGE CreditCDR credit_cdr_id BIGINT(20) UNSIGNED NOT NULL, ".
+					"CHANGE DebitCDR debit_cdr_id BIGINT(20) UNSIGNED NOT NULL;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -42,8 +42,8 @@ class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] =	"ALTER TABLE cdr_credit_link " .
 								"CHANGE id Id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, " .
-                    			"CHANGE credit_cdr CreditCDR BIGINT(20) UNSIGNED NOT NULL, ".
-								"CHANGE debit_cdr DebitCDR BIGINT(20) UNSIGNED NOT NULL;";
+                    			"CHANGE credit_cdr_id CreditCDR BIGINT(20) UNSIGNED NOT NULL, ".
+								"CHANGE debit_cdr_id DebitCDR BIGINT(20) UNSIGNED NOT NULL;";
 		
 		// 2:	Create action_type_detail_requirement table
 		$strSQL = "	CREATE TABLE action_type_detail_requirement
