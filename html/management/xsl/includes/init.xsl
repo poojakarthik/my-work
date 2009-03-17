@@ -319,7 +319,7 @@
 	<xsl:template name="Currency">
 		<xsl:param name="Number" />
 		<xsl:param name="Decimal" select="number('4')" />
-		<xsl:param name="IsCredit" select="number('0')" />
+		<xsl:param name="Negate" select="number('0')" />
 		
 		<xsl:variable name="NumberCorrect">
 			<xsl:choose>
@@ -328,7 +328,7 @@
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:choose>
-						<xsl:when test="$IsCredit = 1">
+						<xsl:when test="$Negate = 1">
 							<xsl:value-of select="number(-$Number)" />
 						</xsl:when>
 						<xsl:otherwise>
