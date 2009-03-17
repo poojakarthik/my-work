@@ -253,6 +253,8 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 		$arrCharge['Notes']			= "Automatically Added Charge";
 		$arrCharge['Description']	= "Late Payment Fee";
 		$arrCharge['ChargeType']	= $this->_strChargeType;
+		$arrCharge['CreatedBy']		= Employee::SYSTEM_EMPLOYEE_ID;
+		$arrCharge['ApprovedBy']	= Employee::SYSTEM_EMPLOYEE_ID;
 		$arrCharge['Amount']		= $lateFee;
 		$arrCharge['Status']		= CHARGE_APPROVED;
 		$arrCharge['Account'] 		= $arrAccount['AccountId'];
