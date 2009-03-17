@@ -82,21 +82,50 @@ class HtmlTemplateDelinquentCDRs extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$intNextBillDate	= GetStartDateTimeForNextBillingPeriod();
-		$intStartingDate	= strtotime("-185 days", $intNextBillDate);
+		// Work out the start of the most recently started billing period
+		$arrCustomerGroups = Customer_Group::listAll();
+		
+		$strNow = GetCurrentISODateTime();
+		$intNow = strtotime($strNow);
+		
+		$intMostRecentlyStartedBillingPeriod = 0;
+		foreach ($arrCustomerGroups as $customerGroup)
+		{
+			try
+			{
+				$intStartOfCurrentBillingPeriod = strtotime(Invoice_Run::getLastInvoiceDateByCustomerGroup($customerGroup->id, $strNow));
+				if ($intStartOfCurrentBillingPeriod > $intMostRecentlyStartedBillingPeriod)
+				{
+					$intMostRecentlyStartedBillingPeriod = $intStartOfCurrentBillingPeriod;
+				}
+			}
+			catch (Exception $e)
+			{
+				// Suppress errors at this stage
+			}
+		}
+		
+		if ($intMostRecentlyStartedBillingPeriod == 0)
+		{
+			// Invoice_Run::getLastInvoiceDateByCustomerGroup() must have failed for each customer group
+			// Use today's date
+			$intMostRecentlyStartedBillingPeriod = $intNow;
+		}
+		
+		$intStartingDate	= strtotime("-189 days", $intMostRecentlyStartedBillingPeriod);
 		
 		$strStartingDate	= date("d/m/Y", $intStartingDate);
-		$strEndingDate		= date("d/m/Y", $intNextBillDate);
+		$strEndingDate		= date("d/m/Y", $intNow);
 		
 		$strYearLowerLimit	= substr($strStartingDate, 6);
 		$strYearUpperLimit	= substr($strEndingDate, 6);
 		
-		$intMaxYear			= intval(date("Y", $intNextBillDate));
+		$intMaxYear			= intval(date("Y", $intNow));
 		$intMinYear			= intval(date("Y", $intStartingDate));
 		
 		$intDefaultYear		= $intMaxYear;
-		$intDefaultMonth	= intval(date("m", $intNextBillDate));
-		$intDefaultDay		= intval(date("d", $intNextBillDate));
+		$intDefaultMonth	= intval(date("m", $intNow));
+		$intDefaultDay		= intval(date("d", $intNow));
 		
 		
 		
@@ -105,14 +134,14 @@ class HtmlTemplateDelinquentCDRs extends HtmlTemplate
 	<div id='Container_SelectionControls' style='height:25px'>
 		<div class='Left'>
 			<span>Earliest Date </span>
-			<input type='text' id='StartDate' name='StartDate' InputMask='ShortDate' maxlength='10' value='$strStartingDate' style='width:85px'/>
+			<input type='text' id='StartDate' name='StartDate' maxlength='20' value='$strStartingDate' style='width:85px'/>
 			<a href='javascript:DateChooser.showChooser(\"StartDate\", $intMinYear, $intMaxYear, \"d/m/Y\", false, true, true, $intDefaultYear, $intDefaultMonth, $intDefaultDay);'>
 				<img src='img/template/calendar_small.png' width='16' height='16' title='Date picker' />
 			</a>
 
 			
 			<span> Latest Date </span>
-			<input type='text' id='EndDate' name='EndDate' InputMask='ShortDate' maxlength='10' value='$strEndingDate' style='width:85px'/>
+			<input type='text' id='EndDate' name='EndDate' maxlength='20' value='$strEndingDate' style='width:85px'/>
 			<a href='javascript:DateChooser.showChooser(\"EndDate\", $intMinYear, $intMaxYear, \"d/m/Y\", false, true, true, $intDefaultYear, $intDefaultMonth, $intDefaultDay);'>
 				<img src='img/template/calendar_small.png' width='16' height='16' title='Date picker' />
 			</a>

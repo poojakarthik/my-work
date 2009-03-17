@@ -337,6 +337,8 @@ class AppTemplateMisc extends ApplicationTemplate
 		
 		$arrSuccessfulCDRs = Array();
 		
+		$strNow = GetCurrentISODateTime();
+		
 		// Retrieve all possible owners for the CDRs
 		if ($intServiceType == SERVICE_TYPE_ADSL)
 		{
@@ -361,9 +363,25 @@ class AppTemplateMisc extends ApplicationTemplate
 		$arrServices	= Array();
 		foreach ($arrRecordSet as $arrRecord)
 		{
-			$arrServices[$arrRecord['Id']]									= $arrRecord;
-			$arrServices[$arrRecord['Id']]['NextBillDate']					= GetNextBillDate($arrRecord['Account']);
-			$arrServices[$arrRecord['Id']]['EarliestAllowableCDRStartDate']	= date("Y-m-d", strtotime("-185 days ". $arrServices[$arrRecord['Id']]['NextBillDate']));
+			$arrServices[$arrRecord['Id']] = $arrRecord;
+			
+			try
+			{
+				$account = Account::getForId($arrRecord['Account']);
+				if ($account === NULL)
+				{
+					throw new exception("There is no account associated with this service record");
+				}
+				$strStartOfCurrentBillingPeriod = Invoice_Run::getLastInvoiceDateByCustomerGroup($account->customerGroup, $strNow);
+			}
+			catch (Exception $e)
+			{
+				// The start of the current billing period could not be calculated, for the account in question
+				// Just use the current timestamp, because clearly we are in the current billing period
+				$strStartOfCurrentBillingPeriod = $strNow;
+			}
+			
+			$arrServices[$arrRecord['Id']]['EarliestAllowableCDRStartDate']	= date("Y-m-d", strtotime("-189 days $strStartOfCurrentBillingPeriod"));
 		}
 		
 		// Build the Database objects required
@@ -396,7 +414,7 @@ class AppTemplateMisc extends ApplicationTemplate
 			
 			$strStartDate = substr($arrCDRRecord['StartDatetime'], 0, 10);
 			
-			// Check that the CDR's StartDatetime is within 185 days of the next bill date of the account that the CDR will be allocated to
+			// Check that the CDR's StartDatetime is within 189 days of the next bill date of the account that the CDR will be allocated to
 			if ($strStartDate < $arrService['EarliestAllowableCDRStartDate'])
 			{
 				// CDR is too old
