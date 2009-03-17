@@ -179,6 +179,8 @@
 		$arrCharge['Nature']			= 'DR';
 		$arrCharge['Description']		= $this->_cfgModuleConfig->Description;
 		$arrCharge['ChargeType']		= $this->_cfgModuleConfig->ChargeType;
+		$arrCharge['CreatedBy']			= Employee::SYSTEM_EMPLOYEE_ID;
+		$arrCharge['ApprovedBy']		= Employee::SYSTEM_EMPLOYEE_ID;
 		$arrCharge['ChargedOn']			= date("Y-m-d");
 		$arrCharge['CreatedOn']			= date("Y-m-d");
 		$arrCharge['Amount']			= $this->_cfgModuleConfig->Amount;
