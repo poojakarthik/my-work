@@ -3164,6 +3164,7 @@ function AddCreditCardSurcharge($intPayment)
 
 		$arrCharge['AccountGroup']		= $arrPayment['AccountGroup'];
 		$arrCharge['CreatedBy']			= $arrPayment['EnteredBy'];
+		$arrCharge['ApprovedBy']		= Employee::SYSTEM_EMPLOYEE_ID;
 		$arrCharge['CreatedOn']			= date("Y-m-d");
 		$arrCharge['ChargeType']		= "CCS";
 		$arrCharge['Description']		= "$strType Surcharge for Payment on {$strDate} (\${$fltPaymentAmount}) @ $strPC%";
