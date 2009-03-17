@@ -279,6 +279,7 @@
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./Charge" />
 							<xsl:with-param name="Decimal" select="number('4')" />
+							<xsl:with-param name="IsCredit" select="./Credit" />
        					</xsl:call-template>
 					</td>
 					<td class="Currency">
