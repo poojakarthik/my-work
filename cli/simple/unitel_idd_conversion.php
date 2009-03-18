@@ -93,9 +93,9 @@ while ($arrLine = fgetcsv($resInputFile))
 			//Log::getLog()->log("\t- ".$mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description']);
 		}
 		
-		if (count($arrMatches))
+		if (!count($arrMatches))
 		{		
-			die;
+			Log::getLog()->log("\t! No Matches Found!");
 		}
 	}
 	
