@@ -91,7 +91,7 @@ while ($arrLine = fgetcsv($resInputFile))
 		foreach ($arrMatches as $mixFlexCode=>$intMatchCount)
 		{
 			$arrLine[]		= $mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description'];
-			//Log::getLog()->log("\t- ".$mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description']);
+			Log::getLog()->log("\t- (Matches: {$intMatchCount})".$mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description']);
 		}
 		
 		if (!count($arrMatches))
