@@ -101,7 +101,7 @@ while ($arrLine = fgetcsv($resInputFile))
 	}
 	
 	// Write the modified line to the Output File
-	fwrite($resOutputFile, implode(',', $arrLine)."\n");
+	fwrite($resOutputFile, '"'.implode('","', $arrLine).'"'."\n");
 }
 
 Log::getLog()->log("\nCommon Keywords:");
