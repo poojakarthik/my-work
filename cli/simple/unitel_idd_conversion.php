@@ -74,7 +74,7 @@ while ($arrLine = fgetcsv($resInputFile))
 			foreach ($arrKeywords as $mixIndex=>$strWord)
 			{
 				$intMatchIndex	= stripos($arrFlexDestination['fixed_description'], $strWord);
-				if (!in_array(strtolower($strWord), $arrWordFilter) && $intMatchIndex >= 0)
+				if (!in_array(strtolower($strWord), $arrWordFilter) && $intMatchIndex !== false && $intMatchIndex >= 0)
 				{
 					// Match Found
 					$strMatchString	= substr($arrFlexDestination['fixed_description'], 0, $intMatchIndex-1).'['.substr($arrFlexDestination['fixed_description'], $intMatchIndex, strlen($strWord)).']'.substr($arrFlexDestination['fixed_description'], $intMatchIndex+strlen($strWord));
