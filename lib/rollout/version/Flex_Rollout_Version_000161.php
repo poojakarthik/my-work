@@ -5,8 +5,7 @@
  * This version: -
  *
  *	1:	Add previous_balance AND total_balance columns to the InvoiceRun table
- *	2:	For all InvoiceRuns that have BalanceData, populate the previous_balance and total_balance columns
- *	3:	Remove the BalanceData column from the InvoiceRun table
+ *	2:	Remove the BalanceData column from the InvoiceRun table
  */
 
 class Flex_Rollout_Version_000161 extends Flex_Rollout_Version
@@ -31,8 +30,8 @@ class Flex_Rollout_Version_000161 extends Flex_Rollout_Version
 								"DROP total_balance;";
 		
 		
-		// 2: For all InvoiceRuns that have BalanceData, populate the previous_balance and total_balance columns
-		// Retrieve all the balance data, so that it can be used for the rollback for when we drop the BalanceData field
+		// 2: Remove the BalanceData column from the InvoiceRun table
+		// First Retrieve all the balance data, so that it can be used for the rollback for when we drop the BalanceData field
 		$strSQL = "SELECT Id, BalanceData FROM InvoiceRun;";
 		$arrInvoiceRunRecords = $dbAdmin->queryAll($strSQL, array('integer', 'text'), MDB2_FETCHMODE_ASSOC);
 		if (PEAR::isError($arrInvoiceRunRecords))
@@ -40,31 +39,7 @@ class Flex_Rollout_Version_000161 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to retreive BalanceData info from the InvoiceRun table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 
-		foreach ($arrInvoiceRunRecords as $arrInvoiceRunRecord)
-		{
-			$arrBalanceData = unserialize($arrInvoiceRunRecord['BalanceData']);
-
-			if (is_array($arrBalanceData))
-			{
-				// This InvoiceRun has Balance Data (I don't have to number format these values because they are stored in the serialised array as strings)
-				$strPreviousBalance = (array_key_exists('PreviousBalance', $arrBalanceData) && is_numeric($arrBalanceData['PreviousBalance']))? $arrBalanceData['PreviousBalance'] : "NULL";
-				$strTotalBalance = (array_key_exists('TotalBalance', $arrBalanceData) && is_numeric($arrBalanceData['TotalBalance']))? $arrBalanceData['TotalBalance'] : "NULL";
-				
-				
-				$strUpdateSQL = "UPDATE InvoiceRun ".
-								"SET previous_balance = $strPreviousBalance, ".
-								"total_balance = $strTotalBalance ".
-								"WHERE Id = {$arrInvoiceRunRecord['Id']};";
-
-				$result = $dbAdmin->query($strUpdateSQL);
-				if (PEAR::isError($result))
-				{
-					throw new Exception(__CLASS__ . " Failed to set previous_balance and total_balance for InvoiceRun {$arrInvoiceRunRecord['Id']}. " . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ") Query - $strUpdateSQL");
-				}
-			}
-		}
-
-		// 3: Remove the BalanceData column from the InvoiceRun table
+		// Now Drop the BalanceData field
 		$strSQL = "ALTER TABLE InvoiceRun DROP BalanceData;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
@@ -80,7 +55,7 @@ class Flex_Rollout_Version_000161 extends Flex_Rollout_Version
 			$this->rollbackSQL[] = "UPDATE InvoiceRun SET BalanceData = $strBalanceData WHERE Id = {$arrInvoiceRunRecord['Id']};";
 		}
 		
-		// Add the command to add the BalanceData column (The rollbackSQL array is used as a LIFO stack)
+		// Add the command to add the BalanceData column
 		$this->rollbackSQL[] = "ALTER TABLE InvoiceRun ADD BalanceData VARCHAR(32767) DEFAULT NULL AFTER BillTax;";
 	}
 
