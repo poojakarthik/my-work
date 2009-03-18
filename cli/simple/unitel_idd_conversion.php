@@ -49,14 +49,14 @@ while ($arrLine = fgetcsv($resInputFile))
 		continue;
 	}
 	
-	Log::getLog()->log("[ ] Rate Id {$intUnitelRateId}");
+	//Log::getLog()->log("[ ] Rate Id {$intUnitelRateId}");
 	
 	// Check for an exact match
 	if ($mixFlexCode = array_search(trim(strtolower($arrLine[1])), $arrDestinations))
 	{
 		// Found an exact match
 		$arrLine[]		= $mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description'];
-		Log::getLog()->log("\t+ ".$mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description']);
+		//Log::getLog()->log("\t+ ".$mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description']);
 	}
 	else
 	{
@@ -71,7 +71,7 @@ while ($arrLine = fgetcsv($resInputFile))
 			{
 				if (!in_array(strtolower($strWord), $arrWordFilter) && stripos($arrDestination['fixed_description'], $strWord) >= 0)
 				{
-					$arrMatches[$mixFlexCode]	= (array_key_exists($strWord, $arrMatches)) ? $arrMatches[$strWord] + 1 : 1;
+					$arrMatches[$mixFlexCode]	= (array_key_exists($strWord, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
 				}
 			}
 		}
