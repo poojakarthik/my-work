@@ -273,6 +273,7 @@ class Log
 	private static function echoMessage($strMessage, $bolAddNewLine=true)
 	{
 		echo ($strMessage . ($bolAddNewLine ? "\n" : ''));
+		flush();
 	}
 }
 ?>
