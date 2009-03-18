@@ -27,7 +27,12 @@ if ($resDestinations === false)
 $arrDestinations	= array();
 while ($arrDestination = $resDestinations->fetch_assoc())
 {
+	Log::getLog()->log(print_r($arrDestination, true));
+	
 	$arrDestination['fixed_description']		= trim(strtolower($arrDestination['Description']));
+	
+	Log::getLog()->log(print_r($arrDestination, true));
+	die;
 	$arrDestinations[$arrDestination['Code']]	= $arrDestination;
 }
 
