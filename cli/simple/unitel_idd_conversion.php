@@ -87,7 +87,7 @@ while ($arrLine = fgetcsv($resInputFile))
 		}
 		
 		// Order Matches by match count, then add to output file
-		asort($arrMatches, SORT_NUMERIC);
+		arsort($arrMatches, SORT_NUMERIC);
 		foreach ($arrMatches as $mixFlexCode=>$intMatchCount)
 		{
 			$arrLine[]		= $mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description'];
