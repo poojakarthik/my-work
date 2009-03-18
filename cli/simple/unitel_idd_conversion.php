@@ -27,19 +27,24 @@ while ($arrDestination = $resDestinations->fetch_assoc())
 }
 
 // Parse the Input File
+$intLine	= 0;
 while ($arrLine = fgetcsv($resInputFile))
 {
-	if (!(int)$arrLine[0])
+	$intUnitelRateId	= (int)$arrLine[0];
+	if (!$intUnitelRateId)
 	{
 		// Non-Data Row
 		continue;
 	}
+	
+	Log::getLog->log("[ ] Rate Id {$intUnitelRateId}");
 	
 	// Check for an exact match
 	if ($mixFlexCode = array_search(trim(strtolower($arrLine[1])), $arrDestinations))
 	{
 		// Found an exact match
 		$arrLine[]		= $mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description'];
+		Log::getLog->log("\t+ ".$mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description']);
 	}
 	else
 	{
@@ -64,6 +69,7 @@ while ($arrLine = fgetcsv($resInputFile))
 		foreach ($arrMatches as $mixFlexCode=>$intMatchCount)
 		{
 			$arrLine[]		= $mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description'];
+			Log::getLog->log("\t- ".$mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description']);
 		}
 	}
 	
