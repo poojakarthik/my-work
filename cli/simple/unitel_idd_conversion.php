@@ -93,7 +93,10 @@ while ($arrLine = fgetcsv($resInputFile))
 			Log::getLog()->log("\t- ".$mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description']);
 		}
 		
-		die;
+		if (count($arrMatches))
+		{		
+			die;
+		}
 	}
 	
 	// Write the modified line to the Output File
