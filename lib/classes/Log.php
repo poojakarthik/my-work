@@ -272,8 +272,17 @@ class Log
 	 */
 	private static function echoMessage($strMessage, $bolAddNewLine=true)
 	{
-		echo ($strMessage . ($bolAddNewLine ? "\n" : ''));
-		flush();
+		$strMessage	.= ($bolAddNewLine ? "\n" : '');
+		if ($resSTDOUT = fopen('php://stdout','w'))
+		{
+			fwrite($resSTDOUT, $strMessage);
+			fclose($resSTDOUT);
+		}
+		else
+		{
+			echo $strMessage;
+			flush();
+		}
 	}
 }
 ?>
