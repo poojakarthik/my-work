@@ -27,12 +27,12 @@ if ($resDestinations === false)
 $arrDestinations	= array();
 while ($arrDestination = $resDestinations->fetch_assoc())
 {
-	Log::getLog()->log(print_r($arrDestination, true));
+	//Log::getLog()->log(print_r($arrDestination, true));
 	
 	$arrDestination['fixed_description']		= trim(strtolower($arrDestination['Description']));
 	
-	Log::getLog()->log(print_r($arrDestination, true));
-	die;
+	//Log::getLog()->log(print_r($arrDestination, true));
+	//die;
 	$arrDestinations[$arrDestination['Code']]	= $arrDestination;
 }
 
@@ -49,14 +49,14 @@ while ($arrLine = fgetcsv($resInputFile))
 		continue;
 	}
 	
-	//Log::getLog()->log("[ ] Rate Id {$intUnitelRateId}");
+	Log::getLog()->log("[ ] Rate Id {$intUnitelRateId}");
 	
 	// Check for an exact match
 	if ($mixFlexCode = array_search(trim(strtolower($arrLine[1])), $arrDestinations))
 	{
 		// Found an exact match
 		$arrLine[]		= $mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description'];
-		//Log::getLog()->log("\t+ ".$mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description']);
+		Log::getLog()->log("\t+ ".$mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description']);
 	}
 	else
 	{
