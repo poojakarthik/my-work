@@ -11,6 +11,8 @@ $strOutFile		= "/home/rdavis/unitel_rate_ids_suggestions.csv";
 $resInputFile	= fopen($strInFile, 'r');
 $resOutputFile	= fopen($strOutFile, 'w');
 
+$qryQuery	= new Query();
+
 // Get Destinations
 $resDestinations	= $qryQuery->Execute("SELECT * FROM Destination WHERE Context = 1");
 if ($resDestinations === false)
