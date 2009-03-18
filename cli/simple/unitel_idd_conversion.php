@@ -65,7 +65,7 @@ while ($arrLine = fgetcsv($resInputFile))
 	{
 		// Filter out any useless words that will just give us junk matches
 		$arrKeywords	= explode(' ', $arrLine[1]);
-		Log::getLog()->log(print_r($arrKeywords, true));
+		//Log::getLog()->log(print_r($arrKeywords, true));
 		
 		// Attempt to match
 		$arrMatches	= array();
@@ -86,7 +86,7 @@ while ($arrLine = fgetcsv($resInputFile))
 		}
 		
 		// Order Matches by match count, then add to output file
-		sort($arrMatches, SORT_NUMERIC);
+		asort($arrMatches, SORT_NUMERIC);
 		foreach ($arrMatches as $mixFlexCode=>$intMatchCount)
 		{
 			$arrLine[]		= $mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description'];
@@ -106,7 +106,7 @@ while ($arrLine = fgetcsv($resInputFile))
 Log::getLog()->log("\nCommon Keywords:");
 			
 // Sort the common keywords
-sort($arrCommonKeywords, SORT_NUMERIC);
+asort($arrCommonKeywords, SORT_NUMERIC);
 foreach ($arrCommonKeywords as $strKeyword=>$intCount)
 {
 	if ($intCount >= $intCommonKeywordMinimum)
