@@ -52,7 +52,7 @@ var Invoice	= Class.create
 		
 		// Render Invoice Summry Popup
 		var strCDRCreditNotice	=	"	<div>\n" + 
-									"		<span><span style='font-weight:bold;color:#E00'>*</span> : This Account's Customer Group has been configured to suppress all CDR Credits.</span>\n" + 
+									"		<span><span style='font-weight:bold;color:#E00'>*</span> : This Account's Customer Group has been configured to suppress all CDR Credits (excluding Service & Equipment).</span>\n" + 
 									"	</div>\n";
 		
 		var strHTML	= "\n" + 
