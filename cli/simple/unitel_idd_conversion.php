@@ -77,7 +77,7 @@ while ($arrLine = fgetcsv($resInputFile))
 				if (!in_array(strtolower($strWord), $arrWordFilter) && $intMatchIndex !== false && $intMatchIndex >= 0)
 				{
 					// Match Found
-					$strMatchString	= substr($arrFlexDestination['fixed_description'], 0, $intMatchIndex-1).'['.substr($arrFlexDestination['fixed_description'], $intMatchIndex, strlen($strWord)).']'.substr($arrFlexDestination['fixed_description'], $intMatchIndex+strlen($strWord));
+					$strMatchString	= substr($arrFlexDestination['fixed_description'], 0, $intMatchIndex).'['.substr($arrFlexDestination['fixed_description'], $intMatchIndex, strlen($strWord)).']'.substr($arrFlexDestination['fixed_description'], $intMatchIndex+strlen($strWord));
 					Log::getLog()->log("\t- Match found on Destination with code {$mixFlexCode}: '{$strMatchString}'");
 					$arrCommonKeywords[$strWord]	= (array_key_exists($strWord, $arrCommonKeywords)) ? $arrCommonKeywords[$strWord] + 1 : 1;
 					$arrMatches[$mixFlexCode]		= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
