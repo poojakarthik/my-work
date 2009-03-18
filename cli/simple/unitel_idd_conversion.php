@@ -65,6 +65,7 @@ while ($arrLine = fgetcsv($resInputFile))
 	{
 		// Filter out any useless words that will just give us junk matches
 		$arrKeywords	= explode(' ', $arrLine[1]);
+		Log::getLog()->log(print_r($arrKeywords, true));
 		
 		// Attempt to match
 		$arrMatches	= array();
@@ -87,6 +88,8 @@ while ($arrLine = fgetcsv($resInputFile))
 			$arrLine[]		= $mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description'];
 			Log::getLog()->log("\t- ".$mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description']);
 		}
+		
+		die;
 	}
 	
 	// Write the modified line to the Output File
