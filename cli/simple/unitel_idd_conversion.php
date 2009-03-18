@@ -71,7 +71,7 @@ while ($arrLine = fgetcsv($resInputFile))
 			{
 				if (!in_array(strtolower($strWord), $arrWordFilter) && stripos($arrDestination['fixed_description'], $strWord) >= 0)
 				{
-					$arrMatches[$mixFlexCode]	= (array_key_exists($strWord, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
+					$arrMatches[$mixFlexCode]	= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
 				}
 			}
 		}
