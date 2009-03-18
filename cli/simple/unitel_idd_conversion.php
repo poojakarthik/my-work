@@ -1,7 +1,8 @@
 <?php
 
 // Framework
-require_once("../../flex.require.php");
+require_once("../../lib/classes/Flex.php");
+Flex::load();
 
 $arrWordFilter	= array('to', 'and', '&', '-', 'is', 'offnet', 'onnet', 'off-net', 'on-net', 'off', 'on', 'net', 'telstra', 'mobile');
 
