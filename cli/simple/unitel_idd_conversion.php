@@ -8,6 +8,9 @@ Log::getLog()->log("UNITEL RATE MATCHER");
 
 $arrWordFilter	= array('to', 'and', '&', '-', 'is', 'offnet', 'onnet', 'off-net', 'on-net', 'off', 'on', 'net', 'telstra', 'mobile');
 
+$intCommonKeywordMinimum	= 5;
+$arrCommonKeywords			= array();
+
 $strInFile		= "/home/rdavis/unitel_rate_ids.csv";
 $strOutFile		= "/home/rdavis/unitel_rate_ids_suggestions.csv";
 
@@ -39,7 +42,7 @@ while ($arrDestination = $resDestinations->fetch_assoc())
 Log::getLog()->log("Processing Input File '{$strInFile}'...");
 
 // Parse the Input File
-$intLine	= 0;
+$intLine			= 0;
 while ($arrLine = fgetcsv($resInputFile))
 {
 	$intUnitelRateId	= (int)$arrLine[0];
@@ -71,7 +74,8 @@ while ($arrLine = fgetcsv($resInputFile))
 			{
 				if (!in_array(strtolower($strWord), $arrWordFilter) && stripos($arrDestination['fixed_description'], $strWord) >= 0)
 				{
-					$arrMatches[$mixFlexCode]	= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
+					$arrCommonKeywords[$strWord]	= (array_key_exists($strWord, $arrCommonKeywords)) ? $arrCommonKeywords[$strWord] + 1 : 1;
+					$arrMatches[$mixFlexCode]		= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
 				}
 			}
 		}
@@ -87,6 +91,19 @@ while ($arrLine = fgetcsv($resInputFile))
 	
 	// Write the modified line to the Output File
 	fwrite($resOutputFile, implode(',', $arrLine)."\n");
+}
+
+Log::getLog()->log("\nCommon Keywords:");
+			
+// Sort the common keywords
+sort($arrCommonKeywords, SORT_NUMERIC);
+foreach ($arrCommonKeywords as $strKeyword=>$intCount)
+{
+	if ($intCount >= $intCommonKeywordMinimum)
+	{
+		$strOutput	= str_pad(substr($strKeyword, 0, 40), 40, ' ', STR_PAD_RIGHT);
+		Log::getLog()->log(("\t[+] ".$strOutput." : {$intCount} instances"));
+	}
 }
 
 // Cleanup
