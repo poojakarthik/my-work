@@ -73,10 +73,11 @@ while ($arrLine = fgetcsv($resInputFile))
 		{
 			foreach ($arrKeywords as $mixIndex=>$strWord)
 			{
-				if (!in_array(strtolower($strWord), $arrWordFilter) && stripos($arrDestination['fixed_description'], $strWord) >= 0)
+				$intMatchIndex	= stripos($arrFlexDestination['fixed_description'], $strWord);
+				if (!in_array(strtolower($strWord), $arrWordFilter) && $intMatchIndex >= 0)
 				{
 					// Match Found
-					Log::getLog()->log("\t- Match found on Destination with code {$mixFlexCode}");
+					Log::getLog()->log("\t- Match found on Destination with code {$mixFlexCode}: '".substr($arrFlexDestination['fixed_description'], $intMatchIndex, strlen($strWord))."'");
 					$arrCommonKeywords[$strWord]	= (array_key_exists($strWord, $arrCommonKeywords)) ? $arrCommonKeywords[$strWord] + 1 : 1;
 					$arrMatches[$mixFlexCode]		= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
 				}
