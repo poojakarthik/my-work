@@ -4,6 +4,8 @@
 require_once("../../lib/classes/Flex.php");
 Flex::load();
 
+Log::getLog()->log("UNITEL RATE MATCHER");
+
 $arrWordFilter	= array('to', 'and', '&', '-', 'is', 'offnet', 'onnet', 'off-net', 'on-net', 'off', 'on', 'net', 'telstra', 'mobile');
 
 $strInFile		= "/home/rdavis/unitel_rate_ids.csv";
@@ -13,6 +15,8 @@ $resInputFile	= fopen($strInFile, 'r');
 $resOutputFile	= fopen($strOutFile, 'w');
 
 $qryQuery	= new Query();
+
+Log::getLog()->log("Getting list of Flex IDD Destinations...");
 
 // Get Destinations
 $resDestinations	= $qryQuery->Execute("SELECT * FROM Destination WHERE Context = 1");
@@ -26,6 +30,8 @@ while ($arrDestination = $resDestinations->fetch_assoc())
 	$arrDestination['fixed_description']		= trim(strtolower($arrDestination['Description']));
 	$arrDestinations[$arrDestination['Code']]	= $arrDestination;
 }
+
+Log::getLog()->log("Processing Input File '{$strInFile}'...");
 
 // Parse the Input File
 $intLine	= 0;
