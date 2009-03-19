@@ -6,7 +6,8 @@ Flex::load();
 
 Log::getLog()->log("UNITEL RATE MATCHER");
 
-$arrWordFilter	= array('to', 'and', '&', '-', 'is', 'offnet', 'onnet', 'off-net', 'on-net', 'off', 'on', 'net', 'telstra', 'mobile');
+$arrWordFilter					= array('to', 'and', '&', '-', 'is');
+$arrWordFilterNeedRegularMatch	= array('offnet', 'onnet', 'off-net', 'on-net', 'off', 'on', 'net', 'telstra', 'mobile');
 
 $intCommonKeywordMinimum	= 5;
 $arrCommonKeywords			= array();
@@ -68,7 +69,8 @@ while ($arrLine = fgetcsv($resInputFile))
 		//Log::getLog()->log(print_r($arrKeywords, true));
 		
 		// Attempt to match
-		$arrMatches	= array();
+		$arrMatches			= array();
+		$arrPartialMatches	= array();
 		foreach ($arrDestinations as $mixFlexCode=>$arrFlexDestination)
 		{
 			foreach ($arrKeywords as $mixIndex=>$strWord)
@@ -81,8 +83,23 @@ while ($arrLine = fgetcsv($resInputFile))
 					$strMatchString	= substr($arrFlexDestination['fixed_description'], 0, $intMatchIndex).'['.substr($arrFlexDestination['fixed_description'], $intMatchIndex, strlen($strWord)).']'.substr($arrFlexDestination['fixed_description'], $intMatchIndex+strlen($strWord));
 					Log::getLog()->log("\t- Match found on Destination with code {$mixFlexCode}: '{$strMatchString}'");
 					$arrCommonKeywords[$strWord]	= (array_key_exists($strWord, $arrCommonKeywords)) ? $arrCommonKeywords[$strWord] + 1 : 1;
-					$arrMatches[$mixFlexCode]		= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
+					
+					if (in_array(strtolower($strWord), $arrWordFilterNeedRegularMatch))
+					{
+						$arrPartialMatches[$mixFlexCode]	= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
+					}
+					else
+					{
+						$arrMatches[$mixFlexCode]			= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
+					}
 				}
+			}
+			
+			// Make sure that we have at least one solid match, and not just partial matches
+			if (array_key_exists($mixFlexCode, $arrMatches) && array_key_exists($mixFlexCode, $arrPartialMatches))
+			{
+				// There is at least one solid match, so add the partial matches to the match count
+				$arrMatches[$mixFlexCode]	+= $arrPartialMatches[$mixFlexCode];
 			}
 		}
 		
