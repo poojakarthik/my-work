@@ -144,7 +144,7 @@ class Cli_App_Billing extends Cli
 						$objOldInvoiceRun	= new Invoice_Run(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 						
 						$objInvoiceRun	= new Invoice_Run();
-						$objInvoiceRun->generate($objOldInvoiceRun->customer_group_id, $objOldInvoiceRun->invoice_run_type_id, strtotime($objOldInvoiceRun->BillingDate), $objOldInvoiceRun->invoice_run_schedule_id);
+						$objInvoiceRun->generateCustomerGroup($objOldInvoiceRun->customer_group_id, $objOldInvoiceRun->invoice_run_type_id, strtotime($objOldInvoiceRun->BillingDate), $objOldInvoiceRun->invoice_run_schedule_id);
 						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id));
 					}
 					break;

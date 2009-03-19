@@ -376,32 +376,38 @@ class Invoice_Run
 		}
 		$arrInvoiceCDRTotals	= $selInvoiceCDRTotals->Fetch();
 
-		$selInvoiceBalanceHistory	= self::_preparedStatement('selInvoiceBalanceHistory');
-		if ($selInvoiceBalanceHistory->Execute(Array('invoice_run_id'=>$this->Id, 'customer_group_id'=>$this->customer_group_id)) === FALSE)
+		$fltPreviousInvoiceRunBalance		= 0.0;
+		$fltTotalPreviousInvoiceRunsBalance	= 0.0;
+		$selInvoiceBalanceHistory			= self::_preparedStatement('selInvoiceBalanceHistory');
+		$intRecordCount						= $selInvoiceBalanceHistory->Execute(Array('invoice_run_id'=>$this->Id, 'customer_group_id'=>$this->customer_group_id));
+		if ($intRecordCount === FALSE)
 		{
 			// Database Error -- throw Exception
 			throw new Exception("DB ERROR: ".$selInvoiceBalanceHistory->Error());
 		}
-		$arrCurrentBalanceTotal		= $selInvoiceBalanceHistory->Fetch();
-		$arrPreviousBalanceTotal	= $selInvoiceBalanceHistory->Fetch();
-
-		$fltTotalOutstanding		= 0;
-		while ($arrBalanceTotal = $selInvoiceBalanceHistory->Fetch())
+		elseif ($intRecordCount == 0)
 		{
-			$fltTotalOutstanding	+= $arrBalanceTotal['TotalBalance'];
+			// There are no previous live AND committed invoice runs for this customer group
+			$fltPreviousInvoiceRunBalance		= 0.0;
+			$fltTotalPreviousInvoiceRunsBalance	= 0.0;
 		}
-		$fltTotalOutstanding		+= ($arrPreviousBalanceTotal['TotalBalance']) ? $arrPreviousBalanceTotal['TotalBalance'] : 0;
-		$fltTotalOutstanding		+= $arrCurrentBalanceTotal['TotalBalance'];
-		$this->BalanceData			=	serialize
-										(
-											Array
-											(
-												'TotalBalance'		=> $arrCurrentBalanceTotal['TotalBalance'],
-												'TotalOutstanding'	=> $fltTotalOutstanding,
-												'PreviousBalance'	=> $arrPreviousBalanceTotal['TotalBalance']
-											)
-										);
+		else
+		{
+			// There is at least 1 previous live and committed invoice run for this customer group
+			// Note that the newly generated invoice run will not be considered because it has not been committed yet
+			$arrPreviousBalanceTotal			= $selInvoiceBalanceHistory->Fetch();
+			$fltPreviousInvoiceRunBalance		= $arrPreviousBalanceTotal['TotalBalance'];
+			$fltTotalPreviousInvoiceRunsBalance	= $fltPreviousInvoiceRunBalance;
+			
+			while (($arrInvoiceRunBalanceTotal = $selInvoiceBalanceHistory->Fetch()) !== FALSE)
+			{
+				$fltTotalPreviousInvoiceRunsBalance += $arrInvoiceRunBalanceTotal['TotalBalance'];
+			}
+		}
 
+		$this->previous_balance			= $fltPreviousInvoiceRunBalance;
+		$this->total_balance			= $fltTotalPreviousInvoiceRunsBalance;
+		
 		// Finalised InvoiceRun record
 		$this->BillCost					= $arrInvoiceCDRTotals['BillCost'];
 		$this->BillRated				= $arrInvoiceCDRTotals['BillRated'];
@@ -1119,7 +1125,7 @@ class Invoice_Run
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("ServiceTypeTotal STT", "SUM(STT.Cost) AS BillCost, SUM(STT.Charge) AS BillRated", "invoice_run_id = <invoice_run_id>");
 					break;
 				case 'selInvoiceBalanceHistory':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id", "SUM(Balance) AS TotalBalance", "invoice_run_id <= <invoice_run_id> AND customer_group_id = <customer_group_id>", "invoice_run_id DESC");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id", "InvoiceRun.Id AS InvoiceRunId, SUM(Invoice.Balance) AS TotalBalance", "InvoiceRun.Id <= <invoice_run_id> AND InvoiceRun.customer_group_id = <customer_group_id> AND InvoiceRun.invoice_run_type_id = ". INVOICE_RUN_TYPE_LIVE ." AND InvoiceRun.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED, "InvoiceRun.Id DESC", "", "InvoiceRun.Id");
 					break;
 				case 'selCheckTemporaryInvoiceRun':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"InvoiceRun", 
