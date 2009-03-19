@@ -69,8 +69,8 @@ while ($arrLine = fgetcsv($resInputFile))
 	if ($strMatchFlexCode !== null)
 	{
 		// Found an exact match
-		Log::getLog()->log("\t+ Perfect Match found on Destination with code ".$mixFlexCode.': '.$arrDestinations[$mixFlexCode]['Description']);
-		$arrLine[]		= $mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description'];
+		Log::getLog()->log("\t+ Perfect Match found on Destination with code ".$strMatchFlexCode.': '.$arrDestinations[$strMatchFlexCode]['Description']);
+		$arrLine[]		= $strMatchFlexCode.':'.$arrDestinations[$strMatchFlexCode]['Description'];
 		$intPerfectMatches++;
 	}
 	else
