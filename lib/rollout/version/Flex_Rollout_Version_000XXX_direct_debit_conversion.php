@@ -17,7 +17,7 @@
  *		Convert account_history.credit_card_id/account_history.direct_debit_id to account_history.new_direct_debit_id
  */
 
-class Flex_Rollout_Version_000160 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000XXX extends Flex_Rollout_Version
 {
 	static public	$arrPaymentMethods	= null;
 	static public	$arrCreditCardTypes	= null;
