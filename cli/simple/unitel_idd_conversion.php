@@ -82,12 +82,12 @@ while ($arrLine = fgetcsv($resInputFile))
 					$arrCommonKeywords[$strWord]	= (array_key_exists($strWord, $arrCommonKeywords)) ? $arrCommonKeywords[$strWord] + 1 : 1;
 					if (in_array(strtolower($strWord), $arrWordFilterNeedRegularMatch))
 					{
-						$strMatchType						= 'SOLID MATCH';
+						$strMatchType						= 'PARTIAL MATCH';
 						$arrPartialMatches[$mixFlexCode]	= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
 					}
 					else
 					{
-						$strMatchType						= 'PARTIAL MATCH';
+						$strMatchType						= 'SOLID MATCH';
 						$arrMatches[$mixFlexCode]			= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
 					}
 					
