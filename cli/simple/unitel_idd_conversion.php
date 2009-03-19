@@ -60,13 +60,13 @@ while ($arrLine = fgetcsv($resInputFile))
 	$strMatchFlexCode	= null;
 	foreach ($arrDestinations as $mixFlexCode=>$arrFlexDestination)
 	{
-		if ($arrFlexDestination['fixed_description'] == trim(strtolower($arrLine[1])))
+		if ($arrFlexDestination['fixed_description'] === trim(strtolower($arrLine[1])))
 		{
 			$strMatchFlexCode	= $mixFlexCode;
 		}
 	}
 	
-	if ($strMatchFlexCode)
+	if ($strMatchFlexCode !== null)
 	{
 		// Found an exact match
 		Log::getLog()->log("\t+ Perfect Match found on Destination with code ".$mixFlexCode.': '.$arrDestinations[$mixFlexCode]['Description']);
