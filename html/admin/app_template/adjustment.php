@@ -66,7 +66,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 
-		$bolCanCreateCreditAdjustments = ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		//$bolCanCreateCreditAdjustments = ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		$bolCanCreateCreditAdjustments = TRUE;
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -127,9 +128,16 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			return TRUE;
 		}
 
-		// load the last 6 invoices with the most recent being first
-		DBL()->AccountInvoices->Account = DBO()->Account->Id->Value;
+		// load the last 6 invoices with the most recent being first (Committed Live, Interim and Final invoices only)
+		$arrWhere = array("AccountId" => DBO()->Account->Id->Value);
+		$strWhere = "	Account = <AccountId>
+						AND invoice_run_id IN (	SELECT id 
+												FROM InvoiceRun
+												WHERE invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ." 
+												AND invoice_run_type_id IN (". INVOICE_RUN_TYPE_LIVE .", ". INVOICE_RUN_TYPE_INTERIM .", ".INVOICE_RUN_TYPE_FINAL .")
+											)";
 		DBL()->AccountInvoices->SetTable("Invoice");
+		DBL()->AccountInvoices->Where->Set($strWhere, $arrWhere);
 		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->AccountInvoices->SetLimit(6);
 		DBL()->AccountInvoices->Load();
