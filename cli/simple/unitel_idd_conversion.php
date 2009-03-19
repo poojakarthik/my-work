@@ -79,19 +79,21 @@ while ($arrLine = fgetcsv($resInputFile))
 				if (!in_array(strtolower($strWord), $arrWordFilter) && in_array(strtolower($strWord), $arrDestinationDescription))
 				{
 					// Match Found
-					$intMatchIndex	= stripos($arrFlexDestination['fixed_description'], $strWord);
-					$strMatchString	= substr($arrFlexDestination['fixed_description'], 0, $intMatchIndex).'['.substr($arrFlexDestination['fixed_description'], $intMatchIndex, strlen($strWord)).']'.substr($arrFlexDestination['fixed_description'], $intMatchIndex+strlen($strWord));
-					Log::getLog()->log("\t- Match found on Destination with code {$mixFlexCode}: '{$strMatchString}'");
 					$arrCommonKeywords[$strWord]	= (array_key_exists($strWord, $arrCommonKeywords)) ? $arrCommonKeywords[$strWord] + 1 : 1;
-					
 					if (in_array(strtolower($strWord), $arrWordFilterNeedRegularMatch))
 					{
+						$strMatchType						= 'SOLID MATCH';
 						$arrPartialMatches[$mixFlexCode]	= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
 					}
 					else
 					{
+						$strMatchType						= 'PARTIAL MATCH';
 						$arrMatches[$mixFlexCode]			= (array_key_exists($mixFlexCode, $arrMatches)) ? $arrMatches[$mixFlexCode] + 1 : 1;
 					}
+					
+					$intMatchIndex	= stripos($arrFlexDestination['fixed_description'], $strWord);
+					$strMatchString	= substr($arrFlexDestination['fixed_description'], 0, $intMatchIndex).'['.substr($arrFlexDestination['fixed_description'], $intMatchIndex, strlen($strWord)).']'.substr($arrFlexDestination['fixed_description'], $intMatchIndex+strlen($strWord));
+					Log::getLog()->log("\t- {$strMatchType} found on Destination with code {$mixFlexCode}: '{$strMatchString}'");
 				}
 			}
 			
