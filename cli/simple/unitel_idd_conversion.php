@@ -43,6 +43,7 @@ while ($arrDestination = $resDestinations->fetch_assoc())
 Log::getLog()->log("Processing Input File '{$strInFile}'...");
 
 // Parse the Input File
+$intPerfectMatches	= 0;
 $intLine			= 0;
 while ($arrLine = fgetcsv($resInputFile))
 {
@@ -56,11 +57,21 @@ while ($arrLine = fgetcsv($resInputFile))
 	Log::getLog()->log("[ ] Rate Id {$intUnitelRateId} ('{$arrLine[1]}')");
 	
 	// Check for an exact match
-	if ($mixFlexCode = array_search(trim(strtolower($arrLine[1])), $arrDestinations))
+	$strMatchFlexCode	= null;
+	foreach ($arrDestinations as $mixFlexCode=>$arrFlexDestination)
+	{
+		if ($arrFlexDestination['fixed_description'] == trim(strtolower($arrLine[1])))
+		{
+			$strMatchFlexCode	= $mixFlexCode;
+		}
+	}
+	
+	if ($strMatchFlexCode)
 	{
 		// Found an exact match
-		$arrLine[]		= $mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description'];
 		Log::getLog()->log("\t+ Perfect Match found on Destination with code ".$mixFlexCode.': '.$arrDestinations[$mixFlexCode]['Description']);
+		$arrLine[]		= $mixFlexCode.':'.$arrDestinations[$mixFlexCode]['Description'];
+		$intPerfectMatches++;
 	}
 	else
 	{
@@ -124,7 +135,7 @@ while ($arrLine = fgetcsv($resInputFile))
 }
 
 Log::getLog()->log("\nCommon Keywords:");
-			
+
 // Sort the common keywords
 asort($arrCommonKeywords, SORT_NUMERIC);
 foreach ($arrCommonKeywords as $strKeyword=>$intCount)
@@ -136,7 +147,12 @@ foreach ($arrCommonKeywords as $strKeyword=>$intCount)
 	}
 }
 
+Log::getLog()->log("\nExact Match Count: {$intPerfectMatches}");
+
 // Cleanup
 fclose($resInputFile);
 fclose($resOutputFile);
+exit(0);
+
+
 ?>
