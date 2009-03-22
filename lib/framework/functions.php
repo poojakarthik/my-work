@@ -2790,6 +2790,7 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 			$effectiveDate = $docProps["CreationDate"];
 
 			// Take the customer group from the file - this should be the same as the one for the invoice
+			require_once(SHARED_BASE_PATH.'classes/customer/Customer_Group');
 			$custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"])->id;
 			echo "Customer Group: ".$custGroupId;
 			die;
