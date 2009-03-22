@@ -1857,7 +1857,8 @@ function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE, $loadDbConst
 	{
 		require_once($strFrameworkDir."db_access.php");
 	}
-
+	
+	require_once(SHARED_BASE_PATH.'classes/ORM.php');
 
 	// Retrieve all constants stored in the database
 	// Note that this will not override constants that have already been defined
@@ -5225,6 +5226,8 @@ function CreateDefaultPaymentTerms($customerGroupId)
 
 	function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
 	{
+		require_once(SHARED_BASE_PATH.'classes/Note.php');
+		
 		// Throw exception if fails
 
 		// Bar the account
