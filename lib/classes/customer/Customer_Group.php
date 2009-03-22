@@ -105,6 +105,19 @@ class Customer_Group
 		$id = intval($id);
 		return (array_key_exists($id, $instances)) ? $instances[$id] : NULL;
 	}
+
+	public static function getForConstantName($strConstantName)
+	{
+		$arrCustomerGroups	= self::listAll();
+		foreach ($arrCustomerGroups as $intCustomerGroupId=>$objCustomerGroup)
+		{
+			if ('CUSTOMER_GROUP_'.strtoupper(str_replace(' ', '_', $objCustomerGroup->internal_name)) == $strConstantName)
+			{
+				return $objCustomerGroup;
+			}
+		}
+		return null;
+	}
 	
 	//------------------------------------------------------------------------//
 	// getColumns

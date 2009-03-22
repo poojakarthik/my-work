@@ -189,7 +189,7 @@ class Cli_App_Pdf extends Cli
 					}
 				}
 
-				$custGroupId = constant($docProps["CustomerGroup"]);
+				$custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"]);
 				if ($arrArgs[self::SWITCH_CUSTOMER_GROUP_ID] !== FALSE)
 				{
 					if ($custGroupId != $arrArgs[self::SWITCH_CUSTOMER_GROUP_ID])

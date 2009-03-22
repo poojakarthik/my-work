@@ -99,9 +99,10 @@
 		//--------------------------------------------------------------------//
 		// Document Object
 		//--------------------------------------------------------------------//
-		$xmlDocument	= self::_addElement($domDocument, 'Document');
+		$strCustomerGroupConstant	= 'CUSTOMER_GROUP_'.strtoupper(str_replace(' ', '_', Customer_Group::getForId($arrCustomer['CustomerGroup'])->internal_name));
+		$xmlDocument				= self::_addElement($domDocument, 'Document');
 		self::_addElement($xmlDocument, 'DocumentType', 'DOCUMENT_TYPE_INVOICE');
-		self::_addElement($xmlDocument, 'CustomerGroup', GetConstantName($arrCustomer['CustomerGroup'], 'CustomerGroup'));
+		self::_addElement($xmlDocument, 'CustomerGroup', $strCustomerGroupConstant);
 		self::_addElement($xmlDocument, 'CreationDate', date('Y-m-d H:i:s', strtotime($arrInvoice['CreatedOn'])));
 		self::_addElement($xmlDocument, 'DeliveryMethod', GetConstantName($arrInvoice['DeliveryMethod'], 'delivery_method'));
 		self::_addAttribute($xmlDocument, 'DateIssued', date('j M y', strtotime($arrInvoice['CreatedOn'])));
