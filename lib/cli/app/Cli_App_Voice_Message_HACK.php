@@ -24,12 +24,12 @@ class Cli_App_Voice_Message_HACK extends Cli
 	
 	public function runVT()
 	{
-		self::doForCG(2, "This is an urgent message from Voicetalk   your telephone provider. According to our records your account remains unpaid. Suspension of your telephone services will commence within the next 24 hours. To avoid disruption please pay your Voicetalk   account immediately and forward the remittance advice. This is an urgent message from Voicetalk   your telephone provider. According to our records your account remains unpaid. Suspension of your telephone services will commence within the next 24 hours. To avoid disruption please pay your Voicetalk   account immediately and forward the remittance advice", FILES_BASE_PATH . "/telco_blue.csv");
+		self::doForCG(2, "This is an urgent message from Voicetalk   your telephone provider. According to our records your account remains unpaid. Suspension of your telephone services will commence within the next 24 hours. To avoid disruption please pay your Voicetalk   account immediately and forward the remittance advice. This is an urgent message from Voicetalk   your telephone provider. According to our records your account remains unpaid. Suspension of your telephone services will commence within the next 24 hours. To avoid disruption please pay your Voicetalk   account immediately and forward the remittance advice", FILES_BASE_PATH . "/voicetalk.csv");
 	}
 	
 	public function runTB()
 	{
-		self::doForCG(1, "This is an urgent message from Tel coe blue   your telephone provider. According to our records your account remains unpaid. Suspension of your telephone services will commence within the next 24 hours. To avoid disruption please pay your Tel coe blue  account immediately and forward the remittance advice. This is an urgent message from Tel coe blue   your telephone provider. According to our records your account remains unpaid. Suspension of your telephone services will commence within the next 24 hours. To avoid disruption please pay your Tel coe blue account immediately and forward the remittance advice", FILES_BASE_PATH . "/voicetalk.csv");
+		self::doForCG(1, "This is an urgent message from Tel coe blue   your telephone provider. According to our records your account remains unpaid. Suspension of your telephone services will commence within the next 24 hours. To avoid disruption please pay your Tel coe blue  account immediately and forward the remittance advice. This is an urgent message from Tel coe blue   your telephone provider. According to our records your account remains unpaid. Suspension of your telephone services will commence within the next 24 hours. To avoid disruption please pay your Tel coe blue account immediately and forward the remittance advice", FILES_BASE_PATH . "/telco_blue.csv");
 	}
 	
 	public function doForCG($cg, $message, $name)

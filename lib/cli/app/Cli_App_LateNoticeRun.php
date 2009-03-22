@@ -246,7 +246,9 @@ class Cli_App_LateNoticeRun extends Cli
 									}
 
 				 					$strContent = "Dear $name,\r\n\r\n" .
-				 								  "Please find attached $a $strLetterType from $strCustGroupName.\r\n\r\n" .
+				 								  "Please find attached $a $strLetterType from $strCustGroupName.\r\n" .
+												  "Please disregard the notice sent earlier today as due to a technical error, the amount outstanding was incorrect.\r\n" .
+												  "We apologise for any confusion this may have caused. If you have any questions in relation to your account please email: payments@protalk.com.au.\r\n\r\n" .
 				 								  "Regards\r\n\r\n" .
 				 								  "The Team at $strCustGroupName";
 

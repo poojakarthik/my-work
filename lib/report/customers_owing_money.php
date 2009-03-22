@@ -157,6 +157,7 @@ if ($intAccountCount)
 elseif ($intAccountCount === 0)
 {
 	CliEcho("There are apparently no Accounts with debt.  If only :'(");
+	Debug($selAccounts->_strQuery);
 	exit(0);
 }
 else
