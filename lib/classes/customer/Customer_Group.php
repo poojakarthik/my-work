@@ -112,6 +112,7 @@ class Customer_Group
 		foreach ($arrCustomerGroups as $intCustomerGroupId=>$objCustomerGroup)
 		{
 			$strCustomerGroupConstant	= 'CUSTOMER_GROUP_'.strtoupper(str_replace(' ', '_', $objCustomerGroup->internal_name));
+			return $strCustomerGroupConstant;
 			//throw new Exception($strCustomerGroupConstant.' vs '.$strConstantName);
 			if ($strCustomerGroupConstant === $strConstantName)
 			{
