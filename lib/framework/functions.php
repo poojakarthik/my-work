@@ -2791,7 +2791,7 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 
 			// Take the customer group from the file - this should be the same as the one for the invoice
 			$custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"])->id;
-			echo $custGroupId;
+			echo "Customer Group: ".$custGroupId;
 			die;
 
 			VixenRequire('lib/pdf/Flex_Pdf.php');
