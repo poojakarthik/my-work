@@ -108,6 +108,7 @@ class Customer_Group
 
 	public static function getForConstantName($strConstantName)
 	{
+		return 'TEST';
 		$arrCustomerGroups	= self::listAll();
 		foreach ($arrCustomerGroups as $intCustomerGroupId=>$objCustomerGroup)
 		{
