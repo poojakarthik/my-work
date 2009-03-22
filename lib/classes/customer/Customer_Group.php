@@ -111,7 +111,9 @@ class Customer_Group
 		$arrCustomerGroups	= self::listAll();
 		foreach ($arrCustomerGroups as $intCustomerGroupId=>$objCustomerGroup)
 		{
-			if ('CUSTOMER_GROUP_'.strtoupper(str_replace(' ', '_', $objCustomerGroup->internal_name)) == $strConstantName)
+			$strCustomerGroupConstant	= 'CUSTOMER_GROUP_'.strtoupper(str_replace(' ', '_', $objCustomerGroup->internal_name));
+			throw new Exception($strCustomerGroupConstant.' vs '.$strConstantName);
+			if ($strCustomerGroupConstant === $strConstantName)
 			{
 				return $objCustomerGroup;
 			}
