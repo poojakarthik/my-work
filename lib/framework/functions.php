@@ -2788,6 +2788,9 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 
 			// Take the effective date to be the document Creation Date
 			$effectiveDate = $docProps["CreationDate"];
+			
+			echo $effectiveDate;
+			die;
 
 			// Take the customer group from the file - this should be the same as the one for the invoice
 			$custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"])->id;
