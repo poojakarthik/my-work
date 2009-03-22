@@ -2790,7 +2790,7 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 			$effectiveDate = $docProps["CreationDate"];
 
 			// Take the customer group from the file - this should be the same as the one for the invoice
-			$custGroupId = constant($docProps["CustomerGroup"]);
+			$custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"])->id;
 
 			VixenRequire('lib/pdf/Flex_Pdf.php');
 
