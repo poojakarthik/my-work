@@ -128,5 +128,104 @@ class Constant_Group
 			throw new Exception("Constant Group '{$strConstantGroupName}' is not defined!");
 		}
 	}
+	
+	/**
+	 * loadFromTable()
+	 *
+	 * Loads a Constant Group from a database table
+	 *
+	 * @param	string		$strTableName				Name of the Table
+	 * @param	[boolean	$bolRegisterConstants	]	TRUE	: Register as PHP constants
+	 * 													FALSE	: Don't register as PHP constants (default)
+	 * 													NULL	: Register if not already registered (on a constant-by-constant basis)
+	 *
+	 * @return	Constant_Group
+	 *
+	 * @method
+	 */
+	public static function loadFromTable($strTableName, $bolRegisterConstants=false, $bolSilentFail=false)
+	{
+		static	$qryQuery;
+		$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
+		
+		if (array_key_exists($strTableName, $GLOBALS['*arrConstant']))
+		{
+			if ($bolSilentFail)
+			{
+				return false;
+			}
+			else
+			{
+				throw new Exception("Constant Group '{$strTableName}' is already defined!");
+			}
+		}
+		else
+		{
+			$strLoadSQL	= "SELECT * FROM `{$strTableName}` WHERE 1";
+			$resLoad	= $qryQuery->Execute();
+			if ($resLoad === false)
+			{
+				throw new Exception($qryQuery->Error());
+			}
+			elseif ($resLoad->num_rows)
+			{
+				$arrFields		= $resLoad->fetch_fields();
+				$arrFieldList	= array();
+				foreach ($arrFields as $objField)
+				{
+					$arrFieldList[strtolower($objField->name)]	= $objField->name;
+				}
+				
+				$strIdField	= (in_array('id', $arrFieldList)) ? 'id' : (in_array('Id', $arrFieldList)) ? 'Id' : false;
+				if ($strIdField !== false && array_key_exists('const_name', $arrFieldList) && array_key_exists('name', $arrFieldList) && array_key_exists('description', $arrFieldList))
+				{
+					// Has the required fields
+					$GLOBALS['*arrConstant'][$strTableName]	= array();
+					while ($arrRecord = $resLoad->fetch_assoc())
+					{
+						$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]				= array();
+						$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Name']		= $arrRecord[$arrFieldList['name']];
+						$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Description']	= $arrRecord[$arrFieldList['description']];
+						$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant']	= $arrRecord[$arrFieldList['const_name']];
+						
+						if (defined($GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant']))
+						{
+							if ($bolRegisterConstants === true)
+							{
+								if ($bolSilentFail)
+								{
+									return false;
+								}
+								else
+								{
+									throw new Exception("Constant {$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant']} is already defined!");
+								}
+							}
+						}
+						elseif ($bolRegisterConstants === null || $bolRegisterConstants === true)
+						{
+							define($GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant'], $arrRecord[$strIdField]);
+						}
+					}
+				}
+				elseif ($bolSilentFail)
+				{
+					return false;
+				}
+				else
+				{
+				throw new Exception("'{$strTableName}' is not a Constant Table!");
+				}
+			}
+			elseif ($bolSilentFail)
+			{
+				return false;
+			}
+			else
+			{
+				throw new Exception("Table '{$strTableName}' does not have any records!");
+			}
+		}
+	}
 }
 ?>
