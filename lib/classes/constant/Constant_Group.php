@@ -10,6 +10,8 @@ class Constant_Group
 {
 	protected	$_strConstantGroupName;
 	
+	protected	$_arrAliasToValueMap;
+	
 	/**
 	 * __construct()
 	 *
@@ -24,7 +26,47 @@ class Constant_Group
 	private function __construct($strConstantGroupName)
 	{
 		$this->_strConstantGroupName	= $strConstantGroupName;
+		
+		$this->_arrAliasToValueMap		= array();
+		
+		// Map alias's to their values (so the values can be referenced by their alias's even if they are not defined as php constants)
+		if (array_key_exists($strConstantGroupName, $GLOBALS['*arrConstant']))
+		{
+			foreach ($GLOBALS['*arrConstant'][$strConstantGroupName] as $mixValue=>$arrDetails)
+			{
+				// It is assumed $arrDetails is in the correct format and no more checks are required
+				$this->_arrAliasToValueMap[$arrDetails['Constant']] = $mixValue;
+			}
+		}
+		else
+		{
+			throw new exception("Constant Group '$strConstantGroupName' is not currently in \$GLOBALS['*arrConstant']");
+		}
 	}
+
+	/**
+	 * getValue()
+	 *
+	 * Retrieves the Value associated with the Constant Alias specified
+	 *
+	 * @param	string	$strAlias			Constant alias for the value (must be within this Constant_Group)
+	 *
+	 * @return	mix		the value that corresponds to the constant alias
+	 *
+	 * @method
+	 */
+	public function getValue($strAlias)
+	{
+		if (array_key_exists($strAlias, $this->_arrAliasToValueMap))
+		{
+			return $this->_arrAliasToValueMap[$strAlias];
+		}
+		else
+		{
+			throw new exception("Constant Alias, '$strAlias', could not be found in the ConstantGroup, {$this->_strConstantGroupName}");
+		}
+	}
+
 	
 	/**
 	 * getConstantGroup()
@@ -138,17 +180,20 @@ class Constant_Group
 	 * @param	[boolean	$bolRegisterConstants	]	TRUE	: Register as PHP constants
 	 * 													FALSE	: Don't register as PHP constants (default)
 	 * 													NULL	: Register if not already registered (on a constant-by-constant basis)
+	 * @param	boollean	$bolSilentFail				Optional, defaults to FALSE
+	 * @param	boolean		$bolForceReload				Optional, defaults to FALSE.  If TRUE then the constants will be reloaded from the database
+	 * 													If FALSE then it will only load them from the database if they haven't already been loaded.
 	 *
 	 * @return	Constant_Group
 	 *
 	 * @method
 	 */
-	public static function loadFromTable($strTableName, $bolRegisterConstants=false, $bolSilentFail=false)
+	public static function loadFromTable($strTableName, $bolRegisterConstants=false, $bolSilentFail=false, $bolForceReload=false)
 	{
 		static	$qryQuery;
 		$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
 		
-		if (array_key_exists($strTableName, $GLOBALS['*arrConstant']))
+		if (array_key_exists($strTableName, $GLOBALS['*arrConstant']) && !$bolForceReload)
 		{
 			if ($bolSilentFail)
 			{
@@ -162,7 +207,7 @@ class Constant_Group
 		else
 		{
 			$strLoadSQL	= "SELECT * FROM `{$strTableName}` WHERE 1";
-			$resLoad	= $qryQuery->Execute();
+			$resLoad	= $qryQuery->Execute($strLoadSQL);
 			if ($resLoad === false)
 			{
 				throw new Exception($qryQuery->Error());
@@ -176,7 +221,7 @@ class Constant_Group
 					$arrFieldList[strtolower($objField->name)]	= $objField->name;
 				}
 				
-				$strIdField	= (in_array('id', $arrFieldList)) ? 'id' : (in_array('Id', $arrFieldList)) ? 'Id' : false;
+				$strIdField	= (in_array('id', $arrFieldList)) ? 'id' : ((in_array('Id', $arrFieldList)) ? 'Id' : false);
 				if ($strIdField !== false && array_key_exists('const_name', $arrFieldList) && array_key_exists('name', $arrFieldList) && array_key_exists('description', $arrFieldList))
 				{
 					// Has the required fields
@@ -187,7 +232,7 @@ class Constant_Group
 						$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Name']		= $arrRecord[$arrFieldList['name']];
 						$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Description']	= $arrRecord[$arrFieldList['description']];
 						$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant']	= $arrRecord[$arrFieldList['const_name']];
-						
+
 						if (defined($GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant']))
 						{
 							if ($bolRegisterConstants === true)
@@ -214,7 +259,7 @@ class Constant_Group
 				}
 				else
 				{
-				throw new Exception("'{$strTableName}' is not a Constant Table!");
+					throw new Exception("'{$strTableName}' is not a Constant Table!");
 				}
 			}
 			elseif ($bolSilentFail)
@@ -226,6 +271,8 @@ class Constant_Group
 				throw new Exception("Table '{$strTableName}' does not have any records!");
 			}
 		}
+		
+		return new self($strTableName);
 	}
 }
 ?>
