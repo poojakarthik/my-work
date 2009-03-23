@@ -498,16 +498,18 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Billing Method :</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
 			echo "      <select id='Account.BillingMethod' name='Account.BillingMethod' style='width:330px'>\n";
-			foreach ($GLOBALS['*arrConstant']['BillingMethod'] as $intConstant=>$arrBillingMethodSelection)
+			
+			$arrDeliveryMethods	= Delivery_Method::getAll();
+			foreach ($arrDeliveryMethods as $intDeliveryMetyhodId=>$objDeliveryMethod)
 			{
-				if (($intConstant == BILLING_METHOD_EMAIL_SENT) || ($intConstant == BILLING_METHOD_DO_NOT_SEND && DBO()->Account->BillingMethod->Value != BILLING_METHOD_DO_NOT_SEND))
+				if (!$objDeliveryMethod->account_setting || ($objDeliveryMethod->const_name == 'DELIVERY_METHOD_DO_NOT_SEND' && DBO()->Account->BillingMethod->Value != DELIVERY_METHOD_DO_NOT_SEND))
 				{
 					// Don't include this option
 					continue;
 				}
 				
-				$strSelected = (DBO()->Account->BillingMethod->Value == $intConstant) ? "selected='selected'" : "";
-				echo "		<option value='$intConstant' $strSelected>{$arrBillingMethodSelection['Description']}</option>\n";
+				$strSelected = (DBO()->Account->BillingMethod->Value == $objDeliveryMethod->id) ? "selected='selected'" : "";
+				echo "		<option value='{$objDeliveryMethod->id}' $strSelected>{$objDeliveryMethod->description}</option>\n";
 			}
 			echo "      </select>\n";
 			echo "   </div>\n";
