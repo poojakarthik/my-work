@@ -85,15 +85,21 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 					else
 					{
 						$alt = FALSE;
-						$bolFirst = TRUE;
+						//$bolFirst = TRUE;
 						
 						foreach($arrHistory as $i=>$ticketHistoryRecord)
 						{
 							$altClass				= $alt ? 'alt' : '';
-							$strSummaryRowClass		= ($bolFirst)? "ticket-history-summary-row-displaying-detail-row" : "ticket-history-summary-row";
-							$strDetailsRowClass		= ($bolFirst)? "ticket-history-details-row-displayed" : "ticket-history-details-row-hidden";
-							$strExpandButtonClass	= ($bolFirst)? "expand-button-expanded" : "expand-button-retracted";
-							$bolFirst				= FALSE;
+							// When we were only expanding the first record
+							//$strSummaryRowClass		= ($bolFirst)? "ticket-history-summary-row-displaying-detail-row" : "ticket-history-summary-row";
+							//$strDetailsRowClass		= ($bolFirst)? "ticket-history-details-row-displayed" : "ticket-history-details-row-hidden";
+							//$strExpandButtonClass	= ($bolFirst)? "expand-button-expanded" : "expand-button-retracted";
+							//$bolFirst				= FALSE;
+							
+							// Expand all correspondence items
+							$strSummaryRowClass		= ($ticketHistoryRecord->bolIsCorrespondence)? "ticket-history-summary-row-displaying-detail-row" : "ticket-history-summary-row";
+							$strDetailsRowClass		= ($ticketHistoryRecord->bolIsCorrespondence)? "ticket-history-details-row-displayed" : "ticket-history-details-row-hidden";
+							$strExpandButtonClass	= ($ticketHistoryRecord->bolIsCorrespondence)? "expand-button-expanded" : "expand-button-retracted";
 							$alt					= !$alt;
 							$strTimestamp			= date("H:i:s d-m-Y", $ticketHistoryRecord->intTimestamp);
 							$strExpandButton		= "<input type='button' onclick='toggleShowHistoryRecordDetails({$i}, this)' class='$strExpandButtonClass' style='float:right'></input>";
@@ -338,7 +344,7 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 		$strDetails .= $strAttachments;
 
 		
-		return new TicketHistoryRecord($intTimestamp, $strEvent, $strPartiesResponsible, $strSummary, $strActions, $strDetails);
+		return new TicketHistoryRecord($intTimestamp, $strEvent, $strPartiesResponsible, $strSummary, $strActions, $strDetails, TRUE);
 	}
 	
 	// Returns single HistoryRecord object representing modifications in the state of the ticket, to arive at $ticketState
@@ -515,7 +521,7 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 		
 		$strActions = NULL;
 		
-		return new TicketHistoryRecord($intTimestamp, $strEvent, $strUser, $strSummary, $strActions, $strDetails);
+		return new TicketHistoryRecord($intTimestamp, $strEvent, $strUser, $strSummary, $strActions, $strDetails, FALSE);
 	}
 }
 
@@ -528,8 +534,9 @@ class TicketHistoryRecord extends stdClass
 	public $strSummary;
 	public $strActions;
 	public $strDetails;
+	public $bolIsCorrespondence;
 	
-	public function __construct($intTimestamp, $strEvent, $strPartiesResponsible, $strSummary, $strActions, $strDetails)
+	public function __construct($intTimestamp, $strEvent, $strPartiesResponsible, $strSummary, $strActions, $strDetails, $bolIsCorrespondence)
 	{
 		$this->intTimestamp = $intTimestamp;
 		$this->strEvent = $strEvent;
@@ -537,6 +544,7 @@ class TicketHistoryRecord extends stdClass
 		$this->strSummary = $strSummary;
 		$this->strActions = $strActions;
 		$this->strDetails = $strDetails;
+		$this->bolIsCorrespondence = $bolIsCorrespondence;
 	}
 }
 
