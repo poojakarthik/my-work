@@ -16,6 +16,8 @@ abstract class ORM
 	protected	$_arrTidyNames	= array();
 	protected	$_arrProperties	= array();
 	
+	protected	$_strIdField	= null;
+	
 	protected	$_strTableName	= NULL;
 	
 	protected	$_bolSaved		= FALSE;
@@ -40,7 +42,8 @@ abstract class ORM
 	protected function __construct($arrProperties=array(), $bolLoadById=FALSE)
 	{
 		// Get list of columns from Data Model
-		$arrTableDefine	= DataAccess::getDataAccess()->FetchTableDefine($this->_strTableName);
+		$arrTableDefine		= DataAccess::getDataAccess()->FetchTableDefine($this->_strTableName);
+		$this->_strIdField	= $arrTableDefine['Id'];
 		foreach ($arrTableDefine['Column'] as $strName=>$arrColumn)
 		{
 			$this->_arrProperties[$strName]					= NULL;
@@ -114,22 +117,23 @@ abstract class ORM
 		}
 		else
 		{
-			// Insert
 			$insSelf	= $this->_preparedStatement("insSelf");
-			$mixResult	= $insSelf->Execute($this->toArray());
-			if ($mixResult === FALSE)
-			{
-				throw new Exception("DB ERROR: ".$insSelf->Error());
-			}
-			if (is_int($mixResult))
-			{
-				$this->id	= $mixResult;
-				return TRUE;
-			}
-			else
-			{
-				return $mixResult;
-			}
+		}
+		
+		// Insert
+		$mixResult	= $insSelf->Execute($this->toArray());
+		if ($mixResult === FALSE)
+		{
+			throw new Exception("DB ERROR: ".$insSelf->Error());
+		}
+		if (is_int($mixResult))
+		{
+			$this->id	= $mixResult;
+			return TRUE;
+		}
+		else
+		{
+			return $mixResult;
 		}
 	}
 
