@@ -94,8 +94,8 @@
 			parent::__construct ('BillingMethods');
 			
 			// Instantiate the Variable Values for possible selection
-			$this->_POST		= $this->Push (new BillingMethod (BILLING_METHOD_POST));
-			$this->_EMAIL		= $this->Push (new BillingMethod (BILLING_METHOD_EMAIL));
+			$this->_POST		= $this->Push (new BillingMethod (DELIVERY_METHOD_POST));
+			$this->_EMAIL		= $this->Push (new BillingMethod (DELIVERY_METHOD_EMAIL));
 			
 			$this->setValue ($intBillingMethod);
 		}
@@ -121,8 +121,8 @@
 			// Select the value
 			switch ($intBillingMethod)
 			{
-				case BILLING_METHOD_POST:		$this->Select ($this->_POST);		return true;
-				case BILLING_METHOD_EMAIL:		$this->Select ($this->_EMAIL);		return true;
+				case DELIVERY_METHOD_POST:		$this->Select ($this->_POST);		return true;
+				case DELIVERY_METHOD_EMAIL:		$this->Select ($this->_EMAIL);		return true;
 				default:						return false;
 			}
 		}

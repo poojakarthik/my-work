@@ -97,10 +97,10 @@ class Cli_App_LateNoticeRunList extends Cli
 					}
 					switch ($arrAccount['DeliveryMethod'])
 					{
-						case BILLING_METHOD_POST:
+						case DELIVERY_METHOD_POST:
 							$arrSummary[$arrAccount['CustomerGroupName']][$strLetterType]['prints'][] = $arrAccount['AccountId'];
 							break;
-						case BILLING_METHOD_EMAIL:
+						case DELIVERY_METHOD_EMAIL:
 							$arrSummary[$arrAccount['CustomerGroupName']][$strLetterType]['emails'][] = $arrAccount['AccountId'];
 							break;
 					}

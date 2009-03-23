@@ -123,7 +123,7 @@
  	function Generate($objInvoice, $objAccount)
  	{
  		// Does this account qualify?
- 		if ($objAccount->BillingMethod !== BILLING_METHOD_POST)
+ 		if ($objAccount->BillingMethod !== DELIVERY_METHOD_POST)
  		{
  			// No, return TRUE
  			return TRUE;

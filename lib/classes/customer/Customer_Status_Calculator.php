@@ -213,7 +213,7 @@ OR
 		}
 		
 		// Test that the account is not emailed the invoice
-		if ($objAccount->billingMethod == BILLING_METHOD_EMAIL)
+		if ($objAccount->billingMethod == DELIVERY_METHOD_EMAIL)
 		{
 			// It is emailed the invoice
 			return FALSE;
@@ -233,7 +233,7 @@ OR
 		}
 		
 		// Test that the account is emailed the invoice
-		if ($objAccount->billingMethod != BILLING_METHOD_EMAIL)
+		if ($objAccount->billingMethod != DELIVERY_METHOD_EMAIL)
 		{
 			// It is not emailed the invoice
 			return FALSE;

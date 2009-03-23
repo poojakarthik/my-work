@@ -123,7 +123,7 @@ class Cli_App_LateNoticeRun extends Cli
 
 						switch ($arrDetails['Account']['DeliveryMethod'])
 						{
-							case BILLING_METHOD_POST:
+							case DELIVERY_METHOD_POST:
 								// We need to generate the pdf for the XML and save it to the 
 								// files/type/pdf/date/cust_group/account.pdf storage
 								// Need to add a note of this to the email
@@ -210,7 +210,7 @@ class Cli_App_LateNoticeRun extends Cli
 
 								break;
 
-							case BILLING_METHOD_EMAIL:
+							case DELIVERY_METHOD_EMAIL:
 								// We can safely go ahead and generate this pdf.
 								$this->log("Generating email PDF $strLetterType for account ". $intAccountId . ' to ' . $arrDetails['Account']['Email']);
 								$pdfContent = $this->getPDFContent($intCustGrp, $arrArgs[self::SWITCH_EFFECTIVE_DATE], $intNoticeType, $xmlFilePath, 'EMAIL');

@@ -98,11 +98,11 @@
 			
 			switch ($intType)
 			{
-				case BILLING_METHOD_POST:
+				case DELIVERY_METHOD_POST:
 					$strName = 'Post';
 					break;
 					
-				case BILLING_METHOD_EMAIL:
+				case DELIVERY_METHOD_EMAIL:
 					$strName = 'Email';
 					break;
 			}
