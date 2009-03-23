@@ -187,8 +187,8 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			
 			// PLAN DETAILS
 			$dboRatePlan->ServiceType->RenderCallback("GetConstantDescription", Array("service_type"), RENDER_OUTPUT);	
-			$dboRatePlan->CustomerGroup = $dboRatePlan->customer_group->Value;
-			$dboRatePlan->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
+			$dboRatePlan->CustomerGroup = Customer_Group::getForId($dboRatePlan->customer_group->Value)->externalName;
+			$dboRatePlan->CustomerGroup->RenderOutput();
 			
 			$intFullService = $dboRatePlan->CarrierFullService->Value;
 			if (!isset($GLOBALS['*arrConstant']['Carrier'][$intFullService]))

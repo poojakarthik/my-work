@@ -270,8 +270,8 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		}
 		
 		echo "</td><td width='50%'>\n";
-		DBO()->RatePlan->CustomerGroup = DBO()->RatePlan->customer_group->Value;
-		DBO()->RatePlan->CustomerGroup->RenderCallback("GetConstantDescription", Array("CustomerGroup"), RENDER_OUTPUT);
+		DBO()->RatePlan->CustomerGroup = Customer_Group::getForId(DBO()->RatePlan->customer_group->Value)->externalName;
+		DBO()->RatePlan->CustomerGroup->RenderOutput();
 		DBO()->RatePlan->MinMonthly->RenderOutput();
 		DBO()->RatePlan->ChargeCap->RenderOutput();
 		DBO()->RatePlan->UsageCap->RenderOutput();
