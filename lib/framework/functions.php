@@ -3369,7 +3369,7 @@ function EnsureLatestInvoiceRunEventsAreDefined()
 	);
 
 	$strTables = "
-		(SELECT customer_group_id, MAX(InvoiceRun.Id) invoice_run_id FROM InvoiceRun, invoice_run_status WHERE InvoiceRun.invoice_run_status_id = invoice_run_status.id AND invoice_run_status.const_name = 'INVOICE_RUN_STATUS_COMMITTED' GROUP BY customer_group_id) last_invoice_run
+		(SELECT customer_group_id, MAX(InvoiceRun.Id) invoice_run_id FROM InvoiceRun JOIN invoice_run_status ON InvoiceRun.invoice_run_status_id = invoice_run_status.id JOIN invoice_run_type ON InvoiceRun.invoice_run_type_id = invoice_run_type.id WHERE invoice_run_status.const_name = 'INVOICE_RUN_STATUS_COMMITTED' AND invoice_run_type.const_name = 'INVOICE_RUN_TYPE_LIVE' GROUP BY customer_group_id) last_invoice_run
 		LEFT OUTER JOIN (SELECT DISTINCT(invoice_run_id) FROM automatic_invoice_run_event) existing
 		ON last_invoice_run.invoice_run_id = existing.invoice_run_id
 		HAVING processed IS NULL
