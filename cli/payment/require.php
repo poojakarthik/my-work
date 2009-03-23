@@ -45,4 +45,6 @@ VixenRequire($strDirectDebitDir."securepay/file/Payment_DirectDebit_File_SecureP
 VixenRequire($strDirectDebitDir."australiandirectentry/file/Payment_DirectDebit_File_AustralianDirectEntry_BankTransfer.php");
 
 VixenRequire('lib/classes/customer/Customer_Group.php');
+VixenRequire('lib/classes/Employee.php');
+
 ?>
