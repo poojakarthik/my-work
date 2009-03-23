@@ -1,6 +1,8 @@
 <?php
 
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../' . 'flex.require.php';
+VixenRequire('lib/classes/Employee.php');
+VixenRequire('lib/classes/Note.php');
 
 class Cli_App_ApplyLateFeesToAccounts extends Cli
 {
