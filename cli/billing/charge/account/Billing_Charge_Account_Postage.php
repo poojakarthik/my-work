@@ -123,7 +123,7 @@
  	function Generate($arrInvoice, $arrAccount)
  	{
  		// Does this account qualify?
- 		if ($arrAccount['BillingMethod'] !== BILLING_METHOD_POST)
+ 		if ($arrAccount['BillingMethod'] !== DELIVERY_METHOD_POST)
  		{
  			// No, return TRUE
  			return TRUE;
