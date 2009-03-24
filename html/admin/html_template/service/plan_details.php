@@ -262,10 +262,17 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 				$dboRatePlan->scalable->RenderArbitrary("Not Scalable", RENDER_OUTPUT);
 			}
 			
-			$dboRatePlan->MinMonthly->RenderOutput();
+			/*$dboRatePlan->MinMonthly->RenderOutput();
 			$dboRatePlan->ChargeCap->RenderOutput();
 			$dboRatePlan->UsageCap->RenderOutput();
-			$dboRatePlan->RecurringCharge->RenderOutput();
+			$dboRatePlan->RecurringCharge->RenderOutput();*/
+			$dboRatePlan->PlanCharge	= DBO()->RatePlan->MinMonthly->Value;
+			$dboRatePlan->UsageStart	= DBO()->RatePlan->ChargeCap->Value;
+			$dboRatePlan->UsageLimit	= DBO()->RatePlan->UsageCap->Value;
+			
+			$dboRatePlan>PlanCharge->RenderArbitrary('$'.number_format($dboRatePlan->PlanCharge->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+			$dboRatePlan->UsageStart->RenderArbitrary('$'.number_format($dboRatePlan->UsageStart->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+			$dboRatePlan->UsageLimit->RenderArbitrary('$'.number_format($dboRatePlan->UsageLimit->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 			
 			if ($dboRatePlan->discount_cap->Value == NULL)
 			{
