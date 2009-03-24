@@ -206,10 +206,13 @@ class Invoice extends ORM
 			$fltTaxableCappedCharge	= $arrDetails['fltTaxableCappedCharge'];
 
 			// Determine and add in Plan Credit
-			if ($fltUsageLimit >= $fltMinimumCharge && $fltUsageLimit > 0)
+			//Log::getLog()->log("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
+			if ($fltUsageLimit > 0)
 			{
-				Log::getLog()->log("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
-				$fltPlanCredit	= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
+				//$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
+				$fltPlanCredit			= min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart;
+				Log::getLog()->log("OLD: min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
+				Log::getLog()->log("NEW: min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart\t = $fltPlanCredit");
 				$intPeriodStart	= $this->intLastInvoiceDatetime;
 				$intPeriodEnd	= strtotime("-1 day", $this->intInvoiceDatetime);
 				$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
@@ -507,10 +510,12 @@ class Invoice extends ORM
 			$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
 			
 			// Determine and add in Plan Credit
-			if ($fltUsageLimit >= $fltMinimumCharge && $fltUsageLimit > 0)
+			if ($fltUsageLimit > 0)
 			{
-				$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
-				Log::getLog()->log("min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
+				//$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
+				$fltPlanCredit			= min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart;
+				Log::getLog()->log("OLD: min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
+				Log::getLog()->log("NEW: min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart\t = $fltPlanCredit");
 				$intPeriodStart			= $intArrearsPeriodStart;
 				$intPeriodEnd			= $intArrearsPeriodEnd;
 				$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
