@@ -194,9 +194,9 @@ class Invoice extends ORM
 				// Add Plan Charges
 				$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, $arrServiceIds, NULL);
 	
-				$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
-				$fltUsageStart		= $arrUsageDetails['ChargeCap'];
-				$fltUsageLimit		= $arrUsageDetails['UsageCap'];
+				$fltMinimumCharge	= (float)$arrUsageDetails['MinMonthly'];
+				$fltUsageStart		= (float)$arrUsageDetails['ChargeCap'];
+				$fltUsageLimit		= (float)$arrUsageDetails['UsageCap'];
 			}
 
 			$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
@@ -433,9 +433,9 @@ class Invoice extends ORM
 		else
 		{
 			$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, Array($intServiceId), $intServiceId);
-			$fltMinimumCharge	= $arrUsageDetails['MinMonthly'];
-			$fltUsageStart		= $arrUsageDetails['ChargeCap'];
-			$fltUsageLimit		= $arrUsageDetails['UsageCap'];
+			$fltMinimumCharge	= (float)$arrUsageDetails['MinMonthly'];
+			$fltUsageStart		= (float)$arrUsageDetails['ChargeCap'];
+			$fltUsageLimit		= (float)$arrUsageDetails['UsageCap'];
 		}
 		//--------------------------------------------------------------------//
 
