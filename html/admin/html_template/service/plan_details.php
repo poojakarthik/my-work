@@ -270,7 +270,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			$dboRatePlan->UsageStart	= DBO()->RatePlan->ChargeCap->Value;
 			$dboRatePlan->UsageLimit	= DBO()->RatePlan->UsageCap->Value;
 			
-			$dboRatePlan>PlanCharge->RenderArbitrary('$'.number_format($dboRatePlan->PlanCharge->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+			$dboRatePlan->PlanCharge->RenderArbitrary('$'.number_format($dboRatePlan->PlanCharge->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 			$dboRatePlan->UsageStart->RenderArbitrary('$'.number_format($dboRatePlan->UsageStart->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 			$dboRatePlan->UsageLimit->RenderArbitrary('$'.number_format($dboRatePlan->UsageLimit->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 			
