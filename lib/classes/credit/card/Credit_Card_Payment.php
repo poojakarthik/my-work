@@ -36,6 +36,8 @@ class Credit_Card_Payment
 
 	public static function isTestMode()
 	{
+		// If constant CREDIT_CARD_PAYMENT_TEST_MODE is not defined or is defined and set to TRUE, then isTestMode will return TRUE
+		// The constant HAS TO BE defined and set to FALSE, for LIVE Credit Card payments to work
 		return (!defined('CREDIT_CARD_PAYMENT_TEST_MODE') || CREDIT_CARD_PAYMENT_TEST_MODE !== FALSE);
 	}
 
