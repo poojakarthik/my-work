@@ -10,7 +10,7 @@ class Constant_Group
 {
 	protected	$_strConstantGroupName;
 	
-	protected	$_arrAliasToValueMap;
+	protected	$_arrAliasToValueMap	= array();
 	
 	/**
 	 * __construct()
@@ -26,8 +26,6 @@ class Constant_Group
 	private function __construct($strConstantGroupName)
 	{
 		$this->_strConstantGroupName	= $strConstantGroupName;
-		
-		$this->_arrAliasToValueMap		= array();
 		
 		// Map alias's to their values (so the values can be referenced by their alias's even if they are not defined as php constants)
 		if (array_key_exists($strConstantGroupName, $GLOBALS['*arrConstant']))
