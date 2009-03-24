@@ -167,10 +167,44 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "<div id='Container_PlanDetails' style='width:100%;height:auto'>";
 		echo "<div id='PlanDetailsColumn1' style='width:50%;float:left'>";		
 		DBO()->RatePlan->Shared->RenderInput(CONTEXT_DEFAULT);
-		DBO()->RatePlan->MinMonthly->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->ChargeCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->UsageCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->RecurringCharge->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
+		
+		// Plan Charge (MinMonthly)
+		$fltPlanCharge		= DBO()->RatePlan->MinMonthly->Value;
+		$strPlanChargeClass	= DBO()->RatePlan->MinMonthly->IsInvalid() ? 'DefaultInvalidInputText' : 'DefaultInputText';
+		echo "
+<div class='DefaultElement'>
+	<input type='text' id='RatePlan.MinMonthly' name='RatePlan.MinMonthly' class='{$strPlanChargeClass}' value='{$fltPlanCharge}'/>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Plan Charge (\$):</div>
+</div>";
+		
+		// Usage Start (ChargeCap)
+		$fltUsageStart		= DBO()->RatePlan->ChargeCap->Value;
+		$strUsageStartClass	= DBO()->RatePlan->ChargeCap->IsInvalid() ? 'DefaultInvalidInputText' : 'DefaultInputText';
+		echo "
+<div class='DefaultElement'>
+	<input type='text' id='RatePlan.ChargeCap' name='RatePlan.ChargeCap' class='{$strUsageStartClass}' value='{$fltUsageStart}'/>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Usage Start (\$):</div>
+</div>";
+		
+		// Usage Limit (UsageCap)
+		$fltUsageLimit		= DBO()->RatePlan->UsageCap->Value;
+		$strUsageLimitClass	= DBO()->RatePlan->UsageCap->IsInvalid() ? 'DefaultInvalidInputText' : 'DefaultInputText';
+		echo "
+<div class='DefaultElement'>
+	<input type='text' id='RatePlan.UsageCap' name='RatePlan.UsageCap' class='{$strUsageLimitClass}' value='{$fltUsageLimit}'/>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Usage Limit (\$):</div>
+</div>";
+		
+		// RecurringCharge (DEPRECATED)
+		$fltRecurringCharge			= DBO()->RatePlan->RecurringCharge->Value;
+		$strRecurringChargeClass	= DBO()->RatePlan->RecurringCharge->IsInvalid() ? 'DefaultInvalidInputText' : 'DefaultInputText';
+		echo "
+<div class='DefaultElement' style='display:none;'>
+	<input type='hidden' id='RatePlan.RecurringCharge' name='RatePlan.RecurringCharge' class='{$strRecurringChargeClass}' value='{$fltRecurringCharge}'/>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Recurring Charge (\$):</div>
+</div>";
+		
+		// Discount Cap
 		DBO()->RatePlan->discount_cap->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
 		
 		// Render the 'Included Data' field
