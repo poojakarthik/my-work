@@ -168,14 +168,16 @@ class Constant_Group
 			throw new Exception("Constant Group '{$strConstantGroupName}' is not defined!");
 		}
 	}
-	
+
 	/**
 	 * loadFromTable()
 	 *
-	 * Loads a Constant Group from a database table
+	 * Loads a Constant Group from a table of the supplied data source (because we use various data sources)
 	 *
+	 * @param	Data_Source_MDB2_Wrapper	$ds			Data_Source_MDB2_Wrapper or Query object.  If set to NULL then a Query object will be 
+	 * 													used, connecting to the default data source for Query objects
 	 * @param	string		$strTableName				Name of the Table
-	 * @param	[boolean	$bolRegisterConstants	]	TRUE	: Register as PHP constants
+	 * @param	boolean		$bolRegisterConstants		TRUE	: Register as PHP constants
 	 * 													FALSE	: Don't register as PHP constants (default)
 	 * 													NULL	: Register if not already registered (on a constant-by-constant basis)
 	 * @param	boollean	$bolSilentFail				Optional, defaults to FALSE
@@ -183,13 +185,19 @@ class Constant_Group
 	 * 													If FALSE then it will only load them from the database if they haven't already been loaded.
 	 *
 	 * @return	Constant_Group
-	 *
 	 * @method
 	 */
-	public static function loadFromTable($strTableName, $bolRegisterConstants=false, $bolSilentFail=false, $bolForceReload=false)
+	public static function loadFromTable($ds, $strTableName, $bolRegisterConstants=false, $bolSilentFail=false, $bolForceReload=false)
 	{
 		static	$qryQuery;
-		$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
+		if (!isset($qryQuery))
+		{
+			$qryQuery = new Query();
+		}
+		if ($ds === NULL)
+		{
+			$ds = $qryQuery;
+		}
 		
 		if (array_key_exists($strTableName, $GLOBALS['*arrConstant']) && !$bolForceReload)
 		{
@@ -204,60 +212,95 @@ class Constant_Group
 		}
 		else
 		{
-			$strLoadSQL	= "SELECT * FROM `{$strTableName}` WHERE 1";
-			$resLoad	= $qryQuery->Execute($strLoadSQL);
-			if ($resLoad === false)
+			$strLoadSQL = "SELECT * FROM {$strTableName} WHERE 1";
+			if ($ds instanceof Data_Source_MDB2_Wrapper)
 			{
-				throw new Exception($qryQuery->Error());
-			}
-			elseif ($resLoad->num_rows)
-			{
-				$arrFields		= $resLoad->fetch_fields();
-				$arrFieldList	= array();
-				foreach ($arrFields as $objField)
+				// MDB2 data source
+				$mixRecordSet = $ds->queryAll($strLoadSQL, null, MDB2_FETCHMODE_ASSOC);
+				if (PEAR::isError($mixRecordSet))
 				{
-					$arrFieldList[strtolower($objField->name)]	= $objField->name;
+					throw new Exception($mixRecordSet->getMessage());
 				}
-				
-				$strIdField	= (in_array('id', $arrFieldList)) ? 'id' : ((in_array('Id', $arrFieldList)) ? 'Id' : false);
-				if ($strIdField !== false && array_key_exists('const_name', $arrFieldList) && array_key_exists('name', $arrFieldList) && array_key_exists('description', $arrFieldList))
+			}
+			elseif ($ds instanceof Query)
+			{
+				// mysqli data source
+				$result	= $ds->Execute($strLoadSQL);
+				if ($result === false)
 				{
-					// Has the required fields
-					$GLOBALS['*arrConstant'][$strTableName]	= array();
-					while ($arrRecord = $resLoad->fetch_assoc())
-					{
-						$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]				= array();
-						$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Name']		= $arrRecord[$arrFieldList['name']];
-						$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Description']	= $arrRecord[$arrFieldList['description']];
-						$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant']	= $arrRecord[$arrFieldList['const_name']];
+					throw new Exception($ds->Error());
+				}
+				$mixRecordSet = array();
+				
+				while ($arrRecord = $result->fetch_assoc())
+				{
+					$mixRecordSet[] = $arrRecord;
+				}
+			}
+			else
+			{
+				throw new exception(__METHOD__ ." : Supplied data source object is not of type Data_Source_MDB2_Wrapper or Query");
+			}
+			
+			if (count($mixRecordSet))
+			{
+				// There is at least 1 record
+				// Check that the required fields are present
+				$arrRecord		= $mixRecordSet[0];
+				$arrFieldList	= array();
+				foreach ($arrRecord as $strField=>$mixValue)
+				{
+					$arrFieldList[strtolower($strField)] = $strField;
+				}
 
-						if (defined($GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant']))
-						{
-							if ($bolRegisterConstants === true)
-							{
-								if ($bolSilentFail)
-								{
-									return false;
-								}
-								else
-								{
-									throw new Exception("Constant {$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant']} is already defined!");
-								}
-							}
-						}
-						elseif ($bolRegisterConstants === null || $bolRegisterConstants === true)
-						{
-							define($GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant'], $arrRecord[$strIdField]);
-						}
+				if 	(	!(	array_key_exists('id', $arrFieldList) && 
+							array_key_exists('name', $arrFieldList) && 
+							array_key_exists('description', $arrFieldList) && 
+							array_key_exists('const_name', $arrFieldList)
+						)
+					)
+				{
+					// The required fields don't exist
+					if ($bolSilentFail)
+					{
+						return false;
+					}
+					else
+					{
+						throw new Exception("'{$strTableName}' is not a Constant Table!");
 					}
 				}
-				elseif ($bolSilentFail)
+				
+				// It has the required fields
+				$strIdField = $arrFieldList['id'];
+				$GLOBALS['*arrConstant'][$strTableName]	= array();
+				foreach ($mixRecordSet as $arrRecord)
 				{
-					return false;
-				}
-				else
-				{
-					throw new Exception("'{$strTableName}' is not a Constant Table!");
+					// It is assumed that the id Field is an integer
+					$intId = intval($arrRecord[$strIdField]);
+					$GLOBALS['*arrConstant'][$strTableName][$intId]					= array();
+					$GLOBALS['*arrConstant'][$strTableName][$intId]['Name']			= $arrRecord[$arrFieldList['name']];
+					$GLOBALS['*arrConstant'][$strTableName][$intId]['Description']	= $arrRecord[$arrFieldList['description']];
+					$GLOBALS['*arrConstant'][$strTableName][$intId]['Constant']		= $arrRecord[$arrFieldList['const_name']];
+
+					if (defined($GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant']))
+					{
+						if ($bolRegisterConstants === true)
+						{
+							if ($bolSilentFail)
+							{
+								return false;
+							}
+							else
+							{
+								throw new Exception("Constant {$GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant']} is already defined!");
+							}
+						}
+					}
+					elseif ($bolRegisterConstants === null || $bolRegisterConstants === true)
+					{
+						define($GLOBALS['*arrConstant'][$strTableName][$arrRecord[$strIdField]]['Constant'], $arrRecord[$strIdField]);
+					}
 				}
 			}
 			elseif ($bolSilentFail)
@@ -272,5 +315,6 @@ class Constant_Group
 		
 		return new self($strTableName);
 	}
+
 }
 ?>
