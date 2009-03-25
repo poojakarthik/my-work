@@ -422,6 +422,7 @@ class Invoice extends ORM
 		if (!$arrPlanDetails)
 		{
 			// There is no Plan for this Service, we can't Invoice it
+			Log::getLog()->log("No Plan for this Service!");
 			return FALSE;
 		}
 
@@ -1338,7 +1339,7 @@ class Invoice extends ORM
 				case 'selPlanDetails':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan",
 																					"RatePlan.*, ServiceRatePlan.Id AS ServiceRatePlan, ServiceRatePlan.StartDatetime AS EarliestStartDatetime",
-																					"ServiceRatePlan.Service = <Service> AND <EffectiveDate> >= StartDatetime AND <EffectiveDate> < EndDatetime",
+																					"ServiceRatePlan.Service = <Service> AND <EffectiveDate> BETWEEN StartDatetime AND EndDatetime",
 																					"CreatedOn DESC",
 																					"1");
 					break;
