@@ -155,6 +155,8 @@ class Invoice extends ORM
 					$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxExemptCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxExemptCappedCharge'];
 					$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['fltTaxableCappedCharge']		+= $arrServiceDetails['ServiceTotal']['fltTaxableCappedCharge'];
 					$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['bolDisconnectedAndNoCDRs']		= ($arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['bolDisconnectedAndNoCDRs'] === false) ? false : ($arrServiceDetails['ServiceTotal']['bolDisconnectedAndNoCDRs']);
+					
+					$arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['strEarliestPlanStartDatetime']	= ($arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['strEarliestPlanStartDatetime']) ? min($arrSharedPlans[$arrServiceDetails['ServiceTotal']['RatePlan']]['strEarliestPlanStartDatetime'], $arrServiceDetails['ServiceTotal']['PlanStartDatetime']) : $arrServiceDetails['ServiceTotal']['PlanStartDatetime'];
 				}
 			}
 			else
@@ -180,6 +182,7 @@ class Invoice extends ORM
 			{
 				throw new Exception("Unable to retrieve details for RatePlan with Id '{$intRatePlan}'!");
 			}
+			$arrPlanDetails['EarliestStartDatetime']	= $arrDetails['strEarliestPlanStartDatetime'];
 
 			$arrServiceIds		= array_keys($arrDetails['Services']);
 			
@@ -414,6 +417,7 @@ class Invoice extends ORM
 			throw new Exception("DB ERROR: ".$selPlanDetails->Error());
 		}
 		$arrPlanDetails	= $selPlanDetails->Fetch();
+		$arrServiceTotal['PlanStartDatetime']	= $arrPlanDetails['EarliestStartDatetime'];
 
 		if (!$arrPlanDetails)
 		{
@@ -964,6 +968,7 @@ class Invoice extends ORM
 		$strServiceIds	= implode(', ', $arrServiceIds);
 		
 		// If this Plan requires CDRs, get the Earliest CDR Details (ensuring that the earliest date is not after the Invoice date)
+		$strEarliestCDR	= null;
 		if ($arrPlanDetails['cdr_required'])
 		{
 			$resResult	= $qryQuery->Execute("SELECT MIN(EarliestCDR) AS EarliestCDR FROM Service WHERE Id IN ({$strServiceIds})");
@@ -984,9 +989,27 @@ class Invoice extends ORM
 			{
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
-			$arrMinCreatedOn	= $resResult->fetch_assoc();
-			$strEarliestCDR		= ($arrMinCreatedOn['EarliestCreatedOn'] !== NULL && strtotime($arrMinCreatedOn['EarliestCreatedOn']) < $this->intInvoiceDatetime) ? $arrMinCreatedOn['EarliestCreatedOn'] : NULL;
+			$arrMinCreatedOn		= $resResult->fetch_assoc();
+			
+			$strPlanStartDatetime	= $arrPlanDetails['EarliestStartDatetime'];
+			$strServiceCreatedOn	= $arrMinCreatedOn['EarliestCreatedOn'];
+			
+			$strEarliestCDR			= max($strPlanStartDatetime, $strServiceCreatedOn);
+			
+			if ($strPlanStartDatetime > $strServiceCreatedOn)
+			{
+				Log::getLog()->log("Earliest CDR comes from Plan Date");
+			}
+			elseif ($strPlanStartDatetime < $strServiceCreatedOn)
+			{
+				Log::getLog()->log("Earliest CDR comes from Creation Date");
+			}
+			else
+			{
+				Log::getLog()->log("Earliest CDR comes from shared Plan Date/Creation Date");
+			}
 		}
+		$strEarliestCDR	= ($strEarliestCDR !== null && strtotime($strEarliestCDR) < $this->intInvoiceDatetime) ? $strEarliestCDR : null;
 
 		// Default Arrears Period
 		$intArrearsPeriodStart	= $this->intLastInvoiceDatetime;
@@ -1314,7 +1337,7 @@ class Invoice extends ORM
 					break;
 				case 'selPlanDetails':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan JOIN RatePlan ON RatePlan.Id = ServiceRatePlan.RatePlan",
-																					"RatePlan.*, ServiceRatePlan.Id AS ServiceRatePlan",
+																					"RatePlan.*, ServiceRatePlan.Id AS ServiceRatePlan, ServiceRatePlan.StartDatetime AS EarliestStartDatetime",
 																					"ServiceRatePlan.Service = <Service> AND <EffectiveDate> >= StartDatetime AND <EffectiveDate> < EndDatetime",
 																					"CreatedOn DESC",
 																					"1");
