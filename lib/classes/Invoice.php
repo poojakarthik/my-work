@@ -227,17 +227,17 @@ class Invoice extends ORM
 			
 			$fltTotalTaxable					= 0.0;
 			$fltTotalTaxExempt					= 0.0;
-			$fltTaxableCappedChargeRemaining	= $fltTaxableCappedCharge;
-			$fltTaxExemptCappedChargeRemaining	= $fltTaxExemptCappedCharge;
+			$fltTaxableCappedChargeRemaining	= max(0, $fltTaxableCappedCharge);
+			$fltTaxExemptCappedChargeRemaining	= max(0, $fltTaxExemptCappedCharge);
 
 			// Determine Under-Usage
 			$fltUnderUsageRemaining				= $fltUsageStart;
 			
-			$fltUnderUsageTaxable				= min($fltTaxableCappedCharge, $fltUnderUsageRemaining);
+			$fltUnderUsageTaxable				= min($fltTaxableCappedChargeRemaining, $fltUnderUsageRemaining);
 			$fltTaxableCappedChargeRemaining	-= $fltUnderUsageTaxable;
 			$fltUnderUsageRemaining				-= $fltUnderUsageTaxable;
 			
-			$fltUnderUsageTaxExempt				= min($fltTaxExemptCappedCharge, $fltUnderUsageRemaining);
+			$fltUnderUsageTaxExempt				= min($fltTaxExemptCappedChargeRemaining, $fltUnderUsageRemaining);
 			$fltTaxExemptCappedChargeRemaining	-= $fltUnderUsageTaxExempt;
 			$fltUnderUsageRemaining				-= $fltUnderUsageTaxExempt;
 			
@@ -555,17 +555,17 @@ class Invoice extends ORM
 			
 			$fltTotalTaxable					= 0.0;
 			$fltTotalTaxExempt					= 0.0;
-			$fltTaxableCappedChargeRemaining	= $fltTaxableCappedCharge;
-			$fltTaxExemptCappedChargeRemaining	= $fltTaxExemptCappedCharge;
+			$fltTaxableCappedChargeRemaining	= max(0, $fltTaxableCappedCharge);
+			$fltTaxExemptCappedChargeRemaining	= max(0, $fltTaxExemptCappedCharge);
 
 			// Determine Under-Usage
 			$fltUnderUsageRemaining				= $fltUsageStart;
 			
-			$fltUnderUsageTaxable				= min($fltTaxableCappedCharge, $fltUnderUsageRemaining);
+			$fltUnderUsageTaxable				= min($fltTaxableCappedChargeRemaining, $fltUnderUsageRemaining);
 			$fltTaxableCappedChargeRemaining	-= $fltUnderUsageTaxable;
 			$fltUnderUsageRemaining				-= $fltUnderUsageTaxable;
 			
-			$fltUnderUsageTaxExempt				= min($fltTaxExemptCappedCharge, $fltUnderUsageRemaining);
+			$fltUnderUsageTaxExempt				= min($fltTaxExemptCappedChargeRemaining, $fltUnderUsageRemaining);
 			$fltTaxExemptCappedChargeRemaining	-= $fltUnderUsageTaxExempt;
 			$fltUnderUsageRemaining				-= $fltUnderUsageTaxExempt;
 			
