@@ -515,45 +515,64 @@ class Invoice extends ORM
 			$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
 			
 			// Determine and add in Plan Credit
+			$fltPlanCredit			= min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart;
+			Log::getLog()->log("OLD: min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
+			Log::getLog()->log("NEW: min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart\t = $fltPlanCredit");
 			if ($fltUsageLimit > 0)
 			{
+				Log::getLog()->log("Adding Plan Credit for \${$fltPlanCredit}");
+				
 				//$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
-				$fltPlanCredit			= min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart;
-				Log::getLog()->log("OLD: min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
-				Log::getLog()->log("NEW: min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart\t = $fltPlanCredit");
 				$intPeriodStart			= $intArrearsPeriodStart;
 				$intPeriodEnd			= $intArrearsPeriodEnd;
 				$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
-
-
+				
 				// HACKHACKHACK: Add inverse tax value of Plan Credit to Service Tax Total, so that everything balances
 				$fltCreditTax			= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->intInvoiceDatetime);
 				$arrServiceTotal['Tax']	+= $fltCreditTax;
 				//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 			}
+			
+			$fltTotalTaxable					= 0.0;
+			$fltTotalTaxExempt					= 0.0;
+			$fltTaxableCappedChargeRemaining	= $fltTaxableCappedCharge;
+			$fltTaxExemptCappedChargeRemaining	= $fltTaxExemptCappedCharge;
 
+			// Determine Under-Usage
+			$fltUnderUsageRemaining				= $fltUsageStart;
+			
+			$fltUnderUsageTaxable				= min($fltTaxableCappedCharge, $fltUnderUsageRemaining);
+			$fltTaxableCappedChargeRemaining	-= $fltUnderUsageTaxable;
+			$fltUnderUsageRemaining				-= $fltUnderUsageTaxable;
+			
+			$fltUnderUsageTaxExempt				= min($fltTaxExemptCappedCharge, $fltUnderUsageRemaining);
+			$fltTaxExemptCappedChargeRemaining	-= $fltUnderUsageTaxExempt;
+			$fltUnderUsageRemaining				-= $fltUnderUsageTaxExempt;
+			
+			Log::getLog()->log("Taxable Under-Usage: \${$fltTaxExemptOverusage}");
+			Log::getLog()->log("Tax Exempt Under-Usage: \${$fltUnderUsageTaxExempt}");
+			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltUnderUsageTaxable, $this->intInvoiceDatetime);
+			
 			// Determine Usage
-			$fltTotalCharge			= min($fltCDRCappedTotal, $fltUsageStart);
-
-			// Apply the Minimum Monthly
-			$fltTotalCharge			= ($fltMinimumCharge > 0.0) ? max($fltMinimumCharge, $fltTotalCharge) : $fltTotalCharge;
-
-			// Add in Taxable over-usage
-			$fltTaxableOverusage	= max(0, $fltTaxableCappedCharge - $fltUsageLimit);
-			$fltTotalCharge			+= $fltTaxableOverusage;
-			Log::getLog()->log("Taxable Overusage: \${$fltTaxableOverusage}");
-
-			// Add in Tax exempt over-usage
-			$fltTaxExemptOverusage	= max(0, $fltCDRCappedTotal - $fltUsageLimit) - $fltTaxableOverusage;
-			$fltTotalCharge			+= $fltTaxExemptOverusage;
-
-			if ($fltTaxExemptOverusage)
-			{
-				Log::getLog()->log("Tax Exempt Overusage: \${$fltTaxExemptOverusage}");
-			}
-			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableOverusage, $this->intInvoiceDatetime);
-			//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
-
+			$fltUsageRemaining					= $fltUsageLimit - $fltUsageStart;
+			
+			$fltUsageTaxable					= min($fltTaxableCappedChargeRemaining, $fltUsageRemaining);
+			$fltTaxableCappedChargeRemaining	-= $fltUsageTaxable;
+			$fltUnderUsageRemaining				-= $fltUsageTaxable;
+			
+			$fltUsageTaxExempt					= min($fltTaxExemptCappedChargeRemaining, $fltUsageRemaining);
+			$fltTaxExemptCappedChargeRemaining	-= $fltUsageTaxExempt;
+			$fltUnderUsageRemaining				-= $fltUsageTaxExempt;
+			
+			Log::getLog()->log("Taxable Usage: \${$fltUsageTaxable}");
+			Log::getLog()->log("Tax Exempt Usage: \${$fltUsageTaxExempt}");
+			Log::getLog()->log("Plan Credit: \${$fltPlanCredit} (should be \$".($fltUsageTaxable+$fltUsageTaxExempt).")");
+			
+			// Determine Over-Usage
+			Log::getLog()->log("Taxable Over-Usage: \${$fltTaxableCappedChargeRemaining}");
+			Log::getLog()->log("Tax Exempt Over-Usage: \${$fltTaxExemptCappedChargeRemaining}");
+			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableCappedChargeRemaining, $this->intInvoiceDatetime);
+			
 			$fltTotalCharge	= $fltCDRCappedTotal;
 
 			//----------------------------------------------------------------//
