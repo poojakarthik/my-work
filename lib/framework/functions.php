@@ -5655,5 +5655,103 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	{
 		return preg_match("/^\d{2}\/\d{6,7}$/", $strTIORefNum);
 	}
+	
+	/**
+	 * ConvertToSimpleArray()
+	 * 
+	 * Converts an array of objects (or array of associative arrays) into a simple array,
+	 * where each cell of the resultant array is a single property of the associated object/assoc-array of the original RecordSet
+	 * 
+	 * @param	array	$arrRecordSet			Array of associative arrays or array of objects
+	 * @param	string	$strValueProperty		The property of the object, or the key into the associative array, 
+	 * 											of the value to keep in the resultant array
+	 * @param	string	[ $strKeyProperty ]		Defaults to null.  If null, then the RecordSet's original keys are retained.
+	 * 											If a property (or key into the associative array), is given, then this will be used for the keys  
+	 *
+	 * @return	array							The simplfied array, somewhat of the form array[$strKeyPropertyValue] = $strValuePropertyValue
+	 */
+	function ConvertToSimpleArray($arrRecordSet, $strValueProperty, $strKeyProperty=null)
+	{
+		$arrSimpleArray = array();
+		if (count($arrRecordSet))
+		{
+			if (is_object(reset($arrRecordSet)))
+			{
+				if ($strKeyProperty !== null)
+				{
+					// A particular property should be used for the key
+					foreach ($arrRecordSet as $objObject)
+					{
+						$arrSimpleArray[$objObject->{$strKeyProperty}] = $objObject->{$strValueProperty};
+					}
+				}
+				else
+				{
+					// Retain the original keys
+					foreach ($arrRecordSet as $key=>$objObject)
+					{
+						$arrSimpleArray[$key] = $objObject->{$strValueProperty};
+					}
+				}
+			}
+			else
+			{
+				// The array is an array of associative arrays
+				if ($strKeyProperty !== null)
+				{
+					// A particular property should be used for the key
+					foreach ($arrRecordSet as $arrRecord)
+					{
+						$arrSimpleArray[$arrRecord[$strKeyProperty]] = $arrRecord[$strValueProperty];
+					}
+				}
+				else
+				{
+					// Retain the original keys
+					foreach ($arrRecordSet as $key=>$arrRecord)
+					{
+						$arrSimpleArray[$key] = $arrRecord[$strValueProperty];
+					}
+				}
+			}
+		}
+		return $arrSimpleArray;
+	}
+	
+	/**
+	 * KeyifyArray()
+	 * 
+	 * Sets the keys for an array of objects (or array of associative arrays) using one of the properties of the object/associative array
+	 * Note that if the value of the property used as the key, isn't unique across the objects, then some of the objects will be lost in the translation
+	 * 
+	 * @param	array	$arrRecordSet		Array of associative arrays or array of objects
+	 * @param	string	$strKeyProperty		For each object (or assoc-array) in the recordset, this property will be used for the object corresponding key  
+	 *
+	 * @return	array						The simplfied array, somewhat of the form array[$objObject->{$strKeyPropertyValue}] = $objObject
+	 */
+	function KeyifyArray($arrRecordSet, $strKeyProperty)
+	{
+		$arrKeyedArray = array();
+		if (count($arrRecordSet))
+		{
+			if (is_object(reset($arrRecordSet)))
+			{
+				// The array is an array of objects
+				foreach ($arrRecordSet as $objObject)
+				{
+					$arrKeyedArray[$objObject->{$strKeyProperty}] = $objObject;
+				}
+			}
+			else
+			{
+				// The array is an array of associative arrays
+				foreach ($arrRecordSet as $arrRecord)
+				{
+					$arrKeyedArray[$arrRecord[$strKeyProperty]] = $arrRecord;
+				}
+			}
+		}
+		return $arrKeyedArray;
+	}
 
 ?>
