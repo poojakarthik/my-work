@@ -34,6 +34,43 @@ class File_Type extends ORM
 	}
 	
 	/**
+	 * getPreferredMIMEType()
+	 *
+	 * Returns a the preferred MIME Type Object for this File_Type
+	 * 
+	 * @param	[boolean	$bolForceRefresh	]	TRUE	: Refresh cache
+	 * 												FALSE	: Use cached value if available (default)
+	 * 
+	 * @return	Mime_Type
+	 * 
+	 * @method
+	 */
+	public function getPreferredMIMEType($bolForceRefresh=false)
+	{
+		static	$objCache;
+		
+		if (!isset($objCache) || $bolForceRefresh)
+		{
+			$selPreferredMimeType	= $this->_preparedStatement('selPreferredMimeType');
+			$resPreferredMimeType	= $selPreferredMimeType->Execute($this->toArray());
+			if ($resPreferredMimeType === false)
+			{
+				throw new Exception($selPreferredMimeType->Error());
+			}
+			elseif ($arrMimeType = $selPreferredMimeType->Fetch())
+			{
+				$objCache	= new Mime_Type($arrMimeType);
+			}
+			else
+			{
+				return null;
+			}
+		}
+		
+		return $objCache;
+	}
+	
+	/**
 	 * getForExtensionAndMimeType()
 	 *
 	 * Returns a File_Type based on the file extension and mime type
@@ -151,7 +188,10 @@ class File_Type extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
 				case 'selByExtensionMimeType':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("file_type JOIN mime_type ON file_type.mime_type_id = mime_type.id", "file_type.*", "file_type.extension = <extension> AND mime_type.mime_content_type = <mime_content_type>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("file_type JOIN file_type_mime_type ftmt ON file_type.id = ftmt.file_type_id JOIN mime_type ON ftmt.mime_type_id = mime_type.id", "file_type.*", "file_type.extension = <extension> AND mime_type.mime_content_type = <mime_content_type>", NULL, 1);
+					break;
+				case 'selPreferredMimeType':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("file_type_mime_type ftmt JOIN mime_type mt ON ftmt.mime_type_id = mt.id", "mt.*", "ftmt.file_type = <id>", "ftmt.id DESC", 1);
 					break;
 				
 				// INSERTS
