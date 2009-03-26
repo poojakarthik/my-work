@@ -159,7 +159,7 @@ class Cli_App_InvoiceXMLTest extends Cli
 		}
 		catch(Exception $exception)
 		{
-			$message = "ERROR: Source file: {$strSource} (Exception @ Line ".$exception->getLine()." in ".$exception->getFile();
+			$message = "ERROR: Source file: {$strSource} (Exception @ Line ".$exception->getLine()." in ".$exception->getFile().")";
 			$undo = str_repeat(chr(8), $cleanUpLength);
 			$messageLen = strlen($message);
 			$cleanUpLength = max($cleanUpLength, $messageLen);
