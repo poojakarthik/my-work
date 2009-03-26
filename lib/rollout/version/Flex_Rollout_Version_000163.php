@@ -40,7 +40,7 @@ class Flex_Rollout_Version_000163 extends Flex_Rollout_Version
 		$this->rollbackSQL[] =	"DROP TABLE file_type_mime_type;";
 
 		// 2:	Populate the file_type_mime_type Table
-		$resFileType = $dbAdmin->query("SELECT * FROM Employee WHERE 1");
+		$resFileType = $dbAdmin->query("SELECT * FROM file_type WHERE 1");
 		if (PEAR::isError($resFileType))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve the list of file_type Records. ' . $resFileType->getMessage() . " (DB Error: " . $resFileType->getUserInfo() . ")");
