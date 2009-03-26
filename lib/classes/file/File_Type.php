@@ -67,6 +67,7 @@ class File_Type extends ORM
 			}
 		}
 		
+		throw new Exception("Preferred MIME Type for {$this->id} is {$objCache->id}");
 		return $objCache;
 	}
 	
