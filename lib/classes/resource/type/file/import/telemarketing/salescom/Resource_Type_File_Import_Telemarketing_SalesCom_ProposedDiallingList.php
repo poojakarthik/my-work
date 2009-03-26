@@ -57,8 +57,13 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 				// Normalise the Line
 				$arrNormalised	= $this->_normaliseLine($strLine);
 				
+				if ($arrNormalised['__WARNINGS__'])
+				{
+					$arrErrors[]	= "Line {$intLine} had the following warnings: ".implode('; ', $arrNormalised['__WARNINGS__']);
+				}
 				if (!$arrNormalised['__ERRORS__'])
 				{
+					
 					// Insert the normalised Line into the Database
 					$objProposedFNN	= new Telemarketing_FNN_Proposed();
 					
@@ -101,6 +106,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 	{
 		$arrNormalised					= array();
 		$arrNormalised['__ERRORS__']	= array();
+		$arrNormalised['__WARNINGS__']	= array();
 		
 		// Explode the CSV
 		$arrExplode		= self::parseCSV($strLine);
@@ -110,7 +116,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 		$intRequiredColumns	= count(self::_getFileFormatDefinition(null, '__COLUMNS__'));
 		if ($intActualColumns !== $intRequiredColumns)
 		{
-			$arrNormalised['__ERRORS__'][]	= "Incorrect number of CSV fields (Actual: {$intActualColumns};Expected: {$intRequiredColumns})";
+			$arrNormalised['__WARNINGS__'][]	= "Incorrect number of CSV fields (Actual: {$intActualColumns};Expected: {$intRequiredColumns})";
 		}
 		
 		$intCallPeriodLengthDays	= self::CALL_PERIOD_LENGTH_DAYS;
