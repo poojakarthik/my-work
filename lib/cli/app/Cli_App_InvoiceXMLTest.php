@@ -442,7 +442,7 @@ class Cli_App_InvoiceXMLTest extends Cli
 
 		if (!$this->precisionEquals($cache['statementNewCharges'], $chargesTotal+$fltTaxTotal, $charges->length))
 		{
-			throw new Exception("Statement claims new charges of " . $cache['statementNewCharges'] . " but Charges in summary total " . $chargesTotal+$fltTaxTotal . ".");
+			throw new Exception("Statement claims new charges of " . $cache['statementNewCharges'] . " but Charges in summary total " . ($chargesTotal+$fltTaxTotal) . ".");
 		}
 
 		$cache['chargesTotal'] = $chargesTotal+$fltTaxTotal;
