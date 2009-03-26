@@ -28,8 +28,8 @@ class Flex_Rollout_Version_000163 extends Flex_Rollout_Version
 						is_preferred_mime_type	TINYINT					NOT NULL	DEFAULT 0		COMMENT '1: Preferred Export MIME Type; 0: Alternate MIME Type',
 						
 						CONSTRAINT	pk_file_type_mime_type_id			PRIMARY KEY (id),
-						CONSTRAINT	fk_file_type_mime_type_file_type_id	PRIMARY KEY (file_type_id)	REFERENCES file_type(id)	ON UPDATE CASCADE	ON DELETE CASCADE,
-						CONSTRAINT	pk_file_type_mime_type_mime_type_id	PRIMARY KEY (mime_type_id)	REFERENCES mime_type(id)	ON UPDATE CASCADE	ON DELETE CASCADE
+						CONSTRAINT	fk_file_type_mime_type_file_type_id	FOREIGN KEY (file_type_id)	REFERENCES file_type(id)	ON UPDATE CASCADE	ON DELETE CASCADE,
+						CONSTRAINT	pk_file_type_mime_type_mime_type_id	FOREIGN KEY (mime_type_id)	REFERENCES mime_type(id)	ON UPDATE CASCADE	ON DELETE CASCADE
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
