@@ -191,7 +191,7 @@ class File_Type extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("file_type JOIN file_type_mime_type ftmt ON file_type.id = ftmt.file_type_id JOIN mime_type ON ftmt.mime_type_id = mime_type.id", "file_type.*", "file_type.extension = <extension> AND mime_type.mime_content_type = <mime_content_type>", NULL, 1);
 					break;
 				case 'selPreferredMimeType':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("file_type_mime_type ftmt JOIN mime_type mt ON ftmt.mime_type_id = mt.id", "mt.*", "ftmt.file_type_id = <id>", "is_preferred_mime_type DESC, ftmt.id DESC", 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("file_type_mime_type ftmt JOIN mime_type mt ON ftmt.mime_type_id = mt.id", "mt.*", "ftmt.file_type_id = <id>", "ftmt.is_preferred_mime_type DESC, ftmt.id DESC", 1);
 					break;
 				
 				// INSERTS
