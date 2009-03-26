@@ -48,8 +48,9 @@ class Flex_Rollout_Version_000163 extends Flex_Rollout_Version
 		$arrFileTypeRollbackSQL	= array();
 		while ($arrFileType = $resFileType->fetchRow(MDB2_FETCHMODE_ASSOC))
 		{
+			throw new Exception(print_r($arrFileType, true));
 			$strSQL = "	INSERT INTO file_type_mime_type (file_type_id, mime_type_id, is_preferred_mime_type) VALUES 
-						({$arrFileType['id']}		, {$arrFileType['mime_type_id']}	, 1);";
+						({$arrFileType['id']}	, {$arrFileType['mime_type_id']}	, 1);";
 			$result = $dbAdmin->query($strSQL);
 			if (PEAR::isError($result))
 			{
