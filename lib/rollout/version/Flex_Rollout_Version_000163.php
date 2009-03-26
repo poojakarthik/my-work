@@ -23,8 +23,8 @@ class Flex_Rollout_Version_000163 extends Flex_Rollout_Version
 		$strSQL = "	CREATE TABLE file_type_mime_type
 					(
 						id						BIGINT(20)	UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
-						file_type_id			BIGINT(20)				NOT NULL					COMMENT '(FK) File Type',
-						mime_type_id			BIGINT(20)				NOT NULL					COMMENT '(FK) MIME Type',
+						file_type_id			BIGINT		UNSIGNED	NOT NULL					COMMENT '(FK) File Type',
+						mime_type_id			BIGINT(20)	UNSIGNED	NOT NULL					COMMENT '(FK) MIME Type',
 						is_preferred_mime_type	TINYINT					NOT NULL	DEFAULT 0		COMMENT '1: Preferred Export MIME Type; 0: Alternate MIME Type',
 						
 						CONSTRAINT	pk_file_type_mime_type_id			PRIMARY KEY (id),
@@ -69,8 +69,8 @@ class Flex_Rollout_Version_000163 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to remove the file_type.mime_type_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] =	"ALTER TABLE file_type " .
-								"DROP FOREIGN KEY fk_file_type_mime_type_id, " .
-								"DROP mime_type_id;";
+								"ADD mime_type_id	BIGINT	UNSIGNED	NOT NULL	COMMENT '(FK) MIME Type', " .
+								"ADD CONSTRAINT	fk_file_type_mime_type_id	FOREIGN KEY (mime_type_id)	REFERENCES mime_type(id)	ON UPDATE CASCADE	ON DELETE RESTRICT;";
 		$this->rollbackSQL	= array_merge($this->rollbackSQL, $arrFileTypeRollbackSQL);
 	}
 
