@@ -3584,6 +3584,7 @@ AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffe
 AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
 JOIN credit_control_status ON Account.credit_control_status = credit_control_status.id AND credit_control_status.can_bar = 1
 JOIN account_status ON Account.Archived = account_status.id AND account_status.can_bar = 1
+AND vip = 0
 AND Account.tio_reference_number IS NULL
 )";
 
@@ -3775,6 +3776,7 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 		ON Account.Archived = account_status.id
 		AND account_status.can_bar = 1
 		AND Account.tio_reference_number IS NULL
+		AND vip = 0
 	)";
 
 	$strGroupBy	= "Invoice.Account HAVING Overdue >= minBalanceToPursue AND Overdue >= (TotalFromOverdueInvoices * 0.25)";
