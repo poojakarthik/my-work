@@ -403,18 +403,20 @@ class Service extends ORM
 	 * getFNNInstances()
 	 *
 	 * Gets all Services which have the given FNN
+	 * This does not consider FNNs in an indial 100 range, which aren't the primary FNN of the indial100
 	 * 
 	 * @param	string	$strFNN						The FNN to match
-	 * @param	boolean	[ $bolAsArray ]				*TRUE: Return arrays of Services; FALSE: Return Service Objects 
+	 * @param	int		[ $intAccountId ]			Defaults to NULL.  If set to an account id, then only FNN Instances, associated with the account, will be returned
+	 * @param	boolean	[ $bolAsArray ]				TRUE: Return arrays of Services; FALSE: Return Service Objects 
 	 * 
 	 * @return	array
 	 *
 	 * @method
 	 */
-	public static function getFNNInstances($strFNN, $bolAsArray=true)
+	public static function getFNNInstances($strFNN, $intAccountId=null, $bolAsArray=true)
 	{
 		$selFNNInstances	= self::_preparedStatement('selFNNInstances');
-		if ($selFNNInstances->Execute(array('FNN'=>$strFNN)) === false)
+		if ($selFNNInstances->Execute(array('FNN'=>$strFNN, 'AccountId'=>$intAccountId)) === false)
 		{
 			throw new Exception($selFNNInstances->Error());
 		}
@@ -497,7 +499,7 @@ class Service extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan", "*", "Service = <service_id> AND <effective_datetime> BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", 1);
 					break;
 				case 'selFNNInstances':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service", "*", "FNN = <FNN>");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service", "*", "FNN = <FNN> AND (<AccountId> IS NULL OR Account = <AccountId>)", "Id ASC");
 					break;
 				case 'selServiceAddress':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceAddress", "*", "Service = <Id>");
