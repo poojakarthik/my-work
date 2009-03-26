@@ -69,7 +69,7 @@ class File_Type extends ORM
 		
 		if ($this->id === 15)
 		{
-			throw new Exception("Preferred MIME Type for {$this->id} is {$objCache->id}");
+			throw new Exception("Preferred MIME Type for {$this->id} is {$this->_objPreferredMIMEType->id}");
 		}
 		return $this->_objPreferredMIMEType;
 	}
