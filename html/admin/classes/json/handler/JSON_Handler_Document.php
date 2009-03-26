@@ -49,7 +49,7 @@ class JSON_Handler_Document extends JSON_Handler
 					$objDocument		= new Document(array('id'=>$jobDocument->id), true);
 					$objDocumentContent	= $objDocument->getContent();
 					$objFileType		= new File_Type(array('id'=>$objDocumentContent->file_type_id), true);
-					$objMimeType		= new Mime_Type(array('id'=>$objFileType->mime_type_id), true);
+					$objMimeType		= $objFileType->getPreferredMIMEType();
 					
 					$attAttachment				= $objEmail->createAttachment($objDocumentContent->content);
 					$attAttachment->type		= $objMimeType->mime_content_type;
@@ -162,7 +162,7 @@ class JSON_Handler_Document extends JSON_Handler
 					$objChildOutput	= new stdClass();
 					
 					$objFileType	= ($objChildContent->file_type_id) ? new File_Type(array('id'=>$objChildContent->file_type_id), true) : null;
-					$objMimeType	= ($objChildContent->file_type_id) ? new Mime_Type(array('id'=>$objFileType->mime_type_id), true) : null;
+					$objMimeType	= ($objChildContent->file_type_id) ? $objFileType->getPreferredMIMEType() : null;
 					
 					$objModifiedBy	= Employee::getForId($objChildContent->employee_id);
 					
