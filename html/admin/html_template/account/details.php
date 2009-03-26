@@ -142,6 +142,50 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			}
 		}
 
+		// Build the Full Postal Address Field
+		$strBusinessName	= trim(DBO()->Account->BusinessName->Value);
+		$strTradingName		= trim(DBO()->Account->TradingName->Value);
+		$strAddress1		= trim(DBO()->Account->Address1->Value);
+		$strAddress2		= trim(DBO()->Account->Address2->Value);
+		$strSuburb			= strtoupper(trim(DBO()->Account->Suburb->Value));
+		$strPostcode		= trim(DBO()->Account->Postcode->Value);
+		$strState			= strtoupper(trim(DBO()->Account->State->Value));
+
+		$strPostalAddress = "";
+		if ($strBusinessName != "")
+		{
+			$strPostalAddress .= htmlspecialchars($strBusinessName) . "<br />";
+		}
+		elseif ($strTradingName != "")
+		{
+			$strPostalAddress .= htmlspecialchars($strTradingName) . "<br />";
+		}
+		else
+		{
+			$strPostalAddress .= "<em style='color:#f00'>[ NO BUSINESS NAME OR TRADING NAME SPECIFIED.  PLEASE FIX ME ]</em><br />";
+		}
+		if ($strAddress1 != "")
+		{
+			$strPostalAddress .= htmlspecialchars($strAddress1) . "<br />";
+		}
+		else
+		{
+			// There is no address 1
+			$strPostalAddress .= "<em style='color:#f00'>[ NO ADDRESS LINE 1 SPECIFIED.  PLEASE FIX ME ]</em><br />";
+		}
+		if ($strAddress2 != "")
+		{
+			$strPostalAddress .= htmlspecialchars($strAddress2) . "<br />";
+		}
+		
+		$strPostalAddress .= ($strSuburb != "")? $strSuburb : "<em style='color:#f00'>[ NO SUBURB/LOCALITY SPECIFIED.  PLEASE FIX ME ]</em>";
+		$strPostalAddress .= " ";
+		$strPostalAddress .= ($strState != "")? $strState : "<em style='color:#f00'>[ NO STATE SPECIFIED.  PLEASE FIX ME ]</em>";
+		$strPostalAddress .= " ";
+		$strPostalAddress .= ($strPostcode != "")? $strPostcode : "<em style='color:#f00'>[ NO POSTCODE SPECIFIED.  PLEASE FIX ME ]</em>";
+		DBO()->Account->PostalAddress = $strPostalAddress;
+		
+		
 		// Render the details of the Account
 		DBO()->CustomerGroup->Id = DBO()->Account->CustomerGroup->Value;
 		DBO()->CustomerGroup->Load();
@@ -192,36 +236,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// HtmlTemplate is being rendered on the InvoicesAndPayments page 
 		if (!DBO()->Account->InvoicesAndPaymentsPage->Value)
 		{
-			// Display the first line of the address, but only if there is one
-			if (DBO()->Account->Address1->Value != "")
-			{
-				DBO()->Account->Address1->RenderOutput();
-			}
-			else
-			{
-				DBO()->Account->Address1->RenderArbitrary("[Not Specified]", RENDER_OUTPUT);
-			}
-			
-			if (DBO()->Account->Address2->Value != "")
-			{
-				DBO()->Account->Address2->RenderOutput();
-			}
-			
-			if (DBO()->Account->Suburb->Value != "")
-			{
-				DBO()->Account->Suburb->RenderOutput();
-			}
-			
-			if (DBO()->Account->Postcode->Value != "")
-			{
-				DBO()->Account->Postcode->RenderOutput();
-			}
-			
-			if (DBO()->Account->State->Value != "")
-			{
-				DBO()->Account->State->RenderOutput();
-			}
-			
+			DBO()->Account->PostalAddress->RenderOutput();
+						
 			if (DBO()->Account->Country->Value != "")
 			{
 				DBO()->Account->Country->RenderOutput();
