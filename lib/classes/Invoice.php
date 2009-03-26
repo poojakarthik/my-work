@@ -227,8 +227,8 @@ class Invoice extends ORM
 			
 			$fltTotalTaxable					= 0.0;
 			$fltTotalTaxExempt					= 0.0;
-			$fltTaxableCappedChargeRemaining	= max(0, $fltTaxableCappedCharge);
-			$fltTaxExemptCappedChargeRemaining	= max(0, $fltTaxExemptCappedCharge);
+			$fltTaxableCappedChargeRemaining	= $fltTaxableCappedCharge/*max(0, $fltTaxableCappedCharge)*/;
+			$fltTaxExemptCappedChargeRemaining	=$fltTaxExemptCappedCharge/* max(0, $fltTaxExemptCappedCharge)*/;
 
 			// Determine Under-Usage
 			$fltUnderUsageRemaining				= $fltUsageStart;
@@ -555,8 +555,8 @@ class Invoice extends ORM
 			
 			$fltTotalTaxable					= 0.0;
 			$fltTotalTaxExempt					= 0.0;
-			$fltTaxableCappedChargeRemaining	= max(0, $fltTaxableCappedCharge);
-			$fltTaxExemptCappedChargeRemaining	= max(0, $fltTaxExemptCappedCharge);
+			$fltTaxableCappedChargeRemaining	= $fltTaxableCappedCharge/*max(0, $fltTaxableCappedCharge)*/;
+			$fltTaxExemptCappedChargeRemaining	=$fltTaxExemptCappedCharge/* max(0, $fltTaxExemptCappedCharge)*/;
 
 			// Determine Under-Usage
 			$fltUnderUsageRemaining				= $fltUsageStart;
