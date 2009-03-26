@@ -13,6 +13,8 @@ class File_Type extends ORM
 	
 	protected static 	$_arrAllowableResolutions	= array(16, 64);
 	
+	protected			$_objPreferredMIMEType;
+	
 	/**
 	 * __construct()
 	 *
@@ -47,9 +49,7 @@ class File_Type extends ORM
 	 */
 	public function getPreferredMIMEType($bolForceRefresh=false)
 	{
-		static	$objCache;
-		
-		if (!isset($objCache) || $bolForceRefresh)
+		if (!isset($this->_objPreferredMIMEType) || $bolForceRefresh)
 		{
 			$selPreferredMimeType	= $this->_preparedStatement('selPreferredMimeType');
 			$resPreferredMimeType	= $selPreferredMimeType->Execute($this->toArray());
@@ -59,7 +59,7 @@ class File_Type extends ORM
 			}
 			elseif ($arrMimeType = $selPreferredMimeType->Fetch())
 			{
-				$objCache	= new Mime_Type($arrMimeType);
+				$this->_objPreferredMIMEType	= new Mime_Type($arrMimeType);
 			}
 			else
 			{
@@ -71,7 +71,7 @@ class File_Type extends ORM
 		{
 			throw new Exception("Preferred MIME Type for {$this->id} is {$objCache->id}");
 		}
-		return $objCache;
+		return $this->_objPreferredMIMEType;
 	}
 	
 	/**
