@@ -29,7 +29,7 @@ class Flex_Rollout_Version_000163 extends Flex_Rollout_Version
 						
 						CONSTRAINT	pk_file_type_mime_type_id			PRIMARY KEY (id),
 						CONSTRAINT	fk_file_type_mime_type_file_type_id	FOREIGN KEY (file_type_id)	REFERENCES file_type(id)	ON UPDATE CASCADE	ON DELETE CASCADE,
-						CONSTRAINT	pk_file_type_mime_type_mime_type_id	FOREIGN KEY (mime_type_id)	REFERENCES mime_type(id)	ON UPDATE CASCADE	ON DELETE CASCADE
+						CONSTRAINT	fk_file_type_mime_type_mime_type_id	FOREIGN KEY (mime_type_id)	REFERENCES mime_type(id)	ON UPDATE CASCADE	ON DELETE CASCADE
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
