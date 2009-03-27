@@ -221,6 +221,11 @@ class Application
 					ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
 				}
 			}
+			
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			{
+				ContextMenu()->Admin->System_Settings->ManageActionTypes();
+			}
 		}
 
 		// Document Management
@@ -415,6 +420,11 @@ class Application
 	
 					ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
 				}
+			}
+			
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			{
+				ContextMenu()->Admin->System_Settings->ManageActionTypes();
 			}
 		}
 

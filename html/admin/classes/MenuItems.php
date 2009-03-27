@@ -3312,6 +3312,22 @@ class MenuItems {
 		return "javascript:JsAutoLoader.loadScript('javascript/document.js', function(){JsAutoLoader.loadScript('javascript/document_explorer.js', function(){Flex.Document.Explorer.update(null);})});";
 	}
 	
+	/**
+	 * ManageActionTypes()
+	 *
+	 * Compiles the Href to be executed when the ManageActionTypes menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ManageActionTypes()
+	{
+		$this->strContextMenuLabel = "Manage Action Types";
+		$this->strLabel = "Manage Action Types";
+		
+		return self::NEW_FRAMEWORK . "reflex.php/ActionType/Manage/";
+	}
+	
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//
