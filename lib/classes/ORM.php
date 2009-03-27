@@ -219,6 +219,41 @@ abstract class ORM
 	}
 	
 	/**
+	 * toStdClass()
+	 *
+	 * Returns a stdClass object modelling the Database Record
+	 * 
+	 * @param	[bool	$bolUseTidyNames				]	TRUE	: Use Tidied Names
+	 * 														FALSE	: Use DB Names (default)
+	 * 
+	 * @return	stdClass
+	 *
+	 * @method
+	 */
+	public function toStdClass($bolUseTidyNames=FALSE)
+	{
+		$arrData	= array();
+		if ($bolUseTidyNames)
+		{
+			foreach ($this->_arrTidyNames as $strTidyName=>$strPropName)
+			{
+				$arrData[$strTidyName] = $this->_arrProperties[$strPropName];
+			}
+		}
+		else
+		{
+			$arrData	= $this->_arrProperties;
+		}
+		
+		$objStdClass	= new stdClass();
+		foreach ($arrData as $strField=>$mixValue)
+		{
+			$objStdClass->{$strField}	= $mixValue;
+		}
+		return $objStdClass;
+	}
+	
+	/**
 	 * mysqlToPostgresArray()
 	 *
 	 * Converts an associative array of MySQL fields/values to their Postgres equivalent
