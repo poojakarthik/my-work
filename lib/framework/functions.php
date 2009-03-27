@@ -4333,6 +4333,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 */
 	function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $intEffectiveDate, $intAutomaticInvoiceActionType)
 	{
+		VixenRequire('lib/classes/Note.php');
 		// Static instances of the db access objects used to add records to the AccountNotice and FileExport tables
 		// are used so that the same objects don't have to be built for each individual Late Payment Notice that gets
 		// made in a run
