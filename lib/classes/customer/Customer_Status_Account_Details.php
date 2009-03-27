@@ -171,13 +171,16 @@ class Customer_Status_Account_Details
 		return FALSE;
 	}
 	
-	// returns TRUE if the account has at least 1 service which is currently still in contract and its contract term is at least $intMinContractTermInMonths months long.
-	// Note that this will return false if the account has a service that has a plan with a contract term >= $intMinContractTermInMonths AND the contract expires in the future
-	// BUT the EndDatetime of the plan's association with the service < the contract's expiry date even if (EndDatetime - StartDatetime) > $intMinContractTermInMonths
+	// Returns TRUE if the account has at least 1 service which is currently on a plan that has a contract term >= $intMinContractTermInMonths, regardless of whether or not
+	// a plan change has been scheduled to begin next billing period, and that plan does not have a contract term >= $intMinContractTermInMonths
 	public function isInContract($intMinContractTermInMonths)
 	{
+		/* This was the old method of determining whether or not the customer was in contract
+		// returns TRUE if the account has at least 1 service which is currently still in contract and its contract term is at least $intMinContractTermInMonths months long.
+		// Note that this will return false if the account has a service that has a plan with a contract term >= $intMinContractTermInMonths AND the contract expires in the future
+		// BUT the EndDatetime of the plan's association with the service < the contract's expiry date even if (EndDatetime - StartDatetime) > $intMinContractTermInMonths
 		$strNow = GetCurrentISODateTime();
-
+		
 		foreach ($this->_arrServicePlans as $arrService)
 		{
 			if (	$arrService['ContractTerm'] >= $intMinContractTermInMonths && 
@@ -185,6 +188,15 @@ class Customer_Status_Account_Details
 					$arrService['EndDatetime'] >= $arrService['ContractExpiresOn'] && 
 					($arrService['ClosedOn'] === NULL || $arrService['ClosedOn'] >= $arrService['ContractExpiresOn'])
 				)
+			{
+				return TRUE;
+			}
+		}
+		return FALSE;
+		*/
+		foreach ($this->_arrServicePlans as $arrService)
+		{
+			if ($arrService['ContractTerm'] >= $intMinContractTermInMonths)
 			{
 				return TRUE;
 			}
