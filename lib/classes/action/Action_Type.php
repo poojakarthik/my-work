@@ -245,34 +245,84 @@ class Action_Type extends ORM
 		return self::$_cache;
 	}
 
-	// Returns array of all Action_Type objects that can be associated with accounts
-	// Action_Type->id is key
-	public static function getAllForAccounts()
+	/**
+	 * getAllForAccounts()
+	 *
+	 * returns array (keyed with the action type ids) of all ActionTypes that can be associated with an account
+	 * 
+	 * @param	bool	[ $bolActiveOnly ]		Defaults to false.  If true then only active ActionTypes are returned
+	 * 											If false then all ActiveTypes are returned
+	 * @param	bool	[ $bolManualOnly ]		Defaults to false.  If true then it only returns ActionTypes that can be manually created by flex users
+	 * 											If false then it returns all ActionTypes
+	 *
+	 * @return	array of Action_Type objects, with the id of each Action_Type as its key
+	 * @method
+	 */
+	public static function getAllForAccounts($bolActiveOnly=false, $bolManualOnly=false)
 	{
-		return self::_getForActionAssociationType(ACTION_ASSOCIATION_TYPE_ACCOUNT);
+		return self::_getForActionAssociationType(ACTION_ASSOCIATION_TYPE_ACCOUNT, $bolActiveOnly, $bolManualOnly);
 	}
 	
-	// Returns array of all Action_Type objects that can be associated with services
-	// Action_Type->id is key
-	public static function getAllForServices()
+	/**
+	 * getAllForServices()
+	 *
+	 * returns array (keyed with the action type ids) of all ActionTypes that can be associated with a service
+	 * 
+	 * @param	bool	[ $bolActiveOnly ]		Defaults to false.  If true then only active ActionTypes are returned
+	 * 											If false then all ActiveTypes are returned
+	 * @param	bool	[ $bolManualOnly ]		Defaults to false.  If true then it only returns ActionTypes that can be manually created by flex users
+	 * 											If false then it returns all ActionTypes
+	 *
+	 * @return	array of Action_Type objects, with the id of each Action_Type as its key
+	 * @method
+	 */
+	public static function getAllForServices($bolActiveOnly=false, $bolManualOnly=false)
 	{
-		return self::_getForActionAssociationType(ACTION_ASSOCIATION_TYPE_SERVICE);
+		return self::_getForActionAssociationType(ACTION_ASSOCIATION_TYPE_SERVICE, $bolActiveOnly, $bolManualOnly);
 	}
 	
-	// Returns array of all Action_Type objects that can be associated with contacts
-	// Action_Type->id is key
-	public static function getAllForContacts()
+	/**
+	 * getAllForContacts()
+	 *
+	 * returns array (keyed with the action type ids) of all ActionTypes that can be associated with a contact
+	 * 
+	 * @param	bool	[ $bolActiveOnly ]		Defaults to false.  If true then only active ActionTypes are returned
+	 * 											If false then all ActiveTypes are returned
+	 * @param	bool	[ $bolManualOnly ]		Defaults to false.  If true then it only returns ActionTypes that can be manually created by flex users
+	 * 											If false then it returns all ActionTypes
+	 *
+	 * @return	array of Action_Type objects, with the id of each Action_Type as its key
+	 * @method
+	 */
+	public static function getAllForContacts($bolActiveOnly=false, $bolManualOnly=false)
 	{
-		return self::_getForActionAssociationType(ACTION_ASSOCIATION_TYPE_CONTACT);
+		return self::_getForActionAssociationType(ACTION_ASSOCIATION_TYPE_CONTACT, $bolActiveOnly, $bolManualOnly);
 	}
 
-	// Returns array of all Action_Type objects that can be associated with $intActionAssociationTypeId
-	// Action_Type->id is key
-	private static function _getForActionAssociationType($intActionAssociationTypeId)
+	/**
+	 * _getForActionAssociationType()
+	 *
+	 * returns array (keyed with the action type ids) of all ActionTypes that can be associated with the specified ActionAssociatoinType
+	 * 
+	 * @param	int		$intActionAssociationTypeId		ActionAssoicationType
+	 * @param	bool	[ $bolActiveOnly ]				Defaults to false.  If true then only active ActionTypes are returned
+	 * 													If false then all ActiveTypes are returned
+	 * @param	bool	[ $bolManualOnly ]				Defaults to false.  If true then it only returns ActionTypes that can be manually created by flex users
+	 * 													If false then it returns all ActionTypes
+	 *
+	 * @return	array of Action_Type objects, with the id of each Action_Type as its key
+	 * @method
+	 */
+	private static function _getForActionAssociationType($intActionAssociationTypeId, $bolActiveOnly=false, $bolManualOnly=false)
 	{
 		// Retrieve the records from the database
 		$selActionTypes = self::_preparedStatement('selAllByActionAssociationType');
-		if ($selActionTypes->Execute(array('ActionAssociationTypeId'=>$intActionAssociationTypeId)) === false)
+		$arrWhere = array(	'ActionAssociationTypeId'	=> $intActionAssociationTypeId,
+							'ActiveOnly'				=> $bolActiveOnly,
+							'ManualOnly'				=> $bolManualOnly
+						);
+		
+		if ($selActionTypes->Execute($arrWhere) === false)
 		{
 			throw new Exception("Failed to retrieve Action_Types, associated with ActionAssociationType $intActionAssociationTypeId, from the data source: ". $selActionTypes->Error());
 		}
@@ -399,7 +449,7 @@ class Action_Type extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("action_type", "*", "", "name ASC");
 					break;
 				case 'selAllByActionAssociationType':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("action_type INNER JOIN action_type_action_association_type", "action_type.*", "action_type_action_association_type.action_association_type_id = <ActionAssociationTypeId>", "action_type.name ASC");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("action_type INNER JOIN action_type_action_association_type", "action_type.*", "action_type_action_association_type.action_association_type_id = <ActionAssociationTypeId> AND (<ActiveOnly> != TRUE OR action_type.active_status_id = ". ACTIVE_STATUS_ACTIVE .") AND (<ManualOnly> != TRUE OR action_type.is_automatic_only = 0)", "action_type.name ASC");
 					break;
 				case 'selAllowedActionAssociationTypes':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("action_type_action_association_type", "*", "action_type_id = <ActionTypeId>", "action_association_type_id ASC");
