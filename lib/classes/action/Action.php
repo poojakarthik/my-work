@@ -243,8 +243,13 @@ class Action extends ORM
 			}
 		}
 		
-		// If this is a system only ActionType, make sure it was created by the system
-		if ($objActionType->systemOnly && $intCreatedByEmployeeId != Employee::SYSTEM_EMPLOYEE_ID)
+		if ($objActionType->activeStatusId !== ACTIVE_STATUS_ACTIVE)
+		{
+			throw new Exception("The {$objActionType->name} ActionType is not active");
+		}
+		
+		// If this is an automatic only ActionType, make sure it was created by the system
+		if ($objActionType->isAutomaticOnly && $intCreatedByEmployeeId != Employee::SYSTEM_EMPLOYEE_ID)
 		{
 			throw new Exception("{$objActionType->name} actions can only be automatically logged by the system");
 		}
