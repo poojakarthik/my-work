@@ -1141,7 +1141,7 @@ class Invoice_Run
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("CustomerGroup", "invoice_cdr_credits", "Id = <customer_group_id>");
 					break;
 				case 'selSampleList':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id", "Account.*, CustomerGroup.flex_url, Invoice.TotalOwing", "Account.Sample != 0 AND invoice_run_id = <Id>");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN Account ON Account.Id = Invoice.Account JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id", "Account.*, CustomerGroup.flex_url, Invoice.TotalOwing, Invoice.Balance", "Account.Sample != 0 AND invoice_run_id = <Id>");
 					break;
 				case 'selInvoiceRunSchedule':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun LEFT JOIN invoice_run_schedule ON InvoiceRun.invoice_run_schedule_id = invoice_run_schedule.id", "invoice_run_schedule.*", "InvoiceRun.Id = <Id>", null, 1);
