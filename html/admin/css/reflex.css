@@ -233,6 +233,21 @@ table.reflex td.title {
 	font-weight: bold;
 }
 
+table.reflex table.clickable tr.selected[onclick] td
+{
+	background-color	: #bbb;
+}
+
+table.reflex table.clickable table.hoverable tr.selected[onclick]:hover td
+{
+	background-color	: #ccc;
+}
+
+table.reflex table.hoverable tbody tr[onclick]:hover
+{
+	background-color	: #ddd;
+}
+
 /******************************** Ticket Stuff ************************/
 
 table.reflex tr td.ticketing-status-in-progress,

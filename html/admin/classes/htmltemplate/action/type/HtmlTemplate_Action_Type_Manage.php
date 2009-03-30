@@ -18,7 +18,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		$this->mxdDataToRender;
 		
 		echo	"\n" .
-		"<table class='reflex'>\n" .
+		"<table class='reflex clickable hoverable'>\n" .
 		"	<caption>\n" .
 		"		<div class='caption_bar'>\n" .
 		"			<div class='caption_title'>\n" .
