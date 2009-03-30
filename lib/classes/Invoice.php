@@ -1034,7 +1034,7 @@ class Invoice extends ORM
 			$strPlanStartDatetime	= $arrPlanDetails['EarliestStartDatetime'];
 			$strServiceCreatedOn	= $arrMinCreatedOn['EarliestCreatedOn'];
 			
-			$strEarliestCDR			= max($strPlanStartDatetime, $strServiceCreatedOn);
+			$strEarliestCDR			= date("Y-m-d", strtotime(max($strPlanStartDatetime, $strServiceCreatedOn)));
 			
 			if ($strPlanStartDatetime > $strServiceCreatedOn)
 			{
@@ -1069,11 +1069,13 @@ class Invoice extends ORM
 			// Yes -- Does this Service have any Invoiced CDRs (or Plan Charges for non-CDR Plans)?
 			if ($arrPlanDetails['cdr_required'])
 			{
-				$strSQL	= "SELECT Id FROM ServiceTypeTotal WHERE Service IN ({$strServiceIds}) AND Records > 0";
+				$strSQL	= "SELECT 1 FROM ServiceTypeTotal WHERE Service IN ({$strServiceIds}) AND Records > 0 AND invoice_run_id != {$this->invoice_run_id}";
 			}
 			else
 			{
-				$strSQL	= "SELECT Id FROM Charge WHERE Service IN ({$strServiceIds}) AND ChargeType IN ('PCAR', 'PCAD') LIMIT 1";
+				$strSQL	=	"SELECT 'Plan Charge' AS Matches FROM Charge WHERE Service IN ({$strServiceIds}) AND ChargeType IN ('PCAR', 'PCAD') AND (CappedCost > 0 OR UncappedCost > 0) AND Status = ".CHARGE_INVOICED." LIMIT 1 \n" .
+							"UNION " .
+							"SELECT 'CDR Data' AS Matches FROM ServiceTotal WHERE (Debit > 0 OR UncappedCost > 0 OR CappedCost > 0) Service IN ({$strServiceIds}) AND invoice_run_id != {$this->invoice_run_id} LIMIT 1";
 			}
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === FALSE)
