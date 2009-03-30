@@ -90,7 +90,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		"			<td>{$arrActionType['id']}</td>\n" .
 		"			<td>{$arrActionType['name']}</td>\n" .
 		"			<td>{$arrActionType['description']}</td>\n" .
-		"			<td>".$cgActionTypeDetailRequirement->getConstantDescription($arrActionType['action_type_detail_requirement_id'])."</td>\n" .
+		"			<td>".$cgActionTypeDetailRequirement->getConstantName($arrActionType['action_type_detail_requirement_id'])."</td>\n" .
 		"			<td>".($arrActionType['is_automatic_only'] ? 'Automatic' : 'Quick Action')."</td>\n" .
 		"			<td>".($arrActionType['is_system'] ? 'System' : 'Custom')."</td>\n" .
 		"			<td>".$cgActiveStatus->getConstantDescription($arrActionType['active_status_id'])."</td>\n" .
