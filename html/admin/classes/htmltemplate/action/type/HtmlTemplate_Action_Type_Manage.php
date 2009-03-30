@@ -25,7 +25,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		"				Managing Action Types" .
 		"			</div>\n" .
 		"			<div class='caption_options'>\n" .
-		"				<span><img class='icon_16' src='../admin/img/template/page_white_add.png' />Add a new Action Type</span>" .
+		"				<span onclick='\$Alert(\"Add a new Action Type\");'><img class='icon_16' src='../admin/img/template/page_white_add.png' />Add a new Action Type</span>" .
 		"			</div>\n" .
 		"		</div>\n" .
 		"	</caption>\n" .
@@ -80,19 +80,9 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		$cgActiveStatus					= ($cgActiveStatus) 				? $cgActiveStatus					: Constant_Group::getConstantGroup('active_status');
 		
 		$strActionEdit	= '&nbsp;';
-		if ($arrActionType['active_status_id'] === ACTIVE_STATUS_ACTIVE)
+		if ($arrActionType['active_status_id'] === ACTIVE_STATUS_ACTIVE && (($arrActionType['is_system'] && AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) || !$arrActionType['is_system']))
 		{
-			if ($arrActionType['is_system'])
-			{
-				if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
-				{
-					$strActionEdit	= "<img style='min-width: 16px; max-width: 16px; min-height: 16px; max-height: 16px;' src='../admin/img/template/page_white_edit.png' onclick='Alert(\"Editing {$arrActionType['id']}\");' />";
-				}
-			}
-			else
-			{
-				$strActionEdit	= "<img style='min-width: 16px; max-width: 16px; min-height: 16px; max-height: 16px;' src='../admin/img/template/page_white_edit.png' onclick='Alert(\"Editing {$arrActionType['id']}\");' />";
-			}
+			$strActionEdit	= "<img style='min-width: 16px; max-width: 16px; min-height: 16px; max-height: 16px;' src='../admin/img/template/page_white_edit.png' onclick='\$Alert(\"Editing {$arrActionType['id']}\");' />";
 		}
 		
 		return	"" .
