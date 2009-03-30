@@ -44,8 +44,8 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		"			<th>Name</th>\n" .
 		"			<th>Description</th>\n" .
 		"			<th>Details Required</th>\n" .
-		"			<th>Automatic</th>\n" .
-		"			<th>System</th>\n" .
+		"			<th>Method</th>\n" .
+		"			<th>Nature</th>\n" .
 		"			<th>Status</th>\n" .
 		"			<th>&nbsp;</th>\n" .
 		"		</tr>\n" .
