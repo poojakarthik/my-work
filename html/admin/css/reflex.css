@@ -1083,4 +1083,5 @@ img.icon_16
 	min-width		: 16px;
 	max-width		: 16px;
 	margin-right	: 0.2em;
+	vertial-align	: text-bottom;
 }
