@@ -19,6 +19,16 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		
 		echo	"\n" .
 		"<table class='reflex'>\n" .
+		"	<caption>\n" .
+		"		<div class='caption_bar'>\n" .
+		"			<div class='caption_title'>\n" .
+		"				Managing Action Types" .
+		"			</div>\n" .
+		"			<div class='caption_options'>\n" .
+		"				<span><img class='icon_16' src='../admin/img/template/page_white_add.png' />Add a new Action Type</span>" .
+		"			</div>\n" .
+		"		</div>\n" .
+		"	</caption>\n" .
 		$this->_buildHeader() .
 		$this->_buildContent() .
 		$this->_buildFooter() .
@@ -91,7 +101,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		"			<td>{$arrActionType['name']}</td>\n" .
 		"			<td>{$arrActionType['description']}</td>\n" .
 		"			<td>".$cgActionTypeDetailRequirement->getConstantDescription($arrActionType['action_type_detail_requirement_id'])."</td>\n" .
-		"			<td>".($arrActionType['is_automatic_only'] ? 'Automatic' : 'Manual')."</td>\n" .
+		"			<td>".($arrActionType['is_automatic_only'] ? 'Automatic' : 'Quick Action')."</td>\n" .
 		"			<td>".($arrActionType['is_system'] ? 'System' : 'Custom')."</td>\n" .
 		"			<td>".$cgActiveStatus->getConstantDescription($arrActionType['active_status_id'])."</td>\n" .
 		"			<td>{$strActionEdit}</td>\n" .
