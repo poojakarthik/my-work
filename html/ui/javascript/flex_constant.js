@@ -61,6 +61,7 @@ var Flex_Constant	= Class.create
 					}
 				}
 				
+				fncCallback();
 				return true;
 			}
 			else if (objResponse.Message)
