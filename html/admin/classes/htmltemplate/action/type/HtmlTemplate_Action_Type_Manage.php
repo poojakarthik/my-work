@@ -54,7 +54,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 			$this->_arrActionAssociationTypeColumnOrder[]	= $intActionAssociationTypeId;
 			
 			$strIconSubPath	= "admin/img/template/".strtolower($objActionAssociationType->name).".png";
-			if (file_exists(Flex::getBase()."html/".$strIconSubPath))
+			if (@file_exists(Flex::getBase()."html/".$strIconSubPath))
 			{
 				$strHeaderHTML	.= "			<th><img class='icon_16' src='../{$strIconSubPath}' alt='{$objActionAssociationType->name}' title='{$objActionAssociationType->name}' /></th>\n";
 			}
@@ -122,7 +122,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 			$strAssociationTypeHTML	= "			<td>";
 			if ($arrAllowableAssoctiationTypes[$intActionAssociationTypeId] instanceof Action_AssociationType)
 			{
-				$strAssociationTypeHTML	.= "<img class='icon_16' src='../admin/img/template/tick.png' alt='Yes' title='Yes' />";
+				$strAssociationTypeHTML	.= "<img class='icon_16' src='../admin/img/template/tick.png' alt='Yes' title='{$arrAllowableAssoctiationTypes[$intActionAssociationTypeId]->name}: Yes' />";
 			}
 			$strAssociationTypeHTML	.= "</td>\n";
 			
