@@ -315,7 +315,7 @@ var Action_Type_Edit	= Class.create
 				elmInputStatusOption.value				= mixValue;
 				elmInputStatusOption.innerHTML			= arrActiveStatus[mixValue].Description;
 				elmInputStatusOption.selected			= (objActionType && objActionType.active_status_id == mixValue) ? 'selected' : '';
-				this.elmInputsTDStatus.appendChild(elmInputStatusOption);
+				this.elmInputStatus.appendChild(elmInputStatusOption);
 				
 				this.arrInputStatusOptions.push(elmInputStatusOption);
 			}
