@@ -181,7 +181,7 @@ var Action_Type_Edit	= Class.create
 			if (objActionType)
 			{
 				// EDIT: Can't change
-				if (objActionType.arrAssociationTypes.indexOf(i) > -1)
+				if (objActionType.arrAssociationTypes.indexOf(parseInt(i)) > -1)
 				{
 					elmInputAssociationSpan					= document.createElement('span');
 					elmInputAssociationSpan.innerHTML		= arrAssociationTypes[i].Description;
