@@ -35,6 +35,8 @@ class JSON_Handler_ConstantGroup extends JSON_Handler
 		}
 		catch (Exception $eException)
 		{
+			unset($arrResponse['arrConstantGroups']);
+			
 			// This is likely to be a user data validation error. Should not throw the exception.
 			$arrResponse['Success'] 	= false;
 			$arrResponse['Message'] 	= $eException->getMessage();
