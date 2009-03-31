@@ -204,10 +204,15 @@ var Action_Type_Edit	= Class.create
 				this.elmInputsTDAssociation.appendChild(elmLabelAssociationOption);
 			}
 			
-			if (i < objActionType.arrAssociationTypes.length - 1)
+			if (i < arrAssociationTypes.length - 1)
 			{
-				this.elmInputsTDAssociation.appendChild(document.createElement('br'));
+				elmBR	= document.createElement('br');
+				this.elmInputsTDAssociation.appendChild(elmBR);
 			}
+		}
+		if (elmBR)
+		{
+			this.elmInputsTDAssociation.removeChild(elmBR);
 		}
 		
 		// AUTOMATIC ONLY
