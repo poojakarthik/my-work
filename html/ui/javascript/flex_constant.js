@@ -12,6 +12,8 @@ var Flex_Constant	= Class.create
 	// Loads a Constant Group (or array of Constant Groups) from Flex using AJAX
 	loadConstantGroup	: function(mixConstantGroup, fncCallback)
 	{
+		alert(mixConstantGroup);
+		
 		var arrConstantGroups	= new Array();
 		if (typeof mixConstantGroup == 'array')
 		{
