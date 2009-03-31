@@ -12,7 +12,7 @@ var Action_Type_Edit	= Class.create
 	
 	_loadForId	: function(intActionTypeId, fncCallback)
 	{
-		var fncJsonFunc		= jQuery.json.jsonFunction(this._render.bind(this), null, 'ActionType', 'getForId');
+		var fncJsonFunc		= jQuery.json.jsonFunction(this._loadForIdResponse.bind(this), null, 'ActionType', 'getForId');
 		fncJsonFunc(intActionTypeId);
 	},
 	
