@@ -35,7 +35,7 @@ var Flex_Constant	= Class.create
 		fncJsonFunc(arrLoadConstantGroups[0], true);
 	},
 	
-	_loadConstantGroupResponse	: function (arrConstantGroups, fncCallback, objResponse)
+	_loadConstantGroupResponse	: function (fncCallback, objResponse)
 	{
 		if (objResponse)
 		{
