@@ -411,7 +411,6 @@ var Action_Type_Edit	= Class.create
 			// Confirmed
 			this._unregisterEventHandlers();
 			this.pupEdit.hide();
-			Flex.Document.Explorer.refresh();
 		}
 		else if (bolConfirmed == undefined)
 		{
