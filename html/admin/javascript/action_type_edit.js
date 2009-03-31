@@ -176,8 +176,11 @@ var Action_Type_Edit	= Class.create
 		
 		
 		var arrAssociationTypes	= Flex.Constant.arrConstantGroups.action_association_type;
+		var bolIncluded			= false;
 		for (var i in arrAssociationTypes)
 		{
+			bolIncluded	= false;
+			
 			if (objActionType)
 			{
 				// EDIT: Can't change
@@ -186,6 +189,8 @@ var Action_Type_Edit	= Class.create
 					elmInputAssociationSpan					= document.createElement('span');
 					elmInputAssociationSpan.innerHTML		= arrAssociationTypes[i].Description;
 					this.elmInputsTDAssociation.appendChild(elmInputAssociationSpan);
+					
+					bolIncluded	= true;
 				}
 			}
 			else
@@ -201,12 +206,17 @@ var Action_Type_Edit	= Class.create
 				elmLabelAssociationOption.setAttribute('for', elmInputAssociationOption.id);
 				elmLabelAssociationOption.innerHTML		= arrAssociationTypes[i].Description;
 				this.elmInputsTDAssociation.appendChild(elmLabelAssociationOption);
+				
+				bolIncluded	= true;
 			}
 			
-			elmBR	= document.createElement('br');
-			this.elmInputsTDAssociation.appendChild(elmBR);
+			if (bolIncluded)
+			{
+				var elmBR	= document.createElement('br');
+				this.elmInputsTDAssociation.appendChild(elmBR);
+			}
 		}
-		if (elmBR != undefined)
+		if (bolIncluded)
 		{
 			this.elmInputsTDAssociation.removeChild(elmBR);
 		}
