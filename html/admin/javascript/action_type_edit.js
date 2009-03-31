@@ -22,6 +22,8 @@ var Action_Type_Edit	= Class.create
 		{
 			if (objResponse.Success)
 			{
+				alert(objResponse.toSource());
+				alert(objResponse.objActionType.toSource());
 				this._render(objResponse.objActionType);
 			}
 			else if (objResponse.Message)
