@@ -312,7 +312,7 @@ var Action_Type_Edit	= Class.create
 			
 			for (mixValue in arrDetailRequirement)
 			{
-				alert(typeof mixValue);
+				alert(arrActiveStatus[mixValue]);
 				elmInputStatusOption					= document.createElement('option');
 				elmInputStatusOption.value				= mixValue;
 				elmInputStatusOption.innerHTML			= arrActiveStatus[mixValue].Description;
