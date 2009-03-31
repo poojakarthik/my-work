@@ -156,7 +156,7 @@ var Action_Type_Edit	= Class.create
 			elmInputDetailsOption.value				= mixValue;
 			elmInputDetailsOption.innerHTML			= arrDetailRequirement[mixValue].Description;
 			elmInputDetailsOption.selected			= (objActionType && objActionType.action_type_detail_requirement_id == mixValue) ? 'selected' : '';
-			this.elmInputsTDDetails.appendChild(elmInputDetailsOption);
+			this.elmInputDetails.appendChild(elmInputDetailsOption);
 			
 			this.arrInputDetailsOptions.push(elmInputDetailsOption);
 		}
@@ -167,7 +167,7 @@ var Action_Type_Edit	= Class.create
 		
 		this.elmInputsTHAssociation				= document.createElement('th');
 		this.elmInputsTHAssociation.className	= "label";
-		this.elmInputsTHAssociation.innerHTML	= "Details Required :";
+		this.elmInputsTHAssociation.innerHTML	= "Associate With :";
 		this.elmInputsTRAssociation.appendChild(this.elmInputsTHAssociation);
 		
 		this.elmInputsTDAssociation				= document.createElement('td');
