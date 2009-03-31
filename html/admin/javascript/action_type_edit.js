@@ -175,12 +175,11 @@ var Action_Type_Edit	= Class.create
 		this.elmInputsTRAssociation.appendChild(this.elmInputsTDAssociation);
 		
 		var arrAssociationTypes	= Flex.Constant.arrConstantGroups.action_association_type;
-		alert(arrAssociationTypes.toSource());
 		for (var i in arrAssociationTypes)
 		{
-			alert(i);
 			if (objActionType)
 			{
+				alert(objActionType.toSource());
 				// EDIT: Can't change
 				if (objActionType.arrAssociationTypes.indexOf(i) > -1)
 				{
