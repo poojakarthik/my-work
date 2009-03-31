@@ -294,7 +294,7 @@ var Action_Type_Edit	= Class.create
 		this.elmInputsTRStatus.appendChild(this.elmInputsTDStatus);
 		
 		var arrActiveStatus	= Flex.Constant.arrConstantGroups.active_status;
-		if (objActionType)
+		if (objActionType && objActionType.active_status_id == $CONSTANT.ACTIVE_STATUS_INACTIVE)
 		{
 			// EDIT: Can't change
 			elmInputStatusSpan							= document.createElement('span');
@@ -314,7 +314,7 @@ var Action_Type_Edit	= Class.create
 				elmInputStatusOption					= document.createElement('option');
 				elmInputStatusOption.value				= mixValue;
 				elmInputStatusOption.innerHTML			= arrActiveStatus[mixValue].Description;
-				elmInputStatusOption.selected			= (objActionType.active_status_id == mixValue) ? 'selected' : '';
+				elmInputStatusOption.selected			= (objActionType && objActionType.active_status_id == mixValue) ? 'selected' : '';
 				this.elmInputsTDStatus.appendChild(elmInputStatusOption);
 				
 				this.arrInputStatusOptions.push(elmInputStatusOption);
