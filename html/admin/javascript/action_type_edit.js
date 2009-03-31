@@ -22,8 +22,6 @@ var Action_Type_Edit	= Class.create
 		{
 			if (objResponse.Success)
 			{
-				alert(objResponse.toSource());
-				alert(objResponse.objActionType.toSource());
 				this._render(objResponse.objActionType);
 			}
 			else if (objResponse.Message)
@@ -48,8 +46,6 @@ var Action_Type_Edit	= Class.create
 		this.pupEdit.setIcon("../admin/img/template/page_white_edit.png");
 		
 		this.objActionType		= (objActionType) ? objActionType : null;
-		
-		//alert(objActionType.toSource());
 		
 		// Popup Contents
 		this.elmEncapsulator				= document.createElement('div');
@@ -181,7 +177,6 @@ var Action_Type_Edit	= Class.create
 		{
 			if (objActionType)
 			{
-				alert(objActionType.toSource());
 				// EDIT: Can't change
 				if (objActionType.arrAssociationTypes.indexOf(i) > -1)
 				{
