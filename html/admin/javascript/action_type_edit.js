@@ -42,7 +42,7 @@ var Action_Type_Edit	= Class.create
 		this.strMode			= (objActionType) ? 'Edit' : 'New';
 		
 		this.pupEdit	= new Reflex_Popup(35);
-		this.pupEdit.setTitle(this.strMode+' '+strFriendlyNature);
+		this.pupEdit.setTitle(this.strMode+' Action Type');
 		this.pupEdit.setIcon("../admin/img/template/page_white_edit.png");
 		
 		this.objActionType		= (objActionType) ? objActionType : null;
@@ -348,7 +348,7 @@ var Action_Type_Edit	= Class.create
 
 		if (!this.elmInputName.value.replace(/(^\s+|\s+$)/g, '').length)
 		{
-			arrErrors.push("[!] Please enter a Name for the "+this.strFriendlyNature);
+			arrErrors.push("[!] Please enter a Name for the Action Type");
 		}
 		if (this.elmInputName.value.indexOf('/') > -1)
 		{
@@ -371,7 +371,7 @@ var Action_Type_Edit	= Class.create
 		}
 		
 		// Show the Loading Splash
-		Vixen.Popup.ShowPageLoadingSplash("Saving "+this.strFriendlyNature+"...", null, null, null, 1);
+		Vixen.Popup.ShowPageLoadingSplash("Saving...", null, null, null, 1);
 		
 		$Alert("Save!");
 		return false;
