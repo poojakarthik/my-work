@@ -2,8 +2,11 @@
 // Handles Flex Constants (and Constant Groups)
 var Flex_Constant	= Class.create
 ({
-	arrConstants		: {},
-	arrConstantGroups	: {},
+	initialize	: function()
+	{
+		this.arrConstants		= {};
+		this.arrConstantGroups	= {};
+	},
 	
 	// Function: load()
 	// Loads a Constant Group (or array of Constant Groups) from Flex using AJAX
