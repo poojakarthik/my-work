@@ -34,7 +34,7 @@ var Flex_Constant	= Class.create
 			}
 		}
 		
-		if (arrLoadConstantGroups[].length)
+		if (arrLoadConstantGroups.length)
 		{
 			// Load
 			var fncJsonFunc		= jQuery.json.jsonFunction(this._loadConstantGroupResponse.bind(this, fncCallback), this._loadConstantGroupResponse.bind(this, fncCallback), 'ConstantGroup', 'getConstantGroups');
