@@ -236,31 +236,31 @@ var Action_Type_Edit	= Class.create
 			this.elmInputsTHAutomatic.style.verticalAlign	= "top";
 			this.elmInputsTDAutomatic.style.verticalAlign	= "top";
 			
-			elmInputAssociationOptionYes			= document.createElement('input');
-			elmInputAssociationOptionYes.type		= 'radio';
-			elmInputAssociationOptionYes.id			= 'Action_Type_Edit_Automatic_Yes';
-			elmInputAssociationOptionYes.name		= 'Action_Type_Edit_Automatic';
-			elmInputAssociationOptionYes.value		= 1;
-			this.elmInputsTDAutomatic.appendChild(elmInputAssociationOptionYes);
+			elmInputAutomaticOptionYes				= document.createElement('input');
+			elmInputAutomaticOptionYes.type			= 'radio';
+			elmInputAutomaticOptionYes.id			= 'Action_Type_Edit_Automatic_Yes';
+			elmInputAutomaticOptionYes.name			= 'Action_Type_Edit_Automatic';
+			elmInputAutomaticOptionYes.value		= 1;
+			this.elmInputsTDAutomatic.appendChild(elmInputAutomaticOptionYes);
 			
-			elmLabelAssociationOptionYes			= document.createElement('label');
-			elmLabelAssociationOptionYes.setAttribute('for', elmInputAssociationOptionYes.id);
-			elmLabelAssociationOptionYes.innerHTML	= 'Automatic';
-			this.elmInputsTDAutomatic.appendChild(elmLabelAssociationOptionYes);
+			elmLabelAutomaticOptionYes				= document.createElement('label');
+			elmLabelAutomaticOptionYes.setAttribute('for', elmInputAutomaticOptionYes.id);
+			elmLabelAutomaticOptionYes.innerHTML	= 'Automatic';
+			this.elmInputsTDAutomatic.appendChild(elmLabelAutomaticOptionYes);
 
 			this.elmInputsTDAutomatic.appendChild(document.createElement('br'));
 			
-			elmInputAssociationOptionNo				= document.createElement('input');
-			elmInputAssociationOptionNo.type		= 'radio';
-			elmInputAssociationOptionNo.id			= 'Action_Type_Edit_Automatic_No';
-			elmInputAssociationOptionNo.name		= 'Action_Type_Edit_Automatic';
-			elmInputAssociationOptionNo.value		= 0;
-			this.elmInputsTDAutomatic.appendChild(elmInputAssociationOptionNo);
+			elmInputAutomaticOptionNo				= document.createElement('input');
+			elmInputAutomaticOptionNo.type			= 'radio';
+			elmInputAutomaticOptionNo.id			= 'Action_Type_Edit_Automatic_No';
+			elmInputAutomaticOptionNo.name			= 'Action_Type_Edit_Automatic';
+			elmInputAutomaticOptionNo.value			= 0;
+			this.elmInputsTDAutomatic.appendChild(elmInputAutomaticOptionNo);
 			
-			elmLabelAssociationOptionNo				= document.createElement('label');
-			elmLabelAssociationOptionNo.setAttribute('for', elmInputAssociationOptionNo.id);
-			elmLabelAssociationOptionNo.innerHTML	= 'Quick Action';
-			this.elmInputsTDAutomatic.appendChild(elmLabelAssociationOptionNo);
+			elmLabelAutomaticOptionNo				= document.createElement('label');
+			elmLabelAutomaticOptionNo.setAttribute('for', elmInputAutomaticOptionNo.id);
+			elmLabelAutomaticOptionNo.innerHTML		= 'Quick Action';
+			this.elmInputsTDAutomatic.appendChild(elmLabelAutomaticOptionNo);
 		}
 		
 		// SYSTEM
