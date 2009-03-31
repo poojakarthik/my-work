@@ -279,7 +279,7 @@ var Action_Type_Edit	= Class.create
 		this.elmInputSystem.name				= "Action_Type_Edit_System";
 		this.elmInputSystem.type				= 'hidden';
 		this.elmInputSystem.value				= (objActionType && objActionType.is_system) ? 1 : 0;
-		this.elmInputsDIV.appendChild(this.elmInputSystem);
+		this.elmInputsTDSystem.appendChild(this.elmInputSystem);
 
 		this.elmInputSystemSpan					= document.createElement('span');
 		this.elmInputSystemSpan.innerHTML		= (this.elmInputSystem.value) ? 'System' : 'Custom';
