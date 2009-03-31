@@ -26,7 +26,6 @@ var Flex_Constant	= Class.create
 		var arrLoadConstantGroups	= [];
 		for (var i = 0; i < arrConstantGroups.length; i++)
 		{
-			alert(this.arrConstantGroups[arrConstantGroups[i]]);
 			if (this.arrConstantGroups[arrConstantGroups[i]] == undefined)
 			{
 				// Add
