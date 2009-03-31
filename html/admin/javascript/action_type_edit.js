@@ -163,14 +163,17 @@ var Action_Type_Edit	= Class.create
 		this.elmInputsTRAssociation				= document.createElement('tr');
 		this.elmInputsTableBody.appendChild(this.elmInputsTRAssociation);
 		
-		this.elmInputsTHAssociation				= document.createElement('th');
-		this.elmInputsTHAssociation.className	= "label";
-		this.elmInputsTHAssociation.innerHTML	= "Associate With :";
+		this.elmInputsTHAssociation						= document.createElement('th');
+		this.elmInputsTHAssociation.className			= "label";
+		this.elmInputsTHAssociation.innerHTML			= "Associate With :";
+		this.elmInputsTHAssociation.style.verticalAlign	= "top";
 		this.elmInputsTRAssociation.appendChild(this.elmInputsTHAssociation);
 		
-		this.elmInputsTDAssociation				= document.createElement('td');
-		this.elmInputsTDAssociation.className	= "input";
+		this.elmInputsTDAssociation						= document.createElement('td');
+		this.elmInputsTDAssociation.className			= "input";
+		this.elmInputsTDAssociation.style.verticalAlign	= "top";
 		this.elmInputsTRAssociation.appendChild(this.elmInputsTDAssociation);
+		
 		
 		var arrAssociationTypes	= Flex.Constant.arrConstantGroups.action_association_type;
 		for (var i in arrAssociationTypes)
@@ -230,6 +233,9 @@ var Action_Type_Edit	= Class.create
 		}
 		else
 		{
+			this.elmInputsTHAutomatic.style.verticalAlign	= "top";
+			this.elmInputsTDAutomatic.style.verticalAlign	= "top";
+			
 			elmInputAssociationOptionYes			= document.createElement('input');
 			elmInputAssociationOptionYes.type		= 'radio';
 			elmInputAssociationOptionYes.id			= 'Action_Type_Edit_Automatic_Yes';
@@ -308,6 +314,9 @@ var Action_Type_Edit	= Class.create
 		}
 		else
 		{
+			this.elmInputsTHStatus.style.verticalAlign	= "top";
+			this.elmInputsTDStatus.style.verticalAlign	= "top";
+			
 			this.elmInputStatus							= document.createElement('select');
 			this.elmInputStatus.name					= "Action_Type_Edit_Status";
 			this.elmInputsTDStatus.appendChild(this.elmInputStatus);
