@@ -125,6 +125,8 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 				$strAssociationTypeHTML	.= "<img class='icon_16' src='../admin/img/template/tick.png' alt='Yes' title='Yes' />";
 			}
 			$strAssociationTypeHTML	.= "</td>\n";
+			
+			$strHTMLContent	.= $strAssociationTypeHTML;
 		}
 		
 		$strHTMLContent	.=	"".
