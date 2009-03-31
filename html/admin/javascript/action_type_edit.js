@@ -294,7 +294,6 @@ var Action_Type_Edit	= Class.create
 		this.elmInputsTRStatus.appendChild(this.elmInputsTDStatus);
 		
 		var arrActiveStatus	= Flex.Constant.arrConstantGroups.active_status;
-		alert(arrActiveStatus.toSource());
 		if (objActionType && objActionType.active_status_id == $CONSTANT.ACTIVE_STATUS_INACTIVE)
 		{
 			// EDIT: Can't change
@@ -310,9 +309,8 @@ var Action_Type_Edit	= Class.create
 			
 			this.arrInputStatusOptions				= new Array();
 			
-			for (mixValue in arrDetailRequirement)
+			for (mixValue in arrActiveStatus)
 			{
-				alert(arrActiveStatus[mixValue]);
 				elmInputStatusOption					= document.createElement('option');
 				elmInputStatusOption.value				= mixValue;
 				elmInputStatusOption.innerHTML			= arrActiveStatus[mixValue].Description;
