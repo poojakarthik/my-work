@@ -15,6 +15,8 @@ class JSON_Handler_ConstantGroup extends JSON_Handler
 	{
 		$arrResponse = array();
 		
+		throw new Exception(print_r($arrConstantGroups, true));
+		
 		try 
 		{
 			$arrResponse['arrConstantGroups']	= array();
