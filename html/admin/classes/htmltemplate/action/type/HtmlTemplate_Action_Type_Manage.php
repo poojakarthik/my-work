@@ -8,7 +8,8 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
 		
-		$this->LoadJavascript("action_type_manage");
+		$this->LoadJavascript("constant");
+		$this->LoadJavascript("action_type_edit");
 		
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SystemSettingsMenu();
