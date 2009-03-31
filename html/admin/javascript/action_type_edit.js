@@ -294,11 +294,16 @@ var Action_Type_Edit	= Class.create
 		this.elmInputsTRStatus.appendChild(this.elmInputsTDStatus);
 		
 		var arrActiveStatus	= Flex.Constant.arrConstantGroups.active_status;
-		if (objActionType && objActionType.active_status_id == $CONSTANT.ACTIVE_STATUS_INACTIVE)
+		if (!objActionType)
 		{
-			// EDIT: Can't change
+			// New: Can't change
+			this.elmInputStatus							= document.createElement('hidden');
+			this.elmInputStatus.name					= "Action_Type_Edit_Status";
+			this.elmInputStatus.value					= $CONSTANT.ACTIVE_STATUS_ACTIVE;
+			this.elmInputsTDStatus.appendChild(this.elmInputStatus);
+			
 			elmInputStatusSpan							= document.createElement('span');
-			elmInputStatusSpan.innerHTML				= arrActiveStatus[objActionType.active_status_id].Description;
+			elmInputStatusSpan.innerHTML				= arrActiveStatus[$CONSTANT.ACTIVE_STATUS_ACTIVE].Description;
 			this.elmInputsTDStatus.appendChild(elmInputStatusSpan);
 		}
 		else
