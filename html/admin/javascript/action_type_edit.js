@@ -193,7 +193,7 @@ var Action_Type_Edit	= Class.create
 			{
 				elmInputAssociationOption				= document.createElement('input');
 				elmInputAssociationOption.type			= 'checkbox';
-				elmInputAssociationOption.id			= 'Action_Type_Edit_Association_[' + arrAssociationTypes[i] + ']';
+				elmInputAssociationOption.id			= 'Action_Type_Edit_Association_[' + i + ']';
 				elmInputAssociationOption.name			= elmInputAssociationOption.id;
 				elmInputAssociationOption.value			= i;
 				this.elmInputsTDAssociation.appendChild(elmInputAssociationOption);
