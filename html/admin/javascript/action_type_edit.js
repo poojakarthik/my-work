@@ -175,14 +175,17 @@ var Action_Type_Edit	= Class.create
 		this.elmInputsTRAssociation.appendChild(this.elmInputsTDAssociation);
 		
 		var arrAssociationTypes	= Flex.Constant.arrConstantGroups.action_association_type;
-		for (var i = 0; i < objActionType.arrAssociationTypes.length; i++)
+		for (var i = 0; i < arrAssociationTypes.length; i++)
 		{
 			if (objActionType)
 			{
 				// EDIT: Can't change
-				elmInputAssociationSpan					= document.createElement('span');
-				elmInputAssociationSpan.innerHTML		= arrAssociationTypes[objActionType.arrAssociationTypes[i]].Description;
-				this.elmInputsTDAssociation.appendChild(elmInputAssociationSpan);
+				if (objActionType.arrAssociationTypes.indexOf(i) > -1)
+				{
+					elmInputAssociationSpan					= document.createElement('span');
+					elmInputAssociationSpan.innerHTML		= arrAssociationTypes[i].Description;
+					this.elmInputsTDAssociation.appendChild(elmInputAssociationSpan);
+				}
 			}
 			else
 			{
@@ -190,12 +193,12 @@ var Action_Type_Edit	= Class.create
 				elmInputAssociationOption.type			= 'checkbox';
 				elmInputAssociationOption.id			= 'Action_Type_Edit_Association_[' + objActionType.arrAssociationTypes[i] + ']';
 				elmInputAssociationOption.name			= elmInputAssociationOption.id;
-				elmInputAssociationOption.value			= objActionType.arrAssociationTypes[i];
+				elmInputAssociationOption.value			= i;
 				this.elmInputsTDAssociation.appendChild(elmInputAssociationOption);
 				
 				elmLabelAssociationOption				= document.createElement('label');
 				elmLabelAssociationOption.setAttribute('for', elmInputAssociationOption.id);
-				elmLabelAssociationOption.innerHTML		= arrAssociationTypes[objActionType.arrAssociationTypes[i]].Description;
+				elmLabelAssociationOption.innerHTML		= arrAssociationTypes[i].Description;
 				this.elmInputsTDAssociation.appendChild(elmLabelAssociationOption);
 			}
 			
