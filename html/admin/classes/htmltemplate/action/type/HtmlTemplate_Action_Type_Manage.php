@@ -46,7 +46,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		"			<th>Code</th>\n" .
 		"			<th>Name</th>\n" .
 		"			<th>Description</th>\n" .
-		"			<th>Details Required</th>\n";
+		"			<th>Details Required</th>\n" .
 		
 		$arrActionAssociationTypes	= Action_AssociationType::getAll();
 		foreach ($arrActionAssociationTypes as $intActionAssociationTypeId=>$objActionAssociationType)
@@ -56,11 +56,11 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 			$strIconSubPath	= "admin/img/template/".strtolower($objActionAssociationType->name).".png";
 			if (file_exists(Flex::getBase()."html/".$strIconSubPath))
 			{
-				$strHeaderHTML	.= "			<img class='icon_16' src='../{$strIconSubPath}' alt='{$objActionAssociationType->name}' title='{$objActionAssociationType->name}' />\n";
+				$strHeaderHTML	.= "			<th><img class='icon_16' src='../{$strIconSubPath}' alt='{$objActionAssociationType->name}' title='{$objActionAssociationType->name}' /></th>\n";
 			}
 			else
 			{
-				$strHeaderHTML	.= "			<span>{$objActionAssociationType->name}</span>\n";
+				$strHeaderHTML	.= "			<th><span>{$objActionAssociationType->name}</span></th>\n";
 			}
 		}
 		
