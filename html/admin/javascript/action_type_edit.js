@@ -277,7 +277,7 @@ var Action_Type_Edit	= Class.create
 		this.elmInputsDIV.appendChild(this.elmInputSystem);
 
 		this.elmInputSystemSpan					= document.createElement('span');
-		this.elmInputSystemSpan.innerHTML		= (elmInputSystem.value) ? 'System' : 'Custom';
+		this.elmInputSystemSpan.innerHTML		= (this.elmInputSystem.value) ? 'System' : 'Custom';
 		this.elmInputsTDSystem.appendChild(this.elmInputSystemSpan);
 		
 		// STATUS
