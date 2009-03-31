@@ -20,7 +20,7 @@ var Flex_Constant	= Class.create
 		}
 		
 		// Filter out any that are already loaded
-		var arrLoadConstantGroups	= new Array();
+		var arrLoadConstantGroups	= [];
 		for (var i = 0; i < arrConstantGroups.length; i++)
 		{
 			if (this.arrConstantGroups[arrConstantGroups[i]] == undefined)
