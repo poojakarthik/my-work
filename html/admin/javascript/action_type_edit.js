@@ -140,7 +140,7 @@ var Action_Type_Edit	= Class.create
 		this.elmInputsTRDetails.appendChild(this.elmInputsTHDetails);
 		
 		this.elmInputsTDDetails					= document.createElement('td');
-		this.elmInputsTDStatus.className		= "input";
+		this.elmInputsTDDetails.className		= "input";
 		this.elmInputsTRDetails.appendChild(this.elmInputsTDDetails);
 		
 		this.elmInputDetails					= document.createElement('select');
