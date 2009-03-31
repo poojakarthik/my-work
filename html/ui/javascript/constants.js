@@ -48,8 +48,9 @@ function VixenConstantsClass()
 	// Adds the constant group to the cache of constant groups
 	/*
 	 *	objConstantGroup must be of the form
-	 *	object[intConstValue].Constant		= ConstantName
-	 *						.Description	= ConstantDescription
+	 *	object[intConstValue].Constant		= Constant Alias
+	 *						.Description	= Constant Description
+	 *						.Name			= Constant Name
 	 */
 	this.SetConstantGroup = function(strConstantGroup, objConstantGroup)
 	{
@@ -71,7 +72,8 @@ function VixenConstantsClass()
 			// Add the constant's details to the ConstantGroup
 			this.Group[strConstantGroup][mixValue] = {	
 														Constant	: objConstantGroup[i].Constant,
-														Description	: objConstantGroup[i].Description
+														Description	: objConstantGroup[i].Description,
+														Description	: (objConstantGroup[i].Name ? objConstantGroup[i].Name : objConstantGroup[i].Description)
 													};
 		}
 	}

@@ -2,9 +2,7 @@
 
 class Application_Handler_ActionType extends Application_Handler
 {
-	const	RECORD_DISPLAY_LIMIT	= 24;
-	
-	// View all Breached Contracts which are pending approval
+	// View all Action Types
 	public function Manage($subPath)
 	{
 		// Check user permissions
@@ -19,14 +17,8 @@ class Application_Handler_ActionType extends Application_Handler
 			$arrActionTypes							= Action_Type::getAll();
 			foreach ($arrActionTypes as $intIndex=>$objActionType)
 			{
-				$objStdClassActionType	= $objActionType->toArray();
-				$objStdClassActionType['arrAllowableActionAssociationTypes']	= 
-				
-				$arrDetailsToRender['arrActionTypes'][$intIndex]	= $objStdClassActionType;
+				$arrDetailsToRender['arrActionTypes'][$intIndex]	= $objActionType;
 			}
-			
-			$arrDetailsToRender['arrCustomerGroups']		= Customer_Group::getAll();
-			$arrDetailsToRender['arrActionAssociationType']	= Customer_Group::getAll();
 			
 			$this->LoadPage('action_type_list', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}

@@ -2,6 +2,8 @@
 
 class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 {
+	private	$_arrActionAssociationTypeColumnOrder	= array();
+	
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
@@ -14,7 +16,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 	}
 
 	public function Render()
-	{		
+	{
 		$this->mxdDataToRender;
 		
 		echo	"\n" .
@@ -37,27 +39,48 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 	
 	protected function _buildHeader()
 	{
-		return	"" .
+		$strHeaderHTML	= "" .
 		"	<thead>\n" .
 		"		<tr>\n" .
 		"			<th>Code</th>\n" .
 		"			<th>Name</th>\n" .
 		"			<th>Description</th>\n" .
-		"			<th>Details Required</th>\n" .
+		"			<th>Details Required</th>\n";
+		
+		$arrActionAssociationTypes	= Action_AssociationType::getAll();
+		foreach ($arrActionAssociationTypes as $intActionAssociationTypeId=>$objActionAssociationType)
+		{
+			$this->_arrActionAssociationTypeColumnOrder[]	= $intActionAssociationTypeId;
+			
+			$strIconSubPath	= "admin/img/template/".strtolower($objActionAssociationType->name).".png";
+			if (file_exists(Flex::getBase()."html/".$strIconSubPath))
+			{
+				$strHeaderHTML	.= "			<img class='icon_16' src='../{$strIconSubPath}' alt='{$objActionAssociationType->name}' title='{$objActionAssociationType->name}' />\n";
+			}
+			else
+			{
+				$strHeaderHTML	.= "			<span>{$objActionAssociationType->name}</span>\n";
+			}
+		}
+		
+		$strHeaderHTML	.= "" .
 		"			<th>Method</th>\n" .
 		"			<th>Nature</th>\n" .
 		"			<th>Status</th>\n" .
 		"			<th>&nbsp;</th>\n" .
 		"		</tr>\n" .
 		"	</thead>\n";
+		
+		return $strHeaderHTML;
 	}
 	
 	protected function _buildFooter()
 	{
+		$intColumnCount	= 8 + count(Action_AssociationType::getAll());
 		return	"" .
 		"	<tfoot>\n" .
 		"		<tr>\n" .
-		"			<th colspan='8'>&nbsp;</th>\n" .
+		"			<th colspan='{$intColumnCount}'>&nbsp;</th>\n" .
 		"		</tr>\n" .
 		"	</tfoot>\n";
 	}
@@ -72,7 +95,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		return $strHTML . "	</tbody>\n";
 	}
 	
-	protected function _buildRecord($arrActionType)
+	protected function _buildRecord($objActionType)
 	{
 		static	$cgActionTypeDetailRequirement;
 		static	$cgActiveStatus;
@@ -80,22 +103,37 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		$cgActiveStatus					= ($cgActiveStatus) 				? $cgActiveStatus					: Constant_Group::getConstantGroup('active_status');
 		
 		$strActionEdit	= '&nbsp;';
-		if ($arrActionType['active_status_id'] === ACTIVE_STATUS_ACTIVE && (($arrActionType['is_system'] && AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) || !$arrActionType['is_system']))
+		if ($objActionType->active_status_id === ACTIVE_STATUS_ACTIVE && (($objActionType->is_system && AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) || $objActionType->is_system))
 		{
-			$strActionEdit	= "<img style='min-width: 16px; max-width: 16px; min-height: 16px; max-height: 16px;' src='../admin/img/template/page_white_edit.png' onclick='\$Alert(\"Editing {$arrActionType['id']}\");' />";
+			$strActionEdit	= "<img class='icon_16' src='../admin/img/template/page_white_edit.png' onclick='\$Alert(\"Editing {$objActionType->id}\");' />";
 		}
 		
-		return	"" .
+		$strHTMLContent	=	"" .
 		"		<tr>\n" .
-		"			<td>{$arrActionType['id']}</td>\n" .
-		"			<td>{$arrActionType['name']}</td>\n" .
-		"			<td>{$arrActionType['description']}</td>\n" .
-		"			<td>".$cgActionTypeDetailRequirement->getConstantName($arrActionType['action_type_detail_requirement_id'])."</td>\n" .
-		"			<td>".($arrActionType['is_automatic_only'] ? 'Automatic' : 'Quick Action')."</td>\n" .
-		"			<td>".($arrActionType['is_system'] ? 'System' : 'Custom')."</td>\n" .
-		"			<td>".$cgActiveStatus->getConstantDescription($arrActionType['active_status_id'])."</td>\n" .
+		"			<td>{$objActionType->id}</td>\n" .
+		"			<td>{$objActionType->name}</td>\n" .
+		"			<td>{$objActionType->description}</td>\n" .
+		"			<td>".$cgActionTypeDetailRequirement->getConstantName($objActionType->action_type_detail_requirement_id)."</td>\n";
+		
+		$arrAllowableAssoctiationTypes	= $objActionType->getAllowableActionAssociationTypes();
+		foreach ($this->_arrActionAssociationTypeColumnOrder as $intActionAssociationTypeId)
+		{
+			$strAssociationTypeHTML	= "			<td>";
+			if ($arrAllowableAssoctiationTypes[$intActionAssociationTypeId] instanceof Action_AssociationType)
+			{
+				$strAssociationTypeHTML	.= "<img class='icon_16' src='../admin/img/template/tick.png' alt='Yes' title='Yes' />";
+			}
+			$strAssociationTypeHTML	.= "</td>\n";
+		}
+		
+		$strHTMLContent	.=	"".
+		"			<td>".($objActionType->is_automatic_only ? 'Automatic' : 'Quick Action')."</td>\n" .
+		"			<td>".($objActionType->is_system ? 'System' : 'Custom')."</td>\n" .
+		"			<td>".$cgActiveStatus->getConstantDescription($objActionType->active_status_id)."</td>\n" .
 		"			<td>{$strActionEdit}</td>\n" .
 		"		</tr>\n";
+		
+		return $strHTMLContent;
 	}
 }
 
