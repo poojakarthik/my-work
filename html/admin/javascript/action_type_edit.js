@@ -4,9 +4,37 @@ var Action_Type_Edit	= Class.create
 ({
 	// Function: initialize()
 	// Prototype constructor
-	initialize	: function(objActionType)
+	initialize	: function(intActionTypeId)
 	{
-		Flex.Constant.loadConstantGroup(new Array('action_association_type', 'action_type_detail_requirement', 'active_status'), this._render.bind(this, objActionType));
+		var fncCallback	= intActionTypeId ? this._loadForId.bind(this, intActionTypeId) : this._render.bind(this, null);
+		Flex.Constant.loadConstantGroup(new Array('action_association_type', 'action_type_detail_requirement', 'active_status'), fncCallback);
+	},
+	
+	_loadForId	: function(intActionTypeId, fncCallback)
+	{
+		var fncJsonFunc		= jQuery.json.jsonFunction(this._render.bind(this), null, 'ActionType', 'getForId');
+		fncJsonFunc(intActionTypeId);
+	},
+	
+	_loadForIdResponse	: function(objResponse)
+	{
+		if (objResponse)
+		{
+			if (objResponse.Success)
+			{
+				this._render(objResponse.objActionType);
+			}
+			else if (objResponse.Message)
+			{
+				$Alert(objResponse.Message);
+				return false;
+			}
+		}
+		else
+		{
+			$Alert(objResponse);
+			return false;
+		}
 	},
 	
 	_render		: function(objActionType)

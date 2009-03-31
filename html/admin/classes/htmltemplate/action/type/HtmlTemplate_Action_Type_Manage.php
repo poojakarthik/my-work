@@ -28,7 +28,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		"				Managing Action Types" .
 		"			</div>\n" .
 		"			<div class='caption_options'>\n" .
-		"				<span onclick='\$Alert(\"Add a new Action Type\");'><img class='icon_16' src='../admin/img/template/page_white_add.png' />Add a new Action Type</span>" .
+		"				<span onclick='new Action_Type_Edit();'><img class='icon_16' src='../admin/img/template/page_white_add.png' />Add a new Action Type</span>" .
 		"			</div>\n" .
 		"		</div>\n" .
 		"	</caption>\n" .
@@ -106,7 +106,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		$strActionEdit	= '&nbsp;';
 		if ($objActionType->active_status_id === ACTIVE_STATUS_ACTIVE && (($objActionType->is_system && AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) || $objActionType->is_system))
 		{
-			$strActionEdit	= "<img class='icon_16' src='../admin/img/template/page_white_edit.png' onclick='\$Alert(\"Editing {$objActionType->id}\");' />";
+			$strActionEdit	= "<img class='icon_16' src='../admin/img/template/page_white_edit.png' onclick='new Action_Type_Edit({$objActionType->id});' />";
 		}
 		
 		$strHTMLContent	=	"" .
