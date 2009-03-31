@@ -178,6 +178,7 @@ var Action_Type_Edit	= Class.create
 		alert(arrAssociationTypes.toSource());
 		for (var i = 0; i < arrAssociationTypes.length; i++)
 		{
+			alert(i);
 			if (objActionType)
 			{
 				// EDIT: Can't change
@@ -192,7 +193,7 @@ var Action_Type_Edit	= Class.create
 			{
 				elmInputAssociationOption				= document.createElement('input');
 				elmInputAssociationOption.type			= 'checkbox';
-				elmInputAssociationOption.id			= 'Action_Type_Edit_Association_[' + objActionType.arrAssociationTypes[i] + ']';
+				elmInputAssociationOption.id			= 'Action_Type_Edit_Association_[' + arrAssociationTypes[i] + ']';
 				elmInputAssociationOption.name			= elmInputAssociationOption.id;
 				elmInputAssociationOption.value			= i;
 				this.elmInputsTDAssociation.appendChild(elmInputAssociationOption);
