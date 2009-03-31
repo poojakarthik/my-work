@@ -311,9 +311,10 @@ var Action_Type_Edit	= Class.create
 			
 			for (mixValue in arrDetailRequirement)
 			{
+				alert(mixValue);
 				elmInputStatusOption					= document.createElement('option');
 				elmInputStatusOption.value				= mixValue;
-				elmInputStatusOption.innerHTML			= arrActiveStatus[mixValue].Description;
+				//elmInputStatusOption.innerHTML			= arrActiveStatus[mixValue].Description;
 				elmInputStatusOption.selected			= (objActionType && objActionType.active_status_id == mixValue) ? 'selected' : '';
 				this.elmInputsTDStatus.appendChild(elmInputStatusOption);
 				
