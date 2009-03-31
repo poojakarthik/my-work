@@ -155,7 +155,7 @@ var Action_Type_Edit	= Class.create
 			elmInputDetailsOption					= document.createElement('option');
 			elmInputDetailsOption.value				= mixValue;
 			elmInputDetailsOption.innerHTML			= arrDetailRequirement[mixValue].Description;
-			elmInputDetailsOption.selected			= (objActionType.action_type_detail_requirement_id == mixValue) ? 'selected' : '';
+			elmInputDetailsOption.selected			= (objActionType && objActionType.action_type_detail_requirement_id == mixValue) ? 'selected' : '';
 			this.elmInputsTDDetails.appendChild(elmInputDetailsOption);
 			
 			this.arrInputDetailsOptions.push(elmInputDetailsOption);
