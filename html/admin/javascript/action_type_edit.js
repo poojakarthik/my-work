@@ -175,6 +175,7 @@ var Action_Type_Edit	= Class.create
 		this.elmInputsTRAssociation.appendChild(this.elmInputsTDAssociation);
 		
 		var arrAssociationTypes	= Flex.Constant.arrConstantGroups.action_association_type;
+		alert(arrAssociationTypes.toSource());
 		for (var i = 0; i < arrAssociationTypes.length; i++)
 		{
 			if (objActionType)
