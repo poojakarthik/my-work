@@ -88,15 +88,17 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 	
 	protected function _buildContent()
 	{
-		$strHTML	= "	<tbody>\n";
+		$strHTML		= "	<tbody>\n";
+		$bolAlternate	= false;
 		foreach ($this->mxdDataToRender['arrActionTypes'] as $intActionTypeId=>$arrActionType)
 		{
-			$strHTML	.= $this->_buildRecord($arrActionType);
+			$strHTML		.= $this->_buildRecord($arrActionType, $bolAlternate);
+			$bolAlternate	= !$bolAlternate;
 		}
 		return $strHTML . "	</tbody>\n";
 	}
 	
-	protected function _buildRecord($objActionType)
+	protected function _buildRecord($objActionType, $bolAlternate=false)
 	{
 		static	$cgActionTypeDetailRequirement;
 		static	$cgActiveStatus;
@@ -109,8 +111,10 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 			$strActionEdit	= "<img class='icon_16' src='../admin/img/template/page_white_edit.png' onclick='Flex.Action_Type_Edit = new Action_Type_Edit({$objActionType->id});' />";
 		}
 		
+		$strTRClass	= ($bolAlternate) ? " class='alt'" : '';
+		
 		$strHTMLContent	=	"" .
-		"		<tr>\n" .
+		"		<tr{$strTRClass}>\n" .
 		"			<td>{$objActionType->id}</td>\n" .
 		"			<td>{$objActionType->name}</td>\n" .
 		"			<td>{$objActionType->description}</td>\n" .
