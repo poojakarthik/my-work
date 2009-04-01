@@ -174,6 +174,7 @@ var Action_Type_Edit	= Class.create
 		this.elmInputsTDAssociation.style.verticalAlign	= "top";
 		this.elmInputsTRAssociation.appendChild(this.elmInputsTDAssociation);
 		
+		this.arrAssociationTypeInputs	= new Array();
 		
 		var arrAssociationTypes	= Flex.Constant.arrConstantGroups.action_association_type;
 		var bolIncluded			= false;
@@ -197,7 +198,7 @@ var Action_Type_Edit	= Class.create
 			{
 				elmInputAssociationOption				= document.createElement('input');
 				elmInputAssociationOption.type			= 'checkbox';
-				elmInputAssociationOption.id			= 'Action_Type_Edit_Association_[' + i + ']';
+				elmInputAssociationOption.id			= 'Action_Type_Edit_Association[' + i + ']';
 				elmInputAssociationOption.name			= elmInputAssociationOption.id;
 				elmInputAssociationOption.value			= i;
 				this.elmInputsTDAssociation.appendChild(elmInputAssociationOption);
@@ -206,6 +207,8 @@ var Action_Type_Edit	= Class.create
 				elmLabelAssociationOption.setAttribute('for', elmInputAssociationOption.id);
 				elmLabelAssociationOption.innerHTML		= arrAssociationTypes[i].Description;
 				this.elmInputsTDAssociation.appendChild(elmLabelAssociationOption);
+				
+				this.arrAssociationTypeInputs.push(elmInputAssociationOption);
 				
 				bolIncluded	= true;
 			}
@@ -238,7 +241,7 @@ var Action_Type_Edit	= Class.create
 		{
 			// EDIT: Can't change
 			elmInputAutomaticSpan					= document.createElement('span');
-			elmInputAutomaticSpan.innerHTML				= (objActionType.is_automatic_only ? 'Automatic' : 'Quick Action');
+			elmInputAutomaticSpan.innerHTML			= (objActionType.is_automatic_only ? 'Automatic' : 'Quick Action');
 			this.elmInputsTDAutomatic.appendChild(elmInputAutomaticSpan);
 		}
 		else
@@ -373,17 +376,47 @@ var Action_Type_Edit	= Class.create
 		// Ensure that all fields are populated
 		var arrErrors	= new Array();
 
-		if (!this.elmInputName.value.replace(/(^\s+|\s+$)/g, '').length)
+		if (this.objActionType && !this.elmInputName.value.replace(/(^\s+|\s+$)/g, '').length)
 		{
-			arrErrors.push("[!] Please enter a Name for the Action Type");
+			arrErrors.push("[!] Please enter a Name.  This must be unique.");
 		}
-		if (this.elmInputName.value.indexOf('/') > -1)
+		if (!this.elmInputDescription.value.replace(/(^\s+|\s+$)/g, '').length)
 		{
-			arrErrors.push("[!] The specified Name contains illegal '/' characters");
+			arrErrors.push("[!] Please enter a Description");
 		}
-		if (this.elmInputFile && this.elmInputFile.disabled == false && !this.elmInputFile.value)
+		if (parseInt(this.elmInputDetails.selectedIndex) == -1)
 		{
-			arrErrors.push("[!] Please select a File to upload");
+			arrErrors.push("[!] Please select a Detail Constraint");
+		}
+		if (!this.objActionType)
+		{
+			var intSelected	= 0;
+			for (var i = 0; i < this.arrAssociationTypeInputs.length; i++)
+			{
+				intSelected	= (this.arrAssociationTypeInputs[i].checked) ? intSelected + 1 : intSelected;
+			}
+			
+			if (!intSelected)
+			{
+				arrErrors.push("[!] Please select at least one Association");
+			}
+		}
+		if (!this.objActionType)
+		{
+			var intSelectedIndex	= -1;
+			for (var i = 0; i < this.elmForm.Action_Type_Edit_Automatic.length; i++)
+			{
+				intSelectedIndex	= (this.elmForm.Action_Type_Edit_Automatic[i].checked) ? i : intSelectedIndex;
+			}
+			
+			if (intSelectedIndex == -1)
+			{
+				arrErrors.push("[!] Please select a Method");
+			}
+		}
+		if (this.objActionType && parseInt(this.elmInputStatus.selectedIndex) == -1)
+		{
+			arrErrors.push("[!] Please select a Status");
 		}
 		
 		if (arrErrors.length)
