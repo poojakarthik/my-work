@@ -353,6 +353,18 @@ var Action_Type_Edit	= Class.create
 			elmInputStatusSpan.innerHTML				= arrActiveStatus[$CONSTANT.ACTIVE_STATUS_ACTIVE].Description;
 			this.elmInputsTDStatus.appendChild(elmInputStatusSpan);
 		}
+		else if (objActionType.is_system)
+		{
+			// System: Can't Change
+			this.elmInputStatus							= document.createElement('hidden');
+			this.elmInputStatus.name					= "Action_Type_Edit_Status";
+			this.elmInputStatus.value					= objActionType.is_system;
+			this.elmInputsTDStatus.appendChild(this.elmInputStatus);
+			
+			elmInputStatusSpan							= document.createElement('span');
+			elmInputStatusSpan.innerHTML				= arrActiveStatus[objActionType.is_system].Description;
+			this.elmInputsTDStatus.appendChild(elmInputStatusSpan);
+		}
 		else
 		{
 			this.elmInputsTHStatus.style.verticalAlign	= "top";
