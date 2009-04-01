@@ -497,6 +497,11 @@ var Action_Type_Edit	= Class.create
 				objActionTypeSave.action_type_detail_requirement_id	= this.objActionType.action_type_detail_requirement_id;
 				objActionTypeSave.active_status_id					= this.objActionType.active_status_id;
 			}
+			else
+			{
+				objActionTypeSave.action_type_detail_requirement_id	= parseInt(this.elmInputDetails.options[this.elmInputDetails.selectedIndex].value);
+				objActionTypeSave.active_status_id					= parseInt(this.elmInputStatus.options[this.elmInputStatus.selectedIndex].value);
+			}
 		}
 		else
 		{
