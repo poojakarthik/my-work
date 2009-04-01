@@ -338,6 +338,7 @@ div.reflex-popup-title-bar {
 	padding				: 3px;
 	background-image	: url('../img/template/background.png');
 	background-repeat	: repeat-x;
+	-moz-user-select	: none;
 }
 
 div.reflex-popup-title {
