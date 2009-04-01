@@ -39,7 +39,7 @@ var Flex_Constant	= Class.create
 			var fncJsonFunc		= jQuery.json.jsonFunction(this._loadConstantGroupResponse.bind(this, fncCallback), this._loadConstantGroupResponse.bind(this, fncCallback), 'ConstantGroup', 'getConstantGroups');
 			fncJsonFunc(arrLoadConstantGroups, true);
 		}
-		else
+		else if (fncCallback)
 		{
 			// Nothing to load - call the Callback function
 			fncCallback();
@@ -66,7 +66,10 @@ var Flex_Constant	= Class.create
 					}
 				}
 				
-				fncCallback();
+				if (fncCallbackf)
+				{
+					fncCallback();
+				}
 				return true;
 			}
 			else if (objResponse.Message)
@@ -92,4 +95,5 @@ if (Flex.Constant == undefined)
 {
 	Flex.Constant	= new Flex_Constant();
 	$CONSTANT		= Flex.Constant.arrConstants;
+	$CONSTANT_GROUP	= Flex.Constant.arrConstantGroups;
 }
