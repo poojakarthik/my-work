@@ -163,6 +163,8 @@ var Action_Type_Edit	= Class.create
 			this.arrInputDetailsOptions.push(elmInputDetailsOption);
 		}
 		
+		this.elmInputDetails.selectedIndex	= (objActionType) ? this.elmInputDetails.selectedIndex : -1;
+		
 		// ASSOCIATION TYPES
 		this.elmInputsTRAssociation				= document.createElement('tr');
 		this.elmInputsTableBody.appendChild(this.elmInputsTRAssociation);
