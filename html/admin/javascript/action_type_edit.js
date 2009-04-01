@@ -213,6 +213,13 @@ var Action_Type_Edit	= Class.create
 				elmInputAssociationOption.value			= i;
 				this.elmInputsTDAssociation.appendChild(elmInputAssociationOption);
 				
+				elmIconAssociationOption				= document.createElement('img');
+				elmIconAssociationOption.className		= 'icon_16;
+				elmIconAssociationOption.src			= "../admin/img/template/action_type_association/"+arrAssociationTypes[i].Name.toLowerCase()+".png";
+				elmIconAssociationOption.alt			= arrAssociationTypes[i].Name;
+				elmIconAssociationOption.title			= arrAssociationTypes[i].Description;
+				this.elmInputsTDAssociation.appendChild(elmIconAssociationOption);
+				
 				elmLabelAssociationOption				= document.createElement('label');
 				elmLabelAssociationOption.setAttribute('for', elmInputAssociationOption.id);
 				elmLabelAssociationOption.innerHTML		= arrAssociationTypes[i].Description;
