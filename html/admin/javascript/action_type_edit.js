@@ -444,15 +444,36 @@ var Action_Type_Edit	= Class.create
 			return false;
 		}
 		
+		var objActionTypeSave	= {};
+		if (this.objActionType)
+		{
+			objActionTypeSave.id								= parseInt(this.objActionType.id);
+			objActionTypeSave.description						= this.elmInputDescription.value.replace(/(^\s+|\s+$)/g, '');
+			objActionTypeSave.action_type_detail_requirement_id	= parseInt(this.elmInputDetails.options[this.elmInputDetails.selectedIndex].value);
+			objActionTypeSave.active_status_id					= parseInt(this.elmInputStatus.options[this.elmInputStatus.selectedIndex].value);
+		}
+		else
+		{
+			objActionTypeSave.name								= this.elmInputName.value.replace(/(^\s+|\s+$)/g, '');
+			objActionTypeSave.description						= this.elmInputDescription.value.replace(/(^\s+|\s+$)/g, '');
+			objActionTypeSave.action_type_detail_requirement_id	= parseInt(this.elmInputDetails.options[this.elmInputDetails.selectedIndex].value);
+			objActionTypeSave.arrAssociationTypes				= new Array();
+
+			for (var i = 0; i < this.arrAssociationTypeInputs.length; i++)
+			{
+				if (this.arrAssociationTypeInputs[i].checked)
+				{
+					objActionTypeSave.arrAssociationTypes.push(parseInt(this.arrAssociationTypeInputs[i].value));
+				}
+			}
+		}
+		
 		// Show the Loading Splash
 		Vixen.Popup.ShowPageLoadingSplash("Saving...", null, null, null, 1);
 		
-		$Alert("Save!");
-		return false;
-		
 		// Perform AJAX query
 		var fncJsonFunc		= jQuery.json.jsonFunction(this._submitResponse.bind(this), null, 'ActionType', 'save');
-		fncJsonFunc(arrLoadConstantGroups);
+		fncJsonFunc(objActionTypeSave);
 	},
 	
 	_submitResponse	: function(objResponse)
@@ -475,7 +496,7 @@ var Action_Type_Edit	= Class.create
 		}
 	},
 	
-	_close	: function(eEvent, bolConfirmed)
+	_close	: function(eEvent, bolConfirmed, bolRefresh)
 	{
 		if (bolConfirmed)
 		{
@@ -483,7 +504,14 @@ var Action_Type_Edit	= Class.create
 			this._unregisterEventHandlers();
 			this.pupEdit.hide();
 			
-			Flex.Action_Type_Edit	= null;
+			if (bolRefresh)
+			{
+				document.location	= document.location;
+			}
+			else
+			{
+				Flex.Action_Type_Edit	= null;
+			}
 		}
 		else if (bolConfirmed == undefined)
 		{
