@@ -145,29 +145,45 @@ var Action_Type_Edit	= Class.create
 		this.elmInputsTDDetails.className		= "input";
 		this.elmInputsTRDetails.appendChild(this.elmInputsTDDetails);
 		
-		this.elmInputDetails					= document.createElement('select');
-		this.elmInputDetails.name				= "Action_Type_Edit_Details";
-		this.elmInputsTDDetails.appendChild(this.elmInputDetails);
-		
 		this.arrInputDetailsOptions				= new Array();
 		
 		var arrDetailRequirement	= Flex.Constant.arrConstantGroups.action_type_detail_requirement;
-		for (mixValue in arrDetailRequirement)
+		
+		if (objActionType && objActionType.is_system)
 		{
-			elmInputDetailsOption					= document.createElement('option');
-			elmInputDetailsOption.value				= mixValue;
-			elmInputDetailsOption.innerHTML			= arrDetailRequirement[mixValue].Description;
-			this.elmInputDetails.appendChild(elmInputDetailsOption);
+			// System: Can't change
+			this.elmInputDetails						= document.createElement('hidden');
+			this.elmInputDetails.name					= "Action_Type_Edit_Details";
+			this.elmInputDetails.value					= objActionType.action_type_detail_requirement_id;
+			this.elmInputsTDDetails.appendChild(this.elmInputStatus);
 			
-			if (objActionType && objActionType.action_type_detail_requirement_id == mixValue)
+			elmInputDetailsSpan							= document.createElement('span');
+			elmInputDetailsSpan.innerHTML				= arrDetailRequirement[objActionType.action_type_detail_requirement_id].Description;
+			this.elmInputsTDDetails.appendChild(elmInputDetailsSpan);
+		}
+		else
+		{
+			this.elmInputDetails					= document.createElement('select');
+			this.elmInputDetails.name				= "Action_Type_Edit_Details";
+			this.elmInputsTDDetails.appendChild(this.elmInputDetails);
+			
+			for (mixValue in arrDetailRequirement)
 			{
-				elmInputDetailsOption.selected		= true;
+				elmInputDetailsOption					= document.createElement('option');
+				elmInputDetailsOption.value				= mixValue;
+				elmInputDetailsOption.innerHTML			= arrDetailRequirement[mixValue].Description;
+				this.elmInputDetails.appendChild(elmInputDetailsOption);
+				
+				if (objActionType && objActionType.action_type_detail_requirement_id == mixValue)
+				{
+					elmInputDetailsOption.selected		= true;
+				}
+				
+				this.arrInputDetailsOptions.push(elmInputDetailsOption);
 			}
 			
-			this.arrInputDetailsOptions.push(elmInputDetailsOption);
+			this.elmInputDetails.selectedIndex	= (objActionType) ? this.elmInputDetails.selectedIndex : -1;
 		}
-		
-		this.elmInputDetails.selectedIndex	= (objActionType) ? this.elmInputDetails.selectedIndex : -1;
 		
 		// ASSOCIATION TYPES
 		this.elmInputsTRAssociation				= document.createElement('tr');
@@ -358,11 +374,11 @@ var Action_Type_Edit	= Class.create
 			// System: Can't Change
 			this.elmInputStatus							= document.createElement('hidden');
 			this.elmInputStatus.name					= "Action_Type_Edit_Status";
-			this.elmInputStatus.value					= objActionType.is_system;
+			this.elmInputStatus.value					= objActionType.active_status_id;
 			this.elmInputsTDStatus.appendChild(this.elmInputStatus);
 			
 			elmInputStatusSpan							= document.createElement('span');
-			elmInputStatusSpan.innerHTML				= arrActiveStatus[objActionType.is_system].Description;
+			elmInputStatusSpan.innerHTML				= arrActiveStatus[objActionType.active_status_id].Description;
 			this.elmInputsTDStatus.appendChild(elmInputStatusSpan);
 		}
 		else
@@ -475,8 +491,12 @@ var Action_Type_Edit	= Class.create
 		{
 			objActionTypeSave.id								= parseInt(this.objActionType.id);
 			objActionTypeSave.description						= this.elmInputDescription.value.replace(/(^\s+|\s+$)/g, '');
-			objActionTypeSave.action_type_detail_requirement_id	= parseInt(this.elmInputDetails.options[this.elmInputDetails.selectedIndex].value);
-			objActionTypeSave.active_status_id					= parseInt(this.elmInputStatus.options[this.elmInputStatus.selectedIndex].value);
+			
+			if (this.objActionType.is_system)
+			{
+				objActionTypeSave.action_type_detail_requirement_id	= this.objActionType.action_type_detail_requirement_id;
+				objActionTypeSave.active_status_id					= this.objActionType.active_status_id;
+			}
 		}
 		else
 		{
