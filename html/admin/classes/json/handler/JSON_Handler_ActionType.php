@@ -44,6 +44,8 @@ class JSON_Handler_ActionType extends JSON_Handler
 	{
 		try
 		{
+			DataAccess::getDataAccess()->TransactionStart();
+			
 			if ((int)$objActionTypeStdClass->id)
 			{
 				// Edit
@@ -79,6 +81,8 @@ class JSON_Handler_ActionType extends JSON_Handler
 				}
 			}
 			
+			DataAccess::getDataAccess()->TransactionCommit();
+			
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"			=> true,
@@ -88,6 +92,8 @@ class JSON_Handler_ActionType extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
+			DataAccess::getDataAccess()->TransactionRollback();
+			
 			// Send an Email to Devs
 			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
 			
