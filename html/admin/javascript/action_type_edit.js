@@ -66,11 +66,11 @@ var Action_Type_Edit	= Class.create
 		
 		if (objActionType)
 		{
-			this.elmInputName			= document.createElement('input');
-			this.elmInputName.name		= "Action_Type_Edit_Id";
-			this.elmInputName.type		= 'hidden';
-			this.elmInputName.value		= objActionType.id;
-			this.elmInputsDIV.appendChild(this.elmInputName);
+			this.elmInputId				= document.createElement('input');
+			this.elmInputId.name		= "Action_Type_Edit_Id";
+			this.elmInputId.type		= 'hidden';
+			this.elmInputId.value		= objActionType.id;
+			this.elmInputsDIV.appendChild(this.elmInputId);
 		}
 		
 		this.elmInputsTable					= document.createElement('table');
@@ -100,6 +100,12 @@ var Action_Type_Edit	= Class.create
 			this.elmSpanName				= document.createElement('span');
 			this.elmSpanName.innerHTML		= (objActionType) ? objActionType.name : '';
 			this.elmInputsTDName.appendChild(this.elmSpanName);
+
+			this.elmInputName				= document.createElement('input');
+			this.elmInputName.name			= "Action_Type_Edit_Name";
+			this.elmInputName.type			= 'hidden';
+			this.elmInputName.value			= objActionType.name;
+			this.elmInputsTDName.appendChild(this.elmInputName);
 		}
 		else
 		{
