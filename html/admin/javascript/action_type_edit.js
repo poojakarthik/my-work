@@ -222,7 +222,7 @@ var Action_Type_Edit	= Class.create
 					elmIconAssociationOption				= document.createElement('img');
 					elmIconAssociationOption.className		= 'icon_16';
 					elmIconAssociationOption.src			= "../admin/img/template/action_type_association/"+arrAssociationTypes[i].Name.toLowerCase()+".png";
-					elmIconAssociationOption.alt			= arrAssociationTypes[i].Name;
+					elmIconAssociationOption.alt			= '';
 					elmIconAssociationOption.title			= arrAssociationTypes[i].Description;
 					this.elmInputsTDAssociation.appendChild(elmIconAssociationOption);
 					
@@ -242,17 +242,20 @@ var Action_Type_Edit	= Class.create
 				elmInputAssociationOption.value			= i;
 				this.elmInputsTDAssociation.appendChild(elmInputAssociationOption);
 				
+				elmLabelAssociationOption				= document.createElement('label');
+				elmLabelAssociationOption.setAttribute('for', elmInputAssociationOption.id);
+				this.elmInputsTDAssociation.appendChild(elmLabelAssociationOption);
+				
 				elmIconAssociationOption				= document.createElement('img');
 				elmIconAssociationOption.className		= 'icon_16';
 				elmIconAssociationOption.src			= "../admin/img/template/action_type_association/"+arrAssociationTypes[i].Name.toLowerCase()+".png";
-				elmIconAssociationOption.alt			= arrAssociationTypes[i].Name;
+				elmIconAssociationOption.alt			= '';
 				elmIconAssociationOption.title			= arrAssociationTypes[i].Description;
-				this.elmInputsTDAssociation.appendChild(elmIconAssociationOption);
+				this.elmLabelAssociationOption.appendChild(elmIconAssociationOption);
 				
-				elmLabelAssociationOption				= document.createElement('label');
-				elmLabelAssociationOption.setAttribute('for', elmInputAssociationOption.id);
-				elmLabelAssociationOption.innerHTML		= arrAssociationTypes[i].Description;
-				this.elmInputsTDAssociation.appendChild(elmLabelAssociationOption);
+				elmSpanAssociationOption				= document.createElement('span');
+				elmSpanAssociationOption.innerHTML		= arrAssociationTypes[i].Description;
+				this.elmLabelAssociationOption.appendChild(elmSpanAssociationOption);
 				
 				this.arrAssociationTypeInputs.push(elmInputAssociationOption);
 				
