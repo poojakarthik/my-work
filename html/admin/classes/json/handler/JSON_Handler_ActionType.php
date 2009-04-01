@@ -53,7 +53,7 @@ class JSON_Handler_ActionType extends JSON_Handler
 				$objActionType->active_status_id					= $objActionTypeStdClass->active_status_id;
 				$objActionType->save();
 			}
-			elseif (Action_Type::getForName($objActionTypeStdClass->name))
+			elseif (Action_Type::getForName($objActionTypeStdClass->name, true))
 			{
 				// Name is not unique
 				throw new Exception("The Name '{$objActionTypeStdClass->name}' is already in use.  Please use another.");
