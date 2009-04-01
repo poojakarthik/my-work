@@ -66,7 +66,7 @@ var Flex_Constant	= Class.create
 					}
 				}
 				
-				if (fncCallbackf)
+				if (fncCallback)
 				{
 					fncCallback();
 				}
