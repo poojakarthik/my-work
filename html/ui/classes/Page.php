@@ -276,7 +276,7 @@ class Page
 	function RenderHeaderJS()
 	{
 		// Include reference to all the standard javascript files, which should be included on every page
-		$arrStandardJsFiles = array("vixen", "popup", "dhtml", "ajax", "event_handler", "login", "search", "customer_verification", "validation", "js_auto_loader", "flex_constant");
+		$arrStandardJsFiles = array("vixen", "popup", "dhtml", "ajax", "event_handler", "login", "search", "customer_verification", "validation", "js_auto_loader");
 		$strFiles = $this->_GetJsFilesQueryString($arrStandardJsFiles);
 		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 
@@ -288,6 +288,7 @@ class Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/sha1.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_popup.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex_constant.js' ></script>\n";
 		
 		// Include reference to all other javascript files required of the page
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
@@ -296,7 +297,7 @@ class Page
 		}
 
 		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex"));
+		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant"));
 
 		foreach ($arrStandardJsFiles as $strFile)
 		{

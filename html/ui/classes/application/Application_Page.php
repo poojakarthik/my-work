@@ -132,7 +132,7 @@ class Application_Page extends Page
 	{
 		// Load the old vixen framework for backward compatibility.
 		// Do this first to ensure that any new stuff doesn't get broken by it.
-		$arrStandardJsFiles = array("vixen", "popup", "dhtml", "ajax", "event_handler", "login", "search", "customer_verification", "validation", "js_auto_loader", "flex_constant");
+		$arrStandardJsFiles = array("vixen", "popup", "dhtml", "ajax", "event_handler", "login", "search", "customer_verification", "validation", "js_auto_loader");
 		// Build the get variables for the javascript.php script
 		$strFiles = $this->_GetJsFilesQueryString($arrStandardJsFiles);
 		// Echo the reference to the javascript.php script which retrieves all the javascript
@@ -149,6 +149,7 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/sha1.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_popup.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex_constant.js' ></script>\n";
 		// TODO: Add a non-vixen login handler to flex.js for when the session has timed out
 
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
@@ -157,7 +158,7 @@ class Application_Page extends Page
 		}
 
 		// Remove any duplicates from the list, as well as files that have already been referenced
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex"));
+		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant"));
 		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
 		
 		foreach ($arrStandardJsFiles as $strFile)
