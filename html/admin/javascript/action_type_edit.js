@@ -197,6 +197,13 @@ var Action_Type_Edit	= Class.create
 				// EDIT: Can't change
 				if (objActionType.arrAssociationTypes.indexOf(parseInt(i)) > -1)
 				{
+					elmIconAssociationOption				= document.createElement('img');
+					elmIconAssociationOption.className		= 'icon_16';
+					elmIconAssociationOption.src			= "../admin/img/template/action_type_association/"+arrAssociationTypes[i].Name.toLowerCase()+".png";
+					elmIconAssociationOption.alt			= arrAssociationTypes[i].Name;
+					elmIconAssociationOption.title			= arrAssociationTypes[i].Description;
+					this.elmInputsTDAssociation.appendChild(elmIconAssociationOption);
+					
 					elmInputAssociationSpan					= document.createElement('span');
 					elmInputAssociationSpan.innerHTML		= arrAssociationTypes[i].Description;
 					this.elmInputsTDAssociation.appendChild(elmInputAssociationSpan);
