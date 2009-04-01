@@ -481,7 +481,7 @@ var Action_Type_Edit	= Class.create
 		Vixen.Popup.ClosePageLoadingSplash();
 		if (objResponse.Success)
 		{
-			$Alert("The Action Type '"+this.elmInputName.value+"' has been successfully saved.", null, null, null, "Save Successful", this._close.bind(this, null, true));
+			$Alert("The Action Type '"+this.elmInputName.value+"' has been successfully saved.", null, null, null, "Save Successful", this._close.bind(this, null, true, true));
 			return true;
 		}
 		else if (objResponse.Success == undefined)
