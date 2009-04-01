@@ -468,6 +468,8 @@ var Action_Type_Edit	= Class.create
 			// Confirmed
 			this._unregisterEventHandlers();
 			this.pupEdit.hide();
+			
+			Flex.Action_Type_Edit	= null;
 		}
 		else if (bolConfirmed == undefined)
 		{
