@@ -132,7 +132,7 @@ class Application_Page extends Page
 	{
 		// Load the old vixen framework for backward compatibility.
 		// Do this first to ensure that any new stuff doesn't get broken by it.
-		$arrStandardJsFiles = array("vixen", "popup", "dhtml", "ajax", "event_handler", "login", "search", "customer_verification", "validation", "js_auto_loader");
+		$arrStandardJsFiles = array("vixen", "popup", "dhtml", "ajax", "event_handler", "login", "search", "customer_verification", "validation", "js_auto_loader", "flex_constant");
 		// Build the get variables for the javascript.php script
 		$strFiles = $this->_GetJsFilesQueryString($arrStandardJsFiles);
 		// Echo the reference to the javascript.php script which retrieves all the javascript
