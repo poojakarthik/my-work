@@ -252,7 +252,11 @@ var Action_Type_Edit	= Class.create
 		}
 		else
 		{
-			this.elmInputsTHAutomatic.style.verticalAlign	= "top";
+			elmInputAutomaticSpan					= document.createElement('span');
+			elmInputAutomaticSpan.innerHTML			= 'Quick Action';
+			this.elmInputsTDAutomatic.appendChild(elmInputAutomaticSpan);
+			
+			/*this.elmInputsTHAutomatic.style.verticalAlign	= "top";
 			this.elmInputsTDAutomatic.style.verticalAlign	= "top";
 			
 			elmInputAutomaticOptionYes				= document.createElement('input');
@@ -279,7 +283,7 @@ var Action_Type_Edit	= Class.create
 			elmLabelAutomaticOptionNo				= document.createElement('label');
 			elmLabelAutomaticOptionNo.setAttribute('for', elmInputAutomaticOptionNo.id);
 			elmLabelAutomaticOptionNo.innerHTML		= 'Quick Action';
-			this.elmInputsTDAutomatic.appendChild(elmLabelAutomaticOptionNo);
+			this.elmInputsTDAutomatic.appendChild(elmLabelAutomaticOptionNo);*/
 		}
 		
 		// SYSTEM
@@ -407,7 +411,7 @@ var Action_Type_Edit	= Class.create
 				arrErrors.push("[!] Please select at least one Association");
 			}
 		}
-		if (!this.objActionType)
+		if (!this.objActionType && this.elmForm.Action_Type_Edit_Automatic)
 		{
 			var intSelectedIndex	= -1;
 			for (var i = 0; i < this.elmForm.Action_Type_Edit_Automatic.length; i++)
