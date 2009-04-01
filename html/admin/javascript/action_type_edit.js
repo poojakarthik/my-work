@@ -376,7 +376,7 @@ var Action_Type_Edit	= Class.create
 		// Ensure that all fields are populated
 		var arrErrors	= new Array();
 
-		if (this.objActionType && !this.elmInputName.value.replace(/(^\s+|\s+$)/g, '').length)
+		if (!this.objActionType && !this.elmInputName.value.replace(/(^\s+|\s+$)/g, '').length)
 		{
 			arrErrors.push("[!] Please enter a Name.  This must be unique.");
 		}
