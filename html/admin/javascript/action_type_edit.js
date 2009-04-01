@@ -155,7 +155,7 @@ var Action_Type_Edit	= Class.create
 			this.elmInputDetails						= document.createElement('hidden');
 			this.elmInputDetails.name					= "Action_Type_Edit_Details";
 			this.elmInputDetails.value					= objActionType.action_type_detail_requirement_id;
-			this.elmInputsTDDetails.appendChild(this.elmInputStatus);
+			this.elmInputsTDDetails.appendChild(this.elmInputDetails);
 			
 			elmInputDetailsSpan							= document.createElement('span');
 			elmInputDetailsSpan.innerHTML				= arrDetailRequirement[objActionType.action_type_detail_requirement_id].Description;
