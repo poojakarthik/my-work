@@ -153,8 +153,12 @@ var Action_Type_Edit	= Class.create
 			elmInputDetailsOption					= document.createElement('option');
 			elmInputDetailsOption.value				= mixValue;
 			elmInputDetailsOption.innerHTML			= arrDetailRequirement[mixValue].Description;
-			elmInputDetailsOption.selected			= (objActionType && objActionType.action_type_detail_requirement_id == mixValue) ? 'selected' : '';
 			this.elmInputDetails.appendChild(elmInputDetailsOption);
+			
+			if (objActionType && objActionType.action_type_detail_requirement_id == mixValue)
+			{
+				elmInputDetailsOption.selected		= true;
+			}
 			
 			this.arrInputDetailsOptions.push(elmInputDetailsOption);
 		}
