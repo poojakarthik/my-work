@@ -104,7 +104,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		$cgActiveStatus					= ($cgActiveStatus) 				? $cgActiveStatus					: Constant_Group::getConstantGroup('active_status');
 		
 		$strActionEdit	= '&nbsp;';
-		if ($objActionType->active_status_id === ACTIVE_STATUS_ACTIVE && (($objActionType->is_system && AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) || $objActionType->is_system))
+		if ($objActionType->active_status_id === ACTIVE_STATUS_ACTIVE && (($objActionType->is_system && AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) || !$objActionType->is_system))
 		{
 			$strActionEdit	= "<img class='icon_16' src='../admin/img/template/page_white_edit.png' onclick='Flex.Action_Type_Edit = new Action_Type_Edit({$objActionType->id});' />";
 		}
