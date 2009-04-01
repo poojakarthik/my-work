@@ -420,6 +420,52 @@ class Action_Type extends ORM
 	}
 
 	/**
+	 * getForName()
+	 *
+	 * Returns Action_Type object for the action_type.name supplied
+	 *
+	 * @param	string	$strName					name of the action_type record to return
+	 * @param	bool	$bolSilentFail				Optional. Defaults to FALSE. If FALSE then an Exception_ORM_LoadById exception will be thrown if the record cannot be found
+	 * 												if TRUE, then NULL will be returned if the record cannot be found
+	 *
+	 * @return	mixed			Action_Type	: if record can be found (this object will also be referenced in the cache)
+	 * 							NULL		: if record can't be found and $bolSilentFail == TRUE
+	 * @method
+	 */
+	public static function getForName($strName, $bolSilentFail=false)
+	{
+		foreach (self::$_cache as $intId=>$objActionType)
+		{
+			if ($objActionType->name === $strName)
+			{
+				return self::$_cache[$intId];
+			}
+		}
+		
+		// Try finding it in the database
+		$selByName	= self::_preparedStatement('selByName');
+		$resByName	= $selByName->Execute(array('name'=>$strName));
+		if ($resByName === false)
+		{
+			throw new Exception($selByName->Error());
+		}
+		elseif ($resByName)
+		{
+			// The object could be created
+			self::$_cache[$objActionType->id]	= $objActionType;
+			return $objActionType;
+		}
+		elseif ($bolSilentFail)
+		{
+			return null;
+		}
+		else
+		{
+			throw new Exception("Unable to load Action Type with Name '{$strName}'");
+		}
+	}
+
+	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
@@ -453,6 +499,9 @@ class Action_Type extends ORM
 					break;
 				case 'selAllowedActionAssociationTypes':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("action_type_action_association_type", "*", "action_type_id = <ActionTypeId>", "action_association_type_id ASC");
+					break;
+				case 'selByName':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("action_type", "*", "name = <name>", "id DESC", 1);
 					break;
 				
 				// INSERTS
