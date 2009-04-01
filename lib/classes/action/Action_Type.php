@@ -449,9 +449,10 @@ class Action_Type extends ORM
 		{
 			throw new Exception($selByName->Error());
 		}
-		elseif ($resByName)
+		elseif ($arrActionType = $selByName->Fetch())
 		{
 			// The object could be created
+			$objActionType						= new Action_Type($arrActionType);
 			self::$_cache[$objActionType->id]	= $objActionType;
 			return $objActionType;
 		}
