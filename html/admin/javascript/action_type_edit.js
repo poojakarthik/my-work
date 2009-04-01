@@ -6,8 +6,6 @@ var Action_Type_Edit	= Class.create
 	// Prototype constructor
 	initialize	: function(intActionTypeId)
 	{
-		alert("INIT!");
-		
 		var fncCallback	= intActionTypeId ? this._loadForId.bind(this, intActionTypeId) : this._render.bind(this, null);
 		Flex.Constant.loadConstantGroup(new Array('action_association_type', 'action_type_detail_requirement', 'active_status'), fncCallback);
 	},
