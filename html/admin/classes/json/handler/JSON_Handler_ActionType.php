@@ -70,7 +70,7 @@ class JSON_Handler_ActionType extends JSON_Handler
 				$objActionType->active_status_id					= ACTIVE_STATUS_ACTIVE;
 				$objActionType->save();
 				
-				foreach ($objActionType->arrAssociationTypes as $intAssociationType)
+				foreach ($objActionTypeStdClass->arrAssociationTypes as $intAssociationType)
 				{
 					$objActionTypeActionAssociationType								= new Action_TypeActionAssociationType();
 					$objActionTypeActionAssociationType->action_type_id				= $objActionType->id;
