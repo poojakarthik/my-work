@@ -338,16 +338,6 @@ class Invoice_Run
 		$this->customer_group_id		= $intCustomerGroup;
 		$this->save();
 
-		// Get CustomerGroup information
-		$selInvoiceCDRCredits	= self::_preparedStatement('selInvoiceCDRCredits');
-		if ($selInvoiceCDRCredits->Execute($this->toArray()) === FALSE)
-		{
-			// Database Error -- throw Exception
-			throw new Exception("DB ERROR: ".$selInvoiceCDRCredits->Error());
-		}
-		$arrInvoiceCDRCredits		= $selInvoiceCDRCredits->Fetch();
-		$this->bolInvoiceCDRCredits	= (bool)$arrInvoiceCDRCredits['invoice_cdr_credits'];
-
 		// Generate an Invoice for each Account
 		$this->InvoiceCount	= 0;
 		foreach ($arrAccounts as $arrAccount)
