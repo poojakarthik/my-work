@@ -251,11 +251,11 @@ var Action_Type_Edit	= Class.create
 				elmIconAssociationOption.src			= "../admin/img/template/action_type_association/"+arrAssociationTypes[i].Name.toLowerCase()+".png";
 				elmIconAssociationOption.alt			= '';
 				elmIconAssociationOption.title			= arrAssociationTypes[i].Description;
-				this.elmLabelAssociationOption.appendChild(elmIconAssociationOption);
+				elmLabelAssociationOption.appendChild(elmIconAssociationOption);
 				
 				elmSpanAssociationOption				= document.createElement('span');
 				elmSpanAssociationOption.innerHTML		= arrAssociationTypes[i].Description;
-				this.elmLabelAssociationOption.appendChild(elmSpanAssociationOption);
+				elmLabelAssociationOption.appendChild(elmSpanAssociationOption);
 				
 				this.arrAssociationTypeInputs.push(elmInputAssociationOption);
 				
