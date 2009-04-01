@@ -12,12 +12,16 @@ var Action_Type_Edit	= Class.create
 	
 	_loadForId	: function(intActionTypeId, fncCallback)
 	{
+		Vixen.Popup.ShowPageLoadingSplash("Loading...", null, null, null, 1);
+		
 		var fncJsonFunc		= jQuery.json.jsonFunction(this._loadForIdResponse.bind(this), null, 'ActionType', 'getForId');
 		fncJsonFunc(intActionTypeId);
 	},
 	
 	_loadForIdResponse	: function(objResponse)
 	{
+		Vixen.Popup.ClosePageLoadingSplash();
+		
 		if (objResponse)
 		{
 			if (objResponse.Success)
