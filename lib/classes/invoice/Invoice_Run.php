@@ -534,21 +534,16 @@ class Invoice_Run
 		}
 	}
 
-	//------------------------------------------------------------------------//
-	// commit
-	//------------------------------------------------------------------------//
 	/**
 	 * commit()
 	 *
 	 * Commits a Temporary Invoice Run
 	 *
-	 * Commits a Temporary Invoice Run
-	 *
 	 * @method
 	 */
-	public function commit()
+	public function commit($bolOptimisedCommit=true)
 	{
-		Log::getLog()->log(" * ENTERING commit()...");
+		Log::getLog()->log(" * Committing Invoice Run with Id {$this->Id}...");
 
 		// Is this InvoiceRun Temporary?
 		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_TEMPORARY)
@@ -556,26 +551,91 @@ class Invoice_Run
 			// No, throw an Exception
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
-
-		// Init variables
+		
+		if ($bolOptimisedCommit)
+		{
+			// Commit Invoice Run as a whole
+			$this->_commitOptimised();
+		}
+		else
+		{
+			// Commit each Invoice individually
+			static	$qryQuery;
+			$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
+	
+			// Get list of Invoices to Commit
+			Log::getLog()->log(" * Getting list of Invoices to Commit...");
+			$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
+			if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
+			{
+				throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
+			}
+			while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
+			{
+				// Commit each Invoice
+				$objInvoice	= new Invoice($arrInvoice);
+				Log::getLog()->log(" * Committing Invoice with Id {$objInvoice->Id}...");
+				$objInvoice->commit();
+			}
+	
+			// Finalise entry in the InvoiceRun table
+			Log::getLog()->log(" * Finalising Invoice Run with Id {$this->Id}");
+			$this->invoice_run_status_id	= INVOICE_RUN_STATUS_COMMITTED;
+			$this->save();
+		}
+	}
+	
+	private function _commitOptimised()
+	{
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
-
-		// Get list of Invoices to Commit
-		Log::getLog()->log(" * Getting list of Invoices to Commit...");
-		$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
-		if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
+		
+		// Commit the CDRs
+		Log::getLog()->log(" * Committing CDRs...");
+		$resCommitCDRs	= $qryQuery->Execute("UPDATE CDR SET Status = ".CDR_INVOICED." WHERE Status = ".CDR_TEMP_INVOICE." AND invoice_run_id = {$this->Id}");
+		if ($resCommitCDRs === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
+			throw new Exception($qryQuery->Error());
 		}
-		while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
+		
+		// Commit the Charges
+		Log::getLog()->log(" * Committing Charges...");
+		$resCommitCharges	= $qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_INVOICED." WHERE Status = ".CHARGE_TEMP_INVOICE." AND invoice_run_id = {$this->Id}");
+		if ($resCommitCharges === FALSE)
 		{
-			// Commit each Invoice
-			$objInvoice	= new Invoice($arrInvoice);
-			Log::getLog()->log(" * Committing Invoice with Id {$objInvoice->Id}...");
-			$objInvoice->commit();
+			throw new Exception($qryQuery->Error());
 		}
-
+		
+		//------------------------------ ACCOUNT -----------------------------//
+		Log::getLog()->log(" * Updating Accounts...");
+		$resUpdateAccounts	= $qryQuery->Execute(	"UPDATE Account JOIN Invoice ON Account.Id = Invoice.Account \n" .
+													"SET Account.LastBilled = {$this->BillingDate}, Account.Sample = (CASE WHEN Account.Sample < 0 THEN Account.Sample + 1 ELSE Account.Sample END) \n" .
+													"WHERE Invoice.invoice_run_id = {$this->Id}");
+		if ($resUpdateAccounts === FALSE)
+		{
+			throw new Exception($qryQuery->Error());
+		}
+		
+		//------------------------------ SERVICE -----------------------------//
+		Log::getLog()->log(" * Updating Services...");
+		$resUpdateInvoices	= $qryQuery->Execute(	"UPDATE (ServiceTotal JOIN service_total_service ON ServiceTotal.Service = service_total_service.service_total_id) JOIN Service ON Service.Id = service_total_service.service_id " .
+													" SET Service.discount_start_datetime = NULL, cdr_count = NULL, cdr_amount = NULL " .
+													" WHERE invoice_run_id = {$this->Id}");
+		if ($resUpdateInvoices === FALSE)
+		{
+			throw new Exception($qryQuery->Error());
+		}
+		
+		//------------------------------ INVOICE -----------------------------//
+		Log::getLog()->log(" * Updating Invoices...");
+		$resUpdateInvoices	= $qryQuery->Execute(	"UPDATE Invoice \n" .
+													"SET Status = (CASE WHEN Balance > 0 THEN ".INVOICE_COMMITTED." ELSE ".INVOICE_SETTLED." END) \n" .
+													"WHERE invoice_run_id = {$this->Id}");
+		if ($resUpdateInvoices === FALSE)
+		{
+			throw new Exception($qryQuery->Error());
+		}
+		
 		// Finalise entry in the InvoiceRun table
 		Log::getLog()->log(" * Finalising Invoice Run with Id {$this->Id}");
 		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_COMMITTED;
