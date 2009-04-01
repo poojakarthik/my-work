@@ -214,7 +214,7 @@ var Action_Type_Edit	= Class.create
 				this.elmInputsTDAssociation.appendChild(elmInputAssociationOption);
 				
 				elmIconAssociationOption				= document.createElement('img');
-				elmIconAssociationOption.className		= 'icon_16;
+				elmIconAssociationOption.className		= 'icon_16';
 				elmIconAssociationOption.src			= "../admin/img/template/action_type_association/"+arrAssociationTypes[i].Name.toLowerCase()+".png";
 				elmIconAssociationOption.alt			= arrAssociationTypes[i].Name;
 				elmIconAssociationOption.title			= arrAssociationTypes[i].Description;
