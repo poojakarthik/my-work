@@ -53,7 +53,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		{
 			$this->_arrActionAssociationTypeColumnOrder[]	= $intActionAssociationTypeId;
 			
-			$strIconSubPath	= "admin/img/template/".strtolower($objActionAssociationType->name).".png";
+			$strIconSubPath	= "admin/img/template/action_type_association/".strtolower($objActionAssociationType->name).".png";
 			if (@file_exists(Flex::getBase()."html/".$strIconSubPath))
 			{
 				$strHeaderHTML	.= "			<th><img class='icon_16' src='../{$strIconSubPath}' alt='{$objActionAssociationType->name}' title='{$objActionAssociationType->name}' /></th>\n";
