@@ -203,7 +203,7 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 			{
 				$intScore			= reset($arrLocalityMatches);
 				$intLocalityIndex	= key($arrLocalityMatches);
-				$strLogBuffer	.= "\t\t[*] Best Match: '".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Score: {$intScore})\n";
+				$strLogBuffer	.= "\t\t[*] Best Match: '".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."'   ".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_STATE]."   ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Score: {$intScore})\n";
 			}
 		}
 		
