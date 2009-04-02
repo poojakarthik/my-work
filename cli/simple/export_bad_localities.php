@@ -217,7 +217,12 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 			Log::getLog()->log(trim($strLogBuffer));
 		}
 		
-		fputcsv($resOutputFile, array_merge($arrAddressOutput, $arrLocalityMatches));
+		foreach ($arrLocalityMatches as $intLocalityIndex=>$intScore)
+		{
+			$arrAddressOutput[]	= $arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."'   ".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_STATE]."   ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT);
+		}
+		
+		fputcsv($resOutputFile, $arrAddressOutput);
 	}
 }
 
