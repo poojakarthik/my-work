@@ -19,8 +19,8 @@ define('LEVENSHTEIN_DIVISOR'	, 3);
 define('CLOSE_MATCH_LIMIT'		, 99);
 
 define('VERBOSE_MODE'			, true);
-
 define('SINGLE_LINE_MODE'		, true);
+define('SILENT_MODE'			, false);
 
 $arrAddressTables	=	array
 						(
@@ -54,6 +54,11 @@ $arrAddressTables	=	array
 
 $dbConnection	= Data_Source::get();
 $dbConnection->setFetchMode(MDB2_FETCHMODE_ASSOC);
+
+if (!SILENT_MODE)
+{
+	Log::getLog()->log(" [*] Loading Locality CSV Database...\n");
+}
 
 // Load the Locality CSV Database
 if (!$resLocalityFile = @fopen(LOCALITY_DATABASE_PATH, 'r'))
@@ -123,6 +128,7 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 		
 		$arrLocalityMatches	= array();
 		
+		$bolPerfectMatch	= false;
 		foreach ($arrLocalities as $intLocalityIndex=>$arrLocality)
 		{
 			$bolPostcodeMatch	= ($intPostcode === $arrLocality[ADDRESS_FIELD_POSTCODE]);
@@ -134,7 +140,8 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 				// Perfect Match
 				if (VERBOSE_MODE || SINGLE_LINE_MODE)
 				{
-					$strLogBuffer	.= "\t\t[+] Perfect match found!\n";
+					$bolPerfectMatch	= true;
+					$strLogBuffer		.= "\t\t[+] Perfect match found!\n";
 				}
 				continue 2;
 			}
@@ -199,7 +206,12 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 			}
 		}
 		
-		if (count($arrLocalityMatches) || VERBOSE_MODE || SINGLE_LINE_MODE)
+		if (!$bolPerfectMatch && !count($arrLocalityMatches))
+		{
+			$strLogBuffer	.= "\t\t[*] Best Match: '".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Score: {$intScore})\n";
+		}
+		
+		if (!SILENT_MODE && (count($arrLocalityMatches) || VERBOSE_MODE || SINGLE_LINE_MODE))
 		{
 			Log::getLog()->log(trim($strLogBuffer));
 		}
