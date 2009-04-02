@@ -190,39 +190,40 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 			}
 		}
 		
-		if (count($arrLocalityMatches))
+		if (!$bolPerfectMatch)
 		{
-			// Order the Matches by Closeness
-			asort($arrLocalityMatches);
-			while (count($arrLocalityMatches) > CLOSE_MATCH_LIMIT)
+			if (count($arrLocalityMatches))
 			{
-				array_pop($arrLocalityMatches);
+				// Order the Matches by Closeness
+				asort($arrLocalityMatches);
+				while (count($arrLocalityMatches) > CLOSE_MATCH_LIMIT)
+				{
+					array_pop($arrLocalityMatches);
+				}
+				
+				if (VERBOSE_MODE || SINGLE_LINE_MODE)
+				{
+					$intScore			= reset($arrLocalityMatches);
+					$intLocalityIndex	= key($arrLocalityMatches);
+					$strLogBuffer	.= "\t\t[*] Best Match: '".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."'   ".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_STATE]."   ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Score: {$intScore})\n";
+				}
 			}
-			
-			if (VERBOSE_MODE || SINGLE_LINE_MODE)
+			else
 			{
-				$intScore			= reset($arrLocalityMatches);
-				$intLocalityIndex	= key($arrLocalityMatches);
-				$strLogBuffer	.= "\t\t[*] Best Match: '".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."'   ".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_STATE]."   ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Score: {$intScore})\n";
+				$strLogBuffer	.= "\t\t[!] No Match!\n";
 			}
-		}
 		
-		if (!$bolPerfectMatch && !count($arrLocalityMatches))
-		{
-			$strLogBuffer	.= "\t\t[!] No Match!\n";
+			foreach ($arrLocalityMatches as $intLocalityIndex=>$intScore)
+			{
+				$arrAddressOutput[]	= $arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."'   ".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_STATE]."   ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT);
+			}
+			fputcsv($resOutputFile, $arrAddressOutput);
 		}
 		
 		if (!SILENT_MODE && (count($arrLocalityMatches) || VERBOSE_MODE || SINGLE_LINE_MODE))
 		{
 			Log::getLog()->log(trim($strLogBuffer));
 		}
-		
-		foreach ($arrLocalityMatches as $intLocalityIndex=>$intScore)
-		{
-			$arrAddressOutput[]	= $arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."'   ".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_STATE]."   ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT);
-		}
-		
-		fputcsv($resOutputFile, $arrAddressOutput);
 	}
 }
 
