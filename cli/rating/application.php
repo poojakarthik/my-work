@@ -369,6 +369,7 @@
 				//Debug("_CalculateCharge() Failed!");
 				return FALSE;
 			}
+			CliEcho("Charged: \${$fltCharge}");
 
 			// Calculate Cap Rate
 			$fltCharge = $this->_CalculateCap();
@@ -377,6 +378,7 @@
 				//Debug("_CalculateCap() Failed!");
 				return FALSE;
 			}
+			CliEcho("Capped: \${$fltCharge}");
 
 			// Calculate Prorate
 			$fltCharge = $this->_CalculateProrate();
@@ -385,6 +387,7 @@
 				//Debug("_CalculateProrate() Failed!");
 				return FALSE;
 			}
+			CliEcho("Prorated: \${$fltCharge}");
 
 			// Rounding
 			$this->_Rounding();
