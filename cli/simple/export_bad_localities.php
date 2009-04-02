@@ -137,21 +137,34 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 				$strInvalidLocality	= preg_replace("/[^A-Za-z0-9]/i", '', $strLocality);
 				$strValidLocality	= preg_replace("/[^A-Za-z0-9]/i", '', $arrLocality[ADDRESS_FIELD_LOCALITY]);
 				
-				$intDifference	= levenshtein($strInvalidLocality, $strValidLocality);
-				if ($intDifference < ceil(strlen($strInvalidLocality) / LEVENSHTEIN_DIVISOR))
-				{
-					// Add to our close-match array
-					$arrLocalityMatches[$intLocalityIndex]	= $intDifference;
-					
-					Log::getLog()->log("\t\t[-] Close Locality Match: '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Difference: {$intDifference})");
-				}
+				$intDifference		= levenshtein($strInvalidLocality, $strValidLocality);
+				$intMaxDifferences	= ceil(strlen($strInvalidLocality) / LEVENSHTEIN_DIVISOR);
 				
-				// Is it the same Postcode?
-				if ($bolPostcodeMatch)
+				
+				// Is it a close Locality match AND the same Postcode?
+				if ($intDifference < $intMaxDifferences && $bolPostcodeMatch)
 				{
+					// Same Postcode & close Locality
+					$arrLocalityMatches[$intLocalityIndex]	= 0 - ($intMaxDifferences + 1 - $intDifference);
+					Log::getLog()->log("\t\t[-] Close Locality & Postcode Match: '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Difference: {$intDifference})");
+				}
+				elseif ($bolPostcodeMatch)
+				{
+					// Close Locality
 					$arrLocalityMatches[$intLocalityIndex]	= -1;
 					
 					Log::getLog()->log("\t\t[-] Postcode Match:  '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)."");
+				}
+				else
+				{
+					// Same Postcode
+					if ($intDifference < $intMaxDifferences)
+					{
+						// Add to our close-match array
+						$arrLocalityMatches[$intLocalityIndex]	= $intDifference;
+						
+						Log::getLog()->log("\t\t[-] Close Locality Match: '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Difference: {$intDifference})");
+					}
 				}
 			}
 		}
