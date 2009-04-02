@@ -600,8 +600,9 @@ class Cli_App_Sales extends Cli
 							$objAccount->PaymentTerms	= self::PAYMENT_TERMS_DEFAULT;
 						}
 						
-						if ($arrSPSaleAccount['direct_debit_type_id'])
+						if ($arrSPSaleAccount['bill_payment_type_id'] == DO_Sales_BillPaymentType::DIRECT_DEBIT)
 						{
+							// Paying via direct debit
 							$objAccount->BillingType		= $this->_convertSalesPortalToFlex('directdebittype', $arrSPSaleAccount['direct_debit_type_id']);
 						}
 						else
@@ -626,76 +627,79 @@ class Cli_App_Sales extends Cli
 						$objAccount->save();
 						//--------------------------------------------------------//
 						
-						//---------------------- DIRECT DEBIT --------------------//
-						switch ($arrSPSaleAccount['direct_debit_type_id'])
+						if ($arrSPSaleAccount['bill_payment_type_id'] == DO_Sales_BillPaymentType::DIRECT_DEBIT)
 						{
-							// Bank Account
-							case 1:
-								$this->log("\t\t\t\t+ Adding Bank Account...");
-								// Get additional Bank Account Details
-								$resSPBankAccount	= $dsSalesPortal->query("SELECT * " .
-																		"FROM sale_account_direct_debit_bank_account " .
-																		"WHERE sale_account_id = {$arrSPSaleAccount['id']} " .
-																		"LIMIT 1");
-								if (PEAR::isError($resSPBankAccount))
-								{
-									throw new Exception($resSPBankAccount->getMessage()." :: ".$resSPBankAccount->getUserInfo());
-								}
-								$arrSPBankAccount	= $resSPBankAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
+							//---------------------- DIRECT DEBIT --------------------//
+							switch ($arrSPSaleAccount['direct_debit_type_id'])
+							{
+								// Bank Account
+								case 1:
+									$this->log("\t\t\t\t+ Adding Bank Account...");
+									// Get additional Bank Account Details
+									$resSPBankAccount	= $dsSalesPortal->query("SELECT * " .
+																			"FROM sale_account_direct_debit_bank_account " .
+																			"WHERE sale_account_id = {$arrSPSaleAccount['id']} " .
+																			"LIMIT 1");
+									if (PEAR::isError($resSPBankAccount))
+									{
+										throw new Exception($resSPBankAccount->getMessage()." :: ".$resSPBankAccount->getUserInfo());
+									}
+									$arrSPBankAccount	= $resSPBankAccount->fetchRow(MDB2_FETCHMODE_ASSOC);
+									
+									// Create new DirectDebit record
+									$arrBankAccount	= array();
+									$arrBankAccount['AccountGroup']		= $objAccount->AccountGroup;
+									$arrBankAccount['BankName']			= $arrSPBankAccount['bank_name'];
+									$arrBankAccount['BSB']				= $arrSPBankAccount['bank_bsb'];
+									$arrBankAccount['AccountNumber']	= $arrSPBankAccount['account_number'];
+									$arrBankAccount['AccountName']		= $arrSPBankAccount['account_name'];
+									$arrBankAccount['Archived']			= 0;
+									$arrBankAccount['created_on']		= $arrSPSale['created_on'];
+									$arrBankAccount['employee_id']		= Employee::SYSTEM_EMPLOYEE_ID;
+									$resBankAccountInsert	= $insBankAccount->Execute($arrBankAccount);
+									if ($resBankAccountInsert === FALSE)
+									{
+										throw new Exception($insBankAccount->Error());
+									}
+									
+									$objAccount->DirectDebit	= $insBankAccount->intInsertId;
+									break;
 								
-								// Create new DirectDebit record
-								$arrBankAccount	= array();
-								$arrBankAccount['AccountGroup']		= $objAccount->AccountGroup;
-								$arrBankAccount['BankName']			= $arrSPBankAccount['bank_name'];
-								$arrBankAccount['BSB']				= $arrSPBankAccount['bank_bsb'];
-								$arrBankAccount['AccountNumber']	= $arrSPBankAccount['account_number'];
-								$arrBankAccount['AccountName']		= $arrSPBankAccount['account_name'];
-								$arrBankAccount['Archived']			= 0;
-								$arrBankAccount['created_on']		= $arrSPSale['created_on'];
-								$arrBankAccount['employee_id']		= Employee::SYSTEM_EMPLOYEE_ID;
-								$resBankAccountInsert	= $insBankAccount->Execute($arrBankAccount);
-								if ($resBankAccountInsert === FALSE)
-								{
-									throw new Exception($insBankAccount->Error());
-								}
-								
-								$objAccount->DirectDebit	= $insBankAccount->intInsertId;
-								break;
-							
-							// Credit Card
-							case 2:
-								$this->log("\t\t\t\t+ Adding Credit Card...");
-								// Get additional Credit Card Details
-								$resSPCreditCard	= $dsSalesPortal->query("SELECT * " .
-																		"FROM sale_account_direct_debit_credit_card " .
-																		"WHERE sale_account_id = {$arrSPSaleAccount['id']} " .
-																		"LIMIT 1");
-								if (PEAR::isError($resSPCreditCard))
-								{
-									throw new Exception($resSPCreditCard->getMessage()." :: ".$resSPCreditCard->getUserInfo());
-								}
-								$arrSPCreditCard	= $resSPCreditCard->fetchRow(MDB2_FETCHMODE_ASSOC);
-								
-								// Create new CreditCard record
-								$arrCreditCard	= array();
-								$arrCreditCard['AccountGroup']	= $objAccount->AccountGroup;
-								$arrCreditCard['CardType']		= $arrSPCreditCard['credit_card_type_id'];
-								$arrCreditCard['Name']			= $arrSPCreditCard['card_name'];
-								$arrCreditCard['CardNumber']	= $arrSPCreditCard['card_number'];
-								$arrCreditCard['ExpMonth']		= str_pad($arrSPCreditCard['expiry_month'], 2, '0', STR_PAD_LEFT);
-								$arrCreditCard['ExpYear']		= (string)$arrSPCreditCard['expiry_year'];
-								$arrCreditCard['CVV']			= $arrSPCreditCard['cvv'];
-								$arrCreditCard['Archived']		= 0;
-								$arrCreditCard['created_on']	= $arrSPSale['created_on'];
-								$arrCreditCard['employee_id']	= Employee::SYSTEM_EMPLOYEE_ID;
-								$resCreditCardInsert	= $insCreditCard->Execute($arrCreditCard);
-								if ($resCreditCardInsert === FALSE)
-								{
-									throw new Exception($insCreditCard->Error());
-								}
-								
-								$objAccount->CreditCard	= $insCreditCard->intInsertId;
-								break;
+								// Credit Card
+								case 2:
+									$this->log("\t\t\t\t+ Adding Credit Card...");
+									// Get additional Credit Card Details
+									$resSPCreditCard	= $dsSalesPortal->query("SELECT * " .
+																			"FROM sale_account_direct_debit_credit_card " .
+																			"WHERE sale_account_id = {$arrSPSaleAccount['id']} " .
+																			"LIMIT 1");
+									if (PEAR::isError($resSPCreditCard))
+									{
+										throw new Exception($resSPCreditCard->getMessage()." :: ".$resSPCreditCard->getUserInfo());
+									}
+									$arrSPCreditCard	= $resSPCreditCard->fetchRow(MDB2_FETCHMODE_ASSOC);
+									
+									// Create new CreditCard record
+									$arrCreditCard	= array();
+									$arrCreditCard['AccountGroup']	= $objAccount->AccountGroup;
+									$arrCreditCard['CardType']		= $arrSPCreditCard['credit_card_type_id'];
+									$arrCreditCard['Name']			= $arrSPCreditCard['card_name'];
+									$arrCreditCard['CardNumber']	= $arrSPCreditCard['card_number'];
+									$arrCreditCard['ExpMonth']		= str_pad($arrSPCreditCard['expiry_month'], 2, '0', STR_PAD_LEFT);
+									$arrCreditCard['ExpYear']		= (string)$arrSPCreditCard['expiry_year'];
+									$arrCreditCard['CVV']			= $arrSPCreditCard['cvv'];
+									$arrCreditCard['Archived']		= 0;
+									$arrCreditCard['created_on']	= $arrSPSale['created_on'];
+									$arrCreditCard['employee_id']	= Employee::SYSTEM_EMPLOYEE_ID;
+									$resCreditCardInsert	= $insCreditCard->Execute($arrCreditCard);
+									if ($resCreditCardInsert === FALSE)
+									{
+										throw new Exception($insCreditCard->Error());
+									}
+									
+									$objAccount->CreditCard	= $insCreditCard->intInsertId;
+									break;
+							}
 						}
 						
 						// Finalise Account
@@ -1274,7 +1278,7 @@ class Cli_App_Sales extends Cli
 							}
 						}
 						
-						Note::createSystemNote(trim($strNote), NULL, $objAccount->accountGroup, $objAccount->id);
+						Note::createSystemNote(trim($strNote), NULL, $objAccount->id);
 					}
 					elseif ((int)$objFlexSale->sale_type_id == DO_Sales_SaleType::EXISTING_CUSTOMER)
 					{
@@ -1300,7 +1304,7 @@ class Cli_App_Sales extends Cli
 							}
 						}
 						
-						Note::createSystemNote(trim($strNote), NULL, $objAccount->accountGroup, $objAccount->id);
+						Note::createSystemNote(trim($strNote), NULL, $objAccount->id);
 					}
 
 					// Set Sale Status
