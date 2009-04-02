@@ -119,9 +119,9 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 		$arrAddressOutput	=	array
 								(
 									'Id'		=> $strPhysicalTableName.'.'.$arrDefinition[LOCAL_FIELD_ID].': '.(int)$arrAddress[LOCAL_FIELD_ID],
-									'Locality'	=> $arrDefinition[ADDRESS_FIELD_LOCALITY].': '.$strLocality, 
-									'State'		=> ($strState ? $arrDefinition[ADDRESS_FIELD_STATE].': '.$strState : ''), 
-									'Postcode'	=> $arrDefinition[ADDRESS_FIELD_POSTCODE].': '.str_pad($intPostcode, 4, '0', STR_PAD_LEFT)
+									'Current: ',
+									'Locality'	=> "{$strLocality}   ".($strState ? "{$strState}   " : '').str_pad($intPostcode, 4, '0', STR_PAD_LEFT),
+									'Suggestions: '
 								);
 		
 		$strLogBuffer	= "\t[+] {$strFriendlyTableName} #".$arrAddress[LOCAL_FIELD_ID]."\t: '{$strLocality}'   ".($strState ? $strState : 'UNK')."   ".str_pad($intPostcode, 4, '0', STR_PAD_LEFT)."\n";
