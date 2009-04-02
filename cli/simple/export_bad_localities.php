@@ -159,11 +159,12 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 				if ($intDifference < $intMaxDifferences && $bolPostcodeMatch)
 				{
 					// Same Postcode & close Locality
-					$arrLocalityMatches[$intLocalityIndex]	= 0 - ($intMaxDifferences + 1 - $intDifference);
+					$intScore	= 0 - ($intMaxDifferences + 1 - $intDifference);
+					$arrLocalityMatches[$intLocalityIndex]	= $intScore;
 					
 					if (VERBOSE_MODE)
 					{
-						$strLogBuffer	.= "\t\t[-] Close Locality & Postcode Match: '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Difference: {$intDifference})\n";
+						$strLogBuffer	.= "\t\t[-] Close Locality & Postcode Match: '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Score: {$intScore})\n";
 					}
 				}
 				elseif ($bolPostcodeMatch)
