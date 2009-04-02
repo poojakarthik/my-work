@@ -16,7 +16,7 @@ define('LOCAL_FIELD_ID'			, 'Id');
 
 defined('LEVENSHTEIN_DIVISOR'	, 3);
 
-defined('CLOSE_MATCH_LIMIT'		, 10);
+defined('CLOSE_MATCH_LIMIT'		, 99);
 
 $arrAddressTables	=	array
 						(
