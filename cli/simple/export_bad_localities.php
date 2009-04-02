@@ -14,9 +14,13 @@ define('ADDRESS_FIELD_COUNTRY'	, 'Country');
 
 define('LOCAL_FIELD_ID'			, 'Id');
 
-defined('LEVENSHTEIN_DIVISOR'	, 3);
+define('LEVENSHTEIN_DIVISOR'	, 3);
 
-defined('CLOSE_MATCH_LIMIT'		, 99);
+define('CLOSE_MATCH_LIMIT'		, 99);
+
+define('VERBOSE_MODE'			, true);
+
+define('SINGLE_LINE_MODE'		, true);
 
 $arrAddressTables	=	array
 						(
@@ -115,7 +119,7 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 									'Postcode'	=> $arrDefinition[ADDRESS_FIELD_POSTCODE].': '.str_pad($intPostcode, 4, '0', STR_PAD_LEFT)
 								);
 		
-		Log::getLog()->log("\t[+] {$strFriendlyTableName} #".$arrAddress[LOCAL_FIELD_ID]."\t: {$strLocality}   ".($strState ? $strState : 'UNK')."   ".str_pad($intPostcode, 4, '0', STR_PAD_LEFT));
+		$strLogBuffer	= "\t[+] {$strFriendlyTableName} #".$arrAddress[LOCAL_FIELD_ID]."\t: {$strLocality}   ".($strState ? $strState : 'UNK')."   ".str_pad($intPostcode, 4, '0', STR_PAD_LEFT)."\n";
 		
 		$arrLocalityMatches	= array();
 		
@@ -128,7 +132,10 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 			if ($bolPostcodeMatch && $bolLocalityMatch && $bolStateMatch)
 			{
 				// Perfect Match
-				Log::getLog()->log("\t\t[+] Perfect match found!");
+				if (VERBOSE_MODE || SINGLE_LINE_MODE)
+				{
+					$strLogBuffer	.= "\t\t[+] Perfect match found!\n";
+				}
 				continue 2;
 			}
 			else
@@ -146,34 +153,55 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 				{
 					// Same Postcode & close Locality
 					$arrLocalityMatches[$intLocalityIndex]	= 0 - ($intMaxDifferences + 1 - $intDifference);
-					Log::getLog()->log("\t\t[-] Close Locality & Postcode Match: '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Difference: {$intDifference})");
+					
+					if (VERBOSE_MODE)
+					{
+						$strLogBuffer	.= "\t\t[-] Close Locality & Postcode Match: '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Difference: {$intDifference})\n";
+					}
 				}
 				elseif ($bolPostcodeMatch)
 				{
-					// Close Locality
+					// Same Postcode
 					$arrLocalityMatches[$intLocalityIndex]	= -1;
 					
-					Log::getLog()->log("\t\t[-] Postcode Match:  '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)."");
-				}
-				else
-				{
-					// Same Postcode
-					if ($intDifference < $intMaxDifferences)
+					if (VERBOSE_MODE)
 					{
-						// Add to our close-match array
-						$arrLocalityMatches[$intLocalityIndex]	= $intDifference;
-						
-						Log::getLog()->log("\t\t[-] Close Locality Match: '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Difference: {$intDifference})");
+						$strLogBuffer	.= "\t\t[-] Postcode Match:  '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)."\n";
+					}
+				}
+				elseif ($intDifference < $intMaxDifferences)
+				{
+					// Add to our close-match array
+					$arrLocalityMatches[$intLocalityIndex]	= $intDifference;
+					
+					if (VERBOSE_MODE)
+					{
+						$strLogBuffer	.= "\t\t[-] Close Locality Match: '".$arrLocality[ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocality[ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Difference: {$intDifference})\n";
 					}
 				}
 			}
 		}
 		
-		// Order the Matches by Closeness
-		asort($arrLocalityMatches);
-		while (count($arrLocalityMatches) > CLOSE_MATCH_LIMIT)
+		if (count($arrLocalityMatches))
 		{
-			array_pop($arrLocalityMatches);
+			// Order the Matches by Closeness
+			asort($arrLocalityMatches);
+			while (count($arrLocalityMatches) > CLOSE_MATCH_LIMIT)
+			{
+				array_pop($arrLocalityMatches);
+			}
+			
+			if (VERBOSE_MODE || SINGLE_LINE_MODE)
+			{
+				$intScore			= reset($arrLocalityMatches);
+				$intLocalityIndex	= key($arrLocalityMatches);
+				$strLogBuffer	.= "\t\t[*] Best Match: '".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Score: {$intScore})\n";
+			}
+		}
+		
+		if (count($arrLocalityMatches) || VERBOSE_MODE || SINGLE_LINE_MODE)
+		{
+			Log::getLog()->log(trim($strLogBuffer));
 		}
 		
 		fputcsv($resOutputFile, array_merge($arrAddressOutput, $arrLocalityMatches));
