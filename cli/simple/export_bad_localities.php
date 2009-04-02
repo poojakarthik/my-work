@@ -124,7 +124,7 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 									'Postcode'	=> $arrDefinition[ADDRESS_FIELD_POSTCODE].': '.str_pad($intPostcode, 4, '0', STR_PAD_LEFT)
 								);
 		
-		$strLogBuffer	= "\t[+] {$strFriendlyTableName} #".$arrAddress[LOCAL_FIELD_ID]."\t: {$strLocality}   ".($strState ? $strState : 'UNK')."   ".str_pad($intPostcode, 4, '0', STR_PAD_LEFT)."\n";
+		$strLogBuffer	= "\t[+] {$strFriendlyTableName} #".$arrAddress[LOCAL_FIELD_ID]."\t: '{$strLocality}'   ".($strState ? $strState : 'UNK')."   ".str_pad($intPostcode, 4, '0', STR_PAD_LEFT)."\n";
 		
 		$arrLocalityMatches	= array();
 		
@@ -209,7 +209,7 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 		
 		if (!$bolPerfectMatch && !count($arrLocalityMatches))
 		{
-			$strLogBuffer	.= "\t\t[*] Best Match: '".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."', ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT)." (Score: {$intScore})\n";
+			$strLogBuffer	.= "\t\t[!] No Match!\n";
 		}
 		
 		if (!SILENT_MODE && (count($arrLocalityMatches) || VERBOSE_MODE || SINGLE_LINE_MODE))
