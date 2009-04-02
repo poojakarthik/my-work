@@ -212,7 +212,7 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 			{
 				$strLogBuffer	.= "\t\t[!] No Match!\n";
 			}
-		
+			
 			foreach ($arrLocalityMatches as $intLocalityIndex=>$intScore)
 			{
 				$arrAddressOutput[]	= $arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."'   ".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_STATE]."   ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT);
