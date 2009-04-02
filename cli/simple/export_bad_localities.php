@@ -90,6 +90,8 @@ if (!$resOutputFile = @fopen(CONVERSION_OUTPUT_PATH, 'w'))
 }
 
 // Process each Address Table
+$intTotalCount		= 0;
+$intTotalPerfect	= 0;
 foreach ($arrAddressTables as $strTable=>$arrDefinition)
 {
 	$arrTableName			= explode(' ', trim($strTable));
@@ -109,8 +111,12 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 	{
 		throw new Exception($resSelect->getMessage()."\n".$resSelect->getUserInfo());
 	}
+	$intCount	= 0;
+	$intPerfect	= 0;
 	while ($arrAddress = $resSelect->fetchRow())
 	{
+		$intCount++;
+		
 		// Process Address
 		$intPostcode	= (int)$arrAddress[ADDRESS_FIELD_POSTCODE];
 		$strLocality	= trim(strtoupper($arrAddress[ADDRESS_FIELD_LOCALITY]));
@@ -138,6 +144,7 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 			if ($bolPostcodeMatch && $bolLocalityMatch && $bolStateMatch)
 			{
 				// Perfect Match
+				$intPerfect++;
 				if (VERBOSE_MODE || SINGLE_LINE_MODE)
 				{
 					$bolPerfectMatch	= true;
@@ -225,7 +232,13 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 			Log::getLog()->log(trim($strLogBuffer));
 		}
 	}
+	
+	$intTotalCount		= $intCount;
+	$intTotalPerfect	= $intPerfect;
+	SendEmail('rdavis@ybs.net.au', "Locality Totals for '{$strFriendlyTableName}'", "Table\t: {$strFriendlyTableName}\nTotal\t: {$intCount}\nPerfect\t: {$intPerfect}");
 }
+
+	SendEmail('rdavis@ybs.net.au', "Locality Grand Totals", "Total\t: {$intTotalCount}\nPerfect\t: {$intTotalPerfect}");
 
 fclose($resOutputFile);
 
