@@ -76,7 +76,7 @@ class Product_Type_Module_Service_Inbound extends Product_Type_Module
 		if ($objFlexSaleItem !== NULL)
 		{
 			// The sale item has been imported into flex
-			$objService = Service::getForId($objFlexSaleItem->serviceId, TRUE, TRUE);
+			$objService = Service::getForId($objFlexSaleItem->serviceId, FALSE, TRUE);
 			
 			// Cancel the service (It is assumed that it hasn't already been cancelled)
 			$objService->onSaleItemCancellation($intEmployeeId);

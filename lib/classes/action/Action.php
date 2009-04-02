@@ -68,7 +68,7 @@ class Action extends ORM
 			$arrServices = array();
 			foreach ($arrServiceIds as $intServiceId)
 			{
-				$arrServices[$intServiceId] = Service::getForId($intServiceId, true);
+				$arrServices[$intServiceId] = Service::getForId($intServiceId);
 			}
 			return $arrServices;
 		}
@@ -195,14 +195,14 @@ class Action extends ORM
 	}
 
 	/**
-	 * createNew()
+	 * createAction()
 	 *
 	 * Creates an Action object and saves it to the data source
 	 * This should be used instead of manually instanciating an Action object and calling the save method, because you shouldn't ever need to update an action
 	 * Note: At least 1 account, service or contact should be associated with an action.  If nothing is associated with the action, an exception will be thrown
 	 * 
 	 * @param	Action_Type		$objActionType		The type of action being logged
-	 * @param	string			$strExtraDetails	The extra details to accompany the action.  Can be NULLABLE
+	 * @param	string			$strExtraDetails	The extra details to accompany the action.  Can be NULL
 	 * @param	mixed			$mixAccountIds		array	:	array of account ids, representing the accounts to associate with this action
 	 * 												integer	:	account id of single account to associate with this action
 	 * 												null	:	no accounts are to be associated with this action 
@@ -218,7 +218,7 @@ class Action extends ORM
 	 * @return	Action			The newly created (and saved) action object
 	 * @method
 	 */
-	public static function createNew($objActionType, $strExtraDetails, $mixAccountIds, $mixServiceIds, $mixContactIds, $intPerformedByEmployeeId, $intCreatedByEmployeeId)
+	public static function createAction($objActionType, $strExtraDetails, $mixAccountIds, $mixServiceIds, $mixContactIds, $intPerformedByEmployeeId, $intCreatedByEmployeeId)
 	{
 		// Validate the details
 		$strExtraDetails = trim($strExtraDetails);

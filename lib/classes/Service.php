@@ -282,7 +282,7 @@ class Service extends ORM
 		$strCurrentRatePlan	= ($objCurrentRatePlan) ? $objCurrentRatePlan->Name : "undefined";
 		$strNote  = "This service has had its plan changed from '{$strCurrentRatePlan}' to '{$objNewRatePlan->Name}'.  $strNotePlanStart";
 		
-		Note::createSystemNote($strNote, $intUserId, $this->AccountGroup, $this->Account, $this->Id);
+		Note::createSystemNote($strNote, $intUserId, $this->Account, $this->Id);
 		return TRUE;
 	}
 	
@@ -297,8 +297,8 @@ class Service extends ORM
 	 * Retrieves a Service object, based on the Service record id passed
 	 * 
 	 * @param	integer		$intServiceId							id of the service record
-	 * @param	bool		$bolExceptionOnNotFound					if TRUE, it will throw an exception, if the record can't be found
-	 * 																if FALSE, it will return NULL if the record can't be found
+	 * @param	bool		$bolSilentFail							if FALSE, it will throw an exception, if the record can't be found (defaults to false)
+	 * 																if TRUE, it will return NULL if the record can't be found
 	 * @param	bool		$bolGetNewestRecordModellingService		if TRUE, then the newest record modelling this service (FNN on the Account that $intServiceId is associated with), is the one returned
 	 * 																	Note, that this might not be the newest most record modelling this service, if the service has been moved to another account
 	 * 																	by means of a Change of Lessee, or Change of Account action.
@@ -308,7 +308,7 @@ class Service extends ORM
 	 *
 	 * @method
 	 */
-	public static function getForId($intServiceId, $bolExceptionOnNotFound=FALSE, $bolGetNewestRecordModellingService=FALSE)
+	public static function getForId($intServiceId, $bolSilentFail=FALSE, $bolGetNewestRecordModellingService=FALSE)
 	{
 		$objQuery = new Query();
 		
@@ -340,12 +340,11 @@ class Service extends ORM
 		
 		if ($mixRecord === NULL)
 		{
-			if ($bolExceptionOnNotFound)
+			if ($bolSilentFail)
 			{
-				throw new Exception("Could not find Service with Service.Id = $intServiceId");
+				return NULL;
 			}
-			
-			return NULL;
+			throw new Exception("Could not find Service with Service.Id = $intServiceId");
 		}
 		else
 		{

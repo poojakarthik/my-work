@@ -76,7 +76,7 @@ class JSON_Handler_Document extends JSON_Handler
 										"Subject: {$strSubject}\n" .
 										"Documents:\n" .
 										implode("\n", $arrAttachmentContent);
-					Note::createSystemNote($strNoteContent, Flex::getUserId(), $objAccount->AccountGroup, $objAccount->Id);
+					Note::createSystemNote($strNoteContent, Flex::getUserId(), $objAccount->Id);
 				}
 				catch (Exception_ORM_LoadById $eException)
 				{

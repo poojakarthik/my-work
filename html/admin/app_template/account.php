@@ -48,6 +48,8 @@ class AppTemplateAccount extends ApplicationTemplate
 	{
 		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		
+		$objAccount = Account::getForId($intAccountId);
+		
 		ContextMenu()->Account->Account_Overview($intAccountId);
 		ContextMenu()->Account->Invoices_And_Payments($intAccountId);
 		ContextMenu()->Account->Services->List_Services($intAccountId);
@@ -77,6 +79,8 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account->Tickets->ViewTicketsForAccount($intAccountId);
 			ContextMenu()->Account->Tickets->AddTicket($intAccountId);
 		}
+		
+		ContextMenu()->Account->{"Actions / Notes"}->ActionsAndNotesCreatorPopup($intAccountId, null, null, "$intAccountId - ". $objAccount->getName());
 		
 	}
 	
@@ -407,6 +411,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Retrieve the Account_Group object
 		DBO()->Account->AccountGroupObject = Account_Group::getForId(DBO()->Account->AccountGroup->Value);
+		
+		// Actions built on this page will be associated with an AccountId only
+		DBO()->Action->AccountId = DBO()->Account->Id->Value;
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_overview');

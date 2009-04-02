@@ -41,15 +41,17 @@ class Note extends ORM
 		parent::__construct($arrProperties, $bolLoadById);
 	}
 	
-	public static function createSystemNote($strContent, $intEmployeeId, $intAccountGroupId, $intAccountId, $intServiceId=NULL, $intContactId=NULL)
+	public static function createSystemNote($strContent, $intEmployeeId, $intAccountId=NULL, $intServiceId=NULL, $intContactId=NULL)
 	{
-		return self::createNote(self::SYSTEM_NOTE_TYPE_ID, $strContent, $intEmployeeId, $intAccountGroupId, $intAccountId, $intServiceId, $intContactId);
+		return self::createNote(self::SYSTEM_NOTE_TYPE_ID, $strContent, $intEmployeeId, $intAccountId, $intServiceId, $intContactId);
 	}
 	
 	// Creates the note, and saves it and returns the object
 	// Will throw an Exception on error
 	// Will always return a Note object, if an exception is not thrown
-	public static function createNote($intNoteTypeId, $strContent, $intEmployeeId, $intAccountGroupId, $intAccountId, $intServiceId=NULL, $intContactId=NULL)
+	// $strContent does not currently need to be escaped because the record will be added using a StatementUpdate, which handles the escaping of strings
+	// At least one of $intAccountId, $intServiceId or $intContactId must be specified (not NULL)
+	public static function createNote($intNoteTypeId, $strContent, $intEmployeeId, $intAccountId=NULL, $intServiceId=NULL, $intContactId=NULL)
 	{
 	 	if ($intEmployeeId === NULL)
 	 	{
@@ -61,22 +63,66 @@ class Note extends ORM
 	 	{
 	 		$intNoteTypeId = self::SYSTEM_NOTE_TYPE_ID;
 	 	}
-	 	
-	 	// Insert the note
-	 	$arrData = Array();
-	 	$arrData['Note']			= $strContent;
-	 	$arrData['AccountGroup']	= $intAccountGroupId;
-	 	$arrData['Contact']			= $intContactId;
-	 	$arrData['Account']			= $intAccountId;
-	 	$arrData['Service']			= $intServiceId;
-	 	$arrData['Employee']		= $intEmployeeId;
-	 	$arrData['Datetime']		= Data_Source_Time::currentTimestamp();
-	 	$arrData['NoteType']		= $intNoteTypeId;
 
-		$objNote = new self($arrData);
-		
 		try
 		{
+		 	if ($intAccountId == NULL && $intServiceId == NULL && $intContactId == NULL)
+		 	{
+		 		throw new Exception("Have not specified what account/service/contact owns the note");
+		 	}
+		 	
+		 	// Retrieve an associated account object so we can specify the AccountGroup, because this is a column of the Note table, but will be deprecated soon
+		 	$objAccount = null;
+		 	if ($intAccountId)
+		 	{
+		 		$objAccount = Account::getForId($intAccountId);
+		 		if ($objAccount == NULL)
+		 		{
+		 			throw new Exception("Can't find account: $intAccountId");
+		 		}
+		 	}
+		 	elseif ($intServiceId)
+		 	{
+		 		// This will throw an exception if the service cannot be found
+		 		$objService = Service::getForId($intServiceId);
+		 		
+		 		// This will return NULL if the account cannot be found
+		 		$objAccount = Account::getForId($objService->account);
+		 		if ($objAccount == NULL)
+		 		{
+		 			throw new Exception("Can't find account: {$objService->account}");
+		 		}
+		 	}
+		 	elseif ($intContactId)
+		 	{
+		 		// This will return NULL if the contact cannot be found
+		 		$objContact = Contact::getForId($intContactId);
+		 		if ($objContact == NULL)
+		 		{
+		 			throw new Exception("Can't find contact: $intContactId");
+		 		}
+		 		$objAccount = Account::getForId($objContact->account);
+		 		if ($objAccount == NULL)
+		 		{
+		 			throw new Exception("Can't find account: {$objContact->account}");
+		 		}
+		 	}
+		 	
+		 	// We now have an account object
+		 	
+		 	// Insert the note
+		 	$arrData = Array();
+		 	$arrData['Note']			= $strContent;
+		 	$arrData['AccountGroup']	= $objAccount->accountGroup;
+		 	$arrData['Contact']			= $intContactId;
+		 	$arrData['Account']			= $intAccountId;
+		 	$arrData['Service']			= $intServiceId;
+		 	$arrData['Employee']		= $intEmployeeId;
+		 	$arrData['Datetime']		= Data_Source_Time::currentTimestamp();
+		 	$arrData['NoteType']		= $intNoteTypeId;
+	
+			$objNote = new self($arrData);
+		
 			$objNote->save();
 		}
 		catch (Exception $e)

@@ -125,7 +125,7 @@ class Sales_Sale extends DO_Sales_Sale
 			if (isset($objAccount) && $objAccount !== NULL)
 			{
 				$strNote = "Sale {$this->id} has been cancelled during its cooling off period.\nReason given: $strReason";
-				Note::createSystemNote($strNote, $objDealer->employeeId, $objAccount->accountGroup, $objAccount->id);
+				Note::createSystemNote($strNote, $objDealer->employeeId, $objAccount->id);
 			}
 			
 			$dataSource->commit($strTransactionName);
@@ -184,7 +184,7 @@ class Sales_Sale extends DO_Sales_Sale
 					
 					$objAccount = Account::getForId($objFlexSale->accountId);
 					
-					Note::createSystemNote($strNote, $intEmployeeId, $objAccount->accountGroup, $this->accountId);
+					Note::createSystemNote($strNote, $intEmployeeId, $this->accountId);
 				}
 			}
 		}

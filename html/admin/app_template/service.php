@@ -2717,7 +2717,7 @@ class AppTemplateService extends ApplicationTemplate
 			try
 			{
 				TransactionStart();
-				$objService = Service::getForId(intval(DBO()->Service->Id->Value), TRUE);
+				$objService = Service::getForId(intval(DBO()->Service->Id->Value));
 				
 				$mixResult = $objService->changePlan(intval(DBO()->NewPlan->Id->Value), $bolStartThisMonth);
 				

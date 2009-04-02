@@ -3327,6 +3327,50 @@ class MenuItems {
 		
 		return self::NEW_FRAMEWORK . "reflex.php/ActionType/Manage/";
 	}
+
+
+	//------------------------------------------------------------------------//
+	// ActionsAndNotesCreatorPopup
+	//------------------------------------------------------------------------//
+	/**
+	 * ActionsAndNotesCreatorPopup()
+	 *
+	 * Compiles the Href (javascript) to execute this functionality
+	 *
+	 * Compiles the Href (javascript) to execute this functionality
+	 * 
+	 * @param	int			$intAccountId		id of the account to associate the notes and actions with
+	 * @param	int			$intServiceId		id of the service to associate the notes and actions with
+	 * @param	int			$intContactId		id of the contact to associate the notes and actions with
+	 * @param	string		$strTitle			Title for the popup (usually the Account Name/number, or the service FNN)
+	 * 
+	 * @return	string							Href(script) to trigger the functionality
+	 * @method
+	 */
+	function ActionsAndNotesCreatorPopup($intAccountId, $intServiceId, $intContactId, $strTitle=null)
+	{
+		$jsonAccountId	= JSON_Services::encode($intAccountId);
+		$jsonServiceId	= JSON_Services::encode($intServiceId);
+		$jsonContactId	= JSON_Services::encode($intContactId);
+		$jsonTitle		= JSON_Services::encode($strTitle);
+		
+		$this->strContextMenuLabel = "Create Actions / Notes";
+		return "javascript:
+if (window.ActionsAndNotes)
+{
+	Flex.ActionsAndNotesCreatorPopup = ActionsAndNotes.createActionsAndNotesCreatorPopup($jsonTitle, $jsonAccountId, $jsonServiceId, $jsonContactId);
+	Flex.ActionsAndNotesCreatorPopup.display();
+}
+else
+{
+	JsAutoLoader.loadScript('javascript/actions_and_notes.js', 	function()
+																{	
+																	Flex.ActionsAndNotesCreatorPopup = ActionsAndNotes.createActionsAndNotesCreatorPopup($jsonTitle, $jsonAccountId, $jsonServiceId, $jsonContactId);
+																	Flex.ActionsAndNotesCreatorPopup.display();
+																});
+}
+";
+	}	
 	
 	//------------------------------------------------------------------------//
 	// BreadCrumb

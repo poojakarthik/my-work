@@ -77,6 +77,12 @@ if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 	$this->Page->AddObject('NoteAdd', COLUMN_TWO, HTML_CONTEXT_PAGE, "NoteAddDiv");
 }
 
+if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+{
+	$this->Page->AddObject('ActionsAndNotesCreator', COLUMN_TWO, HTML_CONTEXT_PAGE, "ActionAddDiv");
+}
+
+
 $this->Page->AddObject('NoteList', COLUMN_TWO, HTML_CONTEXT_PAGE, "NoteListDiv");
 $this->Page->AddObject('AccountServicesList', COLUMN_THREE, HTML_CONTEXT_PAGE, "AccountServicesDiv");
 ?>

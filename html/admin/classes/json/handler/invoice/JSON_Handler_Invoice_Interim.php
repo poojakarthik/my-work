@@ -400,7 +400,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$fltGrandTotal	= number_format($objInvoice->Total + $objInvoice->Tax, 2, '.', '');
 				$strAn			= ($objInvoiceRun->invoice_run_type_id === INVOICE_RUN_TYPE_INTERIM) ? 'An' : 'A';
 				$strContent		= $strAn." ".GetConstantDescription($objInvoiceRun->invoice_run_type_id, 'invoice_run_type') . " has been generated to the value of \${$fltGrandTotal}";
-				Note::createSystemNote($strContent, Flex::getUserId(), $objInvoice->AccountGroup, $objInvoice->Account);
+				Note::createSystemNote($strContent, Flex::getUserId(), $objInvoice->Account);
 				
 				// Commit the Transaction
 				DataAccess::getDataAccess()->TransactionCommit();
