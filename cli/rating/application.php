@@ -314,17 +314,17 @@
 		}
 
 		$arrCDR['Cost'] 	= (float)$arrCDR['Cost'];
-		$mixCDR['Charge'] 	= (float)$arrCDR['Charge'];
+		$arrCDR['Charge'] 	= (float)$arrCDR['Charge'];
 
 		//Debug($arrCDR);
 
 		// Does this call qualify for a discount?
 		$arrCDRTotalDetails	= Array();
 		$bolDiscount		= FALSE;
-		if (!$this->_selCDRTotalDetails->Execute($mixCDR))
+		if (!$this->_selCDRTotalDetails->Execute($arrCDR))
 		{
 			// Error
-			CliEcho("Service {$mixCDR['Service']} not found!");
+			CliEcho("Service {$arrCDR['Service']} not found!");
 			return FALSE;
 		}
 		else
