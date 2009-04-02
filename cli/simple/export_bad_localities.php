@@ -137,8 +137,11 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 		$bolPerfectMatch	= false;
 		foreach ($arrLocalities as $intLocalityIndex=>$arrLocality)
 		{
+			$strInvalidLocality	= preg_replace("/[^A-Z0-9]/i", '', $strLocality);
+			$strValidLocality	= preg_replace("/[^A-Z0-9]/i", '', $arrLocality[ADDRESS_FIELD_LOCALITY]);
+			
 			$bolPostcodeMatch	= ($intPostcode === $arrLocality[ADDRESS_FIELD_POSTCODE]);
-			$bolLocalityMatch	= ($strLocality === $arrLocality[ADDRESS_FIELD_LOCALITY]);
+			$bolLocalityMatch	= ($strInvalidLocality === $strValidLocality);
 			$bolStateMatch		= ($strState === null || $strState === $arrLocality[ADDRESS_FIELD_STATE]);
 			
 			if ($bolPostcodeMatch && $bolLocalityMatch && $bolStateMatch)
@@ -155,12 +158,8 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 			else
 			{
 				// How close are the Locality names?
-				$strInvalidLocality	= preg_replace("/[^A-Za-z0-9]/i", '', $strLocality);
-				$strValidLocality	= preg_replace("/[^A-Za-z0-9]/i", '', $arrLocality[ADDRESS_FIELD_LOCALITY]);
-				
 				$intDifference		= levenshtein($strInvalidLocality, $strValidLocality);
 				$intMaxDifferences	= ceil(strlen($strInvalidLocality) / LEVENSHTEIN_DIVISOR);
-				
 				
 				// Is it a close Locality match AND the same Postcode?
 				if ($intDifference < $intMaxDifferences && $bolPostcodeMatch)
