@@ -143,7 +143,7 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 					$bolPerfectMatch	= true;
 					$strLogBuffer		.= "\t\t[+] Perfect match found!\n";
 				}
-				continue 2;
+				break;
 			}
 			else
 			{
