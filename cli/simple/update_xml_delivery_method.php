@@ -65,7 +65,7 @@ if ($resInvoiceRun->numRows())
 				$strDueDate			= date("j M y", strtotime($arrInvoice['DueOn']));
 				$strNewFileContents	=	preg_replace
 										(
-											"/(\<DueDate\>)(*)(\<\/DueDate\>)/is",
+											"/(\<DueDate\>)(\d{1,2}\ [a-z]{3}\ \d{2})(\<\/DueDate\>)/is",
 											"<DueDate>{$strDueDate}</DueDate>",
 											$strNewFileContents,
 											1
