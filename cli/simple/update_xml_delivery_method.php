@@ -106,14 +106,6 @@ if ($resInvoiceRun->rowCount())
 		{
 			unlink($strPath);
 		}
-		foreach ($arrReplacementFiles as $strPath)
-		{
-			unlink($strPath);
-		}
-		foreach ($arrReplacementFiles as $strPath)
-		{
-			unlink($strPath);
-		}
 		
 		throw $eException;
 	}
