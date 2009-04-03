@@ -23,7 +23,7 @@ $arrBatchWriteFiles		= array();
 
 // Load Invoices from the DB
 $intInvoiceRunId	= (int)$arvg[1];
-$resInvoiceRun		= $dbConnection->query("SELECT Invoice.* FROM InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id WHERE Id = {$intInvoiceRunId}");
+$resInvoiceRun		= $dbConnection->query("SELECT Invoice.* FROM InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id WHERE InvoiceRun.Id = {$intInvoiceRunId}");
 if (PEAR::isError($resInvoiceRun))
 {
 	throw new Exception("MDB2 Error: ".$resInvoiceRun->getMessage()." \n\n Native Message: ".$resInvoiceRun->getUserInfo());
