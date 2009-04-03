@@ -26,7 +26,7 @@ $intInvoiceRunId	= (int)$arvg[1];
 $resInvoiceRun		= $dbConnection->query("SELECT Id FROM InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id WHERE Id = {$intInvoiceRunId}");
 if (PEAR::isError($resInvoiceRun))
 {
-	throw new Exception("MDB2 Error: ".$resInvoiceRun->getMessage()." \n\n Native Message: ".$resInvoiceRun->getUserError());
+	throw new Exception("MDB2 Error: ".$resInvoiceRun->getMessage()." \n\n Native Message: ".$resInvoiceRun->getUserInfo());
 }
 if ($resInvoiceRun->rowCount())
 {
