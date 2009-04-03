@@ -22,7 +22,7 @@ $arrReplacementFiles	= array();
 $arrBatchWriteFiles		= array();
 
 // Load Invoices from the DB
-$intInvoiceRunId	= (int)$arvg[1];
+$intInvoiceRunId	= (int)$argv[1];
 $resInvoiceRun		= $dbConnection->query("SELECT Invoice.* FROM InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id WHERE InvoiceRun.Id = {$intInvoiceRunId}");
 if (PEAR::isError($resInvoiceRun))
 {
@@ -120,7 +120,7 @@ if ($resInvoiceRun->rowCount())
 }
 else
 {
-	throw new Exception("No Invoices for Invoice Run Id '{$arvg[1]}'");
+	throw new Exception("No Invoices for Invoice Run Id '{$argv[1]}'");
 }
 
 
