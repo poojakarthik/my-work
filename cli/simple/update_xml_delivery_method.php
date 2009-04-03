@@ -4,7 +4,7 @@ require_once("../../lib/classes/Flex.php");
 Flex::load();
 
 /* CONFIG */
-define('INVOICE_WHERE'	, "DeliveryMethod = ".DELIVERY_METHOD_DO_NOT_SEND);
+define('INVOICE_WHERE'	, "DeliveryMethod IN (".DELIVERY_METHOD_DO_NOT_SEND.", ".DELIVERY_METHOD_POST.")");
 
 define('XML_PATH'		, Flex::getBase().'files/invoices/xml/');
 
