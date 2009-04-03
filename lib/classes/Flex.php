@@ -15,7 +15,7 @@ final class Flex
 		// TODO :: Login to application
 	}
 
-	function continueSession($sessionName=self::FLEX_CUSTOMER_SESSION)
+	public static function continueSession($sessionName=self::FLEX_CUSTOMER_SESSION)
 	{
 		// Start the session
 		session_cache_limiter('private');
