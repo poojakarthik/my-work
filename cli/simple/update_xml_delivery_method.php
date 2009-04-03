@@ -42,6 +42,7 @@ if ($resInvoiceRun->numRows())
 			{
 				$arrModifiedFiles[]	= $strXMLPath;
 				$strFileContents	= file_get_contents($strXMLPath);
+				$strNewFileContents	= $strFileContents;
 				
 				if ((int)$arrInvoice['DeliveryMethod'] === DELIVERY_METHOD_EMAIL_SENT)
 				{
@@ -52,9 +53,9 @@ if ($resInvoiceRun->numRows())
 				$strDeliveryMethod	= Constant_Group::getConstantGroup('delivery_method')->getConstantAlias((int)$arrInvoice['DeliveryMethod']);
 				$strNewFileContents	=	preg_replace
 										(
-											"/(\<DeliveryMethod\>)([\w]+)(</DeliveryMethod>)/is",
+											"/(\<DeliveryMethod\>)([\w]+)(\<\/DeliveryMethod\>)/is",
 											"<DeliveryMethod>{$strDeliveryMethod}</DeliveryMethod>",
-											$strFileContents,
+											$strNewFileContents,
 											1
 										);
 										
@@ -64,7 +65,7 @@ if ($resInvoiceRun->numRows())
 				$strDueDate			= date("j M y", strtotime($arrInvoice['DueOn']));
 				$strNewFileContents	=	preg_replace
 										(
-											"/(\<DueDate\>)(*)(</DueDate>)/is",
+											"/(\<DueDate\>)(*)(\<\/DueDate\>)/is",
 											"<DueDate>{$strDueDate}</DueDate>",
 											$strNewFileContents,
 											1
