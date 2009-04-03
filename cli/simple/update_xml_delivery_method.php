@@ -34,7 +34,7 @@ if ($resInvoiceRun->numRows())
 	{
 		while ($arrInvoice = $resInvoiceRun->fetchRow())
 		{
-			Log::getLog()->log(" [*] Updating Invoice #{$arrInvoice['id']}/Account #{$arrInvoice['Account']}...");
+			Log::getLog()->log(" [*] Updating Invoice #{$arrInvoice['Id']}/Account #{$arrInvoice['Account']}...");
 			
 			// Find the XML file for this Invoice
 			$strXMLPath	= XML_PATH.$intInvoiceRunId."/{$arrInvoice['Account']}.xml";
