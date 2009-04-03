@@ -28,7 +28,7 @@ if (PEAR::isError($resInvoiceRun))
 {
 	throw new Exception("MDB2 Error: ".$resInvoiceRun->getMessage()." \n\n Native Message: ".$resInvoiceRun->getUserInfo());
 }
-if ($resInvoiceRun->rowCount())
+if ($resInvoiceRun->numRows())
 {
 	try
 	{
