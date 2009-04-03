@@ -373,7 +373,7 @@ class Invoice extends ORM
 			$objDeliveryMethod			= Delivery_Method::getForId($objAccount->BillingMethod);
 			$objCustomerGroupSettings	= $objDeliveryMethod->getCustomerGroupSettings($objAccount->CustomerGroup);
 			
-			$this->DeliveryMethod		= ($objCustomerGroupSettings->minimum_invoice_value <= $this->Balance) ? $objAccount->BillingMethod : DELIVERY_METHOD_DO_NOT_SEND;
+			$this->DeliveryMethod		= ($objCustomerGroupSettings->minimum_invoice_value <= $this->TotalOwing) ? $objAccount->BillingMethod : DELIVERY_METHOD_DO_NOT_SEND;
 		}
 		
 		Log::getLog()->log("Account Delivery Method: ".$objDeliveryMethod->name);
