@@ -89,6 +89,8 @@ if (!$resOutputFile = @fopen(CONVERSION_OUTPUT_PATH, 'w'))
 	throw new Exception(print_r(error_get_last(), true));
 }
 
+fputcsv($resOutputFile, array('Flex Reference', 'Current Locality', 'Current Postcode', 'Current State', 'Correct Locality', 'Correct Postcode', 'Correct State'));
+
 // Process each Address Table
 $intTotalCount		= 0;
 $intTotalPerfect	= 0;
@@ -124,10 +126,10 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 		
 		$arrAddressOutput	=	array
 								(
-									'Id'		=> $strPhysicalTableName.'.'.$arrDefinition[LOCAL_FIELD_ID].': '.(int)$arrAddress[LOCAL_FIELD_ID],
-									'Current: ',
-									'Locality'	=> "{$strLocality}   ".($strState ? "{$strState}   " : '').str_pad($intPostcode, 4, '0', STR_PAD_LEFT),
-									'Suggestions: '
+									'Id'				=> $strPhysicalTableName.'.'.$arrDefinition[LOCAL_FIELD_ID].': '.(int)$arrAddress[LOCAL_FIELD_ID],
+									'Current Locality '	=> $strLocality,
+									'Current Postcode '	=> str_pad($intPostcode, 4, '0', STR_PAD_LEFT),
+									'Current State '	=> $strState
 								);
 		
 		$strLogBuffer	= "\t[+] {$strFriendlyTableName} #".$arrAddress[LOCAL_FIELD_ID]."\t: '{$strLocality}'   ".($strState ? $strState : 'UNK')."   ".str_pad($intPostcode, 4, '0', STR_PAD_LEFT)."\n";
@@ -222,7 +224,9 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 			
 			foreach ($arrLocalityMatches as $intLocalityIndex=>$intScore)
 			{
-				$arrAddressOutput[]	= $arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY]."'   ".$arrLocalities[$intLocalityIndex][ADDRESS_FIELD_STATE]."   ".str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT);
+				$arrAddressOutput[]	= $arrLocalities[$intLocalityIndex][ADDRESS_FIELD_LOCALITY];
+				$arrAddressOutput[]	= str_pad($arrLocalities[$intLocalityIndex][ADDRESS_FIELD_POSTCODE], 4, '0', STR_PAD_LEFT);
+				$arrAddressOutput[]	= $arrLocalities[$intLocalityIndex][ADDRESS_FIELD_STATE];
 			}
 			fputcsv($resOutputFile, $arrAddressOutput);
 		}
@@ -233,8 +237,8 @@ foreach ($arrAddressTables as $strTable=>$arrDefinition)
 		}
 	}
 	
-	$intTotalCount		= $intCount;
-	$intTotalPerfect	= $intPerfect;
+	$intTotalCount		+= $intCount;
+	$intTotalPerfect	+= $intPerfect;
 	SendEmail('rdavis@ybs.net.au', "Locality Totals for '{$strFriendlyTableName}'", "Table\t: {$strFriendlyTableName}\nTotal\t: {$intCount}\nPerfect\t: {$intPerfect}");
 }
 
