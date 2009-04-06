@@ -784,7 +784,7 @@ class Invoice extends ORM
 		}
 
 		// Remove service_total_service Records
-		if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Id = service_total_id)") === FALSE)
+		if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->invoice_run_id} AND Account = {$this->Account} AND Id = service_total_id)") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}

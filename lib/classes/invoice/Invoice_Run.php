@@ -486,9 +486,9 @@ class Invoice_Run
 	 *
 	 * @method
 	 */
-	public function revoke()
+	public function revoke($bolOptimised=true)
 	{
-		//Log::getLog()->log(" * ENTERING revoke()...");
+		Log::getLog()->log(" * Revoking Invoice Run with Id {$this->Id}...");
 
 		// Is this InvoiceRun Temporary?
 		if (!in_array($this->invoice_run_status_id, Array(INVOICE_RUN_STATUS_TEMPORARY, INVOICE_RUN_STATUS_GENERATING)))
@@ -497,25 +497,104 @@ class Invoice_Run
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
 
-		// Init variables
+		if ($bolOptimised)
+		{
+			// Revoke Invoice Run as a whole
+			$this->_revokeOptimised();
+		}
+		else
+		{
+			// Init variables
+			static	$qryQuery;
+			$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
+			
+			// Get list of Invoices to Revoke
+			Log::getLog()->log(" * Getting list of Invoices to Revoke...");
+			$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
+			if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
+			{
+				throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
+			}
+			while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
+			{
+				// Revoke each Invoice
+				$objInvoice = new Invoice($arrInvoice);
+				Log::getLog()->log(" * Revoking Invoice with Id {$objInvoice->Id} (Account #{$objInvoice->Account})...");
+				$objInvoice->revoke();
+			}
+	
+			// Remove entry from the InvoiceRun table
+			Log::getLog()->log(" * Removing Invoice Run with Id {$this->Id}");
+			if ($qryQuery->Execute("DELETE FROM InvoiceRun WHERE Id = {$this->Id}") === FALSE)
+			{
+				throw new Exception("DB ERROR: ".$qryQuery->Error());
+			}
+		}
+	}
+	
+	private function _revokeOptimised()
+	{
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 
-		// Get list of Invoices to Revoke
-		Log::getLog()->log(" * Getting list of Invoices to Revoke...");
-		$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
-		if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
+		// Change CDR Statuses back to CDR_RATED
+		$updCDRRevoke	= self::_preparedStatement('updCDRRevoke');
+		if ($updCDRRevoke->Execute(Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED), $this->toArray()) === FALSE)
 		{
-			throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
-		}
-		while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
-		{
-			// Revoke each Invoice
-			$objInvoice = new Invoice($arrInvoice);
-			Log::getLog()->log(" * Revoking Invoice with Id {$objInvoice->Id}...");
-			$objInvoice->revoke();
+			throw new Exception($updCDRRevoke->Error());
 		}
 
+		// Remove Billing-Time Charges
+		$arrModules	= Billing_Charge::getModules();
+		foreach ($arrModules as $intCustomerGroup=>$arrModuleTypes)
+		{
+			foreach ($arrModuleTypes as $strModuleType=>$arrModules)
+			{
+				foreach ($arrModules as $chgModule)
+				{
+					// Revoke charge
+					$mixResult = $chgModule->RevokeAll($this);
+				}
+			}
+		}
+
+		// Remove Plan Charges
+		if ($qryQuery->Execute("DELETE FROM Charge WHERE ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND invoice_run_id = {$this->Id}") === FALSE)
+		{
+			throw new Exception($qryQuery->Error());
+		}
+
+		// Change Charge Statuses back to CHARGE_APPROVED
+		$updChargeRevoke	= self::_preparedStatement('updChargeRevoke');
+		if ($updChargeRevoke->Execute(Array('Status' => CHARGE_APPROVED, 'invoice_run_id' => NULL), $this->toArray()) === FALSE)
+		{
+			throw new Exception($updChargeRevoke->Error());
+		}
+
+		// Remove service_total_service Records
+		if ($qryQuery->Execute("DELETE FROM service_total_service WHERE service_total_id = (SELECT Id FROM ServiceTotal WHERE invoice_run_id = {$this->Id} AND Id = service_total_id)") === FALSE)
+		{
+			throw new Exception("DB ERROR: ".$qryQuery->Error());
+		}
+
+		// Remove ServiceTotal Records
+		if ($qryQuery->Execute("DELETE FROM ServiceTotal WHERE invoice_run_id = {$this->Id}") === FALSE)
+		{
+			throw new Exception("DB ERROR: ".$qryQuery->Error());
+		}
+
+		// Remove ServiceTypeTotal Records
+		if ($qryQuery->Execute("DELETE FROM ServiceTypeTotal WHERE invoice_run_id = {$this->Id}") === FALSE)
+		{
+			throw new Exception("DB ERROR: ".$qryQuery->Error());
+		}
+
+		// Remove Invoice Record
+		if ($qryQuery->Execute("DELETE FROM Invoice WHERE invoice_run_id = {$this->Id}") === FALSE)
+		{
+			throw new Exception("DB ERROR: ".$qryQuery->Error());
+		}
+		
 		// Remove entry from the InvoiceRun table
 		Log::getLog()->log(" * Removing Invoice Run with Id {$this->Id}");
 		if ($qryQuery->Execute("DELETE FROM InvoiceRun WHERE Id = {$this->Id}") === FALSE)
@@ -531,7 +610,7 @@ class Invoice_Run
 	 *
 	 * @method
 	 */
-	public function commit($bolOptimisedCommit=true)
+	public function commit($bolOptimised=true)
 	{
 		Log::getLog()->log(" * Committing Invoice Run with Id {$this->Id}...");
 
@@ -542,7 +621,7 @@ class Invoice_Run
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
 		
-		if ($bolOptimisedCommit)
+		if ($bolOptimised)
 		{
 			// Commit Invoice Run as a whole
 			$this->_commitOptimised();
@@ -1209,6 +1288,12 @@ class Invoice_Run
 					break;
 
 				// UPDATES
+				case 'updCDRRevoke':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("CDR", "invoice_run_id = <invoice_run_id> AND Status = ".CDR_TEMP_INVOICE, Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED));
+					break;
+				case 'updChargeRevoke':
+					$arrPreparedStatements[$strStatement]	= new StatementUpdate("Charge", "invoice_run_id = <invoice_run_id> AND Status = ".CHARGE_TEMP_INVOICE, Array('invoice_run_id'=>NULL, 'Status'=>CHARGE_APPROVED));
+					break;
 
 				default:
 					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
