@@ -92,13 +92,13 @@ class HtmlTemplateUserLogin extends HtmlTemplate
 		</div>
 		<div class='PropertyInputControlContainer'>
 			<div class='PropertyInputControlLabel'>Password</div>
-			<input type='password' name='Password' class='PropertyInputControl'></input>
+			<input type='password' name='Password' class='PropertyInputControl' onkeypress='if ((event.which && event.which == 13) || (event.keyCode && event.keyCode == 13)) Vixen.Login.Submit();'></input>
 			<div class='PropertyInputControlClear'></div>
 		</div>
 	</div>
 	<div style='float:right;padding:3px 0px'>
+		<input type='button' value='   OK   ' onclick='Vixen.Login.Submit()'></input>
 		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)' ></input>
-		<input type='button' value='Ok' onclick='Vixen.Login.Submit()'></input>
 	</div>
 	<div style='float:none;clear:both;'></div>
 </form>
