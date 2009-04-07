@@ -29,7 +29,7 @@ class Application_Handler_File extends Application_Handler
 			
 			if (!$objDocumentContent || !$objDocumentContent->content)
 			{
-				throw new Exception();
+				throw new Exception("No content for Document '{$objDocument->id}'");
 			}
 			
 			$objDocumentFileType	= new File_Type(array('id'=>$objDocumentContent->file_type_id), true);
@@ -44,6 +44,8 @@ class Application_Handler_File extends Application_Handler
 		}
 		catch (Exception $eException)
 		{
+			throw $eException;
+			
 			// Force a 404
 			header("HTTP/1.0 404 Not Found");
 			exit;
