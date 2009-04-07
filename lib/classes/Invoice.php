@@ -200,6 +200,8 @@ class Invoice extends ORM
 				$fltMinimumCharge	= (float)$arrUsageDetails['MinMonthly'];
 				$fltUsageStart		= (float)$arrUsageDetails['ChargeCap'];
 				$fltUsageLimit		= (float)$arrUsageDetails['UsageCap'];
+			
+				$arrPlanDetails		= $arrUsageDetails['included_data'];
 			}
 
 			$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
@@ -461,6 +463,8 @@ class Invoice extends ORM
 			$fltMinimumCharge	= (float)$arrUsageDetails['MinMonthly'];
 			$fltUsageStart		= (float)$arrUsageDetails['ChargeCap'];
 			$fltUsageLimit		= (float)$arrUsageDetails['UsageCap'];
+			
+			$arrPlanDetails		= $arrUsageDetails['included_data'];
 		}
 		//--------------------------------------------------------------------//
 
@@ -1063,6 +1067,7 @@ class Invoice extends ORM
 			$fltMinimumCharge	= (float)$arrPlanDetails['MinMonthly'];
 			$fltUsageStart		= (float)$arrPlanDetails['ChargeCap'];
 			$fltUsageLimit		= (float)$arrPlanDetails['UsageCap'];
+			$intIncludedData	= (int)$arrPlanDetails['included_data'];
 			
 			// Scalable Plans
 			if ($arrPlanDetails['Shared'])
@@ -1072,9 +1077,23 @@ class Invoice extends ORM
 				$intMaxServices		= (int)$arrPlanDetails['maximum_services'];
 				if ($intScalable && $intMinServices > 0 && $intMaxServices >= $intMinServices)
 				{
+					Log::getLog()->log("Scaling Plan Charges & Usage: {$strEarliestCDR}");
+					
+					Log::getLog()->log("Native Plan Charge: {$fltMinimumCharge}");
 					$fltMinimumCharge	= ($fltMinimumCharge	/ $intMaxServices) * max($intMaxServices, count($arrServiceIds));
+					Log::getLog()->log("Scaled Plan Charge: {$fltMinimumCharge}");
+					
+					Log::getLog()->log("Native Usage Start: {$fltUsageStart}");
 					$fltUsageStart		= ($fltUsageStart		/ $intMaxServices) * max($intMaxServices, count($arrServiceIds));
+					Log::getLog()->log("Scaled Usage Start: {$fltUsageStart}");
+					
+					Log::getLog()->log("Native Usage Limit: {$fltUsageLimit}");
 					$fltUsageLimit		= ($fltUsageLimit		/ $intMaxServices) * max($intMaxServices, count($arrServiceIds));
+					Log::getLog()->log("Scaled Usage Limit: {$fltUsageLimit}");
+					
+					Log::getLog()->log("Native Included Data: {$intIncludedData}");
+					$intIncludedData	= ($intIncludedData		/ $intMaxServices) * max($intMaxServices, count($arrServiceIds));
+					Log::getLog()->log("Scaled Included Data: {$intIncludedData}");
 				}
 			}
 			
@@ -1155,6 +1174,7 @@ class Invoice extends ORM
 						'MinMonthly'			=> $fltMinimumCharge,
 						'ChargeCap'				=> $fltUsageStart,
 						'UsageCap'				=> $fltUsageLimit,
+						'included_data'			=> $intIncludedData,
 
 						'ArrearsPeriodStart'	=> $intArrearsPeriodStart,
 						'ArrearsPeriodEnd'		=> $intArrearsPeriodEnd
@@ -1269,7 +1289,7 @@ class Invoice extends ORM
 		$strServices	= implode(', ', $arrServiceIds);
 
 		// If there is Included Data on this Plan...
-		$intIncludedData	= $arrPlanDetails['included_data'];
+		$intIncludedData	= (int)$arrPlanDetails['included_data'];
 		if ($intIncludedData > 0)
 		{
 			// Get all CDRs which are on Uncapped Data Rates
