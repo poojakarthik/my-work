@@ -3,8 +3,9 @@
 /**
  * Version 166 of database update.
  * This version: -
- *
- *	1:	Compress all document_content.content data with BZIP2
+ *	
+ *	1:	Add the document_content.uncompressed_file_size Field
+ *	2:	Compress all document_content.content data with BZIP2
  *
  */
 
@@ -16,8 +17,21 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 	{
 		$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 		$dbAdmin->setFetchMode(MDB2_FETCHMODE_ASSOC);
-
-		//	1:	Compress all document_content.content data with BZIP2
+		
+		//	1:	Add the document_content.uncompressed_file_size Field
+		$strSQL = "	ALTER TABLE document_content
+					ADD		uncompressed_file_size	INT			UNSIGNED	NULL	COMMENT 'Unique Identifier',
+					CHANGE	content					MEDIUMBLOB				NULL	COMMENT 'Binary content of the Document (compressed with BZIP2)';";
+		$result = $dbAdmin->query($strSQL);
+		if (PEAR::isError($result))
+		{
+			throw new Exception(__CLASS__ . ' Failed to add the document_content.uncompressed_file_size Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
+		}
+		$this->rollbackSQL[] =	"	ALTER TABLE document_content
+									CHANGE	content					MEDIUMBLOB				NULL	COMMENT 'Binary content of the Document', 
+									DROP	uncompressed_file_size;";
+		
+		//	2:	Compress all document_content.content data with BZIP2
 		$resDocumentContent	= $dbAdmin->query("SELECT * FROM document_content WHERE content IS NOT NULL");
 		if (PEAR::isError($resDocumentContent))
 		{
@@ -49,7 +63,8 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 			}
 			
 			$strUpdateSQL	=	"UPDATE	document_content " .
-								"SET	content	= {$strNewContent} " .
+								"SET	content					= {$strNewContent} ," .
+								"		uncompressed_file_size	= {$intUncompressedFileSize} " .
 								"WHERE	id		= {$intDocumentContentId};";
 			
 			$resDocumentContentUpdate	= $dbAdmin->exec($strUpdateSQL);
