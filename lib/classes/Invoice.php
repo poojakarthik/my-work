@@ -1064,6 +1064,20 @@ class Invoice extends ORM
 			$fltUsageStart		= (float)$arrPlanDetails['ChargeCap'];
 			$fltUsageLimit		= (float)$arrPlanDetails['UsageCap'];
 			
+			// Scalable Plans
+			if ($arrPlanDetails['Shared'])
+			{
+				$intScalable		= (int)$arrPlanDetails['scalable'];
+				$intMinServices		= (int)$arrPlanDetails['minimum_services'];
+				$intMaxServices		= (int)$arrPlanDetails['maximum_services'];
+				if ($intScalable && $intMinServices > 0 && $intMaxServices >= $intMinServices)
+				{
+					$fltMinimumCharge	= ($fltMinimumCharge	/ $intMaxServices) * max($intMaxServices, count($arrServiceIds));
+					$fltUsageStart		= ($fltUsageStart		/ $intMaxServices) * max($intMaxServices, count($arrServiceIds));
+					$fltUsageLimit		= ($fltUsageLimit		/ $intMaxServices) * max($intMaxServices, count($arrServiceIds));
+				}
+			}
+			
 			$arrPlanChargeSteps	= Array();
 			
 			// Yes -- Does this Service have any Invoiced CDRs (or Plan Charges for non-CDR Plans)?
