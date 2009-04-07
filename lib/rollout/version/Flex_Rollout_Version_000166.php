@@ -35,11 +35,17 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 			
 			if (PEAR::isError($strNewContent = $dbAdmin->quote($mixCompressed, 'string')))
 			{
-				throw new Exception(__CLASS__ . ' Failed to quote document_content.content: '. $resDocumentContentUpdate->getMessage() . " (DB Error: " . $resDocumentContentUpdate->getUserInfo() . ")");
+				throw new Exception(__CLASS__ . ' Failed to quote new document_content.content: '. $strNewContent->getMessage() . " (DB Error: " . $strNewContent->getUserInfo() . ")");
 			}
 			if (PEAR::isError($intDocumentContentId = $dbAdmin->quote($arrDocumentContent['id'], 'integer')))
 			{
-				throw new Exception(__CLASS__ . ' Failed to quote document_content.content: '. $resDocumentContentUpdate->getMessage() . " (DB Error: " . $resDocumentContentUpdate->getUserInfo() . ")");
+				throw new Exception(__CLASS__ . ' Failed to quote document_content.id: '. $intDocumentContentId->getMessage() . " (DB Error: " . $intDocumentContentId->getUserInfo() . ")");
+			}
+			
+			// Rollback values
+			if (PEAR::isError($strOldContent = $dbAdmin->quote($arrDocumentContent['content'], 'string')))
+			{
+				throw new Exception(__CLASS__ . ' Failed to quote old document_content.content: '. $strOldContent->getMessage() . " (DB Error: " . $strOldContent->getUserInfo() . ")");
 			}
 			
 			$strUpdateSQL	=	"UPDATE	document_content " .
@@ -54,7 +60,7 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 			
 			$this->rollbackSQL[] =	"UPDATE	document_content " .
 									"SET	content	= ".$dbAdmin->quote($arrDocumentContent['content']	, 'string')." " .
-									"WHERE	id		= ".$dbAdmin->quote($arrDocumentContent['id']		, 'integer').";";
+									"WHERE	id		= {$intDocumentContentId};";
 		}
 	}
 
