@@ -33,9 +33,18 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 				throw new Exception("Unable to compress Content for Document {$arrDocumentContent['document_id']} (Revision: {$arrDocumentContent['id']}): Error #{$mixCompressed}");
 			}
 			
+			if (PEAR::isError($strNewContent = $dbAdmin->quote($mixCompressed, 'string')))
+			{
+				throw new Exception(__CLASS__ . ' Failed to quote document_content.content: '. $resDocumentContentUpdate->getMessage() . " (DB Error: " . $resDocumentContentUpdate->getUserInfo() . ")");
+			}
+			if (PEAR::isError($intDocumentContentId = $dbAdmin->quote($arrDocumentContent['id'], 'integer')))
+			{
+				throw new Exception(__CLASS__ . ' Failed to quote document_content.content: '. $resDocumentContentUpdate->getMessage() . " (DB Error: " . $resDocumentContentUpdate->getUserInfo() . ")");
+			}
+			
 			$strUpdateSQL	=	"UPDATE	document_content " .
-								"SET	content	= ".$dbAdmin->quote($mixCompressed				, 'string')." " .
-								"WHERE	id		= ".$dbAdmin->quote($arrDocumentContent['id']	, 'integer').";";
+								"SET	content	= {$strNewContent} " .
+								"WHERE	id		= {$intDocumentContentId};";
 			
 			$resDocumentContentUpdate	= $dbAdmin->exec($strUpdateSQL);
 			if (PEAR::isError($resDocumentContentUpdate))
