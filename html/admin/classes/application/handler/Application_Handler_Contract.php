@@ -8,7 +8,7 @@ class Application_Handler_Contract extends Application_Handler
 	public function ManageBreached($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
 		// Build List of Breached Contracts and their recommended actions
 		try

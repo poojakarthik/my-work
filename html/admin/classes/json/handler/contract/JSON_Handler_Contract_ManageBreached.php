@@ -7,7 +7,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 	public function waive($intContractId, $strReason)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
 		try
 		{
@@ -54,7 +54,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 	public function apply($intContractId, $strReason, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
 		try
 		{
@@ -163,7 +163,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 	}
 
 	// Adds a System Note detailing the Charges
-	public function _addFeesNote($objService, $intRatePlan, $strReason, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee)
+	private function _addFeesNote($objService, $intRatePlan, $strReason, $fltPayoutPercentage, $fltPayoutFee, $fltExitFee)
 	{
 		$objRatePlan			= new Rate_Plan(Array('Id'=>$intRatePlan), TRUE);
 		$objExitChargeType		= Charge_Type::getContractExitFee();
