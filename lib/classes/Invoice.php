@@ -201,7 +201,7 @@ class Invoice extends ORM
 				$fltUsageStart		= (float)$arrUsageDetails['ChargeCap'];
 				$fltUsageLimit		= (float)$arrUsageDetails['UsageCap'];
 			
-				$arrPlanDetails		= $arrUsageDetails['included_data'];
+				$arrPlanDetails['included_data']	= $arrUsageDetails['included_data'];
 			}
 
 			$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
@@ -464,7 +464,7 @@ class Invoice extends ORM
 			$fltUsageStart		= (float)$arrUsageDetails['ChargeCap'];
 			$fltUsageLimit		= (float)$arrUsageDetails['UsageCap'];
 			
-			$arrPlanDetails		= $arrUsageDetails['included_data'];
+			$arrPlanDetails['included_data']	= $arrUsageDetails['included_data'];
 		}
 		//--------------------------------------------------------------------//
 
