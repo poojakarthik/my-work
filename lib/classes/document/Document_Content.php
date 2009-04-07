@@ -151,7 +151,7 @@ class Document_Content extends ORM
 			// Error
 			throw new Exception("Unable to decompress Content for Document {$this->document_id} (Revision: ".($this->id ? $this->id : 'Unsaved')."): Error #{$mixDecompressed}");
 		}
-		throw new Exception(">>>\n".$mixDecompressed."\n<<<");
+		//throw new Exception(">>>\n".$mixDecompressed."\n<<<");
 		return $mixDecompressed;
 	}
 	
