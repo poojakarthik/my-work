@@ -39,7 +39,7 @@ class Document_Content extends ORM
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
 		
-		$this->content			= ($this->content && $bolLoadById) ? $this->_decompressContent($this->content) : $this->content;
+		$this->content			= ($this->content) ? $this->_decompressContent($this->content) : $this->content;
 		$this->bolHasContent	= ($this->content) ? true : false;
 		$this->intContentSize	= ($this->content) ? mb_strlen($this->content) : 0;
 	}
