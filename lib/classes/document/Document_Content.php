@@ -13,6 +13,8 @@ class Document_Content extends ORM
 	
 	protected			$_bolCanSave			= true;
 	
+	private				$_strDecompressedContent	= null;
+	
 	public				$bolHasContent;
 	public				$intContentSize;
 	
@@ -37,6 +39,7 @@ class Document_Content extends ORM
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
 		
+		$this->content			= ($this->content && $bolLoadById) ? $this->_decompressContent($this->content) : $this->content;
 		$this->bolHasContent	= ($this->content) ? true : false;
 		$this->intContentSize	= ($this->content) ? mb_strlen($this->content) : 0;
 	}
@@ -117,6 +120,9 @@ class Document_Content extends ORM
 	{
 		if ($this->_bolCanSave)
 		{
+			// BZIP the Content
+			$this->content	= $this->_compressContent($this->content);
+			
 			parent::save();
 		}
 		else
@@ -124,6 +130,28 @@ class Document_Content extends ORM
 			// You cannot save a Details-only Document_Content
 			throw new Exception("You cannot save a Document_Content object which has been loaded in Details-Only Mode");
 		}
+	}
+	
+	private function _compressContent($mixValue)
+	{
+		$mixCompressed	= bzcompress($mixValue);
+		if (is_int($mixCompressed))
+		{
+			// Error
+			throw new Exception("Unable to compress Content for Document {$this->document_id} (Revision: ".($this->id ? $this->id : 'Unsaved')."): Error #{$mixCompressed}");
+		}
+		return $mixCompressed;
+	}
+	
+	private function _decompressContent($mixValue)
+	{
+		$mixDecompressed	= bzdecompress($mixValue);
+		if (is_int($mixDecompressed))
+		{
+			// Error
+			throw new Exception("Unable to decompress Content for Document {$this->document_id} (Revision: ".($this->id ? $this->id : 'Unsaved')."): Error #{$mixDecompressed}");
+		}
+		return $mixDecompressed;
 	}
 	
 	/**
