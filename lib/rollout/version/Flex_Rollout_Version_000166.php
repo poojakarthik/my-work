@@ -33,7 +33,7 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 				throw new Exception("Unable to compress Content for Document {$arrDocumentContent['document_id']} (Revision: {$arrDocumentContent['id']}): Error #{$mixCompressed}");
 			}
 			
-			if (PEAR::isError($strNewContent = $dbAdmin->quote($mixCompressed, 'string')))
+			if (PEAR::isError($strNewContent = $dbAdmin->quote($mixCompressed, 'text')))
 			{
 				throw new Exception(__CLASS__ . ' Failed to quote new document_content.content: '. $strNewContent->getMessage() . " (DB Error: " . $strNewContent->getUserInfo() . ")");
 			}
@@ -43,7 +43,7 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 			}
 			
 			// Rollback values
-			if (PEAR::isError($strOldContent = $dbAdmin->quote($arrDocumentContent['content'], 'string')))
+			if (PEAR::isError($strOldContent = $dbAdmin->quote($arrDocumentContent['content'], 'text')))
 			{
 				throw new Exception(__CLASS__ . ' Failed to quote old document_content.content: '. $strOldContent->getMessage() . " (DB Error: " . $strOldContent->getUserInfo() . ")");
 			}
@@ -59,7 +59,7 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 			}
 			
 			$this->rollbackSQL[] =	"UPDATE	document_content " .
-									"SET	content	= ".$dbAdmin->quote($arrDocumentContent['content']	, 'string')." " .
+									"SET	content	= {$strOldContent} " .
 									"WHERE	id		= {$intDocumentContentId};";
 		}
 	}
