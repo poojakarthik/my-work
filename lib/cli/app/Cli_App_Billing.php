@@ -118,11 +118,17 @@ class Cli_App_Billing extends Cli
 						throw new Exception("You must supply an Invoice Run Id when running REGENERATE!");
 					}
 					
+					$objOldInvoiceRun	= new Invoice_Run(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
+					if ($objOldInvoiceRun->invoice_run_status_id != INVOICE_RUN_STATUS_TEMPORARY)
+					{
+						throw new Exception("Cannot Regenerate Invoice Run #{$objOldInvoiceRun->Id} because it is not a Temporary Invoice Run! (Actual Status: ".Constant_Group::getConstantGroup('invoice_run_status')->getConstantName($objOldInvoiceRun->invoice_run_status_id).")");
+					}
+					
 					if ($this->_arrArgs[self::SWITCH_ACCOUNT_ID])
 					{
 						// Regenerating a single Invoice
 						$objAccount		= new Account(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID]), FALSE, TRUE);
-						$objInvoiceRun	= new Invoice_Run(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
+						$objInvoiceRun	= $objOldInvoiceRun;
 						$objInvoiceRun->calculateBillingPeriodDates($objInvoiceRun->BillingDate);
 						
 						//$this->debug($objAccount->toArray());
@@ -141,8 +147,6 @@ class Cli_App_Billing extends Cli
 					else
 					{
 						// Regenerating an entire InvoiceRun
-						$objOldInvoiceRun	= new Invoice_Run(Array('Id'=>(int)$this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
-						
 						$objInvoiceRun	= new Invoice_Run();
 						$objInvoiceRun->generateCustomerGroup($objOldInvoiceRun->customer_group_id, $objOldInvoiceRun->invoice_run_type_id, strtotime($objOldInvoiceRun->BillingDate), $objOldInvoiceRun->invoice_run_schedule_id);
 						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id));
