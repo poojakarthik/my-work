@@ -129,9 +129,11 @@ class Document_Content extends ORM
 			parent::__set('uncompressed_file_size', ($this->content === null) ? null : strlen($this->content));
 			
 			// BZIP the Content
-			$this->content	= $this->_compressContent($this->content);
+			$strUncompressedContent	= $this->content;
+			$this->content			= $this->_compressContent($this->content);
 			
 			parent::save();
+			$this->content			= $strUncompressedContent;
 		}
 		else
 		{
