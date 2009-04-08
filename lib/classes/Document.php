@@ -154,7 +154,6 @@ class Document extends ORM
 			$arrDocumentContent					= $resRevision->fetch_assoc();
 			$objDocumentContent					= new Document_Content($arrDocumentContent, false, $bolDetailsOnly);
 			$objDocumentContent->bolHasContent	= (bool)$arrDocumentContent['has_content'];
-			$objDocumentContent->intContentSize	= (int)$arrDocumentContent['uncompressed_file_size'];
 			
 			return $objDocumentContent;
 		}
