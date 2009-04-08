@@ -39,13 +39,13 @@ class Document_Content extends ORM
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
 		
+		throw new Exception(print_r($this->_arrProperties, true));
+		
 		$this->content			= ($this->content) ? $this->_decompressContent($this->content) : $this->content;
 		$this->bolHasContent	= ($this->content) ? true : false;
 		
 		$this->_arrProperties['uncompressed_file_size']	= ($this->content === null) ? null : strlen($this->content);
 		$this->intContentSize	= $this->uncompressed_file_size;
-		
-		throw new Exception(print_r($this->_arrProperties, true));
 	}
 	
 	/**
