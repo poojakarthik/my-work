@@ -20,7 +20,7 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 		
 		//	1:	Add the document_content.uncompressed_file_size Field
 		$strSQL = "	ALTER TABLE document_content
-					ADD		uncompressed_file_size	INT			UNSIGNED	NULL	COMMENT 'Unique Identifier',
+					ADD		uncompressed_file_size	INT			UNSIGNED	NULL	COMMENT 'Size in Bytes of the uncompressed Content',
 					MODIFY	content					MEDIUMBLOB				NULL	COMMENT 'Binary content of the Document (compressed with BZIP2)';";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
