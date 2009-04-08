@@ -153,7 +153,6 @@ class Document extends ORM
 		{
 			$arrDocumentContent					= $resRevision->fetch_assoc();
 			$objDocumentContent					= new Document_Content($arrDocumentContent, false, $bolDetailsOnly);
-			throw new Exception(print_r($objDocumentContent->toArray(), true)."\n\n".print_r($arrDocumentContent, true));
 			$objDocumentContent->bolHasContent	= (bool)$arrDocumentContent['has_content'];
 			
 			return $objDocumentContent;
