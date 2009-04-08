@@ -38,7 +38,7 @@ class Document_Content extends ORM
 		
 		if ($arrProperties)
 		{
-			//throw new Exception(print_r($arrProperties, true));
+			throw new Exception(print_r($arrProperties, true));
 		}
 		
 		// Parent constructor
