@@ -51,6 +51,10 @@ class Flex_Rollout_Version_000166 extends Flex_Rollout_Version
 			{
 				throw new Exception(__CLASS__ . ' Failed to quote new document_content.content: '. $strNewContent->getMessage() . " (DB Error: " . $strNewContent->getUserInfo() . ")");
 			}
+			if (PEAR::isError($intUncompressedFileSize = $dbAdmin->quote(strlen($arrDocumentContent['content']), 'integer')))
+			{
+				throw new Exception(__CLASS__ . ' Failed to quote document_content.uncompressed_file_size: '. $strNewContent->getMessage() . " (DB Error: " . $strNewContent->getUserInfo() . ")");
+			}
 			if (PEAR::isError($intDocumentContentId = $dbAdmin->quote($arrDocumentContent['id'], 'integer')))
 			{
 				throw new Exception(__CLASS__ . ' Failed to quote document_content.id: '. $intDocumentContentId->getMessage() . " (DB Error: " . $intDocumentContentId->getUserInfo() . ")");
