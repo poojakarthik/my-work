@@ -150,7 +150,6 @@ class JSON_Handler_Document extends JSON_Handler
 			
 			// Load the children
 			$arrChildren					= Document::getChildrenForId($intDocumentId, true);
-			throw new Exception(count($arrChildren));
 			$objDocumentOutput->arrChildren	= array();
 			foreach ($arrChildren as $arrChild)
 			{
@@ -160,6 +159,8 @@ class JSON_Handler_Document extends JSON_Handler
 				// Hide system documents from general users
 				if ($objChildContent->status_id == STATUS_ACTIVE && (!(bool)$objChild->is_system_document || $bolSuperAdmin))
 				{
+					throw new Exception("Adding '{$objChildContent->name}'...");
+					
 					$objChildOutput	= new stdClass();
 					
 					$objFileType	= ($objChildContent->file_type_id) ? new File_Type(array('id'=>$objChildContent->file_type_id), true) : null;
