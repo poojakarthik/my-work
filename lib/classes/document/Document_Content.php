@@ -135,7 +135,7 @@ class Document_Content extends ORM
 			// BZIP the Content
 			$strUncompressedContent	= $this->content;
 			$this->content			= $this->_compressContent($this->content);
-			throw new Exception("uncompressed_file_size set to {$this->uncompressed_file_size}");
+			//throw new Exception("uncompressed_file_size set to {$this->uncompressed_file_size}");
 			
 			parent::save();
 			$this->content			= $strUncompressedContent;
