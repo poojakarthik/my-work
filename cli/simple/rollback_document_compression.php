@@ -47,11 +47,11 @@ try
 		{
 			throw new Exception(__CLASS__ . ' Failed to decompress document_content '.$arrDocumentContent['id'].'. ' . $resDocumentContentUpdate->getMessage() . " (DB Error: " . $resDocumentContentUpdate->getUserInfo() . ")");
 		}
-		
-		if (PEAR::isError($resCommit = $dbAdmin->commit()))
-		{
-			throw new Exception($resCommit->getMessage()."\n\n".$resCommit->getUserInfo());
-		}
+	}
+	
+	if (PEAR::isError($resCommit = $dbAdmin->commit()))
+	{
+		throw new Exception($resCommit->getMessage()."\n\n".$resCommit->getUserInfo());
 	}
 }
 catch (Exception $eException)
