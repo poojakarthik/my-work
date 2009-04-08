@@ -155,6 +155,7 @@ class JSON_Handler_Document extends JSON_Handler
 			{
 				$objChild			= new Document($arrChild);
 				$objChildContent	= $objChild->getContentDetails();
+				throw new Exception("Trying to add '{$objChildContent->name}'...");
 				
 				// Hide system documents from general users
 				if ($objChildContent->status_id == STATUS_ACTIVE && (!(bool)$objChild->is_system_document || $bolSuperAdmin))
