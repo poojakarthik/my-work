@@ -52,7 +52,7 @@ class Document_Content extends ORM
 		$this->content			= ($this->content) ? $this->_decompressContent($this->content) : $this->content;
 		$this->bolHasContent	= ($this->content) ? true : false;
 		
-		$this->__set('uncompressed_file_size', ($this->content === null) ? null : strlen($this->content), true);
+		parent::__set('uncompressed_file_size', ($this->content === null) ? null : strlen($this->content));
 		$this->intContentSize	= $this->uncompressed_file_size;
 	}
 	
@@ -133,7 +133,7 @@ class Document_Content extends ORM
 		if ($this->_bolCanSave)
 		{
 			// Ensure that the uncompressed_file_size Field is up to date
-			$this->__set('uncompressed_file_size', ($this->content === null) ? null : strlen($this->content), true);
+			parent::__set('uncompressed_file_size', ($this->content === null) ? null : strlen($this->content));
 			
 			// BZIP the Content
 			$this->content	= $this->_compressContent($this->content);
@@ -170,22 +170,22 @@ class Document_Content extends ORM
 		return $mixDecompressed;
 	}
 	
-	public function __set($strName, $mixValue, $bolOverride=false)
+	public function __set($strName, $mixValue)
 	{
 		$strTidyName	= self::tidyName($strName);
 		switch ($strTidyName)
 		{
 			case 'content':
-				$this->__set('uncompressed_file_size', ($mixValue === null) ? null : strlen($mixValue), true);
+				parent::__set('uncompressed_file_size', ($mixValue === null) ? null : strlen($mixValue));
 				break;
 			
 			case 'uncompressed_file_size':
-				if (!$bolOverride)
-				{
-					throw new Exception("You cannot set Document_Content.uncompressed_file_size directly.  It is automatically updated when you set the Content.");
-				}
+				throw new Exception("You cannot set Document_Content.uncompressed_file_size directly.  It is automatically updated when you set the Content.");
 				break;
 		}
+		
+		// Call Parent Set
+		parent::__set($strName, $mixValue);
 	}
 	
 	/**
