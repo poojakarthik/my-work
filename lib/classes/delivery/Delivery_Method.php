@@ -124,7 +124,7 @@ class Delivery_Method extends ORM
 			}
 			while ($arrCustomerGroupDeliveryMethod = $selCustomerGroupDeliveryMethod->Fetch())
 			{
-				$this->_arrCustomerGroupSettings[$arrCustomerGroupDeliveryMethod['customer_group_id']]	= new Delivery_Method_Customer_Group($arrCustomerGroupDeliveryMethod);
+				$this->_arrCustomerGroupSettings[$arrCustomerGroupDeliveryMethod['customer_group_id']]	= new Customer_Group_Delivery_Method($arrCustomerGroupDeliveryMethod);
 			}
 		}
 		
