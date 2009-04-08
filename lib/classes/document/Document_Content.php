@@ -42,7 +42,10 @@ class Document_Content extends ORM
 		$this->content			= ($this->content) ? $this->_decompressContent($this->content) : $this->content;
 		$this->bolHasContent	= ($this->content) ? true : false;
 		
-		parent::__set('uncompressed_file_size', ($this->content === null) ? null : strlen($this->content));
+		if ($this->content)
+		{
+			parent::__set('uncompressed_file_size', strlen($this->content));
+		}
 		$this->intContentSize	= $this->uncompressed_file_size;
 	}
 	
