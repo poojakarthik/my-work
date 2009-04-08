@@ -150,6 +150,7 @@ class JSON_Handler_Document extends JSON_Handler
 			
 			// Load the children
 			$arrChildren					= Document::getChildrenForId($intDocumentId, true);
+			throw new Exception(count($arrChildren));
 			$objDocumentOutput->arrChildren	= array();
 			foreach ($arrChildren as $arrChild)
 			{
