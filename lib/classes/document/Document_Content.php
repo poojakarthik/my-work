@@ -46,7 +46,7 @@ class Document_Content extends ORM
 		
 		if ($arrProperties)
 		{
-			throw new Exception(print_r(parent::$_arrProperties, true));
+			//throw new Exception(print_r(parent::$_arrProperties, true));
 		}
 		
 		$this->content			= ($this->content) ? $this->_decompressContent($this->content) : $this->content;
