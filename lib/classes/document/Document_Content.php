@@ -172,6 +172,7 @@ class Document_Content extends ORM
 		{
 			case 'content':
 				parent::__set('uncompressed_file_size', ($mixValue === null) ? null : strlen($mixValue));
+				throw new Exception("uncompressed_file_size set to {$this->uncompressed_file_size}");
 				break;
 			
 			case 'uncompressed_file_size':
