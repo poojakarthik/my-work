@@ -118,7 +118,7 @@ class Delivery_Method extends ORM
 			
 			// Cache the Enumeration
 			$selCustomerGroupDeliveryMethod	= self::_preparedStatement('selCustomerGroupDeliveryMethod');
-			if ($selCustomerGroupDeliveryMethod->Execute() === false)
+			if ($selCustomerGroupDeliveryMethod->Execute($this->toArray()) === false)
 			{
 				throw new Exception($selCustomerGroupDeliveryMethod->Error());
 			}
@@ -135,7 +135,7 @@ class Delivery_Method extends ORM
 		}
 		else
 		{
-			return null;
+			throw new Exception("Unable to find Delivery Method {$this->name} settings for Customer Group #{$intCustomerGroupId}");
 		}
 	}
 	
