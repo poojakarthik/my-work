@@ -36,6 +36,8 @@ class Document_Content extends ORM
 	{
 		$this->_bolCanSave	= !$bolDetailsOnly;
 		
+		throw new Exception(print_r($arrProperties, true));
+		
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
 		
