@@ -1,6 +1,7 @@
 <?php
 
 require_once('../../lib/classes/Flex.php');
+Flex::load();
 
 $dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 $dbAdmin->setFetchMode(MDB2_FETCHMODE_ASSOC);
