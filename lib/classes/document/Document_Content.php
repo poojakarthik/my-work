@@ -125,21 +125,15 @@ class Document_Content extends ORM
 	{
 		if ($this->_bolCanSave)
 		{
-			//throw new Exception("uncompressed_file_size set to {$this->uncompressed_file_size}");
-			
-			// Ensure that the uncompressed_file_size Field is up to date
-			parent::__set('uncompressed_file_size', ($this->content === null) ? null : strlen($this->content));
-			
-			//throw new Exception("uncompressed_file_size set to {$this->uncompressed_file_size}");
-			
 			// BZIP the Content
 			$strUncompressedContent	= $this->content;
 			$this->content			= $this->_compressContent($this->content);
-			//throw new Exception("uncompressed_file_size set to {$this->uncompressed_file_size}");
+			
+			// Ensure that the uncompressed_file_size Field is up to date
+			parent::__set('uncompressed_file_size', ($strUncompressedContent === null) ? null : strlen($strUncompressedContent));
 			
 			parent::save();
 			$this->content			= $strUncompressedContent;
-			throw new Exception("uncompressed_file_size set to {$this->uncompressed_file_size}");
 		}
 		else
 		{
