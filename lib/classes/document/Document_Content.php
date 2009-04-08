@@ -36,12 +36,18 @@ class Document_Content extends ORM
 	{
 		$this->_bolCanSave	= !$bolDetailsOnly;
 		
-		throw new Exception(print_r($arrProperties, true));
+		if ($arrProperties)
+		{
+			throw new Exception(print_r($arrProperties, true));
+		}
 		
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
 		
-		throw new Exception(print_r($this->_arrProperties, true));
+		if ($arrProperties)
+		{
+			throw new Exception(print_r($this->_arrProperties, true));
+		}
 		
 		$this->content			= ($this->content) ? $this->_decompressContent($this->content) : $this->content;
 		$this->bolHasContent	= ($this->content) ? true : false;
