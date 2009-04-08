@@ -44,6 +44,8 @@ class Document_Content extends ORM
 		
 		$this->_arrProperties['uncompressed_file_size']	= ($this->content === null) ? null : strlen($this->content);
 		$this->intContentSize	= $this->uncompressed_file_size;
+		
+		throw new Exception($this->_arrProperties);
 	}
 	
 	/**
