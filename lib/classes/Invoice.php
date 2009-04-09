@@ -365,6 +365,7 @@ class Invoice extends ORM
 		$this->TotalOwing		= $this->Balance + $this->AccountBalance;
 
 		// Determine Delivery Method
+		$objDeliveryMethod		= Delivery_Method::getForId($objAccount->BillingMethod);
 		if ($objAccount->deliver_invoice === 0)
 		{
 			$this->DeliveryMethod	= DELIVERY_METHOD_DO_NOT_SEND;
@@ -372,7 +373,6 @@ class Invoice extends ORM
 		else
 		{
 			// Have we met the requirements for this Delivery Method?
-			$objDeliveryMethod			= Delivery_Method::getForId($objAccount->BillingMethod);
 			$objCustomerGroupSettings	= $objDeliveryMethod->getCustomerGroupSettings($objAccount->CustomerGroup);
 			
 			$this->DeliveryMethod		= ($objCustomerGroupSettings->minimum_invoice_value <= $this->TotalOwing) ? $objAccount->BillingMethod : DELIVERY_METHOD_DO_NOT_SEND;
