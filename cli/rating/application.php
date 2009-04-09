@@ -1196,15 +1196,20 @@
 		{
 			// Yes it is...
 			$intEndDay		= floor(strtotime($this->_arrCurrentCDR['EndDatetime'])/86400);
+			//CliEcho("Prorate End Day: ".$intEndDay);
 			$intStartDay	= floor(strtotime($this->_arrCurrentCDR['StartDatetime'])/86400);
+			//CliEcho("Prorate Start Day: ".$intStartDay);
 			$intEndMonth	= floor((strtotime("+ 1 month", strtotime($this->_arrCurrentCDR['StartDatetime']))/86400) - 1);
+			//CliEcho("Prorate End Month: ".$intEndMonth);
 			$intDaysInMonth = $intEndMonth - $intStartDay;
+			//CliEcho("Prorate Days in Month: ".$intDaysInMonth);
 
 			// is StartDate -> EndDate a whole month
 			if ($intEndDay < $intEndMonth)
 			{
 				// calculate prorate
-				$intDaysInCharge = $intEndDay - $intStartDay;
+				$intDaysInCharge = $intEndDay - $intStartDay + 1;
+				//CliEcho("Days in Charge: ".$intDaysInCharge);
 				try
 				{
 					// Calculate and set the current charge
