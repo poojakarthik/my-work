@@ -77,11 +77,13 @@ class AppTemplateService extends ApplicationTemplate
 	
 	public static function BuildContextMenu($intAccountId, $intServiceId, $intServiceType)
 	{
-		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$objService				= Service::getForId($intServiceId);
+		$strServiceType			= GetConstantDescription($intServiceType, 'service_type');
 		
-		ContextMenu()->Service->View_Unbilled_Charges($intServiceId);	
+		ContextMenu()->Service->View_Unbilled_Charges($intServiceId);
 		ContextMenu()->Service->View_Service_History($intServiceId);
-		ContextMenu()->Service->Plan->View_Service_Rate_Plan($intServiceId);	
+		ContextMenu()->Service->Plan->View_Service_Rate_Plan($intServiceId);
 		if ($bolUserHasOperatorPerm)
 		{
 			ContextMenu()->Service->Edit_Service($intServiceId);
@@ -95,10 +97,9 @@ class AppTemplateService extends ApplicationTemplate
 				ContextMenu()->Service->Provisioning->Provisioning($intServiceId);
 				ContextMenu()->Service->Provisioning->ViewProvisioningHistory($intServiceId);
 			}
-			ContextMenu()->Service->Notes->Add_Service_Note($intServiceId);
+			ContextMenu()->Service->{"Actions / Notes"}->ActionsAndNotesCreatorPopup(null, $intServiceId, null,  "$strServiceType - {$objService->fNN}");
 		}
-		ContextMenu()->Service->Notes->View_Service_Notes($intServiceId);
-		
+		ContextMenu()->Service->{"Actions / Notes"}->ActionsAndNotesListPopup(ACTION_ASSOCIATION_TYPE_SERVICE, $intServiceId, true, 99999, "$strServiceType - {$objService->fNN}");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -199,8 +200,9 @@ class AppTemplateService extends ApplicationTemplate
 		$fltUnbilledCDRs						= UnbilledServiceCDRTotal(DBO()->Service->Id->Value);
 		DBO()->Service->TotalUnbilledCharges 	= AddGST($fltUnbilledAdjustments + $fltUnbilledCDRs);
 		
-		// Load the service notes
-		LoadNotes(NULL, DBO()->Service->Id->Value);
+		//DEPRECATED! Old Notes Functionality
+		// Load the notes
+		//LoadNotes(NULL, DBO()->Service->Id->Value);
 		
 		// Retrieve the Provisioning History for the Service if it is a Land Line
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
@@ -220,6 +222,15 @@ class AppTemplateService extends ApplicationTemplate
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->AccountOverview(DBO()->Service->Account->Value, TRUE);
 		BreadCrumb()->SetCurrentPage("Service");
+
+		// Actions built on this page will be associated with a ServiceId only
+		DBO()->Action->ServiceId = DBO()->Service->Id->Value;
+
+		// Set up stuff for listing of Actions and Notes
+		DBO()->ActionList->AATContextId = ACTION_ASSOCIATION_TYPE_SERVICE;
+		DBO()->ActionList->AATContextReferenceId = DBO()->Service->Id->Value;
+		DBO()->ActionList->IncludeAllRelatableAATTypes = true;
+		DBO()->ActionList->MaxRecordsPerPage = 5;
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('service_view');
@@ -590,7 +601,7 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		SaveSystemNote($strSystemNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
-		Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
+		Ajax()->FireOnNewNoteEvent();
 		
 		// Fire the OnServiceUpdate event
 		$arrEvent['Service']['Id'] = DBO()->Service->Id->Value;
@@ -2313,7 +2324,7 @@ class AppTemplateService extends ApplicationTemplate
 				Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
 				
 				// Fire the OnNewNote Event
-				Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, (DBO()->NewService->Id->IsSet)? DBO()->NewService->Id->Value : DBO()->Service->Id->Value);
+				Ajax()->FireOnNewNoteEvent();
 			}
 			return TRUE;
 		}
@@ -2745,7 +2756,7 @@ class AppTemplateService extends ApplicationTemplate
 				Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
 	
 				// Since a system note has been added, fire the OnNewNote event
-				Ajax()->FireOnNewNoteEvent(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
+				Ajax()->FireOnNewNoteEvent();
 	
 				return TRUE;
 			}

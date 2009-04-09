@@ -365,7 +365,7 @@ class AppTemplateProvisioning extends ApplicationTemplate
 				$intServiceId	= $arrServiceIds[0];
 			}
 			SaveSystemNote($strSystemNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, $intServiceId);
-			Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value, $intServiceId);
+			Ajax()->FireOnNewNoteEvent();
 		}
 		
 		// Fire the OnProvisioningRequestSubmission Event

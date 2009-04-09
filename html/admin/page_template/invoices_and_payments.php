@@ -40,7 +40,11 @@ $this->Page->SetLayout('3Column_65_35');
 $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_VIEW);
 $this->Page->AddObject('AccountContactsList', COLUMN_ONE, HTML_CONTEXT_PAGE);
 $this->Page->AddObject('InvoiceList', COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);
-$this->Page->AddObject('NoteList', COLUMN_ONE, HTML_CONTEXT_PAGE, "NoteListDiv");
+
+//DEPRECATED! Old Notes Functionality
+//$this->Page->AddObject('NoteList', COLUMN_ONE, HTML_CONTEXT_PAGE, "NoteListDiv");
+
+$this->Page->AddObject('ActionsAndNotesList', COLUMN_ONE, HTML_CONTEXT_PAGE, "ActionsAndNotesListDiv");
 $this->Page->AddObject('AccountPaymentList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
 $this->Page->AddObject('AdjustmentList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
 $this->Page->AddObject('RecurringAdjustmentList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);

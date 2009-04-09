@@ -14,6 +14,10 @@ $strMethod 		= $arrScript[1];
 // Get the Flex class...
 require_once '../../lib/classes/Flex.php';
 
+// I've stuck this in so the session is named properly
+// Hopefully it won't screw things up, as it calls several of the php session_ functions
+Flex::continueSession(Flex::FLEX_ADMIN_SESSION);
+
 // I added this, so that the new autoloading functionality is available, (which includes the old)
 Flex::load();
 

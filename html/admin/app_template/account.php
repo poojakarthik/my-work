@@ -66,22 +66,20 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account->Add_Associated_Account($intAccountId);
 			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
 			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
-			ContextMenu()->Account->Notes->Add_Account_Note($intAccountId);
 			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL) && count(FlexSale::listForAccountId($intAccountId, NULL, 1)))
 			{
 				// The account has sales associated with it
 				ContextMenu()->Account->Sales->ViewSalesForAccount($intAccountId);
 			}
+			ContextMenu()->Account->{"Actions / Notes"}->ActionsAndNotesCreatorPopup($intAccountId, null, null, "$intAccountId - ". $objAccount->getName());
 		}
-		ContextMenu()->Account->Notes->View_Account_Notes($intAccountId);
 		if (Flex_Module::isActive(FLEX_MODULE_TICKETING) && Ticketing_User::currentUserIsTicketingUser())
 		{
 			ContextMenu()->Account->Tickets->ViewTicketsForAccount($intAccountId);
 			ContextMenu()->Account->Tickets->AddTicket($intAccountId);
 		}
 		
-		ContextMenu()->Account->{"Actions / Notes"}->ActionsAndNotesCreatorPopup($intAccountId, null, null, "$intAccountId - ". $objAccount->getName());
-		
+		ContextMenu()->Account->{"Actions / Notes"}->ActionsAndNotesListPopup(ACTION_ASSOCIATION_TYPE_ACCOUNT, $intAccountId, true, 99999, "$intAccountId - ". $objAccount->getName());
 	}
 	
 	//------------------------------------------------------------------------//
@@ -325,10 +323,19 @@ class AppTemplateAccount extends ApplicationTemplate
 			DBL()->Contact->Load();
 		}
 		
-		LoadNotes(DBO()->Account->Id->Value);
+		//DEPRECATED! Old Notes Functionality
+		//Load the notes 
+		//LoadNotes(DBO()->Account->Id->Value);
 
 		// Flag the Account as being shown in the InvoicesAndPayments Page
 		DBO()->Account->InvoicesAndPaymentsPage = 1;
+		
+		// Set up stuff for listing of Actions and Notes
+		DBO()->ActionList->AATContextId = ACTION_ASSOCIATION_TYPE_ACCOUNT;
+		DBO()->ActionList->AATContextReferenceId = DBO()->Account->Id->Value;
+		DBO()->ActionList->IncludeAllRelatableAATTypes = true;
+		DBO()->ActionList->MaxRecordsPerPage = 5;
+		
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('invoices_and_payments');
@@ -406,14 +413,19 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Load all the services belonging to the account, that the user has permission to view (which is currently all of them)
 		DBO()->Account->Services = $this->GetServices(DBO()->Account->Id->Value, SERVICE_ACTIVE);
 		
+		//DEPRECATED! Old Notes Functionality
 		// Load the user notes
-		LoadNotes(DBO()->Account->Id->Value);
+		//LoadNotes(DBO()->Account->Id->Value);
 		
 		// Retrieve the Account_Group object
-		DBO()->Account->AccountGroupObject = Account_Group::getForId(DBO()->Account->AccountGroup->Value);
+		DBO()->Account->AccountGroupObject = Account_Group::getForId(DBO()->Account->AccountGroup->Value, TRUE);
 		
 		// Actions built on this page will be associated with an AccountId only
-		DBO()->Action->AccountId = DBO()->Account->Id->Value;
+		DBO()->ActionCreator->AccountId = DBO()->Account->Id->Value;
+		DBO()->ActionList->AATContextId = ACTION_ASSOCIATION_TYPE_ACCOUNT;
+		DBO()->ActionList->AATContextReferenceId = DBO()->Account->Id->Value;
+		DBO()->ActionList->IncludeAllRelatableAATTypes = true;
+		DBO()->ActionList->MaxRecordsPerPage = 5;
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_overview');
@@ -1445,7 +1457,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Fire the OnNewNote event
 		if ($strChangesNote)
 		{
-			Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value);
+			Ajax()->FireOnNewNoteEvent();
 		}
 		
 		// Fire the OnAccountServicesUpdate Event

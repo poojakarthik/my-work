@@ -433,7 +433,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 			$strEmployeeOptions = "<option value='0'>New Non-Flex Employee Dealer</option>";
 			foreach ($arrEmployeeIds as $intEmployeeId)
 			{
-				$objEmployee = Employee::getForId($intEmployeeId);
+				$objEmployee = Employee::getForId($intEmployeeId, TRUE);
 				if ($objEmployee === NULL)
 				{
 					// Couldn't retrieve the employee record for some reason

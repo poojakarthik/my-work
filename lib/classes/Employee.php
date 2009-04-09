@@ -119,6 +119,20 @@ class Employee
 		}
 	}
 	
+	// Will return their username, if they don't have a first and a last name
+	// If they don't even have a user name, then it will return "Employee Id: <EmployeeId>"
+	public function getName()
+	{
+		if ($this->firstName == "" && $this->lastName == "")
+		{
+			return ($this->username == "")? "Employee Id: {$this->id}" : $this->username;
+		}
+		else
+		{
+			return "{$this->firstName} {$this->lastName}";
+		}
+	}
+	
 	//------------------------------------------------------------------------//
 	// getForId
 	//------------------------------------------------------------------------//
@@ -129,12 +143,15 @@ class Employee
 	 * 
 	 * Returns the Employee object with the id specified
 	 *
-	 * @param	int 				$intId		id of the employee to return		
-	 * @return	mixed 				Employee	: if $intId is a valid Employee id
-	 * 								NULL		: if $intId is not a valid Employee id	
+	 * @param	int 		$intId				id of the employee to return		
+	 * @param	bool		[ $bolSilentFail ]	defaults to false.  If true then the function will return NULL if the employee cannot be found.
+	 * 											If false then the function will throw an exception when the employee cannot be found
+	 * 
+	 * @return	mixed 		Employee	: if $intId is a valid Employee id
+	 * 						NULL		: if $intId is not a valid Employee id, and $bolSilentFail == true	
 	 * @method
 	 */
-	public static function getForId($intId)
+	public static function getForId($intId, $bolSilentFail=false)
 	{
 		static $selEmployee;
 		if (!isset($selEmployee))
@@ -148,7 +165,14 @@ class Employee
 		if ($intRecCount == 0)
 		{
 			// The Employee doesn't exist
-			return NULL;
+			if ($bolSilentFail)
+			{
+				return NULL;
+			}
+			else
+			{
+				throw new Exception("Could not find employee with id: $intId");
+			}
 		}
 		
 		// The employee must exist

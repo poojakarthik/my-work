@@ -261,6 +261,7 @@ class AjaxFramework
 	 * Adds a FireEvent javascript command to the list of commands that will be returned to Vixen.Ajax.HandleReply, specifically for the OnNewNote Event.
 	 * This Event has been wrapped in its own function because of how often it is used
 	 * 
+	 * ALL PARAMETERS HAVE BEEN DEPRECATED
 	 * @param	integer		$intAccountId	The account that the note is associated with.  Specifiy as NULL, if the note is note associated with an account\
 	 *										(Note that this is not optional.  You will have to explicitly declare it as null if the note is not
 	 *										associated with an account)
@@ -272,14 +273,14 @@ class AjaxFramework
 	 * @return	void
 	 * @method
 	 */
-	function FireOnNewNoteEvent($intAccountId, $intServiceId=NULL, $intContactId=NULL, $intNoteType=null)
+	function FireOnNewNoteEvent()
 	{
-		$arrData['Account']['Id']		= $intAccountId;
-		$arrData['Service']['Id']		= $intServiceId;
-		$arrData['Contact']['Id']		= $intContactId;
-		$arrData['Note']['NoteType']	= ($intNoteType === null) ? Note::SYSTEM_NOTE_TYPE_ID : $intNoteType;
-		
-		$this->AddCommand("FireEvent", Array("Event"=>EVENT_ON_NEW_NOTE, "EventData"=>$arrData));
+		$this->AddCommand("ExecuteJavascript", Array("if (window.ActionsAndNotes) {ActionsAndNotes.fireEvent('NewNote');}"));
+	}
+
+	function FireOnNewActionEvent()
+	{
+		$this->AddCommand("ExecuteJavascript", Array("if (window.ActionsAndNotes) {ActionsAndNotes.fireEvent('NewAction');}"));
 	}
 	
 }

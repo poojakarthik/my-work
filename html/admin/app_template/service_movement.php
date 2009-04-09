@@ -451,7 +451,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
 		
 		// Fire the OnNewNote Event
-		Ajax()->FireOnNewNoteEvent($intAccountId, $intServiceId);
+		Ajax()->FireOnNewNoteEvent();
 		return TRUE;
 	}
 	
@@ -590,7 +590,7 @@ class AppTemplateServiceMovement extends ApplicationTemplate
 		Ajax()->FireEvent(EVENT_ON_SERVICE_UPDATE, $arrEvent);
 		
 		// Fire the OnNewNote Event
-		Ajax()->FireOnNewNoteEvent($intOutgoingOwner, $intOutgoingServiceId);
+		Ajax()->FireOnNewNoteEvent();
 		return TRUE;
 		
 		

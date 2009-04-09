@@ -627,9 +627,8 @@ function VixenAjaxClass()
 					elmElement.focus();
 					break;
 				case "ExecuteJavascript":
-					// This probably isn't the safest way to do this. 
-					// This block of code may keep executing before the code in objInput[intKey].Data is finished executing, which may cause problems
-					eval(objInput[intKey].Data);
+					var funcAnonymous = new Function(objInput[intKey].Data);
+					funcAnonymous();
 					break;
 				case "FireEvent":
 					Vixen.EventHandler.FireEvent(objInput[intKey].Data.Event, objInput[intKey].Data.EventData);

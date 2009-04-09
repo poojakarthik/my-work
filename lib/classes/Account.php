@@ -125,6 +125,34 @@ ORDER BY FNN;";
 		return $arrServices;
 	}
 
+	// Returns the id of all service records that are associated with the account
+	// If 3 Service records model the one logical service on an account, then all 3 record ids will be returned
+	public function getAllServiceRecords($bolAsObjects=FALSE)
+	{
+		$qryQuery = new Query();
+		
+		// The only records we don't want to retrieve are those where ClosedOn < CreatedOn
+		$strColumns = ($bolAsObjects)? "*" : "Id";
+		
+		$strQuery = "SELECT $strColumns FROM Service WHERE Account = {$this->id} AND (ClosedOn IS NULL OR ClosedOn >= CreatedOn);";
+		
+		$objRecordSet = $qryQuery->Execute($strQuery);
+		if (!$objRecordSet)
+		{
+			throw new Exception("Failed to retrieve services for Account: {$this->id} - " . $qryQuery->Error() ." - Query: $strQuery");
+		}
+
+		$arrServices = array();
+
+		while ($arrRecord = $objRecordSet->fetch_assoc())
+		{
+			$arrServices[$arrRecord['Id']] = ($bolAsObjects)? new Service($arrRecord) : $arrRecord['Id'];
+		}
+
+		return $arrServices;
+	}
+	
+
 
 	public function getName()
 	{
@@ -138,7 +166,7 @@ ORDER BY FNN;";
 	
 	// Returns a list of ContactIds or Contact objects, defining the contacts that can be associated with this account
 	// In both cases, the key to the array will be the id of the contact
-	// This will return an empty string if there are no Contacts for this account
+	// This will return an empty array if there are no Contacts for this account
 	public function getContacts($bolAsObjects=FALSE)
 	{
 		$strQuery = "	SELECT c.Id AS ContactId

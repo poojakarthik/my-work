@@ -96,7 +96,7 @@ class Action extends ORM
 	}
 
 	// if there are multiple objects, then they will be ordered in the array from oldest association to newest
-	protected function _getAssociatedObjects($intActionAssociationType)
+	protected function _getAssociatedObjectIds($intActionAssociationType)
 	{
 		if (!$this->id)
 		{
@@ -355,62 +355,6 @@ class Action extends ORM
 		// The object could be created
 		return $action;
 	}
-
-	
-
-	public static function countForAccount($intAccountId, $strFilter=NULL)
-	{
-		// TODO! count how many records would be returned
-	}
-
-	public static function countForService($intServiceId, $strFilter=NULL)
-	{
-		// TODO! count how many records would be returned
-	}
-	
-	public static function countForContact($intContactId, $strFilter=NULL)
-	{
-		// TODO! count how many records would be returned
-	}
-
-
-	public static function listForAccount($intAccountId, $strFilter=NULL, $strOrder=NULL, $strOffset=NULL, $strLimit=NULL)
-	{
-		// instanciate the correct prepared SELECT statement
-		
-		// Append the account id constraint to the filter
-		
-		// call listFor
-	}
-	
-	public static function listForService($intServiceId, $strFilter=NULL, $strOrder=NULL, $strOffset=NULL, $strLimit=NULL)
-	{
-		// Note that this should retrieve all actions for all service records that this service record 'belongs' to
-		// (multiple service records can be used to model the one logical service for a single account)
-		
-		// I could perhaps make a function in Service which retrieves the ids of all service records that modell a service belonging to an account, and then call that
-		
-	}
-	
-	public static function listForContact($intContactId, $strFilter=NULL, $strOrder=NULL, $strOffset=NULL, $strLimit=NULL)
-	{
-	}
-	
-	// Returns generic object
-	public static function getPageInfo($intTotalRows, $intCurrentOffset, $intMaxRowsPerPage)
-	{
-		// TODO! return details relating to First, Previous, Current, Next, and Final pages, and the first and last records of the current page
-		
-		// Note that this is a very generic function, and calculates everything based on $intTotalRows, $intCurrentOffset, $intPageRowLimit, so it should probably go in
-		// lib/framework/functions.php
-		
-	}
-
-	private static function _listFor($selQuery, $strFilter, $strOrder, $strOffset, $strLimit)
-	{
-		// This updates the page info thingy
-	}
-
 
 	//------------------------------------------------------------------------//
 	// _preparedStatement

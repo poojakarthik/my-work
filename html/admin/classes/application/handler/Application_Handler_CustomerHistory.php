@@ -29,7 +29,7 @@ class Application_Handler_CustomerHistory extends Application_Handler
 			try
 			{
 				TransactionStart();
-				$objUser = Employee::getForId(AuthenticatedUser()->GetUserId());
+				$objUser = Employee::getForId(AuthenticatedUser()->GetUserId(), TRUE);
 					
 				if ($objUser !== NULL)
 				{

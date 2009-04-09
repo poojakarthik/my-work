@@ -72,17 +72,19 @@ $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_VIEW, "Account
 $this->Page->AddObject('AccountContactsList', COLUMN_ONE, HTML_CONTEXT_PAGE);
 $this->Page->AddObject('InvoiceList', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 
+
 if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+{
+	$this->Page->AddObject('ActionsAndNotesCreator', COLUMN_TWO, HTML_CONTEXT_PAGE, "ActionsAndNotesCreatorDiv");
+}
+$this->Page->AddObject('ActionsAndNotesList', COLUMN_TWO, HTML_CONTEXT_PAGE, "ActionsAndNotesListDiv");
+
+//DEPRECATED! Old Notes Functionality
+/*if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 {
 	$this->Page->AddObject('NoteAdd', COLUMN_TWO, HTML_CONTEXT_PAGE, "NoteAddDiv");
 }
-
-if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
-{
-	$this->Page->AddObject('ActionsAndNotesCreator', COLUMN_TWO, HTML_CONTEXT_PAGE, "ActionAddDiv");
-}
-
-
 $this->Page->AddObject('NoteList', COLUMN_TWO, HTML_CONTEXT_PAGE, "NoteListDiv");
+*/
 $this->Page->AddObject('AccountServicesList', COLUMN_THREE, HTML_CONTEXT_PAGE, "AccountServicesDiv");
 ?>

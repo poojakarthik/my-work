@@ -925,3 +925,63 @@ div.document-explorer-status span.description
 {
 	font-style	: italic;
 }
+
+
+/*********************************** Actions **********************************/
+div.action-list
+{
+	margin : 0.25em;
+	background-color : #FFF;
+	
+	overflow-x : hidden;
+	overflow-y : auto;
+}
+
+div.action-list.embedded
+{
+	margin : 0em;
+	background-color : inherit;
+}
+
+div.action-list div.item
+{
+	margin : 0.25em;
+	padding : 0.25em;
+	border : 1px solid #000;
+	background-color : #EFEBE7;
+}
+
+div.action-list.embedded div.item
+{
+	margin : 0.25em 0em;
+}
+
+div.action-list div.item.note
+{
+}
+
+div.action-list div.item.action
+{
+	border-color : #000;
+	background-color : #919191;
+}
+
+
+div.action-list div-item div.header
+{
+}
+div.action-list div.item div.details
+{
+	margin-top : 0.5em;
+}
+
+div.action-list-controls
+{
+}
+
+div.action-list-controls input[type='button'].pagination
+{
+	/* Style the pagination buttons here */
+}
+
+

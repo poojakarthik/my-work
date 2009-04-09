@@ -218,8 +218,6 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		
 		Table()->Services->SetHeader("&nbsp;", "FNN", "Plan", "&nbsp;", "&nbsp;", "Actions");
 		
-		// These were the column widths used when we included the "Opened/Closed dd/mm/yyyy" in the table
-//		Table()->Services->SetWidth("3%", "10%", "50%", "7%", "20%", "10%");
 		Table()->Services->SetAlignment("Left", "Left", "Left", "Right", "Left", "Left");
 		
 		$strStatusTitles = "Status :<br />Line :";
@@ -260,7 +258,8 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				}
 			}
 			
-			$strViewServiceNotesLink	= Href()->ViewServiceNotes($arrService['Id']);
+			$strPopupTitle = GetConstantDescription($arrService['ServiceType'], "service_type") ." - ". $arrService['FNN'];
+			$strViewServiceNotesLink	= Href()->ActionsAndNotesListPopup(ACTION_ASSOCIATION_TYPE_SERVICE, $arrService['Id'], true, 99999, $strPopupTitle);
 			$strViewServiceNotes		= "<img src='img/template/note.png' title='View Notes' onclick='$strViewServiceNotesLink'/>";
 			
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($arrService['Id']);

@@ -36,9 +36,20 @@ class Account_Group extends ORM
 		return self::getForId($objAccount->accountGroup);
 	}
 	
-	public static function getForId($intAccountGroupId)
+	public static function getForId($intAccountGroupId, $bolSilentFail=false)
 	{
-		return self::getFor("Id = <Id>", array("Id" => $intAccountGroupId));
+		$objAccountGroup = self::getFor("Id = <Id>", array("Id" => $intAccountGroupId));
+		
+		if ($objAccountGroup === NULL)
+		{
+			if ($bolSilentFail)
+			{
+				return NULL;
+			}
+			throw new Exception("Could not find AccountGroup with id: $intAccountGroupId");
+		}
+		
+		return $objAccountGroup;
 	}
 	
 	protected static function getColumns()

@@ -3358,19 +3358,74 @@ class MenuItems {
 		return "javascript:
 if (window.ActionsAndNotes)
 {
-	Flex.ActionsAndNotesCreatorPopup = ActionsAndNotes.createActionsAndNotesCreatorPopup($jsonTitle, $jsonAccountId, $jsonServiceId, $jsonContactId);
+	Flex.ActionsAndNotesCreatorPopup = ActionsAndNotes.Creator.createPopup($jsonTitle, $jsonAccountId, $jsonServiceId, $jsonContactId);
 	Flex.ActionsAndNotesCreatorPopup.display();
 }
 else
 {
 	JsAutoLoader.loadScript('javascript/actions_and_notes.js', 	function()
 																{	
-																	Flex.ActionsAndNotesCreatorPopup = ActionsAndNotes.createActionsAndNotesCreatorPopup($jsonTitle, $jsonAccountId, $jsonServiceId, $jsonContactId);
-																	Flex.ActionsAndNotesCreatorPopup.display();
+																	ActionsAndNotes.load(	function()
+																							{
+																								Flex.ActionsAndNotesCreatorPopup = ActionsAndNotes.Creator.createPopup($jsonTitle, $jsonAccountId, $jsonServiceId, $jsonContactId);
+																								Flex.ActionsAndNotesCreatorPopup.display();
+																							});
 																});
 }
 ";
 	}	
+
+	//------------------------------------------------------------------------//
+	// ActionsAndNotesListPopup
+	//------------------------------------------------------------------------//
+	/**
+	 * ActionsAndNotesListPopup()
+	 *
+	 * Compiles the Href (javascript) to execute this functionality
+	 *
+	 * Compiles the Href (javascript) to execute this functionality
+	 * 
+	 * @param	int			$intAATContextId					ActionAssocationType representing the context in which the list of Actions And Notes will refer to
+	 * 															For example, if this is set to ACTION_ASSOCIATION_TYPE_SERVICE, then the list will be refering 
+	 * 															to the Actions And Notes of a single service with its id declared as $intAATContextReferenceId
+	 * @param	int			$intAATContextReferenceId			account id / contact id / service id
+	 * @param	int			$bolIncludeAllRelatableAATTypes		If TRUE, then the list will contain all actions and notes relating to $intAATContextReferenceId
+	 * 															as well as all actions and notes relating to other entities that are relatable to $intAATContextReferenceId
+	 *															For example, if $intAATContextId was ACTION_ASSOCIATION_TYPE_ACCOUNT, and $bolIncludeAllRelatableAATTypes == TRUE
+	 *															Then the list will show all Actions and Notes relating to the account, as well as all Actions and Notes relating to 
+	 *															all servies of the account, and all contacts associated with the account
+	 * @param	int			$intMaxRecordsPerPage				Max number of records to show per page, when paginating the list of actions and notes
+	 * @param	string		$strTitle							Title for the popup (usually the Account Name/number, or the service FNN)
+	 * 
+	 * @return	string							Href(script) to trigger the functionality
+	 * @method
+	 */
+	function ActionsAndNotesListPopup($intAATContextId, $intAATContextReferenceId, $bolIncludeAllRelatableAATTypes, $intMaxRecordsPerPage, $strTitle)
+	{
+		$jsonBolIncludeAllRelatableAATTypes = JSON_Services::encode($bolIncludeAllRelatableAATTypes);
+		$jsonStrTitle = JSON_Services::encode($strTitle);
+		
+		$this->strContextMenuLabel = "View Actions / Notes";
+		return "javascript:
+if (window.ActionsAndNotes)
+{
+	Flex.ActionsAndNotesListPopup = ActionsAndNotes.List.createPopup($jsonStrTitle, $intAATContextId, $intAATContextReferenceId, $jsonBolIncludeAllRelatableAATTypes, $intMaxRecordsPerPage);
+	Flex.ActionsAndNotesListPopup.display();
+}
+else
+{
+	JsAutoLoader.loadScript(\"javascript/actions_and_notes.js\",function()
+																{	
+																	ActionsAndNotes.load(	function()
+																							{
+																								Flex.ActionsAndNotesListPopup = ActionsAndNotes.List.createPopup($jsonStrTitle, $intAATContextId, $intAATContextReferenceId, $jsonBolIncludeAllRelatableAATTypes, $intMaxRecordsPerPage);
+																								Flex.ActionsAndNotesListPopup.display();
+																							});
+																});
+}
+";
+	}	
+
 	
 	//------------------------------------------------------------------------//
 	// BreadCrumb

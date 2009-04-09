@@ -596,7 +596,7 @@ class AppTemplateContact extends ApplicationTemplate
 		
 		if ($bolNoteSaved)
 		{
-			Ajax()->FireOnNewNoteEvent(DBO()->Account->Id->Value);
+			Ajax()->FireOnNewNoteEvent();
 		}
 		return TRUE;
 	}

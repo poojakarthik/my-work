@@ -368,9 +368,9 @@ Event.startObserving = function (element, strName, func, useCapture)
 /**
  * stopObserving
  *
- * Cross-browser function for doing an 'addEventLister'
+ * Cross-browser function for doing a 'removeEventLister'
  *
- * Cross-browser function for doing an 'addEventLister'
+ * Cross-browser function for doing a 'removeEventLister'
  *
  * @param element		DOMElement	to listen to handle events for
  * @param strName		String		name of the event (without 'on' prefix)

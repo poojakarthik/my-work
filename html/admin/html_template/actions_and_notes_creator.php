@@ -55,9 +55,9 @@ class HtmlTemplateActionsAndNotesCreator extends HtmlTemplate
 	{
 		$strErrorMsg = NULL;
 		
-		$intAccountId = (DBO()->Action->AccountId->IsSet)? DBO()->Action->AccountId->Value : null;
-		$intServiceId = (DBO()->Action->ServiceId->IsSet)? DBO()->Action->ServiceId->Value : null;
-		$intContactId = (DBO()->Action->ContactId->IsSet)? DBO()->Action->ContactId->Value : null;
+		$intAccountId = (DBO()->ActionCreator->AccountId->IsSet)? DBO()->ActionCreator->AccountId->Value : null;
+		$intServiceId = (DBO()->ActionCreator->ServiceId->IsSet)? DBO()->ActionCreator->ServiceId->Value : null;
+		$intContactId = (DBO()->ActionCreator->ContactId->IsSet)? DBO()->ActionCreator->ContactId->Value : null;
 		
 		$jsonAccountId = JSON_Services::encode($intAccountId);
 		$jsonServiceId = JSON_Services::encode($intServiceId);
@@ -65,29 +65,20 @@ class HtmlTemplateActionsAndNotesCreator extends HtmlTemplate
 		
 		try 
 		{
-			// Retrieve all Note Types
-			$arrNoteTypes = Note_Type::getAll();
-			$arrNoteTypesAssoc = array();
-			foreach ($arrNoteTypes as $intKey=>$objNoteType)
+			// Retrieve all ActionTypes and NoteTypes
+			$arrTypes = JSON_Handler_ActionsAndNotes::getActionAndNoteTypes();
+			
+			if ($arrTypes['success'])
 			{
-				$arrNoteTypesAssoc[$intKey] = $objNoteType->toArray(true);
+				// Successfully retrieved them
+				$jsonNoteTypes		= JSON_Services::encode($arrTypes['noteTypes']);
+				$jsonActionTypes	= JSON_Services::encode($arrTypes['actionTypes']);
 			}
-			$jsonNoteTypes = JSON_Services::encode($arrNoteTypesAssoc);
-
-			// Retrieve all Action Types
-			$arrActionTypes = Action_Type::getAll();
-			$arrActionTypesAssoc = array();
-			foreach ($arrActionTypes as $intKey=>$objActionType)
+			else
 			{
-				$arrActionTypesAssoc[$intKey] = $objActionType->toArray(true);
-				
-				// Load the allowable actionAssociationTypes
-				$arrAllowableActionAssociationTypes = $objActionType->getAllowableActionAssociationTypes();
-				
-				// Convert this to an array which is array(actionAssociationType.id=>actionAssociationType.id)
-				$arrActionTypesAssoc[$intKey]['allowableActionAssociationTypes'] = ConvertToSimpleArray($arrAllowableActionAssociationTypes, 'id', 'id');
+				// Couldn't successfully retrieve them
+				throw new Exception($arrTypes['errorMessage']);
 			}
-			$jsonActionTypes = JSON_Services::encode($arrActionTypesAssoc);
 		}
 		catch (Exception $e)
 		{
@@ -116,15 +107,18 @@ class HtmlTemplateActionsAndNotesCreator extends HtmlTemplate
 			// Do what you gotta do
 			
 			echo "
-<div id='AddActionContainer'></div>
+<div id='ActionsAndNotesCreatorContainer'></div>
 <script type='text/javascript'>
 	Event.observe(window, 'load', 
 		function()
 		{
 			ActionsAndNotes.setActionTypes($jsonActionTypes);
 			ActionsAndNotes.setNoteTypes($jsonNoteTypes);
-			Flex.EmbeddedActionsAndNotesCreator = ActionsAndNotes.createActionsAndNotesCreatorEmbeddedComponent(document.getElementById('AddActionContainer'), $jsonAccountId, $jsonServiceId, $jsonContactId);
-			Flex.EmbeddedActionsAndNotesCreator.display();
+			ActionsAndNotes.load(	function()
+									{
+										Flex.EmbeddedActionsAndNotesCreator = ActionsAndNotes.Creator.createEmbeddedComponent(document.getElementById('ActionsAndNotesCreatorContainer'), $jsonAccountId, $jsonServiceId, $jsonContactId);
+										Flex.EmbeddedActionsAndNotesCreator.display();
+									});
 		}, false)
 </script>\n";
 		}

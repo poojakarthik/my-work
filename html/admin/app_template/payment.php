@@ -229,6 +229,39 @@ class AppTemplatePayment extends ApplicationTemplate
 				}
 			}
 			
+			// Log the action
+			try
+			{
+				$objMadePaymentActionType = Action_Type::getForName('Payment Made');
+				
+				if (DBO()->Payment->Account->Value == NULL)
+				{
+					// The payment was applied to an account group
+					$objAccountGroup = Account_Group::getForId(DBO()->Payment->AccountGroup->Value);
+					
+					$arrAccountIds = $objAccountGroup->getAccounts();
+					if (count($arrAccountIds) == 0)
+					{
+						throw new Exception("Account Group doesn't have any Accounts in it");
+					}
+					
+					$strExtraDetails = "This payment was applied to the entire AccountGroup";
+				}
+				else
+				{
+					$arrAccountIds = array(DBO()->Payment->Account->Value);
+					$strExtraDetails = NULL;
+				}
+				
+				Action::createAction($objMadePaymentActionType, $strExtraDetails, $arrAccountIds, null, null, $dboUser->Id->Value, Employee::SYSTEM_EMPLOYEE_ID);
+			}
+			catch (Exception $e)
+			{
+				TransactionRollback();
+				Ajax()->AddCommand("Alert", "ERROR: Saving the payment failed, unexpectedly. Could not log the Payment action. <br />". $e->getMessage() ." - Please notify your system administrator.");
+				return TRUE;
+			}
+			
 			// The payment has been successfully added.  Commit the Transaction
 			TransactionCommit();
 			

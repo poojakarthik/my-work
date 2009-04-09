@@ -882,7 +882,7 @@ class Dealer
 		// If the dealer is an employee then copy accross values that should never differ from their employee record
 		if ($arrDetails['employeeId'] !== NULL)
 		{
-			$objEmployee = Employee::getForId($arrDetails['employeeId']);
+			$objEmployee = Employee::getForId($arrDetails['employeeId'], true);
 			if ($objEmployee == NULL)
 			{
 				$arrProblems[] = "Could not find employee that this dealer is based on";
