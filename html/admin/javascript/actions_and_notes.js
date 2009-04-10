@@ -338,9 +338,8 @@ Object.extend(ActionsAndNotes.Creator.prototype,
 		}
 		this.populateTypeCombobox();
 		
-		this.elmSubmitButton = document.createElement('input');
-		this.elmSubmitButton.type = 'button';
-		this.elmSubmitButton.value = "Submit";
+		this.elmSubmitButton = document.createElement('button');
+		this.elmSubmitButton.appendChild(document.createTextNode('Submit'));
 		
 		// Register the event listeners on these elements
 		this.registerEventListeners();
@@ -774,9 +773,8 @@ Object.extend(ActionsAndNotes.Creator.Popup.prototype,
 		
 		this.buildForm(elmComponent);
 		
-		var elmCloseButton = document.createElement('input');
-		elmCloseButton.type = "button";
-		elmCloseButton.value = "Close";
+		var elmCloseButton = document.createElement('button');
+		elmCloseButton.appendChild(document.createTextNode('Close'));
 		Event.startObserving(elmCloseButton, "click", this.close.bind(this), true);
 		
 		this.popup.setContent(elmComponent);
@@ -894,7 +892,8 @@ Object.extend(ActionsAndNotes.List.prototype,
 		
 		// Action And Note Type Combobox
 		this.elmTypeConstraintCombobox = document.createElement('select');
-		this.elmTypeConstraintCombobox.style.maxWidth = "50%";
+		this.elmTypeConstraintCombobox.style.maxWidth = "40%";
+		this.elmTypeConstraintCombobox.style.marginLeft = '3px';
 		
 		// The LoggedBy Combobox
 		this.elmLoggedByConstraintCombobox = document.createElement('select');
@@ -902,11 +901,16 @@ Object.extend(ActionsAndNotes.List.prototype,
 		this.elmLoggedByConstraintCombobox.appendChild(new Option('Manual Only', ActionsAndNotes.List.LOGGED_BY_CONSTRAINT_MANUAL_ONLY, false, false));
 		this.elmLoggedByConstraintCombobox.appendChild(new Option('Automatic Only', ActionsAndNotes.List.LOGGED_BY_CONSTRAINT_AUTOMATIC_ONLY, false, false));
 		this.elmLoggedByConstraintCombobox.selectedIndex = 0;
+		this.elmLoggedByConstraintCombobox.style.maxWidth = "40%";
+		this.elmLoggedByConstraintCombobox.style.marginLeft = '3px';
+		
 				
 		// Search Button
-		this.elmSearchButton = document.createElement('input');
-		this.elmSearchButton.type = 'button';
-		this.elmSearchButton.value = "Go";
+		this.elmSearchButton = document.createElement('button');
+		//this.elmSearchButton.type = 'button';
+		//this.elmSearchButton.value = "Go";
+		this.elmSearchButton.appendChild(document.createTextNode('Go'));
+		this.elmSearchButton.style.marginLeft = '3px';
 		
 		// The FilterControlsContainer Div
 		this.elmFilterControlsContainerDiv = document.createElement('div');
@@ -915,19 +919,23 @@ Object.extend(ActionsAndNotes.List.prototype,
 		this.elmFilterControlsContainerDiv.appendChild(this.elmSearchButton);
 		
 		// The pagination buttons
-		this.elmFirstButton = document.createElement('input');
-		this.elmFirstButton.type = "button";
-		this.elmFirstButton.value = "<<";
-		this.elmPreviousButton = document.createElement('input');
-		this.elmPreviousButton.type = "button";
-		this.elmPreviousButton.value = "<";
-		this.elmNextButton = document.createElement('input');
-		this.elmNextButton.type = "button";
-		this.elmNextButton.value = ">";
-		this.elmLastButton = document.createElement('input');
-		this.elmLastButton.type = "button";
-		this.elmLastButton.value = ">>";
-		
+		this.elmFirstButton = document.createElement('button');
+		//this.elmFirstButton.type = "button";
+		//this.elmFirstButton.value = "<<";
+		this.elmFirstButton.appendChild(document.createTextNode('<<'));
+		this.elmPreviousButton = document.createElement('button');
+		//this.elmPreviousButton.type = "button";
+		//this.elmPreviousButton.value = "<";
+		this.elmPreviousButton.appendChild(document.createTextNode('<'));
+		this.elmNextButton = document.createElement('button');
+		//this.elmNextButton.type = "button";
+		//this.elmNextButton.value = ">";
+		this.elmNextButton.appendChild(document.createTextNode('>'));
+		this.elmLastButton = document.createElement('button');
+		//this.elmLastButton.type = "button";
+		//this.elmLastButton.value = ">>";
+		this.elmLastButton.appendChild(document.createTextNode('>>'));
+
 		// Pagination Details
 		this.elmPageSummarySpan = document.createElement('span');
 		this.elmPageSummarySpan.appendChild(document.createTextNode("Viewing X to Y of Z Records"));
@@ -1070,7 +1078,7 @@ Object.extend(ActionsAndNotes.List.prototype,
 			typeConstraint = parseInt(typeConstraint);
 		}
 
-		this.lockAllButtons();
+		this.lockButtons(new Array(this.elmFirstButton, this.elmPreviousButton, this.elmNextButton, this.elmLastButton));
 		this.jsonFuncSearch(this.intAATContextId, this.intAATContextReferenceId, this.bolIncludeAllRelatableAATTypes, typeConstraint, loggedByConstraint, this.intMaxRecordsPerPage, intPageOffset);
 	},
 	
