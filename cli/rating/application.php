@@ -1201,7 +1201,7 @@
 			//CliEcho("Prorate Start Day: ".$intStartDay);
 			$intEndMonth	= floor((strtotime("+ 1 month", strtotime($this->_arrCurrentCDR['StartDatetime']))/86400) - 1);
 			//CliEcho("Prorate End Month: ".$intEndMonth);
-			$intDaysInMonth = $intEndMonth - $intStartDay;
+			$intDaysInMonth = (int)date('t', strtotime($this->_arrCurrentCDR['StartDatetime']));
 			//CliEcho("Prorate Days in Month: ".$intDaysInMonth);
 
 			// is StartDate -> EndDate a whole month
