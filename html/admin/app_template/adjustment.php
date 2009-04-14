@@ -533,6 +533,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// Delete the charge
 				DBO()->Charge->Status = CHARGE_DELETED;
 				
+				// If an Invoice Run is associated with it (it's temp invoiced), set it to NULL, so it doesn't get reversed, if the invoice run gets reversed
+				DBO()->Charge->invoice_run_id = NULL;
+
 				// Update the charge
 				if (!DBO()->Charge->Save())
 				{
