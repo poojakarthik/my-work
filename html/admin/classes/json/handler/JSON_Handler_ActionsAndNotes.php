@@ -478,7 +478,6 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 			$objItem->recordType	= ActionsAndNotes::TYPE_ACTION;
 			$objItem->typeId		= $objAction->actionTypeId;
 			
-			
 			// CreatedBy and PerformedBy
 			if (!array_key_exists($objAction->createdByEmployeeId, $arrEmployees))
 			{

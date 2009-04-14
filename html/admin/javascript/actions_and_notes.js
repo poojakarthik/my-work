@@ -404,6 +404,11 @@ Object.extend(ActionsAndNotes.Creator.prototype,
 			else if (this.elmSelectedTypeOption.isActionType)
 			{
 				strPrompt = "Are you sure you want to submit this '"+ this.elmSelectedTypeOption.actionType.name +"' action?";
+				
+				if (this.elmSelectedTypeOption.actionType.actionTypeDetailRequirementId == $CONSTANT.ACTION_TYPE_DETAIL_REQUIREMENT_OPTIONAL)
+				{
+					strPrompt += "<br /><br />Specifying extra details is optional for this type of action.";
+				}
 			}
 			else
 			{
@@ -898,8 +903,8 @@ Object.extend(ActionsAndNotes.List.prototype,
 		// The LoggedBy Combobox
 		this.elmLoggedByConstraintCombobox = document.createElement('select');
 		this.elmLoggedByConstraintCombobox.appendChild(new Option('Logged By Anyone', ActionsAndNotes.List.LOGGED_BY_CONSTRAINT_ANYONE, false, false));
-		this.elmLoggedByConstraintCombobox.appendChild(new Option('Manual Only', ActionsAndNotes.List.LOGGED_BY_CONSTRAINT_MANUAL_ONLY, false, false));
-		this.elmLoggedByConstraintCombobox.appendChild(new Option('Automatic Only', ActionsAndNotes.List.LOGGED_BY_CONSTRAINT_AUTOMATIC_ONLY, false, false));
+		this.elmLoggedByConstraintCombobox.appendChild(new Option('Logged Manually', ActionsAndNotes.List.LOGGED_BY_CONSTRAINT_MANUAL_ONLY, false, false));
+		this.elmLoggedByConstraintCombobox.appendChild(new Option('Logged Automatically', ActionsAndNotes.List.LOGGED_BY_CONSTRAINT_AUTOMATIC_ONLY, false, false));
 		this.elmLoggedByConstraintCombobox.selectedIndex = 0;
 		this.elmLoggedByConstraintCombobox.style.maxWidth = "40%";
 		this.elmLoggedByConstraintCombobox.style.marginLeft = '3px';
@@ -1155,9 +1160,16 @@ Object.extend(ActionsAndNotes.List.prototype,
 			{
 				this.elmItemsContainerDiv.appendChild(this.renderItem(arrItems[i]));
 			}
+
+			// Add a spacer to the bottom, because there are issues with the scrollable container div truncating the border of the last item contained within it, and this fixes the issue
+			var elmSpacer = document.createElement('div');
+			elmSpacer.style.height = '1px';
+			
+			this.elmItemsContainerDiv.appendChild(elmSpacer);
+			
+			// Reset the horizontal scroll
+			this.elmItemsContainerDiv.scrollTop = 0;
 		}
-		
-		
 		
 		this.setLastSearchDetails();
 	},
@@ -1213,7 +1225,6 @@ Object.extend(ActionsAndNotes.List.prototype,
 	// This will also lock/unlock the buttons
 	setLastSearchDetails : function()
 	{
-		
 		var strPageDescription = "";
 		if (this.lastSearch != null && this.lastSearch.pageRecordCount > 0)
 		{
@@ -1266,8 +1277,9 @@ Object.extend(ActionsAndNotes.List.prototype,
 		
 		elmItemDiv.appendChild(elmHeaderDiv);
 		
-		elmHeaderDiv.appendChild(document.createTextNode(objItem.createdOnFormatted));
-		elmHeaderDiv.appendChild(document.createElement('br'));
+		var elmTimestampContainer = document.createElement('div');
+		elmTimestampContainer.className = 'timestamp';
+		elmTimestampContainer.appendChild(document.createTextNode(objItem.createdOnFormatted));
 		
 		var strType = "";
 		if (objItem.recordType == ActionsAndNotes.TYPE_NOTE)
@@ -1287,24 +1299,44 @@ Object.extend(ActionsAndNotes.List.prototype,
 			// Assume the item is an action
 			elmItemDiv.className += ' action';
 			var actionType = ActionsAndNotes.actionTypes[objItem.typeId];
-			strType = "Action - "+ actionType.name;
+			strType = actionType.name;
 		}
-		elmHeaderDiv.appendChild(document.createTextNode(strType));
-		elmHeaderDiv.appendChild(document.createElement('br'));
+
+		var elmTypeContainer = document.createElement('div');
+		elmTypeContainer.className = 'type';
+		elmTypeContainer.appendChild(document.createTextNode(strType));
 		
 		var strByLine = "";
-		if (objItem.createdBy == objItem.performedBy)
+		if (objItem.createdBy == "Automatic System")
 		{
-			strByLine = "Logged & Performed by "+ objItem.createdBy;
+			strByLine = "Performed by " + objItem.performedBy;
+		}
+		else if (objItem.createdBy == objItem.performedBy)
+		{
+			if (objItem.recordType == ActionsAndNotes.TYPE_NOTE)
+			{
+				// Notes are "created" by the user
+				strByLine = "Created by " + objItem.createdBy;
+			}
+			else
+			{
+				// Actions are 'logged and performed' by the user (if not automatically logged)
+				strByLine = "Logged & Performed by "+ objItem.createdBy;
+			}
 		}
 		else
 		{
 			strByLine = "Logged by "+ objItem.createdBy +", Performed by "+ objItem.performedBy;
 		}
-		
-		elmHeaderDiv.appendChild(document.createTextNode(strByLine));
-		elmHeaderDiv.appendChild(document.createElement('br'));
-		
+
+		var elmByLineContainer = document.createElement('div');
+		elmByLineContainer.className = 'by-line';
+		elmByLineContainer.appendChild(document.createTextNode(strByLine));
+
+		elmHeaderDiv.appendChild(elmTimestampContainer);
+		elmHeaderDiv.appendChild(elmTypeContainer);
+		elmHeaderDiv.appendChild(elmByLineContainer);
+
 		// Handle any associated Accounts
 		if (objItem.associatedAccounts && (j=objItem.associatedAccounts.length) > 0)
 		{
@@ -1380,23 +1412,6 @@ Object.extend(ActionsAndNotes.List.prototype,
 			}
 		}
 
-		
-		if (objItem.associatedObjects)
-		{
-			var intServiceCount = 0;
-			var intContactCount = 0;
-			var intAccountCount = 0;
-			var strServices = "";
-			var strContacts = "";
-			var strAccounts = "";
-		
-			for (i=0, j=objItem.associatedObjects.length; i<j; i++)
-			{
-				
-			}
-		
-		}
-		
 		if (objItem.details !== null)
 		{
 			// There are details

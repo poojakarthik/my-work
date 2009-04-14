@@ -285,6 +285,20 @@ textarea.valid {
 	border: .1em solid #3d0;
 }
 
+input[type='text'],
+select,
+textarea
+{
+	border : .1em solid #111;
+}
+
+input[type='text'][disabled],
+select[disabled],
+textarea[disabled]
+{
+	background-color: #EFEBE7;
+}
+
 div.reflex-popup-footer input.reflex-button {
 	margin-left: 0.5em;
 }
@@ -963,13 +977,32 @@ div.action-list div.item.note
 div.action-list div.item.action
 {
 	border-color : #000;
-	background-color : #919191;
+	background-color : #bcd;
 }
 
-
-div.action-list div-item div.header
+div.action-list div.item div.header
 {
 }
+
+div.action-list div.item div.timestamp
+{
+	float : left;
+}
+
+div.action-list div.item div.type
+{
+	float : right;
+	text-align : right;
+	font-weight : bold;
+}
+
+div.action-list div.item div.by-line
+{
+	clear : both;
+	float : none;
+}
+
+
 div.action-list div.item div.details
 {
 	margin-top : 0.5em;
@@ -978,3 +1011,5 @@ div.action-list div.item div.details
 div.action-list-controls
 {
 }
+
+/******************************** End of Actions ******************************/
