@@ -1127,7 +1127,7 @@
 	 */
 	 function ReversePayment($intPayment, $intReversedBy = NULL)
 	 {
-	 	// Check validity 	
+	 	// Check validity
 	 	if (!is_int($intPayment) || !$intPayment)
 	 	{
 			return FALSE;
@@ -1170,7 +1170,8 @@
 		$arrReversedCharges = Array();
 		$bolChargesReversed = FALSE;
 		$arrCols = Array();
-		$arrCols['Status']	= CHARGE_DELETED;
+		$arrCols['Status']			= CHARGE_DELETED;
+		$arrCols['invoice_run_id']	= NULL;
 		$ubiSurcharge	= new StatementUpdateById("Charge", $arrCols);
 		$insCredit		= new StatementInsert("Charge");
 		$selSurcharges	= new StatementSelect("Charge", "*", "Nature = 'DR' AND LinkId = <Payment> AND LinkType = ".CHARGE_LINK_PAYMENT);
@@ -1182,14 +1183,15 @@
 			{
 				case CHARGE_INVOICED:
 					// Add a credit to negate the charge
-					$arrCredit					= $arrSurcharge;
-					$arrCredit['CreatedOn']		= date("Y-m-d");
-					$arrCredit['ChargedOn']		= date("Y-m-d");
-					$arrCredit['CreatedBy']		= $intReversedBy;
-					$arrCredit['ApprovedBy']	= NULL;
-					$arrCredit['Nature']		= 'CR';
-					$arrCredit['Description']	= "Payment Reversal: ". $arrCredit['Description'];
-					$arrCredit['Status']		= CHARGE_APPROVED;
+					$arrCredit						= $arrSurcharge;
+					$arrCredit['CreatedOn']			= date("Y-m-d");
+					$arrCredit['ChargedOn']			= date("Y-m-d");
+					$arrCredit['CreatedBy']			= $intReversedBy;
+					$arrCredit['ApprovedBy']		= NULL;
+					$arrCredit['Nature']			= 'CR';
+					$arrCredit['Description']		= "Payment Reversal: ". $arrCredit['Description'];
+					$arrCredit['Status']			= CHARGE_APPROVED;
+					$arrCredit['invoice_run_id']	= NULL;
 					unset($arrCredit['Id']);
 					$insCredit->Execute($arrCredit);
 					
@@ -1201,8 +1203,10 @@
 				
 				case CHARGE_APPROVED:
 				case CHARGE_TEMP_INVOICE:
-					// Set the charge status to Deleted
-					$arrSurcharge['Status']	= CHARGE_DELETED;
+					// Set the charge status to Deleted, set invoice_run_id to NULL
+					$arrSurcharge['Status']			= CHARGE_DELETED;
+					$arrSurcharge['invoice_run_id']	= NULL;
+					
 					$ubiSurcharge->Execute($arrSurcharge);
 					
 					// Append appriate message to the list of messages for the system note
