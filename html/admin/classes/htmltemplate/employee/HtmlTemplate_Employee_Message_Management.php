@@ -37,7 +37,8 @@ class HtmlTemplate_Employee_Message_Management extends FlexHtmlTemplate
 			{
 				$strEffectiveFrom = date("d/m/Y H:i:s", strtotime($objMessage->effectiveOn));
 				
-				$strMessage = str_replace("\n", "<br />", htmlspecialchars($objMessage->message));
+				// $strMessage = str_replace("\n", "<br />", htmlspecialchars($objMessage->message));
+				$strMessage = $objMessage->message;
 				
 				$strRowClass	= ($bolAltRow)? "alt" : "";
 				$bolAltRow		= !$bolAltRow;

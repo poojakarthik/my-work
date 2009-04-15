@@ -14,7 +14,7 @@ class HtmlTemplate_Console extends FlexHtmlTemplate
 		{
 			// There is a daily message to display
 			$strTimestamp	= date("M jS, Y H:i:s", strtotime($arrMessage['Timestamp']));
-			$strMessage		= str_replace("\n", "<br />", $arrMessage['Message']);
+			$strMessage		= str_replace("\n", "", $arrMessage['Message']);
 			
 			$strDailyMessageSection = "
 <div id='DailyMessageContainer'>
