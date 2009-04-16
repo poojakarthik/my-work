@@ -163,7 +163,7 @@ class Cli_App_Contracts extends Cli
 				else
 				{
 					// Contract is still active
-					$this->log("SKIPPED (".date("Y-m-d H:i:s", $intClosedOn)." > ".date("Y-m-d H:i:s", $intClosedOn).")");
+					$this->log("SKIPPED (".date("Y-m-d H:i:s", $intClosedOn)." > ".date("Y-m-d H:i:s", $intEffectiveDate).")");
 					continue;
 				}
 				
