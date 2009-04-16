@@ -108,7 +108,7 @@ class Contact extends ORM
 
 	public function passwordIsValid($strPassword)
 	{
-		return $strPassword && sha1($strPassword) == $this->password;
+		return $strPassword && sha1($strPassword) == $this->passWord;
 	}
 
 	public static function isEmailInUse($strEmailAddress)
