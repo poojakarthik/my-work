@@ -11,6 +11,7 @@ $strSalesPortalBaseURL	= 'https://sp.telcoblue.yellowbilling.com.au/';
 $resSession	= curl_init();
 curl_setopt($resSession, CURLOPT_RETURNTRANSFER	, true);
 curl_setopt($resSession, CURLOPT_SSL_VERIFYPEER	, false);
+curl_setopt($resSession, CURLOPT_COOKIESESSION	, true);
 
 //----------------------------------------------------------------------------//
 // Log in
