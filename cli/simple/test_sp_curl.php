@@ -12,10 +12,10 @@ $resSession	= curl_init();
 curl_setopt($resSession, CURLOPT_RETURNTRANSFER	, true);
 curl_setopt($resSession, CURLOPT_SSL_VERIFYPEER	, false);
 curl_setopt($resSession, CURLOPT_COOKIESESSION	, true);
-curl_setopt($resSession, CURLOPT_COOKIEFILE		, "/dev/null");
+//curl_setopt($resSession, CURLOPT_COOKIEFILE		, "/dev/null");
 //curl_setopt($resSession, CURLOPT_COOKIEJAR		, "/dev/null");
 //curl_setopt($resSession, CURLOPT_COOKIE			, session_name() . '=' . session_id());
-curl_setopt($resSession, CURLOPT_FOLLOWLOCATION	, 1);
+//curl_setopt($resSession, CURLOPT_FOLLOWLOCATION	, 1);
 
 //----------------------------------------------------------------------------//
 // Log in
