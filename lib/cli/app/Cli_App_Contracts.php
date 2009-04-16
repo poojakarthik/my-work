@@ -95,8 +95,10 @@ class Cli_App_Contracts extends Cli
 	{
 		$this->log(":: Updating Contract Details ::\n");
 		
+		$this->log("Passed Effective Date: {$strEffectiveDate}");
 		$strEffectiveDate	= ($strEffectiveDate) ? date("Y-m-d H:i:s", strtotime($strEffectiveDate)) : date("Y-m-d H:i:s");
 		$intEffectiveDate	= strtotime($strEffectiveDate);
+		$this->log("Calculated Effective Date: {$strEffectiveDate}");
 		
 		$arrLossStatuses	= Array(SERVICE_LINE_DISCONNECTED, SERVICE_LINE_CHURNED, SERVICE_LINE_REVERSED);
 		$arrLossClosures	= Array(SERVICE_CLOSURE_DISCONNECTED, SERVICE_CLOSURE_ARCHIVED);
