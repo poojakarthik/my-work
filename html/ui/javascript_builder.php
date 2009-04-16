@@ -75,8 +75,9 @@ function HasJavascriptFile($strJSFile, $strPath)
  * Includes each javascript file referenced in $arrFilenames
  *
  * Includes each javascript file referenced in $arrFilenames
- * It is a precondtion that LOCAL_BASE_DIR and FRAMEWORK_BASE_DIR have been set
- * The combined contents of all the javascript files, is echoed to standard output
+ * It is a precondition that LOCAL_BASE_DIR and FRAMEWORK_BASE_DIR have been set
+ * The combined contents of all the javascript files, is echoed to standard output.
+ * If a file cannot be found, then it just moves on to the next
  * 
  * @param	array	$arrFilename		names of the javascript files to retrieve (must include the .js extension)
  * @param	bool	$bolStripComments	optional, if set to TRUE then all comments will be stripped out of the javascript
@@ -112,7 +113,7 @@ function VixenIncludeJsFiles($arrFilenames, $bolStripComments=FALSE)
 		else
 		{
 			// The file could not be found
-			return FALSE;
+			// Don't worry about it
 		}
 	}
 	
