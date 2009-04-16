@@ -24,7 +24,7 @@ $strObject		= 'login';
 $strFunction	= 'jsonLogin';
 curl_setopt($resSession, CURLOPT_URL			, $strSalesPortalBaseURL."sales/format:json/portal/{$strObject}/{$strFunction}");
 curl_setopt($resSession, CURLOPT_POST			, true);
-curl_setopt($resSession, CURLOPT_POSTFIELDS		, array('json'=>$arrFunctionParameters));
+curl_setopt($resSession, CURLOPT_POSTFIELDS		, array('json'=>json_encode($arrFunctionParameters)));
 
 $strResponse		= curl_exec($resSession);
 $mixJSONResponse	= json_decode($strResponse);
@@ -46,7 +46,7 @@ $strObject		= 'ProductTypeModule';
 $strFunction	= 'loadData';
 curl_setopt($resSession, CURLOPT_URL			, $strSalesPortalBaseURL."sales/format:json/portal/{$strObject}/{$strFunction}");
 curl_setopt($resSession, CURLOPT_POST			, true);
-curl_setopt($resSession, CURLOPT_POSTFIELDS		, array('json'=>$arrFunctionParameters));
+curl_setopt($resSession, CURLOPT_POSTFIELDS		, array('json'=>json_encode($arrFunctionParameters)));
 
 $strResponse		= curl_exec($resSession);
 $mixJSONResponse	= json_decode($strResponse);
