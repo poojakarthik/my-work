@@ -10,6 +10,7 @@ $strSalesPortalBaseURL	= 'https://sp.telcoblue.yellowbilling.com.au/';
 //----------------------------------------------------------------------------//
 $resSession	= curl_init();
 curl_setopt($resSession, CURLOPT_RETURNTRANSFER	, true);
+curl_setopt($resSession, CURLOPT_SSL_VERIFYPEER	, false);
 
 //----------------------------------------------------------------------------//
 // Log in
@@ -57,6 +58,8 @@ CliEcho();
 //----------------------------------------------------------------------------//
 // Log out
 curl_setopt($resSession, CURLOPT_URL, $strSalesPortalBaseURL."sales/portal/logout");
+curl_setopt($resSession, CURLOPT_POST			, false);
+curl_setopt($resSession, CURLOPT_POSTFIELDS		, null);
 curl_exec($resSession);
 CliEcho("Logged Out?");
 //----------------------------------------------------------------------------//
