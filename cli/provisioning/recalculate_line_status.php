@@ -24,7 +24,7 @@ else
 
 
 // File Type Conversion Array (Key: Old Type; Value: New Type)
-$arrFileTypeConvert	= Array();
+/*$arrFileTypeConvert	= Array();
 $arrFileTypeConvert[PRV_UNITEL_DAILY_ORDER_RPT]		= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_UNITEL_DAILY_ORDER;
 $arrFileTypeConvert[PRV_UNITEL_DAILY_STATUS_RPT]	= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_UNITEL_DAILY_STATUS;
 $arrFileTypeConvert[PRV_UNITEL_BASKETS_RPT]			= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_UNITEL_BASKETS;
@@ -33,7 +33,7 @@ $arrFileTypeConvert[PRV_UNITEL_PRESELECTION_RPT]	= RESOURCE_TYPE_FILE_IMPORT_PRO
 $arrFileTypeConvert[PRV_AAPT_EOE_RETURN]			= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_EOE_RETURN;
 $arrFileTypeConvert[PRV_AAPT_LSD]					= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_LSD;
 $arrFileTypeConvert[PRV_AAPT_REJECT]				= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_REJECT;
-$arrFileTypeConvert[PRV_AAPT_LOSS]					= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_LOSS;
+$arrFileTypeConvert[PRV_AAPT_LOSS]					= RESOURCE_TYPE_FILE_IMPORT_PROVISIONING_AAPT_LOSS;*/
 
 CliEcho("\n[ RECALCULATING LINE STATUS ]\n");
 
@@ -65,8 +65,9 @@ if ($intServiceCount = $selServices->Execute())
 				$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
 				if (!array_key_exists($intFileType, $appProvisioning->_arrImportFiles[$arrResponse['Carrier']]))
 				{
-					$arrDebug	= array($intFileType, print_r($arrResponse, true), print_r($appProvisioning->_arrImportFiles, true));
-					throw new Exception(implode("\n\n", $arrDebug));
+					// Old file type -- no longer supported
+					CliEcho("OLD FILE TYPE -- SKIPPED");
+					continue;
 				}
 				
 				$arrResponse	= array_merge($arrResponse, $appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]->Normalise($arrResponse['Raw'], DONKEY));
