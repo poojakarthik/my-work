@@ -505,6 +505,31 @@ final class Flex
 			}
 		}
 	}
+	
+	/**
+	 * assert()
+	 *
+	 * Asserts that a given expression is true (loose matching).  If not, then an Exception_Assertion is thrown.
+	 *
+	 * @param	mixed	$mixExpression			Expression which should loose-match to TRUE
+	 * @param	[string	$strMessage			]	Assertion Error Message
+	 * @param	[string	$strDebugData		]	Additional Debug Data
+	 * @param	[string	$strAssertionName	]	Name to identify the Assertion
+	 * 
+	 * @return	boolean
+	 * 
+	 * @throws	Exception_Assertion
+	 *
+	 * @method
+	 */
+	public static function assert($mixExpression, $strMessage=null, $strDebugData=null, $strAssertionName=null)
+	{
+		if (!$mixExpression)
+		{
+			throw new Exception_Assertion($strMessage, $strDebugData, $strAssertionName);
+		}
+		return (bool)$mixExpression;
+	}
 }
 
 ?>
