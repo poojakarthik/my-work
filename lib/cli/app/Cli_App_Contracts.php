@@ -130,7 +130,7 @@ class Cli_App_Contracts extends Cli
 					$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['contract_scheduled_end_datetime'];
 					$arrServiceRatePlan['contract_status_id']				= CONTRACT_STATUS_EXPIRED;
 				}
-				elseif ($intLineStatusDate < $intEffectiveDate)
+				elseif ($intLineStatusDate < $intEffectiveDate && in_array($arrContractService['LineStatus'], $arrLossStatuses))
 				{
 					// Contract has been Breached -- Loss notice via Carrier
 					$arrServiceRatePlan['contract_effective_end_datetime']	= $arrContractService['LineStatusDate'];
