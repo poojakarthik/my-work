@@ -63,7 +63,7 @@ if ($intServiceCount = $selServices->Execute())
 				WaitingIcon();
 				//Debug($arrResponse);
 				$intFileType	= ($arrFileTypeConvert[$arrResponse['FileType']]) ? $arrFileTypeConvert[$arrResponse['FileType']] : $arrResponse['FileType'];
-				if (!array_key_exists($appProvisioning->_arrImportFiles[$arrResponse['Carrier']][$intFileType]))
+				if (!array_key_exists($intFileType, $appProvisioning->_arrImportFiles[$arrResponse['Carrier']]))
 				{
 					$arrDebug	= array(print_r($arrResponse, true), print_r($appProvisioning->_arrImportFiles, true));
 					throw new Exception(implode("\n\n", $arrDebug));
