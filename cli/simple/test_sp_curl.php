@@ -29,7 +29,7 @@ $strResponse		= curl_exec($resSession);
 $mixJSONResponse	= json_decode($strResponse);
 if ($mixJSONResponse !== true)
 {
-	throw new Exception("Login failed:\n'{$strResponse}'");
+	throw new Exception("Login failed:\n>>>\n{$strResponse}\n<<<\n");
 }
 CliEcho("Logged In");
 //----------------------------------------------------------------------------//
