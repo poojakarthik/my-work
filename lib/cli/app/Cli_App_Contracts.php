@@ -152,7 +152,7 @@ class Cli_App_Contracts extends Cli
 							continue 2;
 					}
 				}
-				elseif ($intClosedOn < $intEffectiveDate && in_array($arrContractService['NatureOfClosure'], $arrLossClosures))
+				elseif ($intClosedOn !== NULL && $intClosedOn < $intEffectiveDate && in_array($arrContractService['NatureOfClosure'], $arrLossClosures))
 				{
 					// Contract has been Breached -- Service prematurely closed
 					$arrServiceRatePlan['contract_effective_end_datetime']		= $arrContractService['ClosedOn'];
@@ -163,7 +163,7 @@ class Cli_App_Contracts extends Cli
 				else
 				{
 					// Contract is still active
-					$this->log("SKIPPED");
+					$this->log("SKIPPED (".date("Y-m-d H:i:s", $intClosedOn)." > ".date("Y-m-d H:i:s", $intClosedOn).")");
 					continue;
 				}
 				
