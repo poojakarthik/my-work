@@ -16,6 +16,9 @@ curl_setopt($resSession, CURLOPT_COOKIEFILE		, "/dev/null");	// Stores a cookie 
 
 //----------------------------------------------------------------------------//
 // Log in
+
+// This section is like calling the code:
+//		$mixJSONResponse	= login::jsonLogin('rich', 'rich');
 $arrFunctionParameters	= array
 						(
 							'rich',		// Username
@@ -38,14 +41,37 @@ CliEcho("Logged In");
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// Perform action
+// Save Sale
+// This section is like calling the code:
+//		$mixJSONResponse	= Sale::submit($objSale);
+
+$objSale				= new stdClass();
+$objSale->sale_type_id	= 1;
+
+$objSale->sale_account	= new stdClass();
+$objSale->sale_account->vendor_id				= (int)$_POST['VendorId'];
+$objSale->sale_account->abn						= (int)$_POST['ABN'];
+$objSale->sale_account->acn						= (int)$_POST['ACN'];
+$objSale->sale_account->address_line_1			= (int)$_POST['VendorId'];
+$objSale->sale_account->address_line_2			= (int)$_POST['VendorId'];
+$objSale->sale_account->bill_delivery_type_id	= (int)$_POST['VendorId'];
+$objSale->sale_account->bill_payment_type_id	= (int)$_POST['VendorId'];
+$objSale->sale_account->business_name			= (int)$_POST['VendorId'];
+$objSale->sale_account->bill_payment_type_id	= (int)$_POST['VendorId'];
+$objSale->sale_account->direct_debit_type_id	= (int)$_POST['VendorId'];
+$objSale->sale_account->postcode				= (int)$_POST['VendorId'];
+$objSale->sale_account->reference_id			= (int)$_POST['VendorId'];
+$objSale->sale_account->state_id				= (int)$_POST['VendorId'];
+$objSale->sale_account->suburb					= (int)$_POST['VendorId'];
+$objSale->sale_account->trading_name			= (int)$_POST['VendorId'];
+
 $arrFunctionParameters	= array
 						(
-							'Service_Mobile'
+							$objSale
 						);
 
-$strObject		= 'ProductTypeModule';
-$strFunction	= 'loadData';
+$strObject		= 'Sale';
+$strFunction	= 'submit';
 curl_setopt($resSession, CURLOPT_URL			, $strSalesPortalBaseURL."sales/format:json/portal/{$strObject}/{$strFunction}");
 curl_setopt($resSession, CURLOPT_POST			, true);
 curl_setopt($resSession, CURLOPT_POSTFIELDS		, array('json'=>json_encode($arrFunctionParameters)));
