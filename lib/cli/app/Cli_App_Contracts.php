@@ -259,7 +259,7 @@ class Cli_App_Contracts extends Cli
 				self::ARG_LABEL			=> "EFFECTIVE_DATE",
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "Effective Date for the Contract Calculations (YYYY-MM-DD format)",
-				self::ARG_DEFAULT		=> date("Y-m-d"),
+				self::ARG_DEFAULT		=> null,
 				self::ARG_VALIDATION	=> 'Cli::_validDate("%1$s")'
 			)
 		);
