@@ -113,6 +113,7 @@ class RPC_Client_SalesPortal extends RPC_Client
 				throw new Exception("JSON Response Parse Error: Unspecified error");
 				break;
 		}*/
+		return $objResponse;
 	}
 }
 ?>
