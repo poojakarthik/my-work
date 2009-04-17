@@ -270,16 +270,25 @@ class AppTemplatePlan extends ApplicationTemplate
 				return TRUE;
 		}
 		
-		// Re/Activate the Plan Brochure & Auth Script
-		if (DBO()->RatePlan->brochure_document_id->Value)
+		try
 		{
-			$objBrochure	= new Document(array('id'=>DBO()->RatePlan->brochure_document_id->Value), true);
-			$objBrochure->setStatus($intDocumentStatus);
+			// Re/Activate the Plan Brochure & Auth Script
+			if (DBO()->RatePlan->brochure_document_id->Value)
+			{
+				$objBrochure	= new Document(array('id'=>DBO()->RatePlan->brochure_document_id->Value), true);
+				$objBrochure->setStatus($intDocumentStatus);
+			}
+			if (DBO()->RatePlan->auth_script_document_id->Value)
+			{
+				$objAuthScript	= new Document(array('id'=>DBO()->RatePlan->auth_script_document_id->Value), true);
+				$objAuthScript->setStatus($intDocumentStatus);
+			}
 		}
-		if (DBO()->RatePlan->auth_script_document_id->Value)
+		catch (Exception_ORM_LoadById $eException)
 		{
-			$objAuthScript	= new Document(array('id'=>DBO()->RatePlan->auth_script_document_id->Value), true);
-			$objAuthScript->setStatus($intDocumentStatus);
+			TransactionRollback();
+			Ajax()->AddCommand("Alert", "ERROR: Unable to modify the Plan's Brochure and Auth Script");
+			return TRUE;
 		}
 		
 		// Check that the plan isn't one of the default plans for the Customer Group
