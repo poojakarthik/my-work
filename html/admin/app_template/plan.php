@@ -273,12 +273,12 @@ class AppTemplatePlan extends ApplicationTemplate
 		// Re/Activate the Plan Brochure & Auth Script
 		if (DBO()->RatePlan->brochure_document_id->Value)
 		{
-			$objBrochure	= new Document(array(DBO()->RatePlan->brochure_document_id->Value), true);
+			$objBrochure	= new Document(array('id'=>DBO()->RatePlan->brochure_document_id->Value), true);
 			$objBrochure->setStatus($intDocumentStatus);
 		}
 		if (DBO()->RatePlan->auth_script_document_id->Value)
 		{
-			$objAuthScript	= new Document(array(DBO()->RatePlan->auth_script_document_id->Value), true);
+			$objAuthScript	= new Document(array('id'=>DBO()->RatePlan->auth_script_document_id->Value), true);
 			$objAuthScript->setStatus($intDocumentStatus);
 		}
 		
