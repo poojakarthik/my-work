@@ -8,7 +8,7 @@
  */
 abstract class RPC_Client
 {
-	protected	$_strURL;
+	protected	$_strBaseURL;
 	
 	protected	$_bolLogConversation;
 	protected	$_intRequestId			= 0;
@@ -21,7 +21,7 @@ abstract class RPC_Client
 	 */
 	protected function __construct($strBaseURL, $bolLogConversation=true)
 	{
-		$this->_strURL				= $strBaseURL;
+		$this->_strBaseURL			= $strBaseURL;
 		$this->_bolLogConversation	= ($bolLogConversation === true);
 	}
 	

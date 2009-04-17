@@ -8,8 +8,6 @@
  */
 class RPC_Client_SalesPortal extends RPC_Client
 {
-	protected	$_strURL;
-	
 	/**
 	 * __construct()
 	 *
