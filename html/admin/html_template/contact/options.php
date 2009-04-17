@@ -77,7 +77,7 @@ class HtmlTemplateContactOptions extends HtmlTemplate
 		$strViewContactNotesLink = Href()->ViewContactNotes(DBO()->Contact->Id->Value);
 		echo "<li><a href='$strViewContactNotesLink'>View Contact Notes</a></li>\n";
 		$strAddAssociateAccountLink = Href()->AddAssociatedAccount(DBO()->Contact->Account->Value);
-		echo "<li><a href='$strAddAssociateAccountLink'>Add Associated Account</a></li>\n";
+		//echo "<li><a href='$strAddAssociateAccountLink'>Add Associated Account</a></li>\n";
 
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
