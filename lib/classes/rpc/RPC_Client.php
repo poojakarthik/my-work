@@ -6,7 +6,7 @@
  *
  * @class	RPC_Client
  */
-class RPC_Client
+abstract class RPC_Client
 {
 	protected	$_strURL;
 	
