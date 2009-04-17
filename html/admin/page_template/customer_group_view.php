@@ -38,7 +38,7 @@ $this->Page->AddObject('CustomerGroupPaymentTermsLink', COLUMN_ONE, HTML_CONTEXT
 
 $this->Page->AddObject('CustomerGroupDocumentTemplates', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 
-if (defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') && FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
+if (Flex_Module::isActive(FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS))
 {
 	$this->Page->AddObject('CustomerGroupCreditCardConfigLink', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 }

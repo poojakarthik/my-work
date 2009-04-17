@@ -20,16 +20,6 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 				$response['OUTCOME'] = 'INVALID';
 			}
 		}
-		catch (Credit_Card_Payment_Not_Enabled_Exception $e)
-		{
-			// Should send an email to alert us to the fact that payment was attempted for a non-configgurred account - there is likely a bug in the UI!!
-			throw $e;
-		}
-		catch (Credit_Card_Payment_Not_Configurred_Exception $e)
-		{
-			// Should send an email to alert us to the fact that payments are failing - there is likely a bug in the UI!!
-			throw $e;
-		}
 		catch (Credit_Card_Payment_Incorrect_Password_Exception $e)
 		{
 			$response['OUTCOME'] = 'PASSWORD';
@@ -61,6 +51,11 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 		{
 			$response['OUTCOME'] = 'INVALID';
 			$response['MESSAGE'] = $e->getMessage();
+		}
+		catch (Exception_Assertion $e)
+		{
+			// Assertions should be handled at a much higher level than this
+			throw $e;
 		}
 		catch (Exception $e)
 		{

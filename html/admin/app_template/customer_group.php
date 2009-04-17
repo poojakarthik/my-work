@@ -338,7 +338,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 
 		// Load the CustomerGroupDetails
-		if (!defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') || !FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
+		if (!Flex_Module::isActive(FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS))
 		{
 			DBO()->Error->Message = "The Credit Card Payment module has not been enabled in Flex.";
 			$this->LoadPage('error');

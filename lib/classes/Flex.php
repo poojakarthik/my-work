@@ -505,6 +505,110 @@ final class Flex
 			}
 		}
 	}
+
+	/**
+	 * sendEmailNotificationAlert()
+	 *
+	 * Sends an email to the predefined recipients of the EMAIL_NOTIFICATION_ALERT email notification
+	 * This should fail silently, although it is not wrapped in a try block
+	 *
+	 * @param	string	$strSubject			Subject for the email
+	 * @param	string	$strDetails			Details of the alert (will form the body of the email)
+	 * @param	bool	[ $bolAsHtml ]		defaults to FALSE. If TRUE then $strDetails is considered to be HTML, and the email will be sent as html.
+	 * 										If FALSE then $strDetails is considered to be plain text, and the email will be sent as plain text
+	 * 
+	 * @param	bool	[ $bolIncludeEnvironmentDetails ]	Optional, defaults to FALSE. If true then details about the scripts environment will be included in the email.
+	 * 														This will include a call stack backtrace, $_SESSION, $_SERVER and $_REQUEST details
+	 * @return	void
+	 * @method
+	 */
+	public static function sendEmailNotificationAlert($strSubject, $strDetails, $bolAsHtml=FALSE, $bolIncludeEnvironmentDetails=FALSE)
+	{
+		if (strlen($strDetails) == 0)
+		{
+			$strDetails = "[No Details Given]";
+
+			// Include environment details
+			$bolIncludeEnvironmentDetails = TRUE;
+		}
+
+		$strBody = $strDetails;
+		
+		if (!is_string($strSubject) || strlen($strSubject) == 0)
+		{
+			$strSubject = trim(substr($strDetails, 0, 50)) . "...";
+		}
+		
+		if ($bolIncludeEnvironmentDetails)
+		{
+			// Include the Call Stack (backtrace)
+			ob_start();
+			debug_print_backtrace();
+			$strBacktrace = ob_get_clean();
+			
+			// Truncate the backtrace to 10K if it is in excess of this
+			if (strlen($strBacktrace) > 10000)
+			{
+				$strBacktrace = substr($strBacktrace, 0, 10000) . "... (Function Call Backtrace has been truncated)";
+			}
+			
+			// Include SESSION details
+			if (isset($_SESSION) && is_array($_SESSION) && array_key_exists('User', $_SESSION))
+			{
+				$strSessionDetails = print_r($_SESSION, TRUE);
+
+				// Truncate the Session details to 10K if it is in excess of this
+				if (strlen($strSessionDetails) > 10000)
+				{
+					$strSessionDetails = substr($strSessionDetails, 0, 10000) . "... (Session details have been truncated)";
+				}
+			}
+			else
+			{
+				$strSessionDetails = "[ No session details defined ]";
+			}
+						
+			// Include $_SERVER details
+			$strServerDetails = print_r($_SERVER, TRUE);
+			
+			// Include $_REQUEST details (if there are any)
+			$strRequestDetails = print_r($_REQUEST, TRUE);
+			
+			$strEnvDetails .= "\n\nFunction Call Backtrace:".
+							"\n$strBacktrace".
+							"\n\nUser Details:".
+							"\n$strUserDetails".
+							"\n\nServer Details:".
+							"\n$strServerDetails".
+							"\n\nRequest Details:".
+							"\n$strRequestDetails";
+			
+			if ($bolAsHtml)
+			{
+				$strEnvDetails = "<pre>$strEnvDetails</pre>";
+			}
+			
+			$strBody .= $strEnvDetails;
+		}
+		
+		$strSignature = "\n\nRegards\nFlexor";
+		
+		$strBody .= ($bolAsHtml)? nl2br($strSignature) : $strSignature;
+		$email = new Email_Notification(EMAIL_NOTIFICATION_ALERT);
+		
+		if ($bolAsHtml)
+		{
+			$email->html = $strBody;
+		}
+		else
+		{
+			$email->text = $strBody;
+		}
+		
+		$email->subject = "Flex Alert - $strSubject";
+		$email->send();
+	}
+
 	
 	/**
 	 * assert()

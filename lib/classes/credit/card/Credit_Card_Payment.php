@@ -44,9 +44,11 @@ class Credit_Card_Payment
 	public static function makePayment($intAccountId, $strEmail, $intCardType, $strCardNumber, $intCVV, $intMonth, $intYear, $strName, $fltAmount, $fltSurcharge, $fltTotal, $bolDD, $strPassword, &$resultProperties)
 	{
 		// Check that the module is enabled
-		if (!defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') || !FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
+		if (!Flex_Module::isActive(FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS))
 		{
-			throw new Credit_Card_Payment_Not_Enabled_Exception();
+			// This should never happen
+			throw new Exception_Assertion("Credit Card Payments are not enabled in Flex", "Flex Module FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS is inactive, but its functionality has been called", "Inactive Flex Module has been accessed");
+			//throw new Credit_Card_Payment_Not_Enabled_Exception();
 		}
 
 		// The Module is enabled.
@@ -83,20 +85,17 @@ class Credit_Card_Payment
 			{
 				throw new Credit_Card_Payment_Incorrect_Password_Exception();
 			}
-			
 		}
 		else
 		{
-			// This should NEVER EVER HAPPEN!! The session type should always be recognised.
-			// Authentication should have prevented the code getting this far.
-			throw new Exception("Invalid session. Unable to make credit card payments.");
+			throw new Exception_Assertion("Invalid session. Unable to make credit card payments.", "Flex::isAdminSession() == FALSE && Flex::isCustomerSession() == FALSE. This should NEVER EVER HAPPEN!! The session type should always be recognised. Authentication should have prevented the code getting this far.", "User Authentication Breach");
 		}
 
 		// We should now check to see if the customer group for the account allows credit card payments (it requires a config)
 		$creditCardPaymentConfig = Credit_Card_Payment_Config::getForCustomerGroup($account->customerGroup);
 		if (!$creditCardPaymentConfig)
 		{
-			throw new Credit_Card_Payment_Not_Configurred_Exception();
+			throw new Exception_Assertion("Credit Card Payments have not been configurred in Flex Admin.", "Credit_Card_Payment_Config::getForCustomerGroup({$account->customerGroup}) didn't return anything");
 		}
 
 		// Validate the expiry date
@@ -674,7 +673,7 @@ class Credit_Card_Payment
 
 	public static function availableForCustomerGroup($mxdCustomerGroupOrId)
 	{
-		if (!defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') || !FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
+		if (!Flex_Module::isActive(FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS))
 		{
 			return FALSE;
 		}
@@ -728,7 +727,7 @@ class Credit_Card_Payment
 	private static function getJavaScriptActionParams($accountId)
 	{
 		// Check that the module is enabled
-		if (!defined('FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS') || !FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS)
+		if (!Flex_Module::isActive(FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS))
 		{
 			return FALSE;
 		}
@@ -800,8 +799,6 @@ class Credit_Card_Payment
 }
 
 class Credit_Card_Payment_Incorrect_Password_Exception extends Exception { function __construct()	{ parent::__construct("The customer password specified was incorrect."); 				} }
-class Credit_Card_Payment_Not_Enabled_Exception 	extends Exception { function __construct()	{ parent::__construct("Credit Card Payments are not enabled in Flex."); 				} }
-class Credit_Card_Payment_Not_Configurred_Exception	extends Exception { function __construct() 	{ parent::__construct("Credit Card Payments have not been configurred in Flex Admin."); } }
 class Credit_Card_Payment_Communication_Exception	extends Exception { }
 class Credit_Card_Payment_Communication_Response_Exception	extends Credit_Card_Payment_Communication_Exception { }
 
@@ -884,6 +881,10 @@ class Credit_Card_Payment_Validation_Exception extends Exception
 	static function getKnownErrors()
 	{
 		static $knownErrors;
+		
+		return array();
+		
+		/* These 'Known errors' are incorrect.
 		if (!isset($knownErrors))
 		{
 			$knownErrors = array(
@@ -900,6 +901,7 @@ class Credit_Card_Payment_Validation_Exception extends Exception
 			);
 		}
 		return $knownErrors;
+		*/
 	}
 
 	private function _getMessage($strMessage)

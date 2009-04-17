@@ -53,10 +53,25 @@ Define ('FRAMEWORK_BASE_DIR', "../ui");
 // include the framework javascript_builder.php file
 require_once(FRAMEWORK_BASE_DIR . "/javascript_builder.php");
 
-// if (!VixenIncludeJavascriptFile())
-if (!VixenIncludeJsFiles($_GET['File'], TRUE))
+if (array_key_exists('File', $_GET))
 {
-	echo "/* Could not find the requested javascript files */\n";
+	if (is_array($_GET['File']))
+	{
+		$arrFiles = $_GET['File'];
+	}
+	else
+	{
+		$arrFiles = array($_GET['File']);
+	}
+
+	if (!VixenIncludeJsFiles($arrFiles, TRUE))
+	{
+		echo "/* Could not find the requested javascript files */\n";
+	}
+}
+else
+{
+	echo "/* No javascript files requested */\n";
 }
 
 ?>

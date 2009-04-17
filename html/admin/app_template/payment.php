@@ -329,7 +329,6 @@ class AppTemplatePayment extends ApplicationTemplate
 				return TRUE;
 			}
 
-
 			// Make sure the payment can be reversed
 			$intPaymentStatus = DBO()->Payment->Status->Value;
 			if (($intPaymentStatus != PAYMENT_WAITING) && ($intPaymentStatus != PAYMENT_PAYING) && ($intPaymentStatus != PAYMENT_FINISHED))

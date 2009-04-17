@@ -574,6 +574,7 @@ Object.extend(CreditCardPayment.prototype,
 		{
 			// Need to display the confirmation message and change buttons to OK
 			this.preparePopup();
+			this.confirmBeforeSubmit();
 			this.termsAndConditions();
 			$Alert('The password you entered was incorrect.\n\nPlease correct and try again.');
 			return false;

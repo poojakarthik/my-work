@@ -297,7 +297,7 @@ class Page
 		}
 
 		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant"));
+		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant", "sha1", "reflex_popup"));
 
 		foreach ($arrStandardJsFiles as $strFile)
 		{
@@ -308,10 +308,12 @@ class Page
 		}
 		
 		// Build the get variables for the javascript.php script
-		$strFiles = $this->_GetJsFilesQueryString($arrRemainingJsFiles);
-		echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
+		if (count($arrRemainingJsFiles))
+		{
+			$strFiles = $this->_GetJsFilesQueryString($arrRemainingJsFiles);
+			echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
+		}
 	}
-	
 	
 	//------------------------------------------------------------------------//
 	// RenderJS
