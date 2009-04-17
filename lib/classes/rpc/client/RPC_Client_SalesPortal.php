@@ -6,7 +6,7 @@
  *
  * @class	RPC_Client_SalesPortal
  */
-class RPC_Client_SalesPortal
+class RPC_Client_SalesPortal extends RPC_Client
 {
 	/**
 	 * __construct()
