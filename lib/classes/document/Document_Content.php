@@ -144,22 +144,36 @@ class Document_Content extends ORM
 	
 	private function _compressContent($mixValue)
 	{
-		$mixCompressed	= bzcompress($mixValue);
-		if (is_int($mixCompressed))
+		if ($mixValue !== null)
 		{
-			// Error
-			throw new Exception("Unable to compress Content for Document {$this->document_id} (Revision: ".($this->id ? $this->id : 'Unsaved')."): Error #{$mixCompressed}");
+			$mixCompressed	= bzcompress($mixValue);
+			if (is_int($mixCompressed))
+			{
+				// Error
+				throw new Exception("Unable to compress Content for Document {$this->document_id} (Revision: ".($this->id ? $this->id : 'Unsaved')."): Error #{$mixCompressed}");
+			}
+		}
+		else
+		{
+			$mixCompressed	= null;
 		}
 		return $mixCompressed;
 	}
 	
 	private function _decompressContent($mixValue)
 	{
-		$mixDecompressed	= bzdecompress($mixValue);
-		if (is_int($mixDecompressed))
+		if ($mixValue !== null)
 		{
-			// Error
-			throw new Exception("Unable to decompress Content for Document {$this->document_id} (Revision: ".($this->id ? $this->id : 'Unsaved')."): Error #{$mixDecompressed}");
+			$mixDecompressed	= bzdecompress($mixValue);
+			if (is_int($mixDecompressed))
+			{
+				// Error
+				throw new Exception("Unable to decompress Content for Document {$this->document_id} (Revision: ".($this->id ? $this->id : 'Unsaved')."): Error #{$mixDecompressed}");
+			}
+		}
+		else
+		{
+			$mixDecompressed	= null;
 		}
 		//throw new Exception(">>>\n".$mixDecompressed."\n<<<");
 		return $mixDecompressed;
