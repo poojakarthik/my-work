@@ -164,6 +164,61 @@ class Document extends ORM
 	}
 	
 	/**
+	 * setStatus()
+	 *
+	 * Sets the Status of this Document.  On Activation, it will reuse the latest Active revision of the Content
+	 * 
+	 * @param	integer		$intStatus			STATUS_* to change to
+	 * 
+	 * @return	boolean
+	 *
+	 * @method
+	 */
+	public function setStatus($intStatus)
+	{
+		// Get current Document Content
+		$objContent	= $this->getContent();
+		
+		$intStatus	= (int)$intStatus;
+		if ($objContent && $objContent->status_id !== $intStatus)
+		{
+			$objContent->id			= null;
+			$objContent->changed_on	= null;
+			switch ($intStatus)
+			{
+				case STATUS_ACTIVE:
+					// Get previous Document Content
+					$selLastActiveRevision	= self::_preparedStatement('selLastActiveRevision');
+					$intLastActiveRevision	= $selLastActiveRevision->Execute($this->toArray());
+					if ($intLastActiveRevision === false)
+					{
+						throw new Exception($selLastActiveRevision->Error());
+					}
+					elseif ($arrDocumentContent = $selLastActiveRevision->Fetch())
+					{
+						$objLastActiveContent	= new Document_Content($arrDocumentContent);
+						$objContent->content	= $objLastActiveContent->content;
+						$objContent->status_id	= STATUS_ACTIVE;
+					}
+					else
+					{
+						throw new Exception_Assertion("Document {$this->id} does not have a previous Active Revision", null, "Document Reactivation");
+					}
+					break;
+					
+				case STATUS_INACTIVE:
+					$objContent->content	= null;
+					$objContent->status_id	= STATUS_INACTIVE;
+					break;
+				
+				default:
+					throw new Exception_Assertion("Document::setStatus() provided with invalid Status of {$intStatus}", null, "Document Reactivation");
+			}
+			$objContent->save();
+		}
+	}
+	
+	/**
 	 * getPath()
 	 *
 	 * Returns the pseudo-Path to this Document
@@ -312,6 +367,13 @@ class Document extends ORM
 																					"document.*", 
 																					"parent_document_id <=> <id> AND document_content.id = (SELECT MAX(id) FROM document_content dc2 WHERE document_id = document_content.document_id)",
 																					"document.document_nature_id ASC, document_content.name ASC");
+					break;
+				case 'selLastActiveRevision':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"document_content", 
+																					"*", 
+																					"parent_document_id = <id> AND status_id = ".STATUS_ACTIVE,
+																					"id DESC",
+																					1);
 					break;
 				
 				// INSERTS

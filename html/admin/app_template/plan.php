@@ -242,21 +242,44 @@ class AppTemplatePlan extends ApplicationTemplate
 			return TRUE;
 		}
 		
+		TransactionStart();
+		
+		
 		// The status of a RatePlan is stored in the Archived property of the RatePlan table
+		$intDocumentStatus	= null;
 		switch (DBO()->RatePlan->Archived->Value)
 		{
 			case RATE_STATUS_ACTIVE:
 				DBO()->RatePlan->Archived = RATE_STATUS_ARCHIVED;
+				
+				// Deactivate the Plan Brochure & Auth Script
+				$intDocumentStatus	= STATUS_INACTIVE;
 				break;
 				
 			case RATE_STATUS_ARCHIVED:
 				DBO()->RatePlan->Archived = RATE_STATUS_ACTIVE;
+				
+				// Reactivate the Plan Brochure & Auth Script
+				$intDocumentStatus	= STATUS_ACTIVE;
 				break;
 				
 			default:
 				// Cannot toggle from whatever the status currently is
+				TransactionRollback();
 				Ajax()->AddCommand("Alert", "ERROR: The RatePlan's status cannot be changed");
 				return TRUE;
+		}
+		
+		// Re/Activate the Plan Brochure & Auth Script
+		if (DBO()->RatePlan->brochure_document_id->Value)
+		{
+			$objBrochure	= new Document(array(DBO()->RatePlan->brochure_document_id->Value), true);
+			$objBrochure->setStatus($intDocumentStatus);
+		}
+		if (DBO()->RatePlan->auth_script_document_id->Value)
+		{
+			$objAuthScript	= new Document(array(DBO()->RatePlan->auth_script_document_id->Value), true);
+			$objAuthScript->setStatus($intDocumentStatus);
 		}
 		
 		// Check that the plan isn't one of the default plans for the Customer Group
@@ -264,11 +287,10 @@ class AppTemplatePlan extends ApplicationTemplate
 		DBL()->default_rate_plan->Load();
 		if (DBL()->default_rate_plan->RecordCount() > 0)
 		{
+			TransactionRollback();
 			Ajax()->AddCommand("Alert", "ERROR: This Plan is being used as a default rate plan and cannot have its status changed");
 			return TRUE;
 		}
-		
-		TransactionStart();
 		
 		// Save the changes
 		if (!DBO()->RatePlan->Save())
