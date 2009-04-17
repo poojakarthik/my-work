@@ -79,7 +79,7 @@ abstract class RPC_Client
 	 *
 	 * @method
 	 */
-	abstract protected function _request($strEncodedRequest){}
+	abstract protected function _request($strEncodedRequest);
 	
 	/**
 	 * _prepareRequest()
@@ -92,7 +92,7 @@ abstract class RPC_Client
 	 *
 	 * @constructor
 	 */
-	abstract protected static function _prepareRequest($strFunction, $arrParameters, $strObject){}
+	abstract protected static function _prepareRequest($strFunction, $arrParameters, $strObject);
 	
 	/**
 	 * _parseResponse()
@@ -105,6 +105,6 @@ abstract class RPC_Client
 	 *
 	 * @constructor
 	 */
-	abstract protected static function _parseResponse($strEncodedResponse){}
+	abstract protected static function _parseResponse($strEncodedResponse);
 }
 ?>
