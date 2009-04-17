@@ -13,7 +13,7 @@ class RPC_Client_SalesPortal
 	 *
 	 * @constructor
 	 */
-	protected function __construct($strBaseURL, $bolLogConversation=true)
+	public function __construct($strBaseURL, $bolLogConversation=true)
 	{
 		parent::__construct($strBaseURL, $bolLogConversation);
 		
