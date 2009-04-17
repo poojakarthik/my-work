@@ -371,7 +371,7 @@ class Document extends ORM
 				case 'selLastActiveRevision':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"document_content", 
 																					"*", 
-																					"parent_document_id = <id> AND status_id = ".STATUS_ACTIVE,
+																					"document_id = <id> AND status_id = ".STATUS_ACTIVE,
 																					"id DESC",
 																					1);
 					break;
