@@ -89,7 +89,7 @@ class RPC_Client_SalesPortal extends RPC_Client
 	protected function _parseResponse($strEncodedResponse)
 	{
 		$objResponse	= json_decode($strEncodedResponse);
-		
+		/*
 		$intJSONError	= json_last_error();
 		switch ($intJSONError)
 		{
@@ -112,7 +112,7 @@ class RPC_Client_SalesPortal extends RPC_Client
 			default:
 				throw new Exception("JSON Response Parse Error: Unspecified error");
 				break;
-		}
+		}*/
 	}
 }
 ?>
