@@ -14,7 +14,7 @@ if ($objResponse !== true)
 }
 
 $objResponse	= $objRPCSalesPortal->call('loadData', array('Service_Mobile'), 'ProductTypeModule');
-print_r($objResponse, true);
+print_r($objResponse);
 
 // Logout
 $objResponse	= $objRPCSalesPortal->call('logout');
