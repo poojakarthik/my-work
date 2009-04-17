@@ -2121,6 +2121,9 @@ class MenuItems {
 	function AddAssociatedAccount($intAccountId) {
 		$this->strContextMenuLabel = "";
 		$this->strLabel = "";
+		
+		DebugBacktrace();
+		die;
 
 		return self :: OLD_FRAMEWORK . "account_add.php?Associated=$intAccountId";
 	}
