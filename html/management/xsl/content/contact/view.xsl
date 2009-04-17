@@ -233,15 +233,6 @@
 							<li>
 								<a>
 									<xsl:attribute name="href">
-										<xsl:text>account_add.php?Associated=</xsl:text>
-										<xsl:value-of select="/Response/Contact/Account" />
-									</xsl:attribute>
-									Add Associated Account
-								</a>
-							</li>
-							<li>
-								<a>
-									<xsl:attribute name="href">
 										<xsl:text>../admin/flex.php/Account/InvoicesAndPayments/?Account.Id=</xsl:text>
 										<xsl:value-of select="/Response/Contact/Account" />
 									</xsl:attribute>
