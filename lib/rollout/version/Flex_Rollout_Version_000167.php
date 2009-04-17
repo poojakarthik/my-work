@@ -23,13 +23,13 @@ class Flex_Rollout_Version_000167 extends Flex_Rollout_Version
 						(Code	, Description										, Context)
 					VALUES
 						(80005	, 'Additional Line Connection'						, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT')),
-						(80006	, 'Telephone Line Connection'						, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT'))),
-						(80007	, 'Telephone Line Connection Addtl with Tech visit'	, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT'))),
-						(80008	, 'Telephone Line Connection with Tech Visit'		, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT'))),
-						(82001	, 'ISDN HOME New Connection'						, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT'))),
-						(82002	, 'ISDN 2 Connection Charges'						, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT'))),
-						(83000	, 'ISDN New Service Connection'						, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT'))),
-						(83001	, 'ISDN In-Place service connection'				, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT')));";
+						(80006	, 'Telephone Line Connection'						, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT')),
+						(80007	, 'Telephone Line Connection Addtl with Tech visit'	, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT')),
+						(80008	, 'Telephone Line Connection with Tech Visit'		, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT')),
+						(82001	, 'ISDN HOME New Connection'						, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT')),
+						(82002	, 'ISDN 2 Connection Charges'						, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT')),
+						(83000	, 'ISDN New Service Connection'						, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT')),
+						(83001	, 'ISDN In-Place service connection'				, (SELECT id FROM destination_context WHERE const_name = 'DESTINATION_CONTEXT_SERVICE_AND_EQUIPMENT'));";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
