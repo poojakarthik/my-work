@@ -105,7 +105,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		// If Account.Id is not set, but Service.Id is, then find the account that the service belongs to
 		if ((!DBO()->Account->Id->Value) && (DBO()->Service->Id->Value))
@@ -216,7 +215,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
@@ -363,7 +361,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
-		$bolUserHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		// breadcrumb menu
 		BreadCrumb()->Employee_Console();
@@ -1493,7 +1490,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		$bolCanDeleteAdjustments			= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 		$bolCanReversePayments				= $bolHasAdminPerm;
-		$bolCanCancelRecurringAdjustments	= $bolHasAdminPerm;
+		$bolCanCancelRecurringAdjustments	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 
 
 		// Check what sort of record is being deleted
