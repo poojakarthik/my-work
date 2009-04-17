@@ -236,6 +236,8 @@ class AppTemplatePlan extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_RATE_MANAGEMENT | PERMISSION_ADMIN);
 		
+		$bolGOD	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+		
 		if (!DBO()->RatePlan->Load())
 		{
 			Ajax()->AddCommand("Alert", "ERROR: Could not find RatePlan with Id: ". DBO()->RatePlan->Id->Value);
@@ -287,7 +289,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		catch (Exception $eException)
 		{
 			TransactionRollback();
-			Ajax()->AddCommand("Alert", "ERROR: Unable to modify the Plan's Brochure and Auth Script");
+			Ajax()->AddCommand("Alert", "ERROR: Unable to modify the Plan's Brochure and Auth Script".($bolGOD ? $eException->__toString() : ''));
 			return TRUE;
 		}
 		
