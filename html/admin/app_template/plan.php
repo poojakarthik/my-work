@@ -284,7 +284,7 @@ class AppTemplatePlan extends ApplicationTemplate
 				$objAuthScript->setStatus($intDocumentStatus);
 			}
 		}
-		catch (Exception_ORM_LoadById $eException)
+		catch (Exception $eException)
 		{
 			TransactionRollback();
 			Ajax()->AddCommand("Alert", "ERROR: Unable to modify the Plan's Brochure and Auth Script");
