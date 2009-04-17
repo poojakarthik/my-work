@@ -289,7 +289,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		catch (Exception $eException)
 		{
 			TransactionRollback();
-			Ajax()->AddCommand("Alert", "ERROR: Unable to modify the Plan's Brochure and Auth Script".($bolGOD ? $eException->__toString() : ''));
+			Ajax()->AddCommand("Alert", "ERROR: Unable to modify the Plan's Brochure and Auth Script".($bolGOD ? "\n".$eException->__toString() : ''));
 			return TRUE;
 		}
 		
