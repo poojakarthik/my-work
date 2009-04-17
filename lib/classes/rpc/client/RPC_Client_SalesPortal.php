@@ -37,7 +37,7 @@ class RPC_Client_SalesPortal extends RPC_Client
 	 *
 	 * @constructor
 	 */
-	protected static function _prepareRequest($strFunction, $arrParameters, $strObject)
+	protected function _prepareRequest($strFunction, $arrParameters, $strObject)
 	{
 		// Prepare URL
 		$strURL	= $this->_strBaseURL;
@@ -86,7 +86,7 @@ class RPC_Client_SalesPortal extends RPC_Client
 	 *
 	 * @constructor
 	 */
-	protected static function _parseResponse($strEncodedResponse)
+	protected function _parseResponse($strEncodedResponse)
 	{
 		$objResponse	= json_decode($strEncodedResponse);
 		
