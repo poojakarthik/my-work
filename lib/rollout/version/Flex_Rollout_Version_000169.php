@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
 		$this->rollbackSQL[] =	"	ALTER TABLE	country
 										ADD		description				VARCHAR(255)	NOT NULL	COMMENT 'Description of the Country',
 										CHANGE	code_3_char	code		VARCHAR(255)	NOT NULL	COMMENT 'Abbreviation of the Country\'s name',
-										DROP	code_2_char;
+										DROP	code_2_char,
 										DROP	has_postcode;";
 		
 		//	2:	Populate country.code_2_char Field
