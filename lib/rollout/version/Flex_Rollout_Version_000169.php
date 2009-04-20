@@ -64,11 +64,11 @@ class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to remove state.description Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
-		$this->rollbackSQL[] =	"	ALTER TABLE	`state`
-										ADD		description				VARCHAR(255)	NOT NULL	COMMENT 'Description of the State';";
 		$this->rollbackSQL[] =	"	UPDATE	state
 									SET		description = name
 									WHERE	1;";
+		$this->rollbackSQL[] =	"	ALTER TABLE	`state`
+										ADD		description				VARCHAR(255)	NOT NULL	COMMENT 'Description of the State';";
 		
 		//	4:	Add address_locality Table
 		$strSQL = "	CREATE TABLE address_locality
