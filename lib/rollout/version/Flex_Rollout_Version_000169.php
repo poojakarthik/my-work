@@ -20,11 +20,12 @@ class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
 		$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 		$dbAdmin->setFetchMode(MDB2_FETCHMODE_ASSOC);
 		
-		//	1:	Remove country.description, change code to code_3_char, and add code_2_char Fields
+		//	1:	Remove country.description, change code to code_3_char, and add code_2_char and has_postcode Fields
 		$strSQL = "	ALTER TABLE	country
 						DROP	description,
-						CHANGE	code		code_3_char	CHAR(3)			NULL	COMMENT '3-character Country Code (ISO 3166-1 alpha-3)',
-						ADD		code_2_char				CHAR(2)			NULL	COMMENT '2-character Country Code (ISO 3166-1 alpha-2)';";
+						CHANGE	code		code_3_char	CHAR(3)			NULL					COMMENT '3-character Country Code (ISO 3166-1 alpha-3)',
+						ADD		code_2_char				CHAR(2)			NULL					COMMENT '2-character Country Code (ISO 3166-1 alpha-2)',
+						ADD		has_postcode			TINYINT			NOT NULL	DEFAULT 1	COMMENT '1: This Country uses Postcodes; 0: No Postcodes';";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -36,7 +37,8 @@ class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
 		$this->rollbackSQL[] =	"	ALTER TABLE	country
 										ADD		description				VARCHAR(255)	NOT NULL	COMMENT 'Description of the Country',
 										CHANGE	code_3_char	code		VARCHAR(255)	NOT NULL	COMMENT 'Abbreviation of the Country\'s name',
-										DROP	code_2_char;";
+										DROP	code_2_char;
+										DROP	has_postcode;";
 		
 		//	2:	Populate country.code_2_char Field
 		$strSQL = "	UPDATE	country
