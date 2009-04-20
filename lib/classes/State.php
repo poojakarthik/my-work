@@ -22,7 +22,6 @@ class State
 {
 	private $id					= NULL;
 	private $name				= NULL;
-	private $description		= NULL;
 	private $countryId			= NULL;
 	private $code				= NULL;
 	
@@ -138,7 +137,6 @@ class State
 		$arrColumns =  array(
 						"id"			=> "id",
 						"name"			=> "name",
-						"description"	=> "description",
 						"countryId"		=> "country_id",
 						"code"			=> "code"
 					);

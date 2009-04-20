@@ -21,8 +21,9 @@ class Country
 {
 	private $id					= NULL;
 	private $name				= NULL;
-	private $description		= NULL;
-	private $code				= NULL;
+	private $code2Char			= NULL;
+	private $code3Char			= NULL;
+	private $hasPostcode		= NULL;
 	
 	private static $_arrCache	= NULL;
 
@@ -131,8 +132,9 @@ class Country
 		$arrColumns =  array(
 						"id"			=> "id",
 						"name"			=> "name",
-						"description"	=> "description",
-						"code"			=> "code"
+						"code2Char"		=> "code_2_char",
+						"code3Char"		=> "code_3_char",
+						"hasPostcode"	=> "has_postcode"
 					);
 		if ($bolAsString)
 		{
