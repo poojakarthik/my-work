@@ -76,7 +76,7 @@ class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
 						id			BIGINT			UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
 						name		VARCHAR(256)				NOT NULL					COMMENT 'Name of the Locality',
 						postcode	INT				UNSIGNED	NULL						COMMENT 'Postcode of the Locality',
-						state_id	BIGINT			UNSIGNED	NULL						COMMENT '(FK) State (Top-level Subdivision) of the Locality',
+						state_id	BIGINT			UNSIGNED	NOT NULL					COMMENT '(FK) State (Top-level Subdivision) of the Locality',
 						
 						CONSTRAINT	pk_address_locality_id			PRIMARY KEY	(id),
 						CONSTRAINT	fk_address_locality_state_id	FOREIGN KEY	(state_id)	REFERENCES	state(id)	ON UPDATE CASCADE	ON DELETE CASCADE
