@@ -606,6 +606,9 @@ final class Flex
 		}
 		
 		$email->subject = "Flex Alert - $strSubject";
+		$email->addHeader("X-Priority", "1 (Highest)");
+		$email->addHeader("X-MSMail-Priority", "High");
+		$email->addHeader("Importance", "High");
 		$email->send();
 	}
 

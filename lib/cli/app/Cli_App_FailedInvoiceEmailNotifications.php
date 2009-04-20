@@ -108,7 +108,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 						"<body>$strIntro\n\n<table><tr><th>Account</th>\t<th>Contact</th>\t<th>Email</th>\t<th>Link to account in Flex</th></tr>\n" .
 						implode("\n", $arrRows) . "</table>\n<br/>\n<br/>$strFooter" . $arrCustomerGroup[1] . "</body></html>";
 
-				if (!$this->sendEmailNotification(EMAIL_NOTIFICATION_FAILED_EMAIL_REPORT, $intCustomerGroup, NULL, 'Recent Email Failures: ' . date('Y-m-d H:i:s'), $html, NULL))
+				if (!Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_FAILED_EMAIL_REPORT, $intCustomerGroup, NULL, 'Recent Email Failures: ' . date('Y-m-d H:i:s'), $html, NULL, NULL, TRUE))
 				{
 					$this->log("ERROR: Failed to send email to $strNoticationEmail for customer group $intCustomerGroup.", TRUE);
 					$exitCode++;

@@ -261,7 +261,7 @@ class Cli_App_LateNoticeRun extends Cli
 									$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
 									$attachments[] = $attachment;
 
-									if ($this->sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments))
+									if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments, TRUE))
 									{
 										$arrSummary[$strCustGroupName][$strLetterType]['emails'][] = $intAccountId;
 
@@ -433,7 +433,7 @@ class Cli_App_LateNoticeRun extends Cli
 			$body = implode("\r\n", $report);
 
 			$this->log("Sending report");
-			if ($this->sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_REPORT, NULL, NULL, $subject, NULL, $body))
+			if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE_REPORT, NULL, NULL, $subject, NULL, $body, NULL, TRUE))
 			{
 				$this->log("Report sent");
 			}

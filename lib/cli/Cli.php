@@ -395,19 +395,8 @@ abstract class Cli
 	}
 
 	/**
-	 * @deprecated IMMEDIATELY - Use Email_Notifiction instances to send emails!
-	 */
-	protected function sendEmailNotification($intEmailNotification, $intCustomerGroupId, $strToEmail, $strSubject, $strHTMLMessage, $strTextMessage=NULL, $arrAttachments=NULL)
-	{
-		$outcome = Email_Notification::sendEmailNotification($intEmailNotification, $intCustomerGroupId, $strToEmail, $strSubject, $strHTMLMessage, $strTextMessage, $arrAttachments);
-		return $outcome === TRUE;
-	}
-
-
-	/**
 	 * Validation functions used for command line arg validation
 	 */
-
 	public static function _validDate($date)
 	{
 		if (preg_match("/^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}(| ([01]{1,1}[0-9]{1,1}|2[0-3]{1,1}):[0-5]{1,1}[0-9]{1,1}:[0-5]{1,1}[0-9]{1,1})$/", $date))

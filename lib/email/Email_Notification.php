@@ -59,6 +59,8 @@ class Email_Notification extends Zend_Mail
 		}
 	}
 
+	// If $inCustomerGroupId is specified, then the address retreived from email_notification_address will be the ones relevent to the customer group, or any with customer_group == NULL
+	// This is mostly usefull for specifying an appropriate 'from' address specific to the customer group that the email is allegedly from
 	public function __construct($intEmailNotification=0, $intCustomerGroupId=NULL, $charset='iso-8859-1')
 	{
 		$this->setEmailNotification($intEmailNotification);
@@ -197,45 +199,111 @@ class Email_Notification extends Zend_Mail
 		return $addresses;
 	}
 
-
 	// This is for use by the Cli applications only!
+	// Why only Cli apps?
 	const EMAIL_ATTACHMENT_NAME = 'content_type';
 	const EMAIL_ATTACHMENT_MIME_TYPE = 'dfilename';
 	const EMAIL_ATTACHMENT_CONTENT = 'CONTENT';
+
 	/**
-	 * @deprecated IMMEDIATELY - 16/07/2008
+	 * sendEmailNotification()
+	 *
+	 * Wrapper function for sending an email notification
+	 * 
+	 * Wrapper function for sending an email notification
+	 *
+	 * @param	int		$intEmailNotificationId		Email Notification constant, defining the type of notification to send.  This can be set to NULL to send an email with no
+	 * 												predefined to's, cc's, bcc's or from addresses. Although it will use ybs-admin@ybs.net.au as the from address
+	 * @param	int		$intCustomerGroupId			if specified, it will use the address from email_notification_address specific to this customer group.  Only really useful for
+	 * 												chosing a CustomerGroup specific 'from' address
+	 * @param	mixed	$mixToEmail					string				: single email address for the 'to' address
+	 * 												array				: multiple address' for the 'to' address
+	 * 												NULL or empty array	: Only the predefined 'to' address' will be used
+	 * 												Note that any predefined 'to' email address' in the email_notification_address table, will also be used, even if you explicitly
+	 * 												specify email address' using $mixToEmail
+	 * @param	string	$strSubject					Subject for the email
+	 * @param	string	$strBodyHTML				The body of the email as HTML.  If you want to use text instead of html, then set this to NULL, and use $strBodyText
+	 * @param	string	[ $strBodyText ]			The body of the email as Text.  if $strBodyHTML is also set, then it will be used instead of this
+	 * @param	array	[ $arrAttachments ]			defaults to NULL.  Declare attachements here, using the format
+	 *												$arrAttachments[] = array(	self::EMAIL_ATTACHMENT_CONTENT		=> file content,
+	 *																			self::EMAIL_ATTACHMENT_NAME			=> filename,
+	 *																			self::EMAIL_ATTACHMENT_MIME_TYPE	=> mime type
+	 *																		)
+	 * @param	bool	[ $bolSilentFail ]			Defaults to False. If TRUE then it will return FALSE on failure. If FALSE, then it will throw an exception on failure.
+	 * 
+	 * @return	bool								TRUE on success, FALSE on failure (so long as $bolSilentFail == TRUE)
+	 * 
+	 * @static
+	 * @method
 	 */
-	public static function sendEmailNotification($intEmailNotification, $intCustomerGroupId, $strToEmail, $strSubject, $strHTMLMessage, $strTextMessage=NULL, $arrAttachments=NULL)
+	public static function sendEmailNotification($intEmailNotificationId, $intCustomerGroupId, $mixToEmail, $strSubject, $strBodyHTML, $strBodyText=NULL, $arrAttachments=NULL, $bolSilentFail=FALSE)
 	{
-		$emailNotification = new Email_Notification($intEmailNotification, $intCustomerGroupId);
-		$emailNotification->addTo($strToEmail);
-		$emailNotification->setSubject($strSubject);
-		if ($strHTMLMessage)
-		{
-			$emailNotification->setBodyHtml($strHTMLMessage);
-		}
-		if ($strTextMessage)
-		{
-			$emailNotification->setBodyText($strTextMessage);
-		}
-		if ($arrAttachments)
-		{
-			foreach($arrAttachments as $attchment)
-			{
-				$emailNotification->addAttachment($attchment[self::EMAIL_ATTACHMENT_CONTENT], $attchment[self::EMAIL_ATTACHMENT_NAME], $attchment[self::EMAIL_ATTACHMENT_MIME_TYPE]);
-			}
-		}
 		try
 		{
-			$emailNotification->send();
-			return TRUE;
+			if (!$intEmailNotificationId)
+			{
+				$intEmailNotificationId = 0;
+			}
+			$email = new Email_Notification($intEmailNotificationId, $intCustomerGroupId);
+			
+			$arrToEmails = array();
+			switch (gettype($mixToEmail))
+			{
+				case 'string':
+					$arrToEmails[] = $mixToEmail;
+					break;
+					
+				case 'array':
+					$arrToEmails = $mixToEmail;
+					break;
+					
+				default:
+					break;
+			}
+			
+			foreach ($arrToEmails as $strEmailAdress)
+			{
+				$email->addTo($strEmailAdress);
+			}
+			
+			$email->setSubject($strSubject);
+			if ($strBodyHTML !== NULL)
+			{
+				$email->setBodyHtml($strBodyHTML);
+			}
+			elseif ($strBodyText !== NULL)
+			{
+				$email->setBodyText($strBodyText);
+			}
+			else
+			{
+				$email->setBodyText("[ No content ]");
+			}
+			
+			if ($arrAttachments)
+			{
+				foreach($arrAttachments as $attchment)
+				{
+					$email->addAttachment($attchment[self::EMAIL_ATTACHMENT_CONTENT], $attchment[self::EMAIL_ATTACHMENT_NAME], $attchment[self::EMAIL_ATTACHMENT_MIME_TYPE]);
+				}
+			}
+			
+			$email->send();
 		}
-		catch(Exception $exception)
+		catch (Exception $e)
 		{
-			return $exception->getMessage();
+			if ($bolSilentFail)
+			{
+				return FALSE;
+			}
+			else
+			{
+				throw $e;
+			}
 		}
+		
+		return TRUE;
 	}
-
 }
 
 ?>

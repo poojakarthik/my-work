@@ -328,7 +328,7 @@ class Cli_App_Automatic_Unbarring extends Cli
 
 			$this->log("Sending report");
 			$intNotification = $arrArgs[self::SWITCH_LIST_RUN] ? EMAIL_NOTIFICATION_AUTOMATIC_BARRING_LIST : EMAIL_NOTIFICATION_AUTOMATIC_BARRING_REPORT;
-			if ($this->sendEmailNotification($intNotification, NULL, NULL, $subject, NULL, $body, $attachments))
+			if (Email_Notification::sendEmailNotification($intNotification, NULL, NULL, $subject, NULL, $body, $attachments, TRUE))
 			{
 				$this->log("Report sent");
 			}
@@ -371,7 +371,7 @@ class Cli_App_Automatic_Unbarring extends Cli
 			$body = implode("\r\n", $body);
 
 			$intNotification = $arrArgs[self::SWITCH_LIST_RUN] ? EMAIL_NOTIFICATION_AUTOMATIC_BARRING_LIST : EMAIL_NOTIFICATION_AUTOMATIC_BARRING_REPORT;
-			$this->sendEmailNotification($intNotification, NULL, NULL, $subject, NULL, $body);
+			Email_Notification::sendEmailNotification($intNotification, NULL, NULL, $subject, NULL, $body, NULL, TRUE);
 			$this->showUsage('ERROR: ' . $exception->getMessage());
 			return 1;
 		}
