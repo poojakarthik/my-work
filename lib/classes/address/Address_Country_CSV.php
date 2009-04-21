@@ -109,22 +109,21 @@ class Address_Country_CSV
 			if (!$arrHeader = fgetcsv($resInputFile))
 			{
 				throw new Exception("Unable to parse File Header {$strErrorTail}");
-				
-				foreach (self::$_arrImportColumns as $strAlias=>$intColumn)
+			}
+			foreach (self::$_arrImportColumns as $strAlias=>$intColumn)
+			{
+				echo "Checking Header Column '{$strAlias}' @ index {$intColumn}...\n";
+				if (!array_key_exists($intColumn, $arrHeader))
 				{
-					echo "Checking Header Column '{$strAlias}' @ index {$intColumn}...\n";
-					if (!array_key_exists($intColumn, $arrHeader))
-					{
-						throw new Exception("Header column at Index {$intColumn} does not exist {$strErrorTail}");
-					}
-					elseif ($arrHeader[$intColumn] !== $strAlias)
-					{
-						throw new Exception("Header column at Index {$intColumn} expected '{$strAlias}'; found '{$arrHeader[$intColumn]}' {$strErrorTail}");
-					}
-					else
-					{
-						echo "[+] Header Match ('{$strAlias}' === '{$arrHeader[$intColumn]}')";
-					}
+					throw new Exception("Header column at Index {$intColumn} does not exist {$strErrorTail}");
+				}
+				elseif ($arrHeader[$intColumn] !== $strAlias)
+				{
+					throw new Exception("Header column at Index {$intColumn} expected '{$strAlias}'; found '{$arrHeader[$intColumn]}' {$strErrorTail}");
+				}
+				else
+				{
+					echo "[+] Header Match ('{$strAlias}' === '{$arrHeader[$intColumn]}')";
 				}
 			}
 			
