@@ -60,7 +60,7 @@ class Address_Country_CSV
 	 */
 	public static function getAll($intGetMode=null, $intRolloutVersion=null)
 	{
-		$this->_load();
+		self::_load();
 		
 		$arrCountries	= array();
 		foreach (self::$_arrDatabaseCache as $intCacheRollout=>$arrCountries)
