@@ -30,6 +30,7 @@ class Address_Country_CSV
 	protected	$_strCode2Char;
 	protected	$_strCode3Char;
 	protected	$_intHasPostcode;
+	protected	$_intRolloutVersion;
 	
 	/**
 	 * __construct()
@@ -38,12 +39,13 @@ class Address_Country_CSV
 	 * 
 	 * @constructor
 	 */
-	protected function __construct($strName, $strCode2Char, $strCode3Char, $intHasPostcode)
+	protected function __construct($strName, $strCode2Char, $strCode3Char, $intHasPostcode, $intRolloutVersion)
 	{
-		$this->_strName			= $strName;
-		$this->_strCode2Char	= $strCode2Char;
-		$this->_strCode3Char	= $strCode3Char;
-		$this->_intHasPostcode	= (int)$intHasPostcode;
+		$this->_strName				= $strName;
+		$this->_strCode2Char		= $strCode2Char;
+		$this->_strCode3Char		= $strCode3Char;
+		$this->_intHasPostcode		= (int)$intHasPostcode;
+		$this->_intRolloutVersion	= (int)$intRolloutVersion;
 	}
 	
 	/**
@@ -110,6 +112,7 @@ class Address_Country_CSV
 				
 				foreach (self::$_arrImportColumns as $strAlias=>$intColumn)
 				{
+					echo "Checking Header Column '{$strAlias}' @ index {$intColumn}...\n";
 					if (!array_key_exists($intColumn, $arrHeader))
 					{
 						throw new Exception("Header column at Index {$intColumn} does not exist {$strErrorTail}");
@@ -117,6 +120,10 @@ class Address_Country_CSV
 					elseif ($arrHeader[$intColumn] !== $strAlias)
 					{
 						throw new Exception("Header column at Index {$intColumn} expected '{$strAlias}'; found '{$arrHeader[$intColumn]}' {$strErrorTail}");
+					}
+					else
+					{
+						echo "[+] Header Match ('{$strAlias}' === '{$arrHeader[$intColumn]}')";
 					}
 				}
 			}
