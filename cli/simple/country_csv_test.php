@@ -9,5 +9,5 @@ $arrCountries	= Address_Country_CSV::getAll();
 
 echo "\n>>>";
 print_r($arrCountries);
-echo "\n<<<\n";
+echo "<<<\n";
 ?>
