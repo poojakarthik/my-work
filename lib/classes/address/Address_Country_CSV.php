@@ -123,7 +123,7 @@ class Address_Country_CSV
 				}
 				else
 				{
-					echo "[+] Header Match ('{$strAlias}' === '{$arrHeader[$intColumn]}')";
+					echo "[+] Header Match ('{$strAlias}' === '{$arrHeader[$intColumn]}')\n";
 				}
 			}
 			
