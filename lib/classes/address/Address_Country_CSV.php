@@ -13,7 +13,7 @@ class Address_Country_CSV
 	const	GET_MODE_FOR_REVISION		= 3;
 	const	GET_MODE_AFTER_REVISION		= 4;
 	
-	const	DATABASE_FLEX_PATH			= 'files/rollout/import/country/';
+	const	DATABASE_FLEX_PATH			= 'lib/rollout/support/country/';
 	
 	protected static	$_arrDatabaseCache;
 	
