@@ -1,3 +1,4 @@
-name,description,code,Flex_Rollout_Version
-Australia,Australia,AUS,92
-India,India,IND,92
+name,code_2_char,code_3_char,has_postcode,Flex_Rollout_Version
+Australia,AU,AUS,1,92
+India,IN,IND,1,92
+United States of America,US,USA,0,171
