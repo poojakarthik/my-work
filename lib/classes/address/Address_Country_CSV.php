@@ -74,7 +74,7 @@ class Address_Country_CSV
 				($intGetMode == self::GET_MODE_FOR_REVISION		&& $intCacheRollout == $intRolloutVersion) || 
 				($intGetMode == self::GET_MODE_AFTER_REVISION	&& $intCacheRollout > $intRolloutVersion))
 			{
-				echo "Rollout v{$intCacheRollout} is included";
+				echo "Rollout v{$intCacheRollout} is included\n";
 				foreach ($arrCountries as $objCountry)
 				{
 					echo "Adding to output: \n".print_r($objCountry, true)."\n";
