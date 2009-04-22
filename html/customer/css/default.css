@@ -27,7 +27,7 @@
 
 .text_notice
 {
-	color: red;
+	color: #f00;
 }
 .text_row_standout
 {
@@ -41,9 +41,9 @@
 	left:45%;
 	width:350px;
 	height:123px;
-	border: solid 1px #000000;
+	border: solid 1px #000;
 	background-color: #EF0303;
-	color:	#ffffff;
+	color:	#fff;
 	font-weight: bold;
 	visibility: hidden;
 	padding-top: 0px;
@@ -52,7 +52,7 @@ div#error_box input
 {
 	width:	75px;
 	height:	20px;
-	border: 1px solid #000000;
+	border: 1px solid #000;
     background: #637172;
 	font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 9pt;
@@ -76,7 +76,7 @@ div#error_box input
 	text-align: center;
 	margin:0;
 	padding-top: 20px;
-	color: #000000;
+	color: #000;
 	font-weight: normal;
 }
 .content_0047
@@ -98,7 +98,7 @@ div#error_box input
 	text-indent: 0px;
 	background-image: url("./img/template/message_notice.png");
 	background-repeat: no-repeat;
-	background-color: green;
+	background-color: #0f0;
 	background-color: #4f4f4f;
 }
 /* error box ends */
@@ -248,7 +248,7 @@ textarea.invalid {
 .login-table-style-main-title
 {
 	border: solid 1px #D1D1D1; 
-	color: #000000; 
+	color: #000;
 	width:442px; 
 	font-size:12px;
 	padding:3px;
@@ -331,7 +331,7 @@ textarea.invalid {
 	font-size:	12px;
 	width:		375px;
 	text-indent: 10px;
-	background-color:	#FFFFFF;
+	background-color:	#fff;
 	border:				solid 1px #D1D1D1;
 
 }
@@ -341,7 +341,7 @@ textarea.invalid {
 	font-size:	12px;
 	width:		375px;
 	text-indent: 0; 
-	background-color:	#FFFFFF;
+	background-color:	#fff;
 	border:				solid 1px #D1D1D1;
 
 }
@@ -464,9 +464,9 @@ div.validation-error-tootltip {
   position: absolute;
   top: 0;
   left: 0;
-  color: black;
-  background: white;
-  border: 0.1em solid black;
+  color: #000;
+  background: #fff;
+  border: 0.1em solid #000;
   z-index: 10000;
   padding: 0.4em;
   max-width: 20em;
@@ -514,7 +514,7 @@ div.dynamically-loaded-panel-title
 /* Footer start */
 div.dynamically-loaded-panel-footer
 {
-	background-color:	#FFFFFF;
+	background-color:	#fff;
 	text-align:         right;
 	padding:			3px;
 	/* for firefox compatibility. */
@@ -523,7 +523,7 @@ div.dynamically-loaded-panel-footer
 	width:              442px;
 	height:             20px;
 	margin-left:        7px;
-	border:				solid 1px #FFFFFF;
+	border:				solid 1px #fff;
 }
 /* Footer end */
 
@@ -573,7 +573,7 @@ div.reflex-popup-opaque {
 	left				: 0;
 	width				: 100%;
 	height				: 100%;
-	background-color	: #000000;
+	background-color	: #000;
 	filter				: alpha(opacity=25);
 	-moz-opacity		: .25;
 	opacity				: .25;
@@ -581,7 +581,7 @@ div.reflex-popup-opaque {
 
 div.reflex-popup {
 	margin				: auto;
-	border				: 0.1em solid #000000;
+	border				: 0.1em solid #000;
 	background-color	: #efefef;
 	z-index				: 50;
 	position			: absolute;
@@ -599,7 +599,7 @@ div.reflex-popup table.reflex {
 
 div.reflex-popup-title-bar {
 	height				: auto;
-	background-color	: #000000;
+	background-color	: #000;
 	padding				: 1px;
 	margin:	0px;
 	text-align:	left;
@@ -612,7 +612,7 @@ div.reflex-popup-content{
 }
 
 div.reflex-popup-title {
-	color : #EEEEEE;
+	color : #eee;
 	float : left;
 	width : 79%;
 	margin:	0px;
@@ -696,7 +696,7 @@ div.reflex-loading-image p {
 		font-family:			"Nimbus Sans NL", Tahoma, sans-serif;
 		margin-bottom:			1px;
 		padding-left:			3px;
-		border:					solid 1px #000000;
+		border:					solid 1px #000;
 	}
 	input[type="checkbox"] {
 		border: none;
@@ -746,7 +746,7 @@ div.reflex-loading-image p {
 	h1
 	{
 		float:					left;
-		color:					#000000;
+		color:					#000;
 		width:					950px;
 		
 		font-size:				18pt;
@@ -836,7 +836,7 @@ span.IncorrectLogin
 		width:					100%;
 		position:				relative;
 		padding-bottom:			25px;
-		background-color:		#ffffff;
+		background-color:		#fff;
 	}
 
 	div#PageBody .pageContainerLeft
@@ -856,7 +856,7 @@ span.IncorrectLogin
 		height:					100%;
 		width:					5px;
 		top: 					0;
-		background-color:		#ffffff;
+		background-color:		#fff;
 		background-image:		none;
 	}
 
@@ -881,7 +881,7 @@ span.IncorrectLogin
 		height:					150px;
 		background-image:		url('./img/template/headerbg.png');
 		background-repeat:		repeat-x;
-		background-color:		#ffffff;
+		background-color:		#fff;
 	}
 	
 	.documentContainer
@@ -896,7 +896,7 @@ span.IncorrectLogin
 	{
 		margin-left:			0;
 		margin-right:			0;
-		background-color:		#ffffff;
+		background-color:		#fff;
 		height: 				100%;
 		position:				relative;
 	}
@@ -956,7 +956,7 @@ span.IncorrectLogin
 		position: 				absolute;
 		top: 					0;
 		left: 					0;
-		color: 					#000000;
+		color: 					#000;
 		padding: 				0;
 		line-height:			33px;
 	}
@@ -1078,7 +1078,7 @@ span.IncorrectLogin
 	.DefaultInputText,
 	.DefaultInputTextArea
 	{
-		border:					solid 1px #000000;
+		border:					solid 1px #000;
 	}
 	
 
@@ -1092,7 +1092,7 @@ span.IncorrectLogin
 		left:					0;
 		top:					0;
 		overflow:				hidden;
-		border:					solid 1px #000000;
+		border:					solid 1px #000;
 	}
 	
 	.DefaultInputCheckBox
@@ -1126,7 +1126,7 @@ span.IncorrectLogin
 	.DefaultInvalidInputText,
 	.DefaultInvalidInputTextArea
 	{
-		border:					solid 1px #000000;
+		border:					solid 1px #000;
 	}
 	
 	
@@ -1154,7 +1154,7 @@ span.IncorrectLogin
 		position:				relative;
 		overflow:				visible;
 		height:					auto;
-		border:					solid 1px #FFFFFF;
+		border:					solid 1px #fff;
 	}
 	
 	.DefaultHiddenElement
@@ -1288,7 +1288,7 @@ span.IncorrectLogin
 		background-image:		url('img/template/table_first_bg.png');
 		
 		background-color:		#45a0f3;
-		color:					#FFFFFF;
+		color:					#fff;
 		
 		font-size:				10pt;
 	}
@@ -1300,14 +1300,14 @@ span.IncorrectLogin
 	
 	table.Listing tr.First th a
 	{
-		color:					#FFFFFF;
+		color:					#fff;
 		text-decoration:		none;
 	}
 	
 	table.Listing tr.Odd th,
 	table.Listing tr.Odd td
 	{
-		background-color:		#FFFFFF;
+		background-color:		#fff;
 	}
 	
 	table.Listing tr.Even th,
@@ -1347,7 +1347,7 @@ span.IncorrectLogin
 	.ContextMenuItem
 	{
 		border:			  		solid 1px #999999;
-		background-color:		#FFFFFF;
+		background-color:		#fff;
 		background-repeat:   	no-repeat;
 		background-position: 	top left;
 	}
@@ -1412,7 +1412,7 @@ span.IncorrectLogin
 		background-color:		#505050;
 		background-image:		url('img/template/menubar_hover.png');
 		background-repeat:		repeat-x;
-		color:					white;
+		color:					#fff;
 	}
 	
 	
@@ -1751,7 +1751,7 @@ span.IncorrectLogin
 		
 		border:					solid 1px #07548e;
 		
-		color:					#FFFFFF;
+		color:					#fff;
 		background-color:		#07548e;
 		
 		font-size:				10pt;
@@ -1763,7 +1763,7 @@ span.IncorrectLogin
 		
 		border:					solid 1px #434343;
 		
-		color:					#FFFFFF;
+		color:					#fff;
 		background-color:		#434343;
 		font-size:				10pt;
 	}
@@ -1815,8 +1815,8 @@ span.IncorrectLogin
 	.PopupBox
 	{
 		position:				absolute;
-		border:					1px solid #000000;
-		background-color:		#ffffff;
+		border:					1px solid #000;
+		background-color:		#fff;
 		z-index:				1001;
 	}
 
@@ -1825,8 +1825,8 @@ span.IncorrectLogin
 		font-family:			"Nimbus Sans L", Arial, Tahoma, Sans-serif;
 		font-size:				10pt;
 		line-height:			18pt;
-		color:					#FFFFFF;
-		background-color:		#000000;
+		color:					#fff;
+		background-color:		#000;
 		background-image:		url('img/template/background.png');
 		background-repeat:		repeat-x;
 		padding:				0;
@@ -1872,7 +1872,7 @@ span.IncorrectLogin
 		width:					100%;
 		height:					100%;
 		z-index: 				1000;
-		background-color:		#000000;
+		background-color:		#000;
 		opacity: 				.50;
 	}
 	
@@ -1882,8 +1882,8 @@ span.IncorrectLogin
 
 	.VixenTooltip
 	{
-		border: 				1px solid #000000;
-		background-color: 		#ffffff;
+		border: 				1px solid #000;
+		background-color: 		#fff;
 		z-index: 				100001;
 	}
 	
@@ -1906,8 +1906,8 @@ span.IncorrectLogin
 		top:					44px;
 		width:					100%;
 		height:					28px;
-		color:					#FFFFFF;
-		background-color:		#000000;
+		color:					#fff;
+		background-color:		#000;
 		background-image:		url('img/template/taskbar.png');
 		background-repeat:		repeat-x;
 		padding:				0px;
@@ -1919,15 +1919,15 @@ span.IncorrectLogin
 	
 	.TaskbarItem
 	{
-		border:					1px	solid #EEEEEE;
-		border-top-color:		#CCCCCC;
-		border-left-color:		#CCCCCC;
-		border-right-color:		#333333;
-		border-bottom-color:	#333333;
+		border:					1px	solid #eee;
+		border-top-color:		#ccc;
+		border-left-color:		#ccc;
+		border-right-color:		#333;
+		border-bottom-color:	#333;
 		width:					150px;
 		height:					20px;
-		background-color:		#444444;
-		color:					#CCCCCC;
+		background-color:		#444;
+		color:					#ccc;
 		vertical-align:			middle;
 		float:					left;
 		overflow:				hidden;
@@ -1937,15 +1937,15 @@ span.IncorrectLogin
 	
 	.TaskbarItemSelected
 	{
-		border:					1px	solid #EEEEEE;
-		border-top-color:		#333333;
-		border-left-color:		#333333;
-		border-right-color:		#CCCCCC;
-		border-bottom-color:	#CCCCCC;
+		border:					1px	solid #eee;
+		border-top-color:		#333;
+		border-left-color:		#333;
+		border-right-color:		#ccc;
+		border-bottom-color:	#ccc;
 		width:					150px;
 		height:					20px;
-		background-color:		#BBBBBB;
-		color:					#000000;
+		background-color:		#BBB;
+		color:					#000;
 		font-weight:			bold;
 		vertical-align:			middle;
 		float:					left;

@@ -1495,7 +1495,7 @@ div#weekScheduler_Meridians div
 {
 	width:286px;
 	float:left;
-	background-color:buttonface;
+	background-color: buttonface;
 	border: 1px outset buttonface;
 	height:25px;
 	text-align: center;
