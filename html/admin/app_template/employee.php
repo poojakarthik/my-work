@@ -66,7 +66,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		// Retrieve that last 20 customers that were verified by the user
-		$arrColumns	= Array(	"RequestedOn"	=> "eal.RequestedOn",
+		$arrColumns	= Array(	"RequestedOn"	=> "eal.viewed_on",
 								"AccountId"		=> "A.Id",
 								"BusinessName"	=> "A.BusinessName",
 								"TradingName"	=> "A.TradingName",
