@@ -5,9 +5,7 @@
 	//
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
-	
-	// TODO!bash! [  DONE  ] Fatal error: Call to a member function getValue() on a non-object in /home/flame/vixen/intranet/classes/accounts/account.php on line 402
-	
+		
 	// call application loader
 	require ('config/application_loader.php');
 	
@@ -70,7 +68,6 @@
 					
 					$bolDate = @checkdate ((int) $_POST ['Date']['month'], (int) $_POST ['Date']['day'], (int) $_POST ['Date']['year']);
 					
-					// TODO!bash! [  DONE  ]		Warning: mktime() expects parameter 4 to be long, string given in ... (submit with no date)
 					if (!$_POST ['Date']['month'] || !$_POST ['Date']['day'] || !$_POST ['Date']['year'])
 					{
 						$oblstrError->setValue ('Date Invalid');

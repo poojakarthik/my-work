@@ -1482,7 +1482,7 @@ div.ServiceTypeIconADSL
 
 #weekScheduler_Container{
 	width:576px;
-	border: inset 1px buttonface;
+	border: inset 1px #c6c6c6;
 }
 
 div#weekScheduler_Hours,
@@ -1495,8 +1495,8 @@ div#weekScheduler_Meridians div
 {
 	width:286px;
 	float:left;
-	background-color: buttonface;
-	border: 1px outset buttonface;
+	background-color: #c6c6c6;
+	border: 1px outset #c6c6c6;
 	height:25px;
 	text-align: center;
 	font-size: 8pt;
@@ -1506,8 +1506,8 @@ div#weekScheduler_Meridians div
 div#weekScheduler_Hours div {
 	width:22px;
 	float:left;
-	background-color:buttonface;
-	border: 1px outset buttonface;
+	background-color:#c6c6c6;
+	border: 1px outset #c6c6c6;
 	height:25px;
 	font-size: 8pt;
 	cursor: default;
