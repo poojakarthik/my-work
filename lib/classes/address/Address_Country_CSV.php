@@ -67,14 +67,16 @@ class Address_Country_CSV
 		$arrCountries	= array();
 		foreach (self::$_arrDatabaseCache as $intCacheRollout=>$arrCountries)
 		{
-			if ((!$intGetMode || !$intRolloutVersion) || 
-				($intGetMode == self::GET_MODE_BEFORE_REVISION && $intCacheRollout < $intRolloutVersion) || 
-				($intGetMode == self::GET_MODE_TO_REVISION && $intCacheRollout <= $intRolloutVersion) || 
-				($intGetMode == self::GET_MODE_FOR_REVISION && $intCacheRollout == $intRolloutVersion) || 
-				($intGetMode == self::GET_MODE_AFTER_REVISION && $intCacheRollout > $intRolloutVersion))
+			if (!$intGetMode || 
+				!$intRolloutVersion || 
+				($intGetMode == self::GET_MODE_BEFORE_REVISION	&& $intCacheRollout < $intRolloutVersion) || 
+				($intGetMode == self::GET_MODE_TO_REVISION		&& $intCacheRollout <= $intRolloutVersion) || 
+				($intGetMode == self::GET_MODE_FOR_REVISION		&& $intCacheRollout == $intRolloutVersion) || 
+				($intGetMode == self::GET_MODE_AFTER_REVISION	&& $intCacheRollout > $intRolloutVersion))
 			{
 				foreach ($arrCountries as $objCountry)
 				{
+					echo "Adding to output: \n".print_r($objCountry, true)."\n";
 					$arrCountries[]	= $objCountry;
 				}
 			}
