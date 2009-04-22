@@ -74,16 +74,16 @@ class Address_Country_CSV
 				($intGetMode == self::GET_MODE_FOR_REVISION		&& $intCacheRollout == $intRolloutVersion) || 
 				($intGetMode == self::GET_MODE_AFTER_REVISION	&& $intCacheRollout > $intRolloutVersion))
 			{
-				echo "Rollout v{$intCacheRollout} is included\n";
+				//echo "Rollout v{$intCacheRollout} is included\n";
 				foreach ($arrRolloutCountries as $objCountry)
 				{
-					echo "Adding to output: \n".print_r($objCountry, true)."\n";
+					//echo "Adding to output: \n".print_r($objCountry, true)."\n";
 					$arrCountries[]	= $objCountry;
 				}
 			}
 			else
 			{
-				echo "Rollout v{$intCacheRollout} is excluded";
+				//echo "Rollout v{$intCacheRollout} is excluded";
 			}
 		}
 		return $arrCountries;
@@ -119,7 +119,7 @@ class Address_Country_CSV
 			}
 			foreach (self::$_arrImportColumns as $strAlias=>$intColumn)
 			{
-				echo "Checking Header Column '{$strAlias}' @ index {$intColumn}...\n";
+				//echo "Checking Header Column '{$strAlias}' @ index {$intColumn}...\n";
 				if (!array_key_exists($intColumn, $arrHeader))
 				{
 					throw new Exception("Header column at Index {$intColumn} does not exist {$strErrorTail}");
@@ -130,7 +130,7 @@ class Address_Country_CSV
 				}
 				else
 				{
-					echo "\t[+] Header Match ('{$strAlias}' === '{$arrHeader[$intColumn]}')\n";
+					//echo "\t[+] Header Match ('{$strAlias}' === '{$arrHeader[$intColumn]}')\n";
 				}
 			}
 			
@@ -145,7 +145,7 @@ class Address_Country_CSV
 																	$arrData[self::$_arrImportColumns['has_postcode']],
 																	$intRolloutVersion
 																);
-				echo "Adding: \n".print_r($objAddressCountryCSV, true)."\n";
+				//echo "Adding: \n".print_r($objAddressCountryCSV, true)."\n";
 				
 				self::$_arrDatabaseCache[$intRolloutVersion]	= (!self::$_arrDatabaseCache[$intRolloutVersion]) ? array() : self::$_arrDatabaseCache[$intRolloutVersion];
 				self::$_arrDatabaseCache[$intRolloutVersion][]	= $objAddressCountryCSV;
