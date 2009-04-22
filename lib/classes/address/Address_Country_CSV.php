@@ -73,9 +73,9 @@ class Address_Country_CSV
 				($intGetMode == self::GET_MODE_FOR_REVISION && $intCacheRollout == $intRolloutVersion) || 
 				($intGetMode == self::GET_MODE_AFTER_REVISION && $intCacheRollout > $intRolloutVersion))
 			{
-				foreach ($arrCountries as $arrCountry)
+				foreach ($arrCountries as $objCountry)
 				{
-					$arrCountries[]	= $arrCountry;
+					$arrCountries[]	= $objCountry;
 				}
 			}
 		}
@@ -130,18 +130,18 @@ class Address_Country_CSV
 			// Parse Data
 			while ($arrData = fgetcsv($resInputFile))
 			{
-				echo "Adding: \n".print_r($arrData, true)."\n";
 				$intRolloutVersion		= (int)$arrData[self::$_arrImportColumns['Flex_Rollout_Version']];
-				$objAddressLocalityCSV	= new Address_Country_CSV(
+				$objAddressCountryCSV	= new Address_Country_CSV(
 																	$arrData[self::$_arrImportColumns['name']],
 																	$arrData[self::$_arrImportColumns['code_2_char']],
 																	$arrData[self::$_arrImportColumns['code_3_char']],
 																	$arrData[self::$_arrImportColumns['has_postcode']],
 																	$intRolloutVersion
 																);
+				echo "Adding: \n".print_r($objAddressCountryCSV, true)."\n";
 				
 				self::$_arrDatabaseCache[$intRolloutVersion]	= (!self::$_arrDatabaseCache[$intRolloutVersion]) ? array() : self::$_arrDatabaseCache[$intRolloutVersion];
-				self::$_arrDatabaseCache[$intRolloutVersion][]	= $objAddressLocalityCSV;
+				self::$_arrDatabaseCache[$intRolloutVersion][]	= $objAddressCountryCSV;
 			}
 		}
 	}
