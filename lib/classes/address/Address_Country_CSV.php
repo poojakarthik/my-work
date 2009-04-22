@@ -65,7 +65,7 @@ class Address_Country_CSV
 		self::_load();
 		
 		$arrCountries	= array();
-		foreach (self::$_arrDatabaseCache as $intCacheRollout=>$arrCountries)
+		foreach (self::$_arrDatabaseCache as $intCacheRollout=>$arrRolloutCountries)
 		{
 			if (!$intGetMode || 
 				!$intRolloutVersion || 
@@ -75,7 +75,7 @@ class Address_Country_CSV
 				($intGetMode == self::GET_MODE_AFTER_REVISION	&& $intCacheRollout > $intRolloutVersion))
 			{
 				echo "Rollout v{$intCacheRollout} is included\n";
-				foreach ($arrCountries as $objCountry)
+				foreach ($arrRolloutCountries as $objCountry)
 				{
 					echo "Adding to output: \n".print_r($objCountry, true)."\n";
 					$arrCountries[]	= $objCountry;
