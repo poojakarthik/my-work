@@ -66,7 +66,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		// Retrieve that last 20 customers that were verified by the user
-		$arrColumns	= Array(	"RequestedOn"	=> "EAA.RequestedOn",
+		$arrColumns	= Array(	"RequestedOn"	=> "eal.RequestedOn",
 								"AccountId"		=> "A.Id",
 								"BusinessName"	=> "A.BusinessName",
 								"TradingName"	=> "A.TradingName",
@@ -75,10 +75,10 @@ class AppTemplateEmployee extends ApplicationTemplate
 								"FirstName"		=> "C.FirstName",
 								"LastName"		=> "C.LastName"
 							);
-		$strTables	= "Contact AS C RIGHT JOIN EmployeeAccountAudit AS EAA ON EAA.Contact = C.Id INNER JOIN Account AS A ON EAA.Account = A.Id";
-		$strWhere	= "EAA.Employee = <UserId>";
+		$strTables	= "Contact AS C RIGHT JOIN employee_account_log AS eal ON eal.contact_id = C.Id INNER JOIN Account AS A ON eal.account_id = A.Id";
+		$strWhere	= "eal.employee_id = <UserId>";
 		$arrWhere	= array("UserId" => AuthenticatedUser()->_arrUser['Id']);
-		$strOrderBy	= "EAA.RequestedOn DESC";
+		$strOrderBy	= "eal.viewed_on DESC";
 		$strLimit	= "20";
 		
 		DBL()->RecentCustomers->SetColumns($arrColumns);

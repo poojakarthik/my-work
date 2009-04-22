@@ -1793,9 +1793,9 @@ class MenuItems {
 	/**
 	 * RecordCustomerInHistory()
 	 *
-	 * Adds a customer to the EmployeeAccountAudit table
+	 * Adds a customer to the employee_account_log table
 	 *
-	 * Adds a customer to the EmployeeAccountAudit table
+	 * Adds a customer to the employee_account_log table
 	 * 
 	 * @param	bool	$bolSupressErrors
 	 * @param	string	$strNextPage

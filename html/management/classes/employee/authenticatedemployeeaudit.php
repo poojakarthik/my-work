@@ -142,12 +142,12 @@
 			
 			// Insert the Audit
 			$arrAudit = Array (
-				'Employee'		=> $this->_oblintEmployee->getValue (),
-				'Account'		=> $actAccount->Pull ('Id')->getValue (), 
-				'RequestedOn'	=> new MySQLFunction ("NOW()")
+				'employee_id'		=> $this->_oblintEmployee->getValue(),
+				'account_id'		=> $actAccount->Pull('Id')->getValue(),
+				'viewed_on'			=> new MySQLFunction("NOW()")
 			);
 			
-			$insAudit = new StatementInsert ('EmployeeAccountAudit', $arrAudit);
+			$insAudit = new StatementInsert ('employee_account_log', $arrAudit);
 			$insAudit->Execute ($arrAudit);
 			
 			/* Declaring $oblstrAccount as a reference:	foreach ($this->_oblarrAccounts as &$oblstrAccount)
@@ -188,13 +188,13 @@
 		{
 			// Insert the Audit
 			$arrAudit = Array (
-				'Employee'		=> $this->_oblintEmployee->getValue (),
-				'Account'		=> $cntContact->Pull ('Account')->getValue (), 
-				'Contact'		=> $cntContact->Pull ('Id')->getValue (),
-				'RequestedOn'	=> new MySQLFunction ("NOW()")
+				'employee_id'		=> $this->_oblintEmployee->getValue(),
+				'account_id'		=> $cntContact->Pull('Account')->getValue(),
+				'contact_id'		=> $cntContact->Pull('Id')->getValue(),
+				'viewed_on		'	=> new MySQLFunction("NOW()")
 			);
 			
-			$insAudit = new StatementInsert ('EmployeeAccountAudit', $arrAudit);
+			$insAudit = new StatementInsert ('employee_account_log', $arrAudit);
 			$insAudit->Execute ($arrAudit);
 			
 			// Make the list only 19 Contacts long (deleting items from the top first)

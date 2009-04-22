@@ -57,21 +57,21 @@ class Employee
 		}
 	}
 
-	// Retrives the most recent $intMaxRecords from the EmployeeAccountAudit table for this employee
+	// Retrives the most recent $intMaxRecords from the employee_account_log table for this employee
 	// Returns indexed array of records, else empty array
-	// The records will be sorted in descending order of EmployeeAccountAudit.RequestedOn
+	// The records will be sorted in descending order of employee_account_log.viewed_on
 	public function getAccountHistory($intMaxRecords)
 	{
-		$arrColumns = array("Id",
-							"Account",
-							"Contact",
-							"RequestedOn" 
+		$arrColumns = array("id",
+							"account_id",
+							"contact_id",
+							"viewed_on"
 							);
-		$selEmployeeAccountAudit = new StatementSelect("EmployeeAccountAudit", $arrColumns, "Employee = <EmployeeId>", "RequestedOn DESC", "$intMaxRecords");
+		$selEmployeeAccountAudit = new StatementSelect("employee_account_log", $arrColumns, "employee_id = <EmployeeId>", "viewed_on DESC", "$intMaxRecords");
 		
 		if (($intRecCount = $selEmployeeAccountAudit->Execute(array("EmployeeId" => $this->id))) === FALSE)
 		{
-			throw new Exception("Failed to retrieve EmployeeAccountAudit records with Employee Id {$this->id}: ". $selEmployeeAccountAudit->Error());
+			throw new Exception("Failed to retrieve employee_account_log records with Employee Id {$this->id}: ". $selEmployeeAccountAudit->Error());
 		}
 		if ($intRecCount == 0)
 		{
@@ -88,15 +88,15 @@ class Employee
 	{
 		if ($intAccountId === NULL && $intContactId === NULL)
 		{
-			throw new Exception("Cannot log Customer in EmployeeAccountAudit when both AccountId and ContactId are NULL");
+			throw new Exception("Cannot log Customer in employee_account_log when both account_id and contact_id are NULL");
 		}
 		
-		$arrData = array(	"Employee"		=> $this->id,
-							"Account"		=> NULL,
-							"Contact"		=> NULL,
-							"RequestedOn"	=> new MySQLFunction("NOW()")
+		$arrData = array(	"employee_id"		=> $this->id,
+							"account_id"		=> NULL,
+							"contact_id"		=> NULL,
+							"viewed_on"			=> new MySQLFunction("NOW()")
 						);
-		$insEmployeeAccountAudit = new StatementInsert("EmployeeAccountAudit", $arrData);
+		$insEmployeeAccountAudit = new StatementInsert("employee_account_log", $arrData);
 		
 		if ($intContactId !== NULL && $intAccountId === NULL)
 		{
@@ -115,7 +115,7 @@ class Employee
 		
 		if ($insEmployeeAccountAudit->Execute($arrData) === FALSE)
 		{
-			throw new Exception("Could not insert record into EmployeeAccountAudit table - ". $insEmployeeAccountAudit->Error());
+			throw new Exception("Could not insert record into employee_account_log table - ". $insEmployeeAccountAudit->Error());
 		}
 	}
 	

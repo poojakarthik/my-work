@@ -75,7 +75,7 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 					}
 			}
 
-			// Record the Customer Verification in the EmployeeAccountAudit table
+			// Record the Customer Verification in the employee_account_log table
 			TransactionStart();
 			$objUser = Employee::getForId(AuthenticatedUser()->GetUserId());
 			$objUser->recordCustomerInAccountHistory($intAccountId, $intContactId);

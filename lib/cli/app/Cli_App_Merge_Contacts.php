@@ -15,9 +15,9 @@ class Cli_App_Merge_Contacts extends Cli
 															"ContactColumn"	=> "PrimaryContact"
 															),
 												1	=> array(
-															"Table"			=> "EmployeeAccountAudit",
-															"IdColumn"		=> "Id",
-															"ContactColumn"	=> "Contact"
+															"Table"			=> "employee_account_log",
+															"IdColumn"		=> "id",
+															"ContactColumn"	=> "contact_id"
 															),
 												2	=> array(
 															"Table"			=> "Note",
