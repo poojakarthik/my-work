@@ -143,6 +143,8 @@ class Address_Country_CSV
 				self::$_arrDatabaseCache[$intRolloutVersion]	= (!self::$_arrDatabaseCache[$intRolloutVersion]) ? array() : self::$_arrDatabaseCache[$intRolloutVersion];
 				self::$_arrDatabaseCache[$intRolloutVersion][]	= $objAddressCountryCSV;
 			}
+			
+			print_r(self::$_arrDatabaseCache);
 		}
 	}
 }
