@@ -24,7 +24,7 @@ class Flex_Rollout_Version_000171 extends Flex_Rollout_Version
 						name					VARCHAR(256)				NOT NULL								COMMENT 'Name of the Event',
 						description				VARCHAR(1024)				NOT NULL								COMMENT 'Description of the Event',
 						department_responsible	VARCHAR(256)				NULL									COMMENT 'Department responsible for this Event',
-						start_timestamp			TIMESTAMP					NOT NULL	DEFAULT NULL				COMMENT 'Event Start Timestamp',
+						start_timestamp			TIMESTAMP					NOT NULL	DEFAULT 0					COMMENT 'Event Start Timestamp',
 						end_timestamp			TIMESTAMP					NULL									COMMENT 'Event End Timestamp',
 						created_employee_id		BIGINT			UNSIGNED	NOT NULL								COMMENT '(FK) Employee who created/scheduled the Event',
 						created_on				TIMESTAMP					NOT NULL	DEFAULT CURRENT_TIMESTAMP	COMMENT 'Creation Timestamp',
