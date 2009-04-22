@@ -11,7 +11,7 @@
  *
  */
 
-class Flex_Rollout_Version_000169 extends Flex_Rollout_Version
+class Flex_Rollout_Version_000170 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
 
