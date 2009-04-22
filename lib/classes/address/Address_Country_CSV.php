@@ -130,13 +130,13 @@ class Address_Country_CSV
 			// Parse Data
 			while ($arrData = fgetcsv($resInputFile))
 			{
-				$intRolloutVersion		= (int)self::$_arrImportColumns['Flex_Rollout_Version'];
+				$intRolloutVersion		= (int)$arrData[self::$_arrImportColumns['Flex_Rollout_Version']];
 				$objAddressLocalityCSV	= new Address_Country_CSV(
 																	$arrData[self::$_arrImportColumns['name']],
 																	$arrData[self::$_arrImportColumns['code_2_char']],
 																	$arrData[self::$_arrImportColumns['code_3_char']],
 																	$arrData[self::$_arrImportColumns['has_postcode']],
-																	$arrData[$intRolloutVersion]
+																	$intRolloutVersion
 																);
 				
 				self::$_arrDatabaseCache[$intRolloutVersion]	= (!self::$_arrDatabaseCache[$intRolloutVersion]) ? array() : self::$_arrDatabaseCache[$intRolloutVersion];
