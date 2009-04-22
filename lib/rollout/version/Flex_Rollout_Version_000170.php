@@ -5,9 +5,9 @@
  * This version: -
  *	
  *	1:	Drop the ProvisioningExport, ServiceRecurringCharge, and RatePlanRecurringChargeType Tables
- *	2:	Postgres-ify EmployeeAccountAudit
- *	3:	Postgres-ify RecordTypeTranslation
- *	4:	Add address_locality Table
+ *	2:	Delete invalid EmployeeAccountAudit records
+ *	3:	Postgres-ify EmployeeAccountAudit
+ *	4:	Postgres-ify RecordTypeTranslation
  *
  */
 
@@ -30,7 +30,24 @@ class Flex_Rollout_Version_000170 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to drop the ProvisioningExport, ServiceRecurringCharge, and RatePlanRecurringChargeType Tables. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		
-		//	2:	Postgres-ify EmployeeAccountAudit
+		//	2:	Delete invalid EmployeeAccountAudit records
+		$strSQL = "	DELETE FROM	EmployeeAccountAudit
+					WHERE		(
+									Contact IS NOT NULL
+									AND (SELECT Id FROM Contact WHERE Id = EmployeeAccountAudit.Contact LIMIT 1) IS NULL
+								)
+								OR
+								(
+									Account IS NOT NULL
+									AND (SELECT Id FROM Account WHERE Id = EmployeeAccountAudit.Account LIMIT 1) IS NULL
+								);";
+		$result = $dbAdmin->query($strSQL);
+		if (PEAR::isError($result))
+		{
+			throw new Exception(__CLASS__ . ' Failed to delete invalid EmployeeAccountAudit records. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
+		}
+		
+		//	3:	Postgres-ify EmployeeAccountAudit
 		$strSQL = "	ALTER TABLE	EmployeeAccountAudit
 					RENAME	employee_account_log,
 					
@@ -61,7 +78,7 @@ class Flex_Rollout_Version_000170 extends Flex_Rollout_Version
 									CHANGE	contact_id	Contact		BIGINT(20)	UNSIGNED	NULL,
 									CHANGE	viewed_on	RequestedOn	DATETIME				NOT NULL;";
 		
-		//	3:	Postgres-ify RecordTypeTranslation
+		//	4:	Postgres-ify RecordTypeTranslation
 		$strSQL = "	ALTER TABLE	RecordTypeTranslation
 					RENAME	cdr_call_group_translation,
 					
