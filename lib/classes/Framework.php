@@ -197,7 +197,7 @@
 			case '_selFindRecordCode':
 				if (!isset($_selFindRecordCode))
 				{
-					$_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
+					$_selFindRecordCode		= new StatementSelect("cdr_call_group_translation", "code", "carrier_id = <Carrier> AND carrier_code = <CarrierCode>", "", "1");
 				}
 				return $_selFindRecordCode;
 		

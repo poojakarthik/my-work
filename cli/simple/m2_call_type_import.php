@@ -4,11 +4,11 @@
 require_once("../../flex.require.php");
 
 $arrRecordTypeTranslation					= Array();
-$arrRecordTypeTranslation['Code']			= NULL;
-$arrRecordTypeTranslation['Carrier']		= CARRIER_M2;
-$arrRecordTypeTranslation['CarrierCode']	= NULL;
-$arrRecordTypeTranslation['Description']	= NULL;
-$insRecordTypeTranslation	= new StatementInsert("RecordTypeTranslation", $arrDestinationTranslation);
+$arrRecordTypeTranslation['code']			= NULL;
+$arrRecordTypeTranslation['carrier_id']		= CARRIER_M2;
+$arrRecordTypeTranslation['carrier_code']	= NULL;
+$arrRecordTypeTranslation['description']	= NULL;
+$insRecordTypeTranslation	= new StatementInsert("cdr_call_group_translation", $arrDestinationTranslation);
 $selRecordType				= new StatementSelect("RecordType", "Code", "ServiceType = 101 AND Code = <Code>");
 
 $strInFile		= "/home/rdavis/m2_call_type_import.csv";
@@ -25,16 +25,16 @@ while ($arrLine = fgetcsv($resInputFile))
 	}
 	
 	$arrRecordTypeTranslation					= Array();
-	$arrRecordTypeTranslation['Carrier']		= CARRIER_M2;
-	$arrRecordTypeTranslation['CarrierCode']	= trim($arrLine[0]);
-	$arrRecordTypeTranslation['Description']	= trim($arrLine[1]);
-	$arrRecordTypeTranslation['Code']			= trim($arrLine[2]);
+	$arrRecordTypeTranslation['carrier_id']		= CARRIER_M2;
+	$arrRecordTypeTranslation['carrier_code']	= trim($arrLine[0]);
+	$arrRecordTypeTranslation['description']	= trim($arrLine[1]);
+	$arrRecordTypeTranslation['code']			= trim($arrLine[2]);
 	
 	// Insert into the Database
 	if ($insRecordTypeTranslation->Execute($arrRecordTypeTranslation))
 	{
 		// Success
-		CliEcho("Inserted '{$arrRecordTypeTranslation['Description']}'!");
+		CliEcho("Inserted '{$arrRecordTypeTranslation['description']}'!");
 	}
 	else
 	{
