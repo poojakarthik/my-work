@@ -29,6 +29,7 @@
 {
 	color: 					#f00;
 }
+
 .text_row_standout
 {
 	font-weight: 			bold;
@@ -394,6 +395,7 @@ textarea.invalid {
 	margin-bottom: 			7px;
 	font-weight:			bold;
 }
+
 .customer-standard-table-style
 {
 	font-size:				12px;
@@ -419,6 +421,7 @@ div.reflex-popup-text-content
 	width:					454px;
 	clear: 					both;
 }
+
 .processing-credit-card-payment
 {
 	margin:					0px;
@@ -464,6 +467,7 @@ input.validation-error-tootltip-button {
 	background-image:		url("./img/template/question.jpg");
 	background-position:	50% 50%;
 }
+
 td[contains-invalid-input=true] input.validation-error-tootltip-button {
 	visibility:				visible;
 	border:					none;
@@ -569,6 +573,7 @@ div#VixenPopupContent__VixenAlertBox
 	text-align:				left;
 
 }
+
 div.reflex-popup-overlay {
 	position: 				fixed;
 	top: 					0em;
@@ -616,6 +621,7 @@ div.reflex-popup-title-bar {
 	text-align:				left;
 	text-indent:			5px;
 }
+
 div.reflex-popup-content{
 	text-align:				left;
 	overflow:				visible;
@@ -637,6 +643,7 @@ div.reflex-popup-title-bar-buttons {
 div.reflex-popup-content h1 {
 	width: 					100%
 }
+
 /* For IE6 */
 #acceptTermsCheckbox
 {
@@ -645,6 +652,7 @@ div.reflex-popup-content h1 {
 	padding: 				0;
 	background-color: 		#f9f9f9;
 }
+
 div.reflex-popup-footer {
 	position:				relative;
 	text-align: 			right;
@@ -655,9 +663,11 @@ div.reflex-popup-footer {
 	padding-top:			0;
 	padding-bottom:			0.5em;
 }
+
 input.reflex-button {
 	margin-left: 0.5em;
 }
+
 div.reflex-loading-image {
 	background-repeat:      no-repeat;
 	background-image:       url("./img/template/loading.gif");
