@@ -110,8 +110,8 @@ class Employee
 			$intAccountId = $objContact->account;
 		}
 		
-		$arrData['Account'] = $intAccountId;
-		$arrData['Contact'] = $intContactId;
+		$arrData['account_id'] = $intAccountId;
+		$arrData['contact_id'] = $intContactId;
 		
 		if ($insEmployeeAccountAudit->Execute($arrData) === FALSE)
 		{
