@@ -199,7 +199,7 @@ textarea.invalid {
 }
 .customer-standard-table-title-style-billing
 {
-	text-indent: 30; 
+	text-indent: 30px;
 	font-size:	12px;
 	width:		442px;
 	background-color:	#EFEBE7;
@@ -208,12 +208,12 @@ textarea.invalid {
 	background-image: url("./img/template/invoice.gif");
 	background-position: 5px 50%;
 	padding:	3px;
-	margin-bottom: 7;
+	margin-bottom: 7px;
 	font-weight:	bold;
 }
 .customer-standard-table-title-style-password
 {
-	text-indent: 30; 
+	text-indent: 30px;
 	font-size:	12px;
 	width:		442px;
 	background-color:	#EFEBE7;
@@ -222,12 +222,12 @@ textarea.invalid {
 	background-image: url("./img/template/file.png");
 	background-position: 5px 50%;
 	padding:	3px;
-	margin-bottom: 7;
+	margin-bottom: 7px;
 	font-weight:	bold;
 }
 .customer-standard-table-title-style-survey
 {
-	padding-left: 30; 
+	padding-left: 30px;
 	padding-right:	3px;
 	padding-top:	3px;
 	padding-bottom:	3px;
@@ -238,7 +238,7 @@ textarea.invalid {
 	background-repeat: no-repeat;
 	background-image: url("./img/template/file.png");
 	background-position: 5px 50%;
-	margin-bottom: 7;
+	margin-bottom: 7px;
 	font-weight:	bold;
 }
 
@@ -252,7 +252,7 @@ textarea.invalid {
 	width:442px; 
 	font-size:12px;
 	padding:3px;
-	margin-bottom:7;
+	margin-bottom: 7px;
 	font-weight:bold;
 }
 .login-table-style-main
@@ -260,10 +260,10 @@ textarea.invalid {
 	border: solid 1px #D1D1D1; 
 	background-color: #f9f9f9; 
 	width: 442px; 
-	font-size:12px;
-	padding:3px;
-	margin-bottom:7;
-	font-weight:normal;
+	font-size: 12px;
+	padding: 3px;
+	margin-bottom: 7px;
+	font-weight: normal;
 }
 
 /**************************************************************************/
@@ -271,7 +271,7 @@ textarea.invalid {
 /**************************************************************************/
 .customer-standard-table-title-style-account
 {
-	text-indent: 30; 
+	text-indent: 30px;
 	font-size:	12px;
 	width:		442px;
 	background-color:	#f9f9f9;
@@ -280,12 +280,12 @@ textarea.invalid {
 	background-image: url("./img/template/cash.png");
 	background-position: 5px 50%;
 	padding:	3px;
-	margin-bottom: 7;
+	margin-bottom: 7px;
 	font-weight:	bold;
 }
 .customer-standard-table-title-style-address
 {
-	text-indent: 30; 
+	text-indent: 30px;
 	font-size:	12px;
 	width:		442px;
 	background-color:	#f9f9f9;
@@ -294,12 +294,12 @@ textarea.invalid {
 	background-image: url("./img/template/email.png");
 	background-position: 5px 50%;
 	padding:	3px;
-	margin-bottom: 7;
+	margin-bottom: 7px;
 	font-weight:	bold;
 }
 .customer-standard-table-title-style-contact
 {
-	text-indent: 30; 
+	text-indent: 30px;
 	font-size:	12px;
 	width:		442px;
 	background-color:	#f9f9f9;
@@ -308,7 +308,7 @@ textarea.invalid {
 	background-image: url("./img/template/report.png");
 	background-position: 5px 50%;
 	padding:	3px;
-	margin-bottom: 7;
+	margin-bottom: 7px;
 	font-weight:	bold;
 }
 
@@ -330,7 +330,7 @@ textarea.invalid {
 {
 	font-size:	12px;
 	width:		375px;
-	text-indent: 10; 
+	text-indent: 10px;
 	background-color:	#FFFFFF;
 	border:				solid 1px #D1D1D1;
 
@@ -352,14 +352,14 @@ textarea.invalid {
 	width:		367px !important;
 	/* for ie6 compatibility. */
 	width:		375px;
-	text-indent: 10; 
+	text-indent: 10px;
 	color:	[customer_breadcrumb_menu_link_color];
 	background-repeat:		repeat-x;
 	background-image:		url('./img/template/menu-options-bg.gif');
 	background-position: 0px 100%;
 	border:				solid 1px #D1D1D1;
 	padding:	3px;
-	margin-bottom: 7;
+	margin-bottom: 7px;
 	font-weight:	bold;
 }
 
@@ -368,7 +368,7 @@ textarea.invalid {
 /**************************************************************************/
 .customer-standard-table-title-style
 {
-	text-indent: 30; 
+	text-indent: 30px;
 	font-size:	12px;
 	width:		442px;
 	background-color:	#f9f9f9;
@@ -377,7 +377,7 @@ textarea.invalid {
 	background-image: url("./img/generic/square_black.gif");
 	background-position: 5px 50%;
 	padding:	3px;
-	margin-bottom: 7;
+	margin-bottom: 7px;
 	font-weight:	bold;
 }
 .customer-standard-table-style
@@ -392,9 +392,9 @@ textarea.invalid {
 div.reflex-popup-text-content
 {
 	font-size:			12px;
-	font:				verdana;
+	font-family:		Verdana;
 	margin-left: 0;
-	margin-bottom:				7px;
+	margin-bottom:		7px;
 	padding:			3px;
 	border:				solid 1px #D1D1D1;
 	background-color:	#f9f9f9;
@@ -477,15 +477,15 @@ div#credit-card-payment-panel
 {
 	font-weight: bold;
 	font-size: 12px;
-	font: arial;
-	width: 442;
+	font-family: Arial;
+	width: 442px;
 }
 
 div#credit-card-payment-panel h1
 {
-	margin-left: 7;
+	margin-left: 7px;
 	padding:	3px;
-	font:	verdana;
+	font-family:	Verdana;
 	font-size: 14px;
 	width: auto;
 }
@@ -498,7 +498,7 @@ div.dynamically-loaded-panel-title
 	background-image: url("./img/template/title-icon-creditcard.jpg");
 	background-position: 5px 50%;
 	font-size:			12px;
-	font:				verdana;
+	font-family:		Verdana;
 	border:				solid 1px #D1D1D1;
 	text-align	: left;
 	padding:	3px;
@@ -515,14 +515,14 @@ div.dynamically-loaded-panel-title
 div.dynamically-loaded-panel-footer
 {
 	background-color:	#FFFFFF;
-	text-align	: right;
+	text-align:         right;
 	padding:			3px;
 	/* for firefox compatibility. */
-	width: 446px !important; 
+	width:              446px !important;
 	/* for ie6 compatibility. */
-	width: 442px;
-	height: 20px;
-	margin-left: 7;
+	width:              442px;
+	height:             20px;
+	margin-left:        7px;
 	border:				solid 1px #FFFFFF;
 }
 /* Footer end */
@@ -530,15 +530,15 @@ div.dynamically-loaded-panel-footer
 table.reflex
 {
 	font-size:			12px;
-	font:				verdana;
-	margin-left: 0;
-	margin-bottom:				7px;
+	font-family:		Verdana;
+	margin-left:        0;
+	margin-bottom:		7px;
 	padding:			3px;
 	border:				solid 1px #D1D1D1;
 	background-color:	#f9f9f9;
 	position:			relative;
-	width:454px;
-	clear: both;
+	width:              454px;
+	clear:              both;
 }
 input.required, 
 select.required
@@ -648,13 +648,13 @@ input.reflex-button {
 	margin-left: 0.5em;
 }
 div.reflex-loading-image {
-	background-repeat: no-repeat;
-	background-image: url("./img/template/loading.gif");
-	background-position: 50% 50%;
-	margin: auto;
-	display: block;
-	position: default;
-	text-align: center;
+	background-repeat:      no-repeat;
+	background-image:       url("./img/template/loading.gif");
+	background-position:    50% 50%;
+	margin:                 auto;
+	display:                block;
+	position:               relative;
+	text-align:             center;
 }
 
 div.reflex-loading-image p {
@@ -677,8 +677,8 @@ div.reflex-loading-image p {
 	}
 	.LinksTable
 	{
-		font:				arial;
-		font-size:			12;
+		font-family:		Arial;
+		font-size:			12px;
 		background-color:	[customer_primary_color];
 	}
 
@@ -715,7 +715,7 @@ div.reflex-loading-image p {
 	img
 	{
 		border:					0;
-		behavior: url(iepngfix.htc); 
+		behavior:               url(iepngfix.htc);
 	}
 	
 	a:link,
@@ -1843,7 +1843,7 @@ span.IncorrectLogin
 		text-align:				right;
 		height:					14px;
 		padding:				2px;
-		margin:	5;
+		margin:                 5px;
 	}
 	
 	.PopupMedium,
@@ -1976,13 +1976,13 @@ span.IncorrectLogin
 	width:		440px !important;
 	/* for ie6 compatibility. */
 	width:		442px;
-	text-indent: 10; 
+	text-indent: 10px;
 	color:	[customer_breadcrumb_menu_link_color];
 	background-repeat:		repeat-x;
 	background-image:		url('./img/template/menu-options-bg.gif');
 	background-position: 0px 100%;
 	border:				solid 1px #D1D1D1;
 	padding:	0px;
-	margin-bottom: 7;
+	margin-bottom: 7px;
 	font-weight:	bold;
 }
