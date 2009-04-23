@@ -188,9 +188,10 @@ class Invoice extends ORM
 			
 			if ($arrDetails['bolDisconnectedAndNoCDRs'])
 			{
-				$fltMinimumCharge	= 0.0;
-				$fltUsageStart		= 0.0;
-				$fltUsageLimit		= 0.0;
+				$fltMinimumCharge					= 0.0;
+				$fltUsageStart						= 0.0;
+				$fltUsageLimit						= 0.0;
+				$arrPlanDetails['included_data']	= 0.0;
 			}
 			else
 			{
@@ -490,9 +491,10 @@ class Invoice extends ORM
 		if ($arrServiceTotal['Shared'] || $arrServiceTotal['bolDisconnectedAndNoCDRs'])
 		{
 			// This is either a Shared Plan or is Disconnected and has no CDRs -- don't charge any Plan Charges
-			$fltMinimumCharge	= 0.0;
-			$fltUsageStart		= 0.0;
-			$fltUsageLimit		= 0.0;
+			$fltMinimumCharge					= 0.0;
+			$fltUsageStart						= 0.0;
+			$fltUsageLimit						= 0.0;
+			$arrPlanDetails['included_data']	= 0.0;
 			
 			if ($arrServiceTotal['bolDisconnectedAndNoCDRs'])
 			{
@@ -1298,6 +1300,7 @@ class Invoice extends ORM
 
 		// If there is Included Data on this Plan...
 		$intIncludedData	= (int)$arrPlanDetails['included_data'];
+		Log::getLog()->log("Included Data: {$intIncludedData}");
 		if ($intIncludedData > 0)
 		{
 			// Get all CDRs which are on Uncapped Data Rates
