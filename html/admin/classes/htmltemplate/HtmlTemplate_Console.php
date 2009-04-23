@@ -97,7 +97,7 @@ $strDailyMessageSection
 					echo "
 						<tr".($bolAlt ? " class='alt'" : '').">
 							<td>
-								{$objCalendarEvent->description}
+								".$objCalendarEvent->parseDescription()."
 							</td>
 							<td class='department-responsible'>
 								{$objCalendarEvent->department_responsible}
