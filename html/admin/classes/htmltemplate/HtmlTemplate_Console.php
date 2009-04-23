@@ -50,7 +50,9 @@ $strDailyMessageSection
 ";
 		
 		// Display upcoming Calendar Events
-		echo "
+		if (Flex_Module::isActive(FLEX_MODULE_CALENDAR))
+		{
+			echo "
 <br />
 <div class='reflex-content'>
 	<div class='header'>
@@ -58,13 +60,13 @@ $strDailyMessageSection
 	</div>
 	<div class='body'>
 		<div class='console-calendar'>";
-		
-		ksort($this->mxdDataToRender['UpcomingEvents']);
-		
-		foreach ($this->mxdDataToRender['UpcomingEvents'] as $strDate=>$arrCalendarEvents)
-		{
-			// Table Header & Footer
-			echo "
+			
+			ksort($this->mxdDataToRender['UpcomingEvents']);
+			
+			foreach ($this->mxdDataToRender['UpcomingEvents'] as $strDate=>$arrCalendarEvents)
+			{
+				// Table Header & Footer
+				echo "
 			<div class='day'>
 				<span class='date'>".date('l jS F', strtotime($strDate))."</span>
 				<table class='reflex'>
@@ -86,15 +88,15 @@ $strDailyMessageSection
 						</tr>
 					</tfoot>"*/."
 					<tbody>";
-			
-			// Content
-			if (count($arrCalendarEvents))
-			{
-				$bolAlt	= false;
-				foreach ($arrCalendarEvents as $objCalendarEvent)
+				
+				// Content
+				if (count($arrCalendarEvents))
 				{
-					$bolAlt	= !$bolAlt;
-					echo "
+					$bolAlt	= false;
+					foreach ($arrCalendarEvents as $objCalendarEvent)
+					{
+						$bolAlt	= !$bolAlt;
+						echo "
 						<tr".($bolAlt ? " class='alt'" : '').">
 							<td>
 								".$objCalendarEvent->parseDescription()."
@@ -103,11 +105,11 @@ $strDailyMessageSection
 								{$objCalendarEvent->department_responsible}
 							</td>
 						</tr>";
+					}
 				}
-			}
-			else
-			{
-				echo "
+				else
+				{
+					echo "
 						<tr class='alt'>
 							<td>
 								No actions required
@@ -116,20 +118,21 @@ $strDailyMessageSection
 								&nbsp;
 							</td>
 						</tr>";
-			}
-			
-			// Close off Table
-			echo	"
+				}
+				
+				// Close off Table
+				echo	"
 					</tbody>
 				</table>
 			</div>";
-		}
-		
-		// Close off the calendar
-		echo "
+			}
+			
+			// Close off the calendar
+			echo "
 		</div>
 	</div>
 </div>";
+		}
 	}
 }
 
