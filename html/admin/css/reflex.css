@@ -1110,3 +1110,11 @@ div.console-calendar div.day span.date
 {
 	font-weight	: bold;
 }
+
+div.console-calendar div.day tbody td.department-responsible,
+div.console-calendar div.day tbody th.department-responsible
+{
+	min-width	: 25%;
+	max-width	: 25%;
+	width		: 25%;
+}

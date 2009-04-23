@@ -79,7 +79,7 @@ $strDailyMessageSection
 										<th>
 											Item for action
 										</th>
-										<th>
+										<th class='department-responsible'>
 											Department Responsible
 										</th>
 									</tr>
@@ -105,7 +105,7 @@ $strDailyMessageSection
 										<td>
 											{$objCalendarEvent->description}
 										</td>
-										<td>
+										<td class='department-responsible'>
 											{$objCalendarEvent->department_responsible}
 										</td>
 									</tr>";
