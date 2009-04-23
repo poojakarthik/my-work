@@ -44,7 +44,7 @@ class Calendar_Event extends ORM
 	 * 
 	 * @method
 	 */
-	public static function parseDescription()
+	public function parseDescription()
 	{
 		$arrTokens	= array();
 		preg_match_all("/\[(\w+)(\:)(\d+)\]/", $this->description, $arrTokens, PREG_SET_ORDER);
