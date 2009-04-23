@@ -56,10 +56,10 @@ $strDailyMessageSection
 	<table class='reflex'>
 		<thead>
 			<th>Upcoming Events</th>
-		</thead>
+		</thead>"/*."
 		<tfoot>
 			<th>&nbsp;</th>
-		</tfoot>
+		</tfoot>"*/."
 		<tbody>
 			<tr class='alt'>
 				<td>
