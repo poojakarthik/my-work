@@ -71,6 +71,8 @@ class Calendar_Event extends ORM
 			
 			$strParsedDescription	= str_replace($strToken, $strReplace, $strParsedDescription);
 		}
+		
+		return $strParsedDescription;
 	}
 	
 	/**
