@@ -1086,3 +1086,15 @@ img.icon_16
 	margin-right	: 0.2em;
 	vertical-align	: sub;
 }
+
+/* CONSOLE UPCOMING CALENDAR EVENTS */
+div.console-calendar
+{
+
+}
+
+div.console-calendar div.date:first-child
+{
+	font-size	: 1.5em;
+	font-weight	: bold;
+}

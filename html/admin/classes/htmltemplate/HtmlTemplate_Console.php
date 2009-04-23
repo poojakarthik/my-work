@@ -48,7 +48,74 @@ class HtmlTemplate_Console extends FlexHtmlTemplate
 		echo "
 $strDailyMessageSection
 ";
-
+		
+		// Display upcoming Calendar Events
+		echo "
+<div class='console-calendar'>";
+		
+		ksort($this->mxdDataToRender['UpcomingEvents']);
+		foreach ($this->mxdDataToRender['UpcomingEvents'] as $strDate=>$arrCalendarEvents)
+		{
+			// Table Header & Footer
+			echo "
+	<div class='date'>
+		".date('l jS F', strtotime($strDate))."
+		<table class='reflex'>
+			<thead>
+				<tr>
+					<th>
+						Item for action
+					</th>
+					<th>
+						Department Responsible
+					</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th colspan='2'>
+						&nbsp;
+					</th>
+				</tr>
+			</tfoot>
+			<tbody>";
+			
+			// Content
+			if (count($arrCalendarEvents))
+			{
+				foreach ($arrCalendarEvents as $objCalendarEvent)
+				{
+					echo "
+				<tr>
+					<td>
+						{$objCalendarEvent->description}
+					</td>
+					<td>
+						{$objCalendarEvent->department_responsible}
+					</td>
+				</tr>";
+				}
+			}
+			else
+			{
+				echo "
+			<tr>
+				<td colspan='2'>
+					No actions required
+				</td>
+			</tr>";
+			}
+			
+			// Close off Table
+			echo	"
+			</tbody>
+		</table>
+	</div>";
+		}
+		
+		// Close off the calendar
+		echo "
+</div>";
 	}
 }
 

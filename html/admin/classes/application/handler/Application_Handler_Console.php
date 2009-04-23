@@ -5,6 +5,8 @@ class Application_Handler_Console extends Application_Handler
 	// View all the Customer Statuses in a tabulated format
 	public function View($subPath)
 	{
+		$bolIsGOD	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+		
 		try
 		{
 			// Build the Daily Message
@@ -31,8 +33,35 @@ class Application_Handler_Console extends Application_Handler
 									);
 			}
 			
+			// Get the Events for the next couple of days
+			try
+			{
+				// Get the Events for Today and Tomorrow
+				$strToday			= GetCurrentISODateTime();
+				$intToday			= strtotime($strToday);
+				$intDayOfTheWeek	= (int)date('w', $intToday);
+				$intTomomorrow		= strtotime("+1 day", $intToday);
+				
+				$arrUpcomingEvents	= array();
+				
+				$arrUpcomingEvents[date('Y-m-d', $intToday)]		= Calendar_Event::getForDate($intToday);
+				$arrUpcomingEvents[date('Y-m-d', $intTomomorrow)]	= Calendar_Event::getForDate($intTomomorrow);
+				
+				// If today is Friday, list events for Saturday AND Sunday
+				if ($intDayOfTheWeek == 5)
+				{
+					$intSunday										= strtotime("+2 day", $intToday);
+					$arrUpcomingEvents[date('Y-m-d', $intSunday)]	= Calendar_Event::getForDate($intSunday);
+				}
+			}
+			catch (Exception $eException)
+			{
+				throw new Exception("There was an error retrieving the Calendar Events for the upcoming days.  Please notify YBS of this error.\n". ($bolIsGOD ? $eException->getMessage() : ''));
+			}
+			
 			$arrDetailsToRender = array();
-			$arrDetailsToRender['DailyMessage'] = $arrMessage;
+			$arrDetailsToRender['DailyMessage']		= $arrMessage;
+			$arrDetailsToRender['UpcomingEvents']	= $arrUpcomingEvents;
 	
 			$this->LoadPage('console', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		
