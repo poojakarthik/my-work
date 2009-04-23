@@ -154,7 +154,7 @@ class HtmlTemplateActionsAndNotesList extends HtmlTemplate
 			echo "
 <div id='ActionsAndNotesHeader'>
 	<h2 class='Actions' style='float:left'>Actions / Notes</h2>
-	<a class='button' href='javascript:void()' onclick='document.getElementById(\"ActionsAndNotesCreatorContainer\").style.display = \"block\"; this.parentNode.removeChild(this);' style='float:right'>Create New</a>
+	<input type='button' onclick='document.getElementById(\"ActionsAndNotesCreatorContainer\").style.display = \"block\"; this.parentNode.removeChild(this);' style='float:right' value='New Action'></input>
 	<div style='clear:both;float:none'></div>
 </div>
 <div id='ActionsAndNotesCreatorContainer' style='display:none;margin-bottom:0.5em'></div>\n";
