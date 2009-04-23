@@ -82,14 +82,14 @@ $strDailyMessageSection
 											Department Responsible
 										</th>
 									</tr>
-								</thead>
+								</thead>"/*."
 								<tfoot>
 									<tr>
 										<th colspan='2'>
 											&nbsp;
 										</th>
 									</tr>
-								</tfoot>
+								</tfoot>"*/."
 								<tbody>";
 			
 			// Content
