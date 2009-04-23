@@ -11,6 +11,14 @@ class Calendar_Event extends ORM
 	protected			$_strTableName				= "calendar_event";
 	protected static	$_strStaticTableName		= "calendar_event";
 	
+	protected static	$_arrImportColumns	=	array
+												(
+													'name'					=> 0,
+													'description'			=> 1,
+													'departments'			=> 2,
+													'start_date'			=> 3
+												);
+	
 	/**
 	 * __construct()
 	 *
@@ -139,6 +147,103 @@ class Calendar_Event extends ORM
 			$arrEvents[]	= new self($arrEvent);
 		}
 		return $arrEvents;
+	}
+	
+	/**
+	 * importFromCSVFile()
+	 *
+	 * Gets an array of Calendar_Events which occur on the given Date
+	 *
+	 * @param	string	$strPath				Path to the CSV file to Import from
+	 * 
+	 * @return	integer							Events imported
+	 * 
+	 * @method
+	 */
+	public static function importFromCSVFile($strPath)
+	{
+		if (!file_exists($strPath))
+		{
+			throw new Exception("Path {$strPath} does not exist");
+		}
+		elseif (!($resInputFile = @fopen($strPath, 'r')))
+		{
+			throw new Exception("Unable to open Path {$strPath} for reading: ".error_get_last());
+		}
+		
+		$strErrorTail	= " in File {$strPath}";
+		
+		$intLine	= 0;
+		
+		$arrErrors	= array();
+		
+		// Parse Header
+		$intLine++;
+		if (!$arrHeader = fgetcsv($resInputFile))
+		{
+			throw new Exception("Unable to parse File Header {$strErrorTail}");
+		}
+		foreach (self::$_arrImportColumns as $strAlias=>$intColumn)
+		{
+			try
+			{
+				if (!array_key_exists($intColumn, $arrHeader))
+				{
+					throw new Exception("Header column at Index {$intColumn} does not exist {$strErrorTail}");
+				}
+				elseif ($arrHeader[$intColumn] !== $strAlias)
+				{
+					throw new Exception("Header column at Index {$intColumn} expected '{$strAlias}'; found '{$arrHeader[$intColumn]}' {$strErrorTail}");
+				}
+				else
+				{
+					//echo "\t[+] Header Match ('{$strAlias}' === '{$arrHeader[$intColumn]}')\n";
+				}
+			}
+			catch (Exception $eException)
+			{
+				$arrErrors[]	= $eException->getMessage();
+			}
+		}
+		
+		// Parse Data
+		$intSuccess	= 0;
+		while ($arrData = fgetcsv($resInputFile))
+		{
+			$intLine++;
+			
+			try
+			{
+				if (!($intStartTimestamp = strtotime($arrData[self::$_arrImportColumns['start_date']])))
+				{
+					throw new Exception("Invalid Start Date in column {self::$_arrImportColumns['start_date']}");
+				}
+				
+				$arrCalendarEvent	= array(
+												'name'						=> trim($arrData[self::$_arrImportColumns['name']]),
+												'description'				=> trim($arrData[self::$_arrImportColumns['description']]),
+												'department_responsible'	=> trim($arrData[self::$_arrImportColumns['departments']]),
+												'start_timestamp'			=> date("Y-m-d H:i:s", $intStartTimestamp),
+												'end_timestamp'				=> null,
+												'created_employee_id'		=> Employee::SYSTEM_EMPLOYEE_ID,
+												'status_id'					=> STATUS_ACTIVE
+											);
+				
+				$objCalendarEvent	= new self($arrCalendarEvent);
+				$arrCalendarEvent->save();
+				$intSuccess++;
+			}
+			catch (Exception $eException)
+			{
+				$arrErrors[]	= $eException->getMessage()." @ Line {$intLine}";
+			}
+		}
+		
+		if (count($arrErrors))
+		{
+			throw new Exception(count($arrErrors)." Fatal Errors were encountered {$strErrorTail}.  No data has been imported into Flex.\n\n:".implode("\n", $arrErrors));
+		}
+		return $intSuccess;
 	}
 	
 	/**
