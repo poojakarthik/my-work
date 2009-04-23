@@ -47,19 +47,19 @@ class Calendar_Event extends ORM
 		if ($mixDate === null)
 		{
 			// NULL -- Use Today's date
-			throw new Exception("\$mixDate is NULL");
+			//throw new Exception("\$mixDate is NULL");
 			$strDate	= date("Y-m-d");
 		}
 		elseif (is_string($mixDate) && $intDate = strtotime($mixDate))
 		{
 			// Date String
-			throw new Exception("\$mixDate is a Date string");
+			//throw new Exception("\$mixDate is a Date string");
 			$strDate	= date("Y-m-d", $intDate);
 		}
 		elseif (is_int($mixDate) && $mixDate > 0)
 		{
 			// Assume UNIX Timestamp
-			throw new Exception("\$mixDate is a UNIX Timestamp");
+			//throw new Exception("\$mixDate is a UNIX Timestamp");
 			$strDate	= date("Y-m-d", $mixDate);
 		}
 		else
@@ -68,7 +68,7 @@ class Calendar_Event extends ORM
 			throw new Exception("Parameter mixDate ({$strDateOutputError}) is neither a positive integer, valid date string, or NULL");
 		}
 		
-		throw new Exception("Getting all Active Events for {$strDate} (Converted from {$mixDate})");
+		//throw new Exception("Getting all Active Events for {$strDate} (Converted from {$mixDate})");
 		
 		// Pull Events
 		$selEventsForDate	= self::_preparedStatement('selEventsForDate');
