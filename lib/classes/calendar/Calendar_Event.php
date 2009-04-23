@@ -230,7 +230,7 @@ class Calendar_Event extends ORM
 											);
 				
 				$objCalendarEvent	= new self($arrCalendarEvent);
-				$arrCalendarEvent->save();
+				$objCalendarEvent->save();
 				$intSuccess++;
 			}
 			catch (Exception $eException)
