@@ -55,13 +55,20 @@ class Calendar_Event extends ORM
 		{
 			$strToken		= $arrToken[0];
 			$strObjectName	= $arrToken[1];
+			$strOperator	= $arrToken[3];
 			$intObjectId	= (int)$arrToken[3];
 			
 			switch ($strObjectName)
 			{
 				case 'CustomerGroup':
-					$objCustomerGroup	= Customer_Group::getForId($intObjectId);
-					$strReplace			= "<span style='color:#{$objCustomerGroup->customerPrimaryColor};'>{$objCustomerGroup->internalName}</span>";
+					if ($objCustomerGroup = Customer_Group::getForId($intObjectId))
+					{
+						$strReplace	= "<span style='color:#{$objCustomerGroup->customerPrimaryColor};'>{$objCustomerGroup->internalName}</span>";
+					}
+					else
+					{
+						$strReplace	= "[{$strObjectName}{$strOperator}{$intObjectId}!Customer Group with Id {$intObjectId} does not exist]";
+					}
 					break;
 				
 				default:
