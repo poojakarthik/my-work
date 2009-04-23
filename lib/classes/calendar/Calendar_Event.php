@@ -77,7 +77,7 @@ class Calendar_Event extends ORM
 					break;
 			}
 			
-			$strParsedDescription	= str_replace($strToken, $strReplace, $strParsedDescription, 1);
+			$strParsedDescription	= str_replace($strToken, $strReplace, $strParsedDescription);
 		}
 		
 		return $strParsedDescription;
