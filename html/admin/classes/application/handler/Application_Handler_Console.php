@@ -37,8 +37,7 @@ class Application_Handler_Console extends Application_Handler
 			try
 			{
 				// Get the Events for Today and Tomorrow
-				//$strToday			= GetCurrentISODateTime();
-				$strToday			= "2009-04-24";
+				$strToday			= GetCurrentISODateTime();
 				$intToday			= strtotime($strToday);
 				$intDayOfTheWeek	= (int)date('w', $intToday);
 				$intTomomorrow		= strtotime("+1 day", $intToday);
