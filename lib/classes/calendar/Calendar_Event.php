@@ -54,7 +54,7 @@ class Calendar_Event extends ORM
 		{
 			$strToken		= $arrToken[0];
 			$strObjectName	= $arrToken[1];
-			$strOperator	= $arrToken[3];
+			$strOperator	= $arrToken[2];
 			$intObjectId	= (int)$arrToken[3];
 			
 			switch ($strObjectName)
