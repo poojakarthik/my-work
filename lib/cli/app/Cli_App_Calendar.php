@@ -28,6 +28,10 @@ class Cli_App_Calendar extends Cli
 			$this->requireOnce('lib/classes/Flex.php');
 			Flex::load();
 			
+			// Start a new Transcation
+			$bolTransactionResult	= DataAccess::getDataAccess()->TransactionStart();
+			Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully started!");
+			
 			// Import the File
 			$intImportCount	= Calendar_Event::importFromCSVFile($this->_arrArgs[self::SWITCH_FILE]);
 			
