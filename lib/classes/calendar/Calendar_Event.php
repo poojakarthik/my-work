@@ -50,7 +50,7 @@ class Calendar_Event extends ORM
 			throw new Exception("\$mixDate is NULL");
 			$strDate	= date("Y-m-d");
 		}
-		elseif ($intDate = strtotime($mixDate))
+		elseif (is_string($mixDate) && $intDate = strtotime($mixDate))
 		{
 			// Date String
 			throw new Exception("\$mixDate is a Date string");
