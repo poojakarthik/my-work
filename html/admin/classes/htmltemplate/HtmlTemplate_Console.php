@@ -51,6 +51,7 @@ $strDailyMessageSection
 		
 		// Display upcoming Calendar Events
 		echo "
+<br />
 <div>
 	<table class='reflex'>
 		<thead>
@@ -61,7 +62,7 @@ $strDailyMessageSection
 		</tfoot>
 		<tbody>
 			<tr>
-				<td>
+				<td class='alt'>
 					<div class='console-calendar'>";
 		
 		ksort($this->mxdDataToRender['UpcomingEvents']);
