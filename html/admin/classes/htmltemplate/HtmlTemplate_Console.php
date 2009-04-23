@@ -67,7 +67,6 @@ $strDailyMessageSection
 		
 		ksort($this->mxdDataToRender['UpcomingEvents']);
 		
-		$bolAlt	= true;
 		foreach ($this->mxdDataToRender['UpcomingEvents'] as $strDate=>$arrCalendarEvents)
 		{
 			// Table Header & Footer
@@ -76,7 +75,7 @@ $strDailyMessageSection
 							<span class='date'>".date('l jS F', strtotime($strDate))."</span>
 							<table class='reflex'>
 								<thead>
-									<tr".($bolAlt ? " class='alt'" : '').">
+									<tr class='alt'>
 										<th>
 											Item for action
 										</th>
@@ -97,10 +96,12 @@ $strDailyMessageSection
 			// Content
 			if (count($arrCalendarEvents))
 			{
+				$bolAlt	= false;
 				foreach ($arrCalendarEvents as $objCalendarEvent)
 				{
+					$bolAlt	= !$bolAlt;
 					echo "
-									<tr class='alt'>
+									<tr".($bolAlt ? " class='alt'" : '').">
 										<td>
 											{$objCalendarEvent->description}
 										</td>
