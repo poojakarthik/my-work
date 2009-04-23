@@ -427,9 +427,46 @@ class Invoice extends ORM
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
 		
+		// Generate ServiceTypeTotals
+		$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, RecordType, Charge, Units, Records, RateGroup, Cost, invoice_run_id)";
+		$strExtensionsQuery .= " SELECT CDR.FNN, CDR.AccountGroup, CDR.Account, {$intServiceId} AS Service,";
+		$strExtensionsQuery .= " CDR.RecordType, SUM(CASE WHEN CDR.Credit = 1 THEN 0-CDR.Charge ELSE CDR.Charge END) AS Charge, SUM(CASE WHEN CDR.Credit = 1 THEN 0-CDR.Units ELSE CDR.Units END) AS Units, COUNT(CDR.Charge) AS Records, ServiceRateGroup.RateGroup AS RateGroup, SUM(CASE WHEN CDR.Credit = 1 THEN 0-CDR.Cost ELSE CDR.Cost END) AS Cost, {$this->invoice_run_id} AS invoice_run_id";
+		$strExtensionsQuery .= " FROM CDR JOIN Service ON Service.Id = CDR.Service, ServiceRateGroup";
+		$strExtensionsQuery .= " WHERE CDR.FNN IS NOT NULL AND CDR.RecordType IS NOT NULL";
+		$strExtensionsQuery .= " AND CDR.invoice_run_id = {$this->invoice_run_id}";
+		$strExtensionsQuery .= " AND CDR.Service IN (".implode(', ', $arrServiceDetails['Ids']).")";
+		$strExtensionsQuery .= " AND ServiceRateGroup.Id = (SELECT SRG.Id FROM ServiceRateGroup SRG WHERE NOW() BETWEEN SRG.StartDatetime AND SRG.EndDatetime AND SRG.Service = CDR.Service ORDER BY CreatedOn DESC LIMIT 1) ";
+		$strExtensionsQuery .= " GROUP BY CDR.FNN, CDR.RecordType";
+		if ($qryQuery->Execute($strExtensionsQuery) === FALSE)
+		{
+			throw new Exception("DB ERROR: ".$qryQuery->Error());
+		}
+
+		// Get CDR Total Details
+		$strSQL			= "	SELECT SUM(CDR.Cost) AS TotalCost, SUM(CDR.Charge) AS TotalCharge, Rate.Uncapped, CDR.Credit, RecordType.global_tax_exempt, COUNT(CDR.Id) AS CDRCount
+							FROM (CDR JOIN Rate ON CDR.Rate = Rate.Id) JOIN RecordType ON RecordType.Id = CDR.RecordType
+							WHERE CDR.Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND CDR.invoice_run_id = {$this->invoice_run_id}
+							GROUP BY Rate.Uncapped, CDR.Credit, RecordType.global_tax_exempt";
+		$resCDRTotals	= $qryQuery->Execute($strSQL);
+		if ($resCDRTotals === FALSE)
+		{
+			throw new Exception("DB ERROR: ".$qryQuery->Error());
+		}
+		$intDebitCDRCount	= 0;
+		$arrCDRTotals		= Array();
+		while ($arrCDRTotal = $resCDRTotals->fetch_assoc())
+		{
+			$strCapped	= ($arrCDRTotal['Uncapped'])		 	? 'Uncapped'	: 'Capped';
+			$strCredit	= ($arrCDRTotal['Credit'])				? 'Credit'		: 'Debit';
+			$strTax		= ($arrCDRTotal['global_tax_exempt'])	? 'ExTax'		: 'IncTax';
+			$arrCDRTotals['Charge']	[$strCapped][$strCredit][$strTax]	= $arrCDRTotal['TotalCharge'];
+			$arrCDRTotals['Cost']	[$strCapped][$strCredit][$strTax]	= $arrCDRTotal['TotalCost'];
+			
+			$intDebitCDRCount	+= (!$arrCDRTotal['Credit']) ? $arrCDRTotal['CDRCount'] : 0;
+		}
+		
 		// CDR Count
-		$intCDRCount									= DataAccess::getDataAccess()->refMysqliConnection->affected_rows;
-		$arrServiceTotal['bolDisconnectedAndNoCDRs']	= (!$intCDRCount && $arrServiceDetails['Status'] === SERVICE_DISCONNECTED);
+		$arrServiceTotal['bolDisconnectedAndNoCDRs']	= (!$intDebitCDRCount && $arrServiceDetails['Status'] === SERVICE_DISCONNECTED);
 
 		//--------------------------- PLAN CHARGES ---------------------------//
 		// Retrieve Plan Details for the current Service
@@ -469,40 +506,6 @@ class Invoice extends ORM
 		//--------------------------------------------------------------------//
 
 		//--------------------------- SERVICE TOTALS -------------------------//
-		// Generate ServiceTypeTotals
-		$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, RecordType, Charge, Units, Records, RateGroup, Cost, invoice_run_id)";
-		$strExtensionsQuery .= " SELECT CDR.FNN, CDR.AccountGroup, CDR.Account, {$intServiceId} AS Service,";
-		$strExtensionsQuery .= " CDR.RecordType, SUM(CASE WHEN CDR.Credit = 1 THEN 0-CDR.Charge ELSE CDR.Charge END) AS Charge, SUM(CASE WHEN CDR.Credit = 1 THEN 0-CDR.Units ELSE CDR.Units END) AS Units, COUNT(CDR.Charge) AS Records, ServiceRateGroup.RateGroup AS RateGroup, SUM(CASE WHEN CDR.Credit = 1 THEN 0-CDR.Cost ELSE CDR.Cost END) AS Cost, {$this->invoice_run_id} AS invoice_run_id";
-		$strExtensionsQuery .= " FROM CDR JOIN Service ON Service.Id = CDR.Service, ServiceRateGroup";
-		$strExtensionsQuery .= " WHERE CDR.FNN IS NOT NULL AND CDR.RecordType IS NOT NULL";
-		$strExtensionsQuery .= " AND CDR.invoice_run_id = {$this->invoice_run_id}";
-		$strExtensionsQuery .= " AND CDR.Service IN (".implode(', ', $arrServiceDetails['Ids']).")";
-		$strExtensionsQuery .= " AND ServiceRateGroup.Id = (SELECT SRG.Id FROM ServiceRateGroup SRG WHERE NOW() BETWEEN SRG.StartDatetime AND SRG.EndDatetime AND SRG.Service = CDR.Service ORDER BY CreatedOn DESC LIMIT 1) ";
-		$strExtensionsQuery .= " GROUP BY CDR.FNN, CDR.RecordType";
-		if ($qryQuery->Execute($strExtensionsQuery) === FALSE)
-		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
-		}
-
-		// Get CDR Total Details
-		$strSQL			= "	SELECT SUM(CDR.Cost) AS TotalCost, SUM(CDR.Charge) AS TotalCharge, Rate.Uncapped, CDR.Credit, RecordType.global_tax_exempt
-							FROM (CDR JOIN Rate ON CDR.Rate = Rate.Id) JOIN RecordType ON RecordType.Id = CDR.RecordType
-							WHERE CDR.Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND CDR.invoice_run_id = {$this->invoice_run_id}
-							GROUP BY Rate.Uncapped, CDR.Credit, RecordType.global_tax_exempt";
-		$resCDRTotals	= $qryQuery->Execute($strSQL);
-		if ($resCDRTotals === FALSE)
-		{
-			throw new Exception("DB ERROR: ".$qryQuery->Error());
-		}
-		$arrCDRTotals	= Array();
-		while ($arrCDRTotal = $resCDRTotals->fetch_assoc())
-		{
-			$strCapped	= ($arrCDRTotal['Uncapped'])		 	? 'Uncapped'	: 'Capped';
-			$strCredit	= ($arrCDRTotal['Credit'])				? 'Credit'		: 'Debit';
-			$strTax		= ($arrCDRTotal['global_tax_exempt'])	? 'ExTax'		: 'IncTax';
-			$arrCDRTotals['Charge']	[$strCapped][$strCredit][$strTax]	= $arrCDRTotal['TotalCharge'];
-			$arrCDRTotals['Cost']	[$strCapped][$strCredit][$strTax]	= $arrCDRTotal['TotalCost'];
-		}
 
 		$fltTaxExemptCappedCharge	= $arrCDRTotals['Charge']['Capped']['Debit']['ExTax'] - $arrCDRTotals['Charge']['Capped']['Credit']['ExTax'];
 		$fltTaxableCappedCharge		= $arrCDRTotals['Charge']['Capped']['Debit']['IncTax'] - $arrCDRTotals['Charge']['Capped']['Credit']['IncTax'];
