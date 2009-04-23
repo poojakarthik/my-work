@@ -53,17 +53,11 @@ $strDailyMessageSection
 		echo "
 <br />
 <div>
-	<table class='reflex'>
-		<thead>
-			<th>Upcoming Events</th>
-		</thead>"/*."
-		<tfoot>
-			<th>&nbsp;</th>
-		</tfoot>"*/."
-		<tbody>
-			<tr class='alt'>
-				<td>
-					<div class='console-calendar'>";
+	<div class='content-header'>
+		Upcoming Events
+	</div>
+	<div>
+		<div class='console-calendar'>";
 		
 		ksort($this->mxdDataToRender['UpcomingEvents']);
 		
@@ -71,27 +65,27 @@ $strDailyMessageSection
 		{
 			// Table Header & Footer
 			echo "
-						<div class='day'>
-							<span class='date'>".date('l jS F', strtotime($strDate))."</span>
-							<table class='reflex'>
-								<thead>
-									<tr class='alt'>
-										<th>
-											Item for action
-										</th>
-										<th class='department-responsible'>
-											Department Responsible
-										</th>
-									</tr>
-								</thead>"/*."
-								<tfoot>
-									<tr>
-										<th colspan='2'>
-											&nbsp;
-										</th>
-									</tr>
-								</tfoot>"*/."
-								<tbody>";
+			<div class='day'>
+				<span class='date'>".date('l jS F', strtotime($strDate))."</span>
+				<table class='reflex'>
+					<thead>
+						<tr class='alt'>
+							<th>
+								Item for action
+							</th>
+							<th class='department-responsible'>
+								Department Responsible
+							</th>
+						</tr>
+					</thead>"/*."
+					<tfoot>
+						<tr>
+							<th colspan='2'>
+								&nbsp;
+							</th>
+						</tr>
+					</tfoot>"*/."
+					<tbody>";
 			
 			// Content
 			if (count($arrCalendarEvents))
@@ -101,40 +95,37 @@ $strDailyMessageSection
 				{
 					$bolAlt	= !$bolAlt;
 					echo "
-									<tr".($bolAlt ? " class='alt'" : '').">
-										<td>
-											{$objCalendarEvent->description}
-										</td>
-										<td class='department-responsible'>
-											{$objCalendarEvent->department_responsible}
-										</td>
-									</tr>";
+						<tr".($bolAlt ? " class='alt'" : '').">
+							<td>
+								{$objCalendarEvent->description}
+							</td>
+							<td class='department-responsible'>
+								{$objCalendarEvent->department_responsible}
+							</td>
+						</tr>";
 				}
 			}
 			else
 			{
 				echo "
-									<tr class='alt'>
-										<td colspan='2'>
-											No actions required
-										</td>
-									</tr>";
+						<tr class='alt'>
+							<td colspan='2'>
+								No actions required
+							</td>
+						</tr>";
 			}
 			
 			// Close off Table
 			echo	"
-								</tbody>
-							</table>
-						</div>";
+					</tbody>
+				</table>
+			</div>";
 		}
 		
 		// Close off the calendar
 		echo "
-					</div>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+		</div>
+	</div>
 </div>";
 	}
 }
