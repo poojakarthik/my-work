@@ -1095,6 +1095,7 @@ div.console-calendar
 
 div.console-calendar div.day
 {
+	margin-top		: 1em;
 	margin-bottom	: 1em;
 }
 
