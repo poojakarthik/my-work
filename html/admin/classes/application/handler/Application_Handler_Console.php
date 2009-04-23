@@ -42,6 +42,8 @@ class Application_Handler_Console extends Application_Handler
 				$intDayOfTheWeek	= (int)date('w', $intToday);
 				$intTomomorrow		= strtotime("+1 day", $intToday);
 				
+				throw new Exception("Today: {$strToday}");
+				
 				$arrUpcomingEvents	= array();
 				
 				$arrUpcomingEvents[date('Y-m-d', $intToday)]		= Calendar_Event::getForDate($intToday);
