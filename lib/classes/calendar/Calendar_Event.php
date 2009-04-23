@@ -36,13 +36,15 @@ class Calendar_Event extends ORM
 	 *
 	 * @param	[mixed	$mixDate				integer	: UNIX Timestamp
 	 * 											string	: Date String
-	 * 											NULL	: Use today's date	]
+	 * 											NULL	: Use today's date (default)]
+	 * @param	[bool	$bolIncludeCancelled	TRUE	: Include Cancelled Events
+	 * 											FALSE	: Filter Cancelled Events (default)]
 	 * 
 	 * @return	array							Array of Calendar_Event objects
 	 * 
 	 * @method
 	 */
-	public static function getForDate($mixDate=null)
+	public static function getForDate($mixDate=null, $bolIncludeCancelled=false)
 	{
 		if ($mixDate === null)
 		{
@@ -72,7 +74,7 @@ class Calendar_Event extends ORM
 		
 		// Pull Events
 		$selEventsForDate	= self::_preparedStatement('selEventsForDate');
-		$mixResult			= $selEventsForDate->Execute(array('date'=>$strDate));
+		$mixResult			= $selEventsForDate->Execute(array('date'=>$strDate, 'include_cancelled'=>(int)$bolIncludeCancelled));
 		if ($mixResult === false)
 		{
 			throw new Exception($selEventsForDate->Error());
@@ -117,7 +119,7 @@ class Calendar_Event extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	
 																					"calendar_event",
 																					"*",
-																					"CAST(start_timestamp AS DATE) = <date>",
+																					"CAST(start_timestamp AS DATE) = <date> AND (<include_cancelled> = 0 OR status_id = ".STATUS_ACTIVE.")",
 																					"start_timestamp ASC, id"
 																				);
 					break;
