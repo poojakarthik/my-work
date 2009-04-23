@@ -113,7 +113,7 @@ $strDailyMessageSection
 								No actions required
 							</td>
 							<td class='department-responsible'>
-								{$objCalendarEvent->department_responsible}
+								&nbsp;
 							</td>
 						</tr>";
 			}
