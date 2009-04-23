@@ -50,6 +50,8 @@ class Calendar_Event extends ORM
 		preg_match_all("/\[(\w+)(\:)(\d+)\]/", $this->description, $arrTokens, PREG_SET_ORDER);
 		$arrTokens	= array_unique($arrTokens);
 		
+		throw new Exception(nl2br(print_r($arrTokens, true)));
+		
 		$strParsedDescription	= $this->description;
 		foreach($arrTokens as $arrToken)
 		{
