@@ -224,7 +224,7 @@ class Application
 			
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
-				ContextMenu()->Admin->System_Settings->ManageActionTypes();
+				ContextMenu()->Admin->Actions->ManageActionTypes();
 			}
 		}
 
@@ -424,7 +424,7 @@ class Application
 			
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
-				ContextMenu()->Admin->System_Settings->ManageActionTypes();
+				ContextMenu()->Admin->Actions->ManageActionTypes();
 			}
 		}
 
