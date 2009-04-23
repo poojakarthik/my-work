@@ -119,7 +119,7 @@ class Calendar_Event extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	
 																					"calendar_event",
 																					"*",
-																					"CAST(start_timestamp AS DATE) = <date> AND (<include_cancelled> = 0 OR status_id = ".STATUS_ACTIVE.")",
+																					"CAST(start_timestamp AS DATE) = <date> AND (<include_cancelled> = 1 OR status_id = ".STATUS_ACTIVE.")",
 																					"start_timestamp ASC, id"
 																				);
 					break;
