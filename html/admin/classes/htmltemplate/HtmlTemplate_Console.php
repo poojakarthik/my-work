@@ -19,13 +19,13 @@ class HtmlTemplate_Console extends FlexHtmlTemplate
 			$strDailyMessageSection = '
 <div id="DailyMessageContainer">
 	<table class="reflex">
+		<thead>
+			<th>Message of the day</th>
+		</thead>
+		<tfoot>
+			<th>Last updated: ' . $strTimestamp . '</th>
+		</tfoot>
 		<tbody>
-			<thead>
-				<th>Message of the day</th>
-			</thead>
-			<tfoot>
-				<th>Last updated: ' . $strTimestamp . '</th>
-			</tfoot>
 			<tr class="alt">
 				<td>&nbsp;</td>
 			</tr>
@@ -51,34 +51,45 @@ $strDailyMessageSection
 		
 		// Display upcoming Calendar Events
 		echo "
-<div class='console-calendar'>";
+<div>
+	<table class='reflex'>
+		<thead>
+			<th>Upcoming Events</th>
+		</thead>
+		<tfoot>
+			<th>&nbsp;</th>
+		</tfoot>
+		<tbody>
+			<tr>
+				<td>
+					<div class='console-calendar'>";
 		
 		ksort($this->mxdDataToRender['UpcomingEvents']);
 		foreach ($this->mxdDataToRender['UpcomingEvents'] as $strDate=>$arrCalendarEvents)
 		{
 			// Table Header & Footer
 			echo "
-	<div class='date'>
-		".date('l jS F', strtotime($strDate))."
-		<table class='reflex'>
-			<thead>
-				<tr>
-					<th>
-						Item for action
-					</th>
-					<th>
-						Department Responsible
-					</th>
-				</tr>
-			</thead>
-			<tfoot>
-				<tr>
-					<th colspan='2'>
-						&nbsp;
-					</th>
-				</tr>
-			</tfoot>
-			<tbody>";
+						<div class='date'>
+							".date('l jS F', strtotime($strDate))."
+							<table class='reflex'>
+								<thead>
+									<tr>
+										<th>
+											Item for action
+										</th>
+										<th>
+											Department Responsible
+										</th>
+									</tr>
+								</thead>
+								<tfoot>
+									<tr>
+										<th colspan='2'>
+											&nbsp;
+										</th>
+									</tr>
+								</tfoot>
+								<tbody>";
 			
 			// Content
 			if (count($arrCalendarEvents))
@@ -86,35 +97,40 @@ $strDailyMessageSection
 				foreach ($arrCalendarEvents as $objCalendarEvent)
 				{
 					echo "
-				<tr>
-					<td>
-						{$objCalendarEvent->description}
-					</td>
-					<td>
-						{$objCalendarEvent->department_responsible}
-					</td>
-				</tr>";
+									<tr>
+										<td>
+											{$objCalendarEvent->description}
+										</td>
+										<td>
+											{$objCalendarEvent->department_responsible}
+										</td>
+									</tr>";
 				}
 			}
 			else
 			{
 				echo "
-			<tr>
-				<td colspan='2'>
-					No actions required
-				</td>
-			</tr>";
+									<tr>
+										<td colspan='2'>
+											No actions required
+										</td>
+									</tr>";
 			}
 			
 			// Close off Table
 			echo	"
-			</tbody>
-		</table>
-	</div>";
+								</tbody>
+							</table>
+						</div>";
 		}
 		
 		// Close off the calendar
 		echo "
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 </div>";
 	}
 }
