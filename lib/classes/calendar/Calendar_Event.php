@@ -47,7 +47,7 @@ class Calendar_Event extends ORM
 	public function parseDescription()
 	{
 		$arrTokens	= array();
-		preg_match_all("/\[(\w+)(\:)(\d+)\]/", $this->description, $arrTokens, PREG_SET_ORDER);
+		preg_match_all("/\[(\w+)(\:)(\d+)\]/ms", $this->description, $arrTokens, PREG_SET_ORDER);
 		$arrTokens	= array_unique($arrTokens);
 		
 		$strParsedDescription	= $this->description;
