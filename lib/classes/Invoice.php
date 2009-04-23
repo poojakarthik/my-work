@@ -183,8 +183,6 @@ class Invoice extends ORM
 				throw new Exception("Unable to retrieve details for RatePlan with Id '{$intRatePlan}'!");
 			}
 			$arrPlanDetails['EarliestStartDatetime']	= $arrDetails['strEarliestPlanStartDatetime'];
-
-			$arrServiceIds		= array_keys($arrDetails['Services']);
 			
 			if ($arrDetails['bolDisconnectedAndNoCDRs'])
 			{
@@ -196,7 +194,7 @@ class Invoice extends ORM
 			else
 			{
 				// Add Plan Charges
-				$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, $arrServiceIds, NULL);
+				$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, $arrDetails['Services'], NULL);
 	
 				$fltMinimumCharge	= (float)$arrUsageDetails['MinMonthly'];
 				$fltUsageStart		= (float)$arrUsageDetails['ChargeCap'];
@@ -275,7 +273,7 @@ class Invoice extends ORM
 
 			//----------------------------------------------------------------//
 			// PLAN DATA USAGE
-			$this->_addPlanDataCredit($arrPlanDetails, $arrServiceIds, $intArrearsPeriodStart, $intArrearsPeriodEnd);
+			$this->_addPlanDataCredit($arrPlanDetails, $arrDetails['Services'], $intArrearsPeriodStart, $intArrearsPeriodEnd);
 			//----------------------------------------------------------------//
 		}
 		//--------------------------------------------------------------------//
@@ -503,7 +501,7 @@ class Invoice extends ORM
 		}
 		else
 		{
-			$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, Array($intServiceId), $intServiceId);
+			$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, array($arrServiceDetails), $intServiceId);
 			$fltMinimumCharge	= (float)$arrUsageDetails['MinMonthly'];
 			$fltUsageStart		= (float)$arrUsageDetails['ChargeCap'];
 			$fltUsageLimit		= (float)$arrUsageDetails['UsageCap'];
@@ -611,7 +609,7 @@ class Invoice extends ORM
 
 			//----------------------------------------------------------------//
 			// PLAN DATA USAGE
-			$this->_addPlanDataCredit($arrPlanDetails, Array($intServiceId), $intArrearsPeriodStart, $intArrearsPeriodEnd, $intServiceId);
+			$this->_addPlanDataCredit($arrPlanDetails, array($arrServiceDetails), $intArrearsPeriodStart, $intArrearsPeriodEnd, $intServiceId);
 			//----------------------------------------------------------------//
 		}
 
@@ -1015,11 +1013,11 @@ class Invoice extends ORM
 	 *
 	 * @method
 	 */
-	private function _addPlanCharges($arrPlanDetails, $arrServiceIds, $intPrimaryService=NULL)
+	private function _addPlanCharges($arrPlanDetails, $arrServices, $intPrimaryService=NULL)
 	{
 		static	$qryQuery;
 		$qryQuery		= (isset($qryQuery)) ? $qryQuery : new Query();
-		$strServiceIds	= implode(', ', $arrServiceIds);
+		$strServiceIds	= implode(', ', self::_extractServiceIds($arrServices));
 		
 		// If this Plan requires CDRs, get the Earliest CDR Details (ensuring that the earliest date is not after the Invoice date)
 		$strEarliestCDR	= null;
@@ -1090,19 +1088,19 @@ class Invoice extends ORM
 					Log::getLog()->log("Scaling Plan Charges & Usage: {$strEarliestCDR}");
 					
 					Log::getLog()->log("Native Plan Charge: {$fltMinimumCharge}");
-					$fltMinimumCharge	= ($fltMinimumCharge	/ $intMaxServices) * max($intMaxServices, count($arrServiceIds));
+					$fltMinimumCharge	= ($fltMinimumCharge	/ $intMaxServices) * max($intMaxServices, count($arrServices));
 					Log::getLog()->log("Scaled Plan Charge: {$fltMinimumCharge}");
 					
 					Log::getLog()->log("Native Usage Start: {$fltUsageStart}");
-					$fltUsageStart		= ($fltUsageStart		/ $intMaxServices) * max($intMaxServices, count($arrServiceIds));
+					$fltUsageStart		= ($fltUsageStart		/ $intMaxServices) * max($intMaxServices, count($arrServices));
 					Log::getLog()->log("Scaled Usage Start: {$fltUsageStart}");
 					
 					Log::getLog()->log("Native Usage Limit: {$fltUsageLimit}");
-					$fltUsageLimit		= ($fltUsageLimit		/ $intMaxServices) * max($intMaxServices, count($arrServiceIds));
+					$fltUsageLimit		= ($fltUsageLimit		/ $intMaxServices) * max($intMaxServices, count($arrServices));
 					Log::getLog()->log("Scaled Usage Limit: {$fltUsageLimit}");
 					
 					Log::getLog()->log("Native Included Data: {$intIncludedData}");
-					$intIncludedData	= ($intIncludedData		/ $intMaxServices) * max($intMaxServices, count($arrServiceIds));
+					$intIncludedData	= ($intIncludedData		/ $intMaxServices) * max($intMaxServices, count($arrServices));
 					Log::getLog()->log("Scaled Included Data: {$intIncludedData}");
 				}
 			}
@@ -1282,7 +1280,7 @@ class Invoice extends ORM
 	 * Adds a Plan Credit for Included Data
 	 *
 	 * @param	array		$arrPlanDetails
-	 * @param	array		$arrServiceIds
+	 * @param	array		$arrServices
 	 * @param	integer		$intArrearsPeriodStart
 	 * @param	integer		$intArrearsPeriodEnd
 	 * @param	integer		$intPrimaryService
@@ -1291,12 +1289,12 @@ class Invoice extends ORM
 	 *
 	 * @method
 	 */
-	private function _addPlanDataCredit($arrPlanDetails, $arrServiceIds, $intArrearsPeriodStart, $intArrearsPeriodEnd, $intPrimaryService=NULL)
+	private function _addPlanDataCredit($arrPlanDetails, $arrServices, $intArrearsPeriodStart, $intArrearsPeriodEnd, $intPrimaryService=NULL)
 	{
 		static	$qryQuery;
 		$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
 
-		$strServices	= implode(', ', $arrServiceIds);
+		$strServices	= implode(', ', self::_extractServiceIds($arrServices));
 
 		// If there is Included Data on this Plan...
 		$intIncludedData	= (int)$arrPlanDetails['included_data'];
@@ -1346,6 +1344,19 @@ class Invoice extends ORM
 			// Add the Credit
 			$this->_addPlanCharge('PDCR', $fltTotalCredit, $arrPlanDetails, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->AccountGroup, $this->Account, $intPrimaryService);
 		}
+	}
+	
+	private static function _extractServiceIds($arrServices)
+	{
+		$arrServiceIds	= array();
+		foreach ($arrServices as $arrService)
+		{
+			foreach ($arrService['Ids'] as $intServiceId)
+			{
+				$arrServiceIds[]	= $intServiceId;
+			}
+		}
+		return $arrServiceIds;
 	}
 
 	protected function __set($strName, $mxdValue)
