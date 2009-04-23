@@ -61,8 +61,8 @@ $strDailyMessageSection
 			<th>&nbsp;</th>
 		</tfoot>
 		<tbody>
-			<tr>
-				<td class='alt'>
+			<tr class='alt'>
+				<td>
 					<div class='console-calendar'>";
 		
 		ksort($this->mxdDataToRender['UpcomingEvents']);
@@ -98,7 +98,7 @@ $strDailyMessageSection
 				foreach ($arrCalendarEvents as $objCalendarEvent)
 				{
 					echo "
-									<tr>
+									<tr class='alt'>
 										<td>
 											{$objCalendarEvent->description}
 										</td>
@@ -111,7 +111,7 @@ $strDailyMessageSection
 			else
 			{
 				echo "
-									<tr>
+									<tr class='alt'>
 										<td colspan='2'>
 											No actions required
 										</td>
