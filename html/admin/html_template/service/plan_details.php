@@ -266,9 +266,9 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			$dboRatePlan->ChargeCap->RenderOutput();
 			$dboRatePlan->UsageCap->RenderOutput();
 			$dboRatePlan->RecurringCharge->RenderOutput();*/
-			$dboRatePlan->PlanCharge	= DBO()->RatePlan->MinMonthly->Value;
-			$dboRatePlan->UsageStart	= DBO()->RatePlan->ChargeCap->Value;
-			$dboRatePlan->UsageLimit	= DBO()->RatePlan->UsageCap->Value;
+			$dboRatePlan->PlanCharge	= $dboRatePlan->MinMonthly->Value;
+			$dboRatePlan->UsageStart	= $dboRatePlan->ChargeCap->Value;
+			$dboRatePlan->UsageLimit	= $dboRatePlan->UsageCap->Value;
 			
 			$dboRatePlan->PlanCharge->RenderArbitrary('$'.number_format($dboRatePlan->PlanCharge->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 			$dboRatePlan->UsageStart->RenderArbitrary('$'.number_format($dboRatePlan->UsageStart->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
