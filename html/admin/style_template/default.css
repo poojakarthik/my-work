@@ -1232,10 +1232,8 @@ input[type='button'], a.button, button
 
 input.InputSubmitDisabled, button[disabled]
 {
-	background-image:    url('img/template/button_background_disabled.png');
-	border:              solid 1px #434343;
-	color:               #FFFFFF;
-	background-color:    #434343;
+	color:               #eee;
+	background-color:    #ccc;
 	-moz-user-select:	none;
 }
 
