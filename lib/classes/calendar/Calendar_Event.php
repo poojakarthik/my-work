@@ -57,6 +57,7 @@ class Calendar_Event extends ORM
 		elseif (is_int($mixDate) && $mixDate > 0)
 		{
 			// Assume UNIX Timestamp
+			throw new Exception("\$mixDate is a UNIX Timestamp");
 			$strDate	= date("Y-m-d", $mixDate);
 		}
 		else
