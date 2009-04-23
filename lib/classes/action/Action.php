@@ -201,7 +201,8 @@ class Action extends ORM
 	 * This should be used instead of manually instanciating an Action object and calling the save method, because you shouldn't ever need to update an action
 	 * Note: At least 1 account, service or contact should be associated with an action.  If nothing is associated with the action, an exception will be thrown
 	 * 
-	 * @param	Action_Type		$objActionType		The type of action being logged
+	 * @param	mixed			$mixActionType		Action_Type object	: The type of action being logged, as an Action_Type object
+	 * 												string				: name of the Action_Type to log
 	 * @param	string			$strExtraDetails	The extra details to accompany the action.  Can be NULL
 	 * @param	mixed			$mixAccountIds		array	:	array of account ids, representing the accounts to associate with this action
 	 * 												integer	:	account id of single account to associate with this action
@@ -213,16 +214,30 @@ class Action extends ORM
 	 * 												integer	:	contact id of single contact to associate with this action
 	 * 												null	:	no contacts are to be associated with this action 
 	 * @param	int				$intPerformedByEmployeeId		id of the employee who 'performed' the action
-	 * @param	int				$intCreatedByEmployeeId			id of the employee who logged the action (almost always the same as that who performed the action)
+	 * @param	int				$intCreatedByEmployeeId			id of the employee who logged the action (almost always the same as that who performed the action, or the system employee,
+	 * 															if it was logged automatically)
 	 *
 	 * @return	Action			The newly created (and saved) action object
 	 * @method
 	 */
-	public static function createAction($objActionType, $strExtraDetails, $mixAccountIds, $mixServiceIds, $mixContactIds, $intPerformedByEmployeeId, $intCreatedByEmployeeId)
+	public static function createAction($mixActionType, $strExtraDetails, $mixAccountIds, $mixServiceIds, $mixContactIds, $intPerformedByEmployeeId, $intCreatedByEmployeeId)
 	{
 		// Validate the details
 		$strExtraDetails = trim($strExtraDetails);
 		$strExtraDetails = ($strExtraDetails == "")? null : $strExtraDetails;
+		
+		if (is_string($mixActionType))
+		{
+			$objActionType = Action_Type::getForName($mixActionType);
+		}
+		elseif (get_class($mixActionType) == 'Action_Type')
+		{
+			$objActionType = $mixActionType;
+		}
+		else
+		{
+			throw new Exception("Invalid action type: ". print_r($mixActionType, true));
+		}
 		
 		if ($strExtraDetails !== null)
 		{

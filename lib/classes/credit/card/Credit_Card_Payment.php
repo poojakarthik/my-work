@@ -1,5 +1,8 @@
 <?php
 
+// Only define this constant if you are testing CC payments with contacts that have fake email addresses, or your own email address
+define(SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE, TRUE);
+
 class Credit_Card_Payment
 {
 	const PAYMENT_TYPE_CREDIT_CARD_PAYMENT = '0';
@@ -48,7 +51,6 @@ class Credit_Card_Payment
 		{
 			// This should never happen
 			throw new Exception_Assertion("Credit Card Payments are not enabled in Flex", "Flex Module FLEX_MODULE_ONLINE_CREDIT_CARD_PAYMENTS is inactive, but its functionality has been called", "Inactive Flex Module has been accessed");
-			//throw new Credit_Card_Payment_Not_Enabled_Exception();
 		}
 
 		// The Module is enabled.
@@ -62,9 +64,9 @@ class Credit_Card_Payment
 		if (Flex::isAdminSession())
 		{
 			// Prevent admins from setting up direct debits
-			$bolDD = FALSE;
-			$employeeId = Flex::getUserId();
-			$contact = Contact::getForId($account->primaryContact);
+			$bolDD		= FALSE;
+			$employeeId	= Flex::getUserId();
+			$contact	= Contact::getForId($account->primaryContact);
 			if (!$contact)
 			{
 				throw new Exception("Failed to load primary contact details for the account.");
@@ -73,8 +75,8 @@ class Credit_Card_Payment
 		else if (Flex::isCustomerSession())
 		{
 			// Check that the requested account is in the authenticated customers account group
-			$contact = Contact::getForId(Flex::getUserId());
-			$employeeId = USER_ID;
+			$contact	= Contact::getForId(Flex::getUserId());
+			$employeeId	= Employee::SYSTEM_EMPLOYEE_ID;
 			if (!$contact || !$contact->canAccessAccount($account))
 			{
 				throw new Exception("Invalid user account selected for credit card payment.");
@@ -150,7 +152,7 @@ class Credit_Card_Payment
 			throw new Exception('No credit card holder name specified.');
 		}
 
-		// Check that the amount has been specified and that is is a positive amount between the min and max permitted for the card type.
+		// Check that the amount has been specified and that it is a positive amount between the min and max permitted for the card type.
 		$fltAmount = preg_replace(array("/^0+/", "/[^0-9\.\-]+/"), "", '0'.$fltAmount);
 		if ($fltAmount[0] == '.') $fltAmount = '0' . $fltAmount;
 		$amount = floatVal($fltAmount);
@@ -160,7 +162,7 @@ class Credit_Card_Payment
 		}
 		$fltAmount = self::amount2dp($fltAmount);
 
-		// Check that the amount has been specified and that is is a positive amount between the min and max permitted for the card type.
+		// Check that the surcharge has been specified and that is is a positive amount between the min and max permitted for the card type.
 		$fltSurcharge = preg_replace(array("/^0+/", "/[^0-9\.\-]+/"), "", '0'.$fltSurcharge);
 		if ($fltSurcharge[0] == '.') $fltSurcharge = '0' . $fltSurcharge;
 		$surcharge = floatVal($fltSurcharge);
@@ -170,7 +172,7 @@ class Credit_Card_Payment
 		}
 		$fltSurcharge = self::amount2dp($fltSurcharge);
 
-		// Check that the amount has been specified and that is is a positive amount between the min and max permitted for the card type.
+		// Check that the Total amount has been specified and that is is a positive amount between the min and max permitted for the card type.
 		$fltTotal = preg_replace(array("/^0+/", "/[^0-9\.\-]+/"), "", '0'.$fltTotal);
 		if ($fltTotal[0] == '.') $fltTotal = '0' . $fltTotal;
 		$total = floatVal($fltTotal);
@@ -202,8 +204,10 @@ class Credit_Card_Payment
 
 		$time = time();
 
+		// SecurePayMessage/MessageInfo/MessageID
 		$messageId = substr($account->id . '.' . base64_encode($time), 0, 30);
 
+		// SecurePayMessage/Payment/TxnList/Txn/purchaseOrderNo
 		$purchaseOrderNo = $account->id . '.' . $time;
 
 		$xmlmessage = self::setPaymentCreditCard($creditCardPaymentConfig->merchantId, $creditCardPaymentConfig->password, $time, $messageId, $fltTotal, $purchaseOrderNo, $strCardNumber, $strCVV, $intMonth, $intYear);
@@ -213,7 +217,8 @@ class Credit_Card_Payment
 		$response = self::openSocket($host, $xmlmessage);
 
 		//throw new Exception("\n\n\n\n\n\n\n\n" . $xmlmessage . "\n\n\n\n\n\n\n\n" . $response . "\n\n\n\n\n\n\n");
-
+		//throw new Exception("<pre>\n\n" . htmlspecialchars($xmlmessage) . "\n\n" . htmlspecialchars(str_replace(">", ">\n", $response)) . "\n\n</pre>");
+		//throw new Exception($xmlmessage . "\n\n" . str_replace(">", ">\n", $response) . "\n\n");
 
 		// Need to check the XML response is valid and that the status code (SecurePayMessage/Status/statusCode) == "000".
 		$matches = array();
@@ -238,7 +243,7 @@ class Credit_Card_Payment
 		{
 			$responseCode = $matches[1];
 		}
-		// Get the actual response code from the response
+		// Get the actual response text from the response
 		if (preg_match("/\<responseText(?:| [^\>]*)\>([^\>]*)\</i", $response, $matches))
 		{
 			$responseText = $matches[1];
@@ -260,7 +265,7 @@ class Credit_Card_Payment
 		{
 			$txnId = $matches[1];
 		}
-
+		
 		// Record the balance before applying the payment
 		$balanceBefore = $account->getBalance();
 
@@ -272,14 +277,316 @@ class Credit_Card_Payment
 			// Add an adjustment to the account for the credit card surcharge
 			TransactionStart();
 			$account->applyPayment($employeeId, $contact, $time, $fltTotal, $txnId, $purchaseOrderNo, PAYMENT_TYPE_CREDIT_CARD, $strCardNumber, $cardType, $surcharge);
+//throw new Exception("Just testing what will happen if a payment transaction is successful, but it can't be logged in flex");
 			TransactionCommit();
 		}
 		catch (Exception $e)
 		{
+			// Payment has been processed but we can't log it!?
+			// Try to reverse the payment, and notify the customer, the Collections department and the system administrators
 			TransactionRollback();
-			// Oh jees... payment has been processed but we can't log it???
-			// WIP: Probably best send an email or something!
-			throw $e;
+			
+			$bolReversalSuccess = FALSE;
+			try
+			{
+				$strInitialProblem = $e->getMessage();
+				
+				$reversalTime = time();
+		
+				// SecurePayMessage/MessageInfo/MessageID
+				$reversalMessageId = substr('reversal.' . $messageId, 0, 30);
+
+				$xmlReversalMsg = self::setPaymentCreditCard($creditCardPaymentConfig->merchantId, $creditCardPaymentConfig->password, $reversalTime, $reversalMessageId, $fltTotal, $purchaseOrderNo, $strCardNumber, $strCVV, $intMonth, $intYear, self::REQUEST_TYPE_PAYMENT, self::PAYMENT_TYPE_CREDIT_CARD_REVERSAL, self::CURRENCY_AUD, "", $txnId);
+	
+				$xmlReversalResponse = self::openSocket($host, $xmlReversalMsg);
+		
+				//throw new Exception($xmlmessage . "\n\n" . str_replace(">", ">\n", $response) . "\n\n". "And Now the Reversal Request\n\n$xmlReversalMsg\n\nAnd The Response\n\n". str_replace(">", ">\n", $xmlReversalResponse));
+		
+				// Need to check the XML response is valid and that the status code (SecurePayMessage/Status/statusCode) == "000".
+				$matches = array();
+				$reversalStatusCode = '999';
+	
+				// Get actual status code of response
+				if (preg_match("/\<statusCode(?:| [^\>]*)\>([^\>]*)\</i", $xmlReversalResponse, $matches))
+				{
+					$reversalStatusCode = $matches[1];
+				}
+				
+				// If not, we should throw a Credit_Card_Payment_Remote_Processing_Error exception
+				if ($reversalStatusCode !== '000')
+				{
+					throw new Credit_Card_Payment_Remote_Processing_Error($statusCode);
+				}
+		
+				// Need to check the XML payment response is ok and that the response code (SecurePayMessage/Payment/TxnList/Txn/responseCode) == "00".
+				$reversalResponseCode = 'xx';
+				$reversalResponseText = '';
+		
+				// Get the actual response code from the response
+				if (preg_match("/\<responseCode(?:| [^\>]*)\>([^\>]*)\</i", $xmlReversalResponse, $matches))
+				{
+					$reversalResponseCode = $matches[1];
+				}
+				// Get the actual response text from the response
+				if (preg_match("/\<responseText(?:| [^\>]*)\>([^\>]*)\</i", $xmlReversalResponse, $matches))
+				{
+					$reversalResponseText = $matches[1];
+				}
+		
+				// Check to see if the transaction was approved
+				// This should be determined from the SecurePayMessage/Payment/TxnList/Txn/approved element in the XML (always 'Yes' or 'No'))
+				$reversalApproved = preg_match("/\<approved(?:| [^\>]*)\>Yes\</i", $xmlReversalResponse); 
+				// If not approved, we should return a message containing the response text (SecurePayMessage/Payment/TxnList/Txn/responseText)
+				if (!$reversalApproved)
+				{
+					$resultProperties['MESSAGE'] = "$reversalResponseText ($reversalResponseCode)";
+					throw new Credit_Card_Payment_Validation_Exception($reversalResponseCode, $reversalResponseText);
+				}
+		
+				// Find the TXN Id for the payment
+				$reversalTxnId = '[ Not Found ]';
+				if (preg_match("/\<txnID(?:| [^\>]*)\>([0-9]+)\<\/txnID\>/i", $xmlReversalResponse, $matches))
+				{
+					$reversalTxnId = $matches[1];
+				}
+				
+				// Find the Purchase Order Number for the Reversal Response (I think this should always be the txnId of the original payment which is being reversed)
+				$reversalResponsePurchaseOrderNo = '[ Not Found ]'; 
+				if (preg_match("/\<purchaseOrderNo(?:| [^\>]*)\>([0-9]+)\<\/purchaseOrderNo\>/i", $xmlReversalResponse, $matches))
+				{
+					$reversalResponsePurchaseOrderNo = $matches[1];
+				}
+				
+				$bolReversalSuccess = TRUE;
+			}
+			catch (Exception $e)
+			{
+				$bolReversalSuccess = FALSE;
+				$strReversalProblem = $e->getMessage();
+			}
+			
+			// Email everybody
+			
+			// Build message component detailing the Customer's details and payment details
+			$objCustomerGroup = $account->getCustomerGroup();
+			$strMaskedCreditCardNumber = substr($strCardNumber, 0, 6) . "...". substr($strCardNumber, -3);
+			
+			$strCustomerDetails = "
+				<ul>
+					<li><strong>Customer Group : </strong>". htmlspecialchars($objCustomerGroup->internalName) ."</li>
+					<li><strong>Account Id : </strong>". $account->id ."</li>
+					<li><strong>Account Name : </strong>". htmlspecialchars($account->getName()) ."</li>
+					<li><strong>Contact Name : </strong>". htmlspecialchars($contact->getName()) ."</li>
+					<li><strong>Email Address Provided : </strong>". htmlspecialchars($strEmail) ."</li>
+				</ul>";
+			
+			$strPaymentTransactionDetails = "
+				<ul>
+					<li><strong>Request Timestamp : </strong>". date("H:i:s d/m/Y", $time) ."</li>
+					<li><strong>Payment Amount : </strong>\$". $fltAmount ."</li>
+					<li><strong>Payment Surcharge : </strong>\$". $fltSurcharge ."</li>
+					<li><strong>Payment Total : </strong>\$". $fltTotal ."</li>
+					<li><strong>CC Number : </strong>". $strMaskedCreditCardNumber ."</li>
+					<li><strong>Name on Card : </strong>". htmlspecialchars($strName) ."</li>
+					<li><strong>Expiry Date : </strong>". $intMonth ."/". $intYear ."</li>
+					<li><strong>Purchase Order Number (Payment Reference) : </strong>". htmlspecialchars($purchaseOrderNo) ."</li>
+					<li><strong>TXN Id : </strong>". htmlspecialchars($txnId) ."</li>
+					<li><strong>SecurePay Response Code : </strong>". htmlspecialchars($responseCode) ."</li>
+					<li><strong>SecurePay Response Text : </strong>". htmlspecialchars($responseText) ."</li>
+				</ul>";
+			
+			if ($bolReversalSuccess)
+			{
+				$strPaymentReversalTransactionDetails = "
+				<ul>
+					<li><strong>Request Timestamp : </strong>". date("H:i:s d/m/Y", $reversalTime) ."</li>
+					<li><strong>Payment Total : </strong>\$". $fltTotal ."</li>
+					<li><strong>Request Purchase Order No (Payment Reference) : </strong>". htmlspecialchars($purchaseOrderNo) ."</li>
+					<li><strong>Request TXN Id : </strong>". htmlspecialchars($txnId) ."</li>
+					<li><strong>Response Purchase Order No (Payment Reference) : </strong>". htmlspecialchars($reversalResponsePurchaseOrderNo) ."</li>
+					<li><strong>Response TXN Id : </strong>". htmlspecialchars($reversalTxnId) ."</li>
+					<li><strong>SecurePay Response Code : </strong>". htmlspecialchars($reversalResponseCode) ."</li>
+					<li><strong>SecurePay Response Text : </strong>". htmlspecialchars($reversalResponseText) ."</li>
+				</ul>";
+			}
+			
+			$strPaymentDetails = "
+				<p>
+					<h1>Customer Details</h1>
+					$strCustomerDetails
+					<h1>Payment Transaction Details</h1>
+					$strPaymentTransactionDetails
+					". ($bolReversalSuccess ? "<h1>Payment Reversal Transaction Details</h1>$strPaymentReversalTransactionDetails" : "") ."
+				</p>";
+
+			if ($bolReversalSuccess)
+			{
+				$strPaymentAlertMessage = "
+				<p>
+					A SecurePay credit card transaction was successfully made, but could not be logged as a payment in Flex.
+					<strong>The payment has been successfully reversed.</strong>
+				</p>
+				<p>
+					You might want to check that both the original payment transaction and its reversal are logged in the 
+					SecurePay portal, and follow up the payment with the customer.
+				</p>";
+				
+				if ($bolDD)
+				{
+					$strPaymentAlertMessage .= "
+					<p>
+						The customer also wants to sign up for Direct Debit, but this won't have been processed either.
+					</p>";
+				}
+				
+				$strPaymentAlertMessage .= "
+				<p>
+					<strong>Logging the payment in Flex failed for the following reason :</strong>
+					<pre>$strInitialProblem</pre>
+				</p>
+				$strPaymentDetails";
+			}
+			else
+			{
+				$strPaymentAlertMessage = "
+				<p>
+					A SecurePay credit card transaction was successfully made, but could not be logged as a payment in Flex.
+					<strong>A payment reversal was attempted with SecurePay but this also failed.</strong>
+				</p>
+				<p>
+					Please reverse the payment manually via the SecurePay portal or attempt to enter the payment into Flex 
+					as a manual payment.
+				</p>
+				<p>
+					Notify the customer as to the outcome.
+				</p>";
+				
+				if ($bolDD)
+				{
+					$strPaymentAlertMessage .= "
+					<p>
+						The customer also wants to sign up for Direct Debit, but this won't have been processed either.
+					</p>";
+				}
+				
+				$strPaymentAlertMessage .= "
+				<p>
+					<strong>Logging the payment in Flex failed for the following reason :</strong>
+					<pre>$strInitialProblem</pre>
+				</p>
+				<p>
+					<strong>Reversing the payment failed for the following reason :</strong>
+					<pre>$strReversalProblem</pre>
+				</p>
+				$strPaymentDetails";
+			}
+			
+			$strPaymentAlertMessage .= "
+				<p>
+					Regards <br />
+					Flexor
+				</p>";
+			
+			$strSubject = "Payment Failure - Account: {$account->id}";
+			
+			$bolInternalPaymentEmailSuccess = Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_PAYMENT_ALERT, $account->customerGroup, NULL, $strSubject, $strPaymentAlertMessage, NULL, NULL, TRUE);
+			
+			// Send the same email as a flex alert, and attach all the SecureXML requests and responses
+			$arrFlexAlertAttachments = array();
+			if (isset($xmlmessage))
+			{
+				$arrFlexAlertAttachments[] = array(Email_Notification::EMAIL_ATTACHMENT_NAME		=> 'SecureXMLPaymentRequest.xml',
+													Email_Notification::EMAIL_ATTACHMENT_MIME_TYPE	=> 'text/xml',
+													Email_Notification::EMAIL_ATTACHMENT_CONTENT	=> $xmlmessage
+													);
+			}
+			if (isset($response))
+			{
+				$arrFlexAlertAttachments[] = array(Email_Notification::EMAIL_ATTACHMENT_NAME		=> 'SecureXMLPaymentResponse.xml',
+													Email_Notification::EMAIL_ATTACHMENT_MIME_TYPE	=> 'text/xml',
+													Email_Notification::EMAIL_ATTACHMENT_CONTENT	=> $response
+													);
+			}
+			if (isset($xmlReversalMsg))
+			{
+				$arrFlexAlertAttachments[] = array(Email_Notification::EMAIL_ATTACHMENT_NAME		=> 'SecureXMLPaymentReversalRequest.xml',
+													Email_Notification::EMAIL_ATTACHMENT_MIME_TYPE	=> 'text/xml',
+													Email_Notification::EMAIL_ATTACHMENT_CONTENT	=> $xmlReversalMsg
+													);
+			}
+			if (isset($xmlReversalResponse))
+			{
+				$arrFlexAlertAttachments[] = array(Email_Notification::EMAIL_ATTACHMENT_NAME		=> 'SecureXMLPaymentReversalResponse.xml',
+													Email_Notification::EMAIL_ATTACHMENT_MIME_TYPE	=> 'text/xml',
+													Email_Notification::EMAIL_ATTACHMENT_CONTENT	=> $xmlReversalResponse
+													);
+			}
+			
+			$strFlexAlertSubject = "Flex Alert - Payment Failure - Account: {$account->id}";
+			
+			$bolFlexAlertEmailSuccess = Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_ALERT, $account->customerGroup, NULL, $strFlexAlertSubject, $strPaymentAlertMessage, NULL, $arrFlexAlertAttachments, TRUE);
+
+			if (Flex::isCustomerSession())
+			{
+				// Customer session
+				$strMessage = "The payment transaction was successful, but could not be logged by the {$objCustomerGroup->externalName} Customer Management System, so a reversal was attempted.";
+				
+				if ($bolReversalSuccess)
+				{
+					$strMessage .= " The payment has been successfully reversed, however this can take several days to process depending on your credit card provider.";
+				}
+				else
+				{
+					$strMessage .= " Reversing the payment also failed.";
+				}
+				
+				if ($bolInternalPaymentEmailSuccess)
+				{
+					// The Internal Payment Alert email was successfully sent
+					$strMessage .= " You will be contacted by a {$objCustomerGroup->externalName} representative shortly to complete the payment process." .
+									" Alternatively you can contact the {$objCustomerGroup->externalName} Accounts Department quoting TXN Reference: $txnId, Payment Reference No: {$purchaseOrderNo}.";
+				}
+				else
+				{
+					// The Internal Payment Alert email could not be sent
+					$strMessage .= " The automatic email notifying the {$objCustomerGroup->externalName} Accounts Department of this payment failure, also failed." .
+									" Please contact the {$objCustomerGroup->externalName} Accounts Department quoting TXN Reference: $txnId, Payment Reference No: {$purchaseOrderNo}.";
+				}
+				
+				$strMessage .= " Please do not attempt to make another payment until contact with {$objCustomerGroup->externalName} has been made.".
+				$strMessage .= " We apologise for this inconvenience.";
+			}
+			else
+			{
+				// Admin session
+				$strMessage = "The payment transaction was successful, but could not be logged by Flex.";
+				
+				if ($bolReversalSuccess)
+				{
+					$strMessage .= " The payment has been successfully reversed, however this can take several days to process depending on the customer's credit card provider.";
+				}
+				else
+				{
+					$strMessage .= " Reversing the payment also failed.";
+				}
+				
+				if ($bolInternalPaymentEmailSuccess)
+				{
+					// The Internal Payment Alert email was successfully sent
+					$strMessage .= " Please direct the customer to the Accounts Department so that the payment can be fixed.";
+				}
+				else
+				{
+					// The Internal Payment Alert email could not be sent
+					$strMessage .= " Please direct the customer to the Accounts Department so that the payment can be fixed.".
+									" The automatic email to the Accounts Department notifying them of this payment failure, also failed.".
+									" Please notify them that they won't be receiving an email regarding this failure, and send them the following details.";
+				}
+				
+				$strMessage .= $strPaymentTransactionDetails;
+			}
+			
+			throw new Credit_Card_Payment_Flex_Logging_Exception($strMessage);
 		}
 
 		try
@@ -423,6 +730,27 @@ class Credit_Card_Payment
 			$outputMessage .= "\n\n\nThe system failed to send " . (($bolDD && !$bolFailedDD) ? '' : 'a ') . "confirmation email" . (($bolDD && !$bolFailedDD) ? 's' : '') . ".";
 		}
 
+		// Log the 'Payment Made' Action
+		try
+		{
+			$strExtraDetails = "";
+			if (Flex::isAdminSession())
+			{
+				$strExtraDetails .= "SecurePay credit card transaction via Flex";
+			}
+			else
+			{
+				$strExtraDetails .= "SecurePay credit card transaction via Customer Portal, made by customer: ". $contact->getName();
+			}
+			
+			Action::createAction('Payment Made', $strExtraDetails, $account->id, NULL, NULL, $employeeId, Employee::SYSTEM_EMPLOYEE_ID);
+		}
+		catch (Exception $e)
+		{
+			// Fail silently, but notify system administrators
+			Flex::sendEmailNotificationAlert("Failed to record Payment Action", "Account: {$account->id}\nContact: ". $contact->getName() ."\nEmployee Id: $employeeId\n\nException Message:". $e->getMessage(), FALSE, TRUE, TRUE);
+		}
+
 		$resultProperties['MESSAGE'] = self::replaceMessageTokens($outputMessage, $tokens);
 		return TRUE;
 	}
@@ -472,27 +800,27 @@ class Credit_Card_Payment
 
 	private static function setPaymentCreditCard($merchantId, $merchantPassword, $time, $messageId, $paymentAmount, $purchaseOrderNo, $cardNumber, $cvv, $expiryMonth, $expiryYear, $requestType=self::REQUEST_TYPE_PAYMENT, $paymentType=self::PAYMENT_TYPE_CREDIT_CARD_PAYMENT, $currency=self::CURRENCY_AUD, $preauthid='', $txnid='')
 	{
-		$timestamp = self::getGmtTimeStamp($time);
-		$expiryMonth = (intval($expiryMonth) >= 10 ? '' : '0') . intval($expiryMonth);
-		$expiryYear = intval($expiryYear) % 100;
-		$expiryYear = (intval($expiryYear) >= 10 ? '' : '0') . intval($expiryYear);
-		$paymentAmount = self::amountInCents($paymentAmount);
+		$timestamp		= self::getGmtTimeStamp($time);
+		$expiryMonth	= (intval($expiryMonth) >= 10 ? '' : '0') . intval($expiryMonth);
+		$expiryYear		= intval($expiryYear) % 100;
+		$expiryYear		= (intval($expiryYear) >= 10 ? '' : '0') . intval($expiryYear);
+		$paymentAmount	= self::amountInCents($paymentAmount);
 
-		$merchantId = htmlspecialchars($merchantId);
-		$merchantPassword = htmlspecialchars($merchantPassword);
-		$time = htmlspecialchars($time);
-		$messageId = htmlspecialchars($messageId);
-		$currency = htmlspecialchars($currency);
-		$paymentAmount = htmlspecialchars($paymentAmount);
-		$purchaseOrderNo = htmlspecialchars($purchaseOrderNo);
-		$cardNumber = htmlspecialchars($cardNumber);
-		$cvv = htmlspecialchars($cvv);
-		$expiryMonth = htmlspecialchars($expiryMonth);
-		$expiryYear = htmlspecialchars($expiryYear);
-		$requestType = htmlspecialchars($requestType);
-		$paymentType = htmlspecialchars($paymentType);
-		$preauthid = htmlspecialchars($preauthid);
-		$txnid = htmlspecialchars($txnid);
+		$merchantId			= htmlspecialchars($merchantId);
+		$merchantPassword	= htmlspecialchars($merchantPassword);
+		$time				= htmlspecialchars($time);
+		$messageId			= htmlspecialchars($messageId);
+		$currency			= htmlspecialchars($currency);
+		$paymentAmount		= htmlspecialchars($paymentAmount);
+		$purchaseOrderNo	= htmlspecialchars($purchaseOrderNo);
+		$cardNumber			= htmlspecialchars($cardNumber);
+		$cvv				= htmlspecialchars($cvv);
+		$expiryMonth		= htmlspecialchars($expiryMonth);
+		$expiryYear			= htmlspecialchars($expiryYear);
+		$requestType		= htmlspecialchars($requestType);
+		$paymentType		= htmlspecialchars($paymentType);
+		$preauthid			= htmlspecialchars($preauthid);
+		$txnid				= htmlspecialchars($txnid);
 
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r
 <SecurePayMessage>\r
@@ -798,9 +1126,26 @@ class Credit_Card_Payment
 
 }
 
-class Credit_Card_Payment_Incorrect_Password_Exception extends Exception { function __construct()	{ parent::__construct("The customer password specified was incorrect."); 				} }
-class Credit_Card_Payment_Communication_Exception	extends Exception { }
-class Credit_Card_Payment_Communication_Response_Exception	extends Credit_Card_Payment_Communication_Exception { }
+class Credit_Card_Payment_Incorrect_Password_Exception extends Exception
+{	
+	function __construct()
+	{
+		parent::__construct("The customer password specified was incorrect.");
+	}
+}
+
+class Credit_Card_Payment_Communication_Exception extends Exception
+{
+}
+
+class Credit_Card_Payment_Communication_Response_Exception extends Credit_Card_Payment_Communication_Exception
+{
+}
+
+class Credit_Card_Payment_Flex_Logging_Exception extends Exception
+{
+	
+}
 
 class Credit_Card_Payment_Remote_Processing_Error extends Exception
 {

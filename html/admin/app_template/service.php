@@ -223,7 +223,7 @@ class AppTemplateService extends ApplicationTemplate
 		BreadCrumb()->SetCurrentPage("Service");
 
 		// Actions built on this page will be associated with a ServiceId only
-		DBO()->Action->ServiceId = DBO()->Service->Id->Value;
+		DBO()->ActionCreator->ServiceId = DBO()->Service->Id->Value;
 
 		// Set up stuff for listing of Actions and Notes
 		DBO()->ActionList->AATContextId = ACTION_ASSOCIATION_TYPE_SERVICE;

@@ -563,7 +563,7 @@ Object.extend(CreditCardPayment.prototype,
 		if (outcome == 'INVALID')
 		{
 			// Need to display the confirmation message and change buttons to OK
-			$Alert('Your payment request could not be processed:\n\n' + response['MESSAGE'] + '\n\nPlease check your details and try again.');
+			$Alert('Your payment request could not be processed:<br /><br />' + response['MESSAGE'] + '<br /><br />Please check your details and try again.', null, null, 'modal', 'Payment Failure');
 			this.preparePopup();
 			this.displayForm();
 			return false;
@@ -576,7 +576,7 @@ Object.extend(CreditCardPayment.prototype,
 			this.preparePopup();
 			this.confirmBeforeSubmit();
 			this.termsAndConditions();
-			$Alert('The password you entered was incorrect.\n\nPlease correct and try again.');
+			$Alert('The password you entered was incorrect.<br /><br />Please correct and try again.', null, null, 'modal', 'Payment Failure');
 			return false;
 		}
 
@@ -585,7 +585,16 @@ Object.extend(CreditCardPayment.prototype,
 		if (outcome == 'UNAVAILABLE' || outcome == 'FAILED')
 		{
 			// Need to display the confirmation message and change buttons to OK
-			$Alert('Your payment request could not be processed:\n\n' + response['MESSAGE'] + '\n\nPlease try again later.');
+			$Alert('Your payment request could not be processed:<br /><br />' + response['MESSAGE'] + '<br /><br />Please try again later.', null, null, 'modal', 'Payment Failure');
+			this.preparePopup();
+			this.displayForm();
+			return false;
+		}
+
+		// FLEX_LOGGING_FAILURE = The Payment was made, but then it couldn't be logged as a payment in Flex.  A Payment Reversal would have been attempted, but might have failed
+		if (outcome == 'FLEX_LOGGING_FAILURE')
+		{
+			$Alert('Your payment request could not be completed:<br /><br />' + response['MESSAGE'], null, null, 'modal', 'Payment Failure');
 			this.preparePopup();
 			this.displayForm();
 			return false;
@@ -596,6 +605,13 @@ Object.extend(CreditCardPayment.prototype,
 		{
 			// Need to display the confirmation message and change buttons to OK
 			this.showConfirmationMessage(response['MESSAGE']);
+			
+			// A "Payment Made" action will have been created.  Fire the event, if the ActionsAndNotes package is loaded
+			if (window.ActionsAndNotes)
+			{
+				ActionsAndNotes.fireEvent('NewAction');
+			}
+			
 			return true;
 		}
 

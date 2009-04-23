@@ -580,7 +580,14 @@ function VixenPopupClass()
 						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</" + "script>\n";
 		Vixen.Popup.Create(strPopupId, strContent, strSize, 'centre', strWindowType, strTitle, null, false, fncCallback);
 		
-		$ID("VixenAlertOkButton").onclick	= function(){Vixen.Popup.Close(strPopupId); fncCallback()};
+		if (fncCallback == undefined)
+		{
+			$ID("VixenAlertOkButton").onclick	= function(){Vixen.Popup.Close(strPopupId)};
+		}
+		else
+		{
+			$ID("VixenAlertOkButton").onclick	= function(){Vixen.Popup.Close(strPopupId); fncCallback()};
+		}
 	}
 	
 	/**

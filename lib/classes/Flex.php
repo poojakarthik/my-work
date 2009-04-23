@@ -519,97 +519,114 @@ final class Flex
 	 * 
 	 * @param	bool	[ $bolIncludeEnvironmentDetails ]	Optional, defaults to FALSE. If true then details about the scripts environment will be included in the email.
 	 * 														This will include a call stack backtrace, $_SESSION, $_SERVER and $_REQUEST details
+	 * @param	bool	[ $bolSilentFail ]					optional, defaults to FALSE.  If true and something fails then no exceptions will be thrown. If false and something
+	 * 														fails, an exception will be thrown
 	 * @return	void
 	 * @method
 	 */
-	public static function sendEmailNotificationAlert($strSubject, $strDetails, $bolAsHtml=FALSE, $bolIncludeEnvironmentDetails=FALSE)
+	public static function sendEmailNotificationAlert($strSubject, $strDetails, $bolAsHtml=FALSE, $bolIncludeEnvironmentDetails=FALSE, $bolSilentFail=FALSE)
 	{
-		if (strlen($strDetails) == 0)
+		try
 		{
-			$strDetails = "[No Details Given]";
-
-			// Include environment details
-			$bolIncludeEnvironmentDetails = TRUE;
-		}
-
-		$strBody = $strDetails;
-		
-		if (!is_string($strSubject) || strlen($strSubject) == 0)
-		{
-			$strSubject = trim(substr($strDetails, 0, 50)) . "...";
-		}
-		
-		if ($bolIncludeEnvironmentDetails)
-		{
-			// Include the Call Stack (backtrace)
-			ob_start();
-			debug_print_backtrace();
-			$strBacktrace = ob_get_clean();
-			
-			// Truncate the backtrace to 10K if it is in excess of this
-			if (strlen($strBacktrace) > 10000)
+			if (strlen($strDetails) == 0)
 			{
-				$strBacktrace = substr($strBacktrace, 0, 10000) . "... (Function Call Backtrace has been truncated)";
+				$strDetails = "[No Details Given]";
+	
+				// Include environment details
+				$bolIncludeEnvironmentDetails = TRUE;
+			}
+	
+			$strBody = $strDetails;
+			
+			if (!is_string($strSubject) || strlen($strSubject) == 0)
+			{
+				$strSubject = trim(substr($strDetails, 0, 50)) . "...";
 			}
 			
-			// Include SESSION details
-			if (isset($_SESSION) && is_array($_SESSION) && array_key_exists('User', $_SESSION))
+			if ($bolIncludeEnvironmentDetails)
 			{
-				$strSessionDetails = print_r($_SESSION, TRUE);
-
-				// Truncate the Session details to 10K if it is in excess of this
-				if (strlen($strSessionDetails) > 10000)
+				// Include the Call Stack (backtrace)
+				ob_start();
+				debug_print_backtrace();
+				$strBacktrace = ob_get_clean();
+				
+				// Truncate the backtrace to 10K if it is in excess of this
+				if (strlen($strBacktrace) > 10000)
 				{
-					$strSessionDetails = substr($strSessionDetails, 0, 10000) . "... (Session details have been truncated)";
+					$strBacktrace = substr($strBacktrace, 0, 10000) . "... (Function Call Backtrace has been truncated)";
 				}
+				
+				// Include SESSION details
+				if (isset($_SESSION) && is_array($_SESSION) && array_key_exists('User', $_SESSION))
+				{
+					$strSessionDetails = print_r($_SESSION, TRUE);
+	
+					// Truncate the Session details to 10K if it is in excess of this
+					if (strlen($strSessionDetails) > 10000)
+					{
+						$strSessionDetails = substr($strSessionDetails, 0, 10000) . "... (Session details have been truncated)";
+					}
+				}
+				else
+				{
+					$strSessionDetails = "[ No session details defined ]";
+				}
+							
+				// Include $_SERVER details
+				$strServerDetails = print_r($_SERVER, TRUE);
+				
+				// Include $_REQUEST details (if there are any)
+				$strRequestDetails = print_r($_REQUEST, TRUE);
+				
+				$strEnvDetails .= "\n\nFunction Call Backtrace:".
+								"\n$strBacktrace".
+								"\n\nUser Details:".
+								"\n$strUserDetails".
+								"\n\nServer Details:".
+								"\n$strServerDetails".
+								"\n\nRequest Details:".
+								"\n$strRequestDetails";
+				
+				if ($bolAsHtml)
+				{
+					$strEnvDetails = "<pre>$strEnvDetails</pre>";
+				}
+				
+				$strBody .= $strEnvDetails;
 			}
-			else
-			{
-				$strSessionDetails = "[ No session details defined ]";
-			}
-						
-			// Include $_SERVER details
-			$strServerDetails = print_r($_SERVER, TRUE);
 			
-			// Include $_REQUEST details (if there are any)
-			$strRequestDetails = print_r($_REQUEST, TRUE);
+			$strSignature = "\n\nRegards\nFlexor";
 			
-			$strEnvDetails .= "\n\nFunction Call Backtrace:".
-							"\n$strBacktrace".
-							"\n\nUser Details:".
-							"\n$strUserDetails".
-							"\n\nServer Details:".
-							"\n$strServerDetails".
-							"\n\nRequest Details:".
-							"\n$strRequestDetails";
+			$strBody .= ($bolAsHtml)? nl2br($strSignature) : $strSignature;
+			$email = new Email_Notification(EMAIL_NOTIFICATION_ALERT);
 			
 			if ($bolAsHtml)
 			{
-				$strEnvDetails = "<pre>$strEnvDetails</pre>";
+				$email->html = $strBody;
+			}
+			else
+			{
+				$email->text = $strBody;
 			}
 			
-			$strBody .= $strEnvDetails;
+			$email->subject = "Flex Alert - $strSubject";
+			$email->addHeader("X-Priority", "1 (Highest)");
+			$email->addHeader("X-MSMail-Priority", "High");
+			$email->addHeader("Importance", "High");
+			$email->send();
 		}
-		
-		$strSignature = "\n\nRegards\nFlexor";
-		
-		$strBody .= ($bolAsHtml)? nl2br($strSignature) : $strSignature;
-		$email = new Email_Notification(EMAIL_NOTIFICATION_ALERT);
-		
-		if ($bolAsHtml)
+		catch (Exception $e)
 		{
-			$email->html = $strBody;
+			if ($bolSilentFail)
+			{
+				return FALSE;
+			}
+			else
+			{
+				throw new Exception("Failed to send alert email - ". $e->getMessage());
+			}
 		}
-		else
-		{
-			$email->text = $strBody;
-		}
-		
-		$email->subject = "Flex Alert - $strSubject";
-		$email->addHeader("X-Priority", "1 (Highest)");
-		$email->addHeader("X-MSMail-Priority", "High");
-		$email->addHeader("Importance", "High");
-		$email->send();
+		return TRUE;
 	}
 
 	

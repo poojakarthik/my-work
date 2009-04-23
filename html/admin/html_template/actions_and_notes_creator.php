@@ -1,4 +1,5 @@
 <?php
+//DEPRECATED - The ActionsAndNotes Creator Component is now included in HtmlTemplateActionsAndNotesList
 //----------------------------------------------------------------------------//
 // HtmlTemplateActionsAndNotesCreator
 //----------------------------------------------------------------------------//

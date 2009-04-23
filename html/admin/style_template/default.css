@@ -921,7 +921,8 @@ h2.CustomerGroup,
 h2.ConstantGroup,
 h2.Carrier,
 h2.CustomerStatus,
-h2.Tickets
+h2.Tickets,
+h2.Actions
 {
 	background-repeat:		no-repeat;
 	background-position:	center left;
@@ -998,6 +999,11 @@ h2.Archive
 h2.Notes
 {
 	background-image:              url('img/template/note.png');
+}
+
+h2.Actions
+{
+	background-image:              url('img/template/action.png');
 }
 
 h2.Note

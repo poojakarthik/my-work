@@ -34,6 +34,11 @@ Object.extend(ActionsAndNotes,
 		ActionsAndNotes.actionTypes = objActionTypes;
 	},
 	
+	isLoaded : function()
+	{
+		return ActionsAndNotes.bolHasLoaded;
+	},
+
 	loadActionAndNoteTypes : function(funcOnLoaded, bolForceReload)
 	{
 		if (ActionsAndNotes.noteTypes == null || ActionsAndNotes.actionTypes == null || bolForceReload)
@@ -317,6 +322,12 @@ Object.extend(ActionsAndNotes.Creator.prototype,
 	
 	initialize : function(intAccountId, intServiceId, intContactId)
 	{
+		if (intAccountId == null && intServiceId == null && intContactId == null)
+		{
+			alert("ActionsAndNotes.Creator Error : No AccountId, ServiceId or ContactId has been specified");
+			return;
+		}
+	
 		this.accountId = intAccountId;
 		this.serviceId = intServiceId;
 		this.contactId = intContactId;
