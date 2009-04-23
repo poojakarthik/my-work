@@ -66,6 +66,8 @@ $strDailyMessageSection
 					<div class='console-calendar'>";
 		
 		ksort($this->mxdDataToRender['UpcomingEvents']);
+		
+		$bolAlt	= true;
 		foreach ($this->mxdDataToRender['UpcomingEvents'] as $strDate=>$arrCalendarEvents)
 		{
 			// Table Header & Footer
@@ -74,7 +76,7 @@ $strDailyMessageSection
 							<span class='date'>".date('l jS F', strtotime($strDate))."</span>
 							<table class='reflex'>
 								<thead>
-									<tr>
+									<tr".($bolAlt ? " class='alt'" : '').">
 										<th>
 											Item for action
 										</th>
