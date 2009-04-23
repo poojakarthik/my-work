@@ -61,7 +61,7 @@ class Calendar_Event extends ORM
 			{
 				case 'CustomerGroup':
 					$objCustomerGroup	= Customer_Group::getForId($intObjectId);
-					$strReplace			= "<span style='color:{$objCustomerGroup->customerPrimaryColor}'>{$objCustomerGroup->internalName}</span>";
+					$strReplace			= "<span style='color:#{$objCustomerGroup->customerPrimaryColor};'>{$objCustomerGroup->internalName}</span>";
 					break;
 				
 				default:
