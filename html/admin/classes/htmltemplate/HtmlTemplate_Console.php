@@ -109,8 +109,11 @@ $strDailyMessageSection
 			{
 				echo "
 						<tr class='alt'>
-							<td colspan='2'>
+							<td>
 								No actions required
+							</td>
+							<td class='department-responsible'>
+								{$objCalendarEvent->department_responsible}
 							</td>
 						</tr>";
 			}
