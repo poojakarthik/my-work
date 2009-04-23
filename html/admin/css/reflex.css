@@ -37,9 +37,14 @@ span[onclick]
 div.content-header,
 div.content-footer
 {
-	background-color: #333;
-	color: #eee;
-	text-align: left;
+	width				: 99%;  /* was previously set to 90% */
+	margin-left			: auto;
+	margin-right		: auto;
+	border				: .1em solid #333;
+	border-spacing		: 0;
+	background-color	: #333;
+	color				: #eee;
+	text-align			: left;
 }
 
 div.message {
