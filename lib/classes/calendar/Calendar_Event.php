@@ -47,11 +47,13 @@ class Calendar_Event extends ORM
 		if ($mixDate === null)
 		{
 			// NULL -- Use Today's date
+			throw new Exception("\$mixDate is NULL");
 			$strDate	= date("Y-m-d");
 		}
 		elseif ($intDate = strtotime($mixDate))
 		{
 			// Date String
+			throw new Exception("\$mixDate is a Date string");
 			$strDate	= date("Y-m-d", $intDate);
 		}
 		elseif (is_int($mixDate) && $mixDate > 0)
