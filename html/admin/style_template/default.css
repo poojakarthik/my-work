@@ -1232,6 +1232,7 @@ input[type='button'], a.button, button
 
 input.InputSubmitDisabled, button[disabled]
 {
+	background-image:    none;
 	color:               #eee;
 	background-color:    #ccc;
 	-moz-user-select:	none;
