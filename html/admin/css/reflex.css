@@ -1090,7 +1090,7 @@ img.icon_16
 /* CONSOLE UPCOMING CALENDAR EVENTS */
 div.console-calendar
 {
-	margin		: 0em;
+	
 }
 
 div.console-calendar div.day
@@ -1098,13 +1098,13 @@ div.console-calendar div.day
 	margin		: 1em;
 }
 
-div.console-calendar div.day span.date
+div.console-calendar div.day:first-child
 {
+	font-size	: 1.5em;
 	font-weight	: bold;
 }
 
-div.console-calendar div.date:first-child
+div.console-calendar div.day span.date
 {
-	font-size	: 1.5em;
 	font-weight	: bold;
 }
