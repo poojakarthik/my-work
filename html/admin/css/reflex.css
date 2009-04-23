@@ -1090,7 +1090,12 @@ img.icon_16
 /* CONSOLE UPCOMING CALENDAR EVENTS */
 div.console-calendar
 {
-	margin-top	: 2em;
+	margin-top	: 1em;
+}
+
+div.console-calendar div.date
+{
+	margin-top	: 1em;
 }
 
 div.console-calendar div.date:first-child
