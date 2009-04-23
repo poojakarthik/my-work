@@ -112,14 +112,14 @@ class Flex_Rollout_Version_000162 extends Flex_Rollout_Version
 					('Manual Bar', 'Manual Bar', $intDetailOptionalId, 0),
 					('Manual Unbar', 'Manual Unbar', $intDetailOptionalId, 0),
 					('Manual TDC', 'Manual TDC', $intDetailOptionalId, 0),
-					('Manual UnTDC', 'Manual UnTDC', $intDetailOptionalId, 0),
+					('Manual Reconnect TDC', 'Manual Reconnect TDC', $intDetailOptionalId, 0),
 					('Left Message to Call', 'Left Message to Call', $intDetailOptionalId, 0),
 					('Sent to Debt Collection', 'Sent to Debt Collection', $intDetailRequiredId, 0),
 					('Payment Made', 'Payment Made', $intDetailOptionalId, 1),
 					('Payment Advice', 'Payment Advice', $intDetailRequiredId, 0),
 					('Logged Fault', 'Logged Fault', $intDetailRequiredId, 0),
-					('Closed Fault', 'Closed Fault', $intDetailOptionalId, 0),
-					('Checked Fault', 'Checked Fault', $intDetailOptionalId, 0);";
+					('Closed Fault', 'Closed Fault', $intDetailRequiredId, 0),
+					('Checked Fault', 'Checked Fault', $intDetailRequiredId, 0);";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{

@@ -1,7 +1,7 @@
 <?php
 
 // Only define this constant if you are testing CC payments with contacts that have fake email addresses, or your own email address
-define(SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE, TRUE);
+//define(SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE, TRUE);
 
 class Credit_Card_Payment
 {
@@ -277,7 +277,6 @@ class Credit_Card_Payment
 			// Add an adjustment to the account for the credit card surcharge
 			TransactionStart();
 			$account->applyPayment($employeeId, $contact, $time, $fltTotal, $txnId, $purchaseOrderNo, PAYMENT_TYPE_CREDIT_CARD, $strCardNumber, $cardType, $surcharge);
-//throw new Exception("Just testing what will happen if a payment transaction is successful, but it can't be logged in flex");
 			TransactionCommit();
 		}
 		catch (Exception $e)
@@ -427,8 +426,8 @@ class Credit_Card_Payment
 					<strong>The payment has been successfully reversed.</strong>
 				</p>
 				<p>
-					You might want to check that both the original payment transaction and its reversal are logged in the 
-					SecurePay portal, and follow up the payment with the customer.
+					Check that both the original payment transaction and its reversal are logged in the 
+					SecurePay portal, and <strong>follow up the payment with the customer.</strong>
 				</p>";
 				
 				if ($bolDD)
@@ -554,7 +553,7 @@ class Credit_Card_Payment
 				}
 				
 				$strMessage .= " Please do not attempt to make another payment until contact with {$objCustomerGroup->externalName} has been made.".
-				$strMessage .= " We apologise for this inconvenience.";
+								" We apologise for this inconvenience.";
 			}
 			else
 			{

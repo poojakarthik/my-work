@@ -7,7 +7,7 @@ require_once '../../lib/classes/Flex.php';
 if (!Flex::continueSession(Flex::FLEX_CUSTOMER_SESSION))
 {
 	// Prompt the user to extend their session or logout
-	$response = array('ERROR'=>'LOGIN');
+	$response = array('ERROR'=>'Your session has expired.  Please log in again.');
 	require_once dirname(__FILE__) . '/../../lib/classes/json/JSON_Services.php';
 	echo JSON_Services::encode($response);
 	exit;
