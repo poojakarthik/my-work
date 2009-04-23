@@ -127,9 +127,12 @@ class HtmlTemplateAccountTicketList extends HtmlTemplate
 		$strAddTicketLink = Href()->AddTicket($intAccountId);
 
 		echo "
-<div style='clear:both;float:right'>
+<div style='text-align: right'>
+	<div class='SmallSeparator' style='clear:both'></div>
 	<a class='button' href='$strAllTicketsLink'>View All Tickets</a> 
 	<a class='button' href='$strAddTicketLink'>Create Ticket</a>
+	<br />
+	<div class='SmallSeparator' style='clear:both'></div>
 </div>
 <div class='SmallSeparator' style='clear:both'></div>";
 	}

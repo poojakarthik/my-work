@@ -28,7 +28,7 @@
 /**************************************************************************/
 input, select
 {
-	font-family:		"Nimbus Sans NL", Tahoma, sans-serif;
+	font-family:		Arial, sans-serif;
 	margin-bottom:		1px;
 	border:				solid 1px #000000;
 }
@@ -115,7 +115,7 @@ h3
 
 li
 {
-	font-family:		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family:		Arial, sans-serif;
 	line-height:		14pt;
 	font-size:			10pt;		
 }
@@ -148,7 +148,7 @@ label
 td,
 span
 {
-	font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family: 		Arial, sans-serif;
 	line-height: 		18pt;
 	font-size: 			10pt;
 	left:				0px;
@@ -158,9 +158,12 @@ span
 }
 
 input[type='submit']:hover,
-input[type='button']:hover
+input[type='button']:hover,
+a.button:hover,
+button:hover
 {
-	cursor:	pointer;
+	cursor:				default !important;
+	text-decoration: 	none !important;
 }
 
 span[onclick]:hover
@@ -199,7 +202,7 @@ padding:			3px;
 
 div#ImportReport
 {
-	font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family: 		Arial, sans-serif;
 	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			relative;
@@ -321,7 +324,7 @@ height:		44px;
 
 .TD_DefaultLabel
 {
-	font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family: 		Arial, sans-serif;
 	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			absolute;
@@ -331,7 +334,7 @@ height:		44px;
 .DefaultLabel,
 .DefaultInvalidLabel
 {
-	font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family: 		Arial, sans-serif;
 	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			absolute;
@@ -344,7 +347,7 @@ height:		44px;
 
 .DefaultOutput
 {
-	font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family: 		Arial, sans-serif;
 	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			relative;
@@ -355,7 +358,7 @@ height:		44px;
 
 .DefaultRegularOutput
 {
-	font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family: 		Arial, sans-serif;
 	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			relative;
@@ -370,7 +373,7 @@ height:		44px;
 
 .DefaultInvalidOutput
 {
-	font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family: 		Arial, sans-serif;
 	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			relative;
@@ -386,7 +389,7 @@ height:		44px;
 .DefaultInputText,
 .DefaultInput
 {
-	font-family:		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family:		Arial, sans-serif;
 	line-height:		18pt;
 	font-size:			10pt;
 	position:			relative;
@@ -427,7 +430,7 @@ height:		44px;
 .DefaultInputTextSmall
 {
 
-	font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family: 		Arial, sans-serif;
 	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			relative;
@@ -454,7 +457,7 @@ height:		44px;
 .DefaultInvalidInputTextArea,
 .DefaultInvalidInput
 {
-	font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family: 		Arial, sans-serif;
 	line-height: 		1.2;
 	font-size: 			10pt;
 	position:			relative;
@@ -483,7 +486,7 @@ height:		44px;
 .DefaultOutputSpan,
 .DefaultInvalidOutputSpan
 {
-	font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family: 		Arial, sans-serif;
 	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			relative;
@@ -579,7 +582,7 @@ height:		44px;
 	margin:				0px;
 	padding:			5px;
 	border:				solid 1px #D1D1D1;
-	background-color:	#EFEBE7;
+	background-color:	#eceef2;
 	position:			relative;
 }
 
@@ -706,13 +709,9 @@ table.Listing
 table.Listing tr.First th
 {
 	border-bottom:       solid 1px #C1C1C1;
-
 	background-repeat:   repeat-x;
-	background-image:    url('img/template/table_first_bg.png');
-
-	background-color:    #45a0f3;
+	background-image:    url('img/template/background.png');
 	color:               #FFFFFF;
-
 	font-size:			 10pt;
 }
 
@@ -737,7 +736,7 @@ table.Listing tr.Odd td
 table.Listing tr.Even th,
 table.Listing tr.Even td
 {
-	background-color:    #D5E0F8;
+	background-color:    #ddd;
 	vertical-align:			top;		
 }
 
@@ -777,7 +776,7 @@ table.Listing tr.Selected td
 table.Listing tr.PrimarySelected th,
 table.Listing tr.PrimarySelected td
 {
-	background-color:	#11FF33;
+	background-color:	#bcd;
 	vertical-align:		top;
 }
 
@@ -871,7 +870,7 @@ div#MenuItem
 
 .MenuItemName
 {
-	font-family:	"Nimbus Sans L",Arial,Tahoma,Sans-serif;
+	font-family:	Arial, sans-serif;
 	font-weight:	bold;
 	font-size: 		12pt;
 
@@ -1210,31 +1209,34 @@ input.InputSubmitDisabled
 	font-size:			10pt;
 }
 
-/*  This has been deprecated 2009-04-23
-input[type='button']
+input[type='button'], a.button, button
 {
-	background-image:	url('img/template/button_background.png');
+	background-image:	url('img/template/transparent-bg.png');
 	background-repeat:	repeat-x;
-	background-color:	#07548e;
-
-	color:				#FFFFFF;
-	font-size:			1em;
-	font-weight:		bold;
-
-	margin:				0px;
-	padding:			1px 6px;
-
-	border:				solid 1px #07548e;
+	/*background-color:	#1f5bff;*/
+	background-color:	#ddd;
+	color:				#000;
+	font-family: 		Arial, sans-serif !important;
+	font-size:			1em !important;
+	font-weight:		bold !important;
+	margin:				.2em;
+	padding:			.2em .5em;
+	border-top:			solid .1em #999;
+	border-left:		solid .1em #999;
+	border-bottom:		solid .1em #666;
+	border-right:		solid .1em #666;
+	-moz-border-radius:	4px;
+	cursor: 			pointer !important;
+	-moz-user-select:	none;
 }
-*/
-input.InputSubmitDisabled
+
+input.InputSubmitDisabled, button[disabled]
 {
 	background-image:    url('img/template/button_background_disabled.png');
-
 	border:              solid 1px #434343;
-
 	color:               #FFFFFF;
 	background-color:    #434343;
+	-moz-user-select:	none;
 }
 
 input.InputSubmitLocked,
@@ -1291,7 +1293,7 @@ input.time
 
 .PopupBoxTopBar
 {
-	font-family: "Nimbus Sans L", Arial, Tahoma, Sans-serif;
+	font-family: Arial, sans-serif;
 	font-size: 10pt;
 	line-height: 18pt;
 	color: #FFFFFF;
