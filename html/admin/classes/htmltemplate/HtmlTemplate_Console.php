@@ -52,11 +52,11 @@ $strDailyMessageSection
 		// Display upcoming Calendar Events
 		echo "
 <br />
-<div>
-	<div class='content-header'>
+<div class='reflex-content'>
+	<div class='header'>
 		Upcoming Events
 	</div>
-	<div>
+	<div class='body'>
 		<div class='console-calendar'>";
 		
 		ksort($this->mxdDataToRender['UpcomingEvents']);

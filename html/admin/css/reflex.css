@@ -34,21 +34,30 @@ span[onclick]
 	display: none;
 }
 
-div.content-header,
-div.content-footer
+div.reflex-content
 {
 	width				: 99%;  /* was previously set to 90% */
 	margin-left			: auto;
 	margin-right		: auto;
 	border				: .1em solid #333;
 	border-spacing		: 0;
+}
+
+div.reflex-content div.header,
+div.reflex-content div.footer
+{
 	background-color	: #333;
 	color				: #eee;
 	text-align			: left;
 	padding				: .25em .5em;
 }
 
-div.content-body
+div.reflex-content div.footer
+{
+	text-align			: right;
+}
+
+div.reflex-content div.body
 {
 	
 }
