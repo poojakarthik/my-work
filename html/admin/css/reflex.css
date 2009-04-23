@@ -34,6 +34,14 @@ span[onclick]
 	display: none;
 }
 
+div.content-header,
+div.content-footer
+{
+	background-color: #333;
+	color: #eee;
+	text-align: left;
+}
+
 div.message {
 	background: #CFFFCD;
 	font-weight: bold;
