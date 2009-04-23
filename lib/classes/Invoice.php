@@ -493,6 +493,11 @@ class Invoice extends ORM
 			$fltMinimumCharge	= 0.0;
 			$fltUsageStart		= 0.0;
 			$fltUsageLimit		= 0.0;
+			
+			if ($arrServiceTotal['bolDisconnectedAndNoCDRs'])
+			{
+				Log::getLog()->log("Waiving Plan Charges");
+			}
 		}
 		else
 		{
