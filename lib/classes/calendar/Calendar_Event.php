@@ -48,7 +48,6 @@ class Calendar_Event extends ORM
 	{
 		$arrTokens	= array();
 		preg_match_all("/\[(\w+)(\:)(\d+)\]/", $this->description, $arrTokens, PREG_SET_ORDER);
-		$arrTokens	= array_unique($arrTokens);
 		
 		throw new Exception(print_r($arrTokens, true));
 		
@@ -78,7 +77,7 @@ class Calendar_Event extends ORM
 					break;
 			}
 			
-			$strParsedDescription	= str_replace($strToken, $strReplace, $strParsedDescription);
+			$strParsedDescription	= str_replace($strToken, $strReplace, $strParsedDescription, 1);
 		}
 		
 		return $strParsedDescription;
