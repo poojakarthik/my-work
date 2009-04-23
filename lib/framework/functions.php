@@ -41,9 +41,9 @@
  * Cleans a directory
  *
  * Cleans a directory recursively
- * 
+ *
  * @param	string	$strDirectory		Directory to flush
- * 
+ *
  * @comments
  * @function
  */
@@ -72,9 +72,9 @@ function CleanDir($strDirectory)
  * Removes a directory
  *
  * Removes a directory and all of its files
- * 
+ *
  * @param	string	$strDirectory		Directory to flush
- * 
+ *
  * @function
  */
 function RemoveDir($strDirectory)
@@ -94,7 +94,7 @@ function RemoveDir($strDirectory)
  * display debug output
  *
  * @param	mixed	$mixOutput	value to output
- * @param	string	$strMode	optional mode, html (default) or txt 
+ * @param	string	$strMode	optional mode, html (default) or txt
  * @return	bool
  *
  * @comments
@@ -181,7 +181,7 @@ function Debug($mixOutput, $strMode="html")
  *
  * display debug backtrace output
  *
- * @param	string	$strMode	optional mode, html (default) or txt 
+ * @param	string	$strMode	optional mode, html (default) or txt
  * @return	bool
  *
  * @function
@@ -289,7 +289,7 @@ function Trace($strString, $strLogname = 'Debug')
  * Returns formated backtrace string
  *
  * Returns formated backtrace string
- * 
+ *
  * @param	array	$backtrace		optional Data returned from a debug_backtrace() call
  *
  * @return	string
@@ -367,7 +367,7 @@ function Backtrace($backtrace = NULL)
  *
  * @param	string		$strText	Text to truncate
  * @param	integer		$intLength	Number of characters to limit to (must be > 10)
- * 
+ *
  * @return	mixed					string	: Truncated filename
  * 									FALSE	: Invalid filename
  *
@@ -413,13 +413,13 @@ function TruncateName($strText, $intLength)
  * Removes +61 from FNNs
  *
  * Removes the +61 from the start of an FNN, replacing it with a 0
- * 
+ *
  * @param	string		$strFNN		FNN to be parsed
  *
  * @return	string					Modified FNN
  *
  * @method
- */	
+ */
 function RemoveAusCode($strFNN)
 {
 	return str_replace("+61", "0", $strFNN);
@@ -430,18 +430,18 @@ function RemoveAusCode($strFNN)
 //------------------------------------------------------------------------//
 /**
  * ReplaceAliases()
- * 
+ *
  * Returns a string with string replaced variables
- * 
+ *
  * Returns a string with string replaced variables
- * 
+ *
  * @param	string		$strMessage			The new message line to be added
  * @param	array		$arrAliases			Associative array of alises.
- * 											MUST use the same aliases as used in the 
+ * 											MUST use the same aliases as used in the
  * 											constant being used.  Key is the alias (including the <>'s)
  * 											, and the Value is the value to be inserted.
  * @return	string
- * 
+ *
  * @method
  */
 function ReplaceAliases($strMessage, $arrAliases)
@@ -454,44 +454,44 @@ function ReplaceAliases($strMessage, $arrAliases)
 		}
 	}
 	return $strMessage;
-}	
+}
 
 //------------------------------------------------------------------------//
 // GetCarrierName
 //------------------------------------------------------------------------//
 /**
  * GetCarrierName()
- * 
+ *
  * Convert a Carrier ID to a Carrier Name
- * 
+ *
  * Convert a Carrier ID to a Carrier Name
- * 
+ *
  * @param	integer		$intCarrier			Carrier code to convert
  *
  * @return	mixed							string: Carrier name
  * 											FALSE: Unknown carrier code
- * 
+ *
  * @method
  */
 function GetCarrierName($intCarrier)
 {
 	return GetConstantDescription($intCarrier, 'Carrier');
-}	
+}
 
 //------------------------------------------------------------------------//
 // IsValidFNN
 //------------------------------------------------------------------------//
 /**
  * IsValidFNN()
- * 
+ *
  * Check if an FNN is valid
- * 
+ *
  * Check if an FNN is valid
- * 
+ *
  * @param	string		$strFNN				The FNN number to check for validity
  *
  * @return	boolean							TRUE/FALSE: Depending on whether the FNN is a valid Australian Full National Number
- * 
+ *
  * @method
  */
 function IsValidFNN($strFNN)
@@ -504,16 +504,16 @@ function IsValidFNN($strFNN)
 //------------------------------------------------------------------------//
 /**
  * CleanFNN()
- * 
+ *
  * Clean an FNN
- * 
+ *
  * Clean an FNN
- * 
+ *
  * @param	string		$strFNN				The FNN number to Clean
  * @param	string		$strAreaCode		optional Area Code to Clean
  *
  * @return	string							The Cleaned FNN
- * 
+ *
  * @method
  */
 function CleanFNN($strFNN, $strAreaCode=NULL)
@@ -555,16 +555,16 @@ function CleanFNN($strFNN, $strAreaCode=NULL)
 //------------------------------------------------------------------------//
 /**
  * ServiceType()
- * 
+ *
  * Find the Service Type of an FNN
- * 
+ *
  * Find the Service Type of an FNN
- * 
+ *
  * @param	string		$strFNN				The FNN number to Check
  *
  * @return	mixed					int		Service Type Constant
  *									FALSE	Service Type not found
- * 
+ *
  * @comments
  * @method
  */
@@ -617,17 +617,17 @@ function ServiceType($strFNN)
 //------------------------------------------------------------------------//
 /**
  * GetConstantName()
- * 
+ *
  * Find the Name of a Constant
- * 
+ *
  * Find the Name of a Constant
- * 
+ *
  * @param	string		$intCode			The Constant
  * @param	string		$strType			optional type of Constant. Default = 'CDR'
  *
  * @return	mixed					string	Constant Name
  *									FALSE	Constant not found
- * 
+ *
  * @method
  */
 function GetConstantName($intCode, $strType='CDR')
@@ -651,17 +651,17 @@ function GetConstantName($intCode, $strType='CDR')
 //------------------------------------------------------------------------//
 /**
  * GetConstantDescription()
- * 
+ *
  * Find the Description of a Constant
- * 
+ *
  * Find the Description of a Constant
- * 
+ *
  * @param	string		$intCode			The Constant
  * @param	string		$strType			optional type of Constant. Default = 'CDR'
  *
  * @return	mixed					string	Constant Description
  *									FALSE	Constant not found
- * 
+ *
  * @method
  */
 function GetConstantDescription($intCode, $strType='CDR')
@@ -685,15 +685,15 @@ function GetConstantDescription($intCode, $strType='CDR')
 //------------------------------------------------------------------------//
 /**
  * EvalReturn()
- * 
+ *
  * Eval php code and return the result
- * 
+ *
  * Eval php code and return the result
- * 
+ *
  * @param	string		$strCode			PHP code to be evaled
  *
  * @return	mixed							return value of the php code
- * 
+ *
  * @method
  */
 function EvalReturn ($strCode)
@@ -716,7 +716,7 @@ function EvalReturn ($strCode)
 		$return = FALSE;
 	}
 
-	return $return; 
+	return $return;
 }
 
 // -------------------------------------------------------------------------- //
@@ -728,16 +728,16 @@ function EvalReturn ($strCode)
 //------------------------------------------------------------------------//
 /**
  * AddPermission()
- * 
+ *
  * Add permissions to a user
- * 
+ *
  * Add permissions to a user
- * 
+ *
  * @param	int		$intUser			Current Permissions of the user
  * @param	int		$intPermission		Permissions to be added to the user
  *
  * @return	int							New permissions of the user
- * 
+ *
  * @method
  */
 function AddPermission($intUser, $intPermission)
@@ -754,16 +754,16 @@ function AddPermission($intUser, $intPermission)
 //------------------------------------------------------------------------//
 /**
  * RemovePermission()
- * 
+ *
  * Remove permissions from a user
- * 
+ *
  * Remove permissions from a user
- * 
+ *
  * @param	int		$intUser			Current Permissions of the user
  * @param	int		$intPermission		Permissions to be removed from the user
  *
  * @return	int							New permissions of the user
- * 
+ *
  * @method
  */
 function RemovePermission($intUser, $intPermission)
@@ -783,16 +783,16 @@ function RemovePermission($intUser, $intPermission)
 //------------------------------------------------------------------------//
 /**
  * HasPermission()
- * 
+ *
  * Check if a user has a specified permission
- * 
+ *
  * Check if a user has a specified permission
- * 
+ *
  * @param	mix		$mixUser			Ineger Current Permissions of the user (or array of users)
  * @param	mix		$mixPermission		Integer Permissions to be checked for (or array of permissions)
  *
  * @return	bool						TRUE if the user has the permission
- * 
+ *
  * @comments
  * @method
  */
@@ -857,16 +857,16 @@ function PageUsesModule($strUsedModules, $strModule)
 //------------------------------------------------------------------------//
 /**
  * ListPDF()
- * 
+ *
  * Return a list of invoice PDFs
- * 
+ *
  * Return a list of invoice PDFs for the specified account
- * 
+ *
  * @param	int		$intAccount			Account to find PDFs for
  *
  * @return	mixed						array: Associative array of PDFs
  * 										FALSE: there was an error
- * 
+ *
  * @brokenreturn
  * @function
  */
@@ -946,18 +946,18 @@ function ListPDF($intAccount)
 //------------------------------------------------------------------------//
 /**
  * GetPDF()
- * 
+ *
  * Return the contents of a PDF invoice in a string
- * 
+ *
  * Return the contents of a PDF invoice in a string for the specified account, year, and month
- * 
+ *
  * @param	int		$intAccount			Account to find PDFs for
  * @param	int		$intYear			Year to match
  * @param	int		$intMonth			Month to match
  *
  * @return	mixed						string: contents of the PDF invoice
  * 										FALSE: there was an error
- * 
+ *
  * @function
  */
 function GetPDF($intAccount, $intYear, $intMonth)
@@ -988,11 +988,11 @@ function GetPDF($intAccount, $intYear, $intMonth)
 //------------------------------------------------------------------------//
 /**
  * CSVRow()
- * 
+ *
  * Formats an array of data as a CSV Row
- * 
+ *
  * Formats an array of data as a CSV Row
- * 
+ *
  * @param	string	$strTable			Tabe Name, used to define the CSV format
  * @param	array	$arrData			Data to be formated as CSV
  * @param	string	$strSeparator		optional field separator. defaults to ;
@@ -1000,7 +1000,7 @@ function GetPDF($intAccount, $intYear, $intMonth)
  *
  * @return	mixed						string: CSV line
  * 										FALSE: Table not found
- * 
+ *
  * @function
  */
 function CSVRow($strTable, $arrData, $strSeparator=';', $strTerminator="\n")
@@ -1026,18 +1026,18 @@ function CSVRow($strTable, $arrData, $strSeparator=';', $strTerminator="\n")
 //------------------------------------------------------------------------//
 /**
  * CSVHeader()
- * 
+ *
  * Returns a CSV header row for a table
- * 
+ *
  * Returns a CSV header row for a table
- * 
+ *
  * @param	string	$strTable			Tabe Name, used to define the CSV format
  * @param	string	$strSeparator		optional field separator. defaults to ;
  * @param	string	$strTerminator		optional line terminator. defaults to \n (newline)
  *
  * @return	mixed						string: CSV line
  * 										FALSE: Table not found
- * 
+ *
  * @function
  */
 function CSVHeader($strTable, $strSeparator=';', $strTerminator="\n")
@@ -1063,17 +1063,17 @@ function CSVHeader($strTable, $strSeparator=';', $strTerminator="\n")
 //------------------------------------------------------------------------//
 /**
  * CSVStatementSelect()
- * 
+ *
  * Formats an executed StatementSelect object as a CSV document
- * 
+ *
  * Formats an executed StatementSelect object as a CSV document.
- * 
+ *
  * @param	StatementSelect		$selStatement		The SQL Statement (Post Execution) being parse
  * @param	string	$strSeparator		optional field separator. defaults to ;
  * @param	string	$strTerminator		optional line terminator. defaults to \n (newline)
  *
  * @return	String
- * 
+ *
  * @function
  */
 function CSVStatementSelect (StatementSelect $selStatement, $strSeparator=';', $strTerminator="\n")
@@ -1122,17 +1122,17 @@ function CSVStatementSelect (StatementSelect $selStatement, $strSeparator=';', $
 //------------------------------------------------------------------------//
 /**
  * XLSStatementSelect()
- * 
+ *
  * Formats an executed StatementSelect object as an XLS document
- * 
+ *
  * Formats an executed StatementSelect object as an XLS document.
- * 
+ *
  * @param	StatementSelect		$selStatement		The SQL Statement (Post Execution) being parse
  *
  * @return	String
- * 
+ *
  * @function
- * 
+ *
  */
 function XLSStatementSelect (StatementSelect $selStatement)
 {
@@ -1177,17 +1177,17 @@ function XLSStatementSelect (StatementSelect $selStatement)
 //------------------------------------------------------------------------//
 /**
  * EchoLine()
- * 
+ *
  * Echos out a line to the output
  *
  * Echos out a line to the output
- * 
+ *
  * @param	string	$strText	The string to be echoed
  *
  * @return	void
- * 
+ *
  * @function
- * 
+ *
  */
 function EchoLine($strText)
 {
@@ -1204,18 +1204,18 @@ function EchoLine($strText)
 //------------------------------------------------------------------------//
 /**
  * CheckLuhn()
- * 
+ *
  * Verify a number using the Luhn algorithm
  *
  * Verify a number using the Luhn algorithm
- * 
+ *
  * @param	mix	$mixNumber	the number to be checked
  *
  * @return	bool
- * 
+ *
  * @comments
  * @function
- * 
+ *
  */
 function CheckLuhn($mixNumber)
 {
@@ -1251,18 +1251,18 @@ function CheckLuhn($mixNumber)
 //------------------------------------------------------------------------//
 /**
  * MakeLuhn()
- * 
+ *
  * Create a check digit using the Luhn formula
  *
  * Create a check digit using the Luhn formula
- * 
+ *
  * @param	mix	$mixNumber	the number to be used
  *
  * @return	int
- * 
+ *
  * @comments
  * @function
- * 
+ *
  */
 function MakeLuhn($mixNumber)
 {
@@ -1296,18 +1296,18 @@ function MakeLuhn($mixNumber)
 //------------------------------------------------------------------------//
 /**
  * expdate()
- * 
+ *
  * Check if credit card has not expired
  *
  * Check if credit card has not expired
- * 
+ *
  * @param	int	$month	The month to check against
  * @param	int	$year	The year to check against
  *
  * @return	bool		FALSE if the date passed is in the past
- * 
+ *
  * @function
- * 
+ *
  */
 function expdate($month,$year)
 {
@@ -1330,19 +1330,19 @@ function expdate($month,$year)
 //------------------------------------------------------------------------//
 /**
  * CheckCC()
- * 
+ *
  * Check the validity of a credit card
- * 
- * Check the validity of a credit card 
+ *
+ * Check the validity of a credit card
  *
  * @param	mix	$mixNumber			The cc number to check
- * @param	int	$intCreditCardType 	The constant which describes what type 
- *									of credit card (e.g Visa, Mastercard, etc) 
+ * @param	int	$intCreditCardType 	The constant which describes what type
+ *									of credit card (e.g Visa, Mastercard, etc)
  *
  * @return	bool
- * 
+ *
  * @function
- * 
+ *
  */
 function CheckCC($mixNumber, $intCreditCardType)
 {
@@ -1432,15 +1432,15 @@ function CheckCC($mixNumber, $intCreditCardType)
 //------------------------------------------------------------------------//
 /**
  * EmailAddressValid()
- * 
+ *
  * Check the format of an email address
- * 
- * Check the format of an email address 
+ *
+ * Check the format of an email address
  *
  * @param	str	$strEmail			The email to check
  *
  * @return	bool
- * 
+ *
  * @function
  */
 
@@ -1449,7 +1449,7 @@ function CheckCC($mixNumber, $intCreditCardType)
 
 // code has been modified to reflect the coding standards and allow for comma-separated emails
 
-// "RFC 2822, that specifies what is and is not allowed in an email address, 
+// "RFC 2822, that specifies what is and is not allowed in an email address,
 // states that the form of an email address must be of the form "local-part @ domain"."
 function EmailAddressValid ($strEmail)
 {
@@ -1466,9 +1466,9 @@ function EmailAddressValid ($strEmail)
 
 		// The "local-part" of an email address must be between 1 and 64 characters
 
-		// The most common form is a domain name, which is made up of a number of 
-		// "labels", each separated by a period and between 1 and 63 characters in 
-		// length. Labels may contain letters, digits and hyphens, however must not 
+		// The most common form is a domain name, which is made up of a number of
+		// "labels", each separated by a period and between 1 and 63 characters in
+		// length. Labels may contain letters, digits and hyphens, however must not
 		// begin or end with a hyphen
 
 		if (!ereg("^[^@]{1,64}@[^@]{1,255}$", $strEmailAddress)) {
@@ -1509,15 +1509,15 @@ function EmailAddressValid ($strEmail)
 //------------------------------------------------------------------------//
 /**
  * PostcodeValid()
- * 
+ *
  * Check the format of a postcode
- * 
+ *
  * Check the format of a postcode
  *
  * @param	str	$strPostcode	The postcode to check
  *
  * @return	bool
- * 
+ *
  * @function
  */
 function PostcodeValid ($strPostcode)
@@ -1530,15 +1530,15 @@ function PostcodeValid ($strPostcode)
 //------------------------------------------------------------------------//
 /**
  * PhoneNumberValid()
- * 
+ *
  * Check the format of a phone number
- * 
+ *
  * Check the format of a phone number
  *
  * @param	str	$strPhoneNumber	The phone number to check
  *
  * @return	bool
- * 
+ *
  * @function
  */
 function PhoneNumberValid ($strNumber)
@@ -1551,15 +1551,15 @@ function PhoneNumberValid ($strNumber)
 //------------------------------------------------------------------------//
 /**
  * BSBValid()
- * 
+ *
  * Check the format of a BSB
- * 
+ *
  * Check the format of a BSB
  *
  * @param	str	$strNumber	The BSB to check
  *
  * @return	bool
- * 
+ *
  * @function
  */
 function BSBValid ($strNumber)
@@ -1572,15 +1572,15 @@ function BSBValid ($strNumber)
 //------------------------------------------------------------------------//
 /**
  * BankAccountValid()
- * 
+ *
  * Check the validity of a bank account number
- * 
+ *
  * Check the validity of a bank account number
  *
  * @param	str	$strNumber	The number to check
  *
  * @return	bool
- * 
+ *
  * @function
  */
 function BankAccountValid ($strNumber)
@@ -1594,15 +1594,15 @@ function BankAccountValid ($strNumber)
 //------------------------------------------------------------------------//
 /**
  * MaskShortDate()
- * 
+ *
  * Convert short date in user friendly format (dd/mm/yyyy) to standard format (yyyy-mm-dd)
- * 
+ *
  * Convert short date in user friendly format (dd/mm/yyyy) to standard format (yyyy-mm-dd)
  *
  * @param	str	$strShortDate	The short date to unmask
  *
  * @return	str The unmasked short date or the original string if invalid
- * 
+ *
  * @function
  */
 function UnmaskShortDate ($strShortDate)
@@ -1623,23 +1623,23 @@ function UnmaskShortDate ($strShortDate)
 //------------------------------------------------------------------------//
 /**
  * CliEcho()
- * 
+ *
  * Writes a string to stdout
- * 
+ *
  * Writes a string to stdout
  *
  * @param	string	$strOutput		[optional]	The string to write to stdout; default: ''
  * @param	boolean	$bolNewLine		[optional]	Whether to automatically add a new line character; default: TRUE
  *
  * @return	string								The string written to stdout
- * 
+ *
  * @function
  */
 function CliEcho($strOutput='', $bolNewLine=TRUE)
 {
 	if (!$GLOBALS['**stdout'])
 	{
-		$GLOBALS['**stdout'] = fopen("php://stdout","w"); 
+		$GLOBALS['**stdout'] = fopen("php://stdout","w");
 	}
 	$stdout = $GLOBALS['**stdout'];
 	$strOutput .= ($bolNewLine) ? "\n" : "";
@@ -1653,9 +1653,9 @@ function CliEcho($strOutput='', $bolNewLine=TRUE)
 //------------------------------------------------------------------------//
 /**
  * RoundCurrency()
- * 
- * Rounds a currency  
- * 
+ *
+ * Rounds a currency
+ *
  * Rounds a currency to a specified number of places
  *
  * @param	float	$fltValue	The value to round
@@ -1663,7 +1663,7 @@ function CliEcho($strOutput='', $bolNewLine=TRUE)
  *
  * @return	mix					float: the rounded number
  *								FALSE: if there is an error
- * 
+ *
  * @function
  */
 function RoundCurrency($fltValue, $intPlaces = 4)
@@ -1693,7 +1693,7 @@ function RoundCurrency($fltValue, $intPlaces = 4)
  * @return	Json object
  *
  * @function
- * 
+ *
  */
 function Json()
 {
@@ -1705,16 +1705,16 @@ function Json()
 //------------------------------------------------------------------------//
 /**
  * AjaxRecieve()
- * 
- * Function to act as a reciever for AJAX data.  
- * 
+ *
+ * Function to act as a reciever for AJAX data.
+ *
  * Function to act as a reciever for AJAX data. Converts to and from JSON format.
  *
- * @return	str				
+ * @return	str
  *
  * @brokenreturn
  * @comments
- * 
+ *
  * @function
  */
 function AjaxRecieve()
@@ -1734,14 +1734,14 @@ function AjaxRecieve()
 //------------------------------------------------------------------------//
 /**
  * AjaxReply()
- * 
+ *
  * Send data via AJAX.
- * 
+ *
  * Send data via AJAX.
  *
  * @param	array	$arrReply				The array of data to send
  *
- * @return	void 
+ * @return	void
  *
  * @function
  */
@@ -1757,9 +1757,9 @@ function AjaxReply($arrReply)
 //------------------------------------------------------------------------//
 /**
  * VixenRequire()
- * 
+ *
  * require_once's a viXen file.
- * 
+ *
  * require_once's a viXen file, relative to the vixen base path.
  *
  * @param	string	$strFilename			The viXen-relative path to include
@@ -1784,9 +1784,9 @@ function VixenRequire($strFilename)
 //------------------------------------------------------------------------//
 /**
  * GetVixenBase()
- * 
+ *
  * Finds the viXen base directory
- * 
+ *
  * Finds the viXen base directory.  Throws an exception if it can't resolve path
  *
  * @return		string			Full viXen base path
@@ -1819,9 +1819,9 @@ die;
 //------------------------------------------------------------------------//
 /**
  * LoadFramework()
- * 
+ *
  * Load the framework.
- * 
+ *
  * Load the framework.
  *
  * @param	str	$strFrameworkDir			The directory of the framework (default: NULL)
@@ -1857,7 +1857,7 @@ function LoadFramework($strFrameworkDir=NULL, $bolBasicsOnly=FALSE, $loadDbConst
 	{
 		require_once($strFrameworkDir."db_access.php");
 	}
-	
+
 	require_once(SHARED_BASE_PATH.'classes/ORM.php');
 
 	// Retrieve all constants stored in the database
@@ -1900,13 +1900,13 @@ die;
 }
 
 //------------------------------------------------------------------------//
-// LoadApplication 
+// LoadApplication
 //------------------------------------------------------------------------//
 /**
  * LoadApplication()
- * 
+ *
  * Load the application.
- * 
+ *
  * Load the application.
  *
  * @param	string	$strApplication		The directory of the application (default: NULL)
@@ -1954,13 +1954,13 @@ function LoadApplication($strApplication=NULL)
 }
 
 //------------------------------------------------------------------------//
-// CentreText 
+// CentreText
 //------------------------------------------------------------------------//
 /**
  * CentreText()
- * 
+ *
  * Calculate starting column position to centre a line of text
- * 
+ *
  * Calculate starting column position to centre a line of text
  *
  * @param	str	$strText		The text to be input
@@ -2033,13 +2033,13 @@ function SecsToHMS($intSeconds)
 /**
  * CorrectPartialAccountNum()
  *
- * Corrects a partial account number to the proper format 
+ * Corrects a partial account number to the proper format
  *
  * Corrects a partial account number by prefixing '1' and enough
  * '0s' to make it 10 digits long if it is not allready 10 digits long
  *
  * @param	integer	$intPartialAccNum		The account number to convert.
- *											Assume this is less than or equal to 
+ *											Assume this is less than or equal to
  *											10 digits in length.
  *
  * @return	integer 						the corrected account number or
@@ -2049,7 +2049,7 @@ function SecsToHMS($intSeconds)
  * @function
  */
 function CorrectPartialAccountNum($intPartialAccNum)
-{	
+{
 	// check that $intPartialAccNum can be converted to a 10 digit account number
 	if (!is_numeric($intPartialAccNum))
 	{
@@ -2079,15 +2079,15 @@ function CorrectPartialAccountNum($intPartialAccNum)
 //------------------------------------------------------------------------//
 /**
  * AddGST()
- * 
+ *
  * Adds GST to the input amount
- * 
+ *
  * Adds GST to the input amount
- * 
+ *
  * @param	flt		$fltAmount			The input amount
- * 
+ *
  * @return	flt
- * 
+ *
  * @method
  */
 function AddGST($fltAmount)
@@ -2104,15 +2104,15 @@ function AddGST($fltAmount)
 //------------------------------------------------------------------------//
 /**
  * RemoveGST()
- * 
+ *
  * Removes GST from the input amount
- * 
+ *
  * Removes GST from the input amount
- * 
+ *
  * @param	flt		$fltAmount			The input amount
- * 
+ *
  * @return	flt
- * 
+ *
  * @method
  */
 function RemoveGST($fltAmount)
@@ -2158,7 +2158,7 @@ function ClearScreen($bolReturn = FALSE)
  * Parses command line arguments and puts the data in a meaningful array
  *
  * Parses command line arguments and puts the data in a meaningful array
- * 
+ *
  * @param	array 	$arrConfig	Configuration for parsing the arguments
  *
  * @return	array 				Array of arguments and values
@@ -2238,14 +2238,14 @@ die;
  * Determines if a passed array is associative or not
  *
  * @param		array	$arrArray		Array to be checked
- * 
+ *
  * @return		boolean					true	: Associative array
  * 										false	: Indexed array
  *
  * @method
  * @see			<MethodName()||typePropertyName>
- */ 
-function IsAssociativeArray($arrArray) 
+ */
+function IsAssociativeArray($arrArray)
 {
 	return (is_array($arrArray) && !is_numeric(implode(array_keys($arrArray))));
 }
@@ -2261,11 +2261,11 @@ function IsAssociativeArray($arrArray)
  * Bulk Archives Accounts
  *
  * @param		array	$arrArray		Array of Accounts to Archive
- * 
+ *
  * @return		integer					Number of Accounts affected
  *
  * @method
- */ 
+ */
 function ArchiveAccounts($arrAccounts)
 {
 	if (!$arrAccounts)
@@ -2292,7 +2292,7 @@ function ArchiveAccounts($arrAccounts)
  * 									FALSE	: Failed
  *
  * @method
- */ 
+ */
 function TransactionStart($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 {
 	if (!DataAccess::connected($strConnectionType))
@@ -2320,7 +2320,7 @@ function TransactionStart($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
  * 									FALSE	: Failed
  *
  * @method
- */ 
+ */
 function TransactionRollback($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 {
 	if (!DataAccess::connected($strConnectionType))
@@ -2348,7 +2348,7 @@ function TransactionRollback($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT
  * 									FALSE	: Failed
  *
  * @method
- */ 
+ */
 function TransactionCommit($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 {
 	if (!DataAccess::connected($strConnectionType))
@@ -2369,9 +2369,9 @@ function TransactionCommit($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
  *
  * Overrides the default connection config
  *
- * Overrides the default connection config.  MUST be run before an Application is 
+ * Overrides the default connection config.  MUST be run before an Application is
  * created/loaded
- * 
+ *
  * @param		string	$strURL			optional	URL to connect to
  * @param		string	$strDatabase	optional	Database to connect to
  * @param		string	$strUser		optional	User to connect as
@@ -2381,7 +2381,7 @@ function TransactionCommit($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
  * 													FALSE	: Failed
  *
  * @method
- */ 
+ */
 function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPassword=NULL, $strDatabaseConnection=FLEX_DATABASE_CONNECTION_DEFAULT)
 {
 	if (DataAccess::connected())
@@ -2411,14 +2411,14 @@ function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPasswor
  * Calculates the Unbilled CDR Total for a Service
  *
  * Calculates the Unbilled CDR Total for a Service
- * 
+ *
  * @param		integer	$intService					Service to generate total for
  * @param		bool	$bolDontIncludeCreditCDRs	optional, Set to TRUE if you don't want to include Credit CDRs in the total
- * 
+ *
  * @return		float								Total excluding Tax
  *
  * @method
- */ 
+ */
 function UnbilledServiceCDRTotal($intService, $bolDontIncludeCreditCDRs = FALSE)
 {
 	if ($bolDontIncludeCreditCDRs)
@@ -2451,13 +2451,13 @@ function UnbilledServiceCDRTotal($intService, $bolDontIncludeCreditCDRs = FALSE)
  * Calculates the Unbilled Adjustment Total for a Service
  *
  * Calculates the Unbilled Adjustment Total for a Service.  Only includes Approved Adjustments
- * 
+ *
  * @param		integer	$intService					Service to generate total for
- * 
+ *
  * @return		float								Total excluding Tax
  *
  * @method
- */ 
+ */
 function UnbilledServiceChargeTotal($intService)
 {
 	// Get Adjustment Total
@@ -2477,14 +2477,14 @@ function UnbilledServiceChargeTotal($intService)
  * Calculates the Unbilled CDR Total for an Account
  *
  * Calculates the Unbilled CDR Total for an Account.  Does not account for Adjustments
- * 
+ *
  * @param		integer	$intAccount					Account to generate total for
  * @param		bool	$bolDontIncludeCreditCDRs	optional, Set to TRUE if you don't want to include Credit CDRs in the total
  *
  * @return		float								Total excluding Tax
  *
  * @method
- */ 
+ */
 function UnbilledAccountCDRTotal($intAccount, $bolDontIncludeCreditCDRs = FALSE)
 {
 	if ($bolDontIncludeCreditCDRs)
@@ -2518,13 +2518,13 @@ function UnbilledAccountCDRTotal($intAccount, $bolDontIncludeCreditCDRs = FALSE)
  * Gets the current plan for a specified Service
  *
  * Gets the current plan for a specified Service
- * 
+ *
  * @param		integer	$intService					Service to find a plan for
  *
  * @return		integer								Plan Id
  *
  * @method
- */ 
+ */
 function GetCurrentPlan($intService)
 {
 	// This should really be ordered by CreatedOn DESC not StartDatetime DESC
@@ -2545,15 +2545,15 @@ function GetCurrentPlan($intService)
  * Checks if the invoice pdf exists for the given month, year and account id
  *
  * Checks if the invoice pdf exists for the given month, year and account id
- * 
+ *
  * @param		integer	$intAccountId		the invoice's associated Account
  * @param		integer $intYear			numeric repressentation of the year relating to the invoice's pdf (4 digit year)
  * @param		integer	$intMonth			numeric repressentation of the month relating to the invoice's pdf
  *
- * @return		boolean						TRUE if the pdf was found, else 
+ * @return		boolean						TRUE if the pdf was found, else
  *
  * @method
- */ 
+ */
 function ListPDFSamples($intAccountId)
 {
 	$strGlob = PATH_INVOICE_PDFS ."xml/*-*/{$intAccountId}.xml";
@@ -2582,15 +2582,15 @@ function ListPDFSamples($intAccountId)
  * Checks if the invoice pdf exists for the given month, year and account id
  *
  * Checks if the invoice pdf exists for the given month, year and account id
- * 
+ *
  * @param		integer	$intAccountId		the invoice's associated Account
  * @param		integer $intYear			numeric repressentation of the year relating to the invoice's pdf (4 digit year)
  * @param		integer	$intMonth			numeric repressentation of the month relating to the invoice's pdf
  *
- * @return		boolean						TRUE if the pdf was found, else 
+ * @return		boolean						TRUE if the pdf was found, else
  *
  * @method
- */ 
+ */
 function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mxdInvoiceRun)
 {
 	$strGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}.xml";
@@ -2649,7 +2649,7 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 			$arrInvoiceRun = $selInvoiceRun->Fetch();
 			$strInvoiceRun = strval($arrInvoiceRun['InvoiceRun']);
 			return InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $strInvoiceRun);
-		}		
+		}
 	}
 
 	return FALSE;
@@ -2660,11 +2660,11 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 //------------------------------------------------------------------------//
 /**
  * GetPdfFilename()
- * 
+ *
  * Return the filename of a PDF invoice in a string
- * 
+ *
  * Return the filename of a PDF invoice in a string for the specified account, year, and month
- * 
+ *
  * @param	int		$intAccount			Account to find PDFs for
  * @param	int		$intYear			Year to match
  * @param	int		$intMonth			Month to match
@@ -2673,12 +2673,12 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
  *
  * @return	mixed						string: filename of the PDF invoice
  * 										FALSE: there was an error
- * 
+ *
  * @function
  */
 function GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId)
 {
-	if (!strpos($intInvoiceRunId, '-')) 
+	if (!strpos($intInvoiceRunId, '-'))
 	{
 		$intInvoiceRunId = intval($intInvoiceRunId);
 	}
@@ -2699,22 +2699,22 @@ function GetPdfFilename($intAccount, $intYear, $intMonth, $intInvoiceId, $intInv
 //------------------------------------------------------------------------//
 /**
  * GetPDFContent()
- * 
+ *
  * Return the contents of a PDF invoice in a string
- * 
+ *
  * Return the contents of a PDF invoice in a string for the specified account, year, and month
- * 
+ *
  * @param	obj	$objInvoice		Invoice to get PDF document for
  * @param	int	$intTargetMedia	Target media (if generated on the fly) if not default for file
  *
  * @return	mixed						string: contents of the PDF invoice
  * 										FALSE: there was an error
- * 
+ *
  * @function
  */
 function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRunId, $intTargetMedia=0)
 {
-	if (!strpos($intInvoiceRunId, '-')) 
+	if (!strpos($intInvoiceRunId, '-'))
 	{
 		$intInvoiceRunId = intval($intInvoiceRunId);
 	}
@@ -2763,7 +2763,7 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 			$docProps = array();
 			for($i = 0; $i < 4; $i++)
 			{
-				$docProps[$parts[1][$i]] = $parts[2][$i]; 
+				$docProps[$parts[1][$i]] = $parts[2][$i];
 			}
 
 			// If no target media has been specified, get the default media type for the file
@@ -2799,11 +2799,11 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 			{
 				// Generate the pdf document on the fly
 				$pdfTemplate = new Flex_Pdf_Template(
-					$custGroupId, 
-					$effectiveDate, 
-					DOCUMENT_TEMPLATE_TYPE_INVOICE, 
-					$xml, 
-					$intTargetMedia, 
+					$custGroupId,
+					$effectiveDate,
+					DOCUMENT_TEMPLATE_TYPE_INVOICE,
+					$xml,
+					$intTargetMedia,
 					TRUE);
 
 				$pdfDocument = $pdfTemplate->createDocument();
@@ -2839,12 +2839,12 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
  * Finds the owner of a given FNN for a given date and time
  *
  * Finds the owner of a given FNN for a given date and time
- * 
+ *
  * @param	string	$strFNN				FNN to find owner for
  * @param	string	$strDatetime		Date to find owner on
  * @param	boolean	$bolDateOnly		Date comparison only (instead of Datetime)
  *
- * @return	bool					
+ * @return	bool
  *
  * @method
  */
@@ -2871,7 +2871,7 @@ function FindFNNOwner($strFNN, $strDatetime, $bolDateOnly=FALSE)
  * @return	mixed							TRUE if the FNN is/has been in use since $strDate, or is scheduled to be used
  * 											beyond this date
  * 											FALSE if the FNN isn't in use and is not scheduled to be used
- * 											String if there is an error				
+ * 											String if there is an error
  */
 function IsFNNInUse($strFNN, $bolIsIndial, $strDate)
 {
@@ -2891,10 +2891,10 @@ function IsFNNInUse($strFNN, $bolIsIndial, $strDate)
  * Writes off all outstanding debt for a given Account
  *
  * Writes off all outstanding debt for a given Account
- * 
+ *
  * @param	integer		$intAccount				Account to write off
  *
- * @return	float								Value of written-off invoices					
+ * @return	float								Value of written-off invoices
  *
  * @method
  */
@@ -2931,7 +2931,7 @@ function WriteOffAccount($intAccount)
  * Writes off all outstanding debt for a given Invoice
  *
  * Writes off all outstanding debt for a given Invoice
- * 
+ *
  * @param	integer		$intInvoice					Invoice to write off
  * @param	boolean		$bolAddNote		[optional]	Add a System Note about the write-off (default: TRUE)
  *
@@ -2979,7 +2979,7 @@ function WriteOffInvoice($intInvoice, $bolAddNote = TRUE)
  * Sends a simple email
  *
  * Sends a simple email
- * 
+ *
  * @param	string		$strAddresses				Comma-separated list of addresses to send to
  * @param	string		$strSubject					Subject for the email
  * @param	string		$strContent					Email content
@@ -3024,9 +3024,9 @@ function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='auto@yello
 //------------------------------------------------------------------------//
 /**
  * GetCCType()
- * 
+ *
  * Takes a Credit Card number and finds what bank it comes from
- * 
+ *
  * Takes a Credit Card number and finds what bank it comes from
  *
  * @param	mix		$mixNumber			The CC number to check
@@ -3034,9 +3034,9 @@ function SendEmail($strAddresses, $strSubject, $strContent, $strFrom='auto@yello
  * 										FALSE	: Returns an integer (constant value)
  *
  * @return	mix							Bank name, Constant Value depending on $bolAsString, or FALSE on failure
- * 
+ *
  * @function
- * 
+ *
  */
 function GetCCType($mixNumber, $bolAsString = FALSE)
 {
@@ -3114,7 +3114,7 @@ function GetCCType($mixNumber, $bolAsString = FALSE)
  * Adds a surcharge to the given Account for the specified transaction
  *
  * Adds a surcharge to the given Account for the specified transaction
- * 
+ *
  * @param	integer		$intPayment				Comma-separated list of addresses to send to
  *
  * @return	boolean								Pass/Fail
@@ -3198,7 +3198,7 @@ function AddCreditCardSurcharge($intPayment)
  * Checks if the Invoicing process is currently running
  *
  * Checks if the Invoicing process is currently running
- * 
+ *
  * @return	boolean			Returns TRUE if the Invoicing process is currently underway, else returns FALSE
  *
  * @function
@@ -3245,12 +3245,12 @@ function GetCurrentDateAndTimeForMySQL()
  *
  * Retrieves the current date and time in the ISO Datetime format
  * By default this value is cached, for subsequent calls
- * 
+ *
  * @param	bool	$bolForceRefresh	optional, defaults to FALSE.  If set to TRUE
  * 										then the "current" Time is retrieved from the
  * 										database's server.  If set to FALSE then the
  * 										cached "current" time is retrieved.
- * 
+ *
  * @param	bool	$bolUpdateCache		optional, defaults to FALSE.  If set to TRUE
  * 										then the cached value is updated.
  * 										If $bolForceRefresh == FALSE then $bolUpdateCache
@@ -3318,12 +3318,12 @@ function GetCurrentDateForMySQL()
  *
  * Retrieves the current date and time in the ISO Date format
  * By default this value is cached, for subsequent calls
- * 
+ *
  * @param	bool	$bolForceRefresh	optional, defaults to FALSE.  If set to TRUE
  * 										then the "current" Date is retrieved from the
  * 										database's server.  If set to FALSE then the
  * 										cached "current" time is retrieved.
- * 
+ *
  * @param	bool	$bolUpdateCache		optional.  Only applicable when $bolForceRefresh == TRUE.
  * 										Defaults to FALSE.  If set to TRUE
  * 										then the cached value is updated
@@ -3446,11 +3446,11 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 
 	$strTables = "
 		Invoice
-		JOIN Account 
+		JOIN Account
 		ON Invoice.Account = Account.Id
-		AND Account.Archived IN ($strApplicableAccountStatuses) 
-		AND Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
-		JOIN Service 
+		AND Account.Archived IN ($strApplicableAccountStatuses)
+		AND Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . "
+		JOIN Service
 		ON Account.Id = Service.Account
 		JOIN CustomerGroup
 		ON CustomerGroup.Id = Account.CustomerGroup
@@ -3568,7 +3568,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	);
 
 	$strTables	= "
-Invoice 
+Invoice
 JOIN Account ON Invoice.Account = Account.Id AND Account.Archived IN ($strApplicableAccountStatuses) AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . " AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
 JOIN credit_control_status ON Account.credit_control_status = credit_control_status.id AND credit_control_status.can_bar = 1
 JOIN account_status ON Account.Archived = account_status.id AND account_status.can_bar = 1
@@ -3576,12 +3576,12 @@ JOIN CustomerGroup ON Account.CustomerGroup = CustomerGroup.Id
 JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)";
 
 $strWhere	= "Account.Id IN (
-SELECT DISTINCT(Account.Id) 
-FROM InvoiceRun 
+SELECT DISTINCT(Account.Id)
+FROM InvoiceRun
 JOIN Invoice ON InvoiceRun.Id IN (" . implode(', ', $arrInvoiceRunIds) . ") AND Invoice.Status IN ($strApplicableInvoiceStatuses) AND InvoiceRun.Id = Invoice.invoice_run_id
 JOIN Account ON Account.Id = Invoice.Account AND Account.Archived IN ($strApplicableAccountStatuses) AND Account.BillingType = " . BILLING_TYPE_ACCOUNT . "
 AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
-AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
+AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . "
 JOIN credit_control_status ON Account.credit_control_status = credit_control_status.id AND credit_control_status.can_bar = 1
 JOIN account_status ON Account.Archived = account_status.id AND account_status.can_bar = 1
 AND vip = 0
@@ -3604,8 +3604,8 @@ AND Account.tio_reference_number IS NULL
 	$rows = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
 	foreach ($rows as $i => $row)
 	{
-		$strSQL = "INSERT INTO $tmpTableName ($tmpCols) 
-			VALUES (" . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " . 
+		$strSQL = "INSERT INTO $tmpTableName ($tmpCols)
+			VALUES (" . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " .
 			$row['CustomerGroupId'] . ", '" . $row['CustomerGroupName'] . "', " . $row['Overdue'] . ", " . $row['TotalFromOverdueInvoices'] . ", " . $row['minBalanceToPursue'] . ")";
 		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 		{
@@ -3620,11 +3620,11 @@ AND Account.tio_reference_number IS NULL
 	 FROM
 	 (
 
-		 SELECT InvoicePayment.Account AS \"account_id\", 0 AS \"VIP\", InvoicePayment.invoice_run_id AS \"invoice_run_id\", UNIX_TIMESTAMP(MAX(Payment.PaidOn)) - UNIX_TIMESTAMP(Invoice.CreatedOn) AS \"late\" 
-		 FROM 
-		 Payment, 
-		 InvoicePayment, 
-		 Invoice, 
+		 SELECT InvoicePayment.Account AS \"account_id\", 0 AS \"VIP\", InvoicePayment.invoice_run_id AS \"invoice_run_id\", UNIX_TIMESTAMP(MAX(Payment.PaidOn)) - UNIX_TIMESTAMP(Invoice.CreatedOn) AS \"late\"
+		 FROM
+		 Payment,
+		 InvoicePayment,
+		 Invoice,
 		 $tmpTableName,
 		 (
 			 SELECT id AS \"invoice_run_id\"
@@ -3635,7 +3635,7 @@ AND Account.tio_reference_number IS NULL
 		 ) PreviousSixInvoiceRuns
 		 WHERE Payment.Id = InvoicePayment.Payment
 		 AND InvoicePayment.invoice_run_id = PreviousSixInvoiceRuns.invoice_run_id
-		 AND Invoice.Account = $tmpTableName.AccountId 
+		 AND Invoice.Account = $tmpTableName.AccountId
 		 AND Invoice.Account = InvoicePayment.Account
 		 AND Invoice.invoice_run_id = InvoicePayment.invoice_run_id
 		 AND Invoice.Total > 0.10
@@ -3644,7 +3644,7 @@ AND Account.tio_reference_number IS NULL
 
 		 UNION
 		 SELECT Invoice.Account AS \"account_id\", 0 AS \"VIP\", Invoice.invoice_run_id AS \"invoice_run_id\", UNIX_TIMESTAMP() - UNIX_TIMESTAMP(Invoice.CreatedOn) AS \"late\"
-		 FROM 
+		 FROM
 		 Invoice, $tmpTableName,
 		 (
 			 SELECT id AS \"invoice_run_id\"
@@ -3653,13 +3653,13 @@ AND Account.tio_reference_number IS NULL
 			 ORDER BY id DESC
 			 LIMIT 1, 6
 		 ) PreviousSixInvoiceRuns
-		 WHERE Invoice.Account = $tmpTableName.AccountId 
+		 WHERE Invoice.Account = $tmpTableName.AccountId
 		 AND Invoice.Balance > 0.10
 		 AND Invoice.Total > 0.10
 		 AND Invoice.invoice_run_id = PreviousSixInvoiceRuns.invoice_run_id
 
-		 UNION	
-		 SELECT Account.Id AS \"account_id\", CASE WHEN SUM(vip) > 0 THEN -2 WHEN SUM(Invoice.Id) > 0 THEN 0 ELSE -1 END AS \"VIP\", 0 AS \"invoice_run_id\", 0 AS \"late\" 
+		 UNION
+		 SELECT Account.Id AS \"account_id\", CASE WHEN SUM(vip) > 0 THEN -2 WHEN SUM(Invoice.Id) > 0 THEN 0 ELSE -1 END AS \"VIP\", 0 AS \"invoice_run_id\", 0 AS \"late\"
 		 FROM Account INNER JOIN $tmpTableName ON Account.Id = $tmpTableName.AccountId LEFT OUTER JOIN Invoice ON Account.Id = Invoice.Account
 		 GROUP BY Account.Id
 
@@ -3674,7 +3674,7 @@ AND Account.tio_reference_number IS NULL
 	$rows = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
 	foreach ($rows as $i => $row)
 	{
-		$strSQL = "INSERT INTO $tmpRankTableName (account_id, ranking) 
+		$strSQL = "INSERT INTO $tmpRankTableName (account_id, ranking)
 			VALUES (" . $row['account_id'] . ", " . $row['ranking'] . ")";
 		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 		{
@@ -3741,38 +3741,38 @@ function ListAutomaticBarringAccounts($intEffectiveTime, $action=AUTOMATIC_INVOI
 	);
 
 	$strTables	= "
-		Invoice 
-		JOIN Account 
+		Invoice
+		JOIN Account
 		ON Invoice.Account = Account.Id
-		AND Account.Archived IN ($strApplicableAccountStatuses) 
-		AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
+		AND Account.Archived IN ($strApplicableAccountStatuses)
+		AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . "
 		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
-		JOIN credit_control_status 
+		JOIN credit_control_status
 		ON Account.credit_control_status = credit_control_status.id
 		AND credit_control_status.can_bar = 1
-		JOIN account_status 
+		JOIN account_status
 		ON Account.Archived = account_status.id
 		AND account_status.can_bar = 1
-		JOIN CustomerGroup 
+		JOIN CustomerGroup
 		ON Account.CustomerGroup = CustomerGroup.Id
 		JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)";
 
 	$strWhere	= "Account.Id IN (
-		SELECT DISTINCT(Account.Id) 
-		FROM InvoiceRun 
+		SELECT DISTINCT(Account.Id)
+		FROM InvoiceRun
 		JOIN Invoice
 		ON InvoiceRun.Id IN ($strInvoiceRunIds)
-		AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
+		AND Invoice.Status IN ($strApplicableInvoiceStatuses)
 		AND InvoiceRun.Id = Invoice.invoice_run_id
-		JOIN Account 
+		JOIN Account
 		ON Account.Id = Invoice.Account
-		AND Account.Archived IN ($strApplicableAccountStatuses) 
+		AND Account.Archived IN ($strApplicableAccountStatuses)
 		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate)
-		AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . " 
-		JOIN credit_control_status 
+		AND NOT Account.automatic_barring_status = " . AUTOMATIC_BARRING_STATUS_BARRED . "
+		JOIN credit_control_status
 		ON Account.credit_control_status = credit_control_status.id
 		AND credit_control_status.can_bar = 1
-		JOIN account_status 
+		JOIN account_status
 		ON Account.Archived = account_status.id
 		AND account_status.can_bar = 1
 		AND Account.tio_reference_number IS NULL
@@ -3804,15 +3804,15 @@ function ListInvoiceRunsForAutomaticInvoiceActionAndDate($intAutomaticInvoiceAct
 
 	$strTables = "
 		automatic_invoice_run_event
-		LEFT OUTER JOIN 
+		LEFT OUTER JOIN
 		(
 			SELECT invoice_run_id, count(*) nr
 			FROM automatic_invoice_run_event aire
 			WHERE actioned_datetime IS NULL
-			AND automatic_invoice_action_id IN 
+			AND automatic_invoice_action_id IN
 			(
-				SELECT prerequisite_automatic_invoice_action_id 
-				FROM automatic_invoice_action_dependency 
+				SELECT prerequisite_automatic_invoice_action_id
+				FROM automatic_invoice_action_dependency
 				WHERE dependent_automatic_invoice_action_id = $intAutomaticInvoiceActionType
 			)
 			GROUP BY invoice_run_id
@@ -3929,39 +3929,39 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		'TotalFromOverdueInvoices'	=> "SUM(CASE WHEN ($strEffectiveDate > Invoice.DueOn) AND ((Invoice.Balance - Invoice.Disputed) > 0) THEN Invoice.Total ELSE 0 END)",
 		'minBalanceToPursue'		=> "payment_terms.minimum_balance_to_pursue");
 
-	$strTables	= "Invoice 
-		JOIN Account 
-		ON Invoice.Account = Account.Id 
+	$strTables	= "Invoice
+		JOIN Account
+		ON Invoice.Account = Account.Id
 		AND Invoice.Status IN ($strApplicableInvoiceStatuses)
-		AND Account.Archived IN ($arrApplicableAccountStatuses) 
+		AND Account.Archived IN ($arrApplicableAccountStatuses)
 		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
-		JOIN credit_control_status 
+		JOIN credit_control_status
 		ON Account.credit_control_status = credit_control_status.id
 		AND credit_control_status.send_late_notice = 1
-		JOIN account_status 
+		JOIN account_status
 		ON Account.Archived = account_status.id
 		AND account_status.send_late_notice = 1
-		JOIN Contact 
-		ON Account.PrimaryContact = Contact.Id 
-		JOIN CustomerGroup 
+		JOIN Contact
+		ON Account.PrimaryContact = Contact.Id
+		JOIN CustomerGroup
 		ON Account.CustomerGroup = CustomerGroup.Id
 		JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)";
 
 	$strWhere	= "Account.Id IN (
-		SELECT DISTINCT(Account.Id) 
-		FROM InvoiceRun 
+		SELECT DISTINCT(Account.Id)
+		FROM InvoiceRun
 		JOIN Invoice
 		ON InvoiceRun.Id IN ($strInvoiceRunIds)
-		AND Invoice.Status IN ($strApplicableInvoiceStatuses) 
+		AND Invoice.Status IN ($strApplicableInvoiceStatuses)
 		AND InvoiceRun.Id = Invoice.invoice_run_id
-		JOIN Account 
+		JOIN Account
 		ON Account.Id = Invoice.Account
 		AND Account.Archived IN ($arrApplicableAccountStatuses) $strAccountBillingType
 		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
-		JOIN credit_control_status 
+		JOIN credit_control_status
 		ON Account.credit_control_status = credit_control_status.id
 		AND credit_control_status.send_late_notice = 1
-		JOIN account_status 
+		JOIN account_status
 		ON Account.Archived = account_status.id
 		AND account_status.send_late_notice = 1
 	)";
@@ -4068,8 +4068,8 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	// Create the default automatic_invoice_action_config entries
 
 	// Load up the automatic invoice action configs for the NULL customer_group_id
-	$selAutoInvActions = new StatementSelect('automatic_invoice_action_config', 
-		array('automatic_invoice_action_id', 'days_from_invoice', 'can_schedule', 'response_days'), 
+	$selAutoInvActions = new StatementSelect('automatic_invoice_action_config',
+		array('automatic_invoice_action_id', 'days_from_invoice', 'can_schedule', 'response_days'),
 		'customer_group_id IS NULL');
 	if (($result = $selAutoInvActions->Execute()) === FALSE)
 	{
@@ -4110,8 +4110,8 @@ function CreateDefaultPaymentTerms($customerGroupId)
  *
  * @param	int		$intAutomaticInvoiceActionType	type of action to produce a notice for. eg AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE
  * @param	string	$strBasePath	optional, path where the generated notices will be placed
- *									
- * @return	mixed					returns FALSE on failure 
+ *
+ * @return	mixed					returns FALSE on failure
  *									returns	Array['Successful']	= number of successfully generated notices of the NoticeType
  *											Array['Failed'] 	= number of notices that failed to generate, of the NoticeType
  * @function
@@ -4195,13 +4195,13 @@ function CreateDefaultPaymentTerms($customerGroupId)
 					$arrGeneratedNotices['Details'][$i]['XMLFilePath'] = $mxdSuccess;
 					$bolSuccess = TRUE;
 				}
-				else 
+				else
 				{
 					$arrGeneratedNotices['Failed'] += 1;
 					$bolSuccess = FALSE;
 				}
 
-				$arrSummary[] = Array(	"AccountId"					=> $arrAccount['AccountId'], 
+				$arrSummary[] = Array(	"AccountId"					=> $arrAccount['AccountId'],
 					"Outcome"					=> ($bolSuccess ? "Successful":"Failed"),
 					"BusinessName"				=> $arrAccount['BusinessName'],
 					"TradingName"				=> $arrAccount['TradingName'],
@@ -4213,7 +4213,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			}
 		}
 		// Build the summary file
-		$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))). 
+		$strFilename = 	str_replace(" ", "_", strtolower(GetConstantDescription($intNoticeType, "DocumentTemplateType"))).
 			"_summary_". date("Y_m_d") .".csv";
 		$ptrSummaryFile = fopen($strBasePath . $strFilename, 'wt');
 		if ($ptrSummaryFile !== FALSE)
@@ -4256,7 +4256,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 *
 	 * @param	string	$strPath		path to make ie "./This/is/a/path"
 	 * @param	integer	$intMode		permissions for the directories
-	 *									
+	 *
 	 * @return	bool					TRUE on success, else FALSE
 	 *
 	 * @function
@@ -4326,14 +4326,14 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 * @param	integer	$intNoticeType	Type of notice to generate DOCUMENT_TEMPLATE_TYPE_[OVERDUE_NOTICE|SUSPENSION_NOTICE|FINAL_DEMAND|FRIENDLY_REMINDER]
 	 * @param	array	$arrAccount		All Account, Contact and Invoice data required for the notice
 	 * @param	string	$strBasePath	optional, base path where the generated notices will be placed. Must end with a '/'
-	 *									
+	 *
 	 * @return	bool					TRUE if the notice was successfully generated, else FALSE
 	 *
 	 * @function
 	 */
 	function BuildLatePaymentNotice($intNoticeType, $arrAccount, $strBasePath=FILES_BASE_PATH, $intEffectiveDate, $intAutomaticInvoiceActionType)
 	{
-		VixenRequire('lib/classes/Note.php');
+		VixenRequire('lib/classes/note/Note.php');
 		// Static instances of the db access objects used to add records to the AccountNotice and FileExport tables
 		// are used so that the same objects don't have to be built for each individual Late Payment Notice that gets
 		// made in a run
@@ -4444,14 +4444,14 @@ function CreateDefaultPaymentTerms($customerGroupId)
 
 		$strNow = date("Y-m-d H:i:s");
 		// Log the Notice in the account_letter_log Table
-		$arrLetterLog = Array(	
+		$arrLetterLog = Array(
 			'account_id'		=> $arrAccount['AccountId'],
 			'invoice_id'		=> $arrAccount['InvoiceId'],
 			'document_template_type_id'	=> $intNoticeType,
 			'created_on'		=> $strNow
 		);
 
-		// Only define the StatementInsert object if it hasn't already been defined				
+		// Only define the StatementInsert object if it hasn't already been defined
 		if (!isset($insNotice))
 		{
 			$insNotice = new StatementInsert("account_letter_log", $arrLetterLog);
@@ -4468,7 +4468,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			'FileType'		=>	0,
 			'SHA1'			=>	sha1($strXML));
 
-		// Only define the StatementInsert object if it hasn't already been defined				
+		// Only define the StatementInsert object if it hasn't already been defined
 		if (!isset($insFileExport))
 		{
 			$insFileExport = new StatementInsert("FileExport", $arrFileLog);
@@ -4502,7 +4502,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 * @param	integer	$intDataType	the DatatType of the constants within the constant group.  This must be a constant
 	 * 									from the DATA_TYPE_ constant group
 	 * @param	string	$strDescription optional, description of the constant group.  Defaults to NULL
-	 *									
+	 *
 	 * @return	mix						int  : Id of the ConstantGroup on success
 	 * 									bool : FALSE on failure
 	 *
@@ -4512,7 +4512,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	{
 		// THIS IS DEPRECATED
 		return false;
-		
+
 		/*static $insConstGroup;
 
 		// If the StatementInsert objects have not yet been created, create them now
@@ -4561,14 +4561,14 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 *
 	 * @param	string	$strName			name of the constant (ie CONST_NAME)
 	 * @param	mix		$mixValue			value of the constant (either a string, int, float or bool)
-	 * @param	integer	$intDataType		optional, the DatatType of the constants within the constant group.  
+	 * @param	integer	$intDataType		optional, the DatatType of the constants within the constant group.
 	 * 										This must be a constant from the DATA_TYPE_ constant group.  If
 	 * 										$intConstantGroupId is declared, then $intDataType is considered NULL.
 	 * 										Defaults to NULL
 	 * @param	string	$strDescription 	optional, description of the constant.  Defaults to NULL
 	 * @param	integer	$intConstantGroupId	optional, Id of the ConstantGroup that this constant belongs to.
 	 * 										Defaults to NULL
-	 *									
+	 *
 	 * @return	mix							int  : Id of the Constant on success
 	 * 										bool : FALSE on failure
 	 *
@@ -4578,7 +4578,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	{
 		// THIS IS DEPRECATED
 		return false;
-		
+
 		/*static $insConst;
 
 		if (!isset($insConst))
@@ -4589,7 +4589,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		if ($intConstantGroupId !== NULL)
 		{
 			// A constant group has been specified
-			$intDataType = NULL; 
+			$intDataType = NULL;
 		}
 		if ($intConstantGroupId === NULL && $intDataType === NULL)
 		{
@@ -4619,11 +4619,11 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
 	 *
 	 * Declares all constants and ConstantGroups stored in the database, so long as the constants have not already been defined
-	 * If a constant declared in the database, has aleady been declared in the php process, 
-	 * then it will not be changed.  All ConstantGroups defined in the database are also loaded into the 
+	 * If a constant declared in the database, has aleady been declared in the php process,
+	 * then it will not be changed.  All ConstantGroups defined in the database are also loaded into the
 	 * $GLOBALS['*arrConstant'][ConstantGroupName] structure
 	 *
-	 * @param	boolean		$bolExceptionOnError			optional, if TRUE then an exception is thrown if 
+	 * @param	boolean		$bolExceptionOnError			optional, if TRUE then an exception is thrown if
 	 * 														it cannot resolve the data type of the constant
 	 * 														or if it is declaring a constant in a ConstantGroup
 	 * 														with a value that is already used by another constant
@@ -4640,17 +4640,17 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	{
 		// THIS IS DEPRECATED
 		return false;
-		
+
 		/*$strTables	= "ConfigConstant AS CC INNER JOIN ConfigConstantGroup AS CCG ON CC.ConstantGroup = CCG.Id";
-		$arrColumns	= Array("Id"				=> "CC.Id", 
-			"Name"				=> "CC.Name", 
-			"Value"				=> "CC.Value", 
+		$arrColumns	= Array("Id"				=> "CC.Id",
+			"Name"				=> "CC.Name",
+			"Value"				=> "CC.Value",
 			"ConstDesc"			=> "CC.Description",
 			"Type"				=> "CASE WHEN CCG.Special THEN CCG.Type ELSE CC.Type END",
 			"ConstGroupName"	=> "CCG.Name",
 			"Special" 			=> "CCG.Special");
 		$strOrderBy	= "CC.ConstantGroup, CC.Id";
-		$strWhere	= "TRUE"; 
+		$strWhere	= "TRUE";
 		$selConstants = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy);
 
 		$selConstants->Execute();
@@ -4661,7 +4661,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			// Check if the constant has already been defined
 			if (defined($arrConstant['Name']))
 			{
-				// The constant has already been defined.  
+				// The constant has already been defined.
 				if ($bolExceptionOnRedefinition)
 				{
 					// Throw an exception
@@ -4684,7 +4684,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 				switch ($arrConstant['Type'])
 				{
 				case 1: //DATA_TYPE_STRING:
-					$mixValue = (string)$arrConstant['Value']; 
+					$mixValue = (string)$arrConstant['Value'];
 					break;
 				case 2: //DATA_TYPE_INTEGER:
 					$mixValue = (integer)$arrConstant['Value'];
@@ -4719,7 +4719,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 					if ($bolExceptionOnRedefinition)
 					{
 						// Throw an exception
-						$strMsg = 	"Error: ConstantGroup: {$arrConstant['ConstGroupName']} already has constant ". 
+						$strMsg = 	"Error: ConstantGroup: {$arrConstant['ConstGroupName']} already has constant ".
 							$GLOBALS['*arrConstant'][$arrConstant['ConstGroupName']][$mixValue]['Constant'] .
 							" set to $mixValue so it cannot also contain the constant {$arrConstant['Name']} which ".
 							"is also set to $mixValue";
@@ -4782,7 +4782,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 * Truncates a Unix Timestamp to a specified degree of accuracy
 	 *
 	 * Truncates a Unix Timestamp to a specified degree of accuracy.
-	 * 
+	 *
 	 * @param	integer	$intTime					The timestamp to truncate
 	 * @param	string	$strAccuracy				Where to truncate the timestamp.  Accepts 'y', 'm', 'd', 'h', 'i', or 's'.
 	 * @param	string	$strRound					'floor': Rounded Down; 'ceil': Rounded Up
@@ -4848,7 +4848,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 * Casts a variable to a type defined by Flex DataType constants
 	 *
 	 * Casts a variable to a type defined by Flex DataType constants
-	 * 
+	 *
 	 * @param	mixed	$mixVariable				The variable to cast
 	 * @param	integer	$intDataType				The Flex DataType constant to cast to
 	 *
@@ -4890,7 +4890,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 * Escapes a string for use in XML
 	 *
 	 * Escapes a string for use in XML
-	 * 
+	 *
 	 * @param	string	$strText					The string to escape
 	 * @param	boolean	$bolAttribute				TRUE	: This string is for use in an Attribute (only escape quotes)
 	 * 												FALSE	: This string is for general XML use (escape everything)
@@ -4923,7 +4923,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 * Encrypts a string
 	 *
 	 * Encrypts a string
-	 * 
+	 *
 	 * @param	boolean	$strDecryptedString	The string to encrypt
 	 *
 	 * @return	string						Encrypted string base 64 encoded
@@ -4958,7 +4958,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 * Decrypts a string
 	 *
 	 * Decrypts a string
-	 * 
+	 *
 	 * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
 	 * 														(as returned by Encrypt() function)
 	 *
@@ -4995,9 +4995,9 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 * Decrypts a string and strips spaces from it
 	 *
 	 * Decrypts a string and strips spaces from it. Used by the "Credit Card Payments Report"
-	 * 
+	 *
 	 * @param	boolean	$strBase64EncodedEncryptedString	The encrypted string, base 64 encoded
-	 * 														(as returned by Encrypt() function and 
+	 * 														(as returned by Encrypt() function and
 	 * 														stored in the database)
 	 *
 	 * @return	string										Decrypted string with spaces removed
@@ -5019,7 +5019,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	 * Unpacks an Archive
 	 *
 	 * Unpacks an Archive to a given location.  Accepted Force Types are 'zip', 'tar', 'tar.bz2'
-	 * 
+	 *
 	 * @param	string	$strSourcePath						Full path to the Source Archive
 	 * @param	string	$strDestinationPath		[optional]	Full path to where the Archive should be extracted. (Default: NULL - Current Working Directory)
 	 * @param	boolean	$bolJunkPaths			[optional]	TRUE: Do not recreate Archive directory structure. (Default: FALSE)
@@ -5233,7 +5233,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
 	{
 		require_once(SHARED_BASE_PATH.'classes/Note.php');
-		
+
 		// Throw exception if fails
 
 		// Bar the account
@@ -5421,7 +5421,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			INNER JOIN (
 				SELECT MAX(Service.Id) serviceId
 				FROM Service
-				WHERE 
+				WHERE
 				(
 					Service.ClosedOn IS NULL
 					OR NOW() < Service.ClosedOn
@@ -5468,7 +5468,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			$strTables = "
 				(SELECT Service.Id FROM Service WHERE Service.Id IN ($strServiceIds)) Services
 				LEFT JOIN (SELECT MAX(Id) Id, ServiceRatePlan.Service Service
-				FROM ServiceRatePlan 
+				FROM ServiceRatePlan
 				WHERE ServiceRatePlan.Service IN ($strServiceIds)
 				AND ServiceRatePlan.Active = 1
 				AND ServiceRatePlan.StartDateTime < ServiceRatePlan.EndDateTime
@@ -5563,18 +5563,18 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	//------------------------------------------------------------------------//
 	/**
 	 * FlexModuleActive()
-	 * 
+	 *
 	 * Determines whether a Flex Module is activated or not
-	 * 
+	 *
 	 * Determines whether a Flex Module is activated or not.  If the module doesn't exist
 	 * in the database, it returns NULL (and should be treated as inactive)
 	 *
 	 * @param	string	$strModuleName		The name of the Module to Check
 	 *
 	 * @return	mixed						TRUE: Active; FALSE: Inactive; NULL: Not present
-	 * 
+	 *
 	 * @function
-	 * 
+	 *
 	 */
 	function FlexModuleActive($strModuleName)
 	{
@@ -5614,17 +5614,17 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	//------------------------------------------------------------------------//
 	/**
 	 * signalHandler()
-	 * 
+	 *
 	 * Handles POSIX Signals
-	 * 
+	 *
 	 * Handles POSIX Signals
 	 *
 	 * @param	integer	$intSignalId		POSIX Signal Id
 	 *
 	 * @return	void
-	 * 
+	 *
 	 * @function
-	 * 
+	 *
 	 */
 	function signalHandler($intSignalId)
 	{
@@ -5644,12 +5644,12 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	//------------------------------------------------------------------------//
 	/**
 	 * IsValidTIOReferenceNumber()
-	 * 
+	 *
 	 * Check if a TIO reference number is valid
-	 * 
+	 *
 	 * Check if a TIO reference number is valid
 	 * Valid TIO reference numbers have the format: \d{2}\/\d{6,7}
-	 * 
+	 *
 	 * @param	string		$strTIORefNum		The TIO Reference number to check for validity
 	 *
 	 * @return	boolean
@@ -5658,18 +5658,18 @@ function CreateDefaultPaymentTerms($customerGroupId)
 	{
 		return preg_match("/^\d{2}\/\d{6,7}$/", $strTIORefNum);
 	}
-	
+
 	/**
 	 * ConvertToSimpleArray()
-	 * 
+	 *
 	 * Converts an array of objects (or array of associative arrays) into a simple array,
 	 * where each cell of the resultant array is a single property of the associated object/assoc-array of the original RecordSet
-	 * 
+	 *
 	 * @param	array	$arrRecordSet			Array of associative arrays or array of objects
-	 * @param	string	$strValueProperty		The property of the object, or the key into the associative array, 
+	 * @param	string	$strValueProperty		The property of the object, or the key into the associative array,
 	 * 											of the value to keep in the resultant array
 	 * @param	string	[ $strKeyProperty ]		Defaults to null.  If null, then the RecordSet's original keys are retained.
-	 * 											If a property (or key into the associative array), is given, then this will be used for the keys  
+	 * 											If a property (or key into the associative array), is given, then this will be used for the keys
 	 *
 	 * @return	array							The simplfied array, somewhat of the form array[$strKeyPropertyValue] = $strValuePropertyValue
 	 */
@@ -5720,15 +5720,15 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		}
 		return $arrSimpleArray;
 	}
-	
+
 	/**
 	 * KeyifyArray()
-	 * 
+	 *
 	 * Sets the keys for an array of objects (or array of associative arrays) using one of the properties of the object/associative array
 	 * Note that if the value of the property used as the key, isn't unique across the objects, then some of the objects will be lost in the translation
-	 * 
+	 *
 	 * @param	array	$arrRecordSet		Array of associative arrays or array of objects
-	 * @param	string	$strKeyProperty		For each object (or assoc-array) in the recordset, this property will be used for the object corresponding key  
+	 * @param	string	$strKeyProperty		For each object (or assoc-array) in the recordset, this property will be used for the object corresponding key
 	 *
 	 * @return	array						The simplfied array, somewhat of the form array[$objObject->{$strKeyPropertyValue}] = $objObject
 	 */

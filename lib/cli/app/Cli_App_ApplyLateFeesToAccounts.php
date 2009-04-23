@@ -2,7 +2,7 @@
 
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../' . 'flex.require.php';
 VixenRequire('lib/classes/Employee.php');
-VixenRequire('lib/classes/Note.php');
+VixenRequire('lib/classes/note/Note.php');
 
 class Cli_App_ApplyLateFeesToAccounts extends Cli
 {
@@ -149,11 +149,11 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 
 			$this->log('Rolling back database transaction.');
 			$conConnection->TransactionRollback();
-			
+
 			$this->log('Sending error report via email.');
 			$subject = '[ERROR]'. ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') .' Automatic late payments failed - Database transaction rolled back at ' . date('Y-m-d H:i:s');
 			$body = array();
-			$body[] = 'The automatic late payments process failed. The database transaction was rolled back. The following error details are available: -'; 
+			$body[] = 'The automatic late payments process failed. The database transaction was rolled back. The following error details are available: -';
 			$body[] = '';
 			$body[] = $exception->getMessage();
 			if (count($report))
@@ -222,7 +222,7 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 				$arrData = Array();
 				$arrData['Id']					= $arrAccount['AccountId'];
 				$arrData['DisableLatePayment']	= new MySQLFunction("CASE WHEN DisableLatePayment = 0 THEN NULL ELSE DisableLatePayment + 1 END");
-	
+
 				// Update the number of times we ignore, and return
 				$mxdReturn = $this->_ubiDecreaseLatePayment->Execute($arrData);
 				if ($mxdReturn === FALSE)
@@ -292,14 +292,14 @@ class Cli_App_ApplyLateFeesToAccounts extends Cli
 				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
-		
+
 			self::SWITCH_TEST_RUN => array(
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "for testing script outcome [fully functional EXCEPT emails will not be sent to clients]",
 				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
-		
+
 		);
 	}
 }
