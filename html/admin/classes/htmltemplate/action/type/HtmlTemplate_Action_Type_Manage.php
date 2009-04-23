@@ -46,7 +46,7 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		"			<th>Code</th>\n" .
 		"			<th>Name</th>\n" .
 		"			<th>Description</th>\n" .
-		"			<th>Detail Constraint</th>\n";
+		"			<th>Details Required</th>\n";
 		
 		$arrActionAssociationTypes	= Action_AssociationType::getAll();
 		foreach ($arrActionAssociationTypes as $intActionAssociationTypeId=>$objActionAssociationType)
