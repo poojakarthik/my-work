@@ -230,6 +230,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strProvisioning			= "";
 			$strViewProvisioningHistory	= "";
 			$strCreateTicket			= "";
+			$strViewAddress				= "";
 			if ($bolUserHasOperatorPerm)
 			{
 				// The user can edit stuff
@@ -250,6 +251,9 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 					
 					$strViewProvisioningHistoryLink = Href()->ViewProvisioningHistory($arrService['Id']);
 					$strViewProvisioningHistory		= "<img src='img/template/provisioning_history.png' title='View Provisioning History' onclick='$strViewProvisioningHistoryLink'/>";
+					
+					$strViewAddressLink			= Href()->ViewServiceAddress($arrService['Id']);
+					$strViewAddress				= "<img src='img/template/address.png' title='Address Details' onclick='$strViewAddressLink'/>";
 				}
 				
 				if ($bolTicketingModuleIsActive && $bolUserIsTicketingUser && array_search($arrService['History'][0]['Status'], $arrAllowableServiceStatusesForTickets) !== FALSE)
@@ -265,7 +269,10 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($arrService['Id']);
 			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";
 			
-			$strActionsCell				= "{$strViewServiceNotes} {$strEditService} {$strChangePlan} {$strViewUnbilledCharges} {$strMoveService} {$strProvisioning} {$strViewProvisioningHistory} {$strCreateTicket}";
+			
+			
+			
+			$strActionsCell				= "{$strViewServiceNotes} {$strEditService} {$strChangePlan} {$strViewUnbilledCharges} {$strMoveService} {$strProvisioning} {$strViewProvisioningHistory} {$strViewAddress} {$strCreateTicket}";
 
 			// Create a link to the View Plan for Service page
 			$strViewServiceRatePlanLink = Href()->ViewServiceRatePlan($arrService['Id']);

@@ -96,6 +96,7 @@ class AppTemplateService extends ApplicationTemplate
 				// Only Landlines can be provisioned at this stage
 				ContextMenu()->Service->Provisioning->Provisioning($intServiceId);
 				ContextMenu()->Service->Provisioning->ViewProvisioningHistory($intServiceId);
+				ContextMenu()->Service->ViewServiceAddress($intServiceId);
 			}
 			ContextMenu()->Service->{"Actions / Notes"}->ActionsAndNotesCreatorPopup(null, $intServiceId, null,  "$strServiceType - {$objService->fNN}");
 		}

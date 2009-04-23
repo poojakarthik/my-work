@@ -1722,7 +1722,7 @@ class MenuItems {
 	 * @method
 	 */
 	function ViewServiceAddress($intServiceId) {
-		$this->strContextMenuLabel = "View Address Details";
+		$this->strContextMenuLabel = "Physical Address";
 
 		// Setup data to send
 		$arrData['Service']['Id'] = $intServiceId;

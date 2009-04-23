@@ -1210,6 +1210,7 @@ input.InputSubmitDisabled
 	font-size:			10pt;
 }
 
+/*  This has been deprecated 2009-04-23
 input[type='button']
 {
 	background-image:	url('img/template/button_background.png');
@@ -1225,7 +1226,7 @@ input[type='button']
 
 	border:				solid 1px #07548e;
 }
-
+*/
 input.InputSubmitDisabled
 {
 	background-image:    url('img/template/button_background_disabled.png');

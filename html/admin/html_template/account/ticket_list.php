@@ -128,8 +128,8 @@ class HtmlTemplateAccountTicketList extends HtmlTemplate
 
 		echo "
 <div style='clear:both;float:right'>
-	<a href='$strAllTicketsLink'>View All Tickets</a> / 
-	<a href='$strAddTicketLink'>Create Ticket</a>
+	<a class='button' href='$strAllTicketsLink'>View All Tickets</a> 
+	<a class='button' href='$strAddTicketLink'>Create Ticket</a>
 </div>
 <div class='SmallSeparator' style='clear:both'></div>";
 	}
