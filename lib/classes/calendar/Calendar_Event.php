@@ -216,7 +216,7 @@ class Calendar_Event extends ORM
 			{
 				if (!($intStartTimestamp = strtotime($arrData[self::$_arrImportColumns['start_date']])))
 				{
-					throw new Exception("Invalid Start Date in column {self::$_arrImportColumns['start_date']}");
+					throw new Exception("Invalid Start Date in column ".self::$_arrImportColumns['start_date']);
 				}
 				
 				$arrCalendarEvent	= array(
