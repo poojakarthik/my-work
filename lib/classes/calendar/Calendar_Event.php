@@ -30,6 +30,50 @@ class Calendar_Event extends ORM
 	}
 	
 	/**
+	 * parseDescription()
+	 *
+	 * Gets an array of Calendar_Events which occur on the given Date
+	 *
+	 * @param	[mixed	$mixDate				integer	: UNIX Timestamp
+	 * 											string	: Date String
+	 * 											NULL	: Use today's date (default)]
+	 * @param	[bool	$bolIncludeCancelled	TRUE	: Include Cancelled Events
+	 * 											FALSE	: Filter Cancelled Events (default)]
+	 * 
+	 * @return	array							Array of Calendar_Event objects
+	 * 
+	 * @method
+	 */
+	public static function parseDescription()
+	{
+		$arrTokens	= array();
+		preg_match_all("/\[(\w+)(\:)(\d+)\]/", $this->description, $arrTokens, PREG_SET_ORDER);
+		$arrTokens	= array_unique($arrTokens);
+		
+		$strParsedDescription	= $this->description;
+		foreach($arrTokens as $arrToken)
+		{
+			$strToken		= $arrToken[0];
+			$strObjectName	= $arrToken[1];
+			$intObjectId	= (int)$arrToken[3];
+			
+			switch ($strObjectName)
+			{
+				case 'CustomerGroup':
+					$objCustomerGroup	= Customer_Group::getForId($intObjectId);
+					$strReplace			= "<span style='color:{$objCustomerGroup->customerPrimaryColor}'>{$objCustomerGroup->internalName}</span>";
+					break;
+				
+				default:
+					$strReplace	= $strToken;
+					break;
+			}
+			
+			$strParsedDescription	= str_replace($strToken, $strReplace, $strParsedDescription);
+		}
+	}
+	
+	/**
 	 * getForDate()
 	 *
 	 * Gets an array of Calendar_Events which occur on the given Date
