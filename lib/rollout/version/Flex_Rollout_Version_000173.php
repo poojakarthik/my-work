@@ -19,9 +19,9 @@ class Flex_Rollout_Version_000173 extends Flex_Rollout_Version
 		
 		//	1:	Add the calendar_event Table
 		$strSQL = "	INSERT INTO	flex_module
-						(name		, description		, const_name				, active)
+						(id	, name		, description		, const_name				, active)
 					VALUES
-						('Calendar'	, 'Calendar Module'	, 'FLEX_MODULE_CALENDAR'	, 0);";
+						(14	, 'Calendar'	, 'Calendar Module'	, 'FLEX_MODULE_CALENDAR'	, 0);";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
