@@ -66,7 +66,7 @@ class Calendar_Event extends ORM
 					}
 					else
 					{
-						$strReplace	= "[{$strObjectName}{$strOperator}{$intObjectId}!Customer Group with Id {$intObjectId} does not exist]";
+						$strReplace	= "<span style='color:#f00;font-weight:bold;'>[{$strObjectName}{$strOperator}{$intObjectId}!Customer Group with Id {$intObjectId} does not exist]</span>";
 					}
 					break;
 				
