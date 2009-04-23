@@ -45,6 +45,12 @@ div.content-footer
 	background-color	: #333;
 	color				: #eee;
 	text-align			: left;
+	padding				: .25em .5em;
+}
+
+div.content-body
+{
+	
 }
 
 div.message {
