@@ -42,7 +42,7 @@ class Application_Handler_Console extends Application_Handler
 				$intDayOfTheWeek	= (int)date('w', $intToday);
 				$intTomomorrow		= strtotime("+1 day", $intToday);
 				
-				throw new Exception("Today: {$intToday}");
+				//throw new Exception("Today: {$intToday}");
 				
 				$arrUpcomingEvents	= array();
 				

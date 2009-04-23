@@ -65,7 +65,7 @@ class Calendar_Event extends ORM
 			throw new Exception("Parameter mixDate ({$strDateOutputError}) is neither a positive integer, valid date string, or NULL");
 		}
 		
-		throw new Exception("Getting all Active Events for {$strDate}");
+		throw new Exception("Getting all Active Events for {$strDate} (Converted from {$mixDate})");
 		
 		// Pull Events
 		$selEventsForDate	= self::_preparedStatement('selEventsForDate');
