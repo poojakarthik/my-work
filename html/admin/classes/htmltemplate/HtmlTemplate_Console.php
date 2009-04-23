@@ -70,8 +70,8 @@ $strDailyMessageSection
 		{
 			// Table Header & Footer
 			echo "
-						<div class='date'>
-							".date('l jS F', strtotime($strDate))."
+						<div class='day'>
+							<span class='date'>".date('l jS F', strtotime($strDate))."</span>
 							<table class='reflex'>
 								<thead>
 									<tr>
