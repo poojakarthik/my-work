@@ -191,14 +191,14 @@ try
 			elseif ($bolUpdateExisting)
 			{
 				// Insert into the DB
-				$strInsertSQL	= "	UPDATE	cdr_call_type_translation
+				$strUpdateSQL	= "	UPDATE	cdr_call_type_translation
 									SET		code		= ".$dsFlex->quote($arrDestinationTranslation['code']			, 'integer').",  
 											description	= ".$dsFlex->quote($arrDestinationTranslation['description']	, 'text')."
 									WHERE	id = ".$dsFlex->quote($arrDuplicate['id'], 'integer').";";
-				$resInsert	= $dsFlex->exec($strInsertSQL);
-				if (PEAR::isError($resInsert))
+				$resUpdate	= $dsFlex->exec($strUpdateSQL);
+				if (PEAR::isError($resUpdate))
 				{
-					throw new Exception($resInsert->getMessage()."\n\n".$resInsert->getUserInfo());
+					throw new Exception($resUpdate->getMessage()."\n\n".$resUpdate->getUserInfo());
 				}
 				$intSuccess++;
 			}
