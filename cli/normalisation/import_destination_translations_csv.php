@@ -132,7 +132,7 @@ try
 				
 				if ($intCanImport)
 				{
-					throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} already exists with Id {$arrDuplicate['id']}");
+					throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} already exists with Id {$arrDuplicate['id']} (Current Flex Code: {$arrDuplicate['code']}; Suggested Flex Code: {$arrDuplicate['code']})");
 				}
 			}
 			elseif (!$intCanImport)
