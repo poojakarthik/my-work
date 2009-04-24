@@ -5232,7 +5232,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 
 	function UnbarAccount($intAccountId, $intAccountGroup, $bolAutomatic=FALSE, $invoiceRun=NULL)
 	{
-		require_once(SHARED_BASE_PATH.'classes/Note.php');
+		require_once(SHARED_BASE_PATH.'classes/note/Note.php');
 
 		// Throw exception if fails
 
