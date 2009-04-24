@@ -138,6 +138,11 @@ try
 				throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} should already exist, but does not");
 			}
 			
+			if ($arrDestinationTranslation['description'] == 'Afghanistan')
+			{
+				throw new Exception($intCanImport);
+			}
+			
 			if ($intCanImport)
 			{
 				// Insert into the DB
