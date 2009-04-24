@@ -135,9 +135,9 @@ try
 									(code, carrier_id, carrier_code, description)
 								VALUES
 									(
-										".$dsFlex->quote($arrDestinationTranslation['code']			, 'integer')."
-										".$dsFlex->quote($arrDestinationTranslation['carrier_id']	, 'integer')."
-										".$dsFlex->quote($arrDestinationTranslation['carrier_code']	, 'text')."
+										".$dsFlex->quote($arrDestinationTranslation['code']			, 'integer').", 
+										".$dsFlex->quote($arrDestinationTranslation['carrier_id']	, 'integer').", 
+										".$dsFlex->quote($arrDestinationTranslation['carrier_code']	, 'text').", 
 										".$dsFlex->quote($arrDestinationTranslation['description']	, 'text')."
 									);";
 			$resInsert	= $dsFlex->exec($strInsertSQL);
