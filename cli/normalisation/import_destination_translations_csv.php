@@ -120,7 +120,8 @@ try
 												);
 			
 			// Ensure this is not a duplicate
-			$resDuplicate	= $dsFlex->query("SELECT * FROM cdr_call_type_translation WHERE carrier_id = ".$dsFlex->quote($intCarrier, 'integer')." AND carrier_code = ".$dsFlex->quote($arrDestinationTranslation['carrier_code'], 'text')." LIMIT 1");
+			$strDuplicateSQL	= "SELECT * FROM cdr_call_type_translation WHERE carrier_id = ".$dsFlex->quote($intCarrier, 'integer')." AND carrier_code = ".$dsFlex->quote($arrDestinationTranslation['carrier_code'], 'text')." LIMIT 1";
+			$resDuplicate		= $dsFlex->query("SELECT * FROM cdr_call_type_translation WHERE carrier_id = ".$dsFlex->quote($intCarrier, 'integer')." AND carrier_code = ".$dsFlex->quote($arrDestinationTranslation['carrier_code'], 'text')." LIMIT 1");
 			if (PEAR::isError($resDuplicate))
 			{
 				throw new Exception($resDuplicate->getMessage()."\n\n".$resDuplicate->getUserInfo());
@@ -136,7 +137,7 @@ try
 			}
 			elseif (!$intCanImport)
 			{
-				throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} should already exist, but does not");
+				throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} should already exist, but does not ({$strDuplicateSQL})");
 			}
 			
 			if ($intCanImport)
