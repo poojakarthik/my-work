@@ -126,6 +126,7 @@ try
 			elseif ($resDuplicate->numRows())
 			{
 				$arrDuplicate	= $resDuplicate->fetchRow();
+				throw new Exception(print_r($arrDuplicate, true));
 				throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} already exists with Id {$arrDuplicate['id']}");
 			}
 			
