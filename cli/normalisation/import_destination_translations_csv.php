@@ -104,7 +104,7 @@ try
 		
 		if (!$intFlexCode)
 		{
-			Log::getLog()->log("Skipping '{$arrData[$arrImportColumns['carrier_description']]}'");
+			Log::getLog()->log("Skipping '{$arrData[$arrImportColumns['carrier_description']]}'({$arrData[$arrImportColumns['carrier_code']]}) (No Flex Code Specified)");
 			continue;
 		}
 		
@@ -112,10 +112,22 @@ try
 		{
 			$arrDestinationTranslation	= array(
 													'code'			=> $intFlexCode,
-													'carrier_id'	=> $arrCarrier['Id'],
-													'carrier_code'	=> trim($arrData[$arrImportColumns['departments']]),
+													'carrier_id'	=> (int)$arrCarrier['Id'],
+													'carrier_code'	=> trim($arrData[$arrImportColumns['carrier_code']]),
 													'description'	=> trim($arrData[$arrImportColumns['carrier_description']])
 												);
+			
+			// Ensure this is not a duplicate
+			$resDuplicate	= $dsFlex->query("SELECT * FROM Carrier WHERE const_name = ".$dsFlex->quote($mixCarrier, 'text')." LIMIT 1");
+			if (PEAR::isError($resDuplicate))
+			{
+				throw new Exception($resDuplicate->getMessage()."\n\n".$resDuplicate->getUserInfo());
+			}
+			elseif ($resDuplicate->numRows())
+			{
+				$arrDuplicate	= $resDuplicate->fetchRow();
+				throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} already exists with Id {$arrDuplicate['id']}");
+			}
 			
 			// Insert into the DB
 			$strInsertSQL	= "	INSERT INTO	cdr_call_type_translation
