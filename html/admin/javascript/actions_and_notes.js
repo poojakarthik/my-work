@@ -1427,11 +1427,9 @@ Object.extend(ActionsAndNotes.List.prototype,
 		{
 			// There are details
 			var elmDetailsDiv = document.createElement('div');
-			var elmDetailsPreWrapper = document.createElement('pre');
 			elmDetailsDiv.className = 'details';
 			elmItemDiv.appendChild(elmDetailsDiv);
-			elmDetailsDiv.appendChild(elmDetailsPreWrapper);
-			elmDetailsPreWrapper.appendChild(document.createTextNode(objItem.details));
+			elmDetailsDiv.innerHTML = objItem.details;
 		}
 		
 		return elmItemDiv;

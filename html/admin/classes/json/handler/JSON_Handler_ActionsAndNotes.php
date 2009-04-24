@@ -508,6 +508,12 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 		
 		$objItem->createdOnFormatted = date("l, M j, Y g:i:s A", $objItem->createdOnTimestamp);
 		
+		if ($objItem->details !== NULL)
+		{
+			// Protect against html injection, and convert line breaks to br elements
+			$objItem->details = nl2br(htmlspecialchars($objItem->details));
+		}
+		
 		return $objItem;
 	}
 	

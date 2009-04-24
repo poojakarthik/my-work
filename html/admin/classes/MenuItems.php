@@ -3409,8 +3409,11 @@ else
 		return "javascript:
 if (window.ActionsAndNotes)
 {
-	Flex.ActionsAndNotesListPopup = ActionsAndNotes.List.createPopup($jsonStrTitle, $intAATContextId, $intAATContextReferenceId, $jsonBolIncludeAllRelatableAATTypes, $intMaxRecordsPerPage);
-	Flex.ActionsAndNotesListPopup.display();
+	ActionsAndNotes.load(	function()
+							{
+								Flex.ActionsAndNotesListPopup = ActionsAndNotes.List.createPopup($jsonStrTitle, $intAATContextId, $intAATContextReferenceId, $jsonBolIncludeAllRelatableAATTypes, $intMaxRecordsPerPage);
+								Flex.ActionsAndNotesListPopup.display();
+							});
 }
 else
 {
