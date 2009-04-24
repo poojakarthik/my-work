@@ -132,10 +132,6 @@ try
 				{
 					throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} already exists with Id {$arrDuplicate['id']}");
 				}
-				else
-				{
-					Log::getLog()->log("Skipping '{$arrData[$arrImportColumns['carrier_description']]}'({$arrData[$arrImportColumns['carrier_code']]}) (Already in Flex)");
-				}
 			}
 			elseif (!$intCanImport)
 			{
@@ -160,6 +156,10 @@ try
 					throw new Exception($resInsert->getMessage()."\n\n".$resInsert->getUserInfo());
 				}
 				$intSuccess++;
+			}
+			else
+			{
+				Log::getLog()->log("Skipping '{$arrData[$arrImportColumns['carrier_description']]}'({$arrData[$arrImportColumns['carrier_code']]}) (Already in Flex)");
 			}
 		}
 		catch (Exception $eException)
