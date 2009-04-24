@@ -101,7 +101,7 @@ try
 		
 		$arrFlexDestination	= explode(':', $arrData[$arrImportColumns['flex_code:flex_description']]);
 		$intFlexCode		= (int)$arrFlexDestination[0];
-		$intCanImport		= (int)$arrData[$arrImportColumns['carrier_code']];
+		$intCanImport		= (int)$arrData[$arrImportColumns['can_import']];
 		
 		if (!$intFlexCode)
 		{
