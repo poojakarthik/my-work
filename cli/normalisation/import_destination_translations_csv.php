@@ -120,8 +120,8 @@ try
 												);
 			
 			// Ensure this is not a duplicate
-			$strDuplicateSQL	= "SELECT * FROM cdr_call_type_translation WHERE carrier_id = ".$dsFlex->quote($intCarrier, 'integer')." AND carrier_code = ".$dsFlex->quote($arrDestinationTranslation['carrier_code'], 'text')." LIMIT 1";
-			$resDuplicate		= $dsFlex->query("SELECT * FROM cdr_call_type_translation WHERE carrier_id = ".$dsFlex->quote($intCarrier, 'integer')." AND carrier_code = ".$dsFlex->quote($arrDestinationTranslation['carrier_code'], 'text')." LIMIT 1");
+			$strDuplicateSQL	= "SELECT * FROM cdr_call_type_translation WHERE carrier_id = ".$dsFlex->quote($arrDestinationTranslation['carrier_id'], 'integer')." AND carrier_code = ".$dsFlex->quote($arrDestinationTranslation['carrier_code'], 'text')." LIMIT 1";
+			$resDuplicate		= $dsFlex->query("SELECT * FROM cdr_call_type_translation WHERE carrier_id = ".$dsFlex->quote($arrDestinationTranslation['carrier_id'], 'integer')." AND carrier_code = ".$dsFlex->quote($arrDestinationTranslation['carrier_code'], 'text')." LIMIT 1");
 			if (PEAR::isError($resDuplicate))
 			{
 				throw new Exception($resDuplicate->getMessage()."\n\n".$resDuplicate->getUserInfo());
