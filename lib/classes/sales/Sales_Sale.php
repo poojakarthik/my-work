@@ -182,9 +182,7 @@ class Sales_Sale extends DO_Sales_Sale
 					$strNote				= "Sale {$this->id} has now been flagged as having been {$doStatus->name} as at $strTimestampFormatted in the sales system";
 					$strNote				.= ($doSaleStatusHistory->description !== NULL)? ". ({$doSaleStatusHistory->description})" : "";
 					
-					$objAccount = Account::getForId($objFlexSale->accountId);
-					
-					Note::createSystemNote($strNote, $intEmployeeId, $this->accountId);
+					Note::createSystemNote($strNote, $intEmployeeId, $objFlexSale->accountId);
 				}
 			}
 		}
