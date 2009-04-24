@@ -95,8 +95,9 @@ try
 	
 	// Parse Data
 	$intSuccess	= 0;
-	while ($arrData = fgetcsv($resInputFile))
+	while (!feof($resInputFile))
 	{
+		$arrData	= fgetcsv($resInputFile);
 		$intLine++;
 		
 		$arrFlexDestination	= explode(':', $arrData[$arrImportColumns['flex_code:flex_description']]);
