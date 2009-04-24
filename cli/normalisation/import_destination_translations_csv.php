@@ -154,7 +154,7 @@ try
 	
 	if (count($arrErrors))
 	{
-		throw new Exception(count($arrErrors)." Fatal Errors were encountered {$strErrorTail}.  No data has been imported into Flex.\n\n".implode("\n", $arrErrors))."\n";
+		throw new Exception(count($arrErrors)." Fatal Errors were encountered {$strErrorTail}.  No data has been imported into Flex.\n\n".implode("\n", $arrErrors)."\n");
 	}
 	
 	throw new Exception("TEST MODE");
