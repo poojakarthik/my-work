@@ -12,6 +12,10 @@ $arrImportColumns	=	array
 							'can_import'					=> 3
 						);
 
+define('DESTINATION_TRANSLATION_OVERWRITE_EXISTING_ZERO'	, true);
+define('DESTINATION_TRANSLATION_IGNORE_EXISTING_NONZERO'	, true);
+define('DESTINATION_TRANSLATION_INSERT_MISSING'				, true);
+
 try
 {
 	$dsFlex	= Data_Source::get();
@@ -97,6 +101,8 @@ try
 	$intSuccess	= 0;
 	while (!feof($resInputFile))
 	{
+		$bolUpdateExisting	= false;
+		
 		$arrData	= fgetcsv($resInputFile);
 		$intLine++;
 		
@@ -120,8 +126,8 @@ try
 												);
 			
 			// Ensure this is not a duplicate
-			$strDuplicateSQL	= "SELECT * FROM cdr_call_type_translation WHERE carrier_id = ".$dsFlex->quote($arrDestinationTranslation['carrier_id'], 'integer')." AND carrier_code = ".$dsFlex->quote($arrDestinationTranslation['carrier_code'], 'text')." LIMIT 1";
-			$resDuplicate		= $dsFlex->query("SELECT * FROM cdr_call_type_translation WHERE carrier_id = ".$dsFlex->quote($arrDestinationTranslation['carrier_id'], 'integer')." AND carrier_code = ".$dsFlex->quote($arrDestinationTranslation['carrier_code'], 'text')." LIMIT 1");
+			$strDuplicateSQL	= "SELECT cdr_call_type_translation.* FROM cdr_call_type_translation WHERE carrier_id = ".$dsFlex->quote($arrDestinationTranslation['carrier_id'], 'integer')." AND carrier_code = ".$dsFlex->quote($arrDestinationTranslation['carrier_code'], 'text')." LIMIT 1";
+			$resDuplicate		= $dsFlex->query($strDuplicateSQL);
 			if (PEAR::isError($resDuplicate))
 			{
 				throw new Exception($resDuplicate->getMessage()."\n\n".$resDuplicate->getUserInfo());
@@ -132,12 +138,35 @@ try
 				
 				if ($intCanImport)
 				{
-					throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} already exists with Id {$arrDuplicate['id']} (Current Flex Code: {$arrDuplicate['code']}; Suggested Flex Code: {$arrDestinationTranslation['code']})");
+					if ($arrDuplicate['code'] == 0)
+					{
+						if (DESTINATION_TRANSLATION_OVERWRITE_EXISTING_ZERO)
+						{
+							Log::getLog()->log("Overwriting '{$arrData[$arrImportColumns['carrier_description']]}'({$arrData[$arrImportColumns['carrier_code']]}) (Flex Code is 0)");
+							$bolUpdateExisting	= true;
+						}
+					}
+					elseif (DESTINATION_TRANSLATION_IGNORE_EXISTING_NONZERO)
+					{
+						Log::getLog()->log("Skipping '{$arrData[$arrImportColumns['carrier_description']]}'({$arrData[$arrImportColumns['carrier_code']]}) (Already exists in Flex)");
+					}
+					else
+					{
+						throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} already exists with Id {$arrDuplicate['id']} (Current Flex Code: {$arrDuplicate['code']}[]; Suggested Flex Code: {$arrDestinationTranslation['code']})");
+					}
 				}
 			}
 			elseif (!$intCanImport)
 			{
-				throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} should already exist, but does not ({$strDuplicateSQL})");
+				if (DESTINATION_TRANSLATION_INSERT_MISSING)
+				{
+					Log::getLog()->log("Inserting '{$arrData[$arrImportColumns['carrier_description']]}'({$arrData[$arrImportColumns['carrier_code']]}) (Should exist, but doesn't)");
+					$intCanImport	= 1;
+				}
+				else
+				{
+					throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} should already exist, but does not ({$strDuplicateSQL})");
+				}
 			}
 			
 			if ($intCanImport)
@@ -152,6 +181,20 @@ try
 											".$dsFlex->quote($arrDestinationTranslation['carrier_code']	, 'text').", 
 											".$dsFlex->quote($arrDestinationTranslation['description']	, 'text')."
 										);";
+				$resInsert	= $dsFlex->exec($strInsertSQL);
+				if (PEAR::isError($resInsert))
+				{
+					throw new Exception($resInsert->getMessage()."\n\n".$resInsert->getUserInfo());
+				}
+				$intSuccess++;
+			}
+			elseif ($bolUpdateExisting)
+			{
+				// Insert into the DB
+				$strInsertSQL	= "	UPDATE	cdr_call_type_translation
+									SET		code		= ".$dsFlex->quote($arrDestinationTranslation['code']			, 'integer').",  
+											description	= ".$dsFlex->quote($arrDestinationTranslation['description']	, 'text')."
+									WHERE	id = ".$dsFlex->quote($arrDuplicate['id'], 'integer').";";
 				$resInsert	= $dsFlex->exec($strInsertSQL);
 				if (PEAR::isError($resInsert))
 				{
