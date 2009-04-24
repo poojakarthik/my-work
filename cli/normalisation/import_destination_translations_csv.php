@@ -101,6 +101,7 @@ try
 		
 		$arrFlexDestination	= explode(':', $arrData[$arrImportColumns['flex_code:flex_description']]);
 		$intFlexCode		= (int)$arrFlexDestination[0];
+		$intCanImport		= (int)$arrData[$arrImportColumns['carrier_code']];
 		
 		if (!$intFlexCode)
 		{
@@ -126,26 +127,40 @@ try
 			elseif ($resDuplicate->numRows())
 			{
 				$arrDuplicate	= $resDuplicate->fetchRow();
-				//throw new Exception(print_r($arrDuplicate, true));
-				throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} already exists with Id {$arrDuplicate['id']}");
+				
+				if ($intCanImport)
+				{
+					throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} already exists with Id {$arrDuplicate['id']}");
+				}
+				else
+				{
+					Log::getLog()->log("Skipping '{$arrData[$arrImportColumns['carrier_description']]}'({$arrData[$arrImportColumns['carrier_code']]}) (Already in Flex)");
+				}
+			}
+			elseif (!$intCanImport)
+			{
+				throw new Exception("Destination Translation for Carrier {$arrDestinationTranslation['carrier_id']}/Code {$arrDestinationTranslation['carrier_code']} should already exist, but does not");
 			}
 			
-			// Insert into the DB
-			$strInsertSQL	= "	INSERT INTO	cdr_call_type_translation
-									(code, carrier_id, carrier_code, description)
-								VALUES
-									(
-										".$dsFlex->quote($arrDestinationTranslation['code']			, 'integer').", 
-										".$dsFlex->quote($arrDestinationTranslation['carrier_id']	, 'integer').", 
-										".$dsFlex->quote($arrDestinationTranslation['carrier_code']	, 'text').", 
-										".$dsFlex->quote($arrDestinationTranslation['description']	, 'text')."
-									);";
-			$resInsert	= $dsFlex->exec($strInsertSQL);
-			if (PEAR::isError($resInsert))
+			if ($intCanImport)
 			{
-				throw new Exception($resInsert->getMessage()."\n\n".$resInsert->getUserInfo());
+				// Insert into the DB
+				$strInsertSQL	= "	INSERT INTO	cdr_call_type_translation
+										(code, carrier_id, carrier_code, description)
+									VALUES
+										(
+											".$dsFlex->quote($arrDestinationTranslation['code']			, 'integer').", 
+											".$dsFlex->quote($arrDestinationTranslation['carrier_id']	, 'integer').", 
+											".$dsFlex->quote($arrDestinationTranslation['carrier_code']	, 'text').", 
+											".$dsFlex->quote($arrDestinationTranslation['description']	, 'text')."
+										);";
+				$resInsert	= $dsFlex->exec($strInsertSQL);
+				if (PEAR::isError($resInsert))
+				{
+					throw new Exception($resInsert->getMessage()."\n\n".$resInsert->getUserInfo());
+				}
+				$intSuccess++;
 			}
-			$intSuccess++;
 		}
 		catch (Exception $eException)
 		{
