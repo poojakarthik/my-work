@@ -1,6 +1,9 @@
 <?php
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . "../email/Email_Notification.php";
+//require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . "../email/Email_Notification.php";
+
+require_once(dirname(__FILE__).'../classes/Flex.php');
+Flex::load();
 
 /*
  * Base class for command line applications
