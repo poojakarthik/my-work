@@ -68,7 +68,7 @@ class Note extends ORM
 		{
 		 	if ($intAccountId == NULL && $intServiceId == NULL && $intContactId == NULL)
 		 	{
-		 		throw new Exception("Have not specified what account/service/contact owns the note");
+		 		throw new Exception_Assertion("Have not specified what account/service/contact owns the note");
 		 	}
 		 	
 		 	// Retrieve an associated account object so we can specify the AccountGroup, because this is a column of the Note table, but will be deprecated soon

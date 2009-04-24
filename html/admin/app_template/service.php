@@ -462,8 +462,7 @@ class AppTemplateService extends ApplicationTemplate
 		
 		if (!DBO()->ServiceAddress->Load())
 		{
-			// The service doesn't have address details, load up the Add Service popup
-			$this->EditAddress();
+			Ajax()->AddCommand("Alert", "ERROR: Address Details have not been defined for this service. Please configure them from the Provisioning page");
 			return TRUE;
 		}
 
