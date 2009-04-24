@@ -187,7 +187,8 @@ catch (Exception $eException)
 {
 	// Rollback & Die ungracefully
 	$dsFlex->rollback();
-	throw $eException;
+	Log::getLog()->log($eException->__toString());
+	exit(1);
 }
 
 ?>
