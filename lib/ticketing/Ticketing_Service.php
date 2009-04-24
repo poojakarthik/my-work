@@ -7,7 +7,7 @@
 //require_once 'Zend/Mail.php';
 
 // Load other required classes
-require_once dirname(__FILE__).'/'.'ticketing/Ticketing_Ticket.php';
+require_once dirname(__FILE__).'/Ticketing_Ticket.php';
 
 
 function glog($str)
