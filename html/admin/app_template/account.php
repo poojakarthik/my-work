@@ -1383,13 +1383,26 @@ class AppTemplateAccount extends ApplicationTemplate
 			{
 				throw new Exception($qryQuery->Error());
 			}
-			$arrPreviousCCHistory	= $resPreviousCCHistory->fetch_assoc();
 			
-			$objPreviousEmployee		= Employee::getForId($arrPreviousCCHistory['employee']);
-			$strPreviousEmployeeName	= $objPreviousEmployee->firstName . (($objPreviousEmployee->lastName) ? " {$objPreviousEmployee->lastName}" : '');
-			$strPreviousTimestamp		= date("H:i:s", strtotime($arrPreviousCCHistory['change_datetime']));
-			$strPreviousDatestamp		= date("d/m/Y", strtotime($arrPreviousCCHistory['change_datetime']));
-			$strPreviousCCStatus		= $objCCStatuses->getConstantName(DBO()->CurrentAccount->credit_control_status->Value);
+			$arrPreviousCCHistory	= $resPreviousCCHistory->fetch_assoc();
+
+			if ($arrPreviousCCHistory !== NULL)
+			{
+				// There aren't any records in the credit_control_status_history table relating to this account
+				// This is the first time the credit control status has been changed
+				$objPreviousEmployee		= Employee::getForId($arrPreviousCCHistory['employee']);
+				$strPreviousEmployeeName	= $objPreviousEmployee->firstName . (($objPreviousEmployee->lastName) ? " {$objPreviousEmployee->lastName}" : '');
+				$strPreviousTimestamp		= date("H:i:s", strtotime($arrPreviousCCHistory['change_datetime']));
+				$strPreviousDatestamp		= date("d/m/Y", strtotime($arrPreviousCCHistory['change_datetime']));
+				
+				$strPreviousCCHSettingDetails = "set on {$strNewTimestamp} on {$strNewDatestamp} by {$strNewEmployeeName}";
+			}
+			else
+			{
+				$strPreviousCCHSettingDetails = "(not known when set)";
+			}
+			
+			$strPreviousCCStatus	= $objCCStatuses->getConstantName(DBO()->CurrentAccount->credit_control_status->Value);
 			
 			$strMessage			= "{$strNewEmployeeName} changed the Credit Control Status for Account number ".DBO()->Account->Id->Value." from '{$strPreviousCCStatus}' to '{$strNewCCStatus}' at {$strNewTimestamp} on {$strNewDatestamp}.";
 			
@@ -1416,7 +1429,7 @@ class AppTemplateAccount extends ApplicationTemplate
 								"			<tr>\n" .
 								"				<th style='{$strTHStyle}'>Previous Credit Control Status : </th>\n" .
 								"				<td style='{$strTDStyle}{$strTDAutoStyle}'>{$strPreviousCCStatus}</td>\n" .
-								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>set on {$strPreviousTimestamp} on {$strPreviousDatestamp} by {$strPreviousEmployeeName}</td>\n" .
+								"				<td style='{$strTDStyle}{$strTDWidthStyle}'>$strPreviousCCHSettingDetails</td>\n" .
 								"			</tr>\n" .
 								"			<tr>\n" .
 								"				<th style='{$strTHStyle}'>New Credit Control Status : </th>\n" .
