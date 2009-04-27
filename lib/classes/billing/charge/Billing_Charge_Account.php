@@ -153,7 +153,7 @@
  		{
  			throw new Exception($this->_qryDelete->Error());
  		}
- 		Log::getLog()->log("\t{$resCheckPrior->num_rows} {$this->_cfgModuleConfig->ChargeType} Charges after Delete...");
+ 		Log::getLog()->log("\t{$resCheckAfter->num_rows} {$this->_cfgModuleConfig->ChargeType} Charges after Delete...");
  		
  		return (bool)$resDelete;
  		
