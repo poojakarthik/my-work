@@ -101,7 +101,7 @@ class Application_Page extends Page
 		$strRelativePath = Flex::applicationUrlBase();
 		echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/menu.css' />\n";
 		echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/reflex.css' />\n";
-		echo "\t\t<link rel='stylesheet' type='text/css' href='{$strRelativePath}css/style.css' />\n";
+
 		
 		/* Include all css files in the css directory 
 		$strRelativePath = Flex::applicationUrlBase();

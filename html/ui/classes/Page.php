@@ -240,7 +240,7 @@ class Page
 		$strMd5 = md5_file(MODULE_DEFAULT_CSS);
 		echo "\t\t<link rel='stylesheet' type='text/css' href='css.php?v=$strMd5' />\n";
 		
-		$arrCssFiles = array("menu.css", "style.css");
+		$arrCssFiles = array("menu.css", "reflex.css");
 		foreach ($arrCssFiles as $strCssFile)
 		{
 			echo "\t\t<link rel='stylesheet' type='text/css' href='./css/{$strCssFile}' />\n";
