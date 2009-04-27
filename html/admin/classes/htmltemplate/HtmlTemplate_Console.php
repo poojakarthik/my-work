@@ -20,10 +20,14 @@ class HtmlTemplate_Console extends FlexHtmlTemplate
 <div id="DailyMessageContainer">
 	<table class="reflex">
 		<thead>
-			<th>Message of the day</th>
+			<tr>
+				<th>Message of the day</th>
+			</tr>
 		</thead>
 		<tfoot>
-			<th>Last updated: ' . $strTimestamp . '</th>
+			<tr>
+				<th>Last updated: ' . $strTimestamp . '</th>
+			</tr>
 		</tfoot>
 		<tbody>
 			<tr class="alt">
