@@ -133,7 +133,7 @@
  		Log::getLog()->log("Revoking all {$this->_cfgModuleConfig->ChargeType} Charges...");
  		
  		// Debug
- 		$resCheckPrior	= $this->_qryDelete->Execute("SELECT Id FROM Charge WHERE ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoice->invoice_run_id}' AND Service IS NULL");
+ 		$resCheckPrior	= $this->_qryDelete->Execute("SELECT Id FROM Charge WHERE ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoiceRun->Id}' AND Service IS NULL");
  		if ($resCheckPrior === false)
  		{
  			throw new Exception($this->_qryDelete->Error());
@@ -141,14 +141,14 @@
  		Log::getLog()->log("\t{$resCheckPrior->num_rows} {$this->_cfgModuleConfig->ChargeType} Charges prior to Delete...");
  		
  		// Delete the charges
- 		$resDelete	= $this->_qryDelete->Execute("DELETE FROM Charge WHERE ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoice->invoice_run_id}' AND Service IS NULL");
+ 		$resDelete	= $this->_qryDelete->Execute("DELETE FROM Charge WHERE ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoiceRun->Id}' AND Service IS NULL");
  		if ($resDelete === false)
  		{
  			throw new Exception($this->_qryDelete->Error());
  		}
  		
  		// Debug
- 		$resCheckAfter	= $this->_qryDelete->Execute("SELECT Id FROM Charge WHERE ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoice->invoice_run_id}' AND Service IS NULL");
+ 		$resCheckAfter	= $this->_qryDelete->Execute("SELECT Id FROM Charge WHERE ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoiceRun->Id}' AND Service IS NULL");
  		if ($resCheckAfter === false)
  		{
  			throw new Exception($this->_qryDelete->Error());
