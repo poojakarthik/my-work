@@ -1,3 +1,4 @@
+/* Default styling goes here. */
 body {
 	background-color: #fff;
 	font-family: Arial,Verdana,Helvetica;
@@ -107,9 +108,6 @@ pre {
 	font-size: 1em;
 }
 
-
-
-
 /*********************** Start of reflex stuff *********************************/
 table.reflex {
 	width: 99%; /* This was previously set to 90%*/
@@ -201,13 +199,13 @@ table.reflex tbody tr td.input input[type="checkbox"]
 	vertical-align	: text-bottom;
 }
 
-table.reflex th.reflex-unsorted, 
-table.reflex th.reflex-sorted-ascending, 
+table.reflex th.reflex-unsorted,
+table.reflex th.reflex-sorted-ascending,
 table.reflex th.reflex-sorted-descending
 {
 	cursor: pointer;
-	background-position: 0% 50%; 
-	background-repeat: no-repeat; 
+	background-position: 0% 50%;
+	background-repeat: no-repeat;
 	background-image: url(../img/template/order_neither.png);
 	padding-left: 0.8em;
 }
@@ -261,24 +259,24 @@ tr.highlight-row:hover td
 	background-color: #fcc;
 }
 
-input.required, 
-select.required, 
+input.required,
+select.required,
 textarea.required{
 	background: #fff;
 	color: #111;
 	border: .1em solid #da8;
 }
 
-input.invalid, 
-select.invalid, 
+input.invalid,
+select.invalid,
 textarea.invalid {
 	background: #ffecf0;
 	color: #111;
 	border: .1em solid #d30;
 }
 
-input.valid, 
-select.valid, 
+input.valid,
+select.valid,
 textarea.valid {
 	background: #ecfff0;
 	color: #111;
@@ -490,16 +488,15 @@ input#online-credit-card-payment-button
 th.amount, td.amount { text-align: right; }
 td.attention { color: red !important; }
 
-
-
 /*********************** Sp table stuff **********************/
+
 table.sp th.sp-unsorted,
 table.sp th.sp-sorted-ascending,
 table.sp th.sp-sorted-descending
 {
 	cursor: pointer;
-	background-position: 0% 50%; 
-	background-repeat: no-repeat; 
+	background-position: 0% 50%;
+	background-repeat: no-repeat;
 	background-image: url(../img/order_neither.png);
 	padding-left: 0.8em;
 }
@@ -569,7 +566,6 @@ table.sp tfoot a:link {
 	color: #ffde05 !important;
 }
 
-
 table.sp td,
 table.sp th {
 	padding: .05em .1em;
@@ -600,15 +596,17 @@ table.highlight-rows tbody tr:hover td
 {
 	height: 20px;
 }
+
 .LargeSpace
 {
 	height: 30px;
 }
+
 div.Title{
 	color:					#eeeeee;
 	background-color:		#333333;
 	height:					20px;
-	width:					965px; 
+	width:					965px;
 	text-indent:			10px;
 	font-weight:			bold;
 	padding:				0px;
@@ -621,7 +619,7 @@ div.PartTitle{
 	color:					#eeeeee;
 	background-color:		#333333;
 	height:					20px;
-	width:					470px; 
+	width:					470px;
 	text-indent:			10px;
 	font-weight:			bold;
 	padding:				0px;
@@ -632,56 +630,64 @@ div.PartTitle{
 	padding-bottom:			0px;
 	text-align:				left;
 }
+
 #account_details_holder
 {
 	border:					1px solid #333333;
 	width:					468px;
 	background-color:		#eeeeee;
 }
+
 #account_details_table
 {
 	border:					1px solid #eeeeee;
 	width:					100%;
 }
+
 #primary_contact_details_holder
 {
 	border:					1px solid #333333;
 	width:					468px;
 	background-color:		#eeeeee;
 }
+
 #primary_contact_details_table
 {
 	border:					1px solid #eeeeee;
 	width:					100%;
 }
+
 .Page
 {
 	width:					963px;
 	border:					1px solid #333333;
 	background-color:		#eeeeee;
 }
+
 .data-table td
 {
 	padding-top:			2px;
 	padding-bottom:			2px;
 }
+
 #sale-items-table td
 {
 	text-indent:			10px;
 }
+
 #sale_panel tr
 {
 	vertical-align:			top;
 }
+
 #after-commit-button-panel
 {
 }
+
 .maximum-area-body
 {
 	padding-bottom:			15px;
 }
-
-
 
 
 tr.hide-if-not-last-child:last-child
@@ -867,21 +873,25 @@ table.document-explorer .field-name
 	min-width	: 25em;
 	max-width	: 25em;
 }
+
 table.document-explorer .field-size
 {
 	min-width	: 5em;
 	max-width	: 5em;
 }
+
 table.document-explorer .field-date
 {
 	min-width	: 8em;
 	max-width	: 8em;
 }
+
 table.document-explorer .field-user
 {
 	min-width	: 8em;
 	max-width	: 8em;
 }
+
 table.document-explorer .field-actions
 {
 	width	: auto;
@@ -939,7 +949,6 @@ div.document-explorer-status span.description
 {
 	font-style	: italic;
 }
-
 
 /*********************************** Actions **********************************/
 div.action-list
@@ -1009,12 +1018,13 @@ div.action-list div.item div.details
 
 div.action-list-controls
 {
+
 }
+
 /******************************** End of Actions ******************************/
 a,
 a:link,
 a:visited {
-	/*Orange? why? color: #FF4200;*/
 	color: #00F;
 	text-decoration: none;
 }
@@ -1086,13 +1096,13 @@ div.message {
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 1em;
-} 
+}
 
 div.error {
 	background: #ffecf0;
 	color: #111;
 	border: .1em solid #d30;
-} 
+}
 
 div.warning {
 	background: #ffc47f;
@@ -1179,9 +1189,7 @@ table.reflex tbody tr th.label
 {
 	min-height		: 1.5em;
 	max-height		: 1.5em;
-
 	font-size		: 10pt;
-
 	vertical-align	: middle;
 	text-align		: right;
 	overflow		: hidden;
@@ -1191,7 +1199,6 @@ table.reflex tbody tr td.input
 {
 	min-height		: 1.5em;
 	max-height		: 1.5em;
-
 	vertical-align	: middle;
 	text-align		: left;
 }
@@ -1210,13 +1217,13 @@ table.reflex tbody tr td.input input[type="checkbox"]
 	vertical-align	: text-bottom;
 }
 
-table.reflex th.reflex-unsorted, 
-table.reflex th.reflex-sorted-ascending, 
+table.reflex th.reflex-unsorted,
+table.reflex th.reflex-sorted-ascending,
 table.reflex th.reflex-sorted-descending
 {
 	cursor: pointer;
-	background-position: 0% 50%; 
-	background-repeat: no-repeat; 
+	background-position: 0% 50%;
+	background-repeat: no-repeat;
 	background-image: url(../img/template/order_neither.png);
 	padding-left: 0.8em;
 }
@@ -1299,34 +1306,34 @@ table.reflex tr td.ticketing-status-completed,
 table.reflex tr td.ticketing-priority-low,
 table.reflex tr td.ticketing-priority-type-all,
 table.reflex tr td.ticketing-priority-type-closed,
-option.ticketing-status-completed, 
-option.ticketing-status-in-progress, 
-option.ticketing-status-type-closed, 
+option.ticketing-status-completed,
+option.ticketing-status-in-progress,
+option.ticketing-status-type-closed,
 option.ticketing-priority-low {
 	color: #060;
 }
 
-table.reflex tr td.ticketing-status-with-carrier, 
-table.reflex tr td.ticketing-status-with-customer, 
-table.reflex tr td.ticketing-status-with-internal, 
+table.reflex tr td.ticketing-status-with-carrier,
+table.reflex tr td.ticketing-status-with-customer,
+table.reflex tr td.ticketing-status-with-internal,
 table.reflex tr td.ticketing-priority-medium,
-option.ticketing-status-with-carrier, 
-option.ticketing-status-with-customer, 
-option.ticketing-status-with-internal, 
-option.ticketing-status-type-open, 
+option.ticketing-status-with-carrier,
+option.ticketing-status-with-customer,
+option.ticketing-status-with-internal,
+option.ticketing-status-type-open,
 option.ticketing-status-type-conglomerate-open-pending,
 option.ticketing-priority-medium {
 	color: #ff8822;
 }
 
-table.reflex tr td.ticketing-status-assigned, 
-table.reflex tr td.ticketing-status-unassigned, 
-table.reflex tr td.ticketing-status-deleted, 
+table.reflex tr td.ticketing-status-assigned,
+table.reflex tr td.ticketing-status-unassigned,
+table.reflex tr td.ticketing-status-deleted,
 table.reflex tr td.ticketing-priority-high,
-option.ticketing-status-assigned, 
-option.ticketing-status-unassigned, 
-option.ticketing-status-deleted, 
-option.ticketing-status-type-pending, 
+option.ticketing-status-assigned,
+option.ticketing-status-unassigned,
+option.ticketing-status-deleted,
+option.ticketing-status-type-pending,
 option.ticketing-priority-high {
 	color: #d30;
 }
@@ -1390,11 +1397,10 @@ input[type='button'].expand-button-retracted
 	border: none;
 }
 
-
 /******************************** Ticket Stuff ************************/
 
-input, 
-select, 
+input,
+select,
 textarea {
 	font-size: 1em;
 	border: .1em solid #111;
@@ -1431,24 +1437,24 @@ textarea {
 	font-family: Arial,Verdana,Helvetica;
 }
 
-input.required, 
-select.required, 
+input.required,
+select.required,
 textarea.required{
 	background: #fff;
 	color: #111;
 	border: .1em solid #da8;
 }
 
-input.invalid, 
-select.invalid, 
+input.invalid,
+select.invalid,
 textarea.invalid {
 	background: #ffecf0;
 	color: #111;
 	border: .1em solid #d30;
 }
 
-input.valid, 
-select.valid, 
+input.valid,
+select.valid,
 textarea.valid {
 	background: #ecfff0;
 	color: #111;
@@ -1456,7 +1462,7 @@ textarea.valid {
 }
 
 input.data-entry[disabled],
-select.data-entry[disabled], 
+select.data-entry[disabled],
 textarea.data-entry[disabled]
 {
 	background-color: #DDDDDD;
@@ -1468,7 +1474,7 @@ input[type="button"] {
 }
 
 div#PopupPageBody {
-	background-color:	#EFEBE7; 
+	background-color:	#EFEBE7;
 }
 
 .PopupBox {
@@ -1514,8 +1520,8 @@ div#BreadCrumbMenu {
 }
 
 
-div.DefaultOutput, 
-div input.DefaultInputText, 
+div.DefaultOutput,
+div input.DefaultInputText,
 div select.DefaultInputText {
 	position: relative;
 	float: right;
@@ -1536,15 +1542,12 @@ div.GroupedContent {
 	border: .1em solid #D1D1D1;
 }
 
-div.SmallSeperator {
+div.SmallSeperator,
+div.SmallSeparator
+{
 	height: .25em;
 }
 
-/* And now spelt properly */
-
-div.SmallSeparator {
-	height: .25em;
-}
 
 div.ButtonContainer {
 	float: right;
@@ -1576,7 +1579,7 @@ table.Listing {
 	border .1em solid #333;
 }
 
-table.Listing tr.PrimarySelected th, 
+table.Listing tr.PrimarySelected th,
 table.Listing tr.PrimarySelected td {
 	background-color:#11FF33;
 	vertical-align:top;
@@ -1595,7 +1598,6 @@ table.Listing tr.PrimarySelected td {
 	background: #F2F5FF;
 	padding: .2em 0 .2em;
 }
-
 
 .date-time .date-time-active:hover {
 	color: #fff;
@@ -1752,7 +1754,6 @@ th#refreshPanel
 	float	: left;*/
 }
 
-
 /*****************************Property Input Stuff*****************************/
 /*This is currently only included in Framework3 because Framework2's "Login" popup uses it.  Nothing else in Framework3 should use it*/
 div.PropertyInputControlContainer
@@ -1782,6 +1783,7 @@ div.PropertyInputControlContainer
 	width: 49%;
 	margin-left: 1%;
 }
+
 div.PropertyInputControlClear
 {
 	float:	none;
@@ -1829,6 +1831,7 @@ table.form-data textarea[disabled]
 /***************************** Tab Collection stuff ***************************/
 div.tab-collection
 {
+
 }
 
 div.tab-collection div.tab-header-container
@@ -1844,10 +1847,12 @@ div.tab-collection div.tab-header-container div.tab-header
 	border-left		: solid 1px #888;
 	cursor			: pointer;
 }
+
 div.tab-collection div.tab-header-container div.tab-header:hover
 {
 	background-color: #EEE;
 }
+
 div.tab-collection div.tab-header-container div.selected,
 div.tab-collection div.tab-header-container div.selected:hover
 {
@@ -1962,7 +1967,6 @@ div.document-explorer-list
 	background-color	: #efefef;
 }
 
-
 div.reflex-popup div.document-explorer table.document-explorer
 {
 	margin			: 0px;
@@ -2046,24 +2050,28 @@ table.document-explorer .field-name
 	min-width	: 25em;
 	max-width	: 25em;
 }
+
 table.document-explorer .field-size
 {
 	min-width	: 5em;
 	max-width	: 5em;
 }
+
 table.document-explorer .field-date
 {
 	min-width	: 8em;
 	max-width	: 8em;
 }
+
 table.document-explorer .field-user
 {
 	min-width	: 8em;
 	max-width	: 8em;
 }
+
 table.document-explorer .field-actions
 {
-	width	: auto;
+	width		: auto;
 }
 
 table.document-explorer tbody tr td
