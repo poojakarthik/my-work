@@ -118,7 +118,7 @@
 			
 			$selEmployee->Fetch ($this);
 			
-			
+			throw new Exception(print_r($this, true));
 			
 			
 			// Get the Serialized session and pop it from the
