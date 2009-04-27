@@ -130,8 +130,34 @@
 	 */
  	function RevokeAll($objInvoiceRun)
  	{
+ 		Log::getLog()->log("Revoking all {$this->_cfgModuleConfig->ChargeType} Charges...");
+ 		
+ 		// Debug
+ 		$resCheckPrior	= $this->_qryDelete->Execute("SELECT Id FROM Charge WHERE ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoice->invoice_run_id}' AND Service IS NULL");
+ 		if ($resCheckPrior === false)
+ 		{
+ 			throw new Exception($this->_qryDelete->Error());
+ 		}
+ 		Log::getLog()->log("\t{$resCheckPrior} {$this->_cfgModuleConfig->ChargeType} Charges prior to Delete...");
+ 		
  		// Delete the charges
- 		if (!$this->_selGetAccounts->Execute(Array('invoice_run_id' => $objInvoiceRun->Id)))
+ 		$resDelete	= $this->_qryDelete->Execute("DELETE FROM Charge WHERE ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoice->invoice_run_id}' AND Service IS NULL");
+ 		if ($resDelete === false)
+ 		{
+ 			throw new Exception($this->_qryDelete->Error());
+ 		}
+ 		
+ 		// Debug
+ 		$resCheckAfter	= $this->_qryDelete->Execute("SELECT Id FROM Charge WHERE ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoice->invoice_run_id}' AND Service IS NULL");
+ 		if ($resCheckAfter === false)
+ 		{
+ 			throw new Exception($this->_qryDelete->Error());
+ 		}
+ 		Log::getLog()->log("\t{$resCheckPrior} {$this->_cfgModuleConfig->ChargeType} Charges after Delete...");
+ 		
+ 		return (bool)$resDelete;
+ 		
+ 		/*if (!$this->_selGetAccounts->Execute(Array('invoice_run_id' => $objInvoiceRun->Id)))
  		{
  			Debug($this->_selGetAccounts->Error());
  		}
@@ -139,7 +165,7 @@
  		{
  			$objAccount	= new Account($arrAccount);
  			$this->Revoke($objInvoiceRun, $objAccount);
- 		}
+ 		}*/
  	}
  }
  
