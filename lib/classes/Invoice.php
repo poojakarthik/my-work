@@ -420,7 +420,7 @@ class Invoice extends ORM
 		// Mark all CDRs for this Service as TEMPORARY_INVOICE
 		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND StartDatetime <= '{$this->billing_period_end_datetime}'";
 		$strSQL		.= (!Customer_Group::getForId($objInvoiceRun->customer_group_id)->invoiceCdrCredits) ? " AND (Credit = 0 OR RecordType = 21)" : '';
-		Log::getLog()->log($strSQL);
+		//Log::getLog()->log($strSQL);
 		$resResult	= $qryQuery->Execute($strSQL);
 		if ($resResult === FALSE)
 		{
