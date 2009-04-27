@@ -138,7 +138,7 @@
  		{
  			throw new Exception($this->_qryDelete->Error());
  		}
- 		Log::getLog()->log("\t{$resCheckPrior} {$this->_cfgModuleConfig->ChargeType} Charges prior to Delete...");
+ 		Log::getLog()->log("\t{$resCheckPrior->num_rows} {$this->_cfgModuleConfig->ChargeType} Charges prior to Delete...");
  		
  		// Delete the charges
  		$resDelete	= $this->_qryDelete->Execute("DELETE FROM Charge WHERE ChargeType = '{$this->_cfgModuleConfig->ChargeType}' AND invoice_run_id = '{$objInvoice->invoice_run_id}' AND Service IS NULL");
@@ -153,7 +153,7 @@
  		{
  			throw new Exception($this->_qryDelete->Error());
  		}
- 		Log::getLog()->log("\t{$resCheckPrior} {$this->_cfgModuleConfig->ChargeType} Charges after Delete...");
+ 		Log::getLog()->log("\t{$resCheckPrior->num_rows} {$this->_cfgModuleConfig->ChargeType} Charges after Delete...");
  		
  		return (bool)$resDelete;
  		
