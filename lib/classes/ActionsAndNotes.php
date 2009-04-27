@@ -180,29 +180,33 @@ class ActionsAndNotes
 		$strColumnsForActionSearchQuery	= "'". ActionsAndNotes::TYPE_ACTION ."' AS record_type, action.id AS id, created_on";
 		$strColumnsForActionCountQuery	= "COUNT(action.id) AS total_record_count";
 
-		$arrWherePartsForReleventActionTempTable = array();
-		$arrWherePartsForReleventActionTempTable[] = "account_action.account_id = {$intAccountId}";
+		$arrActionSubQueries = array();
+		
+		// We are always retrieving actions related to the account
+		$arrActionSubQueries[] = "SELECT action_id AS id FROM account_action WHERE account_id = {$intAccountId}";
+
 		if ($strContactIds !== NULL)
 		{
-			$arrWherePartsForReleventActionTempTable[] = "contact_action.contact_id IN ($strContactIds)";
+			$arrActionSubQueries[] = "SELECT action_id AS id FROM contact_action WHERE contact_id IN ($strContactIds)";
 		}
 		if ($strServiceIds !== NULL)
 		{
-			$arrWherePartsForReleventActionTempTable[] = "service_action.service_id IN ($strServiceIds)";
+			$arrActionSubQueries[] = "SELECT action_id AS id FROM service_action WHERE service_id IN ($strServiceIds)";
 		}
 		
-		$strWhereClauseForReleventActionTempTable = implode(" OR ", $arrWherePartsForReleventActionTempTable);
+		// We want the union of the results of the subqueries
+		$strActionSubQueries = implode("\n\t\tUNION\n\t\t", $arrActionSubQueries);
 		
+		// This from clause will retrieve the distinct id of all the actions associated with the account as well as any actions associated with services of the account, and
+		// all actions associated with any contacts which are associated with the account (It's quite a doosey)
 		$strActionQueryFromClause = "
 action 
 INNER JOIN (
-	SELECT DISTINCT action.id AS id
-	FROM action
-	LEFT JOIN account_action ON action.id = account_action.action_id
-	LEFT JOIN service_action ON action.id = service_action.action_id
-	LEFT JOIN contact_action ON action.id = contact_action.action_id
-	WHERE $strWhereClauseForReleventActionTempTable
-) AS relevent_action ON action.id = relevent_action.id";
+	SELECT DISTINCT id
+	FROM (
+		$strActionSubQueries
+	) AS non_distinct_relevent_action
+) AS distinct_relevent_action ON action.id = distinct_relevent_action.id";
 		
 		$strActionQueryWhereClause = "TRUE";
 		
@@ -278,8 +282,8 @@ INNER JOIN (
 		{
 			if ($bolIncludeNotes)
 			{
-				$strSearchQuery .= " UNION ";
-				$strCountQuery .= " UNION ";
+				$strSearchQuery .= "\nUNION\n";
+				$strCountQuery .= "\nUNION\n";
 			}
 			
 			$strSearchQuery .=  "SELECT $strColumnsForActionSearchQuery ".
@@ -300,7 +304,7 @@ INNER JOIN (
 			// Do page stuff
 			$strSearchQuery .= "LIMIT $intMaxRecordsPerPage OFFSET $intPageOffset";
 		}
-		
+
 		$objQueries = new stdClass();
 		$objQueries->search	= $strSearchQuery;
 		$objQueries->count	= $strCountQuery;
@@ -409,8 +413,8 @@ INNER JOIN (
 		{
 			if ($bolIncludeNotes)
 			{
-				$strSearchQuery .= " UNION ";
-				$strCountQuery .= " UNION ";
+				$strSearchQuery .= "\nUNION\n";
+				$strCountQuery .= "\nUNION\n";
 			}
 			
 			$strSearchQuery .=  "SELECT $strColumnsForActionSearchQuery ".
@@ -431,7 +435,7 @@ INNER JOIN (
 			// Do page stuff
 			$strSearchQuery .= "LIMIT $intMaxRecordsPerPage OFFSET $intPageOffset";
 		}
-		
+	
 		$objQueries = new stdClass();
 		$objQueries->search	= $strSearchQuery;
 		$objQueries->count	= $strCountQuery;
