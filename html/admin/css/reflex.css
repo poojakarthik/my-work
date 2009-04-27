@@ -169,6 +169,8 @@ table.reflex thead tr th,
 table.reflex tfoot tr th {
 	padding-top: .25em;
 	padding-bottom: .25em;
+	background-color: #333;
+    background-repeat: repeat-x;
 }
 
 table.reflex thead tr th:first-child {
@@ -197,12 +199,6 @@ table.reflex tfoot tr th:last-child {
 	-webkit-border-radius: 0 0 0 6px;
     border-right: 1px;
     border-top: 1px;
-}
-
-table.reflex thead tr th,
-table.reflex tfoot tr th {
-    background-color: #333;
-    background-repeat: repeat-x;
 }
 
 table.reflex tbody
@@ -821,8 +817,10 @@ div.document-explorer-address-separator img
 
 div.document-explorer
 {
-	padding			: 0px;
+	padding			: 0em;
 	clear			: both;
+	margin-top		: .25em;
+	margin-bottom	: .25em;
 }
 
 div.document-explorer-list
@@ -831,6 +829,8 @@ div.document-explorer-list
 	max-height			: 30em;
 	overflow-y			: scroll;
 	background-color	: #efefef;
+	border-left			: .1em solid #333;
+	border-right		: .1em solid #333;
 }
 
 
@@ -843,10 +843,9 @@ div.reflex-popup div.document-explorer table.document-explorer
 
 table.document-explorer
 {
-	width			: 100%;
-	margin			: 0px;
-	font-size		: 10pt;
-
+	width				: 100%;
+	margin				: 0px;
+	font-size			: 10pt;
 	background-color	: #fff;
 }
 
@@ -872,6 +871,7 @@ table.document-explorer tbody
 {
 	-moz-user-select	: none;
 }
+
 
 table.document-explorer th.notice-normal
 {
@@ -944,6 +944,7 @@ table.document-explorer .field-actions
 table.document-explorer tbody tr td
 {
 	background-color	: #efefef;
+	border				: none !important;
 }
 
 table.document-explorer tr.selected[onclick] td
@@ -1101,6 +1102,7 @@ span[onclick]
 
 div.reflex-content
 {
+	color				: #333;
 	width				: 99%;  /* was previously set to 90% */
 	margin-left			: auto;
 	margin-right		: auto;
@@ -1152,177 +1154,13 @@ div.warning {
 	border: .1em solid #ff8822;
 	color: #111;
 }
-/*
-table.reflex {
-	margin-left: auto;
-	margin-right: auto;
-	border: .1em solid #333;
-	border-spacing: 0;
-}
 
-table.reflex caption div#caption_bar {
-	width: 100%;
-	clear: both;
-}
-
-table.reflex caption div.caption_bar {
-	width: 100%;
-	clear: both;
-}
-
-table.reflex caption div#caption_title{
-	float: left;
-	width: 25%;
-	height: 100%;
-	color: #eee;
-	background-color: #333;
-	text-align: center;
-	font-weight: bold;
-	padding-top: .4em;
-	padding-bottom: .4em;
-}
-
-table.reflex caption div.caption_title{
-	float: left;
-	width: 25%;
-	height: 100%;
-	color: #eee;
-	background-color: #333;
-	text-align: center;
-	font-weight: bold;
-	padding-top: .4em;
-	padding-bottom: .4em;
-}
-
-table.reflex caption div#caption_options{
-	float: right;
-	width: 70%;
-	text-align: right;
-	font-weight: bold;
-	padding: .1em .5em;
-}
-
-table.reflex caption div.caption_options{
-	float: right;
-	width: 70%;
-	text-align: right;
-	font-weight: bold;
-	padding: .1em .5em;
-}
-
-table.reflex thead,
-table.reflex tfoot {
-	color: #eee;
-	text-align: left;
-}
-
-table.reflex tfoot {
-	text-align: right;
-}
-
-table.reflex thead tr th,
-table.reflex tfoot tr th {
-	padding-top: .25em;
-	padding-bottom: .25em;
-}
-
-table.reflex tbody tr th.label
-{
-	min-height		: 1.5em;
-	max-height		: 1.5em;
-	font-size		: 10pt;
-	vertical-align	: middle;
-	text-align		: right;
-	overflow		: hidden;
-}
-
-table.reflex tbody tr td.input
-{
-	min-height		: 1.5em;
-	max-height		: 1.5em;
-	vertical-align	: middle;
-	text-align		: left;
-}
-*/
 table.reflex tbody tr td.input input[type="text"],
 table.reflex tbody tr td.input input[type="password"],
 table.reflex tbody tr td.input textarea,
 table.reflex tbody tr td.input select
 {
 	width			: 98%;
-}
-
-table.reflex tbody tr td.input input[type="checkbox"]
-{
-	margin-right	: 0.25em;
-	vertical-align	: text-bottom;
-}
-
-table.reflex th.reflex-unsorted, 
-table.reflex th.reflex-sorted-ascending, 
-table.reflex th.reflex-sorted-descending
-{
-	cursor: pointer;
-	background-position: 0% 50%; 
-	background-repeat: no-repeat; 
-	background-image: url(../img/template/order_neither.png);
-	padding-left: 0.8em;
-}
-
-table.reflex th.reflex-sorted-ascending
-{
-	background-color: #666;
-	background-image: url(../img/template/order_asc.png);
-}
-
-table.reflex th.reflex-sorted-descending
-{
-	background-color: #666;
-	background-image: url(../img/template/order_desc.png);
-}
-
-table.reflex tfoot a,
-table.reflex tfoot a:visited,
-table.reflex tfoot a:link {
-	color: #ffde05 !important;
-}
-
-
-table.reflex td,
-table.reflex th {
-	padding: .25em .5em;
-}
-
-table.reflex tr td {
-	background-color: #eee;
-	color: #333
-}
-
-table.reflex tr.alt td {
-	background-color: #fff;
-}
-
-table.reflex tr.alt-hover td {
-	background-color: #fff;
-	text-decoration: underline;
-	cursor: pointer;
-}
-
-a.button {
-	cursor: default;
-	border: .1em solid #111;
-	color: #111;
-	background-color: #eee;
-	margin: .25em;
-	padding-left: .25em;
-	padding-right: .25em;
-	font-weight: normal;
-}
-
-table.reflex td.title {
-	width: 20%;
-	vertical-align: top;
-	font-weight: bold;
 }
 
 table.reflex table.clickable tr.selected[onclick] td
@@ -1477,38 +1315,6 @@ input[type="checkbox"] {
 textarea {
 	font-family: Arial,Verdana,Helvetica;
 }
-
-input.required, 
-select.required, 
-textarea.required{
-	background: #fff;
-	color: #111;
-	border: .1em solid #da8;
-}
-
-input.invalid, 
-select.invalid, 
-textarea.invalid {
-	background: #ffecf0;
-	color: #111;
-	border: .1em solid #d30;
-}
-
-input.valid, 
-select.valid, 
-textarea.valid {
-	background: #ecfff0;
-	color: #111;
-	border: .1em solid #3d0;
-}
-
-input.data-entry[disabled],
-select.data-entry[disabled], 
-textarea.data-entry[disabled]
-{
-	background-color: #DDDDDD;
-}
-
 
 input[type="button"] {
 	cursor: pointer;
@@ -1687,96 +1493,6 @@ a img {
 	vertical-align: middle;
 }
 
-/*********************** Start Of Popup stuff *********************************/
-
-div.reflex-popup-overlay {
-	position			: fixed;
-	top					: 0em;
-	left				: 0em;
-	width				: 100%;
-	height				: 100%;
-
-	z-index: 45;
-}
-
-div.reflex-popup-opaque {
-	position			: absolute;
-	top					: 0;
-	left				: 0;
-	width				: 100%;
-	height				: 100%;
-	background-color	: #000000;
-	filter				: alpha(opacity=25);
-	-moz-opacity		: .25;
-	opacity				: .25;
-	z-index				: 50;
-}
-
-div.reflex-popup {
-	margin				: auto;
-	border				: 0.1em solid #000000;
-	background-color	: #efefef;
-	z-index				: 50;
-	position			: absolute;
-}
-
-div.reflex-popup table.reflex {
-	width: 98%;
-	margin-left: 1%;
-	margin-right: 1%;
-	margin-top: 0.5em;
-	margin-bottom: 0.5em;
-	border: .1em solid #333;
-	border-spacing: 0;
-}
-
-div.reflex-popup-title-bar {
-	height				: auto;
-	background-color	: #000000;
-	padding				: 3px;
-	background-image	: url('../img/template/background.png');
-	background-repeat	: repeat-x;
-	-moz-user-select	: none;
-}
-
-div.reflex-popup-title {
-	color : #EEEEEE;
-	float : left;
-	width : 79%;
-	font-weight: bold;
-}
-
-span.reflex-popup-title-text {
-	vertical-align: middle;
-}
-
-img.reflex-popup-title-icon {
-	vertical-align: middle;
-	margin-right: 0.25em;
-}
-
-div.reflex-popup-title-bar-buttons {
-	float : right;
-	width : 20%;
-}
-
-div.reflex-popup-content {
-}
-
-div.reflex-popup-footer {
-	position	: relative;
-	text-align	: right;
-	bottom		: 0;
-	right		: 0;
-	padding-right: 1%;
-	padding-left: 1%;
-	padding-top: 0;
-	padding-bottom: 0.5em;
-}
-
-
-/*********************** End Of Popup stuff ***********************************/
-
 div.clear {
 	float:	none;
 	clear:	both;
@@ -1933,251 +1649,6 @@ div.tab-collection div.tab-body-container
 	color: #f00;
 }
 
-/****************************** Document Explorer *****************************/
-div.document-explorer-address
-{
-	background-color	: #eee;
-	padding				: 0.5em;
-	border				: 0.1em solid #333;
-	clear				: both;
-}
-
-div.document-explorer-address-node
-{
-	background-color	: #f9f9f9;
-	border				: 0.1em solid #ccc;
-	display				: inline-block;
-	padding				: 0.25em;
-}
-
-div.document-explorer-address-node span.node-label
-{
-	margin-left			: 0.25em;
-	vertical-align		: middle;
-}
-
-div.document-explorer-address-node[onclick]
-{
-	color				: #FF4200;
-}
-
-div.document-explorer-address-node[onclick]:hover
-{
-	background-color	: #eee;
-	border-color		: #888;
-	cursor				: pointer;
-}
-
-div.document-explorer-address-node[onclick]:hover
-{
-	background-color	: #eee;
-	border-color		: #888;
-	cursor				: pointer;
-}
-
-div.document-explorer-address-separator
-{
-	max-height		: 16px;
-	max-width		: 16px;
-	display			: inline-block;
-	margin-left		: 0.25em;
-	margin-right	: 0.25em;
-}
-
-div.document-explorer-address-separator img
-{
-	max-height		: 16px;
-	max-width		: 16px;
-	vertical-align	: middle;
-}
-
-div.document-explorer
-{
-	padding			: 0px;
-	clear			: both;
-	margin-top		: .25em;
-	margin-bottom	: .25em;
-}
-
-div.document-explorer-list
-{
-	min-height			: 30em;
-	max-height			: 30em;
-	overflow-y			: scroll;
-	background-color	: #efefef;
-    border-left         : 1px solid #333;
-    border-right        : 1px solid #333;
-}
-
-div.reflex-popup div.document-explorer table.document-explorer
-{
-	margin			: 0px;
-	width			: 100%;
-	border			: none;
-}
-
-table.document-explorer
-{
-	width			: 100%;
-	margin			: 0px;
-	font-size		: 10pt;
-	background-color	: #fff;
-}
-
-img.document-explorer-icon
-{
-	max-height		: 16px;
-	max-width		: 16px;
-	vertical-align	: text-bottom;
-}
-
-img.document-explorer-icon-overlay
-{
-	max-height		: 16px;
-	max-width		: 16px;
-	vertical-align	: text-bottom;
-	position		: relative;
-	left			: -16px;
-	margin-right	: -16px;
-	opacity			: 0.75;
-}
-
-table.document-explorer tbody
-{
-	-moz-user-select	: none;
-}
-
-table.document-explorer th.notice-normal
-{
-	font-weight	: normal;
-	font-style	: italic;
-}
-
-table.document-explorer th span[onclick]
-{
-	color				: #ffde05;
-}
-
-table.document-explorer th span[onclick]:hover
-{
-	text-decoration		: underline;
-}
-
-table.document-explorer th img.icon
-{
-	vertical-align	: text-bottom;
-
-}
-
-table.document-explorer th img.icon.overlay
-{
-	margin-left		: -16px;
-	opacity			: 0.75;
-}
-
-table.document-explorer tbody td
-{
-	overflow: hidden;
-    border: none !important;
-}
-
-
-table.document-explorer span.record-label
-{
-	margin-left	: 0.25em;
-}
-
-table.document-explorer .field-name
-{
-	min-width	: 25em;
-	max-width	: 25em;
-}
-
-table.document-explorer .field-size
-{
-	min-width	: 5em;
-	max-width	: 5em;
-}
-
-table.document-explorer .field-date
-{
-	min-width	: 8em;
-	max-width	: 8em;
-}
-
-table.document-explorer .field-user
-{
-	min-width	: 8em;
-	max-width	: 8em;
-}
-
-table.document-explorer .field-actions
-{
-	width		: auto;
-}
-
-table.document-explorer tbody tr td
-{
-	background-color	: #efefef;
-}
-
-table.document-explorer tr.selected[onclick] td
-{
-	background-color	: #bbb;
-}
-
-table.document-explorer tr.selected[onclick]:hover td
-{
-	background-color	: #ccc;
-}
-
-table.document-explorer tbody tr[onclick]:hover
-{
-	background-color	: #ddd;
-}
-
-table.document-explorer tbody tr[onclick]:hover td
-{
-	cursor				: pointer;
-	text-decoration		: underline;
-	background-color	: #ddd;
-}
-
-div.document-explorer-status
-{
-	background-color	: #f9f9f9;
-	padding				: 0.5em;
-	border				: 0.1em solid #333;
-}
-
-div.document-explorer-status
-{
-	min-height	: 7em;
-	max-height	: 7em;
-	font-size	: 9pt;
-	overflow	: hidden;
-}
-
-div.document-explorer-status span.name
-{
-	font-size	: 10pt;
-	font-weight	: bold;
-}
-
-div.document-explorer-status span.description
-{
-	font-style	: italic;
-}
-
-img.icon_16
-{
-	min-height		: 16px;
-	max-height		: 16px;
-	min-width		: 16px;
-	max-width		: 16px;
-	margin-right	: 0.2em;
-	vertical-align	: sub;
-}
 
 /* CONSOLE UPCOMING CALENDAR EVENTS */
 div.console-calendar

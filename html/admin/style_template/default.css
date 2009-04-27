@@ -1183,21 +1183,20 @@ input.InputSubmitDisabled
 
 input[type='button'], a.button, button
 {
-	background-image:	url('img/template/transparent-bg.png');
-	background-repeat:	repeat-x;
-	/*background-color:	#1f5bff;*/
-	background-color:	#ddd;
-	color:				#000;
+	background-image:	url('img/template/transparent-bg.png') !important;
+	background-repeat:	repeat-x !important;
+	background-color:	#ddd !important;
+	color:				#000 !important;
 	font-family: 		Arial, sans-serif !important;
 	font-size:			1em !important;
 	font-weight:		bold !important;
-	margin:				.2em;
-	padding:			.2em .5em;
-	border-top:			solid .1em #999;
-	border-left:		solid .1em #999;
-	border-bottom:		solid .1em #666;
-	border-right:		solid .1em #666;
-	-moz-border-radius:	4px;
+	margin:				.2em !important;
+	padding:			.2em .5em !important;
+	border-top:			solid .1em #999 !important;
+	border-left:		solid .1em #999 !important;
+	border-bottom:		solid .1em #666 !important;
+	border-right:		solid .1em #666 !important;
+	-moz-border-radius:	4px !important;
 	cursor: 			pointer !important;
 	-moz-user-select:	none;
 }
