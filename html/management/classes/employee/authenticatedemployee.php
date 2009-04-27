@@ -104,7 +104,11 @@
 			);
 			
 			$selEmployee->useObLib (TRUE);
-			$selEmployee->Execute(Array('Id' => $_SESSION['User']['Id']));
+			$resEmployee	= $selEmployee->Execute(Array('Id' => $_SESSION['User']['Id']));
+			if ($resEmployee === false)
+			{
+				throw new Exception($selEmployee->Error());
+			}
 			
 			// If the session is invalid - then throw an exception
 			if ($selEmployee->Count () <> 1)
