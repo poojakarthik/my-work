@@ -113,8 +113,16 @@ table.reflex {
 	width: 99%; /* This was previously set to 90%*/
 	margin-left: auto;
 	margin-right: auto;
-	border: .1em solid #333;
 	border-spacing: 0;
+    border-color: #333;
+}
+
+table.reflex tbody tr td:first-child {
+    border-left: 1px solid #333;
+}
+
+table.reflex tbody tr td:last-child {
+    border-right: 1px solid #333;
 }
 
 table.reflex caption div#caption_bar {
@@ -127,11 +135,16 @@ table.reflex caption div#caption_title{
 	width: 25%;
 	height: 100%;
 	color: #eee;
-	background-color: #333;
+	background-color: #111		;
+    background-image: url('../img/template/background.png');
+    background-repeat: repeat-x;
 	text-align: center;
 	font-weight: bold;
 	padding-top: .4em;
+    margin-left: 8px;
 	padding-bottom: .4em;
+    -moz-border-radius: 6px 6px 0 0;
+	-webkit-border-radius: 6px 6px 0 0;
 }
 
 table.reflex caption div#caption_options{
@@ -144,7 +157,6 @@ table.reflex caption div#caption_options{
 
 table.reflex thead,
 table.reflex tfoot {
-	background-color: #333;
 	color: #eee;
 	text-align: left;
 }
@@ -157,6 +169,40 @@ table.reflex thead tr th,
 table.reflex tfoot tr th {
 	padding-top: .25em;
 	padding-bottom: .25em;
+}
+
+table.reflex thead tr th:first-child {
+    -moz-border-radius-topleft: 6px;
+    -webkit-border-radius: 6px 0 0 0;
+    border-left: 1px;
+    border-top: 1px;
+}
+
+table.reflex thead tr th:last-child {
+	-moz-border-radius-topright: 6px;
+    -webkit-border-radius: 0 6px 0px 0px;
+    border-right: 1px;
+    border-top: 1px;
+}
+
+table.reflex tfoot tr th:first-child {
+	-moz-border-radius-bottomleft: 6px;
+    -webkit-border-radius: 0 0 0 6px;
+    border-left: 1px;
+    border-top: 1px;
+}
+
+table.reflex tfoot tr th:last-child {
+	-moz-border-radius-bottomright: 6px;
+	-webkit-border-radius: 0 0 0 6px;
+    border-right: 1px;
+    border-top: 1px;
+}
+
+table.reflex thead tr th,
+table.reflex tfoot tr th {
+    background-color: #333;
+    background-repeat: repeat-x;
 }
 
 table.reflex tbody
@@ -775,8 +821,6 @@ div.document-explorer-address-separator img
 
 div.document-explorer
 {
-	border-left		: 0.1em solid #333;;
-	border-right	: 0.1em solid #333;
 	padding			: 0px;
 	clear			: both;
 }
@@ -1062,6 +1106,7 @@ div.reflex-content
 	margin-right		: auto;
 	border				: .1em solid #333;
 	border-spacing		: 0;
+	-moz-border-radius	: 6px;
 }
 
 div.reflex-content div.header,
@@ -1107,9 +1152,8 @@ div.warning {
 	border: .1em solid #ff8822;
 	color: #111;
 }
-
+/*
 table.reflex {
-	width: 99%;  /* was previously set to 90% */
 	margin-left: auto;
 	margin-right: auto;
 	border: .1em solid #333;
@@ -1168,7 +1212,6 @@ table.reflex caption div.caption_options{
 
 table.reflex thead,
 table.reflex tfoot {
-	background-color: #333;
 	color: #eee;
 	text-align: left;
 }
@@ -1200,7 +1243,7 @@ table.reflex tbody tr td.input
 	vertical-align	: middle;
 	text-align		: left;
 }
-
+*/
 table.reflex tbody tr td.input input[type="text"],
 table.reflex tbody tr td.input input[type="password"],
 table.reflex tbody tr td.input textarea,
@@ -1950,10 +1993,10 @@ div.document-explorer-address-separator img
 
 div.document-explorer
 {
-	border-left		: 0.1em solid #333;;
-	border-right	: 0.1em solid #333;
 	padding			: 0px;
 	clear			: both;
+	margin-top		: .25em;
+	margin-bottom	: .25em;
 }
 
 div.document-explorer-list
@@ -1962,6 +2005,8 @@ div.document-explorer-list
 	max-height			: 30em;
 	overflow-y			: scroll;
 	background-color	: #efefef;
+    border-left         : 1px solid #333;
+    border-right        : 1px solid #333;
 }
 
 div.reflex-popup div.document-explorer table.document-explorer
@@ -1976,7 +2021,6 @@ table.document-explorer
 	width			: 100%;
 	margin			: 0px;
 	font-size		: 10pt;
-
 	background-color	: #fff;
 }
 
@@ -2031,9 +2075,10 @@ table.document-explorer th img.icon.overlay
 	opacity			: 0.75;
 }
 
-table.document-explorer td
+table.document-explorer tbody td
 {
 	overflow: hidden;
+    border: none !important;
 }
 
 
