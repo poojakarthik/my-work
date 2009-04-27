@@ -1047,8 +1047,6 @@ span[onclick]
 .DefaultInvalidElement
 {
 	position:			relative;
-	overflow:			visible;
-	height:				auto;
 	clear:				both;
 }
 
@@ -1529,8 +1527,7 @@ div select.DefaultInputText {
 }
 
 div.DefaultLabel {
-	position: relative;
-	margin: .5em;
+	margin: .1em .5em;
 	font-weight: bold;
 }
 
@@ -1538,7 +1535,7 @@ div.GroupedContent {
 	clear: both;
 	position: relative;
 	margin: .25em;
-	padding: .25em;
+	padding: .1em;
 	border: .1em solid #D1D1D1;
 }
 
