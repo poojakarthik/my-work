@@ -872,7 +872,7 @@ abstract class NormalisationModule extends CarrierModule
 		
 	 	if ($arrResult = $this->_selFindRecordCode->Fetch())
 	 	{
-	 		return $arrResult['Code'];
+	 		return $arrResult['code'];
 	 	}
 	 	
 		// Return false if there was no match
