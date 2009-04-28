@@ -1,7 +1,7 @@
 <?php
 
 // Only define this constant if you are testing CC payments with contacts that have fake email addresses, or your own email address
-define(SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE, TRUE);
+//define(SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE, TRUE);
 
 class Credit_Card_Payment
 {
