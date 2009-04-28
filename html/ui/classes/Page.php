@@ -299,18 +299,20 @@ class Page
 		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
 		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant", "sha1", "reflex_popup"));
 
-		foreach ($arrStandardJsFiles as $strFile)
+		$arrRemainingJsFilesToInclude = array();
+		foreach ($arrRemainingJsFiles as $strFile)
 		{
-			if (($intKey = array_search($strFile, $arrRemainingJsFiles)) !== FALSE)
+			if (!in_array($strFile, $arrStandardJsFiles))
 			{
-				array_splice($arrRemainingJsFiles, $intKey, 1);
+				// The file is not in the standard list, so include it
+				$arrRemainingJsFilesToInclude[] = $strFile;
 			}
 		}
-		
+
 		// Build the get variables for the javascript.php script
-		if (count($arrRemainingJsFiles))
+		if (count($arrRemainingJsFilesToInclude))
 		{
-			$strFiles = $this->_GetJsFilesQueryString($arrRemainingJsFiles);
+			$strFiles = $this->_GetJsFilesQueryString($arrRemainingJsFilesToInclude);
 			echo "\t\t<script type='text/javascript' src='javascript.php?$strFiles'></script>\n";
 		}
 	}
@@ -436,9 +438,9 @@ class Page
 	echo "
 <html>
 	<head>
-		<link rel=\"shortcut icon\" HREF=\"{$strBaseDir}img/favicon.ico\">
-		<link rel=\"icon\" href=\"{$strBaseDir}img/favicon.ico\">
-		<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>
+		<link rel=\"shortcut icon\" href=\"{$strBaseDir}img/favicon.ico\" />
+		<link rel=\"icon\" href=\"{$strBaseDir}img/favicon.ico\" />
+		<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1' />
 		<title>Flex - {$this->_strPageName}</title>
 		<base href='$strBaseDir'/>\n";
 		$this->RenderHeaderJS();
@@ -970,7 +972,7 @@ class Page
 		foreach ($arrFilenames as $strFilename)
 		{
 			$strFilename .= ".js";
-			$strFiles .= "File[]=$strFilename&";
+			$strFiles .= "File[]=$strFilename&amp;";
 	
 			// If nothing has been requested, return FALSE;
 			if (trim($strFilename) == "")

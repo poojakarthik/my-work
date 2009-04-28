@@ -1,7 +1,7 @@
 <?php
 
 // Only define this constant if you are testing CC payments with contacts that have fake email addresses, or your own email address
-//define(SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE, TRUE);
+define(SEND_CREDIT_CARD_EMAILS_IN_TEST_MODE, TRUE);
 
 class Credit_Card_Payment
 {
@@ -1046,7 +1046,7 @@ class Credit_Card_Payment
 			{\n" . (Flex::isCustomerSession() ? ("\t\t\t\tCreditCardPayment.directDebitTermsAndConditions = \"$disclaimer\"") : "") . "
 			}
 			Event.observe(window, \"load\", creditCardPaymentOnLoad);
-		//--></script><input type='button' id='online-credit-card-payment-button' class='online-credit-card-payment-button' value=\"Pay by Credit Card\" onclick=\"new CreditCardPayment(".$params[0].");return false;\" />" : FALSE;
+		//--></script><input type='button' id='online-credit-card-payment-button' class='online-credit-card-payment-button' value=\"Pay by Credit Card\" onclick=\"new CreditCardPayment(". htmlspecialchars($params[0], ENT_QUOTES) .");return false;\" />" : FALSE;
 	}
 
 	// Should probably detect this automatically and use the primary contact details

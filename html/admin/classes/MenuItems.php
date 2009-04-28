@@ -1237,7 +1237,7 @@ class MenuItems {
 	function ViewRecentCustomers() {
 		$this->strContextMenuLabel = "View Recent Customers";
 
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRecentCustomersId\", \"large\", \"Recent Customers\", \"Employee\", \"ViewRecentCustomers\")";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewRecentCustomersId\", \"extralarge\", \"Recent Customers\", \"Employee\", \"ViewRecentCustomers\")";
 	}
 
 	//------------------------------------------------------------------------//

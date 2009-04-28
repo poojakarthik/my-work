@@ -158,18 +158,20 @@ class Application_Page extends Page
 		}
 
 		// Remove any duplicates from the list, as well as files that have already been referenced
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant"));
+		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "sha1", "reflex_popup", "flex_constant"));
 		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
-		
-		foreach ($arrStandardJsFiles as $strFile)
+
+		$arrRemainingJsFilesToInclude = array();
+		foreach ($arrRemainingJsFiles as $strFile)
 		{
-			if (($intKey = array_search($strFile, $arrRemainingJsFiles)) !== FALSE)
+			if (!in_array($strFile, $arrStandardJsFiles))
 			{
-				array_splice($arrRemainingJsFiles, $intKey, 1);
+				// The file is not in the standard list, so include it
+				$arrRemainingJsFilesToInclude[] = $strFile;
 			}
 		}
-		
-		foreach($arrRemainingJsFiles as $strJsFile)
+
+		foreach($arrRemainingJsFilesToInclude as $strJsFile)
 		{
 			// Find the relative path of the javascript file
 			$strJsFileRelativePath = $this->_GetJsFileRelativePath($strJsFile .".js");
@@ -315,8 +317,8 @@ class Application_Page extends Page
 		echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\">
 	<head>
-		<link rel=\"shortcut icon\" HREF=\"{$strBaseDir}img/favicon.ico\">
-		<link rel=\"icon\" href=\"{$strBaseDir}img/favicon.ico\">
+		<link rel=\"shortcut icon\" href=\"{$strBaseDir}img/favicon.ico\" />
+		<link rel=\"icon\" href=\"{$strBaseDir}img/favicon.ico\" />
 		<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\" />
 		<meta name=\"generator\" content=\"Flex\" />
 		<title>Flex - $this->_strPageName</title>

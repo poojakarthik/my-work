@@ -250,7 +250,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 ?>
 <div class="DefaultElement">
 	<div id="Account.Balance.Output" name="Account.Balance" class="DefaultOutput Currency"><?php DBO()->Account->Balance->Render('Currency2DecWithNegAsCR'); ?><?php
-		require_once dirname(__FILE__) . '/../../../../lib/classes/credit/card/Credit_Card_Payment.php';
 		if (Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->CustomerGroup->Value))
 		{
 			echo Credit_Card_Payment::getPopupActionButton(DBO()->Account->Id->Value);
