@@ -46,6 +46,21 @@
  */
  class ApplicationNormalise extends ApplicationBaseClass
  {
+ 	const	FILE_MINIMUM_PERCENT_VALID	= .9;
+ 	
+ 	private	$_arrCDRErrorStatuses	=	array
+ 										(
+ 											CDR_CANT_NORMALISE,
+ 											CDR_CANT_NORMALISE_RAW,
+ 											CDR_CANT_NORMALISE_BAD_SEQ_NO,
+ 											CDR_CANT_NORMALISE_NON_CDR,
+ 											CDR_BAD_RECORD_TYPE,
+ 											CDR_BAD_DESTINATION,
+ 											CDR_CANT_NORMALISE_NO_MODULE,
+ 											CDR_CANT_NORMALISE_INVALID,
+ 											CDR_DUPLICATE
+ 										);
+ 	
  	//------------------------------------------------------------------------//
 	// errErrorHandler
 	//------------------------------------------------------------------------//
@@ -660,11 +675,15 @@
 			
 			$intDelinquents = 0;
 			$arrDelinquents = Array();
+			
+			$arrFilesTouched	= array();
 	
 			$qryQuery	= new Query();
 	 		foreach ($arrCDRList as $arrCDR)
 	 		{
 				$intNormaliseTotal++;
+				
+				$arrFilesTouched[(int)$arrCDR['File']]	= true;
 				
 				// return TRUE if we have normalised (or tried to normalise) any CDRs
 				$bolReturn = TRUE;
@@ -812,6 +831,42 @@
 				{
 	
 				} 
+				/*
+				// Is this a Landline Service & Equipment CDR?
+				if ($arrCDR['ServiceType'] === SERVICE_TYPE_LANDLINE && $arrCDR['RecordType'] === 21)
+				{
+					$objService	= new Service(array('id'=>$arrCDR['Service']), true);
+					switch ((int)$arrCDR['DestinationCode'])
+					{
+						case 80002:
+							// Business
+							if ($objService->residential === null)
+							{
+								// If it's NULL, then set it to Business
+								$objService->residential	= 0;
+								$objService->save();
+							}
+							elseif ($objService->residential == 1)
+							{
+								// ALERT
+							}
+							break;
+							
+						case 80003:
+							// Residential
+							if ($objService->residential === null)
+							{
+								// If it's NULL, then set it to Residential
+								$objService->residential	= 1;
+								$objService->save();
+							}
+							elseif ($objService->residential == 0)
+							{
+								// ALERT
+							}
+							break;
+					}
+				}*/
 	 		}
 	 		
 	 		// Generate Delinquent Report
@@ -830,7 +885,57 @@
 			}
 			$this->rptDelinquentsReport->AddMessage(MSG_HORIZONTAL_RULE.$strDelinquentText.MSG_HORIZONTAL_RULE);
 			
-	 		
+			// ASSERTION: Each File is at least 95% correct (ie, not Normalised or Delinquent)
+			foreach (array_keys($arrFilesTouched) as $intFileImportId)
+			{
+				$strPercentageValidSQL	= "	SELECT		CDR.Status, COUNT(CDR.Id) AS cdr_count
+											FROM		CDR
+														JOIN FileImport ON FileImport.Id = CDR.File
+											WHERE		CDR.File = {$intFileImportId}
+											GROUP BY	CDR.Status";
+				$resPercentageValid		= $qryQuery->Execute($strPercentageValidSQL);
+				if ($resPercentageValid === false)
+				{
+					throw new Exception($qryQuery->Error());
+				}
+				
+				$intTotalCDRs		= 0;
+				$intErrorCDRs		= 0;
+				$strPercentageDebug	= '';
+				while ($arrPercentageValid = $resPercentageValid->fetch_assoc())
+				{
+					$intTotalCDRs	+= $arrPercentageValid['cdr_count'];
+					if (in_array($arrPercentageValid['Status'], $this->_arrCDRErrorStatuses))
+					{
+						// Error Status Code
+						$intErrorCDRs	+= $arrPercentageValid['cdr_count'];
+					}
+					
+					$strPercentageDebug	.= "({$arrPercentageValid['Status']})".GetConstantDescription($arrPercentageValid['Status'], 'CDR')."\t: {$arrPercentageValid['cdr_count']}\n";
+				}
+				$strPercentageDebug	.=	"\n" .
+										"Total CDRs\t\t: {$intTotalCDRs}\n" .
+										"Error CDRs\t\t: {$intErrorCDRs}";
+				
+				if ($intTotalCDRs)
+				{
+					$fltPercentageValid	= $intErrorCDRs / $intTotalCDRs;
+					try
+					{
+						Flex::assert(
+										$fltPercentageValid >= FILE_MINIMUM_PERCENT_VALID,
+										"CDR File #{$intFileImportId} has too many invalid CDRs",
+										$strPercentageDebug,
+										"CDR File Minimum Percentage Valid"
+									);
+					}
+					catch (Exception_Assertion $eException)
+					{
+						$this->AddToNormalisationReport($eException->getMessage());
+					}
+				}
+			}
+			
 		 	// Normalisation Report totals
 			$arrReportLine['<Action>']		= "Normalised";
 			$arrReportLine['<Total>']		= (int)$intNormaliseTotal;
@@ -841,11 +946,11 @@
 			$this->AddToNormalisationReport($strDelinquentText);
 			$this->AddToNormalisationReport(MSG_HORIZONTAL_RULE);
 			$this->AddToNormalisationReport("Normalisation module completed in ".$this->Framework->uptime()." seconds");
-	
+			
 			// Deliver the reports
 			$this->rptNormalisationReport->Finish();
 			$this->rptDelinquentsReport->Finish();
-		
+			
 			// Commit the Transaction
 			DataAccess::getDataAccess()->TransactionCommit();
 			
