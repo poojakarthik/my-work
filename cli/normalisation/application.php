@@ -778,15 +778,15 @@
 						// If this is a duplicate, make sure people cannot assign this CDR to an Account
 						//if ($this->_selFindDuplicate->Execute($arrCDR))
 						$mixResult = $qryQuery->Execute($strFindDuplicateSQL);
-						if ($arrDuplicateCDR = $mixResult->fetch_assoc())
+						if ($mixResult === FALSE)
+						{
+							throw new Exception($qryQuery->Error()."\n\n{$strFindDuplicateSQL}");
+						}
+						elseif ($arrDuplicateCDR = $mixResult->fetch_assoc())
 						{
 							$strMatchString			= GetConstantDescription($arrDuplicateCDR['Status'], 'CDR');
 							CliEcho("!!! Bad Owner CDR #{$arrCDR['Id']} is a {$strMatchString} of #{$arrDuplicateCDR['Id']}");
 							$arrCDR['Status']		= $arrDuplicateCDR['Status'];
-						}
-						elseif ($mixResult === FALSE)
-						{
-							throw new Exception($qryQuery->Error());
 						}
 						break;
 					case CDR_CANT_NORMALISE_INVALID:
@@ -805,15 +805,15 @@
 						// Normalised OK
 						//if ($this->_selFindDuplicate->Execute($arrCDR))
 						$mixResult = $qryQuery->Execute($strFindDuplicateSQL);
-						if ($arrDuplicateCDR = $mixResult->fetch_assoc())
+						if ($mixResult === FALSE)
+						{
+							throw new Exception($qryQuery->Error()."\n\n{$strFindDuplicateSQL}");
+						}
+						elseif ($arrDuplicateCDR = $mixResult->fetch_assoc())
 						{
 							$strMatchString			= GetConstantDescription($arrDuplicateCDR['Status'], 'CDR');
 							CliEcho("!!! Normalised CDR #{$arrCDR['Id']} is a {$strMatchString} of #{$arrDuplicateCDR['Id']}");
 							$arrCDR['Status']		= $arrDuplicateCDR['Status'];
-						}
-						elseif ($mixResult === FALSE)
-						{
-							throw new Exception($qryQuery->Error());
 						}
 						else
 						{
