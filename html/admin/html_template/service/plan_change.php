@@ -59,7 +59,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		
 		$this->FormStart("ChangePlan", "Service", "ChangePlan");
 		
-		echo "<div class='NarrowForm'>\n";
+		echo "<div class='GroupedContent'>\n";
 		
 		// Render the Service Details
 		DBO()->Account->Id->RenderOutput();
@@ -169,7 +169,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>";
 		
-		echo "</div>\n";  // NarrowForm
+		echo "</div>\n";  // GroupedContent
 
  		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		$this->Button("Cancel", "Vixen.Popup.Close(this);");

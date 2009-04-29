@@ -113,7 +113,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	private function _RenderBareDetail()
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
-		echo "<div class='NarrowForm'>\n";
+		echo "<div class='GroupedContent'>\n";
 		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Service->FNN->RenderOutput();
@@ -141,7 +141,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 	private function _RenderMinimumDetail()
 	{
 		echo "<h2 class='service'>Service Details</h2>\n";
-		echo "<div class='NarrowForm'>\n";
+		echo "<div class='GroupedDetails'>\n";
 		echo "<!-- Actual Service Declared : ". DBO()->ActualRequestedService->Id->Value ." -->\n";
 		DBO()->Account->Id->RenderOutput();
 		if (DBO()->Account->BusinessName->Value)

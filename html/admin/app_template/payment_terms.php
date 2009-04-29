@@ -55,8 +55,7 @@ class AppTemplatePaymentTerms extends ApplicationTemplate
 		DBO()->CustomerGroup->Load();
 
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->System_Settings_Menu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup($customerGroupId, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->SetCurrentPage("Payment Terms");

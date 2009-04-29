@@ -98,7 +98,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 	{	
 		// Start the form
 		$this->FormStart("DeleteRecord", DBO()->DeleteRecord->Application->Value, DBO()->DeleteRecord->Method->Value);
-		echo "<div class='NarrowContent'>\n";
+		echo "<div class='GroupedContent'>\n";
 
 		// do code specific to the record type being deleted
 		switch (DBO()->DeleteRecord->RecordType->Value)
@@ -161,7 +161,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 		// display the textarea for the accompanying note
 		echo "<div class='Seperator'></div>\n";
 		DBO()->Note->Note->RenderInput();
-		echo "</div>\n";  // NarrowContent
+		echo "</div>\n";  // GroupedContent
 		
 		// display the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";

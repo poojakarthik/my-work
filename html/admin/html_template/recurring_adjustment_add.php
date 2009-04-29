@@ -259,7 +259,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "   <div id='EndDate' class='DefaultOutput'>&nbsp;</div>\n";
 		echo "</div>\n";
 		
-		echo "</div>\n"; // WideForm
+		echo "</div>\n"; // GroupedContent
 		
 		// Create the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";

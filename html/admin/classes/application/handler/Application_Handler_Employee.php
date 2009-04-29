@@ -9,7 +9,7 @@ class Application_Handler_Employee extends Application_Handler
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
-		BreadCrumb()->Admin_Console();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Daily Message Management");
 
 		try

@@ -232,7 +232,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// Create a textbox for including a note
 		DBO()->Charge->Notes->RenderInput(CONTEXT_DEFAULT);
 		
-		echo "</div>\n"; // WideForm
+		echo "</div>\n"; // GroupedContent
 
 		// create the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";

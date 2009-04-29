@@ -143,7 +143,7 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 		echo "<tr><td style='border-top-width: thin; border-top-style: solid; border-top-color: #C0C0C0'>&nbsp;</td><td colspan='96' style='border-top-color: #C0C0C0; border-top-width: thin; border-top-style: solid'>&nbsp;</td></tr>\n";
 		echo "</table>\n";
 		
-		echo "<div class='NarrowContent'>\n";
+		echo "<div class='GroupedContent'>\n";
 		echo "<table border='0' cellpadding='3' cellspacing='3' width='100%'>";
 		echo "<tr><td bgcolor='#00FF00' width='10%' style='border: solid 1px'>&nbsp;</td><td width='15%'><span class='DefaultOutputSpan'>Allocated</span></td>";
 		echo "<td bgcolor='#FF0000' width='10%' style='border: solid 1px'>&nbsp;</td><td width='15%'><span class='DefaultOutputSpan'>Over Allocated</span></td>";
@@ -158,8 +158,8 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 		$strProblemReport = str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", $strProblemReport);
 		
 		// Display the Textual Rate Summary contained in DBO()->RateSummary->ProblemReport
-		echo "<div id='ContainerDiv_ContainerDiv_RateGroupSummary' class='NarrowContent' style='padding: 5px 5px 5px 5px'>\n";
-		echo "<div id='ContainerDiv_RateGroupSummary' class='PopupLarge' style='overflow:auto; height:230px; width:auto;'>\n";
+		echo "<div id='ContainerDiv_ContainerDiv_RateGroupSummary' class='GroupedContent' style='padding: 5px 5px 5px 5px'>\n";
+		echo "<div id='ContainerDiv_RateGroupSummary' style='overflow:auto; height:230px; width:auto;'>\n";
 		echo "<span class='DefaultOutputSpan' style='line-height: 1.2;'>";
 		echo $strProblemReport;
 		echo "</span>";

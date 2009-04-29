@@ -85,16 +85,20 @@ class HtmlTemplateUserLogin extends HtmlTemplate
 <div class='MsgNotice'>Your session has expired.  Please enter your login details</div>
 <form id='LoginForm'>
 	<div class='GroupedContent'>
-		<div class='PropertyInputControlContainer'>
-			<div class='PropertyInputControlLabel'>User Name</div>
-			<input type='text' name='UserName' class='PropertyInputControl'></input>
-			<div class='PropertyInputControlClear'></div>
-		</div>
-		<div class='PropertyInputControlContainer'>
-			<div class='PropertyInputControlLabel'>Password</div>
-			<input type='password' name='Password' class='PropertyInputControl' onkeypress='if ((event.which && event.which == 13) || (event.keyCode && event.keyCode == 13)) Vixen.Login.Submit();'></input>
-			<div class='PropertyInputControlClear'></div>
-		</div>
+		<table style='width:100%;background-color:inherit'>
+			<tr>
+				<td style='width:50%'>User Name</td>
+				<td>
+					<input type='text' name='UserName' style='width:100%'></input>
+				</td>
+			</tr>
+			<tr>
+				<td>Password</td>
+				<td>
+					<input type='password' name='Password' style='width:100%' onkeypress='if ((event.which && event.which == 13) || (event.keyCode && event.keyCode == 13)) Vixen.Login.Submit();'></input>
+				</td>
+			</tr>
+		</table>
 	</div>
 	<div style='float:right;padding:3px 0px'>
 		<input type='button' value='   OK   ' onclick='Vixen.Login.Submit()'></input>

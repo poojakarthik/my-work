@@ -66,11 +66,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CUSTOMER_GROUP_ADMIN);
 		
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-		{
-			BreadCrumb()->System_Settings_Menu();
-		}
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Customer Groups");
 		
 		// Retrieve the list of customer groups
@@ -165,8 +161,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 		
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->System_Settings_Menu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->SetCurrentPage("New Customer Group");
 		
@@ -197,8 +192,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->System_Settings_Menu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->SetCurrentPage("Modify Customer Group");
 
@@ -259,8 +253,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->System_Settings_Menu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->SetCurrentPage("Modify Customer Group");
 
@@ -346,11 +339,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		}
 
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-		{
-			BreadCrumb()->System_Settings_Menu();
-		}
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->SetCurrentPage("Credit Card Config");
@@ -409,11 +398,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		DBL()->DocumentTemplate->Load();
 		
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-		{
-			BreadCrumb()->System_Settings_Menu();
-		}
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->SetCurrentPage("Customer Group");
 		
@@ -624,15 +609,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			}
 		}
 		
-		// Build Context Menu
-		//TODO! When we have stuff to put in it
-		
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-		{
-			BreadCrumb()->System_Settings_Menu();
-		}
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->SetCurrentPage("Template History");
@@ -735,12 +713,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		DBL()->DocumentResourceType->OrderBy("PlaceHolder ASC");
 		DBL()->DocumentResourceType->Load();
 		
-		// Context Menu
-		//TODO!
-		
 		//BreadCrumb Menu
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->SystemSettingsMenu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplateType->Id->Value);
@@ -785,12 +759,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		DBL()->DocumentResourceType->OrderBy("PlaceHolder ASC");
 		DBL()->DocumentResourceType->Load();
 		
-		// Context Menu
-		//TODO!
-		
 		//BreadCrumb Menu
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->SystemSettingsMenu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplate->TemplateType->Value);
@@ -831,15 +801,8 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		// Context Menu
-		//TODO!
-		
 		//BreadCrumb Menu
-		BreadCrumb()->Admin_Console();
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-		{
-			BreadCrumb()->System_Settings_Menu();
-		}
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->ViewDocumentTemplateHistory(DBO()->CustomerGroup->Id->Value, DBO()->DocumentTemplate->TemplateType->Value);
@@ -1053,11 +1016,7 @@ class AppTemplateCustomerGroup extends ApplicationTemplate
 		DBO()->DocumentResourceTypes->AsArray = $selResourceType->FetchAll();
 		
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-		{
-			BreadCrumb()->System_Settings_Menu();
-		}
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup(DBO()->CustomerGroup->Id->Value, DBO()->CustomerGroup->internal_name->Value);
 		BreadCrumb()->SetCurrentPage("Document Resources");

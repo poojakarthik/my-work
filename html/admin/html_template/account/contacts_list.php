@@ -260,8 +260,6 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 	 */
 	private function _RenderAsPopup()
 	{
-		echo "<div class='PopupLarge'>\n";
-		
 		// Work out if a virtical scroll bar will be required
 		$strTableContainerStyle = (DBL()->Contact->RecordCount() > 14) ? "style='overflow:auto; height:450px'": "";
 		
@@ -270,8 +268,6 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 
 		$this->_RenderList();
 		
-		echo "</div>\n";  // Table Container
-	
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
@@ -281,7 +277,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		$this->Button("Close", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";
 
-		echo "</div>\n";  //PopupLarge
+		echo "</div>\n";
 
 		// Initialise the javascript object which facilitates this HtmlTemplate
 		$intAccountId = DBO()->Account->Id->Value;

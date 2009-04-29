@@ -120,7 +120,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			DBO()->Rate->Fleet->RenderHidden();
 			
 			DBO()->Rate->Id->RenderHidden();
-			echo "<div class='NarrowContent'>\n"; //beginning of the DIV for the rate name and duration
+			echo "<div class='GroupedContent'>\n"; //beginning of the DIV for the rate name and duration
 				echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
 				echo "<tr><td width='2%' rowspan=10>&nbsp;</td><td width='98%'>".DBO()->Rate->Name->AsInput(CONTEXT_DEFAULT, TRUE, FALSE, Array("style:width"=>"380px"))."</td></tr>\n";
 				echo "<tr><td>".DBO()->Rate->Description->AsInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"380px"))."</td></tr>\n";
@@ -303,7 +303,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			}
 
 			// PassThrough div
-			echo "<div class='NarrowContent' style='padding-left:25px'>\n";
+			echo "<div class='GroupedContent' style='padding-left:25px'>\n";
 			DBO()->Rate->PassThrough->RenderInput(CONTEXT_DEFAULT, TRUE);
 			DBO()->Rate->Uncapped->RenderInput(CONTEXT_DEFAULT, TRUE);
 			
@@ -334,7 +334,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			echo "<div id='RateDetailDiv' style='display:inline'>\n"; //beginning of the ratedetail DIV
 			echo "<div class='Seperator'></div>\n";	
 			
-				echo "<div class='NarrowContent'>\n"; //beginning of the stdunits DIV
+				echo "<div class='GroupedContent'>\n"; //beginning of the stdunits DIV
 					echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
 					
 					// Work out what type of unit this RecordType has
@@ -408,7 +408,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			}
 			
 			echo "<div id='CapMainDetailDiv' style='display:inline'>\n"; // beginning of capmaindetail DIV
-				echo "<div class='NarrowContent'>\n"; //beginning of capdetail DIV
+				echo "<div class='GroupedContent'>\n"; //beginning of capdetail DIV
 				echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
 				echo "<tr><td width='2%'><input type='radio' id='Radio_NoCap'    name='Rate.CapCalculation' value='". RATE_CAP_NO_CAP ."' ". ($intCalculationStatus == RATE_CAP_NO_CAP ? "checked='checked'" : "") . "></td><td><span class='DefaultOutputSpan'>&nbsp;&nbsp;No Capping</span></td><td>&nbsp;</td></tr>\n";
 				
@@ -535,7 +535,7 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 		$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate?<br />The Rate cannot be edited once it is committed\", function(){Vixen.RateAdd.Commit();})");
 		echo "</div></div>\n";  // Buttons
 		
-		echo "</div>\n"; // PopupLarge
+		echo "</div>\n";
 		echo "</div>\n"; // ContainerDiv for the FormContainerDiv
 
 		$this->FormEnd();

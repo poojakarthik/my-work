@@ -51,7 +51,7 @@ class AppTemplateInvoiceRunEvents extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Invoice Run Events");
 
 		// Ensure that the event records have been created for the latest invoice run
@@ -168,7 +168,7 @@ class AppTemplateInvoiceRunEvents extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ManageInvoiceRunEvents();
 		BreadCrumb()->SetCurrentPage("Invoice Run Events");
 

@@ -88,7 +88,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 	
 		$this->FormStart("MakePayment", "Payment", "Add");
 
-		echo "<div class='WideForm'>\n";
+		echo "<div class='GroupedContent'>\n";
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		DBO()->Account->Id->RenderHidden();
@@ -223,7 +223,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "</div>\n"; //Payment_CreditCardDetails
 		
 		
-		echo "</div>\n"; //WideForm
+		echo "</div>\n"; //GroupedContent
 		
 		// Create the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";

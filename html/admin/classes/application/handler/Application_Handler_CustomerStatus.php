@@ -9,8 +9,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->System_Settings_Menu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Customer Statuses");
 
 		ContextMenu()->Customer_Statuses->ManageCustomerStatuses();
@@ -29,8 +28,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->System_Settings_Menu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->Manage_Customer_Statuses();
 		
 		ContextMenu()->Customer_Statuses->ManageCustomerStatuses();
@@ -70,8 +68,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->System_Settings_Menu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->Manage_Customer_Statuses();
 		
 		ContextMenu()->Customer_Statuses->ManageCustomerStatuses();
@@ -111,8 +108,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->System_Settings_Menu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->Manage_Customer_Statuses();
 		BreadCrumb()->SetCurrentPage("Summary Report");
 		
@@ -220,8 +216,7 @@ class Application_Handler_CustomerStatus extends Application_Handler
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->System_Settings_Menu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->Manage_Customer_Statuses();
 		BreadCrumb()->SetCurrentPage("Account Report");
 		

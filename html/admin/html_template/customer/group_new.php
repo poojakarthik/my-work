@@ -98,7 +98,7 @@ class HtmlTemplateCustomerGroupNew extends HtmlTemplate
 	{	
 		$this->FormStart("NewCustomerGroup", "CustomerGroup", "Add");
 
-		echo "<div class='WideForm'>\n";
+		echo "<div class='GroupedContent'>\n";
 
 		DBO()->CustomerGroup->internal_name->RenderInput(CONTEXT_DEFAULT, TRUE);
 		DBO()->CustomerGroup->external_name->RenderInput(CONTEXT_DEFAULT, TRUE);
@@ -106,7 +106,7 @@ class HtmlTemplateCustomerGroupNew extends HtmlTemplate
 		DBO()->CustomerGroup->flex_url->RenderInput(CONTEXT_DEFAULT, TRUE);
 		DBO()->CustomerGroup->email_domain->RenderInput(CONTEXT_DEFAULT, TRUE);
 		
-		echo "</div>"; // WideForm
+		echo "</div>"; // GroupedContent
 		
 		// Create the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";

@@ -102,7 +102,7 @@ class HtmlTemplateRateGroupOverride extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<div class='NarrowForm'>\n";
+		echo "<div class='GroupedContent'>\n";
 		
 		$this->FormStart("RateGroupOverride", "RateGroup", "Override");
 

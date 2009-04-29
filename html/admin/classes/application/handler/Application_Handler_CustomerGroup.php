@@ -13,11 +13,7 @@ class Application_Handler_CustomerGroup extends Application_Handler
 		$detailsToRender['customerGroup'] = $customerGroupId ? Customer_Group::getForId($customerGroupId) : NULL;
 		$detailsToRender['config'] = $detailsToRender['customerGroup'] ? Credit_Card_Payment_Config::getForCustomerGroup($detailsToRender['customerGroup'], TRUE) : NULL;
 
-		BreadCrumb()->Admin_Console();
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
-		{
-			BreadCrumb()->System_Settings_Menu();
-		}
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->ViewAllCustomerGroups();
 		BreadCrumb()->ViewCustomerGroup($customerGroupId, $detailsToRender['customerGroup'] ? $detailsToRender['customerGroup']->name : NULL);
 		BreadCrumb()->SetCurrentPage("Secure Pay Configuration");

@@ -63,7 +63,7 @@ class AppTemplateMisc extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Delinquent CDRs");
 		
 		$this->LoadPage('delinquent_cdrs_move');

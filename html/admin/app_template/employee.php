@@ -144,7 +144,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 		// (Nothing to add)
 
 		// Breadcrumb menu
-		Breadcrumb()->Admin_Console();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Employee List");
 
 		// Retrieve all Employees except the system user

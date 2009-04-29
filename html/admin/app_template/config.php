@@ -66,8 +66,7 @@ class AppTemplateConfig extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_GOD);
 		
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->SystemSettingsMenu();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Constants");
 		
 		// Retrieve the list of ConstantGroups
@@ -104,7 +103,7 @@ class AppTemplateConfig extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
 		// Breadcrumb menu
-		BreadCrumb()->Admin_Console();
+		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("System Settings");
 		
 		// All required data has been retrieved from the database so now load the page template

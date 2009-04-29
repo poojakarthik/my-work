@@ -91,7 +91,7 @@ class HtmlTemplateEmployeeDetails extends HtmlTemplate
 			$strArchivedValue = 'checked';
 		}
 		echo "<form name='theform' action='../ui/flex.php/Employee/EmployeeList/' method='get'><input type='checkbox' name='Archived' value=1 $strArchivedValue onClick='document.theform.submit();'>Show Archived Employees</input></form>";
-		echo "<div class='NarrowTable'>\n";
+		echo "<div style='margin:0px;width:425px'>\n";
 		Table()->EmployeeTable->SetHeader("FirstName", "LastName", "UserName","Status","View Employee");
 		foreach (DBL()->Employee as $dboEmployee)
 		{

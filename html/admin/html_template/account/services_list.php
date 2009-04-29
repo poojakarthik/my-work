@@ -117,8 +117,6 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	 */
 	function RenderPopup($strTableContainerDivId)
 	{
-		echo "<div class='PopupLarge'>\n";
-		
 		// Work out if a virtical scroll bar will be required
 		$strTableContainerStyle = (DBL()->Service->RecordCount() > 14) ? "style='overflow:auto; height:450px'": "";
 		
@@ -139,8 +137,6 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 		$this->Button("Close", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";
 
-		echo "</div>\n";  //PopupLarge
-		
 		// Initialise the javascript object that facilitates this popup (Vixen.AccountServices)
 		echo "<script type='text/javascript'>Vixen.AccountServices.Initialise('{$this->_objAjax->strId}')</script>";
 	}

@@ -586,34 +586,6 @@ height:		44px;
 	position:			relative;
 }
 
-.WideContent
-{
-	margin:              0;
-	padding-top:         5px;
-	padding-left:        5px;
-	padding-right:       5px;
-	padding-bottom:      5px;
-
-	border:              solid 1px #D1D1D1;
-	/*background-color:    #F3F3F3;*/
-	background-color:	#EFEBE7;
-	/*width:				 875px;*/
-}
-
-.NarrowContent
-{
-	margin:              0;
-	padding-top:         5px;
-	padding-left:        5px;
-	padding-right:       5px;
-	padding-bottom:      5px;
-
-	border:              solid 1px #D1D1D1;
-	/*background-color:    #F3F3F3;*/
-	background-color:	#EFEBE7;
-	/*width:				 425px;*/
-}
-
 .ContentSeparator
 {
 	margin-top:			5px;
@@ -621,67 +593,6 @@ height:		44px;
 	border-bottom:		solid 1px #D1D1D1;
 	background-color:	#EFEBE7;
 	width:				100%
-}
-
-.NarrowTable
-{
-	margin:              0;
-	width:				 425px;
-}
-
-.NarrowColumn
-{
-	margin:              0;
-	padding-top:         0px;
-	padding-left:        0px;
-	padding-right:       0px;
-	padding-bottom:      0px;
-
-	/*border:              solid 1px #D1D1D1;*/
-	/*background-color:    #F3F3F3;*/
-	width:				 300px;
-}
-
-/* This should not be used anymore as the width of the entire page is specified in PageBoy and then the columns are defined
-within a table, using percentages as their widths
- */
-.WideColumn
-{
-	margin:              0;
-	padding-top:         0px;
-	padding-left:        0px;
-	padding-right:       0px;
-	padding-bottom:      0px;
-
-	width:				 875px;
-}
-
-
-.WideForm
-{
-	margin:              0;
-	padding-top:         5px;
-	padding-left:        5px;
-	padding-right:       5px;
-	padding-bottom:      5px;
-
-	border:              solid 1px #D1D1D1;
-	/*background-color:    #F3F3F3;*/
-	background-color:    #EFEBE7;
-
-}
-
-.NarrowForm
-{
-	margin:              0;
-	padding-top:         5px;
-	padding-left:        5px;
-	padding-right:       5px;
-	padding-bottom:      5px;
-
-	border:              solid 1px #D1D1D1;
-	/*background-color:    #F3F3F3;*/
-	background-color:    #EFEBE7;
 }
 
 /**************************************************************************/
@@ -787,21 +698,15 @@ table.Listing tr.Hover td
 	background-color:    #FFFFAA;
 	vertical-align:			top;		
 }
-/****************
-tr.Summary
+table.Summary
 {
-background-color:    #000000;	
-}
-	/******************/	
-	table.Summary
-	{
-		background-color:    #C0C0C0;		
+	background-color:    #C0C0C0;		
 }
 
 /**************************************************************************/
 /* MENUS																  */
 /**************************************************************************/
-.ContextMenu
+/*.ContextMenu
 {
 	float:				left;
 	position: 			fixed;
@@ -818,14 +723,12 @@ background-color:    #000000;
 	padding:				1px 1px 1px 1px;
 }
 
-/*
- * I don't think this is actually used
- */
 .ContextMenuItemHighlight
 {
 	border:					solid 1px #999999;
 	background-color:		#FFFFCC;
 }
+*/
 
 div#BreadCrumbMenu
 {
@@ -839,48 +742,6 @@ div#BreadCrumbMenu
 .MenuIcon
 {
 	border:					solid 1px #999999;
-}
-
-
-/*
- * Page Menu Items (menus that take up a whole page)
- * Currently only the System Menu uses these classes
- * 
- */
-
-div#MenuItem
-{
-	height:	6em;
-}
-
-.MenuItemIcon
-{
-	border:			solid 1px #999999;
-	float: 			left;
-	height:			auto;
-	width:			auto;
-}
-
-.MenuItemDetails
-{
-	float:			left;
-	height:			60px;
-	width:			auto;
-}
-
-.MenuItemName
-{
-	font-family:	Arial, sans-serif;
-	font-weight:	bold;
-	font-size: 		12pt;
-
-	margin:			5px;
-}
-
-.MenuItemDescription
-{
-	font-size:		10pt;
-	margin:			5px;
 }
 
 
@@ -1142,73 +1003,28 @@ h2.Tickets
 /* SEPARATORS															  */
 /**************************************************************************/
 
-.Separator
-{
-	height:               20px;
-}
-
-.SmallSeparator
-{
-	height:               10px;
-}
-
-.TinySeparator
-{
-	height:               5px;
-}
-
-.MicroSeparator
-{
-	height:               0px;
-}
-
-.ColumnSpacer
-{
-	width:					30px;
-}
-
-/* And for the idiots who can't spell */
+.Separator,
 .Seperator
 {
 	height:               20px;
 }
 
+.SmallSeparator,
 .SmallSeperator
 {
 	height:               10px;
 }
 
+.TinySeparator,
 .TinySeperator
 {
 	height:               5px;
-}
-
-.MicroSeperator
-{
-	height:               0px;
 }
 
 
 /**************************************************************************/
 /* INPUTS																  */
 /**************************************************************************/
-/*input.InputSubmit,*/
-input.InputSubmitDisabled
-{
-	background-repeat:	repeat-x;
-
-	font-weight:		bold;
-
-	/*margin:				3px;*/
-	margin:				0px;
-	padding-top:		1px;
-	padding-left:		6px;
-	padding-right:		6px;
-	padding-bottom:		1px;
-
-	font-size:			10pt;
-}
-
 input[type='button'], a.button, button
 {
 	background-image:	url('img/template/transparent-bg.png') !important;
@@ -1229,53 +1045,12 @@ input[type='button'], a.button, button
 	-moz-user-select:	none;
 }
 
-input.InputSubmitDisabled, button[disabled]
+button[disabled]
 {
 	background-image:    none;
 	color:               #eee;
 	background-color:    #ccc;
 	-moz-user-select:	none;
-}
-
-input.InputSubmitLocked,
-input.InputSubmitUnlocked
-{
-	background-repeat:   no-repeat;
-
-	font-weight:         bold;
-
-	padding-top:         15px;
-	padding-left:        60px;
-	padding-right:       6px;
-	padding-bottom:      15px;
-	font-size:			10pt;
-}
-
-input.InputSubmitUnlocked
-{
-	background-image:    url('img/template/btn_unlocked.png');
-
-	border:              solid 1px #89b100;
-
-	color:               #89b100;
-	background-color:    #f1f7e1;
-	font-size:			10pt;
-}
-
-input.InputSubmitLocked
-{
-	background-image:    url('img/template/btn_locked.png');
-
-	border:              solid 1px #CC0000;
-
-	color:               #CC0000;
-	background-color:    #f2dbdb;
-	font-size:			10pt;
-}
-
-input.time
-{
-	width:               50px;
 }
 
 /**************************************************************************/
@@ -1313,32 +1088,6 @@ input.time
 	cursor: pointer;
 }
 
-.PopupMedium,
-.PopupLarge
-{
-	margin:              0;
-	padding-top:         0px;
-	padding-left:        3px;
-	padding-right:       3px;
-	padding-bottom:      0px;
-
-	/*border:              solid 1px #D1D1D1;*/
-	/*background-color:    #F3F3F3;*/
-}
-
-.PopupMedium
-{
-	/*width:				 440px;*/
-	width:		auto;
-}
-
-
-.PopupLarge
-{
-	/*width:				 690px;*/
-	width:		auto;
-}
-
 #overlay {
 	position: absolute;
 	left: 0px;
@@ -1366,82 +1115,7 @@ input.time
 /**************************************************************************/	
 .Currency
 {
-
 	font-family:		"Courier New", monospace;
-}
-
-/**************************************************************************/
-/* TASKBAR													   			  */
-/**************************************************************************/
-.VixenTaskbar
-{
-	float:			left;
-	position: 		fixed;
-	top:				44px;
-	width:			100%;
-	height:			28px;
-	color:			#FFFFFF;
-	background-color:	#000000;
-	background-image:	url('img/template/taskbar.png');
-	background-repeat:	repeat-x;
-	padding:			0px;
-	margin:			0px;
-	padding-top:		2px;
-	/*padding-left:		80px;*/
-	display:			block;
-}
-
-.TaskbarItem
-{
-	border:				1px	solid	#EEEEEE;
-	border-top-color:		#CCCCCC;
-	border-left-color:		#CCCCCC;
-	border-right-color:		#333333;
-	border-bottom-color:	#333333;
-	width:				150px;
-	height:				20px;
-	background-color:		#444444;
-	color:				#CCCCCC;
-	vertical-align:		middle;
-	float:				left;
-	overflow:				hidden;
-	padding-left:			1px;
-	cursor:				default;
-}
-
-.TaskbarItemSelected
-{
-	border:				1px	solid	#EEEEEE;
-	border-top-color:		#333333;
-	border-left-color:		#333333;
-	border-right-color:		#CCCCCC;
-	border-bottom-color:	#CCCCCC;
-	width:				150px;
-	height:				20px;
-	background-color:		#BBBBBB;
-	color:				#000000;
-	font-weight:			bold;
-	vertical-align:		middle;
-	float:				left;
-	overflow:				hidden;
-	padding-left:			1px;
-	cursor:				default;
-}
-
-.TaskbarSpacer
-{
-	width:				1px;
-	height:				20px;
-	float:				left;
-}
-
-.TaskbarIcon
-{
-	/*display:			inline;*/
-	width:			16px;
-	height:			16px;
-	vertical-align:	text-top;
-	/*border:			1px solid #000000;*/
 }
 
 /**************************************************************************/
@@ -1484,8 +1158,7 @@ div.ServiceTypeIconADSL
 	background-image:    url('img/template/phonetypes/adsl.png');
 }
 
-/*------------------*/
-
+/********************* THIS IS USED FOR THAT STUPID TIME OF DAY SLIDER ON THE 'Add/Edit Rate' POPUP *****************/
 
 #weekScheduler_Container{
 	width:576px;
@@ -1536,8 +1209,6 @@ div#weekScheduler_Content div.weekScheduler_SelectableTime
 	float:left;
 }
 
-/* Appointment Information */
-
 div.Appointment
 {
 	border: solid 0px #FF6600;
@@ -1566,6 +1237,8 @@ div.Appointment div.Resize
 	right: 0;
 	background-color: #006599;
 }
+
+/*********************** END - Stupid day slider - END ************************/
 
 /***************************************Date Time Picker***********************/
 /* Date Time Calendar Styles */
@@ -1634,18 +1307,7 @@ div.Appointment div.Resize
 	margin: 0 auto;
 }
 
-/***************************************Date Time Picker***********************/
-
-/*
-div#Excess
-{
-display: none;
-}
-
-	div#CapLimit
-	{
-	display: none;
-}*/
+/************************* END - Date Time Picker - END ***********************/
 
 
 /***************************************Flex Modal Window***********************/
@@ -1690,41 +1352,6 @@ table.flexModalContainer td.flexModalContainer
 	margin: 0px;
 	border: 0px;
 }
-
-/*******************Property Input Stuff*****************/
-div.PropertyInputControlContainer
-{
-	width:	100%;
-}
-
-.PropertyInputControlLabel,
-.PropertyInputControlLabelRequired
-{
-	float:			left;
-	width:			47%;
-	padding-left:	2%;
-	padding-right:	1%;
-}
-.PropertyInputControlLabelRequired
-{
-	background-image:		url('img/template/required_input.png');
-	background-repeat:		no-repeat;
-	background-position:	-2% 0%;
-
-}
-
-.PropertyInputControl
-{
-	float: right;
-	width: 49%;
-	margin-left: 1%;
-}
-div.PropertyInputControlClear
-{
-	float:	none;
-	clear:	both;
-}
-
 
 /*** Customer Status classes */
 .customer-status-l
