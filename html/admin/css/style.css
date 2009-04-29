@@ -432,15 +432,15 @@ div.reflex-popup-footer input[type="button"] {
 
 input.validation-error-tootltip-button {
 	visibility: hidden;
-	width: 18px;
-	height: 18px;
-	border: none;
-	cursor: pointer;
-	margin-left: 0.2em;
+	width: 18px !important;
+	height: 18px !important;
+	border: none !important;
+	cursor: pointer !important;
+	margin-left: 0.2em !important;
 	background-color: inherit;
-	background-repeat: no-repeat;
-	background-image: url("../img/template/tooltip_error.gif");
-	background-position: 50% 50%;
+	background-repeat: no-repeat !important;
+	background-image: url("../img/template/tooltip_error.gif") !important;
+	background-position: 50% 50% !important;
 }
 
 td[contains-invalid-input=true] input.validation-error-tootltip-button {
