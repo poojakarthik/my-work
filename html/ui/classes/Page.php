@@ -736,11 +736,11 @@ class Page
 			// If the user is a kb_admin an extra flag is added.
 			if(AuthenticatedUser()->UserHasPerm(PERMISSION_KB_ADMIN_USER))
 			{
-				$mixKbAdmin = "<input type=\"hidden\" name=\"strAdmin\" value=\"1\">\n";
+				$mixKbAdmin = "<input type=\"hidden\" name=\"strAdmin\" value=\"1\" />\n";
 			}
 			// If the user is allowed to access the kb system the menu links change to below:
 			$mixMenuLinks = "
-			<script>
+			<script type=\"text/javascript\">
 			function redirectOutput(kbform)
 			{
 				var w = window.open('about:blank','Knowledg_Base_Popup','width=680,height=600,resizable=1,menubar=0,toolbar=0,location=0,directories=0,scrollbars=1,status=1');
@@ -749,9 +749,9 @@ class Page
 			</script>
 			<form method=\"post\" name=\"kbform\" target=\"Knowledg_Base_Popup\" id=\"kbform\" action=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['URI'] . "\">
 			Logged in as: $strUserName
-			$mixKbAdmin<input type=\"hidden\" name=\"strUsername\" value=\"$strUserName\">
-			<input type=\"hidden\" name=\"mixUsername\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['User'] . "\">
-			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\">
+			$mixKbAdmin<input type=\"hidden\" name=\"strUsername\" value=\"$strUserName\" />
+			<input type=\"hidden\" name=\"mixUsername\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['User'] . "\" />
+			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\" />
 			| <a onclick=\"redirectOutput(this); var elemform = getElementById('kbform'); elemform.submit();\">Knowledge Base</a>	
 			| <a onclick='$strUserPreferencesLink' >Preferences</a>
 			| <a onclick='Vixen.Logout();'>Logout</a>
