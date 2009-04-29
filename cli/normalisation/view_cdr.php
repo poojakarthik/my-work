@@ -40,7 +40,37 @@ if ($intCDR)
 	if ($arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']])
 	{
 		// normalise CDR
-		$mixReturn = $arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']]->Normalise($arrCDR);
+		$arrMatchCDR	= $arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']]->Normalise($arrCDR);
+
+		// Check for duplicates
+		$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> {$arrMatchCDR['CarrierRef']} THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
+									FROM CDR 
+									WHERE Id != {$arrMatchCDR['Id']} AND 
+									FNN = {$arrMatchCDR['FNN']} AND 
+									Source <=> {$arrMatchCDR['Source']} AND 
+									Destination <=> {$arrMatchCDR['Destination']} AND 
+									StartDatetime <=> {$arrMatchCDR['StartDatetime']} AND 
+									EndDatetime <=> {$arrMatchCDR['EndDatetime']} AND 
+									Units = {$arrMatchCDR['Units']} AND 
+									Cost = {$arrMatchCDR['Cost']} AND 
+									RecordType = {$arrMatchCDR['RecordType']} AND 
+									RecordType NOT IN (10, 15, 33, 21) AND 
+									Credit = {$arrMatchCDR['Credit']} AND 
+									Description <=> {$arrMatchCDR['Description']} AND 
+									Status NOT IN (".CDR_DUPLICATE.", ".CDR_RECHARGE.")
+									ORDER BY Id DESC
+									LIMIT 1";
+		$mixResult = $qryQuery->Execute($strFindDuplicateSQL);
+		if ($mixResult === FALSE)
+		{
+			throw new Exception($qryQuery->Error()."\n\n{$strFindDuplicateSQL}");
+		}
+		elseif ($arrDuplicateCDR = $mixResult->fetch_assoc())
+		{
+			$strMatchString			= GetConstantDescription($arrDuplicateCDR['Status'], 'CDR');
+			CliEcho("!!! CDR #{$arrCDR['Id']} is a {$strMatchString} of #{$arrDuplicateCDR['Id']}");
+			$arrCDR['Status']		= $arrDuplicateCDR['Status'];
+		}
 		
 		// debug CDR
 		$arrDebugCDR = $arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']]->DebugCDR();
