@@ -919,7 +919,7 @@
 				
 				if ($intTotalCDRs)
 				{
-					$fltPercentageValid	= $intErrorCDRs / $intTotalCDRs;
+					$fltPercentageValid	= ($intTotalCDRs - $intErrorCDRs) / $intTotalCDRs;
 					try
 					{
 						if (Flex::assert(
