@@ -116,12 +116,14 @@ h3
 li
 {
 	font-family:		Arial, sans-serif;
-	font-size:			10pt;		
+	line-height:		14pt;
+/*	font-size:			10pt;		*/
 }
 
 body
 {
 	margin:				0px;
+/*	line-height:		1.2;*/
 }
 
 body.EmbeddedComponent
@@ -136,6 +138,7 @@ form
 
 label
 {
+/*	line-height:		1.2;*/
 	cursor:				pointer;
 }
 
@@ -146,10 +149,12 @@ td,
 span
 {
 	font-family: 		Arial, sans-serif;
+/*	line-height: 		18pt;*/
 	font-size: 			10pt;
-	left:				0px;
-	top:				0px;
+/*	left:				0px;
+	top:				0px;*/
 	overflow:			hidden;
+/*	line-height: 		1.2;*/
 }
 
 input[type='submit']:hover,
@@ -198,11 +203,13 @@ padding:			3px;
 div#ImportReport
 {
 	font-family: 		Arial, sans-serif;
+/*	line-height: 		18pt;*/
 	font-size: 			10pt;
 	position:			relative;
-	left:				0px;
-	top:				0px;
+/*	left:				0px;
+	top:				0px;*/
 	overflow:			hidden;
+/*	line-height: 		1.0;*/
 }
 
 div.paginated-table-wrapper
@@ -318,6 +325,7 @@ height:		44px;
 .TD_DefaultLabel
 {
 	font-family: 		Arial, sans-serif;
+/*	line-height: 		18pt;*/
 	font-size: 			10pt;
 	position:			absolute;
 	height:				20px;
@@ -327,16 +335,20 @@ height:		44px;
 .DefaultInvalidLabel
 {
 	font-family: 		Arial, sans-serif;
+	line-height: 		18pt; /* Things break down if this isn't here */
 	font-size: 			10pt;
+	position:			absolute;
 	height:				20px;
 	overflow:			hidden;
-	top:				0px;
-	left:				0px;
+	float:				left;
+	top:				0px; /* Things break down if this isn't here */
+/*	left:				0px;*/
 }
 
 .DefaultOutput
 {
 	font-family: 		Arial, sans-serif;
+	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			relative;
 	top:				0px;
@@ -347,6 +359,7 @@ height:		44px;
 .DefaultRegularOutput
 {
 	font-family: 		Arial, sans-serif;
+	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			relative;
 	top:				0px;
@@ -361,6 +374,7 @@ height:		44px;
 .DefaultInvalidOutput
 {
 	font-family: 		Arial, sans-serif;
+	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			relative;
 	top:				0px;
@@ -376,6 +390,7 @@ height:		44px;
 .DefaultInput
 {
 	font-family:		Arial, sans-serif;
+	line-height:		18pt;
 	font-size:			10pt;
 	position:			relative;
 	left:				200px;
@@ -385,6 +400,7 @@ height:		44px;
 
 .DefaultInputCheckBox2
 {
+	line-height: 		18pt;
 	font-size:			10pt;
 	position:			relative;
 	left:				197px;
@@ -415,6 +431,7 @@ height:		44px;
 {
 
 	font-family: 		Arial, sans-serif;
+	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			relative;
 	left:				0px;
@@ -441,6 +458,7 @@ height:		44px;
 .DefaultInvalidInput
 {
 	font-family: 		Arial, sans-serif;
+	line-height: 		1.2;
 	font-size: 			10pt;
 	position:			relative;
 	left:				200px;
@@ -469,11 +487,13 @@ height:		44px;
 .DefaultInvalidOutputSpan
 {
 	font-family: 		Arial, sans-serif;
+	line-height: 		18pt;
 	font-size: 			10pt;
 	position:			relative;
 	left:				0px;
 	top:				0px;
 	overflow:			hidden;
+	line-height: 		1.2;
 }
 
 .DefaultInvalidInputSpan
@@ -490,6 +510,9 @@ height:		44px;
 .DefaultElement,
 .DefaultInvalidElement
 {
+	position:			relative;
+	overflow:			visible;
+	height:				auto;
 	clear:				both;
 }
 
@@ -545,6 +568,7 @@ height:		44px;
 .Large
 {
 	font-size:			35px;
+	line-height:		150%;
 }
 
 /**************************************************************************/
@@ -902,6 +926,8 @@ h2.Actions
 	background-repeat:		no-repeat;
 	background-position:	center left;
 	padding-left:			22px;
+	margin-bottom:			5px;
+	height:					21px;
 }
 
 h2.Carrier
@@ -1090,6 +1116,7 @@ h2.Tickets
 {
 	display:                       inline;
 	margin-left:                   30px;
+	line-height:                   20px;
 	vertical-align:                bottom;
 }
 
@@ -1097,6 +1124,7 @@ h2.Tickets
 {
 	display:                       inline;
 	margin-left:                   5px;
+	line-height:                   20px;
 	vertical-align:                bottom;
 }
 
@@ -1265,6 +1293,7 @@ input.time
 {
 	font-family: Arial, sans-serif;
 	font-size: 10pt;
+	line-height: 18pt;
 	color: #FFFFFF;
 	background-color: #000000;
 	background-image:     url('img/template/background.png');
