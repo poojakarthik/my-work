@@ -42,9 +42,22 @@ if ($intCDR)
 	if ($arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']])
 	{
 		// normalise CDR
-		$arrMatchCDR	= $arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']]->Normalise($arrCDR);
+		$arrCDR	= $arrNormalisationModule[$arrCDR['Carrier']][$arrCDR['FileType']]->Normalise($arrCDR);
 
 		// Check for duplicates
+		$arrMatchCDR	= Array();
+		foreach ($arrCDR as $strField=>$mixValue)
+		{
+			if ($mixValue === NULL)
+			{
+				$mixValue	= 'NULL';
+			}
+			elseif (is_string($mixValue))
+			{
+				$mixValue	= "'".str_replace("'", '\\\'', $mixValue)."'";
+			}
+			$arrMatchCDR[$strField]	= $mixValue;
+		}
 		$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> {$arrMatchCDR['CarrierRef']} THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
 									FROM CDR 
 									WHERE Id != {$arrMatchCDR['Id']} AND 
