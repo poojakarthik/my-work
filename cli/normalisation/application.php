@@ -901,7 +901,7 @@
 				
 				$intTotalCDRs		= 0;
 				$intErrorCDRs		= 0;
-				$strPercentageDebug	= '';
+				$strPercentageDebug	= "File #{$intFileImportId}\n\n";
 				while ($arrPercentageValid = $resPercentageValid->fetch_assoc())
 				{
 					$intTotalCDRs	+= $arrPercentageValid['cdr_count'];
@@ -922,12 +922,15 @@
 					$fltPercentageValid	= $intErrorCDRs / $intTotalCDRs;
 					try
 					{
-						Flex::assert(
+						if (Flex::assert(
 										$fltPercentageValid >= FILE_MINIMUM_PERCENT_VALID,
 										"CDR File #{$intFileImportId} has too many invalid CDRs",
 										$strPercentageDebug,
 										"CDR File Minimum Percentage Valid"
-									);
+									))
+						{
+							$this->AddToNormalisationReport($strPercentageDebug);
+						}
 					}
 					catch (Exception_Assertion $eException)
 					{
