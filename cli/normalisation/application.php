@@ -738,20 +738,20 @@
 					}
 					$arrMatchCDR[$strField]	= $mixValue;
 				}
-				$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> '{$arrMatchCDR['CarrierRef']}' THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
+				$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> {$arrMatchCDR['CarrierRef']} THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
 											FROM CDR 
 											WHERE Id != {$arrMatchCDR['Id']} AND 
-											FNN = '{$arrMatchCDR['FNN']}' AND 
-											Source <=> '{$arrMatchCDR['Source']}' AND 
-											Destination <=> '{$arrMatchCDR['Destination']}' AND 
-											StartDatetime <=> '{$arrMatchCDR['StartDatetime']}' AND 
-											EndDatetime <=> '{$arrMatchCDR['EndDatetime']}' AND 
+											FNN = {$arrMatchCDR['FNN']} AND 
+											Source <=> {$arrMatchCDR['Source']} AND 
+											Destination <=> {$arrMatchCDR['Destination']} AND 
+											StartDatetime <=> {$arrMatchCDR['StartDatetime']} AND 
+											EndDatetime <=> {$arrMatchCDR['EndDatetime']} AND 
 											Units = {$arrMatchCDR['Units']} AND 
 											Cost = {$arrMatchCDR['Cost']} AND 
 											RecordType = {$arrMatchCDR['RecordType']} AND 
 											RecordType NOT IN (10, 15, 33, 21) AND 
 											Credit = {$arrMatchCDR['Credit']} AND 
-											Description <=> '{$arrMatchCDR['Description']}' AND 
+											Description <=> {$arrMatchCDR['Description']} AND 
 											Status NOT IN (".CDR_DUPLICATE.", ".CDR_RECHARGE.")
 											ORDER BY Id DESC
 											LIMIT 1";
