@@ -101,8 +101,6 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		}
 		
 		echo "<div class='GroupedContent'>";
-		echo "<div style='height:22px'>\n";
-		echo "   <div class='Left'>\n";
 		
 		// Draw the Carrier combobox
 		echo "   <span>Carrier</span>\n";
@@ -134,15 +132,8 @@ class HtmlTemplateProvisioningRequest extends HtmlTemplate
 		echo "         <input type='text' id='AuthorisationDateTextBox' name='ProvisioningRequest.AuthorisationDate' InputMask='ShortDate' maxlength='10' value='$strAuthorisationDate' style='width:85px'/>\n";
 		echo "      </span>\n";
 		
-		echo "   </div>\n"; // Left
-		
 		// Render the buttons
-		echo "<div class='Right'>\n";
 		$this->Button("Submit Request", "Vixen.ProvisioningPage.SubmitRequest();");
-		echo "</div>\n";
-
-
-		echo "</div>\n"; // height=22px
 		
 		echo "</div>\n";  // GroupedContent
 		

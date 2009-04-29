@@ -228,8 +228,6 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 
 		// Render filtering controls
 		echo "<div class='GroupedContent' >";
-		echo "<div style='height:25px'>";
-		echo "<div class='Left'>";
 		
 		// Create a combobox containing all the Category filter options
 		echo "<span>Category</span>\n";
@@ -277,11 +275,7 @@ class HtmlTemplateProvisioningHistoryList extends HtmlTemplate
 		echo "   </select>\n";
 		echo "</span>\n";
 
-		echo "</div>\n"; //Left
-		echo "<div class='Right'>\n";
 		$this->Button("Filter", "Vixen.$strObjectName.ApplyFilter(true);");
-		echo "</div>\n"; //Right
-		echo "</div>\n"; //height=25px
 		echo "</div>\n"; // GroupedContent
 		
 		echo "<div class='TinySeperator' style='clear:both'></div>\n";
