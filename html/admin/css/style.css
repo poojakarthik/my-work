@@ -117,7 +117,17 @@ table.reflex {
 	margin-right: auto;
 	border: .1em solid #333;
 	border-spacing: 0;
+    border-color: #333;
 }
+
+table.reflex > tbody > tr > td:first-child {
+    border-left: 1px solid #333;
+}
+
+table.reflex > tbody > tr > td:last-child {
+    border-right: 1px solid #333;
+}
+
 
 table.reflex caption div#caption_bar {
 	width: 100%;
@@ -130,10 +140,15 @@ table.reflex caption div#caption_title{
 	height: 100%;
 	color: #eee;
 	background-color: #333;
+    background-image: url('../img/template/background.png');
+    background-repeat: repeat-x;
 	text-align: center;
 	font-weight: bold;
 	padding-top: .4em;
 	padding-bottom: .4em;
+    margin-left: 8px;
+    -moz-border-radius: 6px 6px 0 0;
+	-webkit-border-radius: 6px 6px 0 0;
 }
 
 table.reflex caption div#caption_options{
@@ -159,6 +174,36 @@ table.reflex thead tr th,
 table.reflex tfoot tr th {
 	padding-top: .25em;
 	padding-bottom: .25em;
+	background-color: #333;
+    background-repeat: repeat-x;
+}
+
+table.reflex thead tr th:first-child {
+    -moz-border-radius-topleft: 6px;
+    -webkit-border-radius: 6px 0 0 0;
+    border-left: 1px;
+    border-top: 1px;
+}
+
+table.reflex thead tr th:last-child {
+	-moz-border-radius-topright: 6px;
+    -webkit-border-radius: 0 6px 0px 0px;
+    border-right: 1px;
+    border-top: 1px;
+}
+
+table.reflex tfoot tr th:first-child {
+	-moz-border-radius-bottomleft: 6px;
+    -webkit-border-radius: 0 0 0 6px;
+    border-left: 1px;
+    border-top: 1px;
+}
+
+table.reflex tfoot tr th:last-child {
+	-moz-border-radius-bottomright: 6px;
+	-webkit-border-radius: 0 0 0 6px;
+    border-right: 1px;
+    border-top: 1px;
 }
 
 table.reflex tbody
@@ -490,8 +535,6 @@ input#online-credit-card-payment-button
 th.amount, td.amount { text-align: right; }
 td.attention { color: red !important; }
 
-
-
 /*********************** Sp table stuff **********************/
 table.sp th.sp-unsorted,
 table.sp th.sp-sorted-ascending,
@@ -569,7 +612,6 @@ table.sp tfoot a:link {
 	color: #ffde05 !important;
 }
 
-
 table.sp td,
 table.sp th {
 	padding: .05em .1em;
@@ -600,10 +642,12 @@ table.highlight-rows tbody tr:hover td
 {
 	height: 20px;
 }
+
 .LargeSpace
 {
 	height: 30px;
 }
+
 div.Title{
 	color:					#eeeeee;
 	background-color:		#333333;
@@ -632,57 +676,64 @@ div.PartTitle{
 	padding-bottom:			0px;
 	text-align:				left;
 }
+
 #account_details_holder
 {
 	border:					1px solid #333333;
 	width:					468px;
 	background-color:		#eeeeee;
 }
+
 #account_details_table
 {
 	border:					1px solid #eeeeee;
 	width:					100%;
 }
+
 #primary_contact_details_holder
 {
 	border:					1px solid #333333;
 	width:					468px;
 	background-color:		#eeeeee;
 }
+
 #primary_contact_details_table
 {
 	border:					1px solid #eeeeee;
 	width:					100%;
 }
+
 .Page
 {
 	width:					963px;
 	border:					1px solid #333333;
 	background-color:		#eeeeee;
 }
+
 .data-table td
 {
 	padding-top:			2px;
 	padding-bottom:			2px;
 }
+
 #sale-items-table td
 {
 	text-indent:			10px;
 }
+
 #sale_panel tr
 {
 	vertical-align:			top;
 }
+
 #after-commit-button-panel
 {
 }
+
 .maximum-area-body
 {
 	padding-bottom:			15px;
 }
-
-
-
 
 tr.hide-if-not-last-child:last-child
 {
@@ -769,10 +820,12 @@ div.document-explorer-address-separator img
 
 div.document-explorer
 {
-	border-left		: 0.1em solid #333;;
+	border-left		: 0.1em solid #333;
 	border-right	: 0.1em solid #333;
 	padding			: 0px;
 	clear			: both;
+	margin-top		: .25em;
+	margin-bottom	: .25em;
 }
 
 div.document-explorer-list
@@ -781,6 +834,8 @@ div.document-explorer-list
 	max-height			: 30em;
 	overflow-y			: scroll;
 	background-color	: #efefef;
+	border-left			: .1em solid #333;
+	border-right		: .1em solid #333;
 }
 
 
@@ -796,7 +851,6 @@ table.document-explorer
 	width			: 100%;
 	margin			: 0px;
 	font-size		: 10pt;
-	
 	background-color	: #fff;
 }
 
@@ -867,21 +921,25 @@ table.document-explorer .field-name
 	min-width	: 25em;
 	max-width	: 25em;
 }
+
 table.document-explorer .field-size
 {
 	min-width	: 5em;
 	max-width	: 5em;
 }
+
 table.document-explorer .field-date
 {
 	min-width	: 8em;
 	max-width	: 8em;
 }
+
 table.document-explorer .field-user
 {
 	min-width	: 8em;
 	max-width	: 8em;
 }
+
 table.document-explorer .field-actions
 {
 	width	: auto;
@@ -890,6 +948,7 @@ table.document-explorer .field-actions
 table.document-explorer tbody tr td
 {
 	background-color	: #efefef;
+	border				: none !important;
 }
 
 table.document-explorer tr.selected[onclick] td
@@ -939,7 +998,6 @@ div.document-explorer-status span.description
 {
 	font-style	: italic;
 }
-
 
 /*********************************** Actions **********************************/
 div.action-list

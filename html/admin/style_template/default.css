@@ -120,12 +120,6 @@ li
 /*	font-size:			10pt;		*/
 }
 
-body
-{
-	margin:				0px;
-/*	line-height:		1.2;*/
-}
-
 body.EmbeddedComponent
 {
 	background-color:	#EFEBE7;
