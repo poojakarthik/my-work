@@ -512,7 +512,7 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 			
 			$strDetails .= "
 <tr>
-	<td><em>$strProperty:</em><td>
+	<td><em>$strProperty:</em></td>
 	<td $strValueColumnColSpan>$strValue</td>$strPreviousValue
 </tr>";
 		}		
