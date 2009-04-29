@@ -8,6 +8,8 @@ require_once('require.php');
 
 echo "<pre>";
 
+$qryQuery	= new Query();
+
 // show cdr
 $intCDR = (int)$_REQUEST['id'];
 if ($argc > 1)
