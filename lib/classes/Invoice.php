@@ -1333,7 +1333,7 @@ class Invoice extends ORM
 						{
 							// Prorate the last session (assumes a consistent rate per unit [KB])
 							$fltRatePerKB	= ($arrDataCDR['Units']) ? ($fltCharge / $arrDataCDR['Units']) : 0;
-							$fltCharge		-= (abs(intAvailableUnits) * $fltRatePerKB);
+							$fltCharge		-= (abs($intAvailableUnits) * $fltRatePerKB);
 						}
 
 						$fltTotalCredit	+= $fltCharge;
