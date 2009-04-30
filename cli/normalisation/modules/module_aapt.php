@@ -284,7 +284,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		
 		// Source
 		$mixValue 						= $this->_FetchRawCDR('OriginatingCLI');
-		if ($mixValue == " ")
+		if (!trim($mixValue))
 		{
 			$mixValue = NULL;
 		}
@@ -292,7 +292,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		
 		// Destination
 		$mixValue 						= $this->_FetchRawCDR('NumberDialled');
-		if ($mixValue == " ")
+		if (!trim($mixValue))
 		{
 			$mixValue = NULL;
 		}
