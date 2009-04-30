@@ -1325,7 +1325,7 @@ class Invoice extends ORM
 					if ($intAvailableUnits > 0.0)
 					{
 						$arrDataCDR['Units']	= ($arrDataCDR['Credit']) ? 0-$arrDataCDR['Units'] : $arrDataCDR['Units'];
-						$arrDataCDR['Charge']	= ($arrDataCDR['Charge']) ? 0-$arrDataCDR['Charge'] : $arrDataCDR['Charge'];
+						$arrDataCDR['Charge']	= ($arrDataCDR['Credit']) ? 0-$arrDataCDR['Charge'] : $arrDataCDR['Charge'];
 
 						$intAvailableUnits	-= $arrDataCDR['Units'];
 						$fltCharge			= $arrDataCDR['Charge'];
