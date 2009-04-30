@@ -1316,9 +1316,11 @@ class Invoice extends ORM
 			// If there are any CDRs
 			if ($resResult->num_rows)
 			{
-				$intTotalUnits		= 0;
-				$fltTotalCredit		= 0.0;
-				$intAvailableUnits	= self::prorate($intIncludedData, $intArrearsPeriodStart, $this->intLastInvoiceDatetime, $this->intInvoiceDatetime, DATE_TRUNCATE_DAY, TRUE, 0);
+				$intTotalUnits				= 0;
+				$fltTotalCredit				= 0.0;
+				$fltTotalCharge				= 0.0;
+				$intProratedIncludedData	= self::prorate($intIncludedData, $intArrearsPeriodStart, $this->intLastInvoiceDatetime, $this->intInvoiceDatetime, DATE_TRUNCATE_DAY, TRUE, 0);
+				$intAvailableUnits			= $intProratedIncludedData;
 				while (($intAvailableUnits > 0.0) && ($arrDataCDR = $resResult->fetch_assoc()))
 				{
 					// If we haven't gone over our Data Cap yet
@@ -1339,7 +1341,16 @@ class Invoice extends ORM
 						$fltTotalCredit	+= $fltCharge;
 					}
 					$intTotalUnits	+= $arrDataCDR['Units'];
+					$fltTotalCharge	+= $arrDataCDR['Charge'];
 				}
+				
+				Log::getLog()->log("Total Data Usage			: {$intTotalUnits} KB");
+				Log::getLog()->log("Prorated Included Data		: {$intProratedIncludedData} KB");
+				Log::getLog()->log("Data Usage Included in Cap	: ".($intProratedIncludedData-max(0, $intAvailableUnits))." KB");
+				Log::getLog()->log("Data Overusage				: ".(max(0, $intTotalUnits-$intProratedIncludedData-max(0, $intAvailableUnits)))." KB");
+				Log::getLog()->log("Data Charge					: \${$fltTotalCharge}");
+				Log::getLog()->log("Creditback					: \${$fltTotalCredit}");
+				Log::getLog()->log("Overusage Charge			: \$".($fltTotalCharge-$fltTotalCredit));
 			}
 
 			// Add the Credit
