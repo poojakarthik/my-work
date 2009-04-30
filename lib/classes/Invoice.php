@@ -1322,7 +1322,7 @@ class Invoice extends ORM
 				$fltTotalCharge				= 0.0;
 				$intProratedIncludedData	= self::prorate($intIncludedData, $intArrearsPeriodStart, $this->intLastInvoiceDatetime, $this->intInvoiceDatetime, DATE_TRUNCATE_DAY, TRUE, 0);
 				$intAvailableUnits			= $intProratedIncludedData;
-				while (($intAvailableUnits > 0.0) && ($arrDataCDR = $resResult->fetch_assoc()))
+				while ($arrDataCDR = $resResult->fetch_assoc())
 				{
 					$arrDataCDR['Units']	= ($arrDataCDR['Credit']) ? 0-$arrDataCDR['Units'] : $arrDataCDR['Units'];
 					$arrDataCDR['Charge']	= ($arrDataCDR['Credit']) ? 0-$arrDataCDR['Charge'] : $arrDataCDR['Charge'];
