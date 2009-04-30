@@ -1323,12 +1323,12 @@ class Invoice extends ORM
 				$intAvailableUnits			= $intProratedIncludedData;
 				while (($intAvailableUnits > 0.0) && ($arrDataCDR = $resResult->fetch_assoc()))
 				{
+					$arrDataCDR['Units']	= ($arrDataCDR['Credit']) ? 0-$arrDataCDR['Units'] : $arrDataCDR['Units'];
+					$arrDataCDR['Charge']	= ($arrDataCDR['Credit']) ? 0-$arrDataCDR['Charge'] : $arrDataCDR['Charge'];
+					
 					// If we haven't gone over our Data Cap yet
 					if ($intAvailableUnits > 0.0)
 					{
-						$arrDataCDR['Units']	= ($arrDataCDR['Credit']) ? 0-$arrDataCDR['Units'] : $arrDataCDR['Units'];
-						$arrDataCDR['Charge']	= ($arrDataCDR['Credit']) ? 0-$arrDataCDR['Charge'] : $arrDataCDR['Charge'];
-
 						$intAvailableUnits	-= $arrDataCDR['Units'];
 						$fltCharge			= $arrDataCDR['Charge'];
 						if ($intAvailableUnits < 0)
