@@ -63,7 +63,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
 			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
 			ContextMenu()->Account->Payments->Change_Payment_Method($intAccountId);
-			//ContextMenu()->Account->Add_Associated_Account($intAccountId);
+			ContextMenu()->Account->Add_Associated_Account($intAccountId);
 			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
 			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
 			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL) && count(FlexSale::listForAccountId($intAccountId, NULL, 1)))
