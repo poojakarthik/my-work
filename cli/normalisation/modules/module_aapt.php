@@ -113,7 +113,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$arrDefine ['CC']				['Index']		= 0;	// record type indicator
 		$arrDefine ['CC']				['Validate']	= "/^3$/";
 		$arrDefine ['OriginatingCLI']	['Index']		= 1;	// Blank or 10 digit  number
-		$arrDefine ['OriginatingCLI']	['Validate']	= "/^ $|^\d{10}$/";
+		$arrDefine ['OriginatingCLI']	['Validate']	= "/^\ ?$|^\d{10}$/";
 		$arrDefine ['OriginatingCSI']	['Index']		= 2;	// Up to 10 digit numeric
 		$arrDefine ['OriginatingCity']	['Index']		= 3;	// 1-13 characters
 		$arrDefine ['OriginatingState']	['Index']		= 4;	// 2-3 characters
