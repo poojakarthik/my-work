@@ -1343,7 +1343,7 @@ class Invoice extends ORM
 			}
 
 			// Add the Credit
-			$this->_addPlanCharge('PDCR', $fltTotalCredit, $arrPlanDetails, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->AccountGroup, $this->Account, $intPrimaryService);
+			$this->_addPlanCharge('PDCR', max(0.0, $fltTotalCredit), $arrPlanDetails, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->AccountGroup, $this->Account, $intPrimaryService);
 		}
 	}
 	
