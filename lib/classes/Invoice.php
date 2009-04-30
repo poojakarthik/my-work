@@ -1307,12 +1307,13 @@ class Invoice extends ORM
 									"FROM CDR JOIN Rate ON Rate.Id = CDR.Rate JOIN RecordType ON RecordType.Id = CDR.RecordType " .
 									"WHERE CDR.Service IN ({$strServices}) AND CDR.invoice_run_id = {$this->invoice_run_id} AND Rate.Uncapped = 1 AND RecordType.DisplayType = ".RECORD_DISPLAY_DATA." " .
 									"ORDER BY CDR.StartDatetime ";
+			Log::getLog()->log($sqlIncludedData);
 			$resResult			= $qryQuery->Execute($sqlIncludedData);
 			if ($resResult === FALSE)
 			{
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
-
+			
 			// If there are any CDRs
 			if ($resResult->num_rows)
 			{
@@ -1337,7 +1338,7 @@ class Invoice extends ORM
 							$fltRatePerKB	= ($arrDataCDR['Units']) ? ($fltCharge / $arrDataCDR['Units']) : 0;
 							$fltCharge		-= (abs($intAvailableUnits) * $fltRatePerKB);
 						}
-
+						
 						$fltTotalCredit	+= $fltCharge;
 					}
 					$intTotalUnits	+= $arrDataCDR['Units'];
@@ -1352,7 +1353,7 @@ class Invoice extends ORM
 				Log::getLog()->log("Creditback					: \${$fltTotalCredit}");
 				Log::getLog()->log("Overusage Charge			: \$".($fltTotalCharge-$fltTotalCredit));
 			}
-
+			
 			// Add the Credit
 			$this->_addPlanCharge('PDCR', max(0.0, $fltTotalCredit), $arrPlanDetails, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->AccountGroup, $this->Account, $intPrimaryService);
 		}
