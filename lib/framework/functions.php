@@ -2866,7 +2866,7 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia)
 			$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$arrInvoice['invoice_run_id']}/{$arrInvoice['Account']}.pdf";
 			if (!@file_put_contents($strPDFPath, $strPDFContent))
 			{
-				throw new Exception(error_get_last());
+				throw new Exception(print_r(error_get_last(), true));
 			}
 		}
 		
