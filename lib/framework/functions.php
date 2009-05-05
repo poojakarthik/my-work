@@ -2637,7 +2637,7 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 		$arrPDFs = glob($strPDFGlob);
 		if ($arrPDFs && count($arrPDFs) && filemtime($strXMLGlob) < filemtime($strPDFGlob))
 		{
-			throw new Exception("Cached Invoice Found @ '{$arrPDFs[0]}'! (XML Modified: ".date("Y-m-d H:i:s", filemtime($strXMLGlob))."; PDF Modified: ".date("Y-m-d H:i:s", filemtime($strPDFGlob)).")");
+			//throw new Exception("Cached Invoice Found @ '{$arrPDFs[0]}'! (XML Modified: ".date("Y-m-d H:i:s", filemtime($strXMLGlob))."; PDF Modified: ".date("Y-m-d H:i:s", filemtime($strPDFGlob)).")");
 			// Return cached PDF
 			return $arrPDFs[0];
 		}
