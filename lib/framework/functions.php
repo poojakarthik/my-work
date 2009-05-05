@@ -2637,6 +2637,7 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 		$arrPDFs = glob($strPDFGlob);
 		if ($arrPDFs && count($arrPDFs) && filemtime($strXMLGlob) < filemtime($strPDFGlob))
 		{
+			throw new Exception("Cached Invoice Found! (XML Modified: ".date("Y-m-d H:i:s", filemtime($strXMLGlob))."; PDF Modified: ".date("Y-m-d H:i:s", filemtime($strPDFGlob)).")");
 			// Return cached PDF
 			return $arrPDFs[0];
 		}
@@ -2845,7 +2846,7 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia)
 		$strPDFContent	= $pdfDocument->render();
 		
 		// If this is the frontend then cache this PDF, so we aren't thrashing the server every time we view the Invoice
-		throw new Exception(PHP_SAPI);
+		//throw new Exception(PHP_SAPI);
 		if (PHP_SAPI !== 'cli')
 		{	
 			VixenRequire('lib/classes/Invoice.php');
