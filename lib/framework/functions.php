@@ -2849,7 +2849,7 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia)
 		//throw new Exception(PHP_SAPI);
 		if (PHP_SAPI !== 'cli')
 		{	
-			VixenRequire('lib/classes/Invoice.php');
+			require_once(dirname(__FILE__).'/../classes/Invoice.php');
 			$objInvoice	= new Invoice(array('Id'=>(int)$intInvoiceId), true);
 			
 			$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$objInvoice->invoice_run_id}/{$objInvoice->Account}.pdf";
