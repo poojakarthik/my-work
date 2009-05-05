@@ -2785,6 +2785,9 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 
 function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia)
 {
+	static	$qryQuery;
+	$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
+	
 	// Get the document properties from the file
 	$parts = array();
 	preg_match_all("/(?:\<(DocumentType|CustomerGroup|CreationDate|DeliveryMethod)\>([^\<]*)\<)/", $strXML, $parts);
@@ -2848,12 +2851,19 @@ function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia)
 		// If this is the frontend then cache this PDF, so we aren't thrashing the server every time we view the Invoice
 		//throw new Exception(PHP_SAPI);
 		if (PHP_SAPI !== 'cli')
-		{	
-			throw new Exception(print_r(get_class_methods('Invoice'), true));
-			require_once(dirname(__FILE__).'/../classes/Invoice.php');
-			$objInvoice	= new Invoice(array('Id'=>(int)$intInvoiceId), true);
+		{
+			$intInvoiceId	= (int)$intInvoiceId;
+			$resInvoice		= $qryQuery->Execute("SELECT * FROM Invoice WHERE Id = {$intInvoiceId} LIMIT 1");
+			if ($resInvoice === false)
+			{
+				throw new Exception($qryQuery->Error());
+			}
+			elseif (!($arrInvoice = $resInvoice->fetch_assoc()))
+			{
+				throw new Exception("Unable to load Invoice with Id '{$intInvoiceId}'");
+			}
 			
-			$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$objInvoice->invoice_run_id}/{$objInvoice->Account}.pdf";
+			$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$arrInvoice['invoice_run_id']}/{$arrInvoice['Account']}.pdf";
 			if (!@file_put_contents($strPDFPath, $strPDFContent))
 			{
 				throw new Exception(error_get_last());
