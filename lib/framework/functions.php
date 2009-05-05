@@ -2593,11 +2593,14 @@ function ListPDFSamples($intAccountId)
  */
 function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mxdInvoiceRun)
 {
-	$strGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}.xml";
-	$arrPDFs = glob($strGlob);
-	if ($arrPDFs && count($arrPDFs))
+	$strPath	= null;
+	
+	// Check for XML Invoice
+	$strXMLGlob = PATH_INVOICE_PDFS ."xml/$mxdInvoiceRun/{$intAccountId}.xml";
+	$arrXMLs = glob($strXMLGlob);
+	if ($arrXMLs && count($arrXMLs))
 	{
-		return $arrPDFs[0];
+		$strPath	= $arrXMLs[0];
 	}
 
 	if ($intInvoiceId)
@@ -2606,7 +2609,7 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 		$arrPDFs = glob($strGlob);
 		if ($arrPDFs && count($arrPDFs))
 		{
-			return $arrPDFs[0];
+			$strPath	= $arrPDFs[0];
 		}
 	}
 
@@ -2614,7 +2617,7 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 	$arrPDFs = glob($strGlob);
 	if ($arrPDFs && count($arrPDFs))
 	{
-		return $arrPDFs[0];
+		$strPath	= $arrPDFs[0];
 	}
 
 	if ($intInvoiceId)
@@ -2623,7 +2626,24 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth, $intInvoiceId, $mx
 		$arrPDFs = glob($strGlob);
 		if ($arrPDFs && count($arrPDFs))
 		{
+			$strPath	= $arrPDFs[0];
+		}
+	}
+	
+	// If we have XML, check to see if we have a cached version of this Invoice (check timestamps as well to make sure we're not seeing an old cache)
+	if ($strPath)
+	{
+		$strPDFGlob = PATH_INVOICE_PDFS ."pdf/$mxdInvoiceRun/{$intAccountId}.pdf";
+		$arrPDFs = glob($strPDFGlob);
+		if ($arrPDFs && count($arrPDFs) && filemtime($strXMLGlob) < filemtime($strPDFGlob))
+		{
+			// Return cached PDF
 			return $arrPDFs[0];
+		}
+		else
+		{
+			// Return XML
+			return $strPath;
 		}
 	}
 
@@ -2748,73 +2768,7 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 			{
 				$xml = file_get_contents($mxdInvoicePath);
 			}
-
-			// Get the document properties from the file
-			$parts = array();
-			preg_match_all("/(?:\<(DocumentType|CustomerGroup|CreationDate|DeliveryMethod)\>([^\<]*)\<)/", $xml, $parts);
-
-			// Check that we have a full set
-			if (count($parts) != 3 || count($parts[1]) != 4 || count($parts[2]) != 4)
-			{
-				throw new Exception("Unable to identify document properties.");
-			}
-
-			// Create a [name=>value,...] arrray...
-			$docProps = array();
-			for($i = 0; $i < 4; $i++)
-			{
-				$docProps[$parts[1][$i]] = $parts[2][$i];
-			}
-
-			// If no target media has been specified, get the default media type for the file
-			if (!$intTargetMedia)
-			{
-				$targetMedia = $docProps["DeliveryMethod"];
-				switch($targetMedia)
-				{
-				case 'DELIVERY_METHOD_EMAIL':
-				case 'DELIVERY_METHOD_EMAIL_SENT':
-				case 'DELIVERY_METHOD_DO_NOT_SEND':
-					$intTargetMedia = DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL;
-					break;
-				case 'DELIVERY_METHOD_POST':
-				case 'DELIVERY_METHOD_PRINT':
-					$intTargetMedia = DOCUMENT_TEMPLATE_MEDIA_TYPE_PRINT;
-					break;
-				default:
-					return FALSE;
-				}
-			}
-
-			// Take the effective date to be the document Creation Date
-			$effectiveDate = $docProps["CreationDate"];
-
-			// Take the customer group from the file - this should be the same as the one for the invoice
-			require_once(SHARED_BASE_PATH.'classes/customer/Customer_Group.php');
-			$custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"])->id;
-
-			VixenRequire('lib/pdf/Flex_Pdf.php');
-
-			try
-			{
-				// Generate the pdf document on the fly
-				$pdfTemplate = new Flex_Pdf_Template(
-					$custGroupId,
-					$effectiveDate,
-					DOCUMENT_TEMPLATE_TYPE_INVOICE,
-					$xml,
-					$intTargetMedia,
-					TRUE);
-
-				$pdfDocument = $pdfTemplate->createDocument();
-
-				$pdf = $pdfDocument->render();
-			}
-			catch (Exception $e)
-			{
-				throw $e;
-			}
-
+			$pdf	= generateInvoicePDF($xml, $intInvoiceId, $intTargetMedia);
 			break;
 
 		case '.pdf':
@@ -2828,7 +2782,89 @@ function GetPDFContent($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvo
 	}
 }
 
-
+function generateInvoicePDF($strXML, $intInvoiceId, $intTargetMedia)
+{
+	// Get the document properties from the file
+	$parts = array();
+	preg_match_all("/(?:\<(DocumentType|CustomerGroup|CreationDate|DeliveryMethod)\>([^\<]*)\<)/", $strXML, $parts);
+	
+	// Check that we have a full set
+	if (count($parts) != 3 || count($parts[1]) != 4 || count($parts[2]) != 4)
+	{
+		throw new Exception("Unable to identify document properties.");
+	}
+	
+	// Create a [name=>value,...] arrray...
+	$docProps = array();
+	for($i = 0; $i < 4; $i++)
+	{
+		$docProps[$parts[1][$i]] = $parts[2][$i];
+	}
+	
+	// If no target media has been specified, get the default media type for the file
+	if (!$intTargetMedia)
+	{
+		$targetMedia = $docProps["DeliveryMethod"];
+		switch($targetMedia)
+		{
+		case 'DELIVERY_METHOD_EMAIL':
+		case 'DELIVERY_METHOD_EMAIL_SENT':
+		case 'DELIVERY_METHOD_DO_NOT_SEND':
+			$intTargetMedia = DOCUMENT_TEMPLATE_MEDIA_TYPE_EMAIL;
+			break;
+		case 'DELIVERY_METHOD_POST':
+		case 'DELIVERY_METHOD_PRINT':
+			$intTargetMedia = DOCUMENT_TEMPLATE_MEDIA_TYPE_PRINT;
+			break;
+		default:
+			return FALSE;
+		}
+	}
+	
+	// Take the effective date to be the document Creation Date
+	$effectiveDate = $docProps["CreationDate"];
+	
+	// Take the customer group from the file - this should be the same as the one for the invoice
+	require_once(SHARED_BASE_PATH.'classes/customer/Customer_Group.php');
+	$custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"])->id;
+	
+	VixenRequire('lib/pdf/Flex_Pdf.php');
+	
+	try
+	{
+		// Generate the pdf document on the fly
+		$pdfTemplate = new Flex_Pdf_Template(
+			$custGroupId,
+			$effectiveDate,
+			DOCUMENT_TEMPLATE_TYPE_INVOICE,
+			$strXML,
+			$intTargetMedia,
+			TRUE);
+		
+		$pdfDocument	= $pdfTemplate->createDocument();
+		$strPDFContent	= $pdfDocument->render();
+		
+		// If this is the frontend then cache this PDF, so we aren't thrashing the server every time we view the Invoice
+		throw new Exception(PHP_SAPI);
+		if (PHP_SAPI !== 'cli')
+		{	
+			VixenRequire('lib/classes/Invoice.php');
+			$objInvoice	= new Invoice(array('Id'=>(int)$intInvoiceId), true);
+			
+			$strPDFPath	= PATH_INVOICE_PDFS."pdf/{$objInvoice->invoice_run_id}/{$objInvoice->Account}.pdf";
+			if (!@file_put_contents($strPDFPath, $strPDFContent))
+			{
+				throw new Exception(error_get_last());
+			}
+		}
+		
+		return $strPDFContent;
+	}
+	catch (Exception $e)
+	{
+		throw $e;
+	}
+}
 
 //------------------------------------------------------------------------//
 // FindFNNOwner
