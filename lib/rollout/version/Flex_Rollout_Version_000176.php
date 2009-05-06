@@ -164,19 +164,23 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 			{
 				throw new Exception(__CLASS__ . ' Failed to add Carrier Instance \''.$arrCarrierInstance['name'].'\'. ' . $resCarrierInstanceInsert->getMessage() . " (DB Error: " . $resCarrierInstanceInsert->getUserInfo() . ")");
 			}
+			$arrCarrierInstance['id']	= (int)$dbAdmin->lastInsertID();
 			
 			// Create the Carrier Instance -> Customer Group links
-			$strCarrierInstanceLinkInsert	= "	INSERT INTO	carrier_instance_customer_group
-													(carrier_instance_id, customer_group_id)
-												VALUES
-													(
-														".$dbAdmin->quote($arrCarrierInstance['carrier_instance_id']	, 'integer').",
-														".$dbAdmin->quote($arrCarrierInstance['customer_group_id']		, 'integer')."
-													);";
-			$resCarrierInstanceLinkInsert	= $dbAdmin->query($strCarrierInstanceLinkInsert);
-			if (PEAR::isError($resCarrierInstanceLinkInsert))
+			foreach ($arrCarrierInstance['arrCustomerGroups'] as $intCustomerGroupId=>$arrCustomerGroup)
 			{
-				throw new Exception(__CLASS__ . ' Failed to link Carrier Instance \''.$arrCarrierInstance['name'].'\' to Customer Groups. ' . $resCarrierInstanceLinkInsert->getMessage() . " (DB Error: " . $resCarrierInstanceLinkInsert->getUserInfo() . ")");
+				$strCarrierInstanceLinkInsert	= "	INSERT INTO	carrier_instance_customer_group
+														(carrier_instance_id, customer_group_id)
+													VALUES
+														(
+															".$dbAdmin->quote($arrCarrierInstance['id']	, 'integer').",
+															".$dbAdmin->quote($intCustomerGroupId		, 'integer')."
+														);";
+				$resCarrierInstanceLinkInsert	= $dbAdmin->query($strCarrierInstanceLinkInsert);
+				if (PEAR::isError($resCarrierInstanceLinkInsert))
+				{
+					throw new Exception(__CLASS__ . ' Failed to link Carrier Instance \''.$arrCarrierInstance['name'].'\' to Customer Groups. ' . $resCarrierInstanceLinkInsert->getMessage() . " (DB Error: " . $resCarrierInstanceLinkInsert->getUserInfo() . ")");
+				}
 			}
 			
 			// Update the Carrier Module
