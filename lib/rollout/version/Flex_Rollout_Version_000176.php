@@ -99,7 +99,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		}
 		while ($arrCarrier = $resCarriers->fetchRow())
 		{
-			$arrCarriers[$arrCarrier['Id']]	= $arrCarrier;
+			$arrCarriers[(int)$arrCarrier['Id']]	= $arrCarrier;
 		}
 		
 		$arrCarrierInstances	= array();
