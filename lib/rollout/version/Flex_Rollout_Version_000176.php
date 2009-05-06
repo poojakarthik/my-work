@@ -7,9 +7,9 @@
  *	1:	Add the carrier_instance Table
  *	2:	Add the carrier_instance_customer_group Table
  *
- *	3:	Populate the carrier_instance and carrier_instance_customer_group Tables
+ *	3:	Add the CarrierModule.carrier_instance_id Field
  *
- *	4:	Add the CarrierModule.carrier_instance_id Field
+ *	4:	Populate the carrier_instance and carrier_instance_customer_group Tables
  *
  *	5:	Add the FileDownload.carrier_module_id Field
  *	6:	Add the FileExport.carrier_module_id Field
@@ -66,7 +66,20 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] =	"	DROP TABLE	carrier_instance_customer_group;";
 		
-		//	3:	Populate the carrier_instance and carrier_instance_customer_group Tables
+		//	3:	Add the CarrierModule.carrier_instance_id Field
+		$strSQL = "	ALTER TABLE	CarrierModule
+						ADD	carrier_instance_id	BIGINT	UNSIGNED	NOT NULL	COMMENT '(FK) Carrier Instance';
+						ADD	CONSTRAINT	fk_carrier_module_carrier_instance_id	FOREIGN KEY	(carrier_instance_id)	REFERENCES carrier_instance(id)	ON UPDATE CASCADE	ON DELETE CASCADE;";
+		$result = $dbAdmin->exec($strSQL);
+		if (PEAR::isError($result))
+		{
+			throw new Exception(__CLASS__ . ' Failed to add the CarrierModule.carrier_instance_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
+		}
+		$this->rollbackSQL[] =	"	ALTER TABLE	CarrierModule
+										DROP	FOREIGN KEY	fk_carrier_module_carrier_instance_id,
+										DROP				carrier_instance_id;";
+		
+		//	4:	Populate the carrier_instance and carrier_instance_customer_group Tables
 		$arrCustomerGroups	= array();
 		$resCutomerGroups	= $dbAdmin->query("SELECT * FROM CustomerGroup WHERE 1");
 		if (PEAR::isError($resCutomerGroups))
@@ -176,19 +189,6 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 				throw new Exception(__CLASS__ . ' Failed to set CarrierModule.carrier_instance_id #'.$arrCarrierModule['Id'].'. ' . $resCarrierInstanceLinkInsert->getMessage() . " (DB Error: " . $resCarrierInstanceLinkInsert->getUserInfo() . ")");
 			}
 		}
-		
-		//	4:	Add the CarrierModule.carrier_instance_id Field
-		$strSQL = "	ALTER TABLE	CarrierModule
-						ADD	carrier_instance_id	BIGINT	UNSIGNED	NOT NULL	COMMENT '(FK) Carrier Instance';
-						ADD	CONSTRAINT	fk_carrier_module_carrier_instance_id	FOREIGN KEY	(carrier_instance_id)	REFERENCES carrier_instance(id)	ON UPDATE CASCADE	ON DELETE CASCADE;";
-		$result = $dbAdmin->exec($strSQL);
-		if (PEAR::isError($result))
-		{
-			throw new Exception(__CLASS__ . ' Failed to add the CarrierModule.carrier_instance_id Field. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
-		}
-		$this->rollbackSQL[] =	"	ALTER TABLE	CarrierModule
-										DROP	FOREIGN KEY	fk_carrier_module_carrier_instance_id,
-										DROP				carrier_instance_id;";
 		
 		//	5:	Add the FileDownload.carrier_module_id Field
 		$strSQL = "	ALTER TABLE	FileDownload
