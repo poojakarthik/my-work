@@ -116,7 +116,10 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		while ($arrCarrierModule = $resCarrierModule->fetchRow())
 		{
 			$intCarrierId	= (int)$arrCarrierModule['Carrier'];
-			throw new Exception(print_r($intCarrierId, true));
+			if (!$intCarrierId)
+			{
+				throw new Exception(print_r($arrCarrierModule, true));
+			}
 			
 			$arrCarrierInstance	= array();
 			$arrCarrierInstance['carrier_id']			= $intCarrierId;
