@@ -36,7 +36,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 						name		VARCHAR(256)		NOT NULL					COMMENT 'Name of this Instance',
 						description	VARCHAR(512)		NULL						COMMENT 'Description of this Instance',
 						
-						CONSTRAINT	pk_carrier_instance_id			PRIMARY KEY,
+						CONSTRAINT	pk_carrier_instance_id			PRIMARY KEY	(id),
 						CONSTRAINT	fk_carrier_instance_carrier_id	FOREIGN KEY	(carrier_id)	REFERENCES Carrier(Id)	ON UPDATE CASCADE	ON DELETE CASCADE
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
@@ -54,7 +54,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 						carrier_instance_id	BIGINT	UNSIGNED	NOT NULL					COMMENT '(FK) Carrier Instance',
 						customer_group_id	BIGINT	UNSIGNED	NOT NULL					COMMENT '(FK) Customer Group',
 						
-						CONSTRAINT	pk_carrier_instance_customer_group_id					PRIMARY KEY,
+						CONSTRAINT	pk_carrier_instance_customer_group_id					PRIMARY KEY	(id),
 						CONSTRAINT	fk_carrier_instance_customer_group_carrier_instance_id	FOREIGN KEY	(carrier_instance_id)	REFERENCES carrier_instance(id)	ON UPDATE CASCADE	ON DELETE CASCADE,
 						CONSTRAINT	fk_carrier_instance_customer_group_customer_group_id	FOREIGN KEY	(customer_group_id)		REFERENCES CustomerGroup(Id)	ON UPDATE CASCADE	ON DELETE CASCADE
 					)
