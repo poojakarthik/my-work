@@ -439,6 +439,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 			$permittedActions['View'] = TRUE;
 			$permittedActions['Edit'] = TRUE;
 
+			/* Only ticketing admins can take/assign/reassign tickets.  If everyone needs to be able to, then uncomment this and remove it from the other section below
 			if ($ticket->isAssigned())
 			{
 				if (!$ticket->isAssignedTo($user))
@@ -452,9 +453,24 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 				$permittedActions['Take'] = TRUE;
 				$permittedActions['Assign'] = TRUE;
 			}
+			*/
 
 			if ($user->isAdminUser())
 			{
+				if ($ticket->isAssigned())
+				{
+					if (!$ticket->isAssignedTo($user))
+					{
+						$permittedActions['Take'] = TRUE;
+					}
+					$permittedActions['Reassign'] = TRUE;
+				}
+				else
+				{
+					$permittedActions['Take'] = TRUE;
+					$permittedActions['Assign'] = TRUE;
+				}
+				
 				// Admin users
 				$permittedActions['Delete'] = TRUE;
 			}

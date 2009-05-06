@@ -361,7 +361,12 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'sourceId';
 					$editableValues[] = 'deliveryStatusId';
 					$editableValues[] = 'details';
-					$editableValues[] = 'ownerId';
+					
+					if ($currentUser->isAdminUser())
+					{
+						// Only ticketing admins can assign tickets to people other than themselves
+						$editableValues[] = 'ownerId';
+					}
 					
 					if (array_key_exists('accountId', $_REQUEST))
 					{
@@ -838,6 +843,7 @@ class Application_Handler_Ticketing extends Application_Handler
 			$permittedActions[] = 'view';
 			$permittedActions[] = 'edit';
 
+			/* Only ticketing admins can take/assign/reassign tickets.  If everyone needs to be able to, then uncomment this and remove it from the other section below
 			if ($ticket->isAssigned())
 			{
 				if (!$ticket->isAssignedTo($user))
@@ -852,9 +858,25 @@ class Application_Handler_Ticketing extends Application_Handler
 				$permittedActions[] = 'take';
 				$permittedActions[] = 'assign';
 			}
+			*/
 
 			if ($user->isAdminUser())
 			{
+				if ($ticket->isAssigned())
+				{
+					if (!$ticket->isAssignedTo($user))
+					{
+						$permittedActions[] = 'take';
+					}
+					
+					$permittedActions[] = 'reassign';
+				}
+				else
+				{
+					$permittedActions[] = 'take';
+					$permittedActions[] = 'assign';
+				}
+				
 				// Admin user
 				$permittedActions[] = 'delete';
 			}
