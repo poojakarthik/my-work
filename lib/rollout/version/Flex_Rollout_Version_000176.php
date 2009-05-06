@@ -115,8 +115,8 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		}
 		while ($arrCarrierModule = $resCarrierModule->fetchRow())
 		{
-			throw new Exception(print_r($arrCarrierModule, true));
 			$intCarrierId	= (int)$arrCarrierModule['Carrier'];
+			throw new Exception(print_r($intCarrierId, true));
 			
 			$arrCarrierInstance	= array();
 			$arrCarrierInstance['carrier_id']			= $intCarrierId;
@@ -156,7 +156,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 												(carrier_id, name, description)
 											VALUES
 												(
-													".$dbAdmin->quote($arrCarrierInstance['carrier_id']		, 'integer').",
+													".$dbAdmin->quote($intCarrierId							, 'integer').",
 													".$dbAdmin->quote($arrCarrierInstance['name']			, 'text').",
 													".$dbAdmin->quote($arrCarrierInstance['description']	, 'text')."
 												);";
