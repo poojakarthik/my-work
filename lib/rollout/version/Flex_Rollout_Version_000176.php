@@ -68,7 +68,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		
 		//	3:	Add the CarrierModule.carrier_instance_id Field
 		$strSQL = "	ALTER TABLE	CarrierModule
-						ADD	carrier_instance_id	BIGINT	UNSIGNED	NOT NULL	COMMENT '(FK) Carrier Instance',
+						ADD	carrier_instance_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Carrier Instance',
 						ADD	CONSTRAINT	fk_carrier_module_carrier_instance_id	FOREIGN KEY	(carrier_instance_id)	REFERENCES carrier_instance(id)	ON UPDATE CASCADE	ON DELETE CASCADE;";
 		$result = $dbAdmin->exec($strSQL);
 		if (PEAR::isError($result))
