@@ -177,6 +177,18 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		{
 			//throw new Exception(serialize($arrCarrierInstance['carrier_id']));
 			//throw new Exception(print_r($arrCarrierInstance, true));
+			if (!$arrCarrierInstance['carrier_id'])
+			{
+				$arrTests	= array();
+				$arrTests[]	= $dbAdmin->quote(1		, 'integer');
+				$arrTests[]	= $dbAdmin->quote(null	, 'integer');
+				$arrTests[]	= $dbAdmin->quote('2'	, 'integer');
+				$arrTests[]	= $dbAdmin->quote(7		, 'integer');
+				$arrTests[]	= $dbAdmin->quote(-22	, 'integer');
+				
+				$arrTests[]	= print_r($arrCarrierInstance, true);
+				throw new Exception(print_r($arrTests, true));
+			}
 			
 			// Create the Carrier Instance
 			$strCarrierInstanceInsert	= "	INSERT INTO	carrier_instance
