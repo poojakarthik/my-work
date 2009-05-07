@@ -22,6 +22,8 @@
 class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 {
 	private $rollbackSQL = array();
+	
+	const	CARRIER_MODULE_CUSTOMER_GROUP_ALL	= '**ALL**';
 
 	public function rollout()
 	{
@@ -154,7 +156,15 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 				$arrCustomerGroups[$intCustomerGroupId]['arrCarrierInstances'][$intCarrierId]	= &$arrCarrierInstance;
 			}
 			
-			$arrCarrierInstances[]	= $arrCarrierInstance;
+			if ($intCarrierInstanceIndex = array_search(serialize($arrCarrierInstance), array_map('serialize', $arrCarrierInstances)))
+			{
+				$arrCarrierModule['arrCarrierInstance']	= &$arrCarrierInstances[$intCarrierInstanceIndex];
+			}
+			else
+			{
+				$arrCarrierModule['arrCarrierInstance']	= &$arrCarrierInstance;
+				$arrCarrierInstances[]					= &$arrCarrierInstance;
+			}
 		}
 		
 		$arrCarrierInstancesUnique		= array_map('unserialize', array_unique(array_map('serialize', $arrCarrierInstances)));
@@ -177,6 +187,8 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 				throw new Exception(__CLASS__ . ' Failed to add Carrier Instance \''.$arrCarrierInstance['name'].'\'. ' . $resCarrierInstanceInsert->getMessage() . " (DB Error: " . $resCarrierInstanceInsert->getUserInfo() . ")");
 			}
 			$arrCarrierInstance['id']	= (int)$dbAdmin->lastInsertID();
+			
+			if (self::CARRIER_MODULE_CUSTOMER_GROUP_ALL)
 			
 			// Create the Carrier Instance -> Customer Group links
 			foreach ($arrCarrierInstance['arrCustomerGroups'] as $intCustomerGroupId=>$arrCustomerGroup)
