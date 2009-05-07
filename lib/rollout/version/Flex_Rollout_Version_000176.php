@@ -175,7 +175,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		
 		foreach ($arrCarrierInstances as $intIndex=>$arrCarrierInstance)
 		{
-			throw new Exception(serialize($arrCarrierInstance['carrier_id']));
+			//throw new Exception(serialize($arrCarrierInstance['carrier_id']));
 			//throw new Exception(print_r($arrCarrierInstance, true));
 			
 			// Create the Carrier Instance
@@ -183,7 +183,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 												(carrier_id, name, description)
 											VALUES
 												(
-													".$dbAdmin->quote($arrCarrierInstance['carrier_id']		, 'integer').",
+													".$dbAdmin->quote((string)$arrCarrierInstance['carrier_id']		, 'integer').",
 													".$dbAdmin->quote($arrCarrierInstance['name']			, 'text').",
 													".$dbAdmin->quote($arrCarrierInstance['description']	, 'text')."
 												);";
