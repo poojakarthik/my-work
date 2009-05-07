@@ -1615,6 +1615,10 @@
 				$bolFleet	= TRUE;
 			}
 		}
+		else
+		{
+			$this->_Debug("Source Account: {$this->_arrCurrentCDR['Account']}; Destination Account: {$arrDestinationOwner['Account']}");
+		}
 
 		// Find the Rate
 		$arrWhere['Account']		= $this->_arrCurrentCDR['Account'];
