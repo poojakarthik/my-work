@@ -154,12 +154,20 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 				$arrCustomerGroups[$intCustomerGroupId]['arrCarrierInstances'][$intCarrierId]	= &$arrCarrierInstance;
 			}
 			
+			$arrCarrierInstances[]	= $arrCarrierInstance;
+		}
+		
+		$arrCarrierInstancesUnique		= array_map('unserialize', array_unique(array_map('serialize', $arrCarrierInstances)));
+		
+		throw new Exception("Carrier Instances: ".((string)count($arrCarrierInstances))."; Unique Instances: ".((string)count($arrCarrierInstancesUnique)));
+		foreach ($arrCarrierInstancesUnique as &$arrCarrierInstance)
+		{
 			// Create the Carrier Instance
 			$strCarrierInstanceInsert	= "	INSERT INTO	carrier_instance
 												(carrier_id, name, description)
 											VALUES
 												(
-													".$dbAdmin->quote($intCarrierId							, 'integer').",
+													".$dbAdmin->quote($arrCarrierInstance['carrier_id']		, 'integer').",
 													".$dbAdmin->quote($arrCarrierInstance['name']			, 'text').",
 													".$dbAdmin->quote($arrCarrierInstance['description']	, 'text')."
 												);";
