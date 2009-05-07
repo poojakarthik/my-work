@@ -138,7 +138,8 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 				
 				foreach ($arrCustomerGroups as $intCustomerGroupId=>$arrCustomerGroup)
 				{
-					$arrCarrierInstance['arrCustomerGroups'][$intCustomerGroupId]					= &$arrCustomerGroups[$intCustomerGroupId];
+					//$arrCarrierInstance['arrCustomerGroups'][$intCustomerGroupId]					= &$arrCustomerGroups[$intCustomerGroupId];
+					$arrCarrierInstance['arrCustomerGroups'][$intCustomerGroupId]					= $intCustomerGroupId;
 					
 					$arrCarriers[$intCarrierId]['arrCustomerGroups'][$intCustomerGroupId]			= &$arrCustomerGroups[$intCustomerGroupId];
 					$arrCustomerGroups[$intCustomerGroupId]['arrCarrierInstances'][$intCarrierId]	= &$arrCarrierInstance;
@@ -153,7 +154,8 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 				$arrCarrierInstance['name']			= $arrCarriers[$intCarrierId]['Name'].": ".$arrCustomerGroups[$intCustomerGroupId]['internal_name'];
 				$arrCarrierInstance['description']	= $arrCarrierInstance['name'];
 				
-				$arrCarrierInstance['arrCustomerGroups'][$intCustomerGroupId]					= &$arrCustomerGroups[$intCustomerGroupId];
+				//$arrCarrierInstance['arrCustomerGroups'][$intCustomerGroupId]					= &$arrCustomerGroups[$intCustomerGroupId];
+				$arrCarrierInstance['arrCustomerGroups'][$intCustomerGroupId]					= $intCustomerGroupId;
 				
 				$arrCarriers[$intCarrierId]['arrCustomerGroups'][$intCustomerGroupId]			= &$arrCustomerGroups[$intCustomerGroupId];
 				$arrCustomerGroups[$intCustomerGroupId]['arrCarrierInstances'][$intCarrierId]	= &$arrCarrierInstance;
