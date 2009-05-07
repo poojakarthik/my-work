@@ -173,7 +173,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		//$arrCarrierInstancesUnique		= array_map('unserialize', array_unique(array_map('serialize', $arrCarrierInstances)));
 		//throw new Exception("Carrier Instances: ".((string)count($arrCarrierInstances))."; Unique Instances: ".((string)count($arrCarrierInstancesUnique)));
 		
-		foreach ($arrCarrierInstances as &$arrCarrierInstance)
+		foreach ($arrCarrierInstances as $intIndex=>$arrCarrierInstance)
 		{
 			//throw new Exception(print_r($arrCarrierInstance, true));
 			
@@ -182,9 +182,9 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 												(carrier_id, name, description)
 											VALUES
 												(
-													".$dbAdmin->quote((int)$arrCarrierInstance['carrier_id']	, 'integer').",
-													".$dbAdmin->quote($arrCarrierInstance['name']				, 'text').",
-													".$dbAdmin->quote($arrCarrierInstance['description']		, 'text')."
+													".$dbAdmin->quote($arrCarrierInstance['carrier_id']		, 'integer').",
+													".$dbAdmin->quote($arrCarrierInstance['name']			, 'text').",
+													".$dbAdmin->quote($arrCarrierInstance['description']	, 'text')."
 												);";
 			$resCarrierInstanceInsert	= $dbAdmin->query($strCarrierInstanceInsert);
 			if (PEAR::isError($resCarrierInstanceInsert))
@@ -211,6 +211,8 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 					throw new Exception(__CLASS__ . ' Failed to link Carrier Instance \''.$arrCarrierInstance['name'].'\' to Customer Groups. ' . $resCarrierInstanceLinkInsert->getMessage() . " (DB Error: " . $resCarrierInstanceLinkInsert->getUserInfo() . ")");
 				}
 			}
+			
+			$arrCarrierInstance[$intIndex]	= $arrCarrierInstance;
 		}
 		
 		// Update the CarrierModule.carrier_instance_id Field
