@@ -182,9 +182,9 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 												(carrier_id, name, description)
 											VALUES
 												(
-													".$dbAdmin->quote($arrCarrierInstance['carrier_id']		, 'integer').",
-													".$dbAdmin->quote($arrCarrierInstance['name']			, 'text').",
-													".$dbAdmin->quote($arrCarrierInstance['description']	, 'text')."
+													".$dbAdmin->quote((int)$arrCarrierInstance['carrier_id']	, 'integer').",
+													".$dbAdmin->quote($arrCarrierInstance['name']				, 'text').",
+													".$dbAdmin->quote($arrCarrierInstance['description']		, 'text')."
 												);";
 			$resCarrierInstanceInsert	= $dbAdmin->query($strCarrierInstanceInsert);
 			if (PEAR::isError($resCarrierInstanceInsert))
