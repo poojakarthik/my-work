@@ -94,7 +94,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		}
 		
 		$arrCarriers	= array();
-		$resCarriers	= $dbAdmin->query("SELECT * FROM CustomerGroup WHERE 1");
+		$resCarriers	= $dbAdmin->query("SELECT * FROM Carrier WHERE 1");
 		if (PEAR::isError($resCarriers))
 		{
 			throw new Exception(__CLASS__ . ' Failed to retrieve Carrier records. ' . $resCarriers->getMessage() . " (DB Error: " . $resCarriers->getUserInfo() . ")");
