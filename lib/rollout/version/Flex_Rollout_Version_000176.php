@@ -105,6 +105,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		}
 		
 		$arrCarrierInstances	= array();
+		$arrCarrierModules		= array();
 		$strCarrierModuleSQL	= "	SELECT	Id,
 											Carrier,
 											customer_group
@@ -117,6 +118,8 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		}
 		while ($arrCarrierModule = $resCarrierModule->fetchRow())
 		{
+			$arrCarrierModules[]	= &$arrCarrierModule;
+			
 			$intCarrierId	= (int)$arrCarrierModule['Carrier'];
 			if (!$intCarrierId)
 			{
@@ -167,10 +170,10 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 			}
 		}
 		
-		$arrCarrierInstancesUnique		= array_map('unserialize', array_unique(array_map('serialize', $arrCarrierInstances)));
+		//$arrCarrierInstancesUnique		= array_map('unserialize', array_unique(array_map('serialize', $arrCarrierInstances)));
+		//throw new Exception("Carrier Instances: ".((string)count($arrCarrierInstances))."; Unique Instances: ".((string)count($arrCarrierInstancesUnique)));
 		
-		throw new Exception("Carrier Instances: ".((string)count($arrCarrierInstances))."; Unique Instances: ".((string)count($arrCarrierInstancesUnique)));
-		foreach ($arrCarrierInstancesUnique as &$arrCarrierInstance)
+		foreach ($arrCarrierInstances as &$arrCarrierInstance)
 		{
 			// Create the Carrier Instance
 			$strCarrierInstanceInsert	= "	INSERT INTO	carrier_instance
@@ -206,15 +209,18 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 					throw new Exception(__CLASS__ . ' Failed to link Carrier Instance \''.$arrCarrierInstance['name'].'\' to Customer Groups. ' . $resCarrierInstanceLinkInsert->getMessage() . " (DB Error: " . $resCarrierInstanceLinkInsert->getUserInfo() . ")");
 				}
 			}
-			
-			// Update the Carrier Module
-			$strCarrierInstanceLinkInsert	= "	UPDATE	CarrierModule
-												SET		carrier_instance_id	= ".$dbAdmin->quote($arrCarrierInstance['id'], 'integer')."
-												WHERE	Id = ".$dbAdmin->quote($arrCarrierModule['Id'], 'integer').";";
-			$resCarrierInstanceLinkInsert	= $dbAdmin->query($strCarrierInstanceLinkInsert);
-			if (PEAR::isError($resCarrierInstanceLinkInsert))
+		}
+		
+		// Update the CarrierModule.carrier_instance_id Field
+		foreach ($arrCarrierModules as &$arrCarrierModule)
+		{
+			$strCarrierModuleUpdate	= "	UPDATE	CarrierModule
+										SET		carrier_instance_id	= ".$dbAdmin->quote($arrCarrierModule['arrCarrierInstance']['id'], 'integer')."
+										WHERE	Id = ".$dbAdmin->quote($arrCarrierModule['Id'], 'integer').";";
+			$resCarrierModuleUpdate	= $dbAdmin->query($strCarrierModuleUpdate);
+			if (PEAR::isError($resCarrierModuleUpdate))
 			{
-				throw new Exception(__CLASS__ . ' Failed to set CarrierModule.carrier_instance_id #'.$arrCarrierModule['Id'].'. ' . $resCarrierInstanceLinkInsert->getMessage() . " (DB Error: " . $resCarrierInstanceLinkInsert->getUserInfo() . ")");
+				throw new Exception(__CLASS__ . ' Failed to set CarrierModule.carrier_instance_id #'.$arrCarrierModule['Id'].'. ' . $resCarrierModuleUpdate->getMessage() . " (DB Error: " . $resCarrierModuleUpdate->getUserInfo() . ")");
 			}
 		}
 		
