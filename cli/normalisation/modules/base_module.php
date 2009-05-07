@@ -408,15 +408,15 @@ abstract class NormalisationModule extends CarrierModule
 	 *
 	 * @method
 	 */	
-	protected function RemoveAusCode($strFNN)
+	public static function RemoveAusCode($strFNN)
 	{
 		if (strpos($strFNN, '+61') === 0)
 		{
-			return str_replace("+61", "0", $strFNN, $intCount = 1);
+			return '0'.substr($strFNN, 3);
 		}
 		elseif (strpos($strFNN, '61') === 0)
 		{
-			return str_replace("61", "0", $strFNN, $intCount = 1);
+			return '0'.substr($strFNN, 2);
 		}
 		return $strFNN;
 	}
