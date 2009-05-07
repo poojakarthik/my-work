@@ -156,7 +156,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 				$arrCustomerGroups[$intCustomerGroupId]['arrCarrierInstances'][$intCarrierId]	= &$arrCarrierInstance;
 			}
 			
-			if ($intCarrierInstanceIndex = array_search(serialize($arrCarrierInstance), array_map('serialize', $arrCarrierInstances)))
+			if (($intCarrierInstanceIndex = array_search(serialize($arrCarrierInstance), array_map('serialize', $arrCarrierInstances))) !== false)
 			{
 				$arrCarrierModule['arrCarrierInstance']	= &$arrCarrierInstances[$intCarrierInstanceIndex];
 			}
