@@ -175,6 +175,8 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		
 		foreach ($arrCarrierInstances as &$arrCarrierInstance)
 		{
+			throw new Exception(print_r($arrCarrierInstance, true));
+			
 			// Create the Carrier Instance
 			$strCarrierInstanceInsert	= "	INSERT INTO	carrier_instance
 												(carrier_id, name, description)
