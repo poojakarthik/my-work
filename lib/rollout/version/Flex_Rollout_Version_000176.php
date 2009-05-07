@@ -207,8 +207,6 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 			}
 			$arrCarrierInstance['id']	= (int)$dbAdmin->lastInsertID();
 			
-			if (self::CARRIER_MODULE_CUSTOMER_GROUP_ALL)
-			
 			// Create the Carrier Instance -> Customer Group links
 			foreach ($arrCarrierInstance['arrCustomerGroups'] as $intCustomerGroupId=>$arrCustomerGroup)
 			{
@@ -232,6 +230,11 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		// Update the CarrierModule.carrier_instance_id Field
 		foreach ($arrCarrierModules as &$arrCarrierModule)
 		{
+			if (!$arrCarrierModule['arrCarrierInstance']['id'])
+			{
+				throw new Exception(print_r($arrCarrierModule['arrCarrierInstance'], true));
+			}
+			
 			//throw new Exception(serialize($arrCarrierModule['arrCarrierInstance']['id'])."\n\n".print_r($arrCarrierModule['arrCarrierInstance'], true));
 			$strCarrierModuleUpdate	= "	UPDATE	CarrierModule
 										SET		carrier_instance_id	= ".$dbAdmin->quote($arrCarrierModule['arrCarrierInstance']['id'], 'integer')."
