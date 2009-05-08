@@ -173,8 +173,8 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		
 		//$arrCarrierInstancesUnique		= array_map('unserialize', array_unique(array_map('serialize', $arrCarrierInstances)));
 		//throw new Exception("Carrier Instances: ".((string)count($arrCarrierInstances))."; Unique Instances: ".((string)count($arrCarrierInstancesUnique)));
-		
-		foreach ($arrCarrierInstances as $intIndex=>$arrCarrierInstance)
+		unset($arrCarrierInstance);
+		foreach ($arrCarrierInstances as $intIndex=>&$arrCarrierInstance)
 		{
 			//throw new Exception(serialize($arrCarrierInstance['carrier_id']));
 			//throw new Exception(print_r($arrCarrierInstance, true));
@@ -224,7 +224,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 				}
 			}
 			
-			$arrCarrierInstance[$intIndex]	= $arrCarrierInstance;
+			//$arrCarrierInstance[$intIndex]	= $arrCarrierInstance;
 		}
 		
 		// Update the CarrierModule.carrier_instance_id Field
