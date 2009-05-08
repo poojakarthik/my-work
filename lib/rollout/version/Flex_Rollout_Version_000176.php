@@ -169,6 +169,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 			}
 			
 			$arrCarrierModules[]	= $arrCarrierModule;
+			unset($arrCarrierInstance);
 		}
 		
 		//$arrCarrierInstancesUnique		= array_map('unserialize', array_unique(array_map('serialize', $arrCarrierInstances)));
