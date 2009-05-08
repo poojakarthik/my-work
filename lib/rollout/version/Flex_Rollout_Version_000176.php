@@ -164,8 +164,8 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 			}
 			else
 			{
-				$arrCarrierModule['arrCarrierInstance']	= $arrCarrierInstance;
-				$arrCarrierInstances[]					= $arrCarrierInstance;
+				$arrCarrierModule['arrCarrierInstance']	= &$arrCarrierInstance;
+				$arrCarrierInstances[]					= &$arrCarrierInstance;
 			}
 			
 			$arrCarrierModules[]	= $arrCarrierModule;
