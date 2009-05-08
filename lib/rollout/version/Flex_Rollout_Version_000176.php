@@ -118,8 +118,6 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		}
 		while ($arrCarrierModule = $resCarrierModule->fetchRow())
 		{
-			$arrCarrierModules[]	= &$arrCarrierModule;
-			
 			$intCarrierId	= (int)$arrCarrierModule['Carrier'];
 			if (!$intCarrierId)
 			{
@@ -169,6 +167,8 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 				$arrCarrierModule['arrCarrierInstance']	= $arrCarrierInstance;
 				$arrCarrierInstances[]					= $arrCarrierInstance;
 			}
+			
+			$arrCarrierModules[]	= $arrCarrierModule;
 		}
 		
 		//$arrCarrierInstancesUnique		= array_map('unserialize', array_unique(array_map('serialize', $arrCarrierInstances)));
