@@ -113,7 +113,7 @@ class Flex_Rollout_Incremental
 				}
 
 				@self::RollbackDatabaseConstantsFile();
-				array_unshift($arrRollbackErrors, "Failed to rollout to version $intVersion: " . $e->getMessage());
+				array_unshift($arrRollbackErrors, "Failed to rollout to version $intVersion @ Line ".$e->getLine().": " . $e->getMessage());
 				throw new Exception(implode("\n", $arrRollbackErrors));
 			}
 
