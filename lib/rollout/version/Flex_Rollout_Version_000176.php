@@ -207,6 +207,11 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 			}
 			$arrCarrierInstance['id']	= (int)$dbAdmin->lastInsertID();
 			
+			if (!$arrCarrierInstance['id'])
+			{
+				throw new Exception(print_r(array_keys($arrCarrierInstance), true));
+			}
+			
 			// Create the Carrier Instance -> Customer Group links
 			foreach ($arrCarrierInstance['arrCustomerGroups'] as $intCustomerGroupId=>$arrCustomerGroup)
 			{
