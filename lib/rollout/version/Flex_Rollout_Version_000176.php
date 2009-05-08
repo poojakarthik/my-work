@@ -234,7 +234,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 			$intCount++;
 			if (!$arrCarrierModule['arrCarrierInstance']['id'])
 			{
-				throw new Exception("@ Count {$intCount}: ".print_r($arrCarrierModule['arrCarrierInstance'], true));
+				throw new Exception("@ Count {$intCount}: ".print_r(array_keys($arrCarrierModule['arrCarrierInstance']), true));
 			}
 			
 			//throw new Exception(serialize($arrCarrierModule['arrCarrierInstance']['id'])."\n\n".print_r($arrCarrierModule['arrCarrierInstance'], true));
