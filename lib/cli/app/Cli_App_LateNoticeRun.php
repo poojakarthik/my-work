@@ -199,11 +199,14 @@ class Cli_App_LateNoticeRun extends Cli
 										$arrSummary[$strCustGroupName][$strLetterType]['pdfs'][] = $targetFile;
 	
 										// We need to log the fact that we've created it, by updating the account automatic_invoice_action
-										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType stored for printing in $outputDirectory", $invoiceRunId);
-										if ($outcome !== TRUE)
+										if (!$arrArgs[self::SWITCH_TEST_RUN])
 										{
-											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
-											$errors++;
+											$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType stored for printing in $outputDirectory", $invoiceRunId);
+											if ($outcome !== TRUE)
+											{
+												$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
+												$errors++;
+											}
 										}
 									}
 								}
@@ -264,11 +267,14 @@ class Cli_App_LateNoticeRun extends Cli
 										$arrSummary[$strCustGroupName][$strLetterType]['emails'][] = $intAccountId;
 
 										// We need to log the fact that we've sent it, by updating the account automatic_invoice_action
-										$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRunId);
-										if ($outcome !== TRUE)
+										if (!$arrArgs[self::SWITCH_TEST_RUN])
 										{
-											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
-											$errors++;
+											$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRunId);
+											if ($outcome !== TRUE)
+											{
+												$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
+												$errors++;
+											}
 										}
 									}
 									else
@@ -286,15 +292,18 @@ class Cli_App_LateNoticeRun extends Cli
 					}
 				}
 			}
-
-			foreach ($invoiceRunAutoFields as $intAutomaticInvoiceAction => $invoiceRunCounts)
+			
+			if (!$arrArgs[self::SWITCH_TEST_RUN])
 			{
-				foreach ($invoiceRunCounts as $invoiceRunId => $count)
+				foreach ($invoiceRunAutoFields as $intAutomaticInvoiceAction => $invoiceRunCounts)
 				{
-					$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction);
-					if ($result !== TRUE)
+					foreach ($invoiceRunCounts as $invoiceRunId => $count)
 					{
-						$arrGeneralErrors[] = $result;
+						$result = $this->changeInvoiceRunAutoActionDateTime($invoiceRunId, $intAutomaticInvoiceAction);
+						if ($result !== TRUE)
+						{
+							$arrGeneralErrors[] = $result;
+						}
 					}
 				}
 			}
