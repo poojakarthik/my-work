@@ -897,7 +897,7 @@ class Application
 		}
 
 		// Check if the user has just logged in
-		if (isset($_POST['VixenUserName']) && isset($_POST['VixenPassword']))
+		if (isset($_POST['VixenUserName']) && isset($_POST['VixenPassword']) && trim($_POST['VixenUserName']))
 		{
 			// user has just logged in. Get the Id of the contact (Identified by UserName and PassWord combination)
 			$selSelectStatement = new StatementSelect (
