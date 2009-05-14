@@ -1117,7 +1117,7 @@ class Invoice extends ORM
 			{
 				$strSQL	=	"SELECT 'Plan Charge' AS Matches FROM Charge WHERE Service IN ({$strServiceIds}) AND ChargeType IN ('PCAR', 'PCAD') AND Status = ".CHARGE_INVOICED." LIMIT 1 \n" .
 							"UNION \n" .
-							"SELECT 'CDR Data' AS Matches FROM ServiceTotal WHERE (Debit > 0 OR UncappedCost > 0 OR CappedCost > 0) AND Service IN ({$strServiceIds}) AND invoice_run_id != {$this->invoice_run_id} LIMIT 1";
+							"SELECT 'CDR Data' AS Matches FROM ServiceTotal WHERE (UncappedCost > 0 OR CappedCost > 0) AND Service IN ({$strServiceIds}) AND invoice_run_id < {$this->invoice_run_id} LIMIT 1";
 			}
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === FALSE)
