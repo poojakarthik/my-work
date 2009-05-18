@@ -18,15 +18,21 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		$this->renderCDRs($this->mxdDataToRender['CDRs'], $this->mxdDataToRender['RecordTypes'], $this->mxdDataToRender['filter'], $this->mxdDataToRender['Invoice']);
 	}
 
-	private function tidyAmount($amount)
+	private function tidyAmount($amount, $bolIsCredit=false)
 	{
+		if ($bolIsCredit && ($amount > 0.000000))
+		{
+			$amount = $amount * (-1);
+		}
+
 		if (strpos($amount, '.') === FALSE)
 		{
 			$amount .= '.';
 		}
 		$amount .= '000';
 		$amount = substr($amount, 0, strrpos($amount, '.') + 3);
-		return '$' . $amount;
+		
+		return $amount;
 	}
 	
 	private function tidyDateTime($strDateTime)
@@ -81,7 +87,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		foreach ($arrRecordTypes as $recordType)
 		{
 			$selected = ($recordType['Id'] == $rt) ? " selected" : "";
-			$recordTypes .= '<option value="' . $recordType['Id'] . '"' . $selected . '>' . htmlspecialchars($recordType['Name']) . '</option>';
+			$recordTypes .= '<option value="' . $recordType['Id'] . '"' . $selected . '>' . htmlspecialchars($recordType['Description']) . '</option>';
 		}
 		$recordTypes .= '</select></span></form>';
 
@@ -102,8 +108,9 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 			<th>Record Type</th>
 			<th>Start Date/Time</th>
 			<th>Calling Party</th>
-			<th>Duration</th>
-			<th class='amount'>Charge</th>
+			<th style='text-align:right'>Duration</th>
+			<th>&nbsp;</th>
+			<th class='amount'>Charge (\$)</th>
 			<th>Actions</th>
 		</tr>
 	</thead>
@@ -122,38 +129,36 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 			echo "
 		<tr$className>
 			<td>" . htmlspecialchars($nr) . "</td>
-			<td>" . htmlspecialchars($cdr['DisplayType']) . "</td>";
+			<td>" . htmlspecialchars($arrRecordTypes[$cdr['RecordTypeId']]['Description']) . "</td>";
 
-			switch ($cdr['RecordTypeId'])
+			// The way we display the record depends on the display type of the record type
+			switch ($arrRecordTypes[$cdr['RecordTypeId']]['DisplayType'])
 			{
-				case RECORD_DISPLAY_SUFFIX_S_AND_E:
+				case RECORD_DISPLAY_S_AND_E:
 					echo "
-			<td colspan=3>" . htmlspecialchars($cdr['Description']) . "</td>";
+			<td colspan=4>" . htmlspecialchars($cdr['Description']) . "</td>";
 					break;
 
-				case RECORD_DISPLAY_SUFFIX_DATA:
+				case RECORD_DISPLAY_DATA:
 					echo "
-			<td colspan=3>GPRS Data</td>";
+			<td colspan=2>". htmlspecialchars($this->tidyDateTime($cdr['StartDatetime'])) ."</td>
+			<td style='text-align:right'>{$cdr['Units']}</td>
+			<td>". GetConstantDescription($arrRecordTypes[$cdr['RecordTypeId']]['DisplayType'], 'DisplayTypeSuffix') ."</td>";
 					break;
 
-				case RECORD_DISPLAY_SUFFIX_SMS:
-					echo "
-			<td>" . htmlspecialchars($this->tidyDateTime($cdr['StartDatetime'])) . "</td>
-			<td>" . htmlspecialchars($cdr['Destination']) . "</td>
-			<td>SMS</td>";
-					break;
-
-				case RECORD_DISPLAY_SUFFIX_CALL:
 				default:
 					echo "
 			<td>" . htmlspecialchars($this->tidyDateTime($cdr['StartDatetime'])) . "</td>
 			<td>" . htmlspecialchars(($arrInvoice['ServiceType'] == SERVICE_TYPE_INBOUND) ? $cdr['Source'] : $cdr['Destination']) . "</td>
-			<td>" . htmlspecialchars(number_format($cdr['Duration'], 0)) . "</td>";
+			<td style='text-align:right'>{$cdr['Units']}</td>
+			<td>". GetConstantDescription($arrRecordTypes[$cdr['RecordTypeId']]['DisplayType'], 'DisplayTypeSuffix') ."</td>";
 					break;
 			}
 
+			$bolIsCredit = ($cdr['Credit'] == 1)? true : false;
+			
 			echo "
-			<td class='amount'>" . htmlspecialchars($this->tidyAmount($cdr['Charge'])) . "</td>
+			<td class='amount'>" . htmlspecialchars($this->tidyAmount($cdr['Charge']), $bolIsCredit) . "</td>
 			<td><a href = \"$url\">View</a></td>
 		</tr>
 			";
@@ -162,7 +167,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		{
 			echo "
 		<tr>
-			<td colspan='7'>" . htmlspecialchars("There were no results matching your search. Please change your search and try again.") . "</td>
+			<td colspan='8'>" . htmlspecialchars("There were no results matching your search. Please change your search and try again.") . "</td>
 		</tr>
 			";
 		}

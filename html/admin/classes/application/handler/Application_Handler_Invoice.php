@@ -16,7 +16,8 @@ class Application_Handler_Invoice extends Application_Handler
 			$db = Data_Source::get();
 			
 			$sqlServiceTotal = "
-				SELECT i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal, CASE WHEN r.invoice_run_type_id = " . INVOICE_RUN_TYPE_LIVE . " THEN \"" . FLEX_DATABASE_CONNECTION_CDR . "\" ELSE \"" . FLEX_DATABASE_CONNECTION_DEFAULT . "\" END as DataSource
+				SELECT i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal, 
+						CASE WHEN (SELECT 'Still In CDR table' FROM CDR WHERE invoice_run_id = i.invoice_run_id LIMIT 1) = 'Still In CDR table' THEN '". FLEX_DATABASE_CONNECTION_DEFAULT ."' ELSE '". FLEX_DATABASE_CONNECTION_CDR ."' END AS DataSource
 				  FROM Invoice i, ServiceTotal t, Service s, Account a, InvoiceRun r 
 				 WHERE t.Id = $intServiceTotal 
 				   AND i.invoice_run_id = t.invoice_run_id 
@@ -84,19 +85,17 @@ class Application_Handler_Invoice extends Application_Handler
 	
 			// Need to load up the RecordTypes for filtering
 	
-			$sqlRecordTypes = " SELECT Id, Name FROM RecordType WHERE ServiceType = $intServiceType ";
+			$sqlRecordTypes = " SELECT Id, Name, Description, DisplayType FROM RecordType WHERE ServiceType = $intServiceType ";
 	
-			$res = $db->query($sqlRecordTypes);
+			$res = $db->query($sqlRecordTypes, array('integer', 'text', 'text', 'integer'));
 			
 			if (PEAR::isError($res))
 			{
-				throw new Exception("Failed to load service types: " . $res->getMessage());
+				throw new Exception("Failed to load call record types: " . $res->getMessage());
 			}
 			
-			$arrDetailsToRender['RecordTypes'] = $res->fetchAll(MDB2_FETCHMODE_ASSOC);
-	
-	
-	
+			// Use the id of each RecordType as the key into the array $arrDetailsToRender['RecordTypes'] for easier referal
+			$arrDetailsToRender['RecordTypes'] = KeyifyArray($res->fetchAll(MDB2_FETCHMODE_ASSOC), "Id");
 
 			// Need to load up the CDRs from the cdr_invoiced table for the current range of CDRs & record type
 			
@@ -117,11 +116,10 @@ class Application_Handler_Invoice extends Application_Handler
 			if ($dataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
 			{
 				$sqlCdrs = "
-					SELECT c.Id as \"Id\", t.Id as \"RecordTypeId\", t.Name as \"RecordType\", c.Description as \"Description\", t.Description as \"DisplayType\", c.Source as \"Source\", c.Destination as \"Destination\", c.EndDatetime - c.StartDatetime as \"Duration\", c.StartDatetime as \"StartDatetime\", c.Units as \"Currency\", c.Charge as \"Charge\"
-					  FROM CDR c, RecordType t
+					SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\"
+					  FROM CDR c
 					 WHERE invoice_run_id = $intInvoiceRunId
 					   AND Account = $intAccountId
-					   AND c.RecordType = t.Id
 				       AND c.Service = $intServiceId
 				";
 	
@@ -138,11 +136,10 @@ class Application_Handler_Invoice extends Application_Handler
 			else
 			{
 				$sqlCdrs = "
-					SELECT c.id as \"Id\", t.id as \"RecordTypeId\", t.name as \"RecordType\", c.description as \"Description\", t.description as \"DisplayType\", c.source as \"Source\", c.destination as \"Destination\", c.end_date_time - c.start_date_time as \"Duration\", c.start_date_time as \"StartDatetime\", c.units as \"Currency\", c.charge as \"Charge\"
-					  FROM cdr_invoiced c, record_type t
+					SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\"
+					  FROM cdr_invoiced c
 					 WHERE invoice_run_id = $intInvoiceRunId
 					   AND account = $intAccountId
-					   AND c.record_type = t.id
 				       AND c.service = $intServiceId
 				";
 	
@@ -199,7 +196,8 @@ class Application_Handler_Invoice extends Application_Handler
 			$intCdrId = intval($subPath[2]);
 			
 			$sqlServiceTotal = "
-				SELECT i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal, CASE WHEN r.invoice_run_type_id = " . INVOICE_RUN_TYPE_LIVE . " THEN \"" . FLEX_DATABASE_CONNECTION_CDR . "\" ELSE \"" . FLEX_DATABASE_CONNECTION_DEFAULT . "\" END as DataSource
+				SELECT i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal, 
+						CASE WHEN (SELECT 'Still In CDR table' FROM CDR WHERE invoice_run_id = i.invoice_run_id LIMIT 1) = 'Still In CDR table' THEN '". FLEX_DATABASE_CONNECTION_DEFAULT ."' ELSE '". FLEX_DATABASE_CONNECTION_CDR ."' END AS DataSource
 				  FROM Invoice i, ServiceTotal t, Service s, Account a, InvoiceRun r
 				 WHERE t.Id = $intServiceTotal 
 				   AND i.invoice_run_id = t.invoice_run_id 
