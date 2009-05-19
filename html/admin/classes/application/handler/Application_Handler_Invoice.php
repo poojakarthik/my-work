@@ -131,7 +131,7 @@ class Application_Handler_Invoice extends Application_Handler
 					$sqlCountCdrs .= " AND c.RecordType = " . $arrDetailsToRender['filter']['recordType'] . " ";
 				}
 	
-				$sqlCdrs .= " ORDER BY c.Id LIMIT " . $arrDetailsToRender['filter']['limit'] . " OFFSET " . $arrDetailsToRender['filter']['offset'] . " ";
+				$sqlCdrs .= " ORDER BY c.StartDatetime ASC LIMIT " . $arrDetailsToRender['filter']['limit'] . " OFFSET " . $arrDetailsToRender['filter']['offset'] . " ";
 			}
 			else
 			{
@@ -151,7 +151,7 @@ class Application_Handler_Invoice extends Application_Handler
 					$sqlCountCdrs .= " AND c.record_type = " . $arrDetailsToRender['filter']['recordType'] . " ";
 				}
 	
-				$sqlCdrs .= " ORDER BY c.id LIMIT " . $arrDetailsToRender['filter']['limit'] . " OFFSET " . $arrDetailsToRender['filter']['offset'] . " ";
+				$sqlCdrs .= " ORDER BY c.StartDatetime ASC LIMIT " . $arrDetailsToRender['filter']['limit'] . " OFFSET " . $arrDetailsToRender['filter']['offset'] . " ";
 			}
 
 			$res = $cdrDb->query($sqlCountCdrs);

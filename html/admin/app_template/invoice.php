@@ -205,43 +205,61 @@ class AppTemplateInvoice extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		require_once dirname(__FILE__) . '/../../../lib/classes/CDR.php';
-		$cdrs = CDR::getForInvoice(DBO()->Invoice);
+		$cdrs = CDR::getForInvoice(DBO()->Invoice->Id->Value);
+		
+		// Load all RecordTypes
+		$db				= Data_Source::get();
+		$sqlRecordTypes	= "SELECT Id, Name, Description, DisplayType FROM RecordType";
+		$res			= $db->query($sqlRecordTypes, array('integer', 'text', 'text', 'integer'));
+		if (PEAR::isError($res))
+		{
+			throw new Exception("Failed to load call record types: " . $res->getMessage());
+		}
+		$arrRecordTypes = KeyifyArray($res->fetchAll(MDB2_FETCHMODE_ASSOC), "Id");
+		
 		
 		$strCallDetailsCSV = "";
-		$arrColumnNames = Array("ServiceType", "FNN", "RecordType", "Date", "Time", "Called Party", "Duration", "Charge (\$)");
-		$arrColumnOrder = Array("ServiceType", "FNN", "RecordTypeDescription", "Date", "Time", "Destination", "Duration", "Charge");
-		$arrBlankRecord = Array(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); 
+		$arrColumnNames = Array("ServiceType", "FNN", "Call Type", "Start Time", "Called Party", "Duration", "Units", "Charge (\$)", "Description");
+		$arrColumnOrder = Array("ServiceType", "FNN", "Call Type", "Start Time", "Called Party", "Duration", "UnitType", "Charge", "Description");
+		$arrBlankRecord = Array(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); 
 		
 		// Add the head record to the CSV file
 		$strCallDetailsCSV = MakeCSVLine($arrColumnNames);
 		
-		// These variables are used to work out where blank records should be made in the csv file
-		$intLastRecordType	= NULL;
-		$intLastFNN			= NULL;
+		// This is used to work out where blank records should be made in the csv file
+		$intLastFNN = NULL;
 		
 		// Add each call (CDR) to the CSV file
 		foreach ($cdrs as $arrCDR)
 		{
-			if (($intLastFNN !== NULL) && (($intLastRecordType != $arrCDR['RecordType']) || ($intLastFNN != $arrCDR['FNN']))) 
+			if (($intLastFNN !== NULL) && ($intLastFNN != $arrCDR['FNN'])) 
 			{
-				// Either the FNN has changed or the RecordType has changed from 
-				// that of the last record added to the CSV file.  Stick in a blank record
+				// The FNN has changed.  Stick in a blank record
 				$strCallDetailsCSV .= MakeCSVLine($arrBlankRecord);
 			}
 			
-			// Set up the values for the record
-			$intStartTime			= strtotime($arrCDR['StartDatetime']);
-			$arrCDR['ServiceType']	= GetConstantDescription($arrCDR['ServiceType'], "service_type");
-			$arrCDR['Date']			= date("d/m/Y", $intStartTime);
-			$arrCDR['Time']			= date("H:i:s", $intStartTime);
-			$arrCDR['Duration']		= date("H:i:s", mktime(0, 0, $arrCDR['Units'], 0, 0, 0));
+			$intRecordDisplayType = $arrRecordTypes[$arrCDR['RecordType']]['DisplayType'];
 			
+			// Set up the values for the record
+			$arrCDR['Start Time']	= $arrCDR['StartDatetime'];
+			$arrCDR['ServiceType']	= GetConstantDescription($arrCDR['ServiceType'], "service_type");
+			$arrCDR['Call Type']	= $arrRecordTypes[$arrCDR['RecordType']]['Description'];
+			$arrCDR['Called Party'] = $arrCDR['Destination'];
+			$arrCDR['Duration']		= $arrCDR['Units'];
+			$arrCDR['UnitType']		= GetConstantDescription($intRecordDisplayType, 'DisplayTypeSuffix');
+			
+			if ($arrCDR['Credit'] == 1)
+			{
+				// Negate the charge, to signify a credit
+				$arrCDR['Charge'] = $arrCDR['Charge'] * (-1);
+			}
+			
+			// We shouldn't have to truncate the charge, because it is calculated and stored as 2 decimal places (even though we can store 4 dec-plac in the database)
+						
 			$strCallDetailsCSV .= MakeCSVLine($arrCDR, $arrColumnOrder);
 			
 			// Update the details used for spacing 
 			$intLastFNN = $arrCDR['FNN'];
-			$intLastRecordType = $arrCDR['RecordType'];
 		}
 		
 		// Build the Filename (<InvoiceDate>_<AccountId>_<InvoiceId>.csv)
