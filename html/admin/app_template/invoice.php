@@ -254,7 +254,8 @@ class AppTemplateInvoice extends ApplicationTemplate
 				$arrCDR['Charge'] = $arrCDR['Charge'] * (-1);
 			}
 			
-			// We shouldn't have to truncate the charge, because it is calculated and stored as 2 decimal places (even though we can store 4 dec-plac in the database)
+			// Truncate the charge to 2 decimal places (it should already be calculated as 2 dec-plac, but will be to 4 dec-plac)
+			$arrCDR['Charge'] = number_format($arrCDR['Charge'], 2, '.', '');
 						
 			$strCallDetailsCSV .= MakeCSVLine($arrCDR, $arrColumnOrder);
 			
