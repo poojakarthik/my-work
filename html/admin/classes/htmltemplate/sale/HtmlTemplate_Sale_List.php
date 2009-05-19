@@ -42,15 +42,15 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 		}
 
 		// Define the columns to show
-		$arrColumns = array("Id"			=> array("Title" => "Id",				"SortField" => DO_Sales_Sale::ORDER_BY_SALE_ID),
-							"Vendor"		=> array("Title" => "Group",			"SortField" => DO_Sales_Sale::ORDER_BY_SALE_ACCOUNT_VENDOR_ID),
-							"SaleType"		=> array("Title" => "Type",				"SortField" => DO_Sales_Sale::ORDER_BY_SALE_TYPE_ID),
-							"AccountName"	=> array("Title" => "Account",			"SortField" => DO_Sales_Sale::ORDER_BY_ACCOUNT_NAME),
-							"ContactName"	=> array("Title" => "Contact",			"SortField" => DO_Sales_Sale::ORDER_BY_CONTACT_NAME),
-							"Status"		=> array("Title" => "Status",			"SortField" => DO_Sales_Sale::ORDER_BY_SALE_STATUS_ID),
-							"LastActionedOn"=> array("Title" => "Last Actioned",	"SortField" => DO_Sales_Sale::ORDER_BY_LAST_ACTIONED_ON),
-							"VerifiedOn"	=> array("Title" => "Verified",			"SortField" => DO_Sales_Sale::ORDER_BY_VERIFIED_ON),
-							"CreatedBy"		=> array("Title" => "Dealer",			"SortField" => DO_Sales_Sale::ORDER_BY_CREATED_BY),
+		$arrColumns = array("Id"			=> array("Title" => "Id",				"SortField" => DO_Sales_Sale::ORDER_BY_SALE_ID,					"DefaultSortDirection" => 'd'),
+							"Vendor"		=> array("Title" => "Group",			"SortField" => DO_Sales_Sale::ORDER_BY_SALE_ACCOUNT_VENDOR_ID,	"DefaultSortDirection" => 'a'),
+							"SaleType"		=> array("Title" => "Type",				"SortField" => DO_Sales_Sale::ORDER_BY_SALE_TYPE_ID,			"DefaultSortDirection" => 'a'),
+							"AccountName"	=> array("Title" => "Account",			"SortField" => DO_Sales_Sale::ORDER_BY_ACCOUNT_NAME,			"DefaultSortDirection" => 'a'),
+							"ContactName"	=> array("Title" => "Contact",			"SortField" => DO_Sales_Sale::ORDER_BY_CONTACT_NAME,			"DefaultSortDirection" => 'a'),
+							"Status"		=> array("Title" => "Status",			"SortField" => DO_Sales_Sale::ORDER_BY_SALE_STATUS_ID,			"DefaultSortDirection" => 'a'),
+							"LastActionedOn"=> array("Title" => "Last Actioned",	"SortField" => DO_Sales_Sale::ORDER_BY_LAST_ACTIONED_ON,		"DefaultSortDirection" => 'd'),
+							"VerifiedOn"	=> array("Title" => "Verified",			"SortField" => DO_Sales_Sale::ORDER_BY_VERIFIED_ON,				"DefaultSortDirection" => 'd'),
+							"CreatedBy"		=> array("Title" => "Dealer",			"SortField" => DO_Sales_Sale::ORDER_BY_CREATED_BY,				"DefaultSortDirection" => 'a'),
 							"Actions"		=> array("Title" => "Actions",			"SortField" => NULL)
 							);
 		$intColumnCount = count($arrColumns);
@@ -210,7 +210,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				else
 				{
 					// The column was not used to sort the current results
-					$strSortDirection	= 'a';
+					$strSortDirection	= $arrColumn['DefaultSortDirection'];
 					$strSortClass		= "reflex-unsorted";
 				}
 				

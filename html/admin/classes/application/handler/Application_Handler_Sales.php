@@ -139,8 +139,8 @@ class Application_Handler_Sales extends Application_Handler
 			}
 			if (count($arrSort) == 0)
 			{
-				// Default to sort by sale.id descending
-				$arrSort[DO_Sales_Sale::ORDER_BY_SALE_ID] = FALSE;
+				// Default to sort by Last Actioned descending
+				$arrSort[DO_Sales_Sale::ORDER_BY_LAST_ACTIONED_ON] = FALSE;
 			}
 	
 	
