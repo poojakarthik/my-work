@@ -90,10 +90,11 @@ class CDR extends ORM
 				"  FROM cdr_invoiced " .
 				" WHERE account = " . $cdrDb->quote($objInvoice->account) . 
 				"   AND invoice_run_id = " . $cdrDb->quote($objInvoice->invoiceRunId) .
-				" ORDER BY ServiceType ASC, FNN ASC, RecordType ASC, StartDatetime ASC";
+				" ORDER BY service_type ASC, fnn ASC, record_type ASC, start_date_time ASC";
 		}
-		else // Must be in CDR table of default db
+		else
 		{
+			// Must be in CDR table of default db
 			$strCdrSelect = 
 				'SELECT Id as "Id", FNN as "FNN", File as "File", Carrier as "Carrier", CarrierRef as "CarrierRef", Source as "Source", Destination as "Destination", StartDatetime as "StartDatetime", EndDatetime as "EndDatetime", Units as "Units", AccountGroup as "AccountGroup", Account as "Account", Service as "Service", Cost as "Cost", Status as "Status", CDR as "CDR", Description as "Description", DestinationCode as "DestinationCode", RecordType as "RecordType", ServiceType as "ServiceType", Charge as "Charge", Rate as "Rate", NormalisedOn as "NormalisedOn", RatedOn as "RatedOn", invoice_run_id, SequenceNo as "SequenceNo", Credit as "Credit" ' .
 				"  FROM CDR " .
