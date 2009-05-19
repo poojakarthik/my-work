@@ -158,7 +158,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 			$bolIsCredit = ($cdr['Credit'] == 1)? true : false;
 			
 			echo "
-			<td class='amount'>" . htmlspecialchars($this->tidyAmount($cdr['Charge']), $bolIsCredit) . "</td>
+			<td class='amount'>" . htmlspecialchars($this->tidyAmount($cdr['Charge'], $bolIsCredit)) . "</td>
 			<td><a href = \"$url\">View</a></td>
 		</tr>
 			";
