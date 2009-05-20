@@ -29,6 +29,7 @@ $arrSQLFields	= array();
 $arrDataReport['Name']			= "Open Networks Daily Order File";
 $arrDataReport['Summary']		= "Generates the Open Networks Daily Order File for a specified date";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['RenderTarget']	= REPORT_TARGET_CSV;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
@@ -37,8 +38,7 @@ $arrDataReport['SQLTable']		= "	Service s
 									JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
 									JOIN ServiceRatePlan srp ON (s.Id = srp.Service)
 									JOIN RatePlan rp ON (rp.id = srp.RatePlan)";
-$arrDataReport['SQLWhere']		= "Account.CreatedOn BETWEEN <StartDate> AND <EndDate> AND Account.Archived = 0";
-$arrDataReport['SQLGroupBy']	= "	s.ServiceType = 100
+$arrDataReport['SQLWhere']		= "	s.ServiceType = 100
 												AND s.Status = 400
 												AND a.Archived = 0
 												AND CAST(s.CreatedOn AS DATE) = <order_date>
@@ -52,6 +52,7 @@ $arrDataReport['SQLGroupBy']	= "	s.ServiceType = 100
 																	LIMIT		1
 																)
 									ORDER BY	s.Id ASC";
+$arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
