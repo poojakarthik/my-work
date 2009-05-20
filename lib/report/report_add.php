@@ -16,55 +16,89 @@ require_once('../../flex.require.php');
 // TODO: Specify the DataReport here!  See report_skeleton.php for tut
 //----------------------------------------------------------------------------//
 
-$arrDataReport	= Array();
-$arrDocReq		= Array();
-$arrSQLSelect	= Array();
-$arrSQLFields	= Array();
+$arrDataReport	= array();
+$arrDocReq		= array();
+$arrSQLSelect	= array();
+$arrSQLFields	= array();
 
 
 //---------------------------------------------------------------------------//
-// ACCOUNTS CREATED IN A DATE PERIOD
+// OPEN NETWORKS DAILY ORDER FILE
 //---------------------------------------------------------------------------//
 
-$arrDataReport['Name']			= "Accounts Created in a Date Period";
-$arrDataReport['Summary']		= "Show a list of Accounts which were created in the specified Date Period";
+$arrDataReport['Name']			= "Open Networks Daily Order File";
+$arrDataReport['Summary']		= "Generates the Open Networks Daily Order File for a specified date";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "Account JOIN Contact ON Account.Id = Contact.Account";
+$arrDataReport['SQLTable']		= "	Service s
+									JOIN Account a ON (s.Account = a.Id)
+									JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
+									JOIN ServiceRatePlan srp ON (s.Id = srp.Service)
+									JOIN RatePlan rp ON (rp.id = srp.RatePlan)";
 $arrDataReport['SQLWhere']		= "Account.CreatedOn BETWEEN <StartDate> AND <EndDate> AND Account.Archived = 0";
-$arrDataReport['SQLGroupBy']	= "";
+$arrDataReport['SQLGroupBy']	= "	s.ServiceType = 100
+												AND s.Status = 400
+												AND a.Archived = 0
+												AND CAST(s.CreatedOn AS DATE) = <order_date>
+												AND <order_date> BETWEEN CAST(srp.StartDatetime AS DATE) AND CAST(srp.EndDatetime AS DATE)
+												AND srp.Id	=	(
+																	SELECT		Id
+																	FROM		ServiceRatePlan
+																	WHERE		Service = s.Id
+																				AND <order_date> BETWEEN CAST(StartDatetime AS DATE) AND CAST(EndDatetime AS DATE)
+																	ORDER BY	CreatedOn DESC
+																	LIMIT		1
+																)
+									ORDER BY	s.Id ASC";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Account #']			['Value']	= "Account.Id";
-$arrSQLSelect['Account #']			['Type']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Order Number']					['Value']	= "s.Id";
 
-$arrSQLSelect['Account Name']		['Value']	= "Account.BusinessName";
+$arrSQLSelect['ISP Identification']				['Value']	= "cg.internal_name";
 
-$arrSQLSelect['Contact']			['Value']	= "CONCAT(Contact.FirstName, ' ', Contact.LastName)";
+$arrSQLSelect['Required Ship Date']				['Value']	= "DATE_FORMAT(CURDATE(), '%d/%m/%y')";
 
-$arrSQLSelect['Contact Phone']		['Value']	= "CASE WHEN Contact.Phone != '' THEN Contact.Phone ELSE Contact.Mobile END";
-$arrSQLSelect['Contact Phone']		['Type']	= EXCEL_TYPE_FNN;
+$arrSQLSelect['Product Required']				['Value']	= 'Netgear DM111PUSP';
 
-$arrSQLSelect['Date Created']		['Value']	= "Account.CreatedOn";
+$arrSQLSelect['Additional Product Required']	['Value']	= '';
+
+$arrSQLSelect['Subscriber Name']				['Value']	= "a.BusinessName";
+
+$arrSQLSelect['Unique User Name']				['Value']	= "CONCAT(LEFT(s.FNN, 10), '@blue1000.com.au')";
+
+$arrSQLSelect['Unique Password']				['Value']	= "LEFT(s.FNN, 10)";
+
+$arrSQLSelect['Subscriber Ph. No.']				['Value']	= "LEFT(s.FNN, 10)";
+
+$arrSQLSelect['Street Number & Name']			['Value']	= "a.Address1";
+
+$arrSQLSelect['Extra Address Details']			['Value']	= "a.Address2";
+
+$arrSQLSelect['Suburb/City']					['Value']	= "a.Suburb";
+
+$arrSQLSelect['State']							['Value']	= "a.State";
+
+$arrSQLSelect['Postcode']						['Value']	= "a.Postcode";
+
+$arrSQLSelect['Notes/comments']					['Value']	= "rp.Name";
+
+$arrSQLSelect['Serial Number']					['Value']	= '';
+
+$arrSQLSelect['Consignment Number']				['Value']	= '';
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
-$arrSQLFields['StartDate']	= Array(
+$arrSQLFields['order_date']	= array(
 										'Type'					=> "dataDate",
 										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "StartDateRange",
-									);
-$arrSQLFields['EndDate']	= Array(
-										'Type'					=> "dataDate",
-										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "EndDateRange",
+										'Documentation-Field'	=> "OrderDate",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
