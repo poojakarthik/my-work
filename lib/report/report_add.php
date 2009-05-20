@@ -64,9 +64,9 @@ $arrSQLSelect['ISP Identification']				['Value']	= "cg.internal_name";
 
 $arrSQLSelect['Required Ship Date']				['Value']	= "DATE_FORMAT(CURDATE(), '%d/%m/%y')";
 
-$arrSQLSelect['Product Required']				['Value']	= 'Netgear DM111PUSP';
+$arrSQLSelect['Product Required']				['Value']	= "'Netgear DM111PUSP'";
 
-$arrSQLSelect['Additional Product Required']	['Value']	= '';
+$arrSQLSelect['Additional Product Required']	['Value']	= "''";
 
 $arrSQLSelect['Subscriber Name']				['Value']	= "a.BusinessName";
 
@@ -88,9 +88,9 @@ $arrSQLSelect['Postcode']						['Value']	= "a.Postcode";
 
 $arrSQLSelect['Notes/comments']					['Value']	= "rp.Name";
 
-$arrSQLSelect['Serial Number']					['Value']	= '';
+$arrSQLSelect['Serial Number']					['Value']	= "''";
 
-$arrSQLSelect['Consignment Number']				['Value']	= '';
+$arrSQLSelect['Consignment Number']				['Value']	= "''";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
