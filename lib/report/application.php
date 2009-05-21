@@ -360,6 +360,7 @@
 	 		{
 	 			$strReturn .= ($bolSave) ? fwrite($ptrFile, "{$strEnclose}$strColumn{$strEnclose}$strDelimiter") : "{$strEnclose}$strColumn{$strEnclose}$strDelimiter";
 	 		}
+	 		$strReturn	= (strrpos($strReturn, $strDelimiter) === (strlen($strReturn) - 1)) ? substr($strReturn, 0, -1) : $strReturn;
 	 		
 	 		$strReturn .= ($bolSave) ? fwrite($ptrFile, "\n") : "\n";
  		}
