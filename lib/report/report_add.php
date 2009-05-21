@@ -103,6 +103,16 @@ $arrSQLFields['order_date']	= array(
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
+// Overrides
+$arrOverrides				= array();
+$arrOverrides['Delimiter']	= ",";
+/*
+$arrOverrides['Delimiter']	= "\t";
+$arrOverrides['Enclose']		= "";
+$arrOverrides['Extension']	= "txt";
+*/
+$arrDataReport['Overrides'] = serialize($arrOverrides);
+
 //----------------------------------------------------------------------------//
 // Insert the Data Report
 //----------------------------------------------------------------------------//
