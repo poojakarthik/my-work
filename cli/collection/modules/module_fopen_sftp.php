@@ -108,6 +108,8 @@
 			
 			if ($this->_resSFTPConnection = ssh2_sftp($this->_resConnection))
 			{
+				stream_set_blocking($this->_resSFTPConnection, 1);
+				
 				// Init wrapper
 				$this->_strWrapper	= "ssh2.sftp://{$this->_resSFTPConnection}";
 				//Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
