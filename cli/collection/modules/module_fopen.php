@@ -115,7 +115,7 @@
 			while (list($mixPathKey, $strPath) = each($arrFileType['Paths']))
 			{
 				// Get the directory listing for this
-				$arrFiles	= scandir($this->_strWrapper.$strPath, 0, $this->_resConnection);
+				$arrFiles	= scandir($this->_strWrapper.$strPath);
 				
 				// Filter file names that we don't want
 				if (is_array($arrFiles))
