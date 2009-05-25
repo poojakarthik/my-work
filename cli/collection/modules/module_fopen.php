@@ -163,7 +163,7 @@
 						if ($arrFileType['DownloadUnique'])
 						{
 							// Does this File Name exist in the database?
-							if ($this->_selFileDownloaded->Execute(array('FileName' => basename($strFilePath))))
+							if (!$this->isDownloadUnique($strFilePath))
 							{
 								// Yes, so we should skip this file
 								continue;
