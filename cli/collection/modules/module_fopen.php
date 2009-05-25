@@ -35,7 +35,7 @@
 	 *
 	 * @method
 	 */
-	abstract function Connect();
+	//abstract function Connect();
 	
 	/**
 	 * Disconnect()
