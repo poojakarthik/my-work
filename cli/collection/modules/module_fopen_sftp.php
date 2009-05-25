@@ -112,12 +112,12 @@
 				$this->_strWrapper	= "ssh2.sftp://{$this->_resSFTPConnection}";
 				//Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
 				
+				// Try reading a file
+				Debug(scandir($this->_strWrapper));
+				
 				// Get list of files to download
 				$this->_arrDownloadPaths	= $this->_getDownloadPaths();
 				reset($this->_arrDownloadPaths);
-				
-				// Try reading a file
-				Debug(scandir($this->_strWrapper));
 				
 				return true;
 			}
