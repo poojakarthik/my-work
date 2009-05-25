@@ -124,12 +124,18 @@
 				{
 					foreach ($arrFiles as $strFilePath)
 					{
+						// Ignore '.' and '..'
+						if (in_array($strFilePath, array('.', '..')))
+						{
+							
+						}
+						
 						if (is_dir($strFilePath))
 						{
 							// This is a directory
 							if ($arrFileType['Recursive'])
 							{
-								$arrFileType['Paths'][]	= $strFilePath;
+								$arrFileType['Paths'][]	= $strPath.'/'.$strFilePath;
 							}
 							else
 							{
@@ -157,6 +163,8 @@
 						
 						// Add the FileImport Type to our element
 						$arrFileType['FileImportType']	= $intFileType;
+						
+						CliEcho("Adding '{$strFilePath}'...");
 						
 						// As far as we can tell, this file is valid
 						$arrDownloadPaths[]	= array('RemotePath' => trim($strFilePath), 'FileType' => $arrFileType);
