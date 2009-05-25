@@ -30,7 +30,7 @@ if ($intCDR)
 	CliEcho();
 	
 	// get CDR
-	$selCDR = new StatementSelect("CDR JOIN FileImport ON CDR.File = FileImport.Id", "CDR.*, FileImport.FileType AS FileType", "CDR.Id = <Id>");
+	$selCDR = new StatementSelect("CDR JOIN FileImport ON CDR.File = FileImport.Id", "CDR.*, FileImport.FileType AS FileTypem FileImport.FileName AS FileName", "CDR.Id = <Id>");
 	if (!$selCDR->Execute(Array('Id' => $intCDR)))
 	{
 		echo "Invalid CDR record requested.  Please double-check the Id ($intCDR).\n";

@@ -704,7 +704,7 @@ abstract class NormalisationModule extends CarrierModule
 	 *
 	 * @method
 	 */
-	 protected function ApplyOwnership($bolOwnerNow = FALSE)
+	 protected function ApplyOwnership($bolOwnerNow=false, $bolUpdateCDRStatus=true)
 	 {
 		// Determine Timestamp to Use
 		if ($bolOwnerNow)
@@ -743,7 +743,11 @@ abstract class NormalisationModule extends CarrierModule
 		}
 	 	
 		// Return false if there was no match, or more than one match
-		$this->_UpdateStatus(CDR_BAD_OWNER);
+		if ($bolUpdateCDRStatus)
+		{
+			$this->_UpdateStatus(CDR_BAD_OWNER);
+		}
+		
 		//Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
 		$this->strFNN = $this->_arrNormalisedData['FNN'];
 	 	return FALSE;
@@ -1122,6 +1126,43 @@ abstract class NormalisationModule extends CarrierModule
 		
 		// return the Raw CDR string
 		return $this->_arrRawData;
+	 }
+	 
+	/**
+	 * getFileImport()
+	 *
+	 * Returns the FileImport record for a CDR Id.  Uses caching.
+	 *
+	 * @method
+	 */
+	 public static function getFileImport($intFileImportId)
+	 {
+		static	$qryQuery;
+		static	$arrFileImports	= array();
+		
+		$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
+		
+		// Cache the FileImport record if we don't already have it
+		$intFileImportId	= (int)$intFileImportId;
+		if (!array_key_exists($intFileImportId, $arrFileImports) || !$arrFileImports[$intFileImportId])
+		{
+			$resFileImport	= $qryQuery->Execute("SELECT * FROM FileImport WHERE Id = {$intFileImportId} LIMIT 1");
+			if ($resFileImport === false)
+			{
+				throw new Exception($qryQuery->Error());
+			}
+			elseif ($arrFileImport = $resFileImport->fetch_assoc())
+			{
+				$arrFileImports[$intFileImportId]	= $arrFileImport;
+			}
+			else
+			{
+				throw new Exception("Unable to find FileImport with Id '{$intFileImportId}'!");
+			}
+		}
+		
+		// Return the FileImport record
+		return $arrFileImports[$intFileImportId];
 	 }
 }
 
