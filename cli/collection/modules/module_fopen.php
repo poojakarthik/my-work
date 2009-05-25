@@ -111,6 +111,8 @@
 		// Get Path Definitions
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
 		
+		$intDEBUGCOUNT	= 0;
+		
 		$arrDownloadPaths	= array();
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
 		{
@@ -119,14 +121,19 @@
 				// Get the directory listing for this
 				$arrFiles	= scandir($this->_strWrapper.$strPath);
 				
-				CliEcho("Files in '{$strPath}'");
-				Debug($arrFiles);
+				//CliEcho("Files in '{$strPath}'");
+				//Debug($arrFiles);
 				
 				// Filter file names that we don't want
 				if (is_array($arrFiles))
 				{
 					foreach ($arrFiles as $strFilePath)
 					{
+						if ($intDEBUGCOUNT > 5)
+						{
+							continue;
+						}
+						
 						// Ignore '.' and '..'
 						if (in_array($strFilePath, array('.', '..')))
 						{
@@ -168,7 +175,8 @@
 						// Add the FileImport Type to our element
 						$arrFileType['FileImportType']	= $intFileType;
 						
-						CliEcho("Adding '{$strFilePath}'...");
+						//CliEcho("Adding '{$strFilePath}'...");
+						$intDEBUGCOUNT++;
 						
 						// As far as we can tell, this file is valid
 						$arrDownloadPaths[]	= array('RemotePath' => trim($strFullRemotePath), 'FileType' => $arrFileType);

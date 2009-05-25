@@ -159,6 +159,37 @@
 			return $arrDownloadFile['FileType'];
 		}
 	}
+	
+	/**
+	 * isDownloadUnique()
+	 *
+	 * Checks whether a given Filename is unique in the DB for this Carrier
+	 * 
+	 * @param	string	$strFilename					Filename to check
+	 * 
+	 * @return	mixed									array: FileImport Type; NULL: Unrecognised type
+	 *
+	 * @method
+	 */
+	public function isDownloadUnique($strFilename)
+	{
+		static	$selFileDownloadUnique;
+		$selFileDownloadUnique	= ($selFileDownloadUnique) ? $selFileDownloadUnique : new StatementSelect("FileDownload", "Id", "Carrier = <carrier_id> AND FileName = <filename>", null, 1);
+		
+		$mixResult	= $selFileDownloadUnique->Execute(array('carrier_id'=>$this->intCarrier, 'filename'=>$strFilename));
+		if ($mixResult === false)
+		{
+			throw new Exception($selFileDownloadUnique->Error());
+		}
+		elseif ($mixResult)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
 }
 
 ?>
