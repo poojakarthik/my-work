@@ -115,7 +115,7 @@
 				//Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
 				
 				// Try reading a file
-				Debug(scandir($this->_strWrapper));
+				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/"));
 				
 				// Get list of files to download
 				//$this->_arrDownloadPaths	= $this->_getDownloadPaths();
