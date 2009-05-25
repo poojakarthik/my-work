@@ -96,13 +96,14 @@
 				}
 			}
 			
+			// Init wrapper
+			$this->_strWrapper	= "ssh2.sftp://{$this->_resConnection}/";
+			Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
+			
 			// Get list of files to download
 			$this->_arrDownloadPaths	= $this->_getDownloadPaths();
 			reset($this->_arrDownloadPaths);
 			
-			// Init wrapper
-			$this->_strWrapper	= "ssh2.sftp://{$this->_resConnection}/";
-			Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
 			return true;
 		}
 		else
