@@ -122,7 +122,7 @@
 				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/gowireless/usage/2009/05/20090501000347"));
 				
 				// Get list of files to download
-				//$this->_arrDownloadPaths	= $this->_getDownloadPaths();
+				$this->_arrDownloadPaths	= $this->_getDownloadPaths();
 				$this->_arrDownloadPaths	= array();
 				reset($this->_arrDownloadPaths);
 				
