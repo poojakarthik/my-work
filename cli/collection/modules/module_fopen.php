@@ -114,6 +114,7 @@
 		{
 			while (list($mixPathKey, $strPath) = each($arrFileType['Paths']))
 			{
+				CliEcho("Currently ".(count($arrFileType['Paths']))." directories");
 				CliEcho("Getting Contents of '{$strPath}'...", false);
 				
 				// Get the directory listing for this
