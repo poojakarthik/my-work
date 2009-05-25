@@ -106,8 +106,6 @@
 	 */
 	protected function _getDownloadPaths()
 	{
-		//Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
-		
 		// Get Path Definitions
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
 		
@@ -174,9 +172,6 @@
 						
 						// Add the FileImport Type to our element
 						$arrFileType['FileImportType']	= $intFileType;
-						
-						//CliEcho("Adding '{$strFilePath}'...");
-						$intDEBUGCOUNT++;
 						
 						// As far as we can tell, this file is valid
 						$arrDownloadPaths[]	= array('RemotePath' => trim($strFullRemotePath), 'FileType' => $arrFileType);
