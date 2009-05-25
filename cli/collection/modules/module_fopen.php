@@ -106,6 +106,8 @@
 	 */
 	protected function _getDownloadPaths()
 	{
+		CliEcho("\nGetting Download Paths...");
+		
 		// Get Path Definitions
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
 		
@@ -149,7 +151,14 @@
 							// This is a directory
 							if ($arrFileType['Recursive'])
 							{
-								$arrFileType['Paths'][]	= $strFullRemotePath;
+								if (!in_array($strFullRemotePath, $arrFileType['Paths']))
+								{
+									$arrFileType['Paths'][]	= $strFullRemotePath;
+								}
+								else
+								{
+									throw new Exception("WHY ON EARTH IS '{$strFullRemotePath}' BEING ADDED AGAIN?");
+								} 
 							}
 							else
 							{
