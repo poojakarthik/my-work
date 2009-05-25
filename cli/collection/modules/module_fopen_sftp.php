@@ -74,6 +74,16 @@
 		$strEncryptionAlgorithm	= strtolower(trim($this->GetConfigField('KeyEncryptionAlgorithm')));
 		$strEncryptionAlgorithm	= (in_array($strEncryptionAlgorithm, array('rsa', 'dsa'))) ? $strEncryptionAlgorithm : $this->_arrModuleConfig['KeyEncryptionAlgorithm']['Default'];
 		
+		switch (strtolower(trim($this->GetConfigField('KeyEncryptionAlgorithm'))))
+		{
+			case 'rsa':
+				$strEncryptionAlgorithm	= 'rsa';
+				break;
+			case 'dsa':
+				$strEncryptionAlgorithm	= 'dss';
+				break;
+		}
+		
 		$arrMethods	= ($bolUsePrivateKey) ? array('hostkey'=>'ssh-'.$strEncryptionAlgorithm) : array();
 		if ($this->_resConnection = ssh2_connect($strHost, 22, $arrMethods))
 		{
