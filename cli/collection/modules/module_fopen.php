@@ -109,8 +109,6 @@
 		// Get Path Definitions
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
 		
-		CliEcho();
-		
 		$arrDownloadPaths	= array();
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
 		{
@@ -183,9 +181,9 @@
 						$arrDownloadPaths[]	= array('RemotePath' => trim($strFullRemotePath), 'FileType' => $arrFileType);
 					}
 				}
+				CliEcho();
 			}
 		}
-		CliEcho();
 		return $arrDownloadPaths;
 	}
 }
