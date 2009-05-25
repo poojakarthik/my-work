@@ -127,7 +127,7 @@
 						// Ignore '.' and '..'
 						if (in_array($strFilePath, array('.', '..')))
 						{
-							
+							continue;
 						}
 						
 						if (is_dir($strFilePath))
