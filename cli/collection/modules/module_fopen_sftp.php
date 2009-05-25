@@ -113,7 +113,12 @@
 				//Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
 				
 				// Try reading a file
+				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/"));
 				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/gowireless"));
+				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/gowireless/usage/"));
+				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/gowireless/usage/2009/"));
+				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/gowireless/usage/2009/05"));
+				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/gowireless/usage/2009/05/20090501000347"));
 				
 				// Get list of files to download
 				//$this->_arrDownloadPaths	= $this->_getDownloadPaths();
