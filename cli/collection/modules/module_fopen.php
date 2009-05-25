@@ -132,13 +132,14 @@
 						{
 							continue;
 						}
+						$strFullRemotePath	= $strPath.'/'.$strFilePath;
 						
-						if (is_dir($strFilePath))
+						if (is_dir($this->_strWrapper.$strFullRemotePath))
 						{
 							// This is a directory
 							if ($arrFileType['Recursive'])
 							{
-								$arrFileType['Paths'][]	= $strPath.'/'.$strFilePath;
+								$arrFileType['Paths'][]	= $strFullRemotePath;
 							}
 							else
 							{
@@ -170,7 +171,7 @@
 						CliEcho("Adding '{$strFilePath}'...");
 						
 						// As far as we can tell, this file is valid
-						$arrDownloadPaths[]	= array('RemotePath' => trim($strFilePath), 'FileType' => $arrFileType);
+						$arrDownloadPaths[]	= array('RemotePath' => trim($strFullRemotePath), 'FileType' => $arrFileType);
 					}
 				}
 			}
