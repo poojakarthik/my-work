@@ -8,6 +8,9 @@
  */
  class CollectionModuleFOpenSFTP extends CollectionModuleFOpen
  {
+	protected	$_resConnection;
+	protected	$_strWrapper;
+	
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_SFTP;
 	
 	const	SSH_KEY_PATH			= '/home/ybs-admin/.ssh/';
