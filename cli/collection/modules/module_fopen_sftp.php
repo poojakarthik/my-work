@@ -113,10 +113,11 @@
 				//Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
 				
 				// Try reading a file
-				Debug(scandir($this->_strWrapper));
+				//Debug(scandir($this->_strWrapper));
 				
 				// Get list of files to download
-				$this->_arrDownloadPaths	= $this->_getDownloadPaths();
+				//$this->_arrDownloadPaths	= $this->_getDownloadPaths();
+				$this->_arrDownloadPaths	= array();
 				reset($this->_arrDownloadPaths);
 				
 				return true;
