@@ -115,6 +115,7 @@
 				// Try reading a file
 				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/"));
 				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "./gowireless"));
+				Debug(ssh2_sftp_realpath($this->_resSFTPConnection, "./"));
 				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/gowireless/usage/"));
 				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/gowireless/usage/2009/"));
 				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/gowireless/usage/2009/05"));
