@@ -127,7 +127,7 @@
 				//CliEcho("Files in '{$strPath}'");
 				//Debug($arrFiles);
 				
-				CliEcho("\\[s");
+				CliEcho("\033[s");
 				
 				// Filter file names that we don't want
 				$intProgress	= 0;
@@ -136,7 +136,7 @@
 					foreach ($arrFiles as $strFilePath)
 					{
 						$intProgress++;
-						CliEcho("\\[2K\[uProcessing File {$intProgress}/$intFileCount", false);
+						CliEcho("\033[2K\033[uProcessing File {$intProgress}/$intFileCount", false);
 						
 						// Ignore '.' and '..'
 						if (in_array($strFilePath, array('.', '..')))
