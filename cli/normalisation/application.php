@@ -289,7 +289,7 @@
 			$this->Framework->StartWatch();
 			
 			// Retrieve list of CDR Files marked as either ready to process, or failed process
-			$arrFileTypes	= Array();
+			$arrFileTypes	= array();
 			foreach ($this->_arrNormalisationModule as $intCarrier=>$arrCarrierFileTypes)
 			{
 				foreach (array_keys($arrCarrierFileTypes) as $intFileType)
@@ -901,7 +901,7 @@
 				
 				$intTotalCDRs		= 0;
 				$intErrorCDRs		= 0;
-				$strPercentageDebug	= "File #{$intFileImportId}\n\n";
+				$strPercentageDebug	= "\n\nFile #{$intFileImportId}\n";
 				while ($arrPercentageValid = $resPercentageValid->fetch_assoc())
 				{
 					$intTotalCDRs	+= $arrPercentageValid['cdr_count'];
