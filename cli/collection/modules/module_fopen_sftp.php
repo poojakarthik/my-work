@@ -102,6 +102,7 @@
 			
 			// Init wrapper
 			$this->_strWrapper	= "ssh2.sftp://{$this->_resConnection}/";
+			Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
 			return true;
 		}
 		else

@@ -106,6 +106,8 @@
 	 */
 	protected function _getDownloadPaths()
 	{
+		Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
+		
 		// Get Path Definitions
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
 		
