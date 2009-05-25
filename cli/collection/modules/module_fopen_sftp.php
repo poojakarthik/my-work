@@ -108,14 +108,12 @@
 			
 			if ($this->_resSFTPConnection = ssh2_sftp($this->_resConnection))
 			{
-				stream_set_blocking($this->_resConnection, 1);
-				
 				// Init wrapper
 				$this->_strWrapper	= "ssh2.sftp://{$this->_resSFTPConnection}";
 				//Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
 				
 				// Try reading a file
-				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/"));
+				Debug(ssh2_sftp_stat($this->_resSFTPConnection, "/gowireless"));
 				
 				// Get list of files to download
 				//$this->_arrDownloadPaths	= $this->_getDownloadPaths();
