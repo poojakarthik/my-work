@@ -106,8 +106,10 @@
 				}
 			}
 			
+			$this->_resSFTPConnection	= ssh2_sftp($this->_resConnection);
+			
 			// Init wrapper
-			$this->_strWrapper	= "ssh2.sftp://{$this->_resConnection}/";
+			$this->_strWrapper	= "ssh2.sftp://{$this->_resSFTPConnection}/";
 			Debug($this->_strWrapper." in ".__FILE__." @ ".__LINE__);
 			
 			// Get list of files to download
