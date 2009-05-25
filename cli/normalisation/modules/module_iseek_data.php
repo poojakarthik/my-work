@@ -84,7 +84,7 @@ class NormalisationModuleIseekData extends NormalisationModule
 		try
 		{
 			$arrUsername	= array();
-			if (Flex::assert(preg_match('/^0[123478]\d{8}/', $strUsername, $arrUsername), "iSeek Data Normalisation: Invalid Username '{$strUsername}'", print_r($this->_arrRawData, true)))
+			if (Flex::assert(preg_match('/^0([123478])\d{8}/', $strUsername, $arrUsername), "iSeek Data Normalisation: Invalid Username '{$strUsername}'", print_r($this->_arrRawData, true)))
 			{
 				$strRawFNN		= $arrUsername[0];
 				$intFNNAreaCode	= (int)$arrUsername[1];
