@@ -109,28 +109,34 @@
 		// Get Path Definitions
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
 		
-		$intDEBUGCOUNT	= 0;
+		CliEcho();
 		
 		$arrDownloadPaths	= array();
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
 		{
 			while (list($mixPathKey, $strPath) = each($arrFileType['Paths']))
 			{
+				CliEcho("Getting Contents of '{$strPath}'...", false);
+				
 				// Get the directory listing for this
-				$arrFiles	= scandir($this->_strWrapper.$strPath);
+				$arrFiles		= scandir($this->_strWrapper.$strPath);
+				$intFileCount	= count($arrFiles);
+				
+				CliEcho("{$intFileCount} files (including '.' and '..')");
 				
 				//CliEcho("Files in '{$strPath}'");
 				//Debug($arrFiles);
 				
+				CliEcho("\\[s");
+				
 				// Filter file names that we don't want
+				$intProgress	= 0;
 				if (is_array($arrFiles))
 				{
 					foreach ($arrFiles as $strFilePath)
 					{
-						if ($intDEBUGCOUNT > 5)
-						{
-							continue;
-						}
+						$intProgress++;
+						CliEcho("\\[2K\[uProcessing File {$intProgress}/$intFileCount", false);
 						
 						// Ignore '.' and '..'
 						if (in_array($strFilePath, array('.', '..')))
@@ -179,6 +185,7 @@
 				}
 			}
 		}
+		CliEcho();
 		return $arrDownloadPaths;
 	}
 }
