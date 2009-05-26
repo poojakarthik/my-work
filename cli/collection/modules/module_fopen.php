@@ -14,6 +14,9 @@
 	//public $intBaseCarrier			= CARRIER_UNITEL;
 	//public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_LOCAL;
 	
+	const	DIRECTORY_NAME_REGEX_PREFIX	= 'regex:';
+	const	SKIP_IS_DIR_AFTER_REGEX		= true;
+	
 	/**
 	 * __construct()
 	 *
@@ -111,6 +114,112 @@
 		// Get Path Definitions
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
 		
+		try
+		{
+			$arrDownloadPaths	= $this->_getDownloadPathsForDirectory($arrDefinitions);
+		}
+		catch (Exception $eException)
+		{
+			
+		}
+		
+		return $arrDownloadPaths;
+	}
+	
+	protected function _getDownloadPathsForDirectories(&$arrDirectories, $strCurrentPath='')
+	{
+		$arrDownloadPaths	= array();
+		
+		while (list($strDirectory, $arrDefinition) = each($arrDirectories))
+		{
+			// Is this a Regex/Variable Directory?
+			if (stripos($strDirectory, self::DIRECTORY_NAME_REGEX_PREFIX) === 0)
+			{
+				// Regex -- get list of subdirectories that match this criteria
+				$strRegex	= '/^'.substr($strDirectory, strlen(self::DIRECTORY_NAME_REGEX_PREFIX)-1).'$/';
+				
+				$arrDirectoryContents	= @scandir($this->_strWrapper.$strCurrentPath);
+				
+				if (is_array($arrDirectoryContents))
+				{
+					foreach ($arrDirectoryContents as $strSubItem)
+					{
+						$strSubItemFullPath	= $strCurrentPath.'/'.$strSubItem;
+						if (preg_match($strRegex, $strSubItem) && is_dir($this->_strWrapper.$strSubItemFullPath))
+						{
+							// We have a matching subdirectory -- add it to our list of directories to download from
+							if (!array_key_exists($strSubItemFullPath, $arrDirectories))
+							{
+								$arrDirectories[$strSubItemFullPath]	= $arrDefinition;
+							}
+						}
+					}
+				}
+				else
+				{
+					// Error
+					throw new Exception("Error retrieving contents of '{$strCurrentPath}': ".error_get_last());
+				}
+			}
+			else
+			{
+				// Normal Directory
+				$strDirectoryFullPath	= $strCurrentPath.'/'.$strDirectory;
+				
+				// Browse Subdirectories
+				if (array_key_exists('arrSubdirectories', $arrDirectories[$strDirectory]) && is_array($arrDirectories[$strDirectory]['arrSubdirectories']) && count($arrDirectories[$strDirectory]['arrSubdirectories']))
+				{
+					$this->_getDownloadPathsForDirectories($arrDirectories[$strDirectory]['arrSubdirectories'], $strDirectoryFullPath);
+				}
+				
+				// Get any Files in this Directory
+				if (array_key_exists('arrFileTypes', $arrDirectories[$strDirectory]) && is_array($arrDirectories[$strDirectory]['arrFileTypes']) && count($arrDirectories[$strDirectory]['arrFileTypes']))
+				{
+					$arrDirectoryContents	= @scandir($this->_strWrapper.$strCurrentPath);
+					
+					if (is_array($arrDirectoryContents))
+					{
+						foreach ($arrDirectoryContents as $strSubItem)
+						{
+							$strSubItemFullPath	= $strCurrentPath.'/'.$strSubItem;
+							
+							foreach ($arrDirectories[$strDirectory]['arrFileTypes'] as $intResourceTypeId=>$arrFileType)
+							{
+								if (preg_match($arrFileType['Regex'], $strSubItem) && !is_dir($this->_strWrapper.$strSubItemFullPath))
+								{
+									// Does this File Name exist in the database?
+									if ($arrFileType['DownloadUnique'] && !$this->isDownloadUnique($strSubItem))
+									{
+										// Yes, so we should skip this file
+										break;
+									}
+									
+									// Regex matches -- is this a directory?
+									if (self::SKIP_IS_DIR_AFTER_REGEX || !is_dir($this->_strWrapper.$strSubItemFullPath))
+									{
+										// It's a File --matched a File Type definition
+										$arrDownloadPaths[]	= array('RemotePath' => trim($strSubItemFullPath), 'FileType' => $arrFileType);
+										break;
+									}
+								}
+							}
+						}
+					}
+					else
+					{
+						// Error
+						throw new Exception("Error retrieving contents of '{$strCurrentPath}': ".error_get_last());
+					}
+				}
+			}
+		}
+		
+		unset($arrDefinition);
+		
+		return $arrDownloadPaths;
+		
+		/*
+		// !!!LEGACY!!! Only for reference while rewriting
 		$arrDownloadPaths	= array();
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
 		{
@@ -157,7 +266,7 @@
 								}
 								else
 								{
-									throw new Exception("WHY ON EARTH IS '{$strFullRemotePath}' BEING ADDED AGAIN?");
+									CliEcho("WHY ON EARTH IS '{$strFullRemotePath}' BEING ADDED AGAIN?");
 								} 
 							}
 							else
@@ -195,6 +304,33 @@
 			}
 		}
 		return $arrDownloadPaths;
+		*/
+	}
+	
+	/**
+	 * GetFileType()
+	 *
+	 * Determines the FileImport type for a given file
+	 * 
+	 * @param	array	$arrDownloadFile				FileDownload properties
+	 * 
+	 * @return	mixed									array: FileImport Type; NULL: Unrecognised type
+	 *
+	 * @method
+	 */
+	public function GetFileType($arrDownloadFile)
+	{
+		// Has this file been extracted from a downloaded archive?
+		if ($arrDownloadFile['ArchiveParent'])
+		{
+			// FIXME: FOpen Collection Modules don't support Archives yet
+			return NULL;
+		}
+		else
+		{
+			// The File Type for this file is already defined
+			return $arrDownloadFile['FileType'];
+		}
 	}
 }
 ?>
