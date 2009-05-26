@@ -133,7 +133,6 @@
 		while (list($strDirectory, $arrDefinition) = each($arrDirectories))
 		{
 			CliEcho("Currently ".(count($arrDirectories))." subdirectories for path '{$strCurrentPath}'");
-			CliEcho("Getting Contents of '{$strDirectory}'...", false);
 			
 			// Is this a Regex/Variable Directory?
 			if (stripos($strDirectory, self::DIRECTORY_NAME_REGEX_PREFIX) === 0)
@@ -142,13 +141,16 @@
 				
 				// Regex -- get list of subdirectories that match this criteria
 				$strRegex	= '/^'.substr($strDirectory, strlen(self::DIRECTORY_NAME_REGEX_PREFIX)-1).'$/';
+				CliEcho("Checking for Subdirectory matches against '{$strRegex}'");
 				
 				$arrDirectoryContents	= @scandir($this->_strWrapper.$strCurrentPath);
 				
 				if (is_array($arrDirectoryContents))
 				{
-					foreach ($arrDirectoryContents as $strSubItem)
+					foreach ($arrDirectoryContents as $intIndex=>$strSubItem)
 					{
+						CliEcho("Subitem {$intIndex}: {$strSubItem}");
+						
 						$strSubItemFullPath	= $strCurrentPath.'/'.$strSubItem;
 						if (preg_match($strRegex, $strSubItem) && is_dir($this->_strWrapper.$strSubItemFullPath))
 						{
