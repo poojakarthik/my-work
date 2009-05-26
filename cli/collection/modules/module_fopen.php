@@ -132,9 +132,14 @@
 		
 		while (list($strDirectory, $arrDefinition) = each($arrDirectories))
 		{
+			CliEcho("Currently ".(count($arrDirectories))." subdirectories for path '{$strCurrentPath}'");
+			CliEcho("Getting Contents of '{$strDirectory}'...", false);
+			
 			// Is this a Regex/Variable Directory?
 			if (stripos($strDirectory, self::DIRECTORY_NAME_REGEX_PREFIX) === 0)
 			{
+				CliEcho("'{$strDirectory}' is a Regex/Variable Directory");
+				
 				// Regex -- get list of subdirectories that match this criteria
 				$strRegex	= '/^'.substr($strDirectory, strlen(self::DIRECTORY_NAME_REGEX_PREFIX)-1).'$/';
 				
@@ -150,6 +155,7 @@
 							// We have a matching subdirectory -- add it to our list of directories to download from
 							if (!array_key_exists($strSubItemFullPath, $arrDirectories))
 							{
+								CliEcho("Physical Subdirectory '{$strSubItem}' matches regex of '{$strRegex}'");
 								$arrDirectories[$strSubItemFullPath]	= $arrDefinition;
 							}
 						}
@@ -163,13 +169,20 @@
 			}
 			else
 			{
+				CliEcho("'{$strDirectory}' is a Normal Directory");
+				
 				// Normal Directory
 				$strDirectoryFullPath	= $strCurrentPath.'/'.$strDirectory;
 				
 				// Browse Subdirectories
 				if (array_key_exists('arrSubdirectories', $arrDirectories[$strDirectory]) && is_array($arrDirectories[$strDirectory]['arrSubdirectories']) && count($arrDirectories[$strDirectory]['arrSubdirectories']))
 				{
+					CliEcho("Traversing subdirectories for '{$strDirectory}'");
 					$this->_getDownloadPathsForDirectories($arrDirectories[$strDirectory]['arrSubdirectories'], $strDirectoryFullPath);
+				}
+				else
+				{
+					CliEcho("'{$strDirectory}' has no Subdirectory definitions");
 				}
 				
 				// Get any Files in this Directory
@@ -177,10 +190,21 @@
 				{
 					$arrDirectoryContents	= @scandir($this->_strWrapper.$strCurrentPath);
 					
+					$intFileCount	= count($arrDirectoryContents);
+					
+					CliEcho("{$intFileCount} files (including '.' and '..')");
+				
+					CliEcho("\033[s");
+					
 					if (is_array($arrDirectoryContents))
 					{
+						$intProgress	= 0;
+						$intMatches		= 0;
 						foreach ($arrDirectoryContents as $strSubItem)
 						{
+							$intProgress++;
+							CliEcho("\033[2K\033[uProcessing File {$intProgress}/{$intFileCount}.  Matches so far: {$intMatches}", false);
+							
 							$strSubItemFullPath	= $strCurrentPath.'/'.$strSubItem;
 							
 							foreach ($arrDirectories[$strDirectory]['arrFileTypes'] as $intResourceTypeId=>$arrFileType)
@@ -199,6 +223,7 @@
 									{
 										// It's a File --matched a File Type definition
 										$arrDownloadPaths[]	= array('RemotePath' => trim($strSubItemFullPath), 'FileType' => $arrFileType);
+										$intMatches++;
 										break;
 									}
 								}
@@ -210,6 +235,10 @@
 						// Error
 						throw new Exception("Error retrieving contents of '{$strCurrentPath}': ".error_get_last());
 					}
+				}
+				else
+				{
+					CliEcho("'{$strDirectory}' has no File Type definitions");
 				}
 			}
 		}
