@@ -158,7 +158,7 @@
 							if (!array_key_exists($strSubItemFullPath, $arrDirectories))
 							{
 								CliEcho("Physical Subdirectory '{$strSubItem}' matches regex of '{$strRegex}'");
-								$arrDirectories[$strSubItemFullPath]	= $arrDefinition;
+								$arrDirectories[$strSubItem]	= $arrDefinition;
 							}
 						}
 					}
@@ -195,7 +195,7 @@
 					$intFileCount	= count($arrDirectoryContents);
 					
 					CliEcho("{$intFileCount} files (including '.' and '..')");
-				
+					
 					CliEcho("\033[s");
 					
 					if (is_array($arrDirectoryContents))
