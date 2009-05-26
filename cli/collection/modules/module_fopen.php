@@ -116,7 +116,7 @@
 		
 		try
 		{
-			$arrDownloadPaths	= $this->_getDownloadPathsForDirectory($arrDefinitions);
+			$arrDownloadPaths	= $this->_getDownloadPathsForDirectories($arrDefinitions);
 		}
 		catch (Exception $eException)
 		{
