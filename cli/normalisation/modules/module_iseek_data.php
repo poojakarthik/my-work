@@ -144,7 +144,7 @@ class NormalisationModuleIseekData extends NormalisationModule
 		// FIXME: This won't be what we want when we actually start supporting normal ADSL
 		$intUploadedOctets		= (int)$this->_FetchRawCDR('uptxoctets');
 		$intDownloadedOctets	= (int)$this->_FetchRawCDR('downrxoctets');
-		$intTotalUnits			= ceil(($intUploadedOctets + $intDownloadedOctets) / self::OCTETS_TO_KILOBYTES_MULTIPLIER);
+		$intTotalUnits			= ceil(($intUploadedOctets + $intDownloadedOctets) / self::OCTETS_TO_KILOBYTES_DIVISOR);
 		$this->_AppendCDR('Units', $intTotalUnits);
 		
 		//--------------------------------------------------------------------//
