@@ -195,7 +195,7 @@
 				// Get any Files in this Directory
 				if (array_key_exists('arrFileTypes', $arrDirectories[$strDirectory]) && is_array($arrDirectories[$strDirectory]['arrFileTypes']) && count($arrDirectories[$strDirectory]['arrFileTypes']))
 				{
-					$arrDirectoryContents	= @scandir($this->_strWrapper.$strCurrentPath);
+					$arrDirectoryContents	= @scandir($this->_strWrapper.$strDirectoryFullPath);
 					
 					$intFileCount	= count($arrDirectoryContents);
 					
@@ -212,7 +212,7 @@
 							$intProgress++;
 							CliEcho("\033[2K\033[uProcessing File {$intProgress}/{$intFileCount}; Matches: {$intMatches}", false);
 							
-							$strSubItemFullPath	= $strCurrentPath.'/'.$strSubItem;
+							$strSubItemFullPath	= $strDirectoryFullPath.'/'.$strSubItem;
 							
 							foreach ($arrDirectories[$strDirectory]['arrFileTypes'] as $intResourceTypeId=>$arrFileType)
 							{
