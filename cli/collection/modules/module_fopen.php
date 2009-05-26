@@ -229,6 +229,7 @@
 									if (self::SKIP_IS_DIR_AFTER_REGEX || !is_dir($this->_strWrapper.$strSubItemFullPath))
 									{
 										// It's a File --matched a File Type definition
+										$arrFileType['FileImportType']	= $intResourceTypeId;
 										$arrDownloadPaths[]	= array('RemotePath' => trim($strSubItemFullPath), 'FileType' => $arrFileType);
 										$intMatches++;
 										break;
