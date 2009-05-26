@@ -140,7 +140,7 @@
 				CliEcho("'{$strDirectory}' is a Regex/Variable Directory");
 				
 				// Regex -- get list of subdirectories that match this criteria
-				$strRegex	= '/^'.substr($strDirectory, strlen(self::DIRECTORY_NAME_REGEX_PREFIX)-1).'$/';
+				$strRegex	= '/^'.substr($strDirectory, strlen(self::DIRECTORY_NAME_REGEX_PREFIX)).'$/';
 				CliEcho("Checking for Subdirectory matches against '{$strRegex}'");
 				
 				$arrDirectoryContents	= @scandir($this->_strWrapper.$strCurrentPath);
