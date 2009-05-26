@@ -210,7 +210,7 @@
 						foreach ($arrDirectoryContents as $strSubItem)
 						{
 							$intProgress++;
-							CliEcho("\033[2K\033[uProcessing File {$intProgress}/{$intFileCount}.  Matches so far: {$intMatches}", false);
+							CliEcho("\033[2K\033[uProcessing File {$intProgress}/{$intFileCount}; Matches: {$intMatches}", false);
 							
 							$strSubItemFullPath	= $strCurrentPath.'/'.$strSubItem;
 							
