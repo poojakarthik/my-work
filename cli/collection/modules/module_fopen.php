@@ -180,7 +180,12 @@
 				if (array_key_exists('arrSubdirectories', $arrDirectories[$strDirectory]) && is_array($arrDirectories[$strDirectory]['arrSubdirectories']) && count($arrDirectories[$strDirectory]['arrSubdirectories']))
 				{
 					CliEcho("Traversing subdirectories for '{$strDirectory}'");
-					$this->_getDownloadPathsForDirectories($arrDirectories[$strDirectory]['arrSubdirectories'], $strDirectoryFullPath);
+					
+					$arrSubdirectoryDownloadPaths	= $this->_getDownloadPathsForDirectories($arrDirectories[$strDirectory]['arrSubdirectories'], $strDirectoryFullPath);
+					foreach ($arrSubdirectoryDownloadPaths as $arrSubdirectoryDownloadPath)
+					{
+						$arrDownloadPaths[]	= $arrSubdirectoryDownloadPath;
+					}
 				}
 				else
 				{
