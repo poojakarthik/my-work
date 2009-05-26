@@ -51,7 +51,7 @@ $arrModuleConfig['FileDefine']		['Value']		= $arrDirectories;
 $strOutputFile	= basename(__FILE__, '.cfg.php').'.serialised';
 @unlink($strOutputFile);
 
-if (file_put_contents($strOutputFile, serialize($arrStructure)))
+if (file_put_contents($strOutputFile, serialize($arrDirectories)))
 {
 	echo "\nSerialised Data successfully dumped to '$strOutputFile'.\n\n";
 }
