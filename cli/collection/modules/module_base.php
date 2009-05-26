@@ -173,6 +173,8 @@
 	 */
 	public function isDownloadUnique($strFilename)
 	{
+		CliEcho("Checking '{$strFilename}' for uniqueness with Carrier #{$this->intCarrier}");
+		
 		static	$selFileDownloadUnique;
 		$selFileDownloadUnique	= ($selFileDownloadUnique) ? $selFileDownloadUnique : new StatementSelect("FileDownload", "Id", "Carrier = <carrier_id> AND FileName = <filename>", null, 1);
 		
