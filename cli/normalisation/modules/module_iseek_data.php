@@ -11,8 +11,8 @@ class NormalisationModuleIseekData extends NormalisationModule
 	public $intBaseCarrier	= CARRIER_ISEEK;
 	public $intBaseFileType	= RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_DATA;
 	
-	const	OCTETS_TO_KILOBYTES_MULTIPLIER	= 1024;
-	const	USAGE_WINDOW_SECONDS			= 300;
+	const	OCTETS_TO_KILOBYTES_DIVISOR	= 1024;
+	const	USAGE_WINDOW_SECONDS		= 300;
 	
 	/**
 	 * __construct()
@@ -144,7 +144,7 @@ class NormalisationModuleIseekData extends NormalisationModule
 		// FIXME: This won't be what we want when we actually start supporting normal ADSL
 		$intUploadedOctets		= (int)$this->_FetchRawCDR('uptxoctets');
 		$intDownloadedOctets	= (int)$this->_FetchRawCDR('downrxoctets');
-		$intTotalUnits			= ($intUploadedOctets + $intDownloadedOctets) * self::OCTETS_TO_KILOBYTES_MULTIPLIER;
+		$intTotalUnits			= ceil(($intUploadedOctets + $intDownloadedOctets) / self::OCTETS_TO_KILOBYTES_MULTIPLIER);
 		$this->_AppendCDR('Units', $intTotalUnits);
 		
 		//--------------------------------------------------------------------//
