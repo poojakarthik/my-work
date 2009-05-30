@@ -236,6 +236,7 @@
 						if (substr(trim($strFilePath), -1) === '/')
 						{
 							// This is a directory, ignore
+							CliEcho("Ignoring Directory '".basename($strFilePath));
 							continue;
 						}
 
@@ -243,6 +244,7 @@
 						if (!preg_match($arrFileType['Regex'], trim(basename($strFilePath))))
 						{
 							// No match
+							CliEcho("File '".basename($strFilePath)."' does not match Regex of '{$arrFileType['Regex']}'");
 							continue;
 						}
 
