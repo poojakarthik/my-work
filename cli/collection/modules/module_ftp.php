@@ -232,6 +232,8 @@
 				// Get the directory listing for this
 				$arrFiles	= @ftp_nlist($this->_resConnection, "-F $strPath");
 
+				Debug($arrFiles);
+
 				// Filter file names that we don't want
 				if (is_array($arrFiles))
 				{
