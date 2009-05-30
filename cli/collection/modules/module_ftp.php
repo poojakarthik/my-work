@@ -109,14 +109,18 @@
 		$strPassword	= $this->GetConfigField('Password');
 
 		// Connect to the Server
+		CliEcho("Connecting to {$strUsername}@{$strHost}");
 		$this->_resConnection	= ($this->GetConfigField('SSL') === TRUE) ? @ftp_ssl_connect($strHost) : @ftp_connect($strHost);
 		if ($this->_resConnection)
 		{
 			// Log in to the Server
+			CliEcho("Authenticating with u:'{$strUsername}';p:'{$strPassword}'");
 			if (@ftp_login($this->_resConnection, $strUsername, $strPassword))
 			{
+				CliEcho("Getting list of paths...");
 				// Retrieve full file listing
 				$this->_arrDownloadPaths	= $this->_GetDownloadPaths();
+				CliEcho(count($this->_arrDownloadPaths)." paths to download from");
 				reset($this->_arrDownloadPaths);
 			}
 			else
