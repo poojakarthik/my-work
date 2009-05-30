@@ -334,7 +334,7 @@
 					// Report the error, and UPDATE the database with a new status, then move to the next file
 					new ExceptionVixen("Specified CDR File doesn't exist", $this->_errErrorHandler, CDR_FILE_DOESNT_EXIST);
 					$arrCDRFile["Status"] = FILE_IMPORT_FAILED;
-					if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("Id" => $arrCDRFile["Id"])) === FALSE)
+					if ($updUpdateCDRFiles->Execute($arrDefine, Array("Id" => $arrCDRFile["Id"])) === FALSE)
 					{
 
 					}
