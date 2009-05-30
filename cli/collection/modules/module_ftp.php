@@ -232,6 +232,8 @@
 				// Get the directory listing for this
 				CliEcho("ls -F {$strPath}");
 				$arrFiles	= ftp_nlist($this->_resConnection, "-F {$strPath}");
+
+				$arrFiles	= scandir("ftp://{$this->_resConnection}/{$strPath}");
 				var_dump($arrFiles);
 
 				Debug($arrFiles);
@@ -243,7 +245,8 @@
 					{
 						$strFilePath	= $strPath.rtrim(trim($strFilePath), '*');
 
-						if (substr(trim($strFilePath), -1) === '/')
+						//if (substr(trim($strFilePath), -1) === '/')
+						if (is_dir("ftp://{$this->_resConnection}/{$strFilePath}"))
 						{
 							// This is a directory, ignore
 							CliEcho("Ignoring Directory '".basename($strFilePath));
