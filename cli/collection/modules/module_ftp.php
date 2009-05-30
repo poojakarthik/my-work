@@ -241,7 +241,7 @@
 						if (@ftp_chdir($this->_resConnection, $strFilePath))
 						{
 							// This is a directory, ignore
-							CliEcho("Ignoring Directory '".basename($strFilePath))."'";
+							//CliEcho("Ignoring Directory '".basename($strFilePath))."'";
 							ftp_chdir($this->_resConnection, $strWorkingDir);
 							continue;
 						}
