@@ -253,7 +253,7 @@
 						if (!preg_match($arrFileType['Regex'], trim(basename($strFilePath))))
 						{
 							// No match
-							CliEcho("File '".basename($strFilePath)."' does not match Regex of '{$arrFileType['Regex']}'");
+							//CliEcho("File '".basename($strFilePath)."' does not match Regex of '{$arrFileType['Regex']}'");
 							continue;
 						}
 
@@ -264,7 +264,7 @@
 							if ($this->_selFileDownloaded->Execute(Array('FileName' => basename($strFilePath))))
 							{
 								// Yes, so we should skip this file
-								CliEcho("File '".basename($strFilePath)."' is not unique");
+								//CliEcho("File '".basename($strFilePath)."' is not unique");
 								continue;
 							}
 						}
