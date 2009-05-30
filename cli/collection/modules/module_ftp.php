@@ -242,7 +242,7 @@
 						{
 							// This is a directory, ignore
 							CliEcho("Ignoring Directory '".basename($strFilePath))/"'";
-							ftp_chdir($strWorkingDir);
+							ftp_chdir($this->_resConnection, $strWorkingDir);
 							continue;
 						}
 
