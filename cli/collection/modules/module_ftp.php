@@ -222,7 +222,7 @@
 		// Get Path Definitions
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
 
-		Debug($arrDefinitions);
+		//Debug($arrDefinitions);
 
 		$arrDownloadPaths	= Array();
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
@@ -232,6 +232,7 @@
 				// Get the directory listing for this
 				CliEcho("ls -F {$strPath}");
 				$arrFiles	= ftp_nlist($this->_resConnection, "-F {$strPath}");
+				var_dump($arrFiles);
 
 				Debug($arrFiles);
 
