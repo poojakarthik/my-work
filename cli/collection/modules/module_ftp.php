@@ -44,10 +44,10 @@
  class CollectionModuleFTP extends CollectionModuleBase
  {
 	private $_resConnection;
- 	
+
 	//public $intBaseCarrier			= CARRIER_UNITEL;
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_FTP;
-	
+
  	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -65,29 +65,29 @@
  	function __construct($intCarrier)
  	{
  		parent::__construct($intCarrier);
- 		
+
 		//##----------------------------------------------------------------##//
 		// Define Module Configuration and Defaults
 		//##----------------------------------------------------------------##//
-		
+
 		// Mandatory
  		$this->_arrModuleConfig['Host']			['Default']		= '';
  		$this->_arrModuleConfig['Host']			['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['Host']			['Description']	= "FTP Server to connect to";
- 		
+
  		$this->_arrModuleConfig['Username']		['Default']		= '';
  		$this->_arrModuleConfig['Username']		['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['Username']		['Description']	= "FTP Username";
- 		
+
  		$this->_arrModuleConfig['Password']		['Default']		= '';
  		$this->_arrModuleConfig['Password']		['Type']		= DATA_TYPE_STRING;
  		$this->_arrModuleConfig['Password']		['Description']	= "FTP Password";
- 		
+
  		$this->_arrModuleConfig['FileDefine']	['Default']		= Array();
  		$this->_arrModuleConfig['FileDefine']	['Type']		= DATA_TYPE_ARRAY;
  		$this->_arrModuleConfig['FileDefine']	['Description']	= "Definitions for where to download files from";
  	}
- 	
+
  	//------------------------------------------------------------------------//
 	// Connect
 	//------------------------------------------------------------------------//
@@ -107,7 +107,7 @@
 		$strHost		= $this->GetConfigField('Host');
 		$strUsername	= $this->GetConfigField('Username');
 		$strPassword	= $this->GetConfigField('Password');
-		
+
 		// Connect to the Server
 		$this->_resConnection	= ($this->GetConfigField('SSL') === TRUE) ? @ftp_ssl_connect($strHost) : @ftp_connect($strHost);
 		if ($this->_resConnection)
@@ -130,7 +130,7 @@
 		}
 		return TRUE;
  	}
- 	
+
   	//------------------------------------------------------------------------//
 	// Disconnect
 	//------------------------------------------------------------------------//
@@ -150,7 +150,7 @@
 			ftp_close($this->_resConnection);
 		}
  	}
- 	
+
   	//------------------------------------------------------------------------//
 	// Download
 	//------------------------------------------------------------------------//
@@ -172,7 +172,7 @@
 		{
 			return "Download() called before Connect()";
 		}
-		
+
 		// Get the Current path element
 		if (!($arrCurrentFile = current($this->_arrDownloadPaths)))
 		{
@@ -183,10 +183,10 @@
 		{
 			// Advance the arrDownloadPaths internal pointer
 			next($this->_arrDownloadPaths);
-			
+
 			// Calculate Local Download Path
 			$arrCurrentFile['LocalPath']	= $strDestination.ltrim(basename($arrCurrentFile['RemotePath']), '/');
-			
+
 			// Attempt to download this file
 			if (ftp_get($this->_resConnection, $arrCurrentFile['LocalPath'], $arrCurrentFile['RemotePath'], $arrCurrentFile['FileType']['FTPMode']))
 			{
@@ -198,7 +198,7 @@
 			}
 		}
  	}
- 	
+
   	//------------------------------------------------------------------------//
 	// _GetDownloadPaths
 	//------------------------------------------------------------------------//
@@ -208,7 +208,7 @@
 	 * Gets a full list of all files to download
 	 *
 	 * Gets a full list of all files to download
-	 * 
+	 *
 	 * @return		array							Array of files to download
 	 *
 	 * @method
@@ -217,7 +217,7 @@
 	{
 		// Get Path Definitions
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
-		
+
 		$arrDownloadPaths	= Array();
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
 		{
@@ -225,27 +225,27 @@
 			{
 				// Get the directory listing for this
 				$arrFiles	= @ftp_nlist($this->_resConnection, "-F $strPath");
-				
+
 				// Filter file names that we don't want
 				if (is_array($arrFiles))
 				{
 					foreach ($arrFiles as &$strFilePath)
 					{
 						$strFilePath	= $strPath.rtrim(trim($strFilePath), '*');
-						
+
 						if (substr(trim($strFilePath), -1) === '/')
 						{
 							// This is a directory, ignore
 							continue;
 						}
-						
+
 						// Does this file match our REGEX?
 						if (!preg_match($arrFileType['Regex'], trim(basename($strFilePath))))
 						{
 							// No match
 							continue;
 						}
-						
+
 						// Does this FileType have download uniqueness?
 						if ($arrFileType['DownloadUnique'])
 						{
@@ -253,13 +253,14 @@
 							if ($this->_selFileDownloaded->Execute(Array('FileName' => basename($strFilePath))))
 							{
 								// Yes, so we should skip this file
+								CliEcho("File '".basename($strFilePath)."' is not unique");
 								continue;
 							}
 						}
-						
+
 						// Add the FileImport Type to our element
 						$arrFileType['FileImportType']	= $intFileType;
-						
+
 						// As far as we can tell, this file is valid
 						$arrDownloadPaths[]	= Array('RemotePath' => trim($strFilePath), 'FileType' => $arrFileType);
 					}
