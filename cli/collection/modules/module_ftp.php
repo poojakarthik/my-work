@@ -223,6 +223,7 @@
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
 
 		//Debug($arrDefinitions);
+		$strWorkingDir	= ftp_pwd($this->_resConnection);
 
 		$arrDownloadPaths	= Array();
 		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
@@ -230,14 +231,7 @@
 			foreach ($arrFileType['Paths'] as $strPath)
 			{
 				// Get the directory listing for this
-				CliEcho("ls -F {$strPath}");
-				//$arrFiles	= ftp_nlist($this->_resConnection, "-F {$strPath}");
-				$arrFiles	= ftp_nlist($this->_resConnection, "{$strPath}");
-
-				//$arrFiles	= scandir("ftp://{$this->_resConnection}/{$strPath}");
-				var_dump($arrFiles);
-
-				Debug($arrFiles);
+				$arrFiles	= ftp_nlist($this->_resConnection, $strPath);
 
 				// Filter file names that we don't want
 				if (is_array($arrFiles))
@@ -247,10 +241,11 @@
 						$strFilePath	= $strPath.rtrim(trim($strFilePath), '*');
 
 						//if (substr(trim($strFilePath), -1) === '/')
-						if (is_dir("ftp://{$this->_resConnection}/{$strFilePath}"))
+						if (ftp_chdir($this->_resConnection, $strFilePath))
 						{
 							// This is a directory, ignore
-							CliEcho("Ignoring Directory '".basename($strFilePath));
+							CliEcho("Ignoring Directory '".basename($strFilePath))/"'";
+							ftp_chdir($strWorkingDir);
 							continue;
 						}
 
