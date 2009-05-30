@@ -47,7 +47,7 @@
  class ApplicationNormalise extends ApplicationBaseClass
  {
  	const	FILE_MINIMUM_PERCENT_VALID	= .9;
- 	
+
  	private	$_arrCDRErrorStatuses	=	array
  										(
  											CDR_CANT_NORMALISE,
@@ -60,7 +60,7 @@
  											CDR_CANT_NORMALISE_INVALID,
  											CDR_DUPLICATE
  										);
- 	
+
  	//------------------------------------------------------------------------//
 	// errErrorHandler
 	//------------------------------------------------------------------------//
@@ -76,7 +76,7 @@
 	 * @property
 	 */
 	public $errErrorHandler;
-	
+
 	//------------------------------------------------------------------------//
 	// rptNormalisationReport
 	//------------------------------------------------------------------------//
@@ -93,7 +93,7 @@
 	 * @property
 	 */
 	public $rptNormalisationReport;
-	
+
 	//------------------------------------------------------------------------//
 	// arrDelinquents
 	//------------------------------------------------------------------------//
@@ -109,7 +109,7 @@
 	 * @property
 	 */
 	public $_arrDelinquents;
-	
+
 	//------------------------------------------------------------------------//
 	// arrNormaliseReportCount
 	//------------------------------------------------------------------------//
@@ -126,7 +126,7 @@
 	 * @property
 	 */
 	public $_arrNormaliseReportCount;
- 	
+
 	//------------------------------------------------------------------------//
 	// _arrNormalisationModule
 	//------------------------------------------------------------------------//
@@ -142,7 +142,7 @@
 	 * @property
 	 */
 	public $_arrNormalisationModule;
-	
+
 	//------------------------------------------------------------------------//
 	// _intImportPass
 	//------------------------------------------------------------------------//
@@ -158,7 +158,7 @@
 	 * @property
 	 */
 	private $_intImportPass;
-	
+
 	//------------------------------------------------------------------------//
 	// _intImportFail
 	//------------------------------------------------------------------------//
@@ -174,7 +174,7 @@
 	 * @property
 	 */
 	private $_intImportFail;
-	
+
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -193,12 +193,12 @@
  	function __construct($mixEmailAddress)
  	{
 		parent::__construct();
-		
+
 	 	// Initialise framework components
 		$this->rptNormalisationReport	= new Report("Normalisation Report for " . date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
 		$this->rptDelinquentsReport		= new Report("Delinquents Report for ". date("Y-m-d H:i:s"), $$mixEmailAddress, FALSE);
 		$this->errErrorHandler			= new ErrorHandler();
-		
+
 		/*
 		// Create an instance of each Normalisation module (OLD METHOD)
  		$this->_arrNormalisationModule[CDR_UNITEL_RSLCOM]		= new NormalisationModuleRSLCOM();
@@ -209,7 +209,7 @@
  		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
  		$this->_arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleOptus();	// Uses Optus' format
  		*/
- 		
+
  		// Load CDR Normalisation CarrierModules
  		CliEcho(" * NORMALISATION MODULES");
  		$this->_selCarrierModules->Execute(Array('Type' => MODULE_TYPE_NORMALISATION_CDR));
@@ -218,28 +218,28 @@
  			$this->_arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]	= new $arrModule['Module']($arrModule['Carrier']);
  			CliEcho("\t + ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".$this->_arrNormalisationModule[$arrModule['Carrier']][$arrModule['FileType']]->strDescription);
  		}
-		
-		
+
+
 		// STATEMENTS
 		$this->_selCreditCDRs = new StatementSelect("CDR", "Id, FNN, Source, Destination, Cost, Units, StartDatetime", "Credit = 1 AND Status = ".CDR_RATED, NULL, "1000");
-		
+
 		$strStatus = " AND (Status = ".CDR_RATED." OR Status = ".CDR_NORMALISED." OR Status = ".CDR_BAD_OWNER." OR Status = ".CDR_BAD_RECORD_TYPE." OR Status = ".CDR_BAD_DESTINATION." OR Status = ".CDR_FIND_OWNER." OR Status = ".CDR_RENORMALISE." OR Status = ".CDR_RATE_NOT_FOUND.")";
 		$this->_selDebitCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDatetime> $strStatus", NULL, 1);
 	 	//$this->_selRatedCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDatetime> AND Status = ".CDR_RATED, NULL, 1);
-		
+
 		$arrUpdateColumns = Array();
  		$arrUpdateColumns['Status']	= '';
  		$this->_ubiCDRStatus = new StatementUpdateById("CDR", $arrUpdateColumns);
-		
+
 		$this->_insCreditLink = new StatementInsert("cdr_credit_link");
-		
+
 		// Update CDR Query
 		$arrDefine = $this->db->FetchClean("CDR");
 		$arrDefine['NormalisedOn'] = new MySQLFunction("NOW()");
  		$this->_updUpdateCDRs = new StatementUpdate("CDR", "Id = <CdrId>", $arrDefine);
-		
+
 		$this->_arrDelinquents = Array();
-		
+
 		// Duplicate CDR Query
 	 	/*$this->_selFindDuplicate	= new StatementSelect(	"CDR",
 															"Id, CASE WHEN CarrierRef <=> <CarrierRef> THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status",
@@ -270,7 +270,7 @@
 	 * Imports CDRs from CDR Files
 	 *
 	 * Imports CDRs from CDR Files
-	 * 
+	 *
 	 * @param	integer	$intLimit	optional	Limits the number of files processed
 	 *
 	 * @return	void
@@ -281,13 +281,13 @@
  	{
 		// Start a Transaction
 		DataAccess::getDataAccess()->TransactionStart();
-		
+
 		try
 		{
 			$this->AddToNormalisationReport("\n\n".MSG_HORIZONTAL_RULE);
 			$this->AddToNormalisationReport(MSG_IMPORTING_TITLE);
 			$this->Framework->StartWatch();
-			
+
 			// Retrieve list of CDR Files marked as either ready to process, or failed process
 			$arrFileTypes	= array();
 			foreach ($this->_arrNormalisationModule as $intCarrier=>$arrCarrierFileTypes)
@@ -297,34 +297,34 @@
 					$arrFileTypes[]	= $intFileType;
 				}
 			}
-			
+
 			// Do we have any FileTypes to import?
 			if (!count($arrFileTypes))
 			{
 				return FALSE;
 			}
-			
+
 			$strWhere			= "FileType IN (".implode(', ', $arrFileTypes).") AND Status IN (".FILE_COLLECTED.", ".FILE_REIMPORT.")";
 			$selSelectCDRFiles 	= new StatementSelect("FileImport JOIN compression_algorithm ON FileImport.compression_algorithm_id = compression_algorithm.id", "FileImport.*, compression_algorithm.file_extension, compression_algorithm.php_stream_wrapper", $strWhere, NULL, $intLimit);
-			
+
 			$insInsertCDRLine	= new StatementInsert("CDR");
-			
+
 			$arrDefine = Array();
 			$arrDefine['Status']		= TRUE;
 			$arrDefine['ImportedOn'] 	= new MySQLFunction("NOW()");
 			$updUpdateCDRFiles			= new StatementUpdate("FileImport", "Id = <id>", $arrDefine);
-			
-			
+
+
 			if ($selSelectCDRFiles->Execute() === FALSE)
 			{
 				Debug($selSelectCDRFiles);
 				exit(1);
 			}
-			
+
 			$intCount = 0;
 			$this->_intImportFail = 0;
 			$this->_intImportPass = 0;
-			
+
 			// Loop through the CDR File entries
 			while ($arrCDRFile = $selSelectCDRFiles->Fetch())
 			{
@@ -336,14 +336,14 @@
 					$arrCDRFile["Status"] = FILE_IMPORT_FAILED;
 					if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 					{
-	
+
 					}
-					
+
 					// Add to the Normalisation report
 					$this->AddToNormalisationReport(MSG_FAIL_FILE_MISSING, Array('<Path>' => $arrCDRFile["Location"]));
 					continue;
 				}
-				
+
 				// Determine exact status, and act accordingly
 				switch($arrCDRFile["Status"])
 				{
@@ -353,15 +353,15 @@
 					*/
 					case FILE_COLLECTED:
 						$this->InsertCDRFile($arrCDRFile, $insInsertCDRLine, $updUpdateCDRFiles);
-	
+
 						break;
 					default:
 						new ExceptionVixen("Unexpected CDR File Status", $this->_errErrorHandler, UNEXPECTED_CDRFILE_STATUS);
 				}
-				
+
 				$intCount++;
 			}
-			
+
 			// Report totals
 			$arrReportLine['<Action>']		= "Imported";
 			$arrReportLine['<Total>']		= $this->_intImportPass + $this->_intImportFail;
@@ -375,11 +375,11 @@
 			DataAccess::getDataAccess()->TransactionRollback();
 			throw $eException;
 		}
-		
+
 		// Commit the Transaction
 		DataAccess::getDataAccess()->TransactionCommit();
  	}
- 	
+
 	//------------------------------------------------------------------------//
 	// DeleteCDRsByFile
 	//------------------------------------------------------------------------//
@@ -391,7 +391,7 @@
 	 * Deletes all data in the DB associated with a particular CDR File
 	 *
 	 * @param	integer		$intFileImportId		Delete CDRs from this File
-	 * 
+	 *
 	 * @return	boolean								FALSE: error or unable to delete
 	 *
 	 * @method
@@ -409,7 +409,7 @@
 		{
 			return FALSE;
 		}
-		
+
 		// remove cdrs
 		$qryDeleteCDRs = new Query();
 		$intResult = $qryDeleteCDRs->Execute("DELETE FROM CDR WHERE File = ".$intFileImportId);
@@ -419,8 +419,8 @@
 		}
 		return $intResult;
  	}
- 	
- 	
+
+
 	//------------------------------------------------------------------------//
 	// CascadeDeleteCDRFile
 	//------------------------------------------------------------------------//
@@ -432,7 +432,7 @@
 	 * Deletes a CDR File from the DB, and all associated CDRs
 	 *
 	 * @param	integer		$intFileImportId		Delete this File
-	 * 
+	 *
 	 * @return	boolean								FALSE: error or unable to delete
 	 *
 	 * @method
@@ -444,18 +444,18 @@
 		{
 			return FALSE;
 		}
-		
+
 		// Delete CDR File entry in FileImport
 		$qryDeleteCDRFile = new Query();
 		$intResult = $qryDeleteCDRFile->Execute("DELETE FROM FileImport WHERE Id = ".$intFileImportId);
 		if ($intResult === FALSE)
 		{
 
-		} 
+		}
 		return $intResult;
  	}
- 	
- 	
+
+
 	//------------------------------------------------------------------------//
 	// InsertCDRFile
 	//------------------------------------------------------------------------//
@@ -468,7 +468,7 @@
 	 *
 	 * @param	array		$arrCDRFile			Associative array of data returned
 	 * 											from a SELECT * statement on this file
-	 * 
+	 *
 	 * @return	integer							Number of CDRs imported
 	 *
 	 * @method
@@ -479,7 +479,7 @@
 
 		// Report
 		$this->rptNormalisationReport->AddMessage("\tImporting ".TruncateName($arrCDRFile['FileName'], 30)."...");
-		
+
 		try
 		{
 			// Set the File status to "Importing"
@@ -489,11 +489,11 @@
 			{
 
 			}
-			
+
 			// Set fields that are consistent over all CDRs for this file
 			$arrCDRLine["File"]			= $arrCDRFile["Id"];
 			$arrCDRLine["Carrier"]		= $arrCDRFile["Carrier"];
-			
+
 			// check for a preprocessor
 			$bolPreprocessor = FALSE;
 			if ($this->_arrNormalisationModule[$arrCDRFile['Carrier']][$arrCDRFile["FileType"]])
@@ -503,7 +503,7 @@
 					$bolPreprocessor = TRUE;
 				}
 			}
-			
+
 			// Insert every CDR Line into the database
 			$fileCDRFile	= fopen($arrCDRFile['php_stream_wrapper'].$arrCDRFile['Location'], "r");
 			$intSequence	= 1;
@@ -514,10 +514,10 @@
 				$arrReportLine['<SeqNo>']		= $intSequence;
 				$arrReportLine['<FileName>']	= TruncateName($arrCDRFile['FileName'], MSG_MAX_FILENAME_LENGTH);
 				//$this->AddToNormalisationReport(MSG_LINE, $arrReportLine);
-				
+
 				$arrCDRLine["SequenceNo"]	= $intSequence;
 				$arrCDRLine["Status"]		= CDR_READY;
-				
+
 				// run Preprocessor
 				if ($bolPreprocessor)
 				{
@@ -527,7 +527,7 @@
 				{
 					$arrCDRLine["CDR"]		= fgets($fileCDRFile);
 				}
-				
+
 				if (trim($arrCDRLine["CDR"]))
 				{
 					$insInsertCDRLine->Execute($arrCDRLine);
@@ -538,12 +538,12 @@
 					}
 				}
 				$intSequence++;
-				
+
 				// Report
 				//$this->AddToNormalisationReport(MSG_OK);
-				
+
 				$this->_intImportPass++;
-				
+
 				// Break here for fast normalisation test
 				if (FAST_NORMALISATION_TEST === TRUE && $intSequence > 100)
 				{
@@ -551,7 +551,7 @@
 				}
 			}
 			fclose($fileCDRFile);
-			
+
 			// Set the File status to "Normalised"
 			$arrCDRFile["Status"]		= FILE_IMPORTED;
 			//$arrCDRFile['NormalisedOn'] = new MySQLFunction("Now()");
@@ -562,28 +562,29 @@
 		}
 		catch (ExceptionVixen $exvException)
 		{
-			$errErrorHandler->PHPExceptionCatcher($exvException);
-			
+			//$errErrorHandler->PHPExceptionCatcher($exvException);
+			CliEcho($exvException->getMessage());
+
 			// Set the File status to "Failed"
 			$arrCDRFile["Status"] = FILE_IMPORT_FAILED;
 			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 			{
 				$updUpdateCDRFiles->Error();
 			}
-			
+
 			// Report
 			//$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_CORRUPT);
 		}
-		
+
 		// Report
 		$intPassed = $this->_intImportPass;
 		$intFailed = ($intSequence - 1) - $intPassed;
-		$this->_intImportFail += $intFailed; 
+		$this->_intImportFail += $intFailed;
 		$this->rptNormalisationReport->AddMessage("\t$intPassed passed, $intFailed failed.");
-		
+
 		return $intSequence;
  	}
- 
+
  	//------------------------------------------------------------------------//
 	// AddToNormalisationReport
 	//------------------------------------------------------------------------//
@@ -597,10 +598,10 @@
 	 * @param	string		$strMessage			The message - use constants
 	 * 											from definition.php.
 	 * @param	array		$arrAliases			Associative array of alises.
-	 * 											MUST use the same aliases as used in the 
+	 * 											MUST use the same aliases as used in the
 	 * 											constant being used.  Key is the alias (including the <>'s)
 	 * 											, and the Value is the value to be inserted.
-	 * 
+	 *
 	 * @method
 	 */
  	function AddToNormalisationReport($strMessage, $arrAliases = Array())
@@ -609,10 +610,10 @@
  		{
  			$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
  		}
- 		
+
  		$this->rptNormalisationReport->AddMessage($strMessage, FALSE);
  	}
-	
+
 	//------------------------------------------------------------------------//
 	// Normalise
 	//------------------------------------------------------------------------//
@@ -634,7 +635,7 @@
  	{
 		// Start a Transaction
 		DataAccess::getDataAccess()->TransactionStart();
-		
+
 		try
 		{
 			// Only new CDRs?
@@ -646,7 +647,7 @@
 			{
 				$strWhere	= "CDR.Status = ".CDR_READY." OR CDR.Status = ".CDR_FIND_OWNER." OR CDR.Status = ".CDR_RENORMALISE." OR CDR.Status = ".CDR_NORMALISE_NOW;
 			}
-			
+
 			// Select CDR Query
 			$strTables	= "CDR INNER JOIN FileImport ON CDR.File = FileImport.Id";
 			$mixColumns	= Array("CDR.*" => "", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
@@ -654,45 +655,45 @@
 			$strOrder	= NULL;
 			$intLimit	= ($intRemaining < 1000 && $intRemaining > 0) ? $intRemaining : 1000;
 	 		$this->_selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $intLimit);
-	 		
+
 	 		// Select all CDRs ready to be Normalised
 			if ($this->_selSelectCDRs->Execute() === FALSE)
 			{
-	
+
 			}
 	 		$arrCDRList = $this->_selSelectCDRs->FetchAll();
-	 		
+
 			// we will return FALSE if there are no CDRs to normalise
-			$bolReturn = FALSE;		
-	
+			$bolReturn = FALSE;
+
 			// Report
 			$this->rptNormalisationReport->AddMessage(MSG_NORMALISATION_TITLE);
-			
+
 			$this->Framework->StartWatch();
-			
+
 			$intNormalisePassed	= 0;
 			$intNormaliseTotal	= 0;
-			
+
 			$intDelinquents = 0;
 			$arrDelinquents = Array();
-			
+
 			$arrFilesTouched	= array();
-	
+
 			$qryQuery	= new Query();
 	 		foreach ($arrCDRList as $arrCDR)
 	 		{
 				$intNormaliseTotal++;
-				
+
 				$arrFilesTouched[(int)$arrCDR['File']]	= true;
-				
+
 				// return TRUE if we have normalised (or tried to normalise) any CDRs
 				$bolReturn = TRUE;
-				
+
 				// Report
 				$arrReportLine['<Action>']		= "Normalising";
 				$arrReportLine['<SeqNo>']		= $arrCDR['SequenceNo'];
 				$arrReportLine['<FileName>']	= TruncateName($arrCDR['FileName'], MSG_MAX_FILENAME_LENGTH);
-				
+
 	 			// Is there a normalisation module for this type?
 				if ($this->_arrNormalisationModule[$arrCDR['Carrier']][$arrCDR["FileType"]])
 				{
@@ -718,12 +719,12 @@
 					// set the CDR status
 					$arrCDR['Status'] = CDR_CANT_NORMALISE_NO_MODULE;
 				}
-				
+
 				if ($arrCDR['Status'] != CDR_NORMALISED && $arrCDR['Status'] != CDR_CANT_NORMALISE_HEADER && $arrCDR['Status'] != CDR_CANT_NORMALISE_NON_CDR)
 				{
 					$this->rptNormalisationReport->AddMessageVariables(MSG_LINE, $arrReportLine, FALSE);
 				}
-				
+
 				// Report
 				$arrMatchCDR	= Array();
 				foreach ($arrCDR as $strField=>$mixValue)
@@ -738,20 +739,20 @@
 					}
 					$arrMatchCDR[$strField]	= $mixValue;
 				}
-				$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> {$arrMatchCDR['CarrierRef']} THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status 
-											FROM CDR 
-											WHERE Id != {$arrMatchCDR['Id']} AND 
-											FNN = {$arrMatchCDR['FNN']} AND 
-											Source <=> {$arrMatchCDR['Source']} AND 
-											Destination <=> {$arrMatchCDR['Destination']} AND 
-											StartDatetime <=> {$arrMatchCDR['StartDatetime']} AND 
-											EndDatetime <=> {$arrMatchCDR['EndDatetime']} AND 
-											Units = {$arrMatchCDR['Units']} AND 
-											Cost = {$arrMatchCDR['Cost']} AND 
-											RecordType = {$arrMatchCDR['RecordType']} AND 
-											RecordType NOT IN (10, 15, 33, 21) AND 
-											Credit = {$arrMatchCDR['Credit']} AND 
-											Description <=> {$arrMatchCDR['Description']} AND 
+				$strFindDuplicateSQL	= "SELECT Id, CASE WHEN CarrierRef <=> {$arrMatchCDR['CarrierRef']} THEN ".CDR_DUPLICATE." ELSE ".CDR_RECHARGE." END AS Status
+											FROM CDR
+											WHERE Id != {$arrMatchCDR['Id']} AND
+											FNN = {$arrMatchCDR['FNN']} AND
+											Source <=> {$arrMatchCDR['Source']} AND
+											Destination <=> {$arrMatchCDR['Destination']} AND
+											StartDatetime <=> {$arrMatchCDR['StartDatetime']} AND
+											EndDatetime <=> {$arrMatchCDR['EndDatetime']} AND
+											Units = {$arrMatchCDR['Units']} AND
+											Cost = {$arrMatchCDR['Cost']} AND
+											RecordType = {$arrMatchCDR['RecordType']} AND
+											RecordType NOT IN (10, 15, 33, 21) AND
+											Credit = {$arrMatchCDR['Credit']} AND
+											Description <=> {$arrMatchCDR['Description']} AND
 											Status NOT IN (".CDR_DUPLICATE.", ".CDR_RECHARGE.")
 											ORDER BY Id DESC
 											LIMIT 1";
@@ -774,7 +775,7 @@
 						$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Cannot match owner"));
 						$arrDelinquents[$this->_arrNormalisationModule[$arrCDR['Carrier']][$arrCDR["FileType"]]->strFNN]++;
 						$intDelinquents++;
-						
+
 						// If this is a duplicate, make sure people cannot assign this CDR to an Account
 						//if ($this->_selFindDuplicate->Execute($arrCDR))
 						$mixResult = $qryQuery->Execute($strFindDuplicateSQL);
@@ -824,13 +825,13 @@
 						$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Unknown Error"));
 						break;
 				}
-				
+
 				$arrCDR['NormalisedOn'] = new MySQLFunction("NOW()");
 	 			// Save CDR back to the DB
 				if ($this->_updUpdateCDRs->Execute($arrCDR, Array("CdrId" => $arrCDR['Id'])) === FALSE)
 				{
-	
-				} 
+
+				}
 				/*
 				// Is this a Landline Service & Equipment CDR?
 				if ($arrCDR['ServiceType'] === SERVICE_TYPE_LANDLINE && $arrCDR['RecordType'] === 21)
@@ -851,7 +852,7 @@
 								// ALERT
 							}
 							break;
-							
+
 						case 80003:
 							// Residential
 							if ($objService->residential === null)
@@ -868,7 +869,7 @@
 					}
 				}*/
 	 		}
-	 		
+
 	 		// Generate Delinquent Report
 			$strDelinquentText = "\n[ Delinquent FNNs ]\n\n";
 			if (is_array($arrDelinquents))
@@ -884,7 +885,7 @@
 				$strDelinquentText .= "\n\tThere were no deliquent FNNs in this run.\n\n";
 			}
 			$this->rptDelinquentsReport->AddMessage(MSG_HORIZONTAL_RULE.$strDelinquentText.MSG_HORIZONTAL_RULE);
-			
+
 			// ASSERTION: Each File is at least 95% correct (ie, not Normalised or Delinquent)
 			foreach (array_keys($arrFilesTouched) as $intFileImportId)
 			{
@@ -898,7 +899,7 @@
 				{
 					throw new Exception($qryQuery->Error());
 				}
-				
+
 				$intTotalCDRs		= 0;
 				$intErrorCDRs		= 0;
 				$strPercentageDebug	= "\n\nFile #{$intFileImportId}\n";
@@ -910,13 +911,13 @@
 						// Error Status Code
 						$intErrorCDRs	+= $arrPercentageValid['cdr_count'];
 					}
-					
+
 					$strPercentageDebug	.= "({$arrPercentageValid['Status']})".GetConstantDescription($arrPercentageValid['Status'], 'CDR')."\t: {$arrPercentageValid['cdr_count']}\n";
 				}
 				$strPercentageDebug	.=	"\n" .
 										"Total CDRs\t\t: {$intTotalCDRs}\n" .
 										"Error CDRs\t\t: {$intErrorCDRs}";
-				
+
 				if ($intTotalCDRs)
 				{
 					$fltPercentageValid	= ($intTotalCDRs - $intErrorCDRs) / $intTotalCDRs;
@@ -938,7 +939,7 @@
 					}
 				}
 			}
-			
+
 		 	// Normalisation Report totals
 			$arrReportLine['<Action>']		= "Normalised";
 			$arrReportLine['<Total>']		= (int)$intNormaliseTotal;
@@ -949,14 +950,14 @@
 			$this->AddToNormalisationReport($strDelinquentText);
 			$this->AddToNormalisationReport(MSG_HORIZONTAL_RULE);
 			$this->AddToNormalisationReport("Normalisation module completed in ".$this->Framework->uptime()." seconds");
-			
+
 			// Deliver the reports
 			$this->rptNormalisationReport->Finish();
 			$this->rptDelinquentsReport->Finish();
-			
+
 			// Commit the Transaction
 			DataAccess::getDataAccess()->TransactionCommit();
-			
+
 			// Return number normalised or FALSE
 			return ($bolReturn) ? $intNormaliseTotal : FALSE;
  		}
@@ -966,7 +967,7 @@
 			throw $eException;
 		}
  	}
-	
+
 	//------------------------------------------------------------------------//
 	// ReNormalise()
 	//------------------------------------------------------------------------//
@@ -979,7 +980,7 @@
 	 * on the next Normalisation Run
 	 *
 	 * @param	integer		$intStatus			Status to look for
-	 *	 
+	 *
 	 * @return	integer							Number of CDRs affected
 	 *
 	 * @method
@@ -992,7 +993,7 @@
 	 	$mixReturn = $updReRate->Execute($arrColumns, NULL);
 	 	return (int)$mixReturn;
 	 }
-	 
+
 	//------------------------------------------------------------------------//
 	// ReFindOwner()
 	//------------------------------------------------------------------------//
@@ -1005,7 +1006,7 @@
 	 * on the next Normalisation Run
 	 *
 	 * @param	integer		$intStatus			Status to look for
-	 *	 
+	 *
 	 * @return	integer							Number of CDRs affected
 	 *
 	 * @method
@@ -1018,7 +1019,7 @@
 	 	$mixReturn = $updReRate->Execute($arrColumns, NULL);
 	 	return (int)$mixReturn;
 	 }
-	 
+
 	//------------------------------------------------------------------------//
 	// MatchCredits()
 	//------------------------------------------------------------------------//
@@ -1028,7 +1029,7 @@
 	 * Attempts to link Credit CDRs to their Debit counterparts, and excludes them from rating
 	 *
 	 * Attempts to link Credit CDRs to their Debit counterparts, and excludes them from rating
-	 *	 
+	 *
 	 * @return	integer							Number of CDRs affected
 	 *
 	 * @method
@@ -1041,7 +1042,7 @@
 	 		Debug("Could not select credit CDRS!");
 	 		return FALSE;
 	 	}
- 		
+
 	 	// Attempt to match the CDRs up
 	 	$intCount = FALSE;
 		while ($arrCreditCDR = $this->_selCreditCDRs->Fetch())
@@ -1062,7 +1063,7 @@
 				/*if ($this->_selRatedCDR->Execute($arrCreditCDR))
 				{
 					$arrDebitCDR = $this->_selRatedCDR->Fetch();
-					
+
 					//unrate the CDR
 					/*$bolResult = $this->Framework->UnRateCDR($arrDebitCDR['Id'], CDR_DEBIT_MATCHED);
 					if (!$bolResult)
@@ -1076,40 +1077,40 @@
 				}*/
 				$bolFail = TRUE;
 	 		}
-			
+
 			if ($bolFail === TRUE)
 			{
 					//TODO!rich! add to report
 					//echo " ! Couldn't Match Debit to Credit with CDR.Id {$arrCreditCDR['Id']}!\n";
-					
+
 					// Update the Credit CDR
 					$arrUpdateColumns['Id']		= $arrCreditCDR['Id'];
 					$arrUpdateColumns['Status']	= CDR_CREDIT_MATCH_NOT_FOUND;
 					$this->_ubiCDRStatus->Execute($arrUpdateColumns);
 					continue;
 			}
-	 		
+
 	 		// Add to the link table
 			$arrInsertColumns = Array();
 	 		$arrInsertColumns['credit_cdr_id']	= $arrCreditCDR['Id'];
 	 		$arrInsertColumns['debit_cdr_id']	= $arrDebitCDR['Id'];
 	 		$this->_insCreditLink->Execute($arrInsertColumns);
-	 		
+
 	 		// Update the Credit CDR
 			$arrUpdateColumns = Array();
 	 		$arrUpdateColumns['Id']		= $arrCreditCDR['Id'];
  			$arrUpdateColumns['Status']	= CDR_CREDIT_MATCHED;
 	 		$this->_ubiCDRStatus->Execute($arrUpdateColumns);
-	 		
+
 	 		// Update the Debit CDR
 			$arrUpdateColumns = Array();
 	 		$arrUpdateColumns['Id']		= $arrDebitCDR['Id'];
  			$arrUpdateColumns['Status']	= CDR_DEBIT_MATCHED;
 	 		$this->_ubiCDRStatus->Execute($arrUpdateColumns);
-	 		
+
 	 		$intCount++;
 	 	}
-	 	
+
 		//TODO!rich! add to report
 	 	echo "Matched $intCount out of $intTotalCount credit CDRs.\n";
 		return $intCount;
