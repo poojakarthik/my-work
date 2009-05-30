@@ -233,7 +233,6 @@
 				CliEcho("ls -F {$strPath}");
 				//$arrFiles	= ftp_nlist($this->_resConnection, "-F {$strPath}");
 				$arrFiles	= ftp_nlist($this->_resConnection, "{$strPath}");
-				$arrFiles	= ftp_nlist($this->_resConnection);
 
 				$arrFiles	= scandir("ftp://{$this->_resConnection}/{$strPath}");
 				var_dump($arrFiles);
