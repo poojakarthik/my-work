@@ -65,10 +65,12 @@
  	{
  		// Call the parent constructor
  		parent::__construct($strErrorMessage, $intErrorCode);
- 		
+
+ 		return;
+
  		// Now that we're constructed, automatically pass our info to the error recorder
  		$errErrorHandler->PHPExceptionCatcher($this);
- 		
+
  		// Finally, if this a fatal exception, die
  		if ($intErrorCode >= FATAL_ERROR_LEVEL)
  		{
