@@ -241,7 +241,7 @@
 						$strFilePath	= $strPath.rtrim(trim($strFilePath), '*');
 
 						//if (substr(trim($strFilePath), -1) === '/')
-						if (ftp_chdir($this->_resConnection, $strFilePath))
+						if (@ftp_chdir($this->_resConnection, $strFilePath))
 						{
 							// This is a directory, ignore
 							CliEcho("Ignoring Directory '".basename($strFilePath))/"'";
