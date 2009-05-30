@@ -230,7 +230,8 @@
 			foreach ($arrFileType['Paths'] as $strPath)
 			{
 				// Get the directory listing for this
-				$arrFiles	= @ftp_nlist($this->_resConnection, "-F $strPath");
+				CliEcho("ls -F {$strPath}");
+				$arrFiles	= @ftp_nlist($this->_resConnection, "-F {$strPath}");
 
 				Debug($arrFiles);
 
