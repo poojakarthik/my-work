@@ -138,7 +138,7 @@ class Cli_App_Pdf extends Cli
 						}
 						else
 						{
-							$this->log("Skipping Account #{$intAccount}: Ignored");
+							$this->log("Skipping File '{$strPath}': Account Ignored");
 						}
 					}
 				}
