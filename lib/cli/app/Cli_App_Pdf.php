@@ -11,6 +11,7 @@ class Cli_App_Pdf extends Cli
 	const SWITCH_OUTPUT_MEDIA = "o";
 	const SWITCH_SINGLE_PDF = "j";
 	const SWITCH_SKIP_XML_OVERVIEW = "i";
+	const SWITCH_IGNORE_ACCOUNTS = "n";
 
 	private $logFile = NULL;
 
@@ -42,6 +43,22 @@ class Cli_App_Pdf extends Cli
 			if (!file_exists($dir))
 			{
 				mkdir($dir, 0777, TRUE);
+			}
+			
+			// Parse Ignore List
+			$strIgnoreAccounts	= $arrArgs[self::SWITCH_IGNORE_ACCOUNTS];
+			$arrIgnoreAccounts	= explode(" ", $strIgnoreAccounts);
+			foreach ($arrIgnoreAccounts as $intKey=>$strAccount)
+			{
+				$intAccount	= (int)trim($strAccount);
+				if ($intAccount)
+				{
+					$arrIgnoreAccounts[$intKey]	= $intAccount;
+				}
+				else
+				{
+					unset($arrIgnoreAccounts[$intKey]);
+				}
 			}
 
 			// Check to see if target is an archive
@@ -110,9 +127,13 @@ class Cli_App_Pdf extends Cli
 						{
 							throw new Exception("Directory '" . $strSource . "' contains unreadable file '" . $arrSourceContents[$i] . "'");
 						}
-						// Store the destination file for this source file
-						$arrFiles[$strPath] = $strDestination . DIRECTORY_SEPARATOR . $arrSourceContents[$i] . ".$instanceRef.pdf";
-
+						
+						// Ensure that it isn't in our ignore list
+						if (!in_array((int)basename($strPath, '.xml')))
+						{
+							// Store the destination file for this source file
+							$arrFiles[$strPath] = $strDestination . DIRECTORY_SEPARATOR . $arrSourceContents[$i] . ".$instanceRef.pdf";
+						}
 					}
 				}
 			}
@@ -550,7 +571,13 @@ class Cli_App_Pdf extends Cli
 				self::ARG_DEFAULT 	=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
 			),
-
+			
+			SWITCH_IGNORE_ACCOUNTS => array(
+				self::ARG_REQUIRED 	=> FALSE,
+				self::ARG_DESCRIPTION => " if set, ignores a space-delimited list of Accounts (encapsulated in quotes for multiple Accounts)",
+				self::ARG_DEFAULT 	=> FALSE,
+				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
+			),
 		);
 		return $commandLineArguments;
 	}
