@@ -53,6 +53,7 @@ class Cli_App_Pdf extends Cli
 				$intAccount	= (int)trim($strAccount);
 				if ($intAccount)
 				{
+					$this->log("Ignoring Account #{$intAccount}");
 					$arrIgnoreAccounts[$intKey]	= $intAccount;
 				}
 				else
@@ -133,6 +134,10 @@ class Cli_App_Pdf extends Cli
 						{
 							// Store the destination file for this source file
 							$arrFiles[$strPath] = $strDestination . DIRECTORY_SEPARATOR . $arrSourceContents[$i] . ".$instanceRef.pdf";
+						}
+						else
+						{
+							$this->log("Skipping Account #{$intAccount}: Ignored");
 						}
 					}
 				}
