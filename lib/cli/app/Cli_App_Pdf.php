@@ -572,10 +572,11 @@ class Cli_App_Pdf extends Cli
 				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
 			),
 			
-			SWITCH_IGNORE_ACCOUNTS => array(
-				self::ARG_REQUIRED 	=> FALSE,
-				self::ARG_DESCRIPTION => " if set, ignores a space-delimited list of Accounts (encapsulated in quotes for multiple Accounts)",
-				self::ARG_DEFAULT 	=> FALSE,
+			self::SWITCH_IGNORE_ACCOUNTS => array(
+				self::ARG_LABEL 		=> "IGNORE_ACCOUNTS", 
+				self::ARG_REQUIRED 		=> FALSE,
+				self::ARG_DESCRIPTION 	=> " if set, ignores a space-delimited list of Accounts (encapsulated in quotes for multiple Accounts)",
+				self::ARG_DEFAULT 		=> FALSE,
 				self::ARG_VALIDATION 	=> 'Cli::_validIsSet()'
 			),
 		);
