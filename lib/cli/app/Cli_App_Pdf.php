@@ -131,7 +131,7 @@ class Cli_App_Pdf extends Cli
 						}
 						
 						// Ensure that it isn't in our ignore list
-						if (!in_array((int)basename($strPath, '.xml')))
+						if (!in_array((int)basename($strPath, '.xml'), $arrIgnoreAccounts))
 						{
 							// Store the destination file for this source file
 							$arrFiles[$strPath] = $strDestination . DIRECTORY_SEPARATOR . $arrSourceContents[$i] . ".$instanceRef.pdf";
