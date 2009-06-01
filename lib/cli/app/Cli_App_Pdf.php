@@ -47,6 +47,7 @@ class Cli_App_Pdf extends Cli
 			
 			// Parse Ignore List
 			$strIgnoreAccounts	= $arrArgs[self::SWITCH_IGNORE_ACCOUNTS];
+			$this->log("Ignore List: '{$strIgnoreAccounts}'");
 			$arrIgnoreAccounts	= explode(" ", $strIgnoreAccounts);
 			foreach ($arrIgnoreAccounts as $intKey=>$strAccount)
 			{
