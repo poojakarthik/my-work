@@ -99,16 +99,18 @@ class Cli_App_LateNoticeRun extends Cli
 						$arrDeliveryMethodAccounts	=array(DELIVERY_METHOD_POST=>array(), DELIVERY_METHOD_EMAIL=>array());
 						foreach ($mixResult['Details'] as $mixKey=>$arrDetails)
 						{
-							$arrDeliveryMethodAccounts[$arrDetails['Account']['DeliveryMethod']][]	= $arrDetails['Account']['AccountId'];
+							$arrDeliveryMethodAccounts[$arrDetails['Account']['DeliveryMethod']][]	= $mixKey;
 						}
 						
 						// Pick a random sample for each Delivery Method
 						foreach ($arrDeliveryMethodAccounts as $intDeliveryMethod=>$arrAccounts)
 						{
-							$mixRandomKey							= array_rand($arrAccounts);
-							$arrSampleAccounts[$intDeliveryMethod]	= $arrAccounts[$mixRandomKey];
+							$mixRandomKey	= array_rand($arrAccounts);
+							$arrAccount		= $mixResult['Details'][$arrAccounts[$mixRandomKey]['Account']];
 							
-							$this->log("{$arrAccounts[$mixRandomKey]} has been selected as the random sample for ".GetConstantDescription($intDeliveryMethod, 'delivery_method'));
+							$arrSampleAccounts[$intDeliveryMethod][$arrAccount['CustomerGroup']]	= $arrAccount['AccountId'];
+							
+							$this->log("{$arrAccounts[$mixRandomKey]} has been selected as the random sample for {$arrAccount['CustomerGroupName']}:".GetConstantDescription($intDeliveryMethod, 'delivery_method'));
 						}
 					}
 
@@ -234,7 +236,7 @@ class Cli_App_LateNoticeRun extends Cli
 									}
 									
 									// This is the sample Post Notice -- email
-									if ($this->_bolTestRun && $arrSampleAccounts[DELIVERY_METHOD_POST] === $intAccountId)
+									if ($this->_bolTestRun && $arrSampleAccounts[DELIVERY_METHOD_POST][$intCustGrp] === $intAccountId)
 									{
 										$subject = "[SAMPLE:POST] $strCustGroupName $strLetterType for Account $intAccountId";
 										
@@ -251,11 +253,11 @@ class Cli_App_LateNoticeRun extends Cli
 	
 										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
 										{
-											$this->log("Sample POST {$strLetterType} delivered to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
+											$this->log("[SAMPLE:SUCCESS]Sample POST {$strLetterType} for {$strCustGroupName} delivered to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
 										}
 										else
 										{
-											$this->log("ERROR: Unable to deliver Sample POST {$strLetterType} to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
+											$this->log("[SAMPLE:ERROR]: Unable to deliver Sample POST {$strLetterType} for {$strCustGroupName} to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
 										}
 									}
 								}
@@ -336,7 +338,7 @@ class Cli_App_LateNoticeRun extends Cli
 									}
 									
 									// This is the sample Email Notice -- email
-									if ($this->_bolTestRun && $arrSampleAccounts[DELIVERY_METHOD_EMAIL] === $intAccountId)
+									if ($this->_bolTestRun && $arrSampleAccounts[DELIVERY_METHOD_EMAIL][$intCustGrp] === $intAccountId)
 									{
 										$subject = "[SAMPLE:EMAIL]".$subject;
 										
@@ -353,11 +355,11 @@ class Cli_App_LateNoticeRun extends Cli
 	
 										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
 										{
-											$this->log("Sample EMAIL {$strLetterType} delivered to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
+											$this->log("Sample EMAIL {$strLetterType} for {$strCustGroupName} delivered to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
 										}
 										else
 										{
-											$this->log("ERROR: Unable to deliver Sample {$strLetterType} Notice to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
+											$this->log("ERROR: Unable to deliver Sample {$strLetterType} for {$strCustGroupName} to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
 										}
 									}
 
