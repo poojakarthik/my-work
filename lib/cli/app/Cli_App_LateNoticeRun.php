@@ -97,21 +97,25 @@ class Cli_App_LateNoticeRun extends Cli
 					$arrSampleAccounts	= array(DELIVERY_METHOD_POST=>null, DELIVERY_METHOD_EMAIL=>null);
 					if ($this->_bolTestRun)
 					{
-						$arrDeliveryMethodAccounts	=array(DELIVERY_METHOD_POST=>array(), DELIVERY_METHOD_EMAIL=>array());
+						$arrDeliveryMethodAccounts	= array(DELIVERY_METHOD_POST=>array(), DELIVERY_METHOD_EMAIL=>array());
+						$arrCustomerGroups			= array();
 						foreach ($mixResult['Details'] as $mixKey=>$arrDetails)
 						{
-							$arrDeliveryMethodAccounts[$arrDetails['Account']['DeliveryMethod']][]	= $mixKey;
+							$arrDeliveryMethodAccounts[$arrDetails['Account']['DeliveryMethod']][$arrDetails['Account']['CustomerGroup']][]	= $mixKey;
 						}
 						
 						// Pick a random sample for each Delivery Method
-						foreach ($arrDeliveryMethodAccounts as $intDeliveryMethod=>$arrAccounts)
+						foreach ($arrDeliveryMethodAccounts as $intDeliveryMethod=>$arrCustomerGroups)
 						{
-							$mixRandomKey	= array_rand($arrAccounts);
-							$arrAccount		= $mixResult['Details'][$arrAccounts[$mixRandomKey]['Account']];
-							
-							$arrSampleAccounts[$intDeliveryMethod][$arrAccount['CustomerGroup']]	= $arrAccount['AccountId'];
-							
-							$this->log("{$arrAccount['AccountId']} has been selected as the random sample for {$arrAccount['CustomerGroupName']}:".GetConstantDescription($intDeliveryMethod, 'delivery_method'));
+							foreach ($arrCustomerGroups as $intCustomerGroupId=>$arrAccounts)
+							{
+								$mixRandomKey	= array_rand($arrAccounts);
+								$arrAccount		= $mixResult['Details'][$arrAccounts[$mixRandomKey]]['Account'];
+								
+								$arrSampleAccounts[$intDeliveryMethod][$intCustomerGroupId]	= $arrAccount['AccountId'];
+								
+								$this->log("{$arrAccount['AccountId']} has been selected as the random sample for {$arrAccount['CustomerGroupName']}:".GetConstantDescription($intDeliveryMethod, 'delivery_method'));
+							}
 						}
 					}
 
