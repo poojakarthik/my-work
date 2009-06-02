@@ -110,7 +110,7 @@ class Cli_App_LateNoticeRun extends Cli
 							
 							$arrSampleAccounts[$intDeliveryMethod][$arrAccount['CustomerGroup']]	= $arrAccount['AccountId'];
 							
-							$this->log("{$arrAccounts[$mixRandomKey]} has been selected as the random sample for {$arrAccount['CustomerGroupName']}:".GetConstantDescription($intDeliveryMethod, 'delivery_method'));
+							$this->log("{$arrAccount['AccountId']} has been selected as the random sample for {$arrAccount['CustomerGroupName']}:".GetConstantDescription($intDeliveryMethod, 'delivery_method'));
 						}
 					}
 
