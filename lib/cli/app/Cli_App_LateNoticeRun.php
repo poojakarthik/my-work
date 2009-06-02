@@ -7,6 +7,7 @@ class Cli_App_LateNoticeRun extends Cli
 {
 	const SWITCH_EFFECTIVE_DATE = "e";
 	const SWITCH_TEST_RUN = "t";
+	const SWITCH_SAMPLE = "p";
 	
 	const	EMAIL_BILLING_NOTIFICATIONS	= 'billing-notifications@yellowbilling.com.au';
 
@@ -313,28 +314,31 @@ class Cli_App_LateNoticeRun extends Cli
 									$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
 									$attachments[] = $attachment;
 
-									if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments, TRUE))
+									if (!$arrArgs[self::SWITCH_TEST_RUN])
 									{
-										$arrSummary[$strCustGroupName][$strLetterType]['emails'][] = $intAccountId;
-
-										// We need to log the fact that we've sent it, by updating the account automatic_invoice_action
-										if (!$arrArgs[self::SWITCH_TEST_RUN])
+										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, $to, $subject, NULL, $strContent, $attachments, TRUE))
 										{
-											$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRunId);
-											if ($outcome !== TRUE)
+											$arrSummary[$strCustGroupName][$strLetterType]['emails'][] = $intAccountId;
+	
+											// We need to log the fact that we've sent it, by updating the account automatic_invoice_action
+											if (!$arrArgs[self::SWITCH_TEST_RUN])
 											{
-												$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
-												$errors++;
+												$outcome = $this->changeAccountAutomaticInvoiceAction($intAccountId, $intAutoInvoiceAction, $intAutomaticInvoiceAction, "$strLetterType emailed to $name ($emailTo)", $invoiceRunId);
+												if ($outcome !== TRUE)
+												{
+													$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $outcome;
+													$errors++;
+												}
 											}
 										}
-									}
-									else
-									{
-										// We need to log the fact that the sending of the email failed
-										$message = "Failed to email $strLetterType PDF for account " . $intAccountId . ' to ' . $emailTo . ($outcome ? "\n$outcome" : '');
-										$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
-										$errors++;
-										$this->log($message, TRUE);
+										else
+										{
+											// We need to log the fact that the sending of the email failed
+											$message = "Failed to email $strLetterType PDF for account " . $intAccountId . ' to ' . $emailTo . ($outcome ? "\n$outcome" : '');
+											$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
+											$errors++;
+											$this->log($message, TRUE);
+										}
 									}
 									
 									// This is the sample Email Notice -- email
@@ -646,6 +650,13 @@ class Cli_App_LateNoticeRun extends Cli
 			self::SWITCH_TEST_RUN => array(
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "for testing script outcome [fully functional EXCEPT emails will not be sent to clients]",
+				self::ARG_DEFAULT		=> FALSE,
+				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
+			),
+		
+			self::SWITCH_SAMPLE => array(
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "will send sample Notices to ".self::EMAIL_BILLING_NOTIFICATIONS,
 				self::ARG_DEFAULT		=> FALSE,
 				self::ARG_VALIDATION	=> 'Cli::_validIsSet()'
 			),
