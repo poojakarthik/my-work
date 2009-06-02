@@ -627,11 +627,6 @@ class Cli_App_LateNoticeRun extends Cli
 		// Sending the email succeeded
 		return $result;
 	}
-	
-	private function sendSampleEmail()
-	{
-		
-	}
 
 	function getCommandLineArguments()
 	{
