@@ -7,6 +7,8 @@ class Cli_App_LateNoticeRun extends Cli
 {
 	const SWITCH_EFFECTIVE_DATE = "e";
 	const SWITCH_TEST_RUN = "t";
+	
+	const	EMAIL_BILLING_NOTIFICATIONS	= 'billing-notifications@yellowbilling.com.au';
 
 	private $runDateTime = '';
 
@@ -20,8 +22,9 @@ class Cli_App_LateNoticeRun extends Cli
 		{
 			// The arguments are present and in a valid format if we get past this point.
 			$arrArgs = $this->getValidatedArguments();
-
-			if ($arrArgs[self::SWITCH_TEST_RUN])
+			
+			$this->_bolTestRun	= (bool)$arrArgs[self::SWITCH_TEST_RUN];
+			if ($this->_bolTestRun)
 			{
 				$this->log("Running in test mode. Emails will not be sent to account holders.", TRUE);
 			}
@@ -87,6 +90,26 @@ class Cli_App_LateNoticeRun extends Cli
 					if (!array_key_exists($intAutomaticInvoiceAction, $invoiceRunAutoFields))
 					{
 						$invoiceRunAutoFields[$intAutomaticInvoiceAction] = array();
+					}
+					
+					// If we're in Test Mode, get samples
+					$arrSampleAccounts	= array(DELIVERY_METHOD_POST=>null, DELIVERY_METHOD_EMAIL=>null);
+					if ($this->_bolTestRun)
+					{
+						$arrDeliveryMethodAccounts	=array(DELIVERY_METHOD_POST=>array(), DELIVERY_METHOD_EMAIL=>array());
+						foreach ($mixResult['Details'] as $mixKey=>$arrDetails)
+						{
+							$arrDeliveryMethodAccounts[$arrDetails['Account']['DeliveryMethod']][]	= $arrDetails['Account']['AccountId'];
+						}
+						
+						// Pick a random sample for each Delivery Method
+						foreach ($arrDeliveryMethodAccounts as $intDeliveryMethod=>$arrAccounts)
+						{
+							$mixRandomKey							= array_rand($arrAccounts);
+							$arrSampleAccounts[$intDeliveryMethod]	= $arrAccounts[$mixRandomKey];
+							
+							$this->log("{$arrAccounts[$mixRandomKey]} has been selected as the random sample for ".GetConstantDescription($intDeliveryMethod, 'delivery_method'));
+						}
 					}
 
 					// We now need to email/print each of the notices that have been generated
@@ -209,6 +232,32 @@ class Cli_App_LateNoticeRun extends Cli
 											}
 										}
 									}
+									
+									// This is the sample Post Notice -- email
+									if ($this->_bolTestRun && $arrSampleAccounts[DELIVERY_METHOD_POST] === $intAccountId)
+									{
+										$subject = "[SAMPLE:POST] $strCustGroupName $strLetterType for Account $intAccountId";
+										
+										$to = self::EMAIL_BILLING_NOTIFICATIONS;
+
+					 					$strContent = "Please find attached a SAMPLE POST $strCustGroupName $strLetterType for Account $intAccountId.";
+
+										$attachments = array();
+										$attachment = array();
+										$attachment[self::EMAIL_ATTACHMENT_NAME] = "{$intAccountId}.pdf";
+										$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'application/pdf';
+										$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
+										$attachments[] = $attachment;
+	
+										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
+										{
+											$this->log("Sample POST {$strLetterType} delivered to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
+										}
+										else
+										{
+											$this->log("ERROR: Unable to deliver Sample POST {$strLetterType} to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
+										}
+									}
 								}
 
 								break;
@@ -253,7 +302,7 @@ class Cli_App_LateNoticeRun extends Cli
 				 								  "Regards\r\n\r\n" .
 				 								  "The Team at $strCustGroupName";
 
-									$to = $arrArgs[self::SWITCH_TEST_RUN] ? 'billing-notifications@yellowbilling.com.au' : $emailTo;
+									$to = $arrArgs[self::SWITCH_TEST_RUN] ? self::EMAIL_BILLING_NOTIFICATIONS : $emailTo;
 
 									$attachments = array();
 									$attachment = array();
@@ -284,6 +333,32 @@ class Cli_App_LateNoticeRun extends Cli
 										$arrSummary[$strCustGroupName][$strLetterType]['errors'][] = $message;
 										$errors++;
 										$this->log($message, TRUE);
+									}
+									
+									// This is the sample Email Notice -- email
+									if ($this->_bolTestRun && $arrSampleAccounts[DELIVERY_METHOD_EMAIL] === $intAccountId)
+									{
+										$subject = "[SAMPLE:EMAIL]".$subject;
+										
+										$to = self::EMAIL_BILLING_NOTIFICATIONS;
+
+					 					$strContent = "[SAMPLE:EMAIL]\r\n\r\n".$strContent."\r\n\r\n[SAMPLE:EMAIL]";
+
+										$attachments = array();
+										$attachment = array();
+										$attachment[self::EMAIL_ATTACHMENT_NAME] = "{$intAccountId}.pdf";
+										$attachment[self::EMAIL_ATTACHMENT_MIME_TYPE] = 'application/pdf';
+										$attachment[self::EMAIL_ATTACHMENT_CONTENT] = $pdfContent;
+										$attachments[] = $attachment;
+	
+										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
+										{
+											$this->log("Sample EMAIL {$strLetterType} delivered to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
+										}
+										else
+										{
+											$this->log("ERROR: Unable to deliver Sample {$strLetterType} Notice to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
+										}
 									}
 
 								}
@@ -551,6 +626,11 @@ class Cli_App_LateNoticeRun extends Cli
 		}
 		// Sending the email succeeded
 		return $result;
+	}
+	
+	private function sendSampleEmail()
+	{
+		
 	}
 
 	function getCommandLineArguments()
