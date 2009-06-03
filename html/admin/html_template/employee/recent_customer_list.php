@@ -182,7 +182,7 @@ class HtmlTemplateEmployeeRecentCustomerList extends HtmlTemplate
 			Table()->RecentCustomers->Render();
 		}
 		
-		echo "<div class='ButtonContainer'><div class='right'>\n";
+		echo "<div class='ButtonContainer'><div style='float:right'>\n";
 		$this->Button("Close", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";
 	}

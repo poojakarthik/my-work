@@ -177,20 +177,20 @@ tr.ticket-history-details-row-hidden + tr.ticket-history-summary-row-displaying-
 
 input[type='button'].expand-button-expanded
 {
-	background-image: url('../img/template/retract.png');
-	background-repeat: no-repeat;
-	background-position: 50% 50%;
-	background-color: inherit;
-	border: none;
+	background-image: url('../img/template/retract.png') !important;
+	background-repeat: no-repeat !important;
+	background-position: 50% 50% !important;
+	background-color: inherit !important;
+	border: none !important;
 }
 
 input[type='button'].expand-button-retracted
 {
-	background-image: url('../img/template/expand.png');
-	background-repeat: no-repeat;
-	background-position: 50% 50%;
-	background-color: inherit;
-	border: none;
+	background-image: url('../img/template/expand.png') !important;
+	background-repeat: no-repeat !important;
+	background-position: 50% 50% !important;
+	background-color: inherit !important;
+	border: none !important;
 }
 
 /* This is used by the timer present on the "All Tickets" page */
