@@ -239,11 +239,11 @@ class HtmlTemplate_Ticketing_Attachment_Types extends FlexHtmlTemplate
 
 <table class="reflex" id="attachment-type-list">
 	<caption>
-		<div id="caption_bar" name="caption_bar">
-			<div id="caption_title" name="caption_title">
+		<div id="caption_bar" class="caption_bar">
+			<div id="caption_title" class="caption_title">
 				Attachment Types
 			</div>
-			<div id="caption_options" name="caption_options">
+			<div id="caption_options" class="caption_options">
 				<a href="#" onclick="addType(); return false;">Add</a>
 			</div>
 		</div>

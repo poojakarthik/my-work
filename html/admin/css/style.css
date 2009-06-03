@@ -1,3 +1,15 @@
+/* This css file is included in both Framework 2 and 3 pages.
+ *
+ * All styling of new functionality (Framework 3 or 2) should have its
+ * styling defined in this file
+ *
+ * Any styling required for popups or the specific content of a popup, should
+ * go here because most popups can be used on top of framework 2 or 3 pages.
+ *
+ * Framework 3 page styling that adversly affects Framework 2 styling, should be defined in reflex.css as that file is only included in Framework 3 pages
+ * Framework 2 page styling that adversly affects Framework 3 styling, should be defined in default.css as that file is only included in Framework 2 pages
+ */
+
 body {
 	background-color: #fff;
 	font-family: Arial,Verdana,Helvetica;
@@ -6,14 +18,7 @@ body {
 	padding: 0em;
 }
 
-h1#page-title{
-	margin-left: auto;
-	margin-right: auto;
-	text-align: center;
-	color: #000;
-	margin-top: -0.6em;
-}
-
+/************************ START - Page Header - START *************************/
 div#header {
 	width: 100%;
 	background-color: #111;
@@ -81,6 +86,14 @@ div#search_bar {
 	height: 2em;
 }
 
+div.bread-crumb-menu {
+	clear				: both;
+	padding				: .2em 0em .2em 1.5em;
+	width				: 100%;
+	background-color	: #fff;
+	color				: #000;
+}
+
 div#menu {
 	width: 100%;
 }
@@ -101,45 +114,38 @@ div.debug-options {
 	right: 1%;
 	top: 40;
 }
-
-pre {
-	font-family: Arial,Verdana,Helvetica;
-	font-size: 1em;
-}
+/************************** END - Page Header - END ***************************/
 
 
-
-
-/*********************** Start of reflex stuff *********************************/
+/************************ START - Reflex Table - START ************************/
 table.reflex {
-	width: 99%; /* This was previously set to 90%*/
+	width: 99%;
 	margin-left: auto;
 	margin-right: auto;
-	border: .1em solid #333;
+	border: .1em solid #1C1C1C;
 	border-spacing: 0;
-    border-color: #333;
 }
 
 table.reflex > tbody > tr > td:first-child {
-    border-left: 1px solid #333;
+/*    border-left: 1px solid #1C1C1C;  I don't know why this is used, instead of using a table border? */
 }
 
 table.reflex > tbody > tr > td:last-child {
-    border-right: 1px solid #333;
+/*    border-right: 1px solid #1C1C1C; I don't know why this is used, instead of using a table border? */
 }
 
 
-table.reflex caption div#caption_bar {
+table.reflex caption div.caption_bar {
 	width: 100%;
 	clear: both;
 }
 
-table.reflex caption div#caption_title{
+table.reflex caption div.caption_title{
 	float: left;
 	width: 25%;
 	height: 100%;
 	color: #eee;
-	background-color: #333;
+	background-color: #1C1C1C;
     background-image: url('../img/template/background.png');
     background-repeat: repeat-x;
 	text-align: center;
@@ -151,7 +157,7 @@ table.reflex caption div#caption_title{
 	-webkit-border-radius: 6px 6px 0 0;
 }
 
-table.reflex caption div#caption_options{
+table.reflex caption div.caption_options{
 	float: right;
 	width: 70%;
 	text-align: right;
@@ -161,7 +167,7 @@ table.reflex caption div#caption_options{
 
 table.reflex thead,
 table.reflex tfoot {
-	background-color: #333;
+	background-color: #202020;
 	color: #eee;
 	text-align: left;
 }
@@ -174,10 +180,10 @@ table.reflex thead tr th,
 table.reflex tfoot tr th {
 	padding-top: .25em;
 	padding-bottom: .25em;
-	background-color: #333;
     background-repeat: repeat-x;
 }
 
+/*  Filletted edges
 table.reflex thead tr th:first-child {
     -moz-border-radius-topleft: 6px;
     -webkit-border-radius: 6px 0 0 0;
@@ -205,6 +211,7 @@ table.reflex tfoot tr th:last-child {
     border-right: 1px;
     border-top: 1px;
 }
+*/
 
 table.reflex tbody
 {
@@ -305,7 +312,9 @@ tr.highlight-row:hover td
 {
 	background-color: #fcc;
 }
+/************************** END - Reflex Table - END **************************/
 
+/******************* START - Reflex Input Controls - START ********************/
 input.required, 
 select.required, 
 textarea.required{
@@ -343,13 +352,39 @@ textarea[disabled]
 {
 	background-color: #EFEBE7;
 }
+/********************* END - Reflex Input Controls - END **********************/
 
-div.reflex-popup-footer input.reflex-button {
-	margin-left: 0.5em;
+/************************** START - Buttons - START ***************************/
+input[type='button'], input.normal-button[type='submit'], a.button, button
+{
+	background-image:	url('../img/template/transparent-bg.png') !important;
+	background-repeat:	repeat-x !important;
+	background-color:	#ddd !important;
+	color:				#000 !important;
+	font-family: 		Arial, sans-serif !important;
+	font-size:			1em !important;
+	font-weight:		bold !important;
+	margin:				.2em !important;
+	padding:			.1em .25 em !important;
+	border-top:			solid .1em #999 !important;
+	border-left:		solid .1em #999 !important;
+	border-bottom:		solid .1em #666 !important;
+	border-right:		solid .1em #666 !important;
+	-moz-border-radius:	4px !important;
+	cursor: 			pointer !important;
+	-moz-user-select:	none;
 }
 
-/*********************** Start Of Popup stuff *********************************/
+button[disabled]
+{
+	background-image:   none !important;
+	color:				#eee !important;
+	background-color:   #ccc !important;
+	-moz-user-select:   none !important;
+}
+/**************************** END - Buttons - END *****************************/
 
+/********************** START - Reflex Popup - START **************************/
 div.reflex-popup-overlay {
 	position			: fixed;
 	top					: 0em;
@@ -470,12 +505,17 @@ div.reflex-popup-text-content {
 	padding: 0.8em;
 }
 
-
 div.reflex-popup-footer input[type="button"] {
 	margin: 0 .25em;
 }
 
-input.validation-error-tootltip-button {
+div.reflex-popup-footer input.reflex-button {
+	margin-left: 0.5em;
+}
+/************************ END - Reflex Popup - END ****************************/
+
+/***************** START - Credit Card Payment Form - START *******************/
+input.validation-error-tooltip-button {
 	visibility: hidden;
 	width: 18px !important;
 	height: 18px !important;
@@ -488,11 +528,11 @@ input.validation-error-tootltip-button {
 	background-position: 50% 50% !important;
 }
 
-td[contains-invalid-input=true] input.validation-error-tootltip-button {
+td[contains-invalid-input=true] input.validation-error-tooltip-button {
 	visibility: visible;
 }
 
-div.validation-error-tootltip {
+div.validation-error-tooltip {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -521,21 +561,19 @@ div.cvv-image-tooltip img {
 	cursor: pointer;
 }
 
-/*********************** End Of Popup stuff ***********************************/
-
-/*********************** End of reflex stuff *********************************/
-
 input#online-credit-card-payment-button
 {
-	
 }
 
 .amount-credit { color: green !important; }
 .amount-debit { color: blue !important; }
 th.amount, td.amount { text-align: right; }
 td.attention { color: red !important; }
+/******************* END - Credit Card Payment Form - END *********************/
 
-/*********************** Sp table stuff **********************/
+/*********************** START - SP table stuff - START ***********************/
+
+/*  I'm pretty sure this stuff (the styling commentted out) isn't used in flex
 table.sp th.sp-unsorted,
 table.sp th.sp-sorted-ascending,
 table.sp th.sp-sorted-descending
@@ -637,7 +675,7 @@ table.highlight-rows tbody tr:hover td
 {
 	background-color: #ffc;
 }
-
+*/
 .MediumSpace
 {
 	height: 20px;
@@ -759,8 +797,10 @@ span.hide-if-not-last-child:last-child
 {
 	display: none;
 }
+/************************* END - SP table stuff - END *************************/
 
-/****************************** Document Explorer *****************************/
+
+/********************** START - Document Explorer - START *********************/
 div.document-explorer-address
 {
 	background-color	: #eee;
@@ -998,8 +1038,9 @@ div.document-explorer-status span.description
 {
 	font-style	: italic;
 }
+/************************ END - Document Explorer - END ***********************/
 
-/*********************************** Actions **********************************/
+/*************************** START - Actions - START **************************/
 div.action-list
 {
 	margin : 0.25em;
@@ -1068,4 +1109,335 @@ div.action-list div.item div.details
 div.action-list-controls
 {
 }
-/******************************** End of Actions ******************************/
+/***************************** END - Actions - END ****************************/
+
+
+/************ START - Vixen Popup Stuff (old style popups) - START ************/
+/** These popups must be available in both framework 2 and framework 3 pages **/
+div#PopupPageBody
+{
+	background-color:	#EFEBE7;
+	padding:			3px;
+}
+
+.PopupBox
+{
+	position: absolute;
+	border: .1em solid #111;
+	background-color: #eee;
+}
+
+.PopupBoxTopBar
+{
+	font-size: 1em;
+	line-height: 1.25em;
+	color: #eee;
+	font-weight: bold;
+	background-color: #000;
+	background-image: url('../img/template/background.png');
+	background-repeat: repeat-x;
+	margin: 0;
+	padding: .25em;
+}
+
+.PopupBoxClose
+{
+	float: right;
+	cursor: pointer;
+}
+
+#PopupHolder #overlay
+{
+	position: absolute;
+	left: 0em;
+	top: 0em;
+	width: 100%;
+	height: 100%;
+	z-index: 1000;
+	background-color: #000;
+	opacity: .50;
+}
+/************** END - Vixen Popup Stuff (old style popups) - END **************/
+
+/********************* START - Tab Collection stuff - START *******************/
+div.tab-collection
+{
+}
+
+div.tab-collection div.tab-header-container
+{
+	/*border-bottom	: solid 1px #888;*/
+}
+
+div.tab-collection div.tab-header-container div.tab-header
+{
+	padding			: 0.2em;
+	border-top		: solid 1px #888;
+	border-right	: solid 1px #888;
+	border-left		: solid 1px #888;
+	cursor			: pointer;
+}
+
+div.tab-collection div.tab-header-container div.tab-header:hover
+{
+	background-color: #EEE;
+}
+
+div.tab-collection div.tab-header-container div.selected,
+div.tab-collection div.tab-header-container div.selected:hover
+{
+	background-color: #CCC;
+	border-bottom: solid 1px #CCC;
+}
+
+div.tab-collection div.tab-body-container
+{
+	padding: 0.25em;
+	border: solid 1px #888;
+	border-top: none;
+	background-color: #CCC;
+}
+/*********************** END -  Tab Collection stuff - END ********************/
+
+
+/********************** START - Sale Statuses - START *************************/
+.sale-item-status-submitted,
+.sale-item-status-verified,
+.sale-item-status-awaiting-dispatch,
+.sale-item-status-dispatched,
+.sale-item-status-completed,
+.sale-status-submitted,
+.sale-status-verified,
+.sale-status-awaiting-dispatch,
+.sale-status-dispatched,
+.sale-status-completed
+{
+	color: #060;
+}
+
+.sale-item-status-manual-intervention,
+.sale-item-status-rejected,
+.sale-item-status-cancelled,
+.sale-status-manual-intervention,
+.sale-status-rejected,
+.sale-status-cancelled
+{
+	color: #f00;
+}
+/************************ END - Sale Statuses - END ***************************/
+
+/************** START - Console Upcoming Calendar Events - START **************/
+div.console-calendar
+{
+	padding-left	: 1em;
+	padding-right	: 1em;
+}
+
+div.console-calendar div.day
+{
+	margin-top		: 1em;
+	margin-bottom	: 1em;
+}
+
+div.console-calendar div.day:first-child
+{
+	font-size	: 1.5em;
+	font-weight	: bold;
+}
+
+div.console-calendar div.day span.date
+{
+	font-weight	: bold;
+}
+
+div.console-calendar div.day tbody td.department-responsible,
+div.console-calendar div.day tbody th.department-responsible
+{
+	min-width	: 25%;
+	max-width	: 25%;
+	width		: 25%;
+}
+/**************** END - Console Upcoming Calendar Events - END ****************/
+
+/*************** START - Dodgey Date Time Picker Control - START **************/
+.date-time td
+{
+	cursor: default;
+	text-align: center !important;
+	border-bottom: .1em dotted #c0c0c0;
+}
+
+.date-time .bar
+{
+	text-align: center;
+	background: #F2F5FF;
+	padding: .2em 0 .2em;
+}
+
+.date-time .date-time-active:hover
+{
+	color: #fff;
+	background: #666;
+}
+
+.date-time td.date-time-active-today
+{
+	border: .1em solid #111;
+}
+
+.date-time button
+{
+	border: none;
+	padding: 0;
+}
+
+.date-time title
+{
+	font-weight: bold;
+}
+
+.date-time th
+{
+	background: #fff;
+	color: #000;
+	border-bottom: .1em solid #c0c0c0;
+	text-align: center !important;
+	margin-top: .2em;
+}
+
+.date-time option, .date-time select
+{
+	font-size: 1em;
+}
+
+.date-time
+{
+	border: .2em solid #111;
+	background: #eee;
+	padding: .1em;
+	width: 15em;
+}
+
+.date-time table
+{
+	width: 100%;
+	font-size: 1em;
+	margin: 0 auto;
+}
+/***************** END - Dodgey Date Time Picker Control - END ****************/
+
+/****************** START - Separators and Seperators - START *****************/
+.Separator,
+.Seperator
+{
+	height:               20px;
+}
+
+.SmallSeparator,
+.SmallSeperator
+{
+	height:               10px;
+}
+
+.TinySeparator,
+.TinySeperator
+{
+	height:               5px;
+}
+/******************** END - Separators and Seperators - END *******************/
+
+/*********** START - Stuff that I haven't categorized yet - START *************/
+div.MsgNotice
+{
+	margin:				5px 3px;
+	padding:			5px;
+	border:				solid 1px #D1D1D1;
+	background-color:	#FFFFCC;
+	position:			relative;
+}
+
+.ButtonContainer
+{
+	height: 	25px;
+	padding:	3px 0px 3px 0px;
+}
+
+div.clear
+{
+	float:	none;
+	clear:	both;
+}
+
+a img
+{
+	border: 0;
+	vertical-align: middle;
+}
+
+pre {
+	font-family: Arial,Verdana,Helvetica;
+	font-size: 1em;
+}
+
+/* Table stuff (using a table to arrange elements of a form) */
+table.form-data
+{
+	width			: 99%;
+	margin-left		: auto;
+	margin-right	: auto;
+}
+
+table.form-data td,
+table.form-data th
+{
+	padding	: 0em 0em;
+}
+
+table.form-data td.title
+{
+	vertical-align	: top;
+	font-weight		: bold;
+}
+
+table.form-data input[disabled],
+table.form-data select[disabled],
+table.form-data textarea[disabled]
+{
+	background-color: #DDDDDD;
+}
+
+
+/* Message highlighting */
+div.warning
+{
+	text-align:			left;
+	margin:				5px 2px 5px 2px;
+	padding:			5px;
+	border:				solid 1px #D1D1D1;
+	background-color:	#FFC;
+	color:				#C00;
+}
+
+span.warning
+{
+	color:				#C00;
+}
+
+div.message {
+	background: #CFFFCD;
+	font-weight: bold;
+	color: #111;
+	border: .1em solid #060;
+	width: 90%;
+	padding: .5em;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1em;
+} 
+
+div.error {
+	background: #ffecf0;
+	color: #111;
+	border: .1em solid #d30;
+}
+/************* END - Stuff that I haven't categorized yet - END ***************/

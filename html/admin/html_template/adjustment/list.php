@@ -242,7 +242,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			// The user can add adjustments
 			$strHref = Href()->AddAdjustment(DBO()->Account->Id->Value);
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
-			$this->Button("Add Adjustment", $strHref);
+			$this->Button("Request Adjustment", $strHref);
 			echo "</div></div>\n";
 		}
 		else

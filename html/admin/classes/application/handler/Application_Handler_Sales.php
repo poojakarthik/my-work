@@ -89,6 +89,7 @@ class Application_Handler_Sales extends Application_Handler
 			$intSaleStatusId	= NULL;
 			$intSaleTypeId		= NULL;
 			$intVendorId		= NULL;
+			$strSearchString	= NULL;
 	
 			// If this search is based on last search, default all search settings to be those of the last search
 			if (($strPathToken == 'last' || array_key_exists('last', $_REQUEST)) && array_key_exists('Sales', $_SESSION) && array_key_exists('LastSalesList', $_SESSION['Sales']))
@@ -103,6 +104,8 @@ class Application_Handler_Sales extends Application_Handler
 				$intSaleStatusId	= array_key_exists('saleStatusId', $arrOldFilter) ? $arrOldFilter['saleStatusId']['Value'] : NULL;
 				$intSaleTypeId		= array_key_exists('saleTypeId', $arrOldFilter) ? $arrOldFilter['saleTypeId']['Value'] : NULL;
 				$intVendorId		= array_key_exists('vendorId', $arrOldFilter) ? $arrOldFilter['vendorId']['Value'] : NULL;
+				$strSearchString	= array_key_exists('searchString', $arrOldFilter) ? $arrOldFilter['searchString']['Value'] : NULL;
+				
 			}
 	
 			if (array_key_exists('offset', $_REQUEST))
@@ -168,7 +171,8 @@ class Application_Handler_Sales extends Application_Handler
 			$intSaleStatusId	= array_key_exists('saleStatusId', $_REQUEST) ? (strlen($_REQUEST['saleStatusId']) ? intval($_REQUEST['saleStatusId']) : NULL) : $intSaleStatusId;
 			$intSaleTypeId		= array_key_exists('saleTypeId', $_REQUEST) ? (strlen($_REQUEST['saleTypeId']) ? intval($_REQUEST['saleTypeId']) : NULL) : $intSaleTypeId;
 			$intVendorId		= array_key_exists('vendorId', $_REQUEST) ? (strlen($_REQUEST['vendorId']) ? intval($_REQUEST['vendorId']) : NULL) : $intVendorId;
-				
+			$strSearchString	= array_key_exists('searchString', $_REQUEST) ? (strlen(trim($_REQUEST['searchString'])) ? trim($_REQUEST['searchString']) : NULL) : $strSearchString;
+			
 			$arrFilter = array();
 			// Never include the system dealer in the list of dealers (Note that we will also have to filter on id for other reasons, so this can be overridden by
 			// another dealer id, or list of dealer ids)
@@ -202,6 +206,12 @@ class Application_Handler_Sales extends Application_Handler
 				$arrFilter['vendorId'] = array(	"Type"	=> DO_Sales_Sale::SEARCH_CONSTRAINT_VENDOR_ID,
 												"Value"	=> $intVendorId
 											);
+			}
+			if ($strSearchString !== NULL)
+			{
+				$arrFilter['searchString'] = array(	"Type"	=> DO_Sales_Sale::SEARCH_CONSTRAINT_SEARCH_STRING,
+													"Value"	=> $strSearchString
+												);
 			}
 			
 			$detailsToRender = array();

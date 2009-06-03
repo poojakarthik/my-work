@@ -297,8 +297,19 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 		$arrServices = $objAccount->getAllServiceRecords(TRUE);
 		$arrContacts = $objAccount->getContacts(TRUE);
 		
-		$arrServiceIds = array_combine(array_keys($arrServices), array_keys($arrServices));
-		$arrContactIds = array_combine(array_keys($arrContacts), array_keys($arrContacts));
+		$arrServiceIds = array_keys($arrServices);
+		if (count($arrServiceIds))
+		{
+			// The account has associated service records
+			$arrServiceIds = array_combine($arrServiceIds, $arrServiceIds);
+		}
+		
+		$arrContactIds = array_keys($arrContacts);
+		if (count($arrContactIds))
+		{
+			// The account has associated contacts (this should always be the case)
+			$arrContactIds = array_combine($arrContactIds, $arrContactIds);
+		}
 		
 		$strViewContactLink = Href()->ViewContact("");
 		$strViewServiceLink = Href()->ViewService("", FALSE);

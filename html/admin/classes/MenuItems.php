@@ -2544,9 +2544,9 @@ class MenuItems {
 	 * @method
 	 */
 	function AddAdjustment($intAccountId, $intServiceId = NULL) {
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Request Adjustment";
 
-		$this->strLabel = "add adjustment";
+		$this->strLabel = "Request Adjustment";
 
 		// Setup data to send
 		$arrData['Account']['Id'] = $intAccountId;
@@ -2555,7 +2555,7 @@ class MenuItems {
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", \"Adjustment\", \"Adjustment\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", \"Request Adjustment\", \"Adjustment\", \"Add\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//

@@ -10,7 +10,7 @@ Object.extend(Sale.prototype, {
 		// Add contents to this.detailsContainer
 		this.detailsContainer.innerHTML = '' 
 		+ '<div class="MediumSpace" style="width: 965px;"></div>' 
-		+ '<div class="Title" style="position: relative;">Sale Status<input type="button" value="View History" onclick="Sale.showHistory(' + this.getId() + ')" style="width: 85px; position: absolute; right: 0px; bottom: -1px;"/></div><div class="Page" style="width: 963px;"><table class="data-table" cellpadding="0" cellspacing="0" border="0" style="width: 100%;"><tr><td>Status:</td><td>' + this.getStatus() + '</td></tr><tr><td>Description:</td><td>' + this.getStatusDescription() + '</td></tr></table></div><div class="MediumSpace"></div>' 
+		+ '<div class="Title" style="position: relative;">Sale Status<input type="button" value="View History" onclick="Sale.showHistory(' + this.getId() + ')" style="position: absolute; right: 0px; bottom: -1px;"/></div><div class="Page" style="width: 963px;"><table class="data-table" cellpadding="0" cellspacing="0" border="0" style="width: 100%;"><tr><td>Status:</td><td>' + this.getStatus() + '</td></tr><tr><td>Description:</td><td>' + this.getStatusDescription() + '</td></tr></table></div><div class="MediumSpace"></div>' 
 		+ '<table cellpadding="0" cellspacing="0" border="0" width="975">' 
 			+ '<tr>' 
 				+ '<td width="480">' 
@@ -52,7 +52,7 @@ Object.extend(Sale.prototype, {
 			+ '</div>' 
 		+ '</div>' 
 		+ '<div class="MediumSpace"></div>' 
-		+ '<div style="position: relative;" class="Title">Sale Items<input type="button" value="Collapse All" style="width: 80px; position: absolute; right: 0px; bottom: -1px;" onclick="if (this.value == \'Collapse All\') { this.value = \'Expand All\'; Sale.Item.collapseAll();} else { this.value = \'Collapse All\'; Sale.Item.expandAll();} " /></div>' 
+		+ '<div style="position: relative;" class="Title">Sale Items<input type="button" value="Collapse All" style="position: absolute; right: 0px; bottom: -1px;" onclick="if (this.value == \'Collapse All\') { this.value = \'Expand All\'; Sale.Item.collapseAll();} else { this.value = \'Collapse All\'; Sale.Item.expandAll();} " /></div>' 
 		+ '<div class="Page">' 
 			+ '<div class="FieldContent" style="padding:0; margin:0;">' 
 				+ '<table id="sale-items-table" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; margin: 0; padding: 0; width:100%;">' 

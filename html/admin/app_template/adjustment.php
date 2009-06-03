@@ -50,13 +50,14 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	/**
 	 * Add()
 	 *
-	 * Performs the logic for the Add Adjustment popup window
+	 * Performs the logic for the Add Adjustment popup window (Used to request an adjustment)
 	 * 
-	 * Performs the logic for the Add Adjustment popup window
+	 * Performs the logic for the Add Adjustment popup window (Used to request an adjustment)
+	 * Note that regardless of whether or not the charge is a credit or debit adjustment, and regardless
+	 * of the user's permission level, no manually requested adjustments (using this function) are automatically approved.
 	 *
 	 * @return		void
 	 * @method
-	 *
 	 */
 	function Add()
 	{
@@ -79,7 +80,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Adjustments can not be added if the account is pending activation
 		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
 		{
-			Ajax()->AddCommand("Alert", "The account is pending activation.  Adjustments cannot be added.");
+			Ajax()->AddCommand("Alert", "The account is pending activation.  Adjustments cannot be requested at this time.");
 			return TRUE;
 		}
 		
@@ -98,12 +99,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);
 			if ($objService->GetStatus() == SERVICE_PENDING)
 			{
-				Ajax()->AddCommand("Alert", "This service is pending activation.  Adjustments can only be applied to active services.");
+				Ajax()->AddCommand("Alert", "This service is pending activation.  Adjustments cannot be requested at this time.");
 				return TRUE;
 			}
 			elseif (!$objService->IsCurrentlyActive())
 			{
-				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Adjustments can only be applied to active services.");
+				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Adjustments can only be requested for active services.");
 				return TRUE;
 			}
 		}
@@ -189,11 +190,11 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->Charge->Description	= DBO()->ChargeType->Description->Value;
 				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
 				
-				// Only ProperAdmins can create credit adjustments
+				// Check if the user has permission to create a credit adjustment, if the adjustment is a credit
 				if (DBO()->Charge->Nature->Value == 'CR' && !$bolCanCreateCreditAdjustments)
 				{
 					// The user does not have the required permissions to create a credit adjustment
-					Ajax()->AddCommand("Alert", "ERROR: You do not have permission to create credit adjustments");
+					Ajax()->AddCommand("Alert", "ERROR: You do not have permission to request credit adjustments");
 					return TRUE;
 				}
 				
@@ -203,29 +204,30 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					DBO()->Charge->Invoice = NULL;
 				}
 				
-				// Set the status to CHARGE_WAITING
+				// Set the status to CHARGE_WAITING (no adjustments are automatically approved)
 				DBO()->Charge->Status = CHARGE_WAITING;
 
 				$arrData = DBO()->Charge->AsArray();
 
+				// Save the adjustment to the charge table of the vixen database
 				TransactionStart();
 				$intChargeId = Framework()->AddCharge($arrData);
 
-				// Save the adjustment to the charge table of the vixen database
 				if ($intChargeId === FALSE)
 				{
 					// The adjustment did not save
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Saving the adjustment failed, unexpectedly");
+					Ajax()->AddCommand("Alert", "ERROR: Requesting the adjustment failed, unexpectedly");
 					return TRUE;
 				}
 				else
 				{
-					DBO()->Charge->Id = $intChargeId;
 					// The adjustment was successfully saved
+
+					DBO()->Charge->Id = $intChargeId;
 					TransactionCommit();
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "The Adjustment has been successfully added");
+					Ajax()->AddCommand("AlertReload", "The request for adjustment has been successfully logged.  Note that there is no guarantee the adjustment will be approved.");
 					return TRUE;
 				}
 			}
@@ -233,7 +235,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			{
 				// Something was invalid
 				Ajax()->RenderHtmlTemplate("AdjustmentAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-				Ajax()->AddCommand("Alert", "ERROR: Adjustment could not be saved. Invalid fields are highlighted");
+				Ajax()->AddCommand("Alert", "ERROR: Adjustment details are incorrect. Invalid fields are highlighted");
 				return TRUE;
 			}
 		}

@@ -3,32 +3,14 @@
  * Dealer_Config
  *
  * Models the Dealer Config table
+ * This class shouldn't really extend ORM because the rows of the dealer config table describe the history of the dealer_config.
+ * This means the entire table is effectively modelling the one object, and ORM is not intended for that sort of thing
  *
  * @class	Dealer_Config
  */
 class Dealer_Config extends ORM
 {
 	protected	$_strTableName	= "dealer_config";
-	
-	/**
-	 * __construct()
-	 *
-	 * Constructor
-	 *
-	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
-	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
-	 * 
-	 * @return	void
-	 * 
-	 * @constructor
-	 */
-	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
-	{
-		// Parent constructor
-		parent::__construct($arrProperties, $bolLoadById);
-	}
-
-	
 	
 	// This will return the current Dealer_Config object
 	// This will throw an exception if it can't find the record.  It is assumed there is always at least one record in the dealer_config table
@@ -65,11 +47,10 @@ class Dealer_Config extends ORM
 	{
 		// Retrieve the current configuration, and compare to see if anything was changed, and if so, set the id field to NULL so a new record is created
 		$objCurrentConfig = self::getConfig();
-		$objCurrentConfig->id = NULL;
-		
-		$this->id = NULL;
 		
 		$arrCurrentConfig = $objCurrentConfig->toArray(TRUE);
+		
+		unset($arrCurrentConfig['id']);
 		
 		// Check if anything has changed
 		$bolHasChanges = FALSE;

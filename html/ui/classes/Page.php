@@ -593,47 +593,23 @@ class Page
 			return;
 		}
 		
-		$strHtmlCode = "<div id='BreadCrumbMenu'>\n";
+		$arrCrumbs = array();
 		foreach (DBO()->BreadCrumb as $objProperty)
 		{
-			$strHtmlCode .= "<a href='{$objProperty->Value}'>{$objProperty->Label}</a> &gt; ";
+			$arrCrumbs[] = "<a href='{$objProperty->Value}'>{$objProperty->Label}</a>";
 		}
 		
 		// Add the current page as a breadcrumb
 		$mixCurrentPage = BreadCrumb()->GetCurrentPage();
 		if ($mixCurrentPage !== FALSE)
 		{
-			// the current page has been defined.  Attach it to the bread crumb trail
-			$strHtmlCode .= $mixCurrentPage;
+			$arrCrumbs[] = $mixCurrentPage;
 		}
 		
-		// Remove the last 6 chars from html code, if it is equal to " &gt; "
-		if (substr($strHtmlCode, -6) == " &gt; ")
-		{
-			$strHtmlCode = substr($strHtmlCode, 0, -6);
-		}
-		
-		$strHtmlCode .= "\n</div>\n";
-		
-		echo $strHtmlCode;
-	}
-	
-	//------------------------------------------------------------------------//
-	// RenderVixenHeader DEPRECIATED
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderVixenHeader()
-	 *
-	 * Renders the Vixen header
-	 *
-	 * Renders the Vixen header
-	 * 
-	 * @method
-	 */
-	function RenderVixenHeader()
-	{
-		$objHeader = new HtmlTemplateVixenHeader(HTML_CONTEXT_DEFAULT);
-		$objHeader->Render();
+		echo "
+			<div id='BreadCrumbMenu' class='bread-crumb-menu'>
+				". implode("\n\t\t\t\t&gt;\n\t\t\t\t", $arrCrumbs) ."
+			</div> <!-- bread crumb menu -->\n";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -709,8 +685,11 @@ class Page
 			$strSelected = ($intSearchType == $mixLastSearchType) ? "selected='selected'" : "";
 			$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='$intSearchType' $strSelected>{$arrSearchType['Name']}</option>";
 		}
-		$strSelected = ($mixLastSearchType == "tickets")? "selected='selected'" : "";
-		$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='tickets' $strSelected>Tickets</option>";
+		if (Flex_Module::isActive(FLEX_MODULE_TICKETING))
+		{
+			$strSelected = ($mixLastSearchType == "tickets")? "selected='selected'" : "";
+			$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='tickets' $strSelected>Tickets</option>";
+		}
 		
 		
 		$mixKbAdmin = NULL;

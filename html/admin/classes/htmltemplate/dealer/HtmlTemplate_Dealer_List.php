@@ -157,11 +157,11 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 		echo "
 <table class='reflex highlight-rows' id='DealerListTable' name='DealerListTable'>
 	<caption>
-		<div id='caption_bar' name='caption_bar'>
-			<div id='caption_title' name='caption_title'>
+		<div id='caption_bar' class='caption_bar'>
+			<div id='caption_title' class='caption_title'>
 				$strTitle
 			</div>
-			<div id='caption_options' name='caption_options'>
+			<div id='caption_options' class='caption_options'>
 				<a onclick='DealerManagement.showConfig();'>Dealer Configuration</a> |
 				<a onclick='Dealer.loadNewDealerPopup()'>New Dealer</a>
 			</div>

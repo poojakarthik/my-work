@@ -12,7 +12,6 @@ class HtmlTemplate_Action_Type_Manage extends FlexHtmlTemplate
 		$this->LoadJavascript("action_type_edit");
 		
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->SystemSettingsMenu();
 		BreadCrumb()->SetCurrentPage("Manage Action Types");
 	}
 

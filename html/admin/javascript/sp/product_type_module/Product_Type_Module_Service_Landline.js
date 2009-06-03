@@ -333,7 +333,7 @@ Object.extend(Sale.ProductTypeModule.Service_Landline.prototype, {
 				 + '</td>'
 				 + '<td style="width: 20px;"></td>'
 				 + '<td style="width: 50%; padding: 0;">'
-					 + '<h3 style="position: relative; width: 100%;" class="data-entry">Service Address<input type="button" value="Copy from another service" style="width: 180px; position: absolute; right: 0px; bottom: -1px;" onclick="Sale.ProductTypeModule.Service_Landline.showCopyWindow(\'' + this.uniqueId + '\');" /></h3>' 
+					 + '<h3 style="position: relative; width: 100%;" class="data-entry">Service Address<input type="button" value="Copy from another service" style="position: absolute; right: 0px; bottom: -1px;" onclick="Sale.ProductTypeModule.Service_Landline.showCopyWindow(\'' + this.uniqueId + '\');" /></h3>' 
 					 + '<table id="' + id + '-service-address" class="data-table"></table>'
 				 + '</td>'
 			 + '</tr>'

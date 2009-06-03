@@ -116,12 +116,12 @@ class HtmlTemplate_Contract_ManageBreached extends FlexHtmlTemplate
 	<table id='contracts' name='contracts' class='reflex'>
 
 		<caption>
-			<div id='caption_bar' name='caption_bar'>
-				<div id='caption_title' name='caption_title'>
+			<div id='caption_bar' class='caption_bar'>
+				<div id='caption_title' class='caption_title'>
 					Displaying {$this->mxdDataToRender['Pagination']['intStart']} to {$this->mxdDataToRender['Pagination']['intEnd']} of {$this->mxdDataToRender['Pagination']['intTotal']} Breached Contracts
 				</div>
 
-				<div id='caption_options' name='caption_options'>
+				<div id='caption_options' class='caption_options'>
 					Select: <a onclick='javascript:Flex.Contract_ManageExpired.selectAll()' >All</a> | <a onclick='javascript:Flex.Contract_ManageExpired.selectNone()' >None</a>&nbsp;&nbsp;With Selected: <a onclick='javascript:Flex.Contract_ManageExpired.confirm(\"apply\")' >Apply</a> | <a onclick='javascript:Flex.Contract_ManageExpired.confirm(\"waive\")' >Waive</a>
 				</div>
 			</div>

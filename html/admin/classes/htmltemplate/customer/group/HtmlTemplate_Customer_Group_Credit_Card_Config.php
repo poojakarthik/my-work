@@ -29,11 +29,11 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 		<form id="view_credit_card_config" name="view_credit_card_config" method="POST">
 			<table id="credit_card_config" name="credit_card_config" class="reflex">
 				<caption>
-					<div id="caption_bar" name="caption_bar">
-						<div id="caption_title" name="caption_title">
+					<div id="caption_bar" class="caption_bar">
+						<div id="caption_title" class="caption_title">
 							Secure Pay Configuration
 						</div>
-						<div id="caption_options" name="caption_options">
+						<div id="caption_options" class="caption_options">
 							<a href="<?=Href()->ViewCustomerGroupCreditCardConfig($customerGroup->id, 'Create')?>" >Enter</a>
 						</div>
 					</div>
@@ -97,11 +97,11 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 			<table id="credit_card_config" name="credit_card_config" class="reflex">
 				<caption>
 
-					<div id="caption_bar" name="caption_bar">
-						<div id="caption_title" name="caption_title">
+					<div id="caption_bar" class="caption_bar">
+						<div id="caption_title" class="caption_title">
 							Secure Pay Configuration
 						</div>
-						<div id="caption_options" name="caption_options">
+						<div id="caption_options" class="caption_options">
 							<?=$edit?><?=$delete?>
 						</div>
 					</div>
@@ -214,12 +214,12 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 		<form id="edit_credit_card_config" name="edit_credit_card_config" method="POST" action="<?=$save?>">
 			<table id="credit_card_config" name="credit_card_config" class="reflex">
 				<caption>
-					<div id="caption_bar" name="caption_bar">
+					<div id="caption_bar" class="caption_bar">
 
-						<div id="caption_title" name="caption_title">
+						<div id="caption_title" class="caption_title">
 							<?=$title?>
 						</div>
-						<div id="caption_options" name="caption_options">
+						<div id="caption_options" class="caption_options">
 							<?=$actions?>
 						</div>
 					</div>
@@ -283,12 +283,12 @@ class HtmlTemplate_Customer_Group_Credit_Card_Config extends FlexHtmlTemplate
 		<table>
 			<table id="credit_card_magic_strings" name="credit_card_magic_strings" class="reflex">
 				<caption>
-					<div id="caption_bar" name="caption_bar">
+					<div id="caption_bar" class="caption_bar">
 
-						<div id="caption_title" name="caption_title">
+						<div id="caption_title" class="caption_title">
 							Special Values For Messages
 						</div>
-						<div id="caption_options" name="caption_options">
+						<div id="caption_options" class="caption_options">
 						</div>
 					</div>
 				</caption>

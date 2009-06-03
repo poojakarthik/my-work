@@ -5,9 +5,9 @@
 /**
  * ORM
  *
- * Models a record from any table
+ * Models a record from any table, for use when a single record logically represents a single object
  *
- * Models a record from any table
+ * Models a record from any table, for use when a single record logically represents a single object
  *
  * @class	ORM
  */
@@ -32,7 +32,7 @@ abstract class ORM
 	 * 
 	 * constructor
 	 *
-	 * @param	array	$arrProperties 		[optional]	Associative array defining an invoice run with keys for each field of the table
+	 * @param	array	$arrProperties 		[optional]	Associative array defining the data source record that this object will model
 	 * @param	boolean	$bolLoadById		[optional]	Automatically load the Record with the passed Id
 	 * 
 	 * @return	void
@@ -78,14 +78,46 @@ abstract class ORM
 		}
 		
 		// Set Properties
-		if (is_array($arrProperties))
+		
+		// First set the id field, if it has been specified
+		if (array_key_exists('id', $arrProperties))
 		{
-			foreach ($arrProperties as $strName=>$mixValue)
-			{
-				// Load from the Database
-				$this->{$strName}	= $mixValue;
-			}
+			$this->setId($arrProperties['id']);
+			
+			// Remove it from the properties
+			unset($arrProperties['id']);
 		}
+		elseif (array_key_exists('Id', $arrProperties))
+		{
+			$this->setId($arrProperties['Id']);
+			
+			// Remove it from the properties
+			unset($arrProperties['Id']);
+		}
+		
+		// Set all remaining fields
+		foreach ($arrProperties as $strName=>$mixValue)
+		{
+			// Load from the Database
+			$this->{$strName}	= $mixValue;
+		}
+	}
+	
+	/**
+	 * __clone
+	 *
+	 * Clones an object
+	 * This will nullify the id property if the original object had it set, and flag the object as not saved
+	 *
+	 * @return	object			The clone
+	 *
+	 * @method
+	 */
+	public function __clone()
+	{
+		// Nullify the id property
+		$this->setId(null);
+		$this->_bolSaved = false;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -128,13 +160,20 @@ abstract class ORM
 		}
 		if (is_int($mixResult))
 		{
-			$this->id	= $mixResult;
+			// Set the id of the object (can't use the __set method as that prohibits explicit mutation of the id property)
+			$this->setId($mixResult);
 			return TRUE;
 		}
 		else
 		{
 			return $mixResult;
 		}
+	}
+
+	// This private function is used to set the id of the object, because this functionality is prohibited in the protected __set method (shouldn't the __set method be public?)
+	private function setId($intId)
+	{
+		$this->_arrProperties[$this->_strIdField] = $intId;
 	}
 
 	public function __get($strName)
@@ -149,6 +188,12 @@ abstract class ORM
 		
 		if (array_key_exists($strName, $this->_arrProperties))
 		{
+			if ($strName == $this->_strIdField)
+			{
+				// Cannot explicitly mutate the id
+				throw new Exception_Assertion("Cannot explicitly set the id property of an ORM object", "Attempted to set the id to $mxdValue for the ". get_class($this) ." Object with internal state: \n". print_r($this, true), "ORM::__set() Violation");
+			}
+			
 			$mixOldValue					= $this->_arrProperties[$strName];
 			$this->_arrProperties[$strName]	= $mxdValue;
 			

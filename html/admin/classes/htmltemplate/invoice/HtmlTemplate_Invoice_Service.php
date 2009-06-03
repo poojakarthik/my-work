@@ -94,11 +94,11 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		echo "
 <table class='reflex highlight-rows'>
 	<caption>
-		<div id='caption_bar' name='caption_bar'>
-			<div id='caption_title' name='caption_title'>
+		<div id='caption_bar' class='caption_bar'>
+			<div id='caption_title' class='caption_title'>
 				Usage Charges
 			</div>
-			<div id='caption_options' name='caption_options'>$recordTypes
+			<div id='caption_options' class='caption_options'>$recordTypes
 			</div>
 		</div>
 	</caption>
@@ -182,11 +182,11 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		echo "
 <table class='reflex'>
 	<caption>
-		<div id='caption_bar' name='caption_bar'>
-			<div id='caption_title' name='caption_title'>
+		<div id='caption_bar' class='caption_bar'>
+			<div id='caption_title' class='caption_title'>
 				Adjustments
 			</div>
-			<div id='caption_options' name='caption_options'>
+			<div id='caption_options' class='caption_options'>
 			</div>
 		</div>
 	</caption>
@@ -240,11 +240,11 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		echo "
 <table class='reflex'>
 	<caption>
-		<div id='caption_bar' name='caption_bar'>
-			<div id='caption_title' name='caption_title'>
+		<div id='caption_bar' class='caption_bar'>
+			<div id='caption_title' class='caption_title'>
 				Invoice Details
 			</div>
-			<div id='caption_options' name='caption_options'>
+			<div id='caption_options' class='caption_options'>
 			</div>
 		</div>
 	</caption>

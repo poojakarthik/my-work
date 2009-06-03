@@ -1,3 +1,16 @@
+/* This css file is only included in Framework 3 pages.
+ *
+ * All styling of new functionality (Framework 3 or 2) should have its
+ * styling defined in style.css
+ *
+ * You should only add styling rules to this file if they are for a Framework 3 page 
+ * (or popup that is only ever openned on a Framework 3 page), and adding the rules to
+ * style.css has an adverse affect on existing Framework 2 functionality.
+ * In these cases I would encourage you to fix the conflict with the Framework 2 functionality
+ *
+ * It is hoped that everything here will eventually be phased out, or moved into style.css
+ */
+
 a,
 a:link,
 a:visited {
@@ -33,8 +46,8 @@ span[onclick]
 
 div.reflex-content
 {
-	color				: #333;
-	width				: 99%;  /* was previously set to 90% */
+	color				: #1C1C1C;
+	width				: 99%;
 	margin-left			: auto;
 	margin-right		: auto;
 	border				: .1em solid #333;
@@ -45,7 +58,7 @@ div.reflex-content
 div.reflex-content div.header,
 div.reflex-content div.footer
 {
-	background-color	: #333;
+	background-color	: #1C1C1C;
 	color				: #eee;
 	text-align			: left;
 	padding				: .25em .5em;
@@ -57,41 +70,15 @@ div.reflex-content div.footer
 	text-align			: right;
 }
 
+div.reflex-content div.header
+{
+	-moz-border-radius-topleft	: 3px;
+	-moz-border-radius-topright	: 3px;
+}
+
 div.reflex-content div.body
 {
 
-}
-
-div.message {
-	background: #CFFFCD;
-	font-weight: bold;
-	color: #111;
-	border: .1em solid #060;
-	width: 90%;
-	padding: .5em;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 1em;
-} 
-
-div.error {
-	background: #ffecf0;
-	color: #111;
-	border: .1em solid #d30;
-} 
-
-div.warning {
-	background: #ffc47f;
-	border: .1em solid #ff8822;
-	color: #111;
-}
-
-table.reflex tbody tr td.input input[type="text"],
-table.reflex tbody tr td.input input[type="password"],
-table.reflex tbody tr td.input textarea,
-table.reflex tbody tr td.input select
-{
-	width			: 98%;
 }
 
 table.reflex table.clickable tr.selected[onclick] td
@@ -109,7 +96,7 @@ table.reflex table.hoverable tbody tr[onclick]:hover
 	background-color	: #ddd;
 }
 
-/******************************** Ticket Stuff ************************/
+/************************* START - Ticket Stuff - START ***********************/
 
 table.reflex tr td.ticketing-status-in-progress,
 table.reflex tr td.ticketing-status-completed,
@@ -170,7 +157,6 @@ td.ticket-history-record-details
 	border-bottom: solid 1px #000;
 }
 
-
 /* Only show the solid border at the top of the ticket-history-summary-row-displaying-detail-row, if the details, of the record above this one, is hidden */
 tr.ticket-history-details-row-hidden + tr.ticket-history-summary-row-displaying-detail-row td
 {
@@ -207,7 +193,14 @@ input[type='button'].expand-button-retracted
 	border: none;
 }
 
-/******************************** Ticket Stuff ************************/
+/* This is used by the timer present on the "All Tickets" page */
+th#refreshPanel
+{
+	color		: #ffde05;
+	margin-left	: 0.25em;
+}
+
+/*************************** END - Ticket Stuff - END *************************/
 
 input, 
 select, 
@@ -247,57 +240,6 @@ textarea {
 	font-family: Arial,Verdana,Helvetica;
 }
 
-input[type="button"] {
-	cursor: pointer;
-}
-
-div#PopupPageBody {
-	background-color:	#EFEBE7; 
-}
-
-.PopupBox {
-	position: absolute;
-	border: .1em solid #111;
-	background-color: #eee;
-}
-
-.PopupBoxTopBar {
-	font-size: 1em;
-	line-height: 1.25em;
-	color: #eee;
-	font-weight: bold;
-	background-color: #000;
-	background-image: url('../img/template/background.png');
-	background-repeat: repeat-x;
-	margin: 0;
-	padding: .25em;
-}
-
-.PopupBoxClose {
-	float: right;
-	cursor: pointer;
-}
-
-#PopupHolder #overlay {
-	position: absolute;
-	left: 0em;
-	top: 0em;
-	width: 100%;
-	height: 100%;
-	z-index: 1000;
-	background-color: #000;
-	opacity: .50;
-}
-
-div#BreadCrumbMenu {
-	clear				: both;
-	padding				: .2em 0em .2em 1.5em;
-	width				: 100%;
-	background-color	: #fff;
-	color				: #000;
-}
-
-
 div.DefaultOutput, 
 div input.DefaultInputText, 
 div select.DefaultInputText {
@@ -317,19 +259,6 @@ div.GroupedContent {
 	margin: .25em;
 	padding: .1em;
 	border: .1em solid #D1D1D1;
-}
-
-div.SmallSeperator,
-div.SmallSeparator
-{
-	height: .25em;
-}
-
-
-div.ButtonContainer {
-	float: right;
-	padding: .25em;
-	margin: .25em;
 }
 
 table tr.Even {
@@ -362,216 +291,4 @@ table.Listing tr.PrimarySelected td {
 	vertical-align:top;
 }
 
-/* Calendar styling. */
 
-.date-time td {
-	cursor: default;
-	text-align: center !important;
-	border-bottom: .1em dotted #c0c0c0;
-}
-
-.date-time .bar {
-	text-align: center;
-	background: #F2F5FF;
-	padding: .2em 0 .2em;
-}
-
-.date-time .date-time-active:hover {
-	color: #fff;
-	background: #666;
-}
-
-.date-time td.date-time-active-today {
-	border: .1em solid #111;
-}
-
-.date-time button {
-	border: none;
-	padding: 0;
-}
-
-.date-time title {
-	font-weight: bold;
-}
-
-.date-time th {
-	background: #fff;
-	color: #000;
-	border-bottom: .1em solid #c0c0c0;
-	text-align: center !important;
-	margin-top: .2em;
-}
-
-.date-time option, .date-time select {
-	font-size: 1em;
-}
-
-.date-time {
-	border: .2em solid #111;
-	background: #eee;
-	padding: .1em;
-	width: 15em;
-}
-
-.date-time table {
-	width: 100%;
-	font-size: 1em;
-	margin: 0 auto;
-}
-
-a img {
-	border: 0;
-	vertical-align: middle;
-}
-
-div.clear {
-	float:	none;
-	clear:	both;
-}
-
-th#refreshPanel
-{
-	color		: #ffde05;
-	margin-left	: 0.25em;
-	/*position: absolute;
-	left: 10px;*/
-	/*bottom: 15px;
-	padding: 0 0.3em 0.2em 0;
-	display	: inline-block;
-	float	: left;*/
-}
-
-div.MsgNotice
-{
-	margin:				5px 3px;
-	padding:			5px;
-	border:				solid 1px #D1D1D1;
-	background-color:	#FFFFCC;
-	position:			relative;
-}
-
-
-/* Table stuff*/
-table.form-data
-{
-	width			: 99%;
-	margin-left		: auto;
-	margin-right	: auto;
-}
-
-table.form-data td,
-table.form-data th
-{
-	padding	: 0em 0em;
-}
-
-table.form-data td.title
-{
-	vertical-align	: top;
-	font-weight		: bold;
-}
-
-table.form-data input[disabled],
-table.form-data select[disabled],
-table.form-data textarea[disabled]
-{
-	background-color: #DDDDDD;
-}
-
-/***************************** Tab Collection stuff ***************************/
-div.tab-collection
-{
-
-}
-
-div.tab-collection div.tab-header-container
-{
-	/*border-bottom	: solid 1px #888;*/
-}
-
-div.tab-collection div.tab-header-container div.tab-header
-{
-	padding			: 0.2em;
-	border-top		: solid 1px #888;
-	border-right	: solid 1px #888;
-	border-left		: solid 1px #888;
-	cursor			: pointer;
-}
-
-div.tab-collection div.tab-header-container div.tab-header:hover
-{
-	background-color: #EEE;
-}
-
-div.tab-collection div.tab-header-container div.selected,
-div.tab-collection div.tab-header-container div.selected:hover
-{
-	background-color: #CCC;
-	border-bottom: solid 1px #CCC;
-}
-
-div.tab-collection div.tab-body-container
-{
-	padding: 0.25em;
-	border: solid 1px #888;
-	border-top: none;
-	background-color: #CCC;
-}
-
-/*************************** Sale Status classes ******************************/
-.sale-item-status-submitted,
-.sale-item-status-verified,
-.sale-item-status-awaiting-dispatch,
-.sale-item-status-dispatched,
-.sale-item-status-completed,
-.sale-status-submitted,
-.sale-status-verified,
-.sale-status-awaiting-dispatch,
-.sale-status-dispatched,
-.sale-status-completed
-{
-	color: #060;
-}
-
-.sale-item-status-manual-intervention,
-.sale-item-status-rejected,
-.sale-item-status-cancelled,
-.sale-status-manual-intervention,
-.sale-status-rejected,
-.sale-status-cancelled
-{
-	color: #f00;
-}
-
-
-/* CONSOLE UPCOMING CALENDAR EVENTS */
-div.console-calendar
-{
-	padding-left	: 1em;
-	padding-right	: 1em;
-}
-
-div.console-calendar div.day
-{
-	margin-top		: 1em;
-	margin-bottom	: 1em;
-}
-
-div.console-calendar div.day:first-child
-{
-	font-size	: 1.5em;
-	font-weight	: bold;
-}
-
-div.console-calendar div.day span.date
-{
-	font-weight	: bold;
-}
-
-div.console-calendar div.day tbody td.department-responsible,
-div.console-calendar div.day tbody th.department-responsible
-{
-	min-width	: 25%;
-	max-width	: 25%;
-	width		: 25%;
-}

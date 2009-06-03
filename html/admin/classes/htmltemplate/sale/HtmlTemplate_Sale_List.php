@@ -230,6 +230,9 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 
 		// Build filter controls
 		
+		// The search string filter
+		$strSearchString = array_key_exists("searchString", $arrFilter)? htmlspecialchars($arrFilter['searchString']['Value'], ENT_QUOTES) : NULL;
+		
 		// The Dealer filter
 		$strDealerOptions = "\n\t<option value='' selected='selected'>All Dealers</option>";
 		$intManagerId = array_key_exists("managerId", $arrFilter)? $arrFilter['managerId']['Value'] : NULL;
@@ -286,12 +289,13 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 		echo "
 <table class='reflex highlight-rows' id='SalesListTable' name='SalesListTable'>
 	<caption>
-		<div id='caption_bar' name='caption_bar'>
-			<div id='caption_title' name='caption_title'>
+		<div id='caption_bar' class='caption_bar'>
+			<div id='caption_title' class='caption_title'>
 				$strTitle
 			</div>
-			<div id='caption_options' name='caption_options'>
+			<div id='caption_options' class='caption_options'>
 				<form method='GET' action='$strSalesListLink'>
+					<input type='text' id='salesSearchString' name='searchString' value='$strSearchString' maxlength='50'></input>
 					<select id='dealerFilter' name='dealerFilter'>$strDealerOptions
 					</select>
 					<select id='vendorId' name='vendorId'>$strVendorOptions

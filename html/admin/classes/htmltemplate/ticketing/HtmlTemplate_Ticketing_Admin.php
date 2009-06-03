@@ -45,11 +45,11 @@ class HtmlTemplate_Ticketing_Admin extends FlexHtmlTemplate
 		<form id="view_ticketing_admin" name="view_ticketing_admin" method="POST">
 			<table id="ticketing" name="ticketing" class="reflex">
 				<caption>
-					<div id="caption_bar" name="caption_bar">
-					<div id="caption_title" name="caption_title">
+					<div id="caption_bar" class="caption_bar">
+					<div id="caption_title" class="caption_title">
 						System Settings
 					</div>
-					<div id="caption_options" name="caption_options">
+					<div id="caption_options" class="caption_options">
 						<a href="<?=Flex::getUrlBase()?>reflex.php/Ticketing/Admin/Edit" >Edit</a>
 					</div>
 					</div>
@@ -107,11 +107,11 @@ class HtmlTemplate_Ticketing_Admin extends FlexHtmlTemplate
 			<input type="hidden" name="save" value="1" />
 			<table id="ticketing" name="ticketing" class="reflex">
 				<caption>
-					<div id="caption_bar" name="caption_bar">
-					<div id="caption_title" name="caption_title">
+					<div id="caption_bar" class="caption_bar">
+					<div id="caption_title" class="caption_title">
 						System Settings
 					</div>
-					<div id="caption_options" name="caption_options">
+					<div id="caption_options" class="caption_options">
 						<a href="<?=Flex::getUrlBase()?>/reflex.php/Ticketing/Admin/View" >View</a>
 					</div>
 					</div>
@@ -175,11 +175,11 @@ class HtmlTemplate_Ticketing_Admin extends FlexHtmlTemplate
 		<br/>
 		<table class="reflex">
 			<caption>
-				<div id="caption_bar" name="caption_bar">
-				<div id="caption_title" name="caption_title">
+				<div id="caption_bar" class="caption_bar">
+				<div id="caption_title" class="caption_title">
 					Customer Groups
 				</div>
-				<div id="caption_options" name="caption_options">
+				<div id="caption_options" class="caption_options">
 				</div>
 				</div>
 			</caption>

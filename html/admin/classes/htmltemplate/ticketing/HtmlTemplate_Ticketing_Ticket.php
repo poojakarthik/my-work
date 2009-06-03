@@ -131,11 +131,11 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 		?>
 			<table id="ticketing" name="ticketing" class="reflex">
 				<caption>
-					<div id="caption_bar" name="caption_bar">
-					<div id="caption_title" name="caption_title">
+					<div id="caption_bar" class="caption_bar">
+					<div id="caption_title" class="caption_title">
 						Viewing ticket: <?=$ticket->id?>
 					</div>
-					<div id="caption_options" name="caption_options">
+					<div id="caption_options" class="caption_options">
 						<?=$actionLinks?>
 					</div>
 					</div>
@@ -279,11 +279,11 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 				<input type="hidden" id="ticketId" value="<?php echo $ticket->id ? $ticket->id : ''; ?>" />
 				<table id="ticketing" name="ticketing" class="reflex">
 					<caption>
-						<div id="caption_bar" name="caption_bar">
-						<div id="caption_title" name="caption_title">
+						<div id="caption_bar" class="caption_bar">
+						<div id="caption_title" class="caption_title">
 							Viewing ticket: <?=$ticket->id?>
 						</div>
-						<div id="caption_options" name="caption_options">
+						<div id="caption_options" class="caption_options">
 							<?=$actionLinks?>
 						</div>
 						</div>
@@ -692,11 +692,11 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 
 		<table class="reflex">
 			<caption>
-				<div id="caption_bar" name="caption_bar">
-					<div id="caption_title" name="caption_title">
+				<div id="caption_bar" class="caption_bar">
+					<div id="caption_title" class="caption_title">
 						<?=htmlspecialchars($header)?>
 					</div>
-					<div id="caption_options" name="caption_options">
+					<div id="caption_options" class="caption_options">
 					</div>
 				</div>
 			</caption>

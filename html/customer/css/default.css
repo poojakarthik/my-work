@@ -455,7 +455,7 @@ div.cvv-image-tooltip img {
 }
 /* CCV tool tip end */
 
-input.validation-error-tootltip-button {
+input.validation-error-tooltip-button {
 	visibility:				hidden;
 	width:					18px;
 	height:					18px;
@@ -468,17 +468,17 @@ input.validation-error-tootltip-button {
 	background-position:	50% 50%;
 }
 
-td[contains-invalid-input=true] input.validation-error-tootltip-button {
+td[contains-invalid-input=true] input.validation-error-tooltip-button {
 	visibility:				visible;
 	border:					none;
 }
 
-td.contains-invalid-input input.validation-error-tootltip-button {
+td.contains-invalid-input input.validation-error-tooltip-button {
 	visibility:				visible;
 	border:					none;
 }
 
-div.validation-error-tootltip {
+div.validation-error-tooltip {
 	position: 				absolute;
 	top: 					0;
 	left: 					0;

@@ -629,7 +629,7 @@ class JSON_Handler_Sale extends JSON_Handler
 			if (count($arrSaleStatusHistoryObjects) == 0)
 			{
 				// This shouldn't ever happen, because if the sale exists, then it should have at least 1 sale_status_history record
-				$strBodyRows = "<tr><td colspan='4'>Now Records</td></tr>";
+				$strBodyRows = "<tr><td colspan='4'>No Records</td></tr>";
 			}
 			else
 			{

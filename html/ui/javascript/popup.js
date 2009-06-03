@@ -687,7 +687,7 @@ function VixenPopupClass()
 	 *
 	 * @method
 	 */
-	this.Confirm = function(strMessage, mixOkOnClick, mixCancelOnClick, strSize, strOkCaption, strCancelCaption)
+	this.Confirm = function(strMessage, mixOkOnClick, mixCancelOnClick, strSize, strOkCaption, strCancelCaption, strPopupTitle)
 	{
 		// set default values
 		strSize = (strSize == null) ? "AlertSize" : strSize;
@@ -702,7 +702,7 @@ function VixenPopupClass()
 						"<tr><td colspan='2' align='left' style='padding: 5px 10px 10px 10px'><span align='justify' style='line-height:1.5'>" + strMessage + "</span></td></tr>" +
 						"<tr><td align='center' width='50%'>" + strOkBtnHtml + "</td>" + 
 						"<td align='center' width='50%'>" + strCancelBtnHtml + "</td></tr>";
-		Vixen.Popup.Create('VixenConfirmBox', strContent, strSize, 'centre', 'modal');
+		Vixen.Popup.Create('VixenConfirmBox', strContent, strSize, 'centre', 'modal', strPopupTitle);
 		
 		// get references to the Ok and Cancel buttons and attach the event listeners
 		var elmOkButton = document.getElementById("VixenConfirmOkButton");

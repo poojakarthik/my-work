@@ -2,10 +2,19 @@
 
 class Application_Handler_CustomerStatus extends Application_Handler
 {
+	// For any of this functionality to work, the module has to be turned on 
+	public static function verifyModuleIsActive()
+	{
+		// Assert that the Customer Status module is turned on
+		Flex::assert(Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS), "Customer Status Module is turned off, but the functionality has been accessed");
+	}
+
 
 	// View all the Customer Statuses in a tabulated format
 	public function ViewAll($subPath)
 	{
+		self::verifyModuleIsActive();
+		
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
@@ -25,6 +34,8 @@ class Application_Handler_CustomerStatus extends Application_Handler
 	// View the details of a single CustomerStatus
 	public function View($subPath)
 	{
+		self::verifyModuleIsActive();
+
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
@@ -65,6 +76,8 @@ class Application_Handler_CustomerStatus extends Application_Handler
 	// Edit the details of a single CustomerStatus
 	public function Edit($subPath)
 	{
+		self::verifyModuleIsActive();
+
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_SUPER_ADMIN);
 		
@@ -105,6 +118,8 @@ class Application_Handler_CustomerStatus extends Application_Handler
 	// Manages the Customer Status Summary Report functionality
 	public function SummaryReport($subPath)
 	{
+		self::verifyModuleIsActive();
+
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		
@@ -213,6 +228,8 @@ class Application_Handler_CustomerStatus extends Application_Handler
 	// Manages the Customer Status Account Report functionality
 	public function AccountReport($subPath)
 	{
+		self::verifyModuleIsActive();
+
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
 		

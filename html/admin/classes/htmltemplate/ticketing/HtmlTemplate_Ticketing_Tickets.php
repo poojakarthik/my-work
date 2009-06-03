@@ -150,11 +150,11 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 	?>
 	<table id="ticketing" name="ticketing" class="reflex highlight-rows">
 		<caption>
-			<div id="caption_bar" name="caption_bar">
-				<div id="caption_title" name="caption_title">
+			<div id="caption_bar" class="caption_bar">
+				<div id="caption_title" class="caption_title">
 					<?=$title?>
 				</div>
-				<div id="caption_options" name="caption_options">
+				<div id="caption_options" class="caption_options">
 
 				Filter:
 				<input type="text" id="ticketFilter" name="quickSearch" value="<?=htmlspecialchars($quickSearch)?>"/>

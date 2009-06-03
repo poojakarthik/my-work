@@ -216,11 +216,13 @@ class Ticketing_Correspondance
 		$strBReg = "/\[T[0-9]+Z\]/";
 		if (preg_match($strTReg, $objCorrespondence->summary, $arrMatches))
 		{
+			// The ticket nmber has been found in the summary of the correspondence
 			$objCorrespondence->summary = preg_replace($strTReg, "", $objCorrespondence->summary);
 			$objCorrespondence->ticketId = intval(preg_replace("/[^0-9]*/", "", $arrMatches[0]));
 		}
 		else if(preg_match($strBReg, $objCorrespondence->details, $arrMatches))
 		{
+			// The ticket number has been found in the body of the ticket
 			$objCorrespondence->ticketId = intval(preg_replace("/[^0-9]*/", "", $arrMatches[0]));
 		}
 

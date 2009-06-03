@@ -1,10 +1,4 @@
 //----------------------------------------------------------------------------//
-// (c) copyright 2007 VOIPTEL Pty Ltd
-//
-// NOT FOR EXTERNAL DISTRIBUTION
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
 // validate_adjustment.js
 //----------------------------------------------------------------------------//
 /**
@@ -157,6 +151,44 @@ function VixenValidateAdjustmentClass()
 			elmChargeAmount.focus();
 		}
 	}
+	
+	this.SubmitRequest = function(bolConfirmed)
+	{
+		if (!bolConfirmed)
+		{
+			// Check if the adjustment is a debit or credit
+			var intChargeTypeId = $ID('Charge.charge_type_id').value;
+			var strMsg = "";
+			if (this._objChargeTypeData[intChargeTypeId].Nature == "CR")
+			{
+				// Credit adjustmemt
+				strMsg = "<strong>Please Note:</strong>" +
+						"<ol>" +
+						"   <li>You are requesting a credit adjustment for approval</li>" +
+						"   <li>You have not notified the customer that this credit is approved</li>" +
+						"   <li>Deliberation of a credit request can take up to 28 days</li>" +
+						"</ol>" +
+						"Are you sure you want to submit this request?";
+			}
+			else if (this._objChargeTypeData[intChargeTypeId].Nature == "DR")
+			{
+				// Debit adjustment
+				strMsg = "Debit Adjustment. Um.  Are you sure you want to do this?";
+			}
+			else
+			{
+				// This case should never occur
+				alert("ERROR: Unknown Charge Type Nature: '" + this._objChargeTypeData[intChargeTypeId].Nature + "'");
+				return;
+			}
+		
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.ValidateAdjustment.SubmitRequest(true)}, null, null, "Yes", "No", "Request Adjustment");
+			return;
+		}
+		
+		var elmRealSubmitButton = $ID("AddAdjustmentSubmitButton");
+		elmRealSubmitButton.click();
+	}
 }
 
 // instantiate the object if it hasn't already been instantiated
@@ -164,17 +196,3 @@ if (Vixen.ValidateAdjustment == undefined)
 {
 	Vixen.ValidateAdjustment = new VixenValidateAdjustmentClass;
 }
-
-/*
-window.addEventListener (
-	'load',
-	function ()
-	{
-		if (document.getElementById ('ChargeType.ChargeType'))
-		{
-			ValidateAdjustment.DeclareChargeType(document.getElementById ('ChargeType.ChargeType'));
-		}
-	},
-	true
-);
-*/

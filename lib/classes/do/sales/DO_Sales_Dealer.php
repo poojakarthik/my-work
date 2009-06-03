@@ -79,7 +79,7 @@ class DO_Sales_Dealer extends DO_Sales_Base_Dealer
 		$arrSubs = $this->getSubordinates();
 		foreach ($arrSubs as $doSub)
 		{
-			if ($doSub->id = $doSubDealer->id)
+			if ($doSub->id == $doSubDealer->id)
 			{
 				return TRUE;
 			}

@@ -391,8 +391,8 @@ GROUP BY owner_id, category_id, status_id
 <br />
 <table class='reflex' id='owner_id_$mixOwner'>
 	<caption>
-		<div id='caption_bar'>
-			<div id='caption_title'> $strTitle
+		<div id='caption_bar' class='caption_bar'>
+			<div id='caption_title' class='caption_title'> $strTitle
 			</div>
 		</div>
 	</caption>

@@ -7,6 +7,7 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 	const SEARCH_CONSTRAINT_SALE_STATUS_ID	= "sale_status";
 	const SEARCH_CONSTRAINT_DEALER_ID		= "dealer";
 	const SEARCH_CONSTRAINT_MANAGER_ID		= "manager"; // includes sales from all dealers under the manager
+	const SEARCH_CONSTRAINT_SEARCH_STRING	= "search_string";
 	
 	
 	const ORDER_BY_CONTACT_NAME		= "contact_name";
@@ -50,8 +51,10 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 	}
 	
 	// Performs a sale search based on lots of different things
+	// It is assumed that none of the arguments are escaped yet
 	public static function searchFor($arrFilter=NULL, $arrSort=NULL, $intLimit=NULL, $intOffset=NULL)
 	{
+		$dataSource			= self::getDataSource();
 		$arrWhereParts		= array();
 		$arrOrderByParts	= array();
 		
@@ -105,9 +108,63 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 						//$arrWhereClauseParts[] = "sale_account.vendor_id = $intVendorId";
 						break;
 						
+					case self::SEARCH_CONSTRAINT_SEARCH_STRING:
+						// Simplify whitespace 
+						$strSearchString = trim(preg_replace('/\s+/', " ", $dataSource->escape($arrConstraint['Value'])));
+						if (strlen($strSearchString) == 0)
+						{
+							// There is no search string
+							// Switch statements are considered a continuable construct in php so we need to break out of 2 loops
+							continue 2;
+						}
+						
+						// A string has been supplied.  Check it against sale id, account name and contact name (this could be quite slow especially because I don't think we index these fields)
+						// Maybe we should index them, but it shouldn't be an issue for a while because in the last 5 months there has only been about 1000 sales in the system
+						$arrSearchStringConstraintParts = array();
+						
+						// Sale Id
+						$intSearchStringAsNumber = intval($strSearchString);
+						if ($intSearchStringAsNumber > 0)
+						{
+							$arrSearchStringConstraintParts[] = "(sale.id = $intSearchStringAsNumber)";
+						}
+						
+						// Account Name
+						// The account name must have each token of the search string in it (but limit it to 5 tokens)
+						$arrSearchStringTokens = explode(" ", $strSearchString, 5);
+						
+						$arrBusinessNamePartChecks = array();
+						$arrTradingNamePartChecks = array();
+						
+						foreach ($arrSearchStringTokens as $strToken)
+						{
+							$arrBusinessNamePartChecks[]	= "sale_account.business_name ILIKE '%{$strToken}%'";
+							$arrTradingNamePartChecks[]		= "sale_account.trading_name ILIKE '%{$strToken}%'";
+							
+						}
+						
+						$arrSearchStringConstraintParts[] = "(". implode(" AND ", $arrBusinessNamePartChecks) .")";
+						$arrSearchStringConstraintParts[] = "(". implode(" AND ", $arrTradingNamePartChecks) .")";
+						
+						// Contact Name (only the primary contact)
+						// Only bother checking the contact's name if the search string isn't numeric
+						if (!is_numeric($strSearchString))
+						{
+							$arrContactNamePartChecks = array();
+							
+							foreach ($arrSearchStringTokens as $strToken)
+							{
+								$arrContactNamePartChecks[]	= "(contact.first_name || COALESCE(' ' || contact.middle_names, '') || ' ' || contact.last_name) ILIKE '%{$strToken}%'";
+							}
+							$arrSearchStringConstraintParts[] = "(". implode(" AND ", $arrContactNamePartChecks) .")";
+						}
+						
+						$arrWhereClauseParts[] = "(". implode(" OR ", $arrSearchStringConstraintParts) .")";
+						
 					default:
 						// Unknown Search constraint
-						continue;
+						// Switch statements are considered a continuable construct in php so we need to break out of 2 loops
+						continue 2;
 				}
 			}
 		}
@@ -222,8 +279,6 @@ $strSaleStatusHistoryTableName.last_actioned_on AS last_actioned_on,
 $strVerifiedOnChangedOn AS verified_on
 $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		
-		$dataSource = self::getDataSource();
-
 		// Execute the query
 		if (PEAR::isError($results = $dataSource->query($strQuery)))
 		{

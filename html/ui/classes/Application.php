@@ -174,7 +174,7 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->View_All_Constants();
 			}*/
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS) && AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 			}
@@ -374,7 +374,7 @@ class Application
 			{
 				ContextMenu()->Admin->System_Settings->View_All_Constants();
 			}*/
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS) && AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
 			}

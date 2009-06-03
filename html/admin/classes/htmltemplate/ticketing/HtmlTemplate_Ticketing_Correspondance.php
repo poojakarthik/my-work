@@ -91,11 +91,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 
 <table class="reflex">
 	<caption>
-		<div id="caption_bar" name="caption_bar">
-		<div id="caption_title" name="caption_title">
+		<div id="caption_bar" class="caption_bar">
+		<div id="caption_title" class="caption_title">
 			Viewing Correspondence
 		</div>
-		<div id="caption_options" name="caption_options"><?=$actionLinks?>
+		<div id="caption_options" class="caption_options"><?=$actionLinks?>
 		</div>
 		</div>
 	</caption>
@@ -336,11 +336,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 			<input type="hidden" id="ticketId" value="<?php echo $correspondence->ticketId; ?>" />
 			<table class="reflex">
 				<caption>
-					<div id="caption_bar" name="caption_bar">
-					<div id="caption_title" name="caption_title">
+					<div id="caption_bar" class="caption_bar">
+					<div id="caption_title" class="caption_title">
 						<?=$title?>
 					</div>
-					<div id="caption_options" name="caption_options"><?=$actionLinks?>
+					<div id="caption_options" class="caption_options"><?=$actionLinks?>
 					</div>
 					</div>
 				</caption>
@@ -657,11 +657,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 <br/>
 <table class="reflex">
 	<caption>
-		<div id="caption_bar" name="caption_bar">
-		<div id="caption_title" name="caption_title">
+		<div id="caption_bar" class="caption_bar">
+		<div id="caption_title" class="caption_title">
 			Attachments
 		</div>
-		<div id="caption_options" name="caption_options">
+		<div id="caption_options" class="caption_options">
 		</div>
 		</div>
 	</caption>
@@ -739,11 +739,11 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 
 <table class="reflex">
 	<caption>
-		<div id="caption_bar" name="caption_bar">
-		<div id="caption_title" name="caption_title">
+		<div id="caption_bar" class="caption_bar">
+		<div id="caption_title" class="caption_title">
 			Error
 		</div>
-		<div id="caption_options" name="caption_options">
+		<div id="caption_options" class="caption_options">
 		</div>
 		</div>
 	</caption>

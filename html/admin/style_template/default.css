@@ -1,3 +1,16 @@
+/* This css file is only included in Framework 2 pages.
+ *
+ * All styling of new functionality (Framework 3 or 2) should have its
+ * styling defined in style.css
+ *
+ * You should only add styling rules to this file if they are for a Framework 2 page 
+ * (or popup that is only ever openned on a Framework 2 page), and adding the rules to
+ * style.css has an adverse affect on existing Framework 3 functionality.
+ * In these cases I would encourage you to fix the conflict with the Framework 3 functionality
+ *
+ * It is hoped that everything here will eventually be phased out, or moved into style.css
+ */
+
 /**************************************************************************/
 /* Flex CSS file														  */
 /*																		  */
@@ -87,14 +100,10 @@ a#ContextMenuItemLink:hover
 h1
 {
 	color:                #006599;
-
 	font-size:            18pt;
-
 	margin-top:           0;
-
 	margin-bottom:			20px;
 	padding-bottom:			5px;
-
 	border-bottom:			solid 1px #006599;
 }
 
@@ -179,41 +188,23 @@ div#PageBody
 	position:		relative;
 }
 
-div#PopupPageBody
-{
-	/*
-	 * There is a function within the Page class, which can be used to override the styling applied to the page (Page->SetStyleOverride(...))
-	 * so long as it is included in the LayoutTemplate.  Currently it is only applied within the popup_layout.php LayoutTemplate and 
-	 * overrides this style class.
-	 * You would use this function within the Page Template.  
-	 */
-
-/*background-color:	#F3F3F3;*/
-background-color:	#EFEBE7;
-
-padding:			3px;
-}
-
 div#ImportReport
 {
 	font-family: 		Arial, sans-serif;
-/*	line-height: 		18pt;*/
 	font-size: 			10pt;
 	position:			relative;
-/*	left:				0px;
-	top:				0px;*/
 	overflow:			hidden;
-/*	line-height: 		1.0;*/
 }
 
+/*********************** Old Style javascript pagination **********************/
+/* Old style pagination classes.  I think this is only used by the employee list page, and possibly the document template resources pages */
+/* these classes are used by ui/javascript/table_sort.js*/
 div.paginated-table-wrapper
 {
-
 }
 
 div.paginated-table-navigation
 {
-	/*background-color:	cyan;*/
 	font-size:			12px;
 	text-align:			right;
 	margin:				-2px 0px -1px 0px;
@@ -234,75 +225,7 @@ div.paginated-table-navigation span.paginated-table-navigation-control-current
 	cursor:				default;
 	text-decoration:	none;
 }
-
-div.MsgNotice
-{
-	margin:				5px 0px 5px 0px;
-	padding:			5px;
-	border:				solid 1px #D1D1D1;
-	background-color:	#FFFFCC;
-	position:			relative;
-}
-
-div.warning
-{
-	text-align:			left;
-	margin:				5px 2px 5px 2px;
-	padding:			5px;
-	border:				solid 1px #D1D1D1;
-	background-color:	#FFC;
-	color:				#C00;
-	position:			relative;
-}
-
-span.warning
-{
-	color:				#C00;
-}
-
-div.message {
-	background: #CFFFCD;
-	font-weight: bold;
-	color: #111;
-	border: .1em solid #060;
-	width: 90%;
-	padding: .5em;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 1em;
-} 
-
-div.error {
-	background: #ffecf0;
-	color: #111;
-	border: .1em solid #d30;
-} 
-
-
-
-/**************************************************************************/
-/* IMAGES														  		  */
-/**************************************************************************/	
-.Logo
-{
-	/*
-	position:	absolute;
-	left:		1px;
-	top:		1px;
-	 */
-z-index:	1000000;
-float:		left;
-padding:	1px;
-width:		99px;
-height:		44px;
-}
-
-.LogoSpacer
-{
-	float:		left;
-	height:		1px;
-	width:		170px;
-}
+/**** END - Old Style javascript pagination - END ********/
 
 /**************************************************************************/
 /* DEFAULT I/O															  */
@@ -601,11 +524,6 @@ height:		44px;
 	height:				auto;
 }
 
-tr.LatePayments
-{
-	font-size:			 10pt;		
-}
-
 table.Listing
 {
 	border:              solid 1px #C1C1C1;
@@ -696,48 +614,6 @@ table.Summary
 {
 	background-color:    #C0C0C0;		
 }
-
-/**************************************************************************/
-/* MENUS																  */
-/**************************************************************************/
-/*.ContextMenu
-{
-	float:				left;
-	position: 			fixed;
-	top:				75px;
-	left:				1px;
-}
-
-.ContextMenuItem
-{
-	border:					solid 1px #999999;
-	background-color:		#FFFFFF;
-	background-repeat:		no-repeat;
-	background-position:	top left;
-	padding:				1px 1px 1px 1px;
-}
-
-.ContextMenuItemHighlight
-{
-	border:					solid 1px #999999;
-	background-color:		#FFFFCC;
-}
-*/
-
-div#BreadCrumbMenu
-{
-	clear: both;
-	padding:			.2em 0em .2em 1.5em;
-	width: 100%;
-	background-color: #fff;
-	color: #000;
-}
-
-.MenuIcon
-{
-	border:					solid 1px #999999;
-}
-
 
 /**************************************************************************/
 /* TITLES															  	  */
@@ -951,147 +827,6 @@ h2.Tickets
 	background-image:				url('img/template/tickets.png');
 }
 
-/**************************************************************************/
-/* HEADER															  	  */
-/**************************************************************************/
-.sectionContent
-{
-	margin:               auto;
-}
-
-.Clear
-{
-	clear:                both;
-}
-
-/**************************************************************************/
-/* BUTTONS															  	  */
-/**************************************************************************/	
-.Menu_Button
-{
-	display:                       inline;
-	margin-left:                   30px;
-	line-height:                   20px;
-	vertical-align:                bottom;
-}
-
-.Debug_Button
-{
-	display:                       inline;
-	margin-left:                   5px;
-	line-height:                   20px;
-	vertical-align:                bottom;
-}
-
-/* This is used as a wrapper for the buttons if they are being floated
- * to the right or left
- */ 
-.ButtonContainer
-{
-	height: 		25px;
-	padding:	3px 0px 3px 0px;
-}
-
-
-/**************************************************************************/
-/* SEPARATORS															  */
-/**************************************************************************/
-
-.Separator,
-.Seperator
-{
-	height:               20px;
-}
-
-.SmallSeparator,
-.SmallSeperator
-{
-	height:               10px;
-}
-
-.TinySeparator,
-.TinySeperator
-{
-	height:               5px;
-}
-
-
-/**************************************************************************/
-/* INPUTS																  */
-/**************************************************************************/
-input[type='button'], a.button, button
-{
-	background-image:	url('img/template/transparent-bg.png') !important;
-	background-repeat:	repeat-x !important;
-	background-color:	#ddd !important;
-	color:				#000 !important;
-	font-family: 		Arial, sans-serif !important;
-	font-size:			1em !important;
-	font-weight:		bold !important;
-	margin:				.2em !important;
-	padding:			.2em .5em !important;
-	border-top:			solid .1em #999 !important;
-	border-left:		solid .1em #999 !important;
-	border-bottom:		solid .1em #666 !important;
-	border-right:		solid .1em #666 !important;
-	-moz-border-radius:	4px !important;
-	cursor: 			pointer !important;
-	-moz-user-select:	none;
-}
-
-button[disabled]
-{
-	background-image:    none;
-	color:               #eee;
-	background-color:    #ccc;
-	-moz-user-select:	none;
-}
-
-/**************************************************************************/
-/* POPUPS																  */
-/**************************************************************************/
-.PopupBox
-{
-	position: absolute;
-	border: 1px solid #000000;
-	background-color: #ffffff;
-	/*z-index: 1001;*/
-}
-
-.PopupBoxTopBar
-{
-	font-family: Arial, sans-serif;
-	font-size: 10pt;
-	line-height: 18pt;
-	color: #FFFFFF;
-	background-color: #000000;
-	background-image:     url('img/template/background.png');
-	background-repeat:    repeat-x;
-	padding: 0px;
-	margin: 0px;
-	padding-left: 5px;
-	cursor: default;
-
-}
-.PopupBoxClose
-{
-	float: right;
-	text-align: right;
-	height: 14px;
-	padding: 3px;
-	cursor: pointer;
-}
-
-#overlay {
-	position: absolute;
-	left: 0px;
-	top: 0px;
-	width:100%;
-	height:100%;
-	z-index: 1000;
-	background-color:	#000000;
-	opacity: .50;
-}
 
 /**************************************************************************/
 /* TOOLTIPS																  */
@@ -1113,7 +848,7 @@ button[disabled]
 }
 
 /**************************************************************************/
-/* PHONE ICONS
+/* PHONE ICONS                                                            */
 /**************************************************************************/
 div.ServiceTypeIconBlank,
 div.ServiceTypeIconLandLine,
@@ -1233,76 +968,6 @@ div.Appointment div.Resize
 }
 
 /*********************** END - Stupid day slider - END ************************/
-
-/***************************************Date Time Picker***********************/
-/* Date Time Calendar Styles */
-.date-time td
-{
-	cursor: default;
-	text-align: center !important;
-	border-bottom: 1px dotted #c0c0c0;
-}
-
-.date-time .bar
-{
-	text-align: center;
-	background: #F2F5FF;
-	padding: 2px 0 2px;
-}
-
-.date-time .date-time-active:hover
-{
-	color: #fff;
-	background: #4b699f;
-}
-
-.date-time td.date-time-active-today
-{
-	border: 1px solid #4b699f;
-}
-
-.date-time button
-{
-	border: none;
-	padding: 0;
-}
-
-.date-time title
-{
-	font-weight: bold;
-}
-
-.date-time th
-{
-	background: #fff;
-	color: #000;
-	width: 18px;
-	border-bottom: 1px solid #c0c0c0;
-	text-align: center !important;
-	margin-top: 2px;
-}
-
-.date-time option, .date-time select 
-{
-	font-size: 10px;
-}
-
-.date-time 
-{
-	border: 2px solid #4b699f;
-	background: #F2F5FF;
-	padding: 1px;
-	width: 185px;
-}
-
-.date-time table {
-	width: 160px;
-	font-size: 10px;
-	margin: 0 auto;
-}
-
-/************************* END - Date Time Picker - END ***********************/
-
 
 /***************************************Flex Modal Window***********************/
 
@@ -1449,24 +1114,3 @@ table#CustomerStatusDetails tr td:first-child
 	text-align:		center;
 }
 
-
-
-/* Table stuff*/
-table.form-data
-{
-	width			: 99%;
-	margin-left		: auto;
-	margin-right	: auto;
-}
-
-table.form-data td,
-table.form-data th
-{
-	padding	: 0em 0em;
-}
-
-table.form-data td.title
-{
-	vertical-align	: top;
-	font-weight		: bold;
-}

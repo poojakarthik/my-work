@@ -264,8 +264,8 @@ GROUP BY customer_group, invoice_run_id, customer_status_id
 <br />
 <table class='reflex' id='customer_group_$mixCustomerGroup'>
 	<caption>
-		<div id='caption_bar'>
-			<div id='caption_title'> $strTitle
+		<div id='caption_bar' class='caption_bar'>
+			<div id='caption_title' class='caption_title'> $strTitle
 			</div>
 		</div>
 	</caption>

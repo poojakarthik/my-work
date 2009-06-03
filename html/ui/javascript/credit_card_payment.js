@@ -943,7 +943,7 @@ alert(outcome);
 	{
 		var button  =document.createElement('input');
 		button.type = 'button';
-		button.className = 'validation-error-tootltip-button';
+		button.className = 'validation-error-tooltip-button';
 		var obj = { boundHoverFunction: null, boundUnhoverFunction: null, errorInput: errorInput, tootltip: null, button: button, tooltipParent: this.getToolTipParent() };
 		obj.boundHoverFunction = this.showToolTip.bind(obj);
 		obj.boundUnhoverFunction = this.hideToolTip.bind(obj);
@@ -961,7 +961,7 @@ alert(outcome);
 		else
 		{
 			this.tooltip = document.createElement('div');
-			this.tooltip.className = 'validation-error-tootltip';
+			this.tooltip.className = 'validation-error-tooltip';
 		}
 		var position = Element.cumulativeOffset(this.button);
 		this.tooltip.appendChild(document.createTextNode(this.errorInput.getAttribute('validityError')));

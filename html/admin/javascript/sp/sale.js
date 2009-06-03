@@ -1537,7 +1537,7 @@ Object.extend(Sale.prototype, {
 			+ '</div>' 
 		+ '</div>' 
 		+ '<div class="MediumSpace"></div>' 
-		+ '<div style="position: relative;" class="Title">Sale Items<input type="button" value="Collapse All" style="width: 80px; position: absolute; right: 0px; bottom: -1px;" onclick="if (this.value == \'Collapse All\') { this.value = \'Expand All\'; Sale.Item.collapseAll();} else { this.value = \'Collapse All\'; Sale.Item.expandAll();} " /></div>' 
+		+ '<div style="position: relative;" class="Title">Sale Items<input type="button" value="Collapse All" style="position: absolute; right: 0px; bottom: -1px;" onclick="if (this.value == \'Collapse All\') { this.value = \'Expand All\'; Sale.Item.collapseAll();} else { this.value = \'Collapse All\'; Sale.Item.expandAll();} " /></div>' 
 		+ '<div class="Page">' 
 			+ '<div class="FieldContent" style="padding:0; margin:0;">' 
 				+ '<table id="sale-items-table" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; margin: 0; padding: 0; width:100%;">' 
@@ -1725,7 +1725,6 @@ Object.extend(Sale.prototype, {
 		var remove = document.createElement('input');
 		remove.type = 'button';
 		remove.value = 'Remove';
-		remove.style.width = '80px';
 		remove.className = "data-entry";
 		var f = function() { Sale.getInstance().removeSaleItem(this.id); }
 		var func = f.bind({ id: item.instanceId });
@@ -1736,7 +1735,6 @@ Object.extend(Sale.prototype, {
 		expand.type = 'button';
 		expand.value = 'Collapse';
 		expand.id = item.instanceId + '-expand';
-		expand.style.width = '80px';
 
 		var func = item.toggleExpanso.bind(item);
 		Event.observe(expand, 'click', func, true);

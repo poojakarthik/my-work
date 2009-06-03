@@ -72,11 +72,11 @@ class HtmlTemplate_Customer_Status_Edit extends FlexHtmlTemplate
 <form id='FormCustomerStatus'>
 	<table class='reflex'>
 		<caption>
-			<div id='caption_bar' name='caption_bar'>
-				<div id='caption_title' name='caption_title'>
+			<div id='caption_bar' class='caption_bar'>
+				<div id='caption_title' class='caption_title'>
 					Customer Status: $strName
 				</div>
-				<div id='caption_options' name='caption_options'>
+				<div id='caption_options' class='caption_options'>
 					<a href='$strViewLink'>View</a>
 				</div>
 			</div>

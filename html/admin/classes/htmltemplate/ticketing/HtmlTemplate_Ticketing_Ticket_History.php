@@ -53,11 +53,11 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 		<br/>
 		<table class="reflex" id='ticket_history_table'>
 			<caption>
-				<div id="caption_bar" name="caption_bar">
-				<div id="caption_title" name="caption_title">
+				<div id="caption_bar" class="caption_bar">
+				<div id="caption_title" class="caption_title">
 					History
 				</div>
-				<div id="caption_options" name="caption_options">
+				<div id="caption_options" class="caption_options">
 					<?=$actionLinks?>
 				</div>
 				</div>

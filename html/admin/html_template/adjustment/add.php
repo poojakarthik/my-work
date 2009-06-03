@@ -235,10 +235,16 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "</div>\n"; // GroupedContent
 
 		// create the buttons
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
-		$this->AjaxSubmit("Add Adjustment");
-		echo "</div></div>\n";
+		echo "
+<div>
+	<div style='float:right'>
+		<input type='button' style='display:none;' id='AddAdjustmentSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_AddAdjustment', 'Add Adjustment', 'Adjustment', 'Add', 'Popup', 'AddAdjustmentPopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
+		<input type='button' value='Submit Request' onclick='Vixen.ValidateAdjustment.SubmitRequest()'></input>
+		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
+	</div>
+	<div style='float:none;clear:both'></div>
+</div>
+";
 
 		// define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);
