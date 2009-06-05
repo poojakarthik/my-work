@@ -31,14 +31,14 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 		//	1:	Add the operation Table
 		$strSQL = "	CREATE TABLE	operation
 					(
-						id				INTEGER			UNSIGNED	NOT NULL				COMMENT 'Unique Identifier',
-						name			VARCHAR(256)				NOT NULL				COMMENT 'Name',
-						description		VARCHAR(1024)				NULL					COMMENT 'Description',
-						system_name		VARCHAR(256)				NOT NULL				COMMENT 'System Name',
-						const_name		VARCHAR(512)				NOT NULL				COMMENT 'Constant Alias',
-						is_assignable	TINYINT						NOT NULL	DEFAULT 1	COMMENT '1: Can be assigned in Flex; 0: Cannot be assigned in Flex',
-						flex_module_id	BIGINT						NULL					COMMENT '(FK) Flex Module that contains this Operation',
-						status_id		BIGINT						NOT NULL				COMMENT '(FK) Status',
+						id				INTEGER			UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
+						name			VARCHAR(256)				NOT NULL					COMMENT 'Name',
+						description		VARCHAR(1024)				NULL						COMMENT 'Description',
+						system_name		VARCHAR(256)				NOT NULL					COMMENT 'System Name',
+						const_name		VARCHAR(512)				NOT NULL					COMMENT 'Constant Alias',
+						is_assignable	TINYINT						NOT NULL	DEFAULT 1		COMMENT '1: Can be assigned in Flex; 0: Cannot be assigned in Flex',
+						flex_module_id	BIGINT						NULL						COMMENT '(FK) Flex Module that contains this Operation',
+						status_id		BIGINT						NOT NULL					COMMENT '(FK) Status',
 						
 						CONSTRAINT	pk_operation_id				PRIMARY KEY (id),
 						CONSTRAINT	fk_operation_flex_module_id	FOREIGN KEY (flex_module_id)	REFERENCES flex_module(id)	ON UPDATE CASCADE	ON DELETE CASCADE,
@@ -55,9 +55,9 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 		//	2:	Add the operation_prerequisite Table
 		$strSQL = "	CREATE TABLE	operation_prerequisite
 					(
-						id							INTEGER			UNSIGNED	NOT NULL				COMMENT 'Unique Identifier',
-						operation_id				INTEGER			UNSIGNED	NOT NULL				COMMENT '(FK) Dependent Operation',
-						prerequisite_operation_id	INTEGER			UNSIGNED	NOT NULL				COMMENT '(FK) Prerequisite Operation',
+						id							INTEGER			UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
+						operation_id				INTEGER			UNSIGNED	NOT NULL					COMMENT '(FK) Dependent Operation',
+						prerequisite_operation_id	INTEGER			UNSIGNED	NOT NULL					COMMENT '(FK) Prerequisite Operation',
 						
 						CONSTRAINT	pk_operation_prerequisite_id						PRIMARY KEY (id),
 						CONSTRAINT	fk_operation_prerequisite_operation_id				FOREIGN KEY (operation_id)				REFERENCES operation(id)	ON UPDATE CASCADE	ON DELETE CASCADE,
@@ -74,10 +74,10 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 		//	3:	Add the operation_profile Table
 		$strSQL = "	CREATE TABLE	operation_profile
 					(
-						id				INTEGER			UNSIGNED	NOT NULL				COMMENT 'Unique Identifier',
-						name			VARCHAR(256)				NOT NULL				COMMENT 'Name',
-						description		VARCHAR(1024)				NULL					COMMENT 'Description',
-						status_id		BIGINT			UNSIGNED	NOT NULL				COMMENT '(FK) Status',
+						id				INTEGER			UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
+						name			VARCHAR(256)				NOT NULL					COMMENT 'Name',
+						description		VARCHAR(1024)				NULL						COMMENT 'Description',
+						status_id		BIGINT			UNSIGNED	NOT NULL					COMMENT '(FK) Status',
 						
 						CONSTRAINT	pk_operation_profile_id				PRIMARY KEY (id),
 						CONSTRAINT	fk_operation_profile_status_id		FOREIGN KEY (status_id)	REFERENCES status(id)	ON UPDATE CASCADE	ON DELETE CASCADE
@@ -93,9 +93,9 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 		//	4:	Add the operation_profile_children Table
 		$strSQL = "	CREATE TABLE	operation_profile_children
 					(
-						id							INTEGER			UNSIGNED	NOT NULL				COMMENT 'Unique Identifier',
-						parent_operation_profile_id	INTEGER			UNSIGNED	NOT NULL				COMMENT '(FK) Parent Operation Profile',
-						child_operation_profile_id	INTEGER			UNSIGNED	NOT NULL				COMMENT '(FK) Child Operation Profile',
+						id							INTEGER			UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
+						parent_operation_profile_id	INTEGER			UNSIGNED	NOT NULL					COMMENT '(FK) Parent Operation Profile',
+						child_operation_profile_id	INTEGER			UNSIGNED	NOT NULL					COMMENT '(FK) Child Operation Profile',
 						
 						CONSTRAINT	pk_operation_profile_children_id							PRIMARY KEY (id),
 						CONSTRAINT	fk_operation_profile_children_parent_operation_profile_id	FOREIGN KEY (parent_operation_profile_id)	REFERENCES operation_profile(id)	ON UPDATE CASCADE	ON DELETE CASCADE,
@@ -112,9 +112,9 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 		//	5:	Add the operation_profile_operation Table
 		$strSQL = "	CREATE TABLE	operation_profile_operation
 					(
-						id							INTEGER			UNSIGNED	NOT NULL				COMMENT 'Unique Identifier',
-						operation_profile_id		INTEGER			UNSIGNED	NOT NULL				COMMENT '(FK) Operation Profile',
-						operation_id				INTEGER			UNSIGNED	NOT NULL				COMMENT '(FK) Operation',
+						id							INTEGER			UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
+						operation_profile_id		INTEGER			UNSIGNED	NOT NULL					COMMENT '(FK) Operation Profile',
+						operation_id				INTEGER			UNSIGNED	NOT NULL					COMMENT '(FK) Operation',
 						
 						CONSTRAINT	pk_operation_profile_operation_id					PRIMARY KEY (id),
 						CONSTRAINT	fk_operation_profile_operation_operation_profile_id	FOREIGN KEY (operation_profile_id)	REFERENCES operation_profile(id)	ON UPDATE CASCADE	ON DELETE CASCADE,
@@ -131,7 +131,7 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 		//	6:	Add the employee_operation Table
 		$strSQL = "	CREATE TABLE	employee_operation
 					(
-						id							INTEGER			UNSIGNED	NOT NULL									COMMENT 'Unique Identifier',
+						id							INTEGER			UNSIGNED	NOT NULL	AUTO_INCREMENT					COMMENT 'Unique Identifier',
 						employee_id					BIGINT			UNSIGNED	NOT NULL									COMMENT '(FK) Employee',
 						operation_id				INTEGER			UNSIGNED	NOT NULL									COMMENT '(FK) Permitted Operation',
 						start_datetime				DATETIME					NOT NULL	DEFAULT '0000-00-00 00:00:00'	COMMENT 'Effective Start Datetime for this permission',
@@ -155,7 +155,7 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 		//	7:	Add the employee_operation_profile Table
 		$strSQL = "	CREATE TABLE	employee_operation_profile
 					(
-						id							INTEGER			UNSIGNED	NOT NULL									COMMENT 'Unique Identifier',
+						id							INTEGER			UNSIGNED	NOT NULL	AUTO_INCREMENT					COMMENT 'Unique Identifier',
 						employee_id					BIGINT			UNSIGNED	NOT NULL									COMMENT '(FK) Employee',
 						operation_profile_id		INTEGER			UNSIGNED	NOT NULL									COMMENT '(FK) Permitted Operation Profile',
 						start_datetime				DATETIME					NOT NULL	DEFAULT '0000-00-00 00:00:00'	COMMENT 'Effective Start Datetime for this permission',
@@ -179,7 +179,7 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 		//	8:	Add the employee_operation_log Table
 		$strSQL = "	CREATE TABLE	employee_operation_log
 					(
-						id							BIGINT			UNSIGNED	NOT NULL									COMMENT 'Unique Identifier',
+						id							BIGINT			UNSIGNED	NOT NULL	AUTO_INCREMENT					COMMENT 'Unique Identifier',
 						employee_id					BIGINT			UNSIGNED	NOT NULL									COMMENT '(FK) Employee',
 						operation_id				INTEGER			UNSIGNED	NOT NULL									COMMENT '(FK) Operation',
 						was_authorised				TINYINT						NOT NULL									COMMENT '1: Authorised; 0: Restricted',
@@ -197,7 +197,7 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 		//	9:	Add the employee_operation_log_account Table
 		$strSQL = "	CREATE TABLE	employee_operation_log_account
 					(
-						id							BIGINT			UNSIGNED	NOT NULL									COMMENT 'Unique Identifier',
+						id							BIGINT			UNSIGNED	NOT NULL		AUTO_INCREMENT				COMMENT 'Unique Identifier',
 						employee_operation_log_id	BIGINT			UNSIGNED	NOT NULL									COMMENT '(FK) Employee Operation Log',
 						account_id					BIGINT			UNSIGNED	NOT NULL									COMMENT '(FK) Account',
 						
@@ -216,7 +216,7 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 		//	10:	Add the employee_operation_log_service Table
 		$strSQL = "	CREATE TABLE	employee_operation_log_service
 					(
-						id							BIGINT			UNSIGNED	NOT NULL									COMMENT 'Unique Identifier',
+						id							BIGINT			UNSIGNED	NOT NULL		AUTO_INCREMENT				COMMENT 'Unique Identifier',
 						employee_operation_log_id	BIGINT			UNSIGNED	NOT NULL									COMMENT '(FK) Employee Operation Log',
 						service_id					BIGINT			UNSIGNED	NOT NULL									COMMENT '(FK) Service',
 						
