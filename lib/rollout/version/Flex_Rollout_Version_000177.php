@@ -184,7 +184,9 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 						operation_id				INTEGER			UNSIGNED	NOT NULL									COMMENT '(FK) Operation',
 						was_authorised				TINYINT						NOT NULL									COMMENT '1: Authorised; 0: Restricted',
 						operation_timestamp			TIMESTAMP					NOT NULL	DEFAULT	CURRENT_TIMESTAMP		COMMENT 'Timestamp of the Operation',
-						description					VARCHAR(1024)				NULL										COMMENT 'Description'
+						description					VARCHAR(1024)				NULL										COMMENT 'Description',
+						
+						CONSTRAINT	pk_employee_operation_log_id	PRIMARY KEY (id)
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
