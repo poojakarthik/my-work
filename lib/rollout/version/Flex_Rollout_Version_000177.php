@@ -224,7 +224,7 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 						
 						CONSTRAINT	pk_employee_operation_log_service_id						PRIMARY KEY (id),
 						CONSTRAINT	fk_employee_operation_log_service_employee_operation_log_id	FOREIGN KEY (employee_operation_log_id)	REFERENCES employee_operation_log(id)	ON UPDATE CASCADE	ON DELETE CASCADE,
-						CONSTRAINT	fk_employee_operation_log_service_employee_service_id		FOREIGN KEY (account_id)				REFERENCES Service(Id)					ON UPDATE CASCADE	ON DELETE CASCADE)
+						CONSTRAINT	fk_employee_operation_log_service_employee_service_id		FOREIGN KEY (service_id)				REFERENCES Service(Id)					ON UPDATE CASCADE	ON DELETE CASCADE)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
