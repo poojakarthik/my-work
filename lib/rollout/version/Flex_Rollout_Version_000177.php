@@ -37,8 +37,8 @@ class Flex_Rollout_Version_000177 extends Flex_Rollout_Version
 						system_name		VARCHAR(256)				NOT NULL					COMMENT 'System Name',
 						const_name		VARCHAR(512)				NOT NULL					COMMENT 'Constant Alias',
 						is_assignable	TINYINT						NOT NULL	DEFAULT 1		COMMENT '1: Can be assigned in Flex; 0: Cannot be assigned in Flex',
-						flex_module_id	BIGINT						NULL						COMMENT '(FK) Flex Module that contains this Operation',
-						status_id		BIGINT						NOT NULL					COMMENT '(FK) Status',
+						flex_module_id	BIGINT			UNSIGNED	NULL						COMMENT '(FK) Flex Module that contains this Operation',
+						status_id		BIGINT			UNSIGNED	NOT NULL					COMMENT '(FK) Status',
 						
 						CONSTRAINT	pk_operation_id				PRIMARY KEY (id),
 						CONSTRAINT	fk_operation_flex_module_id	FOREIGN KEY (flex_module_id)	REFERENCES flex_module(id)	ON UPDATE CASCADE	ON DELETE CASCADE,
