@@ -34,6 +34,8 @@ class Employee
 	private $privileges		= NULL;
 	private $archived		= NULL;
 	private $userRoleId		= NULL;
+	
+	protected	$_arrOperations;
 
 	//------------------------------------------------------------------------//
 	// __construct
@@ -199,6 +201,44 @@ class Employee
 			$arrEmployees[$arrRecord['id']] = new self($arrRecord);
 		}
 		return $arrEmployees;
+	}
+	
+	public function getPermittedOperations()
+	{
+		static	$selOperationProfileIds;
+		static	$selOperationIds;
+		
+		if (!isset($this->_arrOperations))
+		{
+			// Calculate a list of all atomic Operations this profile includes
+			$strEffectiveDatetime	= Data_Source_Time::currentTimestamp();
+			$this->_arrOperations	= array();
+			
+			// Get Sub-Profiles
+			$selOperationProfileIds	= ($selOperationProfileIds) ? $selOperationProfileIds : new StatementSelect("employee_operation_profile", "operation_profile_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime");
+			if ($selOperationProfileIds->Execute($this->toArray()) === false)
+			{
+				throw new Exception($selOperationProfileIds->Error());
+			}
+			while ($arrOperationProfileId = $selOperationProfileIds->Fetch())
+			{
+				// Get the Operations for this Sub-Profile & merge with current list
+				$this->_arrOperations	= array_merge($this->_arrOperations, Operation_Profile::getForId($arrOperationProfileId['operation_profile_id'])->getOperations());
+			}
+			
+			// Get Direct Operations
+			$selOperationIds	= ($selOperationIds) ? $selOperationIds : new StatementSelect("employee_operation", "operation_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime");
+			if ($selOperationIds->Execute($this->toArray()) === false)
+			{
+				throw new Exception($selOperationIds->Error());
+			}
+			while ($arrOperationId = $selOperationIds->Fetch())
+			{
+				// Add this Operation to the list
+				$this->_arrOperations[$arrOperationId['operation_id']]	= Operation::getForId($arrOperationId['operation_id']);
+			}
+		}
+		return $this->_arrOperations;
 	}
 	
 	//------------------------------------------------------------------------//
