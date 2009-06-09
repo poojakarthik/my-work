@@ -4,6 +4,7 @@ class HtmlTemplate_Developer_Console extends FlexHtmlTemplate
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
+		$this->LoadJavascript('developer_operationpermission');
 	}
 
 	public function Render()

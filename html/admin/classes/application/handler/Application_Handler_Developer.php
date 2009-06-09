@@ -18,7 +18,7 @@ class Application_Handler_Developer extends Application_Handler
 														array	(
 																	'strName'	=> 'Operation-based Permission Tests',
 																	'strType'	=> self::URL_TYPE_JS,
-																	'strURL'	=> 'new Flex_Developer_OperationPermission()'
+																	'strURL'	=> 'new Developer_OperationPermission()'
 																)
 													);
 			
