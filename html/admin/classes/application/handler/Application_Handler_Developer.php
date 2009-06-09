@@ -1,0 +1,50 @@
+<?php
+class Application_Handler_Developer extends Application_Handler
+{
+	const	URL_TYPE_JS		= 'onclick';
+	const	URL_TYPE_HREF	= 'href';
+	
+	// View the Developer Page
+	public function ViewList($subPath)
+	{
+		$bolIsGOD	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+		
+		try
+		{
+			// Build list of Developer Functions
+			$arrFunctions	= array();
+			
+			$arrFunctions[]	= self::_stdClassFactory(
+														array	(
+																	'strName'	=> 'Operation-based Permission Tests',
+																	'strType'	=> self::URL_TYPE_JS,
+																	'strURL'	=> 'new Flex_Developer_OperationPermission()'
+																)
+													);
+			
+			$arrDetailsToRender = array();
+			$arrDetailsToRender['arrFunctions']		= $arrFunctions;
+			
+			$this->LoadPage('developer_console', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+		}
+		catch (Exception $e)
+		{
+			$arrDetailsToRender['Message']		= "An error occured";
+			$arrDetailsToRender['ErrorMessage']	= $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+		}
+	}
+	
+	protected static function _stdClassFactory($arrProperties)
+	{
+		$objStdClass	= new stdClass();
+		
+		foreach ($arrProperties as $strName=>$mixValue)
+		{
+			$objStdClass->{$strName}	= $mixValue;
+		}
+		
+		return $objStdClass;
+	}
+}
+?>

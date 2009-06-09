@@ -691,12 +691,14 @@ class Page
 			$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='tickets' $strSelected>Tickets</option>";
 		}
 		
+		$strDeveloperToolsLink	= (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? "| <a onclick='../admin/reflex.php/Developer/ViewList/' >Developer Tools</a>" : '';
 		
 		$mixKbAdmin = NULL;
 		// The default menu links.
 		$mixMenuLinks = "
 		Logged in as: $strUserName
 		| <a onclick='$strUserPreferencesLink' >Preferences</a>
+		{$strDeveloperToolsLink}
 		| <a onclick='Vixen.Logout();'>Logout</a>";
 
 		// Check kb permissions and check that the Knowledge Base module is active
@@ -723,6 +725,7 @@ class Page
 			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\" />
 			| <a onclick=\"redirectOutput(this); var elemform = getElementById('kbform'); elemform.submit();\">Knowledge Base</a>	
 			| <a onclick='$strUserPreferencesLink' >Preferences</a>
+			{$strDeveloperToolsLink}
 			| <a onclick='Vixen.Logout();'>Logout</a>
 			</form>";
 		}
