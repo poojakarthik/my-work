@@ -17,7 +17,7 @@ class HtmlTemplate_Developer_Console extends FlexHtmlTemplate
 			foreach ($arrFunctions as $objFunction)
 			{
 				$strURL	= str_replace("'", "\\'", $objFunction->strURL);
-				echo "\n	<li><a {$objFunction->strType}='{$strURL}'></a>{$objFunction->strName}</li>";
+				echo "\n	<li><a {$objFunction->strType}='{$strURL}'>{$objFunction->strName}</a></li>";
 			}
 			
 			echo "
