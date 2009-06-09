@@ -691,7 +691,7 @@ class Page
 			$strCategoryOptions .= "\n\t\t\t\t\t\t\t<option value='tickets' $strSelected>Tickets</option>";
 		}
 		
-		$strDeveloperToolsLink	= (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? "| <a onclick='../admin/reflex.php/Developer/ViewList/' >Developer Tools</a>" : '';
+		$strDeveloperToolsLink	= (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? "| <a href='../admin/reflex.php/Developer/ViewList/' >Developer Tools</a>" : '';
 		
 		$mixKbAdmin = NULL;
 		// The default menu links.
