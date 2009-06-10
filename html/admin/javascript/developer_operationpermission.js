@@ -123,7 +123,8 @@ Developer_OperationPermission.outputFieldFactory	= function(strLabel, domOutputE
 	
 	objTR.domElement		= document.createElement('tr');
 	
-	objTR.objTH.domElement	= document.createElement('th');
+	objTR.objTH.domElement				= document.createElement('th');
+	objTR.objTH.domElement.innerHTML	= strLabel;
 	objTR.domElement.appendChild(objTR.objTH.domElement);
 	
 	objTR.objTD.domElement	= document.createElement('td');
