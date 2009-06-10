@@ -122,6 +122,9 @@ class Operation_Profile extends ORM_Cached
 				case 'selById':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "name ASC");
+					break;
 				case 'selSubProfileIds':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("operation_profile_children", "*", "parent_operation_profile_id = <id>");
 					break;

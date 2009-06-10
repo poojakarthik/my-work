@@ -13,7 +13,8 @@
  */
 class ORM_Enumerated_Example extends ORM_Enumerated
 {	
-	protected $_strTableName = "insert_table_name_here";
+	protected 			$_strTableName			= "insert_table_name_here";
+	protected static	$_strStaticTableName	= "insert_table_name_here";
 	
 	protected static function getCacheName()
 	{
@@ -95,20 +96,20 @@ class ORM_Enumerated_Example extends ORM_Enumerated
 			{
 				// SELECTS
 				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("insert_table_name_here", "*", "id = <Id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
 				case 'selAll':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("insert_table_name_here", "*", "", "name ASC");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "name ASC");
 					break;
 				
 				// INSERTS
 				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert("insert_table_name_here");
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
 				
 				// UPDATE BY IDS
 				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("insert_table_name_here");
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
 				
 				// UPDATES
