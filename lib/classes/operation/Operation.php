@@ -11,9 +11,12 @@ class Operation extends ORM_Enumerated
 	protected			$_strTableName 			= "operation";
 	protected static	$_strStaticTableName	= "operation";
 	
-	public static function userHasPermission($intOperation)
+	public static function userHasPermission($intOperation, $intEmployeeId=null)
 	{
+		$intEmployeeId	= ((int)$intEmployeeId >= 0) ? (int)$intEmployeeId : Flex::getUserId();
+		
 		// If the user is GOD, then it trumps all permission settings
+		$objEmployee	= Employee::getForId(Flex::getUserId());
 		if ($objEmployee->is_god)
 		{
 			return true;
@@ -21,19 +24,21 @@ class Operation extends ORM_Enumerated
 		else
 		{
 			// Do we have authorisation?
-			return array_key_exists($intOperation, Employee::getForId(Flex::getUserId())->getPermittedOperations());
+			return array_key_exists($intOperation, $objEmployee->getPermittedOperations());
 		}
 	}
 	
-	public static function assertPermission($intOperation, $bolLogOnErrorsOnly=false)
+	public static function assertPermission($intOperation, $bolLogOnErrorsOnly=false, $intEmployeeId=null)
 	{
+		$intEmployeeId	= ((int)$intEmployeeId >= 0) ? (int)$intEmployeeId : Flex::getUserId();
+		
 		$objOperation	= self::getForId($intOperation);
 		
 		// Do we have permission?
-		$bolHasPermission	= self::userHasPermission($intOperation);
+		$bolHasPermission	= self::userHasPermission($intOperation, $intEmployeeId);
 		
 		$objEmployeeOperationLog					= new Employee_Operation_Log();
-		$objEmployeeOperationLog->employee_id		= Flex::getUserId();
+		$objEmployeeOperationLog->employee_id		= $intEmployeeId;
 		$objEmployeeOperationLog->operation_id		= $intOperation;
 		$objEmployeeOperationLog->was_authorised	= (int)$bolHasPermission;
 		

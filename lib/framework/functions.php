@@ -5805,5 +5805,26 @@ function CreateDefaultPaymentTerms($customerGroupId)
 		}
 		return $arrKeyedArray;
 	}
+	
+	function objectifyArray($arrArray)
+	{
+		$objObjectified	= new stdClass();
+		foreach ($arrArray as $strField=>$mixValue)
+		{
+			if (isValidPHPVariableName($strField))
+			{
+				$objObjectified->{$strField}	= $mixValue;
+			}
+			else
+			{
+				throw new Exception("'{$strField}' is not a valid PHP variable name (ref: http://php.net/manual/en/language.variables.basics.php)");
+			}
+		}
+	}
+	
+	function isValidPHPVariableName($strVariableName)
+	{
+		return (strtolower($strVariableName) !== 'this' && preg_match("/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/", $strVariableName));
+	}
 
 ?>
