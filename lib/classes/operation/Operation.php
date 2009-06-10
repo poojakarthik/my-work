@@ -16,13 +16,15 @@ class Operation extends ORM_Enumerated
 		$intEmployeeId	= ((int)$intEmployeeId >= 0) ? (int)$intEmployeeId : Flex::getUserId();
 		
 		// If the user is GOD, then it trumps all permission settings
-		$objEmployee	= Employee::getForId(Flex::getUserId());
+		$objEmployee	= Employee::getForId($intEmployeeId);
 		if ($objEmployee->is_god)
 		{
+			Log::getLog()->log("User is GOD");
 			return true;
 		}
 		else
 		{
+			Log::getLog()->log("User is MORTAL -- checking permissions...");
 			// Do we have authorisation?
 			return array_key_exists($intOperation, $objEmployee->getPermittedOperations());
 		}
