@@ -139,11 +139,15 @@ Developer_OperationPermission.outputFieldFactory	= function(strLabel, domOutputE
 	
 	objTR.domElement		= document.createElement('tr');
 	
-	objTR.objTH.domElement				= document.createElement('th');
-	objTR.objTH.domElement.innerHTML	= strLabel;
+	objTR.objTH.domElement						= document.createElement('th');
+	objTR.objTH.domElement.innerHTML			= strLabel;
+	objTR.objTH.domElement.style.verticalAlign	= 'top';
+	objTR.objTH.domElement.style.textAlign		= 'left';
 	objTR.domElement.appendChild(objTR.objTH.domElement);
 	
 	objTR.objTD.domElement	= document.createElement('td');
+	objTR.objTD.domElement.style.verticalAlign	= 'top';
+	objTR.objTD.domElement.style.textAlign		= 'left';
 	objTR.domElement.appendChild(objTR.objTD.domElement);
 	
 	objTR.objTD.objOutputDIV.domElement	= document.createElement('div');
