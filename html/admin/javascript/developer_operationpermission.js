@@ -58,6 +58,7 @@ var Developer_OperationPermission	= Class.create
 				{
 					objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.selectedIndex	= i;
 					domEmployeeOption.style.color												= '#2861E6';
+					domEmployeeOption.style.fontWeight											= 'bold';
 				}
 			}
 			
