@@ -34,6 +34,7 @@ class Employee
 	private $privileges		= NULL;
 	private $archived		= NULL;
 	private $userRoleId		= NULL;
+	private $isGod			= NULL;
 	
 	protected	$_arrOperations;
 
@@ -275,6 +276,7 @@ class Employee
 						"privileges"	=> "Privileges",
 						"archived"		=> "Archived",
 						"userRoleId"	=> "user_role_id",
+						"isGod"			=> "is_god",
 					);
 	}
 

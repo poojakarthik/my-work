@@ -17,7 +17,7 @@ class Operation extends ORM_Enumerated
 		
 		// If the user is GOD, then it trumps all permission settings
 		$objEmployee	= Employee::getForId($intEmployeeId);
-		if ($objEmployee->is_god)
+		if ($objEmployee->isGod)
 		{
 			Log::getLog()->log("User is GOD");
 			return true;
