@@ -49,10 +49,10 @@ var Developer_OperationPermission	= Class.create
 			
 			for (i = 0; i < objResponse.arrEmployees.length; i++)
 			{
-				objEmployeeOption			= document.createElement('option');
-				objEmployeeOption.value		= objResponse.arrEmployees[i].Id;
-				objEmployeeOption.innerHTML	= objResponse.arrEmployees[i].FirstName + ' ' + objResponse.arrEmployees[i].LastName;
-				objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeSELECT.domElement);
+				domEmployeeOption			= document.createElement('option');
+				domEmployeeOption.value		= objResponse.arrEmployees[i].Id;
+				domEmployeeOption.innerHTML	= objResponse.arrEmployees[i].FirstName + ' ' + objResponse.arrEmployees[i].LastName;
+				objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.appendChild(domEmployeeOption);
 				
 				objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.selectedIndex	= (objResponse.arrEmployees[i].Id == objResponse.intCurrentEmployeeId) ? i : objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.selectedIndex;
 			}
