@@ -10,19 +10,19 @@ var Developer_OperationPermission	= Class.create
 		this._pupPopup	= new Reflex_Popup(35);
 		
 		this._pupPopup.setTitle("Operation Permissions Test");
-		this._pupPopup.addCloseButton();
+		this._pupPopup.addCloseButton(this.close.bindAsEventListener(this));
 		
-		domPopupSubmitButton		= document.createElement('input');
-		domPopupSubmitButton.type	= 'button';
-		domPopupSubmitButton.value	= 'Test!';
-		domPopupSubmitButton.setAttribute('onclick', this._submit.bind(this));
+		this.domPopupSubmitButton		= document.createElement('input');
+		this.domPopupSubmitButton.type	= 'button';
+		this.domPopupSubmitButton.value	= 'Test!';
+		this.domPopupCloseButton.addEventListener('click', this._submit.bindAsEventListener(this), false);
 		
-		domPopupCloseButton			= document.createElement('input');
-		domPopupCloseButton.type	= 'button';
-		domPopupCloseButton.value	= 'Close';
-		domPopupCloseButton.setAttribute('onclick', this._pupPopup.hide.bind(this._pupPopup));
+		this.domPopupCloseButton		= document.createElement('input');
+		this.domPopupCloseButton.type	= 'button';
+		this.domPopupCloseButton.value	= 'Close';
+		this.domPopupCloseButton.addEventListener('click', this.close.bindAsEventListener(this), false);
 		
-		this._pupPopup.setFooterButtons([domPopupSubmitButton, domPopupCloseButton], true);
+		this._pupPopup.setFooterButtons([this.domPopupSubmitButton, this.domPopupCloseButton], true);
 		
 		this._buildPopup();
 	},
@@ -30,6 +30,19 @@ var Developer_OperationPermission	= Class.create
 	_submit			: function()
 	{
 		alert("Submitting");
+	},
+	
+	close			: function()
+	{
+		// Remove Event Listeners
+		this.domPopupCloseButton.removeEventListener('click', this._submit.bindAsEventListener(this), false);
+		this.domPopupCloseButton.removeEventListener('click', this.close.bindAsEventListener(this), false);
+		
+		// Kill Popup (as much as we can)
+		this._pupPopup.setContent('');
+		this._pupPopup.hide();
+		
+		return true;
 	},
 	
 	_buildPopup		: function(objResponse)
