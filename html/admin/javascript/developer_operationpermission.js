@@ -47,8 +47,9 @@ var Developer_OperationPermission	= Class.create
 			//----------------------------------------------------------------//
 			
 			// Build Input Element
-			domEmployeeSelect		= document.createElement('select');
-			domEmployeeSelect.name	= 'employee_id';
+			domEmployeeSelect				= document.createElement('select');
+			domEmployeeSelect.name			= 'employee_id';
+			domEmployeeSelect.style.width	= '100%';
 			
 			for (i = 0; i < objResponse.arrEmployees.length; i++)
 			{
@@ -76,8 +77,9 @@ var Developer_OperationPermission	= Class.create
 			//----------------------------------------------------------------//
 
 			// Build Input Element
-			domOperationSelect		= document.createElement('select');
-			domOperationSelect.name	= 'operation_id';
+			domOperationSelect				= document.createElement('select');
+			domOperationSelect.name			= 'operation_id';
+			domOperationSelect.style.width	= '100%';
 			
 			for (i = 0; i < objResponse.arrOperations.length; i++)
 			{
