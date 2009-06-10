@@ -15,7 +15,7 @@ var Developer_OperationPermission	= Class.create
 		this.domPopupSubmitButton		= document.createElement('input');
 		this.domPopupSubmitButton.type	= 'button';
 		this.domPopupSubmitButton.value	= 'Test!';
-		this.domPopupSubmitButton.addEventListener('click', this._submit.bindAsEventListener(this), false);
+		this.domPopupSubmitButton.addEventListener('click', this.submit.bindAsEventListener(this), false);
 		
 		this.domPopupCloseButton		= document.createElement('input');
 		this.domPopupCloseButton.type	= 'button';
@@ -27,15 +27,29 @@ var Developer_OperationPermission	= Class.create
 		this._buildPopup();
 	},
 	
-	_submit			: function()
+	submit			: function(objResponse)
 	{
-		alert("Submitting");
+		if (objResponse != undefined)
+		{
+			// Handle Response
+			$Alert("User does " + (objResponse.bolHasPermission ? '' : 'not ') + "have permission to access this functionality.");
+		}
+		else
+		{
+			var intEmployeeId	= this._objPage.objTable.objEmployeeTR.objTD.objOutputDIV.objOutput.value;
+			var intOperationId	= this._objPage.objTable.objOperationTR.objTD.objOutputDIV.objOutput.value;
+
+			Vixen.Popup.ShowPageLoadingSplash("Authenticating...", null, null, null, 1);
+			
+			var fncJsonFunc		= jQuery.json.jsonFunction(Developer_OperationPermission._handleResponse.curry(this.submit.bind(this)), null, 'Developer_Permissions', 'userHasPermission');
+			fncJsonFunc(intOperationId, intEmployeeId);
+		}
 	},
 	
 	close			: function()
 	{
 		// Remove Event Listeners
-		this.domPopupSubmitButton.removeEventListener('click', this._submit.bindAsEventListener(this), false);
+		this.domPopupSubmitButton.removeEventListener('click', this.submit.bindAsEventListener(this), false);
 		this.domPopupCloseButton.removeEventListener('click', this.close.bindAsEventListener(this), false);
 		
 		// Kill Popup (as much as we can)
@@ -60,9 +74,9 @@ var Developer_OperationPermission	= Class.create
 			//alert("Drawing Popup");
 			
 			// Containing DIV
-			objPage				= {};
+			var objPage			= {};
 			objPage.domElement	= document.createElement('div');
-
+			
 			//----------------------------------------------------------------//
 			// Table
 			//----------------------------------------------------------------//
@@ -77,13 +91,13 @@ var Developer_OperationPermission	= Class.create
 			//----------------------------------------------------------------//
 			
 			// Build Input Element
-			domEmployeeSelect				= document.createElement('select');
+			var domEmployeeSelect			= document.createElement('select');
 			domEmployeeSelect.name			= 'employee_id';
 			domEmployeeSelect.style.width	= '100%';
 			
 			for (i = 0; i < objResponse.arrEmployees.length; i++)
 			{
-				domEmployeeOption			= document.createElement('option');
+				var domEmployeeOption		= document.createElement('option');
 				domEmployeeOption.value		= objResponse.arrEmployees[i].Id;
 				domEmployeeOption.innerHTML	= objResponse.arrEmployees[i].FirstName + ' ' + objResponse.arrEmployees[i].LastName;
 				domEmployeeSelect.appendChild(domEmployeeOption);
@@ -107,13 +121,13 @@ var Developer_OperationPermission	= Class.create
 			//----------------------------------------------------------------//
 
 			// Build Input Element
-			domOperationSelect				= document.createElement('select');
+			var domOperationSelect			= document.createElement('select');
 			domOperationSelect.name			= 'operation_id';
 			domOperationSelect.style.width	= '100%';
 			
 			for (i = 0; i < objResponse.arrOperations.length; i++)
 			{
-				domOperationOption				= document.createElement('option');
+				var domOperationOption			= document.createElement('option');
 				domOperationOption.value		= objResponse.arrOperations[i].id;
 				domOperationOption.innerHTML	= objResponse.arrOperations[i].name;
 				domOperationSelect.appendChild(domOperationOption);
@@ -137,6 +151,8 @@ var Developer_OperationPermission	= Class.create
 // Static Methods
 Developer_OperationPermission._handleResponse	= function(fncCallback, objResponse)
 {
+	Vixen.Popup.ClosePageLoadingSplash();
+	
 	//alert(objResponse);
 	//alert(fncCallback);
 	if (objResponse)
@@ -162,7 +178,7 @@ Developer_OperationPermission._handleResponse	= function(fncCallback, objRespons
 
 Developer_OperationPermission.outputFieldFactory	= function(strLabel, domOutputElement, strDescription)
 {
-	objTR								= {};
+	var objTR							= {};
 	objTR.objTH							= {};
 	objTR.objTD							= {};
 	objTR.objTD.objOutputDIV			= {};
