@@ -147,7 +147,7 @@ Developer_OperationPermission.outputFieldFactory	= function(strLabel, domOutputE
 	
 	objTR.objTD.domElement	= document.createElement('td');
 	objTR.objTD.domElement.style.verticalAlign	= 'top';
-	objTR.objTD.domElement.style.textAlign		= 'right';
+	objTR.objTD.domElement.style.textAlign		= 'left';
 	objTR.domElement.appendChild(objTR.objTD.domElement);
 	
 	objTR.objTD.objOutputDIV.domElement	= document.createElement('div');
