@@ -57,7 +57,7 @@ var Developer_OperationPermission	= Class.create
 				if (objResponse.arrEmployees[i].Id == objResponse.intCurrentEmployeeId)
 				{
 					objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.selectedIndex	= i;
-					objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.style.color		= '#2861E6';
+					domEmployeeOption.style.color												= '#2861E6';
 				}
 			}
 			
