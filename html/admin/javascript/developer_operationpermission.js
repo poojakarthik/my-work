@@ -20,7 +20,7 @@ var Developer_OperationPermission	= Class.create
 		domPopupCloseButton			= document.createElement('input');
 		domPopupCloseButton.type	= 'button';
 		domPopupCloseButton.value	= 'Close';
-		domPopupCloseButton.setAttribute('onclick', this._pupPopup.close.bind(this._pupPopup));
+		domPopupCloseButton.setAttribute('onclick', this._pupPopup.hide.bind(this._pupPopup));
 		
 		this._pupPopup.setFooterButtons([domPopupSubmitButton, domPopupCloseButton]);
 		
