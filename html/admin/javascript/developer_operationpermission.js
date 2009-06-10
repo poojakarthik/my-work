@@ -76,7 +76,7 @@ Developer_OperationPermission._handleResponse	= function(objResponse, fncCallbac
 	{
 		if (objResponse.Success)
 		{
-			fncCallback();
+			fncCallback(objResponse);
 			return true;
 		}
 		else if (objResponse.Message)
