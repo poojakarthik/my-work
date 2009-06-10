@@ -32,51 +32,42 @@ var Developer_OperationPermission	= Class.create
 			// Containing DIV
 			objPage				= {};
 			objPage.domElement	= document.createElement('div');
-			
+
+			//----------------------------------------------------------------//
 			// Table
+			//----------------------------------------------------------------//
 			objPage.objTable			= {};
 			objPage.objTable.domElement	= document.createElement('table');
 			objPage.domElement.appendChild(objPage.objTable.domElement);
+			//----------------------------------------------------------------//
 			
+			//----------------------------------------------------------------//
 			// Employee
-			objPage.objTable.objEmployeeTR				= {};
-			objPage.objTable.objEmployeeTR.domElement	= document.createElement('tr');
-			objPage.objTable.domElement.appendChild(objPage.objTable.objEmployeeTR.domElement);
+			//----------------------------------------------------------------//
 			
-			objPage.objTable.objEmployeeTR.objEmployeeTH			= {};
-			objPage.objTable.objEmployeeTR.objEmployeeTH.domElement	= document.createElement('th');
-			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTR.objEmployeeTH.domElement);
-			
-			objPage.objTable.objEmployeeTR.objEmployeeTD			= {};
-			objPage.objTable.objEmployeeTR.objEmployeeTD.domElement	= document.createElement('td');
-			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTR.objEmployeeTD.domElement);
-			
-			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT				= {};
-			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT.domElement	= document.createElement('select');
-			objPage.objTable.objEmployeeTR.objEmployeeTD.domElement.appendChild(objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT.domElement);
-			
-			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION								= {};
-			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION.domElement					= document.createElement('span');
-			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION.domElement.style.color		= "#aaa";
-			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION.domElement.style.fontStyle	= "italic";
-			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION.domElement.innerHTML		= "Employee to check permissions for";
-			objPage.objTable.objEmployeeTR.objEmployeeTD.domElement.appendChild(objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION.domElement);
+			// Build Input Element
+			domEmployeeSelect		= document.createElement('select');
+			domEmployeeSelect.name	= 'employee_id';
 			
 			for (i = 0; i < objResponse.arrEmployees.length; i++)
 			{
 				domEmployeeOption			= document.createElement('option');
 				domEmployeeOption.value		= objResponse.arrEmployees[i].Id;
 				domEmployeeOption.innerHTML	= objResponse.arrEmployees[i].FirstName + ' ' + objResponse.arrEmployees[i].LastName;
-				objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT.domElement.appendChild(domEmployeeOption);
+				domEmployeeSelect.appendChild(domEmployeeOption);
 				
 				if (objResponse.arrEmployees[i].Id == objResponse.intCurrentEmployeeId)
 				{
-					objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT.domElement.selectedIndex	= i;
+					domEmployeeSelect.selectedIndex	= i;
 					
 					domEmployeeOption.style.color		= '#2861E6';
 					domEmployeeOption.style.fontWeight	= 'bold';
 				}
 			}
+			
+			// Build TR
+			objPage.objTable.objEmployeeTR	= Developer_OperationPermission.outputFieldFactory('Employee', domEmployeeSelect, "Employee to test permission against");
+			//----------------------------------------------------------------//
 			
 			// Operation Profile
 			// TODO
@@ -118,4 +109,39 @@ Developer_OperationPermission._handleResponse	= function(fncCallback, objRespons
 		$Alert(objResponse);
 		return false;
 	}
+}
+
+Developer_OperationPermission.outputFieldFactory	= function(strLabel, domOutputElement, strDescription)
+{
+	objTR								= {};
+	objTR.objTH							= {};
+	objTR.objTD							= {};
+	objTR.objTD.objOutputDIV			= {};
+	objTR.objTD.objOutputDIV.objOutput	= {};
+	objTR.objTD.objDescription			= {};
+	
+	objTR.domElement		= document.createElement('tr');
+	
+	objTR.objTH.domElement	= document.createElement('th');
+	objTR.domElement.appendChild(objTR.objTH.domElement);
+	
+	objTR.objTD.domElement	= document.createElement('td');
+	objTR.domElement.appendChild(objTR.objTD.domElement);
+	
+	objTR.objTD.objOutputDIV.domElement	= document.createElement('div');
+	objTR.objTD.domElement.appendChild(objTR.objTD.objOutputDIV.domElement);
+	
+	objTR.objTD.objOutputDIV.objOutput.domElement	= domOutputElement;
+	objTR.objTD.domElement.appendChild(objTR.objTD.objOutputDIV.objOutput.domElement);
+	
+	if (strDescription != undefined)
+	{
+		objTR.objTD.objDescription.domElement						= document.createElement('div')
+		objTR.objTD.objDescription.domElement.style.color			= "#666";
+		objTR.objTD.objDescription.domElement.style.fontStyle		= "italic";
+		objTR.objTD.objDescription.domElement.domElement.innerHTML	= strDescription;
+		objTR.objTD.domElement.appendChild(objTR.objTD.objDescription.domElement);
+	}
+	
+	return objTR;
 }
