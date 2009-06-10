@@ -30,18 +30,21 @@ var Developer_OperationPermission	= Class.create
 			alert("Drawing Popup");
 			
 			// Containing DIV
-			objPage	= {};
+			objPage				= {};
 			objPage.domElement	= document.createElement('div');
 			
 			// Table
+			objPage.objTable			= {};
 			objPage.objTable.domElement	= document.createElement('table');
 			objPage.domElement.appendChild(objPage.objTable.domElement);
 			
 			// Employee
+			objPage.objTable.objEmployeeTR				= {};
 			objPage.objTable.objEmployeeTR.domElement	= document.createElement('tr');
 			objPage.objTable.domElement.appendChild(objPage.objTable.objEmployeeTR.domElement);
 			
-			objPage.objTable.objEmployeeSELECT.domElement	= document.createElement('select');
+			objPage.objTable.objEmployeeTR.objEmployeeSELECT			= {};
+			objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement	= document.createElement('select');
 			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeSELECT.domElement);
 			
 			for (i = 0; i < objResponse.arrEmployees.length; i++)
