@@ -15,7 +15,7 @@ var Developer_OperationPermission	= Class.create
 		this.domPopupSubmitButton		= document.createElement('input');
 		this.domPopupSubmitButton.type	= 'button';
 		this.domPopupSubmitButton.value	= 'Test!';
-		this.domPopupSubmitButton.addEventListener('click', this.submit.bindAsEventListener(this), false);
+		this.domPopupSubmitButton.addEventListener('click', this.submit.bind(this), false);
 		
 		this.domPopupCloseButton		= document.createElement('input');
 		this.domPopupCloseButton.type	= 'button';
@@ -38,7 +38,7 @@ var Developer_OperationPermission	= Class.create
 		{
 			var intEmployeeId	= this._objPage.objTable.objEmployeeTR.objTD.objOutputDIV.objOutput.value;
 			var intOperationId	= this._objPage.objTable.objOperationTR.objTD.objOutputDIV.objOutput.value;
-
+			
 			Vixen.Popup.ShowPageLoadingSplash("Authenticating...", null, null, null, 1);
 			
 			var fncJsonFunc		= jQuery.json.jsonFunction(Developer_OperationPermission._handleResponse.curry(this.submit.bind(this)), null, 'Developer_Permissions', 'userHasPermission');
