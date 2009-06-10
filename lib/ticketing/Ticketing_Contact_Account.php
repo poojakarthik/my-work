@@ -50,39 +50,28 @@ class Ticketing_Contact_Account
 			}
 		}
 
-		// If the contact was passed as a ticket, we need to ensure that all of the ticket
-		// correspondences are associated with the ticket account
+		// If the contact was passed as a ticket, we need to ensure that each contact referenced in the correspondance items
+		// are now associated with the ticket account
 		if ($mixContact instanceof Ticketing_Ticket)
 		{
-			$arrColumns = array('account_id' => 't.account_id', 'contact_id' => 'c.contact_id');
+			$arrColumns = array('contact_id');
 
-			$strTables = "
-					ticketing_ticket t
-					JOIN ticketing_correspondance c
-					ON t.id = c.ticket_id
-					LEFT OUTER JOIN ticketing_contact_account a
-					ON t.account_id = a.account_id
-					AND c.id = a.ticketing_contact_id
-			";
+			$strTable = "ticketing_correspondance";
 
-			$strWhere = "
-					t.id = <TICKETID>
-					and t.account_id IS NOT NULL 
-					and a.id IS NULL
-			";
+			$strWhere = "ticket_id = <TicketId> AND contact_id NOT IN (SELECT ticketing_contact_id FROM ticketing_contact_account WHERE account_id = <AccountId>)";
 
-			$arrWhere = array('TICKETID' => intval($mixContact->id));
+			$arrWhere = array(	'TicketId'	=> intval($mixContact->id),
+								'AccountId'	=> intval($accountId)
+								);
 
-			$strGroupBy = " t.account_id, c.contact_id ";
-
-			$selUnassociated = new StatementSelect($strTables, $arrColumns, $strWhere, "", "", $strGroupBy);
+			$selUnassociated = new StatementSelect($strTable, $arrColumns, $strWhere);
 			if (($mixReturn = $selUnassociated->Execute($arrWhere)) === FALSE)
 			{
 				throw new Exception('Failed to check for contacts unassociated with accounts: ' . $selUnassociated->Error());
 			}
 			while ($row = $selUnassociated->Fetch())
 			{
-				self::associate($row['contact_id'], $row['account_id']);
+				self::associate($row['contact_id'], $accountId);
 			}
 		}
 
