@@ -297,14 +297,14 @@ abstract class ORM_Cached extends ORM
 	/**
 	 * getAll
 	 *
-	 * Retreives all the objects comprising the Enumerated Type
+	 * Retreives all the objects comprising the Cached Type
 	 * 
 	 * @param	bool	[ $bolForceReload ]		Defaults to false.  if true, then the cached objects will be reloaded from the database.
 	 * 											if false, then they will only be retreived from the database, if the cache doesn't already exist
 	 *
 	 * @param	string	$strClass				The name of the child class/cache (This won't be needed for PHP 5.3)
 	 *
-	 * @return	array							All the objects comprising the Enumerated Type
+	 * @return	array							All the objects comprising the Cached Type
 	 * @method
 	 */
 	public static function getAll($bolForceReload=false, $strClass=null)
