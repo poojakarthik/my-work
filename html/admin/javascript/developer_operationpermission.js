@@ -19,6 +19,8 @@ var Developer_OperationPermission	= Class.create
 	{
 		if (objResponse == undefined)
 		{
+			alert("Getting Data");
+			
 			// Load all of the required Data
 			var fncJsonFunc		= jQuery.json.jsonFunction(Developer_OperationPermission._handleResponse.curry(this._buildPopup), null, 'Developer_Permissions', 'getDetails');
 			fncJsonFunc();
