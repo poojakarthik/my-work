@@ -71,8 +71,7 @@ var Developer_OperationPermission	= Class.create
 // Static Methods
 Developer_OperationPermission._handleResponse	= function(objResponse, fncCallback)
 {
-	alert(Object.inspect(arguments));
-	alert(arguments.inspect());
+	//alert(Object.inspect(arguments));
 	if (objResponse)
 	{
 		if (objResponse.Success)
