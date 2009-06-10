@@ -12,6 +12,16 @@ var Developer_OperationPermission	= Class.create
 		this._pupPopup.setTitle("Operation Permissions Test");
 		this._pupPopup.addCloseButton();
 		
+		domPopupSubmitButton		= document.createElement('input');
+		domPopupSubmitButton.type	= 'button';
+		domPopupSubmitButton.value	= 'Test!';
+		domPopupSubmitButton.setAttribute('onclick', this._submit.bind(this));
+		
+		domPopupCloseButton			= document.createElement('input');
+		domPopupCloseButton.type	= 'button';
+		domPopupCloseButton.value	= 'Close';
+		domPopupCloseButton.setAttribute('onclick', this._pupPopup.close.bind(this._pupPopup));
+		
 		this._buildPopup();
 	},
 	
