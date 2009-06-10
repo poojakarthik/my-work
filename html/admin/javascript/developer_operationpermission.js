@@ -19,7 +19,7 @@ var Developer_OperationPermission	= Class.create
 	{
 		if (objResponse == undefined)
 		{
-			alert("Getting Data");
+			//alert("Getting Data");
 			
 			// Load all of the required Data
 			var fncJsonFunc		= jQuery.json.jsonFunction(Developer_OperationPermission._handleResponse.curry(this._buildPopup), null, 'Developer_Permissions', 'getDetails');
@@ -27,7 +27,7 @@ var Developer_OperationPermission	= Class.create
 		}
 		else
 		{
-			alert("Drawing Popup");
+			//alert("Drawing Popup");
 			
 			// Containing DIV
 			objPage				= {};
@@ -76,13 +76,13 @@ var Developer_OperationPermission	= Class.create
 // Static Methods
 Developer_OperationPermission._handleResponse	= function(fncCallback, objResponse)
 {
-	alert(objResponse);
-	alert(fncCallback);
+	//alert(objResponse);
+	//alert(fncCallback);
 	if (objResponse)
 	{
 		if (objResponse.Success)
 		{
-			alert("Invoking Callback");
+			//alert("Invoking Callback");
 			fncCallback(objResponse);
 			return true;
 		}
