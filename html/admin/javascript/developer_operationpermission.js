@@ -15,7 +15,7 @@ var Developer_OperationPermission	= Class.create
 		this.domPopupSubmitButton		= document.createElement('input');
 		this.domPopupSubmitButton.type	= 'button';
 		this.domPopupSubmitButton.value	= 'Test!';
-		this.domPopupSubmitButton.addEventListener('click', this.submit.bind(this), false);
+		this.domPopupSubmitButton.addEventListener('click', this.submit.bind(this, null), false);
 		
 		this.domPopupCloseButton		= document.createElement('input');
 		this.domPopupCloseButton.type	= 'button';
@@ -29,7 +29,7 @@ var Developer_OperationPermission	= Class.create
 	
 	submit			: function(objResponse)
 	{
-		if (objResponse != undefined)
+		if (objResponse)
 		{
 			// Handle Response
 			$Alert("User does " + (objResponse.bolHasPermission ? '' : 'not ') + "have permission to access this functionality.");
