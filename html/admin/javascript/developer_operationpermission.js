@@ -70,12 +70,27 @@ var Developer_OperationPermission	= Class.create
 			objPage.objTable.objEmployeeTR	= Developer_OperationPermission.outputFieldFactory('Employee', domEmployeeSelect, "Employee to test permission against");
 			objPage.objTable.domElement.appendChild(objPage.objTable.objEmployeeTR.domElement);
 			//----------------------------------------------------------------//
-			
-			// Operation Profile
-			// TODO
-			
+
+			//----------------------------------------------------------------//
 			// Operation
-			// TODO
+			//----------------------------------------------------------------//
+
+			// Build Input Element
+			domOperationSelect		= document.createElement('select');
+			domOperationSelect.name	= 'operation_id';
+			
+			for (i = 0; i < objResponse.arrOperations.length; i++)
+			{
+				domOperationOption				= document.createElement('option');
+				domOperationOption.value		= objResponse.arrOperations[i].id;
+				domOperationOption.innerHTML	= objResponse.arrOperations[i].name;
+				domOperationSelect.appendChild(domOperationOption);
+			}
+			
+			// Build TR & attach to DOM
+			objPage.objTable.objOperationTR	= Developer_OperationPermission.outputFieldFactory('Operation', domOperationSelect, "Operation to test");
+			objPage.objTable.domElement.appendChild(objPage.objTable.objOperationTR.domElement);
+			//----------------------------------------------------------------//
 			
 			// Set the Page Object
 			this._objPage	= objPage;
