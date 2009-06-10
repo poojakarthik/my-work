@@ -36,8 +36,8 @@ var Developer_OperationPermission	= Class.create
 		}
 		else
 		{
-			var intEmployeeId	= this._objPage.objTable.objEmployeeTR.objTD.objOutputDIV.objOutput.value;
-			var intOperationId	= this._objPage.objTable.objOperationTR.objTD.objOutputDIV.objOutput.value;
+			var intEmployeeId	= this._objPage.objTable.objEmployeeTR.objTD.objOutputDIV.objOutput.options[this._objPage.objTable.objEmployeeTR.objTD.objOutputDIV.objOutput.selectedIndex].value;
+			var intOperationId	= this._objPage.objTable.objOperationTR.objTD.objOutputDIV.objOutput.options[this._objPage.objTable.objOperationTR.objTD.objOutputDIV.objOutput.selectedIndex].value;
 			
 			Vixen.Popup.ShowPageLoadingSplash("Authenticating...", null, null, null, 1);
 			
