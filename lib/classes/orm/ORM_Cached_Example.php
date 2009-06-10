@@ -55,6 +55,11 @@ class ORM_Cached_Example extends ORM_Cached
 		return parent::getForId($intId, $bolSilentFail, __CLASS__);
 	}
 	
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+	
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//

@@ -293,6 +293,52 @@ abstract class ORM_Cached extends ORM
 		
 		return $object;
 	}
+	 
+	/**
+	 * getAll
+	 *
+	 * Retreives all the objects comprising the Enumerated Type
+	 * 
+	 * @param	bool	[ $bolForceReload ]		Defaults to false.  if true, then the cached objects will be reloaded from the database.
+	 * 											if false, then they will only be retreived from the database, if the cache doesn't already exist
+	 *
+	 * @param	string	$strClass				The name of the child class/cache (This won't be needed for PHP 5.3)
+	 *
+	 * @return	array							All the objects comprising the Enumerated Type
+	 * @method
+	 */
+	public static function getAll($bolForceReload=false, $strClass=null)
+	{
+		// PHP 5.3 - $strCacheName = static::getCacheName();
+		$strCacheName = call_user_func(array($strClass, 'getCacheName'));
+		
+		if ($bolForceReload || !self::hasCache($strCacheName))
+		{
+			// Reload the object into the cache
+			
+			// Clear the cache
+			call_user_func(array($strClass, 'clearCache'));
+			
+			// Retrieve the objects from the database
+			$selAll = call_user_func(array($strClass, '_preparedStatement'), 'selAll');
+			if ($selAll->Execute() === false)
+			{
+				throw new Exception(__METHOD__ ." - Failed to retrieve all $strClass objects from the data source: ". $selAll->Error());
+			}
+		
+			$arrObjects = array();
+			while ($arrRecord = $selAll->Fetch())
+			{
+				$object = new $strClass($arrRecord);
+				$arrObjects[] = $object;
+			}
+			
+			// Add the objects to the cache as a bulk operation
+			call_user_func(array($strClass, 'addToCache'), $arrObjects);
+		} 
+		
+		return call_user_func(array($strClass, 'getCachedObjects'));
+	} 
 	
 	/**
 	 * save
