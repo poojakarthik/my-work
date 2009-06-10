@@ -7,7 +7,7 @@ var Developer_OperationPermission	= Class.create
 	initialize	: function()
 	{
 		// Popup
-		this._pupPopup	= new Reflex_Popup(20);
+		this._pupPopup	= new Reflex_Popup(35);
 		
 		this._pupPopup.setTitle("Operation Permissions Test");
 		this._pupPopup.addCloseButton();
@@ -54,7 +54,11 @@ var Developer_OperationPermission	= Class.create
 				domEmployeeOption.innerHTML	= objResponse.arrEmployees[i].FirstName + ' ' + objResponse.arrEmployees[i].LastName;
 				objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.appendChild(domEmployeeOption);
 				
-				objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.selectedIndex	= (objResponse.arrEmployees[i].Id == objResponse.intCurrentEmployeeId) ? i : objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.selectedIndex;
+				if (objResponse.arrEmployees[i].Id == objResponse.intCurrentEmployeeId)
+				{
+					objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.selectedIndex	= i;
+					objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.style.color		= '#2861E6';
+				}
 			}
 			
 			// Operation Profile
