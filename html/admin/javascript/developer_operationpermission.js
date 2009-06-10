@@ -36,8 +36,9 @@ var Developer_OperationPermission	= Class.create
 			//----------------------------------------------------------------//
 			// Table
 			//----------------------------------------------------------------//
-			objPage.objTable			= {};
-			objPage.objTable.domElement	= document.createElement('table');
+			objPage.objTable						= {};
+			objPage.objTable.domElement				= document.createElement('table');
+			objPage.objTable.domElement.className	= 'reflex';
 			objPage.domElement.appendChild(objPage.objTable.domElement);
 			//----------------------------------------------------------------//
 			
