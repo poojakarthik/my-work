@@ -18,44 +18,71 @@ var Developer_OperationPermission	= Class.create
 		this._pupPopup.display();
 	},
 	
-	_handleResponse	: function()
+	_buildPopup		: function(objResponse)
 	{
+		if (objResponse == undefined)
+		{
+			// Load all of the required Data
+			var fncJsonFunc		= jQuery.json.jsonFunction(Developer_OperationPermission._handleResponse.curry(this, this._buildPopup), null, 'Developer_Permissions', 'getDetails');
+			fncJsonFunc();
+		}
+		else
+		{
+			// Containing DIV
+			objPage	= {};
+			objPage.domElement	= document.createElement('div');
+			
+			// Table
+			objPage.objTable.domElement	= document.createElement('table');
+			objPage.domElement.appendChild(objPage.objTable.domElement);
+			
+			// Employee
+			objPage.objTable.objEmployeeTR.domElement	= document.createElement('tr');
+			objPage.objTable.domElement.appendChild(objPage.objTable.objEmployeeTR.domElement);
+			
+			objPage.objTable.objEmployeeSELECT.domElement	= document.createElement('select');
+			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeSELECT.domElement);
+			
+			for (i = 0; i < objResponse.arrEmployees.length; i++)
+			{
+				objEmployeeOption			= document.createElement('option');
+				objEmployeeOption.value		= objResponse.arrEmployees[i].Id;
+				objEmployeeOption.innerHTML	= objResponse.arrEmployees[i].FirstName + ' ' + objResponse.arrEmployees[i].LastName;
+				objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeSELECT.domElement);
+				
+				objPage.objTable.objEmployeeSELECT.domElement.selectedIndex	= (objResponse.arrEmployees[i].Id == objResponse.intCurrentEmployeeId) ? i : objPage.objTable.objEmployeeSELECT.domElement.selectedIndex;
+			}
+			
+			// Set the Page Object
+			this._objPage	= objPage;
+		}
 		
+		// Operation Profile
+		// TODO
+		
+		// Operation
+		// TODO
 	}
 });
 
-Developer_OperationPermission._buildPopup	= function()
+// Static Methods
+Developer_OperationPermission._handleResponse	: function(objResponse, fncCallback)
 {
-	if (objResponse == undefined)
+	if (objResponse)
 	{
-		// Load all of the required Data
-		// TODO
+		if (objResponse.Success)
+		{
+			fncCallback();
+		}
+		else if (objResponse.Message)
+		{
+			$Alert(objResponse.Message);
+			return false;
+		}
 	}
-	
-	// Containing DIV
-	objPage	= {};
-	objPage.domElement	= document.createElement('div');
-	
-	// Table
-	objPage.objTable.domElement	= document.createElement('table');
-	objPage.domElement.appendChild(objPage.objTable.domElement);
-	
-	// Employee
-	objPage.objTable.objEmployeeTR.domElement	= document.createElement('tr');
-	objPage.objTable.domElement.appendChild(objPage.objTable.objEmployeeTR.domElement);
-	
-	objPage.objTable.objEmployeeSELECT.domElement	= document.createElement('select');
-	objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeSELECT.domElement);
-	
-	for (i = 0; i < objResponse.arrEmployees.length; i++)
+	else
 	{
-		objEmployeeOption			= document.createElement('option');
-		objEmployeeOption.value		= objResponse.arrEmployees[i].Id;
-		objEmployeeOption.innerHTML	= objResponse.arrEmployees[i].FirstName + ' ' + objResponse.arrEmployees[i].LastName;
-		objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeSELECT.domElement);
-		
-		objPage.objTable.objEmployeeSELECT.domElement.selectedIndex	= (objResponse.arrEmployees[i].Id == objResponse.intCurrentEmployeeId) ? i : objPage.objTable.objEmployeeSELECT.domElement.selectedIndex;
+		$Alert(objResponse);
+		return false;
 	}
-	
-	return objPage;
 }

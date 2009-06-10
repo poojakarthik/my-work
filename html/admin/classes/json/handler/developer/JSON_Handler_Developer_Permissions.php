@@ -61,5 +61,65 @@ class JSON_Handler_Developer_Permissions extends JSON_Handler
 						);
 		}
 	}
+	
+	public function getDetails()
+	{
+		try
+		{
+			$qryQuery	= new Query();
+			
+			// Get Employees
+			$strEmployeesSQL	= "SELECT * FROM Employee WHERE 1";
+			$resEmployees		= $qryQuery->Execute($strEmployeesSQL);
+			if ($resEmployees === false)
+			{
+				throw new Exception($qryQuery->Error());
+			}
+			else
+			{
+				$arrEmployees	= array();
+				while ($arrEmployee = $resEmployees->fetch_assoc())
+				{
+					$arrEmployees[]	= objectifyArray($arrEmployee);
+				}
+			}
+			
+			// Get Operations
+			$arrOperations		= array();
+			$arrORMOperations	= Operation::getAll();
+			foreach ($arrORMOperations as $intOperationId=>$objORMOperation)
+			{
+				$arrOperations[]	= $objORMOperation->toStdClass();
+			}
+			
+			// Get Operation Profiles
+			$arrOperationProfiles		= array();
+			$arrORMOperationProfiles	= Operation_Profile::getAll();
+			foreach ($arrORMOperationProfiles as $intOperationProfileId=>$objORMOperationProfile)
+			{
+				$arrOperationProfiles[]	= $objORMOperationProfile->toStdClass();
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							"Success"				=> true,
+							'arrEmployees'			=> $arrEmployees,
+							'arrOperations'			=> $arrOperations,
+							'arrOperationProfiles'	=> $arrOperationProfiles,
+							"strDebug"				=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : null
+						);
+		}
+		catch (Exception $e)
+		{
+			// Send an Email to Devs
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
+			return array(
+							"Success"	=> false,
+							"Message"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : null
+						);
+		}
+	}
 }
 ?>
