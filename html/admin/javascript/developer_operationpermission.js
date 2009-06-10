@@ -45,7 +45,7 @@ var Developer_OperationPermission	= Class.create
 			
 			objPage.objTable.objEmployeeTR.objEmployeeSELECT			= {};
 			objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement	= document.createElement('select');
-			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeSELECT.domElement);
+			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement);
 			
 			for (i = 0; i < objResponse.arrEmployees.length; i++)
 			{
@@ -54,7 +54,7 @@ var Developer_OperationPermission	= Class.create
 				objEmployeeOption.innerHTML	= objResponse.arrEmployees[i].FirstName + ' ' + objResponse.arrEmployees[i].LastName;
 				objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeSELECT.domElement);
 				
-				objPage.objTable.objEmployeeSELECT.domElement.selectedIndex	= (objResponse.arrEmployees[i].Id == objResponse.intCurrentEmployeeId) ? i : objPage.objTable.objEmployeeSELECT.domElement.selectedIndex;
+				objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.selectedIndex	= (objResponse.arrEmployees[i].Id == objResponse.intCurrentEmployeeId) ? i : objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.selectedIndex;
 			}
 			
 			// Operation Profile

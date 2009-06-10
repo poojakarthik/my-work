@@ -103,6 +103,7 @@ class JSON_Handler_Developer_Permissions extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"				=> true,
+							'intCurrentEmployeeId'	=> Flex::getUserId(),
 							'arrEmployees'			=> $arrEmployees,
 							'arrOperations'			=> $arrOperations,
 							'arrOperationProfiles'	=> $arrOperationProfiles,
