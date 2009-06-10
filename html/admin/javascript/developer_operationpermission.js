@@ -142,12 +142,12 @@ Developer_OperationPermission.outputFieldFactory	= function(strLabel, domOutputE
 	objTR.objTH.domElement						= document.createElement('th');
 	objTR.objTH.domElement.innerHTML			= strLabel;
 	objTR.objTH.domElement.style.verticalAlign	= 'top';
-	objTR.objTH.domElement.style.textAlign		= 'left';
+	objTR.objTH.domElement.style.textAlign		= 'right';
 	objTR.domElement.appendChild(objTR.objTH.domElement);
 	
 	objTR.objTD.domElement	= document.createElement('td');
 	objTR.objTD.domElement.style.verticalAlign	= 'top';
-	objTR.objTD.domElement.style.textAlign		= 'left';
+	objTR.objTD.domElement.style.textAlign		= 'right';
 	objTR.domElement.appendChild(objTR.objTD.domElement);
 	
 	objTR.objTD.objOutputDIV.domElement	= document.createElement('div');
@@ -161,6 +161,7 @@ Developer_OperationPermission.outputFieldFactory	= function(strLabel, domOutputE
 		objTR.objTD.objDescription.domElement					= document.createElement('div')
 		objTR.objTD.objDescription.domElement.style.color		= "#666";
 		objTR.objTD.objDescription.domElement.style.fontStyle	= "italic";
+		objTR.objTD.objDescription.domElement.style.fontSize	= "0.8em";
 		objTR.objTD.objDescription.domElement.innerHTML			= strDescription;
 		objTR.objTD.domElement.appendChild(objTR.objTD.objDescription.domElement);
 	}
