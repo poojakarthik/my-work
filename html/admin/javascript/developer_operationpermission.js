@@ -43,13 +43,13 @@ var Developer_OperationPermission	= Class.create
 			objPage.objTable.objEmployeeTR.domElement	= document.createElement('tr');
 			objPage.objTable.domElement.appendChild(objPage.objTable.objEmployeeTR.domElement);
 			
-			objPage.objTable.objEmployeeTH				= {};
-			objPage.objTable.objEmployeeTH.domElement	= document.createElement('th');
-			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTH.domElement);
+			objPage.objTable.objEmployeeTR.objEmployeeTH			= {};
+			objPage.objTable.objEmployeeTR.objEmployeeTH.domElement	= document.createElement('th');
+			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTR.objEmployeeTH.domElement);
 			
-			objPage.objTable.objEmployeeTR.objEmployeeTD				= {};
+			objPage.objTable.objEmployeeTR.objEmployeeTD			= {};
 			objPage.objTable.objEmployeeTR.objEmployeeTD.domElement	= document.createElement('td');
-			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTD.domElement);
+			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTR.objEmployeeTD.domElement);
 			
 			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT				= {};
 			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT.domElement	= document.createElement('select');
