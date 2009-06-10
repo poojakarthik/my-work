@@ -65,8 +65,9 @@ var Developer_OperationPermission	= Class.create
 				}
 			}
 			
-			// Build TR
+			// Build TR & attach to DOM
 			objPage.objTable.objEmployeeTR	= Developer_OperationPermission.outputFieldFactory('Employee', domEmployeeSelect, "Employee to test permission against");
+			objPage.objTable.appendChild(objPage.objTable.objEmployeeTR.domElement);
 			//----------------------------------------------------------------//
 			
 			// Operation Profile
