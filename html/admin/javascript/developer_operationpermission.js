@@ -47,8 +47,8 @@ var Developer_OperationPermission	= Class.create
 			objPage.objTable.objEmployeeTH.domElement	= document.createElement('th');
 			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTH.domElement);
 			
-			objPage.objTable.objEmployeeTD				= {};
-			objPage.objTable.objEmployeeTD.domElement	= document.createElement('td');
+			objPage.objTable.objEmployeeTR.objEmployeeTD				= {};
+			objPage.objTable.objEmployeeTR.objEmployeeTD.domElement	= document.createElement('td');
 			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTD.domElement);
 			
 			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT				= {};
