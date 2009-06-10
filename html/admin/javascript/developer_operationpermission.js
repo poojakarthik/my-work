@@ -12,7 +12,7 @@ var Developer_OperationPermission	= Class.create
 		this._pupPopup.setTitle("Operation Permissions Test");
 		this._pupPopup.addCloseButton();
 		
-		this._objPage	= this._buildPopup();
+		this._buildPopup();
 	},
 	
 	_buildPopup		: function(objResponse)
