@@ -12,10 +12,7 @@ var Developer_OperationPermission	= Class.create
 		this._pupPopup.setTitle("Operation Permissions Test");
 		this._pupPopup.addCloseButton();
 		
-		this._objPage	= Developer_OperationPermission._buildPopup();
-		this._pupPopup.setContent(this._objPage.domElement);
-		
-		this._pupPopup.display();
+		this._objPage	= this._buildPopup();
 	},
 	
 	_buildPopup		: function(objResponse)
@@ -53,15 +50,19 @@ var Developer_OperationPermission	= Class.create
 				objPage.objTable.objEmployeeSELECT.domElement.selectedIndex	= (objResponse.arrEmployees[i].Id == objResponse.intCurrentEmployeeId) ? i : objPage.objTable.objEmployeeSELECT.domElement.selectedIndex;
 			}
 			
+			// Operation Profile
+			// TODO
+			
+			// Operation
+			// TODO
+			
 			// Set the Page Object
 			this._objPage	= objPage;
+			
+			// Update the Popup
+			this._pupPopup.setContent(this._objPage.domElement);
+			this._pupPopup.display();
 		}
-		
-		// Operation Profile
-		// TODO
-		
-		// Operation
-		// TODO
 	}
 });
 
