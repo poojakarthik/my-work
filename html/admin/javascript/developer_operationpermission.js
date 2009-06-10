@@ -43,22 +43,38 @@ var Developer_OperationPermission	= Class.create
 			objPage.objTable.objEmployeeTR.domElement	= document.createElement('tr');
 			objPage.objTable.domElement.appendChild(objPage.objTable.objEmployeeTR.domElement);
 			
-			objPage.objTable.objEmployeeTR.objEmployeeSELECT			= {};
-			objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement	= document.createElement('select');
-			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement);
+			objPage.objTable.objEmployeeTH				= {};
+			objPage.objTable.objEmployeeTH.domElement	= document.createElement('th');
+			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTH.domElement);
+			
+			objPage.objTable.objEmployeeTD				= {};
+			objPage.objTable.objEmployeeTD.domElement	= document.createElement('td');
+			objPage.objTable.objEmployeeTR.domElement.appendChild(objPage.objTable.objEmployeeTD.domElement);
+			
+			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT				= {};
+			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT.domElement	= document.createElement('select');
+			objPage.objTable.objEmployeeTR.objEmployeeTD.domElement.appendChild(objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT.domElement);
+			
+			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION								= {};
+			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION.domElement					= document.createElement('span');
+			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION.domElement.style.color		= "#aaa";
+			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION.domElement.style.fontStyle	= "italic";
+			objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION.domElement.innerHTML		= "Employee to check permissions for";
+			objPage.objTable.objEmployeeTR.objEmployeeTD.domElement.appendChild(objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeDESCRIPTION.domElement);
 			
 			for (i = 0; i < objResponse.arrEmployees.length; i++)
 			{
 				domEmployeeOption			= document.createElement('option');
 				domEmployeeOption.value		= objResponse.arrEmployees[i].Id;
 				domEmployeeOption.innerHTML	= objResponse.arrEmployees[i].FirstName + ' ' + objResponse.arrEmployees[i].LastName;
-				objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.appendChild(domEmployeeOption);
+				objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT.domElement.appendChild(domEmployeeOption);
 				
 				if (objResponse.arrEmployees[i].Id == objResponse.intCurrentEmployeeId)
 				{
-					objPage.objTable.objEmployeeTR.objEmployeeSELECT.domElement.selectedIndex	= i;
-					domEmployeeOption.style.color												= '#2861E6';
-					domEmployeeOption.style.fontWeight											= 'bold';
+					objPage.objTable.objEmployeeTR.objEmployeeTD.objEmployeeSELECT.domElement.selectedIndex	= i;
+					
+					domEmployeeOption.style.color		= '#2861E6';
+					domEmployeeOption.style.fontWeight	= 'bold';
 				}
 			}
 			
