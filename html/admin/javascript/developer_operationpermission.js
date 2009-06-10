@@ -27,6 +27,11 @@ var Developer_OperationPermission	= Class.create
 		this._buildPopup();
 	},
 	
+	_submit			: function()
+	{
+		alert("Submitting");
+	},
+	
 	_buildPopup		: function(objResponse)
 	{
 		if (objResponse == undefined)
