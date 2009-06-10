@@ -22,7 +22,7 @@ var Developer_OperationPermission	= Class.create
 		domPopupCloseButton.value	= 'Close';
 		domPopupCloseButton.setAttribute('onclick', this._pupPopup.hide.bind(this._pupPopup));
 		
-		this._pupPopup.setFooterButtons([domPopupSubmitButton, domPopupCloseButton]);
+		this._pupPopup.setFooterButtons([domPopupSubmitButton, domPopupCloseButton], true);
 		
 		this._buildPopup();
 	},
