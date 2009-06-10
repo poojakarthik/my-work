@@ -25,6 +25,8 @@ var Developer_OperationPermission	= Class.create
 		}
 		else
 		{
+			alert("Drawing Popup");
+			
 			// Containing DIV
 			objPage	= {};
 			objPage.domElement	= document.createElement('div');
@@ -70,7 +72,7 @@ var Developer_OperationPermission	= Class.create
 Developer_OperationPermission._handleResponse	= function(objResponse, fncCallback)
 {
 	alert(Object.inspect(arguments));
-	alert(Object.inspect(arguments));
+	alert(Array.inspect(arguments));
 	if (objResponse)
 	{
 		if (objResponse.Success)
