@@ -72,7 +72,7 @@ var Developer_OperationPermission	= Class.create
 Developer_OperationPermission._handleResponse	= function(objResponse, fncCallback)
 {
 	alert(Object.inspect(arguments));
-	alert(Array.inspect(arguments));
+	alert(arguments.inspect());
 	if (objResponse)
 	{
 		if (objResponse.Success)
