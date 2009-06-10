@@ -15,7 +15,7 @@ var Developer_OperationPermission	= Class.create
 		this.domPopupSubmitButton		= document.createElement('input');
 		this.domPopupSubmitButton.type	= 'button';
 		this.domPopupSubmitButton.value	= 'Test!';
-		this.domPopupCloseButton.addEventListener('click', this._submit.bindAsEventListener(this), false);
+		this.domPopupSubmitButton.addEventListener('click', this._submit.bindAsEventListener(this), false);
 		
 		this.domPopupCloseButton		= document.createElement('input');
 		this.domPopupCloseButton.type	= 'button';
@@ -35,7 +35,7 @@ var Developer_OperationPermission	= Class.create
 	close			: function()
 	{
 		// Remove Event Listeners
-		this.domPopupCloseButton.removeEventListener('click', this._submit.bindAsEventListener(this), false);
+		this.domPopupSubmitButton.removeEventListener('click', this._submit.bindAsEventListener(this), false);
 		this.domPopupCloseButton.removeEventListener('click', this.close.bindAsEventListener(this), false);
 		
 		// Kill Popup (as much as we can)
