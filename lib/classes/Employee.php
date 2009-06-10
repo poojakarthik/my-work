@@ -345,6 +345,17 @@ class Employee
 		return $tidy;
 	}
 	
+	public function toArray()
+	{
+		$arrEmployee	= array();
+		$arrColumns		= self::getColumns();
+		foreach ($arrColumns as $strVariableName=>$strDBField)
+		{
+			$arrEmployee[$strDBField]	= $this->__get($strVariableName);
+		}
+		return $arrEmployee;
+	}
+	
 }
 
 ?>
