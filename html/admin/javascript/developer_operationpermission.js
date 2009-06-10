@@ -136,10 +136,10 @@ Developer_OperationPermission.outputFieldFactory	= function(strLabel, domOutputE
 	
 	if (strDescription != undefined)
 	{
-		objTR.objTD.objDescription.domElement						= document.createElement('div')
-		objTR.objTD.objDescription.domElement.style.color			= "#666";
-		objTR.objTD.objDescription.domElement.style.fontStyle		= "italic";
-		objTR.objTD.objDescription.domElement.domElement.innerHTML	= strDescription;
+		objTR.objTD.objDescription.domElement					= document.createElement('div')
+		objTR.objTD.objDescription.domElement.style.color		= "#666";
+		objTR.objTD.objDescription.domElement.style.fontStyle	= "italic";
+		objTR.objTD.objDescription.domElement.innerHTML			= strDescription;
 		objTR.objTD.domElement.appendChild(objTR.objTD.objDescription.domElement);
 	}
 	
