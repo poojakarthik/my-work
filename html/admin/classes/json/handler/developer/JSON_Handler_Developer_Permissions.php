@@ -69,7 +69,7 @@ class JSON_Handler_Developer_Permissions extends JSON_Handler
 			$qryQuery	= new Query();
 			
 			// Get Employees
-			$strEmployeesSQL	= "SELECT * FROM Employee WHERE 1";
+			$strEmployeesSQL	= "SELECT * FROM Employee WHERE Archived = 0";
 			$resEmployees		= $qryQuery->Execute($strEmployeesSQL);
 			if ($resEmployees === false)
 			{
