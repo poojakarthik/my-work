@@ -5820,6 +5820,7 @@ function CreateDefaultPaymentTerms($customerGroupId)
 				throw new Exception("'{$strField}' is not a valid PHP variable name (ref: http://php.net/manual/en/language.variables.basics.php)");
 			}
 		}
+		return $objObjectified;
 	}
 	
 	function isValidPHPVariableName($strVariableName)
