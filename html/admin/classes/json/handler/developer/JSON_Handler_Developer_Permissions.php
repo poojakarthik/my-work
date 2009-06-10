@@ -16,7 +16,7 @@ class JSON_Handler_Developer_Permissions extends JSON_Handler
 		try
 		{
 			$bolHasPermission	= Operation::userHasPermission($intPermission, $intEmployeeId);
-			throw new Exception($bolHasPermission);
+			throw new Exception(print_r($bolHasPermission, true));
 			
 			// If no exceptions were thrown, then everything worked
 			return array(
