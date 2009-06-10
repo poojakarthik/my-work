@@ -71,7 +71,7 @@ var Developer_OperationPermission	= Class.create
 });
 
 // Static Methods
-Developer_OperationPermission._handleResponse	= function(objResponse, fncCallback)
+Developer_OperationPermission._handleResponse	= function(fncCallback, objResponse)
 {
 	alert(objResponse);
 	alert(fncCallback);
