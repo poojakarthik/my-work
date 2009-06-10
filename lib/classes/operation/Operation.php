@@ -19,7 +19,7 @@ class Operation extends ORM_Enumerated
 		$objEmployee	= Employee::getForId($intEmployeeId);
 		if ($objEmployee->isGod)
 		{
-			Log::getLog()->log("User is GOD");
+			Log::getLog()->log("User is GOD -- permissions overridden!");
 			return true;
 		}
 		else
