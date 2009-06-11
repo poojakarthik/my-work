@@ -337,6 +337,33 @@ class AppTemplatePlan extends ApplicationTemplate
 			}
 		}
 		
+		if (DBO()->RatePlan->Archived->Value == RATE_STATUS_ARCHIVED)
+		{
+			// We should alert admins if a plan is archived, because they might need to update other systems that rely on it being active
+			$objCustomerGroup = Customer_Group::getForId(DBO()->RatePlan->customer_group->Value);
+			$strRatePlanName = DBO()->RatePlan->Name->Value;
+			$intRatePlanId = DBO()->RatePlan->Id->Value;
+			$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, 'service_type');
+			
+			$strSubject = "Plan Archive Alert: {$objCustomerGroup->internalName} - $strRatePlanName (id: $intRatePlanId)";
+			
+			$strMessage = "The {$objCustomerGroup->internalName} $strServiceType Plan, '$strRatePlanName' (id: {$intRatePlanId}) has been archived.";
+			
+			if (DBO()->AlternateRatePlan->Id->Value)
+			{
+				// An alternate plan has been declared, to replace the one being archived
+				$objAlternatePlan = new Rate_Plan(array('Id'=>DBO()->AlternateRatePlan->Id->Value), true);
+				$strMessage .= "\nThe plan, '{$objAlternatePlan->name}' (id: {$objAlternatePlan->id}) has been declared as an alernative.";
+			}
+			else
+			{
+				// No alternate plan has been specified
+				$strMessage .= "\nNo alternate plan has been declared";
+			}
+			
+			Flex::sendEmailNotificationAlert($strSubject, $strMessage, false, false, true);
+		}
+		
 		TransactionCommit();
 		
 		// Update the status of the RatePlan in the Sales database, if there is one

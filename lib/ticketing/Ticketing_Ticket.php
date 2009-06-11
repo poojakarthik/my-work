@@ -671,6 +671,7 @@ class Ticketing_Ticket
 		return NULL;
 	}
 
+	// Note: This will only flag the object as not being saved, if the new value is not equal to the old value
 	public function __set($strName, $mxdValue)
 	{
 		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
