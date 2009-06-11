@@ -227,7 +227,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					DBO()->Charge->Id = $intChargeId;
 					TransactionCommit();
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "The request for adjustment has been successfully logged.  Note that there is no guarantee the adjustment will be approved.");
+					Ajax()->AddCommand("AlertReload", "The request for adjustment has been successfully logged.");
 					return TRUE;
 				}
 			}
