@@ -345,15 +345,15 @@ class AppTemplatePlan extends ApplicationTemplate
 			$intRatePlanId = DBO()->RatePlan->Id->Value;
 			$strServiceType = GetConstantDescription(DBO()->RatePlan->ServiceType->Value, 'service_type');
 			
-			$strSubject = "Plan Archive Alert: {$objCustomerGroup->internalName} - $strRatePlanName (id: $intRatePlanId)";
+			$strSubject = "Plan Archive Alert: {$objCustomerGroup->internalName} - $strRatePlanName (RatePlan.Id: $intRatePlanId)";
 			
-			$strMessage = "The {$objCustomerGroup->internalName} $strServiceType Plan, '$strRatePlanName' (id: {$intRatePlanId}) has been archived.";
+			$strMessage = "The {$objCustomerGroup->internalName} $strServiceType Plan, '$strRatePlanName' (RatePlan.Id: {$intRatePlanId}) has been archived.";
 			
 			if (DBO()->AlternateRatePlan->Id->Value)
 			{
 				// An alternate plan has been declared, to replace the one being archived
 				$objAlternatePlan = new Rate_Plan(array('Id'=>DBO()->AlternateRatePlan->Id->Value), true);
-				$strMessage .= "\nThe plan, '{$objAlternatePlan->name}' (id: {$objAlternatePlan->id}) has been declared as an alernative.";
+				$strMessage .= "\nThe plan, '{$objAlternatePlan->name}' (RatePlan.Id: {$objAlternatePlan->id}) has been declared as an alernative.";
 			}
 			else
 			{
