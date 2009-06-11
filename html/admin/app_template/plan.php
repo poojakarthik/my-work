@@ -313,7 +313,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		
 		$strSuccessMsg = "Status change was successful";
 		
-		if (DBO()->AlternateRatePlan->Id->Value && DBO()->RatePlan->Archived == RATE_STATUS_ARCHIVED)
+		if (DBO()->AlternateRatePlan->Id->Value && DBO()->RatePlan->Archived->Value == RATE_STATUS_ARCHIVED)
 		{
 			// Associate the Alternate RatePlan with all the dealers that are associated with the rate plan which was just archived
 			$intArchivedPlanId	= DBO()->RatePlan->Id->Value;
