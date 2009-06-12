@@ -345,6 +345,31 @@ jQuery.json = {
 			// Otherwise schedule another cleanup
 			setTimeout(this._jsonIframeCleanup.bind(this, elmIframe), 100);
 		}
+	},
+	
+	// handleResponse()	: Generic Response Handler
+	handleResponse		: function(fncCallback, objResponse)
+	{
+		//alert(objResponse);
+		//alert(fncCallback);
+		if (objResponse)
+		{
+			if (objResponse.Success)
+			{
+				//alert("Invoking Callback");
+				fncCallback(objResponse);
+				return true;
+			}
+			else if (objResponse.Message)
+			{
+				$Alert(objResponse.Message);
+				return false;
+			}
+		}
+		else
+		{
+			$Alert(objResponse);
+			return false;
+		}
 	}
-
 };
