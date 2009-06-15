@@ -222,7 +222,6 @@ var Developer_DatasetPagination	= Class.create
 	
 	_updatePagination	: function()
 	{
-		return;
 		this._removePaginationEvents();
 		
 		// Attach onClick Event Handlers
