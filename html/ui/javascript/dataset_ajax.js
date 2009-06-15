@@ -24,13 +24,13 @@ var Dataset_Ajax	= Class.create
 		if (this._intCacheMode == Dataset_Ajax.CACHE_MODE_NO_CACHING)
 		{
 			// Yes -- AJAX just this range
-			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._setCache.bind(this)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
+			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecords.bind(this)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
 			fncJsonFunc(false, intLimit, intOffset);
 		}
 		else if (this._arrRecordCache == null)
 		{
 			// Yes -- AJAX full result set
-			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._setCache.bind(this)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
+			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecords.bind(this)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
 			fncJsonFunc();
 		}
 		else
