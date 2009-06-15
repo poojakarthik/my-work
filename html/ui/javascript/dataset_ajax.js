@@ -89,7 +89,8 @@ var Dataset_Ajax	= Class.create
 	
 	_setCache	: function(objResponse)
 	{
-		this._arrRecordCache	= (this.getCacheMode() == Dataset_Ajax.CACHE_MODE_NO_CACHING) ? null : objResponse.arrRecords;
+		//this._arrRecordCache	= (this.getCacheMode() == Dataset_Ajax.CACHE_MODE_NO_CACHING) ? null : objResponse.arrRecords;
+		this._arrRecordCache	= objResponse.arrRecords;
 		this._intRecordCount	= objResponse.intRecordCount;
 	},
 	
