@@ -94,9 +94,10 @@ var Developer_DatasetPagination	= Class.create
 		objPage.objTable.objTFOOT.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.domElement);
 		
 		// First
-		objPage.objTable.objTFOOT.objPagination.objFirst						= {};
-		objPage.objTable.objTFOOT.objPagination.objFirst.domElement				= document.createElement('span');
-		objPage.objTable.objTFOOT.objPagination.objFirst.domElement.innerHTML	= "First";
+		objPage.objTable.objTFOOT.objPagination.objFirst							= {};
+		objPage.objTable.objTFOOT.objPagination.objFirst.domElement					= document.createElement('span');
+		objPage.objTable.objTFOOT.objPagination.objFirst.domElement.innerHTML		= "First";
+		objPage.objTable.objTFOOT.objPagination.objFirst.domElement.setAttribute('onclick', '');
 		objPage.objTable.objTFOOT.objPagination.objFirst.domElement.addEventListener('click', this.objPagination.firstPage.bind(this.objPagination), false);
 		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.objFirst.domElement);
 		
@@ -108,6 +109,7 @@ var Developer_DatasetPagination	= Class.create
 		objPage.objTable.objTFOOT.objPagination.objPrevious							= {};
 		objPage.objTable.objTFOOT.objPagination.objPrevious.domElement				= document.createElement('span');
 		objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.innerHTML	= "Previous";
+		objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.setAttribute('onclick', '');
 		objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.addEventListener('click', this.objPagination.previousPage.bind(this.objPagination), false);
 		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.objPrevious.domElement);
 		
@@ -119,6 +121,7 @@ var Developer_DatasetPagination	= Class.create
 		objPage.objTable.objTFOOT.objPagination.objNext							= {};
 		objPage.objTable.objTFOOT.objPagination.objNext.domElement				= document.createElement('span');
 		objPage.objTable.objTFOOT.objPagination.objNext.domElement.innerHTML	= "Next";
+		objPage.objTable.objTFOOT.objPagination.objNext.domElement.setAttribute('onclick', '');
 		objPage.objTable.objTFOOT.objPagination.objNext.domElement.addEventListener('click', this.objPagination.nextPage.bind(this.objPagination), false);
 		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.objNext.domElement);
 		
@@ -130,6 +133,7 @@ var Developer_DatasetPagination	= Class.create
 		objPage.objTable.objTFOOT.objPagination.objLast							= {};
 		objPage.objTable.objTFOOT.objPagination.objLast.domElement				= document.createElement('span');
 		objPage.objTable.objTFOOT.objPagination.objLast.domElement.innerHTML	= "Last";
+		objPage.objTable.objTFOOT.objPagination.objLast.domElement.setAttribute('onclick', '');
 		objPage.objTable.objTFOOT.objPagination.objLast.domElement.addEventListener('click', this.objPagination.lastPage.bind(this.objPagination), false);
 		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.objLast.domElement);
 		//----------------------------------------------------------------//
