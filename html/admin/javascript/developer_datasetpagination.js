@@ -90,7 +90,6 @@ var Developer_DatasetPagination	= Class.create
 		objPage.objDebugConsole.domElement.style.overflowY			= 'scroll';
 		objPage.objDebugConsole.domElement.style.borderColor		= '#000';
 		objPage.objDebugConsole.domElement.style.borderWidth		= '1px';
-		objPage.objDebugConsole.domElement.style.margin				= '0.5em';
 		objPage.objDebugConsole.domElement.style.fontFamily			= '"Courier New", Courier, monospace, sans-serif';
 		objPage.domElement.appendChild(objPage.objDebugConsole.domElement);
 		//----------------------------------------------------------------//
