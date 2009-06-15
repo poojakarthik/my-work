@@ -1093,7 +1093,8 @@ class Cli_App_Sales extends Cli
 											$arrSPADSLDetails		= $resSPADSLDetails->fetchRow(MDB2_FETCHMODE_ASSOC);
 											
 											// Service Details
-											$objService->FNN			= $arrSPADSLDetails['fnn'];
+											// ADSL services in flex have an "i" appended to their FNN, but this isn't the case in the sales system
+											$objService->FNN			= $arrSPADSLDetails['fnn'] ."i";
 											$objService->ServiceType	= SERVICE_TYPE_ADSL;
 											break;
 											

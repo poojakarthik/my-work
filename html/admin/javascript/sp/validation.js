@@ -13,7 +13,10 @@ Validate	= Class.create(
 		{
 			case 'adsl':
 			case 'landline':
-				expFNN	= /^(0[12378]\d{8}[i]?)$/;
+				// ADSL fnns don't include the 'i' in the sales system
+				//expFNN	= /^(0[12378]\d{8}[i]?)$/;
+				
+				expFNN	= /^(0[12378]\d{8})$/;
 				break;
 			
 			case 'mobile':
@@ -46,14 +49,14 @@ Validate	= Class.create(
 	
 	fnnInbound	: function(strFNN)
 	{
-		return window._validate.fnn(strFNN, 'adsl');
+		return window._validate.fnn(strFNN, 'inbound');
 	},
 
 	// email(): Checks whether an Email is valid
 	email	: function(strEmail)
 	{
 		var expEmail	= /^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)$/i;
-		//var expEmail	= /^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
+		// var expEmail	= /^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i;
 		return expEmail.test(strEmail);
 	},
 

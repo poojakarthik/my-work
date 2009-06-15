@@ -21,14 +21,17 @@ Object.extend(Sale.ProductTypeModule.Service_ADSL.prototype, {
 
 	_getBlankDetailsObject: function()
 	{
+		var saleAccount = Sale.getInstance().getSaleAccount();
+		saleAccount.isValid();
+
 		return {
 			id: null,
 			fnn: null,
-			address_line_1: null,
-			address_line_2: null,
-			suburb: null,
-			postcode: null,
-			state_id: null
+			address_line_1: saleAccount.getAddressLine1(),
+			address_line_2: saleAccount.getAddressLine2(),
+			suburb: saleAccount.getSuburb(),
+			postcode: saleAccount.getPostcode(),
+			state_id: saleAccount.getStateId()
 		};
 	},
 	
@@ -44,8 +47,8 @@ Object.extend(Sale.ProductTypeModule.Service_ADSL.prototype, {
 
 		var table = $ID(id);
 
-		this.elementGroups.fnn = Sale.GUIComponent.createTextInputGroup(this.getFNN(), true);
-		Sale.GUIComponent.appendElementGroupToTable(table, 'DSL Phone Number', this.elementGroups.fnn, window._validate.fnnLandline.bind(this));
+		this.elementGroups.fnn = Sale.GUIComponent.createTextInputGroup(this.getFNN(), true, window._validate.fnnADSL.bind(this));
+		Sale.GUIComponent.appendElementGroupToTable(table, 'DSL Phone Number', this.elementGroups.fnn);
 
 		this.elementGroups.address_line_1 = Sale.GUIComponent.createTextInputGroup(this.getAddressLine1(), true);
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Address (Line 1)', this.elementGroups.address_line_1);
