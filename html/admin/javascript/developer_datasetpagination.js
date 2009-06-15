@@ -4,7 +4,7 @@ var Developer_DatasetPagination	= Class.create
 	{
 		// Init Dataset & Pagination
 		this.objDataset		= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_FULL_CACHING, {strObject: 'Employee', strMethod: 'getRecords'});
-		this.objPagination	= new Pagination(this._updateTable.bind(this), 30, this.objDataset);
+		this.objPagination	= new Pagination(this._updateTable.bind(this), 20, this.objDataset);
 		
 		// Init Popup	
 		this._pupPopup	= new Reflex_Popup(40);
