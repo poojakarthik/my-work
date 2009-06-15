@@ -85,7 +85,7 @@ var Pagination	= Class.create
 		}
 		
 		this.intCurrentPage	= intPageNumber;
-		alert("Current Page: "+this.intCurrentPage);
+		//alert("Current Page: "+this.intCurrentPage);
 		return this.getCurrentPage();
 	},
 	
