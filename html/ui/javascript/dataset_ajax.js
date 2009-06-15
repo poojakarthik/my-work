@@ -42,8 +42,11 @@ var Dataset_Ajax	= Class.create
 	
 	_getRecords	: function(fncCallback, intLimit, intOffset, objResponse)
 	{
-		alert("Setting Cache...");
-		this._setCache(objResponse);
+		if (objResponse)
+		{
+			alert("Setting Cache...");
+			this._setCache(objResponse);
+		}
 		
 		// Choose our results
 		var arrResultSet	= {};
