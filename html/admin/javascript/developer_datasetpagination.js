@@ -225,7 +225,8 @@ var Developer_DatasetPagination	= Class.create
 		this._removePaginationEvents();
 		
 		// Attach onClick Event Handlers
-		alert("Page Count: " + this.objPagination.getPageCount());
+		var intPageCount	= this.objPagination.getPageCount();
+		alert("Page Count: " + intPageCount);
 		if (this.objPagination.intCurrentPage != Pagination.PAGE_FIRST)
 		{
 			alert("This is not the first page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_FIRST +")");
@@ -235,7 +236,7 @@ var Developer_DatasetPagination	= Class.create
 			this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.setAttribute('onclick', '');
 			this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.addEventListener('click', this.objPagination.previousPage.bind(this.objPagination), false);
 		}
-		if (this.objPagination.intCurrentPage != (this.objPagination.getPageCount() - 1))
+		if (this.objPagination.intCurrentPage != (this.objPagination.getPageCount() - 1) && intPageCount)
 		{
 			alert("This is not the last page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_LAST +")");
 			this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.setAttribute('onclick', '');
