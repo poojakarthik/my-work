@@ -49,6 +49,26 @@ var Developer_DatasetPagination	= Class.create
 		objPage.objTable.objTHEAD				= {};
 		objPage.objTable.objTHEAD.domElement	= document.createElement('thead');
 		objPage.objTable.domElement.appendChild(objPage.objTable.objTHEAD.domElement);
+		
+		objPage.objTable.objTHEAD.objId							= {};
+		objPage.objTable.objTHEAD.objId.domElement				= document.createElement('th');
+		objPage.objTable.objTHEAD.objId.domElement.innerHTML	= "Id";
+		objPage.objTable.objTHEAD.domElement.appendChild(objPage.objTable.objTHEAD.objId.domElement);
+		
+		objPage.objTable.objTHEAD.objFirstName						= {};
+		objPage.objTable.objTHEAD.objFirstName.domElement			= document.createElement('th');
+		objPage.objTable.objTHEAD.objFirstName.domElement.innerHTML	= "First Name";
+		objPage.objTable.objTHEAD.domElement.appendChild(objPage.objTable.objTHEAD.objFirstName.domElement);
+		
+		objPage.objTable.objTHEAD.objLastName						= {};
+		objPage.objTable.objTHEAD.objLastName.domElement			= document.createElement('th');
+		objPage.objTable.objTHEAD.objLastName.domElement.innerHTML	= "Last Name";
+		objPage.objTable.objTHEAD.domElement.appendChild(objPage.objTable.objTHEAD.objLastName.domElement);
+		
+		objPage.objTable.objTHEAD.objUsername						= {};
+		objPage.objTable.objTHEAD.objUsername.domElement			= document.createElement('th');
+		objPage.objTable.objTHEAD.objUsername.domElement.innerHTML	= "Username";
+		objPage.objTable.objTHEAD.domElement.appendChild(objPage.objTable.objTHEAD.objUsername.domElement);
 		//----------------------------------------------------------------//
 		
 		//----------------------------------------------------------------//
