@@ -146,6 +146,7 @@ var Developer_DatasetPagination	= Class.create
 		objPage.objDebugConsole.domElement.style.borderColor		= '#000';
 		objPage.objDebugConsole.domElement.style.borderWidth		= '1px';
 		objPage.objDebugConsole.domElement.style.fontFamily			= '"Courier New", Courier, monospace, sans-serif';
+		objPage.objDebugConsole.domElement.style.display			= "none";
 		objPage.domElement.appendChild(objPage.objDebugConsole.domElement);
 		//----------------------------------------------------------------//
 		
