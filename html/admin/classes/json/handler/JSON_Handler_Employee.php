@@ -41,9 +41,11 @@ class JSON_Handler_Employee extends JSON_Handler
 					throw new Exception($qryQuery->Error());
 				}
 				$arrEmployees	= array();
+				$intCount		= 0;
 				while ($arrEmployee = $resEmployees->fetch_assoc())
 				{
-					$arrEmployees[]	= $arrEmployee;
+					$arrEmployees[(string)$intCount]	= $arrEmployee;
+					$intCount++;
 				}
 				
 				// If no exceptions were thrown, then everything worked
