@@ -44,7 +44,7 @@ class JSON_Handler_Employee extends JSON_Handler
 				$intCount		= 0;
 				while ($arrEmployee = $resEmployees->fetch_assoc())
 				{
-					$arrEmployees[(string)$intCount]	= $arrEmployee;
+					$arrEmployees[$intCount+$intOffset]	= $arrEmployee;
 					$intCount++;
 				}
 				
