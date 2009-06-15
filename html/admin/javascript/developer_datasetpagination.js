@@ -135,6 +135,8 @@ var Developer_DatasetPagination	= Class.create
 				strDebug	+= i + ": " + objResultSet[i] + "\n";
 			}
 			alert(strDebug);
+			alert(objResultSet.arrResultSet);
+			alert(objResultSet.arrResultSet.length);
 			
 			// I has recordz
 			for (var i = 0; i < objResultSet.arrResultSet.length; i++)
