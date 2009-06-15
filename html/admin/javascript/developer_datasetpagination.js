@@ -89,6 +89,7 @@ var Developer_DatasetPagination	= Class.create
 		
 		objPage.objTable.objTFOOT.objPagination								= {};
 		objPage.objTable.objTFOOT.objPagination.domElement					= document.createElement('th');
+		objPage.objTable.objTFOOT.objPagination.domElement.colSpan			= 4;
 		objPage.objTable.objTFOOT.objPagination.domElement.style.textAlign	= "right";
 		objPage.objTable.objTFOOT.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.domElement);
 		
