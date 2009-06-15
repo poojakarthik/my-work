@@ -227,6 +227,7 @@ var Developer_DatasetPagination	= Class.create
 			this._removePaginationEvents();
 			
 			// Attach onClick Event Handlers
+			alert("Current Page: " + this.objPagination.intCurrentPage);
 			alert("Page Count: " + intPageCount);
 			if (this.objPagination.intCurrentPage != Pagination.PAGE_FIRST)
 			{
