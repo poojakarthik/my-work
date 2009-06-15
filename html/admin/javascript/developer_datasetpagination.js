@@ -227,11 +227,11 @@ var Developer_DatasetPagination	= Class.create
 			this._removePaginationEvents();
 			
 			// Attach onClick Event Handlers
-			alert("Current Page: " + this.objPagination.intCurrentPage);
-			alert("Page Count: " + intPageCount);
+			//alert("Current Page: " + this.objPagination.intCurrentPage);
+			//alert("Page Count: " + intPageCount);
 			if (this.objPagination.intCurrentPage != Pagination.PAGE_FIRST)
 			{
-				alert("This is not the first page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_FIRST +")");
+				//alert("This is not the first page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_FIRST +")");
 				this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.setAttribute('onclick', '');
 				this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.addEventListener('click', this.objPagination.firstPage.bind(this.objPagination), false);
 				
@@ -240,7 +240,7 @@ var Developer_DatasetPagination	= Class.create
 			}
 			if (this.objPagination.intCurrentPage < (intPageCount - 1) && intPageCount)
 			{
-				alert("This is not the last page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_LAST +")");
+				//alert("This is not the last page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_LAST +")");
 				this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.setAttribute('onclick', '');
 				this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.addEventListener('click', this.objPagination.nextPage.bind(this.objPagination), false);
 				
