@@ -81,7 +81,7 @@ var Pagination	= Class.create
 	{
 		if (intPageNumber == Pagination.PAGE_LAST || intPageNumber > intPageCount)
 		{
-			intPageNumber	= intPageCount;
+			intPageNumber	= intPageCount-1;
 		}
 		
 		this._intCurrentPage	= intPageNumber;
