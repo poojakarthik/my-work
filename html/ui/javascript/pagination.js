@@ -85,7 +85,7 @@ var Pagination	= Class.create
 		
 		this._intCurrentPage	= intPageNumber;
 		return this.getCurrentPage();
-	}
+	},
 	
 	// setDataset()
 	setDataset	: function(objDataset)
