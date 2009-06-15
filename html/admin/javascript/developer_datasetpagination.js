@@ -1,0 +1,142 @@
+var Developer_DatasetPagination	= Class.create
+({
+	initialize	: function()
+	{
+		// Init Popup	
+		this._pupPopup	= new Reflex_Popup(40);
+		
+		this._pupPopup.setTitle("Dataset with Pagination Test");
+		this._pupPopup.addCloseButton(this.close.bindAsEventListener(this));
+		
+		this.domPopupSubmitButton		= document.createElement('input');
+		this.domPopupSubmitButton.type	= 'button';
+		this.domPopupSubmitButton.value	= 'Refresh';
+		this.domPopupSubmitButton.addEventListener('click', this.submit.bind(this, null), false);
+		
+		this.domPopupCloseButton		= document.createElement('input');
+		this.domPopupCloseButton.type	= 'button';
+		this.domPopupCloseButton.value	= 'Close';
+		this.domPopupCloseButton.addEventListener('click', this.close.bindAsEventListener(this), false);
+		
+		this._pupPopup.setFooterButtons([this.domPopupSubmitButton, this.domPopupCloseButton], true);
+		
+		// Init Dataset & Pagination
+		this.objDataset		= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_FULL_CACHING, {strObject: 'JSON_Handler_Employee', strMethod: 'getRecords'});
+		this.objPagination	= new Pagination(this._updateTable.bind(this), 30, this.objDataset);
+	},
+	
+	_renderPopup	: function()
+	{
+		// Containing DIV
+		var objPage			= {};
+		objPage.domElement	= document.createElement('div');
+		
+		//----------------------------------------------------------------//
+		// Table
+		//----------------------------------------------------------------//
+		objPage.objTable						= {};
+		objPage.objTable.domElement				= document.createElement('table');
+		objPage.objTable.domElement.className	= 'reflex';
+		objPage.domElement.appendChild(objPage.objTable.domElement);
+		//----------------------------------------------------------------//
+		
+		//----------------------------------------------------------------//
+		// Table Header
+		//----------------------------------------------------------------//
+		objPage.objTable.objTHEAD				= {};
+		objPage.objTable.objTHEAD.domElement	= document.createElement('thead');
+		objPage.objTable.domElement.appendChild(objPage.objTable.objTHEAD.domElement);
+		//----------------------------------------------------------------//
+		
+		//----------------------------------------------------------------//
+		// Table Body
+		//----------------------------------------------------------------//
+		objPage.objTable.objTBODY				= {};
+		objPage.objTable.objTBODY.domElement	= document.createElement('tbody');
+		objPage.objTable.domElement.appendChild(objPage.objTable.objTBODY.domElement);
+		//----------------------------------------------------------------//
+		
+		//----------------------------------------------------------------//
+		// Debug "Console"
+		//----------------------------------------------------------------//
+		objPage.objDebugConsole	= {};
+		objPage.objDebugConsole.domElement	= document.createElement('div');
+		objPage.objDebugConsole.domElement.style.height		= '10em';
+		objPage.objDebugConsole.domElement.style.width		= '100%';
+		objPage.objDebugConsole.domElement.style.overflowY	= 'scroll';
+		objPage.objDebugConsole.domElement.style.fontFamily	= '"Courier New", Courier, monospace, sans-serif';
+		objPage.domElement.appendChild(objPage.objDebugConsole.domElement);
+		//----------------------------------------------------------------//
+		
+		// Set the Page Object
+		this._objPage	= objPage;
+		
+		// Update the Popup
+		this._pupPopup.setContent(this._objPage.domElement);
+		this._updateTable();
+		this._pupPopup.display();
+	},
+	
+	_updateTable	: function(objResultSet)
+	{
+		// Dump existing content
+		this._objPage.objTable.objTBODY.domElement.innerHTML	= '';
+		
+		// Update content
+		if (!objResultSet || objResultSet.intTotalResults == 0 || objResultSet.arrResultSet.length == 0)
+		{
+			// No records
+			var objTR	= document.createElement('tr');
+			
+			var objTD				= document.createElement('td');
+			objTD.colSpan			= 4;
+			objTD.innerHTML			= "There are no records to display.";
+			objTD.style.textAlign	= 'center';
+			objTR.appendChild(objTD);
+			
+			this._objPage.objTable.objTBODY.domElement.appendChild(objTR);
+		}
+		else
+		{
+			// I has recordz
+			for (var i = 0; i < objResultSet.arrResultSet.length; i++)
+			{
+				var objTR	= document.createElement('tr');
+				
+				var objTD				= document.createElement('td');
+				objTD.innerHTML			= objResultSet.arrResultSet[i].Id;
+				objTR.appendChild(objTD);
+				
+				var objTD				= document.createElement('td');
+				objTD.innerHTML			= objResultSet.arrResultSet[i].FirstName;
+				objTR.appendChild(objTD);
+				
+				var objTD				= document.createElement('td');
+				objTD.innerHTML			= objResultSet.arrResultSet[i].LastName;
+				objTR.appendChild(objTD);
+				
+				var objTD				= document.createElement('td');
+				objTD.innerHTML			= objResultSet.arrResultSet[i].UserName;
+				objTR.appendChild(objTD);
+				
+				this._objPage.objTable.objTBODY.domElement.appendChild(objTR);
+			}
+		}
+		
+		// Update pagination navigation
+		// TODO
+	},
+	
+	close			: function()
+	{
+		// Remove Event Listeners
+		this.domPopupSubmitButton.removeEventListener('click', this.submit.bindAsEventListener(this), false);
+		this.domPopupCloseButton.removeEventListener('click', this.close.bindAsEventListener(this), false);
+		
+		// Kill Popup (as much as we can)
+		this._pupPopup.setContent('');
+		this._pupPopup.hide();
+		
+		return true;
+	},
+})

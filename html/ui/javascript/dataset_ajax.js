@@ -3,9 +3,9 @@
 */
 var Dataset_Ajax	= Class.create
 ({
-	initialize	: function(intCacheMode, strJSONClass)
+	initialize	: function(intCacheMode, objJSONDefinition)
 	{
-		this._strJSONClass	= strJSONClass;
+		this._objJSONDefinition	= objJSONDefinition;
 		
 		this._strRecordSetUniquenessHash	= null;
 		
@@ -24,13 +24,13 @@ var Dataset_Ajax	= Class.create
 		if (this._intCacheMode == Dataset_Ajax.CACHE_MODE_NO_CACHING)
 		{
 			// Yes -- AJAX just this range
-			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._setCache.bind(this)), null, this._strJSONClass, 'getRecords');
-			fncJsonFunc(intLimit, intOffset);
+			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._setCache.bind(this)), null, this._objJSONDefinition.strObject, objJSONDefinition.strMethod);
+			fncJsonFunc(false, intLimit, intOffset);
 		}
 		else if (this._arrRecordCache == null)
 		{
 			// Yes -- AJAX full result set
-			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._setCache.bind(this)), null, this._strJSONClass, 'getRecords');
+			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._setCache.bind(this)), null, this._objJSONDefinition.strObject, objJSONDefinition.strMethod);
 			fncJsonFunc();
 		}
 		else
@@ -70,8 +70,8 @@ var Dataset_Ajax	= Class.create
 		
 		if (bolForceRefresh || !this._intRecordCount)
 		{
-			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecordCount.bind(this)), null, this._strJSONClass, 'getRecordCount');
-			fncJsonFunc();
+			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecordCount.bind(this)), null, , this._objJSONDefinition.strObject, objJSONDefinition.strMethod);
+			fncJsonFunc(true);
 		}
 		else
 		{

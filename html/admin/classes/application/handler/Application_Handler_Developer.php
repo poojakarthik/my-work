@@ -21,6 +21,13 @@ class Application_Handler_Developer extends Application_Handler
 																	'strURL'	=> 'new Developer_OperationPermission()'
 																)
 													);
+			$arrFunctions[]	= self::_stdClassFactory(
+														array	(
+																	'strName'	=> 'AJAX Dataset & Pagination Test',
+																	'strType'	=> self::URL_TYPE_JS,
+																	'strURL'	=> 'new Developer_DatasetPagination()'
+																)
+													);
 			
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['arrFunctions']		= $arrFunctions;
