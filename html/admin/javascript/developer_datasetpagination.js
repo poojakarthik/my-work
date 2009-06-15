@@ -132,7 +132,7 @@ var Developer_DatasetPagination	= Class.create
 			var strDebug	= '';
 			for (var i in objResultSet.arrResultSet)
 			{
-				strDebug	+= i + ": " + objResultSet[i] + "\n";
+				strDebug	+= i + ": " + objResultSet.arrResultSet[i] + "\n";
 			}
 			alert(strDebug);
 			alert(objResultSet.arrResultSet);
