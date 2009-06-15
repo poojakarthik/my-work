@@ -7,6 +7,8 @@ class HtmlTemplate_Developer_Console extends FlexHtmlTemplate
 		$this->LoadJavascript('developer_operationpermission');
 		
 		$this->LoadJavascript('developer_datasetpagination');
+		$this->LoadJavascript('dataset_ajax');
+		$this->LoadJavascript('pagination');
 	}
 
 	public function Render()
