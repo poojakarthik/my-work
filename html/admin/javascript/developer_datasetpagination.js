@@ -227,6 +227,7 @@ var Developer_DatasetPagination	= Class.create
 		// Attach onClick Event Handlers
 		if (this.objPagination.intCurrentPage != Pagination.PAGE_FIRST)
 		{
+			alert("This is not the first page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_FIRST +")");
 			this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.setAttribute('onclick', '');
 			this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.addEventListener('click', this.objPagination.firstPage.bind(this.objPagination), false);
 			
@@ -235,6 +236,7 @@ var Developer_DatasetPagination	= Class.create
 		}
 		if (this.objPagination.intCurrentPage != Pagination.PAGE_LAST)
 		{
+			alert("This is not the last page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_LAST +")");
 			this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.setAttribute('onclick', '');
 			this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.addEventListener('click', this.objPagination.nextPage.bind(this.objPagination), false);
 			
