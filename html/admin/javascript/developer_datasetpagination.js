@@ -127,6 +127,11 @@ var Developer_DatasetPagination	= Class.create
 		objPage.objTable.objTFOOT.objPagination.objLast.domElement				= document.createElement('span');
 		objPage.objTable.objTFOOT.objPagination.objLast.domElement.innerHTML	= "Last";
 		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.objLast.domElement);
+		
+		objPage.objTable.objTFOOT.objPagination.objFirst.fncCallback	= this.objPagination.firstPage.bind(this.objPagination);
+		objPage.objTable.objTFOOT.objPagination.objPrevious.fncCallback	= this.objPagination.previousPage.bind(this.objPagination);
+		objPage.objTable.objTFOOT.objPagination.objNext.fncCallback		= this.objPagination.nextPage.bind(this.objPagination);
+		objPage.objTable.objTFOOT.objPagination.objLast.fncCallback		= this.objPagination.lastPage.bind(this.objPagination);
 		//----------------------------------------------------------------//
 		
 		//----------------------------------------------------------------//
@@ -233,19 +238,19 @@ var Developer_DatasetPagination	= Class.create
 			{
 				//alert("This is not the first page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_FIRST +")");
 				this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.setAttribute('onclick', '');
-				this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.addEventListener('click', this.objPagination.firstPage.bind(this.objPagination), false);
+				this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.addEventListener('click', this._objPage.objTable.objTFOOT.objPagination.objFirst.fncCallback, false);
 				
 				this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.setAttribute('onclick', '');
-				this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.addEventListener('click', this.objPagination.previousPage.bind(this.objPagination), false);
+				this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.addEventListener('click', this._objPage.objTable.objTFOOT.objPagination.objPrevious.fncCallback, false);
 			}
 			if (this.objPagination.intCurrentPage < (intPageCount - 1) && intPageCount)
 			{
 				//alert("This is not the last page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_LAST +")");
 				this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.setAttribute('onclick', '');
-				this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.addEventListener('click', this.objPagination.nextPage.bind(this.objPagination), false);
+				this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.addEventListener('click', this._objPage.objTable.objTFOOT.objPagination.objNext.fncCallback, false);
 				
 				this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.setAttribute('onclick', '');
-				this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.addEventListener('click', this.objPagination.lastPage.bind(this.objPagination), false);
+				this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.addEventListener('click', this._objPage.objTable.objTFOOT.objPagination.objLast.fncCallback, false);
 			}
 		}
 		else
@@ -258,16 +263,16 @@ var Developer_DatasetPagination	= Class.create
 	_removePaginationEvents	: function()
 	{
 		this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.removeAttribute('onclick');
-		this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.removeEventListener('click', this.objPagination.firstPage.bind(this.objPagination), false);
+		this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.removeEventListener('click', this._objPage.objTable.objTFOOT.objPagination.objFirst.fncCallback, false);
 		
 		this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.removeAttribute('onclick');
-		this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.removeEventListener('click', this.objPagination.previousPage.bind(this.objPagination), false);
+		this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.removeEventListener('click', this._objPage.objTable.objTFOOT.objPagination.objPrevious.fncCallback, false);
 		
 		this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.removeAttribute('onclick');
-		this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.removeEventListener('click', this.objPagination.nextPage.bind(this.objPagination), false);
+		this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.removeEventListener('click', this._objPage.objTable.objTFOOT.objPagination.objNext.fncCallback, false);
 		
 		this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.removeAttribute('onclick');
-		this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.removeEventListener('click', this.objPagination.lastPage.bind(this.objPagination), false);
+		this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.removeEventListener('click', this._objPage.objTable.objTFOOT.objPagination.objLast.fncCallback, false);
 	},
 	
 	close			: function()
