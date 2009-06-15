@@ -81,7 +81,7 @@ class JSON_Handler_Employee extends JSON_Handler
 		}
 		if ($arrCount = $resCount->fetch_assoc())
 		{
-			return $resCount['employee_count'];
+			return $arrCount['employee_count'];
 		}
 	}
 }
