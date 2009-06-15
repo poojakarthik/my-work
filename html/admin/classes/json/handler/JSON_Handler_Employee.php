@@ -50,7 +50,7 @@ class JSON_Handler_Employee extends JSON_Handler
 				return array(
 								"Success"			=> true,
 								"arrRecords"		=> $arrEmployees,
-								"intRecordCount"	=> ($intLimit === null) ? count($arrEmployees) : self::getRecordCount(),
+								"intRecordCount"	=> ($intLimit === null) ? count($arrEmployees) : self::_getRecordCount(),
 								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
