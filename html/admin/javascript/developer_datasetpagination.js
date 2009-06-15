@@ -3,7 +3,7 @@ var Developer_DatasetPagination	= Class.create
 	initialize	: function()
 	{
 		// Init Dataset & Pagination
-		this.objDataset		= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_FULL_CACHING, {strObject: 'JSON_Handler_Employee', strMethod: 'getRecords'});
+		this.objDataset		= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_FULL_CACHING, {strObject: 'Employee', strMethod: 'getRecords'});
 		this.objPagination	= new Pagination(this._updateTable.bind(this), 30, this.objDataset);
 		
 		// Init Popup	
