@@ -23,6 +23,9 @@ var Developer_DatasetPagination	= Class.create
 		this.domPopupCloseButton.addEventListener('click', this.close.bindAsEventListener(this), false);
 		
 		this._pupPopup.setFooterButtons([this.domPopupSubmitButton, this.domPopupCloseButton], true);
+		
+		// Draw the Popup
+		this._renderPopup();
 	},
 	
 	_renderPopup	: function()
