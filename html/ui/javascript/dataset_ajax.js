@@ -133,5 +133,5 @@ var Dataset_Ajax	= Class.create
 });
 
 Dataset_Ajax.CACHE_MODE_NO_CACHING			= 0;
-Dataset_Ajax.CACHE_MODE_FULL_CACHING			= 1;
+Dataset_Ajax.CACHE_MODE_FULL_CACHING		= 1;
 Dataset_Ajax.CACHE_MODE_PROGRESSIVE_CACHING	= 2;

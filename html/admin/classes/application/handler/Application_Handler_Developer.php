@@ -25,14 +25,14 @@ class Application_Handler_Developer extends Application_Handler
 														array	(
 																	'strName'	=> 'AJAX Dataset & Pagination Test (Cached)',
 																	'strType'	=> self::URL_TYPE_JS,
-																	'strURL'	=> 'new Developer_DatasetPagination(Dataset_Ajax.CACHE_MODE_FULL_CACHING);'
+																	'strURL'	=> 'new Developer_DatasetPagination(1);'
 																)
 													);
 			$arrFunctions[]	= self::_stdClassFactory(
 														array	(
 																	'strName'	=> 'AJAX Dataset & Pagination Test (Uncached)',
 																	'strType'	=> self::URL_TYPE_JS,
-																	'strURL'	=> 'new Developer_DatasetPagination(Dataset_Ajax.CACHE_MODE_NO_CACHING);'
+																	'strURL'	=> 'new Developer_DatasetPagination(0);'
 																)
 													);
 			
