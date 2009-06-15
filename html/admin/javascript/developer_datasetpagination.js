@@ -156,6 +156,7 @@ var Developer_DatasetPagination	= Class.create
 		// Update the Popup
 		this._pupPopup.setContent(this._objPage.domElement);
 		this._updateTable();
+		this._pupPopup.display();
 		
 		// Load the data
 		this.objPagination.getCurrentPage();
@@ -223,9 +224,6 @@ var Developer_DatasetPagination	= Class.create
 		
 		// Update pagination navigation
 		this._updatePagination();
-		
-		// Display the popup (if it isn't already)
-		this._pupPopup.display();
 	},
 	
 	_updatePagination	: function(intPageCount)
