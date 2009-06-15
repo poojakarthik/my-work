@@ -251,7 +251,7 @@ var Developer_DatasetPagination	= Class.create
 		
 		var objPipe	= document.createElement('span');
 		objPipe.innerHTML	= '&nbsp;|&nbsp;';
-		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPipe);
+		this._objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPipe);
 		
 		// Next
 		this._objPage.objTable.objTFOOT.objPagination.objNext						= {};
@@ -261,7 +261,7 @@ var Developer_DatasetPagination	= Class.create
 		
 		var objPipe	= document.createElement('span');
 		objPipe.innerHTML	= '&nbsp;|&nbsp;';
-		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPipe);
+		this._objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPipe);
 		
 		// Last
 		this._objPage.objTable.objTFOOT.objPagination.objLast						= {};
@@ -292,10 +292,17 @@ var Developer_DatasetPagination	= Class.create
 	
 	_removePaginationEvents	: function()
 	{
-		if (this._bolPaginationSet)
-		{
-			
-		}
+		this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.removeAttribute('onclick');
+		this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.removeEventListener('click', this.objPagination.firstPage.bind(this.objPagination), false);
+
+		this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.removeAttribute('onclick');
+		this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.removeEventListener('click', this.objPagination.previousPage.bind(this.objPagination), false);
+
+		this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.removeAttribute('onclick');
+		this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.removeEventListener('click', this.objPagination.nextPage.bind(this.objPagination), false);
+
+		this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.removeAttribute('onclick');
+		this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.removeEventListener('click', this.objPagination.lastPage.bind(this.objPagination), false);
 	},
 	
 	close			: function()
