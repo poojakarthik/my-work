@@ -83,7 +83,7 @@ var Dataset_Ajax	= Class.create
 	{
 		this._intRecordCount	= objResponse.intRecordCount;
 		fncCallback(this._intRecordCount);
-	}
+	},
 	
 	_setCache	: function(objResponse)
 	{
