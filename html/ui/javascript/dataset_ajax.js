@@ -42,6 +42,7 @@ var Dataset_Ajax	= Class.create
 	
 	_getRecords	: function(fncCallback, intLimit, intOffset, objResponse)
 	{
+		alert("Setting Cache...");
 		this._setCache(objResponse);
 		
 		// Choose our results
@@ -59,7 +60,8 @@ var Dataset_Ajax	= Class.create
 		{
 			this.emptyCache();
 		}
-		
+
+		alert("Dataset returned, sending to Pagination callback...");
 		// "Return" the Results via callback
 		fncCallback(this._intRecordCount, arrResultSet);
 	},
