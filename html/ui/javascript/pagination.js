@@ -2,7 +2,7 @@ var Pagination	= Class.create
 ({
 	initialize	: function(fncUpdateCallback, intPageSize, objDataset)
 	{
-		this._intCurrentPage	= 0;
+		this.intCurrentPage		= 0;
 		this._intPageSize		= intPageSize;
 		
 		this._objDataset		= objDataset;
@@ -13,7 +13,7 @@ var Pagination	= Class.create
 	// getCurrentPage()
 	getCurrentPage	: function()
 	{
-		this._objDataset.getRecords(this._getCurrentPage.bind(this), this._intPageSize, this._intCurrentPage * this._intPageSize);
+		this._objDataset.getRecords(this._getCurrentPage.bind(this), this._intPageSize, this.intCurrentPage * this._intPageSize);
 	},
 	
 	_getCurrentPage	: function(intTotalResults, arrResultSet)
@@ -22,7 +22,7 @@ var Pagination	= Class.create
 		var objResultSet	=	{
 									intTotalResults	: intTotalResults,
 									arrResultSet	: arrResultSet,
-									intCurrentPage	: this._intCurrentPage,
+									intCurrentPage	: this.intCurrentPage,
 									intPageSize		: this._intPageSize,
 									intPageCount	: this._calculatePageCount(intTotalResults)
 								}
@@ -49,13 +49,13 @@ var Pagination	= Class.create
 	// nextPage()
 	nextPage		: function()
 	{
-		this.jumpToPage(this._intCurrentPage + 1);
+		this.jumpToPage(this.intCurrentPage + 1);
 	},
 
 	// previousPage()
 	previousPage	: function()
 	{
-		this.jumpToPage(Math.max(this._intCurrentPage - 1, 0));
+		this.jumpToPage(Math.max(this.intCurrentPage - 1, 0));
 	},
 
 	// firstPage()
@@ -84,7 +84,8 @@ var Pagination	= Class.create
 			intPageNumber	= intPageCount-1;
 		}
 		
-		this._intCurrentPage	= intPageNumber;
+		this.intCurrentPage	= intPageNumber;
+		alert("Current Page: "+this.intCurrentPage);
 		return this.getCurrentPage();
 	},
 	
