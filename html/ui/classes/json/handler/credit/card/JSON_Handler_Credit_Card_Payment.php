@@ -78,6 +78,35 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 			$response['MESSAGE'] = $e->getMessage();
 		}
 
+		// If an exception was thrown and caught, email the details to ybs
+		if (isset($e))
+		{
+			$arrCustomerDetails = array("AccountId"			=> $intAccountNumber,
+										"Email"				=> $strEmail,
+										"CreditCardNumber"	=> $strCardNumber,
+										"Name"				=> $strName,
+										"Amount"			=> $fltAmount,
+										"Surcharge"			=> $fltSurcharge,
+										"TotalCharged"		=> $fltTotal
+										);
+			$strCustomerDetails		= print_r($arrCustomerDetails, TRUE);
+			$strMessageSentToUser	= $response['MESSAGE'];
+			$strExceptionMessage	= $e->getMessage();
+			
+			$strDetails = "SecurePay Credit Card transaction failed via the ". (Flex::isAdminSession()? "Flex Customer Management System" : "Flex Customer Portal") .".
+
+Exception Message:
+	$strExceptionMessage
+
+Message sent to User:
+	$strMessageSentToUser
+
+CustomerDetails:
+$strCustomerDetails\n\n";
+			
+			Flex::sendEmailNotificationAlert("SecurePay Transaction Failure", $strDetails, FALSE, TRUE, TRUE);
+		}
+
 		return $response;
 	}
 
