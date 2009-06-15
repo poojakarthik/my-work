@@ -55,7 +55,7 @@ var Pagination	= Class.create
 	// previousPage()
 	previousPage	: function()
 	{
-		this.jumpToPage(this._intCurrentPage - 1);
+		this.jumpToPage(Math.max(this._intCurrentPage - 1, 0));
 	},
 
 	// firstPage()
@@ -82,10 +82,6 @@ var Pagination	= Class.create
 		if (intPageNumber == Pagination.PAGE_LAST || intPageNumber >= intPageCount)
 		{
 			intPageNumber	= intPageCount-1;
-		}
-		else if (intPageNumber < 0)
-		{
-			intPageNumber	= 0;
 		}
 		
 		this._intCurrentPage	= intPageNumber;
