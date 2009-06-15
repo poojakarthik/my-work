@@ -153,7 +153,7 @@ var Developer_DatasetPagination	= Class.create
 	close			: function()
 	{
 		// Remove Event Listeners
-		this.domPopupSubmitButton.removeEventListener('click', this.submit.bindAsEventListener(this), false);
+		this.domPopupSubmitButton.removeEventListener('click', this.objPagination.getCurrentPage.bind(this.objPagination), false);
 		this.domPopupCloseButton.removeEventListener('click', this.close.bindAsEventListener(this), false);
 		
 		// Kill Popup (as much as we can)
