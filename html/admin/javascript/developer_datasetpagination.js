@@ -129,17 +129,17 @@ var Developer_DatasetPagination	= Class.create
 		{
 			this._objPage.objDebugConsole.domElement.innerHTML	+= "&nbsp;&nbsp;&nbsp;&nbsp;[+] I has Recordz!<br />";
 			
-			var strDebug	= '';
+			/*var strDebug	= '';
 			for (var i in objResultSet.arrResultSet)
 			{
 				strDebug	+= i + ": " + objResultSet.arrResultSet[i] + "\n";
 			}
 			alert(strDebug);
 			alert(objResultSet.arrResultSet);
-			alert(objResultSet.arrResultSet.length);
+			alert(objResultSet.arrResultSet.length);*/
 			
 			// I has recordz
-			for (var i = 0; i < objResultSet.arrResultSet.length; i++)
+			for (var i in objResultSet.arrResultSet)
 			{
 				var objTR	= document.createElement('tr');
 				
