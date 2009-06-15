@@ -18,6 +18,7 @@ var Pagination	= Class.create
 	
 	_getCurrentPage	: function(intTotalResults, arrResultSet)
 	{
+		alert("Page returned, sending to callback...");
 		var objResultSet	=	{
 									intTotalResults	: intTotalResults,
 									arrResultSet	: arrResultSet,
