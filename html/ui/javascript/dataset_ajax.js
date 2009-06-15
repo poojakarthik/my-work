@@ -70,7 +70,7 @@ var Dataset_Ajax	= Class.create
 		
 		if (bolForceRefresh || !this._intRecordCount)
 		{
-			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecordCount.bind(this)), null, , this._objJSONDefinition.strObject, objJSONDefinition.strMethod);
+			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecordCount.bind(this)), null, this._objJSONDefinition.strObject, objJSONDefinition.strMethod);
 			fncJsonFunc(true);
 		}
 		else
