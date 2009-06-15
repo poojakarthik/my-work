@@ -103,11 +103,14 @@ var Developer_DatasetPagination	= Class.create
 	_updateTable	: function(objResultSet)
 	{
 		// Dump existing content
+		this._objPage.objDebugConsole.domElement.innerHTML	+= "Updating Table content...<br />";
 		this._objPage.objTable.objTBODY.domElement.innerHTML	= '';
 		
 		// Update content
 		if (!objResultSet || objResultSet.intTotalResults == 0 || objResultSet.arrResultSet.length == 0)
 		{
+			this._objPage.objDebugConsole.domElement.innerHTML	+= "&nbsp;&nbsp;&nbsp;&nbsp;[-] No Records to Display<br />";
+			
 			// No records
 			var objTR	= document.createElement('tr');
 			
@@ -121,6 +124,8 @@ var Developer_DatasetPagination	= Class.create
 		}
 		else
 		{
+			this._objPage.objDebugConsole.domElement.innerHTML	+= "&nbsp;&nbsp;&nbsp;&nbsp;[+] I has Recordz!<br />";
+			
 			// I has recordz
 			for (var i = 0; i < objResultSet.arrResultSet.length; i++)
 			{
