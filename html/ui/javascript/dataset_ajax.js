@@ -108,12 +108,12 @@ var Dataset_Ajax	= Class.create
 		{
 			// LEGAL VALUES
 			case Dataset_Ajax.CACHE_MODE_NO_CACHING:
-				alert("I am UNCACHED");
+				//alert("I am UNCACHED");
 				this.emptyCache();
 				break;
 				
 			case Dataset_Ajax.CACHE_MODE_FULL_CACHING:
-				alert("I am CACHED");
+				//alert("I am CACHED");
 				break;
 			
 			// ILLEGAL VALUES
