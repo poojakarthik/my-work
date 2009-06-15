@@ -44,7 +44,7 @@ var Dataset_Ajax	= Class.create
 	{
 		if (objResponse)
 		{
-			alert("Setting Cache...");
+			//alert("Setting Cache...");
 			this._setCache(objResponse);
 		}
 		
@@ -64,7 +64,7 @@ var Dataset_Ajax	= Class.create
 			this.emptyCache();
 		}
 
-		alert("Dataset returned, sending to Pagination callback...");
+		//alert("Dataset returned, sending to Pagination callback...");
 		// "Return" the Results via callback
 		fncCallback(this._intRecordCount, arrResultSet);
 	},
