@@ -129,6 +129,8 @@ var Developer_DatasetPagination	= Class.create
 		{
 			this._objPage.objDebugConsole.domElement.innerHTML	+= "&nbsp;&nbsp;&nbsp;&nbsp;[+] I has Recordz!<br />";
 			
+			alert(objResultSet.inspect());
+			
 			// I has recordz
 			for (var i = 0; i < objResultSet.arrResultSet.length; i++)
 			{
