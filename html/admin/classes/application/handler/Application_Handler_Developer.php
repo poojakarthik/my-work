@@ -18,14 +18,21 @@ class Application_Handler_Developer extends Application_Handler
 														array	(
 																	'strName'	=> 'Operation-based Permission Tests',
 																	'strType'	=> self::URL_TYPE_JS,
-																	'strURL'	=> 'new Developer_OperationPermission()'
+																	'strURL'	=> 'new Developer_OperationPermission();'
 																)
 													);
 			$arrFunctions[]	= self::_stdClassFactory(
 														array	(
-																	'strName'	=> 'AJAX Dataset & Pagination Test',
+																	'strName'	=> 'AJAX Dataset & Pagination Test (Cached)',
 																	'strType'	=> self::URL_TYPE_JS,
-																	'strURL'	=> 'new Developer_DatasetPagination()'
+																	'strURL'	=> 'new Developer_DatasetPagination(Dataset_Ajax.CACHE_MODE_FULL_CACHING);'
+																)
+													);
+			$arrFunctions[]	= self::_stdClassFactory(
+														array	(
+																	'strName'	=> 'AJAX Dataset & Pagination Test (Uncached)',
+																	'strType'	=> self::URL_TYPE_JS,
+																	'strURL'	=> 'new Developer_DatasetPagination(Dataset_Ajax.CACHE_MODE_NO_CACHING);'
 																)
 													);
 			
