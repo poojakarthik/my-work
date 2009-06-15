@@ -49,13 +49,13 @@ var Pagination	= Class.create
 	// nextPage()
 	nextPage		: function()
 	{
-		this.jumpToPage(this._intCurrentPage++);
+		this.jumpToPage(this._intCurrentPage + 1);
 	},
 
 	// previousPage()
 	previousPage	: function()
 	{
-		this.jumpToPage(Math.min(this._intCurrentPage--, 0));
+		this.jumpToPage(this._intCurrentPage - 1);
 	},
 
 	// firstPage()
@@ -79,9 +79,13 @@ var Pagination	= Class.create
 	
 	_jumpToPage	: function(intPageNumber, intPageCount)
 	{
-		if (intPageNumber == Pagination.PAGE_LAST || intPageNumber > intPageCount)
+		if (intPageNumber == Pagination.PAGE_LAST || intPageNumber >= intPageCount)
 		{
 			intPageNumber	= intPageCount-1;
+		}
+		else if (intPageNumber < 0)
+		{
+			intPageNumber	= 0;
 		}
 		
 		this._intCurrentPage	= intPageNumber;
