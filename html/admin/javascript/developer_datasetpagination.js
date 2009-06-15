@@ -220,30 +220,37 @@ var Developer_DatasetPagination	= Class.create
 		this._updatePagination();
 	},
 	
-	_updatePagination	: function()
+	_updatePagination	: function(intPageCount)
 	{
-		this._removePaginationEvents();
-		
-		// Attach onClick Event Handlers
-		var intPageCount	= this.objPagination.getPageCount();
-		alert("Page Count: " + intPageCount);
-		if (this.objPagination.intCurrentPage != Pagination.PAGE_FIRST)
+		if (intPageCount)
 		{
-			alert("This is not the first page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_FIRST +")");
-			this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.setAttribute('onclick', '');
-			this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.addEventListener('click', this.objPagination.firstPage.bind(this.objPagination), false);
+			this._removePaginationEvents();
 			
-			this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.setAttribute('onclick', '');
-			this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.addEventListener('click', this.objPagination.previousPage.bind(this.objPagination), false);
+			// Attach onClick Event Handlers
+			alert("Page Count: " + intPageCount);
+			if (this.objPagination.intCurrentPage != Pagination.PAGE_FIRST)
+			{
+				alert("This is not the first page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_FIRST +")");
+				this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.setAttribute('onclick', '');
+				this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.addEventListener('click', this.objPagination.firstPage.bind(this.objPagination), false);
+				
+				this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.setAttribute('onclick', '');
+				this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.addEventListener('click', this.objPagination.previousPage.bind(this.objPagination), false);
+			}
+			if (this.objPagination.intCurrentPage != (this.objPagination.getPageCount() - 1) && intPageCount)
+			{
+				alert("This is not the last page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_LAST +")");
+				this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.setAttribute('onclick', '');
+				this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.addEventListener('click', this.objPagination.nextPage.bind(this.objPagination), false);
+				
+				this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.setAttribute('onclick', '');
+				this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.addEventListener('click', this.objPagination.lastPage.bind(this.objPagination), false);
+			}
 		}
-		if (this.objPagination.intCurrentPage != (this.objPagination.getPageCount() - 1) && intPageCount)
+		else
 		{
-			alert("This is not the last page (" + this.objPagination.intCurrentPage + " != " + Pagination.PAGE_LAST +")");
-			this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.setAttribute('onclick', '');
-			this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.addEventListener('click', this.objPagination.nextPage.bind(this.objPagination), false);
-			
-			this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.setAttribute('onclick', '');
-			this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.addEventListener('click', this.objPagination.lastPage.bind(this.objPagination), false);
+			// Get the page count
+			this.objPagination.getPageCount(this._updatePagination.bind(this));
 		}
 	},
 	
