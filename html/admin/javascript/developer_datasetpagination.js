@@ -180,7 +180,7 @@ var Developer_DatasetPagination	= Class.create
 		}
 		else
 		{
-			this._objPage.objDebugConsole.domElement.innerHTML	+= "&nbsp;&nbsp;&nbsp;&nbsp;[+] I has " + objResultSet.arrResultSet.keys().length + " Recordz!<br />";
+			this._objPage.objDebugConsole.domElement.innerHTML	+= "&nbsp;&nbsp;&nbsp;&nbsp;[+] I has " + Object.keys(objResultSet.arrResultSet).length + " Recordz!<br />";
 			
 			/*var strDebug	= '';
 			for (var i in objResultSet.arrResultSet)
