@@ -78,7 +78,6 @@ var Developer_DatasetPagination	= Class.create
 		objPage.objTable.objTBODY.domElement	= document.createElement('tbody');
 		objPage.objTable.domElement.appendChild(objPage.objTable.objTBODY.domElement);
 		//----------------------------------------------------------------//
-		
 
 		//----------------------------------------------------------------//
 		// Table Footer
@@ -181,7 +180,7 @@ var Developer_DatasetPagination	= Class.create
 		}
 		else
 		{
-			this._objPage.objDebugConsole.domElement.innerHTML	+= "&nbsp;&nbsp;&nbsp;&nbsp;[+] I has Recordz!<br />";
+			this._objPage.objDebugConsole.domElement.innerHTML	+= "&nbsp;&nbsp;&nbsp;&nbsp;[+] I has " + objResultSet.arrResultSet.keys().length + " Recordz!<br />";
 			
 			/*var strDebug	= '';
 			for (var i in objResultSet.arrResultSet)
@@ -242,8 +241,6 @@ var Developer_DatasetPagination	= Class.create
 			this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.setAttribute('onclick', '');
 			this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.addEventListener('click', this.objPagination.lastPage.bind(this.objPagination), false);
 		}
-		
-		this._bolPaginationSet	= true;
 	},
 	
 	_removePaginationEvents	: function()
