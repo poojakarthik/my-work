@@ -2,6 +2,10 @@ var Developer_DatasetPagination	= Class.create
 ({
 	initialize	: function()
 	{
+		// Init Dataset & Pagination
+		this.objDataset		= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_FULL_CACHING, {strObject: 'JSON_Handler_Employee', strMethod: 'getRecords'});
+		this.objPagination	= new Pagination(this._updateTable.bind(this), 30, this.objDataset);
+		
 		// Init Popup	
 		this._pupPopup	= new Reflex_Popup(40);
 		
@@ -11,7 +15,7 @@ var Developer_DatasetPagination	= Class.create
 		this.domPopupSubmitButton		= document.createElement('input');
 		this.domPopupSubmitButton.type	= 'button';
 		this.domPopupSubmitButton.value	= 'Refresh';
-		this.domPopupSubmitButton.addEventListener('click', this.submit.bind(this, null), false);
+		this.domPopupSubmitButton.addEventListener('click', this.objPagination.getCurrentPage.bind(this.objPagination), false);
 		
 		this.domPopupCloseButton		= document.createElement('input');
 		this.domPopupCloseButton.type	= 'button';
@@ -19,10 +23,6 @@ var Developer_DatasetPagination	= Class.create
 		this.domPopupCloseButton.addEventListener('click', this.close.bindAsEventListener(this), false);
 		
 		this._pupPopup.setFooterButtons([this.domPopupSubmitButton, this.domPopupCloseButton], true);
-		
-		// Init Dataset & Pagination
-		this.objDataset		= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_FULL_CACHING, {strObject: 'JSON_Handler_Employee', strMethod: 'getRecords'});
-		this.objPagination	= new Pagination(this._updateTable.bind(this), 30, this.objDataset);
 	},
 	
 	_renderPopup	: function()
