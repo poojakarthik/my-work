@@ -20,7 +20,7 @@ class JSON_Handler_Employee extends JSON_Handler
 				// Count Only
 				return array(
 								"Success"			=> true,
-								"intRecordCount"	=> self::getRecordCount(),
+								"intRecordCount"	=> self::_getRecordCount(),
 								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
