@@ -222,6 +222,7 @@ var Developer_DatasetPagination	= Class.create
 	
 	_updatePagination	: function()
 	{
+		return;
 		this._removePaginationEvents();
 		
 		// Attach onClick Event Handlers
@@ -247,13 +248,13 @@ var Developer_DatasetPagination	= Class.create
 	{
 		this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.removeAttribute('onclick');
 		this._objPage.objTable.objTFOOT.objPagination.objFirst.domElement.removeEventListener('click', this.objPagination.firstPage.bind(this.objPagination), false);
-
+		
 		this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.removeAttribute('onclick');
 		this._objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.removeEventListener('click', this.objPagination.previousPage.bind(this.objPagination), false);
-
+		
 		this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.removeAttribute('onclick');
 		this._objPage.objTable.objTFOOT.objPagination.objNext.domElement.removeEventListener('click', this.objPagination.nextPage.bind(this.objPagination), false);
-
+		
 		this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.removeAttribute('onclick');
 		this._objPage.objTable.objTFOOT.objPagination.objLast.domElement.removeEventListener('click', this.objPagination.lastPage.bind(this.objPagination), false);
 	},
