@@ -10,7 +10,7 @@ var Dataset_Ajax	= Class.create
 		this._strRecordSetUniquenessHash	= null;
 		
 		// Caching Details
-		this._intCacheMode			= intCacheMode;
+		this.setCacheMode(intCacheMode);
 		this._arrRecordCache		= null;
 		this._intRecordCount		= null;
 	},
