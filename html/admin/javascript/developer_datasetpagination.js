@@ -79,6 +79,60 @@ var Developer_DatasetPagination	= Class.create
 		objPage.objTable.domElement.appendChild(objPage.objTable.objTBODY.domElement);
 		//----------------------------------------------------------------//
 		
+
+		//----------------------------------------------------------------//
+		// Table Footer
+		//----------------------------------------------------------------//
+		objPage.objTable.objTFOOT				= {};
+		objPage.objTable.objTFOOT.domElement	= document.createElement('tfoot');
+		objPage.objTable.domElement.appendChild(objPage.objTable.objTFOOT.domElement);
+		
+		objPage.objTable.objTFOOT.objPagination								= {};
+		objPage.objTable.objTFOOT.objPagination.domElement					= document.createElement('th');
+		objPage.objTable.objTFOOT.objPagination.domElement.style.textAlign	= "right";
+		objPage.objTable.objTFOOT.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.domElement);
+		
+		// First
+		objPage.objTable.objTFOOT.objPagination.objFirst						= {};
+		objPage.objTable.objTFOOT.objPagination.objFirst.domElement				= document.createElement('a');
+		objPage.objTable.objTFOOT.objPagination.objFirst.domElement.innerHTML	= "First";
+		objPage.objTable.objTFOOT.objPagination.objFirst.domElement.addEventListener('click', this.objPagination.firstPage.bind(this.objPagination), false);
+		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.objFirst.domElement);
+		
+		var objPipe	= document.createElement('span');
+		objPipe.innerHTML	= '&nbsp;|&nbsp;';
+		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPipe);
+		
+		// Previous
+		objPage.objTable.objTFOOT.objPagination.objPrevious							= {};
+		objPage.objTable.objTFOOT.objPagination.objPrevious.domElement				= document.createElement('a');
+		objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.innerHTML	= "Previous";
+		objPage.objTable.objTFOOT.objPagination.objPrevious.domElement.addEventListener('click', this.objPagination.previousPage.bind(this.objPagination), false);
+		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.objPrevious.domElement);
+		
+		var objPipe	= document.createElement('span');
+		objPipe.innerHTML	= '&nbsp;|&nbsp;';
+		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPipe);
+		
+		// Next
+		objPage.objTable.objTFOOT.objPagination.objNext							= {};
+		objPage.objTable.objTFOOT.objPagination.objNext.domElement				= document.createElement('a');
+		objPage.objTable.objTFOOT.objPagination.objNext.domElement.innerHTML	= "Next";
+		objPage.objTable.objTFOOT.objPagination.objNext.domElement.addEventListener('click', this.objPagination.nextPage.bind(this.objPagination), false);
+		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.objNext.domElement);
+		
+		var objPipe	= document.createElement('span');
+		objPipe.innerHTML	= '&nbsp;|&nbsp;';
+		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPipe);
+		
+		// Last
+		objPage.objTable.objTFOOT.objPagination.objLast							= {};
+		objPage.objTable.objTFOOT.objPagination.objLast.domElement				= document.createElement('a');
+		objPage.objTable.objTFOOT.objPagination.objLast.domElement.innerHTML	= "Last";
+		objPage.objTable.objTFOOT.objPagination.objLast.domElement.addEventListener('click', this.objPagination.lastPage.bind(this.objPagination), false);
+		objPage.objTable.objTFOOT.objPagination.domElement.appendChild(objPage.objTable.objTFOOT.objPagination.objPrevious.domElement);
+		//----------------------------------------------------------------//
+		
 		//----------------------------------------------------------------//
 		// Debug "Console"
 		//----------------------------------------------------------------//
@@ -164,7 +218,7 @@ var Developer_DatasetPagination	= Class.create
 		}
 		
 		// Update pagination navigation
-		// TODO
+		// TODO?
 	},
 	
 	close			: function()
