@@ -219,9 +219,9 @@ class AppTemplateInvoice extends ApplicationTemplate
 		
 		
 		$strCallDetailsCSV = "";
-		$arrColumnNames = Array("ServiceType", "FNN", "Call Type", "Start Time", "Called Party", "Duration", "Units", "Charge (\$)", "Description");
-		$arrColumnOrder = Array("ServiceType", "FNN", "Call Type", "Start Time", "Called Party", "Duration", "UnitType", "Charge", "Description");
-		$arrBlankRecord = Array(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); 
+		$arrColumnNames = Array("ServiceType", "FNN", "Source", "Call Type", "Start Time", "Called Party", "Duration", "Units", "Charge (\$)", "Description");
+		$arrColumnOrder = Array("ServiceType", "FNN", "Source", "Call Type", "Start Time", "Called Party", "Duration", "UnitType", "Charge", "Description");
+		$arrBlankRecord = Array(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); 
 		
 		// Add the head record to the CSV file
 		$strCallDetailsCSV = MakeCSVLine($arrColumnNames);
