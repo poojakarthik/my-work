@@ -309,7 +309,7 @@ class Dealer
 	// Retrieves all top-level Dealers (Call Centres)
 	public static function getCallCentres()
 	{
-		return self::getFor("up_line_id IS NULL AND carrier_id IS NOT NULL");
+		return self::getFor("up_line_id IS NULL AND carrier_id IS NOT NULL AND dealer_status_id = ". Dealer_Status::ACTIVE);
 	}
 	
 	// Retrieves all dealers who can safely be made the manager of $intDealerId

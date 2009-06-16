@@ -131,7 +131,7 @@ var Telemarketing_PermittedDownload	= Class.create
 		"		</table>\n" + 
 		"	</div>\n" + 
 		"	<div style='width:100%; margin: 0 auto; text-align:center;'>\n" +
-		"		<input type='submit' id='Telemarketing_PermittedDownload_Download' value='Download' style='margin-left:3px' /> \n" +
+		"		<input type='submit' class='normal-button' id='Telemarketing_PermittedDownload_Download' value='Download' style='margin-left:3px' /> \n" +
 		"		<input type='button' id='Telemarketing_PermittedDownload_Cancel' value='Close' onclick='Vixen.Popup.Close(this)' style='margin-left:3px' /> \n" + 
 		"	</div>\n\n" +
 		"</form>\n\n"; 

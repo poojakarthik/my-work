@@ -162,20 +162,24 @@ function VixenValidateAdjustmentClass()
 			if (this._objChargeTypeData[intChargeTypeId].Nature == "CR")
 			{
 				// Credit adjustmemt
-				strMsg = "<strong>Please Note:</strong>" +
+				/*strMsg = "<strong>Please Note:</strong>" +
 						"<ol>" +
 						"   <li>You are requesting a credit adjustment for approval</li>" +
 						"   <li>Ensure you have not notified the customer that this credit is approved</li>" +
 						"   <li>Deliberation of a credit request can take up to 28 days</li>" +
 						"</ol>" +
 						"Are you sure you want to submit this request?";
+				*/
+				strMsg = "Are you sure you want to submit this Credit Adjustment Request?";
 			}
 			else if (this._objChargeTypeData[intChargeTypeId].Nature == "DR")
 			{
 				// Debit adjustment
-				strMsg = "Are you requesting a Debit Adjustment.  " +
+				/*strMsg = "Are you requesting a Debit Adjustment.  " +
 						"While requests for Debit Adjustments are usually approved, the deliberation process can still take up to 28 days." +
 						"<br /><br />Are you sure you want to submit this request?";
+				*/
+				strMsg = "Are you sure you want to submit this Debit Adjustment Request?";
 			}
 			else
 			{
