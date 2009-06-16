@@ -177,12 +177,12 @@ class Document extends ORM
 	public function setStatus($intStatus)
 	{
 		// Get current Document Content
-		$objContent	= $this->getContent();
+		$objOldContent	= $this->getContent();
 		
 		$intStatus	= (int)$intStatus;
-		if ($objContent && $objContent->status_id !== $intStatus)
+		if ($objOldContent && $objOldContent->status_id !== $intStatus)
 		{
-			$objContent->id			= null;
+			$objContent				= clone $objOldContent;
 			$objContent->changed_on	= null;
 			switch ($intStatus)
 			{

@@ -74,8 +74,9 @@ class Application_Handler_Document extends Application_Handler
 			{
 				// Load the Document & its Content
 				$objDocument						= new Document(array('id'=>$intDocumentId), true);
-				$objDocumentContent					= $objDocument->getContent();
-				$objDocumentContent->id				= null;
+				$objOldDocumentContent				= $objDocument->getContent();
+				
+				$objDocumentContent					= clone $objOldDocumentContent;
 				$objDocumentContent->changed_on		= null;
 			}
 			
