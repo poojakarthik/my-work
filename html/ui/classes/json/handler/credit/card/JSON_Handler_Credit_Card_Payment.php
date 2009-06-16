@@ -83,7 +83,7 @@ class JSON_Handler_Credit_Card_Payment extends JSON_Handler
 		{
 			$arrCustomerDetails = array("AccountId"			=> $intAccountNumber,
 										"Email"				=> $strEmail,
-										"CreditCardNumber"	=> $strCardNumber,
+										"CreditCardNumber"	=> substr($strCardNumber, 0, 3) ."***". substr($strCardNumber, -5),
 										"Name"				=> $strName,
 										"Amount"			=> $fltAmount,
 										"Surcharge"			=> $fltSurcharge,
