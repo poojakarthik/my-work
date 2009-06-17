@@ -25,7 +25,7 @@ var Control_Tab_Group	= Class.create
 	addTab		: function(strAlias, objControlTab)
 	{
 		// Check the Alias is valid and unique
-		if (strAlias.search("/^[a-z\_][\w]*$/i") == -1)
+		if (strAlias.search(/^[a-z\_][\w]*$/i) == -1)
 		{
 			throw "Tab alias '" + strAlias + "' is invalid!";
 		}
@@ -42,7 +42,7 @@ var Control_Tab_Group	= Class.create
 		
 		var domTabButton		= document.createElement('div');
 		domTabButton.className	= 'tab';
-		domTabButton.innerHTML	= objControlTab.getName().replace("/&/gmi", '&amp;').replace('/"/gmi', '&quot;').replace("/>/gmi", '&gt;').replace("/</gmi", '&lt;');
+		domTabButton.innerHTML	= objControlTab.getName().replace(/&/gmi, '&amp;').replace(/"/gmi, '&quot;').replace(/>/gmi, '&gt;').replace(/</gmi, '&lt;');
 		
 		this._arrTabs.push({strAlias: strAlias, domTabButton: domTabButton, objPage: objTabPage, objControlTab: objControlTab});
 		
