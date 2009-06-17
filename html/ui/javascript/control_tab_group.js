@@ -47,7 +47,10 @@ var Control_Tab_Group	= Class.create
 		this._arrTabs.push({strAlias: strAlias, domTabButton: domTabButton, objPage: objPage, objControlTab: objControlTab});
 		
 		// If this is the first tab, then select it
-		this.switchToTab(strAlias);
+		if (this._arrTabs.length == 1)
+		{
+			this.switchToTab(strAlias);
+		}
 	},
 	
 	switchToTab	: function(mixTab)
