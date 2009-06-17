@@ -2,7 +2,7 @@ var Control_Tab	= Class.create
 ({
 	initialize	: function(strName, objContentDIV)
 	{
-		this.setName(strName);
+		this.strName	= strName;
 		this.setContent(objContentDIV);
 	},
 	
