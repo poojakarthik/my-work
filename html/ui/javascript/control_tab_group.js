@@ -38,11 +38,13 @@ var Control_Tab_Group	= Class.create
 		// Add the Tab to this Group
 		var objPage				= document.createElement('div');
 		objPage.style.display	= 'none';
+		objPage.appendChild(objControlTab.getContent());
 		this.objContainer.objPageContainer.domElement.appendChild(objPage);
 		
 		var domTabButton		= document.createElement('div');
 		domTabButton.className	= 'tab';
 		domTabButton.innerHTML	= objControlTab.getName().replace(/&/gmi, '&amp;').replace(/"/gmi, '&quot;').replace(/>/gmi, '&gt;').replace(/</gmi, '&lt;');
+		domTabButton.attachEventListener();
 		
 		this.objContainer.objTabRow.domElement.appendChild(domTabButton);
 		
