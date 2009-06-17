@@ -16,6 +16,12 @@ var Control_Tab_Group	= Class.create
 		this.objContainer.objTabRow.domElement.className	= 'tab-row';
 		this.objContainer.domElement.appendChild(this.objContainer.objTabRow.domElement);
 		
+		// Tab Row Clearing
+		this.objContainer.objTabRow.objClearing							= {};
+		this.objContainer.objTabRow.objClearing.domElement				= document.createElement('div');
+		this.objContainer.objTabRow.objClearing.domElement.className	= 'clearing';
+		this.objContainer.objTabRow.domElement.appendChild(this.objContainer.objTabRow.objClearing.domElement);
+		
 		// Page Container
 		this.objContainer.objPageContainer						= {};
 		this.objContainer.objPageContainer.domElement			= document.createElement('div');
@@ -46,7 +52,7 @@ var Control_Tab_Group	= Class.create
 		domTabButton.innerHTML	= objControlTab.getName().replace(/&/gmi, '&amp;').replace(/"/gmi, '&quot;').replace(/>/gmi, '&gt;').replace(/</gmi, '&lt;');
 		domTabButton.addEventListener('click', this.switchToTab.bind(this, strAlias), false);
 		
-		this.objContainer.objTabRow.domElement.appendChild(domTabButton);
+		this.objContainer.objTabRow.domElement.insertBefore(domTabButton, this.objContainer.objTabRow.objClearing.domElement);
 		
 		this._arrTabs.push({strAlias: strAlias, domTabButton: domTabButton, objPage: objPage, objControlTab: objControlTab});
 		
