@@ -35,6 +35,13 @@ class Application_Handler_Developer extends Application_Handler
 																	'strURL'	=> 'new Developer_DatasetPagination(0);'
 																)
 													);
+			$arrFunctions[]	= self::_stdClassFactory(
+														array	(
+																	'strName'	=> 'Tab Control',
+																	'strType'	=> self::URL_TYPE_JS,
+																	'strURL'	=> 'new Developer_TabGroup();'
+																)
+													);
 			
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['arrFunctions']		= $arrFunctions;
