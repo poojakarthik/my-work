@@ -44,7 +44,7 @@ var Control_Tab_Group	= Class.create
 		var domTabButton		= document.createElement('div');
 		domTabButton.className	= 'tab';
 		domTabButton.innerHTML	= objControlTab.getName().replace(/&/gmi, '&amp;').replace(/"/gmi, '&quot;').replace(/>/gmi, '&gt;').replace(/</gmi, '&lt;');
-		domTabButton.addEventListener('click', this.switchToTab.bind(this, strAlias));
+		domTabButton.addEventListener('click', this.switchToTab.bind(this, strAlias), false);
 		
 		this.objContainer.objTabRow.domElement.appendChild(domTabButton);
 		
