@@ -1471,7 +1471,7 @@ div.tab-group div.tab-row
 
 div.tab-group.embedded div.tab-row
 {
-	background-color	: #inherit;
+	background-color	: inherit;
 }
 
 div.tab-group div.tab
