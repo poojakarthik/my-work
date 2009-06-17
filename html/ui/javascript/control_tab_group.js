@@ -25,7 +25,7 @@ var Control_Tab_Group	= Class.create
 	addTab		: function(strAlias, objControlTab)
 	{
 		// Check the Alias is valid and unique
-		if (!strAlias.match("/^[a-z\_][\w]*$/i"))
+		if (strAlias.match("/^[a-z\_][\w]*$/i") == null)
 		{
 			throw "Tab alias '" + strAlias + "' is invalid!";
 		}
