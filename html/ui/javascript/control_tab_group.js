@@ -44,6 +44,8 @@ var Control_Tab_Group	= Class.create
 		domTabButton.className	= 'tab';
 		domTabButton.innerHTML	= objControlTab.getName().replace(/&/gmi, '&amp;').replace(/"/gmi, '&quot;').replace(/>/gmi, '&gt;').replace(/</gmi, '&lt;');
 		
+		this.objContainer.objTabRow.domElement.appendChild(domTabButton);
+		
 		this._arrTabs.push({strAlias: strAlias, domTabButton: domTabButton, objPage: objPage, objControlTab: objControlTab});
 		
 		// If this is the first tab, then select it
