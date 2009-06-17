@@ -7,7 +7,8 @@ var Control_Tab_Group	= Class.create
 		// Container
 		this.objContainer						= {};
 		this.objContainer.domElement			= objDIVContainer;
-		this.objContainer.domElement.innerHTML	= 'tab-group';
+		this.objContainer.domElement.className	= 'tab-group';
+		this.objContainer.domElement.innerHTML	= '';
 		
 		// Tab Row
 		this.objContainer.objTabRow							= {};
