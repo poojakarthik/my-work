@@ -1,13 +1,28 @@
+/**
+ *	Control_Tab_Group
+ */
 var Control_Tab_Group	= Class.create
 ({
-	initialize	: function(objDIVContainer)
+	/**
+	 *	initialize()
+	 *
+	 *	Constructor
+	 *
+	 *	@param	DOMNode	objDIVContainer				DIV that will be used at the Tab Group container
+	 *	@param	boolean	bolEmbedded					TRUE	: Embedded in page
+	 *												FALSE	: Sole element in a Popup
+	 */
+	initialize	: function(objDIVContainer, bolEmbedded)
 	{
+		// Parameter defaults 
+		bolEmbedded	= (bolEmbedded == undefined || bolEmbedded == null) ? true : false;
+		
 		this._arrTabs		= [];
 		
 		// Container
 		this.objContainer						= {};
 		this.objContainer.domElement			= objDIVContainer;
-		this.objContainer.domElement.className	= 'tab-group';
+		this.objContainer.domElement.className	= 'tab-group' + (bolEmbedded ? ' embedded' : '');
 		this.objContainer.domElement.innerHTML	= '';
 		
 		// Tab Row
@@ -116,4 +131,4 @@ var Control_Tab_Group	= Class.create
 		//alert("Unable to find tab '" + mixTab + "'");
 		return false;
 	}
-})
+});
