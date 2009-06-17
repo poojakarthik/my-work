@@ -6,9 +6,13 @@ class HtmlTemplate_Developer_Console extends FlexHtmlTemplate
 		parent::__construct($intContext, $strId, $mxdDataToRender);
 		$this->LoadJavascript('developer_operationpermission');
 		
-		$this->LoadJavascript('developer_datasetpagination');
 		$this->LoadJavascript('dataset_ajax');
 		$this->LoadJavascript('pagination');
+		$this->LoadJavascript('developer_datasetpagination');
+		
+		$this->LoadJavascript('control_tab');
+		$this->LoadJavascript('control_tab_group');
+		$this->LoadJavascript('developer_tabgroup');
 	}
 
 	public function Render()
