@@ -7,18 +7,18 @@ var Control_Tab_Group	= Class.create
 		// Container
 		this.objContainer						= {};
 		this.objContainer.domElement			= objDIVContainer;
-		this.objContainer.domElement.innerHTML	= '';
+		this.objContainer.domElement.innerHTML	= 'tab-group';
 		
 		// Tab Row
 		this.objContainer.objTabRow							= {};
 		this.objContainer.objTabRow.domElement				= document.createElement('div');
-		this.objContainer.objTabRow.domElement.className	= '';
+		this.objContainer.objTabRow.domElement.className	= 'tab-row';
 		this.objContainer.domElement.appendChild(this.objContainer.objTabRow.domElement);
 		
 		// Page Container
 		this.objContainer.objPageContainer						= {};
 		this.objContainer.objPageContainer.domElement			= document.createElement('div');
-		this.objContainer.objPageContainer.domElement.className	= '';
+		this.objContainer.objPageContainer.domElement.className	= 'page';
 		this.objContainer.domElement.appendChild(this.objContainer.objPageContainer.domElement);
 	},
 	
@@ -36,7 +36,6 @@ var Control_Tab_Group	= Class.create
 		
 		// Add the Tab to this Group
 		var objPage				= document.createElement('div');
-		objPage.className		= 'page';
 		objPage.style.display	= 'none';
 		this.objContainer.objPageContainer.domElement.appendChild(objPage);
 		
@@ -67,11 +66,13 @@ var Control_Tab_Group	= Class.create
 				{
 					// Selected Tab
 					this._arrTabs[i].objPage.style.display	= 'block';
+					this._arrTabs[i].domTabButton.className	= 'tab selected';
 				}
 				else
 				{
 					// Non-selected Tab
 					this._arrTabs[i].objPage.style.display	= 'none';
+					this._arrTabs[i].domTabButton.className	= 'tab';
 				}
 			}
 		}
