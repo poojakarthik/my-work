@@ -4,10 +4,6 @@ var Control_Tab_Group	= Class.create
 	{
 		this._arrTabs		= [];
 		
-		// Build
-		this.objDIVContainer			= objDIVContainer;
-		this.objDIVContainer.innerHTML	= '';
-		
 		// Container
 		this.objContainer						= {};
 		this.objContainer.domElement			= objDIVContainer;
@@ -17,11 +13,13 @@ var Control_Tab_Group	= Class.create
 		this.objContainer.objTabRow							= {};
 		this.objContainer.objTabRow.domElement				= document.createElement('div');
 		this.objContainer.objTabRow.domElement.className	= '';
+		this.objContainer.domElement.appendChild(this.objContainer.objTabRow.domElement);
 		
 		// Page Container
 		this.objContainer.objPageContainer						= {};
 		this.objContainer.objPageContainer.domElement			= document.createElement('div');
 		this.objContainer.objPageContainer.domElement.className	= '';
+		this.objContainer.domElement.appendChild(this.objContainer.objPageContainer.domElement);
 	},
 	
 	addTab		: function(strAlias, objControlTab)
