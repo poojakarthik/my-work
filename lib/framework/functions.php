@@ -3193,43 +3193,51 @@ function AddCreditCardSurcharge($intPayment)
 		}
 		$arrCSSRate			= $selCCSRate->Fetch();
 		$fltPC				= (float)$arrCSSRate['surcharge'];
-		$strDate			= date("d/m/Y", strtotime($arrPayment['PaidOn']));
-		$strPC				= round($fltPC * 100, 2);
-		$fltPaymentAmount	= number_format($arrPayment['Amount'], 2, ".", "");
-		$fltAmount			= RemoveGST(((float)$arrPayment['Amount'] / (1 + $fltPC)) * $fltPC);
-
-		// Insert Charge
-		$arrCharge	= Array();
-		if (!$arrPayment['Account'])
+		
+		if ($fltPC !== null && $fltPC > 0.0)
 		{
-			// AccountGroup Payment
-			$selAccount->Execute($arrPayment);
-			$arrAccount					= $selAccount->Fetch();
-			$arrCharge['Account']		= $arrAccount['Account'];
+			$strDate			= date("d/m/Y", strtotime($arrPayment['PaidOn']));
+			$strPC				= round($fltPC * 100, 2);
+			$fltPaymentAmount	= number_format($arrPayment['Amount'], 2, ".", "");
+			$fltAmount			= RemoveGST(((float)$arrPayment['Amount'] / (1 + $fltPC)) * $fltPC);
+	
+			// Insert Charge
+			$arrCharge	= Array();
+			if (!$arrPayment['Account'])
+			{
+				// AccountGroup Payment
+				$selAccount->Execute($arrPayment);
+				$arrAccount					= $selAccount->Fetch();
+				$arrCharge['Account']		= $arrAccount['Account'];
+			}
+			else
+			{
+				// Account Payment
+				$arrCharge['Account']		= $arrPayment['Account'];
+			}
+	
+			$arrCharge['AccountGroup']		= $arrPayment['AccountGroup'];
+			$arrCharge['CreatedBy']			= $arrPayment['EnteredBy'];
+			$arrCharge['ApprovedBy']		= Employee::SYSTEM_EMPLOYEE_ID;
+			$arrCharge['CreatedOn']			= date("Y-m-d");
+			$arrCharge['ChargeType']		= "CCS";
+			$arrCharge['Description']		= "$strType Surcharge for Payment on {$strDate} (\${$fltPaymentAmount}) @ $strPC%";
+			$arrCharge['ChargedOn']			= $arrPayment['PaidOn'];
+			$arrCharge['Nature']			= 'DR';
+			$arrCharge['Amount']			= $fltAmount;
+			$arrCharge['Notes']				= '';
+			$arrCharge['global_tax_exempt']	= '';
+			$arrCharge['Status']			= CHARGE_APPROVED;
+			$arrCharge['LinkType']			= CHARGE_LINK_PAYMENT;
+			$arrCharge['LinkId']			= $intPayment;
+			$mixResult = $insCharge->Execute($arrCharge);
+			//Debug($arrCharge);
+			return (bool)($mixResult !== FALSE);
 		}
 		else
 		{
-			// Account Payment
-			$arrCharge['Account']		= $arrPayment['Account'];
+			return null;
 		}
-
-		$arrCharge['AccountGroup']		= $arrPayment['AccountGroup'];
-		$arrCharge['CreatedBy']			= $arrPayment['EnteredBy'];
-		$arrCharge['ApprovedBy']		= Employee::SYSTEM_EMPLOYEE_ID;
-		$arrCharge['CreatedOn']			= date("Y-m-d");
-		$arrCharge['ChargeType']		= "CCS";
-		$arrCharge['Description']		= "$strType Surcharge for Payment on {$strDate} (\${$fltPaymentAmount}) @ $strPC%";
-		$arrCharge['ChargedOn']			= $arrPayment['PaidOn'];
-		$arrCharge['Nature']			= 'DR';
-		$arrCharge['Amount']			= $fltAmount;
-		$arrCharge['Notes']				= '';
-		$arrCharge['global_tax_exempt']	= '';
-		$arrCharge['Status']			= CHARGE_APPROVED;
-		$arrCharge['LinkType']			= CHARGE_LINK_PAYMENT;
-		$arrCharge['LinkId']			= $intPayment;
-		$mixResult = $insCharge->Execute($arrCharge);
-		//Debug($arrCharge);
-		return (bool)($mixResult !== FALSE);
 	}
 	else
 	{
@@ -3984,6 +3992,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		AND Invoice.Status IN ($strApplicableInvoiceStatuses)
 		AND Account.Archived IN ($arrApplicableAccountStatuses)
 		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
+		AND tio_reference_number IS NULL
 		JOIN credit_control_status
 		ON Account.credit_control_status = credit_control_status.id
 		AND credit_control_status.send_late_notice = 1
@@ -4007,6 +4016,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		ON Account.Id = Invoice.Account
 		AND Account.Archived IN ($arrApplicableAccountStatuses) $strAccountBillingType
 		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
+		AND tio_reference_number IS NULL
 		JOIN credit_control_status
 		ON Account.credit_control_status = credit_control_status.id
 		AND credit_control_status.send_late_notice = 1
