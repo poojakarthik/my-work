@@ -94,6 +94,7 @@ var Control_Tab_Group	= Class.create
 			return this._arrTabs[intTabIndex].objControlTab;
 		}
 		
+		alert("Unable to find tab '" + mixTab + "'");
 		return false;
 	}
 })
