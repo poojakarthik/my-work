@@ -23,12 +23,12 @@ var Developer_TabGroup	= Class.create
 		// Main Tab
 		var domTabMain			= document.createElement('div');
 		domTabMain.innerHTML	= 'I am in the Main Tab!';
-		this.arrTabs['Main']	= new Control_Tab('Main', domTabMain);
+		this.objControlTabGroup.addTab('MAIN', new Control_Tab('Main', domTabMain));
 		
 		// Secondary Tab
 		var domTabSecondary			= document.createElement('div');
 		domTabSecondary.innerHTML	= 'I am in the Secondary Tab!';
-		this.arrTabs['Secondary']	= new Control_Tab('Secondary', domTabSecondary);
+		this.objControlTabGroup.addTab('SECONDARY', new Control_Tab('Secondary', domTabSecondary));
 		//--------------------------------------------------------------------//
 		
 		// Display Tab Group
