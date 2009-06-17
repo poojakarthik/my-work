@@ -29,7 +29,7 @@ var Control_Tab_Group	= Class.create
 		{
 			throw "Tab alias '" + strAlias + "' is invalid!";
 		}
-		if (this.tabExists(strAlias))
+		if (this.getTab(strAlias))
 		{
 			throw "A tab with the alias '" + strAlias + "' already exists!";
 		}
