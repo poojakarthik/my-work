@@ -9,7 +9,7 @@ var Control_Tab	= Class.create
 	getName	: function()
 	{
 		return this.strName;
-	}
+	},
 	
 	getContent	: function()
 	{

@@ -40,7 +40,7 @@ var Control_Tab_Group	= Class.create
 		
 		var domTabButton		= document.createElement('div');
 		domTabButton.className	= 'tab';
-		domTabButton.innerHTML	= objControlTab.getName().replace("/&/gmi", '&amp;')replace('/"/gmi', '&quot;')replace("/>/gmi", '&gt;')replace("/</gmi", '&lt;');
+		domTabButton.innerHTML	= objControlTab.getName().replace("/&/gmi", '&amp;').replace('/"/gmi', '&quot;').replace("/>/gmi", '&gt;').replace("/</gmi", '&lt;');
 		
 		this._arrTabs.push({strAlias: strAlias, domTabButton: domTabButton, objPage: objTabPage, objControlTab: objControlTab});
 		
