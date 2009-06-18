@@ -58,6 +58,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->LoadJavascript("control_tab");
 		
 		$this->LoadJavascript("popup/popup_employee");
+		$this->LoadJavascript("popup_employee");
 	}
 	
 	//------------------------------------------------------------------------//
