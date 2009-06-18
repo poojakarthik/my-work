@@ -53,6 +53,11 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->_intContext = $intContext;
 		$this->LoadJavascript("table_sort");
 		$this->LoadJavascript("employee_view");
+		
+		$this->LoadJavascript("control_tab_group");
+		$this->LoadJavascript("control_tab");
+		
+		$this->LoadJavascript("popup/popup_employee");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -126,7 +131,8 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		Table()->EmployeeTable->SetPageSize(24);
 		foreach (DBL()->Employee as $dboEmployee)
 		{
-			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
+			//$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
+			$strViewHref	= "new Popup_Employee();";
 			$strView = "<img onclick='$strViewHref' title='View Employee' src='img/template/view.png'></img>";
 			
 			$strArchivedLabel = "Active";
