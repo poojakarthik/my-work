@@ -129,6 +129,7 @@ table.reflex {
 	margin-right: auto;
 	border: .1em solid #1C1C1C;
 	border-spacing: 0;
+	font-size	: inherit;
 }
 
 table.reflex > tbody > tr > td:first-child {
@@ -220,7 +221,8 @@ table.reflex tfoot tr th:last-child {
 
 table.reflex tbody
 {
-	vertical-align: top;
+	vertical-align	: top;
+	font-size		: inherit;
 }
 
 table.reflex tbody tr th.label
