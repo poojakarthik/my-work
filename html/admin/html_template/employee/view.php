@@ -132,9 +132,10 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		Table()->EmployeeTable->SetPageSize(24);
 		foreach (DBL()->Employee as $dboEmployee)
 		{
-			//$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
-			$strViewHref	= "new Popup_Employee(true);";
-			$strView = "<img onclick='$strViewHref' title='View Employee' src='img/template/view.png'></img>";
+			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
+			$strNewViewHref	= "new Popup_Employee(true);";
+			$strView = "<img onclick='$strViewHref' title='View Employee (OLD)' src='img/template/view.png'></img>";
+			$strView .= "<img onclick='$strNewViewHref' title='View Employee (NEW)' src='img/template/user_edit.png'></img>";
 			
 			$strArchivedLabel = "Active";
 			if ($dboEmployee->Archived->Value == 1)
