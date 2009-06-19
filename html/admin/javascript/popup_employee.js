@@ -64,6 +64,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	{
 		var objTabPage	= {};
 		objTabPage.domElement	= document.createElement('div');
+		objTabPage.domElement.innerHTML	= '[ Details ]';
 		
 		objTabPage.objTable	= {};
 		
@@ -74,6 +75,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	{
 		var objTabPage	= {};
 		objTabPage.domElement	= document.createElement('div');
+		objTabPage.domElement.innerHTML	= '[ Permissions ]';
 		
 		return objTabPage.domElement;
 	},
