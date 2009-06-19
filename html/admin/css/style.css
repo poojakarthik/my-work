@@ -1484,7 +1484,7 @@ div.tab-group.embedded div.tab-row
 div.tab-group div.tab
 {
 	float							: left;
-	position						: relative;
+	position						: absolute;
 	top								: 1px;
 	margin-left						: 0.25em;
 	border							: 1px solid #000;
