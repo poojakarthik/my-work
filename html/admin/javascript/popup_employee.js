@@ -13,6 +13,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	
 	buildContent	: function(objResponse)
 	{
+		alert("Building Content");
+		
 		// Build Content
 		this._objPage			= {};
 		this._objPage.domElement	= document.createElement('div');
