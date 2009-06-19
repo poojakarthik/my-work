@@ -5,12 +5,16 @@ var FX_Fade	= Class.create
 		this.fncCallback	= fncCallback;
 		
 		this.intSpeed		= intSpeed;
-		this.intUpdateRate	= intUpdateRate;
+ 		this.intUpdateRate	= intUpdateRate;
+		alert("Opacity per Cycle: " + this.intSpeed);
+		alert("Update Frequency: " + this.intUpdateRate);
 		
 		this.fltMaxOpacity	= 1.0;
 		this.fltMinOpacity	= 0.0;
 		
 		this.fltOpacity		= (bolVisible) ? this.fltMaxOpacity : this.fltMinOpacity;
+		
+		alert("Initial Opacity: " + this.fltOpacity);
 		
 		this.objPeriodicalExecuter	= null;
 	},
