@@ -21,7 +21,6 @@ var FX_Fade	= Class.create
 	
 	hide	: function()
 	{
-		
 		if (this.objPeriodicalExecuter)
 		{
 			this.objPeriodicalExecuter.stop();
@@ -32,8 +31,11 @@ var FX_Fade	= Class.create
 	
 	show	: function()
 	{
-		this.objPeriodicalExecuter.stop();
-		delete this.objPeriodicalExecuter;
+		if (this.objPeriodicalExecuter)
+		{
+			this.objPeriodicalExecuter.stop();
+			delete this.objPeriodicalExecuter;
+		}
 		this.objPeriodicalExecuter	= new PeriodicalExecuter(this.transition.bind(this, FX_Fade.FADE_IN), this.intUpdateRate / 100);
 	},
 	
