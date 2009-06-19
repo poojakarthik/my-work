@@ -65,7 +65,7 @@ var Control_Tab_Group	= Class.create
 		var strTabButtonHTML	= "<span>" + objControlTab.getName().replace(/&/gmi, '&amp;').replace(/"/gmi, '&quot;').replace(/>/gmi, '&gt;').replace(/</gmi, '&lt;') + "</span>";
 		if (objControlTab.getIcon())
 		{
-			strTabButtonHTML	= "<img alt='' title='" + objControlTab.getName() + "' src='" + objControlTab.getIcon() + "' />" + strTabButtonHTML;
+			strTabButtonHTML	= "<img class='icon' alt='' title='" + objControlTab.getName() + "' src='" + objControlTab.getIcon() + "' />" + strTabButtonHTML;
 		}
 		
 		var domTabButton		= document.createElement('div');
