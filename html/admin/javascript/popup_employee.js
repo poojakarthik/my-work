@@ -2,7 +2,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, bolDisplayOnLoad)
 	{
-		$super(60);
+		$super(35);
 		this.setTitle("Employee");
 		
 		this.bolDisplayOnLoad	= (bolDisplayOnLoad) ? true : false;
@@ -14,8 +14,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	
 	buildContent	: function(objResponse)
 	{
-		alert("Building Content");
-		
 		// Build Content
 		this._objPage			= {};
 		this._objPage.domElement	= document.createElement('div');
@@ -43,7 +41,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.setContent(this._objPage.domElement);
 		if (this.bolDisplayOnLoad)
 		{
-			alert("Displaying immediately");
 			this.display();
 		}
 		
