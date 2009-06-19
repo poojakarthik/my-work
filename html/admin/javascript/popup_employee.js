@@ -42,8 +42,13 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		//--------------------------------------------------------------------//
 		
 		// Update the Popup
-		this._pupPopup.setContent(this._objPage.domElement);
-		this._pupPopup.display();
+		this.setContent(this._objPage.domElement);
+		if (this.bolDisplayOnLoad)
+		{
+			this.display();
+		}
+		
+		return true;
 	},
 	
 	display		: function($super)
