@@ -1465,6 +1465,7 @@ div.tab-group
 div.tab-group div.tab-page-container
 {
 	position	: relative;
+	height		: auto;
 }
 
 div.tab-group div.tab-page
