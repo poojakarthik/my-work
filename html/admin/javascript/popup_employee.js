@@ -4,6 +4,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	{
 		$super(35);
 		this.setTitle("Employee");
+		this.addCloseButton();
 		
 		this.bolDisplayOnLoad	= (bolDisplayOnLoad) ? true : false;
 		
