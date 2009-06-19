@@ -22,7 +22,14 @@ var Employee	= Class.create
 	
 	_load	: function(fncCallback, objResponse)
 	{
+		// Set properties
+		this.objProperties	= objResponse.objEmployee;
 		
+		// Callback
+		if (fncCallback)
+		{
+			fncCallback(this);
+		}
 	}
 });
 
@@ -31,7 +38,7 @@ var Employee	= Class.create
 //----------------------------------------------------------------------------//
 Employee.getForId	= function(intEmployeeId, fncCallback)
 {
-	var objEmployee	= new Employee(intEmployeeId, fncCallback);
+	return new Employee(intEmployeeId, fncCallback);
 }
 //----------------------------------------------------------------------------//
 
