@@ -73,19 +73,48 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		//objTabPage.domElement.innerHTML	= '[ Details ]';
 		
 		// Table
-		objTabPage.objTable							= {};
-		objTabPage.objTable.domElement				= document.createElement('table');
-		objTabPage.objTable.domElement.className	= 'reflex';
-		objTabPage.domElement.appendChild(objTabPage.objTable.domElement);
+		objTabPage.table						= {};
+		objTabPage.table.domElement				= document.createElement('table');
+		objTabPage.table.domElement.className	= 'reflex';
+		objTabPage.domElement.appendChild(objTabPage.table.domElement);
 		
 		// Table Body
-		objTabPage.objTable.objTableBody			= {};
-		objTabPage.objTable.objTableBody.domElement	= document.createElement('tbody');
-		objTabPage.objTable.domElement.appendChild(objTabPage.objTable.objTableBody.domElement);
+		objTabPage.table.tbody				= {};
+		objTabPage.table.tbody.domElement	= document.createElement('tbody');
+		objTabPage.table.domElement.appendChild(objTabPage.table.tbody.domElement);
 		
+		//--------------------------------------------------------------------//
+		// TEMPORARY
+		//--------------------------------------------------------------------//
+		// First Name
+		objTabPage.table.tbody.FirstName			= {};
+		objTabPage.table.tbody.FirstName.domElement	= document.createElement('tr');
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.FirstName.domElement);
 		
+		objTabPage.table.tbody.FirstName.th							= {};
+		objTabPage.table.tbody.FirstName.th.domElement				= document.createElement('th');
+		objTabPage.table.tbody.FirstName.th.domElement.innerHTML	= 'First Name;
+		objTabPage.table.tbody.FirstName.domElement.appendChild(objTabPage.table.tbody.FirstName.th.domElement);
 		
+		objTabPage.table.tbody.FirstName.td							= {};
+		objTabPage.table.tbody.FirstName.td.domElement				= document.createElement('td');
+		objTabPage.table.tbody.FirstName.td.domElement.innerHTML	= this.objEmployee.FirstName;
+		objTabPage.table.tbody.FirstName.domElement.appendChild(objTabPage.table.tbody.FirstName.td.domElement);
 		
+		// Last Name
+		objTabPage.table.tbody.LastName			= {};
+		objTabPage.table.tbody.LastName.domElement	= document.createElement('tr');
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.LastName.domElement);
+		
+		objTabPage.table.tbody.LastName.th						= {};
+		objTabPage.table.tbody.LastName.th.domElement			= document.createElement('th');
+		objTabPage.table.tbody.LastName.th.domElement.innerHTML	= 'Last Name;
+		objTabPage.table.tbody.LastName.domElement.appendChild(objTabPage.table.tbody.LastName.th.domElement);
+		
+		objTabPage.table.tbody.LastName.td						= {};
+		objTabPage.table.tbody.LastName.td.domElement			= document.createElement('td');
+		objTabPage.table.tbody.LastName.td.domElement.innerHTML	= this.objEmployee.LastName;
+		objTabPage.table.tbody.LastName.domElement.appendChild(objTabPage.table.tbody.LastName.td.domElement);
 		
 		return objTabPage.domElement;
 	},
