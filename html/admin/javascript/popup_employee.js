@@ -14,11 +14,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	buildContent	: function(objResponse)
 	{
 		// Build Content
-		this.objPage			= {};
-		this.objPage.domElement	= document.createElement('div');
+		this._objPage			= {};
+		this._objPage.domElement	= document.createElement('div');
 		
 		// Create a Tab Group
-		this.objControlTabGroup	= new Control_Tab_Group(objPage.domElement);
+		this.objControlTabGroup	= new Control_Tab_Group(this._objPage.domElement);
 		
 		//--------------------------------------------------------------------//
 		// Create Tabs
@@ -40,9 +40,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		domTabSecondary.innerHTML	= '[Operations]';
 		this.objControlTabGroup.addTab('Operations', new Control_Tab('Permission Operations (Advanced)', domTabSecondary));
 		//--------------------------------------------------------------------//
-		
-		// Set the Page Object
-		this._objPage	= objPage;
 		
 		// Update the Popup
 		this._pupPopup.setContent(this._objPage.domElement);
