@@ -11,6 +11,45 @@ class JSON_Handler_Employee extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
+	public function getForId($intEmployeeId, $bolIncludePermissions=false)
+	{
+		try
+		{
+			// Get the Employee
+			$objEmployee	= Employee::getForId($intEmployeeId);
+			$arrEmployee	= $objEmployee->toArray();
+			
+			// Get the Permissions
+			if ($bolIncludePermissions)
+			{
+				
+			}
+			else
+			{
+				$arrPermissions	= null;
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							"Success"			=> true,
+							"objEmployee"		=> $arrEmployee,
+							"objPermissions"	=> $arrPermissions,
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+		catch (Exception $e)
+		{
+			// Send an Email to Devs
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
+			return array(
+							"Success"	=> false,
+							"Message"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+	}
+	
 	public function getRecords($bolCountOnly=false, $intLimit=0, $intOffset=0)
 	{
 		try

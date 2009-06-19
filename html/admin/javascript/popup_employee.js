@@ -1,6 +1,6 @@
 var Popup_Employee	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, intEmployeeId, bolDisplayOnLoad)
+	initialize	: function($super, mixEmployee, bolDisplayOnLoad)
 	{
 		$super(35);
 		this.setTitle("Employee");
@@ -17,19 +17,25 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		this.bolDisplayOnLoad	= (bolDisplayOnLoad) ? true : false;
 		
-		if (intEmployeeId)
+		if (mixEmployee instanceof Employee)
 		{
-			// Load the Employee
-			// TODO
+			// Employee object passed -- build immediately
+			this.objEmployee	= mixEmployee;
 			this.buildContent();
+		}
+		else if (Number(mixEmployee) > 0)
+		{
+			// Employee Id passed -- load via JSON
+			this.objEmployee	= Employee.getForId(mixEmployee, this.buildContent.bind(this));
 		}
 		else
 		{
 			this.buildContent();
+			//throw "mixEmployee is not an Employee Id or Employee Object!";
 		}
 	},
 	
-	buildContent	: function(objResponse)
+	buildContent	: function()
 	{
 		// Build Content
 		this._objPage			= {};
@@ -62,11 +68,24 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	
 	buildContentDetails	: function()
 	{
-		var objTabPage	= {};
-		objTabPage.domElement	= document.createElement('div');
-		objTabPage.domElement.innerHTML	= '[ Details ]';
+		var objTabPage					= {};
+		objTabPage.domElement			= document.createElement('div');
+		//objTabPage.domElement.innerHTML	= '[ Details ]';
 		
-		objTabPage.objTable	= {};
+		// Table
+		objTabPage.objTable							= {};
+		objTabPage.objTable.domElement				= document.createElement('table');
+		objTabPage.objTable.domElement.className	= 'reflex';
+		objTabPage.domElement.appendChild(objTabPage.objTable.domElement);
+		
+		// Table Body
+		objTabPage.objTable.objTableBody			= {};
+		objTabPage.objTable.objTableBody.domElement	= document.createElement('tbody');
+		objTabPage.objTable.domElement.appendChild(objTabPage.objTable.objTableBody.domElement);
+		
+		
+		
+		
 		
 		return objTabPage.domElement;
 	},

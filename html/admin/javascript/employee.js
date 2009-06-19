@@ -1,23 +1,41 @@
 var Employee	= Class.create
 ({
-	initialize	: function()
+	initialize	: function(intEmployeeId, fncCallback)
 	{
-		this.objPopup	= new Popup_Employee();
+		if (intEmployeeId)
+		{
+			// Load via JSON
+			var fncJSON	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._load.bind(this, fncCallback)), null, 'Employee', 'getForId');
+			fncJSON(intEmployeeId, true);
+		}
 	},
 	
 	view	: function()
 	{
 		
-	}
+	},
 	
 	edit	: function()
 	{
 		
 	},
 	
-	
+	_load	: function(fncCallback, objResponse)
+	{
+		
+	}
 });
 
+//----------------------------------------------------------------------------//
+// Static Methods
+//----------------------------------------------------------------------------//
+Employee.getForId	= function(intEmployeeId, fncCallback)
+{
+	var objEmployee	= new Employee(intEmployeeId, fncCallback);
+}
+//----------------------------------------------------------------------------//
+
+// Static Members
 Employee.objProperties		= {};
 
 // Id
