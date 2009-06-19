@@ -20,7 +20,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this._objPage.domElement	= document.createElement('div');
 		
 		// Create a Tab Group
-		this.objControlTabGroup	= new Control_Tab_Group(this._objPage.domElement);
+		this.objControlTabGroup	= new Control_Tab_Group(this._objPage.domElement, false);
 		
 		//--------------------------------------------------------------------//
 		// Create Tabs
