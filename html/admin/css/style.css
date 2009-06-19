@@ -391,6 +391,7 @@ button[disabled]
 button img.icon
 {
 	vertical-align	: text-bottom;
+	margin-right	: 0.25em;
 }
 /**************************** END - Buttons - END *****************************/
 
