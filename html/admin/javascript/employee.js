@@ -153,7 +153,7 @@ Employee.objProperties.user_role_id.mixEditable			= true;
 
 Employee.objProperties.user_role_id.input				= {};
 Employee.objProperties.user_role_id.input.type			= 'select';
-Employee.objProperties.user_role_id.input.fncPopulate	= User_Role.getAll;
+//Employee.objProperties.user_role_id.input.fncPopulate	= User_Role.getAll;
 Employee.objProperties.user_role_id.input.fncValidate	= Reflex_Validation.stringNotEmpty;
 Employee.objProperties.user_role_id.input.mixTrim		= function(strPhone){return strPhone.replace(/.+/, '');};
 Employee.objProperties.user_role_id.input.mixMandatory	= false;
