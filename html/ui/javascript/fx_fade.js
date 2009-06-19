@@ -50,7 +50,7 @@ var FX_Fade	= Class.create
 				}
 				break;
 		}
-		fncCallback(this.fltOpacity);
+		this.fncCallback(this.fltOpacity);
 	}
 });
 
