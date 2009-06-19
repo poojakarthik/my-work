@@ -5,7 +5,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		$super(35);
 		this.setTitle("Employee");
 		this.addCloseButton();
-		this.addIcon();
+		this.setIcon("../admin/img/template/user_edit.png");
 		
 		this.domSaveButton				= document.createElement('button');
 		this.domSaveButton.innerHTML	= "<img class='icon' src='../admin/img/template/tick.png' alt='' />Save";
