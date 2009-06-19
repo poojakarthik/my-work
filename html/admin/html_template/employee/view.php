@@ -133,7 +133,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		foreach (DBL()->Employee as $dboEmployee)
 		{
 			//$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
-			$strViewHref	= "new Popup_Employee();";
+			$strViewHref	= "new Popup_Employee(true);";
 			$strView = "<img onclick='$strViewHref' title='View Employee' src='img/template/view.png'></img>";
 			
 			$strArchivedLabel = "Active";
