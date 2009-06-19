@@ -290,7 +290,8 @@ table.reflex tfoot a:link {
 
 table.reflex td,
 table.reflex th {
-	padding: .25em .5em;
+	padding		: .25em .5em;
+	font-size	: inherit;
 }
 
 table.reflex tr td {
