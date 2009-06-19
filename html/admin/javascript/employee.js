@@ -81,7 +81,8 @@ Employee.objProperties.DOB						= {};
 Employee.objProperties.DOB.strLabel				= 'Date of Birth';
 
 Employee.objProperties.DOB.input				= {};
-Employee.objProperties.DOB.input.type			= Control_Date;
+//Employee.objProperties.DOB.input.type			= Control_Date;
+Employee.objProperties.DOB.input.type			= 'text';
 Employee.objProperties.DOB.input.fncValidate	= Reflex_Validation.date;
 Employee.objProperties.DOB.input.mixMandatory	= true;
 
