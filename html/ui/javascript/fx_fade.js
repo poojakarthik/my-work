@@ -33,7 +33,7 @@ var FX_Fade	= Class.create
 		switch (intFadeDirection)
 		{
 			case FX_Fade.FADE_OUT:
-				this.fltOpacity	-= intSpeed / 100;
+				this.fltOpacity	-= intRate;
 				if (this.fltOpacity < this.fltMinOpacity)
 				{
 					this.fltOpacity	= this.fltMinOpacity;
@@ -42,7 +42,7 @@ var FX_Fade	= Class.create
 				break;
 				
 			case FX_Fade.FADE_IN:
-				this.fltOpacity	+= intSpeed / 100;
+				this.fltOpacity	+= intRate;
 				if (this.fltOpacity > this.fltMaxOpacity)
 				{
 					this.fltOpacity	= this.fltMaxOpacity;
