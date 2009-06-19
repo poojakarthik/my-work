@@ -29,19 +29,19 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.arrTabs	= {};
 		
 		// Details Tab
-		var domTabMain			= document.createElement('div');
-		domTabMain.innerHTML	= '[Details]';
-		this.objControlTabGroup.addTab('Details', new Control_Tab('Details', domTabMain));
+		var domTabDetails			= document.createElement('div');
+		domTabDetails.innerHTML	= '[Details]';
+		this.objControlTabGroup.addTab('Details', new Control_Tab('Details', domTabDetails));
 		
 		// Permission Profiles Tab
-		var domTabSecondary			= document.createElement('div');
-		domTabSecondary.innerHTML	= '[Profiles]';
-		this.objControlTabGroup.addTab('Profiles', new Control_Tab('Permissions Profiles (Simple)', domTabSecondary));
+		var domTabProfiles			= document.createElement('div');
+		domTabProfiles.innerHTML	= '[Profiles]';
+		this.objControlTabGroup.addTab('Profiles', new Control_Tab('Permissions Profiles (Simple)', domTabProfiles));
 		
 		// Permission Operations Tab
-		var domTabSecondary			= document.createElement('div');
-		domTabSecondary.innerHTML	= '[Operations]';
-		this.objControlTabGroup.addTab('Operations', new Control_Tab('Permission Operations (Advanced)', domTabSecondary));
+		var domTabOperations		= document.createElement('div');
+		domTabOperations.innerHTML	= '[Operations]';
+		this.objControlTabGroup.addTab('Operations', new Control_Tab('Permission Operations (Advanced)', domTabOperations));
 		//--------------------------------------------------------------------//
 		
 		// Update the Popup
