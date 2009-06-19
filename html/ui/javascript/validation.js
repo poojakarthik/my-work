@@ -180,8 +180,9 @@ function VixenValidationClass()
 		return true;
 	}
 	
-	this.NotEmptyString = function(strValue)
+	this.NotEmptyString = function(strValue, bolTrim)
 	{
+		strValue	= (bolTrim) ? strValue.replace(/(^.+|$.+)/, '') : strValue;
 		return (strValue.length > 0);
 	}
 	
@@ -214,7 +215,6 @@ function VixenValidationClass()
 	{
 		return this.regexFNN.test(strValue);
 	}
-
 }
 
 

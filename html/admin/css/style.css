@@ -1451,7 +1451,7 @@ div.error {
 
 /** Tab/Tab Group Control Styling */
 
-div.tab-group div.page
+div.tab-group div.tab-page
 {
 	border				: none;
 	border-top			: 1px solid #000;
