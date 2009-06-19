@@ -2,9 +2,13 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, bolDisplayOnLoad)
 	{
+		$super();
+		
 		this.bolDisplayOnLoad	= (bolDisplayOnLoad) ? true : false;
 		
-		$super();
+		// Load the Employee
+		// TODO
+		this.buildContent();
 	},
 	
 	buildContent	: function(objResponse)
