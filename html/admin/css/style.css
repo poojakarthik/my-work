@@ -230,7 +230,7 @@ table.reflex tbody tr th.label
 	min-height		: 1.5em;
 	max-height		: 1.5em;
 	
-	font-size		: 10pt;
+	font-size		: inherit;
 	
 	vertical-align	: middle;
 	text-align		: right;
@@ -1524,5 +1524,68 @@ div.tab-group div.tab.selected
 	border-bottom		: 1px solid #f5f5f5;
 	font-weight			: bold;
 	cursor				: default;
+}
+/******************************************************************************/
+
+/********************************* INPUT TABLE ********************************/
+table.input
+{
+	width			: 99%;
+	margin-left		: auto;
+	margin-right	: auto;
+	border			: 0.1em solid #1C1C1C;
+	border-spacing	: 0;
+	font-size		: inherit;
+}
+
+table.input thead,
+table.input tfoot
+{
+	background-color	: #202020;
+	color				: #eee;
+	text-align			: left;
+}
+
+table.input tfoot
+{
+	text-align	: right;
+}
+
+table.input tbody tr td input[type="text"],
+table.input tbody tr td input[type="password"],
+table.input tbody tr td textarea,
+table.input tbody tr td select
+{
+	width			: 98%;
+}
+
+table.input tbody tr td input[type="checkbox"]
+{
+	margin-right	: 0.25em;
+	vertical-align	: text-bottom;
+}
+
+table.input tfoot a,
+table.input tfoot a:visited,
+table.input tfoot a:link
+{
+	color	: #ffde05;
+}
+
+table.input tbody tr th
+{
+	background-color	: #202020;
+	color				: #eee;
+}
+
+table.input tbody tr td
+{
+	background-color	: #ddd;
+	color				: #333
+}
+
+table.input tbody tr.alt td
+{
+	background-color	: #fff;
 }
 /******************************************************************************/
