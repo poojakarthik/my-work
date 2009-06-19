@@ -1462,6 +1462,11 @@ div.tab-group
 	position	: relative;
 }
 
+div.tab-group div.tab-page-container
+{
+	position	: relative;
+}
+
 div.tab-group div.tab-page
 {
 	border				: none;
