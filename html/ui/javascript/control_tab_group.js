@@ -83,7 +83,7 @@ var Control_Tab_Group	= Class.create
 		// Fade FX
 		if (this.bolFadeFX)
 		{
-			objTab.objFXFade	= new FX_Fade(this.setPageOpacity.bind(this, objTab), bolFirstTab, 5, 50);
+			objTab.objFXFade	= new FX_Fade(this.setPageOpacity.bind(this, strAlias), bolFirstTab, 5, 50);
 		}
 		
 		// Add to list of tabs
@@ -173,8 +173,12 @@ var Control_Tab_Group	= Class.create
 		return false;
 	},
 	
-	setPageOpacity	: function(objTab, fltOpacity)
+	setPageOpacity	: function(strAlias, fltOpacity)
 	{
-		objTab.objPage.style.opacity	= fltOpacity;
+		var objTab	= this.getTab(strAlias, false);
+		if (objTab)
+		{
+			objTab.objPage.style.opacity	= fltOpacity;
+		}
 	}
 });
