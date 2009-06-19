@@ -56,6 +56,8 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		
 		$this->LoadJavascript("fx_fade");
 		
+		$this->LoadJavascript("reflex_validation");
+		
 		$this->LoadJavascript("control_tab_group");
 		$this->LoadJavascript("control_tab");
 		
