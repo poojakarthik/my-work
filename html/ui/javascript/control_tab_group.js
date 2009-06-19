@@ -62,7 +62,7 @@ var Control_Tab_Group	= Class.create
 		// Add the Tab to this Group
 		var objPage				= document.createElement('div');
 		objPage.style.opacity	= 0;
-		objPage.className		= 'tab-page;
+		objPage.className		= 'tab-page';
 		objPage.appendChild(objControlTab.getContent());
 		this.objContainer.objPageContainer.domElement.appendChild(objPage);
 		
