@@ -1,16 +1,31 @@
 var Popup_Employee	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, bolDisplayOnLoad)
+	initialize	: function($super, intEmployeeId, bolDisplayOnLoad)
 	{
 		$super(35);
 		this.setTitle("Employee");
 		this.addCloseButton();
+		this.addIcon();
+		
+		this.domSaveButton				= document.createElement('button');
+		this.domSaveButton.innerHTML	= "<img class='icon' src='../admin/img/template/tick.png' alt='' />Save";
+		
+		this.domCancelButton	= document.createElement('button');
+		this.domCancelButton.innerHTML	= "<img class='icon' src='../admin/img/template/delete.png' alt='' />Cancel";
+		
+		this.setFooterButtons([this.domSaveButton, this.domCancelButton], true);
 		
 		this.bolDisplayOnLoad	= (bolDisplayOnLoad) ? true : false;
 		
-		// Load the Employee
-		// TODO
-		this.buildContent();
+		if (intEmployeeId)
+		{
+			// Load the Employee
+			// TODO
+		}
+		else
+		{
+			this.buildContent();
+		}
 	},
 	
 	buildContent	: function(objResponse)
@@ -28,14 +43,10 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.arrTabs	= {};
 		
 		// Details Tab
-		var domTabDetails			= document.createElement('div');
-		domTabDetails.innerHTML	= '[Details]';
-		this.objControlTabGroup.addTab('Details', new Control_Tab('Details', domTabDetails));
+		this.objControlTabGroup.addTab('Details', new Control_Tab('Details', this.buildContentDetails()));
 		
-		// Permission Profiles Tab
-		var domTabProfiles			= document.createElement('div');
-		domTabProfiles.innerHTML	= '[Profiles]';
-		this.objControlTabGroup.addTab('Profiles', new Control_Tab('Permissions', domTabProfiles));
+		// Permissions Tab
+		this.objControlTabGroup.addTab('Permissions', new Control_Tab('Permissions', this.buildContentPermissions()));
 		//--------------------------------------------------------------------//
 		
 		// Update the Popup
@@ -46,6 +57,24 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		}
 		
 		return true;
+	},
+	
+	buildContentDetails	: function()
+	{
+		var objTabPage	= {};
+		objTabPage.domElement	= document.createElement('div');
+		
+		objTabPage.
+		
+		return objTabPage.domElement;
+	},
+	
+	buildContentPermissions	: function()
+	{
+		var objTabPage	= {};
+		objTabPage.domElement	= document.createElement('div');
+		
+		return objTabPage.domElement;
 	},
 	
 	display		: function($super)
