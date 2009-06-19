@@ -62,7 +62,8 @@ var Control_Tab_Group	= Class.create
 		
 		// Add the Tab to this Group
 		var objPage				= document.createElement('div');
-		objPage.style.opacity	= 0;
+		//objPage.style.opacity	= 0;
+		objPage.style.display	= 'none';
 		objPage.className		= 'tab-page';
 		objPage.appendChild(objControlTab.getContent());
 		this.objContainer.objPageContainer.domElement.appendChild(objPage);
@@ -115,7 +116,8 @@ var Control_Tab_Group	= Class.create
 					}
 					else
 					{
-						this._arrTabs[i].objPage.style.opacity	= 1;
+						//this._arrTabs[i].objPage.style.opacity	= 1;
+						this._arrTabs[i].objPage.style.display	= 'block';
 					}
 					this._arrTabs[i].domTabButton.className	= 'tab selected';
 				}
@@ -128,7 +130,8 @@ var Control_Tab_Group	= Class.create
 					}
 					else
 					{
-						this._arrTabs[i].objPage.style.opacity	= 0;
+						//this._arrTabs[i].objPage.style.opacity	= 0;
+						this._arrTabs[i].objPage.style.display	= 'none';
 					}
 					this._arrTabs[i].domTabButton.className	= 'tab';
 				}
