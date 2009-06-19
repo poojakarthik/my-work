@@ -387,6 +387,11 @@ button[disabled]
 	background-color:   #ccc !important;
 	-moz-user-select:   none !important;
 }
+
+button img.icon
+{
+	vertical-align	: text-bottom;
+}
 /**************************** END - Buttons - END *****************************/
 
 /********************** START - Reflex Popup - START **************************/
