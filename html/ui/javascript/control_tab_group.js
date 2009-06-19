@@ -83,7 +83,7 @@ var Control_Tab_Group	= Class.create
 		// Fade FX
 		if (this.bolFadeFX)
 		{
-			objTab.objFXFade	= new FX_Fade(this.setPageOpacity.bind(this, strAlias), bolFirstTab, 5, 5);
+			objTab.objFXFade	= new FX_Fade(this.setPageOpacity.bind(this, strAlias), bolFirstTab, 10, 1);
 		}
 		
 		// Add to list of tabs
