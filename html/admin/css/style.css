@@ -1468,6 +1468,7 @@ div.tab-group div.tab-page
 div.tab-group.embedded div.page
 {
 	border				: 1px solid #000;
+	position			: relative;
 }
 
 div.tab-group div.tab-row
