@@ -41,7 +41,7 @@ var Control_Tab_Group	= Class.create
 		// Page Container
 		this.objContainer.objPageContainer						= {};
 		this.objContainer.objPageContainer.domElement			= document.createElement('div');
-		this.objContainer.objPageContainer.domElement.className	= 'tab-page';
+		this.objContainer.objPageContainer.domElement.className	= 'tab-page-container';
 		this.objContainer.domElement.appendChild(this.objContainer.objPageContainer.domElement);
 	},
 	
