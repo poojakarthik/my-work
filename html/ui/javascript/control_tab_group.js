@@ -61,7 +61,7 @@ var Control_Tab_Group	= Class.create
 		
 		// Add the Tab to this Group
 		var objPage				= document.createElement('div');
-		objPage.style.display	= 'none';
+		objPage.style.opacity	= 0;
 		objPage.appendChild(objControlTab.getContent());
 		this.objContainer.objPageContainer.domElement.appendChild(objPage);
 		
@@ -98,7 +98,7 @@ var Control_Tab_Group	= Class.create
 	
 	switchToTab	: function(mixTab)
 	{
-		var objControlTab	= this.getTab(mixTab);
+		var objControlTab	= this.getTab(mixTab, false);
 		if (objControlTab)
 		{
 			// Set Visibility
@@ -107,25 +107,48 @@ var Control_Tab_Group	= Class.create
 				if (this._arrTabs[i].objControlTab == objControlTab)
 				{
 					// Selected Tab
-					this._arrTabs[i].objPage.style.display	= 'block';
+					if (this.bolFadeFX)
+					{
+						this._arrTabs[i].bolFadeFX.show();
+					}
+					else
+					{
+						this._arrTabs[i].objPage.style.opacity	= 1;
+					}
 					this._arrTabs[i].domTabButton.className	= 'tab selected';
 				}
 				else
 				{
 					// Non-selected Tab
-					this._arrTabs[i].objPage.style.display	= 'none';
+					if (this.bolFadeFX)
+					{
+						this._arrTabs[i].bolFadeFX.hide();
+					}
+					else
+					{
+						this._arrTabs[i].objPage.style.opacity	= 0;
+					}
 					this._arrTabs[i].domTabButton.className	= 'tab';
 				}
 			}
 		}
 	},
 	
-	getTab	: function(mixTab)
+	getTab	: function(mixTab, bolAsControlTab)
 	{
+		bolAsControlTab	= (bolAsControlTab == undefined || bolAsControlTab == null) ? true : false;
+		
 		if (mixTab instanceof Control_Tab)
 		{
 			// Control_Tab object
-			return mixTab;
+			for (var i = 0; i < this._arrTabs.length; i++)
+			{
+				if (this._arrTabs[i].objControlTab == objControlTab)
+				{
+					// Yes -- return the Control_Tab object
+					return (bolAsControlTab) ? this._arrTabs[i].objControlTab : this._arrTabs[i];
+				}
+			}
 		}
 		
 		// Is mixTab an alias?
@@ -134,7 +157,7 @@ var Control_Tab_Group	= Class.create
 			if (this._arrTabs[i].strAlias == mixTab)
 			{
 				// Yes -- return the Control_Tab object
-				return this._arrTabs[i].objControlTab;
+				return (bolAsControlTab) ? this._arrTabs[i].objControlTab : this._arrTabs[i];
 			}
 		}
 		
@@ -143,7 +166,7 @@ var Control_Tab_Group	= Class.create
 		if (intTabIndex >= 0 && intTabIndex < this._arrTabs.length)
 		{
 			// Yes -- return the Control_Tab object
-			return this._arrTabs[intTabIndex].objControlTab;
+			return (bolAsControlTab) ? this._arrTabs[intTabIndex].objControlTab : this._arrTabs[intTabIndex];
 		}
 		
 		//alert("Unable to find tab '" + mixTab + "'");
