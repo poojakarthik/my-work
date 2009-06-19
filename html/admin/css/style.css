@@ -1576,12 +1576,15 @@ table.input tbody tr th
 {
 	background-color	: #202020;
 	color				: #eee;
+	text-align			: right;
+	padding-right		: 0.5em;
 }
 
 table.input tbody tr td
 {
 	background-color	: #ddd;
-	color				: #333
+	color				: #333;
+	padding-left		: 0.5em;
 }
 
 table.input tbody tr.alt td
