@@ -37,7 +37,12 @@ var FX_Fade	= Class.create
 				if (this.fltOpacity < this.fltMinOpacity)
 				{
 					this.fltOpacity	= this.fltMinOpacity;
-					delete this.objPeriodicalExecuter;
+					
+					if (this.objPeriodicalExecuter)
+					{
+						this.objPeriodicalExecuter.stop();
+						delete this.objPeriodicalExecuter;
+					}
 				}
 				break;
 				
@@ -46,7 +51,12 @@ var FX_Fade	= Class.create
 				if (this.fltOpacity > this.fltMaxOpacity)
 				{
 					this.fltOpacity	= this.fltMaxOpacity;
-					delete this.objPeriodicalExecuter;
+					
+					if (this.objPeriodicalExecuter)
+					{
+						this.objPeriodicalExecuter.stop();
+						delete this.objPeriodicalExecuter;
+					}
 				}
 				break;
 		}
