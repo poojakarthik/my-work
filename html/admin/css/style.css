@@ -1464,14 +1464,14 @@ div.tab-group
 
 div.tab-group div.tab-page-container
 {
+	border		: none;
+	border-top	: 1px solid #000;
 	position	: relative;
 	height		: auto;
 }
 
 div.tab-group div.tab-page
 {
-	border				: none;
-	border-top			: 1px solid #000;
 	padding				: 0.5em;
 	background-color	: #f5f5f5;
 	position			: absolute;
@@ -1480,7 +1480,7 @@ div.tab-group div.tab-page
 	width				: 100%;
 }
 
-div.tab-group.embedded div.page
+div.tab-group.embedded div.tab-page-container
 {
 	border				: 1px solid #000;
 }
