@@ -1457,6 +1457,11 @@ div.error {
 
 /** Tab/Tab Group Control Styling */
 
+div.tab-group
+{
+	position	: relative;
+}
+
 div.tab-group div.tab-page
 {
 	border				: none;
