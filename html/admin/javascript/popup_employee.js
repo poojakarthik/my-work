@@ -2,7 +2,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, bolDisplayOnLoad)
 	{
-		$super(80);
+		$super(60);
 		this.setTitle("Employee");
 		
 		this.bolDisplayOnLoad	= (bolDisplayOnLoad) ? true : false;
@@ -36,12 +36,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Permission Profiles Tab
 		var domTabProfiles			= document.createElement('div');
 		domTabProfiles.innerHTML	= '[Profiles]';
-		this.objControlTabGroup.addTab('Profiles', new Control_Tab('Permissions Profiles (Simple)', domTabProfiles));
-		
-		// Permission Operations Tab
-		var domTabOperations		= document.createElement('div');
-		domTabOperations.innerHTML	= '[Operations]';
-		this.objControlTabGroup.addTab('Operations', new Control_Tab('Permission Operations (Advanced)', domTabOperations));
+		this.objControlTabGroup.addTab('Profiles', new Control_Tab('Permissions', domTabProfiles));
 		//--------------------------------------------------------------------//
 		
 		// Update the Popup
