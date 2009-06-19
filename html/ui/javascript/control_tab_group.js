@@ -12,10 +12,11 @@ var Control_Tab_Group	= Class.create
 	 *	@param	boolean	bolEmbedded					TRUE	: Embedded in page
 	 *												FALSE	: Sole element in a Popup
 	 */
-	initialize	: function(objDIVContainer, bolEmbedded)
+	initialize	: function(objDIVContainer, bolEmbedded, bolFadeFX)
 	{
 		// Parameter defaults 
-		bolEmbedded	= (bolEmbedded == undefined || bolEmbedded == null) ? true : false;
+		bolEmbedded		= (bolEmbedded == undefined || bolEmbedded == null) ? true : false;
+		this.bolFadeFX	= (bolFadeFX) ? true : false;
 		
 		this._arrTabs		= [];
 		
@@ -46,6 +47,8 @@ var Control_Tab_Group	= Class.create
 	
 	addTab		: function(strAlias, objControlTab)
 	{
+		var bolFirstTab	= (this._arrTabs.length == 0);
+		
 		// Check the Alias is valid and unique
 		if (strAlias.search(/^[a-z\_][\w]*$/i) == -1)
 		{
@@ -75,10 +78,19 @@ var Control_Tab_Group	= Class.create
 		
 		this.objContainer.objTabRow.domElement.insertBefore(domTabButton, this.objContainer.objTabRow.objClearing.domElement);
 		
-		this._arrTabs.push({strAlias: strAlias, domTabButton: domTabButton, objPage: objPage, objControlTab: objControlTab});
+		var objTab	= {strAlias: strAlias, domTabButton: domTabButton, objPage: objPage, objControlTab: objControlTab};
+		
+		// Fade FX
+		if (this.bolFadeFX)
+		{
+			objTab.objFXFade	= new FX_Fade(this.setPageOpacity.bind(this, objTab), bolFirstTab, 5, 50);
+		}
+		
+		// Add to list of tabs
+		this._arrTabs.push(objTab);
 		
 		// If this is the first tab, then select it
-		if (this._arrTabs.length == 1)
+		if (bolFirstTab)
 		{
 			this.switchToTab(strAlias);
 		}
@@ -136,5 +148,10 @@ var Control_Tab_Group	= Class.create
 		
 		//alert("Unable to find tab '" + mixTab + "'");
 		return false;
+	},
+	
+	setPageOpacity	: function(objTab, fltOpacity)
+	{
+		objTab.objPage.style.opacity	= fltOpacity;
 	}
 });
