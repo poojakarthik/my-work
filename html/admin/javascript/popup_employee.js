@@ -75,7 +75,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Table
 		objTabPage.table						= {};
 		objTabPage.table.domElement				= document.createElement('table');
-		objTabPage.table.domElement.className	= 'reflex';
+		objTabPage.table.domElement.className	= 'input';
 		objTabPage.domElement.appendChild(objTabPage.table.domElement);
 		
 		// Table Body
