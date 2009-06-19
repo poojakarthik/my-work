@@ -44,10 +44,10 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.arrTabs	= {};
 		
 		// Details Tab
-		this.objControlTabGroup.addTab('Details', new Control_Tab('Details', this.buildContentDetails()));
+		this.objControlTabGroup.addTab('Details', new Control_Tab('Details', this.buildContentDetails(), '../admin/img/template/view.png'));
 		
 		// Permissions Tab
-		this.objControlTabGroup.addTab('Permissions', new Control_Tab('Permissions', this.buildContentPermissions()));
+		this.objControlTabGroup.addTab('Permissions', new Control_Tab('Permissions', this.buildContentPermissions(), '../admin/img/template/key.png'));
 		//--------------------------------------------------------------------//
 		
 		// Update the Popup

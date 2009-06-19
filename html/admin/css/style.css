@@ -1494,6 +1494,12 @@ div.tab-group div.tab
 	-webkit-border-top-right-radius	: 0.5em;
 }
 
+div.tab-group div.tab img.icon
+{
+	vertical-align	: text-bottom;
+	margin-right	: 0.25em;
+}
+
 div.tab-group div.tab:hover
 {
 	background-color				: #fff;
