@@ -62,9 +62,6 @@ var Control_Tab_Group	= Class.create
 		objPage.appendChild(objControlTab.getContent());
 		this.objContainer.objPageContainer.domElement.appendChild(objPage);
 		
-		var domTabButtonLabel		= document.createElement('span');
-		domTabButtonLabel.innerHTML	= ;
-		
 		var strTabButtonHTML	= "<span>" + objControlTab.getName().replace(/&/gmi, '&amp;').replace(/"/gmi, '&quot;').replace(/>/gmi, '&gt;').replace(/</gmi, '&lt;') + "</span>";
 		if (objControlTab.getIcon())
 		{
@@ -73,7 +70,7 @@ var Control_Tab_Group	= Class.create
 		
 		var domTabButton		= document.createElement('div');
 		domTabButton.className	= 'tab';
-		domTabButton.innerHTML	= ;
+		domTabButton.innerHTML	= strTabButtonHTML;
 		domTabButton.addEventListener('click', this.switchToTab.bind(this, strAlias), false);
 		
 		this.objContainer.objTabRow.domElement.insertBefore(domTabButton, this.objContainer.objTabRow.objClearing.domElement);
