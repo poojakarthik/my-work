@@ -1574,8 +1574,6 @@ table.input tfoot a:link
 
 table.input tbody tr th
 {
-	background-color	: #202020;
-	color				: #eee;
 	text-align			: right;
 	padding-right		: 0.5em;
 }
