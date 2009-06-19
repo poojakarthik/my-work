@@ -16,7 +16,8 @@ var Control_Tab_Group	= Class.create
 	{
 		// Parameter defaults 
 		bolEmbedded		= (bolEmbedded == undefined || bolEmbedded == null) ? true : false;
-		this.bolFadeFX	= (bolFadeFX) ? true : false;
+		//this.bolFadeFX	= (bolFadeFX) ? true : false;
+		this.bolFadeFX	= false;
 		
 		this._arrTabs		= [];
 		
