@@ -47,6 +47,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.setContent(this._objPage.domElement);
 		if (this.bolDisplayOnLoad)
 		{
+			alert("Displaying immediately");
 			this.display();
 		}
 		
@@ -56,7 +57,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	display		: function($super)
 	{
 		// If we have loaded, then display, otherwise automatically display once loaded
-		if (this.objPage)
+		if (this._objPage)
 		{
 			$super();
 			return true;
