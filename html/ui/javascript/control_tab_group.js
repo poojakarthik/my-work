@@ -98,7 +98,7 @@ var Control_Tab_Group	= Class.create
 	
 	switchToTab	: function(mixTab)
 	{
-		var objControlTab	= this.getTab(mixTab, false);
+		var objControlTab	= this.getTab(mixTab);
 		if (objControlTab)
 		{
 			// Set Visibility
