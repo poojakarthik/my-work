@@ -109,7 +109,7 @@ var Control_Tab_Group	= Class.create
 					// Selected Tab
 					if (this.bolFadeFX)
 					{
-						this._arrTabs[i].bolFadeFX.show();
+						this._arrTabs[i].objFXFade.show();
 					}
 					else
 					{
@@ -122,7 +122,7 @@ var Control_Tab_Group	= Class.create
 					// Non-selected Tab
 					if (this.bolFadeFX)
 					{
-						this._arrTabs[i].bolFadeFX.hide();
+						this._arrTabs[i].objFXFade.hide();
 					}
 					else
 					{
