@@ -1,6 +1,6 @@
 var Popup_Employee	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, bolDisplayOnLoad)
+	initialize	: function($super, intEmployeeId, bolDisplayOnLoad)
 	{
 		$super(35);
 		this.setTitle("Employee");
@@ -21,6 +21,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			// Load the Employee
 			// TODO
+			this.buildContent();
 		}
 		else
 		{
