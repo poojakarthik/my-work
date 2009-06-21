@@ -25,7 +25,7 @@ var Employee	= Class.create
 		// Set properties
 		this.objProperties	= objResponse.objEmployee;
 		
-		alert(Object.inspect(objResponse));
+		alert(Object.inspect(objResponse.objEmployee));
 		
 		// Callback
 		if (fncCallback)
