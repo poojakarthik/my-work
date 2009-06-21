@@ -26,11 +26,13 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		else if (Number(mixEmployee) > 0)
 		{
 			// Employee Id passed -- load via JSON
+			alert("Loading Employee with Id '" + mixEmployee + "'");
 			this.objEmployee	= Employee.getForId(mixEmployee, this.buildContent.bind(this));
 		}
 		else
 		{
-			this.buildContent();
+			throw "Invalid Employee reference '" + mixEmployee + "'";
+			//this.buildContent();
 			//throw "mixEmployee is not an Employee Id or Employee Object!";
 		}
 	},
