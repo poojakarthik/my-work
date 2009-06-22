@@ -208,6 +208,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	
 	setControlMode	: function(bolControlMode)
 	{
+		alert('Set Control Mode...');
 		switch (bolControlMode)
 		{
 			case Control_Field.RENDER_MODE_EDIT:
