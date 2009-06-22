@@ -3993,6 +3993,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		AND Account.Archived IN ($arrApplicableAccountStatuses)
 		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
 		AND tio_reference_number IS NULL
+		AND vip = 0
 		JOIN credit_control_status
 		ON Account.credit_control_status = credit_control_status.id
 		AND credit_control_status.send_late_notice = 1
@@ -4017,6 +4018,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		AND Account.Archived IN ($arrApplicableAccountStatuses) $strAccountBillingType
 		AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < $strEffectiveDate) $strIgnoreDDAccounts
 		AND tio_reference_number IS NULL
+		AND vip = 0
 		JOIN credit_control_status
 		ON Account.credit_control_status = credit_control_status.id
 		AND credit_control_status.send_late_notice = 1
