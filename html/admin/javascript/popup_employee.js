@@ -208,7 +208,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	
 	setControlMode	: function(bolControlMode)
 	{
-		alert('Set Control Mode...');
+		//alert('Set Control Mode...');
 		switch (bolControlMode)
 		{
 			case Control_Field.RENDER_MODE_EDIT:
@@ -241,8 +241,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	addEventListeners	: function()
 	{
 		this.arrEventHandlers						= {};
-		this.arrEventHandlers.setControlModeEdit	= this.setControlMode.bind(this, Control_Field.CONTROL_MODE_EDIT);
-		this.arrEventHandlers.setControlModeView	= this.setControlMode.bind(this, Control_Field.CONTROL_MODE_VIEW);
+		this.arrEventHandlers.setControlModeEdit	= this.setControlMode.bind(this, Control_Field.RENDER_MODE_EDIT);
+		this.arrEventHandlers.setControlModeView	= this.setControlMode.bind(this, Control_Field.RENDER_MODE_VIEW);
 		this.arrEventHandlers.hide					= this.hide.bind(this);
 		this.arrEventHandlers.save					= $Alert.curry('Saving!');
 		
