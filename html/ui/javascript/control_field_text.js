@@ -1,5 +1,5 @@
-var Control_Field_Text	= Class.create
-({
+var Control_Field_Text	= Class.create(/* extends */ Control_Field, 
+{
 	initialize	: function($super, strLabel, strLabelSeparator)
 	{
 		// Parent
@@ -40,5 +40,4 @@ var Control_Field_Text	= Class.create
 			this.objControlOutput.domView.removeClassName('hide');
 		}
 	}
-}
-, /* extends */ Control_Field);
+});
