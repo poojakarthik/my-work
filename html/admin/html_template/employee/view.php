@@ -61,6 +61,9 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->LoadJavascript("control_tab_group");
 		$this->LoadJavascript("control_tab");
 		
+		$this->LoadJavascript("control_field");
+		$this->LoadJavascript("control_field_text");
+		
 		$this->LoadJavascript("employee");
 		$this->LoadJavascript("popup_employee");
 	}
