@@ -238,7 +238,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.arrEventHandlers.setControlModeEdit	= this.setControlMode.bind(this, Control_Field.CONTROL_MODE_EDIT);
 		this.arrEventHandlers.setControlModeView	= this.setControlMode.bind(this, Control_Field.CONTROL_MODE_VIEW);
 		this.arrEventHandlers.hide					= this.hide.bind(this);
-		this.arrEventHandlers.save					= alert.curry('Saving!');
+		this.arrEventHandlers.save					= $Alert.curry('Saving!');
 		
 		this.domEditButton.addEventListener('click'		, this.arrEventHandlers.setControlModeEdit	, false);
 		this.domCancelButton.addEventListener('click'	, this.arrEventHandlers.setControlModeView	, false);
