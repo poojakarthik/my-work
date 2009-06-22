@@ -61,11 +61,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		// Details Tab
 		this.arrTabs.Details	= this.buildContentDetails();
-		this.objControlTabGroup.addTab('Details', new Control_Tab('Details', this.arrTabs.Details, '../admin/img/template/view.png'));
+		this.objControlTabGroup.addTab('Details', new Control_Tab('Details', this.arrTabs.Details.domElement, '../admin/img/template/view.png'));
 		
 		// Permissions Tab
 		this.arrTabs.Permissions	= this.buildContentPermissions();
-		this.objControlTabGroup.addTab('Permissions', new Control_Tab('Permissions', this.arrTabs.Permissions, '../admin/img/template/key.png'));
+		this.objControlTabGroup.addTab('Permissions', new Control_Tab('Permissions', this.arrTabs.Permissions.domElement, '../admin/img/template/key.png'));
 		//--------------------------------------------------------------------//
 		
 		// Update the Popup
@@ -179,7 +179,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		//--------------------------------------------------------------------//
 		
 		
-		return objTabPage.domElement;
+		return objTabPage;
 	},
 	
 	buildContentPermissions	: function()
@@ -188,7 +188,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		objTabPage.domElement	= document.createElement('div');
 		objTabPage.domElement.innerHTML	= '[ Permissions ]';
 		
-		return objTabPage.domElement;
+		return objTabPage;
 	},
 	
 	display		: function($super)
