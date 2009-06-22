@@ -44,12 +44,13 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 
 	setRenderMode	: function($super, bolRenderMode)
 	{
+		$super(bolRenderMode);
+		
 		//if (this.getRenderMode() !== bolRenderMode && bolRenderMode == Control_Field.RENDER_MODE_EDIT)
 		if (bolRenderMode == Control_Field.RENDER_MODE_EDIT)
 		{
 			this.setElementValue('');
 		}
-		$super(bolRenderMode);
 	},
 	
 	addEventListeners	: function()
