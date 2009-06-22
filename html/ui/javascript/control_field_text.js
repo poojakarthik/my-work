@@ -13,7 +13,6 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domView		= document.createElement('span');
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domView);
 		
-		this.update();
 		this.validate();
 		
 		this.addEventListeners();
@@ -24,31 +23,18 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 		return this.objControlOutput.domEdit.value;
 	},
 	
+	updateElementValue	: function(bolUseInternalValue)
+	{
+		mixValue	= (bolUseInternalValue) ? this.mixValue : this.getValue();
+
+		this.objControlOutput.domEdit.value		= mixValue;
+		this.objControlOutput.domView.innerHTML	= mixValue;
+	},
+	
 	getElement	: function()
 	{
 		//this.update();
 		return this.objControlOutput.domElement;
-	},
-	
-	update	: function()
-	{
-		// Update Element Value
-		var mixValue	= this.getValue();
-		
-		this.objControlOutput.domEdit.value		= mixValue;
-		this.objControlOutput.domView.innerHTML	= mixValue;
-		
-		// Update Render Method
-		if (this.isEditable())
-		{
-			this.objControlOutput.domEdit.removeClassName('hide');
-			this.objControlOutput.domView.addClassName('hide');
-		}
-		else
-		{
-			this.objControlOutput.domEdit.addClassName('hide');
-			this.objControlOutput.domView.removeClassName('hide');
-		}
 	},
 	
 	addEventListeners	: function()

@@ -10,11 +10,41 @@ var Control_Field	= Class.create
 		// Create DOM Objects
 		this.objControlOutput				= {};
 		this.objControlOutput.domElement	= document.createElement('div');
+		
+		this.bolInit	= false;
 	},
 	
-	renderElement	: function(bolRenderMode)
+	getElement	: function()
 	{
-		throw "OO Error: Control_Field::renderElement() is an unimplemented Virtual Method!";
+		throw "OO Error: Control_Field::getElement() is an unimplemented Virtual Method!";
+	},
+	
+	getElementValue	: function()
+	{
+		throw "OO Error: Control_Field::getElementValue() is an unimplemented Virtual Method!";
+	},
+	
+	updateElementValue	: function(bolUseInternalValue)
+	{
+		throw "OO Error: Control_Field::updateElementValue() is an unimplemented Virtual Method!";
+	},
+	
+	update	: function()
+	{
+		// Update value
+		this.updateElementValue();
+		
+		// Update Render Method
+		if (this.isEditable())
+		{
+			this.objControlOutput.domEdit.removeClassName('hide');
+			this.objControlOutput.domView.addClassName('hide');
+		}
+		else
+		{
+			this.objControlOutput.domEdit.addClassName('hide');
+			this.objControlOutput.domView.removeClassName('hide');
+		}
 	},
 	
 	// Value
@@ -24,7 +54,8 @@ var Control_Field	= Class.create
 		
 		this.mixValue			= mixValue;
 		this.mixDefaultValue	= this.mixValue;
-		 
+		this.updateElementValue(true);
+		
 		// Make sure we update the Control(s)
 		this.validate();
 	},
