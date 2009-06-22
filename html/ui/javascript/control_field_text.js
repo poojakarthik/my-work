@@ -25,8 +25,8 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 		// Update value
 		var strValue	= this.getValue();
 		
-		this.objElements.domEdit.value		= strValue;
-		this.objElements.domView.innerHTML	= strValue;
+		this.objControlOutput.domEdit.value		= strValue;
+		this.objControlOutput.domView.innerHTML	= strValue;
 		
 		// Update Render Method
 		if (this.isEditable())
