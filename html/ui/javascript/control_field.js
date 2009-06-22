@@ -182,6 +182,8 @@ var Control_Field	= Class.create
 	
 	generateInputTableRow	: function(bolRenderMode)
 	{
+		this.setRenderMode(bolRenderMode);
+		
 		// TODO: Replace styling with Classes
 		var objTR							= {};
 		objTR.objTH							= {};
@@ -202,7 +204,7 @@ var Control_Field	= Class.create
 		objTR.objTD.objOutputDIV.domElement	= document.createElement('div');
 		objTR.objTD.domElement.appendChild(objTR.objTD.objOutputDIV.domElement);
 		
-		objTR.objTD.objOutputDIV.objOutput.domElement	= this.renderElement(bolRenderMode);
+		objTR.objTD.objOutputDIV.objOutput.domElement	= this.getElement();
 		objTR.objTD.domElement.appendChild(objTR.objTD.objOutputDIV.objOutput.domElement);
 		
 		if (this.strDescription != undefined)

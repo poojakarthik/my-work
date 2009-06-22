@@ -14,7 +14,7 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domEdit);
 	},
 	
-	getElement	: function(bolRenderMode)
+	getElement	: function()
 	{
 		this.update();
 		return this.objControlOutput.domElement;
