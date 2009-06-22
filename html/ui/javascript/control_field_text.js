@@ -33,8 +33,10 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 	update	: function()
 	{
 		// Update Element Value
-		this.objControlOutput.domEdit.value		= this.getValue;
-		this.objControlOutput.domView.innerHTML	= this.mixValue;
+		var mixValue	= this.getValue();
+		
+		this.objControlOutput.domEdit.value		= mixValue;
+		this.objControlOutput.domView.innerHTML	= mixValue;
 		
 		// Update Render Method
 		if (this.isEditable())
