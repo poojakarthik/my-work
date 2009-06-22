@@ -12,6 +12,11 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 		
 		this.objControlOutput.domView		= document.createElement('span');
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domView);
+		
+		this.update();
+		this.validate();
+		
+		this.addEventListeners();
 	},
 	
 	getElementValue	: function()
@@ -48,6 +53,9 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 	
 	addEventListeners	: function()
 	{
+		this.arrEventHandlers				= {};
+		this.arrEventHandlers.fncValidate	= this.validate.bind(this);
+		
 		this.objControlOutput.domEdit.addEventListener('click'		, this.arrEventHandlers.fncValidate, false);
 		this.objControlOutput.domEdit.addEventListener('change'		, this.arrEventHandlers.fncValidate, false);
 		this.objControlOutput.domEdit.addEventListener('mouseup'	, this.arrEventHandlers.fncValidate, false);

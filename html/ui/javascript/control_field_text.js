@@ -13,8 +13,10 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domView		= document.createElement('span');
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domView);
 		
-		this.arrEventHandlers				= {};
-		this.arrEventHandlers.fncValidate	= this.validate.bind(this);
+		this.update();
+		this.validate();
+		
+		this.addEventListeners();
 	},
 	
 	getElementValue	: function()
