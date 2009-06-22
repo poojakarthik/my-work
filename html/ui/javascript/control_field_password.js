@@ -23,11 +23,16 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 		return this.objControlOutput.domEdit.value;
 	},
 	
-	updateElementValue	: function(bolUseInternalValue)
-	{
-		mixValue	= (bolUseInternalValue) ? this.mixValue : this.getValue();
-		
+	setElementValue	: function(mixValue)
+	{	
 		this.objControlOutput.domEdit.value		= mixValue;
+	},
+	
+	updateElementValue	: function()
+	{
+		mixValue	= this.getValue();
+		
+		this.setElementValue(mixValue);
 		this.objControlOutput.domView.innerHTML	= (mixValue) ? '[ Password specified ]' : '[ No password specified ]';
 	},
 	
@@ -35,6 +40,15 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 	{
 		//this.update();
 		return this.objControlOutput.domElement;
+	},
+
+	setRenderMode	: function($super, bolRenderMode)
+	{
+		if (this.getRenderMode() !== bolRenderMode && bolRenderMode == Control_Field.RENDER_MODE_EDIT)
+		{
+			this.setElementValue('');
+		}
+		$super(bolRenderMode);
 	},
 	
 	addEventListeners	: function()

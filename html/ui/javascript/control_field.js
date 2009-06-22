@@ -53,16 +53,28 @@ var Control_Field	= Class.create
 		//alert(this.strLabel+" is being set to '" + mixValue + "'");
 		
 		this.mixValue			= mixValue;
-		this.mixDefaultValue	= this.mixValue;
 		this.updateElementValue(true);
 		
 		// Make sure we update the Control(s)
 		this.validate();
 	},
 	
-	getValue	: function()
+	setElementValue	: function(mixValue)
 	{
-		this.mixValue	= this.getElementValue();
+		throw "OO Error: Control_Field::setElementValue() is an unimplemented Virtual Method!";
+	},
+	
+	getElementValue	: function()
+	{
+		throw "OO Error: Control_Field::getElementValue() is an unimplemented Virtual Method!";
+	},
+	
+	getValue	: function(bolImplicitSave)
+	{
+		if (bolImplicitSave)
+		{
+			this.save();
+		}
 		return this.mixValue;
 	},
 	
@@ -122,7 +134,7 @@ var Control_Field	= Class.create
 	trim	: function(bolReturnValue)
 	{
 		// Perform Trim
-		var mixValue	= this.getValue();
+		var mixValue	= this.getElementValue();
 		if (typeof this.mixAutoTrim == 'function')
 		{
 			// Callback
@@ -140,7 +152,7 @@ var Control_Field	= Class.create
 		}
 		else
 		{
-			this.mixValue	= mixValue;
+			this.setElementValue(mixValue);
 		}
 	},
 
@@ -210,7 +222,7 @@ var Control_Field	= Class.create
 		if (typeof this.fncValidate == 'function')
 		{
 			// Callback
-			return (this.fncValidate(this.getValue())) ? true : false;
+			return (this.fncValidate(this.getElementValue())) ? true : false;
 		}
 		else
 		{
@@ -235,7 +247,7 @@ var Control_Field	= Class.create
 				// Invalid data
 				this.objControlOutput.domElement.addClassName('invalid');
 			}
-			else if (!this.getValue())
+			else if (!this.getElementValue())
 			{
 				if (this.isMandatory())
 				{
@@ -263,14 +275,15 @@ var Control_Field	= Class.create
 	
 	revert	: function()
 	{
-		this.setValue(this.mixDefaultValue);
+		this.setElementValue(this.getValue());
 	},
 	
 	save	: function()
 	{
 		if (this.validate())
 		{
-			this.setValue(this.getValue());
+			this.setValue(this.getElementValue());
+			return this.getValue();
 		}
 		else
 		{
