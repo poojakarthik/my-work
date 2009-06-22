@@ -1590,21 +1590,27 @@ table.input tbody tr td .hide
 	display				: none;
 }
 
-table.input tbody tr td div.mandatory
+table.input tbody tr td div.mandatory input,
+table.input tbody tr td div.mandatory select,
+table.input tbody tr td div.mandatory textarea,
 {
 	background	: #fff;
 	color		: #111;
 	border		: .1em solid #da8;
 }
 
-table.input tbody tr td div.invalid
+table.input tbody tr td div.invalid input,
+table.input tbody tr td div.invalid select,
+table.input tbody tr td div.invalid textarea,
 {
 	background	: #ffecf0;
 	color		: #111;
 	border		: .1em solid #d30;
 }
 
-table.input tbody tr td div.valid
+table.input tbody tr td div.valid input,
+table.input tbody tr td div.valid select,
+table.input tbody tr td div.valid textarea,
 {
 	background	: #ecfff0;
 	color		: #111;

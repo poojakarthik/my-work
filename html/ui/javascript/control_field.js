@@ -187,7 +187,7 @@ var Control_Field	= Class.create
 
 		this.objControlOutput.domElement.removeClassName('invalid');
 		this.objControlOutput.domElement.removeClassName('valid');
-		this.objControlOutput.domElement.removeClassName('no-value');
+		this.objControlOutput.domElement.removeClassName('mandatory');
 		
 		if (!this.isValid())
 		{
@@ -199,7 +199,7 @@ var Control_Field	= Class.create
 			if (this.isMandatory())
 			{
 				// Mandatory, but no data
-				this.objControlOutput.domElement.addClassName('no-value');
+				this.objControlOutput.domElement.addClassName('mandatory');
 			}
 		}
 		else
