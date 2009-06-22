@@ -20,8 +20,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.domCancelButton.innerHTML	= "<img class='icon' src='../admin/img/template/delete.png' alt='' />Cancel";
 		
 		this.addEventListeners();
-		
-		this.setFooterButtons([this.domSaveButton, this.domCancelButton], true);
+
+		this.setFooterButtons([this.domEditButton, this.domCloseButton], true);
 		
 		this.bolDisplayOnLoad	= (bolDisplayOnLoad) ? true : false;
 		
