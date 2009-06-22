@@ -11,7 +11,7 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domEdit);
 		
 		this.objControlOutput.domView		= document.createElement('span');
-		this.objControlOutput.domElement.appendChild(this.objControlOutput.domEdit);
+		this.objControlOutput.domElement.appendChild(this.objControlOutput.domView);
 	},
 	
 	getElement	: function()
