@@ -190,29 +190,36 @@ var Control_Field	= Class.create
 	
 	validate	: function()
 	{
-		// Preprocess (trim)
-		this.trim();
-
-		this.objControlOutput.domElement.removeClassName('invalid');
-		this.objControlOutput.domElement.removeClassName('valid');
-		this.objControlOutput.domElement.removeClassName('mandatory');
-		
-		if (!this.isValid())
+		if (this.isEditable())
 		{
-			// Invalid data
-			this.objControlOutput.domElement.addClassName('invalid');
-		}
-		else if (!this.getValue())
-		{
-			if (this.isMandatory())
+			// Preprocess (trim)
+			this.trim();
+	
+			this.objControlOutput.domElement.removeClassName('invalid');
+			this.objControlOutput.domElement.removeClassName('valid');
+			this.objControlOutput.domElement.removeClassName('mandatory');
+			
+			if (!this.isValid())
 			{
-				// Mandatory, but no data
-				this.objControlOutput.domElement.addClassName('mandatory');
+				// Invalid data
+				this.objControlOutput.domElement.addClassName('invalid');
+			}
+			else if (!this.getValue())
+			{
+				if (this.isMandatory())
+				{
+					// Mandatory, but no data
+					this.objControlOutput.domElement.addClassName('mandatory');
+				}
+			}
+			else
+			{
+				this.objControlOutput.domElement.addClassName('valid');
 			}
 		}
 		else
 		{
-			this.objControlOutput.domElement.addClassName('valid');
+			return true;
 		}
 	},
 	
