@@ -27,7 +27,7 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 	{
 		mixValue	= (bolUseInternalValue) ? this.mixValue : this.getValue();
 		
-		this.objControlOutput.domEdit.value		= mixValue;
+		this.objControlOutput.domEdit.checked	= (mixValue) ? true : false;
 		this.objControlOutput.domView.innerHTML	= (mixValue) ? 'Yes' : 'No';
 	},
 	
