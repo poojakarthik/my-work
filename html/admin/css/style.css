@@ -1585,6 +1585,11 @@ table.input tbody tr td
 	padding-left		: 0.5em;
 }
 
+table.input tbody tr td .hide
+{
+	display				: none;
+}
+	
 table.input tbody tr.alt td
 {
 	background-color	: #fff;
