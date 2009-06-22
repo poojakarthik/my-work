@@ -180,6 +180,34 @@ var Control_Field	= Class.create
 		}
 	},
 	
+	validate	: function()
+	{
+		// Preprocess (trim)
+		this.trim();
+
+		this.objControlOutput.domElement.removeClassName('invalid');
+		this.objControlOutput.domElement.removeClassName('valid');
+		this.objControlOutput.domElement.removeClassName('no-value');
+		
+		if (!this.isValid())
+		{
+			// Invalid data
+			this.objControlOutput.domElement.addClassName('invalid');
+		}
+		else if (!this.getValue())
+		{
+			if (this.isMandatory())
+			{
+				// Mandatory, but no data
+				this.objControlOutput.domElement.addClassName('no-value');
+			}
+		}
+		else
+		{
+			this.objControlOutput.domElement.addClassName('valid');
+		}
+	},
+	
 	generateInputTableRow	: function(bolRenderMode)
 	{
 		if (bolRenderMode !== undefined)

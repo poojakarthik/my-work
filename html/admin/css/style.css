@@ -1589,7 +1589,28 @@ table.input tbody tr td .hide
 {
 	display				: none;
 }
-	
+
+table.input tbody tr td div.mandatory
+{
+	background	: #fff;
+	color		: #111;
+	border		: .1em solid #da8;
+}
+
+table.input tbody tr td div.invalid
+{
+	background	: #ffecf0;
+	color		: #111;
+	border		: .1em solid #d30;
+}
+
+table.input tbody tr td div.valid
+{
+	background	: #ecfff0;
+	color		: #111;
+	border		: .1em solid #3d0;
+}
+
 table.input tbody tr.alt td
 {
 	background-color	: #fff;

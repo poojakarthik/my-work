@@ -39,5 +39,19 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 			this.objControlOutput.domEdit.addClassName('hide');
 			this.objControlOutput.domView.removeClassName('hide');
 		}
+	},
+	
+	addEventListeners	: function()
+	{
+		this.objControlOutput.domEdit.addEventListener('click'		, this.arrEventHandlers.fncValidate, false);
+		this.objControlOutput.domEdit.addEventListener('change'		, this.arrEventHandlers.fncValidate, false);
+		this.objControlOutput.domEdit.addEventListener('mouseup'	, this.arrEventHandlers.fncValidate, false);
+	},
+	
+	removeEventListeners	: function()
+	{
+		this.objControlOutput.domEdit.removeEventListener('click'	, this.arrEventHandlers.fncValidate, false);
+		this.objControlOutput.domEdit.removeEventListener('change'	, this.arrEventHandlers.fncValidate, false);
+		this.objControlOutput.domEdit.removeEventListener('mouseup'	, this.arrEventHandlers.fncValidate, false);
 	}
 });
