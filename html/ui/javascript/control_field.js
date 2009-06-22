@@ -5,6 +5,8 @@ var Control_Field	= Class.create
 		this.strLabel			= strLabel;
 		this.strLabelSeparator	= (strLabelSeparator) ? strLabelSeparator : '&nbsp;:';
 		
+		this.mixValue			= '';
+		
 		// Create DOM Objects
 		this.objControlOutput				= {};
 		this.objControlOutput.domElement	= document.createElement('div');
