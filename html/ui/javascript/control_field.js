@@ -210,7 +210,7 @@ var Control_Field	= Class.create
 		if (typeof this.fncValidate == 'function')
 		{
 			// Callback
-			return (this.fncValidate()) ? true : false;
+			return (this.fncValidate(this.getValue())) ? true : false;
 		}
 		else
 		{
