@@ -139,7 +139,7 @@ var Control_Field	= Class.create
 	
 	getRenderMode	: function()
 	{
-		return bolRenderMode;
+		return this.bolRenderMode;
 	},
 	
 	setMandatory	: function(mixMandatory)
