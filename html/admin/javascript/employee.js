@@ -119,7 +119,7 @@ Employee.objProperties.DOB.objDefinition.strLabel		= 'Date of Birth';
 Employee.objProperties.DOB.objDefinition.mixEditable	= true;
 Employee.objProperties.DOB.objDefinition.mixMandatory	= true;
 Employee.objProperties.DOB.objDefinition.fncValidate	= Reflex_Validation.date.bind(Reflex_Validation);
-
+*/
 // Email
 Employee.objProperties.Email				= {};
 Employee.objProperties.Email.strType		= 'text';
@@ -175,7 +175,7 @@ Employee.objProperties.Password.objDefinition.strLabel		= 'Password';
 Employee.objProperties.Password.objDefinition.mixEditable	= true;
 Employee.objProperties.Password.objDefinition.mixMandatory	= true;
 Employee.objProperties.Password.objDefinition.intMaxLength	= 40;
-
+/*
 // Role
 Employee.objProperties.user_role_id				= {};
 Employee.objProperties.user_role_id.strType		= 'select';
@@ -185,7 +185,8 @@ Employee.objProperties.user_role_id.objDefinition.strLabel		= 'Role';
 Employee.objProperties.user_role_id.objDefinition.mixEditable	= true;
 Employee.objProperties.user_role_id.objDefinition.mixMandatory	= true;
 Employee.objProperties.user_role_id.objDefinition.fncPopulate	= User_Role.getAllAsSelectOptions.bind(User_Role);
-
+*/
+/*
 // is_god
 Employee.objProperties.is_god				= {};
 Employee.objProperties.is_god.strType		= 'checkbox';
