@@ -3,7 +3,7 @@ var Control_Field	= Class.create
 	initialize	: function(strLabel, strLabelSeparator)
 	{
 		this.strLabel			= strLabel;
-		this.strLabelSeparator	= (strLabelSeparator) ? strLabelSeparator : '&nbsp;:&nbsp;';
+		this.strLabelSeparator	= (strLabelSeparator) ? strLabelSeparator : '&nbsp;:';
 		
 		// Create DOM Objects
 		this.objControlOutput				= {};
