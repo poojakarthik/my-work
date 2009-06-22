@@ -182,7 +182,10 @@ var Control_Field	= Class.create
 	
 	generateInputTableRow	: function(bolRenderMode)
 	{
-		this.setRenderMode(bolRenderMode);
+		if (bolRenderMode !== undefined)
+		{
+			this.setRenderMode(bolRenderMode);
+		}
 		
 		// TODO: Replace styling with Classes
 		var objTR							= {};
