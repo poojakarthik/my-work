@@ -234,7 +234,7 @@ var Control_Field	= Class.create
 	{
 		if (this.validate())
 		{
-			this.mixDefaultValue	= this.getValue();
+			this.setValue(this.getValue());
 		}
 		else
 		{
