@@ -19,5 +19,10 @@ var Reflex_Validation	=
 		//	* 1300154845
 		//	* 1800648432
 		return (strFNN.search(/(13\d{4}|(0[12356789]\d{2}|1[38])\d{6})/) != -1) ? true : false;
+	},
+	
+	digits	: function(strDigits)
+	{
+		return (strFNN.search(/^\d*$/) != -1) ? true : false;
 	}
 };
