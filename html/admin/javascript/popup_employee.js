@@ -230,7 +230,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	{
 		this.removeEventListeners();
 		$super();
-	}
+	},
 	
 	addEventListeners	: function()
 	{
