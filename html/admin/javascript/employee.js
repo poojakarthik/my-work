@@ -186,7 +186,7 @@ Employee.objProperties.user_role_id.objDefinition.mixEditable	= true;
 Employee.objProperties.user_role_id.objDefinition.mixMandatory	= true;
 Employee.objProperties.user_role_id.objDefinition.fncPopulate	= User_Role.getAllAsSelectOptions.bind(User_Role);
 */
-/*
+
 // is_god
 Employee.objProperties.is_god				= {};
 Employee.objProperties.is_god.strType		= 'checkbox';
@@ -203,4 +203,3 @@ Employee.objProperties.Archived.objDefinition				= {};
 Employee.objProperties.Archived.objDefinition.strLabel		= 'Archived';
 Employee.objProperties.Archived.objDefinition.mixEditable	= true;
 Employee.objProperties.Archived.objDefinition.mixMandatory	= true;
-*/
