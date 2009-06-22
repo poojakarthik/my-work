@@ -18,7 +18,7 @@ var Reflex_Validation	=
 		//	* 134585
 		//	* 1300154845
 		//	* 1800648432
-		return (strTest.search(/(13\d{4}|(0[12356789]\d{2}|1[38])\d{6})/) != -1) ? true : false;
+		return (strTest.search(/(13\d{4}|(0[123456789]\d{2}|1[38])\d{6})/) != -1) ? true : false;
 	},
 	
 	digits	: function(strTest)
