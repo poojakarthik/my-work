@@ -7,11 +7,19 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.addCloseButton();
 		this.setIcon("../admin/img/template/user_edit.png");
 		
+		this.domEditButton				= document.createElement('button');
+		this.domEditButton.innerHTML	= "<img class='icon' src='../admin/img/template/user_edit.png' alt='' />Edit";
+		
+		this.domCloseButton				= document.createElement('button');
+		this.domCloseButton.innerHTML	= "Close";
+		
 		this.domSaveButton				= document.createElement('button');
 		this.domSaveButton.innerHTML	= "<img class='icon' src='../admin/img/template/tick.png' alt='' />Save";
 		
-		this.domCancelButton	= document.createElement('button');
+		this.domCancelButton			= document.createElement('button');
 		this.domCancelButton.innerHTML	= "<img class='icon' src='../admin/img/template/delete.png' alt='' />Cancel";
+		
+		this.addEventListeners();
 		
 		this.setFooterButtons([this.domSaveButton, this.domCancelButton], true);
 		
@@ -194,5 +202,55 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			this.bolDisplayOnLoad	= true;
 			return false;
 		}
+	},
+	
+	setControlMode	: function(bolControlMode)
+	{
+		switch (bolControlMode)
+		{
+			case Control_Field.RENDER_MODE_EDIT:
+				this.setFooterButtons([this.domSaveButton, this.domCancelButton], true);
+				break;
+				
+			case Control_Field.RENDER_MODE_VIEW:
+				this.setFooterButtons([this.domEditButton, this.domCloseButton], true);
+				break;
+		}
+		
+		for (i in this._objPage.table.tbody)
+		{
+			if (i != 'domElement')
+			{
+				this._objPage.table.tbody[i].objControl.setRenderMode(bolControlMode);
+			}
+		}
+	},
+	
+	hide	: function($super)
+	{
+		this.removeEventListeners();
+		$super();
+	}
+	
+	addEventListeners	: function()
+	{
+		this.arrEventHandlers						= {};
+		this.arrEventHandlers.setControlModeEdit	= this.setControlMode.bind(this, Control_Field.CONTROL_MODE_EDIT);
+		this.arrEventHandlers.setControlModeView	= this.setControlMode.bind(this, Control_Field.CONTROL_MODE_VIEW);
+		this.arrEventHandlers.hide					= this.hide.bind(this);
+		this.arrEventHandlers.save					= alert.curry('Saving!');
+		
+		this.domEditButton.addEventListener('click'				, this.arrEventHandlers.setControlModeEdit	, false);
+		this.domCancelButton.domEdit.addEventListener('click'	, this.arrEventHandlers.setControlModeView	, false);
+		this.domCloseButton.domEdit.addEventListener('click'	, this.arrEventHandlers.hide				, false);
+		this.domSaveButton.domEdit.addEventListener('click'		, this.arrEventHandlers.save				, false);
+	},
+	
+	removeEventListeners	: function()
+	{
+		this.domEditButton.removeEventListener('click'				, this.arrEventHandlers.setControlModeEdit	, false);
+		this.domCancelButton.domEdit.removeEventListener('click'	, this.arrEventHandlers.setControlModeView	, false);
+		this.domCloseButton.domEdit.removeEventListener('click'		, this.arrEventHandlers.hide				, false);
+		this.domSaveButton.domEdit.removeEventListener('click'		, this.arrEventHandlers.save				, false);
 	}
 });
