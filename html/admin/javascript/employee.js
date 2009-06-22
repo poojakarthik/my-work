@@ -22,7 +22,7 @@ var Employee	= Class.create
 	
 	getControls	: function()
 	{
-		if (!objPropertyControls)
+		if (objPropertyControls == undefined)
 		{
 			this.objPropertyControls	= {};
 			for (strProperty in Employee.objProperties)
