@@ -26,7 +26,7 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 		var strValue	= this.getValue();
 		
 		this.objControlOutput.domEdit.value		= strValue;
-		this.objControlOutput.domView.innerHTML	= (strValue) ? '[ Password specified ('+strValue+') ]' : '[ No password specified ('+strValue+') ]';
+		this.objControlOutput.domView.innerHTML	= (strValue) ? '[ Password specified ]' : '[ No password specified ]';
 		
 		// Update Render Method
 		if (this.isEditable())
