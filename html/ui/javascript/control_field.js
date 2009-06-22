@@ -107,7 +107,7 @@ var Control_Field	= Class.create
 		}
 		else
 		{
-			this.setValue(mixValue);
+			this.mixValue	= mixValue;
 		}
 	},
 
