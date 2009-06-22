@@ -26,7 +26,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		else if (Number(mixEmployee) > 0)
 		{
 			// Employee Id passed -- load via JSON
-			alert("Loading Employee with Id '" + mixEmployee + "'");
+			//alert("Loading Employee with Id '" + mixEmployee + "'");
 			this.objEmployee	= Employee.getForId(mixEmployee, this.buildContent.bind(this));
 		}
 		else
@@ -100,7 +100,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		objTabPage.table.tbody.FirstName.td							= {};
 		objTabPage.table.tbody.FirstName.td.domElement				= document.createElement('td');
-		objTabPage.table.tbody.FirstName.td.domElement.innerHTML	= this.objEmployee.FirstName;
+		objTabPage.table.tbody.FirstName.td.domElement.innerHTML	= this.objEmployee.objProperties.FirstName;
 		objTabPage.table.tbody.FirstName.domElement.appendChild(objTabPage.table.tbody.FirstName.td.domElement);
 		
 		// Last Name
@@ -115,7 +115,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		objTabPage.table.tbody.LastName.td						= {};
 		objTabPage.table.tbody.LastName.td.domElement			= document.createElement('td');
-		objTabPage.table.tbody.LastName.td.domElement.innerHTML	= this.objEmployee.LastName;
+		objTabPage.table.tbody.LastName.td.domElement.innerHTML	= this.objEmployee.objProperties.LastName;
 		objTabPage.table.tbody.LastName.domElement.appendChild(objTabPage.table.tbody.LastName.td.domElement);
 		
 		return objTabPage.domElement;
