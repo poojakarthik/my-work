@@ -207,10 +207,10 @@ var Control_Field	= Class.create
 	
 	isValid	: function()
 	{
-		if (typeof this.mixMandatory == 'function')
+		if (typeof this.fncValidate == 'function')
 		{
 			// Callback
-			return (this.mixMandatory()) ? true : false;
+			return (this.fncValidate()) ? true : false;
 		}
 		else
 		{
