@@ -22,6 +22,7 @@ var Control_Field	= Class.create
 		
 		// Make sure we update the Control(s)
 		this.update();
+		this.validate();
 	},
 	
 	getValue	: function()
@@ -80,6 +81,7 @@ var Control_Field	= Class.create
 	{
 		this.mixAutoTrim	= mixAutoTrim;
 		this.update();
+		this.validate();
 	},
 	
 	trim	: function(bolReturnValue)
@@ -111,6 +113,7 @@ var Control_Field	= Class.create
 	{
 		this.mixEditable	= mixEditable;
 		this.update();
+		this.validate();
 	},
 	
 	getEditable	: function()
@@ -135,6 +138,7 @@ var Control_Field	= Class.create
 	{
 		this.bolRenderMode	= bolRenderMode;
 		this.update();
+		this.validate();
 	},
 	
 	getRenderMode	: function()
@@ -146,6 +150,7 @@ var Control_Field	= Class.create
 	{
 		this.mixMandatory	= mixMandatory;
 		this.update();
+		this.validate();
 	},
 	
 	isMandatory	: function()
@@ -165,6 +170,7 @@ var Control_Field	= Class.create
 	setValidateFunction	: function(fncValidate)
 	{
 		this.fncValidate	= fncValidate;
+		this.validate();
 	},
 	
 	isValid	: function()
