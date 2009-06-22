@@ -25,7 +25,7 @@ var Employee	= Class.create
 		// Set properties
 		this.objProperties	= objResponse.objEmployee;
 		
-		alert(Object.keys(objResponse.objEmployee));
+		alert(objResponse.objEmployee.FirstName);
 		
 		// Callback
 		if (fncCallback)
