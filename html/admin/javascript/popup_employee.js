@@ -146,11 +146,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Mobile.tr.domElement);
 		
 		// Password
-		objTabPage.table.tbody.Password				= {};
-		objTabPage.table.tbody.Password.objControl	= objControls.Password;
-		objTabPage.table.tbody.Password.tr			= {};
-		objTabPage.table.tbody.Password.tr			= objControls.Password.generateInputTableRow();
-		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Password.tr.domElement);
+		objTabPage.table.tbody.PassWord				= {};
+		objTabPage.table.tbody.PassWord.objControl	= objControls.PassWord;
+		objTabPage.table.tbody.PassWord.tr			= {};
+		objTabPage.table.tbody.PassWord.tr			= objControls.PassWord.generateInputTableRow();
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.PassWord.tr.domElement);
 		
 		// Role
 		/*objTabPage.table.tbody.user_role_id					= {};

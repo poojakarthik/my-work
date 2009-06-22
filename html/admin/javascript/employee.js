@@ -167,14 +167,14 @@ Employee.objProperties.Mobile.objDefinition.intMaxLength	= 25;
 Employee.objProperties.Mobile.objDefinition.fncValidate		= Reflex_Validation.fnn.bind(Reflex_Validation);
 
 // Password
-Employee.objProperties.Password				= {};
-Employee.objProperties.Password.strType		= 'password';
+Employee.objProperties.PassWord				= {};
+Employee.objProperties.PassWord.strType		= 'password';
 
-Employee.objProperties.Password.objDefinition				= {};
-Employee.objProperties.Password.objDefinition.strLabel		= 'Password';
-Employee.objProperties.Password.objDefinition.mixEditable	= true;
-Employee.objProperties.Password.objDefinition.mixMandatory	= true;
-Employee.objProperties.Password.objDefinition.intMaxLength	= 40;
+Employee.objProperties.PassWord.objDefinition				= {};
+Employee.objProperties.PassWord.objDefinition.strLabel		= 'Password';
+Employee.objProperties.PassWord.objDefinition.mixEditable	= true;
+Employee.objProperties.PassWord.objDefinition.mixMandatory	= true;
+Employee.objProperties.PassWord.objDefinition.intMaxLength	= 40;
 /*
 // Role
 Employee.objProperties.user_role_id				= {};
