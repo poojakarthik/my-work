@@ -139,7 +139,6 @@ Employee.objProperties.Extension.strType		= 'text';
 Employee.objProperties.Extension.objDefinition				= {};
 Employee.objProperties.Extension.objDefinition.strLabel		= 'Extension';
 Employee.objProperties.Extension.objDefinition.mixEditable	= true;
-Employee.objProperties.Extension.objDefinition.mixMandatory	= true;
 Employee.objProperties.Extension.objDefinition.mixAutoTrim	= true;
 Employee.objProperties.Extension.objDefinition.intMaxLength	= 15;
 Employee.objProperties.Extension.objDefinition.fncValidate	= Reflex_Validation.digits.bind(Reflex_Validation);
@@ -153,7 +152,7 @@ Employee.objProperties.Phone.objDefinition.strLabel		= 'Phone';
 Employee.objProperties.Phone.objDefinition.mixEditable	= true;
 Employee.objProperties.Phone.objDefinition.mixAutoTrim	= function(strPhone){return strPhone.replace(/.+/, '');};
 Employee.objProperties.Phone.objDefinition.intMaxLength	= 25;
-Employee.objProperties.Phone.objDefinition.fncValidate	= Reflex_Validation.fnn.bind(Reflex_Validation);
+Employee.objProperties.Phone.objDefinition.fncValidate	= Reflex_Validation.fnnFixedLine.bind(Reflex_Validation);
 
 // Mobile
 Employee.objProperties.Mobile				= {};
@@ -164,7 +163,7 @@ Employee.objProperties.Mobile.objDefinition.strLabel		= 'Mobile';
 Employee.objProperties.Mobile.objDefinition.mixEditable		= true;
 Employee.objProperties.Mobile.objDefinition.mixAutoTrim		= function(strPhone){return strPhone.replace(/.+/, '');};
 Employee.objProperties.Mobile.objDefinition.intMaxLength	= 25;
-Employee.objProperties.Mobile.objDefinition.fncValidate		= Reflex_Validation.fnn.bind(Reflex_Validation);
+Employee.objProperties.Mobile.objDefinition.fncValidate		= Reflex_Validation.fnnMobile.bind(Reflex_Validation);
 
 // Password
 Employee.objProperties.PassWord				= {};
