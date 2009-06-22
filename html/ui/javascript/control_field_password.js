@@ -26,7 +26,7 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 	
 	getElement	: function()
 	{
-		this.update();
+		//this.update();
 		return this.objControlOutput.domElement;
 	},
 	

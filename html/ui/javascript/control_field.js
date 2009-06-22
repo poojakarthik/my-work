@@ -24,9 +24,8 @@ var Control_Field	= Class.create
 		
 		this.mixValue			= mixValue;
 		this.mixDefaultValue	= this.mixValue;
-		
+		 
 		// Make sure we update the Control(s)
-		this.update();
 		this.validate();
 	},
 	
@@ -86,7 +85,6 @@ var Control_Field	= Class.create
 	setAutoTrim	: function(mixAutoTrim)
 	{
 		this.mixAutoTrim	= mixAutoTrim;
-		this.update();
 		this.validate();
 	},
 	
@@ -118,7 +116,6 @@ var Control_Field	= Class.create
 	setEditable	: function(mixEditable)
 	{
 		this.mixEditable	= mixEditable;
-		this.update();
 		this.validate();
 	},
 	
@@ -143,7 +140,6 @@ var Control_Field	= Class.create
 	setRenderMode	: function(bolRenderMode)
 	{
 		this.bolRenderMode	= bolRenderMode;
-		this.update();
 		this.validate();
 	},
 	
@@ -155,7 +151,6 @@ var Control_Field	= Class.create
 	setMandatory	: function(mixMandatory)
 	{
 		this.mixMandatory	= mixMandatory;
-		this.update();
 		this.validate();
 	},
 	
@@ -194,6 +189,7 @@ var Control_Field	= Class.create
 	
 	validate	: function()
 	{
+		var bolReturn	= false;
 		if (this.isEditable())
 		{
 			// Preprocess (trim)
@@ -215,6 +211,10 @@ var Control_Field	= Class.create
 					// Mandatory, but no data
 					this.objControlOutput.domElement.addClassName('mandatory');
 				}
+				else
+				{
+					bolReturn	= true;
+				}
 			}
 			else
 			{
@@ -223,8 +223,11 @@ var Control_Field	= Class.create
 		}
 		else
 		{
-			return true;
+			bolReturn	= true;
 		}
+		
+		this.update();
+		return bolReturn;
 	},
 	
 	revert	: function()
