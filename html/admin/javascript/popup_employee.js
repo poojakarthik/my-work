@@ -93,21 +93,21 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		objTabPage.table.tbody.UserName					= {};
 		objTabPage.table.tbody.UserName.objControl		= objControls.UserName;
 		objTabPage.table.tbody.UserName.tr				= {};
-		objTabPage.table.tbody.UserName.tr.domElement	= objControls.UserName.getElement();
+		objTabPage.table.tbody.UserName.tr.domElement	= objControls.UserName.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.UserName.tr.domElement);
 		
 		// First Name
 		objTabPage.table.tbody.FirstName				= {};
 		objTabPage.table.tbody.FirstName.objControl		= objControls.FirstName;
 		objTabPage.table.tbody.FirstName.tr				= {};
-		objTabPage.table.tbody.FirstName.tr.domElement	= objControls.FirstName.getElement();
+		objTabPage.table.tbody.FirstName.tr.domElement	= objControls.FirstName.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.FirstName.tr.domElement);
 		
 		// Last Name
 		objTabPage.table.tbody.LastName					= {};
 		objTabPage.table.tbody.LastName.objControl		= objControls.LastName;
 		objTabPage.table.tbody.LastName.tr				= {};
-		objTabPage.table.tbody.LastName.tr.domElement	= objControls.LastName.getElement();
+		objTabPage.table.tbody.LastName.tr.domElement	= objControls.LastName.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.LastName.tr.domElement);
 		
 		//--------------------------------------------------------------------//
