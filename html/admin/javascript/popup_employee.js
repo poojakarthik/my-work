@@ -60,10 +60,12 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.arrTabs	= {};
 		
 		// Details Tab
-		this.objControlTabGroup.addTab('Details', new Control_Tab('Details', this.buildContentDetails(), '../admin/img/template/view.png'));
+		this.arrTabs.Details	= this.buildContentDetails();
+		this.objControlTabGroup.addTab('Details', new Control_Tab('Details', this.arrTabs.Details, '../admin/img/template/view.png'));
 		
 		// Permissions Tab
-		this.objControlTabGroup.addTab('Permissions', new Control_Tab('Permissions', this.buildContentPermissions(), '../admin/img/template/key.png'));
+		this.arrTabs.Permissions	= this.buildContentPermissions();
+		this.objControlTabGroup.addTab('Permissions', new Control_Tab('Permissions', this.arrTabs.Permissions, '../admin/img/template/key.png'));
 		//--------------------------------------------------------------------//
 		
 		// Update the Popup
@@ -217,11 +219,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				break;
 		}
 		
-		for (i in this.objControlTabGroup.getTab('Details', true).getContent().table.tbody)
+		for (i in this.arrTabs.Details.table.tbody)
 		{
 			if (i != 'domElement')
 			{
-				this.objControlTabGroup.getTab('Details', true).getContent().table.tbody[i].objControl.setRenderMode(bolControlMode);
+				this.arrTabs.Details.table.tbody[i].objControl.setRenderMode(bolControlMode);
 			}
 		}
 	},
