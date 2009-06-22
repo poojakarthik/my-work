@@ -217,11 +217,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				break;
 		}
 		
-		for (i in this.objControlTabGroup.getTab('Details').table.tbody)
+		for (i in this.objControlTabGroup.getTab('Details', true).getContent().table.tbody)
 		{
 			if (i != 'domElement')
 			{
-				this.objControlTabGroup.getTab('Details').table.tbody[i].objControl.setRenderMode(bolControlMode);
+				this.objControlTabGroup.getTab('Details', true).getContent().table.tbody[i].objControl.setRenderMode(bolControlMode);
 			}
 		}
 	},
