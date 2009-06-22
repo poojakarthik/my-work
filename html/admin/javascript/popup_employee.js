@@ -218,6 +218,9 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			case Control_Field.RENDER_MODE_VIEW:
 				this.setFooterButtons([this.domEditButton, this.domCloseButton], true);
 				break;
+			
+			default:
+				throw "Invalid Control Mode '" + bolControlMode + "'";
 		}
 		
 		for (i in this.arrTabs.Details.table.tbody)
