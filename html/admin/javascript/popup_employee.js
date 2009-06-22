@@ -240,17 +240,17 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.arrEventHandlers.hide					= this.hide.bind(this);
 		this.arrEventHandlers.save					= alert.curry('Saving!');
 		
-		this.domEditButton.addEventListener('click'				, this.arrEventHandlers.setControlModeEdit	, false);
-		this.domCancelButton.domEdit.addEventListener('click'	, this.arrEventHandlers.setControlModeView	, false);
-		this.domCloseButton.domEdit.addEventListener('click'	, this.arrEventHandlers.hide				, false);
-		this.domSaveButton.domEdit.addEventListener('click'		, this.arrEventHandlers.save				, false);
+		this.domEditButton.addEventListener('click'		, this.arrEventHandlers.setControlModeEdit	, false);
+		this.domCancelButton.addEventListener('click'	, this.arrEventHandlers.setControlModeView	, false);
+		this.domCloseButton.addEventListener('click'	, this.arrEventHandlers.hide				, false);
+		this.domSaveButton.addEventListener('click'		, this.arrEventHandlers.save				, false);
 	},
 	
 	removeEventListeners	: function()
 	{
-		this.domEditButton.removeEventListener('click'				, this.arrEventHandlers.setControlModeEdit	, false);
-		this.domCancelButton.domEdit.removeEventListener('click'	, this.arrEventHandlers.setControlModeView	, false);
-		this.domCloseButton.domEdit.removeEventListener('click'		, this.arrEventHandlers.hide				, false);
-		this.domSaveButton.domEdit.removeEventListener('click'		, this.arrEventHandlers.save				, false);
+		this.domEditButton.removeEventListener('click'		, this.arrEventHandlers.setControlModeEdit	, false);
+		this.domCancelButton.removeEventListener('click'	, this.arrEventHandlers.setControlModeView	, false);
+		this.domCloseButton.removeEventListener('click'		, this.arrEventHandlers.hide				, false);
+		this.domSaveButton.removeEventListener('click'		, this.arrEventHandlers.save				, false);
 	}
 });
