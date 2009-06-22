@@ -14,6 +14,11 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domView);
 	},
 	
+	getElementValue	: function()
+	{
+		return this.objControlOutput.domEdit.value;
+	},
+	
 	getElement	: function()
 	{
 		this.update();

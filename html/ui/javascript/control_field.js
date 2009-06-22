@@ -5,7 +5,7 @@ var Control_Field	= Class.create
 		this.strLabel			= strLabel;
 		this.strLabelSeparator	= (strLabelSeparator) ? strLabelSeparator : '&nbsp;:';
 		
-		this.mixValue			= '';
+		this.mixDefaultValue	= '';
 		
 		// Create DOM Objects
 		this.objControlOutput				= {};
@@ -20,7 +20,8 @@ var Control_Field	= Class.create
 	// Value
 	setValue	: function(mixValue)
 	{
-		this.mixValue	= mixValue;
+		this.mixValue			= mixValue;
+		this.mixDefaultValue	= this.mixValue;
 		
 		// Make sure we update the Control(s)
 		this.update();
@@ -29,6 +30,7 @@ var Control_Field	= Class.create
 	
 	getValue	: function()
 	{
+		this.mixValue	= this.getElementValue();
 		return this.mixValue;
 	},
 	
@@ -194,7 +196,7 @@ var Control_Field	= Class.create
 		{
 			// Preprocess (trim)
 			this.trim();
-	
+			
 			this.objControlOutput.domElement.removeClassName('invalid');
 			this.objControlOutput.domElement.removeClassName('valid');
 			this.objControlOutput.domElement.removeClassName('mandatory');
@@ -220,6 +222,23 @@ var Control_Field	= Class.create
 		else
 		{
 			return true;
+		}
+	},
+	
+	revert	: function()
+	{
+		this.setValue(this.mixDefaultValue);
+	},
+	
+	save	: function()
+	{
+		if (this.validate())
+		{
+			this.mixDefaultValue	= this.getValue();
+		}
+		else
+		{
+			throw "Saving an invalid value!";
 		}
 	},
 	

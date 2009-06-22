@@ -17,6 +17,11 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 		this.arrEventHandlers.fncValidate	= this.validate.bind(this);
 	},
 	
+	getElementValue	: function()
+	{
+		return this.objControlOutput.domEdit.value;
+	},
+	
 	getElement	: function()
 	{
 		this.update();
