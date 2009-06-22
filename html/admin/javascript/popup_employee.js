@@ -110,6 +110,62 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		objTabPage.table.tbody.LastName.tr				= objControls.LastName.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.LastName.tr.domElement);
 		
+		// Date of Birth
+		/*objTabPage.table.tbody.DOB					= {};
+		objTabPage.table.tbody.DOB.objControl		= objControls.DOB;
+		objTabPage.table.tbody.DOB.tr				= {};
+		objTabPage.table.tbody.DOB.tr				= objControls.DOB.generateInputTableRow();
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.DOB.tr.domElement);*/
+		
+		// Email
+		objTabPage.table.tbody.Email				= {};
+		objTabPage.table.tbody.Email.objControl		= objControls.Email;
+		objTabPage.table.tbody.Email.tr				= {};
+		objTabPage.table.tbody.Email.tr				= objControls.Email.generateInputTableRow();
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Email.tr.domElement);
+		
+		// Extension
+		objTabPage.table.tbody.Extension				= {};
+		objTabPage.table.tbody.Extension.objControl		= objControls.Extension;
+		objTabPage.table.tbody.Extension.tr				= {};
+		objTabPage.table.tbody.Extension.tr				= objControls.Extension.generateInputTableRow();
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Extension.tr.domElement);
+		
+		// Phone
+		objTabPage.table.tbody.Phone				= {};
+		objTabPage.table.tbody.Phone.objControl		= objControls.Phone;
+		objTabPage.table.tbody.Phone.tr				= {};
+		objTabPage.table.tbody.Phone.tr				= objControls.Phone.generateInputTableRow();
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Phone.tr.domElement);
+		
+		// Mobile
+		objTabPage.table.tbody.Mobile					= {};
+		objTabPage.table.tbody.Mobile.objControl		= objControls.Mobile;
+		objTabPage.table.tbody.Mobile.tr				= {};
+		objTabPage.table.tbody.Mobile.tr				= objControls.Mobile.generateInputTableRow();
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Mobile.tr.domElement);
+		
+		// Password
+		objTabPage.table.tbody.Password				= {};
+		objTabPage.table.tbody.Password.objControl	= objControls.Password;
+		objTabPage.table.tbody.Password.tr			= {};
+		objTabPage.table.tbody.Password.tr			= objControls.Password.generateInputTableRow();
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Password.tr.domElement);
+		
+		// Role
+		/*objTabPage.table.tbody.user_role_id					= {};
+		objTabPage.table.tbody.user_role_id.objControl		= objControls.user_role_id;
+		objTabPage.table.tbody.user_role_id.tr				= {};
+		objTabPage.table.tbody.user_role_id.tr				= objControls.user_role_id.generateInputTableRow();
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.user_role_id.tr.domElement);*/
+		
+		// Archived
+		objTabPage.table.tbody.Archived				= {};
+		objTabPage.table.tbody.Archived.objControl	= objControls.Archived;
+		objTabPage.table.tbody.Archived.tr			= {};
+		objTabPage.table.tbody.Archived.tr			= objControls.Archived.generateInputTableRow();
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Archived.tr.domElement);
+		
 		//--------------------------------------------------------------------//
 		
 		
