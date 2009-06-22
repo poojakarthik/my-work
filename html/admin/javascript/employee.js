@@ -28,6 +28,17 @@ var Employee	= Class.create
 			for (strProperty in Employee.objProperties)
 			{
 				this.objPropertyControls[strProperty]	= Control_Field.factory(Employee.objProperties[strProperty].strType, Employee.objProperties[strProperty].objDefinition);
+
+				// Populate with existing values
+				if (this.objProperties)
+				{
+					this.objPropertyControls[strProperty].setValue(this.objProperties[strProperty]);
+				}
+				else
+				{
+					// FIXME: Default values instead?
+					this.objPropertyControls[strProperty].setValue('');
+				}
 			}
 		}
 		
