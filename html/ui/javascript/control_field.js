@@ -50,7 +50,7 @@ var Control_Field	= Class.create
 	// Value
 	setValue	: function(mixValue)
 	{
-		alert(this.strLabel+" is being set to '" + mixValue + "'");
+		//alert(this.strLabel+" is being set to '" + mixValue + "'");
 		
 		this.mixValue			= mixValue;
 		this.mixDefaultValue	= this.mixValue;
