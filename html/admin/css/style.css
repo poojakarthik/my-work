@@ -1592,7 +1592,7 @@ table.input tbody tr td .hide
 
 table.input tbody tr td div.mandatory input,
 table.input tbody tr td div.mandatory select,
-table.input tbody tr td div.mandatory textarea,
+table.input tbody tr td div.mandatory textarea
 {
 	background	: #fff;
 	color		: #111;
@@ -1601,7 +1601,7 @@ table.input tbody tr td div.mandatory textarea,
 
 table.input tbody tr td div.invalid input,
 table.input tbody tr td div.invalid select,
-table.input tbody tr td div.invalid textarea,
+table.input tbody tr td div.invalid textarea
 {
 	background	: #ffecf0;
 	color		: #111;
@@ -1610,7 +1610,7 @@ table.input tbody tr td div.invalid textarea,
 
 table.input tbody tr td div.valid input,
 table.input tbody tr td div.valid select,
-table.input tbody tr td div.valid textarea,
+table.input tbody tr td div.valid textarea
 {
 	background	: #ecfff0;
 	color		: #111;
