@@ -14,7 +14,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		
 		this.objControlOutput.domHidden			= document.createElement('hidden');
 		this.objControlOutput.domHidden.id		= strHiddenId;
-		this.objControlOutput.domHidden.value	= 'init value';
+		//this.objControlOutput.domHidden.value	= 'init value';
 		this.objControlOutput.domEdit.appendChild(this.objControlOutput.domHidden);
 		
 		this.objControlOutput.domInput				= document.createElement('input');
@@ -25,7 +25,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		
 		this.objControlOutput.domIcon			= document.createElement('img');
 		this.objControlOutput.domIcon.src		= '../admin/img/template/calendar_small.png';
-		this.objControlOutput.domIcon.title		= 'Date Picker';
+		this.objControlOutput.domIcon.title		= 'Choose Date with Picker...';
 		this.objControlOutput.domIcon.alt		= 'Choose Date';
 		this.objControlOutput.domEdit.appendChild(this.objControlOutput.domIcon);
 		
