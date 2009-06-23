@@ -1,6 +1,6 @@
 var Popup_Employee	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, mixEmployee, bolDisplayOnLoad)
+	initialize	: function($super, bolRenderMode, mixEmployee, bolDisplayOnLoad)
 	{
 		$super(35);
 		this.setTitle("Employee");
@@ -20,10 +20,12 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.domCancelButton.innerHTML	= "<img class='icon' src='../admin/img/template/delete.png' alt='' />Cancel";
 		
 		this.addEventListeners();
-
+		
 		this.setFooterButtons([this.domEditButton, this.domCloseButton], true);
 		
-		this.bolDisplayOnLoad	= (bolDisplayOnLoad) ? true : false;
+		this.bolDisplayOnLoad	= (bolDisplayOnLoad || bolDisplayOnLoad === undefined) ? true : false;
+		
+		this.bolInitialRenderMode	= bolRenderMode;
 		
 		if (mixEmployee instanceof Employee)
 		{
@@ -68,7 +70,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.objControlTabGroup.addTab('Permissions', new Control_Tab('Permissions', this.arrTabs.Permissions.domElement, '../admin/img/template/key.png'));
 		//--------------------------------------------------------------------//
 		
-		this.setControlMode(Control_Field.RENDER_MODE_VIEW);
+		this.setControlMode(this.bolInitialRenderMode);
 		
 		// Update the Popup
 		this.setContent(this._objPage.domElement);

@@ -10,6 +10,11 @@ var Employee	= Class.create
 		}
 	},
 	
+	addNew	: function()
+	{
+		
+	},
+	
 	view	: function()
 	{
 		
