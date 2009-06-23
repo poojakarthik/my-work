@@ -243,26 +243,25 @@ var Control_Field	= Class.create
 			this.objControlOutput.domElement.removeClassName('valid');
 			this.objControlOutput.domElement.removeClassName('mandatory');
 			
-			if (!this.isValid())
+			if (this.getElementValue())
 			{
-				// Invalid data
-				this.objControlOutput.domElement.addClassName('invalid');
-			}
-			else if (!this.getElementValue())
-			{
-				if (this.isMandatory())
+				if (this.isValid())
 				{
-					// Mandatory, but no data
-					this.objControlOutput.domElement.addClassName('mandatory');
+					bolReturn	= true;
+					this.objControlOutput.domElement.addClassName('valid');
 				}
 				else
 				{
-					bolReturn	= true;
+					this.objControlOutput.domElement.addClassName('invalid');
 				}
+			}
+			else if (this.isMandatory())
+			{
+				this.objControlOutput.domElement.addClassName('mandatory');
 			}
 			else
 			{
-				this.objControlOutput.domElement.addClassName('valid');
+				bolReturn	= true;
 			}
 		}
 		else
