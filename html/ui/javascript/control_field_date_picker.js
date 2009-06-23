@@ -10,7 +10,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domEdit);
 		
 		// FIXME: Temporary Id
-		var strHiddenId	= 'hidden_' + (Math.random() * Date.getTime());
+		var strHiddenId	= 'hidden_' + (Math.random() * (new Date()).getTime());
 		
 		this.objControlOutput.domHidden			= document.createElement('hidden');
 		this.objControlOutput.domHidden.id		= strHiddenId;
