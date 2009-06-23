@@ -1564,6 +1564,11 @@ table.input tbody tr td input[type="text"].date-formatted
 	width			: 10em;
 }
 
+table.input tbody tr td img[onclick]
+{
+	cursor			: pointer;
+}
+
 table.input tbody tr td input[type="checkbox"]
 {
 	margin-right	: 0.25em;
