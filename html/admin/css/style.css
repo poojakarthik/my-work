@@ -1561,7 +1561,7 @@ table.input tbody tr td select
 
 table.input tbody tr td input[type="text"].date-formatted
 {
-	width			: 80%;
+	width			: 10em;
 }
 
 table.input tbody tr td input[type="checkbox"]
