@@ -40,7 +40,7 @@ var Employee	= Class.create
 				this.objPropertyControls[strProperty]	= Control_Field.factory(Employee.objProperties[strProperty].strType, Employee.objProperties[strProperty].objDefinition);
 
 				// Populate with existing values
-				if (this.objProperties)
+				if (Object.keys(this.objProperties).length)
 				{
 					this.objPropertyControls[strProperty].setValue(this.objProperties[strProperty]);
 				}
