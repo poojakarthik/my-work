@@ -9,7 +9,11 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domEdit		= document.createElement('div');
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domEdit);
 		
-		this.objControlOutput.domHidden				= document.createElement('hidden');
+		// FIXME: Temporary Id
+		var strHiddenId	= 'hidden_' + (Math.random() * Date.getTime());
+		
+		this.objControlOutput.domHidden			= document.createElement('hidden');
+		this.objControlOutput.domHidden.id		= strHiddenId;
 		this.objControlOutput.domEdit.appendChild(this.objControlOutput.domHidden);
 		
 		this.objControlOutput.domInput			= document.createElement('input');
@@ -24,7 +28,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domEdit.appendChild(this.objControlOutput.domIcon);
 		
 		var objDate	= new Date();
-		this.objDatePicker	= DateChooser.factory(domHidden.id, Control_Field_Date_Picker.YEAR_START, Control_Field_Date_Picker.YEAR_END, Control_Field_Date_Picker.DATE_FORMAT, false, true, true, objDate.getFullYear(), objDate.getMonth(), objDate.getDay());
+		this.objDatePicker	= DateChooser.factory(this.domHidden.id, Control_Field_Date_Picker.YEAR_START, Control_Field_Date_Picker.YEAR_END, Control_Field_Date_Picker.DATE_FORMAT, false, true, true, objDate.getFullYear(), objDate.getMonth(), objDate.getDay());
 		
 		this.objControlOutput.domView		= document.createElement('span');
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domView);
