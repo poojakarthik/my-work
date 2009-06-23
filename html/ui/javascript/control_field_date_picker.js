@@ -14,6 +14,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		
 		this.objControlOutput.domHidden			= document.createElement('hidden');
 		this.objControlOutput.domHidden.id		= strHiddenId;
+		this.objControlOutput.domHidden.value	= 'init value';
 		this.objControlOutput.domEdit.appendChild(this.objControlOutput.domHidden);
 		
 		this.objControlOutput.domInput				= document.createElement('input');
@@ -47,6 +48,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	setElementValue	: function(mixValue)
 	{
 		this.objControlOutput.domHidden.value	= mixValue;
+		this._updateFormattedInput();
 	},
 	
 	updateElementValue	: function()
