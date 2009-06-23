@@ -604,6 +604,7 @@ DateChooser.prototype = {
 		}
 		input.value = this.getValue();
 		//input.onchange();
+		alert(input.id + " should be '" + this.getValue() + "' but is actually '" + input.value + "'");
 		Vixen.EventHandler.fireEventForElement(input, 'change');
 		this.hide();
 	},
