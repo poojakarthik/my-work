@@ -603,6 +603,7 @@ DateChooser.prototype = {
 				parseInt(this._minuteSelect.options[this._minuteSelect.selectedIndex].value));
 		}
 		input.value = this.getValue();
+		input.change();
 		this.hide();
 	},
 
