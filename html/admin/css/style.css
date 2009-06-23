@@ -1581,6 +1581,7 @@ table.input tbody tr th
 {
 	text-align			: right;
 	padding-right		: 0.5em;
+	width				: 10em;
 }
 
 table.input tbody tr td
