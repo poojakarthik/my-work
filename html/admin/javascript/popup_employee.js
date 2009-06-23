@@ -223,7 +223,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				this.setFooterButtons([this.domSaveButton, this.domCancelButton], true);
 				
 				// Show "Confirm Password"
-				this.arrTabs.Details.table.tbody.PassWordConfirm.tr.style.display	= 'table-row';
+				this.arrTabs.Details.table.tbody.PassWordConfirm.tr.domElement.style.display	= 'table-row';
 				break;
 				
 			case Control_Field.RENDER_MODE_VIEW:
@@ -231,7 +231,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				this.setFooterButtons([this.domEditButton, this.domCloseButton], true);
 				
 				// Hide "Confirm Password"
-				this.arrTabs.Details.table.tbody.PassWordConfirm.tr.style.display	= 'none';
+				this.arrTabs.Details.table.tbody.PassWordConfirm.tr.domElement.style.display	= 'none';
 				break;
 			
 			default:
