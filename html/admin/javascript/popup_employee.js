@@ -16,8 +16,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.domSaveButton				= document.createElement('button');
 		this.domSaveButton.innerHTML	= "<img class='icon' src='../admin/img/template/tick.png' alt='' />Save";
 		
-		this.domCancelButton			= document.createElement('button');
-		this.domCancelButton.innerHTML	= "<img class='icon' src='../admin/img/template/delete.png' alt='' />Cancel";
+		this.domCancelEditButton			= document.createElement('button');
+		this.domCancelEditButton.innerHTML	= "<img class='icon' src='../admin/img/template/delete.png' alt='' />Cancel";
+		
+		this.domCancelNewButton				= document.createElement('button');
+		this.domCancelNewButton.innerHTML	= "<img class='icon' src='../admin/img/template/delete.png' alt='' />Cancel";
 		
 		this.addEventListeners();
 		
@@ -228,7 +231,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			case Control_Field.RENDER_MODE_EDIT:
 				// Change footer buttons
-				this.setFooterButtons([this.domSaveButton, this.domCancelButton], true);
+				this.setFooterButtons([this.domSaveButton, (this.objEmployee.objProperties.Id) ? this.domCancelEditButton : this.domCancelNewButton], true);
 				
 				// Show "Confirm Password"
 				this.arrTabs.Details.table.tbody.PassWordConfirm.tr.domElement.style.display	= 'table-row';
@@ -269,17 +272,19 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.arrEventHandlers.hide					= this.hide.bind(this);
 		this.arrEventHandlers.save					= $Alert.curry('Saving!');
 		
-		this.domEditButton.addEventListener('click'		, this.arrEventHandlers.setControlModeEdit	, false);
-		this.domCancelButton.addEventListener('click'	, this.arrEventHandlers.setControlModeView	, false);
-		this.domCloseButton.addEventListener('click'	, this.arrEventHandlers.hide				, false);
-		this.domSaveButton.addEventListener('click'		, this.arrEventHandlers.save				, false);
+		this.domEditButton.addEventListener('click'			, this.arrEventHandlers.setControlModeEdit	, false);
+		this.domCancelEditButton.addEventListener('click'	, this.arrEventHandlers.setControlModeView	, false);
+		this.domCancelNewButton.addEventListener('click'	, this.arrEventHandlers.hide				, false);
+		this.domCloseButton.addEventListener('click'		, this.arrEventHandlers.hide				, false);
+		this.domSaveButton.addEventListener('click'			, this.arrEventHandlers.save				, false);
 	},
 	
 	removeEventListeners	: function()
 	{
-		this.domEditButton.removeEventListener('click'		, this.arrEventHandlers.setControlModeEdit	, false);
-		this.domCancelButton.removeEventListener('click'	, this.arrEventHandlers.setControlModeView	, false);
-		this.domCloseButton.removeEventListener('click'		, this.arrEventHandlers.hide				, false);
-		this.domSaveButton.removeEventListener('click'		, this.arrEventHandlers.save				, false);
+		this.domEditButton.removeEventListener('click'			, this.arrEventHandlers.setControlModeEdit	, false);
+		this.domCancelEditButton.removeEventListener('click'	, this.arrEventHandlers.setControlModeView	, false);
+		this.domCancelNewButton.removeEventListener('click'		, this.arrEventHandlers.hide				, false);
+		this.domCloseButton.removeEventListener('click'			, this.arrEventHandlers.hide				, false);
+		this.domSaveButton.removeEventListener('click'			, this.arrEventHandlers.save				, false);
 	}
 });
