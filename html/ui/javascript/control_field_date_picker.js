@@ -71,7 +71,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	
 	_getFormattedDate	: function()
 	{
-		if (this.objControlOutput.domHidden.value.length)
+		if (this.objControlOutput.domHidden.value && this.objControlOutput.domHidden.value.length)
 		{
 			return Date.parseDate(this.objControlOutput.domHidden.value, 'Y-m-d').dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
 		}
