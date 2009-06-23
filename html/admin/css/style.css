@@ -1564,15 +1564,9 @@ table.input tbody tr td input[type="text"].date-formatted
 	width			: 10em;
 }
 
-table.input tbody tr td img[onclick]
+table.input tbody tr td img[onclick]:hover
 {
 	cursor			: pointer;
-}
-
-table.input tbody tr td input[type="checkbox"]
-{
-	margin-right	: 0.25em;
-	vertical-align	: text-bottom;
 }
 
 table.input tfoot a,
@@ -1601,6 +1595,19 @@ table.input tbody tr td
 table.input tbody tr td .hide
 {
 	display				: none;
+}
+
+table.input tbody tr td div input,
+table.input tbody tr td div select,
+table.input tbody tr td div textarea
+{
+	vertical-align	: top;
+}
+
+table.input tbody tr td input[type="checkbox"]
+{
+	margin-right	: 0.25em;
+	vertical-align	: middle;
 }
 
 table.input tbody tr td div.mandatory input,
