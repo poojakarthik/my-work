@@ -5,7 +5,9 @@ var Control_Field	= Class.create
 		this.strLabel			= strLabel;
 		this.strLabelSeparator	= (strLabelSeparator) ? strLabelSeparator : '&nbsp;:';
 		
+		// Set a default value (this should be overwritten pretty much immediately)
 		this.mixDefaultValue	= '';
+		this.setValue(this.mixDefaultValue);
 		
 		// Create DOM Objects
 		this.objControlOutput				= {};
