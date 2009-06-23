@@ -49,14 +49,35 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 		this.validate();
 	},
 	
+	setDependant	: function(objControlFieldPassword)
+	{
+		if (objControlField instanceof Control_Field_Password)
+		{
+			this.objDependantControlField	= objControlField;
+		}
+	},
+	
+	validateDependant	: function()
+	{
+		if (this.objDependantControlField)
+		{
+			this.objDependantControlField.validate();
+		}
+	},
+	
 	addEventListeners	: function()
 	{
-		this.arrEventHandlers				= {};
-		this.arrEventHandlers.fncValidate	= this.validate.bind(this);
+		this.arrEventHandlers						= {};
+		this.arrEventHandlers.fncValidate			= this.validate.bind(this);
+		this.arrEventHandlers.fncValidateDependant	= this.validateDependant.bind(this);
 		
 		this.objControlOutput.domEdit.addEventListener('click'	, this.arrEventHandlers.fncValidate, false);
 		this.objControlOutput.domEdit.addEventListener('change'	, this.arrEventHandlers.fncValidate, false);
 		this.objControlOutput.domEdit.addEventListener('keyup'	, this.arrEventHandlers.fncValidate, false);
+		
+		this.objControlOutput.domEdit.addEventListener('click'	, this.arrEventHandlers.fncValidateDependant, false);
+		this.objControlOutput.domEdit.addEventListener('change'	, this.arrEventHandlers.fncValidateDependant, false);
+		this.objControlOutput.domEdit.addEventListener('keyup'	, this.arrEventHandlers.fncValidateDependant, false);
 	},
 	
 	removeEventListeners	: function()
@@ -64,5 +85,9 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domEdit.removeEventListener('click'	, this.arrEventHandlers.fncValidate, false);
 		this.objControlOutput.domEdit.removeEventListener('change'	, this.arrEventHandlers.fncValidate, false);
 		this.objControlOutput.domEdit.removeEventListener('keyup'	, this.arrEventHandlers.fncValidate, false);
+		
+		this.objControlOutput.domEdit.removeEventListener('click'	, this.arrEventHandlers.fncValidateDependant, false);
+		this.objControlOutput.domEdit.removeEventListener('change'	, this.arrEventHandlers.fncValidateDependant, false);
+		this.objControlOutput.domEdit.removeEventListener('keyup'	, this.arrEventHandlers.fncValidateDependant, false);
 	}
 });
