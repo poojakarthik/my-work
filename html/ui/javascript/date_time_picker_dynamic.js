@@ -603,7 +603,8 @@ DateChooser.prototype = {
 				parseInt(this._minuteSelect.options[this._minuteSelect.selectedIndex].value));
 		}
 		input.value = this.getValue();
-		input.onchange();
+		//input.onchange();
+		Vixen.EventHandler.fireEventForElement(input, 'change');
 		this.hide();
 	},
 

@@ -230,6 +230,23 @@ function VixenEventHandlerClass()
 				}
 			}
 		}
+	},
+	
+	this.fireEventForElement	= function(domElement, strEventType)
+	{
+		if (document.createEvent)
+		{
+			// Standards Compliant
+			var objEvent	= document.createEvent("HTMLEvents");
+			objEvent.initEvent(strEventType, true, true);
+	        return !domElement.dispatchEvent(objEvent);
+		}
+		else
+		{
+			// Fallback (for IE, apparently)
+			var objEvent	= document.createEventObject();
+	        return domElement.fireEvent('on' + strEventType, objEvent);
+		}
 	}
 }
 
