@@ -219,11 +219,19 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		switch (bolControlMode)
 		{
 			case Control_Field.RENDER_MODE_EDIT:
+				// Change footer buttons
 				this.setFooterButtons([this.domSaveButton, this.domCancelButton], true);
+				
+				// Show "Confirm Password"
+				this.arrTabs.Details.table.tbody.PassWordConfirm.tr.style.display	= 'table-row';
 				break;
 				
 			case Control_Field.RENDER_MODE_VIEW:
+				// Change footer buttons
 				this.setFooterButtons([this.domEditButton, this.domCloseButton], true);
+				
+				// Hide "Confirm Password"
+				this.arrTabs.Details.table.tbody.PassWordConfirm.tr.style.display	= 'none';
 				break;
 			
 			default:
