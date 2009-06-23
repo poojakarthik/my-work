@@ -53,7 +53,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this._updateFormattedInput();
 		
 		// Update the Datepicker's default date
-		this.objDatePicker.setDate(mixValue);
+		this.objDatePicker.initializeDate();
 	},
 	
 	updateElementValue	: function()
