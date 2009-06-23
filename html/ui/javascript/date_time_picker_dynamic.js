@@ -647,6 +647,7 @@ DateChooser.prototype = {
 
 	// Gets the value, as a formatted string, of the date attached to the chooser
 	getValue: function() {
+		alert("Getting formatted date as '"+this._date.dateFormat(this._format)+"'");
 		return this._date.dateFormat(this._format);
 	},
 
