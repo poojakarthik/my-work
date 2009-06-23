@@ -423,9 +423,20 @@ String.leftPad = function (val, size, ch) {
 
 
 // DateChooser constructor
-function DateChooser(inputId, start, end, format, isTimeChooser, isDateChooser, useCalendar, defaultYear, defaultMonth, defaultDay)
+function DateChooser(mixInput, start, end, format, isTimeChooser, isDateChooser, useCalendar, defaultYear, defaultMonth, defaultDay)
 {
-	var input = document.getElementById(inputId);
+	if (mixInput.id)
+	{
+		// DOM element
+		var input	= mixInput;
+		var inputId	= mixInput.id;
+	}
+	else
+	{
+		// Id
+		var input	= document.getElementById(mixInput);
+		var inputId	= mixInput;
+	}
 
 	var divId = inputId + 'Calendar';
 	var div = document.getElementById(divId);
@@ -459,8 +470,10 @@ DateChooser.instanceCount = 0;
 
 DateChooser.currentChooser  = null;
 
-DateChooser.factory = function(inputId, start, end, format, isTimeChooser, isDateChooser, useCalendar, defaultYear, defaultMonth, defaultDay)
+DateChooser.factory = function(mixInput, start, end, format, isTimeChooser, isDateChooser, useCalendar, defaultYear, defaultMonth, defaultDay)
 {
+	var inputId	= (mixInput.id) ? mixInput.id : mixInput;
+	
 	if (DateChooser.instances[inputId] == undefined)
 	{
 		DateChooser.instances[inputId] = new DateChooser(inputId, start, end, format, isTimeChooser, isDateChooser, useCalendar, defaultYear, defaultMonth, defaultDay);
@@ -471,7 +484,7 @@ DateChooser.factory = function(inputId, start, end, format, isTimeChooser, isDat
 		var input = document.getElementById(inputId);
 		if (input != DateChooser.instances[inputId]._input)
 		{
-			DateChooser.instances[inputId] = new DateChooser(inputId, start, end, format, isTimeChooser, isDateChooser, useCalendar, defaultYear, defaultMonth, defaultDay);
+			DateChooser.instances[inputId] = new DateChooser(mixInput, start, end, format, isTimeChooser, isDateChooser, useCalendar, defaultYear, defaultMonth, defaultDay);
 		}
 	}
 	return DateChooser.instances[inputId];
