@@ -43,6 +43,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			// New Employee
 			this.objEmployee	= new Employee();
+			this.buildContent();
 		}
 		else
 		{
