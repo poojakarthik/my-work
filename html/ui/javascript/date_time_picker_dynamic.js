@@ -478,7 +478,7 @@ DateChooser.factory = function(mixInput, start, end, format, isTimeChooser, isDa
 	
 	if (DateChooser.instances[inputId] == undefined)
 	{
-		DateChooser.instances[inputId] = new DateChooser(inputId, start, end, format, isTimeChooser, isDateChooser, useCalendar, defaultYear, defaultMonth, defaultDay);
+		DateChooser.instances[inputId] = new DateChooser(mixInput, start, end, format, isTimeChooser, isDateChooser, useCalendar, defaultYear, defaultMonth, defaultDay);
 	}
 	else
 	{
