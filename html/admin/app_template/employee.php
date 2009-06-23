@@ -290,6 +290,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 							$arrValidationErrors[] = "$strLabel \"" . DBO()->Employee->UserName->Value . "\" is already in use.";
 						}
 					}
+					DBO()->Employee->is_god = 0;
 				}
 
 				if (!$bolEditSelf && $bolAdminUser)
