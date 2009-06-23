@@ -428,12 +428,14 @@ function DateChooser(mixInput, start, end, format, isTimeChooser, isDateChooser,
 	if (mixInput.id)
 	{
 		// DOM element
+		alert('mixInput is a DOM element (id: '+mixInput.id+')');
 		var input	= mixInput;
 		var inputId	= mixInput.id;
 	}
 	else
 	{
 		// Id
+		alert('mixInput is NOT an Object ('+(typeof mixInput)+') (id: '+mixInput+')');
 		var input	= document.getElementById(mixInput);
 		var inputId	= mixInput;
 	}
