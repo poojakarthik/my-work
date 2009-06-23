@@ -31,7 +31,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domView);
 		
 		var objDate	= new Date();
-		this.objDatePicker	= DateChooser.factory(this.objControlOutput.domHidden, Control_Field_Date_Picker.YEAR_START, Control_Field_Date_Picker.YEAR_END, Control_Field_Date_Picker.DATE_FORMAT, false, true, true, objDate.getFullYear(), objDate.getMonth(), objDate.getDay());
+		this.objDatePicker	= DateChooser.factory(this.objControlOutput.domHidden, Control_Field_Date_Picker.YEAR_START, Control_Field_Date_Picker.YEAR_END, 'Y-m-d', false, true, true, objDate.getFullYear(), objDate.getMonth(), objDate.getDay());
 		
 		this.validate();
 		
@@ -58,7 +58,6 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	
 	_updateFormattedInput	: function()
 	{
-		var objDate	= Date.parseDate(this.objControlOutput.domHidden.value, 'Y-m-d');
 		this.objControlOutput.domInput.value	= Date.parseDate(this.objControlOutput.domHidden.value, 'Y-m-d').dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
 	},
 	
