@@ -7,7 +7,7 @@ var Control_Field	= Class.create
 		
 		// Set a default value (this should be overwritten pretty much immediately)
 		this.mixDefaultValue	= '';
-		this.setValue(this.mixDefaultValue);
+		this.mixValue			= this.mixDefaultValue;
 		
 		// Create DOM Objects
 		this.objControlOutput				= {};
