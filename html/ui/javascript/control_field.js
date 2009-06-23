@@ -363,8 +363,8 @@ Control_Field.factory	= function(strType, objDefinition)
 			objControlField	= new Control_Field_Checkbox(objDefinition.strLabel);
 			break;
 			
-		case 'date':
-			objControlField	= new Control_Field_Date(objDefinition.strLabel);
+		case 'date-picker':
+			objControlField	= new Control_Field_Date_Picker(objDefinition.strLabel);
 			break;
 			
 		case 'hidden':

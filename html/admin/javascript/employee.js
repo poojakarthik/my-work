@@ -109,17 +109,17 @@ Employee.objProperties.UserName.objDefinition.mixEditable	= true;
 Employee.objProperties.UserName.objDefinition.mixMandatory	= true;
 Employee.objProperties.UserName.objDefinition.mixAutoTrim	= true;
 Employee.objProperties.UserName.objDefinition.intMaxLength	= 31;
-/*
+
 // Date of Birth
 Employee.objProperties.DOB				= {};
-Employee.objProperties.DOB.strType		= 'date';
+Employee.objProperties.DOB.strType		= 'date-picker';
 
 Employee.objProperties.DOB.objDefinition				= {};
 Employee.objProperties.DOB.objDefinition.strLabel		= 'Date of Birth';
 Employee.objProperties.DOB.objDefinition.mixEditable	= true;
 Employee.objProperties.DOB.objDefinition.mixMandatory	= true;
 Employee.objProperties.DOB.objDefinition.fncValidate	= Reflex_Validation.date.bind(Reflex_Validation);
-*/
+
 // Email
 Employee.objProperties.Email				= {};
 Employee.objProperties.Email.strType		= 'text';
