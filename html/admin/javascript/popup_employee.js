@@ -123,11 +123,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.LastName.tr.domElement);
 		
 		// Date of Birth
-		/*objTabPage.table.tbody.DOB					= {};
+		objTabPage.table.tbody.DOB					= {};
 		objTabPage.table.tbody.DOB.objControl		= objControls.DOB;
 		objTabPage.table.tbody.DOB.tr				= {};
 		objTabPage.table.tbody.DOB.tr				= objControls.DOB.generateInputTableRow();
-		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.DOB.tr.domElement);*/
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.DOB.tr.domElement);
 		
 		// Email
 		objTabPage.table.tbody.Email				= {};
