@@ -130,7 +130,7 @@ var Control_Field	= Class.create
 		}
 		else if (this.mixAutoTrim)
 		{
-			mixValue	= mixValue.replace(/(^\s*|\s*$)/, '');
+			mixValue	= mixValue.replace(/(^\s*|\s*$)/g, '');
 		}
 		
 		// Return or set Value
@@ -233,7 +233,8 @@ var Control_Field	= Class.create
 	
 	validate	: function()
 	{
-		var bolReturn	= false;
+		var mixReturn	= false;
+		
 		if (this.isEditable())
 		{
 			// Preprocess (trim)
@@ -243,7 +244,8 @@ var Control_Field	= Class.create
 			this.objControlOutput.domElement.removeClassName('valid');
 			this.objControlOutput.domElement.removeClassName('mandatory');
 			
-			if (this.getElementValue())
+			var mixElementValue	= this.getElementValue();
+			if (mixElementValue)
 			{
 				if (this.isValid())
 				{
@@ -253,11 +255,13 @@ var Control_Field	= Class.create
 				else
 				{
 					this.objControlOutput.domElement.addClassName('invalid');
+					mixReturn	= "'"+mixElementValue+"' is not a valid "+this.getLabel();
 				}
 			}
 			else if (this.isMandatory())
 			{
 				this.objControlOutput.domElement.addClassName('mandatory');
+				mixReturn	= "No value supplied for mandatory field "+this.getLabel();
 			}
 			else
 			{
@@ -268,7 +272,7 @@ var Control_Field	= Class.create
 		{
 			bolReturn	= true;
 		}
-
+		
 		//this.updateElementValue();
 		return bolReturn;
 	},
@@ -278,12 +282,15 @@ var Control_Field	= Class.create
 		this.setElementValue(this.getValue());
 	},
 	
-	save	: function()
+	save	: function(bolCommit)
 	{
 		if (this.validate())
 		{
-			this.setValue(this.getElementValue());
-			return this.getValue();
+			if (bolCommit)
+			{
+				this.setValue(this.getElementValue());
+				return this.getValue();
+			}
 		}
 		else
 		{
