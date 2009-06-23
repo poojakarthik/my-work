@@ -145,7 +145,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		foreach (DBL()->Employee as $dboEmployee)
 		{
 			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
-			$strNewViewHref	= "new Popup_Employee({$dboEmployee->Id->Value}, true);";
+			$strNewViewHref	= "new Popup_Employee(Control_Field.RENDER_MODE_VIEW, {$dboEmployee->Id->Value});";
 			$strView = "<img onclick='$strViewHref' title='View Employee (OLD)' src='img/template/view.png'></img>";
 			$strView .= "<img onclick='$strNewViewHref' title='View Employee (NEW)' src='img/template/user_edit.png'></img>";
 			
@@ -211,7 +211,9 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		if ($bolCanCreateEmployees)
 		{
 			echo "<div style='position: absolute; right: 0px; top: 3px;'>";
-			$this->Button("Add Employee", "window.location='$strAddEmployee'");
+			//$this->Button("Add Employee", "window.location='$strAddEmployee'");
+			$this->Button("Add Employee", "new Popup_Employee(Control_Field.RENDER_MODE_EDIT);");
+			
 			echo "</div>\n";
 		}
 		
