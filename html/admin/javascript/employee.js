@@ -8,6 +8,11 @@ var Employee	= Class.create
 			var fncJSON	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._load.bind(this, fncCallback)), null, 'Employee', 'getForId');
 			fncJSON(intEmployeeId, true);
 		}
+		else
+		{
+			// New Employee
+			this.objProperties	= {};
+		}
 	},
 	
 	addNew	: function()

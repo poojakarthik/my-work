@@ -39,6 +39,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			//alert("Loading Employee with Id '" + mixEmployee + "'");
 			this.objEmployee	= Employee.getForId(mixEmployee, this.buildContent.bind(this));
 		}
+		else if (bolRenderMode == Control_Field.RENDER_MODE_EDIT)
+		{
+			// New Employee
+			this.objEmployee	= new Employee();
+		}
 		else
 		{
 			throw "Invalid Employee reference '" + mixEmployee + "'";
