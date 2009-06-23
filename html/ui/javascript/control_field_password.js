@@ -51,9 +51,9 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 	
 	setDependant	: function(objControlFieldPassword)
 	{
-		if (objControlField instanceof Control_Field_Password)
+		if (objControlFieldPassword instanceof Control_Field_Password)
 		{
-			this.objDependantControlField	= objControlField;
+			this.objDependantControlField	= objControlFieldPassword;
 		}
 	},
 	
