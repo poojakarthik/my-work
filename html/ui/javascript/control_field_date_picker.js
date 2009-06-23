@@ -51,6 +51,9 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	{
 		this.objControlOutput.domHidden.value	= mixValue;
 		this._updateFormattedInput();
+		
+		// Update the Datepicker's default date
+		this.objDatePicker.setDate(mixValue);
 	},
 	
 	updateElementValue	: function()
