@@ -447,7 +447,8 @@ function DateChooser(mixInput, start, end, format, isTimeChooser, isDateChooser,
 		div = document.createElement('div');
 		div.id = divId;
 		div.className = 'date-time select-free';
-		div.style.position = "absolute";
+		//div.style.position = "absolute";
+		div.style.position = "fixed";
 		div.style.zIndex = 10000;
 	}
 	this._div = div;
@@ -590,6 +591,7 @@ DateChooser.prototype = {
 
 	setDate: function(value)
 	{
+		alert("Setting date to '"+value+"'");
 		var input = this._input;
 		if (value != null) {
 			this._setDate(Date.parseDate(value, this._format));
