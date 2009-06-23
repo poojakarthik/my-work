@@ -9,6 +9,9 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domEdit		= document.createElement('div');
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domEdit);
 		
+		this.objControlOutput.domHidden				= document.createElement('hidden');
+		this.objControlOutput.domEdit.appendChild(this.objControlOutput.domHidden);
+		
 		this.objControlOutput.domInput			= document.createElement('input');
 		this.objControlOutput.domInput.type		= 'text';
 		this.objControlOutput.domInput.readonly	= true;
@@ -21,7 +24,7 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domEdit.appendChild(this.objControlOutput.domIcon);
 		
 		var objDate	= new Date();
-		this.objDatePicker	= DateChooser.factory(inputId, Control_Field_Date_Picker.YEAR_START, Control_Field_Date_Picker.YEAR_END, Control_Field_Date_Picker.DATE_FORMAT, false, true, true, objDate.getFullYear(), objDate.getMonth(), objDate.getDay());
+		this.objDatePicker	= DateChooser.factory(domHidden.id, Control_Field_Date_Picker.YEAR_START, Control_Field_Date_Picker.YEAR_END, Control_Field_Date_Picker.DATE_FORMAT, false, true, true, objDate.getFullYear(), objDate.getMonth(), objDate.getDay());
 		
 		this.objControlOutput.domView		= document.createElement('span');
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domView);
@@ -33,12 +36,12 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	
 	getElementValue	: function()
 	{
-		return this.objControlOutput.domInput.value;
+		return this.objControlOutput.domHidden.value;
 	},
 	
 	setElementValue	: function(mixValue)
 	{
-		this.objControlOutput.domInput.value	= mixValue;
+		this.objControlOutput.domHidden.value	= mixValue;
 	},
 	
 	updateElementValue	: function()
@@ -49,13 +52,20 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domView.innerHTML	= mixValue;
 	},
 	
+	_updateFormattedInput	: function()
+	{
+		var objDate	= Date.parseDate(this.objControlOutput.domHidden.value, 'Y-m-d');
+		this.objControlOutput.domInput.value	= Date.parseDate(this.objControlOutput.domHidden.value, 'Y-m-d').dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
+	},
+	
 	addEventListeners	: function()
 	{
 		this.arrEventHandlers				= {};
 		this.arrEventHandlers.fncValidate	= this.validate.bind(this);
 		this.arrEventHandlers.fncOpenPicker	= this.objDatePicker.show.bind(this.objDatePicker);
 		
-		this.objControlOutput.domInput.addEventListener('change'	, this.arrEventHandlers.fncValidate, false);
+		this.objControlOutput.domHidden.addEventListener('change'	, this.arrEventHandlers.fncValidate, false);
+		this.objControlOutput.domHidden.addEventListener('change'	, this.arrEventHandlers.fncValidate, false);
 		this.objControlOutput.domIcon.addEventListener('click'	, this.arrEventHandlers.fncOpenPicker, false);
 	},
 	
