@@ -56,12 +56,17 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		mixValue	= this.getValue();
 		
 		this.setElementValue(mixValue);
-		this.objControlOutput.domView.innerHTML	= mixValue;
+		this.objControlOutput.domView.innerHTML	= this._getFormattedDate();
 	},
 	
 	_updateFormattedInput	: function()
 	{
-		this.objControlOutput.domInput.value	= Date.parseDate(this.objControlOutput.domHidden.value, 'Y-m-d').dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
+		this.objControlOutput.domInput.value	= this._getFormattedDate();
+	},
+	
+	_getFormattedDate	: function()
+	{
+		return Date.parseDate(this.objControlOutput.domHidden.value, 'Y-m-d').dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
 	},
 	
 	addEventListeners	: function()
