@@ -830,6 +830,13 @@ DateChooser.prototype = {
 		img.style.top = "3px";
 		div.appendChild(img);
 
+		var domCloseIcon			= document.createElement("IMG");
+		domCloseIcon.src			= "img/template/delete.png";
+		domCloseIcon.addEventListener("click", this.hide.bind(this), false);
+		domCloseIcon.style.position	= "relative";
+		domCloseIcon.style.top		= "3px";
+		div.appendChild(domCloseIcon);
+
 		this._div.appendChild(div);
 
 		if (this._useCalendar)
