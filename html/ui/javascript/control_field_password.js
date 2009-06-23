@@ -61,7 +61,7 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 	{
 		if (this.objDependantControlField)
 		{
-			//this.objDependantControlField.validate();
+			this.objDependantControlField.validate();
 		}
 	},
 	
