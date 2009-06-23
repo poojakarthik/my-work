@@ -174,6 +174,17 @@ Employee.objProperties.PassWord.objDefinition.strLabel		= 'Password';
 Employee.objProperties.PassWord.objDefinition.mixEditable	= true;
 Employee.objProperties.PassWord.objDefinition.mixMandatory	= true;
 Employee.objProperties.PassWord.objDefinition.intMaxLength	= 40;
+
+// Password Confirmation
+Employee.objProperties.PassWordConfirm				= {};
+Employee.objProperties.PassWordConfirm.strType		= 'password';
+
+Employee.objProperties.PassWordConfirm.objDefinition				= {};
+Employee.objProperties.PassWordConfirm.objDefinition.strLabel		= 'Password';
+Employee.objProperties.PassWordConfirm.objDefinition.mixEditable	= true;
+Employee.objProperties.PassWordConfirm.objDefinition.mixMandatory	= true;
+Employee.objProperties.PassWordConfirm.objDefinition.intMaxLength	= 40;
+
 /*
 // Role
 Employee.objProperties.user_role_id				= {};

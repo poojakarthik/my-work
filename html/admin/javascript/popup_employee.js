@@ -104,83 +104,84 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Username
 		objTabPage.table.tbody.UserName					= {};
 		objTabPage.table.tbody.UserName.objControl		= objControls.UserName;
-		objTabPage.table.tbody.UserName.tr				= {};
 		objTabPage.table.tbody.UserName.tr				= objControls.UserName.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.UserName.tr.domElement);
 		
 		// First Name
 		objTabPage.table.tbody.FirstName				= {};
 		objTabPage.table.tbody.FirstName.objControl		= objControls.FirstName;
-		objTabPage.table.tbody.FirstName.tr				= {};
 		objTabPage.table.tbody.FirstName.tr				= objControls.FirstName.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.FirstName.tr.domElement);
 		
 		// Last Name
 		objTabPage.table.tbody.LastName					= {};
 		objTabPage.table.tbody.LastName.objControl		= objControls.LastName;
-		objTabPage.table.tbody.LastName.tr				= {};
 		objTabPage.table.tbody.LastName.tr				= objControls.LastName.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.LastName.tr.domElement);
 		
 		// Date of Birth
 		objTabPage.table.tbody.DOB					= {};
 		objTabPage.table.tbody.DOB.objControl		= objControls.DOB;
-		objTabPage.table.tbody.DOB.tr				= {};
 		objTabPage.table.tbody.DOB.tr				= objControls.DOB.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.DOB.tr.domElement);
 		
 		// Email
 		objTabPage.table.tbody.Email				= {};
 		objTabPage.table.tbody.Email.objControl		= objControls.Email;
-		objTabPage.table.tbody.Email.tr				= {};
 		objTabPage.table.tbody.Email.tr				= objControls.Email.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Email.tr.domElement);
 		
 		// Extension
 		objTabPage.table.tbody.Extension				= {};
 		objTabPage.table.tbody.Extension.objControl		= objControls.Extension;
-		objTabPage.table.tbody.Extension.tr				= {};
 		objTabPage.table.tbody.Extension.tr				= objControls.Extension.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Extension.tr.domElement);
 		
 		// Phone
 		objTabPage.table.tbody.Phone				= {};
 		objTabPage.table.tbody.Phone.objControl		= objControls.Phone;
-		objTabPage.table.tbody.Phone.tr				= {};
 		objTabPage.table.tbody.Phone.tr				= objControls.Phone.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Phone.tr.domElement);
 		
 		// Mobile
 		objTabPage.table.tbody.Mobile					= {};
 		objTabPage.table.tbody.Mobile.objControl		= objControls.Mobile;
-		objTabPage.table.tbody.Mobile.tr				= {};
 		objTabPage.table.tbody.Mobile.tr				= objControls.Mobile.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Mobile.tr.domElement);
 		
 		// Password
 		objTabPage.table.tbody.PassWord				= {};
 		objTabPage.table.tbody.PassWord.objControl	= objControls.PassWord;
-		objTabPage.table.tbody.PassWord.tr			= {};
 		objTabPage.table.tbody.PassWord.tr			= objControls.PassWord.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.PassWord.tr.domElement);
+		
+		// Password Confirm
+		objTabPage.table.tbody.PassWordConfirm				= {};
+		objTabPage.table.tbody.PassWordConfirm.objControl	= objControls.PassWordConfirm;
+		objTabPage.table.tbody.PassWordConfirm.tr			= objControls.PassWordConfirm.generateInputTableRow();
+		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.PassWordConfirm.tr.domElement);
+		objControls.PassWordConfirm.setValidateFunction(this._passwordConfirm.bind(this));
 		
 		// Role
 		/*objTabPage.table.tbody.user_role_id					= {};
 		objTabPage.table.tbody.user_role_id.objControl		= objControls.user_role_id;
-		objTabPage.table.tbody.user_role_id.tr				= {};
 		objTabPage.table.tbody.user_role_id.tr				= objControls.user_role_id.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.user_role_id.tr.domElement);*/
 		
 		// Archived
 		objTabPage.table.tbody.Archived				= {};
 		objTabPage.table.tbody.Archived.objControl	= objControls.Archived;
-		objTabPage.table.tbody.Archived.tr			= {};
 		objTabPage.table.tbody.Archived.tr			= objControls.Archived.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Archived.tr.domElement);
 		
 		//--------------------------------------------------------------------//
 		
 		return objTabPage;
+	},
+	
+	_passwordConfirm	: function(objPasswordControl, strConfirm)
+	{
+		return (strConfirm === this.arrTabs.Details.table.tbody.PassWord.objControl.getElementValue());
 	},
 	
 	buildContentPermissions	: function()
