@@ -21,8 +21,8 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domInput.type			= 'text';
 		this.objControlOutput.domInput.className	= 'date-formatted';
 		this.objControlOutput.domInput.readOnly		= true;
-		this.objControlOutput.domInput.maxLength	= 10;
-		this.objControlOutput.domInput.size			= 10;
+		/*this.objControlOutput.domInput.maxLength	= 10;
+		this.objControlOutput.domInput.size			= 10;*/
 		this.objControlOutput.domEdit.appendChild(this.objControlOutput.domInput);
 		
 		this.objControlOutput.domIcon			= document.createElement('img');
@@ -71,7 +71,14 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	
 	_getFormattedDate	: function()
 	{
-		return Date.parseDate(this.objControlOutput.domHidden.value, 'Y-m-d').dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
+		if (this.objControlOutput.domHidden.value.length)
+		{
+			return Date.parseDate(this.objControlOutput.domHidden.value, 'Y-m-d').dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
+		}
+		else
+		{
+			return "[ No date specified ]";
+		}
 	},
 	
 	addEventListeners	: function()

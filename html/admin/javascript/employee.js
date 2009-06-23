@@ -81,11 +81,12 @@ Employee.getForId	= function(intEmployeeId, fncCallback)
 Employee.objProperties	= {};
 
 // Id
-/*Employee.objProperties.Id				= {};
-Employee.objProperties.Id.strType		= 'hidden';
+Employee.objProperties.Id				= {};
+//Employee.objProperties.Id.strType		= 'hidden';
+Employee.objProperties.Id.strType		= 'text';
 
 Employee.objProperties.Id.objDefinition				= {};
-Employee.objProperties.Id.objDefinition.strLabel	= 'Id';*/
+Employee.objProperties.Id.objDefinition.strLabel	= 'Id';
 
 // First Name
 Employee.objProperties.FirstName				= {};
