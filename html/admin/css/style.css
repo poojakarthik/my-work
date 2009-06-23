@@ -1559,6 +1559,11 @@ table.input tbody tr td select
 	width			: 98%;
 }
 
+table.input tbody tr td input[type="text"].date-formatted
+{
+	width			: 80%;
+}
+
 table.input tbody tr td input[type="checkbox"]
 {
 	margin-right	: 0.25em;

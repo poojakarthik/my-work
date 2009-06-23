@@ -16,9 +16,10 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domHidden.id		= strHiddenId;
 		this.objControlOutput.domEdit.appendChild(this.objControlOutput.domHidden);
 		
-		this.objControlOutput.domInput			= document.createElement('input');
-		this.objControlOutput.domInput.type		= 'text';
-		this.objControlOutput.domInput.readonly	= true;
+		this.objControlOutput.domInput				= document.createElement('input');
+		this.objControlOutput.domInput.type			= 'text';
+		this.objControlOutput.domInput.className	= 'date-formatted';
+		this.objControlOutput.domInput.readOnly		= true;
 		this.objControlOutput.domEdit.appendChild(this.objControlOutput.domInput);
 		
 		this.objControlOutput.domIcon			= document.createElement('img');
