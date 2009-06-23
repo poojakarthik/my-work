@@ -186,10 +186,10 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		//--------------------------------------------------------------------//
 		
-		objControls.PassWord.setValidateFunction(this._passwordConfirm.bind(this));
+		//objControls.PassWord.setValidateFunction(this._passwordConfirm.bind(this));
 		objControls.PassWord.setDependant(objControls.PassWordConfirm);
 		objControls.PassWordConfirm.setValidateFunction(this._passwordConfirm.bind(this));
-		objControls.PassWordConfirm.setDependant(objControls.PassWord);
+		//objControls.PassWordConfirm.setDependant(objControls.PassWord);
 		
 		return objTabPage;
 	},
