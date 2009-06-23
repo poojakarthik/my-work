@@ -428,14 +428,12 @@ function DateChooser(mixInput, start, end, format, isTimeChooser, isDateChooser,
 	if (mixInput.id)
 	{
 		// DOM element
-		alert('mixInput is a DOM element (id: '+mixInput.id+')');
 		var input	= mixInput;
 		var inputId	= mixInput.id;
 	}
 	else
 	{
 		// Id
-		alert('mixInput is NOT an Object ('+(typeof mixInput)+') (id: '+mixInput+')');
 		var input	= document.getElementById(mixInput);
 		var inputId	= mixInput;
 	}
@@ -591,7 +589,6 @@ DateChooser.prototype = {
 
 	setDate: function(value)
 	{
-		alert("Setting date to '"+value+"'");
 		var input = this._input;
 		if (value != null) {
 			this._setDate(Date.parseDate(value, this._format));
@@ -603,9 +600,9 @@ DateChooser.prototype = {
 				parseInt(this._minuteSelect.options[this._minuteSelect.selectedIndex].value));
 		}
 		input.value = this.getValue();
-		//input.onchange();
-		alert(input.id + " should be '" + this.getValue() + "' but is actually '" + input.value + "'");
+		
 		Vixen.EventHandler.fireEventForElement(input, 'change');
+		
 		this.hide();
 	},
 
@@ -650,7 +647,6 @@ DateChooser.prototype = {
 
 	// Gets the value, as a formatted string, of the date attached to the chooser
 	getValue: function() {
-		alert("Getting formatted date as '"+this._date.dateFormat(this._format)+"'");
 		return this._date.dateFormat(this._format);
 	},
 
