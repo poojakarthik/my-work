@@ -150,7 +150,7 @@ Employee.objProperties.Phone.strType		= 'text';
 Employee.objProperties.Phone.objDefinition				= {};
 Employee.objProperties.Phone.objDefinition.strLabel		= 'Phone';
 Employee.objProperties.Phone.objDefinition.mixEditable	= true;
-Employee.objProperties.Phone.objDefinition.mixAutoTrim	= function(strPhone){return strPhone.replace(/.+/, '');};
+Employee.objProperties.Phone.objDefinition.mixAutoTrim	= function(strPhone){return strPhone.replace(/\s+/, '');};
 Employee.objProperties.Phone.objDefinition.intMaxLength	= 25;
 Employee.objProperties.Phone.objDefinition.fncValidate	= Reflex_Validation.fnnFixedLine.bind(Reflex_Validation);
 
@@ -161,7 +161,7 @@ Employee.objProperties.Mobile.strType		= 'text';
 Employee.objProperties.Mobile.objDefinition					= {};
 Employee.objProperties.Mobile.objDefinition.strLabel		= 'Mobile';
 Employee.objProperties.Mobile.objDefinition.mixEditable		= true;
-Employee.objProperties.Mobile.objDefinition.mixAutoTrim		= function(strPhone){return strPhone.replace(/.+/, '');};
+Employee.objProperties.Mobile.objDefinition.mixAutoTrim		= function(strPhone){return strPhone.replace(/\s+/, '');};
 Employee.objProperties.Mobile.objDefinition.intMaxLength	= 25;
 Employee.objProperties.Mobile.objDefinition.fncValidate		= Reflex_Validation.fnnMobile.bind(Reflex_Validation);
 

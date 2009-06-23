@@ -130,7 +130,7 @@ var Control_Field	= Class.create
 		}
 		else if (this.mixAutoTrim)
 		{
-			mixValue	= mixValue.replace(/(^.*|.*$)/, '');
+			mixValue	= mixValue.replace(/(^\s*|\s*$)/, '');
 		}
 		
 		// Return or set Value

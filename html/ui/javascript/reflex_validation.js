@@ -1,11 +1,5 @@
 var Reflex_Validation	=
 {
-	stringNotEmpty	: function(strString, bolTrim)
-	{
-		strValue	= (bolTrim) ? strValue.replace(/(^.+|$.+)/, '') : strValue;
-		return (strValue.length > 0);
-	},
-	
 	email	: function(strTest)
 	{
 		return (strTest.search(/^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i) != -1) ? true : false;
