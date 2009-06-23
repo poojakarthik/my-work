@@ -68,6 +68,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.objControlTabGroup.addTab('Permissions', new Control_Tab('Permissions', this.arrTabs.Permissions.domElement, '../admin/img/template/key.png'));
 		//--------------------------------------------------------------------//
 		
+		this.setControlMode(Control_Field.RENDER_MODE_VIEW);
+		
 		// Update the Popup
 		this.setContent(this._objPage.domElement);
 		if (this.bolDisplayOnLoad)
@@ -177,7 +179,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Archived.tr.domElement);
 		
 		//--------------------------------------------------------------------//
-		
 		
 		return objTabPage;
 	},
