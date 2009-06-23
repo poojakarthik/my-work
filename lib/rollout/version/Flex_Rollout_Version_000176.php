@@ -31,7 +31,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		elseif (!$result->fetchRow())
 		{
 			// DEBUG
-			throw new Exception("SFTP already exists!");
+			//throw new Exception("SFTP already exists!");
 			// DEBUG
 			
 			$strSQL = "	INSERT INTO	resource_type
@@ -60,7 +60,7 @@ class Flex_Rollout_Version_000176 extends Flex_Rollout_Version
 		elseif (!$result->fetchRow())
 		{
 			// DEBUG
-			throw new Exception("SFTP already exists!");
+			//throw new Exception("SFTP already exists!");
 			// DEBUG
 			
 			$strSQL = "	INSERT INTO	resource_type
