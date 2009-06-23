@@ -184,6 +184,11 @@ var Control_Field	= Class.create
 			this.objControlOutput.domView.removeClassName('hide');
 		}
 		
+		if (bolRenderMode == Control_Field.RENDER_MODE_EDIT)
+		{
+			this.setElementValue(this.getValue());
+		}
+		
 		this.validate();
 	},
 	
