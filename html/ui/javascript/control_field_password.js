@@ -35,12 +35,6 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 		this.setElementValue(mixValue);
 		this.objControlOutput.domView.innerHTML	= (mixValue) ? '[ Password specified ]' : '[ No password specified ]';
 	},
-	
-	getElement	: function()
-	{
-		//this.update();
-		return this.objControlOutput.domElement;
-	},
 
 	setRenderMode	: function($super, bolRenderMode)
 	{

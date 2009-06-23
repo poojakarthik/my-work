@@ -36,12 +36,6 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domView.innerHTML	= mixValue;
 	},
 	
-	getElement	: function()
-	{
-		//this.update();
-		return this.objControlOutput.domElement;
-	},
-	
 	addEventListeners	: function()
 	{
 		this.arrEventHandlers				= {};

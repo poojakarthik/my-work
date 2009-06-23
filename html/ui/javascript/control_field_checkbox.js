@@ -20,7 +20,7 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 	
 	getElementValue	: function()
 	{
-		return this.objControlOutput.domEdit.value;
+		return this.objControlOutput.domEdit.checked;
 	},
 	
 	setElementValue	: function(mixValue)
@@ -34,12 +34,6 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 		
 		this.setElementValue(mixValue);
 		this.objControlOutput.domView.innerHTML	= (Number(mixValue)) ? 'Yes' : 'No';
-	},
-	
-	getElement	: function()
-	{
-		//this.update();
-		return this.objControlOutput.domElement;
 	},
 	
 	addEventListeners	: function()

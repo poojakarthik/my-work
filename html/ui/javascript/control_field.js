@@ -16,7 +16,7 @@ var Control_Field	= Class.create
 	
 	getElement	: function()
 	{
-		throw "OO Error: Control_Field::getElement() is an unimplemented Virtual Method!";
+		return this.objControlOutput.domElement;
 	},
 	
 	getElementValue	: function()
@@ -33,18 +33,6 @@ var Control_Field	= Class.create
 	{
 		// Update value
 		this.updateElementValue();
-		
-		// Update Render Method
-		if (this.isEditable())
-		{
-			this.objControlOutput.domEdit.removeClassName('hide');
-			this.objControlOutput.domView.addClassName('hide');
-		}
-		else
-		{
-			this.objControlOutput.domEdit.addClassName('hide');
-			this.objControlOutput.domView.removeClassName('hide');
-		}
 	},
 	
 	// Value
@@ -87,7 +75,7 @@ var Control_Field	= Class.create
 	setVisible	: function(mixVisible)
 	{
 		this.mixVisible	= mixVisible;
-		this.update();
+		//this.updateElementValue();
 	},
 	
 	isVisible	: function()
@@ -183,6 +171,19 @@ var Control_Field	= Class.create
 	setRenderMode	: function(bolRenderMode)
 	{
 		this.bolRenderMode	= bolRenderMode;
+		
+		// Update Render Mode
+		if (this.isEditable())
+		{
+			this.objControlOutput.domEdit.removeClassName('hide');
+			this.objControlOutput.domView.addClassName('hide');
+		}
+		else
+		{
+			this.objControlOutput.domEdit.addClassName('hide');
+			this.objControlOutput.domView.removeClassName('hide');
+		}
+		
 		this.validate();
 	},
 	
@@ -268,8 +269,8 @@ var Control_Field	= Class.create
 		{
 			bolReturn	= true;
 		}
-		
-		this.update();
+
+		//this.updateElementValue();
 		return bolReturn;
 	},
 	
