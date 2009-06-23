@@ -154,6 +154,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		objTabPage.table.tbody.PassWord.objControl	= objControls.PassWord;
 		objTabPage.table.tbody.PassWord.tr			= objControls.PassWord.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.PassWord.tr.domElement);
+		objControls.PassWord.setValidateFunction(this._passwordConfirm.bind(this));
 		
 		// Password Confirm
 		objTabPage.table.tbody.PassWordConfirm				= {};
@@ -179,9 +180,10 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		return objTabPage;
 	},
 	
-	_passwordConfirm	: function(objPasswordControl, strConfirm)
+	_passwordConfirm	: function()
 	{
-		return (strConfirm === this.arrTabs.Details.table.tbody.PassWord.objControl.getElementValue());
+		alert(this.arrTabs.Details.table.tbody.PassWordConfirm.objControl.getElementValue() + " === " + this.arrTabs.Details.table.tbody.PassWord.objControl.getElementValue());
+		return (this.arrTabs.Details.table.tbody.PassWordConfirm.objControl.getElementValue() === this.arrTabs.Details.table.tbody.PassWord.objControl.getElementValue());
 	},
 	
 	buildContentPermissions	: function()
