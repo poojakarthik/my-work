@@ -45,6 +45,8 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 		{
 			this.setElementValue('');
 		}
+		
+		this.validate();
 	},
 	
 	addEventListeners	: function()
