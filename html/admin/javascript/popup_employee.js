@@ -154,14 +154,12 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		objTabPage.table.tbody.PassWord.objControl	= objControls.PassWord;
 		objTabPage.table.tbody.PassWord.tr			= objControls.PassWord.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.PassWord.tr.domElement);
-		objControls.PassWord.setValidateFunction(this._passwordConfirm.bind(this));
 		
 		// Password Confirm
 		objTabPage.table.tbody.PassWordConfirm				= {};
 		objTabPage.table.tbody.PassWordConfirm.objControl	= objControls.PassWordConfirm;
 		objTabPage.table.tbody.PassWordConfirm.tr			= objControls.PassWordConfirm.generateInputTableRow();
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.PassWordConfirm.tr.domElement);
-		objControls.PassWordConfirm.setValidateFunction(this._passwordConfirm.bind(this));
 		
 		// Role
 		/*objTabPage.table.tbody.user_role_id					= {};
@@ -176,6 +174,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		objTabPage.table.tbody.domElement.appendChild(objTabPage.table.tbody.Archived.tr.domElement);
 		
 		//--------------------------------------------------------------------//
+		
+		objControls.PassWord.setValidateFunction(this._passwordConfirm.bind(this));
+		objControls.PassWord.setDependant(objControls.PassWordConfirm);
+		objControls.PassWordConfirm.setValidateFunction(this._passwordConfirm.bind(this));
+		objControls.PassWordConfirm.setDependant(objControls.PassWord);
 		
 		return objTabPage;
 	},
