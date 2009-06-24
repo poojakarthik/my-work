@@ -122,9 +122,6 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 			}
 			
 			Note::createNote($noteType->id, $strContent, Flex::getUserId(), $intAccountId, $intServiceId, $intContactId);
-			
-			throw new Exception("HAHA -- GTFO");
-			
 			TransactionCommit();
 			
 			return array(	"success" => true
@@ -134,8 +131,7 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 		{
 			TransactionRollback();
 			return array(	"success"		=> false,
-							/*"errorMessage"	=> $e->getMessage()*/
-							"errorMessage"	=> $this->_JSONDebug
+							"errorMessage"	=> $e->getMessage()
 						);
 		}
 	}

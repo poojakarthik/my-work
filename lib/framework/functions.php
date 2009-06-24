@@ -2295,12 +2295,6 @@ function ArchiveAccounts($arrAccounts)
  */
 function TransactionStart($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 {
-	if (!DataAccess::connected($strConnectionType))
-	{
-		// Can't start a new transaction if not connected
-		return FALSE;
-	}
-
 	// Start Transaction
 	return DataAccess::getDataAccess($strConnectionType)->TransactionStart();
 }
@@ -2323,12 +2317,6 @@ function TransactionStart($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
  */
 function TransactionRollback($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 {
-	if (!DataAccess::connected($strConnectionType))
-	{
-		// Can't start a new transaction if not connected
-		return FALSE;
-	}
-
 	// Rollback Transaction
 	return DataAccess::getDataAccess($strConnectionType)->TransactionRollback();
 }
@@ -2351,12 +2339,6 @@ function TransactionRollback($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT
  */
 function TransactionCommit($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 {
-	if (!DataAccess::connected($strConnectionType))
-	{
-		// Can't start a new transaction if not connected
-		return FALSE;
-	}
-
 	// Commit Transaction
 	return DataAccess::getDataAccess($strConnectionType)->TransactionCommit();
 }
