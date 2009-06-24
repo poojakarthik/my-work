@@ -315,7 +315,7 @@ class DataAccess
 			
 			if (!$this->refMysqliConnection->query("SAVEPOINT {$strSavepointUID}"))
 			{
-				Log::getLog()->log($this->refMysqliConnection->error());
+				Log::getLog()->log($this->refMysqliConnection->error);
 				
 				// Failure
 				// TODO: Throw an Exception
@@ -372,7 +372,7 @@ class DataAccess
 			
 			if (!$this->refMysqliConnection->query("ROLLBACK TO SAVEPOINT {$strSavepointUID}"))
 			{
-				Log::getLog()->log($this->refMysqliConnection->error());
+				Log::getLog()->log($this->refMysqliConnection->error);
 				
 				// Failure
 				// TODO: Throw an Exception
@@ -421,7 +421,7 @@ class DataAccess
 			
 			if (!$this->refMysqliConnection->query("RELEASE SAVEPOINT {$strSavepointUID}"))
 			{
-				Log::getLog()->log($this->refMysqliConnection->error());
+				Log::getLog()->log($this->refMysqliConnection->error);
 				
 				// Failure
 				// TODO: Throw an Exception
