@@ -2,6 +2,8 @@
 
 class DataAccess
  {
+ 	private	$_arrSavepoints	= array();
+ 	
  	//------------------------------------------------------------------------//
 	// arrTableDefine
 	//------------------------------------------------------------------------//
@@ -306,16 +308,35 @@ class DataAccess
 	{
 		if ($this->_bolHasTransaction)
 		{
-			// Can't start a new transaction if we already have one
-			return FALSE;
+			// Create a Savepoint to simulate Nested Transactions
+			$strSavepointUID	= "FLEX_NESTED_".sha1(time() * (rand(1, 100) / 100));
+			
+			Log::getLog()->log("Creating Savepoint '{$strSavepointUID}'...");
+			
+			if (!$this->refMysqliConnection->query("SAVEPOINT {$strSavepointUID}"))
+			{
+				Log::getLog()->log($this->refMysqliConnection->error());
+				
+				// Failure
+				// TODO: Throw an Exception
+				return false;
+			}
+			
+			array_push($this->_arrSavepoints, $strSavepointUID);
 		}
-		$this->_bolHasTransaction = TRUE;
-		
-		// Make sure the table doesn't lock if PHP dies
-		register_shutdown_function(Array($this, "__shutdown"));
-		
-		// Disable Auto-Commit
-		return $this->refMysqliConnection->autocommit(FALSE);
+		else
+		{
+			Log::getLog()->log("Starting transaction...");
+			
+			// Create a Transaction
+			$this->_bolHasTransaction = true;
+			
+			// Make sure the table doesn't lock if PHP dies
+			register_shutdown_function(Array($this, "__shutdown"));
+			
+			// Disable Auto-Commit
+			return $this->refMysqliConnection->autocommit(false);
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -337,12 +358,34 @@ class DataAccess
 	{
 		if (!$this->_bolHasTransaction)
 		{
+			Log::getLog()->log("No Transaction to roll back!");
+			
 			// No transaction to roll back
-			return FALSE;
+			return false;
 		}
-		
-		// Roll back, then disable transactioning
-		return ($this->refMysqliConnection->rollback() && $this->refMysqliConnection->autocommit(TRUE));
+		elseif (count($this->_arrSavepoints))
+		{
+			// Roll back to last Savepoint
+			$strSavepointUID	= array_pop($this->_arrSavepoints);
+			
+			Log::getLog()->log("Rolling back to Savepoint '{$strSavepointUID}'...");
+			
+			if (!$this->refMysqliConnection->query("ROLLBACK TO SAVEPOINT {$strSavepointUID}"))
+			{
+				Log::getLog()->log($this->refMysqliConnection->error());
+				
+				// Failure
+				// TODO: Throw an Exception
+				return false;
+			}
+		}
+		else
+		{
+			Log::getLog()->log("Rolling back transaction...");
+			
+			// Roll back, then disable transactioning
+			return ($this->refMysqliConnection->rollback() && $this->refMysqliConnection->autocommit(true));
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -364,12 +407,34 @@ class DataAccess
 	{
 		if (!$this->_bolHasTransaction)
 		{
+			Log::getLog()->log("No Transaction to commit!");
+			
 			// No transaction to commit
 			return FALSE;
 		}
-		
-		// Commit, then disable transactioning
-		return ($this->refMysqliConnection->commit() && $this->refMysqliConnection->autocommit(TRUE));
+		elseif (count($this->_arrSavepoints))
+		{
+			// Roll back to last Savepoint
+			$strSavepointUID	= array_pop($this->_arrSavepoints);
+			
+			Log::getLog()->log("Releasing Savepoint '{$strSavepointUID}'...");
+			
+			if (!$this->refMysqliConnection->query("RELEASE SAVEPOINT {$strSavepointUID}"))
+			{
+				Log::getLog()->log($this->refMysqliConnection->error());
+				
+				// Failure
+				// TODO: Throw an Exception
+				return false;
+			}
+		}
+		else
+		{
+			Log::getLog()->log("Committing transaction...");
+			
+			// Commit, then disable transactioning
+			return ($this->refMysqliConnection->commit() && $this->refMysqliConnection->autocommit(TRUE));
+		}
 	}
 	
 	//------------------------------------------------------------------------//
