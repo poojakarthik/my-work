@@ -134,7 +134,8 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 		{
 			TransactionRollback();
 			return array(	"success"		=> false,
-							"errorMessage"	=> $e->getMessage()
+							/*"errorMessage"	=> $e->getMessage()*/
+							"errorMessage"	=> $e->getMessage($this->_JSONDebug)
 						);
 		}
 	}
