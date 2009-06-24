@@ -384,6 +384,7 @@ class DataAccess
 			Log::getLog()->log("Rolling back transaction...");
 			
 			// Roll back, then disable transactioning
+			$this->_bolHasTransaction	= false;
 			return ($this->refMysqliConnection->rollback() && $this->refMysqliConnection->autocommit(true));
 		}
 	}
@@ -433,6 +434,7 @@ class DataAccess
 			Log::getLog()->log("Committing transaction...");
 			
 			// Commit, then disable transactioning
+			$this->_bolHasTransaction	= false;
 			return ($this->refMysqliConnection->commit() && $this->refMysqliConnection->autocommit(TRUE));
 		}
 	}
