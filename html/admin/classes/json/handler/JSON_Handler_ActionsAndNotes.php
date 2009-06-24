@@ -122,6 +122,9 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 			}
 			
 			Note::createNote($noteType->id, $strContent, Flex::getUserId(), $intAccountId, $intServiceId, $intContactId);
+			
+			throw new Exception("HAHA -- GTFO");
+			
 			TransactionCommit();
 			
 			return array(	"success" => true
