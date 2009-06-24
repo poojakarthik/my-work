@@ -343,6 +343,39 @@ class Invoice_Run
 			$this->invoice_run_schedule_id	= $intScheduledInvoiceRun;
 			$this->invoice_run_status_id	= INVOICE_RUN_STATUS_GENERATING;
 			$this->customer_group_id		= $intCustomerGroup;
+			
+			$fltPreviousInvoiceRunBalance		= 0.0;
+			$fltTotalPreviousInvoiceRunsBalance	= 0.0;
+			$selInvoiceBalanceHistory			= self::_preparedStatement('selInvoiceBalanceHistory');
+			$intRecordCount						= $selInvoiceBalanceHistory->Execute(Array('invoice_run_id'=>$this->Id, 'customer_group_id'=>$this->customer_group_id));
+			if ($intRecordCount === FALSE)
+			{
+				// Database Error -- throw Exception
+				throw new Exception("DB ERROR: ".$selInvoiceBalanceHistory->Error());
+			}
+			elseif ($intRecordCount == 0)
+			{
+				// There are no previous live AND committed invoice runs for this customer group
+				$fltPreviousInvoiceRunBalance		= 0.0;
+				$fltTotalPreviousInvoiceRunsBalance	= 0.0;
+			}
+			else
+			{
+				// There is at least 1 previous live and committed invoice run for this customer group
+				// Note that the newly generated invoice run will not be considered because it has not been committed yet
+				$arrPreviousBalanceTotal			= $selInvoiceBalanceHistory->Fetch();
+				$fltPreviousInvoiceRunBalance		= $arrPreviousBalanceTotal['TotalBalance'];
+				$fltTotalPreviousInvoiceRunsBalance	= $fltPreviousInvoiceRunBalance;
+				
+				while (($arrInvoiceRunBalanceTotal = $selInvoiceBalanceHistory->Fetch()) !== FALSE)
+				{
+					$fltTotalPreviousInvoiceRunsBalance += $arrInvoiceRunBalanceTotal['TotalBalance'];
+				}
+			}
+			
+			$this->previous_balance			= $fltPreviousInvoiceRunBalance;
+			$this->total_balance			= $fltTotalPreviousInvoiceRunsBalance;
+			
 			$this->save();
 			
 			$dbaDB->TransactionCommit();
@@ -394,38 +427,6 @@ class Invoice_Run
 				throw new Exception("DB ERROR: ".$selInvoiceCDRTotals->Error());
 			}
 			$arrInvoiceCDRTotals	= $selInvoiceCDRTotals->Fetch();
-	
-			$fltPreviousInvoiceRunBalance		= 0.0;
-			$fltTotalPreviousInvoiceRunsBalance	= 0.0;
-			$selInvoiceBalanceHistory			= self::_preparedStatement('selInvoiceBalanceHistory');
-			$intRecordCount						= $selInvoiceBalanceHistory->Execute(Array('invoice_run_id'=>$this->Id, 'customer_group_id'=>$this->customer_group_id));
-			if ($intRecordCount === FALSE)
-			{
-				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$selInvoiceBalanceHistory->Error());
-			}
-			elseif ($intRecordCount == 0)
-			{
-				// There are no previous live AND committed invoice runs for this customer group
-				$fltPreviousInvoiceRunBalance		= 0.0;
-				$fltTotalPreviousInvoiceRunsBalance	= 0.0;
-			}
-			else
-			{
-				// There is at least 1 previous live and committed invoice run for this customer group
-				// Note that the newly generated invoice run will not be considered because it has not been committed yet
-				$arrPreviousBalanceTotal			= $selInvoiceBalanceHistory->Fetch();
-				$fltPreviousInvoiceRunBalance		= $arrPreviousBalanceTotal['TotalBalance'];
-				$fltTotalPreviousInvoiceRunsBalance	= $fltPreviousInvoiceRunBalance;
-				
-				while (($arrInvoiceRunBalanceTotal = $selInvoiceBalanceHistory->Fetch()) !== FALSE)
-				{
-					$fltTotalPreviousInvoiceRunsBalance += $arrInvoiceRunBalanceTotal['TotalBalance'];
-				}
-			}
-			
-			$this->previous_balance			= $fltPreviousInvoiceRunBalance;
-			$this->total_balance			= $fltTotalPreviousInvoiceRunsBalance;
 			
 			// Finalised InvoiceRun record
 			$this->BillCost					= $arrInvoiceCDRTotals['BillCost'];

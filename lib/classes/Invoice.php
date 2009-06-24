@@ -845,6 +845,10 @@ class Invoice extends ORM
 				throw new Exception("DB ERROR: ".$qryQuery->Error());
 			}
 			
+			// Update the Totals on the InvoiceRun record
+			$objInvoiceRun	= Invoice_Run::getForId($this->invoice_run_id);
+			$objInvoiceRun->calculateTotals();
+			
 			// Commit the Transaction
 			$dbaDB->TransactionCommit();
 		}
