@@ -193,8 +193,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			// Attempt to generate the interim/final Invoice
 			try
 			{
-				// Start the Transaction
-				DataAccess::getDataAccess()->TransactionStart();
+				// NOTE: Billing handles its own Transactions.  Manual Rollback of Invoice Run via Invoice_Run::revoke()
 				
 				$qryQuery	= new Query();
 				
@@ -206,8 +205,20 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				$intInvoiceDatetime	= strtotime(date('Y-m-d', strtotime('+1 day')));
 				
 				// Generate the Invoice
-				$objInvoiceRun	= new Invoice_Run();
-				$objInvoiceRun->generateSingle($objAccount->CustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount);
+				try
+				{
+					$objInvoiceRun	= new Invoice_Run();
+					$objInvoiceRun->generateSingle($objAccount->CustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount);
+				}
+				catch (Exception $eException)
+				{
+					// Perform a Revoke on the Temporary Invoice Run
+					if ($objInvoiceRun->Id)
+					{
+						$objInvoiceRun->revoke();
+					}
+					throw $eException;
+				}
 				
 				// Force the Invoice to be an eBill
 				$resInvoice	= $qryQuery->Execute("SELECT * FROM Invoice WHERE Account = {$objAccount->Id} AND invoice_run_id = {$objInvoiceRun->Id} LIMIT 1");
@@ -233,14 +244,9 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				}
 				$arrLastInvoice	= $resLastInvoice->fetch_assoc();
 				$fltPayments	= ($arrLastInvoice) ? max(0.0, (float)$arrLastInvoice['TotalOwing'] - $objInvoice->AccountBalance) : 0.0;
-				
-				// Commit the Transaction
-				DataAccess::getDataAccess()->TransactionCommit();
 			}
 			catch (Exception $eException)
 			{
-				DataAccess::getDataAccess()->TransactionRollback();
-				
 				if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 				{
 					throw $eException;
@@ -292,9 +298,6 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			// Attempt to revoke the interim/final Invoice
 			try
 			{
-				// Start the Transaction
-				DataAccess::getDataAccess()->TransactionStart();
-				
 				$objInvoice		= new Invoice(array('Id'=>$intInvoice), true);
 				$objInvoiceRun	= new Invoice_Run(array('Id'=>$objInvoice->invoice_run_id), true);
 				
@@ -316,14 +319,9 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				{
 					throw new Exception("Invoice Run {$objInvoiceRun->Id} is not a Temporary Invoice Run");
 				}
-				
-				// Commit the Transaction
-				DataAccess::getDataAccess()->TransactionCommit();
 			}
 			catch (Exception $eException)
 			{
-				DataAccess::getDataAccess()->TransactionRollback();
-				
 				if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 				{
 					throw $eException;
@@ -371,11 +369,16 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			// Attempt to commit the interim/final Invoice
 			try
 			{
-				// Start the Transaction
-				DataAccess::getDataAccess()->TransactionStart();
+				$qryQuery	= new Query();
 				
 				$objInvoice		= new Invoice(array('Id'=>$intInvoice), true);
 				$objInvoiceRun	= new Invoice_Run(array('Id'=>$objInvoice->invoice_run_id), true);
+				
+				// Add a System Note
+				$fltGrandTotal	= number_format($objInvoice->Total + $objInvoice->Tax, 2, '.', '');
+				$strAn			= ($objInvoiceRun->invoice_run_type_id === INVOICE_RUN_TYPE_INTERIM) ? 'An' : 'A';
+				$strContent		= $strAn." ".GetConstantDescription($objInvoiceRun->invoice_run_type_id, 'invoice_run_type') . " has been generated to the value of \${$fltGrandTotal}";
+				$objSystemNote	= Note::createSystemNote($strContent, Flex::getUserId(), $objInvoice->Account);
 				
 				// Ensure that this Invoice Run is either Interim or Final, and is Temporary
 				$arrAllowableInvoiceRunTypes	= array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL);
@@ -395,19 +398,14 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				{
 					throw new Exception("Invoice Run {$objInvoiceRun->Id} is not a Temporary Invoice Run");
 				}
-				
-				// Add a System Note
-				$fltGrandTotal	= number_format($objInvoice->Total + $objInvoice->Tax, 2, '.', '');
-				$strAn			= ($objInvoiceRun->invoice_run_type_id === INVOICE_RUN_TYPE_INTERIM) ? 'An' : 'A';
-				$strContent		= $strAn." ".GetConstantDescription($objInvoiceRun->invoice_run_type_id, 'invoice_run_type') . " has been generated to the value of \${$fltGrandTotal}";
-				Note::createSystemNote($strContent, Flex::getUserId(), $objInvoice->Account);
-				
-				// Commit the Transaction
-				DataAccess::getDataAccess()->TransactionCommit();
 			}
 			catch (Exception $eException)
 			{
-				DataAccess::getDataAccess()->TransactionRollback();
+				// Remove the System Note (if it was created)
+				if ($objSystemNote && $objSystemNote->id)
+				{
+					$qryQuery->Execute("DELETE FROM Note WHERE Id = {$objSystemNote->id}");
+				}
 				
 				if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 				{

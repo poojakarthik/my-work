@@ -258,6 +258,7 @@ class Cli_App_Billing extends Cli
 							{
 								$objInvoiceRun->revoke();
 							}
+							throw $eException;
 						}
 						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id));
 						
