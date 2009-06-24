@@ -326,18 +326,33 @@ class Invoice_Run
 	public function generate($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $arrAccounts, $intScheduledInvoiceRun=NULL)
 	{
 		// Init variables
-		$dbaDB					= DataAccess::getDataAccess();
-
-		//------------------- START INVOICE RUN GENERATION -------------------//
-		// Create the initial InvoiceRun record
-		$this->BillingDate				= date("Y-m-d", $intInvoiceDatetime);
-		$this->InvoiceRun				= date("YmdHis");
-		$this->invoice_run_type_id		= $intInvoiceRunType;
-		$this->invoice_run_schedule_id	= $intScheduledInvoiceRun;
-		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_GENERATING;
-		$this->customer_group_id		= $intCustomerGroup;
-		$this->save();
-
+		static	$dbaDB;
+		$dbaDB	= (isset($dbaDB)) ? $dbaDB : DataAccess::getDataAccess();
+		
+		// Create InvoiceRun record
+		try
+		{
+			// Start Transaction
+			$dbaDB->TransactionStart();
+			
+			//------------------- START INVOICE RUN GENERATION -------------------//
+			// Create the initial InvoiceRun record
+			$this->BillingDate				= date("Y-m-d", $intInvoiceDatetime);
+			$this->InvoiceRun				= date("YmdHis");
+			$this->invoice_run_type_id		= $intInvoiceRunType;
+			$this->invoice_run_schedule_id	= $intScheduledInvoiceRun;
+			$this->invoice_run_status_id	= INVOICE_RUN_STATUS_GENERATING;
+			$this->customer_group_id		= $intCustomerGroup;
+			$this->save();
+			
+			$dbaDB->TransactionCommit();
+		}
+		catch (Exception $eException)
+		{
+			$dbaDB->TransactionRollback();
+			throw $eException;
+		}
+		
 		// Generate an Invoice for each Account
 		$this->InvoiceCount	= 0;
 		foreach ($arrAccounts as $arrAccount)
@@ -348,67 +363,87 @@ class Invoice_Run
 			$objInvoice->generate($objAccount, $this);
 			$this->InvoiceCount++;
 		}
-
-		// Generated Balance Data
-		$selInvoiceTotals	= self::_preparedStatement('selInvoiceTotals');
-		if ($selInvoiceTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
-		{
-			// Database Error -- throw Exception
-			throw new Exception("DB ERROR: ".$selInvoiceTotals->Error());
-		}
-		$arrInvoiceTotals	= $selInvoiceTotals->Fetch();
-
-		$selInvoiceCDRTotals	= self::_preparedStatement('selInvoiceCDRTotals');
-		if ($selInvoiceCDRTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
-		{
-			// Database Error -- throw Exception
-			throw new Exception("DB ERROR: ".$selInvoiceCDRTotals->Error());
-		}
-		$arrInvoiceCDRTotals	= $selInvoiceCDRTotals->Fetch();
-
-		$fltPreviousInvoiceRunBalance		= 0.0;
-		$fltTotalPreviousInvoiceRunsBalance	= 0.0;
-		$selInvoiceBalanceHistory			= self::_preparedStatement('selInvoiceBalanceHistory');
-		$intRecordCount						= $selInvoiceBalanceHistory->Execute(Array('invoice_run_id'=>$this->Id, 'customer_group_id'=>$this->customer_group_id));
-		if ($intRecordCount === FALSE)
-		{
-			// Database Error -- throw Exception
-			throw new Exception("DB ERROR: ".$selInvoiceBalanceHistory->Error());
-		}
-		elseif ($intRecordCount == 0)
-		{
-			// There are no previous live AND committed invoice runs for this customer group
-			$fltPreviousInvoiceRunBalance		= 0.0;
-			$fltTotalPreviousInvoiceRunsBalance	= 0.0;
-		}
-		else
-		{
-			// There is at least 1 previous live and committed invoice run for this customer group
-			// Note that the newly generated invoice run will not be considered because it has not been committed yet
-			$arrPreviousBalanceTotal			= $selInvoiceBalanceHistory->Fetch();
-			$fltPreviousInvoiceRunBalance		= $arrPreviousBalanceTotal['TotalBalance'];
-			$fltTotalPreviousInvoiceRunsBalance	= $fltPreviousInvoiceRunBalance;
-			
-			while (($arrInvoiceRunBalanceTotal = $selInvoiceBalanceHistory->Fetch()) !== FALSE)
-			{
-				$fltTotalPreviousInvoiceRunsBalance += $arrInvoiceRunBalanceTotal['TotalBalance'];
-			}
-		}
-
-		$this->previous_balance			= $fltPreviousInvoiceRunBalance;
-		$this->total_balance			= $fltTotalPreviousInvoiceRunsBalance;
 		
-		// Finalised InvoiceRun record
-		$this->BillCost					= $arrInvoiceCDRTotals['BillCost'];
-		$this->BillRated				= $arrInvoiceCDRTotals['BillRated'];
-		$this->BillInvoiced				= $arrInvoiceTotals['BillInvoiced'];
-		$this->BillTax					= $arrInvoiceTotals['BillTax'];
-		$this->invoice_run_status_id	= INVOICE_RUN_STATUS_TEMPORARY;
-		$this->save();
+		// Generated Balance Data
+		$this->calculateTotals();
 		//--------------------------------------------------------------------//
 	}
-
-
+	
+	public function calculateTotals()
+	{
+		static	$dbaDB;
+		$dbaDB	= (isset($dbaDB)) ? $dbaDB : DataAccess::getDataAccess();
+		
+		try
+		{
+			// Start Transaction
+			$dbaDB->TransactionStart();
+			
+			$selInvoiceTotals	= self::_preparedStatement('selInvoiceTotals');
+			if ($selInvoiceTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
+			{
+				// Database Error -- throw Exception
+				throw new Exception("DB ERROR: ".$selInvoiceTotals->Error());
+			}
+			$arrInvoiceTotals	= $selInvoiceTotals->Fetch();
+	
+			$selInvoiceCDRTotals	= self::_preparedStatement('selInvoiceCDRTotals');
+			if ($selInvoiceCDRTotals->Execute(Array('invoice_run_id'=>$this->Id)) === FALSE)
+			{
+				// Database Error -- throw Exception
+				throw new Exception("DB ERROR: ".$selInvoiceCDRTotals->Error());
+			}
+			$arrInvoiceCDRTotals	= $selInvoiceCDRTotals->Fetch();
+	
+			$fltPreviousInvoiceRunBalance		= 0.0;
+			$fltTotalPreviousInvoiceRunsBalance	= 0.0;
+			$selInvoiceBalanceHistory			= self::_preparedStatement('selInvoiceBalanceHistory');
+			$intRecordCount						= $selInvoiceBalanceHistory->Execute(Array('invoice_run_id'=>$this->Id, 'customer_group_id'=>$this->customer_group_id));
+			if ($intRecordCount === FALSE)
+			{
+				// Database Error -- throw Exception
+				throw new Exception("DB ERROR: ".$selInvoiceBalanceHistory->Error());
+			}
+			elseif ($intRecordCount == 0)
+			{
+				// There are no previous live AND committed invoice runs for this customer group
+				$fltPreviousInvoiceRunBalance		= 0.0;
+				$fltTotalPreviousInvoiceRunsBalance	= 0.0;
+			}
+			else
+			{
+				// There is at least 1 previous live and committed invoice run for this customer group
+				// Note that the newly generated invoice run will not be considered because it has not been committed yet
+				$arrPreviousBalanceTotal			= $selInvoiceBalanceHistory->Fetch();
+				$fltPreviousInvoiceRunBalance		= $arrPreviousBalanceTotal['TotalBalance'];
+				$fltTotalPreviousInvoiceRunsBalance	= $fltPreviousInvoiceRunBalance;
+				
+				while (($arrInvoiceRunBalanceTotal = $selInvoiceBalanceHistory->Fetch()) !== FALSE)
+				{
+					$fltTotalPreviousInvoiceRunsBalance += $arrInvoiceRunBalanceTotal['TotalBalance'];
+				}
+			}
+			
+			$this->previous_balance			= $fltPreviousInvoiceRunBalance;
+			$this->total_balance			= $fltTotalPreviousInvoiceRunsBalance;
+			
+			// Finalised InvoiceRun record
+			$this->BillCost					= $arrInvoiceCDRTotals['BillCost'];
+			$this->BillRated				= $arrInvoiceCDRTotals['BillRated'];
+			$this->BillInvoiced				= $arrInvoiceTotals['BillInvoiced'];
+			$this->BillTax					= $arrInvoiceTotals['BillTax'];
+			$this->invoice_run_status_id	= INVOICE_RUN_STATUS_TEMPORARY;
+			$this->save();
+			
+			$dbaDB->TransactionCommit();
+		}
+		catch (Exception $eException)
+		{
+			$dbaDB->TransactionRollback();
+			throw $eException;
+		}
+	}
+	
 	//------------------------------------------------------------------------//
 	// revokeAll
 	//------------------------------------------------------------------------//
@@ -488,47 +523,33 @@ class Invoice_Run
 	 */
 	public function revoke($bolOptimised=true)
 	{
+		static	$dbaDB;
+		$dbaDB	= (isset($dbaDB)) ? $dbaDB : DataAccess::getDataAccess();
+		
 		Log::getLog()->log(" * Revoking Invoice Run with Id {$this->Id}...");
-
+		
 		// Is this InvoiceRun Temporary?
 		if (!in_array($this->invoice_run_status_id, Array(INVOICE_RUN_STATUS_TEMPORARY, INVOICE_RUN_STATUS_GENERATING)))
 		{
 			// No, throw an Exception
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
-
-		if ($bolOptimised)
+		
+		try
 		{
+			// Start Transaction
+			$dbaDB->TransactionStart();
+			
 			// Revoke Invoice Run as a whole
 			$this->_revokeOptimised();
-		}
-		else
-		{
-			// Init variables
-			static	$qryQuery;
-			$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 			
-			// Get list of Invoices to Revoke
-			Log::getLog()->log(" * Getting list of Invoices to Revoke...");
-			$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
-			if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
-			{
-				throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
-			}
-			while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
-			{
-				// Revoke each Invoice
-				$objInvoice = new Invoice($arrInvoice);
-				Log::getLog()->log(" * Revoking Invoice with Id {$objInvoice->Id} (Account #{$objInvoice->Account})...");
-				$objInvoice->revoke();
-			}
-	
-			// Remove entry from the InvoiceRun table
-			Log::getLog()->log(" * Removing Invoice Run with Id {$this->Id}");
-			if ($qryQuery->Execute("DELETE FROM InvoiceRun WHERE Id = {$this->Id}") === FALSE)
-			{
-				throw new Exception("DB ERROR: ".$qryQuery->Error());
-			}
+			// Commit the Transaction
+			$dbaDB->TransactionCommit();
+		}
+		catch (Exception $eException)
+		{
+			$dbaDB->TransactionRollback();
+			throw $eException;
 		}
 	}
 	
@@ -536,7 +557,7 @@ class Invoice_Run
 	{
 		static	$qryQuery;
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
-
+		
 		// Change CDR Statuses back to CDR_RATED
 		$updCDRRevoke	= self::_preparedStatement('updCDRRevoke');
 		if ($updCDRRevoke->Execute(Array('invoice_run_id'=>NULL, 'Status'=>CDR_RATED), $this->toArray()) === FALSE)
@@ -613,7 +634,7 @@ class Invoice_Run
 	public function commit($bolOptimised=true)
 	{
 		Log::getLog()->log(" * Committing Invoice Run with Id {$this->Id}...");
-
+		
 		// Is this InvoiceRun Temporary?
 		if ($this->invoice_run_status_id !== INVOICE_RUN_STATUS_TEMPORARY)
 		{
@@ -621,36 +642,21 @@ class Invoice_Run
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
 		
-		if ($bolOptimised)
+		try
 		{
+			// Start Transaction
+			$dbaDB->TransactionStart();
+			
 			// Commit Invoice Run as a whole
 			$this->_commitOptimised();
+			
+			// Commit the Transaction
+			$dbaDB->TransactionCommit();
 		}
-		else
+		catch (Exception $eException)
 		{
-			// Commit each Invoice individually
-			static	$qryQuery;
-			$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
-	
-			// Get list of Invoices to Commit
-			Log::getLog()->log(" * Getting list of Invoices to Commit...");
-			$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
-			if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
-			{
-				throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
-			}
-			while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
-			{
-				// Commit each Invoice
-				$objInvoice	= new Invoice($arrInvoice);
-				Log::getLog()->log(" * Committing Invoice with Id {$objInvoice->Id}...");
-				$objInvoice->commit();
-			}
-	
-			// Finalise entry in the InvoiceRun table
-			Log::getLog()->log(" * Finalising Invoice Run with Id {$this->Id}");
-			$this->invoice_run_status_id	= INVOICE_RUN_STATUS_COMMITTED;
-			$this->save();
+			$dbaDB->TransactionRollback();
+			throw $eException;
 		}
 	}
 	

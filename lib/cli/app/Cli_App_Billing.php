@@ -56,8 +56,8 @@ class Cli_App_Billing extends Cli
 			Log::setDefaultLog('Cli_App_Billing');
 			
 			// Start a new Transcation
-			$bolTransactionResult	= DataAccess::getDataAccess()->TransactionStart();
-			Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully started!");
+			//$bolTransactionResult	= DataAccess::getDataAccess()->TransactionStart();
+			//Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully started!");
 
 			// Perform the operation
 			switch ($this->_arrArgs[self::SWITCH_MODE])
@@ -139,7 +139,7 @@ class Cli_App_Billing extends Cli
 						$objInvoice->generate($objAccount, $objInvoiceRun);
 						
 						// Regenerate Invoice Run Totals
-						// TODO
+						$objInvoiceRun->calculateTotals();
 						
 						// Copy XML
 						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id, (int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID]));
@@ -162,7 +162,6 @@ class Cli_App_Billing extends Cli
 						$objInvoiceRun->archiveToCDRInvoiced();
 					}
 					
-					
 					break;
 
 				default:
@@ -170,7 +169,7 @@ class Cli_App_Billing extends Cli
 			}
 
 			// If not in test mode, Commit the Transaction
-			if (!$this->_arrArgs[self::SWITCH_TEST_RUN])
+			/*if (!$this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
 				$bolTransactionResult	= DataAccess::getDataAccess()->TransactionCommit();
 				Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully committed!");
@@ -179,13 +178,13 @@ class Cli_App_Billing extends Cli
 			{
 				$bolTransactionResult	= DataAccess::getDataAccess()->TransactionRollback();
 				Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully revoked!");
-			}
+			}*/
 			return 0;
 		}
 		catch(Exception $exception)
 		{
-			$bolTransactionResult	= DataAccess::getDataAccess()->TransactionRollback();
-			Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully revoked!");
+			//$bolTransactionResult	= DataAccess::getDataAccess()->TransactionRollback();
+			//Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully revoked!");
 
 			if ($this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
@@ -245,10 +244,21 @@ class Cli_App_Billing extends Cli
 					while ($arrInvoiceRunSchedule = $selInvoiceRunSchedule->Fetch())
 					{
 						Log::getLog()->log("\t\t + Generating '{$arrInvoiceRunSchedule['description']}' Invoice Run for ".Customer_Group::getForId($arrInvoiceRunSchedule['customer_group_id'])->externalName."\n");
-
+						
 						// Yes, so lets Generate!
-						$objInvoiceRun	= new Invoice_Run();
-						$objInvoiceRun->generateCustomerGroup($arrPaymentTerms['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
+						try
+						{
+							$objInvoiceRun	= new Invoice_Run();
+							$objInvoiceRun->generateCustomerGroup($arrPaymentTerms['customer_group_id'], $arrInvoiceRunSchedule['invoice_run_type_id'], $intInvoiceDatetime, $arrInvoiceRunSchedule['id']);
+						}
+						catch (Exception $eException)
+						{
+							// Perform a Revoke on the Temporary Invoice Run
+							if ($objInvoiceRun->Id)
+							{
+								$objInvoiceRun->revoke();
+							}
+						}
 						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id));
 						
 						// Generate Invoice Sample Email
