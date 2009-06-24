@@ -399,6 +399,23 @@ class Invoice_Run
 		
 		// Generated Balance Data
 		$this->calculateTotals();
+		
+		// Update Status
+		try
+		{
+			// Start Transaction
+			$dbaDB->TransactionStart();
+			
+			$this->invoice_run_status_id	= INVOICE_RUN_STATUS_TEMPORARY;
+			$this->save();
+			
+			$dbaDB->TransactionCommit();
+		}
+		catch (Exception $eException)
+		{
+			$dbaDB->TransactionRollback();
+			throw $eException;
+		}
 		//--------------------------------------------------------------------//
 	}
 	
@@ -433,7 +450,6 @@ class Invoice_Run
 			$this->BillRated				= $arrInvoiceCDRTotals['BillRated'];
 			$this->BillInvoiced				= $arrInvoiceTotals['BillInvoiced'];
 			$this->BillTax					= $arrInvoiceTotals['BillTax'];
-			$this->invoice_run_status_id	= INVOICE_RUN_STATUS_TEMPORARY;
 			$this->save();
 			
 			$dbaDB->TransactionCommit();
