@@ -122,8 +122,6 @@ class Note extends ORM
 		 	$arrData['NoteType']		= $intNoteTypeId;
 	
 			$objNote = new self($arrData);
-			
-			throw new Exception("HAHA -- GTFO");
 		
 			$objNote->save();
 		}
