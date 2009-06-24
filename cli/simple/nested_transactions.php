@@ -28,15 +28,15 @@ if ($qryQuery->Execute($strCreateTableSQL) === false)
 }
 
 // Rollback non-existent Transaction
-Log::getLog()->log("[ ] Rollback non-existent Transaction");
+Log::getLog()->log("\n[ ] Rollback non-existent Transaction");
 Log::getLog()->log("\t[+] Return value: ".print_r($dacFlex->TransactionRollback(), true));
 
 // Commit non-existent Transaction
-Log::getLog()->log("[ ] Commit non-existent Transaction");
+Log::getLog()->log("\n[ ] Commit non-existent Transaction");
 Log::getLog()->log("\t[+] Return value: ".print_r($dacFlex->TransactionCommit(), true));
 
 // Start Transaction #1			DEPTH	= 0
-Log::getLog()->log("[ ] Start Transaction #1 (DEPTH=0)");
+Log::getLog()->log("\n[ ] Start Transaction #1 (DEPTH=0)");
 $bResult	= $dacFlex->TransactionStart();
 Log::getLog()->log("\t[+] Return value: ".print_r($bResult, true));
 if ($bResult === false)
@@ -45,7 +45,7 @@ if ($bResult === false)
 }
 
 // Add UK to 'transaction_test' Table
-Log::getLog()->log("[ ] Add UK to 'transaction_test' Table");
+Log::getLog()->log("\n[ ] Add UK to 'transaction_test' Table");
 $rResult	= $qryQuery->Execute("INSERT INTO transaction_test (name) VALUES ('UK');");
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
@@ -54,7 +54,7 @@ if ($rResult === false)
 }
 
 // Start Transaction #2			DEPTH++	= 1
-Log::getLog()->log("[ ] Start Transaction #2 (DEPTH=1)");
+Log::getLog()->log("\n[ ] Start Transaction #2 (DEPTH=1)");
 $bResult	= $dacFlex->TransactionStart();
 Log::getLog()->log("\t[+] Return value: ".print_r($bResult, true));
 if ($bResult === false)
@@ -63,7 +63,7 @@ if ($bResult === false)
 }
 
 // Add USA to 'transaction_test' Table
-Log::getLog()->log("[ ] Add USA to 'transaction_test' Table");
+Log::getLog()->log("\n[ ] Add USA to 'transaction_test' Table");
 $rResult	= $qryQuery->Execute("INSERT INTO transaction_test (name) VALUES ('USA');");
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
@@ -72,7 +72,7 @@ if ($rResult === false)
 }
 
 // Start Transaction #3			DEPTH++	= 2
-Log::getLog()->log("[ ] Start Transaction #3 (DEPTH=2)");
+Log::getLog()->log("\n[ ] Start Transaction #3 (DEPTH=2)");
 $bResult	= $dacFlex->TransactionStart();
 Log::getLog()->log("\t[+] Return value: ".print_r($bResult, true));
 if ($bResult === false)
@@ -81,7 +81,7 @@ if ($bResult === false)
 }
 
 // Add NZ to 'transaction_test' Table
-Log::getLog()->log("[ ] Add NZ to 'transaction_test' Table");
+Log::getLog()->log("\n[ ] Add NZ to 'transaction_test' Table");
 $rResult	= $qryQuery->Execute("INSERT INTO transaction_test (name) VALUES ('NZ');");
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
@@ -90,7 +90,7 @@ if ($rResult === false)
 }
 
 // Commit Transaction #3
-Log::getLog()->log("[ ] Commit Transaction #3 (DEPTH=2)");
+Log::getLog()->log("\n[ ] Commit Transaction #3 (DEPTH=2)");
 $bResult	= $dacFlex->TransactionCommit();
 Log::getLog()->log("\t[+] Return value: ".print_r($bResult, true));
 if ($bResult === false)
@@ -99,7 +99,7 @@ if ($bResult === false)
 }
 
 // Rollback Transaction #2
-Log::getLog()->log("[ ] Rollback Transaction #2 (DEPTH=1)");
+Log::getLog()->log("\n[ ] Rollback Transaction #2 (DEPTH=1)");
 $bResult	= $dacFlex->TransactionRollback();
 Log::getLog()->log("\t[+] Return value: ".print_r($bResult, true));
 if ($bResult === false)
@@ -108,7 +108,7 @@ if ($bResult === false)
 }
 
 // Verify 'transaction_test' Table Contents
-Log::getLog()->log("[ ] Verify 'transaction_test' Table Contents");
+Log::getLog()->log("\n[ ] Verify 'transaction_test' Table Contents");
 $rResult	= $qryQuery->Execute("SELECT * FROM transaction_test;");
 Log::getLog()->log("\t[+] Return value: ".print_r(($rResult === false), true));
 if ($rResult === false)
@@ -136,7 +136,7 @@ else
 }
 
 // Commit Transaction #1
-Log::getLog()->log("[ ] Commit Transaction #1 (DEPTH=0)");
+Log::getLog()->log("\n[ ] Commit Transaction #1 (DEPTH=0)");
 $bResult	= $dacFlex->TransactionCommit();
 Log::getLog()->log("\t[+] Return value: ".print_r($bResult, true));
 if ($bResult === false)
@@ -145,7 +145,7 @@ if ($bResult === false)
 }
 
 // Verify Table Contents
-Log::getLog()->log("[ ] Verify 'transaction_test' Table Contents");
+Log::getLog()->log("\n[ ] Verify 'transaction_test' Table Contents");
 $rResult	= $qryQuery->Execute("SELECT * FROM transaction_test;");
 Log::getLog()->log("\t[+] Return value: ".print_r(($rResult === false), true));
 if ($rResult === false)
@@ -173,7 +173,7 @@ else
 }
 
 // Start Transaction #4			DEPTH	= 0
-Log::getLog()->log("[ ] Start Transaction #4 (DEPTH=0)");
+Log::getLog()->log("\n[ ] Start Transaction #4 (DEPTH=0)");
 $bResult	= $dacFlex->TransactionStart();
 Log::getLog()->log("\t[+] Return value: ".print_r($bResult, true));
 if ($bResult === false)
@@ -182,7 +182,7 @@ if ($bResult === false)
 }
 
 // Remove UK from 'transaction_test' Table
-Log::getLog()->log("[ ] Remove UK from 'transaction_test' Table");
+Log::getLog()->log("\n[ ] Remove UK from 'transaction_test' Table");
 $rResult	= $qryQuery->Execute("DELETE FROM transaction_test WHERE name = 'UK';");
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
@@ -191,7 +191,7 @@ if ($rResult === false)
 }
 
 // Add AUS to 'transaction_test' Table
-Log::getLog()->log("[ ] Add AUS to 'transaction_test' Table");
+Log::getLog()->log("\n[ ] Add AUS to 'transaction_test' Table");
 $rResult	= $qryQuery->Execute("INSERT INTO transaction_test (name) VALUES ('AUS');");
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
@@ -200,7 +200,7 @@ if ($rResult === false)
 }
 
 // Start Transaction #5			DEPTH	= 1
-Log::getLog()->log("[ ] Start Transaction #5 (DEPTH=1)");
+Log::getLog()->log("\n[ ] Start Transaction #5 (DEPTH=1)");
 $bResult	= $dacFlex->TransactionStart();
 Log::getLog()->log("\t[+] Return value: ".print_r($bResult, true));
 if ($bResult === false)
@@ -209,7 +209,7 @@ if ($bResult === false)
 }
 
 // Add PNG to 'transaction_test' Table
-Log::getLog()->log("[ ] Add PNG to 'transaction_test' Table");
+Log::getLog()->log("\n[ ] Add PNG to 'transaction_test' Table");
 $rResult	= $qryQuery->Execute("INSERT INTO transaction_test (name) VALUES ('PNG');");
 Log::getLog()->log("\t[+] Return value: ".print_r($rResult, true));
 if ($rResult === false)
@@ -218,7 +218,7 @@ if ($rResult === false)
 }
 
 // Rollback Transaction #5
-Log::getLog()->log("[ ] Rollback Transaction #5 (DEPTH=1)");
+Log::getLog()->log("\n[ ] Rollback Transaction #5 (DEPTH=1)");
 $bResult	= $dacFlex->TransactionRollback();
 Log::getLog()->log("\t[+] Return value: ".print_r($bResult, true));
 if ($bResult === false)
@@ -227,7 +227,7 @@ if ($bResult === false)
 }
 
 // Verify Table Contents
-Log::getLog()->log("[ ] Verify 'transaction_test' Table Contents");
+Log::getLog()->log("\n[ ] Verify 'transaction_test' Table Contents");
 $rResult	= $qryQuery->Execute("SELECT * FROM transaction_test;");
 Log::getLog()->log("\t[+] Return value: ".print_r(($rResult === false), true));
 if ($rResult === false)
@@ -255,7 +255,7 @@ else
 }
 
 // Rollback Transaction #4
-Log::getLog()->log("[ ] Rollback Transaction #4 (DEPTH=0)");
+Log::getLog()->log("\n[ ] Rollback Transaction #4 (DEPTH=0)");
 $bResult	= $dacFlex->TransactionRollback();
 Log::getLog()->log("\t[+] Return value: ".print_r($bResult, true));
 if ($bResult === false)
@@ -264,7 +264,7 @@ if ($bResult === false)
 }
 
 // Remove Test Table
-Log::getLog()->log("[ ] Verify 'transaction_test' Table Contents");
+Log::getLog()->log("\n[ ] Verify 'transaction_test' Table Contents");
 $rResult	= $qryQuery->Execute("SELECT * FROM transaction_test;");
 Log::getLog()->log("\t[+] Return value: ".print_r(($rResult === false), true));
 if ($rResult === false)
@@ -311,8 +311,8 @@ function verifyResultSet($arrVerify, $arrResultSet)
 		}
 	}
 	
-	Log::getLog()->log("\t[+] Verification Result... Expected: ".count($arrVerify)."; Found: {$rResult->num_rows}; Matches: {$intMatches}");
-	if ($intMatches != $rResult->num_rows)
+	Log::getLog()->log("\t[+] Verification Result... Expected: ".count($arrVerify)."; Found: ".count($arrResultSet)."; Matches: {$intMatches}");
+	if ($intMatches != count($arrResultSet))
 	{
 		throw new Exception("Table Contents Verification failed");
 	}
