@@ -691,7 +691,7 @@ final class Flex
 	 */
 	public static function assertCLIScriptNotAlreadyRunning()
 	{
-		$strDebug	= implode("\n", array("\$_SERVER['SERVER_ADDR']:".$_SERVER['SERVER_ADDR'], "\$_SERVER['SCRIPT_FILENAME']:".$_SERVER['SCRIPT_FILENAME']));
+		$strDebug	= implode("\n", array("\$_SERVER['SERVER_ADDR']:".$_SERVER['SERVER_ADDR'], "\$_SERVER['SCRIPT_FILENAME']:".$_SERVER['SCRIPT_FILENAME'], "\$_SERVER['PATH_TRANSLATED']:".$_SERVER['PATH_TRANSLATED']));
 		throw new Exception($strDebug);
 		
 		// Only check CLI scripts
