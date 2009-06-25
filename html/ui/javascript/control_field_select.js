@@ -70,7 +70,7 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 		{
 			// Remove any existing Options
 			this.bPopulated									= false;
-			this.objControlOutput.domEdit.style.display		= 'none;
+			this.objControlOutput.domEdit.style.display		= 'none';
 			this.objControlOutput.domLoading.style.display	= 'inline';
 			
 			this.objControlOutput.domEdit.innerHTML			= '';
