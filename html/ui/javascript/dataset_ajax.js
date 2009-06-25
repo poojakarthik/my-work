@@ -48,9 +48,14 @@ var Dataset_Ajax	= Class.create
 			this._setCache(objResponse);
 		}
 		
+		intLimit	= (intLimit > 0) ? intLimit : Object.keys(this._arrRecordCache).length;
+		alert("Record Cache Length: " + this._arrRecordCache.length);
+		alert("Record Cache Keys Length: " + Object.keys(this._arrRecordCache).length);
+		alert("Offset: " + intOffset);
+		alert("Limit: " + intLimit);
+		
 		// Choose our results
 		var arrResultSet	= {};
-		intLimit	= (intLimit > 0) ? intLimit : Object.keys(this._arrRecordCache).length;
 		for (var i = intOffset, j = (intOffset + intLimit); i < j; i++)
 		{
 			if (this._arrRecordCache[i])
