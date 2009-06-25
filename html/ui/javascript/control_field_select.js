@@ -68,7 +68,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	{
 		if (aOptions === undefined || aOptions === null)
 		{
-			alert("No options -- getting list...");
+			//alert("No options -- getting list...");
 			this.bPopulated									= false;
 			this.objControlOutput.domEdit.style.display		= 'none';
 			this.objControlOutput.domLoading.style.display	= 'inline';
@@ -85,7 +85,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		else
 		{
 			// Set Options
-			alert("Populating Select with " + aOptions.length + " Options");
+			//alert("Populating Select with " + aOptions.length + " Options");
 			for (var i = 0; i < aOptions.length; i++)
 			{
 				this.objControlOutput.domEdit.add(aOptions[i], null);

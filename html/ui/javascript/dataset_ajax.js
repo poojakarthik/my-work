@@ -49,10 +49,10 @@ var Dataset_Ajax	= Class.create
 		}
 		
 		intLimit	= (intLimit > 0) ? intLimit : Object.keys(this._arrRecordCache).length;
-		alert("Record Cache Length: " + this._arrRecordCache.length);
-		alert("Record Cache Keys Length: " + Object.keys(this._arrRecordCache).length);
-		alert("Offset: " + intOffset);
-		alert("Limit: " + intLimit);
+		//alert("Record Cache Length: " + this._arrRecordCache.length);
+		//alert("Record Cache Keys Length: " + Object.keys(this._arrRecordCache).length);
+		//alert("Offset: " + intOffset);
+		//alert("Limit: " + intLimit);
 		
 		// Choose our results
 		var arrResultSet	= {};
@@ -70,7 +70,7 @@ var Dataset_Ajax	= Class.create
 			this.emptyCache();
 		}
 		
-		alert("Dataset with " + Object.keys(arrResultSet).length + " records returned, sending to callback...");
+		//alert("Dataset with " + Object.keys(arrResultSet).length + " records returned, sending to callback...");
 		// "Return" the Results via callback
 		fncCallback(this._intRecordCount, arrResultSet);
 	},
