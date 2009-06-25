@@ -34,9 +34,10 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	
 	setElementValue	: function(mixValue)
 	{
+		alert("Setting " + this.getLabel() + " Element Value to '" + mixValue + "'");
 		if (this.bPopulated)
 		{
-			this.objControlOutput.domEdit.selectedIndex	= (!mixValue && mixValue !== 0) ? -1 : this._getIndexForValue(mixValue);
+			this.objControlOutput.domEdit.selectedIndex	= (!mixValue && Number(mixValue) !== 0) ? -1 : this._getIndexForValue(mixValue);
 		}
 		else
 		{
