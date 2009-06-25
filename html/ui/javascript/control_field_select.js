@@ -43,6 +43,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 			// Not Populated yet... set the Value once populated
 			this.mixValueOnPopulate	= mixValue;
 		}
+		this.validate();
 	},
 	
 	updateElementValue	: function()
