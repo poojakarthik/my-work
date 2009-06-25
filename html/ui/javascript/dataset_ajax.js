@@ -50,6 +50,7 @@ var Dataset_Ajax	= Class.create
 		
 		// Choose our results
 		var arrResultSet	= {};
+		intLimit	= (intLimit > 0) ? intLimit : Object.keys(this._arrRecordCache).length;
 		for (var i = intOffset, j = (intOffset + intLimit); i < j; i++)
 		{
 			if (this._arrRecordCache[i])
@@ -64,7 +65,7 @@ var Dataset_Ajax	= Class.create
 			this.emptyCache();
 		}
 
-		//alert("Dataset returned, sending to Pagination callback...");
+		alert("Dataset returned (), sending to callback...");
 		// "Return" the Results via callback
 		fncCallback(this._intRecordCount, arrResultSet);
 	},
