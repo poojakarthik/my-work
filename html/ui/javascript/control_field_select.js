@@ -19,7 +19,7 @@ var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field,
 		
 		// Not populated yet
 		this.bPopulated									= false;
-		this.objControlOutput.domEdit.style.display		= 'none;
+		this.objControlOutput.domEdit.style.display		= 'none';
 		this.objControlOutput.domLoading.style.display	= 'inline';
 		
 		this.validate();
