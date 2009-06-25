@@ -85,7 +85,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		else
 		{
 			// Set Options
-			alert("Populating Select with " + Object.keys(aOptions).length + " Options");
+			alert("Populating Select with " + aOptions.length + " Options");
 			for (var i = 0; i < aOptions.length; i++)
 			{
 				this.objControlOutput.domEdit.add(aOptions[i], null);
