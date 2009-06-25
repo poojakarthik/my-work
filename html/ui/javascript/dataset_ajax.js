@@ -70,7 +70,7 @@ var Dataset_Ajax	= Class.create
 			this.emptyCache();
 		}
 		
-		//alert("Dataset returned, sending to callback...");
+		alert("Dataset with " + Object.keys(arrResultSet).length + " records returned, sending to callback...");
 		// "Return" the Results via callback
 		fncCallback(this._intRecordCount, arrResultSet);
 	},
@@ -101,7 +101,6 @@ var Dataset_Ajax	= Class.create
 		var oRecords	= {};
 		if (Object.isArray(objResponse.arrRecords))
 		{
-			alert('Is an Array');
 			// Convert to an Object
 			for (var i = 0, j = objResponse.arrRecords.length; i < j; i++)
 			{
@@ -110,7 +109,6 @@ var Dataset_Ajax	= Class.create
 		}
 		else
 		{
-			alert('Non-array (' + objResponse.arrRecords.constructor.name + ')');
 			oRecords	= objResponse.arrRecords;
 		}
 		
