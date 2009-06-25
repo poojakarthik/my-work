@@ -54,6 +54,8 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->LoadJavascript("table_sort");
 		$this->LoadJavascript("employee_view");
 		
+		$this->LoadJavascript("dataset_ajax");
+		
 		$this->LoadJavascript("fx_fade");
 		
 		$this->LoadJavascript("reflex_validation");
