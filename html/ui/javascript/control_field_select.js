@@ -14,12 +14,14 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.domLoading.innerHTML	= "<img src='../admin/img/template/loading.gif' style='width: 16px; height: 16px; margin-right: 0.25em;' title='Loading...' alt='' />Loading...";
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domLoading);
 		
-		this.objControlOutput.domView		= document.createElement('span');
+		this.objControlOutput.domView				= document.createElement('span');
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domView);
+		this.objControlOutput.sViewDisplayDefault	= this.objControlOutput.domView.style.display;
 		
 		// Not populated yet
 		this.bPopulated									= false;
 		this.objControlOutput.domEdit.style.display		= 'none';
+		this.objControlOutput.domView.style.display		= 'none';
 		this.objControlOutput.domLoading.style.display	= 'inline';
 		
 		this.validate();
@@ -69,6 +71,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 			//alert("No options -- getting list...");
 			this.bPopulated									= false;
 			this.objControlOutput.domEdit.style.display		= 'none';
+			this.objControlOutput.domView.style.display		= 'none';
 			this.objControlOutput.domLoading.style.display	= 'inline';
 			
 			// Remove any existing Options
@@ -91,6 +94,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 			
 			this.bPopulated									= true;
 			this.objControlOutput.domEdit.style.display		= this.objControlOutput.sEditDisplayDefault;
+			this.objControlOutput.domView.style.display		= this.objControlOutput.sViewDisplayDefault;
 			this.objControlOutput.domLoading.style.display	= 'none';
 			
 			this.updateElementValue();
