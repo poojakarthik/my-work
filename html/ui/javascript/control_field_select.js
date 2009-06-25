@@ -101,7 +101,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	{
 		for (var i = 0; i < this.objControlOutput.domEdit.options.length; i++)
 		{
-			if (mixValue == this.objControlOutput.domEdit.options[i])
+			if (mixValue == this.objControlOutput.domEdit.options[i].value)
 			{
 				return i;
 			}
