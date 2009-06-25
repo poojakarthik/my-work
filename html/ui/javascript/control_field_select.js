@@ -68,13 +68,16 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	{
 		if (aOptions === undefined || aOptions === null)
 		{
-			// Remove any existing Options
 			alert("No options -- getting list...");
 			this.bPopulated									= false;
 			this.objControlOutput.domEdit.style.display		= 'none';
 			this.objControlOutput.domLoading.style.display	= 'inline';
 			
-			this.objControlOutput.domEdit.innerHTML			= '';
+			// Remove any existing Options
+			for (var i = 0; i < this.objControlOutput.domEdit.options.length; i++)
+			{
+				this.objControlOutput.domEdit.remove(this.objControlOutput.domEdit.options[i]);
+			}
 			
 			// Retrieve Options
 			this.fPopulateFunction(this.populate.bind(this));
@@ -85,7 +88,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 			alert("Populating Select with " + Object.keys(aOptions).length + " Options");
 			for (i in aOptions)
 			{
-				this.objControlOutput.domEdit.appendChild(aOptions[i]);
+				this.objControlOutput.domEdit.add(aOptions[i]);
 			}
 			
 			this.bPopulated									= true;
