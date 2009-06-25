@@ -17,8 +17,8 @@ var Dataset_Ajax	= Class.create
 	
 	getRecords	: function(fncCallback, intLimit, intOffset)
 	{
-		intLimit	= Math.max(0, Number(intLimit));
-		intOffset	= Math.max(0, Number(intOffset));
+		intLimit	= Math.max(0, (intLimit >= 0) ? intLimit : 0);
+		intOffset	= Math.max(0, (intOffset >= 0) ? intOffset : 0);
 		
 		// Do we need to update the cache?
 		if (this._intCacheMode == Dataset_Ajax.CACHE_MODE_NO_CACHING)
