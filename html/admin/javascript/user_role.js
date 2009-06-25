@@ -54,11 +54,13 @@ User_Role.getAllAsSelectOptions	= function(fCallback, oResponse)
 	if (!oResponse)
 	{
 		// Make Request
+		alert("Making a Request for all 'User_Role's");
 		this.getAll(this.getAllAsSelectOptions.bind(this, fCallback));
 	}
 	else
 	{
 		// Create an Array of SELECT DOM Elements
+		alert("Creating Options");
 		var aOptions	= {};
 		for (i in oResponse)
 		{
