@@ -69,7 +69,7 @@ var Dataset_Ajax	= Class.create
 		{
 			this.emptyCache();
 		}
-
+		
 		//alert("Dataset returned, sending to callback...");
 		// "Return" the Results via callback
 		fncCallback(this._intRecordCount, arrResultSet);
@@ -98,8 +98,22 @@ var Dataset_Ajax	= Class.create
 	
 	_setCache	: function(objResponse)
 	{
+		var oRecords	= {};
+		if (objResponse.arrRecords.isArray())
+		{
+			// Convert to an Object
+			for (var i = 0, j = objResponse.arrRecords.length; i < j; i++)
+			{
+				oRecords[i]	= objResponse.arrRecords[i];
+			}
+		}
+		else
+		{
+			oRecords	= objResponse.arrRecords;
+		}
+		
 		//this._arrRecordCache	= (this.getCacheMode() == Dataset_Ajax.CACHE_MODE_NO_CACHING) ? null : objResponse.arrRecords;
-		this._arrRecordCache	= objResponse.arrRecords;
+		this._arrRecordCache	= oRecords;
 		this._intRecordCount	= objResponse.intRecordCount;
 	},
 	
