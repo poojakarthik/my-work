@@ -5,6 +5,8 @@ final class Flex
 	// Define the session cookie names used by flex
 	const FLEX_ADMIN_SESSION = 'flex_admin_sess_id';
 	const FLEX_CUSTOMER_SESSION = 'flex_cust_sess_id';
+	
+	const FLEX_SCRIPT_LOG_RELATIVE_DIR	= '../../files/logs/running/';
 
 	// This is a static library - prevent initialisation!
 	private function __construct(){}
@@ -230,6 +232,9 @@ final class Flex
 				$relativeFrameworkBase . 'style_template/html_elements.php'
 			);
 		}
+		
+		// Check CLI Script Uniqueness
+		Flex::assertCLIScriptNotAlreadyRunning();
 	}
 
 	public static function autoload($strClassName)
@@ -653,6 +658,49 @@ final class Flex
 			throw new Exception_Assertion($strMessage, $strDebugData, $strAssertionName);
 		}
 		return (bool)$mixExpression;
+	}
+
+	/**
+	 * isScriptRunning()
+	 *
+	 * Checks if a CLI script is already running
+	 * 
+	 * @return	boolean
+	 * 
+	 * @throws	Exception
+	 *
+	 * @method
+	 */
+	public static function isScriptRunning($strScriptPath)
+	{
+		$strRelativePath	= dirname(__FILE__).FLEX_SCRIPT_LOG_RELATIVE_DIR;
+		
+		// Determine Script's relativity to Flex
+	}
+
+	/**
+	 * isScriptRunning()
+	 *
+	 * Checks if a CLI script is already running
+	 * 
+	 * @return	boolean
+	 * 
+	 * @throws	Exception
+	 *
+	 * @method
+	 */
+	public static function assertCLIScriptNotAlreadyRunning()
+	{
+		$strDebug	= implode("\n", array("\$_SERVER['SERVER_ADDR']:".$_SERVER['SERVER_ADDR'], "\$_SERVER['SCRIPT_FILENAME']:".$_SERVER['SCRIPT_FILENAME']));
+		throw new Exception($strDebug);
+		
+		// Only check CLI scripts
+		if (!isset($_SERVER['SERVER_ADDR']))
+		{
+			$strMessage	= "The CLI Script '{$_SERVER['SCRIPT_FILENAME']}' is already running";
+			Flex::assert(self::isScriptRunning($_SERVER['SCRIPT_FILENAME']));
+		}
+		return true;
 	}
 }
 
