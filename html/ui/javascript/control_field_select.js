@@ -97,15 +97,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 			this.objControlOutput.domEdit.style.display		= this.objControlOutput.sEditDisplayDefault;
 			this.objControlOutput.domLoading.style.display	= 'none';
 			
-			if (this.mixValueOnPopulate)
-			{
-				this.setElementValue(this.mixValueOnPopulate);
-				delete this.mixValueOnPopulate;
-			}
-			else
-			{
-				this.objControlOutput.domEdit.selectedIndex	= -1;
-			}
+			this.updateElementValue();
 		}
 	},
 	
