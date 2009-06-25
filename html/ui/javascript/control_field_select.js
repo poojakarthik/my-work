@@ -106,6 +106,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 				return i;
 			}
 		}
+		alert("No Index for '" + mixValue + "'");
 		return -1;
 	},
 	
