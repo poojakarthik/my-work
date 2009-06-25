@@ -34,7 +34,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	
 	setElementValue	: function(mixValue)
 	{
-		alert("Setting " + this.getLabel() + " Element Value to '" + mixValue + "'");
+		//alert("Setting " + this.getLabel() + " Element Value to '" + mixValue + "'");
 		
 		// Set if the Contents have loaded, otherwise we will auto-set on population
 		if (this.bPopulated)
@@ -106,7 +106,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 				return i;
 			}
 		}
-		alert("No Index for '" + mixValue + "'");
+		//alert("No Index for '" + mixValue + "'");
 		return -1;
 	},
 	
