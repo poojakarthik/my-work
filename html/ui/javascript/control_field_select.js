@@ -36,7 +36,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	{
 		if (this.bPopulated)
 		{
-			this.objControlOutput.domEdit.selectedIndex	= this._getIndexForValue(mixValue);
+			this.objControlOutput.domEdit.selectedIndex	= (!mixValue && mixValue !== 0) ? -1 : this._getIndexForValue(mixValue);
 		}
 		else
 		{
@@ -116,6 +116,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 				return i;
 			}
 		}
+		return -1;
 	},
 	
 	addEventListeners	: function()
