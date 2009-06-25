@@ -196,7 +196,7 @@ Employee.objProperties.PassWordConfirm.objDefinition.mixEditable	= true;
 Employee.objProperties.PassWordConfirm.objDefinition.mixMandatory	= true;
 Employee.objProperties.PassWordConfirm.objDefinition.intMaxLength	= 40;
 
-/*
+
 // Role
 Employee.objProperties.user_role_id				= {};
 Employee.objProperties.user_role_id.strType		= 'select';
@@ -206,7 +206,7 @@ Employee.objProperties.user_role_id.objDefinition.strLabel		= 'Role';
 Employee.objProperties.user_role_id.objDefinition.mixEditable	= true;
 Employee.objProperties.user_role_id.objDefinition.mixMandatory	= true;
 Employee.objProperties.user_role_id.objDefinition.fncPopulate	= User_Role.getAllAsSelectOptions.bind(User_Role);
-*/
+
 
 // is_god
 Employee.objProperties.is_god				= {};
