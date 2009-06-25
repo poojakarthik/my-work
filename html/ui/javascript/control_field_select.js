@@ -1,4 +1,4 @@
-var Control_Field_Checkbox	= Class.create(/* extends */ Control_Field, 
+var Control_Field_Select	= Class.create(/* extends */ Control_Field, 
 {
 	initialize	: function($super, strLabel, strLabelSeparator)
 	{
