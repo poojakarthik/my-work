@@ -69,6 +69,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		if (aOptions === undefined || aOptions === null)
 		{
 			// Remove any existing Options
+			alert("No options -- getting list...");
 			this.bPopulated									= false;
 			this.objControlOutput.domEdit.style.display		= 'none';
 			this.objControlOutput.domLoading.style.display	= 'inline';
@@ -81,6 +82,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		else
 		{
 			// Set Options
+			alert("Populating Select with " + Object.keys(aOptions).length + " Options");
 			for (i in aOptions)
 			{
 				this.objControlOutput.domEdit.appendChild(aOptions[i]);
