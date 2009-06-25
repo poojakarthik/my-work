@@ -11,7 +11,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		this.objControlOutput.sEditDisplayDefault	= this.objControlOutput.domEdit.style.display;
 		
 		this.objControlOutput.domLoading			= document.createElement('span');
-		this.objControlOutput.domLoading.innerHTML	= "<img src='../admin/img/template/loading.png' style='width: 16px; height: 16px; margin-right: 0.25em;' title='Loading...' alt='' />Loading...";
+		this.objControlOutput.domLoading.innerHTML	= "<img src='../admin/img/template/loading.gif' style='width: 16px; height: 16px; margin-right: 0.25em;' title='Loading...' alt='' />Loading...";
 		this.objControlOutput.domElement.appendChild(this.objControlOutput.domLoading);
 		
 		this.objControlOutput.domView		= document.createElement('span');
