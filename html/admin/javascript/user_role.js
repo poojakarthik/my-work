@@ -61,7 +61,7 @@ User_Role.getAllAsSelectOptions	= function(fCallback, oResponse)
 	{
 		// Create an Array of SELECT DOM Elements
 		alert("Creating Options");
-		var aOptions	= {};
+		var aOptions	= [];
 		for (i in oResponse)
 		{
 			var domOption		= document.createElement('option');
