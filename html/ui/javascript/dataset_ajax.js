@@ -65,7 +65,7 @@ var Dataset_Ajax	= Class.create
 			this.emptyCache();
 		}
 
-		alert("Dataset returned (), sending to callback...");
+		//alert("Dataset returned, sending to callback...");
 		// "Return" the Results via callback
 		fncCallback(this._intRecordCount, arrResultSet);
 	},
