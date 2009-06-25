@@ -67,7 +67,7 @@ User_Role.getAllAsSelectOptions	= function(fCallback, oResponse)
 			var domOption		= document.createElement('option');
 			domOption.value		= oResponse[i].id;
 			domOption.innerHTML	= oResponse[i].name;
-			aSelectOptions.push(domOption);
+			aOptions.push(domOption);
 		}
 		
 		// Pass to Callback
