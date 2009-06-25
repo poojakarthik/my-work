@@ -5,7 +5,6 @@ var Control_Treeview_Multicolumn	= Class.create
 		this.oTable				= {};
 		this.oTable.domElement	= document.createElement('table');
 		this.oTable.domElement.addClassName('treeview');
-		this.domElement.appendChild(this.oContainer.oTable.domElement);
 	},
 	
 	getElement	: function()
