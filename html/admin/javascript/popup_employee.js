@@ -211,6 +211,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		objTabPage.objAvailableProfiles.domElement.addClassName('treeview');
 		objTabPage.domElement.appendChild(objTabPage.objAvailableProfiles.domElement);
 		
+		objTabPage.objAvailableProfiles.objTreeview				= {};
 		objTabPage.objAvailableProfiles.objTreeview.objControl	= new Control_Treeview_Multicolumn();
 		objTabPage.objAvailableProfiles.domElement.appendChild(objTabPage.objAvailableProfiles.objTreeview.objControl.getElement());
 		
