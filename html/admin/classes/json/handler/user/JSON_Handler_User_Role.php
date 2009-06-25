@@ -32,27 +32,27 @@ class JSON_Handler_User_Role extends JSON_Handler
 				
 				$qryQuery	= new Query();
 				
-				// Retrieve list of Employees
-				$strEmployeeSQL	= "SELECT * FROM Employee WHERE 1";
-				$strEmployeeSQL	.= ($intLimit !== null) ? " LIMIT {$intLimit} OFFSET {$intOffset}" : '';
-				$resEmployees	= $qryQuery->Execute($strEmployeeSQL);
+				// Retrieve list of User Roles
+				$strSelectSQL	= "SELECT * FROM user_role WHERE 1";
+				$strSelectSQL	.= ($intLimit !== null) ? " LIMIT {$intLimit} OFFSET {$intOffset}" : '';
+				$resEmployees	= $qryQuery->Execute($strSelectSQL);
 				if ($resEmployees === false)
 				{
 					throw new Exception($qryQuery->Error());
 				}
-				$arrEmployees	= array();
+				$arrResultSet	= array();
 				$intCount		= 0;
-				while ($arrEmployee = $resEmployees->fetch_assoc())
+				while ($arrRecord = $resEmployees->fetch_assoc())
 				{
-					$arrEmployees[$intCount+$intOffset]	= $arrEmployee;
+					$arrResultSet[$intCount+$intOffset]	= $arrRecord;
 					$intCount++;
 				}
 				
 				// If no exceptions were thrown, then everything worked
 				return array(
 								"Success"			=> true,
-								"arrRecords"		=> $arrEmployees,
-								"intRecordCount"	=> ($intLimit === null) ? count($arrEmployees) : self::_getDatasetLength(),
+								"arrRecords"		=> $arrResultSet,
+								"intRecordCount"	=> ($intLimit === null) ? count($arrResultSet) : self::_getDatasetLength(),
 								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
