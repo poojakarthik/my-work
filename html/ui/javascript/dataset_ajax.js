@@ -99,8 +99,9 @@ var Dataset_Ajax	= Class.create
 	_setCache	: function(objResponse)
 	{
 		var oRecords	= {};
-		if (objResponse.arrRecords instanceof Array)
+		if (Object.isArray(objResponse.arrRecords))
 		{
+			alert('Is an Array');
 			// Convert to an Object
 			for (var i = 0, j = objResponse.arrRecords.length; i < j; i++)
 			{
@@ -109,6 +110,7 @@ var Dataset_Ajax	= Class.create
 		}
 		else
 		{
+			alert('Non-array (' + objResponse.arrRecords.constructor.name + ')');
 			oRecords	= objResponse.arrRecords;
 		}
 		
