@@ -35,16 +35,12 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	setElementValue	: function(mixValue)
 	{
 		alert("Setting " + this.getLabel() + " Element Value to '" + mixValue + "'");
+		
+		// Set if the Contents have loaded, otherwise we will auto-set on population
 		if (this.bPopulated)
 		{
 			this.objControlOutput.domEdit.selectedIndex	= (!mixValue && mixValue !== 0) ? -1 : this._getIndexForValue(mixValue);
 		}
-		else
-		{
-			// Not Populated yet... set the Value once populated
-			this.mixValueOnPopulate	= mixValue;
-		}
-		//this.validate();
 	},
 	
 	updateElementValue	: function()
@@ -118,14 +114,14 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		this.arrEventHandlers				= {};
 		this.arrEventHandlers.fncValidate	= this.validate.bind(this);
 		
-		this.objControlOutput.domEdit.addEventListener('click'	, this.arrEventHandlers.fncValidate, false);
+		//this.objControlOutput.domEdit.addEventListener('click'	, this.arrEventHandlers.fncValidate, false);
 		this.objControlOutput.domEdit.addEventListener('change'	, this.arrEventHandlers.fncValidate, false);
 		this.objControlOutput.domEdit.addEventListener('keyup'	, this.arrEventHandlers.fncValidate, false);
 	},
 	
 	removeEventListeners	: function()
 	{
-		this.objControlOutput.domEdit.removeEventListener('click'	, this.arrEventHandlers.fncValidate, false);
+		//this.objControlOutput.domEdit.removeEventListener('click'	, this.arrEventHandlers.fncValidate, false);
 		this.objControlOutput.domEdit.removeEventListener('change'	, this.arrEventHandlers.fncValidate, false);
 		this.objControlOutput.domEdit.removeEventListener('keyup'	, this.arrEventHandlers.fncValidate, false);
 	}
