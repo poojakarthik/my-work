@@ -99,7 +99,7 @@ var Dataset_Ajax	= Class.create
 	_setCache	: function(objResponse)
 	{
 		var oRecords	= {};
-		if (objResponse.arrRecords instanceof 'array')
+		if (objResponse.arrRecords instanceof Array)
 		{
 			// Convert to an Object
 			for (var i = 0, j = objResponse.arrRecords.length; i < j; i++)
