@@ -708,7 +708,7 @@ final class Flex
 		if (!isset($_SERVER['SERVER_ADDR']))
 		{
 			$strMessage	= "The CLI Script '{$_SERVER['SCRIPT_FILENAME']}' is already running";
-			if (!Flex::assert(!self::isScriptRunning($_SERVER['SCRIPT_FILENAME'])))
+			if (Flex::assert(!self::isScriptRunning($_SERVER['SCRIPT_FILENAME'])))
 			{
 				// Script is not running
 				Log::getLog()->log("Creating Lock File...");
@@ -718,7 +718,7 @@ final class Flex
 				if (Flex::assert($resFile && @flock($resFile, LOCK_EX)))
 				{
 					// Write the current timestamp to the file, and leave it open
-					fwrite(date("Y-m-d H:i:s")."\n");
+					fwrite($resFile, date("Y-m-d H:i:s")."\n");
 				}
 			}
 		}
