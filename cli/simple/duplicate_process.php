@@ -13,7 +13,7 @@ $intMaxSeconds	= 60;
 while ($intTime < ($intStartTime + $intMaxSeconds))
 {
 	$intTime	= time();
-	Log::getLog()->log("\033[K\033[1A");
+	Log::getLog()->log("\033[K\033[2A");
 	Log::getLog()->log((($intStartTime + $intMaxSeconds) - $intTime)." seconds remaining");
 }
 
