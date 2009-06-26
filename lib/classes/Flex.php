@@ -711,11 +711,13 @@ final class Flex
 			if (Flex::assert(!self::isScriptRunning($_SERVER['SCRIPT_FILENAME'])))
 			{
 				// Script is not running
-				$strScriptRunningFilename	= self::_buildScriptRunningFilename($_SERVER['SCRIPT_FILENAME']);
-				Log::getLog()->log("Creating Lock File @ '{$strScriptRunningFilename}'...");
+				$arrScriptDetails	= self::_buildScriptRunningFilename($_SERVER['SCRIPT_FILENAME']);
+				$strScriptPath		= $arrScriptDetails['sScriptRealPath'];
+				$strHashPath		= $arrScriptDetails['sHashPath'];
+				Log::getLog()->log("Creating Lock File @ '{$strHashPath}'...");
 				
 				// Create Running File
-				$resFile	= @fopen($strScriptRunningFilename, 'a');
+				$resFile	= @fopen($strHashPath, 'a');
 				if (Flex::assert($resFile && @flock($resFile, LOCK_EX)))
 				{
 					// Write the current timestamp to the file, and leave it open
