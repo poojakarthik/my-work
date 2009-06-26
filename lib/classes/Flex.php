@@ -6,7 +6,7 @@ final class Flex
 	const FLEX_ADMIN_SESSION = 'flex_admin_sess_id';
 	const FLEX_CUSTOMER_SESSION = 'flex_cust_sess_id';
 	
-	const FLEX_SCRIPT_LOG_RELATIVE_DIR	= '../../files/logs/running/';
+	const FLEX_SCRIPT_LOG_RELATIVE_DIR	= 'logs/running/';
 
 	// This is a static library - prevent initialisation!
 	private function __construct(){}
@@ -663,7 +663,7 @@ final class Flex
 	/**
 	 * isScriptRunning()
 	 *
-	 * Checks if a CLI script is already running
+	 * Checks if a Flex CLI script is currently running
 	 * 
 	 * @return	boolean
 	 * 
@@ -673,30 +673,28 @@ final class Flex
 	 */
 	public static function isScriptRunning($strScriptPath)
 	{
-		$strRelativePath	= dirname(__FILE__).FLEX_SCRIPT_LOG_RELATIVE_DIR;
+		$arrScriptDetails	= self::_buildScriptRunningHash($strScriptPath);
+		$strScriptPath		= $arrScriptDetails['sScriptRealPath'];
+		$strHashPath		= $arrScriptDetails['sHashPath'];
 		
-		// Determine Script's relativity to Flex
-		if (strpos($strScriptPath, '/') !== 0)
+		Log::getLog()->log("Checking if '{$strScriptPath}' is already running @ '{$strHashPath}'...");
+		
+		// Check if there is a File Lock on the Hash file
+		$resFile	= @fopen($strHashPath, 'r');
+		if ($resFile && !@flock($resFile, LOCK_EX))
 		{
-			// Relative Path
-			$strScriptPath	= getcwd().'/'.$strScriptPath;
+			// Unable to get an Exclusive lock -- process still running
+			Log::getLog()->log("Script '{$strScriptPath}' is running");
+			return true;
 		}
-		$strScriptPath	= realpath($strScriptPath);
-		throw new Exception("Script Path: '{$strScriptPath}'");
+		
+		// No lock
+		Log::getLog()->log("Script '{$strScriptPath}' is not running");
+		fclose($resFile);
+		return false;
 	}
-
-	/**
-	 * isScriptRunning()
-	 *
-	 * Checks if a CLI script is already running
-	 * 
-	 * @return	boolean
-	 * 
-	 * @throws	Exception
-	 *
-	 * @method
-	 */
-	public static function assertCLIScriptNotAlreadyRunning()
+	
+	public static function createScriptRunningFile($strScriptPath)
 	{
 		$strDebug	= implode("\n", array("\$_SERVER['SERVER_ADDR']:".$_SERVER['SERVER_ADDR'], "\$_SERVER['SCRIPT_FILENAME']:".$_SERVER['SCRIPT_FILENAME'], "\$_SERVER['PATH_TRANSLATED']:".$_SERVER['PATH_TRANSLATED']));
 		//throw new Exception($strDebug);
@@ -705,9 +703,38 @@ final class Flex
 		if (!isset($_SERVER['SERVER_ADDR']))
 		{
 			$strMessage	= "The CLI Script '{$_SERVER['SCRIPT_FILENAME']}' is already running";
-			Flex::assert(self::isScriptRunning($_SERVER['SCRIPT_FILENAME']));
+			if (!Flex::assert(self::isScriptRunning($_SERVER['SCRIPT_FILENAME'])))
+			{
+				// Script is not running
+				Log::getLog()->log("Checking if '{$strScriptPath}' is already running @ '{$strHashPath}'...");
+				
+				// Create Running File
+				$resFile	= @fopen(self::_buildScriptRunningFilename($_SERVER['SCRIPT_FILENAME']), 'a');
+				if (Flex::assert($resFile && @flock($resFile, LOCK_EX)))
+				{
+					// Write the current timestamp to the file, and leave it open
+					fwrite(date("Y-m-d H:i:s")."\n");
+				}
+			}
 		}
 		return true;
+	}
+	
+	private static function _buildScriptRunningFilename($strScriptPath)
+	{
+		$strLockFilePath	= FILES_BASE_PATH.self::FLEX_SCRIPT_LOG_RELATIVE_DIR;
+		
+		// Determine Script's relativity to Flex
+		if (strpos($strScriptPath, '/') !== 0)
+		{
+			// Relative Path
+			$strScriptPath	= getcwd().'/'.$strScriptPath;
+		}
+		$strScriptPath	= realpath($strScriptPath);
+		$strScriptHash	= sha1($strScriptPath);
+		$strHashPath	= $strLockFilePath.'/'.$strScriptHash;
+		
+		return array('sHashPath'=>$strHashPath, 'sScriptRealPath'=>$strScriptPath);
 	}
 }
 
