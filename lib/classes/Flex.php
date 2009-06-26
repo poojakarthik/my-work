@@ -729,7 +729,7 @@ final class Flex
 	private static function _buildScriptRunningFilename($strScriptPath)
 	{
 		$strLockFilePath	= FILES_BASE_PATH.self::FLEX_SCRIPT_LOG_RELATIVE_DIR;
-		@mkdir($strLockFilePath);
+		@mkdir($strLockFilePath, 0777, true);
 		
 		// Determine Script's relativity to Flex
 		if (strpos($strScriptPath, '/') !== 0)
