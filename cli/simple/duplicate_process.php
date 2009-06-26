@@ -1,7 +1,7 @@
 <?php
 
 // Load Framework
-require_once(dirname(__FILE__).'../../lib/classes/Flex.php');
+require_once(dirname(__FILE__).'/../../lib/classes/Flex.php');
 Flex::load();
 
 echo "\n\n";

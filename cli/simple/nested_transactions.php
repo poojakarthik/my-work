@@ -217,8 +217,8 @@ if ($rResult === false)
 	throw new Exception($qryQuery->Error());
 }
 
-// Rollback Transaction #5
-Log::getLog()->log("\n[ ] Rollback Transaction #5 (DEPTH=1)");
+// Rollback Transaction #6
+Log::getLog()->log("\n[ ] Rollback Transaction #6 (DEPTH=0)");
 $bResult	= $dacFlex->TransactionRollback();
 Log::getLog()->log("\t[+] Return value: ".print_r($bResult, true));
 if ($bResult === false)
