@@ -676,6 +676,13 @@ final class Flex
 		$strRelativePath	= dirname(__FILE__).FLEX_SCRIPT_LOG_RELATIVE_DIR;
 		
 		// Determine Script's relativity to Flex
+		if (strpos($strScriptPath, '/') !== 0)
+		{
+			// Relative Path
+			$strScriptPath	= getcwd($strScriptPath);
+		}
+		$strScriptPath	= realpath($strScriptPath);
+		throw new Exception("Script Path: '{$strScriptPath}'");
 	}
 
 	/**
@@ -692,7 +699,7 @@ final class Flex
 	public static function assertCLIScriptNotAlreadyRunning()
 	{
 		$strDebug	= implode("\n", array("\$_SERVER['SERVER_ADDR']:".$_SERVER['SERVER_ADDR'], "\$_SERVER['SCRIPT_FILENAME']:".$_SERVER['SCRIPT_FILENAME'], "\$_SERVER['PATH_TRANSLATED']:".$_SERVER['PATH_TRANSLATED']));
-		throw new Exception($strDebug);
+		//throw new Exception($strDebug);
 		
 		// Only check CLI scripts
 		if (!isset($_SERVER['SERVER_ADDR']))
