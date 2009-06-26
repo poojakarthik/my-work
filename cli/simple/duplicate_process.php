@@ -17,6 +17,7 @@ while ($iTime < ($iStartTime + $iMaxSeconds))
 	$intTime	= time();
 	if (abs($fLastRefresh - $intTime) >= $fRefreshRate)
 	{
+		$fLastRefresh	= $intTime;
 		Log::getLog()->log("\033[1A\033[K\033[1A");
 		Log::getLog()->log((($iStartTime + $iMaxSeconds) - $iTime)." seconds remaining");
 	}
