@@ -694,7 +694,7 @@ final class Flex
 		return false;
 	}
 	
-	public static function createScriptRunningFile($strScriptPath)
+	public static function createScriptRunningFile()
 	{
 		$strDebug	= implode("\n", array("\$_SERVER['SERVER_ADDR']:".$_SERVER['SERVER_ADDR'], "\$_SERVER['SCRIPT_FILENAME']:".$_SERVER['SCRIPT_FILENAME'], "\$_SERVER['PATH_TRANSLATED']:".$_SERVER['PATH_TRANSLATED']));
 		//throw new Exception($strDebug);
