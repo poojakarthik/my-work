@@ -680,9 +680,9 @@ final class Flex
 		Log::getLog()->log("Checking if '{$strScriptPath}' is already running @ '{$strHashPath}'...");
 		
 		// Check if there is a File Lock on the Hash file
-		if ($resFile = @fopen($strHashPath, 'r'))
+		if ($resFile = fopen($strHashPath, 'r'))
 		{
-			if (!@flock($resFile, LOCK_EX | LOCK_NB))
+			if (!flock($resFile, LOCK_EX | LOCK_NB))
 			{
 				// Unable to get an Exclusive lock -- process still running
 				Log::getLog()->log("Script '{$strScriptPath}' is running");
@@ -717,8 +717,8 @@ final class Flex
 				Log::getLog()->log("Creating Lock File @ '{$strHashPath}'...");
 				
 				// Create Running File
-				$resFile	= @fopen($strHashPath, 'a');
-				if (Flex::assert($resFile && @flock($resFile, LOCK_EX | LOCK_NB)))
+				$resFile	= fopen($strHashPath, 'a');
+				if (Flex::assert($resFile && flock($resFile, LOCK_EX | LOCK_NB)))
 				{
 					// Write the current timestamp to the file, and leave it open
 					fwrite($resFile, date("Y-m-d H:i:s")."\n");
