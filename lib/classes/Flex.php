@@ -708,10 +708,10 @@ final class Flex
 		if (!isset($_SERVER['SERVER_ADDR']))
 		{
 			$strMessage	= "The CLI Script '{$_SERVER['SCRIPT_FILENAME']}' is already running";
-			if (!Flex::assert(self::isScriptRunning($_SERVER['SCRIPT_FILENAME'])))
+			if (!Flex::assert(!self::isScriptRunning($_SERVER['SCRIPT_FILENAME'])))
 			{
 				// Script is not running
-				Log::getLog()->log("Checking if '{$strScriptPath}' is already running @ '{$strHashPath}'...");
+				Log::getLog()->log("Creating Lock File...");
 				
 				// Create Running File
 				$resFile	= @fopen(self::_buildScriptRunningFilename($_SERVER['SCRIPT_FILENAME']), 'a');
@@ -728,6 +728,7 @@ final class Flex
 	private static function _buildScriptRunningFilename($strScriptPath)
 	{
 		$strLockFilePath	= FILES_BASE_PATH.self::FLEX_SCRIPT_LOG_RELATIVE_DIR;
+		@mkdir($strLockFilePath);
 		
 		// Determine Script's relativity to Flex
 		if (strpos($strScriptPath, '/') !== 0)
