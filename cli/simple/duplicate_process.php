@@ -13,8 +13,8 @@ $intMaxSeconds	= 60;
 while ($intTime < ($intStartTime + $intMaxSeconds))
 {
 	$intTime	= time();
-	echo "\033[K";
-	echo (($intStartTime + $intMaxSeconds) - $intTime)." seconds remaining";
+	Log::getLog()->log("\033[K");
+	Log::getLog()->log((($intStartTime + $intMaxSeconds) - $intTime)." seconds remaining");
 }
 
 echo "\n\n";
