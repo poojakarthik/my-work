@@ -717,8 +717,8 @@ final class Flex
 				Log::getLog()->log("Creating Lock File @ '{$strHashPath}'...");
 				
 				// Create Running File
-				$resFile	= @fopen($strHashPath, 'w');
-				if (Flex::assert($resFile && @flock($resFile, LOCK_EX)))
+				$resFile	= @fopen($strHashPath, 'a');
+				if (Flex::assert($resFile && @flock($resFile, LOCK_EX | LOCK_NB)))
 				{
 					// Write the current timestamp to the file, and leave it open
 					fwrite($resFile, date("Y-m-d H:i:s")."\n");
