@@ -41,7 +41,7 @@ class Document_Template
 			throw new Exception("Dataset is in an unhandled format '{$strType}'");
 		}
 		
-		Log::getLog()->log($objDomDocument->getDomDocument()->saveXML());
+		Log::getLog()->log(@$objDomDocument->getDomDocument()->saveXML());
 		
 		// Load the Template into a DOMDocument
 		$objXSLTemplate	= new DOMDocument();
