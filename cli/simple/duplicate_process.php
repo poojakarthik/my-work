@@ -13,7 +13,7 @@ $intMaxSeconds	= 60;
 while ($intTime < ($intStartTime + $intMaxSeconds))
 {
 	$intTime	= time();
-	echo "\\033[K";
+	echo "\033[K";
 	echo (($intStartTime + $intMaxSeconds) - $intTime)." seconds remaining";
 }
 
