@@ -680,17 +680,22 @@ final class Flex
 		Log::getLog()->log("Checking if '{$strScriptPath}' is already running @ '{$strHashPath}'...");
 		
 		// Check if there is a File Lock on the Hash file
-		$resFile	= @fopen($strHashPath, 'r');
-		if ($resFile && !@flock($resFile, LOCK_EX))
+		if ($resFile = @fopen($strHashPath, 'r'))
 		{
-			// Unable to get an Exclusive lock -- process still running
-			Log::getLog()->log("Script '{$strScriptPath}' is running");
-			return true;
+			if (!@flock($resFile, LOCK_EX))
+			{
+				// Unable to get an Exclusive lock -- process still running
+				Log::getLog()->log("Script '{$strScriptPath}' is running");
+				return true;
+			}
+			else
+			{
+				fclose($resFile);
+			}
 		}
 		
 		// No lock
 		Log::getLog()->log("Script '{$strScriptPath}' is not running");
-		fclose($resFile);
 		return false;
 	}
 	
