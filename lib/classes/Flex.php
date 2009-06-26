@@ -234,7 +234,7 @@ final class Flex
 		}
 		
 		// Check CLI Script Uniqueness
-		Flex::assertCLIScriptNotAlreadyRunning();
+		Flex::createScriptRunningFile();
 	}
 
 	public static function autoload($strClassName)
