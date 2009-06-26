@@ -712,7 +712,7 @@ final class Flex
 			{
 				// Script is not running
 				$strScriptRunningFilename	= self::_buildScriptRunningFilename($_SERVER['SCRIPT_FILENAME']);
-				Log::getLog()->log("Creating Lock File @ '{}'...");
+				Log::getLog()->log("Creating Lock File @ '{$strScriptRunningFilename}'...");
 				
 				// Create Running File
 				$resFile	= @fopen($strScriptRunningFilename, 'a');
