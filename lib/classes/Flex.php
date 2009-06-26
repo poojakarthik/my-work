@@ -679,7 +679,7 @@ final class Flex
 		if (strpos($strScriptPath, '/') !== 0)
 		{
 			// Relative Path
-			$strScriptPath	= getcwd($strScriptPath);
+			$strScriptPath	= getcwd().'/'.$strScriptPath;
 		}
 		$strScriptPath	= realpath($strScriptPath);
 		throw new Exception("Script Path: '{$strScriptPath}'");
