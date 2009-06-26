@@ -417,7 +417,7 @@ class Rate_Plan extends ORM
 		{
 			$objBlurb 			= new Document(array('id'=>$this->auth_script_document_id));
 			$objBlurbContent	= $objBlurb->getContent();
-			$strBlurb			= htmlspecialchars(trim($objBlurbContent->content), ENT_QUOTES, 'UTF-8');
+			$strBlurb			= htmlentities(trim($objBlurbContent->content), ENT_QUOTES);
 		}
 		
 		$objOldRatePlan		= ($objRatePlanPrevious !== NULL)? new Rate_Plan(array('Id'=>$objRatePlanPrevious->RatePlan), true) : NULL;
