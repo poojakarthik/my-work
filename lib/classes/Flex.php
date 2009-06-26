@@ -673,7 +673,7 @@ final class Flex
 	 */
 	public static function isScriptRunning($strScriptPath)
 	{
-		$arrScriptDetails	= self::_buildScriptRunningHash($strScriptPath);
+		$arrScriptDetails	= self::_buildScriptRunningFilename($strScriptPath);
 		$strScriptPath		= $arrScriptDetails['sScriptRealPath'];
 		$strHashPath		= $arrScriptDetails['sHashPath'];
 		
