@@ -722,7 +722,7 @@ final class Flex
 				// Create Running File
 				$intWouldBlock	= 0;
 				self::$_resLockFile	= fopen($strHashPath, 'a');
-				if (Flex::assert(self::$_resLockFile && flock(self::$_resLockFile, LOCK_EX, $intWouldBlock) && !$intWouldBlock))
+				if (Flex::assert(self::$_resLockFile && flock(self::$_resLockFile, LOCK_EX | LOCK_NB, $intWouldBlock) && !$intWouldBlock))
 				{
 					// Write the current timestamp to the file, and leave it open
 					fwrite(self::$_resLockFile, date("Y-m-d H:i:s")."\n");
