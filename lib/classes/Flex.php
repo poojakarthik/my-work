@@ -7,6 +7,8 @@ final class Flex
 	const FLEX_CUSTOMER_SESSION = 'flex_cust_sess_id';
 	
 	const FLEX_SCRIPT_LOG_RELATIVE_DIR	= 'logs/running/';
+	
+	private static	$_resLockFile;
 
 	// This is a static library - prevent initialisation!
 	private function __construct(){}
@@ -719,11 +721,11 @@ final class Flex
 				
 				// Create Running File
 				$intWouldBlock	= 0;
-				$resFile		= fopen($strHashPath, 'a');
-				if (Flex::assert($resFile && flock($resFile, LOCK_EX, $intWouldBlock) && !$intWouldBlock))
+				self::$_resLockFile	= fopen($strHashPath, 'a');
+				if (Flex::assert(self::$_resLockFile && flock(self::$_resLockFile, LOCK_EX, $intWouldBlock) && !$intWouldBlock))
 				{
 					// Write the current timestamp to the file, and leave it open
-					fwrite($resFile, date("Y-m-d H:i:s")."\n");
+					fwrite(self::$_resLockFile, date("Y-m-d H:i:s")."\n");
 				}
 			}
 		}
