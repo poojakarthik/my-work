@@ -729,6 +729,11 @@ final class Flex
 				}
 			}
 		}
+		else
+		{
+			// non-CLI (Apache)
+			Log::getLog()->log("This is an Apache script -- uniqueness not required");
+		}
 		return true;
 	}
 	
