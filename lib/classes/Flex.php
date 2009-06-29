@@ -234,9 +234,6 @@ final class Flex
 				$relativeFrameworkBase . 'style_template/html_elements.php'
 			);
 		}
-		
-		// Check CLI Script Uniqueness
-		Flex::createScriptRunningFile();
 	}
 
 	public static function autoload($strClassName)
