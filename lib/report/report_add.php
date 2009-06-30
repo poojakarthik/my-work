@@ -23,35 +23,24 @@ $arrSQLFields	= array();
 
 
 //---------------------------------------------------------------------------//
-// OPEN NETWORKS DAILY ORDER FILE
+// ACCOUNT ADDRESS CHANGES SUMMARY
 //---------------------------------------------------------------------------//
 
-$arrDataReport['Name']			= "Open Networks Daily Order File";
-$arrDataReport['Summary']		= "Generates the Open Networks Daily Order File for a specified date";
+$arrDataReport['Name']			= "Ticketing Audit Report";
+$arrDataReport['Summary']		= "Generates a list of Open and Pending Tickets for auditing purposes";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
-$arrDataReport['RenderTarget']	= REPORT_TARGET_CSV;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "	Service s
-									JOIN Account a ON (s.Account = a.Id)
-									JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
-									JOIN ServiceRatePlan srp ON (s.Id = srp.Service)
-									JOIN RatePlan rp ON (rp.id = srp.RatePlan)";
-$arrDataReport['SQLWhere']		= "	s.ServiceType = 100
-												AND s.Status = 400
-												AND a.Archived = 0
-												AND CAST(s.CreatedOn AS DATE) = <order_date>
-												AND <order_date> BETWEEN CAST(srp.StartDatetime AS DATE) AND CAST(srp.EndDatetime AS DATE)
-												AND srp.Id	=	(
-																	SELECT		Id
-																	FROM		ServiceRatePlan
-																	WHERE		Service = s.Id
-																				AND <order_date> BETWEEN CAST(StartDatetime AS DATE) AND CAST(EndDatetime AS DATE)
-																	ORDER BY	CreatedOn DESC
-																	LIMIT		1
-																)
-									ORDER BY	s.Id ASC";
+$arrDataReport['SQLTable']		= "	FROM		ticketing_ticket tt
+												JOIN ticketing_category tc ON (tt.category_id = tc.id)
+												JOIN ticketing_status ts ON (tt.status_id = ts.id)
+												JOIN ticketing_status_type tst ON (ts.status_type_id = tst.id)
+												JOIN ticketing_priority tp ON (tt.priority_id = tp.id)
+												LEFT JOIN ticketing_user tu ON (tt.owner_id = tu.id)
+												LEFT JOIN Employee e ON (tu.employee_id = e.Id)";
+$arrDataReport['SQLWhere']		= "	WHERE		tst.const_name IN ('TICKETING_STATUS_TYPE_PENDING', 'TICKETING_STATUS_TYPE_OPEN')
+									ORDER BY	tt.Id ASC";
 $arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
@@ -59,59 +48,26 @@ $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Order Number']					['Value']	= "s.Id";
+$arrSQLSelect['Ticket ID']						['Value']	= "tt.id";
 
-$arrSQLSelect['ISP Identification']				['Value']	= "cg.internal_name";
+$arrSQLSelect['Subject']						['Value']	= "tt.subject";
 
-$arrSQLSelect['Required Ship Date']				['Value']	= "DATE_FORMAT(CURDATE(), '%d/%m/%y')";
+$arrSQLSelect['Last Actioned']					['Value']	= "DATE_FORMAT(tt.modified_datetime, '%d/%m/%Y %H:%i:%s')";
 
-$arrSQLSelect['Product Required']				['Value']	= "'Netgear DM111PUSP'";
+$arrSQLSelect['Received']						['Value']	= "DATE_FORMAT(tt.creation_datetime, '%d/%m/%Y %H:%i:%s')";
 
-$arrSQLSelect['Additional Product Required']	['Value']	= "''";
+$arrSQLSelect['Owner']							['Value']	= "CONCAT(e.FirstName, ' ', e.LastName)";
 
-$arrSQLSelect['Subscriber Name']				['Value']	= "a.BusinessName";
+$arrSQLSelect['Category']						['Value']	= "tc.name";
 
-$arrSQLSelect['Unique User Name']				['Value']	= "CONCAT(LEFT(s.FNN, 10), '@blue1000.com.au')";
+$arrSQLSelect['Status']							['Value']	= "ts.name";
 
-$arrSQLSelect['Unique Password']				['Value']	= "LEFT(s.FNN, 10)";
-
-$arrSQLSelect['Subscriber Ph. No.']				['Value']	= "LEFT(s.FNN, 10)";
-
-$arrSQLSelect['Street Number & Name']			['Value']	= "a.Address1";
-
-$arrSQLSelect['Extra Address Details']			['Value']	= "a.Address2";
-
-$arrSQLSelect['Suburb/City']					['Value']	= "a.Suburb";
-
-$arrSQLSelect['State']							['Value']	= "a.State";
-
-$arrSQLSelect['Postcode']						['Value']	= "a.Postcode";
-
-$arrSQLSelect['Notes/comments']					['Value']	= "rp.Name";
-
-$arrSQLSelect['Serial Number']					['Value']	= "''";
-
-$arrSQLSelect['Consignment Number']				['Value']	= "''";
+$arrSQLSelect['Priority']						['Value']	= "tp.name";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
-$arrSQLFields['order_date']	= array(
-										'Type'					=> "dataDate",
-										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "OrderDate",
-									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
-
-// Overrides
-$arrOverrides				= array();
-$arrOverrides['Delimiter']	= ",";
-/*
-$arrOverrides['Delimiter']	= "\t";
-$arrOverrides['Enclose']		= "";
-$arrOverrides['Extension']	= "txt";
-*/
-$arrDataReport['Overrides'] = serialize($arrOverrides);
 
 //----------------------------------------------------------------------------//
 // Insert the Data Report
