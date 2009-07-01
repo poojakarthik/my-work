@@ -11,7 +11,7 @@
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
-	$arrPage['Permission']	= PERMISSION_ADMIN;
+	$arrPage['Permission']	= PERMISSION_CREDIT_MANAGEMENT;
 	$arrPage['Modules']		= MODULE_BASE | MODULE_CHARGE | MODULE_RECURRING_CHARGE | MODULE_BILLING;
 	
 	// call application
@@ -36,6 +36,7 @@
 	$oblbolFixed			= $oblarrRecurringChargeType->Push (new dataBoolean	('Fixed', FALSE));
 	$oblbolPlanCharge		= $oblarrRecurringChargeType->Push (new dataBoolean	('PlanCharge', FALSE));
 	$oblbolUniqueCharge		= $oblarrRecurringChargeType->Push (new dataBoolean	('UniqueCharge', FALSE));
+	$oblbolApprovalRequired	= $oblarrRecurringChargeType->Push(new dataBoolean('approval_required', FALSE));
 	
 	//Debug($_POST);die;
 	if ($_SERVER ['REQUEST_METHOD'] == "POST")
@@ -49,6 +50,7 @@
 		$oblbolFixed			->setValue ($_POST ['Fixed']);
 		$oblbolPlanCharge		->setValue ($_POST ['PlanCharge']);
 		$oblbolUniqueCharge		->setValue ($_POST ['UniqueCharge']);
+		$oblbolApprovalRequired->setValue($_POST['approval_required']);
 		
 		$bolRecursionCharge	= $oblfltRecursionCharge	->setValue ($_POST ['RecursionCharge']);
 		$bolMinCharge		= $oblfltMinCharge			->setValue ($_POST ['MinCharge']);
@@ -117,7 +119,8 @@
 						"Continuable"			=> $_POST ['Continuable'],
 						"Fixed"					=> $_POST ['Fixed'],
 						"PlanCharge"			=> $_POST ['PlanCharge'],
-						"UniqueCharge"			=> $_POST ['UniqueCharge']
+						"UniqueCharge"			=> $_POST ['UniqueCharge'],
+						"approval_required"		=> intval($_POST ['approval_required'])
 					)
 				);
 				

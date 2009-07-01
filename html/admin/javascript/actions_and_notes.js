@@ -1429,6 +1429,9 @@ Object.extend(ActionsAndNotes.List.prototype,
 			var elmDetailsDiv = document.createElement('div');
 			elmDetailsDiv.className = 'details';
 			elmItemDiv.appendChild(elmDetailsDiv);
+			
+			// It is assumed that objItem.details has had all HTML special chars escaped, except for <br> elements
+			// to protect against html injection
 			elmDetailsDiv.innerHTML = objItem.details;
 		}
 		

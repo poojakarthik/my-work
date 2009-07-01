@@ -44,7 +44,7 @@ $arrConfig['SpecialCharges']		= $arrSubscript;
 // Recurring Charges
 $arrSubscript = Array();
 $arrSubscript['Command']			= 'php recurring_charges.php';
-$arrSubscript['Directory']			= BACKEND_BASE_PATH.'charges/';
+$arrSubscript['Directory']			= BACKEND_BASE_PATH;
 $arrSubscript['ChildDie']			= TRUE;
 $arrConfig['RecurringCharges']		= $arrSubscript;
 

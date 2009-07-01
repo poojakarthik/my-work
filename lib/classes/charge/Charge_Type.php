@@ -9,7 +9,7 @@
  *
  * Models a record of the ChargeType table
  *
- * @class	Service
+ * @class	Charge_Type
  */
 class Charge_Type extends ORM
 {	

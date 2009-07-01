@@ -33,6 +33,32 @@
 // set the layout template for the page.
 $this->Page->SetLayout('popup_layout');
 
+// Set the name
+if (DBO()->DeleteRecord->Method->Value == "DeleteAdjustment")
+{
+	// Check if the adjustment is associated with a service
+	$intServiceId = DBO()->Charge->Service->Value;
+	if ($intServiceId != NULL)
+	{
+		$objService = Service::getForId($intServiceId);
+		$this->Page->SetName("Adjustment - Service: {$objService->FNN}");
+	}
+}
+elseif (DBO()->DeleteRecord->Method->Value == "DeleteRecurringAdjustment")
+{
+	// Check if the recurring adjustment is associated with a service
+	$intServiceId = DBO()->RecurringCharge->Service->Value;
+	if ($intServiceId != NULL)
+	{
+		$objService = Service::getForId($intServiceId);
+		$this->Page->SetName("Recurring Adjustment - Service: {$objService->FNN}");
+	}
+}
+else
+{
+	// Just use the predefined name
+}
+
 // add the Html Objects to their respective columns
 $this->Page->AddObject('DeleteRecord', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 

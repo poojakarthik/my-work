@@ -6,8 +6,11 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// add recurring charges
+// add recurring charges DEPRECATED
 //----------------------------------------------------------------------------//
+
+// The new Recurring Charge app is located at cli/recurring_charges.php, and it uses /lib/cli/app/Cli_App_Recurring_Charges.php
+
 require_once("../../flex.require.php");
 $arrConfig = LoadApplication();
 

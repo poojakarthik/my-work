@@ -94,14 +94,14 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		{
 			// User has admin permisions and can therefore delete a payment
 			Table()->PaymentTable->SetHeader("Date", "&nbsp;", "Amount ($)", "&nbsp;");
-			Table()->PaymentTable->SetWidth("30%", "10%", "50%", "10%");
+			//Table()->PaymentTable->SetWidth("30%", "10%", "50%", "10%");
 			Table()->PaymentTable->SetAlignment("Left", "Left", "Right", "Center");
 		}
 		else
 		{
 			// User cannot delete payments
 			Table()->PaymentTable->SetHeader("Date", "&nbsp;", "Amount ($)");
-			Table()->PaymentTable->SetWidth("30%", "10%", "60%");
+			//Table()->PaymentTable->SetWidth("30%", "10%", "60%");
 			Table()->PaymentTable->SetAlignment("Left", "Left", "Right");
 		}
 		
@@ -118,7 +118,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			$strAmountCell = "<span class='Currency'>{$dboPayment->Amount->FormattedValue()}</span>";
 			
 			// Build the Payment PaidOn cell
-			$strPaidOnCell = $dboPayment->PaidOn->FormattedValue();
+			$strPaidOnCell = date("d-m-Y", strtotime($dboPayment->PaidOn->Value));
 			
 			if ($bolHasAdminPerm)
 			{

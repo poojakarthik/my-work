@@ -154,14 +154,13 @@ class Application
 
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
-			//ContextMenu()->Admin_Console();
-			/*ContextMenu()->Admin->AdvancedAccountSearch();
-			ContextMenu()->Admin->AdvancedContactSearch();
-			ContextMenu()->Admin->AdvancedServiceSearch();*/
-
-			ContextMenu()->Admin->Adjustments->ManageAdjustments();
-			ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
-			ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+			{
+				ContextMenu()->Admin->Adjustments->ManageAdjustmentRequests();
+				ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentRequests();
+				ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
+				ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
+			}
 
 			ContextMenu()->Admin->PaymentDownload();
 			ContextMenu()->Admin->MoveDelinquentCDRs();
@@ -170,10 +169,6 @@ class Application
 			ContextMenu()->Admin->Employees->ManageEmployees();
 			ContextMenu()->Admin->ManageInvoiceRunEvents();
 
-			/*if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
-			{
-				ContextMenu()->Admin->System_Settings->View_All_Constants();
-			}*/
 			if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS) && AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();
@@ -354,14 +349,13 @@ class Application
 
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
 		{
-			//ContextMenu()->Admin_Console();
-			/*ContextMenu()->Admin->AdvancedAccountSearch();
-			ContextMenu()->Admin->AdvancedContactSearch();
-			ContextMenu()->Admin->AdvancedServiceSearch();*/
-
-			ContextMenu()->Admin->Adjustments->ManageAdjustments();
-			ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
-			ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+			{
+				ContextMenu()->Admin->Adjustments->ManageAdjustmentRequests();
+				ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentRequests();
+				ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
+				ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
+			}
 
 			ContextMenu()->Admin->PaymentDownload();
 			ContextMenu()->Admin->MoveDelinquentCDRs();
@@ -370,10 +364,6 @@ class Application
 			ContextMenu()->Admin->Employees->ManageEmployees();
 			ContextMenu()->Admin->ManageInvoiceRunEvents();
 
-			/*if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
-			{
-				ContextMenu()->Admin->System_Settings->View_All_Constants();
-			}*/
 			if (Flex_Module::isActive(FLEX_MODULE_CUSTOMER_STATUS) && AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
 			{
 				ContextMenu()->Admin->System_Settings->ManageCustomerStatuses();

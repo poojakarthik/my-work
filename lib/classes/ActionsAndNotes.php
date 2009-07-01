@@ -295,7 +295,7 @@ INNER JOIN (
 			
 		}
 		
-		$strSearchQuery .= "ORDER BY created_on DESC ";
+		$strSearchQuery .= "ORDER BY created_on DESC, id DESC ";
 		
 		$intMaxRecordsPerPage = intval($intMaxRecordsPerPage);
 		$intPageOffset = intval($intPageOffset);
@@ -426,7 +426,7 @@ INNER JOIN (
 			
 		}
 		
-		$strSearchQuery .= "ORDER BY created_on DESC ";
+		$strSearchQuery .= "ORDER BY created_on DESC, id DESC ";
 		
 		$intMaxRecordsPerPage = intval($intMaxRecordsPerPage);
 		$intPageOffset = intval($intPageOffset);
@@ -550,7 +550,7 @@ INNER JOIN (
 			
 		}
 		
-		$strSearchQuery .= "ORDER BY created_on DESC ";
+		$strSearchQuery .= "ORDER BY created_on DESC, id DESC ";
 		
 		$intMaxRecordsPerPage = intval($intMaxRecordsPerPage);
 		$intPageOffset = intval($intPageOffset);

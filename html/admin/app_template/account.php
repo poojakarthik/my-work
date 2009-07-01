@@ -289,13 +289,22 @@ class AppTemplateAccount extends ApplicationTemplate
 								'RecurringFreq'=>'RC.RecurringFreq', 'MinCharge'=>'RC.MinCharge', 'RecursionCharge'=>'RC.RecursionCharge',
 								'CancellationFee'=>'RC.CancellationFee', 'Continuable'=>'RC.Continuable', 'PlanCharge'=>'RC.PlanCharge',
 								'UniqueCharge'=>'RC.UniqueCharge', 'TotalCharged'=>'RC.TotalCharged', 'TotalRecursions'=>'RC.TotalRecursions',
-								'Archived'=>'RC.Archived', 'in_advance'=>'RC.in_advance', 'FNN'=>'S.FNN');
+								'recurring_charge_status_id'=>'RC.recurring_charge_status_id', 'in_advance'=>'RC.in_advance', 'FNN'=>'S.FNN');
 		DBL()->RecurringCharge->SetColumns($arrColumns);
-		DBL()->RecurringCharge->SetTable("RecurringCharge AS RC LEFT OUTER JOIN Service AS S ON RC.Service = S.Id");
+		DBL()->RecurringCharge->SetTable("RecurringCharge AS RC LEFT JOIN Service AS S ON RC.Service = S.Id");
+		
+		$intRecChargeStatusAwaitingApproval	= Recurring_Charge_Status::getIdForSystemName('AWAITING_APPROVAL');
+		$intRecChargeStatusDeclined			= Recurring_Charge_Status::getIdForSystemName('DECLINED');
+		$intRecChargeStatusCancelled		= Recurring_Charge_Status::getIdForSystemName('CANCELLED');
+		$intRecChargeStatusActive			= Recurring_Charge_Status::getIdForSystemName('ACTIVE');
+		$intRecChargeStatusCompleted		= Recurring_Charge_Status::getIdForSystemName('COMPLETED');
+		
+		// Only retrieve the recurring charges that are AwaitingApproval, Active, Completed OR (Cancelled after having been Approved)
+		$strRecChargeWhere = "RC.Account = <Account> AND (RC.recurring_charge_status_id IN ($intRecChargeStatusAwaitingApproval, $intRecChargeStatusActive, $intRecChargeStatusCompleted) OR (RC.recurring_charge_status_id = $intRecChargeStatusCancelled AND RC.ApprovedBy IS NOT NULL))";
 		
 		// I can't directly use a DBObject property or method as a parameter of another DBObject or DBList method
 		// On account of how the Property token works 
-		DBL()->RecurringCharge->Where->Set("RC.Account = <Account> AND RC.Archived = 0", Array("Account"=>$intAccountId));
+		DBL()->RecurringCharge->Where->Set($strRecChargeWhere, Array("Account"=>$intAccountId));
 		DBL()->RecurringCharge->OrderBy("StartedOn DESC, Id DESC");
 		DBL()->RecurringCharge->Load();
 		

@@ -196,6 +196,12 @@ Object.extend(Reflex_Popup.prototype, {
 		this.titleText.innerHTML = '';
 		this.titleText.appendChild(document.createTextNode(title));
 	},
+	
+	setTitleElement: function(elmTitle)
+	{
+		this.titleText.innerHTML = '';
+		this.titleText.appendChild(elmTitle);
+	},
 
 	setContent: function(content)
 	{

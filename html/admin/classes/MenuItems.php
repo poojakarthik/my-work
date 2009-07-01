@@ -2577,9 +2577,9 @@ class MenuItems {
 	 * @method
 	 */
 	function AddRecurringAdjustment($intAccountId, $intServiceId = NULL) {
-		$this->strContextMenuLabel = "";
+		$this->strContextMenuLabel = "Request Recurring Adjustment";
 
-		$this->strLabel = "add recurring adjustment";
+		$this->strLabel = "Request Recurring Adjustment";
 
 		// Setup data to send
 		$arrData['Account']['Id'] = $intAccountId;
@@ -2588,7 +2588,7 @@ class MenuItems {
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringAdjustmentPopupId\", \"medium\", \"Recurring Adjustment\", \"Adjustment\", \"AddRecurring\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringAdjustmentPopupId\", \"medium\", \"Request Recurring Adjustment\", \"Adjustment\", \"AddRecurring\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2747,29 +2747,29 @@ class MenuItems {
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteAdjustmentPopupId\", \"medium\", \"Delete Adjustment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteAdjustmentPopupId\", \"medium\", \"Adjustment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
-	// DeleteRecurringAdjustment
+	// CancelRecurringAdjustment
 	//------------------------------------------------------------------------//
 	/**
-	 * DeleteRecurringAdjustment()
+	 * CancelRecurringAdjustment()
 	 *
-	 * Compiles the javascript to be executed when the DeleteRecurringAdjustment menu item is clicked
+	 * Compiles the javascript to be executed when the CancelRecurringAdjustment menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the DeleteRecurringAdjustment menu item is clicked
+	 * Compiles the javascript to be executed when the CancelRecurringAdjustment menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intRecurringAdjustmentId		id of the recurring adjustment to delete
+	 * @param	int		$intRecurringAdjustmentId		id of the recurring adjustment to Cancel
 	 *
-	 * @return	string									action to be executed when the DeleteRecurringAdjustment menu item is clicked
+	 * @return	string									action to be executed when the CancelRecurringAdjustment menu item is clicked
 	 *
 	 * @method
 	 */
-	function DeleteRecurringAdjustment($intRecurringAdjustmentId) {
+	function CancelRecurringAdjustment($intRecurringAdjustmentId) {
 		$this->strContextMenuLabel = "";
-		$this->strLabel = "delete recurring adjustment: $intRecurringAdjustmentId";
+		$this->strLabel = "cancel recurring adjustment: $intRecurringAdjustmentId";
 
 		// Setup data to send
 		$arrData['DeleteRecord']['RecordType'] = "RecurringAdjustment";
@@ -2778,7 +2778,7 @@ class MenuItems {
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteRecurringAdjustmentPopupId\", \"medium\", \"Cancel Recurring Adjustment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteRecurringAdjustmentPopupId\", \"medium\", \"Recurring Adjustment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2977,11 +2977,45 @@ class MenuItems {
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ManageAdjustments() {
-		$this->strContextMenuLabel = "Approve and Decline Adjustments";
+	function ManageAdjustmentsOld() {
+		$this->strContextMenuLabel = "OLD - Approve and Decline Adjustments - OLD";
 		$this->strLabel = "Manage Adjustments";
 		return self :: OLD_FRAMEWORK . "charges_approve.php";
 	}
+
+	/**
+	 * ManageAdjustmentRequests()
+	 *
+	 * Compiles the Href to be executed when the ManageAdjustmentRequests menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ManageAdjustmentRequests menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ManageAdjustmentRequests() {
+		$this->strContextMenuLabel = "Manage Adjustment Requests";
+		$this->strLabel = "Manage Adjustment Requests";
+		return self::NEW_FRAMEWORK . "reflex.php/Adjustment/ManageAdjustmentRequests/";
+	}
+
+
+	/**
+	 * ManageRecurringAdjustmentRequests()
+	 *
+	 * Compiles the Href to be executed when the ManageRecurringAdjustmentRequests menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ManageRecurringAdjustmentRequests menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ManageRecurringAdjustmentRequests() {
+		$this->strContextMenuLabel = "Manage Recurring Adjustment Requests";
+		$this->strLabel = "Manage Recurring Adjustment Requests";
+		return self::NEW_FRAMEWORK . "reflex.php/RecurringAdjustment/ManageRecurringAdjustmentRequests/";
+	}
+
 
 	//------------------------------------------------------------------------//
 	// ManageSingleAdjustmentTypes

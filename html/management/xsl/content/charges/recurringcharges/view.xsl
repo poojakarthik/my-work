@@ -119,12 +119,31 @@
 								<xsl:choose>
 									<xsl:when test="/Response/RecurringChargeType/Continuable = 1">
 										<span class="Green">
-											Yes, this Adjustment continues even after the Minimum Charge is reached.
+											Yes.  This Adjustment continues even after the Minimum Charge is reached.
 										</span>
 									</xsl:when>
 									<xsl:otherwise>
 										<span class="Blue">
-											No, after the Minimum Charged is reached, this Adjustment is cancelled.
+											No.  After the Minimum Charged is reached, this Adjustment is cancelled.
+										</span>
+									</xsl:otherwise>
+								</xsl:choose>
+							</strong>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">Requires Approval:</th>
+						<td>
+							<strong>
+								<xsl:choose>
+									<xsl:when test="/Response/RecurringChargeType/approval_required = 0">
+										<span class="Blue">
+											No.  Requests for the recurring adjustment are automatically approved.
+										</span>
+									</xsl:when>
+									<xsl:otherwise>
+										<span class="Green">
+											Yes.  Requests for the recurring adjustment have to go through the approval process.
 										</span>
 									</xsl:otherwise>
 								</xsl:choose>

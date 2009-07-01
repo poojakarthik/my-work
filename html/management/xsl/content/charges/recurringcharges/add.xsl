@@ -340,6 +340,30 @@
 								</table>
 							</td>
 						</tr>
+						<tr>
+							<td></td>
+							<th>Approval Process :</th>
+							<td>
+								<select name="approval_required">
+									<option value='0'>
+										<xsl:if test="/Response/RecurringChargeType/approval_required = 0">
+											<xsl:attribute name='selected'>
+												<xsl:text>selected</xsl:text>
+											</xsl:attribute>
+										</xsl:if>
+										Requests for the recurring adjustment are automatically approved
+									</option>
+									<option value='1'>
+										<xsl:if test="/Response/RecurringChargeType/approval_required != 0">
+											<xsl:attribute name='selected'>
+												<xsl:text>selected</xsl:text>
+											</xsl:attribute>
+										</xsl:if>
+										Requests for the recurring adjustment have to go through the approval process
+									</option>
+								</select>
+							</td>
+						</tr>
 					</table>
 				</div>
 				<div class="Clear"></div>

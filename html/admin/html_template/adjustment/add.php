@@ -160,8 +160,8 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 			{
 				$strSelected = "";
 			}
-			$strDescription = $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value;
-			echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>$strDescription</option>\n";
+			$strDescription = $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value ." (". $dboChargeType->ChargeType->Value .")";
+			echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>". htmlspecialchars($strDescription) ."</option>\n";
 			
 			// add ChargeType details to an array that will be passed to the javascript that handles events on the ChargeTypeCombo
 			$arrChargeTypeData['ChargeType']	= $dboChargeType->ChargeType->Value;

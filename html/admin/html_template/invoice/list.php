@@ -92,7 +92,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		echo "<h2 class='Invoice'>Invoices</h2>\n";
 		
 		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Status", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
-		Table()->InvoiceTable->SetWidth("10%", "12%", "17%", "17%", "17%", "11%", "4%", "4%", "4%", "4%");
+		//Table()->InvoiceTable->SetWidth("10%", "12%", "17%", "17%", "17%", "11%", "4%", "4%", "4%", "4%");
 		Table()->InvoiceTable->SetAlignment("Left", "Left", "Right", "Right", "Right", "Left", "Center", "Center", "Center", "Center");
 		
 		// Invoices that are older than 1 year will not have CDR records stored in the database
@@ -107,7 +107,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			$strPdfHref		= Href()->ViewInvoicePdf(DBO()->Account->Id->Value, 0, 0, 0, $strInvoiceRun);
 			$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View $strSampleType Sample PDF Invoice' /></a>";
 			$strInvoiceRunDate = is_numeric(substr($strInvoiceRun, 0, 8)) 
-									? substr($strInvoiceRun, 6, 2) . '/' . substr($strInvoiceRun, 4, 2) . '/' .substr($strInvoiceRun, 0, 4) 
+									? substr($strInvoiceRun, 6, 2) . '-' . substr($strInvoiceRun, 4, 2) . '-' .substr($strInvoiceRun, 0, 4) 
 									: "Unknown";
 
 			// Add this row to Invoice table
@@ -203,8 +203,10 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			// Calculate AppliedAmount
 			$dboInvoice->AppliedAmount = $dboInvoice->Amount->Value - $dboInvoice->Balance->Value;
 
+			$strCreatedOnFormatted = date("d-m-Y", strtotime($dboInvoice->CreatedOn->Value));
+
 			// Add this row to Invoice table
-			Table()->InvoiceTable->AddRow(  $dboInvoice->CreatedOn->FormattedValue(),
+			Table()->InvoiceTable->AddRow(  $strCreatedOnFormatted,
 											$dboInvoice->Id->Value, 
 											"<span class='Currency'>". $dboInvoice->Amount->FormattedValue() ."</span>", 
 											"<span class='Currency'>". $dboInvoice->AppliedAmount->FormattedValue() ."</span>",

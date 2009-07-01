@@ -96,7 +96,7 @@
 	}
 	
 	//------------------------------------------------------------------------//
-	// Execute
+	// Execute DEPRECATED
 	//------------------------------------------------------------------------//
 	/**
 	 * Execute()
@@ -111,6 +111,8 @@
 	 */
  	function Execute()
  	{
+ 		// $this->_GetCharges() will always return FALSE.  This method should no longer be used
+ 		
 		$this->_rptRecurringChargesReport->AddMessage(MSG_GENERATE_CHARGES);
 		$intPassed = 0;
 		$intTotal = 0;
@@ -319,7 +321,7 @@
 	}
 	
 	//------------------------------------------------------------------------//
-	// _GetCharges
+	// _GetCharges DEPRECATED
 	//------------------------------------------------------------------------//
 	/**
 	 * _GetCharges()
@@ -336,6 +338,9 @@
 	 */
 	function _GetCharges()
 	{
+		// This functionality isn't used any more
+		return FALSE;
+		
 		// get the next 1000 charges that need to be added
 		if ($this->_selGetCharges->Execute() === FALSE)
 		{

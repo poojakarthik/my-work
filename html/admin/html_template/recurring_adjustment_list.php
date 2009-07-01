@@ -88,46 +88,59 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		// Check if the user has admin privileges
 		$bolHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		$bolUserIsGod		= AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD);
+		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+		
+		$bolCanCancelRecurringAdjustments	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 		
 		// define the table's header
-		if ($bolHasAdminPerm)
+		if ($bolCanCancelRecurringAdjustments)
 		{
 			// User has admin permisions and can therefore delete an adjustment
-			Table()->RecurringAdjustmentTable->SetHeader("Date", "Description", "&nbsp;");
-			Table()->RecurringAdjustmentTable->SetWidth("20%", "70%", "10%");
-			Table()->RecurringAdjustmentTable->SetAlignment("left", "left", "center");
+			Table()->RecurringAdjustmentTable->SetHeader("Date", "Description", "Status", "&nbsp;");
+			Table()->RecurringAdjustmentTable->SetAlignment("left", "left", "left", "center");
 		}
 		else
 		{
 			// User cannot delete adjustments
-			Table()->RecurringAdjustmentTable->SetHeader("Date", "Description");
-			Table()->RecurringAdjustmentTable->SetWidth("20%", "80%");
-			Table()->RecurringAdjustmentTable->SetAlignment("Left", "Left");
+			Table()->RecurringAdjustmentTable->SetHeader("Date", "Description", "Status");
+			Table()->RecurringAdjustmentTable->SetAlignment("left", "left", "left");
 		}
 		
 		// add the rows
 		foreach (DBL()->RecurringCharge as $dboRecurringCharge)
 		{
-			// add the row
-			if ($bolHasAdminPerm)
+			$objRecurringChargeStatus = Recurring_Charge_Status::getForId($dboRecurringCharge->recurring_charge_status_id->Value);
+			
+			$strChargeTypeDescription = htmlspecialchars($dboRecurringCharge->ChargeType->Value ." - ". $dboRecurringCharge->Description->Value);
+			
+			$strRecurringChargeStatus = htmlspecialchars($objRecurringChargeStatus->name);
+			
+			$strStartedOnFormatted = date("d-m-Y", strtotime($dboRecurringCharge->StartedOn->Value));
+			
+			if ($bolCanCancelRecurringAdjustments)
 			{
-				// You can only delete recurring charges that aren't archived
-				if ($dboRecurringCharge->Archived->Value == 0)
+				$strCancelRecurringAdjustmentHref = Href()->CancelRecurringAdjustment($dboRecurringCharge->Id->Value);
+				
+				// Check if the Recurring Adjustment (or request for Recurring Adjustment) can be Cancelled
+				if ($objRecurringChargeStatus->id == Recurring_Charge_Status::getIdForSystemName('AWAITING_APPROVAL'))
 				{
-					// build the "Delete Recurring Adjustment" link
-					$strDeleteRecurringAdjustmentHref  = Href()->DeleteRecurringAdjustment($dboRecurringCharge->Id->Value);
-					$strDeleteRecurringAdjustmentLabel = "<img src='img/template/delete.png' title='Cancel Recurring Adjustment' onclick='$strDeleteRecurringAdjustmentHref'></img>";
+					$strCancelRecurringAdjustmentLabel = "<img src='img/template/delete.png' title='Cancel Recurring Adjustment Request' onclick='$strCancelRecurringAdjustmentHref'></img>";
+				}
+				elseif ($objRecurringChargeStatus->id == Recurring_Charge_Status::getIdForSystemName('ACTIVE'))
+				{
+					$strCancelRecurringAdjustmentLabel = "<img src='img/template/delete.png' title='Cancel Recurring Adjustment' onclick='$strCancelRecurringAdjustmentHref'></img>";
 				}
 				else
 				{
-					$strDeleteRecurringAdjustmentLabel = "<span>&nbsp;</span>";
+					$strCancelRecurringAdjustmentLabel = "&nbsp;";
 				}
 				
-				Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->StartedOn->AsValue(), $dboRecurringCharge->Description->AsValue(), $strDeleteRecurringAdjustmentLabel);
+				Table()->RecurringAdjustmentTable->AddRow($strStartedOnFormatted, $strChargeTypeDescription, $strRecurringChargeStatus, $strCancelRecurringAdjustmentLabel);
 			}
 			else
 			{
-				Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->StartedOn->AsValue(), $dboRecurringCharge->Description->AsValue());
+				Table()->RecurringAdjustmentTable->AddRow($strStartedOnFormatted, $strChargeTypeDescription, $strRecurringChargeStatus);
 			}
 			
 			// Add tooltip
@@ -183,9 +196,12 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 				$dboRecurringCharge->charged = "In Arrears";
 			}
 			$strToolTipHtml .= $dboRecurringCharge->charged->AsOutput();
-			$strToolTipHtml .= $dboRecurringCharge->LastChargedOn->AsOutput();
+			if ($dboRecurringCharge->TotalCharged->Value > 0.0)
+			{
+				$strToolTipHtml .= $dboRecurringCharge->LastChargedOn->AsOutput();
+				$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
+			}
 			
-			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 			$strToolTipHtml .= $dboRecurringCharge->Nature->AsOutput();
 			DBO()->ChargeTypesAvailable->RecurringFreqType = $dboRecurringCharge->RecurringFreqType->Value;
 			$strRecurringFreq = $dboRecurringCharge->RecurringFreq->Value ." ". DBO()->ChargeTypesAvailable->RecurringFreqType->FormattedValue();
@@ -281,7 +297,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			// The user can add recurring adjustments
 			$strHref = Href()->AddRecurringAdjustment(DBO()->Account->Id->Value);
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
-			$this->Button("Add Recurring Adjustment", $strHref);
+			$this->Button("Request Recurring Adjustment", $strHref);
 			echo "</div></div>\n";
 		}
 		else

@@ -168,12 +168,13 @@
 				"Continuable"			=> (isset ($arrDetails ['Continuable'])		? $arrDetails ['Continuable']	: 0),
 				"PlanCharge"			=> (isset ($arrDetails ['PlanCharge'])		? $arrDetails ['PlanCharge']	: 0),
 				"UniqueCharge"			=> (isset ($arrDetails ['UniqueCharge'])	? $arrDetails ['UniqueCharge']	: 0),
+				"approval_required"		=> (array_key_exists('approval_required', $arrDetails)? $arrDetails['approval_required'] : 0),
 				"Archived"				=> 0
 			);
 			
 			$insRecurringChargeType = new StatementInsert ('RecurringChargeType');
 			$intRecurringChargeType = $insRecurringChargeType->Execute ($arrData);
-			
+
 			return $intRecurringChargeType;
 		}
 	}

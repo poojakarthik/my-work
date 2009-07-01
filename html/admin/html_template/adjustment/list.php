@@ -98,39 +98,46 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		if ($bolUserCanDeleteCharges)
 		{
 			// User has admin permisions and can therefore delete an adjustment
-			Table()->AdjustmentTable->SetHeader("Date", "Code", "&nbsp;","Amount ($)", "&nbsp;");
-			Table()->AdjustmentTable->SetWidth("20%", "29%", "3%", "38%", "10%");
-			Table()->AdjustmentTable->SetAlignment("left", "left", "left", "right", "center");
+			Table()->AdjustmentTable->SetHeader("Date", "Code","Amount ($)", "&nbsp;", "&nbsp;");
+			//Table()->AdjustmentTable->SetWidth("20%", "29%", "3%", "38%", "10%");
+			Table()->AdjustmentTable->SetAlignment("left", "left", "right", "left", "right");
 		}
 		else
 		{
 			// User cannot delete adjustments
-			Table()->AdjustmentTable->SetHeader("Date", "Code", "&nbsp;", "Amount ($)");
-			Table()->AdjustmentTable->SetWidth("20%", "29%", "3%", "48%");
-			Table()->AdjustmentTable->SetAlignment("left", "left", "left", "right");
+			Table()->AdjustmentTable->SetHeader("Date", "Code","Amount ($)", "&nbsp;");
+			//Table()->AdjustmentTable->SetWidth("20%", "29%", "3%", "48%");
+			Table()->AdjustmentTable->SetAlignment("left", "left", "right", "left");
 		
 		}
 		
 		// add the rows
 		foreach (DBL()->Charge as $dboCharge)
 		{
-			if ($dboCharge->Nature->Value == NATURE_CR)
+			$strNature				= ($dboCharge->Nature->Value == NATURE_CR)? 'CR' : "&nbsp;";
+			$strChargedOnFormatted	= date('d-m-Y', strtotime($dboCharge->ChargedOn->Value));
+			
+			$strChargeTypeField = $dboCharge->ChargeType->Value;
+			if ($dboCharge->Status->Value == CHARGE_WAITING)
 			{
-				$strNature = $dboCharge->Nature->FormattedValue();
+				$strChargeTypeField .= "<br />(Awaiting Approval)";
 			}
-			else
-			{
-				$strNature = "&nbsp;";
-			}
+			
 			
 			// add the row
 			if ($bolUserCanDeleteCharges)
 			{
+				$strDeleteAdjustmentHref = Href()->DeleteAdjustment($dboCharge->Id->Value);
+				
 				// Only charges having status = waiting or approved can be deleted
-				if (($dboCharge->Status->Value == CHARGE_WAITING) || ($dboCharge->Status->Value == CHARGE_APPROVED) || ($dboCharge->Status->Value == CHARGE_TEMP_INVOICE))
+				if ($dboCharge->Status->Value == CHARGE_WAITING)
+				{
+					// build the "Cancel Adjustment Request" link
+					$strDeleteAdjustmentLabel = "<img src='img/template/delete.png' title='Cancel Adjustment Request' onclick='$strDeleteAdjustmentHref'></img>";
+				}
+				elseif (($dboCharge->Status->Value == CHARGE_APPROVED) || ($dboCharge->Status->Value == CHARGE_TEMP_INVOICE))
 				{
 					// build the "Delete Adjustment" link
-					$strDeleteAdjustmentHref  = Href()->DeleteAdjustment($dboCharge->Id->Value);
 					$strDeleteAdjustmentLabel = "<img src='img/template/delete.png' title='Delete Adjustment' onclick='$strDeleteAdjustmentHref'></img>";
 				}
 				else
@@ -138,20 +145,18 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 					$strDeleteAdjustmentLabel = "&nbsp;";
 				}
 				
-				
-				
-				Table()->AdjustmentTable->AddRow($dboCharge->ChargedOn->FormattedValue(),
-												$dboCharge->ChargeType->Value,
-												$strNature,
+				Table()->AdjustmentTable->AddRow($strChargedOnFormatted,
+												$strChargeTypeField,
 												$dboCharge->Amount->AsCallback("AddGST"),
+												$strNature,
 												$strDeleteAdjustmentLabel);
 			}
 			else
 			{
-				Table()->AdjustmentTable->AddRow($dboCharge->ChargedOn->FormattedValue(),
-												$dboCharge->ChargeType->Value,
-												$strNature,
-												$dboCharge->Amount->AsCallback("AddGST"));
+				Table()->AdjustmentTable->AddRow($strChargedOnFormatted,
+												$strChargeTypeField,
+												$dboCharge->Amount->AsCallback("AddGST"),
+												$strNature);
 			}
 			
 			// add tooltip
@@ -175,7 +180,8 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			
 			if ($dboCharge->CreatedBy->Value && $dboCharge->CreatedBy->Value != USER_ID)
 			{
-				$strToolTipHtml .= $dboCharge->CreatedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
+				$dboCharge->RequestedBy = $dboCharge->CreatedBy->Value;
+				$strToolTipHtml .= $dboCharge->RequestedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
 			}
 			
 			if ($dboCharge->ApprovedBy->Value && $dboCharge->ApprovedBy->Value != USER_ID)

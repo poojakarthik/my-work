@@ -120,7 +120,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			DBL()->ChargeTypesAvailable->Nature = 'DR';
 		}
 		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
-		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
+		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description ASC, ChargeType ASC");
 		DBL()->ChargeTypesAvailable->Load();
 		
 		if (DBL()->ChargeTypesAvailable->RecordCount() == 0)
@@ -190,6 +190,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->Charge->Description	= DBO()->ChargeType->Description->Value;
 				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
 				
+				DBO()->Charge->Notes		= trim(DBO()->Charge->Notes->Value);
+				
 				// Check if the user has permission to create a credit adjustment, if the adjustment is a credit
 				if (DBO()->Charge->Nature->Value == 'CR' && !$bolCanCreateCreditAdjustments)
 				{
@@ -223,8 +225,42 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				else
 				{
 					// The adjustment was successfully saved
+					
+					// Log the 'Adjustment Request' action
+					try
+					{
+						$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
+						if (DBO()->Service->Id->Value)
+						{
+							// The recurring adjustment is being applied to a specific service
+							$intAccountId = NULL;
+							$intServiceId = DBO()->Service->Id->Value;
+						}
+						else
+						{
+							// The recurring adjustment is being applied to an account
+							$intAccountId = DBO()->Account->Id->Value;
+							$intServiceId = NULL;
+						}
+						
+						$strNature				= (DBO()->Charge->Nature->Value == 'CR')? "Credit" : "Debit";
+						$strAmount				= number_format(AddGST(DBO()->Charge->Amount->Value), 2, '.', '');
+						$strChargeType			= DBO()->Charge->ChargeType->Value ." - ". DBO()->Charge->Description->Value;
+						$strActionExtraDetails	= 	"Type: {$strChargeType} ({$strNature})\n".
+													"Amount (Inc GST): \${$strAmount} {$strNature}";
+						
+						// Log the action
+						Action::createAction('Adjustment Requested', $strActionExtraDetails, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+					}
+					catch (Exception $e)
+					{
+						TransactionRollback();
+						Ajax()->AddCommand("Alert", "ERROR: Requesting the adjustment failed, while trying to log the action.");
+						return TRUE;
+					}
+					
+					
 
-					DBO()->Charge->Id = $intChargeId;
 					TransactionCommit();
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 					Ajax()->AddCommand("AlertReload", "The request for adjustment has been successfully logged.");
@@ -276,7 +312,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Adjustments can not be added if the account is pending activation
 		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
 		{
-			Ajax()->AddCommand("Alert", "The account is pending activation.  Adjustments cannot be added.");
+			Ajax()->AddCommand("Alert", "The account is pending activation.  Adjustments cannot be requested at this time.");
 			return TRUE;
 		}
 
@@ -294,12 +330,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);
 			if ($objService->GetStatus() == SERVICE_PENDING)
 			{
-				Ajax()->AddCommand("Alert", "This service is pending activation.  Adjustments can only be applied to active services.");
+				Ajax()->AddCommand("Alert", "This service is pending activation.  Adjustments cannot be requested at this time.");
 				return TRUE;
 			}
 			elseif (!$objService->IsCurrentlyActive())
 			{
-				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Adjustments can only be applied to active services.");
+				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Adjustments can only be requested for active services.");
 				return TRUE;
 			}
 			
@@ -308,7 +344,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Load all charge types that aren't archived
 		DBL()->ChargeTypesAvailable->Archived = 0;
 		DBL()->ChargeTypesAvailable->SetTable("RecurringChargeType");
-		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
+		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description ASC, ChargeType ASC");
 		DBL()->ChargeTypesAvailable->Load();
 
 		if (DBL()->ChargeTypesAvailable->RecordCount() == 0)
@@ -316,14 +352,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			Ajax()->AddCommand("Alert", "There are currently no recurring adjustment types defined");
 			return TRUE;
 		}
-
-
-		// load the last 6 invoices with the most recent being first
-		DBL()->AccountInvoices->Account = DBO()->Account->Id->Value;
-		DBL()->AccountInvoices->SetTable("Invoice");
-		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
-		DBL()->AccountInvoices->SetLimit(6);
-		DBL()->AccountInvoices->Load();
 
 		// check if an adjustment is being submitted
 		if (SubmittedForm('AddRecurringAdjustment', 'Add Adjustment'))
@@ -341,6 +369,23 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// Remove GST from Minimum Charge and Recursion Charge
 				DBO()->RecurringCharge->MinCharge = RemoveGST(DBO()->RecurringCharge->MinCharge->Value);
 				DBO()->RecurringCharge->RecursionCharge = RemoveGST(DBO()->RecurringCharge->RecursionCharge->Value);
+
+				$arrErrors = array();
+				if (DBO()->RecurringCharge->MinCharge->Value <= 0)
+				{
+					$arrErrors[] = "Minimum Charge is invalid";
+				}
+				if (DBO()->RecurringCharge->RecursionCharge->Value <= 0)
+				{
+					$arrErrors[] = "Recurring Charge is invalid";
+				}
+				
+				if (count($arrErrors))
+				{
+					// Errors have been found
+					Ajax()->AddCommand("Alert", "ERROR: ". implode(", ", $arrErrors));
+					return TRUE;
+				}
 				
 				// Account details
 				DBO()->RecurringCharge->Account			= DBO()->Account->Id->Value;
@@ -365,6 +410,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				$intCurrentYear						= intval(date("Y", $intNow));
 				DBO()->RecurringCharge->CreatedOn	= $strCurrentDate;
 
+				// I'm pretty sure I should just leave this even though the adjustment will be pending approval
+				// StartedOn, is the date that the recurring charge should have started on 
 				if ($intCurrentDay >= 29 && $intCurrentDay <= 31)
 				{
 					// The StartedOn date has to snap to either the 28th or the 1st of next month
@@ -407,6 +454,38 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->RecurringCharge->RecurringFreqType	= DBO()->RecurringChargeType->RecurringFreqType->Value;
 				DBO()->RecurringCharge->RecurringFreq		= DBO()->RecurringChargeType->RecurringFreq->Value;
 				
+				$intRecurringFreqType	= DBO()->RecurringChargeType->RecurringFreqType->Value;
+				$intRecurringFreq		= DBO()->RecurringChargeType->RecurringFreq->Value;
+				
+				switch ($intRecurringFreqType)
+				{
+					case BILLING_FREQ_DAY:
+						$strFreqType = "day";
+						break;
+						
+					case BILLING_FREQ_MONTH:
+						$strFreqType = "month";
+						break;
+						
+					case BILLING_FREQ_HALF_MONTH:
+						$strFreqType = "half-month";
+						break; 
+				}
+				if ($intRecurringFreq == 1)
+				{
+					$strFreq = '';
+					$strFreqTypePluraliserSuffix = '';
+				}
+				else
+				{
+					$strFreq = "$intRecurringFreq ";
+					$strFreqTypePluraliserSuffix = 's';
+				}
+				
+				$strIndividualChargePeriod = "{$strFreq}{$strFreqType}{$strFreqTypePluraliserSuffix}";
+				$strInAdvanceInArrears = (DBO()->RecurringCharge->in_advance->Value == TRUE)? "advance" : "arrears";
+				$strStartDateFormatted = date('d-m-Y', strtotime(DBO()->RecurringCharge->StartedOn->Value));
+				
 				// These have already been set				
 				//DBO()->RecurringCharge->MinCharge
 				//DBO()->RecurringCharge->RecursionCharge
@@ -417,48 +496,74 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->RecurringCharge->UniqueCharge		= DBO()->RecurringChargeType->UniqueCharge->Value;
 				DBO()->RecurringCharge->TotalCharged		= 0;
 				DBO()->RecurringCharge->TotalRecursions		= 0;
-				DBO()->RecurringCharge->Archived			= 0;
+				
+				// Set the status to awaiting approval
+				DBO()->RecurringCharge->recurring_charge_status_id = Recurring_Charge_Status::getIdForSystemName('AWAITING_APPROVAL');
 
 				$strMinCharge		= OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->MinCharge->Value), 2, TRUE);
 				$strRecursionCharge	= OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->RecursionCharge->Value), 2, TRUE);
 
-				$strNote  = "Recurring charge created\n";
-				$strNote .= "Type: " . DBO()->RecurringCharge->ChargeType->FormattedValue() . "\n";
-				$strNote .= "Description: " . DBO()->RecurringCharge->Description->FormattedValue() . "\n";
+				$strNote = "Type: " . DBO()->RecurringCharge->ChargeType->FormattedValue() ." - ". DBO()->RecurringCharge->Description->FormattedValue() . "\n";
 				$strNote .= "Nature: " . DBO()->RecurringCharge->Nature->FormattedValue() . "\n";
-				$strNote .= "Minimum Charge: $strMinCharge (inc GST)\n";
-				$strNote .= "Recurring Charge: $strRecursionCharge (inc GST)\n";
-				$strNote .= (DBO()->RecurringCharge->in_advance->Value == TRUE)? "Charged in advance\n" : "Charged in arrears\n";
+				$strNote .= "Minimum Charge (inc GST): {$strMinCharge}\n";
+				$strNote .= "Recurring Charge (inc GST): {$strRecursionCharge} charged in {$strInAdvanceInArrears}, every {$strIndividualChargePeriod}, starting $strStartDateFormatted"; 
 
-				// Save the recurring adjustment to the charge table of the vixen database
+				TransactionStart();
+				
+				// Save the recurring adjustment to the charge table
 				if (!DBO()->RecurringCharge->Save())
 				{
 					// The recurring adjustment did not save
-					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "ERROR: The recurring adjustment did not save");
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Submitting the Recurring Adjustment Request failed, unexpectedly.");
 					return TRUE;
 				}
 				else
 				{
 					// The recurring adjustment was successfully saved
-					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "The recurring adjustment has been successfully added");
-					//TODO Have this fire a OnNewRecurringAdjustment Event
-					//TODO Have this fire a OnNewNote Event
 					
-					// Save the system note
-					// If Service ID is passed then this is creating a system note for a recurring charge linked to a service
-					if (DBO()->Service->Id->Value)
+					// Log the 'Recurring Adjustment Request' action
+					try
 					{
-						$strNote = "Service $strNote";					
-						SaveSystemNote($strNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value, NULL, DBO()->Service->Id->Value);
+						$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
+						if (DBO()->Service->Id->Value)
+						{
+							// The recurring adjustment is being applied to a specific service
+							$intAccountId = NULL;
+							$intServiceId = DBO()->Service->Id->Value;
+						}
+						else
+						{
+							// The recurring adjustment is being applied to an account
+							$intAccountId = DBO()->Account->Id->Value;
+							$intServiceId = NULL;
+						}
+						
+						// Log the action
+						Action::createAction('Recurring Adjustment Requested', $strNote, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+						
+						// If the RecurringChargeType doesn't require approval, then flag it as being approved
+						if (!DBO()->RecurringChargeType->approval_required->Value)
+						{
+							// The Recurring Adjustment can be automatically approved
+							$objRecurringCharge = Recurring_Charge::getForId(DBO()->RecurringCharge->Id->Value);
+							$objRecurringCharge->setToApproved(Employee::SYSTEM_EMPLOYEE_ID, true);
+						}
+						
 					}
-					// If no Service ID is passed then this is creating a system note for a recurring charge linked to an account
-					else
+					catch (Exception $e)
 					{
-						$strNote = "Account $strNote";
-						SaveSystemNote($strNote, DBO()->Account->AccountGroup->Value, DBO()->Account->Id->Value);					
+						TransactionRollback();
+						Ajax()->AddCommand("Alert", "ERROR: Submitting the Recurring Adjustment Request failed, while trying to log the action.");
+						return TRUE;
 					}
+
+					// Everything was successful
+					TransactionCommit();
+					
+					
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					Ajax()->AddCommand("AlertReload", "The Recurring Adjustment Request has been successfully logged.");
 					
 					return TRUE;
 				}
@@ -467,7 +572,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			{
 				// Something was invalid
 				Ajax()->RenderHtmlTemplate("RecurringAdjustmentAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-				Ajax()->AddCommand("Alert", "ERROR: Adjustment could not be saved. Invalid fields have been reset and highlighted");
+				Ajax()->AddCommand("Alert", "ERROR: The Recurring Adjustment Request could not be submitted.  Invalid fields have been reset and highlighted");
 				return TRUE;
 			}
 		}
@@ -508,100 +613,95 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		// Make sure the correct form was submitted
-		if (SubmittedForm('DeleteRecord'))
+		try
 		{
-			$strNoteMsg = "";
-			$strSystemNoteMsg = "";
-		
+			TransactionStart();
+			
 			if (!DBO()->Charge->Load())
 			{
-				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("Reload", "The adjustment with id: ". DBO()->Charge->Id->Value ." could not be found");
-				return TRUE;
+				throw new Exception("The adjustment with id: ". DBO()->Charge->Id->Value ." could not be found");
 			}
 
 			// Deleting Adjustments can not be done while a live invoice run is outstanding
 			$objAccount = Account::getForId(DBO()->Charge->Account->Value);
 			if (Invoice_Run::checkTemporary($objAccount->customerGroup, $objAccount->id))
 			{
-				Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
-				return TRUE;
+				throw new Exception("This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			}
 			
-			// The charge can only be deleted if its status is CHARGE_WAITING or CHARGE_APPROVED or CHARGE_TEMP_INVOICE
-			if ((DBO()->Charge->Status->Value == CHARGE_WAITING) || (DBO()->Charge->Status->Value == CHARGE_APPROVED) || (DBO()->Charge->Status->Value == CHARGE_TEMP_INVOICE))
+			$intAdjustmentId			= DBO()->Charge->Id->Value;
+			$intOriginalChargeStatus	= DBO()->Charge->Status->Value;
+			
+			switch ($intOriginalChargeStatus)
 			{
-				// Delete the charge
-				DBO()->Charge->Status = CHARGE_DELETED;
+				case CHARGE_WAITING:
+					$strActionDescriptionPastTense		= "Cancelled request for adjusment";
+					$strActionDescriptionPresentTense	= "Cancelling request for adjustment";
+					$strActionDescriptionFutureTense	= "Cancel request for adjustment";
+					break;
+					
+				case CHARGE_APPROVED:
+				case CHARGE_TEMP_INVOICE:
+					$strActionDescriptionPastTense		= "Deleted adjustment";
+					$strActionDescriptionPresentTense	= "Deleting adjustment";
+					$strActionDescriptionFutureTense	= "Delete adjustment";
+					break;
 				
-				// If an Invoice Run is associated with it (it's temp invoiced), set it to NULL, so it doesn't get reversed, if the invoice run gets reversed
-				DBO()->Charge->invoice_run_id = NULL;
+				default:
+					throw new Exception("The adjustment can not be deleted due to its status (charge status: {$intOriginalChargeStatus})");
+					break;
+			}
+			
+			// The charge can be deleted
+			
+			DBO()->Charge->Status = CHARGE_DELETED;
+			
+			// If an Invoice Run is associated with it (it is temp invoiced), set it to NULL, so it doesn't get reversed, if the invoice run gets reversed
+			DBO()->Charge->invoice_run_id = NULL;
 
-				// Update the charge
-				if (!DBO()->Charge->Save())
-				{
-					// The charge could not be updated
-					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("Alert", nl2br("The adjustment could not be deleted.\nThere was a problem with updating the record in the database."));
-					return TRUE;
-				}
-				else
-				{
-					// The Charge was successfully updated.  Now add the user's note, if one was specified
-					if (!DBO()->Note->IsInvalid())
-					{
-						DBO()->Note->NoteType = GENERAL_NOTE_TYPE;
-						DBO()->Note->AccountGroup = DBO()->Charge->AccountGroup->Value;
-						DBO()->Note->Account = DBO()->Charge->Account->Value;
-						DBO()->Note->Service = DBO()->Charge->Service->Value;
-						DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
-						DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
-						
-						if (!DBO()->Note->Save())
-						{
-							$strNoteMsg = "\nWarning: The operator's note could not be saved.";
-						}
-					}
-					
-					// Add a system generated note regarding the deleting of the charge
-					$strNote  = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']) . " deleted a " . DBO()->Charge->Nature->FormattedValue();
-					$strNote .= " adjustment made on " . DBO()->Charge->CreatedOn->FormattedValue();
-					// add GST to the charge amount
-					$strChargeAmount = OutputMask()->MoneyValue(addGST(DBO()->Charge->Amount->Value), 2, TRUE);
-					$strNote .= " for " . $strChargeAmount . " (inc GST)";
-					$strNote .= "\nAdjustment Id: " . DBO()->Charge->Id->FormattedValue();
-					$strNote .= "\nAdjustment Type: " . DBO()->Charge->ChargeType->FormattedValue();
-					$strNote .= "\nDescription: " . DBO()->Charge->Description->FormattedValue();
-					
-					if (!SaveSystemNote($strNote, DBO()->Charge->AccountGroup->Value, DBO()->Charge->Account->Value, NULL, DBO()->Charge->Service->Value))
-					{
-						$strSystemNoteMsg = "\nWarning: The automatic system note could not be saved.";
-					}
-					
-					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", nl2br("The adjustment was successfully deleted.{$strNoteMsg}{$strSystemNoteMsg}"));
-					return TRUE;
-				}
-			}
-			else
+			// Update the charge record
+			if (!DBO()->Charge->Save())
 			{
-				// The Charge can not be deleted
-				$strErrorMsg  = "<div class='PopupMedium'>\n";
-				$strErrorMsg .= "ERROR: The adjustment can not be deleted due to its status.\n";
-				$strErrorMsg .= DBO()->Charge->Id->AsOutput();
-				$strErrorMsg .= DBO()->Charge->CreatedOn->AsOutput();
-				$strErrorMsg .= DBO()->Charge->AccountGroup->AsOutput();
-				$strErrorMsg .= DBO()->Charge->Account->AsOutput();
-				$strErrorMsg .= DBO()->Charge->Amount->AsCallback("addGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
-				$strErrorMsg .= DBO()->Charge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus"), RENDER_OUTPUT);
-				$strErrorMsg .= "</div>\n";
-				
-				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("Alert", $strErrorMsg);
-				return TRUE;
+				throw new Exception("Failed to {$strActionDescriptionFutureTense}");
 			}
+			
+			// The Adjustment was successfully 'Deleted'
+			
+			// Record the system note (and include the user's note, if they defined one)
+			$strUserNote		= trim(DBO()->Note->Note->Value);
+			$strChargeType		= DBO()->Charge->ChargeType->Value ." - ". DBO()->Charge->Description->Value;
+			$strAmount			= number_format(addGST(DBO()->Charge->Amount->Value), 2, '.', '');
+			$strNature			= (DBO()->Charge->Nature->Value == 'CR')? "Credit" : "Debit";
+			$strCreatedOn		= date('d-m-Y', strtotime(DBO()->Charge->CreatedOn->Value));
+			$intEmployeeId		= AuthenticatedUser()->_arrUser['Id'];
+			
+			
+			$strNote = 	"{$strActionDescriptionPastTense} (id: $intAdjustmentId)\n".
+						"Type: {$strChargeType} ({$strNature})\n".
+						"Amount (Inc GST): \${$strAmount} {$strNature}\n".
+						"Created: $strCreatedOn";
+			
+			if ($strUserNote != '')
+			{
+				$strNote .= "\nUser Comments:\n{$strUserNote}";
+			}
+			
+			Note::createSystemNote($strNote, $intEmployeeId, DBO()->Charge->Account->Value, DBO()->Charge->Service->Value);
+			
+			// All database modifications have been finalised
+			TransactionCommit();
 		}
+		catch (Exception $e)
+		{
+			TransactionRollback();
+			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			Ajax()->AddCommand("Alert", "ERROR: ". $e->getMessage());
+			return TRUE;
+		}
+		
+		// Success
+		Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+		Ajax()->AddCommand("AlertReload", "Successfully {$strActionDescriptionPastTense}");
 		return TRUE;
 	}
 
@@ -623,164 +723,53 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
-		// Make sure the correct form was submitted
-		if (SubmittedForm('DeleteRecord'))
+		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+		
+		$bolCanDeleteAdjustments	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		
+		if (!$bolCanDeleteAdjustments)
 		{
-			$strNoteMsg = "";
-			$strSystemNoteMsg = "";
-			
-			if (!DBO()->RecurringCharge->Load())
-			{
-				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("Alert", "The recurring adjustment with id: ". DBO()->RecurringCharge->Id->Value ." could not be found");
-				return TRUE;
-			}
+			Ajax()->AddCommand("Alert", "You do not have the required permissions to cancel recurring adjustments");
+			return TRUE;
+		}
+
+		TransactionStart();
+		try
+		{
+
+			$objRecurringCharge = Recurring_Charge::getForId(DBO()->RecurringCharge->Id->Value);
 
 			// Deleting Recurring Adjustments can not be done while billing is in progress
-			$objAccount = Account::getForId(DBO()->RecurringCharge->Account->Value);
+			$objAccount = Account::getForId($objRecurringCharge->account);
 			if (Invoice_Run::checkTemporary($objAccount->customerGroup, $objAccount->id))
 			{
-				Ajax()->AddCommand("Alert", "This action is temporarily unavailable because a related, live invoice run is currently outstanding");
-				return TRUE;
+				throw new Exception("This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			}
-			
-			// The recurring charge can only be deleted if it is not currently archived
-			if (DBO()->RecurringCharge->Archived->Value == 0)
-			{
-				// Declare the transaction
-				TransactionStart();
-				
-				// Set the archive status of the recurring charge to ARCHIVED
-				DBO()->RecurringCharge->Archived = 1;
-				
-				// Update the recurring charge
-				if (!DBO()->RecurringCharge->Save())
-				{
-					// The recurring charge could not be updated
-					
-					// rollback the Transaction (although it really doesn't matter at this stage)
-					TransactionCommit();
-					
-					// Close the popup gracefully
-					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("Alert", "ERROR: The recurring adjustment could not be cancelled.  There was a problem with updating the RecurringCharge record in the database.");
-					return TRUE;
-				}
-				// The recurring charge was successfully updated.
-				
-				// Calculate the amount left owing on the recurring adjustment
-				$fltAmountOwing = DBO()->RecurringCharge->MinCharge->Value - DBO()->RecurringCharge->TotalCharged->Value;
-				
-				// Add a new debit charge if the Recurring Charge was a Debit and there is still money left owing on it
-				if ((DBO()->RecurringCharge->Nature->Value == NATURE_DR) && ($fltAmountOwing > 0.0))
-				{
-					// The additional charge is equal to the money left owing plus the cancellation fee (excluding GST)
-					$fltChargeAmount			= $fltAmountOwing + DBO()->RecurringCharge->CancellationFee->Value;
-					DBO()->Charge->AccountGroup	= DBO()->RecurringCharge->AccountGroup->Value;
-					DBO()->Charge->Account		= DBO()->RecurringCharge->Account->Value;
-					DBO()->Charge->Service		= DBO()->RecurringCharge->Service->Value;
-					DBO()->Charge->CreatedBy	= AuthenticatedUser()->_arrUser['Id'];
-					DBO()->Charge->CreatedOn	= GetCurrentISODate();
-					DBO()->Charge->ApprovedBy	= USER_ID;
-					DBO()->Charge->ChargeType	= DBO()->RecurringCharge->ChargeType->Value;
-					DBO()->Charge->Description	= "CANCELLATION: ". DBO()->RecurringCharge->Description->Value;
-					DBO()->Charge->ChargedOn	= GetCurrentISODate();
-					DBO()->Charge->Nature		= NATURE_DR;
-					DBO()->Charge->Amount		= $fltChargeAmount;
-					DBO()->Charge->Invoice		= NULL;
-					DBO()->Charge->Notes		= DBO()->Note->Note->Value;
-					DBO()->Charge->LinkType		= CHARGE_LINK_RECURRING_CANCEL;
-					DBO()->Charge->LinkId		= DBO()->RecurringCharge->Id->Value;
-					DBO()->Charge->Status		= CHARGE_APPROVED;
-					
-					$arrData = DBO()->Charge->AsArray();
-					$intChargeId = Framework()->AddCharge($arrData);
 
-					// Save the charge
-					if ($intChargeId === FALSE)
-					{
-						// The charge could not be saved so rollback the transaction
-						TransactionRollback();
-						
-						// Close the popup gracefully
-						Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-						Ajax()->AddCommand("Alert", nl2br("ERROR: The recurring adjustment could not be cancelled.\nThere was a problem with generating the cancellation charge."));
-						return TRUE;
-					}
-				}
-				
-				// Commit the transaction
-				TransactionCommit();
-				
-				// Now add the user's note and the automatic note
-				if (!DBO()->Note->IsInvalid())
-				{
-					DBO()->Note->NoteType = GENERAL_NOTE_TYPE;
-					DBO()->Note->AccountGroup = DBO()->RecurringCharge->AccountGroup->Value;
-					DBO()->Note->Account = DBO()->RecurringCharge->Account->Value;
-					DBO()->Note->Service = DBO()->RecurringCharge->Service->Value;
-					DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
-					DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
-					
-					if (!DBO()->Note->Save())
-					{
-						$strNoteMsg = "\nWarning: The operator's note could not be saved.";
-					}
-				}
-				
-				// Add a system generated note regarding the deleting of the charge
-				$strNote  = "Recurring charge removed"; 
-				$strNote .= "\nRecurring Adjustment Id: " . DBO()->RecurringCharge->Id->FormattedValue();
-				$strNote .= "\nType: " . DBO()->RecurringCharge->ChargeType->FormattedValue();
-				$strNote .= "\nDescription: " . DBO()->RecurringCharge->Description->FormattedValue();
-				$strNote .= "\nNature: " . DBO()->RecurringCharge->Nature->FormattedValue();
-				// add GST to the minimum charge
-				$strMinCharge = OutputMask()->MoneyValue(AddGST(DBO()->RecurringCharge->MinCharge->Value), 2, TRUE);
-				$strNote .= "\nMinimum Charge: $strMinCharge (inc GST)";
-				// add GST to the recursion charge
-				$strRecursionCharge = OutputMask()->MoneyValue(AddGST(DBO()->RecurringCharge->RecursionCharge->Value), 2, TRUE);
-				$strNote .= "\nRecursion Charge: $strRecursionCharge (inc GST)";
-				$strAlreadyCharged = OutputMask()->MoneyValue(AddGST(DBO()->RecurringCharge->TotalCharged->Value), 2, TRUE);
-				$strNote .= "\nAlready Charged: $strAlreadyCharged (inc GST)";
-				
-				if (DBO()->RecurringCharge->Nature->Value == NATURE_DR && $fltAmountOwing > 0.0)
-				{
-					// An additional charge was made to account for the remainder of the MinCharge and CancellationFee
-					$strAdditionalCharge = OutputMask()->MoneyValue(AddGST($fltChargeAmount), 2, TRUE);
-					$strNote .= "\nAn additional charge was made for $strAdditionalCharge (inc GST) to account for the outstand portion of the minimum charge and the cancellation fee";
-				}
-				
-				if (!SaveSystemNote($strNote, DBO()->RecurringCharge->AccountGroup->Value, DBO()->RecurringCharge->Account->Value, NULL, DBO()->RecurringCharge->Service->Value))
-				{
-					$strSystemNoteMsg = "\nWarning: The automatic system note could not be saved.";
-				}
-				
-				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", nl2br("The adjustment was successfully cancelled.{$strNoteMsg}{$strSystemNoteMsg}"));
-				return TRUE;
-			}
-			else
-			{
-				// the recurring charge cannot be deleted
-				$strErrorMsg  = "<div class='PopupMedium'>\n";
-				$strErrorMsg .= "ERROR: The Recurring adjustment can not be cancelled as it is already marked as being cancelled.\n";
-				$strErrorMsg .= DBO()->RecurringCharge->Id->AsOutput();
-				$strErrorMsg .= DBO()->RecurringCharge->CreatedOn->AsOutput();
-				$strErrorMsg .= DBO()->RecurringCharge->AccountGroup->AsOutput();
-				$strErrorMsg .= DBO()->RecurringCharge->Account->AsOutput();
-				$strErrorMsg .= DBO()->RecurringCharge->MinCharge->AsCallback("addGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
-				$strErrorMsg .= DBO()->RecurringCharge->RecursionCharge->AsCallback("addGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
-				$strErrorMsg .= DBO()->RecurringCharge->TotalCharged->AsCallback("addGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
-				$strErrorMsg .= DBO()->RecurringCharge->Archived->AsOutput();
-				$strErrorMsg .= "</div>\n";
-				
-				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("Alert", $strErrorMsg);
-				return TRUE;
-			}
+			$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
+
+			$strActionPassedTense	= ($objRecurringCharge->hasSatisfiedRequirementsForCompletion())? 'Discontinued' : 'Cancelled';
+			$strSubjectOfTheAction	= ($objRecurringCharge->recurringChargeStatusId == Recurring_Charge_Status::getIdForSystemName('AWAITING_APPROVAL'))? 'Recurring Adjustment Request' : 'Recurring Adjustment';
+
+			// Cancell the recurring adjustment
+			$objRecurringCharge->setToCancelled($intEmployeeId, true, trim(DBO()->Note->Note->Value));
+			
+			
+			TransactionCommit();
 		}
+		catch (Exception $e)
+		{
+			TransactionRollback();
+			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			Ajax()->AddCommand("Alert", "ERROR: ". $e->getMessage());
+			return TRUE;
+		}
+		
+		// Success
+		Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+		Ajax()->AddCommand("AlertReload", "Successfully $strActionPassedTense the $strSubjectOfTheAction");
 		return TRUE;
 	}
 

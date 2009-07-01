@@ -113,7 +113,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		
 		// Create a combobox containing all the charge types
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Adjustment:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Adjustment :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='ChargeTypeCombo' style='width:100%' onchange='Vixen.RecurringAdjustmentAdd.DeclareChargeType(this.value)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
@@ -122,18 +122,20 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 			// Flag this ChargeType if it was the last one selected
 			$strSelected = ((DBO()->RecurringChargeType->Id->Value) && ($intChargeTypeId == DBO()->RecurringChargeType->Id->Value)) ? "selected='selected'" : "";
 
-			$strDescription = $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value;
-			echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>$strDescription</option>\n";
+			$strDescription = $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value ." (". $dboChargeType->ChargeType->Value .")";
+			echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>". htmlspecialchars($strDescription) ."</option>\n";
 			
 			// Add ChargeType details to an array that will be passed to the javascript that handles events on the ChargeTypeCombo
+			$arrChargeTypeData['Id']						= $dboChargeType->Id->Value;
 			$arrChargeTypeData['ChargeType']				= $dboChargeType->ChargeType->Value;
-			$arrChargeTypeData['Nature']					= $dboChargeType->Nature->FormattedValue();
+			$arrChargeTypeData['Nature']					= $dboChargeType->Nature->Value;
 			$arrChargeTypeData['Fixed']						= $dboChargeType->Fixed->Value;
 			$arrChargeTypeData['Description']				= $dboChargeType->Description->Value;
 			$arrChargeTypeData['RecurringFreqTypeAsText']	= $dboChargeType->RecurringFreqType->FormattedValue();
 			$arrChargeTypeData['RecurringFreqType']			= $dboChargeType->RecurringFreqType->Value;
 			$arrChargeTypeData['RecurringFreq']				= $dboChargeType->RecurringFreq->Value;
 			$arrChargeTypeData['Continuable']				= (boolean)($dboChargeType->Continuable->Value == TRUE);
+			$arrChargeTypeData['ApprovalRequired']			= (boolean)($dboChargeType->approval_required->Value == TRUE);
 			
 			// Add GST to the Minimum Charge and format it as a money value
 			$fltMinChargeIncGST 					= AddGST($dboChargeType->MinCharge->Value);
@@ -178,6 +180,14 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		// Display the nature of the charge
 		DBO()->RecurringChargeType->Nature = $arrChargeTypes[$intChargeTypeId]['Nature'];
 		DBO()->RecurringChargeType->Nature->RenderOutput();
+
+		// Create the "Requires Approval" label
+		echo "
+<div class='DefaultElement'>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Requires Approval :</div>
+	<div id='RecurringChargeType.ApprovalRequired' class='DefaultOutput'>&nbsp;</div>
+</div>";
+
 		
 		// Display whether or not the charge is continuable (keeps getting charged after the minimum charge is reached
 		DBO()->RecurringChargeType->Continuable = $arrChargeTypes[$intChargeTypeId]['Continuable'];
@@ -235,7 +245,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		
 		// Create the TimesToCharge textbox
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Times to Charge</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Times to Charge :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <input type='text' id='TimesToCharge' value='' style='padding-left:3px;width:165px' onkeyup='Vixen.RecurringAdjustmentAdd.TimesChargedChanged(event)'></input>\n";
 		echo "   </div>\n";
@@ -244,29 +254,36 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		// Create the in_advance checkbox
 		echo "
 <div class='DefaultElement'>
-	<div class='DefaultLabel'>&nbsp;&nbsp;Charge in Advance</div>
+	<div class='DefaultLabel'>&nbsp;&nbsp;Charge in Advance/Arrears :</div>
 	<div class='DefaultOutput'>
-		<input type='checkbox' id='RecurringCharge.in_advance' name='RecurringCharge.in_advance' style='padding-left:3px;' ></input>
+		<select id='RecurringCharge.in_advance' name='RecurringCharge.in_advance'>
+			<option value='0' selected='selected'>In Arrears</option>
+			<option value='1'>In Advance</option>
+		</select>
 	</div>
-</div>
-";
-
+</div>";
 		
 		// Create the EndDate label
 		echo "<div class='TinySeparator'></div>";
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;End Date:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;End Date :</div>\n";
 		echo "   <div id='EndDate' class='DefaultOutput'>&nbsp;</div>\n";
 		echo "</div>\n";
 		
 		echo "</div>\n"; // GroupedContent
 		
-		// Create the buttons
-		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
-		$this->AjaxSubmit("Add Adjustment");
-		echo "</div></div>\n";
-		
+		echo "
+<div>
+	<div style='float:right'>
+		<input type='button' style='display:none;' id='AddAdjustmentSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_AddRecurringAdjustment', 'Add Adjustment', 'Adjustment', 'AddRecurring', 'Popup', 'AddRecurringAdjustmentPopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
+		<input type='button' value='Submit Request' id='RecurringAdjustment_submitRequestButton' onclick='Vixen.RecurringAdjustmentAdd.SubmitRequest()'></input>
+		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
+	</div>
+	<div style='float:none;clear:both'></div>
+</div>
+";
+
+
 		// Define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);
 

@@ -47,6 +47,8 @@ function VixenRecurringAdjustmentAddClass()
 	this.elmMinCharge				= null;
 	this.elmTimesToCharge			= null;
 	this.elmRecurringChargeTypeId	= null;
+
+	this.elmSubmitButton			= null;
 	
 	this.fltRecursionCharge			= null;
 	this.fltMinCharge				= null;
@@ -116,6 +118,9 @@ function VixenRecurringAdjustmentAddClass()
 		this.objDetailNodes.EndDate			= $ID("EndDate");
 		this.objDetailNodes.ChargeTypeId	= $ID("RecurringChargeType.Id");
 		this.objDetailNodes.Continuable		= $ID("RecurringChargeType.Continuable.Output");
+		this.objDetailNodes.ApprovalRequired	= $ID("RecurringChargeType.ApprovalRequired")
+
+		this.elmSubmitButton = $ID("RecurringAdjustment_submitRequestButton");
 
 		this.elmStartDateSnapCombo			= $ID("RecurringCharge.SnapToDayOfMonth");
 		if (this.elmStartDateSnapCombo != null)
@@ -168,6 +173,18 @@ function VixenRecurringAdjustmentAddClass()
 		var strChargeType		= this.objChargeTypeData[intChargeTypeId].ChargeType;
 		var strRecurringFreq	= this.objChargeTypeData[intChargeTypeId].RecurringFreq +" "+ this.objChargeTypeData[intChargeTypeId].RecurringFreqTypeAsText;
 		var strContinuable		= (this.objChargeTypeData[intChargeTypeId].Continuable == true)? "Yes" : "No";
+		var strApprovalRequired;
+		var strSubmitButtonLabel;
+		if (this.objChargeTypeData[intChargeTypeId].ApprovalRequired == true)
+		{
+			strApprovalRequired = "Yes";
+			$strSubmitButtonLabel = "Submit Request";
+		}
+		else
+		{
+			strApprovalRequired = "No (automatically approved)";
+			$strSubmitButtonLabel = "Submit";
+		}
 		
 		if (this.objChargeTypeData[intChargeTypeId].Nature == "CR")
 		{
@@ -189,6 +206,7 @@ function VixenRecurringAdjustmentAddClass()
 		this.objDetailNodes.CancellationFee.innerHTML	= strCancellationFee;
 		this.objDetailNodes.RecurringFreq.innerHTML		= strRecurringFreq;
 		this.objDetailNodes.Continuable.innerHTML		= strContinuable;
+		this.objDetailNodes.ApprovalRequired.innerHTML  = strApprovalRequired;
 		
 		this.elmRecursionCharge.value	= strRecursionCharge;
 		this.fltCurrentRecursionCharge	= parseFloat(this.StripDollars(strRecursionCharge));
@@ -218,6 +236,9 @@ function VixenRecurringAdjustmentAddClass()
 			this.elmMinCharge.disabled			= false;
 			this.elmTimesToCharge.disabled		= false;
 		}
+		
+		// Set the label for the submit button
+		this.elmSubmitButton.value = $strSubmitButtonLabel;
 	}
 	
 	//Sets the TimesToCharge textbox, based on the RecursionCharge and the MinCharge
@@ -233,7 +254,7 @@ function VixenRecurringAdjustmentAddClass()
 		}
 		
 		// Work out number of times charged
-		this.intTimesToCharge = Math.ceil(this.fltMinCharge / this.fltRecursionCharge);
+		this.intTimesToCharge = Math.round(this.fltMinCharge / this.fltRecursionCharge);
 		
 		// Set the TimesToCharge textbox
 		if (isNaN(this.intTimesToCharge))
@@ -392,7 +413,7 @@ function VixenRecurringAdjustmentAddClass()
 			return;
 		}
 		
-		this.intTimesToCharge = Math.ceil(this.fltMinCharge / this.fltRecursionCharge);
+		this.intTimesToCharge = Math.round(this.fltMinCharge / this.fltRecursionCharge);
 		
 		this.SetTimesToChargeTextField();
 		this.SetEndDate();
@@ -489,6 +510,76 @@ function VixenRecurringAdjustmentAddClass()
 		this.intCurrentTimesToCharge = this.intTimesToCharge;
 	}
 
+	this.SubmitRequest = function(bolConfirmed)
+	{
+		var objChargeType = this.objChargeTypeData[this.elmRecurringChargeTypeId.value];
+		
+		if (!bolConfirmed)
+		{
+			// Check if the adjustment is a debit or credit
+			var strMsg = "";
+			var strMsgTitle = "";
+			
+			if (objChargeType.ApprovalRequired)
+			{
+				// The Recurring Adjustment is subject to approval
+				strMsgTitle = "Request Recurring Adjustment";
+				
+				if (objChargeType.Nature == "CR")
+				{
+					// Credit adjustment
+					strMsg = "<strong>Please Note:</strong>" +
+							"<ol>" +
+							"   <li>You are requesting a Recurring Credit Adjustment for approval</li>" +
+							"   <li>The credit request can take up to 28 days to be assessed</li>" +
+							"</ol>" +
+							"Are you sure you want to submit this request?";
+				}
+				else if (objChargeType.Nature == "DR")
+				{
+					// Debit adjustment
+					strMsg = "You are requesting a Recurring Debit Adjustment." +
+							"<br /><br />Are you sure you want to submit this request?";
+				}
+				else
+				{
+					// This case should never occur
+					alert("ERROR: Unknown Charge Type Nature: '" + objChargeType.Nature + "'");
+					return;
+				}
+			}
+			else
+			{
+				// The Recurring Adjustment is automatically approved
+				strMsgTitle = "Recurring Adjustment";
+				
+				if (objChargeType.Nature == "CR")
+				{
+					// Credit adjustment
+					strMsg = "You are creating a Recurring Credit Adjustment that will be automatically approved.  " +
+							"<br /><br />Are you sure you want to create this recurring adjustment?";
+				}
+				else if (objChargeType.Nature == "DR")
+				{
+					// Debit adjustment
+					strMsg = "You are creating a Recurring Debit Adjustment that will be automatically approved.  " +
+							"<br /><br />Are you sure you want to create this recurring adjustment?";
+				}
+				else
+				{
+					// This case should never occur
+					alert("ERROR: Unknown Charge Type Nature: '" + objChargeType.Nature + "'");
+					return;
+				}
+			}
+		
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.RecurringAdjustmentAdd.SubmitRequest(true)}, null, null, "Yes", "No", strMsgTitle);
+			return;
+		}
+		
+		var elmRealSubmitButton = $ID("AddAdjustmentSubmitButton");
+		elmRealSubmitButton.click();
+	}
 }
 
 // instanciate the objects

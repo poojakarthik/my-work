@@ -115,7 +115,25 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 				break;
 			case "Adjustment":
 				// Display the description for the delete operation
-				DBO()->DeleteRecord->Description->RenderArbitrary("Are you sure you want to delete the adjustment with the following details?");
+				$intChargeStatus = DBO()->Charge->Status->Value;
+				
+				switch ($intChargeStatus)
+				{
+					case CHARGE_WAITING:
+						$strPrompt = "This is currently just a request for adjustment.  It has not yet been approved.  Are you sure you want to cancel the request?";
+						break;
+						
+					case CHARGE_APPROVED:
+					case CHARGE_TEMP_INVOICE:
+						$strPrompt = "Are you sure you want to delete this Adjustment?";
+						break;
+					
+					default:
+						echo "Can't delete/cancel adjustments with status: ". GetConstantDescription($intChargeStatus, 'ChargeStatus') ." ({$intChargeStatus})";
+						break 2;
+				}
+				
+				echo $strPrompt;
 				echo "<div class='ContentSeparator'></div>";
 				DBO()->Charge->CreatedOn->RenderOutput();
 				DBO()->Charge->ChargeType->RenderOutput();
@@ -126,22 +144,49 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 				break;
 			case "RecurringAdjustment":
 				// Display the description for the delete operation
-				DBO()->DeleteRecord->Description->RenderArbitrary("Are you sure you want to cancel the recurring adjustment with the following details?");
+				
+				$objRecurringChargeStatus = Recurring_Charge_Status::getForId(DBO()->RecurringCharge->recurring_charge_status_id->Value);
+				
+				switch ($objRecurringChargeStatus->systemName)
+				{
+					case 'AWAITING_APPROVAL':
+						$strPrompt = "This is currently just a request for a recurring adjustment.  It has not yet been approved.  Are you sure you want to cancel this request?";
+						break;
+						
+					case 'ACTIVE':
+						if (DBO()->RecurringCharge->TotalCharged->Value < DBO()->RecurringCharge->MinCharge->Value)
+						{
+							// The minimum charge has not be reached yet
+							$strPrompt = "Are you sure you want to cancel this recurring adjustment?";
+						}
+						else
+						{
+							// The minimum charge of this been reached
+							$strPrompt = "This is a continuable recurring adjustment which has satisfied the minimum charge.  Are you sure you want to discontinue this recurring adjustment?";
+						}
+						break;
+					
+					default:
+						echo "Can't cancel recurring adjustments with status: {$objRecurringChargeStatus->name}";
+						break 2;
+				}
+				
+				echo $strPrompt;
 				echo "<div class='ContentSeparator'></div>";
 				DBO()->RecurringCharge->CreatedOn->RenderOutput();
 				DBO()->RecurringCharge->Description->RenderOutput();
 				DBO()->RecurringCharge->MinCharge->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 				DBO()->RecurringCharge->TotalCharged->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 				
-				// calculate the amount owing on the recurring charge
+				// Calculate the amount owing on the recurring charge, if it has been approved
 				$fltAmountOwing = DBO()->RecurringCharge->MinCharge->Value - DBO()->RecurringCharge->TotalCharged->Value;
-				if ((DBO()->RecurringCharge->Nature->Value == NATURE_DR) && ($fltAmountOwing > 0.0))
+				if ((DBO()->RecurringCharge->Nature->Value == NATURE_DR) && ($fltAmountOwing > 0.0) && ($objRecurringChargeStatus->systemName == 'ACTIVE'))
 				{	
 					echo "<div class='SmallSeperator'></div>\n";
 					
 					// The recurring charge is a debit.  A charge will be made to cover the remaining minimum cost, and cancellation fee
 					echo "<div class='ContentSeparator'></div>";
-					DBO()->DeleteRecord->Description->RenderArbitrary("WARNING: Cancelling this adjustment will incur a cost to the customer");
+					DBO()->DeleteRecord->Description->RenderArbitrary("WARNING: Cancelling this recurring adjustment will produce a final adjustment to settle the outstanding minimum charge amount, plus any cancellation fee.");
 					echo "<div class='ContentSeparator'></div>";
 
 					DBO()->RecurringCharge->MinCharge->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
@@ -159,14 +204,19 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 		}
 		
 		// display the textarea for the accompanying note
-		echo "<div class='Seperator'></div>\n";
-		DBO()->Note->Note->RenderInput();
+		echo "
+<div class='Separator'></div>
+<span>Additional Comments</span>
+<br />
+<textarea id='Note.Note' name='Note.Note' rows='4' style='width:100%;overflow:auto'></textarea>
+";
 		echo "</div>\n";  // GroupedContent
+		
 		
 		// display the buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(this);");
-		$this->AjaxSubmit("OK");
+		$this->AjaxSubmit("Yes");
+		$this->Button("No", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";
 		
 		$this->FormEnd();

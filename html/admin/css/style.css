@@ -23,6 +23,12 @@ div.clearing
 	clear	: both;
 }
 
+a
+{
+	cursor : pointer;
+}
+
+
 /************************ START - Page Header - START *************************/
 div#header {
 	width: 100%;
@@ -173,7 +179,8 @@ table.reflex caption div.caption_options{
 
 table.reflex thead,
 table.reflex tfoot {
-	background-color: #202020;
+	/* was background-color: #202020;*/
+	background-color: #1C1C1C;
 	color: #eee;
 	text-align: left;
 }
@@ -314,6 +321,11 @@ table.reflex td.title {
 table.highlight-rows tbody tr:hover td
 {
 	background-color: #ffc;
+}
+
+table tbody tr.selectable[selected="selected"] td
+{
+	background-color: #00ff88;
 }
 
 tr.highlight-row:hover td
