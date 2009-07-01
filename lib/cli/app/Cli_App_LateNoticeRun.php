@@ -258,7 +258,7 @@ class Cli_App_LateNoticeRun extends Cli
 	
 										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
 										{
-											$this->log("[SAMPLE:SUCCESS]Sample POST {$strLetterType} for {$strCustGroupName} delivered to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
+											$this->log("[SAMPLE:SUCCESS]: Sample POST {$strLetterType} for {$strCustGroupName} delivered to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
 										}
 										else
 										{
@@ -363,11 +363,11 @@ class Cli_App_LateNoticeRun extends Cli
 	
 										if (Email_Notification::sendEmailNotification(EMAIL_NOTIFICATION_LATE_NOTICE, $intCustGrp, self::EMAIL_BILLING_NOTIFICATIONS, $subject, NULL, $strContent, $attachments, TRUE))
 										{
-											$this->log("Sample EMAIL {$strLetterType} for {$strCustGroupName} delivered to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
+											$this->log("[SAMPLE:SUCCESS]: Sample EMAIL {$strLetterType} for {$strCustGroupName} delivered to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
 										}
 										else
 										{
-											$this->log("ERROR: Unable to deliver Sample {$strLetterType} for {$strCustGroupName} to '{".self::EMAIL_BILLING_NOTIFICATIONS."}'");
+											$this->log("[SAMPLE:ERROR]: Unable to deliver Sample {$strLetterType} for {$strCustGroupName} to '".self::EMAIL_BILLING_NOTIFICATIONS."'");
 										}
 									}
 
