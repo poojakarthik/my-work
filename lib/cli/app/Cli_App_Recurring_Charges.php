@@ -11,10 +11,12 @@ class Cli_App_Recurring_Charges extends Cli
 {
 	const	SWITCH_TEST_RUN		= "t";
 	
+	private $_strLog = "";
+	
 	function run()
 	{
 //**************************DEBUGGING*****************************
-TransactionStart();
+//TransactionStart();
 //**************************DEBUGGING*****************************
 		try
 		{
@@ -75,7 +77,7 @@ TransactionStart();
 				$this->log($strRecCharge);
 
 //Transaction Stuff				
-//				TransactionStart();
+				TransactionStart();
 				try
 				{
 					// Check if the RecurringCharge has already satisfied the conditions for completion and is not continuable
@@ -141,13 +143,13 @@ TransactionStart();
 					$intRecChargesSuccessfullyProcessed++;
 					
 //Transaction Stuff				
-//					TransactionCommit();
+					TransactionCommit();
 				}
 				catch (Exception_ChargeGeneration $e)
 				{
 					// Failed while trying to generate charges
 //Transaction Stuff				
-//					TransactionRollback();
+					TransactionRollback();
 					$this->log("\tFailed to generate the charges (Changes have been rolled back).  Error: ". $e->getMessage());
 					
 					$arrRecChargesFailedToProcess[] = array(	'RecCharge'	=> $objRecCharge,
@@ -162,7 +164,7 @@ TransactionStart();
 				{
 					// Failed for any reason other than trying to generate the charges
 //Transaction Stuff				
-//					TransactionRollback();
+					TransactionRollback();
 					$this->log("\tError (Changes have been rolled back): ". $e->getMessage());
 					
 					$arrRecChargesFailedToProcess[] = array(	'RecCharge'					=> $objRecCharge,
@@ -172,7 +174,7 @@ TransactionStart();
 				}
 			}
 //**************************DEBUGGING*****************************
-TransactionRollback();
+//TransactionRollback();
 //**************************DEBUGGING*****************************
 
 			$this->log("");
@@ -375,6 +377,7 @@ TransactionRollback();
 			$objEmailNotification = new Email_Notification(EMAIL_NOTIFICATION_RECURRING_CHARGE_REPORT);
 			$objEmailNotification->setSubject($strEmailSubject);
 			$objEmailNotification->setBodyHtml($strEmailBody);
+			$objEmailNotification->addAttachment($this->_strLog, 'recurring_charge_installment_generation_log'. date('Ymd_His', strtotime($strNow)) .'.txt', 'text/plain');
 			$objEmailNotification->send();
 			$this->log("Sent successfully");
 			$this->log("");
@@ -394,6 +397,7 @@ TransactionRollback();
 							"Regards\nFlexor";
 			
 			$objEmailNotification->setBodyText($strEmailBody);
+			$objEmailNotification->addAttachment($this->_strLog, 'recurring_charge_installment_generation_log'. date('Ymd_His', strtotime($strNow)) .'.txt', 'text/plain');
 			$objEmailNotification->send();
 
 			// We can now show the error message
@@ -403,6 +407,18 @@ TransactionRollback();
 			return 1;
 		}
 	}
+
+	// I want to attach the log to the RecurringChargeSummary email
+	protected function log($message, $isError=FALSE, $suppressNewLine=FALSE, $alwaysEcho=FALSE)
+	{
+		parent::log($message, $isError, $suppressNewLine, $alwaysEcho);
+		
+		$this->_strLog .= $message;
+		if (!$suppressNewLine)
+		{
+			$this->_strLog .= "\n";
+		}
+	} 
 
 	function getCommandLineArguments()
 	{
