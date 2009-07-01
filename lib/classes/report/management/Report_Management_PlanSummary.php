@@ -37,7 +37,7 @@ class Report_Management_PlanSummary extends Report_Management
 		$arrCols['TotalCost']			= "SUM(ServiceTotal.CappedCost + ServiceTotal.UncappedCost)";
 		$arrCols['TotalRated']			= "SUM(ServiceTotal.CappedCharge + ServiceTotal.UncappedCharge)";
 		$arrCols['TotalBilled']			= "SUM(TotalCharge)";
-		$selPlanSummary = new StatementSelect(	"Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
+		$selPlanSummary = new StatementSelect(	"ServiceTotal JOIN Service ON Service.Id = ServiceTotal.Service",
 												$arrCols,
 												"ServiceTotal.RatePlan = <RatePlan> AND ServiceTotal.invoice_run_id = <invoice_run_id>");
 		$selServicesLost	= new StatementSelect("ServiceTotal ST", "ST.Id", "ST.invoice_run_id = <last_invoice_run_id> AND ST.Service NOT IN (SELECT ST2.Service FROM ServiceTotal ST2 WHERE ST2.invoice_run_id = <invoice_run_id> AND ST2.RatePlan = <RatePlan>) AND ST.RatePlan = <RatePlan>");
@@ -57,9 +57,9 @@ class Report_Management_PlanSummary extends Report_Management
 		$arrCols['TotalCallCount']		= "COUNT(CDR.Id)";
 		$arrCols['TotalCost']			= "SUM(CDR.Cost)";
 		$arrCols['TotalCharged']		= "SUM(CDR.Charge)";
-		$selCallSummary	= new StatementSelect("CDR JOIN ServiceTotal ON ServiceTotal.Service = CDR.Service", $arrCols, "ServiceTotal.RatePlan = <RatePlan> AND CDR.invoice_run_id = <invoice_run_id> AND ServiceTotal.invoice_run_id = <invoice_run_id> AND CDR.RecordType = <RecordType> AND CDR.Credit = 0");
+		$selCallSummary	= new StatementSelect("ServiceTotal JOIN CDR ON ServiceTotal.Service = CDR.Service", $arrCols, "ServiceTotal.RatePlan = <RatePlan> AND CDR.invoice_run_id = <invoice_run_id> AND ServiceTotal.invoice_run_id = <invoice_run_id> AND CDR.RecordType = <RecordType> AND CDR.Credit = 0");
 		
-		$selCallCredits	= new StatementSelect("CDR JOIN ServiceTotal ON ServiceTotal.Service = CDR.Service", $arrCols, "ServiceTotal.RatePlan = <RatePlan> AND CDR.invoice_run_id = <invoice_run_id> AND ServiceTotal.invoice_run_id = <invoice_run_id> AND CDR.Credit = 1");
+		$selCallCredits	= new StatementSelect("ServiceTotal JOIN CDR ON ServiceTotal.Service = CDR.Service", $arrCols, "ServiceTotal.RatePlan = <RatePlan> AND CDR.invoice_run_id = <invoice_run_id> AND ServiceTotal.invoice_run_id = <invoice_run_id> AND CDR.Credit = 1");
 		
 		$selRatePlans	= new StatementSelect("(RatePlan JOIN ServiceTotal ON RatePlan.Id = ServiceTotal.RatePlan) JOIN Account ON Account.Id = ServiceTotal.Account", "DISTINCT RatePlan.*", "CustomerGroup = <customer_group_id>", "RatePlan.ServiceType");
 		$selMeanSpend	= new StatementSelect("ServiceTypeTotal STT JOIN ServiceTotal ST USING (invoice_run_id, Service)", "AVG(STT.Charge) AS MeanServiceSpend", "ST.invoice_run_id = <invoice_run_id> AND ST.RatePlan = <RatePlan> AND STT.RecordType = <RecordType>");
