@@ -39,6 +39,8 @@ class Cli_App_Recurring_Charges extends Cli
 			$arrRecChargesCompletedWithoutGeneratingCharges	= array();
 			$intRecChargesSuccessfullyProcessed				= 0;
 			$intRecChargesCompletedAfterGeneratingCharges	= 0;
+			$intActiveContinuingDebitRecChargesThatHaveSatisfiedRequirementsForCompletion	= 0;
+			$intActiveContinuingCreditRecChargesThatHaveSatisfiedRequirementsForCompletion	= 0;
 			$arrRecChargesFailedToProcess					= array();
 			$arrRecChargesDueForChargeGeneration			= array(	"Successful" => array(),
 																		"Failed"	=> array()
@@ -48,6 +50,7 @@ class Cli_App_Recurring_Charges extends Cli
 			
 			
 			$intRecurringChargeStatusCompleted = Recurring_Charge_Status::getIdForSystemName('COMPLETED');
+			$intRecurringChargeStatusActive = Recurring_Charge_Status::getIdForSystemName('ACTIVE');
 			
 			// This script will should be ok to run during an outstanding live invoice run, so don't bother testing for now
 			
@@ -138,6 +141,20 @@ class Cli_App_Recurring_Charges extends Cli
 					{
 						// The recurring charge doesn't need to create any installments right now
 						$this->log("\tNot due for charge generation");
+					}
+					
+					// Check if the RecurringAdjustment has satisfied the requirements for completion, but is still Active (a continuable recurring charge)
+					if ($objRecCharge->recurringChargeStatusId == $intRecurringChargeStatusActive && $objRecCharge->hasSatisfiedRequirementsForCompletion())
+					{
+						// It has and it is
+						if ($objRecCharge->nature == NATURE_CR)
+						{
+							$intActiveContinuingCreditRecChargesThatHaveSatisfiedRequirementsForCompletion++;
+						}
+						else
+						{
+							$intActiveContinuingDebitRecChargesThatHaveSatisfiedRequirementsForCompletion++;
+						}
 					}
 					
 					$intRecChargesSuccessfullyProcessed++;
@@ -232,6 +249,15 @@ class Cli_App_Recurring_Charges extends Cli
 			$arrSummaryTableRows[] = array(	'Title'		=> 'Set to COMPLETED without needing installments generated',
 											'Value'		=> count($arrRecChargesCompletedWithoutGeneratingCharges),
 											'Highlight'	=> ((count($arrRecChargesCompletedWithoutGeneratingCharges) > 0)? true : false));
+
+
+			$arrSummaryTableRows[] = array(	'Title'		=> 'Recurring Credits that are continuing beyond the Minimum Credit',
+											'Value'		=> $intActiveContinuingCreditRecChargesThatHaveSatisfiedRequirementsForCompletion,
+											'Highlight'	=> (($intActiveContinuingCreditRecChargesThatHaveSatisfiedRequirementsForCompletion > 0)? true : false));
+
+			$arrSummaryTableRows[] = array(	'Title'		=> 'Recurring Debits that are continuing beyond the Minimum Charge',
+											'Value'		=> $intActiveContinuingDebitRecChargesThatHaveSatisfiedRequirementsForCompletion,
+											'Highlight'	=> false);
 			
 
 			$strSummaryTableRows = "";
