@@ -18,6 +18,14 @@ class Cli_App_LateNoticeRun extends Cli
 		$now = time();
 		$this->runDateTime = date('Y-m-d H:i:s', $now);
 		$pathDate = date('Ymd', $now);
+		
+		$dacFlex	= DataAccess::getDataAccess();
+		
+		if (!$dacFlex->TransactionStart())
+		{
+			$this->showUsage('ERROR: There was an error starting the transaction');
+			return 1;
+		}
 
 		try
 		{
@@ -533,12 +541,29 @@ class Cli_App_LateNoticeRun extends Cli
 			{
 				$this->log("Failed to email report.", TRUE);
 			}
+			
+			if ($this->_bolTestRun)
+			{
+				if (!$dacFlex->TransactionRollback())
+				{
+					throw new Exception("Test Mode Transaction Rollback Failed");
+				}
+			}
+			if (!$dacFlex->TransactionCommit())
+			{
+				throw new Exception("Transaction Commit Failed");
+			}
 
 			$this->log("Finished.");
 			return $errors;
 		}
 		catch(Exception $exception)
 		{
+			if (!$dacFlex->TransactionRollback())
+			{
+				throw new Exception("Transaction Rollback Failed");
+			}
+			
 			$this->showUsage('ERROR: ' . $exception->getMessage());
 			return 1;
 		}
