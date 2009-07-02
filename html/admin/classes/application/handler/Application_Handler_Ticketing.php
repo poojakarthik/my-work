@@ -442,7 +442,7 @@ class Application_Handler_Ticketing extends Application_Handler
 											$ticket->ownerId = NULL;
 											$invalidValues[$editableValue] = 'You cannot unassign a ticket. Please specify an owner for the ticket.';
 										}
-										elseif ($action == 'create' && $intOldTicketStatus !== TICKETING_STATUS_UNASSIGNED)
+										elseif ($action == 'create' && in_array('ownerId', $editableValues))
 										{
 											$ticket->ownerId = NULL;
 											$invalidValues[$editableValue] = 'Please specify an owner for the ticket.';
