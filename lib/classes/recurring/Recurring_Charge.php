@@ -375,14 +375,14 @@ class Recurring_Charge extends ORM_Cached
 		$bolTotalChargedTest	= (bool)($this->totalCharged >= ($this->minCharge - self::MIN_CHARGE_MARGIN_OF_ERROR));
 		
 		// This test is probably more accurate
-		$bolTotalRecursionsTest	= (bool)($this->TotalRecursions >= $intTimesToCharge);
+		$bolTotalRecursionsTest	= (bool)($this->totalRecursions >= $intTimesToCharge);
 		
 		// Sanity check that both these tests arrived at the same answer
 		if ($bolTotalChargedTest != $bolTotalRecursionsTest)
 		{
 			throw new Exception_Assertion("Check to see if RecurringCharge has reached the minimum charge gave 2 different answers when testing ".
 					"against TotalCharged (check: TotalCharged >= (MinCharge - MarginOfError), gives: {$this->totalCharged} >= ({$this->minCharge} - ". self::MIN_CHARGE_MARGIN_OF_ERROR .") == ". print_r($bolTotalChargedTest, true) .") " .
-					"and TotalRecursions (check: TotalRecursions >= calculatedTimesToCharge), gives: {$this->totalCharged} >= {$intTimesToCharge} == ". print_r($bolTotalRecursionsTest, true) .")", "RecurringCharge object: \n". print_r($this, true), "RecurringCharge Record Data Integrity Breach");
+					"and TotalRecursions (check: TotalRecursions >= calculatedTimesToCharge), gives: {$this->totalRecursions} >= {$intTimesToCharge} == ". print_r($bolTotalRecursionsTest, true) .")", "RecurringCharge object: \n". print_r($this, true), "RecurringCharge Record Data Integrity Breach");
 		}
 		
 		return $bolTotalChargedTest;
@@ -392,7 +392,6 @@ class Recurring_Charge extends ORM_Cached
 	// It is a precondition that all necessary fields of the Recurring_Charge object, have been set to valid values
 	// It uses the following fields of the RecurringCharge record to calculate when the installment is due: RecurringFreq, RecurringFreqType, in_advance, StartedOn
 	// For example, if you want to know the ChargedOn date for the first installment then call getChargedOnDateForInstallment(1)
-	//*************************** TODO - TEST THIS FUNCTION THOROUGHLY - TODO ****************************************************************************** 
 	public function getChargedOnDateForInstallment($intInstallment)
 	{
 		$strTimeToAdd = "";
@@ -944,6 +943,13 @@ class Recurring_Charge extends ORM_Cached
 				throw new Exception_Assertion(__METHOD__ ." - There are currently '{$intCurrentInstallmentChargeRecordCount}' installment charge records associated with this recurring charge, but there should only be '{$this->totalRecursions}' records", "RecurringCharge object: \n". print_r($this, true), "RecurringCharge Record Data Integrity Breach");
 			}
 			
+			// Check that a Charge has not already been created for this recurring charge, with this ChargedOn date
+			if ($this->_hasChargeRecordForChargedOnDate($strChargedOnForNextInstallment))
+			{
+				// This should never happen
+				throw new Exception_Assertion(__METHOD__ ." - There is currently already a charge made for this ChargedOn date ({$strChargedOnForNextInstallment})", "RecurringCharge object: \n". print_r($this, true), "RecurringCharge Record Data Integrity Breach");
+			}
+			
 			// Calculate how much to charge (could be a partial installment)
 			$fltAmountToCharge = $this->calculateNextInstallmentCharge();
 			
@@ -1011,6 +1017,22 @@ class Recurring_Charge extends ORM_Cached
 		$arrRecord = $selInstallmentChargeCount->Fetch();
 		return $arrRecord['charge_record_count'];
 	}
+	
+	// Returns TRUE if a charge record already exists relating to this RecurringCharge for this ChargedOn Date
+	private function _hasChargeRecordForChargedOnDate($strChargedOn)
+	{
+		$selCharge = $this->_preparedStatement('selChargeForChargedOnDate');
+		
+		$intRecordCount = $selCharge->Execute(Array('ChargedOn'=> $strChargedOn, 'RecurringChargeId' => $this->id));
+		
+		if ($intRecordCount === false)
+		{
+			throw new Exception('Failed to try and retrieve the charge relating to this recurring charge, with ChargedOn: '. $strChargedOn .'. Msg - '. $selCharge->Error());
+		}
+		
+		return ($intRecordCount)? true : false;
+	}
+	
 
 	// Retrieves all RecurringCharges that are currently active
 	public static function getAllActiveRecurringCharges()
@@ -1090,13 +1112,13 @@ class Recurring_Charge extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "Id ASC");
 					break;
 				case 'selCountInstallmentCharges':
-					$arrColumns		=	Array("charge_record_count" => "COUNT(*)");
-					$strFromClause	=	"charge_recurring_charge ".
-										"INNER JOIN RecurringCharge ON charge_recurring_charge.recurring_charge_id = RecurringCharge.Id ".
-										"INNER JOIN Charge ON charge_recurring_charge.charge_id = Charge.Id AND Charge.LinkType = ". CHARGE_LINK_RECURRING;
-					$arrPreparedStatements[$strStatement]	= new StatementSelect($strFromClause, $arrColumns, "RecurringCharge.Id = <RecurringChargeId>");
+					$arrColumns = Array("charge_record_count" => "COUNT(*)");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect('Charge', $arrColumns, "LinkType = ". CHARGE_LINK_RECURRING ." AND LinkId = <RecurringChargeId>");
 					break;
-				
+				case 'selChargeForChargedOnDate':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect('Charge', "*", "ChargedOn = <ChargedOn> AND LinkType = ". CHARGE_LINK_RECURRING ." AND LinkId = <RecurringChargeId>", "Id ASC");
+					break;
+
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);

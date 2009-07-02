@@ -112,7 +112,7 @@
  	function Execute()
  	{
  		// $this->_GetCharges() will always return FALSE.  This method should no longer be used
- 		
+ 		throw new Exception('DEPRECATED');
 		$this->_rptRecurringChargesReport->AddMessage(MSG_GENERATE_CHARGES);
 		$intPassed = 0;
 		$intTotal = 0;

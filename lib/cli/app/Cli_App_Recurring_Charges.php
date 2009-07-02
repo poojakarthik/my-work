@@ -15,9 +15,6 @@ class Cli_App_Recurring_Charges extends Cli
 	
 	function run()
 	{
-//**************************DEBUGGING*****************************
-//TransactionStart();
-//**************************DEBUGGING*****************************
 		try
 		{
 			$this->log("Starting.");
@@ -39,6 +36,7 @@ class Cli_App_Recurring_Charges extends Cli
 			$arrRecChargesCompletedWithoutGeneratingCharges	= array();
 			$intRecChargesSuccessfullyProcessed				= 0;
 			$intRecChargesCompletedAfterGeneratingCharges	= 0;
+			$intRecChargesNotDueForChargeGeneration = 0;
 			$intActiveContinuingDebitRecChargesThatHaveSatisfiedRequirementsForCompletion	= 0;
 			$intActiveContinuingCreditRecChargesThatHaveSatisfiedRequirementsForCompletion	= 0;
 			$arrRecChargesFailedToProcess					= array();
@@ -79,7 +77,6 @@ class Cli_App_Recurring_Charges extends Cli
 				$arrRecChargeDescriptions[$objRecCharge->id] = $strRecCharge;
 				$this->log($strRecCharge);
 
-//Transaction Stuff				
 				TransactionStart();
 				try
 				{
@@ -88,6 +85,7 @@ class Cli_App_Recurring_Charges extends Cli
 					{
 						// Set it to completed
 						$objRecCharge->setToCompleted();
+						$intRecChargesNotDueForChargeGeneration++;
 						$this->log("\tSet to COMPLETED without requiring any charges to be generated.  (it is not continuable)");
 						
 						$arrRecChargesCompletedWithoutGeneratingCharges[] = $objRecCharge;
@@ -140,6 +138,7 @@ class Cli_App_Recurring_Charges extends Cli
 					else
 					{
 						// The recurring charge doesn't need to create any installments right now
+						$intRecChargesNotDueForChargeGeneration++;
 						$this->log("\tNot due for charge generation");
 					}
 					
@@ -159,13 +158,11 @@ class Cli_App_Recurring_Charges extends Cli
 					
 					$intRecChargesSuccessfullyProcessed++;
 					
-//Transaction Stuff				
 					TransactionCommit();
 				}
 				catch (Exception_ChargeGeneration $e)
 				{
 					// Failed while trying to generate charges
-//Transaction Stuff				
 					TransactionRollback();
 					$this->log("\tFailed to generate the charges (Changes have been rolled back).  Error: ". $e->getMessage());
 					
@@ -180,7 +177,6 @@ class Cli_App_Recurring_Charges extends Cli
 				catch (Exception $e)
 				{
 					// Failed for any reason other than trying to generate the charges
-//Transaction Stuff				
 					TransactionRollback();
 					$this->log("\tError (Changes have been rolled back): ". $e->getMessage());
 					
@@ -190,9 +186,6 @@ class Cli_App_Recurring_Charges extends Cli
 															);
 				}
 			}
-//**************************DEBUGGING*****************************
-//TransactionRollback();
-//**************************DEBUGGING*****************************
 
 			$this->log("");
 			$this->log("Generating Email Report...");
@@ -214,8 +207,12 @@ class Cli_App_Recurring_Charges extends Cli
 											'Value'		=> count($arrRecChargesFailedToProcess),
 											'Highlight'	=> ((count($arrRecChargesFailedToProcess) > 0)? true : false));
 			
-			$arrSummaryTableRows[] = array(	'Title'		=> 'Due for Installment Generation',
+			$arrSummaryTableRows[] = array(	'Title'		=> 'Due/eligible for Installment Generation',
 											'Value'		=> count($arrRecChargesDueForChargeGeneration['Successful']) + count($arrRecChargesDueForChargeGeneration['Failed']),
+											'Highlight'	=> false);
+
+			$arrSummaryTableRows[] = array(	'Title'		=> 'Not due/eligible for Installment Generation',
+											'Value'		=> $intRecChargesNotDueForChargeGeneration,
 											'Highlight'	=> false);
 			
 			$arrSummaryTableRows[] = array(	'Title'		=> 'Successfully Generated Installments',
