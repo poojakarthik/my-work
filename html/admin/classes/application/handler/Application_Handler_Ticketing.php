@@ -354,12 +354,6 @@ class Application_Handler_Ticketing extends Application_Handler
 				case 'create':
 					$ticket = Ticketing_Ticket::createBlank();
 					
-					
-					// Tickets are no longer auto-assigned to the creator
-					//$ticket->owner = $currentUser;
-					$ticket->statusId	= TICKETING_STATUS_UNASSIGNED;
-					$bolChangeOwner	= false;
-
 					// Initial correspondence
 					$correspondence = Ticketing_Correspondance::createBlank();
 					$editableValues[] = 'customerGroupEmailId';
@@ -367,10 +361,17 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'deliveryStatusId';
 					$editableValues[] = 'details';
 					
+					// Tickets are no longer auto-assigned to the creator
 					if ($currentUser->isAdminUser())
 					{
 						// Only ticketing admins can assign tickets to people other than themselves
-						$editableValues[] = 'ownerId';
+						//$ticket->owner		= $currentUser;
+						$editableValues[]	= 'ownerId';
+					}
+					else
+					{
+						$ticket->statusId	= TICKETING_STATUS_UNASSIGNED;
+						$bolChangeOwner		= false;
 					}
 					
 					if (array_key_exists('accountId', $_REQUEST))
@@ -442,11 +443,12 @@ class Application_Handler_Ticketing extends Application_Handler
 											$ticket->ownerId = NULL;
 											$invalidValues[$editableValue] = 'You cannot unassign a ticket. Please specify an owner for the ticket.';
 										}
+										/* No longer need to specify an owner if creating
 										elseif ($action == 'create' && in_array('ownerId', $editableValues))
 										{
 											$ticket->ownerId = NULL;
 											$invalidValues[$editableValue] = 'Please specify an owner for the ticket.';
-										}
+										}*/
 										else
 										{
 											// The ticket doesn't currently have an owner, but it doesn't matter
