@@ -362,6 +362,7 @@ class Application_Handler_Ticketing extends Application_Handler
 					$editableValues[] = 'details';
 					
 					// Tickets are no longer auto-assigned to the creator
+					$ticket->statusId	= TICKETING_STATUS_UNASSIGNED;
 					if ($currentUser->isAdminUser())
 					{
 						// Only ticketing admins can assign tickets to people other than themselves
@@ -370,7 +371,6 @@ class Application_Handler_Ticketing extends Application_Handler
 					}
 					else
 					{
-						$ticket->statusId	= TICKETING_STATUS_UNASSIGNED;
 						$bolChangeOwner		= false;
 					}
 					
