@@ -358,6 +358,7 @@ class Application_Handler_Ticketing extends Application_Handler
 					// Tickets are no longer auto-assigned to the creator
 					//$ticket->owner = $currentUser;
 					$ticket->statusId	= TICKETING_STATUS_UNASSIGNED;
+					$bolChangeOwner	= false;
 
 					// Initial correspondence
 					$correspondence = Ticketing_Correspondance::createBlank();
@@ -376,8 +377,6 @@ class Application_Handler_Ticketing extends Application_Handler
 					{
 						$ticket->accountId = intval($_REQUEST['accountId']);
 					}
-					
-					$bolChangeOwner	= true;
 
 				case 'edit':
 
