@@ -149,13 +149,6 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				self::ARG_DEFAULT 	=> NULL,
 				self::ARG_VALIDATION 	=> 'Cli::_validFile("%1$s", TRUE)'
 			),
-			
-			self::SWITCH_EFFECTIVE_DATE => array(
-				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "Process with an effective date",
-				self::ARG_DEFAULT		=> date('Y-m-d'),
-				self::ARG_VALIDATION	=> 'Cli::_validDate("%1$s")'
-			),
 
 		);
 		return $commandLineArguments;
