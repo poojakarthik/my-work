@@ -353,7 +353,11 @@ class Application_Handler_Ticketing extends Application_Handler
 
 				case 'create':
 					$ticket = Ticketing_Ticket::createBlank();
+					
+					
+					// Tickets are no longer auto-assigned to the creator
 					//$ticket->owner = $currentUser;
+					$ticket->statusId	= TICKETING_STATUS_UNASSIGNED;
 
 					// Initial correspondence
 					$correspondence = Ticketing_Correspondance::createBlank();
