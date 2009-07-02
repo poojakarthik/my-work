@@ -3,7 +3,8 @@
 
 class Cli_App_FailedInvoiceEmailNotifications extends Cli
 {
-	const SWITCH_POSTFIX_LOG = "f";
+	const SWITCH_POSTFIX_LOG	= "f";
+	const SWITCH_EFFECTIVE_DATE	= "d";
 
 	function run()
 	{
@@ -42,7 +43,12 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 
 			// Escape the email address strings to prevent sql injection & prevent errors - this is a bit hacky!
 			$func = function_exists('mysql_escape_string') ? 'mysql_escape_string' : (function_exists('mysqli_escape_string') ? 'mysqli_escape_string' : 'pg_escape_string');
-			array_walk($arrEmailAddresses, $func);
+			//array_walk($arrEmailAddresses, $func);
+			foreach ($arrEmailAddresses as &$strEmailAddress)
+			{
+				$strEmailAddress	= call_user_func($func, $strEmailAddress);
+			}
+			unset($strEmailAddress);
 
 			// Build the 'Email IN (...)' part of the SQL queries
 			$strSqlEmailIn = "Email in ('" . implode("', '", $arrEmailAddresses) . "')";
