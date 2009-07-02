@@ -89,12 +89,7 @@ class Cli_App_Recurring_Charges extends Cli
 						
 						$arrRecChargesCompletedWithoutGeneratingCharges[] = $objRecCharge;
 					}
-					elseif ($objRecCharge->needsToCreateInstallments() == false)
-					{
-						// The recurring charge doesn't need to create any installments right now
-						$this->log("\tNot due for charge generation");
-					}
-					else
+					elseif ($objRecCharge->needsToCreateInstallments())
 					{
 						// The recurring charge needs to create some installments
 						try
@@ -138,6 +133,11 @@ class Cli_App_Recurring_Charges extends Cli
 							// An Exception was thrown when trying to generate the installment charges
 							throw new Exception_ChargeGeneration($e->getMessage());
 						}
+					}
+					else
+					{
+						// The recurring charge doesn't need to create any installments right now
+						$this->log("\tNot due for charge generation");
 					}
 					
 					$intRecChargesSuccessfullyProcessed++;
