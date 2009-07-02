@@ -4,7 +4,6 @@
 class Cli_App_FailedInvoiceEmailNotifications extends Cli
 {
 	const SWITCH_POSTFIX_LOG	= "f";
-	const SWITCH_EFFECTIVE_DATE	= "d";
 
 	function run()
 	{
@@ -22,15 +21,22 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			$strFooter = "Regards,<br/>\n<br/>\nThe Team at Yellow Billing";
 
 			$pathToLog = $arrArgs[self::SWITCH_POSTFIX_LOG];
-
+			
 			// Need to parse the log file here to extract the rejected email addresses
-			$log = file_get_contents($pathToLog);
+			$sPathWithWrapper	= (strtolower(array_pop(explode('.', $pathToLog))) === 'gz') ? 'compess.zlib://'.$pathToLog : $pathToLog;
+			
+			if (strpos($sPathWithWrapper, 'compess.zlib://') === 0)
+			{
+				$this->log("File '$pathToLog' is ZLIB compressed -- opening with wrapper.");
+			}
+			
+			$log = file_get_contents($sPathWithWrapper);
 			if (!$log)
 			{
 				$this->log("Log file '$pathToLog' is empty.");
 				return 0;
 			}
-
+			
 			$matches = array();
 			preg_match_all("/ to=\<([^\>\n\r]+)\>[^\n\r]+status=bounced/", $log, $matches);
 			@$arrEmailAddresses = array_unique($matches[1]);
@@ -142,6 +148,13 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				self::ARG_DESCRIPTION => "is the full path to the Postfix log (or error file)",
 				self::ARG_DEFAULT 	=> NULL,
 				self::ARG_VALIDATION 	=> 'Cli::_validFile("%1$s", TRUE)'
+			),
+			
+			self::SWITCH_EFFECTIVE_DATE => array(
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "Process with an effective date",
+				self::ARG_DEFAULT		=> date('Y-m-d'),
+				self::ARG_VALIDATION	=> 'Cli::_validDate("%1$s")'
 			),
 
 		);
