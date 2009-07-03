@@ -16,6 +16,10 @@ class Flex_Rollout_Incremental
 	{
 		// Find the available updates
 		$db = Data_Source::get();
+		if (PEAR::isError($db))
+		{
+			throw new Excpetion("Unable to connect to the Database: ".$db->getMessage());
+		}
 
 		$sql = "SELECT MAX(version) FROM database_version";
 		$res = $db->query($sql);
