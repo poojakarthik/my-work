@@ -135,10 +135,10 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 		// No rollback is necessary as RecurringCharge.recurring_charge_status_id column will be removed
 
 		//	6.3:	Set RecurringCharge.recurring_charge_status_id to CANCELLED where appropriate
-		//			Eligible records must satisfy: Is Archived AND TotalCharged < MinCharge. The -0.1 is to accomodate any rounding issues
+		//			Eligible records must satisfy: Is Archived AND TotalCharged < MinCharge. The -0.5 is to accomodate any rounding issues
 		$strSQL = "	UPDATE RecurringCharge
 					SET recurring_charge_status_id = (SELECT id FROM recurring_charge_status WHERE system_name = 'CANCELLED')
-					WHERE recurring_charge_status_id IS NULL AND Archived = 1 AND TotalCharged < (MinCharge - 0.1);";
+					WHERE recurring_charge_status_id IS NULL AND Archived = 1 AND TotalCharged < (MinCharge - 0.5);";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -147,10 +147,10 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 		// No rollback is necessary as RecurringCharge.recurring_charge_status_id column will be removed
 
 		//	6.4:	Set RecurringCharge.recurring_charge_status_id to COMPLETED where appropriate
-		//			Eligible records must satisfy: TotalCharged >= MinCharge AND (IS NOT Continuable OR (IS Continuable AND IS Archived)).  The -0.1 is to accomodate any rounding issues
+		//			Eligible records must satisfy: TotalCharged >= MinCharge AND (IS NOT Continuable OR (IS Continuable AND IS Archived)).  The -0.5 is to accomodate any rounding issues
 		$strSQL = "	UPDATE RecurringCharge
 					SET recurring_charge_status_id = (SELECT id FROM recurring_charge_status WHERE system_name = 'COMPLETED')
-					WHERE recurring_charge_status_id IS NULL AND TotalCharged >= (MinCharge - 0.1) AND (Continuable = 0 OR (Continuable = 1 AND Archived = 1));";
+					WHERE recurring_charge_status_id IS NULL AND TotalCharged >= (MinCharge - 0.5) AND (Continuable = 0 OR (Continuable = 1 AND Archived = 1));";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -163,7 +163,7 @@ class Flex_Rollout_Version_000180 extends Flex_Rollout_Version
 		$strSQL = "	UPDATE RecurringCharge
 					SET recurring_charge_status_id = (SELECT id FROM recurring_charge_status WHERE system_name = 'ACTIVE')
 					WHERE recurring_charge_status_id IS NULL AND Archived = 0 
-					AND NOT (TotalCharged >= (MinCharge - 0.1) AND (Continuable = 0 OR (Continuable = 1 AND Archived = 1)))
+					AND NOT (TotalCharged >= (MinCharge - 0.5) AND (Continuable = 0 OR (Continuable = 1 AND Archived = 1)))
 					AND NOT (Archived = 0 AND ApprovedBy IS NULL);";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
