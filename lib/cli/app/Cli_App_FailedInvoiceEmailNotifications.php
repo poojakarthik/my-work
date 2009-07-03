@@ -23,9 +23,9 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			$pathToLog = $arrArgs[self::SWITCH_POSTFIX_LOG];
 			
 			// Need to parse the log file here to extract the rejected email addresses
-			$sPathWithWrapper	= (strtolower(array_pop(explode('.', $pathToLog))) === 'gz') ? 'compess.zlib://'.$pathToLog : $pathToLog;
+			$sPathWithWrapper	= (strtolower(array_pop(explode('.', $pathToLog))) === 'gz') ? 'compress.zlib://'.$pathToLog : $pathToLog;
 			
-			if (strpos($sPathWithWrapper, 'compess.zlib://') === 0)
+			if (strpos($sPathWithWrapper, 'compress.zlib://') === 0)
 			{
 				$this->log("File '$pathToLog' is ZLIB compressed -- opening with wrapper.");
 			}
