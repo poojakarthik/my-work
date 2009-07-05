@@ -34,7 +34,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 	public function search($intSearchType, $strConstraint, $intConstraintType=NULL, $bolIncludeArchived=FALSE, $intOffset=0, $bolForceRefresh=TRUE)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
 		
 		try
 		{
@@ -107,7 +107,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 	public function buildCustomerSearchPopup()
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
 		
 		try
 		{

@@ -41,20 +41,21 @@ define("USER_NAME"						, "Intranet_app");
 // Permission All is 0x7FFFFFFFFFFFFFFF
 
 // Permissions - used for page permission
-													$arrPermissions = Array ();
-define("PERMISSION_PUBLIC"				, 0x1);		$arrPermissions[PERMISSION_PUBLIC]			= "Public";			// 1
-//define("PERMISSION_ADMIN"				, 0x2);		$arrPermissions[PERMISSION_ADMIN]			= "Admin";			// 2
-define("PERMISSION_ADMIN"				, 0x9F);	$arrPermissions[PERMISSION_ADMIN]			= "Admin";			// 159 (2 + PERMISSION_PUBLIC + PERMISSION_OPERATOR + PERMISSION_SALES + PERMISSION_ACCOUNTS + OPERATOR_VIEW)
-define("PERMISSION_OPERATOR"			, 0x4);		$arrPermissions[PERMISSION_OPERATOR]		= "Operator";		// 4
-define("PERMISSION_SALES"				, 0x8);		$arrPermissions[PERMISSION_SALES]			= "Sales";			// 8
-define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]		= "Accounts";		// 16
-define("PERMISSION_RATE_MANAGEMENT"		, 0x20);	$arrPermissions[PERMISSION_RATE_MANAGEMENT]	= "Rate Management";// 32
-define("PERMISSION_CREDIT_MANAGEMENT"			, 0x40);	$arrPermissions[PERMISSION_CREDIT_MANAGEMENT]		= "Credit Card";	// 64
-define("PERMISSION_OPERATOR_VIEW"		, 0x80);	$arrPermissions[PERMISSION_OPERATOR_VIEW]	= "Operator View";	// 128
-define("PERMISSION_SUPER_ADMIN"				, 0x3FF);	$arrPermissions[PERMISSION_SUPER_ADMIN]		= "Super Admin";	// 1023 (256 + All other permissions except DEBUG and GOD) 
+														$arrPermissions = array();
+define("PERMISSION_PUBLIC"					, 0x1);		$arrPermissions[PERMISSION_PUBLIC]					= "Public";			// 1
+//define("PERMISSION_ADMIN"					, 0x2);		$arrPermissions[PERMISSION_ADMIN]					= "Admin";			// 2
+define("PERMISSION_ADMIN"					, 0x9F);	$arrPermissions[PERMISSION_ADMIN]					= "Admin";			// 159 (2 + PERMISSION_PUBLIC + PERMISSION_OPERATOR + PERMISSION_SALES + PERMISSION_ACCOUNTS + OPERATOR_VIEW + PERMISSION_OPERATOR_EXTERNAL)
+define("PERMISSION_OPERATOR"				, 0x4);		$arrPermissions[PERMISSION_OPERATOR]				= "Operator";		// 4
+define("PERMISSION_SALES"					, 0x8);		$arrPermissions[PERMISSION_SALES]					= "Sales";			// 8
+define("PERMISSION_ACCOUNTS"				, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]				= "Accounts";		// 16
+define("PERMISSION_RATE_MANAGEMENT"			, 0x20);	$arrPermissions[PERMISSION_RATE_MANAGEMENT]			= "Rate Management";// 32
+define("PERMISSION_CREDIT_MANAGEMENT"		, 0x40);	$arrPermissions[PERMISSION_CREDIT_MANAGEMENT]		= "Credit Card";	// 64
+define("PERMISSION_OPERATOR_VIEW"			, 0x80);	$arrPermissions[PERMISSION_OPERATOR_VIEW]			= "Operator View";	// 128
+define("PERMISSION_OPERATOR_EXTERNAL"		, 0x100);	$arrPermissions[PERMISSION_OPERATOR_EXTERNAL]		= "Operator External";	// 256
+define("PERMISSION_SUPER_ADMIN"				, 0x3FF);	$arrPermissions[PERMISSION_SUPER_ADMIN]				= "Super Admin";	// 1023 (256 + All other permissions except DEBUG and GOD) 
 define("PERMISSION_CUSTOMER_GROUP_ADMIN"	, 0x200);	$arrPermissions[PERMISSION_CUSTOMER_GROUP_ADMIN]	= "Customer Group Admin";	// 512
 
-													$GLOBALS['Permissions']	= $arrPermissions;
+														$GLOBALS['Permissions']	= $arrPermissions;
 
 /*
 define("PERMISSION_"					, 0x20);

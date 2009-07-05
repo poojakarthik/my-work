@@ -103,7 +103,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	{
 		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		
 		// If Account.Id is not set, but Service.Id is, then find the account that the service belongs to
@@ -175,7 +175,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	{
 		// Check user authorization
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
 
 		// Attempt to load the account
 		if (!DBO()->Account->Load())
@@ -368,7 +368,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		
 		// breadcrumb menu
