@@ -787,16 +787,18 @@ class Application
 	 * Checks the user's permissions against the permissions required to view the current page
 	 * If the user does not have the required permissions then the login screen is loaded
 	 *
-	 * @param		int		$intPagePerms		permissions required to use the page
+	 * @param		mix		$mixPagePerms		permissions required to use the page
+	 * 											int		: Permission required
+	 * 											array	: Array of permissions the user must have at least one of
 	 * @param		bool	$bolRequireLocal	require the user to be local
 	 * @return		void
 	 * @method
 	 *
 	 */
-	function PermissionOrDie($intPagePerms, $bolRequireLocal=NULL)
+	function PermissionOrDie($mixPagePerms, $bolRequireLocal=NULL)
 	{
 		// check the current user permission against permissions passed in
-		if ($this->UserHasPerm($intPagePerms, $bolRequireLocal))
+		if ($this->UserHasPerm($mixPagePerms, $bolRequireLocal))
 		{
 			return TRUE;
 		}
@@ -809,7 +811,7 @@ class Application
 	function InsufficientPrivilegeDie()
 	{
 		// ask user to login, then return to page
-		if ($this->_intMode == AJAX_MODE)
+		if ($this->_intMode == AJAX_MODE || stripos($_SERVER['PHP_SELF'], 'reflex_json.php') !== false)
 		{
 			Ajax()->AddCommand("Alert", "You do not have the required user privileges to perform this action");
 			Ajax()->Reply();
@@ -833,26 +835,36 @@ class Application
 	 * Checks the user's permissions against the permissions passed in
 	 *
 	 *
-	 * @param		int		$intPerms			permissions to check the user's permissions against
+	 * @param		mix		$mixPerms			permissions to check the user's permissions against
+	 * 											int		: Permission required
+	 * 											array	: Array of permissions the user must have at least one of
 	 * @param		bool	$bolRequireLocal	require the user to be local
 	 * @return		bool
 	 * @method
 	 *
 	 */
-	function UserHasPerm($intPerms, $bolRequireLocal=NULL)
+	function UserHasPerm($mixPerms, $bolRequireLocal=NULL)
 	{
 		// check for local user
 		if ($bolRequireLocal == TRUE && $_SESSION['User']['IsLocal'] !== TRUE)
 		{
 			return FALSE;
 		}
-		// Do a binary 'AND' between the user's privilages and the paramerter
-		$intChecked = $_SESSION['User']['Privileges'] & $intPerms;
-
-		// If the user has all the privileges defined in $intPerms, then $intChecked will equal $intPerms
-		if ($intChecked == $intPerms)
+		
+		// Ensure $mixPerms is an array
+		$arrPerms	= (is_array($mixPerms)) ? $mixPerms : array($mixPerms);
+		
+		// If the user has at least one of the specified permissions, then return TRUE
+		foreach ($arrPerms as $intPerms)
 		{
-			return TRUE;
+			// Do a binary 'AND' between the user's privilages and the paramerter
+			$intChecked = $_SESSION['User']['Privileges'] & $intPerms;
+	
+			// If the user has all the privileges defined in $intPerms, then $intChecked will equal $intPerms
+			if ($intChecked == $intPerms)
+			{
+				return TRUE;
+			}
 		}
 
 		return FALSE;
