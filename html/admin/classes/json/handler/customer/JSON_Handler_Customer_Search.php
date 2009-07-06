@@ -107,7 +107,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 	public function buildCustomerSearchPopup()
 	{
 		// Check user permissions
-		if (!(AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL)))
+		if (!(AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL))))
 		{
 			return array(
 							'Success'	=> false,
