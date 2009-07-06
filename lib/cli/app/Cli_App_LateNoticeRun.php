@@ -544,10 +544,7 @@ class Cli_App_LateNoticeRun extends Cli
 			
 			if ($this->_bolTestRun)
 			{
-				if (!$dacFlex->TransactionRollback())
-				{
-					throw new Exception("Test Mode Transaction Rollback Failed");
-				}
+				throw new Exception("Test Mode!  Rolling back all database changes.");
 			}
 			if (!$dacFlex->TransactionCommit())
 			{
