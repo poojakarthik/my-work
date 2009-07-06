@@ -206,6 +206,9 @@ jQuery.json = {
 				Vixen.Popup.ClosePageLoadingSplash();
 			}
 			var success = true;
+			
+			alert(Object.inspect(arguments));
+			
 			if (arguments.length > 0 && arguments[1] != 'success')
 			{
 				success = false;
@@ -223,6 +226,12 @@ jQuery.json = {
 					// ... and get rid of the next line
 					//arguments[0]['ERROR'] = "Your session has timed out. Please log in to continue.";
 					Vixen.Popup.ShowAjaxPopup("LoginPopup", "medium", "Login", "User", "DisplayLoginPopup", null, "nonmodal");
+					return;
+				}
+				else if (arguments[0]['ERROR'] == 'PERMISSIONS')
+				{
+					// Inform the user that they do not have the required permissions for this action
+					$Alert("You do not have permission to access this functionality", 'medium', 'PermissionInsufficient', null, "Insufficient Permissions");
 					return;
 				}
 
