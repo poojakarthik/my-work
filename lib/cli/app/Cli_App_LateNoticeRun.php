@@ -561,7 +561,8 @@ class Cli_App_LateNoticeRun extends Cli
 		{
 			if (!$dacFlex->TransactionRollback())
 			{
-				throw new Exception("Transaction Rollback Failed");
+				$this->showUsage('ERROR: Transaction Rollback Failed');
+				return 1;
 			}
 			
 			$this->showUsage('ERROR: ' . $exception->getMessage());
