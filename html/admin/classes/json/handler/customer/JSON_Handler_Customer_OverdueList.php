@@ -74,7 +74,13 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 	public function buildPopup()
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		if (!(AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR_VIEW))))
+		{
+			return array(
+							'Success'	=> false,
+							'Error'		=> "PERMISSIONS",
+						);
+		}
 		
 		try
 		{
