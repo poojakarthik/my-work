@@ -758,7 +758,7 @@ abstract class ModuleService
 								"Account"			=> $this->_intAccount,
 								"LastCreatedOn"		=> $this->_arrServiceRecords[0]['CreatedOn']
 								);
-		$strOrderBy		= "Id DESC";
+		$strOrderBy		= "ClosedOn DESC, Id DESC";
 		$arrColumns		= array(
 								"Id"				=> "S.Id",
 								"Account"			=> "S.Account", 
