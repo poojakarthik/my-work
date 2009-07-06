@@ -157,7 +157,7 @@ class Report_Management_InvoiceSummary extends Report_Management
 			}
 			
 			// Receivables Summary
-			if (!$arrBalanceData = unserialize($arrData['BalanceData']))
+			/*if (!$arrBalanceData = unserialize($arrData['BalanceData']))
 			{
 				// Don't have the required back-data
 				$arrBalanceData = Array();
@@ -166,14 +166,15 @@ class Report_Management_InvoiceSummary extends Report_Management
 				$fltReceived					= "N/A";
 			}
 			else
-			{
+			{*/
 				// Have Back-data
 				$selLastInvoiceTotal->Execute($arrData);
-				$arrLastInvoiceTotal = $selLastInvoiceTotal->Fetch();
-				$fltTotalOutstanding			= $arrBalanceData['TotalBalance'] + $arrBalanceData['TotalOutstanding'];
-				$fltTotalOutstandingExInvoice	= $arrBalanceData['TotalOutstanding'];
-				$fltReceived					= ($arrLastInvoiceTotal['GrandTotal']) ? ($arrLastInvoiceTotal['GrandTotal'] - $arrBalanceData['PreviousBalance']) / $arrLastInvoiceTotal['GrandTotal'] : 'N/A';
-			}
+				$arrLastInvoiceTotal			= $selLastInvoiceTotal->Fetch();
+				
+				$fltTotalOutstanding			= $arrData['BillInvoiced'] + $arrData['BillTax'] + $arrData['total_balance'];
+				$fltTotalOutstandingExInvoice	= $arrData['total_balance'];
+				$fltReceived					= ($arrLastInvoiceTotal['GrandTotal']) ? ($arrLastInvoiceTotal['GrandTotal'] - $arrData['previous_balance']) / $arrLastInvoiceTotal['GrandTotal'] : 'N/A';
+			//}
 			
 			$wksWorksheet->write(26, $intCol, $fltTotalOutstanding			, $arrFormat['Currency']);
 			$wksWorksheet->write(27, $intCol, $fltTotalOutstandingExInvoice	, $arrFormat['Currency']);
