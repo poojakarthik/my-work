@@ -64,16 +64,22 @@ $arrSQLSelect['Times Invoiced']						['Value']	= "COUNT(i.Id)";
 $arrSQLSelect['Last Invoiced On']					['Value']	= "DATE_FORMAT(MAX(ir.BillingDate), '%d/%m/%Y')";
 
 $arrSQLSelect['Total CDR Cost (ex GST)']			['Value']	= "SUM(ict.cdr_cost)";
+$arrSQLSelect['Total CDR Cost (ex GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrSQLSelect['Total CDR Rated Charge (ex GST)']	['Value']	= "SUM(ict.cdr_rated)";
+$arrSQLSelect['Total CDR Rated Charge (ex GST']		['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrSQLSelect['Total Invoiced (ex GST)']			['Value']	= "SUM(i.Total)";
+$arrSQLSelect['Total Invoiced (ex GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrSQLSelect['Total Taxed']						['Value']	= "SUM(i.Tax)";
+$arrSQLSelect['Total Taxed']						['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrSQLSelect['Total Invoiced (inc GST)']			['Value']	= "SUM(i.Total + i.Tax)";
+$arrSQLSelect['Total Invoiced (inc GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrSQLSelect['Profit Margin']						['Value']	= "IF(SUM(i.Total), (SUM(i.Total) - SUM(ict.cdr_cost)) / SUM(i.Total), 0)";
+$arrSQLSelect['Profit Margin']						['Type']	= EXCEL_TYPE_PERCENTAGE;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
