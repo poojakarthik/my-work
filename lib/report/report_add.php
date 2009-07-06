@@ -23,46 +23,57 @@ $arrSQLFields	= array();
 
 
 //---------------------------------------------------------------------------//
-// ACCOUNT ADDRESS CHANGES SUMMARY
+// ACCOUNT LIFETIME PROFIT SUMMARY
 //---------------------------------------------------------------------------//
 
-$arrDataReport['Name']			= "Ticketing Audit Report";
-$arrDataReport['Summary']		= "Generates a list of Open and Pending Tickets for auditing purposes";
+$arrDataReport['Name']			= "Account Lifetime Profit Summary";
+$arrDataReport['Summary']		= "Provides a Profit Summary for each Account since they were entered in Flex";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "				ticketing_ticket tt
-												JOIN ticketing_category tc ON (tt.category_id = tc.id)
-												JOIN ticketing_status ts ON (tt.status_id = ts.id)
-												JOIN ticketing_status_type tst ON (ts.status_type_id = tst.id)
-												JOIN ticketing_priority tp ON (tt.priority_id = tp.id)
-												LEFT JOIN ticketing_user tu ON (tt.owner_id = tu.id)
-												LEFT JOIN Employee e ON (tu.employee_id = e.Id)";
-$arrDataReport['SQLWhere']		= "				tst.const_name IN ('TICKETING_STATUS_TYPE_PENDING', 'TICKETING_STATUS_TYPE_OPEN')
-									ORDER BY	tt.Id ASC";
-$arrDataReport['SQLGroupBy']	= "";
+$arrDataReport['SQLTable']		= "				Account a
+												JOIN Invoice i ON (a.Id = i.Account)
+												JOIN InvoiceRun ir ON (i.invoice_run_id = ir.Id)
+												JOIN
+												(
+													SELECT		stt.Account				AS account_id,
+																stt.invoice_run_id		AS invoice_run_id,
+																SUM(stt.Cost)			AS cdr_cost,
+																SUM(stt.Charge)			AS cdr_rated
+													FROM		InvoiceRun ir
+																JOIN Invoice i ON (i.invoice_run_id = ir.Id)
+																LEFT JOIN ServiceTypeTotal stt ON (stt.Account = i.Account AND stt.invoice_run_id = i.invoice_run_id)
+													GROUP BY	account_id,
+																invoice_run_id
+												) ict ON (ict.invoice_run_id = ir.Id AND i.Account = ict.account_id)";
+$arrDataReport['SQLWhere']		= "				ir.invoice_run_type_id IN (1, 4, 5)";
+$arrDataReport['SQLGroupBy']	= "				a.Id";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Ticket ID']						['Value']	= "tt.id";
+$arrSQLSelect['Account']							['Value']	= "a.Id";
 
-$arrSQLSelect['Subject']						['Value']	= "tt.subject";
+$arrSQLSelect['Account Name']						['Value']	= "a.BusinessName";
 
-$arrSQLSelect['Last Actioned']					['Value']	= "DATE_FORMAT(tt.modified_datetime, '%d/%m/%Y %H:%i:%s')";
+$arrSQLSelect['Times Invoiced']						['Value']	= "COUNT(i.Id)";
 
-$arrSQLSelect['Received']						['Value']	= "DATE_FORMAT(tt.creation_datetime, '%d/%m/%Y %H:%i:%s')";
+$arrSQLSelect['Last Invoiced On']					['Value']	= "DATE_FORMAT(MAX(ir.BillingDate), '%d/%m/%Y')";
 
-$arrSQLSelect['Owner']							['Value']	= "CONCAT(e.FirstName, ' ', e.LastName)";
+$arrSQLSelect['Total CDR Cost (ex GST)']			['Value']	= "SUM(ict.cdr_cost)";
 
-$arrSQLSelect['Category']						['Value']	= "tc.name";
+$arrSQLSelect['Total CDR Rated Charge (ex GST)']	['Value']	= "SUM(ict.cdr_rated)";
 
-$arrSQLSelect['Status']							['Value']	= "ts.name";
+$arrSQLSelect['Total Invoiced (ex GST)']			['Value']	= "SUM(i.Total)";
 
-$arrSQLSelect['Priority']						['Value']	= "tp.name";
+$arrSQLSelect['Total Taxed']						['Value']	= "SUM(i.Tax)";
+
+$arrSQLSelect['Total Invoiced (inc GST)']			['Value']	= "SUM(i.Total + i.Tax)";
+
+$arrSQLSelect['Profit Margin']						['Value']	= "IF(SUM(i.Total), (SUM(i.Total) - SUM(ict.cdr_cost)) / SUM(i.Total), 0)";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
