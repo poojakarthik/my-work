@@ -2397,7 +2397,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 										"FNNIndial"	=> $strFNNIndial,
 										"Account"	=> $intAccount
 										);
-		$selService = new StatementSelect("Service", "Id, ServiceType", $strWhere, "Id DESC", "1");
+		$selService = new StatementSelect("Service", "Id, ServiceType", $strWhere, "ClosedOn IS NULL DESC, Id DESC", "1");
 		if ($selService->Execute($arrWhere) === FALSE)
 		{
 			// An error occurred
@@ -2428,7 +2428,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		// Find the Service Record modelling this service with the highest Id		
 		$strWhere		= "(FNN = <FNN> OR (Indial100 = 1 AND FNN LIKE <FNNIndialRange>)) AND (ClosedOn IS NULL OR CreatedOn < ClosedOn)";
 		$arrWhere		= array("FNN" => $strFNN, "FNNIndialRange" => $strFNNIndialRange);
-		$strOrderBy		= "Id DESC";
+		$strOrderBy		= "ClosedOn IS NULL DESC, Id DESC";
 		$selFinalOwner	= new StatementSelect("Service", "Account", $strWhere, $strOrderBy, "1");
 		if ($selFinalOwner->Execute($arrWhere) === FALSE)
 		{
@@ -2456,7 +2456,7 @@ WHERE A.Id = {$this->_intAccount} AND DRP.service_type = {$this->_intServiceType
 		$selOwner	= new StatementSelect("Service", "Account", $strWhere, "Id DESC", "1");
 		if ($selOwner->Execute($arrWhere) === FALSE)
 		{
-			$this->_strErrorMsg = "Unexpected Database error occurred";
+			$this->_strErrorMsg = "Unexpected Database error occurred - ". $selOwner->Error();
 			return FALSE;
 		}
 		if (($arrOwner = $selOwner->Fetch()) === FALSE)
