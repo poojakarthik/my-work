@@ -20,7 +20,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			{
 				return array(
 								'Success'			=> false,
-								'ErrorMessage'		=> "Insufficient privileges",
+								'Error'				=> "Insufficient privileges",
 								'HasPermissions'	=> false,
 							);
 			}
