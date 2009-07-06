@@ -659,6 +659,7 @@ class Invoice_Run
 			throw new Exception("InvoiceRun '{$this->Id}' is not a Temporary InvoiceRun!");
 		}
 		
+		$dbaDB	= DataAccess::getDataAccess();
 		try
 		{
 			// Start Transaction
