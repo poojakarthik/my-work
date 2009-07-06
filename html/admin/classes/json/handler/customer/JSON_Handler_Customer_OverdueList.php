@@ -78,7 +78,7 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 		{
 			return array(
 							'Success'	=> false,
-							'Error'		=> "PERMISSIONS",
+							'ERROR'		=> "PERMISSIONS",
 						);
 		}
 		
