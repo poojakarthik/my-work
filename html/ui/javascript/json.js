@@ -207,13 +207,6 @@ jQuery.json = {
 			}
 			var success = true;
 			
-			var sDebug	= '';
-			for (i in arguments)
-			{
-				sDebug	+= i + ': ' + arguments[i] + '\n';
-			}
-			alert(sDebug);
-			
 			if (arguments.length > 0 && arguments[1] != 'success')
 			{
 				success = false;
