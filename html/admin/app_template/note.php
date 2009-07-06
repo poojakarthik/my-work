@@ -64,7 +64,7 @@ class AppTemplateNote extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 
 		// These are used by the LoadNotes function
 		$intAccountId = NULL;
@@ -159,7 +159,7 @@ class AppTemplateNote extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR | PERMISSION_OPERATOR_EXTERNAL);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
 
 		// Validate the note
 		if (DBO()->Note->IsInvalid())
@@ -246,7 +246,7 @@ class AppTemplateNote extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR | PERMISSION_OPERATOR_EXTERNAL);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
 
 		// Check what sort of note it is
 		if (DBO()->Service->Id->IsSet)
@@ -315,7 +315,7 @@ class AppTemplateNote extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 
 		// Load the notes
 		$bolUpdateCookies = (DBO()->NoteDetails->UpdateCookies->Value == TRUE) ? TRUE : FALSE;

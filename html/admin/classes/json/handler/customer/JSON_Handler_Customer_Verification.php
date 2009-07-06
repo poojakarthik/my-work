@@ -14,7 +14,7 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 	public function verify($intContactId, $intAccountId, $objVerifiedContactProperties=NULL, $objVerifiedAccountProperties=NULL, $strRequestedPage=NULL, $bolOverrideVerification=FALSE)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 		
 		try
 		{
@@ -118,7 +118,7 @@ class JSON_Handler_Customer_Verification extends JSON_Handler
 		// If both are specified, then just the Contact is locked in
 		
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 		
 		try
 		{

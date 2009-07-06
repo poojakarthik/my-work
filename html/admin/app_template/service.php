@@ -121,7 +121,7 @@ class AppTemplateService extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 
 		// Setup all DBO and DBL objects required for the page
@@ -241,7 +241,7 @@ class AppTemplateService extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 
 		$intService = DBO()->Service->Id->Value;
 		$objService = ModuleService::GetServiceById($intService);
@@ -2416,7 +2416,7 @@ class AppTemplateService extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 
 		// The service should already be set up as a DBObject because it will be specified as a GET variable or a POST variable

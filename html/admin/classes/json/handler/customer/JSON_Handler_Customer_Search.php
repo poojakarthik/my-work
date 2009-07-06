@@ -34,7 +34,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 	public function search($intSearchType, $strConstraint, $intConstraintType=NULL, $bolIncludeArchived=FALSE, $intOffset=0, $bolForceRefresh=TRUE)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 		
 		try
 		{
@@ -107,7 +107,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 	public function buildCustomerSearchPopup()
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW | PERMISSION_OPERATOR_EXTERNAL);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 		
 		try
 		{
@@ -119,6 +119,8 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 			}
 			
 			// Build contents for the popup
+			$sShowArchived	= (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW)) ? "Show Archived <input type='checkbox' id='IncludeArchived' name='IncludeArchived'/>" : "&nbsp;";
+			
 			$strHtml = "
 <div id='PopupPageBody'>
 	<div class='GroupedContent'>
@@ -128,7 +130,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 					<td>Search For <select id='SearchType' name='SearchType'></select></td>
 					<td>By <select id='ConstraintType' name='ConstraintType'></select></td>
 					<td>With <input type='text' id='Constraint' name='Constraint' value='' maxlength='100' ></input></td>
-					<td>Show Archived <input type='checkbox' id='IncludeArchived' name='IncludeArchived'/></td>
+					<td>{$sShowArchived}</td>
 					<td align='right'><input type='button' onclick='FlexSearch.submitSearch()' value='Search'></input></td>
 				</tr>
 			</table>
