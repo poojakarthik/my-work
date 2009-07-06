@@ -67,7 +67,7 @@ $arrSQLSelect['Total CDR Cost (ex GST)']			['Value']	= "SUM(ict.cdr_cost)";
 $arrSQLSelect['Total CDR Cost (ex GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrSQLSelect['Total CDR Rated Charge (ex GST)']	['Value']	= "SUM(ict.cdr_rated)";
-$arrSQLSelect['Total CDR Rated Charge (ex GST']		['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Total CDR Rated Charge (ex GST)']		['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrSQLSelect['Total Invoiced (ex GST)']			['Value']	= "SUM(i.Total)";
 $arrSQLSelect['Total Invoiced (ex GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
