@@ -437,7 +437,11 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		if ($ticket && $ticket->isSaved())
 		{
 			$permittedActions['View'] = TRUE;
-			$permittedActions['Edit'] = TRUE;
+			
+			if ($user->isNormalUser())
+			{
+				$permittedActions['Edit'] = TRUE;
+			}
 
 			/* Only ticketing admins can take/assign/reassign tickets.  If everyone needs to be able to, then uncomment this and remove it from the other section below
 			if ($ticket->isAssigned())
