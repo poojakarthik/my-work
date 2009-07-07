@@ -109,7 +109,11 @@ class Application
 		$fltAppTemplateTime = microtime(TRUE) - $fltStart;
 
 		// Append default options to the Context Menu
-		ContextMenu()->Customer->View_Recent_Customers();
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
+		{
+			ContextMenu()->Customer->View_Recent_Customers();
+		}
+		
 		ContextMenu()->Customer->Customer_Search();
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
@@ -312,7 +316,11 @@ class Application
 		$fltAppTemplateTime = microtime(TRUE) - $fltStart;
 
 		// Append default options to the Context Menu
-		ContextMenu()->Customer->View_Recent_Customers();
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
+		{
+			ContextMenu()->Customer->View_Recent_Customers();
+		}
+		
 		ContextMenu()->Customer->Customer_Search();
 
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
