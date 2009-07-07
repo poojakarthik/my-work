@@ -47,11 +47,17 @@ class AppTemplateAccount extends ApplicationTemplate
 	public static function BuildContextMenu($intAccountId)
 	{
 		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolUserHasViewPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
 		
 		$objAccount = Account::getForId($intAccountId);
 		
 		ContextMenu()->Account->Account_Overview($intAccountId);
-		ContextMenu()->Account->Invoices_And_Payments($intAccountId);
+		
+		if ($bolUserHasViewPerm)
+		{
+			ContextMenu()->Account->Invoices_And_Payments($intAccountId);
+		}
+		
 		ContextMenu()->Account->Services->List_Services($intAccountId);
 		ContextMenu()->Account->Contacts->List_Contacts($intAccountId);
 		ContextMenu()->Account->View_Cost_Centres($intAccountId);
