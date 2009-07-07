@@ -125,7 +125,8 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 			}
 			
 			// Build contents for the popup
-			$sShowArchived	= (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW)) ? "Show Archived <input type='checkbox' id='IncludeArchived' name='IncludeArchived'/>" : "&nbsp;";
+			$sShowArchivedSpan		= (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW)) ? "" : " style='display: none;'";
+			$sShowArchivedEnabled	= (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW)) ? "" : " disabled='disabled'";
 			
 			$strHtml = "
 <div id='PopupPageBody'>
@@ -136,7 +137,7 @@ class JSON_Handler_Customer_Search extends JSON_Handler
 					<td>Search For <select id='SearchType' name='SearchType'></select></td>
 					<td>By <select id='ConstraintType' name='ConstraintType'></select></td>
 					<td>With <input type='text' id='Constraint' name='Constraint' value='' maxlength='100' ></input></td>
-					<td>{$sShowArchived}</td>
+					<td><span{$sShowArchivedSpan}>Show Archived <input type='checkbox' id='IncludeArchived' name='IncludeArchived' {$sShowArchivedEnabled}/></span></td>
 					<td align='right'><input type='button' onclick='FlexSearch.submitSearch()' value='Search'></input></td>
 				</tr>
 			</table>
