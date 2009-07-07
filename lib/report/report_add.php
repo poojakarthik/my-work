@@ -657,6 +657,61 @@ $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 $arrDataReports[] = $arrDataReport;
 
 
+//---------------------------------------------------------------------------//
+// Tallied Plan Changes by Employee
+//---------------------------------------------------------------------------//
+
+$arrDataReport	= array();
+$arrDocReq		= array();
+$arrSQLSelect	= array();
+$arrSQLFields	= array();
+
+
+$arrDataReport['Name']			= "Tallied Plan Changes by Employee";
+$arrDataReport['Summary']		= "Lists the total number of plan changes (and service creations) made by each employee during the timeframe defined.  If an employee isn't listed in the report, then they did not perform any plan changes, or create any new services during the timeframe in question.";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 64;											// Credit Management
+//$arrDataReport['Priviledges']	= 1;											// Live
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "	FROM Employee INNER JOIN
+									(
+										SELECT DISTINCT Service.FNN AS fnn, ServiceRatePlan.CreatedBy AS employee_id, ServiceRatePlan.CreatedOn AS change_timestamp
+										FROM Service INNER JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service
+										WHERE ServiceRatePlan.EndDatetime > ServiceRatePlan.StartDatetime
+									) AS ServicePlanChange ON Employee.Id = ServicePlanChange.employee_id";
+$arrDataReport['SQLWhere']		= "	DATE(ServicePlanChange.change_timestamp) BETWEEN <EarliestDate> AND <LatestDate>
+									GROUP BY Employee.Id
+									ORDER BY COUNT(*) DESC, MAX(CONCAT(Employee.FirstName, ' ', Employee.LastName)) ASC";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['Employee']				['Value']	= "MAX(CONCAT(Employee.FirstName, ' ', Employee.LastName))";
+$arrSQLSelect['Total Plan Changes']		['Value']	= "COUNT(*)";
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields['EarliestDate']		= Array(
+											'Type'					=> "dataDate",
+											'Documentation-Entity'	=> "DataReport",
+											'Documentation-Field'	=> "Earliest Date",
+											);
+$arrSQLFields['LatestDate']			= Array(
+											'Type'					=> "dataDate",
+											'Documentation-Entity'	=> "DataReport",
+											'Documentation-Field'	=> "Latest Date",
+											);
+
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+// Add the report to the array of reports to add to the database
+$arrDataReports[] = $arrDataReport;
+
+
 //----------------------------------------------------------------------------//
 // Insert the Data Report(s)
 //----------------------------------------------------------------------------//
