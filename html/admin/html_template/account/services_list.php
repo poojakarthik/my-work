@@ -416,14 +416,14 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strFnnDescription	= ($arrService['FNN'] != NULL)? $arrService['FNN'] : "[not specified]";
 			$strIndial100Flag	= ($arrService['Indial100'])? " (Indial&nbsp;100&nbsp;range)" : "";
 			
-			if ($bolUserHasViewPerm)
-			{
-			$strFnnCell			= "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription{$strIndial100Flag}</a>";
-			}
+			/*if ($bolUserHasViewPerm)
+			{*/
+				$strFnnCell			= "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription{$strIndial100Flag}</a>";
+			/*}
 			else
 			{
-			$strFnnCell			= "<span>$strFnnDescription{$strIndial100Flag}</span>";
-			}
+				$strFnnCell			= "<span>$strFnnDescription{$strIndial100Flag}</span>";
+			}*/
 			
 			switch ($arrService['ServiceType'])
 			{
