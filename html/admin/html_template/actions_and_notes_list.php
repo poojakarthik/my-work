@@ -53,7 +53,7 @@ class HtmlTemplateActionsAndNotesList extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$bolUserHasPermissionToAddNotesAndActions = AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
+		$bolUserHasPermissionToAddNotesAndActions = (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR) || AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL));
 		
 		$strErrorMsg	= NULL;
 
