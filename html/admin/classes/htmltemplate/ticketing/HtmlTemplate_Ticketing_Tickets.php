@@ -438,7 +438,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 		{
 			$permittedActions['View'] = TRUE;
 			
-			if ($user->isNormalUser())
+			if ($user->isNormalUser() || $user->isAdminUser())
 			{
 				$permittedActions['Edit'] = TRUE;
 			}
