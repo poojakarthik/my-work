@@ -151,8 +151,8 @@ class Application
 			{
 				ContextMenu()->Ticketing->TicketingConsole();
 				ContextMenu()->Ticketing->ViewUserTickets();
+				ContextMenu()->Ticketing->AddTicket();
 			}
-			ContextMenu()->Ticketing->AddTicket();
 		}
 		if (Ticketing_User::currentUserIsTicketingAdminUser() && Flex_Module::isActive(FLEX_MODULE_TICKETING))
 		{
@@ -356,8 +356,8 @@ class Application
 			{
 				ContextMenu()->Ticketing->TicketingConsole();
 				ContextMenu()->Ticketing->ViewUserTickets();
+				ContextMenu()->Ticketing->AddTicket();
 			}
-			ContextMenu()->Ticketing->AddTicket();
 		}
 		if (Ticketing_User::currentUserIsTicketingAdminUser() && Flex_Module::isActive(FLEX_MODULE_TICKETING))
 		{
