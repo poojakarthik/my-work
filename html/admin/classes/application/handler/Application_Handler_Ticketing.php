@@ -848,7 +848,7 @@ class Application_Handler_Ticketing extends Application_Handler
 		{
 			$permittedActions[] = 'view';
 			
-			if ($user->isNormalUser())
+			if ($user->isNormalUser() || $user->isAdminUser())
 			{
 				$permittedActions[] = 'edit';
 			}
