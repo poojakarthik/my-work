@@ -655,6 +655,7 @@ class Recurring_Charge extends ORM_Cached
 		}
 
 		// Update the RecurringCharge record
+		$this->approvedBy = $intEmployeeId;
 		$this->recurringChargeStatusId = $intRecChargeStatusDeclined;
 		$this->save();
 	}
