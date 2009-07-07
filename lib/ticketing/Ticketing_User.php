@@ -230,7 +230,7 @@ class Ticketing_User
 
 	public static function currentUserIsTicketingExternalUser()
 	{
-		return self::getCurrentUser()->isUserExternal();
+		return self::getCurrentUser()->isExternalUser();
 	}
 
 	public static function currentUserIsTicketingUser()
