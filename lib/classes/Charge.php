@@ -260,6 +260,7 @@ class Charge extends ORM_Cached
 		}
 
 		// Update the Charge record
+		$this->approvedBy = $intEmployeeId;
 		$this->status = CHARGE_DECLINED;
 		$this->save();
 	}
