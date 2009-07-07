@@ -218,9 +218,19 @@ class Ticketing_User
 		return $this->permissionId === TICKETING_USER_PERMISSION_USER;
 	}
 
+	public function isExternalUser()
+	{
+		return $this->permissionId === TICKETING_USER_PERMISSION_USER_EXTERNAL;
+	}
+
 	public function isUser()
 	{
 		return $this->permissionId !== TICKETING_USER_PERMISSION_NONE;
+	}
+
+	public static function currentUserIsTicketingExternalUser()
+	{
+		return self::getCurrentUser()->isUserExternal();
 	}
 
 	public static function currentUserIsTicketingUser()
