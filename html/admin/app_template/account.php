@@ -60,7 +60,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		ContextMenu()->Account->Services->List_Services($intAccountId);
 		ContextMenu()->Account->Contacts->List_Contacts($intAccountId);
-		ContextMenu()->Account->View_Cost_Centres($intAccountId);
+		
+		if ($bolUserHasViewPerm)
+		{
+			ContextMenu()->Account->View_Cost_Centres($intAccountId);
+		}
 		if ($bolUserHasOperatorPerm)
 		{
 			ContextMenu()->Account->Services->Add_Services($intAccountId);
