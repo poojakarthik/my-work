@@ -134,118 +134,122 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		{
 			$bolIsSample = !is_numeric($dboInvoice->Status->Value);
 			
-			// Build the links 
-			$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
-			$intYear = (int)date("Y", $intDate);
-			$intMonth = (int)date("m", $intDate);
-
-			// Check if a pdf exists for the invoice
-			$strPdfLabel	= "&nbsp;";
-			$strEmailLabel	= "&nbsp;";
+			if (!$bolIsSample || $bolUserHasViewPerm)
+			{
 			
-			// Get the Invoice Run Type (plain query is quicker than using DBO)
-			$resInvoiceRun	= $qryQuery->Execute("SELECT * FROM InvoiceRun WHERE Id = {$dboInvoice->invoice_run_id->Value}");
-			if ($resInvoiceRun === false)
-			{
-				throw new Exception($resInvoiceRun->Error());
-			}
-			$arrInvoiceRun	= $resInvoiceRun->fetch_assoc();
-
-			if ($bolUserHasViewPerm && InvoicePDFExists($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, intval($dboInvoice->invoice_run_id->Value)))
-			{
-				// The pdf exists
-				// Build "view invoice pdf" link
-				$strPdfHref 	= Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, $dboInvoice->invoice_run_id->Value);
-				$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View PDF Invoice' /></a>";
+				// Build the links 
+				$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
+				$intYear = (int)date("Y", $intDate);
+				$intMonth = (int)date("m", $intDate);
+	
+				// Check if a pdf exists for the invoice
+				$strPdfLabel	= "&nbsp;";
+				$strEmailLabel	= "&nbsp;";
 				
-				// Build "Email invoice pdf" link, if the user has OPERATOR privileges
-				if (!$bolIsSample)
+				// Get the Invoice Run Type (plain query is quicker than using DBO)
+				$resInvoiceRun	= $qryQuery->Execute("SELECT * FROM InvoiceRun WHERE Id = {$dboInvoice->invoice_run_id->Value}");
+				if ($resInvoiceRun === false)
 				{
-					if ($bolUserHasOperatorPerm)
+					throw new Exception($resInvoiceRun->Error());
+				}
+				$arrInvoiceRun	= $resInvoiceRun->fetch_assoc();
+	
+				if ($bolUserHasViewPerm && InvoicePDFExists($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, intval($dboInvoice->invoice_run_id->Value)))
+				{
+					// The pdf exists
+					// Build "view invoice pdf" link
+					$strPdfHref 	= Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, $dboInvoice->invoice_run_id->Value);
+					$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View PDF Invoice' /></a>";
+					
+					// Build "Email invoice pdf" link, if the user has OPERATOR privileges
+					if (!$bolIsSample)
 					{
-						$strEmailHref	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, $dboInvoice->invoice_run_id->Value);
-						$strEmailLabel	= "<img src='img/template/email.png' title='Email PDF Invoice' onclick='$strEmailHref'></img>";
+						if ($bolUserHasOperatorPerm)
+						{
+							$strEmailHref	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, $dboInvoice->invoice_run_id->Value);
+							$strEmailLabel	= "<img src='img/template/email.png' title='Email PDF Invoice' onclick='$strEmailHref'></img>";
+						}
 					}
 				}
-			}
-			
-			// Build Approve/Reject Buttons for Samples
-			if ($bolIsSample && $bolUserHasInterimPerm && ($arrInvoiceRun['invoice_run_type_id'] == INVOICE_RUN_TYPE_INTERIM || $arrInvoiceRun['invoice_run_type_id'] == INVOICE_RUN_TYPE_FINAL))
-			{
-				switch ($arrInvoiceRun['invoice_run_type_id'])
+				
+				// Build Approve/Reject Buttons for Samples
+				if ($bolIsSample && $bolUserHasInterimPerm && ($arrInvoiceRun['invoice_run_type_id'] == INVOICE_RUN_TYPE_INTERIM || $arrInvoiceRun['invoice_run_type_id'] == INVOICE_RUN_TYPE_FINAL))
 				{
-					case INVOICE_RUN_TYPE_INTERIM:
-						$strCommitType	= 'Interim';
-						break;
-					case INVOICE_RUN_TYPE_FINAL:
-						$strCommitType	= 'Final';
-						break;
+					switch ($arrInvoiceRun['invoice_run_type_id'])
+					{
+						case INVOICE_RUN_TYPE_INTERIM:
+							$strCommitType	= 'Interim';
+							break;
+						case INVOICE_RUN_TYPE_FINAL:
+							$strCommitType	= 'Final';
+							break;
+					}
+					
+					// If this is an Temporary Interim/Final Invoice and has sufficient privileges, replace the Email button with a Commit button
+					$strCommitHref	= Href()->CommitInterimInvoice($dboInvoice->Id->Value);
+					$strRevokeHref	= Href()->RevokeInterimInvoice($dboInvoice->Id->Value);
+					$strEmailLabel	= "<img src='img/template/invoice_commit.png' title='Approve {$strCommitType} Invoice' onclick='{$strCommitHref}' />";
+					$strEmailLabel	.= "<img src='img/template/invoice_revoke.png' title='Reject {$strCommitType} Invoice' onclick='{$strRevokeHref}' />";
 				}
-				
-				// If this is an Temporary Interim/Final Invoice and has sufficient privileges, replace the Email button with a Commit button
-				$strCommitHref	= Href()->CommitInterimInvoice($dboInvoice->Id->Value);
-				$strRevokeHref	= Href()->RevokeInterimInvoice($dboInvoice->Id->Value);
-				$strEmailLabel	= "<img src='img/template/invoice_commit.png' title='Approve {$strCommitType} Invoice' onclick='{$strCommitHref}' />";
-				$strEmailLabel	.= "<img src='img/template/invoice_revoke.png' title='Reject {$strCommitType} Invoice' onclick='{$strRevokeHref}' />";
+	
+				$strViewInvoiceLabel	= "&nbsp;";
+				$strExportCSV			= "&nbsp;";
+				if ($bolUserHasViewPerm && $dboInvoice->CreatedOn->Value > $strCDRCutoffDate)
+				{
+					// Build the "View Invoice Details" link
+					$strViewInvoiceHref		= Href()->ViewInvoice($dboInvoice->Id->Value);
+					$strViewInvoiceLabel	= "<a href='$strViewInvoiceHref'><img src='img/template/invoice.png' title='View Invoice Details' /></a>";
+					
+					// Build the "Export Invoice as CSV" link
+					$strExportCSV = Href()->ExportInvoiceAsCSV($dboInvoice->Id->Value);
+					$strExportCSV = "<a href='$strExportCSV'><img src='img/template/export.png' title='Export as CSV' /></a>";
+				}
+	
+				// Calculate Invoice Amount
+				$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
+	
+				// Calculate AppliedAmount
+				$dboInvoice->AppliedAmount = $dboInvoice->Amount->Value - $dboInvoice->Balance->Value;
+	
+				$strCreatedOnFormatted = date("d-m-Y", strtotime($dboInvoice->CreatedOn->Value));
+	
+				// Add this row to Invoice table
+				Table()->InvoiceTable->AddRow(  $strCreatedOnFormatted,
+												$dboInvoice->Id->Value, 
+												"<span class='Currency'>". $dboInvoice->Amount->FormattedValue() ."</span>", 
+												"<span class='Currency'>". $dboInvoice->AppliedAmount->FormattedValue() ."</span>",
+												"<span class='Currency'>". $dboInvoice->Balance->FormattedValue() ."</span>",
+												($bolIsSample ? $dboInvoice->Status->Value : GetConstantDescription($dboInvoice->Status->Value, "InvoiceStatus")), 
+												$strPdfLabel, 
+												$strEmailLabel,
+												$strViewInvoiceLabel,
+												$strExportCSV);
+												
+				// Set the drop down detail
+				$strDetailHtml = "<div class='VixenTableDetail'>\n";
+				$strDetailHtml .= $dboInvoice->DueOn->AsOutput();
+				if ($dboInvoice->SettledOn->Value)
+				{
+					$strDetailHtml .= $dboInvoice->SettledOn->AsOutput();
+				}
+				//$strDetailHtml .= $dboInvoice->Credits->AsOutput();
+				//$strDetailHtml .= $dboInvoice->Debits->AsOutput();
+				//$strDetailHtml .= $dboInvoice->Total->AsOutput();
+				//$strDetailHtml .= $dboInvoice->Tax->AsOutput();
+				$strDetailHtml .= $dboInvoice->TotalOwing->AsOutput();
+				//$strDetailHtml .= $dboInvoice->Balance->AsOutput();
+				if ($dboInvoice->Disputed->Value > 0)//does this include GST??????
+				{
+					$strDetailHtml .= $dboInvoice->Disputed->AsOutput();
+				}
+				//$strDetailHtml .= $dboInvoice->AccountBalance->AsOutput();
+				$strDetailHtml .= "</div>\n";
+	
+				Table()->InvoiceTable->SetDetail($strDetailHtml);
+	
+				// Add the row index
+				Table()->InvoiceTable->AddIndex("invoice_run_id", $dboInvoice->invoice_run_id->Value);
 			}
-
-			$strViewInvoiceLabel	= "&nbsp;";
-			$strExportCSV			= "&nbsp;";
-			if ($bolUserHasViewPerm && $dboInvoice->CreatedOn->Value > $strCDRCutoffDate)
-			{
-				// Build the "View Invoice Details" link
-				$strViewInvoiceHref		= Href()->ViewInvoice($dboInvoice->Id->Value);
-				$strViewInvoiceLabel	= "<a href='$strViewInvoiceHref'><img src='img/template/invoice.png' title='View Invoice Details' /></a>";
-				
-				// Build the "Export Invoice as CSV" link
-				$strExportCSV = Href()->ExportInvoiceAsCSV($dboInvoice->Id->Value);
-				$strExportCSV = "<a href='$strExportCSV'><img src='img/template/export.png' title='Export as CSV' /></a>";
-			}
-
-			// Calculate Invoice Amount
-			$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
-
-			// Calculate AppliedAmount
-			$dboInvoice->AppliedAmount = $dboInvoice->Amount->Value - $dboInvoice->Balance->Value;
-
-			$strCreatedOnFormatted = date("d-m-Y", strtotime($dboInvoice->CreatedOn->Value));
-
-			// Add this row to Invoice table
-			Table()->InvoiceTable->AddRow(  $strCreatedOnFormatted,
-											$dboInvoice->Id->Value, 
-											"<span class='Currency'>". $dboInvoice->Amount->FormattedValue() ."</span>", 
-											"<span class='Currency'>". $dboInvoice->AppliedAmount->FormattedValue() ."</span>",
-											"<span class='Currency'>". $dboInvoice->Balance->FormattedValue() ."</span>",
-											($bolIsSample ? $dboInvoice->Status->Value : GetConstantDescription($dboInvoice->Status->Value, "InvoiceStatus")), 
-											$strPdfLabel, 
-											$strEmailLabel,
-											$strViewInvoiceLabel,
-											$strExportCSV);
-											
-			// Set the drop down detail
-			$strDetailHtml = "<div class='VixenTableDetail'>\n";
-			$strDetailHtml .= $dboInvoice->DueOn->AsOutput();
-			if ($dboInvoice->SettledOn->Value)
-			{
-				$strDetailHtml .= $dboInvoice->SettledOn->AsOutput();
-			}
-			//$strDetailHtml .= $dboInvoice->Credits->AsOutput();
-			//$strDetailHtml .= $dboInvoice->Debits->AsOutput();
-			//$strDetailHtml .= $dboInvoice->Total->AsOutput();
-			//$strDetailHtml .= $dboInvoice->Tax->AsOutput();
-			$strDetailHtml .= $dboInvoice->TotalOwing->AsOutput();
-			//$strDetailHtml .= $dboInvoice->Balance->AsOutput();
-			if ($dboInvoice->Disputed->Value > 0)//does this include GST??????
-			{
-				$strDetailHtml .= $dboInvoice->Disputed->AsOutput();
-			}
-			//$strDetailHtml .= $dboInvoice->AccountBalance->AsOutput();
-			$strDetailHtml .= "</div>\n";
-
-			Table()->InvoiceTable->SetDetail($strDetailHtml);
-
-			// Add the row index
-			Table()->InvoiceTable->AddIndex("invoice_run_id", $dboInvoice->invoice_run_id->Value);
 		}
 		
 		if (Table()->InvoiceTable->RowCount() == 0)
