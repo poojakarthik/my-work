@@ -847,7 +847,11 @@ class Application_Handler_Ticketing extends Application_Handler
 		if ($ticket && $ticket->isSaved())
 		{
 			$permittedActions[] = 'view';
-			$permittedActions[] = 'edit';
+			
+			if ($user->isNormalUser())
+			{
+				$permittedActions[] = 'edit';
+			}
 
 			/* Only ticketing admins can take/assign/reassign tickets.  If everyone needs to be able to, then uncomment this and remove it from the other section below
 			if ($ticket->isAssigned())
@@ -1228,7 +1232,7 @@ class Application_Handler_Ticketing extends Application_Handler
 	{
 		$permittedActions = array();
 
-		if ($correspondence)
+		if ($correspondence && $user->isNormalUser())
 		{
 			if ($correspondence->isSaved())
 			{
