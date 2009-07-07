@@ -169,9 +169,10 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 				echo "
 <div class=\"DefaultElement\">
 	<select id=\"ticketing_user.permission\" name=\"ticketing_user.permission\" class=\"DefaultInputText Default\">
-		<option value='".TICKETING_USER_PERMISSION_NONE ."'".($displayUserTicketingPermission == TICKETING_USER_PERMISSION_NONE  ? ' SELECTED' : '').">" . GetConstantDescription(TICKETING_USER_PERMISSION_NONE, 'ticketing_user_permission') . "</option>
-		<option value='".TICKETING_USER_PERMISSION_USER ."'".($displayUserTicketingPermission == TICKETING_USER_PERMISSION_USER  ? ' SELECTED' : '').">" . GetConstantDescription(TICKETING_USER_PERMISSION_USER, 'ticketing_user_permission') . "</option>
-		<option value='".TICKETING_USER_PERMISSION_ADMIN."'".($displayUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN ? ' SELECTED' : '').">" . GetConstantDescription(TICKETING_USER_PERMISSION_ADMIN, 'ticketing_user_permission') . "</option>
+		<option value='".TICKETING_USER_PERMISSION_NONE ."'".($displayUserTicketingPermission == TICKETING_USER_PERMISSION_NONE						? ' SELECTED' : '').">" . GetConstantDescription(TICKETING_USER_PERMISSION_NONE				, 'ticketing_user_permission') . "</option>
+		<option value='".TICKETING_USER_PERMISSION_USER ."'".($displayUserTicketingPermission == TICKETING_USER_PERMISSION_USER						? ' SELECTED' : '').">" . GetConstantDescription(TICKETING_USER_PERMISSION_USER				, 'ticketing_user_permission') . "</option>
+		<option value='".TICKETING_USER_PERMISSION_USER_EXTERNAL ."'".($displayUserTicketingPermission == TICKETING_USER_PERMISSION_USER_EXTERNAL	? ' SELECTED' : '').">" . GetConstantDescription(TICKETING_USER_PERMISSION_USER_EXTERNAL	, 'ticketing_user_permission') . "</option>
+		<option value='".TICKETING_USER_PERMISSION_ADMIN."'".($displayUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN					? ' SELECTED' : '').">" . GetConstantDescription(TICKETING_USER_PERMISSION_ADMIN			, 'ticketing_user_permission') . "</option>
 	</select>
    <div id=\"ticketing_user.permission.Label\" class=\"DefaultLabel\">
       <span> &nbsp;</span>
