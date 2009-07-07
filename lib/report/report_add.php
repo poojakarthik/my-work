@@ -673,7 +673,7 @@ $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 64;											// Credit Management
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "	FROM Employee INNER JOIN
+$arrDataReport['SQLTable']		= "	Employee INNER JOIN
 									(
 										SELECT DISTINCT Service.FNN AS fnn, ServiceRatePlan.CreatedBy AS employee_id, ServiceRatePlan.CreatedOn AS change_timestamp
 										FROM Service INNER JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service
