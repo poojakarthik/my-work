@@ -1232,7 +1232,7 @@ class Application_Handler_Ticketing extends Application_Handler
 	{
 		$permittedActions = array();
 
-		if ($correspondence && $user->isNormalUser())
+		if ($correspondence && ($user->isNormalUser() || $user->isAdminUser()))
 		{
 			if ($correspondence->isSaved())
 			{
