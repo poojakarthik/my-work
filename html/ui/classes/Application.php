@@ -811,9 +811,9 @@ class Application
 	function InsufficientPrivilegeDie()
 	{
 		// ask user to login, then return to page
-		if ($this->_intMode == AJAX_MODE || stripos($_SERVER['PHP_SELF'], 'reflex_json.php') !== false)
+		if ($this->_intMode == AJAX_MODE)
 		{
-			Ajax()->AddCommand("Alert", "You do not have the required user privileges to perform this action ({$_SERVER['PHP_SELF']})");
+			Ajax()->AddCommand("Alert", "You do not have the required user privileges to perform this action");
 			Ajax()->Reply();
 			die;
 		}

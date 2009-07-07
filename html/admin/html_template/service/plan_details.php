@@ -106,7 +106,15 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 		{
 			// Build a link to the Rate Plan summary (not the one specific to this service)
 			$strPlanSummaryHref = Href()->ViewPlan($dboRatePlan->Id->Value);
-			$strPlanSummaryLink = "<a href='$strPlanSummaryHref' title='View Plan Details'>{$dboRatePlan->Name->Value}</a>";
+			
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
+			{
+				$strPlanSummaryLink = "<a href='$strPlanSummaryHref' title='View Plan Details'>{$dboRatePlan->Name->Value}</a>";
+			}
+			else
+			{
+				$strPlanSummaryLink = "<span>{$dboRatePlan->Name->Value}</span>";
+			}
 		
 			$dboRatePlan->Name->RenderArbitrary($strPlanSummaryLink, RENDER_OUTPUT);
 			$dboRatePlan->Description->RenderOutput();
@@ -116,7 +124,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			
 			// Build the Plan Brochure link
 			$strBrochureCell	= '';
-			if (Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW) && Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
 			{
 				if ($arrRatePlan['brochure_document_id'])
 				{
@@ -153,7 +161,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			
 			// Build the Voice Auth Script link
 			$strAuthScriptCell	= '';
-			if (Flex_Module::isActive(FLEX_MODULE_PLAN_AUTH_SCRIPT))
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW) && Flex_Module::isActive(FLEX_MODULE_PLAN_AUTH_SCRIPT))
 			{
 				if ($arrRatePlan['auth_script_document_id'])
 				{
