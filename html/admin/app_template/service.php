@@ -78,12 +78,20 @@ class AppTemplateService extends ApplicationTemplate
 	public static function BuildContextMenu($intAccountId, $intServiceId, $intServiceType)
 	{
 		$bolUserHasOperatorPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolUserHasViewPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
+		$bolUserHasExternalPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
+		
 		$objService				= Service::getForId($intServiceId);
 		$strServiceType			= GetConstantDescription($intServiceType, 'service_type');
 		
-		ContextMenu()->Service->View_Unbilled_Charges($intServiceId);
-		ContextMenu()->Service->View_Service_History($intServiceId);
+		if ($bolUserHasViewPerm)
+		{
+			ContextMenu()->Service->View_Unbilled_Charges($intServiceId);
+			ContextMenu()->Service->View_Service_History($intServiceId);
+		}
+		
 		ContextMenu()->Service->Plan->View_Service_Rate_Plan($intServiceId);
+		
 		if ($bolUserHasOperatorPerm)
 		{
 			ContextMenu()->Service->Edit_Service($intServiceId);
@@ -98,6 +106,10 @@ class AppTemplateService extends ApplicationTemplate
 				ContextMenu()->Service->Provisioning->ViewProvisioningHistory($intServiceId);
 				ContextMenu()->Service->ViewServiceAddress($intServiceId);
 			}
+			ContextMenu()->Service->{"Actions / Notes"}->ActionsAndNotesCreatorPopup(null, $intServiceId, null,  "$strServiceType - {$objService->fNN}");
+		}
+		elseif ($bolUserHasExternalPerm)
+		{
 			ContextMenu()->Service->{"Actions / Notes"}->ActionsAndNotesCreatorPopup(null, $intServiceId, null,  "$strServiceType - {$objService->fNN}");
 		}
 		ContextMenu()->Service->{"Actions / Notes"}->ActionsAndNotesListPopup(ACTION_ASSOCIATION_TYPE_SERVICE, $intServiceId, true, 99999, "$strServiceType - {$objService->fNN}");
