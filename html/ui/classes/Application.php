@@ -119,24 +119,30 @@ class Application
 		{
 			ContextMenu()->Customer->VerifySales();
 		}
-
-		ContextMenu()->Customer->Customer_Overdue_List();
+		
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
+		{
+			ContextMenu()->Customer->Customer_Overdue_List();
+		}
 
 		$arrCustomerGroups = Customer_Group::listAll();
-		if (count($arrCustomerGroups) > 1)
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
 		{
-			// There are multiple customer groups
-			ContextMenu()->Plans->ListPlans();
-
-			foreach ($arrCustomerGroups as $objCustomerGroup)
+			if (count($arrCustomerGroups) > 1)
 			{
-				ContextMenu()->Plans->ListPlans($objCustomerGroup->id);
+				// There are multiple customer groups
+				ContextMenu()->Plans->ListPlans();
+	
+				foreach ($arrCustomerGroups as $objCustomerGroup)
+				{
+					ContextMenu()->Plans->ListPlans($objCustomerGroup->id);
+				}
 			}
-		}
-		else
-		{
-			// There is only one customer group, so you don't need to break them down
-			ContextMenu()->Available_Plans();
+			else
+			{
+				// There is only one customer group, so you don't need to break them down
+				ContextMenu()->Available_Plans();
+			}
 		}
 
 		if (Ticketing_User::currentUserIsTicketingUser() && Flex_Module::isActive(FLEX_MODULE_TICKETING))
@@ -224,13 +230,13 @@ class Application
 		}
 
 		// Document Management
-		if (Flex_Module::isActive(FLEX_MODULE_DOCUMENT_MANAGEMENT))
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW) && Flex_Module::isActive(FLEX_MODULE_DOCUMENT_MANAGEMENT))
 		{
 			ContextMenu()->ShowDocumentExplorer();
 		}
 
 		// Internal Contact List
-		if (Flex_Module::isActive(FLEX_MODULE_CONTACT_LIST))
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW) && Flex_Module::isActive(FLEX_MODULE_CONTACT_LIST))
 		{
 			ContextMenu()->ViewInternalContactList();
 		}
@@ -314,24 +320,31 @@ class Application
 		{
 			ContextMenu()->Customer->VerifySales();
 		}
-		ContextMenu()->Customer->Customer_Overdue_List();
+		
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
+		{
+			ContextMenu()->Customer->Customer_Overdue_List();
+		}
 
 		$arrCustomerGroups = Customer_Group::listAll();
-
-		if (count($arrCustomerGroups) > 1)
+		
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
 		{
-			// There are multiple customer groups
-			ContextMenu()->Plans->ListPlans();
-
-			foreach ($arrCustomerGroups as $objCustomerGroup)
+			if (count($arrCustomerGroups) > 1)
 			{
-				ContextMenu()->Plans->ListPlans($objCustomerGroup->id);
+				// There are multiple customer groups
+				ContextMenu()->Plans->ListPlans();
+	
+				foreach ($arrCustomerGroups as $objCustomerGroup)
+				{
+					ContextMenu()->Plans->ListPlans($objCustomerGroup->id);
+				}
 			}
-		}
-		else
-		{
-			// There is only one customer group, so you don't need to break them down
-			ContextMenu()->Available_Plans();
+			else
+			{
+				// There is only one customer group, so you don't need to break them down
+				ContextMenu()->Available_Plans();
+			}
 		}
 
 		if (Ticketing_User::currentUserIsTicketingUser() && Flex_Module::isActive(FLEX_MODULE_TICKETING))
@@ -419,13 +432,13 @@ class Application
 		}
 
 		// Document Management
-		if (Flex_Module::isActive(FLEX_MODULE_DOCUMENT_MANAGEMENT))
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW) && Flex_Module::isActive(FLEX_MODULE_DOCUMENT_MANAGEMENT))
 		{
 			ContextMenu()->ShowDocumentExplorer();
 		}
 
 		// Internal Contact List
-		if (Flex_Module::isActive(FLEX_MODULE_CONTACT_LIST))
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW) && Flex_Module::isActive(FLEX_MODULE_CONTACT_LIST))
 		{
 			ContextMenu()->ViewInternalContactList();
 		}
