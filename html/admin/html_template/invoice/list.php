@@ -84,6 +84,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 	function Render()
 	{	
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolUserHasViewPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
+		$bolUserHasExternalPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
 		$bolUserHasInterimPerm	= (AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS) || AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN));
 		
 		// Render each of the account invoices
@@ -99,28 +101,31 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		$strCDRCutoffDate = date("Y-m-01", strtotime("-1 year"));
 
 //*
-		$arrSampleInvoices = ListPDFSamples(DBO()->Account->Id->Value);
-		foreach ($arrSampleInvoices as $strInvoiceRun => $strSampleType)
+		if ($bolUserHasViewPerm)
 		{
-			// If the strInvoiceRun value is shorter than a 8, it must be an Id. We should load the InvoiceRun for that so that we can 
-			// display the link for it.
-			$strPdfHref		= Href()->ViewInvoicePdf(DBO()->Account->Id->Value, 0, 0, 0, $strInvoiceRun);
-			$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View $strSampleType Sample PDF Invoice' /></a>";
-			$strInvoiceRunDate = is_numeric(substr($strInvoiceRun, 0, 8)) 
-									? substr($strInvoiceRun, 6, 2) . '-' . substr($strInvoiceRun, 4, 2) . '-' .substr($strInvoiceRun, 0, 4) 
-									: "Unknown";
-
-			// Add this row to Invoice table
-			Table()->InvoiceTable->AddRow(  $strInvoiceRunDate,
-											$strSampleType, 
-											"N/A", 
-											"N/A",
-											"N/A",
-											'Sample', 
-											$strPdfLabel, 
-											"&nbsp;",
-											"&nbsp;",
-											"&nbsp;");
+			$arrSampleInvoices = ListPDFSamples(DBO()->Account->Id->Value);
+			foreach ($arrSampleInvoices as $strInvoiceRun => $strSampleType)
+			{
+				// If the strInvoiceRun value is shorter than a 8, it must be an Id. We should load the InvoiceRun for that so that we can 
+				// display the link for it.
+				$strPdfHref		= Href()->ViewInvoicePdf(DBO()->Account->Id->Value, 0, 0, 0, $strInvoiceRun);
+				$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View $strSampleType Sample PDF Invoice' /></a>";
+				$strInvoiceRunDate = is_numeric(substr($strInvoiceRun, 0, 8)) 
+										? substr($strInvoiceRun, 6, 2) . '-' . substr($strInvoiceRun, 4, 2) . '-' .substr($strInvoiceRun, 0, 4) 
+										: "Unknown";
+	
+				// Add this row to Invoice table
+				Table()->InvoiceTable->AddRow(  $strInvoiceRunDate,
+												$strSampleType, 
+												"N/A", 
+												"N/A",
+												"N/A",
+												'Sample', 
+												$strPdfLabel, 
+												"&nbsp;",
+												"&nbsp;",
+												"&nbsp;");
+			}
 		}
 //*/
 		
@@ -146,7 +151,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			}
 			$arrInvoiceRun	= $resInvoiceRun->fetch_assoc();
 
-			if (InvoicePDFExists($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, intval($dboInvoice->invoice_run_id->Value)))
+			if ($bolUserHasViewPerm && InvoicePDFExists($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, intval($dboInvoice->invoice_run_id->Value)))
 			{
 				// The pdf exists
 				// Build "view invoice pdf" link
@@ -186,7 +191,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 
 			$strViewInvoiceLabel	= "&nbsp;";
 			$strExportCSV			= "&nbsp;";
-			if ($dboInvoice->CreatedOn->Value > $strCDRCutoffDate)
+			if ($bolUserHasViewPerm && $dboInvoice->CreatedOn->Value > $strCDRCutoffDate)
 			{
 				// Build the "View Invoice Details" link
 				$strViewInvoiceHref		= Href()->ViewInvoice($dboInvoice->Id->Value);
