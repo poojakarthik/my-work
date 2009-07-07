@@ -265,6 +265,26 @@
 												</xsl:for-each>
 											</select>
 										</xsl:when>
+										<!-- Query -->
+										<xsl:when test="./Type = 'Query'">
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:for-each select="./Options/Option">
+													<option>
+														<xsl:attribute name="value">
+															<xsl:text></xsl:text>
+															<xsl:value-of select="." />
+														</xsl:attribute>
+														<xsl:value-of select="./@Label" />
+													</option>
+												</xsl:for-each>
+											</select>
+										</xsl:when>
 										<!-- NoteTypes -->
 										<xsl:when test="./Type = 'NoteTypes'">
 											<select>

@@ -2024,4 +2024,74 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+
+
+//---------------------------------------------------------------------------//
+// ACCOUNT LIFETIME PROFIT SUMMARY
+//---------------------------------------------------------------------------//
+
+$arrDataReport['Name']			= "Account Lifetime Profit Summary";
+$arrDataReport['Summary']		= "Provides a Profit Summary for each Account since they were entered in Flex";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 2147483648;									// Debug
+//$arrDataReport['Priviledges']	= 1;											// Live
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "				Account a
+												JOIN Invoice i ON (a.Id = i.Account)
+												JOIN InvoiceRun ir ON (i.invoice_run_id = ir.Id)
+												JOIN
+												(
+													SELECT		stt.Account				AS account_id,
+																stt.invoice_run_id		AS invoice_run_id,
+																SUM(stt.Cost)			AS cdr_cost,
+																SUM(stt.Charge)			AS cdr_rated
+													FROM		InvoiceRun ir
+																JOIN Invoice i ON (i.invoice_run_id = ir.Id)
+																LEFT JOIN ServiceTypeTotal stt ON (stt.Account = i.Account AND stt.invoice_run_id = i.invoice_run_id)
+													GROUP BY	account_id,
+																invoice_run_id
+												) ict ON (ict.invoice_run_id = ir.Id AND i.Account = ict.account_id)";
+$arrDataReport['SQLWhere']		= "				ir.invoice_run_type_id IN (1, 4, 5)";
+$arrDataReport['SQLGroupBy']	= "				a.Id";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['Account']							['Value']	= "a.Id";
+
+$arrSQLSelect['Account Name']						['Value']	= "a.BusinessName";
+
+$arrSQLSelect['Times Invoiced']						['Value']	= "COUNT(i.Id)";
+
+$arrSQLSelect['Last Invoiced On']					['Value']	= "DATE_FORMAT(MAX(ir.BillingDate), '%d/%m/%Y')";
+
+$arrSQLSelect['Total CDR Cost (ex GST)']			['Value']	= "SUM(ict.cdr_cost)";
+$arrSQLSelect['Total CDR Cost (ex GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Total CDR Rated Charge (ex GST)']	['Value']	= "SUM(ict.cdr_rated)";
+$arrSQLSelect['Total CDR Rated Charge (ex GST)']		['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Total Invoiced (ex GST)']			['Value']	= "SUM(i.Total)";
+$arrSQLSelect['Total Invoiced (ex GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Total Taxed']						['Value']	= "SUM(i.Tax)";
+$arrSQLSelect['Total Taxed']						['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Total Invoiced (inc GST)']			['Value']	= "SUM(i.Total + i.Tax)";
+$arrSQLSelect['Total Invoiced (inc GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Profit Margin']						['Value']	= "IF(SUM(i.Total), (SUM(i.Total) - SUM(ict.cdr_cost)) / SUM(i.Total), 0)";
+$arrSQLSelect['Profit Margin']						['Type']	= EXCEL_TYPE_PERCENTAGE;
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+
+
+
 ?>

@@ -8,19 +8,30 @@
 		
 		<xsl:variable name="Element" select="/Response/Documentation/Entity/Fields/Field[Entity=$entity][Field=$field]" />
 		
-		<a href="#" class="Label" alt="Pablo provides helpful online documentation">
-			<xsl:attribute name="title">
-				<xsl:text>Pablo 'the helpful donkey'</xsl:text>
-			</xsl:attribute>
-			<xsl:attribute name="onclick">
-				<xsl:text>return ModalExternal (this, 'documentation_view.php?Entity=</xsl:text>
-				<xsl:value-of select="$Element/Entity" />
-				<xsl:text>&amp;Field=</xsl:text>
-				<xsl:value-of select="$Element/Field" />
-				<xsl:text>')</xsl:text>
-			</xsl:attribute>
-			<xsl:value-of select="$Element/Label" />
-		</a> :
+		<xsl:choose>
+			<xsl:when test="$Element/Entity">
+				<!-- The entry was found in the documentation -->
+				<a href="#" class="Label" alt="Pablo provides helpful online documentation">
+					<xsl:attribute name="title">
+						<xsl:text>Pablo 'the helpful donkey'</xsl:text>
+					</xsl:attribute>
+					<xsl:attribute name="onclick">
+						<xsl:text>return ModalExternal (this, 'documentation_view.php?Entity=</xsl:text>
+						<xsl:value-of select="$Element/Entity" />
+						<xsl:text>&amp;Field=</xsl:text>
+						<xsl:value-of select="$Element/Field" />
+						<xsl:text>')</xsl:text>
+					</xsl:attribute>
+					<xsl:value-of select="$Element/Label" />
+				</a> :
+			</xsl:when>
+			<xsl:otherwise>
+				<!-- The entry was not found -->
+				<strong>
+					<xsl:value-of select="$field" />
+				</strong> :
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	
 	<xsl:template name="ConstraintOperator">

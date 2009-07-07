@@ -178,24 +178,24 @@
 			//Debug(unserialize($this->Pull('SQLFields')->getValue()));
 			//die;
 			
-			$oblarrInputs = new dataArray ('Inputs');
+			$oblarrInputs = new dataArray('Inputs');
 			
-			if (is_array ($arrInputs))
+			if (is_array($arrInputs))
 			{
-				foreach ($arrInputs as $strName => $arrInput)
+				foreach($arrInputs as $strName=>$arrInput)
 				{
-					$oblarrField		= $oblarrInputs->Push (new dataArray ('Input'));
-					$oblstrName			= $oblarrField->Push (new dataString ('Name', $strName));
+					$oblarrField		= $oblarrInputs->Push(new dataArray('Input'));
+					$oblstrName			= $oblarrField->Push(new dataString('Name', $strName));
 					
-					$oblstrDocEntity	= $oblarrField->Push (new dataString ('Documentation-Entity',	$arrInput ['Documentation-Entity']));
-					$oblstrDocField		= $oblarrField->Push (new dataString ('Documentation-Field',	$arrInput ['Documentation-Field']));
+					$oblstrDocEntity	= $oblarrField->Push(new dataString('Documentation-Entity',	$arrInput['Documentation-Entity']));
+					$oblstrDocField		= $oblarrField->Push(new dataString('Documentation-Field',	$arrInput['Documentation-Field']));
 					
-					$oblstrType			= $oblarrField->Push (new dataString ('Type',					$arrInput ['Type']));
+					$oblstrType			= $oblarrField->Push(new dataString('Type',					$arrInput['Type']));
 					
 					if (class_exists($arrInput['Type']))
 					{						
 						// Is it a Statement?
-						if ($arrInput['DBSelect'])
+						if (array_key_exists('DBSelect', $arrInput))
 						{
 							$oblarrValue		= $oblarrField->Push(new dataArray('Options'));
 							
@@ -221,14 +221,44 @@
 								$oblarrValue->Push($oblOption);
 							}
 						}
-						elseif (is_subclass_of ($arrInput ['Type'], "dataPrimitive") || is_subclass_of ($arrInput ['Type'], "dataObject"))
+						elseif (array_key_exists('DBQuery', $arrInput))
 						{
-							$oblarrField->Push (new $arrInput ['Type'] ('Value'));
+							// The input is based on the results of the SQL Query defined in $arrInput['DBQuery']
+							$oblarrValue		= $oblarrField->Push(new dataArray('Options'));
+							
+							// Does this have an ALL/IGNORE option?
+							if (is_array($arrInput['DBQuery']['IgnoreField']))
+							{
+								$oblOption =& new $arrInput['DBQuery']['ValueType']('Option', $arrInput['DBQuery']['IgnoreField']['Value']);
+								$oblOption->setAttribute('Label', $arrInput['DBQuery']['IgnoreField']['Label']);
+								$oblarrValue->Push($oblOption);
+							}
+
+							// We need to fetch values from the DB
+							$objQuery = new Query();
+
+							$objRecordSet = $objQuery->Execute($arrInput['DBQuery']['Query']);
+							
+							if ($objRecordSet === false)
+							{
+								throw new Exception("Failed to retrieve values for DataReport constraint field: $strName. Error: ". $objQuery->Error());
+							}
+							
+							while ($arrRecord = $objRecordSet->fetch_assoc())
+							{
+								$oblOption =& new $arrInput['DBQuery']['ValueType']('Option', $arrRecord['Value']);
+								$oblOption->setAttribute('Label', $arrRecord['Label']);
+								$oblarrValue->Push($oblOption);
+							}
+						}
+						elseif (is_subclass_of($arrInput['Type'], "dataPrimitive") || is_subclass_of($arrInput ['Type'], "dataObject"))
+						{
+							$oblarrField->Push(new $arrInput['Type']('Value'));
 						}
 						else
 						{
-							$oblarrValue		= $oblarrField->Push (new dataArray  ('Value'));
-							$oblarrValue->Push (new $arrInput ['Type'] ());
+							$oblarrValue		= $oblarrField->Push(new dataArray('Value'));
+							$oblarrValue->Push(new $arrInput['Type']());
 						}
 					}
 				}
