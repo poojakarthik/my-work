@@ -218,13 +218,16 @@
 												</td>
 											</tr>
 											-->
-											<tr>
-												<td>
+											<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator View']) = 1">
+												<!-- User needs OPERATOR_VIEW privileges to view plans -->
+												<tr>
+													<td>
 													<a href="../admin/flex.php/Plan/AvailablePlans/">
 														<img src="img/template/plans.png" title="View Available Plans" class="MenuIcon" />
 													</a>
-												</td>
-											</tr>
+													</td>
+												</tr>
+											</xsl:if>
 											<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Admin']) = 1">
 												<tr>
 													<td>
@@ -234,26 +237,29 @@
 													</td>
 												</tr>
 											</xsl:if>
-											<xsl:choose>
-												<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Super Admin']) = 1">
-												<tr>
-													<td>
-														<a href="../admin/reflex.php/Ticketing/System/Mine">
-															<img src="img/template/ticketing_system.png" title="Ticketing System" class="MenuIcon" />
-														</a>
-													</td>
-												</tr>
-												</xsl:when>
-												<xsl:when test="/Response/Ticketing = 1">
-												<tr>
-													<td>
-														<a href="../admin/reflex.php/Ticketing/System/Mine">
-															<img src="img/template/ticketing_system.png" title="Ticketing System" class="MenuIcon" />
-														</a>
-													</td>
-												</tr>
-												</xsl:when>
-											</xsl:choose>
+											<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator View']) = 1">
+												<!-- User needs OPERATOR_VIEW privileges to view ticketing system -->
+												<xsl:choose>
+													<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Super Admin']) = 1">
+													<tr>
+														<td>
+															<a href="../admin/reflex.php/Ticketing/System/Mine">
+																<img src="img/template/ticketing_system.png" title="Ticketing System" class="MenuIcon" />
+															</a>
+														</td>
+													</tr>
+													</xsl:when>
+													<xsl:when test="/Response/Ticketing = 1">
+													<tr>
+														<td>
+															<a href="../admin/reflex.php/Ticketing/System/Mine">
+																<img src="img/template/ticketing_system.png" title="Ticketing System" class="MenuIcon" />
+															</a>
+														</td>
+													</tr>
+													</xsl:when>
+												</xsl:choose>
+											</xsl:if>
 											<tr>
 												<td>
 													<a href="#">
