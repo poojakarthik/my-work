@@ -213,7 +213,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		
 		// Draw buttons
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		if (AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 		{
 			// Include the AddContact button
 			$strAddContactHref = Href()->AddContact(DBO()->Account->Id->Value);
@@ -269,7 +269,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		$this->_RenderList();
 		
 		echo "<div class='ButtonContainer'><div class='Right'>\n";
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL))
 		{
 			$strAddContactHref = Href()->AddContact(DBO()->Account->Id->Value);
 			$this->Button("Add Contact", "window.location='$strAddContactHref'");

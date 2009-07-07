@@ -272,7 +272,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		DBO()->Account->Sample->RenderOutput();
 		
-		// This property is DEPRICATED
+		// This property is DEPRECATED
 		//DBO()->Account->DisableLateNotices->RenderOutput();
 		
 		if (DBO()->Account->LatePaymentAmnesty->Value == substr(END_OF_TIME, 0, 10))
