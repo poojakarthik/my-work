@@ -437,14 +437,18 @@
 								<xsl:value-of select="./Id" /><xsl:text>')</xsl:text>
 							</xsl:attribute>
 							<xsl:text>View Notes</xsl:text>
-						</a>, 
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>../admin/flex.php/Account/InvoicesAndPayments/?Account.Id=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<xsl:text>View Invoices &amp; Payments</xsl:text>
 						</a>
+						<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator View']) = 1">
+							<!-- The user has OPERATOR_VIEW privileges -->
+							, <!-- this comma has been left here intentionaly to separate the links -->
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>../admin/flex.php/Account/InvoicesAndPayments/?Account.Id=</xsl:text>
+									<xsl:value-of select="./Id" />
+								</xsl:attribute>
+								<xsl:text>View Invoices &amp; Payments</xsl:text>
+							</a>
+						</xsl:if>
 						<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Operator']) = 1">
 							<!-- The user has OPERATOR privileges and can therefore perform operations that would modify data -->
 							, <!-- this comma has been left here intentionaly to separate the links -->
