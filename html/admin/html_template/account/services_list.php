@@ -157,11 +157,13 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	 */
 	function RenderInPage($strTableContainerDivId)
 	{
+		$sFilter	= (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW)) ? '' : "display: none;";
+		
 		echo "
 <div style='width:100%;height:auto'>
 	<h2 class='Services' style='float:left'>Services</h2>
 			
-	<select id='ServicesListFilterCombo' style='float:left;margin-left:20px' onChange='Vixen.AccountServices.ReloadList(true)'>
+	<select id='ServicesListFilterCombo' style='{$sFilter}float:left;margin-left:20px' onChange='Vixen.AccountServices.ReloadList(true)'>
 		<option value='0'>Show All</option>
 		<option value='". SERVICE_ACTIVE ."' selected='selected'>Active Only</option>
 		<option value='". SERVICE_DISCONNECTED ."'>Disconnected</option>
@@ -204,6 +206,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 	function RenderTable()
 	{
 		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
+		$bolUserHasViewPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
 		$arrServices				= DBO()->Account->Services->Value;
 		$intCurrentDate				= strtotime(GetCurrentISODate());
 		$bolUserIsTicketingUser 	= Ticketing_User::currentUserIsTicketingUser();
@@ -263,7 +266,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strViewServiceNotes		= "<img src='img/template/note.png' title='View Notes' onclick='$strViewServiceNotesLink'/>";
 			
 			$strViewUnbilledChargesLink = Href()->ViewUnbilledCharges($arrService['Id']);
-			$strViewUnbilledCharges 	= "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>";
+			$strViewUnbilledCharges 	= ($bolUserHasViewPerm) ? "<a href='$strViewUnbilledChargesLink' title='View Unbilled Charges'><img src='img/template/cdr.png'></img></a>" : '';
 			
 			
 			
@@ -278,7 +281,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				// The Service has a current plan
 				$strPlanCell = "<a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['CurrentPlan']['Name']}</a>";
 				
-				if (Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
+				if ($bolUserHasViewPerm && Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
 				{
 					if ($arrService['CurrentPlan']['brochure_document_id'])
 					{
@@ -311,7 +314,7 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 				$strStartDate = OutputMask()->ShortDate($arrService['FuturePlan']['StartDatetime']); 
 				$strPlanCell .= "<br />As from $strStartDate : <a href='$strViewServiceRatePlanLink' title='View Service Specific Plan'>{$arrService['FuturePlan']['Name']}</a>";
 				
-				if (Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
+				if ($bolUserHasViewPerm && Flex_Module::isActive(FLEX_MODULE_PLAN_BROCHURE))
 				{
 					if ($arrService['FuturePlan']['brochure_document_id'])
 					{
@@ -412,8 +415,15 @@ class HtmlTemplateAccountServicesList extends HtmlTemplate
 			$strViewServiceLink	= Href()->ViewService($arrService['Id']);
 			$strFnnDescription	= ($arrService['FNN'] != NULL)? $arrService['FNN'] : "[not specified]";
 			$strIndial100Flag	= ($arrService['Indial100'])? " (Indial&nbsp;100&nbsp;range)" : "";
-			$strFnnCell			= "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription{$strIndial100Flag}</a>";
 			
+			if ($bolUserHasViewPerm)
+			{
+			$strFnnCell			= "<a href='$strViewServiceLink' title='View Service Details'>$strFnnDescription{$strIndial100Flag}</a>";
+			}
+			else
+			{
+			$strFnnCell			= "<span>$strFnnDescription{$strIndial100Flag}</span>";
+			}
 			
 			switch ($arrService['ServiceType'])
 			{
