@@ -1666,6 +1666,7 @@ div.select-list
 table.select-list
 {
 	border-collapse	: collapse;
+	width			: 100%;
 }
 
 table.select-list tr.alt td
