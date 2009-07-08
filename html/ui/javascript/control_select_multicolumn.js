@@ -88,7 +88,7 @@ var Control_Select_Multicolumn	= Class.create
 	render	: function()
 	{
 		// Render the Children
-		for (var i = 0; i < aOptions.length; i++)
+		for (var i = 0; i < this.aOptions.length; i++)
 		{
 			this.aOptions[i].render(this.oColumns);
 		}
