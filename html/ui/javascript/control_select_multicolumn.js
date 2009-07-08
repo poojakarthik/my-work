@@ -35,11 +35,12 @@ var Control_Select_Multicolumn	= Class.create
 	remove	: function(oOption)
 	{
 		// Validate parameters
+		var iIndex	= null;
 		if (!(oOption instanceof Control_Select_Multicolumn_Option))
 		{
 			throw "oOption is not a 'Control_Select_Multicolumn_Option' object!";
 		}
-		else if ((var iIndex = this.aOptions.indexOf(oOption)) > -1)
+		else if ((iIndex = this.aOptions.indexOf(oOption)) > -1)
 		{
 			if (iIndex === this.iSelectedIndex)
 			{
