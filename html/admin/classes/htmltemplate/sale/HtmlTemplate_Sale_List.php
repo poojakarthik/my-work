@@ -287,6 +287,20 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 
 		// Output the table of dealers
 		echo "
+<div id='filterOptions' class='GroupedContent' style='margin-bottom:1em'>
+	<form method='GET' action='$strSalesListLink'>
+		<input type='text' id='salesSearchString' name='searchString' value='$strSearchString' maxlength='50%'></input>
+		<select id='dealerFilter' name='dealerFilter'>$strDealerOptions
+		</select>
+		<select id='vendorId' name='vendorId'>$strVendorOptions
+		</select>
+		<select id='saleTypeId' name='saleTypeId'>$strSaleTypeOptions
+		</select>
+		<select id='saleStatusId' name='saleStatusId'>$strSaleStatusOptions
+		</select>
+		<input type='submit' value='Go'></input>
+	</form>
+</div>
 <table class='reflex highlight-rows' id='SalesListTable' name='SalesListTable'>
 	<caption>
 		<div id='caption_bar' class='caption_bar'>
@@ -294,18 +308,6 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				$strTitle
 			</div>
 			<div id='caption_options' class='caption_options'>
-				<form method='GET' action='$strSalesListLink'>
-					<input type='text' id='salesSearchString' name='searchString' value='$strSearchString' maxlength='50'></input>
-					<select id='dealerFilter' name='dealerFilter'>$strDealerOptions
-					</select>
-					<select id='vendorId' name='vendorId'>$strVendorOptions
-					</select>
-					<select id='saleTypeId' name='saleTypeId'>$strSaleTypeOptions
-					</select>
-					<select id='saleStatusId' name='saleStatusId'>$strSaleStatusOptions
-					</select>
-					<input type='submit' value='Go'></input>
-				</form>
 			</div>
 		</div>
 	</caption>
