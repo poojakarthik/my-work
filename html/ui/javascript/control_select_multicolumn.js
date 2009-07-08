@@ -3,9 +3,14 @@ var Control_Select_Multicolumn	= Class.create
 	initialize	: function(bSelectMode)
 	{
 		// DOM Elements
-		this.oTable				= {};
-		this.oTable.domElement	= document.createElement('table');
-		this.oTable.domElement.addClassName('select');
+		this.oContainer				= {};
+		this.oContainer.domElement	= document.createElement('div');
+		this.oContainer.domElement.addClassName('select-list');
+		
+		this.oContainer.oTable				= {};
+		this.oContainer.oTable.domElement	= document.createElement('table');
+		this.oContainer.oTable.domElement.addClassName('select-list');
+		this.oContainer.domElement.appendChild(this.oContainer.oTable.domElement);
 		
 		// Properties
 		this.aOptions		= [];
@@ -15,7 +20,12 @@ var Control_Select_Multicolumn	= Class.create
 	
 	getElement	: function()
 	{
-		return this.oTable.domElement;
+		return this.oContainer.domElement;
+	},
+	
+	getTable	: function()
+	{
+		return this.oContainer.oTable.domElement;
 	},
 	
 	add	: function(oOption)
