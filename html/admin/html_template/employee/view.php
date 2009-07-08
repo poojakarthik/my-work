@@ -65,8 +65,8 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->LoadJavascript("control_tab_group");
 		$this->LoadJavascript("control_tab");
 		
-		//$this->LoadJavascript("control_treeview_multicolumn");
-		//$this->LoadJavascript("control_treeview_multicolumn_node");
+		$this->LoadJavascript("control_select_multicolumn");
+		$this->LoadJavascript("control_select_multicolumn_option");
 		
 		$this->LoadJavascript("date_time_picker_dynamic");
 		
