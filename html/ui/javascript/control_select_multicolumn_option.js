@@ -14,12 +14,12 @@ var Control_Select_Multicolumn_Option	= Class.create
 	
 	attachTo	: function(oControlSelectMulticolumn)
 	{
-		oControlSelectMulticolumn.domElement.appendChild(this._oTR.domElement);
+		oControlSelectMulticolumn.getElement().appendChild(this._oTR.domElement);
 	},
 	
 	detachFrom	: function(oControlSelectMulticolumn)
 	{
-		oControlSelectMulticolumn.domElement.removeChild(this._oTR.domElement);
+		oControlSelectMulticolumn.getElement().removeChild(this._oTR.domElement);
 	},
 	
 	setContent	: function(oContent)
