@@ -39,4 +39,4 @@ var Control_Tab	= Class.create
 	{
 		return this.strIconURL;
 	}
-})
+});
