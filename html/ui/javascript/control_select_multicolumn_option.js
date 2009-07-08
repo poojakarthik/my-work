@@ -14,7 +14,12 @@ var Control_Select_Multicolumn_Option	= Class.create
 	
 	attachTo	: function(oControlSelectMulticolumn)
 	{
-		oControlSelectMulticolumn.domElement.appendChild();
+		oControlSelectMulticolumn.domElement.appendChild(this._oTR.domElement);
+	},
+	
+	detachFrom	: function(oControlSelectMulticolumn)
+	{
+		oControlSelectMulticolumn.domElement.removeChild(this._oTR.domElement);
 	},
 	
 	setContent	: function(oContent)
@@ -52,6 +57,7 @@ var Control_Select_Multicolumn_Option	= Class.create
 		{
 			var domTD		= document.createElement('td');
 			domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
+			this._oTR.domElement.appendChild(domTD);
 		}
 	}
 });

@@ -28,7 +28,10 @@ var Control_Select_Multicolumn	= Class.create
 		else
 		{
 			// Add to array and return the index
-			return this.aOptions.push(oOption) - 1;
+			oOption.attachTo(this);
+			var iIndex	= this.aOptions.push(oOption) - 1;
+			this.render();
+			return iIndex;
 		}
 	},
 	
@@ -47,7 +50,9 @@ var Control_Select_Multicolumn	= Class.create
 				this.iSelectedIndex	= null;
 			}
 			
+			this.aOptions[iIndex].detachFrom(this);
 			this.aOptions.splice(iIndex, 1);
+			this.render();
 			return this.aOptions.length;
 		}
 		else
@@ -70,20 +75,22 @@ var Control_Select_Multicolumn	= Class.create
 	
 	setColumns	: function(oDefinition)
 	{
+		this.oColumns	= oDefinition;
+		/* TODO: Only add data we care about
 		this.oColumns	= {};
 		for (sColumnAlias in oDefinition)
 		{
 			this.oColumns[sColumnAlias]	= {};
-		}
-		this._render();
+		}*/
+		this.render();
 	},
 	
-	_render	: function()
+	render	: function()
 	{
 		// Render the Children
 		for (i in this.oColumns)
 		{
-			this.oColumns[i].render();
+			this.oColumns[i].render(this.oColumns);
 		}
 	}
 });
