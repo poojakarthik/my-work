@@ -215,6 +215,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		objTabPage.objAvailableProfiles.objSelectLeft.objControl	= new Control_Select_Multicolumn();
 		objTabPage.objAvailableProfiles.domElement.appendChild(objTabPage.objAvailableProfiles.objSelectLeft.objControl.getElement());
 		
+		objTabPage.objAvailableProfiles.objSelectLeft.objControl.add(new Control_Select_Multicolumn_Option({}, true));
+		
 		return objTabPage;
 	},
 	
