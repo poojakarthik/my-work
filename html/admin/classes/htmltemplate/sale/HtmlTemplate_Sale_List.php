@@ -289,7 +289,6 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 		echo "
 <div id='filterOptions' class='GroupedContent' style='margin-bottom:1em'>
 	<form method='GET' action='$strSalesListLink'>
-		<input type='text' id='salesSearchString' name='searchString' value='$strSearchString' maxlength='50%'></input>
 		<select id='dealerFilter' name='dealerFilter'>$strDealerOptions
 		</select>
 		<select id='vendorId' name='vendorId'>$strVendorOptions
@@ -298,6 +297,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 		</select>
 		<select id='saleStatusId' name='saleStatusId'>$strSaleStatusOptions
 		</select>
+		<input type='text' id='salesSearchString' name='searchString' value='$strSearchString'></input>
 		<input type='submit' value='Go'></input>
 	</form>
 </div>
