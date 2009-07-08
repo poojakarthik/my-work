@@ -13,6 +13,11 @@ var Control_Select_Multicolumn	= Class.create
 		this.oColumns		= {};
 	},
 	
+	getElement	: function()
+	{
+		return this.oTable.domElement;
+	},
+	
 	add	: function(oOption)
 	{
 		// Validate parameters
