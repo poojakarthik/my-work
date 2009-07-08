@@ -208,7 +208,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Available Profiles
 		objTabPage.objAvailableProfiles				= {};
 		objTabPage.objAvailableProfiles.domElement	= document.createElement('div');
-		objTabPage.objAvailableProfiles.domElement.addClassName('treeview');
 		objTabPage.domElement.appendChild(objTabPage.objAvailableProfiles.domElement);
 		
 		objTabPage.objAvailableProfiles.objSelectLeft				= {};
