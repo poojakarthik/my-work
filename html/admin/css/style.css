@@ -1654,3 +1654,27 @@ table.input tbody tr.alt td
 	background-color	: #fff;
 }
 /******************************************************************************/
+
+/***************************** MULTICOLUMN SELECT *****************************/
+div.select-list
+{
+	background-color	: #fff;
+	border				: 1px solid #000;
+	overflow-y			: scroll;
+}
+
+table.select-list
+{
+	border-collapse	: collapse;
+}
+
+table.select-list tr.alt td
+{
+	background-color	: #eee;
+}
+
+table.select-list tr:hover td
+{
+	background-color	: #b5ccdf;
+}
+/******************************************************************************/
