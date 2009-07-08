@@ -74,7 +74,6 @@ var Control_Select_Multicolumn	= Class.create
 		for (sColumnAlias in oDefinition)
 		{
 			this.oColumns[sColumnAlias]	= {};
-			this.oColumns[sColumnAlias].sWidth	= (oDefinition[sColumnAlias].sWidth) ? oDefinition[sColumnAlias].sWidth : 
 		}
 		this._render();
 	},
