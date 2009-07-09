@@ -221,7 +221,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		if ($bolCanCreateEmployees)
 		{
 			echo "<div style='position: absolute; right: 0px; top: 3px;'>";
-			$this->Button("Add Employee", "window.location='$strAddEmployee'");
+			//$this->Button("Add Employee", "window.location='$strAddEmployee'");
 			$this->Button("Add Employee", "new Popup_Employee(Control_Field.RENDER_MODE_EDIT);");
 			
 			echo "</div>\n";
