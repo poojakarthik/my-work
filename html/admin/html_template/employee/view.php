@@ -55,7 +55,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->LoadJavascript("employee_view");
 		/*
 		COMMENTED OUT FOR 2/7/09 ROLLOUT
-		
+		*/
 		$this->LoadJavascript("dataset_ajax");
 		
 		$this->LoadJavascript("fx_fade");
@@ -157,7 +157,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
 			$strNewViewHref	= "new Popup_Employee(Control_Field.RENDER_MODE_VIEW, {$dboEmployee->Id->Value});";
 			$strView = "<img onclick='$strViewHref' title='View Employee' src='img/template/view.png'></img>";
-			//$strView .= "<img onclick='$strNewViewHref' title='View Employee (NEW)' src='img/template/user_edit.png'></img>";
+			$strView .= "<img onclick='$strNewViewHref' title='View Employee (NEW)' src='img/template/user_edit.png'></img>";
 			
 			$strArchivedLabel = "Active";
 			if ($dboEmployee->Archived->Value == 1)
@@ -222,7 +222,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		{
 			echo "<div style='position: absolute; right: 0px; top: 3px;'>";
 			$this->Button("Add Employee", "window.location='$strAddEmployee'");
-			//$this->Button("Add Employee", "new Popup_Employee(Control_Field.RENDER_MODE_EDIT);");
+			$this->Button("Add Employee", "new Popup_Employee(Control_Field.RENDER_MODE_EDIT);");
 			
 			echo "</div>\n";
 		}
