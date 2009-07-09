@@ -249,7 +249,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oSelectedProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {iType: Control_Select_List.COLUMN_TYPE_TEXT};
 		oTabPage.oProfiles.oSelectedProfiles.oControl.setColumns(oSelectedProfilesColumns);
 		
-		return objTabPage;
+		return oTabPage;
 	},
 	
 	display		: function($super)
