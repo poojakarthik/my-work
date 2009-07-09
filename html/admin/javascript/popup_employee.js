@@ -222,8 +222,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		// Populate
 		var oAvailableProfile								= {};
-		oAvailableProfile[Control_Select_List.COLUMN_LABEL]	= 'Flex Admin';
-		oAvailableProfile[Control_Select_List.COLUMN_VALUE]	= 6;
+		oAvailableProfile[Control_Select_List.COLUMN_LABEL]	= 'Customer Service Representative';
+		oAvailableProfile[Control_Select_List.COLUMN_VALUE]	= 1;
 		oTabPage.oProfiles.oAvailableProfiles.oControl.add(new Control_Select_List_Option(oAvailableProfile, true));
 		//--------------------------------------------------------------------//
 		
