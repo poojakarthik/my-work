@@ -1655,7 +1655,7 @@ table.input tbody tr.alt td
 }
 /******************************************************************************/
 
-/***************************** MULTICOLUMN SELECT *****************************/
+/************************* SELECT LIST (and GROUPS) ***************************/
 div.select-list
 {
 	background-color	: #fff;
@@ -1677,5 +1677,16 @@ table.select-list tr.alt td
 table.select-list tr:hover td
 {
 	background-color	: #b5ccdf;
+}
+
+div.select-list-group
+{
+	column-count			: 2;
+	-moz-column-count		: 2;
+	-webkit-column-count	: 2;
+	
+	column-gap				: 0.5em;
+	-moz-column-gap			: 0.5em;
+	-webkit-column-gap		: 0.5em;
 }
 /******************************************************************************/
