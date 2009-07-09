@@ -80,10 +80,10 @@ $arrSQLSelect['Total Taxed']						['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Total Invoiced (inc GST)']			['Value']	= "SUM(i.Total + i.Tax)";
 $arrSQLSelect['Total Invoiced (inc GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
 
-$arrSQLSelect['CDR Profit Margin']					['Value']	= "IF(SUM(ict.cdr_rated), (SUM(ict.cdr_rated) - SUM(ict.cdr_cost)) / SUM(ict.cdr_rated), 0)";
+$arrSQLSelect['CDR Profit Margin']					['Value']	= "IF(SUM(ict.cdr_rated), (SUM(ict.cdr_rated) - SUM(ict.cdr_cost)) / ABS(SUM(ict.cdr_rated)), 0)";
 $arrSQLSelect['CDR Profit Margin']					['Type']	= EXCEL_TYPE_PERCENTAGE;
 
-$arrSQLSelect['Profit Margin']						['Value']	= "IF(SUM(i.Total), (SUM(i.Total) - SUM(ict.cdr_cost)) / SUM(i.Total), 0)";
+$arrSQLSelect['Profit Margin']						['Value']	= "IF(SUM(i.Total), (SUM(i.Total) - SUM(ict.cdr_cost)) / ABS(SUM(i.Total)), 0)";
 $arrSQLSelect['Profit Margin']						['Type']	= EXCEL_TYPE_PERCENTAGE;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
