@@ -2,7 +2,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, bolRenderMode, mixEmployee, bolDisplayOnLoad)
 	{
-		$super(35);
+		$super(40);
 		this.setTitle("Employee");
 		this.addCloseButton();
 		this.setIcon("../admin/img/template/user_edit.png");
