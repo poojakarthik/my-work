@@ -201,22 +201,53 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	
 	buildContentPermissions	: function()
 	{
-		var objTabPage	= {};
-		objTabPage.domElement	= document.createElement('div');
-		objTabPage.domElement.innerHTML	= '[ Permissions ]';
+		var oTabPage	= {};
+		oTabPage.domElement				= document.createElement('div');
+		oTabPage.domElement.innerHTML	= '[ Permissions ]';
+		
+		oTabPage.oProfiles							= {};
+		oTabPage.oProfiles.domElement				= document.createElement('div');
+		oTabPage.oProfiles.domElement.addClassName	= 'select-list-group';
+		oTabPage.domElement.appendChild(oTabPage.oProfiles.domElement);
 		
 		// Available Profiles
-		objTabPage.objAvailableProfiles				= {};
-		objTabPage.objAvailableProfiles.domElement	= document.createElement('div');
-		objTabPage.domElement.appendChild(objTabPage.objAvailableProfiles.domElement);
+		//--------------------------------------------------------------------//
+		// Create
+		oTabPage.oProfiles.oAvailableProfiles				= {};
+		oTabPage.oProfiles.oAvailableProfiles.domElement	= document.createElement('div');
+		oTabPage.oProfiles.domElement.appendChild(oTabPage.oProfiles.oAvailableProfiles.domElement);
 		
-		objTabPage.objAvailableProfiles.objSelectLeft				= {};
-		objTabPage.objAvailableProfiles.objSelectLeft.objControl	= new Control_Select_Multicolumn();
-		objTabPage.objAvailableProfiles.domElement.appendChild(objTabPage.objAvailableProfiles.objSelectLeft.objControl.getElement());
+		oTabPage.oProfiles.oAvailableProfiles.oControl	= new Control_Select_List();
+		oTabPage.oProfiles.oAvailableProfiles.domElement.appendChild(oTabPage.oProfiles.oAvailableProfiles.oControl.getElement());
 		
-		objTabPage.objAvailableProfiles.objSelectLeft.objControl.setColumns({sName: {}});
+		// Populate
+		oTabPage.oProfiles.oAvailableProfiles.oControl.add(new Control_Select_List_Option({sName: 'CSR'}, true));
+		//--------------------------------------------------------------------//
 		
-		objTabPage.objAvailableProfiles.objSelectLeft.objControl.add(new Control_Select_Multicolumn_Option({sName: 'CSR'}, true));
+		// Selected Profiles
+		//--------------------------------------------------------------------//
+		// Create
+		oTabPage.oProfiles.oSelectedProfiles			= {};
+		oTabPage.oProfiles.oSelectedProfiles.domElement	= document.createElement('div');
+		oTabPage.oProfiles.domElement.appendChild(oTabPage.oProfiles.oSelectedProfiles.domElement);
+		
+		oTabPage.oProfiles.oSelectedProfiles.oControl	= new Control_Select_List();
+		oTabPage.oProfiles.oSelectedProfiles.domElement.appendChild(oTabPage.oProfiles.oSelectedProfiles.oControl.getElement());
+		
+		// Populate
+		oTabPage.oProfiles.oSelectedProfiles.oControl.add(new Control_Select_List_Option({sName: 'Flex Admin'}, true));
+		//--------------------------------------------------------------------//
+		
+		// Configure and link Select Lists
+		var oAvailableProfilesColumns								= {}
+		oAvailableProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {iType: Control_Select_List.COLUMN_TYPE_TEXT};
+		oAvailableProfilesColumns['sendToSelected']					= {iType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oSelectedProfiles.oControl};
+		oTabPage.oProfiles.oAvailableProfiles.oControl.setColumns(oAvailableProfilesColumns);
+		
+		var oSelectedProfilesColumns								= {}
+		oSelectedProfilesColumns['sendToSelected']					= {iType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oAvailableProfiles.oControl};
+		oSelectedProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {iType: Control_Select_List.COLUMN_TYPE_TEXT};
+		oTabPage.oProfiles.oSelectedProfiles.oControl.setColumns(oSelectedProfilesColumns);
 		
 		return objTabPage;
 	},
