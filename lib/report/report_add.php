@@ -80,11 +80,8 @@ $arrSQLSelect['Total CDR Rated Charge (ex GST)']	['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Total CDR Rated Charge (inc GST)']	['Value']	= "SUM(ict.cdr_rated_gst)";
 $arrSQLSelect['Total CDR Rated Charge (inc GST)']	['Type']	= EXCEL_TYPE_CURRENCY;
 
-$arrSQLSelect['CDR Profit Margin (ex GST)']			['Value']	= "IF(SUM(ict.cdr_rated), (SUM(ict.cdr_rated) - SUM(ict.cdr_cost)) / ABS(SUM(ict.cdr_rated)), 0)";
-$arrSQLSelect['CDR Profit Margin (ex GST)']			['Type']	= EXCEL_TYPE_PERCENTAGE;
-
-$arrSQLSelect['CDR Profit Margin (inc GST)']		['Value']	= "IF(SUM(ict.ict.cdr_rated_gst), (SUM(ict.cdr_rated_gst) - SUM(ict.cdr_cost_gst)) / ABS(SUM(ict.cdr_rated_gst)), 0)";
-$arrSQLSelect['CDR Profit Margin (inc GST)']		['Type']	= EXCEL_TYPE_PERCENTAGE;
+$arrSQLSelect['CDR Profit Margin']					['Value']	= "IF(SUM(ict.cdr_rated), (SUM(ict.cdr_rated) - SUM(ict.cdr_cost)) / ABS(SUM(ict.cdr_rated)), 0)";
+$arrSQLSelect['CDR Profit Margin']					['Type']	= EXCEL_TYPE_PERCENTAGE;
 
 $arrSQLSelect['Total Invoiced (ex GST)']			['Value']	= "SUM(i.Total)";
 $arrSQLSelect['Total Invoiced (ex GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
@@ -95,11 +92,8 @@ $arrSQLSelect['Total Taxed']						['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Total Invoiced (inc GST)']			['Value']	= "SUM(i.Total + i.Tax)";
 $arrSQLSelect['Total Invoiced (inc GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
 
-$arrSQLSelect['Invoice Profit Margin (ex GST)']		['Value']	= "IF(SUM(i.Total), (SUM(i.Total) - SUM(ict.cdr_cost)) / ABS(SUM(i.Total)), 0)";
-$arrSQLSelect['Invoice Profit Margin (ex GST)']		['Type']	= EXCEL_TYPE_PERCENTAGE;
-
-$arrSQLSelect['Invoice Profit Margin (inc GST)']	['Value']	= "IF(SUM(i.Total + i.Tax), (SUM(i.Total + i.Tax) - SUM(ict.cdr_cost_gst)) / ABS(SUM(i.Total + i.Tax)), 0)";
-$arrSQLSelect['Invoice Profit Margin (inc GST)']	['Type']	= EXCEL_TYPE_PERCENTAGE;
+$arrSQLSelect['Invoice Profit Margin']				['Value']	= "IF(SUM(i.Total), (SUM(i.Total) - SUM(ict.cdr_cost)) / ABS(SUM(i.Total)), 0)";
+$arrSQLSelect['Invoice Profit Margin']				['Type']	= EXCEL_TYPE_PERCENTAGE;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
