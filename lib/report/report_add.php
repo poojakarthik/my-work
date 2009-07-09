@@ -39,13 +39,16 @@ $arrDataReport['SQLTable']		= "				Account a
 												JOIN InvoiceRun ir ON (i.invoice_run_id = ir.Id)
 												JOIN
 												(
-													SELECT		stt.Account				AS account_id,
-																stt.invoice_run_id		AS invoice_run_id,
-																SUM(stt.Cost)			AS cdr_cost,
-																SUM(stt.Charge)			AS cdr_rated
+													SELECT		stt.Account														AS account_id,
+																stt.invoice_run_id												AS invoice_run_id,
+																SUM(stt.Cost)													AS cdr_cost,
+																SUM(stt.Charge)													AS cdr_rated,
+																SUM(IF(rt.global_tax_exempt = 0, stt.Cost * 1.1, stt.Cost))		AS cdr_cost_gst,
+																SUM(IF(rt.global_tax_exempt = 0, stt.Charge * 1.1, stt.Charge))	AS cdr_rated_gst
 													FROM		InvoiceRun ir
 																JOIN Invoice i ON (i.invoice_run_id = ir.Id)
 																LEFT JOIN ServiceTypeTotal stt ON (stt.Account = i.Account AND stt.invoice_run_id = i.invoice_run_id)
+																LEFT JOIN RecordType rt ON (stt.RecordType = rt.Id)
 													GROUP BY	account_id,
 																invoice_run_id
 												) ict ON (ict.invoice_run_id = ir.Id AND i.Account = ict.account_id)";
@@ -68,8 +71,20 @@ $arrSQLSelect['Last Invoiced On']					['Value']	= "DATE_FORMAT(MAX(ir.BillingDat
 $arrSQLSelect['Total CDR Cost (ex GST)']			['Value']	= "SUM(ict.cdr_cost)";
 $arrSQLSelect['Total CDR Cost (ex GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
 
+$arrSQLSelect['Total CDR Cost (inc GST)']			['Value']	= "SUM(ict.cdr_cost_gst)";
+$arrSQLSelect['Total CDR Cost (inc GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
+
 $arrSQLSelect['Total CDR Rated Charge (ex GST)']	['Value']	= "SUM(ict.cdr_rated)";
-$arrSQLSelect['Total CDR Rated Charge (ex GST)']		['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Total CDR Rated Charge (ex GST)']	['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Total CDR Rated Charge (inc GST)']	['Value']	= "SUM(ict.cdr_rated_gst)";
+$arrSQLSelect['Total CDR Rated Charge (inc GST)']	['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['CDR Profit Margin (ex GST)']			['Value']	= "IF(SUM(ict.cdr_rated), (SUM(ict.cdr_rated) - SUM(ict.cdr_cost)) / ABS(SUM(ict.cdr_rated)), 0)";
+$arrSQLSelect['CDR Profit Margin (ex GST)']			['Type']	= EXCEL_TYPE_PERCENTAGE;
+
+$arrSQLSelect['CDR Profit Margin (inc GST)']		['Value']	= "IF(SUM(ict.ict.cdr_rated_gst), (SUM(ict.cdr_rated_gst) - SUM(ict.cdr_cost_gst)) / ABS(SUM(ict.cdr_rated_gst)), 0)";
+$arrSQLSelect['CDR Profit Margin (inc GST)']		['Type']	= EXCEL_TYPE_PERCENTAGE;
 
 $arrSQLSelect['Total Invoiced (ex GST)']			['Value']	= "SUM(i.Total)";
 $arrSQLSelect['Total Invoiced (ex GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
@@ -80,11 +95,11 @@ $arrSQLSelect['Total Taxed']						['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Total Invoiced (inc GST)']			['Value']	= "SUM(i.Total + i.Tax)";
 $arrSQLSelect['Total Invoiced (inc GST)']			['Type']	= EXCEL_TYPE_CURRENCY;
 
-$arrSQLSelect['CDR Profit Margin']					['Value']	= "IF(SUM(ict.cdr_rated), (SUM(ict.cdr_rated) - SUM(ict.cdr_cost)) / ABS(SUM(ict.cdr_rated)), 0)";
-$arrSQLSelect['CDR Profit Margin']					['Type']	= EXCEL_TYPE_PERCENTAGE;
+$arrSQLSelect['Invoice Profit Margin (ex GST)']		['Value']	= "IF(SUM(i.Total), (SUM(i.Total) - SUM(ict.cdr_cost)) / ABS(SUM(i.Total)), 0)";
+$arrSQLSelect['Invoice Profit Margin (ex GST)']		['Type']	= EXCEL_TYPE_PERCENTAGE;
 
-$arrSQLSelect['Profit Margin']						['Value']	= "IF(SUM(i.Total), (SUM(i.Total) - SUM(ict.cdr_cost)) / ABS(SUM(i.Total)), 0)";
-$arrSQLSelect['Profit Margin']						['Type']	= EXCEL_TYPE_PERCENTAGE;
+$arrSQLSelect['Invoice Profit Margin (inc GST)']	['Value']	= "IF(SUM(i.Total + i.Tax), (SUM(i.Total + i.Tax) - SUM(ict.cdr_cost_gst)) / ABS(SUM(i.Total + i.Tax)), 0)";
+$arrSQLSelect['Invoice Profit Margin (inc GST)']	['Type']	= EXCEL_TYPE_PERCENTAGE;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
