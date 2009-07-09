@@ -221,7 +221,10 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oProfiles.oAvailableProfiles.domElement.appendChild(oTabPage.oProfiles.oAvailableProfiles.oControl.getElement());
 		
 		// Populate
-		oTabPage.oProfiles.oAvailableProfiles.oControl.add(new Control_Select_List_Option({sName: 'CSR'}, true));
+		var oAvailableProfile								= {};
+		oAvailableProfile[Control_Select_List.COLUMN_LABEL]	= 'Flex Admin';
+		oAvailableProfile[Control_Select_List.COLUMN_VALUE]	= 6;
+		oTabPage.oProfiles.oAvailableProfiles.oControl.add(new Control_Select_List_Option(oAvailableProfile, true));
 		//--------------------------------------------------------------------//
 		
 		// Selected Profiles
@@ -235,18 +238,21 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oProfiles.oSelectedProfiles.domElement.appendChild(oTabPage.oProfiles.oSelectedProfiles.oControl.getElement());
 		
 		// Populate
-		oTabPage.oProfiles.oSelectedProfiles.oControl.add(new Control_Select_List_Option({sName: 'Flex Admin'}, true));
+		var oSelectedProfile								= {};
+		oSelectedProfile[Control_Select_List.COLUMN_LABEL]	= 'Flex Admin';
+		oSelectedProfile[Control_Select_List.COLUMN_VALUE]	= 6;
+		oTabPage.oProfiles.oSelectedProfiles.oControl.add(new Control_Select_List_Option(oSelectedProfile, true));
 		//--------------------------------------------------------------------//
 		
 		// Configure and link Select Lists
 		var oAvailableProfilesColumns								= {}
-		oAvailableProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {iType: Control_Select_List.COLUMN_TYPE_TEXT};
-		oAvailableProfilesColumns['sendToSelected']					= {iType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oSelectedProfiles.oControl};
+		oAvailableProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {sType: Control_Select_List.COLUMN_TYPE_TEXT};
+		oAvailableProfilesColumns['sendToSelected']					= {sType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oSelectedProfiles.oControl};
 		oTabPage.oProfiles.oAvailableProfiles.oControl.setColumns(oAvailableProfilesColumns);
 		
 		var oSelectedProfilesColumns								= {}
-		oSelectedProfilesColumns['sendToSelected']					= {iType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oAvailableProfiles.oControl};
-		oSelectedProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {iType: Control_Select_List.COLUMN_TYPE_TEXT};
+		oSelectedProfilesColumns['sendToAvailable']					= {sType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oAvailableProfiles.oControl};
+		oSelectedProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {sType: Control_Select_List.COLUMN_TYPE_TEXT};
 		oTabPage.oProfiles.oSelectedProfiles.oControl.setColumns(oSelectedProfilesColumns);
 		
 		return oTabPage;

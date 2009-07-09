@@ -116,5 +116,9 @@ Control_Select_List.SELECT_MODE_SINGLE	= false;
 Control_Select_List.SELECT_MODE_MULTIPLE	= true;
 
 Control_Select_List.COLUMN_LABEL	= 'label';
-Control_Select_List.COLUMN_SWITCH	= 'switch';
+Control_Select_List.COLUMN_VALUE	= 'value';
+Control_Select_List.COLUMN_SEND		= 'send';
 Control_Select_List.COLUMN_EXPAND	= 'expand';
+
+Control_Select_List.COLUMN_TYPE_TEXT	= 'text';
+Control_Select_List.COLUMN_TYPE_SEND	= 'send';
