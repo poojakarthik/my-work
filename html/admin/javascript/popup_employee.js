@@ -207,7 +207,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		oTabPage.oProfiles							= {};
 		oTabPage.oProfiles.domElement				= document.createElement('div');
-		oTabPage.oProfiles.domElement.addClassName	= 'select-list-group';
+		oTabPage.oProfiles.domElement.addClassName('select-list-group');
 		oTabPage.domElement.appendChild(oTabPage.oProfiles.domElement);
 		
 		// Available Profiles
