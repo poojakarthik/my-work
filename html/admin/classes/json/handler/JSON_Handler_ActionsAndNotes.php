@@ -85,7 +85,7 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 	 */
 	public function createNote($intNoteTypeId, $strContent, $intAccountId=NULL, $intServiceId=NULL, $intContactId=NULL)
 	{
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
 
 		try
 		{
@@ -153,7 +153,7 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 	 */
 	public function createAction($intActionTypeId, $strExtraDetails, $intAccountId=NULL, $intServiceId=NULL, $intContactId=NULL)
 	{
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
 
 		try
 		{
@@ -232,7 +232,7 @@ class JSON_Handler_ActionsAndNotes extends JSON_Handler
 	 */
 	public function search($intAATContextId, $intAATContextReferenceId, $bolIncludeAllRelatableAATTypes, $typeConstraint, $loggedByConstraint, $intMaxRecordsPerPage, $intPageOffset)
 	{
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
 		
 		try
 		{
