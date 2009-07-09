@@ -106,9 +106,9 @@ var Control_Select_List	= Class.create
 });
 
 // Static Methods
-Control_Select_Multicolumn.factory	= function()
+Control_Select_List.factory	= function()
 {
-	return new Control_Select_Multicolumn();
+	return new Control_Select_List();
 };
 
 // Class Constants
