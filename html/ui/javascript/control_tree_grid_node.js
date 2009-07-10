@@ -193,6 +193,8 @@ var Control_Tree_Grid_Node	= Class.create
 		{
 			var domTD		= document.createElement('td');
 			
+			alert("Table Field: "+sField);
+			
 			switch (sField)
 			{
 				case Control_Tree_Grid.COLUMN_EXPAND:
@@ -214,6 +216,7 @@ var Control_Tree_Grid_Node	= Class.create
 				
 				default:
 					domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
+					alert(domTD.innerHTML);
 			}
 			
 			this._oTR.domElement.appendChild(domTD);
