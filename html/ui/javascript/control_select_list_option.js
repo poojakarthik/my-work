@@ -12,6 +12,8 @@ var Control_Select_List_Option	= Class.create
 		this.setSelected(false);
 		
 		this._oParentControl	= null;
+		
+		this._oVisibleColumns	= null;
 	},
 	
 	attachTo	: function(oControlSelectList)
@@ -64,33 +66,44 @@ var Control_Select_List_Option	= Class.create
 		return this._bSelected;
 	},
 	
-	render	: function(oVisibleColumns)
+	render	: function(oVisibleColumns, bForceRender)
 	{
-		// Remove all existing columns
-		this._oTR.domElement.innerHTML	= '';
-		
-		// Add all visible columns
-		for (sField in oVisibleColumns)
+		// Do we really need to re-render?
+		if (oVisibleColumns != this._oVisibleColumns || bForceRender)
 		{
-			var domTD		= document.createElement('td');
+			// Remove all existing columns
+			this._oTR.domElement.innerHTML	= '';
 			
-			switch (oVisibleColumns[sField].sType)
+			// Add all visible columns
+			for (sField in oVisibleColumns)
 			{
-				case Control_Select_List.COLUMN_TYPE_SEND:
-					var domSendIcon	= document.createElement('img');
-					domSendIcon.src	= oVisibleColumns[sField].sIconSource;
-					domTD.addClassName('icon');
-					domTD.appendChild(domSendIcon);
-					
-					// Add 'Send' Click Listener
-					domSendIcon.addEventListener('click', oVisibleColumns[sField].oSendDestination.add.bind(oVisibleColumns[sField].oSendDestination, this), false);
-					break;
+				var domTD		= document.createElement('td');
 				
-				default:
-					domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
+				switch (oVisibleColumns[sField].sType)
+				{
+					case Control_Select_List.COLUMN_TYPE_SEND:
+						var domSendIcon	= document.createElement('img');
+						domSendIcon.src	= oVisibleColumns[sField].sIconSource;
+						domTD.addClassName('icon');
+						domTD.appendChild(domSendIcon);
+						
+						// Add 'Send' Click Listener
+						domSendIcon.addEventListener('click', oVisibleColumns[sField].oSendDestination.add.bind(oVisibleColumns[sField].oSendDestination, this), false);
+						break;
+					
+					default:
+						domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
+				}
+				
+				this._oTR.domElement.appendChild(domTD);
 			}
 			
-			this._oTR.domElement.appendChild(domTD);
+			// Set the internal cache of visible columns
+			this._oVisibleColumns	= oVisibleColumns;
+		}
+		else
+		{
+			alert('Skipping rendering...');
 		}
 	}
 });
