@@ -27,7 +27,7 @@ var Control_Tree_Grid_Node	= Class.create
 	
 	getElement	: function()
 	{
-		return this._oTR;
+		return this._oTR.domElement;
 	},
 	
 	getChildAfter	: function(oChild)
