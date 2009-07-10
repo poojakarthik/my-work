@@ -19,7 +19,10 @@ var Control_Select_List_Option	= Class.create
 		if (oControlSelectList instanceof Control_Select_List)
 		{
 			// Detach from old parent
-			this.detach();
+			if (this._oParentControl)
+			{
+				this._oParentControl.remove(this);
+			}
 			
 			// Attach to new parent
 			this._oParentControl	= oControlSelectList;
@@ -32,6 +35,7 @@ var Control_Select_List_Option	= Class.create
 		if (this._oParentControl)
 		{
 			this._oParentControl.getTable().removeChild(this._oTR.domElement);
+			this._oParentControl	= null;
 		}
 	},
 	

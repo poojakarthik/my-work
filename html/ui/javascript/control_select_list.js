@@ -60,7 +60,7 @@ var Control_Select_List	= Class.create
 				this.iSelectedIndex	= null;
 			}
 			
-			this.aOptions[iIndex].detachFrom(this);
+			this.aOptions[iIndex].detach();
 			this.aOptions.splice(iIndex, 1);
 			this.render();
 			return this.aOptions.length;
