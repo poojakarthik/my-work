@@ -206,6 +206,7 @@ var Control_Tree_Grid_Node	= Class.create
 			this._oTR.domElement.appendChild(domTD);
 		}
 		
+		alert("Rendering...");
 		if (this.isVisible())
 		{
 			alert("Trying to show");
