@@ -221,6 +221,7 @@ var Control_Tree_Grid_Node	= Class.create
 		
 		if (this.isVisible())
 		{
+			alert("Showing");
 			// Show
 			var oParent	= this.getParent();
 			if (oParent instanceof Control_Tree_Grid_Node)
@@ -244,6 +245,7 @@ var Control_Tree_Grid_Node	= Class.create
 		else if (this.getTreeGrid())
 		{
 			// Hide
+			alert("Hiding");
 			try
 			{
 				this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
@@ -260,7 +262,7 @@ var Control_Tree_Grid_Node	= Class.create
 		// Render the Children
 		for (var i = 0; i < this._aChildren.length; i++)
 		{
-			alert("Rendering Child "+i);
+			//alert("Rendering Child "+i);
 			this._aChildren[i].render();
 		}
 	}

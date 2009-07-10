@@ -59,7 +59,7 @@ var Control_Tree_Grid	= Class.create
 		// TODO
 		
 		// Render the Children with the Visible Columns
-		alert("Rendering Tree Grid");
+		//alert("Rendering Tree Grid");
 		this.oRootNode.render(this.oColumns);
 	}
 });
