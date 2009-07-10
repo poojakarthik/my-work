@@ -49,7 +49,7 @@ var Control_Select_List	= Class.create
 	{
 		// Validate parameters
 		var iIndex	= null;
-		if (!(oOption instanceof Control_Select_Multicolumn_Option))
+		if (!(oOption instanceof Control_Select_List_Option))
 		{
 			throw "oOption is not a 'Control_Select_List_Option' object!";
 		}
