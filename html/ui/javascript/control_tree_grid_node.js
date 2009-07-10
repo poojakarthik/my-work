@@ -132,7 +132,7 @@ var Control_Tree_Grid_Node	= Class.create
 	
 	setContent	: function(oContent)
 	{
-		this._oContent	= oContent;
+		this._oContent	= oContent ? oContent : {};
 	},
 	
 	toggleSelected	: function()
