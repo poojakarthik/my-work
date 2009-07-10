@@ -208,6 +208,7 @@ var Control_Tree_Grid_Node	= Class.create
 		
 		if (this.isVisible())
 		{
+			alert("Trying to show");
 			// Show
 			var oParent	= this.getParent();
 			if (oParent instanceof Control_Tree_Grid || !this.getElement().nextSibling)
