@@ -1679,6 +1679,11 @@ table.select-list tr:hover td
 	background-color	: #b5ccdf;
 }
 
+table.select-list tr td.icon
+{
+	width	: auto;
+}
+
 div.select-list-group
 {
 	column-count			: 2;
