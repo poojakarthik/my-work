@@ -234,6 +234,12 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oCSM.oControl									= new Control_Tree_Grid_Node(oCSM.oContent);
 		oTabPage.oProfiles.oControl.appendChild(oCSM.oControl);
 		oCSM.oControl.appendChild(Object.clone(oCSR.oControl));
+		
+		// Set Columns
+		var oProfileColumns	= {};
+		oProfileColumns[Control_Select_List.COLUMN_EXPAND]	= {};
+		oProfileColumns[Control_Select_List.COLUMN_LABEL]	= {};
+		oTabPage.oProfiles.oControl.setColumns(oProfileColumns);
 		//--------------------------------------------------------------------//
 		
 		/*
