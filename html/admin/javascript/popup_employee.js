@@ -217,7 +217,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oCSR.oContent									= {};
 		oCSR.oContent[Control_Tree_Grid.COLUMN_LABEL]	= 'Customer Service Representative';
 		oCSR.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 7;
-		oCST.oControl									= new Control_Tree_Grid_Node(oCSR.oContent);
+		oCSR.oControl									= new Control_Tree_Grid_Node(oCSR.oContent);
 		
 		var oFlexAdmin										= {}
 		oFlexAdmin.oContent									= {};
