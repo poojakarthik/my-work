@@ -215,6 +215,8 @@ var Control_Tree_Grid_Node	= Class.create
 					break;
 				
 				default:
+					alert("oContent: "+this._oContent);
+					alert("oContent[sField]: "+this._oContent[sField]);
 					domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
 					alert(domTD.innerHTML);
 			}
