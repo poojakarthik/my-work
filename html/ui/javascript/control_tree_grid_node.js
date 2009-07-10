@@ -211,15 +211,17 @@ var Control_Tree_Grid_Node	= Class.create
 			alert("Trying to show");
 			// Show
 			var oParent	= this.getParent();
-			if (oParent instanceof Control_Tree_Grid || !this.getElement().nextSibling)
+			if (this.getElement().nextSibling)
 			{
+				alert("Sibling is: "+this.getElement().nextSibling);
 				// This is a root node, or no sibling after me
-				this.getTreeGrid().getTable().appendChild(this._oTR.domElement);
+				this.getTreeGrid().getTable().insertBefore(this._oTR.domElement, this.getElement().nextSibling);
 			}
 			else
 			{
+				alert("No Sibling";
 				// Has a sibling
-				this.getTreeGrid().getTable().insertBefore(this._oTR.domElement, this.getElement().nextSibling);
+				this.getTreeGrid().getTable().appendChild(this._oTR.domElement);
 			}
 		}
 		else if (this.getTreeGrid())
