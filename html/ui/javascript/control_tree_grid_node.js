@@ -226,18 +226,22 @@ var Control_Tree_Grid_Node	= Class.create
 			var oParent	= this.getParent();
 			if (oParent instanceof Control_Tree_Grid_Node)
 			{
+				alert("Normal Node");
 				// This is a normal node
 				if (oParent.getChildBefore(this))
 				{
+					alert("Siblings");
 					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this).getElement().nextSibling);
 				}
 				else
 				{
+					alert("No Siblings");
 					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getElement().nextSibling);
 				}
 			}
 			else
 			{
+				alert("Root Node");
 				// This is the Root node
 				this.getTreeGrid().getTable().appendChild(this._oTR.domElement);
 			}
