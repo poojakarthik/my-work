@@ -1,4 +1,4 @@
-var Control_Select_List_Option	= Class.create
+var Control_Tree_Grid_Node	= Class.create
 ({
 	initialize	: function(oContent, bSelected)
 	{
