@@ -225,6 +225,7 @@ var Control_Tree_Grid_Node	= Class.create
 			var oParent	= this.getParent();
 			if (oParent instanceof Control_Tree_Grid_Node)
 			{
+				// This is a normal node
 				if (oParent.getChildBefore(this))
 				{
 					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this).getElement());
