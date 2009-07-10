@@ -193,7 +193,7 @@ var Control_Tree_Grid_Node	= Class.create
 		{
 			var domTD		= document.createElement('td');
 			
-			switch (oVisibleColumns[sField].sType)
+			switch (sField)
 			{
 				case Control_Tree_Grid.COLUMN_EXPAND:
 					var domExpandIcon	= document.createElement('img');
