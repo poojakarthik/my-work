@@ -247,11 +247,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Configure and link Select Lists
 		var oAvailableProfilesColumns								= {}
 		oAvailableProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {sType: Control_Select_List.COLUMN_TYPE_TEXT};
-		oAvailableProfilesColumns['sendToSelected']					= {sType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oSelectedProfiles.oControl};
+		oAvailableProfilesColumns['sendToSelected']					= {sType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oSelectedProfiles.oControl, sIconSource: '../admin/img/template/add.png'};
 		oTabPage.oProfiles.oAvailableProfiles.oControl.setColumns(oAvailableProfilesColumns);
 		
 		var oSelectedProfilesColumns								= {}
-		oSelectedProfilesColumns['sendToAvailable']					= {sType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oAvailableProfiles.oControl};
+		oSelectedProfilesColumns['sendToAvailable']					= {sType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oAvailableProfiles.oControl, sIconSource: '../admin/img/template/remove.png'};
 		oSelectedProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {sType: Control_Select_List.COLUMN_TYPE_TEXT};
 		oTabPage.oProfiles.oSelectedProfiles.oControl.setColumns(oSelectedProfilesColumns);
 		
