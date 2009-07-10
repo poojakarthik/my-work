@@ -219,41 +219,30 @@ var Control_Tree_Grid_Node	= Class.create
 			this._oTR.domElement.appendChild(domTD);
 		}
 		
-		//alert("Rendering...");
 		if (this.isVisible())
 		{
-			//alert("Trying to show");
 			// Show
 			var oParent	= this.getParent();
-			//alert("Found Parent");
 			if (oParent instanceof Control_Tree_Grid_Node)
 			{
 				if (oParent.getChildBefore(this))
 				{
-					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this));
+					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this).getElement());
 				}
 				else
 				{
 					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getElement().nextSibling);
 				}
 			}
-			if (this.getElement().nextSibling)
-			{
-				//alert("Sibling is: "+this.getElement().nextSibling);
-				// This is a root node, or no sibling after me
-				this.getTreeGrid().getTable().insertBefore(this._oTR.domElement, this.getElement().nextSibling);
-			}
 			else
 			{
-				//alert("No Sibling");
-				// Has a sibling
+				// This is the Root node
 				this.getTreeGrid().getTable().appendChild(this._oTR.domElement);
 			}
 		}
 		else if (this.getTreeGrid())
 		{
 			// Hide
-			//alert("Trying to hide");
 			try
 			{
 				this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
