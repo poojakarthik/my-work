@@ -229,6 +229,7 @@ var Control_Tree_Grid_Node	= Class.create
 		else if (this.getTreeGrid())
 		{
 			// Hide
+			alert("Trying to hide");
 			this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
 		}
 		
