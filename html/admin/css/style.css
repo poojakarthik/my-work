@@ -1698,4 +1698,10 @@ div.select-list-group
 	-moz-column-gap			: 0.5em;
 	-webkit-column-gap		: 0.5em;
 }
+
+div.select-list-group h4
+{
+	padding	: 0;
+	margin	: 0;
+}
 /******************************************************************************/
