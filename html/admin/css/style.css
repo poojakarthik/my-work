@@ -1681,7 +1681,7 @@ table.select-list tr:hover td
 
 table.select-list tr td.icon
 {
-	width	: auto;
+	width	: 0.1em;
 }
 
 div.select-list-group
