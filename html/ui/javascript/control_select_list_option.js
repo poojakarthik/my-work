@@ -69,7 +69,19 @@ var Control_Select_List_Option	= Class.create
 		for (sField in oVisibleColumns)
 		{
 			var domTD		= document.createElement('td');
-			domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
+			
+			switch (oVisibleColumns[sField].iType)
+			{
+				case Control_Select_List.COLUMN_TYPE_SEND:
+					var domSendIcon	= document.createElement('img');
+					domSendIcon.src	= oVisibleColumns[sField].sIconSource;
+					domTD.appendChild(domSendIcon);
+					break;
+				
+				default:
+					domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
+			}
+			
 			this._oTR.domElement.appendChild(domTD);
 		}
 	}
