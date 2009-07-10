@@ -1733,18 +1733,24 @@ table.tree-grid tr:hover td
 	background-color	: #b5ccdf;
 }
 
+table.tree-grid tr td
+{
+	vertical-align	: top;
+}
+
 table.tree-grid tr td.icon
 {
-	width	: 0.1em;
+	width			: 0.1em;
+	vertical-align	: text-bottom;
 }
 
 table.tree-grid tr td.icon img
 {
-	width		: 16px;
-	min-width	: 16px;
+	/*width		: 16px;*/
+	/*min-width	: 16px;*/
 	max-width	: 16px;
-	height		: 16px;
-	min-height	: 16px;
+	/*height		: 16px;*/
+	/*min-height	: 16px;*/
 	max-height	: 16px;
 }
 
