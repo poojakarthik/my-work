@@ -35,7 +35,20 @@ var Control_Tree_Grid_Node	= Class.create
 		var iIndex	= this._aChildren.indexOf(oChild);
 		if (iIndex > -1)
 		{
-			return this._aChildren[iIndex];
+			return this._aChildren[iIndex + 1];
+		}
+		else
+		{
+			return null;
+		}
+	},
+	
+	getChildBefore	: function(oChild)
+	{
+		var iIndex	= this._aChildren.indexOf(oChild);
+		if (iIndex > 0)
+		{
+			return this._aChildren[iIndex - 1];
 		}
 		else
 		{
@@ -206,22 +219,33 @@ var Control_Tree_Grid_Node	= Class.create
 			this._oTR.domElement.appendChild(domTD);
 		}
 		
-		alert("Rendering...");
+		//alert("Rendering...");
 		if (this.isVisible())
 		{
-			alert("Trying to show");
+			//alert("Trying to show");
 			// Show
 			var oParent	= this.getParent();
-			alert("Found Parent");
+			//alert("Found Parent");
+			if (oParent instanceof Control_Tree_Grid_Node)
+			{
+				if (oParent.getChildBefore(this))
+				{
+					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this));
+				}
+				else
+				{
+					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getElement().nextSibling);
+				}
+			}
 			if (this.getElement().nextSibling)
 			{
-				alert("Sibling is: "+this.getElement().nextSibling);
+				//alert("Sibling is: "+this.getElement().nextSibling);
 				// This is a root node, or no sibling after me
 				this.getTreeGrid().getTable().insertBefore(this._oTR.domElement, this.getElement().nextSibling);
 			}
 			else
 			{
-				alert("No Sibling");
+				//alert("No Sibling");
 				// Has a sibling
 				this.getTreeGrid().getTable().appendChild(this._oTR.domElement);
 			}
@@ -229,7 +253,7 @@ var Control_Tree_Grid_Node	= Class.create
 		else if (this.getTreeGrid())
 		{
 			// Hide
-			alert("Trying to hide");
+			//alert("Trying to hide");
 			try
 			{
 				this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
