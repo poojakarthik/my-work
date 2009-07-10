@@ -237,8 +237,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		// Set Columns
 		var oProfileColumns	= {};
-		oProfileColumns[Control_Select_List.COLUMN_EXPAND]	= {};
-		oProfileColumns[Control_Select_List.COLUMN_LABEL]	= {};
+		oProfileColumns[Control_Tree_Grid.COLUMN_EXPAND]	= {};
+		oProfileColumns[Control_Tree_Grid.COLUMN_LABEL]		= {};
 		oTabPage.oProfiles.oControl.setColumns(oProfileColumns);
 		//--------------------------------------------------------------------//
 		
