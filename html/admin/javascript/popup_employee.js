@@ -203,7 +203,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	{
 		var oTabPage	= {};
 		oTabPage.domElement				= document.createElement('div');
-		oTabPage.domElement.innerHTML	= '[ Permissions ]';
 		
 		oTabPage.oProfiles							= {};
 		oTabPage.oProfiles.domElement				= document.createElement('div');
