@@ -219,44 +219,47 @@ var Control_Tree_Grid_Node	= Class.create
 			this._oTR.domElement.appendChild(domTD);
 		}
 		
-		if (this.isVisible())
+		if (this.getTreeGrid())
 		{
-			alert("Showing");
-			// Show
-			var oParent	= this.getParent();
-			if (oParent instanceof Control_Tree_Grid_Node)
+			if (this.isVisible())
 			{
-				alert("Normal Node");
-				// This is a normal node
-				if (oParent.getChildBefore(this))
+				alert("Showing");
+				// Show
+				var oParent	= this.getParent();
+				if (oParent instanceof Control_Tree_Grid_Node)
 				{
-					alert("Siblings");
-					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this).getElement().nextSibling);
+					alert("Normal Node");
+					// This is a normal node
+					if (oParent.getChildBefore(this))
+					{
+						alert("Siblings");
+						this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this).getElement().nextSibling);
+					}
+					else
+					{
+						alert("No Siblings");
+						this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getElement().nextSibling);
+					}
 				}
 				else
 				{
-					alert("No Siblings");
-					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getElement().nextSibling);
+					alert("Root Node");
+					// This is the Root node
+					this.getTreeGrid().getTable().appendChild(this._oTR.domElement);
 				}
 			}
 			else
 			{
-				alert("Root Node");
-				// This is the Root node
-				this.getTreeGrid().getTable().appendChild(this._oTR.domElement);
-			}
-		}
-		else if (this.getTreeGrid())
-		{
-			// Hide
-			alert("Hiding");
-			try
-			{
-				this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
-			}
-			catch (eException)
-			{
-				// Do nothing -- permitted error
+				// Hide
+				alert("Hiding");
+				try
+				{
+					this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
+				}
+				catch (eException)
+				{
+					// Do nothing -- permitted error
+				}
 			}
 		}
 		
