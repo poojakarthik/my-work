@@ -21,17 +21,18 @@ var Control_Tree_Grid_Node	= Class.create
 		// Defaults
 		this._bExpanded	= false;
 		this._bSelected	= (bSelected) ? true : false;
-		this._bVisible	= false;
 	},
 	
 	appendChild	: function(oTreeGridNode)
 	{
-		// TODO
+		oTreeGridNode.attachTo(this);
+		this.render();
 	},
 	
 	removeChild	: function(oTreeGridNode)
 	{
-		// TODO
+		oTreeGridNode.detach();
+		this.render();
 	},
 	
 	getParent	: function()
@@ -75,7 +76,7 @@ var Control_Tree_Grid_Node	= Class.create
 	{
 		if (this._oParentNode)
 		{
-			this._oParentNode.getTable().removeChild(this._oTR.domElement);
+			this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
 			this._oParentNode	= null;
 		}
 	},
@@ -116,15 +117,20 @@ var Control_Tree_Grid_Node	= Class.create
 		return this._bSelected;
 	},
 	
-	setVisible	: function(bVisible)
-	{
-		this._bVisible	= (bVisible) ? true : false;
-		this.render(this._oVisibleColumns, true);
-	},
-	
 	isVisible	: function()
 	{
-		return this._bVisible;
+		if (this.getParent() instanceof Control_Tree_Grid_Node && this.getParent().isExpanded())
+		{
+			return true;
+		}
+		else if (this.getParent() instanceof Control_Tree_Grid)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	},
 	
 	render	: function(oVisibleColumns, bForceRender)
@@ -161,6 +167,18 @@ var Control_Tree_Grid_Node	= Class.create
 			}
 			
 			this._oTR.domElement.appendChild(domTD);
+		}
+		
+		if (this.isVisible())
+		{
+			// Show
+			this.getTreeGrid().getTable().insertBefore(this._oTR.domElement, this.getParent().getChildAfter(this).getElement());
+		}
+		else
+		{
+			// Hide
+			this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
+		}
 		}
 		
 		// Set the internal cache of visible columns
