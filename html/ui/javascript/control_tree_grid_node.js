@@ -228,7 +228,7 @@ var Control_Tree_Grid_Node	= Class.create
 				// This is a normal node
 				if (oParent.getChildBefore(this))
 				{
-					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this).getElement());
+					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this).getElement().nextSibling);
 				}
 				else
 				{
