@@ -206,10 +206,24 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		// Profiles Tree Grid
 		//--------------------------------------------------------------------//
+		// Create
 		oTabPage.oProfiles							= {};
 		oTabPage.oProfiles.oControl					= new Control_Tree_Grid();
 		oTabPage.oProfiles.domElement				= oTabPage.oProfiles.oControl.getElement();
 		oTabPage.domElement.appendChild(oTabPage.oProfiles.domElement);
+		
+		// Populate
+		var oCSR										= {}
+		oCSR.oContent									= {};
+		oCSR.oContent[Control_Tree_Grid.COLUMN_LABEL]	= 'Customer Service Representative';
+		oCSR.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 7;
+		oCST.oControl									= new Control_Tree_Grid_Node(oCSR.oContent);
+		
+		var oFlexAdmin										= {}
+		oFlexAdmin.oContent									= {};
+		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_LABEL]	= 'Flex Admin';
+		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 2;
+		oFlexAdmin.oControl									= new Control_Tree_Grid_Node(oFlexAdmin.oContent);
 		//--------------------------------------------------------------------//
 		
 		/*
