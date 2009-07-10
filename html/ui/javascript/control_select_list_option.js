@@ -77,6 +77,9 @@ var Control_Select_List_Option	= Class.create
 					domSendIcon.src	= oVisibleColumns[sField].sIconSource;
 					domTD.addClassName('icon');
 					domTD.appendChild(domSendIcon);
+					
+					// Add 'Send' Click Listener
+					domSendIcon.addEventListener('click', oVisibleColumns[sField].oSendDestination.add.bind(oVisibleColumns[sField].oSendDestination, this), false);
 					break;
 				
 				default:
