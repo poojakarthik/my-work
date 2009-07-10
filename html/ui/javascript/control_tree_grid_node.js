@@ -256,5 +256,11 @@ var Control_Tree_Grid_Node	= Class.create
 		
 		// Set the internal cache of visible columns
 		this._oVisibleColumns	= oVisibleColumns;
+		
+		// Render the Children
+		for (var i = 0; i < this._aChildren.length; i++)
+		{
+			this._aChildren[i].render();
+		}
 	}
 });
