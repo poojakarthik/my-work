@@ -103,7 +103,7 @@ var Control_Select_List_Option	= Class.create
 		}
 		else
 		{
-			alert('Skipping rendering...');
+			//alert('Skipping rendering...');
 		}
 	}
 });
