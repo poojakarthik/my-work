@@ -193,7 +193,7 @@ var Control_Tree_Grid_Node	= Class.create
 		{
 			var domTD		= document.createElement('td');
 			
-			alert("Table Field: "+sField);
+			//alert("Table Field: "+sField);
 			
 			switch (sField)
 			{
@@ -215,10 +215,10 @@ var Control_Tree_Grid_Node	= Class.create
 					break;
 				
 				default:
-					alert("oContent: "+this._oContent);
-					alert("oContent["+sField+"]: "+this._oContent[sField]);
+					//alert("oContent: "+this._oContent);
+					//alert("oContent["+sField+"]: "+this._oContent[sField]);
 					domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
-					alert(domTD.innerHTML);
+					//alert(domTD.innerHTML);
 			}
 			
 			this._oTR.domElement.appendChild(domTD);
@@ -231,27 +231,27 @@ var Control_Tree_Grid_Node	= Class.create
 		{
 			if (this.isVisible())
 			{
-				alert("Showing");
+				//alert("Showing");
 				// Show
 				var oParent	= this.getParent();
 				if (oParent instanceof Control_Tree_Grid_Node)
 				{
-					alert("Normal Node");
+					//alert("Normal Node");
 					// This is a normal node
 					if (oParent.getChildBefore(this))
 					{
-						alert("Siblings");
+						//alert("Siblings");
 						this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this).getElement().nextSibling);
 					}
 					else
 					{
-						alert("No Siblings");
+						//alert("No Siblings");
 						this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getElement().nextSibling);
 					}
 				}
 				else
 				{
-					alert("Root Node");
+					//alert("Root Node");
 					// This is the Root node
 					this.getTreeGrid().getTable().appendChild(this._oTR.domElement);
 				}
@@ -259,7 +259,7 @@ var Control_Tree_Grid_Node	= Class.create
 			else
 			{
 				// Hide
-				alert("Hiding");
+				//alert("Hiding");
 				try
 				{
 					this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
