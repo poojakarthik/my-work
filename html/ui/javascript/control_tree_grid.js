@@ -13,7 +13,9 @@ var Control_Tree_Grid	= Class.create
 		this.oContainer.domElement.appendChild(this.oContainer.oTable.domElement);
 		
 		// Properties
-		this.oRootNode	= new Control_Tree_Grid_Node(this);
+		this.oRootNode	= new Control_Tree_Grid_Node();
+		this.oRootNode.attachTo(this);
+		
 		this.oColumns	= {};
 	},
 	

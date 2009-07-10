@@ -14,37 +14,69 @@ var Control_Tree_Grid_Node	= Class.create
 		// Properties
 		this.setContent(oContent);
 		
-		this._oParentControl	= null;
+		this._oParentNode	= null;
 		
 		this._oVisibleColumns	= null;
 		
 		// Defaults
 		this._bExpanded	= false;
 		this._bSelected	= (bSelected) ? true : false;
+		this._bVisible	= false;
 	},
 	
-	attachTo	: function(oControlSelectList)
+	appendChild	: function(oTreeGridNode)
 	{
-		if (oControlSelectList instanceof Control_Select_List)
+		// TODO
+	},
+	
+	removeChild	: function(oTreeGridNode)
+	{
+		// TODO
+	},
+	
+	getParent	: function()
+	{
+		return this._oParentNode;
+	},
+	
+	getTreeGrid	: function()
+	{
+		if (this._oParentNode === null)
 		{
-			// Detach from old parent
-			if (this._oParentControl)
-			{
-				this._oParentControl.remove(this);
-			}
-			
-			// Attach to new parent
-			this._oParentControl	= oControlSelectList;
-			oControlSelectList.getTable().appendChild(this._oTR.domElement);
+			// No parent, therefore no Tree Grid
+			return null;
+		}
+		else if (this._oParentNode instanceof Control_Tree_Grid)
+		{
+			// Parent is a Tree Grid
+			return this._oParentNode;
+		}
+		else
+		{
+			// Parent is a Node, check grandparent
+			return this._oParentNode.getTreeGrid();
+		}
+	},
+	
+	attachTo	: function(oTreeGridElement)
+	{
+		if (oTreeGridElement instanceof Control_Tree_Grid || oTreeGridElement instanceof Control_Tree_Grid_Node)
+		{
+			// Valid Element
+			this._oParentNode	= oTreeGridElement;
+		}
+		else
+		{
+			throw "Can only attach Control_Tree_Grid or Control_Tree_Grid_Node elements";
 		}
 	},
 	
 	detach	: function()
 	{
-		if (this._oParentControl)
+		if (this._oParentNode)
 		{
-			this._oParentControl.getTable().removeChild(this._oTR.domElement);
-			this._oParentControl	= null;
+			this._oParentNode.getTable().removeChild(this._oTR.domElement);
+			this._oParentNode	= null;
 		}
 	},
 	
@@ -73,15 +105,26 @@ var Control_Tree_Grid_Node	= Class.create
 		this.setExpanded(!this.isExpanded());
 	},
 	
-	setExpanded	: function(bSelected)
+	setExpanded	: function(bExpanded)
 	{
-		this._bSelected	= (bSelected) ? true : false;
+		this._bExpanded	= (bExpanded) ? true : false;
 		this.render(this._oVisibleColumns, true);
 	},
 	
 	isExpanded	: function()
 	{
 		return this._bSelected;
+	},
+	
+	setVisible	: function(bVisible)
+	{
+		this._bVisible	= (bVisible) ? true : false;
+		this.render(this._oVisibleColumns, true);
+	},
+	
+	isVisible	: function()
+	{
+		return this._bVisible;
 	},
 	
 	render	: function(oVisibleColumns, bForceRender)
