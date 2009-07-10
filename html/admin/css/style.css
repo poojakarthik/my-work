@@ -1661,6 +1661,9 @@ div.select-list
 	background-color	: #fff;
 	border				: 1px solid #000;
 	overflow-y			: scroll;
+	
+	/* Default Height */
+	height				: 10em;
 }
 
 table.select-list
