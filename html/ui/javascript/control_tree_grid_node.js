@@ -219,7 +219,7 @@ var Control_Tree_Grid_Node	= Class.create
 			}
 			else
 			{
-				alert("No Sibling";
+				alert("No Sibling");
 				// Has a sibling
 				this.getTreeGrid().getTable().appendChild(this._oTR.domElement);
 			}
