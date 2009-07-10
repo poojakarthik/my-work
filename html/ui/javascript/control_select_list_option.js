@@ -75,6 +75,7 @@ var Control_Select_List_Option	= Class.create
 				case Control_Select_List.COLUMN_TYPE_SEND:
 					var domSendIcon	= document.createElement('img');
 					domSendIcon.src	= oVisibleColumns[sField].sIconSource;
+					domTD.addClassName('icon');
 					domTD.appendChild(domSendIcon);
 					break;
 				
