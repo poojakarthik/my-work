@@ -212,6 +212,7 @@ var Control_Tree_Grid_Node	= Class.create
 			alert("Trying to show");
 			// Show
 			var oParent	= this.getParent();
+			alert("Found Parent");
 			if (this.getElement().nextSibling)
 			{
 				alert("Sibling is: "+this.getElement().nextSibling);
