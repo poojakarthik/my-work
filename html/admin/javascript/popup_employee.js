@@ -217,6 +217,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oProfiles.oAvailableProfiles.domElement	= document.createElement('div');
 		oTabPage.oProfiles.domElement.appendChild(oTabPage.oProfiles.oAvailableProfiles.domElement);
 		
+		oTabPage.oProfiles.oAvailableProfiles.oTitle						= {};
+		oTabPage.oProfiles.oAvailableProfiles.oTitle.domElement				= document.createElement('h4');
+		oTabPage.oProfiles.oAvailableProfiles.oTitle.domElement.innerHTML	= 'Available Profiles';
+		oTabPage.oProfiles.oAvailableProfiles.domElement.appendChild(oTabPage.oProfiles.oAvailableProfiles.oTitle.domElement);
+		
 		oTabPage.oProfiles.oAvailableProfiles.oControl	= new Control_Select_List();
 		oTabPage.oProfiles.oAvailableProfiles.domElement.appendChild(oTabPage.oProfiles.oAvailableProfiles.oControl.getElement());
 		
@@ -233,6 +238,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oProfiles.oSelectedProfiles			= {};
 		oTabPage.oProfiles.oSelectedProfiles.domElement	= document.createElement('div');
 		oTabPage.oProfiles.domElement.appendChild(oTabPage.oProfiles.oSelectedProfiles.domElement);
+		
+		oTabPage.oProfiles.oSelectedProfiles.oTitle							= {};
+		oTabPage.oProfiles.oSelectedProfiles.oTitle.domElement				= document.createElement('h4');
+		oTabPage.oProfiles.oSelectedProfiles.oTitle.domElement.innerHTML	= 'Selected Profiles';
+		oTabPage.oProfiles.oSelectedProfiles.domElement.appendChild(oTabPage.oProfiles.oSelectedProfiles.oTitle.domElement);
 		
 		oTabPage.oProfiles.oSelectedProfiles.oControl	= new Control_Select_List();
 		oTabPage.oProfiles.oSelectedProfiles.domElement.appendChild(oTabPage.oProfiles.oSelectedProfiles.oControl.getElement());
