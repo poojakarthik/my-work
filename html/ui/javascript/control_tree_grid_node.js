@@ -164,7 +164,7 @@ var Control_Tree_Grid_Node	= Class.create
 	
 	isExpanded	: function()
 	{
-		return this._bSelected;
+		return this._bExpanded;
 	},
 	
 	isVisible	: function()
