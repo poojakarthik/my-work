@@ -235,8 +235,9 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Selected Profiles
 		//--------------------------------------------------------------------//
 		// Create
-		oTabPage.oProfiles.oSelectedProfiles			= {};
-		oTabPage.oProfiles.oSelectedProfiles.domElement	= document.createElement('div');
+		oTabPage.oProfiles.oSelectedProfiles							= {};
+		oTabPage.oProfiles.oSelectedProfiles.domElement					= document.createElement('div');
+		oTabPage.oProfiles.oSelectedProfiles.domElement.style.textAlign	= 'right';
 		oTabPage.oProfiles.domElement.appendChild(oTabPage.oProfiles.oSelectedProfiles.domElement);
 		
 		oTabPage.oProfiles.oSelectedProfiles.oTitle							= {};
