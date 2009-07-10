@@ -70,7 +70,7 @@ var Control_Select_List_Option	= Class.create
 		{
 			var domTD		= document.createElement('td');
 			
-			switch (oVisibleColumns[sField].iType)
+			switch (oVisibleColumns[sField].sType)
 			{
 				case Control_Select_List.COLUMN_TYPE_SEND:
 					var domSendIcon	= document.createElement('img');
