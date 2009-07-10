@@ -42,7 +42,12 @@ $arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_DATA]['DownloadUnique']		= tru
 
 // Directory Structure
 $arrDirectories	= array();
-$arrDirectories['home']['arrSubdirectories']['TB']['arrSubdirectories']['gowireless']['arrSubdirectories']['usage']['arrSubdirectories']['regex:\d{4}']['arrSubdirectories']['regex:\d{2}']['arrFileTypes'][RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_DATA]	= &$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_DATA];
+
+// Old structure (/YYYY/MM/__FILES__)
+$arrDirectories['home']['arrSubdirectories']['TB']['arrSubdirectories']['gowireless']['arrSubdirectories']['usage']['arrSubdirectories']['regex:/$\d{4}^/']['arrSubdirectories']['regex:/$\d{2}^/']['arrFileTypes'][RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_DATA]	= &$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_DATA];
+
+// New structure (/YYYY/MM/DD/__FILES__)
+$arrDirectories['home']['arrSubdirectories']['TB']['arrSubdirectories']['gowireless']['arrSubdirectories']['usage']['arrSubdirectories']['regex:/$\d{4}^/']['arrSubdirectories']['regex:/$\d{2}^/']['arrSubdirectories']['regex:/$\d{2}^/']['arrFileTypes'][RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_DATA]	= &$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_ISEEK_DATA];
 
 // Config
 $arrModuleConfig['FileDefine']		['Value']		= $arrDirectories;
