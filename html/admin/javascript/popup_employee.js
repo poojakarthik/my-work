@@ -247,7 +247,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Configure and link Select Lists
 		var oAvailableProfilesColumns								= {}
 		oAvailableProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {sType: Control_Select_List.COLUMN_TYPE_TEXT};
-		oAvailableProfilesColumns['sendToSelected']					= {sType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oSelectedProfiles.oControl, sIconSource: '../admin/img/template/add.png'};
+		oAvailableProfilesColumns['sendToSelected']					= {sType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oSelectedProfiles.oControl, sIconSource: '../admin/img/template/new.png'};
 		oTabPage.oProfiles.oAvailableProfiles.oControl.setColumns(oAvailableProfilesColumns);
 		
 		var oSelectedProfilesColumns								= {}
