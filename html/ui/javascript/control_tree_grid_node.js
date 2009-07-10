@@ -209,7 +209,17 @@ var Control_Tree_Grid_Node	= Class.create
 		if (this.isVisible())
 		{
 			// Show
-			this.getTreeGrid().getTable().insertBefore(this._oTR.domElement, this.getParent().getChildAfter(this).getElement());
+			var oParent	= this.getParent();
+			if (oParent instanceof Control_Tree_Grid || !this.getElement().nextSibling)
+			{
+				// This is a root node, or no sibling after me
+				this.getTreeGrid().getTable().appendChild(this._oTR.domElement);
+			}
+			else
+			{
+				// Has a sibling
+				this.getTreeGrid().getTable().insertBefore(this._oTR.domElement, this.getElement().nextSibling);
+			}
 		}
 		else if (this.getTreeGrid())
 		{
