@@ -260,6 +260,7 @@ var Control_Tree_Grid_Node	= Class.create
 		// Render the Children
 		for (var i = 0; i < this._aChildren.length; i++)
 		{
+			alert("Rendering Child "+i);
 			this._aChildren[i].render();
 		}
 	}
