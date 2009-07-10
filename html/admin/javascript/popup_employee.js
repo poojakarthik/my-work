@@ -204,11 +204,15 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		var oTabPage	= {};
 		oTabPage.domElement				= document.createElement('div');
 		
+		// Profiles Tree Grid
+		//--------------------------------------------------------------------//
 		oTabPage.oProfiles							= {};
-		oTabPage.oProfiles.domElement				= document.createElement('div');
-		oTabPage.oProfiles.domElement.addClassName('select-list-group');
+		oTabPage.oProfiles.oControl					= new Control_Tree_Grid();
+		oTabPage.oProfiles.domElement				= oTabPage.oProfiles.oControl.getElement();
 		oTabPage.domElement.appendChild(oTabPage.oProfiles.domElement);
+		//--------------------------------------------------------------------//
 		
+		/*
 		// Available Profiles
 		//--------------------------------------------------------------------//
 		// Create
@@ -264,6 +268,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oSelectedProfilesColumns['sendToAvailable']					= {sType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oAvailableProfiles.oControl, sIconSource: '../admin/img/template/remove.png'};
 		oSelectedProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {sType: Control_Select_List.COLUMN_TYPE_TEXT};
 		oTabPage.oProfiles.oSelectedProfiles.oControl.setColumns(oSelectedProfilesColumns);
+		*/
 		
 		return oTabPage;
 	},
