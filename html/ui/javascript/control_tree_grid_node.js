@@ -224,6 +224,9 @@ var Control_Tree_Grid_Node	= Class.create
 			this._oTR.domElement.appendChild(domTD);
 		}
 		
+		// Set the internal cache of visible columns
+		this._oVisibleColumns	= oVisibleColumns;
+		
 		if (this.getTreeGrid())
 		{
 			if (this.isVisible())
@@ -268,14 +271,11 @@ var Control_Tree_Grid_Node	= Class.create
 			}
 		}
 		
-		// Set the internal cache of visible columns
-		this._oVisibleColumns	= oVisibleColumns;
-		
 		// Render the Children
 		for (var i = 0; i < this._aChildren.length; i++)
 		{
 			//alert("Rendering Child "+i);
-			this._aChildren[i].render();
+			this._aChildren[i].render(this._oVisibleColumns);
 		}
 	}
 });
