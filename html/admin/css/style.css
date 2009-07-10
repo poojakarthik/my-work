@@ -1672,7 +1672,7 @@ table.select-list
 	width			: 100%;
 }
 
-table.select-list tr.alt td
+table.select-list tr.nth-child(2n)
 {
 	background-color	: #eee;
 }
