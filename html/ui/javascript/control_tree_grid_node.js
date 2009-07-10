@@ -129,42 +129,41 @@ var Control_Tree_Grid_Node	= Class.create
 	
 	render	: function(oVisibleColumns, bForceRender)
 	{
-		// Do we really need to re-render?
-		if (oVisibleColumns != this._oVisibleColumns || bForceRender)
+		// Remove all existing columns
+		this._oTR.domElement.innerHTML	= '';
+		
+		// Add all visible columns
+		for (sField in oVisibleColumns)
 		{
-			// Remove all existing columns
-			this._oTR.domElement.innerHTML	= '';
+			var domTD		= document.createElement('td');
 			
-			// Add all visible columns
-			for (sField in oVisibleColumns)
+			switch (oVisibleColumns[sField].sType)
 			{
-				var domTD		= document.createElement('td');
-				
-				switch (oVisibleColumns[sField].sType)
-				{
-					case Control_Select_List.COLUMN_TYPE_SEND:
-						var domSendIcon	= document.createElement('img');
-						domSendIcon.src	= oVisibleColumns[sField].sIconSource;
-						domTD.addClassName('icon');
-						domTD.appendChild(domSendIcon);
-						
-						// Add 'Send' Click Listener
-						domSendIcon.addEventListener('click', oVisibleColumns[sField].oSendDestination.add.bind(oVisibleColumns[sField].oSendDestination, this), false);
-						break;
+				case Control_Tree_Grid.COLUMN_EXPAND:
+					var domExpandIcon	= document.createElement('img');
+					domTD.addClassName('icon');
 					
-					default:
-						domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
-				}
+					if (this.aChildren.length)
+					{
+						domExpandIcon.src	= '../admin/img/template/' + (this.isExpanded() ? 'order_desc.png' : 'menu_open_right.png');
+						domExpandIcon.addClassName('clickable');
+						domExpandIcon.addEventListener('click', this.toggleExpanded.bind(this), false);
+					}
+					else
+					{
+						domExpandIcon.src	= '../admin/img/template/transparent-bg';
+					}
+					domTD.appendChild(domExpandIcon);
+					break;
 				
-				this._oTR.domElement.appendChild(domTD);
+				default:
+					domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
 			}
 			
-			// Set the internal cache of visible columns
-			this._oVisibleColumns	= oVisibleColumns;
+			this._oTR.domElement.appendChild(domTD);
 		}
-		else
-		{
-			//alert('Skipping rendering...');
-		}
+		
+		// Set the internal cache of visible columns
+		this._oVisibleColumns	= oVisibleColumns;
 	}
 });
