@@ -1705,3 +1705,59 @@ div.select-list-group h4
 	margin	: 0;
 }
 /******************************************************************************/
+
+/********************************* TREE GRID **********************************/
+div.tree-grid
+{
+	background-color	: #fff;
+	border				: 1px solid #000;
+	overflow-y			: scroll;
+	
+	/* Default Height */
+	height				: 15em;
+}
+
+table.tree-grid
+{
+	border-collapse	: collapse;
+	width			: 100%;
+}
+
+table.select-list tr:nth-child(even)
+{
+	background-color	: #eee;
+}
+
+table.select-list tr:hover td
+{
+	background-color	: #b5ccdf;
+}
+
+table.select-list tr td.icon
+{
+	width	: 0.1em;
+	cursor	: pointer;
+}
+
+table.select-list tr td input[type="checkbox"].row-select
+{
+	display	: none;
+}
+
+div.select-list-group
+{
+	column-count			: 2;
+	-moz-column-count		: 2;
+	-webkit-column-count	: 2;
+	
+	column-gap				: 0.5em;
+	-moz-column-gap			: 0.5em;
+	-webkit-column-gap		: 0.5em;
+}
+
+div.select-list-group h4
+{
+	padding	: 0;
+	margin	: 0;
+}
+/******************************************************************************/
