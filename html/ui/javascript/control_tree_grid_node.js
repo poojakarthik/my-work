@@ -14,6 +14,8 @@ var Control_Tree_Grid_Node	= Class.create
 		// Properties
 		this.setContent(oContent);
 		
+		this._aChildren	= [];
+		
 		this._oParentNode	= null;
 		
 		this._oVisibleColumns	= null;
@@ -23,15 +25,49 @@ var Control_Tree_Grid_Node	= Class.create
 		this._bSelected	= (bSelected) ? true : false;
 	},
 	
+	getElement	: function()
+	{
+		return this._oTR;
+	},
+	
+	getChildAfter	: function(oChild)
+	{
+		var iIndex	= this._aChildren.indexOf(oChild);
+		if (iIndex > -1)
+		{
+			return this._aChildren[iIndex];
+		}
+		else
+		{
+			return null;
+		}
+	},
+	
 	appendChild	: function(oTreeGridNode)
 	{
+		// Attach Child
 		oTreeGridNode.attachTo(this);
+		
+		// Add to Children array
+		this._aChildren.push(oTreeGridNode);
+		
+		// Render
 		this.render();
 	},
 	
 	removeChild	: function(oTreeGridNode)
 	{
+		// Detach Child
 		oTreeGridNode.detach();
+		
+		// Remove from Children array
+		var iIndex	= this._aChildren.indexOf(oChild);
+		if (iIndex > -1)
+		{
+			this._aChildren.splice(iIndex, 1);
+		}
+		
+		// Render
 		this.render();
 	},
 	
@@ -94,6 +130,7 @@ var Control_Tree_Grid_Node	= Class.create
 	setSelected	: function(bSelected)
 	{
 		this._bSelected	= (bSelected) ? true : false;
+		this.render(this._oVisibleColumns, true);
 	},
 	
 	isSelected	: function()
@@ -149,7 +186,7 @@ var Control_Tree_Grid_Node	= Class.create
 					var domExpandIcon	= document.createElement('img');
 					domTD.addClassName('icon');
 					
-					if (this.aChildren.length)
+					if (this._aChildren.length)
 					{
 						domExpandIcon.src	= '../admin/img/template/' + (this.isExpanded() ? 'order_desc.png' : 'menu_open_right.png');
 						domExpandIcon.addClassName('clickable');
@@ -174,7 +211,7 @@ var Control_Tree_Grid_Node	= Class.create
 			// Show
 			this.getTreeGrid().getTable().insertBefore(this._oTR.domElement, this.getParent().getChildAfter(this).getElement());
 		}
-		else
+		else if (this.getTreeGrid())
 		{
 			// Hide
 			this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
