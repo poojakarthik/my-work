@@ -230,7 +230,14 @@ var Control_Tree_Grid_Node	= Class.create
 		{
 			// Hide
 			alert("Trying to hide");
-			this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
+			try
+			{
+				this.getTreeGrid().getTable().removeChild(this._oTR.domElement);
+			}
+			catch (eException)
+			{
+				// Do nothing -- permitted error
+			}
 		}
 		
 		// Set the internal cache of visible columns
