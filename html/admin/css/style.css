@@ -1723,41 +1723,38 @@ table.tree-grid
 	width			: 100%;
 }
 
-table.select-list tr:nth-child(even)
+table.tree-grid tr:nth-child(even)
 {
 	background-color	: #eee;
 }
 
-table.select-list tr:hover td
+table.tree-grid tr:hover td
 {
 	background-color	: #b5ccdf;
 }
 
-table.select-list tr td.icon
+table.tree-grid tr td.icon
 {
 	width	: 0.1em;
+}
+
+table.tree-grid tr td.icon img
+{
+	width		: 16px;
+	min-width	: 16px;
+	max-width	: 16px;
+	height		: 16px;
+	min-height	: 16px;
+	max-height	: 16px;
+}
+
+table.tree-grid tr td.icon img.clickable
+{
 	cursor	: pointer;
 }
 
-table.select-list tr td input[type="checkbox"].row-select
+table.tree-grid tr td input[type="checkbox"].row-select
 {
 	display	: none;
-}
-
-div.select-list-group
-{
-	column-count			: 2;
-	-moz-column-count		: 2;
-	-webkit-column-count	: 2;
-	
-	column-gap				: 0.5em;
-	-moz-column-gap			: 0.5em;
-	-webkit-column-gap		: 0.5em;
-}
-
-div.select-list-group h4
-{
-	padding	: 0;
-	margin	: 0;
 }
 /******************************************************************************/
