@@ -1776,8 +1776,13 @@ table.tree-grid tr td.tree img.clickable
 	cursor	: pointer;
 }
 
-table.tree-grid tr td input[type="checkbox"].row-select
+table.tree-grid tr td.row-select input[type="checkbox"]
 {
 	display	: none;
+}
+
+table.tree-grid tr td.row-select img
+{
+	cursor	: pointer;
 }
 /******************************************************************************/
