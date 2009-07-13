@@ -175,16 +175,17 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 				
 				if (oParent.getChildBefore(this))
 				{
-					//alert("Siblings Before");
+					alert("Siblings Before");
 					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this).getElement().nextSibling);
 				}
 				else if (oParent.getChildAfter(this))
 				{
+					alert("Siblings After");
 					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildAfter(this).getElement());
 				}
 				else
 				{
-					//alert("No Siblings");
+					alert("No Siblings");
 					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getElement().nextSibling);
 				}
 			}
