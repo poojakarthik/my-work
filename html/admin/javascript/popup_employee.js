@@ -217,6 +217,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oCSR.oContent									= {};
 		oCSR.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Customer Service Representative', sIconSource: '../admin/img/template/operation_profile.png'};
 		oCSR.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 7;
+		oCSR.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
 		oCSR.oControl									= new Control_Tree_Grid_Node_Data(oCSR.oContent);
 		oTabPage.oProfiles.oControl.appendChild(oCSR.oControl);
 		/**/
@@ -224,6 +225,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oFlexAdmin.oContent									= {};
 		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Flex Admin', sIconSource: '../admin/img/template/operation_profile.png'};
 		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 2;
+		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
 		oFlexAdmin.oControl									= new Control_Tree_Grid_Node_Data(oFlexAdmin.oContent);
 		oTabPage.oProfiles.oControl.appendChild(oFlexAdmin.oControl);
 		/**/
@@ -231,9 +233,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oCSM.oContent									= {};
 		oCSM.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Customer Service Manager', sIconSource: '../admin/img/template/operation_profile.png'};
 		oCSM.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 4;
+		oCSM.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
 		oCSM.oControl									= new Control_Tree_Grid_Node_Data(oCSM.oContent);
 		oTabPage.oProfiles.oControl.appendChild(oCSM.oControl);
 		/**/
+		delete(oCSR.oContent[Control_Tree_Grid.COLUMN_CHECK]);
 		oCSM.oControl.appendChild(new Control_Tree_Grid_Node_Data(oCSR.oContent));
 		/**/
 		
