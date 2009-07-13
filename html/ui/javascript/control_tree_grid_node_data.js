@@ -151,6 +151,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					// Add Label
 					var domLabel		= document.createElement('span');
 					domLabel.innerHTML	= this._oContent[sField].sLabel;
+					domLabel.addClassName('label');
 					domTD.appendChild(domLabel);
 					break;
 				
