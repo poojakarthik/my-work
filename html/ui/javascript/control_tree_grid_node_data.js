@@ -108,7 +108,9 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			
 			switch (sField)
 			{
-				case Control_Tree_Grid.COLUMN_EXPAND:
+				//case Control_Tree_Grid.COLUMN_EXPAND:
+				case Control_Tree_Grid.COLUMN_LABEL:
+					// Complex label
 					domTD.addClassName('tree');
 					
 					// Calculate Depth
@@ -116,7 +118,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					iDepth	= (iDepth === null) ? 0 : iDepth;
 					domTD.style.paddingLeft	= (iDepth * Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE)+'px';
 					
-					// Add icon
+					// Add Expand icon
 					if (this._aChildren.length)
 					{
 						this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/' + (this.isExpanded() ? 'tree_open.png' : 'tree_closed.png');
@@ -126,6 +128,14 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 						this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/1px-transparent.png';
 					}
 					domTD.appendChild(this._oElement.oExpandIcon.domElement);
+					
+					// Add Row Icon
+					// TODO
+					
+					// Add Label
+					var domLabel		= document.createElement('span');
+					domLabel.innerHTML	= this._oContent[sField].sLabel;
+					domTD.appendChild(domLabel);
 					break;
 				
 				default:
