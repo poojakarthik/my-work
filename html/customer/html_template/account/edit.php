@@ -87,175 +87,163 @@
 		if($intAccountUpdated!="1")
 		{
 			print "
-			<!-- We dont want any caching of this page.. -->
-			<form method=\"POST\" action=\"./flex.php/Console/EditConfirm/\" onsubmit=\"return validate_edit_details(this)\">
-			<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"$intAccountId\">
+			<form method=\"post\" action=\"./flex.php/Console/EditConfirm/\" onsubmit=\"return validate_edit_details(this)\">
+			<input type=\"hidden\" name=\"intUpdateAccountId\" value=\"$intAccountId\" />
 
 			<div class='customer-standard-table-title-style-billing'>Billing Details</div>
-			<!-- <h2 class='Account'>Billing Details</h2> -->
 			<div class='GroupedContent'>
-			<TABLE class=\"customer-standard-table-style\">
-			<TR VALIGN=\"TOP\">
-				<TD width=\"160\">Billing Method: </TD>
-				<TD>";
+			<table class=\"customer-standard-table-style\">
+			<tr valign=\"top\">
+				<td width=\"160\">Billing Method: </td>
+				<td>";
 				
-				$BillingMethod = DBO()->Account->BillingMethod->Value;
-				for($i=0; $i<2; $i++)
+				$intBillingMethod = DBO()->Account->BillingMethod->Value;
+				
+				if($intBillingMethod == DELIVERY_METHOD_EMAIL)
 				{
-					$strShowChecked = "";
-					if($BillingMethod == $i)
-					{
-						$strShowChecked = " CHECKED";
-					}
-					if($i == "2")
-					{
-						$strShowChecked .= " DISABLED";
-					}
-					$strDescriptionOfMethod = $GLOBALS['*arrConstant']['BillingMethod'][$i]['Description'];
-					// Only show Post as a billing method for customers already on post.
-					if($i != "0")
-					{
-						echo "<INPUT TYPE=\"radio\" class=\"edit-details-radio-buttons\" NAME=\"mixAccount_BillingMethod\" VALUE=\"$i\"$strShowChecked> $strDescriptionOfMethod<br/>";
-					}
-					if($i == "0" && $BillingMethod == "0")
-					{
-						echo "<INPUT TYPE=\"radio\" class=\"edit-details-radio-buttons\" NAME=\"mixAccount_BillingMethod\" VALUE=\"$i\"$strShowChecked> $strDescriptionOfMethod<br/>";
-					}
+					echo "<input type=\"radio\" class=\"edit-details-radio-buttons\" name=\"mixAccount_BillingMethod\" value=\"" . DELIVERY_METHOD_EMAIL . "\" checked=\"checked\" /> Email<br/>";
+				}
+				else if($intBillingMethod == DELIVERY_METHOD_POST)
+				{
+					echo "<input type=\"radio\" class=\"edit-details-radio-buttons\" name=\"mixAccount_BillingMethod\" value=\"" . DELIVERY_METHOD_EMAIL . "\"$strShowChecked /> Email<br/>";
+					echo "<input type=\"radio\" class=\"edit-details-radio-buttons\" name=\"mixAccount_BillingMethod\" value=\"" . DELIVERY_METHOD_POST . "\" checked=\"checked\" /> Post<br/>";
+				}
+				else
+				{
+					echo "<input type=\"radio\" class=\"edit-details-radio-buttons\" name=\"mixAccount_BillingMethod\" value=\"" . DELIVERY_METHOD_EMAIL . "\" /> Email<br/>";
 				}
 
-				print "</TD>
-			</TR>
-			</TABLE>
+				print "</td>
+			</tr>
+			</table>
 			</div>
 			<br/>
 
 
 
 			<div class='customer-standard-table-title-style-password'>Account Password</div>
-			<!-- <h2 class='Account'>Account Password</h2> -->
 			<div class='GroupedContent'>
-			<TABLE class=\"customer-standard-table-style\">
-			<TR VALIGN=\"TOP\">
-			<TR>
-				<TD width=\"160\">Old Password: </TD>
-				<TD><INPUT TYPE=\"password\" NAME=\"mixAccount_OldPassword\" VALUE=\"\"></TD>
-			</TR>
-			<TR>
-				<TD>New Password: </TD>
-				<TD><INPUT TYPE=\"password\" NAME=\"mixAccount_NewPassword1\" VALUE=\"\" maxlength=\"40\"></TD>
-			</TR>
-			<TR>
-				<TD>Repeat New Password: </TD>
-				<TD><INPUT TYPE=\"password\" NAME=\"mixAccount_NewPassword2\" VALUE=\"\" maxlength=\"40\"></TD>
-			</TR>
-			<TR>
-				<TD>&nbsp;</TD>
-				<TD colspan=\"2\"><FONT SIZE=\"1\">If you do not wish to change your password please leave these fields blank.</FONT></TD>
-			</TR>
-			</TABLE>
+			<table class=\"customer-standard-table-style\">
+			<tr valign=\"top\">
+			<tr>
+				<td width=\"160\">Old Password: </td>
+				<td><input type=\"password\" name=\"mixAccount_OldPassword\" value=\"\" /></td>
+			</tr>
+			<tr>
+				<td>New Password: </td>
+				<td><input type=\"password\" name=\"mixAccount_NewPassword1\" value=\"\" maxlength=\"40\" /></td>
+			</tr>
+			<tr>
+				<td>Repeat New Password: </td>
+				<td><input type=\"password\" name=\"mixAccount_NewPassword2\" value=\"\" maxlength=\"40\" /></td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td colspan=\"2\"><font size=\"1\">If you do not wish to change your password please leave these fields blank.</font></td>
+			</tr>
+			</table>
 			</div>
 			<br/>
 
 			<div class='customer-standard-table-title-style-address'>Billing Address Details</div>
 			<!-- <h2 class='Account'>Address Details</h2> -->
 			<div class='GroupedContent'>
-			<TABLE class=\"customer-standard-table-style\">
-			<TR>
-			<TD width=\"160\">Street Address: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address1\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address1->Value) . "\" size=\"30\" maxlength=\"255\"></TD>
-			</TR>
-			<TR>
-			<TD></TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Address2\" VALUE=\"" . htmlspecialchars(DBO()->Account->Address2->Value) . "\" size=\"30\" maxlength=\"255\"></TD>
-			</TR>
-			<TR>
-			<TD>Suburb: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Suburb\" VALUE=\"" . htmlspecialchars(DBO()->Account->Suburb->Value) . "\"></TD>
-			</TR>
+			<table class=\"customer-standard-table-style\">
+			<tr>
+			<td width=\"160\">Street Address: </td>
+			<td><input type=\"text\" name=\"mixAccount_Address1\" value=\"" . htmlspecialchars(DBO()->Account->Address1->Value) . "\" size=\"30\" maxlength=\"255\" /></td>
+			</tr>
+			<tr>
+			<td></td>
+			<td><input type=\"text\" name=\"mixAccount_Address2\" value=\"" . htmlspecialchars(DBO()->Account->Address2->Value) . "\" size=\"30\" maxlength=\"255\" /></td>
+			</tr>
+			<tr>
+			<td>Suburb: </td>
+			<td><input type=\"text\" name=\"mixAccount_Suburb\" value=\"" . htmlspecialchars(DBO()->Account->Suburb->Value) . "\" /></td>
+			</tr>
 
-			<TR>
-			<TD>State: </TD>
-			<TD>
-				<SELECT NAME=\"mixAccount_State\">";
+			<tr>
+			<td>State: </td>
+			<td>
+				<select name=\"mixAccount_State\">";
 				
 				foreach($GLOBALS['*arrConstant']['ServiceStateType'] as $strStateName=>$resStateName){
 					$strStateDescription = $GLOBALS['*arrConstant']['ServiceStateType']["$strStateName"]['Description'];
 					if($strStateName == DBO()->Account->State->Value)
 					{
-						$mixStates .= "<OPTION VALUE=\"$strStateName\" SELECTED>$strStateDescription</OPTION>\n";
+						$mixStates .= "<option value=\"$strStateName\" SELECTED>$strStateDescription</option>\n";
 					}
 					else
 					{
-						$mixStates .= "<OPTION VALUE=\"$strStateName\">$strStateDescription</OPTION>\n";
+						$mixStates .= "<option value=\"$strStateName\">$strStateDescription</option>\n";
 					}
 				}
 
 				print "
 				$mixStates
-				</SELECT>
-				</TD>
-			</TR>
-			<TR>
-			<TD>Postcode: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixAccount_Postcode\" VALUE=\"" . htmlspecialchars(DBO()->Account->Postcode->Value) . "\" size=\"4\" maxlength=\"4\"></TD>
-			</TR>
-			<TR>
-			<TD>Country: </TD>
-			<TD>
-				<SELECT NAME=\"mixAccount_Country\">
-				<OPTION VALUE=\"" . htmlspecialchars(DBO()->Account->Country->Value) . "\" SELECTED>" . htmlspecialchars(DBO()->Account->Country->Value) . "</OPTION>
-				</SELECT>
-				</TD>
-			</TR>
-			</TABLE>
+				</select>
+				</td>
+			</tr>
+			<tr>
+			<td>Postcode: </td>
+			<td><input type=\"text\" name=\"mixAccount_Postcode\" value=\"" . htmlspecialchars(DBO()->Account->Postcode->Value) . "\" size=\"4\" maxlength=\"4\"></td>
+			</tr>
+			<tr>
+			<td>Country: </td>
+			<td>
+				<select name=\"mixAccount_Country\">
+				<option value=\"" . htmlspecialchars(DBO()->Account->Country->Value) . "\" SELECTED>" . htmlspecialchars(DBO()->Account->Country->Value) . "</option>
+				</select>
+				</td>
+			</tr>
+			</table>
 			</div>
 			<br/>
 
 			<div class='customer-standard-table-title-style-contact'>Contact Details</div>
-			<!-- <h2 class='Account'>Contact Details</h2> -->
-			<div class='GroupedContent'>
-			<TABLE class=\"customer-standard-table-style\">
-			<TR>
-			<TD width=\"160\">Title: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Title\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Title->Value) . "\" size=\"10\" maxlength=\"255\"></TD>
-			</TR>
-			<TR>
-			<TD>Job Title: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_JobTitle\" VALUE=\"" . htmlspecialchars(DBO()->Contact->JobTitle->Value) . "\"></TD>
-			</TR>
-			<TR>
-			<TD>First Name: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_FirstName\" VALUE=\"" . htmlspecialchars(DBO()->Contact->FirstName->Value) . "\"></TD>
-			</TR>
-			<TR>
-			<TD>Last Name: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_LastName\" VALUE=\"" . htmlspecialchars(DBO()->Contact->LastName->Value) . "\"></TD>
-			</TR>
-			<TR>
-			<TD>E-mail: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Email\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Email->Value) . "\" size=\"30\" maxlength=\"255\"></TD>
-			</TR>
-			<TR>
-			<TD>Phone: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Phone\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Phone->Value) . "\"></TD>
-			</TR>
-			<TR>
-			<TD>Mobile: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Mobile\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Mobile->Value) . "\"></TD>
-			</TR>
-			<TR>
-			<TD>Fax: </TD>
-			<TD><INPUT TYPE=\"text\" NAME=\"mixContact_Fax\" VALUE=\"" . htmlspecialchars(DBO()->Contact->Fax->Value) . "\"></TD>
-			</TR>
+			<div class='groupedcontent'>
+			<table class=\"customer-standard-table-style\">
+			<tr>
+			<td width=\"160\">Title: </td>
+			<td><input type=\"text\" name=\"mixContact_Title\" value=\"" . htmlspecialchars(DBO()->Contact->Title->Value) . "\" size=\"10\" maxlength=\"255\" /></td>
+			</tr>
+			<tr>
+			<td>Job Title: </td>
+			<td><input type=\"text\" name=\"mixContact_JobTitle\" value=\"" . htmlspecialchars(DBO()->Contact->JobTitle->Value) . "\" /></td>
+			</tr>
+			<tr>
+			<td>First Name: </td>
+			<td><input type=\"text\" name=\"mixContact_FirstName\" value=\"" . htmlspecialchars(DBO()->Contact->FirstName->Value) . "\" /></td>
+			</tr>
+			<tr>
+			<td>Last Name: </td>
+			<td><input type=\"text\" name=\"mixContact_LastName\" value=\"" . htmlspecialchars(DBO()->Contact->LastName->Value) . "\" /></td>
+			</tr>
+			<tr>
+			<td>E-mail: </td>
+			<td><input type=\"text\" name=\"mixContact_Email\" value=\"" . htmlspecialchars(DBO()->Contact->Email->Value) . "\" size=\"30\" maxlength=\"255\" /></td>
+			</tr>
+			<tr>
+			<td>Phone: </td>
+			<td><input type=\"text\" name=\"mixContact_Phone\" value=\"" . htmlspecialchars(DBO()->Contact->Phone->Value) . "\" /></td>
+			</tr>
+			<tr>
+			<td>Mobile: </td>
+			<td><input type=\"text\" name=\"mixContact_Mobile\" value=\"" . htmlspecialchars(DBO()->Contact->Mobile->Value) . "\" /></td>
+			</tr>
+			<tr>
+			<td>Fax: </td>
+			<td><input type=\"text\" name=\"mixContact_Fax\" value=\"" . htmlspecialchars(DBO()->Contact->Fax->Value) . "\" /></td>
+			</tr>
 			</TABLE>
 			</div>
 
 			<br/>
-			<TABLE class=\"customer-standard-table-style\">
-			<TR>
-				<TD align=right><INPUT TYPE=\"button\" VALUE=\"Cancel\" onclick=\"javascript:document.location = './'\"> <INPUT TYPE=\"submit\" VALUE=\"Update Details\"></TD>
-			</TR>
-			</TABLE>
+			<table class=\"customer-standard-table-style\">
+			<tr>
+				<td align=right><input type=\"button\" value=\"Cancel\" onclick=\"javascript:document.location = './'\" /> <input type=\"submit\" value=\"Update Details\" /></td>
+			</tr>
+			</table>
 			<div id=\"error_box\"></div>
 			";
 		}
