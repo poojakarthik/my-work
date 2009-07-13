@@ -17,6 +17,10 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._oElement.oExpandIcon.domElement	= document.createElement('img');
 		this._oElement.oExpandIcon.onClick		= this.toggleExpanded.bind(this);
 		
+		this._oElement.oSelectIcon				= {};
+		this._oElement.oSelectIcon.domElement	= document.createElement('img');
+		this._oElement.oSelectIcon.onClick		= this.toggleExpanded.bind(this);
+		
 		this._oElement.oRowIcon				= {};
 		this._oElement.oRowIcon.domElement	= document.createElement('img');
 		
@@ -149,6 +153,10 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	{
 		this._bSelected	= (bSelected) ? true : false;
 		
+		this._oElement.oSelectIcon.domElement.src	= '../admin/img/template/' + (this.isSelected() ? 'checkbox_checked.png' : 'checkbox_unchecked.png');
+		this._oElement.oSelectIcon.domElement.addClassName('clickable');
+		this._oElement.oSelectIcon.domElement.addEventListener('click', this._oElement.oExpandIcon.onClick, false);
+		
 		if (this._oVisibleColumns)
 		{
 			this.render(this._oVisibleColumns);
@@ -240,4 +248,4 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	}
 });
 
-Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE	= 8;
+Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE	= 16;
