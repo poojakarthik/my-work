@@ -165,7 +165,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		// Update the icon
 		if (this._aChildren.length)
 		{
-			alert("We have children...");
 			this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/' + (this.isExpanded() ? 'tree_open.png' : 'tree_closed.png');
 			this._oElement.oExpandIcon.domElement.addClassName('clickable');
 			this._oElement.oExpandIcon.domElement.addEventListener('click', this._oElement.oExpandIcon.onClick, false);
