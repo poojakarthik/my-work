@@ -113,16 +113,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					
 					// Calculate Depth
 					var iDepth	= this.getDepth();
-					if (iDepth)
-					{
-						for (var i = 0; i < iDepth; i++)
-						{
-							var domSpacer	= document.createElement('img');
-							domSpacer.src	= '../admin/img/template/1px-transparent.png';
-							domSpacer.addClassName('indent');
-							domTD.appendChild(domSpacer);
-						}
-					}
+					iDepth	= (iDepth === null) ? 0 : iDepth;
+					domTD.style.paddingLeft	: (iDepth * Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE)+'px';
 					
 					// Add icon
 					if (this._aChildren.length)
@@ -200,4 +192,4 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	}
 });
 
-Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE	= 16;
+Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE	= 8;
