@@ -111,7 +111,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	setSelected	: function(bSelected)
 	{
 		this._bSelected	= (bSelected) ? true : false;
-		this.render(this._oVisibleColumns, true);
+		this.render(this._oVisibleColumns);
 	},
 	
 	isSelected	: function()
@@ -127,7 +127,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	setExpanded	: function(bExpanded)
 	{
 		this._bExpanded	= (bExpanded) ? true : false;
-		//this.render(this._oVisibleColumns, true);
 		this._updateExpandedIcon();
 	},
 	
