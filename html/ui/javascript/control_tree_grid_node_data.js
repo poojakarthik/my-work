@@ -49,12 +49,12 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	
 	setContent	: function(oContent)
 	{
-		this._oContent	= oContent ? oContent : {};
+		this._oContent	= {};
 		
 		// Build TDs
 		//--------------------------------------------------------------------//
 		// Add all visible columns to the TR
-		for (sField in this._oContent)
+		for (sField in oContent)
 		{
 			var domTD		= document.createElement('td');
 			
@@ -75,7 +75,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					if (this._oContent[sField].sIconSource)
 					{
 						this._oElement.oRowIcon.domElement.style.display	= 'inline';
-						this._oElement.oRowIcon.domElement.src	= this._oContent[sField].sIconSource;
+						this._oElement.oRowIcon.domElement.src				= this._oContent[sField].sIconSource;
 					}
 					else
 					{
@@ -96,7 +96,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			}
 			
 			// Set Column TD
-			this._oContent[sField].domElement	= this._oElement.domElement.appendChild(domTD);
+			this._oContent[sField].domElement	= domTD;
 		}
 		//--------------------------------------------------------------------//
 		
