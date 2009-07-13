@@ -148,7 +148,12 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	setExpanded	: function(bExpanded)
 	{
 		this._bExpanded	= (bExpanded) ? true : false;
-		this._updateExpandIcon();
+		//this._updateExpandIcon();
+		
+		if (this._oVisibleColumns)
+		{
+			this.render(this._oVisibleColumns);
+		}
 	},
 	
 	isExpanded	: function()
