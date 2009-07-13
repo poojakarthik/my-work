@@ -114,7 +114,11 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	setSelected	: function(bSelected)
 	{
 		this._bSelected	= (bSelected) ? true : false;
-		this.render(this._oVisibleColumns);
+		
+		if (this._oVisibleColumns)
+		{
+			this.render(this._oVisibleColumns);
+		}
 	},
 	
 	isSelected	: function()
