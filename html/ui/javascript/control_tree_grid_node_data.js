@@ -63,7 +63,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			switch (sField)
 			{
 				case Control_Tree_Grid.COLUMN_LABEL:
-					alert("Label: "+this._oContent[sField].sLabel);
+					alert("Label: "+oContent[sField].sLabel);
 					
 					// Complex label
 					domTD.addClassName('tree');
@@ -75,7 +75,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					if (this._oContent[sField].sIconSource)
 					{
 						this._oElement.oRowIcon.domElement.style.display	= 'inline';
-						this._oElement.oRowIcon.domElement.src				= this._oContent[sField].sIconSource;
+						this._oElement.oRowIcon.domElement.src				= oContent[sField].sIconSource;
 					}
 					else
 					{
@@ -85,17 +85,18 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					
 					// Add Label
 					var domLabel		= document.createElement('span');
-					domLabel.innerHTML	= this._oContent[sField].sLabel;
+					domLabel.innerHTML	= oContent[sField].sLabel;
 					domLabel.addClassName('label');
 					domTD.appendChild(domLabel);
 					break;
 				
 				default:
-					domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
+					domTD.innerHTML	= (oContent && oContent[sField]) ? oContent[sField] : '';
 					break;
 			}
 			
 			// Set Column TD
+			this._oContent[sField].oData		= oContent[sField];
 			this._oContent[sField].domElement	= domTD;
 		}
 		//--------------------------------------------------------------------//
