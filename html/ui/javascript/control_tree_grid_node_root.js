@@ -41,6 +41,6 @@ var Control_Tree_Grid_Node_Root	= Class.create(/* extends */ Control_Tree_Grid_N
 	
 	getDepth	: function()
 	{
-		return (this.getParent()) ? 0 : null;
+		return (this.getParent()) ? -1 : null;
 	}
 });
