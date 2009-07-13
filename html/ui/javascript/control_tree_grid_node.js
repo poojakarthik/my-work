@@ -99,6 +99,11 @@ var Control_Tree_Grid_Node	= Class.create(
 		throw "Virtual Method Control_Tree_Grid_Node::getTreeGrid() cannot be invoked directly!";
 	},
 	
+	getRootNode	: function()
+	{
+		throw "Virtual Method Control_Tree_Grid_Node::getRootNode() cannot be invoked directly!";
+	},
+	
 	attachTo	: function(oTreeGridElement)
 	{
 		throw "Virtual Method Control_Tree_Grid_Node::attachTo() cannot be invoked directly!";

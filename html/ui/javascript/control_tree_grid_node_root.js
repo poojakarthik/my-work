@@ -16,7 +16,7 @@ var Control_Tree_Grid_Node_Root	= Class.create(/* extends */ Control_Tree_Grid_N
 			this._oParent	= oTreeGridElement;
 			
 			// Attach this and any children to the new parent
-			this._oParent.getElement().appendChild(this.getElement());
+			this.getTreeGrid().getTable().appendChild(this.getElement());
 			for (var i = 0; i < this._aChildren.length; i++)
 			{
 				this._aChildren[i].attachTo(this);
@@ -31,6 +31,11 @@ var Control_Tree_Grid_Node_Root	= Class.create(/* extends */ Control_Tree_Grid_N
 	getTreeGrid	: function()
 	{
 		return this._oParent ? this._oParent : null;
+	},
+	
+	getRootNode	: function()
+	{
+		return this;
 	},
 	
 	isExpanded	: function()

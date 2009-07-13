@@ -33,6 +33,11 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		return (this._oParent === null) ? null : this._oParent.getTreeGrid();
 	},
 	
+	getRootNode	: function()
+	{
+		return this.getParent().getRootNode();
+	},
+	
 	attachTo	: function(oTreeGridElement)
 	{
 		if (oTreeGridElement instanceof Control_Tree_Grid_Node_Root || oTreeGridElement instanceof Control_Tree_Grid_Node_Data)
@@ -43,11 +48,11 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			// Attach this and any children to the new parent
 			if (this._oParent.getLastChild())
 			{
-				this.getTreeGrid().getElement().insertBefore(this.getElement(), this._oParent.getLastChild().getElement().nextSibling);
+				this.getTreeGrid().getTable().insertBefore(this.getElement(), this._oParent.getLastChild().getElement().nextSibling);
 			}
 			else
 			{
-				this.getTreeGrid().getElement().insertBefore(this.getElement(), this._oParent.getElement().nextSibling);
+				this.getTreeGrid().getTable().insertBefore(this.getElement(), this._oParent.getElement().nextSibling);
 			}
 			
 			// Reattach children
