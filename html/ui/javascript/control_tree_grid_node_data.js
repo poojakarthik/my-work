@@ -13,6 +13,11 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._oElement.oCheckBox.domElement.type	= 'checkbox';
 		this._oElement.oCheckBox.domElement.addClassName('row-select');
 		
+		this._oElement.oExpandIcon				= {};
+		this._oElement.oExpandIcon.domElement	= document.createElement('img');
+		this._oElement.oExpandIcon.domElement.addClassName('clickable');
+		this._oElement.oExpandIcon.domElement.addEventListener('click', this.toggleExpanded.bind(this), false);
+		
 		// Properties
 		this.setContent(oContent);
 		
@@ -109,15 +114,13 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					
 					if (this._aChildren.length)
 					{
-						domExpandIcon.src	= '../admin/img/template/' + (this.isExpanded() ? 'tree_open.png' : 'tree_closed.png');
-						domExpandIcon.addClassName('clickable');
-						domExpandIcon.addEventListener('click', this.toggleExpanded.bind(this), false);
+						this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/' + (this.isExpanded() ? 'tree_open.png' : 'tree_closed.png');
 					}
 					else
 					{
-						domExpandIcon.src	= '../admin/img/template/transparent-bg';
+						this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/transparent-bg';
 					}
-					domTD.appendChild(domExpandIcon);
+					domTD.appendChild(this._oElement.oExpandIcon.domElement);
 					break;
 				
 				default:
