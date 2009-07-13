@@ -160,7 +160,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._bSelected	= (bSelected) ? true : false;
 		
 		// Update Icon
-		this._oElement.oSelectIcon.domElement.src	= '../admin/img/template/' + (this.isSelected() ? 'checkbox_checked.png' : 'checkbox_unchecked.png');
+		this._oElement.oSelectIcon.domElement.src	= '../admin/img/template/checkbox' + (this.isSelected() ? '-checked' : '') + '.png';
 		
 		if (this._oVisibleColumns)
 		{
