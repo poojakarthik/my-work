@@ -1756,7 +1756,7 @@ table.tree-grid tr td.tree img
 
 table.tree-grid tr td.tree span.label
 {
-	margin-left	: 0.25em;
+	padding-left	: 0.25em;
 }
 
 table.tree-grid tr td.tree img.icon
