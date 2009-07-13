@@ -11,7 +11,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._oElement.oCheckBox					= {}
 		this._oElement.oCheckBox.domElement			= document.createElement('input');
 		this._oElement.oCheckBox.domElement.type	= 'checkbox';
-		this._oElement.oCheckBox.domElement.addClassName('row-select');
 		
 		this._oElement.oExpandIcon				= {};
 		this._oElement.oExpandIcon.domElement	= document.createElement('img');
@@ -19,7 +18,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		
 		this._oElement.oSelectIcon				= {};
 		this._oElement.oSelectIcon.domElement	= document.createElement('img');
-		this._oElement.oSelectIcon.onClick		= this.toggleExpanded.bind(this);
+		this._oElement.oSelectIcon.onClick		= this.toggleSelected.bind(this);
+		this._oElement.oSelectIcon.domElement.addEventListener('click', this._oElement.oSelectIcon.onClick, false);
 		
 		this._oElement.oRowIcon				= {};
 		this._oElement.oRowIcon.domElement	= document.createElement('img');
@@ -126,6 +126,12 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					domTD.appendChild(domLabel);
 					break;
 				
+				case Control_Tree_Grid.COLUMN_CHECK:
+					domTD.addClassName('row-select');
+					domTD.appendChild(this._oElement.oCheckBox.domElement);
+					domTD.appendChild(this._oElement.oSelectIcon.domElement);
+					break;
+				
 				default:
 					domTD.innerHTML	= (oContent && oContent[sField]) ? oContent[sField] : '';
 					break;
@@ -153,9 +159,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	{
 		this._bSelected	= (bSelected) ? true : false;
 		
+		// Update Icon
 		this._oElement.oSelectIcon.domElement.src	= '../admin/img/template/' + (this.isSelected() ? 'checkbox_checked.png' : 'checkbox_unchecked.png');
-		this._oElement.oSelectIcon.domElement.addClassName('clickable');
-		this._oElement.oSelectIcon.domElement.addEventListener('click', this._oElement.oExpandIcon.onClick, false);
 		
 		if (this._oVisibleColumns)
 		{
