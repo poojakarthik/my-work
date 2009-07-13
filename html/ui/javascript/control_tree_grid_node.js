@@ -21,7 +21,7 @@ var Control_Tree_Grid_Node	= Class.create(
 		var iIndex	= this._aChildren.indexOf(oChild);
 		if (iIndex > -1)
 		{
-			return this._aChildren[iIndex + 1];
+			return (this._aChildren[iIndex + 1]) ? this._aChildren[iIndex + 1] : null;
 		}
 		else
 		{
