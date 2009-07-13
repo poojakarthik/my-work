@@ -125,6 +125,9 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					break;
 				
 				case Control_Tree_Grid.COLUMN_CHECK:
+					this._oElement.oCheckBox.domElement.name	= oContent[sField].sName ? oContent[sField].sName : '';
+					this._oElement.oCheckBox.domElement.value	= oContent[sField].mValue ? oContent[sField].mValue : 1;
+					
 					domTD.addClassName('row-select');
 					domTD.appendChild(this._oElement.oCheckBox.domElement);
 					domTD.appendChild(this._oElement.oSelectIcon.domElement);
