@@ -1752,6 +1752,8 @@ table.tree-grid tr td.tree img
 	min-height		: 16px;
 	max-height		: 16px;
 	vertical-align	: top;
+	
+	-moz-user-select	: none;
 }
 
 table.tree-grid tr td.tree span.label
@@ -1788,6 +1790,7 @@ table.tree-grid tr td.row-select input[type="checkbox"]
 
 table.tree-grid tr td.row-select img
 {
-	cursor	: pointer;
+	-moz-user-select	: none;
+	cursor				: pointer;
 }
 /******************************************************************************/
