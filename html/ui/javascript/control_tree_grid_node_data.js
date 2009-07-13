@@ -99,6 +99,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			this._oContent[sField].domElement	= this._oElement.domElement.appendChild(domTD);
 		}
 		//--------------------------------------------------------------------//
+		
+		this.render(this._oVisibleColumns);
 	},
 	
 	toggleSelected	: function()
@@ -166,7 +168,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		return (this.getParent()) ? this.getParent().getDepth() + 1 : null;
 	},
 	
-	render	: function(oVisibleColumns, bForceRender)
+	render	: function(oVisibleColumns)
 	{
 		this._oVisibleColumns	= oVisibleColumns;
 		
