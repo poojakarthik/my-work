@@ -17,6 +17,9 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._oElement.oExpandIcon.domElement	= document.createElement('img');
 		this._oElement.oExpandIcon.onClick		= this.toggleExpanded.bind(this);
 		
+		this._oElement.oRowIcon				= {};
+		this._oElement.oRowIcon.domElement	= document.createElement('img');
+		
 		// Properties
 		this.setContent(oContent);
 		
@@ -133,7 +136,17 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					domTD.appendChild(this._oElement.oExpandIcon.domElement);
 					
 					// Add Row Icon
-					// TODO
+					if (this._oContent[sField].sIconSource)
+					{
+						this._oElement.oRowIcon.domElement.style.display	= 'inline';
+						this._oElement.oRowIcon.domElement.src	= this._oContent[sField].sIconSource;
+					}
+					else
+					{
+						this._oElement.oRowIcon.domElement.style.display	= 'none';
+					}
+					this._oElement.oExpandIcon.domElement.style.marginLeft	= (iDepth * Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE)+'px';
+					domTD.appendChild(this._oElement.oExpandIcon.domElement);
 					
 					// Add Label
 					var domLabel		= document.createElement('span');

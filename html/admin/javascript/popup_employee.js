@@ -215,27 +215,35 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Populate
 		var oCSR										= {}
 		oCSR.oContent									= {};
-		oCSR.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Customer Service Representative'};
+		oCSR.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Customer Service Representative', sIconSource: '../admin/img/template/operation_profile.png'};
 		oCSR.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 7;
 		oCSR.oControl									= new Control_Tree_Grid_Node_Data(oCSR.oContent);
 		oTabPage.oProfiles.oControl.appendChild(oCSR.oControl);
 		/**/
 		var oFlexAdmin										= {}
 		oFlexAdmin.oContent									= {};
-		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Flex Admin'};
+		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Flex Admin', sIconSource: '../admin/img/template/operation_profile.png'};
 		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 2;
 		oFlexAdmin.oControl									= new Control_Tree_Grid_Node_Data(oFlexAdmin.oContent);
 		oTabPage.oProfiles.oControl.appendChild(oFlexAdmin.oControl);
 		/**/
 		var oCSM										= {}
 		oCSM.oContent									= {};
-		oCSM.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Customer Service Manager'};
+		oCSM.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Customer Service Manager', sIconSource: '../admin/img/template/operation_profile.png'};
 		oCSM.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 4;
 		oCSM.oControl									= new Control_Tree_Grid_Node_Data(oCSM.oContent);
 		oTabPage.oProfiles.oControl.appendChild(oCSM.oControl);
 		/**/
 		oCSM.oControl.appendChild(new Control_Tree_Grid_Node_Data(oCSR.oContent));
 		/**/
+		
+		var oEditAccountDetails											= {}
+		oEditAccountDetails.oContent									= {};
+		oEditAccountDetails.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Edit Account Details', sIconSource: '../admin/img/template/operation.png'};
+		oEditAccountDetails.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 7;
+		oEditAccountDetails.oControl									= new Control_Tree_Grid_Node_Data(oCSR.oContent);
+		oCSR.oControl.appendChild(new Control_Tree_Grid_Node_Data(oEditAccountDetails.oContent));
+		
 		// Set Columns
 		var oProfileColumns	= {};
 		oProfileColumns[Control_Tree_Grid.COLUMN_LABEL]		= {};
