@@ -95,7 +95,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			switch (sField)
 			{
 				case Control_Tree_Grid.COLUMN_LABEL:
-					alert("Label: "+oContent[sField].sLabel);
+					//alert("Label: "+oContent[sField].sLabel);
 					
 					// Complex label
 					domTD.addClassName('tree');
@@ -220,7 +220,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		
 		// Show/Hide Row
 		this.getElement().style.display	= (this.isVisible()) ? 'table-row' : 'none';
-		alert(this._oContent['label'].oData.sLabel+" is "+(this.isVisible() ? '' : 'not ')+'visible');
+		//alert(this._oContent['label'].oData.sLabel+" is "+(this.isVisible() ? '' : 'not ')+'visible');
 		
 		// Remove all existing columns
 		this._oElement.domElement.innerHTML	= '';
