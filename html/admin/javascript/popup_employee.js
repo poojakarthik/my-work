@@ -250,13 +250,13 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oEditAccountDetails.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Edit Account Details', sIconSource: '../admin/img/template/operation.png'};
 		oEditAccountDetails.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 9;
 		oEditAccountDetails.oControl									= new Control_Tree_Grid_Node_Data(oEditAccountDetails.oContent);
-		oCSR.oControl.appendChild(new Control_Tree_Grid_Node_Data(oEditAccountDetails.oContent));
 		oEditAccountDetails.oControl.getElement().addClassName('informational');
+		oCSR.oControl.appendChild(oEditAccountDetails.oControl);
 		
 		oCSM.oCSR.oEditAccountDetails			= {};
 		oCSM.oCSR.oEditAccountDetails.oControl	= new Control_Tree_Grid_Node_Data(oEditAccountDetails.oContent);
-		oCSM.oCSR.oControl.appendChild(new Control_Tree_Grid_Node_Data(oCSM.oCSR.oEditAccountDetails.oControl));
 		oCSM.oCSR.oEditAccountDetails.oControl.getElement().addClassName('informational');
+		oCSM.oCSR.oControl.appendChild(oCSM.oCSR.oEditAccountDetails.oControl);
 		
 		// Set Columns
 		var oProfileColumns	= {};
