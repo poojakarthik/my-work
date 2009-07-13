@@ -72,7 +72,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					domTD.appendChild(this._oElement.oExpandIcon.domElement);
 					
 					// Add Row Icon
-					if (this._oContent[sField].sIconSource)
+					if (oContent[sField].sIconSource)
 					{
 						this._oElement.oRowIcon.domElement.style.display	= 'inline';
 						this._oElement.oRowIcon.domElement.src				= oContent[sField].sIconSource;
@@ -96,6 +96,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			}
 			
 			// Set Column TD
+			this._oContent[sField]				= {};
 			this._oContent[sField].oData		= oContent[sField];
 			this._oContent[sField].domElement	= domTD;
 		}
