@@ -94,8 +94,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		{
 			var domTD		= document.createElement('td');
 			
-			//alert("Table Field: "+sField);
-			
 			switch (sField)
 			{
 				case Control_Tree_Grid.COLUMN_LABEL:
@@ -234,7 +232,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		
 		// Show/Hide Row
 		this.getElement().style.display	= (this.isVisible()) ? 'table-row' : 'none';
-		//alert(this._oContent['label'].oData.sLabel+" is "+(this.isVisible() ? '' : 'not ')+'visible');
 		
 		// Remove all existing columns
 		this._oElement.domElement.innerHTML	= '';
