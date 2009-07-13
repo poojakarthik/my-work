@@ -39,7 +39,22 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		{
 			// Valid Element
 			this._oParent	= oTreeGridElement;
-			this._oParent.getElement().appendChild(this.getElement());
+			
+			// Attach this and any children to the new parent
+			if (this._oParent.getLastChild())
+			{
+				this.getTreeGrid().insertBefore(this.getElement(), this._oParent.getLastChild().getElement().nextSibling);
+			}
+			else
+			{
+				this.getTreeGrid().insertBefore(this.getElement(), this._oParent.getElement().nextSibling);
+			}
+			
+			// Reattach children
+			for (var i = 0; i < this._aChildren.length; i++)
+			{
+				this._aChildren[i].attachTo(this);
+			}
 		}
 		else
 		{

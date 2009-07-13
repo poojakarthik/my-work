@@ -14,7 +14,13 @@ var Control_Tree_Grid_Node_Root	= Class.create(/* extends */ Control_Tree_Grid_N
 		{
 			// Valid Element
 			this._oParent	= oTreeGridElement;
+			
+			// Attach this and any children to the new parent
 			this._oParent.getElement().appendChild(this.getElement());
+			for (var i = 0; i < this._aChildren.length; i++)
+			{
+				this._aChildren[i].attachTo(this);
+			}
 		}
 		else
 		{
