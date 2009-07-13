@@ -24,8 +24,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this.setContent(oContent);
 		
 		// Defaults
-		this._bExpanded	= false;
-		this._bSelected	= (bSelected) ? true : false;
+		this.setExpanded(false);
+		this.setSelected(bSelected);
 	},
 	
 	getTreeGrid	: function()
