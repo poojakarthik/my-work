@@ -63,6 +63,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			switch (sField)
 			{
 				case Control_Tree_Grid.COLUMN_LABEL:
+					alert("Label: "+this._oContent[sField].sLabel);
+					
 					// Complex label
 					domTD.addClassName('tree');
 					
