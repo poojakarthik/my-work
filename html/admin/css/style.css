@@ -1743,7 +1743,7 @@ table.tree-grid tr td.icon
 	width			: 0.1em;
 }
 
-table.tree-grid tr td.tree img.indent
+table.tree-grid tr td.tree img
 {
 	width			: 16px;
 	min-width		: 16px;
