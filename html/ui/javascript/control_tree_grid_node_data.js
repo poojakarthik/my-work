@@ -114,7 +114,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					// Calculate Depth
 					var iDepth	= this.getDepth();
 					iDepth	= (iDepth === null) ? 0 : iDepth;
-					domTD.style.paddingLeft	: (iDepth * Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE)+'px';
+					domTD.style.paddingLeft	= (iDepth * Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE)+'px';
 					
 					// Add icon
 					if (this._aChildren.length)
