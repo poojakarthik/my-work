@@ -52,9 +52,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		
 		// Build TDs
 		//--------------------------------------------------------------------//
-		// Remove all existing columns
-		this._oElement.domElement.innerHTML	= '';
-		
 		// Set the internal cache of visible columns
 		this._oVisibleColumns	= oVisibleColumns;
 		
@@ -173,14 +170,17 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	{
 		this._oVisibleColumns	= oVisibleColumns;
 		
+		// Show/Hide Row
+		this.getElement().style.display	= (this.isVisible()) ? 'table-row' : 'none';
+		
+		// Remove all existing columns
+		this._oElement.domElement.innerHTML	= '';
+		
 		// Show/Hide Columns
 		for (sField in this._oVisibleColumns)
 		{
 			this._oElement.domElement.appendChild((this._oContent && this._oContent[sField]) ? this._oContent[sField].domElement : document.createElement('td'));
 		}
-		
-		// Show/Hide Row
-		this.getElement().style.display	= (this.isVisible()) ? 'table-row' : 'none';
 		
 		// Render the Children
 		for (var i = 0; i < this._aChildren.length; i++)
