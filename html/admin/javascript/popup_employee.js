@@ -255,7 +255,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		oCSM.oCSR.oEditAccountDetails			= {};
 		oCSM.oCSR.oEditAccountDetails.oControl	= new Control_Tree_Grid_Node_Data(oEditAccountDetails.oContent);
-		oCSM.oCSR.oControl.appendChild(new Control_Tree_Grid_Node_Data(oCSM.oCSR.oEditAccountDetails.oControl);
+		oCSM.oCSR.oControl.appendChild(new Control_Tree_Grid_Node_Data(oCSM.oCSR.oEditAccountDetails.oControl));
 		oCSM.oCSR.oEditAccountDetails.oControl.getElement().addClassName('informational');
 		
 		// Set Columns
