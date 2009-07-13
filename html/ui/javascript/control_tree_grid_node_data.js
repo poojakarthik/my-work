@@ -132,7 +132,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	setExpanded	: function(bExpanded)
 	{
 		this._bExpanded	= (bExpanded) ? true : false;
-		this._updateExpandedIcon();
+		this._updateExpandIcon();
 	},
 	
 	isExpanded	: function()
@@ -140,7 +140,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		return this._bExpanded;
 	},
 	
-	_updateExpandedIcon	: function()
+	_updateExpandIcon	: function()
 	{
 		// Calculate Depth
 		var iDepth	= this.getDepth();
