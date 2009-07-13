@@ -112,7 +112,19 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					domTD.addClassName('tree');
 					
 					// Calculate Depth
+					var iDepth	= this.getDepth();
+					if (iDepth)
+					{
+						for (var i = 0; i < iDepth; i++)
+						{
+							var domSpacer	= document.createElement('img');
+							domSpacer.src	= '../admin/img/template/1px-transparent.png';
+							domSpacer.addClassName('indent');
+							domTD.appendChild(domSpacer);
+						}
+					}
 					
+					// Add icon
 					if (this._aChildren.length)
 					{
 						this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/' + (this.isExpanded() ? 'tree_open.png' : 'tree_closed.png');
