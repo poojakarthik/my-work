@@ -37,5 +37,10 @@ var Control_Tree_Grid_Node_Root	= Class.create(/* extends */ Control_Tree_Grid_N
 		{
 			return true;
 		}
+	},
+	
+	getDepth	: function()
+	{
+		return (this.getParent()) ? 0 : null;
 	}
 });

@@ -109,8 +109,9 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			switch (sField)
 			{
 				case Control_Tree_Grid.COLUMN_EXPAND:
-					var domExpandIcon	= document.createElement('img');
 					domTD.addClassName('tree');
+					
+					// Calculate Depth
 					
 					if (this._aChildren.length)
 					{
@@ -118,7 +119,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					}
 					else
 					{
-						this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/transparent-bg';
+						this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/1px-transparent.png';
 					}
 					domTD.appendChild(this._oElement.oExpandIcon.domElement);
 					break;
