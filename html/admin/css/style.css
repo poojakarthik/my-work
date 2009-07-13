@@ -1754,6 +1754,11 @@ table.tree-grid tr td.tree img
 	vertical-align	: top;
 }
 
+table.tree-grid tr td.tree span.label
+{
+	margin-left	: 0.25em;
+}
+
 table.tree-grid tr td.tree img.icon
 {
 	/*width		: 16px;*/
