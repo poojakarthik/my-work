@@ -81,6 +81,11 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		return (this.getParent() && this.getParent().isVisible() && this.getParent().isExpanded()) ? true : false;
 	},
 	
+	getDepth	: function()
+	{
+		return (this.getParent()) ? this.getParent().getDepth() + 1 : null;
+	},
+	
 	render	: function(oVisibleColumns, bForceRender)
 	{
 		// Remove all existing columns
@@ -100,11 +105,11 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			{
 				case Control_Tree_Grid.COLUMN_EXPAND:
 					var domExpandIcon	= document.createElement('img');
-					domTD.addClassName('icon');
+					domTD.addClassName('tree');
 					
 					if (this._aChildren.length)
 					{
-						domExpandIcon.src	= '../admin/img/template/' + (this.isExpanded() ? 'order_desc.png' : 'menu_open_right.png');
+						domExpandIcon.src	= '../admin/img/template/' + (this.isExpanded() ? 'tree_open.png' : 'tree_closed.png');
 						domExpandIcon.addClassName('clickable');
 						domExpandIcon.addEventListener('click', this.toggleExpanded.bind(this), false);
 					}
@@ -178,3 +183,5 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		}
 	}
 });
+
+Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE	= 16;
