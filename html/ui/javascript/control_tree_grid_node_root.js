@@ -21,6 +21,11 @@ var Control_Tree_Grid_Node_Root	= Class.create(/* extends */ Control_Tree_Grid_N
 		}
 	},
 	
+	getTreeGrid	: function()
+	{
+		return this._oParent ? this._oParent : null;
+	},
+	
 	isExpanded	: function()
 	{
 		return true;

@@ -21,11 +21,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._bSelected	= (bSelected) ? true : false;
 	},
 	
-	getParent	: function()
-	{
-		return this._oParent;
-	},
-	
 	getTreeGrid	: function()
 	{
 		return (this._oParent === null) ? null : this._oParent.getTreeGrid();
