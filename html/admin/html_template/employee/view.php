@@ -67,6 +67,8 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		
 		$this->LoadJavascript("control_tree_grid");
 		$this->LoadJavascript("control_tree_grid_node");
+		$this->LoadJavascript("control_tree_grid_node_root");
+		$this->LoadJavascript("control_tree_grid_node_data");
 		
 		$this->LoadJavascript("date_time_picker_dynamic");
 		
