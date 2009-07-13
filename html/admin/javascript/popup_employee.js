@@ -238,7 +238,10 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oProfiles.oControl.appendChild(oCSM.oControl);
 		/**/
 		delete(oCSR.oContent[Control_Tree_Grid.COLUMN_CHECK]);
-		oCSM.oControl.appendChild(new Control_Tree_Grid_Node_Data(oCSR.oContent));
+		
+		oCSM.oCSR			= {};
+		oCSM.oCSR.oControl	= new Control_Tree_Grid_Node_Data(oCSR.oContent);
+		oCSM.oControl.appendChild(oCSM.oCSR.oControl);
 		/**/
 		
 		var oEditAccountDetails											= {}
@@ -247,6 +250,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oEditAccountDetails.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 9;
 		oEditAccountDetails.oControl									= new Control_Tree_Grid_Node_Data(oCSR.oContent);
 		oCSR.oControl.appendChild(new Control_Tree_Grid_Node_Data(oEditAccountDetails.oContent));
+		oCSM.oCSR.oControl.appendChild(new Control_Tree_Grid_Node_Data(oEditAccountDetails.oContent));
 		
 		// Set Columns
 		var oProfileColumns	= {};
