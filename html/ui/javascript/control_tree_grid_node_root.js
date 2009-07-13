@@ -8,6 +8,19 @@ var Control_Tree_Grid_Node_Root	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._oElement.domElement	= document.createElement('tbody');
 	},
 	
+	attachTo	: function(oTreeGridElement)
+	{
+		if (oTreeGridElement instanceof Control_Tree_Grid)
+		{
+			// Valid Element
+			this._oParent	= oTreeGridElement;
+		}
+		else
+		{
+			throw "Can only attach Control_Tree_Grid";
+		}
+	},
+	
 	isExpanded	: function()
 	{
 		return true;
