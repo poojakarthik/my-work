@@ -1744,7 +1744,14 @@ table.tree-grid tr td.icon
 	vertical-align	: text-bottom;
 }
 
-table.tree-grid tr td.tree img
+table.tree-grid tr td.tree img.indent
+{
+	max-width	: 16px;
+	max-height	: 16px;
+	vertical-align	: middle;
+}
+
+table.tree-grid tr td.tree img.icon
 {
 	/*width		: 16px;*/
 	/*min-width	: 16px;*/
