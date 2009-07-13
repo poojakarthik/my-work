@@ -49,6 +49,59 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	setContent	: function(oContent)
 	{
 		this._oContent	= oContent ? oContent : {};
+		
+		// Build TDs
+		//--------------------------------------------------------------------//
+		// Remove all existing columns
+		this._oElement.domElement.innerHTML	= '';
+		
+		// Set the internal cache of visible columns
+		this._oVisibleColumns	= oVisibleColumns;
+		
+		// Add all visible columns to the TR
+		for (sField in this._oContent)
+		{
+			var domTD		= document.createElement('td');
+			
+			//alert("Table Field: "+sField);
+			
+			switch (sField)
+			{
+				case Control_Tree_Grid.COLUMN_LABEL:
+					// Complex label
+					domTD.addClassName('tree');
+					
+					// Add Expand icon
+					domTD.appendChild(this._oElement.oExpandIcon.domElement);
+					
+					// Add Row Icon
+					if (this._oContent[sField].sIconSource)
+					{
+						this._oElement.oRowIcon.domElement.style.display	= 'inline';
+						this._oElement.oRowIcon.domElement.src	= this._oContent[sField].sIconSource;
+					}
+					else
+					{
+						this._oElement.oRowIcon.domElement.style.display	= 'none';
+					}
+					domTD.appendChild(this._oElement.oRowIcon.domElement);
+					
+					// Add Label
+					var domLabel		= document.createElement('span');
+					domLabel.innerHTML	= this._oContent[sField].sLabel;
+					domLabel.addClassName('label');
+					domTD.appendChild(domLabel);
+					break;
+				
+				default:
+					domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
+					break;
+			}
+			
+			// Set Column TD
+			this._oContent[sField].domElement	= this._oElement.domElement.appendChild(domTD);
+		}
+		//--------------------------------------------------------------------//
 	},
 	
 	toggleSelected	: function()
@@ -75,12 +128,35 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	setExpanded	: function(bExpanded)
 	{
 		this._bExpanded	= (bExpanded) ? true : false;
-		this.render(this._oVisibleColumns, true);
+		//this.render(this._oVisibleColumns, true);
+		this._updateExpandedIcon();
 	},
 	
 	isExpanded	: function()
 	{
 		return this._bExpanded;
+	},
+	
+	_updateExpandedIcon	: function()
+	{
+		// Calculate Depth
+		var iDepth	= this.getDepth();
+		iDepth	= (iDepth === null) ? 0 : iDepth;
+		
+		// Update the icon
+		if (this._aChildren.length)
+		{
+			this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/' + (this.isExpanded() ? 'tree_open.png' : 'tree_closed.png');
+			this._oElement.oExpandIcon.domElement.addClassName('clickable');
+			this._oElement.oExpandIcon.domElement.addEventListener('click', this._oElement.oExpandIcon.onClick, false);
+		}
+		else
+		{
+			this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/1px-transparent.png';
+			this._oElement.oExpandIcon.domElement.removeClassName('clickable');
+			this._oElement.oExpandIcon.domElement.removeEventListener('click', this._oElement.oExpandIcon.onClick, false);
+		}
+		this._oElement.oExpandIcon.domElement.style.marginLeft	= (iDepth * Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE)+'px';
 	},
 	
 	isVisible	: function()
@@ -95,114 +171,16 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	
 	render	: function(oVisibleColumns, bForceRender)
 	{
-		// Remove all existing columns
-		this._oElement.domElement.innerHTML	= '';
-		
-		// Set the internal cache of visible columns
 		this._oVisibleColumns	= oVisibleColumns;
 		
-		// Add all visible columns to the TR
-		for (sField in oVisibleColumns)
+		// Show/Hide Columns
+		for (sField in this._oVisibleColumns)
 		{
-			var domTD		= document.createElement('td');
-			
-			//alert("Table Field: "+sField);
-			
-			switch (sField)
-			{
-				//case Control_Tree_Grid.COLUMN_EXPAND:
-				case Control_Tree_Grid.COLUMN_LABEL:
-					// Complex label
-					domTD.addClassName('tree');
-					
-					// Calculate Depth
-					var iDepth	= this.getDepth();
-					iDepth	= (iDepth === null) ? 0 : iDepth;
-					
-					// Add Expand icon
-					if (this._aChildren.length)
-					{
-						this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/' + (this.isExpanded() ? 'tree_open.png' : 'tree_closed.png');
-						this._oElement.oExpandIcon.domElement.addClassName('clickable');
-						this._oElement.oExpandIcon.domElement.addEventListener('click', this._oElement.oExpandIcon.onClick, false);
-					}
-					else
-					{
-						this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/1px-transparent.png';
-						this._oElement.oExpandIcon.domElement.removeClassName('clickable');
-						this._oElement.oExpandIcon.domElement.removeEventListener('click', this._oElement.oExpandIcon.onClick, false);
-					}
-					this._oElement.oExpandIcon.domElement.style.marginLeft	= (iDepth * Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE)+'px';
-					domTD.appendChild(this._oElement.oExpandIcon.domElement);
-					
-					// Add Row Icon
-					if (this._oContent[sField].sIconSource)
-					{
-						this._oElement.oRowIcon.domElement.style.display	= 'inline';
-						this._oElement.oRowIcon.domElement.src	= this._oContent[sField].sIconSource;
-					}
-					else
-					{
-						this._oElement.oRowIcon.domElement.style.display	= 'none';
-					}
-					domTD.appendChild(this._oElement.oRowIcon.domElement);
-					
-					// Add Label
-					var domLabel		= document.createElement('span');
-					domLabel.innerHTML	= this._oContent[sField].sLabel;
-					domLabel.addClassName('label');
-					domTD.appendChild(domLabel);
-					break;
-				
-				default:
-					//alert("oContent: "+this._oContent);
-					//alert("oContent["+sField+"]: "+this._oContent[sField]);
-					domTD.innerHTML	= (this._oContent && this._oContent[sField]) ? this._oContent[sField] : '';
-					//alert(domTD.innerHTML);
-			}
-			
-			this._oElement.domElement.appendChild(domTD);
+			this._oElement.domElement.appendChild((this._oContent && this._oContent[sField]) ? this._oContent[sField].domElement : document.createElement('td'));
 		}
 		
-		// Insert TR into the DOM
-		if (this.getTreeGrid())
-		{
-			if (this.isVisible())
-			{
-				//alert("Showing");
-				// Show
-				var oParent	= this.getParent();
-				
-				if (oParent.getChildBefore(this))
-				{
-					alert("Siblings Before");
-					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildBefore(this).getElement().nextSibling);
-				}
-				else if (oParent.getChildAfter(this))
-				{
-					alert("Siblings After");
-					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getChildAfter(this).getElement());
-				}
-				else
-				{
-					alert("No Siblings");
-					this.getTreeGrid().getTable().insertBefore(this.getElement(), oParent.getElement().nextSibling);
-				}
-			}
-			else
-			{
-				// Hide
-				//alert("Hiding");
-				try
-				{
-					this.getTreeGrid().getTable().removeChild(this._oElement.domElement);
-				}
-				catch (eException)
-				{
-					// Do nothing -- permitted error
-				}
-			}
-		}
+		// Show/Hide Row
+		this.getElement().style.display	= (this.isVisible()) ? 'table-row' : 'none';
 		
 		// Render the Children
 		for (var i = 0; i < this._aChildren.length; i++)
