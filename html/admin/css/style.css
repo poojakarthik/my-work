@@ -1707,6 +1707,8 @@ div.select-list-group h4
 /******************************************************************************/
 
 /********************************* TREE GRID **********************************/
+
+/*** Standard Styling ***/
 div.tree-grid
 {
 	background-color	: #fff;
@@ -1793,4 +1795,12 @@ table.tree-grid tr td.row-select img
 	-moz-user-select	: none;
 	cursor				: pointer;
 }
+
+/*** Additional Styling ***/
+table.tree-grid tr.informational td
+{
+	text-style	: italic;
+	text-color	: #555;
+}
+
 /******************************************************************************/
