@@ -207,11 +207,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Profiles Tree Grid
 		//--------------------------------------------------------------------//
 		// Create
-		/*oTabPage.oProfiles							= {};
+		oTabPage.oProfiles							= {};
 		oTabPage.oProfiles.oControl					= new Control_Tree_Grid();
 		oTabPage.oProfiles.domElement				= oTabPage.oProfiles.oControl.getElement();
 		oTabPage.domElement.appendChild(oTabPage.oProfiles.domElement);
-		/*
+		
 		// Populate
 		var oCSR										= {}
 		oCSR.oContent									= {};
@@ -234,12 +234,12 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oCSM.oControl									= new Control_Tree_Grid_Node_Data(oCSM.oContent);
 		oTabPage.oProfiles.oControl.appendChild(oCSM.oControl);
 		oCSM.oControl.appendChild(new Control_Tree_Grid_Node_Data(oCSR.oContent));
-		*/
+		
 		// Set Columns
-		/*var oProfileColumns	= {};
+		var oProfileColumns	= {};
 		oProfileColumns[Control_Tree_Grid.COLUMN_EXPAND]	= {};
 		oProfileColumns[Control_Tree_Grid.COLUMN_LABEL]		= {};
-		oTabPage.oProfiles.oControl.setColumns(oProfileColumns);*/
+		oTabPage.oProfiles.oControl.setColumns(oProfileColumns);
 		//--------------------------------------------------------------------//
 		
 		/*
