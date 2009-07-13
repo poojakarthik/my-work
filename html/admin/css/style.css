@@ -1756,12 +1756,6 @@ table.tree-grid tr td.tree img
 	vertical-align	: middle;
 }
 
-table.tree-grid tr td.tree div
-{
-	display			: inline-block;
-	vertical-align	: middle;
-}
-
 table.tree-grid tr td.tree img.clickable
 {
 	cursor	: pointer;
