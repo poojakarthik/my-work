@@ -173,7 +173,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 				//alert("Showing");
 				// Show
 				var oParent	= this.getParent();
-				if (oParent instanceof Control_Tree_Grid_Node)
+				if (oParent instanceof Control_Tree_Grid_Node_Data)
 				{
 					//alert("Normal Node");
 					// This is a normal node
