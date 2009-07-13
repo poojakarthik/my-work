@@ -216,6 +216,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	render	: function(oVisibleColumns)
 	{
 		this._oVisibleColumns	= oVisibleColumns;
+		this._updateExpandIcon();
 		
 		// Show/Hide Row
 		this.getElement().style.display	= (this.isVisible()) ? 'table-row' : 'none';
