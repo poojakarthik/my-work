@@ -1799,8 +1799,9 @@ table.tree-grid tr td.row-select img
 /*** Additional Styling ***/
 table.tree-grid tr.informational td
 {
-	text-style	: italic;
-	text-color	: #555;
+	font-style	: italic;
+	/*color	: #555;*/
+	opacity		: 0.5;
 }
 
 /******************************************************************************/
