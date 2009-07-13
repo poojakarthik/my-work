@@ -47,6 +47,18 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		}
 	},
 	
+	appendChild	: function($super, oTreeGridNode)
+	{
+		$super(oTreeGridNode);
+		this._updateExpandIcon();
+	},
+	
+	removeChild	: function($super, oTreeGridNode)
+	{
+		$super(oTreeGridNode);
+		this._updateExpandIcon();
+	},
+	
 	setContent	: function(oContent)
 	{
 		this._oContent	= {};
@@ -180,9 +192,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	render	: function(oVisibleColumns)
 	{
 		this._oVisibleColumns	= oVisibleColumns;
-		
-		// Update Expand Icon
-		this._updateExpandIcon();
 		
 		// Show/Hide Row
 		this.getElement().style.display	= (this.isVisible()) ? 'table-row' : 'none';
