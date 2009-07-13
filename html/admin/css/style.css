@@ -1722,12 +1722,12 @@ table.tree-grid
 	border-collapse	: collapse;
 	width			: 100%;
 }
-
+/*
 table.tree-grid tr:nth-child(even)
 {
 	background-color	: #eee;
 }
-
+*/
 table.tree-grid tr:hover td
 {
 	background-color	: #b5ccdf;
