@@ -1741,14 +1741,17 @@ table.tree-grid tr td
 table.tree-grid tr td.icon
 {
 	width			: 0.1em;
-	vertical-align	: text-bottom;
 }
 
 table.tree-grid tr td.tree img.indent
 {
-	max-width	: 16px;
-	max-height	: 16px;
-	vertical-align	: middle;
+	width			: 16px;
+	min-width		: 16px;
+	max-width		: 16px;
+	height			: 16px;
+	min-height		: 16px;
+	max-height		: 16px;
+	vertical-align	: top;
 }
 
 table.tree-grid tr td.tree img.icon
@@ -1760,7 +1763,7 @@ table.tree-grid tr td.tree img.icon
 	/*min-height	: 16px;*/
 	max-height	: 16px;
 	
-	vertical-align	: middle;
+	vertical-align	: top;
 }
 
 table.tree-grid tr td.tree img.clickable
