@@ -240,7 +240,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		var oEditAccountDetails											= {}
 		oEditAccountDetails.oContent									= {};
 		oEditAccountDetails.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Edit Account Details', sIconSource: '../admin/img/template/operation.png'};
-		oEditAccountDetails.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 7;
+		oEditAccountDetails.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 9;
 		oEditAccountDetails.oControl									= new Control_Tree_Grid_Node_Data(oCSR.oContent);
 		oCSR.oControl.appendChild(new Control_Tree_Grid_Node_Data(oEditAccountDetails.oContent));
 		
