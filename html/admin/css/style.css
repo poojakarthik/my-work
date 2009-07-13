@@ -1744,7 +1744,7 @@ table.tree-grid tr td.icon
 	vertical-align	: text-bottom;
 }
 
-table.tree-grid tr td.icon img
+table.tree-grid tr td.tree img
 {
 	/*width		: 16px;*/
 	/*min-width	: 16px;*/
@@ -1752,9 +1752,17 @@ table.tree-grid tr td.icon img
 	/*height		: 16px;*/
 	/*min-height	: 16px;*/
 	max-height	: 16px;
+	
+	vertical-align	: middle;
 }
 
-table.tree-grid tr td.icon img.clickable
+table.tree-grid tr td.tree div
+{
+	display			: inline-block;
+	vertical-align	: middle;
+}
+
+table.tree-grid tr td.tree img.clickable
 {
 	cursor	: pointer;
 }
