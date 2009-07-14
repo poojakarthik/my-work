@@ -55,6 +55,8 @@ var Control_Tree_Grid	= Class.create
 	
 	render	: function()
 	{
+		alert('Rendering Tree...');
+		
 		// Render Column Titles
 		// TODO
 		
