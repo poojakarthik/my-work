@@ -1797,11 +1797,16 @@ table.tree-grid tr td.row-select img
 }
 
 /*** Additional Styling ***/
-table.tree-grid tr.informational td
+table.tree-grid.permissions tr td
 {
 	font-style	: italic;
-	/*color	: #555;*/
 	opacity		: 0.5;
+}
+
+table.tree-grid.permissions tr.selectable td
+{
+	font-style	: none;
+	opacity		: 1;
 }
 
 /******************************************************************************/
