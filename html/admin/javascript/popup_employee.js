@@ -210,8 +210,9 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oProfiles							= {};
 		oTabPage.oProfiles.oControl					= new Control_Tree_Grid();
 		oTabPage.oProfiles.domElement				= oTabPage.oProfiles.oControl.getElement();
+		oTabPage.oProfiles.oControl.getTable().addClassName('permissions');
 		oTabPage.domElement.appendChild(oTabPage.oProfiles.domElement);
-		/**/
+		/*
 		// Populate
 		var oCSR										= {}
 		oCSR.oContent									= {};
@@ -220,7 +221,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oCSR.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
 		oCSR.oControl									= new Control_Tree_Grid_Node_Data(oCSR.oContent);
 		oTabPage.oProfiles.oControl.appendChild(oCSR.oControl);
-		/**/
+		/*
 		var oFlexAdmin										= {}
 		oFlexAdmin.oContent									= {};
 		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Flex Admin', sIconSource: '../admin/img/template/operation_profile.png'};
@@ -228,7 +229,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
 		oFlexAdmin.oControl									= new Control_Tree_Grid_Node_Data(oFlexAdmin.oContent);
 		oTabPage.oProfiles.oControl.appendChild(oFlexAdmin.oControl);
-		/**/
+		/*
 		var oCSM										= {}
 		oCSM.oContent									= {};
 		oCSM.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Customer Service Manager', sIconSource: '../admin/img/template/operation_profile.png'};
@@ -236,14 +237,14 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oCSM.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
 		oCSM.oControl									= new Control_Tree_Grid_Node_Data(oCSM.oContent);
 		oTabPage.oProfiles.oControl.appendChild(oCSM.oControl);
-		/**/
+		/*
 		delete(oCSR.oContent[Control_Tree_Grid.COLUMN_CHECK]);
 		
 		oCSM.oCSR			= {};
 		oCSM.oCSR.oControl	= new Control_Tree_Grid_Node_Data(oCSR.oContent);
 		oCSM.oCSR.oControl.getElement().addClassName('informational');
 		oCSM.oControl.appendChild(oCSM.oCSR.oControl);
-		/**/
+		/*
 		
 		var oEditAccountDetails											= {}
 		oEditAccountDetails.oContent									= {};
@@ -257,7 +258,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oCSM.oCSR.oEditAccountDetails.oControl	= new Control_Tree_Grid_Node_Data(oEditAccountDetails.oContent);
 		oCSM.oCSR.oEditAccountDetails.oControl.getElement().addClassName('informational');
 		oCSM.oCSR.oControl.appendChild(oCSM.oCSR.oEditAccountDetails.oControl);
-		
+		*/
 		// Set Columns
 		var oProfileColumns	= {};
 		oProfileColumns[Control_Tree_Grid.COLUMN_CHECK]		= {};
@@ -265,65 +266,56 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oProfiles.oControl.setColumns(oProfileColumns);
 		//--------------------------------------------------------------------//
 		
-		/*
-		// Available Profiles
+		// Operations Tree Grid
 		//--------------------------------------------------------------------//
 		// Create
-		oTabPage.oProfiles.oAvailableProfiles				= {};
-		oTabPage.oProfiles.oAvailableProfiles.domElement	= document.createElement('div');
-		oTabPage.oProfiles.domElement.appendChild(oTabPage.oProfiles.oAvailableProfiles.domElement);
-		
-		oTabPage.oProfiles.oAvailableProfiles.oTitle						= {};
-		oTabPage.oProfiles.oAvailableProfiles.oTitle.domElement				= document.createElement('h4');
-		oTabPage.oProfiles.oAvailableProfiles.oTitle.domElement.innerHTML	= 'Available Profiles';
-		oTabPage.oProfiles.oAvailableProfiles.domElement.appendChild(oTabPage.oProfiles.oAvailableProfiles.oTitle.domElement);
-		
-		oTabPage.oProfiles.oAvailableProfiles.oControl	= new Control_Select_List();
-		oTabPage.oProfiles.oAvailableProfiles.domElement.appendChild(oTabPage.oProfiles.oAvailableProfiles.oControl.getElement());
-		
-		// Populate
-		var oAvailableProfile								= {};
-		oAvailableProfile[Control_Select_List.COLUMN_LABEL]	= 'Customer Service Representative';
-		oAvailableProfile[Control_Select_List.COLUMN_VALUE]	= 1;
-		oTabPage.oProfiles.oAvailableProfiles.oControl.add(new Control_Select_List_Option(oAvailableProfile, true));
+		oTabPage.oOperations						= {};
+		oTabPage.oOperations.oControl				= new Control_Tree_Grid();
+		oTabPage.oOperations.domElement				= oTabPage.oOperations.oControl.getElement();
+		oTabPage.oOperations.oControl.getTable().addClassName('permissions');
+		oTabPage.domElement.appendChild(oTabPage.oOperations.domElement);
 		//--------------------------------------------------------------------//
 		
-		// Selected Profiles
-		//--------------------------------------------------------------------//
-		// Create
-		oTabPage.oProfiles.oSelectedProfiles							= {};
-		oTabPage.oProfiles.oSelectedProfiles.domElement					= document.createElement('div');
-		oTabPage.oProfiles.oSelectedProfiles.domElement.style.textAlign	= 'right';
-		oTabPage.oProfiles.domElement.appendChild(oTabPage.oProfiles.oSelectedProfiles.domElement);
-		
-		oTabPage.oProfiles.oSelectedProfiles.oTitle							= {};
-		oTabPage.oProfiles.oSelectedProfiles.oTitle.domElement				= document.createElement('h4');
-		oTabPage.oProfiles.oSelectedProfiles.oTitle.domElement.innerHTML	= 'Selected Profiles';
-		oTabPage.oProfiles.oSelectedProfiles.domElement.appendChild(oTabPage.oProfiles.oSelectedProfiles.oTitle.domElement);
-		
-		oTabPage.oProfiles.oSelectedProfiles.oControl	= new Control_Select_List();
-		oTabPage.oProfiles.oSelectedProfiles.domElement.appendChild(oTabPage.oProfiles.oSelectedProfiles.oControl.getElement());
-		
-		// Populate
-		var oSelectedProfile								= {};
-		oSelectedProfile[Control_Select_List.COLUMN_LABEL]	= 'Flex Admin';
-		oSelectedProfile[Control_Select_List.COLUMN_VALUE]	= 6;
-		oTabPage.oProfiles.oSelectedProfiles.oControl.add(new Control_Select_List_Option(oSelectedProfile, true));
-		//--------------------------------------------------------------------//
-		
-		// Configure and link Select Lists
-		var oAvailableProfilesColumns								= {}
-		oAvailableProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {sType: Control_Select_List.COLUMN_TYPE_TEXT};
-		oAvailableProfilesColumns['sendToSelected']					= {sType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oSelectedProfiles.oControl, sIconSource: '../admin/img/template/new.png'};
-		oTabPage.oProfiles.oAvailableProfiles.oControl.setColumns(oAvailableProfilesColumns);
-		
-		var oSelectedProfilesColumns								= {}
-		oSelectedProfilesColumns['sendToAvailable']					= {sType: Control_Select_List.COLUMN_TYPE_SEND, oSendDestination: oTabPage.oProfiles.oAvailableProfiles.oControl, sIconSource: '../admin/img/template/remove.png'};
-		oSelectedProfilesColumns[Control_Select_List.COLUMN_LABEL]	= {sType: Control_Select_List.COLUMN_TYPE_TEXT};
-		oTabPage.oProfiles.oSelectedProfiles.oControl.setColumns(oSelectedProfilesColumns);
-		*/
+		this._populatePermissionsTrees();
 		
 		return oTabPage;
+	},
+	
+	_populatePermissionsTrees	: function(oPermissions)
+	{
+		if (oPermissions)
+		{
+			// Populate Profiles Grid
+			//----------------------------------------------------------------//
+			for (iProfileId in oPermissions.oOperationProfiles)
+			{
+				var oNode										= {};
+				oNode.oControl									= Popup_Employee.operationProfileToTreeGridNode(oPermissions.oOperationProfiles[iProfileId]);
+				oNode.oContent									= oNodeContentoNode.getContent();
+				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
+				oNode.setContent(oNode.oContent);
+				this.arrTabs.Permissions.oProfiles.oControl.appendChild(oNode);
+			}
+			//----------------------------------------------------------------//
+			
+			// Populate Operations Grid
+			//----------------------------------------------------------------//
+			for (iOperationId in oPermissions.oOperations)
+			{
+				var oNode										= {};
+				oNode.oControl									= Popup_Employee.operationToTreeGridNode(oPermissions.oOperationProfiles[iOperationId]);
+				oNode.oContent									= oNodeContentoNode.getContent();
+				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
+				oNode.setContent(oNode.oContent);
+				this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode);
+			}
+			//----------------------------------------------------------------//
+		}
+		else
+		{
+			// Get Permissions
+			this.objEmployee.getPermissions(this._populatePermissionsTrees.bind(this), true);
+		}
 	},
 	
 	display		: function($super)
@@ -405,3 +397,72 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.domSaveButton.removeEventListener('click'			, this.arrEventHandlers.save				, false);
 	}
 });
+
+Popup_Employee.operationToTreeGridNode	= function(oOperation)
+{
+	var oContent								= {};
+	oContent[Control_Tree_Grid.COLUMN_LABEL]	= oOperation.name;
+	
+	if (oOperation.end_datetime)
+	{
+		if (oOperation.end_datetime === '9999-12-31 23:59:59')
+		{
+			oContent['end_datetime']	= '[ Indefinite ]';
+		}
+		else
+		{
+			// TODO: Date Format
+			oContent['end_datetime']	= oOperation.end_datetime;
+		}
+	}
+	
+	var oControlGridNodeData					= new Control_Grid_Node_Data(oContent, oOperation.bEmployeeHasPermission);
+	
+	return oControlGridNodeData;
+};
+
+Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
+{
+	var oContent								= {};
+	oContent[Control_Tree_Grid.COLUMN_LABEL]	= oOperationProfile.name;
+	
+	if (bSelectable)
+	{
+		oContent[Control_Tree_Grid.COLUMN_CHECK]	= {};
+	}
+	
+	if (oOperationProfile.end_datetime)
+	{
+		if (oOperationProfile.end_datetime === '9999-12-31 23:59:59')
+		{
+			oContent['end_datetime']	= '[ Indefinite ]';
+		}
+		else
+		{
+			// TODO: Date Format
+			oContent['end_datetime']	= oOperationProfile.end_datetime;
+		}
+	}
+	
+	var oControlGridNodeData					= new Control_Grid_Node_Data(oContent, oOperationProfile.bEmployeeHasPermission);
+	
+	// Sub-Profiles
+	if (oOperationProfile.oOperationProfiles)
+	{
+		for (iProfileId in oOperation.oProfiles)
+		{
+			oControlGridNodeData.appendChild(this._convertPermissionsToTreeGridNodes(oOperationProfile.oOperationProfiles[iProfileId], false));
+		}
+	}
+	
+	// Sub-Operations
+	if (oOperationProfile.oOperations)
+	{
+		for (iOperationId in oOperationProfile.oOperations)
+		{
+			oControlGridNodeData.appendChild(this._convertPermissionsToTreeGridNodes(oOperationProfile.oOperations[iOperationId], false));
+		}
+	}
+	
+	return oControlGridNodeData;
+};

@@ -151,6 +151,16 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		}
 	},
 	
+	getContent	: function()
+	{
+		var oRawContent	= {};
+		for (sField in this._oContent)
+		{
+			oRawContent[sField]	= this._oContent[sField].oData;
+		}
+		return oRawContent;
+	},
+	
 	toggleSelected	: function()
 	{
 		this.setSelected(!this.isSelected());
