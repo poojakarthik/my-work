@@ -130,10 +130,18 @@ class JSON_Handler_Employee extends JSON_Handler
 	{
 		try
 		{
-			// Get the Employee
-			$objEmployee				= Employee::getForId($iEmployeeId);
-			$aEmployeeOperations		= $oEmployee->getOperations();
-			$aEmployeeOperationProfiles	= $oEmployee->getOperationProfiles();
+			if ($iEmployeeId)
+			{
+				// Get the Employee
+				$objEmployee				= Employee::getForId($iEmployeeId);
+				$aEmployeeOperations		= $oEmployee->getOperations();
+				$aEmployeeOperationProfiles	= $oEmployee->getOperationProfiles();
+			}
+			else
+			{
+				$aEmployeeOperations		= array();
+				$aEmployeeOperationProfiles	= array();
+			}
 			
 			$aOperations		= Operation::getAll();
 			$aOperationProfiles	= Operation_Profile::getAll();
