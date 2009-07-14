@@ -304,6 +304,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				oNode.oControl.setContent(oNode.oContent);
 				this.arrTabs.Permissions.oProfiles.oControl.appendChild(oNode.oControl);
 			}
+			this.arrTabs.Permissions.oProfiles.oControl.render();
 			//----------------------------------------------------------------//
 			
 			// Populate Operations Grid
@@ -318,6 +319,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				oNode.oControl.setContent(oNode.oContent);
 				this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode.oControl);
 			}
+			this.arrTabs.Permissions.oOperations.oControl.render();
 			//----------------------------------------------------------------//
 		}
 		else
