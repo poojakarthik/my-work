@@ -303,7 +303,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			for (iOperationId in oPermissions.oOperations)
 			{
 				var oNode										= {};
-				oNode.oControl									= Popup_Employee.operationToTreeGridNode(oPermissions.oOperationProfiles[iOperationId]);
+				oNode.oControl									= Popup_Employee.operationToTreeGridNode(oPermissions.oOperations[iOperationId]);
 				oNode.oContent									= oNode.oControl.getContent();
 				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
 				oNode.oControl.setContent(oNode.oContent);
