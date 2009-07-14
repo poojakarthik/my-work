@@ -407,6 +407,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 
 Popup_Employee.operationToTreeGridNode	= function(oOperation)
 {
+	alert("Adding Operation '"+oOperation.name+"'");
+	
 	var oContent								= {};
 	oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: oOperation.name, sIconSource: '../admin/img/template/operation.png'};
 	oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperation.id;
@@ -418,6 +420,8 @@ Popup_Employee.operationToTreeGridNode	= function(oOperation)
 
 Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 {
+	alert("Adding Operation Profile '"+oOperationProfile.name+"'");
+	
 	var oContent								= {};
 	oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: oOperationProfile.name, sIconSource: '../admin/img/template/operation_profile.png'};
 	oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperationProfile.id;
