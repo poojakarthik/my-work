@@ -158,7 +158,7 @@ class JSON_Handler_Employee extends JSON_Handler
 			$aPermissionsTree['oOperationProfiles']	= array();
 			foreach ($aOperationProfiles as $iOperationProfileId=>$oOperationProfile)
 			{
-				$aPermissionsTree['oOperationProfiles'][$iOperationProfileId]							= self::_buildOperationTreeNode($oOperationProfile);
+				$aPermissionsTree['oOperationProfiles'][$iOperationProfileId]							= self::_buildOperationProfileTreeNode($oOperationProfile);
 				$aPermissionsTree['oOperationProfiles'][$iOperationProfileId]->bEmployeeHasPermission	= array_key_exists($iOperationProfileId, $aEmployeeOperationProfiles);
 			}
 			
