@@ -1805,7 +1805,7 @@ table.tree-grid.permissions tr td
 
 table.tree-grid.permissions tr.selectable td
 {
-	font-style	: none;
+	font-style	: normal;
 	opacity		: 1;
 }
 
