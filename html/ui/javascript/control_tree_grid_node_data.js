@@ -87,6 +87,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	{
 		this._oContent	= {};
 		
+		alert("oContent: "+oContent);
+		
 		// Build TDs
 		//--------------------------------------------------------------------//
 		// Add all visible columns to the TR
