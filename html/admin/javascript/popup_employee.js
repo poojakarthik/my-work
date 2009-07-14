@@ -294,7 +294,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				oNode.oContent									= oNode.oControl.getContent();
 				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
 				oNode.oControl.setContent(oNode.oContent);
-				this.arrTabs.Permissions.oProfiles.oControl.appendChild(oNode);
+				this.arrTabs.Permissions.oProfiles.oControl.appendChild(oNode.oControl);
 			}
 			//----------------------------------------------------------------//
 			
@@ -307,7 +307,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				oNode.oContent									= oNode.oControl.getContent();
 				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
 				oNode.oControl.setContent(oNode.oContent);
-				this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode);
+				this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode.oControl);
 			}
 			//----------------------------------------------------------------//
 		}
