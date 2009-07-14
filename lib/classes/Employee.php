@@ -206,9 +206,6 @@ class Employee
 	
 	public function getPermittedOperations()
 	{
-		static	$selOperationProfileIds;
-		static	$selOperationIds;
-		
 		if (!isset($this->_arrOperations))
 		{
 			// Calculate a list of all atomic Operations this profile includes
@@ -216,7 +213,7 @@ class Employee
 			$this->_arrOperations	= array();
 			
 			// Get Sub-Profiles
-			$selOperationProfileIds	= ($selOperationProfileIds) ? $selOperationProfileIds : new StatementSelect("employee_operation_profile", "operation_profile_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime");
+			$selOperationProfileIds	= new StatementSelect("employee_operation_profile", "operation_profile_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = <Id>");
 			if ($selOperationProfileIds->Execute($this->toArray()) === false)
 			{
 				throw new Exception($selOperationProfileIds->Error());
@@ -228,7 +225,7 @@ class Employee
 			}
 			
 			// Get Direct Operations
-			$selOperationIds	= ($selOperationIds) ? $selOperationIds : new StatementSelect("employee_operation", "operation_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime");
+			$selOperationIds	= new StatementSelect("employee_operation", "operation_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime employee_id = <Id>");
 			if ($selOperationIds->Execute($this->toArray()) === false)
 			{
 				throw new Exception($selOperationIds->Error());
@@ -240,6 +237,47 @@ class Employee
 			}
 		}
 		return $this->_arrOperations;
+	}
+	
+	public function getOperations()
+	{
+		// Calculate a list of all atomic Operations this profile includes
+		$strEffectiveDatetime	= Data_Source_Time::currentTimestamp();
+		$arrOperations			= array();
+		
+		// Get Operations
+		$selOperationIds	= new StatementSelect("employee_operation", "operation_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime");
+		if ($selOperationIds->Execute($this->toArray()) === false)
+		{
+			throw new Exception($selOperationIds->Error());
+		}
+		while ($arrOperationId = $selOperationIds->Fetch())
+		{
+			// Add this Operation to the list
+			$arrOperations[$arrOperationId['operation_id']]	= Operation::getForId($arrOperationId['operation_id']);
+		}
+		
+		return $arrOperations;
+	}
+	
+	public function getOperationProfiles()
+	{
+		// Calculate a list of all atomic Operations this profile includes
+		$strEffectiveDatetime	= Data_Source_Time::currentTimestamp();
+		$arrOperationProfiles	= array();
+		
+		// Get Profiles
+		$selOperationProfileIds	= new StatementSelect("employee_operation_profile", "operation_profile_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime");
+		if ($selOperationProfileIds->Execute($this->toArray()) === false)
+		{
+			throw new Exception($selOperationProfileIds->Error());
+		}
+		while ($arrOperationProfileId = $selOperationProfileIds->Fetch())
+		{
+			$arrOperationProfiles[$arrOperationProfileId['operation_profile_id']]	= Operation_Profile::getForId($arrOperationProfileId['operation_profile_id']);
+		}
+		
+		return $arrOperationProfiles;
 	}
 	
 	//------------------------------------------------------------------------//

@@ -47,6 +47,46 @@ class Operation_Profile extends ORM_Cached
 		return $this->_arrOperations;
 	}
 	
+	public function getChildOperations()
+	{
+		// Calculate a list of all atomic Operations this profile includes
+		$arrOperations	= array();
+		
+		// Get Direct Operations
+		$selOperationIds	= self::_preparedStatement('selOperationIds');
+		if ($selOperationIds->Execute($this->toArray()) === false)
+		{
+			throw new Exception($selOperationIds->Error());
+		}
+		while ($arrOperationId = $selOperationIds->Fetch())
+		{
+			// Add this Operation to the list
+			$arrOperations[$arrOperationId['operation_id']]	= Operation::getForId($arrOperationId['operation_id']);
+		}
+		
+		return $arrOperations;
+	}
+	
+	public function getChildOperationProfiles()
+	{
+		// Calculate a list of all atomic Operations this profile includes
+		$arrOperationProfiles	= array();
+		
+		// Get Sub-Profiles
+		$selSubProfileIds	= self::_preparedStatement('selSubProfileIds');
+		if ($selSubProfileIds->Execute($this->toArray()) === false)
+		{
+			throw new Exception($selSubProfileIds->Error());
+		}
+		while ($arrSubProfileId = $selSubProfileIds->Fetch())
+		{
+			// Get the Operations for this Sub-Profile & merge with current list
+			$arrOperationProfiles[$arrSubProfileId['child_operation_profile_id']]	= Operation_Profile::getForId($arrSubProfileId['child_operation_profile_id']);
+		}
+		
+		return $arrOperationProfiles;
+	}
+	
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
