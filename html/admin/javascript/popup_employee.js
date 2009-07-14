@@ -416,7 +416,7 @@ Popup_Employee.operationToTreeGridNode	= function(oOperation)
 		}
 	}
 	
-	var oControlGridNodeData					= new Control_Grid_Node_Data(oContent);
+	var oControlGridNodeData					= new Control_Tree_Grid_Node_Data(oContent);
 	
 	return oControlGridNodeData;
 };
@@ -439,7 +439,7 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 		}
 	}
 	
-	var oControlGridNodeData					= new Control_Grid_Node_Data(oContent);
+	var oControlGridNodeData					= new Control_Tree_Grid_Node_Data(oContent);
 	
 	// Sub-Profiles
 	if (oOperationProfile.oOperationProfiles)
