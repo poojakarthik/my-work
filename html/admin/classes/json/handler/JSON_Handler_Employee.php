@@ -125,5 +125,75 @@ class JSON_Handler_Employee extends JSON_Handler
 			return $arrCount['employee_count'];
 		}
 	}
+	
+	public function getPermissions($iEmployeeId, $bGetForEditing=false)
+	{
+		try
+		{
+			// Get the Employee
+			$objEmployee				= Employee::getForId($iEmployeeId);
+			$aEmployeeOperations		= $oEmployee->getOperations();
+			$aEmployeeOperationProfiles	= $oEmployee->getOperationProfiles();
+			
+			$aOperations		= Operation::getAll();
+			$aOperationProfiles	= Operation_Profile::getAll();
+			
+			$aPermissionsTree	= array();
+			
+			$aPermissionsTree['oOperations']	= array();
+			foreach ($aOperations as $iOperationId=>$oOperation)
+			{
+				$aPermissionsTree['oOperations'][$iOperationId]							= $oOperation->toStdClass();
+				$aPermissionsTree['oOperations'][$iOperationId]->bEmployeeHasPermission	= array_key_exists($iOperationId, $aEmployeeOperations);
+			}
+			
+			$aPermissionsTree['oOperationProfiles']	= array();
+			foreach ($aOperationProfiles as $iOperationProfileId=>$oOperationProfile)
+			{
+				$aPermissionsTree['oOperationProfiles'][$iOperationProfileId]							= self::_buildOperationTreeNode($oOperationProfile);
+				$aPermissionsTree['oOperationProfiles'][$iOperationProfileId]->bEmployeeHasPermission	= array_key_exists($iOperationProfileId, $aEmployeeOperationProfiles);
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return array(
+							"Success"			=> true,
+							"oPermissions"		=> $aPermissionsTree,
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+		catch (Exception $e)
+		{
+			// Send an Email to Devs
+			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			
+			return array(
+							"Success"	=> false,
+							"Message"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+	}
+	
+	private static function _buildOperationProfileTreeNode(Operation_Profile $oOperationProfile)
+	{
+		// Prepare this node
+		$oNode	= $oOperationProfile->toStdClass();
+		
+		$oNode->oOperations	= array();
+		$aChildOperations	= $oOperationProfile->getChildOperations();
+		foreach ($aChildOperations as $iOperationId=>$oOperation)
+		{
+			$oNode->oOperations[$iOperationId]		= $oOperation->toStdClass();
+		}
+		
+		$oNode->oOperationProfiles	= array();
+		$aChildOperationProfiles	= $oOperationProfile->getChildOperationProfiles();
+		foreach ($aChildOperationProfiles as $iOperationProfileId=>$oOperationProfile)
+		{
+			$oNode->oOperationProfiles[$iOperationProfileId]	= self::_buildOperationTreeNode($oOperationProfile);
+		}
+		
+		return $oNode;
+	}
 }
 ?>
