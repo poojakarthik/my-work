@@ -91,6 +91,14 @@ class Flex_Pdf_Style extends Zend_Pdf_Style
 		foreach ($style as $stylePart)
 		{
 			$styleParts = explode(":", $stylePart);
+			
+			/* This should really be uncommented, but I don't want to break any existing templates =\
+			if ($stylePart && count($styleParts) < 2)
+			{
+				throw new Exception("Invalid Style Definition '{$stylePart}' in node style '{$styleAttribute}'");
+			}
+			*/
+			
 			switch (strtoupper(trim($styleParts[0])))
 			{
 				case "MEDIA":
