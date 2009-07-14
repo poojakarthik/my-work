@@ -294,6 +294,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			// Populate Profiles Grid
 			//----------------------------------------------------------------//
+			oPermissions.oOperationProfiles	= jQuery.json.arrayAsObject(oPermissions.oOperationProfiles);
 			for (iProfileId in oPermissions.oOperationProfiles)
 			{
 				var oNode										= {};
@@ -307,6 +308,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			
 			// Populate Operations Grid
 			//----------------------------------------------------------------//
+			oPermissions.oOperations	= jQuery.json.arrayAsObject(oPermissions.oOperations);
 			for (iOperationId in oPermissions.oOperations)
 			{
 				var oNode										= {};
@@ -431,6 +433,7 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 	// Sub-Profiles
 	if (oOperationProfile.oOperationProfiles)
 	{
+		oOperationProfile.oOperationProfiles	= jQuery.json.arrayAsObject(oOperationProfile.oOperationProfiles);
 		for (iProfileId in oOperation.oProfiles)
 		{
 			oControlGridNodeData.appendChild(this._convertPermissionsToTreeGridNodes(oOperationProfile.oOperationProfiles[iProfileId], false));
@@ -440,6 +443,7 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 	// Sub-Operations
 	if (oOperationProfile.oOperations)
 	{
+		oOperationProfile.oOperations	= jQuery.json.arrayAsObject(oOperationProfile.oOperations);
 		for (iOperationId in oOperationProfile.oOperations)
 		{
 			oControlGridNodeData.appendChild(this._convertPermissionsToTreeGridNodes(oOperationProfile.oOperations[iOperationId], false));

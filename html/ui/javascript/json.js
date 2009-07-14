@@ -378,5 +378,25 @@ jQuery.json = {
 			$Alert(objResponse);
 			return false;
 		}
+	},
+	
+	arrayAsObject	: function(mArray)
+	{
+		var oReturn;
+		if (Object.isArray(mArray))
+		{
+			// Array -- convert to an Object
+			for (var i = 0, j = objResponse.arrRecords.length; i < j; i++)
+			{
+				oReturn[i]	= objResponse.arrRecords[i];
+			}
+		}
+		else
+		{
+			// Assume it was already an Object
+			oReturn	= mArray;
+		}
+		
+		return oReturn;
 	}
 };
