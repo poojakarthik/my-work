@@ -259,11 +259,12 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oCSM.oCSR.oEditAccountDetails.oControl.getElement().addClassName('informational');
 		oCSM.oCSR.oControl.appendChild(oCSM.oCSR.oEditAccountDetails.oControl);
 		*/
+		
 		// Set Columns
-		var oProfileColumns	= {};
-		oProfileColumns[Control_Tree_Grid.COLUMN_CHECK]		= {};
-		oProfileColumns[Control_Tree_Grid.COLUMN_LABEL]		= {};
-		oTabPage.oProfiles.oControl.setColumns(oProfileColumns);
+		oTabPage.oProfiles.oColumns									= {};
+		oTabPage.oProfiles.oColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
+		oTabPage.oProfiles.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
+		oTabPage.oProfiles.oControl.setColumns(oTabPage.oProfiles.oColumns);
 		//--------------------------------------------------------------------//
 		
 		// Operations Tree Grid
@@ -274,6 +275,12 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oOperations.domElement				= oTabPage.oOperations.oControl.getElement();
 		oTabPage.oOperations.oControl.getTable().addClassName('permissions');
 		oTabPage.domElement.appendChild(oTabPage.oOperations.domElement);
+		
+		// Set Columns
+		oTabPage.oOperations.oColumns									= {};
+		oTabPage.oOperations.oColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
+		oTabPage.oOperations.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
+		oTabPage.oProfiles.oControl.setColumns(oTabPage.oOperations.oColumns);
 		//--------------------------------------------------------------------//
 		
 		this._populatePermissionsTrees();
