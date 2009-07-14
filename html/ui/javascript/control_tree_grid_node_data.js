@@ -131,6 +131,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					domTD.addClassName('row-select');
 					domTD.appendChild(this._oElement.oCheckBox.domElement);
 					domTD.appendChild(this._oElement.oSelectIcon.domElement);
+					
+					this.getElement().addClassName('selectable');
 					break;
 				
 				default:
