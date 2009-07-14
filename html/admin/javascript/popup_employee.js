@@ -426,11 +426,6 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 	var oContent								= {};
 	oContent[Control_Tree_Grid.COLUMN_LABEL]	= oOperationProfile.name;
 	
-	if (bSelectable)
-	{
-		oContent[Control_Tree_Grid.COLUMN_CHECK]	= {};
-	}
-	
 	if (oOperationProfile.end_datetime)
 	{
 		if (oOperationProfile.end_datetime === '9999-12-31 23:59:59')
