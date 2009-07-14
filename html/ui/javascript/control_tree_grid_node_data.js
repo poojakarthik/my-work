@@ -50,19 +50,22 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			this._oParent	= oTreeGridElement;
 			
 			// Attach this and any children to the new parent
-			if (this._oParent.getLastChild())
+			if (this.getRootNode())
 			{
-				this.getRootNode().getElement().insertBefore(this.getElement(), this._oParent.getLastChild().getElement().nextSibling);
-			}
-			else
-			{
-				this.getRootNode().getElement().insertBefore(this.getElement(), this._oParent.getElement().nextSibling);
-			}
-			
-			// Reattach children
-			for (var i = 0; i < this._aChildren.length; i++)
-			{
-				this._aChildren[i].attachTo(this);
+				if (this._oParent.getLastChild())
+				{
+					this.getRootNode().getElement().insertBefore(this.getElement(), this._oParent.getLastChild().getElement().nextSibling);
+				}
+				else
+				{
+					this.getRootNode().getElement().insertBefore(this.getElement(), this._oParent.getElement().nextSibling);
+				}
+				
+				// Reattach children
+				for (var i = 0; i < this._aChildren.length; i++)
+				{
+					this._aChildren[i].attachTo(this);
+				}
 			}
 		}
 		else
