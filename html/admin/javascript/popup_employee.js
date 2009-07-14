@@ -436,7 +436,7 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 	if (oOperationProfile.oOperationProfiles)
 	{
 		oOperationProfile.oOperationProfiles	= jQuery.json.arrayAsObject(oOperationProfile.oOperationProfiles);
-		for (iProfileId in oOperationProfile.oProfiles)
+		for (iProfileId in oOperationProfile.oOperationProfiles)
 		{
 			oControlGridNodeData.appendChild(Popup_Employee.operationProfileToTreeGridNode(oOperationProfile.oOperationProfiles[iProfileId]));
 		}
