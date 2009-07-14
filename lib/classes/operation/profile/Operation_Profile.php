@@ -169,7 +169,7 @@ class Operation_Profile extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("operation_profile_children", "*", "parent_operation_profile_id = <id>");
 					break;
 				case 'selOperationIds':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("operation_profile_operation", "*", "operation_profile_id = <id> AND status_id = ".STATUS_ACTIVE);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("operation_profile_operation", "*", "operation_profile_id = <id>");
 					break;
 				
 				// INSERTS
