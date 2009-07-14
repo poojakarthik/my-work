@@ -30,6 +30,25 @@ var Employee	= Class.create
 		
 	},
 	
+	getPermissions	: function(fCallback, bGetForEditing, oResponse)
+	{
+		if (oResponse)
+		{
+			// Process JSON Response
+			fCallback(oResponse.oPermissions);
+		}
+		else
+		{
+			// Make JSON Request
+			bGetForEditing	= bGetForEditing ? true : false;
+			
+			var iEmployeeId	= (this.objProperties.Id === undefined) ? null : this.objProperties.Id;
+			
+			var fncJSON	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this.getPermissions.bind(this, fCallback, bGetForEditing)), null, 'Employee', 'getPermissions');
+			fncJSON(iEmployeeId, bGetForEditing);
+		}
+	},
+	
 	getControls	: function()
 	{
 		if (!this.objPropertyControls)
