@@ -441,6 +441,10 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 			oControlGridNodeData.appendChild(Popup_Employee.operationProfileToTreeGridNode(oOperationProfile.oOperationProfiles[iProfileId]));
 		}
 	}
+	else
+	{
+		alert(oOperationProfile.name + ' has no sub-Profiles');
+	}
 	
 	// Sub-Operations
 	if (oOperationProfile.oOperations)
@@ -450,6 +454,10 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 		{
 			oControlGridNodeData.appendChild(Popup_Employee.operationToTreeGridNode(oOperationProfile.oOperations[iOperationId]));
 		}
+	}
+	else
+	{
+		alert(oOperationProfile.name + ' has no sub-Operations');
 	}
 	
 	return oControlGridNodeData;
