@@ -198,7 +198,7 @@ class JSON_Handler_Employee extends JSON_Handler
 		$aChildOperationProfiles	= $oOperationProfile->getChildOperationProfiles();
 		foreach ($aChildOperationProfiles as $iOperationProfileId=>$oOperationProfile)
 		{
-			$oNode->oOperationProfiles[$iOperationProfileId]	= self::_buildOperationTreeNode($oOperationProfile);
+			$oNode->oOperationProfiles[$iOperationProfileId]	= self::_buildOperationProfileTreeNode($oOperationProfile);
 		}
 		
 		return $oNode;
