@@ -57,7 +57,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 				{
 					alert(sLabel + " has siblings!");
 					alert(this._oParent.getLastChild()._oContent['label'].oData.sLabel + " is the last sibling");
-					this.getRootNode().getElement().insertBefore(this.getElement(), this._oParent.getLastChild().getElement().nextSibling);
+					//this.getRootNode().getElement().insertBefore(this.getElement(), this._oParent.getLastChild().getElement().nextSibling);
+					this.getRootNode().getElement().insertBefore(this.getElement(), this._oParent.getLastElement().nextSibling);
 				}
 				else
 				{

@@ -21,6 +21,11 @@ var Control_Tree_Grid_Node	= Class.create(
 		return this._aChildren[this._aChildren.length-1];
 	},
 	
+	getLastElement	: function()
+	{
+		return (this._aChildren.length) ? this._aChildren[this._aChildren.length-1].getLastElement() : this.getElement();
+	},
+	
 	getChildAfter	: function(oChild)
 	{
 		var iIndex	= this._aChildren.indexOf(oChild);
