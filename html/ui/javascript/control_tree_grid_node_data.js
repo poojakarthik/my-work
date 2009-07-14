@@ -87,8 +87,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	{
 		this._oContent	= {};
 		
-		alert("oContent: "+oContent);
-		
 		// Build TDs
 		//--------------------------------------------------------------------//
 		// Add all visible columns to the TR
@@ -255,6 +253,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		for (sField in this._oVisibleColumns)
 		{
 			this._oElement.domElement.appendChild((this._oContent && this._oContent[sField]) ? this._oContent[sField].domElement : document.createElement('td'));
+			
+			alert("Field '"+sField+"' does "+((this._oContent && this._oContent[sField]) ? '' : 'not ')+"exist");
 		}
 		
 		// Render the Children
