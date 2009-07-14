@@ -128,7 +128,7 @@ var Control_Tree_Grid_Node	= Class.create(
 		throw "Virtual Method Control_Tree_Grid_Node::isVisible() cannot be invoked directly!";
 	},
 	
-	render	: function(oVisibleColumns, bForceRender)
+	render	: function(oVisibleColumns)
 	{
 		// Set the internal cache of visible columns
 		this._oVisibleColumns	= oVisibleColumns;
