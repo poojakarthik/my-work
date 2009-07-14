@@ -254,7 +254,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		{
 			this._oElement.domElement.appendChild((this._oContent && this._oContent[sField]) ? this._oContent[sField].domElement : document.createElement('td'));
 			
-			alert("Field '"+sField+"' does "+((this._oContent && this._oContent[sField]) ? '' : 'not ')+"exist");
+			//alert("Field '"+sField+"' does "+((this._oContent && this._oContent[sField]) ? '' : 'not ')+"exist");
 		}
 		
 		// Render the Children

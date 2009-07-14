@@ -280,7 +280,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oOperations.oColumns									= {};
 		oTabPage.oOperations.oColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
 		oTabPage.oOperations.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
-		oTabPage.oProfiles.oControl.setColumns(oTabPage.oOperations.oColumns);
+		oTabPage.oOperations.oControl.setColumns(oTabPage.oOperations.oColumns);
 		//--------------------------------------------------------------------//
 		
 		this._populatePermissionsTrees();
