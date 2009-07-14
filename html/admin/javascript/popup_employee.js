@@ -436,7 +436,7 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 		oOperationProfile.oOperationProfiles	= jQuery.json.arrayAsObject(oOperationProfile.oOperationProfiles);
 		for (iProfileId in oOperation.oProfiles)
 		{
-			oControlGridNodeData.appendChild(this._convertPermissionsToTreeGridNodes(oOperationProfile.oOperationProfiles[iProfileId], false));
+			oControlGridNodeData.appendChild(Popup_Employee.operationProfileToTreeGridNode(oOperationProfile.oOperationProfiles[iProfileId]));
 		}
 	}
 	
@@ -446,7 +446,7 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 		oOperationProfile.oOperations	= jQuery.json.arrayAsObject(oOperationProfile.oOperations);
 		for (iOperationId in oOperationProfile.oOperations)
 		{
-			oControlGridNodeData.appendChild(this._convertPermissionsToTreeGridNodes(oOperationProfile.oOperations[iOperationId], false));
+			oControlGridNodeData.appendChild(Popup_Employee.operationToTreeGridNode(oOperationProfile.oOperations[iOperationId]));
 		}
 	}
 	
