@@ -408,20 +408,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 Popup_Employee.operationToTreeGridNode	= function(oOperation)
 {
 	var oContent								= {};
-	oContent[Control_Tree_Grid.COLUMN_LABEL]	= oOperation.name;
-	
-	if (oOperation.end_datetime)
-	{
-		if (oOperation.end_datetime === '9999-12-31 23:59:59')
-		{
-			oContent['end_datetime']	= '[ Indefinite ]';
-		}
-		else
-		{
-			// TODO: Date Format
-			oContent['end_datetime']	= oOperation.end_datetime;
-		}
-	}
+	oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: oOperation.name, sIconSource: '../admin/img/template/operation.png'};
+	oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperation.id;
 	
 	var oControlGridNodeData					= new Control_Tree_Grid_Node_Data(oContent);
 	
@@ -431,20 +419,8 @@ Popup_Employee.operationToTreeGridNode	= function(oOperation)
 Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 {
 	var oContent								= {};
-	oContent[Control_Tree_Grid.COLUMN_LABEL]	= oOperationProfile.name;
-	
-	if (oOperationProfile.end_datetime)
-	{
-		if (oOperationProfile.end_datetime === '9999-12-31 23:59:59')
-		{
-			oContent['end_datetime']	= '[ Indefinite ]';
-		}
-		else
-		{
-			// TODO: Date Format
-			oContent['end_datetime']	= oOperationProfile.end_datetime;
-		}
-	}
+	oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: oOperationProfile.name, sIconSource: '../admin/img/template/operation_profile.png'};
+	oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperationProfile.id;
 	
 	var oControlGridNodeData					= new Control_Tree_Grid_Node_Data(oContent);
 	
