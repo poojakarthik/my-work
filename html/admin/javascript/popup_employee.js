@@ -416,7 +416,7 @@ Popup_Employee.operationToTreeGridNode	= function(oOperation)
 		}
 	}
 	
-	var oControlGridNodeData					= new Control_Grid_Node_Data(oContent, oOperation.bEmployeeHasPermission);
+	var oControlGridNodeData					= new Control_Grid_Node_Data(oContent);
 	
 	return oControlGridNodeData;
 };
@@ -444,7 +444,7 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 		}
 	}
 	
-	var oControlGridNodeData					= new Control_Grid_Node_Data(oContent, oOperationProfile.bEmployeeHasPermission);
+	var oControlGridNodeData					= new Control_Grid_Node_Data(oContent);
 	
 	// Sub-Profiles
 	if (oOperationProfile.oOperationProfiles)
