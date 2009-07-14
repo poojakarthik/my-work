@@ -386,9 +386,9 @@ jQuery.json = {
 		if (Object.isArray(mArray))
 		{
 			// Array -- convert to an Object
-			for (var i = 0, j = objResponse.arrRecords.length; i < j; i++)
+			for (var i = 0, j = mArray.length; i < j; i++)
 			{
-				oReturn[i]	= objResponse.arrRecords[i];
+				oReturn[i]	= mArray[i];
 			}
 		}
 		else
