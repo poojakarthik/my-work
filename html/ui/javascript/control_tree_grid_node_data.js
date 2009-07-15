@@ -120,9 +120,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			switch (sField)
 			{
 				case Control_Tree_Grid.COLUMN_LABEL:
-					//alert("Label: "+oContent[sField].sLabel);
-					
-					// Complex label
 					domTD.addClassName('tree');
 					
 					// Add Expand icon
@@ -133,7 +130,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					
 					// Add Label
 					var domLabel		= document.createElement('span');
-					domLabel.innerHTML	= oContent[sField].sLabel;
+					domLabel.innerHTML	= oContent[sField];
 					domLabel.addClassName('label');
 					domTD.appendChild(domLabel);
 					break;
