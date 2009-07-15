@@ -126,7 +126,7 @@ class JSON_Handler_Employee extends JSON_Handler
 		}
 	}
 	
-	public function getPermissions($iEmployeeId, $bGetForEditing=false)
+	public function getPermissionTrees($iEmployeeId, $bGetForEditing=false)
 	{
 		try
 		{
