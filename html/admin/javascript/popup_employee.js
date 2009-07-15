@@ -265,6 +265,9 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oProfiles.oColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
 		oTabPage.oProfiles.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
 		oTabPage.oProfiles.oControl.setColumns(oTabPage.oProfiles.oColumns);
+		
+		// Set DataTypes
+		oTabPage.oProfiles.oControl.addDataType(Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sName, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sDescription, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sIconSource);
 		//--------------------------------------------------------------------//
 		
 		// Operations Tree Grid
@@ -281,6 +284,9 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oOperations.oColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
 		oTabPage.oOperations.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
 		oTabPage.oOperations.oControl.setColumns(oTabPage.oOperations.oColumns);
+		
+		// Set DataTypes
+		oTabPage.oOperations.oControl.addDataType(Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sDescription, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sIconSource);
 		//--------------------------------------------------------------------//
 		
 		this._populatePermissionsTrees();
@@ -462,3 +468,13 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 	
 	return oControlGridNodeData;
 };
+
+Popup_Employee.TREE_GRID_DATATYPE_OPERATION					= {};
+Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName			= 'operation';
+Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sDescription	= 'Operation';
+Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sIconSource		= '../admin/img/template/operation.png';
+
+Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE					= {};
+Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sName			= 'operation_profile';
+Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sDescription	= 'Operation Profile';
+Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sIconSource		= '../admin/img/template/operation_profile.png';

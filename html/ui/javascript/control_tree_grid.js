@@ -55,10 +55,11 @@ var Control_Tree_Grid	= Class.create
 		this.render();
 	},
 	
-	addDataType	: function(sName, sIconSource, fOnSelectCallback)
+	addDataType	: function(sName, sDescription, sIconSource, fOnSelectCallback)
 	{
 		this.oDataTypes[sName]						= {};
 		this.oDataTypes[sName].sName				= sName;
+		this.oDataTypes[sName].sDescription			= sDescription ? sDescription : sName;
 		this.oDataTypes[sName].sIconSource			= sIconSource ? sIconSource : null;
 		this.oDataTypes[sName].fOnSelectCallback	= fOnSelectCallback ? fOnSelectCallback : null;
 	},

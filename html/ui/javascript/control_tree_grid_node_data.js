@@ -27,6 +27,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		// Properties
 		this.setContent(oContent);
 		
+		this._sDataType	= sDataType ? sDataType : null;
+		
 		// Defaults
 		this.setExpanded(false);
 		this.setSelected(false);
@@ -48,6 +50,9 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		{
 			// Valid Element
 			this._oParent	= oTreeGridElement;
+			
+			// Update the Node Icon
+			this._updateNodeIcon();
 			
 			// Attach this and any children to the new parent
 			if (this.getRootNode())
@@ -91,6 +96,16 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._updateExpandIcon();
 	},
 	
+	setDataType	: function(sDataType)
+	{
+		this._sDataType	= sDataType ? sDataType : null;
+	},
+	
+	getDataType	: function()
+	{
+		return this._sDataType;
+	},
+	
 	setContent	: function(oContent)
 	{
 		this._oContent	= {};
@@ -114,15 +129,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					domTD.appendChild(this._oElement.oExpandIcon.domElement);
 					
 					// Add Row Icon
-					if (oContent[sField].sIconSource)
-					{
-						this._oElement.oRowIcon.domElement.style.display	= 'inline';
-						this._oElement.oRowIcon.domElement.src				= oContent[sField].sIconSource;
-					}
-					else
-					{
-						this._oElement.oRowIcon.domElement.style.display	= 'none';
-					}
 					domTD.appendChild(this._oElement.oRowIcon.domElement);
 					
 					// Add Label
@@ -238,6 +244,19 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 			this._oElement.oExpandIcon.domElement.removeEventListener('click', this._oElement.oExpandIcon.onClick, false);
 		}
 		this._oElement.oExpandIcon.domElement.style.marginLeft	= (iDepth * Control_Tree_Grid_Node_Data.TREE_DEPTH_SCALE)+'px';
+	},
+	
+	_updateNodeIcon	: function()
+	{
+		if (this.getDataType() && this.getTreeGrid() && this.getTreeGrid().aDataTypes[this.getDataType()] && this.getTreeGrid().aDataTypes[this.getDataType()].sIconSource)
+		{
+			this._oElement.oRowIcon.domElement.style.display	= 'inline';
+			this._oElement.oRowIcon.domElement.src				= this.getTreeGrid().aDataTypes[this.getDataType()].sIconSource;
+		}
+		else
+		{
+			this._oElement.oRowIcon.domElement.style.display	= 'none';
+		}
 	},
 	
 	isVisible	: function()
