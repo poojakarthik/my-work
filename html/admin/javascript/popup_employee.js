@@ -411,7 +411,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 
 Popup_Employee.operationToTreeGridNode	= function(oOperation)
 {
-	alert("Adding Operation '"+oOperation.name+"'");
+	//alert("Adding Operation '"+oOperation.name+"'");
 	
 	var oContent								= {};
 	oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: oOperation.name, sIconSource: '../admin/img/template/operation.png'};
@@ -424,7 +424,7 @@ Popup_Employee.operationToTreeGridNode	= function(oOperation)
 
 Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 {
-	alert("Adding Operation Profile '"+oOperationProfile.name+"'");
+	//alert("Adding Operation Profile '"+oOperationProfile.name+"'");
 	
 	var oContent								= {};
 	oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: oOperationProfile.name, sIconSource: '../admin/img/template/operation_profile.png'};
@@ -443,7 +443,7 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 	}
 	else
 	{
-		alert(oOperationProfile.name + ' has no sub-Profiles');
+		//alert(oOperationProfile.name + ' has no sub-Profiles');
 	}
 	
 	// Sub-Operations
@@ -457,7 +457,7 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 	}
 	else
 	{
-		alert(oOperationProfile.name + ' has no sub-Operations');
+		//alert(oOperationProfile.name + ' has no sub-Operations');
 	}
 	
 	return oControlGridNodeData;

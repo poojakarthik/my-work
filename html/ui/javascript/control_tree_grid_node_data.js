@@ -55,14 +55,14 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 				var sLabel	= ((oTreeGridElement instanceof Control_Tree_Grid_Node_Data) ? oTreeGridElement._oContent['label'].oData.sLabel+'->' : '') + this._oContent['label'].oData.sLabel; 
 				if (this._oParent.getLastChild())
 				{
-					alert(sLabel + " has siblings!");
-					alert(this._oParent.getLastChild()._oContent['label'].oData.sLabel + " is the last sibling");
+					//alert(sLabel + " has siblings!");
+					//alert(this._oParent.getLastChild()._oContent['label'].oData.sLabel + " is the last sibling");
 					//this.getRootNode().getElement().insertBefore(this.getElement(), this._oParent.getLastChild().getElement().nextSibling);
 					this.getRootNode().getElement().insertBefore(this.getElement(), this._oParent.getLastElement().nextSibling);
 				}
 				else
 				{
-					alert(sLabel + " has no siblings!");
+					//alert(sLabel + " has no siblings!");
 					this.getRootNode().getElement().insertBefore(this.getElement(), this._oParent.getElement().nextSibling);
 				}
 				
