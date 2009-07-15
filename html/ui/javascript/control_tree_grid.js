@@ -17,6 +17,8 @@ var Control_Tree_Grid	= Class.create
 		this.oRootNode.attachTo(this);
 		
 		this.oColumns	= {};
+		
+		this.oDataTypes	= {};
 	},
 	
 	getElement	: function()
@@ -51,6 +53,22 @@ var Control_Tree_Grid	= Class.create
 			this.oColumns[sColumnAlias]	= {};
 		}*/
 		this.render();
+	},
+	
+	addDataType	: function(sName, sIconSource, fOnSelectCallback)
+	{
+		this.oDataTypes[sName]						= {};
+		this.oDataTypes[sName].sName				= sName;
+		this.oDataTypes[sName].sIconSource			= sIconSource ? sIconSource : null;
+		this.oDataTypes[sName].fOnSelectCallback	= fOnSelectCallback ? fOnSelectCallback : null;
+	},
+	
+	removeDataType	: function(sName)
+	{
+		if (this.oDataTypes[sName])
+		{
+			delete this.oDataTypes[sName];
+		}
 	},
 	
 	render	: function()

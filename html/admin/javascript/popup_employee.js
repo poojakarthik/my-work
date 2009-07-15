@@ -300,7 +300,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				var oNode										= {};
 				oNode.oControl									= Popup_Employee.operationProfileToTreeGridNode(oPermissions.oOperationProfiles[iProfileId]);
 				oNode.oContent									= oNode.oControl.getContent();
-				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
+				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {bChecked: oPermissions.oOperationProfiles[iProfileId].bEmployeeHasPermission};
 				oNode.oControl.setContent(oNode.oContent);
 				this.arrTabs.Permissions.oProfiles.oControl.appendChild(oNode.oControl);
 			}
@@ -315,7 +315,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				var oNode										= {};
 				oNode.oControl									= Popup_Employee.operationToTreeGridNode(oPermissions.oOperations[iOperationId]);
 				oNode.oContent									= oNode.oControl.getContent();
-				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
+				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {bChecked: oPermissions.oOperations[iOperationId].bEmployeeHasPermission};
 				oNode.oControl.setContent(oNode.oContent);
 				this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode.oControl);
 			}
