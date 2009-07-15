@@ -12,17 +12,20 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._oElement.oCheckBox.domElement			= document.createElement('input');
 		this._oElement.oCheckBox.domElement.type	= 'checkbox';
 		
-		this._oElement.oExpandIcon				= {};
-		this._oElement.oExpandIcon.domElement	= document.createElement('img');
-		this._oElement.oExpandIcon.onClick		= this.toggleExpanded.bind(this);
+		this._oElement.oExpandIcon					= {};
+		this._oElement.oExpandIcon.domElement		= document.createElement('img');
+		this._oElement.oExpandIcon.domElement.alt	= '';
+		this._oElement.oExpandIcon.onClick			= this.toggleExpanded.bind(this);
 		
-		this._oElement.oSelectIcon				= {};
-		this._oElement.oSelectIcon.domElement	= document.createElement('img');
-		this._oElement.oSelectIcon.onClick		= this.toggleSelected.bind(this);
+		this._oElement.oSelectIcon					= {};
+		this._oElement.oSelectIcon.domElement		= document.createElement('img');
+		this._oElement.oSelectIcon.domElement.alt	= '';
+		this._oElement.oSelectIcon.onClick			= this.toggleSelected.bind(this);
 		this._oElement.oSelectIcon.domElement.addEventListener('click', this._oElement.oSelectIcon.onClick, false);
 		
 		this._oElement.oRowIcon				= {};
 		this._oElement.oRowIcon.domElement	= document.createElement('img');
+		this._oElement.oRowIcon.domElement.alt	= '';
 		
 		// Properties
 		this.setContent(oContent);
@@ -188,6 +191,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		
 		// Update Icon
 		this._oElement.oSelectIcon.domElement.src	= '../admin/img/template/checkbox' + (this.isSelected() ? '-checked' : '') + '.png';
+		this._oElement.oSelectIcon.domElement.alt	= (this._bSelected) ? 'Uncheck' : 'Check';
 		
 		if (this._oVisibleColumns)
 		{
@@ -230,12 +234,14 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		// Update the icon
 		if (this._aChildren.length)
 		{
+			this._oElement.oExpandIcon.domElement.alt	= (this.isExpanded()) ? 'Collapse' : 'Expand';
 			this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/' + (this.isExpanded() ? 'tree_open.png' : 'tree_closed.png');
 			this._oElement.oExpandIcon.domElement.addClassName('clickable');
 			this._oElement.oExpandIcon.domElement.addEventListener('click', this._oElement.oExpandIcon.onClick, false);
 		}
 		else
 		{
+			this._oElement.oExpandIcon.domElement.alt	= '';
 			this._oElement.oExpandIcon.domElement.src	= '../admin/img/template/1px-transparent.png';
 			this._oElement.oExpandIcon.domElement.removeClassName('clickable');
 			this._oElement.oExpandIcon.domElement.removeEventListener('click', this._oElement.oExpandIcon.onClick, false);
@@ -249,10 +255,12 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		{
 			this._oElement.oRowIcon.domElement.style.display	= 'inline';
 			this._oElement.oRowIcon.domElement.src				= this.getTreeGrid().oDataTypes[this.getDataType()].sIconSource;
+			this._oElement.oRowIcon.domElement.alt				= this.getTreeGrid().oDataTypes[this.getDataType()].sDescription;
 		}
 		else
 		{
 			this._oElement.oRowIcon.domElement.style.display	= 'none';
+			this._oElement.oRowIcon.domElement.alt				= '';
 		}
 	},
 	
