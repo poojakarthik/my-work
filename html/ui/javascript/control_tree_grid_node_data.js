@@ -1,6 +1,6 @@
 var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_Node, 
 {
-	initialize	: function($super, oContent, bSelected)
+	initialize	: function($super, oContent, sDataType)
 	{
 		// Parent constructor	
 		$super();
@@ -29,7 +29,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		
 		// Defaults
 		this.setExpanded(false);
-		this.setSelected(bSelected);
+		this.setSelected(false);
 	},
 	
 	getTreeGrid	: function()
@@ -133,6 +133,8 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 					break;
 				
 				case Control_Tree_Grid.COLUMN_CHECK:
+					this.setSelected(oContent[sField].bChecked);
+					
 					this._oElement.oCheckBox.domElement.name	= oContent[sField].sName ? oContent[sField].sName : '';
 					this._oElement.oCheckBox.domElement.value	= oContent[sField].mValue ? oContent[sField].mValue : 1;
 					
