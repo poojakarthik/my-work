@@ -268,6 +268,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		// Set DataTypes
 		oTabPage.oProfiles.oControl.addDataType(Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sName, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sDescription, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sIconSource);
+		oTabPage.oProfiles.oControl.addDataType(Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sDescription, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sIconSource);
 		//--------------------------------------------------------------------//
 		
 		// Operations Tree Grid
