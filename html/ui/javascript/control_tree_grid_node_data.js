@@ -245,7 +245,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	
 	_updateNodeIcon	: function()
 	{
-		if (this.getDataType() && this.getTreeGrid() && this.getTreeGrid().aDataTypes[this.getDataType()] && this.getTreeGrid().aDataTypes[this.getDataType()].sIconSource)
+		if (this.getDataType() && this.getTreeGrid() && this.getTreeGrid().oDataTypes[this.getDataType()] && this.getTreeGrid().oDataTypes[this.getDataType()].sIconSource)
 		{
 			this._oElement.oRowIcon.domElement.style.display	= 'inline';
 			this._oElement.oRowIcon.domElement.src				= this.getTreeGrid().aDataTypes[this.getDataType()].sIconSource;
