@@ -34,13 +34,23 @@ Reflex_Debug.asHTML	= function(mDebug)
 		domValueTD.appendChild(domUL);
 		for (var i = 0; i < mDebug.length; i++)
 		{
-			var domKeyLI		= document.createElement('li');
-			domKeyLI.innerHTML	= "["+i+"] => ";
-			domUL.appendChild(domKeyLI);
+			var domChildLI	= document.createElement('li');
 			
-			var domValueLI	= document.createElement('li');
-			domValueLI.appendChild(Reflex_Debug.asHTML(mDebug[i]));
-			domUL.appendChild(domValueLI);
+			var domChildTable	= document.createElement('table');
+			var domChildTBody	= document.createElement('tbody');
+			domChildTable.appendChild(domChildTBody);
+			var domChildTR		= document.createElement('tr');
+			domChildTBody.appendChild(domChildTR);
+			
+			var domKeyTH		= document.createElement('th');
+			domKeyTH.innerHTML	= "["+i+"] => ";
+			domChildTR.appendChild(domKeyTH);
+			
+			var domValueTD		= document.createElement('td');
+			domValueTD.appendChild(Reflex_Debug.asHTML(mDebug[i]));
+			domChildTR.appendChild(domValueTD);
+			
+			domUL.appendChild(domChildLI);
 		}
 	}
 	else
@@ -55,13 +65,23 @@ Reflex_Debug.asHTML	= function(mDebug)
 				domValueTD.appendChild(domUL);
 				for (i in mDebug)
 				{
-					var domKeyLI		= document.createElement('li');
-					domKeyLI.innerHTML	= "['"+i+"'] => ";
-					domUL.appendChild(domKeyLI);
+					var domChildLI	= document.createElement('li');
 					
-					var domValueLI	= document.createElement('li');
-					domValueLI.appendChild(Reflex_Debug.asHTML(mDebug[i]));
-					domUL.appendChild(domValueLI);
+					var domChildTable	= document.createElement('table');
+					var domChildTBody	= document.createElement('tbody');
+					domChildTable.appendChild(domChildTBody);
+					var domChildTR		= document.createElement('tr');
+					domChildTBody.appendChild(domChildTR);
+					
+					var domKeyTH		= document.createElement('th');
+					domKeyTH.innerHTML	= "["+i+"] => ";
+					domChildTR.appendChild(domKeyTH);
+					
+					var domValueTD		= document.createElement('td');
+					domValueTD.appendChild(Reflex_Debug.asHTML(mDebug[i]));
+					domChildTR.appendChild(domValueTD);
+					
+					domUL.appendChild(domChildLI);
 				}
 				break;
 			
