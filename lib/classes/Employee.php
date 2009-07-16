@@ -246,7 +246,7 @@ class Employee
 		$arrOperations			= array();
 		
 		// Get Operations
-		$selOperationIds	= new StatementSelect("employee_operation", "operation_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime");
+		$selOperationIds	= new StatementSelect("employee_operation", "operation_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = {$this->id}");
 		if ($selOperationIds->Execute($this->toArray()) === false)
 		{
 			throw new Exception($selOperationIds->Error());
@@ -267,7 +267,7 @@ class Employee
 		$arrOperationProfiles	= array();
 		
 		// Get Profiles
-		$selOperationProfileIds	= new StatementSelect("employee_operation_profile", "operation_profile_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime");
+		$selOperationProfileIds	= new StatementSelect("employee_operation_profile", "operation_profile_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = {$this->id}");
 		if ($selOperationProfileIds->Execute($this->toArray()) === false)
 		{
 			throw new Exception($selOperationProfileIds->Error());
