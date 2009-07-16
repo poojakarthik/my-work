@@ -1227,6 +1227,7 @@ div.popup-debug table tbody tr td
 div.popup-debug table ul
 {
 	list-style-type	: none;
+	padding			: 0;
 }
 
 div.popup-debug table ul li

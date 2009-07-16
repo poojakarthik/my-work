@@ -151,7 +151,8 @@ class JSON_Handler_Employee extends JSON_Handler
 			$aPermissionsTree['oOperations']	= array();
 			foreach ($aOperations as $iOperationId=>$oOperation)
 			{
-				$aPermissionsTree['oOperations'][$iOperationId]							= $oOperation->toStdClass();
+				//$aPermissionsTree['oOperations'][$iOperationId]							= $oOperation->toStdClass();
+				$aPermissionsTree['oOperations'][$iOperationId]							= $oOperation;
 				$aPermissionsTree['oOperations'][$iOperationId]->bEmployeeHasPermission	= array_key_exists($iOperationId, $aEmployeeOperations);
 			}
 			
