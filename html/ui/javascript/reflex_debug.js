@@ -39,7 +39,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 			domUL.appendChild(domKeyLI);
 			
 			var domValueLI	= document.createElement('li');
-			domValueLI.appendChild(Reflex_Debug.asHTML(mDebug[i], bOrdered));
+			domValueLI.appendChild(Reflex_Debug.asHTML(mDebug[i]));
 			domUL.appendChild(domValueLI);
 		}
 	}
@@ -60,7 +60,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 					domUL.appendChild(domKeyLI);
 					
 					var domValueLI	= document.createElement('li');
-					domValueLI.appendChild(Reflex_Debug.asHTML(mDebug[i], bOrdered));
+					domValueLI.appendChild(Reflex_Debug.asHTML(mDebug[i]));
 					domUL.appendChild(domValueLI);
 				}
 				break;
