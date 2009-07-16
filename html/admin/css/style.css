@@ -1191,6 +1191,7 @@ div.popup-debug
 	
 	color				: #000;
 	font-family			: monospace;
+	font-size			: 1.2em;
 	
 	height				: 20em;
 	width				: 100%;
@@ -1209,7 +1210,6 @@ div.popup-debug table
 div.popup-debug table tbody tr th
 {
 	font-family			: inherit;
-	font-size			: inherit;
 	
 	font-weight			: bold;
 }
@@ -1217,7 +1217,6 @@ div.popup-debug table tbody tr th
 div.popup-debug table tbody tr td
 {
 	font-family			: inherit;
-	font-size			: inherit;
 }
 
 div.popup-debug table ul
@@ -1228,7 +1227,6 @@ div.popup-debug table ul
 div.popup-debug table ul li
 {
 	font-family			: inherit;
-	font-size			: inherit;
 }
 /************** END - Vixen Popup Stuff (old style popups) - END **************/
 
