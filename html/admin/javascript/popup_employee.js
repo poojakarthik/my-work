@@ -448,10 +448,22 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		}
 		
 		// Update prerequisites
-		// TODO
+		for (var i = 0; i < this.oOperations[iValue].aPrerequisites.length; i++)
+		{
+			if (this.oOperations[iValue].bEmployeeHasPermission && !this.oOperations[[this.oOperations[iValue].aPrerequisites[i]])
+			{
+				this.oOperations[[this.oOperations[iValue].aPrerequisites[i]].setSelected(true);
+			}
+		}
 		
 		// Update dependants
-		// TODO
+		for (var i in this.oOperations[iValue].oDependants)
+		{
+			if (!this.oOperations[iValue].bEmployeeHasPermission && this.oOperations[i].bEmployeeHasPermission)
+			{
+				this.oOperations[iValue].oDependants[i].setSelected(false);
+			}
+		}
 	},
 	
 	onOperationProfileCheck	: function(oTreeGridNode)
