@@ -39,7 +39,7 @@ Operation.buildDependencyTree	= function(oOperations)
 				}
 				
 				// Add as a dependant
-				oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants.push(oOperations[iOperationId]);
+				oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants.push(iOperationId);
 			}
 		}
 		
