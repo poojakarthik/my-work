@@ -52,7 +52,7 @@ Operation.buildDependencyTree	= function(oOperations)
 		if (!oOperations[iOperationId].aPrerequisites || !oOperations[iOperationId].aPrerequisites.length)
 		{
 			// Add each top-level Operation (i.e. no prerequsities) to the Tree
-			oDependencyTree[iOperationId]	= Operation.buildDependencyTreeNode(oOperations, oOperations[iOperationId]);
+			oDependencyTree[iOperationId]	= Operation.buildDependencyTreeNode(oOperations, iOperationId);
 		}
 	}
 	
