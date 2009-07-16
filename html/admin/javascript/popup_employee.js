@@ -92,7 +92,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			
 			// DEBUG TEST
 			//Reflex_Debug.asHTMLPopup(this.objEmployee);
-			Reflex_Debug.asHTMLPopup({child1 : 'test1', child2 : ['test2'], child3 : {['test3']}});
+			Reflex_Debug.asHTMLPopup({child1 : 'test1', child2 : ['test2'], child3 : {child3_1 : ['test3']}});
 			// DEBUG TEST
 		}
 		
