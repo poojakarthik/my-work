@@ -489,7 +489,7 @@ Popup_Employee.operationToTreeGridNode	= function(oOperation, bWithDependants)
 	}
 	
 	var oControlGridNodeData	= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName);
-	oOperation._aInstances[]	= oControlGridNodeData;
+	oOperation._aInstances.push(oControlGridNodeData);
 	
 	if (bWithDependants && oOperation.oDependants)
 	{
@@ -511,8 +511,8 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 	oContent[Control_Tree_Grid.COLUMN_LABEL]	= oOperationProfile.name;
 	oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperationProfile.id;
 	
-	var oControlGridNodeData		= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sName);
-	oOperationProfile._aInstances[]	= oControlGridNodeData;
+	var oControlGridNodeData	= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sName);
+	oOperationProfile._aInstances.push(oControlGridNodeData);
 	
 	// Sub-Profiles
 	if (oOperationProfile.oOperationProfiles)
