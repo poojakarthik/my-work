@@ -115,7 +115,7 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 		}
 	}
 	
-	public static function getOperationProfiles($bIncludeChildReferences=false)
+	public static function getOperationProfiles($bIncludeChildProfileReferences=false, $bIncludeOperationReferences=false)
 	{
 		static	$qQuery;
 		$qQuery	= ($qQuery) ? $qQuery : new Query();
@@ -129,7 +129,7 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 		{
 			$oStdClass	= $oOperationProfile->toStdClass();
 			
-			if ($bIncludeChildReferences)
+			if ($bIncludeChildProfileReferences)
 			{
 				// Get list of child Profiles
 				$aChildren						= $oOperationProfile->getChildOperationProfiles();
@@ -139,7 +139,10 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 				{
 					$oStdClass->aOperationProfiles[]	= $oOperationProfile->id;
 				}
-				
+			}
+			
+			if ($bIncludeOperationReferences)
+			{
 				// Get list of Operations
 				$aOperations			= $oOperationProfile->getChildOperations();
 				$oStdClass->aOperations	= array();
