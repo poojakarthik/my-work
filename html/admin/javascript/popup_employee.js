@@ -426,7 +426,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	onOperationCheck	: function(oTreeGridNode)
 	{
 		var iValue	= oTreeGridNode.getValue();
-		if (!this.oOperations) || iValue === undefined || !this.oOperations[iValue])
+		if (!this.oOperations || iValue === undefined || !this.oOperations[iValue])
 		{
 			throw "Unknown Operation '"+iValue+"'";
 		}
