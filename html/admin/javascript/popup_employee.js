@@ -335,7 +335,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			for (iOperationId in oOperationDependencyTree)
 			{
 				var oNode										= {};
-				oNode.oControl									= Popup_Employee.operationToTreeGridNode(oPermissions.oOperations[iOperationId]);
+				oNode.oControl									= Popup_Employee.operationToTreeGridNode(oPermissions.oOperations[iOperationId], true);
 				oNode.oContent									= oNode.oControl.getContent();
 				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {mValue: this.oOperations[iOperationId].id, bChecked: this.oOperations[iOperationId].bEmployeeHasPermission};
 				oNode.oControl.setContent(oNode.oContent);
@@ -467,8 +467,10 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	}
 });
 
-Popup_Employee.operationToTreeGridNode	= function(oOperation)
+Popup_Employee.operationToTreeGridNode	= function(oOperation, bWithDependants)
 {
+	bWithDependants	= bWithDependants ? true : false;
+	
 	//alert("Adding Operation '"+oOperation.name+"'");
 	
 	var oContent								= {};
@@ -476,6 +478,15 @@ Popup_Employee.operationToTreeGridNode	= function(oOperation)
 	oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperation.id;
 	
 	var oControlGridNodeData					= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName);
+	
+	if (bWithDependants && oOperation.oDependants)
+	{
+		oOperation.oDependants	= jQuery.json.arrayAsObject(oOperation.oDependants);
+		for (iOperationId in oOperation.oDependants)
+		{
+			oControlGridNodeData.appendChild(Popup_Employee.operationToTreeGridNode(oOperation.oDependants[iOperationId], bWithDependants));
+		}
+	}
 	
 	return oControlGridNodeData;
 };
