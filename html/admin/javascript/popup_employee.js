@@ -545,7 +545,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			for (var i = 0; i < oOperationProfile.aOperationProfiles.length; i++)
 			{
-				oControlGridNodeData.appendChild(this.operationProfileToTree(this.aOperationProfiles[oOperationProfile.aOperationProfiles[i]]));
+				oControlGridNodeData.appendChild(this.operationProfileToTree(this.oOperationProfiles[oOperationProfile.aOperationProfiles[i]]));
 			}
 		}
 		else
@@ -558,7 +558,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			for (var i = 0; i < oOperationProfile.aOperations.length; i++)
 			{
-				oControlGridNodeData.appendChild(this.operationToTree(this.aOperations[oOperationProfile.aOperations[i]]));
+				oControlGridNodeData.appendChild(this.operationToTree(this.oOperations[oOperationProfile.aOperations[i]]));
 			}
 		}
 		else
