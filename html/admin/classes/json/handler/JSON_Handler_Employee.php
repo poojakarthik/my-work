@@ -143,31 +143,30 @@ class JSON_Handler_Employee extends JSON_Handler
 				$aEmployeeOperationProfiles	= array();
 			}
 			
-			$aOperations		= JSON_Handler_Operation::getOperations(true);
+			$aOperations		= Operation_Profile::getAll();
 			$aOperationProfiles	= Operation_Profile::getAll();
 			
-			$aPermissionsTree	= array();
-			
-			$aPermissionsTree['oOperations']	= array();
+			$oOperations	= array();
 			foreach ($aOperations as $iOperationId=>$oOperation)
 			{
-				//$aPermissionsTree['oOperations'][$iOperationId]							= $oOperation->toStdClass();
 				$aPermissionsTree['oOperations'][$iOperationId]							= $oOperation;
 				$aPermissionsTree['oOperations'][$iOperationId]->bEmployeeHasPermission	= array_key_exists($iOperationId, $aEmployeeOperations);
 			}
 			
-			$aPermissionsTree['oOperationProfiles']	= array();
+			$oOperationProfiles	= array();
 			foreach ($aOperationProfiles as $iOperationProfileId=>$oOperationProfile)
 			{
-				$aPermissionsTree['oOperationProfiles'][$iOperationProfileId]							= self::_buildOperationProfileTreeNode($oOperationProfile);
-				$aPermissionsTree['oOperationProfiles'][$iOperationProfileId]->bEmployeeHasPermission	= array_key_exists($iOperationProfileId, $aEmployeeOperationProfiles);
+				$oOperationProfiles[$iOperationProfileId]							= self::_buildOperationProfileTreeNode($oOperationProfile);
+				$oOperationProfiles[$iOperationProfileId]->bEmployeeHasPermission	= array_key_exists($iOperationProfileId, $aEmployeeOperationProfiles);
 			}
 			
 			// If no exceptions were thrown, then everything worked
 			return array(
-							"Success"			=> true,
-							"oPermissions"		=> $aPermissionsTree,
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"Success"				=> true,
+							"oOperations"			=> $aPermissionsTree,
+							"oOperationTree"		=> JSON_Handler_Operation::getOperations(true),
+							"oOperationProfiles"	=> $oOperationProfiles,
+							"strDebug"				=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 		catch (Exception $e)
