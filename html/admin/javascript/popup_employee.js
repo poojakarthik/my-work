@@ -500,7 +500,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			for (var i = 0; i < oOperation.aDependants.length; i++)
 			{
-				oControlGridNodeData.appendChild(this.operationToTreeGridNode(this.oOperations[oOperation.oDependants[i]]));
+				oControlGridNodeData.appendChild(this.operationToTreeGridNode(this.oOperations[oOperation.aDependants[i]]));
 			}
 		}
 		
