@@ -1210,6 +1210,7 @@ div.popup-debug table
 div.popup-debug table tbody tr th
 {
 	vertical-align		: top;
+	text-align			: right;
 	
 	font-family			: inherit;
 	font-weight			: bold;
@@ -1218,6 +1219,7 @@ div.popup-debug table tbody tr th
 div.popup-debug table tbody tr td
 {
 	vertical-align		: top;
+	text-align			: left;
 	
 	font-family			: inherit;
 }
