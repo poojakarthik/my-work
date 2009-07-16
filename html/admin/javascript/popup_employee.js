@@ -332,7 +332,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				oNode.oControl.setContent(oNode.oContent);
 				this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode.oControl);
 			}*/
-			for (iOperationId in this.oOperations)
+			for (iOperationId in oOperations)
 			{
 				// Add the top-level Operations (this will cascade down)
 				if (!oOperations[iOperationId].aPrerequisites || !oOperations[iOperationId].aPrerequisites.length)
