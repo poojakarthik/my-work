@@ -319,7 +319,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			
 			// Populate Operations Grid
 			//----------------------------------------------------------------//
-			oPermissions.oOperations	= jQuery.json.arrayAsObject(oPermissions.oOperations);
+			oPermissions.oOperations		= jQuery.json.arrayAsObject(oPermissions.oOperations);
+			var oOperationDependencyTree	= Operation.buildDependencyTree(oPermissions.oOperations);
 			for (iOperationId in oPermissions.oOperations)
 			{
 				var oNode										= {};
