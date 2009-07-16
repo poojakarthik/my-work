@@ -1190,7 +1190,7 @@ div.popup-debug
 	background-color	: #fff;
 	
 	color				: #000;
-	font-family			: "Courier New", Courier, monospace;
+	font-family			: monospace;
 	font-size			: 0.8em;
 	
 	height				: 20em;
