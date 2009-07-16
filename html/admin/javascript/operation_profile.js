@@ -7,10 +7,8 @@ var Operation_Profile	= Class.create
 });
 
 /* Static Methods */
-Operation_Profile.buildTree	= function(oOperationProfiles)
+Operation_Profile.prepareForTreeGrid	= function(oOperationProfiles)
 {
-	oProfileTree	= {};
-	
 	oOperationProfiles	= jQuery.json.arrayAsObject(oOperationProfiles);
 	
 	//Reflex_Debug.asHTMLPopup(oOperationProfiles);
@@ -20,8 +18,7 @@ Operation_Profile.buildTree	= function(oOperationProfiles)
 		oOperationProfiles[iOperationProfileId].aInstances	= [];
 	}
 	
-	Reflex_Debug.asHTMLPopup(oProfileTree);
-	Reflex_Debug.asHTMLPopup(oOperations);
+	//Reflex_Debug.asHTMLPopup(oOperationProfiles);
 	
-	return oProfileTree;
+	return oOperationProfiles;
 };

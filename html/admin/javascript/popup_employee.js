@@ -308,6 +308,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			// Populate Profiles Grid
 			//----------------------------------------------------------------//
 			oOperationProfiles	= jQuery.json.arrayAsObject(oOperationProfiles);
+			Operation_Profile.prepareForTreeGrid(oOperationProfiles);
 			for (iProfileId in oOperationProfiles)
 			{
 				var oNode										= {};
@@ -323,7 +324,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			// Populate Operations Grid
 			//----------------------------------------------------------------//
 			oOperations						= jQuery.json.arrayAsObject(oOperations);
-			var oOperationDependencyTree	= Operation.buildDependencyTree(oOperations);
+			Operation.prepareForTreeGrid(oOperations);
 			for (iOperationId in oOperations)
 			{
 				// Add the top-level Operations (this will cascade down)
