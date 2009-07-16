@@ -34,9 +34,10 @@ Reflex_Debug.asHTML	= function(mDebug)
 		domValueTD.appendChild(domUL);
 		for (var i = 0; i < mDebug.length; i++)
 		{
-			var domChildLI	= document.createElement('li');
-			
+			var domChildLI		= document.createElement('li');
+			domUL.appendChild(domChildLI);
 			var domChildTable	= document.createElement('table');
+			domChildLI.appendChild(domChildTable);
 			var domChildTBody	= document.createElement('tbody');
 			domChildTable.appendChild(domChildTBody);
 			var domChildTR		= document.createElement('tr');
@@ -49,8 +50,6 @@ Reflex_Debug.asHTML	= function(mDebug)
 			var domValueTD		= document.createElement('td');
 			domValueTD.appendChild(Reflex_Debug.asHTML(mDebug[i]));
 			domChildTR.appendChild(domValueTD);
-			
-			domUL.appendChild(domChildLI);
 		}
 	}
 	else
@@ -66,8 +65,9 @@ Reflex_Debug.asHTML	= function(mDebug)
 				for (i in mDebug)
 				{
 					var domChildLI	= document.createElement('li');
-					
+					domUL.appendChild(domChildLI);
 					var domChildTable	= document.createElement('table');
+					domChildLI.appendChild(domChildTable);
 					var domChildTBody	= document.createElement('tbody');
 					domChildTable.appendChild(domChildTBody);
 					var domChildTR		= document.createElement('tr');
@@ -80,8 +80,6 @@ Reflex_Debug.asHTML	= function(mDebug)
 					var domValueTD		= document.createElement('td');
 					domValueTD.appendChild(Reflex_Debug.asHTML(mDebug[i]));
 					domChildTR.appendChild(domValueTD);
-					
-					domUL.appendChild(domChildLI);
 				}
 				break;
 			
