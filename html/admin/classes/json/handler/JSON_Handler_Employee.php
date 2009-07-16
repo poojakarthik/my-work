@@ -149,8 +149,8 @@ class JSON_Handler_Employee extends JSON_Handler
 			$oOperations	= array();
 			foreach ($aOperations as $iOperationId=>$oOperation)
 			{
-				$aPermissionsTree['oOperations'][$iOperationId]							= $oOperation;
-				$aPermissionsTree['oOperations'][$iOperationId]->bEmployeeHasPermission	= array_key_exists($iOperationId, $aEmployeeOperations);
+				$oOperations[$iOperationId]							= $oOperation;
+				$oOperations[$iOperationId]->bEmployeeHasPermission	= array_key_exists($iOperationId, $aEmployeeOperations);
 			}
 			
 			$oOperationProfiles	= array();
@@ -163,7 +163,7 @@ class JSON_Handler_Employee extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"				=> true,
-							"oOperations"			=> $aPermissionsTree,
+							"oOperations"			=> $oOperations,
 							"oOperationProfiles"	=> $oOperationProfiles,
 							"strDebug"				=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
