@@ -58,10 +58,10 @@ Operation.buildDependencyTreeNode	= function(oOperations, iPrerequisiteOperation
 {
 	var oDependencyTree	= {};
 	
-	for (var i = 0; i < oOperations[iPrerequisiteOperationId].aPrerequisites.length; i++)
+	for (var i = 0; i < oOperations[iPrerequisiteOperationId].aDependants.length; i++)
 	{
 		// Add the dependants to the tree
-		oDependencyTree[oOperations[iPrerequisiteOperationId].aPrerequisites[i]]	= Operation.buildDependencyTreeNode(oOperations, oOperations[iPrerequisiteOperationId].aPrerequisites[i]);
+		oDependencyTree[oOperations[iPrerequisiteOperationId].aDependants[i]]	= Operation.buildDependencyTreeNode(oOperations, oOperations[iPrerequisiteOperationId].aDependants[i]);
 	}
 	
 	return oDependencyTree;
