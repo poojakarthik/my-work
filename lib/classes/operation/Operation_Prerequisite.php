@@ -1,71 +1,44 @@
 <?php
 /**
- * Operation
+ * Operation_Prerequisite
  *
- * Models the 'operation' Table and handles related functions
+ * Models the operation_prerequisite Table
  *
- * @class	Operation
+ * @class	Operation_Prerequisite
  */
-class Operation extends ORM_Enumerated
-{	
-	protected			$_strTableName 			= "operation";
-	protected static	$_strStaticTableName	= "operation";
+class Operation_Prerequisite extends ORM_Cached
+{
+	protected 			$_strTableName			= "operation_prerequisite";
+	protected static	$_strStaticTableName	= "operation_prerequisite";
 	
-	public static function userHasPermission($intOperation, $intEmployeeId=null)
+	public static function getForOperation($mOperation)
 	{
-		$intEmployeeId	= ((int)$intEmployeeId >= 0) ? (int)$intEmployeeId : Flex::getUserId();
+		static	$qQuery;
+		$qQuery	= ($qQuery) ? $qQuery : new Query();
 		
-		// If the user is GOD, then it trumps all permission settings
-		$objEmployee	= Employee::getForId($intEmployeeId);
-		if ($objEmployee->isGod)
+		$iOperationId	= ($mOperation instanceof Operation) ? $mOperation->id : (int)$mOperation;
+		
+		$sGetForOperationSQL	= "	SELECT		id
+									FROM		operation_prerequisite
+									WHERE		operation_id = {$iOperationId}";
+		$rGetForOperation	= $qQuery->Execute($sGetForOperationSQL);
+		if ($rGetForOperation === false)
 		{
-			Log::getLog()->log("User is GOD -- permissions overridden!");
-			return true;
+			throw new Exception($qQuery->Error());
 		}
-		else
+		
+		$aPrerequisites	= array();
+		while ($aPrerequisiteId = $rGetForOperation->fetch_assoc())
 		{
-			Log::getLog()->log("User is MORTAL -- checking permissions...");
-			// Do we have authorisation?
-			return array_key_exists($intOperation, $objEmployee->getPermittedOperations());
+			$aPrerequisites[]	= self::getForId($aPrerequisiteId['id']);
 		}
+		
+		return $aPrerequisites;
 	}
 	
-	public static function assertPermission($intOperation, $bolLogOnErrorsOnly=false, $intEmployeeId=null)
-	{
-		$intEmployeeId	= ((int)$intEmployeeId >= 0) ? (int)$intEmployeeId : Flex::getUserId();
-		
-		$objOperation	= self::getForId($intOperation);
-		
-		// Do we have permission?
-		$bolHasPermission	= self::userHasPermission($intOperation, $intEmployeeId);
-		
-		$objEmployeeOperationLog					= new Employee_Operation_Log();
-		$objEmployeeOperationLog->employee_id		= $intEmployeeId;
-		$objEmployeeOperationLog->operation_id		= $intOperation;
-		$objEmployeeOperationLog->was_authorised	= (int)$bolHasPermission;
-		
-		// Should we log?
-		if (!$bolLogOnErrorsOnly || ($bolLogOnErrorsOnly && !$bolHasPermission))
-		{
-			$objEmployeeOperationLog->save();
-		}
-		
-		// If we have permission, return the Log object, otherwise throw an Exception
-		if ($bolHasPermission)
-		{
-			return $objEmployeeOperationLog;
-		}
-		else
-		{
-			unset($objEmployeeOperationLog);
-			throw new Exception_Operation_Authorisation("You are not permitted to perform the {$objOperation->name} operation");
-		}
-	}
-	
-	public function getPrerequisites()
-	{
-		return Operation_Prerequisite::getForOperation($this->id);
-	}
+	//------------------------------------------------------------------------//
+	//				START - CACHE FUNCTIONS
+	//------------------------------------------------------------------------//
 	
 	protected static function getCacheName()
 	{
@@ -78,15 +51,20 @@ class Operation extends ORM_Enumerated
 		return $strCacheName;
 	}
 	
-	//---------------------------------------------------------------------------------------------------------------------------------//
-	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Enumerated UNTIL WE START USING PHP 5.3 - START
-	//---------------------------------------------------------------------------------------------------------------------------------//
+	protected static function getMaxCacheSize()
+	{
+		return PHP_INT_MAX;
+	}
 	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
 	public static function clearCache()
 	{
 		parent::clearCache(__CLASS__);
 	}
-	
+
 	protected static function getCachedObjects()
 	{
 		return parent::getCachedObjects(__CLASS__);
@@ -96,7 +74,7 @@ class Operation extends ORM_Enumerated
 	{
 		parent::addToCache($mixObjects, __CLASS__);
 	}
-	
+
 	public static function getForId($intId, $bolSilentFail=false)
 	{
 		return parent::getForId($intId, $bolSilentFail, __CLASS__);
@@ -107,20 +85,10 @@ class Operation extends ORM_Enumerated
 		return parent::getAll($bolForceReload, __CLASS__);
 	}
 	
-	public static function getForSystemName($strSystemName)
-	{
-		return parent::getForSystemName($strSystemName, __CLASS__);
-	}
-	
-	public static function getIdForSystemName($strSystemName)
-	{
-		return parent::getIdForSystemName($strSystemName, __CLASS__);
-	}
-	
 	//---------------------------------------------------------------------------------------------------------------------------------//
-	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Enumerated UNTIL WE START USING PHP 5.3 - END
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
-	
+
 	/**
 	 * _preparedStatement()
 	 *
@@ -134,7 +102,7 @@ class Operation extends ORM_Enumerated
 	 */
 	protected static function _preparedStatement($strStatement)
 	{
-		static	$arrPreparedStatements	= array();
+		static	$arrPreparedStatements	= Array();
 		if (isset($arrPreparedStatements[$strStatement]))
 		{
 			return $arrPreparedStatements[$strStatement];
