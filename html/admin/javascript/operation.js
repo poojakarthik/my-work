@@ -16,6 +16,11 @@ Operation.buildDependencyTree	= function(oOperations)
 	
 	//Reflex_Debug.asHTMLPopup(oOperations);
 	
+	for (iOperationId in oOperations)
+	{
+		oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants	= [];
+	}
+	
 	// Convert Child-Prerequisites to Parent-Dependants
 	for (iOperationId in oOperations)
 	{
@@ -25,10 +30,6 @@ Operation.buildDependencyTree	= function(oOperations)
 			if (!oOperations[oOperations[iOperationId].aPrerequisites[i]])
 			{
 				throw "Invalid prerequisite reference: "+oOperations[iOperationId].aPrerequisites[i];
-			}
-			if (oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants === undefined)
-			{
-				oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants	= [];
 			}
 			
 			// Add as a dependant
