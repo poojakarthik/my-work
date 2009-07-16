@@ -302,6 +302,9 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	{
 		if (oOperations && oOperationProfiles)
 		{
+			this.oOperations		= oOperations;
+			this.oOperationProfiles	= oOperationProfiles;
+			
 			// Populate Profiles Grid
 			//----------------------------------------------------------------//
 			oOperationProfiles			= jQuery.json.arrayAsObject(oOperationProfiles);
@@ -322,7 +325,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			//----------------------------------------------------------------//
 			oOperations						= jQuery.json.arrayAsObject(oOperations);
 			var oOperationDependencyTree	= Operation.buildDependencyTree(oOperations);
-			this.oOperations				= oOperations;
 			for (iOperationId in oOperations)
 			{
 				// Add the top-level Operations (this will cascade down)
