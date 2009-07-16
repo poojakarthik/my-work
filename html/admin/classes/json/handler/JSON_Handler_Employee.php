@@ -133,7 +133,7 @@ class JSON_Handler_Employee extends JSON_Handler
 			if ($iEmployeeId)
 			{
 				// Get the Employee
-				$objEmployee				= Employee::getForId($iEmployeeId);
+				$oEmployee					= Employee::getForId($iEmployeeId);
 				$aEmployeeOperations		= $oEmployee->getOperations();
 				$aEmployeeOperationProfiles	= $oEmployee->getOperationProfiles();
 			}
