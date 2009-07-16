@@ -74,7 +74,7 @@ Object.extend(Reflex_Popup, {
 	
 	alert	: function(domElement, iWidth)
 	{
-		var oPopup	= new Reflex_Popup(iWidth ? iWidth : 40);
+		var oPopup	= new Reflex_Popup(iWidth ? iWidth : 80);
 		
 		oPopup.setTitle('Developer Debug');
 		oPopup.addCloseButton();
