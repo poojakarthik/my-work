@@ -38,6 +38,8 @@ Operation.buildDependencyTree	= function(oOperations)
 				oOperations[oOperations[iOperationId].aPrerequisites[i]].oDependants[iOperationId]	= oOperations[iOperationId];
 			}
 		}
+		
+		oOperations[iOperationId].aInstances	= [];
 	}
 	
 	//Reflex_Debug.asHTMLPopup(oOperations);

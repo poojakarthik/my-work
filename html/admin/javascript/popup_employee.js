@@ -442,12 +442,12 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.oOperations[iValue].bEmployeeHasPermission	= oTreeGridNode.isSelected();
 		
 		// Cascade update to all other Nodes
-		for (var i = 0; i < this.oOperations[iValue]._aInstances.length; i++)
+		for (var i = 0; i < this.oOperations[iValue].aInstances.length; i++)
 		{
-			this.oOperations[iValue]._aInstances[i].setSelected(this.oOperations[iValue].bEmployeeHasPermission);
+			this.oOperations[iValue].aInstances[i].setSelected(this.oOperations[iValue].bEmployeeHasPermission, true);
 		}
 		
-		// Update pre-requisites
+		// Update prerequisites
 		// TODO
 		
 		// Update dependants
@@ -466,9 +466,9 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.oOperationProfiles[iValue].bEmployeeHasPermission	= oTreeGridNode.isSelected();
 		
 		// Cascade update to all other Nodes
-		for (var i = 0; i < this.oOperationProfiles[iValue]._aInstances.length; i++)
+		for (var i = 0; i < this.oOperationProfiles[iValue].aInstances.length; i++)
 		{
-			this.oOperationProfiles[iValue]._aInstances[i].setSelected(this.oOperationProfiles[iValue].bEmployeeHasPermission);
+			this.oOperationProfiles[iValue].aInstances[i].setSelected(this.oOperationProfiles[iValue].bEmployeeHasPermission);
 		}
 	}
 });
@@ -489,7 +489,7 @@ Popup_Employee.operationToTreeGridNode	= function(oOperation, bWithDependants)
 	}
 	
 	var oControlGridNodeData	= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName);
-	oOperation._aInstances.push(oControlGridNodeData);
+	oOperation.aInstances.push(oControlGridNodeData);
 	
 	if (bWithDependants && oOperation.oDependants)
 	{
@@ -512,7 +512,7 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 	oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperationProfile.id;
 	
 	var oControlGridNodeData	= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sName);
-	oOperationProfile._aInstances.push(oControlGridNodeData);
+	oOperationProfile.aInstances.push(oControlGridNodeData);
 	
 	// Sub-Profiles
 	if (oOperationProfile.oOperationProfiles)
