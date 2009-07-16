@@ -335,7 +335,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			for (iOperationId in oOperationDependencyTree)
 			{
 				var oNode										= {};
-				oNode.oControl									= Popup_Employee.operationToTreeGridNode(oOperations[iOperationId], true);
+				oNode.oControl									= this.operationToDependencyTree(oOperations[iOperationId]);
 				oNode.oContent									= oNode.oControl.getContent();
 				//oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {mValue: this.oOperations[iOperationId].id, bChecked: this.oOperations[iOperationId].bEmployeeHasPermission};
 				oNode.oControl.setContent(oNode.oContent);
@@ -482,6 +482,29 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			this.oOperationProfiles[iValue].aInstances[i].setSelected(this.oOperationProfiles[iValue].bEmployeeHasPermission);
 		}
+	},
+	
+	operationToDependencyTree	= function(oOperation)
+	{
+		//alert("Adding Operation '"+oOperation.name+"'");
+		
+		var oContent								= {};
+		oContent[Control_Tree_Grid.COLUMN_LABEL]	= oOperation.name;
+		oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperation.id;
+		oContent[Control_Tree_Grid.COLUMN_CHECK]	= {mValue: oOperation.id, bChecked: oOperation.bEmployeeHasPermission};
+		
+		var oControlGridNodeData	= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName);
+		oOperation.aInstances.push(oControlGridNodeData);
+		
+		if (oOperation.aDependants)
+		{
+			for (var i = 0; i < oOperation.aDependants.length)
+			{
+				oControlGridNodeData.appendChild(this.operationToTreeGridNode(this.oOperations[oOperation.oDependants[i]]));
+			}
+		}
+		
+		return oControlGridNodeData;
 	}
 });
 
