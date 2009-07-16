@@ -1209,6 +1209,9 @@ div.popup-debug table
 
 div.popup-debug table tbody tr th
 {
+	font-family			: inherit;
+	font-size			: inherit;
+	
 	font-weight			: bold;
 }
 
