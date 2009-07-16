@@ -337,7 +337,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				var oNode										= {};
 				oNode.oControl									= Popup_Employee.operationToTreeGridNode(oPermissions.oOperations[iOperationId], true);
 				oNode.oContent									= oNode.oControl.getContent();
-				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {mValue: this.oOperations[iOperationId].id, bChecked: this.oOperations[iOperationId].bEmployeeHasPermission};
+				//oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {mValue: this.oOperations[iOperationId].id, bChecked: this.oOperations[iOperationId].bEmployeeHasPermission};
 				oNode.oControl.setContent(oNode.oContent);
 				this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode.oControl);
 			}
