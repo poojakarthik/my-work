@@ -81,7 +81,7 @@ Object.extend(Reflex_Popup, {
 		
 		var domCloseButton			= document.createElement('button');
 		domCloseButton.innerHTML	= '&nbsp;&nbsp;&nbsp;OK&nbsp;&nbsp;&nbsp;';
-		domCloseButton.addEventListener('click', oPopup.hide());
+		domCloseButton.addEventListener('click', oPopup.hide.bind(oPopup), false);
 		oPopup.setFooterButtons([domCloseButton], true);
 	}
 });
