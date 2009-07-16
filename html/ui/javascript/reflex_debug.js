@@ -45,7 +45,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 	}
 	else
 	{
-		domTypeLI.innerHTML	= typeof mDebug;
+		domTypeTD.innerHTML	= typeof mDebug;
 		
 		switch (typeof mDebug)
 		{
