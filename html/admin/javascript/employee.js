@@ -35,7 +35,7 @@ var Employee	= Class.create
 		if (oResponse)
 		{
 			// Process JSON Response
-			fCallback(oResponse.oPermissions);
+			fCallback(oResponse.oOperations, oResponse.oOperationProfiles);
 		}
 		else
 		{
