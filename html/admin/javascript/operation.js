@@ -18,7 +18,7 @@ Operation.buildDependencyTree	= function(oOperations)
 	
 	for (iOperationId in oOperations)
 	{
-		oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants	= [];
+		oOperations[iOperationId].aDependants	= [];
 	}
 	
 	// Convert Child-Prerequisites to Parent-Dependants
