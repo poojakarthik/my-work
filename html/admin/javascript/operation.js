@@ -66,6 +66,8 @@ Operation.buildDependencyTreeNode	= function(oOperations, iPrerequisiteOperation
 {
 	var oDependencyTree	= {};
 	
+	alert(iPrerequisiteOperationId);
+	
 	for (var i = 0; i < oOperations[iPrerequisiteOperationId].aPrerequisites.length; i++)
 	{
 		// Add the dependants to the tree
