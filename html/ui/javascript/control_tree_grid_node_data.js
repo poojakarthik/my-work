@@ -197,6 +197,12 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._oElement.oSelectIcon.domElement.alt	= (this._bSelected) ? 'Uncheck' : 'Check';
 		this._oElement.oSelectIcon.domElement.title	= (this._bSelected) ? 'Uncheck' : 'Check';
 		
+		// onSelect Callback
+		if (this.getDataType() && this.getTreeGrid() && this.getTreeGrid().oDataTypes[this.getDataType()] && this.getTreeGrid().oDataTypes[this.getDataType()].fOnSelectCallback)
+		{
+			this.getTreeGrid().oDataTypes[this.getDataType()].fOnSelectCallback(this);
+		}
+		
 		if (this._oVisibleColumns)
 		{
 			this.render(this._oVisibleColumns);
