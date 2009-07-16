@@ -452,20 +452,20 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		}
 		
 		// Update prerequisites
-		for (var i in this.oOperations[iValue].oPrerequisites)
+		for (var i = 0; i < this.oOperations[iValue].aPrerequisites.length; i++)
 		{
-			if (this.oOperations[iValue].bEmployeeHasPermission && !this.oOperations[i].bEmployeeHasPermission)
+			if (this.oOperations[iValue].bEmployeeHasPermission && !this.oOperations[ this.oOperations[iValue].aPrerequisites[i]].bEmployeeHasPermission)
 			{
-				this.oOperations[iValue].oPrerequisites[i].setSelected(false);
+				this.oOperations[iValue].oPrerequisites[ this.oOperations[iValue].aPrerequisites[i]].setSelected(false);
 			}
 		}
 		
 		// Update dependants
-		for (var i in this.oOperations[iValue].oDependants)
+		for (var i = 0; i < this.oOperations[iValue].aDependants.length; i++)
 		{
-			if (!this.oOperations[iValue].bEmployeeHasPermission && this.oOperations[i].bEmployeeHasPermission)
+			if (!this.oOperations[iValue].bEmployeeHasPermission && this.oOperations[this.oOperations[iValue].aDependants[i]].bEmployeeHasPermission)
 			{
-				this.oOperations[iValue].oDependants[i].setSelected(false);
+				this.oOperations[iValue].oDependants[this.oOperations[iValue].aDependants[i]].setSelected(false);
 			}
 		}
 	},
