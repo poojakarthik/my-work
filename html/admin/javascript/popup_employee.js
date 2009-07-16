@@ -322,7 +322,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			oOperations						= jQuery.json.arrayAsObject(oOperations);
 			var oOperationDependencyTree	= Operation.buildDependencyTree(oOperations);
 			this.oOperations				= oOperations;
-			Reflex_Debug.asHTMLPopup(this.oOperations);
+			//Reflex_Debug.asHTMLPopup(this.oOperations);
 			/*for (iOperationId in oOperations)
 			{
 				var oNode										= {};
