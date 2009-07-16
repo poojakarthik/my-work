@@ -477,19 +477,19 @@ Popup_Employee.operationToTreeGridNode	= function(oOperation, bWithDependants)
 	oContent[Control_Tree_Grid.COLUMN_LABEL]	= oOperation.name;
 	oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperation.id;
 	
-	var oControlGridNodeData					= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName);
-	
 	if (bWithDependants)
 	{
 		oContent[Control_Tree_Grid.COLUMN_CHECK]	= {mValue: oOperation.id, bChecked: oOperation.bEmployeeHasPermission};
-		
-		if (oOperation.oDependants)
+	}
+	
+	var oControlGridNodeData					= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName);
+	
+	if (bWithDependants && oOperation.oDependants)
+	{
+		oOperation.oDependants	= jQuery.json.arrayAsObject(oOperation.oDependants);
+		for (iOperationId in oOperation.oDependants)
 		{
-			oOperation.oDependants	= jQuery.json.arrayAsObject(oOperation.oDependants);
-			for (iOperationId in oOperation.oDependants)
-			{
-				oControlGridNodeData.appendChild(Popup_Employee.operationToTreeGridNode(oOperation.oDependants[iOperationId], bWithDependants));
-			}
+			oControlGridNodeData.appendChild(Popup_Employee.operationToTreeGridNode(oOperation.oDependants[iOperationId], bWithDependants));
 		}
 	}
 	
