@@ -44,7 +44,7 @@ var Employee	= Class.create
 			
 			var iEmployeeId	= (this.objProperties.Id === undefined) ? null : this.objProperties.Id;
 			
-			var fncJSON	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this.getPermissions.bind(this, fCallback, bGetForEditing)), null, 'Employee', 'getPermissions');
+			var fncJSON	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this.getPermissionTrees.bind(this, fCallback, bGetForEditing)), null, 'Employee', 'getPermissions');
 			fncJSON(iEmployeeId, bGetForEditing);
 		}
 	},
