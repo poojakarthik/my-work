@@ -484,7 +484,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	operationToDependencyTree	= function(oOperation)
+	operationToDependencyTree	: function(oOperation)
 	{
 		//alert("Adding Operation '"+oOperation.name+"'");
 		
