@@ -143,7 +143,7 @@ class JSON_Handler_Employee extends JSON_Handler
 				$aEmployeeOperationProfiles	= array();
 			}
 			
-			$aOperations		= Operation_Profile::getAll();
+			$aOperations		= JSON_Handler_Operation::getOperations(true);
 			$aOperationProfiles	= Operation_Profile::getAll();
 			
 			$oOperations	= array();
@@ -164,7 +164,6 @@ class JSON_Handler_Employee extends JSON_Handler
 			return array(
 							"Success"				=> true,
 							"oOperations"			=> $aPermissionsTree,
-							"oOperationTree"		=> JSON_Handler_Operation::getOperations(true),
 							"oOperationProfiles"	=> $oOperationProfiles,
 							"strDebug"				=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
