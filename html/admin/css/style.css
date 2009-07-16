@@ -1183,6 +1183,24 @@ div#PopupPageBody
 	background-color: #000;
 	opacity: .50;
 }
+
+/* DEBUG POPUP */
+div.popup-debug
+{
+	background-color	: #fff;
+	
+	color				: #000;
+	font-family			: "Courier New", Courier, monospace;
+	
+	height				: 20em;
+	width				: 100%;
+	overflow			: scroll;
+}
+
+div.popup-debug table
+{
+	
+}
 /************** END - Vixen Popup Stuff (old style popups) - END **************/
 
 /********************* START - Tab Collection stuff - START *******************/
