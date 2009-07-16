@@ -30,6 +30,9 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		
 		this.bolInitialRenderMode	= bolRenderMode;
 		
+		this.oOperations		= {};
+		this.oOperationProfiles	= {};
+		
 		if (mixEmployee instanceof Employee)
 		{
 			// Employee object passed -- build immediately
@@ -287,7 +290,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oOperations.oControl.setColumns(oTabPage.oOperations.oColumns);
 		
 		// Set DataTypes
-		oTabPage.oOperations.oControl.addDataType(Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sDescription, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sIconSource);
+		oTabPage.oOperations.oControl.addDataType(Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sDescription, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sIconSource, this.onOperationCheck.bind(this));
 		//--------------------------------------------------------------------//
 		
 		this._populatePermissionsTrees();
@@ -413,6 +416,42 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.domCancelNewButton.removeEventListener('click'		, this.arrEventHandlers.hide				, false);
 		this.domCloseButton.removeEventListener('click'			, this.arrEventHandlers.hide				, false);
 		this.domSaveButton.removeEventListener('click'			, this.arrEventHandlers.save				, false);
+	},
+	
+	onOperationCheck	: function(oTreeGridNode)
+	{
+		var iValue	= oTreeGridNode.getValue();
+		if (!this.oOperations) || iValue === undefined || !this.oOperations[iValue])
+		{
+			throw "Unknown Operation '"+iValue+"'";
+		}
+		
+		// Update Cache
+		this.oOperations[iValue].bEmployeeHasPermission	= oTreeGridNode.isSelected();
+		
+		// Cascade update to all other Nodes
+		for (var i = 0; i < this.oOperations[iValue]._aInstances.length; i++)
+		{
+			this.oOperations[iValue]._aInstances[i].setSelected(this.oOperations[iValue].bEmployeeHasPermission);
+		}
+	},
+	
+	onOperationProfileCheck	: function(oTreeGridNode)
+	{
+		var iValue	= oTreeGridNode.getValue();
+		if (!this.oOperationProfiles) || iValue === undefined || !this.oOperationProfiles[iValue])
+		{
+			throw "Unknown Operation Profile '"+iValue+"'";
+		}
+		
+		// Update Cache
+		this.oOperationProfiles[iValue].bEmployeeHasPermission	= oTreeGridNode.isSelected();
+		
+		// Cascade update to all other Nodes
+		for (var i = 0; i < this.oOperationProfiles[iValue]._aInstances.length; i++)
+		{
+			this.oOperationProfiles[iValue]._aInstances[i].setSelected(this.oOperationProfiles[iValue].bEmployeeHasPermission);
+		}
 	}
 });
 
