@@ -213,7 +213,13 @@ class JSON_Handler_Operation extends JSON_Handler
 			if ($bIncludeDependencyReferences)
 			{
 				// Get list of dependencies
-				$oStdClass->aPrerequisites	= $oOperation->getPrerequisites();
+				$aPrerequisites				= $oOperation->getPrerequisites();
+				$oStdClass->aPrerequisites	= array();
+				
+				foreach ($aPrerequisites as $oOperationPrerequisite)
+				{
+					$aPrerequisites[]	= $oOperationPrerequisite->prerequisite_operation_id;
+				}
 			}
 			
 			$aReturn[$oStdClass->id]	= $oStdClass;
