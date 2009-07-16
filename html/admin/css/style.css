@@ -1209,13 +1209,16 @@ div.popup-debug table
 
 div.popup-debug table tbody tr th
 {
-	font-family			: inherit;
+	vertical-align		: top;
 	
+	font-family			: inherit;
 	font-weight			: bold;
 }
 
 div.popup-debug table tbody tr td
 {
+	vertical-align		: top;
+	
 	font-family			: inherit;
 }
 
