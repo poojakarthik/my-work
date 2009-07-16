@@ -37,7 +37,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		
 		// Defaults
 		this.setExpanded(false);
-		this.setSelected(false);
+		this.setSelected(false, true);
 	},
 	
 	getTreeGrid	: function()
@@ -110,6 +110,11 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	getDataType	: function()
 	{
 		return this._sDataType;
+	},
+	
+	getValue	: function()
+	{
+		return this._oElement.oCheckBox.domElement.value;
 	},
 	
 	setContent	: function(oContent)
@@ -187,7 +192,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this.setSelected(!this.isSelected());
 	},
 	
-	setSelected	: function(bSelected)
+	setSelected	: function(bSelected, bBypassCallback)
 	{
 		this._bSelected								= (bSelected) ? true : false;
 		this._oElement.oCheckBox.domElement.checked	= this._bSelected;
@@ -198,7 +203,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._oElement.oSelectIcon.domElement.title	= (this._bSelected) ? 'Uncheck' : 'Check';
 		
 		// onSelect Callback
-		if (this.getDataType() && this.getTreeGrid() && this.getTreeGrid().oDataTypes[this.getDataType()] && this.getTreeGrid().oDataTypes[this.getDataType()].fOnSelectCallback)
+		if (!bBypassCallback && this.getDataType() && this.getTreeGrid() && this.getTreeGrid().oDataTypes[this.getDataType()] && this.getTreeGrid().oDataTypes[this.getDataType()].fOnSelectCallback)
 		{
 			this.getTreeGrid().oDataTypes[this.getDataType()].fOnSelectCallback(this);
 		}
