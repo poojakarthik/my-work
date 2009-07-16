@@ -143,7 +143,7 @@ class JSON_Handler_Employee extends JSON_Handler
 				$aEmployeeOperationProfiles	= array();
 			}
 			
-			$aOperations		= Operation::getAll();
+			$aOperations		= JSON_Handler_Operation::getOperations();
 			$aOperationProfiles	= Operation_Profile::getAll();
 			
 			$aPermissionsTree	= array();

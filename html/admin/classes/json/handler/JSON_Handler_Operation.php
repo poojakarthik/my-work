@@ -195,5 +195,31 @@ class JSON_Handler_Operation extends JSON_Handler
 		
 		return $aOperations;
 	}
+	
+	public static function getOperations($bIncludeDependencyReferences=false)
+	{
+		static	$qQuery;
+		$qQuery	= ($qQuery) ? $qQuery : new Query();
+		
+		// Get full list of Operations
+		$aOperations	= Operation::getAll();
+		
+		// Convert to stdClasses
+		$aReturn	= array();
+		foreach ($aOperations as $iOperationId=>$oOperation)
+		{
+			$oStdClass	= $oOperation->toStdClass();
+			
+			if ($bIncludeDependencyReferences)
+			{
+				// Get list of dependencies
+				$oStdClass->aPrerequisites	= $oOperation->getPrerequisites();
+			}
+			
+			$aReturn[$oStdClass->id]	= $oStdClass;
+		}
+		
+		return $aReturn;
+	}
 }
 ?>
