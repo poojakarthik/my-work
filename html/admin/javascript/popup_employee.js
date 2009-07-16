@@ -481,14 +481,36 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			throw "Unknown Operation Profile '"+iValue+"'";
 		}
-		
+		this.updateOperationProfileSelected(iValue, oTreeGridNode.isSelected());
+	},
+	
+	updateOperationProfileSelected	: function(iOperationProfile, bSelected)
+	{
 		// Update Cache
-		this.oOperationProfiles[iValue].bEmployeeHasPermission	= oTreeGridNode.isSelected();
+		this.oOperationProfiles[iOperationProfile].bEmployeeHasPermission	= bSelected;
 		
-		// Cascade update to all other Nodes
-		for (var i = 0; i < this.oOperationProfiles[iValue].aInstances.length; i++)
+		// Cascade update to all Node Instances
+		for (var i = 0; i < this.oOperationProfiles[iOperationProfile].aInstances.length; i++)
 		{
-			this.oOperationProfiles[iValue].aInstances[i].setSelected(this.oOperationProfiles[iValue].bEmployeeHasPermission);
+			this.oOperationProfiles[iOperationProfile].aInstances[i].setSelected(this.oOperationProfiles[iOperationProfile].bEmployeeHasPermission, true);
+		}
+		
+		// Update prerequisites
+		for (var i = 0; i < this.oOperationProfiles[iOperationProfile].aPrerequisites.length; i++)
+		{
+			if (this.oOperationProfiles[iOperationProfile].bEmployeeHasPermission && !this.oOperationProfiles[this.oOperationProfiles[iOperationProfile].aPrerequisites[i]].bEmployeeHasPermission)
+			{
+				this.updateOperationSelected(this.oOperationProfiles[iOperationProfile].aPrerequisites[i], true);
+			}
+		}
+		
+		// Update dependants
+		for (var i = 0; i < this.oOperationProfiles[iOperationProfile].aDependants.length; i++)
+		{
+			if (!this.oOperationProfiles[iOperationProfile].bEmployeeHasPermission && this.oOperationProfiles[this.oOperationProfiles[iOperationProfile].aDependants[i]].bEmployeeHasPermission)
+			{
+				this.updateOperationSelected(this.oOperationProfiles[iOperationProfile].aDependants[i], false);
+			}
 		}
 	},
 	
