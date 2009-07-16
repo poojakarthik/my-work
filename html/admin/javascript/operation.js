@@ -7,12 +7,11 @@ var Operation	= Class.create
 });
 
 /* Static Methods */
-Operation.buildDependencyTree	= function(oOperations)
+Operation.prepareForTreeGrid	= function(oOperations)
 {
 	oDependencyTree	= {};
 	
 	oOperations	= jQuery.json.arrayAsObject(oOperations);
-	
 	
 	//Reflex_Debug.asHTMLPopup(oOperations);
 	
@@ -39,31 +38,7 @@ Operation.buildDependencyTree	= function(oOperations)
 		oOperations[iOperationId].aInstances	= [];
 	}
 	
-	// Create the Tree
-	for (iOperationId in oOperations)
-	{
-		if (!oOperations[iOperationId].aPrerequisites || !oOperations[iOperationId].aPrerequisites.length)
-		{
-			// Add each top-level Operation (i.e. no prerequsities) to the Tree
-			oDependencyTree[iOperationId]	= Operation.buildDependencyTreeNode(oOperations, iOperationId);
-		}
-	}
-	
-	//Reflex_Debug.asHTMLPopup(oDependencyTree);
 	//Reflex_Debug.asHTMLPopup(oOperations);
 	
-	return oDependencyTree;
-};
-
-Operation.buildDependencyTreeNode	= function(oOperations, iPrerequisiteOperationId)
-{
-	var oDependencyTree	= {};
-	
-	for (var i = 0; i < oOperations[iPrerequisiteOperationId].aDependants.length; i++)
-	{
-		// Add the dependants to the tree
-		oDependencyTree[oOperations[iPrerequisiteOperationId].aDependants[i]]	= Operation.buildDependencyTreeNode(oOperations, oOperations[iPrerequisiteOperationId].aDependants[i]);
-	}
-	
-	return oDependencyTree;
+	return oOperations;
 };
