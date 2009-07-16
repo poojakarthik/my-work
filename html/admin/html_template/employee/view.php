@@ -79,9 +79,11 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->LoadJavascript("control_field_date_picker");
 		$this->LoadJavascript("control_field_select");
 		
+		$this->LoadJavascript("operation");
+		$this->LoadJavascript("operation_profile");
+		
 		$this->LoadJavascript("user_role");
 		$this->LoadJavascript("employee");
-		$this->LoadJavascript("operation");
 		$this->LoadJavascript("popup_employee");
 		/**/
 	}
