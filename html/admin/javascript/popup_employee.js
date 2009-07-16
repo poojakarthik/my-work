@@ -61,6 +61,10 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	
 	buildContent	: function()
 	{
+		// DEBUG TEST
+		Reflex_Debug.asHTMLPopup(this.objEmployee);
+		// DEBUG TEST
+		
 		// Build Content
 		this._objPage			= {};
 		this._objPage.domElement	= document.createElement('div');
