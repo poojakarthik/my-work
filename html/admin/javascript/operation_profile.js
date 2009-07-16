@@ -7,18 +7,17 @@ var Operation_Profile	= Class.create
 });
 
 /* Static Methods */
-Operation_Profile.buildTree	= function(oOperations)
+Operation_Profile.buildTree	= function(oOperationProfiles)
 {
-	oDependencyTree	= {};
+	oProfileTree	= {};
 	
-	oOperations	= jQuery.json.arrayAsObject(oOperations);
+	oOperationProfiles	= jQuery.json.arrayAsObject(oOperationProfiles);
 	
+	//Reflex_Debug.asHTMLPopup(oOperationProfiles);
 	
-	//Reflex_Debug.asHTMLPopup(oOperations);
-	
-	for (iOperationId in oOperations)
+	for (iOperationProfileId in oOperationProfiles)
 	{
-		oOperations[iOperationId].aDependants	= [];
+		oOperationProfiles[iOperationProfileId].aChildren	= [];
 	}
 	
 	// Convert Child-Prerequisites to Parent-Dependants
@@ -49,7 +48,7 @@ Operation_Profile.buildTree	= function(oOperations)
 		}
 	}
 	
-	Reflex_Debug.asHTMLPopup(oDependencyTree);
+	Reflex_Debug.asHTMLPopup(oProfileTree);
 	Reflex_Debug.asHTMLPopup(oOperations);
 	
 	return oDependencyTree;

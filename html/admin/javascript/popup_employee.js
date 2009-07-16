@@ -307,12 +307,11 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			
 			// Populate Profiles Grid
 			//----------------------------------------------------------------//
-			oOperationProfiles			= jQuery.json.arrayAsObject(oOperationProfiles);
-			var oOperationProfileTree	= Operation_Profile.buildDependencyTree(oOperationProfiles);
+			oOperationProfiles	= jQuery.json.arrayAsObject(oOperationProfiles);
 			for (iProfileId in oOperationProfiles)
 			{
 				var oNode										= {};
-				oNode.oControl									= this.operationProfileToTree(oOperations[iOperationId]);
+				oNode.oControl									= this.operationProfileToTree(oOperationProfiles[iProfileId]);
 				oNode.oContent									= oNode.oControl.getContent();
 				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {bChecked: this.oOperationProfiles[iProfileId].bEmployeeHasPermission};
 				oNode.oControl.setContent(oNode.oContent);
@@ -525,6 +524,62 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				oControlGridNodeData.appendChild(this.operationToDependencyTree(this.oOperations[oOperation.aDependants[i]]));
 			}
 		}
+		
+		return oControlGridNodeData;
+	},
+
+	operationProfileToTree	: function(oOperationProfile)
+	{
+		//alert("Adding Operation Profile '"+oOperationProfile.name+"'");
+		
+		var oContent								= {};
+		oContent[Control_Tree_Grid.COLUMN_LABEL]	= oOperationProfile.name;
+		oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperationProfile.id;
+		
+		var oControlGridNodeData	= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sName);
+		oOperationProfile.aInstances.push(oControlGridNodeData);
+		
+		// Sub-Profiles
+		if (oOperationProfile.aOperationProfiles)
+		{
+			for (var i = 0; i < oOperationProfile.aOperationProfiles.length; i++)
+			{
+				oControlGridNodeData.appendChild(this.operationProfileToTree(this.aOperationProfiles[oOperationProfile.aOperationProfiles[i]]));
+			}
+		}
+		else
+		{
+			//alert(oOperationProfile.name + ' has no sub-Profiles');
+		}
+		
+		// Sub-Operations
+		if (oOperationProfile.aOperations)
+		{
+			for (var i = 0; i < oOperationProfile.aOperations.length; i++)
+			{
+				oControlGridNodeData.appendChild(this.operationToTree(this.aOperations[oOperationProfile.aOperations[i]]));
+			}
+		}
+		else
+		{
+			//alert(oOperationProfile.name + ' has no sub-Operations');
+		}
+		
+		return oControlGridNodeData;
+	},
+
+	operationToTree	: function(oOperation)
+	{
+		//alert("Adding Operation '"+oOperation.name+"'");
+		
+		var oContent								= {};
+		oContent[Control_Tree_Grid.COLUMN_LABEL]	= oOperation.name;
+		oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperation.id;
+		
+		var oControlGridNodeData	= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName);
+		
+		// We don't really need to register this as an Instance, because it's only there for informational purposes
+		oOperation.aInstances.push(oControlGridNodeData);
 		
 		return oControlGridNodeData;
 	}
