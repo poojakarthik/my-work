@@ -304,13 +304,14 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			// Populate Profiles Grid
 			//----------------------------------------------------------------//
-			oOperationProfiles	= jQuery.json.arrayAsObject(oOperationProfiles);
+			oOperationProfiles			= jQuery.json.arrayAsObject(oOperationProfiles);
+			var oOperationProfileTree	= Operation_Profile.buildDependencyTree(oOperationProfiles);
 			for (iProfileId in oOperationProfiles)
 			{
 				var oNode										= {};
-				oNode.oControl									= Popup_Employee.operationProfileToTreeGridNode(oOperationProfiles[iProfileId]);
+				oNode.oControl									= this.operationProfileToTree(oOperations[iOperationId]);
 				oNode.oContent									= oNode.oControl.getContent();
-				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {bChecked: oOperationProfiles[iProfileId].bEmployeeHasPermission};
+				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {bChecked: this.oOperationProfiles[iProfileId].bEmployeeHasPermission};
 				oNode.oControl.setContent(oNode.oContent);
 				this.arrTabs.Permissions.oProfiles.oControl.appendChild(oNode.oControl);
 			}
@@ -322,16 +323,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			oOperations						= jQuery.json.arrayAsObject(oOperations);
 			var oOperationDependencyTree	= Operation.buildDependencyTree(oOperations);
 			this.oOperations				= oOperations;
-			//Reflex_Debug.asHTMLPopup(this.oOperations);
-			/*for (iOperationId in oOperations)
-			{
-				var oNode										= {};
-				oNode.oControl									= Popup_Employee.operationToTreeGridNode(oOperations[iOperationId]);
-				oNode.oContent									= oNode.oControl.getContent();
-				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {bChecked: oOperations[iOperationId].bEmployeeHasPermission};
-				oNode.oControl.setContent(oNode.oContent);
-				this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode.oControl);
-			}*/
 			for (iOperationId in oOperations)
 			{
 				// Add the top-level Operations (this will cascade down)
@@ -340,7 +331,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 					var oNode										= {};
 					oNode.oControl									= this.operationToDependencyTree(oOperations[iOperationId]);
 					oNode.oContent									= oNode.oControl.getContent();
-					//oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {mValue: this.oOperations[iOperationId].id, bChecked: this.oOperations[iOperationId].bEmployeeHasPermission};
 					oNode.oControl.setContent(oNode.oContent);
 					this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode.oControl);
 				}
