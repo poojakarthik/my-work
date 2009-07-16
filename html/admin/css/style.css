@@ -1215,6 +1215,12 @@ div.popup-debug table tbody tr th
 	font-weight			: bold;
 }
 
+div.popup-debug table tbody tr td
+{
+	font-family			: inherit;
+	font-size			: inherit;
+}
+
 div.popup-debug table ul
 {
 	list-style-type	: none;
@@ -1222,7 +1228,8 @@ div.popup-debug table ul
 
 div.popup-debug table ul li
 {
-	
+	font-family			: inherit;
+	font-size			: inherit;
 }
 /************** END - Vixen Popup Stuff (old style popups) - END **************/
 
