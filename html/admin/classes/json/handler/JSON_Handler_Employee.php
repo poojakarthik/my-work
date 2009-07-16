@@ -144,8 +144,9 @@ class JSON_Handler_Employee extends JSON_Handler
 			}
 			
 			$aOperations		= JSON_Handler_Operation::getOperations(true);
-			$aOperationProfiles	= Operation_Profile::getAll();
+			$aOperationProfiles	= JSON_Handler_Operation_Profile::getOperationProfiles(true, true);
 			
+			// Operations
 			$oOperations	= array();
 			foreach ($aOperations as $iOperationId=>$oOperation)
 			{
@@ -153,10 +154,11 @@ class JSON_Handler_Employee extends JSON_Handler
 				$oOperations[$iOperationId]->bEmployeeHasPermission	= array_key_exists($iOperationId, $aEmployeeOperations);
 			}
 			
+			// Operation Profiles
 			$oOperationProfiles	= array();
 			foreach ($aOperationProfiles as $iOperationProfileId=>$oOperationProfile)
 			{
-				$oOperationProfiles[$iOperationProfileId]							= self::_buildOperationProfileTreeNode($oOperationProfile);
+				$oOperationProfiles[$iOperationProfileId]							= $oOperationProfile;
 				$oOperationProfiles[$iOperationProfileId]->bEmployeeHasPermission	= array_key_exists($iOperationProfileId, $aEmployeeOperationProfiles);
 			}
 			
@@ -179,28 +181,6 @@ class JSON_Handler_Employee extends JSON_Handler
 							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
-	}
-	
-	private static function _buildOperationProfileTreeNode(Operation_Profile $oOperationProfile)
-	{
-		// Prepare this node
-		$oNode	= $oOperationProfile->toStdClass();
-		
-		$oNode->oOperations	= array();
-		$aChildOperations	= $oOperationProfile->getChildOperations();
-		foreach ($aChildOperations as $iOperationId=>$oOperation)
-		{
-			$oNode->oOperations[$iOperationId]		= $oOperation->toStdClass();
-		}
-		
-		$oNode->oOperationProfiles	= array();
-		$aChildOperationProfiles	= $oOperationProfile->getChildOperationProfiles();
-		foreach ($aChildOperationProfiles as $iOperationProfileId=>$oOperationProfile)
-		{
-			$oNode->oOperationProfiles[$iOperationProfileId]	= self::_buildOperationProfileTreeNode($oOperationProfile);
-		}
-		
-		return $oNode;
 	}
 }
 ?>
