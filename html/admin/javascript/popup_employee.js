@@ -332,14 +332,18 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				oNode.oControl.setContent(oNode.oContent);
 				this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode.oControl);
 			}*/
-			for (iOperationId in oOperationDependencyTree)
+			for (iOperationId in this.oOperations)
 			{
-				var oNode										= {};
-				oNode.oControl									= this.operationToDependencyTree(oOperations[iOperationId]);
-				oNode.oContent									= oNode.oControl.getContent();
-				//oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {mValue: this.oOperations[iOperationId].id, bChecked: this.oOperations[iOperationId].bEmployeeHasPermission};
-				oNode.oControl.setContent(oNode.oContent);
-				this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode.oControl);
+				// Add the top-level Operations (this will cascade down)
+				if (!oOperations[iOperationId].aPrerequisites || !oOperations[iOperationId].aPrerequisites.length)
+				{
+					var oNode										= {};
+					oNode.oControl									= this.operationToDependencyTree(oOperations[iOperationId]);
+					oNode.oContent									= oNode.oControl.getContent();
+					//oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {mValue: this.oOperations[iOperationId].id, bChecked: this.oOperations[iOperationId].bEmployeeHasPermission};
+					oNode.oControl.setContent(oNode.oContent);
+					this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode.oControl);
+				}
 			}
 			this.arrTabs.Permissions.oOperations.oControl.render();
 			//----------------------------------------------------------------//
@@ -500,7 +504,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			for (var i = 0; i < oOperation.aDependants.length; i++)
 			{
-				oControlGridNodeData.appendChild(this.operationToTreeGridNode(this.oOperations[oOperation.aDependants[i]]));
+				oControlGridNodeData.appendChild(this.operationToDependencyTree(this.oOperations[oOperation.aDependants[i]]));
 			}
 		}
 		
