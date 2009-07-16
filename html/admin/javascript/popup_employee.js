@@ -444,7 +444,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	onOperationProfileCheck	: function(oTreeGridNode)
 	{
 		var iValue	= oTreeGridNode.getValue();
-		if (!this.oOperationProfiles) || iValue === undefined || !this.oOperationProfiles[iValue])
+		if (!this.oOperationProfiles || iValue === undefined || !this.oOperationProfiles[iValue])
 		{
 			throw "Unknown Operation Profile '"+iValue+"'";
 		}
