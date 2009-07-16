@@ -29,13 +29,13 @@ Operation.buildDependencyTree	= function(oOperations)
 				{
 					throw "Invalid prerequisite reference: "+oOperations[iOperationId].aPrerequisites[i];
 				}
-				if (oOperations[oOperations[iOperationId].aPrerequisites[i]].oDependants === undefined)
+				if (oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants === undefined)
 				{
-					oOperations[oOperations[iOperationId].aPrerequisites[i]].oDependants	= {};
+					oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants	= [];
 				}
 				
 				// Add as a dependant
-				oOperations[oOperations[iOperationId].aPrerequisites[i]].oDependants[iOperationId]	= oOperations[iOperationId];
+				oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants.push(oOperations[iOperationId]);
 			}
 		}
 		
