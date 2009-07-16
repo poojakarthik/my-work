@@ -1191,6 +1191,7 @@ div.popup-debug
 	
 	color				: #000;
 	font-family			: "Courier New", Courier, monospace;
+	font-size			: 0.8em;
 	
 	height				: 20em;
 	width				: 100%;
@@ -1198,6 +1199,25 @@ div.popup-debug
 }
 
 div.popup-debug table
+{
+	font-family			: inherit;
+	font-size			: inherit;
+	
+	border-collapse		: collapse;
+	padding				: 0;
+}
+
+div.popup-debug table tbody tr th
+{
+	font-weight			: bold;
+}
+
+div.popup-debug table ul
+{
+	list-style-type	: none;
+}
+
+div.popup-debug table ul li
 {
 	
 }
