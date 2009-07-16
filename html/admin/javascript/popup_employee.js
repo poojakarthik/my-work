@@ -441,31 +441,35 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			throw "Unknown Operation '"+iValue+"'";
 		}
-		
+		this.updateOperationSelected(iValue, oTreeGridNode.isSelected());
+	},
+	
+	updateOperationSelected	: function(iOperation, bSelected)
+	{
 		// Update Cache
-		this.oOperations[iValue].bEmployeeHasPermission	= oTreeGridNode.isSelected();
+		this.oOperations[iOperation].bEmployeeHasPermission	= bSelected;
 		
-		// Cascade update to all other Nodes
-		for (var i = 0; i < this.oOperations[iValue].aInstances.length; i++)
+		// Cascade update to all Node Instances
+		for (var i = 0; i < this.oOperations[iOperation].aInstances.length; i++)
 		{
-			this.oOperations[iValue].aInstances[i].setSelected(this.oOperations[iValue].bEmployeeHasPermission, true);
+			this.oOperations[iOperation].aInstances[i].setSelected(this.oOperations[iOperation].bEmployeeHasPermission, true);
 		}
 		
 		// Update prerequisites
-		for (var i = 0; i < this.oOperations[iValue].aPrerequisites.length; i++)
+		for (var i = 0; i < this.oOperations[iOperation].aPrerequisites.length; i++)
 		{
-			if (this.oOperations[iValue].bEmployeeHasPermission && !this.oOperations[this.oOperations[iValue].aPrerequisites[i]].bEmployeeHasPermission)
+			if (this.oOperations[iOperation].bEmployeeHasPermission && !this.oOperations[this.oOperations[iOperation].aPrerequisites[i]].bEmployeeHasPermission)
 			{
-				this.oOperations[this.oOperations[iValue].aPrerequisites[i]].setSelected(false);
+				this.updateOperationSelected(this.oOperations[iOperation].aPrerequisites[i], true);
 			}
 		}
 		
 		// Update dependants
-		for (var i = 0; i < this.oOperations[iValue].aDependants.length; i++)
+		for (var i = 0; i < this.oOperations[iOperation].aDependants.length; i++)
 		{
-			if (!this.oOperations[iValue].bEmployeeHasPermission && this.oOperations[this.oOperations[iValue].aDependants[i]].bEmployeeHasPermission)
+			if (!this.oOperations[iOperation].bEmployeeHasPermission && this.oOperations[this.oOperations[iOperation].aDependants[i]].bEmployeeHasPermission)
 			{
-				this.oOperations[this.oOperations[iValue].aDependants[i]].setSelected(false);
+				this.updateOperationSelected(this.oOperations[iOperation].aDependants[i], false);
 			}
 		}
 	},
