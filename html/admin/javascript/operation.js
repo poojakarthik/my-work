@@ -40,8 +40,8 @@ Operation.buildDependencyTree	= function(oOperations)
 		}
 	}
 	
-	Reflex_Debug.asHTMLPopup(oOperations);
-	Reflex_Debug.asHTMLPopup(oDependencyTree);
+	//Reflex_Debug.asHTMLPopup(oOperations);
+	//Reflex_Debug.asHTMLPopup(oDependencyTree);
 	
 	return oDependencyTree;
 };

@@ -321,7 +321,18 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 			//----------------------------------------------------------------//
 			oPermissions.oOperations		= jQuery.json.arrayAsObject(oPermissions.oOperations);
 			var oOperationDependencyTree	= Operation.buildDependencyTree(oPermissions.oOperations);
-			for (iOperationId in oPermissions.oOperations)
+			this.oOperations				= oPermissions.oOperations;
+			Reflex_Debug.asHTMLPopup(this.oOperations);
+			/*for (iOperationId in oPermissions.oOperations)
+			{
+				var oNode										= {};
+				oNode.oControl									= Popup_Employee.operationToTreeGridNode(oPermissions.oOperations[iOperationId]);
+				oNode.oContent									= oNode.oControl.getContent();
+				oNode.oContent[Control_Tree_Grid.COLUMN_CHECK]	= {bChecked: oPermissions.oOperations[iOperationId].bEmployeeHasPermission};
+				oNode.oControl.setContent(oNode.oContent);
+				this.arrTabs.Permissions.oOperations.oControl.appendChild(oNode.oControl);
+			}*/
+			for (iOperationId in oOperationDependencyTree)
 			{
 				var oNode										= {};
 				oNode.oControl									= Popup_Employee.operationToTreeGridNode(oPermissions.oOperations[iOperationId]);
