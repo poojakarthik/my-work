@@ -48,7 +48,7 @@ Operation.buildDependencyTree	= function(oOperations)
 		}
 	}
 	
-	Reflex_Debug.asHTMLPopup(oOperations);
+	//Reflex_Debug.asHTMLPopup(oOperations);
 	Reflex_Debug.asHTMLPopup(oDependencyTree);
 	
 	return oDependencyTree;
@@ -57,8 +57,6 @@ Operation.buildDependencyTree	= function(oOperations)
 Operation.buildDependencyTreeNode	= function(oOperations, iPrerequisiteOperationId)
 {
 	var oDependencyTree	= {};
-	
-	alert(iPrerequisiteOperationId);
 	
 	for (var i = 0; i < oOperations[iPrerequisiteOperationId].aPrerequisites.length; i++)
 	{
