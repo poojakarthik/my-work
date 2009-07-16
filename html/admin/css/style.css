@@ -335,6 +335,20 @@ tr.highlight-row:hover td
 /************************** END - Reflex Table - END **************************/
 
 /******************* START - Reflex Input Controls - START ********************/
+input[type='text'],
+select,
+textarea
+{
+	border : .1em solid #111;
+}
+
+input[type='text'][disabled],
+select[disabled],
+textarea[disabled]
+{
+	background-color: #EFEBE7;
+}
+
 input.required, 
 select.required, 
 textarea.required{
@@ -356,21 +370,8 @@ select.valid,
 textarea.valid {
 	background: #ecfff0;
 	color: #111;
-	border: .1em solid #3d0;
-}
-
-input[type='text'],
-select,
-textarea
-{
-	border : .1em solid #111;
-}
-
-input[type='text'][disabled],
-select[disabled],
-textarea[disabled]
-{
-	background-color: #EFEBE7;
+	/* border: .1em solid #3d0; */
+	border-color:   #33DD00;
 }
 /********************* END - Reflex Input Controls - END **********************/
 
