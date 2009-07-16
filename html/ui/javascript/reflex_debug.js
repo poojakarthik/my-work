@@ -74,7 +74,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 					domChildTBody.appendChild(domChildTR);
 					
 					var domKeyTH		= document.createElement('th');
-					domKeyTH.innerHTML	= "["+i+"] => ";
+					domKeyTH.innerHTML	= "['"+i+"'] => ";
 					domChildTR.appendChild(domKeyTH);
 					
 					var domValueTD		= document.createElement('td');
