@@ -81,5 +81,5 @@ Reflex_Debug.asHTMLPopup	= function(mDebug)
 	var domDebugDIV	= document.createElement('div');
 	domDebugDIV.addClassName('popup-debug');
 	domDebugDIV.appendChild(Reflex_Debug.asHTML(mDebug));
-	$Alert(domDebugDIV, 'large', null, 'modal', 'Developer Debug');
+	Reflex_Popup.alert(domDebugDIV);
 };

@@ -70,6 +70,19 @@ Object.extend(Reflex_Popup, {
 			Reflex_Popup.overlay.style.top = '' + document.body.scrollTop + 'px';
 			Reflex_Popup.overlay.style.left = '' + document.body.scrollLeft + 'px';
 		}
+	},
+	
+	alert	: function(domElement, iWidth)
+	{
+		var oPopup	= new Reflex_Popup(iWidth ? iWidth : 25);
+		
+		oPopup.setTitle('Developer Debug');
+		oPopup.addCloseButton();
+		
+		var domCloseButton			= document.createElement('button');
+		domCloseButton.innerHTML	= '&nbsp;&nbsp;&nbsp;OK&nbsp;&nbsp;&nbsp;';
+		domCloseButton.addEventListener('click', oPopup.hide());
+		oPopup.setFooterButtons([domCloseButton], true);
 	}
 });
 
