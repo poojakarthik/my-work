@@ -218,7 +218,7 @@ class JSON_Handler_Operation extends JSON_Handler
 				
 				foreach ($aPrerequisites as $oOperationPrerequisite)
 				{
-					$aPrerequisites[]	= $oOperationPrerequisite->prerequisite_operation_id;
+					$oStdClass->aPrerequisites[]	= $oOperationPrerequisite->prerequisite_operation_id;
 				}
 			}
 			
