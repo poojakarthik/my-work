@@ -68,7 +68,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 			// Debug with native toString()
 			case 'function':
 			default:
-				domLI.innerHTML	= String(mDebug).escapeHTML();
+				domValueTD.innerHTML	= String(mDebug).escapeHTML();
 				break;
 		}
 	}
