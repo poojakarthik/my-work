@@ -35,7 +35,6 @@ var Employee	= Class.create
 		if (oResponse)
 		{
 			// Process JSON Response
-			Reflex_Popup.alert(oResponse);
 			fCallback(oResponse.oOperations, oResponse.oOperationProfiles);
 		}
 		else
