@@ -446,6 +446,12 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		{
 			this.oOperations[iValue]._aInstances[i].setSelected(this.oOperations[iValue].bEmployeeHasPermission);
 		}
+		
+		// Update pre-requisites
+		// TODO
+		
+		// Update dependants
+		// TODO
 	},
 	
 	onOperationProfileCheck	: function(oTreeGridNode)
@@ -482,7 +488,8 @@ Popup_Employee.operationToTreeGridNode	= function(oOperation, bWithDependants)
 		oContent[Control_Tree_Grid.COLUMN_CHECK]	= {mValue: oOperation.id, bChecked: oOperation.bEmployeeHasPermission};
 	}
 	
-	var oControlGridNodeData					= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName);
+	var oControlGridNodeData	= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName);
+	oOperation._aInstances[]	= oControlGridNodeData;
 	
 	if (bWithDependants && oOperation.oDependants)
 	{
@@ -504,7 +511,8 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 	oContent[Control_Tree_Grid.COLUMN_LABEL]	= oOperationProfile.name;
 	oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperationProfile.id;
 	
-	var oControlGridNodeData					= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sName);
+	var oControlGridNodeData		= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sName);
+	oOperationProfile._aInstances[]	= oControlGridNodeData;
 	
 	// Sub-Profiles
 	if (oOperationProfile.oOperationProfiles)
