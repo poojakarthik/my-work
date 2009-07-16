@@ -13,6 +13,9 @@ Operation.buildDependencyTree	= function(oOperations)
 	
 	oOperations	= jQuery.json.arrayAsObject(oOperations);
 	
+	
+	Reflex_Debug.asHTMLPopup(oOperations);
+	
 	// Convert Child-Prerequisites to Parent-Dependants
 	for (iOperationId in oOperations)
 	{
