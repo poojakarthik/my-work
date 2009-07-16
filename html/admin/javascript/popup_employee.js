@@ -512,7 +512,7 @@ Popup_Employee.operationProfileToTreeGridNode	= function(oOperationProfile)
 	oContent[Control_Tree_Grid.COLUMN_VALUE]	= oOperationProfile.id;
 	
 	var oControlGridNodeData	= new Control_Tree_Grid_Node_Data(oContent, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sName);
-	oOperationProfile.aInstances.push(oControlGridNodeData);
+	//oOperationProfile.aInstances.push(oControlGridNodeData);
 	
 	// Sub-Profiles
 	if (oOperationProfile.oOperationProfiles)
