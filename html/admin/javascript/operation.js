@@ -25,6 +25,10 @@ Operation.buildDependencyTree	= function(oOperations)
 			// Convert Child-Prerequisites to Parent-Dependants
 			for (var i = 0; i < oOperations[iOperationId].aPrerequisites.length; i++)
 			{
+				if (!oOperations[oOperations[iOperationId].aPrerequisites[i]])
+				{
+					throw "Invalid prerequisite reference: "+oOperations[iOperationId].aPrerequisites[i];
+				}
 				if (oOperations[oOperations[iOperationId].aPrerequisites[i]].oDependants === undefined)
 				{
 					oOperations[oOperations[iOperationId].aPrerequisites[i]].oDependants	= {};
