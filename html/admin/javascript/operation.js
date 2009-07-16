@@ -19,28 +19,20 @@ Operation.buildDependencyTree	= function(oOperations)
 	// Convert Child-Prerequisites to Parent-Dependants
 	for (iOperationId in oOperations)
 	{
-		if (!oOperations[iOperationId].aPrerequisites || !oOperations[iOperationId].aPrerequisites.length)
+		// Convert Child-Prerequisites to Parent-Dependants
+		for (var i = 0; i < oOperations[iOperationId].aPrerequisites.length; i++)
 		{
-			// Add each top-level Operation (i.e. no prerequsities) to the Tree
-			oDependencyTree[iOperationId]	= oOperations[iOperationId];
-		}
-		else
-		{
-			// Convert Child-Prerequisites to Parent-Dependants
-			for (var i = 0; i < oOperations[iOperationId].aPrerequisites.length; i++)
+			if (!oOperations[oOperations[iOperationId].aPrerequisites[i]])
 			{
-				if (!oOperations[oOperations[iOperationId].aPrerequisites[i]])
-				{
-					throw "Invalid prerequisite reference: "+oOperations[iOperationId].aPrerequisites[i];
-				}
-				if (oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants === undefined)
-				{
-					oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants	= [];
-				}
-				
-				// Add as a dependant
-				oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants.push(iOperationId);
+				throw "Invalid prerequisite reference: "+oOperations[iOperationId].aPrerequisites[i];
 			}
+			if (oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants === undefined)
+			{
+				oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants	= [];
+			}
+			
+			// Add as a dependant
+			oOperations[oOperations[iOperationId].aPrerequisites[i]].aDependants.push(iOperationId);
 		}
 		
 		oOperations[iOperationId].aInstances	= [];
