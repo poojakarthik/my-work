@@ -1861,4 +1861,14 @@ table.tree-grid.permissions tr.selectable td
 	opacity		: 1;
 }
 
+table.tree-grid.permissons.read-only tr
+{
+	display		: none;
+}
+
+table.tree-grid.permissions.read-only tr.selectable
+{
+	display		: table-row;
+}
+
 /******************************************************************************/
