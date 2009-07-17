@@ -319,7 +319,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	{
 		//alert('Set Control Mode...');
 		var oTreeGridColumns	= {};
-		oTreeGridColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
 		switch (bolControlMode)
 		{
 			case Control_Field.RENDER_MODE_EDIT:
@@ -349,6 +348,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				throw "Invalid Control Mode '" + bolControlMode + "'";
 		}
 		
+		oTreeGridColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
 		this.arrTabs.Permissions.oProfiles.oControl.setColumns(oTreeGridColumns);
 		this.arrTabs.Permissions.oOperations.oControl.setColumns(oTreeGridColumns);
 		
