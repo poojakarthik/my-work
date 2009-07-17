@@ -199,11 +199,11 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		
 		if (this._bSelected)
 		{
-			this._oElement.addClassName('selected');
+			this._oElement.domElement.addClassName('selected');
 		}
 		else
 		{
-			this._oElement.removeClassName('selected');
+			this._oElement.domElement.removeClassName('selected');
 		}
 		
 		// Update Icon
