@@ -378,7 +378,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				
 				// Send Tree Grids into Edit mode
 				oTreeGridColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
-				oTabPage.oOperations.oControl.getTable().removeClassName('read-only');
+				this.arrTabs.Permissions.oOperations.oControl.getTable().removeClassName('read-only');
 				break;
 				
 			case Control_Field.RENDER_MODE_VIEW:
@@ -389,18 +389,18 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				this.arrTabs.Details.table.tbody.PassWordConfirm.tr.domElement.style.display	= 'none';
 				
 				// Send Tree Grids into Read-Only mode
-				oTabPage.oOperations.oControl.getTable().addClassName('read-only');
+				this.arrTabs.Permissions.oOperations.oControl.getTable().addClassName('read-only');
 				break;
 			
 			default:
 				throw "Invalid Control Mode '" + bolControlMode + "'";
 		}
 		
-		oTabPage.oProfiles.oColumns									= {};
-		oTabPage.oProfiles.oColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
-		oTabPage.oProfiles.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
-		oTabPage.oProfiles.oControl.setColumns(oTreeGridColumns);
-		oTabPage.oOperations.oControl.setColumns(oTreeGridColumns);
+		this.arrTabs.Permissions.oProfiles.oColumns									= {};
+		this.arrTabs.Permissions.oProfiles.oColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
+		this.arrTabs.Permissions.oProfiles.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
+		this.arrTabs.Permissions.oProfiles.oControl.setColumns(oTreeGridColumns);
+		this.arrTabs.Permissions.oOperations.oControl.setColumns(oTreeGridColumns);
 		
 		for (i in this.arrTabs.Details.table.tbody)
 		{
