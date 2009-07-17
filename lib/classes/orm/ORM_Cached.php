@@ -19,7 +19,10 @@ abstract class ORM_Cached extends ORM
 	//NOTE: until PHP 5.3 all functions that aren't private should be internally called using call_user_func($strClass, [args]) except for &getReferenceToCache()
 
 	// This array stores individual caches for each class that extends this class
-	private static $_arrCache = array();
+	private static	$_arrCache			= array();
+	
+	// This array stores whether each cache has been fully retrieved
+	private static	$_arrIsFullyCached	= array();
 
 	/**
 	 * __construct()
@@ -312,7 +315,7 @@ abstract class ORM_Cached extends ORM
 		// PHP 5.3 - $strCacheName = static::getCacheName();
 		$strCacheName = call_user_func(array($strClass, 'getCacheName'));
 		
-		if ($bolForceReload || !self::hasCache($strCacheName))
+		if ($bolForceReload || !self::hasCache($strCacheName) || !self::$_arrIsFullyCached[$strCacheName])
 		{
 			// Reload the object into the cache
 			
@@ -335,6 +338,9 @@ abstract class ORM_Cached extends ORM
 			
 			// Add the objects to the cache as a bulk operation
 			call_user_func(array($strClass, 'addToCache'), $arrObjects);
+			
+			// We have fully cached -- don't do it again unless we're forced to
+			self::$_arrIsFullyCached[$strCacheName]	= true;
 		} 
 		
 		return call_user_func(array($strClass, 'getCachedObjects'));
