@@ -215,53 +215,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oProfiles.domElement				= oTabPage.oProfiles.oControl.getElement();
 		oTabPage.oProfiles.oControl.getTable().addClassName('permissions');
 		oTabPage.domElement.appendChild(oTabPage.oProfiles.domElement);
-		/*
-		// Populate
-		var oCSR										= {}
-		oCSR.oContent									= {};
-		oCSR.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Customer Service Representative', sIconSource: '../admin/img/template/operation_profile.png'};
-		oCSR.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 7;
-		oCSR.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
-		oCSR.oControl									= new Control_Tree_Grid_Node_Data(oCSR.oContent);
-		oTabPage.oProfiles.oControl.appendChild(oCSR.oControl);
-		/*
-		var oFlexAdmin										= {}
-		oFlexAdmin.oContent									= {};
-		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Flex Admin', sIconSource: '../admin/img/template/operation_profile.png'};
-		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 2;
-		oFlexAdmin.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
-		oFlexAdmin.oControl									= new Control_Tree_Grid_Node_Data(oFlexAdmin.oContent);
-		oTabPage.oProfiles.oControl.appendChild(oFlexAdmin.oControl);
-		/*
-		var oCSM										= {}
-		oCSM.oContent									= {};
-		oCSM.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Customer Service Manager', sIconSource: '../admin/img/template/operation_profile.png'};
-		oCSM.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 4;
-		oCSM.oContent[Control_Tree_Grid.COLUMN_CHECK]	= true;
-		oCSM.oControl									= new Control_Tree_Grid_Node_Data(oCSM.oContent);
-		oTabPage.oProfiles.oControl.appendChild(oCSM.oControl);
-		/*
-		delete(oCSR.oContent[Control_Tree_Grid.COLUMN_CHECK]);
-		
-		oCSM.oCSR			= {};
-		oCSM.oCSR.oControl	= new Control_Tree_Grid_Node_Data(oCSR.oContent);
-		oCSM.oCSR.oControl.getElement().addClassName('informational');
-		oCSM.oControl.appendChild(oCSM.oCSR.oControl);
-		/*
-		
-		var oEditAccountDetails											= {}
-		oEditAccountDetails.oContent									= {};
-		oEditAccountDetails.oContent[Control_Tree_Grid.COLUMN_LABEL]	= {sLabel: 'Edit Account Details', sIconSource: '../admin/img/template/operation.png'};
-		oEditAccountDetails.oContent[Control_Tree_Grid.COLUMN_VALUE]	= 9;
-		oEditAccountDetails.oControl									= new Control_Tree_Grid_Node_Data(oEditAccountDetails.oContent);
-		oEditAccountDetails.oControl.getElement().addClassName('informational');
-		oCSR.oControl.appendChild(oEditAccountDetails.oControl);
-		
-		oCSM.oCSR.oEditAccountDetails			= {};
-		oCSM.oCSR.oEditAccountDetails.oControl	= new Control_Tree_Grid_Node_Data(oEditAccountDetails.oContent);
-		oCSM.oCSR.oEditAccountDetails.oControl.getElement().addClassName('informational');
-		oCSM.oCSR.oControl.appendChild(oCSM.oCSR.oEditAccountDetails.oControl);
-		*/
 		
 		// Set Columns
 		oTabPage.oProfiles.oColumns									= {};
@@ -396,9 +349,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				throw "Invalid Control Mode '" + bolControlMode + "'";
 		}
 		
-		this.arrTabs.Permissions.oProfiles.oColumns									= {};
-		this.arrTabs.Permissions.oProfiles.oColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
-		this.arrTabs.Permissions.oProfiles.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
 		this.arrTabs.Permissions.oProfiles.oControl.setColumns(oTreeGridColumns);
 		this.arrTabs.Permissions.oOperations.oControl.setColumns(oTreeGridColumns);
 		
