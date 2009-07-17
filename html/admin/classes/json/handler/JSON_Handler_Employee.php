@@ -154,8 +154,6 @@ class JSON_Handler_Employee extends JSON_Handler
 				$oOperations[$iOperationId]->bEmployeeHasPermission	= array_key_exists($iOperationId, $aEmployeeOperations);
 			}
 			
-			throw new Exception(count($aOperationProfiles));
-			
 			// Operation Profiles
 			$oOperationProfiles	= array();
 			foreach ($aOperationProfiles as $iOperationProfileId=>$oOperationProfile)
