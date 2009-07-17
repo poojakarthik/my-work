@@ -197,6 +197,15 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._bSelected								= (bSelected) ? true : false;
 		this._oElement.oCheckBox.domElement.checked	= this._bSelected;
 		
+		if (this._bSelected)
+		{
+			this._oElement.addClassName('selected');
+		}
+		else
+		{
+			this._oElement.removeClassName('selected');
+		}
+		
 		// Update Icon
 		this._oElement.oSelectIcon.domElement.src	= '../admin/img/template/checkbox' + (this.isSelected() ? '-checked' : '') + '.png';
 		this._oElement.oSelectIcon.domElement.alt	= (this._bSelected) ? 'Uncheck' : 'Check';
