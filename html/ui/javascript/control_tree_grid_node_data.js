@@ -320,11 +320,11 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		
 		// Enable/Disable Selection
 		this._oElement.oSelectIcon.domElement.removeEventListener('click', this._oElement.oSelectIcon.onClick, false);
-		if (this.getTreeGrid().isEditable())
+		if (this.getTreeGrid() && this.getTreeGrid().isEditable())
 		{
 			this._oElement.oSelectIcon.domElement.addEventListener('click', this._oElement.oSelectIcon.onClick, false);
 		}
-		this._oElement.oCheckBox.domElement.readOnly	= !this.getTreeGrid().isEditable();
+		this._oElement.oCheckBox.domElement.readOnly	= (!this.getTreeGrid() || !this.getTreeGrid().isEditable());
 		
 		
 		// Render the Children
