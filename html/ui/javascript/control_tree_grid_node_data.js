@@ -23,7 +23,6 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		this._oElement.oSelectIcon.domElement.alt	= '';
 		this._oElement.oSelectIcon.domElement.title	= '';
 		this._oElement.oSelectIcon.onClick			= this.toggleSelected.bind(this);
-		this._oElement.oSelectIcon.domElement.addEventListener('click', this._oElement.oSelectIcon.onClick, false);
 		
 		this._oElement.oRowIcon						= {};
 		this._oElement.oRowIcon.domElement			= document.createElement('img');
@@ -294,7 +293,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	
 	isVisible	: function()
 	{
-		return (this.getParent() && this.getParent().isVisible() && this.getParent().isExpanded()) ? true : false;
+		return (this.getParent() && this.getParent().isVisible() && this.getParent().isExpanded() && this.getTreeGrid() && this.getTreeGrid().isEditable()) ? true : false;
 	},
 	
 	getDepth	: function()
@@ -317,9 +316,16 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		for (sField in this._oVisibleColumns)
 		{
 			this._oElement.domElement.appendChild((this._oContent && this._oContent[sField]) ? this._oContent[sField].domElement : document.createElement('td'));
-			
-			//alert("Field '"+sField+"' does "+((this._oContent && this._oContent[sField]) ? '' : 'not ')+"exist");
 		}
+		
+		// Enable/Disable Selection
+		this._oElement.oSelectIcon.domElement.removeEventListener('click', this._oElement.oSelectIcon.onClick, false);
+		if (this.getTreeGrid().isEditable())
+		{
+			this._oElement.oSelectIcon.domElement.addEventListener('click', this._oElement.oSelectIcon.onClick, false);
+		}
+		this._oElement.oCheckBox.domElement.readOnly	= !this.getTreeGrid().isEditable();
+		
 		
 		// Render the Children
 		for (var i = 0; i < this._aChildren.length; i++)
