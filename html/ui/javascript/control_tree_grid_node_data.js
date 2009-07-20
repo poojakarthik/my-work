@@ -293,7 +293,7 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	
 	isVisible	: function()
 	{
-		return (this.getParent() && this.getParent().isVisible() && this.getParent().isExpanded() && this.getTreeGrid() && this.getTreeGrid().isEditable()) ? true : false;
+		return (this.getParent() && this.getParent().isVisible() && this.getParent().isExpanded() && (this.isSelected() || (this.getTreeGrid() && this.getTreeGrid().isEditable()))) ? true : false;
 	},
 	
 	getDepth	: function()
