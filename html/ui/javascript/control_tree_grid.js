@@ -86,7 +86,7 @@ var Control_Tree_Grid	= Class.create
 		{
 			if (sField === Control_Tree_Grid.COLUMN_CHECK)
 			{
-				if (this.isEditable() || oVisibleColumns[Control_Tree_Grid.COLUMN_CHECK].bShowWhenReadOnly)
+				if (this.isEditable() || this.oColumns[sField].bShowWhenReadOnly)
 				{
 					oVisibleColumns[sField]	= this.oColumns[sField];
 				}
