@@ -13,6 +13,8 @@ var Dataset_Ajax	= Class.create
 		this.setCacheMode(intCacheMode);
 		this._arrRecordCache		= null;
 		this._intRecordCount		= null;
+		this._intCacheTimeout		= Dataset_Ajax.CACHE_TIMEOUT_DEFAULT;
+		this._intLastCachedOn		= null;
 	},
 	
 	getRecords	: function(fncCallback, intLimit, intOffset)
@@ -21,13 +23,14 @@ var Dataset_Ajax	= Class.create
 		intOffset	= Math.max(0, (intOffset >= 0) ? intOffset : 0);
 		
 		// Do we need to update the cache?
+		var intTime	= Date().getTime();
 		if (this._intCacheMode == Dataset_Ajax.CACHE_MODE_NO_CACHING)
 		{
 			// Yes -- AJAX just this range
 			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecords.bind(this, fncCallback, intLimit, intOffset)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
 			fncJsonFunc(false, intLimit, intOffset);
 		}
-		else if (this._arrRecordCache == null)
+		else if (this._arrRecordCache == null || !this._intLastCachedOn || (this._intCacheTimeout && this._intCacheTimeout > (intTime - this._intLastCachedOn)))
 		{
 			// Yes -- AJAX full result set
 			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecords.bind(this, fncCallback, intLimit, intOffset)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
@@ -115,6 +118,8 @@ var Dataset_Ajax	= Class.create
 		//this._arrRecordCache	= (this.getCacheMode() == Dataset_Ajax.CACHE_MODE_NO_CACHING) ? null : objResponse.arrRecords;
 		this._arrRecordCache	= oRecords;
 		this._intRecordCount	= objResponse.intRecordCount;
+		
+		this._intLastCachedOn	= Date().getTime();
 	},
 	
 	emptyCache	: function()
@@ -151,9 +156,22 @@ var Dataset_Ajax	= Class.create
 	getCacheMode	: function()
 	{
 		return this._intCacheMode;
+	},
+	
+	setCacheTimeout	: function(intCacheTimeout)
+	{
+		this._intCacheTimeout	= (intCacheTimeout > 0) ? Math.max(intCacheTimeout, Dataset_Ajax.CACHE_TIMEOUT_MINIMUM) : null;
+	},
+	
+	getCacheTimeout	: function()
+	{
+		return this._intCacheTimeout;
 	}
 });
 
 Dataset_Ajax.CACHE_MODE_NO_CACHING			= 0;
 Dataset_Ajax.CACHE_MODE_FULL_CACHING		= 1;
 Dataset_Ajax.CACHE_MODE_PROGRESSIVE_CACHING	= 2;
+
+Dataset_Ajax.CACHE_TIMEOUT_MINIMUM			= 0;	// TODO -- Raise this?
+Dataset_Ajax.CACHE_TIMEOUT_DEFAULT			= null;	// TODO -- Have a default?
