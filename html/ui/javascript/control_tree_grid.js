@@ -81,7 +81,7 @@ var Control_Tree_Grid	= Class.create
 		
 		// Render the Children with the Visible Columns
 		//alert("Rendering Tree Grid");
-		var oVisibleColumns	= this.oColumns;
+		var oVisibleColumns	= Object.clone(this.oColumns);
 		if (oVisibleColumns[Control_Tree_Grid.COLUMN_CHECK] && !oVisibleColumns[Control_Tree_Grid.COLUMN_CHECK].bShowWhenReadOnly)
 		{
 			delete oVisibleColumns[Control_Tree_Grid.COLUMN_CHECK];
