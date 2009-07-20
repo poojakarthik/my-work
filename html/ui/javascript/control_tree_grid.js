@@ -81,10 +81,20 @@ var Control_Tree_Grid	= Class.create
 		
 		// Render the Children with the Visible Columns
 		//alert("Rendering Tree Grid");
-		var oVisibleColumns	= Object.clone(this.oColumns);
-		if (oVisibleColumns[Control_Tree_Grid.COLUMN_CHECK] && !oVisibleColumns[Control_Tree_Grid.COLUMN_CHECK].bShowWhenReadOnly)
+		var oVisibleColumns	= {};
+		for (sField in this.oColumns)
 		{
-			delete oVisibleColumns[Control_Tree_Grid.COLUMN_CHECK];
+			if (sField === Control_Tree_Grid.COLUMN_CHECK)
+			{
+				if (this.isEditable() || oVisibleColumns[Control_Tree_Grid.COLUMN_CHECK].bShowWhenReadOnly)
+				{
+					oVisibleColumns[sField]	= this.oColumns[sField];
+				}
+			}
+			else
+			{
+				oVisibleColumns[sField]	= this.oColumns[sField];
+			}
 		}
 		this.oRootNode.render(oVisibleColumns);
 	},
