@@ -401,18 +401,18 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	updateOperationSelected	: function(iOperation, bSelected)
 	{
 		// Update Cache
-		this.oOperations[iOperation].bEmployeeHasPermission	= bSelected;
+		//this.oOperations[iOperation].bEmployeeHasPermission	= bSelected;
 		
 		// Cascade update to all Node Instances
 		for (var i = 0; i < this.oOperations[iOperation].aInstances.length; i++)
 		{
-			this.oOperations[iOperation].aInstances[i].setSelected(this.oOperations[iOperation].bEmployeeHasPermission, true);
+			this.oOperations[iOperation].aInstances[i].setSelected(bSelected, true);
 		}
 		
 		// Update prerequisites
 		for (var i = 0; i < this.oOperations[iOperation].aPrerequisites.length; i++)
 		{
-			if (this.oOperations[iOperation].bEmployeeHasPermission && !this.oOperations[this.oOperations[iOperation].aPrerequisites[i]].bEmployeeHasPermission)
+			if (bSelected && !this.oOperations[this.oOperations[iOperation].aPrerequisites[i]].bEmployeeHasPermission)
 			{
 				this.updateOperationSelected(this.oOperations[iOperation].aPrerequisites[i], true);
 			}
@@ -421,7 +421,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Update dependants
 		for (var i = 0; i < this.oOperations[iOperation].aDependants.length; i++)
 		{
-			if (!this.oOperations[iOperation].bEmployeeHasPermission && this.oOperations[this.oOperations[iOperation].aDependants[i]].bEmployeeHasPermission)
+			if (!bSelected && this.oOperations[this.oOperations[iOperation].aDependants[i]].bEmployeeHasPermission)
 			{
 				this.updateOperationSelected(this.oOperations[iOperation].aDependants[i], false);
 			}
