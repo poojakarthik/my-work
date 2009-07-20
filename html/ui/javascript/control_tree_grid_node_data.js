@@ -227,6 +227,11 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 		return this._bSelected;
 	},
 	
+	isSelectable	: function()
+	{
+		return (this.getContent() && this.getContent()[Control_Tree_Grid.COLUMN_CHECK]);
+	},
+	
 	toggleExpanded	: function()
 	{
 		this.setExpanded(!this.isExpanded());
@@ -293,7 +298,19 @@ var Control_Tree_Grid_Node_Data	= Class.create(/* extends */ Control_Tree_Grid_N
 	
 	isVisible	: function()
 	{
-		return (this.getParent() && this.getParent().isVisible() && this.getParent().isExpanded() && (this.isSelected() || (this.getTreeGrid() && this.getTreeGrid().isEditable()))) ? true : false;
+		return	(
+					this.getParent() &&
+					this.getParent().isVisible() &&
+					this.getParent().isExpanded() &&
+					(
+						!this.isSelectable() ||
+						this.isSelected() ||
+						(
+							this.getTreeGrid() &&
+							this.getTreeGrid().isEditable()
+						)
+					)
+				);
 	},
 	
 	getDepth	: function()
