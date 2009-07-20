@@ -330,6 +330,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				
 				// Send Tree Grids into Edit mode
 				this.arrTabs.Permissions.oProfiles.oControl.setEditable(true);
+				this.arrTabs.Permissions.oOperations.oControl.setEditable(true);
 				break;
 				
 			case Control_Field.RENDER_MODE_VIEW:
@@ -341,6 +342,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				
 				// Send Tree Grids into Read-Only mode
 				this.arrTabs.Permissions.oProfiles.oControl.setEditable(false);
+				this.arrTabs.Permissions.oOperations.oControl.setEditable(false);
 				break;
 			
 			default:
