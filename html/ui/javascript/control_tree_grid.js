@@ -43,6 +43,11 @@ var Control_Tree_Grid	= Class.create
 		this.oRootNode.removeChild(oTreeGridNode);
 	},
 	
+	purgeChildren	: function()
+	{
+		this.oRootNode.purgeChildren();
+	},
+	
 	setColumns	: function(oDefinition)
 	{
 		this.oColumns	= oDefinition;

@@ -94,6 +94,15 @@ var Control_Tree_Grid_Node	= Class.create(
 		}
 	},
 	
+	purgeChildren	: function()
+	{
+		for (var i = 0; i < this._aChildren.length; i++)
+		{
+			this._aChildren[i].purgeChildren();
+			this.removeChild(this._aChildren[i]);
+		}
+	},
+	
 	getParent	: function()
 	{
 		return this._oParent;
