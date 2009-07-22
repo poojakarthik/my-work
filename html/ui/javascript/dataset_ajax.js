@@ -23,17 +23,16 @@ var Dataset_Ajax	= Class.create
 		intOffset	= Math.max(0, (intOffset >= 0) ? intOffset : 0);
 		
 		// Do we need to update the cache?
-		var intTime	= Date().getTime();
+		var intTime		= Date().getTime();
+		var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecords.bind(this, fncCallback, intLimit, intOffset)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
 		if (this._intCacheMode == Dataset_Ajax.CACHE_MODE_NO_CACHING)
 		{
 			// Yes -- AJAX just this range
-			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecords.bind(this, fncCallback, intLimit, intOffset)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
 			fncJsonFunc(false, intLimit, intOffset);
 		}
 		else if (this._arrRecordCache == null || !this._intLastCachedOn || (this._intCacheTimeout && this._intCacheTimeout > (intTime - this._intLastCachedOn)))
 		{
 			// Yes -- AJAX full result set
-			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecords.bind(this, fncCallback, intLimit, intOffset)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
 			fncJsonFunc();
 		}
 		else
@@ -160,7 +159,7 @@ var Dataset_Ajax	= Class.create
 	
 	setCacheTimeout	: function(intCacheTimeout)
 	{
-		this._intCacheTimeout	= (intCacheTimeout > 0) ? Math.max(intCacheTimeout, Dataset_Ajax.CACHE_TIMEOUT_MINIMUM) : null;
+		this._intCacheTimeout	= (intCacheTimeout > 0) ? Math.max(intCacheTimeout, Dataset_Ajax.CACHE_TIMEOUT_MINIMUM) * 1000 : null;
 	},
 	
 	getCacheTimeout	: function()
@@ -173,5 +172,5 @@ Dataset_Ajax.CACHE_MODE_NO_CACHING			= 0;
 Dataset_Ajax.CACHE_MODE_FULL_CACHING		= 1;
 Dataset_Ajax.CACHE_MODE_PROGRESSIVE_CACHING	= 2;
 
-Dataset_Ajax.CACHE_TIMEOUT_MINIMUM			= 0;	// TODO -- Raise this?
-Dataset_Ajax.CACHE_TIMEOUT_DEFAULT			= null;	// TODO -- Have a default?
+Dataset_Ajax.CACHE_TIMEOUT_MINIMUM			= 0;	// In Seconds TODO -- Raise this?
+Dataset_Ajax.CACHE_TIMEOUT_DEFAULT			= null;	// In Seconds TODO -- Have a default?
