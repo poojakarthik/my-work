@@ -1170,7 +1170,7 @@ class Invoice extends ORM
 			}
 			else
 			{
-				$strSQL	=	"SELECT 'Plan Charge' AS Matches FROM Charge WHERE Service IN ({$strServiceIds}) AND ChargeType IN ('PCAR', 'PCAD') AND Status = ".CHARGE_INVOICED." LIMIT 1 \n" .
+				$strSQL	=	"SELECT 'Plan Charge' AS Matches FROM Charge WHERE (Service IN ({$strServiceIds}) OR ({$arrPlanDetails['Shared']} = 1 AND Service IS NULL)) AND ChargeType IN ('PCAR', 'PCAD') AND Status = ".CHARGE_INVOICED." LIMIT 1 \n" .
 							"UNION \n" .
 							"SELECT 'CDR Data' AS Matches FROM ServiceTotal WHERE (UncappedCost > 0 OR CappedCost > 0) AND Service IN ({$strServiceIds}) AND invoice_run_id < {$this->invoice_run_id} LIMIT 1";
 			}
