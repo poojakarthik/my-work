@@ -6,6 +6,11 @@ var Operation_Tree	= Class.create
 		this._oTreeGrid				= {};
 		this._oTreeGrid.oControl	= new Control_Tree_Grid();
 		
+		this._oTreeGrid.oColumns									= {};
+		this._oTreeGrid.oColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
+		this._oTreeGrid.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
+		this._oTreeGrid.oControl.setColumns(this._oTreeGrid.oColumns);
+		
 		this._oTreeGrid.oLoading						= {};
 		this._oTreeGrid.oLoading.domElement				= document.createElement('span');
 		this._oTreeGrid.oLoading.domElement.innerHTML	= "<img src='../admin/img/template/loading.gif' alt='' title='Loading' /> Retrieving list of Operations...";
@@ -37,6 +42,16 @@ var Operation_Tree	= Class.create
 		
 		// Rebuild the Tree
 		this._buildTree();
+	},
+	
+	getTreeGrid	: function()
+	{
+		return this._oTreeGrid.oControl;
+	},
+	
+	getElement	: function()
+	{
+		return this._oTreeGrid.oControl.getElement();
 	},
 	
 	setRenderHeirarchy	: function(sRenderHeirarchy)
@@ -214,7 +229,16 @@ var Operation_Tree	= Class.create
 	
 	getSelected	: function()
 	{
-		return this._aSelected;
+		var aSelected	= [];
+		for (iOperationId in this._oOperationDetails)
+		{
+			if (this._oOperationDetails[iOperationId].bSelected)
+			{
+				aSelected.push(iOperationId);
+			}
+		}
+		
+		return aSelected;
 	},
 	
 	render	: function()
