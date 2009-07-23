@@ -39,7 +39,7 @@ class JSON_Handler_Operation extends JSON_Handler
 		}
 	}
 	
-	public function getRecords($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getDataset($bCountOnly=false, $iLimit=0, $iOffset=0)
 	{
 		try
 		{
@@ -48,7 +48,7 @@ class JSON_Handler_Operation extends JSON_Handler
 				// Count Only
 				return array(
 								"Success"			=> true,
-								"intRecordCount"	=> self::_getRecordCount(),
+								"intRecordCount"	=> self::_getDatasetLength(),
 								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
@@ -80,7 +80,7 @@ class JSON_Handler_Operation extends JSON_Handler
 				return array(
 								"Success"			=> true,
 								"arrRecords"		=> $aResults,
-								"intRecordCount"	=> ($iLimit === null) ? count($aResults) : self::_getRecordCount(),
+								"intRecordCount"	=> ($iLimit === null) ? count($aResults) : self::_getDatasetLength(),
 								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
@@ -98,7 +98,7 @@ class JSON_Handler_Operation extends JSON_Handler
 		}
 	}
 	
-	private static function _getRecordCount()
+	private static function _getDatasetLength()
 	{
 		$qQuery	= new Query();
 		
