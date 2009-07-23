@@ -316,6 +316,10 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	
 	setControlMode	: function(bolControlMode)
 	{
+		// Reset the Permissions Trees to saved values
+		//this.arrTabs.Permissions.oOperationProfiles.setSelected(this.objEmployee.aOperationProfileIds);
+		this.arrTabs.Permissions.oOperations.setSelected(this.objEmployee.aOperationIds);
+		
 		//alert('Set Control Mode...');
 		var oTreeGridColumns	= {};
 		switch (bolControlMode)
