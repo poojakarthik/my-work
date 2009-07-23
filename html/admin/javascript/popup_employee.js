@@ -232,11 +232,24 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Create
 		oTabPage.oOperations	= new Operation_Tree(Operation_Tree.RENDER_HEIRARCHY_GROUPED);
 		oTabPage.domElement.appendChild(oTabPage.oOperations.getElement());
+		
+		// Retrieve Employee Permissions
+		
 		//--------------------------------------------------------------------//
 		
 		//this._populatePermissionsTrees();
 		
 		return oTabPage;
+	},
+	
+	_loadPermissions	: function(aOperationIds, aOperationProfileIds)
+	{
+		this.objEmployee.aOperationIds			= aOperationIds;
+		this.objEmployee.aOperationProfileIds	= aOperationProfileIds;
+		
+		// Update the Trees
+		this.arrTabs.Permissions.oOperations.setSelected(this.objEmployee.aOperationIds);
+		//this.arrTabs.Permissions.oOperationProfiles.setSelected(this.objEmployee.aOperationProfileIds);
 	},
 	
 	_populatePermissionsTrees	: function(oOperations, oOperationProfiles)
@@ -374,46 +387,6 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		this.domCancelNewButton.removeEventListener('click'		, this.arrEventHandlers.hide				, false);
 		this.domCloseButton.removeEventListener('click'			, this.arrEventHandlers.hide				, false);
 		this.domSaveButton.removeEventListener('click'			, this.arrEventHandlers.save				, false);
-	},
-	
-	onOperationCheck	: function(oTreeGridNode)
-	{
-		var iValue	= oTreeGridNode.getValue();
-		if (!this.oOperations || iValue === undefined || !this.oOperations[iValue])
-		{
-			throw "Unknown Operation '"+iValue+"'";
-		}
-		this.updateOperationSelected(iValue, oTreeGridNode.isSelected());
-	},
-	
-	updateOperationSelected	: function(iOperation, bSelected)
-	{
-		// Update Cache
-		//this.oOperations[iOperation].bEmployeeHasPermission	= bSelected;
-		
-		// Cascade update to all Node Instances
-		for (var i = 0; i < this.oOperations[iOperation].aInstances.length; i++)
-		{
-			this.oOperations[iOperation].aInstances[i].setSelected(bSelected, true);
-		}
-		
-		// Update prerequisites
-		for (var i = 0; i < this.oOperations[iOperation].aPrerequisites.length; i++)
-		{
-			if (bSelected && !this.oOperations[this.oOperations[iOperation].aPrerequisites[i]].bEmployeeHasPermission)
-			{
-				this.updateOperationSelected(this.oOperations[iOperation].aPrerequisites[i], true);
-			}
-		}
-		
-		// Update dependants
-		for (var i = 0; i < this.oOperations[iOperation].aDependants.length; i++)
-		{
-			if (!bSelected && this.oOperations[this.oOperations[iOperation].aDependants[i]].bEmployeeHasPermission)
-			{
-				this.updateOperationSelected(this.oOperations[iOperation].aDependants[i], false);
-			}
-		}
 	},
 	
 	onOperationProfileCheck	: function(oTreeGridNode)
