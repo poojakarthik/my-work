@@ -1861,14 +1861,15 @@ table.tree-grid.permissions tr.selectable td
 	opacity		: 1;
 }
 
-table.tree-grid.permissons.read-only tr
+div.tree-grid span.loading
 {
-	display		: none;
+	vertical-align	: middle;
+	text-align		: center;
 }
 
-table.tree-grid.permissions.read-only tr.selectable
+div.tree-grid span.loading img
 {
-	display		: table-row;
+	width	: 16px;
+	height	: 16px;
 }
-
 /******************************************************************************/
