@@ -1874,6 +1874,7 @@ div.tree-grid div.loading div
 	display			: table-cell;
 	vertical-align	: middle;
 	text-align		: center;
+	font-style		: italic;
 }
 
 div.tree-grid div.loading img
