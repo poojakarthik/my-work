@@ -42,12 +42,33 @@ Operation.getAll	= function(fCallback, iRecordCount, aResultSet)
 	if (iRecordCount === undefined || aResultSet === undefined)
 	{
 		// Make Request
-		this._oDataset.getRecords(this.getAll.bind(this, fCallback));
+		this._oDataset.getRecords(Operation.getAll.bind(Operation, fCallback));
 	}
 	else
 	{
 		// Pass Response to Callback
 		fCallback(aResultSet);
+	}
+};
+
+Operation.getAllIndexed	= function(fCallback, aResultSet)
+{
+	if (iRecordCount === undefined || aResultSet === undefined)
+	{
+		// Make Request
+		Operation.getAll(Operation.getAllIndexed.bind(Operation, fCallback));
+	}
+	else
+	{
+		// Index this Result Set with the Ids
+		var oResultSet	= {};
+		for (var i = 0; i < aResultSet.length; i++)
+		{
+			oResultSet[aResultSet[i].id]	= aResultSet[i];
+		}
+		
+		// Pass to Callback
+		fCallback(oResultSet);
 	}
 };
 
