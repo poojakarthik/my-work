@@ -114,6 +114,7 @@ var Operation_Tree	= Class.create
 					// All Operations
 					this._convertOperationToTreeNode(iOperationId);
 					break;
+			}
 		}
 	},
 	
