@@ -62,7 +62,7 @@ Operation.getAllIndexed	= function(fCallback, aResultSet)
 	{
 		// Index this Result Set with the Ids
 		var oResultSet	= {};
-		for (iSequence in aResultSet.length)
+		for (iSequence in aResultSet)
 		{
 			oResultSet[aResultSet[iSequence].id]	= aResultSet[iSequence];
 		}
