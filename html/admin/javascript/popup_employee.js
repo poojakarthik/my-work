@@ -206,7 +206,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	{
 		var oTabPage	= {};
 		oTabPage.domElement				= document.createElement('div');
-		
+		/*
 		// Profiles Tree Grid
 		//--------------------------------------------------------------------//
 		// Create
@@ -226,27 +226,15 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.oProfiles.oControl.addDataType(Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sName, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sDescription, Popup_Employee.TREE_GRID_DATATYPE_OPERATION_PROFILE.sIconSource);
 		oTabPage.oProfiles.oControl.addDataType(Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sDescription, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sIconSource);
 		//--------------------------------------------------------------------//
-		
+		*/
 		// Operations Tree Grid
 		//--------------------------------------------------------------------//
 		// Create
-		oTabPage.oOperations						= {};
-		oTabPage.oOperations.oControl				= new Control_Tree_Grid();
-		oTabPage.oOperations.domElement				= oTabPage.oOperations.oControl.getElement();
-		oTabPage.oOperations.oControl.getTable().addClassName('permissions');
-		oTabPage.domElement.appendChild(oTabPage.oOperations.domElement);
-		
-		// Set Columns
-		oTabPage.oOperations.oColumns									= {};
-		oTabPage.oOperations.oColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
-		oTabPage.oOperations.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
-		oTabPage.oOperations.oControl.setColumns(oTabPage.oOperations.oColumns);
-		
-		// Set DataTypes
-		oTabPage.oOperations.oControl.addDataType(Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sName, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sDescription, Popup_Employee.TREE_GRID_DATATYPE_OPERATION.sIconSource, this.onOperationCheck.bind(this));
+		oTabPage.oOperations	= new Operation_Tree();
+		oTabPage.domElement.appendChild(oTabPage.oOperations.getElement());
 		//--------------------------------------------------------------------//
 		
-		this._populatePermissionsTrees();
+		//this._populatePermissionsTrees();
 		
 		return oTabPage;
 	},
@@ -329,8 +317,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				this.arrTabs.Details.table.tbody.PassWordConfirm.tr.domElement.style.display	= 'table-row';
 				
 				// Send Tree Grids into Edit mode
-				this.arrTabs.Permissions.oProfiles.oControl.setEditable(true);
-				this.arrTabs.Permissions.oOperations.oControl.setEditable(true);
+				//this.arrTabs.Permissions.oProfiles.oControl.setEditable(true);
+				this.arrTabs.Permissions.oOperations.setEditable(true);
 				break;
 				
 			case Control_Field.RENDER_MODE_VIEW:
@@ -341,8 +329,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 				this.arrTabs.Details.table.tbody.PassWordConfirm.tr.domElement.style.display	= 'none';
 				
 				// Send Tree Grids into Read-Only mode
-				this.arrTabs.Permissions.oProfiles.oControl.setEditable(false);
-				this.arrTabs.Permissions.oOperations.oControl.setEditable(false);
+				//this.arrTabs.Permissions.oProfiles.oControl.setEditable(false);
+				this.arrTabs.Permissions.oOperations.setEditable(false);
 				break;
 			
 			default:
