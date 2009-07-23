@@ -125,14 +125,13 @@ var Operation_Tree	= Class.create
 			throw "Operation with Id #"+iOperationId+" does not exist!";
 		}
 		
-		var oNodeContent	=	{
-									Control_Tree_Grid.COLUMN_LABEL	: this.oOperations[iOperationId].oProperties.name,
-									Control_Tree_Grid.COLUMN_VALUE	: iOperationId,
-									Control_Tree_Grid.COLUMN_CHECK	:	{
-																			mValue		: iOperationId,
-																			bChecked	: (this._aSelected.indexOf(iOperationId) > -1)
-																		}
-								};
+		var oNodeContent	=	{}
+		oNodeContent[Control_Tree_Grid.COLUMN_LABEL]	= this.oOperations[iOperationId].oProperties.name;
+		oNodeContent[Control_Tree_Grid.COLUMN_VALUE]	= iOperationId;
+		oNodeContent[Control_Tree_Grid.COLUMN_CHECK]	=	{
+																mValue		: iOperationId,
+																bChecked	: (this._aSelected.indexOf(iOperationId) > -1)
+															};
 		var oNode			= Control_Tree_Grid_Node_Data(oNodeContent, Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sName);
 		
 		this._oOperationDetails[iOperationId].aNodeInstances.push(oNode);
