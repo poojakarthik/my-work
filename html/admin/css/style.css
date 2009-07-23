@@ -1861,15 +1861,20 @@ table.tree-grid.permissions tr.selectable td
 	opacity		: 1;
 }
 
-div.tree-grid span.loading
+div.tree-grid div.loading
 {
-	vertical-align	: middle;
-	text-align		: center;
+	
+}
+
+div.tree-grid div.loading
+{
+	margin	: auto;
 }
 
 div.tree-grid span.loading img
 {
-	width	: 16px;
-	height	: 16px;
+	width			: 16px;
+	height			: 16px;
+	vertical-align	: middle;
 }
 /******************************************************************************/
