@@ -62,9 +62,9 @@ Operation.getAllIndexed	= function(fCallback, aResultSet)
 	{
 		// Index this Result Set with the Ids
 		var oResultSet	= {};
-		for (var i = 0; i < aResultSet.length; i++)
+		for (iSequence in aResultSet.length)
 		{
-			oResultSet[aResultSet[i].id]	= aResultSet[i];
+			oResultSet[aResultSet[iSequence].id]	= aResultSet[iSequence];
 		}
 		
 		// Pass to Callback
