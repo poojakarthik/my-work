@@ -204,8 +204,8 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 	
 	buildContentPermissions	: function()
 	{
-		var oTabPage	= {};
-		oTabPage.domElement				= document.createElement('div');
+		this.arrTabs.Permissions			= {};
+		this.arrTabs.Permissions.domElement	= document.createElement('div');
 		/*
 		// Profiles Tree Grid
 		//--------------------------------------------------------------------//
@@ -230,16 +230,14 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Operations Tree Grid
 		//--------------------------------------------------------------------//
 		// Create
-		oTabPage.oOperations	= new Operation_Tree(Operation_Tree.RENDER_HEIRARCHY_GROUPED);
-		oTabPage.domElement.appendChild(oTabPage.oOperations.getElement());
+		this.arrTabs.Permissions.oOperations	= new Operation_Tree(Operation_Tree.RENDER_HEIRARCHY_GROUPED);
+		this.arrTabs.Permissions.domElement.appendChild(this.arrTabs.Permissions.oOperations.getElement());
 		
 		// Retrieve Employee Permissions
 		this.objEmployee.getPermissions(this._loadPermissions.bind(this));
 		//--------------------------------------------------------------------//
 		
-		//this._populatePermissionsTrees();
-		
-		return oTabPage;
+		return this.arrTabs.Permissions;
 	},
 	
 	_loadPermissions	: function(aOperationIds, aOperationProfileIds)
