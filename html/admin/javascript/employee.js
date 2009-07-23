@@ -37,7 +37,7 @@ var Employee	= Class.create
 			// Process JSON Response
 			fCallback(oResponse.aOperationIds, oResponse.aOperationProfileIds);
 		}
-		else if (!this.objProperties.id && this.objProperties !== 0)
+		else if (!this.objProperties.Id && this.objProperties.Id !== 0)
 		{
 			// New Employee -- can't have any permissions yet
 			fCallback([], []);
