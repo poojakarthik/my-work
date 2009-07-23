@@ -234,7 +234,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		oTabPage.domElement.appendChild(oTabPage.oOperations.getElement());
 		
 		// Retrieve Employee Permissions
-		
+		this.objEmployee.getPermissions(this._loadPermissions.bind(this));
 		//--------------------------------------------------------------------//
 		
 		//this._populatePermissionsTrees();
