@@ -165,6 +165,8 @@ var Operation_Tree	= Class.create
 				}
 				break;
 		}
+		
+		return oNode;
 	},
 	
 	getRenderHeirarchy	: function()
