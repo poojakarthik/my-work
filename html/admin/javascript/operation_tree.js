@@ -123,6 +123,9 @@ var Operation_Tree	= Class.create
 					break;
 			}
 		}
+		
+		// Render the Tree
+		this._oTreeGrid.oControl.render();
 	},
 	
 	_convertOperationToTreeNode	: function(iOperationId)
