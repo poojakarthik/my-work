@@ -82,6 +82,8 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->LoadJavascript("operation");
 		$this->LoadJavascript("operation_profile");
 		
+		$this->LoadJavascript("operation_tree");
+		
 		$this->LoadJavascript("user_role");
 		$this->LoadJavascript("employee");
 		$this->LoadJavascript("popup_employee");
