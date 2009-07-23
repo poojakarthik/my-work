@@ -13,6 +13,8 @@ var Operation_Tree	= Class.create
 		
 		this._oTreeGrid.oControl.addDataType(Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sName, Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sDescription, Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sIconSource, this.onSelectHandler.bind(this));
 		
+		this._oTreeGrid.oControl.getElement().style.overflowY	= 'hidden';
+		
 		this._oTreeGrid.oLoading						= {};
 		this._oTreeGrid.oLoading.domElement				= document.createElement('div');
 		this._oTreeGrid.oLoading.domElement.innerHTML	= "<div><span><img src='../admin/img/template/loading.gif' alt='' title='Loading' /> Retrieving list of Operations...</span></div>";
@@ -32,8 +34,6 @@ var Operation_Tree	= Class.create
 	
 	_load	: function(oResultSet)
 	{
-		alert("Loading Operation Result Set into Operation Tree");
-		
 		this.oOperations		= oResultSet;
 		this._oOperationDetails	= {};
 		
@@ -47,6 +47,10 @@ var Operation_Tree	= Class.create
 		
 		// Rebuild the Tree
 		this._buildTree();
+		
+		// Hide Loading screen
+		this._oTreeGrid.oControl.getElement().style.overflowY	= 'scroll';
+		this._oTreeGrid.oLoading.domElement.style.display		= 'none';
 	},
 	
 	getTreeGrid	: function()
@@ -91,11 +95,9 @@ var Operation_Tree	= Class.create
 	_buildTree	: function()
 	{
 		// Remove the existing tree nodes
-		alert("Purging Operation Tree Children");
 		this._oTreeGrid.oControl.purgeChildren();
 		
 		// Rebuild the tree
-		alert("Rebuilding Operation Tree");
 		for (iOperationId in this.oOperations)
 		{
 			// Render top-level Nodes
