@@ -1877,6 +1877,13 @@ div.tree-grid div.loading div
 	font-style		: italic;
 }
 
+
+div.tree-grid div.loading div span
+{
+	border				: 1px solid #000000;
+	background-color	: #ffffff;
+}
+
 div.tree-grid div.loading img
 {
 	width			: 16px;
