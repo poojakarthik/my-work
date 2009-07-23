@@ -35,7 +35,7 @@ var Operation_Tree	= Class.create
 		this.oOperations		= oResultSet;
 		this._oOperationDetails	= {};
 		
-		for (iOperationId in oResultSet)
+		for (iOperationId in this.oOperations)
 		{
 			this._oOperationDetails[iOperationId]					= {};
 			this._oOperationDetails[iOperationId].bSelected			= false;
