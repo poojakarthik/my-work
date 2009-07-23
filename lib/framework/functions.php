@@ -3915,12 +3915,9 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 	case AUTOMATIC_INVOICE_ACTION_LATE_FEES_LIST:
 	case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE:
 	case AUTOMATIC_INVOICE_ACTION_OVERDUE_NOTICE_LIST:
-		$strAccountBillingType = "AND Account.BillingType = " . BILLING_TYPE_ACCOUNT;
-		$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED);
-		$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
-		break;
 	case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE:
 	case AUTOMATIC_INVOICE_ACTION_SUSPENSION_NOTICE_LIST:
+		$strAccountBillingType = "AND Account.BillingType = " . BILLING_TYPE_ACCOUNT;
 		$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED);
 		$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
 		break;
