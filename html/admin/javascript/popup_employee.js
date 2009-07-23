@@ -230,7 +230,7 @@ var Popup_Employee	= Class.create(Reflex_Popup,
 		// Operations Tree Grid
 		//--------------------------------------------------------------------//
 		// Create
-		oTabPage.oOperations	= new Operation_Tree();
+		oTabPage.oOperations	= new Operation_Tree(Operation_Tree.RENDER_HEIRARCHY_GROUPED);
 		oTabPage.domElement.appendChild(oTabPage.oOperations.getElement());
 		//--------------------------------------------------------------------//
 		
