@@ -23,7 +23,7 @@ var Dataset_Ajax	= Class.create
 		intOffset	= Math.max(0, (intOffset >= 0) ? intOffset : 0);
 		
 		// Do we need to update the cache?
-		var intTime		= Date().getTime();
+		var intTime		= (new Date()).getTime();
 		var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecords.bind(this, fncCallback, intLimit, intOffset)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
 		if (this._intCacheMode == Dataset_Ajax.CACHE_MODE_NO_CACHING)
 		{
@@ -118,7 +118,7 @@ var Dataset_Ajax	= Class.create
 		this._arrRecordCache	= oRecords;
 		this._intRecordCount	= objResponse.intRecordCount;
 		
-		this._intLastCachedOn	= Date().getTime();
+		this._intLastCachedOn	= (new Date()).getTime();
 	},
 	
 	emptyCache	: function()
