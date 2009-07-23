@@ -1882,6 +1882,9 @@ div.tree-grid div.loading div span
 {
 	border				: 1px solid #000000;
 	background-color	: #ffffff;
+	
+	display				: inline-block;
+	padding				: 0.25em;
 }
 
 div.tree-grid div.loading img
