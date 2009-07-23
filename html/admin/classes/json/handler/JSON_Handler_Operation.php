@@ -85,7 +85,7 @@ class JSON_Handler_Operation extends JSON_Handler
 						// Get list of dependants
 						$aDependants			= $oOperation->getDependants();
 						$oStdClass->aDependants	= array();
-						foreach ($aPrerequisites as $oOperationPrerequisite)
+						foreach ($aDependants as $oOperationPrerequisite)
 						{
 							$oStdClass->aDependants[]	= $oOperationPrerequisite->operation_id;
 						}
