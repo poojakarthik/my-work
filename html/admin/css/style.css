@@ -1864,7 +1864,7 @@ table.tree-grid.permissions tr.selectable td
 div.tree-grid div.loading
 {
 	display				: table;
-	background-color	: rgba(25, 25, 25, 0.75);
+	background-color	: rgba(255, 255, 255, 0.5);
 	height				: 100%;
 	width				: 100%;
 }
