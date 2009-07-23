@@ -202,9 +202,9 @@ var Operation_Tree	= Class.create
 		this._oOperationDetails[iOperationId].bSelected	= bSelected;
 		
 		// Update all Node instances
-		for (var i = 0; i < this._oOperationDetails[iOperationId].length; i++)
+		for (var i = 0; i < this._oOperationDetails[iOperationId].aNodeInstances.length; i++)
 		{
-			this._oOperationDetails[iOperationId][i].setSelected(bSelected, true);
+			this._oOperationDetails[iOperationId].aNodeInstances[i].setSelected(bSelected, true);
 		}
 		
 		// Update all Prerequisites
