@@ -36,6 +36,31 @@ class Operation_Prerequisite extends ORM_Cached
 		return $aPrerequisites;
 	}
 	
+	public static function getOperationDependants($mOperation)
+	{
+		static	$qQuery;
+		$qQuery	= ($qQuery) ? $qQuery : new Query();
+		
+		$iOperationId	= ($mOperation instanceof Operation) ? $mOperation->id : (int)$mOperation;
+		
+		$sOperationDependantsSQL	= "	SELECT		id
+										FROM		operation_prerequisite
+										WHERE		prerequisite_operation_id = {$iOperationId}";
+		$rGetOperationDependants	= $qQuery->Execute($sOperationDependantsSQL);
+		if ($rGetOperationDependants === false)
+		{
+			throw new Exception($qQuery->Error());
+		}
+		
+		$aDependants	= array();
+		while ($aDependantId = $rGetOperationDependants->fetch_assoc())
+		{
+			$aDependants[]	= self::getForId($aDependantId['id']);
+		}
+		
+		return $aDependants;
+	}
+	
 	//------------------------------------------------------------------------//
 	//				START - CACHE FUNCTIONS
 	//------------------------------------------------------------------------//

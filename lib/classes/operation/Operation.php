@@ -67,6 +67,11 @@ class Operation extends ORM_Enumerated
 		return Operation_Prerequisite::getForOperation($this->id);
 	}
 	
+	public function getDependants()
+	{
+		return Operation_Prerequisite::getOperationDependants($this->id);
+	}
+	
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
