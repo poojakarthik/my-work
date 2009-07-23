@@ -197,7 +197,6 @@ var Operation_Tree	= Class.create
 		{
 			throw "Operation with Id #"+iOperationId+" does not exist!";
 		}
-		alert("Updating Operation #"+iOperationId);
 		
 		this._oOperationDetails[iOperationId].bSelected	= bSelected;
 		
