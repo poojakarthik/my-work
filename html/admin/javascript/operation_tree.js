@@ -137,7 +137,7 @@ var Operation_Tree	= Class.create
 																mValue		: iOperationId,
 																bChecked	: (this._aSelected.indexOf(iOperationId) > -1)
 															};
-		var oNode			= Control_Tree_Grid_Node_Data(oNodeContent, Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sName);
+		var oNode			= new Control_Tree_Grid_Node_Data(oNodeContent, Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sName);
 		
 		this._oOperationDetails[iOperationId].aNodeInstances.push(oNode);
 		
