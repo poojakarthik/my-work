@@ -233,6 +233,7 @@ var Operation_Tree	= Class.create
 	
 	setSelected	: function(aSelected)
 	{
+		alert("Setting "+aSelected.length+" selected Operations");
 		if (aSelected)
 		{
 			for (var i = 0; i < aSelected.length; i++)
