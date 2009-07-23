@@ -25,11 +25,12 @@ var Operation_Tree	= Class.create
 		this.setRenderHeirarchy(sRenderHeirarchy);
 		
 		// Load Operations
-		this.oOperations	= Operation.getAllIndexed(this._load.bind(this));
+		Operation.getAllIndexed(this._load.bind(this));
 	},
 	
 	_load	: function(oResultSet)
 	{
+		this.oOperations		= oResultSet;
 		this._oOperationDetails	= {};
 		
 		for (iOperationId in oResultSet)
