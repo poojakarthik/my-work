@@ -1863,10 +1863,20 @@ table.tree-grid.permissions tr.selectable td
 
 div.tree-grid div.loading
 {
-	margin	: auto;
+	display				: table;
+	background-color	: rgba(25, 25, 25, 0.75);
+	height				: 100%;
+	width				: 100%;
 }
 
-div.tree-grid span.loading img
+div.tree-grid div.loading div
+{
+	display			: table-cell;
+	vertical-align	: middle;
+	text-align		: center;
+}
+
+div.tree-grid div.loading img
 {
 	width			: 16px;
 	height			: 16px;
