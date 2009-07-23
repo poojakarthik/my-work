@@ -1,6 +1,6 @@
 var Operation_Tree	= Class.create
 ({
-	initialize	: function(aSelected, sRenderHeirarchy)
+	initialize	: function(sRenderHeirarchy, aSelected)
 	{
 		// Create Tree Grid
 		this._oTreeGrid				= {};
