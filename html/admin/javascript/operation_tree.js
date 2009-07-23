@@ -237,7 +237,7 @@ var Operation_Tree	= Class.create
 		{
 			for (var i = 0; i < aSelected.length; i++)
 			{
-				this.onSelectHandler(aSelected[i], true);
+				this.setOperationSelected(aSelected[i], true);
 			}
 		}
 	},
