@@ -16,7 +16,7 @@ var Operation_Tree	= Class.create
 		this._oTreeGrid.oLoading.domElement.innerHTML	= "<img src='../admin/img/template/loading.gif' alt='' title='Loading' /> Retrieving list of Operations...";
 		this._oTreeGrid.oLoading.domElement.addClassName('loading');
 		
-		this._oTreeGrid.oControl.getElement.appendChild(this._oTreeGrid.oLoading.domElement);
+		this._oTreeGrid.oControl.getElement().appendChild(this._oTreeGrid.oLoading.domElement);
 		
 		// Set Selected Operations
 		this._aSelected	= [];
