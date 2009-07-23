@@ -13,7 +13,7 @@ var Operation_Tree	= Class.create
 		
 		this._oTreeGrid.oLoading						= {};
 		this._oTreeGrid.oLoading.domElement				= document.createElement('div');
-		this._oTreeGrid.oLoading.domElement.innerHTML	= "<div><img src='../admin/img/template/loading.gif' alt='' title='Loading' /> <span>Retrieving list of Operations...</span></div>";
+		this._oTreeGrid.oLoading.domElement.innerHTML	= "<div><span><img src='../admin/img/template/loading.gif' alt='' title='Loading' /> Retrieving list of Operations...</span></div>";
 		this._oTreeGrid.oLoading.domElement.addClassName('loading');
 		
 		this._oTreeGrid.oControl.getElement().appendChild(this._oTreeGrid.oLoading.domElement);
