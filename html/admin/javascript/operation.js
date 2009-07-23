@@ -53,7 +53,7 @@ Operation.getAll	= function(fCallback, iRecordCount, aResultSet)
 
 Operation.getAllIndexed	= function(fCallback, aResultSet)
 {
-	if (iRecordCount === undefined || aResultSet === undefined)
+	if (aResultSet === undefined)
 	{
 		// Make Request
 		Operation.getAll(Operation.getAllIndexed.bind(Operation, fCallback));
