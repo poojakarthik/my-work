@@ -111,13 +111,13 @@ var Operation_Tree	= Class.create
 					// Only Operations with no prerequisites
 					if (!this.oOperations[iOperationId].oProperties.aPrerequisites || !this.oOperations[iOperationId].oProperties.aPrerequisites.length)
 					{
-						this._oTreeGrid.oControl(this._convertOperationToTreeNode(iOperationId));
+						this._oTreeGrid.oControl.appendChild(this._convertOperationToTreeNode(iOperationId));
 					}
 					break;
 				
 				default:
 					// All Operations
-					this._oTreeGrid.oControl(this._convertOperationToTreeNode(iOperationId));
+					this._oTreeGrid.oControl.appendChild(this._convertOperationToTreeNode(iOperationId));
 					break;
 			}
 		}
