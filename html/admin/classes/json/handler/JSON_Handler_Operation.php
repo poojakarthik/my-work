@@ -65,7 +65,7 @@ class JSON_Handler_Operation extends JSON_Handler
 				$iCount			= 0;
 				foreach ($oOperations as $iOperationId=>$oOperation)
 				{
-					if ($iCount >= $iOffset+$iLimit)
+					if ($iLimit && $iCount >= $iOffset+$iLimit)
 					{
 						// Break out, as there's no point in continuing
 						break;
