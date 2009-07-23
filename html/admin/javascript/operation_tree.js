@@ -11,6 +11,8 @@ var Operation_Tree	= Class.create
 		this._oTreeGrid.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
 		this._oTreeGrid.oControl.setColumns(this._oTreeGrid.oColumns);
 		
+		this._oTreeGrid.oControl.addDataType(Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sName, Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sDescription, Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sIconSource, this.onSelectHandler.bind(this));
+		
 		this._oTreeGrid.oLoading						= {};
 		this._oTreeGrid.oLoading.domElement				= document.createElement('div');
 		this._oTreeGrid.oLoading.domElement.innerHTML	= "<div><span><img src='../admin/img/template/loading.gif' alt='' title='Loading' /> Retrieving list of Operations...</span></div>";
