@@ -30,6 +30,8 @@ var Operation_Tree	= Class.create
 	
 	_load	: function(oResultSet)
 	{
+		alert("Loading Operation Result Set into Operation Tree");
+		
 		this.oOperations		= oResultSet;
 		this._oOperationDetails	= {};
 		
@@ -87,9 +89,11 @@ var Operation_Tree	= Class.create
 	_buildTree	: function()
 	{
 		// Remove the existing tree nodes
+		alert("Purging Operation Tree Children");
 		this._oTreeGrid.oControl.purgeChildren();
 		
 		// Rebuild the tree
+		alert("Rebuilding Operation Tree");
 		for (iOperationId in this.oOperations)
 		{
 			// Render top-level Nodes
