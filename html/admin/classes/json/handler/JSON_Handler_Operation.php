@@ -58,21 +58,41 @@ class JSON_Handler_Operation extends JSON_Handler
 				$iLimit		= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
 				$iOffset	= ($iLimit === null) ? null : max((int)$iOffset, 0);
 				
-				$qQuery	= new Query();
 				
-				// Retrieve list of Employees
-				$sGetAllSQL	= "SELECT * FROM operation WHERE 1";
-				$sGetAllSQL	.= ($iLimit !== null) ? " LIMIT {$iLimit} OFFSET {$iOffset}" : '';
-				$rGetAll	= $qQuery->Execute($sGetAllSQL);
-				if ($rGetAll === false)
+				// Retrieve list of Operations
+				$oOperations	= Operation::getAll();
+				$aResults		= array();
+				$iCount			= 0;
+				foreach ($oOperations as $iOperationId=>$oOperation)
 				{
-					throw new Exception($qQuery->Error());
-				}
-				$aResults	= array();
-				$iCount		= 0;
-				while ($aResult = $rGetAll->fetch_assoc())
-				{
-					$aResults[$iCount+$iOffset]	= $aResult;
+					if ($iCount >= $iOffset+$iLimit)
+					{
+						// Break out, as there's no point in continuing
+						break;
+					}
+					elseif ($iCount >= $iOffset)
+					{
+						$oStdClass	= $oOperation->toStdClass();
+						
+						// Get list of prerequisites
+						$aPrerequisites				= $oOperation->getPrerequisites();
+						$oStdClass->aPrerequisites	= array();
+						foreach ($aPrerequisites as $oOperationPrerequisite)
+						{
+							$oStdClass->aPrerequisites[]	= $oOperationPrerequisite->prerequisite_operation_id;
+						}
+						
+						// Get list of dependants
+						$aDependants			= $oOperation->getDependants();
+						$oStdClass->aDependants	= array();
+						foreach ($aPrerequisites as $oOperationPrerequisite)
+						{
+							$oStdClass->aDependants[]	= $oOperationPrerequisite->operation_id;
+						}
+						
+						// Add to Result Set
+						$aResults[$iCount+$iOffset]	= $oStdClass;
+					}
 					$iCount++;
 				}
 				
