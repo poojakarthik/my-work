@@ -126,7 +126,7 @@ class JSON_Handler_Employee extends JSON_Handler
 		}
 	}
 	
-	public function getPermissionTrees($iEmployeeId, $bGetForEditing=false)
+	public function getPermissions($iEmployeeId)
 	{
 		try
 		{
@@ -143,30 +143,11 @@ class JSON_Handler_Employee extends JSON_Handler
 				$aEmployeeOperationProfiles	= array();
 			}
 			
-			$aOperations		= JSON_Handler_Operation::getOperations(true);
-			$aOperationProfiles	= JSON_Handler_Operation_Profile::getOperationProfiles(true, true);
-			
-			// Operations
-			$oOperations	= array();
-			foreach ($aOperations as $iOperationId=>$oOperation)
-			{
-				$oOperations[$iOperationId]							= $oOperation;
-				$oOperations[$iOperationId]->bEmployeeHasPermission	= array_key_exists($iOperationId, $aEmployeeOperations);
-			}
-			
-			// Operation Profiles
-			$oOperationProfiles	= array();
-			foreach ($aOperationProfiles as $iOperationProfileId=>$oOperationProfile)
-			{
-				$oOperationProfiles[$iOperationProfileId]							= $oOperationProfile;
-				$oOperationProfiles[$iOperationProfileId]->bEmployeeHasPermission	= array_key_exists($iOperationProfileId, $aEmployeeOperationProfiles);
-			}
-			
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"				=> true,
-							"oOperations"			=> $oOperations,
-							"oOperationProfiles"	=> $oOperationProfiles,
+							"aOperationIds"			=> array_keys($aEmployeeOperations),
+							"aOperationProfileIds"	=> array_keys($aEmployeeOperationProfiles),
 							"strDebug"				=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
