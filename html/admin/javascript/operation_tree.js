@@ -101,7 +101,7 @@ var Operation_Tree	= Class.create
 			{
 				case Operation_Tree.RENDER_HEIRARCHY_INCLUDES:
 					// Only Operations with no dependants
-					if (!this.oOperations[iOperationId].oProperties.aDependants || !this.oOperations[iOperationId].oProperties.aDependants.length)
+					if (!this.oOperations[iOperationId].aDependants || !this.oOperations[iOperationId].aDependants.length)
 					{
 						this._oTreeGrid.oControl.appendChild(this._convertOperationToTreeNode(iOperationId));
 					}
@@ -109,7 +109,7 @@ var Operation_Tree	= Class.create
 					
 				case Operation_Tree.RENDER_HEIRARCHY_GROUPED:
 					// Only Operations with no prerequisites
-					if (!this.oOperations[iOperationId].oProperties.aPrerequisites || !this.oOperations[iOperationId].oProperties.aPrerequisites.length)
+					if (!this.oOperations[iOperationId].aPrerequisites || !this.oOperations[iOperationId].aPrerequisites.length)
 					{
 						this._oTreeGrid.oControl.appendChild(this._convertOperationToTreeNode(iOperationId));
 					}
@@ -131,7 +131,7 @@ var Operation_Tree	= Class.create
 		}
 		
 		var oNodeContent	=	{}
-		oNodeContent[Control_Tree_Grid.COLUMN_LABEL]	= this.oOperations[iOperationId].oProperties.name;
+		oNodeContent[Control_Tree_Grid.COLUMN_LABEL]	= this.oOperations[iOperationId].name;
 		oNodeContent[Control_Tree_Grid.COLUMN_VALUE]	= iOperationId;
 		oNodeContent[Control_Tree_Grid.COLUMN_CHECK]	=	{
 																mValue		: iOperationId,
@@ -145,22 +145,22 @@ var Operation_Tree	= Class.create
 		{
 			case Operation_Tree.RENDER_HEIRARCHY_INCLUDES:
 				// Render all prerequisites
-				if (this.oOperations[iOperationId].oProperties.aPrerequisites && this.oOperations[iOperationId].oProperties.aPrerequisites.length)
+				if (this.oOperations[iOperationId].aPrerequisites && this.oOperations[iOperationId].aPrerequisites.length)
 				{
-					for (var i = 0; i < this.oOperations[iOperationId].oProperties.aPrerequisites.length; i++)
+					for (var i = 0; i < this.oOperations[iOperationId].aPrerequisites.length; i++)
 					{
-						oNode.appendChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].oProperties.aPrerequisites[i]));
+						oNode.appendChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aPrerequisites[i]));
 					}
 				}
 				break;
 				
 			case Operation_Tree.RENDER_HEIRARCHY_GROUPED:
 				// Render all dependants
-				if (this.oOperations[iOperationId].oProperties.aDependants && this.oOperations[iOperationId].oProperties.aDependants.length)
+				if (this.oOperations[iOperationId].aDependants && this.oOperations[iOperationId].aDependants.length)
 				{
-					for (var i = 0; i < this.oOperations[iOperationId].oProperties.aDependants.length; i++)
+					for (var i = 0; i < this.oOperations[iOperationId].aDependants.length; i++)
 					{
-						oNode.appendChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].oProperties.aDependants[i]));
+						oNode.appendChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aDependants[i]));
 					}
 				}
 				break;
