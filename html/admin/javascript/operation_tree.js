@@ -183,6 +183,7 @@ var Operation_Tree	= Class.create
 	
 	setEditable	: function(bEditable)
 	{
+		// Set Tree Editable
 		this._oTreeGrid.oControl.setEditable(bEditable);
 	},
 	
