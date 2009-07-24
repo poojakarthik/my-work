@@ -237,10 +237,9 @@ var Operation_Tree	= Class.create
 		
 		if (aSelected)
 		{
-			//alert("Setting "+aSelected.length+" selected Operations");
-			for (var i = 0; i < aSelected.length; i++)
+			for (iOperationId in this.oOperations)
 			{
-				this.setOperationSelected(aSelected[i], true);
+				this.setOperationSelected(aSelected[i], aSelected.indexOf(iOperationId) > -1);
 			}
 		}
 		else
