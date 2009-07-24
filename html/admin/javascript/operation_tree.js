@@ -233,9 +233,11 @@ var Operation_Tree	= Class.create
 	
 	setSelected	: function(aSelected)
 	{
+		Reflex_Debug.asHTMLPopup(aSelected);
+		
 		if (aSelected)
 		{
-			alert("Setting "+aSelected.length+" selected Operations");
+			//alert("Setting "+aSelected.length+" selected Operations");
 			for (var i = 0; i < aSelected.length; i++)
 			{
 				this.setOperationSelected(aSelected[i], true);
@@ -243,7 +245,7 @@ var Operation_Tree	= Class.create
 		}
 		else
 		{
-			alert("Setting "+aSelected+" selected Operations");
+			//alert("Setting "+aSelected+" selected Operations");
 		}
 	},
 	
