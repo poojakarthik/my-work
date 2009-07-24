@@ -233,7 +233,7 @@ var Operation_Tree	= Class.create
 	
 	setSelected	: function(aSelected)
 	{
-		Reflex_Debug.asHTMLPopup(aSelected);
+		//Reflex_Debug.asHTMLPopup(aSelected);
 		
 		if (aSelected)
 		{
