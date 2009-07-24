@@ -239,7 +239,7 @@ var Operation_Tree	= Class.create
 		{
 			for (iOperationId in this.oOperations)
 			{
-				this.setOperationSelected(aSelected[i], aSelected.indexOf(iOperationId) > -1);
+				this.setOperationSelected(iOperationId, aSelected.indexOf(iOperationId) > -1);
 			}
 		}
 		else
