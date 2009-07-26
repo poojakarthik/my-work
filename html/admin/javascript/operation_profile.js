@@ -29,7 +29,6 @@ var Operation_Profile	= Class.create
 });
 
 Operation_Profile._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_FULL_CACHING, {strObject: 'Operation_Profile', strMethod: 'getDataset'});
-Operation_Profile._oDataset.setCacheTimeout(300);	// Recache timeout of 5 mins
 
 /* Static Methods */
 
@@ -43,7 +42,7 @@ Operation_Profile.getAll	= function(fCallback, iRecordCount, aResultSet)
 	if (iRecordCount === undefined || aResultSet === undefined)
 	{
 		// Make Request
-		this._oDataset.getRecords(this.getAll.bind(this, fCallback));
+		this._oDataset.getRecords(Operation_Profile.getAll.bind(Operation_Profile, fCallback));
 	}
 	else
 	{
@@ -52,18 +51,25 @@ Operation_Profile.getAll	= function(fCallback, iRecordCount, aResultSet)
 	}
 };
 
-Operation_Profile.prepareForTreeGrid	= function(oOperationProfiles)
+Operation_Profile.getAllIndexed	= function(fCallback, aResultSet)
 {
-	oOperationProfiles	= jQuery.json.arrayAsObject(oOperationProfiles);
-	
-	//Reflex_Debug.asHTMLPopup(oOperationProfiles);
-	
-	for (iOperationProfileId in oOperationProfiles)
+	if (aResultSet === undefined)
 	{
-		oOperationProfiles[iOperationProfileId].aInstances	= [];
+		// Make Request
+		Operation_Profile.getAll(Operation_Profile.getAllIndexed.bind(Operation_Profile, fCallback));
 	}
-	
-	//Reflex_Debug.asHTMLPopup(oOperationProfiles);
-	
-	return oOperationProfiles;
+	else
+	{
+		// Index this Result Set with the Ids
+		var oResultSet	= {};
+		for (iSequence in aResultSet)
+		{
+			oResultSet[aResultSet[iSequence].id]	= aResultSet[iSequence];
+		}
+		
+		// Pass to Callback
+		//Reflex_Debug.asHTMLPopup(oResultSet);
+		//Reflex_Debug.asHTMLPopup(aResultSet);
+		fCallback(oResultSet);
+	}
 };
