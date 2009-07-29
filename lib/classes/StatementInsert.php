@@ -124,24 +124,8 @@
 		// Compile the query
 		$strQuery 			= "INSERT INTO " . $strTable . " ($strInsertKeys) VALUES($strInsertValues)";
 		
-	 	// Init and Prepare the mysqli_stmt
-	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
-	 	
-		// Trace
-		$this->Trace("Query: $strQuery");
-		$this->_strQuery = $strQuery;
-		
-	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
-	 	{
-			//echo($strQuery);
-			//echo Mysqli_error($this->db->refMysqliConnection);
-	 		// There was problem preparing the statment
-			// Trace
-			$this->Trace("Failed: ".$this->Error());
-	 		throw new Exception(
-	 			"An error occurred : " . Mysqli_error($this->db->refMysqliConnection) . "\n" . $strQuery . "\n\n"
-	 		);
-	 	}
+	 	// Prepare the Statement
+	 	$this->_prepare($strQuery);
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -165,6 +149,9 @@
 	 */ 
 	 function Execute($arrData)
 	 {
+	 	$aExecutionProfile	= array();
+	 	$aExecutionProfile['fStartTime']	= microtime(true);
+	 	
 		// Trace
 		$this->Trace("Execute($arrData)");
 	 	
@@ -266,6 +253,7 @@
 
 	 	// Run the Statement
 	 	$mixResult = $this->_stmtSqlStatment->execute();
+	 	
 	 	$this->Debug($mixResult);
 	 	if ($mixResult)
 		{
@@ -275,6 +263,12 @@
 			{
 				//Debug("WTF! Last Insert Id is apparently '{$this->db->refMysqliConnection->insert_id}'");
 			}
+			
+			// Update profiling info
+		 	$aExecutionProfile['fDuration']		= microtime(true) - $aExecutionProfile['fStartTime'];
+		 	$aExecutionProfile['iInsertId']		= $this->intInsertId;
+		 	$this->aProfiling['aExecutions'][]	= $aExecutionProfile;
+			
 			return $this->intInsertId;
 		}
 		else

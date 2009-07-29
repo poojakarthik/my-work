@@ -164,23 +164,8 @@
 			$strQuery .= " LIMIT ".(int)$intLimit;
 		}
 		
-		$this->_strQuery = $strQuery;
-		
-		// Trace
-		$this->Trace("Query: $strQuery");
-		
-	 	// Init and Prepare the mysqli_stmt
-	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
-	 	
-	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
-	 	{
-			Debug($strQuery);
-			Debug($arrColumns);
-			// Trace
-			$this->Trace("Failed: ".$this->Error());
-	 		// There was problem preparing the statment
-	 		throw new Exception();
-	 	}
+	 	// Prepare the Statement
+	 	$this->_prepare($strQuery);
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -209,6 +194,10 @@
 	 */ 
 	 function Execute($arrData, $arrWhere)
 	 {
+	 	$aExecutionProfile	= array();
+	 	$aExecutionProfile['fStartTime']	= microtime(true);
+	 	$aExecutionProfile['aWhere']		= array();
+	 	
 		// Trace
 		$this->Trace("Execute($arrData. $arrWhere)");
 	 	
@@ -276,6 +265,7 @@
 			{
 				$strParam = $arrWhere[$strAlias];
 			}
+			$aExecutionProfile['aWhere'][$strAlias]	= $strParam;
 			
 	 		$arrParams[] = $strParam;
 	 	}

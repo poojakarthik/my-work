@@ -68,6 +68,13 @@
 	 * @see			<MethodName()||typePropertyName>
 	 */
 	private $_strTable;
+	
+	public	$aProfiling	=	array
+							(
+								'aExecutions'		=> array(),
+								'fPreparationStart'	=> null,
+								'fPreparationTime'	=> null
+							);
 
  	//------------------------------------------------------------------------//
 	// Statement() - Constructor
@@ -85,8 +92,43 @@
 	 */ 
 	 function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	 {
+	 	$this->aProfiling['fPreparationStart']	= microtime(true);
+	 	
 	 	$this->intSQLMode = SQL_STATEMENT;
 		parent::__construct($strConnectionType);
+	 }
+	 
+	/**
+	 * _prepare()
+	 *
+	 * Prepares the Statement
+	 *
+	 * @return		void
+	 * 
+	 * @param		string	$sQuery
+	 *
+	 * @method
+	 */ 
+	 protected function _prepare($sQuery)
+	 {
+		$this->Trace("Query: {$sQuery}");
+		
+		$this->_strQuery		= $sQuery;
+	 	$this->_stmtSqlStatment	= $this->db->refMysqliConnection->stmt_init();
+		
+	 	if (!$this->_stmtSqlStatment->prepare($sQuery))
+	 	{
+	 		// There was problem preparing the statment
+	 		//throw new Exception("Could not prepare statement : $strQuery\n");
+			// Trace
+			
+			$this->Trace("Error: ".$this->Error());
+			Debug($this->Error());
+			
+			//throw new Exception($this->Error());
+	 	}
+		
+		$this->_aProfiling['fPreparationTime']	= microtime(true) - $this->aProfiling['fPreparationStart'];
 	 }
 	 
 	

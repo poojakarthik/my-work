@@ -223,24 +223,8 @@
 			$strQuery .= "LIMIT " . $strLimit . "\n";	
 	 	}
 	 	
-		// Trace
-		$this->Trace("Query: $strQuery");
-		
-		$this->_strQuery = $strQuery;
-	 	
-	 	// Init and Prepare the mysqli_stmt
-	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
-		
-	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
-	 	{
-	 		// There was problem preparing the statment
-	 		//throw new Exception("Could not prepare statement : $strQuery\n");
-			// Trace
-			$this->Trace("Error: ".$this->Error());
-			Debug($this->Error());
-			//throw new Exception($this->Error());
-	 	}
-		//Debug($this->_strQuery);
+	 	// Prepare the Statement
+	 	$this->_prepare($strQuery);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -304,6 +288,10 @@
 	 */ 
 	 function Execute($arrWhere = Array())
 	 {
+	 	$aExecutionProfile	= array();
+	 	$aExecutionProfile['fStartTime']	= microtime(true);
+	 	$aExecutionProfile['aWhere']		= array();
+	 	
 	 	// Trace
 //		$this->Trace("Execute($strQuery)");
 	 	
@@ -324,6 +312,8 @@
 				{
 					$strParam = $arrWhere[$strAlias];
 				}
+				$aExecutionProfile['aWhere'][$strAlias]	= $strParam;
+				
 		 		$strType .= $this->GetDBInputType($strParam);
 		 		$arrParams[] = $strParam;
 	 			$i++;
@@ -379,6 +369,12 @@
 	 	}
 		
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_result"), $arrFields);
+		
+		// Update profiling info
+	 	$aExecutionProfile['fDuration']		= microtime(true) - $aExecutionProfile['fStartTime'];
+	 	$aExecutionProfile['iResults']		= $this->_stmtSqlStatment->num_rows;
+	 	$this->aProfiling['aExecutions'][]	= $aExecutionProfile;
+		
 		return $this->_stmtSqlStatment->num_rows;
 	}
 	
