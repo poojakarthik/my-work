@@ -465,6 +465,107 @@ class DataAccess
 	{
 		return $this->refMysqliConnection->real_escape_string($value);
 	}
+	
+	public function addToProfiler(DatabaseAccess $oDatabaseAccess)
+	{
+		$this->_aProfiling[]	= $oDatabaseAccess->aProfiling;
+	}
+	
+	public function exportProfilingToXML($sXMLPath)
+	{
+		self::_profilingToXML($this->_aProfiling);
+	}
+	
+	static private function _profilingToXML($aProfilingData)
+	{
+		$domDocument	= new DOMDocument('1.0', 'UTF-8');
+		
+		$eDatabaseAccesses	= new DOMElement('database-accesses');
+		$domDocument->appendChild($eDatabaseAccesses);
+		
+		foreach ($aProfilingData as $aDatabaseAccessProfile)
+		{
+			$eDatabaseAccess	= new DOMElement('database-access');
+			$eDatabaseAccesses->appendChild($eDatabaseAccess);
+			
+			// Query
+			$eQuery	= new DOMElement('query');
+			$eDatabaseAccess->appendChild($eQuery);
+			
+			// Prepare
+			$ePrepare	= new DOMElement('prepare');
+			if (array_key_exists('fPreparationStart', $aDatabaseAccessProfile))
+			{
+				$ePrepareStart	= new DOMElement('start', date("Y-m-d H:i:s.u", $aDatabaseAccessProfile['fPreparationStart']));
+			}
+			if (array_key_exists('fPreparationTime', $aDatabaseAccessProfile))
+			{
+				$ePrepareDuration	= new DOMElement('duration', $aDatabaseAccessProfile['fPreparationTime']);
+			}
+			
+			if ($ePrepareStart || $ePrepareDuration)
+			{
+				$eDatabaseAccess->appendChild($ePrepareStart);
+				$eDatabaseAccess->appendChild($ePrepareDuration);
+			}
+			
+			// Executions
+			$eExecutions	= new DOMElement('executions');
+			$eDatabaseAccesses->appendChild($eExecutions);
+			foreach ($aDatabaseAccessProfile['aExecutions'] as $aExecution)
+			{
+				$eExecution	= new DOMElement('execution');
+				$eExecutions->appendChild($eExecution);
+				
+				// Time
+				$eExecutionStart	= new DOMElement('start-time', date("Y-m-d H:i:s.u", $aDatabaseAccessProfile['fStartTime']));
+				$eExecution->appendChild($eExecutionStart);
+				$eExecutionDuration	= new DOMElement('duration', $aDatabaseAccessProfile['fDuration']);
+				$eExecution->appendChild($eExecutionDuration);
+				
+				// Results
+				if (array_key_exists('iResults', $aExecution))
+				{
+					$eResults	= new DOMElement('results', $aDatabaseAccessProfile['iResults']);
+					$eExecution->appendChild($eResults);
+				}
+				if (array_key_exists('iInsertId', $aExecution))
+				{
+					$eInsertId	= new DOMElement('insert-id', $aDatabaseAccessProfile['iInsertId']);
+					$eExecution->appendChild($eInsertId);
+				}
+				if (array_key_exists('iRowsAffected', $aExecution))
+				{
+					$eRowsAffected	= new DOMElement('rows-affected', $aDatabaseAccessProfile['iRowsAffected']);
+					$eExecution->appendChild($eRowsAffected);
+				}
+				
+				// Properties
+				if (array_key_exists('aWhere', $aExecution))
+				{
+					$eWhere	= new DOMElement('where');
+					$eExecution->appendChild($eWhere);
+					
+					foreach ($aExecution['aWhere'] as $sAlias=>$mValue)
+					{
+						$eWhereParameter	= new DOMElement(preg_replace("/\W+/i", '-', $sAlias), $mValue);
+						$eWhere->appendChild($eWhereParameter);
+					}
+				}
+				if (array_key_exists('aData', $aExecution))
+				{
+					$eData	= new DOMElement('data');
+					$eExecution->appendChild($eData);
+					
+					foreach ($aExecution['aData'] as $sAlias=>$mValue)
+					{
+						$eDataParameter	= new DOMElement(preg_replace("/\W+/i", '-', $sAlias), $mValue);
+						$eData->appendChild($eDataParameter);
+					}
+				}
+			}
+		}
+	}
 }
 
 ?>
