@@ -129,6 +129,7 @@
 	 	}
 		
 		$this->_aProfiling['fPreparationTime']	= microtime(true) - $this->aProfiling['fPreparationStart'];
+		$this->_aProfiling['sQuery']			= $sQuery;
 	 }
 	 
 	
