@@ -463,7 +463,7 @@ class DataAccess
 			$this->TransactionRollback();
 		}
 		
-		if ($this->_bProfilingEnabled)
+		if ($this->getProfilingEnabled())
 		{
 			// Write out Profiling Data to log file
 			$this->exportProfilingToXML();
