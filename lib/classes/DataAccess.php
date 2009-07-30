@@ -522,7 +522,7 @@ class DataAccess
 			$eDatabaseAccesses->appendChild($eDatabaseAccess);
 			
 			// Query
-			$eQuery	= new DOMElement('query');
+			$eQuery	= new DOMElement('query', $aDatabaseAccessProfile['sQuery']);
 			$eDatabaseAccess->appendChild($eQuery);
 			
 			// Prepare
@@ -530,17 +530,21 @@ class DataAccess
 			if (array_key_exists('fPreparationStart', $aDatabaseAccessProfile))
 			{
 				$ePrepareStart	= new DOMElement('start', date("Y-m-d H:i:s.u", $aDatabaseAccessProfile['fPreparationStart']));
-				$eDatabaseAccess->appendChild($ePrepareStart);
+				$ePrepare->appendChild($ePrepareStart);
 			}
 			if (array_key_exists('fPreparationTime', $aDatabaseAccessProfile))
 			{
 				$ePrepareDuration	= new DOMElement('duration', $aDatabaseAccessProfile['fPreparationTime']);
-				$eDatabaseAccess->appendChild($ePrepareDuration);
+				$ePrepare->appendChild($ePrepareDuration);
+			}
+			if ($ePrepareStart || $ePrepareDuration)
+			{
+				$eDatabaseAccess->appendChild($ePrepare);
 			}
 			
 			// Executions
 			$eExecutions	= new DOMElement('executions');
-			$eDatabaseAccesses->appendChild($eExecutions);
+			$eDatabaseAccess->appendChild($eExecutions);
 			foreach ($aDatabaseAccessProfile['aExecutions'] as $aExecution)
 			{
 				$eExecution	= new DOMElement('execution');
