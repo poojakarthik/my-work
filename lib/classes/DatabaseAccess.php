@@ -77,6 +77,8 @@
 	{
 		// make global database object available
 		$this->db = DataAccess::getDataAccess($strConnectionType);
+		
+		$this->db->addToProfiler($this);
 	}
 	
 	//------------------------------------------------------------------------//

@@ -484,7 +484,7 @@ class DataAccess
 	{
 		if ($this->getProfilingEnabled())
 		{
-			$this->_aProfiling[]	= $oDatabaseAccess->aProfiling;
+			$this->_aProfiling[]	= $oDatabaseAccess;
 		}
 	}
 	
@@ -513,8 +513,10 @@ class DataAccess
 		$eDatabaseAccesses	= new DOMElement('database-accesses');
 		$domDocument->appendChild($eDatabaseAccesses);
 		
-		foreach ($aProfilingData as $aDatabaseAccessProfile)
+		foreach ($aProfilingData as $oDatabaseAccess)
 		{
+			$aDatabaseAccessProfile	= $oDatabaseAccess->aProfile;
+			
 			$eDatabaseAccess	= new DOMElement('database-access');
 			$eDatabaseAccesses->appendChild($eDatabaseAccess);
 			
