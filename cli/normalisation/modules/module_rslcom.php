@@ -204,8 +204,17 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 			$strRecordCode 					= $this->FindRecordCode($mixCallType);
 			
 			// Check for Tesltra OnBill with IDD
-			$strRecordCode					= ($strRecordCode === 'IDD' && $mixRateId === '915') ? $this->FindRecordCode('915') : $strRecordCode;
+			if ($mixRateId === '915')
+			{
+				// Is it not an IDD Call?
+				if ($strRecordCode !== 'IDD')
+				{
+					// Re-route to Other Charges
+					$strRecordCode	= $this->FindRecordCode('915');
+				}
+			}
 		}
+		
 		$mixValue 							= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
 
