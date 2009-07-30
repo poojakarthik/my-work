@@ -477,7 +477,10 @@ class DataAccess
 	
 	public function addToProfiler(DatabaseAccess $oDatabaseAccess)
 	{
-		$this->_aProfiling[]	= $oDatabaseAccess->aProfiling;
+		if ($this->getProfilingEnabled())
+		{
+			$this->_aProfiling[]	= $oDatabaseAccess->aProfiling;
+		}
 	}
 	
 	public function exportProfilingToXML($sXMLPath=null)
