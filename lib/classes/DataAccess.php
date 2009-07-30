@@ -35,7 +35,10 @@ class DataAccess
 	 * @property
 	 */
 	public $refMysqliConnection;
+	
+	private $_bProfilingEnabled	= false;
 
+	const	PROFILER_LOG_PATH	= 'logs/profiling/data_access/';
 
 	private static $arrDataAccessCache = array();
 
@@ -459,6 +462,12 @@ class DataAccess
 			//$this->refMysqliConnection->rollback();
 			$this->TransactionRollback();
 		}
+		
+		if ($this->_bProfilingEnabled)
+		{
+			// Write out Profiling Data to log file
+			$this->exportProfilingToXML();
+		}
 	}
 	
 	function escape($value)
@@ -471,9 +480,22 @@ class DataAccess
 		$this->_aProfiling[]	= $oDatabaseAccess->aProfiling;
 	}
 	
-	public function exportProfilingToXML($sXMLPath)
+	public function exportProfilingToXML($sXMLPath=null)
 	{
-		self::_profilingToXML($this->_aProfiling);
+		if ($sXMLPath)
+		{
+			$sXMLPath	= trim($sXMLPath);
+			$sSavePath	= ($sXMLPath[0] === '/') ? $sXMLPath : self::PROFILER_LOG_PATH.$sXMLPath;
+		}
+		else
+		{
+			$sSavePath	= self::PROFILER_LOG_PATH.date("YmdHis-u").'.xml';
+		}
+		
+		@mkdir(dirname($sSavePath));
+		
+		// Save the XML
+		self::_profilingToXML($this->_aProfiling)->save($sSavePath);
 	}
 	
 	static private function _profilingToXML($aProfilingData)
@@ -497,15 +519,11 @@ class DataAccess
 			if (array_key_exists('fPreparationStart', $aDatabaseAccessProfile))
 			{
 				$ePrepareStart	= new DOMElement('start', date("Y-m-d H:i:s.u", $aDatabaseAccessProfile['fPreparationStart']));
+				$eDatabaseAccess->appendChild($ePrepareStart);
 			}
 			if (array_key_exists('fPreparationTime', $aDatabaseAccessProfile))
 			{
 				$ePrepareDuration	= new DOMElement('duration', $aDatabaseAccessProfile['fPreparationTime']);
-			}
-			
-			if ($ePrepareStart || $ePrepareDuration)
-			{
-				$eDatabaseAccess->appendChild($ePrepareStart);
 				$eDatabaseAccess->appendChild($ePrepareDuration);
 			}
 			
@@ -540,7 +558,7 @@ class DataAccess
 					$eExecution->appendChild($eRowsAffected);
 				}
 				
-				// Properties
+				// Where
 				if (array_key_exists('aWhere', $aExecution))
 				{
 					$eWhere	= new DOMElement('where');
@@ -552,6 +570,8 @@ class DataAccess
 						$eWhere->appendChild($eWhereParameter);
 					}
 				}
+				
+				// Data
 				if (array_key_exists('aData', $aExecution))
 				{
 					$eData	= new DOMElement('data');
@@ -565,6 +585,16 @@ class DataAccess
 				}
 			}
 		}
+	}
+	
+	public function setProfilingEnabled($bEnabled)
+	{
+		$this->_bProfilingEnabled	= (bool)$bEnabled;
+	}
+	
+	public function getProfilingEnabled()
+	{
+		return $this->_bProfilingEnabled;
 	}
 }
 
