@@ -500,7 +500,7 @@ class DataAccess
 			$sSavePath	= FILES_BASE_PATH.self::PROFILER_LOG_PATH.date("YmdHis+u").'.xml';
 		}
 		
-		mkdir(dirname($sSavePath), 0777, true);
+		@mkdir(dirname($sSavePath), 0777, true);
 		
 		// Save the XML
 		self::_profilingToXML($this->_aProfiling)->save($sSavePath);
