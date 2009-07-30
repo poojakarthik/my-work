@@ -468,10 +468,17 @@ class DataAccess
 	
 	function __destruct()
 	{
-		if ($this->getProfilingEnabled())
+		try
 		{
-			// Write out Profiling Data to log file
-			$this->exportProfilingToXML();
+			if ($this->getProfilingEnabled())
+			{
+				// Write out Profiling Data to log file
+				$this->exportProfilingToXML();
+			}
+		}
+		catch (Exception $eException)
+		{
+			echo $eException->__toString();
 		}
 	}
 	
