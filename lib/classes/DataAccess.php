@@ -516,7 +516,7 @@ class DataAccess
 		
 		foreach ($aProfilingData as $oDatabaseAccess)
 		{
-			$aDatabaseAccessProfile	= $oDatabaseAccess->aProfile;
+			$aDatabaseAccessProfile	= $oDatabaseAccess->aProfiling;
 			
 			$eDatabaseAccess	= new DOMElement('database-access');
 			$eDatabaseAccesses->appendChild($eDatabaseAccess);
