@@ -559,25 +559,25 @@ class DataAccess
 				$eExecutions->appendChild($eExecution);
 				
 				// Time
-				$eExecutionStart	= new DOMElement('start-time', date("Y-m-d H:i:s.u", $aDatabaseAccessProfile['fStartTime']));
+				$eExecutionStart	= new DOMElement('start-time', date("Y-m-d H:i:s.u", $aExecution['fStartTime']));
 				$eExecution->appendChild($eExecutionStart);
-				$eExecutionDuration	= new DOMElement('duration', $aDatabaseAccessProfile['fDuration']);
+				$eExecutionDuration	= new DOMElement('duration', $aExecution['fDuration']);
 				$eExecution->appendChild($eExecutionDuration);
 				
 				// Results
 				if (array_key_exists('iResults', $aExecution))
 				{
-					$eResults	= new DOMElement('results', $aDatabaseAccessProfile['iResults']);
+					$eResults	= new DOMElement('results', $aExecution['iResults']);
 					$eExecution->appendChild($eResults);
 				}
 				if (array_key_exists('iInsertId', $aExecution))
 				{
-					$eInsertId	= new DOMElement('insert-id', $aDatabaseAccessProfile['iInsertId']);
+					$eInsertId	= new DOMElement('insert-id', $aExecution['iInsertId']);
 					$eExecution->appendChild($eInsertId);
 				}
 				if (array_key_exists('iRowsAffected', $aExecution))
 				{
-					$eRowsAffected	= new DOMElement('rows-affected', $aDatabaseAccessProfile['iRowsAffected']);
+					$eRowsAffected	= new DOMElement('rows-affected', $aExecution['iRowsAffected']);
 					$eExecution->appendChild($eRowsAffected);
 				}
 				
