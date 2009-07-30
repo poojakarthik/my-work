@@ -533,20 +533,21 @@ class DataAccess
 			$eDatabaseAccess->appendChild($eQuery);
 			
 			// Prepare
-			$ePrepare	= new DOMElement('prepare');
-			if (array_key_exists('fPreparationStart', $aDatabaseAccessProfile))
+			if (array_key_exists('fPreparationTime', $aDatabaseAccessProfile) || array_key_exists('fPreparationStart', $aDatabaseAccessProfile))
 			{
-				$ePrepareStart	= new DOMElement('start', date("Y-m-d H:i:s.u", $aDatabaseAccessProfile['fPreparationStart']));
-				$ePrepare->appendChild($ePrepareStart);
-			}
-			if (array_key_exists('fPreparationTime', $aDatabaseAccessProfile))
-			{
-				$ePrepareDuration	= new DOMElement('duration', $aDatabaseAccessProfile['fPreparationTime']);
-				$ePrepare->appendChild($ePrepareDuration);
-			}
-			if ($ePrepareStart || $ePrepareDuration)
-			{
+				$ePrepare	= new DOMElement('prepare');
 				$eDatabaseAccess->appendChild($ePrepare);
+				
+				if (array_key_exists('fPreparationStart', $aDatabaseAccessProfile))
+				{
+					$ePrepareStart	= new DOMElement('start', date("Y-m-d H:i:s.u", $aDatabaseAccessProfile['fPreparationStart']));
+					$ePrepare->appendChild($ePrepareStart);
+				}
+				if (array_key_exists('fPreparationTime', $aDatabaseAccessProfile))
+				{
+					$ePrepareDuration	= new DOMElement('duration', $aDatabaseAccessProfile['fPreparationTime']);
+					$ePrepare->appendChild($ePrepareDuration);
+				}
 			}
 			
 			// Executions
