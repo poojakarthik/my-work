@@ -57,8 +57,31 @@
 	 {
 	 	$this->Trace($strQuery);
 	 	
+	 	parent::_prepare($strQuery);
+	 	
 	 	// run query
 	 	$mixResult = mysqli_query($this->db->refMysqliConnection, $strQuery);
+	 	
+	 	if ($mixResult instanceof MySQLi_Result)
+	 	{
+	 		// Accessor
+	 		$aExecutionProfile['iResults']	= $mixResult->num_rows;
+	 	}
+	 	else
+	 	{
+	 		// Modifier
+	 		$aExecutionProfile['iAffectedRows']	= $this->db->refMysqliConnection->affected_rows;
+	 		
+	 		if ($this->db->refMysqliConnection->insert_id)
+	 		{
+	 			$aExecutionProfile['iInsertId']		= $this->db->refMysqliConnection->insert_id;
+	 		}
+	 	}
+	 	
+	 	$aExecutionProfile['fDuration']		= microtime(true) - $aExecutionProfile['fStartTime'];
+	 	$aExecutionProfile['iResults']		= $this->_stmtSqlStatment->num_rows;
+	 	$this->aProfiling['aExecutions'][]	= $aExecutionProfile;
+	 	
 	 	$this->Debug($mixResult);
 		return $mixResult;
 	 }
