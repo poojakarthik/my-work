@@ -488,11 +488,11 @@ class DataAccess
 		if ($sXMLPath)
 		{
 			$sXMLPath	= trim($sXMLPath);
-			$sSavePath	= ($sXMLPath[0] === '/') ? $sXMLPath : self::PROFILER_LOG_PATH.$sXMLPath;
+			$sSavePath	= ($sXMLPath[0] === '/') ? $sXMLPath : FILES_BASE_PATH.self::PROFILER_LOG_PATH.$sXMLPath;
 		}
 		else
 		{
-			$sSavePath	= self::PROFILER_LOG_PATH.date("YmdHis-u").'.xml';
+			$sSavePath	= FILES_BASE_PATH.self::PROFILER_LOG_PATH.date("YmdHis-u").'.xml';
 		}
 		
 		@mkdir(dirname($sSavePath));
