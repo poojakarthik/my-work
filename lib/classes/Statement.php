@@ -68,13 +68,6 @@
 	 * @see			<MethodName()||typePropertyName>
 	 */
 	private $_strTable;
-	
-	public	$aProfiling	=	array
-							(
-								'aExecutions'		=> array(),
-								'fPreparationStart'	=> null,
-								'fPreparationTime'	=> null
-							);
 
  	//------------------------------------------------------------------------//
 	// Statement() - Constructor
@@ -128,8 +121,7 @@
 			//throw new Exception($this->Error());
 	 	}
 		
-		$this->_aProfiling['fPreparationTime']	= microtime(true) - $this->aProfiling['fPreparationStart'];
-		$this->_aProfiling['sQuery']			= $sQuery;
+		parent::_prepare($sQuery);
 	 }
 	 
 	

@@ -51,6 +51,13 @@
 	 * @property
 	 */
 	protected $db;
+	
+	public	$aProfiling	=	array
+							(
+								'aExecutions'		=> array(),
+								'fPreparationStart'	=> null,
+								'fPreparationTime'	=> null
+							);
 
 	//------------------------------------------------------------------------//
 	// DatabaseAccess() - Constructor
@@ -430,6 +437,12 @@
 	function EscapeString($strString)
 	{
 		return $this->db->refMysqliConnection->real_escape_string($strString);
+	}
+	
+	public function _prepare($sQuery)
+	{
+		$this->aProfiling['fPreparationTime']	= microtime(true) - $this->aProfiling['fPreparationStart'];
+		$this->aProfiling['sQuery']				= $sQuery;
 	}
 }
 
