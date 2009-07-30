@@ -37,6 +37,8 @@ class DataAccess
 	public $refMysqliConnection;
 	
 	private $_bProfilingEnabled	= false;
+	
+	private	$_aProfiling		= array();
 
 	const	PROFILER_LOG_PATH	= 'logs/profiling/data_access/';
 
@@ -498,7 +500,7 @@ class DataAccess
 		}
 		else
 		{
-			$sSavePath	= FILES_BASE_PATH.self::PROFILER_LOG_PATH.date("YmdHis-u").'.xml';
+			$sSavePath	= FILES_BASE_PATH.self::PROFILER_LOG_PATH.date("YmdHis+u").'.xml';
 		}
 		
 		@mkdir(dirname($sSavePath));
@@ -594,6 +596,8 @@ class DataAccess
 				}
 			}
 		}
+		
+		return $domDocument;
 	}
 	
 	public function setProfilingEnabled($bEnabled)
