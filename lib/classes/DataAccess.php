@@ -466,11 +466,11 @@ class DataAccess
 	
 	function __destruct()
 	{
-		$sTouchfile	= date("Ymdhis+u");
-		touch("/home/rdavis/touch_{$sTouchfile}.destruct.touch");
+		$sTouchfile	= FILES_BASE_PATH.'touch_'.date("Ymdhis+u");
+		touch("{$sTouchfile}.destruct.touch");
 		if ($this->getProfilingEnabled())
 		{
-			touch("/home/rdavis/touch_{$sTouchfile}.save.touch");
+			touch("{$sTouchfile}.save.touch");
 			// Write out Profiling Data to log file
 			$this->exportProfilingToXML();
 		}
