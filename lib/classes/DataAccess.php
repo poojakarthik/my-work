@@ -508,7 +508,8 @@ class DataAccess
 	
 	static private function _profilingToXML($aProfilingData)
 	{
-		$domDocument	= new DOMDocument('1.0', 'UTF-8');
+		$domDocument				= new DOMDocument('1.0', 'UTF-8');
+		$domDocument->formatOutput	= true;
 		
 		$eDatabaseAccesses	= new DOMElement('database-accesses');
 		$domDocument->appendChild($eDatabaseAccesses);
