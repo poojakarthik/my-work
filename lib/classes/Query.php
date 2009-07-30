@@ -57,11 +57,13 @@
 	 {
 	 	$this->Trace($strQuery);
 	 	
-	 	parent::_prepare($strQuery);
+	 	$aProfiling				= array();
+		$aProfiling['sQuery']	= $strQuery;
 	 	
 	 	// run query
 	 	$mixResult = mysqli_query($this->db->refMysqliConnection, $strQuery);
 	 	
+	 	// Profiling
 	 	if ($mixResult instanceof MySQLi_Result)
 	 	{
 	 		// Accessor
@@ -78,9 +80,9 @@
 	 		}
 	 	}
 	 	
-	 	$aExecutionProfile['fDuration']		= microtime(true) - $aExecutionProfile['fStartTime'];
-	 	$aExecutionProfile['iResults']		= $this->_stmtSqlStatment->num_rows;
-	 	$this->aProfiling['aExecutions'][]	= $aExecutionProfile;
+	 	$aExecutionProfile['fDuration']	= microtime(true) - $aExecutionProfile['fStartTime'];
+	 	$aExecutionProfile['iResults']	= $this->_stmtSqlStatment->num_rows;
+	 	$aProfiling['aExecutions'][]	= $aExecutionProfile;
 	 	
 	 	$this->Debug($mixResult);
 		return $mixResult;

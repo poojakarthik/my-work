@@ -121,7 +121,8 @@
 			//throw new Exception($this->Error());
 	 	}
 		
-		parent::_prepare($sQuery);
+		$this->aProfiling['fPreparationTime']	= microtime(true) - $this->aProfiling['fPreparationStart'];
+		$this->aProfiling['sQuery']				= $sQuery;
 	 }
 	 
 	

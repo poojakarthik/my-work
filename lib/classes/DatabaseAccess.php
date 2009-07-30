@@ -438,12 +438,6 @@
 	{
 		return $this->db->refMysqliConnection->real_escape_string($strString);
 	}
-	
-	public function _prepare($sQuery)
-	{
-		$this->aProfiling['fPreparationTime']	= microtime(true) - $this->aProfiling['fPreparationStart'];
-		$this->aProfiling['sQuery']				= $sQuery;
-	}
 }
 
 ?>
