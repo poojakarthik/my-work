@@ -33,7 +33,7 @@
 	 * @property
 	 * @see			<MethodName()||typePropertyName>
 	 */
-	private $_stmtSqlStatment;
+	protected $_stmtSqlStatment;
 	
 	//------------------------------------------------------------------------//
 	// arrWhereAliases	
