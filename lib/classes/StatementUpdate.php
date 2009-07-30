@@ -307,6 +307,12 @@
 		{
 			// If it was successful, we want to store the number of affected rows
 			$this->intAffectedRows = $this->db->refMysqliConnection->affected_rows;
+			
+			// Update profiling info
+		 	$aExecutionProfile['fDuration']		= microtime(true) - $aExecutionProfile['fStartTime'];
+		 	$aExecutionProfile['iAffectedRows']	= $this->intAffectedRows;
+		 	$this->aProfiling['aExecutions'][]	= $aExecutionProfile;
+		 	
 			return $this->intAffectedRows;
 		}
 		else
