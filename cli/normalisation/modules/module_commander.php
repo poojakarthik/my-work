@@ -165,8 +165,10 @@ class NormalisationModuleCommander extends NormalisationModule
 		
 		// RecordType
 		$mixRateId 						= $this->_FetchRawCDR('RateId');
-		$mixCallType					= ($mixRateId === '915') ? '915' : $this->_FetchRawCDR('CallType');		// Telstra On-Bill
-		$strRecordCode 					= $this->FindRecordCode($mixCallType);
+		$mixCallType					= $this->_FetchRawCDR('CallType');
+		
+		$strRecordCode					= $this->FindRecordCode($mixCallType);
+		$strRecordCode					= ($mixRateId === '915' && $strRecordCode !== 'IDD') ? $this->FindRecordCode('915') : $strRecordCode;		// Telstra On-Bill
 		$intRecordType 					= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $intRecordType);
 
