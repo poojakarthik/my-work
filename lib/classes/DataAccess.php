@@ -462,7 +462,10 @@ class DataAccess
 			//$this->refMysqliConnection->rollback();
 			$this->TransactionRollback();
 		}
-		
+	}
+	
+	function __destruct()
+	{
 		if ($this->getProfilingEnabled())
 		{
 			// Write out Profiling Data to log file
