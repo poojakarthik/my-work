@@ -597,7 +597,7 @@ class Invoice_Run
 		}
 
 		// Remove Plan Charges
-		if ($qryQuery->Execute("DELETE FROM Charge WHERE ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND invoice_run_id = {$this->Id}") === FALSE)
+		if ($qryQuery->Execute("DELETE FROM Charge WHERE ChargeType IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND CreatedBy IS NULL AND invoice_run_id = {$this->Id}") === FALSE)
 		{
 			throw new Exception($qryQuery->Error());
 		}
