@@ -194,7 +194,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			$dacFlex	= DataAccess::getDataAccess();
 			
 			// DEBUG: Turn on Query Profiling
-			$dacFlex->setProfilingEnabled(true);
+			//$dacFlex->setProfilingEnabled(true);
 			try
 			{
 				$dacFlex->TransactionStart();
