@@ -126,6 +126,7 @@ class Cli_App_Pdf extends Cli
 				$instanceRef = 'i'.strval(ceil(microtime(true)*1000000));
 				$this->log("\nUnique ID for this process thread: $instanceRef");
 			}
+			throw new Exception("TEST");
 
 			// Get the XML data files to be used
 			$arrFiles = array();
