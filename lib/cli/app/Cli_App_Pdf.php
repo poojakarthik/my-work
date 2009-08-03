@@ -318,6 +318,7 @@ class Cli_App_Pdf extends Cli
 				if (file_exists($strDestination))
 				{
 					$this->log("SKIPPING: {$strDestination} has already been generated");
+					$generatedDocs[]	= $strDestination;
 					continue;
 				}
 				else
