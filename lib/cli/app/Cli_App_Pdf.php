@@ -317,14 +317,14 @@ class Cli_App_Pdf extends Cli
 				// If we are resuming a run, make sure that this PDF hasn't already been generated
 				if (file_exists($strDestination))
 				{
-					$this->log("{$strDestination} has already been generated");
+					$this->log("SKIPPING: {$strDestination} has already been generated");
 					continue;
 				}
 				else
 				{
-					throw new Exception("{$strDestination} has NOT already been generated");
+					//throw new Exception("{$strDestination} has NOT already been generated");
 				}
-				throw new Exception("TEST");
+				//throw new Exception("TEST");
 				
 
 				if ($targetMedia == 'DO_NOT_SEND')
@@ -394,7 +394,7 @@ class Cli_App_Pdf extends Cli
 			$this->log(str_repeat(chr(8), $lastDocNameLen+3) . "\nProcessing complete", FALSE, TRUE, TRUE);
 			$this->log("\n");
 			
-			throw new Exception("TEST 2");
+			//throw new Exception("TEST 2");
 
 			ob_flush();
 			flush();
