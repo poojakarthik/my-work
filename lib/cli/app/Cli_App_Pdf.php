@@ -115,10 +115,10 @@ class Cli_App_Pdf extends Cli
 				
 				$aPartialExportList	= glob($strDestination."/*.xml.{$sResumeInstanceRef}.pdf");
 				$instanceRef		= $sResumeInstanceRef;
-				$this->log("\Continuing incomplete process thread: $instanceRef");
+				$this->log("\Continuing incomplete process thread: $instanceRef (".count($aPartialExportList)." PDFs already generated)");
 				
 				// DEBUG
-				throw new Exception(print_r($aPartialExportList, true));
+				//throw new Exception(print_r($aPartialExportList, true));
 			}
 			else
 			{
@@ -126,7 +126,7 @@ class Cli_App_Pdf extends Cli
 				$instanceRef = 'i'.strval(ceil(microtime(true)*1000000));
 				$this->log("\nUnique ID for this process thread: $instanceRef");
 			}
-			throw new Exception("TEST");
+			//throw new Exception("TEST");
 
 			// Get the XML data files to be used
 			$arrFiles = array();
@@ -196,6 +196,18 @@ class Cli_App_Pdf extends Cli
 
 			foreach ($arrFiles as $strSource => $strDestination)
 			{
+				// If we are resuming a run, make sure that this PDF hasn't already been generated
+				if (file_exists($strDestination))
+				{
+					$this->log("{$strDestination} has already been generated");
+					continue;
+				}
+				else
+				{
+					throw new Exception("{$strDestination} has NOT already been generated");
+				}
+				throw new Exception("TEST");
+				
 				$this->log("Processing XML file: $strSource");
 				// Make sure we have enough time to generate this PDF (2 minutes should hopefully always be enough!)...
 				//set_time_limit(1800);
@@ -380,6 +392,8 @@ class Cli_App_Pdf extends Cli
 
 			$this->log(str_repeat(chr(8), $lastDocNameLen+3) . "\nProcessing complete", FALSE, TRUE, TRUE);
 			$this->log("\n");
+			
+			throw new Exception("TEST 2");
 
 			ob_flush();
 			flush();
