@@ -38,7 +38,8 @@ $arrDataReport['SQLTable']		= "	Service s
 									JOIN Account a ON (s.Account = a.Id)
 									JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
 									JOIN Contact c ON (a.PrimaryContact = c.Id)
-									JOIN ServiceRatePlan srp ON (s.Id = srp.Service)";
+									JOIN ServiceRatePlan srp ON (s.Id = srp.Service)
+									JOIN RatePlan rp ON (srp.RatePlan = rp.Id)";
 $arrDataReport['SQLWhere']		= "	<EffectiveDate> BETWEEN CAST(srp.StartDatetime AS DATE) AND CAST(srp.EndDatetime AS DATE)
 									AND srp.Id =	(
 														SELECT		Id
@@ -102,7 +103,7 @@ $arrSQLFields['ServiceType']	= Array(
 											'Type'					=> "Query",
 											'DBQuery'				=> $arrServiceTypeQuery,
 											'Documentation-Entity'	=> "DataReport",
-											'Documentation-Field'	=> "ServiceType",
+											'Documentation-Field'	=> "Service Type",
 										);
 
 
@@ -110,13 +111,13 @@ $arrSQLFields['ServiceStatus']	= Array(
 											'Type'					=> "Query",
 											'DBQuery'				=> $arrServiceStatusQuery,
 											'Documentation-Entity'	=> "Service",
-											'Documentation-Field'	=> "Status",
+											'Documentation-Field'	=> "Service Status",
 										);
 
 $arrSQLFields['EffectiveDate']	= Array(
 										'Type'					=> "dataDate",
 										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "StartDateRange",
+										'Documentation-Field'	=> "Effective Date",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
