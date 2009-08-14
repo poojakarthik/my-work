@@ -13,6 +13,13 @@
 require_once("../../flex.require.php");
 $arrConfig = LoadApplication();
 
+$aParameters	=	array
+					(
+						't'	=> null,
+						'i'	=> '/^\d+$/',
+						'p'	=> null
+					);
+
 // Check Parameters
 $intInvoiceRunId	= (int)$argv[1];
 $bolIncludePDF		= (strtolower($argv[2]) === 'includepdf') ? TRUE : FALSE;
@@ -23,6 +30,9 @@ if (!$selInvoiceRun->Execute(Array('invoice_run_id' => $intInvoiceRunId)))
 	exit(1);
 }
 $arrInvoiceRun	= $selInvoiceRun->Fetch();
+
+Debug($argv);
+die;
 
 // Email them Invoices
 EmailInvoices($arrInvoiceRun, $bolIncludePDF);
