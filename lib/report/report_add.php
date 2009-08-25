@@ -35,7 +35,8 @@ $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "	Account a
-									JOIN Contact c ON (a.PrimaryContact = c.Id)";
+									JOIN Contact c ON (a.PrimaryContact = c.Id)
+									JOIN CustomerGroup cg ON (cg.Id = a.CustomerGroup)";
 $arrDataReport['SQLWhere']		= "	CAST(a.CreatedOn AS DATE) BETWEEN <StartDate> AND <EndDate>
 									AND a.Archived IN (0, 5)
 									AND a.CustomerGroup = <CustomerGroup>";
