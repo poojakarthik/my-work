@@ -25,33 +25,20 @@ $arrSQLFields	= array();
 $arrDataReports = array();
 
 //---------------------------------------------------------------------------//
-// SERVICES OF A SERVICE TYPE ON A STATUS ON A GIVEN DATE
+// MAIL MERGE: WELCOME LETTER
 //---------------------------------------------------------------------------//
 
-$arrDataReport['Name']			= "Services on a Service Status";
-$arrDataReport['Summary']		= "Shows a list of Services for a given Service Type, Service Status, and Date combination";
+$arrDataReport['Name']			= "Mail Merge: Welcome Letter";
+$arrDataReport['Summary']		= "Generates a data set for Mail Merging with Welcome Letters";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "	Service s
-									JOIN Account a ON (s.Account = a.Id)
-									JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
-									JOIN Contact c ON (a.PrimaryContact = c.Id)
-									JOIN ServiceRatePlan srp ON (s.Id = srp.Service)
-									JOIN RatePlan rp ON (srp.RatePlan = rp.Id)";
-$arrDataReport['SQLWhere']		= "	<EffectiveDate> BETWEEN CAST(srp.StartDatetime AS DATE) AND CAST(srp.EndDatetime AS DATE)
-									AND srp.Id =	(
-														SELECT		Id
-														FROM		ServiceRatePlan
-														WHERE		Service = srp.Service
-																	AND <EffectiveDate> BETWEEN CAST(StartDatetime AS DATE) AND CAST(EndDatetime AS DATE)
-														ORDER BY	CreatedOn DESC
-														LIMIT		1
-													)
-									AND s.ServiceType = <ServiceType>
-									AND s.Status = <ServiceStatus>
-									AND IF(s.ClosedOn IS NULL, <EffectiveDate> > s.CreatedOn, <EffectiveDate> BETWEEN s.CreatedOn AND s.ClosedOn)";
+$arrDataReport['SQLTable']		= "	Account a
+									JOIN Contact c ON (a.PrimaryContact = c.Id)";
+$arrDataReport['SQLWhere']		= "	CAST(a.CreatedOn AS DATE) BETWEEN <StartDate> AND <EndDate>
+									AND a.Archived IN (0, 5)
+									AND a.CustomerGroup = <CustomerGroup>";
 $arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
@@ -59,65 +46,59 @@ $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['FNN']				['Value']	= "s.FNN";
-$arrSQLSelect['FNN']				['Type']	= EXCEL_TYPE_FNN;
+$arrSQLSelect['Customer Group']		['Value']	= "cg.external_name";
 
-$arrSQLSelect['Account #']			['Value']	= "a.Id";
-$arrSQLSelect['Account #']			['Type']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Account']			['Value']	= "a.Id";
+$arrSQLSelect['Account']			['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Account Name']		['Value']	= "a.BusinessName";
 
-$arrSQLSelect['Customer Group']		['Value']	= "cg.external_name";
+$arrSQLSelect['First Name']			['Value']	= "c.FirstName";
 
-$arrSQLSelect['Contact']			['Value']	= "CONCAT(c.FirstName, ' ', c.LastName)";
+$arrSQLSelect['Last Name']			['Value']	= "c.LastName";
 
-$arrSQLSelect['Contact Phone']		['Value']	= "IF(c.Phone != '', c.Phone, c.Mobile)";
-$arrSQLSelect['Contact Phone']		['Type']	= EXCEL_TYPE_FNN;
+$arrSQLSelect['Address Line 1']		['Value']	= "a.Address1";
 
-$arrSQLSelect['Rate Plan']			['Value']	= "rp.Name";
+$arrSQLSelect['Address Line 2']		['Value']	= "a.Address2";
 
-$arrSQLSelect['Has Tolled']			['Value']	= "IF(s.EarliestCDR, 'Yes', 'No')";
+$arrSQLSelect['Suburb']				['Value']	= "a.Suburb";
+
+$arrSQLSelect['Postcode']			['Value']	= "a.Postcode";
+
+$arrSQLSelect['State']				['Value']	= "a.State";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
-$arrServiceTypeQuery =	array
-						(
-							'Query'			=> "	SELECT id AS Value, name AS Label
-													FROM service_type
-													ORDER BY name ASC;",
-							'ValueType'		=> "dataInteger"
-						);
-
-$arrServiceStatusQuery =	array
+$arrCustomerGroupQuery =	array
 							(
-								'Query'			=> "	SELECT id AS Value, name AS Label
-														FROM service_status
-														ORDER BY name ASC;",
+								'Query'			=> "	SELECT		Id				AS `Value`,
+																	external_name	AS `Label`
+														FROM		CustomerGroup cg
+														WHERE		1
+														ORDER BY	Id ASC;",
 								'ValueType'		=> "dataInteger"
 							);
 
 
 
-$arrSQLFields['ServiceType']	= Array(
+$arrSQLFields['CustomerGroup']	= Array(
 											'Type'					=> "Query",
-											'DBQuery'				=> $arrServiceTypeQuery,
+											'DBQuery'				=> $arrCustomerGroupQuery,
 											'Documentation-Entity'	=> "DataReport",
-											'Documentation-Field'	=> "Service Type",
+											'Documentation-Field'	=> "Customer Group",
 										);
 
-
-$arrSQLFields['ServiceStatus']	= Array(
-											'Type'					=> "Query",
-											'DBQuery'				=> $arrServiceStatusQuery,
-											'Documentation-Entity'	=> "Service",
-											'Documentation-Field'	=> "Service Status",
-										);
-
-$arrSQLFields['EffectiveDate']	= Array(
+$arrSQLFields['StartDate']	= Array(
 										'Type'					=> "dataDate",
 										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "Effective Date",
+										'Documentation-Field'	=> "Start Date",
+									);
+
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "End Date",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
