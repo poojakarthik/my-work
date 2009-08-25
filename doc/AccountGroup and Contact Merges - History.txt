@@ -1,0 +1,1297 @@
+GENERIC Structure:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (ACCOUNT_ID_1, ACCOUNT_ID_2) ORDER BY Id;
+
+	Account Groups are ACCOUNT_GROUP_1 AND ACCOUNT_GROUP_2
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (ACCOUNT_GROUP_1, ACCOUNT_GROUP_2) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (ACCOUNT_GROUP_1, ACCOUNT_GROUP_2) ORDER BY Id;
+
+There are 2 modelling 1
+
+SELECT * from Contact WHERE Id IN (CONTACT_1, CONTACT_2) ORDER BY Id;
+
+Merge AccountGroup DEPRECATED_ACCOUNT_GROUP into RECEIVING_ACCOUNT_GROUP
+merge_account_groups.php -d RECEIVING_ACCOUNT_GROUP -o DEPRECATED_ACCOUNT_GROUP -t	<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact DEPRECTED_CONTACT into contact RECEIVING_CONTACT
+merge_contacts.php -d RECEIVING_CONTACT -o DEPRECTED_CONTACT -t						<<-- the t is for test mode.  It will rollback all changes
+
+
+
+
+
+Merging accounts 1000168025 and 1000168667 into the same accountgroup as 1000168024 for Rob:
+SELECT * FROM Account WHERE Id IN (1000168025, 1000168667, 1000168024) ORDER BY Id;
+SELECT * FROM Contact WHERE AccountGroup IN (1000168000, 1000168001, 1000168643) ORDER BY Id;
+SELECT * FROM Contact WHERE Id IN (19227, 19228, 19894);
+
+For Rob's one, merge:
+AccountGroup 1000168001 into AccountGroup 1000168000
+merge_account_groups -d 1000168000 -o 1000168001 -t			(DONE)
+
+Contact 19228 into Contact 19227
+merge_contacts -d 19227 -o 19228 -t					(DONE)
+
+AccountGroup 1000168643 into AccountGroup 1000168000
+merge_account_groups -d 1000168000 -o 1000168643 -t			(DONE)
+
+Contact 19894 into Contact 19227
+merge_contacts -d 19227 -o 19894 -t					(DONE)
+
+
+For Cane's One:
+SELECT * FROM Account WHERE Id IN (1000168885, 1000169070) ORDER BY Id;
+	Account Groups are 1000168861 AND 1000169046
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000168861, 1000169046) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000168861, 1000169046) ORDER BY Id;
+There are 3.  2 belong to AccountGroup 1000169046 and 1 belongs to 1000168861
+
+SELECT * from Contact WHERE Id IN (20117, 20323, 20324)
+
+Merge AccountGroup 1000169046 into 1000168861
+merge_account_groups -d 1000168861 -o 1000169046 -t			(DONE)
+
+Merge Contact 20324 into contact 20117
+merge_contacts -d 20117 -o 20324 -t					(DONE)
+
+Make sure the password isn't wiped when the contacts are merged (it wasn't)
+I have to change the primary contact of Account 1000169070 if both accounts are to have the same primary contact (DONE)
+
+
+For Nicole's One:
+SELECT * FROM Account WHERE Id IN (1000169015, 1000166981) ORDER BY Id;
+	Account Groups are 1000166957 AND 1000168991
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000166957, 1000168991) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000166957, 1000168991) ORDER BY Id;
+
+There are 3.  2 belong to AccountGroup 1000166957 and 1 belongs to 1000168991
+
+SELECT * from Contact WHERE Id IN (18175, 20254, 21607);
+
+Merge AccountGroup 1000168991 into 1000166957
+merge_account_groups -d 1000166957 -o 1000168991 -t				(DONE)
+
+Merge Contact 20254 into contact 21607
+merge_contacts -d 21607 -o 20254 -t						(DONE)
+
+
+Rob's second one:
+SELECT * FROM Account WHERE Id IN (1000156446, 1000157334) ORDER BY Id;
+	Account Groups are 1000156446 AND 1000157334
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000156446, 1000157334) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000156446, 1000157334) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (7855, 8725);
+
+Merge AccountGroup 1000157334 into 1000156446
+merge_account_groups -d 1000156446 -o 1000157334 -t				(DONE)
+
+Merge Contact 8725 into contact 7855
+merge_contacts -d 7855 -o 8725 -t						(DONE)
+
+
+
+Jo's one:
+SELECT * FROM Account WHERE Id IN (1000157424, 1000159229) ORDER BY Id;
+	Account Groups are 1000157424 AND 1000159229
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000157424, 1000159229) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000157424, 1000159229) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (8815, 10453);
+
+Merge AccountGroup 1000159229 into 1000157424
+merge_account_groups -d 1000157424 -o 1000159229 -t				(DONE)
+
+Merge Contact 10453 into contact 8815
+merge_contacts -d 8815 -o 10453 -t
+
+
+etien's one:
+SELECT * FROM Account WHERE Id IN (1000166307, 1000169247) ORDER BY Id;
+	Account Groups are 1000166283 AND 1000169223
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000166283, 1000169223) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000166283, 1000169223) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (17492, 20554);
+
+Merge AccountGroup 1000169223 into 1000166283
+merge_account_groups -d 1000166283 -o 1000169223 -t				(DONE)
+
+Merge Contact 20554 into contact 17492
+merge_contacts -d 17492 -o 20554 -t						(DONE)
+
+Cane's second one
+SELECT * FROM Account WHERE Id IN (1000160336, 1000160360) ORDER BY Id;
+	Account Groups are 1000160336 AND 1000160360
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000160336, 1000160360) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000160336, 1000160360) ORDER BY Id;
+
+There are 3, only 2 need to be merged
+
+SELECT * from Contact WHERE Id IN (11415, 11439, 22085);
+
+Merge AccountGroup 1000160360 into 1000160336
+merge_account_groups -d 1000160336 -o 1000160360 -t				(DONE)
+
+Merge Contact 22085 into contact 11439
+merge_contacts -d 11439 -o 22085 -t						(DONE)
+
+
+Etien's second one:
+SELECT * FROM Account WHERE Id IN (1000165203, 1000162489) ORDER BY Id;
+	Account Groups are 1000162489 AND 1000165179
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000162489, 1000165179) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000162489, 1000165179) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (13569, 16342);
+
+Merge AccountGroup 1000165179 into 1000162489
+merge_account_groups -d 1000162489 -o 1000165179 -t				(DONE)
+
+Merge Contact 16342 into contact 13569						(DONE)
+merge_contacts -d 13569 -o 16342 -t
+
+
+
+Rob's third one:
+SELECT * FROM Account WHERE Id IN (1000157422, 1000162941) ORDER BY Id;
+	Account Groups are 1000157422 AND 1000162941
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000157422, 1000162941) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000157422, 1000162941) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (8813, 14021);
+
+Merge AccountGroup 1000162941 into 1000157422
+merge_account_groups -d 1000157422 -o 1000162941 -t				(DONE)
+
+Merge Contact 14021 into contact 8813
+merge_contacts -d 8813 -o 14021 -t						(DONE)
+
+
+Lee's first one:
+SELECT * FROM Account WHERE Id IN (1000170629, 1000170630) ORDER BY Id;
+	Account Groups are 1000170604 AND 1000170605
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000170604, 1000170605) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000170604, 1000170605) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (22225, 22226);
+
+Merge AccountGroup 1000170605 into 1000170604
+merge_account_groups -d 1000170604 -o 1000170605 -t				(DONE)
+
+Merge Contact 22226 into contact 22225
+merge_contacts -d 22225 -o 22226 -t						(DONE)
+
+
+Nicole's second one:
+SELECT * FROM Account WHERE Id IN (1000167008, 1000169477) ORDER BY Id;
+	Account Groups are 1000166984 AND 1000169453
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000166984, 1000169453) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000166984, 1000169453) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (18202, 20834);
+
+Merge AccountGroup 1000169453 into 1000166984
+merge_account_groups -d 1000166984 -o 1000169453 -t				(DONE)
+
+Merge Contact 20834 into contact 18202
+merge_contacts -d 18202 -o 20834 -t
+
+
+Nicole's third one:
+SELECT * FROM Account WHERE Id IN (1000164523, 1000165510) ORDER BY Id;
+	Account Groups are 1000164523 AND 1000165486
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000164523, 1000165486) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000164523, 1000165486) ORDER BY Id;
+
+There are 3
+
+SELECT * from Contact WHERE Id IN (15652, 16668, 21098);
+
+Merge AccountGroup 1000165486 into 1000164523
+merge_account_groups -d 1000164523 -o 1000165486 -t				(DONE)
+
+Merge Contact 16668 into contact 15652
+merge_contacts -d 15652 -o 16668 -t						(DONE)
+
+
+Etien's third one:
+SELECT * FROM Account WHERE Id IN (1000162769, 1000158218) ORDER BY Id;
+	Account Groups are 1000158218 AND 1000162769
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000158218, 1000162769) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000158218, 1000162769) ORDER BY Id;
+
+There are 3
+
+SELECT * from Contact WHERE Id IN (9553, 13849, 20403);
+
+Merge AccountGroup 1000162769 into 1000158218
+merge_account_groups -d 1000158218 -o 1000162769 -t				(DONE)
+
+Merge Contact 20403 into contact 9553
+merge_contacts -d 9553 -o 20403 -t						(DONE)
+
+
+Cane's Third One:
+SELECT * FROM Account WHERE Id IN (1000166910, 1000167203) ORDER BY Id;
+	Account Groups are 1000166886 AND 1000167179
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000166886, 1000167179) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000166886, 1000167179) ORDER BY Id;
+
+There are 2, but they are different people so no contact merging is required
+
+Merge AccountGroup 1000167179 into 1000166886
+merge_account_groups -d 1000166886 -o 1000167179 -t				(DONE)
+
+
+Etien's Fourth One:
+SELECT * FROM Account WHERE Id IN (1000165191, 1000165192) ORDER BY Id;
+	Account Groups are 1000165167 AND 1000165168
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000165167, 1000165168) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000165167, 1000165168) ORDER BY Id;
+
+There are 3
+
+SELECT * from Contact WHERE Id IN (16329, 16330, 22888);
+
+Merge AccountGroup 1000165168 into 1000165167
+merge_account_groups -d 1000165167 -o 1000165168 -t				(DONE)
+
+Merge Contact 16330 into contact 16329
+merge_contacts -d 16329 -o 16330 -t						(DONE)
+
+
+
+Lee's Second ONE: (The Email address should be associated with Mr Graham Smith)
+SELECT * FROM Account WHERE Id IN (1000165814, 1000167096) ORDER BY Id;
+	Account Groups are 1000165790 AND 1000167072
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000165790, 1000167072) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000165790, 1000167072) ORDER BY Id;
+
+There are 10 which should be merged into 5
+
+SELECT * from Contact WHERE Id IN (21884, 21888, 16986, 18291, 20874, 21882, 21886, 21889, 21885, 21890)
+ORDER BY FirstName ASC , Id ASC;
+
+Merge AccountGroup 1000167072 into 1000165790
+merge_account_groups -d 1000165790 -o 1000167072 -t				(DONE)
+
+Merge Contact 21888 into contact 21884
+merge_contacts -d 21884 -o 21888 -t						(DONE)
+
+Merge Contact 18291 into contact 16986
+merge_contacts -d 16986 -o 18291 -t						(DONE)
+
+Merge Contact 21882 into contact 20874
+merge_contacts -d 20874 -o 21882 -t						(DONE)
+
+Merge Contact 21889 into contact 21886
+merge_contacts -d 21886 -o 21889 -t						(DONE)
+
+Merge Contact 21890 into contact 21885
+merge_contacts -d 21885 -o 21890 -t						(DONE)
+
+
+Michelle's First One:
+SELECT * FROM Account WHERE Id IN (1000166671, 1000167730) ORDER BY Id;
+	Account Groups are 1000166647 AND 1000167706
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000166647, 1000167706) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000166647, 1000167706) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (17859, 18930);
+
+Merge AccountGroup 1000167706 into 1000166647
+merge_account_groups -d 1000166647 -o 1000167706 -t				(DONE)
+
+Merge Contact 18930 into contact 17859
+merge_contacts -d 17859 -o 18930 -t						(DONE)
+
+
+Etien's Fifth One:
+SELECT * FROM Account WHERE Id IN (1000166582, 1000166583) ORDER BY Id;
+	Account Groups are 1000166558 AND 1000166559
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000166558, 1000166559) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000166558, 1000166559) ORDER BY Id;
+
+There are 4
+
+SELECT * from Contact WHERE Id IN (17770, 17771, 23100, 23101);
+
+Merge AccountGroup 1000166559 into 1000166558
+merge_account_groups -d 1000166558 -o 1000166559 -t				(DONE)
+
+Merge Contact 17771 into contact 17770
+merge_contacts -d 17770 -o 17771 -t						(DONE)
+
+Merge Contact 23101 into contact 23100
+merge_contacts -d 23100 -o 23101 -t						(DONE)
+
+
+Etien's Sixth ONE:
+SELECT * FROM Account WHERE Id IN (1000168822, 1000168096) ORDER BY Id;
+	Account Groups are 1000168072 AND 1000168798
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000168072, 1000168798) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000168072, 1000168798) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (19302, 20050);
+
+Merge AccountGroup 1000168798 into 1000168072
+merge_account_groups -d 1000168072 -o 1000168798 -t				(DONE)
+
+Merge Contact 20050 into contact 19302
+merge_contacts -d 19302 -o 20050 -t						(DONE)
+
+
+Etien's Seventh ONE:
+SELECT * FROM Account WHERE Id IN (1000169387, 1000170010) ORDER BY Id;
+	Account Groups are 1000169363 AND 1000169985
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000169363, 1000169985) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000169363, 1000169985) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (20723, 21488);
+
+Merge AccountGroup 1000169985 into 1000169363
+merge_account_groups -d 1000169363 -o 1000169985 -t				(DONE)
+
+Merge Contact 21488 into contact 20723
+merge_contacts -d 20723 -o 21488 -t						(DONE)
+
+
+Etien's Eighth ONE:
+SELECT * FROM Account WHERE Id IN (1000163079, 1000167211) ORDER BY Id;
+	Account Groups are 1000163079 AND 1000167187
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000163079, 1000167187) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000163079, 1000167187) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (14159, 18408);
+
+Merge AccountGroup 1000167187 into 1000163079
+merge_account_groups -d 1000163079 -o 1000167187 -t				(DONE)
+
+Merge Contact 18408 into contact 14159
+merge_contacts -d 14159 -o 18408 -t						(DONE)
+
+
+
+Etien's nineth ONE:
+SELECT * FROM Account WHERE Id IN (1000157667, 1000157673) ORDER BY Id;
+	Account Groups are 1000157667 AND 1000157673
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000157667, 1000157673) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000157667, 1000157673) ORDER BY Id;
+
+There are 8 that logically represent 4 people
+
+SELECT * from Contact WHERE Id IN (9043, 9049, 21207, 22009, 22010, 22011, 22012, 22014);
+
+9043, 9049 are the same person
+21207, 22014 are the same person
+22009, 22010 are the same person
+22011, 22012 are the same person
+
+Merge AccountGroup 1000157673 into 1000157667
+merge_account_groups -d 1000157667 -o 1000157673 -t				(DONE)
+
+Merge Contact 9049 into contact 9043
+merge_contacts -d 9043 -o 9049 -t						(DONE)
+
+Merge Contact 22014 into contact 21207
+merge_contacts -d 21207 -o 22014 -t						(DONE)
+
+Merge Contact 22010 into contact 22009
+merge_contacts -d 22009 -o 22010 -t						(DONE)
+
+Merge Contact 22012 into contact 22011
+merge_contacts -d 22011 -o 22012 -t						(DONE)
+
+
+Etien's Tenth ONE:
+SELECT * FROM Account WHERE Id IN (1000156640, 1000170741) ORDER BY Id;
+	Account Groups are 1000156640 AND 1000170716
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000156640, 1000170716) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000156640, 1000170716) ORDER BY Id;
+
+There are 3 logically representing 2 people
+
+SELECT * from Contact WHERE Id IN (8049, 21208, 22346);
+
+Merge AccountGroup 1000170716 into 1000156640
+merge_account_groups -d 1000156640 -o 1000170716 -t				(DONE)
+
+Merge Contact 22346 into contact 21208
+merge_contacts -d 21208 -o 22346 -t						(DONE)
+
+
+
+Mark Abnett's First ONE:
+GENERIC ONE:
+SELECT * FROM Account WHERE Id IN (1000164226, 1000162266) ORDER BY Id;
+	Account Groups are 1000162266 AND 1000164226
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000162266, 1000164226) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000162266, 1000164226) ORDER BY Id;
+
+There are 4 records modelling 2 contacts
+
+SELECT * from Contact WHERE Id IN (13345, 15346, 20854, 23521);
+
+Merge AccountGroup 1000164226 into 1000162266
+merge_account_groups -d 1000162266 -o 1000164226 -t		(DONE)
+
+Merge Contact 15346 into contact 13345
+merge_contacts -d 13345 -o 15346 -t						(DONE)
+
+Merge Contact 23521 into contact 20854
+merge_contacts -d 20854 -o 23521 -t
+
+
+
+Ashley's ONE:
+SELECT * FROM Account WHERE Id IN (1000168534, 1000169906) ORDER BY Id;
+	Account Groups are 1000168510 AND 1000169881
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000168510, 1000169881) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000168510, 1000169881) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (19760, 21370);
+
+Merge AccountGroup 1000169881 into 1000168510
+merge_account_groups -d 1000168510 -o 1000169881 -t		(DONE)
+
+Merge Contact 21370 into contact 19760
+merge_contacts -d 19760 -o 21370 -t						(DONE)
+
+
+Etiens 11th ONE:
+SELECT * FROM Account WHERE Id IN (1000167274, 1000167396) ORDER BY Id;
+	Account Groups are 1000167250 AND 1000167372
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000167250, 1000167372) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000167250, 1000167372) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (18471, 18593);
+
+Merge AccountGroup 1000167372 into 1000167250
+merge_account_groups -d 1000167250 -o 1000167372 -t		(DONE)
+
+Merge Contact 18593 into contact 18471
+merge_contacts -d 18471 -o 18593 -t						(DONE)
+
+Etien's 12th ONE:
+SELECT * FROM Account WHERE Id IN (1000170121, 1000170122) ORDER BY Id;
+	Account Groups are 1000170096 AND 1000170097
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000170096, 1000170097) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000170096, 1000170097) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (21631, 21632);
+
+Merge AccountGroup 1000170097 into 1000170096
+merge_account_groups -d 1000170096 -o 1000170097 -t		(DONE)
+
+Merge Contact 21632 into contact 21631
+merge_contacts -d 21631 -o 21632 -t						(DONE)
+
+
+
+Vicky's 1st ONE:
+SELECT * FROM Account WHERE Id IN (1000169650, 1000173459) ORDER BY Id;
+	Account Groups are 1000169625 AND 1000173400
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000169625, 1000173400) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000169625, 1000173400) ORDER BY Id;
+
+There are 3 logically modelling 2
+
+SELECT * from Contact WHERE Id IN (21046, 25567, 25585);
+
+Merge AccountGroup 1000173400 into 1000169625
+merge_account_groups -d 1000169625 -o 1000173400 -t		(DONE)
+
+Merge Contact 25585 into contact 25567
+merge_contacts -d 25567 -o 25585 -t						(DONE)
+
+
+
+Nicole's 4th ONE:
+SELECT * FROM Account WHERE Id IN (1000174218, 1000174177) ORDER BY Id;
+	Account Groups are 1000174114 AND 1000174155
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000174114, 1000174155) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000174114, 1000174155) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (26506, 26553);
+
+Merge AccountGroup 1000174155 into 1000174114
+merge_account_groups -d 1000174114 -o 1000174155 -t		(DONE)
+
+Merge Contact 26553 into contact 26506
+merge_contacts -d 26506 -o 26553 -t
+
+
+Nicole's 5th ONE:
+SELECT * FROM Account WHERE Id IN (1000174274, 1000174292) ORDER BY Id;
+	Account Groups are 1000174208 AND 1000174226
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000174208, 1000174226) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000174208, 1000174226) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (26631, 26652);
+
+Merge AccountGroup 1000174226 into 1000174208
+merge_account_groups -d 1000174208 -o 1000174226 -t		(DONE)
+
+Merge Contact 26652 into contact 26631
+merge_contacts -d 26631 -o 26652 -t						(DONE)
+
+
+
+Nicole's 6th ONE:
+SELECT * FROM Account WHERE Id IN (1000174301, 1000174308) ORDER BY Id;
+	Account Groups are 1000174235 AND 1000174242
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000174235, 1000174242) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000174235, 1000174242) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (26666, 26672);
+
+Merge AccountGroup 1000174242 into 1000174235
+merge_account_groups -d 1000174235 -o 1000174242 -t		(DONE)
+
+Merge Contact 26672 into contact 26666
+merge_contacts -d 26666 -o 26672 -t						(DONE)
+
+
+
+Etien's 13th ONE:
+SELECT * FROM Account WHERE Id IN (1000160718, 1000162258) ORDER BY Id;
+	Account Groups are 1000160718 AND 1000162258
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000160718, 1000162258) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000160718, 1000162258) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (11796, 13337);
+
+Merge AccountGroup 1000162258 into 1000160718
+merge_account_groups -d 1000160718 -o 1000162258 -t		(DONE)
+
+Merge Contact 13337 into contact 11796
+merge_contacts -d 11796 -o 13337 -t						(DONE)
+
+
+Nicole's 7th ONE:
+SELECT * FROM Account WHERE Id IN (1000174436, 1000172729) ORDER BY Id;
+	Account Groups are 1000172683 AND 1000174370
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000172683, 1000174370) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000172683, 1000174370) ORDER BY Id;
+
+There are only 2 that need to be merged, but there are 4 contact records in total (modelling 3 contacts)
+
+SELECT * from Contact WHERE Id IN (24739, 26831);
+
+Merge AccountGroup 1000174370 into 1000172683
+merge_account_groups -d 1000172683 -o 1000174370 -t		(DONE)
+
+Merge Contact 26831 into contact 24739
+merge_contacts -d 24739 -o 26831 -t
+
+
+Nicole's 8th ONE:
+SELECT * FROM Account WHERE Id IN (1000174459, 1000168232) ORDER BY Id;
+	Account Groups are 1000168208 AND 1000174393
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000168208, 1000174393) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000168208, 1000174393) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (19443, 26868);
+
+Merge AccountGroup 1000174393 into 1000168208
+merge_account_groups -d 1000168208 -o 1000174393 -t		(DONE)
+
+Merge Contact 26868 into contact 19443
+merge_contacts -d 19443 -o 26868 -t						(DONE)
+
+
+Etien's 14th ONE:
+SELECT * FROM Account WHERE Id IN (1000174012, 1000165748) ORDER BY Id;
+	Account Groups are 1000165724 AND 1000173949
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000165724, 1000173949) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000165724, 1000173949) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (16920, 26283);
+
+Merge AccountGroup 1000173949 into 1000165724
+merge_account_groups -d 1000165724 -o 1000173949 -t		(DONE)
+
+Merge Contact 26283 into contact 16920
+merge_contacts -d 16920 -o 26283 -t						(DONE)
+
+
+Etien's 15th ONE:
+SELECT * FROM Account WHERE Id IN (1000163517, 1000165551) ORDER BY Id;
+	Account Groups are 1000163517 AND 1000165527
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000163517, 1000165527) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000163517, 1000165527) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (14615, 16711);
+
+Merge AccountGroup 1000165527 into 1000163517
+merge_account_groups -d 1000163517 -o 1000165527 -t		(DONE)
+
+Merge Contact 16711 into contact 14615
+merge_contacts -d 14615 -o 16711 -t						(DONE)
+
+
+Etien's 16th ONE:
+SELECT * FROM Account WHERE Id IN (1000174046, 1000165141) ORDER BY Id;
+	Account Groups are 1000165117 AND 1000173983
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000165117, 1000173983) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000165117, 1000173983) ORDER BY Id;
+
+There are 3 modelling 2
+
+SELECT * from Contact WHERE Id IN (16277, 26323, 22176);
+
+Merge AccountGroup 1000173983 into 1000165117
+merge_account_groups -d 1000165117 -o 1000173983 -t		(DONE)
+
+Merge Contact 26323 into contact 16277
+merge_contacts -d 16277 -o 26323 -t						(DONE)
+
+
+My 1st ONE
+SELECT * FROM Account WHERE Id IN (1000173983, 1000174758) ORDER BY Id;
+	Account Groups are 1000173920 AND 1000174689
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000173920, 1000174689) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000173920, 1000174689) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (26243, 27278);
+
+Merge AccountGroup 1000174689 into 1000173920
+merge_account_groups -d 1000173920 -o 1000174689 -t		(DONE)
+
+Merge Contact 27278 into contact 26243
+merge_contacts -d 26243 -o 27278 -t						(DONE)
+
+
+My 2nd ONE
+SELECT * FROM Account WHERE Id IN (1000174572, 1000174759) ORDER BY Id;
+	Account Groups are 1000174505 AND 1000174690
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000174505, 1000174690) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000174505, 1000174690) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (27021, 27280);
+
+Merge AccountGroup 1000174690 into 1000174505
+merge_account_groups -d 1000174505 -o 1000174690 -t		(DONE)
+
+Merge Contact 27280 into contact 27021
+merge_contacts -d 27021 -o 27280 -t						(DONE)
+
+
+Nicole's 9th ONE:
+SELECT * FROM Account WHERE Id IN (1000174850, 1000174860) ORDER BY Id;
+	Account Groups are 1000174781 AND 1000174791
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000174781, 1000174791) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000174781, 1000174791) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (27394, 27404);
+
+Merge AccountGroup 1000174791 into 1000174781
+merge_account_groups -d 1000174781 -o 1000174791 -t		(DONE)
+
+Merge Contact 27404 into contact 27394
+merge_contacts -d 27394 -o 27404 -t						(DONE)
+
+
+Etien's 17th ONE:
+SELECT * FROM Account WHERE Id IN (1000168355, 1000168356) ORDER BY Id;
+	Account Groups are 1000168331 AND 1000168332
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000168331, 1000168332) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000168331, 1000168332) ORDER BY Id;
+
+There are 4 modelling 2
+
+SELECT * from Contact WHERE Id IN (19575, 19576, 19577, 19578);
+
+Merge AccountGroup 1000168332 into 1000168331
+merge_account_groups -d 1000168331 -o 1000168332 -t		(DONE)
+
+Merge Contact 19577 into contact 19575
+merge_contacts -d 19575 -o 19577 -t						(DONE)
+
+Merge Contact 19578 into contact 19576
+merge_contacts -d 19576 -o 19578 -t						(DONE)
+
+
+Etien's 18th ONE:
+SELECT * FROM Account WHERE Id IN (1000157175, 1000158014) ORDER BY Id;
+	Account Groups are 1000157175 AND 1000158014
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000157175, 1000158014) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000157175, 1000158014) ORDER BY Id;
+
+There are 3 modelling 1
+
+SELECT * from Contact WHERE Id IN (8577, 9367, 24923);
+
+Merge AccountGroup 1000158014 into 1000157175
+merge_account_groups -d 1000157175 -o 1000158014 -t		(DONE)
+
+Merge Contact 24923 into contact 9367
+merge_contacts -d 9367 -o 24923 -t						(DONE)
+
+Merge Contact 9367 into contact 8577
+merge_contacts -d 8577 -o 9367 -t						(DONE)
+
+
+Kris's 1st ONE:
+SELECT * FROM Account WHERE Id IN (1000170948, 1000171779, 1000174278) ORDER BY Id;
+	Account Groups are 1000170923 AND 1000174212
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000170923, 1000174212) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000170923, 1000174212) ORDER BY Id;
+
+There are 3 modelling 2
+
+SELECT * from Contact WHERE Id IN (22581, 26638, 22595);
+
+Merge AccountGroup 1000174212 into 1000170923
+merge_account_groups -d 1000170923 -o 1000174212 -t
+
+Merge Contact 26638 into contact 22581
+merge_contacts -d 22581 -o 26638 -t
+
+
+
+Nicole's 10th ONE:
+SELECT * FROM Account WHERE Id IN (1000173954, 1000175211) ORDER BY Id;
+	Account Groups are 1000173891 AND 1000175137
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000173891, 1000175137) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000173891, 1000175137) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (26204, 27855);
+
+Merge AccountGroup 1000175137 into 1000173891
+merge_account_groups -d 1000173891 -o 1000175137 -t		(DONE)
+
+Merge Contact 27855 into contact 26204
+merge_contacts -d 26204 -o 27855 -t						(DONE)
+
+
+
+My 3rd ONE:
+SELECT * FROM Account WHERE Id IN (1000175171, 1000174545) ORDER BY Id;
+	Account Groups are 1000174478 AND 1000175099
+
+Checking if there are any other accounts in these groups:
+	SELECT * FROM Account WHERE AccountGroup IN (1000174478, 1000175099) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000174478, 1000175099) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (26989, 27803);
+
+Merge AccountGroup 1000175099 into 1000174478
+merge_account_groups -d 1000174478 -o 1000175099 -t		(DONE)
+
+Merge Contact 27803 into contact 26989
+merge_contacts -d 26989 -o 27803 -t						(DONE)
+
+
+
+Sebi's ONE via ticket 20692 (THIS HAS NOT BEEN DONE YET, BECAUSE I'M AFRAID IT WILL FUCK UP):
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived FROM Account WHERE Id IN (1000172754, 1000173568) ORDER BY Id;
+	Account Groups are 1000172708 AND 1000173508
+
+Checking if there are any other accounts in these groups:
+	SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived FROM Account WHERE AccountGroup IN (1000172708, 1000173508) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000172708, 1000173508) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (24786, 25711) ORDER BY Id;
+
+Merge AccountGroup 1000173508 into 1000172708
+merge_account_groups -d 1000172708 -o 1000173508 -t		(DONE)
+
+Merge Contact 25711 into contact 24786
+merge_contacts -d 24786 -o 25711 -t						(DONE)
+
+
+Eve's ONE via ticket 20953:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived FROM Account WHERE Id IN (1000174146, 1000175175) ORDER BY Id;
+	Account Groups are 1000174083 AND 1000175103
+
+Checking if there are any other accounts in these groups:
+	SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived FROM Account WHERE AccountGroup IN (1000174083, 1000175103) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000174083, 1000175103) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (26469, 27808);
+
+Merge AccountGroup 1000175103 into 1000174083
+merge_account_groups -d 1000174083 -o 1000175103 -t		(DONE)
+
+Merge Contact 27808 into contact 26469
+merge_contacts -d 26469 -o 27808 -t						(DONE)
+
+
+Sam's ONE (from ticket 21232):
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived FROM Account WHERE Id IN (1000171205, 1000175543) ORDER BY Id;
+	Account Groups are 1000171180 AND 1000175468
+
+Checking if there are any other accounts in these groups:
+	SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived FROM Account WHERE AccountGroup IN (1000171180, 1000175468) ORDER BY Id;
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000171180, 1000175468) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (22878, 28284) ORDER BY Id;
+
+Merge AccountGroup 1000175468 into 1000171180
+merge_account_groups -d 1000171180 -o 1000175468 -t		(DONE)
+
+Merge Contact 28284 into contact 22878
+merge_contacts -d 22878 -o 28284 -t						(DONE)
+
+
+
+Sam's new 2nd ONE:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived 
+FROM Account WHERE Id IN (1000167186, 1000175610) ORDER BY Id;
+
+	Account Groups are 1000167162 AND 1000175535
+
+Checking if there are any other accounts in these groups:
+	SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+	FROM Account WHERE AccountGroup IN (1000167162, 1000175535) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000167162, 1000175535) ORDER BY Id;
+
+There are 3 modeling 2
+
+SELECT * from Contact WHERE Id IN (18382, 28366) ORDER BY Id;
+
+Merge AccountGroup 1000175535 into 1000167162
+merge_account_groups -d 1000167162 -o 1000175535 -t		(DONE)
+
+Merge Contact 28366 into contact 18382
+merge_contacts -d 18382 -o 28366 -t						(DONE)
+
+
+Sam's new 3rd ONE:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000174861, 1000175611) ORDER BY Id;
+
+	Account Groups are 1000174792 AND 1000175536
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000174792, 1000175536) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000174792, 1000175536) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (27405, 28367) ORDER BY Id;
+
+Merge AccountGroup 1000175536 into 1000174792
+merge_account_groups -d 1000174792 -o 1000175536 -t		(DONE)
+
+Merge Contact 28367 into contact 27405
+merge_contacts -d 27405 -o 28367 -t						(DONE)
+
+
+Etiens new 1st ONE, via ticket 21654:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000166311, 1000174774) ORDER BY Id;
+
+	Account Groups are 1000166287 AND 1000174705
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000166287, 1000174705) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000166287, 1000174705) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (17496, 27298) ORDER BY Id;
+
+Merge AccountGroup 1000174705 into 1000166287
+merge_account_groups -d 1000166287 -o 1000174705 -t		(DONE)
+
+Merge Contact 27298 into contact 17496
+merge_contacts -d 17496 -o 27298 -t						(DONE)
+
+
+
+Eve's ONE from ticket 21753:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000166350, 1000175225) ORDER BY Id;
+
+	Account Groups are 1000166326 AND 1000175151
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000166326, 1000175151) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000166326, 1000175151) ORDER BY Id;
+
+There are 4 modelling 2
+
+SELECT * from Contact WHERE Id IN (17535, 27873, /* Second contact */ 26277, 28431) ORDER BY Id;
+
+Merge AccountGroup 1000175151 into 1000166326
+merge_account_groups -d 1000166326 -o 1000175151 -t		(DONE)
+
+Merge Contact 27873 into contact 17535
+merge_contacts -d 17535 -o 27873 -t						(DONE)
+
+Merge Contact 28431 into contact 26277
+merge_contacts -d 26277 -o 28431 -t						(DONE)
+
+
+Eve's ONE from ticket 21874:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000157492, 1000157554, 1000159204) ORDER BY Id;
+
+	Account Groups are 1000157492 AND 1000157554 AND 1000159204
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000157492, 1000157554, 1000159204) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000157492, 1000157554, 1000159204) ORDER BY Id;
+
+There is 1 contact duplicated on each account (3 contact records modelling 1) (there is also another contact, but he's just on the one account so we don't have to worry about him)
+
+SELECT * from Contact WHERE Id IN (8879, 8939, 20850, /* and the fourth one all by himself */ 10428) ORDER BY Id;
+
+Merge AccountGroup 1000157554 into 1000157492
+merge_account_groups.php -d 1000157492 -o 1000157554 -t		(DONE)
+
+Merge AccountGroup 1000159204 into 1000157492
+merge_account_groups.php -d 1000157492 -o 1000159204 -t		(DONE)
+
+Merge Contact 8939 into contact 8879
+merge_contacts.php -d 8879 -o 8939 -t						(DONE)
+
+Merge Contact 20850 into contact 8879
+merge_contacts.php -d 8879 -o 20850 -t						(DONE)
+
+
+GENERIC ONE:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (ACCOUNT_ID_1, ACCOUNT_ID_2) ORDER BY Id;
+
+	Account Groups are ACCOUNT_GROUP_1 AND ACCOUNT_GROUP_2
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (ACCOUNT_GROUP_1, ACCOUNT_GROUP_2) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (ACCOUNT_GROUP_1, ACCOUNT_GROUP_2) ORDER BY Id;
+
+There are 2
+
+SELECT * from Contact WHERE Id IN (CONTACT_1, CONTACT_2) ORDER BY Id;
+
+Merge AccountGroup DEPRECATED_ACCOUNT_GROUP into RECEIVING_ACCOUNT_GROUP
+merge_account_groups.php -d RECEIVING_ACCOUNT_GROUP -o DEPRECATED_ACCOUNT_GROUP -t
+
+Merge Contact DEPRECTED_CONTACT into contact RECEIVING_CONTACT
+merge_contacts.php -d RECEIVING_CONTACT -o DEPRECTED_CONTACT -t
+
+
