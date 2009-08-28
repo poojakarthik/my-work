@@ -242,7 +242,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 	 			$emlMail =& Mail::factory('mail');
 	 			
 	 			// Uncomment this to Debug
-	 			/*
+	 			/**/
 	 			$arrDebugEmails		= Array();
 	 			$arrDebugEmails[]	= 'rdavis@ybs.net.au';
 	 			$arrDebugEmails[]	= 'cdobson@austarnet.com.au';
@@ -261,7 +261,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 	 			}
 	 			
 	 			// Uncomment this to Debug
-	 			//die;
+	 			die;
 				
 				// Update DeliveryMethod
 				$arrWhere					= Array();
