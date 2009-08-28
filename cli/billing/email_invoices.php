@@ -173,10 +173,16 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  			{
 				// PDF is included
 				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.\n\n" .
-								"You have the option of accessing your Invoice online via our Customer Online Website {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} which is designed to make viewing, paying and making changes to your Account more cost and time effective. You can view previous Invoices and Payments, make changes to your Account details and even report a fault with your Service. We encourage you to log on and register if you haven't already.  Should you have any difficulties accessing the Customer Portal please email {$arrCustomerGroups[$arrDetail['CustomerGroup']]['outbound_email']}.\n\n" .
-								"In the meantime, we will continue to send your monthly Invoice via email as a PDF file.\n\n" .
-								"Regards,\n\n" .
-								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']}.";
+								"Did you know?\n\n" .
+								"-\tFor convenience, you can add your home account to your current business account and take advantage of the additional savings.\n" .
+								"-\tIf you are an ADSL Broadband customer and you are having connection issues, the first step in trouble shooting is to restart your modem? Simply turn your modem off and on again, then wait until it reboots. If the problem persists, please call us on {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']} and press option 1 to talk to one of our ADSL specialists.\n" .
+								"-\tThe more products you have with us the more you save! <CustomerGroup.external_name>{$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} can look after all your telecommunication needs. Mobiles, Wireless Broadband, ADSL, PABX’s, 1300 inbound numbers. Call {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']}.\n" .
+								"-\tCustomers can call you on a 1300 for the cost of a local call from anywhere in Australia?\n" .
+								"-\tMost of our monthly plan charges are charged in advance.\n" .
+								"-\tYou can download our terms and conditions by visiting {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']}\n\n" .
+								"Thank you for you business!\n\n" .
+								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']}\n" .
+								"The Small to Medium Business Telecommunications Specialists!";
  			}
  			else
  			{
@@ -239,6 +245,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 	 			/**/
 	 			$arrDebugEmails		= Array();
 	 			$arrDebugEmails[]	= 'rdavis@ybs.net.au';
+	 			$arrDebugEmails[]	= 'cdobson@austarnet.com.au';
 	 			//$arrDebugEmails[]	= 'turdminator@hotmail.com';
 	 			//$arrDebugEmails[]	= 'msergeant@ybs.net.au';
 	 			//$arrDebugEmails[]	= 'msergeant@gmail.com';
