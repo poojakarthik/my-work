@@ -90,7 +90,7 @@ $arrSQLSelect['Account Name']		['Value']	= "a.BusinessName";
 $arrSQLSelect['Contact Name']		['Value']	= "CONCAT(c.FirstName, ' ', c.LastName)";
 
 $arrSQLSelect['Contact Phone']		['Value']	= "IF(CAST(c.Phone AS UNSIGNED) > 0, c.Phone, c.Mobile)";
-$arrSQLSelect['Contact Phon']		['Type']	= EXCEL_TYPE_FNN;
+$arrSQLSelect['Contact Phone']		['Type']	= EXCEL_TYPE_FNN;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
