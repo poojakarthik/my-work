@@ -25,21 +25,54 @@ $arrSQLFields	= array();
 $arrDataReports = array();
 
 //---------------------------------------------------------------------------//
-// MAIL MERGE: WELCOME LETTER
+// Accounts Consistently Invoicing over $1000 (Last 3 Invoices)
 //---------------------------------------------------------------------------//
 
-$arrDataReport['Name']			= "Mail Merge: Welcome Letter";
-$arrDataReport['Summary']		= "Generates a data set for Mail Merging with Welcome Letters";
+$arrDataReport['Name']			= "Accounts Consistently Invoicing over \$1000 (Last 3 Invoices)";
+$arrDataReport['Summary']		= "Lists all Accounts who have invoiced over \$1000 over the last 3 Invoices";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "	Account a
+									JOIN account_status a_s ON (a_s.id = a.Archived)
+									JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
 									JOIN Contact c ON (a.PrimaryContact = c.Id)
-									JOIN CustomerGroup cg ON (cg.Id = a.CustomerGroup)";
-$arrDataReport['SQLWhere']		= "	CAST(a.CreatedOn AS DATE) BETWEEN <StartDate> AND <EndDate>
-									AND a.Archived IN (0, 5)
-									AND a.CustomerGroup = <CustomerGroup>";
+									JOIN Invoice i_current ON (a.Id = i_current.Account)
+									JOIN Invoice i_previous ON (a.Id = i_previous.Account)
+									JOIN Invoice i_threevious ON (a.Id = i_threevious.Account)";
+$arrDataReport['SQLWhere']		= "	i_current.Id =	(
+														SELECT		Invoice.Id
+														FROM		Invoice
+																	JOIN InvoiceRun ON (Invoice.invoice_run_id = InvoiceRun.Id)
+														WHERE		invoice_run_type_id IN (1)
+																	AND Invoice.Account = a.Id
+														ORDER BY	Id DESC
+														LIMIT		1 OFFSET 0
+													)
+									AND i_previous.Id =	(
+															SELECT		Invoice.Id
+															FROM		Invoice
+																		JOIN InvoiceRun ON (Invoice.invoice_run_id = InvoiceRun.Id)
+															WHERE		invoice_run_type_id IN (1)
+																		AND Invoice.Account = a.Id
+															ORDER BY	Id DESC
+															LIMIT		1 OFFSET 1
+														)
+									AND i_threevious.Id =	(
+																SELECT		Invoice.Id
+																FROM		Invoice
+																			JOIN InvoiceRun ON (Invoice.invoice_run_id = InvoiceRun.Id)
+																WHERE		invoice_run_type_id IN (1)
+																			AND Invoice.Account = a.Id
+																ORDER BY	Id DESC
+																LIMIT		1 OFFSET 2
+															)
+									AND a_s.const_name NOT IN ('ACCOUNT_CLOSED', 'ACCOUNT_ARCHIVED')
+									AND a.vip = 0
+									AND (i_current.Total + i_current.Tax) > 1000
+									AND (i_previous.Total + i_previous.Tax) > 1000
+									AND (i_threevious.Total + i_threevious.Tax) > 1000";
 $arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
@@ -47,60 +80,21 @@ $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Customer Group']		['Value']	= "cg.external_name";
+$arrSQLSelect['Customer Group']		['Value']	= "cg.internal_name";
 
 $arrSQLSelect['Account']			['Value']	= "a.Id";
 $arrSQLSelect['Account']			['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Account Name']		['Value']	= "a.BusinessName";
 
-$arrSQLSelect['First Name']			['Value']	= "c.FirstName";
+$arrSQLSelect['Contact Name']		['Value']	= "CONCAT(c.FirstName, ' ', c.LastName)";
 
-$arrSQLSelect['Last Name']			['Value']	= "c.LastName";
-
-$arrSQLSelect['Address Line 1']		['Value']	= "a.Address1";
-
-$arrSQLSelect['Address Line 2']		['Value']	= "a.Address2";
-
-$arrSQLSelect['Suburb']				['Value']	= "a.Suburb";
-
-$arrSQLSelect['Postcode']			['Value']	= "a.Postcode";
-
-$arrSQLSelect['State']				['Value']	= "a.State";
+$arrSQLSelect['Contact Phone']		['Value']	= "IF(CAST(c.Phone AS UNSIGNED) > 0, c.Phone, c.Mobile)";
+$arrSQLSelect['Contact Phon']		['Type']	= EXCEL_TYPE_FNN;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
-$arrCustomerGroupQuery =	array
-							(
-								'Query'			=> "	SELECT		Id				AS `Value`,
-																	external_name	AS `Label`
-														FROM		CustomerGroup cg
-														WHERE		1
-														ORDER BY	Id ASC;",
-								'ValueType'		=> "dataInteger"
-							);
-
-
-
-$arrSQLFields['CustomerGroup']	= Array(
-											'Type'					=> "Query",
-											'DBQuery'				=> $arrCustomerGroupQuery,
-											'Documentation-Entity'	=> "DataReport",
-											'Documentation-Field'	=> "Customer Group",
-										);
-
-$arrSQLFields['StartDate']	= Array(
-										'Type'					=> "dataDate",
-										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "Start Date",
-									);
-
-$arrSQLFields['EndDate']	= Array(
-										'Type'					=> "dataDate",
-										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "End Date",
-									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
 
