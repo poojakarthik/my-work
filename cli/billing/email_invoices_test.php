@@ -31,9 +31,6 @@ if (!$selInvoiceRun->Execute(Array('invoice_run_id' => $intInvoiceRunId)))
 }
 $arrInvoiceRun	= $selInvoiceRun->Fetch();
 
-Debug($argv);
-die;
-
 // Email them Invoices
 EmailInvoices($arrInvoiceRun, $bolIncludePDF);
 
