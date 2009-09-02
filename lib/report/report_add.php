@@ -61,7 +61,7 @@ $arrSQLSelect['Contact Name']				['Value']	= "CONCAT(c.FirstName, ' ', c.LastNam
 $arrSQLSelect['Contact Phone']				['Value']	= "IF(CAST(c.Phone AS UNSIGNED) > 0, c.Phone, c.Mobile)";
 $arrSQLSelect['Contact Phone']				['Type']	= EXCEL_TYPE_FNN;
 
-$arrSQLSelect['Invoice Total (inc GST)']	['Value']	= "a.Id";
+$arrSQLSelect['Invoice Total (inc GST)']	['Value']	= "(i.Total + i.Tax)";
 $arrSQLSelect['Invoice Total (inc GST)']	['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
