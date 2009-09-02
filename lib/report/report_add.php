@@ -82,7 +82,7 @@ $arrInvoiceRunQuery =	array
 
 $arrSQLFields['invoice_run_id']	= Array(
 											'Type'					=> "Query",
-											'DBQuery'				=> $arrCustomerGroupQuery,
+											'DBQuery'				=> $arrInvoiceRunQuery,
 											'Documentation-Entity'	=> "DataReport",
 											'Documentation-Field'	=> "Invoice Run",
 										);
