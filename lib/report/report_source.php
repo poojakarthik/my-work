@@ -3080,7 +3080,7 @@ $arrDataReport['SQLWhere']		= "	i_current.Id =	(
 																ORDER BY	Id DESC
 																LIMIT		1 OFFSET 2
 															)
-									AND a_s.const_name NOT IN ('ACCOUNT_CLOSED', 'ACCOUNT_ARCHIVED')
+									AND a_s.const_name NOT IN ('ACCOUNT_STATUS_CLOSED', 'ACCOUNT_STATUS_ARCHIVED')
 									AND a.vip = 0
 									AND (i_current.Total + i_current.Tax) > 1000
 									AND (i_previous.Total + i_previous.Tax) > 1000
@@ -3114,5 +3114,48 @@ $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 $arrDataReports[] = $arrDataReport;
 
 
+
+//---------------------------------------------------------------------------//
+// VIP Accounts List
+//---------------------------------------------------------------------------//
+
+$arrDataReport['Name']			= "VIP Accounts List";
+$arrDataReport['Summary']		= "Lists all Accounts who have the VIP flag selected";
+$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
+$arrDataReport['Priviledges']	= 2147483648;									// Debug
+//$arrDataReport['Priviledges']	= 1;											// Live
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "	Account a
+									JOIN account_status a_s ON (a_s.id = a.Archived)
+									JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
+									JOIN Contact c ON (a.PrimaryContact = c.Id)";
+$arrDataReport['SQLWhere']		= "	a.vip = 1";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect['Customer Group']		['Value']	= "cg.internal_name";
+
+$arrSQLSelect['Account']			['Value']	= "a.Id";
+$arrSQLSelect['Account']			['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Account Name']		['Value']	= "a.BusinessName";
+
+$arrSQLSelect['Contact Name']		['Value']	= "CONCAT(c.FirstName, ' ', c.LastName)";
+
+$arrSQLSelect['Contact Phone']		['Value']	= "IF(CAST(c.Phone AS UNSIGNED) > 0, c.Phone, c.Mobile)";
+$arrSQLSelect['Contact Phone']		['Type']	= EXCEL_TYPE_FNN;
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+
+// Add the report to the array of reports to add to the database
+$arrDataReports[] = $arrDataReport;
 
 ?>
