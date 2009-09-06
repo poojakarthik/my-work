@@ -1295,3 +1295,90 @@ Merge Contact DEPRECTED_CONTACT into contact RECEIVING_CONTACT
 merge_contacts.php -d RECEIVING_CONTACT -o DEPRECTED_CONTACT -t
 
 
+Account: Speedwah Valley Aboriginal Corporation
+-----------------------------------------------
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000175822, 1000176040) ORDER BY Id;
+
+	Account Groups are 1000175742 AND 1000175951
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000175742, 1000175951) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000175742, 1000175951) ORDER BY Id;
+
+There are 2 modelling 1
+
+SELECT * from Contact WHERE Id IN (CONTACT_1, CONTACT_2) ORDER BY Id;
+
+Merge AccountGroup 1000175951 into 1000175742
+merge_account_groups.php -d 1000175742 -o 1000175951 -t	<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 28914 into contact 28653
+merge_contacts.php -d 28653 -o 28914 -t						<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
+
+Accounts: Earth Friendly Insulation && B & J Imports Pty Ltd
+-----------------------------------------------
+GENERIC Structure:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000175094, 1000176153) ORDER BY Id;
+
+	Account Groups are 1000175024 AND 1000176060
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000175024, 1000176060) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000175024, 1000176060) ORDER BY Id;
+
+There are 2 modelling 1
+
+SELECT * from Contact WHERE Id IN (CONTACT_1, CONTACT_2) ORDER BY Id;
+
+Merge AccountGroup 1000176060 into 1000175024
+merge_account_groups.php -d 1000175024 -o 1000176060 -t	<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 29076 into contact 27704
+merge_contacts.php -d 27704 -o 29076 -t						<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
+
+Accounts: Bob Fussell Marine & Sail Centre && Robert Fussell
+-----------------------------------------------
+GENERIC Structure:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000171541, 1000174222) ORDER BY Id;
+
+	Account Groups are 1000171513 AND 1000174159
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000171513, 1000174159) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000171513, 1000174159) ORDER BY Id;
+
+There are 2 modelling 1
+
+SELECT * from Contact WHERE Id IN (CONTACT_1, CONTACT_2) ORDER BY Id;
+
+Merge AccountGroup 1000174159 into 1000171513
+merge_account_groups.php -d 1000171513 -o 1000174159 -t	<<-- the t is for test mode.  It will rollback all changes
+
+-- Robert Fussell (Primary Contact)
+Merge Contact 26566 into contact 23257
+merge_contacts.php -d 23257 -o 26566 -t						<<-- the t is for test mode.  It will rollback all changes
+
+-- Katherine Fussell
+Merge Contact 29112 into contact 29109
+merge_contacts.php -d 29109 -o 29112 -t						<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
