@@ -25,44 +25,83 @@ $arrSQLFields	= array();
 $arrDataReports = array();
 
 //---------------------------------------------------------------------------//
-// VIP Revenue Report
+// Invoice Run: Call Type Totals
 //---------------------------------------------------------------------------//
 
-$arrDataReport['Name']			= "VIP Revenue Report";
-$arrDataReport['Summary']		= "Lists all Accounts who have the VIP flag selected and their Invoice value for a given Invoice Run";
+$arrDataReport['Name']			= "Invoice Run: Call Type Totals";
+$arrDataReport['Summary']		= "Shows Call Type Total data for a given Invoice Run.  The Invoice Run must not have been archived.";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "	Account a
-									JOIN account_status a_s ON (a_s.id = a.Archived)
-									JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
-									JOIN Contact c ON (a.PrimaryContact = c.Id)
-									JOIN Invoice i ON (a.Id = i.Account)";
-$arrDataReport['SQLWhere']		= "	a.vip = 1
-									AND a_s.const_name IN ('ACCOUNT_STATUS_ACTIVE', 'ACCOUNT_STATUS_SUSPENDED', 'ACCOUNT_STATUS_DEBT_COLLECTION')
-									AND i.invoice_run_id = <invoice_run_id>";
-$arrDataReport['SQLGroupBy']	= "";
+$arrDataReport['SQLTable']		= "	CDR cdr
+									JOIN Carrier c ON (c.Id = cdr.Carrier)
+									JOIN RecordType rt ON (cdr.RecordType = rt.Id)
+									JOIN service_type st ON (cdr.ServiceType = st.id)
+									JOIN Account a ON (cdr.Account = a.Id)
+									LEFT JOIN Service s_destination ON (cdr.FNN != cdr.Destination AND s_destination.FNN = cdr.Destination AND s_destination.CreatedOn < cdr.StartDatetime AND (s_destination.ClosedOn IS NULL OR s_destination.ClosedOn > cdr.EndDatetime))
+									LEFT JOIN Account a_destination ON (s_destination.Account = a_destination.Id)";
+$arrDataReport['SQLWhere']		= "	cdr.invoice_run_id = <invoice_run_id>
+									AND cdr.Status IN (198, 199)";
+$arrDataReport['SQLGroupBy']	= "	rt.id,
+									cdr.Carrier,
+									`Call Nature`,
+									cdr.Credit
+						
+						ORDER BY	st.name ASC,
+									rt.Name ASC,
+									c.Name ASC,
+									`Call Nature` ASC,
+									cdr.Credit ASC";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
-$arrSQLSelect['Customer Group']				['Value']	= "cg.internal_name";
+$arrSQLSelect['Service Type']						['Value']	= "st.id";
 
-$arrSQLSelect['Account']					['Value']	= "a.Id";
-$arrSQLSelect['Account']					['Type']	= EXCEL_TYPE_INTEGER;
+$arrSQLSelect['Service Type Description']			['Value']	= "st.description";
 
-$arrSQLSelect['Account Name']				['Value']	= "a.BusinessName";
+$arrSQLSelect['Record Type']						['Value']	= "rt.Id";
 
-$arrSQLSelect['Contact Name']				['Value']	= "CONCAT(c.FirstName, ' ', c.LastName)";
+$arrSQLSelect['Record Type Description']			['Value']	= "rt.Name";
 
-$arrSQLSelect['Contact Phone']				['Value']	= "IF(CAST(c.Phone AS UNSIGNED) > 0, c.Phone, c.Mobile)";
-$arrSQLSelect['Contact Phone']				['Type']	= EXCEL_TYPE_FNN;
+$arrSQLSelect['Carrier Id']							['Value']	= "c.Id";
 
-$arrSQLSelect['Invoice Total (inc GST)']	['Value']	= "(i.Total + i.Tax)";
-$arrSQLSelect['Invoice Total (inc GST)']	['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Carrier Name']						['Value']	= "c.Name";
+
+$arrSQLSelect['Call Nature']						['Value']	= "	CASE
+																		WHEN cdr.Account = s_destination.Account THEN 'Intra-Account'
+																		WHEN a.CustomerGroup = a_destination.CustomerGroup THEN 'Inter-Account'
+																		ELSE 'Off-Network'
+																	END";
+
+$arrSQLSelect['Charge Nature']						['Value']	= "IF(cdr.Credit = 0, 'DR', 'CR')";
+
+$arrSQLSelect['Total Units']						['Value']	= "SUM(cdr.Units)";
+$arrSQLSelect['Total Units']						['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Units Type']							['Value']	= "	CASE
+																		WHEN rt.DisplayType = 3 THEN 'KB(s)'
+																		WHEN rt.DisplayType = 1 THEN 'Second(s)'
+																		ELSE 'Unit(s)'
+																	END";
+
+$arrSQLSelect['Total Cost']							['Value']	= "SUM(cdr.Cost)";
+$arrSQLSelect['Total Cost']							['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['Total Amount Charged to Customers']	['Value']	= "SUM(cdr.Charge)";
+$arrSQLSelect['Total Amount Charged to Customers']	['Type']	= EXCEL_TYPE_CURRENCY;
+
+$arrSQLSelect['CDR Count']							['Value']	= "COUNT(cdr.Id)";
+$arrSQLSelect['CDR Count']							['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['FNN Count']							['Value']	= "COUNT(DISTINCT cdr.FNN)";
+$arrSQLSelect['FNN Count']							['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Account Count']						['Value']	= "COUNT(DISTINCT cdr.Account)";
+$arrSQLSelect['Account Count']						['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
