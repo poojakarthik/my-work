@@ -113,6 +113,7 @@ $arrInvoiceRunQuery =	array
 																JOIN CustomerGroup cg ON (ir.customer_group_id = cg.Id)
 																JOIN invoice_run_type irt ON (irt.id = ir.invoice_run_type_id)
 													WHERE		irt.const_name = 'INVOICE_RUN_TYPE_LIVE'
+																AND (SELECT Id FROM CDR WHERE invoice_run_id = ir.Id LIMIT 1) IS NOT NULL
 													ORDER BY	ir.BillingDate DESC, cg.Id DESC;",
 							'ValueType'		=> "dataInteger"
 						);
