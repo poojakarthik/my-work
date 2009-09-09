@@ -1192,6 +1192,21 @@ class Invoice extends ORM
 				$bolFirstInvoice	= false;
 			}
 			
+			// If the Plan is charged in Advance, then check if we have charged a PCAD yet
+			$bHasChargedInAdvance	= false;
+			if ($arrPlanDetails['InAdvance'])
+			{
+				$rResult	= $qryQuery->Execute("SELECT Id FROM Charge WHERE ChargeType = 'PCAD' AND Service IN ({$strServiceIds}) AND Status = ".CHARGE_INVOICED." AND invoice_run_id != {$this->_objInvoiceRun->invoice_run_type_id} LIMIT 1");
+				if ($rResult === false)
+				{
+					throw new Exception("DB ERROR: ".$qryQuery->Error());
+				}
+				elseif ($resResult->num_rows)
+				{
+					$bHasChargedInAdvance	= true;
+				}
+			}
+			
 			Log::getLog()->log("Arrears period start: ".date("Y-m-d H:i:s", $intArrearsPeriodStart));
 
 			// Charge In Advance (only if this is not an interim Invoice Run)
@@ -1206,7 +1221,7 @@ class Invoice extends ORM
 			}
 
 			// Charge in Arrears
-			if (!$arrPlanDetails['InAdvance'] || $bolFirstInvoice)
+			if (!$arrPlanDetails['InAdvance'] || !$bHasChargedInAdvance)
 			{
 				$arrPlanChargeSteps[]	= ($bolFirstInvoice) ? 'FIRST_ARREARS' : 'NORMAL_ARREARS';
 
