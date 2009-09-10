@@ -29,6 +29,7 @@ class Sales_Report_SaleItemStatus extends Sales_Report
 							"ProductName"				=> "Product",
 							"ProductTypeName"			=> "Product Type",
 							"ProductDetails"			=> "Details",
+							"CreatedBy"					=> "Submitted By",
 							"VerifiedOn"				=> "Verified On",
 							"VerifiedBy"				=> "Verified By",
 							"EOTStatusName"				=> "EOT Status",		// End Of Timeframe Status Name
@@ -153,6 +154,7 @@ SELECT 	si.id AS sale_item_id,
 		si.sale_id AS sale_id, 
 		s.sale_type_id AS sale_type_id,
 		si.product_id AS product_id, 
+		si.created_by AS created_by,
 		verified_details.changed_on AS verified_on,
 		verified_details.changed_by AS verified_by,
 
@@ -278,6 +280,13 @@ ORDER BY sale_type_id ASC, sale_id ASC, sale_item_id ASC, business_name ASC
 				$intAccountId = NULL;
 			}
 			
+			// Find out who created the sale item
+			if (!array_key_exists($arrRecord['created_by'], $arrDealers))
+			{
+				$arrDealers[$arrRecord['created_by']] = Dealer::getForId($arrRecord['created_by'], TRUE);
+			}
+			$objCreatedByDealer = $arrDealers[$arrRecord['created_by']];
+
 			// Find out who verified the sale
 			if (!array_key_exists($arrRecord['verified_by'], $arrDealers))
 			{
@@ -307,6 +316,7 @@ ORDER BY sale_type_id ASC, sale_id ASC, sale_item_id ASC, business_name ASC
 			$arrDetails['ProductName']				= $doProduct->name;
 			$arrDetails['ProductTypeName']			= $arrProductTypes[$doProduct->productTypeId]->name;
 			$arrDetails['ProductDetails']			= call_user_func(array($strModuleClassName, "getSaleItemDescription"), $doSaleItem, FALSE, FALSE);
+			$arrDetails['CreatedBy']				= $objCreatedByDealer->username;
 			$arrDetails['VerifiedOn']				= $arrRecord['verified_on'];
 			$arrDetails['VerifiedBy']				= $objVerificationDealer->username;
 
