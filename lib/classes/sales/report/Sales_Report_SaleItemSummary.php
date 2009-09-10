@@ -36,7 +36,6 @@ class Sales_Report_SaleItemSummary extends Sales_Report
 							"TotalCompletedButNotCooledOff"			=> "Completed but Coolling Off Period has not Expired",
 							"TotalCancelledAndClawedBack"			=> "Cancelled and Clawed Back",
 							"TotalCancelledButNotClawedBack"		=> "Cancelled but Not Clawed Back",
-							"TotalOutstanding"						=> "Total Outstanding",
 							"TotalOutstandingDispatched"			=> "Total Outstanding - Dispatched",
 							"TotalOutstandingManualIntervention"	=> "Total Outstanding - Manual Intervention",
 							"TotalOutstandingAwaitingDispatch"		=> "Total Outstanding - Awaiting Dispatch",
@@ -258,7 +257,6 @@ ORDER BY v.name ASC, pt.name ASC, p.name ASC
 											"TotalCompletedButNotCooledOff"			=> 0,
 											"TotalCancelledAndClawedBack"			=> 0,
 											"TotalCancelledButNotClawedBack"		=> 0,
-											"TotalOutstanding"						=> 0,
 											"TotalOutstandingDispatched"			=> 0,
 											"TotalOutstandingManualIntervention"	=> 0,
 											"TotalOutstandingAwaitingDispatch"		=> 0,
@@ -361,35 +359,26 @@ ORDER BY v.name ASC, pt.name ASC, p.name ASC
 						}
 						break;
 						
+					case DO_Sales_SaleItemStatus::DISPATCHED:
+						$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalOutstandingDispatched'] += 1;
+						break;
+					
+					case DO_Sales_SaleItemStatus::MANUAL_INTERVENTION:
+						$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalOutstandingManualIntervention'] += 1;
+						break;
+					
+					case DO_Sales_SaleItemStatus::AWAITING_DISPATCH:
+						$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalOutstandingAwaitingDispatch'] += 1;
+						break;
+					
+					case DO_Sales_SaleItemStatus::VERIFIED:
+						$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalOutstandingVerified'] += 1;
+						break;
+					
 					default:
-						//  The sale item is outstanding
-						$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalOutstanding'] += 1;
-						
-						switch ($intCurrentStatus)
-						{
-							case DO_Sales_SaleItemStatus::DISPATCHED:
-								$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalOutstandingDispatched'] += 1;
-								break;
-							
-							case DO_Sales_SaleItemStatus::MANUAL_INTERVENTION:
-								$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalOutstandingManualIntervention'] += 1;
-								break;
-							
-							case DO_Sales_SaleItemStatus::AWAITING_DISPATCH:
-								$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalOutstandingAwaitingDispatch'] += 1;
-								break;
-							
-							case DO_Sales_SaleItemStatus::VERIFIED:
-								$this->_arrTotals[$intDealerId][$arrRecord['product_id']]['TotalOutstandingVerified'] += 1;
-								break;
-							
-							default:
-								// Whatever the status is, it shouldn't be set to it
-								$doSaleItemStatus = DO_Sales_SaleItemStatus::getForId($intCurrentStatus);
-								throw new Exception("SaleItem (id {$arrRecord['sale_item_id']}) has been verified, but is now of an illegal status: {$doSaleItemStatus->name} ($intCurrentStatus)");
-								break;
-						}
-						
+						// Whatever the status is, it shouldn't be set to it
+						$doSaleItemStatus = DO_Sales_SaleItemStatus::getForId($intCurrentStatus);
+						throw new Exception("SaleItem (id {$arrRecord['sale_item_id']}) has been verified, but is now of an illegal status: {$doSaleItemStatus->name} ($intCurrentStatus)");
 						break;
 				}
 			}
@@ -413,7 +402,6 @@ ORDER BY v.name ASC, pt.name ASC, p.name ASC
 				$arrRecord['TotalCompletedButNotCooledOff']			= $arrProductTotals['TotalCompletedButNotCooledOff'];
 				$arrRecord['TotalCancelledAndClawedBack']			= $arrProductTotals['TotalCancelledAndClawedBack'];
 				$arrRecord['TotalCancelledButNotClawedBack']		= $arrProductTotals['TotalCancelledButNotClawedBack'];
-				$arrRecord['TotalOutstanding']						= $arrProductTotals['TotalOutstanding'];
 				$arrRecord['TotalOutstandingDispatched']			= $arrProductTotals['TotalOutstandingDispatched'];
 				$arrRecord['TotalOutstandingManualIntervention']	= $arrProductTotals['TotalOutstandingManualIntervention'];
 				$arrRecord['TotalOutstandingAwaitingDispatch']		= $arrProductTotals['TotalOutstandingAwaitingDispatch'];
