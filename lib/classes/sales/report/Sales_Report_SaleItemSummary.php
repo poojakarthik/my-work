@@ -33,7 +33,7 @@ class Sales_Report_SaleItemSummary extends Sales_Report
 							"ProductName"							=> "Product",
 							"TotalVerified"							=> "Total Verified",
 							"TotalCompletedAndCooledOff"			=> "Completed and Coolling Off Period has Expired",
-							"TotalCompletedButNotCooledOff"			=> "Completed but Still Within Coolling Off Period",
+							"TotalCompletedButNotCooledOff"			=> "Completed but Coolling Off Period has not Expired",
 							"TotalCancelledAndClawedBack"			=> "Cancelled and Clawed Back",
 							"TotalCancelledButNotClawedBack"		=> "Cancelled but Not Clawed Back",
 							"TotalOutstanding"						=> "Total Outstanding",
