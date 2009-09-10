@@ -231,12 +231,16 @@ class Invoice_Export
 						$arrCDR['Description']	= ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
 						$arrCDR['TaxExempt']	= $arrCharge['TaxExempt'];
 						
-						$arrCategories['Service Charges & Credits']['Itemisation'][]	= $arrCDR;
+						$aAdjustmentItemisation[]	= $arrCDR;
 					}
 					
+					// Perform "Roll-Ups"
+					$aAdjustmentItemisation	= self::_adjustmentRollup($aAdjustmentItemisation);
+					
+					$arrCategories['Service Charges & Credits']['Itemisation']	= $aAdjustmentItemisation;
 					$arrCategories['Service Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 					$arrCategories['Service Charges & Credits']['TotalCharge']	= $fltAdjustmentsTotal;
-					$arrCategories['Service Charges & Credits']['Records']		= count($arrItemised);
+					$arrCategories['Service Charges & Credits']['Records']		= count($aAdjustmentItemisation);
 					
 					$fltRatedTotal	+= $fltAdjustmentsTotal;
 				}
@@ -257,6 +261,9 @@ class Invoice_Export
 					
 					$fltPlanChargeTotal			+= $arrCDR['Charge'];
 				}
+				
+				// Perform "Roll-Ups"
+				$arrPlanChargeItemisation	= self::_adjustmentRollup($arrPlanChargeItemisation);
 				
 				// Add to Service Array
 				if (count($arrPlanChargeItemisation))
@@ -285,6 +292,9 @@ class Invoice_Export
 					
 					$fltPlanCreditTotal			+= $arrCDR['Charge'];
 				}
+				
+				// Perform "Roll-Ups"
+				$arrPlanCreditItemisation	= self::_adjustmentRollup($arrPlanCreditItemisation);
 				
 				// Add to Service Array
 				if (count($arrPlanCreditItemisation))
@@ -330,7 +340,7 @@ class Invoice_Export
 	 */
 	public static function getAccountAdjustments($arrInvoice)
 	{
-		$arrAdjustments			= Array();
+		$arrAdjustments			= array();
 		$fltAccountChargeTotal	= 0.0;
 		$selAccountAdjustments	= self::_preparedStatement('selAccountAdjustments');
 		if ($selAccountAdjustments->Execute($arrInvoice) === FALSE)
@@ -341,16 +351,20 @@ class Invoice_Export
 		{
 			while ($arrAdjustment = $selAccountAdjustments->Fetch())
 			{
-				$arrCDR								= Array();
-				$arrCDR['Description']				= ($arrAdjustment['ChargeType']) ? ($arrAdjustment['ChargeType']." - ".$arrAdjustment['Description']) : $arrAdjustment['Description'];
-				$arrCDR['Units']					= 1;
-				$arrCDR['Charge']					= $arrAdjustment['Amount'];
-				$arrCDR['TaxExempt']				= $arrAdjustment['TaxExempt'];
-				$arrAdjustments['Itemisation'][]	= $arrCDR;
-				$fltAccountChargeTotal				+= $arrCDR['Charge'];
+				$arrCDR						= array();
+				$arrCDR['Description']		= ($arrAdjustment['ChargeType']) ? ($arrAdjustment['ChargeType']." - ".$arrAdjustment['Description']) : $arrAdjustment['Description'];
+				$arrCDR['Units']			= 1;
+				$arrCDR['Charge']			= $arrAdjustment['Amount'];
+				$arrCDR['TaxExempt']		= $arrAdjustment['TaxExempt'];
+				$aAdjustmentItemisation[]	= $arrCDR;
+				$fltAccountChargeTotal		+= $arrCDR['Charge'];
 			}
 		}
 		
+		// Perform "Roll-Ups"
+		$aAdjustmentItemisation	= self::_adjustmentRollup($aAdjustmentItemisation);
+		
+		$arrAdjustments['Itemisation']	= $aAdjustmentItemisation;
 		$arrAdjustments['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 		$arrAdjustments['TotalCharge']	= $fltAccountChargeTotal;
 		$arrAdjustments['Records']		= count($arrAdjustments['Itemisation']);
@@ -441,9 +455,12 @@ class Invoice_Export
 					$arrCDR['Units']												= 1;
 					$arrCDR['Charge']												= $arrPlanChargeSummary['Amount'];
 					$arrCDR['TaxExempt']											= $arrPlanChargeSummary['TaxExempt'];
-					$arrAccountSummary['Plan Charges']['Itemisation'][]	= $arrCDR;
-					$arrAccountSummary['Plan Charges']['Records']++;
+					$arrAccountSummary['Plan Charges']['Itemisation'][]				= $arrCDR;
 				}
+				
+				// Perform "Roll-Ups"
+				$arrAccountSummary['Plan Charges']['Itemisation']	= self::_adjustmentRollup($arrAccountSummary['Plan Charges']['Itemisation']);
+				$arrAccountSummary['Plan Charges']['Records']		= count($arrAccountSummary['Plan Charges']['Itemisation']);
 			}
 			
 			// Plan Usage/Credit
@@ -465,9 +482,13 @@ class Invoice_Export
 					$arrCDR['Units']												= 1;
 					$arrCDR['Charge']												= $arrPlanChargeSummary['Amount'];
 					$arrCDR['TaxExempt']											= $arrPlanChargeSummary['TaxExempt'];
-					$arrAccountSummary['Plan Usage']['Itemisation'][]	= $arrCDR;
+					$arrAccountSummary['Plan Usage']['Itemisation'][]				= $arrCDR;
 					$arrAccountSummary['Plan Usage']['Records']++;
 				}
+				
+				// Perform "Roll-Ups"
+				$arrAccountSummary['Plan Usage']['Itemisation']	= self::_adjustmentRollup($arrAccountSummary['Plan Usage']['Itemisation']);
+				$arrAccountSummary['Plan Usage']['Records']		= count($arrAccountSummary['Plan Usage']['Itemisation']);
 			}
 		}
 		
@@ -482,6 +503,42 @@ class Invoice_Export
 		return $arrAccountSummary;
 	}
 	
+	/**
+	 * _adjustmentRollup()
+	 *
+	 * Removes Credit/Debit pairs in an array of Adjustments
+	 * 
+	 * @param	array		$aAdjustments					Array of Adjustments
+	 * 
+	 * @return	array										Array of Adjustments without CR/DR Pairs
+	 *
+	 * @method
+	 */
+	private function _adjustmentRollup($aAdjustments)
+	{
+		$aAdjustmentPairs	= $aAdjustments;
+		
+		$aCleanAdjustments	= array();
+		foreach ($aAdjustments as $aAdjustment)
+		{
+			// Search for a mate
+			foreach ($aAdjustmentPairs as $aPairAdjustment)
+			{
+				// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
+				if (($aAdjustment['Description'] === $aPairAdjustment['Description']) && (($aAdjustment['Charge'] - $aPairAdjustment['Charge']) === 0))
+				{
+					// Perfect Pair -- Don't add to the "clean" array
+					continue 2;
+				}
+			}
+			
+			// No mate has been found -- Add to the "clean" array
+			$aCleanAdjustments[]	= $aAdjustment;
+		}
+		
+		// Return an array of Adjustments without CR/DR Pairs
+		return $aCleanAdjustments;
+	}
 	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
