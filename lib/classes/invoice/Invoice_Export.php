@@ -534,7 +534,7 @@ class Invoice_Export
 					
 					// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
 					// Additionally, we cannot have already matched against this Adjustment
-					if ($aPairAdjustment['Matched'] && ($aAdjustment['Description'] === $aPairAdjustment['Description']) && (($aAdjustment['Charge'] - $aPairAdjustment['Charge']) === 0))
+					if (!$aPairAdjustment['Matched'] && ($aAdjustment['Description'] === $aPairAdjustment['Description']) && (($aAdjustment['Charge'] - $aPairAdjustment['Charge']) === 0))
 					{
 						// Perfect Pair -- Mark as matched
 						$aAdjustment['Matched']		= true;
