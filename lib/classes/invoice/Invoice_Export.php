@@ -516,25 +516,39 @@ class Invoice_Export
 	 */
 	private function _adjustmentRollup($aAdjustments)
 	{
-		$aAdjustmentPairs	= $aAdjustments;
+		$aAdjustmentKeys		= array_keys($aAdjustments);
+		$aAdjustmentPairKeys	= array_keys($aAdjustments);
 		
 		$aCleanAdjustments	= array();
-		foreach ($aAdjustments as $aAdjustment)
+		foreach ($aAdjustmentKeys as $mAdjustmentIndex)
 		{
-			// Search for a mate
-			foreach ($aAdjustmentPairs as $aPairAdjustment)
-			{
-				// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
-				if (($aAdjustment['Description'] === $aPairAdjustment['Description']) && (($aAdjustment['Charge'] - $aPairAdjustment['Charge']) === 0))
-				{
-					// Perfect Pair -- Don't add to the "clean" array
-					continue 2;
-				}
-			}
+			$aAdjustment	= &$aAdjustments[$mAdjustmentIndex];
 			
-			// No mate has been found -- Add to the "clean" array
-			$aCleanAdjustments[]	= $aAdjustment;
+			// Have we already matched against something?
+			if ($aAdjustment['Matched'])
+			{
+				// Search for a mate
+				foreach ($aAdjustmentPairKeys as $mPairAdjustmentIndex)
+				{
+					$aPairAdjustment	= &$aAdjustments[$mPairAdjustmentIndex];
+					
+					// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
+					// Additionally, we cannot have already matched against this Adjustment
+					if ($aPairAdjustment['Matched'] && ($aAdjustment['Description'] === $aPairAdjustment['Description']) && (($aAdjustment['Charge'] - $aPairAdjustment['Charge']) === 0))
+					{
+						// Perfect Pair -- Mark as matched
+						$aAdjustment['Matched']		= true;
+						$aPairAdjustment['Matched']	= true;
+						continue 2;
+					}
+				}
+				
+				// No mate has been found -- Add to the "clean" array
+				$aCleanAdjustments[]	= $aAdjustment;
+			}
 		}
+		unset($aAdjustment);
+		unset($aPairAdjustment);
 		
 		// Return an array of Adjustments without CR/DR Pairs
 		return $aCleanAdjustments;
