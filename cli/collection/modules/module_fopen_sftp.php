@@ -13,7 +13,7 @@
 	
 	public $intBaseFileType			= RESOURCE_TYPE_FILE_RESOURCE_SFTP;
 	
-	const	SSH_KEY_PATH			= '/home/ybs-admin/.ssh/';
+	const	SSH_KEY_PATH			= '/home/ybs-collection/.ssh/';
 	
 	/**
 	 * __construct()
