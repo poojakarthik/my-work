@@ -294,9 +294,51 @@ var Invoice	= Class.create
 			return;
 		}
 		
-		// Show confirmation Alert{
+		// Show confirmation Alert
 		$Alert("The Invoice has been successfully Revoked.", null, null, 'autohide-reload', "Invoice Revoked");
 		return;
+	},
+	
+	buildPopupSubmitInterimInvoiceReport	: function()
+	{
+		var	sHtml;
+		sHtml	=	"\n" +
+		"			<form>\n" +
+		"				<div class='GroupedContent'>\n" +
+		"					<table>\n" +
+		"						<tbody>\n" +
+		"							<tr>\n" +
+		"								<th>Interim Invoice Eligiblity Report&nbsp;:&nbsp;</th>\n" +
+		"								<td><input type='file' /></td>\n" +
+		"							</tr>\n" +
+		"						</tbody>\n" +
+		"					</table>\n" +
+		"				</div>\n" +
+		"				<div style=''>\n" +
+		"					<input type='button' value='  Submit  ' style='margin-right: 1em;' />\n" +
+		"					<input type='button' value='  Cancel  ' />\n" +
+		"				</div>\n";
+		"			</form>\n" +
+		
+		var oPopupContent					= {};
+		oPopupContent.domElement			= document.createElement('div');
+		oPopupContent.domElement.innerHTML	= sHtml;
+		
+		// Init the Popup
+		var oPopup;
+		oPopup	= new Reflex_Popup(35);
+		oPopup.setTitle("Submit Interim Invoice Eligiblity Report");
+		oPopup.setContent(oPopupContent.domElement);
+	},
+	
+	submitInterimInvoiceReport	: function()
+	{
+		
+	},
+	
+	_submitInterimInvoiceReport	: function()
+	{
+		
 	}
 });
 
