@@ -179,5 +179,10 @@ class Flex_Date
 
 		return mktime($arrParts['H'], $arrParts['i'], $arrParts['s'], $arrParts['m'], $arrParts['d'], $arrParts['Y']);
 	}
+	
+	public static function periodLength($iStartDatetime, $iEndDatetime, $sAccuracy='d')
+	{
+		return (self::truncate($iEndDatetime, $sAccuracy, false) - self::truncate($iStartDatetime, $sAccuracy, false)) + Flex_Date::SECONDS_IN_DAY;
+	}
 }
 ?>

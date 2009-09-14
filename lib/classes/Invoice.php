@@ -986,11 +986,14 @@ class Invoice extends ORM
 	 */
 	public static function prorate($fltAmount, $intChargeDate, $intPeriodStartDate, $intPeriodEndDate, $strSmallestDenomination=DATE_TRUNCATE_DAY, $bolAllowOverflow=TRUE, $intDecimalPlaces=2)
 	{
-		$intProratePeriod			= (TruncateTime($intPeriodEndDate, $strSmallestDenomination, 'floor') - TruncateTime($intChargeDate, $strSmallestDenomination, 'floor')) + Flex_Date::SECONDS_IN_DAY;
-		$intBillingPeriod			= (TruncateTime($intPeriodEndDate, $strSmallestDenomination, 'floor') - TruncateTime($intPeriodStartDate, $strSmallestDenomination, 'floor')) + Flex_Date::SECONDS_IN_DAY;
-		if ($intBillingPeriod)
+		$intProratePeriod	= Flex_Date::periodLength($intChargeDate, $intPeriodEndDate, $strSmallestDenomination);
+		$intBillingPeriod	= Flex_Date::periodLength($intPeriodStartDate, $intPeriodEndDate, $strSmallestDenomination);
+		
+		$iProratePeriodDays	= floor($intProratePeriod / Flex_Date::SECONDS_IN_DAY);
+		$iBillingPeriodDays	= floor($intBillingPeriod / Flex_Date::SECONDS_IN_DAY);
+		if ($iBillingPeriodDays)
 		{
-			$fltProratedAmount			= ($fltAmount / $intBillingPeriod) * $intProratePeriod;
+			$fltProratedAmount			= ($fltAmount / $iBillingPeriodDays) * $iProratePeriodDays;
 			//Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / {$intBillingPeriod}) * {$intProratePeriod};");
 			//Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / ".($intBillingPeriod / Flex_Date::SECONDS_IN_DAY).") * ".($intProratePeriod / Flex_Date::SECONDS_IN_DAY).";");
 			
@@ -1333,7 +1336,7 @@ class Invoice extends ORM
 		$arrPlanCharge['ChargeType']		= $strChargeType;
 		$arrPlanCharge['charge_type_id']	= $arrChargeTypes[$strChargeType]['Id'];
 		$arrPlanCharge['global_tax_exempt']	= 0;
-		$arrPlanCharge['Description']		= "{$arrPlanDetails['Name']} ".$strDescription." from ".date("d/m/Y", $intPeriodStartDate)." to ".date("d/m/Y", $intPeriodEndDate);
+		$arrPlanCharge['Description']		= self::buildPlanChargeDescription($arrPlanDetails['Name'], $strDescription, $intPeriodStartDate, $intPeriodEndDate);
 		$arrPlanCharge['ChargedOn']			= date("Y-m-d");
 		$arrPlanCharge['Amount']			= abs($fltAmount);
 		$arrPlanCharge['invoice_run_id']	= $this->invoice_run_id;
@@ -1343,6 +1346,11 @@ class Invoice extends ORM
 			throw new Exception("Unable to create '{$arrPlanCharge['Description']}' for {$intAccount}::{$intService}!");
 		}
 		return TRUE;
+	}
+	
+	public static function buildPlanChargeDescription($sPlanName, $sChargeDescription, $iStartDatetime, $iEndDatetime)
+	{
+		return "{$sPlanName} {$strDescription} from ".date("d/m/Y", $iStartDatetime)." to ".date("d/m/Y", $iEndDatetime);
 	}
 
 	/**
