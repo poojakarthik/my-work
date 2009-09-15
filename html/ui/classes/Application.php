@@ -128,6 +128,12 @@ class Application
 		{
 			ContextMenu()->Customer->Customer_Overdue_List();
 		}
+		
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+		{
+			ContextMenu()->Customer->DownloadInterimEligibilityReport();
+			ContextMenu()->Customer->SubmitInterimInterimEligibilityReport();
+		}
 
 		$arrCustomerGroups = Customer_Group::listAll();
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
@@ -335,6 +341,12 @@ class Application
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
 		{
 			ContextMenu()->Customer->Customer_Overdue_List();
+		}
+		
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+		{
+			ContextMenu()->Customer->DownloadInterimEligibilityReport();
+			ContextMenu()->Customer->SubmitInterimInterimEligibilityReport();
 		}
 
 		$arrCustomerGroups = Customer_Group::listAll();

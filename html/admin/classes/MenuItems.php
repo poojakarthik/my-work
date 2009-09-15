@@ -3347,6 +3347,38 @@ class MenuItems {
 	}
 	
 	/**
+	 * DownloadInterimEligibilityReport()
+	 *
+	 * Compiles the Href to be executed when the SubmitInterimInterimEligibilityReport menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function DownloadInterimEligibilityReport()
+	{
+		$this->strContextMenuLabel = "Download Interim Invoice Eligibility Report";
+		$this->strLabel = "Download Interim Invoice Eligibility Report";
+		
+		return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.buildPopupSubmitInterimInvoiceReport()});";
+	}
+	
+	/**
+	 * SubmitInterimInterimEligibilityReport()
+	 *
+	 * Compiles the Href to be executed when the SubmitInterimInterimEligibilityReport menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function SubmitInterimInterimEligibilityReport()
+	{
+		$this->strContextMenuLabel = "Submit Interim Invoice Eligibility Report";
+		$this->strLabel = "Submit Interim Invoice Eligibility Report";
+		
+		return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.buildPopupSubmitInterimInvoiceReport()});";
+	}
+	
+	/**
 	 * ManageActionTypes()
 	 *
 	 * Compiles the Href to be executed when the ManageActionTypes menu item is triggered
