@@ -897,7 +897,7 @@ ORDER BY	a.Id,
 			
 			// Interim Invoice Credit
 			$iProratePeriodDays	= floor(Flex_Date::periodLength($iServiceInvoiceFromDate, $iDate, 'd') / Flex_Date::SECONDS_IN_DAY);
-			$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iDate, 'd') / Flex_Date::SECONDS_IN_DAY);
+			//$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			
 			$aAdjustments['interim_plan_charge_days']	= $iProratePeriodDays;
 			
@@ -908,7 +908,7 @@ ORDER BY	a.Id,
 			
 			// Production Invoice Credit
 			$iProratePeriodDays	= floor(Flex_Date::periodLength($iDate + Flex_Date::SECONDS_IN_DAY, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
-			$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
+			//$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			
 			$aAdjustments['production_plan_charge_days']	= $iProratePeriodDays;
 			
