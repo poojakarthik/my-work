@@ -326,7 +326,7 @@ var Invoice	= Class.create
 		
 		// Init the Popup
 		var oPopup;
-		oPopup	= new Reflex_Popup(35);
+		oPopup	= new Reflex_Popup(40);
 		oPopup.setTitle("Submit Interim Invoice Eligiblity Report");
 		oPopup.setContent(oPopupContent.domElement);
 		
