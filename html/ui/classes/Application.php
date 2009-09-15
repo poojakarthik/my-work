@@ -131,8 +131,8 @@ class Application
 		
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
 		{
-			ContextMenu()->Customer->DownloadInterimEligibilityReport();
-			ContextMenu()->Customer->SubmitInterimInterimEligibilityReport();
+			ContextMenu()->Customer->Interim_Invoice->DownloadInterimEligibilityReport();
+			ContextMenu()->Customer->Interim_Invoice->SubmitInterimInterimEligibilityReport();
 		}
 
 		$arrCustomerGroups = Customer_Group::listAll();
@@ -345,8 +345,8 @@ class Application
 		
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
 		{
-			ContextMenu()->Customer->DownloadInterimEligibilityReport();
-			ContextMenu()->Customer->SubmitInterimInterimEligibilityReport();
+			ContextMenu()->Customer->Interim_Invoice->DownloadInterimEligibilityReport();
+			ContextMenu()->Customer->Interim_Invoice->SubmitInterimInterimEligibilityReport();
 		}
 
 		$arrCustomerGroups = Customer_Group::listAll();
