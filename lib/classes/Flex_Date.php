@@ -128,9 +128,9 @@ class Flex_Date
 	 *
 	 * @method
 	 */
-	public static function truncate($strDate, $strAccuracy, $bolCeil)
+	public static function truncate($mixDatetime, $strAccuracy, $bolCeil)
 	{
-		$intTime	= strtotime($strDate);
+		$intTime	= (is_int($mixDatetime)) ? $mixDatetime : strtotime($mixDatetime);
 		if ($intTime === false)
 		{
 			throw new Exception("'{$strDate}' is not a valid Date");
