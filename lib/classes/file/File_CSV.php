@@ -1,6 +1,6 @@
 <?php
 
-class File_CSV
+class File_CSV implements Iterator 
 {
 	protected	$_aColumns	= array();
 	protected	$_aRows		= array();
@@ -23,12 +23,14 @@ class File_CSV
 	
 	public function setDelimiter($sDelimiter)
 	{
-		$this->_sDelimiter	= $sDelimiter;
+		$sDelimiter			= (string)$sDelimiter;
+		$this->_sDelimiter	= ($sDelimiter) ? $sDelimiter[0] : '';
 	}
 	
 	public function setQuote($sQuote)
 	{
-		$this->_sQuote	= $sQuote;
+		$sQuote			= (string)$sQuote;
+		$this->_sQuote	= ($sQuote) ? $sQuote[0] : '';
 	}
 	
 	public function setEscape($sEscape)
@@ -39,6 +41,7 @@ class File_CSV
 	
 	public function setColumns($aColumns)
 	{
+		// Update the Columns definition
 		$this->_aColumns	= array();
 		$iIndex				= 0;
 		foreach ($aColumns as $sColumn)
@@ -113,15 +116,77 @@ class File_CSV
 	{
 		if (is_array($aArray))
 		{
-			foreach ($aArray as $sColumn=>$sValue)
+			// Set Columns
+			$this->setColumns(array_keys($aArray));
+			
+			// Set Data
+			foreach ($aArray as $aRow)
 			{
-				
+				$this->addRow($aRow);
 			}
 		}
 		else
 		{
 			throw new Exception("Parameter \$aArray is not an array! (Type: ".gettype($aArray)."; Value: '{$aArray}')");
 		}
+	}
+	
+	public function importFile($sPath, $bHasHeader=false, $bImportHeader=false)
+	{
+		if (!is_readable($sPath))
+		{
+			throw new Exception("Unable to import from path '{$sPath}': Path is not readable");
+		}
+		if (!$rImportFile = fopen($sPath, 0777))
+		{
+			throw new Exception("Unable to import from path '{$sPath}': There was an unknown error reading from the path");
+		}
+		
+		// Parse the first row as a Header
+		if ($bImportHeader)
+		{
+			$aColumns	= fgetcsv($rImportFile, 0, $this->_sDelimiter, $this->_sQuote, $this->_sEscape);
+			$this->setColumns($aColumns);
+		}
+		
+		// Import each row
+		while ($aRow = fgetcsv($rImportFile, 0, $this->_sDelimiter, $this->_sQuote, $this->_sEscape))
+		{
+			$aFormattedRow	= array();
+			foreach ($aRow as $iIndex=>$mValue)
+			{
+				// Try to match to a known column, otherwise just append to the end of the row
+				if (array_key_exists($iIndex, $this->_aColumns))
+				{
+					$aFormattedRow[$this->_aColumns[$iIndex]]	= $mValue;
+				}
+				else
+				{
+					$aFormattedRow[]	= $mValue;
+				}
+			}
+			
+			$this->addRow($aFormattedRow);
+		}
+		
+		return true;
+	}
+	
+	public function toArray()
+	{
+		$aOutput	= array();
+		
+		foreach ($this->_aRows as $iRow=>$aRow)
+		{
+			$aRowOutput	= array();
+			foreach ($this->_aColumns as $sColumn)
+			{
+				$aRowOutput[$sColumn]	= $this->_prepare((array_key_exists($sColumn, $aRow)) ? $aRow[$sColumn] : '');
+			}
+			$aOutput[]	= $aRowOutput;
+		}
+		
+		return $aOutput;
 	}
 	
 	protected function _escape($mValue)
@@ -143,6 +208,31 @@ class File_CSV
 	protected function _prepare($mValue)
 	{
 		return $this->_quote($this->_escape($mValue));
+	}
+	
+	public function current()
+	{
+		return current($this->_aRows);
+	}
+	
+	public function key()
+	{
+		return key($this->_aRows);
+	}
+	
+	public function next()
+	{
+		return next($this->_aRows);
+	}
+	
+	public function rewind()
+	{
+		return rewind($this->_aRows);
+	}
+	
+	public function valid()
+	{
+		return (key($this->_aRows) !== null);
 	}
 }
 
