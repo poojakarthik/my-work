@@ -2,7 +2,37 @@
 
 class Application_Handler_Invoice extends Application_Handler
 {
-
+	private static final	$_aInterimEligibilityColumns	=	array
+															(
+																'ACCOUNT_ID'							=> 'Account',
+																'ACCOUNT_NAME'							=> 'Account Name',
+																'DELIVERY_METHOD'						=> 'Delivery Method',
+																'SERVICE_FNN'							=> 'Service FNN',
+																'ACTIVE_SERVICES'						=> 'Total No. Active Services',
+																'ACTIVE_PENDING_SERVICES'				=> 'Total No. Active & Pending Services',
+																'HAS_TOLLED'							=> 'Has Tolled',
+																'CURRENT_PLAN'							=> 'Current Plan',
+																'REQUIRES_CDR'							=> 'Requires CDR',
+																'MONTHLY_PLAN_FEE'						=> 'Monthly Plan Fee',
+																'DAILY_RATE'							=> 'Daily Plan Fee',
+																'PLAN_CHARGE'							=> 'Plan Charge',
+																'PLAN_CHARGE_DAYS'						=> 'Plan Charge Days',
+																'PLAN_CHARGE_DESCRIPTION'				=> 'Plan Charge Description',
+																'INTERIM_PLAN_CREDIT'					=> 'Plan Credit - Interim Bill',
+																'INTERIM_PLAN_CREDIT_DAYS'				=> 'Plan Credit - Interim Bill - Days',
+																'INTERIM_PLAN_CREDIT_DESCRIPTION'		=> 'Plan Credit Description - Interim Bill',
+																'PRODUCTION_PLAN_CREDIT'				=> 'Plan Credit - 1st Bill',
+																'PRODUCTION_PLAN_CREDIT_DAYS'			=> 'Plan Credit - 1st Bill - Days',
+																'PRODUCTION_PLAN_CREDIT_DESCRIPTION'	=> 'Plan Credit Description - 1st Bill',
+															);
+	
+	private static final	$_aInterimExceptionsColumns	=	array
+															(
+																'ACCOUNT_ID'	=> 'Account',
+																'SERVICE_FNN'	=> 'Service FNN',
+																'REASON'		=> 'Reason for Exception'
+															);
+	
 	// View all the breakdown for a service on an invoice
 	public function Service($subPath)
 	{
@@ -368,7 +398,7 @@ class Application_Handler_Invoice extends Application_Handler
 			$this->LoadPage('Invoice_CDR', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 			
 			return;
-
+			
 			$arrDetailsToRender['Message'] = "An error occured when trying to load the invoiced CDR details page";
 			$arrDetailsToRender['ErrorMessage'] = "No handler has been defined for this request.";
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
@@ -380,6 +410,652 @@ class Application_Handler_Invoice extends Application_Handler
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 	}
+	
+	public function InterimEligibilityReport($subPath)
+	{
+		// Prepare the CSV File
+		$oCSVFile	= self::buildInterimEligibilityReport();
+		
+		// Output the Report & return to the User Agent
+		$sFileName	= "interim-invoice-eligibility-report-".date("YmdHis").".csv";
+		header("Content-type: text/csv");
+		header("Content-Disposition: attachment; filename=\"{$sFileName}\"");
+		echo $oCSVFile->save();
+		exit;
+	}
+	
+	public function ActionInterimInvoicesReport($subPath)
+	{
+		$oResponse	= new stdClass();
+		
+		try
+		{
+			// Parse the Report
+			$sSubmittedEligibilityReportPath		= $_FILES['Invoice_Interim_EligibilityFile']['tmp_name'];
+			$sSubmittedEligibilityReportFileName	= $_FILES['Invoice_Interim_EligibilityFile']['name'];
+			
+			$oCSVImportFile	= new File_CSV();
+			$oCSVImportFile->setColumns(array_values(self::$_aInterimEligibilityColumns));
+			$oCSVImportFile->importFile($sSubmittedEligibilityReportPath, true);
+			
+			// Get updated eligibility list
+			$aServices	= self::getInterimEligibileServices();
+			
+			$aAccounts	= array();
+			
+			// Verify the details for all of the submitted Services
+			foreach ($oCSVImportFile as $aImportService)
+			{
+				$iAccountId				= (int)$aImportService[self::$_aInterimEligibilityColumns['ACCOUNT_ID']];
+				$sFNN					= $aImportService[self::$_aInterimEligibilityColumns['SERVICE_FNN']];
+				$sAccountServiceIndex	= "{$iAccountId}.{$sFNN}";
+				
+				$aAccounts[$iAccountId]	= (array_key_exists($iAccountId, $aAccounts)) ? $aAccounts[$iAccountId] : array('aBlacklist'=>array(), 'aWhitelist'=>array(), 'aGreylist'=>array());
+				
+				try
+				{
+					// Does this Service exist in the current eligibility list?
+					if (array_key_exists($sAccountServiceIndex, $aServices))
+					{
+						// Found it -- do our figures match?
+						
+						// Monthly Plan Fee
+						self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['MONTHLY_PLAN_FEE']],
+														(float)$aServices['plan_charge'],
+														"Monthly Plan Fee mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['MONTHLY_PLAN_FEE']]."'; Calculated: '".(float)$aServices['plan_charge']."')");
+						
+						// Daily Rate
+						self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']],
+														(float)$aServices['daily_rate'],
+														"Daily Rate mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']]."'; Calculated: '".(float)$aServices['daily_rate']."')");
+						
+						// Plan Charge
+						self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE']],
+														(float)$aServices['aAdjustments']['plan_charge'],
+														"Plan Charge mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE']]."'; Calculated: '".(float)$aServices['aAdjustments']['plan_charge']."')");
+						
+						// Plan Charge Days
+						self::_compareInterimEligible(	(int)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DAYS']],
+														(int)$aServices['aAdjustments']['plan_charge_days'],
+														"Plan Charge Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DAYS']]."'; Calculated: '".(int)$aServices['aAdjustments']['plan_charge_days']."')");
+						
+						// Plan Charge Description
+						self::_compareInterimEligible(	$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']],
+														$aServices['aAdjustments']['plan_charge_description'],
+														"Plan Charge Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['plan_charge_description']."')");
+						
+						// Interim Plan Credit
+						self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']],
+														(float)$aServices['aAdjustments']['interim_plan_credit'],
+														"Interim Plan Credit mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']]."'; Calculated: '".(float)$aServices['aAdjustments']['interim_plan_credit']."')");
+						
+						// Interim Plan Credit Days
+						self::_compareInterimEligible(	(int)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DAYS']],
+														(int)$aServices['aAdjustments']['interim_plan_credit_days'],
+														"Interim Plan Credit Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DAYS']]."'; Calculated: '".(int)$aServices['aAdjustments']['interim_plan_credit_days']."')");
+						
+						// Interim Plan Credit Description
+						self::_compareInterimEligible(	$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']],
+														$aServices['aAdjustments']['interim_plan_credit_description'],
+														"Interim Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['interim_plan_credit_description']."')");
+						
+						// Production Plan Credit
+						self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']],
+														(float)$aServices['aAdjustments']['production_plan_credit'],
+														"Production Plan Credit mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']]."'; Calculated: '".(float)$aServices['aAdjustments']['production_plan_credit']."')");
+						
+						// Production Plan Credit Days
+						self::_compareInterimEligible(	(int)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']],
+														(int)$aServices['aAdjustments']['production_plan_credit_days'],
+														"Production Plan Credit Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']]."'; Calculated: '".(int)$aServices['aAdjustments']['production_plan_credit_days']."')");
+						
+						// Production Plan Credit Description
+						self::_compareInterimEligible(	$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']],
+														$aServices['aAdjustments']['production_plan_credit_description'],
+														"Production Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['production_plan_credit_description']."')");
+						
+						// Everthing appears to match -- add to Action list
+						$aAccounts[$iAccountId]['aWhitelist'][$sFNN]	= true;
+					}
+					else
+					{
+						// Can't find it -- this Service is probably not eligible anymore
+						throw new Exception_Invoice_InterimEligibilityMismatch("{$sFNN} exists in the resubmitted Authentication Report, but not in the current Eligibility Report");
+					}
+				}
+				catch (Exception_Invoice_InterimEligibilityMismatch $eException)
+				{
+					// Add to the Blacklist
+					$aAccounts[$iAccountId]['aBlacklist'][$sFNN]	= $eException->getMessage();
+				}
+			}
+			
+			// Check to see if the number of submitted eligible Services for an Account matches the new list
+			$iEligibleServices	= 0;
+			foreach ($aServices as $sAccountServiceIndex=>$aService)
+			{
+				$aAccountServiceIndex	= explode('.', $sAccountServiceIndex);
+				$iAccountId				= $aAccountServiceIndex[0];
+				$sFNN					= $aAccountServiceIndex[1];
+				
+				$aAccounts[$iAccountId]	= (array_key_exists($iAccountId, $aAccounts)) ? $aAccounts[$iAccountId] : array('aBlacklist'=>array(), 'aWhitelist'=>array(), 'aGreylist'=>array());
+				
+				if (!array_key_exists($sFNN, $aAccounts[$iAccountId]['aWhitelist']) && !array_key_exists($sFNN, $aAccounts[$iAccountId]['aBlacklist']))
+				{
+					// Service wasn't referenced in the Submitted Report -- add to Greylist
+					 $aAccounts[$iAccountId]['aGreylist'][$sFNN]	= "{$sFNN} exists in the current Eligibility Report, but not in the resubmitted Authentication Report";
+				}
+			}
+			
+			// Action the Eligible Accounts
+			$oCSVExceptionsReport	= new File_CSV();
+			$oCSVExceptionsReport->setColumns(array_values(self::$_aInterimExceptionsColumns));
+			
+			$iAccountsInvoiced	= 0;
+			$iAccountsFailed	= 0;
+			$iServicesInvoiced	= 0;
+			$iServicesFailed	= 0;
+			foreach ($aAccounts as $iAccountId=>$aAccount)
+			{
+				// Blacklisted Services
+				foreach ($aAccount['aBlacklist'] as $sFNN=>$sReason)
+				{
+					$oCSVExceptionsReport->addRow(array	(
+															self::$_aInterimExceptionsColumns['ACCOUNT_ID']		=> $iAccountId,
+															self::$_aInterimExceptionsColumns['SERVICE_FNN']	=> $sFNN,
+															self::$_aInterimExceptionsColumns['REASON']			=> $sReason
+														));
+					$iServicesFailed++;
+				}
+				
+				// Greylisted Services
+				foreach ($aAccount['aGreylist'] as $sFNN=>$sReason)
+				{
+					$oCSVExceptionsReport->addRow(array	(
+															self::$_aInterimExceptionsColumns['ACCOUNT_ID']		=> $iAccountId,
+															self::$_aInterimExceptionsColumns['SERVICE_FNN']	=> $sFNN,
+															self::$_aInterimExceptionsColumns['REASON']			=> $sReason
+														));
+					$iServicesFailed++;
+				}
+				
+				// If we have any Exceptions, add all Whitelisted Services to the report
+				if (count($aAccount['aBlacklist']) || count($aAccount['aGreylist']))
+				{
+					foreach ($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
+					{
+						$oCSVExceptionsReport->addRow(array	(
+																self::$_aInterimExceptionsColumns['ACCOUNT_ID']		=> $iAccountId,
+																self::$_aInterimExceptionsColumns['SERVICE_FNN']	=> $sFNN,
+																self::$_aInterimExceptionsColumns['REASON']			=> "Account {$iAccountId} Rejected -- check other Services for details"
+															));
+						$iServicesFailed++;
+					}
+					
+					$iAccountsFailed++;
+				}
+				else
+				{
+					// Action this Account!
+					$oFlexDataSource	= DataAccess::getDataAccess();
+					$oFlexDataSource->TransactionStart();
+					try
+					{
+						// Add the Adjustments for each Service
+						foreach($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
+						{
+							self::applyInterimInvoiceAdjustments($aServices["{$iAccountId}.{$sFNN}"]);
+						}
+						
+						// Generate an Interim Invoice for this Account
+						$oAccount	= new Account(array('Id'=>$iAccountId), false, true);
+						
+						// Calculate Billing Date
+						$iInvoiceDatetime	= strtotime(date('Y-m-d', strtotime('+1 day')));
+						
+						// Generate the Invoice
+						try
+						{
+							$oInvoiceRun	= new Invoice_Run();
+							$oInvoiceRun->generateSingle($oAccount->CustomerGroup, INVOICE_RUN_TYPE_INTERIM, $iInvoiceDatetime, $oAccount->Id);
+						}
+						catch (Exception $eException)
+						{
+							// Perform a Revoke on the Temporary Invoice Run
+							if ($oInvoiceRun->Id)
+							{
+								$oInvoiceRun->revoke();
+							}
+							throw $eException;
+						}
+						
+						// Commit this mini-transaction
+						$oFlexDataSource->TransactionCommit();
+						
+						$iAccountsInvoiced++;
+						$iServicesInvoiced	+= count($aAccount['aWhitelist']);
+					}
+					catch (Exception $eException)
+					{
+						$oFlexDataSource->TransactionRollback();
+						$oCSVExceptionsReport->addRow(array	(
+																self::$_aInterimExceptionsColumns['ACCOUNT_ID']		=> $iAccountId,
+																self::$_aInterimExceptionsColumns['SERVICE_FNN']	=> '[ ALL ]',
+																self::$_aInterimExceptionsColumns['REASON']			=> "Error while generating the Interim Invoice: ".$eException->getMessage()
+															));
+						$iAccountsFailed++;
+						$iServicesFailed	+= count($aAccount['aWhitelist']);
+					}
+				}
+			}
+			
+			// Generate & Send Exceptions Report
+			$oEmailNotification	= new Email_Notification(EMAIL_NOTIFICATION_INTERIM_INVOICE_ELIGIBLE_SERVICES);
+			
+			$sSubmittedEligibilityReportFileName	= "submitted-{$sSubmittedEligibilityReportFileName}";
+			$oEmailNotification->addAttachment(file_get_contents($sSubmittedEligibilityReportPath), $sSubmittedEligibilityReportFileName, 'text/csv');
+			
+			$oCSVEligibilityReport				= self::buildInterimEligibilityReport();
+			$sCurrentEligibilityReportFileName	= "current-interim-invoice-eligibility-report-".date("YmdHis").".csv";
+			$oEmailNotification->addAttachment($oCSVEligibilityReport->save(), $sCurrentEligibilityReportFileName, 'text/csv');
+			
+			$sExceptionsReportFileName	= "exceptions-report-".date("YmdHis").".csv";
+			$oEmailNotification->addAttachment($oCSVExceptionsReport->save($sExceptionsReportFileName), $sExceptionsReportFileName, 'text/csv');
+			
+			$sEmailBody	= "
+	<div style='font-family: Calibri,Arial,sans-serif !important;'>
+		<h1 style='font-size: 1.5em;'>First Interim Invoice Exceptions Report</h1>
+		
+		<p>
+			Please find attached the following Reports:
+			<ul>
+				<li><strong>Exceptions Report</strong><em> ({$sExceptionsReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services failed in processing and the reasons why</li>
+				<li><strong>Submitted Interim Eligibility Report</strong><em> ({$sSubmittedEligibilityReportFileName})</em> &mdash;&nbsp;The Report you submitted to initiate this process</li>
+				<li><strong>Current Interim Eligibility Report</strong><em> ({$sCurrentEligibilityReportFileName})</em> &mdash;&nbsp;Current version of the Interim Eligibility Report</li>
+			</ul>
+		</p>
+		
+		<h2 style='font-size: 1.2em;'>Summary</h1>
+		<table style='margin-left: 0.5em;'>
+			<tbody>
+				<tr>
+					<th style='text-align: left;' >Accounts Invoiced&nbsp;:&nbsp;</th>
+					<td>{$iAccountsInvoiced}</td>
+				</tr>
+				<tr>
+					<th style='text-align: left;' >Services Invoiced&nbsp;:&nbsp;</th>
+					<td>{$iServicesInvoiced}</td>
+				</tr>
+				<tr>
+					<th style='text-align: left;' >Accounts Failed&nbsp;:&nbsp;</th>
+					<td>{$iAccountsFailed}</td>
+				</tr>
+				<tr>
+					<th style='text-align: left;' >Services Failed&nbsp;:&nbsp;</th>
+					<td>{$iServicesFailed}</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<p>
+			Regards<br />
+			<strong>Flex0r</strong>
+		</p>
+	</div>
+	";
+			
+			$oEmailNotification->setBodyHTML($sEmailBody);
+			
+			$oEmailNotification->send();
+			
+			// Return JSON response
+			$oResponse->Success				= true;
+			$oResponse->iAccountsInvoiced	= $iAccountsInvoiced;
+			$oResponse->iServicesInvoiced	= $iServicesInvoiced;
+			$oResponse->iAccountsFailed		= $iAccountsFailed;
+			$oResponse->iServicesFailed		= $iServicesFailed;
+		}
+		catch (Exception $eException)
+		{
+			$oResponse->Success	= false;
+			$oResponse->Message	= $eException->getMessage();
+		}
+		
+		echo JSON_Services::instance()->encode($oResponse);
+		exit;
+	}
+	
+	public static function getInterimEligibileServices()
+	{
+		$qQuery	= new Query();
+		
+		$sSQL	= "
+SELECT		a.id																											AS account_id,
+			a.BusinessName																									AS account_name,
+			dm.name																											AS delivery_method,
+			ADDDATE(CAST(DATE_FORMAT(CURDATE(), CONCAT('%Y-%m-', LPAD(pt.invoice_day, 2, '0'))) AS DATE), INTERVAL 1 MONTH)	AS next_invoice_date,
+			service_status_count.services_active																			AS services_active,
+			service_status_count.services_pending																			AS services_pending,
+			s.Id																											AS service_id,
+			s.FNN																											AS fnn,
+			srp.RatePlan																									AS rate_plan_id,
+			rp.Name																											AS rate_plan_name,
+			rp.MinMonthly																									AS plan_charge,
+			IF(s.EarliestCDR IS NOT NULL, 1, 0)																				AS has_tolled,
+			rp.cdr_required																									AS cdr_required,
+			CASE
+				WHEN rp.cdr_required THEN s.EarliestCDR
+				WHEN s.CreatedOn > srp.StartDatetime THEN s.CreatedOn
+				ELSE srp.StartDatetime
+			END																												AS invoice_from_date
+
+FROM		Account a
+			JOIN account_status a_s ON (a.Archived = a_s.id)
+			JOIN delivery_method dm ON (dm.id = a.BillingMethod)
+			JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
+			JOIN payment_terms pt ON (cg.Id = pt.customer_group_id)
+			JOIN
+			(
+				SELECT		Service.Account																						AS account_id,
+							COUNT(IF(service_status.const_name = 'SERVICE_ACTIVE', Service.Id, NULL))							AS services_active,
+							COUNT(IF(service_status.const_name = 'SERVICE_PENDING', Service.Id, NULL))							AS services_pending,
+							COUNT(IF(RatePlan.Shared = 1 AND service_status.const_name = 'SERVICE_ACTIVE', Service.Id, NULL))	AS shared_services_active
+				FROM		Service
+							JOIN service_status ON (service_status.id = Service.Status)
+							JOIN ServiceRatePlan ON (Service.Id = ServiceRatePlan.Service AND NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)
+							JOIN RatePlan ON (ServiceRatePlan.RatePlan = RatePlan.Id)
+				WHERE		ServiceRatePlan.Id =	(
+														SELECT		Id
+														FROM		ServiceRatePlan
+														WHERE		NOW() BETWEEN StartDatetime AND EndDatetime
+																	AND Service = Service.Id
+														ORDER BY	CreatedOn DESC
+														LIMIT		1
+													)
+				GROUP BY	Service.Account
+				HAVING		shared_services_active = 0
+							AND services_active > 0
+			) service_status_count ON (a.Id = service_status_count.account_id)
+			JOIN Service s ON (a.Id = s.Account)
+			JOIN service_status ss ON (s.Status = ss.id)
+			JOIN ServiceRatePlan srp ON (srp.Service = s.Id AND NOW() BETWEEN srp.StartDatetime AND srp.EndDatetime)
+			JOIN RatePlan rp ON (srp.RatePlan = rp.Id)
+			LEFT JOIN Invoice i_last ON (a.Id = i_last.Account)
+			LEFT JOIN InvoiceRun ir_last ON (i_last.invoice_run_id = ir_last.Id)
+			LEFT JOIN invoice_run_type irt_last ON (irt_last.id = ir_last.invoice_run_type_id)
+
+WHERE		(
+				(
+					ir_last.Id =	(
+										SELECT		InvoiceRun.Id
+										FROM		InvoiceRun
+													JOIN invoice_run_type ON (invoice_run_type.id = InvoiceRun.invoice_run_type_id)
+													JOIN Invoice ON (InvoiceRun.Id = Invoice.invoice_run_id)
+										WHERE		Invoice.Account = a.Id
+													AND invoice_run_type.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES')
+										ORDER BY	Invoice.CreatedOn DESC
+										LIMIT		1
+									)
+					AND irt_last.const_name NOT IN ('INVOICE_RUN_TYPE_INTERIM', 'INVOICE_RUN_TYPE_FINAL')
+					AND (SELECT c.Id FROM Charge c WHERE c.Account = a.Id AND c.ChargeType IN ('PCAD', 'PCAR') AND c.Status = 103 LIMIT 1) IS NULL
+					AND	(
+							SELECT		stt.Records
+							FROM		ServiceTypeTotal stt
+										JOIN InvoiceRun ir_cdr ON (ir_cdr.Id = stt.invoice_run_id)
+										JOIN invoice_run_type irt_cdr ON (ir_cdr.invoice_run_type_id AND irt_cdr.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
+										JOIN RecordType rt ON (stt.RecordType = rt.Id)
+							WHERE		stt.Account = a.Id
+										AND rt.Code IN ('S&E')
+										AND stt.Records > 0
+							LIMIT		1
+						) IS NULL
+					AND (SELECT COUNT(Id) FROM Invoice WHERE Account = a.Id) <= 3
+				)
+				OR
+				(
+					i_last.Id IS NULL
+				)
+			)
+			AND ss.const_name IN ('SERVICE_ACTIVE', 'SERVICE_PENDING')
+			AND a_s.const_name = 'ACCOUNT_STATUS_ACTIVE'
+			AND srp.Id =	(
+								SELECT		Id
+								FROM		ServiceRatePlan
+								WHERE		Service = s.Id
+											AND NOW() BETWEEN StartDatetime AND EndDatetime
+								ORDER BY	CreatedOn DESC
+								LIMIT		1
+							)
+
+HAVING		next_invoice_date >= ADDDATE(CURDATE(), INTERVAL 7 DAY)
+			AND services_active > 0
+
+ORDER BY	a.Id,
+			s.Id
+";
+		$rResult	= $qQuery->Execute($sSQL);
+		if ($rResult === false)
+		{
+			throw new Exception($qQuery->Error());
+		}
+		$aServices	= array();
+		while ($aService = $rResult->fetch_assoc())
+		{
+			$aService['aAdjustments']	= self::calculateInterimInvoiceAdjustments($aService);
+			
+			$aServices["{$aService['account_id']}.{$aService['fnn']}"]	= $aService;
+		}
+		
+		return $aServices;
+	}
+	
+	public static function calculateInterimInvoiceAdjustments($aService)
+	{
+		$aAdjustments	=	array
+							(
+								'daily_rate'							=> 0.0,
+								'plan_charge'							=> 0.0,
+								'plan_charge_days'						=> 0,
+								'plan_charge_description'				=> '',
+								'interim_plan_credit'					=> 0.0,
+								'interim_plan_credit_days'				=> 0,
+								'interim_plan_credit_description'		=> '',
+								'production_plan_credit'				=> 0.0,
+								'production_plan_credit_days'			=> 0,
+								'production_plan_credit_description'	=> ''
+							);
+		
+		$iTime	= time();
+		$sDate	= date('Y-m-d', $iTime);
+		$iDate	= strtotime($sDate);
+		
+		$iNextInvoiceDate	= strtotime($aService['next_invoice_date']);
+		$iLastInvoiceDate	= strtotime("-1 month", $iNextInvoiceDate);
+		
+		$iBillingPeriodEndDate	= $iNextInvoiceDate - Flex_Date::SECONDS_IN_DAY;
+		
+		$fPlanCharge			= (float)$aService['plan_charge'];
+		
+		if ($fPlanCharge && $aService['invoice_from_date'])
+		{
+			$iServiceInvoiceFromDate	= strtotime($aService['invoice_from_date']);
+			
+			// Calculate Daily Rate
+			$iDaysInBillingPeriod	= (int)date('t', $iLastInvoiceDate);
+			
+			// Tidy Plan Charge
+			$iProratePeriodDays	= floor(Flex_Date::periodLength($iServiceInvoiceFromDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
+			$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
+			
+			$aAdjustments['daily_rate']			= $fPlanCharge / $iBillingPeriodDays;
+			$aAdjustments['plan_charge_days']	= $iProratePeriodDays;
+			
+			$fltProratedAmount				= ($fPlanCharge / $iBillingPeriodDays) * $iProratePeriodDays;
+			$aAdjustments['plan_charge']	= round($fltProratedAmount, 2);
+			
+			$aAdjustments['plan_charge_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iServiceInvoiceFromDate, $iBillingPeriodEndDate);
+			
+			// Interim Invoice Credit
+			$iProratePeriodDays	= floor(Flex_Date::periodLength($iServiceInvoiceFromDate, $iDate, 'd') / Flex_Date::SECONDS_IN_DAY);
+			$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iDate, 'd') / Flex_Date::SECONDS_IN_DAY);
+			
+			$aAdjustments['interim_plan_charge_days']	= $iProratePeriodDays;
+			
+			$fltProratedAmount						= ($fPlanCharge / $iBillingPeriodDays) * $iProratePeriodDays;
+			$aAdjustments['interim_plan_charge']	= round($fltProratedAmount, 2);
+			
+			$aAdjustments['interim_plan_charge_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iServiceInvoiceFromDate, $iDate);
+			
+			// Production Invoice Credit
+			$iProratePeriodDays	= floor(Flex_Date::periodLength($iDate + Flex_Date::SECONDS_IN_DAY, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
+			$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
+			
+			$aAdjustments['production_plan_charge_days']	= $iProratePeriodDays;
+			
+			$fltProratedAmount						= ($fPlanCharge / $iBillingPeriodDays) * $iProratePeriodDays;
+			$aAdjustments['production_plan_charge']	= round($fltProratedAmount, 2);
+			
+			$aAdjustments['production_plan_charge_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iDate + Flex_Date::SECONDS_IN_DAY, $iBillingPeriodEndDate);
+		}
+		
+		return $aAdjustments;
+	}
+	
+	public static function buildInterimEligibilityReport()
+	{
+		// Prepare the CSV File
+		$oCSVFile	= new File_CSV();
+		$oCSVFile->setColumns(array_values(self::$_aInterimEligibilityColumns));
+		
+		// Get data & insert into the CSV Report
+		$aServices	= self::getInterimEligibileServices();
+		foreach ($aServices as &$aService)
+		{
+			$aOutput	= array();
+			
+			$aOutput[self::$_aInterimEligibilityColumns['ACCOUNT_ID']]							= $aService['account_id'];
+			$aOutput[self::$_aInterimEligibilityColumns['ACCOUNT_NAME']]						= $aService['account_name'];
+			$aOutput[self::$_aInterimEligibilityColumns['DELIVERY_METHOD']]						= $aService['delivery_method'];
+			$aOutput[self::$_aInterimEligibilityColumns['SERVICE_FNN']]							= $aService['fnn'];
+			$aOutput[self::$_aInterimEligibilityColumns['ACTIVE_SERVICES']]						= $aService['services_active'];
+			$aOutput[self::$_aInterimEligibilityColumns['ACTIVE_PENDING_SERVICES']]				= ((int)$aService['services_pending'] + (int)$aService['services_active']);
+			$aOutput[self::$_aInterimEligibilityColumns['HAS_TOLLED']]							= ($aService['has_tolled']) ? 'Yes' : 'No';
+			$aOutput[self::$_aInterimEligibilityColumns['CURRENT_PLAN']]						= $aService['rate_plan_name'];
+			$aOutput[self::$_aInterimEligibilityColumns['REQUIRES_CDR']]						= ($aService['cdr_required']) ? 'Yes' : 'No';
+			$aOutput[self::$_aInterimEligibilityColumns['MONTHLY_PLAN_FEE']]					= number_format((float)$aService['plan_charge'], 2, '.', '');
+			$aOutput[self::$_aInterimEligibilityColumns['DAILY_RATE']]							= (float)$aService['aAdjustments']['daily_rate'];
+			$aOutput[self::$_aInterimEligibilityColumns['PLAN_CHARGE']]							= number_format((float)$aService['aAdjustments']['plan_charge'], 2, '.', '');
+			$aOutput[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DAYS']]					= $aService['aAdjustments']['plan_charge_days'];
+			$aOutput[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']]				= $aService['aAdjustments']['plan_charge_description'];
+			$aOutput[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']]					= number_format((float)$aService['aAdjustments']['interim_plan_credit'], 2, '.', '');
+			$aOutput[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DAYS']]			= $aService['aAdjustments']['interim_plan_credit_days'];
+			$aOutput[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']]		= $aService['aAdjustments']['interim_plan_credit_description'];
+			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']]				= number_format((float)$aService['aAdjustments']['production_plan_credit'], 2, '.', '');
+			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']]			= $aService['aAdjustments']['production_plan_credit_days'];
+			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]	= $aService['aAdjustments']['production_plan_credit_description'];
+			
+			// Add the CSV
+			$oCSVFile->addRow($aOutput);
+		}
+		unset($aService);
+		
+		return $oCSVFile;
+	}
+	
+	public static function applyInterimInvoiceAdjustments($aService)
+	{
+		static	$aChargeTypes;
+		if (!isset($aChargeTypes))
+		{
+			$aChargeTypes			= array();
+			$aChargeTypes['PCAR']	= Charge_Type::getByCode('PCAR');
+			$aChargeTypes['PCAD']	= Charge_Type::getByCode('PCAD');
+		}
+		
+		try
+		{
+			$oAccount	= Account::getForId($aService['account_id']);
+			
+			// Add new Plan Charge
+			$oPlanCharge	= new Charge();
+			
+			$oPlanCharge->AccountGroup		= $oAccount->AccountGroup;
+			$oPlanCharge->Account			= $oAccount->Id;
+			$oPlanCharge->Service			= $aService['service_id'];
+			$oPlanCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
+			$oPlanCharge->CreatedOn			= date("Y-m-d");
+			$oPlanCharge->ApprovedBy		= Employee::SYSTEM_EMPLOYEE_ID;
+			$oPlanCharge->ChargeType		= 'PCAR';
+			$oPlanCharge->charge_type_id	= $aChargeTypes['PCAR']->Id;
+			$oPlanCharge->Description		= $aService['aAdjustments']['plan_charge_description'];
+			$oPlanCharge->ChargedOn			= date("Y-m-d");
+			$oPlanCharge->Nature			= 'DR';
+			$oPlanCharge->Amount			= $aService['aAdjustments']['plan_charge'];
+			$oPlanCharge->Status			= CHARGE_APPROVED;
+			$oPlanCharge->global_tax_exempt	= false;
+			
+			$oPlanCharge->save();
+			
+			// Add Interim Plan Credit
+			$oInterimPlanCredit	= new Charge();
+			
+			$oInterimPlanCredit->AccountGroup		= $oAccount->AccountGroup;
+			$oInterimPlanCredit->Account			= $oAccount->Id;
+			$oInterimPlanCredit->Service			= $aService['service_id'];
+			$oInterimPlanCredit->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
+			$oInterimPlanCredit->CreatedOn			= date("Y-m-d");
+			$oInterimPlanCredit->ApprovedBy			= Employee::SYSTEM_EMPLOYEE_ID;
+			$oInterimPlanCredit->ChargeType			= 'PCAR';
+			$oInterimPlanCredit->charge_type_id		= $aChargeTypes['PCAR']->Id;
+			$oInterimPlanCredit->Description		= $aService['aAdjustments']['interim_plan_credit_description'];
+			$oInterimPlanCredit->ChargedOn			= date("Y-m-d");
+			$oInterimPlanCredit->Nature				= 'CR';
+			$oInterimPlanCredit->Amount				= abs($aService['aAdjustments']['interim_plan_credit']);
+			$oInterimPlanCredit->Status				= CHARGE_APPROVED;
+			$oInterimPlanCredit->global_tax_exempt	= false;
+			
+			$oInterimPlanCredit->save();
+			
+			// Add Production Plan Credit
+			$oProductionPlanCredit	= new Charge();
+			
+			$oProductionPlanCredit->AccountGroup		= $oAccount->AccountGroup;
+			$oProductionPlanCredit->Account				= $oAccount->Id;
+			$oProductionPlanCredit->Service				= $aService['service_id'];
+			$oProductionPlanCredit->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
+			$oProductionPlanCredit->CreatedOn			= date("Y-m-d");
+			$oProductionPlanCredit->ApprovedBy			= Employee::SYSTEM_EMPLOYEE_ID;
+			$oProductionPlanCredit->ChargeType			= 'PCAR';
+			$oProductionPlanCredit->charge_type_id		= $aChargeTypes['PCAR']->Id;
+			$oProductionPlanCredit->Description			= $aService['aAdjustments']['production_plan_credit_description'];
+			$oProductionPlanCredit->ChargedOn			= date("Y-m-d", strtotime("+1 day", time()));
+			$oProductionPlanCredit->Nature				= 'CR';
+			$oProductionPlanCredit->Amount				= abs($aService['aAdjustments']['production_plan_credit']);
+			$oProductionPlanCredit->Status				= CHARGE_APPROVED;
+			$oProductionPlanCredit->global_tax_exempt	= false;
+			
+			$oProductionPlanCredit->save();
+		}
+		catch (Exception $eException)
+		{
+			throw new Exception("There was an error adding the Interim Adjustments: ".$eException->getMessage());
+		}
+	}
+	
+	private static function _compareInterimEligible($mLeftValue, $mRightValue, $sMessage, $bStrict=true)
+	{
+		return self::_assertInterimEligible(!(($bStrict && $mLeftValue === $mRightValue) || $mLeftValue == $mRightValue), $sMessage);
+	}
+	
+	private static function _assertInterimEligible($mExpression, $sMessage)
+	{
+		if (!(bool)$mExpression)
+		{
+			throw new Exception_Invoice_InterimEligibilityMismatch($sMessage);
+		}
+		return true;
+	}
 }
 
+class Exception_Invoice_InterimEligibilityMismatch extends Exception{};
 ?>
