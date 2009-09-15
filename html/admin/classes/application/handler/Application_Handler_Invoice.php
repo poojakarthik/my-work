@@ -899,23 +899,23 @@ ORDER BY	a.Id,
 			$iProratePeriodDays	= floor(Flex_Date::periodLength($iServiceInvoiceFromDate, $iDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			//$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			
-			$aAdjustments['interim_plan_charge_days']	= $iProratePeriodDays;
+			$aAdjustments['interim_plan_credit_days']	= $iProratePeriodDays;
 			
 			$fltProratedAmount						= ($fPlanCharge / $iBillingPeriodDays) * $iProratePeriodDays;
-			$aAdjustments['interim_plan_charge']	= round($fltProratedAmount, 2);
+			$aAdjustments['interim_plan_credit']	= round($fltProratedAmount, 2);
 			
-			$aAdjustments['interim_plan_charge_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iServiceInvoiceFromDate, $iDate);
+			$aAdjustments['interim_plan_credit_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iServiceInvoiceFromDate, $iDate);
 			
 			// Production Invoice Credit
 			$iProratePeriodDays	= floor(Flex_Date::periodLength($iDate + Flex_Date::SECONDS_IN_DAY, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			//$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			
-			$aAdjustments['production_plan_charge_days']	= $iProratePeriodDays;
+			$aAdjustments['production_plan_credit_days']	= $iProratePeriodDays;
 			
 			$fltProratedAmount						= ($fPlanCharge / $iBillingPeriodDays) * $iProratePeriodDays;
-			$aAdjustments['production_plan_charge']	= round($fltProratedAmount, 2);
+			$aAdjustments['production_plan_credit']	= round($fltProratedAmount, 2);
 			
-			$aAdjustments['production_plan_charge_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iDate + Flex_Date::SECONDS_IN_DAY, $iBillingPeriodEndDate);
+			$aAdjustments['production_plan_credit_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iDate + Flex_Date::SECONDS_IN_DAY, $iBillingPeriodEndDate);
 		}
 		
 		return $aAdjustments;
