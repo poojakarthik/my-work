@@ -3359,7 +3359,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "Download Interim Invoice Eligibility Report";
 		$this->strLabel = "Download Interim Invoice Eligibility Report";
 		
-		return "javascript:JsAutoLoader.loadScript('javascript/invoice.js', function(){Flex.Invoice.buildPopupSubmitInterimInvoiceReport()});";
+		return self :: NEW_FRAMEWORK . "reflex.php/Invoice/InterimEligibilityReport/";
 	}
 	
 	/**
