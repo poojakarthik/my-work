@@ -329,11 +329,11 @@ var Invoice	= Class.create
 		oPopup	= new Reflex_Popup(35);
 		oPopup.setTitle("Submit Interim Invoice Eligiblity Report");
 		oPopup.setContent(oPopupContent.domElement);
+		
+		oPopup.display();
 
 		document.getElementById('Invoice_Interim_EligibilityUpload_Submit').addEventListener('click', Flex.Invoice.submitInterimInvoiceReport.bind(Flex.Invoice), false);
 		document.getElementById('Invoice_Interim_EligibilityUpload_Cancel').addEventListener('click', oPopup.hide.bind(oPopup), false);
-		
-		oPopup.display();
 	},
 	
 	submitInterimInvoiceReport	: function()
