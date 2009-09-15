@@ -431,8 +431,8 @@ class Application_Handler_Invoice extends Application_Handler
 		try
 		{
 			// Parse the Report
-			$sSubmittedEligibilityReportPath		= $_FILES['Invoice_Interim_EligibilityFile']['tmp_name'];
-			$sSubmittedEligibilityReportFileName	= $_FILES['Invoice_Interim_EligibilityFile']['name'];
+			$sSubmittedEligibilityReportPath		= $_FILES['Invoice_Interim_EligibilityUpload_File']['tmp_name'];
+			$sSubmittedEligibilityReportFileName	= $_FILES['Invoice_Interim_EligibilityUpload_File']['name'];
 			
 			$oCSVImportFile	= new File_CSV();
 			$oCSVImportFile->setColumns(array_values(self::$_aInterimEligibilityColumns));
