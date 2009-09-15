@@ -414,7 +414,7 @@ class Application_Handler_Invoice extends Application_Handler
 	public function InterimEligibilityReport($subPath)
 	{
 		// Prepare the CSV File
-		$oCSVFile	= self::buildInterimEligibilityReport();
+		$oCSVFile	= self::buildInterimEligibilityReport(self::getInterimEligibileServices());
 		
 		// Output the Report & return to the User Agent
 		$sFileName	= "interim-invoice-eligibility-report-".date("YmdHis").".csv";
@@ -655,7 +655,7 @@ class Application_Handler_Invoice extends Application_Handler
 			$sSubmittedEligibilityReportFileName	= "submitted-{$sSubmittedEligibilityReportFileName}";
 			$oEmailNotification->addAttachment(file_get_contents($sSubmittedEligibilityReportPath), $sSubmittedEligibilityReportFileName, 'text/csv');
 			
-			$oCSVEligibilityReport				= self::buildInterimEligibilityReport();
+			$oCSVEligibilityReport				= self::buildInterimEligibilityReport($aServices);
 			$sCurrentEligibilityReportFileName	= "current-interim-invoice-eligibility-report-".date("YmdHis").".csv";
 			$oEmailNotification->addAttachment($oCSVEligibilityReport->save(), $sCurrentEligibilityReportFileName, 'text/csv');
 			
@@ -921,14 +921,13 @@ ORDER BY	a.Id,
 		return $aAdjustments;
 	}
 	
-	public static function buildInterimEligibilityReport()
+	public static function buildInterimEligibilityReport($aServices)
 	{
 		// Prepare the CSV File
 		$oCSVFile	= new File_CSV();
 		$oCSVFile->setColumns(array_values(self::$_aInterimEligibilityColumns));
 		
 		// Get data & insert into the CSV Report
-		$aServices	= self::getInterimEligibileServices();
 		foreach ($aServices as &$aService)
 		{
 			$aOutput	= array();

@@ -303,22 +303,22 @@ var Invoice	= Class.create
 	{
 		var	sHtml;
 		sHtml	=	"\n" +
-		"			<form>\n" +
+		"			<form id='Invoice_Interim_EligibilityUpload_Form' name='Telemarketing_DNCRUpload_Form' method='post' action='../admin/reflex.php/Telemarketing/UploadDNCRWashList/' enctype='multipart/form-data'>\n" +
 		"				<div class='GroupedContent'>\n" +
 		"					<table>\n" +
 		"						<tbody>\n" +
 		"							<tr>\n" +
 		"								<th>Interim Invoice Eligiblity Report&nbsp;:&nbsp;</th>\n" +
-		"								<td><input type='file' /></td>\n" +
+		"								<td><input name='Invoice_Interim_EligibilityUpload_File' type='file' /></td>\n" +
 		"							</tr>\n" +
 		"						</tbody>\n" +
 		"					</table>\n" +
 		"				</div>\n" +
-		"				<div style=''>\n" +
-		"					<input type='button' value='  Submit  ' style='margin-right: 1em;' />\n" +
-		"					<input type='button' value='  Cancel  ' />\n" +
-		"				</div>\n";
-		"			</form>\n" +
+		"				<div style='text-align: center;'>\n" +
+		"					<input id='Invoice_Interim_EligibilityUpload_Submit' type='button' value='  Submit  ' style='margin-right: 1em;' />\n" +
+		"					<input id='Invoice_Interim_EligibilityUpload_Cancel' type='button' value='  Cancel  ' />\n" +
+		"				</div>\n" +
+		"			</form>\n";
 		
 		var oPopupContent					= {};
 		oPopupContent.domElement			= document.createElement('div');
@@ -329,11 +329,16 @@ var Invoice	= Class.create
 		oPopup	= new Reflex_Popup(35);
 		oPopup.setTitle("Submit Interim Invoice Eligiblity Report");
 		oPopup.setContent(oPopupContent.domElement);
+
+		document.getElementById('Invoice_Interim_EligibilityUpload_Submit').addEventListener('click', Flex.Invoice.submitInterimInvoiceReport.bind(Flex.Invoice), false);
+		document.getElementById('Invoice_Interim_EligibilityUpload_Cancel').addEventListener('click', oPopup.hide.bind(oPopup), false);
+		
+		oPopup.display();
 	},
 	
 	submitInterimInvoiceReport	: function()
 	{
-		
+		alert('Submit!');
 	},
 	
 	_submitInterimInvoiceReport	: function()
