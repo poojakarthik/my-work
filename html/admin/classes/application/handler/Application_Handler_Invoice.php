@@ -2,36 +2,36 @@
 
 class Application_Handler_Invoice extends Application_Handler
 {
-	private static final	$_aInterimEligibilityColumns	=	array
-															(
-																'ACCOUNT_ID'							=> 'Account',
-																'ACCOUNT_NAME'							=> 'Account Name',
-																'DELIVERY_METHOD'						=> 'Delivery Method',
-																'SERVICE_FNN'							=> 'Service FNN',
-																'ACTIVE_SERVICES'						=> 'Total No. Active Services',
-																'ACTIVE_PENDING_SERVICES'				=> 'Total No. Active & Pending Services',
-																'HAS_TOLLED'							=> 'Has Tolled',
-																'CURRENT_PLAN'							=> 'Current Plan',
-																'REQUIRES_CDR'							=> 'Requires CDR',
-																'MONTHLY_PLAN_FEE'						=> 'Monthly Plan Fee',
-																'DAILY_RATE'							=> 'Daily Plan Fee',
-																'PLAN_CHARGE'							=> 'Plan Charge',
-																'PLAN_CHARGE_DAYS'						=> 'Plan Charge Days',
-																'PLAN_CHARGE_DESCRIPTION'				=> 'Plan Charge Description',
-																'INTERIM_PLAN_CREDIT'					=> 'Plan Credit - Interim Bill',
-																'INTERIM_PLAN_CREDIT_DAYS'				=> 'Plan Credit - Interim Bill - Days',
-																'INTERIM_PLAN_CREDIT_DESCRIPTION'		=> 'Plan Credit Description - Interim Bill',
-																'PRODUCTION_PLAN_CREDIT'				=> 'Plan Credit - 1st Bill',
-																'PRODUCTION_PLAN_CREDIT_DAYS'			=> 'Plan Credit - 1st Bill - Days',
-																'PRODUCTION_PLAN_CREDIT_DESCRIPTION'	=> 'Plan Credit Description - 1st Bill',
-															);
+	private static 	$_aInterimEligibilityColumns	=	array
+														(
+															'ACCOUNT_ID'							=> 'Account',
+															'ACCOUNT_NAME'							=> 'Account Name',
+															'DELIVERY_METHOD'						=> 'Delivery Method',
+															'SERVICE_FNN'							=> 'Service FNN',
+															'ACTIVE_SERVICES'						=> 'Total No. Active Services',
+															'ACTIVE_PENDING_SERVICES'				=> 'Total No. Active & Pending Services',
+															'HAS_TOLLED'							=> 'Has Tolled',
+															'CURRENT_PLAN'							=> 'Current Plan',
+															'REQUIRES_CDR'							=> 'Requires CDR',
+															'MONTHLY_PLAN_FEE'						=> 'Monthly Plan Fee',
+															'DAILY_RATE'							=> 'Daily Plan Fee',
+															'PLAN_CHARGE'							=> 'Plan Charge',
+															'PLAN_CHARGE_DAYS'						=> 'Plan Charge Days',
+															'PLAN_CHARGE_DESCRIPTION'				=> 'Plan Charge Description',
+															'INTERIM_PLAN_CREDIT'					=> 'Plan Credit - Interim Bill',
+															'INTERIM_PLAN_CREDIT_DAYS'				=> 'Plan Credit - Interim Bill - Days',
+															'INTERIM_PLAN_CREDIT_DESCRIPTION'		=> 'Plan Credit Description - Interim Bill',
+															'PRODUCTION_PLAN_CREDIT'				=> 'Plan Credit - 1st Bill',
+															'PRODUCTION_PLAN_CREDIT_DAYS'			=> 'Plan Credit - 1st Bill - Days',
+															'PRODUCTION_PLAN_CREDIT_DESCRIPTION'	=> 'Plan Credit Description - 1st Bill',
+														);
 	
-	private static final	$_aInterimExceptionsColumns	=	array
-															(
-																'ACCOUNT_ID'	=> 'Account',
-																'SERVICE_FNN'	=> 'Service FNN',
-																'REASON'		=> 'Reason for Exception'
-															);
+	private static 	$_aInterimExceptionsColumns	=	array
+													(
+														'ACCOUNT_ID'	=> 'Account',
+														'SERVICE_FNN'	=> 'Service FNN',
+														'REASON'		=> 'Reason for Exception'
+													);
 	
 	// View all the breakdown for a service on an invoice
 	public function Service($subPath)
