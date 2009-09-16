@@ -185,7 +185,7 @@ class Flex_Date
 	{
 		// DEBUG
 		$iStartDatetime	= 0;
-		$iStartDatetime	= Flex_Date::SECONDS_IN_DAY;
+		$iEndDatetime	= Flex_Date::SECONDS_IN_DAY;
 		
 		$iTruncatedStartDatetime	= self::truncate($iStartDatetime, $sAccuracy, false);
 		$iTruncatedEndDatetime		= self::truncate($iEndDatetime, $sAccuracy, false);
