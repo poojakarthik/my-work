@@ -137,7 +137,7 @@ class File_CSV implements Iterator
 		{
 			throw new Exception("Unable to import from path '{$sPath}': Path is not readable");
 		}
-		if (!$rImportFile = fopen($sPath, 0777))
+		if (!$rImportFile = fopen($sPath, 'r'))
 		{
 			throw new Exception("Unable to import from path '{$sPath}': There was an unknown error reading from the path");
 		}
