@@ -178,7 +178,7 @@ class Flex_Date
 		}
 		
 		//return strtotime("{$arrParts['Y']}-{$arrParts['m']}-{$arrParts['d']} {$arrParts['H']}:{$arrParts['i']}:{$arrParts['s']}");
-		return mktime($arrParts['H'], $arrParts['i'], $arrParts['s'], $arrParts['m'], $arrParts['d'], $arrParts['Y']);
+		return mktime($arrParts['H'], $arrParts['i'], $arrParts['s'], $arrParts['m'], $arrParts['d'], $arrParts['Y'], 0);
 	}
 	
 	public static function periodLength($iStartDatetime, $iEndDatetime, $sAccuracy='d')
