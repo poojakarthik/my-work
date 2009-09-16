@@ -454,8 +454,10 @@ class Application_Handler_Invoice extends Application_Handler
 			
 			try
 			{
-				$sSubmittedEligibilityReportPath		= $_FILES['Invoice_Interim_EligibilityUpload_File']['tmp_name'];
+				$sSubmittedEligibilityReportPath		= dirname($_FILES['Invoice_Interim_EligibilityUpload_File']['tmp_name']).'/'.$_FILES['Invoice_Interim_EligibilityUpload_File']['name'];
 				$sSubmittedEligibilityReportFileName	= $_FILES['Invoice_Interim_EligibilityUpload_File']['name'];
+				
+				move_uploaded_file($_FILES['Invoice_Interim_EligibilityUpload_File']['tmp_name'], $sSubmittedEligibilityReportPath);
 				
 				// Ensure the submitted file meets a few contraints
 				// MIME Type
