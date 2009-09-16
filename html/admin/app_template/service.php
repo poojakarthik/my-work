@@ -2738,7 +2738,7 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		$aPermittedStartTimes	= array(1);
 		$aLastInvoiceType		= $rLastInvoiceType->fetch_assoc();
-		if (!($aLastInvoiceType && $aLastInvoiceType['invoice_run_type_id']))
+		if (!($aLastInvoiceType && !in_array($aLastInvoiceType['invoice_run_type_id'], array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL))))
 		{
 			$aPermittedStartTimes[]	= 0;
 			/*
