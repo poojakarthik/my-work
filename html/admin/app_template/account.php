@@ -283,7 +283,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 		{
-			$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_HIDDEN;
+			//$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_HIDDEN;
 		}
 		
 		$arrColumns = Array(	'Id' => 'C.Id',	'AccountGroup'=>'C.AccountGroup',	'Account'=>'C.Account',	'Service'=>'C.Service',
