@@ -2739,7 +2739,7 @@ class AppTemplateService extends ApplicationTemplate
 		$aLastInvoiceType	= $rLastInvoiceType->fetch_assoc();
 		if ($aLastInvoiceType && $aLastInvoiceType['invoice_run_type_id'])
 		{
-			Ajax()->AddCommand("Alert", "You are not able to change this Service's Rate Plan, as the last Invoice Run was a ".GetConstantDescription($aLastInvoiceType['invoice_run_type_id'], 'invoice_run_type').", dated ".date('d/m/Y', strtotime($aLastInvoiceType['BillingDate'])).".");
+			Ajax()->AddCommand("Alert", "You are not able to change this Service's Rate Plan as the last Invoice Run was a ".GetConstantDescription($aLastInvoiceType['invoice_run_type_id'], 'invoice_run_type').", dated ".date('d/m/Y', strtotime($aLastInvoiceType['BillingDate'])).".");
 			return TRUE;
 		}
 		
