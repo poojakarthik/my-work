@@ -309,7 +309,7 @@ var Invoice	= Class.create
 		"						<tbody>\n" +
 		"							<tr>\n" +
 		"								<th>Interim Invoice Eligiblity Report&nbsp;:&nbsp;</th>\n" +
-		"								<td><input name='Invoice_Interim_EligibilityUpload_File' type='file' /></td>\n" +
+		"								<td><input id='Invoice_Interim_EligibilityUpload_File' name='Invoice_Interim_EligibilityUpload_File' type='file' accept='text/csv' /></td>\n" +
 		"							</tr>\n" +
 		"						</tbody>\n" +
 		"					</table>\n" +
@@ -331,14 +331,26 @@ var Invoice	= Class.create
 		oPopup.setContent(oPopupContent.domElement);
 		
 		oPopup.display();
-
+		
 		document.getElementById('Invoice_Interim_EligibilityUpload_Submit').addEventListener('click', Flex.Invoice.submitInterimInvoiceReport.bind(Flex.Invoice), false);
 		document.getElementById('Invoice_Interim_EligibilityUpload_Cancel').addEventListener('click', oPopup.hide.bind(oPopup), false);
 	},
 	
 	submitInterimInvoiceReport	: function()
 	{
-		alert('Submit!');
+		// Ensure that a File has been selected
+		if (!document.getElementById('Invoice_Interim_EligibilityUpload_File').value)
+		{
+			$Alert("Please select a file to submit.")
+			return false;
+		}
+		if (document.getElementById('Invoice_Interim_EligibilityUpload_File').value.search(/\.csv$/i) === -1)
+		{
+			$Alert("The file you have selected is not an Interim Invoice Eligibility Report.  Please select the correct file.")
+			return false;
+		}
+		
+		alert('Submitting!');
 	},
 	
 	_submitInterimInvoiceReport	: function()
