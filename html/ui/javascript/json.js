@@ -347,7 +347,7 @@ jQuery.json = {
 		{
 			// Destroy the Div and Iframe
 			$Alert("Cleaning up IFrame with Id '"+elmIframe.id+"' and contents '"+$ID(elmIframe.id + '_div').innerHTML+"'");
-			document.body.removeChild($ID(elmIframe.id + '_div'));
+			//document.body.removeChild($ID(elmIframe.id + '_div'));
 		}
 		else
 		{
