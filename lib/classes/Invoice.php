@@ -1350,7 +1350,7 @@ class Invoice extends ORM
 	
 	public static function buildPlanChargeDescription($sPlanName, $sChargeDescription, $iStartDatetime, $iEndDatetime)
 	{
-		return "{$sPlanName} {$strDescription} from ".date("d/m/Y", $iStartDatetime)." to ".date("d/m/Y", $iEndDatetime);
+		return "{$sPlanName} {$sChargeDescription} from ".date("d/m/Y", $iStartDatetime)." to ".date("d/m/Y", $iEndDatetime);
 	}
 
 	/**
