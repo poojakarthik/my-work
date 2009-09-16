@@ -276,17 +276,28 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->InvoicePayment->Load();
 		
 		// Build the list of columns to use for the Charge DBL (as it is pulling this information from 2 tables)
+		$aVisibleChargeTypes	= array(CHARGE_TYPE_VISIBILITY_VISIBLE);
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+		{
+			$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_CREDIT_CONTROL;
+		}
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+		{
+			$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_HIDDEN;
+		}
+		
 		$arrColumns = Array(	'Id' => 'C.Id',	'AccountGroup'=>'C.AccountGroup',	'Account'=>'C.Account',	'Service'=>'C.Service',
 								'invoice_run_id'=>'C.invoice_run_id',	'CreatedBy'=>'C.CreatedBy', 'CreatedOn'=>'C.CreatedOn', 'ApprovedBy'=>'C.ApprovedBy',
 								'ChargeType'=>'C.ChargeType', 'Description'=>'C.Description', 'ChargedOn'=>'C.ChargedOn', 'Nature'=>'C.Nature',
 								'Amount'=>'C.Amount', 'Invoice'=>'C.Invoice', 'Notes'=>'C.Notes', 'Status'=>'C.Status', 'LinkType' => 'C.LinkType',
 								'LinkId' => 'C.LinkId', 'FNN'=>'S.FNN');
 		DBL()->Charge->SetColumns($arrColumns);
-		DBL()->Charge->SetTable("Charge AS C LEFT OUTER JOIN Service AS S ON C.Service = S.Id");
+		DBL()->Charge->SetTable("Charge AS C LEFT OUTER JOIN Service AS S ON C.Service = S.Id LEFT JOIN ChargeType ct ON (ct.Id = C.charge_type_id OR ct.ChargeType = C.ChargeType)");
 		
 		//"WHERE (Account = <accId>) AND (Status conditions)"
 		$strWhere  = "C.Account = ". DBO()->Account->Id->Value;
 		$strWhere .= " AND C.Status IN (". CHARGE_WAITING .", ". CHARGE_APPROVED .", ". CHARGE_TEMP_INVOICE .", ". CHARGE_INVOICED .")";
+		$strWhere .= " AND ct.charge_type_visible_id IN (".implode(', ', $aVisibleChargeTypes).")";
 		DBL()->Charge->Where->SetString($strWhere);
 		DBL()->Charge->OrderBy("ChargedOn DESC, Id DESC");
 		DBL()->Charge->Load();
