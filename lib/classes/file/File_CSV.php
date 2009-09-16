@@ -227,7 +227,7 @@ class File_CSV implements Iterator
 	
 	public function rewind()
 	{
-		return rewind($this->_aRows);
+		return reset($this->_aRows);
 	}
 	
 	public function valid()

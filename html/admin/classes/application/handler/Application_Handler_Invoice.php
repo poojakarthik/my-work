@@ -688,6 +688,7 @@ class Application_Handler_Invoice extends Application_Handler
 				
 				// Generate & Send Exceptions Report
 				$oEmailNotification	= new Email_Notification(EMAIL_NOTIFICATION_FIRST_INTERIM_INVOICE_REPORT);
+				$oEmailNotification->setSubject("First Interim Invoice Exceptions Report - ".date('Y-m-d H:i:s'));
 				
 				$sSubmittedEligibilityReportFileName	= "submitted-{$sSubmittedEligibilityReportFileName}";
 				$oEmailNotification->addAttachment(file_get_contents($sSubmittedEligibilityReportPath), $sSubmittedEligibilityReportFileName, 'text/csv');
