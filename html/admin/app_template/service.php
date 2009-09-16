@@ -2730,6 +2730,18 @@ class AppTemplateService extends ApplicationTemplate
 			return TRUE;
 		}
 		
+		$rLastInvoiceType	= $qryQuery->Execute("SELECT ir.Id, ir.BillingDate, ir.invoice_run_type_id FROM Invoice i JOIN InvoiceRun ir ON (i.invoice_run_id = ir.Id) WHERE i.Account = ".DBO()->Account->Id->Value." AND i.Status != ".INVOICE_TEMP." ORDER BY BillingDate DESC");
+		if ($rLastInvoiceType === false)
+		{
+			throw new Exception($qryQuery->Error());
+		}
+		$aLastInvoiceType	= $rLastInvoiceType->fetch_assoc();
+		if ($aLastInvoiceType && $aLastInvoiceType['invoice_run_type_id'])
+		{
+			Ajax()->AddCommand("Alert", "You are not able to change this Service's Rate Plan, as the last Invoice Run was a ".GetConstantDescription($aLastInvoiceType['invoice_run_type_id'], 'invoice_run_type').", dated ".date('d/m/Y', strtotime($aLastInvoiceType['BillingDate'])).".");
+			return TRUE;
+		}
+		
 		if (SubmittedForm("ChangePlan","Change Plan"))
 		{
 
