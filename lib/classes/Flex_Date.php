@@ -189,7 +189,7 @@ class Flex_Date
 		throw new Exception(	"iStartDatetime: {$iStartDatetime}, ".date("Y-m-d H:i:s", $iStartDatetime)." (Truncated: {$iTruncatedStartDatetime}, ".date("Y-m-d H:i:s", $iTruncatedStartDatetime).") -- ;\n" .
 								"iEndDatetime: {$iEndDatetime}, ".date("Y-m-d H:i:s", $iEndDatetime)." (Truncated: {$iTruncatedEndDatetime}, ".date("Y-m-d H:i:s", $iTruncatedEndDatetime).") -- ;\n" .
 								"Difference: {$iPeriodLengthInSeconds} (".($iPeriodLengthInSeconds / Flex_Date::SECONDS_IN_DAY)."); \n" .
-								"UNIX Timestamp: 0, ".date("Y-m-d H:i:s", 0));
+								"UNIX Timestamp: 0, ".date("Y-m-d H:i:s", 0))." (Current: ".time().", ".date("Y-m-d").")";
 		return $iPeriodLengthInSeconds;
 	}
 }
