@@ -185,7 +185,7 @@ class Flex_Date
 	{
 		// DEBUG
 		$iStartDatetime	= strtotime("2009-09-15 00:00:00");
-		$iEndDatetime	= strtotime("2009-10-14 00:00:00");
+		$iEndDatetime	= strtotime("2009-10-01 00:00:00");
 		
 		$iTruncatedStartDatetime	= self::truncate($iStartDatetime, $sAccuracy, false);
 		$iTruncatedEndDatetime		= self::truncate($iEndDatetime, $sAccuracy, false);
