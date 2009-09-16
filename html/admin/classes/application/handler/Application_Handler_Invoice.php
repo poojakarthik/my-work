@@ -96,13 +96,22 @@ class Application_Handler_Invoice extends Application_Handler
 	
 	
 			// Need to load up the Adjustments for the invoice
+			$aVisibleChargeTypes	= array(CHARGE_TYPE_VISIBILITY_VISIBLE);
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+			{
+				$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_CREDIT_CONTROL;
+			}
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			{
+				$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_HIDDEN;
+			}
 	
 			$sqlAdjustments = "
 				SELECT c.Id as ChargeId, c.ChargeType ChargeType, c.Description Description, s.Id as ServiceId, s.FNN as FNN, ChargedOn as Date, c.Amount Amount, c.Nature as Nature
-				  FROM Service s, Charge c
-				 WHERE c.Service = s.Id	
-				   AND c.invoice_run_id = $intInvoiceRunId
+				  FROM Service s JOIN Charge c ON (s.Id = c.Service) LEFT JOIN ChargeType ct ON (ct.Id = c.charge_type_id OR c.ChargeType = ct.ChargeType)
+				 WHERE c.invoice_run_id = $intInvoiceRunId
 			       AND c.Service = $intServiceId
+			       AND ct.charge_type_visibility_id IN (".implode(', ', $aVisibleChargeTypes).")
 			";
 	
 			$res = $db->query($sqlAdjustments);
