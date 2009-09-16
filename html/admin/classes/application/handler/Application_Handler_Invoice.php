@@ -886,13 +886,14 @@ ORDER BY	a.Id,
 			// Calculate Daily Rate
 			$iDaysInBillingPeriod	= (int)date('t', $iLastInvoiceDate);
 			
+			$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
+			
 			$aAdjustments['billing_period_start']	= date("Y-m-d H:i:s", $iLastInvoiceDate);
 			$aAdjustments['billing_period_end']		= date("Y-m-d H:i:s", $iBillingPeriodEndDate);
-			$aAdjustments['billing_period_days']	= $iDaysInBillingPeriod;
+			$aAdjustments['billing_period_days']	= $iBillingPeriodDays;
 			
 			// Tidy Plan Charge
 			$iProratePeriodDays	= floor(Flex_Date::periodLength($iServiceInvoiceFromDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
-			$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			
 			$aAdjustments['daily_rate']			= $fPlanCharge / $iBillingPeriodDays;
 			$aAdjustments['plan_charge_days']	= $iProratePeriodDays;
