@@ -2741,11 +2741,9 @@ class AppTemplateService extends ApplicationTemplate
 		if (!($aLastInvoiceType && in_array($aLastInvoiceType['invoice_run_type_id'], array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL))))
 		{
 			$aPermittedStartTimes[]	= 0;
-			/*
-			Ajax()->AddCommand("Alert", "You are not able to change this Service's Rate Plan as the last Invoice Run was a ".GetConstantDescription($aLastInvoiceType['invoice_run_type_id'], 'invoice_run_type').", dated ".date('d/m/Y', strtotime($aLastInvoiceType['BillingDate'])).".");
-			return TRUE;
-			*/
 		}
+		Ajax()->AddCommand("Alert", print_r($aPermittedStartTimes, true));
+		return TRUE;
 		DBO()->NewPlan->PermittedStartTimes	= $aPermittedStartTimes;
 		
 		if (SubmittedForm("ChangePlan","Change Plan"))
