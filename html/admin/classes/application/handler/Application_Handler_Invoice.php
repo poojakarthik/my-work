@@ -441,6 +441,9 @@ class Application_Handler_Invoice extends Application_Handler
 	
 	public function ActionInterimInvoicesReport($subPath)
 	{
+		echo "TEST";
+		exit;
+		
 		$oResponse			= new stdClass();
 		$oFlexDataAccess	= DataAccess::getDataAccess();
 		
