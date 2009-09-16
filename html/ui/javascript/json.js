@@ -345,6 +345,7 @@ jQuery.json = {
 		if ($ID(elmIframe.id) && elmIframe.bolLoaded)
 		{
 			// Destroy the Div and Iframe
+			$Alert("Cleaning up IFrame with Id '"+elmIframe.id+"' and contents '"+elmIframe.contentDocument.body.innerHTML+"'");
 			document.body.removeChild($ID(elmIframe.id + '_div'));
 		}
 		else
