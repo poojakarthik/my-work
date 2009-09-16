@@ -315,7 +315,7 @@ jQuery.json = {
 		
 		// Add a target to the form
 		elmForm.target			= elmIframe.id;
-		elmForm.target			= '_blank';
+		//elmForm.target			= '_blank';
 		
 		return true;
 	},
@@ -347,8 +347,8 @@ jQuery.json = {
 		if ($ID(elmIframe.id) && elmIframe.bolLoaded)
 		{
 			// Destroy the Div and Iframe
-			$Alert("Cleaning up IFrame with Id '"+elmIframe.id+"' and contents '"+$ID(elmIframe.id + '_div').innerHTML+"'");
-			//document.body.removeChild($ID(elmIframe.id + '_div'));
+			//$Alert("Cleaning up IFrame with Id '"+elmIframe.id+"' and contents '"+$ID(elmIframe.id + '_div').innerHTML+"'");
+			document.body.removeChild($ID(elmIframe.id + '_div'));
 		}
 		else
 		{
