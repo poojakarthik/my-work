@@ -768,6 +768,8 @@ class Application_Handler_Invoice extends Application_Handler
 		{
 			$oResponse->Success	= false;
 			$oResponse->Message	= $eException->getMessage();
+			
+			file_put_contents('/tmp/action-interim-invoices-report-'.date("YmdHis").'.csv', $eException->getMessage());
 		}
 		
 		echo JSON_Services::instance()->encode($oResponse);
