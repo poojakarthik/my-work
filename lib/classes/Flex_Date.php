@@ -182,8 +182,9 @@ class Flex_Date
 	
 	public static function periodLength($iStartDatetime, $iEndDatetime, $sAccuracy='d')
 	{
-		throw new Exception("iStartDatetime: {$iStartDatetime}; iEndDatetime: {$iEndDatetime}; Difference: ".((self::truncate($iEndDatetime, $sAccuracy, false) - self::truncate($iStartDatetime, $sAccuracy, false)) + Flex_Date::SECONDS_IN_DAY));
-		return (self::truncate($iEndDatetime, $sAccuracy, false) - self::truncate($iStartDatetime, $sAccuracy, false)) + Flex_Date::SECONDS_IN_DAY;
+		$iPeriodLengthInSeconds	= (self::truncate($iEndDatetime, $sAccuracy, false) - self::truncate($iStartDatetime, $sAccuracy, false)) + Flex_Date::SECONDS_IN_DAY;
+		throw new Exception("iStartDatetime: {$iStartDatetime} ({".date("Y-m-d H:i:s", $iStartDatetime)."}); iEndDatetime: {$iEndDatetime} ({".date("Y-m-d H:i:s", $iEndDatetime)."}); Difference: {$iPeriodLengthInSeconds} (".($iPeriodLengthInSeconds / Flex_Date::SECONDS_IN_DAY).")");
+		return $iPeriodLengthInSeconds;
 	}
 }
 ?>
