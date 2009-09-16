@@ -41,6 +41,10 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				
 				// Check the last Invoice Type
 				$rLastInvoiceType	= $qryQuery->Execute("SELECT ir.Id, ir.BillingDate, ir.invoice_run_type_id FROM Invoice i JOIN InvoiceRun ir ON (i.invoice_run_id = ir.Id) WHERE i.Account = {$objAccount->Id} AND i.Status != ".INVOICE_TEMP." ORDER BY BillingDate DESC");
+				if ($rLastInvoiceType === false)
+				{
+					throw new Exception($qryQuery->Error());
+				}
 				$aLastInvoiceType	= $rLastInvoiceType->fetch_assoc();
 				if ($aLastInvoiceType && $aLastInvoiceType['invoice_run_type_id'])
 				{
