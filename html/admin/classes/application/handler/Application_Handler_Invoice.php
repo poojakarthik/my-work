@@ -24,6 +24,9 @@ class Application_Handler_Invoice extends Application_Handler
 															'PRODUCTION_PLAN_CREDIT'				=> 'Plan Credit - 1st Bill',
 															'PRODUCTION_PLAN_CREDIT_DAYS'			=> 'Plan Credit - 1st Bill - Days',
 															'PRODUCTION_PLAN_CREDIT_DESCRIPTION'	=> 'Plan Credit Description - 1st Bill',
+															'DEBUG_BILLING_PERIOD_START'			=> 'DEBUG: Billing Period Start Date',
+															'DEBUG_BILLING_PERIOD_END'				=> 'DEBUG: Billing Period End Date',
+															'DEBUG_BILLING_PERIOD_DAYS'				=> 'DEBUG: Billing Period Length (Days)',
 														);
 	
 	private static 	$_aInterimExceptionsColumns	=	array
@@ -883,6 +886,10 @@ ORDER BY	a.Id,
 			// Calculate Daily Rate
 			$iDaysInBillingPeriod	= (int)date('t', $iLastInvoiceDate);
 			
+			$aAdjustments['billing_period_start']	= date("Y-m-d H:i:s", $iLastInvoiceDate);
+			$aAdjustments['billing_period_end']		= date("Y-m-d H:i:s", $iBillingPeriodEndDate);
+			$aAdjustments['billing_period_days']	= $iDaysInBillingPeriod;
+			
 			// Tidy Plan Charge
 			$iProratePeriodDays	= floor(Flex_Date::periodLength($iServiceInvoiceFromDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
@@ -952,6 +959,9 @@ ORDER BY	a.Id,
 			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']]				= number_format((float)$aService['aAdjustments']['production_plan_credit'], 2, '.', '');
 			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']]			= $aService['aAdjustments']['production_plan_credit_days'];
 			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]	= $aService['aAdjustments']['production_plan_credit_description'];
+			$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_START']]			= $aService['aAdjustments']['billing_period_start'];
+			$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_END']]			= $aService['aAdjustments']['billing_period_end'];
+			$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_DAYS']]			= $aService['aAdjustments']['billing_period_days'];
 			
 			// Add the CSV
 			$oCSVFile->addRow($aOutput);
