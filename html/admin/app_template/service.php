@@ -2736,17 +2736,27 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			throw new Exception($qryQuery->Error());
 		}
-		$aLastInvoiceType	= $rLastInvoiceType->fetch_assoc();
-		if ($aLastInvoiceType && $aLastInvoiceType['invoice_run_type_id'])
+		$aPermittedStartTimes	= array(1);
+		$aLastInvoiceType		= $rLastInvoiceType->fetch_assoc();
+		if (!($aLastInvoiceType && $aLastInvoiceType['invoice_run_type_id']))
 		{
+			$aPermittedStartTimes[]	= 0;
+			/*
 			Ajax()->AddCommand("Alert", "You are not able to change this Service's Rate Plan as the last Invoice Run was a ".GetConstantDescription($aLastInvoiceType['invoice_run_type_id'], 'invoice_run_type').", dated ".date('d/m/Y', strtotime($aLastInvoiceType['BillingDate'])).".");
 			return TRUE;
+			*/
 		}
+		DBO()->NewPlan->PermittedStartTimes	= $aPermittedStartTimes;
 		
 		if (SubmittedForm("ChangePlan","Change Plan"))
 		{
 
 			$bolStartThisMonth = (DBO()->NewPlan->StartTime->Value == 1)? FALSE : TRUE;
+			if ($bolStartThisMonth && !in_array(0, $aPermittedStartTimes))
+			{
+				Ajax()->AddCommand("Alert", "You are not able to start this Rate Plan as of the start of the current billing period, as the last Invoice Run was a ".GetConstantDescription($aLastInvoiceType['invoice_run_type_id'], 'invoice_run_type').", dated ".date('d/m/Y', strtotime($aLastInvoiceType['BillingDate'])).".");
+				return TRUE;
+			}
 			
 			try
 			{

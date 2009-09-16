@@ -151,18 +151,27 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='Combo_NewPlan.StartTime' name='NewPlan.StartTime' style='width:100%'>\n";
 
-		if (DBO()->NewPlan->StartTime->Value == 0)
+		if (in_array(0, DBO()->NewPlan->PermittedStartTimes))
 		{
-			$strSelectCurrentBillingPeriod	= "selected='selected'";
-			$strSelectNextBillingPeriod		= "";
+			if (DBO()->NewPlan->StartTime->Value == 0)
+			{
+				$strSelectCurrentBillingPeriod	= "selected='selected'";
+				$strSelectNextBillingPeriod		= "";
+			}
+			else
+			{
+				$strSelectNextBillingPeriod		= "selected='selected'";
+				$strSelectCurrentBillingPeriod	= "";
+			}
+			
+			echo "<option value='0' $strSelectCurrentBillingPeriod>Begining of current billing period</option>\n";
 		}
 		else
 		{
 			$strSelectNextBillingPeriod		= "selected='selected'";
 			$strSelectCurrentBillingPeriod	= "";
 		}
-
-		echo "<option value='0' $strSelectCurrentBillingPeriod>Begining of current billing period</option>\n";
+		
 		echo "<option value='1' $strSelectNextBillingPeriod>Begining of next billing period</option>\n";
 
 		echo "      </select>\n";
