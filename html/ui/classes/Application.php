@@ -129,10 +129,13 @@ class Application
 			ContextMenu()->Customer->Customer_Overdue_List();
 		}
 		
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+		if (Flex_Module::isActive(FLEX_MODULE_INVOICE_INTERIM))
 		{
-			ContextMenu()->Customer->Interim_Invoice->DownloadInterimEligibilityReport();
-			ContextMenu()->Customer->Interim_Invoice->SubmitInterimInterimEligibilityReport();
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+			{
+				ContextMenu()->Customer->Interim_Invoice->DownloadInterimEligibilityReport();
+				ContextMenu()->Customer->Interim_Invoice->SubmitInterimInterimEligibilityReport();
+			}
 		}
 
 		$arrCustomerGroups = Customer_Group::listAll();
@@ -343,10 +346,13 @@ class Application
 			ContextMenu()->Customer->Customer_Overdue_List();
 		}
 		
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+		if (Flex_Module::isActive(FLEX_MODULE_INVOICE_INTERIM))
 		{
-			ContextMenu()->Customer->Interim_Invoice->DownloadInterimEligibilityReport();
-			ContextMenu()->Customer->Interim_Invoice->SubmitInterimInterimEligibilityReport();
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+			{
+				ContextMenu()->Customer->Interim_Invoice->DownloadInterimEligibilityReport();
+				ContextMenu()->Customer->Interim_Invoice->SubmitInterimInterimEligibilityReport();
+			}
 		}
 
 		$arrCustomerGroups = Customer_Group::listAll();
