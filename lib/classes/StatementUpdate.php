@@ -148,7 +148,8 @@
 	 	if ($strWhere)
 	 	{
 	 		// Find and replace the aliases in $strWhere
-	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
+	 		// Searching and replacing the placeholders is now performed on the entire prepared statement, at the end of this method
+	 		//$this->_arrPlaceholders = $this->FindAlias($strWhere);
 	 		
 			$strQuery .= $strWhere . "\n";
 	 	}
@@ -163,6 +164,10 @@
 	 	{
 			$strQuery .= " LIMIT ".(int)$intLimit;
 		}
+		
+	 	// Find all the placeholders and replace them with question marks
+	 	//$strQuery = preg_replace("/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:--.*))/", '', $strQuery); // This removes comments from the query
+	 	$this->_arrPlaceholders = $this->FindAlias($strQuery);
 		
 	 	// Prepare the Statement
 	 	$this->_prepare($strQuery);
@@ -251,7 +256,7 @@
 	 	}
 		
 	 	// Bind the WHERE data to our mysqli_stmt
-	 	foreach ($this->_arrWhereAliases as $strAlias)
+	 	foreach ($this->_arrPlaceholders as $strAlias)
 	 	{
 	 		$strType .= $this->GetDBInputType($arrWhere[$strAlias]);
 			

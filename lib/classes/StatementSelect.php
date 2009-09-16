@@ -200,7 +200,8 @@
 	 	if ($strWhere != "")
 	 	{
 	 		// Find and replace the aliases in $strWhere
-	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
+	 		// Searching and replacing the placeholders is now performed on the entire prepared statement, at the end of this method
+	 		//$this->_arrPlaceholders = $this->FindAlias($strWhere);
 			$strQuery .= $strWhere . "\n";
 			//Debug($strQuery);
 	 	}
@@ -222,6 +223,14 @@
 	 	{
 			$strQuery .= "LIMIT " . $strLimit . "\n";	
 	 	}
+	 	
+	 	// Find all the placeholders and replace them with question marks
+
+	 	// This removes comments from the query (comments only have to be removed if placeholders are in the comments, and I'm thinking this won't ever be the case)
+	 	// Only uncomment this line if it is needed for old queries.  Going forward I would discourage the use of placeholders in comments in prepared statements
+	 	//$strQuery = preg_replace("/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:--.*))/", '', $strQuery); 
+
+	 	$this->_arrPlaceholders = $this->FindAlias($strQuery);
 	 	
 	 	// Prepare the Statement
 	 	$this->_prepare($strQuery);
@@ -298,11 +307,11 @@
 	 	$strType = "";
 	 	
 	 	// Bind the WHERE data to our mysqli_stmt
-	 	if (isset($this->_arrWhereAliases))
+	 	if (isset($this->_arrPlaceholders))
 	 	{
 	 		$i = 0;
 		 	// Bind the WHERE data to our mysqli_stmt
-		 	foreach ($this->_arrWhereAliases as $strAlias)
+		 	foreach ($this->_arrPlaceholders as $strAlias)
 		 	{
 				if (is_array($arrWhere[$strAlias]))
 				{
@@ -320,17 +329,17 @@
 		 	}
 			//Debug($arrParams);
 /*
-		 	if (count($this->_arrWhereAliases) != count($arrParams))
+		 	if (count($this->_arrPlaceholders) != count($arrParams))
 		 	{
 		 		Debug("Number of Aliases doesn't match variables");
-		 		Debug($this->_arrWhereAliases);
+		 		Debug($this->_arrPlaceholders);
 		 		Debug($arrParams);
 		 		DebugBacktrace();
 		 	}
 
-		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Types: $strType; Query: \n".$this->_strQuery);
+		 	Debug("Aliases: ".count($this->_arrPlaceholders)."; Params: ".count($arrParams). "; Types: $strType; Query: \n".$this->_strQuery);
 		 	DebugBacktrace();*/
-		 	//Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Types: $strType; Query: \n".$this->_strQuery);
+		 	//Debug("Aliases: ".count($this->_arrPlaceholders)."; Params: ".count($arrParams). "; Types: $strType; Query: \n".$this->_strQuery);
 			if (isset ($arrParams) && is_array($arrParams))
 			{
 		 		array_unshift($arrParams, $strType);

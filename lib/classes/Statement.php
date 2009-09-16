@@ -36,21 +36,21 @@
 	protected $_stmtSqlStatment;
 	
 	//------------------------------------------------------------------------//
-	// arrWhereAliases	
+	// arrPlaceholders	
 	//------------------------------------------------------------------------//
 	/**
-	 * arrWhereAliases
+	 * arrPlaceholders
 	 *
-	 * Stores the WHERE aliases
+	 * Indexed array of placeholders used in the prepared statement, stored in the order in which they are found in the statement
 	 *
-	 * Stores the WHERE aliases
+	 * Indexed array of placeholders used in the prepared statement, stored in the order in which they are found in the statement
 	 *
 	 * @type		array
 	 *
 	 * @property
 	 * @see			<MethodName()||typePropertyName>
 	 */
-	private $_arrWhereAliases;
+	private $_arrPlaceholders;
 	
 	//------------------------------------------------------------------------//
 	// strTable	
@@ -163,7 +163,7 @@
 		elseif (is_int($mixData))
  		{
  			// It's an integer
- 			return "d";
+ 			return "i";
  		}
  		elseif (is_float($mixData))
  		{
