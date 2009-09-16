@@ -17,7 +17,7 @@ class Flex_Rollout_Version_000185 extends Flex_Rollout_Version
 		$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 		$dbAdmin->setFetchMode(MDB2_FETCHMODE_ASSOC);
 		
-		//	1:	Add the External Ticketing User Permission
+		//	1:	Add the 1st Interim Invoice Report Email Notification
 		$strSQL = "	INSERT INTO	email_notification
 						(name, description, const_name, allow_customer_group_emails)
 					VALUES
