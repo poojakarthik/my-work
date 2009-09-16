@@ -303,7 +303,7 @@ var Invoice	= Class.create
 	{
 		var	sHtml;
 		sHtml	=	"\n" +
-		"			<form id='Invoice_Interim_EligibilityUpload_Form' name='Telemarketing_DNCRUpload_Form' method='post' action='../admin/reflex.php/Telemarketing/UploadDNCRWashList/' enctype='multipart/form-data'>\n" +
+		"			<form id='Invoice_Interim_EligibilityUpload_Form' name='Invoice_Interim_EligibilityUpload_Form' method='post' action='../admin/reflex.php/Invoice/ActionInterimInvoicesReport/' enctype='multipart/form-data'>\n" +
 		"				<div class='GroupedContent'>\n" +
 		"					<table>\n" +
 		"						<tbody>\n" +
