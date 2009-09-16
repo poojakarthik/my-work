@@ -150,7 +150,8 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Schedule to start :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='Combo_NewPlan.StartTime' name='NewPlan.StartTime' style='width:100%'>\n";
-
+		
+		echo "<option value='0'>".print_r(DBO()->NewPlan->PermittedStartTimes, true)."</option>\n";
 		if (in_array(0, DBO()->NewPlan->PermittedStartTimes))
 		{
 			if (DBO()->NewPlan->StartTime->Value == 0)

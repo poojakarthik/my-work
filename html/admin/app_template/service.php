@@ -2742,8 +2742,6 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			$aPermittedStartTimes[]	= 0;
 		}
-		Ajax()->AddCommand("Alert", print_r($aPermittedStartTimes, true));
-		return TRUE;
 		DBO()->NewPlan->PermittedStartTimes	= $aPermittedStartTimes;
 		
 		if (SubmittedForm("ChangePlan","Change Plan"))
