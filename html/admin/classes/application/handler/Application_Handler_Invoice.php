@@ -426,7 +426,7 @@ class Application_Handler_Invoice extends Application_Handler
 	public function InterimEligibilityReport($subPath)
 	{
 		// DEBUG
-		Flex_Date::periodLength(time(), time() + Flex_Date::SECONDS_IN_DAY, $sAccuracy='d');
+		//Flex_Date::periodLength(time(), time() + Flex_Date::SECONDS_IN_DAY, $sAccuracy='d');
 		
 		// Prepare the CSV File
 		$oCSVFile	= self::buildInterimEligibilityReport(self::getInterimEligibileServices());
