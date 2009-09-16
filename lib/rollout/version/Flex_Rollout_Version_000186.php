@@ -30,7 +30,7 @@ class Flex_Rollout_Version_000186 extends Flex_Rollout_Version
 						system_name		VARCHAR(256)				NOT NULL					COMMENT 'System Name',
 						const_name		VARCHAR(512)				NOT NULL					COMMENT 'Constant Alias',
 						
-						CONSTRAINT	pk_operation_id				PRIMARY KEY (id),
+						CONSTRAINT	pk_operation_id				PRIMARY KEY (id)
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
