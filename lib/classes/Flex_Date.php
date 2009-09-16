@@ -182,8 +182,13 @@ class Flex_Date
 	
 	public static function periodLength($iStartDatetime, $iEndDatetime, $sAccuracy='d')
 	{
-		$iPeriodLengthInSeconds	= (self::truncate($iEndDatetime, $sAccuracy, false) - self::truncate($iStartDatetime, $sAccuracy, false)) + Flex_Date::SECONDS_IN_DAY;
-		throw new Exception("iStartDatetime: {$iStartDatetime} ({".date("Y-m-d H:i:s", $iStartDatetime)."}); iEndDatetime: {$iEndDatetime} ({".date("Y-m-d H:i:s", $iEndDatetime)."}); Difference: {$iPeriodLengthInSeconds} (".($iPeriodLengthInSeconds / Flex_Date::SECONDS_IN_DAY).")");
+		$iTruncatedStartDatetime	= self::truncate($iStartDatetime, $sAccuracy, false);
+		$iTruncatedEndDatetime		= self::truncate($iEndDatetime, $sAccuracy, false);
+		
+		$iPeriodLengthInSeconds	= ($iTruncatedEndDatetime - $iTruncatedStartDatetime) + Flex_Date::SECONDS_IN_DAY;
+		throw new Exception(	"iStartDatetime: {$iStartDatetime}, ".date("Y-m-d H:i:s", $iStartDatetime)." (Truncated: {$iTruncatedStartDatetime}, ".date("Y-m-d H:i:s", $iTruncatedStartDatetime).") -- ;\n" .
+								"iEndDatetime: {$iEndDatetime}, ".date("Y-m-d H:i:s", $iEndDatetime)." (Truncated: {$iTruncatedEndDatetime}, ".date("Y-m-d H:i:s", $iTruncatedEndDatetime).") -- ;\n" .
+								"Difference: {$iPeriodLengthInSeconds} (".($iPeriodLengthInSeconds / Flex_Date::SECONDS_IN_DAY).")");
 		return $iPeriodLengthInSeconds;
 	}
 }
