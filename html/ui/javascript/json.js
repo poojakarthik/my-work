@@ -315,6 +315,7 @@ jQuery.json = {
 		
 		// Add a target to the form
 		elmForm.target			= elmIframe.id;
+		elmForm.target			= '_blank';
 		
 		return true;
 	},
