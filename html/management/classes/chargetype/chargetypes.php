@@ -127,13 +127,14 @@
 			}
 			
 			$arrData = Array (
-				"ChargeType"			=> $arrDetails ['ChargeType'],
-				"Description"			=> $arrDetails ['Description'],
-				"Amount"				=> $fltAmount,
-				"Nature"				=> $arrDetails ['Nature'],
-				"Fixed"					=> (isset($arrDetails['Fixed']) ? $arrDetails['Fixed'] : 0),
-				"Archived"				=> 0,
-				"automatic_only"		=> isset($arrDetails['automatic_only'])? $arrDetails['automatic_only'] : 0
+				"ChargeType"				=> $arrDetails ['ChargeType'],
+				"Description"				=> $arrDetails ['Description'],
+				"Amount"					=> $fltAmount,
+				"Nature"					=> $arrDetails ['Nature'],
+				"Fixed"						=> (isset($arrDetails['Fixed']) ? $arrDetails['Fixed'] : 0),
+				"Archived"					=> 0,
+				"automatic_only"			=> isset($arrDetails['automatic_only'])? $arrDetails['automatic_only'] : 0,
+				"charge_type_visibility_id"	=> CHARGE_TYPE_VISIBILITY_VISIBLE
 			);
 			
 			$insChargeType = new StatementInsert ('ChargeType');
