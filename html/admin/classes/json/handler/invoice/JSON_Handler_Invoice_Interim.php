@@ -46,7 +46,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 					throw new Exception($qryQuery->Error());
 				}
 				$aLastInvoiceType	= $rLastInvoiceType->fetch_assoc();
-				if ($aLastInvoiceType && !in_array($aLastInvoiceType['invoice_run_type_id'], array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL)))
+				if ($aLastInvoiceType && in_array($aLastInvoiceType['invoice_run_type_id'], array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL)))
 				{
 					throw new Exception_Invoice_Interim_NotAllowed("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as the last Invoice Run was a ".GetConstantDescription($aLastInvoiceType['invoice_run_type_id'], 'invoice_run_type').", dated ".date('d/m/Y', strtotime($aLastInvoiceType['BillingDate'])).".");
 				}
