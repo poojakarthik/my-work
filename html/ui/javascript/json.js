@@ -324,7 +324,7 @@ jQuery.json = {
 		var objIframeDocument	= (elmIframe.contentDocument) ? elmIframe.contentDocument : (elmIframe.contentWindow) ? elmIframe.contentWindow.document : window.frames[elmIframe.id].document;
 		
 		// Parse Iframe contents for response data (JSON'd PHP Array)
-		$Alert("Raw Response: "+objIframeDocument.body.innerHTML);
+		//$Alert("Raw Response: "+objIframeDocument.body.innerHTML);
 		var objResponse			= jQuery.json.decode(objIframeDocument.body.innerHTML);
 		objResponse				= (objResponse) ? objResponse : {Message: objIframeDocument.body.innerHTML};
 		
