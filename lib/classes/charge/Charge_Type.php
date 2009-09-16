@@ -134,6 +134,14 @@ class Charge_Type extends ORM
 		}
 	}
 	
+	public function save()
+	{
+		// Set the Defaults
+		$this->charge_type_visibility_id	= (Charge_Type_Visibility::getForId($this->charge_type_visibility_id)) ? $this->charge_type_visibility_id : Charge_Type_Visibility::getForSystemName('VISIBLE');
+		
+		parent::save();
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
