@@ -441,7 +441,7 @@ class Application_Handler_Invoice extends Application_Handler
 	
 	public function ActionInterimInvoicesReport($subPath)
 	{
-		echo "TEST";
+		echo "<div>TEST</div>";
 		exit;
 		
 		$oResponse			= new stdClass();
