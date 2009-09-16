@@ -309,7 +309,7 @@ var Invoice	= Class.create
 		"						<tbody>\n" +
 		"							<tr>\n" +
 		"								<th>Interim Invoice Eligiblity Report&nbsp;:&nbsp;</th>\n" +
-		"								<td><input id='Invoice_Interim_EligibilityUpload_File' name='Invoice_Interim_EligibilityUpload_File' type='file' accept='text/csv' /></td>\n" +
+		"								<td><input id='Invoice_Interim_EligibilityUpload_File' name='Invoice_Interim_EligibilityUpload_File' type='file' accept='text/csv,text/plain' /></td>\n" +
 		"							</tr>\n" +
 		"						</tbody>\n" +
 		"					</table>\n" +

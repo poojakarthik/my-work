@@ -460,7 +460,7 @@ class Application_Handler_Invoice extends Application_Handler
 				// Ensure the submitted file meets a few contraints
 				// MIME Type
 				$sMIMEType	= mime_content_type($_FILES['Invoice_Interim_EligibilityUpload_File']['tmp_name']);
-				if ($sMIMEType !== 'text/csv')
+				if (!in_array($sMIMEType, array('text/csv', 'text/plain')))
 				{
 					throw new Exception("The submitted File is of the wrong File Type.  (Expected: text/csv; Actual: {$sMIMEType})");
 				}
