@@ -349,12 +349,14 @@ var Invoice	= Class.create
 			$Alert("The file you have selected is not an Interim Invoice Eligibility Report.  Please select the correct file.")
 			return false;
 		}
-		
+
+		Vixen.Popup.ShowPageLoadingSplash("Submitting Eligibility Report...", null, null, null, 1);
 		return jQuery.json.jsonIframeFormSubmit(document.getElementById('Invoice_Interim_EligibilityUpload_Form'), jQuery.json.handleResponse.bind(jQuery.json, Flex.Invoice._submitInterimInvoiceReport.bind(Flex.Invoice)));
 	},
 	
 	_submitInterimInvoiceReport	: function(oResponse)
 	{
+		Vixen.Popup.ClosePageLoadingSplash();
 		alert("Response: " + oResponse);
 	}
 });
