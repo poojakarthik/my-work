@@ -39,6 +39,14 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				// Invoice Run Type
 				$intInvoiceRunType	= $objAccount->getInterimInvoiceType();
 				
+				// Check the last Invoice Type
+				$rLastInvoiceType	= $qryQuery->Execute("SELECT ir.Id, ir.BillingDate, ir.invoice_run_type_id FROM Invoice i JOIN InvoiceRun ir ON (i.invoice_run_id = ir.Id) WHERE i.Account = {$objAccount->Id} AND  AND i.Status != ".INVOICE_TEMP);
+				$aLastInvoiceType	= $rLastInvoiceType->fetch_assoc();
+				if ($aLastInvoiceType && $aLastInvoiceType['invoice_run_type_id'])
+				{
+					throw new Exception_Invoice_Interim_NotAllowed("You are not permitted to generate a ".GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as the last Invoice Run was a ".GetConstantDescription($aLastInvoiceType['invoice_run_type_id'], 'invoice_run_type')." Invoice, dated ".date('d/m/Y', strtotime($aLastInvoiceType['BillingDate'])).".");
+				}
+				
 				$strTodaysDate			= date("Y-m-d");
 				$strTodaysDatetime		= $strTodaysDate." 00:00:00";
 				$strTomorrowsDate		= date("Y-m-d", strtotime("+1 day", strtotime($strTodaysDate)));
