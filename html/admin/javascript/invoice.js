@@ -350,12 +350,12 @@ var Invoice	= Class.create
 			return false;
 		}
 		
-		alert('Submitting!');
+		return jQuery.json.jsonIframeFormSubmit(document.getElementById('Invoice_Interim_EligibilityUpload_Form'), jQuery.json.handleResponse.bind(jQuery.json, Flex.Invoice._submitInterimInvoiceReport.bind(Flex.Invoice)));
 	},
 	
-	_submitInterimInvoiceReport	: function()
+	_submitInterimInvoiceReport	: function(oResponse)
 	{
-		
+		alert("Response: " + oResponse);
 	}
 });
 
