@@ -441,6 +441,7 @@ class Application_Handler_Invoice extends Application_Handler
 	
 	public function ActionInterimInvoicesReport($subPath)
 	{
+		sleep(5);
 		echo "<div>TEST</div>";
 		exit;
 		
