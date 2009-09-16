@@ -183,6 +183,10 @@ class Flex_Date
 	
 	public static function periodLength($iStartDatetime, $iEndDatetime, $sAccuracy='d')
 	{
+		// DEBUG
+		$iStartDatetime	= 0;
+		$iStartDatetime	= Flex_Date::SECONDS_IN_DAY;
+		
 		$iTruncatedStartDatetime	= self::truncate($iStartDatetime, $sAccuracy, false);
 		$iTruncatedEndDatetime		= self::truncate($iEndDatetime, $sAccuracy, false);
 		
