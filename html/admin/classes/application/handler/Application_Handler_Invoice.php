@@ -634,8 +634,10 @@ class Application_Handler_Invoice extends Application_Handler
 					else
 					{
 						// Action this Account!
-						$oFlexDataSource	= DataAccess::getDataAccess();
-						$oFlexDataSource->TransactionStart();
+						if (!$oFlexDataAccess->TransactionStart())
+						{
+							throw new Exception("There was an internal error in Flex.  Please notify YBS of this issue with the following message: 'Unable to start a Transaction'");
+						}
 						try
 						{
 							// Add the Adjustments for each Service
@@ -667,14 +669,14 @@ class Application_Handler_Invoice extends Application_Handler
 							}
 							
 							// Commit this mini-transaction
-							$oFlexDataSource->TransactionCommit();
+							$oFlexDataAccess->TransactionCommit();
 							
 							$iAccountsInvoiced++;
 							$iServicesInvoiced	+= count($aAccount['aWhitelist']);
 						}
 						catch (Exception $eException)
 						{
-							$oFlexDataSource->TransactionRollback();
+							$oFlexDataAccess->TransactionRollback();
 							$oCSVExceptionsReport->addRow(array	(
 																	self::$_aInterimExceptionsColumns['ACCOUNT_ID']		=> $iAccountId,
 																	self::$_aInterimExceptionsColumns['SERVICE_FNN']	=> '[ ALL ]',
@@ -687,64 +689,70 @@ class Application_Handler_Invoice extends Application_Handler
 				}
 				
 				// Generate & Send Exceptions Report
-				$oEmailNotification	= new Email_Notification(EMAIL_NOTIFICATION_FIRST_INTERIM_INVOICE_REPORT);
-				$oEmailNotification->setSubject("First Interim Invoice Exceptions Report - ".date('Y-m-d H:i:s'));
+				if ($oCSVExceptionsReport->count())
+				{
+					$oEmailNotification	= new Email_Notification(EMAIL_NOTIFICATION_FIRST_INTERIM_INVOICE_REPORT);
+					$oEmailNotification->setSubject("First Interim Invoice Exceptions Report - ".date('Y-m-d H:i:s'));
+					
+					$sSubmittedEligibilityReportFileName	= "submitted-{$sSubmittedEligibilityReportFileName}";
+					$oEmailNotification->addAttachment(file_get_contents($sSubmittedEligibilityReportPath), $sSubmittedEligibilityReportFileName, 'text/csv');
+					
+					$oCSVEligibilityReport				= self::buildInterimEligibilityReport($aServices);
+					$sCurrentEligibilityReportFileName	= "current-interim-invoice-eligibility-report-".date("YmdHis").".csv";
+					$oEmailNotification->addAttachment($oCSVEligibilityReport->save(), $sCurrentEligibilityReportFileName, 'text/csv');
+					
+					$sExceptionsReportFileName	= "exceptions-report-".date("YmdHis").".csv";
+					$oEmailNotification->addAttachment($oCSVExceptionsReport->save($sExceptionsReportFileName), $sExceptionsReportFileName, 'text/csv');
+					
+					$sEmailBody	= "
+			<div style='font-family: Calibri,Arial,sans-serif !important;'>
+				<h1 style='font-size: 1.5em;'>First Interim Invoice Exceptions Report</h1>
 				
-				$sSubmittedEligibilityReportFileName	= "submitted-{$sSubmittedEligibilityReportFileName}";
-				$oEmailNotification->addAttachment(file_get_contents($sSubmittedEligibilityReportPath), $sSubmittedEligibilityReportFileName, 'text/csv');
+				<p>
+					Please find attached the following Reports:
+					<ul>
+						<li><strong>Exceptions Report</strong><em> ({$sExceptionsReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services failed in processing and the reasons why</li>
+						<li><strong>Submitted Interim Eligibility Report</strong><em> ({$sSubmittedEligibilityReportFileName})</em> &mdash;&nbsp;The Report you submitted to initiate this process</li>
+						<li><strong>Current Interim Eligibility Report</strong><em> ({$sCurrentEligibilityReportFileName})</em> &mdash;&nbsp;Current version of the Interim Eligibility Report</li>
+					</ul>
+				</p>
 				
-				$oCSVEligibilityReport				= self::buildInterimEligibilityReport($aServices);
-				$sCurrentEligibilityReportFileName	= "current-interim-invoice-eligibility-report-".date("YmdHis").".csv";
-				$oEmailNotification->addAttachment($oCSVEligibilityReport->save(), $sCurrentEligibilityReportFileName, 'text/csv');
+				<h2 style='font-size: 1.2em;'>Summary</h2>
+				<table style='margin-left: 0.5em;'>
+					<tbody>
+						<tr>
+							<th style='text-align: left;' >Accounts Invoiced&nbsp;:&nbsp;</th>
+							<td>{$iAccountsInvoiced}</td>
+						</tr>
+						<tr>
+							<th style='text-align: left;' >Services Invoiced&nbsp;:&nbsp;</th>
+							<td>{$iServicesInvoiced}</td>
+						</tr>
+						<tr>
+							<th style='text-align: left;' >Accounts Failed&nbsp;:&nbsp;</th>
+							<td>{$iAccountsFailed}</td>
+						</tr>
+						<tr>
+							<th style='text-align: left;' >Services Failed&nbsp;:&nbsp;</th>
+							<td>{$iServicesFailed}</td>
+						</tr>
+					</tbody>
+				</table>
 				
-				$sExceptionsReportFileName	= "exceptions-report-".date("YmdHis").".csv";
-				$oEmailNotification->addAttachment($oCSVExceptionsReport->save($sExceptionsReportFileName), $sExceptionsReportFileName, 'text/csv');
+				<p>
+					Regards<br />
+					<strong>Flexor</strong>
+				</p>
+			</div>
+			";
+					
+					$oEmailNotification->setBodyHTML($sEmailBody);
+					
+					$oEmailNotification->send();
+				}
 				
-				$sEmailBody	= "
-		<div style='font-family: Calibri,Arial,sans-serif !important;'>
-			<h1 style='font-size: 1.5em;'>First Interim Invoice Exceptions Report</h1>
-			
-			<p>
-				Please find attached the following Reports:
-				<ul>
-					<li><strong>Exceptions Report</strong><em> ({$sExceptionsReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services failed in processing and the reasons why</li>
-					<li><strong>Submitted Interim Eligibility Report</strong><em> ({$sSubmittedEligibilityReportFileName})</em> &mdash;&nbsp;The Report you submitted to initiate this process</li>
-					<li><strong>Current Interim Eligibility Report</strong><em> ({$sCurrentEligibilityReportFileName})</em> &mdash;&nbsp;Current version of the Interim Eligibility Report</li>
-				</ul>
-			</p>
-			
-			<h2 style='font-size: 1.2em;'>Summary</h1>
-			<table style='margin-left: 0.5em;'>
-				<tbody>
-					<tr>
-						<th style='text-align: left;' >Accounts Invoiced&nbsp;:&nbsp;</th>
-						<td>{$iAccountsInvoiced}</td>
-					</tr>
-					<tr>
-						<th style='text-align: left;' >Services Invoiced&nbsp;:&nbsp;</th>
-						<td>{$iServicesInvoiced}</td>
-					</tr>
-					<tr>
-						<th style='text-align: left;' >Accounts Failed&nbsp;:&nbsp;</th>
-						<td>{$iAccountsFailed}</td>
-					</tr>
-					<tr>
-						<th style='text-align: left;' >Services Failed&nbsp;:&nbsp;</th>
-						<td>{$iServicesFailed}</td>
-					</tr>
-				</tbody>
-			</table>
-			
-			<p>
-				Regards<br />
-				<strong>Flex0r</strong>
-			</p>
-		</div>
-		";
-				
-				$oEmailNotification->setBodyHTML($sEmailBody);
-				
-				$oEmailNotification->send();
+				// Generate & Send Processing Report
+				// TODO
 				
 				throw new Exception("TEST MODE --- But everything seems to have worked!");
 				
