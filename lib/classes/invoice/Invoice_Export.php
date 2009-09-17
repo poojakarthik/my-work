@@ -541,8 +541,8 @@ class Invoice_Export
 					if (!$aPairAdjustment['Matched'] && ($aAdjustment['Description'] === $aPairAdjustment['Description']) && (($aAdjustment['Charge'] - $aPairAdjustment['Charge']) === 0))
 					{
 						// Perfect Pair -- Mark as matched
-						$aAdjustment['Matched']		= true;
-						$aPairAdjustment['Matched']	= true;
+						$aAdjustment['Matched']		= $mPairAdjustmentIndex;
+						$aPairAdjustment['Matched']	= $mAdjustmentIndex;
 						continue 2;
 					}
 				}
@@ -553,6 +553,8 @@ class Invoice_Export
 		}
 		unset($aAdjustment);
 		unset($aPairAdjustment);
+		
+		throw new Exception($aAdjustments);
 		
 		// Return an array of Adjustments without CR/DR Pairs
 		return $aCleanAdjustments;
