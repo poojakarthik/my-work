@@ -988,7 +988,7 @@ class Invoice extends ORM
 	 */
 	public static function prorate($fltAmount, $intChargeStartDate, $intChargeEndDate, $intPeriodStartDate, $intPeriodEndDate, $strSmallestDenomination=DATE_TRUNCATE_DAY, $bolAllowOverflow=TRUE, $intDecimalPlaces=2)
 	{
-		$intProratePeriod	= Flex_Date::periodLength($intChargeStartDate, $intPeriodEndDate, $strSmallestDenomination);
+		$intProratePeriod	= Flex_Date::periodLength($intChargeStartDate, $intChargeEndDate, $strSmallestDenomination);
 		$intBillingPeriod	= Flex_Date::periodLength($intPeriodStartDate, $intPeriodEndDate, $strSmallestDenomination);
 		
 		$iProratePeriodDays	= floor($intProratePeriod / Flex_Date::SECONDS_IN_DAY);
