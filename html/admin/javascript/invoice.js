@@ -351,7 +351,7 @@ var Invoice	= Class.create
 		}
 
 		Vixen.Popup.ShowPageLoadingSplash("Submitting Eligibility Report...", null, null, null, 1);
-		if (jQuery.json.jsonIframeFormSubmit(document.getElementById('Invoice_Interim_EligibilityUpload_Form'), jQuery.json.handleResponse.bind(jQuery.json, Flex.Invoice._submitInterimInvoiceReport.bind(Flex.Invoice))))
+		if (jQuery.json.jsonIframeFormSubmit(document.getElementById('Invoice_Interim_EligibilityUpload_Form'), jQuery.json.handleResponse.bind(jQuery.json, Flex.Invoice._submitInterimInvoiceReport.bind(Flex.Invoice), true)))
 		{
 			$ID('Invoice_Interim_EligibilityUpload_Form').submit();
 			return true;
