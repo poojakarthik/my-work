@@ -507,64 +507,68 @@ class Application_Handler_Invoice extends Application_Handler
 						if (array_key_exists($sAccountServiceIndex, $aServices))
 						{
 							// Found it -- do our figures match?
+							$aService	= &$aServices[$sAccountServiceIndex];
 							
 							// Monthly Plan Fee
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['MONTHLY_PLAN_FEE']],
-															(float)$aServices['plan_charge'],
+															(float)$aService['plan_charge'],
 															"Monthly Plan Fee mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['MONTHLY_PLAN_FEE']]."'; Calculated: '".(float)$aServices['plan_charge']."')");
 							
 							// Daily Rate
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']],
-															(float)$aServices['daily_rate'],
+															(float)$aService['daily_rate'],
 															"Daily Rate mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']]."'; Calculated: '".(float)$aServices['daily_rate']."')");
 							
 							// Plan Charge
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE']],
-															(float)$aServices['aAdjustments']['plan_charge'],
+															(float)$aService['aAdjustments']['plan_charge'],
 															"Plan Charge mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE']]."'; Calculated: '".(float)$aServices['aAdjustments']['plan_charge']."')");
 							
 							// Plan Charge Days
 							self::_compareInterimEligible(	(int)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DAYS']],
-															(int)$aServices['aAdjustments']['plan_charge_days'],
+															(int)$aService['aAdjustments']['plan_charge_days'],
 															"Plan Charge Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DAYS']]."'; Calculated: '".(int)$aServices['aAdjustments']['plan_charge_days']."')");
 							
 							// Plan Charge Description
 							self::_compareInterimEligible(	$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']],
-															$aServices['aAdjustments']['plan_charge_description'],
+															$aService['aAdjustments']['plan_charge_description'],
 															"Plan Charge Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['plan_charge_description']."')");
 							
 							// Interim Plan Credit
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']],
-															(float)$aServices['aAdjustments']['interim_plan_credit'],
+															(float)$aService['aAdjustments']['interim_plan_credit'],
 															"Interim Plan Credit mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']]."'; Calculated: '".(float)$aServices['aAdjustments']['interim_plan_credit']."')");
 							
 							// Interim Plan Credit Days
 							self::_compareInterimEligible(	(int)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DAYS']],
-															(int)$aServices['aAdjustments']['interim_plan_credit_days'],
+															(int)$aService['aAdjustments']['interim_plan_credit_days'],
 															"Interim Plan Credit Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DAYS']]."'; Calculated: '".(int)$aServices['aAdjustments']['interim_plan_credit_days']."')");
 							
 							// Interim Plan Credit Description
 							self::_compareInterimEligible(	$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']],
-															$aServices['aAdjustments']['interim_plan_credit_description'],
+															$aService['aAdjustments']['interim_plan_credit_description'],
 															"Interim Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['interim_plan_credit_description']."')");
 							
 							// Production Plan Credit
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']],
-															(float)$aServices['aAdjustments']['production_plan_credit'],
+															(float)$aService['aAdjustments']['production_plan_credit'],
 															"Production Plan Credit mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']]."'; Calculated: '".(float)$aServices['aAdjustments']['production_plan_credit']."')");
 							
 							// Production Plan Credit Days
 							self::_compareInterimEligible(	(int)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']],
-															(int)$aServices['aAdjustments']['production_plan_credit_days'],
+															(int)$aService['aAdjustments']['production_plan_credit_days'],
 															"Production Plan Credit Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']]."'; Calculated: '".(int)$aServices['aAdjustments']['production_plan_credit_days']."')");
 							
 							// Production Plan Credit Description
 							self::_compareInterimEligible(	$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']],
-															$aServices['aAdjustments']['production_plan_credit_description'],
+															$aService['aAdjustments']['production_plan_credit_description'],
 															"Production Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['production_plan_credit_description']."')");
 							
 							// Everthing appears to match -- add to Action list
 							$aAccounts[$iAccountId]['aWhitelist'][$sFNN]	= true;
+							
+							// Clear the $aService reference
+							unset($aService);
 						}
 						else
 						{
