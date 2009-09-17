@@ -548,6 +548,9 @@ class Invoice_Export
 					
 					$aPairAdjustment	= &$aAdjustments[$mPairAdjustmentIndex];
 					
+					fwrite($rLogFile, "\n'{$aAdjustment['Description']}' vs '{$aPairAdjustment['Description']}'\n");
+					fwrite($rLogFile, "\n'".(float)$aAdjustment['Charge']."' - '".(float)$aPairAdjustment['Charge']."' === '".((float)$aAdjustment['Charge'] - (float)$aPairAdjustment['Charge'])."'\n");
+					
 					// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
 					// Additionally, we cannot have already matched against this Adjustment
 					if (!$aPairAdjustment['Matched'] && ($aAdjustment['Description'] === $aPairAdjustment['Description']) && (((float)$aAdjustment['Charge'] - (float)$aPairAdjustment['Charge']) === 0))
