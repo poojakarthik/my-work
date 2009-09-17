@@ -332,11 +332,11 @@ var Invoice	= Class.create
 		
 		oPopup.display();
 		
-		document.getElementById('Invoice_Interim_EligibilityUpload_Submit').addEventListener('click', Flex.Invoice.submitInterimInvoiceReport.bind(Flex.Invoice), false);
+		document.getElementById('Invoice_Interim_EligibilityUpload_Submit').addEventListener('click', Flex.Invoice.submitInterimInvoiceReport.bind(Flex.Invoice, oPopup), false);
 		document.getElementById('Invoice_Interim_EligibilityUpload_Cancel').addEventListener('click', oPopup.hide.bind(oPopup), false);
 	},
 	
-	submitInterimInvoiceReport	: function()
+	submitInterimInvoiceReport	: function(oPopup)
 	{
 		// Ensure that a File has been selected
 		if (!document.getElementById('Invoice_Interim_EligibilityUpload_File').value)
@@ -351,7 +351,7 @@ var Invoice	= Class.create
 		}
 
 		Vixen.Popup.ShowPageLoadingSplash("Submitting Eligibility Report...", null, null, null, 1);
-		if (jQuery.json.jsonIframeFormSubmit(document.getElementById('Invoice_Interim_EligibilityUpload_Form'), jQuery.json.handleResponse.bind(jQuery.json, Flex.Invoice._submitInterimInvoiceReport.bind(Flex.Invoice), true)))
+		if (jQuery.json.jsonIframeFormSubmit(document.getElementById('Invoice_Interim_EligibilityUpload_Form'), jQuery.json.handleResponse.bind(jQuery.json, Flex.Invoice._submitInterimInvoiceReport.bind(Flex.Invoice, oPopup), true)))
 		{
 			$ID('Invoice_Interim_EligibilityUpload_Form').submit();
 			return true;
@@ -362,9 +362,10 @@ var Invoice	= Class.create
 		}
 	},
 	
-	_submitInterimInvoiceReport	: function(oResponse)
+	_submitInterimInvoiceReport	: function(oPopup, oResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
+		oPopup.hide();
 
 		$Alert("Your modified First Interim Invoice Eligibility Report has been successfully submitted.  You should receive a Processing Report via email shortly.")
 		//alert("Response: " + oResponse);
