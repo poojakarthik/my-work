@@ -338,7 +338,7 @@ class Invoice_Run
 			//------------------- START INVOICE RUN GENERATION -------------------//
 			// Create the initial InvoiceRun record
 			$this->BillingDate				= date("Y-m-d", $intInvoiceDatetime);
-			$this->InvoiceRun				= date("YmdHis");
+			$this->InvoiceRun				= date("YmdHis\.u");
 			$this->invoice_run_type_id		= $intInvoiceRunType;
 			$this->invoice_run_schedule_id	= $intScheduledInvoiceRun;
 			$this->invoice_run_status_id	= INVOICE_RUN_STATUS_GENERATING;
