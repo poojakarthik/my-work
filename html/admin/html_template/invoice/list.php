@@ -86,7 +86,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$bolUserHasViewPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
 		$bolUserHasExternalPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
-		$bolUserHasInterimPerm	= (AuthenticatedUser()->UserHasPerm(PERMISSION_ACCOUNTS) || AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN));
+		$bolUserHasInterimPerm	= (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) || AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN));
 		
 		// Render each of the account invoices
 		echo "<a name='Invoice_List'>";

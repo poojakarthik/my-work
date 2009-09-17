@@ -458,6 +458,12 @@ class Application_Handler_Invoice extends Application_Handler
 		
 		try
 		{
+			// Ensure that we have the appropriate Permissions
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+			{
+				throw new Exception("You do not have permission to submit an Interim Invoice Eligibility Report.");
+			}
+			
 			// Try to start a Transaction
 			if (!$oFlexDataAccess->TransactionStart())
 			{
