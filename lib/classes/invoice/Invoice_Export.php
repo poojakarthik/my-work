@@ -215,7 +215,8 @@ class Invoice_Export
 			if ($arrService['Primary'])
 			{
 				// Get Adjustments
-				$arrItemised	= self::_preparedStatementMultiService('selItemisedCharges', $arrService, $arrInvoice);
+				$arrItemised			= self::_preparedStatementMultiService('selItemisedCharges', $arrService, $arrInvoice);
+				$aAdjustmentItemisation	= array();
 				if (count($arrItemised))
 				{
 					$fltAdjustmentsTotal	= 0.0;
@@ -248,7 +249,7 @@ class Invoice_Export
 				// Get Plan Charges
 				$fltPlanChargeTotal			= 0.0;
 				$arrPlanChargeAdjustments	= self::_preparedStatementMultiService('selPlanChargeAdjustments', $arrService, $arrInvoice);
-				$arrPlanChargeItemisation	= Array();
+				$arrPlanChargeItemisation	= array();
 				foreach ($arrPlanChargeAdjustments as $arrAdjustment)
 				{
 					// Format Plan Adjustment as CDR
@@ -279,7 +280,7 @@ class Invoice_Export
 				// Get Plan Usage/Credits
 				$fltPlanCreditTotal			= 0.0;
 				$arrPlanUsageAdjustments	= self::_preparedStatementMultiService('selPlanUsageAdjustments', $arrService, $arrInvoice);
-				$arrPlanCreditItemisation	= Array();
+				$arrPlanCreditItemisation	= array();
 				foreach ($arrPlanUsageAdjustments as $arrAdjustment)
 				{
 					// Format Plan Adjustment as CDR
@@ -343,6 +344,7 @@ class Invoice_Export
 		$arrAdjustments			= array();
 		$fltAccountChargeTotal	= 0.0;
 		$selAccountAdjustments	= self::_preparedStatement('selAccountAdjustments');
+		$aAdjustmentItemisation	= array();
 		if ($selAccountAdjustments->Execute($arrInvoice) === FALSE)
 		{
 			throw new Exception($selAccountAdjustments->Error());
