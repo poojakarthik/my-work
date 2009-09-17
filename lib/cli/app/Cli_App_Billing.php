@@ -58,7 +58,10 @@ class Cli_App_Billing extends Cli
 			// Start a new Transcation
 			//$bolTransactionResult	= DataAccess::getDataAccess()->TransactionStart();
 			//Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully started!");
-
+			
+			$oDataAccessFlex	= DataAccess::getDataAccess();
+			$oQuery				= new Query();
+			
 			// Perform the operation
 			switch ($this->_arrArgs[self::SWITCH_MODE])
 			{
@@ -99,6 +102,22 @@ class Cli_App_Billing extends Cli
 					// Revoke Temporary Invoice Runs
 					$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
 					$objInvoiceRun->revoke();
+					break;
+
+				case 'REVOKE_ALL_INTERIM':
+					// Retrieve list of Temporary Interim (not Final) Invoice Runs
+					$oResult	= $oQuery->Execute("SELECT Id FROM InvoiceRun WHERE invoice_run_type_id = ".INVOICE_RUN_TYPE_INTERIM." AND invoice_run_status_id = ".INVOICE_RUN_STATUS_TEMPORARY);
+					if ($oResult === false)
+					{
+						throw new Exception($oQuery);
+					}
+					
+					// Revoke all Temporary Interim (not Final) Invoice Runs
+					while ($aInvoiceRun = $oResult->fetch_assoc())
+					{
+						$objInvoiceRun	= new Invoice_Run($aInvoiceRun, true);
+						$objInvoiceRun->revoke();
+					}
 					break;
 
 				case 'COMMIT':
@@ -389,8 +408,8 @@ class Cli_App_Billing extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|EXPORT|REPORTS|REGENERATE|ARCHIVE]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","EXPORT","REPORTS","REGENERATE","ARCHIVE"))'
+				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|REVOKE_ALL_INTERIM|EXPORT|REPORTS|REGENERATE|ARCHIVE]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","REVOKE_ALL_INTERIM","EXPORT","REPORTS","REGENERATE","ARCHIVE"))'
 			),
 
 			self::SWITCH_INVOICE_RUN	=> array(
