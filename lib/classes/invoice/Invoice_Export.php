@@ -444,6 +444,7 @@ class Invoice_Export
 			{
 				throw new Exception($selPlanChargeSummary->Error());
 			}
+			$arrAccountSummary['Plan Charges']['Itemisation']	= array();
 			while ($arrPlanChargeSummary = $selPlanChargeSummary->Fetch())
 			{
 				$arrAccountSummary['Plan Charges']['TotalCharge']	+= $arrPlanChargeSummary['Amount'];
@@ -459,11 +460,11 @@ class Invoice_Export
 					$arrCDR['TaxExempt']											= $arrPlanChargeSummary['TaxExempt'];
 					$arrAccountSummary['Plan Charges']['Itemisation'][]				= $arrCDR;
 				}
-				
-				// Perform "Roll-Ups"
-				$arrAccountSummary['Plan Charges']['Itemisation']	= self::_adjustmentRollup($arrAccountSummary['Plan Charges']['Itemisation']);
-				$arrAccountSummary['Plan Charges']['Records']		= count($arrAccountSummary['Plan Charges']['Itemisation']);
 			}
+			
+			// Perform "Roll-Ups"
+			$arrAccountSummary['Plan Charges']['Itemisation']	= self::_adjustmentRollup($arrAccountSummary['Plan Charges']['Itemisation']);
+			$arrAccountSummary['Plan Charges']['Records']		= count($arrAccountSummary['Plan Charges']['Itemisation']);
 			
 			// Plan Usage/Credit
 			$selPlanChargeSummary	= self::_preparedStatement('selPlanUsageSummary');
@@ -471,6 +472,7 @@ class Invoice_Export
 			{
 				throw new Exception($selPlanChargeSummary->Error());
 			}
+			$arrAccountSummary['Plan Usage']['Itemisation']	= array();
 			while ($arrPlanChargeSummary = $selPlanChargeSummary->Fetch())
 			{
 				$arrAccountSummary['Plan Usage']['TotalCharge']	+= $arrPlanChargeSummary['Amount'];
@@ -487,11 +489,11 @@ class Invoice_Export
 					$arrAccountSummary['Plan Usage']['Itemisation'][]				= $arrCDR;
 					$arrAccountSummary['Plan Usage']['Records']++;
 				}
-				
-				// Perform "Roll-Ups"
-				$arrAccountSummary['Plan Usage']['Itemisation']	= self::_adjustmentRollup($arrAccountSummary['Plan Usage']['Itemisation']);
-				$arrAccountSummary['Plan Usage']['Records']		= count($arrAccountSummary['Plan Usage']['Itemisation']);
 			}
+			
+			// Perform "Roll-Ups"
+			$arrAccountSummary['Plan Usage']['Itemisation']	= self::_adjustmentRollup($arrAccountSummary['Plan Usage']['Itemisation']);
+			$arrAccountSummary['Plan Usage']['Records']		= count($arrAccountSummary['Plan Usage']['Itemisation']);
 		}
 		
 		// Add GST Element
