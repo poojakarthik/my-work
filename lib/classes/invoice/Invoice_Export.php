@@ -520,6 +520,12 @@ class Invoice_Export
 	 */
 	private static function _adjustmentRollup($aAdjustments)
 	{
+		static	$rLogFile;
+		if (!isset($rLogFile))
+		{
+			$rLogFile	= @fopen('/tmp/invoice-export-rollup-'.date("YmdHis").'.log', 'w');
+		}
+		
 		$aAdjustmentKeys		= array_keys($aAdjustments);
 		$aAdjustmentPairKeys	= array_keys($aAdjustments);
 		
@@ -544,7 +550,7 @@ class Invoice_Export
 					
 					// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
 					// Additionally, we cannot have already matched against this Adjustment
-					if (!$aPairAdjustment['Matched'] && ($aAdjustment['Description'] === $aPairAdjustment['Description']) && (($aAdjustment['Charge'] - $aPairAdjustment['Charge']) === 0))
+					if (!$aPairAdjustment['Matched'] && ($aAdjustment['Description'] === $aPairAdjustment['Description']) && (((float)$aAdjustment['Charge'] - (float)$aPairAdjustment['Charge']) === 0))
 					{
 						// Perfect Pair -- Mark as matched
 						$aAdjustment['Matched']		= $mPairAdjustmentIndex;
@@ -554,7 +560,7 @@ class Invoice_Export
 				}
 				
 				// No mate has been found -- Add to the "clean" array
-				$aCleanAdjustments[]	= $aAdjustment;
+				$aCleanAdjustments[]	= $aAdjustments[$mAdjustmentIndex];
 			}
 		}
 		unset($aAdjustment);
@@ -562,12 +568,6 @@ class Invoice_Export
 		
 		if (count($aAdjustments) == 3)
 		{
-			static	$rLogFile;
-			if (!isset($rLogFile))
-			{
-				$rLogFile	= @fopen('/tmp/invoice-export-rollup-'.date("YmdHis").'.log', 'w');
-			}
-			
 			//throw new Exception(print_r($aAdjustments, true));
 			if ($rLogFile)
 			{
