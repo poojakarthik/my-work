@@ -336,9 +336,11 @@ class Invoice_Run
 			$dbaDB->TransactionStart();
 			
 			//------------------- START INVOICE RUN GENERATION -------------------//
+			$aMicrotime	= explode(' ', microtime());
+			
 			// Create the initial InvoiceRun record
 			$this->BillingDate				= date("Y-m-d", $intInvoiceDatetime);
-			$this->InvoiceRun				= date("YmdHisu");
+			$this->InvoiceRun				= date("YmdHis").$aMicrotime[0];
 			$this->invoice_run_type_id		= $intInvoiceRunType;
 			$this->invoice_run_schedule_id	= $intScheduledInvoiceRun;
 			$this->invoice_run_status_id	= INVOICE_RUN_STATUS_GENERATING;
