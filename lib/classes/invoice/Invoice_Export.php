@@ -518,7 +518,7 @@ class Invoice_Export
 	 *
 	 * @method
 	 */
-	private function _adjustmentRollup($aAdjustments)
+	private static function _adjustmentRollup($aAdjustments)
 	{
 		$aAdjustmentKeys		= array_keys($aAdjustments);
 		$aAdjustmentPairKeys	= array_keys($aAdjustments);
@@ -554,7 +554,10 @@ class Invoice_Export
 		unset($aAdjustment);
 		unset($aPairAdjustment);
 		
-		throw new Exception($aAdjustments);
+		if (count($aAdjustments) == 3)
+		{
+			throw new Exception(print_r($aAdjustments, true));
+		}
 		
 		// Return an array of Adjustments without CR/DR Pairs
 		return $aCleanAdjustments;
