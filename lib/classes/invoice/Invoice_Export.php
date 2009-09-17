@@ -529,11 +529,17 @@ class Invoice_Export
 			$aAdjustment	= &$aAdjustments[$mAdjustmentIndex];
 			
 			// Have we already matched against something?
-			if ($aAdjustment['Matched'])
+			if (!$aAdjustment['Matched'])
 			{
 				// Search for a mate
 				foreach ($aAdjustmentPairKeys as $mPairAdjustmentIndex)
 				{
+					// Don't match against myself -- though that should be impossible...
+					if ($mAdjustmentIndex === $mPairAdjustmentIndex)
+					{
+						continue;
+					}
+					
 					$aPairAdjustment	= &$aAdjustments[$mPairAdjustmentIndex];
 					
 					// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
