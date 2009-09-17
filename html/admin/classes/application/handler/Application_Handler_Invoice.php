@@ -707,7 +707,12 @@ class Application_Handler_Invoice extends Application_Handler
 																			self::$_aInterimExceptionsColumns['PRODUCTION_PLAN_CREDIT']				=> number_format($aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['production_plan_credit'], 2, '.', ''),
 																			self::$_aInterimExceptionsColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']	=> $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['production_plan_credit_description'],
 																		));
+									
+									$fTotalPlanCharge			+= $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['plan_charge'];
+									$fTotalInterimPlanCredit	+= $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['interim_plan_credit'];
+									$fTotalProductionPlanCredit	+= $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['production_plan_credit'];
 									$iServicesAdjustmentsAdded++;
+									
 									$bAccountHasAdjustments	= true;
 								}
 							}
