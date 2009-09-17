@@ -88,7 +88,7 @@ class Invoice extends ORM
 			$this->strLastInvoiceDatetime	= $objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate);
 			$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
 			$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $this->intInvoiceDatetime);
-			$this->intNextInvoiceDatetime	= Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $objInvoiceRun->intInvoiceDatetime);
+			$this->intNextInvoiceDatetime	= strtotime(Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $objInvoiceRun->intInvoiceDatetime));
 			
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period Start: {$this->strLastInvoiceDatetime} ($this->intLastInvoiceDatetime)");
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period End: {$objInvoiceRun->billing_period_end_datetime}");
@@ -993,7 +993,7 @@ class Invoice extends ORM
 		
 		$iProratePeriodDays	= floor($intProratePeriod / Flex_Date::SECONDS_IN_DAY);
 		$iBillingPeriodDays	= floor($intBillingPeriod / Flex_Date::SECONDS_IN_DAY);
-		if ($iBillingPeriodDays)
+		if ($iProratePeriodDays)
 		{
 			$fltProratedAmount			= ($fltAmount / $iBillingPeriodDays) * $iProratePeriodDays;
 			//Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / {$intBillingPeriod}) * {$intProratePeriod};");
