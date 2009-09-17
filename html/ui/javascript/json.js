@@ -372,7 +372,7 @@ jQuery.json = {
 			}
 			else if (objResponse.Message)
 			{
-				$Alert(objResponse.Message);
+				$Alert(objResponse.Message, null, null, 'modal');
 				return false;
 			}
 		}
