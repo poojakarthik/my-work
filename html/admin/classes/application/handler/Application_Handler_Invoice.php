@@ -36,6 +36,18 @@ class Application_Handler_Invoice extends Application_Handler
 														'REASON'		=> 'Reason for Exception'
 													);
 	
+	private static	$_aInterimProcessingColumns	=	array
+													(
+														'ACCOUNT_ID'							=> 'Account',
+														'SERVICE_FNN'							=> 'Service FNN',
+														'PLAN_CHARGE'							=> 'Plan Charge',
+														'PLAN_CHARGE_DESCRIPTION'				=> 'Plan Charge Description',
+														'INTERIM_PLAN_CREDIT'					=> 'Plan Credit - Interim Bill',
+														'INTERIM_PLAN_CREDIT_DESCRIPTION'		=> 'Plan Credit Description - Interim Bill',
+														'PRODUCTION_PLAN_CREDIT'				=> 'Plan Credit - 1st Bill',
+														'PRODUCTION_PLAN_CREDIT_DESCRIPTION'	=> 'Plan Credit Description - 1st Bill',
+													);
+	
 	// View all the breakdown for a service on an invoice
 	public function Service($subPath)
 	{
@@ -588,10 +600,18 @@ class Application_Handler_Invoice extends Application_Handler
 				$oCSVExceptionsReport	= new File_CSV();
 				$oCSVExceptionsReport->setColumns(array_values(self::$_aInterimExceptionsColumns));
 				
-				$iAccountsInvoiced	= 0;
-				$iAccountsFailed	= 0;
-				$iServicesInvoiced	= 0;
-				$iServicesFailed	= 0;
+				$oCSVProcessingReport	= new File_CSV();
+				$oCSVProcessingReport->setColumns(array_values(self::$_aInterimProcessingColumns));
+				
+				$iAccountsInvoiced			= 0;
+				$iAccountsFailed			= 0;
+				$iAccountsAdjustmentsAdded	= 0;
+				$iServicesInvoiced			= 0;
+				$iServicesFailed			= 0;
+				$iServicesAdjustmentsAdded	= 0;
+				$fTotalPlanCharge			= 0.0;
+				$fTotalInterimPlanCredit	= 0.0;
+				$fTotalProductionPlanCredit	= 0.0;
 				foreach ($aAccounts as $iAccountId=>$aAccount)
 				{
 					// Blacklisted Services
@@ -671,6 +691,28 @@ class Application_Handler_Invoice extends Application_Handler
 							// Commit this mini-transaction
 							$oFlexDataAccess->TransactionCommit();
 							
+							// Add to Processing Report (all Services that had Debits/Credits added)
+							$bAccountHasAdjustments	= false;
+							foreach($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
+							{
+								if ($aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['plan_charge'])
+								{
+									$oCSVProcessingReport->addRow(array	(
+																			self::$_aInterimExceptionsColumns['ACCOUNT_ID']							=> $iAccountId,
+																			self::$_aInterimExceptionsColumns['SERVICE_FNN']						=> $sFNN,
+																			self::$_aInterimExceptionsColumns['PLAN_CHARGE']						=> number_format($aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['plan_charge'], 2, '.', ''),
+																			self::$_aInterimExceptionsColumns['PLAN_CHARGE_DESCRIPTION']			=> $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['plan_charge_description'],
+																			self::$_aInterimExceptionsColumns['INTERIM_PLAN_CREDIT']				=> number_format($aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['interim_plan_credit'], 2, '.', ''),
+																			self::$_aInterimExceptionsColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']	=> $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['interim_plan_credit_description'],
+																			self::$_aInterimExceptionsColumns['PRODUCTION_PLAN_CREDIT']				=> number_format($aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['production_plan_credit'], 2, '.', ''),
+																			self::$_aInterimExceptionsColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']	=> $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['production_plan_credit_description'],
+																		));
+									$iServicesAdjustmentsAdded++;
+									$bAccountHasAdjustments	= true;
+								}
+							}
+							$iAccountsAdjustmentsAdded	+= ($bAccountHasAdjustments) ? 1 : 0; 
+							
 							$iAccountsInvoiced++;
 							$iServicesInvoiced	+= count($aAccount['aWhitelist']);
 						}
@@ -688,71 +730,128 @@ class Application_Handler_Invoice extends Application_Handler
 					}
 				}
 				
-				// Generate & Send Exceptions Report
-				if ($oCSVExceptionsReport->count())
+				// Generate & Send Processing/Exceptions Report
+				$bHasExceptions	= (bool)$oCSVExceptionsReport->count();
+				
+				$oProcessingEmailNotification	= new Email_Notification(EMAIL_NOTIFICATION_FIRST_INTERIM_INVOICE_REPORT);
+				$oProcessingEmailNotification->setSubject("First Interim Invoice Processing/Exceptions Report - ".date('Y-m-d H:i:s'));
+				
+				$sSubmittedEligibilityReportFileName	= "submitted-{$sSubmittedEligibilityReportFileName}";
+				$oProcessingEmailNotification->addAttachment(file_get_contents($sSubmittedEligibilityReportPath), $sSubmittedEligibilityReportFileName, 'text/csv');
+				
+				if ($bHasExceptions)
 				{
-					$oEmailNotification	= new Email_Notification(EMAIL_NOTIFICATION_FIRST_INTERIM_INVOICE_REPORT);
-					$oEmailNotification->setSubject("First Interim Invoice Exceptions Report - ".date('Y-m-d H:i:s'));
-					
-					$sSubmittedEligibilityReportFileName	= "submitted-{$sSubmittedEligibilityReportFileName}";
-					$oEmailNotification->addAttachment(file_get_contents($sSubmittedEligibilityReportPath), $sSubmittedEligibilityReportFileName, 'text/csv');
-					
 					$oCSVEligibilityReport				= self::buildInterimEligibilityReport($aServices);
 					$sCurrentEligibilityReportFileName	= "current-interim-invoice-eligibility-report-".date("YmdHis").".csv";
-					$oEmailNotification->addAttachment($oCSVEligibilityReport->save(), $sCurrentEligibilityReportFileName, 'text/csv');
+					$oProcessingEmailNotification->addAttachment($oCSVEligibilityReport->save(), $sCurrentEligibilityReportFileName, 'text/csv');
 					
 					$sExceptionsReportFileName	= "exceptions-report-".date("YmdHis").".csv";
-					$oEmailNotification->addAttachment($oCSVExceptionsReport->save($sExceptionsReportFileName), $sExceptionsReportFileName, 'text/csv');
+					$oProcessingEmailNotification->addAttachment($oCSVExceptionsReport->save(), $sExceptionsReportFileName, 'text/csv');
 					
-					$sEmailBody	= "
-			<div style='font-family: Calibri,Arial,sans-serif !important;'>
-				<h1 style='font-size: 1.5em;'>First Interim Invoice Exceptions Report</h1>
-				
-				<p>
-					Please find attached the following Reports:
-					<ul>
-						<li><strong>Exceptions Report</strong><em> ({$sExceptionsReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services failed in processing and the reasons why</li>
-						<li><strong>Submitted Interim Eligibility Report</strong><em> ({$sSubmittedEligibilityReportFileName})</em> &mdash;&nbsp;The Report you submitted to initiate this process</li>
-						<li><strong>Current Interim Eligibility Report</strong><em> ({$sCurrentEligibilityReportFileName})</em> &mdash;&nbsp;Current version of the Interim Eligibility Report</li>
-					</ul>
-				</p>
-				
-				<h2 style='font-size: 1.2em;'>Summary</h2>
-				<table style='margin-left: 0.5em;'>
-					<tbody>
-						<tr>
-							<th style='text-align: left;' >Accounts Invoiced&nbsp;:&nbsp;</th>
-							<td>{$iAccountsInvoiced}</td>
-						</tr>
-						<tr>
-							<th style='text-align: left;' >Services Invoiced&nbsp;:&nbsp;</th>
-							<td>{$iServicesInvoiced}</td>
-						</tr>
-						<tr>
-							<th style='text-align: left;' >Accounts Failed&nbsp;:&nbsp;</th>
-							<td>{$iAccountsFailed}</td>
-						</tr>
-						<tr>
-							<th style='text-align: left;' >Services Failed&nbsp;:&nbsp;</th>
-							<td>{$iServicesFailed}</td>
-						</tr>
-					</tbody>
-				</table>
-				
-				<p>
-					Regards<br />
-					<strong>Flexor</strong>
-				</p>
-			</div>
-			";
-					
-					$oEmailNotification->setBodyHTML($sEmailBody);
-					
-					$oEmailNotification->send();
+					$sReportsSummary	.= "
+			<li><strong>Processing Report</strong><em> ({$sProcessingReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services had Interim Invoice Adjustments added to them</li>
+			<li><strong>Exceptions Report</strong><em> ({$sExceptionsReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services failed in processing and the reasons why</li>
+			<li><strong>Submitted Interim Eligibility Report</strong><em> ({$sSubmittedEligibilityReportFileName})</em> &mdash;&nbsp;The Report you submitted to initiate this process</li>
+			<li><strong>Current Interim Eligibility Report</strong><em> ({$sCurrentEligibilityReportFileName})</em> &mdash;&nbsp;Current version of the Interim Eligibility Report</li>
+";
+				}
+				else
+				{
+					$sReportsSummary	.= "
+			<li><strong>Processing Report</strong><em> ({$sProcessingReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services had Interim Invoice Adjustments added to them</li>
+			<li><strong>Submitted Interim Eligibility Report</strong><em> ({$sSubmittedEligibilityReportFileName})</em> &mdash;&nbsp;The Report you submitted to initiate this process</li>
+";
 				}
 				
-				// Generate & Send Processing Report
-				// TODO
+				$sProcessingReportFileName	= "processing-report-".date("YmdHis").".csv";
+				$oProcessingEmailNotification->addAttachment($oCSVProcessingReport->save(), $sProcessingReportFileName, 'text/csv');
+				
+				$sEmailBody	= "
+<div style='font-family: Calibri,Arial,sans-serif;'>
+	<h1 style='font-size: 1.5em;'>First Interim Invoice Processing Report</h1>
+	
+	<p>
+		Please find attached the following Reports:
+		<ul>
+			{$sReportsSummary}
+		</ul>
+	</p>
+	
+	<table style='border: 1px solid #111; border-collapse: collapse;'>
+		<tbody>
+			<tr>
+				<td style='vertical-align: top; padding: 1em;'>
+					<h2 style='font-size: 1.2em;'>Invoice Summary</h2>
+					<table style='margin-left: 0.5em; font-family: inherit;'>
+						<tbody>
+							<tr>
+								<th style='text-align: left;' >Accounts Invoiced&nbsp;:&nbsp;</th>
+								<td>{$iAccountsInvoiced}</td>
+							</tr>
+							<tr>
+								<th style='text-align: left;' >Services Invoiced&nbsp;:&nbsp;</th>
+								<td>{$iServicesInvoiced}</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+				<td rowspan='2' style='vertical-align: top; border-left: 1px solid #111; padding: 1em;'>
+					<h2 style='font-size: 1.2em;'>Adjustments Summary</h2>
+					<table style='margin-left: 0.5em; font-family: inherit;'>
+						<tbody>
+							<tr>
+								<th style='text-align: left;' >Accounts with Adjustments&nbsp;:&nbsp;</th>
+								<td>{$iAccountsAdjustmentsAdded}</td>
+							</tr>
+							<tr>
+								<th style='text-align: left;' >Services with Adjustments&nbsp;:&nbsp;</th>
+								<td>{$iServicesAdjustmentsAdded}</td>
+							</tr>
+							<tr>
+								<th style='text-align: left;' >Total Plan Charge Value&nbsp;:&nbsp;</th>
+								<td>\$".number_format($fTotalPlanCharge, 2, '.', ',')."</td>
+							</tr>
+							<tr>
+								<th style='text-align: left;' >Total Interim Plan Credit Value&nbsp;:&nbsp;</th>
+								<td>\$".number_format($fTotalInterimPlanCredit, 2, '.', ',')."</td>
+							</tr>
+							<tr>
+								<th style='text-align: left;' >Total Production Plan Credit Value&nbsp;:&nbsp;</th>
+								<td>\$".number_format($fTotalProductionPlanCredit, 2, '.', ',')."</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td style='vertical-align: top; padding: 1em; border-top: 1px solid #111;'>
+					<h2 style='font-size: 1.2em;'>Exceptions Summary (see Exceptions Report for details)</h2>
+					<table style='margin-left: 0.5em; font-family: inherit;'>
+						<tbody>
+							<tr>
+								<th style='text-align: left;' >Accounts Failed&nbsp;:&nbsp;</th>
+								<td>{$iAccountsFailed}</td>
+							</tr>
+							<tr>
+								<th style='text-align: left;' >Services Failed&nbsp;:&nbsp;</th>
+								<td>{$iServicesFailed}</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+	</table>
+	
+	<p>
+		Regards<br />
+		<strong>Flexor</strong>
+	</p>
+</div>
+		";
+				
+				$oEmailNotification->setBodyHTML($sEmailBody);
+				
+				$oEmailNotification->send();
 				
 				throw new Exception("TEST MODE --- But everything seems to have worked!");
 				
@@ -1059,6 +1158,7 @@ ORDER BY	a.Id,
 			$oPlanCharge->Nature			= 'DR';
 			$oPlanCharge->Amount			= $aService['aAdjustments']['plan_charge'];
 			$oPlanCharge->Status			= CHARGE_APPROVED;
+			$oPlanCharge->Notes				= '1st Interim Invoice Plan Debit';
 			$oPlanCharge->global_tax_exempt	= false;
 			
 			$oPlanCharge->save();
@@ -1079,6 +1179,7 @@ ORDER BY	a.Id,
 			$oInterimPlanCredit->Nature				= 'CR';
 			$oInterimPlanCredit->Amount				= abs($aService['aAdjustments']['interim_plan_credit']);
 			$oInterimPlanCredit->Status				= CHARGE_APPROVED;
+			$oInterimPlanCredit->Notes				= '1st Interim Invoice Plan Credit';
 			$oInterimPlanCredit->global_tax_exempt	= false;
 			
 			$oInterimPlanCredit->save();
@@ -1099,6 +1200,7 @@ ORDER BY	a.Id,
 			$oProductionPlanCredit->Nature				= 'CR';
 			$oProductionPlanCredit->Amount				= abs($aService['aAdjustments']['production_plan_credit']);
 			$oProductionPlanCredit->Status				= CHARGE_APPROVED;
+			$oProductionPlanCredit->Notes				= '1st Production Invoice Plan Credit';
 			$oProductionPlanCredit->global_tax_exempt	= false;
 			
 			$oProductionPlanCredit->save();
