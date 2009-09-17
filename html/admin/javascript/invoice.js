@@ -365,7 +365,9 @@ var Invoice	= Class.create
 	_submitInterimInvoiceReport	: function(oResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
-		alert("Response: " + oResponse);
+
+		$Alert("Your modified First Interim Invoice Eligibility Report has been successfully submitted.  You should receive a Processing Report via email shortly.")
+		//alert("Response: " + oResponse);
 	}
 });
 
