@@ -636,7 +636,7 @@ class Application_Handler_Invoice extends Application_Handler
 						// Action this Account!
 						if (!$oFlexDataAccess->TransactionStart())
 						{
-							throw new Exception("There was an internal error in Flex.  Please notify YBS of this issue with the following message: 'Unable to start a Transaction'");
+							throw new Exception("There was an internal error in Flex.  Please notify YBS of this issue with the following message: 'Unable to start the inner Transaction'");
 						}
 						try
 						{
