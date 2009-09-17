@@ -1218,7 +1218,7 @@ ORDER BY	a.Id,
 	
 	private static function _compareInterimEligible($mLeftValue, $mRightValue, $sMessage, $bStrict=true)
 	{
-		return self::_assertInterimEligible(!(($bStrict && $mLeftValue === $mRightValue) || $mLeftValue == $mRightValue), $sMessage);
+		return self::_assertInterimEligible((($bStrict && $mLeftValue === $mRightValue) || $mLeftValue == $mRightValue), $sMessage);
 	}
 	
 	private static function _assertInterimEligible($mExpression, $sMessage)
