@@ -324,6 +324,7 @@ class DataAccess
 				
 				// Failure
 				// TODO: Throw an Exception
+				throw new Exception("Unable to create Savepoint with UID '{$strSavepointUID}'}: ".$this->refMysqliConnection->error);
 				return false;
 			}
 			
