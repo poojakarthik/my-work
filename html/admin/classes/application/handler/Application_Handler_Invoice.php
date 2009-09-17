@@ -516,7 +516,7 @@ class Application_Handler_Invoice extends Application_Handler
 							
 							// Daily Rate
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']],
-															(float)$aService['daily_rate'],
+															(float)$aService['aAdjustments']['daily_rate'],
 															"Daily Rate mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']]."'; Calculated: '".(float)$aServices['daily_rate']."')");
 							
 							// Plan Charge
