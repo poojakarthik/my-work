@@ -1140,6 +1140,12 @@ ORDER BY	a.Id,
 	
 	public static function applyInterimInvoiceAdjustments($aService)
 	{
+		// Skip Adjustments with no value
+		if (!(float)$aService['aAdjustments']['plan_charge'])
+		{
+			return;
+		}
+		
 		static	$aChargeTypes;
 		if (!isset($aChargeTypes))
 		{
