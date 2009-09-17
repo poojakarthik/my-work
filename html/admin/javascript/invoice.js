@@ -354,6 +354,7 @@ var Invoice	= Class.create
 		if (jQuery.json.jsonIframeFormSubmit(document.getElementById('Invoice_Interim_EligibilityUpload_Form'), jQuery.json.handleResponse.bind(jQuery.json, Flex.Invoice._submitInterimInvoiceReport.bind(Flex.Invoice, oPopup), true)))
 		{
 			$ID('Invoice_Interim_EligibilityUpload_Form').submit();
+			oPopup.hide();
 			return true;
 		}
 		else
@@ -365,7 +366,6 @@ var Invoice	= Class.create
 	_submitInterimInvoiceReport	: function(oPopup, oResponse)
 	{
 		Vixen.Popup.ClosePageLoadingSplash();
-		oPopup.hide();
 
 		$Alert("Your modified First Interim Invoice Eligibility Report has been successfully submitted.  You should receive a Processing Report via email shortly.")
 		//alert("Response: " + oResponse);
