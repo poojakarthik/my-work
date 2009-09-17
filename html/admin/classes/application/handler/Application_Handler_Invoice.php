@@ -1222,6 +1222,10 @@ ORDER BY	a.Id,
 	
 	private static function _compareInterimEligible($mLeftValue, $mRightValue, $sMessage, $bStrict=true)
 	{
+		// Round floats to 8 decimal places
+		$mLeftValue		= (is_float($mLeftValue)) ? round($mLeftValue, 8) : $mLeftValue;
+		$mRightValue	= (is_float($mRightValue)) ? round($mRightValue, 8) : $mRightValue;
+		
 		return self::_assertInterimEligible((($bStrict && $mLeftValue === $mRightValue) || $mLeftValue == $mRightValue), $sMessage);
 	}
 	
