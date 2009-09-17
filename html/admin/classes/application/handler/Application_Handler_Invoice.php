@@ -854,9 +854,9 @@ class Application_Handler_Invoice extends Application_Handler
 </div>
 		";
 				
-				$oEmailNotification->setBodyHTML($sEmailBody);
+				$oProcessingEmailNotification->setBodyHTML($sEmailBody);
 				
-				$oEmailNotification->send();
+				$oProcessingEmailNotification->send();
 				
 				throw new Exception("TEST MODE --- But everything seems to have worked!");
 				
