@@ -699,22 +699,23 @@ class Application_Handler_Invoice extends Application_Handler
 							$bAccountHasAdjustments	= false;
 							foreach($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
 							{
-								if ($aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['plan_charge'])
+								$sServiceKey	= "{$iAccountId}.{$sFNN}";
+								if ($aServices[$sServiceKey]['aAdjustments']['plan_charge'])
 								{
 									$oCSVProcessingReport->addRow(array	(
-																			self::$_aInterimExceptionsColumns['ACCOUNT_ID']							=> $iAccountId,
-																			self::$_aInterimExceptionsColumns['SERVICE_FNN']						=> $sFNN,
-																			self::$_aInterimExceptionsColumns['PLAN_CHARGE']						=> number_format($aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['plan_charge'], 2, '.', ''),
-																			self::$_aInterimExceptionsColumns['PLAN_CHARGE_DESCRIPTION']			=> $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['plan_charge_description'],
-																			self::$_aInterimExceptionsColumns['INTERIM_PLAN_CREDIT']				=> number_format($aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['interim_plan_credit'], 2, '.', ''),
-																			self::$_aInterimExceptionsColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']	=> $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['interim_plan_credit_description'],
-																			self::$_aInterimExceptionsColumns['PRODUCTION_PLAN_CREDIT']				=> number_format($aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['production_plan_credit'], 2, '.', ''),
-																			self::$_aInterimExceptionsColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']	=> $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['production_plan_credit_description'],
+																			self::$_aInterimProcessingColumns['ACCOUNT_ID']							=> $iAccountId,
+																			self::$_aInterimProcessingColumns['SERVICE_FNN']						=> $sFNN,
+																			self::$_aInterimProcessingColumns['PLAN_CHARGE']						=> number_format($aServices[$sServiceKey]['aAdjustments']['plan_charge'], 2, '.', ''),
+																			self::$_aInterimProcessingColumns['PLAN_CHARGE_DESCRIPTION']			=> $aServices[$sServiceKey]['aAdjustments']['plan_charge_description'],
+																			self::$_aInterimProcessingColumns['INTERIM_PLAN_CREDIT']				=> number_format($aServices[$sServiceKey]['aAdjustments']['interim_plan_credit'], 2, '.', ''),
+																			self::$_aInterimProcessingColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']	=> $aServices[$sServiceKey]['aAdjustments']['interim_plan_credit_description'],
+																			self::$_aInterimProcessingColumns['PRODUCTION_PLAN_CREDIT']				=> number_format($aServices[$sServiceKey]['aAdjustments']['production_plan_credit'], 2, '.', ''),
+																			self::$_aInterimProcessingColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']	=> $aServices[$sServiceKey]['aAdjustments']['production_plan_credit_description'],
 																		));
 									
-									$fTotalPlanCharge			+= $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['plan_charge'];
-									$fTotalInterimPlanCredit	+= $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['interim_plan_credit'];
-									$fTotalProductionPlanCredit	+= $aServices["{$iAccountId}.{$sFNN}"]['aAdjustments']['production_plan_credit'];
+									$fTotalPlanCharge			+= $aServices[$sServiceKey]['aAdjustments']['plan_charge'];
+									$fTotalInterimPlanCredit	+= $aServices[$sServiceKey]['aAdjustments']['interim_plan_credit'];
+									$fTotalProductionPlanCredit	+= $aServices[$sServiceKey]['aAdjustments']['production_plan_credit'];
 									$iServicesAdjustmentsAdded++;
 									
 									$bAccountHasAdjustments	= true;
