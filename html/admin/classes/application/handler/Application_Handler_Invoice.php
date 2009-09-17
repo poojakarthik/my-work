@@ -741,6 +741,9 @@ class Application_Handler_Invoice extends Application_Handler
 				$oProcessingEmailNotification	= new Email_Notification(EMAIL_NOTIFICATION_FIRST_INTERIM_INVOICE_REPORT);
 				$oProcessingEmailNotification->setSubject("First Interim Invoice Processing/Exceptions Report - ".date('Y-m-d H:i:s'));
 				
+				$sProcessingReportFileName	= "processing-report-".date("YmdHis").".csv";
+				$oProcessingEmailNotification->addAttachment($oCSVProcessingReport->save(), $sProcessingReportFileName, 'text/csv');
+				
 				$sSubmittedEligibilityReportFileName	= "submitted-{$sSubmittedEligibilityReportFileName}";
 				$oProcessingEmailNotification->addAttachment(file_get_contents($sSubmittedEligibilityReportPath), $sSubmittedEligibilityReportFileName, 'text/csv');
 				
@@ -768,9 +771,6 @@ class Application_Handler_Invoice extends Application_Handler
 ";
 				}
 				
-				$sProcessingReportFileName	= "processing-report-".date("YmdHis").".csv";
-				$oProcessingEmailNotification->addAttachment($oCSVProcessingReport->save(), $sProcessingReportFileName, 'text/csv');
-				
 				$sEmailBody	= "
 <div style='font-family: Calibri,Arial,sans-serif;'>
 	<h1 style='font-size: 1.5em;'>First Interim Invoice Processing Report</h1>
@@ -782,12 +782,12 @@ class Application_Handler_Invoice extends Application_Handler
 		</ul>
 	</p>
 	
-	<table style='border: 1px solid #111; border-collapse: collapse;'>
+	<table style='font-family: Calibri,Arial,sans-serif; border: 1px solid #111; border-collapse: collapse;'>
 		<tbody>
 			<tr>
 				<td style='vertical-align: top; padding: 1em;'>
 					<h2 style='font-size: 1.2em;'>Invoice Summary</h2>
-					<table style='margin-left: 0.5em; font-family: inherit;'>
+					<table style='font-family: Calibri,Arial,sans-serif; margin-left: 0.5em; font-family: inherit;'>
 						<tbody>
 							<tr>
 								<th style='text-align: left;' >Accounts Invoiced&nbsp;:&nbsp;</th>
@@ -802,7 +802,7 @@ class Application_Handler_Invoice extends Application_Handler
 				</td>
 				<td rowspan='2' style='vertical-align: top; border-left: 1px solid #111; padding: 1em;'>
 					<h2 style='font-size: 1.2em;'>Adjustments Summary</h2>
-					<table style='margin-left: 0.5em; font-family: inherit;'>
+					<table style='font-family: Calibri,Arial,sans-serif; margin-left: 0.5em; font-family: inherit;'>
 						<tbody>
 							<tr>
 								<th style='text-align: left;' >Accounts with Adjustments&nbsp;:&nbsp;</th>
@@ -831,7 +831,7 @@ class Application_Handler_Invoice extends Application_Handler
 			<tr>
 				<td style='vertical-align: top; padding: 1em; border-top: 1px solid #111;'>
 					<h2 style='font-size: 1.2em;'>Exceptions Summary (see Exceptions Report for details)</h2>
-					<table style='margin-left: 0.5em; font-family: inherit;'>
+					<table style='font-family: Calibri,Arial,sans-serif; margin-left: 0.5em; font-family: inherit;'>
 						<tbody>
 							<tr>
 								<th style='text-align: left;' >Accounts Failed&nbsp;:&nbsp;</th>
