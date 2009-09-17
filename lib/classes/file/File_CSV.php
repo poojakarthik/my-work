@@ -143,12 +143,15 @@ class File_CSV implements Iterator
 		}
 		
 		// Parse the first row as a Header
-		if ($bImportHeader)
+		if ($bHasHeader)
 		{
 			if ($sHeader = fgets($rImportFile))
 			{
-				$aColumns	= self::parseLine($sHeader, $this->_sDelimiter, $this->_sQuote, $this->_sEscape);
-				$this->setColumns($aColumns);
+				if ($bImportHeader)
+				{
+					$aColumns	= self::parseLine($sHeader, $this->_sDelimiter, $this->_sQuote, $this->_sEscape);
+					$this->setColumns($aColumns);
+				}
 			}
 		}
 		
