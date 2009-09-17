@@ -270,7 +270,7 @@ class File_CSV implements Iterator
 					{
 						// Quote Character is Escaped
 						$sField		.= $sQuote;
-						$bEscaped	= !$bEscaped;
+						$bEscaped	= false;
 					}
 					else
 					{
@@ -279,11 +279,16 @@ class File_CSV implements Iterator
 					break;
 				
 				case $sDelimiter:
-					if ($bEscaped || $bQuoted)
+					if ($bEscaped)
 					{
 						// Delimiter Character is Escaped
 						$sField		.= $sDelimiter;
-						$bEscaped	= !$bEscaped;
+						$bEscaped	= false;
+					}
+					elseif ($bQuoted)
+					{
+						// Delimiter Character is Quoted
+						$sField		.= $sDelimiter;
 					}
 					else
 					{
