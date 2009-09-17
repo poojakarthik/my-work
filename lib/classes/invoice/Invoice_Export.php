@@ -566,6 +566,7 @@ class Invoice_Export
 			if ($rLogFile)
 			{
 				fwrite($rLogFile, "\n".print_r($aAdjustments, true)."\n");
+				fwrite($rLogFile, "\n".print_r($aCleanAdjustments, true)."\n");
 			}
 		}
 		
