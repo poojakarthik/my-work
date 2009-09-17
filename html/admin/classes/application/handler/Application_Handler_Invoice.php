@@ -863,7 +863,7 @@ class Application_Handler_Invoice extends Application_Handler
 				
 				$oProcessingEmailNotification->send();
 				
-				throw new Exception("TEST MODE --- But everything seems to have worked!");
+				//throw new Exception("TEST MODE --- But everything seems to have worked!");
 				
 				// Everything looks ok -- Commit
 				$oFlexDataAccess->TransactionCommit();
