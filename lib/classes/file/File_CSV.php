@@ -145,13 +145,17 @@ class File_CSV implements Iterator
 		// Parse the first row as a Header
 		if ($bImportHeader)
 		{
-			$aColumns	= fgetcsv($rImportFile, 0, $this->_sDelimiter, $this->_sQuote, $this->_sEscape);
-			$this->setColumns($aColumns);
+			if ($sHeader = fgets($rImportFile))
+			{
+				$aColumns	= self::parseLine($sHeader, $this->_sDelimiter, $this->_sQuote, $this->_sEscape);
+				$this->setColumns($aColumns);
+			}
 		}
 		
 		// Import each row
-		while ($aRow = fgetcsv($rImportFile, 0, $this->_sDelimiter, $this->_sQuote, $this->_sEscape))
+		while ($sRow = fgets($rImportFile))
 		{
+			$aRow			= self::parseLine($sRow, $this->_sDelimiter, $this->_sQuote, $this->_sEscape);
 			$aFormattedRow	= array();
 			foreach ($aRow as $iIndex=>$mValue)
 			{
@@ -233,6 +237,72 @@ class File_CSV implements Iterator
 	public function valid()
 	{
 		return (key($this->_aRows) !== null);
+	}
+	
+	// Mimic the fgetcsv() function from PHP 5.3
+	public static function parseLine($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\')
+	{
+		$sDelimiter	= ($sDelimiter)	? $sDelimiter[0]	: ',';
+		$sQuote		= ($sQuote)		? $sQuote[0]		: '';
+		$sEscape	= ($sEscape)	? $sEscape[0]		: '';
+		
+		// Parse the Line character-by-character
+		$bEscaped	= false;
+		$bQuoted	= false;
+		$aLine		= array();
+		$sField		= '';
+		for ($i=0, $iLineLength=strlen($sLine); $i < $iLineLength; $i++)
+		{
+			$sCharacter	= $sLine[$i];
+			switch($sCharacter)
+			{
+				case $sEscape:
+					if ($bEscaped)
+					{
+						// Escape Character is Escaped
+						$sField	.= $sEscape;
+					}
+					$bEscaped	= !$bEscaped;
+					break;
+				
+				case $sQuote:
+					if ($bEscaped)
+					{
+						// Quote Character is Escaped
+						$sField		.= $sQuote;
+						$bEscaped	= !$bEscaped;
+					}
+					else
+					{
+						$bQuoted	= !$bQuoted;
+					}
+					break;
+				
+				case $sDelimiter:
+					if ($bEscaped || $bQuoted)
+					{
+						// Delimiter Character is Escaped
+						$sField		.= $sDelimiter;
+						$bEscaped	= !$bEscaped;
+					}
+					else
+					{
+						// End of Field
+						$aLine[]	= $sField;
+						$sField		= '';
+					}
+					break;
+				
+				default:
+					// Not a special character
+					$sField		.= $sCharacter;
+					$bEscaped	= !$bEscaped;
+					break;
+			}
+		}
+		
+		// Return the Array representing this Line
+		return $aLine;
 	}
 }
 
