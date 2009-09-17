@@ -88,6 +88,7 @@ class Invoice extends ORM
 			$this->strLastInvoiceDatetime	= $objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate);
 			$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
 			$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $this->intInvoiceDatetime);
+			$this->intNextInvoiceDatetime	= Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $objInvoiceRun->intInvoiceDatetime);
 			
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period Start: {$this->strLastInvoiceDatetime} ($this->intLastInvoiceDatetime)");
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period End: {$objInvoiceRun->billing_period_end_datetime}");
@@ -974,6 +975,7 @@ class Invoice extends ORM
 	 *
 	 * @param	float	$fltAmount								Full value of the Charge
 	 * @param	integer	$intChargeStartDate						The date on which the Charge Period Starts
+	 * @param	integer	$intChargeEndDate						The date on which the Charge Period Ends
 	 * @param	integer	$intPeriodStartDate						The date on which the Billing Period Starts
 	 * @param	integer	$intPeriodEndDate						The date on which the Billing Period Ends
 	 * @param	string	$strSmallestDenomination	[optional]	The smallest Datetime denomination that will be used. (defaults to DATE_TRUNCATE_DAY, where all dates are rounded down to the nearest Day)
@@ -984,9 +986,9 @@ class Invoice extends ORM
 	 *
 	 * @method
 	 */
-	public static function prorate($fltAmount, $intChargeDate, $intPeriodStartDate, $intPeriodEndDate, $strSmallestDenomination=DATE_TRUNCATE_DAY, $bolAllowOverflow=TRUE, $intDecimalPlaces=2)
+	public static function prorate($fltAmount, $intChargeStartDate, $intChargeEndDate, $intPeriodStartDate, $intPeriodEndDate, $strSmallestDenomination=DATE_TRUNCATE_DAY, $bolAllowOverflow=TRUE, $intDecimalPlaces=2)
 	{
-		$intProratePeriod	= Flex_Date::periodLength($intChargeDate, $intPeriodEndDate, $strSmallestDenomination);
+		$intProratePeriod	= Flex_Date::periodLength($intChargeStartDate, $intPeriodEndDate, $strSmallestDenomination);
 		$intBillingPeriod	= Flex_Date::periodLength($intPeriodStartDate, $intPeriodEndDate, $strSmallestDenomination);
 		
 		$iProratePeriodDays	= floor($intProratePeriod / Flex_Date::SECONDS_IN_DAY);
@@ -1229,9 +1231,9 @@ class Invoice extends ORM
 				$arrPlanChargeSteps[]	= ($bolFirstInvoice) ? 'FIRST_ARREARS' : 'NORMAL_ARREARS';
 
 				// Prorate the Charges and Usage details in Arrears
-				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart, $this->intLastInvoiceDatetime, $intArrearsPeriodEnd);
-				$fltUsageStart		= Invoice::prorate($fltUsageStart		, $intArrearsPeriodStart, $this->intLastInvoiceDatetime, $intArrearsPeriodEnd);
-				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, $intArrearsPeriodStart, $this->intLastInvoiceDatetime, $intArrearsPeriodEnd);
+				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intNextInvoiceDatetime-1);
+				$fltUsageStart		= Invoice::prorate($fltUsageStart		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intNextInvoiceDatetime-1);
+				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intNextInvoiceDatetime-1);
 
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= $intArrearsPeriodStart;
@@ -1398,7 +1400,7 @@ class Invoice extends ORM
 				$intTotalUnits				= 0;
 				$fltTotalCredit				= 0.0;
 				$fltTotalCharge				= 0.0;
-				$intProratedIncludedData	= self::prorate($intIncludedData, $intArrearsPeriodStart, $this->intLastInvoiceDatetime, $this->intInvoiceDatetime, DATE_TRUNCATE_DAY, TRUE, 0);
+				$intProratedIncludedData	= self::prorate($intIncludedData, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->intLastInvoiceDatetime, $this->intNextInvoiceDatetime-1, DATE_TRUNCATE_DAY, TRUE, 0);
 				$intAvailableUnits			= $intProratedIncludedData;
 				while ($arrDataCDR = $resResult->fetch_assoc())
 				{
