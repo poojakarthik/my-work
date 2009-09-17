@@ -239,6 +239,11 @@ class File_CSV implements Iterator
 		return (key($this->_aRows) !== null);
 	}
 	
+	public function count()
+	{
+		return count($this->_aRows);
+	}
+	
 	// Mimic the fgetcsv() function from PHP 5.3
 	public static function parseLine($sLine, $sDelimiter=',', $sQuote='"', $sEscape='\\')
 	{
