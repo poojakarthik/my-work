@@ -12,7 +12,7 @@
  * @class	Invoice_Export
  */
 class Invoice_Export
-{ 	
+{
   	//------------------------------------------------------------------------//
 	// getOldInvoice()
 	//------------------------------------------------------------------------//
@@ -556,7 +556,17 @@ class Invoice_Export
 		
 		if (count($aAdjustments) == 3)
 		{
-			throw new Exception(print_r($aAdjustments, true));
+			static	$rLogFile;
+			if (!isset($rLogFile))
+			{
+				$rLogFile	= @fopen('/tmp/invoice-export-rollup-'.date("YmdHis").'.log', 'w');
+			}
+			
+			//throw new Exception(print_r($aAdjustments, true));
+			if ($rLogFile)
+			{
+				fwrite($rLogFile, "\n".print_r($aAdjustments, true)."\n");
+			}
 		}
 		
 		// Return an array of Adjustments without CR/DR Pairs
