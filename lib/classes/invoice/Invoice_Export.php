@@ -562,16 +562,14 @@ class Invoice_Export
 						unset($aPairAdjustment);
 						continue 2;
 					}
+					unset($aPairAdjustment);
 				}
 				
 				// No mate has been found -- Add to the "clean" array
 				$aCleanAdjustments[]	= $aAdjustments[$mAdjustmentIndex];
-				unset($aAdjustment);
-				unset($aPairAdjustment);
 			}
+			unset($aAdjustment);
 		}
-		unset($aAdjustment);
-		unset($aPairAdjustment);
 		
 		if (count($aAdjustments) == 3)
 		{
