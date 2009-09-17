@@ -520,11 +520,11 @@ class Invoice_Export
 	 */
 	private static function _adjustmentRollup($aAdjustments)
 	{
-		static	$rLogFile;
+		/*static	$rLogFile;
 		if (!isset($rLogFile))
 		{
 			$rLogFile	= @fopen('/tmp/invoice-export-rollup-'.date("YmdHis").'.log', 'w');
-		}
+		}*/
 		
 		$aAdjustmentKeys		= array_keys($aAdjustments);
 		$aAdjustmentPairKeys	= array_keys($aAdjustments);
@@ -548,8 +548,8 @@ class Invoice_Export
 					
 					$aPairAdjustment	= &$aAdjustments[$mPairAdjustmentIndex];
 					
-					fwrite($rLogFile, "\n'{$aAdjustment['Description']}' vs '{$aPairAdjustment['Description']}'\n");
-					fwrite($rLogFile, "\n'".(float)$aAdjustment['Charge']."' + '".(float)$aPairAdjustment['Charge']."' === '".((float)$aAdjustment['Charge'] + (float)$aPairAdjustment['Charge'])."'\n");
+					//fwrite($rLogFile, "\n'{$aAdjustment['Description']}' vs '{$aPairAdjustment['Description']}'\n");
+					//fwrite($rLogFile, "\n'".(float)$aAdjustment['Charge']."' + '".(float)$aPairAdjustment['Charge']."' === '".((float)$aAdjustment['Charge'] + (float)$aPairAdjustment['Charge'])."'\n");
 					
 					// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
 					// Additionally, we cannot have already matched against this Adjustment
@@ -570,7 +570,7 @@ class Invoice_Export
 			}
 			unset($aAdjustment);
 		}
-		
+		/*
 		if (count($aAdjustments) == 3)
 		{
 			//throw new Exception(print_r($aAdjustments, true));
@@ -580,7 +580,7 @@ class Invoice_Export
 				fwrite($rLogFile, "\n".print_r($aCleanAdjustments, true)."\n");
 			}
 		}
-		
+		*/
 		// Return an array of Adjustments without CR/DR Pairs
 		return $aCleanAdjustments;
 	}
