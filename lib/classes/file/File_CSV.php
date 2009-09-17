@@ -306,7 +306,7 @@ class File_CSV implements Iterator
 				default:
 					// Not a special character
 					$sField		.= $sCharacter;
-					$bEscaped	= !$bEscaped;
+					$bEscaped	= false;
 					break;
 			}
 		}
