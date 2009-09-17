@@ -558,12 +558,16 @@ class Invoice_Export
 						// Perfect Pair -- Mark as matched
 						$aAdjustment['Matched']		= $mPairAdjustmentIndex;
 						$aPairAdjustment['Matched']	= $mAdjustmentIndex;
+						unset($aAdjustment);
+						unset($aPairAdjustment);
 						continue 2;
 					}
 				}
 				
 				// No mate has been found -- Add to the "clean" array
 				$aCleanAdjustments[]	= $aAdjustments[$mAdjustmentIndex];
+				unset($aAdjustment);
+				unset($aPairAdjustment);
 			}
 		}
 		unset($aAdjustment);
