@@ -567,11 +567,20 @@ class Application_Handler_Invoice extends Application_Handler
 															(int)$aService['aAdjustments']['production_plan_credit_days'],
 															"Production Plan Credit Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']]."'; Calculated: '".(int)$aServices['aAdjustments']['production_plan_credit_days']."')");
 							
-							// Production Plan Credit Description
-							self::_compareInterimEligible(	(string)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']],
-															(string)$aService['aAdjustments']['production_plan_credit_description'],
-															"Production Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['production_plan_credit_description']."')",
-															false);
+							try
+							{
+								// Production Plan Credit Description
+								self::_compareInterimEligible(	(string)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']],
+																(string)$aService['aAdjustments']['production_plan_credit_description'],
+																"Production Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['production_plan_credit_description']."')",
+																false);
+							}
+							catch (Exception_Invoice_InterimEligibilityMismatch $eException)
+							{
+								var_dump((string)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]);
+								var_dump((string)$aService['aAdjustments']['production_plan_credit_description']);
+								throw new Exception("Debug");
+							}
 							
 							// Everthing appears to match -- add to Action list
 							$aAccounts[$iAccountId]['aWhitelist'][$sFNN]	= true;
