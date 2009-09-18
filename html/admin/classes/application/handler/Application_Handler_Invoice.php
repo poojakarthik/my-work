@@ -1012,7 +1012,7 @@ WHERE		(
 					i_last.Id IS NULL
 				)
 			)
-			AND ss.const_name IN ('SERVICE_ACTIVE', 'SERVICE_PENDING')
+			AND ss.const_name IN ('SERVICE_ACTIVE')
 			AND a_s.const_name = 'ACCOUNT_STATUS_ACTIVE'
 			AND srp.Id =	(
 								SELECT		Id
