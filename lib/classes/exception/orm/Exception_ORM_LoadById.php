@@ -1,9 +1,9 @@
 <?php
 class Exception_ORM_LoadById extends Exception
 {
-	public function __construct($strTableName, $mixId)
+	public function __construct($sTable, $iId, $sDetails='')
 	{
-		parent::__construct("Unable to autoload ORM Object '{$strTableName}' with Id '{$mixId}'");
+		parent::__construct("Unable to autoload ORM Object '{$sTable}' with Id '{$iId}' ".(($sDetails) ? "({$sDetails})" : ''));
 	}
 }
 ?>

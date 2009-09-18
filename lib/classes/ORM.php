@@ -73,7 +73,7 @@ abstract class ORM
 			else
 			{
 				// Do we want to Debug something?
-				throw new Exception_ORM_LoadById($this->_strTableName, $intId);
+				throw new Exception_ORM_LoadById($this->_strTableName, $intId, $selById->Error());
 			}
 		}
 		
