@@ -69,7 +69,7 @@ abstract class ORM
 			elseif (!($arrProperties = $selById->Fetch()))
 			{
 				// Do we want to Debug something?
-				throw new Exception_ORM_LoadById($this->_strTableName, $intId, $selById->strQuery);
+				throw new Exception_ORM_LoadById($this->_strTableName, $intId, $selById->_strQuery);
 			}
 		}
 		
