@@ -642,6 +642,10 @@ class Application_Handler_Invoice extends Application_Handler
 							$iServicesFailed++;
 						}
 						
+						if (!is_array($aAccount['aGreyList']))
+						{
+							throw new Exception("\$aAccounts[{$iAccountId}] = ". print_r($aAccount['aGreyList'], true));
+						}
 						foreach ($aAccount['aGreyList'] as $sFNN=>$sReason)
 						{
 							$oCSVExceptionsReport->addRow(array	(
