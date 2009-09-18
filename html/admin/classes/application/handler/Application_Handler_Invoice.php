@@ -614,9 +614,11 @@ class Application_Handler_Invoice extends Application_Handler
 				$oCSVProcessingReport->setColumns(array_values(self::$_aInterimProcessingColumns));
 				
 				$iAccountsInvoiced			= 0;
+				$iAccountsIgnored			= 0;
 				$iAccountsFailed			= 0;
 				$iAccountsAdjustmentsAdded	= 0;
 				$iServicesInvoiced			= 0;
+				$iServicesIgnored			= 0;
 				$iServicesFailed			= 0;
 				$iServicesAdjustmentsAdded	= 0;
 				$fTotalPlanCharge			= 0.0;
@@ -646,8 +648,8 @@ class Application_Handler_Invoice extends Application_Handler
 						$iServicesFailed++;
 					}
 					
-					// If we have any Exceptions, add all Whitelisted Services to the report
-					if (count($aAccount['aBlacklist']) || count($aAccount['aGreylist']))
+					// If we have any Exceptions, add all Whitelisted Services to the Exceptions report
+					if (count($aAccount['aBlacklist']))
 					{
 						foreach ($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
 						{
@@ -660,6 +662,12 @@ class Application_Handler_Invoice extends Application_Handler
 						}
 						
 						$iAccountsFailed++;
+					}
+					elseif (!count($aAccount['aWhitelist']))
+					{
+						// Ignore this Account
+						$iAccountsIgnored++;
+						$iServicesIgnored	+= count($aAccount['aGreylist']);
 					}
 					else
 					{
@@ -807,6 +815,14 @@ class Application_Handler_Invoice extends Application_Handler
 							<tr>
 								<th style='text-align: left;' >Services Invoiced&nbsp;:&nbsp;</th>
 								<td>{$iServicesInvoiced}</td>
+							</tr>
+							<tr>
+								<th style='text-align: left;' >Accounts Ignored&nbsp;:&nbsp;</th>
+								<td>{$iAccountsIgnored}</td>
+							</tr>
+							<tr>
+								<th style='text-align: left;' >Services Ignored&nbsp;:&nbsp;</th>
+								<td>{$iServicesIgnored}</td>
 							</tr>
 						</tbody>
 					</table>
