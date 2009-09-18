@@ -587,10 +587,10 @@ class Application_Handler_Invoice extends Application_Handler
 					}
 					catch (Exception_Invoice_InterimEligibilityMismatch $eException)
 					{
-						var_dump($aService);
+						/*var_dump($aService);
 						var_dump($aImportService);
 						throw new Exception("Debug");
-						
+						*/
 						// Add to the Blacklist
 						$aAccounts[$iAccountId]['aBlacklist'][$sFNN]	= $eException->getMessage();
 					}
