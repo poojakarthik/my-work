@@ -163,6 +163,7 @@
 		elseif (is_int($mixData))
  		{
  			// It's an integer
+ 			// Must be specified as a float, because 'i' has incompatibilities with BIGINTs
  			return "d";
  		}
  		elseif (is_float($mixData))
