@@ -503,7 +503,7 @@ class Application_Handler_Invoice extends Application_Handler
 				{
 					$iAccountId				= (int)$aImportService[self::$_aInterimEligibilityColumns['ACCOUNT_ID']];
 					$sFNN					= $aImportService[self::$_aInterimEligibilityColumns['SERVICE_FNN']];
-					$sFNN					= '0'.self::preg_match_string("/\d{9}(i)?/", $sFNN);
+					$sFNN					= '0'.self::preg_match_string("/\d{9}(i)?$/", $sFNN);
 					$sAccountServiceIndex	= "{$iAccountId}.{$sFNN}";
 					
 					$aAccounts[$iAccountId]	= (array_key_exists($iAccountId, $aAccounts)) ? $aAccounts[$iAccountId] : array('aBlacklist'=>array(), 'aWhitelist'=>array(), 'aGreylist'=>array());
