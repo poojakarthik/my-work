@@ -1149,9 +1149,9 @@ ORDER BY	a.Id,
 			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']]				= number_format((float)$aService['aAdjustments']['production_plan_credit'], 2, '.', '');
 			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']]			= $aService['aAdjustments']['production_plan_credit_days'];
 			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]	= $aService['aAdjustments']['production_plan_credit_description'];
-			$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_START']]			= $aService['aAdjustments']['billing_period_start'];
-			$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_END']]			= $aService['aAdjustments']['billing_period_end'];
-			$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_DAYS']]			= $aService['aAdjustments']['billing_period_days'];
+			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_START']]			= $aService['aAdjustments']['billing_period_start'];
+			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_END']]			= $aService['aAdjustments']['billing_period_end'];
+			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_DAYS']]			= $aService['aAdjustments']['billing_period_days'];
 			
 			// Add the CSV
 			$oCSVFile->addRow($aOutput);
