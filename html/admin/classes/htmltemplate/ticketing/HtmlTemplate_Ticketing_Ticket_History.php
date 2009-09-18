@@ -472,7 +472,7 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 				$arrDetailsChanged[] = "Status";
 			}
 
-			if ($ticketState->priortyId !== $previousTicketState->priortyId)
+			if ($ticketState->priorityId !== $previousTicketState->priorityId)
 			{
 				$arrDetails['Priority']['previousValue'] = htmlspecialchars($prevPriority->name);
 				$arrDetailsChanged[] = "Priority";
