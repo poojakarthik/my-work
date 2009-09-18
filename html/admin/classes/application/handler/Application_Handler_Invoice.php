@@ -536,9 +536,10 @@ class Application_Handler_Invoice extends Application_Handler
 															"Plan Charge Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DAYS']]."'; Calculated: '".(int)$aServices['aAdjustments']['plan_charge_days']."')");
 							
 							// Plan Charge Description
-							self::_compareInterimEligible(	$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']],
-															$aService['aAdjustments']['plan_charge_description'],
-															"Plan Charge Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['plan_charge_description']."')");
+							self::_compareInterimEligible(	(string)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']],
+															(string)$aService['aAdjustments']['plan_charge_description'],
+															"Plan Charge Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['plan_charge_description']."')",
+															false);
 							
 							// Interim Plan Credit
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']],
@@ -551,9 +552,10 @@ class Application_Handler_Invoice extends Application_Handler
 															"Interim Plan Credit Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DAYS']]."'; Calculated: '".(int)$aServices['aAdjustments']['interim_plan_credit_days']."')");
 							
 							// Interim Plan Credit Description
-							self::_compareInterimEligible(	$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']],
-															$aService['aAdjustments']['interim_plan_credit_description'],
-															"Interim Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['interim_plan_credit_description']."')");
+							self::_compareInterimEligible(	(string)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']],
+															(string)$aService['aAdjustments']['interim_plan_credit_description'],
+															"Interim Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['interim_plan_credit_description']."')",
+															false);
 							
 							// Production Plan Credit
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']],
@@ -568,7 +570,8 @@ class Application_Handler_Invoice extends Application_Handler
 							// Production Plan Credit Description
 							self::_compareInterimEligible(	(string)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']],
 															(string)$aService['aAdjustments']['production_plan_credit_description'],
-															"Production Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['production_plan_credit_description']."')");
+															"Production Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['production_plan_credit_description']."')",
+															false);
 							
 							// Everthing appears to match -- add to Action list
 							$aAccounts[$iAccountId]['aWhitelist'][$sFNN]	= true;
