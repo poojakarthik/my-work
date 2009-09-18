@@ -396,6 +396,7 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 			
 			// Attempt to commit the interim/final Invoice
 			$dacFlex	= DataAccess::getDataAccess();
+			$dacFlex->setProfilingEnabled(true);
 			try
 			{
 				$dacFlex->TransactionStart();
