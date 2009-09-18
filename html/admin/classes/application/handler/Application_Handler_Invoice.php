@@ -626,31 +626,29 @@ class Application_Handler_Invoice extends Application_Handler
 				$fTotalProductionPlanCredit	= 0.0;
 				foreach ($aAccounts as $iAccountId=>$aAccount)
 				{
-					// Blacklisted Services
-					foreach ($aAccount['aBlacklist'] as $sFNN=>$sReason)
-					{
-						$oCSVExceptionsReport->addRow(array	(
-																self::$_aInterimExceptionsColumns['ACCOUNT_ID']		=> $iAccountId,
-																self::$_aInterimExceptionsColumns['SERVICE_FNN']	=> $sFNN,
-																self::$_aInterimExceptionsColumns['REASON']			=> $sReason
-															));
-						$iServicesFailed++;
-					}
-					
-					// Greylisted Services
-					foreach ($aAccount['aGreylist'] as $sFNN=>$sReason)
-					{
-						$oCSVExceptionsReport->addRow(array	(
-																self::$_aInterimExceptionsColumns['ACCOUNT_ID']		=> $iAccountId,
-																self::$_aInterimExceptionsColumns['SERVICE_FNN']	=> $sFNN,
-																self::$_aInterimExceptionsColumns['REASON']			=> $sReason
-															));
-						$iServicesFailed++;
-					}
-					
-					// If we have any Exceptions, add all Whitelisted Services to the Exceptions report
+					// If we have any Exceptions, add all Black/Whitelisted Services to the Exceptions report
 					if (count($aAccount['aBlacklist']))
 					{
+						foreach ($aAccount['aBlacklist'] as $sFNN=>$sReason)
+						{
+							$oCSVExceptionsReport->addRow(array	(
+																	self::$_aInterimExceptionsColumns['ACCOUNT_ID']		=> $iAccountId,
+																	self::$_aInterimExceptionsColumns['SERVICE_FNN']	=> $sFNN,
+																	self::$_aInterimExceptionsColumns['REASON']			=> $sReason
+																));
+							$iServicesFailed++;
+						}
+						
+						foreach ($aAccount['aGreyList'] as $sFNN=>$sReason)
+						{
+							$oCSVExceptionsReport->addRow(array	(
+																	self::$_aInterimExceptionsColumns['ACCOUNT_ID']		=> $iAccountId,
+																	self::$_aInterimExceptionsColumns['SERVICE_FNN']	=> $sFNN,
+																	self::$_aInterimExceptionsColumns['REASON']			=> "Account {$iAccountId} Rejected -- check other Services for details"
+																));
+							$iServicesFailed++;
+						}
+						
 						foreach ($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
 						{
 							$oCSVExceptionsReport->addRow(array	(
