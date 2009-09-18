@@ -314,6 +314,9 @@ class File_CSV implements Iterator
 			}
 		}
 		
+		// Finish the current Field
+		$aLine[]	= $sField;
+		
 		// Return the Array representing this Line
 		return $aLine;
 	}
