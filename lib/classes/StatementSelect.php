@@ -343,7 +343,7 @@
 			if (isset ($arrParams) && is_array($arrParams))
 			{
 		 		array_unshift($arrParams, $strType);
-		 		throw new Exception("Binding Parameters: ".print_r($arrParams, true));
+		 		//throw new Exception("Binding Parameters: ".print_r($arrParams, true));
 				call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 			}
 			//Debug ($this);
