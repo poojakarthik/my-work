@@ -402,8 +402,8 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 				
 				$qryQuery	= new Query();
 				
-				$objInvoice		= new Invoice(array('Id'=>$intInvoice), true);
-				$objInvoiceRun	= new Invoice_Run(array('Id'=>$objInvoice->invoice_run_id), true);
+				$objInvoice		= new Invoice(array('Id'=>(int)$intInvoice), true);
+				$objInvoiceRun	= new Invoice_Run(array('Id'=>(int)$objInvoice->invoice_run_id), true);
 				
 				// Ensure that this Invoice Run is either Interim or Final, and is Temporary
 				$arrAllowableInvoiceRunTypes	= array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL);
