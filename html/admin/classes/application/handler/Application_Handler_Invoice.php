@@ -644,7 +644,7 @@ class Application_Handler_Invoice extends Application_Handler
 						
 						if (!is_array($aAccount['aGreyList']))
 						{
-							throw new Exception("\$aAccounts[{$iAccountId}] = ". print_r($aAccount['aGreyList'], true));
+							throw new Exception("\$aAccounts[{$iAccountId}] = ". print_r($aAccount, true));
 						}
 						foreach ($aAccount['aGreyList'] as $sFNN=>$sReason)
 						{
