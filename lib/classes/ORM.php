@@ -62,15 +62,11 @@ abstract class ORM
 		if ($bolLoadById && $intId)
 		{
 			$selById	= $this->_preparedStatement('selById');
-			if ($selById->Execute(Array('Id' => $intId)))
-			{
-				$arrProperties	= $selById->Fetch();
-			}
-			elseif ($selById->Error())
+			if ($selById->Execute(Array('Id' => $intId)) === false)
 			{
 				throw new Exception("DB ERROR: ".$selById->Error());
 			}
-			else
+			elseif (!($arrProperties = $selById->Fetch()))
 			{
 				// Do we want to Debug something?
 				throw new Exception_ORM_LoadById($this->_strTableName, $intId, $selById->Error());
