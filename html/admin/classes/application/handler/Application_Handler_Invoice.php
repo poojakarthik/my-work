@@ -503,6 +503,7 @@ class Application_Handler_Invoice extends Application_Handler
 				{
 					$iAccountId				= (int)$aImportService[self::$_aInterimEligibilityColumns['ACCOUNT_ID']];
 					$sFNN					= $aImportService[self::$_aInterimEligibilityColumns['SERVICE_FNN']];
+					$sFNN					= '0'.self::preg_match_string("/\d{9}(i)?/", $sFNN);
 					$sAccountServiceIndex	= "{$iAccountId}.{$sFNN}";
 					
 					$aAccounts[$iAccountId]	= (array_key_exists($iAccountId, $aAccounts)) ? $aAccounts[$iAccountId] : array('aBlacklist'=>array(), 'aWhitelist'=>array(), 'aGreylist'=>array());
@@ -1270,6 +1271,13 @@ ORDER BY	a.Id,
 			throw new Exception_Invoice_InterimEligibilityMismatch($sMessage);
 		}
 		return true;
+	}
+	
+	public static function preg_match_string($sRegex, $sMatch)
+	{
+		$aMatches	= array();
+		preg_match($sRegex, $sMatch, $aMatches);
+		return (count($aMatches)) ? $aMatches[0] : null;
 	}
 }
 
