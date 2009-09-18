@@ -145,7 +145,7 @@ class File_CSV implements Iterator
 		// Parse the first row as a Header
 		if ($bHasHeader)
 		{
-			if ($sHeader = fgets($rImportFile))
+			if ($sHeader = trim(fgets($rImportFile), "\n\r\0\x0B"))
 			{
 				if ($bImportHeader)
 				{
@@ -156,7 +156,7 @@ class File_CSV implements Iterator
 		}
 		
 		// Import each row
-		while ($sRow = fgets($rImportFile))
+		while ($sRow = trim(fgets($rImportFile), "\n\r\0\x0B"))
 		{
 			$aRow			= self::parseLine($sRow, $this->_sDelimiter, $this->_sQuote, $this->_sEscape);
 			$aFormattedRow	= array();

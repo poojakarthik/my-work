@@ -566,8 +566,8 @@ class Application_Handler_Invoice extends Application_Handler
 															"Production Plan Credit Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']]."'; Calculated: '".(int)$aServices['aAdjustments']['production_plan_credit_days']."')");
 							
 							// Production Plan Credit Description
-							self::_compareInterimEligible(	$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']],
-															$aService['aAdjustments']['production_plan_credit_description'],
+							self::_compareInterimEligible(	(string)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']],
+															(string)$aService['aAdjustments']['production_plan_credit_description'],
 															"Production Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aServices['aAdjustments']['production_plan_credit_description']."')");
 							
 							// Everthing appears to match -- add to Action list
