@@ -14,15 +14,16 @@ function accountNumberChange()
 	if (accountId.value.length != 10) // WIP: HACK (will only work for Telco blue)
 	{
 		accountId.className = 'invalid';
+		accountId.lastAjax = null;
 		return;
 	}
 	if (accountId.lastAjax == accountId.value)
 	{
-		accountId.className = '';
+		// Don't do anything
 		return;
 	}
 	accountId.lastAjax = accountId.value;
-	accountId.className = '';
+	accountId.className = 'invalid';
 	$validateAccounts(accountId.value, ticketId.value);
 }
 
@@ -260,7 +261,7 @@ function onTicketingLoad()
 	{
 		return;
 	}
-	
+
 	accountId.lastAjax = accountId.value;
 
 	remoteClass = 'Ticketing';
