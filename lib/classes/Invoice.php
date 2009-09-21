@@ -88,7 +88,7 @@ class Invoice extends ORM
 			$this->strLastInvoiceDatetime	= $objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate);
 			$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
 			$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $this->intInvoiceDatetime);
-			$this->intNextInvoiceDatetime	= strtotime(Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $objInvoiceRun->intInvoiceDatetime));
+			$this->intNextInvoiceDatetime	= strtotime(Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $objInvoiceRun->strInvoiceDatetime));
 			
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period Start: {$this->strLastInvoiceDatetime} ($this->intLastInvoiceDatetime)");
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period End: {$objInvoiceRun->billing_period_end_datetime}");
