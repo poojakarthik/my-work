@@ -62,7 +62,7 @@ var Reflex_Date_Picker	= Class.create
 		this.getElement().hide();
 	},
 	
-	_renderMonthView	= function(iMonth, iYear)
+	_renderMonthView	: function(iMonth, iYear)
 	{
 		// Containers
 		var oContainer			= {};
