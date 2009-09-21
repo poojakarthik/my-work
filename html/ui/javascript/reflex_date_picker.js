@@ -3,7 +3,7 @@ var Reflex_Date_Picker	= Class.create
 	initialize	: function()
 	{
 		// Unique Identifier	
-		this.sUID	= 'reflex-date-picker_' + str_sha1(String(Date().getTime() * Math.random()));
+		this.sUID	= 'reflex-date-picker_' + str_sha1(String((new Date()).getTime() * Math.random()));
 		
 		// Basic DOM Elements
 		this.oContainer					= {};
