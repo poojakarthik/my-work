@@ -1036,11 +1036,37 @@ ORDER BY	a.Id,
 			throw new Exception($qQuery->Error());
 		}
 		$aServices	= array();
+		$aAccounts	= array();
 		while ($aService = $rResult->fetch_assoc())
 		{
 			$aService['aAdjustments']	= self::calculateInterimInvoiceAdjustments($aService);
 			
-			$aServices["{$aService['account_id']}.{$aService['fnn']}"]	= $aService;
+			$aAccounts[$aService['account_id']]	= (array_key_exists($aService['account_id'], $aAccounts)) ? $aAccounts[$aService['account_id']] : array('aServices'=>array(), 'bAdjustmentEligible'=>false);
+			
+			// Add to Account's list of Services
+			$aAccounts[$aService['account_id']]['aServices'][$aService['fnn']]	= $aService;
+			
+			// If this Service will receive Interim Adjustments, then this Account is eligible for 1st Interim Invoicing
+			if (!$aAccounts[$aService['account_id']]['bAdjustmentEligible'])
+			{
+				if	($aService['aAdjustments']['plan_charge'])
+				{
+					$aAccounts[$aService['account_id']]['bAdjustmentEligible']	= true;
+				}
+			} 
+		}
+		
+		// Check Account-level Eligibility
+		foreach ($aAccounts as $iAccount=>$aAccount)
+		{
+			// Add Services if at least one of the Account's Services will receive an Interim Adjustment
+			if ($aAccount['bAdjustmentEligible'])
+			{
+				foreach ($aAccount['aServices'] as $sFNN=>$aService)
+				{
+					$aServices["{$aService['account_id']}.{$aService['fnn']}"]	= $aService;
+				}
+			}
 		}
 		
 		return $aServices;
