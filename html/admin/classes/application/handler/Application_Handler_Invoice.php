@@ -502,10 +502,16 @@ class Application_Handler_Invoice extends Application_Handler
 				foreach ($oCSVImportFile as $aImportService)
 				{
 					$iAccountId				= (int)$aImportService[self::$_aInterimEligibilityColumns['ACCOUNT_ID']];
-					$sFNN					= $aImportService[self::$_aInterimEligibilityColumns['SERVICE_FNN']];
-					$sFNN					= '0'.self::preg_match_string("/\d{9}(i)?$/", $sFNN);
-					$sAccountServiceIndex	= "{$iAccountId}.{$sFNN}";
 					
+					// Dirty hacks to prepend 0s to FNNs which have had them stripped off
+					$sFNN					= $aImportService[self::$_aInterimEligibilityColumns['SERVICE_FNN']];
+					$sFNN					= self::preg_match_string("/\d{9,10}(i)?$/", $sFNN);
+					if ($sFNN[0] != '0' && !preg_match("/^(13\d{4}|1[38]00\d{6})$/", $sFNN))
+					{
+						$sFNN	= '0'.$sFNN;
+					}
+					
+					$sAccountServiceIndex	= "{$iAccountId}.{$sFNN}";
 					$aAccounts[$iAccountId]	= (array_key_exists($iAccountId, $aAccounts)) ? $aAccounts[$iAccountId] : array('aBlacklist'=>array(), 'aWhitelist'=>array(), 'aGreylist'=>array());
 					
 					try
