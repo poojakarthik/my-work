@@ -4,13 +4,15 @@ var JsAutoLoader = {
 	// Dynamically loads a javascript file into the head of the dom
 	// strScriptName should include the ".js" extension, and can include a path
 	// funcOnLoadEventHandler will be executed as soon as the javascript file finishes loading
-	loadScript : function(strScriptName, funcOnLoadEventHandler, bolUseJavascriptPhp)
+	loadScript : function(mixScripts, funcOnLoadEventHandler, bolUseJavascriptPhp)
 	{
-		if (bolUseJavascriptPhp == undefined)
-		{
-			bolUseJavascriptPhp = false;
-		}
-	
+		bolUseJavascriptPhp	= (bolUseJavascriptPhp === undefined) ? false : true;
+		
+		// Make sure we're working with an array of scripts, then grab the next script to load
+		var arrScripts		= Object.isArray(mixScripts) ? mixScripts : [mixScripts];
+		var	strScriptName	= arrScripts.shift();
+		var fncCallback		= (arrScripts.length > 0) ? JsAutoLoader.loadScript.bind(JsAutoLoader, arrScripts, funcOnLoadEventHandler, bolUseJavascriptPhp) : funcOnLoadEventHandler;
+		
 		// Retrieve the timestamp of when the user started their session
 		// This is used as a work around, to stop the browser from using a cached, old version of the script you want
 		var sessionTimestamp = Flex.cookie.read('LoggedInTimestamp');
@@ -44,13 +46,13 @@ var JsAutoLoader = {
 					{
 						// This script should be loaded, so run the funcOnLoadEventHandler function, in global scope
 						// wrapping it in a timeout will give it global scope
-						setTimeout(funcOnLoadEventHandler, 1);
+						setTimeout(fncCallback, 1);
 					}
 					else
 					{
 						// The script element has been included in the header, but has not finished loading yet
 						// add the funcOnLoadEventHandler to it as an event listener
-						Event.startObserving(scripts[i], "load", funcOnLoadEventHandler, true);
+						Event.startObserving(scripts[i], "load", fncCallback, true);
 					}
 				}
 				return;
@@ -67,7 +69,7 @@ var JsAutoLoader = {
 		// Was an onLoad handler provided?
 		if (funcOnLoadEventHandler != undefined)
 		{
-			Event.startObserving(script, "load", funcOnLoadEventHandler, true);
+			Event.startObserving(script, "load", fncCallback, true);
 		}
 	},
 	
