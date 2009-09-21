@@ -993,11 +993,17 @@ class Invoice extends ORM
 		
 		$iProratePeriodDays	= floor($intProratePeriod / Flex_Date::SECONDS_IN_DAY);
 		$iBillingPeriodDays	= floor($intBillingPeriod / Flex_Date::SECONDS_IN_DAY);
+		
+		Log::getLog()->log("Prorating Charge Start Date\t: ".date("Y-m-d H:i:s", $intChargeStartDate));
+		Log::getLog()->log("Prorating Charge End Date\t: ".date("Y-m-d H:i:s", $intChargeEndDate));
+		Log::getLog()->log("Prorating Period Start Date\t: ".date("Y-m-d H:i:s", $intPeriodStartDate));
+		Log::getLog()->log("Prorating Period End Date\t: ".date("Y-m-d H:i:s", $intPeriodEndDate));
+		Log::getLog()->log("Prorating Period Length (days)\t: {$iProratePeriodDays}");
+		Log::getLog()->log("Billing Period Length (days)\t: {$iBillingPeriodDays}");
 		if ($iProratePeriodDays)
 		{
 			$fltProratedAmount			= ($fltAmount / $iBillingPeriodDays) * $iProratePeriodDays;
-			//Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / {$intBillingPeriod}) * {$intProratePeriod};");
-			//Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / ".($intBillingPeriod / Flex_Date::SECONDS_IN_DAY).") * ".($intProratePeriod / Flex_Date::SECONDS_IN_DAY).";");
+			Log::getLog()->log("{$fltProratedAmount}\t= ({$fltAmount} / {$iBillingPeriodDays}) * {$iProratePeriodDays}");
 			
 			$fltProratedAmount			= round($fltProratedAmount, $intDecimalPlaces);
 			return $fltProratedAmount;
