@@ -143,12 +143,6 @@ class Service extends ORM
 		{
 			// Snap the plan change to the begining of the next billing period
 			
-			// First make sure the start of the current billing period isn't in the future (IF an interim or final invoice was produced today for the account, then this could be the case, because the BillingDate will be set to tomorrow)
-			if ($intStartDateTimeForCurrentBillingPeriod > strtotime($strCurrentDateAndTime))
-			{
-				throw new Exception("The start of the current billing period (". date("H:i:s d-m-Y", $intStartDateTimeForCurrentBillingPeriod) .") is greater than the current timestamp (". date("H:i:s d-m-Y", strtotime($strCurrentDateAndTime)) .")");
-			}
-			
 			// Get the StartDatetime for the next billing period
 			$intStartDatetime = $intStartDateTimeForNextBillingPeriod;
 			
@@ -161,6 +155,12 @@ class Service extends ORM
 		else
 		{
 			// Snap the plan change to the begining of the current billing period
+			
+			// First make sure the start of the current billing period isn't in the future (IF an interim or final invoice was produced today for the account, then this could be the case, because the BillingDate will be set to tomorrow)
+			if ($intStartDateTimeForCurrentBillingPeriod > strtotime($strCurrentDateAndTime))
+			{
+				throw new Exception("The start of the current billing period (". date("H:i:s d-m-Y", $intStartDateTimeForCurrentBillingPeriod) .") is greater than the current timestamp (". date("H:i:s d-m-Y", strtotime($strCurrentDateAndTime)) .")");
+			}
 
 			// Get the StartDatetime for the current billing period
 			$intStartDatetime = $intStartDateTimeForCurrentBillingPeriod;
