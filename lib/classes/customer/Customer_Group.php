@@ -43,6 +43,7 @@ class Customer_Group
 	private $faultsPhone					= NULL;
 	private $coolingOffPeriod				= NULL;
 	private $invoiceCDRCredits				= NULL;
+	private $interimInvoiceDeliveryMethodId	= NULL;
 	
 	private $value							= NULL;
 	private $name							= NULL;
@@ -166,7 +167,8 @@ class Customer_Group
 						"credit_card_payment_phone",
 						"faults_phone",
 						"cooling_off_period",
-						"invoice_cdr_credits"
+						"invoice_cdr_credits",
+						"interim_invoice_delivery_method_id"
 					);
 	}
 
