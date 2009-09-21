@@ -26,7 +26,7 @@ var JsAutoLoader = {
 		var strSource;
 		if (bolUseJavascriptPhp)
 		{
-			strSource = "javascript.php?File[]="+ strScriptName +"v="+ sessionTimestamp;
+			strSource = "javascript.php?File[]="+ strScriptName +"&v="+ sessionTimestamp;
 		}
 		else
 		{
