@@ -76,7 +76,7 @@ Reflex_Date_Format.parseToken	= function(oDate, sToken)
 			break;
 		case 'w':
 			// Numeric representation of the day of the week
-			return oDate.getDate();
+			return oDate.getDay();
 			break;
 		case 'z':
 			// The day of the year (starting from 0)
