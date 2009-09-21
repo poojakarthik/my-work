@@ -249,8 +249,15 @@ class JSON_Handler_Ticketing extends JSON_Handler
 
 		$contact = Ticketing_Contact::getWithProperties($properties);
 
-		// Need to associate with an account!!
-		Ticketing_Contact_Account::associate($contact, $accountId);
+		// If a valid account was passed, then associate this contact with the account
+		$intAccountId = intval($accountId);
+		$objAccount = Account::getForId($intAccountId);
+
+		if ($objAccount !== NULL)
+		{
+			// Associate with the account
+			Ticketing_Contact_Account::associate($contact, $objAccount->id);
+		}
 
 		return $this->contactProps($contact);
 	}
