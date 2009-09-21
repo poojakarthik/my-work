@@ -180,8 +180,6 @@ var Reflex_Date_Picker	= Class.create
 });
 
 // Status Methods
-Reflex_Date_Picker.
-
 Reflex_Date_Picker.dayMutators	= {};
 
 Reflex_Date_Picker.dayMutators.isToday	= function(oDate)
