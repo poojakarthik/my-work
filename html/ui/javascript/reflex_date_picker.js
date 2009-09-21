@@ -126,7 +126,7 @@ var Reflex_Date_Picker	= Class.create
 		oContainer.oGrid.oBody				= {};
 		oContainer.oGrid.oBody.domElement	= document.createElement('tbody');
 		
-		var oDateOfMonth	= new Date(iYear.toString()+'-'+iMonth.toPaddedString(2)+'-'+iMonth.toPaddedString(1);
+		var oDateOfMonth	= new Date(iYear.toString()+'-'+iMonth.toPaddedString(2)+'-'+iMonth.toPaddedString(1));
 		while (oDateOfMonth.getDate() <= iDaysInMonth)
 		{
 			// Add a new row for this week
