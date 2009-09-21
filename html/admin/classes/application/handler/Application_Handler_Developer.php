@@ -42,6 +42,13 @@ class Application_Handler_Developer extends Application_Handler
 																	'strURL'	=> 'new Developer_TabGroup();'
 																)
 													);
+			$arrFunctions[]	= self::_stdClassFactory(
+														array	(
+																	'strName'	=> 'Datepicker',
+																	'strType'	=> self::URL_TYPE_JS,
+																	'strURL'	=> "JsAutoLoader.loadScript(['reflex_date_format.js', 'reflex_date_picker.js'], function(){new Reflex_Date_Picker()});"
+																)
+													);
 			
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['arrFunctions']		= $arrFunctions;
