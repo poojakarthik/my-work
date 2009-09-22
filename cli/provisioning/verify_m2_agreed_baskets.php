@@ -1,7 +1,7 @@
 <?php
 
 define('M2_AGREED_BASKETS_REGEX_HEADER',	"/^(?<RecordType>H)(?<FileName>(?<WholesaleProvider>[a-z]{3})(?<SPCode>\d{3})(?<FileType>a)(?<Date>(?<Year>\d{4})(?<Month>\d{2})(?<Day>\d{2}))(?<FileExtension>\.txt))$/");
-define('M2_AGREED_BASKETS_REGEX_CONTENT',	"/^(?<RecordType>D)(?<Sequence>\d{8})(?<ServiceFNN>\d{6,29})(\ *)(?<Basket>00[1-6])(?<Nature>[CS])(?<Date>(?<Year>\d{4})(?<Month>\d{2})(?<Day>\d{2})).*$/");
+define('M2_AGREED_BASKETS_REGEX_CONTENT',	"/^(?<RecordType>D)(?<Sequence>\d{8})(?<ServiceFNN>\d{6,29})(\ *)(?<Basket>00[1-6])(?<Nature>[CSG])(?<Date>(?<Year>\d{4})(?<Month>\d{2})(?<Day>\d{2})).*$/");
 define('M2_AGREED_BASKETS_REGEX_FOOTER',	"/^(?<RecordType>T)(?<RecordCount>\d{8})$/");
 
 // Framework
@@ -34,6 +34,7 @@ $oExportCSV->setColumns(array(
 
 $aCustomerGroups	= array();
 $oQuery				= new Query();
+$aFNNs				= array();
 
 Log::getLog()->log("Parsing Import File...");
 
@@ -66,6 +67,13 @@ while ($sLine = fgets($rImportFile))
 		
 		// Data/Content
 		$sFNN				= $aTokens[0]['ServiceFNN'];
+		
+		// Ensure we haven't seen this FNN before
+		if (in_array($sFNN, $aFNNs))
+		{
+			continue;
+		}
+		$aFNNs[]	= $sFNN;
 		
 		Log::getLog()->log("[+] Data Row Found... FNN: {$sFNN}");
 		
