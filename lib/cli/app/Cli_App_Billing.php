@@ -182,6 +182,40 @@ class Cli_App_Billing extends Cli
 					}
 					
 					break;
+					
+				case 'SAMPLE_ACCOUNT':
+					// Load the Account
+					$iAccountId	= (int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID];
+					try
+					{
+						$oAccount	= new Account(Array('Id'=>$iAccountId), false, true);
+					}
+					catch (Exception_ORM_LoadById $eException)
+					{
+						throw new Exception("Unable to load Account with Id {$iAccountId}");
+					}
+					
+					// Was there a Fake Date provided?
+					$sDatetime	= date("Y-m-d H:i:s", ($this->_arrArgs[self::SWITCH_FAKE_DATE]) ?  $this->_arrArgs[self::SWITCH_FAKE_DATE] : time());
+					$sDate		= date("Y-m-d", strtotime($sDatetime));
+					
+					// Predict the next Billing Date
+					$sInvoiceDate	= Invoice_Run::predictNextInvoiceDate($oAccount->CustomerGroup, $sDatetime);
+					
+					$oDataAccessFlex->TransactionStart();
+					try
+					{
+						// Perform the Sample Invoice Run!
+						$oInvoiceRun	= new Invoice_Run();
+						$oInvoiceRun->generateSingle($oAccount->CustomerGroup, INVOICE_RUN_TYPE_SAMPLES, strtotime($sInvoiceDate), $iAccountId);
+						
+						$oDataAccessFlex->TransactionCommit();
+					}
+					catch (Exception $eException)
+					{
+						$oDataAccessFlex->TransactionRollback();
+					}
+					break;
 
 				default:
 					throw new Exception("Invalid MODE '{$this->_arrArgs[self::SWITCH_MODE]}' specified!");
@@ -408,8 +442,8 @@ class Cli_App_Billing extends Cli
 			self::SWITCH_MODE => array(
 				self::ARG_LABEL			=> "MODE",
 				self::ARG_REQUIRED		=> TRUE,
-				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|REVOKE_ALL_INTERIM|EXPORT|REPORTS|REGENERATE|ARCHIVE]",
-				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","REVOKE_ALL_INTERIM","EXPORT","REPORTS","REGENERATE","ARCHIVE"))'
+				self::ARG_DESCRIPTION	=> "Invoice Run operation to perform [GENERATE|COMMIT|REVOKE|REVOKE_ALL_INTERIM|EXPORT|REPORTS|REGENERATE|ARCHIVE|SAMPLE_ACCOUNT]",
+				self::ARG_VALIDATION	=> 'Cli::_validInArray("%1$s", array("GENERATE","COMMIT","REVOKE","REVOKE_ALL_INTERIM","EXPORT","REPORTS","REGENERATE","ARCHIVE","SAMPLE_ACCOUNT"))'
 			),
 
 			self::SWITCH_INVOICE_RUN	=> array(
@@ -423,7 +457,7 @@ class Cli_App_Billing extends Cli
 			self::SWITCH_ACCOUNT_ID	=> array(
 				self::ARG_LABEL			=> "ACCOUNT_ID",
 				self::ARG_REQUIRED		=> FALSE,
-				self::ARG_DESCRIPTION	=> "The Account Id to Regenerate and Invoice for",
+				self::ARG_DESCRIPTION	=> "The Account Id to re/generate an Invoice for (required for SAMPLE_ACCOUNT; optional for REGENERATE)",
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validInteger("%1$s")'
 			),
