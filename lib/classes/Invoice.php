@@ -1230,6 +1230,7 @@ class Invoice extends ORM
 					$bHasChargedInAdvance	= true;
 				}
 			}
+			Log::getLog()->log("Have ".(($bHasChargedInAdvance) ? '' : 'not ')."charged in advanced before");
 			
 			Log::getLog()->log("Arrears period start: ".date("Y-m-d H:i:s", $intArrearsPeriodStart));
 
