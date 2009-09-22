@@ -102,6 +102,11 @@ while ($sLine = fgets($rImportFile))
 		// Could we find any kind of Owner?
 		if ($aFNNOwner)
 		{
+			if ($aFNNOwner['Account'] === 'F')
+			{
+				throw new Exception($aFNNOwner);
+			}
+			
 			$oAccount	= new Account(array('Id'=>$aFNNOwner['Account']), false, true);
 			
 			if (!array_key_exists($oAccount->CustomerGroup, $aCustomerGroups))
