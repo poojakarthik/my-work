@@ -73,7 +73,7 @@ while ($sLine = fgets($rImportFile))
 		
 		// Check against Flex DB
 		$aFNNOwner	= FindFNNOwner($sFNN, date("Y-m-d H:i:s", strtotime($sFileEffectiveDate) - 1));
-		if (!$aFNNOwner)
+		if (!is_array($aFNNOwner))
 		{
 			// Couldn't find an Owner File Effective Date
 			$aFNNInstances	= Service::getFNNInstances($sFNN);
@@ -100,7 +100,7 @@ while ($sLine = fgets($rImportFile))
 		}
 		
 		// Could we find any kind of Owner?
-		if ($aFNNOwner)
+		if (is_array($aFNNOwner))
 		{
 			if ($aFNNOwner['Account'] === 'F')
 			{
