@@ -84,31 +84,17 @@ class Invoice extends ORM
 			$this->Tax				= 0.0;
 			
 			// Calculate Billing Period
-			$this->intInvoiceDatetime		= $objInvoiceRun->intInvoiceDatetime;
-			$this->strLastInvoiceDatetime	= $objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate);
-			$this->intLastInvoiceDatetime	= strtotime($this->strLastInvoiceDatetime);
-			$this->strInvoiceDatetime		= date("Y-m-d H:i:s", $this->intInvoiceDatetime);
-			$this->intNextInvoiceDatetime	= strtotime(Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $objInvoiceRun->strInvoiceDatetime));
+			$this->intInvoiceDatetime				= $objInvoiceRun->intInvoiceDatetime;
+			$this->strLastInvoiceDatetime			= $objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate);
+			$this->intLastInvoiceDatetime			= strtotime($this->strLastInvoiceDatetime);
+			$this->strInvoiceDatetime				= date("Y-m-d H:i:s", $this->intInvoiceDatetime);
+			$this->intNextInvoiceDatetime			= strtotime(Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $objInvoiceRun->strInvoiceDatetime));
+			$this->intLastProductionInvoiceDatetime	= strtotime($objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate, true));
 			
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period Start: {$this->strLastInvoiceDatetime} ($this->intLastInvoiceDatetime)");
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period End: {$objInvoiceRun->billing_period_end_datetime}");
 			Log::getLog()->log("\t* {$objAccount->Id} Last Invoice Date: ".date("Y-m-d H:i:s", $this->intLastInvoiceDatetime));
 			Log::getLog()->log("\t* {$objAccount->Id} Next Invoice Date: ".date("Y-m-d H:i:s", $this->intNextInvoiceDatetime));
-			
-			$selLastProductionInvoiceDate	= $this->_preparedStatement('selLastProductionInvoiceDate');
-			if ($selLastProductionInvoiceDate->Execute(Array('InvoiceDatetime'=>$this->strInvoiceDatetime, 'Account'=>$objAccount->Id)) === false)
-			{
-				// Database Error -- throw Exception
-				throw new Exception("DB ERROR: ".$selLastProductionInvoiceDate->Error());
-			}
-			if ($aLastProductionInvoiceDate = $selLastProductionInvoiceDate->Fetch())
-			{
-				$this->intLastProductionInvoiceDatetime	= strtotime($aLastProductionInvoiceDate['BillingDate']);
-			}
-			else
-			{
-				$this->intLastProductionInvoiceDatetime	= $this->intLastInvoiceDatetime;
-			}
 			Log::getLog()->log("\t* {$objAccount->Id} Last Production Invoice Date: ".date("Y-m-d H:i:s", $this->intLastProductionInvoiceDatetime));
 			
 			$this->billing_period_start_datetime	= $this->strLastInvoiceDatetime;
@@ -1603,9 +1589,6 @@ class Invoice extends ORM
 					break;
 				case 'selLastInvoiceDatetime':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN InvoiceRun ON Invoice.invoice_run_id = InvoiceRun.Id", "InvoiceRun.BillingDate", "Invoice.Account = <Account>", "InvoiceRun.BillingDate DESC, InvoiceRun.Id DESC", 1);
-					break;
-				case 'selLastProductionInvoiceDate':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN InvoiceRun ON Invoice.invoice_run_id = InvoiceRun.Id", "InvoiceRun.BillingDate", "Invoice.Account = <Account> AND InvoiceRun.BillingDate < CAST(<InvoiceDatetime> AS DATE) AND InvoiceRun.invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE, "InvoiceRun.BillingDate DESC, InvoiceRun.Id DESC", 1);
 					break;
 
 

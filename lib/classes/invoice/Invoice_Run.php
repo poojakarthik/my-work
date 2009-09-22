@@ -860,7 +860,7 @@ class Invoice_Run
 		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
 
 		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRunByCustomerGroup');
-		if ($selInvoiceRun->Execute(Array('customer_group_id' => $intCustomerGroup)))
+		if ($selInvoiceRun->Execute(Array('customer_group_id' => $intCustomerGroup, 'EffectiveDate'=>$strEffectiveDate)))
 		{
 			// We have an old InvoiceRun
 			$arrLastInvoiceRun	= $selInvoiceRun->Fetch();
@@ -1277,7 +1277,7 @@ class Invoice_Run
 					//$arrPreparedStatements[$strStatement]	= new StatementSelect("Account JOIN account_status ON Account.Archived = account_status.id", "Account.*, account_status.deliver_invoice", "Account.Id = 1000154811 AND CustomerGroup = <customer_group_id> AND Account.CreatedOn < <BillingDate> AND account_status.can_invoice = 1");
 					break;
 				case 'selLastInvoiceRunByCustomerGroup':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "BillingDate", "(customer_group_id = <customer_group_id> OR customer_group_id IS NULL) AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED." AND invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE, "BillingDate DESC", 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun", "BillingDate", "(customer_group_id = <customer_group_id> OR customer_group_id IS NULL) AND BillingDate < <EffectiveDate> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED." AND invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE, "BillingDate DESC", 1);
 					break;
 				case 'selInvoiceTotals':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice", "SUM(Invoice.Total) AS BillInvoiced, SUM(Invoice.Tax) AS BillTax", "invoice_run_id = <invoice_run_id>");

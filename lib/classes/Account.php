@@ -280,12 +280,12 @@ ORDER BY FNN;";
 	 *
 	 * @method
 	 */
-	public function getBillingPeriodStart($strEffectiveDate=null)
+	public function getBillingPeriodStart($strEffectiveDate=null, $bolProductionInvoiceRunsOnly=false)
 	{
 		$strEffectiveDate	= (strtotime($strEffectiveDate)) ? date("Y-m-d", strtotime($strEffectiveDate)) : date("Y-m-d");
 		
 		// Get the Account's last Invoice date
-		$strAccountLastInvoiceDate			= $this->getLastInvoiceDate($strEffectiveDate);
+		$strAccountLastInvoiceDate			= $this->getLastInvoiceDate($strEffectiveDate, $bolProductionInvoiceRunsOnly);
 		$intAccountLastInvoiceDate			= strtotime($strAccountLastInvoiceDate);
 		
 		// Get the CustomerGroup's last Invoice date (or predicted last Invoice date)
@@ -306,14 +306,14 @@ ORDER BY FNN;";
 	 *
 	 * @method
 	 */
-	public function getLastInvoiceDate($strEffectiveDate=null)
+	public function getLastInvoiceDate($strEffectiveDate=null, $bolProductionInvoiceRunsOnly=false)
 	{
 		$strEffectiveDate	= strtotime($strEffectiveDate) ? date("Y-m-d", strtotime($strEffectiveDate)) : date("Y-m-d"); 
 		
 		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
 
 		$selInvoiceRun	= self::_preparedStatement('selLastInvoiceRun');
-		if ($selInvoiceRun->Execute(Array('Account' => $this->Id)))
+		if ($selInvoiceRun->Execute(Array('Account' => $this->Id, 'EffectiveDate'=>$strEffectiveDate, 'ProductionOnly'=>$bolProductionInvoiceRunsOnly)))
 		{
 			// We have an old InvoiceRun
 			$arrLastInvoiceRun	= $selInvoiceRun->Fetch();
@@ -583,7 +583,7 @@ ORDER BY FNN;";
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Account", "*", "Id = <Id>", NULL, 1);
 					break;
 				case 'selLastInvoiceRun':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON Invoice.invoice_run_id = InvoiceRun.Id", "BillingDate", "Invoice.Account = <Account> AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED, "BillingDate DESC", 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON Invoice.invoice_run_id = InvoiceRun.Id", "BillingDate", "Invoice.Account = <Account> AND InvoiceRun.BillingDate < <EffectiveDate> AND (invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." OR <ProductionOnly> = 0) AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED, "BillingDate DESC", 1);
 					break;
 				case 'selPaymentTerms':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("payment_terms", "*", "customer_group_id = <customer_group_id>", "id DESC", 1);
