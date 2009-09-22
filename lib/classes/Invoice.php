@@ -95,6 +95,22 @@ class Invoice extends ORM
 			Log::getLog()->log("\t* {$objAccount->Id} Last Invoice Date: ".date("Y-m-d H:i:s", $this->intLastInvoiceDatetime));
 			Log::getLog()->log("\t* {$objAccount->Id} Next Invoice Date: ".date("Y-m-d H:i:s", $this->intNextInvoiceDatetime));
 			
+			$selLastProductionInvoiceDate	= $this->_preparedStatement('selLastProductionInvoiceDate');
+			if ($selLastProductionInvoiceDate->Execute(Array('InvoiceDatetime'=>$this->strInvoiceDatetime, 'Account'=>$objAccount->Id)) === false)
+			{
+				// Database Error -- throw Exception
+				throw new Exception("DB ERROR: ".$selLastProductionInvoiceDate->Error());
+			}
+			if ($aLastProductionInvoiceDate = $selLastProductionInvoiceDate->Fetch())
+			{
+				$this->intLastProductionInvoiceDatetime	= strtotime($aLastProductionInvoiceDate['BillingDate']);
+			}
+			else
+			{
+				$this->intLastProductionInvoiceDatetime	= $this->intLastInvoiceDatetime;
+			}
+			Log::getLog()->log("\t* {$objAccount->Id} Last Production Invoice Date: ".date("Y-m-d H:i:s", $this->intLastProductionInvoiceDatetime));
+			
 			$this->billing_period_start_datetime	= $this->strLastInvoiceDatetime;
 			$this->billing_period_end_datetime		= $objInvoiceRun->billing_period_end_datetime;
 			
@@ -1248,9 +1264,9 @@ class Invoice extends ORM
 				$arrPlanChargeSteps[]	= ($bolFirstInvoice) ? 'FIRST_ARREARS' : 'NORMAL_ARREARS';
 
 				// Prorate the Charges and Usage details in Arrears
-				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intNextInvoiceDatetime-1);
-				$fltUsageStart		= Invoice::prorate($fltUsageStart		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intNextInvoiceDatetime-1);
-				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intNextInvoiceDatetime-1);
+				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intLastProductionInvoiceDatetime-1);
+				$fltUsageStart		= Invoice::prorate($fltUsageStart		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intLastProductionInvoiceDatetime-1);
+				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intLastProductionInvoiceDatetime-1);
 
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= $intArrearsPeriodStart;
@@ -1417,7 +1433,7 @@ class Invoice extends ORM
 				$intTotalUnits				= 0;
 				$fltTotalCredit				= 0.0;
 				$fltTotalCharge				= 0.0;
-				$intProratedIncludedData	= self::prorate($intIncludedData, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->intLastInvoiceDatetime, $this->intNextInvoiceDatetime-1, DATE_TRUNCATE_DAY, TRUE, 0);
+				$intProratedIncludedData	= self::prorate($intIncludedData, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->intLastInvoiceDatetime, $this->intLastProductionInvoiceDatetime-1, DATE_TRUNCATE_DAY, TRUE, 0);
 				$intAvailableUnits			= $intProratedIncludedData;
 				while ($arrDataCDR = $resResult->fetch_assoc())
 				{
@@ -1587,6 +1603,9 @@ class Invoice extends ORM
 					break;
 				case 'selLastInvoiceDatetime':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN InvoiceRun ON Invoice.invoice_run_id = InvoiceRun.Id", "InvoiceRun.BillingDate", "Invoice.Account = <Account>", "InvoiceRun.BillingDate DESC, InvoiceRun.Id DESC", 1);
+					break;
+				case 'selLastProductionInvoiceDate':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN InvoiceRun ON Invoice.invoice_run_id = InvoiceRun.Id", "InvoiceRun.BillingDate", "Invoice.Account = <Account> AND InvoiceRun.BillingDate < CAST(<InvoiceDatetime> AS DATE) AND InvoiceRun.invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE, "InvoiceRun.BillingDate DESC, InvoiceRun.Id DESC", 1);
 					break;
 
 
