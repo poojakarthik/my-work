@@ -1,8 +1,8 @@
 <?php
 
-define('M2_AGREED_BASKETS_REGEX_HEADER',	"^(?<RecordType>H)(?<FileName>(?<WholesaleProvider>[a-z]{3})(?<SPCode>\d{3})(?<FileType>a)(?<Date>(?<Year>\d{4})(?<Month>\d{2})(?<Day>\d{2}))(?<FileExtension>\.txt))$");
-define('M2_AGREED_BASKETS_REGEX_CONTENT',	"^(?<RecordType>D)(?<Sequence>\d{8})(?<ServiceFNN>\d{6,29})(\ *)(?<Basket>00[1-6])(?<Nature>[CS])(?<Date>(?<Year>\d{4})(?<Month>\d{2})(?<Day>\d{2})).*$");
-define('M2_AGREED_BASKETS_REGEX_FOOTER',	"^(?<RecordType>T)(?<RecordCount>\d{8})$");
+define('M2_AGREED_BASKETS_REGEX_HEADER',	"/^(?<RecordType>H)(?<FileName>(?<WholesaleProvider>[a-z]{3})(?<SPCode>\d{3})(?<FileType>a)(?<Date>(?<Year>\d{4})(?<Month>\d{2})(?<Day>\d{2}))(?<FileExtension>\.txt))$/");
+define('M2_AGREED_BASKETS_REGEX_CONTENT',	"/^(?<RecordType>D)(?<Sequence>\d{8})(?<ServiceFNN>\d{6,29})(\ *)(?<Basket>00[1-6])(?<Nature>[CS])(?<Date>(?<Year>\d{4})(?<Month>\d{2})(?<Day>\d{2})).*$/");
+define('M2_AGREED_BASKETS_REGEX_FOOTER',	"/^(?<RecordType>T)(?<RecordCount>\d{8})$/");
 
 // Framework
 require_once(dirname(__FILE__).'/../../lib/classes/Flex.php');
