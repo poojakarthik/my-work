@@ -24,13 +24,7 @@ elseif (!($rImportFile = @fopen($sImportPath, 'r')))
 	throw new Exception("Unable to open Import Path '{$sImportPath}' for reading");
 }
 
-Log::getLog()->log("Validating Export path path '{$sExportPath}'...");
-
 // Validate Export Path
-if (!@is_writable($sExportPath))
-{
-	throw new Exception("Export Path '{$sExportPath}' is not writable");
-}
 $oExportCSV	= new File_CSV();
 $oExportCSV->setColumns(array(
 								'Service Number',
@@ -168,6 +162,8 @@ while ($sLine = fgets($rImportFile))
 		throw new Exception("Unable to parse Line {$iLineNumber}: '{$sLine}'");
 	}
 }
+
+Log::getLog()->log("Writing CSV to Export path '{$sExportPath}'...");
 
 // Write Output File
 $oExportCSV->saveToFile($sExportPath);

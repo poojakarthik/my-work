@@ -100,11 +100,7 @@ class File_CSV implements Iterator
 	
 	public function saveToFile($sPath, $bIncludeHeaderRow=true)
 	{
-		if (!is_writable($sPath))
-		{
-			throw new Exception("Unable to export to path '{$sPath}': Path is not writable");
-		}
-		elseif (!@file_put_contents($sPath, $this->save($bIncludeHeaderRow)))
+		if (!@file_put_contents($sPath, $this->save($bIncludeHeaderRow)))
 		{
 			throw new Exception("Unable to export to path '{$sPath}': There was an unknown error writing to the path");
 		}
