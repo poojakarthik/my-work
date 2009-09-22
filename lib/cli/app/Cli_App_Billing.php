@@ -195,16 +195,23 @@ class Cli_App_Billing extends Cli
 						throw new Exception("Unable to load Account with Id {$iAccountId}");
 					}
 					
+					Log::getLog()->log("Sampling Account #{$iAccountId}...");
+					
 					// Was there a Fake Date provided?
 					$sDatetime	= date("Y-m-d H:i:s", ($this->_arrArgs[self::SWITCH_FAKE_DATE]) ?  $this->_arrArgs[self::SWITCH_FAKE_DATE] : time());
 					$sDate		= date("Y-m-d", strtotime($sDatetime));
 					
+					Log::getLog()->log("Effective Date: {$sDate} ($sDatetime)");
+					
 					// Predict the next Billing Date
 					$sInvoiceDate	= Invoice_Run::predictNextInvoiceDate($oAccount->CustomerGroup, $sDatetime);
+					Log::getLog()->log("Predicted Production Date: {$sInvoiceDate}");
 					
 					$oDataAccessFlex->TransactionStart();
 					try
 					{
+						Log::getLog()->log("Generating Sample Invoice Run...");
+						
 						// Perform the Sample Invoice Run!
 						$oInvoiceRun	= new Invoice_Run();
 						$oInvoiceRun->generateSingle($oAccount->CustomerGroup, INVOICE_RUN_TYPE_SAMPLES, strtotime($sInvoiceDate), $iAccountId);
