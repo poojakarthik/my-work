@@ -210,13 +210,19 @@ class Invoice_Run
 	public function generateSingle($intCustomerGroup, $intInvoiceRunType, $intInvoiceDatetime, $intAccount)
 	{
 		$intAccount	= (int)$intAccount;
-
+		
 		// Init variables
 		$dbaDB					= DataAccess::getDataAccess();
-
-		if ($intInvoiceRunType !== INVOICE_RUN_TYPE_INTERIM && $intInvoiceRunType !== INVOICE_RUN_TYPE_FINAL)
+		
+		if	(
+				!(
+					$intInvoiceRunType === INVOICE_RUN_TYPE_INTERIM
+					|| $intInvoiceRunType === INVOICE_RUN_TYPE_FINAL
+					|| $intInvoiceRunType === INVOICE_RUN_TYPE_SAMPLES
+				)
+			)
 		{
-			throw new Exception("InvoiceRun::generateSingle() only supports Interim and Final Invoice Runs");
+			throw new Exception("InvoiceRun::generateSingle() only supports Interim, Final and Sample Invoice Runs");
 		}
 
 		$qryQuery	= new Query();

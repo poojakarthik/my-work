@@ -221,6 +221,7 @@ class Cli_App_Billing extends Cli
 					catch (Exception $eException)
 					{
 						$oDataAccessFlex->TransactionRollback();
+						throw $eException;
 					}
 					break;
 
