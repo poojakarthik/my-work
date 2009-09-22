@@ -1264,9 +1264,9 @@ class Invoice extends ORM
 				$arrPlanChargeSteps[]	= ($bolFirstInvoice) ? 'FIRST_ARREARS' : 'NORMAL_ARREARS';
 
 				// Prorate the Charges and Usage details in Arrears
-				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intLastProductionInvoiceDatetime-1);
-				$fltUsageStart		= Invoice::prorate($fltUsageStart		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intLastProductionInvoiceDatetime-1);
-				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastInvoiceDatetime, $this->intLastProductionInvoiceDatetime-1);
+				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1);
+				$fltUsageStart		= Invoice::prorate($fltUsageStart		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1);
+				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1);
 
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= $intArrearsPeriodStart;
@@ -1433,7 +1433,7 @@ class Invoice extends ORM
 				$intTotalUnits				= 0;
 				$fltTotalCredit				= 0.0;
 				$fltTotalCharge				= 0.0;
-				$intProratedIncludedData	= self::prorate($intIncludedData, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->intLastInvoiceDatetime, $this->intLastProductionInvoiceDatetime-1, DATE_TRUNCATE_DAY, TRUE, 0);
+				$intProratedIncludedData	= self::prorate($intIncludedData, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1, DATE_TRUNCATE_DAY, TRUE, 0);
 				$intAvailableUnits			= $intProratedIncludedData;
 				while ($arrDataCDR = $resResult->fetch_assoc())
 				{
