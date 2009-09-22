@@ -535,7 +535,7 @@ class Invoice_Export
 			$aAdjustment	= &$aAdjustments[$mAdjustmentIndex];
 			
 			// Have we already matched against something?
-			if (!$aAdjustment['Matched'])
+			if (!array_key_exists('Matched', $aAdjustment))
 			{
 				// Search for a mate
 				foreach ($aAdjustmentPairKeys as $mPairAdjustmentIndex)
@@ -553,7 +553,7 @@ class Invoice_Export
 					
 					// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
 					// Additionally, we cannot have already matched against this Adjustment
-					if (!$aPairAdjustment['Matched'] && ($aAdjustment['Description'] === $aPairAdjustment['Description']) && (round((float)$aAdjustment['Charge'] + (float)$aPairAdjustment['Charge'], 4) == 0.0))
+					if (!array_key_exists('Matched', $aPairAdjustment) && ($aAdjustment['Description'] === $aPairAdjustment['Description']) && (round((float)$aAdjustment['Charge'] + (float)$aPairAdjustment['Charge'], 4) == 0.0))
 					{
 						// Perfect Pair -- Mark as matched
 						$aAdjustment['Matched']		= $mPairAdjustmentIndex;
