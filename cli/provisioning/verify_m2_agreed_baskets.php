@@ -140,7 +140,7 @@ while ($sLine = fgets($rImportFile))
 											'Total Cost'		=> $aBillingData['total_cost'],
 											'Units'				=> $aBillingData['units'],*/
 											'Customer Group'	=> $oCustomerGroup->externalName,
-											'Flex Status'		=> GetConstantDescription($oServiceCurrentInstance, 'service_status'),
+											'Flex Status'		=> GetConstantDescription($oServiceCurrentInstance->Status, 'service_status'),
 										));
 		}
 		else
