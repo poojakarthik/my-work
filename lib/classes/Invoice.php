@@ -1220,13 +1220,18 @@ class Invoice extends ORM
 			$bHasChargedInAdvance	= false;
 			if ($arrPlanDetails['InAdvance'])
 			{
-				$rResult	= $qryQuery->Execute("SELECT Id FROM Charge WHERE ChargeType = 'PCAD' AND Service IN ({$strServiceIds}) AND Status = ".CHARGE_INVOICED." AND invoice_run_id != {$this->_objInvoiceRun->invoice_run_type_id} LIMIT 1");
+				$rResult	= $qryQuery->Execute("SELECT * FROM Charge WHERE ChargeType = 'PCAD' AND Service IN ({$strServiceIds}) AND Status = ".CHARGE_INVOICED." AND invoice_run_id != {$this->_objInvoiceRun->invoice_run_type_id} LIMIT 1");
 				if ($rResult === false)
 				{
 					throw new Exception("DB ERROR: ".$qryQuery->Error());
 				}
 				elseif ($resResult->num_rows)
 				{
+					while ($aChargeInAdvance = $resResult->fetch_assoc())
+					{
+						Log::getLog()->log(print_r($aChargeInAdvance, true));
+					}
+					
 					$bHasChargedInAdvance	= true;
 				}
 				Log::getLog()->log("Have ".(($bHasChargedInAdvance) ? '' : 'not ')."charged in advanced before");
