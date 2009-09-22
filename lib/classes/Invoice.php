@@ -1227,11 +1227,6 @@ class Invoice extends ORM
 				}
 				elseif ($rResult->num_rows)
 				{
-					while ($aChargeInAdvance = $rResult->fetch_assoc())
-					{
-						Log::getLog()->log(print_r($aChargeInAdvance, true));
-					}
-					
 					$bHasChargedInAdvance	= true;
 				}
 				Log::getLog()->log("Have ".(($bHasChargedInAdvance) ? '' : 'not ')."charged in advanced before");
