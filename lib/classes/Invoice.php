@@ -1225,9 +1225,9 @@ class Invoice extends ORM
 				{
 					throw new Exception("DB ERROR: ".$qryQuery->Error());
 				}
-				elseif ($resResult->num_rows)
+				elseif ($rResult->num_rows)
 				{
-					while ($aChargeInAdvance = $resResult->fetch_assoc())
+					while ($aChargeInAdvance = $rResult->fetch_assoc())
 					{
 						Log::getLog()->log(print_r($aChargeInAdvance, true));
 					}
