@@ -20,8 +20,6 @@ var Reflex_Date_Picker	= Class.create
 		
 		document.body.appendChild(this.oContainer.domElement);
 		
-		alert("Should be attached...");
-		
 		// Temporary
 		this.oContainer.style.position	= 'fixed';
 		this.oContainer.style.top		= '50%';
@@ -73,7 +71,7 @@ var Reflex_Date_Picker	= Class.create
 		oFocusDate	= (oFocusDate == undefined) ? oFocusDate : this.getDate();
 		
 		// Purge all children
-		this.oContainer.oContent.domElement.childElements.invoke('remove');
+		this.oContainer.oContent.domElement.childElements().invoke('remove');
 		
 		// Render each visible month
 		var iFocusMonthIndex	= Math.ceil(this.iMonthsVisible / 2);
