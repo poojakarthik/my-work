@@ -80,7 +80,7 @@ var Reflex_Date_Picker	= Class.create
 		for (var i = 1; i <= this.iMonthsVisible; i++)
 		{
 			oVisibleMonth.shift(1, Date.DATE_INTERVAL_MONTH);
-			this.oContainer.oContent.domElement.appendChild(this._renderMonthView(oVisibleMonth.getMonth(), oVisibleMonth.getFullYear()));
+			this.oContainer.oContent.domElement.appendChild(this._renderMonthView(oVisibleMonth.getMonth(), oVisibleMonth.getFullYear()).domElement);
 		}
 	},
 	
