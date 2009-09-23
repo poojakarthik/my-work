@@ -9,6 +9,15 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer					= {};
 		this.oContainer.domElement		= document.createElement('div');
 		this.oContainer.domElement.id	= this.sUID;
+		
+		this.oContainer.oHeader				= {};
+		this.oContainer.oHeader.domElement	= document.createElement('div');
+		this.oContainer.domElement.appendChild(this.oContainer.oHeader.domElement);
+		
+		this.oContainer.oContent			= {};
+		this.oContainer.oContent.domElement	= document.createElement('div');
+		this.oContainer.domElement.appendChild(this.oContainer.oContent.domElement);
+		
 		document.body.appendChild(this.oContainer.domElement);
 		
 		alert("Should be attached...");
