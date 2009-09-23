@@ -68,7 +68,7 @@ var Reflex_Date_Picker	= Class.create
 	
 	_render	: function(oFocusDate)
 	{
-		oFocusDate	= (oFocusDate == undefined) ? oFocusDate : this.getDate();
+		oFocusDate	= (!oFocusDate) ? this.getDate() : oFocusDate;
 		
 		// Purge all children
 		this.oContainer.oContent.domElement.childElements().invoke('remove');
@@ -80,7 +80,7 @@ var Reflex_Date_Picker	= Class.create
 		for (var i = 1; i <= this.iMonthsVisible; i++)
 		{
 			oVisibleMonth.shift(1, Date.DATE_INTERVAL_MONTH);
-			this.oContainer.oContent.domElement.appendChild(this._renderMonthView(oVisibleMonth.getMonth(), oVisibleMonth.getFullYear()).domElement);
+			this.oContainer.oContent.domElement.appendChild(this._renderMonthView(oVisibleMonth.getMonth() + 1, oVisibleMonth.getFullYear()).domElement);
 		}
 	},
 	
@@ -107,7 +107,7 @@ var Reflex_Date_Picker	= Class.create
 		
 		// Create Table innards
 		//------------------------------------------------------------------------//
-		var oMonthDate		= new Date(iYear, iMonth, 1);
+		var oMonthDate		= new Date(iYear, iMonth - 1, 1);
 		var iDaysInMonth	= parseInt(Reflex_Date_Format.format('t', oMonthDate));
 		
 		// Month Label/Header
