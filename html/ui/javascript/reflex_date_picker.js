@@ -107,7 +107,7 @@ var Reflex_Date_Picker	= Class.create
 		
 		// Create Table innards
 		//------------------------------------------------------------------------//
-		var oMonthDate		= new Date(iYear.toString()+'-'+iMonth.toPaddedString(2)+'-01');
+		var oMonthDate		= new Date(iYear, iMonth, 1);
 		var iDaysInMonth	= parseInt(Reflex_Date_Format.format('t', oMonthDate));
 		
 		// Month Label/Header
@@ -167,7 +167,7 @@ var Reflex_Date_Picker	= Class.create
 		oContainer.oGrid.oBody.domElement	= document.createElement('tbody');
 		oContainer.oGrid.domElement.appendChild(oContainer.oGrid.oBody.domElement);
 		
-		var oDateOfMonth	= new Date(iYear.toString()+'-'+iMonth.toPaddedString(2)+'-'+iMonth.toPaddedString(1));
+		var oDateOfMonth	= new Date(iYear, iMonth, 1);
 		while (oDateOfMonth.getDate() <= iDaysInMonth)
 		{
 			// Add a new row for this week
