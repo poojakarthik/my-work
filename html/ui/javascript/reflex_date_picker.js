@@ -18,6 +18,10 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.style.top		= '50%';
 		this.oContainer.style.left		= '50%';
 		
+		// Defaults
+		this.iMonthsVisible		= Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE;
+		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
+		
 		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isToday];
 	},
 	
