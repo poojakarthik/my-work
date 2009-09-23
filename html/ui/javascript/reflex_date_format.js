@@ -376,6 +376,7 @@ Reflex_Date_Format.numberOrdinalSuffix	= function(iNumber)
 
 Reflex_Date_Format.stringPad	= function(sString, iLength, sPadString, sDirection)
 {
+	sString		= String(sString);
 	iLength		= (iLength === undefined)		? 0			: iLength;
 	sPadString	= (sPadString === undefined)	? ' '		: sPadString;
 	sDirection	= (sPadString === undefined)	? 'right'	: sDirection;
