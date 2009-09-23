@@ -155,11 +155,11 @@ Reflex_Date_Format.parseToken	= function(oDate, sToken)
 			// ISO-8601 year number. This has the same value as Y, except that if the ISO week number (W) belongs to the previous or next year, that year is used instead.
 			return Reflex_Date_Format.calculateISOWeekDate(oDate).iYear;
 			break;
-		case 'L':
+		case 'Y':
 			// A full numeric representation of a year, 4 digits
 			return oDate.getFullYear();
 			break;
-		case 'L':
+		case 'y':
 			// A two digit representation of a year
 			var iYear		= oDate.getFullYear();
 			var iYear2Digit;
