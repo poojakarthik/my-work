@@ -243,4 +243,4 @@ Reflex_Date_Picker.SELECT_MODE_DATE			= 'date';
 Reflex_Date_Picker.SELECT_MODE_DATE_TIME	= 'datetime';
 
 Reflex_Date_Picker.DEFAULT_START_OF_WEEK	= 0;	// Sunday
-Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE	= 1;
+Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE	= 9;
