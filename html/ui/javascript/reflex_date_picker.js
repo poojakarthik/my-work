@@ -156,8 +156,8 @@ var Reflex_Date_Picker	= Class.create
 		
 		for (var iDayOfWeek = 0; iDayOfWeek < 7; iDayOfWeek++)
 		{
-			var domDay		= document.createElement('th');
-			domDay.value	= (Reflex_Date_Format.oDays.oShortNames[(iDayOfWeek + this.iFirstDayOfWeek) % 7]).substr(0, 2);
+			var domDay			= document.createElement('th');
+			domDay.innerHTML	= (Reflex_Date_Format.oDays.oShortNames[(iDayOfWeek + this.iFirstDayOfWeek) % 7]).substr(0, 2);
 			
 			oContainer.oGrid.oHeader.oRow.domElement.appendChild(domDay);
 		}
@@ -188,7 +188,7 @@ var Reflex_Date_Picker	= Class.create
 					domDay.addEventListener();
 					
 					// Set Cell Contents
-					domDay.value	= (Reflex_Date_Format.oDays.oShortNames[(iDayOfWeek + this.iFirstDayOfWeek) % 7]).substr(0, 2);
+					domDay.innerHTML	= (Reflex_Date_Format.oDays.oShortNames[(iDayOfWeek + this.iFirstDayOfWeek) % 7]).substr(0, 2);
 					
 					// Day Mutator Callbacks
 					for (var i = 0; i < this.aDayMutatorCallbacks.length; i++)
