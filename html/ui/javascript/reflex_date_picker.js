@@ -23,9 +23,9 @@ var Reflex_Date_Picker	= Class.create
 		alert("After append...");
 		
 		// Temporary
-		this.oContainer.style.position	= 'fixed';
-		this.oContainer.style.top		= '50%';
-		this.oContainer.style.left		= '50%';
+		this.oContainer.domElement.style.position	= 'fixed';
+		this.oContainer.domElement.style.top		= '50%';
+		this.oContainer.domElement.style.left		= '50%';
 
 		alert("After Styling...");
 		
