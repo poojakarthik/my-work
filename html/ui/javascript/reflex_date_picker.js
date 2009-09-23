@@ -18,7 +18,9 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oContent.domElement	= document.createElement('div');
 		this.oContainer.domElement.appendChild(this.oContainer.oContent.domElement);
 		
+		alert("Before append...");
 		document.body.appendChild(this.oContainer.domElement);
+		alert("After append...");
 		
 		// Temporary
 		this.oContainer.style.position	= 'fixed';
