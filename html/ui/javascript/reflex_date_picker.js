@@ -198,9 +198,9 @@ var Reflex_Date_Picker	= Class.create
 			}
 		}
 		//------------------------------------------------------------------------//
+		
+		return oContainer;
 	}
-	
-	return oContainer;
 });
 
 // Status Methods
