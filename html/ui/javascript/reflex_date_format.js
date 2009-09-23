@@ -54,7 +54,7 @@ Reflex_Date_Format.format	= function(sFormat, mDate)
 		}
 	}
 	
-	alert("Formatted " + oDate + " as '" + sOutput + "' according to formatting string '" + sFormat + "'");
+	//alert("Formatted " + oDate + " as '" + sOutput + "' according to formatting string '" + sFormat + "'");
 	
 	return sOutput;
 };
