@@ -72,15 +72,17 @@ var JsAutoLoader = {
 		script.setAttribute('type', 'text/javascript');
 		script.setAttribute('src', strSource);
 		Event.startObserving(script, "load", this.registerLoadedScript.bind(this, strScriptName), true);
-		head.appendChild(script);
 		
 		// Was an onLoad handler provided?
 		if (fncCallback != undefined)
 		{
-			alert(strScriptName + " is now loading -- creating event listener for Callback...");
-			
 			Event.startObserving(script, "load", fncCallback, true);
+			
+			alert(strScriptName + " is now loading -- creating event listener for Callback...");
 		}
+		
+		// Load the JS Script
+		head.appendChild(script);
 	},
 	
 	// This is used to register the fact that a script has been loaded into the dom
