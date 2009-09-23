@@ -13,7 +13,7 @@ var JsAutoLoader = {
 		var	strScriptName	= arrScripts.shift();
 		var fncCallback		= (arrScripts.length > 0) ? JsAutoLoader.loadScript.bind(JsAutoLoader, arrScripts, funcOnLoadEventHandler, bolUseJavascriptPhp) : funcOnLoadEventHandler;
 		
-		alert("Dynamically Loading JS File '" + strScriptName + "' (" + arrScripts.length + " JS files left to load: " + arrScripts + ")");
+		//alert("Dynamically Loading JS File '" + strScriptName + "' (" + arrScripts.length + " JS files left to load: " + arrScripts + ")");
 		
 		// Retrieve the timestamp of when the user started their session
 		// This is used as a work around, to stop the browser from using a cached, old version of the script you want
@@ -35,7 +35,7 @@ var JsAutoLoader = {
 			strSource = strScriptName +"?v="+ sessionTimestamp;
 		}
 		
-		alert("JS Autoload URI: " + strSource);
+		//alert("JS Autoload URI: " + strSource);
 		
 		// Check if the script has already been requested
 		var scripts = head.getElementsByTagName('script');
@@ -48,7 +48,7 @@ var JsAutoLoader = {
 				{
 					if (this.loadedScripts[strScriptName] != undefined)
 					{
-						alert(strScriptName + " is already loaded -- calling Callback...");
+						//alert(strScriptName + " is already loaded -- calling Callback...");
 						
 						// This script should be loaded, so run the funcOnLoadEventHandler function, in global scope
 						// wrapping it in a timeout will give it global scope
@@ -56,7 +56,7 @@ var JsAutoLoader = {
 					}
 					else
 					{
-						alert(strScriptName + " is already loading -- creating event listener for Callback...");
+						//alert(strScriptName + " is already loading -- creating event listener for Callback...");
 						
 						// The script element has been included in the header, but has not finished loading yet
 						// add the funcOnLoadEventHandler to it as an event listener
@@ -78,7 +78,7 @@ var JsAutoLoader = {
 		{
 			Event.startObserving(script, "load", fncCallback, true);
 			
-			alert(strScriptName + " is now loading -- creating event listener for Callback...");
+			//alert(strScriptName + " is now loading -- creating event listener for Callback...");
 		}
 		
 		// Load the JS Script
