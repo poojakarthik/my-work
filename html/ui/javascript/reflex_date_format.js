@@ -76,7 +76,7 @@ Reflex_Date_Format.parseToken	= function(oDate, sToken)
 			break;
 		case 'l':
 			// A full textual representation of the day of the week
-			return Reflex_Date_Format.oDays.oLongNames[oDate.getDay()];
+			return Reflex_Date_Format.oDays.oFullNames[oDate.getDay()];
 			break;
 		case 'N':
 			// ISO-8601 numeric representation of the day of the week
@@ -121,7 +121,7 @@ Reflex_Date_Format.parseToken	= function(oDate, sToken)
 		// MONTH
 		case 'F':
 			// A full textual representation of a month, such as January or March
-			return Reflex_Date_Format.oMonths.oLongNames[oDate.getMonth()];
+			return Reflex_Date_Format.oMonths.oFullNames[oDate.getMonth()];
 			break;
 		case 'm':
 			// Numeric representation of a month, with leading zeros
