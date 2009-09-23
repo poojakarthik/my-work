@@ -173,7 +173,7 @@ var Reflex_Date_Picker	= Class.create
 			// Add a new row for this week
 			oContainer.oGrid.oBody.oRow				= {};
 			oContainer.oGrid.oBody.oRow.domElement	= document.createElement('tr');
-			oContainer.oGrid.oBody.domElement.appendChild(oContainer.oGrid.oHeader.oRow.domElement);
+			oContainer.oGrid.oBody.domElement.appendChild(oContainer.oGrid.oBody.oRow.domElement);
 			
 			// Add each day
 			for (var iDayOfWeek = 0; iDayOfWeek < 7; iDayOfWeek++)
@@ -215,7 +215,7 @@ var Reflex_Date_Picker	= Class.create
 				}
 				
 				// Add Cell to the Grid
-				oContainer.oGrid.oHeader.oRow.domElement.appendChild(domDay);
+				oContainer.oGrid.oBody.oRow.domElement.appendChild(domDay);
 			}
 		}
 		//------------------------------------------------------------------------//
