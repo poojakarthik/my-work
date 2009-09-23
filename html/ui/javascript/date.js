@@ -29,7 +29,7 @@ Date.prototype.isLeapYear	= function()
 
 Date.prototype.getDaysInMonth	= function()
 {
-	return Date.DAYS_IN_MONTH[this.getMonth()] + ((this.getMonth() === 1 && this.isLeapYear()) 1 : 0);
+	return Date.DAYS_IN_MONTH[this.getMonth()] + ((this.getMonth() === 1 && this.isLeapYear()) ? 1 : 0);
 };
 
 /**
