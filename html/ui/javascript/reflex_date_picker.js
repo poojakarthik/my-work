@@ -190,7 +190,7 @@ var Reflex_Date_Picker	= Class.create
 					//domDay.addEventListener();
 					
 					// Set Cell Contents
-					domDay.innerHTML	= domDay.getDate();
+					domDay.innerHTML	= oDateOfMonth.getDate();
 					
 					// Day Mutator Callbacks
 					for (var i = 0; i < this.aDayMutatorCallbacks.length; i++)
