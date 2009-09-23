@@ -176,7 +176,7 @@ var Reflex_Date_Picker	= Class.create
 			oContainer.oGrid.oBody.domElement.appendChild(oContainer.oGrid.oHeader.oRow.domElement);
 			
 			// Add each day
-			for (var iDayOfWeek = 0; iDayOfWeek < 7; iDayOffset++)
+			for (var iDayOfWeek = 0; iDayOfWeek < 7; iDayOfWeek++)
 			{
 				var domDay		= document.createElement('td');
 				domDay.id		= this.sUID + '_' + Reflex_Date_Format.format("Ymd", oDateOfMonth);
