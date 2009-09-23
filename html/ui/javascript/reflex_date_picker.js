@@ -18,27 +18,19 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oContent.domElement	= document.createElement('div');
 		this.oContainer.domElement.appendChild(this.oContainer.oContent.domElement);
 		
-		alert("Before append...");
 		document.body.appendChild(this.oContainer.domElement);
-		alert("After append...");
 		
 		// Temporary
 		this.oContainer.domElement.style.position	= 'fixed';
 		this.oContainer.domElement.style.top		= '50%';
 		this.oContainer.domElement.style.left		= '50%';
-
-		alert("After Styling...");
 		
 		// Defaults
 		this.iMonthsVisible		= Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE;
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
 		this.oDate				= new Date();
-
-		alert("After Defaults...");
 		
 		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isToday];
-		
-		alert("We should now be returning...");
 	},
 	
 	setPosition	: function(sPositionType, oConfig)
@@ -94,7 +86,6 @@ var Reflex_Date_Picker	= Class.create
 	
 	show	: function()
 	{
-		alert("Showing...");
 		this._render();
 		this.getElement().show();
 	},
