@@ -13,7 +13,7 @@ var JsAutoLoader = {
 		var	strScriptName	= arrScripts.shift();
 		var fncCallback		= (arrScripts.length > 0) ? JsAutoLoader.loadScript.bind(JsAutoLoader, arrScripts, funcOnLoadEventHandler, bolUseJavascriptPhp) : funcOnLoadEventHandler;
 		
-		alert("Dynamically Loading " + arrScripts.length + " JS files: " + arrScripts + " with callback " + fncCallback);
+		alert("Dynamically Loading JS File '" + strScriptName + "' (" + arrScripts.length + " JS files to load in total: " + arrScripts + ")");
 		
 		// Retrieve the timestamp of when the user started their session
 		// This is used as a work around, to stop the browser from using a cached, old version of the script you want
@@ -42,7 +42,7 @@ var JsAutoLoader = {
 			if (scripts[i].hasAttribute('src') && scripts[i].getAttribute('src').match(strScriptName) != null)
 			{
 				// The script has been requested -- Was an onLoad handler provided?
-				if (funcOnLoadEventHandler != undefined)
+				if (fncCallback != undefined)
 				{
 					if (this.loadedScripts[strScriptName] != undefined)
 					{
@@ -69,7 +69,7 @@ var JsAutoLoader = {
 		head.appendChild(script);
 		
 		// Was an onLoad handler provided?
-		if (funcOnLoadEventHandler != undefined)
+		if (fncCallback != undefined)
 		{
 			Event.startObserving(script, "load", fncCallback, true);
 		}
