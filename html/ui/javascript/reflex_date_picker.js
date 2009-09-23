@@ -10,6 +10,11 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.domElement		= document.createElement('div');
 		this.oContainer.domElement.id	= this.sUID;
 		
+		// Temporary
+		this.oContainer.style.position	= 'fixed';
+		this.oContainer.style.top		= '50%';
+		this.oContainer.style.left		= '50%';
+		
 		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isToday];
 	},
 	
@@ -43,12 +48,25 @@ var Reflex_Date_Picker	= Class.create
 	
 	getElement	: function()
 	{
-		
+		return this.oContainer.domElement;
 	},
 	
-	_render	: function()
+	_render	: function(oFocusDate)
 	{
+		oFocusDate	= (oFocusDate == undefined) ? oFocusDate : this.getDate();
 		
+		// Purge all children
+		this.oContainer.oContent.domElement.childElements.invoke('remove');
+		
+		// Render each visible month
+		var iFocusMonthIndex	= Math.ceil(this.iMonthsVisible / 2);
+		var oVisibleMonth		= new Date(oFocusDate);
+		oVisibleMonth.shift(-1 - iFocusMonthIndex, Date.DATE_INTERVAL_MONTH);
+		for (var i = 1; i <= this.iMonthsVisible; i++)
+		{
+			oVisibleMonth.shift(1, Date.DATE_INTERVAL_MONTH);
+			this.oContainer.oContent.domElement.appendChild(this._renderMonthView(oVisibleMonth.getMonth(), oVisibleMonth.getFullYear()));
+		}
 	},
 	
 	show	: function()
@@ -177,6 +195,8 @@ var Reflex_Date_Picker	= Class.create
 		}
 		//------------------------------------------------------------------------//
 	}
+	
+	return oContainer;
 });
 
 // Status Methods
