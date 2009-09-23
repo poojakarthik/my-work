@@ -79,6 +79,14 @@ var Reflex_Date_Picker	= Class.create
 		oVisibleMonth.shift(-1 - iFocusMonthIndex, Date.DATE_INTERVAL_MONTH);
 		for (var i = 1; i <= this.iMonthsVisible; i++)
 		{
+			if (((i - 1) % Reflex_Date_Picker.MONTHS_PER_ROW === 0) && i != 1)
+			{
+				// Add in a clearing
+				var oClearing	= document.createElement('div');
+				oClearing.style.clear	= 'both';
+				this.oContainer.oContent.domElement.appendChild(oClearing);
+			}
+			
 			oVisibleMonth.shift(1, Date.DATE_INTERVAL_MONTH);
 			this.oContainer.oContent.domElement.appendChild(this._renderMonthView(oVisibleMonth.getMonth() + 1, oVisibleMonth.getFullYear()).domElement);
 		}
