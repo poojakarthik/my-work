@@ -253,6 +253,9 @@ class Cli_App_Merge_Contacts extends Cli
 														),
 								"Fax"			=> array(	"NewValue"	=> "",
 															"OldValue"	=> "'". $qryQuery->EscapeString($objDeprecatedContact->fax) ."'"
+														),
+								"Archived"		=> array(	"NewValue"	=> 1,
+															"OldValue"	=> intval($qryQuery->EscapeString($objDeprecatedContact->archived))
 														)
 							);
 			
