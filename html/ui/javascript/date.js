@@ -1,9 +1,9 @@
 // Extends the JS Date Object
 Date.DATE_INTERVAL_DAY		= 'days';
-Date.DATE_INTERVAL_MONTH	= 'minutes';
+Date.DATE_INTERVAL_MONTH	= 'months';
 Date.DATE_INTERVAL_YEAR		= 'years';
 Date.DATE_INTERVAL_HOUR		= 'hours';
-Date.DATE_INTERVAL_MINUTE	= 'months';
+Date.DATE_INTERVAL_MINUTE	= 'minutes';
 Date.DATE_INTERVAL_SECOND	= 'seconds';
 
 Date.DAYS_IN_MONTH	=	{
