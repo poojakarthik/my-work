@@ -247,6 +247,7 @@
 					$_selAccountUnbilledCharges	= new StatementSelect(	"Charge",
 																"Nature, SUM(Amount) AS Amount",
 																"Account = <Account> " .
+																" AND ChargeType NOT IN ('PCAR', 'PCAD', 'PCADR', 'PDCR', 'PDCR') " .
 																" AND Status = ".CHARGE_APPROVED ,
 																NULL,
 																NULL,
@@ -610,7 +611,7 @@
 	 * Determines the current unbilled charges (adjustments) for a specified account
 	 *
 	 * Determines the current unbilled charges (adjustments) for a specified account
-	 * Return amount includes GST
+	 * Return amount includes GST.  Excludes Plan Charges.
 	 * 
 	 *
 	 * @param	integer		$intAccount		The account to determine the unbilled charges total for
