@@ -248,7 +248,7 @@
 																"Nature, SUM(Amount) AS Amount",
 																"Account = <Account> " .
 																" AND ChargeType NOT IN ('PCAR', 'PCAD', 'PCADR', 'PDCR', 'PDCR') " .
-																" AND Status = ".CHARGE_APPROVED ,
+																" AND Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") " ,
 																NULL,
 																NULL,
 																"Nature");
