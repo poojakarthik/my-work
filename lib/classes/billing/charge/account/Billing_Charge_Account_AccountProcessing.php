@@ -99,7 +99,7 @@
 															"SELECT Charge.Id AS Id\n" .
 															"FROM Charge\n" .
 															"WHERE Charge.Account = <Account> AND \n" .
-															"Charge.Status = ".CHARGE_APPROVED." AND " .
+															"Charge.Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND " .
 															"Charge.Nature = 'DR'\n" .
 															"LIMIT 1");
 															
