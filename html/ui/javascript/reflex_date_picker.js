@@ -30,6 +30,7 @@ var Reflex_Date_Picker	= Class.create
 		// Defaults
 		this.iMonthsVisible		= Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE;
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
+		this.oDate				= new Date();
 		
 		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isToday];
 	},
@@ -54,12 +55,12 @@ var Reflex_Date_Picker	= Class.create
 	
 	setDate	: function(mDate)
 	{
-		
+		this.oDate	= new Date(mDate);
 	},
 	
 	getDate	: function()
 	{
-		
+		return this.oDate;
 	},
 	
 	getElement	: function()
