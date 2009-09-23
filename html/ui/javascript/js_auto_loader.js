@@ -35,6 +35,8 @@ var JsAutoLoader = {
 			strSource = strScriptName +"?v="+ sessionTimestamp;
 		}
 		
+		alert("JS Autoload URI: " + strSource);
+		
 		// Check if the script has already been requested
 		var scripts = head.getElementsByTagName('script');
 		for (var i=0, j=scripts.length; i < j; i++)
@@ -46,12 +48,16 @@ var JsAutoLoader = {
 				{
 					if (this.loadedScripts[strScriptName] != undefined)
 					{
+						alert(strScriptName + " is already loaded -- calling Callback...");
+						
 						// This script should be loaded, so run the funcOnLoadEventHandler function, in global scope
 						// wrapping it in a timeout will give it global scope
 						setTimeout(fncCallback, 1);
 					}
 					else
 					{
+						alert(strScriptName + " is already loading -- creating event listener for Callback...");
+						
 						// The script element has been included in the header, but has not finished loading yet
 						// add the funcOnLoadEventHandler to it as an event listener
 						Event.startObserving(scripts[i], "load", fncCallback, true);
@@ -71,6 +77,8 @@ var JsAutoLoader = {
 		// Was an onLoad handler provided?
 		if (fncCallback != undefined)
 		{
+			alert(strScriptName + " is now loading -- creating event listener for Callback...");
+			
 			Event.startObserving(script, "load", fncCallback, true);
 		}
 	},
