@@ -167,8 +167,8 @@ var Reflex_Date_Picker	= Class.create
 		oContainer.oGrid.oBody.domElement	= document.createElement('tbody');
 		oContainer.oGrid.domElement.appendChild(oContainer.oGrid.oBody.domElement);
 		
-		var oDateOfMonth	= new Date(iYear, iMonth, 1);
-		while (oDateOfMonth.getDate() <= iDaysInMonth)
+		var oDateOfMonth	= new Date(iYear, iMonth - 1, 1);
+		while (oDateOfMonth.getDate() <= iDaysInMonth && oDateOfMonth.getMonth() === oMonthDate.getMonth())
 		{
 			// Add a new row for this week
 			oContainer.oGrid.oBody.oRow				= {};
@@ -211,7 +211,7 @@ var Reflex_Date_Picker	= Class.create
 					}
 					
 					// Increment Date
-					oDateOfMonth.setDate(oDateOfMonth.getDate() + 1);
+					oDateOfMonth.shift(1, Date.DATE_INTERVAL_DAY);
 				}
 				
 				// Add Cell to the Grid
