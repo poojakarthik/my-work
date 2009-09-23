@@ -46,7 +46,7 @@ class Application_Handler_Developer extends Application_Handler
 														array	(
 																	'strName'	=> 'Datepicker',
 																	'strType'	=> self::URL_TYPE_JS,
-																	'strURL'	=> 'JsAutoLoader.loadScript(["date.js", "reflex_date_format.js", "reflex_date_picker.js"], function(){Date.$_UNIT_TESTS_.shift(new Date(2008, 2, 29)); (new Reflex_Date_Picker()).show();}, true);'
+																	'strURL'	=> 'JsAutoLoader.loadScript(["date.js", "reflex_date_format.js", "reflex_date_picker.js"], function(){Date.$_UNIT_TESTS_.shift(new Date(2008, 1, 29)); (new Reflex_Date_Picker()).show();}, true);'
 																)
 													);
 			
