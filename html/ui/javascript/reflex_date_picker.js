@@ -31,6 +31,8 @@ var Reflex_Date_Picker	= Class.create
 		this.oDate				= new Date();
 		
 		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isToday];
+		
+		alert("We should now be returning...");
 	},
 	
 	setPosition	: function(sPositionType, oConfig)
