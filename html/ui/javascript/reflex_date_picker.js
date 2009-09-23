@@ -178,14 +178,14 @@ var Reflex_Date_Picker	= Class.create
 			// Add each day
 			for (var iDayOfWeek = 0; iDayOfWeek < 7; iDayOfWeek++)
 			{
-				alert("Adding Cell for " + oDateOfMonth);
-				
 				var domDay		= document.createElement('td');
 				domDay.id		= this.sUID + '_' + Reflex_Date_Format.format("Ymd", oDateOfMonth);
 				
 				// If the Day of the Month is the current day of the week, then add
 				if (oDateOfMonth.getDay() === iDayOfWeek)
 				{
+					//alert("Adding Cell for " + oDateOfMonth);
+					
 					// Add Event Listener
 					//domDay.addEventListener();
 					
