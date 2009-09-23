@@ -24,21 +24,33 @@ Reflex_Date_Format.format	= function(sFormat, mDate)
 	}
 	
 	// Tokenise Format String
-	var aFormat;
 	var sOutput		= '';
 	var bEscaped	= false;
-	for (var i = 0; i < aFormat.length; i++)
+	for (var i = 0; i < sFormat.length; i++)
 	{
-		if (bEscaped)
+		switch (sFormat.charAt(i))
 		{
-			// Escaped -- output the token as plain text
-			sOutput		+= aFormat[i];
-			bEscaped	= false;
-		}
-		else
-		{
-			// Not Escaped -- try to parse the token
-			sOutput		+= Reflex_Date_Format.parseToken(oDate, aFormat[i]);
+			case '\\':
+				if (bEscaped)
+				{
+					sOutput	+= '\\';
+				};
+				bEscaped	= !bEscaped;
+				break;
+			
+			default:
+				if (bEscaped)
+				{
+					// Escaped -- output the token as plain text
+					sOutput		+= sFormat.charAt(i);
+					bEscaped	= false;
+				}
+				else
+				{
+					// Not Escaped -- try to parse the token
+					sOutput		+= Reflex_Date_Format.parseToken(oDate, sFormat.charAt(i));
+				}
+				break;
 		}
 	}
 	
