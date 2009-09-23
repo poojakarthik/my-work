@@ -121,7 +121,7 @@ Reflex_Date_Format.parseToken	= function(oDate, sToken)
 		// MONTH
 		case 'F':
 			// A full textual representation of a month, such as January or March
-			return Reflex_Date_Format.oMonths.oFullNames[oDate.getMonth()];
+			return Reflex_Date_Format.oMonths.oFullNames[oDate.getMonth() + 1];
 			break;
 		case 'm':
 			// Numeric representation of a month, with leading zeros
@@ -129,7 +129,7 @@ Reflex_Date_Format.parseToken	= function(oDate, sToken)
 			break;
 		case 'M':
 			// A short textual representation of a month, three letters
-			return Reflex_Date_Format.oMonths.oShortNames[oDate.getMonth()];
+			return Reflex_Date_Format.oMonths.oShortNames[oDate.getMonth() + 1];
 			break;
 		case 'n':
 			// Numeric representation of a month, without leading zeros
