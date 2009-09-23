@@ -190,7 +190,7 @@ var Reflex_Date_Picker	= Class.create
 					//domDay.addEventListener();
 					
 					// Set Cell Contents
-					domDay.innerHTML	= (Reflex_Date_Format.oDays.oShortNames[(iDayOfWeek + this.iFirstDayOfWeek) % 7]).substr(0, 2);
+					domDay.innerHTML	= domDay.getDate();
 					
 					// Day Mutator Callbacks
 					for (var i = 0; i < this.aDayMutatorCallbacks.length; i++)
