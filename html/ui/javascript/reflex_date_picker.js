@@ -178,6 +178,8 @@ var Reflex_Date_Picker	= Class.create
 			// Add each day
 			for (var iDayOfWeek = 0; iDayOfWeek < 7; iDayOfWeek++)
 			{
+				alert("Adding Cell for " + oDateOfMonth);
+				
 				var domDay		= document.createElement('td');
 				domDay.id		= this.sUID + '_' + Reflex_Date_Format.format("Ymd", oDateOfMonth);
 				
@@ -185,7 +187,7 @@ var Reflex_Date_Picker	= Class.create
 				if (oDateOfMonth.getDay() === iDayOfWeek)
 				{
 					// Add Event Listener
-					domDay.addEventListener();
+					//domDay.addEventListener();
 					
 					// Set Cell Contents
 					domDay.innerHTML	= (Reflex_Date_Format.oDays.oShortNames[(iDayOfWeek + this.iFirstDayOfWeek) % 7]).substr(0, 2);
@@ -198,7 +200,7 @@ var Reflex_Date_Picker	= Class.create
 						// Remove onClick (once removed, it cannot be re-added)
 						if (oResponse.bSelectable === false)
 						{
-							domDay.removeEventListener();
+							//domDay.removeEventListener();
 						}
 						
 						// Add additional CSS Class
