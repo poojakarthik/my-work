@@ -11,6 +11,8 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.domElement.id	= this.sUID;
 		document.body.appendChild(this.oContainer.domElement);
 		
+		alert("Should be attached...");
+		
 		// Temporary
 		this.oContainer.style.position	= 'fixed';
 		this.oContainer.style.top		= '50%';
@@ -72,6 +74,7 @@ var Reflex_Date_Picker	= Class.create
 	
 	show	: function()
 	{
+		alert("Showing...");
 		this._render();
 		this.getElement().show();
 	},
