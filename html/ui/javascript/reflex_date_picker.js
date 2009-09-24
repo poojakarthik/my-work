@@ -25,8 +25,8 @@ var Reflex_Date_Picker	= Class.create
 		
 		// Temporary
 		this.oContainer.domElement.style.position	= 'fixed';
-		this.oContainer.domElement.style.top		= '50%';
-		this.oContainer.domElement.style.left		= '50%';
+		this.oContainer.domElement.style.top		= '25%';
+		this.oContainer.domElement.style.left		= '25%';
 		
 		// Defaults
 		this.iMonthsVisible		= Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE;
