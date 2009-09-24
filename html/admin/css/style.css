@@ -1928,6 +1928,16 @@ div.reflex-datepicker div.content div.month
 	float	: left;
 }
 
+div.reflex-datepicker div.content div.month td.day
+{
+	
+}
+
+div.reflex-datepicker div.content div.month td.day.selectable:hover
+{
+	color	: red;
+}
+
 /* Day Mutator Classes */
 .reflex-datepicker-day-today
 {

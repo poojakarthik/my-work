@@ -171,6 +171,7 @@ var Reflex_Date_Picker	= Class.create
 		
 		oContainer.oGrid.oHeader.oRow				= {};
 		oContainer.oGrid.oHeader.oRow.domElement	= document.createElement('tr');
+		oContainer.oGrid.oHeader.oRow.domElement.addClassName();
 		oContainer.oGrid.oHeader.domElement.appendChild(oContainer.oGrid.oHeader.oRow.domElement);
 		
 		for (var iDayOfWeek = 0; iDayOfWeek < 7; iDayOfWeek++)
@@ -192,6 +193,7 @@ var Reflex_Date_Picker	= Class.create
 			// Add a new row for this week
 			oContainer.oGrid.oBody.oRow				= {};
 			oContainer.oGrid.oBody.oRow.domElement	= document.createElement('tr');
+			oContainer.oGrid.oBody.oRow.domElement.addClassName('week');
 			oContainer.oGrid.oBody.domElement.appendChild(oContainer.oGrid.oBody.oRow.domElement);
 			
 			// Add each day
@@ -199,6 +201,7 @@ var Reflex_Date_Picker	= Class.create
 			{
 				var domDay		= document.createElement('td');
 				domDay.id		= this.sUID + '_' + Reflex_Date_Format.format("Ymd", oDateOfMonth);
+				domDay.addClassName('day');
 				
 				// If the Day of the Month is the current day of the week, then add
 				if (oDateOfMonth.getDay() === (iDayOfWeek % 7) && oDateOfMonth.getMonth() === oMonthDate.getMonth())
@@ -220,6 +223,7 @@ var Reflex_Date_Picker	= Class.create
 						if (oResponse.bSelectable === false)
 						{
 							//domDay.removeEventListener();
+							domDay.addClassName('selectable');
 						}
 						
 						// Add additional CSS Class
