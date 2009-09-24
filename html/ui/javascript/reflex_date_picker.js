@@ -219,17 +219,17 @@ var Reflex_Date_Picker	= Class.create
 					{
 						var oResponse	= this.aDayMutatorCallbacks[i](oDateOfMonth);
 						
+						// Add additional CSS Class
+						if (oResponse.sCSSClass)
+						{
+							domDay.addClassName(oResponse.sCSSClass);
+						}
+						
 						// Remove onClick (once removed, it cannot be re-added)
 						if (oResponse.bSelectable === false)
 						{
 							//domDay.removeEventListener();
 							domDay.addClassName('selectable');
-						}
-						
-						// Add additional CSS Class
-						if (oResponse.sCSSClass)
-						{
-							domDay.addClassName(oResponse.sCSSClass);
 						}
 					}
 					
