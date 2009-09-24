@@ -218,7 +218,7 @@ var Reflex_Date_Picker	= Class.create
 					// Day Mutator Callbacks
 					for (var i = 0; i < this.aDayMutatorCallbacks.length; i++)
 					{
-						var oResponse	= this.aDayMutatorCallbacks[i](oDateOfMonth);
+						var oResponse	= this.aDayMutatorCallbacks[i](oDateOfMonth, oMonthDate);
 						
 						// Add additional CSS Class
 						if (oResponse.sCSSClass)
@@ -261,10 +261,9 @@ Reflex_Date_Picker.dayMutators.isToday	= function(oDate)
 			};
 };
 
-Reflex_Date_Picker.dayMutators.isInCurrentMonth	= function(oDate)
+Reflex_Date_Picker.dayMutators.isInCurrentMonth	= function(oDate, oMonthDate)
 {
-	var oCurrentDate	= new Date();
-	var bEligible		= (oDate.getMonth() === oCurrentDate.getMonth() && oDate.getFullYear() === oCurrentDate.getFullYear());
+	var bEligible		= (oDate.getMonth() === oMonthDate.getMonth() && oDate.getFullYear() === oMonthDate.getFullYear());
 	return	{
 				bSelectable	: bEligible ? null : false,
 				sCSSClass	: bEligible ? 'day' : null
