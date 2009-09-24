@@ -201,7 +201,7 @@ var Reflex_Date_Picker	= Class.create
 				domDay.id		= this.sUID + '_' + Reflex_Date_Format.format("Ymd", oDateOfMonth);
 				
 				// If the Day of the Month is the current day of the week, then add
-				if (oDateOfMonth.getDay() === (iDayOfWeek - this.iFirstDayOfWeek) && oDateOfMonth.getMonth() === oMonthDate.getMonth())
+				if (oDateOfMonth.getDay() === (iDayOfWeek % 7) && oDateOfMonth.getMonth() === oMonthDate.getMonth())
 				{
 					//alert("Adding Cell for " + oDateOfMonth);
 					
