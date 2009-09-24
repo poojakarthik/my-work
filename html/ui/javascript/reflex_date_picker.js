@@ -261,6 +261,26 @@ Reflex_Date_Picker.dayMutators.isToday	= function(oDate)
 			};
 };
 
+Reflex_Date_Picker.dayMutators.isWeekend	= function(oDate)
+{
+	var oCurrentDate	= new Date();
+	var bEligible		= ([0, 6].indexOf(oDate.getDay()) > -1);
+	return	{
+				bSelectable	: null,
+				sCSSClass	: bEligible ? 'reflex-datepicker-day-weekend' : null
+			};
+};
+
+Reflex_Date_Picker.dayMutators.setWeekendInvalid	= function(oDate)
+{
+	var oCurrentDate	= new Date();
+	var oIsWeekend		= Reflex_Date_Picker.dayMutators.isWeekend(oDate);
+	return	{
+				bSelectable	: oIsWeekend.sCSSClass ? false : true,
+				sCSSClass	: oIsWeekend.sCSSClass
+			};
+};
+
 // Class Constants
 Reflex_Date_Picker.SELECT_MODE_DATE			= 'date';
 Reflex_Date_Picker.SELECT_MODE_DATE_TIME	= 'datetime';
