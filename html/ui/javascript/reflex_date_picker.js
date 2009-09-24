@@ -9,14 +9,17 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer					= {};
 		this.oContainer.domElement		= document.createElement('div');
 		this.oContainer.domElement.id	= this.sUID;
+		this.oContainer.domElement.addClassName('reflex-datepicker');
 		
 		this.oContainer.oHeader				= {};
 		this.oContainer.oHeader.domElement	= document.createElement('div');
 		this.oContainer.domElement.appendChild(this.oContainer.oHeader.domElement);
+		this.oContainer.oHeader.domElement.addClassName('header');
 		
 		this.oContainer.oContent			= {};
 		this.oContainer.oContent.domElement	= document.createElement('div');
 		this.oContainer.domElement.appendChild(this.oContainer.oContent.domElement);
+		this.oContainer.oContent.domElement.addClassName('content');
 		
 		document.body.appendChild(this.oContainer.domElement);
 		
@@ -27,6 +30,7 @@ var Reflex_Date_Picker	= Class.create
 		
 		// Defaults
 		this.iMonthsVisible		= Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE;
+		this.iMonthsPerRow		= Reflex_Date_Picker.DEFAULT_MONTHS_PER_ROW;
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
 		this.oDate				= new Date();
 		
@@ -43,9 +47,15 @@ var Reflex_Date_Picker	= Class.create
 		
 	},
 	
-	setMonthsVisible	: function(iMonths)
+	setMonthsVisible	: function(iMonths, iMonthsPerRow)
 	{
 		this.iMonthsVisible	= Math.abs(parseInt(iMonths));
+		
+		iMonthsPerRow	= Math.abs(parseInt(iMonthsPerRow));
+		if (iMonthsPerRow)
+		{
+			this.iMonthsPerRow	= iMonthsPerRow;
+		}
 		
 		// Re-render
 		this._render();
@@ -83,7 +93,7 @@ var Reflex_Date_Picker	= Class.create
 			{
 				// Add in a clearing
 				var oClearing	= document.createElement('div');
-				oClearing.style.clear	= 'both';
+				oClearing.addClassName('clear');
 				this.oContainer.oContent.domElement.appendChild(oClearing);
 			}
 			
@@ -108,6 +118,7 @@ var Reflex_Date_Picker	= Class.create
 		// Containers
 		var oContainer			= {};
 		oContainer.domElement	= document.createElement('div');
+		oContainer.domElement.addClassName('month');
 		
 		oContainer.oGrid			= {};
 		oContainer.oGrid.domElement	= document.createElement('table');
@@ -245,10 +256,9 @@ Reflex_Date_Picker.dayMutators.isToday	= function(oDate)
 };
 
 // Class Constants
-Reflex_Date_Picker.MONTHS_PER_ROW	= 3;
-
 Reflex_Date_Picker.SELECT_MODE_DATE			= 'date';
 Reflex_Date_Picker.SELECT_MODE_DATE_TIME	= 'datetime';
 
 Reflex_Date_Picker.DEFAULT_START_OF_WEEK	= 0;	// Sunday
-Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE	= 9;
+Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE	= 6;
+Reflex_Date_Picker.DEFAULT_MONTHS_PER_ROW	= 3;
