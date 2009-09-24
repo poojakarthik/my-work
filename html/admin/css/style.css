@@ -1931,6 +1931,9 @@ div.reflex-datepicker div.content div.month
 
 div.reflex-datepicker div.content div.month td.day
 {
+	text-align		: right;
+	vertical-align	: middle;
+	
 	min-width	: 2em;
 	max-width	: 2em;
 	width		: 2em;
