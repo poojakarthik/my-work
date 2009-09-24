@@ -1935,6 +1935,11 @@ div.reflex-datepicker div.content div.month caption
 	font-weight	: bold;
 }
 
+div.reflex-datepicker div.content div.month caption span
+{
+	padding	: 0.25em;
+}
+
 div.reflex-datepicker div.content div.month td.day
 {
 	border	: 1px solid #6899EF;

@@ -136,33 +136,33 @@ var Reflex_Date_Picker	= Class.create
 		
 		oContainer.oGrid.oCaption.oMonthPrevious			= {};
 		oContainer.oGrid.oCaption.oMonthPrevious.domElement	= document.createElement('div');
-		oContainer.oGrid.oCaption.oMonthPrevious.domElement.addClassName('reflex-datepicker-month-previous');
+		oContainer.oGrid.oCaption.oMonthPrevious.domElement.addClassName('month-previous');
 		
 		oContainer.oGrid.oCaption.oMonthYear			= {};
 		oContainer.oGrid.oCaption.oMonthYear.domElement	= document.createElement('div');
-		oContainer.oGrid.oCaption.oMonthYear.domElement.addClassName('reflex-datepicker-month');
+		oContainer.oGrid.oCaption.oMonthYear.domElement.addClassName();
 		oContainer.oGrid.oCaption.domElement.appendChild(oContainer.oGrid.oCaption.oMonthYear.domElement);
 		
 		oContainer.oGrid.oCaption.oMonthYear.oMonth							= {};
 		oContainer.oGrid.oCaption.oMonthYear.oMonth.domElement				= document.createElement('span');
 		oContainer.oGrid.oCaption.oMonthYear.oMonth.domElement.innerHTML	= Reflex_Date_Format.format('F', oMonthDate);
-		oContainer.oGrid.oCaption.oMonthYear.oMonth.domElement.addClassName('reflex-datepicker-month-name');
+		oContainer.oGrid.oCaption.oMonthYear.oMonth.domElement.addClassName('month-name');
 		oContainer.oGrid.oCaption.oMonthYear.domElement.appendChild(oContainer.oGrid.oCaption.oMonthYear.oMonth.domElement);
 		
 		oContainer.oGrid.oCaption.oMonthYear.oYear						= {};
 		oContainer.oGrid.oCaption.oMonthYear.oYear.domElement			= document.createElement('span');
 		oContainer.oGrid.oCaption.oMonthYear.oYear.domElement.innerHTML	= Reflex_Date_Format.format('Y', oMonthDate);
-		oContainer.oGrid.oCaption.oMonthYear.oYear.domElement.addClassName('reflex-datepicker-month-year');
+		oContainer.oGrid.oCaption.oMonthYear.oYear.domElement.addClassName('month-year');
 		oContainer.oGrid.oCaption.oMonthYear.domElement.appendChild(oContainer.oGrid.oCaption.oMonthYear.oYear.domElement);
 		
 		oContainer.oGrid.oCaption.oMonthYear.oSelectButton					= {};
 		oContainer.oGrid.oCaption.oMonthYear.oSelectButton.domElement		= document.createElement('span');
-		oContainer.oGrid.oCaption.oMonthYear.oSelectButton.domElement.addClassName('reflex-datepicker-month-select');
+		oContainer.oGrid.oCaption.oMonthYear.oSelectButton.domElement.addClassName('month-select');
 		oContainer.oGrid.oCaption.oMonthYear.domElement.appendChild(oContainer.oGrid.oCaption.oMonthYear.oSelectButton.domElement);
 		
 		oContainer.oGrid.oCaption.oMonthNext			= {};
 		oContainer.oGrid.oCaption.oMonthNext.domElement	= document.createElement('div');
-		oContainer.oGrid.oCaption.oMonthNext.domElement.addClassName('reflex-datepicker-month-next');
+		oContainer.oGrid.oCaption.oMonthNext.domElement.addClassName('month-next');
 		
 		// Days in Week
 		oContainer.oGrid.oHeader			= {};
