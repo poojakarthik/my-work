@@ -458,6 +458,7 @@ class AppTemplateConsole extends ApplicationTemplate
 						WHERE contact_id = \"" . DBO()->Contact->Id->Value . "\"
 					)
 			AND customer_group_id = \"" . DBO()->Account->CustomerGroup->Value . "\"
+			AND NOW() BETWEEN start_date AND end_date
 			ORDER BY id ASC 
 			LIMIT 1";
 			$arrSurvey = $dbConnection->fetchone("$mixSelect");
@@ -467,180 +468,180 @@ class AppTemplateConsole extends ApplicationTemplate
 				{
 					$$key=$val;
 				}
-			}
-			$mixSelect = "SELECT sq.*, sqo.*
-			FROM survey_question AS sq 
-			INNER JOIN survey_question_option AS sqo 
-			ON sq.id = sqo.survey_question_id
-			WHERE sq.survey_id = \"$id\"
-			ORDER BY sqo.survey_question_id,sqo.survey_question_option_response_type_id";
-			// DEBUG
-			// echo "$mixSelect";
-			$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
-
-			$arrInputTypes = array(
-				"1" => "<select [REPLACE]>", 
-				"2" => "<input type='checkbox' [REPLACE]>",
-				"3" => "<input type='radio' [REPLACE]>",
-				"4" => "<textarea [REPLACE]>",
-				"5" => "<input type='text' [REPLACE]>"
-			);
-
-			$arrEndInputTypes = array(
-				"1" => "</select>", 
-				"2" => "",
-				"3" => "",
-				"4" => "</textarea>",
-				"5" => ""
-			);
-
-			$mixOutPut .= "";
-			$arrNumbers = array();
-			$intCount = 0;
-			$intSubCount = 0;
-
-			//var_dump($arrSurvey);
-			foreach($arrSurvey as $results)
-			{
-				foreach($results as $key=>$val){
-					$$key=$val;
-				}
-
-				$mixQuestionStart = "
-				<div class='customer-standard-table-title-style-survey'>[BOX_TITLE]</div>
-				<div class='GroupedContent'>
-				<TABLE class=\"customer-standard-table-style\">
-				<TR VALIGN=\"TOP\">
-					<TD>";
-				$mixQuestionEnd = "
-					</TD>
-				</TR>
-				</TABLE>
-				</div>
-				<br/>";
-
-				// check if this one exists in array. end it.
-				$bolFound = FALSE;
-				foreach($arrNumbers as $key=>$val)
-				{
-					if($val == "$survey_question_id")
-					{
-						$bolFound = TRUE;
-					}
-				}
-				// It doesnt exist, it's a main item, e.g. <select> or <input text>
-				if(!$bolFound)
-				{
-					if(count($arrNumbers)>1)
-					{
-						$mixOutPut .= "$arrEndInputTypes[$survey_question_response_type_id]" . "\n";
-						$mixOutPut .= "$mixQuestionEnd"; // End
-						$intSubCount=0;
-					}
-					$mixOutPut .= str_replace("[BOX_TITLE]","$question",$mixQuestionStart); // Start
-					$intSubCount++;
-					##################################
-					# put main item here
-					##################################
-					switch($survey_question_response_type_id)
-					{
-						case "1":
-						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_response_type_id]");
-						$mixOutPut .= str_replace("[REPLACE]","$option_name","<option value='[REPLACE]'>[REPLACE]</option>");
-						break;
-
-						case "2":
-						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]");
-						$mixOutPut .= " $option_name<br>";
-						break;
-
-						case "3":
-						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]");
-						$mixOutPut .= " $option_name<br>";
-						break;
-
-						default:
-						break;
-					}
-					switch($survey_question_option_response_type_id)
-					{
-						case "4":
-						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
-						break;
-						case "5":
-						$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
-						break;
-
-						default:
-						break;
-					}
-					##################################
-					//$mixOutPut .= "$intSubCount. $response_type $question_id<br>"; // for debug only..
-				}
-				$intCount++;
-				$arrNumbers[$intCount] = "$survey_question_id";
-
-				// already exists, its a sub item. e.g. <option value=>
-				if($bolFound)
-				{
-					$intSubCount++;
-					##################################
-					# put sub item here
-					##################################
-					switch($survey_question_response_type_id)
-					{
-						case "1":
-						$mixOutPut .= str_replace("[REPLACE]","$option_name","<option value='[REPLACE]'>[REPLACE]</option>");
-						break;
-						
-						case "2":
-						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]") . " $option_name<br>";
-						break;
-						
-						case "3":
-						$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]");
-						$mixOutPut .= " $option_name<br>";
-						break;
-
-						case "4":
-						break;
-						
-						case "5":
-						break;
-
-						default:
-						break;
-					}
-					switch($survey_question_option_response_type_id)
-					{
-						case "4":
-						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
-						break;
-						case "5":
-						$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
-						break;
-
-						default:
-						break;
-					}
-					//$mixOutPut .= "$intSubCount. $response_type $question_id<br>"; // for debug only..
-				}
-
-			}
-		
-			// it will never end itself..
-			if(count($arrNumbers)>1)
-			{
-				$mixOutPut .= "
-					$mixQuestionEnd
-				" . str_replace("[BOX_TITLE]","Survey Conditions",$mixQuestionStart) . str_replace("\n","<br>",$conditions) . "
-					$mixQuestionEnd";
-			}
+				
+				$mixSelect = "SELECT sq.*, sqo.*
+				FROM survey_question AS sq 
+				INNER JOIN survey_question_option AS sqo 
+				ON sq.id = sqo.survey_question_id
+				WHERE sq.survey_id = \"$id\"
+				ORDER BY sqo.survey_question_id,sqo.survey_question_option_response_type_id";
+				// DEBUG
+				// echo "$mixSelect";
+				$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
 	
-			$mixOutPut .= "<input type=\"hidden\" name=\"intSurveyId\" value=\"$survey_id\">";
-			DBO()->Survey->Title = $title;
-			DBO()->Survey->Form = $mixOutPut;
-
+				$arrInputTypes = array(
+					"1" => "<select [REPLACE]>", 
+					"2" => "<input type='checkbox' [REPLACE]>",
+					"3" => "<input type='radio' [REPLACE]>",
+					"4" => "<textarea [REPLACE]>",
+					"5" => "<input type='text' [REPLACE]>"
+				);
+	
+				$arrEndInputTypes = array(
+					"1" => "</select>", 
+					"2" => "",
+					"3" => "",
+					"4" => "</textarea>",
+					"5" => ""
+				);
+	
+				$mixOutPut .= "";
+				$arrNumbers = array();
+				$intCount = 0;
+				$intSubCount = 0;
+	
+				//var_dump($arrSurvey);
+				foreach($arrSurvey as $results)
+				{
+					foreach($results as $key=>$val){
+						$$key=$val;
+					}
+	
+					$mixQuestionStart = "
+					<div class='customer-standard-table-title-style-survey'>[BOX_TITLE]</div>
+					<div class='GroupedContent'>
+					<TABLE class=\"customer-standard-table-style\">
+					<TR VALIGN=\"TOP\">
+						<TD>";
+					$mixQuestionEnd = "
+						</TD>
+					</TR>
+					</TABLE>
+					</div>
+					<br/>";
+	
+					// check if this one exists in array. end it.
+					$bolFound = FALSE;
+					foreach($arrNumbers as $key=>$val)
+					{
+						if($val == "$survey_question_id")
+						{
+							$bolFound = TRUE;
+						}
+					}
+					// It doesnt exist, it's a main item, e.g. <select> or <input text>
+					if(!$bolFound)
+					{
+						if(count($arrNumbers)>1)
+						{
+							$mixOutPut .= "$arrEndInputTypes[$survey_question_response_type_id]" . "\n";
+							$mixOutPut .= "$mixQuestionEnd"; // End
+							$intSubCount=0;
+						}
+						$mixOutPut .= str_replace("[BOX_TITLE]","$question",$mixQuestionStart); // Start
+						$intSubCount++;
+						##################################
+						# put main item here
+						##################################
+						switch($survey_question_response_type_id)
+						{
+							case "1":
+							$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_response_type_id]");
+							$mixOutPut .= str_replace("[REPLACE]","$option_name","<option value='[REPLACE]'>[REPLACE]</option>");
+							break;
+	
+							case "2":
+							$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]");
+							$mixOutPut .= " $option_name<br>";
+							break;
+	
+							case "3":
+							$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]");
+							$mixOutPut .= " $option_name<br>";
+							break;
+	
+							default:
+							break;
+						}
+						switch($survey_question_option_response_type_id)
+						{
+							case "4":
+							$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
+							break;
+							case "5":
+							$mixOutPut .= "If $option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
+							break;
+	
+							default:
+							break;
+						}
+						##################################
+						//$mixOutPut .= "$intSubCount. $response_type $question_id<br>"; // for debug only..
+					}
+					$intCount++;
+					$arrNumbers[$intCount] = "$survey_question_id";
+	
+					// already exists, its a sub item. e.g. <option value=>
+					if($bolFound)
+					{
+						$intSubCount++;
+						##################################
+						# put sub item here
+						##################################
+						switch($survey_question_response_type_id)
+						{
+							case "1":
+							$mixOutPut .= str_replace("[REPLACE]","$option_name","<option value='[REPLACE]'>[REPLACE]</option>");
+							break;
+							
+							case "2":
+							$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]") . " $option_name<br>";
+							break;
+							
+							case "3":
+							$mixOutPut .= str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]' value='$option_name'","$arrInputTypes[$survey_question_response_type_id]");
+							$mixOutPut .= " $option_name<br>";
+							break;
+	
+							case "4":
+							break;
+							
+							case "5":
+							break;
+	
+							default:
+							break;
+						}
+						switch($survey_question_option_response_type_id)
+						{
+							case "4":
+							$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
+							break;
+							case "5":
+							$mixOutPut .= "$option_name: " . str_replace("[REPLACE]","name='arrAnswer[$survey_question_id||$id||$response_required]'","$arrInputTypes[$survey_question_option_response_type_id]") . "<br>";
+							break;
+	
+							default:
+							break;
+						}
+						//$mixOutPut .= "$intSubCount. $response_type $question_id<br>"; // for debug only..
+					}
+	
+				}
+			
+				// it will never end itself..
+				if(count($arrNumbers)>1)
+				{
+					$mixOutPut .= "
+						$mixQuestionEnd
+					" . str_replace("[BOX_TITLE]","Survey Conditions",$mixQuestionStart) . str_replace("\n","<br>",$conditions) . "
+						$mixQuestionEnd";
+				}
+		
+				$mixOutPut .= "<input type=\"hidden\" name=\"intSurveyId\" value=\"$survey_id\">";
+				DBO()->Survey->Title = $title;
+				DBO()->Survey->Form = $mixOutPut;
+			}
 		}
 
 		// Survey form has been submitted.
