@@ -249,10 +249,14 @@ Reflex_Date_Picker.dayMutators	= {};
 Reflex_Date_Picker.dayMutators.isToday	= function(oDate)
 {
 	var oCurrentDate	= new Date();
-	return	{
-				bSelectable	: (oDate.getDate() == oCurrentDate.getDate() && oDate.getMonth() == oCurrentDate.getMonth() && oDate.getFullYear() == oCurrentDate.getFullYear()),
-				sCSSClass	: 'reflex-datepicker-day-today'
-			};
+	var bEligible		= (oDate.getDate() === oCurrentDate.getDate() && oDate.getMonth() === oCurrentDate.getMonth() && oDate.getFullYear() === oCurrentDate.getFullYear());
+	if ()
+	{
+		return	{
+					bSelectable	: bEligible,
+					sCSSClass	: bEligible ? 'reflex-datepicker-day-today' : null
+				};
+	}
 };
 
 // Class Constants
