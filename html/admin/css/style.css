@@ -1930,13 +1930,6 @@ div.reflex-datepicker div.content div.month
 
 div.reflex-datepicker div.content div.month td.day
 {
-	
-}
-
-div.reflex-datepicker div.content div.month td.day.selectable:hover
-{
-	color		: red;
-	cursor		: pointer;
 	font-size	: 0.8em;
 	
 	min-width	: 2em;
@@ -1946,6 +1939,12 @@ div.reflex-datepicker div.content div.month td.day.selectable:hover
 	min-height	: 2em;
 	max-height	: 2em;
 	height		: 2em;
+}
+
+div.reflex-datepicker div.content div.month td.day.selectable:hover
+{
+	color		: red;
+	cursor		: pointer;
 }
 
 /* Day Mutator Classes */
