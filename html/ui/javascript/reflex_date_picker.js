@@ -260,6 +260,6 @@ Reflex_Date_Picker.dayMutators.isToday	= function(oDate)
 Reflex_Date_Picker.SELECT_MODE_DATE			= 'date';
 Reflex_Date_Picker.SELECT_MODE_DATE_TIME	= 'datetime';
 
-Reflex_Date_Picker.DEFAULT_START_OF_WEEK	= 0;	// Sunday
+Reflex_Date_Picker.DEFAULT_START_OF_WEEK	= 1;	// Monday
 Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE	= 9;
 Reflex_Date_Picker.DEFAULT_MONTHS_PER_ROW	= 3;
