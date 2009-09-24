@@ -213,6 +213,7 @@ var Reflex_Date_Picker	= Class.create
 					
 					// Set Cell Contents
 					domDay.innerHTML	= oDateOfMonth.getDate();
+					domDay.addClassName('selectable');
 					
 					// Day Mutator Callbacks
 					for (var i = 0; i < this.aDayMutatorCallbacks.length; i++)
@@ -229,7 +230,7 @@ var Reflex_Date_Picker	= Class.create
 						if (oResponse.bSelectable === false)
 						{
 							//domDay.removeEventListener();
-							domDay.addClassName('selectable');
+							domDay.removeClassName('selectable');
 						}
 					}
 					
