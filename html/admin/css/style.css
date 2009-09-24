@@ -1925,12 +1925,14 @@ div.reflex-datepicker div.content div.clear
 
 div.reflex-datepicker div.content div.month
 {
-	border	: 1px solid #333;
+	/*border	: 1px solid #333;*/
 	float	: left;
 }
 
 div.reflex-datepicker div.content div.month td.day
 {
+	border	: 1px solid #6899EF;
+	
 	text-align		: right;
 	vertical-align	: middle;
 	
@@ -1945,6 +1947,8 @@ div.reflex-datepicker div.content div.month td.day
 
 div.reflex-datepicker div.content div.month td.day.selectable:hover
 {
+	border	: 1px solid #2E66C8;
+	
 	color		: red;
 	cursor		: pointer;
 }
