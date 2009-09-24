@@ -34,7 +34,7 @@ var Reflex_Date_Picker	= Class.create
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
 		this.oDate				= new Date();
 		
-		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isToday];
+		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isInCurrentMonth, Reflex_Date_Picker.dayMutators.isToday];
 	},
 	
 	setPosition	: function(sPositionType, oConfig)
@@ -201,7 +201,7 @@ var Reflex_Date_Picker	= Class.create
 			{
 				var domDay		= document.createElement('td');
 				domDay.id		= this.sUID + '_' + Reflex_Date_Format.format("Ymd", oDateOfMonth);
-				domDay.addClassName('day');
+				//domDay.addClassName('day');
 				
 				// If the Day of the Month is the current day of the week, then add
 				if (oDateOfMonth.getDay() === (iDayOfWeek % 7) && oDateOfMonth.getMonth() === oMonthDate.getMonth())
@@ -256,8 +256,18 @@ Reflex_Date_Picker.dayMutators.isToday	= function(oDate)
 	var oCurrentDate	= new Date();
 	var bEligible		= (oDate.getDate() === oCurrentDate.getDate() && oDate.getMonth() === oCurrentDate.getMonth() && oDate.getFullYear() === oCurrentDate.getFullYear());
 	return	{
-				bSelectable	: bEligible ? true : null,
+				bSelectable	: null,
 				sCSSClass	: bEligible ? 'reflex-datepicker-day-today' : null
+			};
+};
+
+Reflex_Date_Picker.dayMutators.isInCurrentMonth	= function(oDate)
+{
+	var oCurrentDate	= new Date();
+	var bEligible		= (oDate.getMonth() === oCurrentDate.getMonth() && oDate.getFullYear() === oCurrentDate.getFullYear());
+	return	{
+				bSelectable	: bEligible ? null : false,
+				sCSSClass	: bEligible ? 'day' : null
 			};
 };
 
@@ -276,7 +286,7 @@ Reflex_Date_Picker.dayMutators.setWeekendInvalid	= function(oDate)
 	var oCurrentDate	= new Date();
 	var oIsWeekend		= Reflex_Date_Picker.dayMutators.isWeekend(oDate);
 	return	{
-				bSelectable	: oIsWeekend.sCSSClass ? false : true,
+				bSelectable	: oIsWeekend.sCSSClass ? false : null,
 				sCSSClass	: oIsWeekend.sCSSClass
 			};
 };
