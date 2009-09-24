@@ -1883,7 +1883,6 @@ div.tree-grid div.loading div
 	font-style		: italic;
 }
 
-
 div.tree-grid div.loading div span
 {
 	border				: 1px solid #000000;
@@ -1899,4 +1898,40 @@ div.tree-grid div.loading img
 	height			: 16px;
 	vertical-align	: middle;
 }
+/******************************************************************************/
+
+/******************************** DATE PICKER *********************************/
+
+div.reflex-datepicker
+{
+	border	: 1px solid #111;
+}
+
+div.reflex-datepicker div.header
+{
+	
+}
+
+div.reflex-datepicker div.content
+{
+	
+}
+
+div.reflex-datepicker div.content div.clear
+{
+	clear	: both;
+}
+
+dib.reflex-datepicker div.content div.month
+{
+	border	: 1px solid #333;
+	float	: left;
+}
+
+/* Day Mutator Classes */
+.reflex-datepicker-day-today
+{
+	
+}
+
 /******************************************************************************/
