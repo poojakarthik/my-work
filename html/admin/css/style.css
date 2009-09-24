@@ -1904,7 +1904,8 @@ div.tree-grid div.loading img
 
 div.reflex-datepicker
 {
-	border	: 1px solid #111;
+	border		: 1px solid #111;
+	font-size	: 0.8em;
 }
 
 div.reflex-datepicker div.header
@@ -1930,8 +1931,6 @@ div.reflex-datepicker div.content div.month
 
 div.reflex-datepicker div.content div.month td.day
 {
-	font-size	: 0.8em;
-	
 	min-width	: 2em;
 	max-width	: 2em;
 	width		: 2em;
