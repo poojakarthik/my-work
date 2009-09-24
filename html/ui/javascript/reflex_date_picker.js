@@ -250,13 +250,10 @@ Reflex_Date_Picker.dayMutators.isToday	= function(oDate)
 {
 	var oCurrentDate	= new Date();
 	var bEligible		= (oDate.getDate() === oCurrentDate.getDate() && oDate.getMonth() === oCurrentDate.getMonth() && oDate.getFullYear() === oCurrentDate.getFullYear());
-	if ()
-	{
-		return	{
-					bSelectable	: bEligible,
-					sCSSClass	: bEligible ? 'reflex-datepicker-day-today' : null
-				};
-	}
+	return	{
+				bSelectable	: bEligible,
+				sCSSClass	: bEligible ? 'reflex-datepicker-day-today' : null
+			};
 };
 
 // Class Constants
