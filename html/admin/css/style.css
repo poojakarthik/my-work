@@ -1931,7 +1931,7 @@ div.reflex-datepicker div.content div.month
 /* Day Mutator Classes */
 .reflex-datepicker-day-today
 {
-	
+	color	: #09f;
 }
 
 /******************************************************************************/
