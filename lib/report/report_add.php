@@ -16,77 +16,59 @@ require_once('../../flex.require.php');
 // TODO: Specify the DataReport here!  See report_skeleton.php for tut
 //----------------------------------------------------------------------------//
 
-$arrDataReport	= array();
-$arrDocReq		= array();
-$arrSQLSelect	= array();
-$arrSQLFields	= array();
-
-
-$arrDataReports = array();
-
-//---------------------------------------------------------------------------//
-// Invoice Run: Call Type Totals
-//---------------------------------------------------------------------------//
-
-$arrDataReport['Name']			= "Invoice Run: List Temporary Interim Invoices";
-$arrDataReport['Summary']		= "Shows a list of Interim Invoice Runs that are yet to be committed.";
-$arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
-$arrDataReport['Priviledges']	= 2147483648;									// Debug
-//$arrDataReport['Priviledges']	= 1;											// Live
-$arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "	Invoice i
-									JOIN InvoiceRun ir ON (ir.Id = i.invoice_run_id)
-									JOIN invoice_run_type irt ON (ir.invoice_run_type_id = irt.id AND irt.const_name IN ('INVOICE_RUN_TYPE_INTERIM'))
-									JOIN invoice_run_status irs ON (ir.invoice_run_status_id = irs.id AND irs.const_name IN ('INVOICE_RUN_STATUS_GENERATING', 'INVOICE_RUN_STATUS_TEMPORARY', 'INVOICE_RUN_STATUS_REVOKING', 'INVOICE_RUN_STATUS_REVOKED', 'INVOICE_RUN_STATUS_COMMITTING'))
-									JOIN Account a ON (a.Id = i.Account)";
-$arrDataReport['SQLWhere']		= "	1
-									
-						ORDER BY	ir.BillingDate ASC,
-									ir.Id ASC";
-$arrDataReport['SQLGroupBy']	= "";
-
-// Documentation Reqs
-$arrDocReq[]	= "DataReport";
-$arrDataReport['Documentation']	= serialize($arrDocReq);
-
-// SQL Select
-$arrSQLSelect['Account']							['Value']	= "a.Id";
-
-$arrSQLSelect['Account Name']						['Value']	= "a.BusinessName";
-
-$arrSQLSelect['Billing Date']						['Value']	= "ir.BillingDate";
-
-$arrSQLSelect['Invoice Run Status']					['Value']	= "irs.name";
-
-$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
-
-// SQL Fields
-$arrDataReport['SQLFields'] = serialize($arrSQLFields);
-
-
-// Add the report to the array of reports to add to the database
-$arrDataReports[] = $arrDataReport;
-
-
-
-//----------------------------------------------------------------------------//
-// Insert the Data Report(s)
-//----------------------------------------------------------------------------//
-
-TransactionStart();
-
-$insDataReport = new StatementInsert("DataReport");
-foreach ($arrDataReports as $arrDataReport)
+function showUsage()
 {
-	if (!$insDataReport->Execute($arrDataReport))
-	{
-		TransactionRollback();
-		Debug($insDataReport->Error());
-	}
+	echo	"\nUsage:\n".
+			"\tphp report_add.php REPORT_SOURCE_FILE\n".
+			"where:".
+			"\tREPORT_SOURCE_FILE is a php file defining the report to add (include the php file extension)\n\n";
+}
+
+// The file that defines the report, must stick all the details for the DataReport record, in this array
+$arrDataReport	= array();
+
+
+if ($argc != 2)
+{
+	showUsage();
+	exit(1);
+}
+
+$strFilename = $argv[1];
+
+if (substr($strFilename, -4) != '.php')
+{
+	echo "\nERROR: The report file must have the php extension\n";
+	showUsage();
+	exit(1);
+}
+
+if (!file_exists($strFilename))
+{
+	echo "\nERROR: Cannot find file: {$strFilename}\n";
+	showUsage();
+	exit(1);
+}
+
+// parse the report file
+require $strFilename;
+
+// Insert it into the database
+TransactionStart();
+$insDataReport = new StatementInsert("DataReport");
+
+echo "\nImporting report: '{$arrDataReport['Name']}' from {$strFilename}... ";
+
+if (!$insDataReport->Execute($arrDataReport))
+{
+	TransactionRollback();
+	echo "FAIL!!!\n";
+	Debug($insDataReport->Error());
+	exit(1);
 }
 
 TransactionCommit();
-Debug("OK!");
+echo "OK!\n";
 
 
 // finished
