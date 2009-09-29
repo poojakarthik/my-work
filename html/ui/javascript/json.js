@@ -190,22 +190,8 @@ jQuery.json = {
 
 		callPostJson: function()
 		{
-			alert("Keys: " + Object.keys({test: 'test', test2: 'balue'}));
-			alert("Values: " + Object.values({test: 'test', test2: 'balue'}));
-			var oTest	= {test: 'test', test2: 'balue'};
-			for (var i in oTest)
-			{
-				alert("jsonFunctionHelper Argument '" + i + "': " + oTest[i]);
-			}
-			alert("Arguments: " + arguments.toSource());
-			_______arguments	= arguments;
-			
-			var sDebug	= Reflex_Debug.asHTML(arguments).innerHTML;
 			this.localFunc.funcArgs = $A(arguments);
-			sDebug	+= Reflex_Debug.asHTML(this.localFunc.funcArgs).innerHTML;
-			Reflex_Debug.asHTMLPopup(arguments);
-			Reflex_Debug.asHTMLPopup(this.localFunc.funcArgs);
-			alert(sDebug);
+			alert(typeof [1,2,34]);
 
 			var data = {
 				json: jQuery.json.encode(this.localFunc.funcArgs)
