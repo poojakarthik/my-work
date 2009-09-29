@@ -380,10 +380,15 @@ jQuery.json = {
 				$Alert(objResponse.Message, null, null, 'modal');
 				return false;
 			}
+			else
+			{
+				$Alert(objResponse, null, null, 'modal');
+				return false;
+			}
 		}
 		else
 		{
-			$Alert(objResponse);
+			$Alert("No Response?");
 			return false;
 		}
 	},
