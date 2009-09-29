@@ -29,7 +29,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 	if (Object.isArray(mDebug))
 	{
 		// Debug as an Array
-		domTypeTD.innerHTML	= 'array';
+		domTypeTD.innerHTML	= 'array (' + mDebug.length + ')';
 		var domUL	= document.createElement('ul');
 		domValueTD.appendChild(domUL);
 		for (var i = 0; i < mDebug.length; i++)
@@ -60,6 +60,8 @@ Reflex_Debug.asHTML	= function(mDebug)
 		{
 			// Debug as an Object
 			case 'object':
+				domTypeTD.innerHTML	+= '(' + mDebug.length + ')';
+				
 				var domUL	= document.createElement('ul');
 				domValueTD.appendChild(domUL);
 				for (i in mDebug)
