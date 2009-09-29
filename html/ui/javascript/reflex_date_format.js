@@ -66,7 +66,7 @@ Reflex_Date_Format.parseToken	= function(oDate, sToken)
 		// DAY
 		case 'd':
 			// Day of the month, 2 digits with leading zeros
-			return Reflex_Date_Format.stringPad(oDate.getDate(), 2, '0', 'left');
+			return oDate.getDate().toPaddedString(2);
 			break;
 		case 'D':
 			// A textual representation of a day, three letters
@@ -127,7 +127,7 @@ Reflex_Date_Format.parseToken	= function(oDate, sToken)
 			break;
 		case 'm':
 			// Numeric representation of a month, with leading zeros
-			return Reflex_Date_Format.stringPad(oDate.getMonth() + 1, 2, '0', 'left');
+			return (oDate.getMonth() + 1).toPaddedString(2);
 			break;
 		case 'M':
 			// A short textual representation of a month, three letters
