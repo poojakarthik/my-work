@@ -201,8 +201,6 @@ jQuery.json = {
 
 		validateJsonResponse: function()
 		{
-			Reflex_Debug.asHTMLPopup(arguments);
-			
 			if (typeof Vixen != 'undefined')
 			{
 				Vixen.Popup.ClosePageLoadingSplash();
@@ -287,7 +285,6 @@ jQuery.json = {
 			localFunc: responseHandler
 		});
 
-		Reflex_Debug.asHTMLPopup(responseHandler);
 		return responseHandler.funcRemote;
 	},
 	
