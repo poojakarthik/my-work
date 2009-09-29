@@ -62,6 +62,8 @@ Reflex_Debug.asHTML	= function(mDebug)
 			case 'object':
 				domTypeTD.innerHTML	+= '(' + mDebug.length + ')';
 				
+				alert(Object.keys(mDebug));
+				
 				var domUL	= document.createElement('ul');
 				domValueTD.appendChild(domUL);
 				for (i in mDebug)
