@@ -190,6 +190,7 @@ jQuery.json = {
 
 		callPostJson: function()
 		{
+			alert(Object.toHTML(arguments));	
 			for (var i in arguments)
 			{
 				alert("jsonFunctionHelper Argument '" + i + "': " + arguments[i]);
