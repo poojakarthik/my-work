@@ -27,16 +27,19 @@ var Dataset_Ajax	= Class.create
 		var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecords.bind(this, fncCallback, intLimit, intOffset)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
 		if (this._intCacheMode == Dataset_Ajax.CACHE_MODE_NO_CACHING)
 		{
+			alert("Getting Range: " + intLimit + " records with offset " + intOffset);
 			// Yes -- AJAX just this range
 			fncJsonFunc(false, intLimit, intOffset);
 		}
 		else if (this._arrRecordCache == null || !this._intLastCachedOn || (this._intCacheTimeout && this._intCacheTimeout > (intTime - this._intLastCachedOn)))
 		{
+			alert("Getting Full Resultset");
 			// Yes -- AJAX full result set
 			fncJsonFunc();
 		}
 		else
 		{
+			alert("Already Cached");
 			// No -- already cached
 			this._getRecords(fncCallback, intLimit, intOffset);
 		}
@@ -83,6 +86,7 @@ var Dataset_Ajax	= Class.create
 		
 		if (bolForceRefresh || !this._intRecordCount)
 		{
+			alert("Getting Refresh");
 			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecordCount.bind(this, fncCallback)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
 			fncJsonFunc(true);
 		}
