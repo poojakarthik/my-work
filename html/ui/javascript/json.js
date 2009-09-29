@@ -360,7 +360,7 @@ jQuery.json = {
 	// handleResponse()	: Generic Response Handler
 	handleResponse		: function(fncCallback, bCloseLoadingSplash, objResponse)
 	{
-		alert(arguments);
+		alert(Object.inspect(arguments));
 		
 		if (bCloseLoadingSplash)
 		{
