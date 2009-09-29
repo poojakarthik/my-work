@@ -193,6 +193,8 @@ jQuery.json = {
 			var sDebug	= Reflex_Debug.asHTML(arguments).innerHTML;
 			this.localFunc.funcArgs = $A(arguments);
 			sDebug	+= Reflex_Debug.asHTML(this.localFunc.funcArgs).innerHTML;
+			Reflex_Debug.asHTMLPopup(arguments);
+			Reflex_Debug.asHTMLPopup(this.localFunc.funcArgs);
 			alert(sDebug);
 
 			var data = {
