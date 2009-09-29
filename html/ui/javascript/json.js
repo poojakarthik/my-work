@@ -192,9 +192,10 @@ jQuery.json = {
 		{
 			alert("Keys: " + Object.keys({test: 'test', test2: 'balue'}));
 			alert("Values: " + Object.values({test: 'test', test2: 'balue'}));
-			for (var i in {test: 'test', test2: 'balue'})
+			var oTest	= {test: 'test', test2: 'balue'};
+			for (var i in )
 			{
-				alert("jsonFunctionHelper Argument '" + i + "': " + arguments[i]);
+				alert("jsonFunctionHelper Argument '" + i + "': " + oTest[i]);
 			}
 			
 			var sDebug	= Reflex_Debug.asHTML(arguments).innerHTML;
