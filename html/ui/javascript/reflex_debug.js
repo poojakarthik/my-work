@@ -67,7 +67,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 				
 				var domUL	= document.createElement('ul');
 				domValueTD.appendChild(domUL);
-				for (mIndex in mDebug)
+				for (var mIndex in mDebug)
 				{
 					//alert("Parsing " + mIndex + " in mDebug");
 					var domChildLI	= document.createElement('li');
