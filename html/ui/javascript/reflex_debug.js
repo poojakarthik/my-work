@@ -114,4 +114,3 @@ Reflex_Debug.backtrace	= function()
 	
 	alert(sBacktrace);
 };
-}
