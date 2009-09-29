@@ -198,6 +198,7 @@ jQuery.json = {
 				alert("jsonFunctionHelper Argument '" + i + "': " + oTest[i]);
 			}
 			alert("Arguments: " + arguments.toSource());
+			_______arguments	= arguments;
 			
 			var sDebug	= Reflex_Debug.asHTML(arguments).innerHTML;
 			this.localFunc.funcArgs = $A(arguments);
