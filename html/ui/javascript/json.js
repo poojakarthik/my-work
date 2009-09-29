@@ -193,7 +193,7 @@ jQuery.json = {
 			alert("Keys: " + Object.keys({test: 'test', test2: 'balue'}));
 			alert("Values: " + Object.values({test: 'test', test2: 'balue'}));
 			var oTest	= {test: 'test', test2: 'balue'};
-			for (var i in )
+			for (var i in oTest)
 			{
 				alert("jsonFunctionHelper Argument '" + i + "': " + oTest[i]);
 			}
