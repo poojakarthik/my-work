@@ -34,7 +34,7 @@ var Reflex_Date_Picker	= Class.create
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
 		this.oDate				= new Date();
 		
-		this.oSetDateCallbacks	= {};
+		this.oSetDateH	= {};
 		
 		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isInCurrentMonth, Reflex_Date_Picker.dayMutators.isToday];
 	},
@@ -87,10 +87,9 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oContent.domElement.childElements().invoke('remove');
 		
 		// Remove all Day Event Handlers
-		for (sFormattedDate in this.oSetDateCallbacks)
+		for (sFormattedDate in this.oSetDateHandlers)
 		{
-			
-			delete this.oSetDateCallbacks[sFormattedDate];
+			delete this.oSetDateHandlers[sFormattedDate];
 		}
 		
 		// Render each visible month
