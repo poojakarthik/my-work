@@ -191,8 +191,7 @@ jQuery.json = {
 		callPostJson: function()
 		{
 			this.localFunc.funcArgs = $A(arguments);
-			alert(typeof [1,2,34]);
-
+			
 			var data = {
 				json: jQuery.json.encode(this.localFunc.funcArgs)
 			};
