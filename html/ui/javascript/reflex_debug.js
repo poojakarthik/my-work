@@ -128,7 +128,7 @@ Reflex_Debug.backtrace	= function()
 };
 
 // DEBUG
-var _____oTest	= {test1: 'value'; test2: 'value2'};
+var _____oTest	= {test1: 'value', test2: 'value2'};
 for (mIndex in _____oTest)
 {
 	alert(mIndex + ": " + _____oTest[mIndex]);
