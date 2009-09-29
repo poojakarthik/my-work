@@ -66,9 +66,9 @@ Reflex_Debug.asHTML	= function(mDebug)
 				
 				var domUL	= document.createElement('ul');
 				domValueTD.appendChild(domUL);
-				for (i in mDebug)
+				for (mIndex in mDebug)
 				{
-					alert("Parsing "+i+" in mDebug");
+					alert("Parsing " + mIndex + " in mDebug");
 					var domChildLI	= document.createElement('li');
 					domUL.appendChild(domChildLI);
 					var domChildTable	= document.createElement('table');
@@ -79,11 +79,11 @@ Reflex_Debug.asHTML	= function(mDebug)
 					domChildTBody.appendChild(domChildTR);
 					
 					var domKeyTH		= document.createElement('th');
-					domKeyTH.innerHTML	= "['"+i+"'] => ";
+					domKeyTH.innerHTML	= "['" + mIndex + "'] => ";
 					domChildTR.appendChild(domKeyTH);
 					
 					var domValueTD		= document.createElement('td');
-					domValueTD.appendChild(Reflex_Debug.asHTML(mDebug[i]));
+					domValueTD.appendChild(Reflex_Debug.asHTML(mDebug[mIndex]));
 					domChildTR.appendChild(domValueTD);
 				}
 				break;
