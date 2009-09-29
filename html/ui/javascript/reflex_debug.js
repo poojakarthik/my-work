@@ -66,6 +66,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 				domValueTD.appendChild(domUL);
 				for (i in mDebug)
 				{
+					alert("Parsing "+i+" in mDebug");
 					var domChildLI	= document.createElement('li');
 					domUL.appendChild(domChildLI);
 					var domChildTable	= document.createElement('table');
