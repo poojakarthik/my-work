@@ -190,9 +190,10 @@ jQuery.json = {
 
 		callPostJson: function()
 		{
-			Reflex_Debug.asHTMLPopup(arguments);
+			var sDebug	= Reflex_Debug.asHTML(arguments);
 			this.localFunc.funcArgs = $A(arguments);
-			Reflex_Debug.asHTMLPopup(this.localFunc.funcArgs);
+			sDebug	+= Reflex_Debug.asHTML(this.localFunc.funcArgs);
+			alert(sDebug);
 
 			var data = {
 				json: jQuery.json.encode(this.localFunc.funcArgs)
