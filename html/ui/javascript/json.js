@@ -190,6 +190,11 @@ jQuery.json = {
 
 		callPostJson: function()
 		{
+			for (var i in arguments)
+			{
+				alert("jsonFunctionHelper Argument '" + i + "': " + arguments[i]);
+			}
+			
 			var sDebug	= Reflex_Debug.asHTML(arguments).innerHTML;
 			this.localFunc.funcArgs = $A(arguments);
 			sDebug	+= Reflex_Debug.asHTML(this.localFunc.funcArgs).innerHTML;
