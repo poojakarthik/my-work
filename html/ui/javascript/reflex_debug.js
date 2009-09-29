@@ -62,7 +62,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 			case 'object':
 				domTypeTD.innerHTML	+= '(' + mDebug.length + ')';
 				
-				alert(Object.keys(mDebug));
+				alert("mDebug Keys: " + Object.keys(mDebug));
 				
 				var domUL	= document.createElement('ul');
 				domValueTD.appendChild(domUL);
@@ -126,10 +126,11 @@ Reflex_Debug.backtrace	= function()
 	
 	alert(sBacktrace);
 };
-
+/*
 // DEBUG
 var _____oTest	= {test1: 'value', test2: 'value2'};
 for (mIndex in _____oTest)
 {
 	alert(mIndex + ": " + _____oTest[mIndex]);
 }
+*/
