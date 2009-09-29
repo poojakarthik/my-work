@@ -60,6 +60,8 @@ Reflex_Debug.asHTML	= function(mDebug)
 		{
 			// Debug as an Object
 			case 'object':
+				mDebug	= {test1: 'value', test2: 'value2'};
+				
 				domTypeTD.innerHTML	+= '(' + mDebug.length + ')';
 				
 				alert("mDebug Keys: " + Object.keys(mDebug));

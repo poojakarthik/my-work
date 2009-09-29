@@ -39,7 +39,7 @@ Date.prototype.getDaysInMonth	= function()
  *	e.g.	(new Date()).shift(1, 'days');		or	(new Date()).shift(1, Date.DATE_INTERVAL_DAY);
  *			(new Date()).shift(-6, 'months');	or	(new Date()).shift(-6, Date.DATE_INTERVAL_MONTH);
  */
-Date.prototype.shiftInterval	= function(iInterval, sIntervalType)
+Date.prototype.shift	= function(iInterval, sIntervalType)
 {
 	iInterval	= parseInt(iInterval);
 	switch (sIntervalType)
