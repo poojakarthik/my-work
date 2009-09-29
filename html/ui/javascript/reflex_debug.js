@@ -108,7 +108,14 @@ Reflex_Debug.backtrace	= function()
 	var sBacktrace	= '';
 	while (fCurrent)
 	{
-		sBacktrace	+= (fCurrent.caller.name) + '\n';
+		if (fCurrent.caller)
+		{
+			sBacktrace	+= (fCurrent.caller.name) + '\n';
+		}
+		else
+		{
+			sBacktrace	+= "[anonymous]\n";
+		}
 		fCurrent	= fCurrent.caller;
 	}
 	
