@@ -550,6 +550,8 @@ function VixenPopupClass()
 	 */
 	this.Alert = function(strMessage, strSize, strPopupId, strWindowType, strTitle, fncCallback)
 	{
+		Reflex_Debug.backtrace();
+		
 		if (strWindowType == null)
 		{
 			var strWindowType		= "autohide";

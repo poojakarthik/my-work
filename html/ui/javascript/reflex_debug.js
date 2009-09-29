@@ -101,3 +101,17 @@ Reflex_Debug.asHTMLPopup	= function(mDebug)
 	domDebugDIV.appendChild(Reflex_Debug.asHTML(mDebug));
 	Reflex_Popup.alert(domDebugDIV);
 };
+
+Reflex_Debug.backtrace	= function()
+{
+	var fCurrent	= Reflex_Debug.backtrace.caller;
+	var sBacktrace	= '';
+	while (fCurrent)
+	{
+		sBacktrace	+= (fCurrent.caller) + '\n';
+		fCurrent	= fCurrent.caller;
+	}
+	
+	alert(sBacktrace);
+};
+}
