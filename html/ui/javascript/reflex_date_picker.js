@@ -219,7 +219,7 @@ var Reflex_Date_Picker	= Class.create
 					//alert("Adding Cell for " + oDateOfMonth);
 					
 					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth);
-					this.oSetDateCallbacks[sFormattedDate]	= this.setDate.bind(this, sFormattedDate);
+					this.oSetDateCallbacks[sFormattedDate]	= this.setDate.bind(this, new Date(oDateOfMonth));
 					
 					// Add Event Listener
 					domDay.addEventListener('click', this.oSetDateCallbacks[sFormattedDate], false);
