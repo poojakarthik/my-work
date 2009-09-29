@@ -232,6 +232,10 @@ Reflex_Date_Format.parseToken	= function(oDate, sToken)
 			// Minutes with leading zeros
 			return oDate.getMinutes().toPaddedString(2);
 			break;
+		case 'i':
+			// Seconds, with leading zeros
+			return oDate.getSeconds().toPaddedString(2);
+			break;
 		case 'u':
 			// Microseconds
 			return (oDate.getMilliseconds() * 1000).toPaddedString(2);
