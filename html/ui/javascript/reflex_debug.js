@@ -26,8 +26,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 	var domValueTD			= document.createElement('td');
 	domValueTR.appendChild(domValueTD);
 	
-	alert(typeof mDebug);
-	if (mDebug.constructor && mDebug.constructor.name == 'Array')
+	if (Object.isArray(mDebug) || (mDebug.length && !Object.keys(mDebug)))
 	{
 		mDebug	= $A(mDebug);
 		
