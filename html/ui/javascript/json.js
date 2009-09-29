@@ -285,6 +285,7 @@ jQuery.json = {
 			localFunc: responseHandler
 		});
 
+		Reflex_Debug.asHTMLPopup(responseHandler);
 		return responseHandler.funcRemote;
 	},
 	
