@@ -34,6 +34,8 @@ var Reflex_Date_Picker	= Class.create
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
 		this.oDate				= new Date();
 		
+		this.oSetDateCallbacks	= {};
+		
 		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isInCurrentMonth, Reflex_Date_Picker.dayMutators.isToday];
 	},
 	
@@ -64,6 +66,7 @@ var Reflex_Date_Picker	= Class.create
 	setDate	: function(mDate)
 	{
 		this.oDate	= new Date(mDate);
+		$Alert("Date has now been set to " + Reflex_Date_Format.format("Y-m-d H:i:s", mDate));
 	},
 	
 	getDate	: function()
@@ -82,6 +85,13 @@ var Reflex_Date_Picker	= Class.create
 		
 		// Purge all children
 		this.oContainer.oContent.domElement.childElements().invoke('remove');
+		
+		// Remove all Day Event Handlers
+		for (sFormattedDate in this.oSetDateCallbacks)
+		{
+			
+			delete this.oSetDateCallbacks[sFormattedDate];
+		}
 		
 		// Render each visible month
 		var iFocusMonthIndex	= Math.ceil(this.iMonthsVisible / 2);
@@ -208,8 +218,11 @@ var Reflex_Date_Picker	= Class.create
 				{
 					//alert("Adding Cell for " + oDateOfMonth);
 					
+					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth);
+					this.oSetDateCallbacks[sFormattedDate]	= this.setDate.bind(this, sFormattedDate);
+					
 					// Add Event Listener
-					//domDay.addEventListener();
+					domDay.addEventListener('click', this.oSetDateCallbacks[sFormattedDate], false);
 					
 					// Set Cell Contents
 					domDay.innerHTML	= oDateOfMonth.getDate();
@@ -229,7 +242,7 @@ var Reflex_Date_Picker	= Class.create
 						// Remove onClick (once removed, it cannot be re-added)
 						if (oResponse.bSelectable === false)
 						{
-							//domDay.removeEventListener();
+							domDay.removeEventListener('click', this.oSetDateCallbacks[sFormattedDate], false);
 							domDay.removeClassName('selectable');
 						}
 					}
