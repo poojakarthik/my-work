@@ -1,3 +1,4 @@
+/*
 // Extends the JS Date Object
 Date.DATE_INTERVAL_DAY		= 'days';
 Date.DATE_INTERVAL_MONTH	= 'months';
@@ -37,7 +38,7 @@ Date.prototype.getDaysInMonth	= function()
  * 
  *	e.g.	(new Date()).shift(1, 'days');		or	(new Date()).shift(1, Date.DATE_INTERVAL_DAY);
  *			(new Date()).shift(-6, 'months');	or	(new Date()).shift(-6, Date.DATE_INTERVAL_MONTH);
- */
+ *//*
 Date.prototype.shiftInterval	= function(iInterval, sIntervalType)
 {
 	iInterval	= parseInt(iInterval);
@@ -110,4 +111,4 @@ Date.$_UNIT_TESTS_.shift	= function(oSourceDate, bProgressive)
 		alert("Test " + (i + 1) + " of " + Date.$_UNIT_TEST_DATA_.shift.length + ": " + oDate + " + " + oTestData.iInterval + " " + oTestData.sIntervalType + " = " + oNewDate);
 	}
 }
-
+*/
