@@ -361,15 +361,8 @@ jQuery.json = {
 	},
 	
 	// handleResponse()	: Generic Response Handler
-	handleResponse		: function(fncCallback, bCloseLoadingSplash, objResponse)
+	handleResponse		: function(fncCallback, objResponse)
 	{
-		Reflex_Debug.asHTMLPopup($A(arguments));
-		
-		if (bCloseLoadingSplash)
-		{
-			Vixen.Popup.ClosePageLoadingSplash();
-		}
-		
 		//alert(objResponse);
 		//alert(fncCallback);
 		if (objResponse)
