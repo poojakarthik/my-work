@@ -60,7 +60,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 		{
 			// Debug as an Object
 			case 'object':
-				mDebug	= {test1: 'value', test2: 'value2'};
+				//mDebug	= {test1: 'value', test2: 'value2'};
 				
 				domTypeTD.innerHTML	+= '(' + Object.keys(mDebug).length + ')';
 				
@@ -70,7 +70,7 @@ Reflex_Debug.asHTML	= function(mDebug)
 				domValueTD.appendChild(domUL);
 				for (mIndex in mDebug)
 				{
-					alert("Parsing " + mIndex + " in mDebug");
+					//alert("Parsing " + mIndex + " in mDebug");
 					var domChildLI	= document.createElement('li');
 					domUL.appendChild(domChildLI);
 					var domChildTable	= document.createElement('table');
