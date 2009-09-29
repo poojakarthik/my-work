@@ -363,7 +363,7 @@ jQuery.json = {
 	// handleResponse()	: Generic Response Handler
 	handleResponse		: function(fncCallback, bCloseLoadingSplash, objResponse)
 	{
-		Reflex_Debug.asHTMLPopup(arguments);
+		Reflex_Debug.asHTMLPopup($A(arguments));
 		
 		if (bCloseLoadingSplash)
 		{
