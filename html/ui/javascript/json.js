@@ -386,7 +386,7 @@ jQuery.json = {
 		}
 		else
 		{
-			$Alert("No Response?");
+			$Alert("There was an error communicating with the Server");
 			return false;
 		}
 	},
