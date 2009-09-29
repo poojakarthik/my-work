@@ -360,6 +360,8 @@ jQuery.json = {
 	// handleResponse()	: Generic Response Handler
 	handleResponse		: function(fncCallback, bCloseLoadingSplash, objResponse)
 	{
+		alert(arguments);
+		
 		if (bCloseLoadingSplash)
 		{
 			Vixen.Popup.ClosePageLoadingSplash();
