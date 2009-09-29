@@ -26,8 +26,10 @@ Reflex_Debug.asHTML	= function(mDebug)
 	var domValueTD			= document.createElement('td');
 	domValueTR.appendChild(domValueTD);
 	
-	if (Object.isArray(mDebug))
+	if ($A(mDebug))
 	{
+		mDebug	= $A(mDebug);
+		
 		// Debug as an Array
 		domTypeTD.innerHTML	= 'array (' + mDebug.length + ')';
 		var domUL	= document.createElement('ul');
