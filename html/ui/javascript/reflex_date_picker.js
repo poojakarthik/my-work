@@ -68,7 +68,7 @@ var Reflex_Date_Picker	= Class.create
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
 		this.oDate				= new Date();
 		
-		this.oSetDateHanders	= {};
+		this.oSetDateHandlers	= {};
 		
 		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isInCurrentMonth, Reflex_Date_Picker.dayMutators.isToday];
 	},
