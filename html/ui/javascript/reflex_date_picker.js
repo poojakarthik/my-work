@@ -38,7 +38,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oTime				= {};
 		this.oContainer.oFooter.oTime.domElement	= document.createElement('div');
 		this.oContainer.oFooter.oTime.domElement.addClassName('time');
-		this.oContainer.oFooter.appendChild(this.oContainer.oFooter.oTime.domElement);
+		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oTime.domElement);
 		
 		this.oContainer.oFooter.oTime.oHour					= {};
 		this.oContainer.oFooter.oTime.oHour.domElement		= document.createElement('input');
