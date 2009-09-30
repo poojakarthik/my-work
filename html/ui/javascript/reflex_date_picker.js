@@ -69,6 +69,12 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oTime.oSecond.domElement.maxLength	= 2;
 		this.oContainer.oFooter.oTime.domElement.appendChild(this.oContainer.oFooter.oTime.oSecond.domElement);
 		
+		this.oContainer.oFooter.oNow						= {};
+		this.oContainer.oFooter.oNow.domElement				= document.createElement('button');
+		this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Now';
+		this.oContainer.oFooter.oNow.domElement.observe('click', this.setDate('now'));
+		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oNow.domElement);
+		
 		document.body.appendChild(this.oContainer.domElement);
 		
 		// Temporary
@@ -125,7 +131,7 @@ var Reflex_Date_Picker	= Class.create
 	
 	setDate	: function(mDate)
 	{
-		this.oDate	= new Date(mDate);
+		this.oDate	= (!mDate || mDate.toLowerCase() === 'now') ? new Date() : new Date(mDate);
 		//$Alert("Date has now been set to " + Reflex_Date_Format.format("Y-m-d H:i:s", mDate));
 	},
 	
