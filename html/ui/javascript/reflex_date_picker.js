@@ -72,7 +72,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oNow						= {};
 		this.oContainer.oFooter.oNow.domElement				= document.createElement('button');
 		this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Now';
-		this.oContainer.oFooter.oNow.domElement.observe('click', this.setDate('now'));
+		this.oContainer.oFooter.oNow.domElement.observe('click', this.setDate.bind(this, 'now'));
 		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oNow.domElement);
 		
 		document.body.appendChild(this.oContainer.domElement);
