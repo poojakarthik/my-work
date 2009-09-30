@@ -267,7 +267,7 @@ var Reflex_Date_Picker	= Class.create
 					this.oSetDateHandlers[sFormattedDate]	= this.setDate.bind(this, new Date(oDateOfMonth));
 					
 					// Add Event Listener
-					domDay.addEventListener('click', this.oSetDateCallbacks[sFormattedDate], false);
+					domDay.addEventListener('click', this.oSetDateHandlers[sFormattedDate], false);
 					
 					// Set Cell Contents
 					domDay.innerHTML	= oDateOfMonth.getDate();
