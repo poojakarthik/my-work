@@ -11,15 +11,49 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.domElement.id	= this.sUID;
 		this.oContainer.domElement.addClassName('reflex-datepicker');
 		
+		// Header
 		this.oContainer.oHeader				= {};
 		this.oContainer.oHeader.domElement	= document.createElement('div');
 		this.oContainer.domElement.appendChild(this.oContainer.oHeader.domElement);
 		this.oContainer.oHeader.domElement.addClassName('header');
 		
+		this.oContainer.oHeader.oLabel				= {};
+		this.oContainer.oHeader.oLabel.domElement	= document.createElement('div');
+		
+		this.oContainer.oHeader.oCloseButton			= {};
+		this.oContainer.oHeader.oCloseButton.domElement	= document.createElement('div');
+		
+		// Content
 		this.oContainer.oContent			= {};
 		this.oContainer.oContent.domElement	= document.createElement('div');
 		this.oContainer.domElement.appendChild(this.oContainer.oContent.domElement);
 		this.oContainer.oContent.domElement.addClassName('content');
+		
+		// Footer
+		this.oContainer.oFooter				= {};
+		this.oContainer.oFooter.domElement	= document.createElement('div');
+		this.oContainer.oContent.domElement.addClassName('footer');
+		this.oContainer.domElement.appendChild(this.oContainer.oFooter.domElement);
+		
+		this.oContainer.oFooter.oTime				= {};
+		this.oContainer.oFooter.oTime.domElement	= document.createElement('div');
+		this.oContainer.oFooter.oTime.domElement.addClassName('time');
+		this.oContainer.domElement.oFooter.appendChild(this.oContainer.oFooter.oTime.domElement);
+		
+		this.oContainer.oFooter.oTime.oHour					= {};
+		this.oContainer.oFooter.oTime.oHour.domElement		= document.createElement('input');
+		this.oContainer.oFooter.oTime.oHour.domElement.type	= 'text';
+		this.oContainer.domElement.oFooter.oTime.appendChild(this.oContainer.oFooter.oTime.oHour.domElement);
+		
+		this.oContainer.oFooter.oTime.oMinute					= {};
+		this.oContainer.oFooter.oTime.oMinute.domElement		= document.createElement('input');
+		this.oContainer.oFooter.oTime.oMinute.domElement.type	= 'text';
+		this.oContainer.domElement.oFooter.oTime.appendChild(this.oContainer.oFooter.oTime.oMinute.domElement);
+		
+		this.oContainer.oFooter.oTime.oSecond					= {};
+		this.oContainer.oFooter.oTime.oSecond.domElement		= document.createElement('input');
+		this.oContainer.oFooter.oTime.oSecond.domElement.type	= 'text';
+		this.oContainer.domElement.oFooter.oTime.appendChild(this.oContainer.oFooter.oTime.oSecond.domElement);
 		
 		document.body.appendChild(this.oContainer.domElement);
 		
@@ -34,7 +68,7 @@ var Reflex_Date_Picker	= Class.create
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
 		this.oDate				= new Date();
 		
-		this.oSetDateH	= {};
+		this.oSetDateHanders	= {};
 		
 		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isInCurrentMonth, Reflex_Date_Picker.dayMutators.isToday];
 	},
@@ -47,6 +81,18 @@ var Reflex_Date_Picker	= Class.create
 	setSelectMode	: function(mMode)
 	{
 		
+	},
+	
+	setDateChangeCallback	: function(fnCallback)
+	{
+		if (typeof fnCallback === 'function')
+		{
+			this.fnDateChangeCallback	= fnCallback;
+		}
+		else
+		{
+			throw "fnCallback is not a Function!";
+		}
 	},
 	
 	setMonthsVisible	: function(iMonths, iMonthsPerRow)
@@ -66,7 +112,7 @@ var Reflex_Date_Picker	= Class.create
 	setDate	: function(mDate)
 	{
 		this.oDate	= new Date(mDate);
-		$Alert("Date has now been set to " + Reflex_Date_Format.format("Y-m-d H:i:s", mDate));
+		//$Alert("Date has now been set to " + Reflex_Date_Format.format("Y-m-d H:i:s", mDate));
 	},
 	
 	getDate	: function()
@@ -218,7 +264,7 @@ var Reflex_Date_Picker	= Class.create
 					//alert("Adding Cell for " + oDateOfMonth);
 					
 					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth);
-					this.oSetDateCallbacks[sFormattedDate]	= this.setDate.bind(this, new Date(oDateOfMonth));
+					this.oSetDateHandlers[sFormattedDate]	= this.setDate.bind(this, new Date(oDateOfMonth));
 					
 					// Add Event Listener
 					domDay.addEventListener('click', this.oSetDateCallbacks[sFormattedDate], false);
@@ -241,7 +287,7 @@ var Reflex_Date_Picker	= Class.create
 						// Remove onClick (once removed, it cannot be re-added)
 						if (oResponse.bSelectable === false)
 						{
-							domDay.removeEventListener('click', this.oSetDateCallbacks[sFormattedDate], false);
+							domDay.removeEventListener('click', this.oSetDateHandlers[sFormattedDate], false);
 							domDay.removeClassName('selectable');
 						}
 					}
