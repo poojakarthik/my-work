@@ -47,12 +47,20 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oTime.oHour.domElement.maxLength	= 2;
 		this.oContainer.oFooter.oTime.domElement.appendChild(this.oContainer.oFooter.oTime.oHour.domElement);
 		
+		var	domColon		= document.createElement('span');
+		domColon.innerHTML	= ':';
+		this.oContainer.oFooter.oTime.domElement.appendChild(domColon);
+		
 		this.oContainer.oFooter.oTime.oMinute						= {};
 		this.oContainer.oFooter.oTime.oMinute.domElement			= document.createElement('input');
 		this.oContainer.oFooter.oTime.oMinute.domElement.type		= 'text';
 		this.oContainer.oFooter.oTime.oMinute.domElement.size		= 2;
 		this.oContainer.oFooter.oTime.oMinute.domElement.maxLength	= 2;
 		this.oContainer.oFooter.oTime.domElement.appendChild(this.oContainer.oFooter.oTime.oMinute.domElement);
+		
+		var	domColon		= document.createElement('span');
+		domColon.innerHTML	= ':';
+		this.oContainer.oFooter.oTime.domElement.appendChild(domColon);
 		
 		this.oContainer.oFooter.oTime.oSecond						= {};
 		this.oContainer.oFooter.oTime.oSecond.domElement			= document.createElement('input');
