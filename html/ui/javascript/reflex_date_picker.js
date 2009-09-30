@@ -14,8 +14,8 @@ var Reflex_Date_Picker	= Class.create
 		// Header
 		this.oContainer.oHeader				= {};
 		this.oContainer.oHeader.domElement	= document.createElement('div');
-		this.oContainer.domElement.appendChild(this.oContainer.oHeader.domElement);
 		this.oContainer.oHeader.domElement.addClassName('header');
+		this.oContainer.domElement.appendChild(this.oContainer.oHeader.domElement);
 		
 		this.oContainer.oHeader.oLabel				= {};
 		this.oContainer.oHeader.oLabel.domElement	= document.createElement('div');
@@ -26,8 +26,8 @@ var Reflex_Date_Picker	= Class.create
 		// Content
 		this.oContainer.oContent			= {};
 		this.oContainer.oContent.domElement	= document.createElement('div');
-		this.oContainer.domElement.appendChild(this.oContainer.oContent.domElement);
 		this.oContainer.oContent.domElement.addClassName('content');
+		this.oContainer.domElement.appendChild(this.oContainer.oContent.domElement);
 		
 		// Footer
 		this.oContainer.oFooter				= {};
