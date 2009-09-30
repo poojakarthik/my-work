@@ -32,7 +32,7 @@ var Reflex_Date_Picker	= Class.create
 		// Footer
 		this.oContainer.oFooter				= {};
 		this.oContainer.oFooter.domElement	= document.createElement('div');
-		this.oContainer.oContent.domElement.addClassName('footer');
+		this.oContainer.oFooter.domElement.addClassName('footer');
 		this.oContainer.domElement.appendChild(this.oContainer.oFooter.domElement);
 		
 		this.oContainer.oFooter.oTime				= {};
