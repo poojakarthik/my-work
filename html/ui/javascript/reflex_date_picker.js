@@ -40,19 +40,25 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oTime.domElement.addClassName('time');
 		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oTime.domElement);
 		
-		this.oContainer.oFooter.oTime.oHour					= {};
-		this.oContainer.oFooter.oTime.oHour.domElement		= document.createElement('input');
-		this.oContainer.oFooter.oTime.oHour.domElement.type	= 'text';
+		this.oContainer.oFooter.oTime.oHour							= {};
+		this.oContainer.oFooter.oTime.oHour.domElement				= document.createElement('input');
+		this.oContainer.oFooter.oTime.oHour.domElement.type			= 'text';
+		this.oContainer.oFooter.oTime.oHour.domElement.size			= 2;
+		this.oContainer.oFooter.oTime.oHour.domElement.maxLength	= 2;
 		this.oContainer.oFooter.oTime.domElement.appendChild(this.oContainer.oFooter.oTime.oHour.domElement);
 		
-		this.oContainer.oFooter.oTime.oMinute					= {};
-		this.oContainer.oFooter.oTime.oMinute.domElement		= document.createElement('input');
-		this.oContainer.oFooter.oTime.oMinute.domElement.type	= 'text';
+		this.oContainer.oFooter.oTime.oMinute						= {};
+		this.oContainer.oFooter.oTime.oMinute.domElement			= document.createElement('input');
+		this.oContainer.oFooter.oTime.oMinute.domElement.type		= 'text';
+		this.oContainer.oFooter.oTime.oMinute.domElement.size		= 2;
+		this.oContainer.oFooter.oTime.oMinute.domElement.maxLength	= 2;
 		this.oContainer.oFooter.oTime.domElement.appendChild(this.oContainer.oFooter.oTime.oMinute.domElement);
 		
-		this.oContainer.oFooter.oTime.oSecond					= {};
-		this.oContainer.oFooter.oTime.oSecond.domElement		= document.createElement('input');
-		this.oContainer.oFooter.oTime.oSecond.domElement.type	= 'text';
+		this.oContainer.oFooter.oTime.oSecond						= {};
+		this.oContainer.oFooter.oTime.oSecond.domElement			= document.createElement('input');
+		this.oContainer.oFooter.oTime.oSecond.domElement.type		= 'text';
+		this.oContainer.oFooter.oTime.oSecond.domElement.size		= 2;
+		this.oContainer.oFooter.oTime.oSecond.domElement.maxLength	= 2;
 		this.oContainer.oFooter.oTime.domElement.appendChild(this.oContainer.oFooter.oTime.oSecond.domElement);
 		
 		document.body.appendChild(this.oContainer.domElement);
