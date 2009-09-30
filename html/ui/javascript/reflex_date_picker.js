@@ -155,6 +155,11 @@ var Reflex_Date_Picker	= Class.create
 			oVisibleMonth.shift(1, Date.DATE_INTERVAL_MONTH);
 			this.oContainer.oContent.domElement.appendChild(this._renderMonthView(oVisibleMonth.getMonth() + 1, oVisibleMonth.getFullYear()).domElement);
 		}
+
+		// Add in a clearing
+		var oClearing	= document.createElement('div');
+		oClearing.addClassName('clear');
+		this.oContainer.oContent.domElement.appendChild(oClearing);
 	},
 	
 	show	: function()
