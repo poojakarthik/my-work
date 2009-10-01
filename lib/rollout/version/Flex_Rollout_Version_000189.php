@@ -19,9 +19,9 @@ class Flex_Rollout_Version_000189 extends Flex_Rollout_Version
 		
 		//	1:	Add the 'Cooling Off' Credit Control Status
 		$strSQL = "	INSERT INTO	credit_control_status
-						(name, can_bar, send_late_notice, description, const_name)
+						(id, name, can_bar, send_late_notice, description, const_name)
 					VALUES
-						('Cooling Off', 0, 1, 'Do not bar.', 'CREDIT_CONTROL_STATUS_COOLING_OFF');";
+						(7, 'Cooling Off', 0, 1, 'Do not bar.', 'CREDIT_CONTROL_STATUS_COOLING_OFF');";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
