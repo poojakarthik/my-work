@@ -4,7 +4,7 @@
 // Aged Receivables Report
 //---------------------------------------------------------------------------//
 
-$arrDataReport['Name']			= "Aged Receivables Report per Account";
+$arrDataReport['Name']			= "Aged Receivables (30/60/90 Days) Report per Account";
 $arrDataReport['Summary']		= "Shows how much each Account owes, grouped by how old the overdue amount is (1-30 days, 30-60 days, 60-90 days, 90+ days old).";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 2147483648;									// Debug
