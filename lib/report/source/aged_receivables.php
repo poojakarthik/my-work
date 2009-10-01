@@ -14,7 +14,7 @@ $arrDataReport['SQLTable']		= "	Invoice i
 									JOIN Account a ON (i.Account = a.Id)
 									JOIN CustomerGroup cg ON (cg.Id = a.CustomerGroup)
 									JOIN Contact c ON a.PrimaryContact = c.Id
-									JOIN credit_control_status ccs ON (ccs.id = a.credit_control_status)";
+									LEFT JOIN credit_control_status ccs ON (ccs.id = a.credit_control_status)";
 $arrDataReport['SQLWhere']		= "	(
 										(<ShowArchived> = 1)
 										OR (<ShowArchived> = 0 AND a.Archived != 1)
