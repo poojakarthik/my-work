@@ -936,7 +936,12 @@ class Application_Handler_Invoice extends Application_Handler
 SELECT		a.id																											AS account_id,
 			a.BusinessName																									AS account_name,
 			dm.name																											AS delivery_method,
-			ADDDATE(CAST(DATE_FORMAT(CURDATE(), CONCAT('%Y-%m-', LPAD(pt.invoice_day, 2, '0'))) AS DATE), INTERVAL 1 MONTH)	AS next_invoice_date,
+			CASE
+				WHEN (CAST(DATE_FORMAT(CURDATE(), '%d') AS UNSIGNED) < pt.invoice_day
+					THEN CAST(DATE_FORMAT(CURDATE(), CONCAT('%Y-%m-', LPAD(pt.invoice_day, 2, '0'))) AS DATE)
+				ELSE
+					ADDDATE(CAST(DATE_FORMAT(CURDATE(), CONCAT('%Y-%m-', LPAD(pt.invoice_day, 2, '0'))) AS DATE), INTERVAL 1 MONTH)
+			END																												AS next_invoice_date,
 			service_status_count.services_active																			AS services_active,
 			service_status_count.services_pending																			AS services_pending,
 			s.Id																											AS service_id,
