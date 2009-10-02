@@ -937,7 +937,7 @@ SELECT		a.id																											AS account_id,
 			a.BusinessName																									AS account_name,
 			dm.name																											AS delivery_method,
 			CASE
-				WHEN (CAST(DATE_FORMAT(CURDATE(), '%d') AS UNSIGNED) < pt.invoice_day
+				WHEN CAST(DATE_FORMAT(CURDATE(), '%d') AS UNSIGNED) < pt.invoice_day
 					THEN CAST(DATE_FORMAT(CURDATE(), CONCAT('%Y-%m-', LPAD(pt.invoice_day, 2, '0'))) AS DATE)
 				ELSE
 					ADDDATE(CAST(DATE_FORMAT(CURDATE(), CONCAT('%Y-%m-', LPAD(pt.invoice_day, 2, '0'))) AS DATE), INTERVAL 1 MONTH)
