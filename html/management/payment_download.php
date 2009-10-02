@@ -87,6 +87,8 @@
 						$oCustomerGroup->setAttribute('id', "customer-group[{$iCustomerGroup}]");
 						$oCustomerGroup->setAttribute('uid', $iCustomerGroup);
 						
+						$oCustomerGroups->appendChild($oCustomerGroup);
+						
 						foreach ($aCustomerGroup as $sField=>$mValue)
 						{
 							$oCustomerGroupProperty	= $oDOMDocument->createElement(str_replace('_', '-', $sField));
