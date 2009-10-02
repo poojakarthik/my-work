@@ -134,8 +134,6 @@
 									$oPaymentProperty->appendChild($oDOMDocument->createCDATASection($mValue));
 									$oPayment->appendChild($oPaymentProperty);
 								}
-								var_dump($aPayment);
-								exit;
 							}
 						}
 					}
