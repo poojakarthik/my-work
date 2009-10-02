@@ -5,6 +5,9 @@
 	
 	<xsl:template match="/">
 		<xsl:for-each select="/customer-groups/customer-group">
+			<xsl:text>&#10;</xsl:text>
+			<xsl:text>&#10;</xsl:text>
+			
 			<!-- Customer Group Details -->
 			<xsl:text>"Customer Group:","</xsl:text>
 			<xsl:value-of select="./name" />
@@ -71,8 +74,6 @@
 				<xsl:value-of select="./amount" />
 				<xsl:text>"</xsl:text>
 				
-				<xsl:text>&#10;</xsl:text>
-				<xsl:text>&#10;</xsl:text>
 				<xsl:text>&#10;</xsl:text>
 				
 			</xsl:for-each>
