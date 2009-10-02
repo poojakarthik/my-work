@@ -126,6 +126,8 @@
 								$oPayment	= $oDOMDocument->createElement('payment');
 								$oPayment->setAttribute('id', "payment[{$aPayment['payment_id']}]");
 								$oPayment->setAttribute('uid', $aPayment['payment_id']);
+								
+								$oCustomerGroupPayments->appendChild($oPayment);
 								foreach ($aCustomerGroup as $sField=>$mValue)
 								{
 									$oPaymentProperty	= $oDOMDocument->createElement(str_replace('_', '-', $sField));
