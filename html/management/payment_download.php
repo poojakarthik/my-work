@@ -128,13 +128,13 @@
 								$oPayment->setAttribute('uid', $aPayment['payment_id']);
 								
 								$oCustomerGroupPayments->appendChild($oPayment);
-								foreach ($aCustomerGroup as $sField=>$mValue)
+								foreach ($aPayment as $sField=>$mValue)
 								{
 									$oPaymentProperty	= $oDOMDocument->createElement(str_replace('_', '-', $sField));
 									$oPaymentProperty->appendChild($oDOMDocument->createCDATASection($mValue));
 									$oPayment->appendChild($oPaymentProperty);
 								}
-								var_dump($aCustomerGroup);
+								var_dump($aPayment);
 								exit;
 							}
 						}
