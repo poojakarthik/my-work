@@ -101,7 +101,6 @@ class Flex_Rollout_Version_000193 extends Flex_Rollout_Version
 		}
 
 		$this->outputMessage("\nFinished: ". date('H:i:s d-m-Y') ."\n");
-		$this->outputMessage("\nAll Done.\n");
 
 	}
 
