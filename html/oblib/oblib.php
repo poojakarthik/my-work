@@ -1236,6 +1236,11 @@
 					$aNode->appendChild($cdata);
 				}
 			}
+			
+			//Creation of XSLT processor and final output to XSL file
+			$xslProcessor = new XSLTProcessor;
+			$xslProcessor->importStyleSheet ($this->_domDocument);    
+			echo $xslProcessor->transformToXML ($domOutput);
  		}
  		
  		// Completely bypasses the XML building stage, accepting a complete XML DOM Document
