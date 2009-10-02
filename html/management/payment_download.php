@@ -135,6 +135,7 @@
 					}
 				}
 				
+				var_dump($oDOMDocument);
 				echo $oDOMDocument->saveXML();
 				exit;
 				
