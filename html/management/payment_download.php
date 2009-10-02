@@ -128,7 +128,7 @@
 								{
 									$oPaymentProperty	= $oDOMDocument->createElement(str_replace('_', '-', $sField));
 									$oPaymentProperty->appendChild($oDOMDocument->createCDATASection($mValue));
-									$oPayment->appendChild($oCustomerGroupProperty);
+									$oPayment->appendChild($oPaymentProperty);
 								}
 							}
 						}
