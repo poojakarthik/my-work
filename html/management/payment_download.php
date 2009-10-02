@@ -138,14 +138,14 @@
 						}
 					}
 				}
-				
+				/*
 				header('Content-type: text/xml');
 				header('Content-Disposition: attachment; filename="Payments-' . $strPaidOn . '.xml"');
 				header("Pragma: no-cache");
 				header("Expires: 0");
 				echo $oDOMDocument->saveXML();
 				exit;
-				
+				*/
 				// Output
 				header('Content-type: text/csv');
 				header('Content-Disposition: attachment; filename="Payments-' . $strPaidOn . '.csv"');
