@@ -1238,7 +1238,7 @@
 			}
  		}
  		
- 			// Completely bypasses the XML building stage, accepting a complete XML DOM Document
+ 		// Completely bypasses the XML building stage, accepting a complete XML DOM Document
  		public function outputXML($sXSLFilename, $oDOMDocument)
  		{
 			// Creates the new DOM Document and loads XML file
