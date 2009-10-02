@@ -205,6 +205,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						<td class="title">Created: </td>
 						<td><?=date('H:i:s M j, Y', strtotime($ticket->creationDatetime))?></td>
 					</tr>
+<!--	
 					<tr class="alt">
 						<td class="title">Last Modified: </td>
 						<td><?=date('H:i:s M j, Y', strtotime($ticket->modifiedDatetime))?></td>
@@ -213,6 +214,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 						<td class="title">Last Modified By: </td>
 						<td><?=($lastModifiedByUser !== NULL? htmlspecialchars($lastModifiedByUser->getName()) : "System")?></td>
 					</tr>
+-->
 				</tbody>
 			</table>
 		</form>

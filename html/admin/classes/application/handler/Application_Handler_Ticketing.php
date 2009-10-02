@@ -655,7 +655,7 @@ class Application_Handler_Ticketing extends Application_Handler
 									$strDetails = trim($value);
 									if ($strDetails == "")
 									{
-										$invalidValues[$editableValue] = "The initial correspondence can't be empty";
+										$invalidValues[$editableValue] = "The initial correspondence cannot be empty";
 									}
 									else
 									{
@@ -720,7 +720,7 @@ class Application_Handler_Ticketing extends Application_Handler
 								$correspondence->ticketId			= $ticket->id;
 								$correspondence->summary			= $ticket->subject;
 								$correspondence->contactId			= $ticket->contactId;
-								$correspondence->userId				= $ticket->ownerId;
+								$correspondence->userId				= $currentUser->id;
 								$correspondence->creationDatetime	= $ticket->creationDatetime;
 								
 								$initialCorrespondenceCouldNotBeSent = FALSE;
@@ -935,7 +935,7 @@ class Application_Handler_Ticketing extends Application_Handler
 			$action = count($subPath) ? strtolower(array_shift($subPath)) : 'view';
 		}
 
-		$action = str_replace('-', '', $action);
+		//$action = str_replace('-', '', $action);
 
 		// We need to load the details of the contact specified by a contact_id in $_REQUEST
 		$detailsToRender = array();
@@ -988,27 +988,69 @@ class Application_Handler_Ticketing extends Application_Handler
 			switch ($action)
 			{
 				case 'delete':
-
-					$correspondence->delete();
-
-					// Deleted the correspondence. Where to now? The ticket?
-					return $this->Ticket(array($correspondence->ticketId, 'view'));
-
-				case 'send':
-				case 'resend':
-
+					TransactionStart();
 					try
 					{
-						$correspondence->emailToCustomer();
+						$correspondence->delete();
+						TransactionCommit();
+						
+						// Deleted the correspondence. Where to now? The ticket?
+						return $this->Ticket(array($correspondence->ticketId, 'view'));
 					}
 					catch (Exception $e)
 					{
+						TransactionRollback();
+						throw new Exception('Failed to delete correspondence item: '. $e->getMessage());
+					}
+					break;
+					
+				case 'send':
+					TransactionStart();
+					try
+					{
+						$correspondence->emailToCustomer();
+						TransactionCommit();
+					}
+					catch (Exception $e)
+					{
+						TransactionRollback();
 						$sendError = $e->getMessage();
 					}
 					$ticketId = $correspondence->ticketId;
 
 					break;
 
+				case 'edit_as_new':
+					
+					// This is really a 'create' operation, where we set some of the initial values to reflect that of an existing correspondence item
+					$action = 'create';
+					
+					$ticketId					= $correspondence->ticketId;
+					$detailsToRender['ticket']	= $correspondence->getTicket();
+					
+					$oldCorrespondence	= $correspondence;
+					$correspondence		= Ticketing_Correspondance::createBlank();
+					
+					// Set initial values for things
+					$correspondence->user					= $currentUser;
+					$correspondence->ticketId				= $oldCorrespondence->ticketId;
+					$correspondence->summary				= $oldCorrespondence->summary;
+					$correspondence->details				= $oldCorrespondence->details;
+					$correspondence->contactId				= $oldCorrespondence->contactId;
+					$correspondence->sourceId				= $oldCorrespondence->sourceId;
+					$correspondence->customerGroupEmailId	= $oldCorrespondence->customerGroupEmailId;
+					$correspondence->deliveryStatusId		= TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
+
+					// Declare which properties can be edited
+					$editableValues[] = 'summary';
+					$editableValues[] = 'details';
+					$editableValues[] = 'contactId';
+					$editableValues[] = 'sourceId';
+					$editableValues[] = 'customerGroupEmailId';
+					$editableValues[] = 'deliveryStatusId';
+
+					break;
+					
 				case 'create':
 
 					if ($ticketId === NULL)
@@ -1040,9 +1082,14 @@ class Application_Handler_Ticketing extends Application_Handler
 						$oldDeliveryStatus = $correspondence->deliveryStatusId;
 					}
 
-					if (!$correspondence->isSaved() || ($correspondence->isOutgoing() && $correspondence->isNotSent()))
+					if ($action == 'create')
 					{
+						// Can only set the source of the correspondence, at creation time
 						$editableValues[] = 'sourceId';
+					}
+					
+					if ($action == 'create' || ($correspondence->isOutgoing() && $correspondence->isNotSent()))
+					{
 						$editableValues[] = 'customerGroupEmailId';
 					}
 
@@ -1120,10 +1167,10 @@ class Application_Handler_Ticketing extends Application_Handler
 
 								case 'customerGroupEmailId':
 									$value = Ticketing_Customer_Group_Email::getForId(intval($value));
-									if (!$value)
+									if (!$value || $value->isArchivedVersion())
 									{
 										$correspondence->customerGroupEmailId = NULL;
-										$invalidValues[$editableValue] = 'You must specify a customer group email address.';
+										$invalidValues[$editableValue] = 'You must specify a valid, active customer group email address.';
 									}
 									else
 									{
@@ -1153,24 +1200,21 @@ class Application_Handler_Ticketing extends Application_Handler
 						}
 						else
 						{
-							$sendAfterSave = FALSE;
 							if ($oldDeliveryStatus == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT && 
 								$correspondence->deliveryStatusId == TICKETING_CORRESPONDANCE_DELIVERY_STATUS_SENT &&
 								$correspondence->isEmail() && $correspondence->isOutgoing())
 							{
+								// You cannot trigger then sending of an email, by changing its status from NOT_SENT to SENT.  Revert to the old status.
 								$correspondence->deliveryStatusId = TICKETING_CORRESPONDANCE_DELIVERY_STATUS_NOT_SENT;
-								$sendAfterSave = TRUE;
+
+								// This will flag the fact that the email was not sent
+								$detailsToRender['email_not_sent'] = TRUE;
 							}
 							if (!$correspondence->deliveryDatetime && (!$correspondence->isOutgoing() || $correspondence->isSent()))
 							{
 								$correspondence->deliveryDatetime = GetCurrentISODateTime();
 							}
 							$correspondence->save();
-							if ($sendAfterSave)
-							{
-								// We need to ensure that the email is sent
-								$detailsToRender['email_not_sent'] = TRUE;
-							}
 							$detailsToRender['saved'] = TRUE;
 							$action = 'save';
 						}
@@ -1232,60 +1276,43 @@ class Application_Handler_Ticketing extends Application_Handler
 	{
 		$permittedActions = array();
 
+		if ($correspondence && $correspondence->isSaved())
+		{
+			$permittedActions[] = 'view';
+			
+			if ($correspondence->userId == $user->id && $correspondence->isEmail() && $correspondence->isNotSent())
+			{
+				// The user created this email, and it has not been sent yet, so they should still be able to edit it and even delete it
+				$permittedActions[] = 'edit';
+				$permittedActions[] = 'delete';
+			}
+		}
+
 		if ($correspondence && ($user->isNormalUser() || $user->isAdminUser()))
 		{
-			if ($correspondence->isSaved())
-			{
-				$permittedActions[] = 'view';
-			}
-
-			if ($user->isAdminUser())
-			{
-				if ($correspondence->isSaved())
-				{
-					$permittedActions[] = 'edit';
-
-					if ($correspondence->isOutgoing())
-					{
-						if ($correspondence->isNotSent())
-						{
-							$permittedActions[] = 'delete';
-						}
-					}
-					else
-					{
-						$permittedActions[] = 'delete';
-					}
-				}
-			}
-			else
-			{
-				// Allow non-admin users to email anything OTHER than incomming emails or emails that have already been sent emails
-				if ($correspondence->isSaved() && (!$correspondence->isEmail() || ($correspondence->isOutgoing() && !$correspondence->isSent())))
-				{
-					$permittedActions[] = 'edit';
-				}
-
-				if ($correspondence->isOutgoing() && $correspondence->isNotSent() && $correspondence->isSaved())
-				{
-					$permittedActions[] = 'delete';
-				}
-			}
-
+			// We are omitting the external user at this stage
+			
 			if ($correspondence->isOutgoing() && $correspondence->isEmail() && $correspondence->isSaved())
 			{
-				if ($correspondence->isNotSent())
+				// Outgoing saved email
+				if ($correspondence->userId == $user->id && $correspondence->isNotSent())
 				{
+					// The user created the email, and it hasn't been sent yet
 					$permittedActions[] = 'send';
 				}
 				else
 				{
-					$permittedActions[] = 'resend';
+					// The email has already been sent.  The user can only edit as new
+					$permittedActions[] = 'edit_as_new';
 				}
 			}
 		}
 
+
 		$permittedActions[] = 'create';
+		
+		// Remove any duplicated actions from the list of permitted actions
+		$permittedActions = array_values(array_unique($permittedActions));
 
 		return $permittedActions;
 	}
@@ -1597,6 +1624,10 @@ class Application_Handler_Ticketing extends Application_Handler
 					if (!$defaultEmail)
 					{
 						$invalidValues['defaultEmailId'] = 'You must specify a default email address to use for this customer group.';
+					}
+					elseif ($defaultEmail->archivedOnDatetime !== null)
+					{
+						$invalidValues['defaultEmailId'] = 'The default email address has been archived.  Please specify an active one.';
 					}
 					else
 					{

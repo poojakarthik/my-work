@@ -186,17 +186,40 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 		makeRowEditable(null, tr, cancelAddEmail);
 	}
 
-	function deleteEmail(id)
+	function archiveEmail(id, bolConfirmed)
 	{
 		undoCurrentAction();
-
-		$deleteEmail(id);
+		
+		if (!bolConfirmed)
+		{
+			var strMessage = 	"Are you sure you want to archive this email address from the ticketing system?" +
+								"<br /><br />WARNING: Any future incoming emails addressed to this address will not be " +
+								"accepted into the ticketing system.  If this email address hasn't been manually redirected/handled " +
+								"by the mail server, the author of the email will not be notified.  Only archive an email address " +
+								"if you are certain the email address is handled by something other than the ticketing system.";
+			Vixen.Popup.Confirm(strMessage, function(){archiveEmail(id, true);});
+			return;
+		}
+		
+		$archiveEmail(id);
 	}
 
-	function deletedEmail(id)
+	function archivedEmail(arrResult)
 	{
-		var deletedRow = $ID('email_' + id);
-		if (deletedRow) deletedRow.parentNode.removeChild(deletedRow);
+		if (!arrResult['Success'])
+		{
+			// A problem occurred
+			var strErrorMsg	= "Failed to archive the email address.  ";
+			strErrorMsg		+= (arrResult['ErrorMessage'])? arrResult['ErrorMessage'] : 'An unidentified error occurred';
+			$Alert(strErrorMsg);
+			return false;
+		}
+	
+		var archivedRow = $ID('email_' + arrResult['id']);
+		if (archivedRow)
+		{
+			archivedRow.parentNode.removeChild(archivedRow);
+		}
 		rejigRows(true);
 	}
 
@@ -224,13 +247,16 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 		var input = null, label = null;
 
 		// Create the input for the email address
-		tr.cells[1].setAttribute('oldInnerHtml', tr.cells[1].innerHTML);
-		input = document.createElement('input');
-		input.value = tr.cells[1].textContent;
-		input.id = 'emailAddress';
-		tr.cells[1].innerHTML = '';
-		tr.cells[1].appendChild(input);
-
+		if (id == null)
+		{
+			tr.cells[1].setAttribute('oldInnerHtml', tr.cells[1].innerHTML);
+			input = document.createElement('input');
+			input.value = tr.cells[1].textContent;
+			input.id = 'emailAddress';
+			tr.cells[1].innerHTML = '';
+			tr.cells[1].appendChild(input);
+		}
+		
 		// Create the input for the name
 		tr.cells[2].setAttribute('oldInnerHtml', tr.cells[2].innerHTML);
 		input = document.createElement('input');
@@ -296,7 +322,6 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 	{
 		var editRow = $ID('email_' + id);
 		if (!editRow) return;
-		editRow.cells[1].innerHTML = editRow.cells[1].getAttribute('oldInnerHtml');
 		editRow.cells[2].innerHTML = editRow.cells[2].getAttribute('oldInnerHtml');
 		editRow.cells[3].innerHTML = editRow.cells[3].getAttribute('oldInnerHtml');
 		editRow.cells[4].innerHTML = editRow.cells[4].getAttribute('oldInnerHtml');
@@ -313,7 +338,8 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 	function saveEmail(id)
 	{
 		// Need to submit the values via ajax to get them saved (Note: id may be null!!)
-		var email = $ID('emailAddress').value;
+		var elmEmail = $ID('emailAddress');
+		var email = (elmEmail)? elmEmail.value : null;
 		var name = $ID('emailName').value;
 		var autoReply = $ID('autoReplyYes').checked;
 		$saveEmail(id, customerGroupId, email, name, autoReply);
@@ -321,9 +347,12 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 
 	function savedEmail(savedDetails)
 	{
-		if (savedDetails['INVALID'])
+		if (!savedDetails['Success'])
 		{
-			$Alert(savedDetails['INVALID']);
+			// A problem occurred
+			var strErrorMsg = "Failed to save changes made to the email address.  ";
+			strErrorMsg += (savedDetails['ErrorMessage'])? savedDetails['ErrorMessage'] : 'An unidentified error occurred';
+			$Alert(strErrorMsg);
 			return false;
 		}
 
@@ -342,7 +371,10 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 		}
 		else
 		{
-			tr = $ID('email_' + id);
+			tr = (savedDetails['archivedId'])? $ID('email_' + savedDetails['archivedId']) : $ID('email_' + id);
+			
+			// Update the id of the table row, if a new record was created
+			tr.id = 'email_' + id;
 		}
 
 		tr.cells[1].innerHTML = '';
@@ -354,7 +386,7 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 		tr.cells[3].innerHTML = '';
 		tr.cells[3].appendChild(document.createTextNode(savedDetails['autoReply'] ? 'Yes' : 'No'));
 
-		if (savedDetails['new'])
+		if (savedDetails['new'] || savedDetails['archivedId'])
 		{
 			tr.cells[4].innerHTML = '';
 			var link = null;
@@ -367,11 +399,16 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 
 			tr.cells[4].appendChild(document.createTextNode('\u00a0\u00a0\u00a0'));
 
-			link = document.createElement('a');
-			link.href = '#';
-			link.appendChild(document.createTextNode('Delete'));
-			link.setAttribute('onclick', "deleteEmail(" + id + "); return false;");
-			tr.cells[4].appendChild(link);
+			if (!savedDetails['isCustomerGroupDefaultEmail'])
+			{
+				// Only include the 'Archive' option if the email isn't the default one for the customer group
+				link = document.createElement('a');
+				link.href = '#';
+				link.appendChild(document.createTextNode('Archive'));
+				link.setAttribute('onclick', "archiveEmail(" + id + "); return false;");
+				tr.cells[4].appendChild(link);
+			}
+
 		}
 		else
 		{
@@ -418,7 +455,7 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 	{
 		var remoteClass = 'Ticketing';
 
-		$deleteEmail = jQuery.json.jsonFunction(deletedEmail, null, remoteClass, 'deleteGroupEmail');
+		$archiveEmail = jQuery.json.jsonFunction(archivedEmail, null, remoteClass, 'archiveGroupEmail');
 		$saveEmail = jQuery.json.jsonFunction(savedEmail, null, remoteClass, 'saveGroupEmail');
 	}
 
@@ -432,7 +469,7 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 
 		?>
 		<br/>
-		<table class="reflex" id="group-emails-list">
+		<table class="reflex highlight-rows" id="group-emails-list">
 			<caption>
 				<div id="caption_bar" class="caption_bar">
 					<div id="caption_title" class="caption_title">
@@ -449,7 +486,7 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 					<th>Email Address</th>
 					<th>Name</th>
 					<th>Acknowledge Emails</th>
-					<th style="width: 10%;"><?=$bolEdit ? '' : 'Action'?></th>
+					<th><?=$bolEdit ? '' : 'Action'?></th>
 				</tr>
 			</thead>
 			<tfoot class="footer">
@@ -488,8 +525,8 @@ class HtmlTemplate_Ticketing_Group_Admin extends FlexHtmlTemplate
 							echo '<a href="#" onclick="' . $link . '">Edit</a>';
 							if (!$default)
 							{
-								$link = "deleteEmail($id); return false;";
-								echo '&nbsp;&nbsp;&nbsp;<a href="#" onclick="' . $link . '">Delete</a>';
+								$link = "archiveEmail($id); return false;";
+								echo '&nbsp;&nbsp;&nbsp;<a href="#" onclick="' . $link . '">Archive</a>';
 							}
 						}
 						?></td>

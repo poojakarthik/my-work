@@ -296,12 +296,52 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		return $props;
 	}
 
-	public function deleteGroupEmail($intGroupEmailId)
+	public function archiveGroupEmail($intGroupEmailId)
 	{
 		if (!Ticketing_User::currentUserIsTicketingAdminUser())
 		{
 			return array('ERROR' => "You are not authorised to perform this action.");
 		}
+
+		TransactionStart();
+		try
+		{
+			$objEmail = Ticketing_Customer_Group_Email::getForId($intGroupEmailId);
+			if (!$objEmail)
+			{
+				throw new Exception("Could not find email with id: {$intGroupEmailId}.");
+			}
+			
+			if ($objEmail->archivedOnDatetime !== null)
+			{
+				throw new Exception("Email with id: {$intGroupEmailId}, has already been archived.");
+			}
+			
+			// Check that this isn't the default email address for the customer group
+			$objCGConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($objEmail->customerGroupId);
+			
+			if ($objCGConfig->defaultEmailId == $objEmail->id)
+			{
+				throw new Exception("This email is currently the default one for the customer group, and therefore cannot be archived.");
+			}
+			
+			$objEmail->archivedOnDatetime = GetCurrentISODatetime();
+			$objEmail->save();
+
+			TransactionCommit();
+			return array(	'Success'	=> true,
+							'id'		=> $objEmail->id
+						);
+		}
+		catch (Exception $e)
+		{
+			TransactionRollback();
+			return array(	'Success'		=> false,
+							'id'			=> $intGroupEmailId,
+							'ErrorMessage'	=> $e->getMessage()
+						);
+		}
+
 
 		$objGroupEmail = Ticketing_Customer_Group_Email::getForId($intGroupEmailId);
 		if (!$objGroupEmail)
@@ -312,58 +352,133 @@ class JSON_Handler_Ticketing extends JSON_Handler
 		return $intGroupEmailId;
 	}
 
-	public function saveGroupEmail($intGroupEmailId=NULL, $customerGroupId, $strEmail, $strName, $bolAutoReply)
+	public function saveGroupEmail($intGroupEmailId=NULL, $intCustomerGroupId, $strEmail, $strName, $bolAutoReply)
 	{
 		if (!Ticketing_User::currentUserIsTicketingAdminUser())
 		{
 			return array('ERROR' => "You are not authorised to perform this action.");
 		}
 
-		$strEmail = strtolower(trim($strEmail));
-		$strName = trim($strName);
-		$bolAutoReply = $bolAutoReply ? TRUE : FALSE;
-		if (!EmailAddressValid($strEmail))
+		if ($strEmail !== null)
 		{
-			return array('INVALID' => "The email address '$strEmail' is invalid.");
+			$strEmail = strtolower(trim($strEmail));
 		}
+		
+		$strName		= trim($strName);
+		$bolAutoReply	= $bolAutoReply ? TRUE : FALSE;
 
-		// Check that the email address is not already in use
-		$existing = Ticketing_Customer_Group_Email::getForEmailAddress($strEmail);
-		if ($existing && $existing->id != $intGroupEmailId)
-		{
-			return array('INVALID' => "The email address '$strEmail' is already in use.");
-		}
+		TransactionStart();
 
-		// If we are editing
-		if ($intGroupEmailId)
+		try
 		{
-			$email = Ticketing_Customer_Group_Email::getForId($intGroupEmailId);
-			if (!$email)
+			// Check that a name has been supplied
+			if ($strName == '')
 			{
-				return array('INVALID' => "The group email address specified ($intGroupEmailId) could not be found.");
+				throw new Exception("A name must be supplied for the email address.");
 			}
-			$email->email = $strEmail;
-			$email->name = $strName;
-			$email->setAutoReply($bolAutoReply);
+			
+			if ($intGroupEmailId)
+			{
+				// We are editing an existing email
+				$objEmail = Ticketing_Customer_Group_Email::getForId($intGroupEmailId);
+				if (!$objEmail)
+				{
+					throw new Exception("The group email address specified ($intGroupEmailId) could not be found.");
+				}
+	
+				// Check that it isn't already archived
+				if ($objEmail->isArchivedVersion())
+				{
+					throw new Exception("The group email address specified ($intGroupEmailId) has been archived, and cannot have further changes made to it.");
+				}
+				
+				// Work out if we have to archive this version, and create a new one, or just update the current one
+				if ($objEmail->name != $strName)
+				{
+					// The name has changed, so we have to archive the old one and create a new one
+					$objOldEmail = $objEmail;
+					$objOldEmail->archivedOnDatetime = GetCurrentISODatetime();
+					$objOldEmail->save();
+					
+					// Create the new one
+					$objEmail = Ticketing_Customer_Group_Email::createForDetails($objOldEmail->customerGroupId, $objOldEmail->email, $objOldEmail->name, $objOldEmail->autoReply());
+				}
+				
+				// Make the changes
+				$objEmail->name = $strName;
+				$objEmail->setAutoReply($bolAutoReply);
+			}
+			else
+			{
+				// We are creating a new email for this customer group
+				
+				// Check that the email address is valid
+				if (!EmailAddressValid($strEmail))
+				{
+					throw new Exception("The email address '$strEmail' is invalid.");
+				}
+				
+				// Check that the email address isn't currently in use
+				$objExistingEmail = Ticketing_Customer_Group_Email::getForEmailAddress($strEmail);
+				if ($objExistingEmail !== null)
+				{
+					throw new Exception("The email address '$strEmail' is already being used.");
+				}
+				
+				$customerGroup = Customer_Group::getForId($intCustomerGroupId);
+				if ($customerGroup === null)
+				{
+					throw new Exception("The specified customer group does not exist.");
+				}
+				$objEmail = Ticketing_Customer_Group_Email::createForDetails($intCustomerGroupId, $strEmail, $strName, $bolAutoReply);
+			}
+			
+			$objEmail->save();
+
+			// If we had to archive a record, and a ticketing_customer_group_config record references it (via default_email_id), update it to reference the new one
+			if (isset($objOldEmail))
+			{
+				$objCGConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($objOldEmail->customerGroupId);
+				if ($objCGConfig !== null && $objCGConfig->defaultEmailId == $objOldEmail->id)
+				{
+					// The ticketing_customer_group_config record was referencing the now archived ticketing_customer_group_email record, as the default one.
+					// Point it to the new one
+					$objCGConfig->defaultEmailId = $objEmail->id;
+					$objCGConfig->save();
+				}
+			}
+			
+			$savedValues = array(	'Success'	=> true, 
+									'id'		=> $objEmail->id,
+									'name'		=> $objEmail->name,
+									'email'		=> $objEmail->email,
+									'autoReply'	=> $objEmail->autoReply(),
+									'new'		=> ($intGroupEmailId ? FALSE : TRUE) // Note that if we archived an old record and created a new one, this isn't considered a new Email
+								);
+			if (isset($objOldEmail))
+			{
+				$savedValues['archivedId'] = $objOldEmail->id;
+			}
+			
+			$objCGConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($objEmail->customerGroupId);
+			
+			if ($objCGConfig === null)
+			{
+				throw new Exception('Could not retrieve Ticketing Customer Group Config relating to this email');
+			}
+			
+			$savedValues['isCustomerGroupDefaultEmail'] = ($objCGConfig->defaultEmailId == $objEmail->id) ? true : false;
+
+			TransactionCommit();
+			return $savedValues;
+		
 		}
-		else
+		catch (Exception $e)
 		{
-			$customerGroup = Customer_Group::getForId($customerGroupId);
-			if (!$customerGroup)
-			{
-				return array('ERROR' => "The specified customer group does not exist.");
-			}
-			$email = Ticketing_Customer_Group_Email::createForDetails($customerGroupId, $strEmail, $strName, $bolAutoReply);
+			TransactionRollback();
+			return array(	'Success'		=> false,
+							'ErrorMessage'	=> $e->getMessage());
 		}
-		$email->save();
-		$savedValues = array(
-			'id' => $email->id,
-			'name' => $email->name,
-			'email' => $email->email,
-			'autoReply' => $email->autoReply(),
-			'new' => ($intGroupEmailId ? FALSE : TRUE),
-		);
-		return $savedValues;
 	}
 
 	public function changeAttachmentBlacklistOverride($attachmentId, $bolOverride)

@@ -1,5 +1,11 @@
 <?php
 
+/* 
+ * Note: 	Active email addresses should be unique accross all the customer groups.
+ * 			That is to say ticketing_customer_group_email.email must be unique for all ticketing_customer_group_email 
+ * 			records where ticketing_customer_group_email.archived_on datetime IS NOT NULL 
+ */
+
 class Ticketing_Customer_Group_Email
 {
 	private $id = NULL;
@@ -7,6 +13,7 @@ class Ticketing_Customer_Group_Email
 	private $email = NULL;
 	private $name = NULL;
 	private $autoReply = NULL;
+	private $archivedOnDatetime = NULL;
 
 	private $_saved = FALSE;
 
@@ -32,11 +39,12 @@ class Ticketing_Customer_Group_Email
 	private static function getColumns()
 	{
 		return array(
-			'id' => 'id',
-			'customerGroupId' => 'customer_group_id',
-			'email' => 'email',
-			'name' => 'name',
-			'autoReply' => 'auto_reply',
+			'id'					=> 'id',
+			'customerGroupId'		=> 'customer_group_id',
+			'email'					=> 'email',
+			'name'					=> 'name',
+			'autoReply'				=> 'auto_reply',
+			'archivedOnDatetime'	=> 'archived_on_datetime'
 		);
 	}
 
@@ -55,18 +63,6 @@ class Ticketing_Customer_Group_Email
 		return $arrValues;
 	}
 
-	public function delete()
-	{
-		$delInstance = new Query();
-		$strSQL = "DELETE FROM " . strtolower(__CLASS__) . " WHERE id = " . $this->id;
-		if (($outcome = $delInstance->Execute($strSQL)) === FALSE)
-		{
-			throw new Exception('Failed to delete customer group email ' . $this->id . ' from customer group ' . $this->customerGroupId . ': ' . $delInstance->Error());
-		}
-		$this->id = NULL;
-		$this->_saved = FALSE;
-	}
-
 	public function save()
 	{
 		if ($this->_saved)
@@ -76,14 +72,40 @@ class Ticketing_Customer_Group_Email
 		}
 		$arrValues = $this->getValuesToSave();
 
-		// No id means that this must be a new record
 		if (!$this->id)
 		{
+			// The record does not currently exist, as no id has been set
+			
+			// Check that this email address is unique if the record is active (this should probably be moved to a 'validate' function)
+			if ($this->archivedOnDatetime === NULL)
+			{
+				// The object is considered active (archivedOnDatetime has not been set), so make sure the email address isn't currently being used
+				$objTCGEmail = self::getForEmailAddress($this->email);
+				if ($objTCGEmail != NULL)
+				{
+					// An active ticketing_customer_group_email record already exists for this email address
+					throw new Exception('Email address is already in use');
+				}
+			}
+			
 			$statement = new StatementInsert(strtolower(__CLASS__), $arrValues);
 		}
-		// This must be an update
 		else
 		{
+			// The record must already exist, as it has an id set
+			
+			// Check that this email address is unique if the record is active (this should probably be moved to a 'validate' function)
+			if ($this->archivedOnDatetime === NULL)
+			{
+				// The object is considered active (archivedOnDatetime has not been set), so make sure the email address isn't currently being used
+				$objTCGEmail = self::getForEmailAddress($this->email);
+				if ($objTCGEmail != NULL && $objTCGEmail->id != $this->id)
+				{
+					// An active ticketing_customer_group_email record already exists for this email address, and it is not for the record that this object relates to
+					throw new Exception('Email address is already in use');
+				}
+			}
+			
 			$arrValues['id'] = $this->id;
 			$statement = new StatementUpdateById(strtolower(__CLASS__), $arrValues);
 		}
@@ -102,15 +124,11 @@ class Ticketing_Customer_Group_Email
 
 	private static function getFor($where, $arrWhere, $multiple=FALSE, $strSort=NULL, $strLimit=NULL)
 	{
-		// Note: Email address should be unique, so only fetch the first record
-		$selMatches = new StatementSelect(
-			strtolower(__CLASS__), 
-			self::getColumns(), 
-			$where
-		);
+		$selMatches = new StatementSelect(strtolower(__CLASS__), self::getColumns(), $where, $strSort, $strLimit);
+		
 		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
 		{
-			throw new Exception("Failed to check for existing customer group email: " . $selMatches->Error());
+			throw new Exception("Failed to retrieve customer group email: " . $selMatches->Error());
 		}
 		if (!$outcome)
 		{
@@ -144,29 +162,70 @@ class Ticketing_Customer_Group_Email
 		return $instance;
 	}
 
-	public static function listForCustomerGroupId($customerGroupId)
+	public static function listForCustomerGroupId($customerGroupId, $bolIncludeArchived=false)
 	{
 		if (!$customerGroupId)
 		{
 			return array();
 		}
-		return self::getFor("customer_group_id = <CustomerGroupId>", array("CustomerGroupId" => $customerGroupId), TRUE);
+		
+		if ($bolIncludeArchived)
+		{
+			// Include archived records
+			$strWhere = "customer_group_id = <CustomerGroupId>";
+		}
+		else
+		{
+			// Don't include the archived records
+			$strWhere = "customer_group_id = <CustomerGroupId> AND archived_on_datetime IS NULL";
+		}
+		
+		return self::getFor($strWhere, array("CustomerGroupId" => $customerGroupId), TRUE, "name ASC, email ASC");
 	}
 
-	public static function listForCustomerGroup(Customer_Group $customerGroup)
+	public static function listForCustomerGroup(Customer_Group $customerGroup, $bolIncludeArchived=false)
 	{
 		if (!$customerGroup)
 		{
 			return array();
 		}
-		return self::listForCustomerGroupId($customerGroup->id);
+		return self::listForCustomerGroupId($customerGroup->id, $bolIncludeArchived);
 	}
 
-	public static function getForEmailAddress($strEmailAddress)
+	// This will only consider ticketing_customer_group_email records where archived_on_datetime is null
+	// If $intCustomerGroupId has been specified, then it will only consider records with this customer group id
+	public static function getForEmailAddress($strEmailAddress, $intCustomerGroupId=null)
 	{
-		return self::getFor("LOWER(email) = <Email>", array("Email" => $strEmailAddress));
-	}
+		$strWhere = "LOWER(email) = <Email> AND archived_on_datetime IS NULL";
+		
+		if ($intCustomerGroupId)
+		{
+			// Limit it to only considering records associated with $intCustomerGroupId
+			$strWhere .= " AND customer_group_id = <CustomerGroupId>";
+		}
 
+		$arrWhere = array(	"Email"				=> strtolower($strEmailAddress),
+							"CustomerGroupId"	=> $intCustomerGroupId);
+		return self::getFor($strWhere, $arrWhere);
+	}
+	
+	// Retrieves an object representing the active record that this object relates to (as this object might represent an archived record).
+	// Note that this will always be a new instance of the object, even if it relates to the same ticketing_customer_group_email record as $this does.
+	// It will return NULL if there isn't an active record relating to this object and customer group
+	public function getActiveVersion()
+	{
+		// Get the active record with the same email and customer group as this one
+		$strWhere = "LOWER(email) = <Email> AND customer_group_id = <CustomerGroupId> AND archived_on_datetime IS NULL";
+		$arrWhere = array('Email'=> $this->email, 'CustomerGroupId'=> $this->customerGroupId);
+		return self::getFor($strWhere, $arrWhere);
+	}
+	
+	// Returns true if the object represents an archived version of an customer group email address
+	public function isArchivedVersion()
+	{
+		return ($this->archivedOnDatetime !== null) ? true : false;
+	}
+	
 	protected function init($arrProperties)
 	{
 		foreach($arrProperties as $name => $property)

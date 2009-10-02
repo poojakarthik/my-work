@@ -80,7 +80,8 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 			}
 			$action[0] = strtoupper($action[0]);
 			$action = htmlspecialchars($action);
-			$actionLinks[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/$id$action$tid/?{$strCurrentAccountGetVar}\">$action</a>";
+			$actionLabel = ucwords(str_replace('_', ' ', $action));
+			$actionLinks[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$id}{$action}{$tid}/?{$strCurrentAccountGetVar}\">{$actionLabel}</a>";
 		}
 		$actionLinks = implode(' | ', $actionLinks);
 
@@ -142,7 +143,16 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 			<td class="title">Customer Group Email: </td>
 			<td><?php
 				$customerGroupEmail = $correspondence->getCustomerGroupEmail();
-				echo htmlspecialchars($customerGroupEmail ? $customerGroupEmail->email : '[No customer group email address selected]');
+				if ($customerGroupEmail)
+				{
+					$strEmailDetails = "{$customerGroupEmail->email} ( {$customerGroupEmail->name} )";
+				}
+				else
+				{
+					$strEmailDetails = '[No customer group email address selected]';
+				}
+				$strEmailDetails = htmlspecialchars($strEmailDetails);
+				echo $strEmailDetails;
 			?></td>
 		</tr>
 		<tr class="alt">
@@ -368,7 +378,7 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								$invalid = array_key_exists('summary', $invalidValues) ? 'invalid' : '';
 								if (array_search('summary', $editableValues) !== FALSE)
 								{
-									?><input type="text" id="summary" name="summary" class="<?=$invalid?>" size="50" value="<?=htmlspecialchars($correspondence->summary)?>" /><?php
+									?><input type="text" id="summary" name="summary" class="<?=$invalid?>" style="width:100%" value="<?=htmlspecialchars($correspondence->summary)?>" /><?php
 								}
 								else
 								{
@@ -453,12 +463,26 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								if (array_search('customerGroupEmailId', $editableValues) !== FALSE)
 								{
 									?><select id="customerGroupEmailId" name='customerGroupEmailId' class="<?=$invalid?>"><?php
-									$custGroupEmailId = $correspondence->customerGroupEmailId ? $correspondence->customerGroupEmailId : NULL;
 									$ticket = $ticket ? $ticket : $correspondence->getTicket();
+									$currentCustGroupEmail = $correspondence->customerGroupEmailId ? Ticketing_Customer_Group_Email::getForId($correspondence->customerGroupEmailId) : NULL;
+									if ($currentCustGroupEmail !== NULL && $currentCustGroupEmail->isArchivedVersion())
+									{
+										// This version of the email has been archived.  Retrieve the most recent version, if one exists
+										$currentCustGroupEmail = $currentCustGroupEmail->getActiveVersion();
+									}
+									
+									if ($currentCustGroupEmail === NULL)
+									{
+										// Retrieve the default version
+										$objCustGroupConfig = Ticketing_Customer_Group_Config::getForCustomerGroupId($ticket->customerGroupId);
+										$currentCustGroupEmail = $objCustGroupConfig->getDefaultCustomerGroupEmail();
+										
+									}
+									
 									$custGroupEmails = Ticketing_Customer_Group_Email::listForCustomerGroupId($ticket->customerGroupId);
 									foreach ($custGroupEmails as $custGroupEmail)
 									{
-										$selected = $custGroupEmailId == $custGroupEmail->id ? ' selected="selected"' : '';
+										$selected = $currentCustGroupEmail->id == $custGroupEmail->id ? ' selected="selected"' : '';
 										?><option value="<?=$custGroupEmail->id?>"<?=$selected?>><?=htmlspecialchars($custGroupEmail->name . ' (' . $custGroupEmail->email . ')')?></option><?php
 									}
 									?></select><?php
@@ -466,7 +490,17 @@ class HtmlTemplate_Ticketing_Correspondance extends FlexHtmlTemplate
 								else
 								{
 									$customerGroupEmail = $correspondence->getCustomerGroupEmail();
-									echo htmlspecialchars($customerGroupEmail ? $customerGroupEmail->email : '[No customer group email address selected]');
+									if ($customerGroupEmail)
+									{
+										$strEmailDetails = "{$customerGroupEmail->email} ( {$customerGroupEmail->name} )";
+									}
+									else
+									{
+										$strEmailDetails = '[No customer group email address selected]';
+									}
+									$strEmailDetails = htmlspecialchars($strEmailDetails);
+									echo $strEmailDetails;
+
 								}
 							?>
 						</td>

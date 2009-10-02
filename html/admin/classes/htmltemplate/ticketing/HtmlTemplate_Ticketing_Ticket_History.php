@@ -42,7 +42,7 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 		}
 		
 		// Define All Allowable actions for this page 
-		$this->arrAllowableActions = array('edit', 'send');
+		$this->arrAllowableActions = array('edit', 'send', 'edit_as_new');
 
 		// Build the high-level history for the account
 		$arrHistory = $this->buildHistory();
@@ -101,7 +101,7 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 							$strDetailsRowClass		= ($ticketHistoryRecord->bolIsCorrespondence)? "ticket-history-details-row-displayed" : "ticket-history-details-row-hidden";
 							$strExpandButtonClass	= ($ticketHistoryRecord->bolIsCorrespondence)? "expand-button-expanded" : "expand-button-retracted";
 							$alt					= !$alt;
-							$strTimestamp			= date("H:i:s d-m-Y", $ticketHistoryRecord->intTimestamp);
+							$strTimestamp			= date("H:i:s D d-m-Y", $ticketHistoryRecord->intTimestamp);
 							$strExpandButton		= "<input type='button' onclick='toggleShowHistoryRecordDetails({$i}, this)' class='$strExpandButtonClass' style='float:right'></input>";
 														
 		?>
@@ -115,7 +115,9 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 				</tr>
 				<tr class='<?=$strDetailsRowClass?> <?=$altClass?>' altClass='<?=$altClass?>' id='ticket_history_record_details_<?=$i?>'>
 					<td colspan='6' class='ticket-history-record-details'>
-						<?=$ticketHistoryRecord->strDetails?>
+						<div style='margin:0% 5% 2em 5%;'>
+							<?=$ticketHistoryRecord->strDetails?>
+						</div>
 					</td>
 				</tr>
 		<?php
@@ -233,6 +235,7 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 	{
 		// Compile the Parties Responsible
 		$arrPartiesResponsible = array();
+		
 		// Retrieve the contact
 		if ($correspondence->contactId)
 		{
@@ -267,9 +270,9 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 		$link = Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/View/?{$this->strCurrentAccountGetVar}";
 		$strSummary = "<a href='$link' title='View'>". htmlspecialchars($correspondence->summary) ."</a>";
 		
-		// Compile the Timestamp
-		$intTimestamp = strtotime($correspondence->creationDatetime);
-		
+		// Compile the Timestamp (use creation_datetime if delivery_datetime is null)
+		$strTimestamp = ($correspondence->deliveryDatetime !== null)? $correspondence->deliveryDatetime : $correspondence->creationDatetime;
+		$intTimestamp = strtotime($strTimestamp);
 		
 		// Compile Actions
 		$arrPossibleActions = Application_Handler_Ticketing::getPermittedCorrespondenceActions($this->currentTicketingUser, $correspondence);
@@ -280,7 +283,8 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 			if (in_array($strAction, $arrPossibleActions))
 			{
 				$strAction = ucfirst($strAction);
-				$arrActions[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/{$strAction}/?{$this->strCurrentAccountGetVar}\">{$strAction}</a>";
+				$strActionLabel = ucwords(str_replace('_', ' ', $strAction));
+				$arrActions[] = "<a href=\"" . Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/{$strAction}/?{$this->strCurrentAccountGetVar}\">{$strActionLabel}</a>";
 			}
 			elseif ($strAction == 'send' && in_array('resend', $arrPossibleActions))
 			{
@@ -290,14 +294,8 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 		$strActions = (count($arrActions))? implode(" | ", $arrActions) : NULL;
 		
 		// Compile the 'details'
-		$strDeliveryTimestamp	= ($correspondence->deliveryDatetime === NULL)? "" : date("H:i:s d-m-Y", strtotime($correspondence->deliveryDatetime));
-		$strCreationTimestamp	= ($correspondence->creationDatetime === NULL)? "" : date("H:i:s d-m-Y", $intTimestamp);
-		$strDetails = "";
-		if ($correspondence->deliveryDatetime !== NULL)
-		{
-			$strDetails .= "<em>Delivered: $strDeliveryTimestamp</em><br />\n";
-		}
-		$strDetails .= "<em>Content:</em><div style='padding-left:3em'>". nl2br(htmlspecialchars(trim($correspondence->details))) ."</div>";
+		//$strDetails = "<em>Content:</em><div style='padding-left:3em'>". nl2br(htmlspecialchars(trim($correspondence->details))) ."</div>";
+		$strDetails = "<div>". nl2br(htmlspecialchars(trim($correspondence->details))) ."</div>\n";
 		
 		// Grab the Attachments (minus the actual file so as not to unneccessarily slow things down)
 		$strGenericAttachmentLink	= Flex::getUrlBase() . "reflex.php/Ticketing/Attachment/";
@@ -334,7 +332,7 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 		
 		if (count($arrAttachmentRows))
 		{
-			$strAttachments = "<em>Attachments:</em><div style='padding-left:3em'>". implode('<br />', $arrAttachmentRows) ."</div>";
+			$strAttachments = "<br /><em>Attachments:</em><div style='padding-left:3em'>". implode('<br />', $arrAttachmentRows) ."</div>";
 		}
 		else
 		{

@@ -36,11 +36,13 @@ class Ticketing_Correspondance_Source
 		$available = array();
 		if ($user->isUser())
 		{
+			// Everybody gets phone
 			$available[] = self::getForId(TICKETING_CORRESPONDANCE_SOURCE_PHONE);
-			$available[] = self::getForId(TICKETING_CORRESPONDANCE_SOURCE_EMAIL);
 		}
-		if ($user->isAdminUser())
+		if ($user->isAdminUser() || $user->isNormalUser())
 		{
+			// Only admins and normal users get email
+			$available[] = self::getForId(TICKETING_CORRESPONDANCE_SOURCE_EMAIL);
 		}
 		return $available;
 	}

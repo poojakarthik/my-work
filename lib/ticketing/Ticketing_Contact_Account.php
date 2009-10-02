@@ -10,30 +10,33 @@ class Ticketing_Contact_Account
 	/**
 	 * Associates a ticketing contact (passed by id or as an object associated with a contact) 
 	 * with an account (passed by id or as an object associated with an account).
-	 * If the passed 'account' is a ticket, all correspondence contacts for that ticket are also
+	 * If the passed 'contact' is a ticket, all correspondence contacts for that ticket are also
 	 * associated with the account.
 	 * 
 	 * @param $mixContact mixed Ticketing Conatact Id (numeric), Ticketing Contact, Ticketing Ticket or Ticketing Correspondance
-	 * @param $mixAccount mixed Account Id (numeric), Account or Ticketing Ticket
+	 * @param $mixAccount mixed Account Id (numeric), Account object
 	 */	
 	public static function associate($mixContact, $mixAccount)
 	{
 		$contactId = $mixContact instanceof Ticketing_Contact ? $mixContact->id : 
 					 ($mixContact instanceof Ticketing_Ticket ? $mixContact->contactId : 
 					 ($mixContact instanceof Ticketing_Correspondance ? $mixContact->contactId 
-					 : intval($mixContact)));
-		$accountId = $mixAccount instanceof Account ? $mixAccount->id : 
-					 ($mixAccount instanceof Ticketing_Ticket ? $mixAccount->accountId
-					 : intval($mixAccount));
+					 : $mixContact));
+		$accountId = $mixAccount instanceof Account ? $mixAccount->id : $mixAccount;
+		
+		$contactId = intval($contactId);
+		$accountId = intval($accountId);
 
-		if (!$accountId)
+		// Check that the account is a valid account
+		$objAccount = Account::getForId($accountId);
+		if ($objAccount === NULL)
 		{
-			// There is no account to associate with contacts
-			return TRUE;
+			// The account id does not reference a valid account
+			throw new Exception("Failed to associate contact (id: {$contactId}) with account (id: {$accountId}) because the account does not exist");
 		}
 
 		$selAssociation = new StatementSelect('ticketing_contact_account', array('id'=>'id'), 'ticketing_contact_id = <TCID> AND account_id = <ACID>');
-		$arrWhere = array('TCID' => intval($contactId), 'ACID' => intval($accountId));
+		$arrWhere = array('TCID' => $contactId, 'ACID' => $accountId);
 		if (($outcome=$selAssociation->Execute($arrWhere)) === FALSE)
 		{
 			throw new Exception('Failed to check for association between account ' . $accountId . ' and contact ' . $contactId . ': ' . $selAssociation->Error());
@@ -50,8 +53,8 @@ class Ticketing_Contact_Account
 			}
 		}
 
-		// If the contact was passed as a ticket, we need to ensure that each contact referenced in the correspondance items
-		// are now associated with the ticket account
+		// If the contact was passed as a ticket, we need to ensure that each contact referenced in the ticket's correspondance items
+		// are now associated with the ticket's account
 		if ($mixContact instanceof Ticketing_Ticket)
 		{
 			$arrColumns = array('contact_id');
@@ -61,7 +64,7 @@ class Ticketing_Contact_Account
 			$strWhere = "ticket_id = <TicketId> AND contact_id NOT IN (SELECT ticketing_contact_id FROM ticketing_contact_account WHERE account_id = <AccountId>)";
 
 			$arrWhere = array(	'TicketId'	=> intval($mixContact->id),
-								'AccountId'	=> intval($accountId)
+								'AccountId'	=> $accountId
 								);
 
 			$selUnassociated = new StatementSelect($strTable, $arrColumns, $strWhere);

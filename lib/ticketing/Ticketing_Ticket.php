@@ -243,7 +243,11 @@ class Ticketing_Ticket
 			// Each time we update the record, we need to copy the details to the history table
 			$this->recordHistoricCopy();
 
-			Ticketing_Contact_Account::associate($this, $this);
+			// If an account has been defined for this ticket then associate all contacts referenced in this ticket, with the account
+			if ($this->accountId != null)
+			{ 
+				Ticketing_Contact_Account::associate($this, $this->accountId);
+			}
 		}
 
 		$this->_saved = TRUE;
@@ -351,15 +355,46 @@ class Ticketing_Ticket
 		{
 			$where = NULL;
 		}
+		
+		
 		$strSort = '';
+		$arrExtendedSortingFields = array("userCorrespondenceLastActionedOn");
 		foreach ($sort as $column => $asc)
 		{
-			if (!property_exists(__CLASS__, $column)) continue;
-			$strSort .= ($strSort ? ', ' : '') . self::uglifyName($column) . ' ' . ($asc ? ' ASC ' : ' DESC ');
+			if (property_exists(__CLASS__, $column) || in_array($column, $arrExtendedSortingFields))
+			{
+				$strSort .= ($strSort ? ', ' : '') . self::uglifyName($column) . ' ' . ($asc ? ' ASC ' : ' DESC ');
+			}
 		}
-		$strSort = $strSort ? $strSort : NULL;
+		if (!$strSort || empty($strSort))
+		{
+			$strSort = 'creation_datetime DESC, id DESC';
+		}
+
 		$strLimit = intval($limit) ? (intval($offset) . ", " . intval($limit)): NULL;
-		return self::getFor($where, $arrWhere, TRUE, $strSort, $strLimit);
+		
+		$strTables = "ticketing_ticket LEFT JOIN (
+SELECT ticket_id, MAX(COALESCE(delivery_datetime, creation_datetime)) AS user_correspondence_last_actioned_on
+FROM ticketing_correspondance
+WHERE user_id IS NOT NULL
+GROUP BY ticket_id
+) AS user_created_correspondence ON ticketing_ticket.id = user_created_correspondence.ticket_id";
+
+		$selMatches = new StatementSelect($strTables, self::getColumns(), $where, $strSort, $strLimit);
+		if (($outcome = $selMatches->Execute($arrWhere)) === FALSE)
+		{
+			throw new Exception("Failed to load tickets: " . $selMatches->Error());
+		}
+
+		$arrInstances = array();
+		if ($outcome)
+		{
+			while($details = $selMatches->Fetch())
+			{
+				$arrInstances[] = new Ticketing_Ticket($details);
+			}
+		}
+		return $arrInstances;
 	}
 
 	private static function getRelatedStringWhereClause($relatedString)
@@ -454,6 +489,7 @@ class Ticketing_Ticket
 		{
 			$strSort = 'creation_datetime DESC, id DESC';
 		}
+		
 		$selMatches = new StatementSelect(
 			strtolower(__CLASS__), 
 			self::getColumns(), 
@@ -598,9 +634,30 @@ class Ticketing_Ticket
 			$customerGroupEmail = $correspondance->getCustomerGroupEmail();
 			if ($customerGroupEmail)
 			{
-				return $customerGroupEmail;
+				if ($customerGroupEmail->isArchivedVersion())
+				{
+					// This customer group email record has been archived.  See if there is an active version of it for this customer group
+					$customerGroupEmail = $customerGroupEmail->getActiveVersion();
+					if ($customerGroupEmail !== null)
+					{
+						// Found one
+						return $customerGroupEmail;
+					}
+					else
+					{
+						// Did not find one, so move on to the next correspondence item
+					}
+				}
+				else
+				{
+					// This customer group email is still active, so use it
+					return $customerGroupEmail;
+				}
 			}
 		}
+		
+		// If it got this far, then it couldn't find an active email address to use, based on the ticket's existing correspondence
+		// Use the customer group's default email address
 		$config = Ticketing_Customer_Group_Config::getForCustomerGroupId($this->customerGroupId);
 		if (!$config)
 		{

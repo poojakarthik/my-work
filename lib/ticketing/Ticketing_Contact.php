@@ -26,7 +26,32 @@ class Ticketing_Contact
 
 	public function getName()
 	{
-		return ($this->firstName ? $this->firstName : '') . ($this->firstName && $this->lastName ? ' ' : '') . ($this->lastName ? $this->lastName : $this->email);
+		if ($this->firstName && $this->lastName)
+		{
+			return $this->firstName .' '. $this->lastName;
+		}
+		elseif ($this->firstName)
+		{
+			return $this->firstName . ($this->email ? " ({$this->email})" : '');
+		}
+		elseif ($this->lastName)
+		{
+			return $this->lastName . ($this->email ? " ({$this->email})" : '');
+		}
+		elseif ($this->email)
+		{
+			return $this->email;
+		}
+		elseif ($this->id)
+		{
+			return "Unnamed Contact (Id: {$this->id})";
+		}
+		else
+		{
+			return "Unnamed Contact (Id: ?)";
+		}
+		
+		//return ($this->firstName ? $this->firstName : '') . ($this->firstName && ($this->lastName || $this->email) ? ' ' : '') . ($this->lastName ? $this->lastName : $this->email);
 	}
 
 	public static function getForCorrespondence(Ticketing_Correspondance $objCorrespondence)
