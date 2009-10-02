@@ -1252,7 +1252,7 @@
 			
 			// Creation of XSLT processor and final output to XSL file
 			$oXSLProcessor	= new XSLTProcessor();
-			$oXSLProcessor->importStyleSheet($this->_domDocument);
+			$oXSLProcessor->importStyleSheet($oXSLDocument);
 			echo $oXSLProcessor->transformToXML($oDOMDocument);
  		}
 		
