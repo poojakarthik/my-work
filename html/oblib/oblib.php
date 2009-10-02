@@ -1251,7 +1251,7 @@
 			echo $oXSLProcessor->transformToXML($oDOMDocument);
  		}
 		
-		public static function charEscape($strIllegal)
+		public function charEscape($strIllegal)
 		{
 			// this function accepts a multiline (<br /> delimited) string
 			// and returns said string with all OTHER tags removed
