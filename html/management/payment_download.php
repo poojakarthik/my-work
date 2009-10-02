@@ -138,10 +138,10 @@
 						}
 					}
 				}
-				/*
+				
 				echo $oDOMDocument->saveXML();
 				exit;
-				*/
+				
 				// Output
 				header('Content-type: text/csv');
 				header('Content-Disposition: attachment; filename="Payments-' . $strPaidOn . '.csv"');
