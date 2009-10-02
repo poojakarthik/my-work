@@ -65,6 +65,7 @@
 				// Cheque Report
 				$oCustomerGroups	= $oDOMDocument->createElement('customer-groups');
 				$oDOMDocument->appendChild($oCustomerGroups);
+				var_dump($oDOMDocument);
 				foreach ($aCustomerGroups as $mCustomerGroup)
 				{
 					$iCustomerGroup	= (int)$mCustomerGroup;
