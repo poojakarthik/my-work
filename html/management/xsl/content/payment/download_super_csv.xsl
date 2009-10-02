@@ -14,11 +14,11 @@
 			<xsl:value-of select="./bank-account-name" />
 			<xsl:text>",</xsl:text>
 			
-			<xsl:text>"BSB:",</xsl:text>
+			<xsl:text>"BSB:","</xsl:text>
 			<xsl:value-of select="./bank-bsb" />
 			<xsl:text>",</xsl:text>
 			
-			<xsl:text>"Bank Account Number:",</xsl:text>
+			<xsl:text>"Bank Account Number:","</xsl:text>
 			<xsl:value-of select="./bank-account-number" />
 			<xsl:text>"</xsl:text>
 			
