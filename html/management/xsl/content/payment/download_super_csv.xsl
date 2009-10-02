@@ -23,6 +23,7 @@
 			<xsl:text>"</xsl:text>
 			
 			<xsl:text>&#10;</xsl:text>
+			<xsl:text>&#10;</xsl:text>
 			
 			<!-- Payment Column Headers -->
 			<xsl:text>"Payment ID","Account Group","Account","Account Name","Trading Name","Reference","Date","Amount"</xsl:text>
@@ -70,6 +71,8 @@
 				<xsl:value-of select="./amount" />
 				<xsl:text>"</xsl:text>
 				
+				<xsl:text>&#10;</xsl:text>
+				<xsl:text>&#10;</xsl:text>
 				<xsl:text>&#10;</xsl:text>
 				
 			</xsl:for-each>
