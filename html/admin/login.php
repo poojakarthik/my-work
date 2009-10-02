@@ -42,7 +42,6 @@
 		
 		$Style->attachObject ($oblarrAuthenticationAttempt);
 	}
-	throw new Exception("test");
 	
 	$Style->Output ("../management/xsl/content/login.xsl");
 	
