@@ -1953,7 +1953,7 @@ div.reflex-datepicker div.content div.month caption
 	font-size	: 1.2em;
 	font-weight	: bold;
 	
-	background-image	: url('../admin/img/template/wave.png');
+	background-image	: url('../../admin/img/template/wave.png');
 	background-color	: #D7812A;
 	
 	height	: 2.5em;
@@ -1961,7 +1961,8 @@ div.reflex-datepicker div.content div.month caption
 
 div.reflex-datepicker div.content div.month caption span
 {
-	padding	: 0.25em;
+	vertical-align	: middle;
+	padding			: 0.25em;
 }
 
 div.reflex-datepicker div.content div.month td.day
