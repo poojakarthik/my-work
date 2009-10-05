@@ -988,11 +988,16 @@ FROM		Account a
 			JOIN service_status ss ON (s.Status = ss.id)
 			JOIN ServiceRatePlan srp ON (srp.Service = s.Id AND NOW() BETWEEN srp.StartDatetime AND srp.EndDatetime)
 			JOIN RatePlan rp ON (srp.RatePlan = rp.Id)
-			LEFT JOIN Invoice i_last ON (a.Id = i_last.Account)
-			LEFT JOIN InvoiceRun ir_last ON (i_last.invoice_run_id = ir_last.Id)
-			LEFT JOIN invoice_run_type irt_last ON (irt_last.id = ir_last.invoice_run_type_id)
+			LEFT JOIN
+			(
+				Invoice i_last
+				JOIN InvoiceRun ir_last ON (i_last.invoice_run_id = ir_last.Id)
+				JOIN invoice_run_type irt_last ON (irt_last.id = ir_last.invoice_run_type_id AND irt_last.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
+			) ON (a.Id = i_last.Account)
 
 WHERE		(
+				ir_last.Id IS NULL
+				OR
 				(
 					ir_last.Id =	(
 										SELECT		InvoiceRun.Id
@@ -1005,7 +1010,15 @@ WHERE		(
 										LIMIT		1
 									)
 					AND irt_last.const_name NOT IN ('INVOICE_RUN_TYPE_INTERIM', 'INVOICE_RUN_TYPE_FINAL')
-					AND (SELECT c.Id FROM Charge c WHERE c.Account = a.Id AND c.ChargeType IN ('PCAD', 'PCAR') AND c.Status = 103 LIMIT 1) IS NULL
+					AND	(
+							SELECT		c.Id
+							FROM		Charge c
+										JOIN InvoiceRun ir_charge ON (ir_charge.Id = c.invoice_run_id)
+										JOIN invoice_run_type irt_charge ON (ir_charge.invoice_run_type_id AND irt_charge.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
+							WHERE		c.Account = a.Id
+										AND c.ChargeType IN ('PCAD', 'PCAR')
+							LIMIT		1
+						) IS NULL
 					AND	(
 							SELECT		stt.Records
 							FROM		ServiceTypeTotal stt
@@ -1018,10 +1031,6 @@ WHERE		(
 							LIMIT		1
 						) IS NULL
 					AND (SELECT COUNT(Id) FROM Invoice WHERE Account = a.Id) <= 3
-				)
-				OR
-				(
-					ir_last.Id IS NULL
 				)
 			)
 			AND ss.const_name IN ('SERVICE_ACTIVE')
