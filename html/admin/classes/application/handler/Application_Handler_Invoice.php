@@ -1021,7 +1021,7 @@ WHERE		(
 				)
 				OR
 				(
-					i_last.Id IS NULL
+					ir_last.Id IS NULL
 				)
 			)
 			AND ss.const_name IN ('SERVICE_ACTIVE')
