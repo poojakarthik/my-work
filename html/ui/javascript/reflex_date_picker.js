@@ -100,7 +100,33 @@ var Reflex_Date_Picker	= Class.create
 	
 	setSelectMode	: function(mMode)
 	{
-		
+		var	oCurrentDate	= this.getDate();
+		switch (mMode)
+		{
+			case Reflex_Date_Picker.SELECT_MODE_DATE_TIME:
+				// Switch Now/Today Buttons
+				this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Today';
+				
+				// Show Time input
+				this.oContainer.oFooter.oTime.domElement.show();
+				
+				this.sSelectMode	= Reflex_Date_Picker.SELECT_MODE_DATE_TIME;
+				break;
+				
+			case Reflex_Date_Picker.SELECT_MODE_DATE:
+			default:
+				// Reset the time component of the selected Date
+				this.setTime(0, 0, 0);
+				
+				// Switch Now/Today Buttons
+			this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Now';
+				
+				// Hide Time input
+				this.oContainer.oFooter.oTime.domElement.hide();
+				
+				this.sSelectMode	= Reflex_Date_Picker.SELECT_MODE_DATE;
+				break;
+		}
 	},
 	
 	setDateChangeCallback	: function(fnCallback)
@@ -129,10 +155,40 @@ var Reflex_Date_Picker	= Class.create
 		this._render();
 	},
 	
-	setDate	: function(mDate)
+	setDate	: function(iYear, iMonth, iDay)
+	{
+		var	oCurrentDatetime	= this.getDate();
+		this.setDatetime(new Date(iYear, iMonth, iDay, oCurrentDatetime.getHours(), oCurrentDatetime.getMinutes(), oCurrentDatetime.getSeconds()));
+	},
+	
+	setTime	: function(iHours, iMinutes, iSeconds)
+	{
+		var	oCurrentDatetime	= this.getDate();
+		this.setDatetime(new Date(oCurrentDatetime.getFullYear(), oCurrentDatetime.getMonth(), oCurrentDatetime.getDay(), iHours, iMinutes, iSeconds));
+	},
+	
+	setDatetime	: function(mDate)
 	{
 		this.oDate	= (!mDate || mDate.toLowerCase() === 'now') ? new Date() : new Date(mDate);
 		//$Alert("Date has now been set to " + Reflex_Date_Format.format("Y-m-d H:i:s", mDate));
+		
+		// If this is a Date only, then zero-out the time component
+		switch (this.sSelectMode)
+		{
+			case Reflex_Date_Picker.SELECT_MODE_DATE:
+				this.oDate.setHours(0);
+				this.oDate.setMinutes(0);
+				this.oDate.setSeconds(0);
+				break;
+		}
+		
+		this.oContainer.oHeader.oLabel.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y H:i:s", oDate);
+		
+		// Callback
+		if (typeof this.fnDateChangeCallback === 'function')
+		{
+			this.fnDateChangeCallback(this.oDate);
+		}
 	},
 	
 	getDate	: function()
@@ -374,8 +430,8 @@ Reflex_Date_Picker.dayMutators.setWeekendInvalid	= function(oDate)
 };
 
 // Class Constants
-Reflex_Date_Picker.SELECT_MODE_DATE			= 'date';
-Reflex_Date_Picker.SELECT_MODE_DATE_TIME	= 'datetime';
+Reflex_Date_Picker.SELECT_MODE_DATE				= 'date';
+Reflex_Date_Picker.SELECT_MODE_DATE_TIME		= 'datetime';
 
 Reflex_Date_Picker.DEFAULT_START_OF_WEEK	= 1;	// Monday
 Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE	= 3;
