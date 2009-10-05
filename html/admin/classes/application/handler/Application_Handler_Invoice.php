@@ -1014,7 +1014,7 @@ WHERE		(
 							SELECT		c.Id
 							FROM		Charge c
 										JOIN InvoiceRun ir_charge ON (ir_charge.Id = c.invoice_run_id)
-										JOIN invoice_run_type irt_charge ON (ir_charge.invoice_run_type_id AND irt_charge.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
+										JOIN invoice_run_type irt_charge ON (ir_charge.invoice_run_type_id = irt_charge.id AND irt_charge.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
 							WHERE		c.Account = a.Id
 										AND c.ChargeType IN ('PCAD', 'PCAR')
 							LIMIT		1
@@ -1023,7 +1023,7 @@ WHERE		(
 							SELECT		stt.Records
 							FROM		ServiceTypeTotal stt
 										JOIN InvoiceRun ir_cdr ON (ir_cdr.Id = stt.invoice_run_id)
-										JOIN invoice_run_type irt_cdr ON (ir_cdr.invoice_run_type_id AND irt_cdr.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
+										JOIN invoice_run_type irt_cdr ON (ir_cdr.invoice_run_type_id = irt_cdr.id AND irt_cdr.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
 										JOIN RecordType rt ON (stt.RecordType = rt.Id)
 							WHERE		stt.Account = a.Id
 										AND rt.Code IN ('S&E')
