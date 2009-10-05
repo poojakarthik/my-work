@@ -214,10 +214,14 @@ FROM sale
 			ON sale.id = current_status_details.sale_id
 	LEFT JOIN sale_status_history AS verification_details
 		ON sale.id = verification_details.sale_id AND verification_details.sale_status_id = {$intSaleStatusIdVerified}
+	INNER JOIN dealer
+		ON sale.created_by = dealer.id
+	INNER JOIN vendor
+		ON sale_account.vendor_id = vendor.id
 
 WHERE	sale.created_by IN (<DealerIds>)
 		AND sale.created_on BETWEEN '{$strEarliestSubmissionTime}' AND '{$strLatestSubmissionTime}'
-ORDER BY sale_account.vendor_id ASC
+ORDER BY dealer.username ASC, vendor.name ASC
 ";
 
 		// Convert new line chars to spaces, and remove all tabs
