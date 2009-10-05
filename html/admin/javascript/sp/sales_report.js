@@ -2,6 +2,7 @@ var FlexSalesReport = {
 	REPORT_TYPE_COMMISSIONS			: "Commissions",
 	REPORT_TYPE_OUTSTANDING_SALES	: "OutstandingSales",
 	REPORT_TYPE_SALE_ITEM_SUMMARY	: "SaleItemSummary",
+	REPORT_TYPE_SALE_SUMMARY		: "SaleSummary",
 	REPORT_TYPE_SALE_ITEM_STATUS	: "SaleItemStatus",
 	REPORT_TYPE_SALE_ITEM_HISTORY	: "SaleItemHistory",
 	REPORT_TYPE_SALE_HISTORY		: "SaleHistory",
@@ -511,6 +512,7 @@ var FlexSalesReport = {
 				break;
 
 			case this.REPORT_TYPE_SALE_ITEM_SUMMARY:
+			case this.REPORT_TYPE_SALE_SUMMARY:
 				mixValid = this.validateDealerControl();
 				if (mixValid !== true)
 				{
@@ -521,6 +523,10 @@ var FlexSalesReport = {
 				{
 					strProblemsEncountered += mixValid;
 				}
+				break;
+
+			default:
+				strProblemsEncountered += "<br />Unknown Sale Report Type: " + this.strReportType;
 				break;
 		}
 		

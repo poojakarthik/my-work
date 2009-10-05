@@ -20,6 +20,7 @@ abstract class Sales_Report
 	const REPORT_TYPE_SALE_ITEM_STATUS	= "SaleItemStatus";
 	const REPORT_TYPE_SALE_ITEM_HISTORY	= "SaleItemHistory";
 	const REPORT_TYPE_SALE_HISTORY		= "SaleHistory";
+	const REPORT_TYPE_SALE_SUMMARY		= "SaleSummary";
 	
 	const RENDER_MODE_IN_PAGE_HTML	= "InPageHTML";
 	const RENDER_MODE_HTML			= "HTML";
@@ -51,6 +52,9 @@ abstract class Sales_Report
 																							),
 												self::REPORT_TYPE_OUTSTANDING_SALES	=> array(	"Name"			=> "Outstanding Sales Report",
 																								"Description"	=> "Outstanding Sales Report"
+																							),
+												self::REPORT_TYPE_SALE_SUMMARY		=> array(	"Name"			=> "Sale Summary Report",
+																								"Description"	=> "Sale Summary Report"
 																							),
 												self::REPORT_TYPE_SALE_ITEM_SUMMARY	=> array(	"Name"			=> "Sale Item Summary Report",
 																								"Description"	=> "Sale Item Summary Report"

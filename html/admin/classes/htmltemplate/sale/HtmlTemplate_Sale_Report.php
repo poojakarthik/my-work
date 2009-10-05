@@ -125,6 +125,18 @@ $strOptions
 										);
 				break;
 				
+			case Sales_Report::REPORT_TYPE_SALE_SUMMARY:
+				$arrConstraints[] = array(	"Label"		=> "Dealers",
+											"Control"	=> $this->buildDealerControl("dealers")
+										);
+				$arrConstraints[] = array(	"Label"		=> "Earliest Submission Time",
+											"Control"	=> $this->buildDateControl("earliestTime", $strEarliestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "00:00:00 d/m/Y")
+										);
+				$arrConstraints[] = array(	"Label"		=> "Latest Submission Time",
+											"Control"	=> $this->buildDateControl("latestTime", $strLatestTimestampFormatted, $intEarliestYear, $intLatestYear, FALSE, NULL, NULL, NULL, "23:59:59 d/m/Y")
+										);
+				break;
+				
 			case Sales_Report::REPORT_TYPE_SALE_ITEM_STATUS:
 				$arrStatuses = array(	DO_Sales_SaleItemStatus::VERIFIED,
 										DO_Sales_SaleItemStatus::AWAITING_DISPATCH,
