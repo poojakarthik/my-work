@@ -1921,6 +1921,7 @@ div.reflex-datepicker div.header
 div.reflex-datepicker div.footer
 {
 	border-top	: 0.1em solid #BF8E5F;
+	padding		: 0.25em;
 }
 
 div.reflex-datepicker div.footer div.time
