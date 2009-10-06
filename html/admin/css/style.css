@@ -2005,6 +2005,8 @@ div.reflex-datepicker div.content div.month td.day
 	
 	background-color	: #EFE0D1;
 	background-image	: url('../../admin/img/template/wave.png');
+	background-repeat	: repeat-x;
+	background-position	: 50%;
 	
 	padding-right	: 0.25em;
 	
@@ -2022,11 +2024,11 @@ div.reflex-datepicker div.content div.month td.day
 
 div.reflex-datepicker div.content div.month td.day.selectable:hover
 {
-	border	: 1px solid #CF7926;
+	border	: 1px solid #BF6A17;
 	
-	background-color	: #FFD6AF;
+	background-color	: #FFF7EF;
 	
-	color		: #CF7926;
+	color		: #BF6A17;
 	cursor		: pointer;
 }
 
