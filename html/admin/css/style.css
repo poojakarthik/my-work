@@ -1966,13 +1966,12 @@ div.reflex-datepicker div.content div.month caption
 	
 	border-top		: 0.1em solid #DFA66F;
 	border-bottom	: 0.1em solid #8F5823;
+	border-left		: 0.1em solid #DFA66F;
 	border-right	: 0.1em solid #8F5823;
 }
 
 div.reflex-datepicker div.content div div.month:first-child caption
 {
-	border-left		: 0.1em solid #DFA66F;
-	
 	-moz-border-radius-topleft			: 0.75em;
 	-moz-border-radius-bottomleft		: 0.75em;
 	-webkit-border-top-left-radius		: 0.75em;
