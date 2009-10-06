@@ -1904,7 +1904,10 @@ div.tree-grid div.loading img
 
 div.reflex-datepicker
 {
-	border		: 1px solid #111;
+	border		: 1px solid #FFD6AF;
+	
+	padding		: 0.2em;
+	
 	font-size	: 0.8em;
 	
 	font-family	: "Trebuchet MS", Verdana, Tahoma, Arial, sans-serif
@@ -1928,7 +1931,8 @@ div.reflex-datepicker div.footer div.time
 
 div.reflex-datepicker div.footer div.time span
 {
-	font-weight	: bold;
+	font-size	: 1.1em;
+	font-weight	: bolder;
 	
 	margin-left		: 0.25em;
 	margin-right	: 0.25em;
@@ -1999,7 +2003,7 @@ div.reflex-datepicker div.content div.month td.day
 {
 	border	: 1px solid #BF8E5F;
 	
-	background-color	: #DFAD7D;
+	background-color	: #EFE0D1;
 	background-image	: url('../../admin/img/template/wave.png');
 	
 	padding-right	: 0.25em;
@@ -2018,7 +2022,9 @@ div.reflex-datepicker div.content div.month td.day
 
 div.reflex-datepicker div.content div.month td.day.selectable:hover
 {
-	border	: 1px solid #FFD6AF;
+	border	: 1px solid #CF7926;
+	
+	background-color	: #FFD6AF;
 	
 	color		: #CF7926;
 	cursor		: pointer;
