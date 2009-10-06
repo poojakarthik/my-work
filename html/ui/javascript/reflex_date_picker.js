@@ -323,7 +323,8 @@ var Reflex_Date_Picker	= Class.create
 		
 		var oDateOfMonth	= new Date(iYear, iMonth - 1, 1);
 		var iWeeks			= 0;
-		while (iWeeks < Reflex_Date_Picker.MINIMUM_WEEKS_IN_MONTH || (oDateOfMonth.getDate() <= iDaysInMonth && oDateOfMonth.getMonth() === oMonthDate.getMonth()))
+		while (iWeeks < Reflex_Date_Picker.MINIMUM_WEEKS_IN_MONTH)
+		//while (oDateOfMonth.getDate() <= iDaysInMonth && oDateOfMonth.getMonth() === oMonthDate.getMonth())
 		{
 			// Add a new row for this week
 			iWeeks++;
