@@ -221,8 +221,10 @@ var Reflex_Date_Picker	= Class.create
 		// Render each visible month
 		var iFocusMonthIndex	= Math.ceil(this.iMonthsVisible / 2);
 		var oVisibleMonth		= new Date(oFocusDate);
-		var oCurrentRow			= document.createElement('div');
 		oVisibleMonth.shift(-1 - iFocusMonthIndex, Date.DATE_INTERVAL_MONTH);
+
+		var oCurrentRow			= document.createElement('div');
+		this.oContainer.oContent.domElement.appendChild(oCurrentRow);
 		for (var i = 1; i <= this.iMonthsVisible; i++)
 		{
 			if (((i - 1) % this.iMonthsPerRow === 0) && i != 1)
