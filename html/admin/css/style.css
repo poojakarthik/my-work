@@ -1979,18 +1979,18 @@ div.reflex-datepicker div.content div.month caption
 
 div.reflex-datepicker div.content div div.month:first-child caption
 {
-	-moz-border-radius-topleft			: 0.75em;
-	-moz-border-radius-bottomleft		: 0.75em;
-	-webkit-border-top-left-radius		: 0.75em;
-	-webkit-border-bottom-left-radius	: 0.75em;
+	-moz-border-radius-topleft			: 0.5em;
+	-moz-border-radius-bottomleft		: 0.5em;
+	-webkit-border-top-left-radius		: 0.5em;
+	-webkit-border-bottom-left-radius	: 0.5em;
 }
 
 div.reflex-datepicker div.content div div.month:last-child caption
 {
-	-moz-border-radius-topright			: 0.75em;
-	-moz-border-radius-bottomright		: 0.75em;
-	-webkit-border-top-right-radius		: 0.75em;
-	-webkit-border-bottom-right-radius	: 0.75em;
+	-moz-border-radius-topright			: 0.5em;
+	-moz-border-radius-bottomright		: 0.5em;
+	-webkit-border-top-right-radius		: 0.5em;
+	-webkit-border-bottom-right-radius	: 0.5em;
 }
 
 div.reflex-datepicker div.content div.month caption span
