@@ -2047,13 +2047,13 @@ div.reflex-datepicker div.content div.month td.day.selectable:hover
 }
 
 /* Day Mutator Classes */
-.reflex-datepicker-day-today span
+td.day.reflex-datepicker-day-today span
 {
 	color			: #BF6A17;
 	border-bottom	: 0.1em dotted #BF6A17;
 }
 
-.reflex-datepicker-day-selected
+td.day.reflex-datepicker-day-selected
 {
 	color				: #BF6A17;
 	background-color	: #BF6A17;
