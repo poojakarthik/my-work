@@ -91,7 +91,7 @@ var Reflex_Date_Picker	= Class.create
 		
 		this.oSetDateHandlers	= {};
 		
-		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isInCurrentMonth, Reflex_Date_Picker.dayMutators.isToday];
+		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isInCurrentMonth, Reflex_Date_Picker.dayMutators.isToday, Reflex_Date_Picker.dayMutators.isSelected.curry(this)];
 	},
 	
 	setPosition	: function(sPositionType, oConfig)
@@ -390,6 +390,17 @@ var Reflex_Date_Picker	= Class.create
 
 // Status Methods
 Reflex_Date_Picker.dayMutators	= {};
+
+Reflex_Date_Picker.dayMutators.isSelected	= function(oReflexDatePicker, oDate)
+{
+	var oSelectedDate	= oReflexDatePicker.getDate();
+	var bEligible		= (oDate.getDate() === oSelectedDate.getDate() && oDate.getMonth() === oSelectedDate.getMonth() && oDate.getFullYear() === oSelectedDate.getFullYear());
+	return	{
+				bSelectable	: null,
+				sCSSClass	: bEligible ? 'reflex-datepicker-day-today' : null
+			};
+};
+
 
 Reflex_Date_Picker.dayMutators.isToday	= function(oDate)
 {
