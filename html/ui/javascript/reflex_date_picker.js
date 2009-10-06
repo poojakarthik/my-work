@@ -305,7 +305,7 @@ var Reflex_Date_Picker	= Class.create
 		
 		oContainer.oGrid.oHeader.oRow				= {};
 		oContainer.oGrid.oHeader.oRow.domElement	= document.createElement('tr');
-		oContainer.oGrid.oHeader.oRow.domElement.addClassName();
+		oContainer.oGrid.oHeader.oRow.domElement.addClassName('days');
 		oContainer.oGrid.oHeader.domElement.appendChild(oContainer.oGrid.oHeader.oRow.domElement);
 		
 		for (var iDayOfWeek = 0; iDayOfWeek < 7; iDayOfWeek++)
