@@ -1997,7 +1997,10 @@ div.reflex-datepicker div.content div.month caption span
 
 div.reflex-datepicker div.content div.month td.day
 {
-	border	: 1px solid #6899EF;
+	border	: 1px solid #BF8E5F;
+	
+	background-color	: #DFAD7D;
+	background-image	: url('../../admin/img/template/wave.png');
 	
 	padding-right	: 0.25em;
 	
@@ -2015,16 +2018,16 @@ div.reflex-datepicker div.content div.month td.day
 
 div.reflex-datepicker div.content div.month td.day.selectable:hover
 {
-	border	: 1px solid #2E66C8;
+	border	: 1px solid #FFD6AF;
 	
-	color		: red;
+	color		: #CF7926;
 	cursor		: pointer;
 }
 
 /* Day Mutator Classes */
 .reflex-datepicker-day-today
 {
-	color	: #09f;
+	color	: #BF6A17;
 }
 
 /******************************************************************************/
