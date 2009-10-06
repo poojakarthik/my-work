@@ -1964,7 +1964,7 @@ div.reflex-datepicker div.content div.month caption
 	border-bottom	: 0.1em solid #8F5823;
 }
 
-div.reflex-datepicker div.content div:first-child div.month caption
+div.reflex-datepicker div.content div div.month:first-child caption
 {
 	border-left		: 0.1em solid #DFA66F;
 	
@@ -1974,7 +1974,7 @@ div.reflex-datepicker div.content div:first-child div.month caption
 	-webkit-border-bottom-left-radius	: 1.25em;
 }
 
-div.reflex-datepicker div.content div:last-child div.month caption
+div.reflex-datepicker div.content div div.month:last-child caption
 {
 	border-right	: 0.1em solid #8F5823;
 	
