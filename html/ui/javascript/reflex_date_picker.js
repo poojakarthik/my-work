@@ -36,39 +36,49 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.domElement.addClassName('footer');
 		this.oContainer.domElement.appendChild(this.oContainer.oFooter.domElement);
 		
-		this.oContainer.oFooter.oTime				= {};
-		this.oContainer.oFooter.oTime.domElement	= document.createElement('div');
-		this.oContainer.oFooter.oTime.domElement.addClassName('time');
-		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oTime.domElement);
+		this.oContainer.oFooter.oDatetime	= {};
+		this.oContainer.oFooter.oDatetime.domElement	= document.createElement('div');
+		this.oContainer.oFooter.oDatetime.domElement.addClassName('date-time');
+		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oDatetime.domElement);
 		
-		this.oContainer.oFooter.oTime.oHour							= {};
-		this.oContainer.oFooter.oTime.oHour.domElement				= document.createElement('input');
-		this.oContainer.oFooter.oTime.oHour.domElement.type			= 'text';
-		this.oContainer.oFooter.oTime.oHour.domElement.size			= 2;
-		this.oContainer.oFooter.oTime.oHour.domElement.maxLength	= 2;
-		this.oContainer.oFooter.oTime.domElement.appendChild(this.oContainer.oFooter.oTime.oHour.domElement);
+		this.oContainer.oFooter.oDatetime.oDate				= {};
+		this.oContainer.oFooter.oDatetime.oDate.domElement	= document.createElement('div');
+		this.oContainer.oFooter.oDatetime.oDate.domElement.addClassName('date');
+		this.oContainer.oFooter.oDatetime.domElement.appendChild(this.oContainer.oFooter.oDatetime.oDate.domElement);
+		
+		this.oContainer.oFooter.oDatetime.oTime				= {};
+		this.oContainer.oFooter.oDatetime.oTime.domElement	= document.createElement('div');
+		this.oContainer.oFooter.oDatetime.oTime.domElement.addClassName('time');
+		this.oContainer.oFooter.oDatetime.domElement.appendChild(this.oContainer.oFooter.oDatetime.oTime.domElement);
+		
+		this.oContainer.oFooter.oDatetime.oTime.oHour							= {};
+		this.oContainer.oFooter.oDatetime.oTime.oHour.domElement				= document.createElement('input');
+		this.oContainer.oFooter.oDatetime.oTime.oHour.domElement.type			= 'text';
+		this.oContainer.oFooter.oDatetime.oTime.oHour.domElement.size			= 2;
+		this.oContainer.oFooter.oDatetime.oTime.oHour.domElement.maxLength	= 2;
+		this.oContainer.oFooter.oDatetime.oTime.domElement.appendChild(this.oContainer.oFooter.oDatetime.oTime.oHour.domElement);
 		
 		var	domColon		= document.createElement('span');
 		domColon.innerHTML	= ':';
-		this.oContainer.oFooter.oTime.domElement.appendChild(domColon);
+		this.oContainer.oFooter.oDatetime.oTime.domElement.appendChild(domColon);
 		
-		this.oContainer.oFooter.oTime.oMinute						= {};
-		this.oContainer.oFooter.oTime.oMinute.domElement			= document.createElement('input');
-		this.oContainer.oFooter.oTime.oMinute.domElement.type		= 'text';
-		this.oContainer.oFooter.oTime.oMinute.domElement.size		= 2;
-		this.oContainer.oFooter.oTime.oMinute.domElement.maxLength	= 2;
-		this.oContainer.oFooter.oTime.domElement.appendChild(this.oContainer.oFooter.oTime.oMinute.domElement);
+		this.oContainer.oFooter.oDatetime.oTime.oMinute						= {};
+		this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement			= document.createElement('input');
+		this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement.type		= 'text';
+		this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement.size		= 2;
+		this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement.maxLength	= 2;
+		this.oContainer.oFooter.oDatetime.oTime.domElement.appendChild(this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement);
 		
 		var	domColon		= document.createElement('span');
 		domColon.innerHTML	= ':';
-		this.oContainer.oFooter.oTime.domElement.appendChild(domColon);
+		this.oContainer.oFooter.oDatetime.oTime.domElement.appendChild(domColon);
 		
-		this.oContainer.oFooter.oTime.oSecond						= {};
-		this.oContainer.oFooter.oTime.oSecond.domElement			= document.createElement('input');
-		this.oContainer.oFooter.oTime.oSecond.domElement.type		= 'text';
-		this.oContainer.oFooter.oTime.oSecond.domElement.size		= 2;
-		this.oContainer.oFooter.oTime.oSecond.domElement.maxLength	= 2;
-		this.oContainer.oFooter.oTime.domElement.appendChild(this.oContainer.oFooter.oTime.oSecond.domElement);
+		this.oContainer.oFooter.oDatetime.oTime.oSecond						= {};
+		this.oContainer.oFooter.oDatetime.oTime.oSecond.domElement			= document.createElement('input');
+		this.oContainer.oFooter.oDatetime.oTime.oSecond.domElement.type		= 'text';
+		this.oContainer.oFooter.oDatetime.oTime.oSecond.domElement.size		= 2;
+		this.oContainer.oFooter.oDatetime.oTime.oSecond.domElement.maxLength	= 2;
+		this.oContainer.oFooter.oDatetime.oTime.domElement.appendChild(this.oContainer.oDatetime.oFooter.oTime.oSecond.domElement);
 		
 		this.oContainer.oFooter.oNow						= {};
 		this.oContainer.oFooter.oNow.domElement				= document.createElement('button');
@@ -181,7 +191,8 @@ var Reflex_Date_Picker	= Class.create
 		}
 		
 		// Update Label
-		this.oContainer.oHeader.oLabel.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y H:i:s", this.oDate);
+		//this.oContainer.oHeader.oLabel.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y H:i:s", this.oDate);
+		this.oContainer.oFooter.oDatetime.oDate.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y ", this.oDate);
 		
 		// Update calendar
 		this._render(this.oDate);
