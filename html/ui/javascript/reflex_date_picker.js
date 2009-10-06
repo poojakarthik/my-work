@@ -338,11 +338,14 @@ var Reflex_Date_Picker	= Class.create
 			{
 				var domDay		= document.createElement('td');
 				domDay.id		= this.sUID + '_' + Reflex_Date_Format.format("Ymd", oDateOfMonth);
-				//domDay.addClassName('day');
 				
 				// If the Day of the Month is the current day of the week, then add
 				if (oDateOfMonth.getDay() === (iDayOfWeek % 7) && oDateOfMonth.getMonth() === oMonthDate.getMonth())
 				{
+					var domDaySpan	= document.createElement('span');
+					domDay.appendChild(domDaySpan);
+					
+					//domDay.addClassName('day');
 					//alert("Adding Cell for " + oDateOfMonth);
 					
 					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth);
@@ -352,7 +355,7 @@ var Reflex_Date_Picker	= Class.create
 					domDay.addEventListener('click', this.oSetDateHandlers[sFormattedDate], false);
 					
 					// Set Cell Contents
-					domDay.innerHTML	= oDateOfMonth.getDate();
+					domDaySpan.innerHTML	= oDateOfMonth.getDate();
 					domDay.addClassName('selectable');
 					
 					// Day Mutator Callbacks
@@ -397,7 +400,7 @@ Reflex_Date_Picker.dayMutators.isSelected	= function(oReflexDatePicker, oDate)
 	var bEligible		= (oDate.getDate() === oSelectedDate.getDate() && oDate.getMonth() === oSelectedDate.getMonth() && oDate.getFullYear() === oSelectedDate.getFullYear());
 	return	{
 				bSelectable	: null,
-				sCSSClass	: bEligible ? 'reflex-datepicker-day-today' : null
+				sCSSClass	: bEligible ? 'reflex-datepicker-day-selected' : null
 			};
 };
 
