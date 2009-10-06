@@ -72,7 +72,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oNow						= {};
 		this.oContainer.oFooter.oNow.domElement				= document.createElement('button');
 		this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Now';
-		this.oContainer.oFooter.oNow.domElement.observe('click', this.setDate.bind(this, 'now'));
+		this.oContainer.oFooter.oNow.domElement.observe('click', this.setDatetime.bind(this, 'now'));
 		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oNow.domElement);
 		
 		document.body.appendChild(this.oContainer.domElement);
@@ -182,7 +182,11 @@ var Reflex_Date_Picker	= Class.create
 				break;
 		}
 		
+		// Update Label
 		this.oContainer.oHeader.oLabel.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y H:i:s", oDate);
+		
+		// Update calendar
+		this._render(this.oDate);
 		
 		// Callback
 		if (typeof this.fnDateChangeCallback === 'function')
@@ -217,19 +221,19 @@ var Reflex_Date_Picker	= Class.create
 		// Render each visible month
 		var iFocusMonthIndex	= Math.ceil(this.iMonthsVisible / 2);
 		var oVisibleMonth		= new Date(oFocusDate);
+		var oCurrentRow			= document.createElement('div');
 		oVisibleMonth.shift(-1 - iFocusMonthIndex, Date.DATE_INTERVAL_MONTH);
 		for (var i = 1; i <= this.iMonthsVisible; i++)
 		{
 			if (((i - 1) % this.iMonthsPerRow === 0) && i != 1)
 			{
-				// Add in a clearing
-				var oClearing	= document.createElement('div');
-				oClearing.addClassName('clear');
-				this.oContainer.oContent.domElement.appendChild(oClearing);
+				// Create a new Row
+				oCurrentRow	= document.createElement('div');
+				this.oContainer.oContent.domElement.appendChild(oCurrentRow);
 			}
 			
 			oVisibleMonth.shift(1, Date.DATE_INTERVAL_MONTH);
-			this.oContainer.oContent.domElement.appendChild(this._renderMonthView(oVisibleMonth.getMonth() + 1, oVisibleMonth.getFullYear()).domElement);
+			oCurrentRow.domElement.appendChild(this._renderMonthView(oVisibleMonth.getMonth() + 1, oVisibleMonth.getFullYear()).domElement);
 		}
 
 		// Add in a clearing
@@ -345,7 +349,7 @@ var Reflex_Date_Picker	= Class.create
 					//alert("Adding Cell for " + oDateOfMonth);
 					
 					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth);
-					this.oSetDateHandlers[sFormattedDate]	= this.setDate.bind(this, new Date(oDateOfMonth));
+					this.oSetDateHandlers[sFormattedDate]	= this.setDatetime.bind(this, new Date(oDateOfMonth));
 					
 					// Add Event Listener
 					domDay.addEventListener('click', this.oSetDateHandlers[sFormattedDate], false);

@@ -1957,6 +1957,8 @@ div.reflex-datepicker div.content div.month caption
 	background-color	: #D7812A;
 	
 	height	: 2.5em;
+	
+	vertical-align	: middle;
 }
 
 div.reflex-datepicker div.content div.month caption span
