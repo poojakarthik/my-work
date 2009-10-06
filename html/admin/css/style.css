@@ -2055,7 +2055,7 @@ div.reflex-datepicker div.content div.month td.day.reflex-datepicker-day-today s
 
 div.reflex-datepicker div.content div.month td.day.reflex-datepicker-day-selected
 {
-	color				: #DFC3A7;
+	color				: #fff;
 	font-weight			: bolder;
 	
 	background-color	: #CF8D4D;
