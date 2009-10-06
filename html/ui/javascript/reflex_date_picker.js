@@ -167,7 +167,7 @@ var Reflex_Date_Picker	= Class.create
 	
 	setDatetime	: function(mDate)
 	{
-		this.oDate	= (!mDate || mDate.toLowerCase() === 'now') ? new Date() : new Date(mDate);
+		this.oDate	= (!mDate || (mDate.toLowerCase && mDate.toLowerCase() === 'now')) ? new Date() : new Date(mDate);
 		//$Alert("Date has now been set to " + Reflex_Date_Format.format("Y-m-d H:i:s", mDate));
 		
 		// If this is a Date only, then zero-out the time component
