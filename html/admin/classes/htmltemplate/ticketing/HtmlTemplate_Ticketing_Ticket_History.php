@@ -268,7 +268,7 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 		
 		// Compile the Summary of the event (the correspondence summary)
 		$link = Flex::getUrlBase() . "reflex.php/Ticketing/Correspondence/{$correspondence->id}/View/?{$this->strCurrentAccountGetVar}";
-		$strSummary = (trim($correspondence->summary) != '')? htmlspecialchars(trim($correspondence->summary)) : '[No Summary Defined]';
+		$strSummary = (trim($correspondence->summary) != '')? htmlspecialchars(trim($correspondence->summary)) : '<em>[No Summary Defined]</em>';
 		$strSummary = "<a href='$link' title='View'>{$strSummary}</a>";
 		
 		// Compile the Timestamp (use creation_datetime if delivery_datetime is null)
