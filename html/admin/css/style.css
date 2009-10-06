@@ -1920,13 +1920,12 @@ div.reflex-datepicker div.header
 
 div.reflex-datepicker div.footer
 {
-	
+	border-top	: 0.1em solid #BF8E5F;
 }
 
 div.reflex-datepicker div.footer div.time
 {
-	margin-left		: auto;
-	margin-right	: auto;
+	display	: inline-block;
 }
 
 div.reflex-datepicker div.footer div.time span
