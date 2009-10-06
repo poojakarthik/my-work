@@ -1959,12 +1959,14 @@ div.reflex-datepicker div.content div.month caption
 	background-color	: #D7812A;
 	background-position	: 0% -50%;
 	
-	height	: 2.5em;
+	height		: 1.5em;
+	line-height	: 1.5em;
 	
 	vertical-align	: middle;
 	
 	border-top		: 0.1em solid #DFA66F;
 	border-bottom	: 0.1em solid #8F5823;
+	border-right	: 0.1em solid #8F5823;
 }
 
 div.reflex-datepicker div.content div div.month:first-child caption
@@ -1979,8 +1981,6 @@ div.reflex-datepicker div.content div div.month:first-child caption
 
 div.reflex-datepicker div.content div div.month:last-child caption
 {
-	border-right	: 0.1em solid #8F5823;
-	
 	-moz-border-radius-topright			: 0.75em;
 	-moz-border-radius-bottomright		: 0.75em;
 	-webkit-border-top-right-radius		: 0.75em;

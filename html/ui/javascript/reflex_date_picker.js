@@ -282,7 +282,6 @@ var Reflex_Date_Picker	= Class.create
 		
 		oContainer.oGrid.oCaption.oMonthYear			= {};
 		oContainer.oGrid.oCaption.oMonthYear.domElement	= document.createElement('div');
-		oContainer.oGrid.oCaption.oMonthYear.domElement.addClassName();
 		oContainer.oGrid.oCaption.domElement.appendChild(oContainer.oGrid.oCaption.oMonthYear.domElement);
 		
 		oContainer.oGrid.oCaption.oMonthYear.oMonth							= {};
