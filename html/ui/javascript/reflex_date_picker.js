@@ -146,8 +146,8 @@ var Reflex_Date_Picker	= Class.create
 	{
 		this.iMonthsVisible	= Math.abs(parseInt(iMonths));
 		
-		iMonthsPerRow	= Math.abs(parseInt(iMonthsPerRow));
-		this.iMonthsPerRow	= (iMonthsPerRow > 0) iMonthsPerRow : 1;
+		iMonthsPerRow		= Math.abs(parseInt(iMonthsPerRow));
+		this.iMonthsPerRow	= (iMonthsPerRow > 0) ? iMonthsPerRow : 1;
 		
 		// Re-render
 		this._render();
