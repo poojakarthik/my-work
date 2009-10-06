@@ -322,9 +322,11 @@ var Reflex_Date_Picker	= Class.create
 		oContainer.oGrid.domElement.appendChild(oContainer.oGrid.oBody.domElement);
 		
 		var oDateOfMonth	= new Date(iYear, iMonth - 1, 1);
-		while (oDateOfMonth.getDate() <= iDaysInMonth && oDateOfMonth.getMonth() === oMonthDate.getMonth())
+		var iWeeks			= 0;
+		while (iWeeks < Reflex_Date_Picker.MINIMUM_WEEKS_IN_MONTH || (oDateOfMonth.getDate() <= iDaysInMonth && oDateOfMonth.getMonth() === oMonthDate.getMonth()))
 		{
 			// Add a new row for this week
+			iWeeks++;
 			oContainer.oGrid.oBody.oRow				= {};
 			oContainer.oGrid.oBody.oRow.domElement	= document.createElement('tr');
 			oContainer.oGrid.oBody.oRow.domElement.addClassName('week');
@@ -434,3 +436,5 @@ Reflex_Date_Picker.SELECT_MODE_DATE_TIME		= 'datetime';
 Reflex_Date_Picker.DEFAULT_START_OF_WEEK	= 1;	// Monday
 Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE	= 3;
 Reflex_Date_Picker.DEFAULT_MONTHS_PER_ROW	= 3;
+
+Reflex_Date_Picker.MINIMUM_WEEKS_IN_MONTH	= 6;
