@@ -1947,7 +1947,8 @@ div.reflex-datepicker div.content div.clear
 div.reflex-datepicker div.content div.month
 {
 	/*border	: 1px solid #333;*/
-	float	: left;
+	display			: inline-block;
+	vertical-align	: top;
 }
 
 div.reflex-datepicker div.content div.month caption
