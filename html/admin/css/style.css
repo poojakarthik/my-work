@@ -1977,6 +1977,12 @@ div.reflex-datepicker div.content div.month caption
 	border-right	: 0.1em solid #8F5823;
 }
 
+div.reflex-datepicker div.content div.month tr.days th
+{
+	font-weight		: bold;
+	border-bottom	: 0.1em solid #BF8E5F;
+}
+
 div.reflex-datepicker div.content div div.month:first-child caption
 {
 	-moz-border-radius-topleft			: 0.5em;
