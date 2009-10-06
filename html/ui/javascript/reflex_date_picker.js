@@ -6,9 +6,10 @@ var Reflex_Date_Picker	= Class.create
 		this.sUID	= 'reflex-date-picker_' + String(Math.round((new Date()).getTime() * Math.random()));
 		
 		// Basic DOM Elements
-		this.oContainer					= {};
-		this.oContainer.domElement		= document.createElement('div');
-		this.oContainer.domElement.id	= this.sUID;
+		this.oContainer									= {};
+		this.oContainer.domElement						= document.createElement('div');
+		this.oContainer.domElement.id					= this.sUID;
+		this.oContainer.domElement.oReflexDatePicker	= this;
 		this.oContainer.domElement.addClassName('reflex-datepicker');
 		
 		// Header
