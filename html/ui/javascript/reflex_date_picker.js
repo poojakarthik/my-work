@@ -147,10 +147,7 @@ var Reflex_Date_Picker	= Class.create
 		this.iMonthsVisible	= Math.abs(parseInt(iMonths));
 		
 		iMonthsPerRow	= Math.abs(parseInt(iMonthsPerRow));
-		if (iMonthsPerRow)
-		{
-			this.iMonthsPerRow	= iMonthsPerRow;
-		}
+		this.iMonthsPerRow	= (iMonthsPerRow > 0) iMonthsPerRow : 1;
 		
 		// Re-render
 		this._render();
@@ -226,9 +223,9 @@ var Reflex_Date_Picker	= Class.create
 
 		var oCurrentRow			= document.createElement('div');
 		this.oContainer.oContent.domElement.appendChild(oCurrentRow);
-		for (var i = 1; i <= this.iMonthsVisible; i++)
+		for (var i = 0; i < this.iMonthsVisible; i++)
 		{
-			if (((i - 1) % this.iMonthsPerRow === 0) && i != 1)
+			if ((i % this.iMonthsPerRow === 0) && i !== 0)
 			{
 				// Create a new Row
 				oCurrentRow	= document.createElement('div');
