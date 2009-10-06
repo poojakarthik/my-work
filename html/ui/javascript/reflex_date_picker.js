@@ -232,8 +232,8 @@ var Reflex_Date_Picker	= Class.create
 				this.oContainer.oContent.domElement.appendChild(oCurrentRow);
 			}
 			
-			oVisibleMonth.shift(1, Date.DATE_INTERVAL_MONTH);
 			oCurrentRow.appendChild(this._renderMonthView(oVisibleMonth.getMonth() + 1, oVisibleMonth.getFullYear()).domElement);
+			oVisibleMonth.shift(1, Date.DATE_INTERVAL_MONTH);
 		}
 	},
 	
