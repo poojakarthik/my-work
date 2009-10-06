@@ -1980,6 +1980,10 @@ div.reflex-datepicker div.content div.month caption
 div.reflex-datepicker div.content div.month tr.days th
 {
 	font-weight		: bold;
+}
+
+div.reflex-datepicker div.content div.month tr.days
+{
 	border-bottom	: 0.1em solid #BF8E5F;
 }
 
