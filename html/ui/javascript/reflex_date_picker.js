@@ -36,7 +36,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.domElement.addClassName('footer');
 		this.oContainer.domElement.appendChild(this.oContainer.oFooter.domElement);
 		
-		this.oContainer.oFooter.oDatetime	= {};
+		this.oContainer.oFooter.oDatetime				= {};
 		this.oContainer.oFooter.oDatetime.domElement	= document.createElement('div');
 		this.oContainer.oFooter.oDatetime.domElement.addClassName('date-time');
 		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oDatetime.domElement);
@@ -78,7 +78,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oDatetime.oTime.oSecond.domElement.type		= 'text';
 		this.oContainer.oFooter.oDatetime.oTime.oSecond.domElement.size		= 2;
 		this.oContainer.oFooter.oDatetime.oTime.oSecond.domElement.maxLength	= 2;
-		this.oContainer.oFooter.oDatetime.oTime.domElement.appendChild(this.oContainer.oDatetime.oFooter.oTime.oSecond.domElement);
+		this.oContainer.oFooter.oDatetime.oTime.domElement.appendChild(this.oContainer.oFooter.oDatetime.oFooter.oTime.oSecond.domElement);
 		
 		this.oContainer.oFooter.oNow						= {};
 		this.oContainer.oFooter.oNow.domElement				= document.createElement('button');
