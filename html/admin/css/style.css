@@ -1953,6 +1953,8 @@ div.reflex-datepicker div.content div.month caption
 	font-size	: 1.2em;
 	font-weight	: bold;
 	
+	color		: #fff;
+	
 	background-image	: url('../../admin/img/template/wave.png');
 	background-color	: #D7812A;
 	
@@ -1968,20 +1970,20 @@ div.reflex-datepicker div.content div div.month:first-child caption
 {
 	border-left		: 0.1em solid #DFA66F;
 	
-	-moz-border-radius-topleft			: 1.25em;
-	-moz-border-radius-bottomleft		: 1.25em;
-	-webkit-border-top-left-radius		: 1.25em;
-	-webkit-border-bottom-left-radius	: 1.25em;
+	-moz-border-radius-topleft			: 0.75em;
+	-moz-border-radius-bottomleft		: 0.75em;
+	-webkit-border-top-left-radius		: 0.75em;
+	-webkit-border-bottom-left-radius	: 0.75em;
 }
 
 div.reflex-datepicker div.content div div.month:last-child caption
 {
 	border-right	: 0.1em solid #8F5823;
 	
-	-moz-border-radius-topright			: 1.25em;
-	-moz-border-radius-bottomright		: 1.25em;
-	-webkit-border-top-right-radius		: 1.25em;
-	-webkit-border-bottom-right-radius	: 1.25em;
+	-moz-border-radius-topright			: 0.75em;
+	-moz-border-radius-bottomright		: 0.75em;
+	-webkit-border-top-right-radius		: 0.75em;
+	-webkit-border-bottom-right-radius	: 0.75em;
 }
 
 div.reflex-datepicker div.content div.month caption span
