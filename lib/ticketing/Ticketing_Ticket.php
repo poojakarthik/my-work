@@ -206,19 +206,24 @@ class Ticketing_Ticket
 		$arrValues = $this->getValuesToSave();
 
 		$now = GetCurrentISODateTime();
- 		
+		$this->modifiedDatetime = $arrValues['modified_datetime'] = $now;
+
 		// No id means that this must be a new record
 		if (!$this->id)
 		{
-			$this->creationDatetime = $arrValues['creation_datetime'] = $now;
-			$this->modifiedDatetime = $arrValues['modified_datetime'] = $now;
+			// Check if the creation timestamp has been set yet
+			if ($arrValues['creation_datetime'] === null)
+			{
+				// Set it now
+				$this->creationDatetime = $arrValues['creation_datetime'] = $now;
+			}
+			
 			$statement = new StatementInsert($this->getTableName(), $arrValues);
 		}
 		// This must be an update
 		else
 		{
 			$arrValues['id'] = $this->id;
-			$this->modifiedDatetime = $arrValues['modified_datetime'] = $now;
 			$statement = new StatementUpdateById($this->getTableName(), $arrValues);
 		}
 
