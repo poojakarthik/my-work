@@ -1906,6 +1906,8 @@ div.reflex-datepicker
 {
 	border		: 1px solid #111;
 	font-size	: 0.8em;
+	
+	font-family	: "Trebuchet MS", Verdana, Tahoma, Arial, sans-serif
 }
 
 div.reflex-datepicker div.header
