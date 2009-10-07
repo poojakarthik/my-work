@@ -135,6 +135,7 @@ class Cli_App_Note extends Cli
 			
 			self::SWITCH_INPUT_FILE => array(
 				self::ARG_REQUIRED		=> true,
+				self::ARG_LABEL			=> "CSV_FILE",
 				self::ARG_DESCRIPTION	=> "CSV File to Import from",
 				self::ARG_VALIDATION	=> 'Cli::_validFile("%1$s", true)'
 			),
