@@ -34,7 +34,7 @@ class Cli_App_Note extends Cli
 			// Load up the CSV file
 			$oCSVFile	= new File_CSV();
 			$oCSVFile->setColumns(self::$_aColumns);
-			$oCSVFile->importFile($this->_arrArgs[self::SWITCH_TEST_RUN], true, false);
+			$oCSVFile->importFile($this->_arrArgs[self::SWITCH_INPUT_FILE], true, false);
 			
 			$oFlexDataAccess	= DataAccess::getDataAccess();
 			
