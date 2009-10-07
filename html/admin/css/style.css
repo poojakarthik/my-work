@@ -1904,7 +1904,8 @@ div.tree-grid div.loading img
 
 div.reflex-datepicker
 {
-	border		: 1px solid #FFD6AF;
+	border				: 0.1em solid #BF8E5F;
+	background-color	: #FFEFDF;
 	
 	padding		: 0.2em;
 	
@@ -2031,7 +2032,7 @@ div.reflex-datepicker div.content div.month td
 
 div.reflex-datepicker div.content div.month td.day
 {
-	border	: 1px solid #BF8E5F;
+	border	: 0.1em solid #BF8E5F;
 	
 	background-color	: #EFE0D1;
 	background-image	: url('../../admin/img/template/wave.png');
@@ -2044,7 +2045,7 @@ div.reflex-datepicker div.content div.month td.day
 
 div.reflex-datepicker div.content div.month td.day.selectable:hover
 {
-	border	: 1px solid #BF6A17;
+	border	: 0.1em solid #BF6A17;
 	
 	background-color	: #FFF7EF;
 	
