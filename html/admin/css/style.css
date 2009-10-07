@@ -1924,6 +1924,7 @@ div.reflex-datepicker div.footer
 	padding		: 0.25em;
 	
 	font-size	: 1.1em;
+	font-weight	: bolder;
 }
 
 div.reflex-datepicker div.footer div.reflex-datepicker-datetime,
@@ -1939,9 +1940,6 @@ div.reflex-datepicker div.footer div.reflex-datepicker-datetime div.reflex-datep
 
 div.reflex-datepicker div.footer div.reflex-datepicker-datetime-time span
 {
-	font-size	: 1.1em;
-	font-weight	: bolder;
-	
 	margin-left		: 0.25em;
 	margin-right	: 0.25em;
 }
