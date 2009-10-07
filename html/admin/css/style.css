@@ -1911,16 +1911,16 @@ div.reflex-datepicker
 	
 	font-size	: 0.8em;
 	
-	font-family	: "Trebuchet MS", Verdana, Tahoma, Arial, sans-serif
+	font-family	: "Trebuchet MS", Verdana, Tahoma, Arial, sans-serif;
 	
 	-moz-border-radius-topleft			: 0.5em;
 	-moz-border-radius-bottomleft		: 0.5em;
+	-webkit-border-top-left-radius		: 0.5em;
+	-webkit-border-bottom-left-radius	: 0.5em;
 	-moz-border-radius-topright			: 0.5em;
 	-moz-border-radius-bottomright		: 0.5em;
 	-webkit-border-top-right-radius		: 0.5em;
 	-webkit-border-bottom-right-radius	: 0.5em;
-	-webkit-border-top-left-radius		: 0.5em;
-	-webkit-border-bottom-left-radius	: 0.5em;
 }
 
 div.reflex-datepicker div.header
