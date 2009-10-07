@@ -28,7 +28,7 @@ class Cli_App_Note extends Cli
 			
 			if ($this->_arrArgs[self::SWITCH_TEST_RUN])
 			{
-				$this->log("Running in test mode.", true);
+				$this->log("Running in test mode.  No Notes will be saved.", true);
 			}
 			
 			// Load up the CSV file
@@ -73,6 +73,7 @@ class Cli_App_Note extends Cli
 					$oNote->Account			= $oAccount->Id;
 					$oNote->Datetime		= $sImportDatetime;
 					$oNote->NoteType		= Note::GENERAL_NOTE_TYPE_ID;
+					$oNote->Note			= $aRow['Note'];
 					if (!$oNote->save())
 					{
 						throw new Exception("Unable to save Note '{$aRow['Note']}' for Account #{$oAccount->Id}");
