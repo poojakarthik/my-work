@@ -155,7 +155,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 				<tbody>
 					<tr class="alt">
 						<td class="title">Subject: </td>
-						<td><?=htmlspecialchars(trim($ticket->subject) ? $ticket->subject : '<em>[No Subject]</em>')?></td>
+						<td><?=(trim($ticket->subject) ? htmlspecialchars($ticket->subject) : '<em>[No Subject]</em>')?></td>
 					</tr>
 					<tr class="alt">
 						<td class="title">Owner: </td>
@@ -307,7 +307,7 @@ class HtmlTemplate_Ticketing_Ticket extends FlexHtmlTemplate
 								}
 								else
 								{
-									echo htmlspecialchars(trim($ticket->subject) ? $ticket->subject : '<em>[No Subject]</em>');
+									echo (trim($ticket->subject) ? htmlspecialchars($ticket->subject) : '<em>[No Subject]</em>');
 								}
 								?>
 							</td>
