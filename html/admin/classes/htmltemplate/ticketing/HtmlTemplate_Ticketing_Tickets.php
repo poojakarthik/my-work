@@ -444,7 +444,7 @@ class HtmlTemplate_Ticketing_Tickets extends FlexHtmlTemplate
 
 			<tr class="<?=$tr_alt?>">
 				<td><a href="reflex.php/Ticketing/Ticket/<?=$ticket->id?>/View/<?php echo "?{$strAccountGetVar}"?>"><?php echo $ticket->id; ?></a></td>
-				<td><?php echo htmlspecialchars(trim($ticket->subject) ? $ticket->subject : '<em>[No Subject]</em>'); ?></td>
+				<td><?php echo (trim($ticket->subject) ? htmlspecialchars($ticket->subject) : '<em>[No Subject]</em>'); ?></td>
 				<td><?php echo $strModifiedOn; ?></td>
 				<td><?php echo $strLastActionedOn; ?></td>
 				<td><?php echo $strCreatedOn; ?></td>
