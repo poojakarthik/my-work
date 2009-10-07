@@ -1905,13 +1905,22 @@ div.tree-grid div.loading img
 div.reflex-datepicker
 {
 	border				: 0.1em solid #BF8E5F;
-	background-color	: #FFEFDF;
+	background-color	: #FFF7EF;
 	
 	padding		: 0.2em;
 	
 	font-size	: 0.8em;
 	
 	font-family	: "Trebuchet MS", Verdana, Tahoma, Arial, sans-serif
+	
+	-moz-border-radius-topleft			: 0.5em;
+	-moz-border-radius-bottomleft		: 0.5em;
+	-moz-border-radius-topright			: 0.5em;
+	-moz-border-radius-bottomright		: 0.5em;
+	-webkit-border-top-right-radius		: 0.5em;
+	-webkit-border-bottom-right-radius	: 0.5em;
+	-webkit-border-top-left-radius		: 0.5em;
+	-webkit-border-bottom-left-radius	: 0.5em;
 }
 
 div.reflex-datepicker div.header
