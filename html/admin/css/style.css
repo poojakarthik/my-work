@@ -1924,7 +1924,9 @@ div.reflex-datepicker div.footer
 	padding		: 0.25em;
 }
 
-div.reflex-datepicker div.footer div.time
+div.reflex-datepicker div.footer div.reflex-datepicker-datetime,
+div.reflex-datepicker div.footer div.reflex-datepicker-datetime div.reflex-datepicker-datetime-date,
+div.reflex-datepicker div.footer div.reflex-datepicker-datetime div.reflex-datepicker-datetime-time
 {
 	display	: inline-block;
 }

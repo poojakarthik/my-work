@@ -38,17 +38,17 @@ var Reflex_Date_Picker	= Class.create
 		
 		this.oContainer.oFooter.oDatetime				= {};
 		this.oContainer.oFooter.oDatetime.domElement	= document.createElement('div');
-		this.oContainer.oFooter.oDatetime.domElement.addClassName('date-time');
+		this.oContainer.oFooter.oDatetime.domElement.addClassName('reflex-datepicker-datetime');
 		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oDatetime.domElement);
 		
 		this.oContainer.oFooter.oDatetime.oDate				= {};
 		this.oContainer.oFooter.oDatetime.oDate.domElement	= document.createElement('div');
-		this.oContainer.oFooter.oDatetime.oDate.domElement.addClassName('date');
+		this.oContainer.oFooter.oDatetime.oDate.domElement.addClassName('reflex-datepicker-datetime-date');
 		this.oContainer.oFooter.oDatetime.domElement.appendChild(this.oContainer.oFooter.oDatetime.oDate.domElement);
 		
 		this.oContainer.oFooter.oDatetime.oTime				= {};
 		this.oContainer.oFooter.oDatetime.oTime.domElement	= document.createElement('div');
-		this.oContainer.oFooter.oDatetime.oTime.domElement.addClassName('time');
+		this.oContainer.oFooter.oDatetime.oTime.domElement.addClassName('reflex-datepicker-datetime-time');
 		this.oContainer.oFooter.oDatetime.domElement.appendChild(this.oContainer.oFooter.oDatetime.oTime.domElement);
 		
 		this.oContainer.oFooter.oDatetime.oTime.oHour							= {};
