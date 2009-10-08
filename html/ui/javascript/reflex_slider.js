@@ -136,6 +136,8 @@ Reflex_Slider	= Class.create
 		{
 			this.fnSetValueCallback(this.getValues());
 		}
+		
+		$Alert("Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]");
 	},
 	
 	_limitValues	: function()
