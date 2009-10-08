@@ -42,6 +42,7 @@ Reflex_Slider	= Class.create
 		this.domDebugConsole.style.position			= 'fixed';
 		this.domDebugConsole.style.bottom			= '0';
 		this.domDebugConsole.style.height			= '10em';
+		this.domDebugConsole.style.width			= '100%';
 		this.domDebugConsole.style.minHeight		= '10em';
 		this.domDebugConsole.style.maxHeight		= '10em';
 		this.domDebugConsole.style.overflowX		= 'scroll';
@@ -237,7 +238,7 @@ Reflex_Slider	= Class.create
 		var iMultiplier	= this.oContainer.oRail.domElement.getWidth() / iValueRange;
 		var iValue		= (iDifference * iMultiplier) + this.iMinValue;
 		
-		this.domDebugConsole.innerHTML	+= String(iValue) + " (x: " + iX + ", y: " + iY + ", CumulativeOffset: " + oCumulativeOffset.left + ")<br />\n";
+		this.domDebugConsole.innerHTML	+= String(iValue) + " (x: " + iX + ", y: " + iY + ", CumulativeOffset: " + oCumulativeOffset.left + ", ValueRange: " + iValueRange + ", Multiplier: " + iMultiplier + ")<br />\n";
 		
 		return iValue;
 	},
