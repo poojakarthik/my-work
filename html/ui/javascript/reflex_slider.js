@@ -31,6 +31,9 @@ Reflex_Slider	= Class.create
 		this.oContainer.oRail.oHandleEnd.onMouseUp				= this._onMouseUp.bindAsEventListener(this, this.oContainer.oRail.oHandleEnd);
 		this.oContainer.oRail.oHandleEnd.onDrag					= this._onDrag.bindAsEventListener(this, this.oContainer.oRail.oHandleEnd);
 		
+		this.oContainer.oRail.oHandleStart.domElement.observe('mousedown', this.oContainer.oRail.oHandleStart.onMouseDown);
+		this.oContainer.oRail.oHandleEnd.domElement.observe('mousedown', this.oContainer.oRail.oHandleEnd.onMouseDown);
+		
 		// Defaults
 		this.oValues	=	{
 								iStartValue	: 0,
