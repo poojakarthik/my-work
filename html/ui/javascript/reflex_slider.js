@@ -44,8 +44,8 @@ Reflex_Slider	= Class.create
 		this.domDebugConsole.style.height			= '10em';
 		this.domDebugConsole.style.minHeight		= '10em';
 		this.domDebugConsole.style.maxHeight		= '10em';
-		this.domDebugConsole.style.overflow-x		= 'scroll';
-		this.domDebugConsole.style.overflow-y		= 'scroll';
+		this.domDebugConsole.style.overflowX		= 'scroll';
+		this.domDebugConsole.style.overflowY		= 'scroll';
 		this.domDebugConsole.style.border			= '0.1em solid #000';
 		this.domDebugConsole.style.backgroundColor	= '#fff';
 		document.body.appendChild(this.domDebugConsole);
