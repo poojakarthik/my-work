@@ -2062,6 +2062,15 @@ div.reflex-datepicker div.content div.month td.day.selectable:hover
 	cursor		: pointer;
 }
 
+div.reflex-datepicker div.content div.time-picker
+{
+	border-top	: 0.1em solid #BF8E5F;
+	padding		: 0.25em;
+	
+	font-size	: 1.1em;
+	font-weight	: bolder;
+}
+
 /* Day Mutator Classes */
 div.reflex-datepicker div.content div.month td.day.reflex-datepicker-day-today span
 {
