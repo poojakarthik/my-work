@@ -30,6 +30,24 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oContent.domElement.addClassName('content');
 		this.oContainer.domElement.appendChild(this.oContainer.oContent.domElement);
 		
+		// Date Picker Content
+		this.oContainer.oContent.oDatePicker			= {};
+		this.oContainer.oContent.oDatePicker.domElement	= document.createElement('div');
+		this.oContainer.oContent.oDatePicker.domElement.addClassName('date-picker');
+		this.oContainer.oContent.domElement.appendChild(this.oContainer.oContent.oDatePicker.domElement);
+		
+		// Time Picker Content
+		this.oContainer.oContent.oTimePicker			= {};
+		this.oContainer.oContent.oTimePicker.domElement	= document.createElement('div');
+		this.oContainer.oContent.oTimePicker.domElement.addClassName('time-picker');
+		this.oContainer.oContent.domElement.appendChild(this.oContainer.oContent.oTimePicker.domElement);
+		
+		this.oContainer.oContent.oTimePicker.oSlider	= new Reflex_Slider();
+		this.oContainer.oContent.oTimePicker.oSlider.setSelectMode(Reflex_Slider.SELECT_MODE_VALUE);
+		this.oContainer.oContent.oTimePicker.oSlider.setMinValue(0);
+		this.oContainer.oContent.oTimePicker.oSlider.setMaxValue(60 * 60 * 24);
+		this.oContainer.oContent.oTimePicker.oSlider.setStepping(60 * 15);
+		
 		// Footer
 		this.oContainer.oFooter				= {};
 		this.oContainer.oFooter.domElement	= document.createElement('div');
@@ -160,7 +178,7 @@ var Reflex_Date_Picker	= Class.create
 		this.iMonthsPerRow	= (iMonthsPerRow > 0) ? iMonthsPerRow : 1;
 		
 		// Re-render
-		this._render();
+		this._renderDatePicker();
 	},
 	
 	setDate	: function(iYear, iMonth, iDay)
@@ -195,7 +213,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oDatetime.oDate.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y ", this.oDate);
 		
 		// Update calendar
-		this._render(this.oDate);
+		this._renderDatePicker(this.oDate);
 		
 		// Callback
 		if (typeof this.fnDateChangeCallback === 'function')
@@ -214,12 +232,12 @@ var Reflex_Date_Picker	= Class.create
 		return this.oContainer.domElement;
 	},
 	
-	_render	: function(oFocusDate)
+	_renderDatePicker	: function(oFocusDate)
 	{
 		oFocusDate	= (!oFocusDate) ? this.getDate() : oFocusDate;
 		
 		// Purge all children
-		this.oContainer.oContent.domElement.childElements().invoke('remove');
+		this.oContainer.oContent.oDatePicker.domElement.childElements().invoke('remove');
 		
 		// Remove all Day Event Handlers
 		for (sFormattedDate in this.oSetDateHandlers)
@@ -233,14 +251,14 @@ var Reflex_Date_Picker	= Class.create
 		oVisibleMonth.shift(0 - iFocusMonthIndex, Date.DATE_INTERVAL_MONTH);
 		
 		var oCurrentRow			= document.createElement('div');
-		this.oContainer.oContent.domElement.appendChild(oCurrentRow);
+		this.oContainer.oContent.oDatePicker.domElement.appendChild(oCurrentRow);
 		for (var i = 0; i < this.iMonthsVisible; i++)
 		{
 			if ((i % this.iMonthsPerRow === 0) && i !== 0)
 			{
 				// Create a new Row
 				oCurrentRow	= document.createElement('div');
-				this.oContainer.oContent.domElement.appendChild(oCurrentRow);
+				this.oContainer.oContent.oDatePicker.domElement.appendChild(oCurrentRow);
 			}
 			
 			oCurrentRow.appendChild(this._renderMonthView(oVisibleMonth.getMonth() + 1, oVisibleMonth.getFullYear()).domElement);
@@ -250,7 +268,7 @@ var Reflex_Date_Picker	= Class.create
 	
 	show	: function()
 	{
-		this._render();
+		this._renderDatePicker();
 		this.getElement().show();
 	},
 	
