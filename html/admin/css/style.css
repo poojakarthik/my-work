@@ -2104,6 +2104,10 @@ div.reflex-slider-rail
 	position	: relative;
 	
 	border		: 0.1em solid #DFA66F;
+	
+	min-height	: 0.5em;
+	max-height	: 0.5em;
+	height		: 0.5em;
 }
 
 div.reflex-slider-rail-label
