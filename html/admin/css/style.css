@@ -2096,7 +2096,7 @@ div.reflex-slider
 }
 
 div.reflex-slider-rail,
-div.reflex-slider-handle
+div.reflex-slider-rail-handle
 {
 	-moz-border-radius-topright			: 0.25em;
 	-moz-border-radius-bottomright		: 0.25em;
@@ -2128,7 +2128,7 @@ div.reflex-slider-rail-label
 	background-color	: #fff;
 }
 
-div.reflex-slider-range
+div.reflex-slider-rail-range
 {
 	position	: absolute;
 	
@@ -2136,7 +2136,7 @@ div.reflex-slider-range
 	background-image	: url('../../admin/img/template/wave.png');
 }
 
-div.reflex-slider-handle
+div.reflex-slider-rail-handle
 {
 	position	: absolute;
 	
@@ -2156,13 +2156,13 @@ div.reflex-slider-handle
 	margin-left	: -0.5em;
 }
 
-div.reflex-slider-handle:hover
+div.reflex-slider-rail-handle:hover
 {
 	border-color		: #BF6A17;
 	background-color	: #FFF7EF;
 }
 
-div.reflex-slider-label
+div.reflex-slider-rail-label
 {
 	position	: absolute;
 }
