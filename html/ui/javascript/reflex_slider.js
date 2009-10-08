@@ -235,7 +235,11 @@ Reflex_Slider	= Class.create
 		
 		var iValueRange	= this.iMaxValue - this.iMinValue;
 		var iMultiplier	= this.oContainer.oRail.domElement.getWidth() / iValueRange;
-		return (iDifference * iMultiplier) + this.iMinValue;
+		var iValue		= (iDifference * iMultiplier) + this.iMinValue;
+		
+		this.domDebugConsole.innerHTML	+= String(iValue) + " (x: " + iX + ", y: " + iY + ", CumulativeOffset: " + oCumulativeOffset.left + ")<br />\n";
+		
+		return iValue;
 	},
 	
 	_onMouseDown	: function(oEvent, oHandle)
@@ -258,6 +262,7 @@ Reflex_Slider	= Class.create
 	
 	_onDrag	: function(oEvent, oHandle)
 	{
+		this.domDebugConsole.innerHTML	+= oHandle.sName + ".drag():";
 		// Which Slider?
 		if (oHandle === this.oContainer.oRail.oHandleStart)
 		{
@@ -274,7 +279,6 @@ Reflex_Slider	= Class.create
 			// Neither?  WTF?
 			throw "_onDrag() has been passed an Event whose Element is neither the Start nor End Handle!";
 		}
-		this.domDebugConsole.innerHTML	+= oHandle.sName + ".drag()<br />\n";
 	},
 	
 	_render	: function()
