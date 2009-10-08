@@ -2093,7 +2093,7 @@ div.reflex-datepicker div.content div.month td.day.reflex-datepicker-day-selecte
 
 div.reflex-slider
 {
-	
+	-moz-user-select	:	none;
 }
 
 div.reflex-slider-rail,
