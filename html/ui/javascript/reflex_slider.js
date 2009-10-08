@@ -14,6 +14,9 @@ Reflex_Slider	= Class.create
 		this.oContainer.oRail.oHandleStart.domElement.innerHTML	= '&nbsp;';
 		this.oContainer.oRail.oHandleStart.domElement.addClassName('reflex-slider-rail-handle');
 		this.oContainer.oRail.domElement.appendChild(this.oContainer.oRail.oHandleStart.domElement);
+		this.oContainer.oRail.oHandleStart.onMouseDown			= this._onMouseDown.bindAsEventListener(this, this.oContainer.oRail.oHandleStart);
+		this.oContainer.oRail.oHandleStart.onMouseUp			= this._onMouseUp.bindAsEventListener(this, this.oContainer.oRail.oHandleStart);
+		this.oContainer.oRail.oHandleStart.onDrag				= this._onDrag.bindAsEventListener(this, this.oContainer.oRail.oHandleStart);
 		
 		this.oContainer.oRail.oHandleRange						= {domElement: document.createElement('div')};
 		this.oContainer.oRail.oHandleRange.domElement.innerHTML	= '&nbsp;';
@@ -24,15 +27,9 @@ Reflex_Slider	= Class.create
 		this.oContainer.oRail.oHandleEnd.domElement.innerHTML	= '&nbsp;';
 		this.oContainer.oRail.oHandleEnd.domElement.addClassName('reflex-slider-rail-handle');
 		this.oContainer.oRail.domElement.appendChild(this.oContainer.oRail.oHandleEnd.domElement);
-
-		this.oEventListeners	=	{
-										onMouseDown: this._onMouseDown.bindAsEventListener(this),
-										onMouseUp: this._onMouseUp.bindAsEventListener(this),
-										onDrag: this._onDrag.bindAsEventListener(this)
-									};
-		
-		this.oContainer.oRail.oHandleStart.domElement.observe('mousedown', this.oEventListeners.onMouseDown);
-		this.oContainer.oRail.oHandleEnd.domElement.observe('mousedown', this.oEventListeners.onMouseDown);
+		this.oContainer.oRail.oHandleEnd.onMouseDown			= this._onMouseDown.bindAsEventListener(this, this.oContainer.oRail.oHandleEnd);
+		this.oContainer.oRail.oHandleEnd.onMouseUp				= this._onMouseUp.bindAsEventListener(this, this.oContainer.oRail.oHandleEnd);
+		this.oContainer.oRail.oHandleEnd.onDrag					= this._onDrag.bindAsEventListener(this, this.oContainer.oRail.oHandleEnd);
 		
 		// Defaults
 		this.oValues	=	{
@@ -219,29 +216,29 @@ Reflex_Slider	= Class.create
 		return (iDifference * iMultiplier) + this.iMinValue;
 	},
 	
-	_onMouseDown	: function(oEvent)
+	_onMouseDown	: function(oEvent, oHandle)
 	{
 		// Enable Dragging
-		document.observe('mouseup', this.oEventListeners.onMouseUp);
-		document.observe('mousemove', this.oEventListeners.onDrag);
+		document.observe('mouseup', oHandle.onMouseUp);
+		document.observe('mousemove', oHandle.onDrag);
 	},
 	
-	_onMouseUp		: function(oEvent)
+	_onMouseUp		: function(oEvent, oHandle)
 	{
 		// Disable Dragging
-		document.stopObserving('mouseup', this.oEventListeners.onMouseUp);
-		document.stopObserving('mousemove', this.oEventListeners.onDrag);
+		document.stopObserving('mouseup', oHandle.onMouseUp);
+		document.stopObserving('mousemove', oHandle.onDrag);
 	},
 	
-	_onDrag	: function(oEvent)
+	_onDrag	: function(oEvent, oHandle)
 	{
 		// Which Slider?
-		if (oEvent.element === this.oContainer.oRail.oHandleStart)
+		if (oHandle === this.oContainer.oRail.oHandleStart)
 		{
 			// Update Slider position
 			this.setValues(this._calculateValueFromMousePosition(oEvent.pointerX(), oEvent.pointerY()), this.oValues.iEndValue);
 		}
-		else if (oEvent.element === this.oContainer.oRail.oHandleEnd)
+		else if (oHandle === this.oContainer.oRail.oHandleEnd)
 		{
 			// Update Slider position
 			this.setValues(this.oValues.iStartValue, this._calculateValueFromMousePosition(oEvent.pointerX(), oEvent.pointerY()));

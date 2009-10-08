@@ -2139,6 +2139,7 @@ div.reflex-slider-rail-range
 div.reflex-slider-rail-handle
 {
 	position	: absolute;
+	top			: -0.25em;
 	
 	border		: 0.1em solid #BF6A17;
 	
