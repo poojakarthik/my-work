@@ -48,6 +48,11 @@ Reflex_Slider	= Class.create
 		this._render();
 	},
 	
+	getElement	: function()
+	{
+		return this.oContainer.domElement;
+	},
+	
 	setMinValue	: function(iMinValue)
 	{
 		this.iMinValue	= parseInt(iMinValue);

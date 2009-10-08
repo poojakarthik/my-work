@@ -47,6 +47,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oContent.oTimePicker.oSlider.setMinValue(0);
 		this.oContainer.oContent.oTimePicker.oSlider.setMaxValue(60 * 60 * 24);
 		this.oContainer.oContent.oTimePicker.oSlider.setStepping(60 * 15);
+		this.oContainer.oContent.oTimePicker.domElement.appendChild(this.oContainer.oContent.oTimePicker.oSlider.getElement());
 		
 		// Footer
 		this.oContainer.oFooter				= {};
