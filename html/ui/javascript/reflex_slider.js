@@ -157,7 +157,7 @@ Reflex_Slider	= Class.create
 		}
 		
 		//$Alert("Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]");
-		this.domDebugConsole.innerHTML	+= "Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]\n";
+		this.domDebugConsole.innerHTML	+= "Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]<br />\n";
 	},
 	
 	_limitValues	: function()
@@ -244,7 +244,7 @@ Reflex_Slider	= Class.create
 		document.observe('mouseup', oHandle.onMouseUp);
 		document.observe('mousemove', oHandle.onDrag);
 		
-		this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseDown()";
+		this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseDown()<br />\n";
 	},
 	
 	_onMouseUp		: function(oEvent, oHandle)
@@ -253,7 +253,7 @@ Reflex_Slider	= Class.create
 		document.stopObserving('mouseup', oHandle.onMouseUp);
 		document.stopObserving('mousemove', oHandle.onDrag);
 		
-		this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseUp()";
+		this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseUp()<br />\n";
 	},
 	
 	_onDrag	: function(oEvent, oHandle)
@@ -274,7 +274,7 @@ Reflex_Slider	= Class.create
 			// Neither?  WTF?
 			throw "_onDrag() has been passed an Event whose Element is neither the Start nor End Handle!";
 		}
-		this.domDebugConsole.innerHTML	+= oHandle.sName + ".drag()";
+		this.domDebugConsole.innerHTML	+= oHandle.sName + ".drag()<br />\n";
 	},
 	
 	_render	: function()
