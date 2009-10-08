@@ -18,7 +18,6 @@ Reflex_Slider	= Class.create
 		this.oContainer.oRail.oHandleRange	= {domElement: document.createElement('div')};
 		this.oContainer.oRail.oHandleRange.domElement.addClassName('reflex-slider-rail-range');
 
-		this.oEventListeners.onMouseUp	= ;
 		this.oEventListeners	=	{
 										onMouseDown: this._onMouseDown.bindAsEventListener(this),
 										onMouseUp: this._onMouseUp.bindAsEventListener(this),
