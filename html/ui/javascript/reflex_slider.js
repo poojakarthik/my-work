@@ -40,7 +40,7 @@ Reflex_Slider	= Class.create
 		// DEBUG
 		this.domDebugConsole						= document.createElement('div');
 		this.domDebugConsole.style.position			= 'fixed';
-		this.domDebugConsole.style.bottom			= '10em';
+		this.domDebugConsole.style.bottom			= '0';
 		this.domDebugConsole.style.height			= '10em';
 		this.domDebugConsole.style.minHeight		= '10em';
 		this.domDebugConsole.style.maxHeight		= '10em';
