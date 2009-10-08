@@ -238,7 +238,7 @@ Reflex_Slider	= Class.create
 		var iMultiplier	= this.oContainer.oRail.domElement.getWidth() / iValueRange;
 		var iValue		= (iDifference * iMultiplier) + this.iMinValue;
 		
-		this.domDebugConsole.innerHTML	+= String(iValue) + " (x: " + iX + ", y: " + iY + ", CumulativeOffset: " + oCumulativeOffset.left + ", ValueRange: " + iValueRange + ", Multiplier: " + iMultiplier + ")<br />\n";
+		this.domDebugConsole.innerHTML	+= String(iValue) + " (x: " + iX + ", y: " + iY + ", ElementWidth: " + this.oContainer.oRail.domElement.getWidth() + ", CumulativeOffset: " + oCumulativeOffset.left + ", ValueRange: " + iValueRange + ", Multiplier: " + iMultiplier + ")<br />\n";
 		
 		return iValue;
 	},
