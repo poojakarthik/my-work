@@ -28,6 +28,11 @@ Reflex_Slider	= Class.create
 		this.oContainer.oRail.oHandleEnd.domElement.observe('mousedown', this.oEventListeners.onMouseDown);
 		
 		// Defaults
+		this.oValues	=	{
+								iStartValue	: 0
+								iEndValue	: 0
+							};
+		
 		this.setValues(iMinValue);
 		this.setMinValue(iMinValue);
 		this.setMaxValue(iMaxValue);
