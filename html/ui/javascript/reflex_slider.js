@@ -32,6 +32,7 @@ Reflex_Slider	= Class.create
 								iStartValue	: 0,
 								iEndValue	: 0
 							};
+		this.aLabels	= [];
 
 		this.setMinValue(iMinValue);
 		this.setMaxValue(iMaxValue);
