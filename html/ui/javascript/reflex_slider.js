@@ -68,29 +68,29 @@ Reflex_Slider	= Class.create
 		switch (sSelectMode)
 		{
 			case Reflex_Slider.SELECT_MODE_RANGE_MIN:
-				this.oContainer.oRail.oHandleStart.hide();
-				this.oContainer.oRail.oHandleEnd.show();
-				this.oContainer.oRail.oHandleRange.show();
+				this.oContainer.oRail.oHandleStart.domElement.hide();
+				this.oContainer.oRail.oHandleEnd.domElement.show();
+				this.oContainer.oRail.oHandleRange.domElement.show();
 				break;
 				
 			case Reflex_Slider.SELECT_MODE_RANGE_MAX:
-				this.oContainer.oRail.oHandleStart.show();
-				this.oContainer.oRail.oHandleEnd.hide();
-				this.oContainer.oRail.oHandleRange.show();
+				this.oContainer.oRail.oHandleStart.domElement.show();
+				this.oContainer.oRail.oHandleEnd.domElement.hide();
+				this.oContainer.oRail.oHandleRange.domElement.show();
 				break;
 				
 			case Reflex_Slider.SELECT_MODE_RANGE:
-				this.oContainer.oRail.oHandleStart.show();
-				this.oContainer.oRail.oHandleEnd.show();
-				this.oContainer.oRail.oHandleRange.show();
+				this.oContainer.oRail.oHandleStart.domElement.show();
+				this.oContainer.oRail.oHandleEnd.domElement.show();
+				this.oContainer.oRail.oHandleRange.domElement.show();
 				this.iRangeMinimumDifference	= Math.max(0, parseInt(iRangeMinimumDifference));
 				break;
 				
 			case Reflex_Slider.SELECT_MODE_VALUE:
 			default:
-				this.oContainer.oRail.oHandleStart.show();
-				this.oContainer.oRail.oHandleEnd.hide();
-				this.oContainer.oRail.oHandleRange.hide();
+				this.oContainer.oRail.oHandleStart.domElement.show();
+				this.oContainer.oRail.oHandleEnd.domElement.hide();
+				this.oContainer.oRail.oHandleRange.domElement.hide();
 				
 				sSelectMode	= Reflex_Slider.SELECT_MODE_VALUE;
 				break;
