@@ -29,7 +29,7 @@ Reflex_Slider	= Class.create
 		
 		// Defaults
 		this.oValues	=	{
-								iStartValue	: 0
+								iStartValue	: 0,
 								iEndValue	: 0
 							};
 
