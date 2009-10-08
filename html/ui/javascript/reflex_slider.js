@@ -11,6 +11,7 @@ Reflex_Slider	= Class.create
 		this.oContainer.domElement.appendChild(this.oContainer.oRail.domElement);
 		
 		this.oContainer.oRail.oHandleStart						= {domElement: document.createElement('div')};
+		this.oContainer.oRail.oHandleStart.sName				= 'handle-start';
 		this.oContainer.oRail.oHandleStart.domElement.innerHTML	= '&nbsp;';
 		this.oContainer.oRail.oHandleStart.domElement.addClassName('reflex-slider-rail-handle');
 		this.oContainer.oRail.domElement.appendChild(this.oContainer.oRail.oHandleStart.domElement);
@@ -19,11 +20,13 @@ Reflex_Slider	= Class.create
 		this.oContainer.oRail.oHandleStart.onDrag				= this._onDrag.bindAsEventListener(this, this.oContainer.oRail.oHandleStart);
 		
 		this.oContainer.oRail.oHandleRange						= {domElement: document.createElement('div')};
+		this.oContainer.oRail.oHandleRange.sName				= 'handle-range';
 		this.oContainer.oRail.oHandleRange.domElement.innerHTML	= '&nbsp;';
 		this.oContainer.oRail.oHandleRange.domElement.addClassName('reflex-slider-rail-range');
 		this.oContainer.oRail.domElement.appendChild(this.oContainer.oRail.oHandleRange.domElement);
 		
 		this.oContainer.oRail.oHandleEnd						= {domElement: document.createElement('div')};
+		this.oContainer.oRail.oHandleEnd.sName					= 'handle-end';
 		this.oContainer.oRail.oHandleEnd.domElement.innerHTML	= '&nbsp;';
 		this.oContainer.oRail.oHandleEnd.domElement.addClassName('reflex-slider-rail-handle');
 		this.oContainer.oRail.domElement.appendChild(this.oContainer.oRail.oHandleEnd.domElement);
@@ -33,6 +36,19 @@ Reflex_Slider	= Class.create
 		
 		this.oContainer.oRail.oHandleStart.domElement.observe('mousedown', this.oContainer.oRail.oHandleStart.onMouseDown);
 		this.oContainer.oRail.oHandleEnd.domElement.observe('mousedown', this.oContainer.oRail.oHandleEnd.onMouseDown);
+		
+		// DEBUG
+		this.domDebugConsole						= document.createElement('div');
+		this.domDebugConsole.style.position			= 'fixed';
+		this.domDebugConsole.style.bottom			= '10em';
+		this.domDebugConsole.style.height			= '10em';
+		this.domDebugConsole.style.minHeight		= '10em';
+		this.domDebugConsole.style.maxHeight		= '10em';
+		this.domDebugConsole.style.overflow-x		= 'scroll';
+		this.domDebugConsole.style.overflow-y		= 'scroll';
+		this.domDebugConsole.style.border			= '0.1em solid #000';
+		this.domDebugConsole.style.backgroundColor	= '#fff';
+		document.body.appendChild(this.domDebugConsole);
 		
 		// Defaults
 		this.oValues	=	{
@@ -141,6 +157,7 @@ Reflex_Slider	= Class.create
 		}
 		
 		//$Alert("Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]");
+		this.domDebugConsole.innerHTML	+= "Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]\n";
 	},
 	
 	_limitValues	: function()
@@ -226,6 +243,8 @@ Reflex_Slider	= Class.create
 		// Enable Dragging
 		document.observe('mouseup', oHandle.onMouseUp);
 		document.observe('mousemove', oHandle.onDrag);
+		
+		this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseDown()";
 	},
 	
 	_onMouseUp		: function(oEvent, oHandle)
@@ -233,6 +252,8 @@ Reflex_Slider	= Class.create
 		// Disable Dragging
 		document.stopObserving('mouseup', oHandle.onMouseUp);
 		document.stopObserving('mousemove', oHandle.onDrag);
+		
+		this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseUp()";
 	},
 	
 	_onDrag	: function(oEvent, oHandle)
@@ -253,6 +274,7 @@ Reflex_Slider	= Class.create
 			// Neither?  WTF?
 			throw "_onDrag() has been passed an Event whose Element is neither the Start nor End Handle!";
 		}
+		this.domDebugConsole.innerHTML	+= oHandle.sName + ".drag()";
 	},
 	
 	_render	: function()
