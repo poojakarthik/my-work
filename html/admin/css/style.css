@@ -2065,7 +2065,8 @@ div.reflex-datepicker div.content div.month td.day.selectable:hover
 div.reflex-datepicker div.content div.time-picker
 {
 	border-top	: 0.1em solid #BF8E5F;
-	padding		: 0.25em;
+	/*padding		: 0.25em;*/
+	padding		: 2em;
 	
 	font-size	: 1.1em;
 	font-weight	: bolder;
