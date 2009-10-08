@@ -2078,3 +2078,80 @@ div.reflex-datepicker div.content div.month td.day.reflex-datepicker-day-selecte
 }
 
 /******************************************************************************/
+
+/*********************************** SLIDER ***********************************/
+
+div.reflex-slider
+{
+	
+}
+
+div.reflex-slider-rail,
+div.reflex-slider-handle
+{
+	-moz-border-radius-topright			: 0.25em;
+	-moz-border-radius-bottomright		: 0.25em;
+	-moz-border-radius-topleft			: 0.25em;
+	-moz-border-radius-bottomleft		: 0.25em;
+	-webkit-border-top-right-radius		: 0.25em;
+	-webkit-border-bottom-right-radius	: 0.25em;
+	-webkit-border-top-left-radius		: 0.25em;
+	-webkit-border-bottom-left-radius	: 0.25em;
+}
+
+div.reflex-slider-rail
+{
+	position	: relative;
+	
+	border		: 0.1em solid #DFA66F;
+}
+
+div.reflex-slider-rail-label
+{
+	position	: absolute;
+	top			: -1.5em;
+	
+	border				: 0.1em solid BF6A17;
+	background-color	: #fff;
+}
+
+div.reflex-slider-range
+{
+	position	: absolute;
+	
+	background-color	: #CF8D4D;
+	background-image	: url('../../admin/img/template/wave.png');
+}
+
+div.reflex-slider-handle
+{
+	position	: absolute;
+	
+	border		: 0.1em solid #BF6A17;
+	
+	background-image	: url('../../admin/img/template/wave.png');
+	background-color	: #EFE0D1;
+	
+	min-width	: 1em;
+	max-width	: 1em;
+	width		: 1em;
+	
+	min-height	: 1em;
+	max-height	: 1em;
+	height		: 1em;
+	
+	margin-left	: -0.5em;
+}
+
+div.reflex-slider-handle:hover
+{
+	border-color		: #BF6A17;
+	background-color	: #FFF7EF;
+}
+
+div.reflex-slider-label
+{
+	position	: absolute;
+}
+
+/******************************************************************************/
