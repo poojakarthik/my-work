@@ -224,7 +224,8 @@ var Reflex_Date_Picker	= Class.create
 		}
 		
 		// Update Label
-		this.oContainer.oHeader.oLabel.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y H:i:s", this.oDate);
+		//this.oContainer.oHeader.oLabel.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y H:i:s", this.oDate);
+		this.oContainer.oFooter.oDatetime.oDate.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y H:i:s ", this.oDate);
 		//this.oContainer.oFooter.oDatetime.oDate.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y ", this.oDate);
 		
 		// Update calendar
