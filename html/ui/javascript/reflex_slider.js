@@ -285,7 +285,7 @@ Reflex_Slider	= Class.create
 		document.observe('mouseup', oHandle.onMouseUp);
 		document.observe('mousemove', oHandle.onDrag);
 		
-		this.oDragRefreshPeriodicalExecuter	= new PeriodicalExecuter(this._dragRefresh.bind(this, oHandle), this.iRefreshFramesPerSecond / 60);
+		this.oDragRefreshPeriodicalExecuter	= new PeriodicalExecuter(this._dragRefresh.bind(this, oHandle), 60 /this.iRefreshFramesPerSecond);
 		
 		//this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseDown()<br />\n";
 	},
