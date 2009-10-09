@@ -66,8 +66,6 @@ Reflex_Slider	= Class.create
 														iY	: null
 													}
 									};
-		this.iStartValue	= 0;
-		this.iEndValue		= 0;
 		
 		this.setStepping(1);
 		this.setMinValue(iMinValue);
