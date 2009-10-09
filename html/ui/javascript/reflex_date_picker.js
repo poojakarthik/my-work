@@ -43,10 +43,10 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oContent.domElement.appendChild(this.oContainer.oContent.oTimePicker.domElement);
 		
 		this.oContainer.oContent.oTimePicker.oSlider	= new Reflex_Slider();
-		this.oContainer.oContent.oTimePicker.oSlider.setSelectMode(Reflex_Slider.SELECT_MODE_VALUE);
+		this.oContainer.oContent.oTimePicker.oSlider.setSelectMode(Reflex_Slider.SELECT_MODE_RANGE);
 		this.oContainer.oContent.oTimePicker.oSlider.setMinValue(0);
 		this.oContainer.oContent.oTimePicker.oSlider.setMaxValue((60 * 60 * 24) - 1);
-		//this.oContainer.oContent.oTimePicker.oSlider.setStepping(60 * 60, true, true);
+		this.oContainer.oContent.oTimePicker.oSlider.setStepping(60 * 60, true, true);
 		this.oContainer.oContent.oTimePicker.oSlider.setValueCallback(this.setTimeFromSlider.bind(this));
 		this.oContainer.oContent.oTimePicker.domElement.appendChild(this.oContainer.oContent.oTimePicker.oSlider.getElement());
 		
