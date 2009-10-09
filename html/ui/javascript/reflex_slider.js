@@ -70,8 +70,9 @@ Reflex_Slider	= Class.create
 		this.iStepping	= 1;
 		
 		// Config
-		this.setMinValue(iMinValue);
-		this.setMaxValue(iMaxValue);
+		this.iMinValue	= parseInt(iMinValue);
+		this.iMaxValue	= parseInt(iMaxValue);
+		
 		this.setValues(this.iMinValue, this.iMaxValue);
 		this.setSelectMode(sSelectMode);
 		
