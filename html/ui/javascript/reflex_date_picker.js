@@ -114,14 +114,14 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.domElement.style.left		= '25%';
 		
 		// Defaults
+		this.oSetDateHandlers	= {};
+		
+		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isInCurrentMonth, Reflex_Date_Picker.dayMutators.isToday, Reflex_Date_Picker.dayMutators.isSelected.curry(this)];
+		
 		this.iMonthsVisible		= Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE;
 		this.iMonthsPerRow		= Reflex_Date_Picker.DEFAULT_MONTHS_PER_ROW;
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
 		this.setDatetime();
-		
-		this.oSetDateHandlers	= {};
-		
-		this.aDayMutatorCallbacks	= [Reflex_Date_Picker.dayMutators.isInCurrentMonth, Reflex_Date_Picker.dayMutators.isToday, Reflex_Date_Picker.dayMutators.isSelected.curry(this)];
 	},
 	
 	setPosition	: function(sPositionType, oConfig)
