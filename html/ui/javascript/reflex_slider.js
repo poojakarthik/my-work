@@ -194,7 +194,7 @@ Reflex_Slider	= Class.create
 			iValue	= Math.round(Math.round((iValue / this.iStepping)) * this.iStepping);
 		}
 
-		alert('Snapped iValue: '+String(Math.min(iMaxValue, Math.max(iMinValue, iValue)));
+		alert('Snapped iValue: '+String(Math.min(iMaxValue, Math.max(iMinValue, iValue))));
 		
 		return Math.min(iMaxValue, Math.max(iMinValue, iValue));
 	},
