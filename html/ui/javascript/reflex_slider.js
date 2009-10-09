@@ -106,6 +106,8 @@ Reflex_Slider	= Class.create
 	
 	setSelectMode	: function(sSelectMode, iRangeMinimumDifference)
 	{
+		iRangeMinimumDifference	= iRangeMinimumDifference ? iRangeMinimumDifference : 0;
+		
 		sSelectMode	= String(sSelectMode).toLowerCase();
 		switch (sSelectMode)
 		{
