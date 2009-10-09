@@ -299,6 +299,7 @@ Reflex_Slider	= Class.create
 		if (this.oDragRefreshPeriodicalExecuter)
 		{
 			this.oDragRefreshPeriodicalExecuter.stop();
+			delete this.oDragRefreshPeriodicalExecuter;
 		}
 		
 		//this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseUp()<br />\n";
