@@ -174,7 +174,7 @@ Reflex_Slider	= Class.create
 		else
 		{
 			// Snap to nearest stepping value
-			return Math.round(Math.round((iValue / this.iStepping)) * this.iStepping);
+			return this._snapValue(Math.round(Math.round((iValue / this.iStepping)) * this.iStepping));
 		}
 	},
 	
