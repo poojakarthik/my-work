@@ -226,7 +226,7 @@ Reflex_Slider	= Class.create
 	
 	_calculatePercentageFromValue	: function(iValue)
 	{
-		return (this.iMaxValue - this.iMinValue) / iValue;
+		return iValue/ (this.iMaxValue - this.iMinValue);
 	},
 	
 	_calculateValueFromMousePosition	: function(iX, iY)
@@ -285,18 +285,16 @@ Reflex_Slider	= Class.create
 	_render	: function()
 	{
 		// Find Percentage Positions
-		var iValueRange	= this.iMaxValue - this.iMinValue;
-		
 		var fStartPercentage	= this._calculatePercentageFromValue(this.oValues.iStartValue);
 		var fEndPercentage		= this._calculatePercentageFromValue(this.oValues.iEndValue);
 		
 		// Update Handles
-		this.oContainer.oRail.oHandleStart.domElement.style.left	= String(fStartPercentage) + "%";
-		this.oContainer.oRail.oHandleEnd.domElement.style.left		= String(fEndPercentage) + "%";
+		this.oContainer.oRail.oHandleStart.domElement.style.left	= String(100 - fStartPercentage) + "%";
+		this.oContainer.oRail.oHandleEnd.domElement.style.left		= String(100 - fEndPercentage) + "%";
 		
 		// Update Range
-		this.oContainer.oRail.oHandleRange.domElement.style.left	= String(fStartPercentage) + "%";
-		this.oContainer.oRail.oHandleRange.domElement.style.width	= String(fEndPercentage - fStartPercentage) + "%";
+		this.oContainer.oRail.oHandleRange.domElement.style.left	= String(100 - fStartPercentage) + "%";
+		this.oContainer.oRail.oHandleRange.domElement.style.width	= String(100 - (fEndPercentage - fStartPercentage)) + "%";
 		
 		this.domDebugConsole.innerHTML	+= "Rendering... [StartHandle: "+fStartPercentage+"%, EndHandle: "+fEndPercentage+"%, RangePosition: "+fStartPercentage+"%, RangeLength: "+(fEndPercentage - fStartPercentage)+"%]<br />\n";
 	}
