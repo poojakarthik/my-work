@@ -117,7 +117,7 @@ var Reflex_Date_Picker	= Class.create
 		this.iMonthsVisible		= Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE;
 		this.iMonthsPerRow		= Reflex_Date_Picker.DEFAULT_MONTHS_PER_ROW;
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
-		this.setDatetime(new Date());
+		this.setDatetime();
 		
 		this.oSetDateHandlers	= {};
 		
