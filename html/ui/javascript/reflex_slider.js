@@ -5,6 +5,7 @@ Reflex_Slider	= Class.create
 		// DOM Elements	
 		this.oContainer	= {domElement: document.createElement('div')};
 		this.oContainer.domElement.addClassName('reflex-slider');
+		this.oContainer.domElement.oReflexSlider	= this;
 		
 		this.oContainer.oRail	= {domElement: document.createElement('div')};
 		this.oContainer.oRail.domElement.addClassName('reflex-slider-rail');
