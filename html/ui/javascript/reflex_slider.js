@@ -138,11 +138,11 @@ Reflex_Slider	= Class.create
 	setValues	: function(iStartValue, iEndValue)
 	{
 		iStartValue					= parseInt(iStartValue);
-		iStartValue					= Math.round(Math.round((iStartValue / this.iStepping)) * iStartValue);
+		iStartValue					= Math.round(Math.round((iStartValue / this.iStepping)) * this.iStepping);
 		this.oValues.iStartValue	= Math.min(this.iMaxValue, Math.max(this.iMinValue, iStartValue));
 		
 		iEndValue					= parseInt(iEndValue);
-		iEndValue					= Math.round(Math.round((iEndValue / this.iStepping)) * iEndValue);
+		iEndValue					= Math.round(Math.round((iEndValue / this.iStepping)) * this.iStepping);
 		this.oValues.iEndValue		= Math.min(this.iMaxValue, Math.max(this.iMinValue, iEndValue));
 		
 		// Handle any limits
