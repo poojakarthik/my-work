@@ -58,11 +58,11 @@ Reflex_Slider	= Class.create
 							};
 		this.aLabels	= [];
 
+		this.setStepping(1);
 		this.setMinValue(iMinValue);
 		this.setMaxValue(iMaxValue);
 		this.setValues(iMinValue);
 		this.setSelectMode(sSelectMode);
-		this.setStepping(1);
 		
 		// Render!
 		this._render();
