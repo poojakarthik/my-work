@@ -47,6 +47,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oContent.oTimePicker.oSlider.setMinValue(0);
 		this.oContainer.oContent.oTimePicker.oSlider.setMaxValue(60 * 60 * 24);
 		this.oContainer.oContent.oTimePicker.oSlider.setStepping(60 * 60);
+		this.oContainer.oContent.oTimePicker.oSlider.setValueCallback(this.setTimeInSeconds.bind(this));
 		this.oContainer.oContent.oTimePicker.domElement.appendChild(this.oContainer.oContent.oTimePicker.oSlider.getElement());
 		
 		// Footer
@@ -74,17 +75,17 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oDatetime.oTime.oHour.domElement				= document.createElement('input');
 		this.oContainer.oFooter.oDatetime.oTime.oHour.domElement.type			= 'text';
 		this.oContainer.oFooter.oDatetime.oTime.oHour.domElement.size			= 2;
-		this.oContainer.oFooter.oDatetime.oTime.oHour.domElement.maxLength	= 2;
+		this.oContainer.oFooter.oDatetime.oTime.oHour.domElement.maxLength		= 2;
 		this.oContainer.oFooter.oDatetime.oTime.domElement.appendChild(this.oContainer.oFooter.oDatetime.oTime.oHour.domElement);
 		
 		var	domColon		= document.createElement('span');
 		domColon.innerHTML	= ':';
 		this.oContainer.oFooter.oDatetime.oTime.domElement.appendChild(domColon);
 		
-		this.oContainer.oFooter.oDatetime.oTime.oMinute						= {};
-		this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement			= document.createElement('input');
-		this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement.type		= 'text';
-		this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement.size		= 2;
+		this.oContainer.oFooter.oDatetime.oTime.oMinute							= {};
+		this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement				= document.createElement('input');
+		this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement.type			= 'text';
+		this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement.size			= 2;
 		this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement.maxLength	= 2;
 		this.oContainer.oFooter.oDatetime.oTime.domElement.appendChild(this.oContainer.oFooter.oDatetime.oTime.oMinute.domElement);
 		
@@ -186,6 +187,16 @@ var Reflex_Date_Picker	= Class.create
 	{
 		var	oCurrentDatetime	= this.getDate();
 		this.setDatetime(new Date(iYear, iMonth, iDay, oCurrentDatetime.getHours(), oCurrentDatetime.getMinutes(), oCurrentDatetime.getSeconds()));
+	},
+	
+	setTimeInSeconds	: function(iSeconds)
+	{
+		var	oCurrentDatetime	= new Date(this.getDate());
+		oCurrentDatetime.setHours(0);
+		oCurrentDatetime.setMinutes(0);
+		oCurrentDatetime.setSeconds(0);
+		oCurrentDatetime.setSeconds(iSeconds);
+		this.setDatetime(oCurrentDatetime);
 	},
 	
 	setTime	: function(iHours, iMinutes, iSeconds)
