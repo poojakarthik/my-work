@@ -47,7 +47,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oContent.oTimePicker.oSlider.setMinValue(0);
 		this.oContainer.oContent.oTimePicker.oSlider.setMaxValue(60 * 60 * 24);
 		this.oContainer.oContent.oTimePicker.oSlider.setStepping(60 * 60);
-		this.oContainer.oContent.oTimePicker.oSlider.setValueCallback(this.setTimeInSeconds.bind(this));
+		this.oContainer.oContent.oTimePicker.oSlider.setValueCallback(this.setTimeFromSlider.bind(this));
 		this.oContainer.oContent.oTimePicker.domElement.appendChild(this.oContainer.oContent.oTimePicker.oSlider.getElement());
 		
 		// Footer
@@ -189,7 +189,7 @@ var Reflex_Date_Picker	= Class.create
 		this.setDatetime(new Date(iYear, iMonth, iDay, oCurrentDatetime.getHours(), oCurrentDatetime.getMinutes(), oCurrentDatetime.getSeconds()));
 	},
 	
-	setTimeInSeconds	: function(iSeconds)
+	setTimeFromSlider	: function(oValues)
 	{
 		if (this.sSelectMode !== Reflex_Date_Picker.SELECT_MODE_DATE)
 		{
@@ -197,7 +197,7 @@ var Reflex_Date_Picker	= Class.create
 			oCurrentDatetime.setHours(0);
 			oCurrentDatetime.setMinutes(0);
 			oCurrentDatetime.setSeconds(0);
-			oCurrentDatetime.setSeconds(iSeconds);
+			oCurrentDatetime.setSeconds(oValues.iStartValue);
 			this.setDatetime(oCurrentDatetime);
 		}
 	},
