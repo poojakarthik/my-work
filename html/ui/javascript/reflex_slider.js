@@ -13,7 +13,6 @@ Reflex_Slider	= Class.create
 		
 		this.oContainer.oRail.oHandleStart						= {domElement: document.createElement('div')};
 		this.oContainer.oRail.oHandleStart.sName				= 'handle-start';
-		//this.oContainer.oRail.oHandleStart.domElement.innerHTML	= '&nbsp;';
 		this.oContainer.oRail.oHandleStart.domElement.addClassName('reflex-slider-rail-handle');
 		this.oContainer.oRail.domElement.appendChild(this.oContainer.oRail.oHandleStart.domElement);
 		this.oContainer.oRail.oHandleStart.onMouseDown			= this._onMouseDown.bindAsEventListener(this, this.oContainer.oRail.oHandleStart);
@@ -22,13 +21,11 @@ Reflex_Slider	= Class.create
 		
 		this.oContainer.oRail.oHandleRange						= {domElement: document.createElement('div')};
 		this.oContainer.oRail.oHandleRange.sName				= 'handle-range';
-		//this.oContainer.oRail.oHandleRange.domElement.innerHTML	= '&nbsp;';
 		this.oContainer.oRail.oHandleRange.domElement.addClassName('reflex-slider-rail-range');
 		this.oContainer.oRail.domElement.appendChild(this.oContainer.oRail.oHandleRange.domElement);
 		
 		this.oContainer.oRail.oHandleEnd						= {domElement: document.createElement('div')};
 		this.oContainer.oRail.oHandleEnd.sName					= 'handle-end';
-		//this.oContainer.oRail.oHandleEnd.domElement.innerHTML	= '&nbsp;';
 		this.oContainer.oRail.oHandleEnd.domElement.addClassName('reflex-slider-rail-handle');
 		this.oContainer.oRail.domElement.appendChild(this.oContainer.oRail.oHandleEnd.domElement);
 		this.oContainer.oRail.oHandleEnd.onMouseDown			= this._onMouseDown.bindAsEventListener(this, this.oContainer.oRail.oHandleEnd);
