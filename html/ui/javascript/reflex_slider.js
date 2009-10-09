@@ -173,6 +173,7 @@ Reflex_Slider	= Class.create
 	
 	_snapValue	: function(iValue)
 	{
+		alert('iValue: '+iValue);
 		// Ensure that it's within our boundaries
 		var iMinValue	= this.bMinAlwaysSelectable ? this.iMinValue : Math.round(Math.ceil((this.iMinValue / this.iStepping)) * this.iStepping);
 		var iMaxValue	= this.bMaxAlwaysSelectable ? this.iMaxValue : Math.round(Math.floor((this.iMaxValue / this.iStepping)) * this.iStepping);
@@ -192,6 +193,8 @@ Reflex_Slider	= Class.create
 			// Snap to nearest stepping value
 			iValue	= Math.round(Math.round((iValue / this.iStepping)) * this.iStepping);
 		}
+
+		alert('Snapped iValue: '+String(Math.min(iMaxValue, Math.max(iMinValue, iValue)));
 		
 		return Math.min(iMaxValue, Math.max(iMinValue, iValue));
 	},
