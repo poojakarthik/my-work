@@ -372,7 +372,9 @@ Reflex_Slider	= Class.create
 		}
 		if (this.oContainer.oRail.oHandleRange.domElement.style.width != String(fEndPercentage - fStartPercentage) + "%")
 		{
-			this.oContainer.oRail.oHandleRange.domElement.style.width	= String(fEndPercentage - fStartPercentage) + "%";
+			this.oContainer.oRail.oHandleRange.domElement.style.width		= String(fEndPercentage - fStartPercentage) + "%";
+			this.oContainer.oRail.oHandleRange.domElement.style.minWidth	= String(fEndPercentage - fStartPercentage) + "%";
+			this.oContainer.oRail.oHandleRange.domElement.style.maxWidth	= String(fEndPercentage - fStartPercentage) + "%";
 		}
 		
 		//this.domDebugConsole.innerHTML	+= "Rendering... [StartHandle: "+fStartPercentage+"%, EndHandle: "+fEndPercentage+"%, RangePosition: "+fStartPercentage+"%, RangeLength: "+(fEndPercentage - fStartPercentage)+"%]<br />\n";
