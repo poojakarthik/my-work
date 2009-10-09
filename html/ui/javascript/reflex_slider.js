@@ -49,7 +49,7 @@ Reflex_Slider	= Class.create
 		this.domDebugConsole.style.overflowY		= 'scroll';
 		this.domDebugConsole.style.border			= '0.1em solid #000';
 		this.domDebugConsole.style.backgroundColor	= '#fff';
-		document.body.appendChild(this.domDebugConsole);
+		//document.body.appendChild(this.domDebugConsole);
 		
 		// Defaults
 		this.oValues	=	{
@@ -158,7 +158,7 @@ Reflex_Slider	= Class.create
 		}
 		
 		//$Alert("Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]");
-		this.domDebugConsole.innerHTML	+= "Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]<br />\n";
+		//this.domDebugConsole.innerHTML	+= "Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]<br />\n";
 	},
 	
 	_limitValues	: function()
@@ -238,7 +238,7 @@ Reflex_Slider	= Class.create
 		var iMultiplier	= iValueRange / this.oContainer.oRail.domElement.getWidth();
 		var iValue		= (iDifference * iMultiplier) + this.iMinValue;
 		
-		this.domDebugConsole.innerHTML	+= String(iValue) + " (x: " + iX + ", y: " + iY + ", ElementWidth: " + this.oContainer.oRail.domElement.getWidth() + ", CumulativeOffset: " + oCumulativeOffset.left + ", ValueRange: " + iValueRange + ", Multiplier: " + iMultiplier + ")<br />\n";
+		//this.domDebugConsole.innerHTML	+= String(iValue) + " (x: " + iX + ", y: " + iY + ", ElementWidth: " + this.oContainer.oRail.domElement.getWidth() + ", CumulativeOffset: " + oCumulativeOffset.left + ", ValueRange: " + iValueRange + ", Multiplier: " + iMultiplier + ")<br />\n";
 		
 		return iValue;
 	},
@@ -249,7 +249,7 @@ Reflex_Slider	= Class.create
 		document.observe('mouseup', oHandle.onMouseUp);
 		document.observe('mousemove', oHandle.onDrag);
 		
-		this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseDown()<br />\n";
+		//this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseDown()<br />\n";
 	},
 	
 	_onMouseUp		: function(oEvent, oHandle)
@@ -258,12 +258,12 @@ Reflex_Slider	= Class.create
 		document.stopObserving('mouseup', oHandle.onMouseUp);
 		document.stopObserving('mousemove', oHandle.onDrag);
 		
-		this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseUp()<br />\n";
+		//this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseUp()<br />\n";
 	},
 	
 	_onDrag	: function(oEvent, oHandle)
 	{
-		this.domDebugConsole.innerHTML	+= oHandle.sName + ".drag():";
+		//this.domDebugConsole.innerHTML	+= oHandle.sName + ".drag():";
 		// Which Slider?
 		if (oHandle === this.oContainer.oRail.oHandleStart)
 		{
@@ -296,7 +296,7 @@ Reflex_Slider	= Class.create
 		this.oContainer.oRail.oHandleRange.domElement.style.left	= String(fStartPercentage) + "%";
 		this.oContainer.oRail.oHandleRange.domElement.style.width	= String(fEndPercentage - fStartPercentage) + "%";
 		
-		this.domDebugConsole.innerHTML	+= "Rendering... [StartHandle: "+fStartPercentage+"%, EndHandle: "+fEndPercentage+"%, RangePosition: "+fStartPercentage+"%, RangeLength: "+(fEndPercentage - fStartPercentage)+"%]<br />\n";
+		//this.domDebugConsole.innerHTML	+= "Rendering... [StartHandle: "+fStartPercentage+"%, EndHandle: "+fEndPercentage+"%, RangePosition: "+fStartPercentage+"%, RangeLength: "+(fEndPercentage - fStartPercentage)+"%]<br />\n";
 	}
 });
 
