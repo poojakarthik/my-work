@@ -191,12 +191,15 @@ var Reflex_Date_Picker	= Class.create
 	
 	setTimeInSeconds	: function(iSeconds)
 	{
-		var	oCurrentDatetime	= new Date(this.getDate());
-		oCurrentDatetime.setHours(0);
-		oCurrentDatetime.setMinutes(0);
-		oCurrentDatetime.setSeconds(0);
-		oCurrentDatetime.setSeconds(iSeconds);
-		this.setDatetime(oCurrentDatetime);
+		if (this.sSelectMode !== Reflex_Date_Picker.SELECT_MODE_DATE)
+		{
+			var	oCurrentDatetime	= new Date(this.getDate());
+			oCurrentDatetime.setHours(0);
+			oCurrentDatetime.setMinutes(0);
+			oCurrentDatetime.setSeconds(0);
+			oCurrentDatetime.setSeconds(iSeconds);
+			this.setDatetime(oCurrentDatetime);
+		}
 	},
 	
 	setTime	: function(iHours, iMinutes, iSeconds)
