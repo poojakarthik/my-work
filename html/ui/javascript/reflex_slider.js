@@ -137,13 +137,8 @@ Reflex_Slider	= Class.create
 	
 	setValues	: function(iStartValue, iEndValue)
 	{
-		iStartValue					= parseInt(iStartValue);
-		iStartValue					= Math.round(Math.round((iStartValue / this.iStepping)) * this.iStepping);
-		this.oValues.iStartValue	= Math.min(this.iMaxValue, Math.max(this.iMinValue, iStartValue));
-		
-		iEndValue					= parseInt(iEndValue);
-		iEndValue					= Math.round(Math.round((iEndValue / this.iStepping)) * this.iStepping);
-		this.oValues.iEndValue		= Math.min(this.iMaxValue, Math.max(this.iMinValue, iEndValue));
+		this.oValues.iStartValue	= this._snapValue(parseInt(iStartValue));
+		this.oValues.iEndValue		= this._snapValue(parseInt(iEndValue));
 		
 		// Handle any limits
 		this._limitValues();
@@ -159,6 +154,28 @@ Reflex_Slider	= Class.create
 		
 		//$Alert("Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]");
 		//this.domDebugConsole.innerHTML	+= "Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]<br />\n";
+	},
+	
+	_snapValue	: function(iValue)
+	{
+		// Ensure that it's within our boundaries
+		iValue	= Math.min(this.iMaxValue, Math.max(this.iMinValue, iValue));
+		
+		if (iValue == this.iMinValue && this.bMinAlwaysSelectable)
+		{
+			// Snap to Min Value
+			return this.iMinValue;
+		}
+		else if (iValue == this.iMaxValue && this.bMaxAlwaysSelectable)
+		{
+			// Snap to Max Value
+			return this.iMaxValue;
+		}
+		else
+		{
+			// Snap to nearest stepping value
+			return Math.round(Math.round((iValue / this.iStepping)) * this.iStepping);
+		}
 	},
 	
 	_limitValues	: function()
@@ -183,8 +200,11 @@ Reflex_Slider	= Class.create
 		}
 	},
 	
-	setStepping	: function(iStepping)
+	setStepping	: function(iStepping, bMinAlwaysSelectable, bMaxAlwaysSelectable)
 	{
+		this.bMinAlwaysSelectable	= (bMinAlwaysSelectable || bMinAlwaysSelectable === null || bMinAlwaysSelectable === undefined) ? true : false;
+		this.bMaxAlwaysSelectable	= (bMaxAlwaysSelectable || bMaxAlwaysSelectable === null || bMaxAlwaysSelectable === undefined) ? true : false;
+		
 		this.iStepping	= Math.max(1, parseInt(iStepping));
 		
 		this._limitValues();
