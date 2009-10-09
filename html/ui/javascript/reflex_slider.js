@@ -226,7 +226,7 @@ Reflex_Slider	= Class.create
 	
 	_calculatePercentageFromValue	: function(iValue)
 	{
-		return iValue/ (this.iMaxValue - this.iMinValue);
+		return (iValue / (this.iMaxValue - this.iMinValue)) * 100;
 	},
 	
 	_calculateValueFromMousePosition	: function(iX, iY)
