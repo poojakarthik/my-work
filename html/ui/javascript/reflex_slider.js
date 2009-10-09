@@ -294,6 +294,11 @@ Reflex_Slider	= Class.create
 		document.stopObserving('mouseup', oHandle.onMouseUp);
 		document.stopObserving('mousemove', oHandle.onDrag);
 		
+		if (this.oDragRefreshPeriodicalExecuter)
+		{
+			this.oDragRefreshPeriodicalExecuter.stop();
+		}
+		
 		//this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseUp()<br />\n";
 	},
 	
