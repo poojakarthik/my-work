@@ -67,7 +67,9 @@ Reflex_Slider	= Class.create
 													}
 									};
 		
-		this.setStepping(1);
+		this.iStepping	= 1;
+		
+		// Config
 		this.setMinValue(iMinValue);
 		this.setMaxValue(iMaxValue);
 		this.setValues(iMinValue);
