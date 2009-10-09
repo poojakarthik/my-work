@@ -72,7 +72,7 @@ Reflex_Slider	= Class.create
 		// Config
 		this.setMinValue(iMinValue);
 		this.setMaxValue(iMaxValue);
-		this.setValues(iMinValue, iMaxValue);
+		this.setValues(this.iMinValue, this.iMaxValue);
 		this.setSelectMode(sSelectMode);
 		
 		this.iRefreshFramesPerSecond	= Reflex_Slider.DEFAULT_REFRESH_FRAMES_PER_SECOND;
