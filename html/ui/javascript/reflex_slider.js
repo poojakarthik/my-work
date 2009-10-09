@@ -289,12 +289,12 @@ Reflex_Slider	= Class.create
 		var fEndPercentage		= this._calculatePercentageFromValue(this.oValues.iEndValue);
 		
 		// Update Handles
-		this.oContainer.oRail.oHandleStart.domElement.style.left	= String(100 - fStartPercentage) + "%";
-		this.oContainer.oRail.oHandleEnd.domElement.style.left		= String(100 - fEndPercentage) + "%";
+		this.oContainer.oRail.oHandleStart.domElement.style.left	= String(fStartPercentage) + "%";
+		this.oContainer.oRail.oHandleEnd.domElement.style.left		= String(fEndPercentage) + "%";
 		
 		// Update Range
-		this.oContainer.oRail.oHandleRange.domElement.style.left	= String(100 - fStartPercentage) + "%";
-		this.oContainer.oRail.oHandleRange.domElement.style.width	= String(100 - (fEndPercentage - fStartPercentage)) + "%";
+		this.oContainer.oRail.oHandleRange.domElement.style.left	= String(fStartPercentage) + "%";
+		this.oContainer.oRail.oHandleRange.domElement.style.width	= String(fEndPercentage - fStartPercentage) + "%";
 		
 		this.domDebugConsole.innerHTML	+= "Rendering... [StartHandle: "+fStartPercentage+"%, EndHandle: "+fEndPercentage+"%, RangePosition: "+fStartPercentage+"%, RangeLength: "+(fEndPercentage - fStartPercentage)+"%]<br />\n";
 	}
