@@ -57,6 +57,17 @@ Reflex_Slider	= Class.create
 								iEndValue	: 0
 							};
 		this.aLabels	= [];
+		
+		this.oMouseCoordinates	=	{
+										oLast	:	{
+														iX	: null,
+														iY	: null
+													},
+										oNext	:	{
+														iX	: null,
+														iY	: null
+													}
+									};
 
 		this.setStepping(1);
 		this.setMinValue(iMinValue);
@@ -272,6 +283,8 @@ Reflex_Slider	= Class.create
 		document.observe('mouseup', oHandle.onMouseUp);
 		document.observe('mousemove', oHandle.onDrag);
 		
+		this.oDragRefreshPeriodicalExecuter	= new PeriodicalExecuter(this._dragRefresh.bind(this, oHandle));
+		
 		//this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseDown()<br />\n";
 	},
 	
@@ -286,22 +299,39 @@ Reflex_Slider	= Class.create
 	
 	_onDrag	: function(oEvent, oHandle)
 	{
+		// Update 'next' mouse coordinates
+		var oMouseCoordinates			= oEvent.pointer();
+		this.oMouseCoordinates.oNext.iX	= oMouseCoordinates.x;
+		this.oMouseCoordinates.oNext.iY	= oMouseCoordinates.y;
+	},
+	
+	// Refeshes the Slider value(s) at a configured FPS
+	_dragRefresh	: function(oHandle)
+	{
 		//this.domDebugConsole.innerHTML	+= oHandle.sName + ".drag():";
-		// Which Slider?
-		if (oHandle === this.oContainer.oRail.oHandleStart)
+		
+		// Only update if the coordinates have changed
+		if (this.oMouseCoordinates.oNext.iX != this.oMouseCoordinates.oLast.iX || this.oMouseCoordinates.oNext.iY != this.oMouseCoordinates.oLast.iY)
 		{
-			// Update Slider position
-			this.setValues(this._calculateValueFromMousePosition(oEvent.pointerX(), oEvent.pointerY()), this.oValues.iEndValue);
-		}
-		else if (oHandle === this.oContainer.oRail.oHandleEnd)
-		{
-			// Update Slider position
-			this.setValues(this.oValues.iStartValue, this._calculateValueFromMousePosition(oEvent.pointerX(), oEvent.pointerY()));
-		}
-		else
-		{
-			// Neither?  WTF?
-			throw "_onDrag() has been passed an Event whose Element is neither the Start nor End Handle!";
+			this.oMouseCoordinates.oLast.iX	= this.oMouseCoordinates.oNext.iX;
+			this.oMouseCoordinates.oLast.iY	= this.oMouseCoordinates.oNext.iY;
+			
+			// Which Slider?
+			if (oHandle === this.oContainer.oRail.oHandleStart)
+			{
+				// Update Slider position
+				this.setValues(this._calculateValueFromMousePosition(this.oMouseCoordinates.oNext.iX, this.oMouseCoordinates.oNext.iY), this.oValues.iEndValue);
+			}
+			else if (oHandle === this.oContainer.oRail.oHandleEnd)
+			{
+				// Update Slider position
+				this.setValues(this.oValues.iStartValue, this._calculateValueFromMousePosition(this.oMouseCoordinates.oNext.iX, this.oMouseCoordinates.oNext.iY));
+			}
+			else
+			{
+				// Neither?  WTF?
+				throw "_onDrag() has been passed an Event whose Element is neither the Start nor End Handle!";
+			}
 		}
 	},
 	
