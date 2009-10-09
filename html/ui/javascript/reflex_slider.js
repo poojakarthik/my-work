@@ -297,6 +297,8 @@ Reflex_Slider	= Class.create
 		// Update Range
 		this.oContainer.oRail.oHandleRange.domElement.style.left	= String(fStartPercentage) + "%";
 		this.oContainer.oRail.oHandleRange.domElement.style.width	= String(fEndPercentage - fStartPercentage) + "%";
+		
+		this.domDebugConsole.innerHTML	+= "Rendering... [StartHandle: "+fStartPercentage+"%, EndHandle: "+fEndPercentage+"%, RangePosition: "+fStartPercentage+"%, RangeLength: "+(fEndPercentage - fStartPercentage)+"%]<br />\n";
 	}
 });
 
