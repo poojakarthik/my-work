@@ -75,6 +75,8 @@ Reflex_Slider	= Class.create
 		this.setValues(iMinValue);
 		this.setSelectMode(sSelectMode);
 		
+		this.iRefreshFramesPerSecond	= Reflex_Slider.DEFAULT_REFRESH_FRAMES_PER_SECOND;
+		
 		// Render!
 		this._render();
 	},
@@ -283,7 +285,7 @@ Reflex_Slider	= Class.create
 		document.observe('mouseup', oHandle.onMouseUp);
 		document.observe('mousemove', oHandle.onDrag);
 		
-		this.oDragRefreshPeriodicalExecuter	= new PeriodicalExecuter(this._dragRefresh.bind(this, oHandle));
+		this.oDragRefreshPeriodicalExecuter	= new PeriodicalExecuter(this._dragRefresh.bind(this, oHandle), this.iRefreshFramesPerSecond / 60);
 		
 		//this.domDebugConsole.innerHTML	+= oHandle.sName + ".mouseDown()<br />\n";
 	},
@@ -374,3 +376,5 @@ Reflex_Slider.SELECT_MODE_VALUE		= 'value';
 Reflex_Slider.SELECT_MODE_RANGE		= 'range';
 Reflex_Slider.SELECT_MODE_RANGE_MIN	= 'min';
 Reflex_Slider.SELECT_MODE_RANGE_MAX	= 'max';
+
+Reflex_Slider.DEFAULT_REFRESH_FRAMES_PER_SECOND	= 30;
