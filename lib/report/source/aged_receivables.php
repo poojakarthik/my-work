@@ -57,6 +57,8 @@ $arrSQLSelect['Email']						['Value']	= "c.Email";
 
 $arrSQLSelect['Credit Control Status']		['Value']	= "ccs.name";
 
+$arrSQLSelect['TIO Reference Number']		['Value']	= "a.tio_reference_number";
+
 $arrSQLSelect['Outstanding Not Overdue']	['Value']	= "SUM(IF(CURDATE() <= i.DueOn AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
 $arrSQLSelect['Outstanding Not Overdue']	['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Outstanding Not Overdue']	['Total']	= EXCEL_TOTAL_SUM;
