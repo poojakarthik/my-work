@@ -297,7 +297,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		//"WHERE (Account = <accId>) AND (Status conditions)"
 		$strWhere  = "C.Account = ". DBO()->Account->Id->Value;
 		$strWhere .= " AND C.Status IN (". CHARGE_WAITING .", ". CHARGE_APPROVED .", ". CHARGE_TEMP_INVOICE .", ". CHARGE_INVOICED .")";
-		$strWhere .= " AND ct.charge_type_visibility_id IN (".implode(', ', $aVisibleChargeTypes).")";
+		$strWhere .= " AND (ct.Id IS NULL OR ct.charge_type_visibility_id IN (".implode(', ', $aVisibleChargeTypes)."))";
 		DBL()->Charge->Where->SetString($strWhere);
 		DBL()->Charge->OrderBy("ChargedOn DESC, Id DESC");
 		DBL()->Charge->Load();
