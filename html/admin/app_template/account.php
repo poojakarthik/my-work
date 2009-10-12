@@ -292,7 +292,7 @@ class AppTemplateAccount extends ApplicationTemplate
 								'Amount'=>'C.Amount', 'Invoice'=>'C.Invoice', 'Notes'=>'C.Notes', 'Status'=>'C.Status', 'LinkType' => 'C.LinkType',
 								'LinkId' => 'C.LinkId', 'FNN'=>'S.FNN');
 		DBL()->Charge->SetColumns($arrColumns);
-		DBL()->Charge->SetTable("Charge AS C LEFT OUTER JOIN Service AS S ON C.Service = S.Id LEFT JOIN ChargeType ct ON (IF(ct.Id = C.charge_type_id, 1, ct.ChargeType = C.ChargeType))");
+		DBL()->Charge->SetTable("Charge AS C LEFT OUTER JOIN Service AS S ON C.Service = S.Id LEFT JOIN ChargeType ct ON (IF(ct.Id = C.charge_type_id, 1, ct.ChargeType LIKE BINARY C.ChargeType))");
 		
 		//"WHERE (Account = <accId>) AND (Status conditions)"
 		$strWhere  = "C.Account = ". DBO()->Account->Id->Value;
