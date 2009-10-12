@@ -195,9 +195,9 @@
 		$arrLastInvoice	= Invoice_Export::getOldInvoice($arrInvoice, 1);
 		$xmlStatement	= self::_addElement($xmlInvoice, 'Statement');
 		self::_addElement($xmlStatement, 'OpeningBalance', number_format($arrLastInvoice['TotalOwing'], 2, '.', ''));
-		self::_addElement($xmlStatement, 'OverdueBalance', number_format($arrCustomer['OverdueBalance'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'Payments', number_format(max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0), 2, '.', ''));
-		self::_addElement($xmlStatement, 'Overdue', number_format($arrInvoice['AccountBalance'], 2, '.', ''));
+		self::_addElement($xmlStatement, 'OutstandingBalance', number_format($arrInvoice['AccountBalance'], 2, '.', ''));
+		self::_addElement($xmlStatement, 'OverdueBalance', number_format($arrCustomer['OverdueBalance'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'NewCharges', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'TotalOwing', number_format($arrInvoice['TotalOwing'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'BillingPeriodStart', $strBillingPeriodStart);
