@@ -88,6 +88,13 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 
 			$sel = array('TR' => "Concat('<tr><td>', Account.Id, '</td>\t<td>', Contact.FirstName, ' ', Contact.LastName, '</td>\t<td>', Contact.Email, '</td>\t<td>',
 					   '<a href=''', CustomerGroup.flex_url, '$accountLink', Account.Id, '''>', CustomerGroup.flex_url, '$accountLink', Account.Id, '</a></td></tr>\n')");
+					   
+			$sel = array(	"account_id"				=> "Account.Id",
+							"contact_first_name"		=> "Contact.FirstName",
+							"contact_last_name"			=> "Contact.LastName",
+							"contact_email"				=> "Contact.Email",
+							"customer_group_flex_url"	=> "CustomerGroup.flex_url"
+						);
 			$selAccounts = new StatementSelect("Account, Contact, CustomerGroup", $sel, "Contact.AccountGroup = Account.AccountGroup AND Account.CustomerGroup = <CustomerGroup> AND CustomerGroup.Id = Account.CustomerGroup AND $strSqlEmailIn");
 
 			$exitCode = 0;
@@ -111,7 +118,16 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				$arrRows = $selAccounts->FetchAll();
 				foreach ($arrRows as $idx => $email) 
 				{
-					$arrRows[$idx] = $email['TR'];
+					//$arrRows[$idx] = $email['TR'];						$email['']
+					$arrRows[$idx] = "
+<tr>
+	<td>{$email['account_id']}</td>
+	<td>{$email['contact_first_name']} {$email['contact_last_name']}</td>
+	<td>{$email['contact_email']}</td>
+	<td>
+		<a href='{$email['customer_group_flex_url']}{$accountLink}{$email['account_id']}'>{$email['customer_group_flex_url']}{$accountLink}{$email['account_id']}</a>
+	</td>
+</tr>";
 				}
 
 				// Complete building the html body
