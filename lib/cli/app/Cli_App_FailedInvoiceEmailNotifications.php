@@ -15,7 +15,7 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 			// Include the application... 
 			$this->requireOnce('flex.require.php');
 
-			$accountLink = '/management/flex.php/Account/Overview/?Account.Id=';
+			$accountLink = '/admin/flex.php/Account/Overview/?Account.Id=';
 
 			$strIntro = 'The email addresses for the following accounts were recently found to be invalid. Any recent attempts to send emails to those addresses will have failed. Please check the details are entered correctly for each account.';
 			$strFooter = "Regards,<br/>\n<br/>\nThe Team at Yellow Billing";
@@ -86,9 +86,6 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				$this->log('The failed emails were related to ' . $intNrCustGroups . ' customer groups.');
 			}
 
-			$sel = array('TR' => "Concat('<tr><td>', Account.Id, '</td>\t<td>', Contact.FirstName, ' ', Contact.LastName, '</td>\t<td>', Contact.Email, '</td>\t<td>',
-					   '<a href=''', CustomerGroup.flex_url, '$accountLink', Account.Id, '''>', CustomerGroup.flex_url, '$accountLink', Account.Id, '</a></td></tr>\n')");
-					   
 			$sel = array(	"account_id"				=> "Account.Id",
 							"contact_first_name"		=> "Contact.FirstName",
 							"contact_last_name"			=> "Contact.LastName",
@@ -118,7 +115,6 @@ class Cli_App_FailedInvoiceEmailNotifications extends Cli
 				$arrRows = $selAccounts->FetchAll();
 				foreach ($arrRows as $idx => $email) 
 				{
-					//$arrRows[$idx] = $email['TR'];						$email['']
 					$arrRows[$idx] = "
 <tr>
 	<td>{$email['account_id']}</td>
