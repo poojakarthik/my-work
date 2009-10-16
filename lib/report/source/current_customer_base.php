@@ -55,7 +55,7 @@ $arrDataReport['SQLWhere']		= "	a.Archived = 0
 									AND (<customer_group_id> IS NULL OR cg.Id = <customer_group_id>)";
 $arrDataReport['SQLGroupBy']	= "	a.Id
 									
-						HAVING		`Total Tolling Services:integer` > 0
+						HAVING		`Total Tolling Services` > 0
 						
 						ORDER BY	cg.Id, a.Id ASC";
 
