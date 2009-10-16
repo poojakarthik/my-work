@@ -39,7 +39,7 @@ $arrDataReport['SQLTable']		= "	Account a
 													JOIN InvoiceRun ir ON (ir.Id = stt.invoice_run_id)
 										WHERE		1
 										GROUP BY	fnn
-									)";
+									) /* fnn_cdr_summary */ fcs ON (s.FNN = fcs.fnn)";
 $arrDataReport['SQLWhere']		= "	a.Archived = 0
 									AND a.vip = 0
 									AND a.credit_control_status NOT IN (3, 4)	/* Sending to Debt Collection/Debt Collection */
@@ -52,7 +52,8 @@ $arrDataReport['SQLWhere']		= "	a.Archived = 0
 														ORDER BY	CreatedOn DESC
 														LIMIT		1
 													)
-									AND (<customer_group_id> IS NULL OR cg.Id = <customer_group_id>)";
+									AND (<customer_group_id> IS NULL OR cg.Id = <customer_group_id>)
+									AND a.CreatedOn < <date_cutoff>";
 $arrDataReport['SQLGroupBy']	= "	a.Id
 									
 						HAVING		`Total Tolling Services` > 0
@@ -119,14 +120,18 @@ $arrInvoiceRunQuery =	array
 							'ValueType'		=> "dataInteger"
 						);
 
-
-
 $arrSQLFields['customer_group_id']	= Array(
 											'Type'					=> "Query",
 											'DBQuery'				=> $arrInvoiceRunQuery,
 											'Documentation-Entity'	=> "DataReport",
 											'Documentation-Field'	=> "Customer Group",
 										);
+
+$arrSQLFields['date_cutoff']	= Array(
+											'Type'					=> "dataDate",
+											'Documentation-Entity'	=> "DataReport",
+											'Documentation-Field'	=> "Account Creation Cutoff Date",
+											);
 
 // SQL Fields
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
