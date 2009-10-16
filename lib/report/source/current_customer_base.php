@@ -56,7 +56,14 @@ $arrDataReport['SQLWhere']		= "	a.Archived = 0
 									AND a.CreatedOn < <date_cutoff>";
 $arrDataReport['SQLGroupBy']	= "	a.Id
 									
-						HAVING		\"Total Tolling Services\" > 0
+						HAVING		COUNT(
+										CASE
+											WHEN s.ServiceType = 100 THEN s.Id
+											WHEN fcs.invoiced_cdr_count > 0 THEN s.Id
+											WHEN fcs.has_unbilled_cdrs = 1 THEN s.Id
+											ELSE NULL
+										END
+									) > 0
 						
 						ORDER BY	cg.Id, a.Id ASC";
 
