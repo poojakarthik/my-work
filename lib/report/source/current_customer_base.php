@@ -52,7 +52,7 @@ $arrDataReport['SQLWhere']		= "	a.Archived = 0
 														ORDER BY	CreatedOn DESC
 														LIMIT		1
 													)
-									AND (<customer_group_id> IS NULL OR cg.Id = <customer_group_id>)
+									AND (<customer_group_id> = -1 OR cg.Id = <customer_group_id>)
 									AND a.CreatedOn < <date_cutoff>";
 $arrDataReport['SQLGroupBy']	= "	a.Id
 									
@@ -120,7 +120,7 @@ $arrInvoiceRunQuery =	array
 														WHERE		1
 													
 													UNION
-														SELECT		NULL						AS `Value`,
+														SELECT		-1							AS `Value`,
 																	'[ All Customer Groups ]'	AS `Label`
 													
 													ORDER BY	(Value IS NULL) DESC, Value ASC",
