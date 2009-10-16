@@ -63,7 +63,7 @@ $arrDataReport['SQLGroupBy']	= "	a.Id
 											WHEN fcs.has_unbilled_cdrs = 1 THEN s.Id
 											ELSE NULL
 										END
-									) > 0
+									) > 0 /* This is the same as `Total Tolling Services`, but there are issues with using that alias in Data Reports */
 						
 						ORDER BY	cg.Id, a.Id ASC";
 
