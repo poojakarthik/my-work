@@ -1,11 +1,6 @@
 <?php
-//----------------------------------------------------------------------------//
-// ORM_Cached_Example
-//----------------------------------------------------------------------------//
 /**
  * ORM_Cached_Example
- *
- * This is an example of a class that extends ORM_Cached
  *
  * This is an example of a class that extends ORM_Cached
  *

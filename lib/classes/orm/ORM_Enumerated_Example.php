@@ -1,11 +1,6 @@
 <?php
-//----------------------------------------------------------------------------//
-// ORM_Enumerated_Example
-//----------------------------------------------------------------------------//
 /**
  * ORM_Enumerated_Example
- *
- * This is an example of a class that extends ORM_Enumerated
  *
  * This is an example of a class that extends ORM_Enumerated
  *
