@@ -292,7 +292,7 @@ class AppTemplateAccount extends ApplicationTemplate
 								'Amount'=>'C.Amount', 'Invoice'=>'C.Invoice', 'Notes'=>'C.Notes', 'Status'=>'C.Status', 'LinkType' => 'C.LinkType',
 								'LinkId' => 'C.LinkId', 'FNN'=>'S.FNN');
 		DBL()->Charge->SetColumns($arrColumns);
-		DBL()->Charge->SetTable("Charge AS C LEFT OUTER JOIN Service AS S ON C.Service = S.Id LEFT JOIN ChargeType ct ON (ct.Id = (SELECT Id FROM ChargeType WHERE IF(C.charge_type_id = Id, 1, IF(C.ChargeType = ChargeType, 1, 0)) ORDER BY Id DESC LIMIT 1)");
+		DBL()->Charge->SetTable("Charge AS C LEFT OUTER JOIN Service AS S ON C.Service = S.Id LEFT JOIN ChargeType ct ON (ct.Id = (SELECT Id FROM ChargeType WHERE IF(C.charge_type_id = Id, 1, IF(C.ChargeType = ChargeType, 1, 0)) ORDER BY Id DESC LIMIT 1))");
 		
 		//"WHERE (Account = <accId>) AND (Status conditions)"
 		$strWhere  = "C.Account = ". DBO()->Account->Id->Value;
