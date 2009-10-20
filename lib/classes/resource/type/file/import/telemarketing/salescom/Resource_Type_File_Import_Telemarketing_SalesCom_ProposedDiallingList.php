@@ -10,7 +10,7 @@ class Resource_Type_File_Import_Telemarketing_SalesCom_ProposedDiallingList
 {
 	protected	$_objFileImport;
 	
-	const		CALL_PERIOD_LENGTH_DAYS	= 21;
+	const		CALL_PERIOD_LENGTH_DAYS	= 30;
 	
 	/**
 	 * __construct()
