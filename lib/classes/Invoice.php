@@ -1194,9 +1194,9 @@ class Invoice extends ORM
 			}
 			else
 			{
-				$strSQL	=	"SELECT 'Plan Charge' AS Matches FROM Charge WHERE (Service IN ({$strServiceIds}) OR ({$arrPlanDetails['Shared']} = 1 AND Service IS NULL)) AND ChargeType IN ('PCAR', 'PCAD') AND Status = ".CHARGE_INVOICED." LIMIT 1 \n" .
+				$strSQL	=	"SELECT 'Plan Charge' AS Matches FROM Charge WHERE Account = {$this->Account} AND (Service IN ({$strServiceIds}) OR ({$arrPlanDetails['Shared']} = 1 AND Service IS NULL)) AND ChargeType IN ('PCAR', 'PCAD') AND Status = ".CHARGE_INVOICED." LIMIT 1 \n" .
 							"UNION \n" .
-							"SELECT 'CDR Data' AS Matches FROM ServiceTotal WHERE (UncappedCost > 0 OR CappedCost > 0) AND Service IN ({$strServiceIds}) AND invoice_run_id < {$this->invoice_run_id} LIMIT 1";
+							"SELECT 'CDR Data' AS Matches FROM ServiceTotal st JOIN InvoiceRun ir ON (ir.Id = st.invoice_run_id) JOIN service_total_service sts ON (sts.service_total_id = st.Id) WHERE (UncappedCost > 0 OR CappedCost > 0) AND sts.service_id IN ({$strServiceIds}) AND ir.BillingDate < '{$this->_objInvoiceRun->BillingDate}' LIMIT 1";
 			}
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === FALSE)
@@ -1220,7 +1220,7 @@ class Invoice extends ORM
 			$bHasChargedInAdvance	= false;
 			if ($arrPlanDetails['InAdvance'])
 			{
-				$rResult	= $qryQuery->Execute("SELECT * FROM Charge WHERE ChargeType = 'PCAD' AND Service IN ({$strServiceIds}) AND Status = ".CHARGE_INVOICED." AND invoice_run_id != {$this->_objInvoiceRun->invoice_run_type_id} LIMIT 1");
+				$rResult	= $qryQuery->Execute("SELECT * FROM Charge WHERE ChargeType = 'PCAD' AND Service IN ({$strServiceIds}) AND Status = ".CHARGE_INVOICED." AND invoice_run_id != {$this->_objInvoiceRun->invoice_run_id} LIMIT 1");
 				if ($rResult === false)
 				{
 					throw new Exception("DB ERROR: ".$qryQuery->Error());
