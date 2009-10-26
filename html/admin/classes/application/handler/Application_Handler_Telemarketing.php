@@ -2,6 +2,18 @@
 
 class Application_Handler_Telemarketing extends Application_Handler
 {
+	static protected	$_aReconciliationColumns	=	array
+														(
+															'FNN'				=> 'FNN',
+															'PROPOSED_FILENAME'	=> 'Proposed List File',
+															'DATE_WASHED'		=> 'Date Washed',
+															'WASH_OUTCOME'		=> 'Washing Outcome',
+															'PERMITTED_START'	=> 'Permitted Period Start',
+															'PERMITTED_END'		=> 'Permitted Period End',
+															'DATE_DIALLED'		=> 'Date Dialled',
+															'CALL_OUTCOME'		=> 'Call Outcome'
+														);
+	
 	// Shows a history of Proposed Dialling Lists and their associated data
 	public function History($subPath)
 	{
@@ -517,6 +529,202 @@ class Application_Handler_Telemarketing extends Application_Handler
 		
 		// Return the washed list of FNNs
 		return $arrFNNs;
+	}
+	
+	public function UploadDiallerReport()
+	{
+		$bolVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+		
+		$arrDetailsToRender	= array();
+		if (!DataAccess::getDataAccess()->TransactionStart())
+		{
+			throw new Exception("Flex was unable to start a Transaction.  The Upload has been aborted.  Please try again shortly.");
+		}
+		try
+		{
+			$qryQuery	= new Query();
+			
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN))
+			{
+				throw new Exception("You do not have sufficient privileges to upload a Dialler Report!" . (($bolVerboseErrors) ? ' But you do have GOD mode... wtf' : ''));
+			}
+			
+			// Load the Dealer object
+			$objDealer	= Dealer::getForId((int)$_POST['Telemarketing_DiallerReportUpload_Dealer']);
+			
+			// Get File Format Details
+			$strSQL		= "SELECT * FROM CarrierModule WHERE Carrier = {$objDealer->carrierId} AND Type = ".MODULE_TYPE_TELEMARKETING_DIALLER_IMPORT." AND Active = 1";
+			$resResult	= $qryQuery->Execute($strSQL);
+			if ($resResult === false)
+			{
+				throw new Exception("There was an internal database error.  Please notify YBS of this error." . ($bolVerboseErrors) ? "\n\n".$qryQuery->Error()."\n\n{$strSQL}" : '');
+			}
+			if (!($arrCarrierModule = $resResult->fetch_assoc()))
+			{
+				$strDealerName	= $objDealer->firstName . (($objDealer->lastName) ? ' '.$objDealer->lastName : '');
+				throw new Exception("Flex does not support Dialler Reports from {$strDealerName}." . (($bolVerboseErrors) ? "\n\n".$qryQuery->Error() : ''));
+			}
+			
+			// Check the File Name format
+			if (!Resource_Type::validateFileName($arrCarrierModule['FileType'], $_POST['Telemarketing_DiallerReportUpload_File']['name']))
+			{
+				throw new Exception("'{$_POST['Telemarketing_ProposedUpload_File']['name']}' is not a valid file name.  Ensure that you are trying to upload the correct file, and try again.");
+			}
+			
+			// Import the File (into FileImport)
+			$strFriendlyFileName	= dirname($_FILES['Telemarketing_DiallerReportUpload_File']['tmp_name']).'/'.$_FILES['Telemarketing_DiallerReportUpload_File']['name'];
+			move_uploaded_file($_FILES['Telemarketing_DiallerReportUpload_File']['tmp_name'], $strFriendlyFileName);
+			try
+			{
+				$objFileImport	= File_Import::import($strFriendlyFileName, $arrCarrierModule['FileType'], $objDealer->carrierId, "FileName = <FileName>");
+			}
+			catch (Exception $eException)
+			{
+				throw new Exception("There was an internal error when importing the File.  If this problem occurs more than once, please notify YBS at support@ybs.net.au" . (($bolVerboseErrors) ? "\n".$eException->getMessage() : ''));
+			}
+			//unlink($strFriendlyFileName);
+			
+			// If the File was imported OK, then Normalise
+			if ($objFileImport->Status === FILE_IMPORTED || $objFileImport->Status === FILE_COLLECTED)
+			{
+				// Import the Dialled FNNs into the telemarketing_fnn_dialled table
+				$objNormaliser	= new $arrCarrierModule['Module']($objFileImport, (int)$_POST['Telemarketing_DiallerReportUpload_Vendor'], $objDealer->id);
+				$arrErrors		= $objNormaliser->normalise();
+				if ($arrErrors)
+				{
+					// Create a log dump
+					$strLogFileName	= FILES_BASE_PATH.'logs/telemarketing/dialler/'.date('YmdHis').'_'.AuthenticatedUser()->GetUserId().'.log';
+					@mkdir(dirname($strLogFileName), 0777, true);
+					@file_put_contents($strLogFileName, implode("\n", $arrErrors));
+					
+					//throw new Exception("The uploaded file is invalid.  The were ".count($arrErrors)." errors encountered while importing.\nPlease ensure that you have selected the correct file, and try again.\nIf this message appears more than once, please contact YBS.");
+				}
+				
+				// Update the FileImport Status to Imported
+				$objFileImport->Status	= FILE_NORMALISED;
+				$objFileImport->save();
+				
+				$arrDetailsToRender['Success']			= true;
+				$arrDetailsToRender['Message']			= "The Dialler Report '".basename($_FILES['Telemarketing_DiallerReportUpload_File']['name'])."' has been imported.  Your File Reference Id is '{$objFileImport->Id}'." . (($bolVerboseErrors && $arrErrors) ? "\nFlex encountered ".count($arrErrors)." non-fatal errors while processing the file.  For more information on these errors, please contact YBS." : '');
+			}
+			else
+			{
+				$arrDetailsToRender['Message']			= "The File could not be Imported";
+				if ($objFileImport->Status === FILE_NOT_UNIQUE)
+				{
+					$arrDetailsToRender['Message']		.= " because a file with this Name already exists in Flex";
+				}
+				else
+				{
+					$arrDetailsToRender['Message']		.= ".  If you receive this error more than once, please notify YBS." . (($bolVerboseErrors) ? "(".GetConstantDescription($objFileImport->Status, 'FileStatus').")" : '');
+				}
+				$arrDetailsToRender['Success']			= false;
+			}
+			
+			// Commit the transaction
+			DataAccess::getDataAccess()->TransactionCommit();
+			
+			// Generate Response
+			$arrDetailsToRender['file_import_id']	= $objFileImport->Id;
+		}
+		catch (Exception $e)
+		{
+			DataAccess::getDataAccess()->TransactionRollback();
+			
+			$arrDetailsToRender['Success']	= false;
+			$arrDetailsToRender['Message']	= $e->getMessage();
+		}
+		
+		// Render the JSON'd Array
+		flush();
+		echo JSON_Services::instance()->encode($arrDetailsToRender);
+		die;
+	}
+	
+	// Downloads a Call Reconciliation Report
+	public function DownloadCallReconciliationReport($subPath)
+	{
+		$bVerboseErrors	= AuthenticatedUser()->UserHasPerm(PERMISSION_GOD);
+		
+		$aDetailsToRender	= array();
+		try
+		{
+			$oQuery				= new Query();
+			
+			$iFileImportId	= (int)$_REQUEST['Telemarketing_CallReconciliationDownload_File'];
+			$oFileImport	= new File_Import(array('Id'=>$iFileImportId), true);
+			
+			$oCSVFile	= new File_CSV();
+			$oCSVFile->setColumns(array_values(self::$_aColumns));
+			
+			// Get list of FNNs in the Dialler Report, and try to match them up to FNNs we've previously permitted
+			$oFNNsResult	= $oQuery->Execute("	SELECT		tfd.id			AS telemarketing_fnn_dialled_id,
+																tfp.id			AS telemarketing_fnn_proposed_id
+													
+													FROM		telemarketing_fnn_dialled tfd
+																LEFT JOIN telemarketing_fnn_proposed tfp ON (tfd.fnn = tfp.fnn AND CAST(tfp.call_period_start AS DATE) <= CAST(tfd.dialled_on AS DATE) AND tfd.dealer_id = tfp.dealer_id)
+													
+													WHERE		tfd.file_import_id = {$oFileImport->Id}
+																AND tfp.id =	(
+																				SELECT		MAX(id)
+																				FROM		telemarketing_fnn_proposed
+																							JOIN telemarketing_fnn_proposed_status tfps ON (tfps.id = telemarketing_fnn_proposed.telemarketing_fnn_proposed_status_id)
+																				WHERE		tfd.fnn = fnn
+																							AND CAST(call_period_start AS DATE) <= CAST(tfd.dialled_on AS DATE)
+																							AND tfd.dealer_id = tfp.dealer_id
+																				ORDER BY	(CAST(call_period_end AS DATE) >= CAST(tfd.dialled_on AS DATE) AND tfps.const_name = 'TELEMARKETING_FNN_PROPOSED_STATUS_EXPORT') DESC,
+																							CAST(call_period_end AS DATE) >= CAST(tfd.dialled_on AS DATE) DESC,
+																							tfps.const_name = 'TELEMARKETING_FNN_PROPOSED_STATUS_EXPORT' DESC,
+																							call_period_start DESC
+																				LIMIT		1
+																			)");
+			if ($oFNNsResult === false)
+			{
+				throw new Exception($oQuery->Error());
+			}
+			$aFNNs	= array();
+			while ($aFNN = $oFNNsResult->fetch_assoc())
+			{
+				$aRendered	= array();
+				
+				$oTelemarketingDialledFNN	= Telemarketing_FNN_Dialled::getForId($aFNN['telemarketing_fnn_dialled_id']);
+				
+				$aRendered[self::$_aColumns['FNN']]					= $aFNN['oTelemarketingDialledFNN']->fnn;
+				$aRendered[self::$_aColumns['DATE_DIALLED']]		= $oTelemarketingDialledFNN->dialled_on;
+				$aRendered[self::$_aColumns['CALL_OUTCOME']]		= Telemarketing_FNN_Dialled_Result::getForId($oTelemarketingDialledFNN->telemarketing_fnn_dialled_result_id)->description;
+				
+				// Some FNNs will not have been permitted
+				if ($aFNN['telemarketing_fnn_proposed_id'])
+				{
+					$oTelemarketingProposedFNN	= Telemarketing_FNN_Proposed::getForId($aFNN['telemarketing_fnn_proposed_id']);
+					
+					$aRendered[self::$_aColumns['PROPOSED_FILENAME']]	= File_Import::getForId($oTelemarketingProposedFNN->proposed_list_file_import_id)->FileName;
+					$aRendered[self::$_aColumns['DATE_WASHED']]			= File_Export::getForId($oTelemarketingProposedFNN->permitted_list_file_export_id)->ExportedOn;
+					$aRendered[self::$_aColumns['WASH_OUTCOME']]		= ($oTelemarketingProposedFNN->telemarketing_fnn_withheld_reason_id) ? 'Withheld: ' . Telemarketing_FNN_Withheld_Reason::getForId($oTelemarketingProposedFNN->telemarketing_fnn_withheld_reason_id)->description : 'Permitted';
+					$aRendered[self::$_aColumns['PERMITTED_START']]		= $oTelemarketingProposedFNN->call_period_start;
+					$aRendered[self::$_aColumns['PERMITTED_END']]		= $oTelemarketingProposedFNN->call_period_end;
+				}
+				
+				$oCSVFile->addRow($aRendered); 
+			}
+			
+			// Dump the data to an export string
+			$sCSVContents	= $oCSVFile->save();
+			
+			// Send the File to be downloaded
+			$sFileName	= "reconciled_{$oFileImport->FileName}.csv";
+			header('content-type: text/csv');
+			header('content-disposition: attachment; filename="'.$sFileName.'"');
+			echo file_get_contents($sCSVContents);
+		}
+		catch (Exception $oException)
+		{
+			$aDetailsToRender['Success']	= false;
+			$aDetailsToRender['Message']	= $oException->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
+		}
+		die;
 	}
 }
 ?>
