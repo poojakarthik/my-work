@@ -720,6 +720,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 		}
 		catch (Exception $oException)
 		{
+			echo $oException->__toString();
+			die;
 			$aDetailsToRender['Success']	= false;
 			$aDetailsToRender['Message']	= $oException->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
