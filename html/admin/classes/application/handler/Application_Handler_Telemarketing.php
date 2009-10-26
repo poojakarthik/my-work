@@ -653,7 +653,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$oQuery				= new Query();
 			
 			$iFileImportId	= (int)$_REQUEST['Telemarketing_CallReconciliationDownload_File'];
-			$oFileImport	= new File_Import(array('Id'=>$iFileImportId), true);
+			$oFileImport	= File_Import::getForId($iFileImportId);
 			
 			$oCSVFile	= new File_CSV();
 			$oCSVFile->setColumns(array_values(self::$_aReconciliationColumns));
