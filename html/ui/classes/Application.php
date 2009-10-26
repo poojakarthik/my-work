@@ -233,7 +233,9 @@ class Application
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadDNCR();
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDNCR();
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadPermitted();
-					//ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDiallerReport();
+					
+					ContextMenu()->Admin->Telemarketing->Call_Reconciliation->TelemarketUploadDiallerReport();
+					ContextMenu()->Admin->Telemarketing->Call_Reconciliation->TelemarketDownloadReconciliationReport();
 	
 					ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
 				}
@@ -451,7 +453,9 @@ class Application
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadDNCR();
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDNCR();
 					ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketDownloadPermitted();
-					//ContextMenu()->Admin->Telemarketing->File_Washing->TelemarketUploadDiallerReport();
+					
+					ContextMenu()->Admin->Telemarketing->Call_Reconciliation->TelemarketUploadDiallerReport();
+					ContextMenu()->Admin->Telemarketing->Call_Reconciliation->TelemarketDownloadReconciliationReport();
 	
 					ContextMenu()->Admin->Telemarketing->TelemarketingBlacklistAddFNN();
 				}
