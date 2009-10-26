@@ -93,7 +93,7 @@ var Telemarketing_ReconciliationDownload	= Class.create
 	
 	_renderPopupDownload	: function(objResponse)
 	{
-		Reflex_Debug.asHTMLPopup(objResponse);
+		//Reflex_Debug.asHTMLPopup(objResponse);
 		
 		if (objResponse.HasPermissions === false)
 		{
