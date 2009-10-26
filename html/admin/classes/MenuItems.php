@@ -3247,7 +3247,27 @@ class MenuItems {
 		$this->strContextMenuLabel = "Upload Dialler Report";
 		$this->strLabel = "Upload Dialler Report";
 		
-		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing_file_washing.js', function(){Flex.Telemarketing.uploadDiallerReport();});";
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_diallerreportupload.js', function(){Flex.Telemarketing.DiallerReportUpload.displayPopupUpload();})});";
+	}
+
+	//------------------------------------------------------------------------//
+	// TelemarketDownloadReconciliationReport
+	//------------------------------------------------------------------------//
+	/**
+	 * TelemarketDownloadReconciliationReport()
+	 *
+	 * Compiles the Href to be executed when the TelemarketDownloadReconciliationReport menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the TelemarketDownloadReconciliationReport menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function TelemarketDownloadReconciliationReport() {
+		$this->strContextMenuLabel = "Download Reconciliation Report";
+		$this->strLabel = "Download Reconciliation Report";
+		
+		return "javascript:JsAutoLoader.loadScript('javascript/telemarketing.js', function(){JsAutoLoader.loadScript('javascript/telemarketing_reconciliationdownload.js', function(){Flex.Telemarketing.ReconciliationDownload.displayPopupDownload();})});";
 	}
 
 	/**
