@@ -227,7 +227,7 @@ class JSON_Handler_Telemarketing_Wash extends JSON_Handler
 			$qryQuery	= new Query();
 			
 			// Get list of Imported Files
-			$resResult	= $qryQuery->Execute("SELECT FileImport.Id as file_import_id, FileImport.FileName AS file_name, FileImport.ImportedOn as file_imported_on, tfp.dealer_id, dealer.first_name AS dealer_first_name, dealer.last_name AS dealer_last_name, tfp.customer_group_id, CustomerGroup.external_name AS customer_group_name " .
+			$resResult	= $qryQuery->Execute("SELECT FileImport.Id as file_import_id, FileImport.FileName AS file_name, FileImport.ImportedOn as file_imported_on, tfd.dealer_id, dealer.first_name AS dealer_first_name, dealer.last_name AS dealer_last_name, tfd.customer_group_id, CustomerGroup.external_name AS customer_group_name " .
 												"FROM (( FileImport JOIN telemarketing_fnn_dialled tfd ON tfd.file_import_id = FileImport.Id) JOIN CustomerGroup ON CustomerGroup.Id = tfd.customer_group_id) JOIN dealer ON dealer.id = tfd.dealer_id " .
 												"WHERE FileImport.ImportedOn >= SUBDATE(CURDATE(), INTERVAL 7 DAY) " .
 												"GROUP BY FileImport.Id " .
