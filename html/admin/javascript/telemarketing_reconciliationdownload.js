@@ -93,6 +93,8 @@ var Telemarketing_ReconciliationDownload	= Class.create
 	
 	_renderPopupDownload	: function(objResponse)
 	{
+		Reflex_Debug.asHTMLPopup(objResponse);
+		
 		if (objResponse.HasPermissions === false)
 		{
 			$Alert("You do not have sufficient privileges to download a Call Reconciliation Report.");
