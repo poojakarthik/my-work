@@ -667,18 +667,18 @@ class Application_Handler_Telemarketing extends Application_Handler
 													
 													WHERE		tfd.file_import_id = {$oFileImport->Id}
 																AND tfp.id =	(
-																				SELECT		telemarketing_fnn_proposed.id
-																				FROM		telemarketing_fnn_proposed
-																							JOIN telemarketing_fnn_proposed_status tfps ON (tfps.id = telemarketing_fnn_proposed.telemarketing_fnn_proposed_status_id)
-																				WHERE		tfd.fnn = fnn
-																							AND CAST(call_period_start AS DATE) <= CAST(tfd.dialled_on AS DATE)
-																							AND tfd.dealer_id = tfp.dealer_id
-																				ORDER BY	(CAST(call_period_end AS DATE) >= CAST(tfd.dialled_on AS DATE) AND tfps.const_name = 'TELEMARKETING_FNN_PROPOSED_STATUS_EXPORT') DESC,
-																							CAST(call_period_end AS DATE) >= CAST(tfd.dialled_on AS DATE) DESC,
-																							tfps.const_name = 'TELEMARKETING_FNN_PROPOSED_STATUS_EXPORT' DESC,
-																							call_period_start DESC
-																				LIMIT		1
-																			)");
+																					SELECT		telemarketing_fnn_proposed.id
+																					FROM		telemarketing_fnn_proposed
+																								JOIN telemarketing_fnn_proposed_status tfps ON (tfps.id = telemarketing_fnn_proposed.telemarketing_fnn_proposed_status_id)
+																					WHERE		tfd.fnn = fnn
+																								AND CAST(call_period_start AS DATE) <= CAST(tfd.dialled_on AS DATE)
+																								AND tfd.dealer_id = tfp.dealer_id
+																					ORDER BY	(CAST(call_period_end AS DATE) >= CAST(tfd.dialled_on AS DATE) AND tfps.const_name = 'TELEMARKETING_FNN_PROPOSED_STATUS_EXPORT') DESC,
+																								CAST(call_period_end AS DATE) >= CAST(tfd.dialled_on AS DATE) DESC,
+																								tfps.const_name = 'TELEMARKETING_FNN_PROPOSED_STATUS_EXPORT' DESC,
+																								call_period_start DESC
+																					LIMIT		1
+																				)");
 			if ($oFNNsResult === false)
 			{
 				throw new Exception($oQuery->Error());
