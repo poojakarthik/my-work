@@ -4,11 +4,10 @@
  * Version 195 of database update.
  * This version: -
  *	
- *	1:	Add the "Dealer Call Reconciliation Report" to resource_type Table
- *	2:	Add the telemarketing_fnn_dialled_result_category Table
- *	3:	Populate the telemarketing_fnn_dialled_result_category Table
- *	4:	Add the telemarketing_fnn_dialled_result.telemarketing_fnn_dialled_result_category_id Field and make the id non-AUTO_INCREMENT
- *	5:	Populate the telemarketing_fnn_dialled_result Table
+ *	1:	Add the telemarketing_fnn_dialled_result_category Table
+ *	2:	Populate the telemarketing_fnn_dialled_result_category Table
+ *	3:	Add the telemarketing_fnn_dialled_result.telemarketing_fnn_dialled_result_category_id Field and make the id non-AUTO_INCREMENT
+ *	4:	Populate the telemarketing_fnn_dialled_result Table
  *
  */
 
@@ -21,20 +20,7 @@ class Flex_Rollout_Version_000195 extends Flex_Rollout_Version
 		$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 		$dbAdmin->setFetchMode(MDB2_FETCHMODE_ASSOC);
 		
-		//	1:	Add the "Dealer Call Reconciliation Report" to resource_type Table
-		$strSQL = "	INSERT INTO	resource_type
-						(name	, description	, const_name	, resource_type_nature)
-					VALUES
-						('Dealer Dialler Report'	, 'Common Dealer Dialler Report'	, 'RESOURCE_TYPE_FILE_IMPORT_TELEMARKETING_CALL_RECONCILIATION_REPORT');";
-		$result = $dbAdmin->query($strSQL);
-		if (PEAR::isError($result))
-		{
-			throw new Exception(__CLASS__ . ' Failed to add the "Dealer Call Reconciliation Report" to resource_type Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
-		}
-		$this->rollbackSQL[] =	"	DELETE FROM	resource_type
-									WHERE		const_name = 'RESOURCE_TYPE_FILE_IMPORT_TELEMARKETING_CALL_RECONCILIATION_REPORT';";
-		
-		//	2:	Add the telemarketing_fnn_dialled_result_category Table
+		//	1:	Add the telemarketing_fnn_dialled_result_category Table
 		$strSQL = "	CREATE TABLE	telemarketing_fnn_dialled_result_category
 					(
 						id				INTEGER			UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
@@ -53,7 +39,7 @@ class Flex_Rollout_Version_000195 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] =	"	DROP TABLE	telemarketing_fnn_dialled_result_category;";
 		
-		//	3:	Populate the telemarketing_fnn_dialled_result_category Table
+		//	2:	Populate the telemarketing_fnn_dialled_result_category Table
 		$strSQL = "	INSERT INTO	telemarketing_fnn_dialled_result_category
 						(name		, description		, system_name	, const_name)
 					VALUES
@@ -70,7 +56,7 @@ class Flex_Rollout_Version_000195 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to populate the telemarketing_fnn_dialled_result_category Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		
-		//	4:	Add the telemarketing_fnn_dialled_result.telemarketing_fnn_dialled_result_category_id Field and make the id non-AUTO_INCREMENT
+		//	3:	Add the telemarketing_fnn_dialled_result.telemarketing_fnn_dialled_result_category_id Field and make the id non-AUTO_INCREMENT
 		$strSQL = "	ALTER TABLE			telemarketing_fnn_dialled_result
 					MODIFY	COLUMN		id																INT	UNSIGNED	NOT NULL	COMMENT 'Unique Identifier',
 					ADD		COLUMN		telemarketing_fnn_dialled_result_category_id					INT	UNSIGNED	NOT NULL	COMMENT '(FK) Category for this Call Result',
@@ -85,7 +71,7 @@ class Flex_Rollout_Version_000195 extends Flex_Rollout_Version
 									DROP	COLUMN		telemarketing_fnn_dialled_result_category_id,
 									MODIFY	COLUMN		id																BIGINT(20)	UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier';";
 		
-		//	5:	Populate the telemarketing_fnn_dialled_result Table
+		//	4:	Populate the telemarketing_fnn_dialled_result Table
 		$strSQL = "	INSERT INTO	telemarketing_fnn_dialled_result
 						(id		, name				, description		, const_name										,	telemarketing_fnn_dialled_result_category_id)
 					VALUES
