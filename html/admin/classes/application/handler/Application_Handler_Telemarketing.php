@@ -667,7 +667,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 													
 													WHERE		tfd.file_import_id = {$oFileImport->Id}
 																AND tfp.id =	(
-																				SELECT		MAX(id)
+																				SELECT		telemarketing_fnn_proposed.id
 																				FROM		telemarketing_fnn_proposed
 																							JOIN telemarketing_fnn_proposed_status tfps ON (tfps.id = telemarketing_fnn_proposed.telemarketing_fnn_proposed_status_id)
 																				WHERE		tfd.fnn = fnn
