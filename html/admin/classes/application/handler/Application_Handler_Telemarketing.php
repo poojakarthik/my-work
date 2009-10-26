@@ -656,7 +656,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$oFileImport	= new File_Import(array('Id'=>$iFileImportId), true);
 			
 			$oCSVFile	= new File_CSV();
-			$oCSVFile->setColumns(array_values(self::$_aColumns));
+			$oCSVFile->setColumns(array_values(self::$_aReconciliationColumns));
 			
 			// Get list of FNNs in the Dialler Report, and try to match them up to FNNs we've previously permitted
 			$oFNNsResult	= $oQuery->Execute("	SELECT		tfd.id			AS telemarketing_fnn_dialled_id,
@@ -690,20 +690,20 @@ class Application_Handler_Telemarketing extends Application_Handler
 				
 				$oTelemarketingDialledFNN	= Telemarketing_FNN_Dialled::getForId($aFNN['telemarketing_fnn_dialled_id']);
 				
-				$aRendered[self::$_aColumns['FNN']]					= $aFNN['oTelemarketingDialledFNN']->fnn;
-				$aRendered[self::$_aColumns['DATE_DIALLED']]		= $oTelemarketingDialledFNN->dialled_on;
-				$aRendered[self::$_aColumns['CALL_OUTCOME']]		= Telemarketing_FNN_Dialled_Result::getForId($oTelemarketingDialledFNN->telemarketing_fnn_dialled_result_id)->description;
+				$aRendered[self::$_aReconciliationColumns['FNN']]				= $aFNN['oTelemarketingDialledFNN']->fnn;
+				$aRendered[self::$_aReconciliationColumns['DATE_DIALLED']]		= $oTelemarketingDialledFNN->dialled_on;
+				$aRendered[self::$_aReconciliationColumns['CALL_OUTCOME']]		= Telemarketing_FNN_Dialled_Result::getForId($oTelemarketingDialledFNN->telemarketing_fnn_dialled_result_id)->description;
 				
 				// Some FNNs will not have been permitted
 				if ($aFNN['telemarketing_fnn_proposed_id'])
 				{
 					$oTelemarketingProposedFNN	= Telemarketing_FNN_Proposed::getForId($aFNN['telemarketing_fnn_proposed_id']);
 					
-					$aRendered[self::$_aColumns['PROPOSED_FILENAME']]	= File_Import::getForId($oTelemarketingProposedFNN->proposed_list_file_import_id)->FileName;
-					$aRendered[self::$_aColumns['DATE_WASHED']]			= File_Export::getForId($oTelemarketingProposedFNN->permitted_list_file_export_id)->ExportedOn;
-					$aRendered[self::$_aColumns['WASH_OUTCOME']]		= ($oTelemarketingProposedFNN->telemarketing_fnn_withheld_reason_id) ? 'Withheld: ' . Telemarketing_FNN_Withheld_Reason::getForId($oTelemarketingProposedFNN->telemarketing_fnn_withheld_reason_id)->description : 'Permitted';
-					$aRendered[self::$_aColumns['PERMITTED_START']]		= $oTelemarketingProposedFNN->call_period_start;
-					$aRendered[self::$_aColumns['PERMITTED_END']]		= $oTelemarketingProposedFNN->call_period_end;
+					$aRendered[self::$_aReconciliationColumns['PROPOSED_FILENAME']]	= File_Import::getForId($oTelemarketingProposedFNN->proposed_list_file_import_id)->FileName;
+					$aRendered[self::$_aReconciliationColumns['DATE_WASHED']]		= File_Export::getForId($oTelemarketingProposedFNN->permitted_list_file_export_id)->ExportedOn;
+					$aRendered[self::$_aReconciliationColumns['WASH_OUTCOME']]		= ($oTelemarketingProposedFNN->telemarketing_fnn_withheld_reason_id) ? 'Withheld: ' . Telemarketing_FNN_Withheld_Reason::getForId($oTelemarketingProposedFNN->telemarketing_fnn_withheld_reason_id)->description : 'Permitted';
+					$aRendered[self::$_aReconciliationColumns['PERMITTED_START']]	= $oTelemarketingProposedFNN->call_period_start;
+					$aRendered[self::$_aReconciliationColumns['PERMITTED_END']]		= $oTelemarketingProposedFNN->call_period_end;
 				}
 				
 				$oCSVFile->addRow($aRendered); 
