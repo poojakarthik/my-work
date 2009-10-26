@@ -89,7 +89,7 @@ var Telemarketing_DiallerReportUpload	= Class.create
 		Vixen.Popup.ShowPageLoadingSplash("Uploading Dialler Report...", null, null, null, 100);
 		
 		// Perform AJAX query
-		return Flex.Telemarketing.iframeFormSubmit($ID('Telemarketing_DiallerReportUploadad_Form'), this.uploadReponseHandler.bind(this));
+		return Flex.Telemarketing.iframeFormSubmit($ID('Telemarketing_DiallerReportUpload_Form'), this.uploadReponseHandler.bind(this));
 	},
 	
 	uploadReponseHandler	: function(objResponse)
