@@ -60,14 +60,14 @@ class Flex_Rollout_Version_000195 extends Flex_Rollout_Version
 		$strSQL = "	ALTER TABLE			telemarketing_fnn_dialled_result
 					MODIFY	COLUMN		id																	BIGINT(20)	UNSIGNED	NOT NULL	COMMENT 'Unique Identifier',
 					ADD		COLUMN		telemarketing_fnn_dialled_result_category_id						INTEGER		UNSIGNED	NOT NULL	COMMENT '(FK) Category for this Call Result',
-					ADD		CONSTRAINT	fk_telemarketing_fnn_dialled_result_fnn_dialled_result_category_id	FOREIGN KEY	(telemarketing_fnn_dialled_result_category_id)	REFERENCES telemarketing_fnn_dialled_result_category(id)	ON UPDATE CASCADE	ON DELETE RESTRICT;";
+					ADD		CONSTRAINT	fk_telemarketing_fnn_dialled_result_dialled_result_category_id	FOREIGN KEY	(telemarketing_fnn_dialled_result_category_id)	REFERENCES telemarketing_fnn_dialled_result_category(id)	ON UPDATE CASCADE	ON DELETE RESTRICT;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
 			throw new Exception(__CLASS__ . ' Failed to add the telemarketing_fnn_dialled_result.telemarketing_fnn_dialled_result_category_id Field and make the id non-AUTO_INCREMENT. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] =	"	ALTER TABLE			telemarketing_fnn_dialled_result
-									DROP	CONSTRAINT	fk_telemarketing_fnn_dialled_result_fnn_dialled_result_category_id,
+									DROP	CONSTRAINT	fk_telemarketing_fnn_dialled_result_dialled_result_category_id,
 									DROP	COLUMN		telemarketing_fnn_dialled_result_category_id,
 									MODIFY	COLUMN		id																BIGINT(20)	UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier';";
 		
