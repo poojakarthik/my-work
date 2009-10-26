@@ -716,7 +716,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$sFileName	= "reconciled_{$oFileImport->FileName}.csv";
 			header('content-type: text/csv');
 			header('content-disposition: attachment; filename="'.$sFileName.'"');
-			echo file_get_contents($sCSVContents);
+			echo $sCSVContents;
 		}
 		catch (Exception $oException)
 		{
