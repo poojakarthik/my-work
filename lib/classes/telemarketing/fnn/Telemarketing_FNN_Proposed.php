@@ -52,7 +52,7 @@ class Telemarketing_FNN_Proposed extends ORM_Cached
 		$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
 		
 		// Perform Query
-		$strSQL		= "SELECT * FROM ".self::TABLE_NAME." WHERE {$strWhere}";
+		$strSQL		= "SELECT * FROM ".self::$_strStaticTableName." WHERE {$strWhere}";
 		$resResult	= $qryQuery->Execute($strSQL);
 		if ($resResult === false)
 		{
