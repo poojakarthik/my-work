@@ -40,7 +40,7 @@ class Flex_Rollout_Version_000196 extends Flex_Rollout_Version
 		$this->outputMessage("Creating indexes for telemarketing_fnn_dialled @ ".date("Y-m-d H:i:s"));
 		$strSQL = "	ALTER TABLE	telemarketing_fnn_dialled
 					ADD	INDEX	in_telemarketing_fnn_dialled_fnn		(fnn),
-					ADD	INDEX	in_telemarketing_fnn_dialled_dialled_on	(call_period_start);";
+					ADD	INDEX	in_telemarketing_fnn_dialled_dialled_on	(dialled_on);";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
@@ -48,7 +48,7 @@ class Flex_Rollout_Version_000196 extends Flex_Rollout_Version
 		}
 		$this->rollbackSQL[] =	"	ALTER TABLE		telemarketing_fnn_dialled
 									DROP	INDEX	in_telemarketing_fnn_dialled_fnn		(fnn),
-									DROP	INDEX	in_telemarketing_fnn_dialled_dialled_on	(call_period_start);";
+									DROP	INDEX	in_telemarketing_fnn_dialled_dialled_on	(dialled_on);";
 		
 		$this->outputMessage("Completed indexes for telemarketing_fnn_* @ ".date("Y-m-d H:i:s"));
 	}
