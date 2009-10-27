@@ -694,7 +694,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 				
 				$oTelemarketingDialledFNN	= Telemarketing_FNN_Dialled::getForId($aFNN['telemarketing_fnn_dialled_id']);
 				
-				$aRendered[self::$_aReconciliationColumns['FNN']]				= $aFNN['oTelemarketingDialledFNN']->fnn;
+				$aRendered[self::$_aReconciliationColumns['FNN']]				= $oTelemarketingDialledFNN->fnn;
 				$aRendered[self::$_aReconciliationColumns['DATE_DIALLED']]		= $oTelemarketingDialledFNN->dialled_on;
 				$aRendered[self::$_aReconciliationColumns['CALL_OUTCOME']]		= Telemarketing_FNN_Dialled_Result::getForId($oTelemarketingDialledFNN->telemarketing_fnn_dialled_result_id)->description;
 				
