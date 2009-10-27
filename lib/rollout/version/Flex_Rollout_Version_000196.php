@@ -32,9 +32,9 @@ class Flex_Rollout_Version_000196 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to add indexes to the telemarketing_fnn_proposed Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] =	"	ALTER TABLE		telemarketing_fnn_proposed
-									DROP	INDEX	in_telemarketing_fnn_proposed_fnn				(fnn),
-									DROP	INDEX	in_telemarketing_fnn_proposed_call_period_start	(call_period_start),
-									DROP	INDEX	in_telemarketing_fnn_proposed_call_period_end	(call_period_end);";
+									DROP	INDEX	in_telemarketing_fnn_proposed_fnn,
+									DROP	INDEX	in_telemarketing_fnn_proposed_call_period_start,
+									DROP	INDEX	in_telemarketing_fnn_proposed_call_period_end;";
 		
 		//	2:	Add indexes to the telemarketing_fnn_dialled Table
 		$this->outputMessage("Creating indexes for telemarketing_fnn_dialled @ ".date("Y-m-d H:i:s"));
@@ -47,8 +47,8 @@ class Flex_Rollout_Version_000196 extends Flex_Rollout_Version
 			throw new Exception(__CLASS__ . ' Failed to add indexes to the telemarketing_fnn_dialled Table. ' . $result->getMessage() . " (DB Error: " . $result->getUserInfo() . ")");
 		}
 		$this->rollbackSQL[] =	"	ALTER TABLE		telemarketing_fnn_dialled
-									DROP	INDEX	in_telemarketing_fnn_dialled_fnn		(fnn),
-									DROP	INDEX	in_telemarketing_fnn_dialled_dialled_on	(dialled_on);";
+									DROP	INDEX	in_telemarketing_fnn_dialled_fnn,
+									DROP	INDEX	in_telemarketing_fnn_dialled_dialled_on;";
 		
 		$this->outputMessage("Completed indexes for telemarketing_fnn_* @ ".date("Y-m-d H:i:s"));
 	}
