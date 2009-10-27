@@ -666,7 +666,10 @@ class Application_Handler_Telemarketing extends Application_Handler
 																LEFT JOIN telemarketing_fnn_proposed tfp ON (tfd.fnn = tfp.fnn AND CAST(tfp.call_period_start AS DATE) <= CAST(tfd.dialled_on AS DATE) AND tfd.dealer_id = tfp.dealer_id)
 													
 													WHERE		tfd.file_import_id = {$oFileImport->Id}
-																AND tfp.id =	(
+																AND
+																(
+																	tfp.id IS NULL
+																	OR tfp.id =	(
 																					SELECT		telemarketing_fnn_proposed.id
 																					FROM		telemarketing_fnn_proposed
 																								JOIN telemarketing_fnn_proposed_status tfps ON (tfps.id = telemarketing_fnn_proposed.telemarketing_fnn_proposed_status_id)
@@ -678,7 +681,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 																								tfps.const_name = 'TELEMARKETING_FNN_PROPOSED_STATUS_EXPORT' DESC,
 																								call_period_start DESC
 																					LIMIT		1
-																				)");
+																				)
+																)");
 			if ($oFNNsResult === false)
 			{
 				throw new Exception($oQuery->Error());
