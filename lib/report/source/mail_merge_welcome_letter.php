@@ -18,17 +18,18 @@ $arrDataReport['SQLWhere']		= "	CAST(a.CreatedOn AS DATE) BETWEEN <StartDate> AN
 									AND a.CustomerGroup = <CustomerGroup>
 									AND 0 =	(
 													SELECT	COUNT(s.Id)
-													FROM	Service s ON (s.Account = a.Id)
+													FROM	Service s
 															JOIN ServiceRatePlan srp ON (srp.Service = s.Id AND NOW() BETWEEN srp.StartDatetime AND srp.EndDatetime)
 															JOIN RatePlan rp ON (rp.Id = srp.RatePlan)
-													WHERE	srp.Id =	(	
-																			SELECT		Id
-																			FROM		ServiceRatePlan
-																			WHERE		Service = s.Id
-																						AND NOW() BETWEEN StartDatetime AND EndDatetime
-																			ORDER BY	CreatedOn DESC
-																			LIMIT		1
-																		)
+													WHERE	s.Account = a.Id
+															AND srp.Id =	(	
+																				SELECT		Id
+																				FROM		ServiceRatePlan
+																				WHERE		Service = s.Id
+																							AND NOW() BETWEEN StartDatetime AND EndDatetime
+																				ORDER BY	CreatedOn DESC
+																				LIMIT		1
+																			)
 															AND rp.Name LIKE '%sunshine%'
 												)";
 $arrDataReport['SQLGroupBy']	= "";
