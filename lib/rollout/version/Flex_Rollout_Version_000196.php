@@ -21,7 +21,7 @@ class Flex_Rollout_Version_000196 extends Flex_Rollout_Version
 		$sDatetime	= date("Y-m-d H:i:s");
 		
 		//	1:	Add indexes to the telemarketing_fnn_proposed Table
-		$this->outputMessage("Creating indexes for telemarketing_fnn_proposed @ ".date("Y-m-d H:i:s"));
+		$this->outputMessage("Creating indexes for telemarketing_fnn_proposed @ ".date("Y-m-d H:i:s")."\n");
 		$strSQL = "	ALTER TABLE	telemarketing_fnn_proposed
 					ADD	INDEX	in_telemarketing_fnn_proposed_fnn				(fnn),
 					ADD	INDEX	in_telemarketing_fnn_proposed_call_period_start	(call_period_start),
@@ -37,7 +37,7 @@ class Flex_Rollout_Version_000196 extends Flex_Rollout_Version
 									DROP	INDEX	in_telemarketing_fnn_proposed_call_period_end;";
 		
 		//	2:	Add indexes to the telemarketing_fnn_dialled Table
-		$this->outputMessage("Creating indexes for telemarketing_fnn_dialled @ ".date("Y-m-d H:i:s"));
+		$this->outputMessage("Creating indexes for telemarketing_fnn_dialled @ ".date("Y-m-d H:i:s")."\n");
 		$strSQL = "	ALTER TABLE	telemarketing_fnn_dialled
 					ADD	INDEX	in_telemarketing_fnn_dialled_fnn		(fnn),
 					ADD	INDEX	in_telemarketing_fnn_dialled_dialled_on	(dialled_on);";
@@ -50,7 +50,7 @@ class Flex_Rollout_Version_000196 extends Flex_Rollout_Version
 									DROP	INDEX	in_telemarketing_fnn_dialled_fnn,
 									DROP	INDEX	in_telemarketing_fnn_dialled_dialled_on;";
 		
-		$this->outputMessage("Completed indexes for telemarketing_fnn_* @ ".date("Y-m-d H:i:s"));
+		$this->outputMessage("Completed indexes for telemarketing_fnn_* @ ".date("Y-m-d H:i:s")."\n");
 	}
 
 	function rollback()
