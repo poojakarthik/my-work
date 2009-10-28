@@ -719,7 +719,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 			$sCSVContents	= $oCSVFile->save();
 			
 			// Send the File to be downloaded
-			$sFileName	= "reconciled_{$oFileImport->FileName}.csv";
+			$sFileName	= "reconciled_{$oFileImport->FileName}";
 			header('content-type: text/csv');
 			header('content-disposition: attachment; filename="'.$sFileName.'"');
 			echo $sCSVContents;
