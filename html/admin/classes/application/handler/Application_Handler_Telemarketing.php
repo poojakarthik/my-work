@@ -4,6 +4,8 @@ class Application_Handler_Telemarketing extends Application_Handler
 {
 	static protected	$_aReconciliationColumns	=	array
 														(
+															'DEALER'			=> 'Dealer',
+															'VENDOR'			=> 'Vendor',
 															'FNN'				=> 'FNN',
 															'PROPOSED_FILENAME'	=> 'Proposed List File',
 															'DATE_WASHED'		=> 'Date Washed',
@@ -693,10 +695,13 @@ class Application_Handler_Telemarketing extends Application_Handler
 				$aRendered	= array();
 				
 				$oTelemarketingDialledFNN	= Telemarketing_FNN_Dialled::getForId($aFNN['telemarketing_fnn_dialled_id']);
+				$oDealer					= Dealer::getForId($oTelemarketingDialledFNN->dealer_id);
 				
-				$aRendered[self::$_aReconciliationColumns['FNN']]				= $oTelemarketingDialledFNN->fnn;
-				$aRendered[self::$_aReconciliationColumns['DATE_DIALLED']]		= $oTelemarketingDialledFNN->dialled_on;
-				$aRendered[self::$_aReconciliationColumns['CALL_OUTCOME']]		= Telemarketing_FNN_Dialled_Result::getForId($oTelemarketingDialledFNN->telemarketing_fnn_dialled_result_id)->description;
+				$aRendered[self::$_aReconciliationColumns['DEALER']]		= $oDealer->firstName . ' ' . $oDealer->lastName;
+				$aRendered[self::$_aReconciliationColumns['VENDOR']]		= Customer_Group::getForId($oTelemarketingDialledFNN->customer_group_id)->externalName;
+				$aRendered[self::$_aReconciliationColumns['FNN']]			= $oTelemarketingDialledFNN->fnn;
+				$aRendered[self::$_aReconciliationColumns['DATE_DIALLED']]	= $oTelemarketingDialledFNN->dialled_on;
+				$aRendered[self::$_aReconciliationColumns['CALL_OUTCOME']]	= Telemarketing_FNN_Dialled_Result::getForId($oTelemarketingDialledFNN->telemarketing_fnn_dialled_result_id)->description;
 				
 				// Some FNNs will not have been permitted
 				if ($aFNN['telemarketing_fnn_proposed_id'])
