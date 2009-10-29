@@ -113,7 +113,7 @@
  		if ($this->_FetchRaw('TransactionCode') == '13')
  		{
  			// We only care about Direct Debit records
- 			$this->_Append('PaymentType', PAYMENT_TYPE_DIRECT_DEBIT_BANK_TRANSFER);
+ 			$this->_Append('PaymentType', PAYMENT_TYPE_BANK_TRANSFER);
  		}
  		else
  		{
