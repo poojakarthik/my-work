@@ -51,7 +51,7 @@ class Flex_Rollout_Version_000197 extends Flex_Rollout_Version
 		
 		//	3:	Map the 3G fallback Destination to the 3G Context
 		$strSQL = "	UPDATE	destination_context
-					SET		fallback_destination_id = 40000
+					SET		fallback_destination_id = (SELECT Id FROM Destination WHERE Code = 40000 LIMIT 1)
 					WHERE	const_name = 'DESTINTAION_CONTEXT_3G';";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
