@@ -102,6 +102,8 @@ class NormalisationModuleIseekData extends NormalisationModule
 					
 					// Record Type
 					$this->_AppendCDR('RecordType', $this->FindRecordType(SERVICE_TYPE_MOBILE, '3G'));
+					
+					// Destination Code
 				}
 				else
 				{
@@ -121,6 +123,17 @@ class NormalisationModuleIseekData extends NormalisationModule
 		catch (Exception_Assertion $eException)
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+		}
+		
+		// Destination Code & Description (only if we have a context)
+		if ($this->_intContext > 0)
+		{
+			// There is technically no way to determine destination, so we're just retrieving the fallback Destination
+			$arrDestinationCode	= $this->FindDestination(DONKEY);
+			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
+			
+			$strDescription	= ($arrDestinationCode['bolUnknownDestination']) ? '' : $arrDestinationCode['Description'];
+			$this->_AppendCDR('Description', $strDescription);
 		}
 		
 		// CarrierRef
