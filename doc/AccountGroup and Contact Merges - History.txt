@@ -1382,3 +1382,31 @@ merge_contacts.php -d 23257 -o 26566 -t						<<-- the t is for test mode.  It wi
 Merge Contact 29112 into contact 29109
 merge_contacts.php -d 29109 -o 29112 -t						<<-- the t is for test mode.  It will rollback all changes
 -----------------------------------------------
+
+Accounts: 	Unison Design & Construct Co. Pty Ltd & Sail Centre && Unison Joints Pty Ltd
+-----------------------------------------------
+GENERIC Structure:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000165177, 1000175227) ORDER BY Id;
+
+	Account Groups are 1000165153 AND 1000175153
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000165153, 1000175153) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000165153, 1000175153) ORDER BY Id;
+
+There are 2 modelling 1
+
+SELECT * from Contact WHERE Id IN (16314, 27876) ORDER BY Id;
+
+Merge AccountGroup 1000175153 into 1000165153
+merge_account_groups.php -d 1000165153 -o 1000175153 -t	<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 27876 into contact 16314
+merge_contacts.php -d 16314 -o 27876 -t						<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
