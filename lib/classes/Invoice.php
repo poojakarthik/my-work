@@ -1229,7 +1229,21 @@ class Invoice extends ORM
 				{
 					$bHasChargedInAdvance	= true;
 				}
+				else
+				{
+					// Check if the Service(s) have been invoiced on another Plan before
+					$oResult	= $qryQuery->Execute("SELECT st.RatePlan FROM ServiceTotal st JOIN InvoiceRun ir ON (ir.Id = st.invoice_run_id) WHERE st.Service IN ({$strServiceIds}) AND ir.BillingDate < {$this->_objInvoiceRun->BillingDate} AND st.RatePlan != {$arrPlanDetails['Id']} LIMIT 1");
+					if ($oResult === false)
+					{
+						throw new Exception("DB ERROR: ".$qryQuery->Error());
+					}
+					elseif ($oResult->num_rows)
+					{
+						$bHasInvoicedOnAnotherPlan	= true;
+					}
+				}
 				Log::getLog()->log("Have ".(($bHasChargedInAdvance) ? '' : 'not ')."charged in advanced before");
+				Log::getLog()->log("Have ".(($bHasInvoicedOnAnotherPlan) ? '' : 'not ')."invoiced on another Plan before");
 			}
 			
 			Log::getLog()->log("Arrears period start: ".date("Y-m-d H:i:s", $intArrearsPeriodStart));
@@ -1246,15 +1260,15 @@ class Invoice extends ORM
 			}
 
 			// Charge in Arrears
-			if (!$arrPlanDetails['InAdvance'] || !$bHasChargedInAdvance)
+			if (!$arrPlanDetails['InAdvance'] || (!$bHasChargedInAdvance && !$bHasInvoicedOnAnotherPlan))
 			{
 				$arrPlanChargeSteps[]	= ($bolFirstInvoice) ? 'FIRST_ARREARS' : 'NORMAL_ARREARS';
-
+				
 				// Prorate the Charges and Usage details in Arrears
 				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1);
 				$fltUsageStart		= Invoice::prorate($fltUsageStart		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1);
 				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1);
-
+				
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= $intArrearsPeriodStart;
 				$intPeriodEnd	= $intArrearsPeriodEnd;
