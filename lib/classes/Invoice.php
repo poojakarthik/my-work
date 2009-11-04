@@ -1232,10 +1232,8 @@ class Invoice extends ORM
 				}
 				else
 				{
-					// Check if the Service(s) have been invoiced on another Plan before
-					$sQuery		= "SELECT st.RatePlan FROM ServiceTotal st JOIN InvoiceRun ir ON (ir.Id = st.invoice_run_id) WHERE st.Service IN ({$strServiceIds}) AND ir.BillingDate < '{$this->_objInvoiceRun->BillingDate}' AND st.RatePlan != {$arrPlanDetails['Id']} LIMIT 1";
-					Log::getLog()->log($sQuery); 
-					$oResult	= $qryQuery->Execute($sQuery);
+					// Check if the Service(s) have been invoiced on another Plan before 
+					$oResult	= $qryQuery->Execute("SELECT st.RatePlan FROM ServiceTotal st JOIN InvoiceRun ir ON (ir.Id = st.invoice_run_id) WHERE st.Service IN ({$strServiceIds}) AND ir.BillingDate < '{$this->_objInvoiceRun->BillingDate}' AND st.RatePlan != {$arrPlanDetails['Id']} LIMIT 1");
 					if ($oResult === false)
 					{
 						throw new Exception("DB ERROR: ".$qryQuery->Error());
