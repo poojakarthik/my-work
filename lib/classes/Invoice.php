@@ -1217,7 +1217,8 @@ class Invoice extends ORM
 			}
 			
 			// If the Plan is charged in Advance, then check if we have charged a PCAD yet
-			$bHasChargedInAdvance	= false;
+			$bHasChargedInAdvance		= false;
+			$bHasInvoicedOnAnotherPlan	= false;
 			if ($arrPlanDetails['InAdvance'])
 			{
 				$rResult	= $qryQuery->Execute("SELECT * FROM Charge WHERE ChargeType = 'PCAD' AND Account = {$this->Account} AND (Service IN ({$strServiceIds}) OR ({$arrPlanDetails['Shared']} = 1 AND Service IS NULL)) AND Status = ".CHARGE_INVOICED." AND invoice_run_id != {$this->_objInvoiceRun->Id} LIMIT 1");
@@ -1232,7 +1233,8 @@ class Invoice extends ORM
 				else
 				{
 					// Check if the Service(s) have been invoiced on another Plan before
-					$oResult	= $qryQuery->Execute("SELECT st.RatePlan FROM ServiceTotal st JOIN InvoiceRun ir ON (ir.Id = st.invoice_run_id) WHERE st.Service IN ({$strServiceIds}) AND ir.BillingDate < {$this->_objInvoiceRun->BillingDate} AND st.RatePlan != {$arrPlanDetails['Id']} LIMIT 1");
+					$sQuery		= "SELECT st.RatePlan FROM ServiceTotal st JOIN InvoiceRun ir ON (ir.Id = st.invoice_run_id) WHERE st.Service IN ({$strServiceIds}) AND ir.BillingDate < {$this->_objInvoiceRun->BillingDate} AND st.RatePlan != {$arrPlanDetails['Id']} LIMIT 1"; 
+					$oResult	= $qryQuery->Execute($sQuery);
 					if ($oResult === false)
 					{
 						throw new Exception("DB ERROR: ".$qryQuery->Error());
