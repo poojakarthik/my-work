@@ -475,7 +475,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			if (!$insRateGroupRate->Execute($arrInsertValues))
 			{
 				// Inserting one of the records failed
-				return "ERROR: Saving a record to the RateGroupRate table of the database failed, unexpectedly.<br />The Rate Group has not been saved";
+				return "ERROR: Saving a record to the RateGroupRate table of the database failed, unexpectedly.<br />The Rate Group has not been saved: ".$insRateGroupRate->Error();
 			}
 		}
 		
