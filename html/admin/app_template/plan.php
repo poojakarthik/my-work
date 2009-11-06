@@ -255,7 +255,7 @@ class AppTemplatePlan extends ApplicationTemplate
 				DBO()->RatePlan->Archived = RATE_STATUS_ARCHIVED;
 				
 				// Deactivate the Plan Brochure & Auth Script
-				$intDocumentStatus	= STATUS_INACTIVE;
+				//$intDocumentStatus	= STATUS_INACTIVE;
 				break;
 				
 			case RATE_STATUS_ARCHIVED:
