@@ -449,7 +449,10 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		// Declare which fields you want to set
-		DBO()->RateGroup->SetColumns("Name, Description, RecordType, ServiceType, Fleet, CapLimit, Archived");
+		DBO()->RateGroup->SetColumns("Name, Description, RecordType, ServiceType, Fleet, CapLimit, Archived, effective_start_datetime, effective_end_datetime");
+		
+		DBO()->RateGroup->effective_start_datetime	= '0000-00-00 00:00:00';
+		DBO()->RateGroup->effective_end_datetime	= '9999-12-31 23:59:59';
 		
 		// Add the RateGroup Record
 		if (!DBO()->RateGroup->Save())
