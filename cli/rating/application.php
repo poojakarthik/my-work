@@ -244,9 +244,10 @@
 												"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND \n" .
 												"ServiceRateGroup.Service = <Service> AND \n" .
 												"Rate.Fleet = <Fleet> AND \n" .
-												"Destination = <Destination> AND \n" .
+												"(Destination = <Destination> OR <Destination> = ".DONKEY.") AND \n" .
 												"(Rate.RecordType = <RecordType> OR <RecordType> = ".DONKEY.") AND \n" .
-												"(<StartDatetime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime OR <ClosestRate> = 1)";
+												"(<StartDatetime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime OR <ClosestRate> = 1) AND \n" .
+												"<StartDatetime> BETWEEN RateGroupRate.effective_start_datetime AND RateGroupRate.effective_end_datetime ";
 
 		$this->_selRate	= new StatementSelect(	"((ServiceRateGroup JOIN RateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup) JOIN RateGroupRate ON RateGroupRate.RateGroup = RateGroup.Id) JOIN Rate ON Rate.Id = RateGroupRate.Rate",
 												"Rate.*, ServiceRateGroup.StartDatetime, ServiceRateGroup.EndDatetime",
@@ -1603,6 +1604,7 @@
 			$arrFleetWhere['Service']		= $arrDestinationOwner['Service'];
 			$arrFleetWhere['Fleet']			= TRUE;
 			$arrFleetWhere['RecordType']	= DONKEY;							// Must be DONKEY, because Fleet calls can occur between ServiceTypes, and therefore between RecordTypes
+			$arrFleetWhere['Destination']	= DONKEY;							// Must be DONKEY, because Fleet calls can occur between ServiceTypes, therefore between RecordTypes, therefore between Destinations
 			if ($this->_selRate->Execute($arrFleetWhere) === FALSE)
 			{
 				// Error
