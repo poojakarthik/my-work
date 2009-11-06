@@ -272,7 +272,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			// Escape any special characters
 			$strSearchString = str_replace("'", "\'", $strSearchString);
 			
-			$strLimitToRateGroup = "Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = $intRateGroupId)";
+			$strLimitToRateGroup = "Id IN (SELECT Rate FROM RateGroupRate rgr WHERE RateGroup = $intRateGroupId AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)";
 			$strWhere = "(Name LIKE '%$strSearchString%' OR Description LIKE '%$strSearchString%') AND $strLimitToRateGroup";
 			DBL()->Rate->Where->SetString($strWhere);
 		}
@@ -280,14 +280,14 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		{
 			// A search string has not been specified
 			// Load the Rates belonging to the RateGroup (Limit to 11)
-			DBL()->Rate->Where->SetString("Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = $intRateGroupId)");
+			DBL()->Rate->Where->SetString("Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = $intRateGroupId AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)");
 			DBL()->Rate->OrderBy("Name");
 			DBL()->Rate->SetLimit(10);
 		}
 		DBL()->Rate->Load();
 		
 		// Retrieve the number of Rates belonging to the RateGroup
-		$selRateCount = new StatementSelect("Rate", Array("RateCount"=>"Count(Id)"), "Id IN (SELECT RATE FROM RateGroupRate WHERE RateGroup = $intRateGroupId)");
+		$selRateCount = new StatementSelect("Rate", Array("RateCount"=>"Count(Id)"), "Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = $intRateGroupId  AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)");
 		$selRateCount->Execute();
 		$arrRateCount = $selRateCount->Fetch();
 		DBO()->RateGroup->TotalRateCount = $arrRateCount['RateCount']; 
@@ -1041,7 +1041,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 		if (IsSet($intRateGroupId))
 		{
-			$selRateGroupRates = new StatementSelect("RateGroupRate", "Id, RateGroup, Rate", "RateGroup=<RateGroup>", NULL, NULL);
+			$selRateGroupRates = new StatementSelect("RateGroupRate", "Id, RateGroup, Rate", "RateGroup=<RateGroup>  AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime", NULL, NULL);
 			$selRateGroupRates->Execute(Array("RateGroup" => $intRateGroupId));
 			$arrRateGroupRates = $selRateGroupRates->FetchAll();
 		}
@@ -1454,7 +1454,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 									"ExsMarkup"					=> "R.ExsMarkup",
 									"ExsPercentage"				=> "R.ExsPercentage");
 			
-			$selRates = new StatementSelect("Rate AS R LEFT OUTER JOIN Destination AS D ON R.Destination = D.Code", $arrColumnNames, "R.Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>)","D.Description, R.Name");
+			$selRates = new StatementSelect("Rate AS R LEFT OUTER JOIN Destination AS D ON R.Destination = D.Code", $arrColumnNames, "R.Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>  AND NOW() BETWEEN effective_start_datetime AND effective_end_datetime)","D.Description, R.Name");
 			
 			$mixNumRecords = $selRates->Execute(Array("RateGroupId" => DBO()->RateGroup->Id->Value));
 			$arrRates = $selRates->FetchAll();
