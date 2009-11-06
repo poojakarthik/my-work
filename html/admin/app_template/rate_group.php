@@ -1921,7 +1921,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				
 		// Add a record to the RateGroupRate table for each rate associated with this rategroup
 		$insRateGroupRate = new StatementInsert("RateGroupRate");
-		$arrInsertValues = Array("RateGroup" => $arrRateGroup['Id']);
+		$arrInsertValues = Array("RateGroup" => $arrRateGroup['Id'], 'effective_start_datetime' => '0000-00-00 00:00:00', 'effective_end_datetime' => '9999-12-31 23:59:59');
 		foreach ($arrRateIds as $intRateId)
 		{
 			$arrInsertValues['Rate'] = $intRateId;
