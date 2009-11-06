@@ -449,10 +449,8 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		// Declare which fields you want to set
-		DBO()->RateGroup->SetColumns("Name, Description, RecordType, ServiceType, Fleet, CapLimit, Archived, effective_start_datetime, effective_end_datetime");
+		DBO()->RateGroup->SetColumns("Name, Description, RecordType, ServiceType, Fleet, CapLimit, Archived");
 		
-		DBO()->RateGroup->effective_start_datetime	= '0000-00-00 00:00:00';
-		DBO()->RateGroup->effective_end_datetime	= '9999-12-31 23:59:59';
 		
 		// Add the RateGroup Record
 		if (!DBO()->RateGroup->Save())
@@ -470,7 +468,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// Add a record to the RateGroupRate table for each rate associated with this rategroup
 		// StatementInsert is being used rather than a DBObject, as it is quicker, and this could require about 1000 records being added
 		$insRateGroupRate = new StatementInsert("RateGroupRate");
-		$arrInsertValues = Array("RateGroup" => DBO()->RateGroup->Id->Value);
+		$arrInsertValues = Array("RateGroup" => DBO()->RateGroup->Id->Value, 'effective_start_datetime' => '0000-00-00 00:00:00', 'effective_end_datetime' => '9999-12-31 23:59:59');
 		foreach (DBL()->Rate as $dboRate)
 		{
 			$arrInsertValues['Rate'] = $dboRate->Id->Value;
