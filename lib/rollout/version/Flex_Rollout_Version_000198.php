@@ -86,8 +86,7 @@ class Flex_Rollout_Version_000198 extends Flex_Rollout_Version
 						CONSTRAINT	fk_discount_record_type_discount_id		FOREIGN KEY	(discount_id)		REFERENCES discount(id)		ON UPDATE CASCADE	ON DELETE CASCADE,
 						CONSTRAINT	fk_discount_record_type_record_type_id	FOREIGN KEY	(record_type_id)	REFERENCES RecordType(Id)	ON UPDATE CASCADE	ON DELETE CASCADE
 					)
-					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
-					--DROP TABLE	discount_record_type;";
+					ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
 		$result = $dbAdmin->query($strSQL);
 		if (PEAR::isError($result))
 		{
