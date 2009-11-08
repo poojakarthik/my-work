@@ -335,6 +335,9 @@ class Invoice_Run
 		static	$dbaDB;
 		$dbaDB	= (isset($dbaDB)) ? $dbaDB : DataAccess::getDataAccess();
 		
+		$fStopwatchStart	= microtime(true);
+		Log::getLog()->log("\t* Invoice Run processing started at ".date("Y-m-d H:i:s", (int)$fStopwatchStart));
+		
 		// Create InvoiceRun record
 		try
 		{
@@ -424,6 +427,9 @@ class Invoice_Run
 			$dbaDB->TransactionRollback();
 			throw $eException;
 		}
+		
+		$fStopwatchCommit	= microtime(true);
+		Log::getLog()->log("\t* Total Invoice Run processing time: ".($fStopwatchCommit - $fStopwatchStart)."s...");
 		//--------------------------------------------------------------------//
 	}
 	

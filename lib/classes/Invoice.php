@@ -62,9 +62,15 @@ class Invoice extends ORM
 		$qryQuery	= (isset($qryQuery)) ? $qryQuery : new Query();
 		$dbaDB		= (isset($dbaDB)) ? $dbaDB : DataAccess::getDataAccess();
 		
+		$fStopwatchStart	= microtime(true);
+		Log::getLog()->log("\t* Invoice processing for Account {$objAccount->Id} started at ".date("Y-m-d H:i:s", (int)$fStopwatchStart));
+		
 		// Is there already an Invoice for this Account?  If so, revoke it
 		Log::getLog()->log("\t* Revoking any existing Invoices for Account with Id {$objAccount->Id}...");
 		self::revokeByAccount($objAccount);
+		
+		$fStopwatchRevoke	= microtime(true);
+		Log::getLog()->log("\t* Revoking took ".($fStopwatchRevoke - $fStopwatchStart)."s...");
 		
 		// Generate Invoice
 		try
@@ -414,8 +420,15 @@ class Invoice extends ORM
 			throw $eException;
 		}
 		
+		$fStopwatchGeneration	= microtime(true);
+		Log::getLog()->log("\t* Generation took ".($fStopwatchGeneration - $fStopwatchRevoke)."s...");
+		
 		// Export the Invoice
 		$this->export();
+		
+		$fStopwatchExport	= microtime(true);
+		Log::getLog()->log("\t* Export to XML took ".($fStopwatchExport - $fStopwatchGeneration)."s...");
+		Log::getLog()->log("\t* Total processing time: ".($fStopwatchExport - $fStopwatchStart)."s...");
 		//--------------------------------------------------------------------//
 	}
 
