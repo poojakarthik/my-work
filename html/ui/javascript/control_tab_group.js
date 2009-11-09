@@ -17,7 +17,8 @@ var Control_Tab_Group	= Class.create
 		// Parameter defaults 
 		bolEmbedded		= (bolEmbedded || bolEmbedded == undefined || bolEmbedded == null) ? true : false;
 		//this.bolFadeFX	= (bolFadeFX) ? true : false;
-		this.bolFadeFX	= false;
+		this.bolFadeFX		= false;
+		this.oSelectedTab	= null;
 		
 		this._arrTabs		= [];
 		
@@ -32,13 +33,13 @@ var Control_Tab_Group	= Class.create
 		this.objContainer.objTabRow.domElement				= document.createElement('div');
 		this.objContainer.objTabRow.domElement.className	= 'tab-row';
 		this.objContainer.domElement.appendChild(this.objContainer.objTabRow.domElement);
-		
+		/*
 		// Tab Row Clearing
 		this.objContainer.objTabRow.objClearing							= {};
 		this.objContainer.objTabRow.objClearing.domElement				= document.createElement('div');
 		this.objContainer.objTabRow.objClearing.domElement.className	= 'clearing';
 		this.objContainer.objTabRow.domElement.appendChild(this.objContainer.objTabRow.objClearing.domElement);
-		
+		*/
 		// Page Container
 		this.objContainer.objPageContainer						= {};
 		this.objContainer.objPageContainer.domElement			= document.createElement('div');
@@ -66,7 +67,6 @@ var Control_Tab_Group	= Class.create
 		objPage.style.display	= 'none';
 		objPage.className		= 'tab-page';
 		objPage.appendChild(objControlTab.getContent());
-		this.objContainer.objPageContainer.domElement.appendChild(objPage);
 		
 		var strTabButtonHTML	= "<span>" + objControlTab.getName().replace(/&/gmi, '&amp;').replace(/"/gmi, '&quot;').replace(/>/gmi, '&gt;').replace(/</gmi, '&lt;') + "</span>";
 		if (objControlTab.getIcon())
@@ -79,28 +79,55 @@ var Control_Tab_Group	= Class.create
 		domTabButton.innerHTML	= strTabButtonHTML;
 		domTabButton.addEventListener('click', this.switchToTab.bind(this, strAlias), false);
 		
-		this.objContainer.objTabRow.domElement.insertBefore(domTabButton, this.objContainer.objTabRow.objClearing.domElement);
-		
 		var objTab	= {strAlias: strAlias, domTabButton: domTabButton, objPage: objPage, objControlTab: objControlTab};
 		
 		// Fade FX
-		if (this.bolFadeFX)
+		/*if (this.bolFadeFX)
 		{
 			objTab.objFXFade	= new FX_Fade(this.setPageOpacity.bind(this, strAlias), bolFirstTab, 10, 1);
-		}
+		}*/
 		
 		// Add to list of tabs
 		this._arrTabs.push(objTab);
 		
-		// If this is the first tab, then select it
-		if (bolFirstTab)
+		// Render
+		this._render();
+	},
+	
+	removeTab	: function(mixTab)
+	{
+		var objControlTab	= this.getTab(mixTab);
+		if (objControlTab)
 		{
-			this.switchToTab(strAlias);
+			this._arrTabs.splice(this._arrTabs.indexOf(objControlTab), 1);
+			
+			this._render();
+		}
+	},
+	
+	_render	: function()
+	{
+		// Purge existing Tabs
+		this.objContainer.objTabRow.domElement.childElements().each(this.objContainer.objTabRow.domElement.removeChild, this.objContainer.objTabRow.domElement);
+		this.objContainer.objPageContainer.domElement.childElements().each(this.objContainer.objPageContainer.domElement.removeChild, this.objContainer.objPageContainer.domElement);
+		
+		// Render Tabs
+		for (var i = 0; i < this._arrTabs.length; i++)
+		{
+			this.objContainer.objPageContainer.domElement.appendChild(objPage);
+			this.objContainer.objTabRow.domElement.appendChild(domTabButton);
+		}
+		
+		// Switch to the last selected tab (or first tab available)
+		if (!this.switchToTab(this.oSelectedTab))
+		{
+			this.switchToTab(this._arrTabs.first());
 		}
 	},
 	
 	switchToTab	: function(mixTab)
 	{
+		var bSwitched		= false;
 		var objControlTab	= this.getTab(mixTab);
 		if (objControlTab)
 		{
@@ -120,6 +147,9 @@ var Control_Tab_Group	= Class.create
 						this._arrTabs[i].objPage.style.display	= 'block';
 					}
 					this._arrTabs[i].domTabButton.className	= 'tab selected';
+					
+					this.oSelectedTab	= objControlTab;
+					bSwitched			= true;
 				}
 				else
 				{
@@ -137,6 +167,8 @@ var Control_Tab_Group	= Class.create
 				}
 			}
 		}
+		
+		return bSwitched;
 	},
 	
 	getTab	: function(mixTab, bolAsControlTab)
