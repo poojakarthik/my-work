@@ -68,6 +68,9 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		$this->LoadJavascript("rate_plan_add");
+		
+		$this->LoadJavascript('control_tab');
+		$this->LoadJavascript('control_tab_group');
 	}
 	
 	//------------------------------------------------------------------------//
