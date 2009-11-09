@@ -121,7 +121,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			echo "</div>\n";
 	
 			// Stick in the div container for the DeclareRateGroups table
-			echo "<div id='RateGroupsDiv'></div>\n";
+			echo "<div id='RateGroupsDiv'>Rate Groups Content</div>\n";
 			
 			// Create the buttons
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
