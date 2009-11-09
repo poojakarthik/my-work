@@ -189,6 +189,16 @@ function VixenRatePlanAddClass()
 		Vixen.Ajax.CallAppTemplate('Plan', 'GetRateGroupsForm', objObjects);
 	}
 	
+	this.ShowRateGroupsTab	= function()
+	{
+		this.oTabGroup.oControl.addTab('rate_groups', new Control_Tab('Rate Groups', $ID('RateGroupsDiv'), '../admin/img/template/plan.png'));
+	}
+	
+	this.HideRateGroupsTab	= function()
+	{
+		this.oTabGroup.oControl.removeTab('rate_groups');
+	}
+	
 	//------------------------------------------------------------------------//
 	// EditRateGroup
 	//------------------------------------------------------------------------//

@@ -98,6 +98,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			break;
 		case HTML_CONTEXT_RATE_GROUPS_EMPTY:
 			// Don't render anything
+			echo "<script type='text/javascript'>Vixen.RatePlanAdd.HideRateGroupsTab()</script>";
 			break;
 		case HTML_CONTEXT_DEFAULT:
 		default:
@@ -585,6 +586,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		}
 		
 		Table()->RateGroups->Render();
+		
+		echo "<script type='text/javascript'>Vixen.RatePlanAdd.ShowRateGroupsTab()</script>";
 	}
 	
 	
