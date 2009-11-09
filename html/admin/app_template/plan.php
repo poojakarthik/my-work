@@ -248,21 +248,18 @@ class AppTemplatePlan extends ApplicationTemplate
 		
 		
 		// The status of a RatePlan is stored in the Archived property of the RatePlan table
-		$intDocumentStatus	= null;
 		switch (DBO()->RatePlan->Archived->Value)
 		{
 			case RATE_STATUS_ACTIVE:
 				DBO()->RatePlan->Archived = RATE_STATUS_ARCHIVED;
 				
 				// Deactivate the Plan Brochure & Auth Script
-				//$intDocumentStatus	= STATUS_INACTIVE;
 				break;
 				
 			case RATE_STATUS_ARCHIVED:
 				DBO()->RatePlan->Archived = RATE_STATUS_ACTIVE;
 				
 				// Reactivate the Plan Brochure & Auth Script
-				$intDocumentStatus	= STATUS_ACTIVE;
 				break;
 				
 			default:
@@ -278,12 +275,18 @@ class AppTemplatePlan extends ApplicationTemplate
 			if (DBO()->RatePlan->brochure_document_id->Value)
 			{
 				$objBrochure	= new Document(array('id'=>DBO()->RatePlan->brochure_document_id->Value), true);
-				$objBrochure->setStatus($intDocumentStatus);
+				if ($objBrochure->status_id !== STATUS_ACTIVE)
+				{
+					$objBrochure->setStatus(STATUS_ACTIVE);
+				}
 			}
 			if (DBO()->RatePlan->auth_script_document_id->Value)
 			{
 				$objAuthScript	= new Document(array('id'=>DBO()->RatePlan->auth_script_document_id->Value), true);
-				$objAuthScript->setStatus($intDocumentStatus);
+				if ($objAuthScript->status_id !== STATUS_ACTIVE)
+				{
+					$objAuthScript->setStatus(STATUS_ACTIVE);
+				}
 			}
 		}
 		catch (Exception $eException)
