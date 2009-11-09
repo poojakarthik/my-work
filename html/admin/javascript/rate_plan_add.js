@@ -61,8 +61,8 @@ function VixenRatePlanAddClass()
 		$ID('VixenForm_AddPlan').appendChild(this.oTabGroup.domElement);
 		
 		this.oTabGroup.oControl.addTab('plan_details', new Control_Tab('Plan Details', $ID('RatePlanDetailsId'), '../admin/img/template/plan.png'));
-		this.oTabGroup.oControl.addTab('rate_groups', new Control_Tab('Rate Groups', $ID('RateGroupsDiv'), '../admin/img/template/plan.png'));
-		//this.oTabGroup.oControl.addTab('discounts', new Control_Tab('Discounts', document.createElement('div'), '../admin/img/template/money_dollar.png'));
+		//this.oTabGroup.oControl.addTab('rate_groups', new Control_Tab('Rate Groups', $ID('RateGroupsDiv'), '../admin/img/template/plan.png'));
+		this.oTabGroup.oControl.addTab('discounts', new Control_Tab('Discounts', document.createElement('div'), '../admin/img/template/money_dollar.png'));
 		
 		this.oTabGroup.oControl.switchToTab('plan_details');
 	}
