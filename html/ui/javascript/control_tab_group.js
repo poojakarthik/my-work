@@ -180,7 +180,7 @@ var Control_Tab_Group	= Class.create
 			// Control_Tab object
 			for (var i = 0; i < this._arrTabs.length; i++)
 			{
-				if (this._arrTabs[i].objControlTab == objControlTab)
+				if (this._arrTabs[i].objControlTab == mixTab)
 				{
 					// Yes -- return the Control_Tab object
 					return (bolAsControlTab) ? this._arrTabs[i].objControlTab : this._arrTabs[i];
