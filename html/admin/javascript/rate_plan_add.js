@@ -57,7 +57,7 @@ function VixenRatePlanAddClass()
 		// Add the Sections as Tab Pages
 		this.oTabGroup				= {};
 		this.oTabGroup.domElement	= document.createElement('div');
-		this.oTabGroup.oControl		= new Control_Tab_Group(this.oTabGroup.domElement, true);
+		this.oTabGroup.oControl		= new Control_Tab_Group(this.oTabGroup.domElement, false);
 		$ID('VixenForm_AddPlan').appendChild(this.oTabGroup.domElement);
 		
 		this.oTabGroup.oControl.addTab('plan_details', new Control_Tab('Plan Details', $ID('RatePlanDetailsId'), '../admin/img/template/plan.png'));
