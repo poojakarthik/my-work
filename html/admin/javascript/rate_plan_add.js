@@ -50,9 +50,21 @@ function VixenRatePlanAddClass()
 	{
 		this.elmScalable					= $ID("ScalableCheckbox");
 		this.elmScalableDetailsContainter	= $ID("Scalable_ExtraDetailsContainer");
-
+		
 		this.elmContractTerm				= $ID("RatePlan.ContractTerm");
 		this.elmContactDetailsContainter	= $ID("Contract_ExtraDetailsContainer");
+		
+		// Add the Sections as Tab Pages
+		this.oTabGroup				= {};
+		this.oTabGroup.domElement	= document.createElement('div');
+		this.oTabGroup.oControl		= new Control_Tab_Group(this.oTabGroup.domElement, true);
+		$ID('VixenForm_AddPlan').appendChild(this.oTabGroup.domElement);
+		
+		this.oTabGroup.oControl.addTab('plan_details', new Control_Tab('Plan Details', $ID('RatePlanDetailsId'), '../admin/img/template/plan.png'));
+		this.oTabGroup.oControl.addTab('rate_groups', new Control_Tab('Rate Groups', $ID('RateGroupsDiv'), '../admin/img/template/plan.png'));
+		//this.oTabGroup.oControl.addTab('discounts', new Control_Tab('Discounts', $ID(''), '../admin/img/template/money_dollar.png'));
+		
+		this.oTabGroup.oControl.switchToTab('plan_details');
 	}
 	
 	// Shows/Hides the Extra details that are required if the plan is scalable
