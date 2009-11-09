@@ -114,8 +114,8 @@ var Control_Tab_Group	= Class.create
 		// Render Tabs
 		for (var i = 0; i < this._arrTabs.length; i++)
 		{
-			this.objContainer.objPageContainer.domElement.appendChild(objPage);
-			this.objContainer.objTabRow.domElement.appendChild(domTabButton);
+			this.objContainer.objPageContainer.domElement.appendChild(this._arrTabs[i].objPage);
+			this.objContainer.objTabRow.domElement.appendChild(this._arrTabs[i].domTabButton);
 		}
 		
 		// Switch to the last selected tab (or first tab available)
