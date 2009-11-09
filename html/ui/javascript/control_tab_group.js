@@ -15,7 +15,7 @@ var Control_Tab_Group	= Class.create
 	initialize	: function(objDIVContainer, bolEmbedded, bolFadeFX)
 	{
 		// Parameter defaults 
-		bolEmbedded		= (bolEmbedded == undefined || bolEmbedded == null) ? true : false;
+		bolEmbedded		= (bolEmbedded || bolEmbedded == undefined || bolEmbedded == null) ? true : false;
 		//this.bolFadeFX	= (bolFadeFX) ? true : false;
 		this.bolFadeFX	= false;
 		
