@@ -405,8 +405,8 @@ class Invoice extends ORM
 				}
 			}
 			
-			Log::getLog()->log("Account Delivery Method: ".$objDeliveryMethod->name);
-			Log::getLog()->log("Invoice Delivery Method: ".Delivery_Method::getForId($this->DeliveryMethod)->name);
+			Log::getLog()->log("Account Delivery Method: ".$objDeliveryMethod->name." ({$objAccount->BillingMethod})");
+			Log::getLog()->log("Invoice Delivery Method: ".Delivery_Method::getForId($this->DeliveryMethod)->name." ({$this->DeliveryMethod})");
 			
 			// Insert the Invoice Data
 			$this->save();
