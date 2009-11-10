@@ -1178,7 +1178,7 @@ class Cli_App_Sales extends Cli
 									$arrRatePlanId	= explode('=', $arrProduct['external_reference']);
 									$objRatePlan	= new Rate_Plan(Array('Id'=>(int)$arrRatePlanId[1]), TRUE);
 									$this->log("\t\t\t\t\t\t+ Setting Plan to '{$objRatePlan->Name}'...");									
-									$objService->changePlan($objRatePlan);
+									$objService->changePlan($objRatePlan, TRUE, TRUE);
 									
 									$objService->objRatePlan	= $objRatePlan;
 									
