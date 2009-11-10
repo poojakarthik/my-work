@@ -102,14 +102,16 @@ class Service extends ORM
 	 *
 	 * Changes the Rate Plan for this Service
 	 *
-	 * @param	mixed	$mixRatePlan					Rate_Plan object, or the Id of the new Rate Plan
-	 * @param	boolean	$bolStartThisBillingPeriod	[optional]	TRUE: Starts the new Plan this month; FALSE: Starts the new Plan next month
+	 * @param	mixed	$mixRatePlan								Rate_Plan object, or the Id of the new Rate Plan
+	 * @param	bool	$bolStartThisBillingPeriod	[optional]		TRUE: Starts the new Plan this month; FALSE: Starts the new Plan next month
+	 * @param	bool	$bolForceChangeIfPlanIsArchived [optional]	TRUE: will make the plan change even if the plan is archived; FALSE: will not
+	 * 																make the plan change if the plan is archived
 	 *
 	 * @return	void
 	 *
 	 * @method
 	 */
-	public function changePlan($mixRatePlan, $bolStartThisBillingPeriod=TRUE)
+	public function changePlan($mixRatePlan, $bolStartThisBillingPeriod=TRUE, $bolForceChangeIfPlanIsArchived=FALSE)
 	{
 		$objAccount	= new Account(array('Id'=>$this->Account), FALSE, TRUE);
 		
@@ -182,18 +184,18 @@ class Service extends ORM
 		// Find the current plan (if there is one)
 		$objCurrentRatePlan = $this->getCurrentPlan();
 
-		// Check that the Plan is active and is of the appropriate ServiceType and CustomerGroup
-		if ($objNewRatePlan->Archived != RATE_STATUS_ACTIVE)
+		// Check that the Plan is active (or archived but we are forcing the plan change) and is of the appropriate ServiceType and CustomerGroup
+		if ($objNewRatePlan->Archived != RATE_STATUS_ACTIVE && !($objNewRatePlan->Archived == RATE_STATUS_ARCHIVED && $bolForceChangeIfPlanIsArchived == TRUE))
 		{
-			return "ERROR: This Plan is not currently active";
+			throw new Exception("Plan '{$objNewRatePlan->name}' (id: {$objNewRatePlan->id}) is not currently active");
 		}
 		if ($objNewRatePlan->ServiceType != $this->ServiceType)
 		{
-			return "ERROR: This Plan is not of the same ServiceType as the Service";
+			throw new Exception("Plan '{$objNewRatePlan->name}' (id: {$objNewRatePlan->id}) is not of the same ServiceType as the Service");
 		}
 		if ($objNewRatePlan->customer_group != $objAccount->CustomerGroup)
 		{
-			return "ERROR: This Plan does not belong to the CustomerGroup that this account belongs to";
+			throw new Exception("Plan '{$objNewRatePlan->name}' (id: {$objNewRatePlan->id}) does not belong to the CustomerGroup that this account belongs to");
 		}
 		
 		// Set the EndDatetime to $strOldPlanEndDatetime for all records in the ServiceRatePlan and ServiceRateGroup tables
