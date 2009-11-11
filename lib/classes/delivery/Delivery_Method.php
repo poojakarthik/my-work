@@ -6,95 +6,67 @@
  *
  * @class	Delivery_Method
  */
-class Delivery_Method extends ORM
-{
-	protected			$_strTableName				= "delivery_method";
-	protected static	$_strStaticTableName		= "delivery_method";
-	
-	protected static	$_arrStaticCache			= array();
+class Delivery_Method extends ORM_Enumerated
+{	
+	protected 			$_strTableName			= "delivery_method";
+	protected static	$_strStaticTableName	= "delivery_method";
 	
 	protected			$_arrCustomerGroupSettings;
 	
-	/**
-	 * __construct()
-	 *
-	 * constructor
-	 *
-	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
-	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
-	 * 
-	 * @return	void
-	 * 
-	 * @constructor
-	 */
-	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
+	protected static function getCacheName()
 	{
-		// Parent constructor
-		parent::__construct($arrProperties, $bolLoadById);
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
+		{
+			$strCacheName = __CLASS__;
+		}
+		return $strCacheName;
 	}
 	
-	/**
-	 * getForId()
-	 *
-	 * Returns a Delivery_Method object or array for the given Id
-	 *
-	 * @param	integer		$intId						The Id of the Record to return
-	 * @param	[boolean	$bolAsArray				]	TRUE	: Return associative array
-	 * 													FALSE	: Return Delivery_Method object (default)
-	 * @param	[boolean	$bolForceRecache		]	TRUE	: Refresh the Enumeration cache
-	 * 													FALSE	: Use the existing cache if available (default)
-	 * 
-	 * @return	void
-	 * 
-	 * @constructor
-	 */
-	public static function getForId($intId, $bolAsArray=false, $bolForceRecache=false)
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Enumerated UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	
+	public static function clearCache()
 	{
-		$arrCache	= self::getAll($bolForceRecache);
-		
-		// Return the cached instance
-		if (array_key_exists($intId, $arrCache))
-		{
-			return ($bolAsArray) ? $arrCache[$intId]->toArray() : $arrCache[$intId];
-		}
-		else
-		{
-			return null;
-		}
+		parent::clearCache(__CLASS__);
+	}
+
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
 	}
 	
-	/**
-	 * getAll()
-	 *
-	 * Returns an array of Delivery_Method objects or arrays
-	 *
-	 * @param	[boolean	$bolForceRecache		]	TRUE	: Refresh the Enumeration cache
-	 * 													FALSE	: Use the existing cache if available (default)
-	 * 
-	 * @return	void
-	 * 
-	 * @constructor
-	 */
-	public static function getAll($bolForceRecache=false)
+	protected static function addToCache($mixObjects)
 	{
-		if (!self::$_arrStaticCache || $bolForceRecache)
-		{
-			self::$_arrStaticCache	= array();
-			
-			// Cache the Enumeration
-			$selAll	= self::_preparedStatement('selAll');
-			if ($selAll->Execute() === false)
-			{
-				throw new Exception($selAll->Error());
-			}
-			while ($arrEnum = $selAll->Fetch())
-			{
-				self::$_arrStaticCache[$arrEnum['id']]	= new self($arrEnum);
-			}
-		}
-		
-		return self::$_arrStaticCache;
+		parent::addToCache($mixObjects, __CLASS__);
 	}
+
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+	
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+	
+	public static function getForSystemName($strSystemName)
+	{
+		return parent::getForSystemName($strSystemName, __CLASS__);
+	}
+	
+	public static function getIdForSystemName($strSystemName)
+	{
+		return parent::getIdForSystemName($strSystemName, __CLASS__);
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Enumerated UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
 	
 	/**
 	 * getCustomerGroupSettings()
@@ -138,12 +110,12 @@ class Delivery_Method extends ORM
 			throw new Exception("Unable to find Delivery Method {$this->name} settings for Customer Group #{$intCustomerGroupId}");
 		}
 	}
-	
+
 	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
-	 * 
+	 *
 	 * @param	string		$strStatement						Name of the statement
 	 * 
 	 * @return	Statement										The requested Statement
@@ -166,7 +138,7 @@ class Delivery_Method extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
 				case 'selAll':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "name ASC");
 					break;
 				case 'selCustomerGroupDeliveryMethod':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("customer_group_delivery_method", "*", "delivery_method_id = <id> AND id = (SELECT id FROM customer_group_delivery_method cgdm2 WHERE delivery_method_id = <id> AND customer_group_id = customer_group_delivery_method.customer_group_id ORDER BY id DESC LIMIT 1)");
