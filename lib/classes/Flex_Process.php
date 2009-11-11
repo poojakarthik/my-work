@@ -37,21 +37,21 @@ class Flex_Process
 	
 	protected function __construct($sProcessName)
 	{
-		$this->sProcessName		= $sProcessName;
-		$this->sLockFilePath	= self::_buildProcessRunningFilename($sProcessName);
+		$this->_sProcessName		= $sProcessName;
+		$this->_sLockFilePath	= self::_buildProcessRunningFilename($sProcessName);
 	}
 	
 	public function lock()
 	{
-		if (Flex::assert(!self::isProcessRunning($this->sProcessName)))
+		if (Flex::assert(!$this->isLocked()))
 		{
 			// Script is not running
-			$sLockFilePath	= self::_buildScriptRunningFilename($this->sProcessName);
-			Log::getLog()->log("Creating Lock File @ '{$sLockFilePath}'...");
+			$sLockFilePath	= self::_buildScriptRunningFilename($this->_sProcessName);
+			Log::getLog()->log("Creating Lock File @ '{$this->_sLockFilePath}'...");
 			
 			// Create Running File
 			$iWouldBlock	= 0;
-			$this->_rLockFile	= fopen($sLockFilePath, 'a');
+			$this->_rLockFile	= fopen($this->_sLockFilePath, 'a');
 			if (Flex::assert($this->_rLockFile && flock($this->_rLockFile, LOCK_EX | LOCK_NB, $iWouldBlock) && !$iWouldBlock))
 			{
 				// Write the current timestamp to the file, and leave it open
@@ -71,11 +71,11 @@ class Flex_Process
 	public function isLocked()
 	{
 		// Check if there is a File Lock on the Hash file
-		if (!file_exists($this->sLockFilePath))
+		if (!file_exists($this->_sLockFilePath))
 		{
 			return false;
 		}
-		elseif ($rFile = fopen($this->sLockFilePath, 'r'))
+		elseif ($rFile = fopen($this->_sLockFilePath, 'r'))
 		{
 			$iWouldBlock	= 0;
 			$bLocked		= (!flock($rFile, LOCK_EX | LOCK_NB, $iWouldBlock) || $iWouldBlock);
