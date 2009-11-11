@@ -8,7 +8,14 @@
 //----------------------------------------------------------------------------//
 // rating application
 //----------------------------------------------------------------------------//
-require_once('../../flex.require.php');
+// Framework
+require_once('../../lib/classes/Flex.php');
+Flex::load();
+
+// Ensure that Rating isn't already running, then identify that it is now running
+Flex_Process::factory(Flex_Process::PROCESS_CDR_RATING)->lock();
+
+//require_once('../../flex.require.php');
 $arrConfig = LoadApplication();
 
 define('FLEX_RATING_BATCH_SIZE'	, 1000);
