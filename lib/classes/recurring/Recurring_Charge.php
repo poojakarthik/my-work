@@ -16,7 +16,9 @@ class Recurring_Charge extends ORM_Cached
 	protected 			$_strTableName			= "RecurringCharge";
 	protected static	$_strStaticTableName	= "RecurringCharge";
 	
-	// This defines the margin of error, when determing if the minimum charge has been reached (RecurringCharge.TotalCharge >= (RecurringCharge.MinCharge - MIN_CHARGE_MARGIN_OF_ERROR))
+	// This defines the standard margin of error, when determing if the minimum charge has been reached (RecurringCharge.TotalCharge >= (RecurringCharge.MinCharge - MIN_CHARGE_MARGIN_OF_ERROR))
+	// Note that this should never be referenced directly, but instead use getMinChargeMarginOfError() because if the RecurringCharge <= MIN_CHARGE_MARGIN_OF_ERROR
+	// then we use half of the RecurringCharge, as the margin of error, instead of MIN_CHARGE_MARGIN_OF_ERROR
 	const MIN_CHARGE_MARGIN_OF_ERROR = 0.5;
 	
 	const SEARCH_CONSTRAINT_RECURRING_CHARGE_STATUS_ID	= "RecurringCharge|recurring_charge_status_id";
@@ -368,11 +370,20 @@ class Recurring_Charge extends ORM_Cached
 		return $this->hasReachedMinimumCharge();
 	}
 	
+	public function getMinChargeMarginOfError()
+	{
+		// If the recursionCharge is less than or equal to the margin of error (and this would be rare), 
+		// then use half the recursionCharge instead of the standard margin of error
+		return ($this->recursionCharge <= self::MIN_CHARGE_MARGIN_OF_ERROR)? ($this->recursionCharge / 2) : self::MIN_CHARGE_MARGIN_OF_ERROR;
+	}
+	
 	public function hasReachedMinimumCharge()
 	{
 		$intTimesToCharge	= $this->getTimesToCharge();
+		$fltErrorMargin		= $this->getMinChargeMarginOfError();
+		
 
-		$bolTotalChargedTest	= (bool)($this->totalCharged >= ($this->minCharge - self::MIN_CHARGE_MARGIN_OF_ERROR));
+		$bolTotalChargedTest	= (bool)($this->totalCharged >= ($this->minCharge - $fltErrorMargin));
 		
 		// This test is probably more accurate
 		$bolTotalRecursionsTest	= (bool)($this->totalRecursions >= $intTimesToCharge);
@@ -381,8 +392,8 @@ class Recurring_Charge extends ORM_Cached
 		if ($bolTotalChargedTest != $bolTotalRecursionsTest)
 		{
 			throw new Exception_Assertion("Check to see if RecurringCharge has reached the minimum charge gave 2 different answers when testing ".
-					"against TotalCharged (check: TotalCharged >= (MinCharge - MarginOfError), gives: {$this->totalCharged} >= ({$this->minCharge} - ". self::MIN_CHARGE_MARGIN_OF_ERROR .") == ". print_r($bolTotalChargedTest, true) .") " .
-					"and TotalRecursions (check: TotalRecursions >= calculatedTimesToCharge), gives: {$this->totalRecursions} >= {$intTimesToCharge} == ". print_r($bolTotalRecursionsTest, true) .")", "RecurringCharge object: \n". print_r($this, true), "RecurringCharge Record Data Integrity Breach");
+					"against TotalCharged (check: TotalCharged >= (MinCharge - MarginOfError), gives: {$this->totalCharged} >= ({$this->minCharge} - {$fltErrorMargin}) == ". ($bolTotalChargedTest ? 'TRUE' : 'FALSE') .") " .
+					"and TotalRecursions (check: TotalRecursions >= calculatedTimesToCharge), gives: {$this->totalRecursions} >= {$intTimesToCharge} == ". ($bolTotalRecursionsTest ? 'TRUE' : 'FALSE') .")", "RecurringCharge object: \n". print_r($this, true), "RecurringCharge Record Data Integrity Breach");
 		}
 		
 		return $bolTotalChargedTest;
@@ -479,7 +490,7 @@ class Recurring_Charge extends ORM_Cached
 	{
 		$intTimesToCharge = round($this->minCharge / $this->recursionCharge);
 		
-		if (($intTimesToCharge * $this->recursionCharge) < ($this->minCharge - self::MIN_CHARGE_MARGIN_OF_ERROR))
+		if (($intTimesToCharge * $this->recursionCharge) < ($this->minCharge - $this->getMinChargeMarginOfError()))
 		{
 			// We must add one more time to charge to meet the minimum charge (this could possibly be a partial charge, if the recurring charge isn't continuable)
 			$intTimesToCharge = $intTimesToCharge + 1;
@@ -498,11 +509,12 @@ class Recurring_Charge extends ORM_Cached
 		}
 		
 		// Must not be continuable
-		$intTimesToCharge = $this->getTimesToCharge();
+		$intTimesToCharge	= $this->getTimesToCharge();
+		$fltErrorMargin		= $this->getMinChargeMarginOfError();
 		
-		if 	(	(($intTimesToCharge * $this->recursionCharge) < ($this->minCharge - self::MIN_CHARGE_MARGIN_OF_ERROR))
+		if 	(	(($intTimesToCharge * $this->recursionCharge) < ($this->minCharge - $fltErrorMargin))
 				||
-				(($intTimesToCharge * $this->recursionCharge) > ($this->minCharge + self::MIN_CHARGE_MARGIN_OF_ERROR))
+				(($intTimesToCharge * $this->recursionCharge) > ($this->minCharge + $fltErrorMargin))
 			)
 		{
 			return true;
