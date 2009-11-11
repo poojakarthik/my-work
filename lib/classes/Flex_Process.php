@@ -55,8 +55,11 @@ class Flex_Process
 			{
 				// Write the current timestamp to the file, and leave it open
 				fwrite($this->_rLockFile, date("Y-m-d H:i:s")."\n");
+				return true;
 			}
 		}
+		
+		return false;
 	}
 	
 	public function unlock()
