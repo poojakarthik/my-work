@@ -43,7 +43,7 @@ class Flex_Process
 	
 	public function lock()
 	{
-		if (Flex::assert(!$this->isLocked()))
+		if (Flex::assert(!$this->isLocked(), "Process {$this->_sProcessName} cannot run because it is already running", null, "Process {$this->_sProcessName} blocked"))
 		{
 			// Script is not running
 			Log::getLog()->log("Creating Lock File @ '{$this->_sLockFilePath}'...");
