@@ -383,6 +383,7 @@ class Invoice extends ORM
 			$this->TotalOwing		= $this->Balance + $this->AccountBalance;
 	
 			// Determine Delivery Method
+			$objDeliveryMethod	= Delivery_Method::getForId($objAccount->BillingMethod);
 			$objCustomerGroup	= Customer_Group::getForId($objAccount->CustomerGroup);
 			if (in_array($objInvoiceRun->invoice_run_type_id, array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL)) && $objCustomerGroup && $objCustomerGroup->interimInvoiceDeliveryMethodId)
 			{
@@ -391,7 +392,6 @@ class Invoice extends ORM
 			}
 			else
 			{
-				$objDeliveryMethod		= Delivery_Method::getForId($objAccount->BillingMethod);
 				if ($objDeliveryMethod->deliver_invoice === 0)
 				{
 					$this->DeliveryMethod	= DELIVERY_METHOD_DO_NOT_SEND;
