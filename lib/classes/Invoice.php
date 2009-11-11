@@ -386,25 +386,23 @@ class Invoice extends ORM
 			$objAccountStatus	= Account_Status::getForId($objAccount->Archived);
 			$objDeliveryMethod	= Delivery_Method::getForId($objAccount->BillingMethod);
 			$objCustomerGroup	= Customer_Group::getForId($objAccount->CustomerGroup);
-			/*if (in_array($objInvoiceRun->invoice_run_type_id, array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL)) && $objCustomerGroup && $objCustomerGroup->interimInvoiceDeliveryMethodId)
+			if ($objAccountStatus->deliver_invoice === 0)
+			{
+				// Obey Account Status restrictions
+				$this->DeliveryMethod	= DELIVERY_METHOD_DO_NOT_SEND;
+			}
+			elseif (in_array($objInvoiceRun->invoice_run_type_id, array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL)) && $objCustomerGroup && $objCustomerGroup->interimInvoiceDeliveryMethodId)
 			{
 				// Interim/Final Invoices use the Customer Group's setting (if one is configured)
 				$this->DeliveryMethod	= $objCustomerGroup->interimInvoiceDeliveryMethodId;
 			}
 			else
-			{*/
-				if ($objAccountStatus->deliver_invoice === 0)
-				{
-					$this->DeliveryMethod	= DELIVERY_METHOD_DO_NOT_SEND;
-				}
-				else
-				{
-					// Have we met the requirements for this Delivery Method?
-					$objCustomerGroupSettings	= $objDeliveryMethod->getCustomerGroupSettings($objAccount->CustomerGroup);
-					
-					$this->DeliveryMethod		= ($objCustomerGroupSettings->minimum_invoice_value <= $this->TotalOwing) ? $objAccount->BillingMethod : DELIVERY_METHOD_DO_NOT_SEND;
-				}
-			//}
+			{
+				// Have we met the requirements for this Delivery Method?
+				$objCustomerGroupSettings	= $objDeliveryMethod->getCustomerGroupSettings($objAccount->CustomerGroup);
+				
+				$this->DeliveryMethod		= ($objCustomerGroupSettings->minimum_invoice_value <= $this->TotalOwing) ? $objAccount->BillingMethod : DELIVERY_METHOD_DO_NOT_SEND;
+			}
 			
 			Log::getLog()->log("Account Status: ".$objAccountStatus->name." ({$objAccount->Archived})");
 			Log::getLog()->log("Account Delivery Method: ".$objDeliveryMethod->name." ({$objAccount->BillingMethod})");
