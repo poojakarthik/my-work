@@ -383,15 +383,15 @@ class Invoice extends ORM
 			$this->TotalOwing		= $this->Balance + $this->AccountBalance;
 	
 			// Determine Delivery Method
-			$objDeliveryMethod	= Delivery_Method::getForId($objAccount->BillingMethod);
+			$objDeliveryMethod		= Delivery_Method::getForId($objAccount->BillingMethod);
 			$objCustomerGroup	= Customer_Group::getForId($objAccount->CustomerGroup);
-			if (in_array($objInvoiceRun->invoice_run_type_id, array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL)) && $objCustomerGroup && $objCustomerGroup->interimInvoiceDeliveryMethodId)
+			/*if (in_array($objInvoiceRun->invoice_run_type_id, array(INVOICE_RUN_TYPE_INTERIM, INVOICE_RUN_TYPE_FINAL)) && $objCustomerGroup && $objCustomerGroup->interimInvoiceDeliveryMethodId)
 			{
 				// Interim/Final Invoices use the Customer Group's setting (if one is configured)
 				$this->DeliveryMethod	= $objCustomerGroup->interimInvoiceDeliveryMethodId;
 			}
 			else
-			{
+			{*/
 				if ($objDeliveryMethod->deliver_invoice === 0)
 				{
 					$this->DeliveryMethod	= DELIVERY_METHOD_DO_NOT_SEND;
@@ -403,7 +403,7 @@ class Invoice extends ORM
 					
 					$this->DeliveryMethod		= ($objCustomerGroupSettings->minimum_invoice_value <= $this->TotalOwing) ? $objAccount->BillingMethod : DELIVERY_METHOD_DO_NOT_SEND;
 				}
-			}
+			//}
 			
 			Log::getLog()->log("Account Delivery Method: ".$objDeliveryMethod->name." ({$objAccount->BillingMethod})");
 			Log::getLog()->log("Invoice Delivery Method: ".Delivery_Method::getForId($this->DeliveryMethod)->name." ({$this->DeliveryMethod})");
