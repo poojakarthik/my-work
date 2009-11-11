@@ -46,7 +46,6 @@ class Flex_Process
 		if (Flex::assert(!$this->isLocked()))
 		{
 			// Script is not running
-			$sLockFilePath	= self::_buildScriptRunningFilename($this->_sProcessName);
 			Log::getLog()->log("Creating Lock File @ '{$this->_sLockFilePath}'...");
 			
 			// Create Running File
