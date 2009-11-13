@@ -1164,6 +1164,33 @@ abstract class NormalisationModule extends CarrierModule
 		// Return the FileImport record
 		return $arrFileImports[$intFileImportId];
 	 }
+	
+	protected static function _getServiceTypeForFNN($sFNN)
+	{
+		if (preg_match("/^1([83]00\d{6}|3{4})$/", $sFNN))
+		{
+			// Inbound
+			return SERVICE_TYPE_INBOUND;
+		}
+		elseif (preg_match("/^04\d{8}$/", $sFNN))
+		{
+			// Mobile
+			return SERVICE_TYPE_MOBILE;
+		}
+		elseif (preg_match("/^0\d{9}i$/", $sFNN))
+		{
+			return SERVICE_TYPE_ADSL;
+		}
+		elseif (preg_match("/^0\d{9}$/", $sFNN))
+		{
+			// Landline
+			return SERVICE_TYPE_LAND_LINE;
+		}
+		else
+		{
+			throw new Exception_Assertion("Unable to derive Service Type from FNN '{$sFNN}'", $sFNN, "Unable to derive Service Type from FNN");
+		}
+	}
 }
 
 ?>
