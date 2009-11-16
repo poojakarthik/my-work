@@ -57,9 +57,9 @@ try
 			$aInsertColumns['description']	= trim($aRow['carrier-description']);
 			
 			// Verify that there isn't already a translation for this Carrier/CarrierCode pair
-			if ($oMatchTranslation->Execute($aInsertColumns))
+			if ($oMatchTranslation->Execute($aInsertColumns) === false)
 			{
-				throw new Exception("Unable to check [".implode('.', $aInsertColumns)."]! (".$oInsertTranslation->Error().")");
+				throw new Exception("Unable to check [".implode('.', $aInsertColumns)."]! (".$oMatchTranslation->Error().")");
 			}
 			elseif ($aMatchedTranslation = $oMatchTranslation->Fetch())
 			{
