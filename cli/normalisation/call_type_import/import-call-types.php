@@ -68,7 +68,7 @@ try
 		}
 	}
 	
-	throw new Exception("TEST MODE");
+	//throw new Exception("TEST MODE");
 	
 	// Commit
 	if (!DataAccess::getDataAccess()->TransactionCommit())
