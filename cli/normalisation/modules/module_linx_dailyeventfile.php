@@ -66,7 +66,7 @@ class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 				// covert CDR string to array
 				$this->_SplitRawCDR($arrCDR['CDR']);
 				$sMethod	= "_normalise{$sRawRecordType}";
-				$this->$sMethod;
+				$this->$sMethod();
 				break;
 			
 			// Other Records (read from Monthly Invoice File instead)
@@ -102,6 +102,8 @@ class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 		}
 		
 		//--------------------------------------------------------------------//
+		
+		
 		
 		// Apply Ownership
 		$this->ApplyOwnership();
