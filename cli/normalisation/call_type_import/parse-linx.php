@@ -53,7 +53,7 @@ while (!feof($rImportFile))
 	
 	if (!array_key_exists($sPBI, $aCallTypes))
 	{
-		$aDistanceRangeCodes[$sPBI]	= $sDescription;
+		$aCallTypes[$sPBI]	= $sDescription;
 	}
 	
 	if (!array_key_exists($sDistanceRangeCode, $aDistanceRangeCodes))
