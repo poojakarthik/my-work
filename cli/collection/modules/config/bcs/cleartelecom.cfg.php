@@ -21,7 +21,7 @@ $arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_DAILY_EVENT_FILE]['DownloadUniq
 
 // -- Monthly Invoice (S&E)
 $arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE]							= array();
-$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE]['Regex']					= "/^EBILLDAY\d{2}\d{2}\d{2}\_APe$/i";
+$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE]['Regex']					= "/^EBILLMTH\d{2}\d{2}\d{2}\_AAm\_\d{2}\d{2}\d{4}\-\d{2}\d{2}\d{2}\-AM\.txt$/i";
 $arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE]['Uniqueness']			= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE]['DownloadUnique']		= true;
 
