@@ -76,21 +76,21 @@ while (!feof($rImportFile))
 
 Log::getLog()->log("[ Distance Range Codes ]");
 $oDRCCSV	= new File_CSV();
-$oDRCCSV->setColumns(array('Code', 'Description'));
+$oDRCCSV->setColumns(array('carrier-code', 'carrier-description', 'flex-code'));
 foreach ($aDistanceRangeCodes as $sCode=>$sDescription)
 {
 	Log::getLog()->log("\t[{$sCode}] {$sDescription}");
-	$oDRCCSV->addRow(array('Code'=>$sCode, 'Description'=>$sDescription));
+	$oDRCCSV->addRow(array('carrier-code'=>$sCode, 'carrier-description'=>$sDescription));
 }
 $oDRCCSV->saveToFile($sExportDRCFilename);
 
 Log::getLog()->log("[ Call Types ]");
 $oPBICSV	= new File_CSV();
-$oPBICSV->setColumns(array('Code', 'Description'));
+$oPBICSV->setColumns(array('carrier-code', 'carrier-description', 'flex-code'));
 foreach ($aCallTypes as $sCode=>$sDescription)
 {
 	Log::getLog()->log("\t[{$sCode}] {$sDescription}");
-	$oPBICSV->addRow(array('Code'=>$sCode, 'Description'=>$sDescription));
+	$oPBICSV->addRow(array('carrier-code'=>$sCode, 'carrier-description'=>$sDescription));
 }
 $oPBICSV->saveToFile($sExportPBIFilename);
 
