@@ -50,6 +50,8 @@
 		// Get list of files to download
 		$this->_arrDownloadPaths	= $this->_getDownloadPaths();
 		reset($this->_arrDownloadPaths);
+		
+		return true;
 	}
 }
 ?>
