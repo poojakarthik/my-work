@@ -4,13 +4,16 @@
 require_once('../../../lib/classes/Flex.php');
 Flex::load();
 
-$sFilename	= $argv[1];
-if (!file_exists($sFilename) || !is_readable($sFilename))
+$sImportFilename	= $argv[1];
+if (!file_exists($sImportFilename) || !is_readable($sImportFilename))
 {
-	throw new Exception("Unable to open file '{$sFilename}' for reading");
+	throw new Exception("Unable to open file '{$sImportFilename}' for reading");
 }
 
-$rImportFile	= fopen($sFilename, 'r');
+$sExportPBIFilename	= dirname($sImportFilename).'/linx-pbi-codes.csv';
+$sExportDRCFilename	= dirname($sImportFilename).'/linx-drc-codes.csv';
+
+$rImportFile	= fopen($sImportFilename, 'r');
 
 // Get Call Types
 $iRecords				= 0;
@@ -72,16 +75,22 @@ while (!feof($rImportFile))
 }
 
 Log::getLog()->log("[ Distance Range Codes ]");
+$oDRCCSV	= new File_CSV(array('Code', 'Description'));
 foreach ($aDistanceRangeCodes as $sCode=>$sDescription)
 {
 	Log::getLog()->log("\t[{$sCode}] {$sDescription}");
+	$oDRCCSV->addRow(array('Code'=>$sCode, 'Description'=>$sDescription));
 }
+$oDRCCSV->saveToFile($sExportDRCFilename);
 
 Log::getLog()->log("[ Call Types ]");
+$oPBICSV	= new File_CSV(array('Code', 'Description'));
 foreach ($aCallTypes as $sCode=>$sDescription)
 {
 	Log::getLog()->log("\t[{$sCode}] {$sDescription}");
+	$oPBICSV->addRow(array('Code'=>$sCode, 'Description'=>$sDescription));
 }
+$oPBICSV->saveToFile($sExportPBIFilename);
 
 Log::getLog()->log("Total Records: {$iRecords}");
 Log::getLog()->log("Total Ignored: {$iIgnored}");
