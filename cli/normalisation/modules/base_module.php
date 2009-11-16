@@ -364,7 +364,7 @@ abstract class NormalisationModule extends CarrierModule
 			if(!$bolValid)
 			{
 				$this->_UpdateStatus(CDR_CANT_NORMALISE_INVALID);
-				Debug($strKey." : ".(string)$i);
+				Debug($strKey." : '{$this->_arrNormalisedData[$strKey]}' : ".(string)$i);
 				return false;
 			}
 		}
