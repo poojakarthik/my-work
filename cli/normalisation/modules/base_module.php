@@ -498,7 +498,8 @@ abstract class NormalisationModule extends CarrierModule
 			}
 		}
 		
-		Debug($this->_arrDefineCarrier);
+		//Debug($this->_arrDefineCarrier);
+		Debug($this->_arrRawData);
 	 }
 	 
 	//------------------------------------------------------------------------//
