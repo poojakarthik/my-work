@@ -36,6 +36,7 @@ VixenRequire("cli/collection/modules/module_optus.php");
 VixenRequire("cli/collection/modules/module_ssh.php");
 
 VixenRequire("cli/collection/modules/module_fopen.php");
+VixenRequire("cli/collection/modules/module_fopen_local.php");
 VixenRequire("cli/collection/modules/module_fopen_sftp.php");
 VixenRequire("cli/collection/modules/module_fopen_ftp.php");
 

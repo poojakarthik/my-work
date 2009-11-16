@@ -30,9 +30,9 @@ $arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE]['Download
 $arrDirectories	= array();
 
 // (/YYYY/__FILES__)
-$arrDirectories['regex:/^\d{4}$/']['arrFileTypes'][RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_STANDARD]				= &$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_STANDARD];
-$arrDirectories['regex:/^\d{4}$/']['arrFileTypes'][RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_DAILY_EVENT_FILE]		= &$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_DAILY_EVENT_FILE];
-$arrDirectories['regex:/^\d{4}$/']['arrFileTypes'][RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE]	= &$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE];
+$arrDirectories['home']['arrSubdirectories']['rdavis']['arrSubdirectories']['bcs']['arrSubdirectories']['cdr']['arrSubdirectories']['clear-telecoms']['arrSubdirectories']['regex:/^\d{4}$/']['arrFileTypes'][RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_STANDARD]				= &$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_AAPT_STANDARD];
+$arrDirectories['home']['arrSubdirectories']['rdavis']['arrSubdirectories']['bcs']['arrSubdirectories']['cdr']['arrSubdirectories']['clear-telecoms']['arrSubdirectories']['regex:/^\d{4}$/']['arrFileTypes'][RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_DAILY_EVENT_FILE]		= &$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_DAILY_EVENT_FILE];
+$arrDirectories['home']['arrSubdirectories']['rdavis']['arrSubdirectories']['bcs']['arrSubdirectories']['cdr']['arrSubdirectories']['clear-telecoms']['arrSubdirectories']['regex:/^\d{4}$/']['arrFileTypes'][RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE]	= &$arrFileTypes[RESOURCE_TYPE_FILE_IMPORT_CDR_LINX_MONTHLY_INVOICE_FILE];
 
 // Config
 $arrModuleConfig['FileDefine']		['Value']		= $arrDirectories;
