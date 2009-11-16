@@ -75,7 +75,8 @@ while (!feof($rImportFile))
 }
 
 Log::getLog()->log("[ Distance Range Codes ]");
-$oDRCCSV	= new File_CSV(array('Code', 'Description'));
+$oDRCCSV	= new File_CSV();
+$oDRCCSV->setColumns(array('Code', 'Description'));
 foreach ($aDistanceRangeCodes as $sCode=>$sDescription)
 {
 	Log::getLog()->log("\t[{$sCode}] {$sDescription}");
@@ -84,7 +85,7 @@ foreach ($aDistanceRangeCodes as $sCode=>$sDescription)
 $oDRCCSV->saveToFile($sExportDRCFilename);
 
 Log::getLog()->log("[ Call Types ]");
-$oPBICSV	= new File_CSV(array('Code', 'Description'));
+$oPBICSV	= new File_CSV();
 foreach ($aCallTypes as $sCode=>$sDescription)
 {
 	Log::getLog()->log("\t[{$sCode}] {$sDescription}");
