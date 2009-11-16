@@ -61,7 +61,7 @@ class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 			// Usage Records
 			case 'UIR':	// Usage Information Record
 			case 'UAR':	// Usage Information Adjustment Record
-				$this->_arrDefineCarrier	= $this->_arrRecordDefinitions[$sRawRecordType];
+				$this->_arrDefineCarrier	= self::$_arrRecordDefinitions[$sRawRecordType];
 				
 				// covert CDR string to array
 				$this->_SplitRawCDR($arrCDR['CDR']);
