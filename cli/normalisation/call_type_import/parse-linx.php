@@ -29,30 +29,35 @@ while (!feof($rImportFile))
 	
 	// Record Type
 	$sRecordType	= substr($sLine, 0, 3);
-	if ($sRecordType != 'UTR')
+	switch ($sRecordType)
 	{
-		// Skip -- we only want Usage Tariff Records
-		$iIgnored++;
-		continue;
+		case 'UTR':	// Usage Tariff Records
+		case 'CTR':	// Usage Tariff Records (Wholesale Agreed Rates)
+			// Product Billing Identifier
+			$sPBI	= trim(substr($sLine, 12, 8));
+			
+			// Billing Element Code
+			$sBEC	= trim(substr($sLine, 20, 8));
+			
+			// Description
+			$sDescription	= trim(substr($sLine, 77, 80));
+			
+			// Unit of Measure (reference only)
+			$sUnitOfMeasure	= trim(substr($sLine, 157, 5));
+			
+			// Distance Range Code
+			$sDistanceRangeCode	= trim(substr($sLine, 229, 4));
+			
+			// Distance Range Description
+			$sDistanceRangeDescription	= trim(substr($sLine, 233, 50));
+			break;
+			
+		case 'NTR':	// Non-Usage Tariff Records
+		default:	// Unhandled Row Type
+			$iIgnored++;
+			continue;
+			break;
 	}
-	
-	// Product Billing Identifier
-	$sPBI	= trim(substr($sLine, 12, 8));
-	
-	// Billing Element Code
-	$sBEC	= trim(substr($sLine, 20, 8));
-	
-	// Description
-	$sDescription	= trim(substr($sLine, 77, 80));
-	
-	// Unit of Measure (reference only)
-	$sUnitOfMeasure	= trim(substr($sLine, 157, 5));
-	
-	// Distance Range Code
-	$sDistanceRangeCode	= trim(substr($sLine, 229, 4));
-	
-	// Distance Range Description
-	$sDistanceRangeDescription	= trim(substr($sLine, 233, 50));
 	
 	if (!array_key_exists($sPBI, $aCallTypes))
 	{
