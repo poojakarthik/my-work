@@ -63,6 +63,9 @@
 		
 		// Init wrapper
 		$this->_strWrapper	= "ftp://{$strUsername}:{$strPassword}@{$strHost}";
+		$rResource	= fopen($this->_strWrapper.'/2009/W015657972.K16', 'r');
+		ftp_pasv($rResource);
+		throw new Exception("TEST");
 		
 		// Test if the connection works...
 		if ($this->_resConnection = fopen($this->_strWrapper.'/2009/W015657972.K16', 'r'))
