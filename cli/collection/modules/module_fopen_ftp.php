@@ -65,7 +65,7 @@
 		$this->_strWrapper	= "ftp://{$strUsername}:{$strPassword}@{$strHost}";
 		
 		// Test if the connection works...
-		if ($this->_resConnection = fopen($this->_strWrapper.'/', 'r'))
+		if ($this->_resConnection = fopen($this->_strWrapper.'/2009/W015657972.K16', 'r'))
 		{
 			// Get list of files to download
 			$this->_arrDownloadPaths	= $this->_getDownloadPaths();
