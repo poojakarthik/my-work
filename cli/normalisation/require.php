@@ -38,4 +38,6 @@ VixenRequire($strApplicationDir."module_optus.php");
 VixenRequire($strApplicationDir."module_rslcom.php");
 VixenRequire($strApplicationDir."module_m2.php");
 VixenRequire($strApplicationDir."module_iseek_data.php");
+VixenRequire($strApplicationDir."module_linx_dailyeventfile.php");
+VixenRequire($strApplicationDir."module_linx_monthlyinvoicefile.php");
  ?>
