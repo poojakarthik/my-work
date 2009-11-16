@@ -469,6 +469,8 @@ abstract class NormalisationModule extends CarrierModule
 	 	// keep a record of the raw CDR
 		$this->_strRawCDR = $strCDR;
 		
+		CliEcho("RAW CDR: '{$this->_strRawCDR}'");
+		
 	 	// clean the array
 		$this->_arrRawData = array();
 		
@@ -495,7 +497,8 @@ abstract class NormalisationModule extends CarrierModule
 				$this->_arrRawData[$strKey] = trim(substr($strCDR, $strValue['Start'], $strValue['Length']));
 			}
 		}
-
+		
+		Debug($this->_arrDefineCarrier);
 	 }
 	 
 	//------------------------------------------------------------------------//
