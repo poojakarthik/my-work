@@ -86,6 +86,15 @@
 		}
 	}
 	
+ 	function Disconnect()
+ 	{
+		if ($this->_resConnection)
+		{
+			ftp_close($this->_resConnection);
+		}
+		return true;
+ 	}
+	
 	/**
 	 * Download()
 	 *
