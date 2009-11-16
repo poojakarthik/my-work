@@ -365,6 +365,7 @@ abstract class NormalisationModule extends CarrierModule
 			{
 				$this->_UpdateStatus(CDR_CANT_NORMALISE_INVALID);
 				Debug($strKey." : '{$this->_arrNormalisedData[$strKey]}' : ".(string)$i);
+				Debug($this->_arrNormalisedData);
 				return false;
 			}
 		}
@@ -469,7 +470,7 @@ abstract class NormalisationModule extends CarrierModule
 	 	// keep a record of the raw CDR
 		$this->_strRawCDR = $strCDR;
 		
-		CliEcho("RAW CDR: '{$this->_strRawCDR}'");
+		//CliEcho("RAW CDR: '{$this->_strRawCDR}'");
 		
 	 	// clean the array
 		$this->_arrRawData = array();
@@ -499,7 +500,7 @@ abstract class NormalisationModule extends CarrierModule
 		}
 		
 		//Debug($this->_arrDefineCarrier);
-		Debug($this->_arrRawData);
+		//Debug($this->_arrRawData);
 	 }
 	 
 	//------------------------------------------------------------------------//
