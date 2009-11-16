@@ -13,9 +13,10 @@ if (!file_exists($sFilename) || !is_readable($sFilename))
 $rImportFile	= fopen($sFilename, 'r');
 
 // Get Call Types
-$iRecords	= 0;
-$iIgnored	= 0;
-$iParsed	= 0;
+$iRecords			= 0;
+$iIgnored			= 0;
+$iParsed			= 0;
+$aUniqueDefinitions	= array();
 while (!feof($rImportFile))
 {
 	$iRecords++;
@@ -45,7 +46,12 @@ while (!feof($rImportFile))
 	// Distance Range Code
 	$sDistanceRangeCode	= trim(substr($sLine, 229, 4));
 	
-	Log::getLog()->log("[+] PBI: {$sPBI}; BEC: {$sBEC}; UoM: {$sUnitOfMeasure}; DRC: {$sDistanceRangeCode}; Description: {$sDescription}");
+	$sDefinition	= "{$sPBI}.{$sBEC}.{$sDistanceRangeCode}.{$sUnitOfMeasure}.{$sDescription}";
+	if (!array_key_exists($sDefinition, $aUniqueDefinitions))
+	{	
+		$aUniqueDefinitions[$sDefinition]	= true;
+		Log::getLog()->log("[+] PBI: {$sPBI}; BEC: {$sBEC}; UoM: {$sUnitOfMeasure}; DRC: {$sDistanceRangeCode}; Description: {$sDescription}");
+	}
 	
 	$iParsed++;
 }
@@ -53,6 +59,7 @@ while (!feof($rImportFile))
 Log::getLog()->log("Total Records: {$iRecords}");
 Log::getLog()->log("Total Ignored: {$iIgnored}");
 Log::getLog()->log("Total Parsed: {$iParsed}");
+Log::getLog()->log("Total Unique: ".count($aUniqueDefinitions));
 
 exit(0);
 
