@@ -31,7 +31,7 @@ while (!feof($rImportFile))
 	$sRecordType	= substr($sLine, 0, 3);
 	switch ($sRecordType)
 	{
-		case 'UTR':	// Usage Tariff Records
+		//case 'UTR':	// Usage Tariff Records
 		case 'CTR':	// Usage Tariff Records (Wholesale Agreed Rates)
 			// Product Billing Identifier
 			$sPBI	= trim(substr($sLine, 12, 8));
