@@ -208,7 +208,7 @@ class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 		$this->_AppendCDR('ServiceType', $iServiceType);
 		
 		// RecordType
-		$sRecordCode	= $this->FindRecordCode($this->_FetchRawCDR('ProductBillingIdentifier'));
+		$sRecordCode	= $this->FindRecordCode(trim($this->_FetchRawCDR('ProductBillingIdentifier')));
 		$this->_AppendCDR('RecordCode', $sRecordCode);
 		$iRecordType	= $this->FindRecordType($iServiceType, $sRecordCode);
 		$this->_AppendCDR('RecordType', $iRecordType);
