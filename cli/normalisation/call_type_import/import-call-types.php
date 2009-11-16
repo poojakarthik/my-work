@@ -42,6 +42,7 @@ try
 								'description'	=> null
 							);
 	$oInsertTranslation	= new StatementInsert("cdr_call_type_translation", $aInsertColumns);
+	$oMatchTranslation	= new StatementSelect("cdr_call_type_translation", "*", "carrier_id = <carrier_id> AND carrier_code = <carrier_code>", null, 1);
 	
 	// Import each row
 	foreach ($oCSVFile as $aRow)
@@ -51,13 +52,33 @@ try
 		if ((int)$aRow['flex-code'])
 		{
 			// Import
-			$aInsertColumns['code']			= (int)trim($aRow['flex-code']);
+			$aInsertColumns['code']			= trim($aRow['flex-code']);
 			$aInsertColumns['carrier_code']	= trim($aRow['carrier-code']);
 			$aInsertColumns['description']	= trim($aRow['carrier-description']);
 			
+			// Verify that there isn't already a translation for this Carrier/CarrierCode pair
+			if ($oMatchTranslation->Execute($aInsertColumns))
+			{
+				throw new Exception("Unable to check [".implode('.', $aInsertColumns)."]! (".$oInsertTranslation->Error().")");
+			}
+			elseif ($aMatchedTranslation = $oMatchTranslation->Fetch())
+			{
+				if ($aMatchedTranslation['description'] !== $aRow['carrier-description'])
+				{
+					throw new Exception("Non-matching Translation already exists for [".implode('.', $aInsertColumns)."]! ([".implode('.', $aMatchedTranslation)."])");
+				}
+				else
+				{
+					// Ignore -- this exact translation already exists in the DB
+					$iIgnored++;
+					continue;
+				}
+			}
+			
+			// Insert Translation
 			if ($oInsertTranslation->Execute($aInsertColumns) === false)
 			{
-				throw new Exception("Unable to import [".implode('.', $aInsertColumns)."]!");
+				throw new Exception("Unable to insert [".implode('.', $aInsertColumns)."]! (".$oInsertTranslation->Error().")");
 			}
 			$iImported++;
 		}
