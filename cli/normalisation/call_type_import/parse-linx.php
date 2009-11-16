@@ -43,7 +43,7 @@ while (!feof($rImportFile))
 	$sUnitOfMeasure	= trim(substr($sLine, 157, 5));
 	
 	// Distance Range Code
-	$sDistanceRangeCode	= trim(substr($sLine, 157, 5));
+	$sDistanceRangeCode	= trim(substr($sLine, 229, 4));
 	
 	Log::getLog()->log("[+] PBI: {$sPBI}; BEC: {$sBEC}; UoM: {$sUnitOfMeasure}; DRC: {$sDistanceRangeCode}; Description: {$sDescription}");
 	
