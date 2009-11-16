@@ -55,7 +55,7 @@ class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 		$this->_AppendCDR('SequenceNo', $this->_iSequence++);
 		
 		// Determine File Record Type
-		$sRawRecordType	= strtoupper(substr($arrCDR['Raw'], 0 , 3));
+		$sRawRecordType	= strtoupper(substr($arrCDR['CDR'], 0 , 3));
 		switch ($sRawRecordType)
 		{
 			// Usage Records
