@@ -117,7 +117,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('CarrierRef', $this->_FetchRawCDR('InvoiceArrangementId').'.'.$this->_FetchRawCDR('GlobalItemReferenceNumber'));
 		
 		// FNN
-		$sFNN	= self::RemoveAusCode($this->_FetchRawCDR('FullNationalNumber'));
+		$sFNN	= self::RemoveAusCode(self::_parseServiceNumber($this->_FetchRawCDR('FullNationalNumber')));
 		$this->_AppendCDR('FNN', $sFNN);
 		
 		// Source
@@ -170,7 +170,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('CarrierRef', $this->_FetchRawCDR('InvoiceArrangementId').'.'.$this->_FetchRawCDR('GlobalItemReferenceNumber'));
 		
 		// FNN
-		$sFNN	= self::RemoveAusCode($this->_FetchRawCDR('FullNationalNumber'));
+		$sFNN	= self::RemoveAusCode(self::_parseServiceNumber($this->_FetchRawCDR('FullNationalNumber')));
 		$this->_AppendCDR('FNN', $sFNN);
 		
 		// Source
@@ -214,6 +214,24 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('Credit', 0);
 		
 		return;
+	}
+	
+	static private function _parseServiceNumber($sServiceNumber)
+	{
+		switch (substr($sServiceNumber, 0, 1))
+		{
+			case 'A':	// Full National Number
+				return trim(substr($sServiceNumber, 2, 6)).trim(substr($sServiceNumber, 8, 4));
+				break;
+			
+			case 'O':	// International Number
+				return trim(substr($sServiceNumber, 2, 15));
+				break;
+			
+			default:	// Other
+				return trim(substr($sServiceNumber, 1, 18));
+				break;
+		}
 	}
 	
 	static private	$_arrRecordDefinitions	=	array

@@ -120,14 +120,14 @@ class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 		$this->_AppendCDR('CarrierRef', $this->_FetchRawCDR('EventFileInstanceId').'.'.$this->_FetchRawCDR('EventRecordSequenceNumber').'.'.$this->_FetchRawCDR('InputLinxOnlineEBillFileId'));
 		
 		// FNN
-		$sFNN	= self::RemoveAusCode($this->_FetchRawCDR('FullNationalNumber'));
+		$sFNN	= self::RemoveAusCode(self::_parseServiceNumber($this->_FetchRawCDR('FullNationalNumber')));
 		$this->_AppendCDR('FNN', $sFNN);
 		
 		// Source
-		$this->_AppendCDR('Source', self::RemoveAusCode($this->_FetchRawCDR('OriginatingNumber')));
+		$this->_AppendCDR('Source', self::RemoveAusCode(self::_parseServiceNumber($this->_FetchRawCDR('OriginatingNumber'))));
 		
 		// Destination
-		$this->_AppendCDR('Destination', self::RemoveAusCode($this->_FetchRawCDR('DestinationNumber')));
+		$this->_AppendCDR('Destination', self::RemoveAusCode(self::_parseServiceNumber($this->_FetchRawCDR('DestinationNumber'))));
 		
 		// Units
 		$fUnits		= (int)$this->_FetchRawCDR('Quantity') / 100000;			// Quantity has 5 implied decimal places
@@ -258,6 +258,24 @@ class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 		
 		// Credit
 		$this->_AppendCDR('Credit', 1);
+	}
+	
+	static private function _parseServiceNumber($sServiceNumber)
+	{
+		switch (substr($sServiceNumber, 0, 1))
+		{
+			case 'A':	// Full National Number
+				return trim(substr($sServiceNumber, 2, 6)).trim(substr($sServiceNumber, 8, 4));
+				break;
+			
+			case 'O':	// International Number
+				return trim(substr($sServiceNumber, 2, 15));
+				break;
+			
+			default:	// Other
+				return trim(substr($sServiceNumber, 1, 18));
+				break;
+		}
 	}
 	
 	static private	$_arrRecordDefinitions	=	array
