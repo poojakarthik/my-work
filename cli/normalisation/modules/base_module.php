@@ -871,7 +871,8 @@ abstract class NormalisationModule extends CarrierModule
 	 */
 	 protected function FindRecordCode($mixCarrierCode)
 	 {
-
+		CliEcho("Finding Record Code Translation for Carrier {$this->intBaseCarrier} with Code '{$mixCarrierCode}'");
+		
 	 	$intResult = $this->_selFindRecordCode->Execute(Array("Carrier" => $this->intBaseCarrier, "CarrierCode" => $mixCarrierCode));
 		
 		if($intResult === FALSE)
@@ -908,7 +909,6 @@ abstract class NormalisationModule extends CarrierModule
 	 */
 	 protected function FindRecordType($intServiceType, $strRecordCode)
 	 {
-
 	 	$intResult = $this->_selFindRecordType->Execute(Array("ServiceType" => $intServiceType, "Code" => $strRecordCode));
 		
 		if ($intResult === FALSE)
