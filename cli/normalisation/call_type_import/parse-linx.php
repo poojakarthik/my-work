@@ -50,6 +50,10 @@ while (!feof($rImportFile))
 	$iParsed++;
 }
 
+Log::getLog()->log("Total Records: {$iRecords}");
+Log::getLog()->log("Total Ignored: {$iIgnored}");
+Log::getLog()->log("Total Parsed: {$iParsed}");
+
 exit(0);
 
 ?>
