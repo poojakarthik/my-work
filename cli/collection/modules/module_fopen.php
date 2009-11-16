@@ -145,7 +145,7 @@
 				CliEcho("Checking for Subdirectory matches against '{$strRegex}'");
 				
 				$sWrappedPath			= $this->_strWrapper.$strCurrentPath.'/';
-				$arrDirectoryContents	= @scandir($sWrappedPath);
+				$arrDirectoryContents	= @self::_scanDir($sWrappedPath);
 				
 				if (is_array($arrDirectoryContents))
 				{
@@ -197,7 +197,8 @@
 				// Get any Files in this Directory
 				if (array_key_exists('arrFileTypes', $arrDirectories[$strDirectory]) && is_array($arrDirectories[$strDirectory]['arrFileTypes']) && count($arrDirectories[$strDirectory]['arrFileTypes']))
 				{
-					$arrDirectoryContents	= @scandir($this->_strWrapper.$strDirectoryFullPath);
+					$sWrappedPath			= $this->_strWrapper.$strDirectoryFullPath.'/';
+					$arrDirectoryContents	= @self::_scanDir($sWrappedPath);
 					
 					$intFileCount	= count($arrDirectoryContents);
 					
@@ -257,6 +258,20 @@
 		unset($arrDefinition);
 		
 		return $arrDownloadPaths;
+	}
+	
+	static protected function _scanDir($sPath)
+	{
+		$aContents	= array();
+		
+		$rDirectory	= opendir($sPath);
+		while (($sFile = readdir($rDirectory)) !== false)
+		{
+			$aContents[]	= $sPath;
+		}
+		closedir($rDirectory);
+		
+		return $aContents;
 	}
 	
 	/**
