@@ -144,7 +144,8 @@
 				$strRegex	= substr($strDirectory, strlen(self::DIRECTORY_NAME_REGEX_PREFIX));
 				CliEcho("Checking for Subdirectory matches against '{$strRegex}'");
 				
-				$arrDirectoryContents	= @scandir($this->_strWrapper.$strCurrentPath);
+				$sWrappedPath			= $this->_strWrapper.$strCurrentPath;
+				$arrDirectoryContents	= @scandir($sWrappedPath);
 				
 				if (is_array($arrDirectoryContents))
 				{
@@ -167,7 +168,7 @@
 				else
 				{
 					// Error
-					throw new Exception("Error retrieving contents of '{$strCurrentPath}': ".implode('; ', error_get_last()));
+					throw new Exception("Error retrieving contents of '{$sWrappedPath}': ".implode('; ', error_get_last()));
 				}
 			}
 			else
