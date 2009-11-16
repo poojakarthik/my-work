@@ -52,7 +52,7 @@ try
 		if ((int)$aRow['flex-code'])
 		{
 			// Import
-			$aInsertColumns['code']			= trim($aRow['flex-code']);
+			$aInsertColumns['code']			= (int)trim($aRow['flex-code']);
 			$aInsertColumns['carrier_code']	= trim($aRow['carrier-code']);
 			$aInsertColumns['description']	= trim($aRow['carrier-description']);
 			
