@@ -13,10 +13,12 @@ if (!file_exists($sFilename) || !is_readable($sFilename))
 $rImportFile	= fopen($sFilename, 'r');
 
 // Get Call Types
-$iRecords			= 0;
-$iIgnored			= 0;
-$iParsed			= 0;
-$aUniqueDefinitions	= array();
+$iRecords				= 0;
+$iIgnored				= 0;
+$iParsed				= 0;
+$aUniqueDefinitions		= array();
+$aDistanceRangeCodes	= array();
+$aCallTypes				= array();
 while (!feof($rImportFile))
 {
 	$iRecords++;
@@ -46,20 +48,47 @@ while (!feof($rImportFile))
 	// Distance Range Code
 	$sDistanceRangeCode	= trim(substr($sLine, 229, 4));
 	
+	// Distance Range Description
+	$sDistanceRangeDescription	= trim(substr($sLine, 233, 50));
+	
+	if (!array_key_exists($sPBI, $aCallTypes))
+	{
+		$aDistanceRangeCodes[$sPBI]	= $sDescription;
+	}
+	
+	if (!array_key_exists($sDistanceRangeCode, $aDistanceRangeCodes))
+	{
+		$aDistanceRangeCodes[$sDistanceRangeCode]	= $sDistanceRangeDescription;
+	}
+	
 	$sDefinition	= "{$sPBI}.{$sBEC}.{$sDistanceRangeCode}.{$sUnitOfMeasure}.{$sDescription}";
 	if (!array_key_exists($sDefinition, $aUniqueDefinitions))
 	{	
 		$aUniqueDefinitions[$sDefinition]	= true;
-		Log::getLog()->log("[+] PBI: {$sPBI}; BEC: {$sBEC}; UoM: {$sUnitOfMeasure}; DRC: {$sDistanceRangeCode}; Description: {$sDescription}");
+		//Log::getLog()->log("[+] PBI: {$sPBI}; BEC: {$sBEC}; UoM: {$sUnitOfMeasure}; DRC: {$sDistanceRangeCode}; Description: {$sDescription}");
 	}
 	
 	$iParsed++;
+}
+
+Log::getLog()->log("[ Distance Range Codes ]");
+foreach ($aDistanceRangeCodes as $sCode=>$sDescription)
+{
+	Log::getLog()->log("\t[{$sCode}] {$sDescription}");
+}
+
+Log::getLog()->log("[ Call Types ]");
+foreach ($aCallTypes as $sCode=>$sDescription)
+{
+	Log::getLog()->log("\t[{$sCode}] {$sDescription}");
 }
 
 Log::getLog()->log("Total Records: {$iRecords}");
 Log::getLog()->log("Total Ignored: {$iIgnored}");
 Log::getLog()->log("Total Parsed: {$iParsed}");
 Log::getLog()->log("Total Unique: ".count($aUniqueDefinitions));
+Log::getLog()->log("Total DRCs: ".count($aDistanceRangeCodes));
+Log::getLog()->log("Total PBIs: ".count($aCallTypes));
 
 exit(0);
 
