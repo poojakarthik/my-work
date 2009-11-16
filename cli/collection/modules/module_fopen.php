@@ -114,13 +114,14 @@
 		// Get Path Definitions
 		$arrDefinitions		= $this->GetConfigField('FileDefine');
 		
+		$arrDownloadPaths	= array();
 		try
 		{
 			$arrDownloadPaths	= $this->_getDownloadPathsForDirectories($arrDefinitions);
 		}
 		catch (Exception $eException)
 		{
-			
+			CliEcho("Error retrieving download paths: ".$eException->getMessage());
 		}
 		
 		return $arrDownloadPaths;
@@ -255,94 +256,6 @@
 		unset($arrDefinition);
 		
 		return $arrDownloadPaths;
-		
-		/*
-		// !!!LEGACY!!! Only for reference while rewriting
-		$arrDownloadPaths	= array();
-		foreach ($arrDefinitions as $intFileType=>&$arrFileType)
-		{
-			while (list($mixPathKey, $strPath) = each($arrFileType['Paths']))
-			{
-				CliEcho("Currently ".(count($arrFileType['Paths']))." directories");
-				CliEcho("Getting Contents of '{$strPath}'...", false);
-				
-				// Get the directory listing for this
-				$arrFiles		= scandir($this->_strWrapper.$strPath);
-				$intFileCount	= count($arrFiles);
-				
-				CliEcho("{$intFileCount} files (including '.' and '..')");
-				
-				//CliEcho("Files in '{$strPath}'");
-				//Debug($arrFiles);
-				
-				CliEcho("\033[s");
-				
-				// Filter file names that we don't want
-				$intProgress	= 0;
-				if (is_array($arrFiles))
-				{
-					foreach ($arrFiles as $strFilePath)
-					{
-						$intProgress++;
-						CliEcho("\033[2K\033[uProcessing File {$intProgress}/$intFileCount", false);
-						
-						// Ignore '.' and '..'
-						if (in_array($strFilePath, array('.', '..')))
-						{
-							continue;
-						}
-						$strFullRemotePath	= $strPath.'/'.$strFilePath;
-						
-						if (is_dir($this->_strWrapper.$strFullRemotePath))
-						{
-							// This is a directory
-							if ($arrFileType['Recursive'])
-							{
-								if (!in_array($strFullRemotePath, $arrFileType['Paths']))
-								{
-									$arrFileType['Paths'][]	= $strFullRemotePath;
-								}
-								else
-								{
-									CliEcho("WHY ON EARTH IS '{$strFullRemotePath}' BEING ADDED AGAIN?");
-								} 
-							}
-							else
-							{
-								continue;
-							}
-						}
-						
-						// Does this file match our REGEX?
-						if (!preg_match($arrFileType['Regex'], trim(basename($strFilePath))))
-						{
-							// No match
-							continue;
-						}
-						
-						// Does this FileType have download uniqueness?
-						if ($arrFileType['DownloadUnique'])
-						{
-							// Does this File Name exist in the database?
-							if (!$this->isDownloadUnique($strFilePath))
-							{
-								// Yes, so we should skip this file
-								continue;
-							}
-						}
-						
-						// Add the FileImport Type to our element
-						$arrFileType['FileImportType']	= $intFileType;
-						
-						// As far as we can tell, this file is valid
-						$arrDownloadPaths[]	= array('RemotePath' => trim($strFullRemotePath), 'FileType' => $arrFileType);
-					}
-				}
-				CliEcho();
-			}
-		}
-		return $arrDownloadPaths;
-		*/
 	}
 	
 	/**
