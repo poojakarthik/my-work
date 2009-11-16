@@ -167,7 +167,7 @@
 				else
 				{
 					// Error
-					throw new Exception("Error retrieving contents of '{$strCurrentPath}': ".error_get_last());
+					throw new Exception("Error retrieving contents of '{$strCurrentPath}': ".implode('; ', error_get_last()));
 				}
 			}
 			else
