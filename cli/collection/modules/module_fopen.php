@@ -149,7 +149,7 @@
 				
 				if (is_array($arrDirectoryContents))
 				{
-					CliEcho("Found ".count($arrDirectoryContents)." remote subdirectories...");
+					CliEcho("Found ".count($arrDirectoryContents)." remote objects...");
 					foreach ($arrDirectoryContents as $intIndex=>$strSubItem)
 					{
 						CliEcho("Subitem {$intIndex}: {$strSubItem}");
