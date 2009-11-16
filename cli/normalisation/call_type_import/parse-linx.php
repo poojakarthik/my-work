@@ -86,6 +86,7 @@ $oDRCCSV->saveToFile($sExportDRCFilename);
 
 Log::getLog()->log("[ Call Types ]");
 $oPBICSV	= new File_CSV();
+$oPBICSV->setColumns(array('Code', 'Description'));
 foreach ($aCallTypes as $sCode=>$sDescription)
 {
 	Log::getLog()->log("\t[{$sCode}] {$sDescription}");
