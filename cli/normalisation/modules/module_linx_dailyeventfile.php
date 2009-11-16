@@ -294,7 +294,7 @@ class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 																											'Start'		=> 3,
 																											'Length'	=> 3
 																										),
-																	'EventInstanceFileId'			=>	array
+																	'EventFileInstanceId'			=>	array
 																										(
 																											'Start'		=> 6,
 																											'Length'	=> 8
@@ -429,7 +429,7 @@ class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 																											'Start'		=> 3,
 																											'Length'	=> 3
 																										),
-																	'EventInstanceFileId'			=>	array
+																	'EventFileInstanceId'			=>	array
 																										(
 																											'Start'		=> 6,
 																											'Length'	=> 8
