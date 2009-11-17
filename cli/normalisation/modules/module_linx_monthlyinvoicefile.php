@@ -55,7 +55,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('SequenceNo', $this->_iSequence++);
 		
 		// Determine File Record Type
-		$sRawRecordType	= strtoupper(substr($arrCDR['CDR'], 0 , 3));
+		$sRawRecordType	= strtoupper(substr($arrCDR['CDR'], 37, 2));
 		switch ($sRawRecordType)
 		{
 			// Usage Records
@@ -94,7 +94,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 			
 			default:
 				// Unhandled File Record Type
-				throw new Exception_Assertion("Unhandled LINX Daily Event File Record Type: '{$sRawRecordType}'", $arrCDR, "Unhandled LINX Daily Event File Record Type: '{$sRawRecordType}'");
+				throw new Exception_Assertion("Unhandled LINX Monthly Invoice File Record Type: '{$sRawRecordType}'", $arrCDR, "Unhandled LINX Monthly Invoice File Record Type: '{$sRawRecordType}'");
 				break;
 		}
 		
