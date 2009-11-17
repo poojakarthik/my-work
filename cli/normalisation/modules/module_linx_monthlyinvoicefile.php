@@ -143,11 +143,11 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		
 		// StartDatetime
 		$sStartDate	= $this->_FetchRawCDR('StartDate');
-		$this->_AppendCDR('StartDatetime', substr($sStartDate, 0, 4).'-'.substr($sStartDate, 4, 2).'-'.substr($sStartDate, 6, 2));
+		$this->_AppendCDR('StartDatetime', substr($sStartDate, 0, 4).'-'.substr($sStartDate, 4, 2).'-'.substr($sStartDate, 6, 2).' 00:00:00');
 		
 		// EndDatetime
 		$sEndDate	= $this->_FetchRawCDR('EndDate');
-		$this->_AppendCDR('EndDatetime', substr($sEndDate, 0, 4).'-'.substr($sEndDate, 4, 2).'-'.substr($sEndDate, 6, 2));
+		$this->_AppendCDR('EndDatetime', substr($sEndDate, 0, 4).'-'.substr($sEndDate, 4, 2).'-'.substr($sEndDate, 6, 2).' 23:59:59');
 		
 		// Cost
 		$fCost	= ((int)$this->_FetchRawCDR('SummaryNetAmount')) / 10000;
