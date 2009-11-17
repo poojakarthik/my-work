@@ -60,6 +60,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		{
 			// Usage Records
 			case 'SE':	// S&E Bulked
+			case 'OC':	// OC&C Bulked
 				$this->_arrDefineCarrier	= self::$_arrRecordDefinitions[$sRawRecordType];
 				
 				// covert CDR string to array
@@ -74,7 +75,6 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 			case 'RM':	// Remit
 			case 'UC':	// Usage Charges Summary
 			case 'OO':	// Ons and Offs
-			case 'OC':	// OC&C Bulked
 			case 'DC':	// Directory Charges
 			case 'AD':	// Adjustments
 			case 'PY':	// Payments
