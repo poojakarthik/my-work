@@ -205,7 +205,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$aDestination	= $this->FindDestination(trim($this->_FetchRawCDR('BillingTransactionDescription')));
 		if ($aDestination)
 		{
-			$this->_AppendCDR('Destination', $aDestination['Code']);
+			$this->_AppendCDR('DestinationCode', $aDestination['Code']);
 		}
 		
 		// Description
