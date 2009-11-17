@@ -153,7 +153,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		
 		// Cost
 		$fCost	= ((int)$this->_FetchRawCDR('SummaryNetAmount')) / 10000;
-		$this->_AppendCDR('Cost', $fCost);	// SummaryNetAmount has 4 implied decimal places
+		$this->_AppendCDR('Cost', abs($fCost));	// SummaryNetAmount has 4 implied decimal places
 		
 		// ServiceType
 		$iServiceType	= self::_getServiceTypeForFNN($sFNN);
