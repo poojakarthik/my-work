@@ -949,7 +949,7 @@ abstract class NormalisationModule extends CarrierModule
 	 {
 	 	static	$selUnknownDestination;
 	 	
-		//CliEcho("Finding Destination Translation for Carrier {$this->intBaseCarrier} with Code '{$mixCarrierCode}' in Context {$this->_intContext}");
+		CliEcho("Finding Destination Translation for Carrier {$this->intBaseCarrier} with Code '{$mixCarrierCode}' in Context {$this->_intContext}");
 	 	
 	 	// See if we have translation data for this destination
 	 	$arrData = Array("Carrier" => $this->intBaseCarrier, "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);

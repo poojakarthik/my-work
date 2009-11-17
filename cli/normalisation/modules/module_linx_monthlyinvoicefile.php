@@ -148,7 +148,8 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('EndDatetime', $this->_FetchRawCDR('EndDate'));
 		
 		// Cost
-		$this->_AppendCDR('Cost', ((int)$this->_FetchRawCDR('SummaryNetAmount')) / 10000);	// SummaryNetAmount has 4 implied decimal places
+		$fCost	= ((int)$this->_FetchRawCDR('SummaryNetAmount')) / 10000;
+		$this->_AppendCDR('Cost', $fCost);	// SummaryNetAmount has 4 implied decimal places
 		
 		// ServiceType
 		$iServiceType	= self::_getServiceTypeForFNN($sFNN);
@@ -159,10 +160,13 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('RecordType', $iRecordType);
 		
 		// Destination
-		$aDestination	= $this->FindDestination(trim($this->_FetchRawCDR('BillingTransactionDescription')));
+		$sBillingTransactionDescription				= trim($this->_FetchRawCDR('BillingTransactionDescription'));
+		$iBillingTransactionDescriptonLastHyphen	= strrpos($sBillingTransactionDescription, ' -');
+		$sDestinationTranslationCode				= ($iBillingTransactionDescriptonLastHyphen === false) ? $sBillingTransactionDescription : substr($sBillingTransactionDescription, 0, $iBillingTransactionDescriptonLastHyphen+1);
+		$aDestination								= $this->FindDestination($sDestinationTranslationCode);
 		if ($aDestination)
 		{
-			$this->_AppendCDR('Destination', $aDestination['Code']);
+			$this->_AppendCDR('DestinationCode', $aDestination['Code']);
 		}
 		
 		// Description
@@ -170,7 +174,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('Description', $sDescription);
 		
 		// Credit
-		$this->_AppendCDR('Credit', 0);
+		$this->_AppendCDR('Credit', ($fCost < 0) ? 1 : 0);
 		
 		return;
 	}
@@ -201,7 +205,8 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('EndDatetime', $this->_FetchRawCDR('EndDate'));
 		
 		// Cost
-		$this->_AppendCDR('Cost', ((int)$this->_FetchRawCDR('SummaryNetAmount')) / 10000);	// SummaryNetAmount has 4 implied decimal places
+		$fCost	= ((int)$this->_FetchRawCDR('SummaryNetAmount')) / 10000;
+		$this->_AppendCDR('Cost', $fCost);	// SummaryNetAmount has 4 implied decimal places
 		
 		// ServiceType
 		$iServiceType	= self::_getServiceTypeForFNN($sFNN);
@@ -212,7 +217,10 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('RecordType', $iRecordType);
 		
 		// Destination
-		$aDestination	= $this->FindDestination(trim($this->_FetchRawCDR('BillingTransactionDescription')));
+		$sBillingTransactionDescription				= trim($this->_FetchRawCDR('BillingTransactionDescription'));
+		$iBillingTransactionDescriptonLastHyphen	= strrpos($sBillingTransactionDescription, ' -');
+		$sDestinationTranslationCode				= ($iBillingTransactionDescriptonLastHyphen === false) ? $sBillingTransactionDescription : substr($sBillingTransactionDescription, 0, $iBillingTransactionDescriptonLastHyphen+1);
+		$aDestination								= $this->FindDestination($sDestinationTranslationCode);
 		if ($aDestination)
 		{
 			$this->_AppendCDR('DestinationCode', $aDestination['Code']);
@@ -223,7 +231,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('Description', $sDescription);
 		
 		// Credit
-		$this->_AppendCDR('Credit', 0);
+		$this->_AppendCDR('Credit', ($fCost < 0) ? 1 : 0);
 		
 		return;
 	}
