@@ -145,7 +145,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('ServiceType', $iServiceType);
 		
 		// RecordType
-		$iRecordType	= $this->FindRecordType('S&E', $iServiceType);
+		$iRecordType	= $this->FindRecordType($iServiceType, 'S&E');
 		$this->_AppendCDR('RecordType', $iRecordType);
 		
 		// Destination
@@ -198,7 +198,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('ServiceType', $iServiceType);
 		
 		// RecordType
-		$iRecordType	= $this->_FindRecordType('S&E', $iServiceType);
+		$iRecordType	= $this->FindRecordType($iServiceType, 'S&E');
 		$this->_AppendCDR('RecordType', $iRecordType);
 		
 		// Destination
