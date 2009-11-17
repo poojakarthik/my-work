@@ -162,7 +162,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		// Destination
 		$sBillingTransactionDescription				= trim($this->_FetchRawCDR('BillingTransactionDescription'));
 		$iBillingTransactionDescriptonLastHyphen	= strrpos($sBillingTransactionDescription, ' -');
-		$sDestinationTranslationCode				= ($iBillingTransactionDescriptonLastHyphen === false) ? $sBillingTransactionDescription : substr($sBillingTransactionDescription, 0, $iBillingTransactionDescriptonLastHyphen+1);
+		$sDestinationTranslationCode				= ($iBillingTransactionDescriptonLastHyphen === false) ? $sBillingTransactionDescription : substr($sBillingTransactionDescription, 0, $iBillingTransactionDescriptonLastHyphen);
 		$aDestination								= $this->FindDestination($sDestinationTranslationCode);
 		if ($aDestination)
 		{
