@@ -142,10 +142,12 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('Units', abs($this->_FetchRawCDR('GenericQuantity')));	// Can be negative if being disconnected
 		
 		// StartDatetime
-		$this->_AppendCDR('StartDatetime', $this->_FetchRawCDR('StartDate'));
+		$sStartDate	= $this->_FetchRawCDR('StartDate');
+		$this->_AppendCDR('StartDatetime', substr($sStartDate, 0, 4).'-'.substr($sStartDate, 4, 2).'-'.substr($sStartDate, 6, 2));
 		
 		// EndDatetime
-		$this->_AppendCDR('EndDatetime', $this->_FetchRawCDR('EndDate'));
+		$sEndDate	= $this->_FetchRawCDR('EndDate');
+		$this->_AppendCDR('EndDatetime', substr($sEndDate, 0, 4).'-'.substr($sEndDate, 4, 2).'-'.substr($sEndDate, 6, 2));
 		
 		// Cost
 		$fCost	= ((int)$this->_FetchRawCDR('SummaryNetAmount')) / 10000;
@@ -182,7 +184,10 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 	// Other Charges & Credits
 	private function _normaliseOC()
 	{
-		// CarrierRef
+		// Certainly LOOKS like an S&E Record...
+		return $this->_normaliseSE();
+		
+		/*// CarrierRef
 		$this->_AppendCDR('CarrierRef', $this->_FetchRawCDR('InvoiceArrangementId').'.'.$this->_FetchRawCDR('GlobalItemReferenceNumber'));
 		
 		// FNN
@@ -233,7 +238,7 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		// Credit
 		$this->_AppendCDR('Credit', ($fCost < 0) ? 1 : 0);
 		
-		return;
+		return;*/
 	}
 	
 	static private function _parseServiceNumber($sServiceNumber)
