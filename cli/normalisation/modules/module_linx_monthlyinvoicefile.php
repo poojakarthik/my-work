@@ -61,12 +61,21 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 			// Usage Records
 			case 'SE':	// S&E Bulked
 			case 'OC':	// OC&C Bulked
-				$this->_arrDefineCarrier	= self::$_arrRecordDefinitions[$sRawRecordType];
-				
-				// covert CDR string to array
-				$this->_SplitRawCDR($arrCDR['CDR']);
-				$sMethod	= "_normalise{$sRawRecordType}";
-				$this->$sMethod();
+				if (strtoupper(substr($arrCDR['CDR'], 39, 1)) === 'D')
+				{
+					// Detail Record
+					$this->_arrDefineCarrier	= self::$_arrRecordDefinitions[$sRawRecordType];
+					
+					// covert CDR string to array
+					$this->_SplitRawCDR($arrCDR['CDR']);
+					$sMethod	= "_normalise{$sRawRecordType}";
+					$this->$sMethod();
+				}
+				else
+				{
+					// Summary Record
+					return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+				}
 				break;
 			
 			// Other Records
