@@ -126,6 +126,8 @@
 			{
 				return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}' to '{$arrCurrentFile['LocalPath']}': ".implode('; ', error_get_last());
 			}
+			
+			return $arrCurrentFile;
 		}
  	}
  	
