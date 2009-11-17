@@ -220,7 +220,8 @@ class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 			$aDestination	= $this->FindDestination(trim($this->_FetchRawCDR('DistanceRangeCode')));
 			$this->_AppendCDR('Destination', $aDestination['Code']);
 			
-			throw new Exception("DESTINATION");
+			Debug($aDestination);
+			die;
 		}
 		
 		// Description
