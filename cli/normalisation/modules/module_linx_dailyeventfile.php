@@ -103,7 +103,7 @@ class NormalisationModuleLinxDailyEventFile extends NormalisationModule
 		
 		//--------------------------------------------------------------------//
 		
-		Debug($this->_arrNormalisedData);
+		//Debug($this->_arrNormalisedData);
 		
 		// Apply Ownership
 		$this->ApplyOwnership();
