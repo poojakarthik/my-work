@@ -109,8 +109,8 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		
 		//--------------------------------------------------------------------//
 		
-		Debug($this->_arrRawData);
-		Debug($this->_arrNormalisedData);
+		//Debug($this->_arrRawData);
+		//Debug($this->_arrNormalisedData);
 		
 		// Apply Ownership
 		$this->ApplyOwnership();
