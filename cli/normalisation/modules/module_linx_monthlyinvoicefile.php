@@ -142,12 +142,14 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		$this->_AppendCDR('Units', abs($this->_FetchRawCDR('GenericQuantity')));	// Can be negative if being disconnected
 		
 		// StartDatetime
-		$sStartDate	= $this->_FetchRawCDR('StartDate');
-		$this->_AppendCDR('StartDatetime', substr($sStartDate, 0, 4).'-'.substr($sStartDate, 4, 2).'-'.substr($sStartDate, 6, 2).' 00:00:00');
+		$sStartDate		= $this->_FetchRawCDR('StartDate');
+		$sStartDatetime	= substr($sStartDate, 0, 4).'-'.substr($sStartDate, 4, 2).'-'.substr($sStartDate, 6, 2).' 00:00:00';
+		$this->_AppendCDR('StartDatetime', $sStartDatetime);
 		
 		// EndDatetime
-		$sEndDate	= $this->_FetchRawCDR('EndDate');
-		$this->_AppendCDR('EndDatetime', substr($sEndDate, 0, 4).'-'.substr($sEndDate, 4, 2).'-'.substr($sEndDate, 6, 2).' 23:59:59');
+		$sEndDate		= $this->_FetchRawCDR('EndDate');
+		$sEndDatetime	= substr($sEndDate, 0, 4).'-'.substr($sEndDate, 4, 2).'-'.substr($sEndDate, 6, 2).' 23:59:59';
+		$this->_AppendCDR('EndDatetime', $sEndDatetime);
 		
 		// Cost
 		$fCost	= ((int)$this->_FetchRawCDR('SummaryNetAmount')) / 10000;
@@ -164,15 +166,16 @@ class NormalisationModuleLinxMonthlyInvoiceFile extends NormalisationModule
 		// Destination
 		$sBillingTransactionDescription				= trim($this->_FetchRawCDR('BillingTransactionDescription'));
 		$iBillingTransactionDescriptonLastHyphen	= strrpos($sBillingTransactionDescription, ' -');
-		$sDestinationTranslationCode				= ($iBillingTransactionDescriptonLastHyphen === false) ? $sBillingTransactionDescription : substr($sBillingTransactionDescription, 0, $iBillingTransactionDescriptonLastHyphen);
-		$aDestination								= $this->FindDestination($sDestinationTranslationCode);
+		$sBillingTransactionDescriptionShort		= ($iBillingTransactionDescriptonLastHyphen === false) ? $sBillingTransactionDescription : substr($sBillingTransactionDescription, 0, $iBillingTransactionDescriptonLastHyphen);
+		$aDestination								= $this->FindDestination($sBillingTransactionDescriptionShort);
 		if ($aDestination)
 		{
 			$this->_AppendCDR('DestinationCode', $aDestination['Code']);
 		}
 		
 		// Description
-		$sDescription	= (!$aDestination || $aDestination['bolUnknownDestination']) ? trim($this->_FetchRawCDR('BillingTransactionDescription')) : $aDestination['Description'];
+		$sDescription	= (!$aDestination || $aDestination['bolUnknownDestination']) ? $sBillingTransactionDescriptionShort : $aDestination['Description'];
+		$sDescription	.= " ".date('j/m/Y', strtotime($sStartDatetime))." to ".date('j/m/Y', strtotime($sEndDatetime));
 		$this->_AppendCDR('Description', $sDescription);
 		
 		// Credit
