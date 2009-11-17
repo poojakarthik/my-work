@@ -327,7 +327,7 @@ abstract class NormalisationModule extends CarrierModule
 		}
 																												// 5
 		// start time : valid date/time
-		$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDatetime"]);
+		$arrValid['StartDatetime']	= preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDatetime"]);
 
 		// end time : empty or valid date/time
 		if ($this->_arrNormalisedData["EndDatetime"] != "")														// 6
