@@ -173,14 +173,38 @@ class Cli_App_Billing extends Cli
 					break;
 				
 				case 'ARCHIVE':
+					/*
+					// For a future, less hacky age...
 					$strSQL	= "SELECT * FROM InvoiceRun WHERE CDRArchivedState IS NULL AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED;
-					
 					while ($arrInvoiceRun = $resInvoiceRuns->fetch_assoc())
 					{
 						$objInvoiceRun	= new Invoice_Run($arrInvoiceRun);
 						$objInvoiceRun->archiveToCDRInvoiced();
 					}
+					*/
 					
+					$oUnarchivedInvoiceRunsResult	= $oQuery->Execute("	SELECT		ir.Id
+																			
+																			FROM		InvoiceRun ir
+																						JOIN invoice_run_status irs ON (irs.id = ir.invoice_run_status_id)
+																			
+																			WHERE		irs.const_name = 'INVOICE_RUN_STATUS_COMMITTED'
+																						AND	(
+																								SELECT		Id
+																								FROM		CDR cdr
+																								WHERE		invoice_run_id = ir.Id
+																								LIMIT		1
+																							) IS NOT NULL;");
+					if ($oUnarchivedInvoiceRunsResult === false)
+					{
+						throw new Exception($oQuery->Error());
+					}
+					while ($aInvoiceRun = $oQuery->fetch_assoc)
+					{
+						// Archive this Invoice Run
+						$this->log("Archiving Invoice Run {$aInvoiceRun['Id']}...");
+						self::_archiveInvoiceRunCDRs($aInvoiceRun['Id']);
+					}
 					break;
 					
 				case 'SAMPLE_ACCOUNT':
@@ -415,7 +439,127 @@ class Cli_App_Billing extends Cli
 			return shell_exec($strSCPCommand);
 		}
 	}
-
+	
+	private static function _archiveInvoiceRunCDRs($iInvoiceRunId)
+	{
+		$dsArchiveDB						= Data_Source::get('cdr');
+		$oQuery								= new Query();
+		
+		$sFlexDatabaseHost			= $GLOBALS['**arrDatabase']['flex']['URL'];
+		$sFlexDatabaseName			= $GLOBALS['**arrDatabase']['flex']['Database'];
+		$sFlexDatabaseUser			= $GLOBALS['**arrDatabase']['flex']['User'];
+		$sFlexDatabasePass			= $GLOBALS['**arrDatabase']['flex']['Password'];
+		
+		$sArchiveDatabaseHost		= $GLOBALS['**arrDatabase']['cdr']['URL'];
+		$sArchiveDatabaseName		= $GLOBALS['**arrDatabase']['cdr']['Database'];
+		$sArchiveDatabaseUser		= $GLOBALS['**arrDatabase']['cdr']['User'];
+		$sArchiveDatabasePass		= $GLOBALS['**arrDatabase']['cdr']['Password'];	// Not actually used -- uses .pgpass file
+		
+		$sMySQLDumpFilename			= "{$sFlexDatabaseName}_CDR_{$iInvoiceRunId}.sql";
+		$sPostgreSQLDumpFilename	= "{$sFlexDatabaseName}_CDR_{$iInvoiceRunId}.pgsql";
+		$sPostgreSQLInsertFilename	= "{$sFlexDatabaseName}_cdr_invoiced_{$iInvoiceRunId}.pgsql";
+		
+		// Perform the MySQL Dump
+		$sMySQLDumpCommand	= "mysqldump -h {$sFlexDatabaseHost} -u {$sFlexDatabaseUser} --password='{$sFlexDatabasePass}' {$sFlexDatabaseName} -t CDR --where='invoice_run_id={$iInvoiceRunId}' > {$sMySQLDumpFilename}";
+		$iMySQLDumpReturn	= null;
+		$sMySQLDumpOutput	= system($sMySQLDumpCommand, $iMySQLDumpReturn);
+		if ($iMySQLDumpReturn > 0)
+		{
+			throw new Exception("Failed to get CDR dump: \n{$sMySQLDumpOutput}\n");
+		}
+		
+		// Convert MySQL statements to PostgreSQL statements
+		$sMySQL2PostgreSQLCommand	= "perl /data/bin/mysql2pgsql.pl {$sMySQLDumpFilename} {$sPostgreSQLDumpFilename}";
+		$iMySQL2PostgreSQLReturn	= null;
+		$sMySQL2PostgreSQLOutput	= system($sMySQL2PostgreSQLCommand, $iMySQL2PostgreSQLReturn);
+		if ($iMySQL2PostgreSQLReturn > 0)
+		{
+			throw new Exception("Failed to Convert MySQL statements to PostgreSQL statements: \n{$sMySQL2PostgreSQLOutput}\n");
+		}
+		
+		// Archivify Statements
+		$sArchivifyStatementsCommand	= "perl -pi -e 's/INTO \"cdr\"/INTO cdr_invoiced_{$iInvoiceRunId}/' {$sPostgreSQLDumpFilename}";
+		$iArchivifyStatementsReturn		= null;
+		$sArchivifyStatementsOutput		= system($sArchivifyStatementsCommand, $iArchivifyStatementsReturn);
+		if ($iArchivifyStatementsReturn > 0)
+		{
+			throw new Exception("Failed to archivify statements to PostgreSQL statements: \n{$sArchivifyStatementsOutput}\n");
+		}
+		
+		// Trim the Dump file to only include INSERT statements
+		$sTrimCommand	= "grep \"INSERT INTO\" {$sPostgreSQLDumpFilename} > {$sPostgreSQLInsertFilename}";
+		$iTrimReturn	= null;
+		$sTrimOutput	= system($sTrimCommand, $iTrimReturn);
+		if ($iArchivifyStatementsReturn > 0)
+		{
+			throw new Exception("Failed to trim the Dump file to only include INSERT statements: \n{$sTrimOutput}\n");
+		}
+		
+		// Create the cdr_invoiced_$iInvoiceRunId Table in to Archive DB
+		$sCreateTableCommand	= "echo 'CREATE TABLE cdr_invoiced_{$iInvoiceRunId} (CHECK(invoice_run_id = {$iInvoiceRunId})) INHERITS (cdr_invoiced);' | psql -h {$sArchiveDatabaseHost} -U {$sArchiveDatabaseUser} {$sArchiveDatabaseName}";
+		$iCreateTableReturn		= null;
+		$sCreateTableOutput		= system($sCreateTableCommand, $iCreateTableReturn);
+		if ($iCreateTableReturn > 0)
+		{
+			throw new Exception("Failed to create the cdr_invoiced_$iInvoiceRunId Table in to Archive DB: \n{$sCreateTableOutput}\n");
+		}
+		
+		// Insert the CDRs into the Archive DB (requires .pgpass to be set up)
+		$sInsertCommand	= "psql -h {$sArchiveDatabaseHost} -U {$sArchiveDatabaseUser} {$sArchiveDatabaseName} < {$sPostgreSQLInsertFilename}";
+		$iInsertReturn	= null;
+		$sInsertOutput	= system($sInsertCommand, $iInsertReturn);
+		if ($iInsertReturn > 0)
+		{
+			throw new Exception("Failed to create the cdr_invoiced_$iInvoiceRunId Table in to Archive DB: \n{$sInsertOutput}\n");
+		}
+		
+		// Verify CDR counts
+		$rVerifyMySQLResult	= $oQuery->Execute("SELECT COUNT(Id) AS cdr_count FROM CDR WHERE invoice_run_id = {$iInvoiceRunId}");
+		if ($rVerifyMySQLResult === false)
+		{
+			throw new Exception($oQuery->Error());
+		}
+		$aVerifyMySQL	= $rVerifyMySQLResult->fetch_assoc();
+		
+		$oVerifyPostgreSQLPartitionResult	= $dsArchiveDB->query("SELECT COUNT(id) AS cdr_count FROM cdr_invoiced_{$iInvoiceRunId} WHERE 1");
+		if (PEAR::isError($oVerifyPostgreSQLPartitionResult))
+		{
+			throw new Exception($oVerifyPostgreSQLPartitionResult->getMessage() . " (DB Error: " . $oVerifyPostgreSQLPartitionResult->getUserInfo() . ")");
+		}
+		$aVerifyPostgreSQLPartition	= $oVerifyPostgreSQLPartitionResult->fetchRow(MDB2_FETCHMODE_ASSOC);
+		
+		$oVerifyPostgreSQLTableResult	= $dsArchiveDB->query("SELECT COUNT(id) AS cdr_count FROM cdr_invoiced WHERE invoice_run_id = {$iInvoiceRunId}");
+		if (PEAR::isError($oVerifyPostgreSQLTableResult))
+		{
+			throw new Exception($oVerifyPostgreSQLTableResult->getMessage() . " (DB Error: " . $oVerifyPostgreSQLTableResult->getUserInfo() . ")");
+		}
+		$aVerifyPostgreSQLTable	= $oVerifyPostgreSQLTableResult->fetchRow(MDB2_FETCHMODE_ASSOC);
+		
+		$iCDRCount					= (int)$aVerifyMySQL['cdr_count'];
+		$iCDRInvoicedCount			= (int)$aVerifyPostgreSQLPartition['cdr_count'];
+		$iCDRInvoicePartitionCount	= (int)$aVerifyPostgreSQLTable['cdr_count'];
+		if (!($iCDRCount === $iCDRInvoicedCount && $iCDRCount === $iCDRInvoicePartitionCount))
+		{
+			throw new Exception("CDR Count Mismatch: (CDR: {$iCDRCount}; cdr_invoiced_{$iInvoiceRunId}: {$iCDRInvoicePartitionCount}; cdr_invoiced: {$iCDRInvoicedCount})");
+		}
+		
+		// Remove CDRs from Flex database
+		$oDeleteResult	= $oQuery->Execute("DELETE FROM CDR WHERE invoice_run_id = {$iInvoiceRunId}");
+		if ($oDeleteResult === false)
+		{
+			throw new Exception($oQuery->Error());
+		}
+		
+		// File Cleanup -- BZ2 them for now, manual cleanup later
+		$sCompressCommand	= "bzip2 {$sMySQLDumpFilename} {$sPostgreSQLDumpFilename} {$sPostgreSQLInsertFilename}";
+		$iCompressReturn	= null;
+		$sCompressOutput	= system($sCompressCommand, $iCompressReturn);
+		if ($iCompressReturn > 0)
+		{
+			throw new Exception("Failed to compress dump files: \n{$sCompressOutput}\n");
+		}
+	}
+	
 	public static function debug($mixMessage, $bolNewLine=TRUE)
 	{
 		if (defined('BILLING_TEST_MODE') && BILLING_TEST_MODE)
