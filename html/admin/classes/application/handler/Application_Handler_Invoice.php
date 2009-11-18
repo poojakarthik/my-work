@@ -952,9 +952,8 @@ SELECT		a.id																											AS account_id,
 			IF(s.EarliestCDR IS NOT NULL, 1, 0)																				AS has_tolled,
 			rp.cdr_required																									AS cdr_required,
 			CASE
-				WHEN rp.cdr_required THEN s.EarliestCDR
-				WHEN s.CreatedOn > srp.StartDatetime THEN s.CreatedOn
-				ELSE srp.StartDatetime
+				WHEN rp.cdr_required THEN IF(CAST(s.EarliestCDR AS DATE) <= CURDATE(), s.EarliestCDR, NULL /* LAST INVOICE DATE */)
+				ELSE IF(s.CreatedOn > srp.StartDatetime, s.CreatedOn, srp.StartDatetime)
 			END																												AS invoice_from_date
 
 FROM		Account a
@@ -1121,7 +1120,7 @@ ORDER BY	a.Id,
 		
 		if ($fPlanCharge && $aService['invoice_from_date'])
 		{
-			$iServiceInvoiceFromDate	= strtotime($aService['invoice_from_date']);
+			$iServiceInvoiceFromDate	= ($aService['invoice_from_date']) ? strtotime($aService['invoice_from_date']) : $iLastInvoiceDate;
 			
 			// Calculate Daily Rate
 			$iDaysInBillingPeriod	= (int)date('t', $iLastInvoiceDate);
