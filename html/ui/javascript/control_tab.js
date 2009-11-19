@@ -58,9 +58,9 @@ var Control_Tab	= Class.create
 	{
 		// Update Tab Button
 		var strTabButtonHTML	= "<span>" + this.getName().replace(/&/gmi, '&amp;').replace(/"/gmi, '&quot;').replace(/>/gmi, '&gt;').replace(/</gmi, '&lt;') + "</span>";
-		if (objControlTab.getIcon())
+		if (this.getIcon())
 		{
-			strTabButtonHTML	= "<img class='icon' alt='' title='" + objControlTab.getName() + "' src='" + objControlTab.getIcon() + "' />" + strTabButtonHTML;
+			strTabButtonHTML	= "<img class='icon' alt='' title='" + this.getName() + "' src='" + this.getIcon() + "' />" + strTabButtonHTML;
 		}
 		this.oTabButton.innerHTML	= strTabButtonHTML;
 	},
