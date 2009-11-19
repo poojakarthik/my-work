@@ -18,6 +18,7 @@ var Control_Tab_Group	= Class.create
 		bolEmbedded			= (bolEmbedded || bolEmbedded == undefined || bolEmbedded == null) ? true : false;
 		this.oSelectedTab	= null;
 		
+		this._oTabs			= {};
 		this._aTabOrder		= [];
 		
 		// Container
