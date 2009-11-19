@@ -34,7 +34,7 @@ var Control_Tab	= Class.create
 	
 	setContent	: function(objContentDIV)
 	{
-		this.oTabPage.removeChild(this.objContentDIV);
+		this.oTabPage.childElements().each(this.oTabPage.removeChild, this.oTabPage);
 		this.objContentDIV	= objContentDIV ? objContentDIV : null;
 		
 		if (this.objContentDIV)
