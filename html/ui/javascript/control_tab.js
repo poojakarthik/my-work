@@ -77,7 +77,7 @@ var Control_Tab	= Class.create
 	
 	getPage	: function()
 	{
-		return this.oPage;
+		return this.oTabPage;
 	},
 	
 	getButton	: function()
