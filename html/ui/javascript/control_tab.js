@@ -73,5 +73,15 @@ var Control_Tab	= Class.create
 		{
 			this.oTabButton.addEventListener('click', this.oControlTabGroup.switchToTab.bind(this.oControlTabGroup, this), false);
 		}
+	},
+	
+	getPage	: function()
+	{
+		return this.oPage;
+	},
+	
+	getButton	: function()
+	{
+		return this.oTabButton;
 	}
 });
