@@ -58,8 +58,8 @@ var Control_Tab_Group	= Class.create
 		objControlTab.setParentGroup(this);
 		
 		// Add to list of tabs
-		this._aTabOrder.push(strAlias);
 		this._oTabs[strAlias]	= objControlTab;
+		this._aTabOrder.push(strAlias);
 		
 		// Render
 		this._paint();
