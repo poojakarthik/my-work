@@ -71,7 +71,7 @@ var Control_Tab	= Class.create
 		
 		if (this.oControlTabGroup)
 		{
-			this.oTabButton.addEventListener('click', this.oControlTabGroup.switchToTab.bind(this.oControlTabGroup, strAlias), false);
+			this.oTabButton.addEventListener('click', this.oControlTabGroup.switchToTab.bind(this.oControlTabGroup, this), false);
 		}
 	}
 });
