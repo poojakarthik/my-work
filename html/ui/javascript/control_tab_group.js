@@ -15,7 +15,7 @@ var Control_Tab_Group	= Class.create
 	initialize	: function(objDIVContainer, bolEmbedded)
 	{
 		// Parameter defaults 
-		bolEmbedded		= (bolEmbedded || bolEmbedded == undefined || bolEmbedded == null) ? true : false;
+		bolEmbedded			= (bolEmbedded || bolEmbedded == undefined || bolEmbedded == null) ? true : false;
 		this.oSelectedTab	= null;
 		
 		this._aTabOrder		= [];
@@ -134,19 +134,37 @@ var Control_Tab_Group	= Class.create
 		
 		return bSwitched;
 	},
-	
-	showTab	: function(mTab)
+	/*
+	setTabEnabled	: function(mTab, bEnabled)
 	{
 		// Ensure that the Tab is visible and selectable
-		
+		var objControlTab	= this.getTab(mixTab);
+		if (objControlTab)
+		{
+			if (bEnabled)
+			{
+				objControlTab.getButton().show();
+			}
+			else
+			{
+				objControlTab.getButton().hide();
+				
+				// Make sure we switch away from this tab as it's no longer selectable
+				if (this.oSelectedTab === objControlTab)
+				{
+					this.switchToTab(0);
+				}
+			}
+		}
 	},
 	
-	hideTab	: function()
+	isTabEnabled	: function(mTab)
 	{
 		// Ensure that the Tab is invisible and not selectable
-		
+		var objControlTab	= this.getTab(mixTab);
+		return (objControlTab && objControlTab.getButton().visible()) ? true : false;
 	},
-	
+	*/
 	getTab	: function(mixTab)
 	{
 		if (mixTab instanceof Control_Tab)
