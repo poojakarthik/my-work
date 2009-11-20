@@ -197,14 +197,14 @@ function VixenRatePlanAddClass()
 		}
 		else
 		{
-			this.oTabGroup.oControl.showTab('rate_groups');
+			this.oTabGroup.oControl.getTab('rate_groups').getButton().show();
 		}
 	}
 	
 	this.HideRateGroupsTab	= function()
 	{
 		//this.oTabGroup.oControl.removeTab('rate_groups');
-		this.oTabGroup.oControl.hideTab('rate_groups')
+		this.oTabGroup.oControl.getTab('rate_groups').getButton().hide();
 	}
 	
 	//------------------------------------------------------------------------//

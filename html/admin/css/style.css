@@ -1569,6 +1569,9 @@ div.tab-group div.tab
 	-moz-border-radius				: 0.5em 0.5em 0 0;
 	-webkit-border-top-left-radius	: 0.5em;
 	-webkit-border-top-right-radius	: 0.5em;
+	
+	-moz-user-select				: none;
+	-webkit-user-select				: none;
 }
 
 div.tab-group div.tab img.icon
