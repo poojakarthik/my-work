@@ -62,7 +62,7 @@ function VixenRatePlanAddClass()
 		
 		this.oTabGroup.oControl.addTab('plan_details', new Control_Tab('Plan Details', $ID('RatePlanDetailsId'), '../admin/img/template/plan.png'));
 		
-		alert("'RateGroupsDiv' does " + ($ID('RateGroupsDiv') ? '' : 'not ') + 'exist');
+		//alert("'RateGroupsDiv' does " + ($ID('RateGroupsDiv') ? '' : 'not ') + 'exist');
 		//this.oTabGroup.oControl.addTab('rate_groups', new Control_Tab('Rate Groups', $ID('RateGroupsDiv'), '../admin/img/template/plan.png'));
 		this.oTabGroup.oControl.addTab('discounts', new Control_Tab('Discounts', document.createElement('div'), '../admin/img/template/money_dollar.png'));
 		
@@ -191,12 +191,20 @@ function VixenRatePlanAddClass()
 	
 	this.ShowRateGroupsTab	= function()
 	{
-		this.oTabGroup.oControl.addTab('rate_groups', new Control_Tab('Rate Groups', $ID('RateGroupsDiv'), '../admin/img/template/plan.png'));
+		if (!this.oTabGroup.oControl.getTab('rate_groups'))
+		{
+			this.oTabGroup.oControl.addTab('rate_groups', new Control_Tab('Rate Groups', $ID('RateGroupsDiv'), '../admin/img/template/plan.png'));
+		}
+		else
+		{
+			this.oTabGroup.oControl.showTab('rate_groups');
+		}
 	}
 	
 	this.HideRateGroupsTab	= function()
 	{
-		this.oTabGroup.oControl.removeTab('rate_groups');
+		//this.oTabGroup.oControl.removeTab('rate_groups');
+		this.oTabGroup.oControl.hideTab('rate_groups')
 	}
 	
 	//------------------------------------------------------------------------//
