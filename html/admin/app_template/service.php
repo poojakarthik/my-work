@@ -1586,6 +1586,9 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// Insert the new records into the ServiceRateGroup table
 		unset($arrColumns['RatePlan']);
+		unset($arrColumns['contract_scheduled_end_datetime']);
+		unset($arrColumns['contract_effective_end_datetime']);
+		unset($arrColumns['contract_status_id']);
 		$arrColumns['RateGroup'] = NULL;
 		if (!isset($insServiceRateGroup))
 		{
