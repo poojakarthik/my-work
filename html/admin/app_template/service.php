@@ -1562,13 +1562,17 @@ class AppTemplateService extends ApplicationTemplate
 		}
 
 		// Insert the new record into the ServiceRatePlan table
-		$arrColumns = Array(	"Service" => $intService,
-								"RatePlan" => $intPlan,
-								"CreatedBy" => $intEmployeeId,
-								"CreatedOn" => $strCreatedOn,
-								"StartDatetime" => $strStartDatetime,
-								"EndDatetime" => $strEndDatetime,
-								"Active" => ($bolActive)? 1 : 0
+		$intContractTerm	= (int)$arrRatePlan['ContractTerm'];
+		$arrColumns = Array(	"Service"							=> $intService,
+								"RatePlan"							=> $intPlan,
+								"CreatedBy"							=> $intEmployeeId,
+								"CreatedOn"							=> $strCreatedOn,
+								"StartDatetime"						=> $strStartDatetime,
+								"EndDatetime"						=> $strEndDatetime,
+								"Active"							=> ($bolActive)? 1 : 0,
+								'contract_scheduled_end_datetime'	=> ($intContractTerm && $intContractTerm > 0) ? date('Y-m-d H:i:s', strtotime("-1 second", strtotime("+{$intContractTerm} months", strtotime($strStartDatetime)))) : NULL,
+								'contract_effective_end_datetime'	=> null,
+								'contract_status_id'				=> ($intContractTerm && $intContractTerm > 0) ? CONTRACT_STATUS_ACTIVE : NULL
 							);
 		if (!isset($insServiceRatePlan))
 		{
