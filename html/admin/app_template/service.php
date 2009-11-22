@@ -2828,10 +2828,10 @@ class AppTemplateService extends ApplicationTemplate
 	}
 	
 	//------------------------------------------------------------------------//
-	// _ActivateService
+	// _ActivateService DEPRECATED
 	//------------------------------------------------------------------------//
 	/**
-	 * _ActivateService()
+	 * _ActivateService() DEPRECATED
 	 *
 	 * Performs the database modifications required of activating the service
 	 * 
