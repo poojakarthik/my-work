@@ -131,7 +131,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			echo "</div>\n";
 			
 			// Discounts
-			echo "<div id='DiscountsDiv' style='-moz-column-count: 2;'>\n";
+			echo "<div id='DiscountsDiv' style='-moz-column-count: 2; -webkit-column-count: 2;'>\n";
 			//$this->_RenderPlanDiscountDetails();
 			echo "</div>\n";
 	
@@ -606,7 +606,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	
 	private function _RenderPlanDiscountDetails()
 	{
-		echo "<div id='DiscountDefinitions' style='width: 50%;'>\n";
+		echo "<div id='DiscountDefinitions' style='width: 100%;'>\n";
 		
 		echo "<table id='rate_plan_discounts' class='listing-fw3' style='width: 98%; margin: auto;'>\n";
 		
@@ -652,7 +652,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				"	<button style='line-height: 100%;'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/new.png' /><span>Add Discount</span></button></th>" .
 				"</div>\n";
 		
-		echo "</div><div id='DiscountRecordTypes' style='width: 50%;'>\n";
+		echo "</div><div id='DiscountRecordTypes' style='width: 100%;'>\n";
 		
 		echo "<table id='discount_record_types' class='listing-fw3' style='width: 98%'; margin: auto;>\n";
 		
