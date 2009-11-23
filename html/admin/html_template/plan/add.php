@@ -612,7 +612,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		echo "<table id='rate_plan_discounts' class='listing-fw3' style='width: 98%; margin: auto;'>\n";
 		
-		echo "<caption><h2>Discounts</h2></caption>\n";
+		echo "<caption style='text-align: left;'><h2>Discounts</h2></caption>\n";
 		
 		echo	"<thead>\n" .
 				"	<tr>\n" .
@@ -660,7 +660,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		echo "<table id='discount_record_types' class='listing-fw3' style='width: 98%; margin: auto;'>\n";
 		
-		echo "<caption><h2>Record Type Associations</h2></caption>\n";
+		echo "<caption style='text-align: left;'><h2>Record Type Associations</h2></caption>\n";
 		
 		echo	"<thead>\n" .
 				"	<tr>\n" .
