@@ -222,7 +222,7 @@ function VixenRatePlanAddClass()
 			// Discounts
 			if (!this.oTabGroup.oControl.getTab('discounts'))
 			{
-				this.oTabGroup.oControl.addTab('discounts', new Control_Tab('Discounts', document.createElement('div'), '../admin/img/template/money_dollar.png'));
+				this.oTabGroup.oControl.addTab('discounts', new Control_Tab('Discounts', $ID('DiscountsDiv'), '../admin/img/template/money_dollar.png'));
 			}
 			else
 			{
