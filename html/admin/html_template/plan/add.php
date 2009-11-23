@@ -653,7 +653,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "</tbody>\n";
 		echo "</table>\n";
 		echo	"<div style='text-align: right; padding-right: 1%;'>\n" .
-				"	<button style='line-height: 100%;' onclick='Vixen.RatePlanAdd.addDiscount();'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/new.png' /><span>Add Discount</span></button></th>" .
+				"	<button type='button' style='line-height: 100%;' onclick='Vixen.RatePlanAdd.addDiscount();'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/new.png' /><span>Add Discount</span></button></th>" .
 				"</div>\n";
 		
 		echo "</div><div id='DiscountRecordTypes' style='width: 100%;'>\n";
