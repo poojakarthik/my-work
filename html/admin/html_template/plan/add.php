@@ -610,6 +610,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		echo "<div id='DiscountDefinitions' style='width: 100%;'>\n";
 		
+		echo "<h2>Discounts</h2>\n";
+		
 		echo "<table id='rate_plan_discounts' class='listing-fw3' style='width: 98%; margin: auto;'>\n";
 		
 		echo	"<thead>\n" .
@@ -655,6 +657,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				"</div>\n";
 		
 		echo "</div><div id='DiscountRecordTypes' style='width: 100%;'>\n";
+		
+		echo "<h2>Record Type Associations</h2>\n";
 		
 		echo "<table id='discount_record_types' class='listing-fw3' style='width: 98%; margin: auto;'>\n";
 		
