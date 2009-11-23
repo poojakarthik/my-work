@@ -609,7 +609,7 @@ function VixenRatePlanAddClass()
 	this.refreshDiscountDefinitions	= function()
 	{
 		var domTableBody	= $ID('rate_plan_discounts').select('tbody').first();
-		domTableBody.childElements.each(Element.remove, Element);
+		domTableBody.childElements().each(Element.remove, Element);
 		
 		if (this.aDiscounts.length)
 		{
@@ -650,7 +650,7 @@ function VixenRatePlanAddClass()
 			var oCurrentDiscount	= domSelect.options[domSelect.selectedIndex];
 			
 			// Refresh select contents
-			domSelect.childElements.each(Element.remove, Element);
+			domSelect.childElements().each(Element.remove, Element);
 			
 			var domOption		= document.createElement('option');
 			domOption.value		= null;
