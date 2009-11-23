@@ -644,32 +644,32 @@ function VixenRatePlanAddClass()
 	{
 		for (var i = 0, aRows = $ID('discount_record_types').select('tbody tr'), j = aRows.length; i < j; i++)
 		{
+			var domSelect	= aRows[i].select('select').first();
+			
 			// Get currently selected Discount.id
-			// TODO
+			var oCurrentDiscount	= domSelect.options[domSelect.selectedIndex];
 			
 			// Refresh select contents
-			var domSelect	= aRows[i].select('select').first();
 			domSelect.childElements.each(Element.remove, Element);
+			
+			var domOption		= document.createElement('option');
+			domOption.value		= null;
+			domOption.innerHTML	= '[ No Discount ]';
+			domSelect.appendChild(domOption);
+			
 			for (var i = 0, j = this.aDiscounts.length; i < j; i++)
 			{
-				// Create new TR for this Discount
+				// Create new Option for this Discount
 				var domOption		= document.createElement('option');
-				domTR.innerHTML	=	"	<td>".$dboRecordType->Name->Value."</td>\n" .
-									"	<td>" .
-									"		<select style='width: 100%;'>\n" .
-									"			<option value=''>[ No Discount ]</option>\n" .
-									"			{$sComboOptions}\n" .
-									"		</select>\n" .
-									"	</td>\n" .;
-				domTableBody.appendChild(domTR);
+				domOption.value		= this.aDiscounts[i].id;
+				domOption.innerHTML	= this.aDiscounts[i].name;
+				domSelect.appendChild(domOption);
 			}
-			
-			// 
 		}
 	};
 }
 
-// instanciate the objects
+// Instantiate the objects
 if (Vixen.RatePlanAdd == undefined)
 {
 	Vixen.RatePlanAdd = new VixenRatePlanAddClass;
