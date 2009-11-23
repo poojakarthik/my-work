@@ -1059,6 +1059,23 @@ class AppTemplatePlan extends ApplicationTemplate
 			// Find all the Discounts currently used by this RatePlan
 			DBL()->rate_plan_discount->rate_plan_id = $intRatePlanId;
 			DBL()->rate_plan_discount->Load();
+			
+			foreach (DBL()->rate_plan_discount as $dboRatePlanDiscount)
+			{
+				DBL()->discount_record_type->discount_id	= $dboRatePlanDiscount->id;
+				DBL()->discount_record_type->Load();
+				
+				foreach (DBL()->discount_record_type as $dboDiscountRecordType)
+				{
+					foreach (DBL()->RecordType as $dboRecordType)
+					{
+						if ($dboRecordType->Id->Value === $dboDiscountRecordType->record_type_id->Value)
+						{
+							$dboRecordType->discount_id	= $dboDiscountRecordType->discount_id->Value;
+						}
+					}
+				}
+			}
 		}
 		
 		// Render the html template

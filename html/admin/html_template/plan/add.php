@@ -667,20 +667,27 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		echo "<tbody>\n";
 		
-		$sComboOptions	= "<option value=''>[ No Discount ]</option>\n";
-		foreach (DBL()->rate_plan_discount as $dboRatePlanDiscount)
-		{
-			$oDiscount		= Discount::getForId($dboRatePlanDiscount->discount_id);
-			$sComboOptions	.= "<option value='{$oDiscount->id}'>{$oDiscount->name}</option>\n";
-		}
+		$sComboOptions	= "<option value='' selected='selected'>[ No Discount ]</option>\n";
 		
 		if (DBL()->RecordType->RecordCount() > 0)
 		{
 			foreach (DBL()->RecordType as $dboRecordType)
 			{
+				$sComboOptions	= '';
+				foreach (DBL()->rate_plan_discount as $dboRatePlanDiscount)
+				{
+					$oDiscount		= Discount::getForId($dboRatePlanDiscount->discount_id);
+					$sComboOptions	.= "<option value='{$oDiscount->id}' selected='".(($dboRecordType->discount_id === $oDiscount->Id) ? 'selected' : '')."'>{$oDiscount->name}</option>\n";
+				}
+				
 				echo	"<tr>\n" .
 						"	<td>".$dboRecordType->Name->Value."</td>\n" .
-						"	<td></td>\n" .
+						"	<td>" .
+						"		<select>\n" .
+						"			<option value=''>[ No Discount ]</option>\n" .
+						"			{$sComboOptions}\n" .
+						"		</select>\n" .
+						"	</td>\n" .
 						"</tr>\n";
 			}
 		}
