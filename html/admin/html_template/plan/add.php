@@ -654,7 +654,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		echo "</div><div id='DiscountRecordTypes' style='width: 100%;'>\n";
 		
-		echo "<table id='discount_record_types' class='listing-fw3' style='width: 98%'; margin: auto;>\n";
+		echo "<table id='discount_record_types' class='listing-fw3' style='width: 98%; margin: auto;'>\n";
 		
 		echo	"<thead>\n" .
 				"	<tr>\n" .
