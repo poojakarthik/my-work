@@ -621,11 +621,11 @@ function VixenRatePlanAddClass()
 									"<td>"+this.aDiscounts[i].description+"</td>\n" +
 									"<td>" +
 									"	<select style='width: 100%;'>\n" +
-									"		<option selected='".((this.aDiscounts[i].unit_limit) ? '' : 'selected')."'>\$</option>\n" +
-									"		<option selected='".((this.aDiscounts[i].unit_limit) ? 'selected' : '')."'>Units</option>\n" +
+									"		<option selected='"+((this.aDiscounts[i].unit_limit) ? '' : 'selected')+"'>\$</option>\n" +
+									"		<option selected='"+((this.aDiscounts[i].unit_limit) ? 'selected' : '')+"'>Units</option>\n" +
 									"	</select>\n" +
 									"</td>\n" +
-									"<td>".((this.aDiscounts[i].unit_limit) ? this.aDiscounts[i].unit_limit : this.aDiscounts[i].charge_limit)."</td>\n";
+									"<td>"+((this.aDiscounts[i].unit_limit) ? this.aDiscounts[i].unit_limit : this.aDiscounts[i].charge_limit)+"</td>\n";
 				domTableBody.appendChild(domTR);
 			}
 		}
