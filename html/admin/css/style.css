@@ -2178,3 +2178,43 @@ div.reflex-slider-rail-label
 }
 
 /******************************************************************************/
+
+/* Emulates the old Listing Table style from Framework v1 */
+table.listing-fw3
+{
+	border:              solid 1px #C1C1C1;
+}
+
+table.listing-fw3 thead tr th
+{
+	border-bottom:       solid 1px #C1C1C1;
+	
+	background-repeat:   repeat-x;
+	background-image:    url('../img/template/table_first_bg.png');
+	
+	background-color:    #45a0f3;
+	color:               #FFFFFF;
+}
+
+table.listing-fw3 .icon
+{
+	width:               20px;
+}
+
+table.listing-fw3  thead tr th a
+{
+	color:               #FFFFFF;
+	text-decoration:     none;
+}
+
+table.listing-fw3 tbody tr:nth-child(odd) th,
+table.listing-fw3 tbody tr:nth-child(odd) td
+{
+	background-color:    #FFFFFF;
+}
+
+table.listing-fw3 tbody tr:nth-child(even) th,
+table.listing-fw3 tbody tr:nth-child(even) td
+{
+	background-color:    #D5E0F8;
+}

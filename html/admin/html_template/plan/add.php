@@ -608,7 +608,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	{
 		echo "<div id='DiscountDefinitions' style='display: inline-block; width: 50%;'>\n";
 		
-		echo "<table id='rate_plan_discounts'>\n";
+		echo "<table id='rate_plan_discounts' class='listing-fw3'>\n";
 		
 		echo	"<thead>\n" .
 				"	<tr>\n" .
@@ -656,7 +656,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		echo "</div><div id='DiscountRecordTypes' style='display: inline-block; width: 50%;'>\n";
 		
-		echo "<table id='discount_record_types'>\n";
+		echo "<table id='discount_record_types' class='listing-fw3'>\n";
 		
 		echo	"<thead>\n" .
 				"	<tr>\n" .
