@@ -2192,7 +2192,7 @@ table.listing-fw3 thead th
 {
 	border-bottom:       solid 1px #C1C1C1;
 	background-repeat:   repeat-x;
-	background-image:    url('img/template/background.png');
+	background-image:    url('../../admin/img/template/background.png');
 	color:               #FFFFFF;
 	font-size:			 10pt;
 }
@@ -2228,18 +2228,18 @@ table.listing-fw3 thead th.VixenTableSortColumn div.VixenTableSortColumnWrapper
 	background-repeat:   	no-repeat;
 	background-position: 	100% 50%;
 	padding-right: 			10px;
-	background-image:		url('img/template/order_none.png');
+	background-image:		url('../../admin/img/template/order_none.png');
 	cursor:					pointer;
 }
 
 table.listing-fw3 thead th.VixenTableSortColumnAsc div.VixenTableSortColumnWrapper
 {
-	background-image:		url('img/template/order_asc.png');
+	background-image:		url('../../admin/img/template/order_asc.png');
 }
 
 table.listing-fw3 thead th.VixenTableSortColumnDesc div.VixenTableSortColumnWrapper
 {
-	background-image:		url('img/template/order_desc.png');
+	background-image:		url('../../admin/img/template/order_desc.png');
 }
 
 table.listing-fw3 tbody tr.Archived td
