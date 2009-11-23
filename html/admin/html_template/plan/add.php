@@ -608,7 +608,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	{
 		echo "<div id='DiscountDefinitions' style='display: inline-block; width: 50%;'>\n";
 		
-		echo "<table id='rate_plan_discounts' class='listing-fw3'>\n";
+		echo "<table id='rate_plan_discounts' class='listing-fw3' style='width: 98%'; margin: auto;>\n";
 		
 		echo	"<thead>\n" .
 				"	<tr>\n" .
@@ -642,21 +642,21 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		else
 		{
 			echo	"<tr>\n" .
-					"	<td colspan='2'>There are no Record Types associated with this Service Type</td>\n" .
+					"	<td colspan='3'>There are no Discounts defined for this Plan</td>\n" .
 					"</tr>\n";
 		}
 		
 		echo "</tbody>\n";
 		echo	"<tfoot>\n" .
 				"	<tr>\n" .
-				"		<th><button style='line-height: 100%;'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/add.png' /><span>Add Discount</span></button></th>" .
+				"		<th><button style='line-height: 100%;'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/new.png' /><span>Add Discount</span></button></th>" .
 				"	</tr>\n" .
 				"</tfoot>\n";
 		echo "</table>\n";
 		
 		echo "</div><div id='DiscountRecordTypes' style='display: inline-block; width: 50%;'>\n";
 		
-		echo "<table id='discount_record_types' class='listing-fw3'>\n";
+		echo "<table id='discount_record_types' class='listing-fw3' style='width: 98%'; margin: auto;>\n";
 		
 		echo	"<thead>\n" .
 				"	<tr>\n" .
