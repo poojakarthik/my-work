@@ -95,10 +95,19 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			break;
 		case HTML_CONTEXT_RATE_GROUPS:
 			$this->_RenderRateGroups();
+			echo "<script type='text/javascript'>Vixen.RatePlanAdd.setRateGroupTabVisible(true)</script>";
 			break;
 		case HTML_CONTEXT_RATE_GROUPS_EMPTY:
 			// Don't render anything
-			echo "<script type='text/javascript'>Vixen.RatePlanAdd.HideRateGroupsTab()</script>";
+			echo "<script type='text/javascript'>Vixen.RatePlanAdd.setRateGroupTabVisible(false)</script>";
+			break;
+		case HTML_CONTEXT_DISCOUNTS:
+			$this->_RenderPlanDiscountDetails();
+			echo "<script type='text/javascript'>Vixen.RatePlanAdd.setDiscountTabVisible(true)</script>";
+			break;
+		case HTML_CONTEXT_DISCOUNTS_EMPTY:
+			// Don't render anything
+			echo "<script type='text/javascript'>Vixen.RatePlanAdd.setDiscountTabVisible(false)</script>";
 			break;
 		case HTML_CONTEXT_DEFAULT:
 		default:
@@ -120,9 +129,14 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			echo "<div id='RatePlanDetailsId'>\n";
 			$this->_RenderPlanDetails();
 			echo "</div>\n";
+			
+			// Discounts
+			echo "<div id='DiscountsDiv'>\n";
+			//$this->_RenderPlanDiscountDetails();
+			echo "</div>\n";
 	
 			// Stick in the div container for the DeclareRateGroups table
-			echo "<div id='RateGroupsDiv'>Rate Groups Content</div>\n";
+			echo "<div id='RateGroupsDiv'></div>\n";
 			
 			// Create the buttons
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
@@ -590,7 +604,96 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "<script type='text/javascript'>Vixen.RatePlanAdd.ShowRateGroupsTab()</script>";
 	}
 	
-	
+	private function _RenderPlanDiscountDetails()
+	{
+		echo "<div id='DiscountDefinitions' style='display: inline-block; width: 50%;'>\n";
+		
+		echo "<table id='rate_plan_discounts'>\n";
+		
+		echo	"<thead>\n" .
+				"	<tr>\n" .
+				"		<th>Name</th>" .
+				"		<th>Description</th>" .
+				"		<th colspan='2'>Limit</th>" .
+				"	</tr>\n" .
+				"</thead>\n";
+		
+		echo "<tbody>\n";
+		
+		// Available Discounts
+		if (DBL()->rate_plan_discount->RecordCount() > 0)
+		{
+			foreach (DBL()->rate_plan_discount as $dboRatePlanDiscount)
+			{
+				$oDiscount	= Discount::getForId($dboRatePlanDiscount->discount_id->Value);
+				echo	"<tr>\n" .
+						"	<td>{$oDiscount->name}</td>\n" .
+						"	<td>{$oDiscount->description}</td>\n" .
+						"	<td>" .
+						"		<select>\n" .
+						"			<option selected='".(($oDiscount->unit_limit) ? '' : 'selected')."'>\$</option>\n" .
+						"			<option selected='".(($oDiscount->unit_limit) ? 'selected' : '')."'>Units</option>\n" .
+						"		</select>\n" .
+						"	</td>\n" .
+						"	<td>".(($oDiscount->unit_limit) ? $oDiscount->unit_limit : $oDiscount->charge_limit)."</td>\n" .
+						"</tr>\n";
+			}
+		}
+		else
+		{
+			echo	"<tr>\n" .
+					"	<td colspan='2'>There are no Record Types associated with this Service Type</td>\n" .
+					"</tr>\n";
+		}
+		
+		echo "</tbody>\n";
+		echo	"<tfoot>\n" .
+				"	<tr>\n" .
+				"		<th><button style='line-height: 100%;'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/add.png' /><span>Add Discount</span></button></th>" .
+				"	</tr>\n" .
+				"</tfoot>\n";
+		echo "</table>\n";
+		
+		echo "</div><div id='DiscountRecordTypes' style='display: inline-block; width: 50%;'>\n";
+		
+		echo "<table id='discount_record_types'>\n";
+		
+		echo	"<thead>\n" .
+				"	<tr>\n" .
+				"		<th>Record Type</th>" .
+				"		<th>Discount</th>" .
+				"	</tr>\n" .
+				"</thead>\n";
+		
+		echo "<tbody>\n";
+		
+		$sComboOptions	= "<option value=''>[ No Discount ]</option>\n";
+		foreach (DBL()->rate_plan_discount as $dboRatePlanDiscount)
+		{
+			$oDiscount		= Discount::getForId($dboRatePlanDiscount->discount_id);
+			$sComboOptions	.= "<option value='{$oDiscount->id}'>{$oDiscount->name}</option>\n";
+		}
+		
+		if (DBL()->RecordType->RecordCount() > 0)
+		{
+			foreach (DBL()->RecordType as $dboRecordType)
+			{
+				echo	"<tr>\n" .
+						"	<td>".$dboRecordType->Name->Value."</td>\n" .
+						"	<td></td>\n" .
+						"</tr>\n";
+			}
+		}
+		else
+		{
+			echo	"<tr>\n" .
+					"	<td colspan='2'>There are no Record Types associated with this Service Type</td>\n" .
+					"</tr>\n";
+		}
+		
+		echo "</tbody>\n";
+		echo "</table>\n";
+	}
 }
 
 ?>

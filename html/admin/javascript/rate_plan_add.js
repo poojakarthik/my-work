@@ -64,7 +64,7 @@ function VixenRatePlanAddClass()
 		
 		//alert("'RateGroupsDiv' does " + ($ID('RateGroupsDiv') ? '' : 'not ') + 'exist');
 		//this.oTabGroup.oControl.addTab('rate_groups', new Control_Tab('Rate Groups', $ID('RateGroupsDiv'), '../admin/img/template/plan.png'));
-		this.oTabGroup.oControl.addTab('discounts', new Control_Tab('Discounts', document.createElement('div'), '../admin/img/template/money_dollar.png'));
+		//this.oTabGroup.oControl.addTab('discounts', new Control_Tab('Discounts', document.createElement('div'), '../admin/img/template/money_dollar.png'));
 		
 		this.oTabGroup.oControl.switchToTab('plan_details');
 	}
@@ -186,25 +186,56 @@ function VixenRatePlanAddClass()
 			objObjects.BaseRatePlan.Id = elmBaseRatePlanId.value;
 		}
 		
-		Vixen.Ajax.CallAppTemplate('Plan', 'GetRateGroupsForm', objObjects);
+		//Vixen.Ajax.CallAppTemplate('Plan', 'GetRateGroupsForm', objObjects);
+		Vixen.Ajax.CallAppTemplate('Plan', 'GetRecordTypesForms', objObjects);
 	}
 	
-	this.ShowRateGroupsTab	= function()
+	this.setRateGroupTabVisible	= function(bVisible)
 	{
-		if (!this.oTabGroup.oControl.getTab('rate_groups'))
+		if (bVisible)
 		{
-			this.oTabGroup.oControl.addTab('rate_groups', new Control_Tab('Rate Groups', $ID('RateGroupsDiv'), '../admin/img/template/plan.png'));
+			// SHOW
+			// Rate Groups
+			if (!this.oTabGroup.oControl.getTab('rate_groups'))
+			{
+				this.oTabGroup.oControl.addTab('rate_groups', new Control_Tab('Rate Groups', $ID('RateGroupsDiv'), '../admin/img/template/plan.png'));
+			}
+			else
+			{
+				this.oTabGroup.oControl.getTab('rate_groups').getButton().show();
+			}
 		}
 		else
 		{
-			this.oTabGroup.oControl.getTab('rate_groups').getButton().show();
+			// HIDE
+			// Rate Groups
+			//this.oTabGroup.oControl.removeTab('rate_groups');
+			this.oTabGroup.oControl.getTab('rate_groups').getButton().hide();
 		}
 	}
 	
-	this.HideRateGroupsTab	= function()
+	this.setDiscountTabVisible	= function(bVisible)
 	{
-		//this.oTabGroup.oControl.removeTab('rate_groups');
-		this.oTabGroup.oControl.getTab('rate_groups').getButton().hide();
+		if (bVisible)
+		{
+			// SHOW
+			// Discounts
+			if (!this.oTabGroup.oControl.getTab('discounts'))
+			{
+				this.oTabGroup.oControl.addTab('discounts', new Control_Tab('Discounts', document.createElement('div'), '../admin/img/template/money_dollar.png'));
+			}
+			else
+			{
+				this.oTabGroup.oControl.getTab('discounts').getButton().show();
+			}
+		}
+		else
+		{
+			// HIDE
+			// Discounts
+			//this.oTabGroup.oControl.removeTab('discounts');
+			this.oTabGroup.oControl.getTab('discounts').getButton().hide();
+		}
 	}
 	
 	//------------------------------------------------------------------------//

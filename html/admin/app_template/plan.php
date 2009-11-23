@@ -1018,6 +1018,76 @@ class AppTemplatePlan extends ApplicationTemplate
 		return TRUE;
 	}
 	
+	/**
+	 * GetDiscountsForm()
+	 * 
+	 * This will only work with the "Add Rate Plan" webpage as it assumes specific DBObjects have been defined within DBO()
+	 * This function expects DBO()->ServiceType->Id to be set, as it only displays the RateGroups for the RecordTypes belonging to the ServiceType
+	 * If (DBO()->RatePlan->Id is set XOR DBO()->BaseRatePlan->Id is set) then it will flag which RateGroups are currently used by the RatePlan
+	 *
+	 * @return		bool			TRUE if successful
+	 * @method
+	 *
+	 */
+	function GetDiscountsForm()
+	{
+		// We do not need to authorise the user as this only draws a subsection of one of the forms
 	
+		if (!DBO()->RatePlan->ServiceType->Value)
+		{
+			// A service type was not actually chosen 
+			Ajax()->RenderHtmlTemplate("PlanAdd", HTML_CONTEXT_DISCOUNTS_EMPTY, "DiscountsDiv");
+			return TRUE;
+		}
+	
+		// Find all RecordTypes belonging to this ServiceType
+		DBL()->RecordType->ServiceType = DBO()->RatePlan->ServiceType->Value;
+		DBL()->RecordType->OrderBy("Name");
+		DBL()->RecordType->Load();
+		
+		// Find all Rate Groups for this ServiceType that aren't archived (archived can equal, 0 (not archived), 1 (archived) or 2 (not yet committed/draft))
+		$strWhere = "ServiceType = <ServiceType> AND Archived != " . RATE_STATUS_ARCHIVED;
+		DBL()->rate_plan_discount->Where->Set($strWhere, Array('ServiceType' => DBO()->RatePlan->ServiceType->Value));
+		DBL()->rate_plan_discount->OrderBy("Description");
+		DBL()->rate_plan_discount->Load();
+		
+		// If a RatePlan.Id xor BaseRatePlan.Id has been specified then we want to mark which of these rate groups belong to it
+		if (DBO()->RatePlan->Id->Value)
+		{
+			$intRatePlanId = DBO()->RatePlan->Id->Value;
+		}
+		elseif (DBO()->BaseRatePlan->Id->Value)
+		{
+			$intRatePlanId = DBO()->BaseRatePlan->Id->Value;
+		}
+		if (IsSet($intRatePlanId))
+		{
+			// Find all the Discounts currently used by this RatePlan
+			DBL()->rate_plan_discount->rate_plan_id = $intRatePlanId;
+			DBL()->rate_plan_discount->Load();
+		}
+		
+		// Render the html template
+		Ajax()->RenderHtmlTemplate("PlanAdd", HTML_CONTEXT_DISCOUNTS, "DiscountsDiv");
+		
+		// Set the focus to the Rate Group combobox of the first RecordType to display
+		/*  This is not done anymore and can be removed
+		if (DBL()->RecordType->RecordCount() > 0)
+		{
+			DBL()->RecordType->rewind();
+			$dboFirstRecordType = DBL()->RecordType->current();
+			$strElement = "RateGroup" . $dboFirstRecordType->Id->Value . ".RateGroupId";
+			Ajax()->AddCommand("SetFocus", $strElement);
+		}
+		*/
+		return TRUE;
+	}
+	
+	function GetRecordTypesForms()
+	{
+		$this->GetRateGroupsForm();
+		$this->GetDiscountsForm();
+		return true;
+	}
 }
 ?>
