@@ -441,6 +441,9 @@ class Ticketing_Service
 		
 		$strXML = preg_replace($out, $in, $strXML);
 		
+		// Remove any remaining decimal entity codes with nothing
+		$strXML	= preg_replace("/\&\#\d+\;/", "", $strXML);
+		
 		return $strXML;
 	}
 
