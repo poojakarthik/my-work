@@ -2185,7 +2185,14 @@ div.reflex-slider-rail-label
 */
 table.listing-fw3
 {
-	border:              solid 1px #C1C1C1;
+	border			: solid 1px #C1C1C1;
+	border-spacing	: 0;
+}
+
+table.listing-fw3 td,
+table.listing-fw3 th
+{
+	padding	: 3px;
 }
 
 table.listing-fw3 thead th
