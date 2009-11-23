@@ -573,6 +573,100 @@ function VixenRatePlanAddClass()
 		// Execute AppTemplatePlan->Add() and make sure all the input elements of the form are sent
 		Vixen.Ajax.SendForm("VixenForm_AddPlan", "Commit", "Plan", "Add");
 	}
+	
+	this.aDiscounts		= [];
+	this.iDiscountUID	= 0;
+	
+	this.addDiscount	= function()
+	{
+		this.iDiscountUID--;
+		var oDiscount	=	{
+								id				: this.iDiscountUID,
+								name			: '',
+								description		: '',
+								charge_limit	: 0.00,
+								unit_limit		: 0
+							};
+		this.aDiscounts.push(oDiscount);
+		
+		this.refreshDiscountDefinitions();
+	};
+	
+	this.removeDiscount	= function(iDiscountId)
+	{
+		// Remove all instances of this Id
+		for (var i = 0, j = this.aDiscounts.length; i < j; i++)
+		{
+			if (iDiscountId === this.aDiscounts[i].id)
+			{
+				this.aDiscounts.splice(i, 1);
+			}
+		}
+		
+		this.refreshDiscountDefinitions();
+	};
+	
+	this.refreshDiscountDefinitions	= function()
+	{
+		var domTableBody	= $ID('rate_plan_discounts').select('tbody').first();
+		domTableBody.childElements.each(Element.remove, Element);
+		
+		if (this.aDiscounts.length)
+		{
+			for (var i = 0, j = this.aDiscounts.length; i < j; i++)
+			{
+				// Create new TR for this Discount
+				var domTR		= document.createElement('tr');
+				domTR.innerHTML	=	"<td>"+this.aDiscounts[i].name+"</td>\n" +
+									"<td>"+this.aDiscounts[i].description+"</td>\n" +
+									"<td>" +
+									"	<select style='width: 100%;'>\n" +
+									"		<option selected='".((this.aDiscounts[i].unit_limit) ? '' : 'selected')."'>\$</option>\n" +
+									"		<option selected='".((this.aDiscounts[i].unit_limit) ? 'selected' : '')."'>Units</option>\n" +
+									"	</select>\n" +
+									"</td>\n" +
+									"<td>".((this.aDiscounts[i].unit_limit) ? this.aDiscounts[i].unit_limit : this.aDiscounts[i].charge_limit)."</td>\n";
+				domTableBody.appendChild(domTR);
+			}
+		}
+		else
+		{
+			// No Discounts
+			var domTR		= document.createElement('tr');
+			domTR.innerHTML	=	"<td colspan='4'>There are no Discounts defined for this Plan</td>";
+			domTableBody.appendChild(domTR);
+		}
+		
+		this.refreshDiscountCombos();
+	};
+	
+	this.refreshDiscountCombos	= function()
+	{
+		for (var i = 0, aRows = $ID('discount_record_types').select('tbody tr'), j = aRows.length; i < j; i++)
+		{
+			// Get currently selected Discount.id
+			// TODO
+			
+			// Refresh select contents
+			var domSelect	= aRows[i].select('select').first();
+			domSelect.childElements.each(Element.remove, Element);
+			for (var i = 0, j = this.aDiscounts.length; i < j; i++)
+			{
+				// Create new TR for this Discount
+				var domOption		= document.createElement('option');
+				domTR.innerHTML	=	"	<td>".$dboRecordType->Name->Value."</td>\n" .
+									"	<td>" .
+									"		<select style='width: 100%;'>\n" .
+									"			<option value=''>[ No Discount ]</option>\n" .
+									"			{$sComboOptions}\n" .
+									"		</select>\n" .
+									"	</td>\n" .;
+				domTableBody.appendChild(domTR);
+			}
+			
+			// 
+		}
+	};
 }
 
 // instanciate the objects
