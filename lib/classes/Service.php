@@ -234,9 +234,9 @@ class Service extends ORM
 		$objServiceRatePlan->Active								= $intActive;
 		
 		$intContractTerm										= (int)$objNewRatePlan->ContractTerm;
-		$objServiceRatePlan->contract_scheduled_end_datetime	= ($intContractTerm > 0) ? date('Y-m-d H:i:s', strtotime("-1 second", strtotime("+{$intContractTerm} months", $intStartDatetime))) : NULL;
+		$objServiceRatePlan->contract_scheduled_end_datetime	= ($intContractTerm && $intContractTerm > 0) ? date('Y-m-d H:i:s', strtotime("-1 second", strtotime("+{$intContractTerm} months", $intStartDatetime))) : NULL;
 		$objServiceRatePlan->contract_effective_end_datetime	= NULL;
-		$objServiceRatePlan->contract_status_id					= ($intContractTerm > 0) ? CONTRACT_STATUS_ACTIVE : NULL;
+		$objServiceRatePlan->contract_status_id					= ($intContractTerm && $intContractTerm > 0) ? CONTRACT_STATUS_ACTIVE : NULL;
 		
 		$objServiceRatePlan->save();
 		
