@@ -131,7 +131,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			echo "</div>\n";
 			
 			// Discounts
-			echo "<div id='DiscountsDiv' style='-moz-column-count: 2; -webkit-column-count: 2;'>\n";
+			echo "<div id='DiscountsDiv' style='-moz-column-count: 2; -webkit-column-count: 2;'>&nbsp;\n";
 			//$this->_RenderPlanDiscountDetails();
 			echo "</div>\n";
 	
