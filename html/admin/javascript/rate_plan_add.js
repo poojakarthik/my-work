@@ -617,6 +617,7 @@ function VixenRatePlanAddClass()
 			{
 				// Create new TR for this Discount
 				var domTR		= document.createElement('tr');
+				domTableBody.appendChild(domTR);
 				domTR.innerHTML	=	"<td>"+this.aDiscounts[i].name+"</td>\n" +
 									"<td>"+this.aDiscounts[i].description+"</td>\n" +
 									"<td>" +
@@ -626,7 +627,6 @@ function VixenRatePlanAddClass()
 									"	</select>\n" +
 									"</td>\n" +
 									"<td>"+((this.aDiscounts[i].unit_limit) ? this.aDiscounts[i].unit_limit : this.aDiscounts[i].charge_limit)+"</td>\n";
-				domTableBody.appendChild(domTR);
 			}
 		}
 		else
