@@ -131,7 +131,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			echo "</div>\n";
 			
 			// Discounts
-			echo "<div id='DiscountsDiv'>\n";
+			echo "<div id='DiscountsDiv' style='-moz-column-count: 2;'>\n";
 			//$this->_RenderPlanDiscountDetails();
 			echo "</div>\n";
 	
@@ -606,15 +606,15 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	
 	private function _RenderPlanDiscountDetails()
 	{
-		echo "<div id='DiscountDefinitions' style='display: inline-block; width: 50%;'>\n";
+		echo "<div id='DiscountDefinitions' style='width: 50%;'>\n";
 		
 		echo "<table id='rate_plan_discounts' class='listing-fw3' style='width: 98%'; margin: auto;>\n";
 		
 		echo	"<thead>\n" .
 				"	<tr>\n" .
-				"		<th>Name</th>" .
-				"		<th>Description</th>" .
-				"		<th colspan='2'>Limit</th>" .
+				"		<th style='text-align: left; max-width: 40%; min-width: 40%;'>Name</th>" .
+				"		<th style='text-align: left; max-width: 40%; min-width: 40%;'>Description</th>" .
+				"		<th style='text-align: right;' colspan='2'>Limit</th>" .
 				"	</tr>\n" .
 				"</thead>\n";
 		
@@ -630,7 +630,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 						"	<td>{$oDiscount->name}</td>\n" .
 						"	<td>{$oDiscount->description}</td>\n" .
 						"	<td>" .
-						"		<select>\n" .
+						"		<select style='width: 100%;'>\n" .
 						"			<option selected='".(($oDiscount->unit_limit) ? '' : 'selected')."'>\$</option>\n" .
 						"			<option selected='".(($oDiscount->unit_limit) ? 'selected' : '')."'>Units</option>\n" .
 						"		</select>\n" .
@@ -647,21 +647,19 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		}
 		
 		echo "</tbody>\n";
-		echo	"<tfoot>\n" .
-				"	<tr>\n" .
-				"		<th><button style='line-height: 100%;'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/new.png' /><span>Add Discount</span></button></th>" .
-				"	</tr>\n" .
-				"</tfoot>\n";
 		echo "</table>\n";
+		echo	"<div>\n" .
+				"	<button style='line-height: 100%; text-align: right;'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/new.png' /><span>Add Discount</span></button></th>" .
+				"</div>\n";
 		
-		echo "</div><div id='DiscountRecordTypes' style='display: inline-block; width: 50%;'>\n";
+		echo "</div><div id='DiscountRecordTypes' style='width: 50%;'>\n";
 		
 		echo "<table id='discount_record_types' class='listing-fw3' style='width: 98%'; margin: auto;>\n";
 		
 		echo	"<thead>\n" .
 				"	<tr>\n" .
-				"		<th>Record Type</th>" .
-				"		<th>Discount</th>" .
+				"		<th style='text-align: left; max-width: 60%; min-width: 60%;'>Record Type</th>" .
+				"		<th style='text-align: left;'>Discount</th>" .
 				"	</tr>\n" .
 				"</thead>\n";
 		
@@ -683,7 +681,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				echo	"<tr>\n" .
 						"	<td>".$dboRecordType->Name->Value."</td>\n" .
 						"	<td>" .
-						"		<select>\n" .
+						"		<select style='width: 100%;'>\n" .
 						"			<option value=''>[ No Discount ]</option>\n" .
 						"			{$sComboOptions}\n" .
 						"		</select>\n" .
