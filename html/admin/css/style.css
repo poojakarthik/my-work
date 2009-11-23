@@ -2179,21 +2179,22 @@ div.reflex-slider-rail-label
 
 /******************************************************************************/
 
-/* Emulates the old Listing Table style from Framework v1 */
+/*
+	Emulates the old Listing Table style from Framework v2 
+	This is only so that new tables on old pages don't break style
+*/
 table.listing-fw3
 {
 	border:              solid 1px #C1C1C1;
 }
 
-table.listing-fw3 thead tr th
+table.listing-fw3 thead th
 {
 	border-bottom:       solid 1px #C1C1C1;
-	
 	background-repeat:   repeat-x;
-	background-image:    url('../img/template/table_first_bg.png');
-	
-	background-color:    #45a0f3;
+	background-image:    url('img/template/background.png');
 	color:               #FFFFFF;
+	font-size:			 10pt;
 }
 
 table.listing-fw3 .icon
@@ -2201,7 +2202,7 @@ table.listing-fw3 .icon
 	width:               20px;
 }
 
-table.listing-fw3  thead tr th a
+table.listing-fw3 thead th a
 {
 	color:               #FFFFFF;
 	text-decoration:     none;
@@ -2211,10 +2212,60 @@ table.listing-fw3 tbody tr:nth-child(odd) th,
 table.listing-fw3 tbody tr:nth-child(odd) td
 {
 	background-color:    #FFFFFF;
+	vertical-align:			top;
 }
 
 table.listing-fw3 tbody tr:nth-child(even) th,
 table.listing-fw3 tbody tr:nth-child(even) td
 {
-	background-color:    #D5E0F8;
+	background-color:    #ddd;
+	vertical-align:			top;		
+}
+
+table.listing-fw3 thead th.VixenTableSortColumn div.VixenTableSortColumnWrapper 
+{
+	display: 				inline;
+	background-repeat:   	no-repeat;
+	background-position: 	100% 50%;
+	padding-right: 			10px;
+	background-image:		url('img/template/order_none.png');
+	cursor:					pointer;
+}
+
+table.listing-fw3 thead th.VixenTableSortColumnAsc div.VixenTableSortColumnWrapper
+{
+	background-image:		url('img/template/order_asc.png');
+}
+
+table.listing-fw3 thead th.VixenTableSortColumnDesc div.VixenTableSortColumnWrapper
+{
+	background-image:		url('img/template/order_desc.png');
+}
+
+table.listing-fw3 tbody tr.Archived td
+{
+	background-color:    #C0C0C0;
+	vertical-align:			top;		
+}
+
+table.listing-fw3 tbody tr.Selected th,
+table.listing-fw3 tbody tr.Selected td
+{
+	background-color:	#99FF33;
+	vertical-align:		top;		
+}
+
+table.listing-fw3 tbody tr.PrimarySelected th,
+table.listing-fw3 tbody tr.PrimarySelected td
+{
+	background-color:	#bcd;
+	vertical-align:		top;
+}
+
+
+table.listing-fw3 tbody tr.Hover th,
+table.listing-fw3 tbody tr.Hover td
+{
+	background-color:    #FFFFAA;
+	vertical-align:			top;		
 }
