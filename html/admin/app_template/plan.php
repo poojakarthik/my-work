@@ -1045,12 +1045,6 @@ class AppTemplatePlan extends ApplicationTemplate
 		DBL()->RecordType->OrderBy("Name");
 		DBL()->RecordType->Load();
 		
-		// Find all Rate Groups for this ServiceType that aren't archived (archived can equal, 0 (not archived), 1 (archived) or 2 (not yet committed/draft))
-		$strWhere = "ServiceType = <ServiceType> AND Archived != " . RATE_STATUS_ARCHIVED;
-		DBL()->rate_plan_discount->Where->Set($strWhere, Array('ServiceType' => DBO()->RatePlan->ServiceType->Value));
-		DBL()->rate_plan_discount->OrderBy("Description");
-		DBL()->rate_plan_discount->Load();
-		
 		// If a RatePlan.Id xor BaseRatePlan.Id has been specified then we want to mark which of these rate groups belong to it
 		if (DBO()->RatePlan->Id->Value)
 		{
