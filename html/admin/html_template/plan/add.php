@@ -642,14 +642,14 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		else
 		{
 			echo	"<tr>\n" .
-					"	<td colspan='3'>There are no Discounts defined for this Plan</td>\n" .
+					"	<td colspan='4'>There are no Discounts defined for this Plan</td>\n" .
 					"</tr>\n";
 		}
 		
 		echo "</tbody>\n";
 		echo "</table>\n";
-		echo	"<div>\n" .
-				"	<button style='line-height: 100%; text-align: right;'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/new.png' /><span>Add Discount</span></button></th>" .
+		echo	"<div style='text-align: right;'>\n" .
+				"	<button style='line-height: 100%;'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/new.png' /><span>Add Discount</span></button></th>" .
 				"</div>\n";
 		
 		echo "</div><div id='DiscountRecordTypes' style='width: 50%;'>\n";
