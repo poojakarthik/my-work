@@ -606,9 +606,9 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	
 	private function _RenderPlanDiscountDetails()
 	{
-		echo "<div style='-moz-column-count: 2; -webkit-column-count: 2;'>\n";
+		echo "<div>\n";
 		
-		echo "<div id='DiscountDefinitions' style='width: 100%;'>\n";
+		echo "<div id='DiscountDefinitions' style='display: inline-block; vertical-align: top; width: 50%;'>\n";
 		
 		echo "<table id='rate_plan_discounts' class='listing-fw3' style='width: 98%; margin: auto;'>\n";
 		
@@ -656,7 +656,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				"	<button type='button' style='line-height: 100%;' onclick='Vixen.RatePlanAdd.addDiscount();'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/new.png' /><span>Add Discount</span></button></th>" .
 				"</div>\n";
 		
-		echo "</div><div id='DiscountRecordTypes' style='width: 100%;'>\n";
+		echo "</div><div id='DiscountRecordTypes' style='display: inline-block; vertical-align: top; width: 50%;'>\n";
 		
 		echo "<table id='discount_record_types' class='listing-fw3' style='width: 98%; margin: auto;'>\n";
 		
