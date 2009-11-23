@@ -493,6 +493,9 @@ function VixenAjaxClass()
 						elmNewContainer.setAttribute('Id', id);
 						elmNewContainer.innerHTML = strReply;
 						
+						// Also copy across any styling
+						elmNewContainer.style	= elmOldContainer.style;
+						
 						// Replace the old div with the new one
 						elmOldContainer.parentNode.replaceChild(elmNewContainer, elmOldContainer);
 						break;
