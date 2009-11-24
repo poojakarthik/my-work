@@ -634,15 +634,15 @@ function VixenRatePlanAddClass()
 				else
 				{
 					// Update the label
-					aSelectOptions[i].innerHTML	= this.aDiscounts[i].name;
+					aSelectOptions[i].innerHTML	= oDiscount.name;
 				}
 			}
 			else if (oDiscount)
 			{
 				// Option doesn't exist -- create a new Option
 				var domOption		= document.createElement('option');
-				domOption.value		= this.aDiscounts[i].id;
-				domOption.innerHTML	= this.aDiscounts[i].name;
+				domOption.value		= oDiscount.id;
+				domOption.innerHTML	= oDiscount.name;
 				aSelects[i].appendChild(domOption);
 			}
 		}
