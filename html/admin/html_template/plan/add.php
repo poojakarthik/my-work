@@ -616,6 +616,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		echo	"<thead>\n" .
 				"	<tr>\n" .
+				"		<th>&nbsp;</th>" .
 				"		<th style='text-align: left; max-width: 40%; min-width: 40%;'>Name</th>" .
 				"		<th style='text-align: left; max-width: 40%; min-width: 40%;'>Description</th>" .
 				"		<th style='text-align: left;' colspan='2'>Limit</th>" .
