@@ -682,11 +682,11 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				foreach (DBL()->rate_plan_discount as $dboRatePlanDiscount)
 				{
 					$oDiscount		= Discount::getForId($dboRatePlanDiscount->discount_id);
-					$sComboOptions	.= "<option value='{$oDiscount->id}' selected='".(($dboRecordType->discount_id === $oDiscount->Id) ? 'selected' : '')."'>{$oDiscount->name}</option>\n";
+					$sComboOptions	.= "<option value='{$oDiscount->id}' ".(($dboRecordType->discount_id === $oDiscount->Id) ? "selected='selected'" : '').">{$oDiscount->name}</option>\n";
 				}
 				
 				echo	"<tr>\n" .
-						"	<td>".$dboRecordType->Name->Value."</td>\n" .
+						"	<td>".$dboRecordType->Description->Value."</td>\n" .
 						"	<td>" .
 						"		<select style='width: 100%;'>\n" .
 						"			<option value=''>[ No Discount ]</option>\n" .
