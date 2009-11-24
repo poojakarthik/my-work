@@ -6,7 +6,7 @@
  *
  * @class	Discount
  */
-class ORM_Cached_Example extends ORM_Cached
+class Discount extends ORM_Cached
 {
 	protected 			$_strTableName			= "discount";
 	protected static	$_strStaticTableName	= "discount";
