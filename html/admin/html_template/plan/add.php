@@ -626,30 +626,21 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "<tbody>\n";
 		
 		// Available Discounts
-		if (DBL()->rate_plan_discount->RecordCount() > 0)
+		$sDiscountInitJS	= '';
+		foreach (DBL()->rate_plan_discount as $dboRatePlanDiscount)
 		{
-			foreach (DBL()->rate_plan_discount as $dboRatePlanDiscount)
-			{
-				$oDiscount	= Discount::getForId($dboRatePlanDiscount->discount_id->Value);
-				echo	"<tr>\n" .
-						"	<td>{$oDiscount->name}</td>\n" .
-						"	<td>{$oDiscount->description}</td>\n" .
-						"	<td>" .
-						"		<select style='width: 100%;'>\n" .
-						"			<option selected='".(($oDiscount->unit_limit) ? '' : 'selected')."'>\$</option>\n" .
-						"			<option selected='".(($oDiscount->unit_limit) ? 'selected' : '')."'>Units</option>\n" .
-						"		</select>\n" .
-						"	</td>\n" .
-						"	<td>".(($oDiscount->unit_limit) ? $oDiscount->unit_limit : $oDiscount->charge_limit)."</td>\n" .
-						"</tr>\n";
-			}
+			$oDiscount			= Discount::getForId($dboRatePlanDiscount->discount_id->Value);
+			$sDiscountInitJS	.=	"Vixen.RatePlanAdd.addDiscount(	{
+																		id				: {$oDiscount->id},
+																		name			: '".addslashes($oDiscount->name)."',
+																		description		: '".addslashes($oDiscount->description)."',
+																		charge_limit	: {$oDiscount->charge_limit},
+																		unit_limit		: {$oDiscount->unit_limit}
+																	});\n";
 		}
-		else
-		{
-			echo	"<tr>\n" .
-					"	<td colspan='5'>There are no Discounts defined for this Plan</td>\n" .
-					"</tr>\n";
-		}
+		echo	"<tr>\n" .
+				"	<td colspan='5'>There are no Discounts defined for this Plan</td>\n" .
+				"</tr>\n";
 		
 		echo "</tbody>\n";
 		echo "</table>\n";
@@ -657,6 +648,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				"	<button type='button' style='line-height: 100%;' onclick='Vixen.RatePlanAdd.addDiscount();'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/new.png' /><span>Add Discount</span></button></th>" .
 				"</div>\n";
 		
+		// Record Type Associations
 		echo "</div><div id='DiscountRecordTypes' style='display: inline-block; vertical-align: top; width: 50%;'>\n";
 		
 		echo "<table id='discount_record_types' class='listing-fw3' style='width: 98%; margin: auto;'>\n";
@@ -674,23 +666,25 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		$sComboOptions	= "<option value='' selected='selected'>[ No Discount ]</option>\n";
 		
+		$sRecordTypeInitJS	= '';
 		if (DBL()->RecordType->RecordCount() > 0)
 		{
+			$iRecordTypeCount	= 0;
 			foreach (DBL()->RecordType as $dboRecordType)
 			{
-				$sComboOptions	= '';
+				$iRecordTypeCount++;
 				foreach (DBL()->rate_plan_discount as $dboRatePlanDiscount)
 				{
-					$oDiscount		= Discount::getForId($dboRatePlanDiscount->discount_id);
-					$sComboOptions	.= "<option value='{$oDiscount->id}' ".(($dboRecordType->discount_id === $oDiscount->Id) ? "selected='selected'" : '').">{$oDiscount->name}</option>\n";
+					// Set as default selected Discount
+					$oDiscount			= Discount::getForId($dboRatePlanDiscount->discount_id);
+					$sRecordTypeInitJS	=	"\$ID('discount_record_types').select('tbody tr[value] select option[value={$dboRatePlanDiscount->discount_id}]').first().selected	= true;\n";
 				}
 				
-				echo	"<tr>\n" .
+				echo	"<tr value='{$dboRecordType->Id->Value}'>\n" .
 						"	<td>".$dboRecordType->Description->Value."</td>\n" .
 						"	<td>" .
-						"		<select style='width: 100%;'>\n" .
+						"		<select id='RecordType_{$dboRecordType->Id->Value}.discount_id' style='width: 100%;'>\n" .
 						"			<option value=''>[ No Discount ]</option>\n" .
-						"			{$sComboOptions}\n" .
 						"		</select>\n" .
 						"	</td>\n" .
 						"</tr>\n";
@@ -708,6 +702,10 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		
 		echo "</div>";
 		echo "</div>";
+		
+		// Init JS
+		echo "<script type='text/javascript'>{$sRecordTypeInitJS}</script>\n";
+		echo "<script type='text/javascript'>{$sDiscountInitJS}</script>\n";
 	}
 }
 

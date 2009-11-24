@@ -577,18 +577,20 @@ function VixenRatePlanAddClass()
 	this.aDiscounts		= [];
 	this.iDiscountUID	= 0;
 	
-	this.addDiscount	= function()
+	this.addDiscount	= function(oDiscount)
 	{
 		this.iDiscountUID--;
-		var oDiscount	=	{
-								id				: this.iDiscountUID,
-								name			: '',
-								description		: '',
-								charge_limit	: 0.00,
-								unit_limit		: 0
-							};
+		
+		oDiscount	= (typeof oDiscount == 'object') ? oDiscount	: {};
+		
+		oDiscount.id			= (oDiscount.id)			? oDiscount.id				: this.iDiscountUID;
+		oDiscount.name			= (oDiscount.name)			? oDiscount.name			: '';
+		oDiscount.description	= (oDiscount.description)	? oDiscount.description		: '';
+		oDiscount.charge_limit	= (oDiscount.charge_limit)	? oDiscount.charge_limit	: null;
+		oDiscount.unit_limit	= (oDiscount.unit_limit)	? oDiscount.unit_limit		: null;
+		
 		this.aDiscounts.push(oDiscount);
-
+		
 		this._paintDiscount(oDiscount.id);
 	};
 	
@@ -677,12 +679,15 @@ function VixenRatePlanAddClass()
 			var domTR		= document.createElement('tr');
 			domTableBody.appendChild(domTR);
 			domTR.setAttribute('value', iDiscountId);
-			domTR.innerHTML	=	"<td><input type='hidden' value='"+iDiscountId+"' /><img src='../admin/img/template/delete.png' onclick='Vixen.RatePlanAdd.removeDiscount("+iDiscountId+")' alt='Delete' title='Delete Discount' /></td>" +
-								"<td><input type='text' style='width: 100%;' /></td>\n" +
-								"<td><input type='text' style='width: 100%;' /></td>\n" +
-								"<td><input type='text' style='width: 100%;' /></td>\n" +
+			domTR.innerHTML	=	"<td>\n" +
+								"	<input id='discount_"+iDiscountId+".id' name='discount_"+iDiscountId+".id' type='hidden' value='"+iDiscountId+"' />\n" +
+								"	<img src='../admin/img/template/delete.png' onclick='Vixen.RatePlanAdd.removeDiscount("+iDiscountId+")' alt='Delete' title='Delete Discount' />\n" +
+								"</td>\n" +
+								"<td><input id='discount_"+iDiscountId+".name' name='discount_"+iDiscountId+".name' type='text' style='width: 100%;' /></td>\n" +
+								"<td><input id='discount_"+iDiscountId+".description' name='discount_"+iDiscountId+".description' type='text' style='width: 100%;' /></td>\n" +
+								"<td><input id='discount_"+iDiscountId+".limit' name='discount_"+iDiscountId+".limit' type='text' style='width: 100%;' /></td>\n" +
 								"<td style='min-width: 4em;'>" +
-								"	<select style='width: 100%;'>\n" +
+								"	<select id='discount_"+iDiscountId+".limit_type' name='discount_"+iDiscountId+".limit_type' style='width: 100%;'>\n" +
 								"		<option value='CHARGE' "+((oDiscount.unit_limit > 0) ? '' : "selected='selected'")+">\$</option>\n" +
 								"		<option value='UNITS' "+((oDiscount.unit_limit > 0) ? "selected='selected'" : '')+">Units</option>\n" +
 								"	</select>\n" +
