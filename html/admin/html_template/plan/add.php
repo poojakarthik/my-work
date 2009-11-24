@@ -196,7 +196,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	<div class='DefaultLabel'>&nbsp;&nbsp;Plan Charge (\$):</div>
 </div>";
 		
-		// Usage Start (ChargeCap)
+		// Usage Start (ChargeCap) (DEPRECATED)
+		/*
 		$fltUsageStart		= DBO()->RatePlan->ChargeCap->Value;
 		$strUsageStartClass	= DBO()->RatePlan->ChargeCap->IsInvalid() ? 'DefaultInvalidInputText' : 'DefaultInputText';
 		echo "
@@ -204,8 +205,10 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	<input type='text' id='RatePlan.ChargeCap' name='RatePlan.ChargeCap' class='{$strUsageStartClass}' value='{$fltUsageStart}'/>
 	<div class='DefaultLabel'>&nbsp;&nbsp;Usage Start (\$):</div>
 </div>";
+		*/
 		
-		// Usage Limit (UsageCap)
+		// Usage Limit (UsageCap) (DEPRECATED)
+		/*
 		$fltUsageLimit		= DBO()->RatePlan->UsageCap->Value;
 		$strUsageLimitClass	= DBO()->RatePlan->UsageCap->IsInvalid() ? 'DefaultInvalidInputText' : 'DefaultInputText';
 		echo "
@@ -213,6 +216,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	<input type='text' id='RatePlan.UsageCap' name='RatePlan.UsageCap' class='{$strUsageLimitClass}' value='{$fltUsageLimit}'/>
 	<div class='DefaultLabel'>&nbsp;&nbsp;Usage Limit (\$):</div>
 </div>";
+		*/
 		
 		// RecurringCharge (DEPRECATED)
 		$fltRecurringCharge			= DBO()->RatePlan->RecurringCharge->Value;
@@ -226,7 +230,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		// Discount Cap
 		DBO()->RatePlan->discount_cap->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
 		
-		// Render the 'Included Data' field
+		// Render the 'Included Data' field (DEPRECATED)
+		/*
 		$strIncludedDataClass	= (DBO()->RatePlan->included_data->IsInvalid())? "DefaultInvalidInputText" : "DefaultInputText";
 		$intIncludedData		= DBO()->RatePlan->included_data->Value;
 		$intIncludedData		= ($intIncludedData) ? $intIncludedData / 1024 : 0;
@@ -235,6 +240,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	<input type='text' id='RatePlan.included_data' name='RatePlan.included_data' class='{$strIncludedDataClass}' value='{$intIncludedData}'/>
 	<div class='DefaultLabel'>&nbsp;&nbsp;Included Data (MB) :</div>
 </div>";
+		*/
 		
 		// Render the "scalable, minimum_services & maximum_services" input controls
 		if (DBO()->RatePlan->scalable->Value == TRUE)
