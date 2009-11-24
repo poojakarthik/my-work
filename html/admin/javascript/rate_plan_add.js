@@ -609,6 +609,8 @@ function VixenRatePlanAddClass()
 	
 	this._paintDiscount	= function(iDiscountId)
 	{
+		iDiscountId	= parseInt(iDiscountId);
+		
 		// Get the Discount details
 		var oDiscount;
 		for (var i = 0, j = this.aDiscounts.length; i < j; i++)
@@ -662,7 +664,7 @@ function VixenRatePlanAddClass()
 			if (domOption)
 			{
 				// Option exists
-				if (oDiscount === undefined)
+				if (!oDiscount === undefined)
 				{
 					// No Discount with this Id -- remove Option from DOM
 					alert("Removing Option for "+iDiscountId);
