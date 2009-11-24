@@ -640,8 +640,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 																		id				: {$oDiscount->id},
 																		name			: '".addslashes($oDiscount->name)."',
 																		description		: '".addslashes($oDiscount->description)."',
-																		charge_limit	: ".($oDiscount->charge_limit ? $oDiscount->charge_limit : null).",
-																		unit_limit		: ".($oDiscount->unit_limit ? $oDiscount->unit_limit : null)."
+																		charge_limit	: ".($oDiscount->charge_limit ? $oDiscount->charge_limit : 'null').",
+																		unit_limit		: ".($oDiscount->unit_limit ? $oDiscount->unit_limit : 'null')."
 																	});\n";
 		}
 		echo	"<tr>\n" .
