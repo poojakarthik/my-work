@@ -692,6 +692,8 @@ function VixenRatePlanAddClass()
 			aTextInputs[0].observe('keyup', this._paintDiscount.bind(this, iDiscountId));
 			aTextInputs[1].observe('keyup', this._paintDiscount.bind(this, iDiscountId));
 			aTextInputs[2].observe('keyup', this._paintDiscount.bind(this, iDiscountId));
+
+			this._paintRatePlanDiscountsTable();
 		}
 		
 		// Paint Discount Combos
