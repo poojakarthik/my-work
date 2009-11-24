@@ -621,7 +621,7 @@ function VixenRatePlanAddClass()
 		
 		// Paint Discount Definition
 		var domTableBody	= $ID('discount_record_types').select('tbody').first();
-		var domRow			= domTableBody.select('tr[value="'+iDiscountId+'"]');
+		var domRow			= domTableBody.select('tr[value="'+iDiscountId+'"]').first();
 		if (domRow)
 		{
 			// Definition exists
