@@ -671,6 +671,12 @@ function VixenRatePlanAddClass()
 			aTextInputs[2].value	= ((oDiscount.unit_limit > 0) ? oDiscount.unit_limit : oDiscount.charge_limit);
 			
 			aTextInputs[0].observe('change', this._paintDiscount.bind(this, iDiscountId));
+			aTextInputs[1].observe('change', this._paintDiscount.bind(this, iDiscountId));
+			aTextInputs[2].observe('change', this._paintDiscount.bind(this, iDiscountId));
+			
+			aTextInputs[0].observe('keyup', this._paintDiscount.bind(this, iDiscountId));
+			aTextInputs[1].observe('keyup', this._paintDiscount.bind(this, iDiscountId));
+			aTextInputs[2].observe('keyup', this._paintDiscount.bind(this, iDiscountId));
 		}
 		
 		// Paint Discount Combos
