@@ -700,7 +700,12 @@ function VixenRatePlanAddClass()
 			aTextInputs[0].observe('keyup', this._paintDiscount.bind(this, iDiscountId));
 			aTextInputs[1].observe('keyup', this._paintDiscount.bind(this, iDiscountId));
 			aTextInputs[2].observe('keyup', this._paintDiscount.bind(this, iDiscountId));
-
+			
+			var domSelect	= domTR.select('select').first();
+			domSelect.observe('change', this._paintDiscount.bind(this, iDiscountId));
+			domSelect.observe('keyup', this._paintDiscount.bind(this, iDiscountId));
+			domSelect.observe('click', this._paintDiscount.bind(this, iDiscountId));
+			
 			this._paintRatePlanDiscountsTable();
 		}
 		
