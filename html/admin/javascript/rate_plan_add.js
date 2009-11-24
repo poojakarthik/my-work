@@ -618,15 +618,20 @@ function VixenRatePlanAddClass()
 				// Create new TR for this Discount
 				var domTR		= document.createElement('tr');
 				domTableBody.appendChild(domTR);
-				domTR.innerHTML	=	"<td>"+this.aDiscounts[i].name+"</td>\n" +
+				domTR.innerHTML	=	"<td><input type='text' value='"+this.aDiscounts[i].name+"'</td>\n" +
 									"<td>"+this.aDiscounts[i].description+"</td>\n" +
+									"<td>"+((this.aDiscounts[i].unit_limit) ? this.aDiscounts[i].unit_limit : this.aDiscounts[i].charge_limit)+"</td>\n" +
 									"<td>" +
 									"	<select style='width: 100%;'>\n" +
-									"		<option selected='"+((this.aDiscounts[i].unit_limit) ? '' : 'selected')+"'>\$</option>\n" +
-									"		<option selected='"+((this.aDiscounts[i].unit_limit) ? 'selected' : '')+"'>Units</option>\n" +
+									"		<option selected='"+((this.aDiscounts[i].unit_limit > 0) ? '' : 'selected')+"'>\$</option>\n" +
+									"		<option selected='"+((this.aDiscounts[i].unit_limit > 0) ? 'selected' : '')+"'>Units</option>\n" +
 									"	</select>\n" +
-									"</td>\n" +
-									"<td>"+((this.aDiscounts[i].unit_limit) ? this.aDiscounts[i].unit_limit : this.aDiscounts[i].charge_limit)+"</td>\n";
+									"</td>\n";
+				
+				var aInputs	= domTR.select('input[type="text"]');
+				aInputs[0].value	= this.aDiscounts[i].name;
+				aInputs[1].value	= this.aDiscounts[i].description;
+				aInputs[2].value	= ((this.aDiscounts[i].unit_limit > 0) ? this.aDiscounts[i].unit_limit : this.aDiscounts[i].charge_limit);
 			}
 		}
 		else
