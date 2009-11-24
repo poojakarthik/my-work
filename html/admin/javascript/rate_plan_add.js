@@ -665,12 +665,12 @@ function VixenRatePlanAddClass()
 				if (oDiscount === undefined)
 				{
 					// No Discount with this Id -- remove Option from DOM
-					aSelectOptions[i].remove();
+					domOption.remove();
 				}
 				else
 				{
 					// Update the label
-					aSelectOptions[i].innerHTML	= oDiscount.name;
+					domOption.innerHTML	= oDiscount.name;
 				}
 			}
 			else if (oDiscount)
