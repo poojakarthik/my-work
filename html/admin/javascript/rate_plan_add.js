@@ -656,8 +656,8 @@ function VixenRatePlanAddClass()
 			domTableBody.appendChild(domTR);
 			domTR.setAttribute('value', iDiscountId);
 			domTR.innerHTML	=	"<td><input type='hidden' value='"+iDiscountId+"' /><input type='text' /></td>\n" +
-								"<td><input type='text' /></td>\n" +
-								"<td><input type='text' /></td>\n" +
+								"<td><input type='text' style='width: 100%;' /></td>\n" +
+								"<td><input type='text' style='width: 100%;' /></td>\n" +
 								"<td style='min-width: 4em;'>" +
 								"	<select style='width: 100%;'>\n" +
 								"		<option value='CHARGE' "+((oDiscount.unit_limit > 0) ? '' : "selected='selected'")+">\$</option>\n" +
