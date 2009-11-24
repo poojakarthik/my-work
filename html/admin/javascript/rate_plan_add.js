@@ -639,7 +639,7 @@ function VixenRatePlanAddClass()
 
 				// Update the Discount object
 				oDiscount.name			= aTextInputs[0].value.replace(/(^\s+|\s+$)/, '');
-				oDiscount.description	= aTextInputs[1].value.replace(/(^\s+|\s+$)/, '');
+				oDiscount.description	= aTextInputs[1].value;
 				oDiscount.charge_limit	= (oSelect.options[oSelect.selectedIndex].value.toUpperCase() === 'UNITS') ? null : parseFloat(aTextInputs[2].value);
 				oDiscount.unit_limit	= (oSelect.options[oSelect.selectedIndex].value.toUpperCase() === 'UNITS') ? parseInt(aTextInputs[2].value) : null;
 				
