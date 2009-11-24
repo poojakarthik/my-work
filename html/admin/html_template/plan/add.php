@@ -128,6 +128,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			
 			echo "<div id='RatePlanDetailsId'>\n";
 			$this->_RenderPlanDetails();
+			echo "<script type='text/javascript'>Vixen.RatePlanAdd.Initialise()</script>";
 			echo "</div>\n";
 			
 			// Discounts
@@ -443,7 +444,6 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "</div>";  // Container_PlanDetails
 		echo "</div>\n"; // GroupedContent
 		echo "<div class='SmallSeperator'></div>\n";
-		echo "<script type='text/javascript'>Vixen.RatePlanAdd.Initialise()</script>";
 	}
 	
 	//------------------------------------------------------------------------//
