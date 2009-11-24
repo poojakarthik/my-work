@@ -588,13 +588,14 @@ function VixenRatePlanAddClass()
 								unit_limit		: 0
 							};
 		this.aDiscounts.push(oDiscount);
-		
-		this.refreshDiscountDefinitions();
+
+		this._paintDiscount(iDiscountId);
 	};
 	
 	this.removeDiscount	= function(iDiscountId)
 	{
 		// Remove all instances of this Id
+		$ID('rate_plan_discounts').select('tbody tr').each();
 		for (var i = 0, j = this.aDiscounts.length; i < j; i++)
 		{
 			if (iDiscountId === this.aDiscounts[i].id)
@@ -603,72 +604,46 @@ function VixenRatePlanAddClass()
 			}
 		}
 		
-		this.refreshDiscountDefinitions();
+		this._paintDiscount(iDiscountId);
 	};
 	
-	this.refreshDiscountDefinitions	= function()
+	this._paintDiscount	= function(iDiscountId)
 	{
-		var domTableBody	= $ID('rate_plan_discounts').select('tbody').first();
-		domTableBody.childElements().each(Element.remove, Element);
-		
-		if (this.aDiscounts.length)
+		// Get the Discount details
+		var oDiscount;
+		for (var i = 0, j = this.aDiscounts.length; i < j; i++)
 		{
-			for (var i = 0, j = this.aDiscounts.length; i < j; i++)
+			if (iDiscountId === this.aDiscounts[i].id)
 			{
-				// Create new TR for this Discount
-				var domTR		= document.createElement('tr');
-				domTableBody.appendChild(domTR);
-				domTR.innerHTML	=	"<td><input type='text' style='width: 100%;' /></td>\n" +
-									"<td><input type='text' style='width: 100%;' /></td>\n" +
-									"<td><input type='text' style='width: 100%;' /></td>\n" +
-									"<td style='min-width: 4em;'>" +
-									"	<select style='width: 100%;'>\n" +
-									"		<option selected='"+((this.aDiscounts[i].unit_limit > 0) ? '' : 'selected')+"'>\$</option>\n" +
-									"		<option selected='"+((this.aDiscounts[i].unit_limit > 0) ? 'selected' : '')+"'>Units</option>\n" +
-									"	</select>\n" +
-									"</td>\n";
-				
-				var aInputs	= domTR.select('input[type="text"]');
-				aInputs[0].value	= this.aDiscounts[i].name;
-				aInputs[1].value	= this.aDiscounts[i].description;
-				aInputs[2].value	= ((this.aDiscounts[i].unit_limit > 0) ? this.aDiscounts[i].unit_limit : this.aDiscounts[i].charge_limit);
+				oDiscount	= this.aDiscounts[i];
 			}
 		}
-		else
-		{
-			// No Discounts
-			var domTR		= document.createElement('tr');
-			domTR.innerHTML	=	"<td colspan='4'>There are no Discounts defined for this Plan</td>";
-			domTableBody.appendChild(domTR);
-		}
 		
-		this.refreshDiscountCombos();
-	};
-	
-	this.refreshDiscountCombos	= function()
-	{
-		for (var i = 0, aRows = $ID('discount_record_types').select('tbody tr'), j = aRows.length; i < j; i++)
+		// Repaint Discount Combos
+		for (var i = 0, aSelects = $ID('discount_record_types').select('tbody tr select '), j = aSelects.length; i < j; i++)
 		{
-			var domSelect	= aRows[i].select('select').first();
-			
-			// Get currently selected Discount.id
-			var oCurrentDiscount	= domSelect.options[domSelect.selectedIndex];
-			
-			// Refresh select contents
-			domSelect.childElements().each(Element.remove, Element);
-			
-			var domOption		= document.createElement('option');
-			domOption.value		= null;
-			domOption.innerHTML	= '[ No Discount ]';
-			domSelect.appendChild(domOption);
-			
-			for (var i = 0, j = this.aDiscounts.length; i < j; i++)
+			var domOption	= aSelects[i].select('option[value="'+iDiscountId+'"]').first();
+			if (domOption)
 			{
-				// Create new Option for this Discount
+				// Option exists
+				if (oDiscount === undefined)
+				{
+					// No Discount with this Id -- remove Option from DOM
+					aSelectOptions[i].remove();
+				}
+				else
+				{
+					// Update the label
+					aSelectOptions[i].innerHTML	= this.aDiscounts[i].name;
+				}
+			}
+			else if (oDiscount)
+			{
+				// Option doesn't exist -- create a new Option
 				var domOption		= document.createElement('option');
 				domOption.value		= this.aDiscounts[i].id;
 				domOption.innerHTML	= this.aDiscounts[i].name;
-				domSelect.appendChild(domOption);
+				aSelects[i].appendChild(domOption);
 			}
 		}
 	};
