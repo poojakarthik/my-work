@@ -601,6 +601,10 @@ class AppTemplatePlan extends ApplicationTemplate
 		 *		V4: Check that the Name is unique when compared with all other Rate Plans, for a given CustomerGroup/ServiceType combination (including all archived and draft plans)
 		 *		V5: Check that a non-fleet Rate Group has been declared for each RecordType which is Required
 		 */
+		 
+		// Sneak in just before Validation to set the deprecated ChargeCap and UsageCap fields to 0 until they're physically removed from the table
+		DBO()->RatePlan->ChargeCap	= 0;
+		DBO()->RatePlan->UsageCap	= 0;
 	
 		// V1: Validate the fields
 		if (DBO()->RatePlan->IsInvalid())
@@ -684,9 +688,12 @@ class AppTemplatePlan extends ApplicationTemplate
 			DBO()->RatePlan->contract_payout_percentage	= 0.0;
 		}
 		
-		// Included Data
+		// Included Data (DEPRECATED)
+		DBO()->RatePlan->included_data	= 0;	// Set as 0 until we physically remove the field
+		/*
 		DBO()->RatePlan->included_data	= max(0, (int)DBO()->RatePlan->included_data->Value);
 		DBO()->RatePlan->included_data	= (DBO()->RatePlan->included_data->Value > 0) ? DBO()->RatePlan->included_data->Value * 1024 : 0;
+		*/
 		
 		// Commissionable Value
 		$fltCommissionableValue	= (float)DBO()->RatePlan->commissionable_value->Value;
