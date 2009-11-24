@@ -619,8 +619,42 @@ function VixenRatePlanAddClass()
 			}
 		}
 		
-		// Repaint Discount Combos
-		for (var i = 0, aSelects = $ID('discount_record_types').select('tbody tr select '), j = aSelects.length; i < j; i++)
+		// Paint Discount Definition
+		var domTableBody	= $ID('discount_record_types').select('tbody').first();
+		var domRow			= domTableBody.select('tr[value="'+iDiscountId+'"]');
+		if (domRow)
+		{
+			// Definition exists
+			if (oDiscount === undefined)
+			{
+				// No Discount with this Id -- remove TR from DOM
+				domRow.remove();
+			}
+		}
+		else
+		{
+			// Definition doesn't exit -- create new TR for this Discount
+			var domTR		= document.createElement('tr');
+			domTableBody.appendChild(domTR);
+			domTR.setAttribute('value', iDiscountId);
+			domTR.innerHTML	=	"<td><input type='hidden' value='"+iDiscountId+"' /><input type='text' /></td>\n" +
+								"<td><input type='text' /></td>\n" +
+								"<td><input type='text' /></td>\n" +
+								"<td style='min-width: 4em;'>" +
+								"	<select style='width: 100%;'>\n" +
+								"		<option selected='"+((oDiscount.unit_limit > 0) ? '' : 'selected')+"'>\$</option>\n" +
+								"		<option selected='"+((oDiscount.unit_limit > 0) ? 'selected' : '')+"'>Units</option>\n" +
+								"	</select>\n" +
+								"</td>\n";
+			
+			var aTextInputs			= domTR.select('input[type="text"]');
+			aTextInputs[0].value	= oDiscount.name;
+			aTextInputs[1].value	= oDiscount.description;
+			aTextInputs[2].value	= ((oDiscount.unit_limit > 0) ? oDiscount.unit_limit : oDiscount.charge_limit);
+		}
+		
+		// Paint Discount Combos
+		for (var i = 0, aSelects = $ID('discount_record_types').select('tbody tr select'), j = aSelects.length; i < j; i++)
 		{
 			var domOption	= aSelects[i].select('option[value="'+iDiscountId+'"]').first();
 			if (domOption)
