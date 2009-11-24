@@ -589,7 +589,7 @@ function VixenRatePlanAddClass()
 							};
 		this.aDiscounts.push(oDiscount);
 
-		this._paintDiscount(iDiscountId);
+		this._paintDiscount(oDiscount.id);
 	};
 	
 	this.removeDiscount	= function(iDiscountId)
