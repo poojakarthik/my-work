@@ -648,6 +648,29 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				"	<button type='button' style='line-height: 100%;' onclick='Vixen.RatePlanAdd.addDiscount();'><img style='vertical-align: middle; margin-right: 0.25em;' src='../admin/img/template/new.png' /><span>Add Discount</span></button></th>" .
 				"</div>\n";
 		
+		/*
+		// Notes on Discounts
+		echo	"<div>\n" .
+				"	<div><img src='../admin/img/template/MsgNotice.png' alt='Alert' title='Alert' /><h3 style='display: inline;'>Important Notes about Discounts</h3></div>\n" .
+				"	<div>\n" .
+				"		<p>Discounts are unlike Rate Groups, in that Discounts cannot be reused between Rate Plans.  This means that the Name field need not be unique.</p>\n" .
+				"		<p>On the Customer&apos;s Invoice, they will receive a Plan Credit for every specified Discount.  Flex will use the <strong>Name</strong> field in the description of these Credits.  For example:\n</p>\n" .
+				"		<dl>\n" .
+				"			<dt>Name</dt>\n" .
+				"			<dd>STD Usage</dd>\n" .
+				"			<dt>Plan Credit Description</dt>\n" .
+				"			<dd>PCR - Fixed Line PLUS STD Usage from 1/10/2009 to 31/10/2009</dd>\n" .
+				"		<dl>\n" .
+				"			<dt>Name</dt>\n" .
+				"			<dd>Data Usage (2GB)</dd>\n" .
+				"			<dt>Plan Credit Description</dt>\n" .
+				"			<dd>PCR - Mobile PLUS Data Usage (2GB) from 1/10/2009 to 31/10/2009</dd>\n" .
+				"		</dl>\n" .
+				"		</dl>\n" .
+				"	</div>\n" .
+				"</div>\n";
+		*/
+		
 		// Record Type Associations
 		echo "</div><div id='DiscountRecordTypes' style='display: inline-block; vertical-align: top; width: 50%;'>\n";
 		
