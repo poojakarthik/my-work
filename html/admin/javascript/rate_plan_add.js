@@ -632,6 +632,22 @@ function VixenRatePlanAddClass()
 				// No Discount with this Id -- remove TR from DOM
 				domRow.remove();
 			}
+			else
+			{
+				var aTextInputs	= domTR.select('input[type="text"]');
+				var oSelect		= domTR.select('select').first();
+
+				// Update the Discount object
+				oDiscount.name			: aTextInputs[0].value.replace(/(^\s+|\s+$)/, '');
+				oDiscount.description	: aTextInputs[1].value.replace(/(^\s+|\s+$)/, '');
+				oDiscount.charge_limit	: (oSelect.options[oSelect.selectedIndex].value.toUpper() === 'UNITS') ? null : parseFloat(aTextInputs[2].value);
+				oDiscount.unit_limit	: (oSelect.options[oSelect.selectedIndex].value.toUpper() === 'UNITS') ? parseInt(aTextInputs[2].value) : null;
+				
+				// Update Definition inputs with cleaned/validated values
+				aTextInputs[0].value	= oDiscount.name;
+				aTextInputs[1].value	= oDiscount.description;
+				aTextInputs[2].value	= ((oDiscount.unit_limit > 0) ? oDiscount.unit_limit : oDiscount.charge_limit);
+			}
 		}
 		else
 		{
@@ -644,8 +660,8 @@ function VixenRatePlanAddClass()
 								"<td><input type='text' /></td>\n" +
 								"<td style='min-width: 4em;'>" +
 								"	<select style='width: 100%;'>\n" +
-								"		<option selected='"+((oDiscount.unit_limit > 0) ? '' : 'selected')+"'>\$</option>\n" +
-								"		<option selected='"+((oDiscount.unit_limit > 0) ? 'selected' : '')+"'>Units</option>\n" +
+								"		<option value='CHARGE' selected='"+((oDiscount.unit_limit > 0) ? '' : 'selected')+"'>\$</option>\n" +
+								"		<option value='UNITS' selected='"+((oDiscount.unit_limit > 0) ? 'selected' : '')+"'>Units</option>\n" +
 								"	</select>\n" +
 								"</td>\n";
 			
