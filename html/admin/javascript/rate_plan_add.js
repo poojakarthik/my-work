@@ -596,13 +596,13 @@ function VixenRatePlanAddClass()
 	{
 		// Remove all instances of this Id
 		iDiscountId	= parseInt(iDiscountId);
-		alert("Removing Discount "+iDiscountId);
+		//alert("Removing Discount "+iDiscountId);
 		for (var i = 0, j = this.aDiscounts.length; i < j; i++)
 		{
 			if (iDiscountId === this.aDiscounts[i].id)
 			{
 				this.aDiscounts.splice(i, 1);
-				alert("Removed Discount "+iDiscountId);
+				//alert("Removed Discount "+iDiscountId);
 			}
 		}
 		
@@ -646,7 +646,7 @@ function VixenRatePlanAddClass()
 			if (oDiscount === undefined)
 			{
 				// No Discount with this Id -- remove TR from DOM
-				alert("Removing Discount Definition for "+iDiscountId);
+				//alert("Removing Discount Definition for "+iDiscountId);
 				domRow.remove();
 				this._paintRatePlanDiscountsTable();
 			}
@@ -654,7 +654,7 @@ function VixenRatePlanAddClass()
 			{
 				var aTextInputs	= domRow.select('input[type="text"]');
 				var oSelect		= domRow.select('select').first();
-
+				
 				// Update the Discount object
 				oDiscount.name			= aTextInputs[0].value.replace(/(^\s+|\s+$)/, '');
 				oDiscount.description	= aTextInputs[1].value;
@@ -710,7 +710,7 @@ function VixenRatePlanAddClass()
 				if (oDiscount === undefined)
 				{
 					// No Discount with this Id -- remove Option from DOM
-					alert("Removing Option for "+iDiscountId);
+					//alert("Removing Option for "+iDiscountId);
 					domOption.remove();
 				}
 				else
