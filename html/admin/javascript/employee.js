@@ -5,8 +5,7 @@ var Employee	= Class.create
 		if (intEmployeeId)
 		{
 			// Load via JSON
-			var fncJSON	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._load.bind(this, fncCallback)), null, 'Employee', 'getForId');
-			fncJSON(intEmployeeId, true);
+			this._load(iEmployeeId, fncCallback)
 		}
 		else
 		{
@@ -54,39 +53,71 @@ var Employee	= Class.create
 	
 	getControls	: function()
 	{
+		this._refreshControls();
+		
+		return this.objPropertyControls;
+	},
+	
+	_refreshControls	: function()
+	{
 		if (!this.objPropertyControls)
 		{
 			this.objPropertyControls	= {};
 			for (strProperty in Employee.objProperties)
 			{
 				this.objPropertyControls[strProperty]	= Control_Field.factory(Employee.objProperties[strProperty].strType, Employee.objProperties[strProperty].objDefinition);
-
-				// Populate with existing values
-				if (Object.keys(this.objProperties).length)
-				{
-					this.objPropertyControls[strProperty].setValue(this.objProperties[strProperty]);
-				}
-				else
-				{
-					// FIXME: Default values instead?
-					this.objPropertyControls[strProperty].setValue('');
-				}
 			}
 		}
 		
-		return this.objPropertyControls;
+		for (strProperty in this.objPropertyControls)
+		{
+			if (Object.keys(this.objProperties).length)
+			{
+				this.objPropertyControls[strProperty].setValue(this.objProperties[strProperty]);
+			}
+			else
+			{
+				// FIXME: Default values instead?
+				this.objPropertyControls[strProperty].setValue('');
+			}
+		}
 	},
 	
-	_load	: function(fncCallback, objResponse)
+	_load	: function(iEmployeeId, fncCallback, objResponse)
 	{
-		// Set properties
-		this.objProperties	= objResponse.objEmployee;
-		
-		// Callback
-		if (fncCallback)
+		if (objResponse)
 		{
-			fncCallback(this);
+			// Set properties
+			this.objProperties	= objResponse.objEmployee;
+			
+			// Callback
+			if (fncCallback)
+			{
+				fncCallback(this);
+			}
 		}
+		else
+		{
+			var fncJSON	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this.refresh.bind(this, fncCallback)), null, 'Employee', 'getForId');
+			fncJSON(intEmployeeId, true);
+		}
+	},
+	
+	refresh	: function()
+	{
+		if (this.objProperties && this.objProperties.Id !== null && this.objProperties.Id !== undefined)
+		{
+			this._load(this.objProperties.Id, this._refreshControls.bind(this));
+		}
+	},
+	
+	save	: function()
+	{
+		// Prepare Operations
+		// TODO
+		
+		// Save
+		// TODO
 	}
 });
 
