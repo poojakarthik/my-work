@@ -634,8 +634,8 @@ function VixenRatePlanAddClass()
 			}
 			else
 			{
-				var aTextInputs	= domTR.select('input[type="text"]');
-				var oSelect		= domTR.select('select').first();
+				var aTextInputs	= domRow.select('input[type="text"]');
+				var oSelect		= domRow.select('select').first();
 
 				// Update the Discount object
 				oDiscount.name			= aTextInputs[0].value.replace(/(^\s+|\s+$)/, '');
@@ -683,19 +683,19 @@ function VixenRatePlanAddClass()
 				if (!oDiscount === undefined)
 				{
 					// No Discount with this Id -- remove Option from DOM
-					alert("Removing Option for "+iDiscountId);
+					//alert("Removing Option for "+iDiscountId);
 					domOption.remove();
 				}
 				else
 				{
 					// Update the label
-					alert("Updating Option for "+iDiscountId+" from '"+domOption.innerHTML+"' to '"+oDiscount.name+"'");
+					//alert("Updating Option for "+iDiscountId+" from '"+domOption.innerHTML+"' to '"+oDiscount.name+"'");
 					domOption.innerHTML	= oDiscount.name;
 				}
 			}
 			else if (oDiscount)
 			{
-				alert("Adding Option for "+iDiscountId);
+				//alert("Adding Option for "+iDiscountId);
 				// Option doesn't exist -- create a new Option
 				var domOption		= document.createElement('option');
 				domOption.value		= oDiscount.id;
