@@ -942,8 +942,20 @@ class AppTemplatePlan extends ApplicationTemplate
 					$oDiscount					= new Discount();
 					$oDiscount->name			= trim(DBO()->{$sDiscountObjectName}->name->Value);
 					$oDiscount->description		= trim(DBO()->{$sDiscountObjectName}->description->Value);
-					$oDiscount->charge_limit	= abs((float)trim(DBO()->{$sDiscountObjectName}->charge_limit->Value));
-					$oDiscount->unit_limit		= abs((int)trim(DBO()->{$sDiscountObjectName}->unit_limit->Value));
+					
+					if (DBO()->{$sDiscountObjectName}->limit_type->Value === 'UNITS')
+					{
+						$oDiscount->charge_limit	= null;
+						$oDiscount->unit_limit		= abs((int)trim(DBO()->{$sDiscountObjectName}->unit_limit->Value));
+					}
+					else
+					{
+						$oDiscount->charge_limit	= abs((float)trim(DBO()->{$sDiscountObjectName}->charge_limit->Value));
+						$oDiscount->unit_limit		= null;
+					}
+					$oDiscount->charge_limit	= ($oDiscount->charge_limit) ? $oDiscount->charge_limit : null;
+					$oDiscount->unit_limit		= ($oDiscount->unit_limit) ? $oDiscount->unit_limit : null;
+					
 					$oDiscount->save();
 					
 					$aDiscountReferenceMap[$iDiscountReference]	= $oDiscount->id;
