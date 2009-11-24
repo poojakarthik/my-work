@@ -909,7 +909,48 @@ class AppTemplatePlan extends ApplicationTemplate
 			}
 		}
 		
-		// S5: If the RatePlan is being committed then all draft RateGroups used by it must be commited and all draft Rates
+		// S5: Remove all records from the rate_plan_discount table where RatePlan == DBO()->RatePlan->Id->Value
+		$delRatePlanDiscount	= new Query();
+		$delRatePlanDiscount->Execute("DELETE FROM rate_plan_discount WHERE rate_plan_id = " . DBO()->RatePlan->Id->Value);
+		
+		// S6: Remove any records from the discount table which are no longer linked to any Rate Plans (Discounts cannot be shared between Plans)
+		$delUnlinkedDiscounts	= new Query();
+		$delUnlinkedDiscounts->Execute("DELETE FROM discount WHERE (SELECT id FROM rate_plan_discount WHERE discount_id = discount.id LIMIT 1) IS NULL");
+		
+		// S7: Save each of the Discounts which are linked between this Rate Plan and a Record Type
+		$aDiscountReferenceMap	= array();
+		foreach (DBL()->RecordType as $dboRecordType)
+		{
+			$sRecordTypeObjectName		= "RecordType_{$dboRecordType->Id->Value}";
+			$iDiscountReference	= (int)DBO()->{$sRecordTypeObjectName}->discount_id->Value;
+			
+			// Has the Discount already been created?
+			if ($iDiscountReference && $iDiscountReference > 0)
+			{
+				if (!array_key_exists($iDiscountReference, $aDiscountReferenceMap))
+				{
+					// Create the Discount
+					$sDiscountObjectName	= "discount_{$iDiscountReference}";
+					
+					$oDiscount					= new Discount();
+					$oDiscount->name			= trim(DBO()->{$sDiscountObjectName}->name->Value);
+					$oDiscount->description		= trim(DBO()->{$sDiscountObjectName}->description->Value);
+					$oDiscount->charge_limit	= abs((float)trim(DBO()->{$sDiscountObjectName}->charge_limit->Value));
+					$oDiscount->unit_limit		= abs((int)trim(DBO()->{$sDiscountObjectName}->unit_limit->Value));
+					$oDiscount->save();
+					
+					$aDiscountReferenceMap[$iDiscountReference]	= $oDiscount->id;
+				}
+				
+				// Save Link
+				$oDiscountRecordType					= new Discount_Record_Type();
+				$oDiscountRecordType->discount_id		= $aDiscountReferenceMap[$iDiscountReference];
+				$oDiscountRecordType->record_type_id	= $dboRecordType->Id->Value;
+				$oDiscountRecordType->save();
+			}
+		}
+		
+		// S8: If the RatePlan is being committed then all draft RateGroups used by it must be commited and all draft Rates
 		// used by the draft RateGroups must be committed
 		if ((SubmittedForm('AddPlan', 'Commit')) && (count($this->_arrRateGroups) > 0))
 		{
