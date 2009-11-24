@@ -647,7 +647,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		else
 		{
 			echo	"<tr>\n" .
-					"	<td colspan='4'>There are no Discounts defined for this Plan</td>\n" .
+					"	<td colspan='5'>There are no Discounts defined for this Plan</td>\n" .
 					"</tr>\n";
 		}
 		
