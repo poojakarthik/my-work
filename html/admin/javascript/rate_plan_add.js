@@ -607,6 +607,20 @@ function VixenRatePlanAddClass()
 		this._paintDiscount(iDiscountId);
 	};
 	
+	this._paintRatePlanDiscountsTable	= function()
+	{
+		if ($ID('rate_plan_discounts').select('tbody tr[value]'))
+		{
+			// We have some Discount Definitions -- hide the "No Discounts" notification
+			$ID('rate_plan_discounts').select('tbody tr:not(tr[value])').first().hide();
+		}
+		else
+		{
+			// We don't have any Discount Definitions -- show the "No Discounts" notification	
+			$ID('rate_plan_discounts').select('tbody tr:not(tr[value])').first().show();
+		}
+	};
+	
 	this._paintDiscount	= function(iDiscountId)
 	{
 		iDiscountId	= parseInt(iDiscountId);
@@ -631,6 +645,7 @@ function VixenRatePlanAddClass()
 			{
 				// No Discount with this Id -- remove TR from DOM
 				domRow.remove();
+				this._paintRatePlanDiscountsTable();
 			}
 			else
 			{
