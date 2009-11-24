@@ -595,12 +595,14 @@ function VixenRatePlanAddClass()
 	this.removeDiscount	= function(iDiscountId)
 	{
 		// Remove all instances of this Id
-		$ID('rate_plan_discounts').select('tbody tr').each();
+		iDiscountId	= parseInt(iDiscountId);
+		alert("Removing Discount "+iDiscountId);
 		for (var i = 0, j = this.aDiscounts.length; i < j; i++)
 		{
 			if (iDiscountId === this.aDiscounts[i].id)
 			{
 				this.aDiscounts.splice(i, 1);
+				alert("Removed Discount "+iDiscountId);
 			}
 		}
 		
@@ -644,6 +646,7 @@ function VixenRatePlanAddClass()
 			if (oDiscount === undefined)
 			{
 				// No Discount with this Id -- remove TR from DOM
+				alert("Removing Discount Definition for "+iDiscountId);
 				domRow.remove();
 				this._paintRatePlanDiscountsTable();
 			}
@@ -707,7 +710,7 @@ function VixenRatePlanAddClass()
 				if (!oDiscount === undefined)
 				{
 					// No Discount with this Id -- remove Option from DOM
-					//alert("Removing Option for "+iDiscountId);
+					alert("Removing Option for "+iDiscountId);
 					domOption.remove();
 				}
 				else
