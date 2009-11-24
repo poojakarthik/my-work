@@ -958,6 +958,12 @@ class AppTemplatePlan extends ApplicationTemplate
 					
 					$oDiscount->save();
 					
+					// Create the Discount<->RatePlan Link
+					$oRatePlanDiscount					= new Rate_Plan_Discount();
+					$oRatePlanDiscount->rate_plan_id	= DBO()->RatePlan->Id->Value;
+					$oRatePlanDiscount->discount_id		= $oDiscount->id;
+					$oRatePlanDiscount->save();
+					
 					$aDiscountReferenceMap[$iDiscountReference]	= $oDiscount->id;
 				}
 				
