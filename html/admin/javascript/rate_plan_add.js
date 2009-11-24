@@ -611,7 +611,7 @@ function VixenRatePlanAddClass()
 	
 	this._paintRatePlanDiscountsTable	= function()
 	{
-		if ($ID('rate_plan_discounts').select('tbody tr[value]'))
+		if ($ID('rate_plan_discounts').select('tbody tr[value]').length)
 		{
 			// We have some Discount Definitions -- hide the "No Discounts" notification
 			$ID('rate_plan_discounts').select('tbody tr:not(tr[value])').first().hide();
