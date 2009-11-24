@@ -705,7 +705,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				foreach (DBL()->rate_plan_discount as $dboRatePlanDiscount)
 				{
 					// Set as default selected Discount
-					$oDiscount			= Discount::getForId($dboRatePlanDiscount->discount_id);
+					$oDiscount			= Discount::getForId($dboRatePlanDiscount->discount_id->Value);
 					$sRecordTypeInitJS	=	"\$ID('discount_record_types').select('tbody tr[value] select option[value={$dboRatePlanDiscount->discount_id}]').first().selected	= true;\n";
 				}
 				

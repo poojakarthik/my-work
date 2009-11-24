@@ -1111,7 +1111,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		DBL()->RecordType->OrderBy("Name");
 		DBL()->RecordType->Load();
 		
-		// If a RatePlan.Id xor BaseRatePlan.Id has been specified then we want to mark which of these rate groups belong to it
+		// If a RatePlan.Id xor BaseRatePlan.Id has been specified then we want to mark which of these Discounts belong to it
 		if (DBO()->RatePlan->Id->Value)
 		{
 			$intRatePlanId = DBO()->RatePlan->Id->Value;
@@ -1120,7 +1120,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		{
 			$intRatePlanId = DBO()->BaseRatePlan->Id->Value;
 		}
-		if (IsSet($intRatePlanId))
+		if (isset($intRatePlanId))
 		{
 			// Find all the Discounts currently used by this RatePlan
 			DBL()->rate_plan_discount->rate_plan_id = $intRatePlanId;
