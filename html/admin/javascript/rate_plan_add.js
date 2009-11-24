@@ -660,8 +660,8 @@ function VixenRatePlanAddClass()
 								"<td><input type='text' /></td>\n" +
 								"<td style='min-width: 4em;'>" +
 								"	<select style='width: 100%;'>\n" +
-								"		<option value='CHARGE' selected='"+((oDiscount.unit_limit > 0) ? '' : 'selected')+"'>\$</option>\n" +
-								"		<option value='UNITS' selected='"+((oDiscount.unit_limit > 0) ? 'selected' : '')+"'>Units</option>\n" +
+								"		<option value='CHARGE' "+((oDiscount.unit_limit > 0) ? '' : "selected='selected'")+">\$</option>\n" +
+								"		<option value='UNITS' "+((oDiscount.unit_limit > 0) ? "selected='selected'" : '')+">Units</option>\n" +
 								"	</select>\n" +
 								"</td>\n";
 			
