@@ -579,11 +579,11 @@ function VixenRatePlanAddClass()
 	
 	this.addDiscount	= function(oDiscount)
 	{
-		this.iDiscountUID--;
-		
 		oDiscount	= (typeof oDiscount == 'object') ? oDiscount	: {};
 		
-		oDiscount.id			= (oDiscount.id)			? oDiscount.id				: this.iDiscountUID;
+		this.iDiscountUID	= (oDiscount.id) ? oDiscount.id : this.iDiscountUID + 1;
+		
+		oDiscount.id			= this.iDiscountUID;
 		oDiscount.name			= (oDiscount.name)			? oDiscount.name			: '';
 		oDiscount.description	= (oDiscount.description)	? oDiscount.description		: '';
 		oDiscount.charge_limit	= (oDiscount.charge_limit)	? oDiscount.charge_limit	: null;
