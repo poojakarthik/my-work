@@ -574,6 +574,11 @@ function VixenRatePlanAddClass()
 		Vixen.Ajax.SendForm("VixenForm_AddPlan", "Commit", "Plan", "Add");
 	}
 	
+	this._validateDiscounts	= function()
+	{
+		// TODO
+	};
+	
 	this.aDiscounts		= [];
 	this.iDiscountUID	= 0;
 	
@@ -666,6 +671,9 @@ function VixenRatePlanAddClass()
 				
 				oDiscount.charge_limit	= (isNaN(oDiscount.charge_limit)) ? 0 : oDiscount.charge_limit;
 				oDiscount.unit_limit	= (isNaN(oDiscount.unit_limit)) ? 0 : oDiscount.unit_limit;
+				
+				// parseFloat will remove any decimal points at the end, so make sure we re-add it
+				oDiscount.charge_limit	+= (aTextInputs[2].value.length > 1 && aTextInputs[2].value.charAt(aTextInputs[2].value.length - 1) === '.') ? '.' : ''; 
 				
 				// Update Definition inputs with cleaned/validated values
 				aTextInputs[0].value	= oDiscount.name;
