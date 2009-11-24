@@ -733,8 +733,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "</div>";
 		
 		// Init JS
-		echo "<script type='text/javascript'>{$sRecordTypeInitJS}</script>\n";
 		echo "<script type='text/javascript'>{$sDiscountInitJS}</script>\n";
+		echo "<script type='text/javascript'>{$sRecordTypeInitJS}</script>\n";
 	}
 }
 
