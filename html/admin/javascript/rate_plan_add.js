@@ -621,7 +621,7 @@ function VixenRatePlanAddClass()
 				domTR.innerHTML	=	"<td><input type='text' /></td>\n" +
 									"<td><input type='text' /></td>\n" +
 									"<td><input type='text' /></td>\n" +
-									"<td>" +
+									"<td style='min-width: 4em;'>" +
 									"	<select style='width: 100%;'>\n" +
 									"		<option selected='"+((this.aDiscounts[i].unit_limit > 0) ? '' : 'selected')+"'>\$</option>\n" +
 									"		<option selected='"+((this.aDiscounts[i].unit_limit > 0) ? 'selected' : '')+"'>Units</option>\n" +
