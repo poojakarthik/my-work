@@ -602,6 +602,7 @@ function VixenRatePlanAddClass()
 			if (iDiscountId === this.aDiscounts[i].id)
 			{
 				this.aDiscounts.splice(i, 1);
+				break;
 				//alert("Removed Discount "+iDiscountId);
 			}
 		}
