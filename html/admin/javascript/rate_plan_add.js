@@ -618,9 +618,9 @@ function VixenRatePlanAddClass()
 				// Create new TR for this Discount
 				var domTR		= document.createElement('tr');
 				domTableBody.appendChild(domTR);
-				domTR.innerHTML	=	"<td><input type='text' /></td>\n" +
-									"<td><input type='text' /></td>\n" +
-									"<td><input type='text' /></td>\n" +
+				domTR.innerHTML	=	"<td><input type='text' style='width: 100%;' /></td>\n" +
+									"<td><input type='text' style='width: 100%;' /></td>\n" +
+									"<td><input type='text' style='width: 100%;' /></td>\n" +
 									"<td style='min-width: 4em;'>" +
 									"	<select style='width: 100%;'>\n" +
 									"		<option selected='"+((this.aDiscounts[i].unit_limit > 0) ? '' : 'selected')+"'>\$</option>\n" +
