@@ -434,7 +434,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		fwrite($resLogFile, "({$fltSplit}) Active Service Cache built! (".($fltSplit-$fltOldSplit)." seconds)\n");
 		
 		// Build a Cache of Active Contacts
-		$resResult	= $qryQuery->Execute("SELECT Phone, Fax, Mobile FROM Contact JOIN Account ON Account.PrimaryContact = Contact.Id WHERE Account.Archived = 0 AND Contact.Archived = 0");
+		$resResult	= $qryQuery->Execute("SELECT Phone, Fax, Mobile FROM Contact JOIN Account ON Account.PrimaryContact = Contact.Id WHERE (Account.Archived != 0 OR Contact.Archived != 0)");
 		$arrContactCache	= array();
 		if ($resResult === false)
 		{
