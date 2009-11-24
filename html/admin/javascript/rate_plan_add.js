@@ -662,8 +662,8 @@ function VixenRatePlanAddClass()
 				oDiscount.charge_limit	= (oSelect.options[oSelect.selectedIndex].value.toUpperCase() === 'UNITS') ? null : parseFloat(aTextInputs[2].value);
 				oDiscount.unit_limit	= (oSelect.options[oSelect.selectedIndex].value.toUpperCase() === 'UNITS') ? parseInt(aTextInputs[2].value) : null;
 				
-				oDiscount.charge_limit	= (isNan(oDiscount.charge_limit)) ? 0 : oDiscount.charge_limit;
-				oDiscount.unit_limit	= (isNan(oDiscount.unit_limit)) ? 0 : oDiscount.unit_limit;
+				oDiscount.charge_limit	= (isNaN(oDiscount.charge_limit)) ? 0 : oDiscount.charge_limit;
+				oDiscount.unit_limit	= (isNaN(oDiscount.unit_limit)) ? 0 : oDiscount.unit_limit;
 				
 				// Update Definition inputs with cleaned/validated values
 				aTextInputs[0].value	= oDiscount.name;
