@@ -131,11 +131,11 @@ class HtmlTemplatePlanDiscountDetails extends HtmlTemplate
 		
 		echo "<table id='discount_record_types' class='listing-fw3' style='width: 98%; margin: auto;'>\n";
 		
-		echo "<caption style='text-align: left;'><h2>Record Type Associations</h2></caption>\n";
+		echo "<caption style='text-align: left;'><h2>Call Type Associations</h2></caption>\n";
 		
 		echo	"<thead>\n" .
 				"	<tr>\n" .
-				"		<th style='text-align: left; max-width: 60%; min-width: 60%;'>Record Type</th>" .
+				"		<th style='text-align: left; max-width: 60%; min-width: 60%;'>Call Type</th>" .
 				"		<th style='text-align: left;'>Discount</th>" .
 				"	</tr>\n" .
 				"</thead>\n";
@@ -156,7 +156,7 @@ class HtmlTemplatePlanDiscountDetails extends HtmlTemplate
 		else
 		{
 			echo	"<tr>\n" .
-					"	<td colspan='2'>There are no Record Types associated with this Service Type</td>\n" .
+					"	<td colspan='2'>There are no Call Types associated with this Service Type</td>\n" .
 					"</tr>\n";
 		}
 		
