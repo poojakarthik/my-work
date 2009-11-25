@@ -1107,6 +1107,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		}
 	
 		// Find all RecordTypes belonging to this ServiceType
+		DBL()->RecordType->EmptyRecords();
 		DBL()->RecordType->ServiceType = DBO()->RatePlan->ServiceType->Value;
 		DBL()->RecordType->OrderBy("Name");
 		DBL()->RecordType->Load();
@@ -1132,6 +1133,11 @@ class AppTemplatePlan extends ApplicationTemplate
 				
 				DBL()->discount_record_type->discount_id	= $dboRatePlanDiscount->id->Value;
 				DBL()->discount_record_type->Load();
+				
+				if (DBL()->discount_record_type->RecordCount())
+				{
+					throw new Exception(DBL()->discount_record_type->RecordCount());
+				}
 				
 				foreach (DBL()->discount_record_type as $dboDiscountRecordType)
 				{
