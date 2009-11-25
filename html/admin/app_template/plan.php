@@ -1133,13 +1133,14 @@ class AppTemplatePlan extends ApplicationTemplate
 				
 				foreach (DBL()->discount_record_type as $dboDiscountRecordType)
 				{
-					foreach (DBL()->RecordType as $dboRecordType)
+					foreach (DBL()->RecordType as &$dboRecordType)
 					{
 						if ($dboRecordType->Id->Value === $dboDiscountRecordType->record_type_id->Value)
 						{
 							$dboRecordType->discount_id	= $dboDiscountRecordType->discount_id->Value;
 						}
 					}
+					unset($dboRecordType);
 				}
 			}
 		}
