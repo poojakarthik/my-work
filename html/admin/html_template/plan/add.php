@@ -709,11 +709,11 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 					// Set as default selected Discount
 					$oDiscount			= Discount::getForId($dboRecordType->discount_id->Value);
 					$sRecordTypeInitJS	.=	"\$ID('discount_record_types').select('tbody tr[value={$dboRecordType->Id->Value}] select option[value={$oDiscount->id}]').first().selected	= true;\n";
-				}
+				}/*
 				else
 				{
 					$sRecordTypeInitJS	.= "// {$dboRecordType->Description->Value} has no Discounts\n";
-				}
+				}*/
 				
 				echo	"<tr value='{$dboRecordType->Id->Value}'>\n" .
 						"	<td>".$dboRecordType->Description->Value."</td>\n" .
@@ -743,6 +743,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "<script type='text/javascript'>{$sRecordTypeInitJS}</script>\n";
 		
 		// DEBUG
+		/*
 		echo "<script type='text/javascript'>\n";
 		foreach (DBL()->RecordType as $dboRecordType)
 		{
@@ -751,6 +752,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "// rate_plan_discount Count: ".DBL()->rate_plan_discount->RecordCount()."\n";
 		echo "// discount_record_type Count: ".DBL()->rate_plan_discount->RecordCount()."\n";
 		echo "</script>";
+		*/
 	}
 }
 
