@@ -559,12 +559,30 @@ class AppTemplatePlan extends ApplicationTemplate
 			return FALSE;
 		}
 		
+		// Retrieve a list of Record Types applicable to the RatePlan
+		DBL()->RecordType->ServiceType = DBO()->RatePlan->ServiceType->Value;
+		DBL()->RecordType->OrderBy("Description");
+		DBL()->RecordType->Load();
+		
 		// Load all the RateGroups belonging to the RatePlan
 		$strWhere = "Id IN (SELECT RateGroup FROM RatePlanRateGroup WHERE RatePlan = ". DBO()->RatePlan->Id->Value .")";
 		DBL()->RateGroup->Where->SetString($strWhere);
 		DBL()->RateGroup->OrderBy("Name");
 		DBL()->RateGroup->Load();
 		
+		// Load all the Discounts belonging to the RatePlan
+		$strWhere = "id IN (SELECT discount_id FROM rate_plan_discount WHERE rate_plan_id = ". DBO()->RatePlan->Id->Value .")";
+		DBL()->discount->Where->SetString($strWhere);
+		DBL()->discount->OrderBy("name");
+		DBL()->discount->Load();
+		
+		foreach (DBL()->discount as $dboDiscount)
+		{
+			// Load the Record Types associated with each Discount
+			$dboDiscount->dblRecordTypes	= new DBList('RecordType');
+			$dboDiscount->dblRecordTypes->Value->Where->SetString("Id IN (SELECT record_type_id FROM discount_record_type WHERE discount_id = {$dboDiscount->id->Value})");
+			$dboDiscount->dblRecordTypes->Value->Load();
+		}
 		
 		$this->LoadPage('rate_plan_view');
 

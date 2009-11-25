@@ -81,12 +81,7 @@ class HtmlTemplatePlanRateGroupDetails extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
-		// Retrieve a list of Record Types applicable to the RatePlan
-		DBL()->RecordType->ServiceType = DBO()->RatePlan->ServiceType->Value;
-		DBL()->RecordType->OrderBy("Description");
-		DBL()->RecordType->Load();
-	
+	{
 		// Build an array to store all the RateGroup information to display, having the key be the record type
 		$arrRateGroups = array();
 		foreach (DBL()->RateGroup as $dboRateGroup)
