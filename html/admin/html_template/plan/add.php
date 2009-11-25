@@ -719,7 +719,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 						"	<td>".$dboRecordType->Description->Value."</td>\n" .
 						"	<td>" .
 						"		<select id='RecordType_{$dboRecordType->Id->Value}.discount_id' name='RecordType_{$dboRecordType->Id->Value}.discount_id' style='width: 100%;'>\n" .
-						"			<option value='' style='opacity: 0.5;'>[ No Discount ]</option>\n" .
+						"			<option value='' style='opacity: 0.5; font-style: italic;'>[ No Discount ]</option>\n" .
 						"		</select>\n" .
 						"	</td>\n" .
 						"</tr>\n";
