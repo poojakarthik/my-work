@@ -710,13 +710,9 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 					$oDiscount			= Discount::getForId($dboRecordType->discount_id->Value);
 					$sRecordTypeInitJS	.=	"\$ID('discount_record_types').select('tbody tr[value={$dboRecordType->Id->Value}] select option[value={$oDiscount->id}]').first().selected	= true;\n";
 				}
-				elseif ($dboRecordType->discount_id->Value === false)
-				{
-					$sRecordTypeInitJS	.= "// {$dboRecordType->Description->Value} has no Discounts\n";
-				}
 				else
 				{
-					$sRecordTypeInitJS	.= "// {$dboRecordType->Description->Value} has an error\n";
+					$sRecordTypeInitJS	.= "// {$dboRecordType->Description->Value} has no Discounts\n";
 				}
 				
 				echo	"<tr value='{$dboRecordType->Id->Value}'>\n" .

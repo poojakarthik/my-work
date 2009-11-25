@@ -1140,10 +1140,6 @@ class AppTemplatePlan extends ApplicationTemplate
 						{
 							$dboRecordType->discount_id	= $dboDiscountRecordType->discount_id->Value;
 						}
-						else
-						{
-							$dboRecordType->discount_id	= false;
-						}
 					}
 				}
 			}
