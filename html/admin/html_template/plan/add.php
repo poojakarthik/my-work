@@ -708,7 +708,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				{
 					// Set as default selected Discount
 					$oDiscount			= Discount::getForId($dboRecordType->discount_id->Value);
-					$sRecordTypeInitJS	.=	"\$ID('discount_record_types').select('tbody tr[value={$dboRecordType->Id->Value}] select option[value={$dboRatePlanDiscount->discount_id->Value}]').first().selected	= true;\n";
+					$sRecordTypeInitJS	.=	"\$ID('discount_record_types').select('tbody tr[value={$dboRecordType->Id->Value}] select option[value={$oDiscount->id}]').first().selected	= true;\n";
 				}
 				
 				echo	"<tr value='{$dboRecordType->Id->Value}'>\n" .
