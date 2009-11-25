@@ -752,6 +752,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		{
 			echo "// {$dboRecordType->Description->Value}: {$dboRecordType->discount_id->Value}\n";
 		}
+		echo "// rate_plan_discount Count: ".DBL()->rate_plan_discount->RecordCount()."\n";
+		echo "// discount_record_type Count: ".DBL()->rate_plan_discount->RecordCount()."\n";
 		echo "</script>";
 	}
 }
