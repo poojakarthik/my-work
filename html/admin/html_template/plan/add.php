@@ -737,6 +737,14 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		// Init JS
 		echo "<script type='text/javascript'>{$sDiscountInitJS}</script>\n";
 		echo "<script type='text/javascript'>{$sRecordTypeInitJS}</script>\n";
+		
+		// DEBUG
+		echo "<script type='text/javascript'>\n";
+		foreach (DBL()->RecordType as $dboRecordType)
+		{
+			echo "// {$dboRecordType->Description->Value}: {$dboRecordType->discount_id->Value}\n";
+		}
+		echo "</script>";
 	}
 }
 
