@@ -149,7 +149,7 @@ class HtmlTemplatePlanDiscountDetails extends HtmlTemplate
 				
 				echo	"<tr value='{$dboRecordType->Id->Value}'>\n" .
 						"	<td>".htmlspecialchars($dboRecordType->Description->Value)."</td>\n" .
-						"	<td>".((array_key_exists($dboRecordType->Id->Value, $aRecordTypeDiscountMap)) ? htmlspecialchars($aRecordTypeDiscountMap[$dboRecordType->Id->Value]->name->Value) : "<span style='font-style: italic;'>[ No Discount ]</span>")."</td>\n" .
+						"	<td>".((array_key_exists($dboRecordType->Id->Value, $aRecordTypeDiscountMap)) ? htmlspecialchars($aRecordTypeDiscountMap[$dboRecordType->Id->Value]->name->Value) : "<span style='font-style: italic; opactity: 0.75;'>[ No Discount ]</span>")."</td>\n" .
 						"</tr>\n";
 			}
 		}
