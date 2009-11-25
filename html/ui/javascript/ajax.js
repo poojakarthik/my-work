@@ -287,7 +287,7 @@ function VixenAjaxClass()
 		}			
 		
 		// Debug the output
-		Reflex_Debug.asHTMLPopup(objSend);
+		//Reflex_Debug.asHTMLPopup(objSend);
 		
 		// Output each Object.Property stored in objSend.Objects
 		/*for (strObject in objSend.Objects)
