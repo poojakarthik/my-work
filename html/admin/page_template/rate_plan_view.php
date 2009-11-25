@@ -35,5 +35,8 @@ $this->Page->SetLayout('1Column');
 // add the Html Objects to their respective columns
 $this->Page->AddObject('PlanDetails', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "PlanDetailsDiv");
 $this->Page->AddObject('PlanRateGroupDetails', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "PlanRateGroupDetailsDiv");
+$this->Page->AddObject('PlanDiscountDetails', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "PlanDiscountDetailsDiv");
+
+// TODO: Can we throw some JS in here to tabify this page?
 
 ?>
