@@ -110,7 +110,7 @@ class HtmlTemplatePlanDiscountDetails extends HtmlTemplate
 						"	<td style='text-align: left;'>".(($dboDiscount->unit_limit->Value) ? "{$dboDiscount->unit_limit->Value} Units" : "\$".number_format($dboDiscount->charge_limit->Value, 2, '.', ','))."</th>" .
 						"</tr>\n";
 				
-				foreach (DBL()->discount->dblRecordTypes->Value as $dboRecordType)
+				foreach ($dboDiscount->dblRecordTypes->Value as $dboRecordType)
 				{
 					$aRecordTypeDiscountMap[$dboRecordType->Id->Value]	= $dboDiscount;
 				}
@@ -142,14 +142,13 @@ class HtmlTemplatePlanDiscountDetails extends HtmlTemplate
 		
 		echo	"<tbody>\n";
 		
-		$sRecordTypeInitJS	= '';
 		if (DBL()->RecordType->RecordCount() > 0)
 		{
 			foreach (DBL()->RecordType as $dboRecordType)
 			{
 				
 				echo	"<tr value='{$dboRecordType->Id->Value}'>\n" .
-						"	<td>".$dboRecordType->Description->Value."</td>\n" .
+						"	<td>".htmlspecialchars($dboRecordType->Description->Value)."</td>\n" .
 						"	<td>".((array_key_exists($dboRecordType->Id->Value, $aRecordTypeDiscountMap)) ? htmlspecialchars($dboDiscount->name->Value) : '[ No Discount ]')."</td>\n" .
 						"</tr>\n";
 			}
