@@ -1131,7 +1131,7 @@ class AppTemplatePlan extends ApplicationTemplate
 				DBL()->discount_record_type->discount_id	= $dboRatePlanDiscount->id->Value;
 				DBL()->discount_record_type->Load();
 				
-				throw new Exception(DBL()->discount_record_type);
+				//throw new Exception(DBL()->discount_record_type);
 				
 				
 				foreach (DBL()->discount_record_type as $dboDiscountRecordType)
