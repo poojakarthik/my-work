@@ -702,10 +702,12 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			foreach (DBL()->RecordType as $dboRecordType)
 			{
 				$iRecordTypeCount++;
-				foreach (DBL()->rate_plan_discount as $dboRatePlanDiscount)
+				
+				// Do we have a pre-existing Discount defined?
+				if ($dboRecordType->discount_id->Value)
 				{
 					// Set as default selected Discount
-					$oDiscount			= Discount::getForId($dboRatePlanDiscount->discount_id->Value);
+					$oDiscount			= Discount::getForId($dboRecordType->discount_id->Value);
 					$sRecordTypeInitJS	.=	"\$ID('discount_record_types').select('tbody tr[value={$dboRecordType->Id->Value}] select option[value={$dboRatePlanDiscount->discount_id->Value}]').first().selected	= true;\n";
 				}
 				
