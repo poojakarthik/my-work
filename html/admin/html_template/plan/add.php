@@ -712,11 +712,11 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				}
 				elseif ($dboRecordType->discount_id === false)
 				{
-					$sRecordTypeInitJS	.= "// {$dboRecordType->Description->Value} has no Discounts";
+					$sRecordTypeInitJS	.= "// {$dboRecordType->Description->Value} has no Discounts\n";
 				}
 				else
 				{
-					$sRecordTypeInitJS	.= "// {$dboRecordType->Description->Value} has an error";
+					$sRecordTypeInitJS	.= "// {$dboRecordType->Description->Value} has an error\n";
 				}
 				
 				echo	"<tr value='{$dboRecordType->Id->Value}'>\n" .
