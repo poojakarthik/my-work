@@ -56,7 +56,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 				$sDataDiscountName			= "Data Usage ({$sLimitDescription})";
 				$sDataDiscountDescription	= "{$aRatePlan['Name']} - Data Usage - \${$sLimitDescription}";
 				
-				$this->outputMessage("\t\t[*] Defining Data Discount '{$sDataDiscountDescription}'...\n");
+				$this->outputMessage("\t\t[+] Defining Data Discount '{$sDataDiscountDescription}'...\n");
 				
 				//	1.1.1	Insert Discount for Data
 				$this->outputMessage("\t\t\t[+] Inserting Data Discount...\n");
@@ -99,6 +99,10 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 					throw new Exception(__CLASS__ . ' Failed to insert Data Discount <-> RatePlan link for Discount #'.$iDataDiscountId.' for Rate Plan #'.$aRatePlan['Id'].'. ' . $oDataRatePlanDiscountInsertResult->getMessage() . " (DB Error: " . $oDataRatePlanDiscountInsertResult->getUserInfo() . ")");
 				}
 			}
+			else
+			{
+				$this->outputMessage("\t\t[!] No Included Data\n");
+			}
 			
 			//	1.2:	Create a Discount for General Usage
 			if ($fUsageLimit)
@@ -106,7 +110,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 				$sGeneralDiscountName			= "Included Usage";
 				$sGeneralDiscountDescription	= "{$aRatePlan['Name']} - {$sGeneralDiscountName} - {$fUsageLimit}";
 				
-				$this->outputMessage("\t\t[*] Defining General Usage Discount '{$sGeneralDiscountDescription}'...\n");
+				$this->outputMessage("\t\t[+] Defining General Usage Discount '{$sGeneralDiscountDescription}'...\n");
 				
 				//	1.2.1	Insert Discount for General Usage
 				$this->outputMessage("\t\t\t[+] Inserting General Usage Discount...\n");
@@ -148,6 +152,10 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 				{
 					throw new Exception(__CLASS__ . ' Failed to insert General Usage Discount <-> RatePlan link for Discount #'.$iDataDiscountId.' for Rate Plan #'.$aRatePlan['Id'].'. ' . $oGeneralRatePlanDiscountInsertResult->getMessage() . " (DB Error: " . $oGeneralRatePlanDiscountInsertResult->getUserInfo() . ")");
 				}
+			}
+			else
+			{
+				$this->outputMessage("\t\t[!] No Included General Usage\n");
 			}
 		}
 		
