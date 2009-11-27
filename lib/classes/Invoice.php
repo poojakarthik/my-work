@@ -107,7 +107,7 @@ class Invoice extends ORM
 			{
 				$this->intProratePeriodStart	= strtotime(date("Y-m-".str_pad($iInvoiceDayOfMonth, 2, '0', STR_PAD_LEFT), $this->intInvoiceDatetime));
 			}
-			$this->intProratePeriodEnd			= $objInvoiceRun->billing_period_end_datetime;
+			$this->intProratePeriodEnd			= strtotime($objInvoiceRun->billing_period_end_datetime);
 			
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period Start: {$this->strLastInvoiceDatetime} ($this->intLastInvoiceDatetime)");
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period End: {$objInvoiceRun->billing_period_end_datetime}");
