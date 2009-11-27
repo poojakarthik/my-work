@@ -97,11 +97,25 @@ class Invoice extends ORM
 			$this->intNextInvoiceDatetime			= strtotime(Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $objInvoiceRun->strInvoiceDatetime));
 			$this->intLastProductionInvoiceDatetime	= strtotime($objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate, true));
 			
+			$iInvoiceDayOfMonth	= (int)date('d', $objInvoiceRun->intInvoiceDatetime);
+			$oPaymentTerms		= Payment_Terms::getCurrentForCustomerGroup($objAccount->CustomerGroup);
+			if ($iInvoiceDayOfMonth < $oPaymentTerms->invoice_day)
+			{
+				$this->intProratePeriodStart	= strtotime("-1 month", strtotime(date("Y-m-01", $this->intInvoiceDatetime)));
+			}
+			else
+			{
+				$this->intProratePeriodStart	= strtotime(date("Y-m-01", $this->intInvoiceDatetime));
+			}
+			$this->intProratePeriodEnd			= $objInvoiceRun->billing_period_end_datetime;
+			
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period Start: {$this->strLastInvoiceDatetime} ($this->intLastInvoiceDatetime)");
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period End: {$objInvoiceRun->billing_period_end_datetime}");
 			Log::getLog()->log("\t* {$objAccount->Id} Last Invoice Date: ".date("Y-m-d H:i:s", $this->intLastInvoiceDatetime));
 			Log::getLog()->log("\t* {$objAccount->Id} Next Invoice Date: ".date("Y-m-d H:i:s", $this->intNextInvoiceDatetime));
 			Log::getLog()->log("\t* {$objAccount->Id} Last Production Invoice Date: ".date("Y-m-d H:i:s", $this->intLastProductionInvoiceDatetime));
+			Log::getLog()->log("\t* {$objAccount->Id} Prorate Period Start Date: ".date("Y-m-d H:i:s", $this->intProratePeriodStart));
+			Log::getLog()->log("\t* {$objAccount->Id} Prorate Period End Date: ".date("Y-m-d H:i:s", $this->intProratePeriodEnd));
 			
 			$this->billing_period_start_datetime	= $this->strLastInvoiceDatetime;
 			$this->billing_period_end_datetime		= $objInvoiceRun->billing_period_end_datetime;
@@ -1133,7 +1147,7 @@ class Invoice extends ORM
 				$arrPlanChargeSteps[]	= ($bolFirstInvoice) ? 'FIRST_ARREARS' : 'NORMAL_ARREARS';
 				
 				// Prorate the Charges and Usage details in Arrears
-				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1);
+				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intProratePeriodStart, $this->intNextInvoiceDatetime-1);
 				
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= $intArrearsPeriodStart;
@@ -1257,7 +1271,7 @@ class Invoice extends ORM
 		$iUnitLimit		= max($oDiscount->unit_limit, 0);
 		
 		$mDiscountLimit			= ($iUnitLimit) ? $iUnitLimit : $fChargeLimit;
-		$mProratedDiscountLimit	= self::prorate($mDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1, DATE_TRUNCATE_DAY, true, 0);
+		$mProratedDiscountLimit	= self::prorate($mDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->intProratePeriodStart, $this->intNextInvoiceDatetime-1, DATE_TRUNCATE_DAY, true, 0);
 		$sDiscountType			= ($iUnitLimit) ? Discount::DISCOUNT_TYPE_UNITS : Discount::DISCOUNT_TYPE_CHARGE;
 		Log::getLog()->log("Prorated Discount Limit: {$mProratedDiscountLimit}");
 		Log::getLog()->log("Discount Limit: {$mDiscountLimit}");
