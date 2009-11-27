@@ -54,7 +54,7 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 				$fIncludedDataMB			= $iIncludedDataKB / 1024;
 				$sLimitDescription			= ($fIncludedDataMB >= 1024) ? (floor(($fIncludedDataMB / 1024) * 100) / 100).'GB' : floor($fIncludedDataMB).'MB';
 				$sDataDiscountName			= "Data Usage ({$sLimitDescription})";
-				$sDataDiscountDescription	= "{$aRatePlan['Name']} - Data Usage - {$sLimitDescription}";
+				$sDataDiscountDescription	= "{$aRatePlan['Name']} - Data Usage - \${$sLimitDescription}";
 				
 				$this->outputMessage("\t\t[*] Defining Data Discount '{$sDataDiscountDescription}'...\n");
 				
