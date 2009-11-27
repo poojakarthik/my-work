@@ -5,6 +5,7 @@
  * This version: -
  *	
  *	1:	Convert RatePlan Capping properties to Discounts
+ *	2:	Correct Data Rate cap inclusiveness
  *
  */
 
@@ -159,6 +160,22 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 			}
 		}
 		
+		// 2:	Correct Data Rate cap inclusiveness
+		$this->outputMessage("[+] Fixing Data Rate cap inclusiveness...\n");
+		$sDataRateFixSQL	= "	UPDATE  Rate r
+								        JOIN RecordType rt ON (rt.Id = r.RecordType AND rt.DisplayType = 3)
+								        JOIN RateGroupRate rgr ON (rgr.Rate = r.Id)
+								        JOIN RatePlanRateGroup rprg ON (rprg.RateGroup = rgr.RateGroup)
+								        JOIN RatePlan rp ON (rp.Id = rprg.RatePlan)
+								SET	    r.Uncapped = 0
+								WHERE   rp.included_data IS NOT NULL
+								        AND rp.included_data > 0
+								        AND r.Uncapped = 1;";
+		$oDataRateFixResult	= $dbAdmin->exec($sDataRateFixSQL);
+		if (PEAR::isError($oDataRateFixResult))
+		{
+			throw new Exception(__CLASS__ . ' Failed to correct Data Rate cap inclusiveness. ' . $oDataRateFixResult->getMessage() . " (DB Error: " . $oDataRateFixResult->getUserInfo() . ")");
+		}
 	}
 
 	function rollback()
