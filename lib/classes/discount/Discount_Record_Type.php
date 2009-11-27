@@ -11,6 +11,36 @@ class Discount_Record_Type extends ORM_Cached
 	protected 			$_strTableName			= "discount_record_type";
 	protected static	$_strStaticTableName	= "discount_record_type";
 	
+	/**
+	 * getForDiscountId
+	 * 
+	 * Returns an array of Discount_Record_Type objects associated with a given Discount.
+	 * This method will add results to the Cache, however it will not read from the Cache
+	 * 
+	 * @return	array
+	 */
+	public static function getForDiscountId($iDiscountId)
+	{
+		$aDiscountRecordTypes	= array();
+		
+		$oSelectDiscountRecordTypes	= self::_preparedStatement('selByDiscountId');
+		$iResult					= $oSelectDiscountRecordTypes->Execute(array('discount_id'=>$iDiscountId));
+		if ($iResult === false)
+		{
+			throw new Exception($oSelectDiscountRecordTypes->Error());
+		}
+		while ($aDiscountRecordType = $oSelectDiscountRecordTypes->Fetch())
+		{
+			// Create new Discount_Record_Type object and manually add to the Cache
+			$oDiscountRecordType	= new self($aDiscountRecordType);
+			self::addToCache($oDiscountRecordType);
+			
+			$aDiscountRecordTypes[$oDiscountRecordType->id]	= $oDiscountRecordType;
+		}
+		
+		return $aDiscountRecordTypes;
+	}
+	
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -88,6 +118,10 @@ class Discount_Record_Type extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "name ASC");
+					break;
+					
+				case 'selByDiscountId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "discount_id = <discount_id>");
 					break;
 				
 				// INSERTS

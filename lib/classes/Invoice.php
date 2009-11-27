@@ -203,105 +203,34 @@ class Invoice extends ORM
 				}
 				$arrPlanDetails['EarliestStartDatetime']	= $arrDetails['strEarliestPlanStartDatetime'];
 				
-				if ($arrDetails['bolDisconnectedAndNoCDRs'])
-				{
-					$fltMinimumCharge					= 0.0;
-					$fltUsageStart						= 0.0;
-					$fltUsageLimit						= 0.0;
-					$arrPlanDetails['included_data']	= 0.0;
-				}
-				else
+				if (!$arrDetails['bolDisconnectedAndNoCDRs'])
 				{
 					// Add Plan Charges
 					$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, $arrDetails['Services'], NULL);
-		
-					$fltMinimumCharge	= (float)$arrUsageDetails['MinMonthly'];
-					$fltUsageStart		= (float)$arrUsageDetails['ChargeCap'];
-					$fltUsageLimit		= (float)$arrUsageDetails['UsageCap'];
-				
-					$arrPlanDetails['included_data']	= $arrUsageDetails['included_data'];
 				}
-	
+				
+				// Determine and add in Shared Plan Usage Discounts
 				$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
 				$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
-	
-				$fltCDRCappedTotal			= $arrDetails['fltTaxExemptCappedCharge'] + $arrDetails['fltTaxableCappedCharge'];
-				$fltTaxableCappedCharge		= $arrDetails['fltTaxableCappedCharge'];
-				$fltTaxExemptCappedCharge	= $arrDetails['fltTaxExemptCappedCharge'];
-	
-				// Determine and add in Plan Credit
-				//Log::getLog()->log("Usage Start: {$fltUsageStart}, Capped Total: {$fltCDRCappedTotal}, Usage Limit: {$fltUsageLimit}");
-				if ($fltUsageLimit > 0)
+				
+				// Get a list of Discounts associated with this Plan
+				$aDiscounts	= Rate_Plan::getForId($arrPlanDetails['Id'])->getDiscounts();
+				foreach ($aDiscounts as $iDiscountId=>$oDiscount)
 				{
-					//$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
-					$fltPlanCredit			= min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart;
-					Log::getLog()->log("OLD: min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
-					Log::getLog()->log("NEW: min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart\t = $fltPlanCredit");
-					$intPeriodStart	= $this->intLastInvoiceDatetime;
-					$intPeriodEnd	= strtotime("-1 day", $this->intInvoiceDatetime);
-					$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id);
-	
-					// HACKHACKHACK: Add inverse tax value of Plan Credit to the Tax Total, so that everything balances
-					$this->Tax		+= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->intInvoiceDatetime);
+					// Calculate this Discount
+					$aDiscountTotals	= $this->_calculateDiscount($oDiscount, $arrPlanDetails, $arrDetails['Services'], $intArrearsPeriodStart, $intArrearsPeriodEnd);
+					
+					// Offset the Global Tax that will be added for discounted usage
+					$this->Tax	+= $aDiscountTotals['fDiscountTaxOffset'];
 				}
-				
-				$fltTotalTaxable					= 0.0;
-				$fltTotalTaxExempt					= 0.0;
-				$fltTaxableCappedChargeRemaining	= $fltTaxableCappedCharge/*max(0, $fltTaxableCappedCharge)*/;
-				$fltTaxExemptCappedChargeRemaining	=$fltTaxExemptCappedCharge/* max(0, $fltTaxExemptCappedCharge)*/;
-	
-				// Determine Under-Usage
-				$fltUnderUsageRemaining				= $fltUsageStart;
-				
-				$fltUnderUsageTaxable				= min($fltTaxableCappedChargeRemaining, $fltUnderUsageRemaining);
-				$fltTaxableCappedChargeRemaining	-= $fltUnderUsageTaxable;
-				$fltUnderUsageRemaining				-= $fltUnderUsageTaxable;
-				
-				$fltUnderUsageTaxExempt				= min($fltTaxExemptCappedChargeRemaining, $fltUnderUsageRemaining);
-				$fltTaxExemptCappedChargeRemaining	-= $fltUnderUsageTaxExempt;
-				$fltUnderUsageRemaining				-= $fltUnderUsageTaxExempt;
-				
-				Log::getLog()->log("Taxable Under-Usage: \${$fltUnderUsageTaxable}");
-				Log::getLog()->log("Tax Exempt Under-Usage: \${$fltUnderUsageTaxExempt}");
-				$this->Tax	+= self::calculateGlobalTaxComponent($fltUnderUsageTaxable, $this->intInvoiceDatetime);
-				
-				// Determine Usage
-				$fltUsageRemaining					= $fltUsageLimit - $fltUsageStart;
-				
-				$fltUsageTaxable					= min($fltTaxableCappedChargeRemaining, $fltUsageRemaining);
-				$fltTaxableCappedChargeRemaining	-= $fltUsageTaxable;
-				$fltUnderUsageRemaining				-= $fltUsageTaxable;
-				
-				$fltUsageTaxExempt					= min($fltTaxExemptCappedChargeRemaining, $fltUsageRemaining);
-				$fltTaxExemptCappedChargeRemaining	-= $fltUsageTaxExempt;
-				$fltUnderUsageRemaining				-= $fltUsageTaxExempt;
-				
-				Log::getLog()->log("Taxable Usage: \${$fltUsageTaxable}");
-				Log::getLog()->log("Tax Exempt Usage: \${$fltUsageTaxExempt}");
-				Log::getLog()->log("Plan Credit: \${$fltPlanCredit} (should be \$".($fltUsageTaxable+$fltUsageTaxExempt).")");
-				
-				// Determine Over-Usage
-				Log::getLog()->log("Taxable Over-Usage: \${$fltTaxableCappedChargeRemaining}");
-				Log::getLog()->log("Tax Exempt Over-Usage: \${$fltTaxExemptCappedChargeRemaining}");
-				$this->Tax	+= self::calculateGlobalTaxComponent($fltTaxableCappedChargeRemaining, $this->intInvoiceDatetime);
-				
-				$fltTotalCharge	= $fltCDRCappedTotal;
-	
-				// Add to Invoice Totals
-				$this->Debits	+= $fltCDRCappedTotal;
-	
-				//----------------------------------------------------------------//
-				// PLAN DATA USAGE
-				$this->_addPlanDataCredit($arrPlanDetails, $arrDetails['Services'], $intArrearsPeriodStart, $intArrearsPeriodEnd);
-				//----------------------------------------------------------------//
 			}
 			//--------------------------------------------------------------------//
-	
+			
 			//----------------------- GENERATE INVOICE DATA ----------------------//
 			$fltPreChargeDebitTotal		= $this->Debits;
 			$fltPreChargeCreditTotal	= $this->Credits;
 			$fltPreChargeTaxTotal		= $this->Tax;
-	
+			
 			// Mark Account Adjustments
 			$arrWhere	= Array('Account' => $objAccount->Id, 'BillingPeriodEnd'=>$this->billing_period_end_datetime);
 			$arrData	= Array('Status' => CHARGE_TEMP_INVOICE, 'invoice_run_id' => $this->invoice_run_id);
@@ -311,7 +240,7 @@ class Invoice extends ORM
 				// Database Error -- throw Exception
 				throw new Exception("DB ERROR: ".$updMarkAccountCharges->Error());
 			}
-	
+			
 			// Get Preliminary Charge Totals
 			$selAccountChargeTotals	= self::_preparedStatement('selAccountChargeTotals');
 			if ($selAccountChargeTotals->Execute(Array('Account' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
@@ -331,7 +260,7 @@ class Invoice extends ORM
 			$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->intInvoiceDatetime);
 			Log::getLog()->log("Preliminary Account Charges END");
 			Log::getLog()->log($arrAccountChargeTotals);
-	
+			
 			// Calculate Preliminary Invoice Values
 			$this->AccountBalance	= $GLOBALS['fwkFramework']->GetAccountBalance($objAccount->Id);
 			if ($this->AccountBalance === FALSE)
@@ -460,7 +389,6 @@ class Invoice extends ORM
 		$arrServiceTotal['Tax']			= 0.0;
 		$intServiceId					= $arrServiceDetails['Id'];
 		
-		
 		// Mark all CDRs for this Service as TEMPORARY_INVOICE
 		$strSQL		= "UPDATE CDR SET Status = ".CDR_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND StartDatetime <= '{$this->billing_period_end_datetime}'";
 		$strSQL		.= (!Customer_Group::getForId($objInvoiceRun->customer_group_id)->invoiceCdrCredits) ? " AND (Credit = 0 OR RecordType = 21)" : '';
@@ -535,9 +463,6 @@ class Invoice extends ORM
 		{
 			// This is either a Shared Plan or is Disconnected and has no CDRs -- don't charge any Plan Charges
 			$fltMinimumCharge					= 0.0;
-			$fltUsageStart						= 0.0;
-			$fltUsageLimit						= 0.0;
-			$arrPlanDetails['included_data']	= 0.0;
 			
 			if ($arrServiceTotal['bolDisconnectedAndNoCDRs'])
 			{
@@ -548,34 +473,30 @@ class Invoice extends ORM
 		{
 			$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, array($arrServiceDetails), $intServiceId);
 			$fltMinimumCharge	= (float)$arrUsageDetails['MinMonthly'];
-			$fltUsageStart		= (float)$arrUsageDetails['ChargeCap'];
-			$fltUsageLimit		= (float)$arrUsageDetails['UsageCap'];
-			
-			$arrPlanDetails['included_data']	= $arrUsageDetails['included_data'];
 		}
 		//--------------------------------------------------------------------//
-
+		
 		//--------------------------- SERVICE TOTALS -------------------------//
-
+		
 		$fltTaxExemptCappedCharge	= $arrCDRTotals['Charge']['Capped']['Debit']['ExTax'] - $arrCDRTotals['Charge']['Capped']['Credit']['ExTax'];
 		$fltTaxableCappedCharge		= $arrCDRTotals['Charge']['Capped']['Debit']['IncTax'] - $arrCDRTotals['Charge']['Capped']['Credit']['IncTax'];
 		$fltCDRCappedTotal			= $fltTaxableCappedCharge + $fltTaxExemptCappedCharge;
-
+		
 		$fltTaxExemptUncappedCharge	= $arrCDRTotals['Charge']['Uncapped']['Debit']['ExTax'] - $arrCDRTotals['Charge']['Uncapped']['Credit']['ExTax'];
 		$fltTaxableUncappedCharge	= $arrCDRTotals['Charge']['Uncapped']['Debit']['IncTax'] - $arrCDRTotals['Charge']['Uncapped']['Credit']['IncTax'];
 		$fltCDRUncappedTotal		= $fltTaxableUncappedCharge + $fltTaxExemptUncappedCharge;
-
+		
 		$fltTaxExemptCappedCost		= $arrCDRTotals['Cost']['Capped']['Debit']['ExTax'] - $arrCDRTotals['Cost']['Capped']['Credit']['ExTax'];
 		$fltTaxableCappedCost		= $arrCDRTotals['Cost']['Capped']['Debit']['IncTax'] - $arrCDRTotals['Cost']['Capped']['Credit']['IncTax'];
 		$fltCDRCappedCost			= $fltTaxableCappedCost + $fltTaxExemptCappedCost;
-
+		
 		$fltTaxExemptUncappedCost	= $arrCDRTotals['Cost']['Uncapped']['Debit']['ExTax'] - $arrCDRTotals['Cost']['Uncapped']['Credit']['ExTax'];
 		$fltTaxableUncappedCost		= $arrCDRTotals['Cost']['Uncapped']['Debit']['IncTax'] - $arrCDRTotals['Cost']['Uncapped']['Credit']['IncTax'];
 		$fltCDRUncappedCost			= $fltTaxableUncappedCost + $fltTaxExemptUncappedCost;
-
+		
 		$arrServiceTotal['fltTaxExemptCappedCharge']	= $fltTaxExemptCappedCharge;
 		$arrServiceTotal['fltTaxableCappedCharge']		= $fltTaxableCappedCharge;
-
+		
 		$fltTaxExemptCost	= $fltTaxExemptCappedCost + $fltTaxExemptUncappedCost;
 		$fltTaxExemptCharge	= $fltTaxExemptCappedCharge + $fltTaxExemptUncappedCharge;
 		if ($fltTaxExemptCost || $fltTaxExemptCharge)
@@ -583,92 +504,40 @@ class Invoice extends ORM
 			Log::getLog()->log("TAX EXEMPT CHARGES!");
 			Log::getLog()->log($arrCDRTotals);
 		}
-
-		// Calculate Service Plan Usage for non-Shared Services
+		
+		// Calculate Service Plan Usage Discounts for non-Shared Services
 		$fltTotalCharge	= 0.0;
 		if (!$arrPlanDetails['Shared'])
 		{
 			$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
 			$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
 			
-			// Determine and add in Plan Credit
-			$fltPlanCredit			= min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart;
-			Log::getLog()->log("OLD: min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge)\t = $fltPlanCredit");
-			Log::getLog()->log("NEW: min($fltUsageLimit, max(0, $fltCDRCappedTotal)) - $fltUsageStart\t = $fltPlanCredit");
-			if ($fltUsageLimit > 0)
+			// Get a list of Discounts associated with this Plan
+			$aDiscounts	= Rate_Plan::getForId($arrPlanDetails['Id'])->getDiscounts();
+			foreach ($aDiscounts as $iDiscountId=>$oDiscount)
 			{
-				Log::getLog()->log("Adding Plan Credit for \${$fltPlanCredit}");
+				// Calculate this Discount
+				$aDiscountTotals	= $this->_calculateDiscount($oDiscount, $arrPlanDetails, array($arrServiceDetails), $intArrearsPeriodStart, $intArrearsPeriodEnd, $intServiceId);
 				
-				//$fltPlanCredit			= min(max($fltUsageLimit, $fltMinimumCharge), max(0, $fltCDRCappedTotal)) - (max($fltUsageStart, $fltMinimumCharge) - $fltMinimumCharge);
-				$intPeriodStart			= $intArrearsPeriodStart;
-				$intPeriodEnd			= $intArrearsPeriodEnd;
-				$this->_addPlanCharge('PCR', $fltPlanCredit, $arrPlanDetails, $intPeriodStart, $intPeriodEnd, $objAccount->AccountGroup, $objAccount->Id, $intServiceId);
-				
-				// HACKHACKHACK: Add inverse tax value of Plan Credit to Service Tax Total, so that everything balances
-				$fltCreditTax			= self::calculateGlobalTaxComponent(abs($fltPlanCredit), $this->intInvoiceDatetime);
-				$arrServiceTotal['Tax']	+= $fltCreditTax;
-				//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
+				// Offset the Global Tax that will be added for discounted usage
+				$arrServiceTotal['Tax']	+= $aDiscountTotals['fDiscountTaxOffset'];
 			}
-			
-			$fltTotalTaxable					= 0.0;
-			$fltTotalTaxExempt					= 0.0;
-			$fltTaxableCappedChargeRemaining	= $fltTaxableCappedCharge/*max(0, $fltTaxableCappedCharge)*/;
-			$fltTaxExemptCappedChargeRemaining	=$fltTaxExemptCappedCharge/* max(0, $fltTaxExemptCappedCharge)*/;
-
-			// Determine Under-Usage
-			$fltUnderUsageRemaining				= $fltUsageStart;
-			
-			$fltUnderUsageTaxable				= min($fltTaxableCappedChargeRemaining, $fltUnderUsageRemaining);
-			$fltTaxableCappedChargeRemaining	-= $fltUnderUsageTaxable;
-			$fltUnderUsageRemaining				-= $fltUnderUsageTaxable;
-			
-			$fltUnderUsageTaxExempt				= min($fltTaxExemptCappedChargeRemaining, $fltUnderUsageRemaining);
-			$fltTaxExemptCappedChargeRemaining	-= $fltUnderUsageTaxExempt;
-			$fltUnderUsageRemaining				-= $fltUnderUsageTaxExempt;
-			
-			Log::getLog()->log("Taxable Under-Usage: \${$fltUnderUsageTaxable}");
-			Log::getLog()->log("Tax Exempt Under-Usage: \${$fltUnderUsageTaxExempt}");
-			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltUnderUsageTaxable, $this->intInvoiceDatetime);
-			
-			// Determine Usage
-			$fltUsageRemaining					= $fltUsageLimit - $fltUsageStart;
-			
-			$fltUsageTaxable					= min($fltTaxableCappedChargeRemaining, $fltUsageRemaining);
-			$fltTaxableCappedChargeRemaining	-= $fltUsageTaxable;
-			$fltUnderUsageRemaining				-= $fltUsageTaxable;
-			
-			$fltUsageTaxExempt					= min($fltTaxExemptCappedChargeRemaining, $fltUsageRemaining);
-			$fltTaxExemptCappedChargeRemaining	-= $fltUsageTaxExempt;
-			$fltUnderUsageRemaining				-= $fltUsageTaxExempt;
-			
-			Log::getLog()->log("Taxable Usage: \${$fltUsageTaxable}");
-			Log::getLog()->log("Tax Exempt Usage: \${$fltUsageTaxExempt}");
-			Log::getLog()->log("Plan Credit: \${$fltPlanCredit} (should be \$".($fltUsageTaxable+$fltUsageTaxExempt).")");
-			
-			// Determine Over-Usage
-			Log::getLog()->log("Taxable Over-Usage: \${$fltTaxableCappedChargeRemaining}");
-			Log::getLog()->log("Tax Exempt Over-Usage: \${$fltTaxExemptCappedChargeRemaining}");
-			$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableCappedChargeRemaining, $this->intInvoiceDatetime);
-			
-			$fltTotalCharge	= $fltCDRCappedTotal;
-
-			//----------------------------------------------------------------//
-			// PLAN DATA USAGE
-			$this->_addPlanDataCredit($arrPlanDetails, array($arrServiceDetails), $intArrearsPeriodStart, $intArrearsPeriodEnd, $intServiceId);
-			//----------------------------------------------------------------//
 		}
-
-		// Add in Uncapped Charges & Credits
+		
+		// Add in the Capped Usage
+		$fltTotalCharge			+= $fltCDRCappedTotal;
+		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableCappedCharge, $this->intInvoiceDatetime);
+		
+		// Add in Uncapped Usage
 		$fltTotalCharge			+= $fltCDRUncappedTotal;
 		$arrServiceTotal['Tax']	+= self::calculateGlobalTaxComponent($fltTaxableUncappedCharge, $this->intInvoiceDatetime);
-		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
-
+		
 		// Mark all Service Charges as TEMPORARY_INVOICE
 		if ($qryQuery->Execute("UPDATE Charge SET Status = ".CHARGE_TEMP_INVOICE.", invoice_run_id = {$this->invoice_run_id} WHERE Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND Service IN (".implode(', ', $arrServiceDetails['Ids']).") AND ChargedOn <= '{$this->billing_period_end_datetime}'") === FALSE)
 		{
 			throw new Exception("DB ERROR: ".$qryQuery->Error());
 		}
-
+		
 		// Add in Service Billing-time Charges
 		$arrModules	= Billing_Charge::getModules();
 		foreach ($arrModules[$objAccount->CustomerGroup]['Billing_Charge_Service'] as $chgModule)
@@ -676,7 +545,7 @@ class Invoice extends ORM
 			// Generate charge
 			$mixResult = $chgModule->Generate($this, new Service($arrServiceDetails, TRUE));
 		}
-
+		
 		// Retrieve Charge Totals
 		$strServiceChargeTotalSQL	=	"SELECT Charge.Nature, Charge.global_tax_exempt, SUM(Charge.Amount) AS Total " .
 										"FROM Charge " .
@@ -701,7 +570,7 @@ class Invoice extends ORM
 		//Log::getLog()->log("Service Tax: \${$arrServiceTotal['Tax']} @ Line ".__LINE__);
 		$fltServiceCredits		= $arrChargeTotals['CR']['IncTax'] + $arrChargeTotals['CR']['ExTax'];
 		$fltServiceDebits		= $arrChargeTotals['DR']['IncTax'] + $arrChargeTotals['DR']['ExTax'];
-
+		
 		// Finalise and Insert Service Total
 		$arrServiceTotal['FNN']					= $arrServiceDetails['FNN'];
 		$arrServiceTotal['AccountGroup']		= $objAccount->AccountGroup;
@@ -723,7 +592,7 @@ class Invoice extends ORM
 		{
 			throw new Exception("DB ERROR: ".$insServiceTotal->Error());
 		}
-
+		
 		// Link each Service to the ServiceTotal
 		$insServiceTotalService	= self::_preparedStatement('insServiceTotalService');
 		foreach ($arrServiceDetails['Ids'] as $intServiceId)
@@ -737,7 +606,7 @@ class Invoice extends ORM
 				throw new Exception("DB ERROR: ".$insServiceTotalService->Error());
 			}
 		}
-
+		
 		// Return the Service Total details
 		return $arrServiceTotal;
 		//--------------------------------------------------------------------//
@@ -1166,9 +1035,6 @@ class Invoice extends ORM
 		if ($strEarliestCDR)
 		{
 			$fltMinimumCharge	= (float)$arrPlanDetails['MinMonthly'];
-			$fltUsageStart		= (float)$arrPlanDetails['ChargeCap'];
-			$fltUsageLimit		= (float)$arrPlanDetails['UsageCap'];
-			$intIncludedData	= (int)$arrPlanDetails['included_data'];
 			
 			// Scalable Plans
 			if ($arrPlanDetails['Shared'])
@@ -1183,18 +1049,6 @@ class Invoice extends ORM
 					Log::getLog()->log("Native Plan Charge: {$fltMinimumCharge}");
 					$fltMinimumCharge	= ($fltMinimumCharge	/ $intMaxServices) * max($intMaxServices, count($arrServices));
 					Log::getLog()->log("Scaled Plan Charge: {$fltMinimumCharge}");
-					
-					Log::getLog()->log("Native Usage Start: {$fltUsageStart}");
-					$fltUsageStart		= ($fltUsageStart		/ $intMaxServices) * max($intMaxServices, count($arrServices));
-					Log::getLog()->log("Scaled Usage Start: {$fltUsageStart}");
-					
-					Log::getLog()->log("Native Usage Limit: {$fltUsageLimit}");
-					$fltUsageLimit		= ($fltUsageLimit		/ $intMaxServices) * max($intMaxServices, count($arrServices));
-					Log::getLog()->log("Scaled Usage Limit: {$fltUsageLimit}");
-					
-					Log::getLog()->log("Native Included Data: {$intIncludedData}");
-					$intIncludedData	= ($intIncludedData		/ $intMaxServices) * max($intMaxServices, count($arrServices));
-					Log::getLog()->log("Scaled Included Data: {$intIncludedData}");
 				}
 			}
 			
@@ -1280,8 +1134,6 @@ class Invoice extends ORM
 				
 				// Prorate the Charges and Usage details in Arrears
 				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1);
-				$fltUsageStart		= Invoice::prorate($fltUsageStart		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1);
-				$fltUsageLimit		= Invoice::prorate($fltUsageLimit		, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1);
 				
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= $intArrearsPeriodStart;
@@ -1295,8 +1147,6 @@ class Invoice extends ORM
 
 			// No -- ignore all Plan Charges, because we haven't tolled yet
 			$fltMinimumCharge	= 0.0;
-			$fltUsageStart		= 0.0;
-			$fltUsageLimit		= 0.0;
 		}
 		// DEBUG
 		Log::getLog()->log(print_r($arrPlanChargeSteps, true));
@@ -1304,9 +1154,6 @@ class Invoice extends ORM
 		// Return usage data
 		return Array(
 						'MinMonthly'			=> $fltMinimumCharge,
-						'ChargeCap'				=> $fltUsageStart,
-						'UsageCap'				=> $fltUsageLimit,
-						'included_data'			=> $intIncludedData,
 
 						'ArrearsPeriodStart'	=> $intArrearsPeriodStart,
 						'ArrearsPeriodEnd'		=> $intArrearsPeriodEnd
@@ -1369,14 +1216,9 @@ class Invoice extends ORM
 			}
 		}
 
-		// If this is a Plan Data Credit, include the allowance in the Description
+		// Charge Description
 		$strDescription	= $arrChargeTypes[$strChargeType]['Description'];
-		if ($arrPlanDetails['included_data'] > 0 && $strChargeType == 'PDCR')
-		{
-			$intMegaBytes	= $arrPlanDetails['included_data'] / 1024;
-			$strDescription	.= " ({$intMegaBytes}MB)";
-		}
-
+		
 		// Generate Charge
 		$arrPlanCharge						= Array();
 		$arrPlanCharge['AccountGroup']		= $intAccountGroup;
@@ -1395,96 +1237,164 @@ class Invoice extends ORM
 		{
 			throw new Exception("Unable to create '{$arrPlanCharge['Description']}' for {$intAccount}::{$intService}!");
 		}
-		return TRUE;
+		return true;
 	}
 	
 	public static function buildPlanChargeDescription($sPlanName, $sChargeDescription, $iStartDatetime, $iEndDatetime)
 	{
 		return "{$sPlanName} {$sChargeDescription} from ".date("d/m/Y", $iStartDatetime)." to ".date("d/m/Y", $iEndDatetime);
 	}
-
-	/**
-	 * _addPlanDataCredit()
-	 *
-	 * Adds a Plan Credit for Included Data
-	 *
-	 * @param	array		$arrPlanDetails
-	 * @param	array		$arrServices
-	 * @param	integer		$intArrearsPeriodStart
-	 * @param	integer		$intArrearsPeriodEnd
-	 * @param	integer		$intPrimaryService
-	 *
-	 * @return	boolean
-	 *
-	 * @method
-	 */
-	private function _addPlanDataCredit($arrPlanDetails, $arrServices, $intArrearsPeriodStart, $intArrearsPeriodEnd, $intPrimaryService=NULL)
+	
+	private function _calculateDiscount($oDiscount, $aPlanDetails, $aServices, $iArrearsPeriodStart, $iArrearsPeriodEnd, $iPrimaryServiceId=NULL)
 	{
-		static	$qryQuery;
-		$qryQuery	= ($qryQuery) ? $qryQuery : new Query();
-
-		$strServices	= implode(', ', self::_extractServiceIds($arrServices));
-
-		// If there is Included Data on this Plan...
-		$intIncludedData	= (int)$arrPlanDetails['included_data'];
-		Log::getLog()->log("Included Data: {$intIncludedData}");
-		if ($intIncludedData > 0)
+		static	$oQuery, $oChargeTypePCR;
+		$oQuery			= ($oQuery) ? $oQuery : new Query();
+		$oChargeTypePCR	= ($oChargeTypePCR) ? $oChargeTypePCR : Charge_Type::getByCode('PCR');
+		
+		$sServices	= implode(', ', self::_extractServiceIds($aServices));
+		
+		$fChargeLimit	= max($oDiscount->charge_limit, 0);
+		$iUnitLimit		= max($oDiscount->unit_limit, 0);
+		
+		$mDiscountLimit	= ($iUnitLimit) ? $iUnitLimit : $fChargeLimit;
+		$sDiscountType	= ($iUnitLimit) ? Discount::DISCOUNT_TYPE_UNITS : Discount::DISCOUNT_TYPE_CHARGE;
+		Log::getLog()->log("Discount Limit: {$mDiscountLimit}");
+		Log::getLog()->log("Discount Limit Type: ".(($iUnitLimit) ? 'UNITS' : 'CHARGE'));
+		
+		// If there is a valid Discount to apply...
+		$fDiscountApplied	= 0.0;
+		$fDiscountTaxOffset	= 0.0;
+		if ($mDiscountLimit)
 		{
-			// Get all CDRs which are on Uncapped Data Rates
-			$sqlIncludedData	=	"SELECT CDR.Units, CDR.Charge , CDR.Credit " .
-									"FROM CDR JOIN Rate ON Rate.Id = CDR.Rate JOIN RecordType ON RecordType.Id = CDR.RecordType " .
-									"WHERE CDR.Service IN ({$strServices}) AND CDR.invoice_run_id = {$this->invoice_run_id} AND Rate.Uncapped = 1 AND RecordType.DisplayType = ".RECORD_DISPLAY_DATA." " .
-									"ORDER BY CDR.StartDatetime ";
-			Log::getLog()->log($sqlIncludedData);
-			$resResult			= $qryQuery->Execute($sqlIncludedData);
-			if ($resResult === FALSE)
-			{
-				throw new Exception("DB ERROR: ".$qryQuery->Error());
-			}
+			// Get the RecordTypes associated with this Discount
+			$aRecordTypes	= $oDiscount->getRecordsTypes();
+			$sRecordTypes	= implode(', ', array_keys($aRecordTypes));
 			
-			// If there are any CDRs
-			if ($resResult->num_rows)
+			if ($sRecordTypes)
 			{
-				$intTotalUnits				= 0;
-				$fltTotalCredit				= 0.0;
-				$fltTotalCharge				= 0.0;
-				$intProratedIncludedData	= self::prorate($intIncludedData, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->intLastProductionInvoiceDatetime, $this->intNextInvoiceDatetime-1, DATE_TRUNCATE_DAY, TRUE, 0);
-				$intAvailableUnits			= $intProratedIncludedData;
-				while ($arrDataCDR = $resResult->fetch_assoc())
+				// Get all CDRs for the eligible RecordTypes which are not excluded from the Cap
+				$sIncludedUsage	=	"SELECT cdr.Units, cdr.Charge , cdr.Credit, rt.global_tax_exempt " .
+									"FROM CDR cdr JOIN Rate r ON r.Id = cdr.Rate JOIN RecordType rt ON (rt.Id = cdr.RecordType) " .
+									"WHERE cdr.Service IN ({$strServices}) AND cdr.invoice_run_id = {$this->invoice_run_id} AND r.Uncapped = 0 AND cdr.RecordType IN ($sRecordTypes) " .
+									"ORDER BY cdr.StartDatetime ";
+				Log::getLog()->log($sIncludedUsage);
+				$oResult	= $oQuery->Execute($sIncludedUsage);
+				if ($oResult === FALSE)
 				{
-					$arrDataCDR['Units']	= ($arrDataCDR['Credit']) ? 0-$arrDataCDR['Units'] : $arrDataCDR['Units'];
-					$arrDataCDR['Charge']	= ($arrDataCDR['Credit']) ? 0-$arrDataCDR['Charge'] : $arrDataCDR['Charge'];
-					
-					// If we haven't gone over our Data Cap yet
-					if ($intAvailableUnits > 0.0)
-					{
-						$intAvailableUnits	-= $arrDataCDR['Units'];
-						$fltCharge			= $arrDataCDR['Charge'];
-						if ($intAvailableUnits < 0)
-						{
-							// Prorate the last session (assumes a consistent rate per unit [KB])
-							$fltRatePerKB	= ($arrDataCDR['Units']) ? ($fltCharge / $arrDataCDR['Units']) : 0;
-							$fltCharge		-= (abs($intAvailableUnits) * $fltRatePerKB);
-						}
-						
-						$fltTotalCredit	+= $fltCharge;
-					}
-					$intTotalUnits	+= $arrDataCDR['Units'];
-					$fltTotalCharge	+= $arrDataCDR['Charge'];
+					throw new Exception("DB ERROR: ".$oQuery->Error());
 				}
 				
-				Log::getLog()->log("Total Data Usage			: {$intTotalUnits} KB");
-				Log::getLog()->log("Prorated Included Data		: {$intProratedIncludedData} KB");
-				Log::getLog()->log("Data Usage Included in Cap	: ".($intProratedIncludedData-max(0, $intAvailableUnits))." KB");
-				Log::getLog()->log("Data Overusage				: ".(max(0, $intTotalUnits-$intProratedIncludedData-max(0, $intAvailableUnits)))." KB");
-				Log::getLog()->log("Data Charge					: \${$fltTotalCharge}");
-				Log::getLog()->log("Creditback					: \${$fltTotalCredit}");
-				Log::getLog()->log("Overusage Charge			: \$".($fltTotalCharge-$fltTotalCredit));
+				// If there are any CDRs
+				if ($oResult->num_rows)
+				{
+					$iTotalUnits		= 0;
+					$fTotalCharge		= 0.0;
+					$fTaxOffset			= 0.0;
+					$fTotalCredit		= 0.0;
+					
+					$mProratedDiscountLimit	= self::prorate($mDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->iLastProductionInvoiceDatetime, $this->iNextInvoiceDatetime-1, DATE_TRUNCATE_DAY, true, 0);
+					
+					$mRemainingDiscount		= $mProratedDiscountLimit;
+					while ($aDataCDR = $oResult->fetch_assoc())
+					{
+						$iUnits		= ($aDataCDR['Credit']) ? 0 - $aDataCDR['Units'] : $aDataCDR['Units'];
+						$fCharge	= ($aDataCDR['Credit']) ? 0 - $aDataCDR['Charge'] : $aDataCDR['Charge'];
+						
+						$iTotalUnits	+= $iUnits;
+						$fTotalCharge	+= $fCharge;
+						
+						// If we haven't gone over our limit yet
+						if ($mRemainingDiscount > 0.0)
+						{
+							switch ($sDiscountType)
+							{
+								case Discount::DISCOUNT_TYPE_UNITS:
+									$mRemainingDiscount	-= $iUnits;
+									if ($mRemainingDiscount < 0)
+									{
+										// Prorate the last CDR (assumes a consistent rate per unit)
+										$fRatePerUnit	= ($iUnits) ? ($fCharge / $iUnits) : 0;
+										$fCharge		-= (abs($mRemainingDiscount) * $fRatePerUnit);
+									}
+									break;
+									
+								case Discount::DISCOUNT_TYPE_CHARGE:
+									$mRemainingDiscount	-= $fCharge;
+									if ($mRemainingDiscount < 0)
+									{
+										// Prorate the last CDR
+										$fCharge		-= abs($mRemainingDiscount);
+									}
+									break;
+							}
+							
+							// Add a global tax offset against the credited CDR
+							if (!$aDataCDR['global_tax_exempt'])
+							{
+								$fTaxOffset	+= $fCharge;
+							}
+							
+							$fTotalCredit	+= $fCharge;
+						}
+					}
+					$mTotalUsage	= ($iUnitLimit) ? $iTotalUnits : $fTotalCharge;
+					
+					Log::getLog()->log("Total Usage Units			: {$iTotalUnits}");
+					Log::getLog()->log("Total Usage Charge			: \${$fTotalCharge}");
+					switch ($sDiscountType)
+					{
+						case Discount::DISCOUNT_TYPE_UNITS:
+							Log::getLog()->log("Prorated Discount Limit		: {$mProratedDiscountLimit} Units");
+							Log::getLog()->log("Usage Included in Discount	: ".($mProratedDiscountLimit - max(0, $mRemainingDiscount))." Units");
+							Log::getLog()->log("Overusage					: ".(max(0, $mTotalUsage - $mProratedDiscountLimit - max(0, $mRemainingDiscount)))." Units");
+							break;
+							
+						case Discount::DISCOUNT_TYPE_CHARGE:
+							Log::getLog()->log("Prorated Discount Limit		: \${$mProratedDiscountLimit}");
+							Log::getLog()->log("Usage Included in Discount	: \$".($mProratedDiscountLimit - max(0, $mRemainingDiscount)));
+							Log::getLog()->log("Overusage					: \$".(max(0, $mTotalUsage - $mProratedDiscountLimit - max(0, $mRemainingDiscount))));
+							break;
+					}
+					
+					Log::getLog()->log("Creditback					: \${$fTotalCredit}");
+					Log::getLog()->log("Overusage Charge			: \$".($fTotalCharge - $fTotalCredit));
+				}
+				
+				if ($mTotalUsage > 0)
+				{
+					// Add the Credit
+					$oCharge					= new Charge();
+					$oCharge->AccountGroup		= $this->_objAccount->AccountGroup;
+					$oCharge->Account			= $this->Account;
+					$oCharge->Service			= $iPrimaryServiceId;
+					$oCharge->Nature			= 'CR';
+					$oCharge->ChargeType		= $oChargeTypePCR->ChargeType;
+					$oCharge->charge_type_id	= $oChargeTypePCR->Id;
+					$oCharge->global_tax_exempt	= 1;
+					$oCharge->Description		= self::buildPlanChargeDescription($aPlanDetails['Name'], "{$oDiscount->name} Discount", $iArrearsPeriodStart, $iArrearsPeriodEnd);
+					$oCharge->ChargedOn			= date("Y-m-d");
+					$oCharge->Amount			= abs($fTotalCredit);
+					$oCharge->invoice_run_id	= $this->invoice_run_id;
+					$oCharge->Status			= CHARGE_TEMP_INVOICE;
+					$oCharge->save();
+					
+					$fDiscountApplied	= $fTotalCredit;
+					$fDiscountTaxOffset	= $fTaxOffset;
+				}
+				else
+				{
+					// Net Credit (or $0.00) -- no Discounting!
+					$fDiscountApplied	= 0.0;
+					$fDiscountTaxOffset	= 0.0;
+				}
 			}
-			
-			// Add the Credit
-			$this->_addPlanCharge('PDCR', max(0.0, $fltTotalCredit), $arrPlanDetails, $intArrearsPeriodStart, $intArrearsPeriodEnd, $this->AccountGroup, $this->Account, $intPrimaryService);
 		}
+		
+		return	array
+				(
+					'fDiscountApplied'		=> $fDiscountApplied,
+					'fDiscountTaxOffset'	=> $fDiscountTaxOffset
+				);
 	}
 	
 	private static function _extractServiceIds($arrServices)

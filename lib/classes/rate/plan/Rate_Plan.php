@@ -1,63 +1,40 @@
 <?php
-//----------------------------------------------------------------------------//
-// Rate_Plan
-//----------------------------------------------------------------------------//
 /**
  * Rate_Plan
  *
- * Models a record of the RatePlan table
- *
- * Models a record of the RatePlan table
+ * Models the RatePlan table
  *
  * @class	Rate_Plan
  */
-class Rate_Plan extends ORM
+class Rate_Plan extends ORM_Cached
 {
-	protected	$_strTableName	= "RatePlan";
+	protected 			$_strTableName			= "RatePlan";
+	protected static	$_strStaticTableName	= "RatePlan";
+
+	protected			$_aRatePlanDiscounts;
 	
-	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct()
-	 *
-	 * constructor
-	 * 
-	 * constructor
-	 *
-	 * @param	array	$arrProperties 		[optional]	Associative array defining the class with keys for each field of the table
-	 * @param	boolean	$bolLoadById		[optional]	Automatically load the object with the passed Id
-	 * 
-	 * @return	void
-	 * 
-	 * @constructor
-	 */
-	public function __construct($arrProperties=Array(), $bolLoadById=FALSE)
+	public function getDiscounts($bForceReload=false)
 	{
-		// Parent constructor
-		parent::__construct($arrProperties, $bolLoadById);
-	}
-	
-	
-	// Returns all RatePlan objects in an array where the id of the RatePlan is the key to the array
-	// This array is sorted by RatePlan.Name
-	public static function getAll() 
-	{
-		$selRatePlan = new StatementSelect("RatePlan", "*", "", "Name ASC");
-		
-		if ($selRatePlan->Execute() === FALSE)
+		if ($this->id !== null)
 		{
-			throw new Exception("Failed to retrieve all RatePlans - ". $selRatePlan->Error());
+			if (!isset($this->_aRatePlanDiscounts) || $bForceReload)
+			{
+				// Retrieve & cache list of Discount_Record_Type linking objects
+				$this->_aRatePlanDiscounts	= Rate_Plan_Discount::getForRatePlanId($this->id);
+			}
+			
+			$aDiscounts	= array();
+			foreach ($this->_aRatePlanDiscounts as $iRatePlanDiscountId=>$oRatePlanDiscount)
+			{
+				$aDiscounts[$oRatePlanDiscount->discount_id]	= Discount::getForId($oRatePlanDiscount->discount_id);
+			}
+			
+			return $aDiscounts;
 		}
-		
-		$arrRatePlans = array();
-		$arrRecordSet = $selRatePlan->FetchAll();
-		foreach ($arrRecordSet as $arrRecord)
+		else
 		{
-			$objRatePlan = new self($arrRecord);
-			$arrRatePlans[$objRatePlan->Id] = $objRatePlan;
+			throw new Exception("Rate_Plan::getDiscounts() instance method must have been saved to or loaded from the database before invocation");
 		}
-		return $arrRatePlans;
 	}
 
 	/**
@@ -576,16 +553,60 @@ class Rate_Plan extends ORM
 		return Document_Template::render($objTemplateContent->content, $objVariables);
 	}
 	
-	//------------------------------------------------------------------------//
-	// _preparedStatement
-	//------------------------------------------------------------------------//
+	protected static function getCacheName()
+	{
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
+		{
+			$strCacheName = __CLASS__;
+		}
+		return $strCacheName;
+	}
+	
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
+	}
+
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
+	
+	protected static function addToCache($mixObjects)
+	{
+		parent::addToCache($mixObjects, __CLASS__);
+	}
+
+	public static function getForId($intId, $bolSilentFail=false)
+	{
+		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+	}
+	
+	public static function getAll($bolForceReload=false)
+	{
+		return parent::getAll($bolForceReload, __CLASS__);
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+
 	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
-	 * Access a Static Cache of Prepared Statements used by this Class
-	 * 
 	 * @param	string		$strStatement						Name of the statement
 	 * 
 	 * @return	Statement										The requested Statement
@@ -605,17 +626,20 @@ class Rate_Plan extends ORM
 			{
 				// SELECTS
 				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"RatePlan", "*", "Id = <Id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
+					break;
+				case 'selAll':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "name ASC");
 					break;
 				
 				// INSERTS
 				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert("RatePlan");
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
 				
 				// UPDATE BY IDS
 				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("RatePlan");
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
 				
 				// UPDATES

@@ -11,6 +11,36 @@ class Rate_Plan_Discount extends ORM_Cached
 	protected 			$_strTableName			= "rate_plan_discount";
 	protected static	$_strStaticTableName	= "rate_plan_discount";
 	
+	/**
+	 * getForRatePlanId
+	 * 
+	 * Returns an array of Rate_Plan_Discount objects associated with a given Rate Plan.
+	 * This method will add results to the Cache, however it will not read from the Cache
+	 * 
+	 * @return	array
+	 */
+	public static function getForRatePlanId($iRatePlanId)
+	{
+		$aRatePlanDiscounts	= array();
+		
+		$oSelectRatePlanDiscounts	= self::_preparedStatement('selByRatePlanId');
+		$iResult					= $oSelectRatePlanDiscounts->Execute(array('rate_plan_id'=>$iRatePlanId));
+		if ($iResult === false)
+		{
+			throw new Exception($oSelectRatePlanDiscounts->Error());
+		}
+		while ($aRatePlanDiscount = $oSelectRatePlanDiscounts->Fetch())
+		{
+			// Create new Discount_Record_Type object and manually add to the Cache
+			$oRatePlanDiscount	= new self($aRatePlanDiscount);
+			self::addToCache($oRatePlanDiscount);
+			
+			$aRatePlanDiscounts[$oRatePlanDiscount->id]	= $oRatePlanDiscount;
+		}
+		
+		return $aRatePlanDiscounts;
+	}
+	
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -88,6 +118,10 @@ class Rate_Plan_Discount extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "name ASC");
+					break;
+					
+				case 'selByRatePlanId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "rate_plan_id = <rate_plan_id>");
 					break;
 				
 				// INSERTS

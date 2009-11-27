@@ -1,49 +1,15 @@
 <?php
 /**
- * Discount
+ * Record_Type
  *
- * Models the discount Table
+ * Models the RecordType table
  *
- * @class	Discount
+ * @class	Record_Type
  */
-class Discount extends ORM_Cached
+class Record_Type extends ORM_Cached
 {
-	protected 			$_strTableName			= "discount";
-	protected static	$_strStaticTableName	= "discount";
-	
-	protected	$_aDiscountRecordTypes;
-	
-	const	DISCOUNT_TYPE_CHARGE	= 'CHARGE';
-	const	DISCOUNT_TYPE_UNITS		= 'UNITS';
-	
-	public function getLimitDescription()
-	{
-		return ($this->unit_limit) ? "{$this->unit_limit} Units" : "\${$this->charge_limit}";
-	}
-	
-	public function getRecordTypes($bForceReload=false)
-	{
-		if ($this->id !== null)
-		{
-			if (!isset($this->_aDiscountRecordTypes) || $bForceReload)
-			{
-				// Retrieve & cache list of Discount_Record_Type linking objects
-				$this->_aDiscountRecordTypes	= Discount_Record_Type::getForDiscountId($this->id);
-			}
-			
-			$aRecordTypes	= array();
-			foreach ($this->_aDiscountRecordTypes as $iDiscountRecordTypeId=>$oDiscountRecordType)
-			{
-				$aRecordTypes[$oDiscountRecordType->record_type_id]	= Record_Type::getForId($oDiscountRecordType->record_type_id);
-			}
-			
-			return $aRecordTypes;
-		}
-		else
-		{
-			throw new Exception("Discount::getRecordTypes() instance method must have been saved to or loaded from the database before invocation");
-		}
-	}
+	protected 			$_strTableName			= "RecordType";
+	protected static	$_strStaticTableName	= "RecordType";
 	
 	protected static function getCacheName()
 	{

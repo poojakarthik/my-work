@@ -16,6 +16,9 @@
  */
 abstract class ORM_Cached extends ORM
 {
+	const	CACHE_TRUNCATE_OLDEST		= 1;
+	const	CACHE_TRUNCATE_LEAST_USED	= 2;
+	
 	//NOTE: until PHP 5.3 all functions that aren't private should be internally called using call_user_func($strClass, [args]) except for &getReferenceToCache()
 
 	// This array stores individual caches for each class that extends this class
@@ -23,6 +26,8 @@ abstract class ORM_Cached extends ORM
 	
 	// This array stores whether each cache has been fully retrieved
 	private static	$_arrIsFullyCached	= array();
+	
+	private static	$_aCacheTruncateRules	= array();
 
 	/**
 	 * __construct()
@@ -220,6 +225,70 @@ abstract class ORM_Cached extends ORM
 				unset($arrCache[$arrKeys[$i]]);
 			}
 		}
+	}
+	
+	/**
+	 * setCacheCleanupRule
+	 * 
+	 * Sets the rule for how to handle exceeding the maximum Cache size.  You should use the associated Class Constants.
+	 * 
+	 * @return	void
+	 * @method
+	 */
+	protected static function setTruncateRule($iCacheCleanupRule, $sClass=null)
+	{
+		switch ((int)$iCacheCleanupRule)
+		{
+			case self::CACHE_TRUNCATE_LEAST_USED:
+			case self::CACHE_TRUNCATE_OLDEST:
+				self::$_aCacheCleanupRules[call_user_func(array($sClass, 'getCacheName'))]	= (int)$iCacheCleanupRule;
+				break;
+			
+			default:
+				throw new Exception("Unknown Cache Cleanup Rule '{$iCacheCleanupRule}'");
+				break;
+		}
+	} 
+	
+	/**
+	 * truncateCache
+	 * 
+	 * Truncates the cache for a Class if it has exceeded the maximum allowable size using the rule specified
+	 * by the setTruncateRule() method
+	 * 
+	 * @return	void
+	 * @method
+	 */
+	private static function _truncateCache($sClass=null)
+	{
+		$sCacheName		= call_user_func(array($sClass, 'getCacheName'));
+		$iTruncateRule	= (array_key_exists($sCacheName, self::$_aCacheCleanupRules)) ? self::$_aCacheCleanupRules[$sCacheName] : self::CACHE_TRUNCATE_OLDEST;
+		
+		switch ($iTruncateRule)
+		{
+			case self::CACHE_TRUNCATE_LEAST_USED:
+				return self::_truncateCacheLeastUsed($sCacheName);
+				break;
+			
+			case self::CACHE_TRUNCATE_OLDEST:
+			default:
+				return self::_truncateCacheOldest($sCacheName);
+				break;
+		}
+	}
+	
+	private static function _truncateCacheOldest($sCacheName)
+	{
+		$iTruncated	= 0;
+		// TODO
+		return $iTruncated;
+	}
+	
+	private static function _truncateCacheLeastUsed($sCacheName)
+	{
+		$iTruncated	= 0;
+		// TODO
+		return $iTruncated;
 	}
 
 	/**
