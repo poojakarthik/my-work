@@ -99,7 +99,7 @@ class Invoice extends ORM
 			
 			$iInvoiceDayOfMonth	= (int)date('d', $objInvoiceRun->intInvoiceDatetime);
 			$oPaymentTerms		= Payment_Terms::getCurrentForCustomerGroup($objAccount->CustomerGroup);
-			if ($iInvoiceDayOfMonth < $oPaymentTerms->invoice_day)
+			if ($iInvoiceDayOfMonth <= $oPaymentTerms->invoice_day)
 			{
 				$this->intProratePeriodStart	= strtotime("-1 month", strtotime(date("Y-m-01", $this->intInvoiceDatetime)));
 			}
