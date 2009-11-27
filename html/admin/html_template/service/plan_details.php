@@ -290,7 +290,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			{
 				$dboRatePlan->discount_cap->RenderOutput();
 			}
-			
+			/* DEPRECATED
 			$intIncludedData	= $dboRatePlan->included_data->Value;
 			if ($intIncludedData == 0)
 			{
@@ -302,6 +302,7 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 				$intIncludedDataInMB	= $intIncludedData / 1024;
 				$dboRatePlan->included_data->RenderArbitrary("{$intIncludedDataInMB} {$strUnit}", RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 			}
+			*/
 		
 		echo '<div class="DefaultElement">
    <div class="DefaultOutput Default" name="RatePlan.locked" id="RatePlan.locked.Output">'.($dboRatePlan->locked->Value ? 'Yes' : 'No').'</div>
