@@ -275,12 +275,12 @@ class HtmlTemplateServicePlanDetails extends HtmlTemplate
 			$dboRatePlan->UsageCap->RenderOutput();
 			$dboRatePlan->RecurringCharge->RenderOutput();*/
 			$dboRatePlan->PlanCharge	= $dboRatePlan->MinMonthly->Value;
-			$dboRatePlan->UsageStart	= $dboRatePlan->ChargeCap->Value;
-			$dboRatePlan->UsageLimit	= $dboRatePlan->UsageCap->Value;
+			//$dboRatePlan->UsageStart	= $dboRatePlan->ChargeCap->Value;
+			//$dboRatePlan->UsageLimit	= $dboRatePlan->UsageCap->Value;
 			
 			$dboRatePlan->PlanCharge->RenderArbitrary('$'.number_format($dboRatePlan->PlanCharge->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
-			$dboRatePlan->UsageStart->RenderArbitrary('$'.number_format($dboRatePlan->UsageStart->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
-			$dboRatePlan->UsageLimit->RenderArbitrary('$'.number_format($dboRatePlan->UsageLimit->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+			//$dboRatePlan->UsageStart->RenderArbitrary('$'.number_format($dboRatePlan->UsageStart->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+			//$dboRatePlan->UsageLimit->RenderArbitrary('$'.number_format($dboRatePlan->UsageLimit->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 			
 			if ($dboRatePlan->discount_cap->Value == NULL)
 			{

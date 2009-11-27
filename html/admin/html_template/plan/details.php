@@ -277,12 +277,12 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 		DBO()->RatePlan->UsageCap->RenderOutput();
 		DBO()->RatePlan->RecurringCharge->RenderOutput();*/
 		DBO()->RatePlan->PlanCharge	= DBO()->RatePlan->MinMonthly->Value;
-		DBO()->RatePlan->UsageStart	= DBO()->RatePlan->ChargeCap->Value;
-		DBO()->RatePlan->UsageLimit	= DBO()->RatePlan->UsageCap->Value;
+		//DBO()->RatePlan->UsageStart	= DBO()->RatePlan->ChargeCap->Value;
+		//DBO()->RatePlan->UsageLimit	= DBO()->RatePlan->UsageCap->Value;
 		
 		DBO()->RatePlan->PlanCharge->RenderArbitrary('$'.number_format(DBO()->RatePlan->PlanCharge->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
-		DBO()->RatePlan->UsageStart->RenderArbitrary('$'.number_format(DBO()->RatePlan->UsageStart->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
-		DBO()->RatePlan->UsageLimit->RenderArbitrary('$'.number_format(DBO()->RatePlan->UsageLimit->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+		//DBO()->RatePlan->UsageStart->RenderArbitrary('$'.number_format(DBO()->RatePlan->UsageStart->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
+		//DBO()->RatePlan->UsageLimit->RenderArbitrary('$'.number_format(DBO()->RatePlan->UsageLimit->Value, 2, '.', ''), RENDER_OUTPUT, CONTEXT_DEFAULT, FALSE, FALSE);
 		
 		if (DBO()->RatePlan->discount_cap->Value == NULL)
 		{
