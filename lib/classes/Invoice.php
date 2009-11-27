@@ -1267,7 +1267,7 @@ class Invoice extends ORM
 		if ($mDiscountLimit)
 		{
 			// Get the RecordTypes associated with this Discount
-			$aRecordTypes	= $oDiscount->getRecordsTypes();
+			$aRecordTypes	= $oDiscount->getRecordTypes();
 			$sRecordTypes	= implode(', ', array_keys($aRecordTypes));
 			
 			if ($sRecordTypes)
