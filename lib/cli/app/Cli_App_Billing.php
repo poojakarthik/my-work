@@ -271,7 +271,7 @@ class Cli_App_Billing extends Cli
 			//$bolTransactionResult	= DataAccess::getDataAccess()->TransactionRollback();
 			//Log::getLog()->log("Transaction was " . ((!$bolTransactionResult) ? 'not ' : '') . "successfully revoked!");
 
-			if ($this->_arrArgs[self::SWITCH_TEST_RUN])
+			if ($this->_arrArgs[self::SWITCH_TEST_RUN] || $this->_arrArgs[Cli::SWITCH_VERBOSE])
 			{
 				$strMessage	= $exception->__toString();
 			}
