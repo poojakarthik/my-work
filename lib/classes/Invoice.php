@@ -1275,7 +1275,7 @@ class Invoice extends ORM
 				// Get all CDRs for the eligible RecordTypes which are not excluded from the Cap
 				$sIncludedUsage	=	"SELECT cdr.Units, cdr.Charge , cdr.Credit, rt.global_tax_exempt " .
 									"FROM CDR cdr JOIN Rate r ON r.Id = cdr.Rate JOIN RecordType rt ON (rt.Id = cdr.RecordType) " .
-									"WHERE cdr.Service IN ({$strServices}) AND cdr.invoice_run_id = {$this->invoice_run_id} AND r.Uncapped = 0 AND cdr.RecordType IN ($sRecordTypes) " .
+									"WHERE cdr.Service IN ({$sServices}) AND cdr.invoice_run_id = {$this->invoice_run_id} AND r.Uncapped = 0 AND cdr.RecordType IN ($sRecordTypes) " .
 									"ORDER BY cdr.StartDatetime ";
 				Log::getLog()->log($sIncludedUsage);
 				$oResult	= $oQuery->Execute($sIncludedUsage);
