@@ -221,21 +221,21 @@ class Invoice extends ORM
 				{
 					// Add Plan Charges
 					$arrUsageDetails	= $this->_addPlanCharges($arrPlanDetails, $arrDetails['Services'], NULL);
-				}
-				
-				// Determine and add in Shared Plan Usage Discounts
-				$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
-				$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
-				
-				// Get a list of Discounts associated with this Plan
-				$aDiscounts	= Rate_Plan::getForId($arrPlanDetails['Id'])->getDiscounts();
-				foreach ($aDiscounts as $iDiscountId=>$oDiscount)
-				{
-					// Calculate this Discount
-					$aDiscountTotals	= $this->_calculateDiscount($oDiscount, $arrPlanDetails, $arrDetails['Services'], $intArrearsPeriodStart, $intArrearsPeriodEnd);
 					
-					// Offset the Global Tax that will be added for discounted usage
-					$this->Tax	+= $aDiscountTotals['fDiscountTaxOffset'];
+					// Determine and add in Shared Plan Usage Discounts
+					$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
+					$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
+					
+					// Get a list of Discounts associated with this Plan
+					$aDiscounts	= Rate_Plan::getForId($arrPlanDetails['Id'])->getDiscounts();
+					foreach ($aDiscounts as $iDiscountId=>$oDiscount)
+					{
+						// Calculate this Discount
+						$aDiscountTotals	= $this->_calculateDiscount($oDiscount, $arrPlanDetails, $arrDetails['Services'], $intArrearsPeriodStart, $intArrearsPeriodEnd);
+						
+						// Offset the Global Tax that will be added for discounted usage
+						$this->Tax	+= $aDiscountTotals['fDiscountTaxOffset'];
+					}
 				}
 			}
 			//--------------------------------------------------------------------//
@@ -521,7 +521,7 @@ class Invoice extends ORM
 		
 		// Calculate Service Plan Usage Discounts for non-Shared Services
 		$fltTotalCharge	= 0.0;
-		if (!$arrPlanDetails['Shared'])
+		if (!$arrPlanDetails['Shared'] && !$arrServiceTotal['bolDisconnectedAndNoCDRs'])
 		{
 			$intArrearsPeriodStart	= $arrUsageDetails['ArrearsPeriodStart'];
 			$intArrearsPeriodEnd	= $arrUsageDetails['ArrearsPeriodEnd'];
