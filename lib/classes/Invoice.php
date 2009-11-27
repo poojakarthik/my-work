@@ -1256,8 +1256,10 @@ class Invoice extends ORM
 		$fChargeLimit	= max($oDiscount->charge_limit, 0);
 		$iUnitLimit		= max($oDiscount->unit_limit, 0);
 		
-		$mDiscountLimit	= ($iUnitLimit) ? $iUnitLimit : $fChargeLimit;
-		$sDiscountType	= ($iUnitLimit) ? Discount::DISCOUNT_TYPE_UNITS : Discount::DISCOUNT_TYPE_CHARGE;
+		$mDiscountLimit			= ($iUnitLimit) ? $iUnitLimit : $fChargeLimit;
+		$mProratedDiscountLimit	= self::prorate($mDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->iLastProductionInvoiceDatetime, $this->iNextInvoiceDatetime-1, DATE_TRUNCATE_DAY, true, 0);
+		$sDiscountType			= ($iUnitLimit) ? Discount::DISCOUNT_TYPE_UNITS : Discount::DISCOUNT_TYPE_CHARGE;
+		Log::getLog()->log("Prorated Discount Limit: {$mProratedDiscountLimit}");
 		Log::getLog()->log("Discount Limit: {$mDiscountLimit}");
 		Log::getLog()->log("Discount Limit Type: ".(($iUnitLimit) ? 'UNITS' : 'CHARGE'));
 		
@@ -1291,8 +1293,6 @@ class Invoice extends ORM
 					$fTotalCharge		= 0.0;
 					$fTaxOffset			= 0.0;
 					$fTotalCredit		= 0.0;
-					
-					$mProratedDiscountLimit	= self::prorate($mDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->iLastProductionInvoiceDatetime, $this->iNextInvoiceDatetime-1, DATE_TRUNCATE_DAY, true, 0);
 					
 					$mRemainingDiscount		= $mProratedDiscountLimit;
 					while ($aDataCDR = $oResult->fetch_assoc())
