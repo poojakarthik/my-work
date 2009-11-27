@@ -176,6 +176,15 @@ class Flex_Rollout_Version_000201 extends Flex_Rollout_Version
 		{
 			throw new Exception(__CLASS__ . ' Failed to correct Data Rate cap inclusiveness. ' . $oDataRateFixResult->getMessage() . " (DB Error: " . $oDataRateFixResult->getUserInfo() . ")");
 		}
+		$this->rollbackSQL[]	= "	UPDATE  Rate r
+									        JOIN RecordType rt ON (rt.Id = r.RecordType AND rt.DisplayType = 3)
+									        JOIN RateGroupRate rgr ON (rgr.Rate = r.Id)
+									        JOIN RatePlanRateGroup rprg ON (rprg.RateGroup = rgr.RateGroup)
+									        JOIN RatePlan rp ON (rp.Id = rprg.RatePlan)
+									SET	    r.Uncapped = 1
+									WHERE   rp.included_data IS NOT NULL
+									        AND rp.included_data > 0
+									        AND r.Uncapped = 0;";
 	}
 
 	function rollback()
