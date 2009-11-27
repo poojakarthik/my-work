@@ -1345,7 +1345,7 @@ class Invoice extends ORM
 							// Add a global tax offset against the credited CDR
 							if (!$aDataCDR['global_tax_exempt'])
 							{
-								$fTaxOffset	+= self::calculateGlobalTaxComponent($fCharge, $this->intInvoiceDatetime);
+								$fTaxOffset	-= self::calculateGlobalTaxComponent($fCharge, $this->intInvoiceDatetime);
 							}
 							
 							$fTotalCredit	+= $fCharge;
