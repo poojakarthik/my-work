@@ -1345,7 +1345,7 @@ class Invoice extends ORM
 							// Add a global tax offset against the credited CDR
 							if (!$aDataCDR['global_tax_exempt'])
 							{
-								$fTaxOffset	+= $fCharge;
+								$fTaxOffset	+= self::calculateGlobalTaxComponent($fCharge, $this->intInvoiceDatetime);
 							}
 							
 							$fTotalCredit	+= $fCharge;
@@ -1371,6 +1371,7 @@ class Invoice extends ORM
 					}
 					
 					Log::getLog()->log("Creditback					: \${$fTotalCredit}");
+					Log::getLog()->log("Tax Offset					: \${$fTotalCredit}");
 					Log::getLog()->log("Overusage Charge			: \$".($fTotalCharge - $fTotalCredit));
 				
 					if ($mTotalUsage > 0)
