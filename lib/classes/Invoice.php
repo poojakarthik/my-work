@@ -1385,8 +1385,10 @@ class Invoice extends ORM
 						$oCharge->charge_type_id	= $oChargeTypePCR->Id;
 						$oCharge->global_tax_exempt	= 1;
 						$oCharge->Description		= self::buildPlanChargeDescription($aPlanDetails['Name'], "{$oDiscount->name} Discount", $iArrearsPeriodStart, $iArrearsPeriodEnd);
+						$oCharge->CreatedOn			= date("Y-m-d");
 						$oCharge->ChargedOn			= date("Y-m-d");
 						$oCharge->Amount			= abs($fTotalCredit);
+						$oCharge->Notes				= '';
 						$oCharge->invoice_run_id	= $this->invoice_run_id;
 						$oCharge->Status			= CHARGE_TEMP_INVOICE;
 						$oCharge->save();
