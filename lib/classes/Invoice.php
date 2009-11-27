@@ -1147,7 +1147,7 @@ class Invoice extends ORM
 				$arrPlanChargeSteps[]	= ($bolFirstInvoice) ? 'FIRST_ARREARS' : 'NORMAL_ARREARS';
 				
 				// Prorate the Charges and Usage details in Arrears
-				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intProratePeriodStart, $this->intNextInvoiceDatetime-1);
+				$fltMinimumCharge	= Invoice::prorate($fltMinimumCharge	, $intArrearsPeriodStart	, $intArrearsPeriodEnd	, $this->intProratePeriodStart, $this->intProratePeriodEnd);
 				
 				$strChargeType	= 'PCAR';
 				$intPeriodStart	= $intArrearsPeriodStart;
@@ -1271,7 +1271,7 @@ class Invoice extends ORM
 		$iUnitLimit		= max($oDiscount->unit_limit, 0);
 		
 		$mDiscountLimit			= ($iUnitLimit) ? $iUnitLimit : $fChargeLimit;
-		$mProratedDiscountLimit	= self::prorate($mDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->intProratePeriodStart, $this->intNextInvoiceDatetime-1, DATE_TRUNCATE_DAY, true, 0);
+		$mProratedDiscountLimit	= self::prorate($mDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->intProratePeriodStart, $this->intProratePeriodEnd, DATE_TRUNCATE_DAY, true, 0);
 		$sDiscountType			= ($iUnitLimit) ? Discount::DISCOUNT_TYPE_UNITS : Discount::DISCOUNT_TYPE_CHARGE;
 		Log::getLog()->log("Prorated Discount Limit: {$mProratedDiscountLimit}");
 		Log::getLog()->log("Discount Limit: {$mDiscountLimit}");
