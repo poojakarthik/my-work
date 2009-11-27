@@ -1371,7 +1371,7 @@ class Invoice extends ORM
 					}
 					
 					Log::getLog()->log("Creditback					: \${$fTotalCredit}");
-					Log::getLog()->log("Tax Offset					: \${$fTotalCredit}");
+					Log::getLog()->log("Tax Offset					: \${$fTaxOffset}");
 					Log::getLog()->log("Overusage Charge			: \$".($fTotalCharge - $fTotalCredit));
 				
 					if ($mTotalUsage > 0)
