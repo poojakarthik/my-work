@@ -1277,7 +1277,7 @@ class Invoice extends ORM
 									"FROM CDR cdr JOIN Rate r ON r.Id = cdr.Rate JOIN RecordType rt ON (rt.Id = cdr.RecordType) " .
 									"WHERE cdr.Service IN ({$sServices}) AND cdr.invoice_run_id = {$this->invoice_run_id} AND r.Uncapped = 0 AND cdr.RecordType IN ($sRecordTypes) " .
 									"ORDER BY cdr.StartDatetime ";
-				Log::getLog()->log($sIncludedUsage);
+				//Log::getLog()->log($sIncludedUsage);
 				$oResult	= $oQuery->Execute($sIncludedUsage);
 				if ($oResult === FALSE)
 				{
@@ -1358,34 +1358,38 @@ class Invoice extends ORM
 					
 					Log::getLog()->log("Creditback					: \${$fTotalCredit}");
 					Log::getLog()->log("Overusage Charge			: \$".($fTotalCharge - $fTotalCredit));
-				}
 				
-				if ($mTotalUsage > 0)
-				{
-					// Add the Credit
-					$oCharge					= new Charge();
-					$oCharge->AccountGroup		= $this->_objAccount->AccountGroup;
-					$oCharge->Account			= $this->Account;
-					$oCharge->Service			= $iPrimaryServiceId;
-					$oCharge->Nature			= 'CR';
-					$oCharge->ChargeType		= $oChargeTypePCR->ChargeType;
-					$oCharge->charge_type_id	= $oChargeTypePCR->Id;
-					$oCharge->global_tax_exempt	= 1;
-					$oCharge->Description		= self::buildPlanChargeDescription($aPlanDetails['Name'], "{$oDiscount->name} Discount", $iArrearsPeriodStart, $iArrearsPeriodEnd);
-					$oCharge->ChargedOn			= date("Y-m-d");
-					$oCharge->Amount			= abs($fTotalCredit);
-					$oCharge->invoice_run_id	= $this->invoice_run_id;
-					$oCharge->Status			= CHARGE_TEMP_INVOICE;
-					$oCharge->save();
-					
-					$fDiscountApplied	= $fTotalCredit;
-					$fDiscountTaxOffset	= $fTaxOffset;
+					if ($mTotalUsage > 0)
+					{
+						// Add the Credit
+						$oCharge					= new Charge();
+						$oCharge->AccountGroup		= $this->_objAccount->AccountGroup;
+						$oCharge->Account			= $this->Account;
+						$oCharge->Service			= $iPrimaryServiceId;
+						$oCharge->Nature			= 'CR';
+						$oCharge->ChargeType		= $oChargeTypePCR->ChargeType;
+						$oCharge->charge_type_id	= $oChargeTypePCR->Id;
+						$oCharge->global_tax_exempt	= 1;
+						$oCharge->Description		= self::buildPlanChargeDescription($aPlanDetails['Name'], "{$oDiscount->name} Discount", $iArrearsPeriodStart, $iArrearsPeriodEnd);
+						$oCharge->ChargedOn			= date("Y-m-d");
+						$oCharge->Amount			= abs($fTotalCredit);
+						$oCharge->invoice_run_id	= $this->invoice_run_id;
+						$oCharge->Status			= CHARGE_TEMP_INVOICE;
+						$oCharge->save();
+						
+						$fDiscountApplied	= $fTotalCredit;
+						$fDiscountTaxOffset	= $fTaxOffset;
+					}
+					else
+					{
+						// Net Credit (or $0.00) -- no Discounting!
+						$fDiscountApplied	= 0.0;
+						$fDiscountTaxOffset	= 0.0;
+					}
 				}
 				else
 				{
-					// Net Credit (or $0.00) -- no Discounting!
-					$fDiscountApplied	= 0.0;
-					$fDiscountTaxOffset	= 0.0;
+					Log::getLog()->log("No CDRs - Skipping Discounting!");
 				}
 			}
 		}
