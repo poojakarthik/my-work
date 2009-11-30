@@ -1324,7 +1324,7 @@ class Invoice extends ORM
 							{
 								case Discount::DISCOUNT_TYPE_UNITS:
 									$mRemainingDiscount	-= $iUnits;
-									if ($mRemainingDiscount <= 0)
+									if ($mRemainingDiscount < 0)
 									{
 										// Prorate the last CDR (assumes a consistent rate per unit)
 										$fRatePerUnit	= ($iUnits) ? ($fCharge / $iUnits) : 0;
@@ -1334,7 +1334,7 @@ class Invoice extends ORM
 									
 								case Discount::DISCOUNT_TYPE_CHARGE:
 									$mRemainingDiscount	-= $fCharge;
-									if ($mRemainingDiscount <= 0)
+									if ($mRemainingDiscount < 0)
 									{
 										// Prorate the last CDR
 										$fCharge		-= abs($mRemainingDiscount);
