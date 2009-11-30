@@ -8,7 +8,13 @@
 //----------------------------------------------------------------------------//
 // import and process payments
 //----------------------------------------------------------------------------//
-require_once('../../flex.require.php');
+require_once('../../lib/classes/Flex.php');
+Flex::load();
+
+// Ensure that Payments isn't already running, then identify that it is now running
+Flex_Process::factory(Flex_Process::PROCESS_PAYMENTS_PROCESSING)->lock();
+
+//require_once('../../flex.require.php');
 $arrConfig = LoadApplication();
 
 // Application entry point - create an instance of the application object
