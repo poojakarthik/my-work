@@ -223,7 +223,9 @@ var Reflex_Date_Picker	= Class.create
 				this.oContainer.oContent.oTimePicker.oSlider.setValues(
 																		(this.oDate.getHours() * 60 * 60) + 
 																		(this.oDate.getMinutes() * 60) + 
-																		this.oDate.getSeconds() 
+																		this.oDate.getSeconds(),
+																		null,
+																		false
 																	);
 				break;
 		}

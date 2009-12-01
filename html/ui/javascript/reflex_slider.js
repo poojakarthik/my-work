@@ -166,7 +166,7 @@ var Reflex_Slider	= Class.create
 		this._paint();
 		
 		// User Callback
-		if (this.fnSetValueCallback)
+		if (this.fnSetValueCallback && bPropogate)
 		{
 			this.fnSetValueCallback(this.getValues());
 		}
