@@ -152,8 +152,10 @@ var Reflex_Slider	= Class.create
 		return this.oValues;
 	},
 	
-	setValues	: function(iStartValue, iEndValue)
+	setValues	: function(iStartValue, iEndValue, bPropogate)
 	{
+		bPropogate	= (bPropogate === undefined || bPropogate === null) ? true : bPropogate;
+		
 		this.oValues.iStartValue	= this._snapValue(parseInt(iStartValue));
 		this.oValues.iEndValue		= this._snapValue(parseInt(iEndValue));
 		
@@ -387,4 +389,4 @@ Reflex_Slider.SELECT_MODE_RANGE		= 'range';
 Reflex_Slider.SELECT_MODE_RANGE_MIN	= 'min';
 Reflex_Slider.SELECT_MODE_RANGE_MAX	= 'max';
 
-Reflex_Slider.DEFAULT_REFRESH_FRAMES_PER_SECOND	= 60;
+Reflex_Slider.DEFAULT_REFRESH_FRAMES_PER_SECOND	= 100;
