@@ -392,16 +392,19 @@ input[type='button'], input.normal-button[type='submit'], a.button, button
 	border-bottom:		solid .1em #666 !important;
 	border-right:		solid .1em #666 !important;
 	-moz-border-radius:	4px !important;
+	-webkit-border-radius:	4px !important;
 	cursor: 			pointer !important;
 	-moz-user-select:	none;
+	-webkit-user-select	: none;
 }
 
 button[disabled]
 {
-	background-image:   none !important;
-	color:				#eee !important;
-	background-color:   #ccc !important;
-	-moz-user-select:   none !important;
+	background-image	: none !important;
+	color				: #eee !important;
+	background-color	: #ccc !important;
+	-moz-user-select	: none !important;
+	-webkit-user-select	: none !important;
 }
 
 button img.icon
@@ -2098,6 +2101,7 @@ div.reflex-datepicker div.content div.month td.day.reflex-datepicker-day-selecte
 div.reflex-slider
 {
 	-moz-user-select	:	none;
+	-webkit-user-select	:	none;
 }
 
 div.reflex-slider-rail,
