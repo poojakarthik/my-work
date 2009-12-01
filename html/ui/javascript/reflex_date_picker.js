@@ -1,6 +1,6 @@
 var Reflex_Date_Picker	= Class.create
 ({
-	initialize	: function()
+	initialize	: function(mMode)
 	{
 		// Unique Identifier
 		this.sUID	= 'reflex-date-picker_' + String(Math.round((new Date()).getTime() * Math.random()));
@@ -118,6 +118,7 @@ var Reflex_Date_Picker	= Class.create
 		this.iMonthsVisible		= Reflex_Date_Picker.DEFAULT_MONTHS_VISIBLE;
 		this.iMonthsPerRow		= Reflex_Date_Picker.DEFAULT_MONTHS_PER_ROW;
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
+		this.setSelectMode(Reflex_Date_Picker.SELECT_MODE_DATE_TIME);
 		this.setDatetime();
 	},
 	
