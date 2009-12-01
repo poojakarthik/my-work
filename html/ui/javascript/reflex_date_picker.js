@@ -398,8 +398,8 @@ var Reflex_Date_Picker	= Class.create
 					//domDay.addClassName('day');
 					//alert("Adding Cell for " + oDateOfMonth);
 					
-					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDay());
-					this.oSetDateHandlers[sFormattedDate]	= this.setDate.bind(this, new Date(oDateOfMonth));
+					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth);
+					this.oSetDateHandlers[sFormattedDate]	= this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDay());
 					
 					// Add Event Listener
 					domDay.addEventListener('click', this.oSetDateHandlers[sFormattedDate], false);
