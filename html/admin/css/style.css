@@ -2107,6 +2107,9 @@ div.reflex-slider
 div.reflex-slider-rail,
 div.reflex-slider-rail-handle
 {
+	-moz-user-select	:	none;
+	-webkit-user-select	:	none;
+	
 	-moz-border-radius-topright			: 0.25em;
 	-moz-border-radius-bottomright		: 0.25em;
 	-moz-border-radius-topleft			: 0.25em;
@@ -2119,6 +2122,9 @@ div.reflex-slider-rail-handle
 
 div.reflex-slider-rail
 {
+	-moz-user-select	:	none;
+	-webkit-user-select	:	none;
+	
 	position	: relative;
 	
 	border		: 0.1em solid #DFA66F;
@@ -2130,6 +2136,9 @@ div.reflex-slider-rail
 
 div.reflex-slider-rail-label
 {
+	-moz-user-select	:	none;
+	-webkit-user-select	:	none;
+	
 	position	: absolute;
 	top			: -1.5em;
 	
@@ -2139,6 +2148,9 @@ div.reflex-slider-rail-label
 
 div.reflex-slider-rail-range
 {
+	-moz-user-select	:	none;
+	-webkit-user-select	:	none;
+	
 	position	: absolute;
 	
 	min-height	: 100%;
@@ -2151,6 +2163,9 @@ div.reflex-slider-rail-range
 
 div.reflex-slider-rail-handle
 {
+	-moz-user-select	:	none;
+	-webkit-user-select	:	none;
+	
 	position	: absolute;
 	top			: -0.25em;
 	
@@ -2172,12 +2187,18 @@ div.reflex-slider-rail-handle
 
 div.reflex-slider-rail-handle:hover
 {
+	-moz-user-select	:	none;
+	-webkit-user-select	:	none;
+	
 	border-color		: #BF6A17;
 	background-color	: #FFF7EF;
 }
 
 div.reflex-slider-rail-label
 {
+	-moz-user-select	:	none;
+	-webkit-user-select	:	none;
+	
 	position	: absolute;
 }
 
