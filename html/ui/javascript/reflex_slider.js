@@ -155,6 +155,9 @@ var Reflex_Slider	= Class.create
 	setValues	: function(iStartValue, iEndValue)
 	{
 		this.oValues.iStartValue	= this._snapValue(parseInt(iStartValue));
+		
+		iEndValue	= parseInt(iEndValue);
+		iEndValue	= (iEndValue >= this.oValues.iStartValue) ? iEndValue : this.oValues.iStartValue;
 		this.oValues.iEndValue		= this._snapValue(parseInt(iEndValue));
 		
 		// Handle any limits
