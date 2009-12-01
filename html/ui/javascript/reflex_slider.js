@@ -1,8 +1,8 @@
-Reflex_Slider	= Class.create
+var Reflex_Slider	= Class.create
 ({
 	initialize	: function(iMinValue, iMaxValue, sSelectMode)
 	{
-		// DOM Elements	
+		// DOM Elements
 		this.oContainer	= {domElement: document.createElement('div')};
 		this.oContainer.domElement.addClassName('reflex-slider');
 		this.oContainer.domElement.oReflexSlider	= this;
@@ -10,6 +10,7 @@ Reflex_Slider	= Class.create
 		this.oContainer.oRail	= {domElement: document.createElement('div')};
 		this.oContainer.oRail.domElement.addClassName('reflex-slider-rail');
 		this.oContainer.domElement.appendChild(this.oContainer.oRail.domElement);
+		this.oContainer.oRail.onClick	= function(){};
 		
 		this.oContainer.oRail.oHandleRange						= {domElement: document.createElement('div')};
 		this.oContainer.oRail.oHandleRange.sName				= 'handle-range';
@@ -34,7 +35,7 @@ Reflex_Slider	= Class.create
 		
 		this.oContainer.oRail.oHandleStart.domElement.observe('mousedown', this.oContainer.oRail.oHandleStart.onMouseDown);
 		this.oContainer.oRail.oHandleEnd.domElement.observe('mousedown', this.oContainer.oRail.oHandleEnd.onMouseDown);
-		
+		Enumerable
 		// DEBUG
 		this.domDebugConsole						= document.createElement('div');
 		this.domDebugConsole.style.position			= 'fixed';
@@ -78,8 +79,8 @@ Reflex_Slider	= Class.create
 		
 		this.iRefreshFramesPerSecond	= Reflex_Slider.DEFAULT_REFRESH_FRAMES_PER_SECOND;
 		
-		// Render!
-		this._render();
+		// Paint!
+		this._paint();
 	},
 	
 	getElement	: function()
@@ -143,7 +144,7 @@ Reflex_Slider	= Class.create
 		this.sSelectMode	= sSelectMode;
 		
 		// Update the Slider
-		this._render();
+		this._paint();
 	},
 	
 	getValues	: function()
@@ -159,8 +160,8 @@ Reflex_Slider	= Class.create
 		// Handle any limits
 		this._limitValues();
 		
-		// Render
-		this._render();
+		// Paint
+		this._paint();
 		
 		// User Callback
 		if (this.fnSetValueCallback)
@@ -230,7 +231,7 @@ Reflex_Slider	= Class.create
 		this.iStepping	= Math.max(1, parseInt(iStepping));
 		
 		this._limitValues();
-		this._render();
+		this._paint();
 	},
 	
 	setLabels	: function(aLabels)
@@ -349,7 +350,7 @@ Reflex_Slider	= Class.create
 		}
 	},
 	
-	_render	: function()
+	_paint	: function()
 	{
 		// Find Percentage Positions
 		var fStartPercentage	= this._calculatePercentageFromValue(this.oValues.iStartValue);
@@ -377,7 +378,7 @@ Reflex_Slider	= Class.create
 			this.oContainer.oRail.oHandleRange.domElement.style.maxWidth	= String(fEndPercentage - fStartPercentage) + "%";
 		}
 		
-		//this.domDebugConsole.innerHTML	+= "Rendering... [StartHandle: "+fStartPercentage+"%, EndHandle: "+fEndPercentage+"%, RangePosition: "+fStartPercentage+"%, RangeLength: "+(fEndPercentage - fStartPercentage)+"%]<br />\n";
+		//this.domDebugConsole.innerHTML	+= "Painting... [StartHandle: "+fStartPercentage+"%, EndHandle: "+fEndPercentage+"%, RangePosition: "+fStartPercentage+"%, RangeLength: "+(fEndPercentage - fStartPercentage)+"%]<br />\n";
 	}
 });
 
