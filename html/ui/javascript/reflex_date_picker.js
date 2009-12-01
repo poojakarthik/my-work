@@ -221,6 +221,7 @@ var Reflex_Date_Picker	= Class.create
 				break;
 			
 			case Reflex_Date_Picker.SELECT_MODE_DATE_TIME:
+				alert('Setting Time Slider Values');
 				this.oContainer.oContent.oTimePicker.oSlider.setValues(
 																		(this.oDate.getHours() * 60 * 60) + (this.oDate.getMinutes() * 60) + this.oDate.getSeconds(),
 																		null,
