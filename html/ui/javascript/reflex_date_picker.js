@@ -129,12 +129,11 @@ var Reflex_Date_Picker	= Class.create
 	
 	setSelectMode	: function(mMode)
 	{
-		var	oCurrentDate	= this.getDate();
 		switch (mMode)
 		{
 			case Reflex_Date_Picker.SELECT_MODE_DATE_TIME:
 				// Switch Now/Today Buttons
-				this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Today';
+				this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Now';
 				
 				// Show Time input
 				this.oContainer.oFooter.oTime.domElement.show();
@@ -148,7 +147,7 @@ var Reflex_Date_Picker	= Class.create
 				this.setTime(0, 0, 0);
 				
 				// Switch Now/Today Buttons
-			this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Now';
+			this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Today';
 				
 				// Hide Time input
 				this.oContainer.oFooter.oTime.domElement.hide();
