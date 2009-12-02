@@ -566,7 +566,7 @@ class Rate_Plan extends ORM_Cached
 	
 	protected static function getMaxCacheSize()
 	{
-		return 1000000;
+		return 100;
 	}
 
 	//---------------------------------------------------------------------------------------------------------------------------------//
