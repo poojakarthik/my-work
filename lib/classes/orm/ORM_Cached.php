@@ -390,6 +390,7 @@ abstract class ORM_Cached extends ORM
 			
 			// Clear the cache
 			call_user_func(array($strClass, 'clearCache'));
+			self::$_arrIsFullyCached[$strCacheName]	= false;
 			
 			// Retrieve the objects from the database
 			$selAll = call_user_func(array($strClass, '_preparedStatement'), 'selAll');
@@ -402,11 +403,19 @@ abstract class ORM_Cached extends ORM
 			while ($arrRecord = $selAll->Fetch())
 			{
 				$object = new $strClass($arrRecord);
-				$arrObjects[] = $object;
+				$arrObjects[$object->id] = $object;
 			}
 			
 			// Add the objects to the cache as a bulk operation
 			call_user_func(array($strClass, 'addToCache'), $arrObjects);
+			
+			if (count($arrObjects) > call_user_func(array($strClass, 'getMaxCacheSize')))
+			{
+				// The number of objects retrieved is larger than the max cache size, meaning they haven't been fully cached
+				// Don't flag this class as having been fully cached (OK, DONE)
+				// Return all the objects
+				return $arrObjects;
+			}
 			
 			// We have fully cached -- don't do it again unless we're forced to
 			self::$_arrIsFullyCached[$strCacheName]	= true;
