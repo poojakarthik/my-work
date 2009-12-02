@@ -129,6 +129,7 @@ var Reflex_Date_Picker	= Class.create
 	
 	setSelectMode	: function(sMode)
 	{
+		alert("Setting Select Mode to: '"+sMode+"'");
 		switch (sMode)
 		{
 			case Reflex_Date_Picker.SELECT_MODE_DATE_TIME:
@@ -155,6 +156,7 @@ var Reflex_Date_Picker	= Class.create
 				this.sSelectMode	= Reflex_Date_Picker.SELECT_MODE_DATE;
 				break;
 		}
+		alert("Select Mode is now '"+this.sSelectMode+"'");
 	},
 	
 	setDateChangeCallback	: function(fnCallback)
