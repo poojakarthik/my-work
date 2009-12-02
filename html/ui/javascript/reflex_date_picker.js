@@ -227,6 +227,10 @@ var Reflex_Date_Picker	= Class.create
 																		false
 																	);
 				break;
+			
+			default:
+				alert("Unknown Select Mode: '"+this.sSelectMode+"'");
+				break;
 		}
 		
 		// Update Label
