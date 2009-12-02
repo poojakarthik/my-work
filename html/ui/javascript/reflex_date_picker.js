@@ -129,7 +129,7 @@ var Reflex_Date_Picker	= Class.create
 	
 	setSelectMode	: function(sMode)
 	{
-		alert("Setting Select Mode to: '"+sMode+"'");
+		//alert("Setting Select Mode to: '"+sMode+"'");
 		switch (sMode)
 		{
 			case Reflex_Date_Picker.SELECT_MODE_DATE_TIME:
@@ -156,7 +156,7 @@ var Reflex_Date_Picker	= Class.create
 				this.sSelectMode	= Reflex_Date_Picker.SELECT_MODE_DATE;
 				break;
 		}
-		alert("Select Mode is now '"+this.sSelectMode+"'");
+		//alert("Select Mode is now '"+this.sSelectMode+"'");
 	},
 	
 	setDateChangeCallback	: function(fnCallback)
@@ -197,7 +197,7 @@ var Reflex_Date_Picker	= Class.create
 			oCurrentDatetime.setMinutes(0);
 			oCurrentDatetime.setSeconds(0);
 			oCurrentDatetime.setSeconds(oValues.iStartValue);
-			this.setDatetime(oCurrentDatetime);
+			this.setDatetime(oCurrentDatetime, false);
 		}
 	},
 	
@@ -207,8 +207,10 @@ var Reflex_Date_Picker	= Class.create
 		this.setDatetime(new Date(oCurrentDatetime.getFullYear(), oCurrentDatetime.getMonth(), oCurrentDatetime.getDay(), iHours, iMinutes, iSeconds));
 	},
 	
-	setDatetime	: function(mDate)
+	setDatetime	: function(mDate, bUpdateTimeSlider)
 	{
+		bUpdateTimeSlider	= (bUpdateTimeSlider === null || bUpdateTimeSlider === undefined) ? true : bUpdateTimeSlider;	// Default: TRUE
+		
 		this.oDate	= (!mDate || (mDate.toLowerCase && mDate.toLowerCase() === 'now')) ? new Date() : new Date(mDate);
 		//$Alert("Date has now been set to " + Reflex_Date_Format.format("Y-m-d H:i:s", mDate));
 		
@@ -222,12 +224,11 @@ var Reflex_Date_Picker	= Class.create
 				break;
 			
 			case Reflex_Date_Picker.SELECT_MODE_DATE_TIME:
-				alert('Setting Time Slider Values');
-				this.oContainer.oContent.oTimePicker.oSlider.setValues(
-																		(this.oDate.getHours() * 60 * 60) + (this.oDate.getMinutes() * 60) + this.oDate.getSeconds(),
-																		null,
-																		false
-																	);
+				//alert('Setting Time Slider Values');
+				if (bUpdateTimeSlider) 
+				{
+					this.oContainer.oContent.oTimePicker.oSlider.setValues((this.oDate.getHours() * 60 * 60) + (this.oDate.getMinutes() * 60) + this.oDate.getSeconds());
+				}
 				break;
 			
 			default:

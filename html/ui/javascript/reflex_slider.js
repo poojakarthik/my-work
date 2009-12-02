@@ -152,10 +152,8 @@ var Reflex_Slider	= Class.create
 		return this.oValues;
 	},
 	
-	setValues	: function(iStartValue, iEndValue, bPropogate)
+	setValues	: function(iStartValue, iEndValue)
 	{
-		bPropogate	= (bPropogate === undefined || bPropogate === null) ? true : bPropogate;
-		
 		this.oValues.iStartValue	= this._snapValue(parseInt(iStartValue));
 		this.oValues.iEndValue		= this._snapValue(parseInt(iEndValue));
 		
@@ -166,7 +164,7 @@ var Reflex_Slider	= Class.create
 		this._paint();
 		
 		// User Callback
-		if (this.fnSetValueCallback && bPropogate)
+		if (this.fnSetValueCallback)
 		{
 			this.fnSetValueCallback(this.getValues());
 		}
