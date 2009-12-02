@@ -22,6 +22,12 @@ Date.DAYS_IN_MONTH	=	{
 							11	: 31
 						};
 
+// getDaySeconds(): Gets the number of seconds that have passed on the day
+Date.prototype.getDaySeconds	= function()
+{
+	return (this.getHours() * 60 * 60) + (this.getMinutes() * 60) + this.getSeconds();
+}
+
 Date.prototype.isLeapYear	= function()
 {
 	var iYear	= this.getFullYear();
