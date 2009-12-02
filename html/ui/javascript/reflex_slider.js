@@ -16,6 +16,7 @@ var Reflex_Slider	= Class.create
 		this.oContainer.oRail.oHandleRange.sName				= 'handle-range';
 		this.oContainer.oRail.oHandleRange.domElement.addClassName('reflex-slider-rail-range');
 		this.oContainer.oRail.domElement.appendChild(this.oContainer.oRail.oHandleRange.domElement);
+		this.oContainer.oRail.oHandleRange.domElement.observe('mousedown');
 		
 		this.oContainer.oRail.oHandleStart						= {domElement: document.createElement('div')};
 		this.oContainer.oRail.oHandleStart.sName				= 'handle-start';
@@ -284,6 +285,11 @@ var Reflex_Slider	= Class.create
 		//this.domDebugConsole.innerHTML	+= String(iValue) + " (x: " + iX + ", y: " + iY + ", ElementWidth: " + this.oContainer.oRail.domElement.getWidth() + ", CumulativeOffset: " + oCumulativeOffset.left + ", ValueRange: " + iValueRange + ", Multiplier: " + iMultiplier + ")<br />\n";
 		
 		return iValue;
+	},
+	
+	_onRailClick	: function()	
+	{
+		
 	},
 	
 	_onMouseDown	: function(oEvent, oHandle)
