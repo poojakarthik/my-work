@@ -387,4 +387,4 @@ Reflex_Slider.SELECT_MODE_RANGE		= 'range';
 Reflex_Slider.SELECT_MODE_RANGE_MIN	= 'min';
 Reflex_Slider.SELECT_MODE_RANGE_MAX	= 'max';
 
-Reflex_Slider.DEFAULT_REFRESH_FRAMES_PER_SECOND	= 200;
+Reflex_Slider.DEFAULT_REFRESH_FRAMES_PER_SECOND	= 30;
