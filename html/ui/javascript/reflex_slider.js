@@ -195,7 +195,7 @@ var Reflex_Slider	= Class.create
 			// Snap to nearest stepping value
 			iValue	= Math.round(Math.round((iValue / this.iStepping)) * this.iStepping);
 		}
-
+		
 		//alert('Snapped iValue: '+String(Math.min(iMaxValue, Math.max(iMinValue, iValue))));
 		
 		return Math.min(iMaxValue, Math.max(iMinValue, iValue));
@@ -387,4 +387,4 @@ Reflex_Slider.SELECT_MODE_RANGE		= 'range';
 Reflex_Slider.SELECT_MODE_RANGE_MIN	= 'min';
 Reflex_Slider.SELECT_MODE_RANGE_MAX	= 'max';
 
-Reflex_Slider.DEFAULT_REFRESH_FRAMES_PER_SECOND	= 24;
+Reflex_Slider.DEFAULT_REFRESH_FRAMES_PER_SECOND	= 200;
