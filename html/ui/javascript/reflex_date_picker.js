@@ -216,8 +216,6 @@ var Reflex_Date_Picker	= Class.create
 		this.oDate		= (!mDate || (mDate.toLowerCase && mDate.toLowerCase() === 'now')) ? new Date() : new Date(mDate);
 		//$Alert("Date has now been set to " + Reflex_Date_Format.format("Y-m-d H:i:s", mDate));
 		
-		var bDateChanged	= (oOldDate === null || oOldDate.getFullYear() != this.oDate.getFullYear() || oOldDate.getMonth() != this.oDate.getMonth() || oOldDate.getDate() != this.oDate.getDate());
-		
 		// If this is a Date only, then zero-out the time component
 		switch (this.sSelectMode)
 		{
@@ -245,8 +243,8 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oDatetime.oDate.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y H:i:s ", this.oDate);
 		//this.oContainer.oFooter.oDatetime.oDate.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y ", this.oDate);
 		
-		// Update calendar
-		if (bDateChanged)
+		// Update calendar (only if the date has changed)
+		if (oOldDate === null || oOldDate.getFullYear() != this.oDate.getFullYear() || oOldDate.getMonth() != this.oDate.getMonth() || oOldDate.getDate() != this.oDate.getDate())
 		{
 			this._renderDatePicker(this.oDate);
 		}
