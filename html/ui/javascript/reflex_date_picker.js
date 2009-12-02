@@ -137,7 +137,7 @@ var Reflex_Date_Picker	= Class.create
 				this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Now';
 				
 				// Show Time input
-				this.oContainer.oFooter.oTime.domElement.show();
+				this.oContainer.oFooter.oDatetime.oTime.domElement.show();
 				
 				this.sSelectMode	= Reflex_Date_Picker.SELECT_MODE_DATE_TIME;
 				break;
@@ -151,7 +151,7 @@ var Reflex_Date_Picker	= Class.create
 				this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Today';
 				
 				// Hide Time input
-				this.oContainer.oFooter.oTime.domElement.hide();
+				this.oContainer.oFooter.oDatetime.oTime.domElement.hide();
 				
 				this.sSelectMode	= Reflex_Date_Picker.SELECT_MODE_DATE;
 				break;
