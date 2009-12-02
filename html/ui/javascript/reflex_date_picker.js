@@ -212,8 +212,11 @@ var Reflex_Date_Picker	= Class.create
 	{
 		bUpdateTimeSlider	= (bUpdateTimeSlider === null || bUpdateTimeSlider === undefined) ? true : bUpdateTimeSlider;	// Default: TRUE
 		
-		this.oDate	= (!mDate || (mDate.toLowerCase && mDate.toLowerCase() === 'now')) ? new Date() : new Date(mDate);
+		var oOldDate	= this.oDate ? this.oDate : null;
+		this.oDate		= (!mDate || (mDate.toLowerCase && mDate.toLowerCase() === 'now')) ? new Date() : new Date(mDate);
 		//$Alert("Date has now been set to " + Reflex_Date_Format.format("Y-m-d H:i:s", mDate));
+		
+		var bDateChanged	= (oOldDate === null || oOldDate.getFullYear() != this.oDate.getFullYear() || oOldDate.getMonth() != this.oDate.getMonth() || oOldDate.getDate() != this.oDate.getDate());
 		
 		// If this is a Date only, then zero-out the time component
 		switch (this.sSelectMode)
@@ -225,10 +228,10 @@ var Reflex_Date_Picker	= Class.create
 				break;
 			
 			case Reflex_Date_Picker.SELECT_MODE_DATE_TIME:
-				//alert('Setting Time Slider Values');
+				// Update the Time Slider
 				if (bUpdateTimeSlider) 
 				{
-					this.oContainer.oContent.oTimePicker.oSlider.setValues((this.oDate.getHours() * 60 * 60) + (this.oDate.getMinutes() * 60) + this.oDate.getSeconds());
+					this.oContainer.oContent.oTimePicker.oSlider.setValues(this.oDate.getDaySeconds());
 				}
 				break;
 			
@@ -243,7 +246,10 @@ var Reflex_Date_Picker	= Class.create
 		//this.oContainer.oFooter.oDatetime.oDate.domElement.innerHTML	= Reflex_Date_Format.format("l, j F Y ", this.oDate);
 		
 		// Update calendar
-		this._renderDatePicker(this.oDate);
+		if (bDateChanged)
+		{
+			this._renderDatePicker(this.oDate);
+		}
 		
 		// Callback
 		if (typeof this.fnDateChangeCallback === 'function')
