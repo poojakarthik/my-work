@@ -566,9 +566,9 @@ class Rate_Plan extends ORM_Cached
 	
 	protected static function getMaxCacheSize()
 	{
-		return 100;
+		return 1000000;
 	}
-	
+
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
 	//---------------------------------------------------------------------------------------------------------------------------------//
