@@ -23,10 +23,10 @@ var Reflex_FX_Transition	= Class.create
 		this.oAnimatedStyles	= {};
 		for (sCSSProperty in oTargetStyle)
 		{
-			oAnimatedStyles[sCSSProperty]	=	{
-													sStartValue	: oElement.getStyle(sCSSProperty),
-													sEndValue	: oTargetStyle[sCSSProperty]
-												};
+			this.oAnimatedStyles[sCSSProperty]	=	{
+														sStartValue	: oElement.getStyle(sCSSProperty),
+														sEndValue	: oTargetStyle[sCSSProperty]
+													};
 		}
 		this.fPercentComplete		= 0.0;
 		this.iDuration				= Math.floor(fDuration * 1000);
