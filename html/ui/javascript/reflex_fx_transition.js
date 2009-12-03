@@ -84,6 +84,7 @@ var Reflex_FX_Transition	= Class.create
 	_destruct	: function()
 	{
 		// Cleanup
+		alert('Cleaning up!');
 		this.oPeriodicalExecuter.stop();
 		delete this.oPeriodicalExecuter;
 	},
