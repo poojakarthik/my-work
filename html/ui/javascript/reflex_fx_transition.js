@@ -111,7 +111,6 @@ var Reflex_FX_Transition	= Class.create
 		
 		// Get transformation factor
 		var fTransformationFactor	= this.fnTimingFunction(fPercentComplete);
-		Reflex_Debug.asHTMLPopup("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete (" + Math.floor(fPercentComplete) + ")");
 		//alert("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete");
 		
 		// Update the Element's style
@@ -125,7 +124,7 @@ var Reflex_FX_Transition	= Class.create
 		//alert("Element style updated with: " + oTransitionStyle.toSource());
 		
 		// Has the transition finished?
-		if (Math.floor(fPercentComplete) >= 1)
+		if (Math.floor(fPercentComplete) >= 1.0)
 		{
 			this._destruct();
 			alert("Transition Complete!");
@@ -135,6 +134,7 @@ var Reflex_FX_Transition	= Class.create
 				this.fnOnCompleteCallback();
 			}
 		}
+		Reflex_Debug.asHTMLPopup("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete (" + Math.floor(fPercentComplete) + ")");
 	}
 });
 
