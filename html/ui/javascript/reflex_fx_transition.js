@@ -35,7 +35,7 @@ var Reflex_FX_Transition	= Class.create
 		switch (typeof mTimingFunction)
 		{
 			case 'function':
-				alert("Timing Function is a custom function");
+				//alert("Timing Function is a custom function");
 				this.fnTimingFunction	= mTimingFunction;
 				break;
 			
@@ -43,12 +43,12 @@ var Reflex_FX_Transition	= Class.create
 			default:
 				if (Reflex_FX_Transition.oTimingFunctions[mTimingFunction])
 				{
-					alert("Timing Function is built-in function '" + mTimingFunction + "'");
+					//alert("Timing Function is built-in function '" + mTimingFunction + "'");
 					this.fnTimingFunction	= Reflex_FX_Transition.oTimingFunctions[mTimingFunction];
 				}
 				else
 				{
-					alert("Timing Function is reverting to the default function");
+					//alert("Timing Function is reverting to the default function");
 					this.fnTimingFunction	= Reflex_FX_Transition.DEFAULT_TIMING_FUNCTION;
 				}
 				break;
@@ -63,14 +63,14 @@ var Reflex_FX_Transition	= Class.create
 		// Start the transition
 		this.iStartTime				= (new Date()).getTime();
 		this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), 1 / (this.iFPSOverride ? this.iFPSOverride : Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND));
-		alert('Animation Started!');
+		//alert('Animation Started!');
 	},
 	
 	// Stop the transition in its current state
 	cancel	: function()
 	{
 		this._destruct();
-		alert('Animation Cancelled!');
+		//alert('Animation Cancelled!');
 	},
 	
 	// Skip to the end of the transition
@@ -78,7 +78,7 @@ var Reflex_FX_Transition	= Class.create
 	{
 		this._destruct();
 		this._paint(1.0);
-		alert('Animation Ended!');
+		//alert('Animation Ended!');
 	},
 	
 	_destruct	: function()
@@ -92,7 +92,7 @@ var Reflex_FX_Transition	= Class.create
 	{
 		if (this.iStartTime)
 		{
-			alert('Animation Refreshing!');
+			//alert('Animation Refreshing!');
 			
 			// Determine progress
 			var iTranspired			= (new Date()).getTime() - this.iStartTime;
@@ -106,12 +106,12 @@ var Reflex_FX_Transition	= Class.create
 	
 	_paint	: function(fPercentComplete)
 	{
-		alert('Animation Painting!');
+		//alert('Animation Painting!');
 		
 		// Get transformation factor
 		var fTransformationFactor	= this.fnTimingFunction(fPercentComplete);
 		
-		alert("Transformation Factor: " + fTransformationFactor + " @ " + fPercentComplete + "% complete");
+		//alert("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete");
 		
 		// Update the Element's style
 		var oTransitionStyle	= {};
@@ -121,12 +121,12 @@ var Reflex_FX_Transition	= Class.create
 		}
 		this.oElement.setStyle(oTransitionStyle);
 		
-		alert("Element style updated with: " + oTransitionStyle.toSource());
+		//alert("Element style updated with: " + oTransitionStyle.toSource());
 		
 		// Has the transition finished?
 		if (Math.floor(fPercentComplete) >= 1)
 		{
-			alert("Transition Complete!");
+			//alert("Transition Complete!");
 			if (typeof this.fnOnCompleteCallback == 'function')
 			{
 				// Invoice the callback
