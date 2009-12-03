@@ -134,7 +134,7 @@ var Reflex_FX_Transition	= Class.create
 				this.fnOnCompleteCallback();
 			}
 		}
-		Reflex_Debug.asHTMLPopup("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete (" + Math.floor(fPercentComplete) + ")");
+		//Reflex_Debug.asHTMLPopup("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete (" + Math.floor(fPercentComplete) + ")");
 	}
 });
 
