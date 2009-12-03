@@ -84,7 +84,7 @@ var Reflex_FX_Transition	= Class.create
 	_destruct	: function()
 	{
 		// Cleanup
-		//alert('Cleaning up!');
+		alert('Cleaning up!');
 		this.oPeriodicalExecuter.stop();
 		delete this.oPeriodicalExecuter;
 	},
@@ -127,14 +127,14 @@ var Reflex_FX_Transition	= Class.create
 		if (Math.floor(fPercentComplete) >= 1.0)
 		{
 			this._destruct();
-			//alert("Transition Complete!");
+			alert("Transition Complete!");
 			if (typeof this.fnOnCompleteCallback == 'function')
 			{
 				// Invoice the callback
 				this.fnOnCompleteCallback();
 			}
 		}
-		//Reflex_Debug.asHTMLPopup("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete (" + Math.floor(fPercentComplete) + ")");
+		Reflex_Debug.asHTMLPopup("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete (" + Math.floor(fPercentComplete) + ")");
 	}
 });
 
