@@ -128,7 +128,7 @@ var Reflex_FX_Transition	= Class.create
 		if (Math.floor(fPercentComplete) >= 1)
 		{
 			this._destruct();
-			//alert("Transition Complete!");
+			alert("Transition Complete!");
 			if (typeof this.fnOnCompleteCallback == 'function')
 			{
 				// Invoice the callback
@@ -138,7 +138,7 @@ var Reflex_FX_Transition	= Class.create
 	}
 });
 
-Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND	= 10;
+Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND	= 24;
 
 Reflex_FX_Transition.apply	= function(oElement)
 {
