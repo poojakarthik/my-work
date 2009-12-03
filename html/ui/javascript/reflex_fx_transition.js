@@ -149,6 +149,7 @@ Reflex_FX_Transition.getCSSTransformDefinition	= function(sCSSValue)
 {
 	var oTransformDefinition	= {};
 	var aMatches;
+	alert(aMatches = Reflex_FX_Transition.oCSSValueRegexes.measurements.exec(sCSSValue));
 	if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.measurements.exec(sCSSValue)).length > 0)
 	{
 		// Measurement (1.5em, 22px, 15%, etc)
