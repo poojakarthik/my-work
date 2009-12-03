@@ -20,6 +20,7 @@ var Developer_Animation	= Class.create(/* extends */Reflex_Popup,
 		
 		// Animate
 		this.fx.display	= new Reflex_FX_Transition(this.container, {opacity: 1}, 0.5);
+		this.fx.display.start();
 	},
 	
 	hide	: function($super)
@@ -31,5 +32,6 @@ var Developer_Animation	= Class.create(/* extends */Reflex_Popup,
 		
 		// Animate
 		this.fx.hide	= new Reflex_FX_Transition(this.container, {opacity: 0}, 0.5);
+		this.fx.hide.start();
 	}
 });
