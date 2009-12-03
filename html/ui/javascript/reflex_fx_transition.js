@@ -58,7 +58,7 @@ var Reflex_FX_Transition	= Class.create
 	start	: function()
 	{
 		// Start the transition
-		this.iStartTime				= Date().getTime();
+		this.iStartTime				= (new Date()).getTime();
 		this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), this.iFPSOverride ? this.iFPSOverride : Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND);
 	},
 	
@@ -87,7 +87,7 @@ var Reflex_FX_Transition	= Class.create
 		if (this.iStartTime)
 		{
 			// Determine progress
-			var iCurrentTime		= Date().getTime();
+			var iCurrentTime		= (new Date()).getTime();
 			var iTranspired			= iCurrentTime - this.iStartTime;
 			this._paint(Math.min(1, (iTranspired / this.iDuration)));
 		}
