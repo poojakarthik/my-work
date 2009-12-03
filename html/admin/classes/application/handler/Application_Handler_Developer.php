@@ -53,7 +53,7 @@ class Application_Handler_Developer extends Application_Handler
 														array	(
 																	'strName'	=> 'FX',
 																	'strType'	=> self::URL_TYPE_JS,
-																	'strURL'	=> 'JsAutoLoader.loadScript(["reflex_fx_transition.js", "developer_animation.js"], function(){var oPopup = new Developer_Animation(25); oPopup.setContent("<div>Magical animated Popup!</div>"); oPopup.display();}, false);'
+																	'strURL'	=> 'JsAutoLoader.loadScript(["reflex_fx_transition.js", "developer_animation.js"], function(){var oPopup = new Developer_Animation(25); oPopup.setContent("<div style=\'margin: 2.5em;\'>Magical animated Popup!</div>"); oPopup.display();}, false);'
 																)
 													);
 			
