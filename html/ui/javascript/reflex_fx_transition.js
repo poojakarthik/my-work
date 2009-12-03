@@ -149,7 +149,7 @@ Reflex_FX_Transition.getCSSTransformDefinition	= function(sCSSValue)
 {
 	var oTransformDefinition	= {};
 	var aMatches;
-	if (aMatches = Reflex_FX_Transition.oCSSValueRegexes.measurements.exec(sCSSValue))
+	if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.measurements.exec(sCSSValue)).length)
 	{
 		// Measurement (1.5em, 22px, 15%, etc)
 		oTransformDefinition.sSourceType	= 'measurement';
@@ -157,21 +157,21 @@ Reflex_FX_Transition.getCSSTransformDefinition	= function(sCSSValue)
 		oTransformDefinition.sUnits			= aMatches[aMatches.length-1].toLowerCase();
 		oTransformDefinition.sValue			= aMatches[1];
 	}
-	else if (aMatches = Reflex_FX_Transition.oCSSValueRegexes.rgb.exec(sCSSValue))
+	else if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.rgb.exec(sCSSValue)).length)
 	{
 		// rgb(r,g,b)
 		oTransformDefinition.sSourceType	= 'rgb';
 		oTransformDefinition.sOutputType	= 'hexadecimal';
 		oTransformDefinition.sValue			= '#' + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, aMatches[1]))) + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, aMatches[9]))) + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, aMatches[17])));
 	}
-	else if (aMatches = Reflex_FX_Transition.oCSSValueRegexes.rgbPercent.exec(sCSSValue))
+	else if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.rgbPercent.exec(sCSSValue)).length)
 	{
 		// rgb(r%,g%,b%)
 		oTransformDefinition.sSourceType	= 'rgbPercent';
 		oTransformDefinition.sOutputType	= 'hexadecimal';
 		oTransformDefinition.sValue			= '#' + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, Math.round(aMatches[1] * 255)))) + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, Math.round(aMatches[9] * 255)))) + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, Math.round(aMatches[17] * 255))));
 	}
-	else if (aMatches = Reflex_FX_Transition.oCSSValueRegexes.hexadecimal.exec(sCSSValue))
+	else if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.hexadecimal.exec(sCSSValue)).length)
 	{
 		// Hexadecimal (#0099FF, #09F)
 		oTransformDefinition.sSourceType	= 'hexadecimal';
