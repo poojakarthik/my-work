@@ -20,7 +20,7 @@ var Developer_Animation	= Class.create(/* extends */Reflex_Popup,
 		$super();
 		
 		// Animate
-		this.fx.display	= new Reflex_FX_Transition(this.container, {opacity: 1}, 0.05);
+		this.fx.display	= new Reflex_FX_Transition(this.container, {opacity: 1}, 0.05, 'ease-in');
 		this.fx.display.start();
 	},
 	

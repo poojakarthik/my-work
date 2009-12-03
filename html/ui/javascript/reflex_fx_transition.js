@@ -40,6 +40,7 @@ var Reflex_FX_Transition	= Class.create
 				break;
 			
 			case 'string':
+				mTimingFunction	= mTimingFunction.camelize();
 			default:
 				if (Reflex_FX_Transition.oTimingFunctions[mTimingFunction])
 				{
