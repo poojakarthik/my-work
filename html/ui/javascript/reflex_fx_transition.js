@@ -115,7 +115,7 @@ var Reflex_FX_Transition	= Class.create
 		
 		// Update the Element's style
 		var oTransitionStyle	= {};
-		for (sCSSProperty in this.oAnimatedStyles.length)
+		for (sCSSProperty in this.oAnimatedStyles)
 		{
 			oTransitionStyle[sCSSProperty]	= Reflex_FX_Transition.transformCSSValue(this.oAnimatedStyles[sCSSProperty].sStartValue, this.oAnimatedStyles[sCSSProperty].sEndValue, fTransformationFactor);
 		}
