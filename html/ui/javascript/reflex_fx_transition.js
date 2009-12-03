@@ -127,14 +127,14 @@ var Reflex_FX_Transition	= Class.create
 		if (Math.floor(fPercentComplete) >= 1.0)
 		{
 			this._destruct();
-			alert("Transition Complete!");
+			//alert("Transition Complete!");
 			if (typeof this.fnOnCompleteCallback == 'function')
 			{
 				// Invoice the callback
 				this.fnOnCompleteCallback();
 			}
 		}
-		Reflex_Debug.asHTMLPopup("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete (" + Math.floor(fPercentComplete) + ")");
+		//Reflex_Debug.asHTMLPopup("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete (" + Math.floor(fPercentComplete) + ")");
 	}
 });
 
@@ -149,7 +149,7 @@ Reflex_FX_Transition.getCSSTransformDefinition	= function(sCSSValue)
 {
 	var oTransformDefinition	= {};
 	var aMatches;
-	alert(aMatches = Reflex_FX_Transition.oCSSValueRegexes.measurements.exec(sCSSValue));
+	//alert(aMatches = Reflex_FX_Transition.oCSSValueRegexes.measurements.exec(sCSSValue));
 	if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.measurements.exec(sCSSValue)).length > 0)
 	{
 		// Measurement (1.5em, 22px, 15%, etc)
