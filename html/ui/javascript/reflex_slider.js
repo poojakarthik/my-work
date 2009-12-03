@@ -12,6 +12,8 @@ var Reflex_Slider	= Class.create
 		this.oContainer.domElement.appendChild(this.oContainer.oRail.domElement);
 		this.oContainer.oRail.onClick	= function(){};
 		
+		this.oHandles	= {};
+		/*
 		this.oContainer.oRail.oHandleRange						= {domElement: document.createElement('div')};
 		this.oContainer.oRail.oHandleRange.sName				= 'handle-range';
 		this.oContainer.oRail.oHandleRange.domElement.addClassName('reflex-slider-rail-range');
@@ -25,6 +27,7 @@ var Reflex_Slider	= Class.create
 		this.oContainer.oRail.oHandleStart.onMouseDown			= this._onMouseDown.bindAsEventListener(this, this.oContainer.oRail.oHandleStart);
 		this.oContainer.oRail.oHandleStart.onMouseUp			= this._onMouseUp.bindAsEventListener(this, this.oContainer.oRail.oHandleStart);
 		this.oContainer.oRail.oHandleStart.onDrag				= this._onDrag.bindAsEventListener(this, this.oContainer.oRail.oHandleStart);
+		this.oContainer.oRail.oHandleStart.oSlideFX				= null;
 		
 		this.oContainer.oRail.oHandleEnd						= {domElement: document.createElement('div')};
 		this.oContainer.oRail.oHandleEnd.sName					= 'handle-end';
@@ -33,10 +36,12 @@ var Reflex_Slider	= Class.create
 		this.oContainer.oRail.oHandleEnd.onMouseDown			= this._onMouseDown.bindAsEventListener(this, this.oContainer.oRail.oHandleEnd);
 		this.oContainer.oRail.oHandleEnd.onMouseUp				= this._onMouseUp.bindAsEventListener(this, this.oContainer.oRail.oHandleEnd);
 		this.oContainer.oRail.oHandleEnd.onDrag					= this._onDrag.bindAsEventListener(this, this.oContainer.oRail.oHandleEnd);
+		this.oContainer.oRail.oHandleEnd.oSlideFX				= null;
 		
 		this.oContainer.oRail.oHandleStart.domElement.observe('mousedown', this.oContainer.oRail.oHandleStart.onMouseDown);
 		this.oContainer.oRail.oHandleEnd.domElement.observe('mousedown', this.oContainer.oRail.oHandleEnd.onMouseDown);
-		Enumerable
+		*/
+		
 		// DEBUG
 		this.domDebugConsole						= document.createElement('div');
 		this.domDebugConsole.style.position			= 'fixed';
@@ -107,59 +112,69 @@ var Reflex_Slider	= Class.create
 		this.setLabels(this.aLabels);
 	},
 	
-	setSelectMode	: function(sSelectMode, iRangeMinimumDifference)
+	// Adds a new Handle
+	addHandle	: function(sHandleName, iValue, fnCallback)
 	{
-		iRangeMinimumDifference	= iRangeMinimumDifference ? iRangeMinimumDifference : 0;
-		
-		sSelectMode	= String(sSelectMode).toLowerCase();
-		switch (sSelectMode)
+		if (this.oHandles[sHandleName] === undefined)
 		{
-			case Reflex_Slider.SELECT_MODE_RANGE_MIN:
-				this.oContainer.oRail.oHandleStart.domElement.hide();
-				this.oContainer.oRail.oHandleEnd.domElement.show();
-				this.oContainer.oRail.oHandleRange.domElement.show();
-				break;
-				
-			case Reflex_Slider.SELECT_MODE_RANGE_MAX:
-				this.oContainer.oRail.oHandleStart.domElement.show();
-				this.oContainer.oRail.oHandleEnd.domElement.hide();
-				this.oContainer.oRail.oHandleRange.domElement.show();
-				break;
-				
-			case Reflex_Slider.SELECT_MODE_RANGE:
-				this.oContainer.oRail.oHandleStart.domElement.show();
-				this.oContainer.oRail.oHandleEnd.domElement.show();
-				this.oContainer.oRail.oHandleRange.domElement.show();
-				this.iRangeMinimumDifference	= Math.max(0, parseInt(iRangeMinimumDifference));
-				break;
-				
-			case Reflex_Slider.SELECT_MODE_VALUE:
-			default:
-				this.oContainer.oRail.oHandleStart.domElement.show();
-				this.oContainer.oRail.oHandleEnd.domElement.hide();
-				this.oContainer.oRail.oHandleRange.domElement.hide();
-				
-				sSelectMode	= Reflex_Slider.SELECT_MODE_VALUE;
-				break;
+			// Add a new Handle
+			var oHandle	=	{
+								sName		: sHandleName,
+								oElement	: document.createElement('div'),
+								iValue		: iValue,
+								oSlideFX	: null
+							};
+			oHandle.oElement.addClassName('reflex-slider-rail-handle');
+			
+			// Attach DOM Element
+			this.oContainer.oRail.domElement.appendChild(oHandle.oElement);
+			
+			// Event Handlers
+			oHandle.oEventHandlers	=	{
+											onMouseDown	: this._onMouseDown.bindAsEventListener(this, oHandle),
+											onMouseUp	: this._onMouseUp.bindAsEventListener(this, oHandle),
+											onDrag		: this._onDrag.bindAsEventListener(this, oHandle),
+										};
 		}
-		this.sSelectMode	= sSelectMode;
-		
-		// Update the Slider
-		this._paint();
+		else
+		{
+			throw "A Handle with the name '"+sHandleName+"' already exists with the value: '"+this.oHandles[sHandleName].iValue+"'";
+		}
 	},
 	
+	// Removes a Handle by it's name/alias
+	removeHandle	: function(sHandleName)
+	{
+		if (this.oHandles[sHandleName] !== undefined)
+		{
+			// Remove the Handle
+			this.oContainer.oRail.domElement.removeChild(oHandle.oElement);
+			delete this.oHandles[sHandleName];
+			return true;
+		}
+		return false;
+	},
+	
+	// Returns the values of all Handles by their
 	getValues	: function()
 	{
-		return this.oValues;
+		var oValues	= {};
+		for (sHandle in this.oHandles)
+		{
+			oValues[sHandle]	= this.oHandles[sHandle].iValue;
+		}
+		return oValues;
 	},
 	
-	setValues	: function(iStartValue, iEndValue)
+	setValues	: function(oValues)
 	{
-		this.oValues.iStartValue	= this._snapValue(parseInt(iStartValue));
-		this.oValues.iEndValue		= this._snapValue(parseInt(iEndValue));
-		
-		// Handle any limits
-		this._limitValues();
+		for (sHandleName in oValues)
+		{
+			if (this.oHandles[sHandleName])
+			{
+				this.oHandles[sHandleName].iValue	= this._snapValue(parseInt(oValues[sHandleName]));
+			}
+		}
 		
 		// Paint
 		this._paint();
@@ -172,6 +187,14 @@ var Reflex_Slider	= Class.create
 		
 		//$Alert("Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]");
 		//this.domDebugConsole.innerHTML	+= "Values set to: [iStartValue: " + this.oValues.iStartValue + ", iEndValue: " + this.oValues.iEndValue + "]<br />\n";
+	},
+	
+	_correctValues	: function()
+	{
+		for (sHandleName in this.oHandles)
+		{
+			this.oHandles[sHandleName].iValue	= this._snapValue(this.oHandles[sHandleName].iValue);
+		}
 	},
 	
 	_snapValue	: function(iValue)
@@ -202,28 +225,6 @@ var Reflex_Slider	= Class.create
 		return Math.min(iMaxValue, Math.max(iMinValue, iValue));
 	},
 	
-	_limitValues	: function()
-	{
-		switch (this.sSelectMode)
-		{
-			case Reflex_Slider.SELECT_MODE_RANGE_MIN:
-				this.oValues.iStartValue	= this.iMinValue;
-				break;
-				
-			case Reflex_Slider.SELECT_MODE_RANGE_MAX:
-				this.oValues.iEndValue		= this.iMaxValue;
-				break;
-				
-			case Reflex_Slider.SELECT_MODE_RANGE:
-				this.oValues.iEndValue		= Math.max(this.oValues.iStartValue, this.oValues.iEndValue);
-				break;
-				
-			case Reflex_Slider.SELECT_MODE_VALUE:
-				this.oValues.iEndValue		= this.oValues.iStartValue;
-				break;
-		}
-	},
-	
 	setStepping	: function(iStepping, bMinAlwaysSelectable, bMaxAlwaysSelectable)
 	{
 		this.bMinAlwaysSelectable	= (bMinAlwaysSelectable || bMinAlwaysSelectable === null || bMinAlwaysSelectable === undefined) ? true : false;
@@ -231,7 +232,7 @@ var Reflex_Slider	= Class.create
 		
 		this.iStepping	= Math.max(1, parseInt(iStepping));
 		
-		this._limitValues();
+		this._correctValues();
 		this._paint();
 	},
 	
@@ -256,18 +257,6 @@ var Reflex_Slider	= Class.create
 		this.aLabels	= aLabels;
 	},
 	
-	setValueCallback	: function(fnCallback)
-	{
-		if (typeof fnCallback === 'function')
-		{
-			this.fnSetValueCallback	= fnCallback;
-		}
-		else
-		{
-			throw "fnCallback is not a Function!";
-		}
-	},
-	
 	_calculatePercentageFromValue	: function(iValue)
 	{
 		return (iValue / (this.iMaxValue - this.iMinValue)) * 100;
@@ -289,7 +278,8 @@ var Reflex_Slider	= Class.create
 	
 	_onRailClick	: function()	
 	{
-		
+		// Snap the closest handle to this point
+		// TODO
 	},
 	
 	_onMouseDown	: function(oEvent, oHandle)
@@ -338,50 +328,24 @@ var Reflex_Slider	= Class.create
 			this.oMouseCoordinates.oLast.iY	= this.oMouseCoordinates.oNext.iY;
 			
 			// Which Slider?
-			if (oHandle === this.oContainer.oRail.oHandleStart)
-			{
-				// Update Slider position
-				this.setValues(this._calculateValueFromMousePosition(this.oMouseCoordinates.oNext.iX, this.oMouseCoordinates.oNext.iY), this.oValues.iEndValue);
-			}
-			else if (oHandle === this.oContainer.oRail.oHandleEnd)
-			{
-				// Update Slider position
-				this.setValues(this.oValues.iStartValue, this._calculateValueFromMousePosition(this.oMouseCoordinates.oNext.iX, this.oMouseCoordinates.oNext.iY));
-			}
-			else
-			{
-				// Neither?  WTF?
-				throw "_onDrag() has been passed an Event whose Element is neither the Start nor End Handle!";
-			}
+			var oValues	= {};
+			oValues[oHandle.sName]	= this._calculateValueFromMousePosition(this.oMouseCoordinates.oNext.iX, this.oMouseCoordinates.oNext.iY);
+			this.setValues(oValues);
 		}
 	},
 	
 	_paint	: function()
 	{
-		// Find Percentage Positions
-		var fStartPercentage	= this._calculatePercentageFromValue(this.oValues.iStartValue);
-		var fEndPercentage		= this._calculatePercentageFromValue(this.oValues.iEndValue);
-		
-		// Update Handles
-		if (this.oContainer.oRail.oHandleStart.domElement.style.left != String(fStartPercentage) + "%")
+		for (sHandleName in this.oHandles)
 		{
-			this.oContainer.oRail.oHandleStart.domElement.style.left	= String(fStartPercentage) + "%";
-		}
-		if (this.oContainer.oRail.oHandleEnd.domElement.style.left != String(fEndPercentage) + "%")
-		{
-			this.oContainer.oRail.oHandleEnd.domElement.style.left		= String(fEndPercentage) + "%";
-		}
-		
-		// Update Range
-		if (this.oContainer.oRail.oHandleRange.domElement.style.left != String(fStartPercentage) + "%")
-		{
-			this.oContainer.oRail.oHandleRange.domElement.style.left	= String(fStartPercentage) + "%";
-		}
-		if (this.oContainer.oRail.oHandleRange.domElement.style.width != String(fEndPercentage - fStartPercentage) + "%")
-		{
-			this.oContainer.oRail.oHandleRange.domElement.style.width		= String(fEndPercentage - fStartPercentage) + "%";
-			this.oContainer.oRail.oHandleRange.domElement.style.minWidth	= String(fEndPercentage - fStartPercentage) + "%";
-			this.oContainer.oRail.oHandleRange.domElement.style.maxWidth	= String(fEndPercentage - fStartPercentage) + "%";
+			// Find Percentage Position
+			var fPercentagePosition	= this._calculatePercentageFromValue(this.oHandles[sHandleName].iValue);
+			
+			// Update Element Style
+			if (this.oHandles[sHandleName].oElement.style.left != String(fPercentagePosition)+'%')
+			{
+				this.oHandles[sHandleName].oElement.style.left = String(fPercentagePosition)+'%';
+			}
 		}
 		
 		//this.domDebugConsole.innerHTML	+= "Painting... [StartHandle: "+fStartPercentage+"%, EndHandle: "+fEndPercentage+"%, RangePosition: "+fStartPercentage+"%, RangeLength: "+(fEndPercentage - fStartPercentage)+"%]<br />\n";
