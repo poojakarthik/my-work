@@ -49,6 +49,13 @@ class Application_Handler_Developer extends Application_Handler
 																	'strURL'	=> 'JsAutoLoader.loadScript(["reflex_fx_transition.js", "reflex_slider.js", "reflex_date_format.js", "reflex_date_picker.js"], function(){var oDatePicker = new Reflex_Date_Picker(); oDatePicker.show();}, false);'
 																)
 													);
+			$arrFunctions[]	= self::_stdClassFactory(
+														array	(
+																	'strName'	=> 'FX',
+																	'strType'	=> self::URL_TYPE_JS,
+																	'strURL'	=> 'JsAutoLoader.loadScript(["reflex_fx_transition.js", "developer_animation.js"], function(){var oPopup = new Developer_Animation(25); oPopup.setContent("<div>Magical animated Popup!</div>"); oPopup.display();}, false);'
+																)
+													);
 			
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['arrFunctions']		= $arrFunctions;
