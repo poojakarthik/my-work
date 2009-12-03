@@ -60,12 +60,14 @@ var Reflex_FX_Transition	= Class.create
 		// Start the transition
 		this.iStartTime				= (new Date()).getTime();
 		this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), this.iFPSOverride ? this.iFPSOverride : Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND);
+		alert('Animation Started!');
 	},
 	
 	// Stop the transition in its current state
 	cancel	: function()
 	{
 		this._destruct();
+		alert('Animation Cancelled!');
 	},
 	
 	// Skip to the end of the transition
@@ -73,6 +75,7 @@ var Reflex_FX_Transition	= Class.create
 	{
 		this._destruct();
 		this._paint(1.0);
+		alert('Animation Ended!');
 	},
 	
 	_destruct	: function()
@@ -86,17 +89,26 @@ var Reflex_FX_Transition	= Class.create
 	{
 		if (this.iStartTime)
 		{
+			alert('Animation Refreshing!');
+			
 			// Determine progress
-			var iCurrentTime		= (new Date()).getTime();
-			var iTranspired			= iCurrentTime - this.iStartTime;
+			var iTranspired			= (new Date()).getTime() - this.iStartTime;
 			this._paint(Math.min(1, (iTranspired / this.iDuration)));
+		}
+		else
+		{
+			throw "_refresh() called before start()!";
 		}
 	},
 	
 	_paint	: function(fPercentComplete)
 	{
+		alert('Animation Painting!');
+		
 		// Get transformation factor
 		var fTransformationFactor	= this.fnTimingFunction(fPercentComplete);
+		
+		alert("Transformation Factor: " + fTransformationFactor + " @ " + fPercentComplete + "% complete");
 		
 		// Update the Element's style
 		var oTransitionStyle	= {};
@@ -104,13 +116,19 @@ var Reflex_FX_Transition	= Class.create
 		{
 			oTransitionStyle[sCSSProperty]	= Reflex_FX_Transition.transformCSSValue(this.oAnimatedStyles[sCSSProperty].sStartValue, this.oAnimatedStyles[sCSSProperty].sEndValue, fTransformationFactor);
 		}
-		this.oElement.setStyle(oTransitionStyle); 
+		this.oElement.setStyle(oTransitionStyle);
+		
+		alert("Element style updated with: " + oTransitionStyle.toSource());
 		
 		// Has the transition finished?
-		if (Math.floor(fPercentComplete) >= 1 && typeof this.fnOnCompleteCallback == 'function')
+		if (Math.floor(fPercentComplete) >= 1)
 		{
-			// Invoice the callback
-			this.fnOnCompleteCallback();
+			alert("Transition Complete!");
+			if (typeof this.fnOnCompleteCallback == 'function')
+			{
+				// Invoice the callback
+				this.fnOnCompleteCallback();
+			}
 		}
 	}
 });
