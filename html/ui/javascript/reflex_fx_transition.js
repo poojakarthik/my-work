@@ -110,7 +110,7 @@ var Reflex_FX_Transition	= Class.create
 		
 		// Get transformation factor
 		var fTransformationFactor	= this.fnTimingFunction(fPercentComplete);
-		
+		Reflex_Debug.asHTMLPopup("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete");
 		//alert("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete");
 		
 		// Update the Element's style
