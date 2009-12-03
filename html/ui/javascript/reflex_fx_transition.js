@@ -100,6 +100,8 @@ var Reflex_FX_Transition	= Class.create
 			
 			// Determine progress
 			var iTranspired			= (new Date()).getTime() - this.iStartTime;
+			this.oElement.innerHTML	= this.oElement.innerHTML + "\n"+iTranspired+" = " + ((new Date()).getTime()) + " - " + this.iStartTime + "<br />";
+			this.oElement.innerHTML	= this.oElement.innerHTML + "\n_paint(" + Math.min(1, (iTranspired / this.iDuration)) + " = Math.min(1, ("+iTranspired+" / "+this.iDuration+")))<br />";
 			this._paint(Math.min(1, (iTranspired / this.iDuration)));
 		}
 		else
