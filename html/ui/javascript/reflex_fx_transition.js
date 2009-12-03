@@ -29,7 +29,7 @@ var Reflex_FX_Transition	= Class.create
 													};
 		}
 		this.fPercentComplete		= 0.0;
-		this.iDuration				= fDuration;
+		this.iDuration				= Math.floor(fDuration * 1000);
 		this.fnOnCompleteCallback	= fnOnCompleteCallback;
 		
 		switch (typeof mTimingFunction)
