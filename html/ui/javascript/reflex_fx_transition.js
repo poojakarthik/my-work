@@ -35,6 +35,7 @@ var Reflex_FX_Transition	= Class.create
 		switch (typeof mTimingFunction)
 		{
 			case 'function':
+				alert("Timing Function is a custom function");
 				this.fnTimingFunction	= mTimingFunction;
 				break;
 			
@@ -42,11 +43,13 @@ var Reflex_FX_Transition	= Class.create
 			default:
 				if (Reflex_FX_Transition.oTimingFunctions[mTimingFunction])
 				{
+					alert("Timing Function is built-in function '" + mTimingFunction + "'");
 					this.fnTimingFunction	= Reflex_FX_Transition.oTimingFunctions[mTimingFunction];
 				}
 				else
 				{
-					this.fnTimingFunction	= Reflex_FX_Transition.oTimingFunctions[Reflex_FX_Transition.DEFAULT_TIMING_FUNCTION];
+					alert("Timing Function is reverting to the default function");
+					this.fnTimingFunction	= Reflex_FX_Transition.DEFAULT_TIMING_FUNCTION;
 				}
 				break;
 		}
@@ -59,7 +62,7 @@ var Reflex_FX_Transition	= Class.create
 	{
 		// Start the transition
 		this.iStartTime				= (new Date()).getTime();
-		this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), this.iFPSOverride ? this.iFPSOverride : Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND);
+		this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), 1 / (this.iFPSOverride ? this.iFPSOverride : Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND));
 		alert('Animation Started!');
 	},
 	
@@ -302,7 +305,6 @@ Reflex_FX_Transition.oTimingFunctions	=	{
 											};
 
 Reflex_FX_Transition.DEFAULT_TIMING_FUNCTION	= Reflex_FX_Transition.oTimingFunctions.ease;
-
 
 Reflex_FX_Transition.oCSSValueRegexes	=	{
 												measurements	: /((\d+)((\.)(\d+))?|((\.)(\d+)))(\%|in|cm|mm|em|ex|pt|pc|px)?/i,
