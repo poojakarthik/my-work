@@ -13,7 +13,7 @@ var Reflex_Slider	= Class.create
 		this.oContainer.oRail.onMouseDown	= this._onRailMouseDown.bindAsEventListener(this);
 		this.oContainer.oRail.onMouseUp		= this._onRailMouseUp.bindAsEventListener(this);
 		this.oContainer.oRail.onDrag		= this._onRailMouseMove.bindAsEventListener(this);
-		this.oContainer.oRail.observe('mousedown', this.oContainer.oRail.onClick);
+		this.oContainer.oRail.domElement.observe('mousedown', this.oContainer.oRail.onClick);
 		
 		this.oHandles	= {};
 		
