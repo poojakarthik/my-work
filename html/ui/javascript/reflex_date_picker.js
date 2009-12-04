@@ -188,7 +188,7 @@ var Reflex_Date_Picker	= Class.create
 		this.setDatetime(new Date(iYear, iMonth, iDay, oCurrentDatetime.getHours(), oCurrentDatetime.getMinutes(), oCurrentDatetime.getSeconds()));
 	},
 	
-	setTimeFromSlider	: function(oSliderHandle)
+	setTimeFromSlider	: function(oSliderValues)
 	{
 		if (this.sSelectMode !== Reflex_Date_Picker.SELECT_MODE_DATE)
 		{
@@ -196,7 +196,7 @@ var Reflex_Date_Picker	= Class.create
 			oCurrentDatetime.setHours(0);
 			oCurrentDatetime.setMinutes(0);
 			oCurrentDatetime.setSeconds(0);
-			oCurrentDatetime.setSeconds(oSliderHandle.getValue());
+			oCurrentDatetime.setSeconds(oSliderValues.time.iValue);
 			this.setDatetime(oCurrentDatetime, false);
 		}
 	},
