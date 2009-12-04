@@ -14,6 +14,7 @@ var Reflex_Slider_Handle	= Class.create
 		
 		this.oElement	= document.createElement('div');
 		this.oElement.addClassName('reflex-slider-rail-handle');
+		this.oElement.setStyle({left: '0%'});
 		this.oElement.observe('mousedown', this.onMouseDown);
 		
 		this.setValue(iValue);
