@@ -196,7 +196,7 @@ var Reflex_Date_Picker	= Class.create
 			oCurrentDatetime.setHours(0);
 			oCurrentDatetime.setMinutes(0);
 			oCurrentDatetime.setSeconds(0);
-			oCurrentDatetime.setSeconds(oSliderValues.time.iValue);
+			oCurrentDatetime.setSeconds(oSliderValues.time);
 			this.setDatetime(oCurrentDatetime, false);
 		}
 	},
