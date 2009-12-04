@@ -228,7 +228,7 @@ var Reflex_Date_Picker	= Class.create
 				// Update the Time Slider
 				if (bUpdateTimeSlider) 
 				{
-					this.oContainer.oContent.oTimePicker.oSlider.setValues(this.oDate.getDaySeconds());
+					this.oContainer.oContent.oTimePicker.oSlider.setValues({time: this.oDate.getDaySeconds()});
 				}
 				break;
 			
