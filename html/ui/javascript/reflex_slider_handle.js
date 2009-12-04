@@ -62,6 +62,7 @@ var Reflex_Slider_Handle	= Class.create
 	
 	setValueForCoordinates	: function(iX, iY)
 	{
+		alert("Setting Value for Coordinates ["+iX+","+iY+"]");
 		this.setValue(this.oReflexSlider.calculateValueFromCoordinates(oMouseCoordinates.x, oMouseCoordinates.y));
 	},
 	
