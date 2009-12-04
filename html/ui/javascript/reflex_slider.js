@@ -145,7 +145,7 @@ var Reflex_Slider	= Class.create
 		var iMultiplier	= iValueRange / this.oContainer.oRail.domElement.getWidth();
 		var iValue		= (iDifference * iMultiplier) + this.oValueLimits.iMinValue;
 		
-		return iValue;
+		return this._snapValue(iValue);
 	},
 	
 	_onRailMouseDown	: function(oEvent)	
