@@ -10,8 +10,10 @@ var Reflex_Slider	= Class.create
 		this.oContainer.oRail	= {domElement: document.createElement('div')};
 		this.oContainer.oRail.domElement.addClassName('reflex-slider-rail');
 		this.oContainer.domElement.appendChild(this.oContainer.oRail.domElement);
-		this.oContainer.oRail.onClick	= this._onRailClick.bindAsEventListener(this);
-		this.oContainer.oRail.observe('click', this.oContainer.oRail.onClick);
+		this.oContainer.oRail.onMouseDown	= this._onRailMouseDown.bindAsEventListener(this);
+		this.oContainer.oRail.onMouseUp		= this._onRailMouseUp.bindAsEventListener(this);
+		this.oContainer.oRail.onDrag		= this._onRailMouseMove.bindAsEventListener(this);
+		this.oContainer.oRail.observe('mousedown', this.oContainer.oRail.onClick);
 		
 		this.oHandles	= {};
 		
@@ -146,13 +148,29 @@ var Reflex_Slider	= Class.create
 		return iValue;
 	},
 	
-	_onRailClick	: function(oEvent)	
+	_onRailMouseDown	: function(oEvent)	
+	{
+		document.observe('mousemove', this.oContainer.oRail.onDrag);
+		this.onRailSlide(oEvent, bAnimate);
+	},
+	
+	_onRailMouseMove	: function(oEvent)	
+	{
+		this.onRailSlide(oEvent, bAnimate);
+	},
+	
+	_onRailMouseUp	: function(oEvent)	
+	{
+		document.stopObserving('mousemove', this.oContainer.oRail.onDrag);
+	},
+	
+	_actionRailMouseEvent	: function(iMouseX, iMouseY, bAnimate)
 	{
 		// Snap the closest handle to this point
 		var iMinDistance;
 		var oClosestHandle;
 		var oMouseCoordinates	= oEvent.pointer();
-		var iCalculatedValue	= this._calculateValueFromMousePosition(oMouseCoordinates.x, oMouseCoordinates.y);
+		var iCalculatedValue	= this.calculateValueFromCoordinates(oMouseCoordinates.x, oMouseCoordinates.y);
 		for (sHandle in this.oHandles)
 		{
 			var iDifference	= Math.abs(this.oHandles[sHandle].iValue - iCalculatedValue);
@@ -166,7 +184,7 @@ var Reflex_Slider	= Class.create
 		if (oClosestHandle !== undefined)
 		{
 			// Update the closest Handle
-			oClosestHandle.setValue(iCalculatedValue, true);
+			oClosestHandle.setValue(iCalculatedValue, bAnimate);
 		}
 	}
 });
