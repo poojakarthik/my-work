@@ -11,6 +11,7 @@ var Reflex_Slider	= Class.create
 		this.oContainer.oRail.domElement.addClassName('reflex-slider-rail');
 		this.oContainer.domElement.appendChild(this.oContainer.oRail.domElement);
 		this.oContainer.oRail.onClick	= this._onRailClick.bindAsEventListener(this);
+		this.oContainer.oRail.observe('click', this.oContainer.oRail.onClick);
 		
 		this.oHandles	= {};
 		
