@@ -69,6 +69,7 @@ var Reflex_Slider_Handle	= Class.create
 	{
 		if (this.oTransitionFX)
 		{
+			alert("Painting with iValue "+this.iValue);
 			if (!this.oTransitionFX.isRunning() && !this.oTransitionFX.isComplete())
 			{
 				//alert("Starting Animation! (iValue: "+this.iValue+")");
