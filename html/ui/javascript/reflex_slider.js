@@ -171,8 +171,7 @@ var Reflex_Slider	= Class.create
 		// Snap the closest handle to this point
 		var iMinDistance;
 		var oClosestHandle;
-		var oMouseCoordinates	= oEvent.pointer();
-		var iCalculatedValue	= this.calculateValueFromCoordinates(oMouseCoordinates.x, oMouseCoordinates.y);
+		var iCalculatedValue	= this.calculateValueFromCoordinates(iMouseX, iMouseY);
 		for (sHandle in this.oHandles)
 		{
 			var iDifference	= Math.abs(this.oHandles[sHandle].iValue - iCalculatedValue);
