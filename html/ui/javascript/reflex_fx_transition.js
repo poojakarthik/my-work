@@ -150,7 +150,7 @@ var Reflex_FX_Transition	= Class.create
 		}
 		this.oElement.setStyle(oTransitionStyle);
 		
-		alert("Element style updated with: " + oTransitionStyle.toSource());
+		//alert("Element style updated with: " + oTransitionStyle.toSource());
 		
 		// Has the transition finished?
 		if (Math.floor(fPercentComplete) >= 1.0)
@@ -167,7 +167,7 @@ var Reflex_FX_Transition	= Class.create
 	}
 });
 
-Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND	= 30;
+Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND	= 60;
 
 Reflex_FX_Transition.apply	= function(oElement)
 {
