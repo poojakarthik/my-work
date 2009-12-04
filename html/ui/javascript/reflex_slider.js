@@ -34,7 +34,7 @@ var Reflex_Slider	= Class.create
 	
 	getValueLimits	: function()
 	{
-		return oValueLimits;
+		return this.oValueLimits;
 	},
 	
 	// Adds a new Handle
