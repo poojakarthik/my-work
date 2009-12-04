@@ -1,6 +1,6 @@
 var Reflex_Date_Picker	= Class.create
 ({
-	initialize	: function(mMode)
+	initialize	: function(mMode, oDate)
 	{
 		// Unique Identifier
 		this.sUID	= 'reflex-date-picker_' + String(Math.round((new Date()).getTime() * Math.random()));
@@ -44,7 +44,7 @@ var Reflex_Date_Picker	= Class.create
 		
 		this.oContainer.oContent.oTimePicker.oSlider	= new Reflex_Slider(0, (60 * 60 * 24) - 1, Reflex_Slider.SELECT_MODE_VALUE);
 		this.oContainer.oContent.oTimePicker.oSlider.setStepping(60 * 15, true, true);
-		this.oContainer.oContent.oTimePicker.oSlider.setValueCallback(this.setTimeFromSlider.bind(this));
+		this.oContainer.oContent.oTimePicker.oSlider.addHandle('time', 0, this.setTimeFromSlider.bind(this));
 		this.oContainer.oContent.oTimePicker.domElement.appendChild(this.oContainer.oContent.oTimePicker.oSlider.getElement());
 		
 		// Footer
@@ -119,7 +119,7 @@ var Reflex_Date_Picker	= Class.create
 		this.iMonthsPerRow		= Reflex_Date_Picker.DEFAULT_MONTHS_PER_ROW;
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
 		this.setSelectMode(Reflex_Date_Picker.SELECT_MODE_DATE_TIME);
-		this.setDatetime();
+		this.setDatetime(oDate);
 	},
 	
 	setPosition	: function(sPositionType, oConfig)
@@ -188,7 +188,7 @@ var Reflex_Date_Picker	= Class.create
 		this.setDatetime(new Date(iYear, iMonth, iDay, oCurrentDatetime.getHours(), oCurrentDatetime.getMinutes(), oCurrentDatetime.getSeconds()));
 	},
 	
-	setTimeFromSlider	: function(oValues)
+	setTimeFromSlider	: function(oSliderHandle)
 	{
 		if (this.sSelectMode !== Reflex_Date_Picker.SELECT_MODE_DATE)
 		{
@@ -196,7 +196,7 @@ var Reflex_Date_Picker	= Class.create
 			oCurrentDatetime.setHours(0);
 			oCurrentDatetime.setMinutes(0);
 			oCurrentDatetime.setSeconds(0);
-			oCurrentDatetime.setSeconds(oValues.iStartValue);
+			oCurrentDatetime.setSeconds(oSliderHandle.getValue());
 			this.setDatetime(oCurrentDatetime, false);
 		}
 	},
