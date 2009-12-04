@@ -42,14 +42,14 @@ var Reflex_Slider_Handle	= Class.create
 		
 		// Update the Element styling
 		var oValueLimits	= this.oReflexSlider.getValueLimits();
-		var fLeftOffset		= this.iValue / (oValueLimits.iMaxValue - oValueLimits.iMixValue);
+		var sLeftOffset		= String(this.iValue / (oValueLimits.iMaxValue - oValueLimits.iMixValue)) + '%';
 		if (bAnimate)
 		{
-			this.oTransitionFX	= new Reflex_FX_Transition(this.oElement, {left: fLeftOffset}, 0.25, 'ease');
+			this.oTransitionFX	= new Reflex_FX_Transition(this.oElement, {left: sLeftOffset}, 0.25, 'ease');
 		}
 		else
 		{
-			this.oTransitionFX	= new Reflex_FX_Transition(this.oElement, {left: fLeftOffset}, 0, 'linear');
+			this.oTransitionFX	= new Reflex_FX_Transition(this.oElement, {left: sLeftOffset}, 0, 'linear');
 		}
 		this.paint();
 		
