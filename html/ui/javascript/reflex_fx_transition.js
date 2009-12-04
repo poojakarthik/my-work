@@ -342,19 +342,19 @@ Reflex_FX_Transition.oTimingFunctions	=	{
 													var t	= fProgress;
 													
 													var p0	= {x: 0, y: 0};
-													var p1	= {x: 0, y: 0};
 													var c0	= {x: fPoint1X, y: fPoint1Y};
 													var c1	= {x: fPoint2X, y: fPoint2Y};
+													var p1	= {x: 0, y: 0};
 													
 													// Source: http://en.wikipedia.org/wiki/Bezier_curve
 													// B(t) = (1 - t)^3 * P0 + 3(1 - t)^2 * t * P1 + 3(1 - t) * t^2 * P2 + t^3 * P3
 													fCurvedProgressX	=	(Math.pow(1 - t, 3) * p0.x)
-																			+ (3 * (Math.pow(1 - t, 2) * t * p1.x))
-																			+ (3 * (1 - t) * Math.pow(t, 2) * p2.x)
+																			+ (3 * (Math.pow(1 - t, 2) * t * c0.x))
+																			+ (3 * (1 - t) * Math.pow(t, 2) * c1.x)
 																			+ (Math.pow(t, 3) * p3.x);
 													fCurvedProgressY	=	(Math.pow(1 - t, 3) * p0.y)
-																			+ (3 * (Math.pow(1 - t, 2) * t * p1.y))
-																			+ (3 * (1 - t) * Math.pow(t, 2) * p2.y)
+																			+ (3 * (Math.pow(1 - t, 2) * t * c0.y))
+																			+ (3 * (1 - t) * Math.pow(t, 2) * c1.y)
 																			+ (Math.pow(t, 3) * p3.y);
 													return fCurvedProgressY;
 												}
