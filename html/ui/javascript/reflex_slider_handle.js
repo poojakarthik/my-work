@@ -7,17 +7,18 @@ var Reflex_Slider_Handle	= Class.create
 		
 		this.sName	= sName;
 		
-		this.oElement	= document.createElement('div');
-		this.oElement.addClassName('reflex-slider-rail-handle');
-		
-		this.setValue(iValue);
-		
-		this.onSetValue		= (typeof fnOnSetValueCallback == 'function') ? fnOnSetValueCallback : null;
-		
 		// Event Handlers
 		this.onMouseDown	= this._onMouseUp.bindAsEventListener(this);
 		this.onMouseUp		= this._onMouseUp.bindAsEventListener(this);
 		this.onDrag			= this._onDrag.bindAsEventListener(this);
+		
+		this.oElement	= document.createElement('div');
+		this.oElement.addClassName('reflex-slider-rail-handle');
+		this.oElement.observe('mousedown', this.onMouseDown);
+		
+		this.setValue(iValue);
+		
+		this.onSetValue		= (typeof fnOnSetValueCallback == 'function') ? fnOnSetValueCallback : null;
 	},
 	
 	getElement	: function()
