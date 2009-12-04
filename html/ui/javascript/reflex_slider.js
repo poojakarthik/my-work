@@ -43,7 +43,7 @@ var Reflex_Slider	= Class.create
 		if (this.oHandles[sHandleName] === undefined)
 		{
 			// Add a new Handle
-			var oHandle	= new Reflex_Slider_Handle(sName, iValue, fnCallback);
+			var oHandle	= new Reflex_Slider_Handle(sHandleName, iValue, fnCallback);
 			this.oContainer.oRail.domElement.appendChild(oHandle.getElement());
 		}
 		else
