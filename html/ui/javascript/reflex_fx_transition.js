@@ -194,7 +194,7 @@ Reflex_FX_Transition.getCSSTransformDefinition	= function(sCSSValue)
 		oTransformDefinition.sOutputType	= 'hexadecimal';
 		oTransformDefinition.sValue			= '#' + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, aMatches[1]))) + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, aMatches[9]))) + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, aMatches[17])));
 	}
-	else if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.rgbPercent.exec(sCSSValue)).length > 0)
+	else if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.rgbPercent.exec(sCSSValue)))
 	{
 		// rgb(r%,g%,b%)
 		oTransformDefinition.sSourceType	= 'rgbPercent';
