@@ -176,6 +176,7 @@ Reflex_FX_Transition.apply	= function(oElement)
 
 Reflex_FX_Transition.getCSSTransformDefinition	= function(sCSSValue)
 {
+	sCSSValue	= String(sCSSValue);
 	var oTransformDefinition	= {};
 	var aMatches;
 	//alert(aMatches = Reflex_FX_Transition.oCSSValueRegexes.measurements.exec(sCSSValue));
