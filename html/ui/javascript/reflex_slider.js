@@ -85,6 +85,7 @@ var Reflex_Slider	= Class.create
 		{
 			if (this.oHandles[sHandleName])
 			{
+				alert("Setting '"+sHandleName+"' to "+oValues[sHandleName]);
 				this.oHandles[sHandleName].setValue(this._snapValue(parseInt(oValues[sHandleName])));
 			}
 		}
