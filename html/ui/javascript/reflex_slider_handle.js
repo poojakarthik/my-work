@@ -1,0 +1,101 @@
+
+var Reflex_Slider_Handle	= Class.create
+({
+	initialize	: function(oReflexSlider, sName, iValue, fnOnSetValueCallback)
+	{
+		this.oReflexSlider	= oReflexSlider;
+		
+		this.sName	= sName;
+		
+		this.oElement	= document.createElement('div');
+		this.oElement.addClassName('reflex-slider-rail-handle');
+		
+		this.setValue(iValue);
+		
+		this.onSetValue		= (typeof fnOnSetValueCallback == 'function') ? fnOnSetValueCallback : null;
+		
+		// Event Handlers
+		this.onMouseDown	= this._onMouseUp.bindAsEventListener(this);
+		this.onMouseUp		= this._onMouseUp.bindAsEventListener(this);
+		this.onDrag			= this._onDrag.bindAsEventListener(this);
+	},
+	
+	getElement	: function()
+	{
+		return this.oElement;
+	},
+	
+	getValue	: function()
+	{
+		return this.iValue;
+	},
+	
+	setValue	: function(iValue, bAnimate)
+	{
+		this.iValue	= iValue;
+		
+		if (this.oTransitionFX)
+		{
+			this.oTransitionFX.cancel();
+		}
+		
+		// Update the Element styling
+		var oValueLimits	= this.oReflexSlider.getValueLimits();
+		var fLeftOffset		= this.iValue / (oValueLimits.iMaxValue - oValueLimits.iMixValue);
+		if (bAnimate)
+		{
+			this.oTransitionFX	= new Reflex_FX_Transition(this.oElement, {left: fLeftOffset}, 0.25, 'ease');
+		}
+		else
+		{
+			this.oTransitionFX	= new Reflex_FX_Transition(this.oElement, {left: fLeftOffset}, 0, 'linear');
+		}
+		this.paint();
+		
+		if (this.onSetValue)
+		{
+			this.onSetValue(this);
+		}
+	},
+	
+	setValueForCoordinates	: function(iX, iY)
+	{
+		this.setValue(this.oReflexSlider.calculateValueFromCoordinates(oMouseCoordinates.x, oMouseCoordinates.y));
+	},
+	
+	paint	: function()
+	{
+		if (this.oTransitionFX)
+		{
+			if (!this.oTransitionFX.isRunning() && !this.oTransitionFX.isComplete())
+			{
+				this.oTransitionFX.start();
+			}
+		}
+		else
+		{
+			throw "paint() called before setValue() on Reflex_Slider_Handle '"+this.sName+"'";
+		}
+	},
+	
+	_onMouseDown	: function(oEvent)
+	{
+		// Enable Dragging
+		document.observe('mouseup', this.onMouseUp);
+		document.observe('mousemove', this.onDrag);
+	},
+	
+	_onMouseUp		: function(oEvent)
+	{
+		// Disable Dragging
+		document.stopObserving('mouseup', this.onMouseUp);
+		document.stopObserving('mousemove', this.onDrag);
+	},
+	
+	_onDrag	: function(oEvent)
+	{
+		// Update the Handle's Value based on the Mouse Position
+		var oMouseCoordinates	= oEvent.pointer();
+		this.setValueForCoordinates(oMouseCoordinates.x, oMouseCoordinates.y);
+	}
+});

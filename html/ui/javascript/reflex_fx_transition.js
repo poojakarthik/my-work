@@ -59,12 +59,25 @@ var Reflex_FX_Transition	= Class.create
 		this.iFPSOverride	= (iFPS !== NaN && iFPS > 0) ? iFPS : null;
 	},
 	
+	getTargetStyle	: function()
+	{
+		return Object.clone(oTargetStyle);
+	},
+	
 	start	: function()
 	{
-		// Start the transition
-		this.iStartTime				= (new Date()).getTime();
-		this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), 1 / (this.iFPSOverride ? this.iFPSOverride : Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND));
-		//alert('Animation Started!');
+		this.iStartTime	= (new Date()).getTime();
+		if (this.iDuration == 0)
+		{
+			// Zero-length duration - skip straight to the end
+			this.end();
+		}
+		else
+		{
+			// Start the transition
+			this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), 1 / (this.iFPSOverride ? this.iFPSOverride : Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND));
+			//alert('Animation Started!');
+		}
 	},
 	
 	// Stop the transition in its current state
@@ -80,6 +93,16 @@ var Reflex_FX_Transition	= Class.create
 		this._destruct();
 		this._paint(1.0);
 		//alert('Animation Ended!');
+	},
+	
+	isRunning	: function()
+	{
+		return (this.oPeriodicalExecuter !== undefined);
+	},
+	
+	isComplete	: function()
+	{
+		return (!this.isRunning() && this.iStartTime);
 	},
 	
 	_destruct	: function()

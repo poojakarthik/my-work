@@ -2153,6 +2153,7 @@ div.reflex-slider-rail-handle
 {
 	position	: absolute;
 	top			: -0.25em;
+	left		: 0%;			/* default position -- overridden element style */
 	
 	border		: 0.1em solid #BF6A17;
 	

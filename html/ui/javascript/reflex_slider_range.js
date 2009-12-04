@@ -112,34 +112,5 @@ var Reflex_Slider_Range	= Class.create(/* extends */Reflex_Slider,
 				this.oValues.iEndValue		= this.oValues.iStartValue;
 				break;
 		}
-	},
-	
-	_paint	: function()
-	{
-		for (sHandleName in this.oHandles)
-		{
-			// Find Percentage Position
-			var fPercentagePosition	= this._calculatePercentageFromValue(this.oHandles[sHandleName].iValue);
-			
-			// Update Element Style
-			if (this.oHandles[sHandleName].oElement.style.left != String(fPercentagePosition)+'%')
-			{
-				this.oHandles[sHandleName].oElement.style.left = String(fPercentagePosition)+'%';
-			}
-		}
-		
-		// Update Range
-		if (this.oContainer.oRail.oHandleRange.domElement.style.left != String(fStartPercentage) + "%")
-		{
-			this.oContainer.oRail.oHandleRange.domElement.style.left	= String(fStartPercentage) + "%";
-		}
-		if (this.oContainer.oRail.oHandleRange.domElement.style.width != String(fEndPercentage - fStartPercentage) + "%")
-		{
-			this.oContainer.oRail.oHandleRange.domElement.style.width		= String(fEndPercentage - fStartPercentage) + "%";
-			this.oContainer.oRail.oHandleRange.domElement.style.minWidth	= String(fEndPercentage - fStartPercentage) + "%";
-			this.oContainer.oRail.oHandleRange.domElement.style.maxWidth	= String(fEndPercentage - fStartPercentage) + "%";
-		}
-		
-		//this.domDebugConsole.innerHTML	+= "Painting... [StartHandle: "+fStartPercentage+"%, EndHandle: "+fEndPercentage+"%, RangePosition: "+fStartPercentage+"%, RangeLength: "+(fEndPercentage - fStartPercentage)+"%]<br />\n";
 	}
 });
