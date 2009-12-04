@@ -150,13 +150,13 @@ var Reflex_FX_Transition	= Class.create
 		}
 		this.oElement.setStyle(oTransitionStyle);
 		
-		alert("Element style updated with: " + oTransitionStyle.toSource());
+		//alert("Element style updated with: " + oTransitionStyle.toSource());
 		
 		// Has the transition finished?
 		if (Math.floor(fPercentComplete) >= 1.0)
 		{
 			this._destruct();
-			//alert("Transition Complete!");
+			alert("Transition Complete!");
 			if (typeof this.fnOnCompleteCallback == 'function')
 			{
 				// Invoice the callback
