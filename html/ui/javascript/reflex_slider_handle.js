@@ -85,6 +85,7 @@ var Reflex_Slider_Handle	= Class.create
 	
 	_onMouseDown	: function(oEvent)
 	{
+		alert("Handle Mouse Down");
 		// Enable Dragging
 		document.observe('mouseup', this.onMouseUp);
 		document.observe('mousemove', this.onDrag);
@@ -92,6 +93,7 @@ var Reflex_Slider_Handle	= Class.create
 	
 	_onMouseUp		: function(oEvent)
 	{
+		alert("Handle Mouse Up");
 		// Disable Dragging
 		document.stopObserving('mouseup', this.onMouseUp);
 		document.stopObserving('mousemove', this.onDrag);
@@ -99,6 +101,7 @@ var Reflex_Slider_Handle	= Class.create
 	
 	_onDrag	: function(oEvent)
 	{
+		alert("Handle Drag");
 		// Update the Handle's Value based on the Mouse Position
 		var oMouseCoordinates	= oEvent.pointer();
 		this.setValueForCoordinates(oMouseCoordinates.x, oMouseCoordinates.y);
