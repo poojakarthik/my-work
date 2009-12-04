@@ -179,7 +179,7 @@ Reflex_FX_Transition.getCSSTransformDefinition	= function(sCSSValue)
 	var oTransformDefinition	= {};
 	var aMatches;
 	//alert(aMatches = Reflex_FX_Transition.oCSSValueRegexes.measurements.exec(sCSSValue));
-	if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.measurements.exec(sCSSValue)).length > 0)
+	if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.measurements.exec(sCSSValue)))
 	{
 		// Measurement (1.5em, 22px, 15%, etc)
 		oTransformDefinition.sSourceType	= 'measurement';
@@ -187,7 +187,7 @@ Reflex_FX_Transition.getCSSTransformDefinition	= function(sCSSValue)
 		oTransformDefinition.sUnits			= aMatches[9] ? aMatches[9].toLowerCase() : null;
 		oTransformDefinition.sValue			= aMatches[1];
 	}
-	else if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.rgb.exec(sCSSValue)).length > 0)
+	else if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.rgb.exec(sCSSValue)))
 	{
 		// rgb(r,g,b)
 		oTransformDefinition.sSourceType	= 'rgb';
@@ -201,7 +201,7 @@ Reflex_FX_Transition.getCSSTransformDefinition	= function(sCSSValue)
 		oTransformDefinition.sOutputType	= 'hexadecimal';
 		oTransformDefinition.sValue			= '#' + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, Math.round(aMatches[1] * 255)))) + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, Math.round(aMatches[9] * 255)))) + Reflex_FX_Transition.decimalToHex(Math.min(255, Math.max(0, Math.round(aMatches[17] * 255))));
 	}
-	else if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.hexadecimal.exec(sCSSValue)).length > 0)
+	else if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.hexadecimal.exec(sCSSValue)))
 	{
 		// Hexadecimal (#0099FF, #09F)
 		oTransformDefinition.sSourceType	= 'hexadecimal';
