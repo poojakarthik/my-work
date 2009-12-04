@@ -83,18 +83,18 @@ var Reflex_Slider	= Class.create
 	
 	setValues	: function(oValues)
 	{
-		alert(oValues.toSource());
+		//alert(oValues.toSource());
 		for (sHandleName in oValues)
 		{
 			//alert(sHandleName);
 			if (this.oHandles[sHandleName])
 			{
-				alert("Setting '"+sHandleName+"' to "+oValues[sHandleName]);
+				//alert("Setting '"+sHandleName+"' to "+oValues[sHandleName]);
 				this.oHandles[sHandleName].setValue(this._snapValue(parseInt(oValues[sHandleName])));
 			}
 			else
 			{
-				alert("No Handle with the name '"+sHandleName+"'");
+				//alert("No Handle with the name '"+sHandleName+"'");
 			}
 		}
 	},
