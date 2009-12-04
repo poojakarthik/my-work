@@ -171,6 +171,7 @@ var Reflex_Slider	= Class.create
 	
 	_actionRailMouseEvent	: function(iMouseX, iMouseY, bAnimate)
 	{
+		alert("Rail event @ ["+iMouseX+","+iMouseY+"] " + (bAnimate ? "(animated)" : ""));
 		// Snap the closest handle to this point
 		var iMinDistance;
 		var oClosestHandle;
