@@ -81,7 +81,7 @@ var Reflex_Slider	= Class.create
 		return oValues;
 	},
 	
-	setValues	: function(oValues)
+	setValues	: function(oValues, bAnimate)
 	{
 		//alert(oValues.toSource());
 		for (sHandleName in oValues)
@@ -90,7 +90,7 @@ var Reflex_Slider	= Class.create
 			if (this.oHandles[sHandleName])
 			{
 				//alert("Setting '"+sHandleName+"' to "+oValues[sHandleName]);
-				this.oHandles[sHandleName].setValue(this._snapValue(parseInt(oValues[sHandleName])));
+				this.oHandles[sHandleName].setValue(this._snapValue(parseInt(oValues[sHandleName])), bAnimate);
 			}
 			else
 			{
