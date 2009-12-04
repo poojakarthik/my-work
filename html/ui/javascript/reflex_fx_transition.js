@@ -344,7 +344,7 @@ Reflex_FX_Transition.oTimingFunctions	=	{
 													var p0	= {x: 0, y: 0};
 													var c0	= {x: fPoint1X, y: fPoint1Y};
 													var c1	= {x: fPoint2X, y: fPoint2Y};
-													var p1	= {x: 0, y: 0};
+													var p1	= {x: 1, y: 1};
 													
 													// Source: http://en.wikipedia.org/wiki/Bezier_curve
 													// B(t) = (1 - t)^3 * P0 + 3(1 - t)^2 * t * P1 + 3(1 - t) * t^2 * P2 + t^3 * P3
