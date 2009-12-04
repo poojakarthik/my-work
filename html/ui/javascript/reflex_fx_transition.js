@@ -156,7 +156,7 @@ var Reflex_FX_Transition	= Class.create
 		if (Math.floor(fPercentComplete) >= 1.0)
 		{
 			this._destruct();
-			alert("Transition Complete!");
+			//alert("Transition Complete!");
 			if (typeof this.fnOnCompleteCallback == 'function')
 			{
 				// Invoice the callback
