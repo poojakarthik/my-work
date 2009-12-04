@@ -8,7 +8,7 @@ var Reflex_Slider_Handle	= Class.create
 		this.sName	= sName;
 		
 		// Event Handlers
-		this.onMouseDown	= this._onMouseUp.bindAsEventListener(this);
+		this.onMouseDown	= this._onMouseDown.bindAsEventListener(this);
 		this.onMouseUp		= this._onMouseUp.bindAsEventListener(this);
 		this.onDrag			= this._onDrag.bindAsEventListener(this);
 		
