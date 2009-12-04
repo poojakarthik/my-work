@@ -62,15 +62,15 @@ var Reflex_Slider_Handle	= Class.create
 	
 	setValueForCoordinates	: function(iX, iY)
 	{
-		alert("Setting Value for Coordinates ["+iX+","+iY+"]");
-		this.setValue(this.oReflexSlider.calculateValueFromCoordinates(oMouseCoordinates.x, oMouseCoordinates.y));
+		//alert("Setting Value for Coordinates ["+iX+","+iY+"]");
+		this.setValue(this.oReflexSlider.calculateValueFromCoordinates(iX, iY));
 	},
 	
 	paint	: function()
 	{
 		if (this.oTransitionFX)
 		{
-			alert("Painting with iValue "+this.iValue);
+			//alert("Painting with iValue "+this.iValue);
 			if (!this.oTransitionFX.isRunning() && !this.oTransitionFX.isComplete())
 			{
 				//alert("Starting Animation! (iValue: "+this.iValue+")");
@@ -85,7 +85,7 @@ var Reflex_Slider_Handle	= Class.create
 	
 	_onMouseDown	: function(oEvent)
 	{
-		alert("Handle Mouse Down");
+		//alert("Handle Mouse Down");
 		// Enable Dragging
 		document.observe('mouseup', this.onMouseUp);
 		document.observe('mousemove', this.onDrag);
@@ -93,7 +93,7 @@ var Reflex_Slider_Handle	= Class.create
 	
 	_onMouseUp		: function(oEvent)
 	{
-		alert("Handle Mouse Up");
+		//alert("Handle Mouse Up");
 		// Disable Dragging
 		document.stopObserving('mouseup', this.onMouseUp);
 		document.stopObserving('mousemove', this.onDrag);
@@ -101,7 +101,7 @@ var Reflex_Slider_Handle	= Class.create
 	
 	_onDrag	: function(oEvent)
 	{
-		alert("Handle Drag");
+		//alert("Handle Drag");
 		// Update the Handle's Value based on the Mouse Position
 		var oMouseCoordinates	= oEvent.pointer();
 		this.setValueForCoordinates(oMouseCoordinates.x, oMouseCoordinates.y);
