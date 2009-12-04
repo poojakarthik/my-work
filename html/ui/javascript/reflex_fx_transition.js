@@ -351,11 +351,11 @@ Reflex_FX_Transition.oTimingFunctions	=	{
 													fCurvedProgressX	=	(Math.pow(1 - t, 3) * p0.x)
 																			+ (3 * (Math.pow(1 - t, 2) * t * c0.x))
 																			+ (3 * (1 - t) * Math.pow(t, 2) * c1.x)
-																			+ (Math.pow(t, 3) * p3.x);
+																			+ (Math.pow(t, 3) * p1.x);
 													fCurvedProgressY	=	(Math.pow(1 - t, 3) * p0.y)
 																			+ (3 * (Math.pow(1 - t, 2) * t * c0.y))
 																			+ (3 * (1 - t) * Math.pow(t, 2) * c1.y)
-																			+ (Math.pow(t, 3) * p3.y);
+																			+ (Math.pow(t, 3) * p1.y);
 													return fCurvedProgressY;
 												}
 											};
