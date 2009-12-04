@@ -43,7 +43,7 @@ var Reflex_Slider_Handle	= Class.create
 		
 		// Update the Element styling
 		var oValueLimits	= this.oReflexSlider.getValueLimits();
-		var sLeftOffset		= String(this.iValue / (oValueLimits.iMaxValue - oValueLimits.iMinValue)) + '%';
+		var sLeftOffset		= String((this.iValue / (oValueLimits.iMaxValue - oValueLimits.iMinValue)) * 100) + '%';
 		alert("sLeftOffset: '"+sLeftOffset+"'");
 		if (bAnimate)
 		{
