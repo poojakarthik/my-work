@@ -81,6 +81,7 @@ var Reflex_Slider	= Class.create
 	
 	setValues	: function(oValues)
 	{
+		alert(oValues.toSource());
 		for (sHandleName in oValues)
 		{
 			if (this.oHandles[sHandleName])
