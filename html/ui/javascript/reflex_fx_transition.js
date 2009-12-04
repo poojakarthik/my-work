@@ -167,7 +167,7 @@ var Reflex_FX_Transition	= Class.create
 	}
 });
 
-Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND	= 24;
+Reflex_FX_Transition.DEFAULT_FRAMES_PER_SECOND	= 60;
 
 Reflex_FX_Transition.apply	= function(oElement)
 {
