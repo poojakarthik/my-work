@@ -71,7 +71,7 @@ var Reflex_Slider_Handle	= Class.create
 		{
 			if (!this.oTransitionFX.isRunning() && !this.oTransitionFX.isComplete())
 			{
-				alert("Starting Animation! (iValue: "+this.iValue+")");
+				//alert("Starting Animation! (iValue: "+this.iValue+")");
 				this.oTransitionFX.start();
 			}
 		}
