@@ -19,9 +19,6 @@ var Reflex_Slider	= Class.create
 		
 		// Config
 		this.setValueLimits(iMinValue, iMaxValue);
-		
-		// Paint!
-		this._paint();
 	},
 	
 	getElement	: function()
