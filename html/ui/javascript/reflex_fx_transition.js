@@ -159,7 +159,7 @@ var Reflex_FX_Transition	= Class.create
 			//alert("Transition Complete!");
 			if (typeof this.fnOnCompleteCallback == 'function')
 			{
-				// Invoice the callback
+				// Invoke the callback
 				this.fnOnCompleteCallback();
 			}
 		}
