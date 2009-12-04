@@ -171,18 +171,19 @@ var Reflex_Slider	= Class.create
 	
 	_actionRailMouseEvent	: function(iMouseX, iMouseY, bAnimate)
 	{
-		alert("Rail event @ ["+iMouseX+","+iMouseY+"] " + (bAnimate ? "(animated)" : ""));
+		//alert("Rail event @ ["+iMouseX+","+iMouseY+"] " + (bAnimate ? "(animated)" : ""));
 		// Snap the closest handle to this point
 		var iMinDistance;
 		var oClosestHandle;
 		var iCalculatedValue	= this.calculateValueFromCoordinates(iMouseX, iMouseY);
 		for (sHandle in this.oHandles)
 		{
-			var iDifference	= Math.abs(this.oHandles[sHandle].iValue - iCalculatedValue);
+			var iDifference	= Math.abs(this.oHandles[sHandle].getValue() - iCalculatedValue);
+			//alert("Difference for Handle '"+sHandle+"': " + iDifference);
 			if (iMinDistance === undefined || iMinDistance > iDifference)
 			{
 				// This is now the closest Handle
-				oClosestHandle	= oHandle;
+				oClosestHandle	= this.oHandles[sHandle];
 			}
 		}
 		
