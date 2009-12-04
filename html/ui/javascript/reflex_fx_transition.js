@@ -260,7 +260,7 @@ Reflex_FX_Transition.transformCSSValue	= function(sCSSStartValue, sCSSEndValue, 
 	switch (oEndTransformDefinition.sOutputType)
 	{
 		case 'measurement':
-			return parseFloat(oStartTransformDefinition.sValue) + ((parseFloat(oEndTransformDefinition.sValue) - parseFloat(oStartTransformDefinition.sValue)) * fTransformationFactor);
+			return String(parseFloat(oStartTransformDefinition.sValue) + ((parseFloat(oEndTransformDefinition.sValue) - parseFloat(oStartTransformDefinition.sValue)) * fTransformationFactor)) + oEndTransformDefinition.sUnits;
 			break;
 			
 		case 'colour':
