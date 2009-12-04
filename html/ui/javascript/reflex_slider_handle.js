@@ -44,7 +44,7 @@ var Reflex_Slider_Handle	= Class.create
 		// Update the Element styling
 		var oValueLimits	= this.oReflexSlider.getValueLimits();
 		var sLeftOffset		= String((this.iValue / (oValueLimits.iMaxValue - oValueLimits.iMinValue)) * 100) + '%';
-		//alert("sLeftOffset: '"+sLeftOffset+"'");
+		alert("sLeftOffset: '"+sLeftOffset+"'");
 		if (bAnimate)
 		{
 			this.oTransitionFX	= new Reflex_FX_Transition(this.oElement, {left: sLeftOffset}, 0.25, 'ease');
