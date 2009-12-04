@@ -152,13 +152,13 @@ var Reflex_Slider	= Class.create
 	{
 		document.observe('mousemove', this.oContainer.oRail.onDrag);
 		var oPointer	= oEvent.pointer();
-		this.onRailSlide(oPointer.x, oPointer.y, true);
+		this._actionRailMouseEvent(oPointer.x, oPointer.y, true);
 	},
 	
 	_onRailMouseMove	: function(oEvent)	
 	{
 		var oPointer	= oEvent.pointer();
-		this.onRailSlide(oPointer.x, oPointer.y, false);
+		this._actionRailMouseEvent(oPointer.x, oPointer.y, false);
 	},
 	
 	_onRailMouseUp	: function(oEvent)	
