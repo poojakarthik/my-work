@@ -185,7 +185,7 @@ Reflex_FX_Transition.getCSSTransformDefinition	= function(sCSSValue)
 		// Measurement (1.5em, 22px, 15%, etc)
 		oTransformDefinition.sSourceType	= 'measurement';
 		oTransformDefinition.sOutputType	= 'measurement';
-		oTransformDefinition.sUnits			= aMatches[9] ? aMatches[9].toLowerCase() : null;
+		oTransformDefinition.sUnits			= aMatches[9] ? aMatches[9].toLowerCase() : '';
 		oTransformDefinition.sValue			= aMatches[1];
 	}
 	else if ((aMatches = Reflex_FX_Transition.oCSSValueRegexes.rgb.exec(sCSSValue)))
