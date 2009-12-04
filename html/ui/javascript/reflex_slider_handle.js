@@ -57,7 +57,9 @@ var Reflex_Slider_Handle	= Class.create
 		
 		if (this.onSetValue)
 		{
-			this.onSetValue({sName: this.sName, iValue: this.getValue()});
+			var oValues	= {};
+			oValues[this.sName]	= this.getValue();
+			this.onSetValue(oValues);
 		}
 	},
 	
