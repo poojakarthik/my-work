@@ -8,10 +8,14 @@
 //----------------------------------------------------------------------------//
 // normalisation application
 //----------------------------------------------------------------------------//
-//require_once('../../flex.require.php');
-require_once("../../lib/classes/Flex.php");
+// Framework
+require_once('../../lib/classes/Flex.php');
 Flex::load();
 
+// Ensure that Rating isn't already running, then identify that it is now running
+Flex_Process::factory(Flex_Process::PROCESS_CDR_NORMALISATION)->lock();
+
+//require_once('../../flex.require.php');
 $arrConfig = LoadApplication();
 
 echo "<pre>\n";
@@ -47,7 +51,9 @@ $appNormalise = new ApplicationNormalise($mixEmailAddress);
 // Import if its a full run
 if ($bolImport)
 {
+	Flex_Process::factory(Flex_Process::PROCESS_CDR_IMPORT)->lock();
 	$appNormalise->Import();
+	Flex_Process::factory(Flex_Process::PROCESS_CDR_IMPORT)->unlock();
 }
 
 // run the Normalise method until there is nothing left to normalise
