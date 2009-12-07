@@ -62,7 +62,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oDatetime.oDate.domElement	= document.createElement('div');
 		this.oContainer.oFooter.oDatetime.oDate.domElement.addClassName('reflex-datepicker-datetime-date');
 		this.oContainer.oFooter.oDatetime.domElement.appendChild(this.oContainer.oFooter.oDatetime.oDate.domElement);
-		
+		/*
 		this.oContainer.oFooter.oDatetime.oTime				= {};
 		this.oContainer.oFooter.oDatetime.oTime.domElement	= document.createElement('div');
 		this.oContainer.oFooter.oDatetime.oTime.domElement.addClassName('reflex-datepicker-datetime-time');
@@ -96,7 +96,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oDatetime.oTime.oSecond.domElement.size		= 2;
 		this.oContainer.oFooter.oDatetime.oTime.oSecond.domElement.maxLength	= 2;
 		this.oContainer.oFooter.oDatetime.oTime.domElement.appendChild(this.oContainer.oFooter.oDatetime.oTime.oSecond.domElement);
-		
+		*/
 		this.oContainer.oFooter.oNow						= {};
 		this.oContainer.oFooter.oNow.domElement				= document.createElement('button');
 		this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Now';
