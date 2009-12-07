@@ -156,6 +156,13 @@ Object.extend(Reflex_Popup.prototype, {
 		Event.observe(document.body, "mousemove", this.drag.bind(this));
 		Event.observe(document.body, "mouseup", this.dragEnd.bind(this));
 		Event.observe(document.body, "drag", this.dragCancel.bind(this));
+		
+		// Fancy FX init
+		this.fx	=	{
+						display	: null,
+						hide	: null
+					};
+		this.container.style.opacity	= 0;
 	},
 	
 	draggedFrom: null,
@@ -279,12 +286,27 @@ Object.extend(Reflex_Popup.prototype, {
 
 	display: function()
 	{
+		if (this.fx.hide)
+		{
+			this.fx.hide.cancel();
+		}
 		Reflex_Popup.display(this);
+		
+		// Animate
+		this.fx.display	= new Reflex_FX_Transition(this.container, {opacity: 1}, 0.1, 'ease-out');
+		this.fx.display.start();
 	},
 
 	hide: function()
 	{
-		Reflex_Popup.hide(this);
+		if (this.fx.display)
+		{
+			this.fx.display.cancel();
+		}
+		
+		// Animate
+		this.fx.hide	= new Reflex_FX_Transition(this.container, {opacity: 0}, 0.1, null, Reflex_Popup.hide.bind(Reflex_Popup, this));
+		this.fx.hide.start();
 	}
 });
 
