@@ -161,7 +161,7 @@ class Application_Page extends Page
 		}
 
 		// Remove any duplicates from the list, as well as files that have already been referenced
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "sha1", "reflex_popup", "flex_constant"));
+		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "sha1", "reflex_fx_transition", "reflex_popup", "flex_constant"));
 		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
 
 		$arrRemainingJsFilesToInclude = array();

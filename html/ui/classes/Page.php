@@ -290,7 +290,7 @@ class Page
 		}
 
 		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant", "sha1", "reflex_popup"));
+		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant", "sha1", "reflex_fx_transition", "reflex_popup"));
 
 		$arrRemainingJsFilesToInclude = array();
 		foreach ($arrRemainingJsFiles as $strFile)
