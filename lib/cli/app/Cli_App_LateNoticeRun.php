@@ -312,10 +312,14 @@ class Cli_App_LateNoticeRun extends Cli
 										$a = 'an';
 									}
 
-				 					$strContent = "Dear $name,\r\n\r\n" .
-				 								  "Please find attached $a $strLetterType from $strCustGroupName.\r\n\r\n" .
-				 								  "Regards\r\n\r\n" .
-				 								  "The Team at $strCustGroupName";
+				 					$strContent =	"Dear $name,\n\n" .
+				 									"You may have overlooked payment of your account this month.  Please find attached urgent correspondence regarding your monthly invoice that requires your immediate attention.\n\n" .
+				 									"If you have paid your account recently, we thank you and please disregard this email.\n\n" .
+				 									"Please note that if you have paid your account by BPay it can take up to 5 business days to receive this payment.\n\n" .
+				 									"Regards\n\n" .
+				 									"Credit Department\n" .
+				 									"$strCustGroupName\n" .
+				 									'"The Small to Medium Size Business Specialists!"';
 
 									$to = $arrArgs[self::SWITCH_TEST_RUN] ? self::EMAIL_BILLING_NOTIFICATIONS : $emailTo;
 
