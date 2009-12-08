@@ -109,7 +109,9 @@ class Validation
 			return FALSE;
 		}
 		
-		$strABN_without_spaces = ereg_replace(" ","", $strValue);
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// $strABN_without_spaces = ereg_replace(" ","", $strValue);
+		$strABN_without_spaces = preg_replace("/\s/","", $strValue);
 		
 		// 3. Check there are 11 integers
 		if ((strlen($strABN_without_spaces) > 11) || (strlen($strABN_without_spaces) < 11))
