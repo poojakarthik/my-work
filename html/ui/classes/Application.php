@@ -991,7 +991,11 @@ class Application
 					DBO()->Contact->Save();
 				}
 				// Check if CustomersGroup in database matches the URL being used.
-				if(!eregi($_SERVER['HTTP_HOST'],DBO()->CustomerGroup->flex_url->Value)){
+				// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+				// if(!eregi($_SERVER['HTTP_HOST'],DBO()->CustomerGroup->flex_url->Value)){
+				$sLink = $_SERVER['HTTP_HOST'];
+				if(!preg_match("/$sLink/i",DBO()->CustomerGroup->flex_url->Value))
+				{
 					header("Location: " . DBO()->CustomerGroup->flex_url->Value);
 				}
 
@@ -1038,7 +1042,11 @@ class Application
 			DBO()->CustomerGroup->Load();
 
 			// Check if CustomersGroup in database matches the URL being used.
-			if(!eregi($_SERVER['HTTP_HOST'],DBO()->CustomerGroup->flex_url->Value)){
+			// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+			// if(!eregi($_SERVER['HTTP_HOST'],DBO()->CustomerGroup->flex_url->Value)){
+			$sLink = $_SERVER['HTTP_HOST'];
+			if(!preg_match("/$sLink/i", DBO()->CustomerGroup->flex_url->Value))
+			{
 				header("Location: " . DBO()->CustomerGroup->flex_url->Value);
 			}
 
