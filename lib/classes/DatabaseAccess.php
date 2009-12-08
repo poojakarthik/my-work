@@ -121,8 +121,8 @@
 	 */ 
 	function IsColumnName($strColumn)
 	{
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0. 
 		// return (eregi("A-Z0-9", $strColumn) == strlen($strColumn)) ? true : false;
-		
 		return (preg_match("/^[A-Z0-9]+$/i", $strColumn)) ? true : false;
 	}
 	

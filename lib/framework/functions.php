@@ -1471,7 +1471,10 @@ function EmailAddressValid ($strEmail)
 		// length. Labels may contain letters, digits and hyphens, however must not
 		// begin or end with a hyphen
 
-		if (!ereg("^[^@]{1,64}@[^@]{1,255}$", $strEmailAddress)) {
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0. 
+		// if (!ereg("^[^@]{1,64}@[^@]{1,255}$", $strEmailAddress)) {
+		if (!preg_match("/^[^@]{1,64}@[^@]{1,255}$/", $strEmailAddress))
+		{
 			// Email invalid because wrong number of characters in one section, or wrong number of @ symbols.
 			return false;
 		}
@@ -1481,7 +1484,10 @@ function EmailAddressValid ($strEmail)
 		$arrLocal = explode(".", $arrEmail [0]);
 
 		for ($i = 0; $i < sizeof($arrLocal); $i++) {
-			if (!ereg("^(([A-Za-z0-9!#$%&'*+/=?^_`{|}~-][A-Za-z0-9!#$%&'*+/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$", $arrLocal [$i])) {
+			// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0. 
+			// if (!ereg("^(([A-Za-z0-9!#$%&'*+/=?^_`{|}~-][A-Za-z0-9!#$%&'*+/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$", $arrLocal [$i])) {
+			if (!preg_match("/^(([A-Za-z0-9!#$%&'*+/=?^_`{|}~-][A-Za-z0-9!#$%&'*+/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$/", $arrLocal [$i]))
+			{
 				return false;
 			}
 		}
