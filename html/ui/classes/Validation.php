@@ -102,7 +102,9 @@ class Validation
 		}
 		
 		// 2. Check that the item has only Numbers and Spaces
-		if (ereg("/[^\d\s]/g", $strValue) != FALSE)
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// if (ereg("/[^\d\s]/g", $strValue) != FALSE)
+		if(!preg_match("/^[\d\s]+$/", $strValue))
 		{
 			return FALSE;
 		}
