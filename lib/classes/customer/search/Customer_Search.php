@@ -237,7 +237,9 @@ class Customer_Search
 						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived));
 					}
 					// Check if $mixSearchItem is a valid ABN
-					$strConstraintAsABN = ereg_replace("[^0-9]", "", $mixConstraint);
+					// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+					// $strConstraintAsABN = ereg_replace("[^0-9]", "", $mixConstraint);
+					$strConstraintAsABN = preg_replace("/[^0-9]/", "", $mixConstraint);
 					//TODO! actually implement this validation.  (It currently only lives in a class within the oblib stuff.  It should be moved to lib/framework/functions.php)
 					if (TRUE)
 					{
