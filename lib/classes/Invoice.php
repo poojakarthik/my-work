@@ -909,7 +909,9 @@ class Invoice extends ORM
 		Log::getLog()->log("Prorating Period End Date\t: ".date("Y-m-d H:i:s", $intPeriodEndDate));
 		Log::getLog()->log("Prorating Period Length (days)\t: {$iProratePeriodDays}");
 		Log::getLog()->log("Billing Period Length (days)\t: {$iBillingPeriodDays}");
-		Flex::assert(($iBillingPeriodDays > 0), "Invoice Billing Period length in days is not greater than 0", array('charge-date-start'=>date("Y-m-d H:i:s", $intChargeStartDate), 'charge-date-end'=>date("Y-m-d H:i:s", $intChargeEndDate), 'period-date-start'=>date("Y-m-d H:i:s", $intPeriodStartDate), 'period-date-end'=>date("Y-m-d H:i:s", $intPeriodEndDate), 'prorate-period-days'=>$iProratePeriodDays, 'billing-period-days'=>$iBillingPeriodDays, 'arguments' => func_get_args()), "Invoice Prorating: Invalid Billing Period");
+		
+		$aArguments	= func_get_args();
+		Flex::assert(($iBillingPeriodDays > 0), "Invoice Billing Period length in days is not greater than 0", array('charge-date-start'=>date("Y-m-d H:i:s", $intChargeStartDate), 'charge-date-end'=>date("Y-m-d H:i:s", $intChargeEndDate), 'period-date-start'=>date("Y-m-d H:i:s", $intPeriodStartDate), 'period-date-end'=>date("Y-m-d H:i:s", $intPeriodEndDate), 'prorate-period-days'=>$iProratePeriodDays, 'billing-period-days'=>$iBillingPeriodDays, 'arguments' => $aArguments), "Invoice Prorating: Invalid Billing Period");
 		if ($iProratePeriodDays)
 		{
 			$fltProratedAmount			= ($fltAmount / $iBillingPeriodDays) * $iProratePeriodDays;
