@@ -1503,8 +1503,12 @@ function EmailAddressValid ($strEmail)
 				return false; // Not enough parts to domain
 			}
 
-			for ($i = 0; $i < sizeof($arrDomain); $i++) {
-				if (!ereg("^(([A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9])|([A-Za-z0-9]+))$", $arrDomain [$i])) {
+			for ($i = 0; $i < sizeof($arrDomain); $i++)
+			{
+				// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+				// if (!ereg("^(([A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9])|([A-Za-z0-9]+))$", $arrDomain [$i])) {
+				if (!preg_match("/^(([A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9])|([A-Za-z0-9]+))$/", $arrDomain [$i]))
+				{
 					return false;
 				}
 			}
