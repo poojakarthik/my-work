@@ -270,7 +270,9 @@ class Customer_Search
 					}
 					
 					// Check if it is a tio ref num
-					$strConstraintAsTIORefNum = ereg_replace("[^0-9\/]", "", $mixConstraint);
+					// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+					// $strConstraintAsTIORefNum = ereg_replace("[^0-9\/]", "", $mixConstraint);
+					$strConstraintAsTIORefNum = preg_replace("/[^0-9\/]/", "", $mixConstraint);
 					if (IsValidTIOReferenceNumber($strConstraintAsTIORefNum))
 					{
 						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForTIORefNum($strConstraintAsTIORefNum, $bolIncludeArchived));
