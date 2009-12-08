@@ -97,9 +97,15 @@ function __autoload($strClassName)
 	if ($mixClassPointer === FALSE)
 	{
 		// The file could not be found so check for a subdirectory of $strClassPath matching the first word in $strClassName
-		$strRegex = "^[A-Z][a-z]+[A-Z]";
-		$mixLength = ereg($strRegex, $strClassName, $regs);
-		if ($mixLength === FALSE)
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		/*
+		 * $strRegex = "^[A-Z][a-z]+[A-Z]";
+		 * $mixLength = ereg($strRegex, $strClassName, $regs);
+		 * if ($mixLength === FALSE)
+		 */
+		$aMatches	= array();
+		$iMatches	= preg_match("/^([A-Z][a-z]+)([A-Z])/", $strClassName, $aMatches);
+		if (!$iMatches)
 		{
 			// The class name is only one word long therefore it couldn't possibly be in a subdirectory
 			// the class's file cannot be found
