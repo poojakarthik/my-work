@@ -185,7 +185,9 @@ class Customer_Search
 				break;
 				
 			case self::CONSTRAINT_TYPE_FNN:
-				$strConstraintAsFNN = ereg_replace("[^0-9a-zA-Z]", "", $mixConstraint);
+				// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0. 
+				// $strConstraintAsFNN = ereg_replace("[^0-9a-zA-Z]", "", $mixConstraint);
+				$strConstraintAsFNN = preg_replace("/[^0-9a-zA-Z]/", "", $mixConstraint);
 				$arrAccounts = self::_findAccountsForFNN($strConstraintAsFNN, $bolIncludeArchived);
 				break;
 				
@@ -227,6 +229,7 @@ class Customer_Search
 					}
 					
 					// Remove none FNN valid chars from the search string
+					
 					$strConstraintAsFNN = ereg_replace("[^0-9a-zA-Z]", "", $mixConstraint);
 					if (IsValidFNN($strConstraintAsFNN))
 					{
