@@ -1492,7 +1492,11 @@ function EmailAddressValid ($strEmail)
 			}
 		}
 
-		if (!ereg("^\[?[0-9\.]+\]?$", $arrEmail [1])) { // Check if domain is IP. If not, it should be valid domain name
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// if (!ereg("^\[?[0-9\.]+\]?$", $arrEmail [1])) {
+		// Check if domain is IP. If not, it should be valid domain name
+		if (!preg_match("/^\[?[0-9\.]+\]?$/", $arrEmail [1]))
+		{
 			$arrDomain = explode(".", $arrEmail [1]);
 
 			if (sizeof ($arrDomain) < 2) {
