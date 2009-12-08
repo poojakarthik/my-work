@@ -105,7 +105,9 @@
 		{
 			$strUnbilledAdjustments = "$" . number_format($strUnbilledAdjustments, 2, '.', '');
 		}
-		if(eregi("-",$strUnbilledAdjustments))
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// if(eregi("-",$strUnbilledAdjustments))
+		if(preg_match("/-/",$strUnbilledAdjustments))
 		{
 			$strUnbilledAdjustments = str_replace("-","",$strUnbilledAdjustments) . " CR";
 		}
