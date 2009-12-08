@@ -1210,31 +1210,46 @@ function InputValidation($strName,$mixInput,$strType,$intLength){
 			$strFoundError=TRUE;
 			$strErrorResponse="The email address does not have a valid MX record, please check your email address and make sure it is valid. If you believe this is a temporary email issue please try again.<br><br>If problems persist, please try a different email address.";
 		}
-		if (!eregi("^[A-Z0-9._%-]+@[A-Z0-9._%-]+\.[A-Z]{2,6}$", $mixInput)) {
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// if (!eregi("^[A-Z0-9._%-]+@[A-Z0-9._%-]+\.[A-Z]{2,6}$", $mixInput)) {
+		if (!preg_match("/^[A-Z0-9._%-]+@[A-Z0-9._%-]+\.[A-Z]{2,6}$/i", $mixInput))
+		{
 			$strFoundError=TRUE;
 			$strErrorResponse="Invalid input: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 		case "numbers":
-		if(!eregi("^[0-9]{1,$intLength}$",$mixInput)){
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// if(!eregi("^[0-9]{1,$intLength}$",$mixInput)){
+		if(!preg_match("/^[0-9]{1,$intLength}$/i",$mixInput))
+		{
 			$strFoundError=TRUE;
 			$strErrorResponse="Incorrect $strName entered. The $strName should be a maximum of $intLength characters long and contain only numbers. e.g. 0123456789";
 		}
 		break;
 		case "letters":
-		if(!eregi("^[a-zA-Z]{1,$intLength}$",$mixInput)){
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// if(!eregi("^[a-zA-Z]{1,$intLength}$",$mixInput)){
+		if(!preg_match("/^[a-zA-Z]{1,$intLength}$/i",$mixInput))
+		{
 			$strFoundError=TRUE;
 			$strErrorResponse="Invalid input: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 		case "mixed":
-		if(!eregi("^[a-zA-Z0-9]{1,$intLength}$",$mixInput)){
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// if(!eregi("^[a-zA-Z0-9]{1,$intLength}$",$mixInput)){
+		if(!preg_match("/^[a-zA-Z0-9]{1,$intLength}$/i",$mixInput))
+		{
 			$strFoundError=TRUE;
 			$strErrorResponse="Invalid input: $strName, max length: $intLength, characters accepted: $strType";
 		}
 		break;
 		case "multiword":
-		if(!eregi("^[[:space:]a-zA-Z0-9_.-]{1,$intLength}$",$mixInput)){
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// if(!eregi("^[[:space:]a-zA-Z0-9_.-]{1,$intLength}$",$mixInput)){
+		if(!preg_match("/^[[:space:]a-zA-Z0-9_.-]{1,$intLength}$/i",$mixInput))
+		{
 			$strFoundError=TRUE;
 			$strErrorResponse="Invalid input: $strName, max length: $intLength, characters accepted: $strType";
 		}
