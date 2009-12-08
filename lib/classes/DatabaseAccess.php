@@ -122,7 +122,8 @@
 	function IsColumnName($strColumn)
 	{
 		// return (eregi("A-Z0-9", $strColumn) == strlen($strColumn)) ? true : false;
-		return (preg_match("/A-Z0-9/i", $strColumn) == strlen($strColumn)) ? true : false;
+		
+		return (preg_match("/^[A-Z0-9]+$/i", $strColumn)) ? true : false;
 	}
 	
 
