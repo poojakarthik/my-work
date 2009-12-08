@@ -101,11 +101,11 @@ class Invoice extends ORM
 			$oPaymentTerms		= Payment_Terms::getCurrentForCustomerGroup($objAccount->CustomerGroup);
 			if ($iInvoiceDayOfMonth <= $oPaymentTerms->invoice_day)
 			{
-				$this->intProratePeriodStart	= strtotime("-1 month", strtotime(date("Y-m-".str_pad($iInvoiceDayOfMonth, 2, '0', STR_PAD_LEFT), $this->intInvoiceDatetime)));
+				$this->intProratePeriodStart	= strtotime("-1 month", strtotime(date("Y-m-".str_pad($oPaymentTerms->invoice_day, 2, '0', STR_PAD_LEFT), $this->intInvoiceDatetime)));
 			}
 			else
 			{
-				$this->intProratePeriodStart	= strtotime(date("Y-m-".str_pad($iInvoiceDayOfMonth, 2, '0', STR_PAD_LEFT), $this->intInvoiceDatetime));
+				$this->intProratePeriodStart	= strtotime(date("Y-m-".str_pad($oPaymentTerms->invoice_day, 2, '0', STR_PAD_LEFT), $this->intInvoiceDatetime));
 			}
 			$this->intProratePeriodEnd			= strtotime($objInvoiceRun->billing_period_end_datetime);
 			
