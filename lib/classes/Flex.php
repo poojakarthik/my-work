@@ -436,24 +436,21 @@ final class Flex
 		if ($mixClassPointer === FALSE)
 		{
 			// The file could not be found so check for a subdirectory of $strClassPath matching the first word in $strClassName
-			$strRegex = "^[A-Z][a-z]+[A-Z]";
-			$mixLength = ereg($strRegex, $strClassName, $regs);
-			if ($mixLength === FALSE)
+			$aMatches	= array();
+			$iMatches	= preg_match("/^([A-Z][a-z]+)([A-Z])/", $strClassName, $aMatches);
+			if (!$iMatches)
 			{
 				// The class name is only one word long therefore it couldn't possibly be in a subdirectory
 				// the class's file cannot be found
 				return FALSE;
 			}
 			
-			// Subtract 1 from $mixLength as it will have included the first letter of the second word
-			$mixLength--;
-			
 			// Grab the first word (the sub directory)
-			$strSubDir = substr($strClassName, 0, $mixLength);
+			$strSubDir = $aMatches[1];
 			$strClassPath .= strtolower("/$strSubDir");
 			
 			// Grab the filename
-			$strClassName = substr($strClassName, $mixLength);
+			$strClassName = substr($strClassName, strlen($strSubDir));
 			
 			// Load a directory listing for $strClassPath
 			self::oldLoadDirectoryListing($strClassPath);
