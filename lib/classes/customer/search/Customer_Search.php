@@ -246,7 +246,9 @@ class Customer_Search
 						$arrAccounts = array_merge($arrAccounts, self::_findAccountsForABN($strConstraintAsABN, $bolIncludeArchived));
 					}
 					//Check if $mixSearchItem is a valid ACN
-					$strConstraintAsACN = ereg_replace("[^0-9]", "", $mixConstraint);
+					// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+					// $strConstraintAsACN = ereg_replace("[^0-9]", "", $mixConstraint);
+					$strConstraintAsACN = preg_replace("/[^0-9]/", "", $mixConstraint);
 					//TODO! actually implement this validation.  (we don't currently do any ACN validation)
 					if (TRUE)
 					{
