@@ -81,7 +81,9 @@ class CommonLayout
 				echo "<div class='MenuItemsContainer'>";
 				// Get version.
 				$strShowIE6Code=FALSE;
-				if(eregi("MSIE 6.0",$_SERVER['HTTP_USER_AGENT']))
+				// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+				// if(eregi("MSIE 6.0",$_SERVER['HTTP_USER_AGENT']))
+				if(preg_match("/MSIE 6.0/i",$_SERVER['HTTP_USER_AGENT']))
 				{
 					$strShowIE6Code=TRUE;
 				}

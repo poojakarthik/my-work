@@ -99,7 +99,9 @@
 			for($i=100; $i<100+count($GLOBALS['*arrConstant']['service_type']); $i++)
 			{
 				$mixServiceDescription = $GLOBALS['*arrConstant']['service_type'][$i]['Description'];
-				if(!eregi("dialup",$mixServiceDescription))
+				// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+				// if(!eregi("dialup",$mixServiceDescription))
+				if(!preg_match("/dialup/i",$mixServiceDescription))
 				{
 					$mixTypeOfServiceList .= "
 					<tr>

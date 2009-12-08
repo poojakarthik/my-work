@@ -115,7 +115,9 @@
 			</TR>";
 		}
 		$strCustomerBalance = "$" . number_format(DBO()->Account->CustomerBalance->Value, 2, '.', '');
-		if(eregi("-",$strCustomerBalance))
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// if(eregi("-",$strCustomerBalance))
+		if(preg_match("/-/",$strCustomerBalance))
 		{
 			$strCustomerBalance = str_replace("-","",$strCustomerBalance) . " CR";
 		}
@@ -130,7 +132,9 @@
 		</TR>";
 
 		$strUnbilledAdjustments = "$" . number_format(DBO()->Account->UnbilledAdjustments->Value, 2, '.', '');
-		if(eregi("-",$strUnbilledAdjustments))
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// if(eregi("-",$strUnbilledAdjustments))
+		if(preg_match("/-/",$strUnbilledAdjustments))
 		{
 			$strUnbilledAdjustments = str_replace("-","",$strUnbilledAdjustments) . " CR";
 		}
@@ -191,7 +195,9 @@
 		{
 			$strUnbilledAdjustments = "$" . number_format($strUnbilledAdjustments, 2, '.', '');
 		}
-		if(eregi("-",$strUnbilledAdjustments))
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// if(eregi("-",$strUnbilledAdjustments))
+		if(preg_match("/-/",$strUnbilledAdjustments))
 		{
 			$strUnbilledAdjustments = str_replace("-","",$strUnbilledAdjustments) . " CR";
 		}

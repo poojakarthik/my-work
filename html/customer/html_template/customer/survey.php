@@ -137,7 +137,9 @@
 		else if(DBO()->Survey->Error->Value !== NULL)
 		{
 			$return_link = "";
-			if(!eregi("already completed this survey",DBO()->Survey->Error->Value))
+			// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+			// if(!eregi("already completed this survey",DBO()->Survey->Error->Value))
+			if(!preg_match("/already completed this survey/i",DBO()->Survey->Error->Value))
 			{
 				$return_link = "Please return and correct the errors, <A HREF=\"javascript:history.go(-1)\">click here</A>.";
 			}
