@@ -522,7 +522,9 @@ class Customer_Search
 	private static function _findAccountsForTIORefNum($strTIORefNum, $bolIncludeArchived)
 	{
 		// Strip invalid chars from the tio ref num
-		$strTIORefNum = ereg_replace("[^0-9\/]", "", $strTIORefNum);
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// $strTIORefNum = ereg_replace("[^0-9\/]", "", $strTIORefNum);
+		$strTIORefNum = preg_replace("/[^0-9\/]/", "", $strTIORefNum);
 		
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND a.Archived != ". ACCOUNT_STATUS_ARCHIVED;
 		
