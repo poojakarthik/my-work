@@ -2166,10 +2166,12 @@ class AppTemplateConsole extends ApplicationTemplate
 
 				// we can check the database for a record. 1
 				// Since there is duplicate account numbers we check there first name...?
-				$strCustContact = $dbConnection->fetchone("SELECT Id,FirstName,LastName,DOB,LastLogin,Email,Account FROM `Contact` WHERE Account = \"" . ereg_replace("[^0-9]", "", $_POST['mixAccountNumber']) . "\" AND FirstName LIKE \"" . trim($_POST['mixFirstName']) . "\" AND LastName LIKE \"" . trim($_POST['mixLastName']) . "\" LIMIT 1");
+				// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+				$strCustContact = $dbConnection->fetchone("SELECT Id,FirstName,LastName,DOB,LastLogin,Email,Account FROM `Contact` WHERE Account = \"" . preg_replace("/[^0-9]/", "", $_POST['mixAccountNumber']) . "\" AND FirstName LIKE \"" . trim($_POST['mixFirstName']) . "\" AND LastName LIKE \"" . trim($_POST['mixLastName']) . "\" LIMIT 1");
 
 				// we can check the database for a record. 2
-				// $strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"" . ereg_replace("[^0-9]", "", $_POST['mixAccountNumber']) . "\" LIMIT 1");
+				// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+				// $strCustAccount = $dbConnection->fetchone("SELECT ABN FROM `Account` WHERE Id = \"" . preg_replace("/[^0-9]/", "", $_POST['mixAccountNumber']) . "\" LIMIT 1");
 
 
 				// $intCustomerEnteredABN = $_POST['mixABN'];
@@ -2192,7 +2194,9 @@ class AppTemplateConsole extends ApplicationTemplate
 					DBO()->ErrorMessage .= "Error you have already setup your account, if you forget your password: <a href=\"" . Href()->ResetPassword() . "\">go here</a>" . "<br/>";
 
 				}
-				else if(eregi($strCustContact->FirstName, $_POST['mixFirstName']) && eregi($strCustContact->LastName, $_POST['mixLastName']) && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]")
+				// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+				// else if(eregi($strCustContact->FirstName, $_POST['mixFirstName']) && eregi($strCustContact->LastName, $_POST['mixLastName']) && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]")
+				else if(preg_match("/$strCustContact->FirstName/i", $_POST['mixFirstName']) && preg_match("/$strCustContact->LastName/i", $_POST['mixLastName']) && $strCustContact->DOB == "$_POST[mixBirthYear]-$_POST[mixBirthMonth]-$_POST[mixBirthDay]")
 				{
 					DBO()->Fail = FALSE;
 					DBO()->Contact->Id = $strCustContact->Id;
