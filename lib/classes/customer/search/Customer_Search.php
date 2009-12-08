@@ -487,7 +487,9 @@ class Customer_Search
 	
 	private static function _findAccountsForABN($strABN, $bolIncludeArchived)
 	{
-		$strABN = ereg_replace("[^0-9]", "", $strABN);
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
+		// $strABN = ereg_replace("[^0-9]", "", $strABN);
+		$strABN = preg_replace("/[^0-9]/", "", $strABN);
 		
 		$strArchivedConstraint = ($bolIncludeArchived)? "" : "AND Archived != ". ACCOUNT_STATUS_ARCHIVED;
 		$strQuery = "	SELECT DISTINCT Id
