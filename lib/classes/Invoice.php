@@ -97,9 +97,9 @@ class Invoice extends ORM
 			$this->intNextInvoiceDatetime			= strtotime(Invoice_Run::predictNextInvoiceDate($objAccount->CustomerGroup, $objInvoiceRun->strInvoiceDatetime));
 			$this->intLastProductionInvoiceDatetime	= strtotime($objAccount->getBillingPeriodStart($objInvoiceRun->BillingDate, true));
 			
-			$iInvoiceDayOfMonth	= (int)date('d', $objInvoiceRun->intInvoiceDatetime);
+			$iCurrentDay	= (int)date('d', $objInvoiceRun->intInvoiceDatetime);
 			$oPaymentTerms		= Payment_Terms::getCurrentForCustomerGroup($objAccount->CustomerGroup);
-			if ($iInvoiceDayOfMonth <= $oPaymentTerms->invoice_day)
+			if ($iCurrentDay <= $oPaymentTerms->invoice_day)
 			{
 				$this->intProratePeriodStart	= strtotime("-1 month", strtotime(date("Y-m-".str_pad($oPaymentTerms->invoice_day, 2, '0', STR_PAD_LEFT), $this->intInvoiceDatetime)));
 			}
@@ -107,7 +107,7 @@ class Invoice extends ORM
 			{
 				$this->intProratePeriodStart	= strtotime(date("Y-m-".str_pad($oPaymentTerms->invoice_day, 2, '0', STR_PAD_LEFT), $this->intInvoiceDatetime));
 			}
-			$this->intProratePeriodEnd			= strtotime($objInvoiceRun->billing_period_end_datetime);
+			$this->intProratePeriodEnd			= strtotime("-1 second", strtotime("+1 month", $this->intProratePeriodStart));
 			
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period Start: {$this->strLastInvoiceDatetime} ($this->intLastInvoiceDatetime)");
 			Log::getLog()->log("\t* {$objAccount->Id} Billing Period End: {$objInvoiceRun->billing_period_end_datetime}");
