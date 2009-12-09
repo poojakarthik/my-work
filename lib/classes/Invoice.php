@@ -1270,12 +1270,39 @@ class Invoice extends ORM
 		
 		$sServices	= implode(', ', self::_extractServiceIds($aServices));
 		
+		Log::getLog()->log("Discount: ".$oDiscount->name);
+		
 		$fChargeLimit	= max($oDiscount->charge_limit, 0);
 		$iUnitLimit		= max($oDiscount->unit_limit, 0);
 		
-		$mDiscountLimit			= ($iUnitLimit) ? $iUnitLimit : $fChargeLimit;
-		$mProratedDiscountLimit	= self::prorate($mDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->intProratePeriodStart, $this->intProratePeriodEnd, DATE_TRUNCATE_DAY, true, 0);
-		$sDiscountType			= ($iUnitLimit) ? Discount::DISCOUNT_TYPE_UNITS : Discount::DISCOUNT_TYPE_CHARGE;
+		if ($iUnitLimit)
+		{
+			$sDiscountType	= Discount::DISCOUNT_TYPE_UNITS;
+			$mDiscountLimit	= $iUnitLimit;
+		}
+		else
+		{
+			$sDiscountType	= Discount::DISCOUNT_TYPE_CHARGE;
+			$mDiscountLimit	= $fChargeLimit;
+		}
+		
+		// Scalable Shared Discounts
+		$mScaledDiscountLimit	= $mDiscountLimit;
+		if ($aPlanDetails['Shared'])
+		{
+			$iScalable		= (int)$aPlanDetails['scalable'];
+			$iMinServices	= (int)$aPlanDetails['minimum_services'];
+			$iMaxServices	= (int)$aPlanDetails['maximum_services'];
+			if ($iScalable && $iMinServices > 0 && $iMaxServices >= $iMinServices)
+			{
+				$mScaledDiscountLimit	= ($mDiscountLimit	/ $iMaxServices) * max($iMaxServices, count($aServices));
+				Log::getLog()->log("Scaled! (Full Discount: {$mDiscountLimit}; Scaled Discount: {$mScaledDiscountLimit})");
+			}
+		}
+		
+		$mProratedDiscountLimit	= self::prorate($mScaledDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->intProratePeriodStart, $this->intProratePeriodEnd, DATE_TRUNCATE_DAY, true, 0);
+		$mProratedDiscountLimit	= ($sDiscountType === Discount::DISCOUNT_TYPE_UNITS) ? round($mProratedDiscountLimit) : $mProratedDiscountLimit;
+		
 		Log::getLog()->log("Prorated Discount Limit: {$mProratedDiscountLimit}");
 		Log::getLog()->log("Discount Limit: {$mDiscountLimit}");
 		Log::getLog()->log("Discount Limit Type: ".(($iUnitLimit) ? 'UNITS' : 'CHARGE'));
