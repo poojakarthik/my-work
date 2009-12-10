@@ -56,7 +56,7 @@ class Product_Type_Module_Service_Mobile extends Product_Type_Module
 		if (!count($products))
 		{
 			$product = new DO_Sales_SaleItemServiceMobile();
-			$product->saleItemId = $bolValidateOnly ? 0 : $saleItem->id;
+			$product->saleItemId = $bolValidateOnly ? null : $saleItem->id;
 		}
 		else
 		{

@@ -83,6 +83,75 @@ class DO_Sales_CreditCardType extends DO_Sales_Base_CreditCardType
 		return $value;
 	}
 
+	// Assume credit card name is independent of the card type
+	public static function isValidCreditCardName($strName)
+	{
+		// Check that the string is not empty and has no leading or trailing whitespace
+		if (!DO_SalesValidation::isTrimmed($strName) || $strName === '')
+		{
+			return false;
+		}
+		
+		// Check for the presence of illegal chars
+		return DO_SalesValidation::hasIllegalChars($strName, "`~!@#\$%^*()=_+{}[]|\\;:\"<>,/?\n\r\t")? false : true;
+	}
+
+	// Assumes $strNumber is not encrypted
+	public function isValidCreditCardNumber($strNumber)
+	{
+		if (!preg_match("/^[0-9]*$/", $strNumber))
+		{
+			//echo "/* $value - bad content */\n";
+			return false;
+		}
+
+		// Check the length
+		if (array_search(strlen($strNumber), $this->validLengths) === false) 
+		{
+			//echo "/* $value - bad length */\n";
+			return false;
+		}
+		
+		// Check the prefix
+		$prefixes = $this->validPrefixes;
+		
+		$ok = false;
+		
+		foreach ($prefixes as $prefix)
+		{
+			if (substr($strNumber, 0, strlen($prefix)) == $prefix)
+			{
+				$ok = true;
+				break;
+			}
+		}
+		
+		if (!$ok)
+		{
+			//echo "/* $value - bad prefix */\n";
+			return false;
+		}
+
+		// Check the luhn
+		return DO_SalesValidation::isValidLuhnNumber($strNumber);
+	}
+
+	// Assumes $strCVV is not encrypted
+	public function isValidCVV($strCVV)
+	{
+		if (!preg_match("/^\\d*$/", $strCVV))
+		{
+			return false;
+		}
+		
+		// Check the length
+		if ($this->cvvLength != strlen($strCVV)) 
+		{
+			return false;
+		}
+		return true;
+	}
+
 }
 
 ?>

@@ -27,15 +27,40 @@ class DO_Sales_SaleAccount extends DO_Sales_Base_SaleAccount
 
 	public function __set($propertyName, $value)
 	{
-		switch ($propertyName)
+		if ($value !== null)
 		{
-			case 'acn':
-			case 'abn':
-				if ($value !== null)
-				{
-					$value = preg_replace("/[^0-9]+/", "", $value);
-				}
-				break;
+			// Only string values need to be sanitized at this high a level.  Everything else is done at a lower level
+			switch ($propertyName)
+			{
+				case 'acn':
+					$value = DO_SalesSanitation::cleanACN($value);
+					break;
+	
+				case 'abn':
+					$value = DO_SalesSanitation::cleanABN($value);
+					break;
+	
+				case 'businessName':
+					$value = DO_SalesSanitation::cleanBusinessName($value);
+					break;
+	
+				case 'tradingName':
+					$value = DO_SalesSanitation::cleanTradingName($value);
+					break;
+				
+				case 'addressLine1':
+				case 'addressLine2':
+					$value = DO_SalesSanitation::cleanAddressLine($value);
+					break;
+				
+				case 'suburb':
+					$value = DO_SalesSanitation::cleanAddressSuburb($value);
+					break;
+
+				case 'postcode':
+					$value = DO_SalesSanitation::cleanPostcode($value);
+					break;
+			}
 		}
 		
 		return parent::__set($propertyName, $value);
@@ -43,73 +68,50 @@ class DO_Sales_SaleAccount extends DO_Sales_Base_SaleAccount
 	
 	protected function _isValidValue($propertyName, $value)
 	{
+		// This bit does low-level validation based on the associated field of the database table that the class represents.
+		// It handles things such as string length, data type and nullability constraints
 		if (!parent::_isValidValue($propertyName, $value))
 		{
 			return false;
 		}
 
+		if ($value === null)
+		{
+			// We have already done the low level check to see if the field is manditory, so if the value is still set to null, then it should be considered valid.
+			// Although this doesn't take into account scenarios where a value can only be set to null, when some other value is set to a specific value.
+			// Validation rules of that nature should be declared in the class' isValid() method
+			return true;
+		}
+		
+		// We don't really need to validate values representing foreign keys, because they will be enforced by the database
+
 		switch ($propertyName)
 		{
-
 			case 'postcode':
-				return preg_match("/^\\d{4}$/", $value);
+				return DO_SalesValidation::isValidPostcode($value);
 				
 			case 'acn':
-				// We know it is null or 9 chars long
-				if ($value === null) return true;
-				
-				// Ensure that they are all digits
-				if (!preg_match("/^[0-9]{9}$/", $value))
-				{
-					return false;
-				}
-
-				// Check the check digit
-				
-				// (i) apply weighting to digits 0 to 7 and (ii) sum the products
-				$total = 0;
-				for ($i = 0; $i < 8; $i++)
-				{
-					$total += ((8 - $i) * intval($value[$i]));
-				}
-				
-				// (iii) divide by 10 to obtain remainder, (iv) complement the remainder to 10 (if complement = 10, set to 0) and (v) compare to character 8
-				return intval($value[8]) == ((10 - ($total % 10)) % 10);
+				return DO_SalesValidation::isValidACN($value);
 								
 			case 'abn':
-				// We know it is null or 11 chars long
-				if ($value === null) return true;
+				return DO_SalesValidation::isValidABN($value);
 				
-				// Ensure that they are all digits
-				if (!preg_match("/^[0-9]{11}$/", $value))
-				{
-					return false;
-				}
-		
-				// Official ABN validation Step 1:
-				// Subtract 1 from the first (left most) digit to give a new eleven digit number
-				$strABNStep1 = (intval($value[0]) - 1) . substr($value, 1);
+			case 'businessName':
+				return DO_SalesValidation::isValidBusinessName($value);
+				
+			case 'tradingName':
+				return DO_SalesValidation::isValidTradingName($value);
+				
+			case 'addressLine1':
+			case 'addressLine2':
+				return DO_SalesValidation::isValidAddressLine($value);
 			
-				$arrWeight = array(10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19);
-				
-				// Steps 2 and 3:
-				// Multiply each of the digits in this new number, by its weighting factor and sum the resulting 11 products
-				$intABNStep3 = 0;
-				
-				for ($i=0; $i < 11; $i++)
-				{
-					$intABNStep3 += intval($strABNStep1[$i]) * $arrWeight[$i];
-				}
-				
-				// Steps 4 and 5:
-				// Divide the total by 89.  If the remainder is zero then the number is valid
-				return (($intABNStep3 % 89) == 0);
-
+			case 'suburb':
+				return DO_SalesValidation::isValidAddressSuburb($value);
 
 			default:
 				// No validation - assume has already been validated
 				return true;
-
 		}
 	}
 

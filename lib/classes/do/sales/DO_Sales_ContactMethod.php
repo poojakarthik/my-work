@@ -2,72 +2,121 @@
 
 class DO_Sales_ContactMethod extends DO_Sales_Base_ContactMethod
 {
+	private $_doContactMethodType = null;
+	
+	public function __set($propertyName, $value)
+	{
+		if ($value !== null)
+		{
+			// Only string values need to be sanitized at this high a level.  Everything else is done at a lower level
+			switch ($propertyName)
+			{
+				case 'details':
+					$objContactMethodType = $this->getContactMethodType();
+					if ($objContactMethodType === null)
+					{
+						// The contact method type has not yet been established.  Do generic sanitation
+						$value = DO_SalesSanitation::removeExcessWhitespace($value);
+					}
+					else
+					{
+						$value = $objContactMethodType->cleanContactMethodDetails($value);
+					}
+					break;
+			}
+		}
+
+		return parent::__set($propertyName, $value);
+	}
+
 	public function isValid($bolThrowException=false)
 	{
-		$props = $this->getPropertyNames();
-		$errors = array();
-
-		$contactMethod = DO_Sales_ContactMethodType::getForId($this->contactMethodTypeId);
-		if ($contactMethod == null)
+		// Make sure the contact method type exists
+		$objContactMethodType = $this->getContactMethodType();
+		if ($objContactMethodType == null)
 		{
-			if (!$bolThrowException) 
+			if (!$bolThrowException)
 			{
 				return false;
 			}
 			else 
 			{
-				throw new Exception($this->getObjectLabel() . " has an invalid contact method type.");
+				throw new DO_Exception_Validation($this->getObjectLabel(), "Unknown contact method type.");
 			}
 		}
-				
-		for ($i = 0, $l = count($props); $i < $l; $i++)
+		
+		// Run the standard validation
+		try
 		{
-			if (!$this->_isValidValue($props[$i], $this->properties[$props[$i]]))
-			{
-				if (!$bolThrowException) 
-				{
-					return false;
-				}
-				$errors[] = "Invalid value specified for '" . $contactMethod->name . ' ' . $this->getPropertyLabel($props[$i]) . "'.";// . $this->{$props[$i]};
-			}
+			return parent::isValid($bolThrowException);
 		}
-		if (count($errors))
+		catch (DO_Exception_Validation $e)
 		{
-			throw new DO_Validation_Exception($this->getObjectLabel() . " is invalid:\n\t" . implode("\n\t", $errors));
+			// Mention the type of contact method
+			throw new DO_Exception_Validation($this->getObjectLabel() ." ". $objContactMethodType->name, $e->errors); 
 		}
-		return true;
 	}
 	
 	protected function _isValidValue($propertyName, $value)
 	{
+		// This bit does low-level validation based on the associated field of the database table that the class represents.
+		// It handles things such as string length, data type and nullability constraints
 		if (!parent::_isValidValue($propertyName, $value))
 		{
 			return false;
 		}
 
+		if ($value === null)
+		{
+			// We have already done the low level check to see if the field is manditory, so if the value is still set to null, then it should be considered valid.
+			// Although this doesn't take into account scenarios where a value can only be set to null, when some other value is set to a specific value.
+			// Validation rules of that nature should be declared in the class' isValid() method
+			return true;
+		}
+
 		switch ($propertyName)
 		{
-
 			case 'details':
-			
-				switch ($this->contactMethodTypeId)
+				$objContactMethodType = $this->getContactMethodType();
+				if ($objContactMethodType === null)
 				{
-
-					case 1: // WIP: Code this properly! 1 = Email
-						return preg_match("/^[a-z0-9!#\$%&'\*\+\/=\?\^_`\{\|\}~\-]+(?:\.[a-z0-9!#\$%&'\*\+\/=\?\^_`\{\|\}~\-]+)*@(?:[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?$/i", $value);
-					
-					case 2: // WIP: Code this properly! 2 = Fax
-					case 3: // WIP: Code this properly! 3 = Phone
-						return preg_match("/^0[12378]\\d{8}$/", $value);
-					
-					case 4: // WIP: Code this properly! 4 = Mobile
-						return preg_match("/^04\\d{8}$/", $value);
+					// The contact method type has not been established.  I should probably throw an exception here, but instead I'll just return false
+					return false;
 				}
-
-			default:
-				// No extra validation - assume is correct
-				return true;
-
+				else
+				{
+					return $objContactMethodType->isValidContactMethodDetails($value);
+				}
+				break;
+		}
+		
+		// No extra validation - assume is correct
+		return true;
+	}
+	
+	public function getContactMethodType()
+	{
+		if ($this->contactMethodTypeId === null)
+		{
+			$this->_doContactMethodType = null;
+			return $this->_doContactMethodType;
+		}
+		else
+		{
+			// See if we already have it cached
+			if ($this->_doContactMethodType !== null && $this->_doContactMethodType->id == $this->contactMethodTypeId)
+			{
+				// The object is already loaded
+				return $this->_doContactMethodType;
+			}
+			
+			// Retrieve the object
+			$this->_doContactMethodType = parent::getContactMethodType();
+			if ($this->_doContactMethodType === null)
+			{
+				throw new Exception("Could not retrieve ContactMethodType object with id: {$this->contactMethodTypeId}");
+			}
+			return $this->_doContactMethodType;
 		}
 	}
 }

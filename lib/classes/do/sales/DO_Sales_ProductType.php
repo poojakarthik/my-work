@@ -2,6 +2,11 @@
 
 class DO_Sales_ProductType extends DO_Sales_Base_ProductType
 {
+	// These constants should directly relate to the records of this table
+	const SERVICE_LANDLINE	= 1;
+	const SERVICE_MOBILE	= 2;
+	const SERVICE_ADSL		= 3;
+	const SERVICE_INBOUND	= 4;
 
 	static function listAll()
 	{
@@ -38,7 +43,9 @@ class DO_Sales_ProductType extends DO_Sales_Base_ProductType
 	 */
 	static function getProductTypesForVendor($intVendorId)
 	{
-
+		// Sanitize the inputs as they will be inserted directly into SQL
+		$intVendorId = intval($intVendorId);
+		
 		$dataSource = self::getDataSource();
 
 		$strSQL = "
@@ -47,7 +54,7 @@ class DO_Sales_ProductType extends DO_Sales_Base_ProductType
 			WHERE id IN (
 				SELECT product_type_id 
 				FROM product 
-				WHERE vendor_id = '$intVendorId') ORDER BY name ASC";
+				WHERE vendor_id = {$intVendorId}) ORDER BY name ASC";
 
 		$result = $dataSource->query($strSQL);
 
@@ -71,6 +78,9 @@ class DO_Sales_ProductType extends DO_Sales_Base_ProductType
 	 */
 	static function getProductTypesForDealerAndVendor($intDealerId, $intVendorId)
 	{
+		// Sanitize the inputs as they will be inserted directly into SQL
+		$intDealerId = intval($intDealerId);
+		$intVendorId = intval($intVendorId);
 
 		$dataSource = self::getDataSource();
 
@@ -80,11 +90,11 @@ class DO_Sales_ProductType extends DO_Sales_Base_ProductType
 			WHERE id IN (
 				SELECT product_type_id 
 				FROM product 
-				WHERE vendor_id = '$intVendorId'
+				WHERE vendor_id = {$intVendorId}
 			AND id IN (
 				SELECT product_id 
 				FROM dealer_product 
-				WHERE dealer_id = '$intDealerId'
+				WHERE dealer_id = {$intDealerId}
 			)) ORDER BY name ASC";
 
 		$result = $dataSource->query($strSQL);
@@ -109,13 +119,12 @@ class DO_Sales_ProductType extends DO_Sales_Base_ProductType
 	 */
 	static function getProductTypeNameFromId($intId)
 	{
+		// Sanitize the inputs as they will be inserted directly into SQL
+		$intId = intval($intId);
 
 		$dataSource = self::getDataSource();
 
-		$strSQL = "
-		SELECT name 
-			FROM product_type 
-			WHERE id='$intId';";
+		$strSQL = "SELECT name FROM product_type WHERE id = {$intId};";
 
 		$result = $dataSource->query($strSQL);
 
@@ -128,9 +137,7 @@ class DO_Sales_ProductType extends DO_Sales_Base_ProductType
 		$arrProductTypeName = $result->fetchRow(MDB2_FETCHMODE_OBJECT);
 
 		return $arrProductTypeName;
-
 	}
-
 }
 
 ?>

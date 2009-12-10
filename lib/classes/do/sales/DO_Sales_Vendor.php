@@ -40,37 +40,6 @@ class DO_Sales_Vendor extends DO_Sales_Base_Vendor
 			return date("Y-m-d H:i:s", strtotime("+ {$this->coolingOffPeriod} hours $strVerifiedOnTimestamp"));
 		}
 	}
-
-	// THIS should not be used.  Instead use DO_Sales_Dealer->getVendors()
-	/*
-	 * function getListOfVendors()
-	 *
-	 * Returns an array, builds a list of vendors.
-	 */
-	static function getListOfVendors($intDealerId)
-	{
-
-		$dataSource = self::getDataSource();
-
-		$strSQL = "SELECT id,description 
-		FROM vendor 
-		WHERE id IN (SELECT vendor_id FROM dealer_vendor WHERE dealer_id = '$intDealerId')";
-
-		$result = $dataSource->query($strSQL);
-
-		if(PEAR::isError($result))
-		{
-			throw new Exception("Failed to build a list of vendors: " . $result->getMessage());
-
-		}
-
-		$arrVendorList = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
-
-		return $arrVendorList;
-
-	}
-	
-
 }
 
 ?>

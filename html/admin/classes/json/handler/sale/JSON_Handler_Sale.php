@@ -108,7 +108,7 @@ class JSON_Handler_Sale extends JSON_Handler
 					$saleAccount->save($dealer->id);
 				}
 			}
-			catch (DO_Validation_Exception $e)
+			catch (DO_Exception_Validation $e)
 			{
 				throw new Exception($e->getMessage());
 			}
@@ -127,7 +127,7 @@ class JSON_Handler_Sale extends JSON_Handler
 						case 1: // WIP - Code this properly! 1 = Bank Account
 							$directDebitDetails = $saleAccountDetails->sale_account_direct_debit_bank_account;
 							$directDebit = new DO_Sales_SaleAccountDirectDebitBankAccount();
-							$directDebit->saleAccountId = $bolValidateOnly ? 0 : $saleAccount->id;
+							$directDebit->saleAccountId = $bolValidateOnly ? null : $saleAccount->id;
 							$directDebit->accountName = $directDebitDetails->account_name;
 							$directDebit->accountNumber = $directDebitDetails->account_number;
 							$directDebit->bankBsb = $directDebitDetails->bank_bsb;
@@ -137,7 +137,7 @@ class JSON_Handler_Sale extends JSON_Handler
 						case 2: // WIP - Code this properly! 2 = Credit Card
 							$directDebitDetails = $saleAccountDetails->sale_account_direct_debit_credit_card;
 							$directDebit = new DO_Sales_SaleAccountDirectDebitCreditCard();
-							$directDebit->saleAccountId = $bolValidateOnly ? 0 : $saleAccount->id;
+							$directDebit->saleAccountId = $bolValidateOnly ? null : $saleAccount->id;
 							$directDebit->cardName = $directDebitDetails->card_name;
 							$directDebit->cardNumber = $directDebitDetails->card_number;
 							$directDebit->creditCardTypeId = $directDebitDetails->credit_card_type_id;
@@ -152,7 +152,7 @@ class JSON_Handler_Sale extends JSON_Handler
 						$directDebit->save();
 					}
 				}
-				catch (DO_Validation_Exception $e)
+				catch (DO_Exception_Validation $e)
 				{
 					throw new Exception($e->getMessage());
 				}
@@ -209,8 +209,8 @@ class JSON_Handler_Sale extends JSON_Handler
 					if ($new)
 					{
 						$contactSale = new DO_Sales_ContactSale();
-						$contactSale->saleId = $bolValidateOnly ? 0 : $sale->id;
-						$contactSale->contactId = $bolValidateOnly ? 0 : $contact->id;
+						$contactSale->saleId = $bolValidateOnly ? null : $sale->id;
+						$contactSale->contactId = $bolValidateOnly ? null : $contact->id;
 						$contactSale->contactAssociationTypeId = 1; // WIP - Code this properly! 1 = PRIMARY
 						$contactSale->isValid(true);
 						if (!$bolValidateOnly) 
@@ -219,7 +219,7 @@ class JSON_Handler_Sale extends JSON_Handler
 						}
 					}
 				}
-				catch (DO_Validation_Exception $e)
+				catch (DO_Exception_Validation $e)
 				{
 					throw new Exception($e->getMessage());
 				}
@@ -253,7 +253,7 @@ class JSON_Handler_Sale extends JSON_Handler
 						else
 						{
 							$contactMethod = new DO_Sales_ContactMethod();
-							$contactMethod->contactId = $bolValidateOnly ? 0 : $contact->id;
+							$contactMethod->contactId = $bolValidateOnly ? null : $contact->id;
 							$contactMethod->contactMethodTypeId = $contactMethodDetails->contact_method_type_id;
 						}
 						
@@ -288,7 +288,7 @@ class JSON_Handler_Sale extends JSON_Handler
 						
 						$hasPrimary = $hasPrimary || $contactMethod->isPrimary;
 					}
-					catch (DO_Validation_Exception $e)
+					catch (DO_Exception_Validation $e)
 					{
 						throw new Exception($e->getMessage());
 					}
@@ -353,7 +353,7 @@ class JSON_Handler_Sale extends JSON_Handler
 						$item = new DO_Sales_SaleItem();
 						$item->createdBy = $dealer->id;
 						$item->productId = $itemDetails->product_id;
-						$item->saleId = $bolValidateOnly ? 0 : $sale->id;
+						$item->saleId = $bolValidateOnly ? null : $sale->id;
 						$item->saleItemStatusId = DO_Sales_SaleItemStatus::SUBMITTED;
 					}
 					$item->isValid(true);
@@ -362,7 +362,7 @@ class JSON_Handler_Sale extends JSON_Handler
 						$item->save($dealer->id, 'New (original) sale item');
 					}
 				}
-				catch (DO_Validation_Exception $e)
+				catch (DO_Exception_Validation $e)
 				{
 					throw new Exception($e->getMessage());
 				}
@@ -385,7 +385,7 @@ class JSON_Handler_Sale extends JSON_Handler
 				{
 					$objModule->saveProductDetailsForSaleItem($itemDetails->product_detail, $item, $bolValidateOnly);
 				}
-				catch (DO_Validation_Exception $e)
+				catch (DO_Exception_Validation $e)
 				{
 					throw new Exception($e->getMessage());
 				}

@@ -2,6 +2,11 @@
 
 class DO_Sales_ServiceMobileOrigin extends DO_Sales_Base_ServiceMobileOrigin
 {
+	// These constants should directly relate to the records of this table
+	const NEW_SERVICE			= 1;
+	const EXISTING_PRE_PAID		= 2;
+	const EXISTING_POST_PAID	= 3;
+
 	protected static $_cache = NULL;
 
 	// Returns array of all the objects, with the id of the records as the key

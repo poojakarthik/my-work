@@ -181,6 +181,14 @@ abstract class DO_Base
 			return true;
 		}
 		
+		// Only save it if it's valid
+		//TODO! This might prohibit the updating for data that has already been saved to the database, but is now considered invalid
+		// And what if we change the validation rules?  This could happen a fair bit, and we would have to retroactivate the validation?  If it's a problem, I guess I could always remove this validation check
+		// It would however prevent invalid data being entered into the database
+		// This will throw a DO_Exception_Validation Exception, if any validation fails
+		$this->isValid(true);
+		
+		
 		$dataSource = $this->getDataSource();
 		$arrValues = $this->_getValuesForDataSource();
 
@@ -266,7 +274,7 @@ abstract class DO_Base
 		}
 		if (count($errors))
 		{
-			throw new DO_Validation_Exception($this->getObjectLabel() . " is invalid:\n\t" . implode("\n\t", $errors));
+			throw new DO_Exception_Validation($this->getObjectLabel(), $errors);
 		}
 		return true;
 	}
@@ -333,9 +341,5 @@ abstract class DO_Base
 }
 
 
-class DO_Validation_Exception extends Exception
-{
-	
-}
 
 ?>

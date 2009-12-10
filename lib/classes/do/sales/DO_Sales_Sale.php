@@ -31,9 +31,24 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 													"LastOffset"		=> NULL
 												);
 	
-	// Note that this currently only handles "prop IS NULL", "prop IN (list of unquoted values)", "prop = unquoted value"
+	// Note that this currently only handles "prop IS NULL", "prop IN (list of values)", "prop = value"
 	private static function _prepareSearchConstraint($strProp, $mixValue)
 	{
+		// Sanitise the data as it will be inserted into SQL (MDB2 ->quote() does not quote numeric datatypes, if you're wondering)
+		$dataSource = self::getDataSource();
+		if (is_array($mixValue))
+		{
+			foreach ($mixValue as &$strValue)
+			{
+				$strValue = $dataSource->quote($strValue);
+			}
+		}
+		elseif ($mixValue !== NULL)
+		{
+			$strValue = $dataSource->quote($strValue);
+		}
+		
+		// Build the constraint SQL
 		$strSearch = "";
 		if ($mixValue === NULL)
 		{
@@ -45,7 +60,7 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 		}
 		else
 		{
-			$strSearch = "$strProp = $mixValue";
+			$strSearch	= "$strProp = $mixValue";
 		}
 		return $strSearch;
 	}
@@ -140,11 +155,10 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 						{
 							$arrBusinessNamePartChecks[]	= "sale_account.business_name ILIKE '%{$strToken}%'";
 							$arrTradingNamePartChecks[]		= "sale_account.trading_name ILIKE '%{$strToken}%'";
-							
 						}
 						
-						$arrSearchStringConstraintParts[] = "(". implode(" AND ", $arrBusinessNamePartChecks) .")";
-						$arrSearchStringConstraintParts[] = "(". implode(" AND ", $arrTradingNamePartChecks) .")";
+						$arrSearchStringConstraintParts[] = "(". implode(" AND ", array_unique($arrBusinessNamePartChecks)) .")";
+						$arrSearchStringConstraintParts[] = "(". implode(" AND ", array_unique($arrTradingNamePartChecks)) .")";
 						
 						// Contact Name (only the primary contact)
 						// Only bother checking the contact's name if the search string isn't numeric
@@ -156,7 +170,7 @@ class DO_Sales_Sale extends DO_Sales_Base_Sale
 							{
 								$arrContactNamePartChecks[]	= "(contact.first_name || COALESCE(' ' || contact.middle_names, '') || ' ' || contact.last_name) ILIKE '%{$strToken}%'";
 							}
-							$arrSearchStringConstraintParts[] = "(". implode(" AND ", $arrContactNamePartChecks) .")";
+							$arrSearchStringConstraintParts[] = "(". implode(" AND ", array_unique($arrContactNamePartChecks)) .")";
 						}
 						
 						$arrWhereClauseParts[] = "(". implode(" OR ", $arrSearchStringConstraintParts) .")";

@@ -439,16 +439,18 @@ class DO_Foreign_Key
 	/**
  	 * public $funcName()
 	 *
-	 * Retreives an instance of $strTargetClass, the 
+	 * Retrieves an instance of $strTargetClass, the 
 	 * target ('to-one' end) of the foreign key $this->name
 	 * between tables $this->from and $this->to.
 	 *
-	 * @param void
+	 * @param bool \$bolSilentFail	[optional]	When set to true and the object can't be found, this method will return null.
+	 * 											When set to false and the object can't be found, this method will throw a DO_Exception_ObjectNotFoundInDataSource Exception.
+	 *
 	 * @return {$strTargetClass} instance or null
  	 */
-	public function $funcName()
+	public function $funcName(\$bolSilentFail=false)
 	{
-		return {$strTargetClass}::getForId(\$this->".$from->getFieldForFieldName($fromFields[0])->getPropertyName().");
+		return {$strTargetClass}::getForId(\$this->".$from->getFieldForFieldName($fromFields[0])->getPropertyName().", \$bolSilentFail);
 	}";
 	
 		return $strForeignKeyFunction;
@@ -637,6 +639,22 @@ class DO_Field
 							if ($nullable) return "if (trim(\$value) === '') \$value = null;";							
 					
 					}
+					break;
+					
+				case 'boolean':
+					return 
+				"if (!is_bool(\$value) && !is_null(\$value))
+				{
+					if (is_string(\$value))
+					{
+						\$value = (trim(\$value) === '')? null : (strtolower(\$value[0]) == 't');
+					}
+					else
+					{
+						\$value = \$value ? true : false;
+					}
+				}";
+					break;
 			
 		}
 		
@@ -774,6 +792,7 @@ class DO_Field
 		$unsigned = array_key_exists('unsigned', $this->properties) ? $this->properties['unsigned'] : false;
 		$default = array_key_exists('default', $this->properties) ? $this->properties['default'] : null;
 		$autoIncrement = array_key_exists('autoincrement', $this->properties) ? $this->properties['autoincrement'] : false;
+		$isForeignKey = false;
 
 		if (preg_match("/(?:char|text|enum)/i", $nativeType))
 		{
@@ -795,14 +814,30 @@ class DO_Field
 			return ($nullable ? '($value === null) || ' : '') . 'preg_match("/^(?:[01][0-9]|2[0-3])\:[0-5][0-9](?:|\:[0-5][0-9](?:|\.[0-9]{1,6}))$/", $value)';
 		}
 		
-		if (preg_match("/(?:boolean)/i", $nativeType))
+		if (preg_match("/(?:bool)/i", $nativeType))
 		{
 			return 'is_bool($value)';
 		}
 		
 		if (preg_match("/(?:int)/i", $nativeType))
 		{
-			return (($nullable || $autoIncrement) ? '($value === null) || ' : '') . ($unsigned ? 'preg_match("/^[0-9]+$/", "$value")' : 'preg_match("/^(\-?[0-9]+|[0-9]+\-?)$/", "$value")');
+			$strFKClause = '';
+			
+			// Check if this is a foreign key, and if so check that the foreign record exists
+			foreach ($this->doTable->fks as $objFK)
+			{
+				// We are only concerned with foreign keys on individual fields that are integers, not composite foreign keys
+				// Don't do a check for the record, if the value is set to null even if the field is not nullable.  Sometimes validation takes place before the foreign key record is created
+				if (count($objFK->map) == 1 && array_key_exists($this->fieldName, $objFK->map))
+				{
+					$strFuncName = DO_Modeler::codifyName('get_'.$objFK->determineName());
+					//$strFKClause .= " && (\$value === 0 || \$this->{$strFuncName}(true) !== null)";
+					$strFKClause .= " && (\$this->{$strFuncName}(true) !== null)";
+					$isForeignKey = true;
+				}
+			}
+			
+			return (($nullable || $autoIncrement || $isForeignKey) ? '($value === null) || ' : '') .'('. ($unsigned ? 'preg_match("/^[0-9]+$/", "$value")' : 'preg_match("/^(\-?[0-9]+|[0-9]+\-?)$/", "$value")') . $strFKClause .')';
 		}
 		
 		if (preg_match("/(?:float|decimal)/i", $nativeType))
@@ -960,6 +995,7 @@ class DO_Field
 						}
 						else
 						{
+							// This is deliberately set to 'return $value...'
 							return 'return $value ? "true" : "false"; // boolean to boolean string (true = "TRUE", false = "FALSE")';
 						}
 						break;
@@ -1131,7 +1167,7 @@ class DO_File_Base_Class
 				$strSetCase = $obField->getSetConversion();
 				if ($strSetCase)
 				{
-					$strSetCases .= "\n\n\t\t\tcase '$prop':\n\t\t\t\t$strSetCase";
+					$strSetCases .= "\n\n\t\t\tcase '$prop':\n\t\t\t\t$strSetCase\n\t\t\t\tbreak;";
 				}
 				
 				$strDefaultValues .= $obField->getQuotedDefaultValue();
@@ -1234,17 +1270,15 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 				// No conversion - assume is correct or irrelevant
 
 		}
-		if ($bolQuoted)
+	
+		if ($value === null)
 		{
-			if ($value === null)
-			{
-				$value = "NULL";
-			}
-			else
-			{
-				$dataSource = $this->getDataSource();
-				$value = \'\\\'\' . $dataSource->escape($value, false) . \'\\\'\';
-			}
+			$value = "NULL";
+		}
+		elseif ($bolQuoted)
+		{
+			$dataSource = $this->getDataSource();
+			$value = \'\\\'\' . $dataSource->escape($value, false) . \'\\\'\';
 		}
 		return $value;
 	}
@@ -1466,9 +1500,18 @@ abstract class '.$obBaseClassName.' extends '.$dsnClassName.'
 		return $results->fetchOne();
 	}
 	
-	public static function getForId($id)
+	public static function getForId($id, $bolSilentFail=false)
 	{
-		return '.$obClassName.'::getFor(array('.$obClassName.'::getIdName() => intval($id)), false, null, 0, 0);
+		$object = '.$obClassName.'::getFor(array('.$obClassName.'::getIdName() => intval($id)), false, null, 0, 0);
+		if ($object === null)
+		{
+			if ($bolSilentFail)
+			{
+				return null;
+			}
+			throw new DO_Exception_ObjectNotFoundInDataSource('.$obClassName.'::getDataSourceName(), '.$obClassName.'::getObjectLabel(), '.$obClassName.'::getIdName(), $id);
+		}
+		return $object;
 	}
 	
 	public static function getDataSource()

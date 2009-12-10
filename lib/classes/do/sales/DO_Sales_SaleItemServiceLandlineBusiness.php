@@ -4,14 +4,22 @@ class DO_Sales_SaleItemServiceLandlineBusiness extends DO_Sales_Base_SaleItemSer
 {
 	public function __set($propertyName, $value)
 	{
-		switch ($propertyName)
+		if ($value !== null)
 		{
-			case 'abn':
-				if ($value !== null)
-				{
-					$value = preg_replace("/[^0-9]+/", "", $value);
-				}
-				break;
+			switch($propertyName)
+			{
+				case 'companyName':
+					$value = DO_SalesSanitation::cleanBusinessName($value);
+					break;
+					
+				case 'tradingName':
+					$value = DO_SalesSanitation::cleanTradingName($value);
+					break;
+					
+				case 'abn':
+					$value = DO_SalesSanitation::cleanABN($value);
+					break;
+			}
 		}
 		
 		return parent::__set($propertyName, $value);
@@ -24,42 +32,28 @@ class DO_Sales_SaleItemServiceLandlineBusiness extends DO_Sales_Base_SaleItemSer
 			return false;
 		}
 
+		if ($value === null)
+		{
+			// We have already done the low level check to see if the field is manditory, so if the value is still set to null, then it should be considered valid.
+			// Although this doesn't take into account scenarios where a value can only be set to null, when some other value is set to a specific value.
+			// Validation rules of that nature should be declared in the class' isValid() method
+			return true;
+		}
+
 		switch ($propertyName)
 		{
-
+			case 'companyName':
+				return DO_SalesValidation::isValidBusinessName($value);
+				
+			case 'tradingName':
+				return DO_SalesValidation::isValidTradingName($value);
+				
 			case 'abn':
-				// We know it is 11 chars long
-				
-				// Ensure that they are all digits
-				if (!preg_match("/^[0-9]{11}$/", $value))
-				{
-					return false;
-				}
-		
-				// Official ABN validation Step 1:
-				// Subtract 1 from the first (left most) digit to give a new eleven digit number
-				$strABNStep1 = (intval($value[0]) - 1) . substr($value, 1);
-			
-				$arrWeight = array(10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19);
-				
-				// Steps 2 and 3:
-				// Multiply each of the digits in this new number, by its weighting factor and sum the resulting 11 products
-				$intABNStep3 = 0;
-				
-				for ($i=0; $i < 11; $i++)
-				{
-					$intABNStep3 += intval($strABNStep1[$i]) * $arrWeight[$i];
-				}
-				
-				// Steps 4 and 5:
-				// Divide the total by 89.  If the remainder is zero then the number is valid
-				return (($intABNStep3 % 89) == 0);
-
+				return DO_SalesValidation::isValidABN($value);
 
 			default:
 				// No validation - assume has already been validated
 				return true;
-
 		}
 	}
 }

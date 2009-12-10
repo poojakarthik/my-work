@@ -124,7 +124,7 @@ class Product_Type_Module_Service_Landline extends Product_Type_Module
 		if (!count($products))
 		{
 			$product = new DO_Sales_SaleItemServiceLandline();
-			$product->saleItemId = $bolValidateOnly ? 0 : $saleItem->id;
+			$product->saleItemId = $bolValidateOnly ? null : $saleItem->id;
 			$new = true;
 		}
 		else
@@ -171,6 +171,7 @@ class Product_Type_Module_Service_Landline extends Product_Type_Module
 		$product->serviceStreetNumberStart = $productDetails->service_street_number_start;
 		$product->serviceStreetNumberEnd = $productDetails->service_street_number_end;
 		$product->serviceStreetNumberSuffix = $productDetails->service_street_number_suffix;
+		$product->sanitise();
 		$product->isValid(true);
 		if (!$bolValidateOnly)
 		{
@@ -184,7 +185,7 @@ class Product_Type_Module_Service_Landline extends Product_Type_Module
 
 			case 1: // WIP - Code this properly! 1 = Residential
 				$objLandlineType = new DO_Sales_SaleItemServiceLandlineResidential();
-				$objLandlineType->saleItemServiceLandlineId = $bolValidateOnly ? 0 : $product->id;
+				$objLandlineType->saleItemServiceLandlineId = $bolValidateOnly ? null : $product->id;
 				$objLandlineType->landlineEndUserTitleId = $landlineTypeDetails->landline_end_user_title_id;
 				$objLandlineType->endUserOccupation = $landlineTypeDetails->end_user_occupation;
 				$objLandlineType->endUserGivenName = $landlineTypeDetails->end_user_given_name;
@@ -195,7 +196,7 @@ class Product_Type_Module_Service_Landline extends Product_Type_Module
 
 			case 2: // WIP - Code this properly! 2 = Business
 				$objLandlineType = new DO_Sales_SaleItemServiceLandlineBusiness();
-				$objLandlineType->saleItemServiceLandlineId = $bolValidateOnly ? 0 : $product->id;
+				$objLandlineType->saleItemServiceLandlineId = $bolValidateOnly ? null : $product->id;
 				$objLandlineType->companyName = $landlineTypeDetails->company_name;
 				$objLandlineType->abn = $landlineTypeDetails->abn;
 				$objLandlineType->tradingName = $landlineTypeDetails->trading_name;
