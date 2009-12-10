@@ -240,6 +240,9 @@ class Cli_App_Billing extends Cli
 						$oInvoiceRun	= new Invoice_Run();
 						$oInvoiceRun->generateSingle($oAccount->CustomerGroup, INVOICE_RUN_TYPE_SAMPLES, strtotime($sInvoiceDate), $iAccountId);
 						
+						// Copy PDF to the front-end Server
+						$this->_copyXML($oInvoiceRun->Id);
+						
 						$oDataAccessFlex->TransactionCommit();
 					}
 					catch (Exception $eException)
