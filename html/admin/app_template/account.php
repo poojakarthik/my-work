@@ -1274,11 +1274,11 @@ class AppTemplateAccount extends ApplicationTemplate
 									// Add this FNN to the Blacklist (if it isn't already on there)
 									if (!Telemarketing_FNN_Blacklist::getForTypeAndFNN(TELEMARKETING_FNN_BLACKLIST_NATURE_OPTOUT, $oService->FNN))
 									{
-										$oTelemarketingFNNBlacklist				= new Telemarketing_FNN_Blacklist();
-										$oTelemarketingFNNBlacklist->fnn		= $oService->FNN;
-										$oTelemarketingFNNBlacklist->cached_on	= GetCurrentDateForMySQL();
-										$oTelemarketingFNNBlacklist->expired_on	= '9999-12-31 23:59:59';
-										$oTelemarketingFNNBlacklist->fnn		= TELEMARKETING_FNN_BLACKLIST_NATURE_OPTOUT;
+										$oTelemarketingFNNBlacklist											= new Telemarketing_FNN_Blacklist();
+										$oTelemarketingFNNBlacklist->fnn									= $oService->FNN;
+										$oTelemarketingFNNBlacklist->cached_on								= GetCurrentDateForMySQL();
+										$oTelemarketingFNNBlacklist->expired_on								= '9999-12-31 23:59:59';
+										$oTelemarketingFNNBlacklist->telemarketing_fnn_blacklist_nature_id	= TELEMARKETING_FNN_BLACKLIST_NATURE_OPTOUT;
 										$oTelemarketingFNNBlacklist->save();
 									}
 									break;
