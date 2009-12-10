@@ -410,7 +410,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		fwrite($resLogFile, "({$fltSplit}) Blacklist built! (".($fltSplit-$fltOldSplit)." seconds)\n");
 		
 		// Build a Cache of Active Service FNNs
-		$resResult	= $qryQuery->Execute("SELECT FNN, Indial100 FROM Service WHERE Status = ".SERVICE_ACTIVE);
+		$resResult	= $qryQuery->Execute("SELECT FNN, Indial100 FROM Service WHERE Status IN (".SERVICE_ACTIVE.", ".SERVICE_PENDING.")");
 		$arrServiceCache	= array();
 		if ($resResult === false)
 		{
@@ -434,7 +434,7 @@ class Application_Handler_Telemarketing extends Application_Handler
 		fwrite($resLogFile, "({$fltSplit}) Active Service Cache built! (".($fltSplit-$fltOldSplit)." seconds)\n");
 		
 		// Build a Cache of Active Contacts
-		$resResult	= $qryQuery->Execute("SELECT Phone, Fax, Mobile FROM Contact JOIN Account ON Account.PrimaryContact = Contact.Id WHERE (Account.Archived != 0 OR Contact.Archived != 0)");
+		$resResult	= $qryQuery->Execute("SELECT Phone, Fax, Mobile FROM Contact JOIN Account ON Account.PrimaryContact = Contact.Id WHERE (Account.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_PENDING_ACTIVATION.") OR Contact.Archived = 0)");
 		$arrContactCache	= array();
 		if ($resResult === false)
 		{
