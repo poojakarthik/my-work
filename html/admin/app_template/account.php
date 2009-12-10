@@ -1256,8 +1256,36 @@ class AppTemplateAccount extends ApplicationTemplate
 					}
 					break;
 					
-				case ACCOUNT_STATUS_CLOSED:
 				case ACCOUNT_STATUS_DEBT_COLLECTION:
+					// If the Telemarketing Flex Module is active
+					if (Flex_Module::isActive(FLEX_MODULE_TELEMARKETING))
+					{
+						// Add the FNNs on this Account to the Telemarketing Blacklist
+						$oAccount	= Account::getForId(DBO()->Account->Id->Value);
+						$aServices	= $oAccount->listServices();
+						
+						foreach ($aServices as $iServiceId=>$oService)
+						{
+							switch ($oService->ServiceType)
+							{
+								case SERVICE_TYPE_LAND_LINE:
+								case SERVICE_TYPE_MOBILE:
+								case SERVICE_TYPE_INBOUND:
+									// Add this FNN to the Blacklist (if it isn't already on there)
+									if (!Telemarketing_FNN_Blacklist::getForTypeAndFNN(TELEMARKETING_FNN_BLACKLIST_NATURE_OPTOUT, $oService->FNN))
+									{
+										$oTelemarketingFNNBlacklist				= new Telemarketing_FNN_Blacklist();
+										$oTelemarketingFNNBlacklist->fnn		= $oService->FNN;
+										$oTelemarketingFNNBlacklist->cached_on	= GetCurrentDateForMySQL();
+										$oTelemarketingFNNBlacklist->expired_on	= '9999-12-31 23:59:59';
+										$oTelemarketingFNNBlacklist->fnn		= TELEMARKETING_FNN_BLACKLIST_NATURE_OPTOUT;
+										$oTelemarketingFNNBlacklist->save();
+									}
+									break;
+							}
+						}
+					} 
+				case ACCOUNT_STATUS_CLOSED:
 				case ACCOUNT_STATUS_SUSPENDED:
 					$intModifiedServicesNewStatus = SERVICE_DISCONNECTED;
 					// If user has selected "Closed", "Debt Collection", "Suspended" for the account status, only Active services have their Status and 
