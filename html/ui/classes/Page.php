@@ -278,7 +278,8 @@ class Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/json.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/sha1.js' ></script>\n";
-		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_fx_transition.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_fx_morph.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_popup.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_popup.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex_constant.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
@@ -291,7 +292,7 @@ class Page
 		}
 
 		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant", "sha1", "reflex_fx_transition", "reflex_popup"));
+		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant", "sha1", "reflex_fx", "reflex_fx_morph", "reflex_popup"));
 
 		$arrRemainingJsFilesToInclude = array();
 		foreach ($arrRemainingJsFiles as $strFile)
