@@ -1486,7 +1486,7 @@ function EmailAddressValid ($strEmail)
 		for ($i = 0; $i < sizeof($arrLocal); $i++) {
 			// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0. 
 			// if (!ereg("^(([A-Za-z0-9!#$%&'*+/=?^_`{|}~-][A-Za-z0-9!#$%&'*+/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$", $arrLocal [$i])) {
-			if (!preg_match("/^(([A-Za-z0-9!#$%&'*+/=?^_`{|}~-][A-Za-z0-9!#$%&'*+/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$/", $arrLocal [$i]))
+			if (!preg_match("/^(([A-Za-z0-9!#$%&'*+\/=?^_`{|}~-][A-Za-z0-9!#$%&'*+\/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$/", $arrLocal [$i]))
 			{
 				return false;
 			}
