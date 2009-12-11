@@ -387,7 +387,7 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 		$arrDetails["Account"] = array(	"property"	=> "Account",
 										"value"		=> ($account ? $account->id : "[Not matched to an account]") 
 									);
-		$arrDetails["Customer Group"] = array(	"property"	=> "Customer Group",
+		$arrDetails["CustomerGroup"] = array(	"property"	=> "Customer Group",
 												"value"		=> ($customerGroup ? htmlspecialchars($customerGroup->internalName) : NULL) 
 											);
 		$arrDetails["Contact"] = array(	"property"	=> "Contact",
@@ -449,7 +449,7 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 
 			if ($ticketState->customerGroupId !== $previousTicketState->customerGroupId)
 			{
-				$arrDetails['Customer Group']['previousValue'] = $prevCustomerGroup ? htmlspecialchars($prevCustomerGroup->internalName) : NULL;
+				$arrDetails['CustomerGroup']['previousValue'] = $prevCustomerGroup ? htmlspecialchars($prevCustomerGroup->internalName) : NULL;
 				$arrDetailsChanged[] = "CustomerGroup";
 			}
 			
@@ -479,7 +479,23 @@ class HtmlTemplate_Ticketing_Ticket_History extends FlexHtmlTemplate
 
 			if (count($arrDetailsChanged))
 			{
-				$strSummary = "Updated - ". implode(", ", $arrDetailsChanged);
+				$arrSummaryParts = array();
+				foreach ($arrDetailsChanged as $strProperty)
+				{
+					if (array_key_exists($strProperty, $arrDetails))
+					{
+						if ($arrDetails[$strProperty]['previousValue'] === null)
+						{
+							$arrSummaryParts[] = "<strong>{$arrDetails[$strProperty]['property']}</strong> set to <strong>{$arrDetails[$strProperty]['value']}</strong>";
+						}
+						else
+						{
+							$arrSummaryParts[] = "<strong>{$arrDetails[$strProperty]['property']}</strong> changed from <strong>{$arrDetails[$strProperty]['previousValue']}</strong> to <strong>{$arrDetails[$strProperty]['value']}</strong>";
+						}
+					}
+				}
+				
+				$strSummary = implode("<br />", $arrSummaryParts);
 			}
 			else
 			{
