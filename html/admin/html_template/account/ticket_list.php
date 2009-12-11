@@ -108,7 +108,8 @@ class HtmlTemplateAccountTicketList extends HtmlTemplate
 				foreach ($arrTickets as $objTicket)
 				{
 					$strIdCell		= "<a href='". Href()->TicketingTicket($objTicket->id, $intAccountId) ."' title='View Ticket'>{$objTicket->id}</a>";
-					$strSubjectCell	= htmlspecialchars($objTicket->subject);
+					$strSubject		= trim($objTicket->subject);
+					$strSubjectCell	= ($strSubject != '')? htmlspecialchars($strSubject) : "<em>(No Subject)</em>";
 					
 					Table()->Tickets->AddRow($strIdCell, $strSubjectCell);
 				}
