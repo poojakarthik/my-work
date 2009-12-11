@@ -407,27 +407,43 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		{
 			$saleItems = null;
 			
-			if ($this->saleStatusId == DO_Sales_SaleStatus::SUBMITTED)
+			// This method is also used to set 'Manual Intervention' sales to 'Awaiting Dispatch', so only verify the sale if it hasn't already been verified
+			if (!$this->hasBeenVerified())
 			{
+				// Check that it can be verfied
+				if ($this->saleStatusId != DO_Sales_SaleStatus::SUBMITTED)
+				{
+					throw new Exception("Sale cannot be set to verified because of its current status.");
+				}
+			
 				$this->saleStatusId = DO_Sales_SaleStatus::VERIFIED;
 				$this->save($dealerId, 'Sale verified');
 	
-				// We also want to verify all of the sale items
+				// We also want to verify all of the eligible sale items
 				$saleItems = DO_Sales_SaleItem::listForSale($this);
 				foreach ($saleItems as $saleItem)
 				{
-					$saleItem->verify($dealerId);
+					// Only verify sale items that are currently set to 'submitted'
+					if ($saleItem->saleItemStatusId == DO_Sales_SaleItemStatus::SUBMITTED)
+					{
+						$saleItem->verify($dealerId);
+					}
 				}
 			}
 			
+			// Now set the sale to Awaiting Dispatch
 			$this->saleStatusId = DO_Sales_SaleStatus::AWAITING_DISPATCH;
 			$this->save($dealerId, 'Sale awaiting dispatch');
 
-			// We also want to verify all of the sale items
+			// We also want to set each sale item to 'Awaiting Dispatch', so long as it is eligible
 			$saleItems = $saleItems ? $saleItems : DO_Sales_SaleItem::listForSale($this);
+			$arrEligibleSaleItemStatuses = array(DO_Sales_SaleItemStatus::VERIFIED, DO_Sales_SaleItemStatus::MANUAL_INTERVENTION);
 			foreach ($saleItems as $saleItem)
 			{
-				$saleItem->setAwaitingDispatch($dealerId);
+				if (in_array($saleItem->saleItemStatusId, $arrEligibleSaleItemStatuses, true))
+				{
+					$saleItem->setAwaitingDispatch($dealerId);
+				}
 			}
 			
 			$dataSource->commit($strTransactionName);
@@ -437,6 +453,20 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 			$dataSource->rollback($strTransactionName);
 			throw $e;
 		}
+	}
+	
+	// This method returns TRUE if the sale has been verified, else FALSE
+	public function hasBeenVerified()
+	{
+		$arrSaleStatusHistory = DO_Sales_SaleStatusHistory::listForSale($this);
+		foreach ($arrSaleStatusHistory as $doSaleStatusHistory)
+		{
+			if ($doSaleStatusHistory->saleStatusId == DO_Sales_SaleStatus::VERIFIED)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public function reject($dealerId)

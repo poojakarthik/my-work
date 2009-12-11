@@ -45,6 +45,10 @@ class DO_Sales_SaleItem extends DO_Sales_Base_SaleItem
 
 	public function verify($dealerId)
 	{
+		if ($this->saleItemStatusId != DO_Sales_SaleItemStatus::SUBMITTED)
+		{
+			throw new Exception("Sale Item cannot be set to Verified due to its current status");
+		}
 		$this->saleItemStatusId = DO_Sales_SaleItemStatus::VERIFIED;
 		$this->save($dealerId, 'Item verified');
 	}
