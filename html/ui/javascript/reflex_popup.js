@@ -31,7 +31,7 @@ Object.extend(Reflex_Popup, {
 	{
 		// If the popup is in the page, remove it
 		popup.container.remove();
-		alert("Container Removed");
+		//alert("Container Removed");
 		
 		// If the overlay only contains the opaque pane, remove the overlay from the page
 		var aPopups	= Reflex_Popup.overlay.select('div.reflex-popup');
@@ -42,7 +42,7 @@ Object.extend(Reflex_Popup, {
 		// Otherwise we can re-append the second to last element (the previous popup in the stack)
 		else
 		{
-			alert(Reflex_Popup.overlay.childNodes.length);
+			//alert(Reflex_Popup.overlay.childNodes.length);
 			Reflex_Popup.overlay.appendChild(aPopups.last());
 		}
 	},
