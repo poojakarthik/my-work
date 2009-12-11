@@ -34,6 +34,7 @@ Object.extend(Reflex_Popup, {
 		{
 			popup.container.parentNode.removeChild(popup.container);
 		}
+		alert("Container Removed");
 		// If the overlay only contains the opaque pane, remove the overlay from the page
 		if (Reflex_Popup.overlay.childNodes.length == 1)
 		{
@@ -45,7 +46,8 @@ Object.extend(Reflex_Popup, {
 		// Otherwise we can re-append the second to last element (the previous popup in the stack)
 		else
 		{
-			Reflex_Popup.overlay.appendChild(Reflex_Popup.overlay.childNodes[Reflex_Popup.overlay.childNodes.length - 2])
+			alert(Reflex_Popup.overlay.childNodes.length);
+			Reflex_Popup.overlay.appendChild(Reflex_Popup.overlay.childNodes[Reflex_Popup.overlay.childNodes.length - 2]);
 		}
 	},
 
