@@ -33,7 +33,7 @@ class Ticketing_Ticket_History extends Ticketing_Ticket
 	// Note that the objects returned by this will be of class Ticketing_Ticket_History 
 	public static function getForTicket($ticket, $strSort='')
 	{
-		return self::getFor('ticket_id = <TicketId>', array('TicketId'=>$ticket->id), TRUE, 'creation_datetime DESC, id DESC');
+		return self::getFor('ticket_id = <TicketId>', array('TicketId'=>$ticket->id), TRUE, 'modified_datetime DESC, id DESC');
 	}
 	
 	private static function getFor($strWhere, $arrWhere, $multiple=FALSE, $strSort=NULL, $strLimit=NULL)
