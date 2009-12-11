@@ -291,7 +291,7 @@ Object.extend(Reflex_Popup.prototype, {
 		Reflex_Popup.display(this);
 		
 		// Animate
-		this.fx.display	= new Reflex_FX_Transition(this.container, {opacity: 1}, 0.1, 'ease-out');
+		this.fx.display	= new Reflex_FX_Morph(this.container, {opacity: 1}, 0.1, 'ease-out');
 		this.fx.display.start();
 	},
 
@@ -303,7 +303,7 @@ Object.extend(Reflex_Popup.prototype, {
 		}
 		
 		// Animate
-		this.fx.hide	= new Reflex_FX_Transition(this.container, {opacity: 0}, 0.1, null, Reflex_Popup.hide.bind(Reflex_Popup, this));
+		this.fx.hide	= new Reflex_FX_Morph(this.container, {opacity: 0}, 0.1, 'ease', Reflex_Popup.hide.bind(Reflex_Popup, this));
 		this.fx.hide.start();
 	}
 });

@@ -1,6 +1,6 @@
 var Reflex_Date_Picker	= Class.create
 ({
-	initialize	: function(mMode, oDate)
+	initialize	: function(mMode, oDate, bShowImmediately)
 	{
 		// Unique Identifier
 		this.sUID	= 'reflex-date-picker_' + String(Math.round((new Date()).getTime() * Math.random()));
@@ -10,6 +10,8 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.domElement						= document.createElement('div');
 		this.oContainer.domElement.id					= this.sUID;
 		this.oContainer.domElement.oReflexDatePicker	= this;
+		this.oContainer.domElement.style.opacity		= 0.0;
+		this.oContainer.domElement.style.display		= 'none';
 		this.oContainer.domElement.addClassName('reflex-datepicker');
 		
 		// Header
@@ -120,6 +122,27 @@ var Reflex_Date_Picker	= Class.create
 		this.iFirstDayOfWeek	= Reflex_Date_Picker.DEFAULT_START_OF_WEEK;
 		this.setSelectMode(Reflex_Date_Picker.SELECT_MODE_DATE_TIME);
 		this.setDatetime(oDate);
+		
+		this.oToggleFX	=	new Reflex_FX_Shift(oElement, sX, sY, sWidth, sHeight, fOpacity, fDuration, mTimingFunction, fnOnCompleteCallback);
+		
+		// Animate this beast!
+		if (bShowImmediately)
+		{
+			this.show();
+		}
+	},
+	
+	show	: function()
+	{
+		this.oFX.hide.cancel();
+		this.oContainer.domElement.style.opacity	= 0.0;
+		this.oContainer.domElement.style.display	= 'block';
+	},
+	
+	hide	: function()
+	{
+		this.oContainer.domElement.style.opacity	= 0.0;
+		this.oContainer.domElement.style.display	= 'none';
 	},
 	
 	setPosition	: function(sPositionType, oConfig)
@@ -182,10 +205,15 @@ var Reflex_Date_Picker	= Class.create
 		this._renderDatePicker();
 	},
 	
-	setDate	: function(iYear, iMonth, iDay)
+	setDate	: function(iYear, iMonth, iDay, bClose)
 	{
 		var	oCurrentDatetime	= this.getDate();
 		this.setDatetime(new Date(iYear, iMonth, iDay, oCurrentDatetime.getHours(), oCurrentDatetime.getMinutes(), oCurrentDatetime.getSeconds()));
+		
+		if (bClose)
+		{
+			this.hide();
+		}
 	},
 	
 	setTimeFromSlider	: function(oSliderValues)
@@ -275,7 +303,8 @@ var Reflex_Date_Picker	= Class.create
 		// Remove all Day Event Handlers
 		for (sFormattedDate in this.oSetDateHandlers)
 		{
-			delete this.oSetDateHandlers[sFormattedDate];
+			delete this.oSetDateHandlers[sFormattedDate].onClick;
+			delete this.oSetDateHandlers[sFormattedDate].onDblClick;
 		}
 		
 		// Render each visible month
@@ -411,10 +440,12 @@ var Reflex_Date_Picker	= Class.create
 					//alert("Adding Cell for " + oDateOfMonth);
 					
 					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth);
-					this.oSetDateHandlers[sFormattedDate]	= this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate());
+					this.oSetDateHandlers[sFormattedDate].onClick		= this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate());
+					this.oSetDateHandlers[sFormattedDate].onDblClick	= this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate(), true);
 					
 					// Add Event Listener
-					domDay.addEventListener('click', this.oSetDateHandlers[sFormattedDate], false);
+					domDay.addEventListener('click', this.oSetDateHandlers[sFormattedDate].onClick, false);
+					domDay.addEventListener('dblclick', this.oSetDateHandlers[sFormattedDate].onDblClick, false);
 					
 					// Set Cell Contents
 					domDaySpan.innerHTML	= oDateOfMonth.getDate();
@@ -434,7 +465,8 @@ var Reflex_Date_Picker	= Class.create
 						// Remove onClick (once removed, it cannot be re-added)
 						if (oResponse.bSelectable === false)
 						{
-							domDay.removeEventListener('click', this.oSetDateHandlers[sFormattedDate], false);
+							domDay.removeEventListener('click', this.oSetDateHandlers[sFormattedDate].onClick, false);
+							domDay.removeEventListener('dblclick', this.oSetDateHandlers[sFormattedDate].onDblClick, false);
 							domDay.removeClassName('selectable');
 						}
 					}

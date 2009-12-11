@@ -36,9 +36,9 @@ var Reflex_Slider_Handle	= Class.create
 	{
 		this.iValue	= iValue;
 		
-		if (this.oTransitionFX)
+		if (this.oMorphFX)
 		{
-			this.oTransitionFX.cancel();
+			this.oMorphFX.cancel();
 		}
 		
 		// Update the Element styling
@@ -47,11 +47,11 @@ var Reflex_Slider_Handle	= Class.create
 		//alert("sLeftOffset: '"+sLeftOffset+"'");
 		if (bAnimate)
 		{
-			this.oTransitionFX	= new Reflex_FX_Transition(this.oElement, {left: sLeftOffset}, 0.25, 'ease');
+			this.oMorphFX	= new Reflex_FX_Morph(this.oElement, {left: sLeftOffset}, 0.25, 'ease');
 		}
 		else
 		{
-			this.oTransitionFX	= new Reflex_FX_Transition(this.oElement, {left: sLeftOffset}, 0, 'linear');
+			this.oMorphFX	= new Reflex_FX_Morph(this.oElement, {left: sLeftOffset}, 0, 'linear');
 		}
 		this.paint();
 		
@@ -71,13 +71,13 @@ var Reflex_Slider_Handle	= Class.create
 	
 	paint	: function()
 	{
-		if (this.oTransitionFX)
+		if (this.oMorphFX)
 		{
 			//alert("Painting with iValue "+this.iValue);
-			if (!this.oTransitionFX.isRunning() && !this.oTransitionFX.isComplete())
+			if (!this.oMorphFX.isRunning() && !this.oMorphFX.isComplete())
 			{
 				//alert("Starting Animation! (iValue: "+this.iValue+")");
-				this.oTransitionFX.start();
+				this.oMorphFX.start();
 			}
 		}
 		else

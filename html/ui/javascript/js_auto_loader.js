@@ -89,5 +89,10 @@ var JsAutoLoader = {
 	registerLoadedScript : function(strScriptName)
 	{
 		this.loadedScripts[strScriptName] = true;
+	},
+	
+	require	: function(mScripts, fnOnLoadCallback)
+	{
+		JsAutoLoader.loadScript(mScripts, fnOnLoadCallback, false);
 	}
 }
