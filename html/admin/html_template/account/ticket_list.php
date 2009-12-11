@@ -109,7 +109,7 @@ class HtmlTemplateAccountTicketList extends HtmlTemplate
 				{
 					$strIdCell		= "<a href='". Href()->TicketingTicket($objTicket->id, $intAccountId) ."' title='View Ticket'>{$objTicket->id}</a>";
 					$strSubject		= trim($objTicket->subject);
-					$strSubjectCell	= ($strSubject != '')? htmlspecialchars($strSubject) : "<em>(No Subject)</em>";
+					$strSubjectCell	= ($strSubject != '')? htmlspecialchars($strSubject) : "<em>[No Subject]</em>";
 					
 					Table()->Tickets->AddRow($strIdCell, $strSubjectCell);
 				}
