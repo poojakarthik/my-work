@@ -85,15 +85,6 @@ var Reflex_FX	= Class.create
 		}
 		this.iStartTime	= iCurrentTime - iCurrentlyTranspired;
 		
-		if (bReverseDirection)
-		{
-			this.iStartTime			= iCurrentTime;
-		}
-		else
-		{
-			this.iStartTime			= iCurrentTime;
-		}
-		
 		if (this.iDuration == 0)
 		{
 			// Zero-length duration - skip straight to the end
