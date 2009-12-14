@@ -123,7 +123,7 @@ var Reflex_Date_Picker	= Class.create
 		this.setSelectMode(Reflex_Date_Picker.SELECT_MODE_DATE_TIME);
 		this.setDatetime(oDate);
 		
-		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, 0, 0, '0em', '0em', 0.0, 0.1, 'ease');
+		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, 0, 0, '0em', '0em', 0.0, 0.5, 'ease');
 		
 		// Animate this beast!
 		this.bVisible	= false;
@@ -445,7 +445,7 @@ var Reflex_Date_Picker	= Class.create
 					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth);
 					this.oSetDateHandlers[sFormattedDate]	=	{
 																	onClick		: this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate()),
-																	onDblClick	: this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate(), true),
+																	onDblClick	: this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate(), true)
 																};
 					
 					// Add Event Listener
