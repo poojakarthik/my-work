@@ -306,6 +306,7 @@ var Reflex_Date_Picker	= Class.create
 		{
 			delete this.oSetDateHandlers[sFormattedDate].onClick;
 			delete this.oSetDateHandlers[sFormattedDate].onDblClick;
+			delete this.oSetDateHandlers[sFormattedDate];
 		}
 		
 		// Render each visible month
@@ -441,8 +442,10 @@ var Reflex_Date_Picker	= Class.create
 					//alert("Adding Cell for " + oDateOfMonth);
 					
 					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth);
-					this.oSetDateHandlers[sFormattedDate].onClick		= this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate());
-					this.oSetDateHandlers[sFormattedDate].onDblClick	= this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate(), true);
+					this.oSetDateHandlers[sFormattedDate]	=	{
+																	onClick		: this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate()),
+																	onDblClick	: this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate(), true),
+																};
 					
 					// Add Event Listener
 					domDay.addEventListener('click', this.oSetDateHandlers[sFormattedDate].onClick, false);
