@@ -139,14 +139,14 @@ var Reflex_Date_Picker	= Class.create
 	{
 		this.bVisible	= true;
 		this.oToggleFX.cancel();
-		this.oToggleFX.start(true);
+		this.oToggleFX.start(true, true);
 	},
 	
 	hide	: function()
 	{
 		this.bVisible	= false;
 		this.oToggleFX.cancel();
-		this.oToggleFX.start(false);
+		this.oToggleFX.start(false, true);
 	},
 	
 	setPosition	: function(sPositionType, oConfig)
