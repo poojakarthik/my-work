@@ -55,5 +55,11 @@ Reflex_FX_Shift	= Class.create(/* extends */Reflex_FX,
 									};
 		//Reflex_Debug.asHTMLPopup(oStyleDefinition);
 		$super(oElement, oStyleDefinition, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS);
+	},
+	
+	start	: function($super, bReverseDirection, bResume)
+	{
+		$super(bReverseDirection, bResume);
+		alert('Animation Started!' + (this.bReverseDirection ? ' IN REVERSE!!!!~~' : ''));
 	}
 });

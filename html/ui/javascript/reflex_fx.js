@@ -95,7 +95,7 @@ var Reflex_FX	= Class.create
 		{
 			// Start the transition
 			this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), 1 / (this.iFPSOverride ? this.iFPSOverride : Reflex_FX.DEFAULT_FRAMES_PER_SECOND));
-			alert('Animation Started!' + (this.bReverseDirection ? ' IN REVERSE!!!!~~' : ''));
+			//alert('Animation Started!' + (this.bReverseDirection ? ' IN REVERSE!!!!~~' : ''));
 		}
 	},
 	
