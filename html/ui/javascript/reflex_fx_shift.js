@@ -33,26 +33,30 @@ Reflex_FX_Shift	= Class.create(/* extends */Reflex_FX,
 		oToStyle.height	= sHeight	? sHeight	: oElement.getHeight();
 		
 		var oStyleDefinition	=	{
-										opacity	:	{
-														from	: oElement.getStyle('opacity'),
-														to		: oToStyle.opacity
-													},
-										top	:	{
-														from	: oElement.getStyle('top'),
-														to		: oToStyle.top
-													},
-										left	:	{
-														from	: oElement.getStyle('left'),
-														to		: oToStyle.left
-													},
-										width	:	{
-														from	: oElement.getStyle('width'),
-														to		: oToStyle.width
-													},
-										height	:	{
-														from	: oElement.getStyle('height'),
-														to		: oToStyle.height
-													}
+										opacity		:	{
+															from	: oElement.getStyle('opacity'),
+															to		: oToStyle.opacity
+														},
+										top			:	{
+															from	: oElement.getStyle('top'),
+															to		: oToStyle.top
+														},
+										left		:	{
+															from	: oElement.getStyle('left'),
+															to		: oToStyle.left
+														},
+										width		:	{
+															from	: oElement.getStyle('width'),
+															to		: oToStyle.width
+														},
+										height		:	{
+															from	: oElement.getStyle('height'),
+															to		: oToStyle.height
+														},
+										fontSize	:	{
+															from	: oElement.getStyle('font-size'),
+															to		: oToStyle.fontSize
+														}
 									};
 		//Reflex_Debug.asHTMLPopup(oStyleDefinition);
 		$super(oElement, oStyleDefinition, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS);
