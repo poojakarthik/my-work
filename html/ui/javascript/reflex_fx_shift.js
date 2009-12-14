@@ -10,23 +10,24 @@ Reflex_FX_Shift	= Class.create(/* extends */Reflex_FX,
 	 * @param {Object}			oElement
 	 * @param {String}			sX
 	 * @param {String}			sY
-	 * @param {String}			sWidth
-	 * @param {String}			sHeight
+	 * @param {Object}			oBoxSize					Either .x & .y (for boxes with dimensions) or .fontSize (for font-relative boxes)
 	 * @param {Number[Float]}	fOpacity
 	 * @param {Number[Float]}	fDuration
 	 * @param {String|Function}	mTimingFunction
 	 * @param {Function}		fnOnCompleteCallback
 	 * @param {Number[Integer]}	iFPS
 	 */
-	initialize	: function($super, oElement, fX, fY, sWidth, sHeight, fOpacity, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS)
+	initialize	: function($super, oElement, fX, fY, oBoxSize, fOpacity, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS)
 	{
 		var oToStyle	=	{
 								opacity	: (fOpacity !== undefined && fOpacity !== null)	? fOpacity	: oElement.getStyle('opacity'),
 							};
 		
+		oToStyle.fontSize	= (oBoxSize.fontSize !== undefined && oBoxSize.fontSize !== null) ? oBoxSize.fontSize : oElement.getStyle('font-size');
+		
 		var oPositionedOffset	= oElement.positionedOffset();
-		oToStyle.top	= (Number(fY) !== 'NaN') ? fY : oPositionedOffset.top;
-		oToStyle.left	= (Number(fX) !== 'NaN') ? fX : oPositionedOffset.left;
+		oToStyle.top	= (Number(oBoxSize.y) !== 'NaN') ? oBoxSize.y : oPositionedOffset.top;
+		oToStyle.left	= (Number(oBoxSize.x) !== 'NaN') ? oBoxSize.x : oPositionedOffset.left;
 		
 		oToStyle.width	= sWidth	? sWidth	: oElement.getWidth();
 		oToStyle.height	= sHeight	? sHeight	: oElement.getHeight();
