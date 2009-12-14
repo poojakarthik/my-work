@@ -448,8 +448,8 @@ var Reflex_Date_Picker	= Class.create
 					
 					var sFormattedDate	= Reflex_Date_Format.format("Y-m-d", oDateOfMonth);
 					this.oSetDateHandlers[sFormattedDate]	=	{
-																	onClick		: this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate()),
-																	onDblClick	: this.setDate.bind(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate(), true)
+																	onClick		: (function(oEvent, iYear, iMonth, iDay){this.setDate(iYear, iMonth, iDay, false)}).bindAsEventListener(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate()),
+																	onDblClick	: (function(oEvent, iYear, iMonth, iDay){this.setDate(iYear, iMonth, iDay, true)}).bindAsEventListener(this, oDateOfMonth.getFullYear(), oDateOfMonth.getMonth(), oDateOfMonth.getDate())
 																};
 					
 					// Add Event Listener
