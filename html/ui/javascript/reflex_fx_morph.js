@@ -19,7 +19,7 @@ var Reflex_FX_Morph	= Class.create(/* extends */Reflex_FX,
 	initialize	: function($super, oElement, oToStyle, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS)
 	{
 		// Calculate the "from" style
-		var oStyleDefinition;
+		var oStyleDefinition	= {};
 		for (sCSSProperty in oToStyle)
 		{
 			oStyleDefinition[sCSSProperty]	=	{
