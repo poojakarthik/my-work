@@ -159,7 +159,7 @@ var Reflex_FX	= Class.create
 		
 		// Get transformation factor
 		var fTransformationFactor	= this.fnTimingFunction(this.bReverseDirection ? 1.0 - fPercentComplete : fPercentComplete);
-		//alert("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete");
+		alert("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete");
 		
 		// Update the Element's style
 		var oTransitionStyle	= {};
