@@ -11,8 +11,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.domElement						= document.createElement('div');
 		this.oContainer.domElement.id					= this.sUID;
 		this.oContainer.domElement.oReflexDatePicker	= this;
-		this.oContainer.domElement.style.opacity		= 0.0;
-		this.oContainer.domElement.style.display		= 'none';
+		this.oContainer.domElement.style.opacity		= 1.0;
 		this.oContainer.domElement.addClassName('reflex-datepicker');
 		
 		// Header
