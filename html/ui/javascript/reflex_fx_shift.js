@@ -60,12 +60,12 @@ Reflex_FX_Shift	= Class.create(/* extends */Reflex_FX,
 	start	: function($super, bReverseDirection, bResume)
 	{
 		$super(bReverseDirection, bResume);
-		alert('Animation Started!' + (this.bReverseDirection ? ' IN REVERSE!!!!~~' : ''));
+		//alert('Animation Started!' + (this.bReverseDirection ? ' IN REVERSE!!!!~~' : ''));
 	},
 	
 	_paint	: function($super, fPercentComplete)
 	{
 		$super(fPercentComplete);
-		alert("Transformation Factor: " + this.fnTimingFunction(this.bReverseDirection ? 1.0 - fPercentComplete : fPercentComplete) + " @ " + (fPercentComplete * 100) + "% complete");
+		//alert("Transformation Factor: " + this.fnTimingFunction(this.bReverseDirection ? 1.0 - fPercentComplete : fPercentComplete) + " @ " + (fPercentComplete * 100) + "% complete");
 	}
 });
