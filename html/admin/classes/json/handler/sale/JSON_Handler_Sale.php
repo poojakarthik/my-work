@@ -26,6 +26,9 @@ class JSON_Handler_Sale extends JSON_Handler
 	public function confirm($saleDetails, $bolValidateOnly=false)
 	{
 		$dealer = Dealer::getForEmployeeId(Flex::getUserId());
+		// Sometimes we want to use the user's flex dealer object, and sometimes the user's sales system dealer object, to do some of the checks
+		$doDealer = DO_Sales_Dealer::getForId($dealer->id);
+		
 		if (!$dealer || !$dealer->isActive())
 		{
 			throw new Exception("You do not have sufficient permissions to perform that action.");
@@ -89,6 +92,12 @@ class JSON_Handler_Sale extends JSON_Handler
 
 			try
 			{
+				// Check that the vendor has not been changed
+				if ($saleAccountDetails->vendor_id != $saleAccount->vendorId)
+				{
+					throw new Exception("Vendor cannot be changed, once it has been originally established");
+				}
+				
 				$saleAccount->abn = $saleAccountDetails->abn;
 				$saleAccount->acn = $saleAccountDetails->acn;
 				$saleAccount->addressLine1 = $saleAccountDetails->address_line_1;
@@ -350,6 +359,23 @@ class JSON_Handler_Sale extends JSON_Handler
 					}
 					else
 					{
+						// New Item
+
+						// Ensure the user has permission to add new items of this product
+						if (!$doDealer->hasProductPermission($itemDetails->product_id))
+						{
+							$objProduct = DO_Sales_Product::getForId($itemDetails->product_id);
+							throw new Exception("You do not have permission to sell the product: {$objProduct->name}");
+						}
+						
+						// Ensure that the product belongs to the vendor that the sale belongs to
+						$objProduct = DO_Sales_Product::getForId($itemDetails->product_id);
+						if ($objProduct->vendorId != $saleAccount->vendorId)
+						{
+							$objVendor	= DO_Sales_Vendor::getForId($saleAccount->vendorId);
+							throw new Exception("The product, '{$objProduct->name}', is not offered by the vendor '{$objVendor->name}'");
+						}
+						
 						$item = new DO_Sales_SaleItem();
 						$item->createdBy = $dealer->id;
 						$item->productId = $itemDetails->product_id;

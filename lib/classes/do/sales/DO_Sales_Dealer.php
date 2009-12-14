@@ -4,6 +4,11 @@ class DO_Sales_Dealer extends DO_Sales_Base_Dealer
 {
 	const SYSTEM_DEALER_ID = 1;
 	
+	private $_arrPermittedProductIds	= null;
+	private $_arrPermittedVendorIds		= null;
+	private $_arrPermittedSaleTypeIds	= null;
+	
+	
 	public function __set($propertyName, $value)
 	{
 		if ($value !== null)
@@ -327,6 +332,55 @@ class DO_Sales_Dealer extends DO_Sales_Base_Dealer
 		}
 		return $arrVendorsForDealer;
 	}
+	
+	// Will return true if the dealer is permitted to configure sales of this product, else false
+	public function hasProductPermission($intProductId)
+	{
+		if ($this->_arrPermittedProductIds === null)
+		{
+			$this->_arrPermittedProductIds = array();
+			$arrDealerProducts = DO_Sales_DealerProduct::listForDealer($this);
+			foreach ($arrDealerProducts as $doDealerProduct)
+			{
+				$this->_arrPermittedProductIds[] = $doDealerProduct->productId;
+			}
+		}
+		
+		return in_array($intProductId, $this->_arrPermittedProductIds);
+	}
+	
+	// Will return true if the dealer is permitted to configure sales for this vendor, else false
+	public function hasVendorPermission($intVendorId)
+	{
+		if ($this->_arrPermittedVendorIds === null)
+		{
+			$this->_arrPermittedVendorIds = array();
+			$arrDealerVendors = DO_Sales_DealerVendor::listForDealer($this);
+			foreach ($arrDealerVendors as $doDealerVendor)
+			{
+				$this->_arrPermittedVendorIds[] = $doDealerVendor->vendorId;
+			}
+		}
+		
+		return in_array($intVendorId, $this->_arrPermittedVendorIds);
+	}
+
+	// Will return true if the dealer is permitted to configure sales of this sale type, else false
+	public function hasSaleTypePermission($intSaleTypeId)
+	{
+		if ($this->_arrPermittedSaleTypeIds === null)
+		{
+			$this->_arrPermittedSaleTypeIds = array();
+			$arrDealerSaleTypes = DO_Sales_DealerSaleType::listForDealer($this);
+			foreach ($arrDealerSaleTypes as $doDealerSaleType)
+			{
+				$this->_arrPermittedSaleTypeIds[] = $doDealerSaleType->saleTypeId;
+			}
+		}
+		
+		return in_array($intSaleTypeId, $this->_arrPermittedSaleTypeIds);
+	}
+	
 	
 	// Returns TRUE if the dealer can View the sale.  The requirements being that the sale is associated with them, or any of their subordinates
 	public function canViewSale($doSale)
