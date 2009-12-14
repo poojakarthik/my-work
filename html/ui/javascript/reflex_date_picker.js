@@ -137,6 +137,8 @@ var Reflex_Date_Picker	= Class.create
 	
 	show	: function()
 	{
+		this._renderDatePicker();
+		
 		this.bVisible	= true;
 		this.oToggleFX.cancel();
 		this.oToggleFX.start(true, true);
@@ -332,7 +334,7 @@ var Reflex_Date_Picker	= Class.create
 			oVisibleMonth.shift(1, Date.DATE_INTERVAL_MONTH);
 		}
 	},
-	
+	/*
 	show	: function()
 	{
 		this._renderDatePicker();
@@ -343,7 +345,7 @@ var Reflex_Date_Picker	= Class.create
 	{
 		this.getElement().hide();
 	},
-	
+	*/
 	_renderMonthView	: function(iMonth, iYear)
 	{
 		// Containers
