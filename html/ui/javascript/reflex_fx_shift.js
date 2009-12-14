@@ -1,5 +1,5 @@
 
-var Reflex_FX_Shift	= Class.create(/* extends */Reflex_FX,
+Reflex_FX_Shift	= Class.create(/* extends */Reflex_FX,
 {
 	/**
 	 * initialize()

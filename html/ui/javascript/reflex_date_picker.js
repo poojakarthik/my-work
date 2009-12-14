@@ -1,3 +1,4 @@
+
 var Reflex_Date_Picker	= Class.create
 ({
 	initialize	: function(mMode, oDate, bShowImmediately)
