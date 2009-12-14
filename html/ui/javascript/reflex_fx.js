@@ -83,7 +83,8 @@ var Reflex_FX	= Class.create
 			var fPreviouslyCompleted	= Math.min(1, (iPreviousTranspired / this.iDuration));
 			iCurrentlyTranspired		= bReverseDirection ? iPreviousTranspired : this.iDuration - iPreviousTranspired;
 		}
-		this.iStartTime	= iCurrentTime - iCurrentlyTranspired;
+		this.iStartTime			= iCurrentTime - iCurrentlyTranspired;
+		this.iLastUpdateTime	= this.iStartTime;
 		
 		if (this.iDuration == 0)
 		{
