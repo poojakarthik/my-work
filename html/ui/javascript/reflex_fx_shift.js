@@ -53,7 +53,7 @@ Reflex_FX_Shift	= Class.create(/* extends */Reflex_FX,
 														to		: oToStyle.height
 													}
 									};
-		Reflex_Debug.asHTMLPopup(oStyleDefinition);
+		//Reflex_Debug.asHTMLPopup(oStyleDefinition);
 		$super(oElement, oStyleDefinition, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS);
 	}
 });
