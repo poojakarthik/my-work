@@ -124,7 +124,7 @@ var Reflex_Date_Picker	= Class.create
 		this.setDatetime(oDate);
 		
 		// Hide
-		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', '0px', '0px', 0.0, 5, 'ease');
+		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', '0px', '0px', 0.0, 0.5, 'ease');
 		this.oToggleFX.start();
 		this.oToggleFX.end();
 		
