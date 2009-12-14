@@ -124,9 +124,10 @@ var Reflex_Date_Picker	= Class.create
 		this.setSelectMode(Reflex_Date_Picker.SELECT_MODE_DATE_TIME);
 		this.setDatetime(oDate);
 		
-		this.oToggleFX	=	new Reflex_FX_Shift(oElement, sX, sY, sWidth, sHeight, fOpacity, fDuration, mTimingFunction, fnOnCompleteCallback);
+		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, 0, 0, '0em', '0em', 0.0, 0.1, 'ease');
 		
 		// Animate this beast!
+		this.bVisible	= false;
 		if (bShowImmediately)
 		{
 			this.show();
@@ -135,15 +136,16 @@ var Reflex_Date_Picker	= Class.create
 	
 	show	: function()
 	{
-		this.oFX.hide.cancel();
-		this.oContainer.domElement.style.opacity	= 0.0;
-		this.oContainer.domElement.style.display	= 'block';
+		this.bVisible	= true;
+		this.oToggleFX.cancel();
+		this.oToggleFX.start(true);
 	},
 	
 	hide	: function()
 	{
-		this.oContainer.domElement.style.opacity	= 0.0;
-		this.oContainer.domElement.style.display	= 'none';
+		this.bVisible	= false;
+		this.oToggleFX.cancel();
+		this.oToggleFX.start(false);
 	},
 	
 	setPosition	: function(sPositionType, oConfig)
