@@ -151,6 +151,7 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/sha1.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_fx.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_fx_morph.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_fx_shift.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_popup.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex_constant.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
@@ -163,7 +164,7 @@ class Application_Page extends Page
 		}
 
 		// Remove any duplicates from the list, as well as files that have already been referenced
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "sha1", "reflex_fx", "reflex_fx_morph", "reflex_popup", "flex_constant"));
+		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "sha1", "reflex_fx", "reflex_fx_morph", "reflex_fx_shift", "reflex_popup", "flex_constant"));
 		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
 
 		$arrRemainingJsFilesToInclude = array();
