@@ -21,7 +21,7 @@ Reflex_FX_Shift	= Class.create(/* extends */Reflex_FX,
 	initialize	: function($super, oElement, fX, fY, sWidth, sHeight, fOpacity, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS)
 	{
 		var oToStyle	=	{
-								opacity	: fOpacity	? fOpacity	: oElement.getStyle('opacity'),
+								opacity	: (fOpacity !== undefined && fOpacity !== null)	? fOpacity	: oElement.getStyle('opacity'),
 							};
 		
 		var oPositionedOffset	= oElement.positionedOffset();
