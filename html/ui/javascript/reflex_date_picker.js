@@ -123,7 +123,7 @@ var Reflex_Date_Picker	= Class.create
 		this.setSelectMode(Reflex_Date_Picker.SELECT_MODE_DATE_TIME);
 		this.setDatetime(oDate);
 		
-		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, 0, 0, '0em', '0em', 0.0, 5, 'ease');
+		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0px', '0px', '0px', '0px', 0.0, 5, 'ease');
 		
 		// Animate this beast!
 		this.bVisible	= false;
