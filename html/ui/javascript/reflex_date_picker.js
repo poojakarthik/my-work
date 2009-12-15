@@ -1,7 +1,7 @@
 
 var Reflex_Date_Picker	= Class.create
 ({
-	initialize	: function(mMode, oDate, bShowImmediately)
+	initialize	: function(mMode, oDate)
 	{
 		// Unique Identifier
 		this.sUID	= 'reflex-date-picker_' + String(Math.round((new Date()).getTime() * Math.random()));
@@ -101,9 +101,15 @@ var Reflex_Date_Picker	= Class.create
 		*/
 		this.oContainer.oFooter.oNow						= {};
 		this.oContainer.oFooter.oNow.domElement				= document.createElement('button');
-		this.oContainer.oFooter.oNow.domElement.innerHTML	= 'Now';
+		this.oContainer.oFooter.oNow.domElement.innerHTML	= "<img src='../admin/img/template/clock.png' style='margin-right: 0.25em;' alt='' title='Select' />Now";
 		this.oContainer.oFooter.oNow.domElement.observe('click', this.setDatetime.bind(this, 'now'));
 		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oNow.domElement);
+		
+		this.oContainer.oFooter.oSelect							= {};
+		this.oContainer.oFooter.oSelect.domElement				= document.createElement('button');
+		this.oContainer.oFooter.oSelect.domElement.innerHTML	= "<img src='../admin/img/template/tick.png' style='margin-right: 0.25em;' alt='' title='Select' />Select";
+		this.oContainer.oFooter.oSelect.domElement.observe('click', this.close.bind(this));
+		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oSelect.domElement);
 		
 		document.body.appendChild(this.oContainer.domElement);
 		
@@ -123,16 +129,11 @@ var Reflex_Date_Picker	= Class.create
 		this.setSelectMode(Reflex_Date_Picker.SELECT_MODE_DATE_TIME);
 		this.setDatetime(oDate);
 		
-		// Hide
-		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', {fontSize: '0px'}, 0.0, 0.1, 'ease');
+		// Hide by default
+		this._updateContentVisibility();
+		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', {fontSize: '0px'}, 0.0, 0.1, 'ease', this._updateContentVisibility.bind(this));
 		this.oToggleFX.start();
 		this.oToggleFX.end();
-		
-		// Animate this beast!
-		if (bShowImmediately)
-		{
-			this.show();
-		}
 	},
 	
 	show	: function()
@@ -141,6 +142,7 @@ var Reflex_Date_Picker	= Class.create
 		
 		this.bVisible	= true;
 		this.oToggleFX.cancel();
+		
 		this.oToggleFX.start(true, true);
 	},
 	
@@ -148,7 +150,20 @@ var Reflex_Date_Picker	= Class.create
 	{
 		this.bVisible	= false;
 		this.oToggleFX.cancel();
+		
 		this.oToggleFX.start(false, true);
+	},
+	
+	_updateContentVisibility	: function()
+	{
+		if (this.bVisible)
+		{
+			this.oContent.domElement.childElements.each(function(oElement){oElement.setStyle({display: ''});});
+		}
+		else
+		{
+			this.oContent.domElement.childElements.each(function(oElement){oElement.setStyle({display: 'hidden'});});
+		}
 	},
 	
 	setPosition	: function(sPositionType, oConfig)
