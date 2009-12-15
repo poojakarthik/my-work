@@ -10,8 +10,10 @@ $arrDataReport['Priviledges']	= 2147483648;									// Debug
 //$arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "	Account a
-									JOIN Contact c ON (a.PrimaryContact = c.Id)
-									JOIN CustomerGroup cg ON (cg.Id = a.CustomerGroup)";
+									JOIN account_status a_s ON (a.Archived = a_s.id)
+									JOIN CustomerGroup cg ON (cg.Id = a.CustomerGroup)
+									JOIN Service s ON (s.Account = a.Id)
+									JOIN service_status ss ON (s.Status = ss.id)";
 $arrDataReport['SQLWhere']		= "	a_s.const_name = 'ACCOUNT_STATUS_ACTIVE'
 									AND ss.const_name = 'SERVICE_ACTIVE'
 									AND CAST(s.CreatedOn AS DATE) BETWEEN <StartDate> AND <EndDate>";
