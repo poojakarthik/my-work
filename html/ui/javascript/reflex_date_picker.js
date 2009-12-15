@@ -140,27 +140,21 @@ var Reflex_Date_Picker	= Class.create
 	{
 		this._renderDatePicker();
 		
-		this.bVisible	= true;
 		this.oToggleFX.cancel();
 		
-		this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({visibility: 'hidden'});});
+		this.bVisible	= false;
+		this._updateContentVisibility();
+		this.bVisible	= true;
 		
 		this.oToggleFX.start(true, true);
 	},
 	
 	hide	: function()
 	{
-		if (!(this instanceof Reflex_Date_Picker))
-		{
-			alert("Reflex_Date_Picker.hide()'s 'this' is not a Reflex_Date_Picker!");
-			alert(this.toSource());
-		}
-		//alert(this.toSource());
-		
-		this.bVisible	= false;
 		this.oToggleFX.cancel();
 		
-		this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({visibility: 'hidden'});});
+		this.bVisible	= false;
+		this._updateContentVisibility();
 		
 		this.oToggleFX.start(false, true);
 	},
@@ -169,11 +163,13 @@ var Reflex_Date_Picker	= Class.create
 	{
 		if (this.bVisible)
 		{
-			this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({visibility: ''});});
+			this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: ''});});
+			this.oContainer.domElement.setStyle({height: this.oContainer.domElement.getHeight(), width: this.oContainer.domElement.getWidth()});
 		}
 		else
 		{
-			this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({visibility: 'hidden'});});
+			this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: 'none'});});
+			this.oContainer.domElement.setStyle({height: '', width: ''});
 		}
 	},
 	
