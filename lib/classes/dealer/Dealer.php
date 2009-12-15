@@ -4,6 +4,21 @@ class Dealer
 {
 	const SYSTEM_DEALER_ID = 1;
 	
+	const SEARCH_CONSTRAINT_DEALER_ID			= "dealer_id";
+	const SEARCH_CONSTRAINT_DEALER_STATUS_ID	= "dealer_status";
+	const SEARCH_CONSTRAINT_UP_LINE_ID			= "up_line_id";
+	const SEARCH_CONSTRAINT_SEARCH_STRING		= "search_string";
+	const SEARCH_CONSTRAINT_CARRIER_ID			= "carrier_id";
+
+	const ORDER_BY_DEALER_ID					= "dealer|id";
+	const ORDER_BY_FIRST_NAME					= "dealer|first_name";
+	const ORDER_BY_LAST_NAME					= "dealer|last_name";
+	const ORDER_BY_USERNAME						= "dealer|username";
+	const ORDER_BY_CAN_VERIFY_SALES				= "dealer|can_verify";
+	const ORDER_BY_DEALER_STATUS_ID				= "dealer|dealer_status_id";
+	const ORDER_BY_UP_LINE_ID					= "dealer|up_line_id";
+	const ORDER_BY_EMPLOYEE_ID					= "dealer|employee_id";
+	
 	// The key to this array will be the tidy names as defined by the getColumns function
 	private	$_arrProperties	= array();
 
@@ -194,6 +209,65 @@ class Dealer
 		return (count($arrDealers) == 1)? current($arrDealers) : NULL;
 	}
 
+	// Note that this currently only handles "prop IS NULL", "prop IN (list of values)", "prop = value" and negated versions of these (IS NOT NULL, NOT IN, != )
+	private static function _prepareSearchConstraint($strProp, $mixValue, $strComparison)
+	{
+		// Sanitise the data
+		$dataSource = DataAccess::getDataAccess();
+		if (is_array($mixValue))
+		{
+			foreach ($mixValue as &$strValue)
+			{
+				$strValue = "'". $dataSource->escape($strValue) ."'";
+			}
+		}
+		elseif ($mixValue !== NULL)
+		{
+			$strValue = "'". $dataSource->escape($strValue) ."'";
+		}
+		
+		// Build the constraint SQL
+		$strSearch = "";
+		
+		switch ($strComparison)
+		{
+			case '=':
+				if ($mixValue === NULL)
+				{
+					$strSearch = "$strProp IS NULL";
+				}
+				elseif (is_array($mixValue))
+				{
+					$strSearch = "$strProp IN (". implode(", ", $mixValue) .")";
+				}
+				else
+				{
+					$strSearch	= "$strProp = $mixValue";
+				}
+				break;
+				
+			case '!=':
+				if ($mixValue === NULL)
+				{
+					$strSearch = "$strProp IS NOT NULL";
+				}
+				elseif (is_array($mixValue))
+				{
+					$strSearch = "$strProp NOT IN (". implode(", ", $mixValue) .")";
+				}
+				else
+				{
+					$strSearch	= "$strProp != $mixValue";
+				}
+				break;
+				
+			default:
+				throw new Exception(__METHOD__ ." - Unknown search constraint condition: {$strComparison}");
+		}
+		
+		return $strSearch;
+	}
+	
 	public static function getAll($mixFilter=NULL, $arrSort=NULL, $intLimit=NULL, $intOffset=NULL)
 	{
 		$arrOrderByParts	= array();
@@ -205,69 +279,78 @@ class Dealer
 		if (is_array($mixFilter))
 		{
 			$arrWhereParts = array();
-			foreach ($mixFilter as $strColumn=>$arrStyle)
+			foreach ($mixFilter as $arrConstraint)
 			{
-				if (!array_key_exists($strColumn, $arrColumns))
+				if (!(is_array($arrConstraint) && array_key_exists("Type", $arrConstraint)))
 				{
-					// The column doesn't exist in the dealer table
+					// Search constraint declaration is invalid
 					continue;
 				}
-				$strColumnType = $arrColumnTypes[$strColumn];
-				
-				switch ($arrStyle['Comparison'])
+
+				switch ($arrConstraint['Type'])
 				{
-					case '!=':
-					case '=':
-						if ($arrStyle['Value'] === NULL || (is_array($arrStyle['Value']) && empty($arrStyle['Value'])))
-						{
-							$strNegate = ($arrStyle['Comparison'] == '!=')? "NOT" : "";
-							$arrWhereParts[] = $arrColumns[$strColumn] ." IS $strNegate NULL";
-						}
-						elseif (is_array($arrStyle['Value']))
-						{
-							$arrValues = array();
-							foreach ($arrStyle['Value'] as $mixValue)
-							{
-								// prepare the values for being used in sql code
-								switch ($strColumnType)
-								{
-									case 'integer':
-									case 'boolean':
-										$arrValues[] = intval($mixValue);
-										break;
-									case 'text':
-										$arrValues[] = "'". $objDB->EscapeString($mixValue) ."'";
-										break;
-									default:
-										throw new exception(__CLASS__ ."::". __METHOD__ ." - don't know how to handle data type, '$strColumnType'");
-								}
-							}
-							
-							$strNegate = ($arrStyle['Comparison'] == '!=')? "NOT" : "";
-							$arrWhereParts[] = $arrColumns[$strColumn] ." $strNegate IN (". implode(", ", $arrValues) .")";
-						}
-						else
-						{
-							// prepare the values for being used in sql code
-							switch ($strColumnType)
-							{
-								case 'integer':
-								case 'boolean':
-									$mixValue = intval($arrStyle['Value']);
-									break;
-								case 'text':
-									$mixValue = "'". $objDB->EscapeString($arrStyle['Value']) ."'";
-									break;
-								default:
-									throw new exception(__CLASS__ ."::". __METHOD__ ." - don't know how to handle data type, '$strColumnType'");
-							}
-							$strComparison = ($arrStyle['Comparison'] == '!=')? "!=" : "=";
-							$arrWhereParts[] = $arrColumns[$strColumn] ." $strComparison $mixValue";
-						}
+					case self::SEARCH_CONSTRAINT_DEALER_ID:
+						$arrWhereParts[] = self::_prepareSearchConstraint("dealer.id", $arrConstraint['Value'], $arrConstraint['Comparison']);
 						break;
+
+					case self::SEARCH_CONSTRAINT_DEALER_STATUS_ID:
+						$arrWhereParts[] = self::_prepareSearchConstraint("dealer.dealer_status_id", $arrConstraint['Value'], $arrConstraint['Comparison']);
+						break;
+					
+					case self::SEARCH_CONSTRAINT_CARRIER_ID:
+						$arrWhereParts[] = self::_prepareSearchConstraint("dealer.carrier_id", $arrConstraint['Value'], $arrConstraint['Comparison']);
+						break;
+
+					case self::SEARCH_CONSTRAINT_UP_LINE_ID:
+						// We want all dealers who this guy managers, as well as himself
+						$intDealerId		= intval($arrConstraint['Value']);
+						$objManager			= Dealer::getForId($intDealerId, true);
+						$arrSubordinates	= $objManager->getSubordinates();
+						$arrDealerIds		= array($intDealerId);
+						foreach ($arrSubordinates as $objSubordinate)
+						{
+							$arrDealerIds[] = $objSubordinate->id;
+						}
+						$arrWhereParts[] = self::_prepareSearchConstraint("dealer.id", $arrDealerIds, $arrConstraint['Comparison']);
+						break;
+					
+					case self::SEARCH_CONSTRAINT_SEARCH_STRING:
+						// Simplify whitespace 
+						$strSearchString = trim(preg_replace('/\s+/', " ", $objDB->EscapeString($arrConstraint['Value'])));
+						if (strlen($strSearchString) == 0)
+						{
+							// There is no search string
+							// Switch statements are considered a continuable construct in php so we need to break out of 2 loops
+							continue 2;
+						}
+
+						// A string has been supplied.  Check it against dealer id, dealer name, username, and up_line_manager_username
+						$arrSearchStringConstraintParts = array();
+						
+						// Dealer Id
+						$intSearchStringAsNumber = intval($strSearchString);
+						if ($intSearchStringAsNumber > 0)
+						{
+							$arrSearchStringConstraintParts[] = "(dealer.id = $intSearchStringAsNumber)";
+						}
+						
+						// Dealer name
+						$arrSearchStringConstraintParts[] = "(CONCAT(dealer.first_name, ' ', dealer.last_name) LIKE '%{$strSearchString}%')";
+						
+						// Dealer username
+						$arrSearchStringConstraintParts[] = "(dealer.username LIKE '%{$strSearchString}%')";
+						
+						$arrWhereParts[] = "(". implode(" OR ", $arrSearchStringConstraintParts) .")";
+						break;
+					
+					default:
+						// Unknown Search constraint
+						// Switch statements are considered a continuable construct in php so we need to break out of 2 loops
+						continue 2;
 				}
 			}
-			$strWhere = (count($arrWhereParts) > 0)? implode(" AND ", $arrWhereParts) : NULL;
+			
+			$strWhere = (count($arrWhereParts) > 0)? implode(" AND ", $arrWhereParts) : NULL;	
 		}
 		elseif (is_string($mixFilter))
 		{
@@ -283,16 +366,31 @@ class Dealer
 		{
 			foreach ($arrSort as $strColumn=>$bolAsc)
 			{
-				if (array_key_exists($strColumn, $arrColumns))
+				switch ($strColumn)
 				{
-					$arrOrderByParts[] = "{$arrColumns[$strColumn]} " . ($bolAsc ? "ASC" : "DESC");
+					case self::ORDER_BY_DEALER_ID:
+					case self::ORDER_BY_FIRST_NAME:
+					case self::ORDER_BY_LAST_NAME:
+					case self::ORDER_BY_USERNAME:
+					case self::ORDER_BY_CAN_VERIFY_SALES:
+					case self::ORDER_BY_DEALER_STATUS_ID:
+					case self::ORDER_BY_UP_LINE_ID:
+					case self::ORDER_BY_EMPLOYEE_ID:
+						$arrOrderByParts[] = str_replace('|', '.', $strColumn) . ($bolAsc ? " ASC" : " DESC");
+						break;
+						
+					default:
+						throw new Exception(__METHOD__ ." - Illegal sorting identifier: $strColumn");
+						break;
 				}
 			}
 		}
+		
 		$strOrderBy = (count($arrOrderByParts) > 0)? implode(", ", $arrOrderByParts) : NULL;
 		
 		return self::getFor($strWhere, $strOrderBy, $intLimit, $intOffset);
 	}
+
 
 	// Retrieves all dealers who manager other dealers
 	public static function getManagers()

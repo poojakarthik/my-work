@@ -40,15 +40,15 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 		}
 
 		// Define the columns to show
-		$arrColumns = array("Id"			=> array("Title" => "Id",				"SortField" => "id"),
-							"FirstName"		=> array("Title" => "First Name",		"SortField" => "firstName"),
-							"LastName"		=> array("Title" => "Last Name",		"SortField" => "lastName"),
-							"Username"		=> array("Title" => "Username",			"SortField" => "username"),
+		$arrColumns = array("Id"			=> array("Title" => "Id",				"SortField" => Dealer::ORDER_BY_DEALER_ID),
+							"FirstName"		=> array("Title" => "First Name",		"SortField" => Dealer::ORDER_BY_FIRST_NAME),
+							"LastName"		=> array("Title" => "Last Name",		"SortField" => Dealer::ORDER_BY_LAST_NAME),
+							"Username"		=> array("Title" => "Username",			"SortField" => Dealer::ORDER_BY_USERNAME),
 							"IsManager"		=> array("Title" => "Manages Others",	"SortField" => NULL),
-							"Manager"		=> array("Title" => "Up Line Manager",	"SortField" => "upLineId"),
-							"CanVerify"		=> array("Title" => "Can Verify Sales",	"SortField" => "canVerify"),
-							"Status"		=> array("Title" => "Status",			"SortField" => "dealerStatusId"),
-							"IsEmployee"	=> array("Title" => "Is Employee",		"SortField" => "employeeId"),
+							"Manager"		=> array("Title" => "Up Line Manager",	"SortField" => Dealer::ORDER_BY_UP_LINE_ID),
+							"CanVerify"		=> array("Title" => "Can Verify Sales",	"SortField" => Dealer::ORDER_BY_CAN_VERIFY_SALES),
+							"Status"		=> array("Title" => "Status",			"SortField" => Dealer::ORDER_BY_DEALER_STATUS_ID),
+							"IsEmployee"	=> array("Title" => "Is Employee",		"SortField" => Dealer::ORDER_BY_EMPLOYEE_ID),
 							"Actions"		=> array("Title" => "Actions",			"SortField" => NULL)
 							);
 		$intColumnCount = count($arrColumns);
@@ -153,8 +153,47 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 		$strHeaderRow = "\t\t<tr>\n$strHeaderRow\t\t</tr>";
 
 
+		// Build filter controls
+
+		// The search string filter
+		$strSearchString = array_key_exists("searchString", $arrFilter)? htmlspecialchars($arrFilter['searchString']['Value'], ENT_QUOTES) : NULL;
+		
+		// The Dealer Status
+		$arrDealerStatuses = Dealer_Status::getAll();
+		$strDealerStatusOptions = "\n\t<option value='' selected='selected'>All Statuses</option>";
+		$intDealerStatusId = array_key_exists("dealerStatusId", $arrFilter)? $arrFilter['dealerStatusId']['Value'] : NULL;
+		foreach ($arrDealerStatuses as $objDealerStatus)
+		{
+			$strSelected = ($objDealerStatus->id == $intDealerStatusId)? "selected='selected'" : "";
+			$strDealerStatus = htmlspecialchars($objDealerStatus->name);
+			$strDealerStatusOptions .= "\n\t<option value='{$objDealerStatus->id}' $strSelected>$strDealerStatus</option>";
+		}
+
+		// The Carrier
+		$arrSalesCallCentreCarriers = Carrier::listForCarrierTypeId(CARRIER_TYPE_SALES_CALL_CENTRE);
+		$strCarrierOptions = "\n\t<option value='' selected='selected'>All Call Centres</option>";
+		$intCarrierId = array_key_exists("carrierId", $arrFilter)? $arrFilter['carrierId']['Value'] : NULL;
+		foreach ($arrSalesCallCentreCarriers as $objCarrier)
+		{
+			$strSelected = ($objCarrier->id == $intCarrierId)? "selected='selected'" : "";
+			$strCarrierName = htmlspecialchars($objCarrier->name);
+			$strCarrierOptions .= "\n\t<option value='{$objCarrier->id}' $strSelected>$strCarrierName</option>";
+		}
+
+		$strDealerListLink = MenuItems::ManageDealers();
+
 		// Output the table of dealers
 		echo "
+<div id='filterOptions' class='GroupedContent' style='margin-bottom:1em'>
+	<form method='GET' action='{$strDealerListLink}'>
+		<select id='dealerFilterOptionsCarrierId' name='carrierId'>$strCarrierOptions
+		</select>
+		<select id='dealerFilterOptionsDealerStatusId' name='dealerStatusId'>$strDealerStatusOptions
+		</select>
+		<input type='text' id='dealerFilterOptionsSearchString' name='searchString' value='$strSearchString'></input>
+		<input type='submit' value='Go'></input>
+	</form>
+</div>
 <table class='reflex highlight-rows' id='DealerListTable' name='DealerListTable'>
 	<caption>
 		<div id='caption_bar' class='caption_bar'>
