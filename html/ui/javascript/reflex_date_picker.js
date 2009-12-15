@@ -148,7 +148,11 @@ var Reflex_Date_Picker	= Class.create
 	
 	hide	: function()
 	{
-		Reflex_Debug.asHTMLPopup(this);
+		if (!(this instanceof Reflex_Date_Picker))
+		{
+			alert("Reflex_Date_Picker.hide()'s 'this' is not a Reflex_Date_Picker!");
+			alert(this.toSource());
+		}
 		
 		this.bVisible	= false;
 		this.oToggleFX.cancel();
