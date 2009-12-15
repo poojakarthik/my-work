@@ -148,6 +148,8 @@ var Reflex_Date_Picker	= Class.create
 	
 	hide	: function()
 	{
+		Reflex_Debug.asHTMLPopup(this);
+		
 		this.bVisible	= false;
 		this.oToggleFX.cancel();
 		
