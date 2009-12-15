@@ -129,11 +129,11 @@ var Reflex_Date_Picker	= Class.create
 		this.setSelectMode(Reflex_Date_Picker.SELECT_MODE_DATE_TIME);
 		this.setDatetime(oDate);
 		
-		// Hide by default
-		this._updateContentVisibility();
 		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', {fontSize: '0px'}, 0.0, 0.1, 'ease', this._updateContentVisibility.bind(this));
-		this.oToggleFX.start();
+		// Hide by default
+		this.hide();
 		this.oToggleFX.end();
+		//this._updateContentVisibility();
 	},
 	
 	show	: function()
@@ -153,7 +153,7 @@ var Reflex_Date_Picker	= Class.create
 			alert("Reflex_Date_Picker.hide()'s 'this' is not a Reflex_Date_Picker!");
 			alert(this.toSource());
 		}
-		alert(this.toSource());
+		//alert(this.toSource());
 		
 		this.bVisible	= false;
 		this.oToggleFX.cancel();
