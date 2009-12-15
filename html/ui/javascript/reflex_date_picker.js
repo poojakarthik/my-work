@@ -108,7 +108,7 @@ var Reflex_Date_Picker	= Class.create
 		this.oContainer.oFooter.oSelect							= {};
 		this.oContainer.oFooter.oSelect.domElement				= document.createElement('button');
 		this.oContainer.oFooter.oSelect.domElement.innerHTML	= "<img src='../admin/img/template/tick.png' style='margin-right: 0.25em;' alt='' title='Select' />Select";
-		this.oContainer.oFooter.oSelect.domElement.observe('click', this.hide.bind(this));
+		this.oContainer.oFooter.oSelect.domElement.observe('click', this.hide.bindAsEventHandler(this));
 		this.oContainer.oFooter.domElement.appendChild(this.oContainer.oFooter.oSelect.domElement);
 		
 		document.body.appendChild(this.oContainer.domElement);
