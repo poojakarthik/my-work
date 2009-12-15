@@ -165,11 +165,11 @@ var Reflex_Date_Picker	= Class.create
 	{
 		if (this.bVisible)
 		{
-			this.oContainer.domElement.childElements.each(function(oElement){oElement.setStyle({display: ''});});
+			this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: ''});});
 		}
 		else
 		{
-			this.oContainer.domElement.childElements.each(function(oElement){oElement.setStyle({display: 'hidden'});});
+			this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: 'hidden'});});
 		}
 	},
 	
