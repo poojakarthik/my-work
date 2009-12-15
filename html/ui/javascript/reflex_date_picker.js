@@ -158,6 +158,8 @@ var Reflex_Date_Picker	= Class.create
 		this.bVisible	= false;
 		this.oToggleFX.cancel();
 		
+		this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: ''});});
+		
 		this.oToggleFX.start(false, true);
 	},
 	
