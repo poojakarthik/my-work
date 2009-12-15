@@ -129,8 +129,8 @@ var Reflex_Date_Picker	= Class.create
 		this.setSelectMode(Reflex_Date_Picker.SELECT_MODE_DATE_TIME);
 		this.setDatetime(oDate);
 		
-		//this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', {fontSize: '0px'}, 0.0, 0.1, 'ease', this._updateContentVisibility.bind(this));
-		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', {width: '0px', height: '0px'}, 0.0, 0.5, 'ease', this._updateContentVisibility.bind(this));
+		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', {fontSize: '0px'}, 0.0, 0.5, 'ease', this._updateContentVisibility.bind(this));
+		//this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', {width: '0px', height: '0px'}, 0.0, 0.5, 'ease', this._updateContentVisibility.bind(this));
 		// Hide by default
 		this.hide();
 		this.oToggleFX.end();
@@ -164,13 +164,13 @@ var Reflex_Date_Picker	= Class.create
 	{
 		if (this.bVisible)
 		{
-			this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: ''});});
-			this.oContainer.domElement.setStyle({height: this.oContainer.domElement.getHeight(), width: this.oContainer.domElement.getWidth()});
+			//this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: ''});});
+			//this.oContainer.domElement.setStyle({height: this.oContainer.domElement.getHeight(), width: this.oContainer.domElement.getWidth()});
 		}
 		else
 		{
-			this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: 'none'});});
-			this.oContainer.domElement.setStyle({height: 'auto', width: 'auto'});
+			//this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: 'none'});});
+			//this.oContainer.domElement.setStyle({height: 'auto', width: 'auto'});
 		}
 	},
 	
