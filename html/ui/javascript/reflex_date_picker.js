@@ -129,8 +129,8 @@ var Reflex_Date_Picker	= Class.create
 		this.setSelectMode(Reflex_Date_Picker.SELECT_MODE_DATE_TIME);
 		this.setDatetime(oDate);
 		
-		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', {fontSize: '0px'}, 0.0, 0.5, 'ease', this._updateContentVisibility.bind(this));
-		//this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', {width: '0px', height: '0px'}, 0.0, 0.5, 'ease', this._updateContentVisibility.bind(this));
+		this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', {fontSize: '0px'}, 0.0, 0.25, 'ease', this._updateContentVisibility.bind(this));
+		//this.oToggleFX	=	new Reflex_FX_Shift(this.oContainer.domElement, '0%', '0%', {width: '0px', height: '0px'}, 0.0, 0.25, 'ease', this._updateContentVisibility.bind(this));
 		// Hide by default
 		this.hide();
 		this.oToggleFX.end();
