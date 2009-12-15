@@ -153,6 +153,7 @@ var Reflex_Date_Picker	= Class.create
 			alert("Reflex_Date_Picker.hide()'s 'this' is not a Reflex_Date_Picker!");
 			alert(this.toSource());
 		}
+		alert(this.toSource());
 		
 		this.bVisible	= false;
 		this.oToggleFX.cancel();
