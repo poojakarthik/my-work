@@ -169,7 +169,7 @@ var Reflex_Date_Picker	= Class.create
 		else
 		{
 			this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: 'none'});});
-			this.oContainer.domElement.setStyle({height: '', width: ''});
+			this.oContainer.domElement.setStyle({height: 'auto', width: 'auto'});
 		}
 	},
 	
