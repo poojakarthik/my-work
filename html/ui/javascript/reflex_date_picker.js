@@ -143,6 +143,8 @@ var Reflex_Date_Picker	= Class.create
 		this.bVisible	= true;
 		this.oToggleFX.cancel();
 		
+		this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: 'hidden'});});
+		
 		this.oToggleFX.start(true, true);
 	},
 	
@@ -158,7 +160,7 @@ var Reflex_Date_Picker	= Class.create
 		this.bVisible	= false;
 		this.oToggleFX.cancel();
 		
-		this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: ''});});
+		this.oContainer.domElement.childElements().each(function(oElement){oElement.setStyle({display: 'hidden'});});
 		
 		this.oToggleFX.start(false, true);
 	},
