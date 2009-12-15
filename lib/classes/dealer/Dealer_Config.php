@@ -38,7 +38,7 @@ class Dealer_Config extends ORM
 	{
 		// Only Employees are eligible
 		$strWhere	= "id != ". Dealer::SYSTEM_DEALER_ID . " AND dealer_status_id = ". Dealer_Status::ACTIVE ." AND employee_id IS NOT NULL";
-		$arrOrderBy	= array("username" => TRUE);
+		$arrOrderBy	= array(Dealer::ORDER_BY_USERNAME => TRUE);
 		
 		return Dealer::getAll($strWhere, $arrOrderBy);
 	}

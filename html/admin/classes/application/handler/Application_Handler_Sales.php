@@ -302,7 +302,7 @@ class Application_Handler_Sales extends Application_Handler
 			}
 		
 			// Process Dealers
-			$arrObjDealers		= Dealer::getAll("id != ". Dealer::SYSTEM_DEALER_ID, array("username" => TRUE));
+			$arrObjDealers		= Dealer::getAll("id != ". Dealer::SYSTEM_DEALER_ID, array(Dealer::ORDER_BY_USERNAME => TRUE));
 			$arrObjManagers		= Dealer::getManagers();
 			$arrDealers			= array();
 			$arrSortedDealerIds	= array();
