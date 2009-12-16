@@ -340,6 +340,14 @@ class Dealer
 						// Dealer username
 						$arrSearchStringConstraintParts[] = "(dealer.username LIKE '%{$strSearchString}%')";
 						
+						// Dealer's upline dealer's username 
+						/*
+						 * This particular condition requires a dependent subquery which depending on the size of the dealer table, could slow things down significantly.
+						 * There probably won't ever be enough records in the table for it to be noticable, and it is an important thing to include in the search.
+						 * This also relies on the query's FROM clause not aliasing the dealer table, otherwise the manager.id = dealer.up_line_id will fail
+						 */
+						$arrSearchStringConstraintParts[] = "(SELECT manager.username FROM dealer AS manager WHERE manager.id = dealer.up_line_id) LIKE '%{$strSearchString}%'";
+						
 						$arrWhereParts[] = "(". implode(" OR ", $arrSearchStringConstraintParts) .")";
 						break;
 					
