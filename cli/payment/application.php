@@ -870,7 +870,7 @@
 	 	}
 		
 		CliEcho("\n* Processing Customer Groups...");
-	 	$selAccountDebts	= new StatementSelect("(Invoice JOIN Account ON Account.Id = Invoice.Account) JOIN payment_terms ON payment_terms.customer_group_id = Account.CustomerGroup", "Account, SUM(Invoice.Balance) AS Charge, direct_debit_minimum", "CustomerGroup = <CustomerGroup> AND Account.BillingType = <BillingType> AND Account.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.") AND payment_terms.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = <CustomerGroup>)", "Account.Id", NULL, "Account.Id HAVING Charge >= payment_terms.direct_debit_minimum");
+	 	$selAccountDebts	= new StatementSelect("(Invoice JOIN Account ON Account.Id = Invoice.Account) JOIN payment_terms ON payment_terms.customer_group_id = Account.CustomerGroup", "Account, SUM(Invoice.Balance) AS Charge, direct_debit_minimum", "CustomerGroup = <CustomerGroup> AND Account.BillingType = <BillingType> AND Account.Archived IN (".ACCOUNT_STATUS_ACTIVE.", ".ACCOUNT_STATUS_CLOSED.") AND payment_terms.id IN (SELECT MAX(id) FROM payment_terms WHERE customer_group_id = <CustomerGroup>) AND Invoice.DueOn >= CURDATE()", "Account.Id", NULL, "Account.Id HAVING Charge >= payment_terms.direct_debit_minimum");
 		
 	 	// Process Direct Debits for each Customer Group
 	 	$arrReturn	= Array();
