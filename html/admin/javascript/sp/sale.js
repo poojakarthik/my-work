@@ -2343,7 +2343,7 @@ Object.extend(Sale.SaleAccount.prototype, {
 			this.destroyDirectDebitDetails();
 		}
 		this.object.bill_payment_type_id = bill_payment_type_id;
-		$ID('direct-debit-type-table').style.visibility = (this.object.bill_payment_type_id == Sale.BillPaymentType.BILL_PAYMENT_TYPE_DIRECT_DEBIT ? 'visible' : 'hidden')
+		$ID('direct-debit-type-table').style.visibility = (this.object.bill_payment_type_id == Sale.BillPaymentType.BILL_PAYMENT_TYPE_DIRECT_DEBIT ? 'visible' : 'hidden');
 		this.getSaleAccountDirectDebitTypeDetails();
 	},
 	
