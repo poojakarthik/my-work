@@ -1412,7 +1412,15 @@ Object.extend(Sale.prototype, {
 		$ID('commit-button-panel').style.display = 'none';
 		$ID('after-commit-button-panel').style.display = 'inline';
 		alert("The sale has been saved. The reference number for this sale is " + $saleId + ".");
-		if (this.isNewSale()) document.location = document.location.toString().replace(/\/portal\/.*/i, '/portal/sales/view/last');
+		if (this.isNewSale()) 
+		{
+			document.location = document.location.toString().replace(/\/portal\/.*/i, '/portal/sales/view/last');
+		}
+		else
+		{
+			// reload the page, so that the correct options are shown (Hacky, I know, but screw you sir)
+			document.location.reload();
+		}
 	},
 	
 	cancelSale: function()
