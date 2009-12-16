@@ -73,7 +73,7 @@ class HtmlTemplate_Sale_List extends FlexHtmlTemplate
 				$arrSaleStatusHistory	= DO_Sales_SaleStatusHistory::listForSale($objSale, '"changedOn" DESC');
 				$objDealer				= DO_Sales_Dealer::getForId($objSale->createdBy);
 				$arrContactSale			= DO_Sales_ContactSale::listForSale($objSale, "({$arrContactSaleProps['contactAssociationTypeId']} = ". DO_Sales_ContactAssociationType::PRIMARY .") DESC", 1);
-				$objContact				= (count($arrContactSale) == 1)? DO_Sales_Contact::getForId($arrContactSale[0]->id) : NULL;
+				$objContact				= (count($arrContactSale) == 1)? DO_Sales_Contact::getForId($arrContactSale[0]->contactId) : NULL;
 				$objVendor				= $arrVendors[$objSaleAccount->vendorId];
 				
 				$strRowClass	= ($bolAlt)? "class='alt'" : "";
