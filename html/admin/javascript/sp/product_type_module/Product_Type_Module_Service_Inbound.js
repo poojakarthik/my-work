@@ -45,7 +45,7 @@ Object.extend(Sale.ProductTypeModule.Service_Inbound.prototype, {
 		this.elementGroups.fnn = Sale.GUIComponent.createTextInputGroup(this.getFNN(), true, window._validate.fnnInbound.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Inbound Phone Number', this.elementGroups.fnn);
 
-		this.elementGroups.answer_point = Sale.GUIComponent.createTextInputGroup(this.getAnswerPoint(), false);
+		this.elementGroups.answer_point = Sale.GUIComponent.createTextInputGroup(this.getAnswerPoint(), false, window._validate.fnnInboundAnswerPoint.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Answer Point', this.elementGroups.answer_point);
 
 		this.elementGroups.has_complex_configuration = Sale.GUIComponent.createCheckboxGroup(this.getHasComplexConfiguration(), false);

@@ -52,6 +52,11 @@ Validate	= Class.create(
 		return window._validate.fnn(strFNN, 'inbound');
 	},
 
+	fnnInboundAnswerPoint   : function(strFNN)
+	{
+		return (window._validate.fnn(strFNN, 'mobile') || window._validate.fnn(strFNN, 'landline'));
+	},
+
 	// email(): Checks whether an Email is valid
 	email	: function(strEmail)
 	{
