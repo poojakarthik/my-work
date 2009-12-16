@@ -632,7 +632,7 @@ HIl<?php
  		$this->_arrFooter	= Array();
  		$this->_arrFooter['**Type']			= 'Footer';
  		$this->_arrFooter['**Request']		= 'Footer';
- 		$this->_arrFooter['RecordCount']	= count($this->_arrFileContent);
+ 		$this->_arrFooter['RecordCount']	= count(explode("\n", $this->_strFileContents));
  		
  		// Parent Export
  		return parent::Export();
