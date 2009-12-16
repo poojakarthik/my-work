@@ -324,7 +324,7 @@ class Dealer
 							continue 2;
 						}
 
-						// A string has been supplied.  Check it against dealer id, dealer name, username, and up_line_manager_username
+						// A string has been supplied.  Check it against dealer id, dealer name, username, and up_line_manager's name and username
 						$arrSearchStringConstraintParts = array();
 						
 						// Dealer Id
@@ -334,19 +334,16 @@ class Dealer
 							$arrSearchStringConstraintParts[] = "(dealer.id = $intSearchStringAsNumber)";
 						}
 						
-						// Dealer name
-						$arrSearchStringConstraintParts[] = "(CONCAT(dealer.first_name, ' ', dealer.last_name) LIKE '%{$strSearchString}%')";
+						// Dealer name and username
+						$arrSearchStringConstraintParts[] = "(CONCAT(dealer.first_name, ' ', dealer.last_name, ' ', dealer.username) LIKE '%{$strSearchString}%')";
 						
-						// Dealer username
-						$arrSearchStringConstraintParts[] = "(dealer.username LIKE '%{$strSearchString}%')";
-						
-						// Dealer's upline dealer's username 
+						// Dealer's upline dealer's name and username 
 						/*
 						 * This particular condition requires a dependent subquery which depending on the size of the dealer table, could slow things down significantly.
 						 * There probably won't ever be enough records in the table for it to be noticable, and it is an important thing to include in the search.
 						 * This also relies on the query's FROM clause not aliasing the dealer table, otherwise the manager.id = dealer.up_line_id will fail
 						 */
-						$arrSearchStringConstraintParts[] = "(SELECT manager.username FROM dealer AS manager WHERE manager.id = dealer.up_line_id) LIKE '%{$strSearchString}%'";
+						$arrSearchStringConstraintParts[] = "(SELECT CONCAT(manager.first_name, ' ', manager.last_name, ' ', manager.username) FROM dealer AS manager WHERE manager.id = dealer.up_line_id) LIKE '%{$strSearchString}%'";
 						
 						$arrWhereParts[] = "(". implode(" OR ", $arrSearchStringConstraintParts) .")";
 						break;
