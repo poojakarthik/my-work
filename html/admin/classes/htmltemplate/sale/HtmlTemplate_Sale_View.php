@@ -110,6 +110,7 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 	Sale.canAmendSale = <?=Sales_Portal_Sale::canBeAmended($objSale) ? 'true' : 'false'?>;
 	Sale.canVerifySale = <?=Sales_Portal_Sale::canBeVerified($objSale) ? 'true' : 'false'?>;
 	Sale.canRejectSale = <?=Sales_Portal_Sale::canBeRejected($objSale) ? 'true' : 'false'?>;
+	Sale.canBeSetToAwaitingDispatch = <?=(Sales_Portal_Sale::canBeVerified($objSale) && $objSale->hasBeenVerified()) ? 'true' : 'false'?>;
 
 	Sale.contactTitles = {
 		ids: [<?=implode(',', array_keys($arrContactIdName))?>],

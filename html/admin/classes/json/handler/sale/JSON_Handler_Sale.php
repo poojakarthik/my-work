@@ -448,7 +448,7 @@ class JSON_Handler_Sale extends JSON_Handler
 		
 	}
 
-	public function cancelSale($saleId, $strReason=NULL)
+	public function cancelSale($saleId, $strReason)
 	{
 		$dealer = Dealer::getForEmployeeId(Flex::getUserId());
 		if (!$dealer || !$dealer->isActive())
@@ -461,6 +461,12 @@ class JSON_Handler_Sale extends JSON_Handler
 		if (!$sale)
 		{
 			throw new Exception("The specified sale '$saleId' could not be found.");
+		}
+
+		$strReason = trim($strReason);
+		if ($strReason == "")
+		{
+			throw new Exception("A reason must be supplied for cancelling the sale.");
 		}
 
 		if (Sales_Portal_Sale::canBeCancelled($sale))
@@ -506,25 +512,31 @@ class JSON_Handler_Sale extends JSON_Handler
 		}
 	}
 
-	public function rejectSale($saleId)
+	public function rejectSale($saleId, $strReason)
 	{
 		$dealer = Dealer::getForEmployeeId(Flex::getUserId());
 		if (!$dealer || !$dealer->isActive())
 		{
 			throw new Exception("You do not have sufficient permissions to perform that action.");
 		}
-
+		
 		$sale = DO_Sales_Sale::getForId(intval($saleId));
 		if (!$sale)
 		{
 			throw new Exception("The specified sale '$saleId' could not be found.");
 		}
 
+		$strReason = trim($strReason);
+		if ($strReason == "")
+		{
+			throw new Exception("A reason must be supplied for rejecting the sale.");
+		}
+
 		// Sale can only be moved to rejected if it is :-
 		// submitted
 		if (Sales_Portal_Sale::canBeRejected($sale))
 		{
-			$sale->reject($dealer->id);
+			$sale->reject($dealer->id, $strReason);
 		}
 		else
 		{

@@ -2,6 +2,21 @@
 
 class DO_Sales_SaleItemStatusHistory extends DO_Sales_Base_SaleItemStatusHistory
 {
+	public function __set($propertyName, $value)
+	{
+		if ($value !== null)
+		{
+			// Only string values need to be sanitized at this high a level.  Everything else is done at a lower level
+			switch ($propertyName)
+			{
+				case 'description':
+					$value = DO_SalesSanitation::removeExcessWhitespace($value);
+					break;
+			}
+		}
+		
+		return parent::__set($propertyName, $value);
+	}
 
 	public static function recordHistoryForSaleItem(DO_Sales_SaleItem $saleItem, $intDealerId, $comment=NULL)
 	{

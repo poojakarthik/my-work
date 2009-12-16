@@ -469,17 +469,22 @@ $strFromClause $strWhereClause $strOrderByClause $strLimitClause;";
 		return false;
 	}
 	
-	public function reject($dealerId)
+	public function reject($dealerId, $strReason=NULL)
 	{
+		if ($strReason === NULL)
+		{
+			$strReason = "Sale rejected";
+		}
+
 		$this->saleStatusId = DO_Sales_SaleStatus::REJECTED;
-		$this->save($dealerId, 'Sale rejected');
+		$this->save($dealerId, $strReason);
 	}
 	
 	public function cancel($dealerId, $strReason=NULL)
 	{
 		if ($strReason === NULL)
 		{
-			$strReason = "Item cancelled";
+			$strReason = "Sale cancelled";
 		}
 		
 		$dataSource = $this->getDataSource();

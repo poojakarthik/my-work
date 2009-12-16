@@ -43,13 +43,10 @@ class Sales_Portal_Sale
 	{
 		// Sale can only be amended if it is :-
 		// submitted 
-		// rejected 
 		// manual intervention
 		return array_search(intval($sale->saleStatusId), 
 							array(	DO_Sales_SaleStatus::SUBMITTED, 
-									DO_Sales_SaleStatus::REJECTED, 
 									DO_Sales_SaleStatus::MANUAL_INTERVENTION), true) !== false;
-		
 	}
 	
 	public static function canBeRejected(DO_Sales_Sale $sale)

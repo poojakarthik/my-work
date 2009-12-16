@@ -15,6 +15,7 @@ Object.extend(Sale, {
 	canAmendSale: false,
 	canVerifySale: false,
 	canRejectSale: false,
+	canBeSetToAwaitingDispatch: false,
 
 	loading: null,
 	
@@ -1416,7 +1417,16 @@ Object.extend(Sale.prototype, {
 	
 	cancelSale: function()
 	{
-		this._remoteSaleFunctionCall('cancelSale', this._cancelOK);
+		var strReason = new String;
+		
+		strReason = prompt("Are you sure you want to cancel this sale?  Please supply a reason for cancelling it.", "");
+		
+		if (strReason == null)
+		{
+			return;
+		}
+
+		this._remoteSaleFunctionCall('cancelSale', this._cancelOK, strReason);
 	},
 	
 	_cancelOK: function()
@@ -1428,7 +1438,16 @@ Object.extend(Sale.prototype, {
 	
 	rejectSale: function()
 	{
-		this._remoteSaleFunctionCall('rejectSale', this._rejectOK);
+		var strReason = new String;
+		
+		strReason = prompt("Are you sure you want to reject this sale?  Please supply a reason for rejecting it.", "");
+		
+		if (strReason == null)
+		{
+			return;
+		}
+		
+		this._remoteSaleFunctionCall('rejectSale', this._rejectOK, strReason);
 	},
 	
 	_rejectOK: function()
@@ -1440,24 +1459,43 @@ Object.extend(Sale.prototype, {
 	
 	verifySale: function()
 	{
-		this._remoteSaleFunctionCall('verifySale', this._verifyOK);
+		var strMsg = (Sale.canBeSetToAwaitingDispatch) ? "Are you sure you want to dispatch this sale?" : "Are you sure you want to verify this sale?";
+	
+		if (confirm(strMsg))
+		{
+			this._remoteSaleFunctionCall('verifySale', this._verifyOK);
+		}
 	},
 	
 	_verifyOK: function()
 	{
+		var strMsg = (Sale.canBeSetToAwaitingDispatch) ? "The sale is awaiting dispatch." : "The sale has been verified.";
+
 		window.scroll(0,0);
-		alert("The sale has been verified.");
+		alert(strMsg);
 		document.location = document.location.toString().replace(/\/portal\/.*/i, '/portal/sales/view/last');
 	},
 	
-	_remoteSaleFunctionCall: function($remoteFunName, $okFunc)
+	_remoteSaleFunctionCall: function($remoteFunName, $okFunc /*, RemoteArg2, RemoteArg3, etc */)
 	{
 		window.scroll(0,0);
 		$ID('submit-button-panel').style.display = 'none';
 		$ID('commit-button-panel').style.display = 'none';
 		$ID('after-commit-button-panel').style.display = 'none';
 		var remote = SalesPortal.getRemoteFunction('Sale', $remoteFunName, $okFunc.bind(this), this._processError.bind(this));
-		remote(Sale.getInstance().getId());
+		
+		// Add in variables (sale id and RemoteArg2, etc)
+		
+		// First variable is always the sale id
+		remote = remote.curry(Sale.getInstance().getId());
+		
+		for (var i=2, j=arguments.length; i < j; i++)
+		{
+			remote = remote.curry(arguments[i]);
+		}
+		
+		// Call the remote method
+		remote();
 	},
 	
 	_processError: function($return)
@@ -1477,10 +1515,13 @@ Object.extend(Sale.prototype, {
 	
 	buildGUI: function()
 	{
+		// The 'Verify' and the 'Awaiting Dispatch' actions are in the same function.  They probably shouldn't be
+		var strVerifyButtonLabel = (Sale.canBeSetToAwaitingDispatch) ? "Dispatch Sale" : "Verify Sale";
+		
 		var buttons = (Sale.canAmendSale ? '&nbsp;<input type="button" value="Amend Sale" onclick="Sale.getInstance().amendSale()">&nbsp;' : '') +
 					  (Sale.canCancelSale ? '&nbsp;<input type="button" value="Cancel Sale" onclick="Sale.getInstance().cancelSale()">&nbsp;' : '') +
 					  (Sale.canRejectSale ? '&nbsp;<input type="button" value="Reject Sale" onclick="Sale.getInstance().rejectSale()">&nbsp;' : '') +
-					  (Sale.canVerifySale ? '&nbsp;<input type="button" value="Verify Sale" onclick="Sale.getInstance().verifySale()">&nbsp;' : '');
+					  (Sale.canVerifySale ? '&nbsp;<input type="button" value="'+ strVerifyButtonLabel +'" onclick="Sale.getInstance().verifySale()">&nbsp;' : '');
 		
 		// Add contents to this.detailsContainer
 		this.detailsContainer.innerHTML = '' 
@@ -1726,7 +1767,7 @@ Object.extend(Sale.prototype, {
 		remove.type = 'button';
 		remove.value = 'Remove';
 		remove.className = "data-entry";
-		var f = function() { Sale.getInstance().removeSaleItem(this.id); }
+		var f = function() { if (confirm("Are you sure you want to remove this item?")) { Sale.getInstance().removeSaleItem(this.id); } }
 		var func = f.bind({ id: item.instanceId });
 		Event.observe(remove, 'click', func, true);
 		controls.appendChild(remove);
