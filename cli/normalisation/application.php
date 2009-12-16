@@ -47,6 +47,8 @@
  class ApplicationNormalise extends ApplicationBaseClass
  {
  	const	FILE_MINIMUM_PERCENT_VALID	= .9;
+ 	
+ 	const	FILE_IMPORT_LIMIT			= 1000;
 
  	private	$_arrCDRErrorStatuses	=	array
  										(
@@ -277,7 +279,7 @@
 	 *
 	 * @method
 	 */
- 	function Import($intLimit=NULL)
+ 	function Import($intCDRLimit=NULL)
  	{
 		// Start a Transaction
 		DataAccess::getDataAccess()->TransactionStart();
@@ -305,7 +307,7 @@
 			}
 
 			$strWhere			= "FileType IN (".implode(', ', $arrFileTypes).") AND Status IN (".FILE_COLLECTED.", ".FILE_REIMPORT.")";
-			$selSelectCDRFiles 	= new StatementSelect("FileImport JOIN compression_algorithm ON FileImport.compression_algorithm_id = compression_algorithm.id", "FileImport.*, compression_algorithm.file_extension, compression_algorithm.php_stream_wrapper", $strWhere, NULL, $intLimit);
+			$selSelectCDRFiles 	= new StatementSelect("FileImport JOIN compression_algorithm ON FileImport.compression_algorithm_id = compression_algorithm.id", "FileImport.*, compression_algorithm.file_extension, compression_algorithm.php_stream_wrapper", $strWhere, NULL, self::FILE_IMPORT_LIMIT);
 
 			$insInsertCDRLine	= new StatementInsert("CDR");
 
@@ -324,9 +326,11 @@
 			$intCount = 0;
 			$this->_intImportFail = 0;
 			$this->_intImportPass = 0;
+			
+			$iTotalCDRsImported	= 0;
 
-			// Loop through the CDR File entries
-			while ($arrCDRFile = $selSelectCDRFiles->Fetch())
+			// Loop through the CDR File entries until we have imported the minimum number of CDRs (or there are no files left)
+			while ($arrCDRFile = $selSelectCDRFiles->Fetch() && (!$intCDRLimit || $iTotalCDRsImported < $intCDRLimit))
 			{
 				// Make sure the file exists
 				if (!file_exists($arrCDRFile['Location']))
@@ -352,8 +356,8 @@
 						$this->CascadeDeleteCDRs();
 					*/
 					case FILE_COLLECTED:
-						$this->InsertCDRFile($arrCDRFile, $insInsertCDRLine, $updUpdateCDRFiles);
-
+						$iSequence			= $this->InsertCDRFile($arrCDRFile, $insInsertCDRLine, $updUpdateCDRFiles);
+						$iTotalCDRsImported	+= ($iSequence - 1);
 						break;
 					default:
 						new ExceptionVixen("Unexpected CDR File Status", $this->_errErrorHandler, UNEXPECTED_CDRFILE_STATUS);

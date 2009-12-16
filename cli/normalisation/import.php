@@ -18,7 +18,7 @@ Flex_Process::factory(Flex_Process::PROCESS_CDR_IMPORT)->lock();
 $arrConfig = LoadApplication();
 
 // Check for command line args
-$intLimit = ((int)trim($argv[1])) ? (int)trim($argv[1]) : NULL;
+$intCDRLimit = ((int)trim($argv[1])) ? (int)trim($argv[1]) : NULL;
 
 // set addresses for report
 //$mixEmailAddress = 'flame@telcoblue.com.au';
@@ -28,7 +28,7 @@ $mixEmailAddress = 'rdavis@ybs.net.au';
 $appNormalise = new ApplicationNormalise($mixEmailAddress);
 
 // Import lines from CDR files into the database
-$appNormalise->Import($intLimit);
+$appNormalise->Import($intCDRLimit);
 
 // finished
 echo("\n-- End of Normalise::Import --\n");
