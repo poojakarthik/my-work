@@ -68,7 +68,8 @@ Control_Tree	= Class.create
 			
 			// Create a CSS Class for this Column
 			// FIXME: Namespacing conflict between trees
-			oReflexStyle.addRule("li.-reflex-tree-column-"+sName, "width: "+this.oColumns[sName].fWidth+"percent");
+			this.oColumns[sName].sClassName	= "-reflex-tree-column-"+sName;
+			oReflexStyle.addRule("li."+this.oColumns[sName].sClassName, "width: "+this.oColumns[sName].fWidth+"%");
 		}
 		
 		this.paint();
