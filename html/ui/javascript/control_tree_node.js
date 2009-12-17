@@ -143,6 +143,8 @@ Control_Tree_Node	= Class.create
 				oExpandContainer.appendChild(oExpandElement);
 				oIconContainer.appendChild(oIconElement);
 				
+				oExpandElement.observe('click', this.toggleExpanded.bind(this));
+				
 				oTextElement.innerHTML	= this.oData['label'] ? this.oData['label'].escapeHTML() : '';
 				
 				oColumnElement.appendChild(oExpandContainer);
