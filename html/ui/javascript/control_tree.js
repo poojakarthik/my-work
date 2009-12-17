@@ -7,21 +7,21 @@ Control_Tree	= Class.create
 		this.oContainer	= document.createElement('div');
 		this.oContainer.addClassName('reflex-tree');
 		
-		var	oHeader	= document.createElement('ul'),
-			oBody	= document.createElement('ul'),
-			oFooter	= document.createElement('ul');
+		this.oHeader	= document.createElement('ul'),
+		this.oBody		= document.createElement('ul'),
+		this.oFooter	= document.createElement('ul');
 		
-		oHeader.addClassName('reflex-tree-header');
-		oBody.addClassName('reflex-tree-body');
-		oFooter.addClassName('reflex-tree-footer');
+		this.oHeader.addClassName('reflex-tree-header');
+		this.oBody.addClassName('reflex-tree-body');
+		this.oFooter.addClassName('reflex-tree-footer');
 		
 		// Create Root Node
 		this.oRootNode	= new Control_Tree_Node();
 		oBody.appendChild(this.oRootNode.getElement());
 		
-		this.oContainer.appendChild(oHeader);
-		this.oContainer.appendChild(oBody);
-		this.oContainer.appendChild(oFooter);
+		this.oContainer.appendChild(this.oHeader);
+		this.oContainer.appendChild(this.oBody);
+		this.oContainer.appendChild(this.oFooter);
 	},
 	
 	getElement	: function()
@@ -76,6 +76,16 @@ Control_Tree	= Class.create
 	
 	paint	: function()
 	{
+		// Redraw the Columns
+		this.oHeader.childElements().each(Element.remove, Element);
+		for (sName in this.oColumns)
+		{
+			var	oColumn	= document.createElement('li');
+			oColumn.innerHTML	= this.oColumns[sName].sTitle.escapeHTML();
+			this.oHeader.appendChild(oColumn);
+		}
+		
+		// Redraw the children!
 		this.oRootNode.paint(this.oColumns);
 	}
 });
