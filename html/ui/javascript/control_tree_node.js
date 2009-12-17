@@ -22,8 +22,8 @@ Control_Tree_Node	= Class.create
 		this.setData(oData);
 		
 		// Defaults
-		this.oColumns	= {};
-		this.aChildren	= [];
+		this.oVisibleColumns	= {};
+		this.aChildren			= [];
 	},
 	
 	setData	: function(oData)
@@ -34,7 +34,7 @@ Control_Tree_Node	= Class.create
 			this.oData	= sField;
 		}
 		
-		this._paint();
+		this.paint();
 	},
 	
 	getElement	: function()
@@ -50,6 +50,7 @@ Control_Tree_Node	= Class.create
 			this.aChildren.push(oControlTreeNode);
 			this.oChildrenList.appendChild(oControlTreeNode.getElement());
 		}
+		this.paint();
 	},
 	
 	removeChild	: function(oControlTreeNode)
@@ -118,11 +119,51 @@ Control_Tree_Node	= Class.create
 		this.setExpanded(!this.isExpanded());
 	},
 	
-	_paint	: function(oColumns)
+	paint	: function(oColumns)
 	{
-		var oVisibleColumns	= oColumns ? oColumns : this.oColumns;
+		this.oVisibleColumns	= oColumns ? oColumns : this.oVisibleColumns;
 		
-		// TODO
+		// Purge existing Columns
+		this.oColumnsList.childElements().each(Element.remove, Element);
+		
+		// Add Columns
+		for (sName in this.oVisibleColumns)
+		{
+			var	oColumnElement	= document.createElement('li');
+			
+			if (sName === 'label')
+			{
+				// Label Column
+				var	oExpandContainer	= document.createElement('div'),
+					oExpandElement		= document.createElement('img'),
+					oIconContainer		= document.createElement('div'),
+					oIconElement		= document.createElement('img'),
+					oTextElement		= document.createElement('div');
+				
+				oExpandContainer.appendChild(oExpandElement);
+				oIconContainer.appendChild(oIconElement);
+				
+				oTextElement.innerHTML	= this.oData['label'] ? this.oData['label'].escapeHTML() : '';
+				
+				oColumnElement.appendChild(oExpandContainer);
+				oColumnElement.appendChild(oIconContainer);
+				oColumnElement.appendChild(oTextElement);
+				
+				// Must go first (doesn't make sense anywhere else)
+				this.oColumnsList.insertBefore(oColumnElement, this.oColumnsList.firstDescendant);
+			}
+			else
+			{
+				// Data Column
+				oColumnElement.innerHTML	= this.oData[sName] ? this.oData[sName].escapeHTML() : '';
+			}
+		}
+		
+		// Paint Children
+		for (var i = 0, j = this.aChildren.length; i < j; i++)
+		{
+			this.aChildren[i].paint(this.oVisibleColumns);
+		}
 	}
 });
 

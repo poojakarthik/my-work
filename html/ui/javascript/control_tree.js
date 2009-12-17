@@ -42,6 +42,16 @@ Control_Tree	= Class.create
 										};
 		}
 		
+		// Force a 'label' Column
+		if (!('label' in this.oColumns))
+		{
+			this.oColumns[sName]	=	{
+											sName	: 'label',
+											sTitle	: '',		// No Title
+											fWidth	: 'auto'
+										};
+		}
+		
 		var	oWidths	= {};
 		for (sName in this.oColumns)
 		{
@@ -56,7 +66,7 @@ Control_Tree	= Class.create
 			this.oColumns[sName].fWidth	= oWidths[sName];
 		}
 		
-		this._paint();
+		this.paint();
 	},
 	
 	getRootNode	: function()
@@ -64,9 +74,9 @@ Control_Tree	= Class.create
 		return this.oRootNode;
 	},
 	
-	_paint	: function()
+	paint	: function()
 	{
-		this.oRootNode._paint(this.oColumns);
+		this.oRootNode.paint(this.oColumns);
 	}
 });
 
