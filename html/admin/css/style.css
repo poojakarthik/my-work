@@ -2179,8 +2179,9 @@ div.reflex-slider-rail-handle:hover
 	background-color	: #FFF7EF;
 }
 
-div.reflex-slider-rail-label
+div.reflex-slider-rail-marker
 {
+	margin-left	: -50%;
 	position	: absolute;
 }
 
@@ -2283,3 +2284,18 @@ table.listing-fw3 tbody tr.Hover td
 	background-color:    #FFFFAA;
 	vertical-align:			top;		
 }
+
+
+/******************************************************************************/
+
+/* List-based Tree */
+
+ul.reflex-tree-node-children
+{
+	position	: absolute;
+	bottom		: 0px;
+}
+
+/******************************************************************************/
+
+
