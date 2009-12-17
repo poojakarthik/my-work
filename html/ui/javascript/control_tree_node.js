@@ -18,13 +18,13 @@ Control_Tree_Node	= Class.create
 		this.oElement.addClassName('reflex-tree-node-children');
 		this.oElement.appendChild(this.oChildrenListContainer);
 		
-		// Set Data
-		this.setData(oData);
-		this.setExpanded(false);
-		
 		// Defaults
 		this.oVisibleColumns	= {};
 		this.aChildren			= [];
+		
+		// Set Data
+		this.setData(oData);
+		this.setExpanded(false);
 	},
 	
 	setData	: function(oData)
