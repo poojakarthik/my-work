@@ -32,14 +32,16 @@ class Application_Handler_Ticketing extends Application_Handler
 		}
 
 		// Default all search settings to be 'blank'
-		$offset = 0;
-		$limit = $defaultLimit;
-		$sort = array();
-		$columns = array();
-		$ownerId = NULL;
-		$statusId = NULL;
-		$categoryId = NULL;
-		$quickSearch = NULL;
+		$offset			= 0;
+		$limit			= $defaultLimit;
+		$sort			= array();
+		$columns		= array();
+		$ownerId		= NULL;
+		// Default to showing all Open and Pending tickets
+		$objStatusTypeConglomerateOpenOrPending = Ticketing_Status_Type_Conglomerate::getForId(Ticketing_Status_Type_Conglomerate::TICKETING_STATUS_TYPE_CONGLOMERATE_OPEN_OR_PENDING);
+		$statusId		= $objStatusTypeConglomerateOpenOrPending->listStatusIds();
+		$categoryId		= NULL;
+		$quickSearch	= NULL;
 
 		// If viewing own tickets, default owner id to be the id of the currently logged in user
 		$bolOwnTickets = $pathToken == 'mine';
