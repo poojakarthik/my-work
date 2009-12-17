@@ -104,6 +104,7 @@ var Reflex_FX	= Class.create
 	{
 		this._destruct();
 		//alert('Animation Cancelled!');
+		return this.getPercentComplete();
 	},
 	
 	// Skip to the end of the transition
@@ -121,7 +122,7 @@ var Reflex_FX	= Class.create
 	
 	isComplete	: function()
 	{
-		return (!this.isRunning() && this.iStartTime && this.fPercentComplete === 1.0);
+		return (!this.isRunning() && this.iStartTime && this.getPercentComplete() == 1.0);
 	},
 	
 	_destruct	: function()
@@ -142,16 +143,21 @@ var Reflex_FX	= Class.create
 			//alert('Animation Refreshing!');
 			
 			// Determine progress
-			this.iLastUpdateTime	= (new Date()).getTime();
-			var iTranspired			= this.iLastUpdateTime - this.iStartTime;
 			//this.oElement.innerHTML	= this.oElement.innerHTML + "\n"+iTranspired+" = " + ((new Date()).getTime()) + " - " + this.iStartTime + "<br />";
 			//this.oElement.innerHTML	= this.oElement.innerHTML + "\n_paint(" + Math.min(1, (iTranspired / this.iDuration)) + " = Math.min(1, ("+iTranspired+" / "+this.iDuration+")))<br />";
-			this._paint(Math.min(1, (iTranspired / this.iDuration)));
+			this._paint(this.getPercentComplete());
 		}
 		else
 		{
 			throw "_refresh() called before start()!";
 		}
+	},
+	
+	getPercentComplete	: function()
+	{
+		this.iLastUpdateTime	= (new Date()).getTime();
+		var iTranspired			= this.iLastUpdateTime - this.iStartTime;
+		return Math.min(1, (iTranspired / this.iDuration));
 	},
 	
 	_paint	: function(fPercentComplete)
