@@ -169,7 +169,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  			if ($bolIncludePDF)
  			{
 				// PDF is included
-				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.\n\n" .
+				/*$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.\n\n" .
 								"Did you know?\n\n" .
 								"-\tFor convenience, you can add your home account to your current business account and take advantage of the additional savings.\n" .
 								"-\tIf you are an ADSL Broadband customer and you are having connection issues, the first step in trouble shooting is to restart your modem? Simply turn your modem off and on again, then wait until it reboots. If the problem persists, please call us on {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']} and press option 1 to talk to one of our ADSL specialists.\n" .
@@ -179,7 +179,16 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 								"-\tYou can download our terms and conditions by visiting {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']}\n\n" .
 								"Thank you for you business!\n\n" .
 								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']}\n" .
-								"The Small to Medium Business Telecommunications Specialists!";
+								"The Small to Medium Business Telecommunications Specialists!";*/
+				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.
+
+We trust you enjoyed a well deserved break over the holiday season.
+
+From the {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Management and Staff, we wish you a happy 2010 and look forward to delivering some exciting New Business Services for you in the coming months, so stay tuned.
+
+Regards
+The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']}
+";
  			}
  			else
  			{
