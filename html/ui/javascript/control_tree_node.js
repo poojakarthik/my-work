@@ -156,11 +156,9 @@ Control_Tree_Node	= Class.create
 			{
 				// Label Column
 				var	oExpandContainer	= document.createElement('div'),
-					oExpandElement		= document.createElement('img'),
 					oIconContainer		= document.createElement('div'),
 					oTextElement		= document.createElement('div');
 				
-				oExpandContainer.appendChild(oExpandElement);
 				oIconContainer.appendChild(this.oIconElement);
 				
 				oExpandElement.observe('click', this.toggleExpanded.bind(this));
