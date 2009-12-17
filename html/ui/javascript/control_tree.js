@@ -61,9 +61,14 @@ Control_Tree	= Class.create
 		
 		oWidths	= Control_Tree.normalisePercentages(oWidths);
 		
+		var	oReflexStyle	= Reflex_Style.getInstance();
 		for (sName in this.oColumns)
 		{
 			this.oColumns[sName].fWidth	= oWidths[sName];
+			
+			// Create a CSS Class for this Column
+			// FIXME: Namespacing conflict between trees
+			oReflexStyle.addRule("li.-reflex-tree-column-"+sName, "width: "+this.oColumns[sName].fWidth+"percent");
 		}
 		
 		this.paint();
