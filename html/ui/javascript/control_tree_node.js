@@ -28,7 +28,13 @@ Control_Tree_Node	= Class.create
 	
 	setData	: function(oData)
 	{
-		// TODO
+		this.oData	= {};
+		for (sField in oData)
+		{
+			this.oData	= sField;
+		}
+		
+		this._paint();
 	},
 	
 	getElement	: function()
