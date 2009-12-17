@@ -26,5 +26,7 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 		oContent.appendChild(this.oTreePanel.getElement());
 		
 		this.setContent(oContent);
+		this.addCloseButton();
+		this.setTitle("Tree Control");
 	}
 });
