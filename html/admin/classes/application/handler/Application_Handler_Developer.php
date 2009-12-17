@@ -56,6 +56,13 @@ class Application_Handler_Developer extends Application_Handler
 																	'strURL'	=> 'JsAutoLoader.loadScript(["developer_animation.js"], function(){var oPopup = new Developer_Animation(25); oPopup.setContent("<div style=\\"margin: 2.5em;\\">Magical animated Popup!</div>"); oPopup.addCloseButton(); oPopup.display();}, false);'
 																)
 													);
+			$arrFunctions[]	= self::_stdClassFactory(
+														array	(
+																	'strName'	=> 'Tree',
+																	'strType'	=> self::URL_TYPE_JS,
+																	'strURL'	=> 'JsAutoLoader.loadScript(["reflex_style.js", "control_tree_node.js", "control_tree.js", "developer_tree.js"], function(){var oPopup = new Developer_Tree(); oPopup.display();}, false);'
+																)
+													);
 			
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['arrFunctions']		= $arrFunctions;
@@ -82,4 +89,5 @@ class Application_Handler_Developer extends Application_Handler
 		return $objStdClass;
 	}
 }
+
 ?>
