@@ -169,7 +169,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  			if ($bolIncludePDF)
  			{
 				// PDF is included
-				/*$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.\n\n" .
+				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.\n\n" .
 								"Did you know?\n\n" .
 								"-\tFor convenience, you can add your home account to your current business account and take advantage of the additional savings.\n" .
 								"-\tIf you are an ADSL Broadband customer and you are having connection issues, the first step in trouble shooting is to restart your modem? Simply turn your modem off and on again, then wait until it reboots. If the problem persists, please call us on {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']} and press option 1 to talk to one of our ADSL specialists.\n" .
@@ -179,30 +179,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 								"-\tYou can download our terms and conditions by visiting {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']}\n\n" .
 								"Thank you for you business!\n\n" .
 								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']}\n" .
-								"The Small to Medium Business Telecommunications Specialists!";*/
-				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.
-
-The {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Management and Staff would like to take this opportunity to thank you for your business through 2009 and wish you a happy and safe holiday season and a prosperous 2010.
-
-For your convenience the {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Service Centre will be open for business, should you require assistance over the Christmas Period.
-
-Hours Of Operation will be:
- 
-24th  December 8:30 am – 4:00pm normal operation
-
-25th  - 28th December -  CHRISTMAS! Time is for family rest and relaxation however we will have some of our team operating our After Hours Service should you run into any urgent faults with your landline and ADSL service over this period call 1300 509 913, approx 2 hours response time.
-
-29th – 31st December 9:00am -5:00pm normal operation
-
-1st January 2010 (urgent faults can be reported)
-
-4th January 2010 Reopen 8:30am – 5:30pm ALL HANDS BACK ON DECK FOR THE NEW YEAR!
-
-Should you have any questions please feel free to call our service team on {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']}.
-Merry Christmas 
-regards
-The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']}
-";
+								"The Small to Medium Business Telecommunications Specialists!";
  			}
  			else
  			{
