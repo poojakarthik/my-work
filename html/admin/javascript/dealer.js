@@ -182,17 +182,18 @@ var Dealer = {
 		Event.startObserving(this.controls.postalCountryId, "change", this.setUpStatesForCountry.bind(this, this.controls.postalCountryId, this.controls.postalStateId), true);
 		
 		// Populate the controls
-		this.controls.firstName.value		= this.objDealer.firstName;
-		this.controls.lastName.value		= this.objDealer.lastName;
-		this.controls.titleId.value			= this.objDealer.titleId;
-		this.controls.username.value		= this.objDealer.username;
-		this.controls.upLineId.value		= (this.objDealer.upLineId != null)? this.objDealer.upLineId : 0;
-		this.controls.carrierId.value		= (this.objDealer.carrierId != null)? this.objDealer.carrierId : 0;
-		this.controls.canVerify.checked		= (this.objDealer.canVerify == 1);
-		this.controls.phone.value			= this.objDealer.phone;
-		this.controls.mobile.value			= this.objDealer.mobile;
-		this.controls.fax.value				= this.objDealer.fax;
-		this.controls.email.value			= this.objDealer.email;
+		this.controls.firstName.value				= this.objDealer.firstName;
+		this.controls.lastName.value				= this.objDealer.lastName;
+		this.controls.titleId.value					= this.objDealer.titleId;
+		this.controls.username.value				= this.objDealer.username;
+		this.controls.upLineId.value				= (this.objDealer.upLineId != null)? this.objDealer.upLineId : 0;
+		this.controls.carrierId.value				= (this.objDealer.carrierId != null)? this.objDealer.carrierId : 0;
+		this.controls.syncSaleConstraints.checked	= (this.objDealer.syncSaleConstraints == 1);
+		this.controls.canVerify.checked				= (this.objDealer.canVerify == 1);
+		this.controls.phone.value					= this.objDealer.phone;
+		this.controls.mobile.value					= this.objDealer.mobile;
+		this.controls.fax.value						= this.objDealer.fax;
+		this.controls.email.value					= this.objDealer.email;
 		
 		if (this.objDealer.terminationDate != null)
 		{
@@ -247,10 +248,12 @@ var Dealer = {
 		
 		// Retrieve all the ManagerDependentContainer divs
 		this.objManagerDependentContainers = {};
-		this.objManagerDependentContainers.Editable		= objPopup.getElementsByClassName('EditableManagerDependentField');
-		this.objManagerDependentContainers.Restricted	= objPopup.getElementsByClassName('RestrictedManagerDependentField');
-		
+		this.objManagerDependentContainers.Editable				= objPopup.getElementsByClassName('EditableManagerDependentField');
+		this.objManagerDependentContainers.Restricted			= objPopup.getElementsByClassName('RestrictedManagerDependentField');
+		this.objManagerDependentContainers.SaleConstraintsTab   = document.getElementById('TabHeaderSalesConstraintsDetails');
+
 		Event.startObserving(this.controls.upLineId, "change", this.showHideManagerDependentFields.bind(this), true);
+		Event.startObserving(this.controls.syncSaleConstraints, "change", this.showHideManagerDependentFields.bind(this), true);
 		this.showHideManagerDependentFields();
 		
 		// Populate the SaleTypes combobox
@@ -275,12 +278,42 @@ var Dealer = {
 	showHideManagerDependentFields : function()
 	{
 		var bolHasManager = (this.controls.upLineId.value != '0');
-
-		var elementsToHide		= (bolHasManager)? this.objManagerDependentContainers.Editable : this.objManagerDependentContainers.Restricted;
-		var elementsToDisplay	= (bolHasManager)? this.objManagerDependentContainers.Restricted : this.objManagerDependentContainers.Editable;
+		var elementsToHide, elementsToDisplay;
+		
+		if (bolHasManager)
+		{
+			// Hide fields that will be kept in sync with those of the dealer's manager
+			elementsToHide		= this.objManagerDependentContainers.Editable;
+			elementsToDisplay	= this.objManagerDependentContainers.Restricted;
+		
+			if (this.controls.syncSaleConstraints.checked)
+			{
+				// Hide the sale constraints tab because they will be synced with the dealer's manager
+				this.objManagerDependentContainers.SaleConstraintsTab.style.display = 'none';
+			}
+			else
+			{
+				// Show the sale constraints tab
+				this.objManagerDependentContainers.SaleConstraintsTab.style.display = 'block';
+			}
+		}
+		else
+		{
+			// No Manager; show fields
+			elementsToHide		= this.objManagerDependentContainers.Restricted;
+			elementsToDisplay	= this.objManagerDependentContainers.Editable;
+		
+			// Always show the Sale Constraints tab, regardless of the syncSaleConstraints setting
+			this.objManagerDependentContainers.SaleConstraintsTab.style.display = 'block';
+			if (this.controls.syncSaleConstraints.checked)
+			{
+				// Alert the user that sale constraints can't be synced if the dealer doesn't have a manager
+				$Alert('Sale Constraints can only be synced if an up line manager is declared');
+			}
+		}
 
 		// Restrict all the manager dependent fields
-		for (i=0, j=elementsToHide.length; i<j; i++)
+		for (var i=0, j=elementsToHide.length; i<j; i++)
 		{
 			elementsToHide[i].style.display = "none";
 		}
@@ -529,6 +562,7 @@ var Dealer = {
 		objDealer.username				= this.controls.username.value;
 		objDealer.password				= this.controls.password.value;
 		objDealer.upLineId				= (this.controls.upLineId.value != 0)? parseInt(this.controls.upLineId.value) : null;
+		objDealer.syncSaleConstraints	= this.controls.syncSaleConstraints.checked;
 		objDealer.canVerify				= this.controls.canVerify.checked;
 		objDealer.phone					= this.controls.phone.value;
 		objDealer.mobile				= this.controls.mobile.value;
@@ -638,6 +672,9 @@ var Dealer = {
 			// Update dealer object
 			this.objDealer = response.Dealer;
 			
+			// The sales constraints might be out of sync with what they are in the database, so reset the
+			this.initialiseSalesConstraints();
+			
 			// Flag this page as needing a refresh
 			this.bolPageNeedsRefresh = true;
 		}
@@ -705,4 +742,5 @@ var Dealer = {
 		}
 		return true;
 	}
+	
 };

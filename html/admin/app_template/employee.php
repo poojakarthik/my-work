@@ -416,11 +416,12 @@ class AppTemplateEmployee extends ApplicationTemplate
 									$objDealer = new Dealer();
 
 									// All employees get the "can verify" flag, initially
-									$objDealer->canVerify		= TRUE;
-									$objDealer->gstRegistered	= FALSE;
-									$objDealer->clawbackPeriod	= 0;
-									$objDealer->createdOn		= GetCurrentISODateTime();
-									$objDealer->upLineId		= $objDealerConfig->defaultEmployeeManagerDealerId;
+									$objDealer->canVerify			= TRUE;
+									$objDealer->gstRegistered		= FALSE;
+									$objDealer->syncSaleConstraints	= TRUE;
+									$objDealer->clawbackPeriod		= 0;
+									$objDealer->createdOn			= GetCurrentISODateTime();
+									$objDealer->upLineId			= $objDealerConfig->defaultEmployeeManagerDealerId;
 								}
 
 								if ($objDealer !== NULL)

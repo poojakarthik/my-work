@@ -40,16 +40,17 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 		}
 
 		// Define the columns to show
-		$arrColumns = array("Id"			=> array("Title" => "Id",				"SortField" => Dealer::ORDER_BY_DEALER_ID),
-							"FirstName"		=> array("Title" => "First Name",		"SortField" => Dealer::ORDER_BY_FIRST_NAME),
-							"LastName"		=> array("Title" => "Last Name",		"SortField" => Dealer::ORDER_BY_LAST_NAME),
-							"Username"		=> array("Title" => "Username",			"SortField" => Dealer::ORDER_BY_USERNAME),
-							"IsManager"		=> array("Title" => "Manages Others",	"SortField" => NULL),
-							"Manager"		=> array("Title" => "Up Line Manager",	"SortField" => Dealer::ORDER_BY_UP_LINE_ID),
-							"CanVerify"		=> array("Title" => "Can Verify Sales",	"SortField" => Dealer::ORDER_BY_CAN_VERIFY_SALES),
-							"Status"		=> array("Title" => "Status",			"SortField" => Dealer::ORDER_BY_DEALER_STATUS_ID),
-							"IsEmployee"	=> array("Title" => "Is Employee",		"SortField" => Dealer::ORDER_BY_EMPLOYEE_ID),
-							"Actions"		=> array("Title" => "Actions",			"SortField" => NULL)
+		$arrColumns = array("Id"					=> array("Title" => "Id",							"SortField" => Dealer::ORDER_BY_DEALER_ID),
+							"FirstName"				=> array("Title" => "First Name",					"SortField" => Dealer::ORDER_BY_FIRST_NAME),
+							"LastName"				=> array("Title" => "Last Name",					"SortField" => Dealer::ORDER_BY_LAST_NAME),
+							"Username"				=> array("Title" => "Username",						"SortField" => Dealer::ORDER_BY_USERNAME),
+							"IsManager"				=> array("Title" => "Manages Others",				"SortField" => NULL),
+							"Manager"				=> array("Title" => "Up Line Manager",				"SortField" => Dealer::ORDER_BY_UP_LINE_ID),
+							"SyncSaleConstraints"	=> array("Title" => "Has Synced Sale Constraints",	"SortField" => Dealer::ORDER_BY_SYNC_SALE_CONSTRAINTS),
+							"CanVerify"				=> array("Title" => "Can Verify Sales",				"SortField" => Dealer::ORDER_BY_CAN_VERIFY_SALES),
+							"Status"				=> array("Title" => "Status",						"SortField" => Dealer::ORDER_BY_DEALER_STATUS_ID),
+							"IsEmployee"			=> array("Title" => "Is Employee",					"SortField" => Dealer::ORDER_BY_EMPLOYEE_ID),
+							"Actions"				=> array("Title" => "Actions",						"SortField" => NULL)
 							);
 		$intColumnCount = count($arrColumns);
 		
@@ -60,23 +61,24 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 			$bolAlt = FALSE;
 			foreach ($arrDealers as $objDealer)
 			{
-				$strRowClass	= ($bolAlt)? "class='alt'" : "";
-				$bolAlt			= !$bolAlt;
+				$strRowClass			= ($bolAlt)? "class='alt'" : "";
+				$bolAlt					= !$bolAlt;
 				
-				$strId			= $objDealer->id;
-				$strFirstName	= htmlspecialchars($objDealer->firstName);
-				$strLastName	= htmlspecialchars($objDealer->lastName);
-				$strUsername	= htmlspecialchars($objDealer->username);
-				$strIsManager	= (array_key_exists($objDealer->id, $arrManagers))? "Yes" : "No";
-				$strManager		= ($objDealer->upLineId !== NULL && array_key_exists($objDealer->upLineId, $arrManagers))? htmlspecialchars($arrManagers[$objDealer->upLineId]->username) : "";
-				$strCanVerify	= ($objDealer->canVerify)? "Yes" : "No";
-				$strStatus		= htmlspecialchars(Dealer_Status::getForId($objDealer->dealerStatusId)->name);
-				$strIsEmployee	= ($objDealer->employeeId !== NULL)? "Yes" : "No";
+				$strId					= $objDealer->id;
+				$strFirstName			= htmlspecialchars($objDealer->firstName);
+				$strLastName			= htmlspecialchars($objDealer->lastName);
+				$strUsername			= htmlspecialchars($objDealer->username);
+				$strIsManager			= (array_key_exists($objDealer->id, $arrManagers))? "Yes" : "No";
+				$strManager				= ($objDealer->upLineId !== NULL && array_key_exists($objDealer->upLineId, $arrManagers))? htmlspecialchars($arrManagers[$objDealer->upLineId]->username) : "";
+				$strSyncSaleConstraints	= ($objDealer->syncSaleConstraints)? "Yes" : "No";
+				$strCanVerify			= ($objDealer->canVerify)? "Yes" : "No";
+				$strStatus				= htmlspecialchars(Dealer_Status::getForId($objDealer->dealerStatusId)->name);
+				$strIsEmployee			= ($objDealer->employeeId !== NULL)? "Yes" : "No";
 				
-				$arrActions		= array();
-				$arrActions[]	= "<a onclick='". Href()->ViewDealer($objDealer->id) ."'>View</a>";
-				$arrActions[]	= "<a onclick='". Href()->EditDealer($objDealer->id) ."'>Edit</a>";;
-				$strActions		= implode("&nbsp;&nbsp;", $arrActions);
+				$arrActions				= array();
+				$arrActions[]			= "<a onclick='". Href()->ViewDealer($objDealer->id) ."'>View</a>";
+				$arrActions[]			= "<a onclick='". Href()->EditDealer($objDealer->id) ."'>Edit</a>";;
+				$strActions				= implode("&nbsp;&nbsp;", $arrActions);
 				
 				$strBodyRows .= "
 			<tr $strRowClass>
@@ -86,6 +88,7 @@ class HtmlTemplate_Dealer_List extends FlexHtmlTemplate
 				<td>$strUsername</td>	
 				<td>$strIsManager</td>	
 				<td>$strManager</td>	
+				<td>$strSyncSaleConstraints</td>
 				<td>$strCanVerify</td>	
 				<td>$strStatus</td>	
 				<td>$strIsEmployee</td>	

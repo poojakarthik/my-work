@@ -26,6 +26,9 @@ class JSON_Handler_Dealer extends JSON_Handler
 				// We are creating a new dealer
 				$objDealer = new Dealer();
 				
+				// Set default values (default values should really be set in the constructor of the dealer object)
+				$objDealer->syncSaleConstraints = TRUE;
+				
 				// Check if the dealer is an employee
 				if ($intEmployeeId !== NULL)
 				{
@@ -154,8 +157,8 @@ class JSON_Handler_Dealer extends JSON_Handler
 				<div class='tab-header' id='TabHeaderAddressDetails' name='TabHeaderAddressDetails' tab='3' style='float:left;margin-right:1em'>
 					<span style='font-weight:bold'>Address</span>
 				</div>
-				<div class='tab-header' id='TabHeaderSalesConstraintsDetails' name='TabHeaderSalesConstraintsDetails' tab='4' style='float:left;margin-right:1em'>
-					<span style='font-weight:bold'>Sales Constraints</span>
+				<div class='tab-header' id='TabHeaderSalesConstraintsDetails' name='TabHeaderSalesConstraintsDetails' tab='4' style='float:left;margin-right:1em;display:none'>
+					<span style='font-weight:bold'>Sale Constraints</span>
 				</div>
 				<div style='float:none;clear:both'></div>
 			</div> <!-- TabHeaderContainer -->
@@ -200,6 +203,10 @@ class JSON_Handler_Dealer extends JSON_Handler
 						<tr>
 							<td class='title'>Up Line Manager</td>
 							<td><select id='upLineId' name='upLineId' style='width:100%'>$strManagerComboOptions</select></td>
+						</tr>
+						<tr>
+							<td class='title'>Use Manager's Sale Constraints</td>
+							<td><input type='checkbox' id='syncSaleConstraints' name='syncSaleConstraints'></input></td>
 						</tr>
 						<tr>
 							<td class='title'>Can Verify Sales</td>
@@ -513,14 +520,15 @@ class JSON_Handler_Dealer extends JSON_Handler
 			{
 				$strManagerName = "No up line manager";
 			}
-			$arrDetails['upLineManager']	= htmlspecialchars($strManagerName);  
-			$arrDetails['canVerify']		= ($objDealer->canVerify)? "Yes" : "No";
-			$arrDetails['phone']			= ($objDealer->phone !== NULL)? htmlspecialchars($objDealer->phone) : "[Not Specified]";
-			$arrDetails['mobile']			= ($objDealer->mobile !== NULL)? htmlspecialchars($objDealer->mobile) : "[Not Specified]";
-			$arrDetails['fax']				= ($objDealer->fax !== NULL)? htmlspecialchars($objDealer->fax) : "[Not Specified]";
-			$arrDetails['email']			= ($objDealer->email !== NULL)? htmlspecialchars($objDealer->email) : "[Not Specified]";
+			$arrDetails['upLineManager']		= htmlspecialchars($strManagerName);
+			$arrDetails['syncSaleConstraints']	= ($objDealer->syncSaleConstraints)? "Yes" : "No";  
+			$arrDetails['canVerify']			= ($objDealer->canVerify)? "Yes" : "No";
+			$arrDetails['phone']				= ($objDealer->phone !== NULL)? htmlspecialchars($objDealer->phone) : "[Not Specified]";
+			$arrDetails['mobile']				= ($objDealer->mobile !== NULL)? htmlspecialchars($objDealer->mobile) : "[Not Specified]";
+			$arrDetails['fax']					= ($objDealer->fax !== NULL)? htmlspecialchars($objDealer->fax) : "[Not Specified]";
+			$arrDetails['email']				= ($objDealer->email !== NULL)? htmlspecialchars($objDealer->email) : "[Not Specified]";
 			
-			$arrDetails['terminationDate']	= ($objDealer->terminationDate !== NULL)? substr($objDealer->terminationDate, 8, 2) ." / ". substr($objDealer->terminationDate, 5, 2) ." / ". substr($objDealer->terminationDate, 0, 4) : "[Not Specified]";
+			$arrDetails['terminationDate']		= ($objDealer->terminationDate !== NULL)? substr($objDealer->terminationDate, 8, 2) ." / ". substr($objDealer->terminationDate, 5, 2) ." / ". substr($objDealer->terminationDate, 0, 4) : "[Not Specified]";
 			$objDealerStatus = Dealer_Status::getForId($objDealer->dealerStatusId);
 			$arrDetails['status'] = ($objDealerStatus !== NULL)? htmlspecialchars($objDealerStatus->name) : "Status: {$objDealer->dealerStatusId} could not be found";
 			$arrDetails['isEmployee'] = ($objDealer->employeeId !== NULL)? "Yes" : "No";
@@ -654,7 +662,7 @@ class JSON_Handler_Dealer extends JSON_Handler
 					<span style='font-weight:bold'>Address</span>
 				</div>
 				<div class='tab-header' id='TabHeaderSalesConstraintsDetails' name='TabHeaderSalesConstraintsDetails' tab='4' style='float:left;margin-right:1em'>
-					<span style='font-weight:bold'>Sales Constraints</span>
+					<span style='font-weight:bold'>Sale Constraints</span>
 				</div>
 				<div style='float:none;clear:both'></div>
 			</div> <!-- TabHeaderContainer -->
@@ -676,6 +684,10 @@ class JSON_Handler_Dealer extends JSON_Handler
 						<tr>
 							<td class='title'>Up Line Manager</td>
 							<td>{$arrDetails['upLineManager']}</td>
+						</tr>
+						<tr>
+							<td class='title'>Use Manager's Sale Constraints</td>
+							<td>{$arrDetails['syncSaleConstraints']}</td>
 						</tr>
 						<tr>
 							<td class='title'>Can Verify Sales</td>

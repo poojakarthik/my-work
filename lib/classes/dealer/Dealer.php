@@ -18,6 +18,7 @@ class Dealer
 	const ORDER_BY_DEALER_STATUS_ID				= "dealer|dealer_status_id";
 	const ORDER_BY_UP_LINE_ID					= "dealer|up_line_id";
 	const ORDER_BY_EMPLOYEE_ID					= "dealer|employee_id";
+	const ORDER_BY_SYNC_SALE_CONSTRAINTS		= "dealer|sync_sale_constraints";
 	
 	// The key to this array will be the tidy names as defined by the getColumns function
 	private	$_arrProperties	= array();
@@ -381,6 +382,7 @@ class Dealer
 					case self::ORDER_BY_DEALER_STATUS_ID:
 					case self::ORDER_BY_UP_LINE_ID:
 					case self::ORDER_BY_EMPLOYEE_ID:
+					case self::ORDER_BY_SYNC_SALE_CONSTRAINTS:
 						$arrOrderByParts[] = str_replace('|', '.', $strColumn) . ($bolAsc ? " ASC" : " DESC");
 						break;
 						
@@ -637,11 +639,29 @@ class Dealer
 				$this->clawbackPeriod = $objManager->clawbackPeriod;
 				$this->_bolSaved = FALSE;
 			}
+			
+			// Synchronise the sale constraints, if the dealer has been flagged to be kept in sync with their manager
+			if ($this->syncSaleConstraints == TRUE)
+			{
+				// We need to sync them (don't bother checking if they are already in sync; that will be checked later one)
+				$this->setSaleTypes($objManager->getSaleTypes());
+				$this->setCustomerGroups($objManager->getCustomerGroups());
+				$this->setRatePlans($objManager->getRatePlans());
+				$this->_bolSaved = FALSE;
+			}
 		}
 		
 		if ($this->_bolSaved)
 		{
-			// Nothing to save
+			// Nothing to update, but we should at least check if any of the subordinates need updating
+			
+			// For each IMMEDIATE subordinate, run their save method, which will update any details that should be kept in sync with this dealer
+			$arrSubbies = $this->getSubordinates(TRUE);
+			foreach ($arrSubbies as $objSubbie)
+			{
+				$objSubbie->save();
+			}
+			
 			return;
 		}
 		
@@ -738,12 +758,10 @@ class Dealer
 			}
 		}
 		
-		// Update those fields that should cascade down to subordinates of the dealer, if they have any subordinates
+		// For each IMMEDIATE subordinate, run their save method, which will update any details that should be kept in sync with this dealer
 		$arrSubbies = $this->getSubordinates(TRUE);
 		foreach ($arrSubbies as $objSubbie)
 		{
-			$objSubbie->carrierId		= $this->carrierId;
-			$objSubbie->clawbackPeriod	= $this->clawbackPeriod;
 			$objSubbie->save();
 		}
 		
@@ -793,7 +811,8 @@ class Dealer
 			"createdOn"				=> "created_on",
 			"clawbackPeriod"		=> "clawback_period",
 			"employeeId"			=> "employee_id",
-			"carrierId"				=> "carrier_id"
+			"carrierId"				=> "carrier_id",
+			"syncSaleConstraints"	=> "sync_sale_constraints"
 		);
 	}
 	
@@ -845,7 +864,8 @@ class Dealer
 			"createdOn"				=> "text",
 			"clawbackPeriod"		=> "integer",
 			"employeeId"			=> "integer",
-			"carrierId"				=> "integer"
+			"carrierId"				=> "integer",
+			"syncSaleConstraints"	=> "boolean"
 		);
 	}
 	
