@@ -18,6 +18,8 @@ Control_Tree_Node	= Class.create
 		this.oElement.addClassName('reflex-tree-node-children');
 		this.oElement.appendChild(this.oChildrenListContainer);
 		
+		this.oIconElement	= document.createElement('img');
+		
 		// Defaults
 		this.oVisibleColumns	= {};
 		this.aChildren			= [];
