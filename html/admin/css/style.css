@@ -2323,7 +2323,13 @@ li.reflex-tree-node-label > div
 	display	: inline-block;
 }
 
-ul.reflex-tree-node-children
+div.reflex-tree-node-children
+{
+	overflow-y	: hidden;
+	position	: relative;
+}
+
+div.reflex-tree-node-children > ul
 {
 	position	: absolute;
 	bottom		: 0px;
