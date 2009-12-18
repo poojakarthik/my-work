@@ -121,7 +121,7 @@ Control_Tree_Node	= Class.create
 			this.oElement.addClassName('reflex-tree-node-expanded');
 			
 			// Open
-			alert(this.oChildrenList.getHeight());
+			alert(this.oChildrenList.getDimensions().toSource());
 			this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: this.oChildrenList.getDimensions().height+'px'}, 1.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
 		}
 		else
