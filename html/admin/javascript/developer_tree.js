@@ -3,7 +3,7 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 {
 	initialize	: function($super)
 	{
-		$super(20);
+		$super(40);
 		
 		// Init Tree
 		this.oTreePanel	= new Control_Tree();
