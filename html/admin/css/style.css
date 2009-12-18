@@ -2307,7 +2307,7 @@ div.reflex-tree ul
 }
 
 div.reflex-tree ul.reflex-tree-header > li,
-div.reflex-tree ul.reflex-tree-footer > li,
+div.reflex-tree ul.reflex-tree-footer > li
 {
 	display	: inline-block;
 }
