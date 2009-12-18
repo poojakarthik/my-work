@@ -8,15 +8,15 @@ Control_Tree_Node	= Class.create
 		this.oElement.addClassName('reflex-tree-node');
 		
 		this.oColumnsList	= document.createElement('ul');
-		this.oElement.addClassName('reflex-tree-node-columns');
+		this.oColumnsList.addClassName('reflex-tree-node-columns');
 		this.oElement.appendChild(this.oColumnsList);
 		
 		this.oChildrenListContainer	= document.createElement('div');
 		this.oElement.appendChild(this.oChildrenListContainer);
 		
 		this.oChildrenList	= document.createElement('ul');
-		this.oElement.addClassName('reflex-tree-node-children');
-		this.oElement.appendChild(this.oChildrenListContainer);
+		this.oChildrenList.addClassName('reflex-tree-node-children');
+		this.oChildrenListContainer.appendChild(this.oChildrenList);
 		
 		this.oIconElement	= document.createElement('img');
 		
