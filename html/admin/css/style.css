@@ -2290,6 +2290,22 @@ table.listing-fw3 tbody tr.Hover td
 
 /* List-based Tree */
 
+div.reflex-tree
+{
+	border	: 0.1em solid #333;
+}
+
+div.reflex-tree *
+{
+	paddding	: 0px;
+	margin		: 0px;
+}
+
+div.reflex-tree > ul
+{
+	display	: inline-block;
+}
+
 ul.reflex-tree-node-children
 {
 	position	: absolute;
