@@ -2306,6 +2306,12 @@ div.reflex-tree ul
 	list-style-type	: none;
 }
 
+div.reflex-tree ul.reflex-tree-header > li,
+div.reflex-tree ul.reflex-tree-footer > li,
+{
+	display	: inline-block;
+}
+
 ul.reflex-tree-node-columns > li.reflex-tree-node-column
 {
 	display	: inline-block;
