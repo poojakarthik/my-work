@@ -55,7 +55,6 @@ Control_Tree	= Class.create
 		var	oWidths	= {};
 		for (sName in this.oColumns)
 		{
-			iCount++;
 			oWidths[sName]	= this.oColumns[sName].fWidth;
 		}
 		
