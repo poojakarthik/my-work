@@ -41,6 +41,12 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 											}
 							};
 		
+		for (sLabel in oTreeData)
+		{
+			this.oTreePanel.getRootNode().addChild(this._addTreeNode(sLabel, oChildren[sLabel]));
+		}
+		this.oTreePanel.paint();
+		
 		var oContent	= document.createElement('div');
 		oContent.setStyle({margin : '0.25em'});
 		oContent.appendChild(this.oTreePanel.getElement());
@@ -48,11 +54,17 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 		this.setContent(oContent);
 		this.addCloseButton();
 		this.setTitle("Tree Control");
-	},
-	
-	_addTreeNode	: function(oTreeData)
-	{
-		var	oTreeNode	= new Control_Tree_Node();
-		this.oTreePanel.getRootNode().addChild();
 	}
 });
+
+Developer_Tree._addTreeNode	= function(sName, oChildren)
+{
+	var	oTreeNode	= new Control_Tree_Node({label: sName});
+	
+	for (sLabel in oTreeData)
+	{
+		oTreeNode.addChild(this._addTreeNode(sLabel, oChildren[sLabel]));
+	}
+	
+	return oTreeNode;
+};
