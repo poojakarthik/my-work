@@ -92,6 +92,7 @@ Control_Tree	= Class.create
 		}
 		
 		// Redraw the children!
+		this.oRootNode.setExpanded(true, !this.oRootNode.isExpanded());
 		this.oRootNode.paint(this.oColumns);
 	}
 });
