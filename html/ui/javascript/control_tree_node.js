@@ -12,10 +12,10 @@ Control_Tree_Node	= Class.create
 		this.oElement.appendChild(this.oColumnsList);
 		
 		this.oChildrenListContainer	= document.createElement('div');
+		this.oChildrenListContainer.addClassName('reflex-tree-node-children');
 		this.oElement.appendChild(this.oChildrenListContainer);
 		
 		this.oChildrenList	= document.createElement('ul');
-		this.oChildrenList.addClassName('reflex-tree-node-children');
 		this.oChildrenListContainer.appendChild(this.oChildrenList);
 		
 		this.oIconElement	= document.createElement('img');
