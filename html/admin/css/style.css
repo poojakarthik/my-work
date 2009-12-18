@@ -2322,6 +2322,16 @@ ul.reflex-tree-node-children
 	bottom		: 0px;
 }
 
+div.reflex-tree-node-expand
+{
+	background-image	: url("../img/template/tree_closed.png");
+}
+
+div.reflex-tree-node-expand.reflex-tree-node-expanded
+{
+	background-image	: url("../img/template/tree_open.png");
+}
+
 div.reflex-tree-node-icon,
 div.reflex-tree-node-expand,
 {
