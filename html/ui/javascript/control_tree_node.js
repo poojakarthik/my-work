@@ -22,7 +22,7 @@ Control_Tree_Node	= Class.create
 		
 		// Defaults
 		this.oVisibleColumns	= {};
-		this.aChildren			= [];
+		this.aChildren			= []; 
 		
 		// Set Data
 		this.setData(oData);
@@ -167,6 +167,14 @@ Control_Tree_Node	= Class.create
 				oIconContainer.appendChild(this.oIconElement);
 				
 				oExpandContainer.observe('click', this.toggleExpanded.bind(this));
+				if (this.aChildren.length > 0)
+				{
+					oExpandContainer.addClassName('reflex-tree-node-expand');
+					if (this.bExpanded)
+					{
+						oExpandContainer.addClassName('reflex-tree-node-expanded');
+					}
+				}
 				
 				oTextElement.innerHTML	= this.oData['label'] ? this.oData['label'].escapeHTML() : '';
 				
