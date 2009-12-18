@@ -103,9 +103,10 @@ Control_Tree_Node	= Class.create
 		}
 	},
 	
-	setExpanded	: function(bExpanded)
+	setExpanded	: function(bExpanded, bAnimate)
 	{
 		this.bExpanded	= (bExpanded) ? true : false;
+		bAnimate		= (bAnimate || bAnimate === undefined || bAnimate === null) ? true : false;
 		
 		// Animate
 		var oPercentComplete	= 1;
@@ -131,6 +132,10 @@ Control_Tree_Node	= Class.create
 		}
 		this.oChildrenList.setStyle({position: 'absolute'});
 		this.oSlideFX.start();
+		if (!bAnimate)
+		{
+			this.oSlideFX.end();
+		}
 	},
 	
 	isExpanded	: function()
