@@ -43,7 +43,7 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 		
 		for (sLabel in oTreeData)
 		{
-			this.oTreePanel.getRootNode().addChild(this._addTreeNode(sLabel, oChildren[sLabel]));
+			this.oTreePanel.getRootNode().addChild(Developer_Tree._addTreeNode(sLabel, oTreeData[sLabel]));
 		}
 		this.oTreePanel.paint();
 		
@@ -61,9 +61,9 @@ Developer_Tree._addTreeNode	= function(sName, oChildren)
 {
 	var	oTreeNode	= new Control_Tree_Node({label: sName});
 	
-	for (sLabel in oTreeData)
+	for (sLabel in oChildren)
 	{
-		oTreeNode.addChild(this._addTreeNode(sLabel, oChildren[sLabel]));
+		oTreeNode.addChild(Developer_Tree._addTreeNode(sLabel, oChildren[sLabel]));
 	}
 	
 	return oTreeNode;
