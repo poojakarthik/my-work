@@ -99,7 +99,7 @@ Control_Tree_Node	= Class.create
 				this.oParent.removeChild(this);
 			}
 			
-			this.oParent	= oControlTree;
+			this.oParent	= oControlTreeNode;
 		}
 	},
 	
