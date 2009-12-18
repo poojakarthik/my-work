@@ -16,7 +16,7 @@ Control_Tree	= Class.create
 		this.oFooter.addClassName('reflex-tree-footer');
 		
 		// Create Root Node
-		this.oRootNode	= new Control_Tree_Node();
+		this.oRootNode	= new Control_Tree_Node({label : 'ROOT NODE TEST'});
 		this.oRootNode.setExpanded(true);
 		this.oBody.appendChild(this.oRootNode.getElement());
 		
