@@ -183,7 +183,7 @@ Control_Tree_Node	= Class.create
 					}
 				}
 				
-				oTextElement.innerHTML	= this.oData['label'] ? this.oData['label'].escapeHTML() : '';
+				oTextElement.innerHTML	= this.oData['label'] ? this.oData['label'].escapeHTML() : '[ No Label ]';
 				
 				oColumnElement.appendChild(oExpandContainer);
 				oColumnElement.appendChild(oIconContainer);
