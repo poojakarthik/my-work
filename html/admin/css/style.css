@@ -2306,10 +2306,33 @@ div.reflex-tree ul
 	list-style-type	: none;
 }
 
+ul.reflex-tree-node-columns > li.reflex-tree-node-column
+{
+	display	: inline-block;
+}
+
+li.reflex-tree-node-label > div
+{
+	display	: inline-block;
+}
+
 ul.reflex-tree-node-children
 {
 	position	: absolute;
 	bottom		: 0px;
+}
+
+div.reflex-tree-node-icon,
+div.reflex-tree-node-expand,
+div.reflex-tree-node-icon img
+{
+	min-width	: 16px;
+	max-width	: 16px;
+	width		: 16px;
+	
+	min-height	: 16px;
+	max-height	: 16px;
+	height		: 16px;
 }
 
 /******************************************************************************/
