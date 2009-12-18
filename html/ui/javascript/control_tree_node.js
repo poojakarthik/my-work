@@ -162,7 +162,7 @@ Control_Tree_Node	= Class.create
 			if (sName === 'label')
 			{
 				// Label Column
-				oColumnElement.setStyle({marginLeft: (this.getNodeDepth() * Control_Tree_Node.NODE_INDENT_STEPPING_EM) + 'em'});
+				oColumnElement.setStyle({paddingLeft: (this.getNodeDepth() * Control_Tree_Node.NODE_INDENT_STEPPING_EM) + 'em'});
 				
 				var	oExpandContainer	= document.createElement('div'),
 					oIconContainer		= document.createElement('div'),
