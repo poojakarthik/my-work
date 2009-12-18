@@ -175,7 +175,7 @@ Control_Tree_Node	= Class.create
 				oColumnElement.appendChild(oTextElement);
 				
 				// Must go first (doesn't make sense anywhere else)
-				this.oColumnsList.insertBefore(oColumnElement, this.oColumnsList.firstDescendant);
+				this.oColumnsList.insertBefore(oColumnElement, this.oColumnsList.firstDescendant());
 			}
 			else
 			{
