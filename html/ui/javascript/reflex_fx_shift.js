@@ -29,8 +29,8 @@ Reflex_FX_Shift	= Class.create(/* extends */Reflex_FX,
 		
 		oToStyle.fontSize	= (oBoxSize.fontSize !== undefined && oBoxSize.fontSize !== null) ? oBoxSize.fontSize : oElement.getStyle('font-size');
 		
-		oToStyle.width	= (oBoxSize.width !== undefined && oBoxSize.width !== null)		? oBoxSize.width	: oElement.getWidth();
-		oToStyle.height	= (oBoxSize.height !== undefined && oBoxSize.height !== null)	? oBoxSize.height	: oElement.getHeight();
+		oToStyle.width	= (oBoxSize.width !== undefined && oBoxSize.width !== null)		? oBoxSize.width	: oElement.offsetWidth;
+		oToStyle.height	= (oBoxSize.height !== undefined && oBoxSize.height !== null)	? oBoxSize.height	: oElement.offsetHeight;
 		
 		var oStyleDefinition	=	{
 										opacity		:	{
