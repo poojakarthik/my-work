@@ -142,6 +142,11 @@ Control_Tree_Node	= Class.create
 		this.setExpanded(!this.isExpanded());
 	},
 	
+	getNodeDepth	: function()
+	{
+		return this.oParent ? this.oParent.getNodeDepth() + 1 : 0;
+	},
+	
 	paint	: function(oColumns)
 	{
 		this.oVisibleColumns	= oColumns ? oColumns : this.oVisibleColumns;
@@ -157,6 +162,8 @@ Control_Tree_Node	= Class.create
 			if (sName === 'label')
 			{
 				// Label Column
+				oColumnElement.setStyle({marginLeft: (this.getNodeDepth() * Control_Tree_Node.NODE_INDENT_STEPPING_EM) + 'em'});
+				
 				var	oExpandContainer	= document.createElement('div'),
 					oIconContainer		= document.createElement('div'),
 					oTextElement		= document.createElement('div');
@@ -201,3 +208,4 @@ Control_Tree_Node	= Class.create
 });
 
 Control_Tree_Node.SLIDE_ANIMATION_DURATION	= 0.5;
+Control_Tree_Node.NODE_INDENT_STEPPING_EM	= 2;
