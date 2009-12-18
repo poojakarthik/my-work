@@ -115,6 +115,7 @@ Control_Tree_Node	= Class.create
 			oPercentComplete	= this.oSlideFX.cancel();
 		}
 		
+		this.oChildrenList.setStyle({position: 'absolute'});
 		if (this.bExpanded)
 		{
 			this.oElement.addClassName('reflex-tree-node-expanded');
@@ -130,7 +131,6 @@ Control_Tree_Node	= Class.create
 			// Close
 			this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: '0px'}, 0.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
 		}
-		this.oChildrenList.setStyle({position: 'absolute'});
 		this.oSlideFX.start();
 		if (!bAnimate)
 		{
