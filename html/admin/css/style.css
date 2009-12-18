@@ -2309,7 +2309,8 @@ div.reflex-tree ul
 div.reflex-tree ul.reflex-tree-header > li,
 div.reflex-tree ul.reflex-tree-footer > li
 {
-	display	: inline-block;
+	padding-left	: 0.25em;
+	display			: inline-block;
 }
 
 ul.reflex-tree-node-columns > li.reflex-tree-node-column
