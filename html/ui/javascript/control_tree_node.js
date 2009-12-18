@@ -161,9 +161,12 @@ Control_Tree_Node	= Class.create
 					oIconContainer		= document.createElement('div'),
 					oTextElement		= document.createElement('div');
 				
+				oExpandContainer.addClassName('reflex-tree-node-expand');
+				oIconContainer.addClassName('reflex-tree-node-icon');
+				
 				oIconContainer.appendChild(this.oIconElement);
 				
-				oExpandElement.observe('click', this.toggleExpanded.bind(this));
+				oExpandContainer.observe('click', this.toggleExpanded.bind(this));
 				
 				oTextElement.innerHTML	= this.oData['label'] ? this.oData['label'].escapeHTML() : '';
 				
