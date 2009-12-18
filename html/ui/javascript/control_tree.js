@@ -17,6 +17,7 @@ Control_Tree	= Class.create
 		
 		// Create Root Node
 		this.oRootNode	= new Control_Tree_Node();
+		this.oRootNode.setExpanded(true);
 		this.oBody.appendChild(this.oRootNode.getElement());
 		
 		this.oContainer.appendChild(this.oHeader);
