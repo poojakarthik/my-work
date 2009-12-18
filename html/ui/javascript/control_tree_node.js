@@ -122,19 +122,19 @@ Control_Tree_Node	= Class.create
 			
 			// Open
 			alert(this.oChildrenList.getDimensions().toSource());
-			this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: this.oChildrenList.getDimensions().height+'px'}, 1.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
+			//this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: this.oChildrenList.getHeight()+'px'}, 1.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
 		}
 		else
 		{
 			this.oElement.removeClassName('reflex-tree-node-expanded');
 			
 			// Close
-			this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: '0px'}, 0.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
+			//this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: '0px'}, 0.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
 		}
-		this.oSlideFX.start();
+		//this.oSlideFX.start();
 		if (!bAnimate)
 		{
-			this.oSlideFX.end();
+			//this.oSlideFX.end();
 		}
 	},
 	
