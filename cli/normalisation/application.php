@@ -330,7 +330,7 @@
 			$iTotalCDRsImported	= 0;
 
 			// Loop through the CDR File entries until we have imported the minimum number of CDRs (or there are no files left)
-			while ($arrCDRFile = $selSelectCDRFiles->Fetch() && (!$intCDRLimit || $iTotalCDRsImported < $intCDRLimit))
+			while (($arrCDRFile = $selSelectCDRFiles->Fetch()) && (!$intCDRLimit || $iTotalCDRsImported < $intCDRLimit))
 			{
 				// Make sure the file exists
 				if (!file_exists($arrCDRFile['Location']))
