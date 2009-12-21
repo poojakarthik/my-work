@@ -281,56 +281,59 @@
 	 */
  	function Import($intCDRLimit=NULL)
  	{
-		// Start a Transaction
-		DataAccess::getDataAccess()->TransactionStart();
+		$this->AddToNormalisationReport("\n\n".MSG_HORIZONTAL_RULE);
+		$this->AddToNormalisationReport(MSG_IMPORTING_TITLE);
+		$this->Framework->StartWatch();
 
-		try
+		// Retrieve list of CDR Files marked as either ready to process, or failed process
+		$arrFileTypes	= array();
+		foreach ($this->_arrNormalisationModule as $intCarrier=>$arrCarrierFileTypes)
 		{
-			$this->AddToNormalisationReport("\n\n".MSG_HORIZONTAL_RULE);
-			$this->AddToNormalisationReport(MSG_IMPORTING_TITLE);
-			$this->Framework->StartWatch();
-
-			// Retrieve list of CDR Files marked as either ready to process, or failed process
-			$arrFileTypes	= array();
-			foreach ($this->_arrNormalisationModule as $intCarrier=>$arrCarrierFileTypes)
+			foreach (array_keys($arrCarrierFileTypes) as $intFileType)
 			{
-				foreach (array_keys($arrCarrierFileTypes) as $intFileType)
-				{
-					$arrFileTypes[]	= $intFileType;
-				}
+				$arrFileTypes[]	= $intFileType;
 			}
+		}
 
-			// Do we have any FileTypes to import?
-			if (!count($arrFileTypes))
+		// Do we have any FileTypes to import?
+		if (!count($arrFileTypes))
+		{
+			return FALSE;
+		}
+
+		$strWhere			= "FileType IN (".implode(', ', $arrFileTypes).") AND Status IN (".FILE_COLLECTED.", ".FILE_REIMPORT.")";
+		$selSelectCDRFiles 	= new StatementSelect("FileImport JOIN compression_algorithm ON FileImport.compression_algorithm_id = compression_algorithm.id", "FileImport.*, compression_algorithm.file_extension, compression_algorithm.php_stream_wrapper", $strWhere, NULL, self::FILE_IMPORT_LIMIT);
+
+		$insInsertCDRLine	= new StatementInsert("CDR");
+
+		$arrDefine = Array();
+		$arrDefine['Status']		= TRUE;
+		$arrDefine['ImportedOn'] 	= new MySQLFunction("NOW()");
+		$updUpdateCDRFiles			= new StatementUpdate("FileImport", "Id = <id>", $arrDefine);
+
+
+		if ($selSelectCDRFiles->Execute() === FALSE)
+		{
+			Debug($selSelectCDRFiles);
+			exit(1);
+		}
+
+		$intCount = 0;
+		$this->_intImportFail = 0;
+		$this->_intImportPass = 0;
+		
+		$iTotalCDRsImported	= 0;
+
+		// Loop through the CDR File entries until we have imported the minimum number of CDRs (or there are no files left)
+		while (($arrCDRFile = $selSelectCDRFiles->Fetch()) && (!$intCDRLimit || $iTotalCDRsImported < $intCDRLimit))
+		{
+			// Start a Transaction
+			if (!DataAccess::getDataAccess()->TransactionStart())
 			{
-				return FALSE;
+				throw new Exception("Unable to start a transaction");
 			}
-
-			$strWhere			= "FileType IN (".implode(', ', $arrFileTypes).") AND Status IN (".FILE_COLLECTED.", ".FILE_REIMPORT.")";
-			$selSelectCDRFiles 	= new StatementSelect("FileImport JOIN compression_algorithm ON FileImport.compression_algorithm_id = compression_algorithm.id", "FileImport.*, compression_algorithm.file_extension, compression_algorithm.php_stream_wrapper", $strWhere, NULL, self::FILE_IMPORT_LIMIT);
-
-			$insInsertCDRLine	= new StatementInsert("CDR");
-
-			$arrDefine = Array();
-			$arrDefine['Status']		= TRUE;
-			$arrDefine['ImportedOn'] 	= new MySQLFunction("NOW()");
-			$updUpdateCDRFiles			= new StatementUpdate("FileImport", "Id = <id>", $arrDefine);
-
-
-			if ($selSelectCDRFiles->Execute() === FALSE)
-			{
-				Debug($selSelectCDRFiles);
-				exit(1);
-			}
-
-			$intCount = 0;
-			$this->_intImportFail = 0;
-			$this->_intImportPass = 0;
 			
-			$iTotalCDRsImported	= 0;
-
-			// Loop through the CDR File entries until we have imported the minimum number of CDRs (or there are no files left)
-			while (($arrCDRFile = $selSelectCDRFiles->Fetch()) && (!$intCDRLimit || $iTotalCDRsImported < $intCDRLimit))
+			try
 			{
 				// Make sure the file exists
 				if (!file_exists($arrCDRFile['Location']))
@@ -364,24 +367,25 @@
 				}
 
 				$intCount++;
+				
+				// Commit the Transaction
+				DataAccess::getDataAccess()->TransactionCommit();
 			}
-
-			// Report totals
-			$arrReportLine['<Action>']		= "Imported";
-			$arrReportLine['<Total>']		= $this->_intImportPass + $this->_intImportFail;
-			$arrReportLine['<Time>']		= $this->Framework->LapWatch();
-			$arrReportLine['<Pass>']		= (int)$this->_intImportPass;
-			$arrReportLine['<Fail>']		= (int)$this->_intImportFail;
-			$this->AddToNormalisationReport(MSG_REPORT, $arrReportLine);
-		}
-		catch (Exception $eException)
-		{
-			DataAccess::getDataAccess()->TransactionRollback();
-			throw $eException;
+			catch (Exception $eException)
+			{
+				// Rollback the Transaction
+				DataAccess::getDataAccess()->TransactionRollback();
+				throw $eException;
+			}
 		}
 
-		// Commit the Transaction
-		DataAccess::getDataAccess()->TransactionCommit();
+		// Report totals
+		$arrReportLine['<Action>']		= "Imported";
+		$arrReportLine['<Total>']		= $this->_intImportPass + $this->_intImportFail;
+		$arrReportLine['<Time>']		= $this->Framework->LapWatch();
+		$arrReportLine['<Pass>']		= (int)$this->_intImportPass;
+		$arrReportLine['<Fail>']		= (int)$this->_intImportFail;
+		$this->AddToNormalisationReport(MSG_REPORT, $arrReportLine);
  	}
 
 	//------------------------------------------------------------------------//
