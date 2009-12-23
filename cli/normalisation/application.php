@@ -348,7 +348,7 @@
 
 					// Add to the Normalisation report
 					$this->AddToNormalisationReport(MSG_FAIL_FILE_MISSING, Array('<Path>' => $arrCDRFile["Location"]));
-					continue;
+					throw new Exception("File not found");
 				}
 
 				// Determine exact status, and act accordingly
@@ -369,13 +369,16 @@
 				$intCount++;
 				
 				// Commit the Transaction
-				DataAccess::getDataAccess()->TransactionCommit();
+				if (!DataAccess::getDataAccess()->TransactionCommit())
+				{
+					throw new Exception("Unable to commit the transaction");
+				}
 			}
 			catch (Exception $eException)
 			{
 				// Rollback the Transaction
 				DataAccess::getDataAccess()->TransactionRollback();
-				throw $eException;
+				//throw $eException;
 			}
 		}
 
