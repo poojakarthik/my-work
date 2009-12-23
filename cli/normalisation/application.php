@@ -48,7 +48,7 @@
  {
  	const	FILE_MINIMUM_PERCENT_VALID	= .9;
  	
- 	const	FILE_IMPORT_LIMIT			= 1000;
+ 	const	FILE_IMPORT_LIMIT			= 100000;
 
  	private	$_arrCDRErrorStatuses	=	array
  										(
