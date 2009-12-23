@@ -297,25 +297,32 @@
 	 					break;
 	 				
 	 				case 'Date':
-	 					$strDate	= $arrField['Value'];
+	 					$strDate		= $arrField['Value'];
+	 					$sRegexMatch	= '';
 	 					switch ($arrType[1])
 	 					{
 	 						case 'YYYYMMDD':
 	 							$strParse	= $strDate;
+	 							
+	 							$sRegexMatch	= "/^(\d{4})(1[012]|0\d)((3[10]|[012]\d))$/i";
 	 							break;
 	 							
 	 						case 'YYYY-MM-DD':
 	 							$strParse	= $strDate;
+	 							
+	 							$sRegexMatch	= "/^(\d{4})\-(1[012]|0\d)\-((3[10]|[012]\d))$/i";
 	 							break;
 	 						
 	 						case 'DD-MM-YYYY':
 	 							$strParse	= substr($strDate, -4, 4);
 	 							$strParse	.= substr($strDate, 4, 2);
 	 							$strParse	.= substr($strDate, 0, 2);
+	 							
+	 							$sRegexMatch	= "/^((3[10]|[012]\d))\-(1[012]|0\d)\-(\d{4})$/i";
 	 					}
 	 					
 	 					// Is it a valid date?
-	 					if (!strtotime($strParse))
+	 					if (!preg_match($sRegexMatch, $strParse))
 	 					{
 							$strMessage	= "Request #{$arrLine['**Request']}; Field '$strField' with value '$strDate' is not a valid {$arrType[1]} date";
 							return Array('Pass' => FALSE, 'Line' => $strMessage);
