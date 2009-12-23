@@ -52,6 +52,8 @@
 	protected	$_arrFooter;
 	protected	$_ptrFile;
 	
+	protected	$_strFileContents	= '';
+	
 	
  	//------------------------------------------------------------------------//
 	// __construct
@@ -80,7 +82,6 @@
  		$this->_arrFileContent	= Array();
  		$this->bolExported		= FALSE;
  		$this->_intMinRequests	= 1;
- 		$this->_strFileContents	= '';
  		
  		// Statements
  		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "Id", "CarrierRef = <CarrierRef>");
@@ -149,46 +150,33 @@
  		if ($this->_arrDefine['Header'])
  		{
 			$arrResult	= $this->_RenderLine($this->_arrHeader, 'Title', $bolRenderToFile);
-			if (!$arrResult['Pass'] && PROVISIONING_DEBUG)
-			{
-				CliEcho($arrResult['Line']);
-			}
-			else
-			{
-				$this->_strFileContents	.= $arrResult['Line'];
-			}
+			
+			Flex::assert($arrResult['Pass'], "Unable to render Header", print_r($arrResult, true), "Provisioning Export: File Header");
+			$this->_strFileContents	.= $arrResult['Line'];
  		}
  		
  		// Render each line
+ 		$iLine	= 0;
  		foreach ($this->_arrFileContent as $arrLine)
  		{
+ 			$iLine++;
  			$arrResult	= $this->_RenderLine($arrLine, NULL, $bolRenderToFile);
- 			
- 			if (!$arrResult['Pass'] && PROVISIONING_DEBUG)
- 			{
- 				CliEcho($arrResult['Line']);
- 			}
-			else
-			{
-				$this->_strFileContents	.= $arrResult['Line'];
-			}
+			
+			Flex::assert($arrResult['Pass'], "Unable to render Line {$iLine} of ".count($this->_arrFileContent), print_r($arrResult, true), "Provisioning Export: File Content");
+			$this->_strFileContents	.= $arrResult['Line'];
  		}
  		
  		// Render Footer
  		if ($this->_arrDefine['Footer'])
  		{
 			$arrResult	= $this->_RenderLine($this->_arrFooter, NULL, $bolRenderToFile);
-			if (!$arrResult['Pass'] && PROVISIONING_DEBUG)
-			{
-				CliEcho($arrResult['Line']);
-			}
-			else
-			{
-				$this->_strFileContents	.= $arrResult['Line'];
-			}
+			
+			Flex::assert($arrResult['Pass'], "Unable to render Footer", print_r($arrResult, true), "Provisioning Export: File Footer");
+			$this->_strFileContents	.= $arrResult['Line'];
  		}
  		
  		// Replace \\n with \n
+ 		// FIXME: Why are we doing this?
  		$this->_strFileContents	= str_replace('\n', "\n", $this->_strFileContents);
  		
  		// Close file
