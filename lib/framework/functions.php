@@ -3622,7 +3622,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 
 	$strTables	= "
 (
-	SELECT	'{$strEffectiveDate}' AS effective_date
+	SELECT	{$strEffectiveDate} AS effective_date
 ) config
 JOIN InvoiceRun ir_barring ON (1)
 JOIN invoice_run_type irt_barring ON (irt_barring.id = ir_barring.invoice_run_type_id AND irt_barring.const_name = 'INVOICE_RUN_TYPE_LIVE')
