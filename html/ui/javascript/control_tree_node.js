@@ -119,13 +119,15 @@ Control_Tree_Node	= Class.create
 			oPercentComplete	= this.oSlideFX.cancel();
 		}
 		
+		this.oChildrenList.setStyle({position: 'static'});
+		var oDimensions	= this.oChildrenListContainer.getDimensions();
 		this.oChildrenList.setStyle({position: 'absolute'});
 		if (this.bExpanded)
 		{
 			this.oElement.addClassName('reflex-tree-node-expanded');
 			
 			// Open
-			alert(this.oChildrenList.getDimensions().toSource());
+			alert(oDimensions);
 			//this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: this.oChildrenList.getHeight()+'px'}, 1.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
 		}
 		else
@@ -159,6 +161,8 @@ Control_Tree_Node	= Class.create
 	
 	paint	: function(oColumns)
 	{
+		
+		
 		this.oVisibleColumns	= oColumns ? oColumns : this.oVisibleColumns;
 		
 		// Purge existing Columns
