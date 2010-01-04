@@ -43,7 +43,7 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 		
 		for (sLabel in oTreeData)
 		{
-			alert("Adding '"+sLabel+"'");
+			//alert("Adding '"+sLabel+"'");
 			this.oTreePanel.getRootNode().addChild(Developer_Tree._addTreeNode(sLabel, oTreeData[sLabel]));
 		}
 		this.oTreePanel.paint();
