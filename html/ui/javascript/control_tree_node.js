@@ -34,10 +34,10 @@ Control_Tree_Node	= Class.create
 		this.oData	= {};
 		for (sField in oData)
 		{
-			this.oData	= sField;
+			this.oData[sField]	= oData[sField];
 		}
 		
-		alert(oData.toSource());
+		alert(this.oData.toSource());
 		this.paint();
 	},
 	
