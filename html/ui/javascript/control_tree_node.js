@@ -120,14 +120,14 @@ Control_Tree_Node	= Class.create
 		}
 		
 		this.oChildrenList.setStyle({position: 'static'});
-		var oDimensions	= this.oChildrenList.getDimensions();
+		var sHeight	= this.oChildrenList.getHeight();
 		//this.oChildrenList.setStyle({position: 'absolute'});
 		if (this.bExpanded)
 		{
 			this.oElement.addClassName('reflex-tree-node-expanded');
 			
 			// Open
-			alert(oDimensions.toSource());
+			alert(sHeight);
 			//this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: this.oChildrenList.getHeight()+'px'}, 1.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
 		}
 		else
