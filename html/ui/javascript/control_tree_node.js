@@ -71,8 +71,9 @@ Control_Tree_Node	= Class.create
 			oControlTreeNode.setParent(this);
 			this.aChildren.push(oControlTreeNode);
 			this.oChildrenList.appendChild(oControlTreeNode.getElement());
+			
+			this.paint();
 		}
-		this.paint();
 	},
 	
 	removeChild	: function(oControlTreeNode)
