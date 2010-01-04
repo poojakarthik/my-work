@@ -121,7 +121,7 @@ Control_Tree_Node	= Class.create
 		
 		this.oChildrenList.setStyle({position: 'static'});
 		var oDimensions	= this.oChildrenListContainer.getDimensions();
-		this.oChildrenList.setStyle({position: 'absolute'});
+		//this.oChildrenList.setStyle({position: 'absolute'});
 		if (this.bExpanded)
 		{
 			this.oElement.addClassName('reflex-tree-node-expanded');
