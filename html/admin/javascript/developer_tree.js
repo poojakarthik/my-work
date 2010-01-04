@@ -64,7 +64,7 @@ Developer_Tree._addTreeNode	= function(sName, oChildren)
 	
 	for (sLabel in oChildren)
 	{
-		alert("Adding '"+sLabel+"'");
+		//alert("Adding '"+sLabel+"'");
 		oTreeNode.addChild(Developer_Tree._addTreeNode(sLabel, oChildren[sLabel]));
 	}
 	

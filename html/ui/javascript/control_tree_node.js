@@ -66,7 +66,7 @@ Control_Tree_Node	= Class.create
 	{
 		if (oControlTreeNode instanceof Control_Tree_Node && oControlTreeNode !== this)
 		{
-			alert("Adding Child '"+oControlTreeNode.oData.label+"' to '"+this.oData.label+"'");
+			//alert("Adding Child '"+oControlTreeNode.oData.label+"' to '"+this.oData.label+"'");
 			
 			oControlTreeNode.setParent(this);
 			this.aChildren.push(oControlTreeNode);
