@@ -43,6 +43,7 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 		
 		for (sLabel in oTreeData)
 		{
+			alert("Adding '"+sLabel+"'");
 			this.oTreePanel.getRootNode().addChild(Developer_Tree._addTreeNode(sLabel, oTreeData[sLabel]));
 		}
 		this.oTreePanel.paint();
@@ -63,6 +64,7 @@ Developer_Tree._addTreeNode	= function(sName, oChildren)
 	
 	for (sLabel in oChildren)
 	{
+		alert("Adding '"+sLabel+"'");
 		oTreeNode.addChild(Developer_Tree._addTreeNode(sLabel, oChildren[sLabel]));
 	}
 	
