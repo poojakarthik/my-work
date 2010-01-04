@@ -14,8 +14,18 @@ var Reflex_Slider	= Class.create
 		this.oContainer.oRail.onMouseUp		= this._onRailMouseUp.bindAsEventListener(this);
 		this.oContainer.oRail.onDrag		= this._onRailMouseMove.bindAsEventListener(this);
 		this.oContainer.oRail.domElement.observe('mousedown', this.oContainer.oRail.onMouseDown);
+		/*	Move these to a "Reflex_Slider_Scrollbar" subclass
+		this.oContainer.oArrowLeft	= {domElement: document.createElement('div')};
+		this.oContainer.oRail.domElement.addClassName('reflex-slider-arrow-left');
+		this.oContainer.domElement.insertBefore(this.oContainer.oArrowLeft.domElement, this.oContainer.oRail.domElement);
 		
+		this.oContainer.oArrowRight	= {domElement: document.createElement('div')};
+		this.oContainer.oRail.domElement.addClassName('reflex-slider-arrow-right');
+		this.oContainer.domElement.appendChild(this.oContainer.oArrowRight.domElement);
+		*/
 		this.oHandles	= {};
+		
+		this.aMarkers	= [];
 		
 		// Defaults
 		this.iStepping	= 1;
@@ -201,5 +211,60 @@ var Reflex_Slider	= Class.create
 			// Update the closest Handle
 			oClosestHandle.setValue(iCalculatedValue, bAnimate);
 		}
-	}
+	},
+	
+	setHandleLabel	: function()
+	{
+		
+	},
+	
+	/*
+	setMarkers	: function(aMarkers)
+	{
+		
+	},
+	
+	addMarker	: function(sLabel, iValue, sCustomCSSClass)
+	{
+		// Does this marker already exist?
+		for (var i = 0, j = this.aMarkers.length; i < j; i++)
+		{
+			if (this.aMarkers[0].sLabel == sLabel)
+			{
+				return false;
+			}
+		}
+		
+		// Add the Marker to the "Marker" array
+		this.aMarkers.push({sLabel: sLabel, iValue: this._snapValue(parseInt(iValue))});
+		
+		// Render as DIVs
+		var oContainer			= document.createElement('div');
+		oContainer.style.left	= String((iValue / (this.oValueLimits.iMaxValue - this.oValueLimits.iMinValue)) * 100) + '%';
+		
+		oContainer.addClassName('reflex-slider-rail-marker');
+		if (sCustomCSSClass)
+		{
+			oContainer.addClassName(sCustomCSSClass);
+		}
+		
+		var oLabel	= document.createElement('div');
+		oContainer.innerHTML	= sLabel.escapeHTML();
+		
+		// Add to DOM
+		this.oContainer.oRail.appendChild(oContainer);
+		
+		return true;
+	},
+	
+	removeMarker	: function (sLabel)
+	{
+		for (var i = 0, j = this.aMarkers.length; i < j; i++)
+		{
+			if (this.aMarkers[0].sLabel == sLabel)
+			{
+				return false;
+			}
+		}
+	}*/
 });
