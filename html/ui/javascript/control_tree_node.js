@@ -127,7 +127,6 @@ Control_Tree_Node	= Class.create
 			this.oElement.addClassName('reflex-tree-node-expanded');
 			
 			// Open
-			alert(sHeight);
 			//this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: this.oChildrenList.getHeight()+'px'}, 1.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
 			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', false, true, 1.0, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});this.oChildrenListContainer.setStyle({height: null});}).bind(this));
 		}
