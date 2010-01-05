@@ -136,23 +136,39 @@ Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 	// HACKY HACKY HACKY HACKY
 	// Note: This is probably really slow
 	
+	alert("Calculating Element Dimesions");
+	
 	// Clone the element
 	var oElementClone	= oElement.clone(true);
+	
+	alert('Cloned');
 	
 	// Set opacity to 0
 	oElementClone.setOpacity(0);
 	
+	alert('Opacity set to 0');
+	
 	// Position absolutely
 	oElementClone.style.position	= 'absolute';
+	oElementClone.style.top			= 0;
+	oElementClone.style.left		= 0;
+	
+	alert('Positioned Absolutely @ [0, 0]');
 	
 	// Attach to the Body
 	document.body.appendChild(oElementClone);
 	
+	alert('Attached to the Body');
+	
 	// Get calculated dimensions
 	var oDimensions	= oElementClone.getDimensions();
 	
+	alert('Dimensions calculated as '+oDimensions.width+'x'+oDimensions.height);
+	
 	// Remove clone from DOM
 	oElementClone.remove();
+	
+	alert('Clone removed from the DOM');
 	
 	return oDimensions;
 };
