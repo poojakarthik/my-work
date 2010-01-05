@@ -223,5 +223,5 @@ Control_Tree_Node	= Class.create
 	}
 });
 
-Control_Tree_Node.SLIDE_ANIMATION_DURATION	= 0.5;
+Control_Tree_Node.SLIDE_ANIMATION_DURATION	= 0.1;
 Control_Tree_Node.NODE_INDENT_STEPPING_EM	= 2;
