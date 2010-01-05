@@ -39,16 +39,7 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		this.oContainedElement.style.position	= 'absolute';
 		
 		var oDimensions			= Reflex_FX_Reveal.calculateElementDimensions(this.oContainedElement);
-		var oStyleDefinition	=	{
-										width		:	{
-															from	: '0px',
-															to		: oDimensions.width+'px'
-														},
-										height		:	{
-															from	: '0px',
-															to		: oDimensions.height+'px'
-														}
-									};
+		var oStyleDefinition	=	{};
 		
 		// Fading
 		if (bFade)
