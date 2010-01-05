@@ -101,10 +101,10 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 			
 			default:
 			case Reflex_FX_Reveal.DISPLAY_MODE_SLIDE:
-				this.oContainedElement.style.top	= oDirection.down	? '0px' : null;
-				this.oContainedElement.style.bottom	= oDirection.up		? '0px' : null;
-				this.oContainedElement.style.left	= oDirection.right	? '0px' : null;
-				this.oContainedElement.style.right	= oDirection.left	? '0px' : null;
+				this.oContainedElement.style.top	= oDirection.up		? '0px' : null;
+				this.oContainedElement.style.bottom	= oDirection.down	? '0px' : null;
+				this.oContainedElement.style.left	= oDirection.left	? '0px' : null;
+				this.oContainedElement.style.right	= oDirection.right	? '0px' : null;
 				break;
 		}
 		
