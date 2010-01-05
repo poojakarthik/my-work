@@ -8,7 +8,7 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 	 * 
 	 * @param {Object} $super
 	 * @param {Object} oElement
-	 * @param {Object} sDirection
+	 * @param {Object} sOrigin
 	 * @param {Object} sDisplayMode
 	 * @param {Object} bFade
 	 * @param {Object} bUseParentAsContainer	TRUE: Use the Element's parent as the container; FALSE: Create a Container Element
@@ -60,7 +60,7 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		}
 		
 		// Direction
-		var aDirectionTokens	= sDirection ? String(sDirection).split('-') : [];
+		var aDirectionTokens	= sOrigin ? String(sOrigin).split('-') : [];
 		var oDirection			= {};
 		for (var i = 0, j = aDirectionTokens.length; i < j; i++)
 		{
@@ -96,7 +96,7 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		}
 		
 		// Display Modes
-		switch (sDirection.toLowerCase().strip())
+		switch (sDisplayMode.toLowerCase().strip())
 		{
 			case Reflex_FX_Reveal.DISPLAY_MODE_ROLLOUT:
 				this.oContainedElement.style.top	= oDirection.top	? '0px' : null;
