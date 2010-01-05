@@ -2363,8 +2363,8 @@ div.reflex-tree-node-icon img
 	vertical-align	: middle;
 	text-align		: center;
 	
-	max-width		: 2em;
-	max-height		: 2em;
+	max-width		: 16px;
+	max-height		: 16px;
 }
 
 /******************************************************************************/
