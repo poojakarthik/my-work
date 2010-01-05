@@ -68,7 +68,7 @@ var Reflex_FX	= Class.create
 	resume	: function(bReverse)
 	{
 		fResumeOffset	= 0.0;
-		if (bResume && this.iLastUpdateTime && this.iStartTime)
+		if (this.iLastUpdateTime && this.iStartTime)
 		{
 			// Resuming the last animation
 			var iPreviousTranspired		= this.iLastUpdateTime - this.iStartTime;
