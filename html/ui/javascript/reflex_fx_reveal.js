@@ -39,10 +39,7 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		this.oContainedElement.style.position	= 'absolute';
 		
 		var oDimensions			= Reflex_FX_Reveal.calculateElementDimensions(this.oContainedElement);
-		var oStyleDefinition	=	{
-										width		:	{},
-										height		:	{}
-									};
+		var oStyleDefinition	= {};
 		
 		// Fading
 		if (bFade)
@@ -125,8 +122,8 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		var fPercentComplete	= this.getPercentComplete(false);
 		fPercentComplete		= this.bReverse ? 1.0 - fPercentComplete : fPercentComplete;
 		
-		this.oElement.style.height				= (fPercentComplete < 1.0) ? this.oElement.style.height		: null;
-		this.oElement.style.width				= (fPercentComplete < 1.0) ? this.oElement.style.width		: null;
+		this.oElement.style.height				= (fPercentComplete < 1.0 && this.oStyleDefinition.height) ? this.oElement.style.height		: null;
+		this.oElement.style.width				= (fPercentComplete < 1.0 && this.oStyleDefinition.width) ? this.oElement.style.width		: null;
 		this.oContainedElement.style.position	= (fPercentComplete < 1.0) ? 'absolute'						: null;
 		
 		$super();
