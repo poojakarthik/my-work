@@ -206,7 +206,7 @@ var Reflex_FX	= Class.create
 		}
 		
 		// Has the transition finished?
-		if (Math.floor(fTransitionComplete) >= 1.0)
+		if (Math.floor(fPercentComplete) >= 1.0)
 		{
 			this._destruct();
 			//alert("Transition Complete!");
