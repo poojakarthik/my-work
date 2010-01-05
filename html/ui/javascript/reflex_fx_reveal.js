@@ -147,7 +147,7 @@ Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 	//alert('Cloned');
 	
 	// Set opacity to 0
-	//oElementClone.setOpacity(0);
+	oElementClone.setOpacity(0);
 	
 	//alert('Opacity set to 0');
 	
@@ -173,7 +173,7 @@ Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 	//throw "BREAK";
 	
 	// Remove clone from DOM
-	//oElementClone.remove();
+	oElementClone.remove();
 	
 	//alert('Clone removed from the DOM');
 	
