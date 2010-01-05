@@ -174,6 +174,7 @@ Control_Tree_Node	= Class.create
 		for (sName in this.oVisibleColumns)
 		{
 			var	oColumnElement	= document.createElement('li');
+			oColumnElement.addClassName('reflex-tree-node-column');
 			
 			if (sName === 'label')
 			{
