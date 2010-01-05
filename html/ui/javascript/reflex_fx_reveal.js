@@ -136,11 +136,11 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		var oDimensions					= Reflex_FX_Reveal.calculateElementDimensions(this.oContainedElement);
 		if (this.oStyleDefinition.width)
 		{
-			this.oStyleDefinition.width.to	= oDimensions.width+'px';
+			this.oStyleDefinition.width.to		= oDimensions.width+'px';
 		}
 		if (this.oStyleDefinition.height)
 		{
-			this.oStyleDefinition.height.to	= oDimensions.height+'px';
+			this.oStyleDefinition.height.to		= oDimensions.height+'px';
 		}
 		
 		$super(fPercentComplete);
