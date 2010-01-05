@@ -65,14 +65,24 @@ var Reflex_FX	= Class.create
 		return Object.clone(this.oStyleDefinition);
 	},
 	
-	resume	: function(bReverseDirection)
+	resume	: function(bReverse)
 	{
-		this.start(bReverseDirection, true);
+		fResumeOffset	= 0.0;
+		if (bResume && this.iLastUpdateTime && this.iStartTime)
+		{
+			// Resuming the last animation
+			var iPreviousTranspired		= this.iLastUpdateTime - this.iStartTime;
+			var fPreviouslyCompleted	= Math.min(1, (iPreviousTranspired / this.iDuration));
+			iCurrentlyTranspired		= bReverse ? iPreviousTranspired : this.iDuration - iPreviousTranspired;
+			
+			fResumeOffset	= Math.max(0, Math.min(1, (iCurrentlyTranspired / this.iDuration)));
+		}
+		this.start(bReverse, fResumeOffset);
 	},
 	
-	start	: function(bReverseDirection, bResume)
+	start	: function(bReverse, fStartOffset)
 	{
-		this.bReverseDirection	= bReverseDirection ? true : false;
+		this.bReverse	= bReverse ? true : false;
 		
 		var iCurrentTime			= (new Date()).getTime();
 		var iCurrentlyTranspired	= 0;
@@ -81,7 +91,7 @@ var Reflex_FX	= Class.create
 			// Resuming the last animation
 			var iPreviousTranspired		= this.iLastUpdateTime - this.iStartTime;
 			var fPreviouslyCompleted	= Math.min(1, (iPreviousTranspired / this.iDuration));
-			iCurrentlyTranspired		= bReverseDirection ? iPreviousTranspired : this.iDuration - iPreviousTranspired;
+			iCurrentlyTranspired		= bReverse ? iPreviousTranspired : this.iDuration - iPreviousTranspired;
 		}
 		this.iStartTime			= iCurrentTime - iCurrentlyTranspired;
 		this.iLastUpdateTime	= this.iStartTime;
@@ -95,7 +105,7 @@ var Reflex_FX	= Class.create
 		{
 			// Start the transition
 			this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), 1 / (this.iFPSOverride ? this.iFPSOverride : Reflex_FX.DEFAULT_FRAMES_PER_SECOND));
-			//alert('Animation Started!' + (this.bReverseDirection ? ' IN REVERSE!!!!~~' : ''));
+			//alert('Animation Started!' + (this.bReverse ? ' IN REVERSE!!!!~~' : ''));
 		}
 	},
 	
@@ -145,6 +155,7 @@ var Reflex_FX	= Class.create
 			// Determine progress
 			//this.oElement.innerHTML	= this.oElement.innerHTML + "\n"+iTranspired+" = " + ((new Date()).getTime()) + " - " + this.iStartTime + "<br />";
 			//this.oElement.innerHTML	= this.oElement.innerHTML + "\n_paint(" + Math.min(1, (iTranspired / this.iDuration)) + " = Math.min(1, ("+iTranspired+" / "+this.iDuration+")))<br />";
+			this.iLastUpdateTime	= (new Date()).getTime();
 			this._paint(this.getPercentComplete());
 		}
 		else
@@ -153,11 +164,23 @@ var Reflex_FX	= Class.create
 		}
 	},
 	
-	getPercentComplete	: function()
+	getPercentComplete	: function(bSetLastUpdateTime)
 	{
-		this.iLastUpdateTime	= (new Date()).getTime();
-		var iTranspired			= this.iLastUpdateTime - this.iStartTime;
-		return Math.min(1, (iTranspired / this.iDuration));
+		bSetLastUpdateTime	= (bSetLastUpdateTime || bSetLastUpdateTime === null || bSetLastUpdateTime === undefined) ? true : false;
+		if (bSetLastUpdateTime)
+		{
+			this.iLastUpdateTime	= (new Date()).getTime();
+		}
+		
+		if (this.iStartTime && this.iLastUpdateTime)
+		{
+			var iTranspired			= this.iLastUpdateTime - this.iStartTime;
+			return Math.min(1, (iTranspired / this.iDuration));
+		}
+		else
+		{
+			return 0;
+		}
 	},
 	
 	_paint	: function(fPercentComplete)
@@ -165,7 +188,7 @@ var Reflex_FX	= Class.create
 		//alert('Animation Painting!');
 		
 		// Get transformation factor
-		var fTransformationFactor	= this.fnTimingFunction(this.bReverseDirection ? 1.0 - fPercentComplete : fPercentComplete);
+		var fTransformationFactor	= this.fnTimingFunction(this.bReverse ? 1.0 - fPercentComplete : fPercentComplete);
 		//alert("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete");
 		
 		// Update the Element's style
