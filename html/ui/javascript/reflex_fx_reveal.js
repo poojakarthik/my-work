@@ -144,9 +144,9 @@ Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 	alert('Cloned');
 	
 	// Set opacity to 0
-	oElementClone.setOpacity(0);
+	//oElementClone.setOpacity(0);
 	
-	alert('Opacity set to 0');
+	//alert('Opacity set to 0');
 	
 	// Position absolutely
 	oElementClone.style.position	= 'absolute';
