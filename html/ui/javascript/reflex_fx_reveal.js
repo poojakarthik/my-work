@@ -112,6 +112,14 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		$super(oContainerElement, oStyleDefinition, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS);
 	},
 	
+	_destruct	: function($super)
+	{
+		var fPercentComplete	= this.getPercentComplete(false);
+		this.oElement.height	= fPercentComplete < 1.0 ? this.oElement.height : null;
+		this.oElement.width		= fPercentComplete < 1.0 ? this.oElement.width : null;
+		$super();
+	},
+	
 	_paint	: function($super, fPercentComplete)
 	{
 		// Ensure we are using the latest width/height (in case some child elements have been added)
