@@ -128,7 +128,7 @@ Control_Tree_Node	= Class.create
 			
 			// Open
 			//this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: this.oChildrenList.getHeight()+'px'}, 1.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
-			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', false, true, 0.1, 'ease');
+			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', false, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
 		}
 		else
 		{
@@ -136,7 +136,7 @@ Control_Tree_Node	= Class.create
 			
 			// Close
 			//this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: '0px'}, 0.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
-			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', true, true, 0.1, 'ease');
+			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', true, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
 		}
 		this.oSlideFX.start();
 		if (!bAnimate)
@@ -225,5 +225,5 @@ Control_Tree_Node	= Class.create
 	}
 });
 
-Control_Tree_Node.SLIDE_ANIMATION_DURATION	= 0.5;
+Control_Tree_Node.SLIDE_ANIMATION_DURATION	= 0.05;
 Control_Tree_Node.NODE_INDENT_STEPPING_EM	= 2;
