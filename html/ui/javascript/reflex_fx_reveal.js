@@ -61,21 +61,21 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 			var sCleanedToken	= aDirectionTokens[i].toLowerCase().strip();
 			switch (sCleanedToken)
 			{
-				case 'up':
-					oDirection.up		= true;
-					oDirection.down		= false;
-					break;
-				case 'down':
+				case 'top':
 					oDirection.up		= false;
 					oDirection.down		= true;
 					break;
+				case 'bottom':
+					oDirection.up		= true;
+					oDirection.down		= false;
+					break;
 				case 'left':
-					oDirection.left		= true;
-					oDirection.right	= false;
+					oDirection.left		= false;
+					oDirection.right	= true;
 					break;
 				case 'right':
-					oDirection.left		= false;
-					oDirection.right	= true
+					oDirection.left		= true;
+					oDirection.right	= false;
 					break;
 			}
 		}
@@ -179,15 +179,6 @@ Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 	
 	return oDimensions;
 };
-
-Reflex_FX_Reveal.DIRECTION_UP			= 'up';
-Reflex_FX_Reveal.DIRECTION_DOWN			= 'down';
-Reflex_FX_Reveal.DIRECTION_LEFT			= 'left';
-Reflex_FX_Reveal.DIRECTION_RIGHT		= 'right';
-Reflex_FX_Reveal.DIRECTION_UPLEFT		= 'up-left';
-Reflex_FX_Reveal.DIRECTION_UPRIGHT		= 'up-right';
-Reflex_FX_Reveal.DIRECTION_DOWNLEFT		= 'down-left';
-Reflex_FX_Reveal.DIRECTION_DOWNRIGHT	= 'down-right';
 
 Reflex_FX_Reveal.DISPLAY_MODE_ROLLOUT	= 'reveal';
 Reflex_FX_Reveal.DISPLAY_MODE_SLIDE		= 'slide';
