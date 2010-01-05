@@ -140,7 +140,7 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		{
 			oTransitionStyle[sCSSProperty]	= Reflex_FX.transformCSSValue(this.oStyleDefinition[sCSSProperty].from, this.oStyleDefinition[sCSSProperty].to, fTransformationFactor);
 		}
-		alert("Element style updated with: " + oTransitionStyle.toSource());
+		//alert("Element style updated with: " + oTransitionStyle.toSource());
 		// /DEBUG
 		
 		$super(fPercentComplete);
