@@ -91,7 +91,7 @@ var Reflex_FX	= Class.create
 		this.iStartTime				= iCurrentTime - iCurrentlyTranspired;
 		this.iLastUpdateTime		= this.iStartTime;
 		
-		if (this.iDuration == 0)
+		if (this.iDuration == 0 || fStartOffset >= 1.0)
 		{
 			// Zero-length duration - skip straight to the end
 			this.end();
