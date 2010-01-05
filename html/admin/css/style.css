@@ -2313,6 +2313,12 @@ div.reflex-tree ul.reflex-tree-footer > li
 	display			: inline-block;
 }
 
+ul.reflex-tree-body > li.reflex-tree-node > ul.reflex-tree-node-columns
+{
+	/* Root Node */
+	display	: none;
+}
+
 ul.reflex-tree-node-columns > li.reflex-tree-node-column
 {
 	display			: inline-block;
