@@ -197,7 +197,7 @@ var Reflex_FX	= Class.create
 		
 		if (this.bReverse)
 		{
-			alert("Element style updated with: " + oTransitionStyle.toSource() + " with Style Definition "+this.oStyleDefinition.toSource());
+			alert("Element style updated with: " + oTransitionStyle.toSource() + " @ "+fTransitionComplete+" with Style Definition "+this.oStyleDefinition.toSource());
 			if (fTransitionComplete < 1 && fTransitionComplete > 0)
 			{
 				throw "Element style updated with: " + oTransitionStyle.toSource();
