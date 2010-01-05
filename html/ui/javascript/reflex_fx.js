@@ -116,6 +116,7 @@ var Reflex_FX	= Class.create
 	end		: function()
 	{
 		this._destruct();
+		this.iLastUpdateTime	= this.iStartTime + this.iDuration;
 		this._paint(1.0);
 		//alert('Animation Ended!');
 	},
@@ -127,7 +128,7 @@ var Reflex_FX	= Class.create
 	
 	isComplete	: function()
 	{
-		return (!this.isRunning() && this.iStartTime && this.getPercentComplete() == 1.0);
+		return (!this.isRunning() && this.iStartTime && this.getPercentComplete(false) == 1.0);
 	},
 	
 	_destruct	: function()
