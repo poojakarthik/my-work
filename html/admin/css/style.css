@@ -2334,11 +2334,11 @@ div.reflex-tree-node-children
 	position	: relative;
 }
 
-div.reflex-tree-node-children > ul
+/*div.reflex-tree-node-children > ul
 {
 	position	: absolute;
 	bottom		: 0px;
-}
+}*/
 
 div.reflex-tree-node-expand
 {
