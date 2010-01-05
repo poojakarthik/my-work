@@ -175,6 +175,7 @@ Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 	//alert('Positioned Absolutely @ [0, 0]');
 	
 	// Attach to the Body
+	// FIXME: This won't work, because the font size may have changed! -- Need to either copy calculated font size, or attach to real parent (could be messy)
 	document.body.appendChild(oElementClone);
 	
 	//alert('Attached to the Body');
