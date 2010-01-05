@@ -136,7 +136,7 @@ Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 	// HACKY HACKY HACKY HACKY
 	// Note: This is probably really slow
 	
-	alert("Calculating Element Dimensions");
+	alert("Calculating "+oElement.tagName+" Element Dimensions");
 	
 	// Clone the element
 	var oElementClone	= oElement.clone(true);
