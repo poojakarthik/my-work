@@ -128,7 +128,7 @@ Control_Tree_Node	= Class.create
 			
 			// Open
 			//this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: this.oChildrenList.getHeight()+'px'}, 1.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
-			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', false, true, 0.1, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});this.oChildrenListContainer.setStyle({height: null});}).bind(this));
+			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', false, true, 0.1, 'ease');
 		}
 		else
 		{
@@ -136,7 +136,7 @@ Control_Tree_Node	= Class.create
 			
 			// Close
 			//this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: '0px'}, 0.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
-			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', true, true, 0.1, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});this.oChildrenListContainer.setStyle({height: '0px'});}).bind(this));
+			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', true, true, 0.1, 'ease');
 		}
 		this.oSlideFX.start();
 		if (!bAnimate)
@@ -189,9 +189,9 @@ Control_Tree_Node	= Class.create
 				
 				oIconContainer.appendChild(this.oIconElement);
 				
-				oExpandContainer.observe('click', this.toggleExpanded.bind(this));
 				if (this.aChildren.length > 0)
 				{
+					oExpandContainer.observe('click', this.toggleExpanded.bind(this));
 					oExpandContainer.addClassName('reflex-tree-node-expand');
 					if (this.bExpanded)
 					{
