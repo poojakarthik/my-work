@@ -2346,7 +2346,6 @@ div.reflex-tree-node-expand.reflex-tree-node-expanded
 	background-image	: url("../img/template/tree_open.png");
 }
 
-div.reflex-tree-node-icon,
 div.reflex-tree-node-expand
 {
 	min-width	: 16px;
