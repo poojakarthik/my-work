@@ -105,7 +105,7 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 				break;
 		}
 		
-		alert(oStyleDefinition.toSource());
+		//alert(oStyleDefinition.toSource());
 		
 		//Reflex_Debug.asHTMLPopup(oStyleDefinition);
 		$super(oContainerElement, oStyleDefinition, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS);
