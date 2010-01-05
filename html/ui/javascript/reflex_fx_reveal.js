@@ -114,9 +114,10 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 	
 	_destruct	: function($super)
 	{
-		var fPercentComplete		= this.getPercentComplete(false);
-		this.oElement.style.height	= fPercentComplete < 1.0 ? this.oElement.style.height	: null;
-		this.oElement.style.width	= fPercentComplete < 1.0 ? this.oElement.style.width	: null;
+		var fPercentComplete			= this.getPercentComplete(false);
+		this.oElement.style.height		= fPercentComplete < 1.0 ? this.oElement.style.height	: null;
+		this.oElement.style.width		= fPercentComplete < 1.0 ? this.oElement.style.width	: null;
+		this.oElement.style.position	= fPercentComplete < 1.0 ? this.oElement.style.position	: null;
 		$super();
 	},
 	
