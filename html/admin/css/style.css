@@ -2346,7 +2346,7 @@ div.reflex-tree-node-expand.reflex-tree-node-expanded
 }
 
 div.reflex-tree-node-icon,
-div.reflex-tree-node-expand,
+div.reflex-tree-node-expand
 {
 	min-width	: 2em;
 	max-width	: 2em;
