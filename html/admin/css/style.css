@@ -2315,7 +2315,8 @@ div.reflex-tree ul.reflex-tree-footer > li
 
 ul.reflex-tree-node-columns > li.reflex-tree-node-column
 {
-	display	: inline-block;
+	display			: inline-block;
+	vertical-align	: top;
 }
 
 li.reflex-tree-node-label > div
