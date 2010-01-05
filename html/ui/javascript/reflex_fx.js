@@ -91,7 +91,7 @@ var Reflex_FX	= Class.create
 		this.iStartTime				= iCurrentTime - iCurrentlyTranspired;
 		this.iLastUpdateTime		= this.iStartTime;
 		
-		if (this.iDuration == 0 || fStartOffset >= 1.0)
+		if (this.iDuration == 0)
 		{
 			// Zero-length duration - skip straight to the end
 			this.end();
@@ -182,7 +182,8 @@ var Reflex_FX	= Class.create
 		//alert('Animation Painting!');
 		
 		// Get transformation factor
-		var fTransformationFactor	= this.fnTimingFunction(this.bReverse ? 1.0 - fPercentComplete : fPercentComplete);
+		fPercentComplete			= this.bReverse ? 1.0 - fPercentComplete : fPercentComplete;
+		var fTransformationFactor	= this.fnTimingFunction(fPercentComplete);
 		//alert("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete");
 		
 		// Update the Element's style
