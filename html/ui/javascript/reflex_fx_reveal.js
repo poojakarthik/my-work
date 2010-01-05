@@ -126,8 +126,8 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		// Ensure we are using the latest width/height (in case some child elements have been added)
 		// TODO: Do we want to interpolate the "from" values as well, to ensure a nice, smooth animation?
 		var oDimensions					= Reflex_FX_Reveal.calculateElementDimensions(this.oContainedElement);
-		this.oStyleDefinition.width.to	= oDimensions.width;
-		this.oStyleDefinition.height.to	= oDimensions.height;
+		this.oStyleDefinition.width.to	= oDimensions.width+'px';
+		this.oStyleDefinition.height.to	= oDimensions.height+'px';
 		
 		// DEBUG
 		// Get transformation factor
