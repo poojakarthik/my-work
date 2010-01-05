@@ -62,9 +62,9 @@ Reflex_FX_Shift	= Class.create(/* extends */Reflex_FX,
 		$super(oElement, oStyleDefinition, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS);
 	},
 	
-	start	: function($super, bReverseDirection, bResume)
+	start	: function($super, bReverseDirection, fStartOffset)
 	{
-		$super(bReverseDirection, bResume);
+		$super(bReverseDirection, fStartOffset);
 		//alert('Animation Started!' + (this.bReverseDirection ? ' IN REVERSE!!!!~~' : ''));
 	},
 	
