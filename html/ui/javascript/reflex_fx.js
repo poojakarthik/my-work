@@ -193,8 +193,12 @@ var Reflex_FX	= Class.create
 			oTransitionStyle[sCSSProperty]	= Reflex_FX.transformCSSValue(this.oStyleDefinition[sCSSProperty].from, this.oStyleDefinition[sCSSProperty].to, fTransformationFactor);
 		}
 		this.oElement.setStyle(oTransitionStyle);
-		
 		//alert("Element style updated with: " + oTransitionStyle.toSource());
+		
+		if (this.bReverse && (fTransitionComplete < 1 && fTransitionComplete > 0))
+		{
+			throw "Element style updated with: " + oTransitionStyle.toSource();
+		}
 		
 		// Has the transition finished?
 		if (Math.floor(fTransitionComplete) >= 1.0)
