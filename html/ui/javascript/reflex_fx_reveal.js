@@ -152,6 +152,8 @@ Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 	oElementClone.style.position	= 'absolute';
 	oElementClone.style.top			= 0;
 	oElementClone.style.left		= 0;
+	oElementClone.style.bottom		= null;
+	oElementClone.style.right		= null;
 	
 	//alert('Positioned Absolutely @ [0, 0]');
 	
