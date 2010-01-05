@@ -114,6 +114,12 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		$super(oContainerElement, oStyleDefinition, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS);
 	},
 	
+	start	: function($super, bReverse, fStartOffset)
+	{
+		this.oContainedElement.style.position	= fStartOffset > 0.0 ? 'absolute' : null;
+		$super(bReverse, fStartOffset);
+	},
+	
 	_destruct	: function($super)
 	{
 		var fPercentComplete					= this.getPercentComplete(false);

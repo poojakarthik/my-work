@@ -77,7 +77,7 @@ var Reflex_FX	= Class.create
 			
 			fResumeOffset	= Math.max(0, Math.min(1, (iCurrentlyTranspired / this.iDuration)));
 		}
-		alert("Resuming @ "+fResumeOffset+(bReverse ? ' IN REVERSE!' : ''));
+		//alert("Resuming @ "+fResumeOffset+(bReverse ? ' IN REVERSE!' : ''));
 		this.start(bReverse, fResumeOffset);
 	},
 	
