@@ -167,20 +167,18 @@ var Reflex_FX	= Class.create
 	getPercentComplete	: function(bSetLastUpdateTime)
 	{
 		bSetLastUpdateTime	= (bSetLastUpdateTime || bSetLastUpdateTime === null || bSetLastUpdateTime === undefined) ? true : false;
-		if (bSetLastUpdateTime)
+		if (this.iStartTime)
 		{
-			this.iLastUpdateTime	= (new Date()).getTime();
+			this.iLastUpdateTime	= bSetLastUpdateTime ? (new Date()).getTime() : this.iLastUpdateTime;
+			
+			if (this.iLastUpdateTime)
+			{
+				var iTranspired			= this.iLastUpdateTime - this.iStartTime;
+				return Math.min(1, (iTranspired / this.iDuration));
+			}
 		}
 		
-		if (this.iStartTime && this.iLastUpdateTime)
-		{
-			var iTranspired			= this.iLastUpdateTime - this.iStartTime;
-			return Math.min(1, (iTranspired / this.iDuration));
-		}
-		else
-		{
-			return 0;
-		}
+		return 0;
 	},
 	
 	_paint	: function(fPercentComplete)
