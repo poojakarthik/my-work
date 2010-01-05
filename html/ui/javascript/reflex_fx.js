@@ -83,18 +83,12 @@ var Reflex_FX	= Class.create
 	start	: function(bReverse, fStartOffset)
 	{
 		this.bReverse	= bReverse ? true : false;
+		fStartOffset	= fStartOffset ? Math.max(0, Math.min(1, fStartOffset)) : 0;
 		
 		var iCurrentTime			= (new Date()).getTime();
-		var iCurrentlyTranspired	= 0;
-		if (bResume && this.iLastUpdateTime && this.iStartTime)
-		{
-			// Resuming the last animation
-			var iPreviousTranspired		= this.iLastUpdateTime - this.iStartTime;
-			var fPreviouslyCompleted	= Math.min(1, (iPreviousTranspired / this.iDuration));
-			iCurrentlyTranspired		= bReverse ? iPreviousTranspired : this.iDuration - iPreviousTranspired;
-		}
-		this.iStartTime			= iCurrentTime - iCurrentlyTranspired;
-		this.iLastUpdateTime	= this.iStartTime;
+		var iCurrentlyTranspired	= Math.ceil(fStartOffset * this.iDuration);
+		this.iStartTime				= iCurrentTime - iCurrentlyTranspired;
+		this.iLastUpdateTime		= this.iStartTime;
 		
 		if (this.iDuration == 0)
 		{
