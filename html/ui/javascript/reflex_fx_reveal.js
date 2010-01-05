@@ -9,7 +9,7 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 	 * @param {Object} $super
 	 * @param {Object} oElement
 	 * @param {Object} sDirection
-	 * @param {Object} sDockMode
+	 * @param {Object} sDisplayMode
 	 * @param {Object} bFade
 	 * @param {Object} bUseParentAsContainer	TRUE: Use the Element's parent as the container; FALSE: Create a Container Element
 	 * @param {Object} fDuration
@@ -17,7 +17,7 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 	 * @param {Object} fnOnCompleteCallback
 	 * @param {Object} iFPS
 	 */
-	initialize	: function($super, oElement, sDirection, sDockMode, bFade, bUseParentAsContainer, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS)
+	initialize	: function($super, oElement, sOrigin, sDisplayMode, bFade, bUseParentAsContainer, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS)
 	{
 		var oContainerElement;
 		var oParent	= oElement.up();
@@ -60,10 +60,59 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		}
 		
 		// Direction
-		// TODO
+		var aDirectionTokens	= sDirection ? String(sDirection).split('-') : [];
+		var oDirection			= {};
+		for (var i = 0, j = aDirectionTokens.length; i < j; i++)
+		{
+			var sCleanedToken	= aDirectionTokens[i].toLowerCase().strip();
+			switch (sCleanedToken)
+			{
+				case 'up':
+					oDirection.up		= true;
+					oDirection.down		= false;
+					break;
+				case 'down':
+					oDirection.up		= false;
+					oDirection.down		= true;
+					break;
+				case 'left':
+					oDirection.left		= true;
+					oDirection.right	= false;
+					break;
+				case 'right':
+					oDirection.left		= false;
+					oDirection.right	= true
+					break;
+			}
+		}
 		
-		// Dock Modes
-		// TODO
+		if (oDirection.up || oDirection.down)
+		{
+			oStyleDefinition.height	= {from: '0px', to: oDimensions.height+'px'};
+		}
+		if (oDirection.left || oDirection.right)
+		{
+			oStyleDefinition.width	= {from: '0px', to: oDimensions.width+'px'};
+		}
+		
+		// Display Modes
+		switch (sDirection.toLowerCase().strip())
+		{
+			case Reflex_FX_Reveal.DISPLAY_MODE_ROLLOUT:
+				this.oContainedElement.style.top	= oDirection.top	? '0px' : null;
+				this.oContainedElement.style.bottom	= oDirection.bottom	? '0px' : null;
+				this.oContainedElement.style.left	= oDirection.left	? '0px' : null;
+				this.oContainedElement.style.right	= oDirection.right	? '0px' : null;
+				break;
+			
+			default:
+			case Reflex_FX_Reveal.DISPLAY_MODE_SLIDE:
+				this.oContainedElement.style.top	= oDirection.top	? null : '0px';
+				this.oContainedElement.style.bottom	= oDirection.bottom	? null : '0px';
+				this.oContainedElement.style.left	= oDirection.left	? null : '0px';
+				this.oContainedElement.style.right	= oDirection.right	? null : '0px';
+				break;
+		}
 		
 		//Reflex_Debug.asHTMLPopup(oStyleDefinition);
 		$super(oContainerElement, oStyleDefinition, fDuration, mTimingFunction, fnOnCompleteCallback, iFPS);
@@ -108,14 +157,14 @@ Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 	return oDimensions;
 };
 
-Reflex_FX_Reveal.REVEAL_DIRECTION_UP		= 'up';
-Reflex_FX_Reveal.REVEAL_DIRECTION_DOWN		= 'down';
-Reflex_FX_Reveal.REVEAL_DIRECTION_LEFT		= 'left';
-Reflex_FX_Reveal.REVEAL_DIRECTION_RIGHT		= 'right';
-Reflex_FX_Reveal.REVEAL_DIRECTION_UPLEFT	= 'up-left';
-Reflex_FX_Reveal.REVEAL_DIRECTION_UPRIGHT	= 'up-right';
-Reflex_FX_Reveal.REVEAL_DIRECTION_DOWNLEFT	= 'down-left';
-Reflex_FX_Reveal.REVEAL_DIRECTION_DOWNRIGHT	= 'down-right';
+Reflex_FX_Reveal.DIRECTION_UP			= 'up';
+Reflex_FX_Reveal.DIRECTION_DOWN			= 'down';
+Reflex_FX_Reveal.DIRECTION_LEFT			= 'left';
+Reflex_FX_Reveal.DIRECTION_RIGHT		= 'right';
+Reflex_FX_Reveal.DIRECTION_UPLEFT		= 'up-left';
+Reflex_FX_Reveal.DIRECTION_UPRIGHT		= 'up-right';
+Reflex_FX_Reveal.DIRECTION_DOWNLEFT		= 'down-left';
+Reflex_FX_Reveal.DIRECTION_DOWNRIGHT	= 'down-right';
 
-Reflex_FX_Reveal.REVEAL_MODE_REVEAL	= 'reveal';
-Reflex_FX_Reveal.REVEAL_MODE_REVEAL	= 'slide';
+Reflex_FX_Reveal.DISPLAY_MODE_ROLLOUT	= 'reveal';
+Reflex_FX_Reveal.DISPLAY_MODE_SLIDE		= 'slide';
