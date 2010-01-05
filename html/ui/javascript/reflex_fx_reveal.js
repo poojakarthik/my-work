@@ -171,7 +171,7 @@ Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 	// Get calculated dimensions
 	var oDimensions	= oElementClone.getDimensions();
 	
-	//alert(oElement.tagName+' dimensions calculated as '+oDimensions.width+'x'+oDimensions.height);
+	alert(oElement.tagName+' dimensions calculated as '+oDimensions.width+'x'+oDimensions.height+' (vs '+oElement.getWidth()+'x'+oElement.getHeight()+')');
 	
 	//throw "BREAK";
 	
