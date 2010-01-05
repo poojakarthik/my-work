@@ -122,8 +122,8 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		var fPercentComplete	= this.getPercentComplete(false);
 		fPercentComplete		= this.bReverse ? 1.0 - fPercentComplete : fPercentComplete;
 		
-		this.oElement.style.height				= (fPercentComplete < 1.0 && this.oStyleDefinition.height) ? this.oElement.style.height		: null;
-		this.oElement.style.width				= (fPercentComplete < 1.0 && this.oStyleDefinition.width) ? this.oElement.style.width		: null;
+		this.oElement.style.height				= (fPercentComplete < 1.0) ? this.oElement.style.height		: null;
+		this.oElement.style.width				= (fPercentComplete < 1.0) ? this.oElement.style.width		: null;
 		this.oContainedElement.style.position	= (fPercentComplete < 1.0) ? 'absolute'						: null;
 		
 		$super();
@@ -134,8 +134,14 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		// Ensure we are using the latest width/height (in case some child elements have been added)
 		// TODO: Do we want to interpolate the "from" values as well, to ensure a nice, smooth animation?
 		var oDimensions					= Reflex_FX_Reveal.calculateElementDimensions(this.oContainedElement);
-		this.oStyleDefinition.width.to	= oDimensions.width+'px';
-		this.oStyleDefinition.height.to	= oDimensions.height+'px';
+		if (this.oStyleDefinition.width)
+		{
+			this.oStyleDefinition.width.to	= oDimensions.width+'px';
+		}
+		if (this.oStyleDefinition.height)
+		{
+			this.oStyleDefinition.height.to	= oDimensions.height+'px';
+		}
 		
 		$super(fPercentComplete);
 		//alert("Transformation Factor: " + this.fnTimingFunction(this.bReverseDirection ? 1.0 - fPercentComplete : fPercentComplete) + " @ " + (fPercentComplete * 100) + "% complete");
