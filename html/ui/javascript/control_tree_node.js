@@ -118,6 +118,10 @@ Control_Tree_Node	= Class.create
 		{
 			oPercentComplete	= this.oSlideFX.cancel();
 		}
+		else
+		{
+			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', false, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
+		}
 		
 		this.oChildrenList.setStyle({position: 'static'});
 		var sHeight	= this.oChildrenList.getHeight();
@@ -125,20 +129,19 @@ Control_Tree_Node	= Class.create
 		if (this.bExpanded)
 		{
 			this.oElement.addClassName('reflex-tree-node-expanded');
+			this.oSlideFX.resume(false);
 			
 			// Open
-			//this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: this.oChildrenList.getHeight()+'px'}, 1.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
-			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', false, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
+			//this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', false, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
 		}
 		else
 		{
 			this.oElement.removeClassName('reflex-tree-node-expanded');
+			this.oSlideFX.resume(true);
 			
 			// Close
-			//this.oSlideFX	= new Reflex_FX_Shift(this.oChildrenListContainer, null, null, {height: '0px'}, 0.0, Control_Tree_Node.SLIDE_ANIMATION_DURATION * oPercentComplete, 'ease', (function(){this.oChildrenList.setStyle({position: 'static'});}).bind(this));
-			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', true, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
+			//this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', true, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
 		}
-		this.oSlideFX.start();
 		if (!bAnimate)
 		{
 			this.oSlideFX.end();
@@ -223,5 +226,5 @@ Control_Tree_Node	= Class.create
 	}
 });
 
-Control_Tree_Node.SLIDE_ANIMATION_DURATION	= 1.0;
+Control_Tree_Node.SLIDE_ANIMATION_DURATION	= 0.5;
 Control_Tree_Node.NODE_INDENT_STEPPING_EM	= 2;
