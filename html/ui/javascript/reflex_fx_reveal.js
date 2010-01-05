@@ -116,7 +116,7 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 	
 	start	: function($super, bReverse, fStartOffset)
 	{
-		this.oContainedElement.style.position	= fStartOffset > 0.0 ? 'absolute' : null;
+		//this.oContainedElement.style.position	= fStartOffset > 0.0 ? 'absolute' : null;
 		$super(bReverse, fStartOffset);
 	},
 	
