@@ -2343,7 +2343,6 @@ div.reflex-tree-node-expand
 
 div.reflex-tree-node-expand.reflex-tree-node-expanded
 {
-	display				: inline-block;
 	background-image	: url("../img/template/tree_open.png");
 }
 
