@@ -129,20 +129,6 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 		this.oStyleDefinition.width.to	= oDimensions.width+'px';
 		this.oStyleDefinition.height.to	= oDimensions.height+'px';
 		
-		// DEBUG
-		// Get transformation factor
-		var fTransformationFactor	= this.fnTimingFunction(this.bReverse ? 1.0 - fPercentComplete : fPercentComplete);
-		//alert("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete");
-		
-		// Update the Element's style
-		var oTransitionStyle	= {};
-		for (sCSSProperty in this.oStyleDefinition)
-		{
-			oTransitionStyle[sCSSProperty]	= Reflex_FX.transformCSSValue(this.oStyleDefinition[sCSSProperty].from, this.oStyleDefinition[sCSSProperty].to, fTransformationFactor);
-		}
-		//alert("Element style updated with: " + oTransitionStyle.toSource());
-		// /DEBUG
-		
 		$super(fPercentComplete);
 		//alert("Transformation Factor: " + this.fnTimingFunction(this.bReverseDirection ? 1.0 - fPercentComplete : fPercentComplete) + " @ " + (fPercentComplete * 100) + "% complete");
 	}
