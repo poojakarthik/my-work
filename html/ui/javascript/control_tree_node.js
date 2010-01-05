@@ -184,9 +184,7 @@ Control_Tree_Node	= Class.create
 					oIconContainer		= document.createElement('div'),
 					oTextElement		= document.createElement('div');
 				
-				oExpandContainer.addClassName('reflex-tree-node-expand');
 				oIconContainer.addClassName('reflex-tree-node-icon');
-				
 				oIconContainer.appendChild(this.oIconElement);
 				
 				if (this.aChildren.length > 0)
