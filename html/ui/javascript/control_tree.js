@@ -88,6 +88,8 @@ Control_Tree	= Class.create
 		{
 			var	oColumn	= document.createElement('li');
 			oColumn.innerHTML	= this.oColumns[sName].sTitle.escapeHTML();
+			oColumn.addClassName('reflex-tree-header-column');
+			oColumn.addClassName(this.oColumns[sName].sClassName);
 			this.oHeader.appendChild(oColumn);
 		}
 		
