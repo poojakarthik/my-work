@@ -182,8 +182,8 @@ var Reflex_FX	= Class.create
 		//alert('Animation Painting!');
 		
 		// Get transformation factor
-		fPercentComplete			= this.bReverse ? 1.0 - fPercentComplete : fPercentComplete;
-		var fTransformationFactor	= this.fnTimingFunction(fPercentComplete);
+		var fTransitionComplete		= this.bReverse ? 1.0 - fPercentComplete : fPercentComplete;
+		var fTransformationFactor	= this.fnTimingFunction(fTransitionComplete);
 		//alert("Transformation Factor: " + fTransformationFactor + " @ " + (fPercentComplete * 100) + "% complete");
 		
 		// Update the Element's style
@@ -197,7 +197,7 @@ var Reflex_FX	= Class.create
 		//alert("Element style updated with: " + oTransitionStyle.toSource());
 		
 		// Has the transition finished?
-		if (Math.floor(fPercentComplete) >= 1.0)
+		if (Math.floor(fTransitionComplete) >= 1.0)
 		{
 			this._destruct();
 			//alert("Transition Complete!");
