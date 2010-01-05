@@ -85,6 +85,7 @@ var Reflex_FX	= Class.create
 	{
 		this.bReverse	= bReverse ? true : false;
 		fStartOffset	= fStartOffset ? Math.max(0, Math.min(1, fStartOffset)) : 0;
+		fStartOffset	= this.bReverse ? 1 - fStartOffset : fStartOffset;
 		
 		var iCurrentTime			= (new Date()).getTime();
 		var iCurrentlyTranspired	= Math.ceil(fStartOffset * this.iDuration);
