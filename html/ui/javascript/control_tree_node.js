@@ -205,6 +205,8 @@ Control_Tree_Node	= Class.create
 				oColumnElement.appendChild(oIconContainer);
 				oColumnElement.appendChild(oTextElement);
 				
+				oColumnElement.addClassName('reflex-tree-node-label');
+				
 				// Must go first (doesn't make sense anywhere else)
 				this.oColumnsList.insertBefore(oColumnElement, this.oColumnsList.firstDescendant());
 			}
