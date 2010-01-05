@@ -162,8 +162,6 @@ Control_Tree_Node	= Class.create
 	
 	paint	: function(oColumns)
 	{
-		
-		
 		this.oVisibleColumns	= oColumns ? oColumns : this.oVisibleColumns;
 		
 		// Purge existing Columns
@@ -178,7 +176,7 @@ Control_Tree_Node	= Class.create
 			if (sName === 'label')
 			{
 				// Label Column
-				oColumnElement.setStyle({paddingLeft: (this.getNodeDepth() * Control_Tree_Node.NODE_INDENT_STEPPING_EM) + 'em'});
+				oColumnElement.setStyle({paddingLeft: (Math.max(0, this.getNodeDepth() - 1) * Control_Tree_Node.NODE_INDENT_STEPPING_EM) + 'em'});
 				
 				var	oExpandContainer	= document.createElement('div'),
 					oIconContainer		= document.createElement('div'),
