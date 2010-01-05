@@ -165,6 +165,8 @@ Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 	
 	alert('Dimensions calculated as '+oDimensions.width+'x'+oDimensions.height);
 	
+	throw "BREAK";
+	
 	// Remove clone from DOM
 	oElementClone.remove();
 	
