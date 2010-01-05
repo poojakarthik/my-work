@@ -123,9 +123,6 @@ Control_Tree_Node	= Class.create
 			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', false, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
 		}
 		
-		this.oChildrenList.setStyle({position: 'static'});
-		var sHeight	= this.oChildrenList.getHeight();
-		//this.oChildrenList.setStyle({position: 'absolute'});
 		if (this.bExpanded)
 		{
 			this.oElement.addClassName('reflex-tree-node-expanded');
