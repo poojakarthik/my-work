@@ -2342,7 +2342,7 @@ div.reflex-tree-node-expand
 	background-image	: url("../img/template/tree_closed.png");
 }
 
-li.reflex-tree-node.reflex-tree-node-expanded > div.reflex-tree-node-columns > reflex-tree-node-label > div.reflex-tree-node-expand
+li.reflex-tree-node.reflex-tree-node-expanded > div.reflex-tree-node-columns > li.reflex-tree-node-label > div.reflex-tree-node-expand
 {
 	background-image	: url("../img/template/tree_open.png");
 }
