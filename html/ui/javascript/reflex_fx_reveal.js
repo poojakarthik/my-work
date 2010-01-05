@@ -138,6 +138,8 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 
 Reflex_FX_Reveal.calculateElementDimensions	= function(oElement)
 {
+	return oElement.getDimensions();
+	
 	// HACKY HACKY HACKY HACKY
 	// Note: This is probably really slow
 	
