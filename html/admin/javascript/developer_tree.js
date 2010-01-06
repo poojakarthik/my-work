@@ -119,7 +119,5 @@ Developer_Tree._addTreeNode	= function(sName, oDefinition)
 	}
 	oTreeNode.setData(oData);
 	
-	oTreeNode.setIcon();
-	
 	return oTreeNode;
 };

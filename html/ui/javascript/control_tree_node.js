@@ -49,12 +49,12 @@ Control_Tree_Node	= Class.create
 			alert("Icon: "+sIcon);
 			this.oIconElement.src			= String(sIcon);
 			this.oIconElement.title			= sTitle ? String(sTitle) : '';
-			this.oIconElement.style.display	= null;
+			this.oIconElement.show();
 		}
 		else
 		{
 			alert("No Icon!");
-			this.oIconElement.style.display	= 'none';
+			this.oIconElement.hide();
 			this.oIconElement.src	= '';
 			this.oIconElement.title	= '';
 		}
