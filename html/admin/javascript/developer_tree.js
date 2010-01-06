@@ -10,11 +10,11 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 		this.oTreePanel.setColumns(	{
 										'label'			:	{
 																sTitle	: 'File',
-																fWidth	: 50
+																fWidth	: 65
 															},
 										'size'			:	{
 																sTitle	: 'Size',
-																fWidth	: 25
+																fWidth	: 10
 															},
 										'modified-on'	:	{
 																sTitle	: 'Modified On',
