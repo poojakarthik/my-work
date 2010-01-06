@@ -2310,6 +2310,7 @@ div.reflex-tree ul.reflex-tree-header > li,
 div.reflex-tree ul.reflex-tree-footer > li
 {
 	display			: inline-block;
+	overflow		: hidden;
 }
 
 div.reflex-tree ul.reflex-tree-header > li > span,
@@ -2351,18 +2352,18 @@ div.reflex-tree-node-children
 	bottom		: 0px;
 }*/
 
-div.reflex-tree-node-expand
+span.reflex-tree-node-expand
 {
 	display				: inline-block;
 	background-image	: url("../img/template/tree_closed.png");
 }
 
-li.reflex-tree-node.reflex-tree-node-expanded > ul.reflex-tree-node-columns > li.reflex-tree-node-label > div.reflex-tree-node-expand
+li.reflex-tree-node.reflex-tree-node-expanded > ul.reflex-tree-node-columns > li.reflex-tree-node-label > span.reflex-tree-node-expand
 {
 	background-image	: url("../img/template/tree_open.png");
 }
 
-div.reflex-tree-node-expand
+span.reflex-tree-node-expand
 {
 	min-width	: 16px;
 	max-width	: 16px;
@@ -2373,7 +2374,7 @@ div.reflex-tree-node-expand
 	height		: 16px;
 }
 
-div.reflex-tree-node-icon img
+span.reflex-tree-node-icon img
 {
 	vertical-align	: middle;
 	text-align		: center;
