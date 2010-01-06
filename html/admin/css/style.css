@@ -2343,11 +2343,10 @@ div.reflex-tree-node-children
 	position	: relative;
 }
 
-/*div.reflex-tree-node-children > ul
+div.reflex-tree-node-children > ul
 {
-	position	: absolute;
-	bottom		: 0px;
-}*/
+	width	: 100%;
+}
 
 span.reflex-tree-node-expand
 {
