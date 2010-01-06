@@ -1,11 +1,11 @@
 var Employee	= Class.create
 ({
-	initialize	: function(iEmployeeId, fncCallback)
+	initialize	: function(iEmployeeId, fnCallback)
 	{
-		if (intEmployeeId)
+		if (iEmployeeId)
 		{
 			// Load via JSON
-			this._load(iEmployeeId, fncCallback)
+			this._load(iEmployeeId, fnCallback)
 		}
 		else
 		{
