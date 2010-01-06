@@ -29,11 +29,11 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 																	'template'	:	{
 																						_children	:	{
 																											'tree_open.png'		:	{
-																																		icon	: '../admin/img/template/mime/png_small.png',
+																																		_icon	: '../admin/img/template/mime/png_small.png',
 																																		size	: '1KB'
 																																	},
 																											'tree_closed.png'	:	{
-																																		icon	: '../admin/img/template/mime/png_small.png',
+																																		_icon	: '../admin/img/template/mime/png_small.png',
 																																		size	: '1KB'
 																																	},
 																										}
@@ -48,8 +48,8 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 																																	_children	:	{
 																																						'handler'	:	{
 																																											_children	:	{
-																																																'tree_closed.pngApplication_Handler_Developer.php'	:	{
-																																																															icon	: '../admin/img/template/mime/text_small.png',
+																																																'Application_Handler_Developer.php'	:	{
+																																																															_icon	: '../admin/img/template/mime/text_small.png',
 																																																															size	: '4KB'
 																																																														},
 																																															}
@@ -96,12 +96,18 @@ Developer_Tree._addTreeNode	= function(sName, oDefinition)
 				oTreeNode.addChild(Developer_Tree._addTreeNode(sChildName, oDefinition._children[sChildName]));
 			}
 		}
+		else if (sProperty == '_icon')
+		{
+			oTreeNode.setIcon(oDefinition._icon);
+		}
 		else
 		{
 			oData[sProperty]	= oDefinition[sProperty];
 		}
 	}
 	oTreeNode.setData(oData);
+	
+	oTreeNode.setIcon();
 	
 	return oTreeNode;
 };
