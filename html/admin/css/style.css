@@ -2317,13 +2317,13 @@ ul.reflex-tree-node-columns > li.reflex-tree-node-column
 
 ul.reflex-tree-node-columns > li.reflex-tree-node-column:nth-child(n+2) > span
 {
-	border-left	: 1px dotted #ccc;
+	border-left	: 1px dotted #3f3f3f;
 }
 
 div.reflex-tree ul.reflex-tree-header
 {
-	border-top		: 1px solid #ccc;
-	border-bottom	: 1px solid #ccc;
+	border-top		: 1px solid #3f3f3f;
+	border-bottom	: 1px solid #111;
 	
 	font-weight			: bold;
 	color				: #eee;
@@ -2339,7 +2339,7 @@ div.reflex-tree ul.reflex-tree-footer > li > span
 div.reflex-tree ul.reflex-tree-header > li:nth-child(n+2) > span,
 div.reflex-tree ul.reflex-tree-footer > li:nth-child(n+2) > span
 {
-	border-left	: 1px solid #ccc;
+	border-left	: 1px solid #3f3f3f;
 }
 
 ul.reflex-tree-body > li.reflex-tree-node > ul.reflex-tree-node-columns
