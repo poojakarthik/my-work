@@ -184,7 +184,7 @@ Control_Tree_Node	= Class.create
 				oIconContainer.addClassName('reflex-tree-node-icon');
 				oIconContainer.appendChild(this.oIconElement);
 				
-				oExpandContainer.setStyle({paddingLeft: (Math.max(0, this.getNodeDepth() - 1) * Control_Tree_Node.NODE_INDENT_STEPPING_EM) + 'em'});
+				oExpandContainer.setStyle({marginLeft: (Math.max(0, this.getNodeDepth() - 1) * Control_Tree_Node.NODE_INDENT_STEPPING_EM) + 'em'});
 				if (this.aChildren.length > 0)
 				{
 					oExpandContainer.observe('click', this.toggleExpanded.bind(this));
