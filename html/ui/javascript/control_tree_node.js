@@ -124,24 +124,20 @@ Control_Tree_Node	= Class.create
 		}
 		else
 		{
-			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', false, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
+			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', true, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
 		}
 		
 		if (this.bExpanded)
 		{
+			// Open
 			this.oElement.addClassName('reflex-tree-node-expanded');
 			this.oSlideFX.resume(false);
-			
-			// Open
-			//this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', false, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
 		}
 		else
 		{
+			// Close
 			this.oElement.removeClassName('reflex-tree-node-expanded');
 			this.oSlideFX.resume(true);
-			
-			// Close
-			//this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', true, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
 		}
 		if (!bAnimate)
 		{
