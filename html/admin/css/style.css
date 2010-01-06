@@ -2312,6 +2312,7 @@ ul.reflex-tree-node-columns > li.reflex-tree-node-column
 {
 	display			: inline-block;
 	overflow		: hidden;
+	whitespace		: nowrap;
 }
 
 div.reflex-tree ul.reflex-tree-header > li > span,
