@@ -44,6 +44,7 @@ Control_Tree_Node	= Class.create
 	
 	setIcon	: function(sIcon, sTitle)
 	{
+		alert("Icon: "+sIcon);
 		if (sIcon)
 		{
 			this.oIconElement.src			= String(sIcon);
