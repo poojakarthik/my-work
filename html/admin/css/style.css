@@ -2353,6 +2353,8 @@ span.reflex-tree-node-expand
 	/* Using padding instead of width/height because padding will override the span collapse */
 	padding-top		: 16px;
 	padding-left	: 16px;
+	
+	margin-right	: 0.25em;
 }
 
 span.reflex-tree-node-expandable
@@ -2373,6 +2375,8 @@ span.reflex-tree-node-icon img
 	
 	max-width		: 16px;
 	max-height		: 16px;
+	
+	margin-right	: 0.25em;
 }
 
 /******************************************************************************/
