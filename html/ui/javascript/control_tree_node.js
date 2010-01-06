@@ -27,6 +27,7 @@ Control_Tree_Node	= Class.create
 		// Set Data
 		this.setData(oData);
 		this.setExpanded(false, false);
+		this.setIcon();
 	},
 	
 	setData	: function(oData)
