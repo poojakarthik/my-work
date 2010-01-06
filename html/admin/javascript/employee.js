@@ -1,6 +1,6 @@
 var Employee	= Class.create
 ({
-	initialize	: function(intEmployeeId, fncCallback)
+	initialize	: function(iEmployeeId, fncCallback)
 	{
 		if (intEmployeeId)
 		{
