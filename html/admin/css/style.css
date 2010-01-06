@@ -2350,11 +2350,22 @@ div.reflex-tree-node-children > ul
 
 span.reflex-tree-node-expand
 {
+	min-width	: 16px;
+	max-width	: 16px;
+	width		: 16px;
+	
+	min-height	: 16px;
+	max-height	: 16px;
+	height		: 16px;
+}
+
+span.reflex-tree-node-expandable
+{
 	display				: inline-block;
 	background-image	: url("../img/template/tree_closed.png");
 }
 
-li.reflex-tree-node.reflex-tree-node-expanded > ul.reflex-tree-node-columns > li.reflex-tree-node-label > span.reflex-tree-node-expand
+li.reflex-tree-node.reflex-tree-node-expanded > ul.reflex-tree-node-columns > li.reflex-tree-node-label > span.reflex-tree-node-expandable
 {
 	background-image	: url("../img/template/tree_open.png");
 }
