@@ -108,9 +108,9 @@ Developer_Tree._addTreeNode	= function(sName, oDefinition)
 		}
 		else if (sProperty == '_icon')
 		{
-			alert("Setting Icon to "+oDefinition._icon);
+			//alert("Setting Icon to "+oDefinition._icon);
 			oTreeNode.setIcon(oDefinition._icon);
-			alert("Icon is "+oTreeNode.oIconElement.src);
+			//alert("Icon is "+oTreeNode.oIconElement.src);
 		}
 		else
 		{
