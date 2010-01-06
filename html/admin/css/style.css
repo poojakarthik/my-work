@@ -2320,6 +2320,16 @@ ul.reflex-tree-node-columns > li.reflex-tree-node-column:nth-child(n+2) > span
 	border-left	: 1px dotted #ccc;
 }
 
+div.reflex-tree ul.reflex-tree-header
+{
+	border-top		: 1px solid #ccc;
+	border-bottom	: 1px solid #ccc;
+	
+	font-weight			: bold;
+	color				: #eee;
+	background-image	: url(../img/template/background.png);
+}
+
 div.reflex-tree ul.reflex-tree-header > li > span,
 div.reflex-tree ul.reflex-tree-footer > li > span
 {
