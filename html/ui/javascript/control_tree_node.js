@@ -178,9 +178,9 @@ Control_Tree_Node	= Class.create
 			{
 				// Label Column
 				var	oInsetElement		= document.createElement('span'),
-					oExpandContainer	= document.createElement('div'),
-					oIconContainer		= document.createElement('div'),
-					oTextElement		= document.createElement('div');
+					oExpandContainer	= document.createElement('span'),
+					oIconContainer		= document.createElement('span'),
+					oTextElement		= document.createElement('span');
 				
 				oIconContainer.addClassName('reflex-tree-node-icon');
 				oIconContainer.appendChild(this.oIconElement);
