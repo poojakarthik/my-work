@@ -86,6 +86,16 @@ Developer_Tree._addTreeNode	= function(sName, oDefinition)
 	var	oData		=	{
 							label	: sName
 						};
+	
+	if (oDefinition._children)
+	{
+		oTreeNode.setIcon('../admin/img/template/folder.png');
+	}
+	else
+	{
+		oTreeNode.setIcon('../admin/img/template/mime/blank_small.png');
+	}
+	
 	for (sProperty in oDefinition)
 	{
 		//alert("Adding '"+sLabel+"'");
