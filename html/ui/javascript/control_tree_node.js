@@ -46,19 +46,19 @@ Control_Tree_Node	= Class.create
 	{
 		if (sIcon)
 		{
-			alert("Icon: "+sIcon);
+			//alert("Icon: "+sIcon);
 			this.oIconElement.src			= String(sIcon);
 			this.oIconElement.title			= sTitle ? String(sTitle) : '';
 			this.oIconElement.show();
 		}
 		else
 		{
-			alert("No Icon!");
+			//alert("No Icon!");
 			this.oIconElement.hide();
 			this.oIconElement.src	= '';
 			this.oIconElement.title	= '';
 		}
-		alert("Icon updated to: "+this.oIconElement.src);
+		//alert("Icon updated to: "+this.oIconElement.src);
 	},
 	
 	getElement	: function()
@@ -232,4 +232,4 @@ Control_Tree_Node	= Class.create
 
 Control_Tree_Node.SLIDE_ANIMATION_DURATION	= 0.1;
 //Control_Tree_Node.SLIDE_ANIMATION_DURATION	= 1.0;
-Control_Tree_Node.NODE_INDENT_STEPPING_EM	= 1.5;
+Control_Tree_Node.NODE_INDENT_STEPPING_EM	= 1;
