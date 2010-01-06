@@ -143,6 +143,10 @@ Reflex_FX_Reveal	= Class.create(/* extends */Reflex_FX,
 			this.oStyleDefinition.height.to		= oDimensions.height+'px';
 		}
 		
+		var fPercentComplete					= this.getPercentComplete(false);
+		fPercentComplete						= this.bReverse ? 1.0 - fPercentComplete : fPercentComplete;
+		this.oContainedElement.style.position	= (fPercentComplete < 1.0) ? 'absolute' : null;
+		
 		$super(fPercentComplete);
 		//alert("Transformation Factor: " + this.fnTimingFunction(this.bReverseDirection ? 1.0 - fPercentComplete : fPercentComplete) + " @ " + (fPercentComplete * 100) + "% complete");
 	}
