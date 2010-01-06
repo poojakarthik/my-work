@@ -23,21 +23,42 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 									});
 		
 		// Add some Tree Data
-		var	oTreeData	=	{
+		var oTreeData	=	{
 								'img'	:	{
-												'template'	:	{
-																	'tree_open.png'		: {},
-																	'tree_closed.png'	: {}
+												_children	:	{
+																	'template'	:	{
+																						_children	:	{
+																											'tree_open.png'		:	{
+																																		icon	: '../admin/img/template/mime/png_small.png',
+																																		size	: '1KB'
+																																	},
+																											'tree_closed.png'	:	{
+																																		icon	: '../admin/img/template/mime/png_small.png',
+																																		size	: '1KB'
+																																	},
+																										}
+																					}
 																}
 											},
 								'admin'	:	{
-												'classes':	{
-																'application'	:	{
-																						'handler':	{
-																										'Application_Handler_Developer.php'	: {}
-																									}
+												_children	:	{
+																	'classes'	:	{
+																						_children	:	{
+																											'application'	:	{
+																																	_children	:	{
+																																						'handler'	:	{
+																																											_children	:	{
+																																																'tree_closed.pngApplication_Handler_Developer.php'	:	{
+																																																															icon	: '../admin/img/template/mime/text_small.png',
+																																																															size	: '4KB'
+																																																														},
+																																															}
+																																										}
+																																					}
+																																}
+																										}
 																					}
-															}
+																}
 											}
 							};
 		
@@ -58,15 +79,29 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 	}
 });
 
-Developer_Tree._addTreeNode	= function(sName, oChildren)
+Developer_Tree._addTreeNode	= function(sName, oDefinition)
 {
 	var	oTreeNode	= new Control_Tree_Node({label: sName});
 	
-	for (sLabel in oChildren)
+	var	oData		=	{
+							label	: sName
+						};
+	for (sProperty in oDefinition)
 	{
 		//alert("Adding '"+sLabel+"'");
-		oTreeNode.addChild(Developer_Tree._addTreeNode(sLabel, oChildren[sLabel]));
+		if (sProperty == '_children')
+		{
+			for (sChildName in oDefinition._children)
+			{
+				oTreeNode.addChild(Developer_Tree._addTreeNode(sChildName, oDefinition._children[sChildName]));
+			}
+		}
+		else
+		{
+			oData[sProperty]	= oDefinition[sProperty];
+		}
 	}
+	oTreeNode.setData(oData);
 	
 	return oTreeNode;
 };
