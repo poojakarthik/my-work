@@ -46,13 +46,13 @@ Control_Tree_Node	= Class.create
 	{
 		if (sIcon)
 		{
-			this.oIconElement.src	= String(sIcon);
-			this.oIconElement.title	= sTitle ? String(sTitle) : '';
-			this.oIconElement.show();
+			this.oIconElement.src			= String(sIcon);
+			this.oIconElement.title			= sTitle ? String(sTitle) : '';
+			this.oIconElement.style.display	= null;
 		}
 		else
 		{
-			this.oIconElement.hide();
+			this.oIconElement.style.display	= 'none';
 			this.oIconElement.src	= '';
 			this.oIconElement.title	= '';
 		}
