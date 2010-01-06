@@ -172,6 +172,7 @@ Control_Tree_Node	= Class.create
 		{
 			var	oColumnElement	= document.createElement('li');
 			oColumnElement.addClassName('reflex-tree-node-column');
+			oColumnElement.addClassName(this.oVisibleColumns[sName].sClassName);
 			
 			if (sName === 'label')
 			{
@@ -209,7 +210,7 @@ Control_Tree_Node	= Class.create
 			else
 			{
 				// Data Column
-				oColumnElement.innerHTML	= this.oData[sName] ? this.oData[sName].escapeHTML() : '';
+				oColumnElement.innerHTML	= "<span>"+(this.oData[sName] ? this.oData[sName].escapeHTML() : '')+"</span>";
 			}
 		}
 		
