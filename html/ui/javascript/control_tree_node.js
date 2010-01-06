@@ -44,19 +44,21 @@ Control_Tree_Node	= Class.create
 	
 	setIcon	: function(sIcon, sTitle)
 	{
-		alert("Icon: "+sIcon);
 		if (sIcon)
 		{
+			alert("Icon: "+sIcon);
 			this.oIconElement.src			= String(sIcon);
 			this.oIconElement.title			= sTitle ? String(sTitle) : '';
 			this.oIconElement.style.display	= null;
 		}
 		else
 		{
+			alert("No Icon!");
 			this.oIconElement.style.display	= 'none';
 			this.oIconElement.src	= '';
 			this.oIconElement.title	= '';
 		}
+		alert("Icon updated to: "+this.oIconElement.src);
 	},
 	
 	getElement	: function()
