@@ -2307,7 +2307,8 @@ div.reflex-tree ul
 }
 
 div.reflex-tree ul.reflex-tree-header > li,
-div.reflex-tree ul.reflex-tree-footer > li
+div.reflex-tree ul.reflex-tree-footer > li,
+ul.reflex-tree-node-columns > li.reflex-tree-node-column
 {
 	display			: inline-block;
 	overflow		: hidden;
@@ -2323,11 +2324,6 @@ ul.reflex-tree-body > li.reflex-tree-node > ul.reflex-tree-node-columns
 {
 	/* Root Node */
 	display	: none;
-}
-
-ul.reflex-tree-node-columns > li.reflex-tree-node-column
-{
-	display			: inline-block;
 }
 
 li.reflex-tree-node-column > *
