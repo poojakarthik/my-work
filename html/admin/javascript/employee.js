@@ -99,7 +99,7 @@ var Employee	= Class.create
 		else
 		{
 			var fncJSON	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this.refresh.bind(this, fncCallback)), null, 'Employee', 'getForId');
-			fncJSON(intEmployeeId, true);
+			fncJSON(iEmployeeId, true);
 		}
 	},
 	
@@ -124,9 +124,9 @@ var Employee	= Class.create
 //----------------------------------------------------------------------------//
 // Static Methods
 //----------------------------------------------------------------------------//
-Employee.getForId	= function(intEmployeeId, fncCallback)
+Employee.getForId	= function(iEmployeeId, fncCallback)
 {
-	return new Employee(intEmployeeId, fncCallback);
+	return new Employee(iEmployeeId, fncCallback);
 }
 //----------------------------------------------------------------------------//
 
