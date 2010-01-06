@@ -155,6 +155,28 @@ Control_Tree_Node	= Class.create
 		this.setExpanded(!this.isExpanded());
 	},
 	
+	expandAll	: function()
+	{
+		this.setExpandedAll(true);
+	},
+	
+	collapseAll	: function()
+	{
+		this.setExpandedAll(false);
+	},
+	
+	setExpandedAll	: function(bExpanded)
+	{
+		// Expand/Contract Children
+		for (var i = 0, j = this.aChildren.length; i < j; i++)
+		{
+			this.aChildren[i].setExpandAll(bExpanded);
+		}
+		
+		// Expand/Contract Self
+		this.setExpanded(bExpanded);
+	},
+	
 	getNodeDepth	: function()
 	{
 		return this.oParent ? this.oParent.getNodeDepth() + 1 : 0;

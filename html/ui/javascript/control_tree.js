@@ -80,6 +80,16 @@ Control_Tree	= Class.create
 		return this.oRootNode;
 	},
 	
+	expandAll	: function()
+	{
+		this.oRootNode.expandAll();
+	},
+	
+	collapseAll	: function()
+	{
+		this.oRootNode.collapseAll();
+	},
+	
 	paint	: function()
 	{
 		// Redraw the Columns
