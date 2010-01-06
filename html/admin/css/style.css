@@ -2370,17 +2370,6 @@ li.reflex-tree-node.reflex-tree-node-expanded > ul.reflex-tree-node-columns > li
 	background-image	: url("../img/template/tree_open.png");
 }
 
-span.reflex-tree-node-expand
-{
-	min-width	: 16px;
-	max-width	: 16px;
-	width		: 16px;
-	
-	min-height	: 16px;
-	max-height	: 16px;
-	height		: 16px;
-}
-
 span.reflex-tree-node-icon img
 {
 	vertical-align	: middle;
