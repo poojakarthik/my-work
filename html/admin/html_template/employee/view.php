@@ -53,12 +53,13 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->_intContext = $intContext;
 		$this->LoadJavascript("table_sort");
 		$this->LoadJavascript("employee_view");
-		/*
-		COMMENTED OUT FOR 2/7/09 ROLLOUT
 		
 		$this->LoadJavascript("dataset_ajax");
 		
+		/*
+		COMMENTED OUT FOR 2/7/09 ROLLOUT
 		$this->LoadJavascript("fx_fade");
+		*/
 		
 		$this->LoadJavascript("reflex_validation");
 		
@@ -87,7 +88,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->LoadJavascript("user_role");
 		$this->LoadJavascript("employee");
 		$this->LoadJavascript("popup_employee");
-		/**/
+		
 	}
 	
 	//------------------------------------------------------------------------//
