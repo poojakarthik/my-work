@@ -22,7 +22,7 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 															},
 										'modified-by'	:	{
 																sTitle	: 'Modified By',
-																fWidth	: 20
+																fWidth	: 10
 															}
 									});
 		
