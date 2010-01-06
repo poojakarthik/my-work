@@ -177,14 +177,15 @@ Control_Tree_Node	= Class.create
 			if (sName === 'label')
 			{
 				// Label Column
-				var	oExpandContainer	= document.createElement('div'),
+				var	oInsetElement		= document.createElement('span'),
+					oExpandContainer	= document.createElement('div'),
 					oIconContainer		= document.createElement('div'),
 					oTextElement		= document.createElement('div');
 				
 				oIconContainer.addClassName('reflex-tree-node-icon');
 				oIconContainer.appendChild(this.oIconElement);
 				
-				oExpandContainer.setStyle({marginLeft: (Math.max(0, this.getNodeDepth() - 1) * Control_Tree_Node.NODE_INDENT_STEPPING_EM) + 'em'});
+				oInsetElement.setStyle({paddingLeft: (Math.max(0, this.getNodeDepth() - 1) * Control_Tree_Node.NODE_INDENT_STEPPING_EM) + 'em'});
 				if (this.aChildren.length > 0)
 				{
 					oExpandContainer.observe('click', this.toggleExpanded.bind(this));
@@ -197,6 +198,7 @@ Control_Tree_Node	= Class.create
 				
 				oTextElement.innerHTML	= this.oData['label'] ? this.oData['label'].escapeHTML() : '[ No Label ]';
 				
+				oColumnElement.appendChild(oInsetElement);
 				oColumnElement.appendChild(oExpandContainer);
 				oColumnElement.appendChild(oIconContainer);
 				oColumnElement.appendChild(oTextElement);
