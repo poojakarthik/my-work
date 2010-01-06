@@ -214,6 +214,7 @@ Control_Tree_Node	= Class.create
 			{
 				// Data Column
 				oColumnElement.innerHTML	= "<span>"+(this.oData[sName] ? this.oData[sName].escapeHTML() : '')+"</span>";
+				this.oColumnsList.appendChild(oColumnElement);
 			}
 		}
 		
