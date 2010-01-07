@@ -11,7 +11,7 @@ Reflex.Control.Tree.Node.Root	= Class.create(/* extends */Reflex.Control.Tree.No
 				throw "Cannot set the Tree for a Root Node more than once!";
 			}
 			
-			this.oParent	= oControlTreeNode;
+			this.oParent	= oControlTree;
 		}
 	},
 	
