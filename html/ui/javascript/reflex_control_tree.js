@@ -35,7 +35,7 @@ Reflex.Control.Tree	= Class.create(/* extends */Reflex.Control,
 		this.oColumns	= {};
 		for (sColumnName in oColumns)
 		{
-			var sName	= Control_Tree.sanitiseName(sColumnName);
+			var sName	= Reflex.Control.Tree.sanitiseName(sColumnName);
 			this.oColumns[sName]	=	{
 											sName	: sName,
 											sTitle	: oColumns[sColumnName].sTitle ? oColumns[sColumnName].sTitle : sColumnName,
@@ -59,7 +59,7 @@ Reflex.Control.Tree	= Class.create(/* extends */Reflex.Control,
 			oWidths[sName]	= this.oColumns[sName].fWidth;
 		}
 		
-		oWidths	= Control_Tree.normalisePercentages(oWidths);
+		oWidths	= Reflex.Control.Tree.normalisePercentages(oWidths);
 		
 		var	oReflexStyle	= Reflex_Style.getInstance();
 		for (sName in this.oColumns)
