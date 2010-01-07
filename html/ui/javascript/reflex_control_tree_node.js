@@ -137,7 +137,7 @@ Reflex.Control.Tree.Node	= Class.create
 		}
 		else
 		{
-			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', true, true, Control_Tree_Node.SLIDE_ANIMATION_DURATION, 'ease');
+			this.oSlideFX	= new Reflex_FX_Reveal(this.oChildrenList, 'top', 'slide', true, true, Reflex.Control.Tree.Node.SLIDE_ANIMATION_DURATION, 'ease');
 		}
 		
 		if (this.bExpanded)
@@ -220,7 +220,7 @@ Reflex.Control.Tree.Node	= Class.create
 				oIconContainer.addClassName('reflex-tree-node-icon');
 				oIconContainer.appendChild(this.oIconElement);
 				
-				oInsetElement.setStyle({paddingLeft: (Math.max(0, this.getNodeDepth() - 1) * Control_Tree_Node.NODE_INDENT_STEPPING_EM) + 'em'});
+				oInsetElement.setStyle({paddingLeft: (Math.max(0, this.getNodeDepth() - 1) * Reflex.Control.Tree.Node.NODE_INDENT_STEPPING_EM) + 'em'});
 				
 				oExpandContainer.addClassName('reflex-tree-node-expand');
 				if (this.aChildren.length > 0)
