@@ -6,7 +6,7 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 		$super(80);
 		
 		// Init Tree
-		this.oTreePanel	= new Control_Tree();
+		this.oTreePanel	= new Reflex.Control.Tree();
 		this.oTreePanel.setColumns(	{
 										'label'			:	{
 																sTitle	: 'File',
@@ -71,6 +71,8 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 			//alert("Adding '"+sLabel+"'");
 			this.oTreePanel.getRootNode().addChild(Developer_Tree._addTreeNode(sLabel, oTreeData[sLabel]));
 		}
+		
+		// Do we need to call this anymore?
 		this.oTreePanel.paint();
 		
 		var oContent	= document.createElement('div');
@@ -85,7 +87,7 @@ Developer_Tree	= Class.create(/* extends */Reflex_Popup,
 
 Developer_Tree._addTreeNode	= function(sName, oDefinition)
 {
-	var	oTreeNode	= new Control_Tree_Node({label: sName});
+	var	oTreeNode	= new Reflex.Control.Tree.Node({label: sName});
 	
 	var	oData		=	{
 							label	: sName
