@@ -1,6 +1,6 @@
 
-Reflex.Control.Tree.Node.Root	= Class.create
-({
+Reflex.Control.Tree.Node.Root	= Class.create(/* extends */Reflex.Control.Tree.Node,
+{
 	setParent	: function(oControlTree)
 	{
 		if (oControlTree instanceof Reflex.Control.Tree)
