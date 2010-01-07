@@ -60,7 +60,7 @@ class Application_Handler_Developer extends Application_Handler
 														array	(
 																	'strName'	=> 'Tree',
 																	'strType'	=> self::URL_TYPE_JS,
-																	'strURL'	=> 'JsAutoLoader.loadScript(["reflex_style.js", "reflex_fx_reveal.js", "control_tree_node.js", "control_tree.js", "developer_tree.js"], function(){var oPopup = new Developer_Tree(); oPopup.display();}, false);'
+																	'strURL'	=> 'JsAutoLoader.loadScript(["reflex_style.js", "reflex_fx_reveal.js", "reflex_control.js", "reflex_control_tree.js", "reflex_control_tree_node.js", "reflex_control_tree_node_root.js", "developer_tree.js"], function(){var oPopup = new Developer_Tree(); oPopup.display();}, false);'
 																)
 													);
 			
