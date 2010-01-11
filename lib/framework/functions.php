@@ -3983,8 +3983,8 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		'Overdue'							=> "SUM(IF(config.effective_date > i.DueOn, i.Balance - i.Disputed, 0))",
 		'EligibleOverdue'					=> "SUM(IF(config.effective_date > i.DueOn AND i.CreatedOn <= i_latepayment.CreatedOn, i.Balance - i.Disputed, 0))",
 		'TotalOutstanding'					=> "SUM(i.Balance - i.Disputed)",
-		'TotalFromOverdueInvoices'			=> "SUM(CASE WHEN (config.effective_date > i.DueOn) AND ((i.Balance - i.Disputed) > 0) THEN i.Total + i.Tax ELSE 0 END)",
-		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF( WHEN (config.effective_date > i.DueOn) AND ((i.Balance - i.Disputed) > 0 AND i.CreatedOn <= i_latepayment.CreatedOn) THEN i.Total + i.Tax ELSE 0 END)",
+		'TotalFromOverdueInvoices'			=> "SUM(IF((config.effective_date > i.DueOn) AND ((i.Balance - i.Disputed) > 0)), i.Total + i.Tax, 0))",
+		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF((config.effective_date > i.DueOn) AND ((i.Balance - i.Disputed) > 0 AND i.CreatedOn <= i_latepayment.CreatedOn), i.Total + i.Tax, 0))",
 		'minBalanceToPursue'				=> "pt.minimum_balance_to_pursue"
 	);
 
