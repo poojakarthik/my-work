@@ -3956,7 +3956,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 	// Find all Accounts that fit the requirements for Late Notice generation
 		$arrColumns = array(
 		'invoice_run_id'					=> "ir_latepayment.Id",
-		'AccountId'							=> "i.Account",
+		'AccountId'							=> "a.Id",
 		'AccountGroup'						=> "a.AccountGroup",
 		'BusinessName'						=> "a.BusinessName",
 		'TradingName'						=> "a.TradingName",
@@ -3979,12 +3979,12 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		'DisableLatePayment'				=> "a.DisableLatePayment",
 		'InvoiceId'							=> "i_latepayment.Id",
 		'CreatedOn'							=> "i_latepayment.CreatedOn",
-		'OutstandingNotOverdue'				=> "SUM(IF(config.effective_date <= i.DueOn, i.Balance - i.Disputed, 0))",
-		'Overdue'							=> "SUM(IF(config.effective_date > i.DueOn, i.Balance - i.Disputed, 0))",
-		'EligibleOverdue'					=> "SUM(IF(config.effective_date > i.DueOn AND i.CreatedOn <= i_latepayment.CreatedOn, i.Balance - i.Disputed, 0))",
-		'TotalOutstanding'					=> "SUM(i.Balance - i.Disputed)",
-		'TotalFromOverdueInvoices'			=> "SUM(IF(config.effective_date > i.DueOn AND (i.Balance - i.Disputed) > 0, i.Total + i.Tax, 0))",
-		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF(config.effective_date > i.DueOn AND (i.Balance - i.Disputed) > 0 AND i.CreatedOn <= i_latepayment.CreatedOn, i.Total + i.Tax, 0))",
+		'OutstandingNotOverdue'				=> "SUM(IF(config.effective_date <= i_overdue.DueOn, i_overdue.Balance - i_overdue.Disputed, 0))",
+		'Overdue'							=> "SUM(IF(config.effective_date > i_overdue.DueOn, i_overdue.Balance - i_overdue.Disputed, 0))",
+		'EligibleOverdue'					=> "SUM(IF(config.effective_date > i_overdue.DueOn AND i_overdue.CreatedOn <= i_latepayment.CreatedOn, i_overdue.Balance - i_overdue.Disputed, 0))",
+		'TotalOutstanding'					=> "SUM(i_overdue.Balance - i_overdue.Disputed)",
+		'TotalFromOverdueInvoices'			=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed) > 0, i_overdue.Total + i_overdue.Tax, 0))",
+		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed) > 0 AND i_overdue.CreatedOn <= i_latepayment.CreatedOn, i_overdue.Total + i_overdue.Tax, 0))",
 		'minBalanceToPursue'				=> "pt.minimum_balance_to_pursue"
 	);
 
