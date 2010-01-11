@@ -4009,7 +4009,7 @@ JOIN invoice_run_type irt_overdue ON (irt_overdue.id = ir_overdue.invoice_run_ty
 JOIN invoice_run_status irs_overdue ON (irs_overdue.id = ir_overdue.invoice_run_status_id AND irs_overdue.const_name = 'INVOICE_RUN_STATUS_COMMITTED')";
 
 $strWhere	= "
-ir_latepayment.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
+ir_latepayment.Id IN (" . $strInvoiceRunIds . ")
 ";
 
 	$strGroupBy	= "a.Id HAVING EligibleOverdue >= minBalanceToPursue AND TotalOutstanding >= minBalanceToPursue AND EligibleOverdue > (TotalFromEligibleOverdueInvoices * 0.25)";
