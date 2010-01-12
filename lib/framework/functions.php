@@ -3638,7 +3638,7 @@ JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
 JOIN payment_terms pt ON (pt.id = (SELECT id FROM payment_terms WHERE customer_group_id = cg.Id ORDER BY id DESC LIMIT 1))
 
 JOIN Invoice i_overdue ON (i_overdue.Account = a.Id)
-JOIN InvoiceRun ir_overdue ON (i_overdue.invoice_run_id = ir_overdue.Id AND ir_overdue.Id <= ir_barring.Id AND ir_overdue.BillingDate <= ir_barring.BillingDate)
+JOIN InvoiceRun ir_overdue ON (i_overdue.invoice_run_id = ir_overdue.Id)
 JOIN invoice_run_type irt_overdue ON (irt_overdue.id = ir_overdue.invoice_run_type_id AND irt_overdue.const_name = 'INVOICE_RUN_TYPE_LIVE')
 JOIN invoice_run_status irs_overdue ON (irs_overdue.id = ir_overdue.invoice_run_status_id AND irs_overdue.const_name = 'INVOICE_RUN_STATUS_COMMITTED')";
 
@@ -4004,7 +4004,7 @@ JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
 JOIN payment_terms pt ON (pt.id = (SELECT id FROM payment_terms WHERE customer_group_id = cg.Id ORDER BY id DESC LIMIT 1))
 
 JOIN Invoice i_overdue ON (i_overdue.Account = a.Id)
-JOIN InvoiceRun ir_overdue ON (i_overdue.invoice_run_id = ir_overdue.Id AND ir_overdue.Id <= ir_latepayment.Id AND ir_overdue.BillingDate <= ir_latepayment.BillingDate)
+JOIN InvoiceRun ir_overdue ON (i_overdue.invoice_run_id = ir_overdue.Id)
 JOIN invoice_run_type irt_overdue ON (irt_overdue.id = ir_overdue.invoice_run_type_id AND irt_overdue.const_name = 'INVOICE_RUN_TYPE_LIVE')
 JOIN invoice_run_status irs_overdue ON (irs_overdue.id = ir_overdue.invoice_run_status_id AND irs_overdue.const_name = 'INVOICE_RUN_STATUS_COMMITTED')";
 
