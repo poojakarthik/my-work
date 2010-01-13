@@ -121,6 +121,8 @@
 		<xsl:param name="Selected-Year" />
 		
 		<xsl:param name="Now" />
+		<xsl:param name="Minimum-Age" select="0" />
+		<xsl:param name="Maximum-Age" select="150" />
 		
 		<select>
 			<xsl:attribute name="name">
@@ -159,8 +161,8 @@
 			<option value="">YYYY</option>
 			
 			<xsl:call-template name="DateLoop">
-				<xsl:with-param name="start" select="number(substring($Now, 1, 4)) - 150" />
-				<xsl:with-param name="cease" select="number(substring($Now, 1, 4)) - 18" />
+				<xsl:with-param name="start" select="number(substring($Now, 1, 4)) - number($Minimum-Age)" />
+				<xsl:with-param name="cease" select="number(substring($Now, 1, 4)) - number($Maximum-Age)" />
 				<xsl:with-param name="select" select="$Selected-Year" />
 			</xsl:call-template>
 		</select>

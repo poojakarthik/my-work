@@ -190,6 +190,7 @@
 											<xsl:with-param name="Selected-Day"		select="/Response/ui-values/DOB-day" />
 											<xsl:with-param name="Selected-Month"	select="/Response/ui-values/DOB-month" />
 											<xsl:with-param name="Selected-Year"	select="/Response/ui-values/DOB-year" />
+											<xsl:with-param name="Now"				select="/Response/Now" />
 										</xsl:call-template>
 									</td>
 								</tr>

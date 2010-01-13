@@ -358,6 +358,8 @@
 											<xsl:with-param name="Selected-Day"		select="substring (/Response/ServiceAddress/DateOfBirth, 7, 2)" />
 											<xsl:with-param name="Selected-Month"	select="substring (/Response/ServiceAddress/DateOfBirth, 5, 2)" />
 											<xsl:with-param name="Selected-Year"	select="substring (/Response/ServiceAddress/DateOfBirth, 1, 4)" />
+											<xsl:with-param name="Now"				select="/Response/Now" />
+											<xsl:with-param name="Minimum-Age"		select="18" />
 										</xsl:call-template>
 									</td>
 								</tr>
