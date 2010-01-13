@@ -159,13 +159,13 @@
 			</xsl:attribute>
 			
 			<option value="">YYYY</option>
-			
+			<!-- DEBUG
 			<option value=""><xsl:text>Now: </xsl:text><xsl:value-of select="$Now" /></option>
 			<option value=""><xsl:text>Minimum-Age: </xsl:text><xsl:value-of select="$Minimum-Age" /></option>
 			<option value=""><xsl:text>Maximum-Age: </xsl:text><xsl:value-of select="$Maximum-Age" /></option>
 			<option value=""><xsl:text>Start-Year: </xsl:text><xsl:value-of select="number(substring($Now, 1, 4)) - number($Minimum-Age)" /></option>
 			<option value=""><xsl:text>End-Year: </xsl:text><xsl:value-of select="number(substring($Now, 1, 4)) - number($Maximum-Age)" /></option>
-			
+			-->
 			<xsl:call-template name="DateLoop">
 				<xsl:with-param name="start" select="number(substring($Now, 1, 4)) - number($Maximum-Age)" />
 				<xsl:with-param name="cease" select="number(substring($Now, 1, 4)) - number($Minimum-Age)" />
