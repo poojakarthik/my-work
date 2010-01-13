@@ -157,8 +157,8 @@
 			<option value="">YYYY</option>
 			
 			<xsl:call-template name="DateLoop">
-				<xsl:with-param name="start" select="1910" />
-				<xsl:with-param name="cease" select="1990" />
+				<xsl:with-param name="start" select="year-from-date(current-date()) - 150" />
+				<xsl:with-param name="cease" select="year-from-date(current-date()) - 18" />
 				<xsl:with-param name="select" select="$Selected-Year" />
 			</xsl:call-template>
 		</select>
