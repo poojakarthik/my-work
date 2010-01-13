@@ -167,8 +167,8 @@
 			<option value=""><xsl:text>End-Year: </xsl:text><xsl:value-of select="number(substring($Now, 1, 4)) - number($Maximum-Age)" /></option>
 			
 			<xsl:call-template name="DateLoop">
-				<xsl:with-param name="start" select="number(substring($Now, 1, 4)) - number($Minimum-Age)" />
-				<xsl:with-param name="cease" select="number(substring($Now, 1, 4)) - number($Maximum-Age)" />
+				<xsl:with-param name="start" select="number(substring($Now, 1, 4)) - number($Maximum-Age)" />
+				<xsl:with-param name="cease" select="number(substring($Now, 1, 4)) - number($Minimum-Age)" />
 				<xsl:with-param name="select" select="$Selected-Year" />
 			</xsl:call-template>
 		</select>
