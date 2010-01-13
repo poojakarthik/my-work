@@ -120,7 +120,7 @@
 		<xsl:param name="Selected-Month" />
 		<xsl:param name="Selected-Year" />
 		
-		<xsl:param name="Current-Year" />
+		<xsl:param name="Now" />
 		
 		<select>
 			<xsl:attribute name="name">
@@ -159,8 +159,8 @@
 			<option value="">YYYY</option>
 			
 			<xsl:call-template name="DateLoop">
-				<xsl:with-param name="start" select="$Current-Year - 150" />
-				<xsl:with-param name="cease" select="$Current-Year - 18" />
+				<xsl:with-param name="start" select="number(substring($Now, 0, 4)) - 150" />
+				<xsl:with-param name="cease" select="number(substring($Now, 0, 4)) - 18" />
 				<xsl:with-param name="select" select="$Selected-Year" />
 			</xsl:call-template>
 		</select>
