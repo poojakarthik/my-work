@@ -62,6 +62,7 @@
 			
 			$this->Constrain ('Status',		'NOT EQUAL',	CHARGE_DECLINED);
 			$this->Constrain ('Status',		'NOT EQUAL',	CHARGE_INVOICED);
+			$this->Constrain ('Status',		'NOT EQUAL',	CHARGE_DELETED);
 			
 			if ($srvService)
 			{
