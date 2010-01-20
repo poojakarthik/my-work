@@ -3616,9 +3616,9 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		'CustomerGroupId'					=> "cg.Id",
 		'CustomerGroupName'					=> "cg.external_name",
 		'Overdue'							=> "SUM(IF(i_overdue.DueOn < config.effective_date, i_overdue.Balance - i_overdue.Disputed, 0))",
-		'EligibleOverdue'					=> "SUM(IF(i_overdue.DueOn < config.effective_date AND i_overdue.CreatedOn <= ir_barring.CreatedOn, i_overdue.Balance - i_overdue.Disputed, 0))",
+		'EligibleOverdue'					=> "SUM(IF(i_overdue.DueOn < config.effective_date AND i_overdue.CreatedOn <= i_barring.CreatedOn, i_overdue.Balance - i_overdue.Disputed, 0))",
 		'TotalFromOverdueInvoices'			=> "SUM(IF(i_overdue.DueOn < config.effective_date AND ((i_overdue.Balance - i_overdue.Disputed) > 0), i_overdue.Total + i_overdue.Tax, 0))",
-		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF(i_overdue.DueOn < config.effective_date AND ((i_overdue.Balance - i_overdue.Disputed) > 0) AND i_overdue.CreatedOn <= ir_barring.CreatedOn, i_overdue.Total + i_overdue.Tax, 0))",
+		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF(i_overdue.DueOn < config.effective_date AND ((i_overdue.Balance - i_overdue.Disputed) > 0) AND i_overdue.CreatedOn <= i_barring.CreatedOn, i_overdue.Total + i_overdue.Tax, 0))",
 		'minBalanceToPursue'				=> "pt.minimum_balance_to_pursue",
 	);
 
