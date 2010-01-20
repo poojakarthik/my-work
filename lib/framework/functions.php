@@ -3668,7 +3668,7 @@ ir_barring.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
 	{
 		$strSQL = "INSERT INTO $tmpTableName ($tmpCols)
 			 VALUES (null, " . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " .
-			$row['CustomerGroupId'] . ", '" . $row['CustomerGroupName'] . "', " . $row['Overdue'] . ", " . $row['TotalFromOverdueInvoices'] . ", " . $row['minBalanceToPursue'] . ")";
+			$row['CustomerGroupId'] . ", '" . $row['CustomerGroupName'] . "', " . $row['TotalOutstanding'] . ", " . $row['Overdue'] . ", " . $row['EligibleOverdue'] . ", " . $row['TotalFromOverdueInvoices'] . ", " . $row['TotalFromEligibleOverdueInvoices'] . ", " . $row['minBalanceToPursue'] . ")";
 		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 		{
 			throw new Exception("Failed to populate tmp table (1.$i) $tmpTableName: " . $result->getMessage() . "\n\n$strSQL\n\n");
