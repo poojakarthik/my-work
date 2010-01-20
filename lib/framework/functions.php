@@ -3568,8 +3568,11 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 			AccountGroupId bigint(20) unsigned NOT NULL,
 			CustomerGroupId bigint(20) unsigned NOT NULL,
 			CustomerGroupName VARCHAR(255) DEFAULT '',
+			TotalOutstanding decimal(13,4) NOT NULL, 
 			Overdue decimal(13,4) NOT NULL,
+			EligibleOverdue decimal(13,4) NOT NULL,
 			TotalFromOverdueInvoices decimal(13,4) NOT NULL,
+			TotalFromEligibleOverdueInvoices decimal(13,4) NOT NULL,
 			minBalanceToPursue decimal(13,4) NOT NULL,
 			PRIMARY KEY (id)
 		) ENGINE=InnoDB AUTO_INCREMENT=0;
@@ -3663,7 +3666,7 @@ ir_barring.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
 	$rows = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
 	foreach ($rows as $i => $row)
 	{
-		$strSQL = "INSERT INTO $tmpTableName 
+		$strSQL = "INSERT INTO $tmpTableName ($tmpCols)
 			 VALUES (null, " . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " .
 			$row['CustomerGroupId'] . ", '" . $row['CustomerGroupName'] . "', " . $row['Overdue'] . ", " . $row['TotalFromOverdueInvoices'] . ", " . $row['minBalanceToPursue'] . ")";
 		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
