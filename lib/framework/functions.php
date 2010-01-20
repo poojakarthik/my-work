@@ -3667,7 +3667,7 @@ ir_barring.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
 	foreach ($rows as $i => $row)
 	{
 		$strSQL = "INSERT INTO $tmpTableName ($tmpCols)
-			 VALUES (null, " . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " .
+			 VALUES (" . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " .
 			$row['CustomerGroupId'] . ", '" . $row['CustomerGroupName'] . "', " . $row['TotalOutstanding'] . ", " . $row['Overdue'] . ", " . $row['EligibleOverdue'] . ", " . $row['TotalFromOverdueInvoices'] . ", " . $row['TotalFromEligibleOverdueInvoices'] . ", " . $row['minBalanceToPursue'] . ")";
 		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 		{
