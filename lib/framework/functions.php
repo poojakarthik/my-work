@@ -3663,8 +3663,8 @@ ir_barring.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
 	$rows = $result->fetchAll(MDB2_FETCHMODE_ASSOC);
 	foreach ($rows as $i => $row)
 	{
-		$strSQL = "INSERT INTO $tmpTableName ($tmpCols)
-			VALUES (" . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " .
+		$strSQL = "INSERT INTO $tmpTableName 
+			VALUES (null, " . $row['invoice_run_id'] . ", " . $row['AccountId'] . ", " . $row['AccountGroupId'] . ", " .
 			$row['CustomerGroupId'] . ", '" . $row['CustomerGroupName'] . "', " . $row['Overdue'] . ", " . $row['TotalFromOverdueInvoices'] . ", " . $row['minBalanceToPursue'] . ")";
 		if (PEAR::isError($result = $dbAdmin->query($strSQL)))
 		{
