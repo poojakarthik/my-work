@@ -3615,6 +3615,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		'AccountGroupId'					=> "a.AccountGroup",
 		'CustomerGroupId'					=> "cg.Id",
 		'CustomerGroupName'					=> "cg.external_name",
+		'TotalOutstanding'					=> "SUM(i_overdue.Balance - i_overdue.Disputed)",
 		'Overdue'							=> "SUM(IF(i_overdue.DueOn < config.effective_date, i_overdue.Balance - i_overdue.Disputed, 0))",
 		'EligibleOverdue'					=> "SUM(IF(i_overdue.DueOn < config.effective_date AND i_overdue.CreatedOn <= i_barring.CreatedOn, i_overdue.Balance - i_overdue.Disputed, 0))",
 		'TotalFromOverdueInvoices'			=> "SUM(IF(i_overdue.DueOn < config.effective_date AND ((i_overdue.Balance - i_overdue.Disputed) > 0), i_overdue.Total + i_overdue.Tax, 0))",
@@ -3646,7 +3647,7 @@ $strWhere	= "
 ir_barring.Id IN (" . implode(',', $arrInvoiceRunIds) . ")
 ";
 
-	$strGroupBy	= "a.Id HAVING EligibleOverdue >= minBalanceToPursue AND AccountBalance >= minBalanceToPursue AND EligibleOverdue > (TotalFromEligibleOverdueInvoices * 0.25)";
+	$strGroupBy	= "a.Id HAVING EligibleOverdue >= minBalanceToPursue AND TotalOutstanding >= minBalanceToPursue AND EligibleOverdue > (TotalFromEligibleOverdueInvoices * 0.25)";
 	$strOrderBy	= "a.Id ASC";
 
 	$select = array();
