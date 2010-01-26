@@ -2403,3 +2403,28 @@ span.reflex-tree-node-icon img
 /******************************************************************************/
 
 
+
+/******************************************************************************/
+
+/* Ticker (Marquee) */
+div.reflex-ticker
+{
+	position	: relative;
+	width		: 500px;
+	border		: 1px solid black;
+	white-space	: nowrap;
+	overflow	: hidden;
+}
+
+div.ticker > ul.ticker-frame
+{
+	position	: relative;
+	left		: 0px;
+}
+
+div.ticker > ul.ticker-frame > li.ticker-message
+{
+	margin-left	: 2em;
+}
+
+/******************************************************************************/
