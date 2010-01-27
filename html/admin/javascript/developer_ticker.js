@@ -21,7 +21,7 @@ Developer_Ticker	= Class.create(/* extends */Reflex_Popup,
 		var sCSSSelector	= this.contentPane.select('input').first().value;
 		
 		// Valid CSS Selector?
-		var oResult	= select(sCSSSelector).first();
+		var oResult	= $$(sCSSSelector).first();
 		var oElement;
 		if (oResult.appendChild)
 		{
