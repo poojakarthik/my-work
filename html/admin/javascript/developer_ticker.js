@@ -13,15 +13,15 @@ Developer_Ticker	= Class.create(/* extends */Reflex_Popup,
 		this.addCloseButton();
 		this.setTitle("Ticker");
 		
-		this.contentPane.select('button').observe('click', this.moveTicker.bind(this));
+		this.contentPane.select('button').first().observe('click', this.moveTicker.bind(this));
 	},
 	
 	moveTicker	: function()
 	{
-		var sCSSSelector	= this.contentPane.select('input').value;
+		var sCSSSelector	= this.contentPane.select('input').first().value;
 		
 		// Valid CSS Selector?
-		var oResult	= select(sCSSSelector);
+		var oResult	= select(sCSSSelector).first();
 		var oElement;
 		if (oResult.appendChild)
 		{
@@ -39,7 +39,7 @@ Developer_Ticker	= Class.create(/* extends */Reflex_Popup,
 			return false;
 		}
 		
-		var oSelect	= this.contentPane.select('select');
+		var oSelect	= this.contentPane.select('select').first();
 		switch (oSelect[oSelect.selectedIndex].charAt(0).toLowerCase())
 		{
 			case 'b':
