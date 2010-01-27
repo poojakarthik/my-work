@@ -63,7 +63,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 	_paint	: function(fPixelOffset)
 	{
 		//alert(this.toSource());
-		console.log(this.oFrame.toSource());
+		console.log(this.toSource());
 		
 		var fLeft	= parseFloat(this.oFrame.style.left) + fPixelOffset;
 		//alert(fLeft);
