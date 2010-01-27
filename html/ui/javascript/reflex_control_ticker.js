@@ -66,8 +66,10 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		fPixelOffset	= Math.abs(fPixelOffset);
 		
 		//alert(this.toSource());
-		console.log("Ticker.offsetBefore: "+this.oFrame.getStyle(this.sDirection));
-		var fPositionOffset	= parseFloat(this.oFrame.getStyle(this.sDirection)) + fPixelOffset;
+		var fCurrentOffset	= parseFloat(this.oFrame.getStyle(this.sDirection));
+		console.log("Ticker.offsetBefore: "+fCurrentOffset);
+		
+		var fPositionOffset	= fCurrentOffset + fPixelOffset;
 		//alert(fLeft);
 		console.log("Ticker.offsetShifted: "+fPositionOffset);
 		
