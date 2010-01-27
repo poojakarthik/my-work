@@ -69,7 +69,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 			fLeft	= fDifference;
 		}
 		
-		//alert(fLeft);
+		alert(fLeft);
 		this.oFrame.style.left	= fLeft+'px';
 	}
 });
