@@ -79,7 +79,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		
 		if (console && console.log)
 		{
-			console.log("Ticker.left: ".fLeft);
+			console.log("Ticker.left: "+fLeft);
 		}
 		//alert(fLeft);
 		this.oFrame.style.left	= fLeft+'px';
