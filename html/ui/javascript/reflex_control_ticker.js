@@ -69,18 +69,18 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		
 		//alert(this.toSource());
 		var fCurrentOffset	= parseFloat(this.oFrame.getStyle(this.sDirection));
-		console.log("Ticker.offsetBefore: "+fCurrentOffset);
+		//console.log("Ticker.offsetBefore: "+fCurrentOffset);
 		
-		var fPositionOffset	= fCurrentOffset + fPixelOffset;
+		var fPositionOffset	= fCurrentOffset - fPixelOffset;
 		//alert(fLeft);
-		console.log("Ticker.offsetShifted: "+fPositionOffset);
+		//console.log("Ticker.offsetShifted: "+fPositionOffset);
 		
 		if (fPositionOffset < 0)
 		{
 			fPositionOffset	= parseFloat(this.oElement.clientWidth) + fPositionOffset;
 		}
 		
-		console.log("Ticker.offsetCorrected: "+fPositionOffset);
+		//console.log("Ticker.offsetCorrected: "+fPositionOffset);
 		//alert(fLeft);
 		
 		var oUpdateStyle				= {};
