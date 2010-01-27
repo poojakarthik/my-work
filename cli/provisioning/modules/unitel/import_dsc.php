@@ -220,8 +220,9 @@
  			// Type
 			switch ($arrData['OrderType'])
 			{
-				case "11":	// Migration Request
-				case "12":	// Churn to eBill
+				case "10":	// Churn
+				case "11":	// Migration (legacy)
+				case "12":	// Churn
 					$arrPDR['Type']	= PROVISIONING_TYPE_FULL_SERVICE;
 					break;
 				case "13":	// Virtual PreSelection
