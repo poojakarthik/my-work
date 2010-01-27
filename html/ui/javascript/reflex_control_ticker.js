@@ -8,7 +8,6 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		this.aMessages	= [];
 		
 		// Bind to Element
-		this.oElement	= (typeof mBoundElement == 'string') ? document.getElementById(mBoundElement) : mBoundElement;
 		this.oFrame		= document.createElement('ul');
 		this.oElement.appendChild(this.oFrame);
 		
