@@ -11,8 +11,8 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		this.oFrame		= document.createElement('ul');
 		this.oElement.appendChild(this.oFrame);
 		
-		this.oElement.className	= 'ticker';
-		this.oFrame.className	= 'ticker-frame';
+		this.oElement.addClassName('ticker');
+		this.oFrame.addClassName('ticker-frame');
 		
 		this.oLastUpdated	= new Date();
 		
