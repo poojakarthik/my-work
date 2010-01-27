@@ -9,7 +9,6 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		
 		// Bind to Element
 		this.oFrame		= document.createElement('ul');
-		console.log(this.oFrame.toSource());
 		this.oElement.appendChild(this.oFrame);
 		
 		this.oElement.addClassName('ticker');
@@ -64,9 +63,8 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 	_paint	: function(fPixelOffset)
 	{
 		//alert(this.toSource());
-		console.log(this.toSource());
-		
-		var fLeft	= parseFloat(this.oFrame.style.left) + fPixelOffset;
+		console.log("Ticker.leftAfter: "+this.oFrame.getStyle('left'));
+		var fLeft	= parseFloat(this.oFrame.getStyle('left')) + fPixelOffset;
 		//alert(fLeft);
 		console.log("Ticker.leftBefore: "+fLeft);
 		
