@@ -9,7 +9,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		
 		// Bind to Element
 		this.oFrame		= document.createElement('ul');
-		console.log(this.toSource());
+		console.log(this.oFrame.toSource());
 		this.oElement.appendChild(this.oFrame);
 		
 		this.oElement.addClassName('ticker');
