@@ -76,7 +76,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		//console.log("Ticker.offsetShifted: "+fPositionOffset);
 		
 		// Is it off the screen?
-		if (fPositionOffset < parseFloat(this.oFrame.clientWidth))
+		if (fPositionOffset < 0 - parseFloat(this.oFrame.clientWidth))
 		{
 			fPositionOffset	= parseFloat(this.oElement.clientWidth) + fPositionOffset;
 		}
