@@ -90,8 +90,8 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 	}
 });
 
-Reflex.Control.Ticker.ANIMATION_PIXELS_PER_SECOND	= 30;
-Reflex.Control.Ticker.FRAMES_PER_SECOND				= 24;
+Reflex.Control.Ticker.ANIMATION_PIXELS_PER_SECOND	= 50;
+Reflex.Control.Ticker.FRAMES_PER_SECOND				= 10;
 
 Reflex.Control.Ticker.DIRECTION_LEFT	= 'left';
 Reflex.Control.Ticker.DIRECTION_RIGHT	= 'right';
