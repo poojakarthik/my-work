@@ -40,23 +40,26 @@ Developer_Ticker	= Class.create(/* extends */Reflex_Popup,
 		}
 		
 		var oSelect	= this.contentPane.select('select').first();
-		switch (oSelect[oSelect.selectedIndex].charAt(0).toLowerCase())
+		if (oSelect.selectedIndex > -1)
 		{
-			case 'b':
-				// Before
-				oElement.parentNode.insertBefore(this.oTicker.getElement(), oElement);
-				break;
-				
-			case 'a':
-				// After
-				oElement.parentNode.insertBefore(this.oTicker.getElement(), oElement.nextSibling);
-				break;
-				
-			case 'c':
-			default:
-				// Child
-				oElement.appendChild(this.oTicker.getElement());
-				break;
+			switch (oSelect[oSelect.selectedIndex].value.charAt(0).toLowerCase())
+			{
+				case 'b':
+					// Before
+					oElement.parentNode.insertBefore(this.oTicker.getElement(), oElement);
+					break;
+					
+				case 'a':
+					// After
+					oElement.parentNode.insertBefore(this.oTicker.getElement(), oElement.nextSibling);
+					break;
+					
+				case 'c':
+				default:
+					// Child
+					oElement.appendChild(this.oTicker.getElement());
+					break;
+			}
 		}
 	}
 });
