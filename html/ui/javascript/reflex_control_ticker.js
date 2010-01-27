@@ -32,7 +32,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		
 		this.setSpeed(Reflex.Control.Ticker.ANIMATION_PIXELS_PER_SECOND);
 		
-		this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), 1000 / Reflex.Control.Ticker.FRAMES_PER_SECOND);
+		this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), 1 / Reflex.Control.Ticker.FRAMES_PER_SECOND);
 	},
 	
 	setSpeed	: function(iPixelsPerSecond)
