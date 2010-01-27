@@ -2425,6 +2425,7 @@ div.ticker > ul.ticker-frame
 div.ticker > ul.ticker-frame > li.ticker-message
 {
 	margin-left	: 2em;
+	display		: inline-block;
 }
 
 /******************************************************************************/

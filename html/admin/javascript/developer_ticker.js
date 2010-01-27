@@ -9,7 +9,7 @@ Developer_Ticker	= Class.create(/* extends */Reflex_Popup,
 		
 		// Add messages
 		this.oTicker.addMessage("Alert: Preselection through Optus will not work from 22/1/2010 to 25/1/2010");
-		this.oTicker.addMessage("Remember to close the damn front door when you leave.  Were you bought in a goddamn tent?");
+		this.oTicker.addMessage("Remember to close the damn front door when you leave.  Were you born in a goddamn tent?");
 		
 		var sContent	= "<div style='font-weight: bold;'>Attach Ticker to Element (using CSS Selector): </div><div><select><option value='child'>as Child of</option><option value='before'>before</option><option value='after'>after</option></select><input type='text' style='width: 50em;' /><button>Attach!</button></div>";
 		
