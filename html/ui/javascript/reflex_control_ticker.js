@@ -30,7 +30,15 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 				break;
 		}
 		
+		this.setSpeed(Reflex.Control.Ticker.ANIMATION_PIXELS_PER_SECOND);
+		
 		this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), 1000 / Reflex.Control.Ticker.FRAMES_PER_SECOND);
+	},
+	
+	setSpeed	: function(iPixelsPerSecond)
+	{
+		iPixelsPerSecond		= parseInt(iPixelsPerSecond);
+		this.iPixelsPerSecond	= (!iPixelsPerSecond || iPixelsPerSecond === 'NaN') ? Reflex.Control.Ticker.ANIMATION_PIXELS_PER_SECOND : Math.abs(iPixelsPerSecond);
 	},
 	
 	addMessage	: function (sMessage)
