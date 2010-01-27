@@ -62,25 +62,26 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 	
 	_paint	: function(fPixelOffset)
 	{
+		// Get Direction
+		fPixelOffset	= Math.abs(fPixelOffset);
+		
 		//alert(this.toSource());
-		console.log("Ticker.leftAfter: "+this.oFrame.getStyle('left'));
-		var fLeft	= parseFloat(this.oFrame.getStyle('left')) + fPixelOffset;
+		console.log("Ticker.offsetBefore: "+this.oFrame.getStyle(this.sDirection));
+		var fPositionOffset	= parseFloat(this.oFrame.getStyle(this.sDirection)) + fPixelOffset;
 		//alert(fLeft);
-		console.log("Ticker.leftBefore: "+fLeft);
+		console.log("Ticker.offsetShifted: "+fPositionOffset);
 		
-		var fDifference	= parseFloat(this.oFrame.offsetWidth) - fLeft;
-		if (fDifference < 0)
+		if (fPositionOffset < 0)
 		{
-			fLeft	= parseFloat(this.oElement.clientWidth) + fDifference;
-		}
-		else if (fDifference > parseFloat(this.oFrame.offsetWidth))
-		{
-			fLeft	= fDifference;
+			fPositionOffset	= parseFloat(this.oElement.clientWidth) + fPositionOffset;
 		}
 		
-		console.log("Ticker.leftAfter: "+fLeft);
+		console.log("Ticker.offsetCorrected: "+fPositionOffset);
 		//alert(fLeft);
-		this.oFrame.style.left	= fLeft+'px';
+		
+		var oUpdateStyle				= {};
+		oUpdateStyle[this.sDirection]	= fPositionOffset+'px';
+		this.oFrame.setStyle(oUpdateStyle);
 	}
 });
 
