@@ -75,6 +75,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		//alert(fLeft);
 		//console.log("Ticker.offsetShifted: "+fPositionOffset);
 		
+		// Is it off the screen?
 		if (fPositionOffset < 0)
 		{
 			fPositionOffset	= parseFloat(this.oElement.clientWidth) + fPositionOffset;
@@ -90,7 +91,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 });
 
 Reflex.Control.Ticker.ANIMATION_PIXELS_PER_SECOND	= 30;
-Reflex.Control.Ticker.FRAMES_PER_SECOND				= 60;
+Reflex.Control.Ticker.FRAMES_PER_SECOND				= 24;
 
 Reflex.Control.Ticker.DIRECTION_LEFT	= 'left';
 Reflex.Control.Ticker.DIRECTION_RIGHT	= 'right';
