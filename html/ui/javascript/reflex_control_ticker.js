@@ -58,6 +58,8 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		var fShiftPixels	= this.iPixelsPerSecond * iDifference;
 		//alert("Painting with offet "+iShiftPixels+'px');
 		this._paint(fShiftPixels);
+		
+		this.oLastUpdated	= oCurrentTime;
 	},
 	
 	_paint	: function(fPixelOffset)
