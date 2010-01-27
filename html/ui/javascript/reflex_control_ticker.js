@@ -46,7 +46,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		this.aMessages.push(sMessage);
 		
 		var oMessage		= document.createElement('li');
-		oMessage.className	= 'ticker-message';
+		oMessage.addClassName('ticker-message');
 		oMessage.innerHTML	= sMessage;
 		this.oFrame.appendChild(oMessage);
 	},
