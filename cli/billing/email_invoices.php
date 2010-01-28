@@ -182,9 +182,11 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 								"The Small to Medium Business Telecommunications Specialists!";*/
 				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.
 
-We trust you enjoyed a well deserved break over the holiday season.
+We welcome you to look over your invoice carefully, should you have any questions regarding your account, you can email us, alternatively you can call our contact centre on {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']}.
 
-From the {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Management and Staff, we wish you a happy 2010 and look forward to delivering some exciting New Business Services for you in the coming months, so stay tuned.
+Many of our long standing customers stay with us because of our flexible plans and competitive rates.
+
+As part of our continued service to you in 2010, should you require a complimentary bill analysis, or wish to upgrade your plans, we have a team of product specialists waiting to assist you. Simply e-mail upgrade@{$arrCustomerGroups[$arrDetail['CustomerGroup']]['email_domain']} or call in, and a product specialist will assist you.
 
 Regards
 The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']}
