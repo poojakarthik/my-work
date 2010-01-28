@@ -14,7 +14,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		this.oElement.addClassName('ticker');
 		this.oFrame.addClassName('ticker-frame');
 		
-		this.iLastUpdateTime	= new Date();
+		this.iLastUpdateTime	= (new Date()).getTime();
 		
 		this.bSeamlessLooping	= bSeamlessLooping ? true : false;
 		
@@ -60,9 +60,8 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 	
 	_refresh	: function()
 	{
-		var oCurrentDate	= new Date();
-		var iCurrentTime	= oCurrentDate.getTime();
-		var iDifference		= (iCurrentTime - this.oLastUpdated.getTime()) / 1000;
+		var iCurrentTime	= (new Date()).getTime();
+		var iDifference		= (iCurrentTime - this.iLastUpdateTime) / 1000;
 		var fShiftPixels	= this.iPixelsPerSecond * iDifference;
 		//alert("Painting with offet "+iShiftPixels+'px');
 		this._paint(fShiftPixels);
@@ -79,7 +78,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		this._oActualFPSMessage.innerHTML	= "Actual FPS: "+this._aFPSFrames.length+" fps";
 		/* /DEBUG */
 		
-		this.oLastUpdated	= oCurrentTime;
+		this.iLastUpdateTime	= iCurrentTime;
 	},
 	
 	_paint	: function(fPixelOffset)
