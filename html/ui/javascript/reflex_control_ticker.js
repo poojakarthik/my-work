@@ -14,7 +14,7 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		this.oElement.addClassName('ticker');
 		this.oFrame.addClassName('ticker-frame');
 		
-		this.oLastUpdated	= new Date();
+		this.iLastUpdateTime	= new Date();
 		
 		this.bSeamlessLooping	= bSeamlessLooping ? true : false;
 		
@@ -33,6 +33,11 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		this.setSpeed(Reflex.Control.Ticker.ANIMATION_PIXELS_PER_SECOND);
 		
 		this.oPeriodicalExecuter	= new PeriodicalExecuter(this._refresh.bind(this), 1 / Reflex.Control.Ticker.FRAMES_PER_SECOND);
+		
+		// DEBUG: Actual FPS output
+		this.addMessage("Target FPS: "+Reflex.Control.Ticker.FRAMES_PER_SECOND+" fps");
+		this._oActualFPSMessage	= this.addMessage("Actual FPS: N/A");
+		this._aFPSFrames		= [this.iLastUpdateTime];
 	},
 	
 	setSpeed	: function(iPixelsPerSecond)
@@ -49,15 +54,30 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 		oMessage.addClassName('ticker-message');
 		oMessage.innerHTML	= sMessage;
 		this.oFrame.appendChild(oMessage);
+		
+		return oMessage;
 	},
 	
 	_refresh	: function()
 	{
-		var oCurrentTime	= new Date();
-		var iDifference		= (oCurrentTime.getTime() - this.oLastUpdated.getTime()) / 1000;
+		var oCurrentDate	= new Date();
+		var iCurrentTime	= oCurrentDate.getTime();
+		var iDifference		= (iCurrentTime - this.oLastUpdated.getTime()) / 1000;
 		var fShiftPixels	= this.iPixelsPerSecond * iDifference;
 		//alert("Painting with offet "+iShiftPixels+'px');
 		this._paint(fShiftPixels);
+		
+		/* DEBUG: FPS Output */
+		this._aFPSFrames.unshift(iCurrentTime);
+		
+		// Remove frames older than a second 
+		while (this._aFPSFrames.length && (iCurrentTime - this._aFPSFrames[this._aFPSFrames.length-1] > 1000))
+		{
+			this._aFPSFrames.pop();
+		}
+		
+		this._oActualFPSMessage.innerHTML	= "Actual FPS: "+this._aFPSFrames.length+" fps";
+		/* /DEBUG */
 		
 		this.oLastUpdated	= oCurrentTime;
 	},
