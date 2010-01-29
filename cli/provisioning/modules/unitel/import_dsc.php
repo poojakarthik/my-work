@@ -352,6 +352,25 @@
 				default:	// Unknown Record Type
 					$arrPDR['Status']			= RESPONSE_STATUS_CANT_NORMALISE;
  			}
+ 			
+ 			// There are some types of Rejects that actually indicate that the Request has actually already succeeded or is pending
+ 			if ($arrPDR['request_status'] == REQUEST_STATUS_REJECTED)
+ 			{
+ 				switch ((int)$arrData['ReasonCode'])
+ 				{
+ 					// Number is already with us (mark as Completed)
+ 					case 850:	// Service Basket already with Provider
+ 						$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
+ 						$arrPDR['Description']		= "Completed - <Reason>";
+ 						break;
+ 						
+ 					// Similar order already pending (mark as Pending)
+ 					case 830:	// Order concurrent or pending (same Provider)
+ 						$arrPDR['request_status']	= REQUEST_STATUS_COMPLETED;
+ 						$arrPDR['Description']		= "Pending - <Reason>";
+ 						break;
+ 				}
+ 			}
  			//----------------------------------------------------------------//
  			
  			//----------------------------------------------------------------//
