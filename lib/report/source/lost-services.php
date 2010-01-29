@@ -13,8 +13,8 @@ $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "	(
-										SELECT	<start_date> AS start_date,
-												<end_date> AS end_date
+										SELECT	<StartDate> AS start_date,
+												<EndDate> AS end_date
 									) config
 									JOIN Service s
 									JOIN ProvisioningResponse pr ON (s.FNN = pr.FNN AND s.Account = pr.Account AND pr.Type IN (910, 916) AND CAST(pr.ImportedOn AS DATE) BETWEEN config.start_date AND config.end_date)
@@ -105,12 +105,12 @@ $arrSQLSelect['Account Active Service Count']			['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
-$arrSQLFields['start_date']	= Array(
+$arrSQLFields['StartDate']	= Array(
 										'Type'					=> "dataDate",
 										'Documentation-Entity'	=> "DataReport",
 										'Documentation-Field'	=> "Start Date",
 									);
-$arrSQLFields['end_date']	= Array(
+$arrSQLFields['EndDate']	= Array(
 										'Type'					=> "dataDate",
 										'Documentation-Entity'	=> "DataReport",
 										'Documentation-Field'	=> "End Date",
