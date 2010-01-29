@@ -17,7 +17,7 @@ $arrDataReport['SQLTable']		= "	(
 												<end_date> AS end_date
 									) config
 									JOIN Service s
-									JOIN ProvisioningResponse pr ON (s.FNN = pr.FNN AND s.Account = pr.Account AND pr.Type IN (910, 916) AND pr.EffectiveDate BETWEEN config.start_date AND config.end_date)
+									JOIN ProvisioningResponse pr ON (s.FNN = pr.FNN AND s.Account = pr.Account AND pr.Type IN (910, 916) AND CAST(pr.ImportedOn AS DATE) BETWEEN config.start_date AND config.end_date)
 									JOIN Account a ON (a.Id = s.Account)
 									JOIN CustomerGroup cg ON (cg.Id = a.CustomerGroup)
 									JOIN Contact c ON (a.PrimaryContact = c.Id)
@@ -33,7 +33,7 @@ $arrDataReport['SQLWhere']		= "	pr.Id =	(
 													WHERE		FNN = s.FNN
 																AND Account = s.Account
 																AND Type IN (910, 916)
-																AND EffectiveDate BETWEEN config.start_date AND config.end_date
+																AND CAST(ImportedOn AS DATE) BETWEEN config.start_date AND config.end_date
 													ORDER BY	EffectiveDate DESC,
 																Id DESC
 													LIMIT 1
@@ -60,7 +60,7 @@ $arrDataReport['SQLWhere']		= "	pr.Id =	(
 														OR
 														(
 															Type IN (910, 916)
-															AND EffectiveDate BETWEEN config.start_date AND config.end_date
+															AND CAST(ImportedOn AS DATE) BETWEEN config.start_date AND config.end_date
 														)
 													)
 										ORDER BY	EffectiveDate DESC,
