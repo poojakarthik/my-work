@@ -141,7 +141,7 @@
 			catch (Exception $oException)
 			{
 				CliEcho("<div>".nl2br($selResult->_strQuery)."</div>");
-				throw new Exception($oException->__toString());
+				throw new Exception("<div>".nl2br($selResult->_strQuery)."</div>");
 			}
 			
 			// Return the Result
