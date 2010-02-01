@@ -131,9 +131,16 @@
 			$arrValues = $this->ConvertInput($arrFields);
 			
 			// Execute the Result
-			if ($selResult->Execute($arrValues) === false)
+			try
 			{
-				throw new Exception($selResult->Error()."\n\n\n".$selResult->_strQuery);
+				if ($selResult->Execute($arrValues) === false)
+				{
+					throw new Exception($selResult->Error()."\n\n\n".$selResult->_strQuery);
+				}
+			}
+			catch (Exception $oException)
+			{
+				throw new Exception($oException->__toString()."\n\n\n".$selResult->_strQuery);
 			}
 			
 			// Return the Result
