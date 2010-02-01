@@ -12,20 +12,16 @@ $arrDataReport['Summary']		= "Lists all of the services which were lost in the s
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= 1;											// Live
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "	(
-										SELECT	<StartDate> AS start_date,
-												<EndDate> AS end_date
-									) config
-									JOIN Service s
-									JOIN ProvisioningResponse pr ON (s.FNN = pr.FNN AND s.Account = pr.Account AND pr.Type IN (910, 916) AND CAST(pr.ImportedOn AS DATE) BETWEEN config.start_date AND config.end_date)
+$arrDataReport['SQLTable']		= "	Service s
+									JOIN ProvisioningResponse pr ON (s.FNN = pr.FNN AND s.Account = pr.Account AND pr.Type IN (910, 916) AND CAST(pr.ImportedOn AS DATE) BETWEEN <StartDate> AND <EndDate>)
 									JOIN Account a ON (a.Id = s.Account)
 									JOIN CustomerGroup cg ON (cg.Id = a.CustomerGroup)
 									JOIN Contact c ON (a.PrimaryContact = c.Id)
 									
-									LEFT JOIN ServiceRatePlan srp ON (s.Id = srp.Service AND config.end_date BETWEEN srp.StartDatetime AND srp.EndDatetime)
+									LEFT JOIN ServiceRatePlan srp ON (s.Id = srp.Service AND <EndDate> BETWEEN srp.StartDatetime AND srp.EndDatetime)
 									LEFT JOIN RatePlan rp ON (rp.Id = srp.RatePlan)
 									
-									LEFT JOIN Service s_active ON (a.Id = s_active.Account AND (s_active.CreatedOn < s_active.ClosedOn OR s_active.ClosedOn IS NULL) AND CAST(s.CreatedOn AS DATE) <= config.end_date AND (s_active.ClosedOn IS NULL OR CAST(s_active.ClosedOn AS DATE) > config.end_date))
+									LEFT JOIN Service s_active ON (a.Id = s_active.Account AND (s_active.CreatedOn < s_active.ClosedOn OR s_active.ClosedOn IS NULL) AND CAST(s.CreatedOn AS DATE) <= <EndDate> AND (s_active.ClosedOn IS NULL OR CAST(s_active.ClosedOn AS DATE) > <EndDate>))
 ";
 $arrDataReport['SQLWhere']		= "	pr.Id =	(
 													SELECT		Id
@@ -33,7 +29,7 @@ $arrDataReport['SQLWhere']		= "	pr.Id =	(
 													WHERE		FNN = s.FNN
 																AND Account = s.Account
 																AND Type IN (910, 916)
-																AND CAST(ImportedOn AS DATE) BETWEEN config.start_date AND config.end_date
+																AND CAST(ImportedOn AS DATE) BETWEEN <StartDate> AND <EndDate>
 													ORDER BY	EffectiveDate DESC,
 																Id DESC
 													LIMIT 1
@@ -42,7 +38,7 @@ $arrDataReport['SQLWhere']		= "	pr.Id =	(
 														SELECT		Id
 														FROM		ServiceRatePlan
 														WHERE		Service = s.Id
-																	AND config.end_date BETWEEN StartDatetime AND EndDatetime
+																	AND <EndDate> BETWEEN StartDatetime AND EndDatetime
 														ORDER BY	CreatedOn DESC
 														LIMIT		1
 													)
@@ -60,7 +56,7 @@ $arrDataReport['SQLWhere']		= "	pr.Id =	(
 														OR
 														(
 															Type IN (910, 916)
-															AND CAST(ImportedOn AS DATE) BETWEEN config.start_date AND config.end_date
+															AND CAST(ImportedOn AS DATE) BETWEEN <StartDate> AND <EndDate>
 														)
 													)
 										ORDER BY	EffectiveDate DESC,
