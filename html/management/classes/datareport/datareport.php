@@ -140,7 +140,8 @@
 			}
 			catch (Exception $oException)
 			{
-				throw new Exception($oException->__toString()."\n\n\n".$selResult->_strQuery);
+				CliEcho($selResult->_strQuery);
+				throw new Exception($oException->__toString());
 			}
 			
 			// Return the Result
