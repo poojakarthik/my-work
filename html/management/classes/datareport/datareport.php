@@ -140,6 +140,7 @@
 			}
 			catch (Exception $oException)
 			{
+				throw new Exception(print_r($selResult->_arrPlaceholders, true));
 				throw new Exception($selResult->_strQuery);
 			}
 			
