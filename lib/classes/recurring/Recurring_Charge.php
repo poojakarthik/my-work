@@ -488,8 +488,17 @@ class Recurring_Charge extends ORM_Cached
 	// This returns the obligated times to charge (this can be zero if MinCharge is zero)
 	public function getTimesToCharge()
 	{
-		$intTimesToCharge = round($this->minCharge / $this->recursionCharge);
+		$intTimesToCharge = @($this->minCharge / $this->recursionCharge);
+		try
+		{
+			Flex::assert($intTimesToCharge !== false, 'Recurring_Charge::getTimesToCharge() caused a divide-by-zero error', print_r($this->toArray(), true), "Recurring_Charge::getTimesToCharge() -- Division by Zero");
+		}
+		catch (Exception_Assertion $oException)
+		{
+			// Do nothing -- we just want to report it
+		}
 		
+		$intTimesToCharge	= round($intTimesToCharge);
 		if (($intTimesToCharge * $this->recursionCharge) < ($this->minCharge - $this->getMinChargeMarginOfError()))
 		{
 			// We must add one more time to charge to meet the minimum charge (this could possibly be a partial charge, if the recurring charge isn't continuable)
