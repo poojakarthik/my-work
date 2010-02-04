@@ -54,41 +54,40 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->LoadJavascript("table_sort");
 		$this->LoadJavascript("employee_view");
 		
-		$this->LoadJavascript("dataset_ajax");
-		
-		/*
-		COMMENTED OUT FOR 2/7/09 ROLLOUT
-		$this->LoadJavascript("fx_fade");
-		*/
-		
-		$this->LoadJavascript("reflex_validation");
-		
-		$this->LoadJavascript("control_tab_group");
-		$this->LoadJavascript("control_tab");
-		
-		$this->LoadJavascript("control_tree_grid");
-		$this->LoadJavascript("control_tree_grid_node");
-		$this->LoadJavascript("control_tree_grid_node_root");
-		$this->LoadJavascript("control_tree_grid_node_data");
-		
-		$this->LoadJavascript("date_time_picker_dynamic");
-		
-		$this->LoadJavascript("control_field");
-		$this->LoadJavascript("control_field_text");
-		$this->LoadJavascript("control_field_password");
-		$this->LoadJavascript("control_field_checkbox");
-		$this->LoadJavascript("control_field_date_picker");
-		$this->LoadJavascript("control_field_select");
-		
-		$this->LoadJavascript("operation");
-		$this->LoadJavascript("operation_profile");
-		
-		$this->LoadJavascript("operation_tree");
-		
-		$this->LoadJavascript("user_role");
-		$this->LoadJavascript("employee");
-		$this->LoadJavascript("popup_employee");
-		
+		// Development
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+		{
+			$this->LoadJavascript("dataset_ajax");
+			
+			$this->LoadJavascript("reflex_validation");
+			
+			$this->LoadJavascript("control_tab_group");
+			$this->LoadJavascript("control_tab");
+			
+			$this->LoadJavascript("control_tree_grid");
+			$this->LoadJavascript("control_tree_grid_node");
+			$this->LoadJavascript("control_tree_grid_node_root");
+			$this->LoadJavascript("control_tree_grid_node_data");
+			
+			$this->LoadJavascript("date_time_picker_dynamic");
+			
+			$this->LoadJavascript("control_field");
+			$this->LoadJavascript("control_field_text");
+			$this->LoadJavascript("control_field_password");
+			$this->LoadJavascript("control_field_checkbox");
+			$this->LoadJavascript("control_field_date_picker");
+			$this->LoadJavascript("control_field_select");
+			
+			$this->LoadJavascript("operation");
+			$this->LoadJavascript("operation_profile");
+			
+			$this->LoadJavascript("operation_tree");
+			
+			$this->LoadJavascript("user_role");
+			$this->LoadJavascript("employee");
+			$this->LoadJavascript("popup_employee");
+			
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -163,9 +162,13 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		foreach (DBL()->Employee as $dboEmployee)
 		{
 			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
-			$strNewViewHref	= "new Popup_Employee(Control_Field.RENDER_MODE_VIEW, {$dboEmployee->Id->Value});";
 			$strView = "<img onclick='$strViewHref' title='View Employee' src='img/template/view.png'></img>";
-			$strView .= "<img onclick='$strNewViewHref' title='View Employee (NEW)' src='img/template/user_edit.png'></img>";
+			
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			{
+				$strNewViewHref	= "new Popup_Employee(Control_Field.RENDER_MODE_VIEW, {$dboEmployee->Id->Value});";
+				$strView .= "<img onclick='$strNewViewHref' title='View Employee (NEW)' src='img/template/user_edit.png'></img>";
+			}
 			
 			$strArchivedLabel = "Active";
 			if ($dboEmployee->Archived->Value == 1)
@@ -230,7 +233,11 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		{
 			echo "<div style='position: absolute; right: 0px; top: 3px;'>";
 			$this->Button("Add Employee", "window.location='$strAddEmployee'");
-			$this->Button("Add Employee", "new Popup_Employee(Control_Field.RENDER_MODE_EDIT);");
+			
+			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			{
+				$this->Button("Add Employee", "new Popup_Employee(Control_Field.RENDER_MODE_EDIT);");
+			}
 			
 			echo "</div>\n";
 		}
