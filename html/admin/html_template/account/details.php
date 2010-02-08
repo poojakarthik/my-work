@@ -481,9 +481,33 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		DBO()->Account->BusinessName->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
 		DBO()->Account->TradingName->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
-
-		DBO()->Account->ABN->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
-		DBO()->Account->ACN->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
+		
+		if ($bolIsProperAdminUser)
+		{
+			DBO()->Account->ABN->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
+			DBO()->Account->ACN->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
+		}
+		else
+		{
+			// The user does not have permission to edit this property
+			if ((DBO()->Account->ABN->Value == "") && (DBO()->Account->ACN->Value == ""))
+			{
+				// There is no ABN or ACN
+				DBO()->Account->ABN->RenderArbitrary("[Not Specified]", RENDER_OUTPUT);
+			}
+			
+			if (DBO()->Account->ABN->Value != "")
+			{
+				// Display the ABN, but only if there is one
+				DBO()->Account->ABN->RenderOutput();
+			}
+			
+			if (DBO()->Account->ACN->Value != "")
+			{
+				// If there is no ABN, display the ACN, if there is one
+				DBO()->Account->ACN->RenderOutput();
+			}
+		}
 		
 		// Don't include address and BillingMethod details if this
 		// HtmlTemplate is being rendered on the InvoicesAndPayments page 
