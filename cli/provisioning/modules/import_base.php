@@ -73,9 +73,9 @@
  		$this->_arrModuleConfig	= Array();
  		
  		// Statements
- 		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "*", "CarrierRef = <CarrierRef>");
+ 		$this->_selRequestByCarrierRef	= new StatementSelect("ProvisioningRequest", "*", "CarrierRef = <CarrierRef> AND Status IN (301, 302, 303)");
  		$this->_selRequestByFNN			= new StatementSelect(	"ProvisioningRequest", "*", 
-																"Carrier = <Carrier> AND FNN = <FNN> AND Type = <Type> AND RequestedOn < <EffectiveDate>");
+																"Carrier = <Carrier> AND FNN = <FNN> AND Type = <Type> AND RequestedOn < <EffectiveDate> AND Status IN (301, 302, 303)");
 		$this->_selTranslateCarrierCode	= new StatementSelect("ProvisioningTranslation", "flex_code", "Context = <Context> AND CarrierCode = <CarrierCode>");
 		
 		$this->_selCarrierModule		= new StatementSelect("CarrierModule", "*", "Carrier = <Carrier> AND Module = <Module> AND Type = ".MODULE_TYPE_PROVISIONING_INPUT);
