@@ -20,7 +20,7 @@ class Application_Handler_Account extends Application_Handler
 			$arrDetailsToRender['arrCustomerGroups']	= Customer_Group::getAll();
 			
 			// Countries & States (Australia only)
-			$resCountries	= $qryQuery->Execute("SELECT * FROM country WHERE code = 'AUS'");
+			$resCountries	= $qryQuery->Execute("SELECT * FROM country WHERE code_3_char = 'AUS'");
 			if ($resCountries === false)
 			{
 				throw new Exception($resCountries->Error());
@@ -29,7 +29,8 @@ class Application_Handler_Account extends Application_Handler
 			while ($arrCountry = $resCountries->fetch_assoc())
 			{
 				// States
-				$resStates	= $qryQuery->Execute("SELECT * FROM state WHERE country_id = {$arrCountry['id']})");
+				$strQuery = "SELECT * FROM state WHERE country_id = {$arrCountry['id']}";
+				$resStates	= $qryQuery->Execute($strQuery);
 				if ($resStates === false)
 				{
 					throw new Exception($resStates->Error());
