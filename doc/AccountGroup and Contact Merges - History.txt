@@ -1410,3 +1410,36 @@ merge_account_groups.php -d 1000165153 -o 1000175153 -t	<<-- the t is for test m
 Merge Contact 27876 into contact 16314
 merge_contacts.php -d 16314 -o 27876 -t						<<-- the t is for test mode.  It will rollback all changes
 -----------------------------------------------
+
+
+Accounts: 	Insight Processing, Mortgage Choice Maroochydore, and Mortgage Choice Buderim
+-----------------------------------------------
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000175001, 1000175113) ORDER BY Id;
+
+	Account Groups are  1000174931 AND 1000175041
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000174931, 1000175041) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000174931, 1000175041) ORDER BY Id;
+
+There are 2 modelling 1
+
+SELECT * from Contact WHERE Id IN (CONTACT_1, CONTACT_2, CONTACT_3) ORDER BY Id;
+
+Merge AccountGroup 1000175041 into 1000174931
+merge_account_groups.php -d 1000174931 -o 1000175041 -t	<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 27730 into contact 27597
+merge_contacts.php -d 27597 -o 27730 -t						<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 29692 into contact 27597
+merge_contacts.php -d 27597 -o 29692 -t						<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
+
+
