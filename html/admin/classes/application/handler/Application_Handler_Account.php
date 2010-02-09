@@ -43,7 +43,7 @@ class Application_Handler_Account extends Application_Handler
 				$arrDetailsToRender['arrCountries'][$arrCountry['id']]	= $arrCountry;
 			}
 			
-			$this->LoadPage('telemarketing_file_history', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			$this->LoadPage('account_create', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 		catch (Exception $eException)
 		{
