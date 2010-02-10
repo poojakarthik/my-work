@@ -3639,7 +3639,8 @@ else
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function AddAccount() {
+	function AddAccount()
+	{
 		$this->strContextMenuLabel = "Add New Account";
 		$this->strLabel = "Add New Account";
 		return self :: NEW_FRAMEWORK . "reflex.php/Account/Create/";
