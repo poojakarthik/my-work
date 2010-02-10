@@ -2472,6 +2472,16 @@ div.page-reset h2
 	margin-bottom:			10px;
 	padding:				5px 5px 5px 40px;
 }
+div.Required
+{
+	display:			inline-block;
+	padding:			0;
+	width:				10px;
+	color:				#CC0000;
+	text-align:			left;
+	font-size:			0.8em;
+	vertical-align:		top; 
+}
 
 .Attention
 {
@@ -2530,5 +2540,6 @@ table.form-layout > tbody > tr > td > ul > li > table
 {
 	padding-left:		10px;
 }
+
 /************************ END - Form Layout - END ************************/
 

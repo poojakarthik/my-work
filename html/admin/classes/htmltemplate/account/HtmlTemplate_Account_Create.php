@@ -42,39 +42,39 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<h2 class='Account'>Account Details</h2>
 		<table class='form-layout'>
 		<tr>
-			<th>Business Name:</th>
+			<th><div class='Required'>*</div>Business Name:</th>
 			<td><input type='text' name='Account[BusinessName]' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>Trading Name:</th>
+			<th><div class='Required'>&nbsp;</div>Trading Name:</th>
 			<td><input type='text' name='Account[TradingName]' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>ABN:</th>
+			<th><div class='Required'>1</div>ABN:</th>
 			<td><input type='text' name='Account[ABN]' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>ACN:</th>
+			<th><div class='Required'>1</div>ACN:</th>
 			<td><input type='text' name='Account[ACN]' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>Address (Line 1):</th>
+			<th><div class='Required'>*</div>Address (Line 1):</th>
 			<td><input type='text' name='Account[Address1]' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>Address (Line 2):</th>
+			<th><div class='Required'>&nbsp;</div>Address (Line 2):</th>
 			<td><input type='text' name='Account[Address2]' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>Suburb:</th>
+			<th><div class='Required'>*</div>Suburb:</th>
 			<td><input type='text' name='Account[Suburb]' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>Postcode:</th>
+			<th><div class='Required'>*</div>Postcode:</th>
 			<td><input type='text' name='Account[Postcode]' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>State:</th>
+			<th><div class='Required'>*</div>State:</th>
 			<td>
 				<select name='Account[State]'>
 					<option value=''></option>
@@ -82,7 +82,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<th>Customer Group:</th>
+			<th><div class='Required'>*</div>Customer Group:</th>
 			<td>
 				<select name='Account[CustomerGroup]'>
 					<option value=''></option>
@@ -97,61 +97,68 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<h2 class='Account'>Billing Details</h2>
 		<table class='form-layout'>
 		<tr>
-			<th>NDD Fee:</th>
+			<th><div class='Required'>&nbsp;</div>NDD Fee:</th>
 			<td>
 				<input type='checkbox' name='Account[DisableDDR]' value='1' />
 				Do NOT charge an admin fee (non direct debit fee)
+				<div class='Seperator'></div>
 			</td>
 		</tr>
 		<tr>
-			<th>Late Payments:</th>
+			<th><div class='Required'>&nbsp;</div>Late Payments:</th>
 			<td>
 				<ul>
 					<li><input type='radio' name='Account[DisableLatePayment]' value='0' /> Charge a late payment fee</li>
 					<li><input type='radio' name='Account[DisableLatePayment]' value='-1' /> Don't charge a late payment fee on the next invoice</li>
-					<li><input type='radio' name='Account[DisableLatePayment]' value='1' /> Never charge a late payment fee</li>
+					<li><input type='radio' name='Account[DisableLatePayment]' value='1' /> Never charge a late payment fee<div class='Seperator'></div></li>
 				</ul>
 			</td>
 		</tr>
 		<tr>
-			<th>Billing Method:</th>
+			<th><div class='Required'>*</div>Billing Method:</th>
 			<td>
 				<select name='Account[BillingMethod]'>
 					<option value=''></option>
 				</select>
+				<div class='Seperator'></div>
 			</td>
 		</tr>
 		<tr>
-			<th>Payment Method:</th>
+			<th><div class='Required'>*</div>Payment Method:</th>
 			<td>
 				<ul>
-					<li><input type='radio' name='Account[BillingType]' value='3' /> Invoice</li>
 					<li>
+						<input type='radio' name='Account[BillingType]' value='3' /> Invoice
+						<div class='Seperator'></div>
+					</li>
+					<li>
+						<div class='Seperator'></div>
 						<input type='radio' name='Account[BillingType]' value='1' /> Direct Debit - from Bank Account
 						<table>
 						<tr>
-							<th>Bank Name:</th>
+							<th style='width: 175px;'><div class='Required'>#</div>Bank Name:</th>
 							<td><input name='DDR[BankName]' maxlength='255' value='' type='text' /></td>
 						</tr>
 						<tr>
-							<th>BSB #:</th>
+							<th><div class='Required'>#</div>BSB #:</th>
 							<td><input name='DDR[BSB]' maxlength='6' value='' type='text' /></td>
 						</tr>
 						<tr>
-							<th>Account #:</th>
+							<th><div class='Required'>#</div>Account #:</th>
 							<td><input name='DDR[AccountNumber]' maxlength='9' value='' type='text' /></td>
 						</tr>
 						<tr>
-							<th>Account Name:</th>
+							<th><div class='Required'>#</div>Account Name:</th>
 							<td><input name='DDR[AccountName]' maxlength='255' value='' type='text' /></td>
 						</tr>
 						</table>
 					</li>
 					<li>
+						<div class='Seperator'></div>
 						<input type='radio' name='Account[BillingType]' value='2' /> Direct Debit - from Credit Card
 						<table>
 						<tr>
-							<th>Card Type:</th>
+							<th style='width: 175px;'><div class='Required'>#</div>Card Type:</th>
 							<td>
 								<select tabindex='23' name='CC[CardType]'>
 									<option value='1'>Visa</option>
@@ -162,15 +169,15 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 							</td>
 						</tr>
 						<tr>
-							<th>Card Holder Name:</th>
+							<th><div class='Required'>#</div>Card Holder Name:</th>
 							<td><input name='CC[Name]' maxlength='255' value='' type='text' /></td>
 						</tr>
 						<tr>
-							<th>Credit Card Number:</th>
+							<th><div class='Required'>#</div>Credit Card Number:</th>
 							<td><input name='CC[CardNumber]' maxlength='20' value='' type='text' /></td>
 						</tr>
 						<tr>
-							<th>Expiration Date:</th>
+							<th><div class='Required'>#</div>Expiration Date:</th>
 							<td>
 								<select tabindex='26' name='CC[ExpMonth]'>
 									<option value='1'>1</option>
@@ -199,7 +206,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 							</td>
 						</tr>
 						<tr>
-							<th>CVV #:</th>
+							<th><div class='Required'>#</div>CVV #:</th>
 							<td><input name='CC[CVV]' maxlength='255' value='' type='text' /></td>
 						</tr>
 						</table>
@@ -218,13 +225,30 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<th></th>
 			<td>
 				<ul>
-					<li><input type='radio' name='Contact[USE]' value='1' /> Select an existing contact from the list below:</li>
-					<li><input type='radio' name='Contact[USE]' value='0' /> Create a new Contact using the following details:</li>
+					<li>
+						<input type='radio' name='Contact[USE]' value='1' />
+						Select an existing contact from the list below:
+						<table>
+						<tr>
+							<th></th>
+							<td>
+								<select name='Contact[Id]'>
+									<option></option>	
+								</select>
+							</td>
+						</tr>
+						</table>
+					</li>
+					<li>
+						<div class='Seperator'></div>
+						<input type='radio' name='Contact[USE]' value='0' />
+						Create a new Contact using the following details:
+					</li>
 				</ul>
 			</td>
 		</tr>
 		<tr>
-			<th>Title:</th>
+			<th><div class='Required'>#</div>Title:</th>
 			<td>
 				<select name='Contact[Title]'>
 					<option value=''></option>
@@ -232,15 +256,15 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<th>First Name:</th>
+			<th><div class='Required'>#</div>First Name:</th>
 			<td><input type='text' name='Contact[FirstName]' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>Last Name:</th>
+			<th><div class='Required'>#</div>Last Name:</th>
 			<td><input type='text' name='Contact[LastName]' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>Date of Birth:</th>
+			<th><div class='Required'>#</div>Date of Birth:</th>
 			<td>
 				<select name='Contact[DOB][day]'>
 					<option></option>
@@ -254,27 +278,27 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<th>Job Title:</th>
+			<th><div class='Required'>&nbsp;</div>Job Title:</th>
 			<td><input type='text' name='Contact[JobTitle]' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>Email Address:</th>
+			<th><div class='Required'>#</div>Email Address:</th>
 			<td><input type='text' name='Contact[Email]' maxlength='255' /></td>
 		</tr>
 		<tr>
-			<th>Phone Number:</th>
+			<th><div class='Required'>2</div>Phone Number:</th>
 			<td><input type='text' name='Contact[Phone]' maxlength='25' /></td>
 		</tr>
 		<tr>
-			<th>Mobile Number:</th>
+			<th><div class='Required'>2</div>Mobile Number:</th>
 			<td><input type='text' name='Contact[Mobile]' maxlength='25' /></td>
 		</tr>
 		<tr>
-			<th>Fax Number:</th>
+			<th><div class='Required'>&nbsp;</div>Fax Number:</th>
 			<td><input type='text' name='Contact[Fax]' maxlength='25' /></td>
 		</tr>
 		<tr>
-			<th>Password:</th>
+			<th><div class='Required'>#</div>Password:</th>
 			<td><input type='text' name='Contact[Password]' maxlength='255' /></td>
 		</tr>
 		</table>\n";
@@ -288,10 +312,10 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<th></th>
 			<td>
 				<ul>
-					<li><strong><span class='Red'>* </span></strong>: Required field</li>
-					<li><strong><span class='Red'><sup>1</sup> </span></strong>: One or both fields required</li>
-					<li><strong><span class='Red'><sup>2</sup> </span></strong>: One or both fields required only when the associated option is selected</li>
-					<li><strong><span class='Red'><sup>#</sup> </span></strong>: Required only when the associated option is selected</li>
+					<li><div class='Required'>*</div>: Required field</li>
+					<li><div class='Required'>1</div>: One or both fields required</li>
+					<li><div class='Required'>2</div>: One or both fields required only when the associated option is selected</li>
+					<li><div class='Required'>#</div>: Required only when the associated option is selected</li>
 				</ul>
 			</td>
 		</tr>
