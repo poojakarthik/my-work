@@ -2435,24 +2435,35 @@ table.form-layout
 {
 	width:				70em;
 	margin-left:		0;
+	background-color:	#EFEFEF;
+	border-spacing:		0;
+	border:				1px solid #000000;
 }
 
 table.form-layout > tbody > tr > th
 {
-	background-color:	#dedede;
 	text-align:			left;
 	width:				15em;
 	vertical-align:		top;
+	font-size:			1.2em;
+	padding:			3px 10px 3px 10px;
+}
+
+table.form-layout > tbody > tr > td
+{
+	background-color:	#dddddd;
+	padding:			3px 10px 3px 10px;
+	color:				#333333;
 }
 
 table.form-layout > tbody > tr > td > input[type=text]
 {
-	border:				1px solid #4572E7;
+	border:				1px solid #000000;
 	width:				15em;
 }
 table.form-layout > tbody > tr > td > select
 {
-	border:				1px solid #4572E7;
+	border:				1px solid #000000;
 }
 table.form-layout > tbody > tr > td > ul
 {
@@ -2460,4 +2471,9 @@ table.form-layout > tbody > tr > td > ul
 	margin:				0;
 	padding:			0;
 	text-align:			left;
+}
+
+table.form-layout > tbody > tr > td > ul > li > table
+{
+	padding-left:		10px;
 }

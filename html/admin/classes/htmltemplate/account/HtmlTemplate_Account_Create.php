@@ -33,7 +33,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		// Account Details
 		echo "
 		<h2 class='Account'>Account Details</h2>
-		<table class='reflex form-layout'>
+		<table class='form-layout'>
 		<tr>
 			<th>Business Name:</th>
 			<td><input type='text' name='Account[BusinessName]' class='input-string' maxlength='255'></td>
@@ -80,7 +80,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		// Billing Details
 		echo "
 		<h2 class='Account'>Billing Details</h2>
-		<table class='reflex form-layout'>
+		<table class='form-layout'>
 		<tr>
 			<th>NDD Fee:</th>
 			<td>
@@ -198,7 +198,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		// Primary Contact Details
 		echo "
 		<h2 class='Account'>Primary Contact Details</h2>
-		<table class='reflex form-layout'>
+		<table class='form-layout'>
 		<tr>
 			<th></th>
 			<td>
@@ -258,7 +258,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		// Legend
 		echo "
 		<h2 class='Account'>Legend</h2>
-		<table class='reflex form-layout'>
+		<table class='form-layout'>
 		<tr>
 			<th></th>
 			<td>
