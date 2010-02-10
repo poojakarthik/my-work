@@ -33,66 +33,63 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		// Account Details
 		echo "
 		<h2 class='Account'>Account Details</h2>
-		<div class='wide-form'>
-		<table>
+		<table class='reflex form-layout'>
 		<tr>
-			<td>Business Name</td>
+			<th>Business Name</th>
 			<td><input type='text' name='Account[BusinessName]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>Trading Name</td>
+			<th>Trading Name</th>
 			<td><input type='text' name='Account[TradingName]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>ABN</td>
+			<th>ABN</th>
 			<td><input type='text' name='Account[ABN]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>ACN</td>
+			<th>ACN</th>
 			<td><input type='text' name='Account[ACN]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>Address (Line 1)</td>
+			<th>Address (Line 1)</th>
 			<td><input type='text' name='Account[Address1]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>Address (Line 2)</td>
+			<th>Address (Line 2)</th>
 			<td><input type='text' name='Account[Address2]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>Suburb</td>
+			<th>Suburb</th>
 			<td><input type='text' name='Account[Suburb]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>Postcode</td>
+			<th>Postcode</th>
 			<td><input type='text' name='Account[Postcode]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>State</td>
+			<th>State</th>
 			<td><select name='Account[State]'><option value=''></option></select></td>
 		</tr>
 		<tr>
-			<td>Customer Group</td>
+			<th>Customer Group</th>
 			<td><select name='Account[CustomerGroup]'><option value=''></option></select></td>
 		</tr>
-		</table>
-		</div>\n";
+		</table>\n";
 		
 	
 		// Billing Details
 		echo "
 		<h2 class='Account'>Billing Details</h2>
-		<div class='wide-form'>
-		<table>
+		<table class='reflex form-layout'>
 		<tr>
-			<td>NDD Fee</td>
+			<th>NDD Fee</th>
 			<td>
 				<input type='checkbox' name='Account[DisableDDR]' value='1'>
 				Do NOT charge an admin fee (non direct debit fee)
 			</td>
 		</tr>
 		<tr>
-			<td style='vertical-align: top;'>Late Payments</td>
+			<th>Late Payments</th>
 			<td>
 				<ul style='list-style-type: none; margin: 0; padding: 0;'>
 					<li><input type='radio' name='Account[DisableLatePayment]' value='0'> Charge a late payment fee</li>
@@ -102,7 +99,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<td>Billing Method</td>
+			<th>Billing Method</th>
 			<td>
 				<select name='Account[BillingMethod]'>
 					<option value=''></option>
@@ -110,7 +107,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<td style='vertical-align: top;'>Payment Method</td>
+			<th>Payment Method</th>
 			<td>
 				<ul style='list-style-type: none; margin: 0; padding: 0;'>
 					<li><input type='radio' name='Account[BillingType]' value='3'> Invoice</li>
@@ -119,17 +116,15 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				</ul>
 			</td>
 		</tr>
-		</table>
-		</div>\n";
+		</table>\n";
 		
 
 		// Primary Contact Details
 		echo "
 		<h2 class='Account'>Primary Contact Details</h2>
-		<div class='wide-form'>
-		<table>
+		<table class='reflex form-layout'>
 		<tr>
-			<td style='vertical-align: top;'></td>
+			<th></th>
 			<td>
 				<ul style='list-style-type: none; margin: 0; padding: 0;'>
 					<li><input type='radio' name='Contact[USE]' value='1'> Select an existing contact from the list below:</li>
@@ -138,19 +133,19 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<td>Title</td>
+			<th>Title</th>
 			<td><select name='Contact[Title]'><option value=''></option></select></td>
 		</tr>
 		<tr>
-			<td>First Name</td>
+			<th>First Name</th>
 			<td><input type='text' name='Contact[FirstName]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>Last Name</td>
+			<th>Last Name</th>
 			<td><input type='text' name='Contact[LastName]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>Date of Birth</td>
+			<th>Date of Birth</th>
 			<td>
 				<select name='Contact[DOB][day]'></select>
 				<select name='Contact[DOB][month]'></select>
@@ -158,40 +153,38 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<td>Job Title</td>
+			<th>Job Title</th>
 			<td><input type='text' name='Contact[JobTitle]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>Email Address</td>
+			<th>Email Address</th>
 			<td><input type='text' name='Contact[Email]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<td>Phone Number</td>
+			<th>Phone Number</th>
 			<td><input type='text' name='Contact[Phone]' class='input-string' maxlength='25'></td>
 		</tr>
 		<tr>
-			<td>Mobile Number</td>
+			<th>Mobile Number</th>
 			<td><input type='text' name='Contact[Mobile]' class='input-string' maxlength='25'></td>
 		</tr>
 		<tr>
-			<td>Fax Number</td>
+			<th>Fax Number</th>
 			<td><input type='text' name='Contact[Fax]' class='input-string' maxlength='25'></td>
 		</tr>
 		<tr>
-			<td>Password</td>
+			<th>Password</th>
 			<td><input type='text' name='Contact[Password]' class='input-string' maxlength='255'></td>
 		</tr>
-		</table>
-		</div>\n";
+		</table>\n";
 		
 		
 		// Legend
 		echo "
 		<h2 class='Account'>Primary Contact Details</h2>
-		<div class='wide-form'>
-		<table>
+		<table class='reflex form-layout'>
 		<tr>
-			<td style='vertical-align: top;'></td>
+			<th></th>
 			<td>
 				<ul style='list-style-type: none; margin: 0; padding: 0;'>
 					<li><strong><span class='Red'>* </span></strong>: Required field</li>
@@ -201,8 +194,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				</ul>
 			</td>
 		</tr>
-		</table>
-		</div>\n";
+		</table>\n";
 	}
 	
 }
