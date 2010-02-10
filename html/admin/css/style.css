@@ -2429,3 +2429,29 @@ div.ticker > ul.ticker-frame > li.ticker-message
 }
 
 /******************************************************************************/
+
+
+table.form-layout
+{
+	width:				70em;
+	margin-left:		0;
+}
+
+table.form-layout > tbody > tr > th
+{
+	background-color:	#dedede;
+	text-align:			left;
+	width:				15em;
+	vertical-align:		top;
+}
+
+table.form-layout > tbody > tr > td > input
+{
+	border:				1px solid #4572E7;
+	width:				15em;
+}
+table.form-layout > tbody > tr > td > select
+{
+	border:				1px solid #4572E7;
+}
+

@@ -10,7 +10,6 @@
  *
  * It is hoped that everything here will eventually be phased out, or moved into style.css
  */
-
 a,
 a:link,
 a:visited {
@@ -290,5 +289,3 @@ table.Listing tr.PrimarySelected td {
 	background-color:#11FF33;
 	vertical-align:top;
 }
-
-
