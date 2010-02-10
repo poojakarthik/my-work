@@ -101,7 +101,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<td>
 				<input type='checkbox' name='Account[DisableDDR]' value='1' />
 				Do NOT charge an admin fee (non direct debit fee)
-				<div class='Seperator'></div>
+				<div class='SmallSeperator'></div>
 			</td>
 		</tr>
 		<tr>
@@ -110,7 +110,10 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				<ul>
 					<li><input type='radio' name='Account[DisableLatePayment]' value='0' /> Charge a late payment fee</li>
 					<li><input type='radio' name='Account[DisableLatePayment]' value='-1' /> Don't charge a late payment fee on the next invoice</li>
-					<li><input type='radio' name='Account[DisableLatePayment]' value='1' /> Never charge a late payment fee<div class='Seperator'></div></li>
+					<li>
+						<input type='radio' name='Account[DisableLatePayment]' value='1' /> Never charge a late payment fee
+						<div class='SmallSeperator'></div>
+					</li>
 				</ul>
 			</td>
 		</tr>
@@ -120,7 +123,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				<select name='Account[BillingMethod]'>
 					<option value=''></option>
 				</select>
-				<div class='Seperator'></div>
+				<div class='SmallSeperator'></div>
 			</td>
 		</tr>
 		<tr>
@@ -129,10 +132,9 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				<ul>
 					<li>
 						<input type='radio' name='Account[BillingType]' value='3' /> Invoice
-						<div class='Seperator'></div>
 					</li>
 					<li>
-						<div class='Seperator'></div>
+						<div class='SmallSeperator'></div>
 						<input type='radio' name='Account[BillingType]' value='1' /> Direct Debit - from Bank Account
 						<table>
 						<tr>
@@ -154,7 +156,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						</table>
 					</li>
 					<li>
-						<div class='Seperator'></div>
+						<div class='SmallSeperator'></div>
 						<input type='radio' name='Account[BillingType]' value='2' /> Direct Debit - from Credit Card
 						<table>
 						<tr>
@@ -240,7 +242,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						</table>
 					</li>
 					<li>
-						<div class='Seperator'></div>
+						<div class='SmallSeperator'></div>
 						<input type='radio' name='Contact[USE]' value='0' />
 						Create a new Contact using the following details:
 					</li>
