@@ -9,20 +9,17 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 
 	public function Render()
 	{
-		
-		$strAccountCreateLink = MenuItems::AddAccount();
-		// $_GET['Associated']=1000167166
-		
+
 		echo "
 		<div class='page-reset'>
-		<form method='post' action='{$strAccountCreateLink}'>\n";
+		<form method='post' action='" . MenuItems::AddAccount() . "'>\n";
 
 		// Message Notice
 		if(array_key_exists("Associated", $_GET))
 		{
 			echo "
 			<div style='position: relative; float: right;'>
-				<input type='submit' class='normal-button' name='View_Account' value='View Account' />
+				<input onclick=document.location='" . MenuItems::AccountOverview(htmlspecialchars($_GET['Associated'])) . "' type='button' class='normal-button' name='View_Account' value='View Account'/>
 			</div>
 			<div><h1>Add Associated Account</h1></div>
 			<div class='line-small'></div>
