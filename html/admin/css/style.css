@@ -2445,7 +2445,7 @@ table.form-layout > tbody > tr > th
 	vertical-align:		top;
 }
 
-table.form-layout > tbody > tr > td > input
+table.form-layout > tbody > tr > td > input[type=text]
 {
 	border:				1px solid #4572E7;
 	width:				15em;
