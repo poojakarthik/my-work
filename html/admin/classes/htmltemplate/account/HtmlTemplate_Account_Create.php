@@ -33,6 +33,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		// Account Details
 		echo "
 		<h2 class='Account'>Account Details</h2>
+		<div class='wide-form'>
 		<table>
 		<tr>
 			<td>Business Name</td>
@@ -74,12 +75,14 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<td>Customer Group</td>
 			<td><select name='Account[CustomerGroup]'><option value=''></option></select></td>
 		</tr>
-		</table>\n";
+		</table>
+		</div>\n";
 		
 	
 		// Billing Details
 		echo "
 		<h2 class='Account'>Billing Details</h2>
+		<div class='wide-form'>
 		<table>
 		<tr>
 			<td>NDD Fee</td>
@@ -116,12 +119,14 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				</ul>
 			</td>
 		</tr>
-		</table>\n";
+		</table>
+		</div>\n";
 		
 
 		// Primary Contact Details
 		echo "
 		<h2 class='Account'>Primary Contact Details</h2>
+		<div class='wide-form'>
 		<table>
 		<tr>
 			<td style='vertical-align: top;'></td>
@@ -176,12 +181,14 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<td>Password</td>
 			<td><input type='text' name='Contact[Password]' class='input-string' maxlength='255'></td>
 		</tr>
-		</table>\n";
+		</table>
+		</div>\n";
 		
 		
 		// Legend
 		echo "
 		<h2 class='Account'>Primary Contact Details</h2>
+		<div class='wide-form'>
 		<table>
 		<tr>
 			<td style='vertical-align: top;'></td>
@@ -194,7 +201,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				</ul>
 			</td>
 		</tr>
-		</table>\n";
+		</table>
+		</div>\n";
 	}
 	
 }
