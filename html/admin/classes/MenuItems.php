@@ -3625,5 +3625,25 @@ else
 				break;
 		}
 	}
+	
+	//------------------------------------------------------------------------//
+	// AddAccount
+	//------------------------------------------------------------------------//
+	/**
+	 * AddAccount()
+	 *
+	 * Compiles the Href to be executed when the AddAccount menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the AddAccount menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function AddAccount() {
+		$this->strContextMenuLabel = "Add New Account";
+		$this->strLabel = "Add New Account";
+		return self :: NEW_FRAMEWORK . "reflex.php/Account/Create/";
+	}
+
 }
 ?>

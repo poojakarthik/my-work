@@ -10,7 +10,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 	public function Render()
 	{
 		
-		$strAccountCreateLink = MenuItems::ManageSales();
+		$strAccountCreateLink = MenuItems::AddAccount();
 		// $_GET['Associated']=1000167166
 		
 		echo "
@@ -301,8 +301,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		echo "
 		<div class='Seperator'></div>
 		<div style='text-align: center;'>
-			<input type='button' name='Add_Account_Submit' value='Save' />
-			<input type='button' name='Add_Account_Cancel' value='Cancel' />
+			<input type='submit' class='normal-button' name='Add_Account_Submit' value='Save' />
+			<input type='submit' class='normal-button' name='Add_Account_Cancel' value='Cancel' />
 		</div>";
 		
 		// End page reset wrapper
