@@ -2430,6 +2430,8 @@ div.ticker > ul.ticker-frame > li.ticker-message
 
 /******************************************************************************/
 
+
+/************************ START - Page Reset - START ************************/
 div.page-reset *
 {
 	font-family:		inherit;
@@ -2455,7 +2457,10 @@ div.page-reset h2
 {
 	font-size:			1.3em;
 }
+/************************ END - Page Reset - END ************************/
 
+
+/************************ START - Ported CSS from Framework 1 - START ************************/
 .MsgNoticeWide
 {
 	background-color:		#FFFFC0;
@@ -2474,7 +2479,10 @@ div.page-reset h2
 	color:					#CC0000;
 	font-weight:			bold;
 }
+/************************ END - Ported CSS from Framework 1 - END ************************/
 
+
+/************************ START - Form Layout - START ************************/
 table.form-layout
 {
 	width:				100%;
@@ -2522,3 +2530,5 @@ table.form-layout > tbody > tr > td > ul > li > table
 {
 	padding-left:		10px;
 }
+/************************ END - Form Layout - END ************************/
+
