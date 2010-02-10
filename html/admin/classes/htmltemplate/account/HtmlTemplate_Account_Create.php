@@ -35,43 +35,43 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<h2 class='Account'>Account Details</h2>
 		<table class='reflex form-layout'>
 		<tr>
-			<th>Business Name</th>
+			<th>Business Name:</th>
 			<td><input type='text' name='Account[BusinessName]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>Trading Name</th>
+			<th>Trading Name:</th>
 			<td><input type='text' name='Account[TradingName]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>ABN</th>
+			<th>ABN:</th>
 			<td><input type='text' name='Account[ABN]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>ACN</th>
+			<th>ACN:</th>
 			<td><input type='text' name='Account[ACN]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>Address (Line 1)</th>
+			<th>Address (Line 1):</th>
 			<td><input type='text' name='Account[Address1]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>Address (Line 2)</th>
+			<th>Address (Line 2):</th>
 			<td><input type='text' name='Account[Address2]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>Suburb</th>
+			<th>Suburb:</th>
 			<td><input type='text' name='Account[Suburb]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>Postcode</th>
+			<th>Postcode:</th>
 			<td><input type='text' name='Account[Postcode]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>State</th>
+			<th>State:</th>
 			<td><select name='Account[State]'><option value=''></option></select></td>
 		</tr>
 		<tr>
-			<th>Customer Group</th>
+			<th>Customer Group:</th>
 			<td><select name='Account[CustomerGroup]'><option value=''></option></select></td>
 		</tr>
 		</table>\n";
@@ -82,14 +82,14 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<h2 class='Account'>Billing Details</h2>
 		<table class='reflex form-layout'>
 		<tr>
-			<th>NDD Fee</th>
+			<th>NDD Fee:</th>
 			<td>
 				<input type='checkbox' name='Account[DisableDDR]' value='1'>
 				Do NOT charge an admin fee (non direct debit fee)
 			</td>
 		</tr>
 		<tr>
-			<th>Late Payments</th>
+			<th>Late Payments:</th>
 			<td>
 				<ul style='list-style-type: none; margin: 0; padding: 0;'>
 					<li><input type='radio' name='Account[DisableLatePayment]' value='0'> Charge a late payment fee</li>
@@ -99,7 +99,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<th>Billing Method</th>
+			<th>Billing Method:</th>
 			<td>
 				<select name='Account[BillingMethod]'>
 					<option value=''></option>
@@ -107,7 +107,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<th>Payment Method</th>
+			<th>Payment Method:</th>
 			<td>
 				<ul style='list-style-type: none; margin: 0; padding: 0;'>
 					<li><input type='radio' name='Account[BillingType]' value='3'> Invoice</li>
@@ -133,19 +133,19 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<th>Title</th>
+			<th>Title:</th>
 			<td><select name='Contact[Title]'><option value=''></option></select></td>
 		</tr>
 		<tr>
-			<th>First Name</th>
+			<th>First Name:</th>
 			<td><input type='text' name='Contact[FirstName]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>Last Name</th>
+			<th>Last Name:</th>
 			<td><input type='text' name='Contact[LastName]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>Date of Birth</th>
+			<th>Date of Birth:</th>
 			<td>
 				<select name='Contact[DOB][day]'></select>
 				<select name='Contact[DOB][month]'></select>
@@ -153,27 +153,27 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<th>Job Title</th>
+			<th>Job Title:</th>
 			<td><input type='text' name='Contact[JobTitle]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>Email Address</th>
+			<th>Email Address:</th>
 			<td><input type='text' name='Contact[Email]' class='input-string' maxlength='255'></td>
 		</tr>
 		<tr>
-			<th>Phone Number</th>
+			<th>Phone Number:</th>
 			<td><input type='text' name='Contact[Phone]' class='input-string' maxlength='25'></td>
 		</tr>
 		<tr>
-			<th>Mobile Number</th>
+			<th>Mobile Number:</th>
 			<td><input type='text' name='Contact[Mobile]' class='input-string' maxlength='25'></td>
 		</tr>
 		<tr>
-			<th>Fax Number</th>
+			<th>Fax Number:</th>
 			<td><input type='text' name='Contact[Fax]' class='input-string' maxlength='25'></td>
 		</tr>
 		<tr>
-			<th>Password</th>
+			<th>Password:</th>
 			<td><input type='text' name='Contact[Password]' class='input-string' maxlength='255'></td>
 		</tr>
 		</table>\n";
