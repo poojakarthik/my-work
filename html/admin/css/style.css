@@ -2445,17 +2445,22 @@ div.page-reset
 
 div.page-reset h1
 {	
+	color:				#006599;
+	font-size:			18pt;
+}
+
+div.page-reset h2
+{
+	font-size:			1.3em;
+}
+div.line-small
+{
 	border-bottom:		1px solid #006599;
 	color:				#006599;
 	font-size:			18pt;
 	margin-bottom:		20px;
 	margin-top:			0;
 	padding-bottom:		5px;
-}
-
-div.page-reset h2
-{
-	font-size:			1.3em;
 }
 /************************ END - Page Reset - END ************************/
 
@@ -2465,7 +2470,7 @@ div.page-reset h2
 {
 	background-color:		#FFFFC0;
 	background-image:		url(../img/template/MsgNotice.png);
-	background-position:	10px 23px;
+	background-position:	10px 50%;
 	background-repeat:		no-repeat;
 	border:					1px solid #868735;
 	line-height:			25px;

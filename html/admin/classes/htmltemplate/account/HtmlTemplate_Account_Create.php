@@ -16,13 +16,23 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		echo "
 		<div class='page-reset'>
 		<form method='post' action='{$strAccountCreateLink}'>\n";
-		
+
 		// Message Notice
 		if(array_key_exists("Associated", $_GET))
 		{
 			echo "
-			<h1>Add Associated Account</h1>
-			<input type='hidden' name='Associated' value='{$_GET['Associated']}' />";
+			<div style='position: relative; float: right;'>
+				<input type='submit' class='normal-button' name='View_Account' value='View Account' />
+			</div>
+			<div><h1>Add Associated Account</h1></div>
+			<div class='line-small'></div>
+			<input type='hidden' name='Associated' value='{$_GET['Associated']}' />
+			<div class='MsgNoticeWide'>
+
+				<strong><span class='Attention'>Attention</span> :</strong>
+				The account's status will default to &quot;Pending Activation&quot;
+
+			</div>\n";
 		}
 		
 		if(!array_key_exists("Associated", $_GET))
@@ -30,9 +40,14 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			echo "
 			<h1>Add Customer</h1>
 			<div class='MsgNoticeWide'>
+
 				<strong><span class='Attention'>Attention</span> :</strong>
 				This form will add a new Customer. If you wish to add an Account to an existing Customer, 
-				you will need to use the &quot;Add Associated Account&quot; link from the existing Account.
+				you will need to use the &quot;Add Associated Account&quot; link from the existing Account.<br />
+
+				<strong><span class='Attention'>Attention</span> :</strong>
+				The account's status will default to &quot;Pending Activation&quot;
+
 			</div>\n";
 		}
 
