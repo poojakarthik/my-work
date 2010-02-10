@@ -2430,10 +2430,54 @@ div.ticker > ul.ticker-frame > li.ticker-message
 
 /******************************************************************************/
 
+div.page-reset *
+{
+	font-family:		inherit;
+	font-size:			inherit;
+}
+
+div.page-reset
+{
+	width:				70em;
+}
+
+div.page-reset h1
+{	
+	border-bottom:		1px solid #006599;
+	color:				#006599;
+	font-size:			18pt;
+	margin-bottom:		20px;
+	margin-top:			0;
+	padding-bottom:		5px;
+}
+
+div.page-reset h2
+{
+	font-size:			1.3em;
+}
+
+.MsgNoticeWide
+{
+	background-color:		#FFFFC0;
+	background-image:		url(../img/template/MsgNotice.png);
+	background-position:	10px 23px;
+	background-repeat:		no-repeat;
+	border:					1px solid #868735;
+	line-height:			25px;
+	margin-bottom:			10px;
+	padding:				5px 5px 5px 40px;
+}
+
+.Attention
+{
+	border-bottom:			1px dashed #CC0000;
+	color:					#CC0000;
+	font-weight:			bold;
+}
 
 table.form-layout
 {
-	width:				70em;
+	width:				100%;
 	margin-left:		0;
 	background-color:	#EFEFEF;
 	border-spacing:		0;
@@ -2445,7 +2489,6 @@ table.form-layout > tbody > tr > th
 	text-align:			left;
 	width:				15em;
 	vertical-align:		top;
-	font-size:			1.2em;
 	padding:			3px 10px 3px 10px;
 }
 
@@ -2461,10 +2504,12 @@ table.form-layout > tbody > tr > td > input[type=text]
 	border:				1px solid #000000;
 	width:				15em;
 }
+
 table.form-layout > tbody > tr > td > select
 {
 	border:				1px solid #000000;
 }
+
 table.form-layout > tbody > tr > td > ul
 {
 	list-style-type:	none;

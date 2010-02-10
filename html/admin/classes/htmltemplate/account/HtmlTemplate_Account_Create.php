@@ -13,22 +13,26 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		$strAccountCreateLink = MenuItems::ManageSales();
 		// $_GET['Associated']=1000167166
 		
-		echo "<form method='POST' action='{$strAccountCreateLink}'>\n";
+		echo "<div class='page-reset'><form method='POST' action='{$strAccountCreateLink}'>\n";
 		
+		// Message Notice
 		if(array_key_exists("Associated", $_GET))
 		{
-			echo "<h1>Add Associated Account</h1>";
-			echo "<input type='hidden' name='Associated' value='{$_GET['Associated']}'>\n";
-
+			echo "<h1>Add Associated Account</h1><input type='hidden' name='Associated' value='{$_GET['Associated']}'>";
 		}
 		if(!array_key_exists("Associated", $_GET))
 		{
-			echo "<h1>Add Customer</h1>";
-			echo "<strong><span class='Attention'>Attention</span> :</strong>
-			This form will add a new Customer. If you wish to add an Account to an existing Customer, 
-			you will need to use the &quot;Add Associated Account&quot; link from the existing Account.\n";
-
+			echo "
+			<h1>Add Customer</h1>
+			<div class='MsgNoticeWide'>
+				<strong><span class='Attention'>Attention</span> :</strong>
+				This form will add a new Customer. If you wish to add an Account to an existing Customer, 
+				you will need to use the &quot;Add Associated Account&quot; link from the existing Account.
+			</div>\n";
 		}
+		echo "<div class='Seperator'></div>\n";
+		
+		
 		
 		// Account Details
 		echo "
@@ -271,6 +275,9 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		</table>\n";
+		
+		echo "</div>";
+		
 	}
 	
 }
