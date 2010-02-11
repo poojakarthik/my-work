@@ -9,7 +9,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 
 	public function Render()
 	{
-
+		
 		echo "
 		<div class='page-reset'>
 		<form method='post' action='" . MenuItems::AddAccount() . "'>\n";
@@ -88,16 +88,28 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>*</div>State:</th>
 			<td>
-				<select name='Account[State]'>
-					<option value=''></option>
+				<select name='Account[State]'>";
+				
+				foreach ($this->mxdDataToRender['arrStates'] as $oState)
+				{
+					echo "<option value='{$oState->id}'>{$oState->name}</option>\n";
+				}
+				
+				echo "
 				</select>
 			</td>
 		</tr>
 		<tr>
 			<th><div class='Required'>*</div>Customer Group:</th>
 			<td>
-				<select name='Account[CustomerGroup]'>
-					<option value=''></option>
+				<select name='Account[CustomerGroup]'>";
+				
+				foreach ($this->mxdDataToRender['arrCustomerGroups'] as $oCustomerGroup)
+				{
+					echo "<option value='{$oCustomerGroup->id}'>{$oCustomerGroup->name}</option>\n";
+				}
+				
+				echo "
 				</select>
 			</td>
 		</tr>
@@ -132,8 +144,14 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>*</div>Delivery Method:</th>
 			<td>
-				<select name='Account[DeliveryMethod]'>
-					<option value=''></option>
+				<select name='Account[DeliveryMethod]'>";
+				
+				foreach ($this->mxdDataToRender['arrDeliveryMethods'] as $oDeliveryMethod)
+				{
+					echo "<option value='{$oDeliveryMethod->id}'>{$oDeliveryMethod->name}</option>\n";
+				}
+				
+				echo "
 				</select>
 				<div class='SmallSeperator'></div>
 			</td>
@@ -174,11 +192,14 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						<tr>
 							<th style='width: 175px;'><div class='Required'>#</div>Card Type:</th>
 							<td>
-								<select tabindex='23' name='CC[CardType]'>
-									<option value='1'>Visa</option>
-									<option value='2'>MasterCard</option>
-									<option value='4'>American Express</option>
-									<option value='5'>Diners Club</option>
+								<select tabindex='23' name='CC[CardType]'>";
+
+								foreach ($this->mxdDataToRender['arrCreditCardTypes'] as $oCreditCardType)
+								{
+									echo "<option value='{$oCreditCardType->id}'>{$oCreditCardType->name}</option>\n";
+								}
+								
+								echo "
 								</select>
 							</td>
 						</tr>
@@ -244,8 +265,14 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		</tr>
 			<th><div class='Required'></div></th>
 			<td>
-				<select name='Contact[Id]'>
-					<option></option>	
+				<select name='Contact[Id]'>";
+
+				foreach ($this->mxdDataToRender['arrAccountGroupContacts'] as $iId=>$oAccountGroupContact)
+				{
+					echo "<option value='{$oAccountGroupContact->id}'>{$oAccountGroupContact->name}{$iId}</option>\n";
+				}
+				
+				echo "
 				</select>
 			</td>
 		</tr>
@@ -259,8 +286,14 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>#</div>Title:</th>
 			<td>
-				<select name='Contact[Title]'>
-					<option value=''></option>
+				<select name='Contact[Title]'>";
+
+				foreach ($this->mxdDataToRender['arrContactTitles'] as $oContactTitle)
+				{
+					echo "<option value='{$oContactTitle->id}'>{$oContactTitle->name}</option>\n";
+				}
+				
+				echo "
 				</select>
 			</td>
 		</tr>

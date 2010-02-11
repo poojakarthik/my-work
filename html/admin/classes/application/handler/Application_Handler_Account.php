@@ -55,11 +55,11 @@ class Application_Handler_Account extends Application_Handler
 		
 		try
 		{
-					
+
 			//----------------------------------------------------------------//
 			// Retrieve Data required to build the page
 			//----------------------------------------------------------------//
-			
+
 			$arrDetailsToRender								= array();
 			$arrDetailsToRender['arrCustomerGroups']		= Customer_Group::getAll();
 			$arrDetailsToRender['arrStates']				= State::getAll();
@@ -67,28 +67,27 @@ class Application_Handler_Account extends Application_Handler
 			$arrDetailsToRender['arrCreditCardTypes']		= Credit_Card_Type::listAll();
 			$arrDetailsToRender['arrCreditCardExpiryMonth']	= array(); // 12 month
 			$arrDetailsToRender['arrCreditCardExpiryYear']	= array(); // 10 year
-			
 			if (array_key_exists("Associated", $_GET))
-			{
-				if ($oAccountGroup = Account_Group::getForAccountId($_GET['Associated']) && is_numeric($_GET['Associated']))
+			{	
+				if (($oAccountGroup = Account_Group::getForAccountId($_GET['Associated'])) && is_numeric($_GET['Associated']))
 				{
+					var_dump($oAccountGroup->getContacts());
 					$arrDetailsToRender['arrAccountGroupContacts'] = $oAccountGroup->getContacts();
 				}
 				else
 				{
-					throw new Exception('Invalid Associated Account Id specified.');
+					throw new Exception('Invalid associated account id specified.');
 				}
 			}
 			else
 			{
 				$oAccountGroup = new Account_Group();
 			}
-			
 			$arrDetailsToRender['arrContactTitles']			= Contact_Title::getAll();
 			$arrDetailsToRender['arrDateOfBirthDay']		= array();
 			$arrDetailsToRender['arrDateOfBirthMonth']		= array();
 			$arrDetailsToRender['arrDateOfBirthYear']		= array();
-			
+
 			/**** RICHES OLD CODE START ****/
 			/*
 			$qryQuery	= new Query();
