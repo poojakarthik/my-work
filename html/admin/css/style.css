@@ -2440,7 +2440,8 @@ div.page-reset *
 
 div.page-reset
 {
-	width:				70em;
+	width:				64%;
+	min-width:			70em;
 }
 
 div.page-reset h1

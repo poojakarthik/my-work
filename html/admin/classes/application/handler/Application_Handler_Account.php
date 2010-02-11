@@ -55,16 +55,44 @@ class Application_Handler_Account extends Application_Handler
 		
 		try
 		{
-			$qryQuery	= new Query();
-			
+					
 			//----------------------------------------------------------------//
 			// Retrieve Data required to build the page
 			//----------------------------------------------------------------//
 			
-			// Customer Groups
-			$arrDetailsToRender['arrCustomerGroups']	= Customer_Group::getAll();
+			$arrDetailsToRender								= array();
+			$arrDetailsToRender['arrCustomerGroups']		= Customer_Group::getAll();
+			$arrDetailsToRender['arrStates']				= State::getAll();
+			$arrDetailsToRender['arrDeliveryMethods']		= Delivery_Method::getAccountSettingOptions();
+			$arrDetailsToRender['arrCreditCardTypes']		= Credit_Card_Type::listAll();
+			$arrDetailsToRender['arrCreditCardExpiryMonth']	= array(); // 12 month
+			$arrDetailsToRender['arrCreditCardExpiryYear']	= array(); // 10 year
 			
-			// Countries & States (Australia only)
+			if (array_key_exists("Associated", $_GET))
+			{
+				if ($oAccountGroup = Account_Group::getForAccountId($_GET['Associated']) && is_numeric($_GET['Associated']))
+				{
+					$arrDetailsToRender['arrAccountGroupContacts'] = $oAccountGroup->getContacts();
+				}
+				else
+				{
+					throw new Exception('Invalid Associated Account Id specified.');
+				}
+			}
+			else
+			{
+				$oAccountGroup = new Account_Group();
+			}
+			
+			$arrDetailsToRender['arrContactTitles']			= Contact_Title::getAll();
+			$arrDetailsToRender['arrDateOfBirthDay']		= array();
+			$arrDetailsToRender['arrDateOfBirthMonth']		= array();
+			$arrDetailsToRender['arrDateOfBirthYear']		= array();
+			
+			/**** RICHES OLD CODE START ****/
+			/*
+			$qryQuery	= new Query();
+			$arrDetailsToRender['arrCustomerGroups']	= Customer_Group::getAll();
 			$resCountries	= $qryQuery->Execute("SELECT * FROM country WHERE code_3_char = 'AUS'");
 			if ($resCountries === false)
 			{
@@ -73,7 +101,6 @@ class Application_Handler_Account extends Application_Handler
 			$arrDetailsToRender['arrCountries']	= array();
 			while ($arrCountry = $resCountries->fetch_assoc())
 			{
-				// States
 				$resStates	= $qryQuery->Execute("SELECT * FROM state WHERE country_id = {$arrCountry['id']}");
 				if ($resStates === false)
 				{
@@ -84,9 +111,13 @@ class Application_Handler_Account extends Application_Handler
 				{
 					$arrCountry['arrStates'][$arrState['id']]	= $arrState;
 				}
-				
 				$arrDetailsToRender['arrCountries'][$arrCountry['id']]	= $arrCountry;
 			}
+			*/
+			/**** RICHES OLD CODE END ****/
+			
+			// Set the final breadcrumb
+			BreadCrumb()->SetCurrentPage("Add Account");
 			
 			$this->LoadPage('account_create', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}

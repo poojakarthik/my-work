@@ -32,7 +32,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</div>\n";
 		}
 		
-		if(!array_key_exists("Associated", $_GET))
+		if (!array_key_exists("Associated", $_GET))
 		{
 			echo "
 			<h1>Add Customer</h1>
@@ -130,9 +130,9 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		<tr>
-			<th><div class='Required'>*</div>Billing Method:</th>
+			<th><div class='Required'>*</div>Delivery Method:</th>
 			<td>
-				<select name='Account[BillingMethod]'>
+				<select name='Account[DeliveryMethod]'>
 					<option value=''></option>
 				</select>
 				<div class='SmallSeperator'></div>
@@ -238,27 +238,22 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th></th>
 			<td>
-				<ul>
-					<li>
-						<input type='radio' name='Contact[USE]' value='1' />
-						Select an existing contact from the list below:
-						<table>
-						<tr>
-							<th></th>
-							<td>
-								<select name='Contact[Id]'>
-									<option></option>	
-								</select>
-							</td>
-						</tr>
-						</table>
-					</li>
-					<li>
-						<div class='SmallSeperator'></div>
-						<input type='radio' name='Contact[USE]' value='0' />
-						Create a new Contact using the following details:
-					</li>
-				</ul>
+				<input type='radio' name='Contact[USE]' value='1' />
+				Select an existing contact from the list below:
+			</td>
+		</tr>
+			<th><div class='Required'></div></th>
+			<td>
+				<select name='Contact[Id]'>
+					<option></option>	
+				</select>
+			</td>
+		</tr>
+			<th><div class='Required'></th>
+			<td>
+					<div class='SmallSeperator'></div>
+					<input type='radio' name='Contact[USE]' value='0' />
+					Create a new Contact using the following details:</ul>
 			</td>
 		</tr>
 		<tr>
