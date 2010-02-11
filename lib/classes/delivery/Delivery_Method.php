@@ -13,6 +13,8 @@ class Delivery_Method extends ORM_Enumerated
 	
 	protected			$_arrCustomerGroupSettings;
 	
+	protected static	$_aAccountSettingOptions;
+	
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -112,6 +114,44 @@ class Delivery_Method extends ORM_Enumerated
 	}
 
 	/**
+	 * getAccountSettingOptions()
+	 *
+	 * Retrieves a list of Delivery_Method objects that are allowable options for the Account settings
+	 *
+	 * @param	bool		$bRefresh=false					If true, will refesh any established cache of the function results
+	 * 
+	 * @return	array										Array of allowable options (with the 'id' property as the key)
+	 *
+	 * @static
+	 * @method
+	 */
+	public static function getAccountSettingOptions($bRefresh=false)
+	{
+		if (!isset(self::$_aAccountSettingOptions) || $bRefresh)
+		{
+			self::$_aAccountSettingOptions	= array();
+			
+			// Retrieve List
+			$oAccountSettingOptions	= self::_preparedStatement('selAccountSettingOptions');
+			if ($oAccountSettingOptions->Execute() === false)
+			{
+				throw new Exception($oAccountSettingOptions->Error());
+			}
+			while ($aDeliveryMethod = $oAccountSettingOptions->Fetch())
+			{
+				// Add to Account Setting Options cache
+				self::$_aAccountSettingOptions[$aDeliveryMethod['id']]	= new Delivery_Method($aDeliveryMethod);
+				
+				// Add to general cache
+				self::addToCache(self::$_aAccountSettingOptions[$aDeliveryMethod['id']]);
+			}
+		}
+		
+		// Return Array of valid Account Setting Options
+		return self::$_aAccountSettingOptions;
+	}
+
+	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
@@ -142,6 +182,9 @@ class Delivery_Method extends ORM_Enumerated
 					break;
 				case 'selCustomerGroupDeliveryMethod':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("customer_group_delivery_method", "*", "delivery_method_id = <id> AND id = (SELECT id FROM customer_group_delivery_method cgdm2 WHERE delivery_method_id = <id> AND customer_group_id = customer_group_delivery_method.customer_group_id ORDER BY id DESC LIMIT 1)");
+					break;
+				case 'selAccountSettingOptions':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "account_setting = 1", "id ASC");
 					break;
 				
 				// INSERTS
