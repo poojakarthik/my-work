@@ -17,7 +17,7 @@ class Flex_Rollout_Version_000203 extends Flex_Rollout_Version
 		$dbAdmin = Data_Source::get(FLEX_DATABASE_CONNECTION_ADMIN);
 		$dbAdmin->setFetchMode(MDB2_FETCHMODE_ASSOC);
 		
-		//	1:	Add the Telstra Carrier
+		//	1:	Add the "Australia's Telecom" and "Sparkz Infotech" Carriers
 		$strSQL = "	INSERT INTO	Carrier
 						(name, description, const_name, carrier_type)
 					VALUES
