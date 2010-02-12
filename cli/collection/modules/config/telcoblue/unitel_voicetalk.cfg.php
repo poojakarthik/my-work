@@ -11,7 +11,7 @@ $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= 
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/m2/';
 //$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_STANDARD]				['Paths']		[]	= '/m2/previousbatches/';
 
-$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Regex']			= "/^[A-Za-z]{3}(On|Off)netBatch_SE_[A-Z]\d{5}_\d{8}.csv$/";
+$arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Regex']			= "/^[a-z]{3}[a-z0-9]batch_se_[a-z]\d{5}_\d{8}.csv$/i";
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['Uniqueness']		= "FileName = <FileName> AND SHA1 = <SHA1>";
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['FTPMode']			= FTP_ASCII;
 $arrStructure[RESOURCE_TYPE_FILE_IMPORT_CDR_UNITEL_S_AND_E]				['DownloadUnique']	= TRUE;
