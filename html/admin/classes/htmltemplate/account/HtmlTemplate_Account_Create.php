@@ -149,6 +149,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<td>
 				<select name='Account[DeliveryMethod]'>";
 				
+				// Generate a dropdown menu of available delivery methods, eg. Post, Email
 				foreach ($this->mxdDataToRender['arrDeliveryMethods'] as $oDeliveryMethod)
 				{
 					echo "<option value='{$oDeliveryMethod->id}'>{$oDeliveryMethod->name}</option>\n";
