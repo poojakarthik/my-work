@@ -2,6 +2,9 @@
 
 class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 {
+	
+	const CREDIT_CARD_EXPIRY_LIMIT_YEARS	= 10;
+	
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
@@ -214,29 +217,28 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						<tr>
 							<th><div class='Required'>#</div>Expiration Date:</th>
 							<td>
-								<select tabindex='26' name='CC[ExpMonth]'>
-									<option value='1'>1</option>
-									<option value='2'>2</option>
-									<option value='3'>3</option>
-									<option value='4'>4</option>
-									<option value='5'>5</option>
-									<option value='6'>6</option>
-									<option value='7'>7</option>
-									<option value='8'>8</option>
-									<option value='9'>9</option>
-									<option value='10'>10</option>
-									<option value='11'>11</option>
-									<option value='12'>12</option>
+								<select tabindex='26' name='CC[ExpMonth]'>";
+								
+									// Generate 12 months in the year
+									for ($i=1; $i<13; $i++)
+									{
+										echo "<option value='{$i}'>$i</option>\n";
+									}
+								
+								echo "
 								</select> / 
-								<select tabindex='27' name='CC[ExpYear]'>
-									<option value='2008'>2008</option>
-									<option value='2009'>2009</option>
-									<option value='2010'>2010</option>
-									<option value='2011'>2011</option>
-									<option value='2012'>2012</option>
-									<option value='2013'>2013</option>
-									<option value='2014'>2014</option>
-									<option value='2015'>2015</option>
+								<select tabindex='27' name='CC[ExpYear]'>";
+								
+									// Get the current year
+									$intCurrentYear = date("Y");
+									
+									// Generate credit card expiry year options.
+									for ($i=$intCurrentYear; $i<$intCurrentYear+self::CREDIT_CARD_EXPIRY_LIMIT_YEARS; $i++)
+									{
+										echo "<option value='{$i}'>{$i}</option>\n";
+									}
+								
+								echo "
 								</select>
 							</td>
 						</tr>
