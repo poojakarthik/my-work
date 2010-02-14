@@ -93,6 +93,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<td>
 				<select name='Account[State]'>";
 				
+				// Generate a dropdown menu of available states, eg. QLD, NSW, VIC
 				foreach ($this->mxdDataToRender['arrStates'] as $oState)
 				{
 					echo "<option value='{$oState->id}'>{$oState->name}</option>\n";
@@ -107,6 +108,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<td>
 				<select name='Account[CustomerGroup]'>";
 				
+				// Generate a dropdown menu of available customer groups
 				foreach ($this->mxdDataToRender['arrCustomerGroups'] as $oCustomerGroup)
 				{
 					echo "<option value='{$oCustomerGroup->id}'>{$oCustomerGroup->name}</option>\n";
