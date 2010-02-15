@@ -26,12 +26,13 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		if(array_key_exists("Associated", $_GET))
 		{
 			echo "
+			<input type='hidden' name='Associated' value='{$_GET['Associated']}' />
+
 			<div style='position: relative; float: right;'>
 				<input onclick=document.location='" . MenuItems::AccountOverview(htmlspecialchars($_GET['Associated'])) . "' type='button' class='normal-button' name='View_Account' value='View Account'/>
 			</div>
 			<div><h1>Add Associated Account</h1></div>
 			<div class='line-small'></div>
-			<input type='hidden' name='Associated' value='{$_GET['Associated']}' />
 			<div class='MsgNoticeWide'>
 
 				<strong><span class='Attention'>Attention</span> :</strong>
@@ -43,6 +44,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		if (!array_key_exists("Associated", $_GET))
 		{
 			echo "
+			<input type='hidden' name='Contact[USE]' value='0' />
+
 			<h1>Add Customer</h1>
 			<div class='MsgNoticeWide'>
 
@@ -265,35 +268,45 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		echo "
 		<div class='Seperator'></div>
 		<h2 class='Account'>Primary Contact Details</h2>
-		<table class='form-layout'>
-		<tr>
-			<th></th>
-			<td>
-				<input type='radio' name='Contact[USE]' value='1' />
-				Select an existing contact from the list below:
-			</td>
-		</tr>
-			<th><div class='Required'></div></th>
-			<td>
-				<select name='Contact[Id]'>";
+		<table class='form-layout'>";
 
-				// Generate a dropdown menu of existing contacts
-				foreach ($this->mxdDataToRender['arrAccountGroupContacts'] as $iId=>$oAccountGroupContact)
-				{
-					echo "<option value='{$oAccountGroupContact->id}'>{$oAccountGroupContact->name}{$iId}</option>\n";
-				}
-				
-				echo "
-				</select>
-			</td>
-		</tr>
-			<th><div class='Required'></th>
-			<td>
-					<div class='SmallSeperator'></div>
-					<input type='radio' name='Contact[USE]' value='0' />
-					Create a new Contact using the following details:</ul>
-			</td>
-		</tr>
+
+		if(array_key_exists("Associated", $_GET))
+		{
+			
+			echo "
+			<tr>
+				<th></th>
+				<td>
+					<input type='radio' name='Contact[USE]' value='1' />
+					Select an existing contact from the list below:
+				</td>
+			</tr>
+				<th><div class='Required'></div></th>
+				<td>
+					<select name='Contact[Id]'>";
+	
+					// Generate a dropdown menu of existing contacts
+					foreach ($this->mxdDataToRender['arrAccountGroupContacts'] as $iId=>$oAccountGroupContact)
+					{
+						echo "<option value='{$oAccountGroupContact->id}'>{$oAccountGroupContact->name}{$iId}</option>\n";
+					}
+					
+					echo "
+					</select>
+				</td>
+			</tr>
+				<th><div class='Required'></th>
+				<td>
+						<div class='SmallSeperator'></div>
+						<input type='radio' name='Contact[USE]' value='0' />
+						Create a new Contact using the following details:</ul>
+				</td>
+			</tr>";
+			
+		}
+		
+		echo "
 		<tr>
 			<th><div class='Required'>#</div>Title:</th>
 			<td>
