@@ -20,7 +20,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 	
 		echo "
 		<div class='page-reset'>
-		<form method='post' action='" . MenuItems::SaveAccount() . "'>\n";
+		<form method='post' action='" . MenuItems::SaveAccount() . "' onsubmit='return this.oAccountCreate.submit();'>\n";
 
 		// Message Notice
 		if(array_key_exists("Associated", $_GET))
@@ -66,7 +66,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<table class='form-layout'>
 		<tr>
 			<th><div class='Required'>*</div>Business Name:</th>
-			<td><input type='text' name='Account[BusinessName]' class='input-string' maxlength='255' /></td>
+			<td><input type='text' name='Account[BusinessName]' id='business-name' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
 			<th><div class='Required'>&nbsp;</div>Trading Name:</th>
@@ -74,7 +74,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		</tr>
 		<tr>
 			<th><div class='Required'>1</div>ABN:</th>
-			<td><input type='text' name='Account[ABN]' class='input-string' maxlength='255' /></td>
+			<td><input type='text' name='Account[ABN]' id='abn' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
 			<th><div class='Required'>1</div>ACN:</th>

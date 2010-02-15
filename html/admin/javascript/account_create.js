@@ -3,19 +3,8 @@ Account_Create = Class.create
 ({
 	initialize	: function(oForm)
 	{
-		this.oForm	= oForm;
-		
-		this.oForm.getInputs('text','account-name').first().validate = function ()
-		{
-		
-			if (this.value.length < 5)
-			{
-			 return "Account name must be at least 5 characters long.";
-			}
-			
-			return true;
-			
-		}
+		this.oForm					= oForm;
+		this.oForm.oAccountCreate	= this;
 		
 		this.oForm.getInputs('text','business-name').first().validate = function ()
 		{
@@ -26,6 +15,31 @@ Account_Create = Class.create
 			}
 			
 			return true;
+			
+		}
+		
+		this.oForm.getInputs('text','abn').first().validate = function ()
+		{
+		
+			if (!Reflex_Validate.abn(this.value))
+			{
+				return "Invalid ABN specified";
+			}
+			
+			return true;
+		}
+		
+		
+		
+		
+		// Add dynamic validation
+		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j, i++)
+		{
+			if (aInputs[i].validate)
+			{
+				aInputs[i].observe('keyup', aInputs[i].validate.bind(aInputs[i]));
+				aInputs[i].observe('change', aInputs[i].validate.bind(aInputs[i]));
+			}
 		}
 
 	},
@@ -69,6 +83,6 @@ Account_Create = Class.create
 });
 
 
-oAccountCreate	= new Account_Create($ID('account-create'));
-oAccountCreate.submit();
+//oAccountCreate	= new Account_Create($ID('account-create'));
+//oAccountCreate.submit();
 
