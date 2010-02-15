@@ -300,11 +300,11 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				<select name='Contact[Title]'>
 					<option value=''></option>";
 
-				// Generate a dropdown menu of contact titles, eg. Mr, Dr
-				foreach ($this->mxdDataToRender['arrContactTitles'] as $oContactTitle)
-				{
-					echo "<option value='{$oContactTitle->id}'>{$oContactTitle->name}</option>\n";
-				}
+					// Generate a dropdown menu of contact titles, eg. Mr, Dr
+					foreach ($this->mxdDataToRender['arrContactTitles'] as $oContactTitle)
+					{
+						echo "<option value='{$oContactTitle->id}'>{$oContactTitle->name}</option>\n";
+					}
 				
 				echo "
 				</select>
@@ -323,36 +323,36 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<td>
 				<select name='Contact[DOB][day]'>
 					<option value=''>DD</option>";
-
-				// Generate 31 days in a month
-				for ($i=1; $i<32; $i++)
-				{
-					echo "<option value='{$i}'>{$i}</option>\n";
-				}
-				
+	
+					// Generate 31 days in a month
+					for ($i=1; $i<32; $i++)
+					{
+						echo "<option value='{$i}'>{$i}</option>\n";
+					}
+					
 				echo "
 				</select>
 				<select name='Contact[DOB][month]'>
 					<option value=''>MM</option>";
-
-				// Generate 12 months in the year
-				for ($i=1; $i<13; $i++)
-				{
-					echo "<option value='{$i}'>{$i}</option>\n";
-				}
-				
+	
+					// Generate 12 months in the year
+					for ($i=1; $i<13; $i++)
+					{
+						echo "<option value='{$i}'>{$i}</option>\n";
+					}
+					
 				echo "
 				</select>
 				<select name='Contact[DOB][year]'>
 					<option value=''>YYYY</option>";
-				
-				// Generate list of years for date of birth selection
-				$intStartMinimumAgeRequired = $intCurrentYear-self::MINIMUM_AGE_REQUIRED_FOR_ACCOUNT;
-				
-				for ($i=$intStartMinimumAgeRequired; $i>$intStartMinimumAgeRequired-self::MAXIMUM_AGE_REQUIRED_FOR_ACCOUNT; $i--)
-				{
-					echo "<option value='{$i}'>{$i}</option>\n";
-				}
+					
+					// Generate list of years for date of birth selection
+					$intStartMinimumAgeRequired = $intCurrentYear-self::MINIMUM_AGE_REQUIRED_FOR_ACCOUNT;
+					
+					for ($i=$intStartMinimumAgeRequired; $i>$intStartMinimumAgeRequired-self::MAXIMUM_AGE_REQUIRED_FOR_ACCOUNT; $i--)
+					{
+						echo "<option value='{$i}'>{$i}</option>\n";
+					}
 				
 				echo "
 				</select>
