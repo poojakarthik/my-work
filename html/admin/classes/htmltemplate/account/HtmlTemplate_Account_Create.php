@@ -429,7 +429,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		echo "
 		</form>
 		</div>";
-		
+	
+		$this->LoadJavascript('account_create');	
 	}
 	
 }

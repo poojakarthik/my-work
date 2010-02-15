@@ -89,9 +89,8 @@ class Application_Handler_Account extends Application_Handler
 		
 		try
 		{
-			
-			// Merge the PHP with the HTML template
-			$this->LoadPage('account', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			$iAccountId = 1000174964;
+			header ('Location: ' . MenuItems::AccountOverview($iAccountId));
 				
 		}
 		
