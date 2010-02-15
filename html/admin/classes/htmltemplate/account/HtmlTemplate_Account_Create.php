@@ -4,6 +4,9 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 {
 	
 	const CREDIT_CARD_EXPIRY_LIMIT_YEARS	= 10;
+	const MINIMUM_AGE_REQUIRED_FOR_ACCOUNT	= 18;
+	const MAXIMUM_AGE_REQUIRED_FOR_ACCOUNT	= 150;
+	
 	
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
@@ -13,6 +16,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 	public function Render()
 	{
 		
+		$intCurrentYear = (int)date("Y");
+	
 		echo "
 		<div class='page-reset'>
 		<form method='post' action='" . MenuItems::AddAccount() . "'>\n";
@@ -91,7 +96,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>*</div>State:</th>
 			<td>
-				<select name='Account[State]'>";
+				<select name='Account[State]'>
+					<option value=''></option>";
 				
 				// Generate a dropdown menu of available states, eg. QLD, NSW, VIC
 				foreach ($this->mxdDataToRender['arrStates'] as $oState)
@@ -106,7 +112,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>*</div>Customer Group:</th>
 			<td>
-				<select name='Account[CustomerGroup]'>";
+				<select name='Account[CustomerGroup]'>
+					<option value=''></option>";
 				
 				// Generate a dropdown menu of available customer groups
 				foreach ($this->mxdDataToRender['arrCustomerGroups'] as $oCustomerGroup)
@@ -232,9 +239,6 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 								echo "
 								</select> / 
 								<select tabindex='27' name='CC[ExpYear]'>";
-								
-									// Get the current year
-									$intCurrentYear = date("Y");
 									
 									// Generate credit card expiry year options.
 									for ($i=$intCurrentYear; $i<$intCurrentYear+self::CREDIT_CARD_EXPIRY_LIMIT_YEARS; $i++)
@@ -293,7 +297,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>#</div>Title:</th>
 			<td>
-				<select name='Contact[Title]'>";
+				<select name='Contact[Title]'>
+					<option value=''></option>";
 
 				// Generate a dropdown menu of contact titles, eg. Mr, Dr
 				foreach ($this->mxdDataToRender['arrContactTitles'] as $oContactTitle)
@@ -317,13 +322,39 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<th><div class='Required'>#</div>Date of Birth:</th>
 			<td>
 				<select name='Contact[DOB][day]'>
-					<option></option>
+					<option value=''>DD</option>";
+
+				// Generate 31 days in a month
+				for ($i=1; $i<32; $i++)
+				{
+					echo "<option value='{$i}'>{$i}</option>\n";
+				}
+				
+				echo "
 				</select>
 				<select name='Contact[DOB][month]'>
-					<option></option>
+					<option value=''>MM</option>";
+
+				// Generate 12 months in the year
+				for ($i=1; $i<13; $i++)
+				{
+					echo "<option value='{$i}'>{$i}</option>\n";
+				}
+				
+				echo "
 				</select>
 				<select name='Contact[DOB][year]'>
-					<option></option>
+					<option value=''>YYYY</option>";
+				
+				// Generate list of years for date of birth selection
+				$intStartMinimumAgeRequired = $intCurrentYear-self::MINIMUM_AGE_REQUIRED_FOR_ACCOUNT;
+				
+				for ($i=$intStartMinimumAgeRequired; $i>$intStartMinimumAgeRequired-self::MAXIMUM_AGE_REQUIRED_FOR_ACCOUNT; $i--)
+				{
+					echo "<option value='{$i}'>{$i}</option>\n";
+				}
+				
+				echo "
 				</select>
 			</td>
 		</tr>

@@ -88,35 +88,8 @@ class Application_Handler_Account extends Application_Handler
 			$arrDetailsToRender['arrDateOfBirthMonth']		= array();
 			$arrDetailsToRender['arrDateOfBirthYear']		= array();
 
-			/**** RICHES OLD CODE START ****/
-			/*
-			$qryQuery	= new Query();
-			$arrDetailsToRender['arrCustomerGroups']	= Customer_Group::getAll();
-			$resCountries	= $qryQuery->Execute("SELECT * FROM country WHERE code_3_char = 'AUS'");
-			if ($resCountries === false)
-			{
-				throw new Exception($resCountries->Error());
-			}
-			$arrDetailsToRender['arrCountries']	= array();
-			while ($arrCountry = $resCountries->fetch_assoc())
-			{
-				$resStates	= $qryQuery->Execute("SELECT * FROM state WHERE country_id = {$arrCountry['id']}");
-				if ($resStates === false)
-				{
-					throw new Exception($resStates->Error());
-				}
-				$arrCountry['arrStates']	= array();
-				while ($arrState = $resStates->fetch_assoc())
-				{
-					$arrCountry['arrStates'][$arrState['id']]	= $arrState;
-				}
-				$arrDetailsToRender['arrCountries'][$arrCountry['id']]	= $arrCountry;
-			}
-			*/
-			/**** RICHES OLD CODE END ****/
-			
 			// Set the final breadcrumb
-			BreadCrumb()->SetCurrentPage("Add Account");
+			// BreadCrumb()->SetCurrentPage("Add Account");
 			
 			$this->LoadPage('account_create', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
