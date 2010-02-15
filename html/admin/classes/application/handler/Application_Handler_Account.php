@@ -67,31 +67,58 @@ class Application_Handler_Account extends Application_Handler
 			$arrDetailsToRender['arrCreditCardTypes']		= Credit_Card_Type::listAll();
 			$arrDetailsToRender['arrCreditCardExpiryMonth']	= array(); // 12 month
 			$arrDetailsToRender['arrCreditCardExpiryYear']	= array(); // 10 year
-			if (array_key_exists("Associated", $_GET))
-			{	
-				if (($oAccountGroup = Account_Group::getForAccountId($_GET['Associated'])) && is_numeric($_GET['Associated']))
-				{
-					var_dump($oAccountGroup->getContacts());
-					$arrDetailsToRender['arrAccountGroupContacts'] = $oAccountGroup->getContacts();
-				}
-				else
-				{
-					throw new Exception('Invalid associated account id specified.');
-				}
-			}
-			else
-			{
-				$oAccountGroup = new Account_Group();
-			}
 			$arrDetailsToRender['arrContactTitles']			= Contact_Title::getAll();
 			$arrDetailsToRender['arrDateOfBirthDay']		= array();
 			$arrDetailsToRender['arrDateOfBirthMonth']		= array();
 			$arrDetailsToRender['arrDateOfBirthYear']		= array();
 
+
+			//----------------------------------------------------------------//
+			// Retrieve Associated Accounts
+			//----------------------------------------------------------------//
+			
+			if (array_key_exists("Associated", $_GET))
+			{
+				$iAssociated = (int)$_GET['Associated'];
+
+				// Validates the entered account group is true.
+				if (($oAccountGroup = Account_Group::getForAccountId($iAssociated)))
+				{
+
+					// Select contacts associated with the account group
+					$qryQuery = new Query();
+					$resAssociatedContacts = $qryQuery->Execute("
+					SELECT	DISTINCT c.*
+					FROM	AccountGroup ag
+							JOIN Account a ON (a.AccountGroup = ag.Id AND a.Archived = 0)
+							JOIN Contact c ON (a.PrimaryContact = c.Id
+												OR (ag.Id = c.AccountGroup
+													AND c.CustomerContact = 1)
+												) AND c.Archived = 0
+					WHERE ag.Id = $iAssociated;");
+
+					if ($resAssociatedContacts)
+					{
+						// Populate contacts array for the html template.
+						$arrDetailsToRender['arrAssociatedContacts']	= array();
+						while ($arrContact = $resAssociatedContacts->fetch_assoc())
+						{
+							$arrDetailsToRender['arrAssociatedContacts'][$arrContact['Id']]	= $arrContact;
+							
+						}
+					}
+				
+				}
+				
+			}
+			
+			
 			// Set the final breadcrumb
 			// BreadCrumb()->SetCurrentPage("Add Account");
 			
+			// Merge the PHP with the HTML template
 			$this->LoadPage('account_create', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			
 		}
 		catch (Exception $eException)
 		{

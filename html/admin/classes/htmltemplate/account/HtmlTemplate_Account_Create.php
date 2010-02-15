@@ -263,7 +263,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</td>
 		</tr>
 		</table>\n";
-
+		
+				
 		// Primary Contact Details
 		echo "
 		<div class='Seperator'></div>
@@ -284,12 +285,13 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</tr>
 				<th><div class='Required'></div></th>
 				<td>
-					<select name='Contact[Id]'>";
-	
+					<select name='Contact[Id]'>
+						<option value=''></option>";
+
 					// Generate a dropdown menu of existing contacts
-					foreach ($this->mxdDataToRender['arrAccountGroupContacts'] as $iId=>$oAccountGroupContact)
+					foreach ($this->mxdDataToRender['arrAssociatedContacts'] as $iId=>$oAssociatedContact)
 					{
-						echo "<option value='{$oAccountGroupContact->id}'>{$oAccountGroupContact->name}{$iId}</option>\n";
+						echo "<option value='{$oAssociatedContact['Id']}'>{$oAssociatedContact['FirstName']} {$oAssociatedContact['LastName']}</option>\n";
 					}
 					
 					echo "
