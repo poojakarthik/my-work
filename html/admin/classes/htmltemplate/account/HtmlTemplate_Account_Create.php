@@ -20,7 +20,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 	
 		echo "
 		<div class='page-reset'>
-		<form method='post' action='" . MenuItems::AddAccount() . "'>\n";
+		<form method='post' action='" . MenuItems::SaveAccount() . "'>\n";
 
 		// Message Notice
 		if(array_key_exists("Associated", $_GET))
