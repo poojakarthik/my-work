@@ -46,6 +46,7 @@ Account_Create = Class.create
 	
 	submit	: function()
 	{
+		alert('submit called');
 		var aErrors	= [];
 		
 		// Check if everything is valid
@@ -83,6 +84,6 @@ Account_Create = Class.create
 });
 
 
-//oAccountCreate	= new Account_Create($ID('account-create'));
-//oAccountCreate.submit();
+oAccountCreate	= new Account_Create($ID('account-create'));
+oAccountCreate.submit();
 

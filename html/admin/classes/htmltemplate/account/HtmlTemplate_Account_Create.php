@@ -11,6 +11,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
+		// $this->LoadJavascript("account_create");
 	}
 
 	public function Render()
@@ -20,7 +21,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 	
 		echo "
 		<div class='page-reset'>
-		<form method='post' action='" . MenuItems::SaveAccount() . "' onsubmit='return this.oAccountCreate.submit();'>\n";
+		<!-- <form method='post' id='account-create' name='account-create' action='" . MenuItems::SaveAccount() . "' onsubmit='return this.oAccountCreate.submit();'> -->
+		<form method='post' onsubmit='return this.oAccountCreate.submit();'>\n";
 
 		// Message Notice
 		if(array_key_exists("Associated", $_GET))
@@ -428,9 +430,10 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		// End page reset wrapper
 		echo "
 		</form>
-		</div>";
-	
-		$this->LoadJavascript('account_create');	
+		</div>
+		<script src=\"http://192.168.2.180/flex/trunk/html/admin/javascript/account_create.js\" type=\"text/javascript\"></script>
+		";
+		
 	}
 	
 }
