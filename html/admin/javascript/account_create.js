@@ -4,7 +4,6 @@ Account_Create = Class.create
 ({
 	initialize	: function(oForm)
 	{
-		alert('position constructor');
 		this.oForm					= oForm;
 		this.oForm.oAccountCreate	= this;
 		
@@ -49,7 +48,6 @@ Account_Create = Class.create
 	
 	submit	: function()
 	{
-		alert('position submit');
 		var aErrors	= [];
 		
 		// Check if everything is valid
@@ -73,7 +71,6 @@ Account_Create = Class.create
 			{
 				sErrors	+= aErrors[i] + "\n";
 			}
-			alert(sErrors);
 			return false;
 		}
 		
