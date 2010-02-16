@@ -1,8 +1,10 @@
 
-Account_Create = Class.create
+
+document.Account_Create = Class.create
 ({
 	initialize	: function(oForm)
 	{
+		alert('position constructor');
 		this.oForm					= oForm;
 		this.oForm.oAccountCreate	= this;
 		
@@ -21,19 +23,20 @@ Account_Create = Class.create
 		this.oForm.getInputs('text','abn').first().validate = function ()
 		{
 		
+			/*
 			if (!Reflex_Validate.abn(this.value))
 			{
 				return "Invalid ABN specified";
 			}
-			
+			*/
 			return true;
 		}
 		
 		
 		
-		
+
 		// Add dynamic validation
-		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j, i++)
+		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j; i++)
 		{
 			if (aInputs[i].validate)
 			{
@@ -46,11 +49,11 @@ Account_Create = Class.create
 	
 	submit	: function()
 	{
-		alert('submit called');
+		alert('position submit');
 		var aErrors	= [];
 		
 		// Check if everything is valid
-		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j, i++)
+		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j; i++)
 		{
 			if (aInputs[i].validate)
 			{
@@ -79,11 +82,4 @@ Account_Create = Class.create
 	}
 
 	
-}
-
 });
-
-
-oAccountCreate	= new Account_Create($ID('account-create'));
-oAccountCreate.submit();
-
