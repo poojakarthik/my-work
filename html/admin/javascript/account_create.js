@@ -1,6 +1,6 @@
 
 
-document.Account_Create = Class.create
+Account_Create = Class.create
 ({
 	initialize	: function(oForm)
 	{
