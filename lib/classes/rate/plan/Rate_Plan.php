@@ -358,7 +358,7 @@ class Rate_Plan extends ORM_Cached
 		
 		$strOnClick			= "JsAutoLoader.loadScript(\"javascript/document.js\", function(){Flex.Document.emailDocument($strDocuments, \"Plan {$strBrochurePlural}\", {$strSenders}, \"{$strSubject}\", \"{$strContent}\", {$strRecipients}, {$strAccount})});";
 		
-		return addcslashes($strOnClick, "'");
+		return str_replace("'", "&apos;", $strOnClick);
 	}
 	
 	/**
