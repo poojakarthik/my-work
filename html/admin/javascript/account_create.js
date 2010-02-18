@@ -4,12 +4,14 @@ Account_Create = Class.create
 ({
 	initialize	: function(oForm)
 	{
+		// alert('position construct');
 		this.oForm					= oForm;
 		this.oForm.oAccountCreate	= this;
 		
-		this.oForm.getInputs('text','business-name').first().validate = function ()
+		this.oForm.getInputs('text','Account[BusinessName]').first().validate = function ()
 		{
-		
+
+			// alert('position getInputs1');
 			if (this.value.length < 5)
 			{
 			 return "Business name must be at least 5 characters long.";
@@ -19,15 +21,20 @@ Account_Create = Class.create
 			
 		}
 		
-		this.oForm.getInputs('text','abn').first().validate = function ()
+		this.oForm.getInputs('text','Account[ABN]').first().validate = function ()
 		{
-		
-			/*
-			if (!Reflex_Validate.abn(this.value))
+
+			alert('position geInputs2');
+			if (!Reflex_Validation.abn(this.value))
 			{
+				alert('Invalid ABN specified');
 				return "Invalid ABN specified";
 			}
-			*/
+			else
+			{
+				alert('correct abn');
+			}
+
 			return true;
 		}
 		
@@ -37,6 +44,7 @@ Account_Create = Class.create
 		// Add dynamic validation
 		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j; i++)
 		{
+			// alert(aInputs[i].validate);
 			if (aInputs[i].validate)
 			{
 				aInputs[i].observe('keyup', aInputs[i].validate.bind(aInputs[i]));
@@ -48,6 +56,7 @@ Account_Create = Class.create
 	
 	submit	: function()
 	{
+		alert('position submit');
 		var aErrors	= [];
 		
 		// Check if everything is valid
@@ -66,11 +75,13 @@ Account_Create = Class.create
 		// Alert errors, then fail
 		if (aErrors.length)
 		{
+			alert(aErrors.length);
 			var sErrors	= '';
 			for (var i = 0, j = aErrors.length; i < j; i++)
 			{
 				sErrors	+= aErrors[i] + "\n";
 			}
+			alert(sErrors);
 			return false;
 		}
 		
