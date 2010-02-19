@@ -48,6 +48,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	{
 		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$bolUserHasViewPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
+		$bolUserHasExternalPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
 		
 		$objAccount = Account::getForId($intAccountId);
 		
@@ -72,7 +73,13 @@ class AppTemplateAccount extends ApplicationTemplate
 			ContextMenu()->Account->Payments->Make_Payment($intAccountId);
 			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
 			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
+		}
+		if ($bolUserHasOperatorPerm || $bolUserHasExternalPerm)
+		{
 			ContextMenu()->Account->Payments->Change_Payment_Method($intAccountId);
+		}
+		if ($bolUserHasOperatorPerm)
+		{
 			ContextMenu()->Account->Add_Associated_Account($intAccountId);
 			ContextMenu()->Account->Provisioning->Provisioning(NULL, $intAccountId);
 			ContextMenu()->Account->Provisioning->ViewProvisioningHistory(NULL, $intAccountId);
