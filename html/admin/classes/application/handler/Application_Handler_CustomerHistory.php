@@ -8,7 +8,7 @@ class Application_Handler_CustomerHistory extends Application_Handler
 
 	public function Record($subPath)
 	{
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR_VIEW);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 
 		$bolSupressErrors = FALSE;
 		if (is_array($subPath) && count($subPath) == 1)
