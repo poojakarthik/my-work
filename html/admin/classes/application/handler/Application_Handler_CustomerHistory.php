@@ -59,7 +59,7 @@ class Application_Handler_CustomerHistory extends Application_Handler
 				}
 				else if ($intContactId !== NULL)
 				{
-					$strNextPage = self::NEXT_PAGE_COONTACT_DETAILS;
+					$strNextPage = self::NEXT_PAGE_CONTACT_DETAILS;
 				}
 				else
 				{
