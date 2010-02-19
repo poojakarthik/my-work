@@ -250,7 +250,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 ?>
 <div class="DefaultElement">
 	<div id="Account.Balance.Output" name="Account.Balance" class="DefaultOutput Currency"><?php DBO()->Account->Balance->Render('Currency2DecWithNegAsCR'); ?><?php
-		if (Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->CustomerGroup->Value) && AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		if (Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->CustomerGroup->Value) && AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 		{
 			echo Credit_Card_Payment::getPopupActionButton(DBO()->Account->Id->Value);
 		}
