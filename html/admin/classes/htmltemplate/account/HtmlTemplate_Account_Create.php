@@ -19,12 +19,11 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 	{
 		
 		$intCurrentYear = (int)date("Y");
-	//action='" . MenuItems::SaveAccount() . "' 
+		// action='" . MenuItems::SaveAccount() . "' 
+		// onsubmit='return this.oAccountCreate.submit();'
 		echo "
 		<div class='page-reset'>
-		<form method='post' id='account-create' name='account-create'
-
-			onsubmit='return this.oAccountCreate.submit();'>\n";
+		<form method='post' id='account-create' name='account-create' onsubmit='return this.oAccountCreate.submit();'>\n";
 
 		// Message Notice
 		if(array_key_exists("Associated", $_GET))

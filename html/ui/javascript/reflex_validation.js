@@ -42,7 +42,7 @@ var Reflex_Validation	=
 		var strValue = mixValue.toString();
 		var strValue = strValue.replace(/[^\d]/g, '');
 		
-		if (!this.regexABN.test(strValue))
+		if (!/^[0-9]{11}$/.test(strValue))
 		{
 			return false;
 		}
