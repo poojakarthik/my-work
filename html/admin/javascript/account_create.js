@@ -7,29 +7,55 @@ Account_Create = Class.create
 		this.oForm					= oForm;
 		this.oForm.oAccountCreate	= this;
 		
+		// Validate Business Name
 		this.oForm.getInputs('text','Account[BusinessName]').first().validate = function ()
 		{
 			if (this.value.length < 5)
 			{
+				this.className = "invalid";
 				return "Business name must be at least 5 characters long.";
 			}
+			
+			this.className = "valid";
 			return true;
 		}
 
+		// Validate an ABN
 		this.oForm.getInputs('text','Account[ABN]').first().validate = function ()
 		{
 			if (!Reflex_Validation.abn(this.value))
 			{
+				this.className = "invalid";
 				return "Invalid ABN specified";
 			}
+			
+			this.className = "valid";
 			return true;
 		}
+		
+		// Validate an ACN
 		this.oForm.getInputs('text','Account[ACN]').first().validate = function ()
 		{
 			if (!Reflex_Validation.acn(this.value))
 			{
-				return "Invalid ABN specified";
+				this.className = "invalid";
+				return "Invalid ACN specified";
 			}
+
+			this.className = "valid";
+			return true;
+		}
+		
+		// Validate a State
+		this.oForm.getInputs('select','Account[State]').first().validate = function ()
+		{
+			if (!/^[0-9]{2}$/.test(this.value))
+			{
+				this.className = "invalid";
+				return "Invalid State specified";
+			}
+
+			this.className = "valid";
 			return true;
 		}
 

@@ -107,7 +107,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>*</div>State:</th>
 			<td>
-				<select name='Account[State]'>
+				<select name='Account[State]' class='input-string'>
 					<option value=''></option>";
 				
 				// Generate a dropdown menu of available states, eg. QLD, NSW, VIC
@@ -123,7 +123,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>*</div>Customer Group:</th>
 			<td>
-				<select name='Account[CustomerGroup]'>
+				<select name='Account[CustomerGroup]' class='input-string'>
 					<option value=''></option>";
 				
 				// Generate a dropdown menu of available customer groups
@@ -167,7 +167,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>*</div>Delivery Method:</th>
 			<td>
-				<select name='Account[DeliveryMethod]'>";
+				<select name='Account[DeliveryMethod]' class='input-string'>";
 				
 				// Generate a dropdown menu of available delivery methods, eg. Post, Email
 				foreach ($this->mxdDataToRender['arrDeliveryMethods'] as $oDeliveryMethod)
