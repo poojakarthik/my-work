@@ -89,27 +89,16 @@ var Reflex_Validation	=
 	// This method was ported from bash's original ACN.js
 	acn : function(mixValue)
 	{
-		// 1. If the length is 0, it is valid because we might not have an ACN
-		if (mixValue.length == 0)
-		{
-			return true;
-		}
-		
-		// 2. Check that the item has only Numbers and Spaces
+		// Check that the item has only Numbers and Spaces
 		if (mixValue.match (/[^\d\s]/g) !== null)
 		{
 			return false;
 		}
+		// Strip out everything except digits
+		var intACN = mixValue.replace (/[^\d]/g, '');
 		
-		var ACN_NoSpaces = mixValue.replace (/[^\d]/g, '');
-		
-		// 3. Check there are 9 integers
-		if (ACN_NoSpaces.length > 9)
-		{
-			return false;
-		}
-		
-		if (ACN_NoSpaces.length < 9)
+		// Check there are 9 integers
+		if (intACN.length !== 9)
 		{
 			return false;
 		}
@@ -136,7 +125,7 @@ var Reflex_Validation	=
 		
 		for (i=0; i < 8; ++i)
 		{
-			NumberSum += parseInt (ACN_NoSpaces.charAt (i) * arrWeights [i]);
+			NumberSum += parseInt (intACN.charAt (i) * arrWeights [i]);
 		}
 		
 		// 3. Divide by 10 to obtain remainder 84 / 10 = 8 remainder 4
@@ -151,7 +140,7 @@ var Reflex_Validation	=
 		}
 		
 		// 5. Check the calculated check digit equals actual check digit
-		if (ACN_NoSpaces.charAt (8) != Complement)
+		if (intACN.charAt (8) != Complement)
 		{
 			return false;
 		}
