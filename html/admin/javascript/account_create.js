@@ -15,7 +15,6 @@ Account_Create = Class.create
 				this.className = "invalid";
 				return "Business name must be at least 5 characters long.";
 			}
-			
 			this.className = "valid";
 			return true;
 		}
@@ -28,11 +27,10 @@ Account_Create = Class.create
 				this.className = "invalid";
 				return "Invalid ABN specified";
 			}
-			
 			this.className = "valid";
 			return true;
 		}
-		
+
 		// Validate an ACN
 		this.oForm.getInputs('text','Account[ACN]').first().validate = function ()
 		{
@@ -41,10 +39,46 @@ Account_Create = Class.create
 				this.className = "invalid";
 				return "Invalid ACN specified";
 			}
-
 			this.className = "valid";
 			return true;
 		}
+
+		// Validate Address line 1
+		this.oForm.getInputs('text','Account[Address1]').first().validate = function ()
+		{
+			if (this.value.length < 5)
+			{
+				this.className = "invalid";
+				return "Invalid Address (Line 1)";
+			}
+			this.className = "valid";
+			return true;
+		}
+
+		// Validate Suburb
+		this.oForm.getInputs('text','Account[Suburb]').first().validate = function ()
+		{
+			if (this.value.length < 4)
+			{
+				this.className = "invalid";
+				return "Invalid Suburb";
+			}
+			this.className = "valid";
+			return true;
+		}
+		
+		// Validate Postcode
+		this.oForm.getInputs('text','Account[Postcode]').first().validate = function ()
+		{
+			if (this.value.match (/^\d{4}$/) === null)
+			{
+				this.className = "invalid";
+				return "Invalid Postcode";	
+			}
+			this.className = "valid";
+			return true;
+		}
+
 		
 		// Validate a State
 		this.oForm.getInputs('select','Account[State]').first().validate = function ()
@@ -54,7 +88,6 @@ Account_Create = Class.create
 				this.className = "invalid";
 				return "Invalid State specified";
 			}
-
 			this.className = "valid";
 			return true;
 		}
