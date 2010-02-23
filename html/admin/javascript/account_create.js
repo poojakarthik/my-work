@@ -66,7 +66,7 @@ Account_Create = Class.create
 			this.className = "valid";
 			return true;
 		}
-		
+
 		// Validate Postcode
 		this.oForm.getInputs('text','Account[Postcode]').first().validate = function ()
 		{
@@ -79,23 +79,26 @@ Account_Create = Class.create
 			return true;
 		}
 
+		// Some examples from rich. to be continued...
+		// Get value from state <select>
+		this.oForm.select('select[name="Account[State]"]').first();
+		// Get value from Billing Type <radio>
+		this.oForm.select('input[type=radio][name="Account[BillingType]"][checked]').first();
 		
-		// Validate a State
-		this.oForm.getInputs('select','Account[State]').first().validate = function ()
+		
+		// Validate State
+		this.oForm.AccountState = $ID('Account[State]');
+		alert(this.oForm.AccountState.getValue());
+		
+		this.oForm.AccountState.validate = function ()
 		{
-			if (!/^[0-9]{2}$/.test(this.value))
-			{
-				this.className = "invalid";
-				return "Invalid State specified";
-			}
-			this.className = "valid";
-			return true;
+			alert('position state');
 		}
+		this.oForm.AccountState.observe('change', this.oForm.AccountState.validate.bind(this.oForm.AccountState));
 
 		// Add dynamic validation
 		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j; i++)
 		{
-			// alert(aInputs[i].validate);
 			if (aInputs[i].validate)
 			{
 				aInputs[i].observe('keyup', aInputs[i].validate.bind(aInputs[i]));
@@ -121,6 +124,19 @@ Account_Create = Class.create
 				}
 			}
 		}
+
+
+		if (this.oForm.elements ['Account[State]'].value == '')
+		{
+			aErrors.push('Invalid State');
+			this.oForm.elements ['Account[State]'].className = "invalid";
+		}
+		if (this.oForm.elements ['Account[CustomerGroup]'].value == '')
+		{
+			aErrors.push('Invalid Customer Group');
+			this.oForm.elements ['Account[CustomerGroup]'].className = "invalid";
+		}
+		
 		
 		// Alert errors, then fail
 		if (aErrors.length)

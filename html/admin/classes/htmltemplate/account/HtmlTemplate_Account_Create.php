@@ -107,8 +107,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>*</div>State:</th>
 			<td>
-				<select name='Account[State]' class='input-string'>
-					<option value=''></option>";
+				<select name='Account[State]' id='Account[State]' class='input-string'>
+					<option value='22'></option>";
 				
 				// Generate a dropdown menu of available states, eg. QLD, NSW, VIC
 				foreach ($this->mxdDataToRender['arrStates'] as $oState)
