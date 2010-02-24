@@ -79,24 +79,44 @@ Account_Create = Class.create
 			return true;
 		}
 
-		// Some examples from rich. to be continued...
-		// Get value from state <select>
-		this.oForm.select('select[name="Account[State]"]').first();
-		// Get value from Billing Type <radio>
-		this.oForm.select('input[type=radio][name="Account[BillingType]"][checked]').first();
-		
-		
 		// Validate State
-		this.oForm.AccountState = $ID('Account[State]');
-		alert(this.oForm.AccountState.getValue());
-		
-		this.oForm.AccountState.validate = function ()
+		this.oForm.select('select[name="Account[State]"]').first().validate = function ()
 		{
-			alert('position state');
+			if (this.value == '')
+			{
+				this.className = "invalid";
+				return "Invalid State";	
+			}
+			this.className = "valid";
+			return true;
 		}
-		this.oForm.AccountState.observe('change', this.oForm.AccountState.validate.bind(this.oForm.AccountState));
 
-		// Add dynamic validation
+		// Validate Customer Group
+		this.oForm.select('select[name="Account[CustomerGroup]"]').first().validate = function ()
+		{
+			if (this.value == '')
+			{
+				this.className = "invalid";
+				return "Invalid Customer Group";	
+			}
+			this.className = "valid";
+			return true;
+		}
+		
+		/*
+		this.oForm.select('input[type=radio][name="Account[BillingType]"][checked=checked]').first().validate = function ()
+		{
+			if(!this.checked)
+			{
+				this.className = "invalid";
+				return "Invalid Payment Method";
+			}
+			this.className = "valid";
+			return true;
+		}
+		*/
+		
+		// Add dynamic validation ( Event listeners, for Input Elements )
 		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j; i++)
 		{
 			if (aInputs[i].validate)
@@ -105,11 +125,21 @@ Account_Create = Class.create
 				aInputs[i].observe('change', aInputs[i].validate.bind(aInputs[i]));
 			}
 		}
+		// Event listeners for select Elements
+		for (var aSelects = this.oForm.select('select'), i = 0, j = aSelects.length; i < j; i++)
+		{
+			if (aSelects[i].validate)
+			{
+				aSelects[i].observe('keyup', aSelects[i].validate.bind(aSelects[i]));
+				aSelects[i].observe('change', aSelects[i].validate.bind(aSelects[i]));
+			}
+		}
 
 	},
 	
 	submit	: function()
 	{
+		
 		var aErrors	= [];
 
 		// Check if everything is valid
@@ -125,18 +155,32 @@ Account_Create = Class.create
 			}
 		}
 
+		for (var aSelects = this.oForm.select('select'), i = 0, j = aSelects.length; i < j; i++)
+		{
+			if (aSelects[i].validate)
+			{
+				var mValid	= aSelects[i].validate();
+				if (mValid !== true)
+				{
+					aErrors.push(mValid);
+				}
+			}
+		}
 
-		if (this.oForm.elements ['Account[State]'].value == '')
+		// Validate Billing Type
+		var intFoundCheckedBillingType = 0;
+		for (var aSelect = this.oForm.select('input[type=radio][name="Account[BillingType]"]'), i = 0, j = aSelect.length; i < j; i++)
 		{
-			aErrors.push('Invalid State');
-			this.oForm.elements ['Account[State]'].className = "invalid";
+			if (aSelect[i].checked)
+			{
+				intFoundCheckedBillingType = 1;
+			}
 		}
-		if (this.oForm.elements ['Account[CustomerGroup]'].value == '')
+		if (intFoundCheckedBillingType == 0)
 		{
-			aErrors.push('Invalid Customer Group');
-			this.oForm.elements ['Account[CustomerGroup]'].className = "invalid";
+			aErrors.push('Invalid Payment Method selected');
 		}
-		
+
 		
 		// Alert errors, then fail
 		if (aErrors.length)
