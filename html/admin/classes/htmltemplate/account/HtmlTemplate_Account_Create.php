@@ -13,6 +13,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		parent::__construct($intContext, $strId, $mxdDataToRender);
 		$this->LoadJavascript("reflex_validation");
 		$this->LoadJavascript("account_create");
+		$this->LoadJavascript("credit_card_payment");
 	}
 
 	public function Render()
