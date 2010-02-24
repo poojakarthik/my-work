@@ -167,15 +167,20 @@ Account_Create = Class.create
 			}
 		}
 
-		// Validate Billing Type
+		// Validate Billing Type, by default none have been selected.
 		var intFoundCheckedBillingType = 0;
+		
+		// Iterate through the options
 		for (var aSelect = this.oForm.select('input[type=radio][name="Account[BillingType]"]'), i = 0, j = aSelect.length; i < j; i++)
 		{
+			// Check if any are selected
 			if (aSelect[i].checked)
 			{
+				// Found a selected item, there won't be an error in this case.
 				intFoundCheckedBillingType = 1;
 			}
 		}
+		// If no billing type is found, add it to the error array.
 		if (intFoundCheckedBillingType == 0)
 		{
 			aErrors.push('Invalid Payment Method selected');
