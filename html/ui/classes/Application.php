@@ -530,6 +530,7 @@ class Application
 		DBO()->Validate();
 
 		// Create AppTemplate Object
+		Flex::assert($strClass, "Failed to load Class '{$strClass}' via AJAX", print_r(array($objSubmit, $objAjax, $strClass, $strMethod), true), "Failed to load Class via AJAX");
 		$this->objAppTemplate = new $strClass;
 
 		$this->objAppTemplate->SetMode($objSubmit->Mode, $objAjax);
@@ -540,6 +541,14 @@ class Application
 		// Render Page
 		if (Ajax()->HasCommands())
 		{
+			/* We never want to cache AJAX */
+			header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
+			header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
+			header( 'Cache-Control: no-store, no-cache, must-revalidate' );
+			header( 'Cache-Control: post-check=0, pre-check=0', false );
+			header( 'Cache-Control: max-age=0', false );
+			header( 'Pragma: no-cache' );
+			
 			// Send back AJAX data as JSON
 			Ajax()->Reply();
 		}
