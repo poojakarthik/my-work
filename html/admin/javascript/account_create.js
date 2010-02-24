@@ -214,6 +214,10 @@ Account_Create = Class.create
 					{ 
 						aErrors.push('Payment Method Error: CVV');
 					}
+					if(!CreditCardPayment.checkCardType($ID('CC[CardType]').value))
+					{
+						aErrors.push('Payment Method Error: CardType');
+					}
 					if(!CreditCardPayment.checkExpiry($ID('CC[ExpMonth]').value, $ID('CC[ExpYear]').value))
 					{
 						aErrors.push('Payment Method Error: Expiry Date Mismatch');
