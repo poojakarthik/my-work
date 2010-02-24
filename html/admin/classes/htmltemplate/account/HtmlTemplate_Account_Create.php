@@ -193,19 +193,19 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						<table>
 						<tr>
 							<th style='width: 175px;'><div class='Required'>#</div>Bank Name:</th>
-							<td><input name='DDR[BankName]' maxlength='255' value='' type='text' /></td>
+							<td><input name='DDR[BankName]' id='DDR[BankName]' maxlength='255' value='' type='text' /></td>
 						</tr>
 						<tr>
 							<th><div class='Required'>#</div>BSB #:</th>
-							<td><input name='DDR[BSB]' maxlength='6' value='' type='text' /></td>
+							<td><input name='DDR[BSB]' id='DDR[BSB]' maxlength='6' value='' type='text' /></td>
 						</tr>
 						<tr>
 							<th><div class='Required'>#</div>Account #:</th>
-							<td><input name='DDR[AccountNumber]' maxlength='9' value='' type='text' /></td>
+							<td><input name='DDR[AccountNumber]' id='DDR[AccountNumber]' maxlength='9' value='' type='text' /></td>
 						</tr>
 						<tr>
 							<th><div class='Required'>#</div>Account Name:</th>
-							<td><input name='DDR[AccountName]' maxlength='255' value='' type='text' /></td>
+							<td><input name='DDR[AccountName]' id='DDR[AccountName]' maxlength='255' value='' type='text' /></td>
 						</tr>
 						</table>
 					</li>
@@ -216,7 +216,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						<tr>
 							<th style='width: 175px;'><div class='Required'>#</div>Card Type:</th>
 							<td>
-								<select tabindex='23' name='CC[CardType]'>";
+								<select tabindex='23' name='CC[CardType]' id='CC[CardType]'>";
 
 								// Generate a dropdown menu of available credit card types.
 								foreach ($this->mxdDataToRender['arrCreditCardTypes'] as $oCreditCardType)
@@ -230,16 +230,16 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						</tr>
 						<tr>
 							<th><div class='Required'>#</div>Card Holder Name:</th>
-							<td><input name='CC[Name]' maxlength='255' value='' type='text' /></td>
+							<td><input name='CC[Name]' id='CC[Name]' maxlength='255' value='' type='text' /></td>
 						</tr>
 						<tr>
 							<th><div class='Required'>#</div>Credit Card Number:</th>
-							<td><input name='CC[CardNumber]' maxlength='20' value='' type='text' /></td>
+							<td><input name='CC[CardNumber]' id='CC[CardNumber]' maxlength='20' value='' type='text' /></td>
 						</tr>
 						<tr>
 							<th><div class='Required'>#</div>Expiration Date:</th>
 							<td>
-								<select tabindex='26' name='CC[ExpMonth]'>";
+								<select tabindex='26' name='CC[ExpMonth]' id='CC[ExpMonth]'>";
 								
 									// Generate 12 months in the year
 									for ($i=1; $i<13; $i++)
@@ -249,7 +249,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 								
 								echo "
 								</select> / 
-								<select tabindex='27' name='CC[ExpYear]'>";
+								<select tabindex='27' name='CC[ExpYear]' id='CC[ExpYear]'>";
 									
 									// Generate credit card expiry year options.
 									for ($i=$intCurrentYear; $i<$intCurrentYear+self::CREDIT_CARD_EXPIRY_LIMIT_YEARS; $i++)
@@ -263,7 +263,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						</tr>
 						<tr>
 							<th><div class='Required'>#</div>CVV #:</th>
-							<td><input name='CC[CVV]' maxlength='255' value='' type='text' /></td>
+							<td><input name='CC[CVV]' id='CC[CVV]' maxlength='255' value='' type='text' /></td>
 						</tr>
 						</table>
 					</li>

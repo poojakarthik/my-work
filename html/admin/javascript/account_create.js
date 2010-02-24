@@ -167,25 +167,84 @@ Account_Create = Class.create
 			}
 		}
 
-		// Validate Billing Type, by default none have been selected.
+		// Validation for radio boxes
+		var intFoundCheckedBillingType = 0;
 		var intFoundCheckedBillingType = 0;
 		
-		// Iterate through the options
 		for (var aSelect = this.oForm.select('input[type=radio][name="Account[BillingType]"]'), i = 0, j = aSelect.length; i < j; i++)
 		{
-			// Check if any are selected
 			if (aSelect[i].checked)
 			{
-				// Found a selected item, there won't be an error in this case.
 				intFoundCheckedBillingType = 1;
+				if (aSelect[i].value == 1)
+				{
+					if ($ID('DDR[BankName]').value == '')
+					{
+						aErrors.push('Payment Method Error: BankName');
+					}
+					if ($ID('DDR[BSB]').value == '')
+					{ 
+						aErrors.push('Payment Method Error: BSB');
+					}
+					if ($ID('DDR[AccountNumber]').value == '') 
+					{ 
+						aErrors.push('Payment Method Error: AccountNumber');
+					}
+					if ($ID('DDR[AccountName]').value == '') 
+					{ 
+						aErrors.push('Payment Method Error: AccountName');
+					}
+
+				}
+				if (aSelect[i].value == 2)
+				{
+					if ($ID('CC[CardType]').value == '') 
+					{ 
+						aErrors.push('Payment Method Error: CardType');
+					}
+					if ($ID('CC[Name]').value == '') 
+					{ 
+						aErrors.push('Payment Method Error: Name');
+					}
+					if ($ID('CC[CardNumber]').value == '') 
+					{ 
+						aErrors.push('Payment Method Error: CardNumber');
+					}
+					if ($ID('CC[ExpMonth]').value == '') 
+					{ 
+						aErrors.push('Payment Method Error: ExpMonth');
+					}
+					if ($ID('CC[ExpYear]').value == '') 
+					{ 
+						aErrors.push('Payment Method Error: ExpYear');
+					}
+					if ($ID('CC[CVV]').value == '') 
+					{ 
+						aErrors.push('Payment Method Error: CVV');
+					}
+				}
 			}
 		}
+		var intFoundCheckedDisableLatePayment = 0;
+		for (var aSelect = this.oForm.select('input[type=radio][name="Account[DisableLatePayment]"]'), i = 0, j = aSelect.length; i < j; i++)
+		{
+			if (aSelect[i].checked)
+			{
+				intFoundCheckedDisableLatePayment = 1;
+			}
+		}
+		
 		// If no billing type is found, add it to the error array.
 		if (intFoundCheckedBillingType == 0)
 		{
 			aErrors.push('Invalid Payment Method selected');
 		}
+		if (intFoundCheckedDisableLatePayment == 0)
+		{
+			aErrors.push('No Late Payment option selected');
+		}
 
+		
 		
 		// Alert errors, then fail
 		if (aErrors.length)
