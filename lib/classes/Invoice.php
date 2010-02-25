@@ -1078,9 +1078,9 @@ class Invoice extends ORM
 			}
 			else
 			{
-				$strSQL	=	"SELECT 'Plan Charge' AS Matches FROM Charge WHERE Account = {$this->Account} AND (Service IN ({$strServiceIds}) OR ({$arrPlanDetails['Shared']} = 1 AND Service IS NULL)) AND ChargeType IN ('PCAR', 'PCAD') AND Status = ".CHARGE_INVOICED." LIMIT 1 \n" .
+				$strSQL	=	"SELECT 'Plan Charge' AS Matches FROM Charge WHERE Account = {$this->Account} AND (Service IN ({$strServiceIds}) OR ({$arrPlanDetails['Shared']} = 1 AND Service IS NULL)) AND ChargeType IN ('PCAR', 'PCAD', 'PCR', 'PDCR') AND Status = ".CHARGE_INVOICED." LIMIT 1 \n" .
 							"UNION \n" .
-							"SELECT 'CDR Data' AS Matches FROM ServiceTotal st JOIN InvoiceRun ir ON (ir.Id = st.invoice_run_id) JOIN service_total_service sts ON (sts.service_total_id = st.Id) WHERE (UncappedCost > 0 OR CappedCost > 0) AND sts.service_id IN ({$strServiceIds}) AND ir.BillingDate < '{$this->_objInvoiceRun->BillingDate}' LIMIT 1";
+							"SELECT 'CDR Data' AS Matches FROM ServiceTotal st JOIN ServiceTypeTotal stt ON (stt.Service = st.Service AND stt.invoice_run_id = st.invoice_run_id) JOIN InvoiceRun ir ON (ir.Id = st.invoice_run_id) JOIN service_total_service sts ON (sts.service_total_id = st.Id) WHERE ((UncappedCost > 0 OR CappedCost > 0) OR stt.Id IS NOT NULL) AND sts.service_id IN ({$strServiceIds}) AND ir.BillingDate < '{$this->_objInvoiceRun->BillingDate}' LIMIT 1";
 			}
 			$resResult	= $qryQuery->Execute($strSQL);
 			if ($resResult === FALSE)
