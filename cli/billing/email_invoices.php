@@ -182,11 +182,7 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 								"The Small to Medium Business Telecommunications Specialists!";*/
 				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.
 
-We welcome you to look over your invoice carefully, should you have any questions regarding your account, you can email us, alternatively you can call our contact centre on {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']}.
-
-Many of our long standing customers stay with us because of our flexible plans and competitive rates.
-
-As part of our continued service to you in 2010, should you require a complimentary bill analysis, or wish to upgrade your plans, we have a team of product specialists waiting to assist you. Simply e-mail upgrade@{$arrCustomerGroups[$arrDetail['CustomerGroup']]['email_domain']} or call in, and a product specialist will assist you.
+Please note there are some important changes to the dates service and equipment charges are applied to your account. For further information go to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} or call our Business Service Centre Monday to Friday 8:30am to 5:30pm AEST.
 
 Regards
 The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']}
