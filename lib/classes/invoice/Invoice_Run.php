@@ -859,8 +859,10 @@ class Invoice_Run
 	 *
 	 * @method
 	 */
-	public static function getLastInvoiceDateByCustomerGroup($intCustomerGroup, $strEffectiveDate)
+	public static function getLastInvoiceDateByCustomerGroup($intCustomerGroup, $strEffectiveDate=null)
 	{
+		$strEffectiveDate	= ($strEffectiveDate) ? $strEffectiveDate : date('Y-m-d');
+		
 		//Debug('CustomerGroup: '.$intCustomerGroup);
 		//Debug('EffectiveDate: '.$strEffectiveDate);
 		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
