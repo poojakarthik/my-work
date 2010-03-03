@@ -567,8 +567,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$arrOptions					= Array();
 		$arrOptions[NULL]			= "Send late notices";
 		
+		$sLastInvoiceRunDate	= Invoice_Run::getLastInvoiceDateByCustomerGroup(DBO()->Account->CustomerGroup->Value);
+		
 		$intPaymentTerms			= DBO()->Account->PaymentTerms->Value;
-		$intLastMonthsBillAmnesty	= strtotime("+ $intPaymentTerms days", GetStartDateTimeForBillingPeriod());
+		$intLastMonthsBillAmnesty	= strtotime("+ $intPaymentTerms days", $sLastInvoiceRunDate);
 		if ($intLastMonthsBillAmnesty > time())
 		{
 			$strLastMonthsBillAmnesty = date("Y-m-d", $intLastMonthsBillAmnesty);
@@ -576,7 +578,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			// The user can still flag the account to not receive late notices regarding last months bill
 			$arrOptions[$strLastMonthsBillAmnesty]	= "Exempt until ". date("jS F", $intLastMonthsBillAmnesty);
 		}
-		$intThisMonthsBillAmnesty					= strtotime("+ $intPaymentTerms days", GetStartDateTimeForNextBillingPeriod());
+		
+		$intThisMonthsBillAmnesty					= strtotime("+ $intPaymentTerms days", Invoice_Run::predictNextInvoiceDate(DBO()->Account->CustomerGroup->Value));
 		$strThisMonthsBillAmnesty					= date("Y-m-d", $intThisMonthsBillAmnesty);
 		$arrOptions[$strThisMonthsBillAmnesty]		= "Exempt until ". date("jS F", $intThisMonthsBillAmnesty);
 		$arrOptions[$strEndOfTime]					= "Never send late notices";
