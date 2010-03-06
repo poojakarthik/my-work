@@ -253,7 +253,7 @@ class Cli_App_Sales extends Cli
 			$this->log("\t\t* Getting list of Flex Dealers...");
 			
 			// Get list of Dealers from Flex
-			$resFlexDealers	= $qryQuery->Execute("SELECT * FROM dealer;");
+			$resFlexDealers	= $qryQuery->Execute("SELECT * FROM dealer ORDER BY ISNULL(up_line_id) DESC, (id < up_line_id) DESC, id ASC;");
 			if ($resFlexDealers === FALSE)
 			{
 				throw new Exception($qryQuery->Error());
