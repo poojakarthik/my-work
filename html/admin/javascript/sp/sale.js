@@ -4255,7 +4255,7 @@ Object.extend(Sale.Note.prototype, {
 			this.object = obj;
 		}
 		
-		this.sDetailsContainerId	= 'sale-note['+(this.object.id ? this.object.id : Sale.Note.getNewNoteId())+']';
+		this.sDetailsContainerId	= 'sale-note_'+(this.object.id ? this.object.id : Sale.Note.getNewNoteId())+'_';
 		
 		this.elementGroups = {};
 	},
