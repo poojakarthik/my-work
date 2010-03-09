@@ -1,4 +1,8 @@
 
+/*
+ * TODO: Look into possibility of using overflow: hidden; and scrollLeft/scrollRight instead of position: absolute; and left/right
+ */
+
 Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 {
 	initialize	: function($super, sDirection, bSeamlessLooping)
@@ -49,7 +53,6 @@ Reflex.Control.Ticker	= Class.create(/* extends */Reflex.Control,
 	addMessage	: function (sMessage)
 	{
 		this.aMessages.push(sMessage);
-		
 		var oMessage		= document.createElement('li');
 		oMessage.addClassName('ticker-message');
 		oMessage.innerHTML	= sMessage;
