@@ -4292,7 +4292,6 @@ Object.extend(Sale.Note.prototype, {
 		oHeaderRow.appendChild(oSummaryCell);
 		oHeaderRow.appendChild(oButtonCell);
 		
-		oHeaderCell.colSpan	= 2;
 		if (!this.object.id)
 		{
 			// New Note
