@@ -2302,7 +2302,7 @@ Object.extend(Sale.SaleAccount.prototype, {
 				sale_account_direct_debit_bank_account_id: null,
 				sale_account_direct_debit_bank_account: null,
 	
-				reference_id: null,
+				external_reference: null,
 				business_name: null,
 				trading_name: null,
 				abn: null,
@@ -2694,14 +2694,14 @@ Object.extend(Sale.SaleAccount.prototype, {
 		return this.directDebitDetails;
 	},
 	
-	setReferenceId: function(value)
+	setExternalReference: function(value)
 	{
-		this.object.reference_id = value;
+		this.object.external_reference = value;
 	},
 	
-	getReferenceId: function()
+	getExternalReference: function()
 	{
-		return this.object.reference_id;
+		return this.object.external_reference;
 	},
 	
 	setBusinessName: function(value)
@@ -3153,7 +3153,7 @@ Object.extend(Sale.Contact.prototype, {
 				contact_association_type_id: null,
 				contact_title_id: null,
 				contact_status_id: null,
-				reference_id: null,
+				external_reference: null,
 				created_on: null,
 				first_name: null,
 				middle_names: null,
@@ -3543,14 +3543,14 @@ Object.extend(Sale.Contact.prototype, {
 		return this.object.contact_status_id;
 	},
 
-	setReferenceId: function(value)
+	setExternalReference: function(value)
 	{
-		this.object.reference_id = value;
+		this.object.external_reference = value;
 	},
 	
-	getReferenceId: function()
+	getExternalReference: function()
 	{
-		return this.object.reference_id;
+		return this.object.external_reference;
 	},
 
 	setCreatedOn: function(value)
