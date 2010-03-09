@@ -335,6 +335,18 @@ Object.extend(Sale.SaleAccount.prototype, {
 		Event.observe(this.elementGroups.bill_delivery_type_id.inputs[0], 'change', this.changeBillDeliveryType.bind(this));
 		Event.observe(this.elementGroups.bill_payment_type_id.inputs[0], 'change', this.changeBillPaymentType.bind(this));
 		Event.observe(this.elementGroups.direct_debit_type_id.inputs[0], 'change', this.changeDirectDebitType.bind(this));
+		
+		// Disable the inputs if the Sale is to an existing customer
+		switch (Sale.getInstance().getSaleTypeId())
+		{
+			case Sale.SaleType.SALE_TYPE_EXISTING:
+			case Sale.SaleType.SALE_TYPE_WINBACK:
+				for (var sElementGroup in this.elementGroups)
+				{
+					Sale.GUIComponent.disableElementGroup(this.elementGroups[sElementGroup]);
+				}
+				break;
+		}
 	}
 	
 })
