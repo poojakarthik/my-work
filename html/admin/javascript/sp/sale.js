@@ -2255,10 +2255,12 @@ Object.extend(Sale.prototype, {
 	
 	loadNotes: function()
 	{
+		var	aSaleNotes	= [];
 		for (var i = 0, l = this.object.notes.length; i < l; i++)
 		{
-			Sale.Note.registerNote(new Sale.Note(this.object.notes[i]));
+			aSaleNotes.push(new Sale.Note(this.object.notes[i]));
 		}
+		Sale.Note.registerNotes(aSaleNotes);
 	},
 	
 	addNote: function()
@@ -4160,8 +4162,17 @@ Object.extend(Sale.Note,
 	
 	registerNote	: function(oSaleNote)
 	{
-		Sale.Note.oSaleNotes[oSaleNote.getSaleElementId()]	= oSaleNote;
-		oSaleNote.buildGUI();
+		Sale.Note.registerNotes([oSaleNote]);
+	},
+	
+	registerNotes	: function(aSaleNotes)
+	{
+		for (var i = 0, j = aSaleNotes.length; i < j; i++)
+		{
+			var	oSaleNote	= aSaleNotes[i];
+			Sale.Note.oSaleNotes[oSaleNote.getSaleElementId()]	= oSaleNote;
+			oSaleNote.buildGUI();
+		}
 		
 		Sale.getInstance().object.notes	= Sale.Note.getNotesDataAsArray();
 	},
