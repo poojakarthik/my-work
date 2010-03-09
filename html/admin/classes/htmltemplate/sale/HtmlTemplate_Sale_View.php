@@ -12,6 +12,8 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 		$this->LoadJavascript('sp/sale');
 		$this->LoadJavascript('sp/flex_sale');
 		$this->LoadJavascript('sp/SalesPortal');
+		
+		$this->LoadJavascript('date_time_picker_dynamic');
 
 		$productTypes = DO_Sales_ProductType::listAll();
 		
