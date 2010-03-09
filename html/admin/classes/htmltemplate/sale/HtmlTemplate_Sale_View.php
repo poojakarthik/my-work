@@ -62,7 +62,7 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 		//$response->openPage();
 		
 		
-		$arrSaleTypes		= DO_Sales_SaleType::listAll();
+		$arrSaleTypes		= DO_Sales_SaleType::getAll();
 		$arrSaleTypeIdName	= array();
 		foreach($arrSaleTypes as $oSaleType) $arrSaleTypeIdName[$oSaleType->id] = '"' . $oSaleType->name . '"';
 
