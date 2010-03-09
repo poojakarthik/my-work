@@ -4313,9 +4313,11 @@ Object.extend(Sale.Note.prototype, {
 		oButtonCell.appendChild(oButtonCollapse);
 		
 		var	oBodyRow	= document.createElement('tr'),
+			oBodyCell	= document.createElement('td'),
 			oDataTable	= document.createElement('table');
 		oDetailsTable.appendChild(oBodyRow);
-		oBodyRow.appendChild(oDataTable);
+		oBodyRow.appendChild(oBodyCell);
+		oBodyCell.appendChild(oDataTable);
 		
 		// Seems like a waste when there's only one field... :'(
 		this.elementGroups.content	= Sale.GUIComponent.createTextareaGroup(this.getContent(), true);
