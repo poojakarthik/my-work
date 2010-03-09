@@ -107,7 +107,7 @@ class JSON_Handler_Sale extends JSON_Handler
 				//$saleAccount->billPaymentTypeId = $saleAccountDetails->bill_payment_type_id;
 				//$saleAccount->directDebitTypeId = $saleAccountDetails->direct_debit_type_id ? $saleAccountDetails->direct_debit_type_id : null;
 				$saleAccount->postcode = $saleAccountDetails->postcode;
-				$saleAccount->referenceId = $saleAccountDetails->reference_id;
+				$saleAccount->externalReference = $saleAccountDetails->external_reference;
 				$saleAccount->stateId = $saleAccountDetails->state_id;
 				$saleAccount->suburb = $saleAccountDetails->suburb;
 				$saleAccount->tradingName = $saleAccountDetails->trading_name;
