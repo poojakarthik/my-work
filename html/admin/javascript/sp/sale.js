@@ -79,6 +79,7 @@ Object.extend(Sale.BillPaymentType, {
 Sale.DirectDebitType = Class.create();
 Object.extend(Sale.DirectDebitType, {
 
+	//DIRECT_DEBIT_TYPE_CHARGE_CARD:	3,
 	DIRECT_DEBIT_TYPE_CREDIT_CARD:	2,
 	DIRECT_DEBIT_TYPE_BANK_ACCOUNT:	1
 
@@ -90,6 +91,14 @@ Object.extend(Sale.BillDeliveryType, {
 	BILL_DELIVERY_TYPE_EMAIL:	2,
 	BILL_DELIVERY_TYPE_POST:	1
 
+});
+
+Sale.SaleType	= Class.create();
+Object.extend(Sale.SaleType, {
+
+	SALE_TYPE_NEW		:	1,
+	SALE_TYPE_EXISTING	:	2,
+	SALE_TYPE_WINBACK	:	3
 });
 
 Sale.GUIComponent = Class.create();
@@ -917,6 +926,8 @@ Object.extend(Sale.GUIComponent, {
 		cell.appendChild(document.createTextNode($label + ":"));
 		cell = $group.row.insertCell(-1);
 		Sale.GUIComponent.appendElementGroup(cell, $group);
+		
+		return $group.row;
 	},
 	
 	updateElementGroupDisplay: function($group)
@@ -1290,7 +1301,7 @@ Object.extend(Sale.prototype, {
 
 			this.buildPageForObject({
 				id: null,
-				sale_type_id: 1, //null, // FK to sale_type table
+				//sale_type_id: 1, //null, // FK to sale_type table
 				sale_status_id: null,
 				created_on: null,
 				created_by: null, // dealer_id - FK to dealer table
@@ -1300,7 +1311,9 @@ Object.extend(Sale.prototype, {
 				
 				contacts: [], // List of contacts (will only contain 1 for version 1 of sales portal)
 				
-				items: [] // List of items
+				items: [], // List of items
+				
+				notes: []	// List of Notes
 			});
 		}
 		else
@@ -1313,15 +1326,210 @@ Object.extend(Sale.prototype, {
 	
 	buildPageForObject: function(object)
 	{
-		this.object = object;
+		// If we don't have a Sale Type yet, throw a selection popup to prompt user
+		if (!object.sale_type_id)
+		{
+			var	oSaleTypePopup	= new Reflex_Popup(40);
+			oSaleTypePopup.setTitle('Sale Type');
+			
+			var	sSalePopupContent	= "" +
+"	<div class='Page' style='width: auto;'>" +
+"		<table style='width: 100%'>" +
+"			<thead>" +
+"				<tr>" +
+"					<th style='width: 180px;'>Sale Type:</th>" +
+"					<td>" +
+"						<select id='sale_type_select'>" +
+"						</select>" +
+"					</td>" +
+"				</tr>" +
+"			</thead>" +
+"			<tbody id='sale_type_existing_details'>" +
+"				<tr>" +
+"					<th style='width: 180px;'>Existing Account:</th>" +
+"					<td>" +
+"						<input type='text' id='sale_type_existing_id' style='width: 90%; margin: 0;' />" +
+"						<div id='sale_type_existing_id_results' style='width: 90%;'>" +
+"							<table style='width: 100%; margin: 0;'>" +
+"								<tbody></tbody>" +
+"							</table>" +
+"						</div>" +
+"					</td>" +
+"				</tr>" +
+"			</tbody>" +
+"		</table>" +
+"	</div>" +
+"	<div style='text-align: center;'>" +
+"		<button id='sale_type_popup_ok'>OK</button>" +
+"		<button id='sale_type_popup_cancel'>Cancel</button>" +
+"	</div>";
+			
+			oSaleTypePopup.setContent(sSalePopupContent);
+			
+			// Add available Sale Types
+			var	oSaleTypeSelect	= oSaleTypePopup.contentPane.select('#sale_type_select').first();
+			for (var i = 0, j = Sale.sale_type.ids.length; i < j; i++)
+			{
+				var	oOption	= document.createElement('option');
+				oOption.value	= Sale.sale_type.ids[i];
+				oOption.text	= Sale.sale_type.labels[i];
+				
+				oSaleTypeSelect.add(oOption, null);
+			}
+			
+			// Select Event Handlers
+			oSaleTypeSelect.observe('click', this.changeSaleType.bind(this));
+			oSaleTypeSelect.observe('change', this.changeSaleType.bind(this));
+			oSaleTypeSelect.observe('keyup', this.changeSaleType.bind(this));
+			
+			// Search Event Handlers
+			var	oSaleTypeExistingId	= oSaleTypePopup.contentPane.select('#sale_type_existing_id').first();
+			oSaleTypeExistingId.observe('change', this.existingCustomerSearch.bind(this));
+			oSaleTypeExistingId.observe('keyup', this.existingCustomerSearch.bind(this));
+			
+			
+			// Button Event Handlers
+			oSaleTypePopup.submit	= function(oSaleData, fnCallback)
+			{
+				var	oSaleTypeSelect		= this.contentPane.select('#sale_type_select').first();
+				
+				if (oSaleTypeSelect.selectedIndex >= 0)
+				{
+					oSaleData.sale_type_id	= parseInt(oSaleTypeSelect.options[oSaleTypeSelect.selectedIndex].value);
+					switch (oSaleData.sale_type_id)
+					{
+						case Sale.SaleType.SALE_TYPE_EXISTING:
+						case Sale.SaleType.SALE_TYPE_WINBACK:
+							// Retrieve Account Details via AJAX
+							var	fnGetAccountDetails	= SalesPortal.getRemoteFunction('Sale', 'getAccountDetails', this._submit.bind(this, oSaleData, fnCallback));
+							fnGetAccountDetails($ID('sale_type_existing_id').value);
+							break;
 
-	//	document.body.className = document.body.originalClassName + " data-entry";
+						case Sale.SaleType.SALE_TYPE_NEW:
+						default:
+							this._submit(oSaleData, fnCallback);
+							break;
+					}
+				}
+				else
+				{
+					alert("Please select a Sale Type");
+				}
+			};
+			
+			oSaleTypePopup._submit	= function(oSaleData, fnCallback, oAccountDetails)
+			{
+				// If there are Account Details, merge them with the Sale object
+				if (oAccountDetails)
+				{
+					// This should work fine, though a tad hacky
+					oAccountDetails.sale_type_id	= oSaleData.sale_type_id;
+					oSaleData						= oAccountDetails;
+				}
+				
+				this.hide();
+				fnCallback(oSaleData);
+			};
+			
+			oSaleTypePopup.contentPane.select('#sale_type_popup_ok').first().observe('click', oSaleTypePopup.submit.bind(oSaleTypePopup, object, this.buildPageForObject.bind(this)));
+			oSaleTypePopup.contentPane.select('#sale_type_popup_cancel').first().observe('click', (function(){window.location.href = $$('base').first().href; this.hide()}).bind(oSaleTypePopup));
+			
+			oSaleTypePopup.display();
+			
+			this.changeSaleType();
+			
+			// When the Popup is submitted, we'll rebuild the page, so just return for now
+			return;
+		}
+		else if (!object.sale_type_id && !this.newSale)
+		{
+			// Sanity Check Failed: Submitted Sale without a Sale Type
+			// TODO: Handle this somehow
+		}
+		else
+		{
+			// Everything is in order -- build the UI!
+			this.object = object;
+	
+		//	document.body.className = document.body.originalClassName + " data-entry";
+			
+			this.getSaleAccount();
+			this.loadContacts();
+			this.loadItems();
+			
+			this.setContainers(this.detailsContainer);
+		}
+	},
+	
+	changeSaleType	: function()
+	{
+		var	oSaleTypeSelect	= $ID('sale_type_select');
+		switch (parseInt(oSaleTypeSelect.options[oSaleTypeSelect.selectedIndex].value))
+		{
+			case Sale.SaleType.SALE_TYPE_EXISTING:
+			case Sale.SaleType.SALE_TYPE_WINBACK:
+				$ID('sale_type_existing_details').show();
+				break;
+
+			case Sale.SaleType.SALE_TYPE_NEW:
+			default:
+				$ID('sale_type_existing_details').hide();
+				break;
+		}
+	},
+	
+	existingCustomerSearch	: function()
+	{
+		var	sSearchTerm	= $ID('sale_type_existing_id').value.strip();
+
+		this.sLastSearchTerm	= sSearchTerm;
+		if (sSearchTerm && sSearchTerm.length > 3)
+		{
+			var	fnSearch	= SalesPortal.getRemoteFunction('Sale', 'searchExistingCustomers', this._existingCustomerSearchResults.bind(this, sSearchTerm));
+			fnSearch(sSearchTerm);
+		}
+		else
+		{
+			// Nothing to search, hide results
+			$ID('sale_type_existing_id_results').hide();
+		}
+	},
+	
+	_existingCustomerSearchResults	: function(sSearchTerm, aCustomers)
+	{
+		// We only want to render the most recent result
+		if (this.sLastSearchTerm === sSearchTerm)	
+		{
+			var	oResultsTableBody	= $ID('sale_type_existing_id_results').select('tbody').first();
+			oResultsTableBody.innerHTML	= '';
+			for (var i = 0, j = aCustomers.length; i < j; i++)
+			{
+				var	oRow	= document.createElement('tr');
+				
+				var	oAccountId		= document.createElement('th'),
+					oAccountName	= document.createElement('td');
+				
+				oAccountId.innerHTML	= aCustomers[i].account_id;
+				oAccountName.innerHTML	= aCustomers[i].account_name.escapeHTML();
+				
+				oRow.appendChild(oAccountId);
+				oRow.appendChild(oAccountName);
+				
+				var	fnSelect	= this.existingCustomerSearchSelect.bind(this, aCustomers[i].account_id);
+				oRow.observe('click', fnSelect);
+				
+				oResultsTableBody.appendChild(oRow);
+			}
+			$ID('sale_type_existing_id_results').show();
+		}
+	},
+	
+	existingCustomerSearchSelect	: function(iAccountId)
+	{
+		$ID('sale_type_existing_id_results').hide();
+		$ID('sale_type_existing_id').value	= iAccountId;
 		
-		this.getSaleAccount();
-		this.loadContacts();
-		this.loadItems();
-		
-		this.setContainers(this.detailsContainer);
+		this.sLastSearchTerm	= null;
 	},
 	
 	// Validates the details client side and then submits the details to the server for validation
@@ -1534,27 +1742,28 @@ Object.extend(Sale.prototype, {
 		// Add contents to this.detailsContainer
 		this.detailsContainer.innerHTML = '' 
 		+ '<div class="Page">' 
-			+ (this.isNewSale() ? '' : '<span onclick="Sale.showHistory(' + this.getId() + ')"><a href="javascript:void(0)">View&nbsp;Sale&nbsp;History</a></span>') 
-			+ '</div><div class="FieldContent" align="right">' 
+/*			+ '<div class="FieldContent" align="right">' 
 				+ 'Sale Type:' 
 				+ '<select name="SaleType">' 
 					+ '<option value="New">New</option>' 
 			//		+ '<option value="Existing" DISABLED>Existing</option>' 
 			//		+ '<option value="Winback" DISABLED>Winback</option>' 
 				+ '</select>' 
-			+ '</div>' 
+			+ '</div>'*/ 
 		+ '</div>' 
-		+ '<div class="MediumSpace"></div>' 
+		+ '<div class="MediumSpace"></div>'
+		+ '<div class="Title" style="position: relative;">Sale Status<input type="button" value="View History" onclick="Sale.showHistory(' + this.getId() + ')" style="'+/*'width: 85px;'+*/' position: absolute; right: 0px; bottom: -1px;"/></div><div class="Page" style=""><table class="data-table" cellpadding="0" cellspacing="0" border="0" style="width: 100%;"><tr><td>Status:</td><td>' + this.getStatus() + '</td></tr><tr><td>Description:</td><td>' + this.getStatusDescription() + '</td></tr></table></div>'
+		+ '<div class="MediumSpace"></div>'
 		+ '<table cellpadding="0" cellspacing="0" border="0" width="975">' 
 			+ '<tr>' 
 				+ '<td width="480">' 
 					+ '<div class="PartTitle">Account Details</div>' 
-						+ '<div class="PartPage" id="account_details_holder"></div>' 
-					+ '</td>' 
-					+ '<td width="15"></td>' 
-					+ '<td width="480">' 
-						+ '<div class="PartTitle">Primary Contact Details</div>' 
-						+ '<div class="PartPage" id="primary_contact_details_holder"></div>' 
+					+ '<div class="PartPage" id="account_details_holder"></div>' 
+				+ '</td>' 
+				+ '<td width="15"></td>' 
+				+ '<td width="480">' 
+					+ '<div class="PartTitle">Primary Contact Details</div>' 
+					+ '<div class="PartPage" id="primary_contact_details_holder"></div>' 
 				+ '</td>' 
 			+ '</tr>' 
 		+ '</table>' 
@@ -1586,7 +1795,7 @@ Object.extend(Sale.prototype, {
 			+ '</div>' 
 		+ '</div>' 
 		+ '<div class="MediumSpace"></div>' 
-		+ '<div style="position: relative;" class="Title">Sale Items<input type="button" value="Collapse All" style="position: absolute; right: 0px; bottom: -1px;" onclick="if (this.value == \'Collapse All\') { this.value = \'Expand All\'; Sale.Item.collapseAll();} else { this.value = \'Collapse All\'; Sale.Item.expandAll();} " /></div>' 
+		+ '<div style="position: relative;" class="Title">Sale Items<input type="button" value="Collapse All" style="'+/*'width: 80px;'+*/'position: absolute; right: 0px; bottom: -1px;" onclick="if (this.value == \'Collapse All\') { this.value = \'Expand All\'; Sale.Item.collapseAll();} else { this.value = \'Collapse All\'; Sale.Item.expandAll();} " /></div>' 
 		+ '<div class="Page">' 
 			+ '<div class="FieldContent" style="padding:0; margin:0;">' 
 				+ '<table id="sale-items-table" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; margin: 0; padding: 0; width:100%;">' 
@@ -1611,6 +1820,14 @@ Object.extend(Sale.prototype, {
 				+ '</TABLE></div>' 
 			+ '<table cellpadding="0" cellspacing="0" border="0" id="direct-debit-detail-table" class="data-table' + (Sale.canAmendSale ? ' read-only' : '') + '"></table>' 
 		+ '</div>' 
+		+ '<div class="MediumSpace"></div>' 
+		+ '<div class="Title" style="position: relative;"><span>Sale Notes</span><div style="position: absolute; right: 0px; bottom: -1px;"><button class="data-entry" onclick="Sale.Note.registerNote(new Sale.Note());">Add Note</button>&nbsp;<button id="sale-notes-collapse-all" onclick="Sale.Note.toggleExpandedAll();">Collapse All</button></div></div>' 
+		+ '<div class="Page">'
+		+ '<div class="FieldContent" style="padding:0; margin:0;">' 
+			+ '<table id="sale-notes-table" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; margin: 0; padding: 0; width:100%;">' 
+			+ '</table>' 
+		+ '</div>' 
+		+ '</div>'
 		+ '<div class="MediumSpace"></div>'
 		+ '<span id="amend-button-panel" class="data-display">&nbsp;<input type="button" value="Add New Sale" onclick="Sale.getInstance().addNewSale();">&nbsp;' + buttons + '</span>'
 		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Submit" onclick="Sale.getInstance().submit();">' 
@@ -1633,6 +1850,7 @@ Object.extend(Sale.prototype, {
 		$ID('after-commit-button-panel').style.display = 'none';
 		$ID('amend-button-panel').style.display = !startInEditMode ? 'inline' : 'none';
 		
+		// Build Detail Content
 		var saleAccount = this.getSaleAccount();
 		saleAccount.setContainers($ID('account_details_holder'));
 		
@@ -1647,6 +1865,8 @@ Object.extend(Sale.prototype, {
 		{
 			this.addSaleItem(this.saleItems[i]);
 		}
+
+		this.loadNotes();
 		
 		Event.observe($ID('sale_product_type_list'), 'change', this.changeProductType.bind(this), true);
 
@@ -1654,7 +1874,17 @@ Object.extend(Sale.prototype, {
 	},
 
 
-
+	getStatus: function()
+	{
+		if (this.isNewSale()) return "New Sale";
+		return this.object.status;
+	},
+	
+	getStatusDescription: function()
+	{
+		if (this.isNewSale()) return "Details not yet submitted.";
+		return this.object.status_description;
+	},
 
 
 	remote$listProductTypesForVendor: null,
@@ -1774,6 +2004,7 @@ Object.extend(Sale.prototype, {
 		var remove = document.createElement('input');
 		remove.type = 'button';
 		remove.value = 'Remove';
+		//remove.style.width = '80px';
 		remove.className = "data-entry";
 		var f = function() { if (confirm("Are you sure you want to remove this item?")) { Sale.getInstance().removeSaleItem(this.id); } }
 		var func = f.bind({ id: item.instanceId });
@@ -1784,6 +2015,7 @@ Object.extend(Sale.prototype, {
 		expand.type = 'button';
 		expand.value = 'Collapse';
 		expand.id = item.instanceId + '-expand';
+		//expand.style.width = '80px';
 
 		var func = item.toggleExpanso.bind(item);
 		Event.observe(expand, 'click', func, true);
@@ -1845,6 +2077,16 @@ Object.extend(Sale.prototype, {
 		$instances = this.getItems();
 		for (var $i = 0, $l = $instances.length; $i < $l; $i++)
 		{
+			if ($instances[$i] && !$instances[$i].isValid()) return false;
+		}
+		
+		$instances = this.getNotes();
+		for (var $i = 0, $l = $instances.length; $i < $l; $i++)
+		{
+			if (!$instances[$i].isValid)
+			{
+				alert($instances[$i].toSource());
+			}
 			if ($instances[$i] && !$instances[$i].isValid()) return false;
 		}
 		
@@ -2009,8 +2251,30 @@ Object.extend(Sale.prototype, {
 	getItems: function()
 	{
 		return this.saleItems;
+	},
+	
+	loadNotes: function()
+	{
+		for (var i = 0, l = this.object.notes.length; i < l; i++)
+		{
+			Sale.Note.registerNote(new Sale.Note(this.object.notes[i]));
+		}
+	},
+	
+	addNote: function()
+	{
+		Sale.Note.registerNote(new Sale.Note());
+	},
+	
+	removeNote: function(instance)
+	{
+		Sale.Note.deleteNote(instance);
+	},
+	
+	getNotes: function()
+	{
+		return Sale.Note.getNotesAsArray();
 	}
-
 });
 
 Sale.SaleAccount = Class.create();
@@ -2060,6 +2324,7 @@ Object.extend(Sale.SaleAccount.prototype, {
 
 	buildGUI: function()
 	{
+		// Account Details
 		this.detailsContainer.innerHTML = '<table id="account_details_table" class="data-table"></table>';
 
 		var table = $ID('account_details_table');
@@ -2106,7 +2371,7 @@ Object.extend(Sale.SaleAccount.prototype, {
 		var isMandatoryFunction	= function(){return (Sale.GUIComponent.getElementGroupValue(Sale.getInstance().getSaleAccount().elementGroups.bill_payment_type_id) == Sale.BillPaymentType.BILL_PAYMENT_TYPE_DIRECT_DEBIT);};
 		this.elementGroups.direct_debit_type_id = Sale.GUIComponent.createDropDown(Sale.direct_debit_type.ids, Sale.direct_debit_type.labels, this.getDirectDebitTypeId(), isMandatoryFunction.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Direct Debit Type', this.elementGroups.direct_debit_type_id);
-
+		
 		this.setBillPaymentTypeId(this.object.bill_payment_type_id);
 		
 		if (Sale.vendors.ids.length == 1)
@@ -2146,6 +2411,18 @@ Object.extend(Sale.SaleAccount.prototype, {
 		Event.observe(this.elementGroups.bill_delivery_type_id.inputs[0], 'change', this.changeBillDeliveryType.bind(this));
 		Event.observe(this.elementGroups.bill_payment_type_id.inputs[0], 'change', this.changeBillPaymentType.bind(this));
 		Event.observe(this.elementGroups.direct_debit_type_id.inputs[0], 'change', this.changeDirectDebitType.bind(this));
+		
+		// Disable the inputs if the Sale is to an existing customer
+		switch (Sale.getInstance().getSaleTypeId())
+		{
+			case Sale.SaleType.SALE_TYPE_EXISTING:
+			case Sale.SaleType.SALE_TYPE_WINBACK:
+				for (var sElementGroup in this.elementGroups)
+				{
+					Sale.GUIComponent.disableElementGroup(this.elementGroups[sElementGroup]);
+				}
+				break;
+		}
 	},
 	
 	changeBillDeliveryType: function()
@@ -2312,7 +2589,10 @@ Object.extend(Sale.SaleAccount.prototype, {
 
 
 
-
+	getAccountNumber	: function()
+	{
+		return (this.object.account_number) ? this.object.account_number : '[ New Account ]';
+	},
 
 	setStateId: function(state_id)
 	{
@@ -2579,6 +2859,18 @@ Object.extend(Sale.SaleAccount.DirectDebit.CreditCard.prototype, {
 										this.elementGroups.cvv.isValid();
 									}
 		Event.observe(this.elementGroups.credit_card_type_id.inputs[0], 'change', fncChangeCreditCardType.bind(this));
+		
+		// Disable the inputs if the Sale is to an existing customer
+		switch (Sale.getInstance().getSaleTypeId())
+		{
+			case Sale.SaleType.SALE_TYPE_EXISTING:
+			case Sale.SaleType.SALE_TYPE_WINBACK:
+				for (var sElementGroup in this.elementGroups)
+				{
+					Sale.GUIComponent.disableElementGroup(this.elementGroups[sElementGroup]);
+				}
+				break;
+		}
 	},
 	
 	isValid: function()
@@ -2745,6 +3037,18 @@ Object.extend(Sale.SaleAccount.DirectDebit.BankAccount.prototype, {
 		
 		this.elementGroups.account_name = Sale.GUIComponent.createTextInputGroup(this.getAccountName(), fncIsMandatoryFunction.bind(this));
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Account Name', this.elementGroups.account_name);
+
+		// Disable the inputs if the Sale is to an existing customer
+		switch (Sale.getInstance().getSaleTypeId())
+		{
+			case Sale.SaleType.SALE_TYPE_EXISTING:
+			case Sale.SaleType.SALE_TYPE_WINBACK:
+				for (var sElementGroup in this.elementGroups)
+				{
+					Sale.GUIComponent.disableElementGroup(this.elementGroups[sElementGroup]);
+				}
+				break;
+		}
 	},
 
 
@@ -2924,6 +3228,18 @@ Object.extend(Sale.Contact.prototype, {
 		Event.observe(this.elementGroups.primaryContactMethod.inputs[0], 'change', this.changePrimaryContactMethod.bind(this), true);	
 		
 		Sale.GUIComponent.appendElementGroupToTable(table, 'Preferred Contact Method', this.elementGroups.primaryContactMethod);
+
+		// Disable the inputs if the Sale is to an existing customer
+		switch (Sale.getInstance().getSaleTypeId())
+		{
+			case Sale.SaleType.SALE_TYPE_EXISTING:
+			case Sale.SaleType.SALE_TYPE_WINBACK:
+				for (var sElementGroup in this.elementGroups)
+				{
+					Sale.GUIComponent.disableElementGroup(this.elementGroups[sElementGroup]);
+				}
+				break;
+		}
 	},
 	
 	changePrimaryContactMethod: function()
@@ -3825,5 +4141,301 @@ Object.extend(Sale.ProductTypeModule.prototype, {
 	hasLoaded: function()
 	{
 		return true;
+	}
+});
+
+
+Sale.Note = Class.create();
+
+Object.extend(Sale.Note,
+{
+	iNewNoteId	: 0,
+	oSaleNotes	: {},
+	
+	getNewNoteId	: function()
+	{
+		Sale.Note.iNewNoteId--;
+		return Sale.Note.iNewNoteId;
+	},
+	
+	registerNote	: function(oSaleNote)
+	{
+		Sale.Note.oSaleNotes[oSaleNote.getSaleElementId()]	= oSaleNote;
+		oSaleNote.buildGUI();
+		
+		Sale.getInstance().object.notes	= Sale.Note.getNotesDataAsArray();
+	},
+	
+	deleteNote	: function(oSaleNote)
+	{
+		$ID(oSaleNote.getSaleElementId()).remove();
+		delete	Sale.Note.oSaleNotes[oSaleNote.getSaleElementId()];
+		
+		Sale.getInstance().object.notes	= Sale.Note.getNotesDataAsArray();
+	},
+	
+	getNoteTable	: function()
+	{
+		return $ID('sale-notes-table');
+	},
+	
+	toggleExpandedAll	: function()
+	{
+		switch ($ID('sale-notes-collapse-all').innerHTML.split(' ', 1).first().toLowerCase())
+		{
+			case 'collapse':
+				Sale.Note.collapseAll();
+				break;
+			
+			case 'expand':
+			default:
+				Sale.Note.expandAll();
+				break;
+		}
+	},
+	
+	collapseAll	: function()
+	{
+		$ID('sale-notes-collapse-all').innerHTML	= 'Expand All';
+		for (var i in Sale.Note.oSaleNotes)
+		{
+			Sale.Note.oSaleNotes[i].collapse();
+		}
+	},
+	
+	expandAll	: function()
+	{
+		$ID('sale-notes-collapse-all').innerHTML	= 'Collapse All';
+		for (var i in Sale.Note.oSaleNotes)
+		{
+			Sale.Note.oSaleNotes[i].expand();
+		}
+	},
+	
+	getNotesAsArray	: function()
+	{
+		var	aAsArray	= [];
+		for (var sElementId in Sale.Note.oSaleNotes)
+		{
+			aAsArray.push(Sale.Note.oSaleNotes[sElementId]);
+		}
+		return aAsArray;
+	},
+	
+	getNotesDataAsArray	: function()
+	{
+		var	aDataArray	= [];
+		for (var sElementId in Sale.Note.oSaleNotes)
+		{
+			aDataArray.push(Sale.Note.oSaleNotes[sElementId].object);
+		}
+		return aDataArray;
+	}
+});
+
+Object.extend(Sale.Note.prototype, Sale.GUIComponent.prototype);
+Object.extend(Sale.Note.prototype, {
+
+	object: null,
+	
+	initialize: function(obj)
+	{
+		if (obj == null)
+		{
+			this.object = {
+				id					: null,
+				sale_id				: null,
+				created_dealer_id	: null,
+				created_timestamp	: null,
+				content				: null
+			};
+		}
+		else
+		{
+			this.object = obj;
+		}
+		
+		this.sDetailsContainerId	= 'sale-note['+(this.object.id ? this.object.id : Sale.Note.getNewNoteId())+']';
+		
+		this.elementGroups = {};
+	},
+	
+	getSaleElementId	: function()
+	{
+		return this.sDetailsContainerId;
+	},
+
+	buildGUI: function()
+	{
+		var oSetTable		= Sale.Note.getNoteTable(),
+			oSetTableRow	= document.createElement('tr'),
+			oSetTableCell	= document.createElement('td');
+		
+		oSetTable.appendChild(oSetTableRow);
+		oSetTableRow.appendChild(oSetTableCell);
+		
+		var	oDetailsTable			= document.createElement('table');
+		oDetailsTable.id			= this.getSaleElementId();
+		oDetailsTable.addClassName('sale-note');
+		oSetTableCell.appendChild(oDetailsTable);
+		
+		var	oHeaderRow		= document.createElement('tr'),
+			oHeaderCell		= document.createElement('td'),
+			oHeaderPanel	= document.createElement('div'),
+			oSummarySpan	= document.createElement('span'),
+			oButtonPanel	= document.createElement('div');
+		oDetailsTable.appendChild(oHeaderRow);
+		oHeaderRow.appendChild(oHeaderCell);
+		oHeaderCell.appendChild(oHeaderPanel);
+		oHeaderPanel.appendChild(oSummarySpan);
+		oHeaderPanel.appendChild(oButtonPanel);
+		
+		oHeaderCell.colSpan	= 2;
+		if (!this.object.id)
+		{
+			// New Note
+			var	oButtonDelete				= document.createElement('button');
+			oButtonDelete.innerHTML			= 'Delete';
+			oButtonDelete.style.marginRight	= '0.25em';
+			oButtonDelete.addClassName('sale-item-delete');
+			oButtonDelete.addClassName('data-entry');
+			oButtonPanel.appendChild(oButtonDelete);
+			
+			oButtonDelete.observe('click', Sale.Note.deleteNote.curry(this));
+		}
+		var	oButtonCollapse	= document.createElement('button');
+		oButtonCollapse.addClassName('sale-item-collapse');
+		oButtonCollapse.innerHTML	= 'Collapse';
+		oButtonCollapse.observe('click', this.toggleExpanded.bind(this));
+		oButtonPanel.appendChild(oButtonCollapse);
+		
+		oButtonPanel.style.position			= 'absolute';
+		oButtonPanel.style.right			= '0px';
+		oButtonPanel.style.bottom			= '-1px';
+		oButtonPanel.style.backgroundColor	= 'inherit';
+		
+		oHeaderPanel.style.position	= 'relative';
+		
+		// Seems like a waste when there's only one field... :'(
+		this.elementGroups.content	= Sale.GUIComponent.createTextareaGroup(this.getContent(), true);
+		var	oBodyRow				= Sale.GUIComponent.appendElementGroupToTable(oDetailsTable, 'Content', this.elementGroups.content);
+		
+		for (var i = 0, aTextAreas = oBodyRow.select('textarea'), j = aTextAreas.length; i < j; i++)
+		{
+			aTextAreas[i].setStyle({width: '90%', height: '10em'});
+			aTextAreas[i].observe('change', this.updateSummaryContent.bind(this));
+			aTextAreas[i].observe('keyup', this.updateSummaryContent.bind(this));
+		}
+		
+		oHeaderRow.addClassName('sale-item-header');
+		oBodyRow.addClassName('sale-item-body');
+		
+		oHeaderCell.id					= this.getSaleElementId()+'-summary';
+		oHeaderCell.style.whiteSpace	= 'nowrap';
+		this.updateSummaryContent();
+		
+		this.expand();
+	},
+
+	isValid: function()
+	{
+		// Validate the values and invoke the isValid method of child objects
+		var bolChildrenValid	= true;
+		for (var i = 0; i < this.elementGroups.length; i++)
+		{
+			bolChildrenValid	= (this.elementGroups[i].isValid()) ? bolChildrenValid : false;
+		}
+		
+		// Set values
+		this.object.content	= Sale.GUIComponent.getElementGroupValue(this.elementGroups.content);
+		
+		this.updateSummaryContent();
+		
+		return bolChildrenValid;
+	},
+	
+	toggleExpanded	: function()
+	{
+		if ($ID(this.getSaleElementId()).select('.sale-item-body').first().visible())
+		{
+			this.collapse();
+		}
+		else
+		{
+			this.expand();
+		}
+	},
+	
+	expand	: function()
+	{
+		$ID(this.getSaleElementId()).select('.sale-item-body').first().show();
+		$ID(this.getSaleElementId()).select('.sale-item-collapse').first().innerHTML	= 'Collapse';
+	},
+	
+	collapse	: function()
+	{
+		$ID(this.getSaleElementId()).select('.sale-item-body').first().hide();
+		$ID(this.getSaleElementId()).select('.sale-item-collapse').first().innerHTML	= 'Expand';
+	},
+	
+	showValidationTip: function()
+	{
+		return false;
+	},
+	
+	updateSummaryContent	: function()
+	{
+		var	oSummaryCell	= $ID(this.getSaleElementId()+'-summary');
+		
+		var	sSummary	= "";
+		
+		if (!this.object.id)
+		{
+			sSummary	= "[ New Unsaved Note ]";
+		}
+		else
+		{
+			var	oNoteDate	= Date.parseDate(this.object.created_timestamp, 'Y-m-d H:i:s');
+			sSummary		= oNoteDate.dateFormat("d/m/Y h:i:sa")+" by "+this.getCreatedDealerName();
+		}
+		sSummary	+= " &ndash; "+this.getContentSummarised().escapeHTML();
+		
+		oSummaryCell.select('span').first().innerHTML	= sSummary;
+	},
+	
+	setContent: function(value)
+	{
+		this.object.content = value;
+	},
+	
+	getContent: function()
+	{
+		return this.object.content;
+	},
+	
+	getContentUnsaved	: function()
+	{
+		return Sale.GUIComponent.getElementGroupValue(this.elementGroups.content);
+	},
+	
+	getContentSummarised	: function()
+	{
+		// Only want to return a short summary of the Note Content -- so get the first line
+		return String(this.getContentUnsaved().strip().split("\n", 1).first());
+	},
+	
+	getCreatedDealerId: function()
+	{
+		return this.object.created_dealer_id;
+	},
+	
+	getCreatedDealerName	: function()
+	{
+		return (!this.object.id) ? '[ New Unsaved Note ]' : this.object.dealer_name;
+	},
+	
+	getCreatedTimestamp: function()
+	{
+		return (!this.object.id) ? '[ New Unsaved Note ]' : this.object.created_timestamp;
 	}
 });
