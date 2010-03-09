@@ -61,6 +61,10 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 
 		//$response->openPage();
 		
+		
+		$arrSaleTypes		= DO_Sales_SaleType::listAll();
+		$arrSaleTypeIdName	= array();
+		foreach($arrSaleTypes as $oSaleType) $arrSaleTypeIdName[$oSaleType->id] = '"' . $oSaleType->name . '"';
 
 		$contactTitles = DO_Sales_ContactTitle::listAll();
 		$arrContactIdName = array();
@@ -111,6 +115,11 @@ class HtmlTemplate_Sale_View extends FlexHtmlTemplate
 	Sale.canVerifySale = <?=Sales_Portal_Sale::canBeVerified($objSale) ? 'true' : 'false'?>;
 	Sale.canRejectSale = <?=Sales_Portal_Sale::canBeRejected($objSale) ? 'true' : 'false'?>;
 	Sale.canBeSetToAwaitingDispatch = <?=(Sales_Portal_Sale::canBeVerified($objSale) && $objSale->hasBeenVerified()) ? 'true' : 'false'?>;
+	
+	Sale.sale_type	= {
+		ids		: [<?=implode(',', array_keys($arrSaleTypeIdName))?>],
+		labels	: [<?=implode(',', array_values($arrSaleTypeIdName))?>],
+	}
 
 	Sale.contactTitles = {
 		ids: [<?=implode(',', array_keys($arrContactIdName))?>],
