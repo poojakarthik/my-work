@@ -428,6 +428,38 @@ class JSON_Handler_Sale extends JSON_Handler
 					$removedItem->cancel($dealer->id);
 				}
 			}
+			
+			// Notes
+			$aNotes	= $saleDetails->notes;
+			
+			foreach ($aNotes as $oSaleNoteData)
+			{
+				try
+				{
+					// We only care about new Notes (existing Notes cannot be modified or removed)
+					if (!DO_Sales_SaleNote::getForId($oSaleNoteData->id))
+					{
+						$oSaleNote						= new DO_Sales_SaleNote();
+						$oSaleNote->saleId				= $bolValidateOnly ? null : $sale->id;
+						$oSaleNote->createdDealerId		= $dealer->id;
+						$oSaleNote->content				= $oSaleNoteData->content;
+						
+						$oSaleNote->isValid(true);
+						if (!$bolValidateOnly) 
+						{
+							$oSaleNote->save();
+						}
+					}
+				}
+				catch (DO_Exception_Validation $e)
+				{
+					throw new Exception($e->getMessage());
+				}
+				catch (Exception $e)
+				{
+					throw new Exception(($bolValidateOnly ? "The sale note details entered are invalid: " : "Failed to save sale note: ") . $e->getMessage());
+				}
+			}
 
 			if ($bolValidateOnly)
 			{

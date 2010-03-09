@@ -137,6 +137,24 @@ class Sales_Portal
 			$saleDetails->items[] = $saleItemDetails;
 		}
 		
+		// Notes
+		$oSaleNotes	= DO_Sales_SaleNote::listForSale($sale);
+		
+		$saleDetails->notes	= array();
+		foreach ($oSaleNotes as $oSaleNote)
+		{
+			$oSaleNoteDealer	= DO_Sales_Dealer::getForId($oSaleNote->createdDealerId);
+			
+			$oSaleNoteDetails						= new stdClass();
+			$oSaleNoteDetails->id					= $oSaleNote->id;
+			$oSaleNoteDetails->created_dealer_id	= $oSaleNote->createdDealerId;
+			$oSaleNoteDetails->created_timestamp	= $oSaleNote->createdTimestamp;
+			$oSaleNoteDetails->content				= $oSaleNote->content;
+			$oSaleNoteDetails->dealer_name			= $oSaleNoteDealer->username;
+			
+			$saleDetails->notes[]	= $oSaleNoteDetails;
+		}
+		
 		//echo "/*\n\n";
 		//var_export($saleDetails);
 		//echo "\n\n*/";
