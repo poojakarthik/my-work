@@ -4279,6 +4279,12 @@ Object.extend(Sale.Note.prototype, {
 		oDetailsTable.addClassName('sale-note');
 		oSetTableCell.appendChild(oDetailsTable);
 		
+		if (this.object.id)
+		{
+			// Existing Saved Notes are not editable
+			oDetailsTable.addClassName('read-only');
+		}
+		
 		var	oHeaderRow		= document.createElement('tr'),
 			oHeaderCell		= document.createElement('td'),
 			oHeaderPanel	= document.createElement('div'),
