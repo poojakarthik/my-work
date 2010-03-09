@@ -37,7 +37,7 @@ class Sales_Portal
 		$saleDetails->sale_account->sale_account_direct_debit_credit_card = null;
 		$saleDetails->sale_account->sale_account_direct_debit_bank_account_id = $saleAccount->saleAccountDirectDebitBankAccountId;
 		$saleDetails->sale_account->sale_account_direct_debit_bank_account = null;
-		$saleDetails->sale_account->reference_id = $saleAccount->referenceId;
+		$saleDetails->sale_account->external_reference = $saleAccount->externalReference;
 		$saleDetails->sale_account->business_name = $saleAccount->businessName;
 		$saleDetails->sale_account->trading_name = $saleAccount->tradingName;
 		$saleDetails->sale_account->abn = $saleAccount->abn;
@@ -82,7 +82,7 @@ class Sales_Portal
 			$contactDetails->created_on = $contact->createdOn;
 			$contactDetails->contact_title_id = $contact->contactTitleId;
 			$contactDetails->contact_status_id = $contact->contactStatusId;
-			$contactDetails->reference_id = $contact->referenceId;
+			$contactDetails->external_reference = $contact->externalReference;
 			$contactDetails->first_name = $contact->firstName;
 			$contactDetails->middle_names = $contact->middleNames;
 			$contactDetails->last_name = $contact->lastName;
