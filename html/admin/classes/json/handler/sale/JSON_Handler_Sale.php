@@ -201,6 +201,7 @@ class JSON_Handler_Sale extends JSON_Handler
 						$contact->contactStatusId = 1; // WIP - Code this properly! 	1 = Active
 						$new = true;
 					}
+					$contact->externalReference = $contactDetails->external_reference;
 					$contact->contactTitleId = $contactDetails->contact_title_id;
 					$contact->dateOfBirth = $contactDetails->date_of_birth;
 					$contact->firstName = $contactDetails->first_name;
