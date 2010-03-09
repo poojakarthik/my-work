@@ -67,7 +67,15 @@ Object.extend(Sale.prototype, {
 		+ '<div class="Page">'
 				+ '<div><TABLE id="bill-details" cellpadding="0" cellspacing="0" border="0" class="data-table"></TABLE></div>' 
 			+ '<table cellpadding="0" cellspacing="0" border="0" id="direct-debit-detail-table" class="data-table read-only"></table>' 
+		+ '</div>'  
+		+ '<div class="MediumSpace"></div>' 
+		+ '<div class="Title" style="position: relative;"><span>Sale Notes</span><div style="position: absolute; right: 0px; bottom: -1px;"><button class="data-entry" onclick="Sale.Note.registerNote(new Sale.Note());">Add Note</button>&nbsp;<button id="sale-notes-collapse-all" onclick="Sale.Note.toggleExpandedAll();">Collapse All</button></div></div>' 
+		+ '<div class="Page">'
+		+ '<div class="FieldContent" style="padding:0; margin:0;">' 
+			+ '<table id="sale-notes-table" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; margin: 0; padding: 0; width:100%;">' 
+			+ '</table>' 
 		+ '</div>' 
+		+ '</div>'
 		+ '<div class="MediumSpace"></div>'
 		+ '<span id="submit-button-panel" class="data-entry"><input type="button" value="Submit" onclick="Sale.getInstance().submit()">&nbsp;&nbsp;<input type="button" value="Cancel" onclick="Sale.getInstance().cancelAmend()"></span>'
 		+ '<span id="commit-button-panel"><input type="button" value="Commit" onclick="Sale.getInstance().commit()">&nbsp;&nbsp;<input type="button" value="Edit" onclick="Sale.getInstance().cancel()"></span>'
@@ -100,6 +108,8 @@ Object.extend(Sale.prototype, {
 		{
 			this.addSaleItem(this.saleItems[i]);
 		}
+
+		this.loadNotes();
 		
 		Event.observe($ID('sale_product_type_list'), 'change', this.changeProductType.bind(this), true);
 
