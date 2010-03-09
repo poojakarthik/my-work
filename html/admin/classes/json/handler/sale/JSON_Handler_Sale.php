@@ -437,7 +437,7 @@ class JSON_Handler_Sale extends JSON_Handler
 				try
 				{
 					// We only care about new Notes (existing Notes cannot be modified or removed)
-					if (!DO_Sales_SaleNote::getForId($oSaleNoteData->id))
+					if (!DO_Sales_SaleNote::getForId($oSaleNoteData->id, true))
 					{
 						$oSaleNote						= new DO_Sales_SaleNote();
 						$oSaleNote->saleId				= $bolValidateOnly ? null : $sale->id;
