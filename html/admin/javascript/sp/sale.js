@@ -4298,8 +4298,10 @@ Object.extend(Sale.Note.prototype, {
 			var	oButtonDelete				= document.createElement('button');
 			oButtonDelete.innerHTML			= 'Delete';
 			oButtonDelete.style.marginRight	= '0.25em';
+			
 			oButtonDelete.addClassName('sale-item-delete');
 			oButtonDelete.addClassName('data-entry');
+			
 			oButtonCell.appendChild(oButtonDelete);
 			
 			oButtonDelete.observe('click', Sale.Note.deleteNote.curry(this));
@@ -4310,9 +4312,14 @@ Object.extend(Sale.Note.prototype, {
 		oButtonCollapse.observe('click', this.toggleExpanded.bind(this));
 		oButtonCell.appendChild(oButtonCollapse);
 		
+		var	oBodyRow	= document.createElement('tr'),
+			oDataTable	= document.createElement('table');
+		oDetailsTable.appendChild(oBodyRow);
+		oBodyRow.appendChild(oDataTable);
+		
 		// Seems like a waste when there's only one field... :'(
 		this.elementGroups.content	= Sale.GUIComponent.createTextareaGroup(this.getContent(), true);
-		var	oBodyRow				= Sale.GUIComponent.appendElementGroupToTable(oDetailsTable, 'Content', this.elementGroups.content);
+		Sale.GUIComponent.appendElementGroupToTable(oDataTable, 'Content', this.elementGroups.content);
 		
 		for (var i = 0, aTextAreas = oBodyRow.select('textarea'), j = aTextAreas.length; i < j; i++)
 		{
