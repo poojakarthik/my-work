@@ -4286,15 +4286,11 @@ Object.extend(Sale.Note.prototype, {
 		}
 		
 		var	oHeaderRow		= document.createElement('tr'),
-			oHeaderCell		= document.createElement('td'),
-			oHeaderPanel	= document.createElement('div'),
-			oSummarySpan	= document.createElement('span'),
-			oButtonPanel	= document.createElement('div');
+			oSummaryCell	= document.createElement('td'),
+			oButtonCell		= document.createElement('td');
 		oDetailsTable.appendChild(oHeaderRow);
-		oHeaderRow.appendChild(oHeaderCell);
-		oHeaderCell.appendChild(oHeaderPanel);
-		oHeaderPanel.appendChild(oSummarySpan);
-		oHeaderPanel.appendChild(oButtonPanel);
+		oHeaderRow.appendChild(oSummaryCell);
+		oHeaderRow.appendChild(oButtonCell);
 		
 		oHeaderCell.colSpan	= 2;
 		if (!this.object.id)
@@ -4305,7 +4301,7 @@ Object.extend(Sale.Note.prototype, {
 			oButtonDelete.style.marginRight	= '0.25em';
 			oButtonDelete.addClassName('sale-item-delete');
 			oButtonDelete.addClassName('data-entry');
-			oButtonPanel.appendChild(oButtonDelete);
+			oButtonCell.appendChild(oButtonDelete);
 			
 			oButtonDelete.observe('click', Sale.Note.deleteNote.curry(this));
 		}
@@ -4313,20 +4309,7 @@ Object.extend(Sale.Note.prototype, {
 		oButtonCollapse.addClassName('sale-item-collapse');
 		oButtonCollapse.innerHTML	= 'Collapse';
 		oButtonCollapse.observe('click', this.toggleExpanded.bind(this));
-		oButtonPanel.appendChild(oButtonCollapse);
-		
-		/*
-		oButtonPanel.style.position			= 'absolute';
-		oButtonPanel.style.right			= '0px';
-		oButtonPanel.style.bottom			= '-1px';
-		oButtonPanel.style.backgroundColor	= 'inherit';
-		*/
-		// Floating is a method of the Devil, but in this case I'm lazy
-		oButtonPanel.style.float			= 'right';
-		oButtonPanel.style.backgroundColor	= 'inherit';
-		
-		
-		oHeaderPanel.style.position	= 'relative';
+		oButtonCell.appendChild(oButtonCollapse);
 		
 		// Seems like a waste when there's only one field... :'(
 		this.elementGroups.content	= Sale.GUIComponent.createTextareaGroup(this.getContent(), true);
@@ -4342,8 +4325,8 @@ Object.extend(Sale.Note.prototype, {
 		oHeaderRow.addClassName('sale-item-header');
 		oBodyRow.addClassName('sale-item-body');
 		
-		oHeaderCell.id					= this.getSaleElementId()+'-summary';
-		oHeaderCell.style.whiteSpace	= 'nowrap';
+		oSummaryCell.id					= this.getSaleElementId()+'-summary';
+		oSummaryCell.style.whiteSpace	= 'nowrap';
 		this.updateSummaryContent();
 		
 		this.expand();
@@ -4412,7 +4395,7 @@ Object.extend(Sale.Note.prototype, {
 		}
 		sSummary	+= " &ndash; "+this.getContentSummarised().escapeHTML();
 		
-		oSummaryCell.select('span').first().innerHTML	= sSummary;
+		oSummaryCell.innerHTML	= sSummary;
 	},
 	
 	setContent: function(value)
