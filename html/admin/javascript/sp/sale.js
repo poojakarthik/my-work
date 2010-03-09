@@ -4319,6 +4319,8 @@ Object.extend(Sale.Note.prototype, {
 		oBodyRow.appendChild(oBodyCell);
 		oBodyCell.appendChild(oDataTable);
 		
+		oBodyCell.colSpan	= 2;
+		
 		// Seems like a waste when there's only one field... :'(
 		this.elementGroups.content	= Sale.GUIComponent.createTextareaGroup(this.getContent(), true);
 		Sale.GUIComponent.appendElementGroupToTable(oDataTable, 'Content', this.elementGroups.content);
