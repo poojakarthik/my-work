@@ -4315,10 +4315,16 @@ Object.extend(Sale.Note.prototype, {
 		oButtonCollapse.observe('click', this.toggleExpanded.bind(this));
 		oButtonPanel.appendChild(oButtonCollapse);
 		
+		/*
 		oButtonPanel.style.position			= 'absolute';
 		oButtonPanel.style.right			= '0px';
 		oButtonPanel.style.bottom			= '-1px';
 		oButtonPanel.style.backgroundColor	= 'inherit';
+		*/
+		// Floating is a method of the Devil, but in this case I'm lazy
+		oButtonPanel.style.float			= 'right';
+		oButtonPanel.style.backgroundColor	= 'inherit';
+		
 		
 		oHeaderPanel.style.position	= 'relative';
 		
