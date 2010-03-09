@@ -1307,6 +1307,32 @@ div.tab-collection div.tab-body-container
 }
 /************************ END - Sale Statuses - END ***************************/
 
+
+/************************* START - Sale Notes - START *************************/
+#sale-notes-table .sale-note
+{
+	width			: 100%;
+	border			: none;
+	border-collapse	: collapse;
+	border-spacing	: 0;
+}
+
+#sale-notes-table .sale-note > tr:first-child > td
+{
+	border-bottom		: 2px dashed #fff;
+}
+
+#sale-notes-table > tr:nth-child(odd) .sale-note > tr > td
+{
+	background-color	: #fff;
+}
+
+#sale-notes-table > tr:nth-child(odd) .sale-note > tr:first-child > td
+{
+	border-bottom		: 2px dashed #eaeaea;
+}
+/*************************** END - Sale Notes - END ***************************/
+
 /************** START - Console Upcoming Calendar Events - START **************/
 div.console-calendar
 {
