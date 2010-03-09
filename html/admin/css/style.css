@@ -1309,7 +1309,7 @@ div.tab-collection div.tab-body-container
 
 
 /************************* START - Sale Notes - START *************************/
-#sale-notes-table .sale-note
+#sale-notes-table table
 {
 	width			: 100%;
 	border			: none;

@@ -4292,6 +4292,8 @@ Object.extend(Sale.Note.prototype, {
 		oHeaderRow.appendChild(oSummaryCell);
 		oHeaderRow.appendChild(oButtonCell);
 		
+		oButtonCell.style.textAlign	= 'right';
+		
 		if (!this.object.id)
 		{
 			// New Note
