@@ -1349,7 +1349,7 @@ Object.extend(Sale.prototype, {
 "					<th style='width: 180px;'>Existing Account:</th>" +
 "					<td>" +
 "						<input type='text' id='sale_type_existing_id' style='width: 90%; margin: 0;' />" +
-"						<div id='sale_type_existing_id_results' style='width: 90%;'>" +
+"						<div id='sale_type_existing_id_results' style='width: 90%; display: none;'>" +
 "							<table style='width: 100%; margin: 0;'>" +
 "								<tbody></tbody>" +
 "							</table>" +
