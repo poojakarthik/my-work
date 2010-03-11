@@ -1,10 +1,5 @@
 /*
- * Author: Ryan Forrester
- *
  * File: javascript_functions.js
- * Purpose: mostly validation..
- *
- * 
  */
 
 /* function to validate empty fields */
