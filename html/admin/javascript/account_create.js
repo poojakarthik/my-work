@@ -179,7 +179,7 @@ Account_Create = Class.create
 					intFoundCheckedContactType = 1;
 					if (isNaN($ID('Contact[Id]').value))
 					{
-						aErrors.push('Invalid Contact Selected');
+						aErrors.push('Invalid Primary Contact Selected');
 					}
 				}
 				// Create a new contact
