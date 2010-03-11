@@ -216,11 +216,11 @@ Account_Create = Class.create
 			{
 				aErrors.push('Invalid Contact Title Selected');
 			}
-			if ($ID('Contact[FirstName]').value.length < 5)
+			if ($ID('Contact[FirstName]').value.length < 1)
 			{
 				aErrors.push('First Name must be at least 5 characters long');
 			}
-			if ($ID('Contact[LastName]').value.length < 5)
+			if ($ID('Contact[LastName]').value.length < 1)
 			{
 				aErrors.push('Last Name must be at least 5 characters long');
 			}
@@ -350,7 +350,8 @@ Account_Create = Class.create
 				sErrors	+= "- " + aErrors[i] + "\n";
 			}
 			alert(sErrors);
-			return false;
+			// return false;
+			return true;
 		}
 		
 		// No errors -- submit
