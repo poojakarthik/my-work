@@ -66,11 +66,13 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 
 		// Account Details
 		echo "
+		<!-- 
 		<div class='Seperator'></div>
 		<div style='text-align: center;'>
 			<input type='submit' class='normal-button' name='Add_Account_Submit' value='Save' />
 			<input type='submit' class='normal-button' name='Add_Account_Cancel' value='Cancel' />
 		</div>
+		-->
 		<div class='Seperator'></div>
 		<h2 class='Account'>Account Details</h2>
 		<table class='form-layout'>

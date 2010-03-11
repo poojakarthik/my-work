@@ -152,7 +152,7 @@ Account_Create = Class.create
 		
 		var aErrors	= [];
 
-		// Check if everything is valid
+		// Check if <input> fields are valid.
 		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j; i++)
 		{
 			if (aInputs[i].validate)
@@ -164,7 +164,7 @@ Account_Create = Class.create
 				}
 			}
 		}
-
+		// Same as above except this handles the <select> elements.
 		for (var aSelects = this.oForm.select('select'), i = 0, j = aSelects.length; i < j; i++)
 		{
 			if (aSelects[i].validate)
