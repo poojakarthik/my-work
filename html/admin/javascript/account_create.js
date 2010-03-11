@@ -166,18 +166,48 @@ Account_Create = Class.create
 				}
 			}
 		}
-
-		// Validation for radio boxes
-		var intFoundCheckedBillingType = 0;
-		var intFoundCheckedBillingType = 0;
 		
+		// By default no valid billing type has been selected
+		var intFoundCheckedContactType = 0;
+		for (var aSelect = this.oForm.select('input[type=radio][name="Contact[USE]"]'), i = 0, j = aSelect.length; i < j; i++)
+		{
+			if (aSelect[i].checked)
+			{
+				// Select an existing contact
+				if (aSelect[i].value == 1)
+				{
+					intFoundCheckedContactType = 1;
+					if (isNaN($ID('Contact[Id]').value))
+					{
+						aErrors.push('Invalid Contact Selected');
+					}
+				}
+				// Create a new contact
+				if (aSelect[i].value == 0)
+				{
+					intFoundCheckedContactType = 1;
+					// TODO add validation for new primary contact
+				}
+			}
+			
+		}
+
+		// By default no valid billing type has been selected
+		var intFoundCheckedBillingType = 0;
 		for (var aSelect = this.oForm.select('input[type=radio][name="Account[BillingType]"]'), i = 0, j = aSelect.length; i < j; i++)
 		{
 			if (aSelect[i].checked)
 			{
-				intFoundCheckedBillingType = 1;
+				// Invoice
+				if (aSelect[i].value == 3)
+				{
+					intFoundCheckedBillingType = 1;	
+				}
+				// Direct Debit
 				if (aSelect[i].value == 1)
 				{
+					intFoundCheckedBillingType = 1;	
+					
 					if ($ID('DDR[BankName]').value == '')
 					{
 						aErrors.push('Payment Method Error: BankName');
@@ -196,8 +226,11 @@ Account_Create = Class.create
 					}
 
 				}
+				// Credit Card
 				if (aSelect[i].value == 2)
 				{
+					intFoundCheckedBillingType = 1;	
+					
 					if ($ID('CC[CardType]').value == '') 
 					{ 
 						aErrors.push('Payment Method Error: CardType');
@@ -234,6 +267,10 @@ Account_Create = Class.create
 		if (intFoundCheckedBillingType == 0)
 		{
 			aErrors.push('Invalid Payment Method selected');
+		}
+		if (intFoundCheckedContactType == 0)
+		{
+			aErrors.push('Invalid Primary Contact Details');
 		}
 		if (intFoundCheckedDisableLatePayment == 0)
 		{

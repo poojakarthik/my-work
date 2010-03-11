@@ -295,8 +295,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</tr>
 				<th><div class='Required'></div></th>
 				<td>
-					<select name='Contact[Id]'>
-						<option value=''></option>";
+					<select name='Contact[Id]' id='Contact[Id]'>
+						<option value='false'></option>";
 
 					// Generate a dropdown menu of existing contacts
 					foreach ($this->mxdDataToRender['arrAssociatedContacts'] as $iId=>$oAssociatedContact)
@@ -310,9 +310,9 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</tr>
 				<th><div class='Required'></th>
 				<td>
-						<div class='SmallSeperator'></div>
-						<input type='radio' name='Contact[USE]' value='0' />
-						Create a new Contact using the following details:</ul>
+					<div class='SmallSeperator'></div>
+					<input type='radio' name='Contact[USE]' value='0' />
+					Create a new Contact using the following details:</ul>
 				</td>
 			</tr>";
 			

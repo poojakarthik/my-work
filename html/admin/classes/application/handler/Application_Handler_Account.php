@@ -52,7 +52,7 @@ class Application_Handler_Account extends Application_Handler
 												OR (ag.Id = c.AccountGroup
 													AND c.CustomerContact = 1)
 												) AND c.Archived = 0
-					WHERE ag.Id = $iAssociated;");
+					WHERE a.Id = $iAssociated;");
 
 					if ($resAssociatedContacts)
 					{
