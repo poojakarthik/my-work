@@ -217,7 +217,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						<tr>
 							<th style='width: 175px;'><div class='Required'>#</div>Card Type:</th>
 							<td>
-								<select tabindex='23' name='CC[CardType]' id='CC[CardType]'>";
+								<select tabindex='23' name='CC[CardType]' id='CC[CardType]'>
+								<option value=''>Select Card Type</option>";
 
 								// Generate a dropdown menu of available credit card types.
 								foreach ($this->mxdDataToRender['arrCreditCardTypes'] as $oCreditCardType)

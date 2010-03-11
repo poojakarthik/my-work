@@ -207,18 +207,14 @@ Account_Create = Class.create
 						aErrors.push('Payment Method Error: Name');
 					}
 					if ($ID('CC[CardNumber]').value == '') 
-					{ 
+					{
 						aErrors.push('Payment Method Error: CardNumber');
 					}
-					if ($ID('CC[CVV]').value == '') 
-					{ 
+					if ($ID('CC[CVV]').value.match (/^\d{3,4}$/) === null)
+					{
 						aErrors.push('Payment Method Error: CVV');
 					}
-					if(!CreditCardPayment.checkCardType($ID('CC[CardType]').value))
-					{
-						aErrors.push('Payment Method Error: CardType');
-					}
-					if(!CreditCardPayment.checkExpiry($ID('CC[ExpMonth]').value, $ID('CC[ExpYear]').value))
+					if (!CreditCardPayment.checkExpiry($ID('CC[ExpMonth]').value, $ID('CC[ExpYear]').value))
 					{
 						aErrors.push('Payment Method Error: Expiry Date Mismatch');
 					}
