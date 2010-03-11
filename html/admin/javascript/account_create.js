@@ -22,10 +22,15 @@ Account_Create = Class.create
 		// Validate an ABN
 		this.oForm.getInputs('text','Account[ABN]').first().validate = function ()
 		{
-			if (!Reflex_Validation.abn(this.value))
+			if (this.value !== '' && !Reflex_Validation.abn(this.value))
 			{
 				this.className = "invalid";
 				return "Invalid ABN specified";
+			}
+			if(this.value == '')
+			{
+				this.className = "";
+				return true;
 			}
 			this.className = "valid";
 			return true;
@@ -34,10 +39,15 @@ Account_Create = Class.create
 		// Validate an ACN
 		this.oForm.getInputs('text','Account[ACN]').first().validate = function ()
 		{
-			if (!Reflex_Validation.acn(this.value))
+			if (this.value !== '' && !Reflex_Validation.acn(this.value))
 			{
 				this.className = "invalid";
 				return "Invalid ACN specified";
+			}
+			if(this.value == '')
+			{
+				this.className = "";
+				return true;
 			}
 			this.className = "valid";
 			return true;
@@ -167,33 +177,83 @@ Account_Create = Class.create
 			}
 		}
 		
-		// By default no valid billing type has been selected
+		// By default no contact type has been selected
 		var intFoundCheckedContactType = 0;
+		var intValidateExistingContact = null;
+		
+		if($ID('Contact[USE]'))
+		{
+			intValidateExistingContact = 0;
+			intFoundCheckedContactType = 1;
+		}
+		
 		for (var aSelect = this.oForm.select('input[type=radio][name="Contact[USE]"]'), i = 0, j = aSelect.length; i < j; i++)
 		{
 			if (aSelect[i].checked)
 			{
+				intFoundCheckedContactType = 1;
 				// Select an existing contact
 				if (aSelect[i].value == 1)
 				{
-					intFoundCheckedContactType = 1;
+					intValidateExistingContact = 1;
 					if (isNaN($ID('Contact[Id]').value))
 					{
 						aErrors.push('Invalid Primary Contact Selected');
 					}
 				}
-				// Create a new contact
 				if (aSelect[i].value == 0)
 				{
-					intFoundCheckedContactType = 1;
-					// TODO add validation for new primary contact
+					intValidateExistingContact = 0;
 				}
 			}
 			
 		}
 
+		// Validate new primary contact details
+		if(intValidateExistingContact == 0)
+		{
+			if (isNaN($ID('Contact[Title]').value))
+			{
+				aErrors.push('Invalid Contact Title Selected');
+			}
+			if ($ID('Contact[FirstName]').value.length < 5)
+			{
+				aErrors.push('First Name must be at least 5 characters long');
+			}
+			if ($ID('Contact[LastName]').value.length < 5)
+			{
+				aErrors.push('Last Name must be at least 5 characters long');
+			}
+			if (isNaN($ID('Contact[DOB][day]').value))
+			{
+				aErrors.push('Invalid Date Of Birth Day');
+			}
+			if (isNaN($ID('Contact[DOB][month]').value))
+			{
+				aErrors.push('Invalid Date Of Birth Month');
+			}
+			if (isNaN($ID('Contact[DOB][year]').value))
+			{
+				aErrors.push('Invalid Date Of Birth Year');
+			}
+			if (!_validate.email($ID('Contact[Email]').value))
+			{
+				aErrors.push('Invalid Email Address');
+			}
+			if (!_validate.fnnLandLine($ID('Contact[Phone]').value) && !_validate.fnnMobile($ID('Contact[Mobile]').value))
+			{
+				aErrors.push('A valid phone number OR Mobile must be provided');
+			}
+			if ($ID('Contact[Password]').value.length < 8)
+			{
+				aErrors.push('Password must be at least 8 characters long');
+			}
+		}
+		
+		
 		// By default no valid billing type has been selected
 		var intFoundCheckedBillingType = 0;
+		
 		for (var aSelect = this.oForm.select('input[type=radio][name="Account[BillingType]"]'), i = 0, j = aSelect.length; i < j; i++)
 		{
 			if (aSelect[i].checked)
@@ -276,8 +336,10 @@ Account_Create = Class.create
 		{
 			aErrors.push('No Late Payment option selected');
 		}
-
-		
+		if(!Reflex_Validation.abn($ID('Account[ABN]').value) && !Reflex_Validation.acn($ID('Account[ACN]').value))
+		{
+			aErrors.push('A valid ABN or ACN is required.');
+		}
 		
 		// Alert errors, then fail
 		if (aErrors.length)

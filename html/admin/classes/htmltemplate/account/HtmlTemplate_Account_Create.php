@@ -84,11 +84,11 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		</tr>
 		<tr>
 			<th><div class='Required'>1</div>ABN:</th>
-			<td><input type='text' name='Account[ABN]' class='input-string' maxlength='255' /></td>
+			<td><input type='text' name='Account[ABN]' id='Account[ABN]' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
 			<th><div class='Required'>1</div>ACN:</th>
-			<td><input type='text' name='Account[ACN]' class='input-string' maxlength='255' /></td>
+			<td><input type='text' name='Account[ACN]' id='Account[ACN]' class='input-string' maxlength='255' /></td>
 		</tr>
 		<tr>
 			<th><div class='Required'>*</div>Address (Line 1):</th>
@@ -281,7 +281,10 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<h2 class='Account'>Primary Contact Details</h2>
 		<table class='form-layout'>";
 
-
+		if(!array_key_exists("Associated", $_GET))
+		{
+			echo "<input type='hidden' name='Contact[USE]' id='Contact[USE]' value='0' />";	
+		}
 		if(array_key_exists("Associated", $_GET))
 		{
 			
@@ -322,8 +325,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>#</div>Title:</th>
 			<td>
-				<select name='Contact[Title]'>
-					<option value=''></option>";
+				<select name='Contact[Title]' id='Contact[Title]'>
+					<option value='false'></option>";
 
 					// Generate a dropdown menu of contact titles, eg. Mr, Dr
 					foreach ($this->mxdDataToRender['arrContactTitles'] as $oContactTitle)
@@ -337,17 +340,17 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		</tr>
 		<tr>
 			<th><div class='Required'>#</div>First Name:</th>
-			<td><input type='text' name='Contact[FirstName]' maxlength='255' /></td>
+			<td><input type='text' name='Contact[FirstName]' id='Contact[FirstName]' maxlength='255' /></td>
 		</tr>
 		<tr>
 			<th><div class='Required'>#</div>Last Name:</th>
-			<td><input type='text' name='Contact[LastName]' maxlength='255' /></td>
+			<td><input type='text' name='Contact[LastName]' id='Contact[LastName]' maxlength='255' /></td>
 		</tr>
 		<tr>
 			<th><div class='Required'>#</div>Date of Birth:</th>
 			<td>
-				<select name='Contact[DOB][day]'>
-					<option value=''>DD</option>";
+				<select name='Contact[DOB][day]' id='Contact[DOB][day]'>
+					<option value='false'>DD</option>";
 	
 					// Generate 31 days in a month
 					for ($i=1; $i<32; $i++)
@@ -357,8 +360,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 					
 				echo "
 				</select>
-				<select name='Contact[DOB][month]'>
-					<option value=''>MM</option>";
+				<select name='Contact[DOB][month]' id='Contact[DOB][month]'>
+					<option value='false'>MM</option>";
 	
 					// Generate 12 months in the year
 					for ($i=1; $i<13; $i++)
@@ -368,8 +371,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 					
 				echo "
 				</select>
-				<select name='Contact[DOB][year]'>
-					<option value=''>YYYY</option>";
+				<select name='Contact[DOB][year]' id='Contact[DOB][year]'>
+					<option value='false'>YYYY</option>";
 					
 					// Generate list of years for date of birth selection
 					$intStartMinimumAgeRequired = $intCurrentYear-self::MINIMUM_AGE_REQUIRED_FOR_ACCOUNT;
@@ -385,27 +388,27 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		</tr>
 		<tr>
 			<th><div class='Required'>&nbsp;</div>Job Title:</th>
-			<td><input type='text' name='Contact[JobTitle]' maxlength='255' /></td>
+			<td><input type='text' name='Contact[JobTitle]' id='Contact[JobTitle]' maxlength='255' /></td>
 		</tr>
 		<tr>
 			<th><div class='Required'>#</div>Email Address:</th>
-			<td><input type='text' name='Contact[Email]' maxlength='255' /></td>
+			<td><input type='text' name='Contact[Email]' id='Contact[Email]' maxlength='255' /></td>
 		</tr>
 		<tr>
 			<th><div class='Required'>2</div>Phone Number:</th>
-			<td><input type='text' name='Contact[Phone]' maxlength='25' /></td>
+			<td><input type='text' name='Contact[Phone]' id='Contact[Phone]' maxlength='25' /></td>
 		</tr>
 		<tr>
 			<th><div class='Required'>2</div>Mobile Number:</th>
-			<td><input type='text' name='Contact[Mobile]' maxlength='25' /></td>
+			<td><input type='text' name='Contact[Mobile]' id='Contact[Mobile]' maxlength='25' /></td>
 		</tr>
 		<tr>
 			<th><div class='Required'>&nbsp;</div>Fax Number:</th>
-			<td><input type='text' name='Contact[Fax]' maxlength='25' /></td>
+			<td><input type='text' name='Contact[Fax]' id='Contact[Fax]' maxlength='25' /></td>
 		</tr>
 		<tr>
 			<th><div class='Required'>#</div>Password:</th>
-			<td><input type='text' name='Contact[Password]' maxlength='255' /></td>
+			<td><input type='text' name='Contact[Password]' id='Contact[Password]' maxlength='255' /></td>
 		</tr>
 		</table>\n";
 
