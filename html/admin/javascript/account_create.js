@@ -206,13 +206,13 @@ Account_Create = Class.create
 					{ 
 						aErrors.push('Payment Method Error: Name');
 					}
-					if ($ID('CC[CardNumber]').value == '') 
-					{
-						aErrors.push('Payment Method Error: CardNumber');
-					}
 					if ($ID('CC[CVV]').value.match (/^\d{3,4}$/) === null)
 					{
 						aErrors.push('Payment Method Error: CVV');
+					}
+					if (!_validate.creditCardNumber($ID('CC[CardNumber]').value, $ID('CC[CardType]').value))
+					{
+						aErrors.push('Payment Method Error: CardNumber');
 					}
 					if (!CreditCardPayment.checkExpiry($ID('CC[ExpMonth]').value, $ID('CC[ExpYear]').value))
 					{

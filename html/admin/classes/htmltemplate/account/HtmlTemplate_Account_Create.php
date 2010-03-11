@@ -14,6 +14,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		$this->LoadJavascript("reflex_validation");
 		$this->LoadJavascript("account_create");
 		$this->LoadJavascript("credit_card_payment");
+		$this->LoadJavascript("sp/validation");
 	}
 
 	public function Render()
@@ -217,8 +218,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						<tr>
 							<th style='width: 175px;'><div class='Required'>#</div>Card Type:</th>
 							<td>
-								<select tabindex='23' name='CC[CardType]' id='CC[CardType]'>
-								<option value=''>Select Card Type</option>";
+								<select tabindex='23' name='CC[CardType]' id='CC[CardType]'>";
 
 								// Generate a dropdown menu of available credit card types.
 								foreach ($this->mxdDataToRender['arrCreditCardTypes'] as $oCreditCardType)
@@ -265,7 +265,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						</tr>
 						<tr>
 							<th><div class='Required'>#</div>CVV #:</th>
-							<td><input name='CC[CVV]' id='CC[CVV]' maxlength='255' value='' type='text' /></td>
+							<td><input name='CC[CVV]' id='CC[CVV]' maxlength='4' value='' type='text' /></td>
 						</tr>
 						</table>
 					</li>
