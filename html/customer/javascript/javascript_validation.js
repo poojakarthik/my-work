@@ -1,22 +1,5 @@
 /*
- * Author: Ryan Forrester
- *
  * File: javascript_validation.js
- * Purpose: validates form data, email fields, phone numbers, etc..
- *
- * Usage:
- * <script language="JavaScript" src="js/javascript_validation.js"></script>
- * <script language="JavaScript" src="js/javascript_error_box.js"></script>
- * <form method="foo" onsubmit="return validate_form(this)" name="form1">
- *
- * Add function at the bottom if creating new form which requires validation.
- *
- * Associated files:
- * - javascript_functions.js (contains the functions which do the validation, add more here if required.)
- * - javascript_error_box.js (contains the code which creates a popup error box.)
- *
- * A note on some of the available functions: 
- * validate_phone(), validate_required(), validate_email()
  */
 
 /* check fields on normal contact form */
