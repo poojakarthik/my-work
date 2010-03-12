@@ -333,7 +333,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 					// Generate a dropdown menu of contact titles, eg. Mr, Dr
 					foreach ($this->mxdDataToRender['arrContactTitles'] as $oContactTitle)
 					{
-						echo "<option value='{$oContactTitle->id}'>{$oContactTitle->name}</option>\n";
+						// echo "<option value='{$oContactTitle->id}'>{$oContactTitle->name}</option>\n";
+						echo "<option value='{$oContactTitle->name}'>{$oContactTitle->name}</option>\n";
 					}
 				
 				echo "
