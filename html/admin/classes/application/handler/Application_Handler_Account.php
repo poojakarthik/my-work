@@ -110,7 +110,7 @@ class Application_Handler_Account extends Application_Handler
 			$oAccountGroup->Archived							= 0;
 			$oAccountGroup->save();
 
-			
+
 			//----------------------------------------------------------------//
 			// Assign properties of new Contact
 			//----------------------------------------------------------------//
