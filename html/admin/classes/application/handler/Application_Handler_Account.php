@@ -234,11 +234,8 @@ class Application_Handler_Account extends Application_Handler
 			$strNote .= "Billing Method:		{$oAccount->BillingMethod}\n";
 			Note::createSystemNote($strNote, AuthenticatedUser()->getUserId(), $oAccount->Id, null, null);
 			
-			
-			// Debug
-			//var_dump($oAccount);
-			//exit;
-			// Redirect to the Account Overview page (of the new account we created.)
+
+			// Redirect to the Account Overview
 			header ('Location: /' . MenuItems::AccountOverview($oAccount->Id));
 			exit;
 				
