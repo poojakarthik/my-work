@@ -10,7 +10,7 @@ Account_Create = Class.create
 		// Validate Business Name
 		this.oForm.getInputs('text','Account[BusinessName]').first().validate = function ()
 		{
-			if (this.value.length < 5)
+			if (!/\S/.test(this.value))
 			{
 				this.className = "invalid";
 				return "Business name must be at least 5 characters long.";
@@ -56,7 +56,7 @@ Account_Create = Class.create
 		// Validate Address line 1
 		this.oForm.getInputs('text','Account[Address1]').first().validate = function ()
 		{
-			if (this.value.length < 5)
+			if (!/\S/.test(this.value))
 			{
 				this.className = "invalid";
 				return "Invalid Address (Line 1)";
@@ -68,7 +68,7 @@ Account_Create = Class.create
 		// Validate Suburb
 		this.oForm.getInputs('text','Account[Suburb]').first().validate = function ()
 		{
-			if (this.value.length < 4)
+			if (!/\S/.test(this.value))
 			{
 				this.className = "invalid";
 				return "Invalid Suburb";
@@ -92,7 +92,7 @@ Account_Create = Class.create
 		// Validate State
 		this.oForm.select('select[name="Account[State]"]').first().validate = function ()
 		{
-			if (this.value == '')
+			if (!/\S/.test(this.value))
 			{
 				this.className = "invalid";
 				return "Invalid State";	
@@ -104,7 +104,7 @@ Account_Create = Class.create
 		// Validate Customer Group
 		this.oForm.select('select[name="Account[CustomerGroup]"]').first().validate = function ()
 		{
-			if (this.value == '')
+			if (!/\S/.test(this.value))
 			{
 				this.className = "invalid";
 				return "Invalid Customer Group";	
@@ -216,11 +216,11 @@ Account_Create = Class.create
 			{
 				aErrors.push('Invalid Contact Title Selected');
 			}
-			if ($ID('Contact[FirstName]').value.length < 1)
+			if (!/\S/.test($ID('Contact[FirstName]').value))
 			{
 				aErrors.push('First Name must be at least 5 characters long');
 			}
-			if ($ID('Contact[LastName]').value.length < 1)
+			if (!/\S/.test($ID('Contact[LastName]').value))
 			{
 				aErrors.push('Last Name must be at least 5 characters long');
 			}
@@ -267,20 +267,20 @@ Account_Create = Class.create
 				if (aSelect[i].value == 1)
 				{
 					intFoundCheckedBillingType = 1;	
-					
-					if ($ID('DDR[BankName]').value == '')
+
+					if (!/\S/.test($ID('DDR[BankName]').value))
 					{
 						aErrors.push('Payment Method Error: BankName');
 					}
-					if ($ID('DDR[BSB]').value == '')
+					if (!/\S/.test($ID('DDR[BSB]').value))
 					{ 
 						aErrors.push('Payment Method Error: BSB');
 					}
-					if ($ID('DDR[AccountNumber]').value == '') 
+					if (!/\S/.test($ID('DDR[AccountNumber]').value))
 					{ 
 						aErrors.push('Payment Method Error: AccountNumber');
 					}
-					if ($ID('DDR[AccountName]').value == '') 
+					if (!/\S/.test($ID('DDR[AccountName]').value))
 					{ 
 						aErrors.push('Payment Method Error: AccountName');
 					}
@@ -290,12 +290,12 @@ Account_Create = Class.create
 				if (aSelect[i].value == 2)
 				{
 					intFoundCheckedBillingType = 1;	
-					
-					if ($ID('CC[CardType]').value == '') 
+
+					if (!/\S/.test($ID('DDR[CardType]').value))
 					{ 
 						aErrors.push('Payment Method Error: CardType');
 					}
-					if ($ID('CC[Name]').value == '') 
+					if (!/\S/.test($ID('DDR[Name]').value))
 					{ 
 						aErrors.push('Payment Method Error: Name');
 					}

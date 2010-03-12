@@ -25,7 +25,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		// onsubmit='return this.oAccountCreate.submit();'
 		echo "
 		<div class='page-reset'>
-		<form method='post' id='account-create' name='account-create' onsubmit='return this.oAccountCreate.submit();'>\n";
+		<form method='post' action='reflex.php/Account/Save/' id='account-create' name='account-create' onsubmit='return this.oAccountCreate.submit();'>\n";
 
 		// Message Notice
 		if(array_key_exists("Associated", $_GET))
@@ -133,7 +133,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				// Generate a dropdown menu of available customer groups
 				foreach ($this->mxdDataToRender['arrCustomerGroups'] as $oCustomerGroup)
 				{
-					echo "<option value='{$oCustomerGroup->id}'>{$oCustomerGroup->name}</option>\n";
+					echo "<option value='{$oCustomerGroup->id}'>{$oCustomerGroup->id}{$oCustomerGroup->name}</option>\n";
 				}
 				
 				echo "
@@ -159,7 +159,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<th><div class='Required'>&nbsp;</div>Late Payments:</th>
 			<td>
 				<ul>
-					<li><input type='radio' name='Account[DisableLatePayment]' value='0' /> Charge a late payment fee</li>
+					<li><input type='radio' name='Account[DisableLatePayment]' value='0' CHECKED /> Charge a late payment fee</li>
 					<li><input type='radio' name='Account[DisableLatePayment]' value='-1' /> Don't charge a late payment fee on the next invoice</li>
 					<li>
 						<input type='radio' name='Account[DisableLatePayment]' value='1' /> Never charge a late payment fee
@@ -189,11 +189,11 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<td>
 				<ul>
 					<li>
-						<input type='radio' name='Account[BillingType]' value='3' /> Invoice
+						<input type='radio' name='Account[BillingType]' value='" . BILLING_TYPE_ACCOUNT . "' /> Invoice
 					</li>
 					<li>
 						<div class='SmallSeperator'></div>
-						<input type='radio' name='Account[BillingType]' value='1' /> Direct Debit - from Bank Account
+						<input type='radio' name='Account[BillingType]' value='" . BILLING_TYPE_DIRECT_DEBIT . "' /> Direct Debit - from Bank Account
 						<table>
 						<tr>
 							<th style='width: 175px;'><div class='Required'>#</div>Bank Name:</th>
@@ -215,7 +215,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 					</li>
 					<li>
 						<div class='SmallSeperator'></div>
-						<input type='radio' name='Account[BillingType]' value='2' /> Direct Debit - from Credit Card
+						<input type='radio' name='Account[BillingType]' value='" . BILLING_TYPE_CREDIT_CARD . "' /> Direct Debit - from Credit Card
 						<table>
 						<tr>
 							<th style='width: 175px;'><div class='Required'>#</div>Card Type:</th>
@@ -351,7 +351,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>#</div>Date of Birth:</th>
 			<td>
-				<select name='Contact[DOB][day]' id='Contact[DOB][day]'>
+				<select name='Contact[DOB][day]' id='Contact[DOB][Day]'>
 					<option value='false'>DD</option>";
 	
 					// Generate 31 days in a month
@@ -362,7 +362,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 					
 				echo "
 				</select>
-				<select name='Contact[DOB][month]' id='Contact[DOB][month]'>
+				<select name='Contact[DOB][month]' id='Contact[DOB][Month]'>
 					<option value='false'>MM</option>";
 	
 					// Generate 12 months in the year
@@ -373,7 +373,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 					
 				echo "
 				</select>
-				<select name='Contact[DOB][year]' id='Contact[DOB][year]'>
+				<select name='Contact[DOB][year]' id='Contact[DOB][Year]'>
 					<option value='false'>YYYY</option>";
 					
 					// Generate list of years for date of birth selection
