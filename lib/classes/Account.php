@@ -402,9 +402,13 @@ ORDER BY FNN;";
 		return $arrValues;
 	} 
 
-	// $intEmployeeId is used for the account_history record which records the state of the account
-	// Setting this to NULL will make it use the system employee id (Account_History::SYSTEM_ACTION_EMPLOYEE_ID)
-	public function save($intEmployeeId=NULL)
+	//	$intEmployeeId is used for the account_history record which records the state of the account
+	//		Setting this to NULL will make it use the system employee id (Account_History::SYSTEM_ACTION_EMPLOYEE_ID)
+	//	
+	//	$bRecordInHistory should almost always be TRUE.
+	//		The only exception is Account Creation where we need an Account Id in order to save our Primary Contact
+	//		
+	public function save($intEmployeeId=NULL, $bRecordInHistory=true)
 	{
 		if ($this->_saved)
 		{
@@ -441,8 +445,11 @@ ORDER BY FNN;";
 			}
 		}
 		
-		// Record the new state of the account
-		Account_History::recordCurrentState($this->Id, $intEmployeeId);
+		if ($bRecordInHistory)
+		{
+			// Record the new state of the account
+			Account_History::recordCurrentState($this->Id, $intEmployeeId);
+		}
 		
 		$this->_saved = TRUE;
 		return TRUE;
