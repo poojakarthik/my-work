@@ -92,7 +92,7 @@ class Application_Handler_Account extends Application_Handler
 		{
 			
 			//----------------------------------------------------------------//
-			// Validate Information:
+			// Validate Information - TODO
 			//----------------------------------------------------------------//
 			// 1 checkdate ( int $month  , int $day  , int $year  )
 			// 2 Check unique email address
