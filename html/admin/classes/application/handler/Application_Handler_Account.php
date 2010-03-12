@@ -112,52 +112,6 @@ class Application_Handler_Account extends Application_Handler
 
 
 			//----------------------------------------------------------------//
-			// Assign properties of new Contact
-			//----------------------------------------------------------------//
-			
-			switch ($_POST['Contact']['USE'])
-			{
-				case 0:
-					// Create a new Contact
-					$oContact = new Contact();
-					$oContact->AccountGroup						= $oAccountGroup->Id;
-					$oContact->Title							= $_POST['Contact']['Title'];
-					$oContact->FirstName						= $_POST['Contact']['FirstName'];
-					$oContact->LastName							= $_POST['Contact']['LastName'];
-					$oContact->DOB								= $_POST['Contact']['DOB']['Year'] . "-" . $_POST['Contact']['DOB']['Month'] . "" . $_POST['Contact']['DOB']['Day'];
-					$oContact->JobTitle							= $_POST['Contact']['JobTitle'];
-					$oContact->Email							= $_POST['Contact']['Email'];
-					// This gets set after the account is created further down.
-					//$oContact->Account						= $oAccount->Id;
-					$oContact->Account							= 9999999999; // debug
-					$oContact->CustomerContact					= self::DEFAULT_CUSTOMER_CONTACT;
-					$oContact->Phone							= $_POST['Contact']['Phone'];
-					$oContact->Mobile							= $_POST['Contact']['Mobile'];
-					$oContact->Fax								= $_POST['Contact']['Fax'];
-					$oContact->PassWord							= $_POST['Contact']['Password'];
-					$oContact->SessionId						= '';
-					$oContact->SessionExpire					= self::DEFAULT_SESSION_EXPIRE;
-					$oContact->Archived							= self::DEFAULT_CONTACT_ARCHIVED;
-					$oContact->LastLogin						= null;
-					$oContact->CurrentLogin						= null;
-					$oContact->save();
-					// This integer is used when creating $oAccount
-					$intPrimaryContactId						= $oContact->Id;
-					break;
-				case 1:
-					// Use an existing Contact
-					// This integer is used when creating $oAccount
-					$intPrimaryContactId						= $_POST['Contact']['Id'];
-					break;
-				default:
-					// No option detected.
-					// This integer is used when creating $oAccount
-					$intPrimaryContactId = null;
-					break;				
-			}
-			
-			
-			//----------------------------------------------------------------//
 			// Assign properties of new Account
 			//----------------------------------------------------------------//
 			
@@ -173,7 +127,7 @@ class Application_Handler_Account extends Application_Handler
 			$oAccount->State									= (int)$_POST['Account']['State'];
 			$oAccount->Country									= 'AU';
 			$oAccount->BillingType								= (int)$_POST['Account']['BillingType'];
-			$oAccount->PrimaryContact							= (int)$intPrimaryContactId;
+			$oAccount->PrimaryContact							= null;
 			$oAccount->CustomerGroup							= (int)$_POST['Account']['CustomerGroup'];
 			// TODO
 			//$oAccount->CreditCard								= $_POST['Account']['CreditCard'];
@@ -204,13 +158,53 @@ class Application_Handler_Account extends Application_Handler
 			
 			
 			//----------------------------------------------------------------//
-			// Assign properties of New Contact
+			// Assign properties of new Contact
 			//----------------------------------------------------------------//
-			if($_POST['Contact']['USE'] == 0)
+			
+			switch ($_POST['Contact']['USE'])
 			{
-				$oContact->Account						= $oAccount->Id;
-				$oContact->save();
+				case 0:
+					// Create a new Contact
+					$oContact = new Contact();
+					$oContact->AccountGroup						= $oAccountGroup->Id;
+					$oContact->Title							= $_POST['Contact']['Title'];
+					$oContact->FirstName						= $_POST['Contact']['FirstName'];
+					$oContact->LastName							= $_POST['Contact']['LastName'];
+					$oContact->DOB								= $_POST['Contact']['DOB']['Year'] . "-" . $_POST['Contact']['DOB']['Month'] . "" . $_POST['Contact']['DOB']['Day'];
+					$oContact->JobTitle							= $_POST['Contact']['JobTitle'];
+					$oContact->Email							= $_POST['Contact']['Email'];
+					$oContact->Account							= $oAccount->Id; // debug
+					$oContact->CustomerContact					= self::DEFAULT_CUSTOMER_CONTACT;
+					$oContact->Phone							= $_POST['Contact']['Phone'];
+					$oContact->Mobile							= $_POST['Contact']['Mobile'];
+					$oContact->Fax								= $_POST['Contact']['Fax'];
+					$oContact->PassWord							= $_POST['Contact']['Password'];
+					$oContact->SessionId						= '';
+					$oContact->SessionExpire					= self::DEFAULT_SESSION_EXPIRE;
+					$oContact->Archived							= self::DEFAULT_CONTACT_ARCHIVED;
+					$oContact->LastLogin						= null;
+					$oContact->CurrentLogin						= null;
+					$oContact->save();
+					// This integer is used when creating $oAccount
+					$intPrimaryContactId						= $oContact->Id;
+					break;
+				case 1:
+					// Use an existing Contact
+					// This integer is used when creating $oAccount
+					$intPrimaryContactId						= $_POST['Contact']['Id'];
+					break;
+				default:
+					// No option detected.
+					// This integer is used when creating $oAccount
+					$intPrimaryContactId = null;
+					break;				
 			}
+			
+			
+			//----------------------------------------------------------------//
+			// Assign properties of New Account
+			//----------------------------------------------------------------//
+			$oAccount->PrimaryContact						= $intPrimaryContactId;
 			
 			
 			//----------------------------------------------------------------//
@@ -231,6 +225,7 @@ class Application_Handler_Account extends Application_Handler
 			$strNote .= "Account Group:			{$oAccount->AccountGroup}\n";
 			$strNote .= "Billing Type:			{$oAccount->BillingType}\n";
 			$strNote .= "Billing Method:		{$oAccount->BillingMethod}\n";
+			
 			Note::createSystemNote($strNote, AuthenticatedUser()->getUserId(), $oAccount->Id, null, null);
 			
 
