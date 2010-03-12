@@ -173,7 +173,7 @@ class Application_Handler_Account extends Application_Handler
 					$oContact->DOB								= $_POST['Contact']['DOB']['Year'] . "-" . $_POST['Contact']['DOB']['Month'] . "" . $_POST['Contact']['DOB']['Day'];
 					$oContact->JobTitle							= $_POST['Contact']['JobTitle'];
 					$oContact->Email							= $_POST['Contact']['Email'];
-					$oContact->Account							= $oAccount->Id; // debug
+					$oContact->Account							= $oAccount->Id;
 					$oContact->CustomerContact					= self::DEFAULT_CUSTOMER_CONTACT;
 					$oContact->Phone							= $_POST['Contact']['Phone'];
 					$oContact->Mobile							= $_POST['Contact']['Mobile'];
