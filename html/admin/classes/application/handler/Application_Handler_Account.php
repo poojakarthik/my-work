@@ -4,7 +4,6 @@ class Application_Handler_Account extends Application_Handler
 {
 	
 	const DEFAULT_DISABLE_LATE_PAYMENT_NOTICES	= 0;
-	const DEFAULT_LATE_PAYMENT_AMNESTY			= null;
 	const DEFAULT_SAMPLE						= 0;
 	const DEFAULT_CUSTOMER_CONTACT				= 0;
 	const DEFAULT_SESSION_EXPIRE				= '1970-01-01 00:00:00';
@@ -131,14 +130,14 @@ class Application_Handler_Account extends Application_Handler
 					// This gets set after the account is created further down.
 					//$oContact->Account						= $oAccount->Id;
 					$oContact->Account							= 9999999999; // debug
-					$oContact->CustomerContact					= DEFAULT_CUSTOMER_CONTACT;
+					$oContact->CustomerContact					= self::DEFAULT_CUSTOMER_CONTACT;
 					$oContact->Phone							= $_POST['Contact']['Phone'];
 					$oContact->Mobile							= $_POST['Contact']['Mobile'];
 					$oContact->Fax								= $_POST['Contact']['Fax'];
 					$oContact->PassWord							= $_POST['Contact']['Password'];
 					$oContact->SessionId						= '';
-					$oContact->SessionExpire					= DEFAULT_SESSION_EXPIRE;
-					$oContact->Archived							= DEFAULT_CONTACT_ARCHIVED;
+					$oContact->SessionExpire					= self::DEFAULT_SESSION_EXPIRE;
+					$oContact->Archived							= self::DEFAULT_CONTACT_ARCHIVED;
 					$oContact->LastLogin						= null;
 					$oContact->CurrentLogin						= null;
 					$oContact->save();
@@ -190,9 +189,9 @@ class Application_Handler_Account extends Application_Handler
 			$oAccount->CreatedOn								= Data_Source_Time::currentTimeStamp();
 			$oAccount->DisableDDR								= ($_POST['Account']['DisableDDR']) ? $_POST['Account']['DisableDDR'] : 0;
 			$oAccount->DisableLatePayment						= $_POST['Account']['DisableLatePayment'];
-			$oAccount->DisableLateNotices						= DEFAULT_DISABLE_LATE_PAYMENT_NOTICES;
-			$oAccount->LatePaymentAmnesty						= DEFAULT_LATE_PAYMENT_AMNESTY;
-			$oAccount->Sample									= DEFAULT_SAMPLE;
+			$oAccount->DisableLateNotices						= self::DEFAULT_DISABLE_LATE_PAYMENT_NOTICES;
+			$oAccount->LatePaymentAmnesty						= null;
+			$oAccount->Sample									= self::DEFAULT_SAMPLE;
 			$oAccount->Archived									= ACCOUNT_STATUS_PENDING_ACTIVATION;
 			$oAccount->credit_control_status					= CREDIT_CONTROL_STATUS_UP_TO_DATE;
 			$oAccount->last_automatic_invoice_action			= AUTOMATIC_INVOICE_ACTION_NONE;
@@ -200,7 +199,7 @@ class Application_Handler_Account extends Application_Handler
 			$oAccount->automatic_barring_status					= AUTOMATIC_BARRING_STATUS_NONE;
 			$oAccount->automatic_barring_datetime				= null;
 			$oAccount->tio_reference_number						= null;
-			$oAccount->vip										= DEFAULT_VIP_STATUS;
+			$oAccount->vip										= self::DEFAULT_VIP_STATUS;
 			$oAccount->save();
 			
 			
