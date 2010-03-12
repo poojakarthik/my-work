@@ -154,7 +154,7 @@ class Application_Handler_Account extends Application_Handler
 			$oAccount->automatic_barring_datetime				= null;
 			$oAccount->tio_reference_number						= null;
 			$oAccount->vip										= self::DEFAULT_VIP_STATUS;
-			$oAccount->save();
+			$oAccount->save(AuthenticatedUser()->getUserId(), false);
 			
 			
 			//----------------------------------------------------------------//
@@ -204,8 +204,8 @@ class Application_Handler_Account extends Application_Handler
 			//----------------------------------------------------------------//
 			// Assign properties of New Account
 			//----------------------------------------------------------------//
-			$oAccount->PrimaryContact						= $intPrimaryContactId;
-			
+			$oAccount->PrimaryContact							= $intPrimaryContactId;
+			$oAccount->save(AuthenticatedUser()->getUserId());
 			
 			//----------------------------------------------------------------//
 			// Add A System Note
