@@ -1329,6 +1329,14 @@ Object.extend(Sale.prototype, {
 		// If we don't have a Sale Type yet, throw a selection popup to prompt user
 		if (!object.sale_type_id)
 		{
+			if (Sale.sale_type.ids.length == 1 && Sale.sale_type.ids.first() == Sale.SaleType.SALE_TYPE_NEW)
+			{
+				// If the only permitted Sale Type is New Customers, then skip the prompt
+				object.sale_type_id	= Sale.SaleType.SALE_TYPE_NEW;
+				this.buildPageForObject(object);
+				return;
+			}
+			
 			var	oSaleTypePopup	= new Reflex_Popup(40);
 			oSaleTypePopup.setTitle('Sale Type');
 			
