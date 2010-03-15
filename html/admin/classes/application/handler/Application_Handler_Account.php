@@ -94,8 +94,6 @@ class Application_Handler_Account extends Application_Handler
 			//----------------------------------------------------------------//
 			// Validate Information
 			//----------------------------------------------------------------//
-			// I've consolidated some error checks (Email as an example.)
-			// For most cases, users should not reach any error here because it will be caught by JavaScript.
 
 			if(Contact::isEmailInUse($_POST['Contact']['Email']) || !Validation::IsValidEmail($_POST['Contact']['Email']))
 			{
@@ -144,7 +142,7 @@ class Application_Handler_Account extends Application_Handler
 			
 			
 			//----------------------------------------------------------------//
-			// Assign properties of new Account Group
+			// Create Account Group, or Assign Existing
 			//----------------------------------------------------------------//
 			
 			if(array_key_exists("Associated", $_POST))
@@ -163,24 +161,43 @@ class Application_Handler_Account extends Application_Handler
 			}
 
 
-			if($_POST['Account']['BillingType'] == BILLING_TYPE_ACCOUNT)
-			{
-				$oAccountGroup = new Account_Group();
-				$oAccountGroup->CreatedBy							= AuthenticatedUser()->getUserId();
-				$oAccountGroup->CreatedOn							= Data_Source_Time::currentTimeStamp();
-				$oAccountGroup->ManagedBy							= null;
-				$oAccountGroup->Archived							= 0;
-				$oAccountGroup->save();
-				$intAccountGroupId									= $oAccountGroup->Id
-				
-			}
+			//----------------------------------------------------------------//
+			// Propose a payment method
+			//----------------------------------------------------------------//
+			
+			$intBillingType		= (array_key_exists('BillingType', $_POST) && array_key_exists('{$_POST['BillingType']}', $GLOBALS['*arrConstant']['BillingType']) ? $_POST['BillingType'] : BILLING_TYPE_ACCOUNT;
+			$intDirectDebitId	= null;
+			$intCreditCardId	= null;
+			
 			if($_POST['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
 			{
-				
+				$oDirectDebit = new Credit_Card();
+				$oDirectDebit->AccountGroup							= $intAccountGroupId;
+				$oDirectDebit->BankName								= $_POST['DDR']['BankName'];
+				$oDirectDebit->BSB									= $_POST['DDR']['BSB'];
+				$oDirectDebit->AccountNumber						= $_POST['DDR']['AccountNumber'];
+				$oDirectDebit->AccountName							= $_POST['DDR']['AccountName'];
+				$oDirectDebit->Archived								= 0;
+				$oDirectDebit->created_on							= Data_Source_Time::currentTimeStamp();
+				$oDirectDebit->employee_id							= AuthenticatedUser()->getUserId();
+				$oDirectDebit->save();
+				$intDirectDebitId									= $oDirectDebit->Id
 			}
 			if($_POST['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD)
 			{
-				
+				$oCreditCard = new Credit_Card();
+				$oCreditCard->AccountGroup							= $intAccountGroupId;
+				$oCreditCard->CardType								= $_POST['CC']['CardType'];
+				$oCreditCard->Name									= $_POST['CC']['Name'];
+				$oCreditCard->CardNumber							= $_POST['CC']['CardNumber'];
+				$oCreditCard->ExpMonth								= $_POST['CC']['ExpMonth'];
+				$oCreditCard->ExpYear								= $_POST['CC']['ExpYear'];
+				$oCreditCard->CVV									= $_POST['CC']['CVV'];
+				$oCreditCard->Archived								= 0;
+				$oCreditCard->created_on							= Data_Source_Time::currentTimeStamp();
+				$oCreditCard->employee_id							= AuthenticatedUser()->getUserId();
+				$oCreditCard->save();
+				$intCreditCardId									= $oCreditCard->Id
 			}
 			
 			
@@ -199,12 +216,11 @@ class Application_Handler_Account extends Application_Handler
 			$oAccount->Postcode									= (int)$_POST['Account']['Postcode'];
 			$oAccount->State									= (int)$_POST['Account']['State'];
 			$oAccount->Country									= 'AU';
-			$oAccount->BillingType								= (int)$_POST['Account']['BillingType'];
+			$oAccount->BillingType								= $intBillingType;
 			$oAccount->PrimaryContact							= null;
 			$oAccount->CustomerGroup							= (int)$_POST['Account']['CustomerGroup'];
-			// TODO
-			//$oAccount->CreditCard								= $_POST['Account']['CreditCard'];
-			//$oAccount->DirectDebit							= $_POST['Account']['DirectDebit'];
+			$oAccount->CreditCard								= $intCreditCardId;
+			$oAccount->DirectDebit								= $intDirectDebitId;
 			$oAccount->AccountGroup								= $intAccountGroupId;
 			$oAccount->LastBilled								= null;
 			$oAccount->BillingDate								= Payment_Terms::getCurrentForCustomerGroup((int)$_POST['Account']['CustomerGroup'])->invoice_day;
@@ -276,8 +292,10 @@ class Application_Handler_Account extends Application_Handler
 			//----------------------------------------------------------------//
 			// Assign properties of New Account
 			//----------------------------------------------------------------//
+			
 			$oAccount->PrimaryContact							= $intPrimaryContactId;
 			$oAccount->save(AuthenticatedUser()->getUserId());
+			
 			
 			//----------------------------------------------------------------//
 			// Add A System Note
