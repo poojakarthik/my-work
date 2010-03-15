@@ -186,7 +186,7 @@ class Validation
 		 
 		// Sum the products
 		$intSum = 0;
-		foreach(str_split($strValue) as $intKey => $intDigit)
+		foreach(str_split($strValue) as $intKey=>$intDigit)
 		{
 			$intSum += $intDigit * $arrWeights[$intKey];
 		}

@@ -162,6 +162,28 @@ class Application_Handler_Account extends Application_Handler
 				$intAccountGroupId									= $oAccountGroup->Id
 			}
 
+
+			if($_POST['Account']['BillingType'] == BILLING_TYPE_ACCOUNT)
+			{
+				$oAccountGroup = new Account_Group();
+				$oAccountGroup->CreatedBy							= AuthenticatedUser()->getUserId();
+				$oAccountGroup->CreatedOn							= Data_Source_Time::currentTimeStamp();
+				$oAccountGroup->ManagedBy							= null;
+				$oAccountGroup->Archived							= 0;
+				$oAccountGroup->save();
+				$intAccountGroupId									= $oAccountGroup->Id
+				
+			}
+			if($_POST['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
+			{
+				
+			}
+			if($_POST['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD)
+			{
+				
+			}
+			
+			
 			//----------------------------------------------------------------//
 			// Assign properties of new Account
 			//----------------------------------------------------------------//
@@ -206,7 +228,7 @@ class Application_Handler_Account extends Application_Handler
 			$oAccount->tio_reference_number						= null;
 			$oAccount->vip										= self::DEFAULT_VIP_STATUS;
 			$oAccount->save(AuthenticatedUser()->getUserId(), false);
-			
+
 			
 			//----------------------------------------------------------------//
 			// Assign properties of new Contact
