@@ -149,25 +149,31 @@ class Application_Handler_Account extends Application_Handler
 			}
 			if($_POST['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
 			{
-				if(!array_key_exists('BankName', $_POST['DDR'])){throw new Exception('Invalid Direct Debit Details');}
-				if(!array_key_exists('BSB', $_POST['DDR'])){throw new Exception('Invalid Direct Debit Details');}
-				if(!array_key_exists('AccountNumber', $_POST['DDR'])){throw new Exception('Invalid Direct Debit Details');}
-				if(!array_key_exists('AccountName', $_POST['DDR'])){throw new Exception('Invalid Direct Debit Details');}
+				if(!Validation::IsNotEmptyString('BankName', $_POST['DDR'])){throw new Exception('Invalid Direct Debit Bank Name');}
+				if(!Validation::IsNotEmptyString('BSB', $_POST['DDR'])){throw new Exception('Invalid Direct Debit BSB');}
+				if(!Validation::IsNotEmptyString('AccountNumber', $_POST['DDR'])){throw new Exception('Invalid Direct Debit Account Number');}
+				if(!Validation::IsNotEmptyString('AccountName', $_POST['DDR'])){throw new Exception('Invalid Direct Debit Account Name');}
 			}
 			if($_POST['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD)
 			{
-				if(!array_key_exists('CardType', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
-				if(!array_key_exists('Name', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
-				if(!array_key_exists('CardNumber', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
-				if(!array_key_exists('ExpMonth', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
-				if(!array_key_exists('ExpYear', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
-				if(!array_key_exists('CVV', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
+				if(!Validation::IsNotEmptyString('CardType', $_POST['CC'])){throw new Exception('Invalid Credit Card Type');}
+				if(!Validation::IsNotEmptyString('Name', $_POST['CC'])){throw new Exception('Invalid Credit Card Name');}
+				if(!Validation::IsNotEmptyString('ExpMonth', $_POST['CC'])){throw new Exception('Invalid Credit Card Exp Month');}
+				if(!Validation::IsNotEmptyString('ExpYear', $_POST['CC'])){throw new Exception('Invalid Credit Card Exp Year');}
+				if(!array_key_exists('CardNumber', $_POST['CC']) || !Credit_Card_type::cardNumberIsValid($_POST['CC']['CardNumber']))
+				{
+					throw new Exception('Invalid Credit Card Number');
+				}				
+				if(!array_key_exists('CardNumber', $_POST['CVV']) || !Credit_Card_type::cvvIsValid($_POST['CC']['CVV']))
+				{
+					throw new Exception('Invalid Credit Card CVV');
+				}
 			}
 			
 			//----------------------------------------------------------------//
 			// TODO
 			//----------------------------------------------------------------//
-			// Validate: CC number vs CC Type, Primarty Contact, Encrypt cc, cvv details
+			// Validate: Primarty Contact
 			
 			
 			//----------------------------------------------------------------//
@@ -193,7 +199,6 @@ class Application_Handler_Account extends Application_Handler
 			//----------------------------------------------------------------//
 			// Propose a payment method
 			//----------------------------------------------------------------//
-			// array_key_exists('BillingType', $_POST) && 
 			$intBillingType		= (array_key_exists((int)$_POST['Account']['BillingType'], $GLOBALS['*arrConstant']['BillingType'])) ? $_POST['Account']['BillingType'] : BILLING_TYPE_ACCOUNT;
 			$intDirectDebitId	= null;
 			$intCreditCardId	= null;
@@ -218,10 +223,10 @@ class Application_Handler_Account extends Application_Handler
 				$oCreditCard->AccountGroup							= $intAccountGroupId;
 				$oCreditCard->CardType								= $_POST['CC']['CardType'];
 				$oCreditCard->Name									= $_POST['CC']['Name'];
-				$oCreditCard->CardNumber							= $_POST['CC']['CardNumber'];
+				$oCreditCard->CardNumber							= Encrypt($_POST['CC']['CardNumber']);
 				$oCreditCard->ExpMonth								= $_POST['CC']['ExpMonth'];
 				$oCreditCard->ExpYear								= $_POST['CC']['ExpYear'];
-				$oCreditCard->CVV									= $_POST['CC']['CVV'];
+				$oCreditCard->CVV									= Encrypt($_POST['CC']['CVV']);
 				$oCreditCard->Archived								= 0;
 				$oCreditCard->created_on							= Data_Source_Time::currentTimeStamp();
 				$oCreditCard->employee_id							= AuthenticatedUser()->getUserId();
