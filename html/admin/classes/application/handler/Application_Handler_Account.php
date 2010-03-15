@@ -135,10 +135,39 @@ class Application_Handler_Account extends Application_Handler
 			{
 				throw new Exception('Invalid Customer Group');
 			}
+			if(!array_key_exists('DisableLatePayment', $_POST['Account']))
+			{				
+				throw new Exception('No Late Payment option has been selected');
+			}
+			if(!array_key_exists('DeliveryMethod', $_POST['Account']))
+			{				
+				throw new Exception('No Delivery Method option has been selected');
+			}
+			if(!array_key_exists('BillingType', $_POST['Account']))
+			{				
+				throw new Exception('No Payment Method option has been selected');
+			}
+			if($_POST['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
+			{
+				if(!array_key_exists('BankName', $_POST['DDR'])){throw new Exception('Invalid Direct Debit Details');}
+				if(!array_key_exists('BSB', $_POST['DDR'])){throw new Exception('Invalid Direct Debit Details');}
+				if(!array_key_exists('AccountNumber', $_POST['DDR'])){throw new Exception('Invalid Direct Debit Details');}
+				if(!array_key_exists('AccountName', $_POST['DDR'])){throw new Exception('Invalid Direct Debit Details');}
+			}
+			if($_POST['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD)
+			{
+				if(!array_key_exists('CardType', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
+				if(!array_key_exists('Name', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
+				if(!array_key_exists('CardNumber', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
+				if(!array_key_exists('ExpMonth', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
+				if(!array_key_exists('ExpYear', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
+				if(!array_key_exists('CVV', $_POST['CC'])){throw new Exception('Invalid Credit Card Details');}
+			}
+			
 			//----------------------------------------------------------------//
 			// TODO
 			//----------------------------------------------------------------//
-			// Validate: Late Payments, Delivery Method, Payment Method, Primarty Contact
+			// Validate: CC number vs CC Type, Primarty Contact, Encrypt cc, cvv details
 			
 			
 			//----------------------------------------------------------------//
@@ -147,7 +176,7 @@ class Application_Handler_Account extends Application_Handler
 			
 			if(array_key_exists("Associated", $_POST))
 			{
-				$intAccountGroupId = (int)Account_Group::getForAccountId($_POST['Associated']);
+				$intAccountGroupId = Account_Group::getForAccountId($_POST['Associated'])->Id;
 			}
 			if(!array_key_exists("Associated", $_POST))
 			{
@@ -157,15 +186,15 @@ class Application_Handler_Account extends Application_Handler
 				$oAccountGroup->ManagedBy							= null;
 				$oAccountGroup->Archived							= 0;
 				$oAccountGroup->save();
-				$intAccountGroupId									= $oAccountGroup->Id
+				$intAccountGroupId									= $oAccountGroup->Id;
 			}
 
 
 			//----------------------------------------------------------------//
 			// Propose a payment method
 			//----------------------------------------------------------------//
-			
-			$intBillingType		= (array_key_exists('BillingType', $_POST) && array_key_exists('{$_POST['BillingType']}', $GLOBALS['*arrConstant']['BillingType']) ? $_POST['BillingType'] : BILLING_TYPE_ACCOUNT;
+			// array_key_exists('BillingType', $_POST) && 
+			$intBillingType		= (array_key_exists((int)$_POST['Account']['BillingType'], $GLOBALS['*arrConstant']['BillingType'])) ? $_POST['Account']['BillingType'] : BILLING_TYPE_ACCOUNT;
 			$intDirectDebitId	= null;
 			$intCreditCardId	= null;
 			
@@ -181,7 +210,7 @@ class Application_Handler_Account extends Application_Handler
 				$oDirectDebit->created_on							= Data_Source_Time::currentTimeStamp();
 				$oDirectDebit->employee_id							= AuthenticatedUser()->getUserId();
 				$oDirectDebit->save();
-				$intDirectDebitId									= $oDirectDebit->Id
+				$intDirectDebitId									= $oDirectDebit->Id;
 			}
 			if($_POST['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD)
 			{
@@ -197,7 +226,7 @@ class Application_Handler_Account extends Application_Handler
 				$oCreditCard->created_on							= Data_Source_Time::currentTimeStamp();
 				$oCreditCard->employee_id							= AuthenticatedUser()->getUserId();
 				$oCreditCard->save();
-				$intCreditCardId									= $oCreditCard->Id
+				$intCreditCardId									= $oCreditCard->Id;
 			}
 			
 			

@@ -29,7 +29,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 
 		// Message Notice
 		if(array_key_exists("Associated", $_GET))
-		{
+		{			
 			echo "
 			<input type='hidden' name='Associated' value='{$_GET['Associated']}' />
 
