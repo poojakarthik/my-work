@@ -156,6 +156,58 @@ class Validation
 	}
 
 	//------------------------------------------------------------------------//
+	// IsValidACN
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidACN()
+	 *
+	 * Checks if a value is a valid ACN Number
+	 *
+	 * Checks if a value is a valid ACN Number
+	 *
+	 * @param	mix			$strValue			the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	public static function isValidACN($strValue)
+	{
+		$arrWeights = array(8, 7, 6, 5, 4, 3, 2, 1, 0);
+		 
+		// Strip non-numbers from the acn
+		$strValue = preg_replace('/[^0-9]/', '', $strValue);
+		 
+		// Check acn is 9 chars long
+		if(strlen($strValue) != 9)
+		{
+			return false;
+		}
+		 
+		// Sum the products
+		$intSum = 0;
+		foreach(str_split($strValue) as $intKey => $intDigit)
+		{
+			$intSum += $intDigit * $arrWeights[$intKey];
+		}
+		 
+		// Get the remainder
+		$intRemainder = $intSum % 10;
+		 
+		// Get remainder compliment
+		$intComplement = (string)(10 - $intRemainder);
+		 
+		// If complement is 10, set to 0
+		if($intComplement === "10")
+		{
+			$intComplement = "0";
+		}
+		 
+		return ($strValue[8] === $intComplement);
+	}
+
+
+	//------------------------------------------------------------------------//
 	// IsValidPostcode
 	//------------------------------------------------------------------------//
 	/**
