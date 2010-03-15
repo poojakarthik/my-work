@@ -9,6 +9,7 @@ class Application_Handler_Account extends Application_Handler
 	const DEFAULT_SESSION_EXPIRE				= '1970-01-01 00:00:00';
 	const DEFAULT_CONTACT_ARCHIVED				= 0;
 	const DEFAULT_VIP_STATUS					= 0;
+	const DEFAULT_PASSWORD_LENGTH_REQUIREMENT	= 8;
 	
 
 	// Renders the page for Account Creation
@@ -46,14 +47,14 @@ class Application_Handler_Account extends Application_Handler
 					// Select contacts associated with the account group
 					$qryQuery = new Query();
 					$resAssociatedContacts = $qryQuery->Execute("
-					SELECT	DISTINCT c.*
-					FROM	AccountGroup ag
-							JOIN Account a ON (a.AccountGroup = ag.Id AND a.Archived = 0)
+					SELECT DISTINCT c.*
+					FROM AccountGroup ag
+							JOIN Account a ON (a.AccountGroup = ag.Id AND a.Archived IN (" . ACCOUNT_STATUS_ACTIVE . ", " . ACCOUNT_STATUS_PENDING_ACTIVATION . "))
 							JOIN Contact c ON (a.PrimaryContact = c.Id
 												OR (ag.Id = c.AccountGroup
 													AND c.CustomerContact = 1)
 												) AND c.Archived = 0
-					WHERE a.Id = $iAssociated;");
+					WHERE a.Id =$iAssociated;");
 
 					if ($resAssociatedContacts)
 					{
@@ -94,46 +95,41 @@ class Application_Handler_Account extends Application_Handler
 			//----------------------------------------------------------------//
 			// Validate Information
 			//----------------------------------------------------------------//
-
-			if(Contact::isEmailInUse($_POST['Contact']['Email']) || !Validation::IsValidEmail($_POST['Contact']['Email']))
+			if(!array_key_exists('USE', $_POST['Contact']))
 			{
-				throw new Exception('Invalid Email address or the Email address is already in use');
-			}
-			if(!@checkdate((int)$_POST ['Contact']['DOB']['Month'], (int)$_POST ['Contact']['DOB']['Day'], (int)$_POST ['Contact']['DOB']['Year']))
-			{
-				throw new Exception('Invalid Date Of Birth');
+				throw new Exception('Invalid Primary Contact Selected (Needs to be either Existing or New)');
 			}
 			if(!Validation::IsValidABN($_POST['Account']['ABN']) && !Validation::IsValidACN($_POST['Account']['ACN']))
 			{
-				throw new Exception('A valid ABN or ACN is required');
+				#throw new Exception('A valid ABN or ACN is required');
 			}
 			if(!Validation::IsValidPostcode($_POST['Account']['Postcode']))
 			{
-				throw new Exception('Invalid Post Code');
+				#throw new Exception('Invalid Post Code');
 			}
 			if(!Validation::IsNotEmptyString($_POST['Account']['BusinessName']))
 			{
-				throw new Exception('Invalid Business Name');
+				#throw new Exception('Invalid Business Name');
 			}
 			if(!Validation::IsNotEmptyString($_POST['Account']['Address1']))
 			{
-				throw new Exception('Invalid Address Line 1');
+				#throw new Exception('Invalid Address Line 1');
 			}
 			if(!Validation::IsNotEmptyString($_POST['Account']['Suburb']))
 			{
-				throw new Exception('Invalid Suburb');
+				#throw new Exception('Invalid Suburb');
 			}
 			if(!Validation::IsValidInteger($_POST['Account']['Postcode']))
 			{
-				throw new Exception('Invalid Postcode');
+				#throw new Exception('Invalid Postcode');
 			}
 			if(!Validation::IsValidInteger($_POST['Account']['State']))
 			{
-				throw new Exception('Invalid State');
+				#throw new Exception('Invalid State');
 			}
 			if(!Validation::IsValidInteger($_POST['Account']['CustomerGroup']))
 			{
-				throw new Exception('Invalid Customer Group');
+				#throw new Exception('Invalid Customer Group');
 			}
 			if(!array_key_exists('DisableLatePayment', $_POST['Account']))
 			{				
@@ -145,7 +141,7 @@ class Application_Handler_Account extends Application_Handler
 			}
 			if(!array_key_exists('BillingType', $_POST['Account']))
 			{				
-				throw new Exception('No Payment Method option has been selected');
+				#throw new Exception('No Payment Method option has been selected');
 			}
 			if($_POST['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
 			{
@@ -170,11 +166,42 @@ class Application_Handler_Account extends Application_Handler
 				}
 			}
 			
-			//----------------------------------------------------------------//
-			// TODO
-			//----------------------------------------------------------------//
-			// Validate: Primarty Contact
-			
+			if ($_POST['Contact']['USE'] == 0)
+			{
+				if(Contact::isEmailInUse($_POST['Contact']['Email']) || !Validation::IsValidEmail($_POST['Contact']['Email']))
+				{
+					throw new Exception('Invalid Email address or the Email address is already in use');
+				}
+				if(!@checkdate((int)$_POST ['Contact']['DOB']['Month'], (int)$_POST ['Contact']['DOB']['Day'], (int)$_POST ['Contact']['DOB']['Year']))
+				{
+					throw new Exception('Invalid Date Of Birth');
+				}
+				if(!Validation::IsNotEmptyString($_POST['Contact']['Title']))
+				{
+					throw new Exception('Invalid Contact Title Selected');
+				}
+				if(!Validation::IsNotEmptyString($_POST['Contact']['FirstName']))
+				{
+					throw new Exception('Invalid Contact First Name Selected');
+				}
+				if(!Validation::IsNotEmptyString($_POST['Contact']['LastName']))
+				{
+					throw new Exception('Invalid Contact Last Name Selected');
+				}
+				if(!Validation::IsNotEmptyString($_POST['Contact']['Password']) && strlen($_POST['Contact']['Password'])<DEFAULT_PASSWORD_LENGTH_REQUIREMENT)
+				{
+					throw new Exception('Invalid Contact Password, must be at least ' . DEFAULT_PASSWORD_LENGTH_REQUIREMENT . ' characterrs');
+				}
+				if(!Validation::IsValidPhoneNumber($_POST['Contact']['Mobile']) && !Validation::IsValidPhoneNumber($_POST['Contact']['Phone']))
+				{
+					throw new Exception('A valid Mobile or Phone number is required.');
+				}
+			}
+			if ($_POST['Contact']['USE'] == 1 && !Contact::getForId($_POST['Contact']['USE']))
+			{
+				throw new Exception('Invalid Primary Contact Selected');
+			}
+
 			
 			//----------------------------------------------------------------//
 			// Create Account Group, or Assign Existing
