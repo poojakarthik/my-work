@@ -92,50 +92,57 @@ class Application_Handler_Account extends Application_Handler
 		{
 			
 			//----------------------------------------------------------------//
-			// Validate Information - TODO
+			// Validate Information
 			//----------------------------------------------------------------//
-			// 1. checkdate ( int $month  , int $day  , int $year  )
-			// 2. Check unique email address
-			// 3. Validate all form required fields (must exist)
+			// I've consolidated some error checks (Email as an example.)
+			// For most cases, users should not reach any error here because it will be caught by JavaScript.
+
 			if(Contact::isEmailInUse($_POST['Contact']['Email']) || !Validation::IsValidEmail($_POST['Contact']['Email']))
 			{
-
+				throw new Exception('Invalid Email address or the Email address is already in use');
 			}
-			else if(!@checkdate((int)$_POST ['Contact']['DOB']['Month'], (int)$_POST ['Contact']['DOB']['Day'], (int)$_POST ['Contact']['DOB']['Year']))
+			if(!@checkdate((int)$_POST ['Contact']['DOB']['Month'], (int)$_POST ['Contact']['DOB']['Day'], (int)$_POST ['Contact']['DOB']['Year']))
 			{
-				
+				throw new Exception('Invalid Date Of Birth');
 			}
-			else if(!Validation::IsValidABN() && !Validation::IsValidACN())
+			if(!Validation::IsValidABN($_POST['Account']['ABN']) && !Validation::IsValidACN($_POST['Account']['ACN']))
 			{
-				
+				throw new Exception('A valid ABN or ACN is required');
 			}
-			else if(!Validation::IsValidPostcode())
+			if(!Validation::IsValidPostcode($_POST['Account']['Postcode']))
 			{
-				
+				throw new Exception('Invalid Post Code');
 			}
-			else if(!Validation::IsValidPhoneNumber())
+			if(!Validation::IsNotEmptyString($_POST['Account']['BusinessName']))
 			{
-				
+				throw new Exception('Invalid Business Name');
 			}
-			else if(!Validation::IsValidInteger())
+			if(!Validation::IsNotEmptyString($_POST['Account']['Address1']))
 			{
-				
+				throw new Exception('Invalid Address Line 1');
 			}
-			else if(!Validation::NonZeroInteger())
+			if(!Validation::IsNotEmptyString($_POST['Account']['Suburb']))
 			{
-				
+				throw new Exception('Invalid Suburb');
 			}
-			else if(!Validation::IsAlphaString())
+			if(!Validation::IsValidInteger($_POST['Account']['Postcode']))
 			{
-				
+				throw new Exception('Invalid Postcode');
 			}
-			else if(!Validation::IsValidEmail())
+			if(!Validation::IsValidInteger($_POST['Account']['State']))
 			{
-				
+				throw new Exception('Invalid State');
 			}
-			else
+			if(!Validation::IsValidInteger($_POST['Account']['CustomerGroup']))
 			{
-
+				throw new Exception('Invalid Customer Group');
+			}
+			//----------------------------------------------------------------//
+			// TODO
+			//----------------------------------------------------------------//
+			// Validate: Late Payments, Delivery Method, Payment Method, Primarty Contact
+			
+			
 			//----------------------------------------------------------------//
 			// Assign properties of new Account Group
 			//----------------------------------------------------------------//
