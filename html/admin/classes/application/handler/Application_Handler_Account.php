@@ -97,19 +97,63 @@ class Application_Handler_Account extends Application_Handler
 			// 1. checkdate ( int $month  , int $day  , int $year  )
 			// 2. Check unique email address
 			// 3. Validate all form required fields (must exist)
-			
-			
+			if(Contact::isEmailInUse($_POST['Contact']['Email']) || !Validation::IsValidEmail($_POST['Contact']['Email']))
+			{
+
+			}
+			else if(!@checkdate((int)$_POST ['Contact']['DOB']['Month'], (int)$_POST ['Contact']['DOB']['Day'], (int)$_POST ['Contact']['DOB']['Year']))
+			{
+				
+			}
+			else if(!Validation::IsValidABN() && !Validation::IsValidACN())
+			{
+				
+			}
+			else if(!Validation::IsValidPostcode())
+			{
+				
+			}
+			else if(!Validation::IsValidPhoneNumber())
+			{
+				
+			}
+			else if(!Validation::IsValidInteger())
+			{
+				
+			}
+			else if(!Validation::NonZeroInteger())
+			{
+				
+			}
+			else if(!Validation::IsAlphaString())
+			{
+				
+			}
+			else if(!Validation::IsValidEmail())
+			{
+				
+			}
+			else
+			{
+
 			//----------------------------------------------------------------//
 			// Assign properties of new Account Group
 			//----------------------------------------------------------------//
 			
-			$oAccountGroup = new Account_Group();
-			$oAccountGroup->CreatedBy							= AuthenticatedUser()->getUserId();
-			$oAccountGroup->CreatedOn							= Data_Source_Time::currentTimeStamp();
-			$oAccountGroup->ManagedBy							= null;
-			$oAccountGroup->Archived							= 0;
-			$oAccountGroup->save();
-
+			if(array_key_exists("Associated", $_POST))
+			{
+				$intAccountGroupId = (int)Account_Group::getForAccountId($_POST['Associated']);
+			}
+			if(!array_key_exists("Associated", $_POST))
+			{
+				$oAccountGroup = new Account_Group();
+				$oAccountGroup->CreatedBy							= AuthenticatedUser()->getUserId();
+				$oAccountGroup->CreatedOn							= Data_Source_Time::currentTimeStamp();
+				$oAccountGroup->ManagedBy							= null;
+				$oAccountGroup->Archived							= 0;
+				$oAccountGroup->save();
+				$intAccountGroupId									= $oAccountGroup->Id
+			}
 
 			//----------------------------------------------------------------//
 			// Assign properties of new Account
@@ -132,7 +176,7 @@ class Application_Handler_Account extends Application_Handler
 			// TODO
 			//$oAccount->CreditCard								= $_POST['Account']['CreditCard'];
 			//$oAccount->DirectDebit							= $_POST['Account']['DirectDebit'];
-			$oAccount->AccountGroup								= $oAccountGroup->Id;
+			$oAccount->AccountGroup								= $intAccountGroupId;
 			$oAccount->LastBilled								= null;
 			$oAccount->BillingDate								= Payment_Terms::getCurrentForCustomerGroup((int)$_POST['Account']['CustomerGroup'])->invoice_day;
 			$oAccount->BillingFreq								= BILLING_DEFAULT_FREQ;
@@ -166,7 +210,7 @@ class Application_Handler_Account extends Application_Handler
 				case 0:
 					// Create a new Contact
 					$oContact = new Contact();
-					$oContact->AccountGroup						= $oAccountGroup->Id;
+					$oContact->AccountGroup						= $intAccountGroupId;
 					$oContact->Title							= $_POST['Contact']['Title'];
 					$oContact->FirstName						= $_POST['Contact']['FirstName'];
 					$oContact->LastName							= $_POST['Contact']['LastName'];
@@ -199,7 +243,6 @@ class Application_Handler_Account extends Application_Handler
 					$intPrimaryContactId = null;
 					break;				
 			}
-			
 			
 			//----------------------------------------------------------------//
 			// Assign properties of New Account
