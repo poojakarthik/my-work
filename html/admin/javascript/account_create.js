@@ -5,10 +5,15 @@ Account_Create = Class.create
 	
 	initialize	: function(oForm)
 	{
-	
-		Flex.Constant.loadConstantGroup(['BillingType', 'account_status'], this._onConstantLoad.bind(this))
 
 	
+		//----------------------------------------------------------------//
+		// Load Constants
+		//----------------------------------------------------------------//
+	
+		// Flex.Constant.loadConstantGroup(['BillingType', 'account_status'], this._onConstantLoad.bind(this))
+		Flex.Constant.loadConstantGroup('BillingType', this._onConstantLoad.bind(this))
+		
 		this.oForm					= oForm;
 		this.oForm.oAccountCreate	= this;
 	
@@ -216,7 +221,6 @@ Account_Create = Class.create
 
 		if(intValidateExistingContact == 0)
 		{
-			alert($ID('Contact[Title]').value.length);
 			if ($ID('Contact[Title]').value.length == 0)
 			{
 				aErrors.push('Invalid Contact Title Selected');
@@ -229,15 +233,15 @@ Account_Create = Class.create
 			{
 				aErrors.push('Invalid Last Name');
 			}
-			if (isNaN($ID('Contact[DOB][day]').value))
+			if (isNaN($ID('Contact[DOB][Day]').value))
 			{
 				aErrors.push('Invalid Date Of Birth Day');
 			}
-			if (isNaN($ID('Contact[DOB][month]').value))
+			if (isNaN($ID('Contact[DOB][Month]').value))
 			{
 				aErrors.push('Invalid Date Of Birth Month');
 			}
-			if (isNaN($ID('Contact[DOB][year]').value))
+			if (isNaN($ID('Contact[DOB][Year]').value))
 			{
 				aErrors.push('Invalid Date Of Birth Year');
 			}
@@ -259,7 +263,7 @@ Account_Create = Class.create
 		//----------------------------------------------------------------//
 		// Validate Proposed Billing Details
 		//----------------------------------------------------------------//
-		
+
 		var intFoundCheckedBillingType = 0;
 		
 		for (var aSelect = this.oForm.select('input[type=radio][name="Account[BillingType]"]'), i = 0, j = aSelect.length; i < j; i++)
@@ -267,12 +271,12 @@ Account_Create = Class.create
 			if (aSelect[i].checked)
 			{
 				// Invoice
-				if (aSelect[i].value == 3)
+				if (aSelect[i].value == $CONSTANT.BILLING_TYPE_ACCOUNT)
 				{
 					intFoundCheckedBillingType = 1;	
 				}
 				// Direct Debit
-				if (aSelect[i].value == 1)
+				if (aSelect[i].value == $CONSTANT.BILLING_TYPE_DIRECT_DEBIT)
 				{
 					intFoundCheckedBillingType = 1;	
 
@@ -295,7 +299,7 @@ Account_Create = Class.create
 
 				}
 				// Credit Card
-				if (aSelect[i].value == 2)
+				if (aSelect[i].value == $CONSTANT.BILLING_TYPE_CREDIT_CARD)
 				{
 					intFoundCheckedBillingType = 1;	
 
@@ -355,7 +359,7 @@ Account_Create = Class.create
 		//----------------------------------------------------------------//
 		// Fail
 		//----------------------------------------------------------------//
-					
+
 		// When we fail to create an account, load the error popup
 		if (aErrors.length)
 		{
@@ -380,18 +384,14 @@ Account_Create = Class.create
 	_onConstantLoad : function ()
 	{
 		this.bConstantsLoaded = true;
-		// Method to access constants.
-		//$CONSTANT.FOO_BAR
 	}
 
 });
 
 
-Account_Create.DEFAULT_DISABLE_LATE_PAYMENT_NOTICES	= 0;
-Account_Create.DEFAULT_SAMPLE						= 0;
-Account_Create.DEFAULT_CUSTOMER_CONTACT				= 0;
-Account_Create.DEFAULT_SESSION_EXPIRE				= '1970-01-01 00:00:00';
-Account_Create.DEFAULT_CONTACT_ARCHIVED				= 0;
-Account_Create.DEFAULT_VIP_STATUS					= 0;
+//----------------------------------------------------------------//
+// Constants
+//----------------------------------------------------------------//
+
 Account_Create.DEFAULT_PASSWORD_LENGTH_REQUIREMENT	= 8;
 

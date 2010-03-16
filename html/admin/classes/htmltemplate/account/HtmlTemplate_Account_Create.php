@@ -134,7 +134,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				// Generate a dropdown menu of available customer groups
 				foreach ($this->mxdDataToRender['arrCustomerGroups'] as $oCustomerGroup)
 				{
-					echo "<option value='{$oCustomerGroup->id}'>{$oCustomerGroup->id}{$oCustomerGroup->name}</option>\n";
+					echo "<option value='{$oCustomerGroup->id}'>{$oCustomerGroup->name}</option>\n";
 				}
 				
 				echo "
@@ -353,7 +353,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<th><div class='Required'>#</div>Date of Birth:</th>
 			<td>
 				<select name='Contact[DOB][day]' id='Contact[DOB][Day]'>
-					<option value='false'>DD</option>";
+					<option value=''>DD</option>";
 	
 					// Generate 31 days in a month
 					for ($i=1; $i<32; $i++)
@@ -364,7 +364,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				echo "
 				</select>
 				<select name='Contact[DOB][month]' id='Contact[DOB][Month]'>
-					<option value='false'>MM</option>";
+					<option value=''>MM</option>";
 	
 					// Generate 12 months in the year
 					for ($i=1; $i<13; $i++)
@@ -375,7 +375,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				echo "
 				</select>
 				<select name='Contact[DOB][year]' id='Contact[DOB][Year]'>
-					<option value='false'>YYYY</option>";
+					<option value=''>YYYY</option>";
 					
 					// Generate list of years for date of birth selection
 					$intStartMinimumAgeRequired = $intCurrentYear-self::MINIMUM_AGE_REQUIRED_FOR_ACCOUNT;
