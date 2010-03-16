@@ -2,10 +2,20 @@
 
 Account_Create = Class.create
 ({
+	
 	initialize	: function(oForm)
 	{
+	
+		Flex.Constant.loadConstantGroup(['BillingType', 'account_status'], this._onConstantLoad.bind(this))
+
+	
 		this.oForm					= oForm;
 		this.oForm.oAccountCreate	= this;
+	
+
+		//----------------------------------------------------------------//
+		// Event listeners To Validate Proposed Account
+		//----------------------------------------------------------------//
 		
 		// Validate Business Name
 		this.oForm.getInputs('text','Account[BusinessName]').first().validate = function ()
@@ -112,21 +122,7 @@ Account_Create = Class.create
 			this.className = "valid";
 			return true;
 		}
-		
-		/*
-		this.oForm.select('input[type=radio][name="Account[BillingType]"][checked=checked]').first().validate = function ()
-		{
-			if(!this.checked)
-			{
-				this.className = "invalid";
-				return "Invalid Payment Method";
-			}
-			this.className = "valid";
-			return true;
-		}
-		*/
-		
-		// Add dynamic validation ( Event listeners, for Input Elements )
+		// Event listeners for Input Elements
 		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j; i++)
 		{
 			if (aInputs[i].validate)
@@ -135,7 +131,7 @@ Account_Create = Class.create
 				aInputs[i].observe('change', aInputs[i].validate.bind(aInputs[i]));
 			}
 		}
-		// Event listeners for select Elements
+		// Event listeners for Select Elements
 		for (var aSelects = this.oForm.select('select'), i = 0, j = aSelects.length; i < j; i++)
 		{
 			if (aSelects[i].validate)
@@ -149,6 +145,11 @@ Account_Create = Class.create
 	
 	submit	: function()
 	{
+
+		
+		//----------------------------------------------------------------//
+		// Validate Proposed Account (runs Event Listeners)
+		//----------------------------------------------------------------//
 		
 		var aErrors	= [];
 
@@ -177,7 +178,11 @@ Account_Create = Class.create
 			}
 		}
 		
-		// By default no contact type has been selected
+
+		//----------------------------------------------------------------//
+		// Validate Proposed Primary Contact
+		//----------------------------------------------------------------//
+
 		var intFoundCheckedContactType = 0;
 		var intValidateExistingContact = null;
 		
@@ -209,20 +214,20 @@ Account_Create = Class.create
 			
 		}
 
-		// Validate new primary contact details
 		if(intValidateExistingContact == 0)
 		{
-			if (isNaN($ID('Contact[Title]').value))
+			alert($ID('Contact[Title]').value.length);
+			if ($ID('Contact[Title]').value.length == 0)
 			{
 				aErrors.push('Invalid Contact Title Selected');
 			}
 			if (!/\S/.test($ID('Contact[FirstName]').value))
 			{
-				aErrors.push('First Name must be at least 5 characters long');
+				aErrors.push('Invalid First Name');
 			}
 			if (!/\S/.test($ID('Contact[LastName]').value))
 			{
-				aErrors.push('Last Name must be at least 5 characters long');
+				aErrors.push('Invalid Last Name');
 			}
 			if (isNaN($ID('Contact[DOB][day]').value))
 			{
@@ -244,14 +249,17 @@ Account_Create = Class.create
 			{
 				aErrors.push('A valid phone number OR Mobile must be provided');
 			}
-			if ($ID('Contact[Password]').value.length < 8)
+			if ($ID('Contact[Password]').value.length < Account_Create.DEFAULT_PASSWORD_LENGTH_REQUIREMENT)
 			{
-				aErrors.push('Password must be at least 8 characters long');
+				aErrors.push('Password must be at least ' + Account_Create.DEFAULT_PASSWORD_LENGTH_REQUIREMENT + ' characters long');
 			}
 		}
+
 		
+		//----------------------------------------------------------------//
+		// Validate Proposed Billing Details
+		//----------------------------------------------------------------//
 		
-		// By default no valid billing type has been selected
 		var intFoundCheckedBillingType = 0;
 		
 		for (var aSelect = this.oForm.select('input[type=radio][name="Account[BillingType]"]'), i = 0, j = aSelect.length; i < j; i++)
@@ -323,7 +331,7 @@ Account_Create = Class.create
 			}
 		}
 		
-		// If no billing type is found, add it to the error array.
+		// Check Billing Type
 		if (intFoundCheckedBillingType == 0)
 		{
 			aErrors.push('Invalid Payment Method selected');
@@ -336,12 +344,19 @@ Account_Create = Class.create
 		{
 			aErrors.push('No Late Payment option selected');
 		}
+		
+		// ABN, ACN Checking
 		if(!Reflex_Validation.abn($ID('Account[ABN]').value) && !Reflex_Validation.acn($ID('Account[ACN]').value))
 		{
 			aErrors.push('A valid ABN or ACN is required.');
 		}
 		
-		// Alert errors, then fail
+
+		//----------------------------------------------------------------//
+		// Fail
+		//----------------------------------------------------------------//
+					
+		// When we fail to create an account, load the error popup
 		if (aErrors.length)
 		{
 			var sErrors	= 'Please check the following:\n\n';
@@ -350,13 +365,33 @@ Account_Create = Class.create
 				sErrors	+= "- " + aErrors[i] + "\n";
 			}
 			alert(sErrors);
-			// return false;
-			return true;
+			return false;
 		}
 		
-		// No errors -- submit
+
+		//----------------------------------------------------------------//
+		// Send Valid Response
+		//----------------------------------------------------------------//
+					
 		return true;
+	},
+	
+
+	_onConstantLoad : function ()
+	{
+		this.bConstantsLoaded = true;
+		// Method to access constants.
+		//$CONSTANT.FOO_BAR
 	}
 
-	
 });
+
+
+Account_Create.DEFAULT_DISABLE_LATE_PAYMENT_NOTICES	= 0;
+Account_Create.DEFAULT_SAMPLE						= 0;
+Account_Create.DEFAULT_CUSTOMER_CONTACT				= 0;
+Account_Create.DEFAULT_SESSION_EXPIRE				= '1970-01-01 00:00:00';
+Account_Create.DEFAULT_CONTACT_ARCHIVED				= 0;
+Account_Create.DEFAULT_VIP_STATUS					= 0;
+Account_Create.DEFAULT_PASSWORD_LENGTH_REQUIREMENT	= 8;
+

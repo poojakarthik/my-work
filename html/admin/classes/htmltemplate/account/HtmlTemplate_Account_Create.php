@@ -21,8 +21,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 	{
 		
 		$intCurrentYear = (int)date("Y");
-		// action='" . MenuItems::SaveAccount() . "' 
-		// onsubmit='return this.oAccountCreate.submit();'
+		
 		echo "
 		<div class='page-reset'>
 		<form method='post' action='reflex.php/Account/Save/' id='account-create' name='account-create' onsubmit='return this.oAccountCreate.submit();'>\n";
@@ -64,15 +63,17 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			</div>\n";
 		}
 
-		// Account Details
+		// Add account or Close page
 		echo "
-		<!-- 
 		<div class='Seperator'></div>
 		<div style='text-align: center;'>
 			<input type='submit' class='normal-button' name='Add_Account_Submit' value='Save' />
 			<input type='submit' class='normal-button' name='Add_Account_Cancel' value='Cancel' />
-		</div>
-		-->
+		</div>";
+		
+		
+		// Account Details
+		echo "
 		<div class='Seperator'></div>
 		<h2 class='Account'>Account Details</h2>
 		<table class='form-layout'>
@@ -278,15 +279,14 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		
 				
 		// Primary Contact Details
-		echo "
-		<div class='Seperator'></div>
-		<h2 class='Account'>Primary Contact Details</h2>
-		<table class='form-layout'>";
-
 		if(!array_key_exists("Associated", $_GET))
 		{
 			echo "<input type='hidden' name='Contact[USE]' id='Contact[USE]' value='0' />";	
 		}
+		echo "
+		<div class='Seperator'></div>
+		<h2 class='Account'>Primary Contact Details</h2>
+		<table class='form-layout'>";
 		if(array_key_exists("Associated", $_GET))
 		{
 			
@@ -328,7 +328,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<th><div class='Required'>#</div>Title:</th>
 			<td>
 				<select name='Contact[Title]' id='Contact[Title]'>
-					<option value='false'></option>";
+					<option value=''></option>";
 
 					// Generate a dropdown menu of contact titles, eg. Mr, Dr
 					foreach ($this->mxdDataToRender['arrContactTitles'] as $oContactTitle)
