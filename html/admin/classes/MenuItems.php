@@ -975,7 +975,7 @@ class MenuItems {
 	function AddCustomer() {
 		$this->strLabel = "Add Customer";
 		$this->strContextMenuLabel = "";
-		return self :: OLD_FRAMEWORK . "account_add.php";
+		return self :: NEW_FRAMEWORK . "reflex.php/Account/Create";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2122,7 +2122,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "";
 		$this->strLabel = "";
 
-		return self :: OLD_FRAMEWORK . "account_add.php?Associated=$intAccountId";
+		return self :: NEW_FRAMEWORK . "reflex.php/Account/Create?Associated=$intAccountId";
 	}
 
 	//------------------------------------------------------------------------//
