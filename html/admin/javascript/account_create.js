@@ -28,7 +28,7 @@ Account_Create = Class.create
 			if (!/\S/.test(this.value))
 			{
 				this.className = "invalid";
-				return "Business name must be at least 5 characters long.";
+				return "Invalid Business Name";
 			}
 			this.className = "valid";
 			return true;
