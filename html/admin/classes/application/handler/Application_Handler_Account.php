@@ -159,11 +159,11 @@ class Application_Handler_Account extends Application_Handler
 				if(!Validation::IsNotEmptyString('Name', $_POST['CC'])){throw new Exception('Invalid Credit Card Name');}
 				if(!Validation::IsNotEmptyString('ExpMonth', $_POST['CC'])){throw new Exception('Invalid Credit Card Exp Month');}
 				if(!Validation::IsNotEmptyString('ExpYear', $_POST['CC'])){throw new Exception('Invalid Credit Card Exp Year');}
-				if(!array_key_exists('CardNumber', $_POST['CC']) || !Credit_Card_type::cardNumberIsValid($_POST['CC']['CardNumber']))
+				if(!array_key_exists('CardNumber', $_POST['CC']) || !Credit_Card_Type::cardNumberIsValid($_POST['CC']['CardNumber']))
 				{
 					throw new Exception('Invalid Credit Card Number');
 				}				
-				if(!array_key_exists('CardNumber', $_POST['CVV']) || !Credit_Card_type::cvvIsValid($_POST['CC']['CVV']))
+				if(!array_key_exists('CardNumber', $_POST['CVV']) || !Credit_Card_Type::cvvIsValid($_POST['CC']['CVV']))
 				{
 					throw new Exception('Invalid Credit Card CVV');
 				}
