@@ -352,29 +352,31 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		<tr>
 			<th><div class='Required'>#</div>Date of Birth:</th>
 			<td>
-				<select name='Contact[DOB][day]' id='Contact[DOB][Day]'>
+				<select name='Contact[DOB][Day]' id='Contact[DOB][Day]'>
 					<option value=''>DD</option>";
 	
 					// Generate 31 days in a month
 					for ($i=1; $i<32; $i++)
 					{
-						echo "<option value='{$i}'>{$i}</option>\n";
+						$intDOBDay = str_pad($i, 2, "0", STR_PAD_LEFT);
+						echo "<option value='{$intDOBDay}'>{$intDOBDay}</option>\n";
 					}
 					
 				echo "
 				</select>
-				<select name='Contact[DOB][month]' id='Contact[DOB][Month]'>
+				<select name='Contact[DOB][Month]' id='Contact[DOB][Month]'>
 					<option value=''>MM</option>";
 	
 					// Generate 12 months in the year
 					for ($i=1; $i<13; $i++)
 					{
-						echo "<option value='{$i}'>{$i}</option>\n";
+						$intDOBMonth = str_pad($i, 2, "0", STR_PAD_LEFT);
+						echo "<option value='{$intDOBMonth}'>{$intDOBMonth}</option>\n";
 					}
 					
 				echo "
 				</select>
-				<select name='Contact[DOB][year]' id='Contact[DOB][Year]'>
+				<select name='Contact[DOB][Year]' id='Contact[DOB][Year]'>
 					<option value=''>YYYY</option>";
 					
 					// Generate list of years for date of birth selection

@@ -159,11 +159,11 @@ class Application_Handler_Account extends Application_Handler
 				if(!Validation::IsNotEmptyString('Name', $_POST['CC'])){throw new Exception('Invalid Credit Card Name');}
 				if(!Validation::IsNotEmptyString('ExpMonth', $_POST['CC'])){throw new Exception('Invalid Credit Card Exp Month');}
 				if(!Validation::IsNotEmptyString('ExpYear', $_POST['CC'])){throw new Exception('Invalid Credit Card Exp Year');}
-				if(!array_key_exists('CardNumber', $_POST['CC']) || !Credit_Card_Type::cardNumberIsValid($_POST['CC']['CardNumber']))
+				if(!array_key_exists('CardNumber', $_POST['CC']) || !CheckCC($_POST['CC']['CardNumber'], $_POST['CC']['CardType']))
 				{
 					throw new Exception('Invalid Credit Card Number');
 				}				
-				if(!array_key_exists('CardNumber', $_POST['CVV']) || !Credit_Card_Type::cvvIsValid($_POST['CC']['CVV']))
+				if(!array_key_exists('CardNumber', $_POST['CC']) || !Validation::IsValidInteger($_POST['CC']['CVV']))
 				{
 					throw new Exception('Invalid Credit Card CVV');
 				}
@@ -184,7 +184,7 @@ class Application_Handler_Account extends Application_Handler
 				{
 					throw new Exception('Invalid Email address or the Email address is already in use');
 				}
-				if(!@checkdate((int)$_POST ['Contact']['DOB']['Month'], (int)$_POST ['Contact']['DOB']['Day'], (int)$_POST ['Contact']['DOB']['Year']))
+				if(!checkdate((int)$_POST ['Contact']['DOB']['Month'], (int)$_POST ['Contact']['DOB']['Day'], (int)$_POST ['Contact']['DOB']['Year']))
 				{
 					throw new Exception('Invalid Date Of Birth');
 				}

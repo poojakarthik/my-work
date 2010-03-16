@@ -270,7 +270,6 @@ Account_Create = Class.create
 		{
 			if (aSelect[i].checked)
 			{
-				alert(aSelect[i].value);
 				// Invoice
 				if (aSelect[i].value == $CONSTANT.BILLING_TYPE_ACCOUNT)
 				{
@@ -303,8 +302,7 @@ Account_Create = Class.create
 				if (aSelect[i].value == $CONSTANT.BILLING_TYPE_CREDIT_CARD)
 				{
 					intFoundCheckedBillingType = 1;	
-
-					if (!isNaN($ID('CC[CardType]').value))
+					if (isNaN($ID('CC[CardType]').value))
 					{ 
 						aErrors.push('Payment Method Error: CardType');
 					}
