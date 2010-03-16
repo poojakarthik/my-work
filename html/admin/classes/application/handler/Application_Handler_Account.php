@@ -71,6 +71,13 @@ class Application_Handler_Account extends Application_Handler
 				
 			}
 			
+			BreadCrumb()->Employee_Console();
+			if(array_key_exists("Associated", $_GET))
+			{
+				BreadCrumb()->AccountOverview((int)$_GET['Associated']);	
+			}
+			BreadCrumb()->SetCurrentPage("Add Customer");
+			
 			// Merge the PHP with the HTML template
 			$this->LoadPage('account_create', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 			
