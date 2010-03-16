@@ -251,7 +251,7 @@ class Application_Handler_Account extends Application_Handler
 			
 			if($_POST['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
 			{
-				$oDirectDebit = new Direct_Debit();
+				$oDirectDebit = new DirectDebit();
 				$oDirectDebit->AccountGroup							= $intAccountGroupId;
 				$oDirectDebit->BankName								= $_POST['DDR']['BankName'];
 				$oDirectDebit->BSB									= $_POST['DDR']['BSB'];
