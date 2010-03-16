@@ -93,44 +93,47 @@ class Application_Handler_Account extends Application_Handler
 		{
 			
 			//----------------------------------------------------------------//
-			// Validate Information
+			// Validate Proposed Account
 			//----------------------------------------------------------------//
-			if(!array_key_exists('USE', $_POST['Contact']))
-			{
-				throw new Exception('Invalid Primary Contact Selected (Needs to be either Existing or New)');
-			}
+			
 			if(!Validation::IsValidABN($_POST['Account']['ABN']) && !Validation::IsValidACN($_POST['Account']['ACN']))
 			{
-				#throw new Exception('A valid ABN or ACN is required');
+				throw new Exception('A valid ABN or ACN is required');
 			}
 			if(!Validation::IsValidPostcode($_POST['Account']['Postcode']))
 			{
-				#throw new Exception('Invalid Post Code');
+				throw new Exception('Invalid Post Code');
 			}
 			if(!Validation::IsNotEmptyString($_POST['Account']['BusinessName']))
 			{
-				#throw new Exception('Invalid Business Name');
+				throw new Exception('Invalid Business Name');
 			}
 			if(!Validation::IsNotEmptyString($_POST['Account']['Address1']))
 			{
-				#throw new Exception('Invalid Address Line 1');
+				throw new Exception('Invalid Address Line 1');
 			}
 			if(!Validation::IsNotEmptyString($_POST['Account']['Suburb']))
 			{
-				#throw new Exception('Invalid Suburb');
+				throw new Exception('Invalid Suburb');
 			}
 			if(!Validation::IsValidInteger($_POST['Account']['Postcode']))
 			{
-				#throw new Exception('Invalid Postcode');
+				throw new Exception('Invalid Postcode');
 			}
 			if(!Validation::IsValidInteger($_POST['Account']['State']))
 			{
-				#throw new Exception('Invalid State');
+				throw new Exception('Invalid State');
 			}
 			if(!Validation::IsValidInteger($_POST['Account']['CustomerGroup']))
 			{
-				#throw new Exception('Invalid Customer Group');
+				throw new Exception('Invalid Customer Group');
 			}
+			
+			
+			//----------------------------------------------------------------//
+			// Validate Proposed Billing Details
+			//----------------------------------------------------------------//
+			
 			if(!array_key_exists('DisableLatePayment', $_POST['Account']))
 			{				
 				throw new Exception('No Late Payment option has been selected');
@@ -141,7 +144,7 @@ class Application_Handler_Account extends Application_Handler
 			}
 			if(!array_key_exists('BillingType', $_POST['Account']))
 			{				
-				#throw new Exception('No Payment Method option has been selected');
+				throw new Exception('No Payment Method option has been selected');
 			}
 			if($_POST['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
 			{
@@ -166,6 +169,15 @@ class Application_Handler_Account extends Application_Handler
 				}
 			}
 			
+			
+			//----------------------------------------------------------------//
+			// Validate Proposed Primary Contact
+			//----------------------------------------------------------------//
+			
+			if(!array_key_exists('USE', $_POST['Contact']))
+			{
+				throw new Exception('Invalid Primary Contact Selected (Needs to be either Existing or New)');
+			}
 			if ($_POST['Contact']['USE'] == 0)
 			{
 				if(Contact::isEmailInUse($_POST['Contact']['Email']) || !Validation::IsValidEmail($_POST['Contact']['Email']))
@@ -202,9 +214,15 @@ class Application_Handler_Account extends Application_Handler
 				throw new Exception('Invalid Primary Contact Selected');
 			}
 
-			
+
 			//----------------------------------------------------------------//
-			// Create Account Group, or Assign Existing
+			// Create Account BEGINS
+			//----------------------------------------------------------------//
+			// If we have made it this far, everything has been validated and we are ready to create a new account!
+
+
+			//----------------------------------------------------------------//
+			// 1. Create Account Group or Assign Existing
 			//----------------------------------------------------------------//
 			
 			if(array_key_exists("Associated", $_POST))
@@ -224,15 +242,16 @@ class Application_Handler_Account extends Application_Handler
 
 
 			//----------------------------------------------------------------//
-			// Propose a payment method
+			// 2. Add Payment Method
 			//----------------------------------------------------------------//
+			
 			$intBillingType		= (array_key_exists((int)$_POST['Account']['BillingType'], $GLOBALS['*arrConstant']['BillingType'])) ? $_POST['Account']['BillingType'] : BILLING_TYPE_ACCOUNT;
 			$intDirectDebitId	= null;
 			$intCreditCardId	= null;
 			
 			if($_POST['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
 			{
-				$oDirectDebit = new Credit_Card();
+				$oDirectDebit = new Direct_Debit();
 				$oDirectDebit->AccountGroup							= $intAccountGroupId;
 				$oDirectDebit->BankName								= $_POST['DDR']['BankName'];
 				$oDirectDebit->BSB									= $_POST['DDR']['BSB'];
@@ -263,7 +282,7 @@ class Application_Handler_Account extends Application_Handler
 			
 			
 			//----------------------------------------------------------------//
-			// Assign properties of new Account
+			// 3. Assign properties of new Account
 			//----------------------------------------------------------------//
 			
 			$oAccount = new Account();
@@ -308,7 +327,7 @@ class Application_Handler_Account extends Application_Handler
 
 			
 			//----------------------------------------------------------------//
-			// Assign properties of new Contact
+			// 4. Assign properties of new Contact
 			//----------------------------------------------------------------//
 			
 			switch ($_POST['Contact']['USE'])
@@ -335,23 +354,20 @@ class Application_Handler_Account extends Application_Handler
 					$oContact->LastLogin						= null;
 					$oContact->CurrentLogin						= null;
 					$oContact->save();
-					// This integer is used when creating $oAccount
 					$intPrimaryContactId						= $oContact->Id;
 					break;
 				case 1:
 					// Use an existing Contact
-					// This integer is used when creating $oAccount
 					$intPrimaryContactId						= $_POST['Contact']['Id'];
 					break;
 				default:
 					// No option detected.
-					// This integer is used when creating $oAccount
 					$intPrimaryContactId = null;
 					break;				
 			}
 			
 			//----------------------------------------------------------------//
-			// Assign properties of New Account
+			// 5. Assign additional properties of New Account
 			//----------------------------------------------------------------//
 			
 			$oAccount->PrimaryContact							= $intPrimaryContactId;
@@ -359,7 +375,7 @@ class Application_Handler_Account extends Application_Handler
 			
 			
 			//----------------------------------------------------------------//
-			// Add A System Note
+			// 6. Add A System Note
 			//----------------------------------------------------------------//
 						
 			$strNote  = "Account created with the following details:\n";
@@ -380,12 +396,20 @@ class Application_Handler_Account extends Application_Handler
 			Note::createSystemNote($strNote, AuthenticatedUser()->getUserId(), $oAccount->Id, null, null);
 			
 
+			//----------------------------------------------------------------//
+			// 7. Send Response
+			//----------------------------------------------------------------//
+						
 			// Redirect to the Account Overview
 			header ('Location: /' . MenuItems::AccountOverview($oAccount->Id));
 			exit;
 				
 		}
 		
+		//----------------------------------------------------------------//
+		// Fail
+		//----------------------------------------------------------------//
+					
 		// When we fail to create an account, load the error page
 		catch (Exception $eException)
 		{
