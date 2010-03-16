@@ -148,12 +148,12 @@ Account_Create = Class.create
 
 		
 		//----------------------------------------------------------------//
-		// Validate Proposed Account (runs Event Listeners)
+		// Validate Proposed Account
 		//----------------------------------------------------------------//
 		
 		var aErrors	= [];
 
-		// Check if <input> fields are valid.
+		// Run Event listeners for Input Elements
 		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j; i++)
 		{
 			if (aInputs[i].validate)
@@ -165,7 +165,7 @@ Account_Create = Class.create
 				}
 			}
 		}
-		// Same as above except this handles the <select> elements.
+		// Run Event listeners for Select Elements
 		for (var aSelects = this.oForm.select('select'), i = 0, j = aSelects.length; i < j; i++)
 		{
 			if (aSelects[i].validate)
