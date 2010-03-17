@@ -103,7 +103,13 @@ class Application_Handler_Account extends Application_Handler
 			//----------------------------------------------------------------//
 			// Validate Proposed Account
 			//----------------------------------------------------------------//
-			
+			if(array_key_exists('Associated', $_POST))
+			{
+				if(!Account::getForId($_POST['Associated']))
+				{
+					throw new Exception('The specified Associated Account is invalid.');
+				}
+			}			
 			if(!Validation::IsValidABN($_POST['Account']['ABN']) && !Validation::IsValidACN($_POST['Account']['ACN']))
 			{
 				throw new Exception('A valid ABN or ACN is required');
