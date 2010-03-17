@@ -127,7 +127,7 @@ class Application_Handler_Account extends Application_Handler
 			{
 				throw new Exception('Invalid Postcode');
 			}
-			if(!Validation::IsValidInteger($_POST['Account']['State']))
+			if(!Validation::IsNotEmptyString($_POST['Account']['State']))
 			{
 				throw new Exception('Invalid State');
 			}
@@ -301,7 +301,7 @@ class Application_Handler_Account extends Application_Handler
 			$oAccount->Address2									= $_POST['Account']['Address2'];
 			$oAccount->Suburb									= $_POST['Account']['Suburb'];
 			$oAccount->Postcode									= (int)$_POST['Account']['Postcode'];
-			$oAccount->State									= (int)$_POST['Account']['State'];
+			$oAccount->State									= $_POST['Account']['State'];
 			$oAccount->Country									= 'AU';
 			$oAccount->BillingType								= $intBillingType;
 			$oAccount->PrimaryContact							= null;
@@ -346,7 +346,7 @@ class Application_Handler_Account extends Application_Handler
 					$oContact->Title							= $_POST['Contact']['Title'];
 					$oContact->FirstName						= $_POST['Contact']['FirstName'];
 					$oContact->LastName							= $_POST['Contact']['LastName'];
-					$oContact->DOB								= $_POST['Contact']['DOB']['Year'] . "-" . $_POST['Contact']['DOB']['Month'] . "" . $_POST['Contact']['DOB']['Day'];
+					$oContact->DOB								= (int)$_POST['Contact']['DOB']['Year'] . "-" . (int)str_pad($_POST['Contact']['DOB']['Month'], 2, "0", STR_PAD_LEFT) . "-" . (int)str_pad($_POST['Contact']['DOB']['Day'], 2, "0", STR_PAD_LEFT);
 					$oContact->JobTitle							= $_POST['Contact']['JobTitle'];
 					$oContact->Email							= $_POST['Contact']['Email'];
 					$oContact->Account							= $oAccount->Id;
@@ -354,7 +354,7 @@ class Application_Handler_Account extends Application_Handler
 					$oContact->Phone							= $_POST['Contact']['Phone'];
 					$oContact->Mobile							= $_POST['Contact']['Mobile'];
 					$oContact->Fax								= $_POST['Contact']['Fax'];
-					$oContact->PassWord							= $_POST['Contact']['Password'];
+					$oContact->PassWord							= sha1($_POST['Contact']['Password']);
 					$oContact->SessionId						= '';
 					$oContact->SessionExpire					= self::DEFAULT_SESSION_EXPIRE;
 					$oContact->Archived							= self::DEFAULT_CONTACT_ARCHIVED;

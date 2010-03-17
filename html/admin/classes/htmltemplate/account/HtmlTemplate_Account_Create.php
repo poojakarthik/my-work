@@ -122,7 +122,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 					// Generate a dropdown menu of available states, eg. QLD, NSW, VIC
 					foreach ($this->mxdDataToRender['arrStates'] as $oState)
 					{
-						echo "<option value='{$oState->id}'>{$oState->name}</option>\n";
+						echo "<option value='{$oState->code}'>{$oState->name}</option>\n";
 					}
 					
 					echo "
@@ -192,7 +192,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<tr>
 				<th><div class='Required'>*</div>Delivery Method:</th>
 				<td>
-					<select name='Account[DeliveryMethod]' class='input-string'>";
+					<select name='Account[DeliveryMethod]' class='input-string'>
+						<option value=''>Please Select</option>";
 					
 					// Generate a dropdown menu of available delivery methods, eg. Post, Email
 					foreach ($this->mxdDataToRender['arrDeliveryMethods'] as $oDeliveryMethod)
@@ -210,11 +211,11 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				<td>
 					<ul>
 						<li>
-							<input type='radio' name='Account[BillingType]' value='" . BILLING_TYPE_ACCOUNT . "' /> Invoice
+							<input type='radio' name='Account[BillingType]' id='Account[BillingType]' value='" . BILLING_TYPE_ACCOUNT . "' /> Invoice
 						</li>
 						<li>
 							<div class='SmallSeperator'></div>
-							<input type='radio' name='Account[BillingType]' value='" . BILLING_TYPE_DIRECT_DEBIT . "' /> Direct Debit - from Bank Account
+							<input type='radio' name='Account[BillingType]' id='Account[BillingType]' value='" . BILLING_TYPE_DIRECT_DEBIT . "' /> Direct Debit - from Bank Account
 							<table>
 							<tr>
 								<th style='width: 175px;'><div class='Required'>*</div>Bank Name:</th>
@@ -236,7 +237,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						</li>
 						<li>
 							<div class='SmallSeperator'></div>
-							<input type='radio' name='Account[BillingType]' value='" . BILLING_TYPE_CREDIT_CARD . "' /> Direct Debit - from Credit Card
+							<input type='radio' name='Account[BillingType]' id='Account[BillingType]' value='" . BILLING_TYPE_CREDIT_CARD . "' checked /> Direct Debit - from Credit Card
 							<table>
 								<tr>
 									<th style='width: 175px;'><div class='Required'>*</div>Card Type:</th>
@@ -307,7 +308,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		// Primary Contact Details
 		if(!array_key_exists("Associated", $_GET))
 		{
-			echo "<input type='hidden' name='Contact[USE]' id='Contact[USE]' value='0' />";	
+			echo "<input type='radio' name='Contact[USE]' id='Contact[USE]' value='0' style='display: none;' checked />";	
 		}
 		echo "
 		<div class='Seperator'></div>
@@ -330,10 +331,11 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<tr>
 				<th></th>
 				<td>
-					<input type='radio' name='Contact[USE]' value='1' />
+					<input type='radio' name='Contact[USE]' id='Contact[USE]' value='1' checked />
 					Select an existing contact from the list below:
 				</td>
 			</tr>
+			<tr>
 				<th><div class='Required'></div></th>
 				<td>
 					<select name='Contact[Id]' id='Contact[Id]'>
@@ -349,11 +351,12 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 					</select>
 				</td>
 			</tr>
+			<tr>
 				<th><div class='Required'></th>
 				<td>
 					<div class='SmallSeperator'></div>
-					<input type='radio' name='Contact[USE]' value='0' />
-					Create a new Contact using the following details:</ul>
+					<input type='radio' name='Contact[USE]' id='Contact[USE]' value='0' />
+					Create a new Contact using the following details:
 				</td>
 			</tr>";
 			
@@ -394,8 +397,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						// Generate 31 days in a month
 						for ($i=1; $i<32; $i++)
 						{
-							$intDOBDay = str_pad($i, 2, "0", STR_PAD_LEFT);
-							echo "<option value='{$intDOBDay}'>{$intDOBDay}</option>\n";
+							echo "<option value='{$i}'>{$i}</option>\n";
 						}
 						
 					echo "
@@ -406,8 +408,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 						// Generate 12 months in the year
 						for ($i=1; $i<13; $i++)
 						{
-							$intDOBMonth = str_pad($i, 2, "0", STR_PAD_LEFT);
-							echo "<option value='{$intDOBMonth}'>{$intDOBMonth}</option>\n";
+							echo "<option value='{$i}'>{$i}</option>\n";
 						}
 						
 					echo "

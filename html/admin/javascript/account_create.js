@@ -16,12 +16,12 @@ Account_Create = Class.create
 		
 		this.oForm					= oForm;
 		this.oForm.oAccountCreate	= this;
-	
 
-		//----------------------------------------------------------------//
-		// Event listeners To Validate Proposed Account
-		//----------------------------------------------------------------//
 		
+		//----------------------------------------------------------------//
+		// Validate Proposed Account
+		//----------------------------------------------------------------//
+
 		// Validate Business Name
 		this.oForm.getInputs('text','Account[BusinessName]').first().validate = function ()
 		{
@@ -33,19 +33,33 @@ Account_Create = Class.create
 			this.className = "valid";
 			return true;
 		}
+		
+		// Validate Trading Name
+		this.oForm.getInputs('text','Account[TradingName]').first().validate = function ()
+		{
+			this.className = "valid";
+			return true;
+		}
 
 		// Validate an ABN
 		this.oForm.getInputs('text','Account[ABN]').first().validate = function ()
 		{
-			if (this.value !== '' && !Reflex_Validation.abn(this.value))
+			if (!Reflex_Validation.abn(this.value) && Reflex_Validation.acn($ID('Account[ACN]').value) && this.value !== '')
 			{
 				this.className = "invalid";
 				return "Invalid ABN specified";
 			}
-			if(this.value == '')
+			if (Reflex_Validation.abn(this.value) && $ID('Account[ACN]').value == '')
 			{
-				this.className = "";
+				this.className = "valid";
+				$ID('Account[ACN]').className = "valid";
 				return true;
+			}
+			if (!Reflex_Validation.abn(this.value) && !Reflex_Validation.acn($ID('Account[ACN]').value))
+			{
+				this.className = "invalid";
+				$ID('Account[ACN]').className = "invalid";
+				return "Invalid ABN specified";
 			}
 			this.className = "valid";
 			return true;
@@ -54,15 +68,22 @@ Account_Create = Class.create
 		// Validate an ACN
 		this.oForm.getInputs('text','Account[ACN]').first().validate = function ()
 		{
-			if (this.value !== '' && !Reflex_Validation.acn(this.value))
+			if (!Reflex_Validation.acn(this.value) && Reflex_Validation.abn($ID('Account[ABN]').value) && this.value !== '')
 			{
 				this.className = "invalid";
 				return "Invalid ACN specified";
 			}
-			if(this.value == '')
+			if (Reflex_Validation.acn(this.value) && $ID('Account[ABN]').value == '')
 			{
-				this.className = "";
+				this.className = "valid";
+				$ID('Account[ABN]').className = "valid";
 				return true;
+			}
+			if (!Reflex_Validation.acn(this.value) && !Reflex_Validation.abn($ID('Account[ABN]').value))
+			{
+				this.className = "invalid";
+				$ID('Account[ABN]').className = "invalid";
+				return "Invalid ACN specified";
 			}
 			this.className = "valid";
 			return true;
@@ -76,6 +97,13 @@ Account_Create = Class.create
 				this.className = "invalid";
 				return "Invalid Address (Line 1)";
 			}
+			this.className = "valid";
+			return true;
+		}
+		
+		// Validate Address line 2
+		this.oForm.getInputs('text','Account[Address2]').first().validate = function ()
+		{
 			this.className = "valid";
 			return true;
 		}
@@ -127,7 +155,379 @@ Account_Create = Class.create
 			this.className = "valid";
 			return true;
 		}
-		// Event listeners for Input Elements
+
+		this.oForm.select('select[name="Account[DeliveryMethod]"]').first().validate = function ()
+		{
+			if (!/\S/.test(this.value))
+			{	
+				this.className = "invalid";
+				return "Invalid Delivery Method";
+			}
+			this.className = "valid";
+			return true;
+		}
+		//----------------------------------------------------------------//
+		// Validate Proposed Billing Details
+		//----------------------------------------------------------------//
+		
+		// Validate Direct Debit Bank Name
+		this.oForm.getInputs('text','DDR[BankName]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Account[BillingType]"]:checked').first();
+			if (oSelectedRadio && !/\S/.test(this.value))
+			{
+				this.className = "invalid";
+				return (oSelectedRadio.value == $CONSTANT.BILLING_TYPE_DIRECT_DEBIT) ? "Invalid Direct Debit Account BankName" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+
+		// Validate Direct Debit BSB Number
+		this.oForm.getInputs('text','DDR[BSB]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Account[BillingType]"]:checked').first();
+			if (oSelectedRadio && !/\S/.test(this.value))
+			{
+				this.className = "invalid";
+				return (oSelectedRadio.value == $CONSTANT.BILLING_TYPE_DIRECT_DEBIT) ? "Invalid Direct Debit Account BSB" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+
+		// Validate Direct Debit Account Number
+		this.oForm.getInputs('text','DDR[AccountNumber]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Account[BillingType]"]:checked').first();
+			if (oSelectedRadio && !/\S/.test(this.value))
+			{
+				this.className = "invalid";
+				return (oSelectedRadio.value == $CONSTANT.BILLING_TYPE_DIRECT_DEBIT) ? "Invalid Direct Debit Account Number" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+
+		// Validate Direct Debit Account Name
+		this.oForm.getInputs('text','DDR[AccountName]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Account[BillingType]"]:checked').first();
+			if (oSelectedRadio && !/\S/.test(this.value))
+			{
+				this.className = "invalid";
+				return (oSelectedRadio.value == $CONSTANT.BILLING_TYPE_DIRECT_DEBIT) ? "Invalid Direct Debit Account Name" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+		
+		
+		// Validate CC Name
+		this.oForm.getInputs('text','CC[Name]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Account[BillingType]"]:checked').first();
+			if (oSelectedRadio && !/\S/.test(this.value))
+			{
+				this.className = "invalid";
+				return (oSelectedRadio.value == $CONSTANT.BILLING_TYPE_CREDIT_CARD) ? "Invalid Direct Debit Credit Card Name" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+		
+		// Validate CC
+		this.oForm.select('select[name="CC[CardType]"]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Account[BillingType]"]:checked').first();
+			if (oSelectedRadio && !_validate.creditCardNumber($ID('CC[CardNumber]').value, this.value))
+			{	
+				this.className = "invalid";
+				$ID('CC[CardNumber]').className = "invalid";
+				return (oSelectedRadio.value == $CONSTANT.BILLING_TYPE_CREDIT_CARD) ? "Invalid Direct Debit Credit Card Card Type" : true;
+			}
+			this.className = "valid";
+			$ID('CC[CardNumber]').className = "valid";
+			return true;
+		}
+		this.oForm.getInputs('text','CC[CardNumber]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Account[BillingType]"]:checked').first();
+			if (oSelectedRadio && !_validate.creditCardNumber(this.value, $ID('CC[CardType]').value))
+			{
+				this.className = "invalid";
+				$ID('CC[CardType]').className = "invalid";
+				return (oSelectedRadio.value == $CONSTANT.BILLING_TYPE_CREDIT_CARD) ? "Invalid Direct Debit Credit Card Number" : true;
+			}
+			this.className = "valid";
+			$ID('CC[CardType]').className = "valid";
+			return true;
+		}
+
+		// Validate CC Expiry
+		this.oForm.select('select[name="CC[ExpMonth]"]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Account[BillingType]"]:checked').first();
+			if (oSelectedRadio && !CreditCardPayment.checkExpiry(this.value, $ID('CC[ExpYear]').value))
+			{			
+				this.className = "invalid";			
+				$ID('CC[ExpYear]').className = "invalid";
+				return (oSelectedRadio.value == $CONSTANT.BILLING_TYPE_CREDIT_CARD) ? "Invalid Direct Debit Credit Card Expiry Month" : true;
+			}
+			this.className = "valid";
+			$ID('CC[ExpYear]').className = "valid";
+			return true;
+		}
+		this.oForm.select('select[name="CC[ExpYear]"]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Account[BillingType]"]:checked').first();
+			if (oSelectedRadio && !CreditCardPayment.checkExpiry($ID('CC[ExpMonth]').value, this.value))
+			{			
+				this.className = "invalid";			
+				$ID('CC[ExpMonth]').className = "invalid";
+				return (oSelectedRadio.value == $CONSTANT.BILLING_TYPE_CREDIT_CARD) ? "Invalid Direct Debit Credit Card Expiry Year" : true;
+			}
+			this.className = "valid";
+			$ID('CC[ExpMonth]').className = "valid";
+			return true;
+		}
+		
+		// Validate CC CVV
+		this.oForm.getInputs('text','CC[CVV]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Account[BillingType]"]:checked').first();
+			if (oSelectedRadio && this.value.match (/^\d{3,4}$/) === null)
+			{
+				this.className = "invalid";
+				return (oSelectedRadio.value == $CONSTANT.BILLING_TYPE_CREDIT_CARD) ? "Invalid Direct Debit Credit Card CVV" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+
+
+		//----------------------------------------------------------------//
+		// Validate Proposed Primary Contact
+		//----------------------------------------------------------------//
+		this.oForm.select('select[name="Contact[Title]"]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+			if (oSelectedRadio && this.value.length == 0)
+			{			
+				this.className = "invalid";
+				return (oSelectedRadio.value != 1) ? "Invalid Contact Title Selected" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+		this.oForm.getInputs('text','Contact[FirstName]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+			if (oSelectedRadio && !/\S/.test(this.value))
+			{
+				this.className = "invalid";
+				return (oSelectedRadio.value != 1) ? "Invalid First Name" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+		this.oForm.getInputs('text','Contact[LastName]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+			if (oSelectedRadio && !/\S/.test(this.value))
+			{
+				this.className = "invalid";
+				return (oSelectedRadio.value != 1) ? "Invalid Last Name" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+		
+		
+		// Date of birth
+		this.oForm.select('select[name="Contact[DOB][Day]"]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+			if (oSelectedRadio && this.value.length == 0)
+			{			
+				this.className = "invalid";
+				return (oSelectedRadio.value != 1) ? "Invalid Date Of Birth Day" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+		this.oForm.select('select[name="Contact[DOB][Month]"]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+			if (oSelectedRadio && this.value.length == 0)
+			{			
+				this.className = "invalid";
+				return (oSelectedRadio.value != 1) ? "Invalid Date Of Birth Month" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+		this.oForm.select('select[name="Contact[DOB][Year]"]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+			if (oSelectedRadio && this.value.length == 0)
+			{
+				this.className = "invalid";
+				return (oSelectedRadio.value != 1) ? "Invalid Date Of Birth Year" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+		
+		// Job Title
+		this.oForm.getInputs('text','Contact[JobTitle]').first().validate = function ()
+		{
+			this.className = "valid";
+			return true;
+		}
+		
+		// Email
+		this.oForm.getInputs('text','Contact[Email]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+			if (oSelectedRadio && !_validate.email(this.value))
+			{
+				this.className = "invalid";
+				return (oSelectedRadio.value != 1) ? "Invalid Contact Email" : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+		
+		// Validate Phone
+		this.oForm.getInputs('text','Contact[Phone]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+			if (oSelectedRadio && oSelectedRadio.value != 1)
+			{
+				if (!_validate.fnnLandLine(this.value) && _validate.fnnMobile($ID('Contact[Mobile]').value) && this.value !== '')
+				{
+					this.className = "invalid";
+					return "Invalid Phone specified";
+				}
+				if (_validate.fnnLandLine(this.value) && $ID('Contact[Mobile]').value == '')
+				{
+					this.className = "valid";
+					$ID('Contact[Mobile]').className = "valid";
+					return true;
+				}
+				if (!_validate.fnnLandLine(this.value) && !_validate.fnnMobile($ID('Contact[Mobile]').value))
+				{
+					this.className = "invalid";
+					$ID('Contact[Mobile]').className = "invalid";
+					return "Invalid Phone specified";
+				}
+				this.className = "valid";
+				return true;
+			}
+			else
+			{						
+				if (!_validate.fnnLandLine(this.value) && _validate.fnnMobile($ID('Contact[Mobile]').value) && this.value !== '')
+				{
+					this.className = "invalid";
+					return true;
+				}
+				if (_validate.fnnLandLine(this.value) && $ID('Contact[Mobile]').value == '')
+				{
+					this.className = "valid";
+					$ID('Contact[Mobile]').className = "valid";
+					return true;
+				}
+				if (!_validate.fnnLandLine(this.value) && !_validate.fnnMobile($ID('Contact[Mobile]').value))
+				{
+					this.className = "invalid";
+					$ID('Contact[Mobile]').className = "invalid";
+					return true;
+				}
+				this.className = "valid";
+				return true;
+			}
+		}
+
+		// Validate Mobile
+		this.oForm.getInputs('text','Contact[Mobile]').first().validate = function ()
+		{
+
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+			if (oSelectedRadio && oSelectedRadio.value != 1)
+			{
+				if (!_validate.fnnMobile(this.value) && _validate.fnnLandLine($ID('Contact[Phone]').value) && this.value !== '')
+				{
+					this.className = "invalid";
+					return "Invalid Mobile specified";
+				}
+				if (_validate.fnnMobile(this.value) && $ID('Contact[Phone]').value == '')
+				{
+					this.className = "valid";
+					$ID('Contact[Phone]').className = "valid";
+					return true;
+				}
+				if (!_validate.fnnMobile(this.value) && !_validate.fnnLandLine($ID('Contact[Phone]').value))
+				{
+					this.className = "invalid";
+					$ID('Contact[Phone]').className = "invalid";
+					return "Invalid Mobile specified";
+				}
+				this.className = "valid";
+				return true;
+			}
+			else
+			{
+				if (!_validate.fnnMobile(this.value) && _validate.fnnLandLine($ID('Contact[Phone]').value) && this.value !== '')
+				{
+					this.className = "invalid";
+					return true;
+				}
+				if (_validate.fnnMobile(this.value) && $ID('Contact[Phone]').value == '')
+				{
+					this.className = "valid";
+					$ID('Contact[Phone]').className = "valid";
+					return true;
+				}
+				if (!_validate.fnnMobile(this.value) && !_validate.fnnLandLine($ID('Contact[Phone]').value))
+				{
+					this.className = "invalid";
+					$ID('Contact[Phone]').className = "invalid";
+					return true;
+				}
+				this.className = "valid";
+				return true;
+			}
+		}
+
+		this.oForm.getInputs('text','Contact[Fax]').first().validate = function ()
+		{
+			if (!_validate.fnnLandLine(this.value) && this.value != '')
+			{
+				this.className = "invalid";
+				return "Invalid Fax specified";
+			}
+			this.className = "valid";
+			return true;
+		}
+			
+		this.oForm.getInputs('text','Contact[Password]').first().validate = function ()
+		{
+			var	oSelectedRadio	= $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+			if (oSelectedRadio && this.value.length < Account_Create.DEFAULT_PASSWORD_LENGTH_REQUIREMENT)
+			{
+				this.className = "invalid";
+				return (oSelectedRadio.value != 1) ? 'Password must be at least ' + Account_Create.DEFAULT_PASSWORD_LENGTH_REQUIREMENT + ' characters long' : true;
+			}
+			this.className = "valid";
+			return true;
+		}
+
+
+		//----------------------------------------------------------------//
+		// Setup Event listeners
+		//----------------------------------------------------------------//
+		
 		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j; i++)
 		{
 			if (aInputs[i].validate)
@@ -136,7 +536,7 @@ Account_Create = Class.create
 				aInputs[i].observe('change', aInputs[i].validate.bind(aInputs[i]));
 			}
 		}
-		// Event listeners for Select Elements
+		
 		for (var aSelects = this.oForm.select('select'), i = 0, j = aSelects.length; i < j; i++)
 		{
 			if (aSelects[i].validate)
@@ -145,20 +545,20 @@ Account_Create = Class.create
 				aSelects[i].observe('change', aSelects[i].validate.bind(aSelects[i]));
 			}
 		}
+		
+		this._isValid();
 
 	},
 	
-	submit	: function()
+	
+	_isValid	: function()
 	{
-
 		
 		//----------------------------------------------------------------//
-		// Validate Proposed Account
+		// Run Event listeners
 		//----------------------------------------------------------------//
 		
 		var aErrors	= [];
-
-		// Run Event listeners for Input Elements
 		for (var aInputs = this.oForm.getInputs(), i = 0, j = aInputs.length; i < j; i++)
 		{
 			if (aInputs[i].validate)
@@ -170,7 +570,6 @@ Account_Create = Class.create
 				}
 			}
 		}
-		// Run Event listeners for Select Elements
 		for (var aSelects = this.oForm.select('select'), i = 0, j = aSelects.length; i < j; i++)
 		{
 			if (aSelects[i].validate)
@@ -186,180 +585,51 @@ Account_Create = Class.create
 
 		//----------------------------------------------------------------//
 		// Validate Proposed Primary Contact
+		//----------------------------------------------------------------//	
+		
+		var	intCheckContactUSE = $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+		if(intCheckContactUSE && intCheckContactUSE.value != 0)
+		{
+			if (isNaN($ID('Contact[Id]').value))
+			{
+				aErrors.push('Invalid Primary Contact Selected');
+			}
+		}
+	
 		//----------------------------------------------------------------//
-
-		var intFoundCheckedContactType = 0;
-		var intValidateExistingContact = null;
-		
-		if($ID('Contact[USE]'))
-		{
-			intValidateExistingContact = 0;
-			intFoundCheckedContactType = 1;
-		}
-		
-		for (var aSelect = this.oForm.select('input[type=radio][name="Contact[USE]"]'), i = 0, j = aSelect.length; i < j; i++)
-		{
-			if (aSelect[i].checked)
-			{
-				intFoundCheckedContactType = 1;
-				// Select an existing contact
-				if (aSelect[i].value == 1)
-				{
-					intValidateExistingContact = 1;
-					if (isNaN($ID('Contact[Id]').value))
-					{
-						aErrors.push('Invalid Primary Contact Selected');
-					}
-				}
-				if (aSelect[i].value == 0)
-				{
-					intValidateExistingContact = 0;
-				}
-			}
-			
-		}
-
-		if(intValidateExistingContact == 0)
-		{
-			if ($ID('Contact[Title]').value.length == 0)
-			{
-				aErrors.push('Invalid Contact Title Selected');
-			}
-			if (!/\S/.test($ID('Contact[FirstName]').value))
-			{
-				aErrors.push('Invalid First Name');
-			}
-			if (!/\S/.test($ID('Contact[LastName]').value))
-			{
-				aErrors.push('Invalid Last Name');
-			}
-			if (isNaN($ID('Contact[DOB][Day]').value))
-			{
-				aErrors.push('Invalid Date Of Birth Day');
-			}
-			if (isNaN($ID('Contact[DOB][Month]').value))
-			{
-				aErrors.push('Invalid Date Of Birth Month');
-			}
-			if (isNaN($ID('Contact[DOB][Year]').value))
-			{
-				aErrors.push('Invalid Date Of Birth Year');
-			}
-			if (!_validate.email($ID('Contact[Email]').value))
-			{
-				aErrors.push('Invalid Email Address');
-			}
-			if (!_validate.fnnLandLine($ID('Contact[Phone]').value) && !_validate.fnnMobile($ID('Contact[Mobile]').value))
-			{
-				aErrors.push('A valid phone number OR Mobile must be provided');
-			}
-			if ($ID('Contact[Password]').value.length < Account_Create.DEFAULT_PASSWORD_LENGTH_REQUIREMENT)
-			{
-				aErrors.push('Password must be at least ' + Account_Create.DEFAULT_PASSWORD_LENGTH_REQUIREMENT + ' characters long');
-			}
-		}
-
-		
+		// Check Radio Boxes
 		//----------------------------------------------------------------//
-		// Validate Proposed Billing Details
-		//----------------------------------------------------------------//
-
-		var intFoundCheckedBillingType = 0;
 		
-		for (var aSelect = this.oForm.select('input[type=radio][name="Account[BillingType]"]'), i = 0, j = aSelect.length; i < j; i++)
-		{
-			if (aSelect[i].checked)
-			{
-				// Invoice
-				if (aSelect[i].value == $CONSTANT.BILLING_TYPE_ACCOUNT)
-				{
-					intFoundCheckedBillingType = 1;	
-				}
-				// Direct Debit
-				if (aSelect[i].value == $CONSTANT.BILLING_TYPE_DIRECT_DEBIT)
-				{
-					intFoundCheckedBillingType = 1;	
-
-					if (!/\S/.test($ID('DDR[BankName]').value))
-					{
-						aErrors.push('Payment Method Error: BankName');
-					}
-					if (!/\S/.test($ID('DDR[BSB]').value))
-					{ 
-						aErrors.push('Payment Method Error: BSB');
-					}
-					if (!/\S/.test($ID('DDR[AccountNumber]').value))
-					{ 
-						aErrors.push('Payment Method Error: AccountNumber');
-					}
-					if (!/\S/.test($ID('DDR[AccountName]').value))
-					{ 
-						aErrors.push('Payment Method Error: AccountName');
-					}
-
-				}
-				// Credit Card
-				if (aSelect[i].value == $CONSTANT.BILLING_TYPE_CREDIT_CARD)
-				{
-					intFoundCheckedBillingType = 1;	
-					if (isNaN($ID('CC[CardType]').value))
-					{ 
-						aErrors.push('Payment Method Error: CardType');
-					}
-					if (!/\S/.test($ID('CC[Name]').value))
-					{ 
-						aErrors.push('Payment Method Error: Name');
-					}
-					if ($ID('CC[CVV]').value.match (/^\d{3,4}$/) === null)
-					{
-						aErrors.push('Payment Method Error: CVV');
-					}
-					if (!_validate.creditCardNumber($ID('CC[CardNumber]').value, $ID('CC[CardType]').value))
-					{
-						aErrors.push('Payment Method Error: CardNumber');
-					}
-					if (!CreditCardPayment.checkExpiry($ID('CC[ExpMonth]').value, $ID('CC[ExpYear]').value))
-					{
-						aErrors.push('Payment Method Error: Expiry Date Mismatch');
-					}
-				}
-			}
-		}
-		var intFoundCheckedDisableLatePayment = 0;
-		for (var aSelect = this.oForm.select('input[type=radio][name="Account[DisableLatePayment]"]'), i = 0, j = aSelect.length; i < j; i++)
-		{
-			if (aSelect[i].checked)
-			{
-				intFoundCheckedDisableLatePayment = 1;
-			}
-		}
-		
-		// Check Billing Type
-		if (intFoundCheckedBillingType == 0)
+		var	intCheckBillingType = $ID('account-create').select('input[type=radio][name="Account[BillingType]"]:checked').first();
+		if(!intCheckBillingType)
 		{
 			aErrors.push('Invalid Payment Method selected');
 		}
-		if (intFoundCheckedContactType == 0)
+		var	intCheckDisableLatePayment = $ID('account-create').select('input[type=radio][name="Account[DisableLatePayment]"]:checked').first();
+		if(!intCheckDisableLatePayment)
+		{
+			aErrors.push('No Late Payment option selected');
+		}		
+		var	intCheckContact = $ID('account-create').select('input[type=radio][name="Contact[USE]"]:checked').first();
+		if(!intCheckContact)
 		{
 			aErrors.push('Invalid Primary Contact Details');
 		}
-		if (intFoundCheckedDisableLatePayment == 0)
-		{
-			aErrors.push('No Late Payment option selected');
-		}
 		
-		// ABN, ACN Checking
-		if(!Reflex_Validation.abn($ID('Account[ABN]').value) && !Reflex_Validation.acn($ID('Account[ACN]').value))
-		{
-			aErrors.push('A valid ABN or ACN is required.');
-		}
+		return aErrors;
 		
+	},
+	
+	
+	submit	: function()
+	{
 
+		
 		//----------------------------------------------------------------//
-		// Fail
+		// Submits New Account
 		//----------------------------------------------------------------//
-
-		// When we fail to create an account, load the error popup
+		
+		var aErrors = this._isValid();
 		if (aErrors.length)
 		{
 			var sErrors	= 'Please check the following:\n\n';
@@ -370,13 +640,9 @@ Account_Create = Class.create
 			alert(sErrors);
 			return false;
 		}
-		
 
-		//----------------------------------------------------------------//
-		// Send Valid Response
-		//----------------------------------------------------------------//
-					
 		return true;
+	
 	},
 	
 
