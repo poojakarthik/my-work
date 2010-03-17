@@ -933,7 +933,7 @@ class Application_Handler_Invoice extends Application_Handler
 		$qQuery	= new Query();
 		
 		$sSQL	= "
-SELECT		a.id																											AS account_id,
+SELECT		a.Id																											AS account_id,
 			a.BusinessName																									AS account_name,
 			dm.name																											AS delivery_method,
 			CASE
@@ -1010,16 +1010,16 @@ WHERE		(
 									)
 					AND irt_last.const_name NOT IN ('INVOICE_RUN_TYPE_INTERIM', 'INVOICE_RUN_TYPE_FINAL')
 					AND	(
-							SELECT		c.Id
+							SELECT		COUNT(c.Id)
 							FROM		Charge c
 										JOIN InvoiceRun ir_charge ON (ir_charge.Id = c.invoice_run_id)
 										JOIN invoice_run_type irt_charge ON (ir_charge.invoice_run_type_id = irt_charge.id AND irt_charge.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
 							WHERE		c.Account = a.Id
 										AND c.ChargeType IN ('PCAD', 'PCAR')
 							LIMIT		1
-						) IS NULL
+						) = 0
 					AND	(
-							SELECT		stt.Records
+							SELECT		COUNT(stt.Id)
 							FROM		ServiceTypeTotal stt
 										JOIN InvoiceRun ir_cdr ON (ir_cdr.Id = stt.invoice_run_id)
 										JOIN invoice_run_type irt_cdr ON (ir_cdr.invoice_run_type_id = irt_cdr.id AND irt_cdr.const_name NOT IN ('INVOICE_RUN_TYPE_INTERNAL_SAMPLES', 'INVOICE_RUN_TYPE_SAMPLES'))
@@ -1028,8 +1028,8 @@ WHERE		(
 										AND rt.Code IN ('S&E')
 										AND stt.Records > 0
 							LIMIT		1
-						) IS NULL
-					AND (SELECT COUNT(Id) FROM Invoice WHERE Account = a.Id) <= 3
+						) = 0
+					AND (SELECT COUNT(Invoice.Id) FROM Invoice WHERE Invoice.Account = a.Id AND Status NOT IN (100)) <= 3
 				)
 			)
 			AND ss.const_name IN ('SERVICE_ACTIVE')
@@ -1045,9 +1045,10 @@ WHERE		(
 
 HAVING		next_invoice_date >= ADDDATE(CURDATE(), INTERVAL 7 DAY)
 			AND services_active > 0
+			
 
-ORDER BY	a.Id,
-			s.Id
+ORDER BY	account_id,
+			service_id
 ";
 		$rResult	= $qQuery->Execute($sSQL);
 		if ($rResult === false)
