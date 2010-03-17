@@ -9,7 +9,7 @@ class Application_Handler_Account extends Application_Handler
 	const DEFAULT_SESSION_EXPIRE				= '1970-01-01 00:00:00';
 	const DEFAULT_CONTACT_ARCHIVED				= 0;
 	const DEFAULT_VIP_STATUS					= 0;
-	const DEFAULT_PASSWORD_LENGTH_REQUIREMENT	= 8;
+	const DEFAULT_PASSWORD_LENGTH_REQUIREMENT	= 6;
 	
 
 	// Renders the page for Account Creation
