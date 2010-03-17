@@ -18,6 +18,7 @@ class Application_Handler_Account extends Application_Handler
 			
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		
 		try
 		{
 
