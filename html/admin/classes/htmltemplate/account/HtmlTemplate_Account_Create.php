@@ -24,7 +24,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		
 		echo "
 		<div class='page-reset'>
-		<form method='post' action='reflex.php/Account/Save/' id='account-create' name='account-create' onsubmit='return this.oAccountCreate.submit();'>\n";
+		<form method='post' autocomplete='off' action='reflex.php/Account/Save/' id='account-create' name='account-create' onsubmit='return this.oAccountCreate.submit();'>\n";
 
 		// Message Notice
 		if(array_key_exists("Associated", $_GET))
