@@ -639,12 +639,12 @@ Account_Create = Class.create({
 			oContainerDiv.style.padding			= '10px';
 
 			// Alert Title
-			var elmAlertTitle					= document.createElement('div');
-			elmAlertTitle.style.paddingTop		= '10px';
-			elmAlertTitle.style.paddingBottom	= '10px';
-			elmAlertTitle.style.fontSize		= '1.4em';
-			elmAlertTitle.innerHTML				= 'Please check the following:';
-			oContainerDiv.appendChild(elmAlertTitle);
+			var eAlertTitle						= document.createElement('div');
+			eAlertTitle.style.paddingTop		= '10px';
+			eAlertTitle.style.paddingBottom		= '10px';
+			eAlertTitle.style.fontSize			= '1.4em';
+			eAlertTitle.innerHTML				= 'Please check the following:';
+			oContainerDiv.appendChild(eAlertTitle);
 
 			for (var i = 0, j = aErrors.length; i < j; i++)
 			{
