@@ -10,7 +10,7 @@ Reflex_Template._createElement	= function(sTag)
 	
 	for (var i = 1, l = arguments.length; i < l; i++)
 	{
-		if (i == 1 && typeof arguments[i] === 'object')
+		if (i == 1 && typeof arguments[i] === 'object' && !arguments[i].nodeType)
 		{
 			// Attribute Definition
 			for (sAttributeName in arguments[i])
@@ -20,11 +20,17 @@ Reflex_Template._createElement	= function(sTag)
 		}
 		else if (typeof arguments[i] === 'function')
 		{
-			// Child Element
+			// Child Element Generator Function
 			oElement.appendChild(arguments[i]());
+		}
+		else if (arguments[i].nodeType)
+		{
+			// Child Element
+			oElement.appendChild(arguments[i]);
 		}
 		else
 		{
+			//alert(typeof arguments[i]);
 			// Text Node
 			oElement.appendChild(document.createTextNode(String(arguments[i]).escapeHTML()));
 		}
@@ -38,7 +44,7 @@ Reflex_Template._createElement	= function(sTag)
 Reflex_Template._aTags	= ['a','abbr','acronym','address','area','b','base','bdo','big','blockquote','body','br','button','caption','cite','code','col','colgroup','dd','del','dfn','div','dl','dt','em','fieldset','form','frame','frameset','h1','head','hr','html','i','iframe','img','input','ins','kbd','label','legend','li','link','map','meta','noframes','noscript','object','ol','optgroup','option','p','param','pre','q','samp','script','select','small','span','strong','style','sub','sup','table','tbody','td','textarea','tfoot','th','thead','title','tr','tt','ul','var'];
 for (var i = 0, l = Reflex_Template._aTags.length; i < l; i++)
 {
-	Reflex_Template.[Reflex_Template._aTags[i]]	=	Reflex_Template._createElement.curry(Reflex_Template._aTags[i]);
+	Reflex_Template[Reflex_Template._aTags[i]]	=	Reflex_Template._createElement.curry(Reflex_Template._aTags[i]);
 }
 
 // Try to create a shortcut with $T
