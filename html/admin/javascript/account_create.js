@@ -4,8 +4,8 @@ Account_Create = Class.create({
 	
 	initialize	: function(oForm)
 	{
-
-		
+	
+	
 		//----------------------------------------------------------------//
 		// Load Constants
 		//----------------------------------------------------------------//
@@ -516,7 +516,7 @@ Account_Create = Class.create({
 			if (oSelectedRadio && this.value.length < Account_Create.DEFAULT_PASSWORD_LENGTH_REQUIREMENT)
 			{
 				this.className = "invalid";
-				return (oSelectedRadio.value != 1) ? 'Password must be at least ' + Account_Create.DEFAULT_PASSWORD_LENGTH_REQUIREMENT + ' characters long' : true;
+				return (oSelectedRadio.value != 1) ? 'Invalid Password, minimum ' + Account_Create.DEFAULT_PASSWORD_LENGTH_REQUIREMENT + ' characters' : true;
 			}
 			this.className = "valid";
 			return true;
@@ -546,6 +546,7 @@ Account_Create = Class.create({
 		}
 		
 		this._isValid();
+		
 
 	},
 	
@@ -628,14 +629,44 @@ Account_Create = Class.create({
 		//----------------------------------------------------------------//
 		
 		var aErrors = this._isValid();
+		
 		if (aErrors.length)
 		{
-			var sErrors	= 'Please check the following:\n\n';
+			
+			// Alert Container
+			var oContainerDiv					= document.createElement('div');
+			oContainerDiv.className				= 'GroupedContent';
+			oContainerDiv.style.padding			= '10px';
+
+			// Alert Title
+			var elmAlertTitle					= document.createElement('div');
+			elmAlertTitle.style.paddingTop		= '10px';
+			elmAlertTitle.style.paddingBottom	= '10px';
+			elmAlertTitle.style.fontSize		= '1.4em';
+			elmAlertTitle.innerHTML				= 'Please check the following:';
+			oContainerDiv.appendChild(elmAlertTitle);
+
 			for (var i = 0, j = aErrors.length; i < j; i++)
 			{
-				sErrors	+= "- " + aErrors[i] + "\n";
+				// Errors
+				var eErrorDiv					= document.createElement('div');
+				eErrorDiv.innerHTML				= aErrors[i];
+				oContainerDiv.appendChild(eErrorDiv);
 			}
-			alert(sErrors);
+			
+			// Popup
+			var oPopup = new Reflex_Popup(40);
+			oPopup.setTitle("Error");
+			oPopup.addCloseButton();
+			oPopup.setIcon("../admin/img/template/user_edit.png");
+			oPopup.setContent(oContainerDiv);
+			oPopup.domCloseButton = document.createElement('button');
+			oPopup.domCloseButton.style.width = '60px';
+			oPopup.domCloseButton.innerHTML = "OK";
+			oPopup.domCloseButton.observe('click', oPopup.hide.bind(oPopup));
+			oPopup.setFooterButtons([oPopup.domCloseButton], true);
+			oPopup.display();
+
 			return false;
 		}
 
@@ -643,7 +674,6 @@ Account_Create = Class.create({
 	
 	},
 	
-
 	_onConstantLoad : function ()
 	{
 		this.bConstantsLoaded = true;
