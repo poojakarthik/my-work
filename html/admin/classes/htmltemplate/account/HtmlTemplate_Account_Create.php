@@ -457,7 +457,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 				<tr>
 					<th colspan='2'>
 						<input type='submit' class='normal-button' name='Add_Account_Submit' value='Save' class='reflex-button' />
-						<input type='submit' class='normal-button' name='Add_Account_Cancel' value='Cancel' class='reflex-button' />
+						<input onclick=document.location='" . $this->mxdDataToRender['strCancelURI'] . "' type='button' class='normal-button' name='Add_Account_Cancel' value='Cancel'/>
 					</th>
 				</tr>
 			</tfoot>

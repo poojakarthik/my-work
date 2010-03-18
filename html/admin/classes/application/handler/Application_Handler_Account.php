@@ -32,7 +32,7 @@ class Application_Handler_Account extends Application_Handler
 			$arrDetailsToRender['arrDeliveryMethods']		= Delivery_Method::getAccountSettingOptions();
 			$arrDetailsToRender['arrCreditCardTypes']		= Credit_Card_Type::listAll();
 			$arrDetailsToRender['arrContactTitles']			= Contact_Title::getAll();
-			
+			$arrDetailsToRender['strCancelURI']				= (array_key_exists("Associated", $_GET)) ? MenuItems::AccountOverview(htmlspecialchars($_GET['Associated'])) : MenuItems::NEW_FRAMEWORK;
 			//----------------------------------------------------------------//
 			// Retrieve Associated Accounts
 			//----------------------------------------------------------------//
