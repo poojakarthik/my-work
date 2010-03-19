@@ -633,26 +633,28 @@ Account_Create = Class.create({
 		if (aErrors.length)
 		{
 			
-			// Alert Container
+			// Popup Container
 			var oContainerDiv					= document.createElement('div');
-			oContainerDiv.className				= 'GroupedContent';
-			oContainerDiv.style.padding			= '10px';
+			oContainerDiv.setAttribute('id','PopupPageBody');
 
 			// Alert Title
 			var eAlertTitle						= document.createElement('div');
-			eAlertTitle.style.paddingTop		= '10px';
-			eAlertTitle.style.paddingBottom		= '10px';
-			eAlertTitle.style.fontSize			= '1.4em';
+			eAlertTitle.className				= 'MsgNotice'
 			eAlertTitle.innerHTML				= 'Please check the following:';
 			oContainerDiv.appendChild(eAlertTitle);
+
+			// Error Container
+			var eAlertContainer					= document.createElement('div');
+			eAlertContainer.className			= 'GroupedErrorContent';
 
 			for (var i = 0, j = aErrors.length; i < j; i++)
 			{
 				// Errors
 				var eErrorDiv					= document.createElement('div');
 				eErrorDiv.innerHTML				= aErrors[i];
-				oContainerDiv.appendChild(eErrorDiv);
+				eAlertContainer.appendChild(eErrorDiv);
 			}
+			oContainerDiv.appendChild(eAlertContainer);
 			
 			// Popup
 			var oPopup = new Reflex_Popup(40);
@@ -664,7 +666,7 @@ Account_Create = Class.create({
 			oPopup.domCloseButton.style.width = '60px';
 			oPopup.domCloseButton.innerHTML = "OK";
 			oPopup.domCloseButton.observe('click', oPopup.hide.bind(oPopup));
-			oPopup.setFooterButtons([oPopup.domCloseButton], true);
+			oPopup.setFooterButtons([oPopup.domCloseButton], false);
 			oPopup.display();
 
 			return false;

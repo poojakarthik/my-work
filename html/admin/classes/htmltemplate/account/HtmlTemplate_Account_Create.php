@@ -15,6 +15,7 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 		$this->LoadJavascript("account_create");
 		$this->LoadJavascript("credit_card_payment");
 		$this->LoadJavascript("sp/validation");
+		$this->LoadJavascript("reflex_template");
 	}
 
 	public function Render()

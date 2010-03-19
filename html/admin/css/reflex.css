@@ -260,6 +260,17 @@ div.GroupedContent {
 	border: .1em solid #D1D1D1;
 }
 
+div.GroupedErrorContent
+{
+	clear				: both;
+	position			: relative;
+	margin				: .25em;
+	padding				: .1em;
+	border				: .1em solid #D1D1D1;
+	padding				: 5px;
+	background-color	: #ECEEF2;
+}
+
 table tr.Even {
 	background-color: #eee;
 }
