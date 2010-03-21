@@ -3631,7 +3631,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 	SELECT	{$strEffectiveDate} AS effective_date
 ) config
 JOIN InvoiceRun ir_barring ON (1)
-JOIN invoice_run_type irt_barring ON (irt_barring.id = ir_barring.invoice_run_type_id AND irt_barring.const_name = 'INVOICE_RUN_TYPE_LIVE')
+JOIN invoice_run_type irt_barring ON (irt_barring.id = ir_barring.invoice_run_type_id AND irt_barring.const_name IN ('INVOICE_RUN_TYPE_LIVE', 'INVOICE_RUN_TYPE_FINAL', 'INVOICE_RUN_TYPE_INTERIM'))
 JOIN invoice_run_status irs_barring ON (irs_barring.id = ir_barring.invoice_run_status_id AND irs_barring.const_name = 'INVOICE_RUN_STATUS_COMMITTED')
 JOIN Invoice i_barring ON (i_barring.invoice_run_id = ir_barring.Id AND ir_barring.Id)
 JOIN Account a ON (a.Id = i_barring.Account AND (a.LatePaymentAmnesty IS NULL OR a.LatePaymentAmnesty < config.effective_date) AND vip = 0 AND tio_reference_number IS NULL)
@@ -3643,7 +3643,7 @@ JOIN payment_terms pt ON (pt.id = (SELECT id FROM payment_terms WHERE customer_g
 
 JOIN Invoice i_overdue ON (i_overdue.Account = a.Id AND i_overdue.Status NOT IN (100, 106))
 JOIN InvoiceRun ir_overdue ON (i_overdue.invoice_run_id = ir_overdue.Id)
-JOIN invoice_run_type irt_overdue ON (irt_overdue.id = ir_overdue.invoice_run_type_id AND irt_overdue.const_name = 'INVOICE_RUN_TYPE_LIVE')
+JOIN invoice_run_type irt_overdue ON (irt_overdue.id = ir_overdue.invoice_run_type_id AND irt_overdue.const_name IN ('INVOICE_RUN_TYPE_LIVE', 'INVOICE_RUN_TYPE_FINAL', 'INVOICE_RUN_TYPE_INTERIM'))
 JOIN invoice_run_status irs_overdue ON (irs_overdue.id = ir_overdue.invoice_run_status_id AND irs_overdue.const_name = 'INVOICE_RUN_STATUS_COMMITTED')";
 
 $strWhere	= "
@@ -3997,7 +3997,7 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 	SELECT	{$strEffectiveDate} AS effective_date
 ) config
 JOIN InvoiceRun ir_latepayment ON (1)
-JOIN invoice_run_type irt_latepayment ON (irt_latepayment.id = ir_latepayment.invoice_run_type_id AND irt_latepayment.const_name = 'INVOICE_RUN_TYPE_LIVE')
+JOIN invoice_run_type irt_latepayment ON (irt_latepayment.id = ir_latepayment.invoice_run_type_id AND irt_latepayment.const_name IN ('INVOICE_RUN_TYPE_LIVE', 'INVOICE_RUN_TYPE_FINAL', 'INVOICE_RUN_TYPE_INTERIM'))
 JOIN invoice_run_status irs_latepayment ON (irs_latepayment.id = ir_latepayment.invoice_run_status_id AND irs_latepayment.const_name = 'INVOICE_RUN_STATUS_COMMITTED')
 JOIN Invoice i_latepayment ON (i_latepayment.invoice_run_id = ir_latepayment.Id AND ir_latepayment.Id)
 JOIN Account a ON (a.Id = i_latepayment.Account AND (a.LatePaymentAmnesty IS NULL OR a.LatePaymentAmnesty < config.effective_date) AND vip = 0 AND tio_reference_number IS NULL)
@@ -4009,7 +4009,7 @@ JOIN payment_terms pt ON (pt.id = (SELECT id FROM payment_terms WHERE customer_g
 
 JOIN Invoice i_overdue ON (i_overdue.Account = a.Id AND i_overdue.Status NOT IN (100, 106))
 JOIN InvoiceRun ir_overdue ON (i_overdue.invoice_run_id = ir_overdue.Id)
-JOIN invoice_run_type irt_overdue ON (irt_overdue.id = ir_overdue.invoice_run_type_id AND irt_overdue.const_name = 'INVOICE_RUN_TYPE_LIVE')
+JOIN invoice_run_type irt_overdue ON (irt_overdue.id = ir_overdue.invoice_run_type_id AND irt_overdue.const_name IN ('INVOICE_RUN_TYPE_LIVE', 'INVOICE_RUN_TYPE_FINAL', 'INVOICE_RUN_TYPE_INTERIM'))
 JOIN invoice_run_status irs_overdue ON (irs_overdue.id = ir_overdue.invoice_run_status_id AND irs_overdue.const_name = 'INVOICE_RUN_STATUS_COMMITTED')";
 
 $strWhere	= "
