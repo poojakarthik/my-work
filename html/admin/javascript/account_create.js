@@ -633,13 +633,16 @@ Account_Create = Class.create({
 		if (aErrors.length)
 		{
 	
-			var oErrorTemplate = $T.div({id: 'PopupPageBody'},
+			var oErrorTemplate =	$T.div({id: 'PopupPageBody'},
+											$T.div(
+													{class: 'MsgNotice'}, 
+													'Please check the following:'
+											),
+											$T.div(
+													{class: 'account-create-errors'}
+											)
+									);
 			
-					$T.div({class: 'MsgNotice'}, 'Please check the following:'),
-			
-					$T.div({class: 'account-create-errors'})
-			        
-			);
 			var oAccountCreateErrors = oErrorTemplate.select('.account-create-errors').first();
 			
 			for (var i = 0, j = aErrors.length; i < j; i++)
@@ -656,7 +659,7 @@ Account_Create = Class.create({
 			oPopup.domCloseButton.style.width = '60px';
 			oPopup.domCloseButton.innerHTML = "OK";
 			oPopup.domCloseButton.observe('click', oPopup.hide.bind(oPopup));
-			oPopup.setFooterButtons([oPopup.domCloseButton], false);
+			oPopup.setFooterButtons([oPopup.domCloseButton], true);
 			oPopup.display();
 
 			return false;
