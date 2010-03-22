@@ -48,5 +48,58 @@ class JSON_Handler_Account extends JSON_Handler
 						);
 		}
 	}
+	
+	public function getPaymentMethods($iAccountId)
+	{
+		try
+		{
+
+			$aResult		= array();
+			
+			/*
+			 *
+			 * TODO: 
+			 * Need to retrieve CreditCards and DirectDebits
+			 * Merge into single array and return back to javascript
+			 * 
+			 */
+			 
+			$oAccountGroup  	= Account_Group::getForAccountId($iAccountId);
+			if(!$oAccountGroup)
+			{
+				throw new Exception('Invalid Account Id');
+			}
+			
+			
+			$qryQuery		= new Query();
+			$resCreditCards	= $qryQuery->Execute("
+			SELECT *
+			FROM CreditCard
+			WHERE AccountGroup={$oAccountGroup->id} AND Archived = 0;");
+			
+			while ($arrCreditCard = $resCreditCards->fetch_assoc())
+			{
+				$aResult[]	= $arrCreditCard;
+
+				/*
+				$aResult['credit_cards'][][]	= "";
+				*/
+			}
+			
+			return array(
+							"Success"		=> true,
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
+							"arrPaymentMethods"	=> $aResult,
+						);
+		}
+		catch (Exception $e)
+		{
+			return array(
+							"Success"		=> false,
+							"ErrorMessage"	=> 'ERROR: '.$e->getMessage(),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+	}
 }
 ?>

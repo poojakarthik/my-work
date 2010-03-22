@@ -3,27 +3,35 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 	
 	initialize	: function($super, iAccountId)
 	{
-		// Popup Settings
-		$super(60);
-		this.setTitle("Change Payment Method");
-		this.addCloseButton();
-		this.setIcon("../admin/img/template/user_edit.png");
+		// Explicitly include the JS file "Reflex_Template.js"
+	
+		//----------------------------------------------------------------//
+		// Retrieve Data required to build the page
+		//----------------------------------------------------------------//
 		
-		// Set Content
-		this.setContent('Test: '+iAccountId);
+		Vixen.Popup.ShowPageLoadingSplash("Please Wait", null, null, null, 0);
+	
+		// (jQuery.json.jsonFunction(this.displayPopupReturnHandler.bind(this), alert('fail'), 'Account', 'getPaymentMethods'))(iAccountId);
+		this._getPaymentMethods			= jQuery.json.jsonFunction(this.displayPopupReturnHandler.bind(this), null, 'Account', 'getPaymentMethods');
+		this._getPaymentMethods(iAccountId);
 		
-		// Setup Buttons
-		this.domChangePaymentMethodButton				= document.createElement('button');
-		this.domChangePaymentMethodButton.innerHTML		= "Change Payment Method";
-		this.domCancelButton							= document.createElement('button');
-		this.domCancelButton.innerHTML					= "Cancel";
-		this.setFooterButtons([this.domChangePaymentMethodButton, this.domCancelButton], false);
+	},
+	
+	displayPopupReturnHandler	: function(response)
+	{
+				
+		Vixen.Popup.ClosePageLoadingSplash();
 		
-		// Display Popup
-		this.display();
-		
-		
-		this._addEventListeners();
+		if (response.success && response.success == true)
+		{
+
+
+		}
+
+		else
+		{
+
+		}
 		
 	},
 	
