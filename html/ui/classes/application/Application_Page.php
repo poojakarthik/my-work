@@ -157,6 +157,7 @@ class Application_Page extends Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex_constant.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
 		// TODO: Add a non-vixen login handler to flex.js for when the session has timed out
 
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
@@ -165,7 +166,7 @@ class Application_Page extends Page
 		}
 
 		// Remove any duplicates from the list, as well as files that have already been referenced
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "sha1", "reflex", "reflex_fx", "reflex_fx_morph", "reflex_fx_shift", "reflex_popup", "flex_constant"));
+		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "sha1", "reflex", "reflex_fx", "reflex_fx_morph", "reflex_fx_shift", "reflex_popup", "flex_constant", "reflex_template"));
 		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
 
 		$arrRemainingJsFilesToInclude = array();

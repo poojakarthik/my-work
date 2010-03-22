@@ -286,6 +286,7 @@ class Page
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/flex_constant.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_debug.js' ></script>\n";
 		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/date.js' ></script>\n";
+		echo "\t\t<script type='text/javascript' src='{$strFrameworkDir}javascript/reflex_template.js' ></script>\n";
 		
 		// Include reference to all other javascript files required of the page
 		if (!array_key_exists('*arrJavaScript', $GLOBALS) || !is_array($GLOBALS['*arrJavaScript']))
@@ -294,7 +295,7 @@ class Page
 		}
 
 		$arrRemainingJsFiles	= array_unique($GLOBALS['*arrJavaScript']);
-		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant", "sha1", "reflex", "reflex_fx", "reflex_fx_morph", "reflex_fx_shift", "reflex_popup"));
+		$arrStandardJsFiles		= array_merge($arrStandardJsFiles, array("prototype", "jquery", "json", "flex", "flex_constant", "sha1", "reflex", "reflex_fx", "reflex_fx_morph", "reflex_fx_shift", "reflex_popup", "reflex_template"));
 
 		$arrRemainingJsFilesToInclude = array();
 		foreach ($arrRemainingJsFiles as $strFile)
