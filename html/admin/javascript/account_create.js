@@ -637,7 +637,7 @@ Account_Create = Class.create({
 			
 					$T.div({class: 'MsgNotice'}, 'Please check the following:'),
 			
-					$T.div({class: 'account-create-errors'}, 'test')
+					$T.div({class: 'account-create-errors'})
 			        
 			);
 			var oAccountCreateErrors = oErrorTemplate.select('.account-create-errors').first();
