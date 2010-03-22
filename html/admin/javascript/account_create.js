@@ -632,36 +632,26 @@ Account_Create = Class.create({
 		
 		if (aErrors.length)
 		{
+	
+			var oErrorTemplate = $T.div({id: 'PopupPageBody'},
 			
-			// Popup Container
-			var oContainerDiv					= document.createElement('div');
-			oContainerDiv.setAttribute('id','PopupPageBody');
-
-			// Alert Title
-			var eAlertTitle						= document.createElement('div');
-			eAlertTitle.className				= 'MsgNotice'
-			eAlertTitle.innerHTML				= 'Please check the following:';
-			oContainerDiv.appendChild(eAlertTitle);
-
-			// Error Container
-			var eAlertContainer					= document.createElement('div');
-			eAlertContainer.className			= 'GroupedErrorContent';
-
+					$T.div({class: 'MsgNotice'}, 'Please check the following:'),
+			
+					$T.div({class: 'account-create-errors'}, 'test')
+			        
+			);
+			var oAccountCreateErrors = oErrorTemplate.select('.account-create-errors').first();
+			
 			for (var i = 0, j = aErrors.length; i < j; i++)
 			{
-				// Errors
-				var eErrorDiv					= document.createElement('div');
-				eErrorDiv.innerHTML				= aErrors[i];
-				eAlertContainer.appendChild(eErrorDiv);
+				oAccountCreateErrors.appendChild($T.div(aErrors[i]));
 			}
-			oContainerDiv.appendChild(eAlertContainer);
-			
-			// Popup
+						
 			var oPopup = new Reflex_Popup(40);
 			oPopup.setTitle("Error");
 			oPopup.addCloseButton();
 			oPopup.setIcon("../admin/img/template/user_edit.png");
-			oPopup.setContent(oContainerDiv);
+			oPopup.setContent(oErrorTemplate);
 			oPopup.domCloseButton = document.createElement('button');
 			oPopup.domCloseButton.style.width = '60px';
 			oPopup.domCloseButton.innerHTML = "OK";
