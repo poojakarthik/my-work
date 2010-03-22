@@ -656,7 +656,8 @@ Account_Create = Class.create({
 			oPopup.setIcon("../admin/img/template/user_edit.png");
 			oPopup.setContent(oErrorTemplate);
 			oPopup.domCloseButton = document.createElement('button');
-			oPopup.domCloseButton.style.width = '60px';
+			oPopup.domCloseButton.style.setProperty('padding-left', '20px', 'important');
+			oPopup.domCloseButton.style.setProperty('padding-right', '20px', 'important');
 			oPopup.domCloseButton.innerHTML = "OK";
 			oPopup.domCloseButton.observe('click', oPopup.hide.bind(oPopup));
 			oPopup.setFooterButtons([oPopup.domCloseButton], true);
