@@ -2601,6 +2601,11 @@ ol.cost-centre-list > li.alt
 	background-color	: #fff;
 }
 
+table.cost-centre-list > td
+{
+	padding: 0px;
+}
+
 li.cost-centre-name
 {
 	width			: 75%; 
