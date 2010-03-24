@@ -112,25 +112,22 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		if (isNaN(mCostCentre))
 		{
-			alert('li gggggggggggggggggggv');
 			oLiCostCentre = mCostCentre;
 		}
 		else 
 		{
-			alert('id given');
 			oLiCostCentre = this.aLiMap[mCostCentre];
 		}
 		
 		// Hide/show the relevant elements
 		if (oLiCostCentre)
 		{
-			alert(oLiCostCentre);
 			var oSpan 			= oLiCostCentre.select('ul > li > span').first();
 			var oText 			= oLiCostCentre.select('ul > li > input').first();
 			var oEditButton 	= oLiCostCentre.select('ul > li > button.popup-cost-centre-edit').first();
 			var oSaveButton 	= oLiCostCentre.select('ul > li > button.popup-cost-centre-save').first();
 			var oCancelButton 	= oLiCostCentre.select('ul > li > button.popup-cost-centre-cancel').first();
-			
+			debugger;
 			if (bInEditMode)
 			{
 				// In edit mode, show the text box and the save & cancel buttons
