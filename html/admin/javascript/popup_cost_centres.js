@@ -9,7 +9,15 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// Make AJAX request to get cost centres
 		// TODO
-		this._buildUI({});
+		
+		var aDummy = [];
+		aDummy.push({id: 1, name: 'Cost centre 1'});
+		aDummy.push({id: 2, name: 'Cost centre 2'});
+		aDummy.push({id: 3, name: 'Cost centre 3'});
+		aDummy.push({id: 4, name: 'Cost centre 4'});
+		aDummy.push({id: 5, name: 'Cost centre 5'});
+		
+		this._buildUI(aDummy);
 	},
 
 	_buildUI	: function(oResponse)
@@ -36,7 +44,12 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		this.oMainUL 	= oContent.select('ul').first();
 		
 		// Add all cost centres from response
-		// TODO
+		var aCostCentres = oResponse;
+		
+		for (var i = 0; i < aCostCentres.length; i++)
+		{
+			this._addCostCentre(aCostCentres[i].id, aCostCentres[i].name);
+		}
 		
 		// Set the add buttons event handler
 		var oAddButton	= oContent.select( 'button' ).first();
@@ -51,7 +64,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	
 	_addCostCentre	: function(iId, sName, bInEditMode)
 	{
-		var sLiStyle	= 'display:inline; list-style-type:none;';
+		var sLiStyle = 'display:inline; list-style-type:none;';
 		
 		// Attach the new LI to the main UL
 		var oNewLi = $T.li(
