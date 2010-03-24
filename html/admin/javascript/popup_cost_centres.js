@@ -40,14 +40,14 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.thead(
 										$T.tr(
 												$T.th(
-													'&nbsp;'
+													//'&nbsp;'
 												)
 										)
 									),
-									$T.thead(
+									$T.tfoot(
 										$T.tr(
 												$T.th(
-													'&nbsp;'
+													//'&nbsp;'
 												)
 										)
 									),
