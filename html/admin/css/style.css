@@ -2600,6 +2600,16 @@ li.cost-centre-name
 	width	: 75%; 	
 }
 
+li.cost-centre-name > span
+{
+	padding-left	: 2%;
+}
+
+li.cost-centre-name > input
+{
+	width	: 72%;
+}
+
 li.cost-centre-buttons
 {
 	width	: 25%; 	
