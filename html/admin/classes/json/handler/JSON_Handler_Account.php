@@ -130,18 +130,23 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 	
-	public function saveCostCentre($iId, $sName)
+	public function saveCostCentre($iAccountId, $iId, $sName)
 	{
 		try
 		{
 			// If iId is given, get the cost centre for the id and update, otherwise create a new cost centre
 			if (is_numeric($iId))
 			{
+				// Update existing cost centre
 				$oCostCentre = Cost_Centre::getForId($iId);
 			} 
 			else 
 			{
-				$oCostCentre = new Cost_Centre();
+				// New Cost centre required
+				$oAccountGroup 				= Account_Group::getForAccountId($iAccountId);
+				$oCostCentre 				= new Cost_Centre();
+				$oCostCentre->AccountGroup	= $oAccountGroup->Id;
+				$oCostCentre->Account 		= $iAccountId;
 			}
 			
 			$oCostCentre->Name = $sName;
