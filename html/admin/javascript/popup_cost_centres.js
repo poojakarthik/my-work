@@ -38,6 +38,10 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 							);
 		this.oMainUL 	= oContent.select('ul').first();
 		
+		// Set the add buttons event handler
+		var oAddButton	= oContent.select( 'button' ).first();
+		oAddButton.observe('click', this._addCostCentre.bind(this, null, '', true));
+			
 		// Add all cost centres from response
 		var aCostCentres = oResponse;
 		
@@ -45,10 +49,6 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		{
 			this._addCostCentre(aCostCentres[i].id, aCostCentres[i].name);
 		}
-		
-		// Set the add buttons event handler
-		var oAddButton	= oContent.select( 'button' ).first();
-		oAddButton.observe('click', this._addCostCentre.bind(this, null, '', true));
 		
 		this.setTitle('Manage Cost Centres');
 		//this.setIcon()
