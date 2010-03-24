@@ -54,38 +54,36 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		var sLiStyle	= 'display:inline; list-style-type:none;';
 		
 		// Attach the new LI to the main UL
-		this.oMainUL.appendChild(
-			$T.li(
-				$T.ul(
-					$T.li(
-						{style: sLiStyle},
-						$T.span(
-							sName
-						),
-						$T.input(
-								{type: 'text', style: 'display: none', value: sName}
-						)
-					),
-					$T.li(
-						{style: sLiStyle},
-						$T.button(
-							{class: 'popup-cost-centre-edit'},
-							'Edit'
-						),
-						$T.button(
-							{style: 'display: none', class: 'popup-cost-centre-save'},
-							'Save'
-						),
-						$T.button(
-							{style: 'display: none', class: 'popup-cost-centre-cancel'},
-							'Cancel'
-						)
-					)
-				)
-		 	)
-		);
+		var oNewLi = $T.li(
+						$T.ul(
+								$T.li(
+									{style: sLiStyle},
+									$T.span(
+										sName
+									),
+									$T.input(
+											{type: 'text', style: 'display: none', value: sName}
+									)
+								),
+								$T.li(
+									{style: sLiStyle},
+									$T.button(
+										{class: 'popup-cost-centre-edit'},
+										'Edit'
+									),
+									$T.button(
+										{style: 'display: none', class: 'popup-cost-centre-save'},
+										'Save'
+									),
+									$T.button(
+										{style: 'display: none', class: 'popup-cost-centre-cancel'},
+										'Cancel'
+									)
+								)
+							)
+					 	);
+		this.oMainUL.appendChild(oNewLi);
 		
-		var oNewLi = this.oMainUL.select('li').last();
 		var mCostCentre = (iId != null ? iId : oNewLi);
 		
 		// Bind events to the buttons (edit, save & cancel)
