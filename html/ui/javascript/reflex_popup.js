@@ -70,23 +70,47 @@ Object.extend(Reflex_Popup, {
 		}
 	},
 	
-	alert	: function(domElement, iWidth)
+	alert	: function(mContent, oConfig)
 	{
-		var oPopup	= new Reflex_Popup(iWidth ? iWidth : 80);
+		// Config Defaults
+		oConfig	 				= (typeof oConfig !== 'undefined') 		? oConfig 					: {} );
+		oConfig.sTitle 			= oConfig.sTitle 						? oConfig.sTitle 			: Reflex_Popup.DEFAULT_ALERT_TITLE;
+		oConfig.iWidth 			= (parseInt(oConfig.iWidth)) 			? oConfig.iWidth			: Reflex_Popup.DEFAULT_ALERT_WIDTH;
+		oConfig.sButtonLabel 	= oConfig.sButtonLabel 					? oConfig.sButtonLabel		: Reflex_Popup.DEFAULT_ALERT_BUTTON_LABEL;
+		oConfig.fnOnClose 		= typeof oConfig.fnClose === 'function' ? oConfig.fnClose 			: null;
+		oConfig.sIconSource 	= oConfig.sIconSource 					? oConfig.sIconSource 		: Reflex_Popup.DEFAULT_ALERT_ICON_SOURCE;
 		
-		oPopup.setTitle('Developer Debug');
+		var oPopup	= new Reflex_Popup(oConfig.iWidth);
+		
+		oPopup.setTitle(oConfig.iWidth);
+		oPopup.setIcon(oConfig.sIconSrc);
 		oPopup.addCloseButton();
+			
+		var oCloseButton = 	$T.button(
+								oConfig.sButtonLabel.escapeHTML()
+							);
 		
-		var domCloseButton			= document.createElement('button');
-		domCloseButton.innerHTML	= '&nbsp;&nbsp;&nbsp;OK&nbsp;&nbsp;&nbsp;';
-		domCloseButton.addEventListener('click', oPopup.hide.bind(oPopup), false);
-		oPopup.setFooterButtons([domCloseButton], true);
+		var fnOnClose = function(oPopup, fnCallback)
+		{
+			oPopup.hide();
+			
+			if( typeof oConfig.fnClose === 'function')
+			{
+				fnCallback();
+			}
+		}
 		
-		oPopup.setContent(domElement);
-		
+		oCloseButton.observe('click', fnOnClose.curry(oPopup, oConfig.fnOnClose));
+		oPopup.setFooterButtons([oCloseButton], true);
+		oPopup.setContent(mContent);
 		oPopup.display();
 	}
 });
+
+Reflex_Popup.DEFAULT_ALERT_WIDTH 		= 40;
+Reflex_Popup.DEFAULT_ALERT_TITLE 		= 'Notification';
+Reflex_Popup.DEFAULT_ALERT_BUTTON_LABEL = 'OK';
+Reflex_Popup.DEFAULT_ALERT_ICON_SOURCE 	= '../admin/img/template/MsgNotice.png';
 
 Reflex_Popup.overlay.className = 'reflex-popup-overlay';
 Reflex_Popup.opaquePane.className = 'reflex-popup-opaque';

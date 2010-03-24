@@ -24,7 +24,14 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		if (typeof oResponse === 'undefined')
 		{
 			// Make AJAX Request
-			// TODO
+			this._getCostCentres	= jQuery.json.jsonFunction(this._buildUI.bind(this), this._buildUI.bind(this), 'Account', 'getCostCentres');
+			this._getCostCentres(iAccountId);
+			return;
+		}
+		
+		if (oResponse.Success == false)
+		{
+			Reflex_Popup.alert('There was an error accessing the database' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Database Error', fnOnClose: this.hide.bind(this)});
 			return;
 		}
 		
@@ -42,11 +49,11 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		oAddButton.observe('click', this._addCostCentre.bind(this, null, '', true));
 			
 		// Add all cost centres from response
-		var aCostCentres = oResponse;
+		var aCostCentres = jQuery.json.arrayAsObject(oResponse.aCostCentres);
 		
-		for (var i = 0; i < aCostCentres.length; i++)
+		for (var i in aCostCentres)
 		{
-			this._addCostCentre(aCostCentres[i].id, aCostCentres[i].name);
+			this._addCostCentre(aCostCentres[i].Id, aCostCentres[i].Name);
 		}
 		
 		this.setTitle('Manage Cost Centres');

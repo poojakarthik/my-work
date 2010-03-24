@@ -101,5 +101,33 @@ class JSON_Handler_Account extends JSON_Handler
 						);
 		}
 	}
+	
+	public function getCostCentres($iAccountId)
+	{
+		try 
+		{
+			$aStdObjects = array();
+			$aCostCentres = Cost_Centre::getForAccountId($iAccountId);
+			
+			foreach ($aCostCentres as $iId => $oCostCentre)
+			{
+				$aStdObjects[$iId] = $oCostCentre->toStdClass();
+			}
+			
+			return array(
+							"Success"			=> true,
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
+							"aCostCentres"		=> $aStdObjects
+						);
+		}
+		catch (Exception $e)
+		{
+			return array(
+							"Success"		=> false,
+							"ErrorMessage"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? 'ERROR: '.$e->getMessage() : false,
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+	}
 }
 ?>
