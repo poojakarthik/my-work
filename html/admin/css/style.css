@@ -2575,7 +2575,7 @@ table.form-layout > tbody > tr > td > ul > li > table
 
 /************************ END - Form Layout - END ************************/
 
-/************************ START - Cost Centre Popup - START ************************/
+/************************ START - Reset List Styles - START ************************/
 ul.reset,
 ol.reset
 {
@@ -2593,14 +2593,14 @@ ol.horizontal > li
 {
 	display	: inline-block;
 }
-/************************ END - Cost Centre Popup - END ************************/
+/************************ END - Reset List Styles - END ************************/
 
 /************************ START - Cost Centre Popup - START ************************/
 td.cost-centre-name
 {
-	width			: 75%; 
+	/*width			: 75%; 
 	white-space		: nowrap;
-	overflow-x		: hidden;
+	overflow-x		: hidden;*/
 	vertical-align	: middle;
 }
 
@@ -2611,19 +2611,14 @@ td.cost-centre-name > span
 
 td.cost-centre-name > input
 {
-	/*margin-left		: 2%;*/
+	/*margin-left		: 2%;
 	width			: 100%;
 }
 
 td.cost-centre-buttons
 {
-	width			: 25%;
+	/*width			: 25%;*/
 	vertical-align	: middle; 	
-}
-
-td.cost-centre-buttons > button
-{
-	margin-top	: 0px;
 }
 
 /************************ END - Cost Centre Popup - END ************************/

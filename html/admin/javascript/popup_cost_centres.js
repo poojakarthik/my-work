@@ -112,13 +112,13 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 						)
 					);*/
 		var oNewTR 		=	$T.tr({class: sAltClass},
-								$T.td({class: 'cost-centre-name'},
+								$T.td({class: 'cost-centre-name', width: '75%'},
 									$T.span(
 										sName
 									),
 									$T.input({type: 'text', style: 'display: none', value: sName})
 								),
-								$T.td({class: 'cost-centre-buttons'},
+								$T.td({class: 'cost-centre-buttons', width: '25%'},
 									$T.button({class: 'popup-cost-centre-edit'},
 										'Edit'
 									),
