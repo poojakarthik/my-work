@@ -9,7 +9,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// Make AJAX request to get cost centres
 		// TODO
-		this._buildUI();
+		this._buildUI({});
 	},
 
 	_buildUI	: function(oResponse)
