@@ -143,13 +143,14 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		this._setCostCentreEditMode(mCostCentre, bInEditMode);
 	},
 	
+	// TODO: Remove me if not used
 	_inputHasFocus	: function(mCostCentre)
 	{
 		var oTRCostCentre = this._getCostCentreTR(mCostCentre);
 		
 		if (oTRCostCentre)
 		{
-			alert('here'); 
+			 
 		}
 	},
 	
@@ -159,8 +160,23 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		if (oTRCostCentre)
 		{
+			// Check both text and span values
 			var spanValue = oTRCostCentre.select('td > span').first().innerHTML;
 			var textValue = oTRCostCentre.select('td > input').first().value;
+			
+			// If the text is NOT different...
+			if (textValue == spanValue)
+			{
+				// Remove if a new cost centre, set back to non-edit mode if existing
+				if (isNaN(mCostCentre))
+				{
+					this._removeCostCentre(mCostCentre);
+				}
+				else
+				{
+					this._setCostCentreEditMode(mCostCentre, false);
+				}
+			}
 		}
 	},
 	
