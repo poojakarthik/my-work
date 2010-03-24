@@ -129,5 +129,39 @@ class JSON_Handler_Account extends JSON_Handler
 						);
 		}
 	}
+	
+	public function saveCostCentre($iId, $sName)
+	{
+		try
+		{
+			// If iId is given, get the cost centre for the id and update, otherwise create a new cost centre
+			if (is_numeric($iId))
+			{
+				$oCostCentre = Cost_Centre::getForId($iId);
+			} 
+			else 
+			{
+				$oCostCentre = new Cost_Centre();
+			}
+			
+			$oCostCentre->Name = $sName;
+			$oCostCentre->save();
+			
+			return array(
+							"Success"	=> true,
+							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
+							"iId"		=> $oCostCentre->Id,
+							"sName"		=> $oCostCentre->Name
+						);
+		}
+		catch (Exception $e)
+		{
+			return array(
+							"Success"		=> false,
+							"ErrorMessage"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? 'ERROR: '.$e->getMessage() : false,
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+		}
+	}
 }
 ?>

@@ -152,9 +152,36 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	
 	_saveCostCentreChanges	: function(mCostCentre)
 	{
-		// TODO: AJAX request to save changes
-		// On completion call this._setCostCentreEditMode(id, false) giving the id of the cost centre
+		// Get the name and id, pass to saveCostCentre
+		var iId				= isNaN(mCostCentre) ? null : mCostCentre;
+		var oLiCostCentre 	= this._getCostCentreLi(mCostCentre);
+		var sNewName		= oLiCostCentre.select('ul > li > input').first().value;
+		
+		// AJAX request to save changes
+		this._saveCostCentre = jQuery.json.jsonFunction(this._updateCostCentreAfterSave.bind(this), this._saveCostCentreError.bind(this), 'Account', 'saveCostCentre');
+		this._saveCostCentre(iId, sNewName);
 	},
+	
+	_updateCostCentreAfterSave	: function(oResponse)
+	{
+		var iId = oResponse.iId;
+		var oLiCostCentre = this._getCostCentreLi(iId);
+		
+		if (oLiCostCentre)
+		{
+			// Set the span's content to new name
+			oLiCostCentre.select('ul > li > span').first().innerHTML = oResponse.sName;
+			
+			// Disable edit mode for the cost centre
+			this._setCostCentreEditMode(oLiCostCentre, false);
+		}
+	},
+	
+	_saveCostCentreError	: function()
+	{
+		// Show a Reflex_Popup.alert explaining the error
+		Reflex_Popup.alert('There was an error saving the cost centre' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Save Error'});
+	}
 	
 	_removeCostCentre		: function(mCostCentre)
 	{
