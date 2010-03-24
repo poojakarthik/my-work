@@ -48,7 +48,9 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.tfoot(
 										$T.tr(
 												$T.th(
-													$T.div()
+													$T.button(
+														'Add'
+													)
 												)
 										)
 									),
@@ -59,9 +61,6 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 											)
 										)
 									)
-								),
-								$T.button(
-									'Add'
 								)
 							);
 		this.oMainUL 	= oContent.select('ul').first();
