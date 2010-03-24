@@ -5,18 +5,9 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		$super(40);
 		
 		// This array to hold a reference to the LI in the main UL for each cost centre
-		this.aLiMap = []; 
+		this.hLiMap = {}; 
 		
-		// DEBUG
-		var aDummy = [];
-		aDummy.push({id: 1, name: 'Cost centre 1'});
-		aDummy.push({id: 2, name: 'Cost centre 2'});
-		aDummy.push({id: 3, name: 'Cost centre 3'});
-		aDummy.push({id: 4, name: 'Cost centre 4'});
-		aDummy.push({id: 5, name: 'Cost centre 5'});
-		// END DEBUG
-		
-		this._buildUI(aDummy);
+		this._buildUI();
 	},
 
 	_buildUI	: function(oResponse)
@@ -112,7 +103,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		if (iId != null)
 		{
 			oCancelButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, false));
-			this.aLiMap[iId] = oNewLi;
+			this.hLiMap[iId] = oNewLi;
 		} else {
 			oCancelButton.observe('click', this._removeCostCentre.bind(this, mCostCentre));
 		}
@@ -178,7 +169,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		}
 		else 
 		{
-			return this.aLiMap[mCostCentre];
+			return this.hLiMap[mCostCentre];
 		}
 		
 		return false;
