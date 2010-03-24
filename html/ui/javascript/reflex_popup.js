@@ -82,8 +82,8 @@ Object.extend(Reflex_Popup, {
 		
 		var oPopup	= new Reflex_Popup(oConfig.iWidth);
 		
-		oPopup.setTitle(oConfig.iWidth);
-		oPopup.setIcon(oConfig.sIconSrc);
+		oPopup.setTitle(oConfig.sTitle);
+		oPopup.setIcon(oConfig.sIconSource);
 		oPopup.addCloseButton();
 			
 		var oCloseButton = 	$T.button(
@@ -107,6 +107,7 @@ Object.extend(Reflex_Popup, {
 	}
 });
 
+// Alert constants
 Reflex_Popup.DEFAULT_ALERT_WIDTH 		= 40;
 Reflex_Popup.DEFAULT_ALERT_TITLE 		= 'Notification';
 Reflex_Popup.DEFAULT_ALERT_BUTTON_LABEL = 'OK';
