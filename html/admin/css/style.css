@@ -2575,3 +2575,22 @@ table.form-layout > tbody > tr > td > ul > li > table
 
 /************************ END - Form Layout - END ************************/
 
+
+/************************ START - Cost Centre Popup - START ************************/
+ul.reset,
+ol.reset
+{
+	padding	: 0px;
+}
+
+ul.reset > li,
+ol.reset > li
+{
+	list-style-type	: none;	
+}
+
+ul.horizontal
+{
+	display	: inline-block;
+}
+/************************ END - Cost Centre Popup - END ************************/
