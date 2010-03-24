@@ -40,9 +40,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									),
 									$T.thead(
 										$T.tr(
-											$T.th(
-												$T.div()
-											)
+											$T.th(),
+											$T.th()
 										)
 									),
 									$T.tfoot(
@@ -50,7 +49,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 											$T.th(
 												$T.button(
 													'Add'
-												)
+												),
+												$T.th()
 											)
 										)
 									),
@@ -63,7 +63,6 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									)
 								)
 							);
-		//this.oMainUL 	= oContent.select('ul').first();
 		this.oTBody 	= oContent.select('tbody').first();
 		
 		// Set the add buttons event handler
