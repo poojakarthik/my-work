@@ -197,7 +197,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		for (var iId in this.hTRMap)
 		{
-			sName = oTRCostCentre.select('td > input').first().value;
+			sName = this.hTRMap[iId].select('td > input').first().value;
 			
 			if (sName != '')
 			{
