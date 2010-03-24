@@ -73,7 +73,7 @@ Object.extend(Reflex_Popup, {
 	alert	: function(mContent, oConfig)
 	{
 		// Config Defaults
-		oConfig	 				= (typeof oConfig !== 'undefined') 		? oConfig 					: {} );
+		oConfig	 				= (typeof oConfig !== 'undefined') 		? oConfig 					: {};
 		oConfig.sTitle 			= oConfig.sTitle 						? oConfig.sTitle 			: Reflex_Popup.DEFAULT_ALERT_TITLE;
 		oConfig.iWidth 			= (parseInt(oConfig.iWidth)) 			? oConfig.iWidth			: Reflex_Popup.DEFAULT_ALERT_WIDTH;
 		oConfig.sButtonLabel 	= oConfig.sButtonLabel 					? oConfig.sButtonLabel		: Reflex_Popup.DEFAULT_ALERT_BUTTON_LABEL;
