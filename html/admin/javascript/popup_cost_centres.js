@@ -5,7 +5,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		$super(40);
 		
 		// This array to hold a reference to the LI in the main UL for each cost centre
-		this.hLiMap = {}; 
+		this.hLiMap = {};
+		this.iAccountId = iAccountId;
 		
 		this._buildUI();
 	},
@@ -16,7 +17,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		{
 			// Make AJAX Request
 			this._getCostCentres	= jQuery.json.jsonFunction(this._buildUI.bind(this), this._buildUI.bind(this), 'Account', 'getCostCentres');
-			this._getCostCentres(iAccountId);
+			this._getCostCentres(this.iAccountId);
 			return;
 		}
 		
