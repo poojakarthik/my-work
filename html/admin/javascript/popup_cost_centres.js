@@ -181,7 +181,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	{
 		// Show a Reflex_Popup.alert explaining the error
 		Reflex_Popup.alert('There was an error saving the cost centre' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Save Error'});
-	}
+	},
 	
 	_removeCostCentre		: function(mCostCentre)
 	{
