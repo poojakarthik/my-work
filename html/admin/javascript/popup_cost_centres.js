@@ -92,7 +92,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		var sAltClass = (this.iCostCentreCount % 2) ? 'alt' : '';
 		
 		// Attach the new LI to the main UL
-		var oNewLi = $T.li({class: sAltClass}
+		var oNewLi = $T.li({class: sAltClass},
 						$T.ul({class: 'reset horizontal'},
 							$T.li({class: 'cost-centre-name'},
 								$T.span(
