@@ -7,15 +7,14 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		// This array to hold a reference to the LI in the main UL for each cost centre
 		this.aLiMap = []; 
 		
-		// Make AJAX request to get cost centres
-		// TODO
-		
+		// DEBUG
 		var aDummy = [];
 		aDummy.push({id: 1, name: 'Cost centre 1'});
 		aDummy.push({id: 2, name: 'Cost centre 2'});
 		aDummy.push({id: 3, name: 'Cost centre 3'});
 		aDummy.push({id: 4, name: 'Cost centre 4'});
 		aDummy.push({id: 5, name: 'Cost centre 5'});
+		// END DEBUG
 		
 		this._buildUI(aDummy);
 	},
@@ -131,6 +130,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 			if (bInEditMode)
 			{
 				// In edit mode, show the text box and the save & cancel buttons
+				oText.value = oSpan.innerHTML;
 				oText.show();
 				oSaveButton.show();
 				oCancelButton.show();
@@ -153,8 +153,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	
 	_saveCostCentreChanges	: function(mCostCentre)
 	{
-		// TODO: AJAX request to save changes, on completion call 
-		// this._setCostCentreEditMode(id, false) giving the id of the cost centre
+		// TODO: AJAX request to save changes
+		// On completion call this._setCostCentreEditMode(id, false) giving the id of the cost centre
 	},
 	
 	_removeCostCentre		: function(mCostCentre)
