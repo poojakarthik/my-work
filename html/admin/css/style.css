@@ -2621,7 +2621,8 @@ td.cost-centre-name > input
 
 td.cost-centre-buttons
 {
-	vertical-align	: middle; 	
+	vertical-align	: middle;
+	width			: 75%; 	
 }
 
 /************************ END - Cost Centre Popup - END ************************/
