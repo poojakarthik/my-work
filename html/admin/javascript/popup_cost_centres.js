@@ -29,7 +29,9 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// Build UI
 		var oContent 	=	$T.div(
-								$T.ul(),
+								$T.ul(
+									{class:'reset'}
+								),
 								$T.button(
 									'Add'
 								)
@@ -63,29 +65,29 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		var oNewLi = $T.li(
 						{style: sLiStyle},
 						$T.ul(
-								$T.li(
-									{style: sLiStyle},
-									$T.span(
-										sName
-									),
-									$T.input(
-											{type: 'text', style: 'display: none', value: sName}
-									)
+							{class:'reset horizontal'},
+							$T.li(
+								{style: sLiStyle},
+								$T.span(
+									sName
 								),
-								$T.li(
-									{style: sLiStyle},
-									$T.button(
-										{class: 'popup-cost-centre-edit'},
-										'Edit'
-									),
-									$T.button(
-										{style: 'display: none', class: 'popup-cost-centre-save'},
-										'Save'
-									),
-									$T.button(
-										{style: 'display: none', class: 'popup-cost-centre-cancel'},
-										'Cancel'
-									)
+								$T.input(
+										{type: 'text', style: 'display: none', value: sName}
+								)
+							),
+							$T.li(
+								{style: sLiStyle},
+								$T.button(
+									{class: 'popup-cost-centre-edit'},
+									'Edit'
+								),
+								$T.button(
+									{style: 'display: none', class: 'popup-cost-centre-save'},
+									'Save'
+								),
+								$T.button(
+									{style: 'display: none', class: 'popup-cost-centre-cancel'},
+									'Cancel'
 								)
 							)
 					 	);
