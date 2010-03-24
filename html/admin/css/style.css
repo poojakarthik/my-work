@@ -2600,6 +2600,7 @@ li.cost-centre-name
 	width		: 75%; 
 	white-space	: nowrap;
 	overflow-x	: hidden;
+	padding-top	: 0.5em;
 }
 
 li.cost-centre-name > span
