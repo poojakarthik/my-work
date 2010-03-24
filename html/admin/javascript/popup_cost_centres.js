@@ -158,14 +158,14 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		var sNewName		= oLiCostCentre.select('ul > li > input').first().value;
 		
 		// AJAX request to save changes
-		this._saveCostCentre = jQuery.json.jsonFunction(this._updateCostCentreAfterSave.bind(this), this._saveCostCentreError.bind(this), 'Account', 'saveCostCentre');
+		this._saveCostCentre = jQuery.json.jsonFunction(this._updateCostCentreAfterSave.bind(this, mCostCentre), this._saveCostCentreError.bind(this), 'Account', 'saveCostCentre');
 		this._saveCostCentre(this.iAccountId, iId, sNewName);
 	},
 	
-	_updateCostCentreAfterSave	: function(oResponse)
+	_updateCostCentreAfterSave	: function(oResponse, mCostCentre)
 	{
 		var iId = oResponse.iId;
-		var oLiCostCentre = this._getCostCentreLi(iId);
+		var oLiCostCentre = this._getCostCentreLi(mCostCentre);
 		
 		if (oLiCostCentre)
 		{
