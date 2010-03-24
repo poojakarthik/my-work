@@ -1179,13 +1179,14 @@
 		}
 		
 		// Have we given values for all fields?
-		if (count($arrClean) !== (count($arrAddress)-4))
+		// We'll let the Carrier tell us if something is wrong
+		/*if (count($arrClean) !== (count($arrAddress)-4))
 		{
 			$strError	= "Original Service Address Field Count (".(count($arrAddress)-4).") != Cleaned Address Field Count (".count($arrClean).")";
 			Debug($strError);
 			Debug($arrAddress);
 			Debug($arrClean);
-		}
+		}*/
 		
 		// Return Cleaned Array or Error Messages
 		if ($strError)
