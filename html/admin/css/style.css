@@ -2596,6 +2596,21 @@ ol.horizontal > li
 /************************ END - Reset List Styles - END ************************/
 
 /************************ START - Cost Centre Popup - START ************************/
+table.cost-centre-list
+{
+	table-layout	: fixed;
+}
+
+col.cost-centre-name-col
+{
+	width	: 75%;
+}
+
+col.cost-centre-buttons-col
+{
+	width	: 25%;
+}
+
 td.cost-centre-name
 {
 	overflow		: hidden;
@@ -2611,7 +2626,6 @@ td.cost-centre-name > input
 td.cost-centre-buttons
 {
 	vertical-align	: middle;
-	width			: 75%; 	
 }
 
 /************************ END - Cost Centre Popup - END ************************/
