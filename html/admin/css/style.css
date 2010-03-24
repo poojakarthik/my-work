@@ -2607,7 +2607,7 @@ li.cost-centre-name > span
 
 li.cost-centre-name > input
 {
-	padding-left	: 2%;
+	margin-left		: 2%;
 	width			: 98%;
 }
 
