@@ -2611,7 +2611,7 @@ td.cost-centre-name > div
 	/*display		: block;*/
 	overflow	: hidden;
 	white-space	: nowrap;
-	width		: 75%;
+	/*width		: 75%;*/
 }
 
 td.cost-centre-name > input
