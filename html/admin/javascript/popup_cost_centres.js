@@ -47,7 +47,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.tfoot(
 										$T.tr(
 											$T.th(
-												$T.button(
+												$T.button({class: 'cost-centre-add'},
 													'Add'
 												)
 											),
@@ -59,6 +59,9 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 										$T.col({class: 'cost-centre-buttons-col'})
 									),
 									$T.tbody()
+								),
+								$T.button(
+									'Save'
 								)
 							);
 		this.oTBody 	= oContent.select('tbody').first();
@@ -66,6 +69,10 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		// Set the add buttons event handler
 		var oAddButton	= oContent.select( 'button' ).first();
 		oAddButton.observe('click', this._addCostCentre.bind(this, null, '', true));
+		
+		// Set the save buttons event handler
+		var oSaveButton	= oContent.select( 'button' ).last();
+		oSaveButton.observe('click', this._saveChanges.bind(this));
 		
 		// Add all cost centres from response
 		var aCostCentres = jQuery.json.arrayAsObject(oResponse.aCostCentres);
@@ -87,28 +94,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		var sAltClass = (this.iCostCentreCount % 2) ? 'alt' : '';
 		
-		// Attach the new LI to the main UL
-		/*var oNewLi = $T.li({class: sAltClass},
-						$T.ul({class: 'reset horizontal'},
-							$T.li({class: 'cost-centre-name'},
-								$T.span(
-									sName
-								),
-								$T.input({type: 'text', style: 'display: none', value: sName})
-							),
-							$T.li({class: 'cost-centre-buttons'},
-								$T.button({class: 'popup-cost-centre-edit'},
-									'Edit'
-								),
-								$T.button({style: 'display: none', class: 'popup-cost-centre-save'},
-									'Save'
-								),
-								$T.button({style: 'display: none', class: 'popup-cost-centre-cancel'},
-									'Cancel'
-								)
-							)
-						)
-					);*/
+		// Attach a new TR to the main TBODY
 		var oNewTR 		=	$T.tr({class: sAltClass},
 								$T.td({class: 'cost-centre-name'},
 									$T.span(
@@ -119,13 +105,13 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 								$T.td({class: 'cost-centre-buttons'},
 									$T.button({class: 'popup-cost-centre-edit'},
 										'Edit'
-									),
+									)/*,
 									$T.button({style: 'display: none', class: 'popup-cost-centre-save'},
 										'Save'
 									),
 									$T.button({style: 'display: none', class: 'popup-cost-centre-cancel'},
 										'Cancel'
-									)
+									)*/
 								)
 							);
 		var mCostCentre	= (iId != null ? iId : oNewTR);
@@ -133,18 +119,18 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// Bind events to the buttons (edit, save & cancel)
 		var oEditButton		= oNewTR.select( 'button.popup-cost-centre-edit' ).first();
-		var oCancelButton 	= oNewTR.select( 'button.popup-cost-centre-cancel' ).first();
-		var oSaveButton 	= oNewTR.select( 'button.popup-cost-centre-save' ).first();
+		//var oCancelButton 	= oNewTR.select( 'button.popup-cost-centre-cancel' ).first();
+		//var oSaveButton 	= oNewTR.select( 'button.popup-cost-centre-save' ).first();
 		oEditButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, true));
-		oSaveButton.observe('click', this._saveCostCentreChanges.bind(this, mCostCentre));
+		//oSaveButton.observe('click', this._saveCostCentreChanges.bind(this, mCostCentre));
 		
 		// Add the new LI to the LI map (only if valid)
 		if (iId != null)
 		{
-			oCancelButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, false));
+			//oCancelButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, false));
 			this.hTRMap[iId] = oNewTR;
 		} else {
-			oCancelButton.observe('click', this._removeCostCentre.bind(this, mCostCentre));
+			//oCancelButton.observe('click', this._removeCostCentre.bind(this, mCostCentre));
 		}
 		
 		this._setCostCentreEditMode(mCostCentre, bInEditMode);
@@ -161,16 +147,16 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 			var oSpan 			= oTRCostCentre.select('td > span').first();
 			var oText 			= oTRCostCentre.select('td > input').first();
 			var oEditButton 	= oTRCostCentre.select('td > button.popup-cost-centre-edit').first();
-			var oSaveButton 	= oTRCostCentre.select('td > button.popup-cost-centre-save').first();
-			var oCancelButton 	= oTRCostCentre.select('td > button.popup-cost-centre-cancel').first();
+			//var oSaveButton 	= oTRCostCentre.select('td > button.popup-cost-centre-save').first();
+			//var oCancelButton 	= oTRCostCentre.select('td > button.popup-cost-centre-cancel').first();
 			
 			if (bInEditMode)
 			{
 				// In edit mode, show the text box and the save & cancel buttons
 				oText.value = oSpan.innerHTML;
 				oText.show();
-				oSaveButton.show();
-				oCancelButton.show();
+				//oSaveButton.show();
+				//oCancelButton.show();
 				
 				oSpan.hide();
 				oEditButton.hide();
@@ -182,12 +168,18 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 				oEditButton.show();
 				
 				oText.hide();
-				oSaveButton.hide();
-				oCancelButton.hide();
+				//oSaveButton.hide();
+				//oCancelButton.hide();
 			}
 		}
 	},
 	
+	_saveChanges	: function()
+	{
+		alert('save');
+	},
+	
+	/*
 	_saveCostCentreChanges	: function(mCostCentre)
 	{
 		// Get the name and id, pass to saveCostCentre
@@ -199,6 +191,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		this._saveCostCentre = jQuery.json.jsonFunction(this._updateCostCentreAfterSave.bind(this, mCostCentre), this._saveCostCentreError.bind(this), 'Account', 'saveCostCentre');
 		this._saveCostCentre(this.iAccountId, iId, sNewName);
 	},
+	*/
 	
 	_updateCostCentreAfterSave	: function(mCostCentre, oResponse)
 	{
