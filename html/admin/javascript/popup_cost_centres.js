@@ -30,7 +30,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// Build UI
 		var oContent 	=	$T.div(
-								$T.table({class: 'reflex'},
+								$T.div({class: 'reflex'},
 									$T.caption(
 										$T.div({id: 'caption_bar', class: 'caption_bar'},
 											$T.div({id: 'caption_title', class: 'caption_title'},
@@ -38,26 +38,14 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 											)
 										)
 									),
-									$T.thead(
-										$T.tr(
-												$T.th(
-													' '
-												)
-										)
+									$T.div(
+										''
 									),
-									$T.tfoot(
-										$T.tr(
-												$T.th(
-													' '
-												)
-										)
+									$T.div(
+										$T.ul({class:'reset cost-centre-list'})
 									),
-									$T.tbody(
-										$T.tr(
-											$T.td(
-												$T.ul({class:'reset cost-centre-list'})
-											)
-										)
+									$T.div(
+											''
 									)
 								),
 								$T.button(
