@@ -44,6 +44,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		this.setTitle('Manage Cost Centres');
 		//this.setIcon()
+		this.addCloseButton();
 		this.setContent(oContent);
 		this.display();
 	},
