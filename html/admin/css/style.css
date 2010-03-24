@@ -2598,9 +2598,8 @@ ol.horizontal > li
 /************************ START - Cost Centre Popup - START ************************/
 td.cost-centre-name
 {
-	/*width			: 75%; 
 	white-space		: nowrap;
-	overflow-x		: hidden;*/
+	overflow-x		: hidden;
 	vertical-align	: middle;
 }
 
