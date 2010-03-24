@@ -46,6 +46,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 			this._addCostCentre(aCostCentres[i].id, aCostCentres[i].name);
 		}
 		
+		debugger;
+		
 		// Set the add buttons event handler
 		var oAddButton	= oContent.select( 'button' ).first();
 		oAddButton.observe('click', this._addCostCentre.bind(this, null, '', true));
