@@ -59,18 +59,16 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	
 	_addCostCentre	: function(iId, sName, bInEditMode)
 	{
-		var sLiStyle = 'display:inline; list-style-type:none;';
-		
 		// Attach the new LI to the main UL
-		var oNewLi = $T.li({style: sLiStyle},
+		var oNewLi = $T.li(
 						$T.ul({class:'reset horizontal'},
-							$T.li({style: sLiStyle},
+							$T.li(
 								$T.span(
 									sName
 								),
 								$T.input({type: 'text', style: 'display: none', value: sName})
 							),
-							$T.li({style: sLiStyle},
+							$T.li(
 								$T.button({class: 'popup-cost-centre-edit'},
 									'Edit'
 								),
