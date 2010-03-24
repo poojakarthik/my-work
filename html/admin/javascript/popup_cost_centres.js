@@ -41,20 +41,20 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.thead(
 										$T.tr(
 												$T.th(
-													'&nbsp;'
+													$T.div()
 												)
 										)
 									),
 									$T.tfoot(
 										$T.tr(
 												$T.th(
-													'&nbsp;'
+													$T.div()
 												)
 										)
 									),
 									$T.tbody(
 										$T.tr(
-											$T.td({class: 'cost-centre-list'},
+											$T.td(
 												$T.ul({class: 'reset cost-centre-list'})
 											)
 										)
