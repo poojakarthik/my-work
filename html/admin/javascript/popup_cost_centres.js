@@ -55,6 +55,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// Attach the new LI to the main UL
 		var oNewLi = $T.li(
+						{style: sLiStyle},
 						$T.ul(
 								$T.li(
 									{style: sLiStyle},
