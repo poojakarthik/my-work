@@ -34,7 +34,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 								)
 							);
 		this.oMainUL 	= oContent.select('ul').first();
-		
+		alert(oContent.select('ul'));
 		// Add all cost centres from response
 		// TODO
 		
