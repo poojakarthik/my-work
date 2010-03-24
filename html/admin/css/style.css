@@ -2619,4 +2619,9 @@ li.cost-centre-buttons
 	width			: 25%;
 	vertical-align	: top; 	
 }
+
+li.cost-centre-buttons > button
+{
+	margin-top	: 0px;
+}
 /************************ END - Cost Centre Popup - END ************************/
