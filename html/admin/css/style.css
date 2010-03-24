@@ -2595,6 +2595,12 @@ ol.horizontal > li
 	display	: inline-block;
 }
 
+ul.cost-centre-list > li.alt,
+ol.cost-centre-list > li.alt
+{
+	background-color	: #fff;
+}
+
 li.cost-centre-name
 {
 	width			: 75%; 
@@ -2624,4 +2630,5 @@ li.cost-centre-buttons > button
 {
 	margin-top	: 0px;
 }
+
 /************************ END - Cost Centre Popup - END ************************/

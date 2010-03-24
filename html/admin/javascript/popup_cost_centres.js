@@ -6,6 +6,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// This array to hold a reference to the LI in the main UL for each cost centre
 		this.hLiMap = {};
+		this.iCostCentreCount = 0;
 		this.iAccountId = iAccountId;
 		
 		this._buildUI();
@@ -33,7 +34,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.caption(
 										$T.div({id: 'caption_bar', class: 'caption_bar'},
 											$T.div({id: 'caption_title', class: 'caption_title'},
-												'Manage Cost Centres'
+												'Cost Centres'
 											)
 										)
 									),
@@ -54,7 +55,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.tbody(
 										$T.tr(
 											$T.td(
-												$T.ul({class:'reset'})
+												$T.ul({class:'reset cost-centre-list'})
 											)
 										)
 									)
@@ -86,8 +87,12 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	
 	_addCostCentre	: function(iId, sName, bInEditMode)
 	{
+		this.iCostCentreCount++;
+		
+		var sAltClass = (this.iCostCentreCount % 2) ? 'alt' : '';
+		
 		// Attach the new LI to the main UL
-		var oNewLi = $T.li(
+		var oNewLi = $T.li({class: sAltClass}
 						$T.ul({class: 'reset horizontal'},
 							$T.li({class: 'cost-centre-name'},
 								$T.span(
