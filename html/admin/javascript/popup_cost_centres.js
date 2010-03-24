@@ -107,13 +107,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 								$T.td({class: 'cost-centre-buttons'},
 									$T.button({class: 'popup-cost-centre-edit'},
 										'Edit'
-									)/*,
-									$T.button({style: 'display: none', class: 'popup-cost-centre-save'},
-										'Save'
-									),
-									$T.button({style: 'display: none', class: 'popup-cost-centre-cancel'},
-										'Cancel'
-									)*/
+									)
 								)
 							);
 		var mCostCentre	= (iId != null ? iId : oNewTR);
@@ -122,36 +116,16 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		// Bind events to the elements (edit & text)
 		var oEditButton	= oNewTR.select( 'button.popup-cost-centre-edit' ).first();
 		var oText		= oNewTR.select( 'td > input' ).first();
-		//var oCancelButton 	= oNewTR.select( 'button.popup-cost-centre-cancel' ).first();
-		//var oSaveButton 	= oNewTR.select( 'button.popup-cost-centre-save' ).first();
 		oEditButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, true));
-		oText.observe('focus', this._inputHasFocus.bind(this, mCostCentre));
 		oText.observe('blur', this._checkForValueChange.bind(this, mCostCentre));
-		//oSaveButton.observe('click', this._saveCostCentreChanges.bind(this, mCostCentre));
 		
 		// Add the new LI to the LI map (only if valid)
 		if (iId != null)
 		{
-			//oCancelButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, false));
 			this.hTRMap[iId] = oNewTR;
 		} 
-		else 
-		{
-			//oCancelButton.observe('click', this._removeCostCentre.bind(this, mCostCentre));
-		}
-		
+				
 		this._setCostCentreEditMode(mCostCentre, bInEditMode);
-	},
-	
-	// TODO: Remove me if not used
-	_inputHasFocus	: function(mCostCentre)
-	{
-		var oTRCostCentre = this._getCostCentreTR(mCostCentre);
-		
-		if (oTRCostCentre)
-		{
-			 
-		}
 	},
 	
 	_checkForValueChange	: function(mCostCentre)
@@ -191,8 +165,6 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 			var oSpan 			= oTRCostCentre.select('td > span').first();
 			var oText 			= oTRCostCentre.select('td > input').first();
 			var oEditButton 	= oTRCostCentre.select('td > button.popup-cost-centre-edit').first();
-			//var oSaveButton 	= oTRCostCentre.select('td > button.popup-cost-centre-save').first();
-			//var oCancelButton 	= oTRCostCentre.select('td > button.popup-cost-centre-cancel').first();
 			
 			if (bInEditMode)
 			{
@@ -200,8 +172,6 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 				oText.value = oSpan.innerHTML;
 				oText.show();
 				oText.focus();
-				//oSaveButton.show();
-				//oCancelButton.show();
 				
 				oSpan.hide();
 				oEditButton.hide();
@@ -213,30 +183,40 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 				oEditButton.show();
 				
 				oText.hide();
-				//oSaveButton.hide();
-				//oCancelButton.hide();
+				oText.value = '';
 			}
 		}
 	},
 	
 	_saveChanges	: function()
 	{
-		alert('save');
-	},
-	
-	/*
-	_saveCostCentreChanges	: function(mCostCentre)
-	{
 		// Get the name and id, pass to saveCostCentre
-		var iId				= isNaN(mCostCentre) ? null : mCostCentre;
-		var oTRCostCentre 	= this._getCostCentreTR(mCostCentre);
-		var sNewName		= oTRCostCentre.select('td > input').first().value;
+		var aChanges = {};
+		var sName = null;
+		var iChangeCount = 0;
 		
-		// AJAX request to save changes
-		this._saveCostCentre = jQuery.json.jsonFunction(this._updateCostCentreAfterSave.bind(this, mCostCentre), this._saveCostCentreError.bind(this), 'Account', 'saveCostCentre');
-		this._saveCostCentre(this.iAccountId, iId, sNewName);
+		for (var iId in this.hTRMap)
+		{
+			sName = oTRCostCentre.select('td > input').first().value;
+			
+			if (sName != '')
+			{
+				aChanges[iId] = sName;
+				iChangeCount++;
+			}
+		}
+		
+		if (iChangeCount)
+		{
+			// AJAX request to save changes
+			this._saveCostCentres = jQuery.json.jsonFunction(this.hide.bind(this), this._saveCostCentresError.bind(this), 'Account', 'saveCostCentreChanges');
+			this._saveCostCentres(this.iAccountId, aChanges);
+		}
+		else 
+		{
+			Reflex_Popup.alert('There are no changes to save');
+		}
 	},
-	*/
 	
 	_updateCostCentreAfterSave	: function(mCostCentre, oResponse)
 	{
@@ -253,10 +233,10 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_saveCostCentreError	: function()
+	_saveCostCentresError	: function()
 	{
 		// Show a Reflex_Popup.alert explaining the error
-		Reflex_Popup.alert('There was an error saving the cost centre' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Save Error'});
+		Reflex_Popup.alert('There was an error saving the cost centre changes' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Save Error'});
 	},
 	
 	_removeCostCentre		: function(mCostCentre)

@@ -130,34 +130,37 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 	
-	public function saveCostCentre($iAccountId, $iId, $sName)
+	public function saveCostCentreChanges($iAccountId, $aChanges)
 	{
 		try
 		{
-			// If iId is given, get the cost centre for the id and update, otherwise create a new cost centre
-			if (is_numeric($iId))
+			foreach ($aChanges as $iId => $sName)
 			{
-				// Update existing cost centre
-				$oCostCentre = Cost_Centre::getForId($iId);
-			} 
-			else 
-			{
-				// New Cost centre required
-				$oAccountGroup 				= Account_Group::getForAccountId($iAccountId);
-				$oCostCentre 				= new Cost_Centre();
-				$oCostCentre->AccountGroup	= $oAccountGroup->Id;
-				$oCostCentre->Account 		= $iAccountId;
+				// If iId is given, get the cost centre for the id and update, otherwise create a new cost centre
+				if (is_numeric($iId))
+				{
+					// Update existing cost centre
+					$oCostCentre = Cost_Centre::getForId($iId);
+				} 
+				else 
+				{
+					// New Cost centre required
+					$oAccountGroup 				= Account_Group::getForAccountId($iAccountId);
+					$oCostCentre 				= new Cost_Centre();
+					$oCostCentre->AccountGroup	= $oAccountGroup->Id;
+					$oCostCentre->Account 		= $iAccountId;
+				}
+				
+				$oCostCentre->Name = $sName;
+				$oCostCentre->save();
+				
+				return array(
+								"Success"	=> true,
+								"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
+								"iId"		=> $oCostCentre->Id,
+								"sName"		=> $oCostCentre->Name
+							);
 			}
-			
-			$oCostCentre->Name = $sName;
-			$oCostCentre->save();
-			
-			return array(
-							"Success"	=> true,
-							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
-							"iId"		=> $oCostCentre->Id,
-							"sName"		=> $oCostCentre->Name
-						);
 		}
 		catch (Exception $e)
 		{
