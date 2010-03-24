@@ -113,7 +113,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 					);*/
 		var oNewTR 		=	$T.tr({class: sAltClass},
 								$T.td({class: 'cost-centre-name', width: '75%'},
-									$T.span(
+									$T.div(
 										sName
 									),
 									$T.input({type: 'text', style: 'display: none', value: sName})
@@ -160,7 +160,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		// Hide/show the relevant elements
 		if (oTRCostCentre)
 		{
-			var oSpan 			= oTRCostCentre.select('td > span').first();
+			var oSpan 			= oTRCostCentre.select('td > div').first();
 			var oText 			= oTRCostCentre.select('td > input').first();
 			var oEditButton 	= oTRCostCentre.select('td > button.popup-cost-centre-edit').first();
 			var oSaveButton 	= oTRCostCentre.select('td > button.popup-cost-centre-save').first();
@@ -210,7 +210,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		if (oTRCostCentre)
 		{
 			// Set the span's content to new name
-			oTRCostCentre.select('td > span').first().innerHTML = oResponse.sName;
+			oTRCostCentre.select('td > div').first().innerHTML = oResponse.sName;
 			
 			// Disable edit mode for the cost centre
 			this._setCostCentreEditMode(oTRCostCentre, false);

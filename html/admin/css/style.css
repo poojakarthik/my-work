@@ -2601,9 +2601,9 @@ td.cost-centre-name
 	vertical-align	: middle;
 }
 
-td.cost-centre-name > span
+td.cost-centre-name > div
 {
-	display		: block;
+	/*display		: block;*/
 	overflow	: hidden;
 	white-space	: nowrap;
 	width		: 75%;
