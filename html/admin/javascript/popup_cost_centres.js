@@ -129,7 +129,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.button({style: 'display: none', class: 'popup-cost-centre-cancel'},
 										'Cancel'
 									)
-								),
+								)
 							);
 		var mCostCentre	= (iId != null ? iId : oNewTR);
 		this.oTBody.appendChild(oNewTR);
