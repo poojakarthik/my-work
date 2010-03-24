@@ -34,13 +34,13 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 								)
 							);
 		this.oMainUL 	= oContent.select('ul').first();
-		alert(oContent.select('ul').first());
+		
 		// Add all cost centres from response
 		// TODO
 		
 		// Set the add buttons event handler
 		var oAddButton	= oContent.select( 'button' ).first();
-		oAddButton.observe('click', this._addCostCentre.bind(null, '', true));
+		oAddButton.observe('click', this._addCostCentre.bind(this, null, '', true));
 		
 		this.setTitle('Manage Cost Centres');
 		//this.setIcon()
@@ -92,9 +92,9 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		var oEditButton		= oNewLi.select( 'button.popup-cost-centre-edit' ).first();
 		var oCancelButton 	= oNewLi.select( 'button.popup-cost-centre-cancel' ).first();
 		var oSaveButton 	= oNewLi.select( 'button.popup-cost-centre-save' ).first();
-		oEditButton.observe('click', this._setCostCentreEditMode.bind(mCostCentre, true));
-		oCancelButton.observe('click', this._setCostCentreEditMode.bind(mCostCentre, false));
-		oSaveButton.observe('click', this._saveCostCentreChanges.bind(mCostCentre));
+		oEditButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, true));
+		oCancelButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, false));
+		oSaveButton.observe('click', this._saveCostCentreChanges.bind(this, mCostCentre));
 		
 		// Add the new LI to the LI map (only if valid)
 		if (!isNaN(mCostCentre))
