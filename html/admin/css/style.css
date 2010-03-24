@@ -2598,7 +2598,7 @@ ol.horizontal > li
 li.cost-centre-name
 {
 	width		: 75%; 
-	white-space	: no-wrap;
+	white-space	: nowrap;
 	overflow-x	: hidden;
 }
 
