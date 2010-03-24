@@ -30,7 +30,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// Build UI
 		var oContent 	=	$T.div(
-								$T.table({class: 'reflex'},
+								$T.table({class: 'reflex cost-centre-list'},
 									$T.caption(
 										$T.div({id: 'caption_bar', class: 'caption_bar'},
 											$T.div({id: 'caption_title', class: 'caption_title'},
@@ -55,6 +55,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 										)
 									),
 									$T.tbody(
+										$T.col({width: '75%'}),
+										$T.col({width: '25%'})
 										/*$T.tr(
 											$T.td(
 												$T.ul({class: 'reset cost-centre-list'})
@@ -112,13 +114,13 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 						)
 					);*/
 		var oNewTR 		=	$T.tr({class: sAltClass},
-								$T.td({class: 'cost-centre-name', width: '75%'},
+								$T.td({class: 'cost-centre-name'},
 									$T.div(
 										sName
 									),
 									$T.input({type: 'text', style: 'display: none', value: sName})
 								),
-								$T.td({class: 'cost-centre-buttons', width: '25%'},
+								$T.td({class: 'cost-centre-buttons'},
 									$T.button({class: 'popup-cost-centre-edit'},
 										'Edit'
 									),

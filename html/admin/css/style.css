@@ -2596,6 +2596,11 @@ ol.horizontal > li
 /************************ END - Reset List Styles - END ************************/
 
 /************************ START - Cost Centre Popup - START ************************/
+table.cost-centre-list
+{
+	table-layout	: fixed;	
+}
+
 td.cost-centre-name
 {
 	vertical-align	: middle;
