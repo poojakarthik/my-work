@@ -2596,22 +2596,11 @@ ol.horizontal > li
 /************************ END - Reset List Styles - END ************************/
 
 /************************ START - Cost Centre Popup - START ************************/
-table.cost-centre-list
-{
-	table-layout	: fixed;	
-}
-
 td.cost-centre-name
 {
+	overflow		: hidden;
+	white-space		: nowrap;
 	vertical-align	: middle;
-}
-
-td.cost-centre-name > div
-{
-	/*display		: block;*/
-	overflow	: hidden;
-	white-space	: nowrap;
-	/*width		: 75%;*/
 }
 
 td.cost-centre-name > input
