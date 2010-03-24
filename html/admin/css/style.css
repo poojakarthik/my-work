@@ -2600,17 +2600,18 @@ li.cost-centre-name
 	width		: 75%; 
 	white-space	: nowrap;
 	overflow-x	: hidden;
-	padding-top	: 0.5em;
 }
 
 li.cost-centre-name > span
 {
 	padding-left	: 2%;
+	padding-top		: 0.5em;
 }
 
 li.cost-centre-name > input
 {
 	margin-left		: 2%;
+	margin-top		: 0.5em;
 	width			: 98%;
 }
 
