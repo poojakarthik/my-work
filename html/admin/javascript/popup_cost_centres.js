@@ -62,35 +62,27 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		var sLiStyle = 'display:inline; list-style-type:none;';
 		
 		// Attach the new LI to the main UL
-		var oNewLi = $T.li(
-						{style: sLiStyle},
-						$T.ul(
-							{class:'reset horizontal'},
-							$T.li(
-								{style: sLiStyle},
+		var oNewLi = $T.li({style: sLiStyle},
+						$T.ul({class:'reset horizontal'},
+							$T.li({style: sLiStyle},
 								$T.span(
 									sName
 								),
-								$T.input(
-										{type: 'text', style: 'display: none', value: sName}
-								)
+								$T.input({type: 'text', style: 'display: none', value: sName})
 							),
-							$T.li(
-								{style: sLiStyle},
-								$T.button(
-									{class: 'popup-cost-centre-edit'},
+							$T.li({style: sLiStyle},
+								$T.button({class: 'popup-cost-centre-edit'},
 									'Edit'
 								),
-								$T.button(
-									{style: 'display: none', class: 'popup-cost-centre-save'},
+								$T.button({style: 'display: none', class: 'popup-cost-centre-save'},
 									'Save'
 								),
-								$T.button(
-									{style: 'display: none', class: 'popup-cost-centre-cancel'},
+								$T.button({style: 'display: none', class: 'popup-cost-centre-cancel'},
 									'Cancel'
 								)
 							)
-					 	);
+						)
+					);
 		this.oMainUL.appendChild(oNewLi);
 		
 		var mCostCentre = (iId != null ? iId : oNewLi);
