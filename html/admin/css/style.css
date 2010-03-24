@@ -2600,7 +2600,7 @@ li.cost-centre-name
 	width			: 75%; 
 	white-space		: nowrap;
 	overflow-x		: hidden;
-	vertical-align	: top;
+	vertical-align	: middle;
 }
 
 li.cost-centre-name > span
@@ -2617,7 +2617,7 @@ li.cost-centre-name > input
 li.cost-centre-buttons
 {
 	width			: 25%;
-	vertical-align	: top; 	
+	vertical-align	: middle; 	
 }
 
 li.cost-centre-buttons > button
