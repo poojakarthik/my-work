@@ -2594,4 +2594,14 @@ ol.horizontal > li
 {
 	display	: inline-block;
 }
+
+li.cost-centre-name
+{
+	width	: 75%; 	
+}
+
+li.cost-centre-buttons
+{
+	width	: 25%; 	
+}
 /************************ END - Cost Centre Popup - END ************************/

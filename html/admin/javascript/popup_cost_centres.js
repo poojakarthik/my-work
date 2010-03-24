@@ -61,14 +61,14 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	{
 		// Attach the new LI to the main UL
 		var oNewLi = $T.li(
-						$T.ul({class:'reset horizontal'},
-							$T.li(
+						$T.ul({class: 'reset horizontal'},
+							$T.li({class: 'cost-centre-name'},
 								$T.span(
 									sName
 								),
 								$T.input({type: 'text', style: 'display: none', value: sName})
 							),
-							$T.li(
+							$T.li({class: 'cost-centre-buttons'},
 								$T.button({class: 'popup-cost-centre-edit'},
 									'Edit'
 								),
