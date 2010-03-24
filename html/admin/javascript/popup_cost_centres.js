@@ -28,11 +28,6 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 			// TODO
 			return;
 		}
-		else
-		{
-			// DEBUG
-			oResponse = {};
-		}
 		
 		// Build UI
 		var oContent 	=	$T.div(
