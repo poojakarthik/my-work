@@ -149,7 +149,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		if (oTRCostCentre)
 		{
-			 
+			alert('here'); 
 		}
 	},
 	
@@ -159,7 +159,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		if (oTRCostCentre)
 		{
-			
+			var spanValue = oTRCostCentre.select('td > span').first().innerHTML;
+			var textValue = oTRCostCentre.select('td > input').first().value;
 		}
 	},
 	
