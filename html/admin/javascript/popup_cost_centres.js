@@ -8,6 +8,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		this.hTRMap = {};
 		this.iCostCentreCount = 0;
 		this.iAccountId = iAccountId;
+		this.oTBody = null;
+		this.sCurrentEditedInputValue = null;
 		
 		this._buildUI();
 	},
@@ -117,11 +119,14 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		var mCostCentre	= (iId != null ? iId : oNewTR);
 		this.oTBody.appendChild(oNewTR);
 		
-		// Bind events to the buttons (edit, save & cancel)
-		var oEditButton		= oNewTR.select( 'button.popup-cost-centre-edit' ).first();
+		// Bind events to the elements (edit & text)
+		var oEditButton	= oNewTR.select( 'button.popup-cost-centre-edit' ).first();
+		var oText		= oNewTR.select( 'td > input' ).first();
 		//var oCancelButton 	= oNewTR.select( 'button.popup-cost-centre-cancel' ).first();
 		//var oSaveButton 	= oNewTR.select( 'button.popup-cost-centre-save' ).first();
 		oEditButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, true));
+		oText.observe('focus', this._inputHasFocus.bind(this, mCostCentre));
+		oText.observe('blur', this._checkForValueChange.bind(this, mCostCentre));
 		//oSaveButton.observe('click', this._saveCostCentreChanges.bind(this, mCostCentre));
 		
 		// Add the new LI to the LI map (only if valid)
@@ -129,11 +134,33 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		{
 			//oCancelButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, false));
 			this.hTRMap[iId] = oNewTR;
-		} else {
+		} 
+		else 
+		{
 			//oCancelButton.observe('click', this._removeCostCentre.bind(this, mCostCentre));
 		}
 		
 		this._setCostCentreEditMode(mCostCentre, bInEditMode);
+	},
+	
+	_inputHasFocus	: function(mCostCentre)
+	{
+		var oTRCostCentre = this._getCostCentreTR(mCostCentre);
+		
+		if (oTRCostCentre)
+		{
+			 
+		}
+	},
+	
+	_checkForValueChange	: function(mCostCentre)
+	{
+		var oTRCostCentre = this._getCostCentreTR(mCostCentre);
+		
+		if (oTRCostCentre)
+		{
+			
+		}
 	},
 	
 	_setCostCentreEditMode	: function(mCostCentre, bInEditMode)
@@ -155,6 +182,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 				// In edit mode, show the text box and the save & cancel buttons
 				oText.value = oSpan.innerHTML;
 				oText.show();
+				oText.focus();
 				//oSaveButton.show();
 				//oCancelButton.show();
 				
