@@ -46,8 +46,6 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 			this._addCostCentre(aCostCentres[i].id, aCostCentres[i].name);
 		}
 		
-		debugger;
-		
 		// Set the add buttons event handler
 		var oAddButton	= oContent.select( 'button' ).first();
 		oAddButton.observe('click', this._addCostCentre.bind(this, null, '', true));
@@ -108,6 +106,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		// Add the new LI to the LI map (only if valid)
 		if (!isNaN(mCostCentre))
 		{
+			alert(mCostCentre);
 			this.aLiMap[iId] = oNewLi;
 		}
 		
@@ -136,7 +135,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 			var oEditButton 	= oLiCostCentre.select('ul > li > button.popup-cost-centre-edit').first();
 			var oSaveButton 	= oLiCostCentre.select('ul > li > button.popup-cost-centre-save').first();
 			var oCancelButton 	= oLiCostCentre.select('ul > li > button.popup-cost-centre-cancel').first();
-			debugger;
+			
 			if (bInEditMode)
 			{
 				// In edit mode, show the text box and the save & cancel buttons
