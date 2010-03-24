@@ -100,14 +100,15 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		var oCancelButton 	= oNewLi.select( 'button.popup-cost-centre-cancel' ).first();
 		var oSaveButton 	= oNewLi.select( 'button.popup-cost-centre-save' ).first();
 		oEditButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, true));
-		oCancelButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, false));
 		oSaveButton.observe('click', this._saveCostCentreChanges.bind(this, mCostCentre));
 		
 		// Add the new LI to the LI map (only if valid)
-		if (!isNaN(mCostCentre))
+		if (iId != null)
 		{
-			alert(mCostCentre);
+			oCancelButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, false));
 			this.aLiMap[iId] = oNewLi;
+		} else {
+			oCancelButton.observe('click', this._removeCostCentre.bind(this, mCostCentre));
 		}
 		
 		this._setCostCentreEditMode(mCostCentre, bInEditMode);
@@ -116,17 +117,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	_setCostCentreEditMode	: function(mCostCentre, bInEditMode)
 	{
 		// Retrieve the LI for the given cost centre (either the id or the LI itself)
-		var oLiCostCentre = null;
-		
-		if (isNaN(mCostCentre))
-		{
-			oLiCostCentre = mCostCentre;
-		}
-		else 
-		{
-			oLiCostCentre = this.aLiMap[mCostCentre];
-		}
-		
+		var oLiCostCentre = this._getCostCentreLi(mCostCentre);
+				
 		// Hide/show the relevant elements
 		if (oLiCostCentre)
 		{
@@ -163,6 +155,26 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	{
 		// TODO: AJAX request to save changes, on completion call 
 		// this._setCostCentreEditMode(id, false) giving the id of the cost centre
+	},
+	
+	_removeCostCentre		: function(mCostCentre)
+	{
+		var oLiCostCentre = this._getCostCentreLi(mCostCentre);
+		this.oMainUL.removeChild(oLiCostCentre);
+	},
+	
+	_getCostCentreLi		: function(mCostCentre)
+	{
+		if (isNaN(mCostCentre))
+		{
+			return mCostCentre;
+		}
+		else 
+		{
+			return this.aLiMap[mCostCentre];
+		}
+		
+		return false;
 	}
 });
 
