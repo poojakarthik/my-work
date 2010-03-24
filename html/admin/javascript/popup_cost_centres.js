@@ -7,7 +7,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		// This array to hold a reference to the LI in the main UL for each cost centre
 		this.aLiMap = []; 
 		
-		// TODO: Make AJAX request to get cost centres
+		// Make AJAX request to get cost centres
+		// TODO
 		this._buildUI();
 	},
 
@@ -17,7 +18,6 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		{
 			// Make AJAX Request
 			// TODO
-			
 			return;
 		}
 		else
@@ -34,6 +34,9 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 								)
 							);
 		this.oMainUL 	= oContent.select('ul').first();
+		
+		// Add all cost centres from response
+		// TODO
 		
 		// Set the add buttons event handler
 		var oAddButton	= oContent.select( 'button' ).first();
@@ -74,7 +77,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 							{style: 'display: none', class: 'popup-cost-centre-cancel'},
 							'Cancel'
 						)
-					),
+					)
 				)
 		 	)
 		);
@@ -115,7 +118,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// Hide/show the relevant elements
 		if (oLiCostCentre)
-		{			
+		{
 			var oSpan 			= oLiCostCentre.select( 'ul > li > span').first();
 			var oText 			= oLiCostCentre.select( 'ul > li > input').first();
 			var oEditButton 	= oLiCostCentre.select( 'ul > li > button.popup-cost-centre-edit').first();
