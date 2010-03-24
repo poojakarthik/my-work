@@ -159,7 +159,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// AJAX request to save changes
 		this._saveCostCentre = jQuery.json.jsonFunction(this._updateCostCentreAfterSave.bind(this), this._saveCostCentreError.bind(this), 'Account', 'saveCostCentre');
-		this._saveCostCentre(iId, sNewName);
+		this._saveCostCentre(this.iAccountId, iId, sNewName);
 	},
 	
 	_updateCostCentreAfterSave	: function(oResponse)
