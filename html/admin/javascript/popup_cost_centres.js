@@ -162,7 +162,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		this._saveCostCentre(this.iAccountId, iId, sNewName);
 	},
 	
-	_updateCostCentreAfterSave	: function(oResponse, mCostCentre)
+	_updateCostCentreAfterSave	: function(mCostCentre, oResponse)
 	{
 		Reflex_Popup.alert('SAVED: ' + oResponse.iId + ', ' + oResponse.sName, {sTitle: 'Save Success'});
 		
