@@ -2597,9 +2597,10 @@ ol.horizontal > li
 
 li.cost-centre-name
 {
-	width		: 75%; 
-	white-space	: nowrap;
-	overflow-x	: hidden;
+	width			: 75%; 
+	white-space		: nowrap;
+	overflow-x		: hidden;
+	vertical-align	: top;
 }
 
 li.cost-centre-name > span
@@ -2615,6 +2616,7 @@ li.cost-centre-name > input
 
 li.cost-centre-buttons
 {
-	width	: 25%; 	
+	width			: 25%;
+	vertical-align	: top; 	
 }
 /************************ END - Cost Centre Popup - END ************************/
