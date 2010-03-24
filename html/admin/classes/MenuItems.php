@@ -1217,7 +1217,8 @@ class MenuItems {
 	function ViewCostCentres($intAccountId) {
 		$this->strLabel = "Cost Centres";
 		$this->strContextMenuLabel = "";
-		return self :: OLD_FRAMEWORK . "costcentre_list.php?Account=$intAccountId";
+		//return self :: OLD_FRAMEWORK . "costcentre_list.php?Account=$intAccountId";
+		return "javascript:JsAutoLoader.loadScript('javascript/popup_cost_centres.js', function(){new Popup_Cost_Centres($intAccountId);});";
 	}
 
 	//------------------------------------------------------------------------//
