@@ -35,7 +35,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 											$T.div({id: 'caption_title', class: 'caption_title'},
 												'Manage Cost Centres'
 											)
-										),
+										)
 									),
 									$T.thead(
 										$T.tr(
@@ -57,7 +57,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 												$T.ul({class:'reset'})
 											)
 										)
-									),
+									)
 								),
 								$T.button(
 									'Add'
