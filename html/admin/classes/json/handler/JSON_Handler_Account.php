@@ -153,14 +153,14 @@ class JSON_Handler_Account extends JSON_Handler
 				
 				$oCostCentre->Name = $sName;
 				$oCostCentre->save();
-				
-				return array(
-								"Success"	=> true,
-								"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
-								"iId"		=> $oCostCentre->Id,
-								"sName"		=> $oCostCentre->Name
-							);
 			}
+			
+			return array(
+						"Success"	=> true,
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
+						"iId"		=> $oCostCentre->Id,
+						"sName"		=> $oCostCentre->Name
+					);
 		}
 		catch (Exception $e)
 		{
