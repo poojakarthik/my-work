@@ -207,7 +207,7 @@ abstract class ORM_Enumerated extends ORM_Cached
 				// You have to set the system_name
 				$object->setSystemName($arrRecord['system_name']);
 
-				$arrObjects[] = $object;
+				$arrObjects[$object->id] = $object;
 			}
 			
 			// Add the objects to the cache as a bulk operation
