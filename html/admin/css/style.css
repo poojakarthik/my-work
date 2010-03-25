@@ -2638,4 +2638,9 @@ td.cost-centre-buttons
 	vertical-align	: middle;
 }
 
+td.cost-centre-buttons > img
+{
+	cursor	: pointer;
+}
+
 /************************ END - Cost Centre Popup - END ************************/

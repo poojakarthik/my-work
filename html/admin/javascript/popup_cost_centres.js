@@ -113,8 +113,10 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// Bind events to the elements (edit & text)
 		var oEditImage	= oNewTR.select( 'td > img' ).first();
+		var oNameTD		= oNewTR.select( 'td.cost-centre-name' ).first();
 		var oText		= oNewTR.select( 'td > input' ).first();
 		oEditImage.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, true));
+		oNameTD.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, true));
 		oText.observe('blur', this._checkForValueChange.bind(this, mCostCentre));
 		
 		// Add the new LI to the LI map (only if valid)
