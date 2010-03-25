@@ -2606,7 +2606,7 @@ div.cost-centre-list > table
 	table-layout	: fixed;
 }
 
-div.cost-centre-list > table > th
+div.cost-centre-list > table th
 {
 	text-align	: left;
 }
