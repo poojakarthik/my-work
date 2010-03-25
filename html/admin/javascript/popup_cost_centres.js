@@ -213,7 +213,16 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		}
 		
 		// Add the new cost centres
-		
+		for (var i = 0; i < this.aNewTRArray.length; i++)
+		{
+			sName = this.aNewTRArray[i].select('td > input').first().value;
+			
+			if (sName != '')
+			{
+				aChanges.push({iId: null, sName: sName});
+				iChangeCount++;
+			}
+		}
 		
 		if (iChangeCount)
 		{
@@ -257,7 +266,6 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		{
 			if (oTRCostCentre === this.aNewTRArray[i])
 			{
-				alert('removed');
 				this.aNewTRArray = this.aNewTRArray.splice(i, 1);
 				break;
 			}
