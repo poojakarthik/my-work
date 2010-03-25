@@ -2598,7 +2598,7 @@ ol.horizontal > li
 /************************ START - Cost Centre Popup - START ************************/
 div.cost-centre-list
 {
-	table-layout	: fixed;
+	text-align	: center;
 }
 
 div.cost-centre-list > table
