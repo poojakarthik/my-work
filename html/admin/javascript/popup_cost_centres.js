@@ -1,3 +1,4 @@
+
 var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, iAccountId)
@@ -6,10 +7,10 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// This array to hold a reference to the LI in the main UL for each cost centre
 		this.hTRMap = {};
+		this.aNewTRArray = [];
 		this.iCostCentreCount = 0;
 		this.iAccountId = iAccountId;
 		this.oTBody = null;
-		this.sCurrentEditedInputValue = null;
 		
 		this._buildUI();
 	},
@@ -105,7 +106,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.input({type: 'text', style: 'display: none', value: sName})
 								),
 								$T.td({class: 'cost-centre-buttons'},
-									$T.img({src: '../admin/img/template/user_edit.png'})
+									$T.img({src: Popup_Cost_Centres.EDIT_IMAGE_SOURCE})
 								)
 							);
 		var mCostCentre	= (iId != null ? iId : oNewTR);
@@ -124,6 +125,10 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		{
 			this.hTRMap[iId] = oNewTR;
 		} 
+		else 
+		{
+			this.aNewTRArray.push(oNewTR);
+		}	
 				
 		this._setCostCentreEditMode(mCostCentre, bInEditMode);
 	},
@@ -195,16 +200,20 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		var sName = null;
 		var iChangeCount = 0;
 		
+		// Add the changes
 		for (var iId in this.hTRMap)
 		{
 			sName = this.hTRMap[iId].select('td > input').first().value;
 			
 			if (sName != '')
 			{
-				aChanges[iId] = sName;
+				aChanges.push({iId: iId, sName: sName});
 				iChangeCount++;
 			}
 		}
+		
+		// Add the new cost centres
+		
 		
 		if (iChangeCount)
 		{
@@ -241,8 +250,20 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	
 	_removeCostCentre		: function(mCostCentre)
 	{
-		var oLiCostCentre = this._getCostCentreTR(mCostCentre);
-		this.oTBody.removeChild(oLiCostCentre);
+		var oTRCostCentre = this._getCostCentreTR(mCostCentre);
+		
+		// Remove the reference to the TR from the NewTRArray
+		for (var i = 0; i < this.aNewTRArray.length; i++)
+		{
+			if (oTRCostCentre === this.aNewTRArray[i])
+			{
+				alert('removed');
+				this.aNewTRArray = this.aNewTRArray.splice(i, 1);
+				break;
+			}
+		}
+		
+		this.oTBody.removeChild(oTRCostCentre);
 	},
 	
 	_getCostCentreTR		: function(mCostCentre)
@@ -260,3 +281,4 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	}
 });
 
+Popup_Cost_Centres.EDIT_IMAGE_SOURCE = '../admin/img/template/user_edit.png';
