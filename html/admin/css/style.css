@@ -2606,6 +2606,11 @@ div.cost-centre-list > table
 	table-layout	: fixed;
 }
 
+div.cost-centre-list > table > th
+{
+	text-align	: left;
+}
+
 col.cost-centre-name-col
 {
 	width	: 65%;
@@ -2632,11 +2637,5 @@ td.cost-centre-buttons
 {
 	vertical-align	: middle;
 }
-
-th.cost-centre-add
-{
-	text-align	: left;
-}
-
 
 /************************ END - Cost Centre Popup - END ************************/
