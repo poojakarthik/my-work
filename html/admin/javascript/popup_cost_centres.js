@@ -105,18 +105,19 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.input({type: 'text', style: 'display: none', value: sName})
 								),
 								$T.td({class: 'cost-centre-buttons'},
-									$T.button({class: 'popup-cost-centre-edit'},
+									/*$T.button({class: 'popup-cost-centre-edit'},
 										'Edit'
-									)
+									)*/
+									$T.img({src: '../admin/img/template/MsgNotice.png'})
 								)
 							);
 		var mCostCentre	= (iId != null ? iId : oNewTR);
 		this.oTBody.appendChild(oNewTR);
 		
 		// Bind events to the elements (edit & text)
-		var oEditButton	= oNewTR.select( 'button.popup-cost-centre-edit' ).first();
+		var oEditImage	= oNewTR.select( 'td > img' ).first();
 		var oText		= oNewTR.select( 'td > input' ).first();
-		oEditButton.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, true));
+		oEditImage.observe('click', this._setCostCentreEditMode.bind(this, mCostCentre, true));
 		oText.observe('blur', this._checkForValueChange.bind(this, mCostCentre));
 		
 		// Add the new LI to the LI map (only if valid)
@@ -164,7 +165,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		{
 			var oSpan 			= oTRCostCentre.select('td > span').first();
 			var oText 			= oTRCostCentre.select('td > input').first();
-			var oEditButton 	= oTRCostCentre.select('td > button.popup-cost-centre-edit').first();
+			var oEditImage 		= oTRCostCentre.select('td > img').first();
 			
 			if (bInEditMode)
 			{
@@ -174,13 +175,13 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 				oText.focus();
 				
 				oSpan.hide();
-				oEditButton.hide();
+				oEditImage.hide();
 			}
 			else 
 			{
 				// NOT in edit mode, show the span and the edit button
 				oSpan.show();
-				oEditButton.show();
+				oEditImage.show();
 				
 				oText.hide();
 				oText.value = '';
