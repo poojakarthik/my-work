@@ -168,10 +168,10 @@ class JSON_Handler_Account extends JSON_Handler
 		catch (Exception $e)
 		{
 			return array(
-							"Success"		=> false,
-							"ErrorMessage"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? 'ERROR: '.$e->getMessage() : false,
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
-						);
+						"Success"		=> false,
+						"ErrorMessage"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? 'ERROR: '.$e->getMessage() : false,
+						"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+					);
 		}
 	}
 }
