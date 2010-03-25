@@ -107,6 +107,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		this.oTBody.appendChild(this.oAddNewCostCentreTR);
 		this.setTitle('Manage Cost Centres');
+		this.setIcon('../admin/img/template/building.png');
 		this.addCloseButton();
 		this.setContent(oContent);
 		this.display();
