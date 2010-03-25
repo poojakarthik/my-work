@@ -105,10 +105,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.input({type: 'text', style: 'display: none', value: sName})
 								),
 								$T.td({class: 'cost-centre-buttons'},
-									/*$T.button({class: 'popup-cost-centre-edit'},
-										'Edit'
-									)*/
-									$T.img({src: '../admin/img/template/MsgNotice.png'})
+									$T.img({src: '../admin/img/template/edit.png'})
 								)
 							);
 		var mCostCentre	= (iId != null ? iId : oNewTR);
