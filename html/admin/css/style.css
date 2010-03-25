@@ -2602,6 +2602,11 @@ div.cost-centre-list
 	padding		: 0.5em;
 }
 
+div.cost-centre-list > div
+{
+	background-color:	#ffffff;
+}
+
 div.cost-centre-list > table.reflex,
 div.cost-centre-list > div > table.reflex
 {
@@ -2658,6 +2663,18 @@ td.cost-centre-name
 td.cost-centre-name > input
 {
 	width	: 100%;
+}
+
+td.cost-centre-name > span,
+td.cost-centre-name > img,
+td.cost-centre-name > input
+{
+	vertical-align	: middle;
+}
+
+td.cost-centre-name > img
+{
+	margin-right	: 0.25em;
 }
 
 td.add 

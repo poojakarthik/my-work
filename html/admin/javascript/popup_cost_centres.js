@@ -44,12 +44,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									),
 									$T.thead(
 										$T.tr(
-											$T.th(
-												/*$T.button({class: 'cost-centre-add'},
-													$T.img({src: Popup_Cost_Centres.ADD_IMAGE_SOURCE}),
-													$T.span('Add')
-												)*/
-											),
+											$T.th(),
 											$T.th()
 										)
 									)
@@ -82,10 +77,6 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 							);
 		this.oTBody 	= oContent.select('tbody').first();
 		
-		// Set the add buttons event handler
-		//var oAddButton = oContent.select( 'button' ).first();
-		//oAddButton.observe('click', this._addCostCentre.bind(this, null, '', true));
-		
 		// Set the save buttons event handler
 		var oSaveButton	= oContent.select( 'button' ).last().previous();
 		oSaveButton.observe('click', this._saveChanges.bind(this));
@@ -105,13 +96,11 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// Create the 'Add' row
 		this.oAddNewCostCentreTR = $T.tr(
-										$T.td({class: 'cost-centre-name add'},
+										$T.td({class: 'cost-centre-name add', colspan: '2'},
+											$T.img({src: Popup_Cost_Centres.ADD_IMAGE_SOURCE}),
 											$T.span(
-												'Add a new Cost Centre'
+												'Click to add a new Cost Centre...'
 											)
-										),
-										$T.td({class: 'cost-centre-buttons'},
-											$T.img({src: Popup_Cost_Centres.ADD_IMAGE_SOURCE})
 										)
 									);
 		this.oAddNewCostCentreTR.observe('click', this._addCostCentre.bind(this, null, '', true));
