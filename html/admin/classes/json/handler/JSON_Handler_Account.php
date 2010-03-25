@@ -134,10 +134,11 @@ class JSON_Handler_Account extends JSON_Handler
 	{
 		try
 		{
+			// Handles multiple changes
 			foreach ($aChanges as $aCostCentre)
 			{
-				$iId 	= $aCostCentre['iId'];
-				$sName 	= $aCostCentre['sName'];
+				$iId 	= $aCostCentre->iId;
+				$sName 	= $aCostCentre->sName;
 				
 				// If iId is given, get the cost centre for the id and update, otherwise create a new cost centre
 				if (is_numeric($iId))

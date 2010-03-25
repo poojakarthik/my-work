@@ -11,6 +11,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		this.iCostCentreCount = 0;
 		this.iAccountId = iAccountId;
 		this.oTBody = null;
+		this.oAddNewCostCentreTR = null;
 		
 		this._buildUI();
 	},
@@ -43,48 +44,79 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									),
 									$T.thead(
 										$T.tr(
-											$T.th(),
-											$T.th()
-										)
-									),
-									$T.tfoot(
-										$T.tr(
 											$T.th(
-												$T.button({class: 'cost-centre-add'},
-													'Add'
-												)
+												/*$T.button({class: 'cost-centre-add'},
+													$T.img({src: Popup_Cost_Centres.ADD_IMAGE_SOURCE}),
+													$T.span('Add')
+												)*/
 											),
 											$T.th()
 										)
-									),
-									$T.colgroup(
-										$T.col({class: 'cost-centre-name-col'}),
-										$T.col({class: 'cost-centre-buttons-col'})
-									),
-									$T.tbody()
+									)
+								),
+								$T.div(
+									$T.table({class: 'reflex'},
+										$T.colgroup(
+											$T.col({class: 'cost-centre-name-col'}),
+											$T.col({class: 'cost-centre-buttons-col'})
+										),
+										$T.tbody()
+									)
+								),
+								$T.table({class: 'reflex'},
+									$T.tfoot(
+										$T.tr(
+											$T.th(),
+											$T.th()
+										)
+									)
 								),
 								$T.button(
-									'Save'
+									$T.img({src: Popup_Cost_Centres.SAVE_IMAGE_SOURCE}),
+									$T.span('Save')
+								),
+								$T.button(
+									$T.img({src: Popup_Cost_Centres.CANCEL_IMAGE_SOURCE}),
+									$T.span('Cancel')
 								)
 							);
 		this.oTBody 	= oContent.select('tbody').first();
 		
 		// Set the add buttons event handler
-		var oAddButton	= oContent.select( 'button' ).first();
-		oAddButton.observe('click', this._addCostCentre.bind(this, null, '', true));
+		//var oAddButton = oContent.select( 'button' ).first();
+		//oAddButton.observe('click', this._addCostCentre.bind(this, null, '', true));
 		
 		// Set the save buttons event handler
-		var oSaveButton	= oContent.select( 'button' ).last();
+		var oSaveButton	= oContent.select( 'button' ).last().previous();
 		oSaveButton.observe('click', this._saveChanges.bind(this));
+		
+		// Set the cancel buttons event handler
+		var oCancelButton = oContent.select( 'button' ).last();
+		oCancelButton.observe('click', this.hide.bind(this));
 		
 		// Add all cost centres from response
 		var aCostCentres = jQuery.json.arrayAsObject(oResponse.aCostCentres);
+		var iCostCentreCount = 0;
 		
 		for (var i in aCostCentres)
 		{
 			this._addCostCentre(aCostCentres[i].Id, aCostCentres[i].Name);
 		}
 		
+		// Create the 'Add' row
+		this.oAddNewCostCentreTR = $T.tr(
+										$T.td({class: 'cost-centre-name add'},
+											$T.span(
+												'Add a new Cost Centre'
+											)
+										),
+										$T.td({class: 'cost-centre-buttons'},
+											$T.img({src: Popup_Cost_Centres.ADD_IMAGE_SOURCE})
+										)
+									);
+		this.oAddNewCostCentreTR.observe('click', this._addCostCentre.bind(this, null, '', true));
+		
+		this.oTBody.appendChild(this.oAddNewCostCentreTR);
 		this.setTitle('Manage Cost Centres');
 		this.addCloseButton();
 		this.setContent(oContent);
@@ -95,10 +127,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	{
 		this.iCostCentreCount++;
 		
-		var sAltClass = (this.iCostCentreCount % 2) ? 'alt' : '';
-		
 		// Attach a new TR to the main TBODY
-		var oNewTR 		=	$T.tr({class: sAltClass},
+		var oNewTR 		=	$T.tr(
 								$T.td({class: 'cost-centre-name'},
 									$T.span(
 										sName
@@ -110,7 +140,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 								)
 							);
 		var mCostCentre	= (iId != null ? iId : oNewTR);
-		this.oTBody.appendChild(oNewTR);
+		this.oTBody.insertBefore(oNewTR, this.oAddNewCostCentreTR);
 		
 		// Bind events to the elements (edit & text)
 		var oEditImage	= oNewTR.select( 'td > img' ).first();
@@ -173,13 +203,16 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 			
 			if (bInEditMode)
 			{
-				// In edit mode, show the text box and the save & cancel buttons
-				oText.value = oSpan.innerHTML;
-				oText.show();
-				oText.focus();
-				
-				oSpan.hide();
-				oEditImage.hide();
+				if (!oText.visible())
+				{
+					// In edit mode, show the text box and the save & cancel buttons
+					oText.value = oSpan.innerHTML;
+					oText.show();
+					oText.focus();
+					
+					oSpan.hide();
+					oEditImage.hide();
+				}
 			}
 			else 
 			{
@@ -196,7 +229,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	_saveChanges	: function()
 	{
 		// Get the name and id, pass to saveCostCentre
-		var aChanges = {};
+		var aChanges = [];
 		var sName = null;
 		var iChangeCount = 0;
 		
@@ -266,7 +299,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		{
 			if (oTRCostCentre === this.aNewTRArray[i])
 			{
-				this.aNewTRArray = this.aNewTRArray.splice(i, 1);
+				this.aNewTRArray.splice(i, 1);
 				break;
 			}
 		}
@@ -289,4 +322,8 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	}
 });
 
-Popup_Cost_Centres.EDIT_IMAGE_SOURCE = '../admin/img/template/user_edit.png';
+// Interface constants
+Popup_Cost_Centres.EDIT_IMAGE_SOURCE	= '../admin/img/template/pencil.png';
+Popup_Cost_Centres.ADD_IMAGE_SOURCE 	= '../admin/img/template/new.png';
+Popup_Cost_Centres.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
+Popup_Cost_Centres.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';

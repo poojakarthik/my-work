@@ -2579,7 +2579,7 @@ table.form-layout > tbody > tr > td > ul > li > table
 ul.reset,
 ol.reset
 {
-	padding	: 0px;
+	padding	: 0em;
 }
 
 ul.reset > li,
@@ -2599,16 +2599,43 @@ ol.horizontal > li
 div.cost-centre-list
 {
 	text-align	: center;
+	padding		: 0.5em;
 }
 
-div.cost-centre-list > table
+div.cost-centre-list > table.reflex,
+div.cost-centre-list > div > table.reflex
+{
+	margin			: 0em;
+	width			: 100%;
+}
+
+div.cost-centre-list > div > table.reflex
 {
 	table-layout	: fixed;
+	width			: 100%;
+	border			: none;
 }
 
-div.cost-centre-list > table th
+div.cost-centre-list > table.reflex th
 {
 	text-align	: left;
+}
+
+div.cost-centre-list > div > table.reflex > tbody > tr:nth-child(odd) > td
+{
+	background-color	: #fff;
+}
+
+div.cost-centre-list > div
+{
+	overflow-y			: scroll;
+	height				: 20em;
+	width				: 100%;
+	border-left			: 0.1em solid #333333;
+	border-right		: 0.1em solid #333333;
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+	box-sizing			: border-box;
 }
 
 col.cost-centre-name-col
@@ -2633,6 +2660,11 @@ td.cost-centre-name > input
 	width	: 100%;
 }
 
+td.add 
+{
+	font-style	: italic;
+}
+
 td.cost-centre-buttons
 {
 	vertical-align	: middle;
@@ -2641,6 +2673,17 @@ td.cost-centre-buttons
 td.cost-centre-buttons > img
 {
 	cursor	: pointer;
+}
+
+div.cost-centre-list button > img
+{
+	vertical-align	: middle;
+	margin-right	: 0.25em;
+}
+
+div.cost-centre-list button > span
+{
+	vertical-align	: middle;
 }
 
 /************************ END - Cost Centre Popup - END ************************/
