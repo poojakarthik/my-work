@@ -83,7 +83,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		// Set the cancel buttons event handler
 		var oCancelButton = oContent.select( 'button' ).last();
-		oCancelButton.observe('click', this.hide.bind(this));
+		oCancelButton.observe('click', this._showCancelConfirmation.bind(this));
 		
 		// Add all cost centres from response
 		var aCostCentres = jQuery.json.arrayAsObject(oResponse.aCostCentres);
@@ -111,6 +111,12 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		this.addCloseButton();
 		this.setContent(oContent);
 		this.display();
+	},
+	
+	_showCancelConfirmation	: function()
+	{
+		var sPopupId = 'Flex_Cost_Centres_Cancel_'+(Math.round(Math.random()*100));
+		Vixen.Popup.YesNoCancel("Are you sure you want to cancel and revert all changes?", this.hide.bind(this), Vixen.Popup.Close.bind(Vixen.Popup, sPopupId), null, null, sPopupId, "Revert Changes");
 	},
 	
 	_addCostCentre	: function(iId, sName, bInEditMode)
