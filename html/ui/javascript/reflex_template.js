@@ -32,7 +32,8 @@ Reflex_Template._createElement	= function(sTag)
 		{
 			//alert(typeof arguments[i]);
 			// Text Node
-			oElement.appendChild(document.createTextNode(String(arguments[i]).escapeHTML()));
+			//oElement.appendChild(document.createTextNode(String(arguments[i]).escapeHTML()));
+			oElement.appendChild(document.createTextNode(String(arguments[i])));
 		}
 	}
 	

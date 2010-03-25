@@ -2704,3 +2704,19 @@ div.cost-centre-list button > span
 }
 
 /************************ END - Cost Centre Popup - END ************************/
+
+/************************ START - Charge Type Manage - START ************************/
+
+#ChargeTypeContainer div.caption_title
+{
+	min-height	: 1.55em;
+}
+
+#ChargeTypeContainer div.caption_options > div
+{
+	float		: right; 
+	margin-left	: 2em;
+}
+
+/************************ END - Charge Type Manage - END ************************/
+
