@@ -2596,7 +2596,12 @@ ol.horizontal > li
 /************************ END - Reset List Styles - END ************************/
 
 /************************ START - Cost Centre Popup - START ************************/
-table.cost-centre-list
+div.cost-centre-list
+{
+	table-layout	: fixed;
+}
+
+div.cost-centre-list > table
 {
 	table-layout	: fixed;
 }
