@@ -3034,7 +3034,7 @@ class MenuItems {
 	function ManageSingleAdjustmentTypes() {
 		$this->strContextMenuLabel = "Manage Single Adjustment Types";
 		$this->strLabel = "Manage Single Adjustment Types";
-		return self :: OLD_FRAMEWORK . "charges_charge_list.php";
+		return self::NEW_FRAMEWORK . "reflex.php/ChargeType/Manage/";
 	}
 
 	//------------------------------------------------------------------------//

@@ -259,16 +259,17 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 			oPopup.display();
 			
 			// AJAX request to save changes
-			this._saveCostCentres = jQuery.json.jsonFunction(this._fnSaveComplete.bind(this,oPopup), this._saveCostCentresError.bind(this), 'Account', 'saveCostCentreChanges');
+			this._saveCostCentres = jQuery.json.jsonFunction(this._saveComplete.bind(this,oPopup), this._saveCostCentresError.bind(this), 'Account', 'saveCostCentreChanges');
 			this._saveCostCentres(this.iAccountId, aChanges);
 		}
 		else 
 		{
-			Reflex_Popup.alert('There are no changes to save');
+			// Behave as though save is complete, there are no changes
+			this._saveComplete();
 		}
 	},
 	
-	_fnSaveComplete	: function(oPopup)
+	_saveComplete	: function(oPopup)
 	{
 		if (oPopup)
 		{
