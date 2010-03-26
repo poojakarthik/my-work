@@ -1,6 +1,6 @@
 <?php
 
-class HtmlTemplate_Charge_Type_Manage extends FlexHtmlTemplate
+class HtmlTemplate_Recurring_Charge_Type_Manage extends FlexHtmlTemplate
 {
 	private	$_arrActionAssociationTypeColumnOrder = array();
 	
@@ -10,22 +10,22 @@ class HtmlTemplate_Charge_Type_Manage extends FlexHtmlTemplate
 		
 		$this->LoadJavascript('dataset_ajax');
 		$this->LoadJavascript('pagination');
-		$this->LoadJavascript("page_charge_type");
-		$this->LoadJavascript("popup_charge_type");
+		$this->LoadJavascript("page_recurring_charge_type");
+		//$this->LoadJavascript("popup_recurring_charge_type");
 		
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->SetCurrentPage("Manage Single Adjustment Types");
+		BreadCrumb()->SetCurrentPage("Manage Recurring Adjustment Types");
 	}
 
 	public function Render()
 	{
 		echo "
-<div id='ChargeTypeContainer'></div>
+<div id='RecurringChargeTypeContainer'></div>
 <script type='text/javascript'>
 	Event.observe(window, 'load', 
 		function()
 		{
-			objAdjustmentType = new Page_Charge_Type(\$ID('ChargeTypeContainer'));
+			objAdjustmentType = new Page_Recurring_Charge_Type(\$ID('RecurringChargeTypeContainer'));
 		}, false)
 </script>\n";
 
