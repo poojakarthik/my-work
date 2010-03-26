@@ -58,7 +58,7 @@ var Dataset_Ajax	= Class.create
 		
 		// Choose our results
 		var arrResultSet	= {};
-		for (var i = intOffset, j = (intOffset + intLimit); i < j; i++)
+		for (var i = intOffset, j = (intOffset + intLimit); i <= j; i++)
 		{
 			if (this._arrRecordCache[i])
 			{

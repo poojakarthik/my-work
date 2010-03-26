@@ -116,13 +116,18 @@ var Page_Charge_Type = Class.create(
 			},
 		};		
 		
-		// Bind 'add' button event
+		// Bind 'add' button event, making it create a popup which calls back to load the last page of data on completion
 		var oAddButton = this.oContentDiv.select('tfoot button').first();
-		oAddButton.observe('click', function(){new Popup_Charge_Type();});
+		oAddButton.observe('click', this._showAddPopup.bind(this));
 		
 		// Attach content and get data
 		oContainerDiv.appendChild(this.oContentDiv);
 		this.oPagination.getCurrentPage();
+	},
+	
+	_showAddPopup	: function()
+	{
+		new Popup_Charge_Type(this.oPagination.lastPage.bind(this.oPagination));
 	},
 	
 	_updateTable	: function(oResultSet)
@@ -167,7 +172,7 @@ var Page_Charge_Type = Class.create(
 			oCaptionTitle.innerHTML	= 'Page '+ iCurrentPage +' of ' + oResultSet.intPageCount;
 			
 			// Add the rows
-			var aData 			= oResultSet.arrResultSet;
+			var aData 			= jQuery.json.arrayAsObject(oResultSet.arrResultSet);
 			var bAlternateRow	= true;
 			
 			for(var iId in aData)
@@ -179,6 +184,7 @@ var Page_Charge_Type = Class.create(
 			this._updatePagination();
 		}
 		
+		// Close the loading popup
 		if (this.oLoadingOverlay)
 		{
 			this.oLoadingOverlay.hide();
@@ -209,10 +215,10 @@ var Page_Charge_Type = Class.create(
 			if (!oData.automatic_only && !oData.Archived)
 			{
 				var oLastTD = oTR.select('td:last-child' ).first();
-				//debugger;
+				
 				// Add click event to the 'archive' button
 				var oArchiveButton = $T.img({src: Page_Charge_Type.ARCHIVE_IMAGE_SOURCE, alt: 'Archive', title: 'Archive'});
-				oArchiveButton.observe('click', this._archiveChargeType.bind(this, oData.Id, false));
+				oArchiveButton.observe('click', this._archive.bind(this, oData.Id, false));
 				
 				oLastTD.appendChild(oArchiveButton);
 			}
@@ -270,7 +276,7 @@ var Page_Charge_Type = Class.create(
 		}
 	},
 	
-	_archiveChargeType	: function(iId, bConfirmed)
+	_archive	: function(iId, bConfirmed)
 	{
 		// Show yes, no, cancel
 		if (!bConfirmed)
@@ -283,28 +289,35 @@ var Page_Charge_Type = Class.create(
 											sTitle			: 'Archive Confirmation', 
 											sYesLabel		: 'Yes, Archive', 
 											sNoLabel		: 'No, do not Archive', 
-											fnOnYes			: this._archiveChargeType.bind(this, iId, true, false)
+											fnOnYes			: this._archive.bind(this, iId, true, false)
 										});
 			return;
 		}
 		
-		var fnArchiveComplete = function(oPopup)
+		var fnArchiveComplete = function()
 		{
-			this.oLoadingOverlay = oPopup;
 			this.oPagination.getCurrentPage();
 		}
 		
 		var oArchivingPopup = new Reflex_Popup.Loading('Archiving...');
 		oArchivingPopup.display();
+		this.oLoadingOverlay = oArchivingPopup;
 		
 		// Archive confirmed do the AJAX request
-		var fnArchiveChargeType = jQuery.json.jsonFunction(fnArchiveComplete.bind(this, oArchivingPopup), this._archiveFailed.bind(this), 'Charge_Type', 'archiveChargeType');
-		fnArchiveChargeType(iId);
+		var fnArchive = jQuery.json.jsonFunction(fnArchiveComplete.bind(this, oArchivingPopup), this._archiveFailed.bind(this), 'Charge_Type', 'archive');
+		fnArchive(iId);
 	},
 	
 	_archiveFailed	: function(oResponse)
 	{
 		Reflex_Popup.alert('There was an error accessing the database' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Database Error'});
+		
+		// Close the loading popup
+		if (this.oLoadingOverlay)
+		{
+			this.oLoadingOverlay.hide();
+			delete this.oLoadingOverlay;
+		}
 	}
 });
 

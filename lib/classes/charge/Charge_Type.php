@@ -175,12 +175,15 @@ class Charge_Type extends ORM_Cached
 		{
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oCharges->Error());
 		}
-
+		
 		// Create the Charge objects (these objects will also include the fields accountName and serviceFNN)
 		$aChargeTypeObjects = array();
+		$iCurrentIndex = $iOffset;
+		
 		while ($aRecord = $oRecords->Fetch())
 		{
-			$aChargeTypeObjects[$aRecord['Id']] = new self($aRecord);
+			$aChargeTypeObjects[$iCurrentIndex] = new self($aRecord);
+			$iCurrentIndex++;
 		}
 		
 		// Create the pagination details, if a Limit clause was used

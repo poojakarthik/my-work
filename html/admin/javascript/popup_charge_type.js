@@ -1,10 +1,11 @@
 
 var Popup_Charge_Type	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super)
+	initialize	: function($super, fnOnClose)
 	{
 		$super(40);
 		
+		this.fnOnClose = fnOnClose;
 		this._buildUI();
 	},
 	
@@ -14,6 +15,13 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		var oContent 	=	$T.div({class: 'charge-type'},
 								$T.div({class: 'charge-type-table'},
 									$T.table({class: 'reflex'},
+										$T.caption(
+											$T.div({class: 'caption_bar'},						
+												$T.div({class: 'caption_title'},
+													'Details'
+												)
+											)
+										),
 										$T.colgroup(
 											$T.col(),
 											$T.col()
@@ -105,14 +113,93 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		
 		this.setTitle('Add Adjustment Type');
 		this.setIcon('../admin/img/template/charge_small.png');
-		this.addCloseButton();
 		this.setContent(oContent);
 		this.display();
 	},
 	
 	_saveChanges	: function()
 	{
+		// Get the data
+		var aTR 			= this.oContent.select('div.charge-type-table > table.reflex > tbody > tr');
+		var sCode 			= aTR[0].select('input').first().value;
+		var sDescription 	= aTR[1].select('input').first().value;
+		var sAmount 		= aTR[2].select('input').first().value;
+		var sNature			= aTR[3].select('select').first().value;
+		var bFixed			= aTR[4].select('input').first().checked;
 		
+		// Validate the data
+		var aValidationErrors = $T.ul(); 
+		
+		if (!sCode || sCode == '')
+		{
+			aValidationErrors.appendChild($T.li('Please supply a Charge Code'));
+		}
+		
+		if (!sDescription || sDescription == '')
+		{
+			aValidationErrors.appendChild($T.li('Please supply a Description'));
+		}
+		
+		if (!sAmount || sAmount == '' || isNaN(sAmount))
+		{
+			aValidationErrors.appendChild($T.li('Please supply an Amount in dollars'));
+		}
+		
+		if (aValidationErrors.childNodes.length)
+		{
+			Reflex_Popup.alert(
+							$T.div({style: 'margin: 0.5em'},
+								'The following errors have occured: ',
+								aValidationErrors
+							),
+							{
+								iWidth	: 25,
+								sTitle	: 'Validation Errors'
+							}
+						);
+			return;
+		}
+		
+		// Build request data
+		var oRequestData = 	{
+							iId				: null,
+							sChargeType		: sCode, 
+							sDescription	: sDescription, 
+							fAmount			: parseFloat(sAmount), 
+							sNature			: sNature, 
+							bFixed			: bFixed
+						};
+		
+		var oSavePopup = new Reflex_Popup.Loading('Saving...');
+		oSavePopup.display();
+		this.oSavingOverlay = oSavePopup;
+		
+		// Make AJAX request
+		this._saveChargeType = jQuery.json.jsonFunction(this._saveComplete.bind(this), this._saveCostCentresError.bind(this), 'Charge_Type', 'save');
+		this._saveChargeType(oRequestData);
+	},
+	
+	_saveComplete	: function(oResponse)
+	{
+		// On close callback
+		if (this.fnOnClose)
+		{
+			this.fnOnClose();
+		}
+		
+		// Hide saving overlay
+		this.oSavingOverlay.hide();
+		
+		// Hide this
+		this.hide();
+		
+		// Confirmation
+		Reflex_Popup.alert('Adjustment Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
+	},
+	
+	_saveCostCentresError	: function(oResponse)
+	{
+		Reflex_Popup.alert('There was an error saving the Adjustment Type' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Save Error'});
 	},
 	
 	_showCancelConfirmation	: function()
