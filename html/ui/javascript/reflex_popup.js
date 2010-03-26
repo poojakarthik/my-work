@@ -84,12 +84,12 @@ Object.extend(Reflex_Popup, {
 		
 		oPopup.setTitle(oConfig.sTitle);
 		oPopup.setIcon(oConfig.sIconSource);
-		oPopup.addCloseButton();
 			
 		var oCloseButton = 	$T.button(
 								oConfig.sButtonLabel.escapeHTML()
 							);
 		
+		// Close function
 		var fnOnClose = function(oPopup, fnCallback)
 		{
 			oPopup.hide();
@@ -102,6 +102,84 @@ Object.extend(Reflex_Popup, {
 		
 		oCloseButton.observe('click', fnOnClose.curry(oPopup, oConfig.fnOnClose));
 		oPopup.setFooterButtons([oCloseButton], true);
+		
+		// Apply padding if text only content
+		if (typeof mContent == 'string')
+		{
+			mContent = 	$T.div({style: 'margin: 0.5em; text-align: center;'},
+							mContent
+						);
+		}
+		
+		oPopup.setContent(mContent);
+		oPopup.display();
+	},
+	
+	yesNoCancel	: function(mContent, oConfig)
+	{
+		// Config Defaults
+		oConfig	 				= (typeof oConfig !== 'undefined') 			? oConfig 					: {};
+		oConfig.sTitle 			= oConfig.sTitle 							? oConfig.sTitle 			: Reflex_Popup.DEFAULT_YESNOCANCEL_TITLE;
+		oConfig.iWidth 			= (parseInt(oConfig.iWidth)) 				? oConfig.iWidth			: Reflex_Popup.DEFAULT_ALERT_WIDTH;
+		oConfig.sIconSource 	= oConfig.sIconSource 						? oConfig.sIconSource 		: Reflex_Popup.DEFAULT_ALERT_ICON_SOURCE;
+		oConfig.sYesLabel 		= oConfig.sYesLabel 						? oConfig.sYesLabel			: Reflex_Popup.DEFAULT_YESNOCANCEL_YES_LABEL;
+		oConfig.sNoLabel 		= oConfig.sNoLabel 							? oConfig.sNoLabel			: Reflex_Popup.DEFAULT_YESNOCANCEL_NO_LABEL;
+		oConfig.sCancelLabel 	= oConfig.sCancelLabel 						? oConfig.sCancelLabel		: Reflex_Popup.DEFAULT_YESNOCANCEL_CANCEL_LABEL;
+		oConfig.bShowCancel 	= oConfig.bShowCancel 						? oConfig.bShowCancel		: false;
+		oConfig.fnOnYes 		= typeof oConfig.fnOnYes === 'function' 	? oConfig.fnOnYes 			: null;
+		oConfig.fnOnNo 			= typeof oConfig.fnOnNo === 'function' 		? oConfig.fnOnNo 			: null;
+		oConfig.fnOnCancel 		= typeof oConfig.fnOnCancel === 'function' 	? oConfig.fnOnCancel 		: null;
+		oConfig.bOverrideStyle	= oConfig.bOverrideStyle					? oConfig.bOverrideStyle	: false; 
+		
+		var oPopup	= new Reflex_Popup(oConfig.iWidth);
+		oPopup.setTitle(oConfig.sTitle);
+		oPopup.setIcon(oConfig.sIconSource);
+		
+		// Create footer buttons
+		var aFooterButtons	= [];
+		var oYesButton 		= 	$T.button(
+									oConfig.sYesLabel.escapeHTML()
+								);
+		var oNoButton 		= 	$T.button(
+									oConfig.sNoLabel.escapeHTML()
+								);
+		aFooterButtons.push(oYesButton);
+		aFooterButtons.push(oNoButton);
+		
+		// Handler for all button events
+		var fnClosePopup = function(oPopup, fnCallback)
+		{
+			oPopup.hide();
+			
+			if( typeof fnCallback === 'function')
+			{
+				fnCallback();
+			}
+		}
+		
+		oYesButton.observe('click', fnClosePopup.curry(oPopup, oConfig.fnOnYes));
+		oNoButton.observe('click', fnClosePopup.curry(oPopup, oConfig.fnOnNo));
+		
+		// Add the cancel button and it's event handler if specified
+		if (oConfig.bShowCancel)
+		{
+			var oCancelButton = $T.button(
+									oConfig.sCancelLabel.escapeHTML()
+								);
+			aFooterButtons.push(oCancelButton);
+			oCancelButton.observe('click', fnClosePopup.curry(oPopup, oConfig.fnOnCancel));
+		}
+		
+		oPopup.setFooterButtons(aFooterButtons, true);
+		
+		// Apply padding if text only content
+		if ((typeof mContent == 'string') || !oConfig.bOverrideStyle)
+		{
+			mContent = 	$T.div({style: 'margin: 0.5em; text-align: center;'},
+							mContent
+						);
+		}
+		
 		oPopup.setContent(mContent);
 		oPopup.display();
 	}
@@ -112,6 +190,12 @@ Reflex_Popup.DEFAULT_ALERT_WIDTH 		= 40;
 Reflex_Popup.DEFAULT_ALERT_TITLE 		= 'Notification';
 Reflex_Popup.DEFAULT_ALERT_BUTTON_LABEL = 'OK';
 Reflex_Popup.DEFAULT_ALERT_ICON_SOURCE 	= '../admin/img/template/MsgNotice.png';
+
+// Yes/No/Cancel constants
+Reflex_Popup.DEFAULT_YESNOCANCEL_TITLE			= 'Confirmation';
+Reflex_Popup.DEFAULT_YESNOCANCEL_YES_LABEL		= 'Yes';
+Reflex_Popup.DEFAULT_YESNOCANCEL_NO_LABEL		= 'No';
+Reflex_Popup.DEFAULT_YESNOCANCEL_CANCEL_LABEL	= 'Cancel';
 
 Reflex_Popup.overlay.className = 'reflex-popup-overlay';
 Reflex_Popup.opaquePane.className = 'reflex-popup-opaque';
@@ -348,23 +432,25 @@ Object.extend(Reflex_Popup.Loading.prototype, {
 	
 	loading: null,
 	
-	initialize: function()
+	initialize: function(sMessage)
 	{
 		this.parentInitialize(20);
+		
+		sMessage = sMessage ? String(sMessage) : 'Loading...';
+		
 		var loading = this.loading = document.createElement('div');
 		loading.className = "reflex-loading-image";
 		loading.style.height = '8em';
 		p = document.createElement('p');
 		loading.appendChild(p);
-		p.appendChild(document.createTextNode('Loading...'));
-		loading.appendChild(document.createElement('br'));
+		p.appendChild(document.createTextNode(sMessage));
 		loading.appendChild(document.createElement('br'));
 		loading.appendChild(document.createElement('br'));
 		p = document.createElement('p');
 		loading.appendChild(p);
 		p.appendChild(document.createTextNode('Please wait.'));
 		
-		this.setTitle('Loading...');
+		this.setTitle(sMessage);
 		this.setContent(this.loading);
 		this.setHeaderButtons(new Array());
 		this.setFooterButtons(new Array());

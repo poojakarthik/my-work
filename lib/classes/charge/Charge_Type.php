@@ -14,7 +14,7 @@
 class Charge_Type extends ORM_Cached
 {	
 	protected 			$_strTableName					= "ChargeType";
-	protected static	$_sStaticTableName				= "ChargeType";
+	protected static	$_strStaticTableName			= "ChargeType";
 	
 	protected static	$lastSearchPaginationDetails	= null;
 	
@@ -58,19 +58,19 @@ class Charge_Type extends ORM_Cached
 		return parent::getCachedObjects(__CLASS__);
 	}
 	
-	protected static function addToCache($mixObjects)
+	protected static function addToCache($mObjects)
 	{
-		parent::addToCache($mixObjects, __CLASS__);
+		parent::addToCache($mObjects, __CLASS__);
 	}
 
-	public static function getForId($intId, $bolSilentFail=false)
+	public static function getForId($iId, $bSilentFail=false)
 	{
-		return parent::getForId($intId, $bolSilentFail, __CLASS__);
+		return parent::getForId($iId, $bSilentFail, __CLASS__);
 	}
 	
-	public static function getAll($bolForceReload=false)
+	public static function getAll($bForceReload=false)
 	{
-		return parent::getAll($bolForceReload, __CLASS__);
+		return parent::getAll($bForceReload, __CLASS__);
 	}
 	
 	public static function getLastSearchPaginationDetails()
@@ -80,171 +80,140 @@ class Charge_Type extends ORM_Cached
 	
 	// Performs a search for ChargeType
 	// It is assumed that none of the arguments are escaped yet
-	// This will just return the TotalRecordCount if $bolGetTotalRecordCountOnly == true
-	public static function searchFor($arrFilter=null, $arrSort=null, $intLimit=null, $intOffset=null, $bolGetTotalRecordCountOnly=false)
+	// This will just return the TotalRecordCount if $bGetTotalRecordCountOnly == true
+	public static function searchFor($aFilter=null, $aSort=null, $iLimit=null, $iOffset=null, $bGetTotalRecordCountOnly=false)
 	{
-		$arrWhereParts		= array();
-		$arrOrderByParts	= array();
+		$aWhereParts		= array();
+		$aOrderByParts	= array();
 		
 		// Build WHERE clause
-		$arrWhereClauseParts = array();
-		if (is_array($arrFilter))
+		$aWhereClauseParts = array();
+		if (is_array($aFilter))
 		{
-			foreach ($arrFilter as $arrConstraint)
+			foreach ($aFilter as $aConstraint)
 			{
-				switch ($arrConstraint['Type'])
+				switch ($aConstraint['Type'])
 				{
 					case self::SEARCH_CONSTRAINT_CHARGE_TYPE_ARCHIVED:
 					case self::SEARCH_CONSTRAINT_CHARGE_TYPE_NATURE:
 					case self::SEARCH_CONSTRAINT_CHARGE_TYPE_AUTOMATIC_ONLY:
 					case self::SEARCH_CONSTRAINT_CHARGE_TYPE_VISIBILITY_ID:
-						$arrWhereClauseParts[] = self::_prepareSearchConstraint(str_replace( '|', '.', $arrConstraint['Type']), $arrConstraint['Value']);
+						$aWhereClauseParts[] = self::_prepareSearchConstraint(str_replace( '|', '.', $aConstraint['Type']), $aConstraint['Value']);
 						break;
 				}
 			}
 		}
-		$strWhereClause = (count($arrWhereClauseParts))? implode(" AND ", $arrWhereClauseParts) : "1";
+		$sWhereClause = (count($aWhereClauseParts))? implode(" AND ", $aWhereClauseParts) : "1";
 		
 		// Build OrderBy Clause
-		if (is_array($arrSort))
+		if (is_array($aSort))
 		{
-			foreach ($arrSort as $strColumn=>$bolAsc)
+			foreach ($aSort as $sColumn=>$bAsc)
 			{
-				switch ($strColumn)
+				switch ($sColumn)
 				{
 					case self::ORDER_BY_CHARGE_TYPE:
 					case self::ORDER_BY_DESCRIPTION:
 					case self::ORDER_BY_NATURE:
 					case self::ORDER_BY_AMOUNT:
-						$arrOrderByParts[] = str_replace('|', '.', $strColumn) . ($bolAsc ? " ASC" : " DESC");
+						$aOrderByParts[] = str_replace('|', '.', $sColumn) . ($bAsc ? " ASC" : " DESC");
 						break;
 					default:
-						throw new Exception(__METHOD__ ." - Illegal sorting identifier: $strColumn");
+						throw new Exception(__METHOD__ ." - Illegal sorting identifier: $sColumn");
 						break;
 				}
 			}
 		}
-		$strOrderByClause = (count($arrOrderByParts) > 0)? implode(", ", $arrOrderByParts) : NULL;
+		$sOrderByClause = (count($aOrderByParts) > 0)? implode(", ", $aOrderByParts) : NULL;
 		
 		// Build LIMIT clause
-		if ($intLimit !== NULL)
+		if ($iLimit !== NULL)
 		{
-			$strLimitClause = intval($intLimit);
-			if ($intOffset !== NULL)
+			$sLimitClause = intval($iLimit);
+			if ($iOffset !== NULL)
 			{
-				$strLimitClause .= " OFFSET ". intval($intOffset);
+				$sLimitClause .= " OFFSET ". intval($iOffset);
 			}
 			else
 			{
-				$intOffset = 0;
+				$iOffset = 0;
 			}
 		}
 		else
 		{
-			$strLimitClause = "";
+			$sLimitClause = "";
 		}
 		
 		// Build SELECT statement
-		$strFromClause = self::$_sStaticTableName;
-		
-		// Create the SELECT clause
-		/*$arrColumns = self::_getColumns();
-
-		$arrColumnsForSelectClause = array();
-		foreach ($arrColumns as $strTidyName=>$strName)
-		{
-			$arrColumnsForSelectClause[] = self::$_sStaticTableName.".{$strName} AS $strTidyName";
-		}
-
-		$strSelectClause = implode(',', $arrColumnsForSelectClause);
-		*/
-		
-		$strSelectClause = '*';
+		$sFromClause = self::$_strStaticTableName;
+		$sSelectClause = '*';
 		
 		// Create query to find out how many rows there are in total
-		$strRowCountQuery = "SELECT COUNT(".self::$_sStaticTableName.".Id) as row_count FROM $strFromClause WHERE $strWhereClause;";
+		$sRowCountQuery = "SELECT COUNT(".self::$_strStaticTableName.".Id) as row_count FROM $sFromClause WHERE $sWhereClause;";
 		
 		// Check how many rows there are
-		$objQuery = new Query();
+		$oQuery = new Query();
 		
-		$mixResult = $objQuery->Execute($strRowCountQuery);
-		if ($mixResult === FALSE)
+		$mResult = $oQuery->Execute($sRowCountQuery);
+		if ($mResult === FALSE)
 		{
 			throw new Exception("Failed to retrieve total record count for 'Charge Search' query - ". $objQuery->Error());
 		}
 		
-		$intTotalRecordCount = intval(current($mixResult->fetch_assoc()));
+		$iTotalRecordCount = intval(current($mResult->fetch_assoc()));
 		
-		if ($bolGetTotalRecordCountOnly)
+		if ($bGetTotalRecordCountOnly)
 		{
 			// return the total record count
-			return $intTotalRecordCount;
+			return $iTotalRecordCount;
 		}
 		
 		// Create the proper query
-		$selRecords = new StatementSelect($strFromClause, $strSelectClause, $strWhereClause, $strOrderByClause, $strLimitClause);
+		$oRecords = new StatementSelect($sFromClause, $sSelectClause, $sWhereClause, $sOrderByClause, $sLimitClause);
 				
-		if ($selRecords->Execute() === FALSE)
+		if ($oRecords->Execute() === FALSE)
 		{
-			throw new Exception("Failed to retrieve records for '{self::$_sStaticTableName} Search' query - ". $selCharges->Error());
+			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oCharges->Error());
 		}
 
 		// Create the Charge objects (these objects will also include the fields accountName and serviceFNN)
-		$arrChargeTypeObjects = array();
-		while ($arrRecord = $selRecords->Fetch())
+		$aChargeTypeObjects = array();
+		while ($aRecord = $oRecords->Fetch())
 		{
-			$arrChargeTypeObjects[$arrRecord['Id']] = new self($arrRecord);
+			$aChargeTypeObjects[$aRecord['Id']] = new self($aRecord);
 		}
 		
 		// Create the pagination details, if a Limit clause was used
-		if ($intLimit === NULL || count($arrChargeTypeObjects) == 0)
+		if ($iLimit === NULL || count($aChargeTypeObjects) == 0)
 		{
 			// Don't bother calulating pagination details
 			self::$lastSearchPaginationDetails = null;
 		}
 		else
 		{
-			self::$lastSearchPaginationDetails = new PaginationDetails($intTotalRecordCount, $intLimit, intval($intOffset));
+			self::$lastSearchPaginationDetails = new PaginationDetails($iTotalRecordCount, $iLimit, intval($iOffset));
 		}
 		
-		return $arrChargeTypeObjects;
+		return $aChargeTypeObjects;
 	}
 	
 	// Note that this currently only handles "prop IS NULL", "prop IN (list of unquoted values)", "prop = unquoted value"
-	private static function _prepareSearchConstraint($strProp, $mixValue)
+	private static function _prepareSearchConstraint($sProp, $mValue)
 	{
-		$strSearch = "";
-		if ($mixValue === NULL)
+		$sSearch = "";
+		if ($mValue === NULL)
 		{
-			$strSearch = "$strProp IS NULL";
+			$sSearch = "$sProp IS NULL";
 		}
-		elseif (is_array($mixValue))
+		elseif (is_array($mValue))
 		{
-			$strSearch = "$strProp IN (". implode(", ", $mixValue) .")";
+			$sSearch = "$sProp IN (". implode(", ", $mValue) .")";
 		}
 		else
 		{
-			$strSearch = "$strProp = $mixValue";
+			$sSearch = "$sProp = $mValue";
 		}
-		return $strSearch;
-	}
-	
-	// Retrieves a list of column names (array[tidyName] = 'ActualColumnName')
-	private static function _getColumns()
-	{
-		static $arrColumns;
-		if (!isset($arrColumns))
-		{
-			$arrTableDefine = DataAccess::getDataAccess()->FetchTableDefine(self::$_sStaticTableName);
-			
-			foreach ($arrTableDefine['Column'] as $strName=>$arrColumn)
-			{
-				$arrColumns[self::tidyName($strName)] = $strName;
-			}
-			$arrColumns[self::tidyName($arrTableDefine['Id'])] = $arrTableDefine['Id'];
-		}
-		
-		return $arrColumns;
+		return $sSearch;
 	}
 	
 	//---------------------------------------------------------------------------------------------------------------------------------//
@@ -268,16 +237,16 @@ class Charge_Type extends ORM_Cached
 	 *
 	 * @method
 	 */
-	static public function getByCode($strCode)
+	static public function getByCode($sCode)
 	{
-		$selByCode	= self::_preparedStatement("selByCode");
-		if ($selByCode->Execute(Array('ChargeType'=>$strCode)))
+		$oByCode	= self::_preparedStatement("selByCode");
+		if ($oByCode->Execute(Array('ChargeType'=>$sCode)))
 		{
-			return new Charge_Type($selByCode->Fetch());
+			return new Charge_Type($oByCode->Fetch());
 		}
-		elseif ($selByCode->Error())
+		elseif ($oByCode->Error())
 		{
-			throw new Exception($selByCode->Error());
+			throw new Exception($oByCode->Error());
 		}
 		else
 		{
@@ -301,14 +270,14 @@ class Charge_Type extends ORM_Cached
 	 */
 	static public function getContractExitFee()
 	{
-		$selContractExitFee	= self::_preparedStatement("selContractExitFee");
-		if ($selContractExitFee->Execute())
+		$oContractExitFee	= self::_preparedStatement("selContractExitFee");
+		if ($oContractExitFee->Execute())
 		{
-			return new Charge_Type($selContractExitFee->Fetch());
+			return new Charge_Type($oContractExitFee->Fetch());
 		}
-		elseif ($selContractExitFee->Error())
+		elseif ($oContractExitFee->Error())
 		{
-			throw new Exception($selContractExitFee->Error());
+			throw new Exception($oContractExitFee->Error());
 		}
 		else
 		{
@@ -332,14 +301,14 @@ class Charge_Type extends ORM_Cached
 	 */
 	static public function getContractPayoutFee()
 	{
-		$selContractPayoutFee	= self::_preparedStatement("selContractPayoutFee");
-		if ($selContractPayoutFee->Execute())
+		$oContractPayoutFee	= self::_preparedStatement("selContractPayoutFee");
+		if ($oContractPayoutFee->Execute())
 		{
-			return new Charge_Type($selContractPayoutFee->Fetch());
+			return new Charge_Type($oContractPayoutFee->Fetch());
 		}
-		elseif ($selContractPayoutFee->Error())
+		elseif ($oContractPayoutFee->Error())
 		{
-			throw new Exception($selContractPayoutFee->Error());
+			throw new Exception($oContractPayoutFee->Error());
 		}
 		else
 		{
@@ -350,7 +319,7 @@ class Charge_Type extends ORM_Cached
 	public function save()
 	{
 		// Set the Defaults
-		$this->charge_type_visibility_id	= (Charge_Type_Visibility::getForId($this->charge_type_visibility_id)) ? $this->charge_type_visibility_id : Charge_Type_Visibility::getForSystemName('VISIBLE');
+		$this->charge_type_visibility_id = (Charge_Type_Visibility::getForId($this->charge_type_visibility_id)) ? $this->charge_type_visibility_id : Charge_Type_Visibility::getForSystemName('VISIBLE');
 		
 		parent::save();
 	}
@@ -371,49 +340,49 @@ class Charge_Type extends ORM_Cached
 	 *
 	 * @method
 	 */
-	protected static function _preparedStatement($strStatement)
+	protected static function _preparedStatement($sStatement)
 	{
 		static	$arrPreparedStatements	= Array();
-		if (isset($arrPreparedStatements[$strStatement]))
+		if (isset($arrPreparedStatements[$sStatement]))
 		{
-			return $arrPreparedStatements[$strStatement];
+			return $arrPreparedStatements[$sStatement];
 		}
 		else
 		{
-			switch ($strStatement)
+			switch ($sStatement)
 			{
 				// SELECTS
 				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ChargeType", "*", "Id = <Id>", NULL, 1);
+					$arrPreparedStatements[$sStatement]	= new StatementSelect(	"ChargeType", "*", "Id = <Id>", NULL, 1);
 					break;
 				case 'selByCode':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ChargeType", "*", "ChargeType = <ChargeType> AND Archived = 0", NULL, 1);
+					$arrPreparedStatements[$sStatement]	= new StatementSelect(	"ChargeType", "*", "ChargeType = <ChargeType> AND Archived = 0", NULL, 1);
 					break;
 				case 'selContractPayoutFee':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"contract_terms JOIN ChargeType ON ChargeType.Id = contract_terms.payout_charge_type_id", "ChargeType.*", "1", NULL, 1);
+					$arrPreparedStatements[$sStatement]	= new StatementSelect(	"contract_terms JOIN ChargeType ON ChargeType.Id = contract_terms.payout_charge_type_id", "ChargeType.*", "1", NULL, 1);
 					break;
 				case 'selContractExitFee':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"contract_terms JOIN ChargeType ON ChargeType.Id = contract_terms.exit_fee_charge_type_id", "ChargeType.*", "1", NULL, 1);
+					$arrPreparedStatements[$sStatement]	= new StatementSelect(	"contract_terms JOIN ChargeType ON ChargeType.Id = contract_terms.exit_fee_charge_type_id", "ChargeType.*", "1", NULL, 1);
 					break;
 				case 'selAll':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_sStaticTableName, "*", "1");
+					$arrPreparedStatements[$sStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
 					break;
 				// INSERTS
 				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert("ChargeType");
+					$arrPreparedStatements[$sStatement]	= new StatementInsert("ChargeType");
 					break;
 				
 				// UPDATE BY IDS
 				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("ChargeType");
+					$arrPreparedStatements[$sStatement]	= new StatementUpdateById("ChargeType");
 					break;
 				
 				// UPDATES
 				
 				default:
-					throw new Exception(__CLASS__."::{$strStatement} does not exist!");
+					throw new Exception(__CLASS__."::{$sStatement} does not exist!");
 			}
-			return $arrPreparedStatements[$strStatement];
+			return $arrPreparedStatements[$sStatement];
 		}
 	}
 }

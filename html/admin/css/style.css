@@ -320,7 +320,7 @@ table.reflex td.title {
 
 table.highlight-rows tbody tr:hover td
 {
-	background-color: #ffc;
+	background-color: #ffc !important;
 }
 
 table tbody tr.selectable[selected="selected"] td
@@ -405,6 +405,12 @@ button[disabled]
 	background-color	: #ccc !important;
 	-moz-user-select	: none !important;
 	-webkit-user-select	: none !important;
+	cursor				: default !important;
+}
+
+button[disabled] img
+{
+	opacity	: 0.50;
 }
 
 button img.icon
@@ -2687,11 +2693,6 @@ td.cost-centre-buttons
 	vertical-align	: middle;
 }
 
-td.cost-centre-buttons > img
-{
-	cursor	: pointer;
-}
-
 div.cost-centre-list button > img
 {
 	vertical-align	: middle;
@@ -2718,5 +2719,102 @@ div.cost-centre-list button > span
 	margin-left	: 2em;
 }
 
+#ChargeTypeContainer table > tbody > tr > td:nth-child(3),
+#ChargeTypeContainer table > tbody > tr > td:last-child
+{
+	text-align	: right;
+}
+
+#ChargeTypeContainer table > thead > tr > th:nth-child(3)
+{
+	text-align	: right;
+}
+
+#ChargeTypeContainer table > colgroup > col:nth-child(4)
+{
+	width	: 2em; 
+}
+
+#ChargeTypeContainer table > colgroup > col:nth-child(5)
+{
+	width	: 3em;
+}
+
+#ChargeTypeContainer table > tbody > tr.charge-nature-debit > td:nth-child(4)
+{
+	color	: #006599;
+}
+
+#ChargeTypeContainer table > tbody > tr.charge-nature-credit > td:nth-child(4)
+{
+	color	: #008000;
+}
+
+#ChargeTypeContainer table > tbody > tr:nth-child(odd) > td
+{
+	background-color	: #fff;
+}
+
+#ChargeTypeContainer div.footer-pagination
+{
+	text-align		: right;
+	padding-right	: 1em;
+}
+
+#ChargeTypeContainer table > tfoot button > *
+{
+	vertical-align	: middle;
+}
+
+#ChargeTypeContainer table > tfoot button > img
+{
+	margin-right	: 0.25em;
+}
+
 /************************ END - Charge Type Manage - END ************************/
+
+/************************ START - Popup Charge Type Add/Edit - START ************************/
+
+div.charge-type
+{
+	margin	: 0.5em;
+}
+
+div.charge-type-buttons
+{
+	text-align	: center;
+}
+
+div.charge-type-buttons > button > *
+{
+	vertical-align	: middle;
+}
+
+div.charge-type-buttons > button > img
+{
+	margin-right	: 0.25em;
+}
+
+tr.charge-type-fixation > td > input,
+tr.charge-type-fixation > td > span
+{
+	vertical-align	: middle;
+}
+
+tr.charge-type-fixation > td > span
+{
+	margin-left	: 0.3em;
+}
+
+div.charge-type-table colgroup > col:first-child
+{
+	width	: 45%;
+}
+
+div.charge-type-table colgroup > col:last-child
+{
+	width	: 55%;
+}
+
+/************************ END - Popup Charge Type Add/Edit - END ************************/
 

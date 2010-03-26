@@ -67,11 +67,11 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									)
 								),
 								$T.button(
-									$T.img({src: Popup_Cost_Centres.SAVE_IMAGE_SOURCE}),
+									$T.img({src: Popup_Cost_Centres.SAVE_IMAGE_SOURCE, alt: '', title: 'Save'}),
 									$T.span('Save')
 								),
 								$T.button(
-									$T.img({src: Popup_Cost_Centres.CANCEL_IMAGE_SOURCE}),
+									$T.img({src: Popup_Cost_Centres.CANCEL_IMAGE_SOURCE, alt: '', title: 'Cancel'}),
 									$T.span('Cancel')
 								)
 							);
@@ -97,7 +97,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		// Create the 'Add' row
 		this.oAddNewCostCentreTR = $T.tr(
 										$T.td({class: 'cost-centre-name add', colspan: '2'},
-											$T.img({src: Popup_Cost_Centres.ADD_IMAGE_SOURCE}),
+											$T.img({src: Popup_Cost_Centres.ADD_IMAGE_SOURCE, alt: 'Add', title: 'Add'}),
 											$T.span(
 												'Click to add a new Cost Centre...'
 											)
@@ -115,8 +115,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	
 	_showCancelConfirmation	: function()
 	{
-		var sPopupId = 'Flex_Cost_Centres_Cancel_'+(Math.round(Math.random()*100));
-		Vixen.Popup.YesNoCancel("Are you sure you want to cancel and revert all changes?", this.hide.bind(this), Vixen.Popup.Close.bind(Vixen.Popup, sPopupId), null, null, sPopupId, "Revert Changes");
+		Reflex_Popup.yesNoCancel('Are you sure you want to cancel and revert all changes?', {sTitle: 'Revert Changes', fnOnYes: this.hide.bind(this)});
 	},
 	
 	_addCostCentre	: function(iId, sName, bInEditMode)
@@ -132,7 +131,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.input({type: 'text', style: 'display: none', value: sName})
 								),
 								$T.td({class: 'cost-centre-buttons'},
-									$T.img({src: Popup_Cost_Centres.EDIT_IMAGE_SOURCE})
+									$T.img({src: Popup_Cost_Centres.EDIT_IMAGE_SOURCE, alt: 'Edit', title: 'Edit'})
 								)
 							);
 		var mCostCentre	= (iId != null ? iId : oNewTR);

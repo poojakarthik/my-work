@@ -13,14 +13,14 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getChargeTypes($bolCountOnly=false, $intLimit=0, $intOffset=0)
+	public function getChargeTypes($bCountOnly=false, $iLimit=0, $iOffset=0)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
 		
 		try
 		{
-			if ($bolCountOnly)
+			if ($bCountOnly)
 			{
 				// Count Only
 				return array(
@@ -32,17 +32,20 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 			else
 			{
 				// Include Data
-				$intLimit	= (max($intLimit, 0) == 0) ? self::MAX_LIMIT : (int)$intLimit;
-				$intLimit	= ($intLimit > self::MAX_LIMIT)? self::MAX_LIMIT : $intLimit;
-				$intOffset	= ($intLimit === null) ? 0 : max((int)$intOffset, 0);
+				$iLimit		= (max($iLimit, 0) == 0) 		? self::MAX_LIMIT 	: (int)$iLimit;
+				$iLimit		= ($iLimit > self::MAX_LIMIT)	? self::MAX_LIMIT	: $iLimit;
+				$iOffset	= ($iLimit === null) 			? 0 				: max((int)$iOffset, 0);
 				
 				// Retrieve the charges & convert response to std classes
-				$aChargeTypes = Charge_Type::searchFor(null, null, $intLimit, $intOffset);
+				$aChargeTypes = Charge_Type::searchFor(null, null, $iLimit, $iOffset);
 				$aStdClassChargeTypes = array();
 				
 				foreach ($aChargeTypes as $iId => $oChargeType)
 				{
-					$aStdClassChargeTypes[$iId] = $oChargeType->toStdClass();
+					$aStdClassChargeTypes[$iId]									= $oChargeType->toStdClass();
+					$aStdClassChargeTypes[$iId]->charge_type_visibility_name	= Constant_Group::getConstantGroup('charge_type_visibility')->getConstantDescription($oChargeType->charge_type_visibility_id);
+					$aStdClassChargeTypes[$iId]->archived_label					= ($oChargeType->Archived)			? 'Archived'	: 'Active';
+					$aStdClassChargeTypes[$iId]->automatic_only_label			= ($oChargeType->automatic_only)	? 'System Only'	: 'Users';
 				}
 				
 				$oPaginationDetails = Charge_Type::getLastSearchPaginationDetails();
@@ -50,11 +53,34 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 				// If no exceptions were thrown, then everything worked
 				return array(
 							"Success"			=> true,
-							"arrRecords"		=> $aStdClassChargeTypes,
+							"arrRecords"			=> $aStdClassChargeTypes,
 							"intRecordCount"	=> ($oPaginationDetails !== null)? $oPaginationDetails->totalRecordCount : count($aChargeTypes),
 							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 			}
+		}
+		catch (Exception $e)
+		{
+			return array(
+						"Success"	=> false,
+						"Message"	=> 'ERROR: '.$e->getMessage(),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
+	}
+	
+	public function archiveChargeType($iChargeTypeId)
+	{
+		try
+		{
+			$oChargeType = Charge_Type::getForId((int)$iChargeTypeId);
+			$oChargeType->Archived = 1;
+			$oChargeType->save();
+			
+			return array(
+						"Success"	=> true,
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
 		}
 		catch (Exception $e)
 		{
