@@ -3,12 +3,9 @@ var Page_Recurring_Charge_Type = Class.create(
 {
 	initialize	: function(oContainerDiv, iMaxRecordsPerPage)
 	{
-		
-		return;
-		
 		// Create DataSet & pagination object
-		this.oDataset		= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {strObject: 'Charge_Type', strMethod: 'getChargeTypes'});
-		this.oPagination	= new Pagination(this._updateTable.bind(this), Page_Charge_Type.MAX_RECORDS_PER_PAGE, this.oDataset);
+		this.oDataset		= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {strObject: 'Recurring_Charge_Type', strMethod: 'getAll'});
+		this.oPagination	= new Pagination(this._updateTable.bind(this), Page_Recurring_Charge_Type.MAX_RECORDS_PER_PAGE, this.oDataset);
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
@@ -44,8 +41,7 @@ var Page_Recurring_Charge_Type = Class.create(
 												$T.th({colspan: '3'},
 													'Amount ($ inc GST)'
 												),
-												$T.th('Visibility'),
-												$T.th('Added By'),
+												$T.th('Recursion'),
 												$T.th('Status'),
 												$T.th('Actions')
 											)
@@ -57,15 +53,15 @@ var Page_Recurring_Charge_Type = Class.create(
 											$T.col(),
 											$T.col()
 										),
-										$T.tbody(
+										$T.tbody({class: 'alternating'}
 											// ...
 										),
 										$T.tfoot( 
 											$T.tr(
 												$T.th({colspan: '9'},
 													$T.button(
-														$T.img({src: Page_Charge_Type.ADD_IMAGE_SOURCE, alt: '', title: 'Add Adjustment Type'}),
-														$T.span('Add Adjustment Type')
+														$T.img({src: Page_Recurring_Charge_Type.ADD_IMAGE_SOURCE, alt: '', title: 'Add Adjustment Type'}),
+														$T.span('Add Recurring Adjustment Type')
 													)
 												)
 											)
@@ -130,7 +126,7 @@ var Page_Recurring_Charge_Type = Class.create(
 	
 	_showAddPopup	: function()
 	{
-		new Popup_Charge_Type(this.oPagination.lastPage.bind(this.oPagination));
+		new Popup_Recurring_Charge_Type(this.oPagination.lastPage.bind(this.oPagination));
 	},
 	
 	_updateTable	: function(oResultSet)
@@ -181,7 +177,7 @@ var Page_Recurring_Charge_Type = Class.create(
 			for(var iId in aData)
 			{
 				bAlternateRow = !bAlternateRow;
-				oTBody.appendChild(this._createChargeTypeRow(aData[iId], bAlternateRow));
+				oTBody.appendChild(this._createTableRow(aData[iId], bAlternateRow));
 			}
 			
 			this._updatePagination();
@@ -195,32 +191,50 @@ var Page_Recurring_Charge_Type = Class.create(
 		}
 	},
 	
-	_createChargeTypeRow	: function(oData, bAlternateRow)
+	_createTableRow	: function(oData, bAlternateRow)
 	{
 		if (oData.Id != null)
 		{
+			// Add CSS to the nature cell
+			var sNatureTDClass = '';
+			
+			switch (oData.Nature)
+			{
+				case 'DR':
+					sNatureTDClass = 'charge-nature-debit';
+					break;
+				case 'CR':
+					sNatureTDClass = 'charge-nature-credit';
+					break;
+			}
+			
 			// Add a row with the charge types details, alternating class applied
 			var	oTR	=	$T.tr(
 							$T.td(oData.ChargeType),
 							$T.td(oData.Description),
-							$T.td(parseFloat( oData.Amount ).toFixed(2)),
-							$T.td(oData.Nature),
-							$T.td(oData.Fixed ? '(Fixed)' : ''),
-							$T.td(oData.charge_type_visibility_name),
-							$T.td(oData.automatic_only_label),
+							$T.td({class: 'charge-amount-number'},
+								parseFloat( oData.RecursionCharge ).toFixed(2)
+							),
+							$T.td({class: sNatureTDClass},
+								oData.Nature
+							),
+							$T.td({class: 'charge-amount-fixation'},
+								oData.Fixed ? '(Fixed)' : ''
+							),
+							$T.td(oData.recursion),
 							$T.td(oData.archived_label),
-							$T.td(
+							$T.td({class: 'charge-archive'}
 								// Place holder for archive button
 							)
 						);
 			
-			// If NOT a 'system only' charge, allow it to be archived
-			if (!oData.automatic_only && !oData.Archived)
+			// If NOT already archived allow it to be archived
+			if (!oData.Archived)
 			{
 				var oLastTD = oTR.select('td:last-child' ).first();
 				
 				// Add click event to the 'archive' button
-				var oArchiveButton = $T.img({src: Page_Charge_Type.ARCHIVE_IMAGE_SOURCE, alt: 'Archive', title: 'Archive'});
+				var oArchiveButton = $T.img({src: Page_Recurring_Charge_Type.ARCHIVE_IMAGE_SOURCE, alt: 'Archive', title: 'Archive'});
 				oArchiveButton.observe('click', this._archive.bind(this, oData.Id, false));
 				
 				oLastTD.appendChild(oArchiveButton);
@@ -285,7 +299,7 @@ var Page_Recurring_Charge_Type = Class.create(
 		if (!bConfirmed)
 		{
 			Reflex_Popup.yesNoCancel(	$T.div(
-											$T.p('Archiving this Adjustment Type will make it unavailable for use.'),
+											$T.p('Archiving this Recurring Adjustment Type will make it unavailable for use.'),
 											$T.p('Are you sure you want to archive it?')
 										),
 										{
@@ -307,7 +321,7 @@ var Page_Recurring_Charge_Type = Class.create(
 		this.oLoadingOverlay = oArchivingPopup;
 		
 		// Archive confirmed do the AJAX request
-		var fnArchive = jQuery.json.jsonFunction(fnArchiveComplete.bind(this, oArchivingPopup), this._archiveFailed.bind(this), 'Charge_Type', 'archive');
+		var fnArchive = jQuery.json.jsonFunction(fnArchiveComplete.bind(this, oArchivingPopup), this._archiveFailed.bind(this), 'Recurring_Charge_Type', 'archive');
 		fnArchive(iId);
 	},
 	
@@ -324,6 +338,6 @@ var Page_Recurring_Charge_Type = Class.create(
 	}
 });
 
-Page_Charge_Type.MAX_RECORDS_PER_PAGE	= 25;
-Page_Charge_Type.ARCHIVE_IMAGE_SOURCE	= '../admin/img/template/delete.png';
-Page_Charge_Type.ADD_IMAGE_SOURCE		= '../admin/img/template/new.png';
+Page_Recurring_Charge_Type.MAX_RECORDS_PER_PAGE	= 25;
+Page_Recurring_Charge_Type.ARCHIVE_IMAGE_SOURCE	= '../admin/img/template/delete.png';
+Page_Recurring_Charge_Type.ADD_IMAGE_SOURCE		= '../admin/img/template/new.png';

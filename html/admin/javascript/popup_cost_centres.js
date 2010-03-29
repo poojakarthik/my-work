@@ -55,7 +55,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 											$T.col({class: 'cost-centre-name-col'}),
 											$T.col({class: 'cost-centre-buttons-col'})
 										),
-										$T.tbody()
+										$T.tbody({class: 'alternating'})
 									)
 								),
 								$T.table({class: 'reflex'},

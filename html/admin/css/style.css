@@ -332,6 +332,12 @@ tr.highlight-row:hover td
 {
 	background-color: #fcc;
 }
+
+tbody.alternating > tr:nth-child(odd) > td
+{
+	background-color	: #fff;
+}
+
 /************************** END - Reflex Table - END **************************/
 
 /******************* START - Reflex Input Controls - START ********************/
@@ -2632,11 +2638,6 @@ div.cost-centre-list > table.reflex th
 	text-align	: left;
 }
 
-div.cost-centre-list > div > table.reflex > tbody > tr:nth-child(odd) > td
-{
-	background-color	: #fff;
-}
-
 div.cost-centre-list > div
 {
 	overflow-y			: scroll;
@@ -2713,54 +2714,6 @@ div.cost-centre-list button > span
 	min-height	: 1.55em;
 }
 
-#ChargeTypeContainer div.caption_options > div
-{
-	float		: right; 
-	margin-left	: 2em;
-}
-
-#ChargeTypeContainer table > tbody > tr > td:nth-child(3),
-#ChargeTypeContainer table > tbody > tr > td:last-child
-{
-	text-align	: right;
-}
-
-#ChargeTypeContainer table > thead > tr > th:nth-child(3)
-{
-	text-align	: right;
-}
-
-#ChargeTypeContainer table > colgroup > col:nth-child(4)
-{
-	width	: 2em; 
-}
-
-#ChargeTypeContainer table > colgroup > col:nth-child(5)
-{
-	width	: 3em;
-}
-
-#ChargeTypeContainer table > tbody > tr.charge-nature-debit > td:nth-child(4)
-{
-	color	: #006599;
-}
-
-#ChargeTypeContainer table > tbody > tr.charge-nature-credit > td:nth-child(4)
-{
-	color	: #008000;
-}
-
-#ChargeTypeContainer table > tbody > tr:nth-child(odd) > td
-{
-	background-color	: #fff;
-}
-
-#ChargeTypeContainer div.footer-pagination
-{
-	text-align		: right;
-	padding-right	: 1em;
-}
-
 #ChargeTypeContainer table > tfoot button > *
 {
 	vertical-align	: middle;
@@ -2769,6 +2722,35 @@ div.cost-centre-list button > span
 #ChargeTypeContainer table > tfoot button > img
 {
 	margin-right	: 0.25em;
+}
+
+td.charge-amount-number,
+td.charge-archive
+{
+	text-align	: right;
+}
+
+td.charge-amount-fixation
+{
+	width	: 3em;
+}
+
+table > tbody > tr > td.charge-nature-debit
+{
+	color	: #006599;
+	width	: 2em; 
+}
+
+table > tbody > tr > td.charge-nature-credit
+{
+	color	: #008000;
+	width	: 2em; 
+}
+
+div.footer-pagination
+{
+	text-align		: right;
+	padding-right	: 1em;
 }
 
 /************************ END - Charge Type Manage - END ************************/
@@ -2795,13 +2777,13 @@ div.charge-type-buttons > button > img
 	margin-right	: 0.25em;
 }
 
-tr.charge-type-fixation > td > input,
-tr.charge-type-fixation > td > span
+tr.charge-type-checkbox > td > input,
+tr.charge-type-checkbox > td > span
 {
 	vertical-align	: middle;
 }
 
-tr.charge-type-fixation > td > span
+tr.charge-type-checkbox > td > span
 {
 	margin-left	: 0.3em;
 }
@@ -2820,7 +2802,20 @@ div.charge-type-table colgroup > col:last-child
 
 /************************ START - Recurring Charge Type Manage - START ************************/
 
-/* ... */
+#RecurringChargeTypeContainer div.caption_title
+{
+	min-height	: 1.55em;
+}
+
+#RecurringChargeTypeContainer table > tfoot button > *
+{
+	vertical-align	: middle;
+}
+
+#RecurringChargeTypeContainer table > tfoot button > img
+{
+	margin-right	: 0.25em;
+}
 
 /************************ END - Recurring Charge Type Manage - END ************************/
 

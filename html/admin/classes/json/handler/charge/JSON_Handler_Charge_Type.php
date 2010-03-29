@@ -36,8 +36,6 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 				$iLimit		= ($iLimit > self::MAX_LIMIT)	? self::MAX_LIMIT	: $iLimit;
 				$iOffset	= ($iLimit === null) 			? 0 				: max((int)$iOffset, 0);
 				
-				//throw new Exception("iLimit:{$iLimit} iOffset:{$iOffset}");
-				
 				// Retrieve the charges & convert response to std classes
 				$aChargeTypes = Charge_Type::searchFor(null, null, $iLimit, $iOffset);
 				$aStdClassChargeTypes = array();

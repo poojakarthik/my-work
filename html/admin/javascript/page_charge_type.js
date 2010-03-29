@@ -54,7 +54,7 @@ var Page_Charge_Type = Class.create(
 											$T.col(),
 											$T.col()
 										),
-										$T.tbody(
+										$T.tbody({class: 'alternating'}
 											// ...
 										),
 										$T.tfoot( 
@@ -196,17 +196,36 @@ var Page_Charge_Type = Class.create(
 	{
 		if (oData.Id != null)
 		{
+			// Add CSS to the nature cell
+			var sNatureTDClass = '';
+			
+			switch (oData.Nature)
+			{
+				case 'DR':
+					sNatureTDClass = 'charge-nature-debit';
+					break;
+				case 'CR':
+					sNatureTDClass = 'charge-nature-credit';
+					break;
+			}
+			
 			// Add a row with the charge types details, alternating class applied
 			var	oTR	=	$T.tr(
 							$T.td(oData.ChargeType),
 							$T.td(oData.Description),
-							$T.td(parseFloat( oData.Amount ).toFixed(2)),
-							$T.td(oData.Nature),
-							$T.td(oData.Fixed ? '(Fixed)' : ''),
+							$T.td({class: 'charge-amount-number'},
+								parseFloat( oData.Amount ).toFixed(2)
+							),
+							$T.td({class: sNatureTDClass},
+								oData.Nature
+							),
+							$T.td({class: 'charge-amount-fixation'},
+								oData.Fixed ? '(Fixed)' : ''
+							),
 							$T.td(oData.charge_type_visibility_name),
 							$T.td(oData.automatic_only_label),
 							$T.td(oData.archived_label),
-							$T.td(
+							$T.td({class: 'charge-archive'}
 								// Place holder for archive button
 							)
 						);
@@ -221,17 +240,6 @@ var Page_Charge_Type = Class.create(
 				oArchiveButton.observe('click', this._archive.bind(this, oData.Id, false));
 				
 				oLastTD.appendChild(oArchiveButton);
-			}
-			
-			// Add CSS to the row depending on the nature
-			switch (oData.Nature)
-			{
-				case 'DR':
-					oTR.addClassName('charge-nature-debit');
-					break;
-				case 'CR':
-					oTR.addClassName('charge-nature-credit');
-					break;
 			}
 			
 			return oTR;

@@ -176,7 +176,7 @@ class Charge_Type extends ORM_Cached
 			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oCharges->Error());
 		}
 		
-		// Create the Charge objects (these objects will also include the fields accountName and serviceFNN)
+		// Create the ChargeType objects
 		$aChargeTypeObjects = array();
 		$iCurrentIndex = $iOffset;
 		

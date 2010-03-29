@@ -66,7 +66,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 													)
 												)
 											),
-											$T.tr({class: 'charge-type-fixation'},
+											$T.tr({class: 'charge-type-checkbox'},
 												$T.th({class: 'label'},
 													'Fixation :'
 												),
@@ -106,7 +106,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		oCancelButton.observe('click', this._showCancelConfirmation.bind(this));
 		
 		// Set the fixation checkbox event
-		var oFixationCheckbox = oContent.select( 'tr.charge-type-fixation input[type="checkbox"]' ).first();
+		var oFixationCheckbox = oContent.select( 'tr.charge-type-checkbox input[type="checkbox"]' ).first();
 		oFixationCheckbox.observe('click', this._updateFixationLabel.bind(this, oFixationCheckbox));
 		
 		this.oContent = oContent; 
@@ -175,7 +175,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		this.oSavingOverlay = oSavePopup;
 		
 		// Make AJAX request
-		this._saveChargeType = jQuery.json.jsonFunction(this._saveComplete.bind(this), this._saveCostCentresError.bind(this), 'Charge_Type', 'save');
+		this._saveChargeType = jQuery.json.jsonFunction(this._saveComplete.bind(this), this._saveError.bind(this), 'Charge_Type', 'save');
 		this._saveChargeType(oRequestData);
 	},
 	
@@ -197,7 +197,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		Reflex_Popup.alert('Adjustment Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
 	},
 	
-	_saveCostCentresError	: function(oResponse)
+	_saveError	: function(oResponse)
 	{
 		Reflex_Popup.alert('There was an error saving the Adjustment Type' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Save Error'});
 	},
@@ -209,8 +209,8 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 	
 	_updateFixationLabel	: function(oFixationCheckbox)
 	{
-		var oFixationOnSpan = this.oContent.select('tr.charge-type-fixation td > span').first();
-		var oFixationOffSpan = this.oContent.select('tr.charge-type-fixation td > span').last();
+		var oFixationOnSpan = this.oContent.select('tr.charge-type-checkbox td > span').first();
+		var oFixationOffSpan = this.oContent.select('tr.charge-type-checkbox td > span').last();
 		
 		if (oFixationCheckbox.checked)
 		{

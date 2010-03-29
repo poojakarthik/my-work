@@ -11,7 +11,7 @@ class HtmlTemplate_Recurring_Charge_Type_Manage extends FlexHtmlTemplate
 		$this->LoadJavascript('dataset_ajax');
 		$this->LoadJavascript('pagination');
 		$this->LoadJavascript("page_recurring_charge_type");
-		//$this->LoadJavascript("popup_recurring_charge_type");
+		$this->LoadJavascript("popup_recurring_charge_type");
 		
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("Manage Recurring Adjustment Types");
