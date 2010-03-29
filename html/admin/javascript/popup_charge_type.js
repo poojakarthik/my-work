@@ -108,6 +108,42 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		// Set the fixation checkbox event
 		var oFixationCheckbox = oContent.select( 'tr.charge-type-checkbox input[type="checkbox"]' ).first();
 		oFixationCheckbox.observe('click', this._updateFixationLabel.bind(this, oFixationCheckbox));
+			
+		// Setup validation handlers
+		this.hInputs 			= {};
+		var aInputs 			= oContent.select('input, select');
+		aInputs[0].sFieldName 	= 'Charge Code';
+		aInputs[0].bRequired	= true;
+		aInputs[1].sFieldName 	= 'Description';
+		aInputs[1].bRequired	= true;
+		aInputs[2].sFieldName 	= 'Amount';
+		aInputs[2].bRequired	= true;
+		aInputs[3].sFieldName 	= 'Fixation';
+		aInputs[3].bRequired	= true;
+		aInputs[4].sFieldName 	= 'Nature';
+		aInputs[4].bRequired	= true;
+			
+		for (var i = 0; i < aInputs.length; i++)
+		{
+			if (typeof aInputs[i].sFieldName !== 'undefined')
+			{
+				this.hInputs[aInputs[i].sFieldName] = aInputs[i];
+			}
+		}
+		
+		// Inputs
+		this.hInputs['Charge Code'].validate 	= Popup_Charge_Type._validateInput.bind(this.hInputs['Charge Code'], 	Reflex_Validation.nonEmptyString);
+		this.hInputs['Description'].validate 	= Popup_Charge_Type._validateInput.bind(this.hInputs['Description'], 	Reflex_Validation.nonEmptyString);
+		this.hInputs['Amount'].validate 		= Popup_Charge_Type._validateInput.bind(this.hInputs['Amount'],			Reflex_Validation.float);
+		
+		// Selects
+		this.hInputs['Nature'].validate 		= Popup_Charge_Type._validateInput.bind(this.hInputs['Nature'], 		Reflex_Validation.nonEmptyString);
+		
+		for (var sName in this.hInputs)
+		{
+			this.hInputs[sName].observe('keyup', this.hInputs[sName].validate);
+			this.hInputs[sName].observe('change', this.hInputs[sName].validate);
+		}
 		
 		this.oContent = oContent; 
 		
@@ -115,59 +151,55 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		this.setIcon('../admin/img/template/charge_small.png');
 		this.setContent(oContent);
 		this.display();
+		
+		// Run initial validation to show required fields
+		this._isValid();
+	},
+	
+	_isValid	: function()
+	{
+		// Build an array of error messages, after running all validation functions
+		var aErrors	= [];
+		var mError 	= null;
+		var oInput 	= null;
+		
+		for (var sName in this.hInputs)
+		{
+			oInput = this.hInputs[sName];
+			
+			if (typeof oInput.validate !== 'undefined')
+			{
+				mError = oInput.validate();
+				
+				if (mError != null)
+				{
+					aErrors.push(mError);
+				}
+			}
+		}
+		
+		return aErrors;
 	},
 	
 	_saveChanges	: function()
 	{
-		// Get the data
-		var aTR 			= this.oContent.select('div.charge-type-table > table.reflex > tbody > tr');
-		var sCode 			= aTR[0].select('input').first().value;
-		var sDescription 	= aTR[1].select('input').first().value;
-		var sAmount 		= aTR[2].select('input').first().value;
-		var sNature			= aTR[3].select('select').first().value;
-		var bFixed			= aTR[4].select('input').first().checked;
-		
 		// Validate the data
-		var aValidationErrors = $T.ul(); 
+		var aValidationErrors = this._isValid();
 		
-		if (!sCode || sCode == '')
+		if (aValidationErrors.length)
 		{
-			aValidationErrors.appendChild($T.li('Please supply a Charge Code'));
-		}
-		
-		if (!sDescription || sDescription == '')
-		{
-			aValidationErrors.appendChild($T.li('Please supply a Description'));
-		}
-		
-		if (!sAmount || sAmount == '' || isNaN(sAmount))
-		{
-			aValidationErrors.appendChild($T.li('Please supply an Amount in dollars'));
-		}
-		
-		if (aValidationErrors.childNodes.length)
-		{
-			Reflex_Popup.alert(
-							$T.div({style: 'margin: 0.5em'},
-								'The following errors have occured: ',
-								aValidationErrors
-							),
-							{
-								iWidth	: 25,
-								sTitle	: 'Validation Errors'
-							}
-						);
+			Popup_Charge_Type._showValidationErrorPopup(aValidationErrors);
 			return;
 		}
 		
 		// Build request data
-		var oRequestData = 	{
+		var oRequestData =	{
 							iId				: null,
-							sChargeType		: sCode, 
-							sDescription	: sDescription, 
-							fAmount			: parseFloat(sAmount), 
-							sNature			: sNature, 
-							bFixed			: bFixed
+							sChargeType		: this.hInputs['Charge Code'].value, 
+							sDescription	: this.hInputs['Description'].value, 
+							fAmount			: parseFloat(this.hInputs['Amount'].value), 
+							sNature			: this.hInputs['Nature'].value, 
+							bFixed			: this.hInputs['Fixation'].checked
 						};
 		
 		var oSavePopup = new Reflex_Popup.Loading('Saving...');
@@ -181,20 +213,31 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 	
 	_saveComplete	: function(oResponse)
 	{
-		// On close callback
-		if (this.fnOnClose)
+		if (oResponse.Success)
 		{
-			this.fnOnClose();
+			// On close callback
+			if (this.fnOnClose)
+			{
+				this.fnOnClose();
+			}
+			
+			// Hide saving overlay
+			this.oSavingOverlay.hide();
+			
+			// Hide this
+			this.hide();
+			
+			// Confirmation
+			Reflex_Popup.alert('Adjustment Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
 		}
-		
-		// Hide saving overlay
-		this.oSavingOverlay.hide();
-		
-		// Hide this
-		this.hide();
-		
-		// Confirmation
-		Reflex_Popup.alert('Adjustment Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
+		else
+		{
+			// Hide saving overlay
+			this.oSavingOverlay.hide();
+			
+			// Show validation errors
+			Popup_Charge_Type._showValidationErrorPopup(oResponse.aValidationErrors);
+		}
 	},
 	
 	_saveError	: function(oResponse)
@@ -227,3 +270,58 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 
 Popup_Charge_Type.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
 Popup_Charge_Type.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
+
+Popup_Charge_Type._showValidationErrorPopup	= function(aErrors)
+{
+	// Build UL of error messages
+	var oValidationErrors = $T.ul();
+	
+	for (var i = 0; i < aErrors.length; i++)
+	{
+		oValidationErrors.appendChild(
+							$T.li(aErrors[i])
+						);
+	}
+	
+	// Show a popup containing the list
+	Reflex_Popup.alert(
+					$T.div({style: 'margin: 0.5em'},
+						'The following errors have occured: ',
+						oValidationErrors
+					),
+					{
+						iWidth	: 30,
+						sTitle	: 'Validation Errors'
+					}
+				);
+};
+
+Popup_Charge_Type._validateInput	= function(fnValidate)
+{
+	// This is to be bound to the scope of an input
+	try
+	{
+		this.removeClassName('valid');
+		this.removeClassName('invalid');
+		
+		// Check required validation first
+		if (this.bRequired && (this.value == '' || this.value === null))
+		{
+			throw('Required field');
+		}
+		else
+		{
+			if (fnValidate(this.value))
+			{
+				this.addClassName('valid');
+			}
+			
+			return null;
+		}
+	}
+	catch (e)
+	{
+		this.addClassName('invalid');
+		return this.sFieldName + ': ' + e; 
+	}
+};

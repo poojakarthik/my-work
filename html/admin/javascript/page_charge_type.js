@@ -214,7 +214,7 @@ var Page_Charge_Type = Class.create(
 							$T.td(oData.ChargeType),
 							$T.td(oData.Description),
 							$T.td({class: 'charge-amount-number'},
-								parseFloat( oData.Amount ).toFixed(2)
+								parseFloat(oData.Amount).toFixed(2)
 							),
 							$T.td({class: sNatureTDClass},
 								oData.Nature

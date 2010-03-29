@@ -107,7 +107,7 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 													$T.span('Will stop charging when the minimum charge is reached.')
 												)
 											),
-											$T.tr({class: 'charge-type-checkbox'},
+											/*$T.tr({class: 'charge-type-checkbox'},
 												$T.th({class: 'label'},
 													'Unique Charge :'
 												),
@@ -124,7 +124,7 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 														' a unique adjustment.'
 													)
 												)
-											),
+											),*/
 											$T.tr({class: 'charge-type-checkbox'},
 												$T.th({class: 'label'},
 													'Fixation :'
@@ -189,94 +189,121 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 			checkbox.observe('click', this._updateCheckboxLabel.bind(this, aCheckboxTRs[i]));
 		}
 		
+		// Setup validation handlers
+		this.hInputs 			= {};		
+		var aInputs 			= oContent.select('input, select');
+		aInputs[0].sFieldName 	= 'Charge Code';
+		aInputs[0].bRequired	= true;
+		aInputs[1].sFieldName 	= 'Description';
+		aInputs[1].bRequired	= true;
+		aInputs[2].sFieldName 	= 'Recursion Charge';
+		aInputs[2].bRequired	= true;
+		aInputs[3].sFieldName 	= 'Recurring Frequency';
+		aInputs[3].bRequired	= true;
+		aInputs[4].sFieldName 	= 'Minimum Charge';
+		aInputs[4].bRequired	= true;
+		aInputs[5].sFieldName 	= 'Cancellation Fee';
+		aInputs[5].bRequired	= true;
+		aInputs[6].sFieldName 	= 'Continuation';
+		aInputs[6].bRequired	= true;
+		aInputs[7].sFieldName 	= 'Fixation';
+		aInputs[7].bRequired	= true;
+		aInputs[8].sFieldName 	= 'Nature';
+		aInputs[8].bRequired	= true;
+		aInputs[9].sFieldName 	= 'Recurring Frequency Type';
+		aInputs[9].bRequired	= true;
+		aInputs[10].sFieldName 	= 'Approval Process';
+		aInputs[10].bRequired	= true;
+		
+		for (var i = 0; i < aInputs.length; i++)
+		{
+			if (typeof aInputs[i].sFieldName !== 'undefined')
+			{
+				this.hInputs[aInputs[i].sFieldName] = aInputs[i];
+			}
+		}
+		
+		// Inputs
+		this.hInputs['Charge Code'].validate 				= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Charge Code'], 				Reflex_Validation.nonEmptyString);
+		this.hInputs['Description'].validate 				= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Description'],			 	Reflex_Validation.nonEmptyString);
+		this.hInputs['Recursion Charge'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recursion Charge'], 		Reflex_Validation.float);
+		this.hInputs['Recurring Frequency'].validate 		= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recurring Frequency'],		Reflex_Validation.nonEmptyDigits);
+		this.hInputs['Minimum Charge'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Minimum Charge'], 			Reflex_Validation.float);
+		this.hInputs['Cancellation Fee'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Cancellation Fee'], 		Reflex_Validation.float);
+		
+		// Selects
+		this.hInputs['Nature'].validate 					= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Nature'], 					Reflex_Validation.nonEmptyString);
+		this.hInputs['Recurring Frequency Type'].validate	= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recurring Frequency Type'],	Reflex_Validation.digits);
+		this.hInputs['Approval Process'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Approval Process'], 		Reflex_Validation.digits);
+		
+		for (var sName in this.hInputs)
+		{
+			this.hInputs[sName].observe('keyup', this.hInputs[sName].validate);
+			this.hInputs[sName].observe('change', this.hInputs[sName].validate);
+		}
+		
 		this.oContent = oContent; 
 		
 		this.setTitle('Add Recurring Adjustment Type');
 		this.setIcon('../admin/img/template/charge_small.png');
 		this.setContent(oContent);
 		this.display();
+		
+		// Run initial validation to show required fields
+		this._isValid();
+	},
+	
+	_isValid	: function()
+	{
+		// Build an array of error messages, after running all validation functions
+		var aErrors	= [];
+		var mError 	= null;
+		var oInput 	= null;
+		
+		for (var sName in this.hInputs)
+		{
+			oInput = this.hInputs[sName];
+			
+			if (typeof oInput.validate !== 'undefined')
+			{
+				mError = oInput.validate();
+				
+				if (mError != null)
+				{
+					aErrors.push(mError);
+				}
+			}
+		}
+		
+		return aErrors;
 	},
 	
 	_saveChanges	: function()
 	{
-		// Get the data
-		var aTR 					= this.oContent.select('div.charge-type-table > table.reflex > tbody > tr');
-		var sCode 					= aTR[0].select('input').first().value;
-		var sDescription 			= aTR[1].select('input').first().value;
-		var sRecursionCharge		= aTR[2].select('input').first().value;
-		var sNature					= aTR[3].select('select').first().value;
-		var sRecurringFrequency		= aTR[4].select('input').first().value;
-		var sRecurringFrequencyType	= aTR[4].select('select').first().value;
-		var sMinimumCharge			= aTR[5].select('input').first().value;
-		var sCancellationFee		= aTR[6].select('input').first().value;
-		var bContinuation			= aTR[7].select('input').first().checked;
-		var bUniqueCharge			= aTR[8].select('input').first().checked;
-		var bFixation				= aTR[9].select('input').first().checked;
-		var sApproval				= aTR[10].select('select').first().value;
-		
 		// Validate the data
-		var aValidationErrors = $T.ul(); 
+		var aValidationErrors = this._isValid();
 		
-		if (!sCode || sCode == '')
+		if (aValidationErrors.length)
 		{
-			aValidationErrors.appendChild($T.li('Please supply a Charge Code'));
-		}
-		
-		if (!sDescription || sDescription == '')
-		{
-			aValidationErrors.appendChild($T.li('Please supply a Description'));
-		}
-		
-		if (!sRecursionCharge || sRecursionCharge == '' || isNaN(sRecursionCharge))
-		{
-			aValidationErrors.appendChild($T.li('Please supply a Recursion Charge in dollars'));
-		}
-		
-		if (!sRecurringFrequency || sRecurringFrequency == '' || isNaN(sRecurringFrequency))
-		{
-			aValidationErrors.appendChild($T.li('Please supply a Recursion Frequency (number)'));
-		}
-		
-		if (sMinimumCharge != '' && isNaN(sMinimumCharge))
-		{
-			aValidationErrors.appendChild($T.li('Please supply a Minimum Charge in dollars'));
-		}
-		
-		if (sCancellationFee != '' && isNaN(sCancellationFee))
-		{
-			aValidationErrors.appendChild($T.li('Please supply a Cancellation Fee in dollars'));
-		}
-		
-		if (aValidationErrors.childNodes.length)
-		{
-			Reflex_Popup.alert(
-							$T.div({style: 'margin: 0.5em'},
-								'The following errors have occured: ',
-								aValidationErrors
-							),
-							{
-								iWidth	: 25,
-								sTitle	: 'Validation Errors'
-							}
-						);
+			Popup_Recurring_Charge_Type._showValidationErrorPopup(aValidationErrors);
 			return;
 		}
 		
 		// Build request data
 		var oRequestData = 	{
 							iId					: null,
-							sChargeType			: sCode, 
-							sDescription		: sDescription, 
-							fRecursionCharge	: parseFloat(sRecursionCharge),
-							iRecurringFreqType	: parseInt(sRecurringFrequencyType),
-							iRecurringFreq		: parseInt(sRecurringFrequency),
-							fMinCharge			: parseFloat(sMinimumCharge),
-							fCancellationFee	: parseFloat(sCancellationFee),
-							sNature				: sNature, 
-							bContinuable		: bContinuation,
-							bUniqueCharge		: bUniqueCharge,
-							bFixed				: bFixation,
-							iApprovalRequired	: parseInt(sApproval)
+							sChargeType			: this.hInputs['Charge Code'].value, 
+							sDescription		: this.hInputs['Description'].value, 
+							fRecursionCharge	: parseFloat(this.hInputs['Recursion Charge'].value),
+							iRecurringFreqType	: parseInt(this.hInputs['Recurring Frequency Type'].value),
+							iRecurringFreq		: parseInt(this.hInputs['Recurring Frequency'].value),
+							fMinCharge			: parseFloat(this.hInputs['Minimum Charge'].value),
+							fCancellationFee	: parseFloat(this.hInputs['Cancellation Fee'].value),
+							sNature				: this.hInputs['Nature'].value, 
+							bContinuable		: this.hInputs['Continuation'].checked,
+							//bUniqueCharge		: this.hInputs['Unique Charge'].checked,
+							bFixed				: this.hInputs['Fixation'].checked,
+							iApprovalRequired	: parseInt(this.hInputs['Approval Process'].value)
 						};
 		
 		var oSavePopup = new Reflex_Popup.Loading('Saving...');
@@ -290,20 +317,31 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 	
 	_saveComplete	: function(oResponse)
 	{
-		// On close callback
-		if (this.fnOnClose)
+		if (oResponse.Success)
 		{
-			this.fnOnClose();
+			// On close callback
+			if (this.fnOnClose)
+			{
+				this.fnOnClose();
+			}
+			
+			// Hide saving overlay
+			this.oSavingOverlay.hide();
+			
+			// Hide this
+			this.hide();
+			
+			// Confirmation
+			Reflex_Popup.alert('Adjustment Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
 		}
-		
-		// Hide saving overlay
-		this.oSavingOverlay.hide();
-		
-		// Hide this
-		this.hide();
-		
-		// Confirmation
-		Reflex_Popup.alert('Adjustment Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
+		else
+		{
+			// Hide saving overlay
+			this.oSavingOverlay.hide();
+			
+			// Show validation errors
+			Popup_Recurring_Charge_Type._showValidationErrorPopup(oResponse.aValidationErrors);
+		}
 	},
 	
 	_saveError	: function(oResponse)
@@ -344,3 +382,58 @@ Popup_Recurring_Charge_Type.BILLING_FREQ_HALF_MONTH	= 3;
 
 Popup_Recurring_Charge_Type.APPROVAL_REQUIRED		= 1;
 Popup_Recurring_Charge_Type.NO_APPROVAL_REQUIRED	= 0;
+
+Popup_Recurring_Charge_Type._showValidationErrorPopup	= function(aErrors)
+{
+	// Build UL of error messages
+	var oValidationErrors = $T.ul();
+	
+	for (var i = 0; i < aErrors.length; i++)
+	{
+		oValidationErrors.appendChild(
+							$T.li(aErrors[i])
+						);
+	}
+	
+	// Show a popup containing the list
+	Reflex_Popup.alert(
+					$T.div({style: 'margin: 0.5em'},
+						'The following errors have occured: ',
+						oValidationErrors
+					),
+					{
+						iWidth	: 30,
+						sTitle	: 'Validation Errors'
+					}
+				);
+}
+
+Popup_Recurring_Charge_Type._validateInput	= function(fnValidate)
+{
+	// This is to be bound to the scope of an input
+	try
+	{
+		this.removeClassName('valid');
+		this.removeClassName('invalid');
+		
+		// Check required validation first
+		if (this.bRequired && (this.value == '' || this.value === null))
+		{
+			throw('Required field');
+		}
+		else
+		{
+			if (fnValidate(this.value))
+			{
+				this.addClassName('valid');
+			}
+			
+			return null;
+		}
+	}
+	catch (e)
+	{
+		this.addClassName('invalid');
+		return this.sFieldName + ': ' + e; 
+	}
+};

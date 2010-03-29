@@ -10,6 +10,7 @@ class HtmlTemplate_Charge_Type_Manage extends FlexHtmlTemplate
 		
 		$this->LoadJavascript('dataset_ajax');
 		$this->LoadJavascript('pagination');
+		$this->LoadJavascript('reflex_validation');
 		$this->LoadJavascript("page_charge_type");
 		$this->LoadJavascript("popup_charge_type");
 		

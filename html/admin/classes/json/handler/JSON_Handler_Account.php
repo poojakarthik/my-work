@@ -132,8 +132,23 @@ class JSON_Handler_Account extends JSON_Handler
 	
 	public function saveCostCentreChanges($iAccountId, $aChanges)
 	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return array(
+						"Success"		=> false,
+						"ErrorMessage"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? 'ERROR: Could not start database transaction.' : false,
+						"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
+		
 		try
 		{
+			$aValidationErrors = array();
+			
 			// Handles multiple changes
 			foreach ($aChanges as $aCostCentre)
 			{
@@ -145,7 +160,7 @@ class JSON_Handler_Account extends JSON_Handler
 				{
 					// Update existing cost centre
 					$oCostCentre = Cost_Centre::getForId($iId);
-				} 
+				}
 				else 
 				{
 					// New Cost centre required
@@ -155,18 +170,51 @@ class JSON_Handler_Account extends JSON_Handler
 					$oCostCentre->Account 		= $iAccountId;
 				}
 				
-				$oCostCentre->Name = $sName;
-				$oCostCentre->save();
+				// Validate input
+				$bValidInput = true;
+				
+				if (!isset($sName) || $sName == '')
+				{
+					$aValidationErrors[] = 'Cost Centre Name missing';
+					$bValidInput = false;
+				}
+				
+				if ($bValidInput)
+				{
+					// Validation passed, update the object and save
+					$oCostCentre->Name = $sName;
+					$oCostCentre->save();
+				}
 			}
 			
-			return array(
-						"Success"		=> true,
-						"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
-						"iAccountId"	=> $iAccountId
-					);
+			if (count($aValidationErrors) > 0)
+			{
+				// Validation errors found, rollback transaction and return errors
+				$oDataAccess->TransactionRollback();
+				
+				return array(
+							"Success"			=> false,
+							"aValidationErrors"	=> $aValidationErrors,
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
+			}
+			else
+			{
+				// Everything looks OK -- Commit!
+				$oDataAccess->TransactionCommit();
+				
+				// Return successfully
+				return array(
+							"Success"		=> true,
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
+							"iAccountId"	=> $iAccountId
+						);
+			}
 		}
 		catch (Exception $e)
 		{
+			$oDataAccess->TransactionRollback();
+			
 			return array(
 						"Success"		=> false,
 						"ErrorMessage"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? 'ERROR: '.$e->getMessage() : false,

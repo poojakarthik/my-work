@@ -269,14 +269,22 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_saveComplete	: function(oPopup)
+	_saveComplete	: function(oPopup, oResponse)
 	{
 		if (oPopup)
 		{
 			oPopup.hide();
 		}
 		
-		this.hide();
+		if (!oResponse || oResponse.Success)
+		{
+			this.hide();
+		}
+		else
+		{
+			// Show validation errors
+			Popup_Cost_Centres._showValidationErrorPopup(oResponse.aValidationErrors);
+		}
 	},
 	
 	_updateCostCentreAfterSave	: function(mCostCentre, oResponse)
@@ -337,3 +345,28 @@ Popup_Cost_Centres.EDIT_IMAGE_SOURCE	= '../admin/img/template/pencil.png';
 Popup_Cost_Centres.ADD_IMAGE_SOURCE 	= '../admin/img/template/new.png';
 Popup_Cost_Centres.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
 Popup_Cost_Centres.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
+
+Popup_Cost_Centres._showValidationErrorPopup	= function(aErrors)
+{
+	// Build UL of error messages
+	var oValidationErrors = $T.ul();
+	
+	for (var i = 0; i < aErrors.length; i++)
+	{
+		oValidationErrors.appendChild(
+							$T.li(aErrors[i])
+						);
+	}
+	
+	// Show a popup containing the list
+	Reflex_Popup.alert(
+					$T.div({style: 'margin: 0.5em'},
+						'The following errors have occured: ',
+						oValidationErrors
+					),
+					{
+						iWidth	: 30,
+						sTitle	: 'Validation Errors'
+					}
+				);
+};

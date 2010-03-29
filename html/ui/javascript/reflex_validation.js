@@ -146,6 +146,45 @@ var Reflex_Validation	=
 		}
 		
 		return true;
-	}
+	},
 	
+	/*
+	 * These validation functions throw an exception if the given value is invalid.
+	 * They return true if valid and they return false if no value is given.
+	 */
+	nonEmptyString	: function(mValue)
+	{
+		if (mValue == null || mValue.toString() == '')
+		{
+			throw ('Value missing');
+		}
+		else 
+		{
+			return true;
+		}
+	},
+	
+	float	: function(mValue)
+	{
+		if (mValue.toString().match(/^\d+(\.\d+)?$/))
+		{
+			return true;
+		}
+		else
+		{
+			throw ('Invalid number');
+		}
+	},
+	
+	nonEmptyDigits	: function(mValue)
+	{
+		if (Reflex_Validation.digits(mValue))
+		{
+			return true;
+		}
+		else 
+		{
+			throw ('Invalid number');
+		}
+	}
 };

@@ -2777,6 +2777,7 @@ div.charge-type-buttons > button > img
 	margin-right	: 0.25em;
 }
 
+
 tr.charge-type-checkbox > td > input,
 tr.charge-type-checkbox > td > span
 {
@@ -2815,6 +2816,18 @@ div.charge-type-table colgroup > col:last-child
 #RecurringChargeTypeContainer table > tfoot button > img
 {
 	margin-right	: 0.25em;
+}
+
+td.recurring-charge-charged
+{
+	width	: 12em;
+}
+
+td.recurring-charge-min-charge,
+td.recurring-charge-cancel-fee
+{
+	width		: 15em;
+	text-align	: right;
 }
 
 /************************ END - Recurring Charge Type Manage - END ************************/

@@ -41,12 +41,18 @@ var Page_Recurring_Charge_Type = Class.create(
 												$T.th({colspan: '3'},
 													'Amount ($ inc GST)'
 												),
-												$T.th('Recursion'),
+												$T.th({colspan: '2'},
+													'Charged'
+												),
+												$T.th('Minimum Charge ($ inc GST)'),
+												$T.th('Cancellation Fee ($ inc GST)'),
 												$T.th('Status'),
 												$T.th('Actions')
 											)
 										),
 										$T.colgroup(
+											$T.col(),
+											$T.col(),
 											$T.col(),
 											$T.col(),
 											$T.col(),
@@ -58,7 +64,7 @@ var Page_Recurring_Charge_Type = Class.create(
 										),
 										$T.tfoot( 
 											$T.tr(
-												$T.th({colspan: '9'},
+												$T.th({colspan: '11'},
 													$T.button(
 														$T.img({src: Page_Recurring_Charge_Type.ADD_IMAGE_SOURCE, alt: '', title: 'Add Adjustment Type'}),
 														$T.span('Add Recurring Adjustment Type')
@@ -213,7 +219,7 @@ var Page_Recurring_Charge_Type = Class.create(
 							$T.td(oData.ChargeType),
 							$T.td(oData.Description),
 							$T.td({class: 'charge-amount-number'},
-								parseFloat( oData.RecursionCharge ).toFixed(2)
+								parseFloat(oData.RecursionCharge).toFixed(2)
 							),
 							$T.td({class: sNatureTDClass},
 								oData.Nature
@@ -221,7 +227,18 @@ var Page_Recurring_Charge_Type = Class.create(
 							$T.td({class: 'charge-amount-fixation'},
 								oData.Fixed ? '(Fixed)' : ''
 							),
-							$T.td(oData.recursion),
+							$T.td(
+								{class: 'recurring-charge-charged'},
+								$T.div(oData.recursion),
+								$T.div(oData.recursion_detail)
+							),
+							$T.td(oData.Continuable ? '(Continuing)' : ''),
+							$T.td({class: 'recurring-charge-min-charge'},
+								parseFloat(oData.MinCharge).toFixed(2)
+							),
+							$T.td({class: 'recurring-charge-cancel-fee'},
+								parseFloat(oData.CancellationFee).toFixed(2)
+							),
 							$T.td(oData.archived_label),
 							$T.td({class: 'charge-archive'}
 								// Place holder for archive button

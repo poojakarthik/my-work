@@ -216,6 +216,39 @@ class Recurring_Charge_Type extends ORM_Cached
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
+	//------------------------------------------------------------------------//
+	// getByCode()
+	//------------------------------------------------------------------------//
+	/**
+	 * getByCode()
+	 *
+	 * Rerieves the ChargeType by its Code
+	 *
+	 * Rerieves the ChargeType by its Code
+	 * 
+	 * @param	string	$strCode		The ChargeType Code
+	 * 
+	 * @return	mixed					Charge_Type on Success
+	 * 									NULL on Failure
+	 *
+	 * @method
+	 */
+	static public function getByCode($sCode)
+	{
+		$oByCode	= self::_preparedStatement("selByCode");
+		if ($oByCode->Execute(Array('ChargeType'=>$sCode)))
+		{
+			return new Charge_Type($oByCode->Fetch());
+		}
+		elseif ($oByCode->Error())
+		{
+			throw new Exception($oByCode->Error());
+		}
+		else
+		{
+			return NULL;
+		}
+	}
 
 	//------------------------------------------------------------------------//
 	// _preparedStatement
