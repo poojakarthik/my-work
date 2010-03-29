@@ -3053,7 +3053,7 @@ class MenuItems {
 	function ManageRecurringAdjustmentTypes() {
 		$this->strContextMenuLabel = "Manage Recurring Adjustment Types";
 		$this->strLabel = "Manage Recurring Adjustment Types";
-		return self :: OLD_FRAMEWORK . "charges_recurringcharge_list.php";
+		return self::NEW_FRAMEWORK . "reflex.php/RecurringChargeType/Manage/";
 	}
 
 	//------------------------------------------------------------------------//
