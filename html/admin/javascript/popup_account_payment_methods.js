@@ -43,6 +43,7 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 																		)
 																)
 															),
+															$T.thead(),
 															$T.tbody(
 																$T.tr(
 																		{class: 'account-payment-methods-titles'},
@@ -55,7 +56,8 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 																		$T.td({class: 'account-payment-methods-col-credit-cards'}),
 																		$T.td({class: 'account-payment-methods-col-bank-accounts'})
 																)
-															)
+															),
+															$T.tfoot()
 													)
 												);
 				
@@ -66,13 +68,25 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 			for(var i in oBankAccounts)
 			{
 				// response.intSelectedPaymentMethod
-				var oPaymentMethod =	$T.table({class: 'account-payment-methods'},
+				var oPaymentMethod =	$T.table(
 											$T.tr(
 													$T.td(
-														$T.div('Account Name: '+String(oBankAccounts[i].AccountName)),
-														$T.div('BSB #'+String(oBankAccounts[i].BSB)+', Account #'+String(oBankAccounts[i].AccountNumber)),
-														$T.div('Bank Name: '+String(oBankAccounts[i].BankName)),
-														$T.div('Created: '+String(oBankAccounts[i].created_on))
+															$T.input(
+																	{type: 'radio'}
+															)
+													),
+													$T.td(
+															
+															$T.table({class: 'account-payment-methods'},
+																	$T.tr(
+																			$T.td(		
+																				$T.div('Account Name: '+String(oBankAccounts[i].AccountName)),
+																				$T.div('BSB #'+String(oBankAccounts[i].BSB)+', Account #'+String(oBankAccounts[i].AccountNumber)),
+																				$T.div('Bank Name: '+String(oBankAccounts[i].BankName)),
+																				$T.div('Created: '+String(oBankAccounts[i].created_on))
+																			)
+																	)
+															)
 													)
 												)
 										)
