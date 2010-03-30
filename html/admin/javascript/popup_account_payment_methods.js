@@ -52,46 +52,68 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 															),
 															$T.tbody(
 																	$T.tr(
-																			$T.td({class: 'account-payment-methods-col-other'}),
-																			$T.td({class: 'account-payment-methods-col-credit-cards'}),
-																			$T.td({class: 'account-payment-methods-col-bank-accounts'})
+																			$T.td({class: 'account-payment-methods-col-other'},
+																					$T.ul({class: 'horizontal reset account-payment-method'})
+																			),
+																			$T.td({class: 'account-payment-methods-col-credit-cards'},
+																					$T.ul({class: 'horizontal reset account-payment-method'})
+																			),
+																			$T.td({class: 'account-payment-methods-col-bank-accounts'},
+																					$T.ul({class: 'horizontal reset account-payment-method'})
+																			)		
 																	)
 															),
 															$T.tfoot()
 													)
 												);
-				
+
 			
-			// Populate Popup Template with Payment Methods
-			var oAccountPaymentMethodsColBankAccounts = oPaymentMethodsTemplate.select('.account-payment-methods-col-bank-accounts').first();
+
+			//----------------------------------------------------------------//
+			// Add Bank Accounts to popup
+			//----------------------------------------------------------------//
+			var oAccountPaymentMethodsColBankAccounts = oPaymentMethodsTemplate.select('.account-payment-methods-col-bank-accounts > ul').first();
 			var oBankAccounts	= jQuery.json.arrayAsObject(response.arrPaymentMethods.direct_debits);
 			for(var i in oBankAccounts)
 			{
 				// response.intSelectedPaymentMethod
-				var oPaymentMethod =	$T.table({class: 'account-payment-methods'},
-											$T.tr(
-													$T.td(
-															$T.input(
-																	{type: 'radio', name: 'account-payment-method', value: String(oBankAccounts[i].Id)}
-															)
-													),
-													$T.td(
-															
-															$T.table(
-																	$T.tr(
-																			$T.td(		
-																				$T.div('Account Name: '+String(oBankAccounts[i].AccountName)),
-																				$T.div('BSB #'+String(oBankAccounts[i].BSB)+', Account #'+String(oBankAccounts[i].AccountNumber)),
-																				$T.div('Bank Name: '+String(oBankAccounts[i].BankName)),
-																				$T.div('Created: '+String(oBankAccounts[i].created_on))
-																			)
-																	)
-															)
-													)
+				var oPaymentMethodDD	=	$T.ul({class: 'horizontal reset account-payment-method'},
+											$T.li(
+												$T.input(
+														{type: 'radio', name: 'account-payment-method', value: String(oBankAccounts[i].Id)}
 												)
+											),
+											$T.li(	
+												$T.div('Account Name: '+String(oBankAccounts[i].AccountName)),
+												$T.div('BSB #'+String(oBankAccounts[i].BSB)+', Account #'+String(oBankAccounts[i].AccountNumber)),
+												$T.div('Bank Name: '+String(oBankAccounts[i].BankName)),
+												$T.div('Created: '+String(oBankAccounts[i].created_on))
+											)
 										)
-				oAccountPaymentMethodsColBankAccounts.appendChild(oPaymentMethod);
+				oAccountPaymentMethodsColBankAccounts.appendChild(oPaymentMethodDD);
 			}
+
+			//----------------------------------------------------------------//
+			// Add Credit Cards to popup
+			//----------------------------------------------------------------//
+			var oAccountPaymentMethodsColCreditCards = oPaymentMethodsTemplate.select('.account-payment-methods-col-credit-cards > ul').first();
+			var oCreditCards	= jQuery.json.arrayAsObject(response.arrPaymentMethods.credit_cards);
+			for(var i in oCreditCards)
+			{
+				// response.intSelectedPaymentMethod
+				var oPaymentMethodCC	=	$T.ul({class: 'horizontal reset account-payment-method'},
+											$T.li(
+												$T.input(
+														{type: 'radio', name: 'account-payment-method', value: String(oCreditCards[i].Id)}
+												)
+											),
+											$T.li(	
+
+											)
+										)
+				oAccountPaymentMethodsColCreditCards.appendChild(oPaymentMethodCC);
+			}
+			
 			
 			// Display Popup
 			var oPopup = new Reflex_Popup(95);
