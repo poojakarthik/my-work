@@ -718,6 +718,11 @@ table.highlight-rows tbody tr:hover td
 	background-color: #ffc;
 }
 */
+.SmallSpace
+{
+	height: 10px;
+}
+
 .MediumSpace
 {
 	height: 20px;
@@ -2863,3 +2868,25 @@ div.datareport-buttons > button > img
 /************************ END - DataReport list - END ************************/
 
 
+/************************ START - Change Payment Method - START ************************/
+div.account-payment-methods div
+{
+	text-align			: left;
+}
+
+td.account-payment-methods-col-other
+{
+	width				: 25%;
+	text-align			: center;
+	font-size			: 1.6em;
+}
+
+td.account-payment-methods-col-credit-cards,
+td.account-payment-methods-col-bank-accounts
+{
+	width				: 37%;
+	text-align			: center;
+	font-size			: 1.6em;
+}
+
+/************************ END - Change Payment Method - END ************************/
