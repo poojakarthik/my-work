@@ -390,7 +390,7 @@ jQuery.json = {
 	
 	arrayAsObject	: function(mArray)
 	{
-		var oReturn;
+		var oReturn	= {};
 		if (Object.isArray(mArray))
 		{
 			// Array -- convert to an Object

@@ -1191,12 +1191,13 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ChangePaymentMethod($intAccountId) {
+	function ChangePaymentMethod($iAccountId) {
 		$this->strLabel = "Change Payment Method";
 		$this->strContextMenuLabel = "";
-		return self :: OLD_FRAMEWORK . "account_payment.php?Id=$intAccountId";
+		// return self :: OLD_FRAMEWORK . "account_payment.php?Id=$intAccountId";
+		return "javascript:JsAutoLoader.loadScript('javascript/popup_account_payment_methods.js', function(){new Popup_Account_Payment_Methods({$iAccountId})});";
 	}
-
+	
 	//------------------------------------------------------------------------//
 	// ViewCostCentres
 	//------------------------------------------------------------------------//

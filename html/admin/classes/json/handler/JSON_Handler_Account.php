@@ -65,6 +65,8 @@ class JSON_Handler_Account extends JSON_Handler
 			 */
 			 
 			$oAccountGroup  	= Account_Group::getForAccountId($iAccountId);
+			$oAccount			= Account::getForId($iAccountId);
+			
 			if(!$oAccountGroup)
 			{
 				throw new Exception('Invalid Account Id');
@@ -79,17 +81,25 @@ class JSON_Handler_Account extends JSON_Handler
 			
 			while ($arrCreditCard = $resCreditCards->fetch_assoc())
 			{
-				$aResult[]	= $arrCreditCard;
-
-				/*
-				$aResult['credit_cards'][][]	= "";
-				*/
+				$aResult['credit_cards'][]	= $arrCreditCard;
+			}
+			
+			$qryQuery		= new Query();
+			$resDirectDebits	= $qryQuery->Execute("
+			SELECT *
+			FROM DirectDebit
+			WHERE AccountGroup={$oAccountGroup->id} AND Archived = 0;");
+			
+			while ($arrDirectDebit = $resDirectDebits->fetch_assoc())
+			{
+				$aResult['direct_debits'][]	= $arrDirectDebit;
 			}
 			
 			return array(
-							"Success"		=> true,
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
-							"arrPaymentMethods"	=> $aResult,
+							"Success"					=> true,
+							"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
+							"arrPaymentMethods"			=> $aResult,
+							"intSelectedPaymentMethod"	=> $oAccount->BillingType,
 						);
 		}
 		catch (Exception $e)

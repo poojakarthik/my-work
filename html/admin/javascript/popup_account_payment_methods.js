@@ -3,7 +3,6 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 	
 	initialize	: function($super, iAccountId)
 	{
-		// Explicitly include the JS file "Reflex_Template.js"
 	
 		//----------------------------------------------------------------//
 		// Retrieve Data required to build the page
@@ -17,14 +16,80 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		
 	},
 	
+	
 	displayPopupReturnHandler	: function(response)
 	{
-				
+
+		//----------------------------------------------------------------//
+		// Display Change Payment Methods
+		//----------------------------------------------------------------//
+		
 		Vixen.Popup.ClosePageLoadingSplash();
 		
-		if (response.success && response.success == true)
-		{
+		if (response.Success && response.Success == true)
+		{	
 
+			// Popup Template
+			var oPaymentMethodsTemplate		=	$T.div({style: 'padding: 20px 0 20px 0', class: 'reflex-popup-content'},
+													$T.div({class: 'MediumSpace'}),
+													$T.table({class: 'form-layout reflex'},
+														$T.caption(
+															$T.div({class: 'caption_bar', id: 'caption_bar'},
+																$T.div({class: 'caption_title', id: 'caption_title'},
+																	'Payment Methods'
+																)
+															)
+														),
+														$T.tbody(
+															$T.tr(
+																$T.td(
+																	{class: 'account-payment-methods-col-other'},
+																	''
+																),
+																$T.td(
+																	{class: 'account-payment-methods-col-credit-cards'},
+																	'Credit Cards'
+																),
+																$T.td(
+																	{class: 'account-payment-methods-col-bank-accounts'},
+																	'Bank Accounts'
+																)
+															)
+														)
+													),
+													$T.div({class: 'MediumSpace'})
+												);
+				
+			
+			// Populate Popup Template with Payment Methods
+			var oAccountPaymentMethodsColBankAccounts = oPaymentMethodsTemplate.select('.account-payment-methods-col-bank-accounts').first();
+			var oBankAccounts	= jQuery.json.arrayAsObject(response.arrPaymentMethods.direct_debits);
+			for(var i in oBankAccounts)
+			{
+				// response.intSelectedPaymentMethod
+				var oPaymentMethod = $T.div({class: 'account-payment-methods'},
+						$T.div('Account Name: '+String(oBankAccounts[i].AccountName)),
+						$T.div('BSB #'+String(oBankAccounts[i].BSB)+', Account #'+String(oBankAccounts[i].AccountNumber)),
+						$T.div('Bank Name: '+String(oBankAccounts[i].BankName)),
+						$T.div('Created: '+String(oBankAccounts[i].created_on)),
+						$T.div({class: 'SmallSpace'})
+				)
+				oAccountPaymentMethodsColBankAccounts.appendChild(oPaymentMethod);
+			}
+			
+			// Display Popup
+			var oPopup = new Reflex_Popup(95);
+			oPopup.setTitle("Change Payment Method");
+			oPopup.addCloseButton();
+			oPopup.setIcon("../admin/img/template/user_edit.png");
+			oPopup.setContent(oPaymentMethodsTemplate);
+			oPopup.domCloseButton = document.createElement('button');
+			oPopup.domCloseButton.style.setProperty('padding-left', '20px', 'important');
+			oPopup.domCloseButton.style.setProperty('padding-right', '20px', 'important');
+			oPopup.domCloseButton.innerHTML = "OK";
+			oPopup.domCloseButton.observe('click', oPopup.hide.bind(oPopup));
+			oPopup.setFooterButtons([oPopup.domCloseButton], true);
+			oPopup.display();
 
 		}
 
@@ -32,7 +97,7 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		{
 
 		}
-		
+
 	},
 	
 	addPaymentMethod	: function()
