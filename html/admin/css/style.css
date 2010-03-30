@@ -2865,6 +2865,16 @@ div.datareport-buttons > button > img
 	margin-right	: 0.25em;
 }
 
+div.datareport-select-options-columns
+{
+	-moz-column-count	: 3;
+}
+
+div.datareport th
+{
+	width	: 30%;
+}
+
 /************************ END - DataReport list - END ************************/
 
 
