@@ -2832,10 +2832,34 @@ td.recurring-charge-cancel-fee
 
 /************************ END - Recurring Charge Type Manage - END ************************/
 
-/************************ START - Popup Recurring Charge Type Add/Edit - START ************************/
+/************************ START - DataReport list - START ************************/
 
-/* ... */
+div.datareport
+{
+	margin	: 0.5em;
+}
 
-/************************ END - Popup Recurring Charge Type Add/Edit - END ************************/
+div.datareport-tables table.reflex caption div.caption_title
+{
+	width	: 40%;
+}
+
+div.datareport-buttons
+{
+	text-align	: center;
+}
+
+div.datareport-buttons > button > img,
+div.datareport-buttons > button > span
+{
+	vertical-align	: middle;
+}
+
+div.datareport-buttons > button > img
+{
+	margin-right	: 0.25em;
+}
+
+/************************ END - DataReport list - END ************************/
 
 

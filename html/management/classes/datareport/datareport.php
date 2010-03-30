@@ -204,7 +204,7 @@
 					$oblstrType			= $oblarrField->Push(new dataString('Type',					$arrInput['Type']));
 					
 					if (class_exists($arrInput['Type']))
-					{						
+					{
 						// Is it a Statement?
 						if (array_key_exists('DBSelect', $arrInput))
 						{

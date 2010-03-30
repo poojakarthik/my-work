@@ -2,8 +2,6 @@
 
 class HtmlTemplate_Charge_Type_Manage extends FlexHtmlTemplate
 {
-	private	$_arrActionAssociationTypeColumnOrder = array();
-	
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
