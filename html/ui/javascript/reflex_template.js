@@ -10,7 +10,11 @@ Reflex_Template._createElement	= function(sTag)
 	
 	for (var i = 1, l = arguments.length; i < l; i++)
 	{
-		if (i == 1 && typeof arguments[i] === 'object' && !arguments[i].nodeType)
+		if (typeof arguments[i] === 'undefined' || arguments[i] === null)
+		{
+			// No data -- do nothing
+		}
+		else if (i == 1 && typeof arguments[i] === 'object' && !arguments[i].nodeType)
 		{
 			// Attribute Definition
 			for (sAttributeName in arguments[i])
