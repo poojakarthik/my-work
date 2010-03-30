@@ -72,7 +72,7 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 											$T.tr(
 													$T.td(
 															$T.input(
-																	{type: 'radio'}
+																	{type: 'radio', name: 'account-payment-method', value: String(oBankAccounts[i].Id)}
 															)
 													),
 													$T.td(
