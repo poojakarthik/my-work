@@ -2871,13 +2871,14 @@ div.datareport-buttons > button > img
 /************************ START - Change Payment Method - START ************************/
 div.payment-methods
 {
-	padding-top				: 20px;
-	padding-bottom			: 20px;
+	padding-top			: 20px;
+	padding-bottom		: 20px;
 }
 
-tr.account-payment-methods-titles > td
+div.payment-methods > table> thead > tr > td
 {
 	font-size			: 1.6em !important;
+	text-indent			: 10px;
 }
 
 td.account-payment-methods-col-other
@@ -2890,7 +2891,7 @@ td.account-payment-methods-col-other
 td.account-payment-methods-col-credit-cards,
 td.account-payment-methods-col-bank-accounts
 {
-	width				: 37%;
+	width				: 37.5%;
 	text-align			: center;
 	margin-bottom		: 10px;
 	border-left			: 1px solid #000000;

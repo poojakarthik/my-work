@@ -43,14 +43,14 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 																		)
 																)
 															),
-															$T.thead(),
+															$T.thead(
+																		$T.tr(
+																				$T.td(''),
+																				$T.td('Credit Cards'),
+																				$T.td('Bank Accounts')
+																		)
+																	),
 															$T.tbody(
-																$T.tr(
-																		{class: 'account-payment-methods-titles'},
-																		$T.td(''),
-																		$T.td('Credit Cards'),
-																		$T.td('Bank Accounts')
-																),
 																$T.tr(
 																		$T.td({class: 'account-payment-methods-col-other'}),
 																		$T.td({class: 'account-payment-methods-col-credit-cards'}),
