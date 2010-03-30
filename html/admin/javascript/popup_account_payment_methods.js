@@ -35,27 +35,27 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 													$T.table(
 															{class: 'form-layout reflex'},
 															$T.caption(
-																$T.div(
-																		{class: 'caption_bar', id: 'caption_bar'},
 																		$T.div(
-																				{class: 'caption_title', id: 'caption_title'},
-																				'Payment Methods'
+																				{class: 'caption_bar', id: 'caption_bar'},
+																				$T.div(
+																						{class: 'caption_title', id: 'caption_title'},
+																						'Payment Methods'
+																				)
 																		)
-																)
 															),
 															$T.thead(
-																		$T.tr(
-																				$T.td(''),
-																				$T.td('Credit Cards'),
-																				$T.td('Bank Accounts')
-																		)
-																	),
+																	$T.tr(
+																			$T.td(''),
+																			$T.td('Credit Cards'),
+																			$T.td('Bank Accounts')
+																	)
+															),
 															$T.tbody(
-																$T.tr(
-																		$T.td({class: 'account-payment-methods-col-other'}),
-																		$T.td({class: 'account-payment-methods-col-credit-cards'}),
-																		$T.td({class: 'account-payment-methods-col-bank-accounts'})
-																)
+																	$T.tr(
+																			$T.td({class: 'account-payment-methods-col-other'}),
+																			$T.td({class: 'account-payment-methods-col-credit-cards'}),
+																			$T.td({class: 'account-payment-methods-col-bank-accounts'})
+																	)
 															),
 															$T.tfoot()
 													)
