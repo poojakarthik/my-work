@@ -2869,24 +2869,40 @@ div.datareport-buttons > button > img
 
 
 /************************ START - Change Payment Method - START ************************/
-div.account-payment-methods div
+div.payment-methods
 {
-	text-align			: left;
+	padding				: 20px 0 20px 0
+}
+
+tr.account-payment-methods-titles > td
+{
+	font-size			: 1.6em !important;
 }
 
 td.account-payment-methods-col-other
 {
 	width				: 25%;
 	text-align			: center;
-	font-size			: 1.6em;
+	font-size			: 1.6em !important;
+	margin-bottom		: 10px;
 }
-
 td.account-payment-methods-col-credit-cards,
 td.account-payment-methods-col-bank-accounts
 {
 	width				: 37%;
 	text-align			: center;
-	font-size			: 1.6em;
+	margin-bottom		: 10px;
+	border-left			: 1px solid #000000;
+}
+
+table.account-payment-methods
+{
+	margin-top			: 10px;
+	margin-bottom		: 10px;
+}
+table.account-payment-methods > tr > td
+{
+	font-size			: 0.8em;
 }
 
 /************************ END - Change Payment Method - END ************************/

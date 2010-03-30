@@ -30,34 +30,33 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		{	
 
 			// Popup Template
-			var oPaymentMethodsTemplate		=	$T.div({style: 'padding: 20px 0 20px 0', class: 'reflex-popup-content'},
-													$T.div({class: 'MediumSpace'}),
-													$T.table({class: 'form-layout reflex'},
-														$T.caption(
-															$T.div({class: 'caption_bar', id: 'caption_bar'},
-																$T.div({class: 'caption_title', id: 'caption_title'},
-																	'Payment Methods'
+			var oPaymentMethodsTemplate		=	$T.div(
+													{class: 'payment-methods reflex-popup-content'},
+													$T.table(
+															{class: 'form-layout reflex'},
+															$T.caption(
+																$T.div(
+																		{class: 'caption_bar', id: 'caption_bar'},
+																		$T.div(
+																				{class: 'caption_title', id: 'caption_title'},
+																				'Payment Methods'
+																		)
+																)
+															),
+															$T.tbody(
+																$T.tr(
+																		{class: 'account-payment-methods-titles'},
+																		$T.td(''),
+																		$T.td('Credit Cards'),
+																		$T.td('Bank Accounts')
+																),
+																$T.tr(
+																		$T.td({class: 'account-payment-methods-col-other'}),
+																		$T.td({class: 'account-payment-methods-col-credit-cards'}),
+																		$T.td({class: 'account-payment-methods-col-bank-accounts'})
 																)
 															)
-														),
-														$T.tbody(
-															$T.tr(
-																$T.td(
-																	{class: 'account-payment-methods-col-other'},
-																	''
-																),
-																$T.td(
-																	{class: 'account-payment-methods-col-credit-cards'},
-																	'Credit Cards'
-																),
-																$T.td(
-																	{class: 'account-payment-methods-col-bank-accounts'},
-																	'Bank Accounts'
-																)
-															)
-														)
-													),
-													$T.div({class: 'MediumSpace'})
+													)
 												);
 				
 			
@@ -67,13 +66,16 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 			for(var i in oBankAccounts)
 			{
 				// response.intSelectedPaymentMethod
-				var oPaymentMethod = $T.div({class: 'account-payment-methods'},
-						$T.div('Account Name: '+String(oBankAccounts[i].AccountName)),
-						$T.div('BSB #'+String(oBankAccounts[i].BSB)+', Account #'+String(oBankAccounts[i].AccountNumber)),
-						$T.div('Bank Name: '+String(oBankAccounts[i].BankName)),
-						$T.div('Created: '+String(oBankAccounts[i].created_on)),
-						$T.div({class: 'SmallSpace'})
-				)
+				var oPaymentMethod =	$T.table({class: 'account-payment-methods'},
+											$T.tr(
+													$T.td(
+														$T.div('Account Name: '+String(oBankAccounts[i].AccountName)),
+														$T.div('BSB #'+String(oBankAccounts[i].BSB)+', Account #'+String(oBankAccounts[i].AccountNumber)),
+														$T.div('Bank Name: '+String(oBankAccounts[i].BankName)),
+														$T.div('Created: '+String(oBankAccounts[i].created_on))
+													)
+												)
+										)
 				oAccountPaymentMethodsColBankAccounts.appendChild(oPaymentMethod);
 			}
 			
