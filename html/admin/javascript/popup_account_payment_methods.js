@@ -68,7 +68,7 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 			for(var i in oBankAccounts)
 			{
 				// response.intSelectedPaymentMethod
-				var oPaymentMethod =	$T.table(
+				var oPaymentMethod =	$T.table({class: 'account-payment-methods'},
 											$T.tr(
 													$T.td(
 															$T.input(
@@ -77,7 +77,7 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 													),
 													$T.td(
 															
-															$T.table({class: 'account-payment-methods'},
+															$T.table(
 																	$T.tr(
 																			$T.td(		
 																				$T.div('Account Name: '+String(oBankAccounts[i].AccountName)),

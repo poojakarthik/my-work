@@ -2896,14 +2896,16 @@ td.account-payment-methods-col-bank-accounts
 	border-left			: 1px solid #000000;
 }
 
+
 table.account-payment-methods
 {
-	margin-top			: 10px;
-	margin-bottom		: 10px;
 }
-table.account-payment-methods > tr > td
+table.account-payment-methods > tr > td,
+table.account-payment-methods > tr > td > table > tr > td
 {
 	font-size			: 0.8em;
+	padding-left		: 0;
+	padding-right		: 0;
 }
 
 /************************ END - Change Payment Method - END ************************/
