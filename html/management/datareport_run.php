@@ -47,7 +47,7 @@
 		// Is this an email report?
 		if ($rptReport->Pull('RenderMode')->getValue() == REPORT_RENDER_EMAIL)
 		{
-			// Add to DataReportSchedule table			
+			// Add to DataReportSchedule table
 			$insDataReportSchedule = new StatementInsert("DataReportSchedule", $arrInsertData);
 			$insDataReportSchedule->Execute($arrInsertData);
 			
