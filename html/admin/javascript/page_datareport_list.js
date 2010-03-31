@@ -85,7 +85,7 @@ var Page_DataReport_List = Class.create(
 			}	
 			
 			var	oTR	=	$T.tr(
-							$T.td(
+							$T.td({class: 'datareport-name'},
 								$T.a(oData.Name)
 							),
 							$T.td(

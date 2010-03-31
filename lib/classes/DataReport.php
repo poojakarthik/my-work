@@ -66,6 +66,134 @@ class DataReport extends ORM_Cached
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	
 	//------------------------------------------------------------------------//
+	// convertInput
+	//------------------------------------------------------------------------//
+	public function convertInput($aRaw)
+	{
+		// Run through each editable field for the report, 
+		// grab the value from the raw data and perform any manipulation necessary.
+		$aWhere		= array();
+		$aFields	= unserialize($this->SQLFields);
+		
+		if (is_array($aRaw))
+		{
+			foreach ($aFields as $sName=>$aInput)
+			{
+				switch ($aInput['Type'])
+				{
+					case "dataDate":
+						// Cast the date data to an array if needed
+						if (is_array($aRaw[$sName]))
+						{
+							$aDate	= $aRaw[$sName];
+						}
+						else
+						{
+							$aDate	= (array)$aRaw[$sName];
+						}
+						
+						$aWhere[$sName] = date(
+							"Y-m-d", 
+							mktime (0, 0, 0, $aDate['month'], $aDate['day'], $aDate['year'])
+						);
+						break;
+						
+					case "dataDatetime":
+						// Cast the date data to an array if needed
+						if (is_array($aRaw[$sName]))
+						{
+							$aDate	= $aRaw[$sName];
+						}
+						else
+						{
+							$aDate	= (array)$aRaw[$sName];
+						}
+						
+						$aWhere[$sName] = date(
+							"Y-m-d H:i:s", 
+							mktime (
+								$aRaw[$sName]['hour']	, $aDate['minute']	, $aDate['second'],
+								$aRaw[$sName]['month']	, $aDate['day']		, $aDate['year']
+							)
+						);
+						break;
+						
+					case "dataString":
+						$aWhere[$sName] = "%" . $aRaw[$sName] . "%";
+						break;
+						
+					case "dataInteger":
+						$aWhere[$sName] = (int)$aRaw[$sName];
+						break;
+
+					default:
+						$aWhere[$sName] = $aRaw[$sName];
+						break;
+				}
+			}
+		}
+		
+		return $aWhere;
+	}
+	
+	//------------------------------------------------------------------------//
+	// execute
+	//------------------------------------------------------------------------//
+	public function execute($aSelects, $aFields, $iLimit)
+	{
+		// This deals with turning the SQLSelect Serialized Array 
+		// into a String: Field1, Field2, Field3 [, ... ]
+		$aSelect 	= unserialize($this->SQLSelect);
+		$i 			= 0;
+		
+		foreach ($aSelects as $sField)
+		{
+			if ($aSelect[$sField])
+			{
+				if ($i != 0)
+				{
+					$sSelect .= ", ";
+				}
+				
+				$sSelect .= $aSelect[$sField]['Value']." AS \"".str_replace("\"", "\\\"", $sField)."\"";
+				++$i;
+			}
+		}
+		
+		// This starts the SQL Statement
+		$oResult	= 	new StatementSelect (
+							$this->SQLTable, 
+							$sSelect, 
+							$this->SQLWhere, 
+							null,
+							(is_numeric ($iLimit) ? $iLimit : null),
+							$this->SQLGroupBy
+						);
+		
+		// From here, we may need to process values. For example, dates
+		// come into the system as an Array [day, month, year]. We need
+		// to change them to a string of YYYY-MM-DD
+		$aValues = $this->ConvertInput($aFields);
+		
+		// Execute the Result
+		try
+		{
+			if ($oResult->Execute($aValues) === false)
+			{
+				throw new Exception($oResult->Error()."\n\n\n".$oResult->_strQuery);
+			}
+		}
+		catch (Exception $oException)
+		{
+			throw new Exception(print_r($oResult->_arrPlaceholders, true));
+			throw new Exception($oResult->_strQuery);
+		}
+		
+		// Return the Result
+		return $oResult;
+	}
+	
+	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
 	/**

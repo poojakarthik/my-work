@@ -339,7 +339,9 @@
  		if ($bolSave)
  		{
 	 		// Open file
-	 		$strPath		= FILES_BASE_PATH."upload/datareport/$strName";
+	 		$sBaseDir		= FILES_BASE_PATH."upload/datareport/";
+ 			@mkdir($sBaseDir, 0777, true);
+ 			$strPath		= "$sBaseDir$strName";
 	 		$ptrFile		= fopen($strPath, "w");
  		}
  		else
@@ -381,8 +383,8 @@
  		//die;
  		
  		$arrReturn = Array();
- 		$arrReturn['Output']	= $strReturn;
- 		$arrReturn['FileName']	= $strPath;
+ 		$arrReturn['Output']		= $strReturn;
+ 		$arrReturn['FileName']		= $strPath;
  		return $arrReturn;
  	}
 	
@@ -418,7 +420,9 @@
  		// Saving?
  		if ($bolSave)
  		{
- 			$strPath		= FILES_BASE_PATH."upload/datareport/$strFileName";
+ 			$sBaseDir		= FILES_BASE_PATH."upload/datareport/";
+ 			@mkdir($sBaseDir, 0777, true);
+ 			$strPath		= "$sBaseDir$strFileName";
 			$wkbWorkbook	= new Spreadsheet_Excel_Writer($strPath);
  		}
  		else
@@ -600,6 +604,7 @@
 		
 		// Save the XLS file, CHMOD, return path
 		$wkbWorkbook->close();
+		
 		if ($bolSave)
 		{
  			chmod($strPath, 0777);

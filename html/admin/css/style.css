@@ -2875,6 +2875,11 @@ div.datareport th
 	width	: 30%;
 }
 
+td.datareport-name
+{
+	width	: 25%;
+}
+
 /************************ END - DataReport list - END ************************/
 
 

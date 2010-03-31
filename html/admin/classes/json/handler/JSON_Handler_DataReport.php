@@ -74,9 +74,10 @@ class JSON_Handler_DataReport extends JSON_Handler
 					$sDocumentationField	= $aField['Documentation-Field'];
 					$oDocumentation			= Documentation::getForEntityAndField($aField['Documentation-Entity'], $sDocumentationField);
 					$aNewInput 				= 	array(
-												'sType'		=> $sType, 
-												'sLabel' 	=> $oDocumentation->Label,
-												'sFieldName'	=> $sDocumentationField
+												'sType'			=> $sType, 
+												'sLabel' 		=> $oDocumentation->Label,
+												'sFieldName'	=> $sDocumentationField,
+												'sName'			=> $sName
 											);
 					
 					if (array_key_exists('DBSelect', $aField))
@@ -205,14 +206,93 @@ class JSON_Handler_DataReport extends JSON_Handler
 		}
 	}
 	
-	public function runReport($iId)
+	public function executeReport($aReportData)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
 		
 		try
 		{
-			$bDummy = false; // Delete me
+			// Get the report details
+			$oDataReport	= DataReport::getForId($aReportData->iId);
+						
+			// Build an array of data to insert into 'DataReportSchedule' (for email), also used to generate the xls/csv file
+			$aInsertData 					= array();
+			$aInsertData['DataReport']		= $aReportData->iId;
+			$aInsertData['Employee']		= Flex::getUserId();
+			$aInsertData['CreatedOn']		= new MySQLFunction("NOW()");
+			$aInsertData['SQLSelect']		= serialize($aReportData->aSelect);
+			$aInsertData['SQLWhere']		= serialize($oDataReport->convertInput((array)$aReportData->hInput));
+			$aInsertData['SQLLimit']		= serialize((int)$aReportData->sLimit);
+			$aInsertData['RenderTarget']	= ($aReportData->iOutputCSV == 1) ? REPORT_TARGET_CSV : REPORT_TARGET_XLS;
+			$aInsertData['Status']			= REPORT_WAITING;
+			
+			// Check the RenderMode
+			if ($oDataReport->RenderMode == REPORT_RENDER_EMAIL)
+			{
+				// Generated later and email sent with result
+				// Add a record to 'DataReportSchedule'
+				$oDataReportSchedule = new StatementInsert("DataReportSchedule", $aInsertData);
+				$oDataReportSchedule->Execute($aInsertData);
+				
+				return array(
+						"Success"		=> true,
+						"bEmail"		=> true,
+						"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+			}
+			else
+			{
+				// Get the reports result data
+				$oResult = $oDataReport->execute($aReportData->aSelect, (array)$aReportData->hInput, (int)$aReportData->sLimit);
+				if ($aResult = $oResult->FetchAll())
+				{
+					// Immediately generated and return the path to the file
+					
+					// Include XLS generator
+					require_once('Spreadsheet/Excel/Writer.php');
+	
+					// Create an ApplicationReport
+					$aConfig 	= LoadApplication("lib/report");
+					$oAppReport	= new ApplicationReport(Array('Display' => FALSE));
+					
+					// Prepare the select columns
+					$aDataReport	= $oDataReport->toArray();
+					
+					// Check the output format & generate the report
+					$sPath 	= $aReportData->iOutputCSV;
+					
+					if ($aReportData->iOutputCSV == 1)
+					{
+				        // CSV file
+				       	$aCSV 	= $oAppReport->ExportCSV($aResult, $aDataReport, $aInsertData, true);
+				        $sPath 	= $aCSV['FileName'];
+					}
+					else
+					{
+						// XLS file
+						$sPath	= $oAppReport->ExportXLS($aResult, $aDataReport, $aInsertData, true);
+					}
+					
+					// Return the path to the generated file
+					return array(
+							"Success"		=> true,
+							"bEmail"		=> false,
+							"sPath"			=> basename($sPath),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						);
+				}
+				else
+				{
+					// No data in the report, return 'bNoRecords' to imply this
+					return array(
+							"Success"		=> false,
+							"bEmail"		=> false,
+							"bNoRecords"	=> true,
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						);
+				}
+			}
 		}
 		catch (Exception $e)
 		{

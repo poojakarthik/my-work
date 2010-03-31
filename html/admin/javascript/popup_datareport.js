@@ -5,6 +5,8 @@ var Popup_DataReport	= Class.create(Reflex_Popup,
 	{
 		$super(70);
 		this.iDataReportId 	= iDataReportId;
+		this.hConstraints	= {};
+		this.aSelectDetails	= [];
 		this._buildUI();
 	},
 	
@@ -73,7 +75,7 @@ var Popup_DataReport	= Class.create(Reflex_Popup,
 											$T.caption(
 												$T.div({class: 'caption_bar'},						
 													$T.div({class: 'caption_title'},
-														'Report Constraint Input'
+														'Report Constraints'
 													)
 												)
 											),
@@ -82,7 +84,7 @@ var Popup_DataReport	= Class.create(Reflex_Popup,
 													$T.th({class: 'label'},
 														'Maximum Results :'
 													),
-													$T.td(
+													$T.td({class: 'datareport-constraint-limit'},
 														$T.input({type: 'text'})
 													)
 												),
@@ -121,6 +123,9 @@ var Popup_DataReport	= Class.create(Reflex_Popup,
 			{
 				oSelectDetailsDiv.appendChild($T.div(sFieldName));
 				iSelectCount++;
+				
+				// Store for later, when executing the report
+				this.aSelectDetails.push(sFieldName);
 			}
 			
 			if (iSelectCount >= Popup_DataReport.MAX_SELECT_OPTIONS_COLUMN_HEIGHT)
@@ -132,7 +137,7 @@ var Popup_DataReport	= Class.create(Reflex_Popup,
 			// Insert constraint input table if necessary
 			if (oDataReport.aInputData.length > 0)
 			{
-				Popup_DataReport._createReportConstraints(oDataReport.aInputData, oContent.select('tbody.datareport-select-constraints').first());
+				this._createReportConstraints(oDataReport.aInputData, oContent.select('tbody.datareport-select-constraints').first());
 			}
 			
 			// Insert the output format options
@@ -168,8 +173,8 @@ var Popup_DataReport	= Class.create(Reflex_Popup,
 										);
 			
 			// Set the save buttons event handler
-			var oSaveButton	= oContent.select( 'button' ).first();
-			oSaveButton.observe('click', this._runReport.bind(this));
+			var oRunButton	= oContent.select( 'button' ).first();
+			oRunButton.observe('click', this._executeReport.bind(this));
 			
 			// Set the cancel buttons event handler
 			var oCancelButton = oContent.select( 'button' ).last();
@@ -180,79 +185,239 @@ var Popup_DataReport	= Class.create(Reflex_Popup,
 			this.setTitle('Run Data Report');
 			this.setIcon('../admin/img/template/report_small.png');
 			this.setContent(oContent);
+			this.addCloseButton();
 			this.display();
 		}
 		else
 		{
 			// Error in AJAX request
-			Reflex_Popup.alert('There was an error accessing the database' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Database Error'});
+			Popup_DataReport._ajaxError(oResponse);
 		}
 	},
 	
-	_runReport	: function()
+	_createReportConstraints	: function(aInputData, oParentTBody)
 	{
+		var oInputInfo 	= null;
+		var oInput 		= null;
+		var oTRLimit	= oParentTBody.select('tr').first();
 		
+		for (var i = 0; i < aInputData.length; i++)
+		{
+			oInputInfo = aInputData[i];
+			oInput = null;
+			
+			// Create the input based on it's type and using the data given
+			switch (oInputInfo.sType)
+			{
+				case Popup_DataReport.CONSTRAINT_STATEMENT_SELECT:
+				case Popup_DataReport.CONSTRAINT_QUERY:
+					oInput	= Popup_DataReport._createQuerySelect(oInputInfo);
+					break;
+				case Popup_DataReport.CONSTRAINT_INTEGER:
+					oInput	= $T.input();
+					break;
+				case Popup_DataReport.CONSTRAINT_STRING:
+					oInput	= $T.input();
+					break;
+				case Popup_DataReport.CONSTRAINT_BOOLEAN:
+					oInput	= Popup_DataReport._createBooleanSelect(oInputInfo);
+					break;
+				case Popup_DataReport.CONSTRAINT_FLOAT:
+					oInput	= $T.input();
+					break;
+				case Popup_DataReport.CONSTRAINT_DATE:
+				case Popup_DataReport.CONSTRAINT_DATE_TIME:
+					oInput = Popup_DataReport._createDateTimeSelect(oInputInfo);
+					break;
+			}
+			
+			if (oInput)
+			{
+				// Add a new row to the tbody element
+				oParentTBody.insertBefore(
+								$T.tr(
+									$T.th({class: 'label'},
+											(oInputInfo.sLabel ? oInputInfo.sLabel : oInputInfo.sFieldName) + ' :'
+									),
+									$T.td(oInput)
+								),
+								oTRLimit
+							);
+				
+				// Add to constraints hash
+				this.hConstraints[oInputInfo.sName]	= {oInput: oInput, sType: oInputInfo.sType};
+			}
+		}
+		
+		return oParentTBody;
+	},
+	
+	_executeReport	: function()
+	{
+		var hRequestData	= 	{
+									iId			: this.iDataReportId,
+									aSelect		: this.aSelectDetails,
+									hInput		: {},
+									sLimit		: null,
+									iOutputCSV	: null
+								};
+		var oInputInfo		= null;
+		var mValue			= null;
+		
+		// Determine the value for each constraint
+		for (var sFieldName in this.hConstraints)
+		{
+			oInputInfo	= this.hConstraints[sFieldName];
+			mValue		= null;
+			
+			// Check type, get value
+			switch (oInputInfo.sType)
+			{
+				case Popup_DataReport.CONSTRAINT_STATEMENT_SELECT:
+				case Popup_DataReport.CONSTRAINT_QUERY:
+					mValue	= oInputInfo.oInput.value;
+					break;
+				case Popup_DataReport.CONSTRAINT_INTEGER:
+					mValue	= parseInt(oInputInfo.oInput.value);
+					break;
+				case Popup_DataReport.CONSTRAINT_STRING:
+					mValue	= oInputInfo.oInput.value;
+					break;
+				case Popup_DataReport.CONSTRAINT_FLOAT:
+					mValue	= parseFloat(oInputInfo.oInput.value);
+					break;
+				case Popup_DataReport.CONSTRAINT_BOOLEAN:
+					// Boolean as integer
+					var aBooleanInputs	= oInputInfo.oInput.select('td > input');
+					var bYesRadio		= aBooleanInputs.first();
+					var bNoRadio		= aBooleanInputs.last();
+					
+					if (bYesRadio.checked)
+					{
+						mValue	= parseInt(bYesRadio.value);
+					}
+					else
+					{
+						mValue	= parseInt(bNoRadio.value);
+					}
+					break;
+				case Popup_DataReport.CONSTRAINT_DATE:
+					// Object containing date parts
+					var aSelects	= oInputInfo.oInput.select('select');
+					mValue			= 	{
+											day		: parseInt(aSelects[0].value),
+											month	: parseInt(aSelects[1].value),
+											year	: parseInt(aSelects[2].value)
+										};
+					break;
+				case Popup_DataReport.CONSTRAINT_DATE_TIME:
+					// Object containing date & time parts
+					var aSelects	= oInputInfo.oInput.select('select');
+					mValue			= 	{
+											day		: parseInt(aSelects[0].value),
+											month	: parseInt(aSelects[1].value),
+											year	: parseInt(aSelects[2].value),
+											hour	: parseInt(aSelects[3].value),
+											minute	: parseInt(aSelects[4].value),
+											second	: parseInt(aSelects[5].value)
+										};
+					break;
+			}
+			
+			if (mValue !== null)
+			{
+				hRequestData.hInput[sFieldName]	= mValue;
+			}
+		}
+		
+		// Get the limit and output format values
+		var aOutputFormatInputs	= this.oContent.select('tbody.datareport-output-format > tr input');
+		var bExcelRadio			= aOutputFormatInputs.first();
+		var bCSVRadio			= aOutputFormatInputs.last();
+		
+		if (bExcelRadio.checked)
+		{
+			hRequestData.iOutputCSV	= parseInt(bExcelRadio.value);
+		}
+		else
+		{
+			hRequestData.iOutputCSV	= parseInt(bCSVRadio.value);
+		}
+		
+		hRequestData.sLimit	= this.oContent.select('td.datareport-constraint-limit > input').first().value;
+		
+		// Make AJAX request
+		this.oGeneratingPopup	= new Reflex_Popup.Loading('Running Report...');
+		this.oGeneratingPopup.display();
+		
+		this._executReportAJAX	= jQuery.json.jsonFunction(this._executeReponse.bind(this), this._executeReponse.bind(this), 'DataReport', 'executeReport');
+		this._executReportAJAX(hRequestData);
+	},
+	
+	_executeReponse	: function(oResponse)
+	{
+		// Hide loading popup
+		this.oGeneratingPopup.hide();
+		delete this.oGeneratingPopup;
+		
+		if (oResponse.Success)
+		{
+			if (oResponse.bEmail)
+			{
+				Reflex_Popup.alert(
+					'The data report will be emailed to you when it has been generated',
+					{
+						sTitle	: 'Email Report',
+						fnClose	: this.hide.bind(this)
+					}
+				);
+			}
+			else 
+			{
+				if(oResponse.bNoRecords)
+				{
+					// No records, show popup
+					Reflex_Popup.alert('The data report is empty');
+				}
+				else
+				{
+					// All good, let's show them the report
+					window.location = 'reflex.php/DataReport/Download/?sFileName=' + encodeURIComponent(oResponse.sPath) + '&iCSV=' + (oResponse.sPath.match(/\.csv/) ? 1 : 0);
+				}
+			}
+		}
+		else
+		{
+			// Error occurred in execution
+			Popup_DataReport._ajaxError(oResponse);
+		}
 	}
 });
 
+/////////////////////////////
+// Class constants
+/////////////////////////////
+
+// Images
 Popup_DataReport.CANCEL_IMAGE_SOURCE 		= '../admin/img/template/delete.png';
 Popup_DataReport.RUN_REPORT_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
 
+// Size/Position
 Popup_DataReport.MAX_SELECT_OPTIONS_COLUMN_HEIGHT	= 10;
 
-Popup_DataReport._createReportConstraints	= function(aInputData, oParentTBody)
-{
-	var oInputInfo 	= null;
-	var oInput 		= null;
-	var oTRLimit	= oParentTBody.select('tr').first();
-	
-	for (var i = 0; i < aInputData.length; i++)
-	{
-		oInputInfo = aInputData[i];
-		oInput = null;
-		
-		// Create the input based on it's type and using the data given
-		switch (oInputInfo.sType)
-		{
-			case 'StatementSelect':
-			case 'Query':
-				oInput	= Popup_DataReport._createQuerySelect(oInputInfo);
-				break;
-			case 'dataInteger':
-				oInput	= $T.input();
-				break;
-			case 'dataString':
-				oInput	= $T.input();
-				break;
-			case 'dataBoolean':
-				oInput	= Popup_DataReport._createBooleanSelect(oInputInfo);
-				break;
-			case 'dataFloat':
-				oInput	= $T.input();
-				break;
-			case 'dataDate':
-			case 'dataDatetime':
-				oInput = Popup_DataReport._createDateTimeSelect(oInputInfo);
-				break;
-		}
-		
-		if (oInput)
-		{
-			// Add a new row to the tbody element
-			oParentTBody.insertBefore(
-							$T.tr(
-								$T.th({class: 'label'},
-									(oInputInfo.sLabel ? oInputInfo.sLabel : oInputInfo.sFieldName) + ' :'
-								),
-								$T.td(oInput)
-							),
-							oTRLimit
-						);
-		}
-	}
-	
-	return oParentTBody;
-}
+// Report constraint types
+Popup_DataReport.CONSTRAINT_STATEMENT_SELECT	= 'StatementSelect';
+Popup_DataReport.CONSTRAINT_QUERY				= 'Query';
+Popup_DataReport.CONSTRAINT_INTEGER				= 'dataInteger';
+Popup_DataReport.CONSTRAINT_STRING				= 'dataString';
+Popup_DataReport.CONSTRAINT_BOOLEAN				= 'dataBoolean';
+Popup_DataReport.CONSTRAINT_FLOAT				= 'dataFloat';
+Popup_DataReport.CONSTRAINT_DATE				= 'dataDate';
+Popup_DataReport.CONSTRAINT_DATE_TIME			= 'dataDatetime';
+
+/////////////////////////////
+// End Class constants
+/////////////////////////////
 
 Popup_DataReport._createQuerySelect		= function(oInputInfo)
 {
@@ -270,19 +435,22 @@ Popup_DataReport._createQuerySelect		= function(oInputInfo)
 	}
 	
 	return oSelect;
-}
+};
 
 Popup_DataReport._createDateTimeSelect	= function(oInputInfo)
 {
+	// Create date select
 	var oDiv	=	$T.div(
 						Popup_DataReport._createNumberSelect(1, 31),
 						'/',
 						Popup_DataReport._createNumberSelect(1, 12),
 						'/',
-						Popup_DataReport._createNumberSelect(2000, 2010)
+						Popup_DataReport._createNumberSelect(2000, 2010),
+						' '
 					);
 	
-	if (oInputInfo.Type == 'dataDatetime')
+	// Add time select if needed (type is dataDatetime)
+	if (oInputInfo.sType == Popup_DataReport.CONSTRAINT_DATE_TIME)
 	{
 		oDiv.appendChild(Popup_DataReport._createNumberSelect(0, 24));
 		oDiv.innerHTML += ':';
@@ -292,7 +460,7 @@ Popup_DataReport._createDateTimeSelect	= function(oInputInfo)
 	}
 	
 	return oDiv;
-}
+};
 
 Popup_DataReport._createNumberSelect	= function(iLowest, iHighest)
 {
@@ -308,7 +476,7 @@ Popup_DataReport._createNumberSelect	= function(iLowest, iHighest)
 	}
 	
 	return oSelect;
-}
+};
 
 Popup_DataReport._createBooleanSelect	= function(oInputInfo)
 {
@@ -320,10 +488,15 @@ Popup_DataReport._createBooleanSelect	= function(oInputInfo)
 							' Yes'
 						),
 						$T.td(
-							$T.input({type: 'radio', value: 0, name: oInputInfo.sName}),
+							$T.input({type: 'radio', value: 0, name: oInputInfo.sName, checked: true}),
 							' No'
 						)
 					)
 				)
 			);
+};
+
+Popup_DataReport._ajaxError	= function(oResponse)
+{
+	Reflex_Popup.alert('There was an error accessing the database' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Database Error'});
 }
