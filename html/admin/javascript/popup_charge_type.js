@@ -232,17 +232,25 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		}
 		else
 		{
+			if (oResponse.Message)
+			{
+				Reflex_Popup.alert(oResponse.Message);
+			}
+			
 			// Hide saving overlay
 			this.oSavingOverlay.hide();
 			
 			// Show validation errors
-			Popup_Charge_Type._showValidationErrorPopup(oResponse.aValidationErrors);
+			if (oResponse.aValidationErrors)
+			{
+				Popup_Charge_Type._showValidationErrorPopup(oResponse.aValidationErrors);
+			}
 		}
 	},
 	
 	_saveError	: function(oResponse)
 	{
-		Reflex_Popup.alert('There was an error saving the Adjustment Type' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Save Error'});
+		Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error'});
 	},
 	
 	_showCancelConfirmation	: function()

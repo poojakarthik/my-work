@@ -21,7 +21,7 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 			// Check user permissions
 			if (!AuthenticatedUser()->UserHasPerm($this->_permissions))
 			{
-				throw(new Exception('User does not have permission.'));
+				throw(new JSON_Handler_Charge_Type_Exception('You do not have permission to view charge types'));
 			}
 			
 			// Build filter data for the 'searchFor' function
@@ -71,11 +71,19 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 						);
 			}
 		}
+		catch (JSON_Handler_Charge_Type_Exception $oException)
+		{
+			return array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage(),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
 		catch (Exception $e)
 		{
 			return array(
 						"Success"	=> false,
-						"Message"	=> 'ERROR: '.$e->getMessage(),
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error accessing the database',
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
@@ -90,9 +98,9 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 		{
 			// Failure!
 			return array(
-						"Success"		=> false,
-						"ErrorMessage"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? 'ERROR: Could not start database transaction.' : false,
-						"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						"Success"	=> false,
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error accessing the database',
+						"strDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD) ? $this->_JSONDebug : ''
 					);
 		}
 		
@@ -101,7 +109,7 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 			// Check user permissions
 			if (!AuthenticatedUser()->UserHasPerm($this->_permissions))
 			{
-				throw(new Exception('User does not have permission.'));
+				throw(new JSON_Handler_Charge_Type_Exception('You do not have permission to archive a charge type.'));
 			}
 			
 			$oChargeType = Charge_Type::getForId((int)$iChargeTypeId);
@@ -115,6 +123,17 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
+		catch (JSON_Handler_Charge_Type_Exception $oException)
+		{
+			// Rollback database transaction
+			$oDataAccess->TransactionRollback();
+			
+			return array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage(),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
 		catch (Exception $e)
 		{
 			// Rollback database transaction
@@ -122,7 +141,7 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 			
 			return array(
 						"Success"	=> false,
-						"Message"	=> 'ERROR: '.$e->getMessage(),
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error accessing the database',
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
@@ -137,9 +156,9 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 		{
 			// Failure!
 			return array(
-						"Success"		=> false,
-						"ErrorMessage"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'ERROR: Could not start database transaction.' : false,
-						"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						"Success"	=> false,
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error accessing the database',
+						"strDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
 					);
 		}
 		
@@ -148,7 +167,7 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 			// Check user permissions
 			if (!AuthenticatedUser()->UserHasPerm($this->_permissions))
 			{
-				throw(new Exception('User does not have permission.'));
+				throw(new JSON_Handler_Charge_Type_Exception('You do not have permission to save charge types'));
 			}
 			
 			// Create a charge type object
@@ -160,7 +179,7 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 			else
 			{
 				// No id given, must be a new object
-				$oChargeType 								= new Charge_Type();
+				$oChargeType	= new Charge_Type();
 				
 				// The following fields are not supplied by the interface, defaults are set here
 				$oChargeType->Archived 						= 0;
@@ -226,6 +245,17 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 						);
 			}
 		}
+		catch (JSON_Handler_Charge_Type_Exception $oException)
+		{
+			// Rollback database transaction
+			$oDataAccess->TransactionRollback();
+			
+			return array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage(),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
 		catch (Exception $e)
 		{
 			// Rollback database transaction
@@ -233,11 +263,16 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 			
 			return array(
 						"Success"	=> false,
-						"Message"	=> 'ERROR: '.$e->getMessage(),
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error accessing the database',
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
 	}
+}
+
+class JSON_Handler_Charge_Type_Exception extends Exception
+{
+	// No changes...
 }
 
 ?>

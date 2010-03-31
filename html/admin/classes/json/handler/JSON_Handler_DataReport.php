@@ -19,7 +19,7 @@ class JSON_Handler_DataReport extends JSON_Handler
 			// Check user permissions
 			if (!AuthenticatedUser()->UserHasPerm($this->_aPermissions))
 			{
-				throw(new Exception('User does not have permission.'));
+				throw(new JSON_Handler_DataReport_Exception('You do not have permission to get the list of data reports.'));
 			}
 			
 			// Retrieve the datareports & convert response to std classes
@@ -28,9 +28,14 @@ class JSON_Handler_DataReport extends JSON_Handler
 			
 			foreach ($aDataReports as $iId => $oDataReport)
 			{
-				if (AuthenticatedUser()->UserHasPerm($oDataReport->Privileges))
+				if (AuthenticatedUser()->UserHasPerm($oDataReport->Priviledges))
 				{
 					$aStdClassDataReports[$iId]	= $oDataReport->toStdClass();
+					
+					if ($oDataReport->Priviledges & PERMISSION_DEBUG)
+					{
+						$aStdClassDataReports[$iId]->bHidden	= true;
+					}
 				}
 			}
 			
@@ -41,11 +46,19 @@ class JSON_Handler_DataReport extends JSON_Handler
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
+		catch (JSON_Handler_DataReport_Exception $oException)
+		{
+			return array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage(),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
 		catch (Exception $e)
 		{
 			return array(
 						"Success"	=> false,
-						"Message"	=> 'ERROR: '.$e->getMessage(),
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
@@ -58,7 +71,7 @@ class JSON_Handler_DataReport extends JSON_Handler
 			// Check user permissions
 			if (!AuthenticatedUser()->UserHasPerm($this->_aPermissions))
 			{
-				throw(new Exception('User does not have permission.'));
+				throw(new JSON_Handler_DataReport_Exception('You do not have permission to view this data report.'));
 			}
 			
 			// Get the datareport orm object
@@ -68,10 +81,22 @@ class JSON_Handler_DataReport extends JSON_Handler
 			// Check permissions against the reports priviledges
 			if (!AuthenticatedUser()->UserHasPerm($oDataReport->Priviledges))
 			{
-				throw(new Exception('User does not have permission to retrieve the report.'));
+				throw(new JSON_Handler_DataReport_Exception('User does not have permission to retrieve the report.'));
+			}
+			
+			if ($oDataReport->RenderMode == REPORT_RENDER_EMAIL)
+			{
+				// Email report, so check that the authenticated user has an email address
+				$oEmployee	= Employee::getForId(Flex::getUserId());			
+				
+				if (is_null($oEmployee->email) || ($oEmployee->email == ''))
+				{
+					throw(new JSON_Handler_DataReport_Exception('Please set your email address in your account Preferences, you cannot run an email report without doing so'));
+				}
 			}
 			
 			// Unserialize the serialized data
+			$oStdClassDataReport->SQLSelect2 = $oStdClassDataReport->SQLSelect;
 			$oStdClassDataReport->SQLSelect	= unserialize($oStdClassDataReport->SQLSelect);
 			$aSQLFields	= unserialize($oStdClassDataReport->SQLFields);
 			
@@ -212,11 +237,19 @@ class JSON_Handler_DataReport extends JSON_Handler
 						"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
+		catch (JSON_Handler_DataReport_Exception $oException)
+		{
+			return array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage(),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
 		catch (Exception $e)
 		{
 			return array(
 						"Success"	=> false,
-						"Message"	=> 'ERROR: '.$e->getMessage(),
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
@@ -229,7 +262,7 @@ class JSON_Handler_DataReport extends JSON_Handler
 			// Check user permissions
 			if (!AuthenticatedUser()->UserHasPerm($this->_aPermissions))
 			{
-				throw(new Exception('User does not have permission.'));
+				throw(new JSON_Handler_DataReport_Exception('You do not have permission to execute this report'));
 			}
 			
 			// Get the report details
@@ -238,13 +271,17 @@ class JSON_Handler_DataReport extends JSON_Handler
 			// Check permissions against the reports priviledges
 			if (!AuthenticatedUser()->UserHasPerm($oDataReport->Priviledges))
 			{
-				throw(new Exception('User does not have permission to execute the report.'));
+				throw(new JSON_Handler_DataReport_Exception('You do not have permission to execute the report'));
 			}
+			
+			// Check that the authenticated user has an email address
+			$iLoggedInUserId	= Flex::getUserId();
+			$oEmployee			= Employee::getForId(Flex::getUserId());	
 			
 			// Build an array of data to insert into 'DataReportSchedule' (for email), also used to generate the xls/csv file
 			$aInsertData 					= array();
 			$aInsertData['DataReport']		= $aReportData->iId;
-			$aInsertData['Employee']		= Flex::getUserId();
+			$aInsertData['Employee']		= $iLoggedInUserId;
 			$aInsertData['CreatedOn']		= new MySQLFunction("NOW()");
 			$aInsertData['SQLSelect']		= serialize($aReportData->aSelect);
 			$aInsertData['SQLWhere']		= serialize($oDataReport->convertInput((array)$aReportData->hInput));
@@ -262,7 +299,7 @@ class JSON_Handler_DataReport extends JSON_Handler
 				
 				return array(
 						"Success"		=> true,
-						"bEmail"		=> true,
+						"sEmail"		=> $oEmployee->email,
 						"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 			}
@@ -302,7 +339,7 @@ class JSON_Handler_DataReport extends JSON_Handler
 					// Return the path to the generated file
 					return array(
 							"Success"		=> true,
-							"bEmail"		=> false,
+							"sEmail"		=> false,
 							"sPath"			=> basename($sPath),
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
@@ -311,23 +348,36 @@ class JSON_Handler_DataReport extends JSON_Handler
 				{
 					// No data in the report, return 'bNoRecords' to imply this
 					return array(
-							"Success"		=> false,
-							"bEmail"		=> false,
+							"Success"		=> true,
+							"sEmail"		=> false,
 							"bNoRecords"	=> true,
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 				}
 			}
 		}
+		catch (JSON_Handler_DataReport_Exception $oException)
+		{
+			return array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage(),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
 		catch (Exception $e)
 		{
 			return array(
 						"Success"	=> false,
-						"Message"	=> 'ERROR: '.$e->getMessage(),
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
 	}
+}
+
+class JSON_Handler_DataReport_Exception extends Exception
+{
+	// No changes
 }
 
 ?>

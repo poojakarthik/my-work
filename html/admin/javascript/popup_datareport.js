@@ -190,6 +190,10 @@ var Popup_DataReport	= Class.create(Reflex_Popup,
 		}
 		else
 		{
+			// Hide loading
+			this.oLoadingPopup.hide();
+			delete this.oLoadingPopup;
+			
 			// Error in AJAX request
 			Popup_DataReport._ajaxError(oResponse);
 		}
@@ -362,10 +366,10 @@ var Popup_DataReport	= Class.create(Reflex_Popup,
 		
 		if (oResponse.Success)
 		{
-			if (oResponse.bEmail)
+			if (oResponse.sEmail != false)
 			{
 				Reflex_Popup.alert(
-					'The data report will be emailed to you when it has been generated',
+					'The data report will be emailed to ' + oResponse.sEmail + ' when it has been generated',
 					{
 						sTitle	: 'Email Report',
 						fnClose	: this.hide.bind(this)
@@ -377,7 +381,7 @@ var Popup_DataReport	= Class.create(Reflex_Popup,
 				if(oResponse.bNoRecords)
 				{
 					// No records, show popup
-					Reflex_Popup.alert('The data report is empty');
+					Reflex_Popup.alert('The data report returned no results');
 				}
 				else
 				{
@@ -504,5 +508,5 @@ Popup_DataReport._createBooleanSelect	= function(oInputInfo)
 
 Popup_DataReport._ajaxError	= function(oResponse)
 {
-	Reflex_Popup.alert('There was an error accessing the database' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Database Error'});
+	Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error'});
 }

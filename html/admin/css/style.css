@@ -2880,6 +2880,27 @@ td.datareport-name
 	width	: 25%;
 }
 
+tr.datareport-hidden > td.datareport-name
+{
+	text-decoration	: line-through;
+}
+
+ul.datareport-legend
+{
+	margin	: 0em;
+}
+
+ul.datareport-legend img
+{
+	padding-left	: 1em;
+}
+
+ul.datareport-legend img,
+ul.datareport-legend span
+{
+	vertical-align	: middle;
+}
+
 /************************ END - DataReport list - END ************************/
 
 

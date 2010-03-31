@@ -6,12 +6,12 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		$super(40);
 		
 		// This array to hold a reference to the LI in the main UL for each cost centre
-		this.hTRMap = {};
-		this.aNewTRArray = [];
-		this.iCostCentreCount = 0;
-		this.iAccountId = iAccountId;
-		this.oTBody = null;
-		this.oAddNewCostCentreTR = null;
+		this.hTRMap 				= {};
+		this.aNewTRArray 			= [];
+		this.iCostCentreCount 		= 0;
+		this.iAccountId 			= iAccountId;
+		this.oTBody 				= null;
+		this.oAddNewCostCentreTR	= null;
 		
 		this._buildUI();
 	},
@@ -28,7 +28,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		if (oResponse.Success == false)
 		{
-			Reflex_Popup.alert('There was an error accessing the database' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Database Error', fnOnClose: this.hide.bind(this)});
+			Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error', fnOnClose: this.hide.bind(this)});
 			return;
 		}
 		
@@ -75,7 +75,7 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 									$T.span('Cancel')
 								)
 							);
-		this.oTBody 	= oContent.select('tbody').first();
+		this.oTBody	= oContent.select('tbody').first();
 		
 		// Set the save buttons event handler
 		var oSaveButton	= oContent.select( 'button' ).last().previous();
@@ -282,8 +282,13 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		}
 		else
 		{
+			this._saveCostCentresError(oResponse);
+			
 			// Show validation errors
-			Popup_Cost_Centres._showValidationErrorPopup(oResponse.aValidationErrors);
+			if (oResponse.aValidationErrors)
+			{
+				Popup_Cost_Centres._showValidationErrorPopup(oResponse.aValidationErrors);
+			}
 		}
 	},
 	
@@ -302,10 +307,10 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_saveCostCentresError	: function()
+	_saveCostCentresError	: function(oResponse)
 	{
 		// Show a Reflex_Popup.alert explaining the error
-		Reflex_Popup.alert('There was an error saving the cost centre changes' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Save Error'});
+		Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Save Error'});
 	},
 	
 	_removeCostCentre		: function(mCostCentre)

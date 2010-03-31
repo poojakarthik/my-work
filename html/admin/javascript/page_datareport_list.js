@@ -26,6 +26,18 @@ var Page_DataReport_List = Class.create(
 													$T.div({class: 'caption_title'},
 														'Report Listing'
 													)
+												),
+												$T.div({class: 'caption_options'},
+													$T.ul({class: 'reset horizontal datareport-legend'},
+														$T.li(
+															$T.img({src: Page_DataReport_List.INSTANT_REPORT_IMAGE_SOURCE, alt: 'Immediate', title: 'Immediate'}),
+															$T.span(' : Immediate')
+														),
+														$T.li(
+															$T.img({src: Page_DataReport_List.EMAIL_REPORT_IMAGE_SOURCE, alt: 'Emailed', title: 'Emailed'}),
+															$T.span(' : Emailed')
+														)
+													)
 												)
 											),
 											$T.thead(
@@ -59,7 +71,7 @@ var Page_DataReport_List = Class.create(
 		else
 		{
 			// Error
-			Reflex_Popup.alert('There was an error accessing the database' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Database Error'});
+			Page_DataReport_List.ajaxError(oResponse);
 		}
 	},
 	
@@ -75,11 +87,11 @@ var Page_DataReport_List = Class.create(
 			{
 				case 1:
 					sTypeImage	= Page_DataReport_List.EMAIL_REPORT_IMAGE_SOURCE;
-					sTypeAlt	= 'Email';
+					sTypeAlt	= 'Emailed';
 					break;
 				case 0:
 					sTypeImage	= Page_DataReport_List.INSTANT_REPORT_IMAGE_SOURCE;
-					sTypeAlt	= 'Screen';
+					sTypeAlt	= 'Immediate';
 					break;
 					
 			}	
@@ -93,6 +105,11 @@ var Page_DataReport_List = Class.create(
 							),
 							$T.td(oData.Summary)
 						);
+			
+			if (oData.bHidden)
+			{
+				oTR.addClassName('datareport-hidden');
+			}
 			
 			// Attach click event to the name anchor
 			var oA	= oTR.select('a').first();
@@ -108,5 +125,11 @@ var Page_DataReport_List = Class.create(
 	}
 });
 
+// Image constants
 Page_DataReport_List.INSTANT_REPORT_IMAGE_SOURCE	= '../admin/img/template/report_instant.png';
 Page_DataReport_List.EMAIL_REPORT_IMAGE_SOURCE		= '../admin/img/template/report_email.png';
+
+Page_DataReport_List.ajaxError	= function(oResponse)
+{
+	Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error'});
+}

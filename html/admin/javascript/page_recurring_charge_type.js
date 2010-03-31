@@ -315,36 +315,55 @@ var Page_Recurring_Charge_Type = Class.create(
 		// Show yes, no, cancel
 		if (!bConfirmed)
 		{
-			Reflex_Popup.yesNoCancel(	$T.div(
-											$T.p('Archiving this Recurring Adjustment Type will make it unavailable for use.'),
-											$T.p('Are you sure you want to archive it?')
-										),
-										{
-											sTitle			: 'Archive Confirmation', 
-											sYesLabel		: 'Yes, Archive', 
-											sNoLabel		: 'No, do not Archive', 
-											fnOnYes			: this._archive.bind(this, iId, true, false)
-										});
+			Reflex_Popup.yesNoCancel(
+				$T.div(
+					$T.p('Archiving this Recurring Adjustment Type will make it unavailable for use.'),
+					$T.p('Are you sure you want to archive it?')
+				),
+				{
+					sTitle			: 'Archive Confirmation', 
+					sYesLabel		: 'Yes, Archive', 
+					sNoLabel		: 'No, do not Archive', 
+					fnOnYes			: this._archive.bind(this, iId, true, false)
+				}
+			);
 			return;
 		}
 		
-		var fnArchiveComplete = function()
+		var fnArchiveComplete = function(oResponse)
 		{
-			this.oPagination.getCurrentPage();
+			if (oResponse.Success)
+			{
+				// Refresh the current page
+				this.oPagination.getCurrentPage();
+			}
+			else
+			{
+				// Hide loading & show error popup
+				this.oLoadingOverlay.hide();
+				delete this.oLoadingOverlay;
+				
+				if (oResponse.Message)
+				{
+					Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
+				}
+			}
 		}
 		
-		var oArchivingPopup = new Reflex_Popup.Loading('Archiving...');
-		oArchivingPopup.display();
-		this.oLoadingOverlay = oArchivingPopup;
+		this.oLoadingOverlay	= new Reflex_Popup.Loading('Archiving...');
+		this.oLoadingOverlay.display();
 		
 		// Archive confirmed do the AJAX request
-		var fnArchive = jQuery.json.jsonFunction(fnArchiveComplete.bind(this, oArchivingPopup), this._archiveFailed.bind(this), 'Recurring_Charge_Type', 'archive');
+		var fnArchive = jQuery.json.jsonFunction(fnArchiveComplete.bind(this), this._archiveFailed.bind(this), 'Recurring_Charge_Type', 'archive');
 		fnArchive(iId);
 	},
 	
 	_archiveFailed	: function(oResponse)
 	{
-		Reflex_Popup.alert('There was an error accessing the database' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Database Error'});
+		if (oResponse.Message)
+		{
+			Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
+		}
 		
 		// Close the loading popup
 		if (this.oLoadingOverlay)

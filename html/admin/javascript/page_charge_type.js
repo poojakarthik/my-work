@@ -302,23 +302,34 @@ var Page_Charge_Type = Class.create(
 			return;
 		}
 		
-		var fnArchiveComplete = function()
+		var fnArchiveComplete = function(oResponse)
 		{
-			this.oPagination.getCurrentPage();
+			if (oResponse.Success)
+			{
+				// Refresh the current page
+				this.oPagination.getCurrentPage();
+			}
+			else
+			{
+				// Hide loading & show error popup
+				this.oLoadingOverlay.hide();
+				delete this.oLoadingOverlay;
+				
+				Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error'});
+			}
 		}
 		
-		var oArchivingPopup = new Reflex_Popup.Loading('Archiving...');
-		oArchivingPopup.display();
-		this.oLoadingOverlay = oArchivingPopup;
+		this.oLoadingOverlay	= new Reflex_Popup.Loading('Archiving...');
+		this.oLoadingOverlay.display();
 		
 		// Archive confirmed do the AJAX request
-		var fnArchive = jQuery.json.jsonFunction(fnArchiveComplete.bind(this, oArchivingPopup), this._archiveFailed.bind(this), 'Charge_Type', 'archive');
+		var fnArchive = jQuery.json.jsonFunction(fnArchiveComplete.bind(this), this._archiveFailed.bind(this), 'Charge_Type', 'archive');
 		fnArchive(iId);
 	},
 	
 	_archiveFailed	: function(oResponse)
 	{
-		Reflex_Popup.alert('There was an error accessing the database' + (oResponse.ErrorMessage ? ' (' + oResponse.ErrorMessage + ')' : ''), {sTitle: 'Database Error'});
+		Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error'});
 		
 		// Close the loading popup
 		if (this.oLoadingOverlay)

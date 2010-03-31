@@ -126,17 +126,17 @@ class JSON_Handler_Account extends JSON_Handler
 			
 			return array(
 							"Success"			=> true,
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : '',
 							"aCostCentres"		=> $aStdObjects
 						);
 		}
 		catch (Exception $e)
 		{
-			return array(
-							"Success"		=> false,
-							"ErrorMessage"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? 'ERROR: '.$e->getMessage() : false,
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
-						);
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
 		}
 	}
 	
@@ -149,9 +149,9 @@ class JSON_Handler_Account extends JSON_Handler
 		{
 			// Failure!
 			return array(
-						"Success"		=> false,
-						"ErrorMessage"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? 'ERROR: Could not start database transaction.' : false,
-						"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
 		
@@ -205,7 +205,7 @@ class JSON_Handler_Account extends JSON_Handler
 				return array(
 							"Success"			=> false,
 							"aValidationErrors"	=> $aValidationErrors,
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 			}
 			else
@@ -216,7 +216,7 @@ class JSON_Handler_Account extends JSON_Handler
 				// Return successfully
 				return array(
 							"Success"		=> true,
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : '',
 							"iAccountId"	=> $iAccountId
 						);
 			}
@@ -226,9 +226,9 @@ class JSON_Handler_Account extends JSON_Handler
 			$oDataAccess->TransactionRollback();
 			
 			return array(
-						"Success"		=> false,
-						"ErrorMessage"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? 'ERROR: '.$e->getMessage() : false,
-						"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
 	}
