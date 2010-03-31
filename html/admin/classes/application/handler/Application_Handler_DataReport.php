@@ -8,7 +8,7 @@ class Application_Handler_DataReport extends Application_Handler
 	public function ListAll($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_ADMIN, PERMISSION_ACCOUNTS));
 		
 		try
 		{

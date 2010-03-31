@@ -440,29 +440,30 @@ Popup_DataReport._createQuerySelect		= function(oInputInfo)
 Popup_DataReport._createDateTimeSelect	= function(oInputInfo)
 {
 	// Create date select
+	var oDate	= new Date();
 	var oDiv	=	$T.div(
-						Popup_DataReport._createNumberSelect(1, 31),
+						Popup_DataReport._createNumberSelect(1, 31, oDate.getDate()),
 						'/',
-						Popup_DataReport._createNumberSelect(1, 12),
+						Popup_DataReport._createNumberSelect(1, 12, oDate.getMonth() + 1),
 						'/',
-						Popup_DataReport._createNumberSelect(2000, 2010),
+						Popup_DataReport._createNumberSelect(2000, 2010, oDate.getFullYear()),
 						' '
 					);
 	
 	// Add time select if needed (type is dataDatetime)
 	if (oInputInfo.sType == Popup_DataReport.CONSTRAINT_DATE_TIME)
 	{
-		oDiv.appendChild(Popup_DataReport._createNumberSelect(0, 24));
-		oDiv.innerHTML += ':';
-		oDiv.appendChild(Popup_DataReport._createNumberSelect(0, 59));
-		oDiv.innerHTML += ':';
-		oDiv.appendChild(Popup_DataReport._createNumberSelect(0, 59));
+		oDiv.appendChild(Popup_DataReport._createNumberSelect(0, 24, oDate.getHours()));
+		oDiv.appendChild(document.createTextNode(':'));
+		oDiv.appendChild(Popup_DataReport._createNumberSelect(0, 59, oDate.getMinutes()));
+		oDiv.appendChild(document.createTextNode(':'));
+		oDiv.appendChild(Popup_DataReport._createNumberSelect(0, 59, oDate.getSeconds()));
 	}
 	
 	return oDiv;
 };
 
-Popup_DataReport._createNumberSelect	= function(iLowest, iHighest)
+Popup_DataReport._createNumberSelect	= function(iLowest, iHighest, defaultValue)
 {
 	var oSelect	= $T.select();
 	
@@ -473,6 +474,11 @@ Popup_DataReport._createNumberSelect	= function(iLowest, iHighest)
 							(iValue < 10 ? '0' + iValue : iValue)
 						)
 					);
+	}
+	
+	if (defaultValue !== null)
+	{
+		oSelect.value = defaultValue;
 	}
 	
 	return oSelect;

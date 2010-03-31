@@ -2,7 +2,8 @@
 
 class JSON_Handler_Recurring_Charge_Type extends JSON_Handler
 {
-	protected	$_JSONDebug	= '';
+	protected	$_JSONDebug		= '';
+	protected	$_permissions	= PERMISSION_CREDIT_MANAGEMENT;
 	
 	const MAX_LIMIT = 100;
 	
@@ -15,11 +16,14 @@ class JSON_Handler_Recurring_Charge_Type extends JSON_Handler
 	
 	public function getAll($bCountOnly=false, $iLimit=0, $iOffset=0)
 	{
-		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
-		
 		try
 		{
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm($this->_permissions))
+			{
+				throw(new Exception('User does not have permission.'));
+			}
+			
 			// Build filter data for the 'searchFor' function
 			$aFilterData = 	array(
 								array(
@@ -127,6 +131,12 @@ class JSON_Handler_Recurring_Charge_Type extends JSON_Handler
 		
 		try
 		{
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm($this->_permissions))
+			{
+				throw(new Exception('User does not have permission.'));
+			}
+			
 			$oRecurringChargeType 			= Recurring_Charge_Type::getForId((int)$iRecurringChargeTypeId);
 			$oRecurringChargeType->Archived	= 1;
 			$oRecurringChargeType->save();
@@ -169,6 +179,12 @@ class JSON_Handler_Recurring_Charge_Type extends JSON_Handler
 		
 		try
 		{
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm($this->_permissions))
+			{
+				throw(new Exception('User does not have permission.'));
+			}
+			
 			// Create a recurring charge type object
 			if ($oDetails->iId)
 			{

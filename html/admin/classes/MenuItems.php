@@ -3111,7 +3111,7 @@ class MenuItems {
 	function DataReports() {
 		$this->strContextMenuLabel = "Data Reports";
 		$this->strLabel = "Data Reports";
-		return self :: OLD_FRAMEWORK . "datareport_list.php";
+		return self::NEW_FRAMEWORK . "reflex.php/DataReport/ListAll/";
 	}
 
 	//------------------------------------------------------------------------//

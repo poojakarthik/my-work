@@ -2,7 +2,8 @@
 
 class JSON_Handler_DataReport extends JSON_Handler
 {
-	protected	$_JSONDebug	= '';
+	protected	$_JSONDebug		= '';
+	protected	$_aPermissions	= array(PERMISSION_ADMIN, PERMISSION_ACCOUNTS);
 	
 	public function __construct()
 	{
@@ -13,18 +14,24 @@ class JSON_Handler_DataReport extends JSON_Handler
 	
 	public function getAll()
 	{
-		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
-		
 		try
 		{
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm($this->_aPermissions))
+			{
+				throw(new Exception('User does not have permission.'));
+			}
+			
 			// Retrieve the datareports & convert response to std classes
 			$aDataReports 			= DataReport::getAll();
 			$aStdClassDataReports 	= array();
 			
 			foreach ($aDataReports as $iId => $oDataReport)
 			{
-				$aStdClassDataReports[$iId]	= $oDataReport->toStdClass();				
+				if (AuthenticatedUser()->UserHasPerm($oDataReport->Privileges))
+				{
+					$aStdClassDataReports[$iId]	= $oDataReport->toStdClass();
+				}
 			}
 			
 			// If no exceptions were thrown, then everything worked
@@ -46,14 +53,23 @@ class JSON_Handler_DataReport extends JSON_Handler
 	
 	public function getForId($iId)
 	{
-		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
-		
 		try
 		{
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm($this->_aPermissions))
+			{
+				throw(new Exception('User does not have permission.'));
+			}
+			
 			// Get the datareport orm object
 			$oDataReport			= DataReport::getForId($iId);
 			$oStdClassDataReport	= $oDataReport->toStdClass();
+			
+			// Check permissions against the reports priviledges
+			if (!AuthenticatedUser()->UserHasPerm($oDataReport->Priviledges))
+			{
+				throw(new Exception('User does not have permission to retrieve the report.'));
+			}
 			
 			// Unserialize the serialized data
 			$oStdClassDataReport->SQLSelect	= unserialize($oStdClassDataReport->SQLSelect);
@@ -208,14 +224,23 @@ class JSON_Handler_DataReport extends JSON_Handler
 	
 	public function executeReport($aReportData)
 	{
-		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
-		
 		try
 		{
+			// Check user permissions
+			if (!AuthenticatedUser()->UserHasPerm($this->_aPermissions))
+			{
+				throw(new Exception('User does not have permission.'));
+			}
+			
 			// Get the report details
 			$oDataReport	= DataReport::getForId($aReportData->iId);
-						
+			
+			// Check permissions against the reports priviledges
+			if (!AuthenticatedUser()->UserHasPerm($oDataReport->Priviledges))
+			{
+				throw(new Exception('User does not have permission to execute the report.'));
+			}
+			
 			// Build an array of data to insert into 'DataReportSchedule' (for email), also used to generate the xls/csv file
 			$aInsertData 					= array();
 			$aInsertData['DataReport']		= $aReportData->iId;

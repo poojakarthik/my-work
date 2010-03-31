@@ -6,12 +6,12 @@ class Application_Handler_RecurringChargeType extends Application_Handler
 	public function Manage($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
 		
-		// Build List of Action Types
+		// Build List of Recurring Charge Types
 		try
 		{
-			$aDetailsToRender = array();
+			$aDetailsToRender	= array();
 			$this->LoadPage('recurring_charge_type_list', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)

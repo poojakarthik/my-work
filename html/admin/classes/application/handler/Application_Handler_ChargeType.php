@@ -6,13 +6,12 @@ class Application_Handler_ChargeType extends Application_Handler
 	public function Manage($subPath)
 	{
 		// Check user permissions
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_PROPER_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
 		
-		// Build List of Action Types
+		// Build List of Charge Types
 		try
 		{
-			$aDetailsToRender					= array();
-			//$aDetailsToRender['aChargeTypes']	= Charge_Type::getAll();
+			$aDetailsToRender	= array();
 			$this->LoadPage('charge_type_list', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)
