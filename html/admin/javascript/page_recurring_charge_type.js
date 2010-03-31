@@ -354,15 +354,20 @@ var Page_Recurring_Charge_Type = Class.create(
 		this.oLoadingOverlay.display();
 		
 		// Archive confirmed do the AJAX request
-		var fnArchive = jQuery.json.jsonFunction(fnArchiveComplete.bind(this), this._archiveFailed.bind(this), 'Recurring_Charge_Type', 'archive');
+		var fnArchive = jQuery.json.jsonFunction(
+							fnArchiveComplete.bind(this), 
+							this._archiveFailed.bind(this), 
+							'Recurring_Charge_Type', 
+							'archive'
+						);
 		fnArchive(iId);
 	},
 	
 	_archiveFailed	: function(oResponse)
 	{
-		if (oResponse.Message)
+		if (oResponse.ERROR)
 		{
-			Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
+			Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
 		}
 		
 		// Close the loading popup

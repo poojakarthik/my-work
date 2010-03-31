@@ -311,7 +311,12 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 		this.oSavingOverlay = oSavePopup;
 		
 		// Make AJAX request
-		this._saveChargeType = jQuery.json.jsonFunction(this._saveComplete.bind(this), this._saveError.bind(this), 'Recurring_Charge_Type', 'save');
+		this._saveChargeType = 	jQuery.json.jsonFunction(
+									this._saveComplete.bind(this), 
+									this._saveError.bind(this), 
+									'Recurring_Charge_Type', 
+									'save'
+								);
 		this._saveChargeType(oRequestData);
 	},
 	
@@ -354,7 +359,17 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 	
 	_saveError	: function(oResponse)
 	{
-		Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error'});
+		// Hide saving overlay
+		this.oSavingOverlay.hide();
+		
+		if (oResponse.Message)
+		{
+			Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
+		}
+		else if (oResponse.ERROR)
+		{
+			Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
+		}
 	},
 	
 	_showCancelConfirmation	: function()

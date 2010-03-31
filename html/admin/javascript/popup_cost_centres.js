@@ -28,7 +28,16 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 		
 		if (oResponse.Success == false)
 		{
-			Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error', fnOnClose: this.hide.bind(this)});
+			var oConfig	= {sTitle: 'Error', fnOnClose: this.hide.bind(this)};
+			
+			if (oResponse.Message)
+			{
+				Reflex_Popup.alert(oResponse.Message, oConfig);
+			}
+			else if (oResponse.ERROR)
+			{
+				Reflex_Popup.alert(oResponse.ERROR, oConfig);
+			}
 			return;
 		}
 		
@@ -310,7 +319,16 @@ var Popup_Cost_Centres	= Class.create(Reflex_Popup,
 	_saveCostCentresError	: function(oResponse)
 	{
 		// Show a Reflex_Popup.alert explaining the error
-		Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Save Error'});
+		var oConfig	= {sTitle: 'Error'};
+		
+		if (oResponse.Message)
+		{
+			Reflex_Popup.alert(oResponse.Message, oConfig);
+		}
+		else if (oResponse.ERROR)
+		{
+			Reflex_Popup.alert(oResponse.ERROR, oConfig);
+		}
 	},
 	
 	_removeCostCentre		: function(mCostCentre)

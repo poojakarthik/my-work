@@ -508,5 +508,12 @@ Popup_DataReport._createBooleanSelect	= function(oInputInfo)
 
 Popup_DataReport._ajaxError	= function(oResponse)
 {
-	Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error'});
+	if (oResponse.Message)
+	{
+		Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
+	}
+	else if (oResponse.ERROR)
+	{
+		Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
+	}
 }

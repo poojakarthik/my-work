@@ -323,13 +323,18 @@ var Page_Charge_Type = Class.create(
 		this.oLoadingOverlay.display();
 		
 		// Archive confirmed do the AJAX request
-		var fnArchive = jQuery.json.jsonFunction(fnArchiveComplete.bind(this), this._archiveFailed.bind(this), 'Charge_Type', 'archive');
+		var fnArchive = jQuery.json.jsonFunction(
+							fnArchiveComplete.bind(this), 
+							this._archiveFailed.bind(this), 
+							'Charge_Type', 
+							'archive'
+						);
 		fnArchive(iId);
 	},
 	
 	_archiveFailed	: function(oResponse)
 	{
-		Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error'});
+		Reflex_Popup.alert((oResponse.ERROR ? oResponse.ERROR : ''), {sTitle: 'Error'});
 		
 		// Close the loading popup
 		if (this.oLoadingOverlay)
