@@ -2941,3 +2941,130 @@ ul.account-payment-method > li
 }
 
 /************************ END - Change Payment Method - END ************************/
+
+
+/************************ START - Invoice View - START ************************/
+
+div.invoice-view
+{
+	margin	: 0em 1em 1em 1em;
+}
+
+div.invoice-view > table.reflex,
+div.invoice-view > div > table.reflex
+{
+	margin	: 1em 0em 0em 0em;
+	width	: 100%;
+}
+
+div.invoice-view-tables table.reflex caption div.caption_title
+{
+	width	: 30%;
+}
+
+div.invoice-view-buttons,
+div.invoice-dispute-buttons
+{
+	text-align	: center;
+}
+
+div.invoice-view-buttons > button > img,
+div.invoice-view-buttons > button > span,
+div.invoice-dispute-buttons > button > img,
+div.invoice-dispute-buttons > button > span,
+td.invoice-view-dispute > button > img,
+td.invoice-view-dispute > button > span,
+td.invoice-view-dispute > span
+{
+	vertical-align	: middle;
+}
+
+div.invoice-view-buttons > button > img,
+div.invoice-dispute-buttons > button > img,
+tbody.invoice-view-details button > img
+{
+	margin-right	: 0.25em;
+}
+
+div.invoice-view th
+{
+	width	: 30%;
+}
+
+div.invoice-view-services
+{
+	overflow-y			: scroll;
+	height				: 10em;
+	width				: 100%;
+	margin-bottom		: 1em;
+	border-left			: 0.1em solid #333333;
+	border-right		: 0.1em solid #333333;
+	border-bottom		: 0.1em solid #333333;
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+	box-sizing			: border-box;
+	background-color	: #ffffff;
+}
+
+div.invoice-view-services > table.reflex
+{
+	table-layout	: fixed;
+	width			: 100%;
+	border			: none;
+	margin			: 0em;
+}
+
+div.invoice-dispute
+{
+	margin	: 1em;
+}
+
+div.invoice-dispute table.reflex
+{
+	margin	: 0em;
+	width	: 100%;
+}
+
+div.invoice-dispute table.reflex > tbody > tr > th.label
+{
+	width	: 7em;
+}
+
+div.invoice-dispute table.reflex > tbody > tr > td:nth-child(2)
+{
+	width	: 0.5em;
+}
+
+div.invoice-dispute table.reflex > tbody > tr > td:nth-child(3)
+{
+	width	: 2em;
+}
+
+div.invoice-dispute table.reflex > tbody > tr > td.currency
+{
+	text-align	: right;
+}
+
+div.invoice-dispute table.reflex > tbody > tr > td.dispute-currency-disputed,
+td.invoice-view-dispute > span 
+{
+	color	: #cc0000;
+}
+
+div.invoice-dispute table.reflex > tbody > tr > td.dispute-tax
+{
+	border-bottom	: solid 1px black;
+}
+
+td.invoice-view-dispute > span
+{
+	padding-right	: 1em;
+}
+
+div.invoice-dispute-buttons
+{
+	margin-top	: 0.5em;
+}
+
+/************************ END - Invoice View - END ************************/
+

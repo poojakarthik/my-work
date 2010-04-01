@@ -11,10 +11,11 @@
  *
  * @class	Invoice
  */
-class Invoice extends ORM
+class Invoice extends ORM_Cached
 {
-	protected	$_strTableName	= "Invoice";
-
+	protected			$_strTableName			= "Invoice";
+	protected static	$_strStaticTableName	= "Invoice";
+	
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -37,7 +38,57 @@ class Invoice extends ORM
 		// Parent constructor
 		parent::__construct($arrProperties, $bolLoadById);
 	}
+	
+	protected static function getCacheName()
+	{
+		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
+		static $strCacheName;
+		if (!isset($strCacheName))
+		{
+			$strCacheName = __CLASS__;
+		}
+		return $strCacheName;
+	}
+	
+	protected static function getMaxCacheSize()
+	{
+		return 100;
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START
+	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public static function clearCache()
+	{
+		parent::clearCache(__CLASS__);
+	}
+
+	protected static function getCachedObjects()
+	{
+		return parent::getCachedObjects(__CLASS__);
+	}
+	
+	protected static function addToCache($mObjects)
+	{
+		parent::addToCache($mObjects, __CLASS__);
+	}
+
+	public static function getForId($iId, $bSilentFail=false)
+	{
+		return parent::getForId($iId, $bSilentFail, __CLASS__);
+	}
+	
+	public static function getAll($bForceReload=false)
+	{
+		return parent::getAll($bForceReload, __CLASS__);
+	}
+		
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
+	//---------------------------------------------------------------------------------------------------------------------------------//
+	
+	
 	//------------------------------------------------------------------------//
 	// generate
 	//------------------------------------------------------------------------//
@@ -1459,6 +1510,117 @@ class Invoice extends ORM
 			}
 		}
 		return $arrServiceIds;
+	}
+	
+	//------------------------------------------------------------------------//
+	// Resolve
+	//------------------------------------------------------------------------//
+	/**
+	 * resolve()
+	 *
+	 * Resolve a Dispute on the invoice
+	 *
+	 * Resolve a Dispute on the invoice
+	 *
+	 * @param	Integer		$intResolveMethod	(CONSTANT) The method in which this dispute will be resolved
+	 * @param	Float		$fltAmount			The amount which will be changed to the Account, if customer to Pay $X.XX
+	 * @return	void
+	 *
+	 * @method
+	 */
+	public function resolve($iResolveMethod, $fAmount)
+	{
+		$iUserId = Flex::getUserId();
+		
+		// Check that the invoice is currently in dispute
+		if ($this->Status <> INVOICE_DISPUTED)
+		{
+			throw new Exception('Invoice Not Disputed');
+		}
+		
+		// The status that will be added to the Note
+		$sStatus 	= "Resolution for Dispute on Invoice #".$this->Id."\n";
+		
+		// Used to save a new credit, if necessary
+		$oCharge	= false;
+		
+		switch ($iResolveMethod)
+		{
+			case DISPUTE_RESOLVE_FULL_PAYMENT:
+				// If the full amount is required to be paid (for example, Dispute was Denied)
+				$sStatus .= "No Credit was applied to this Dispute. ";
+				$sStatus .= "The Customer is required to pay the full Amount.";
+				break;
+				
+			case DISPUTE_RESOLVE_PARTIAL_PAYMENT:
+				// If a payment is required for a particular amount of a Dispute
+				// Generate a credit for Invoice.Disputed - $fltAmount
+				$oCharge					= new Charge();
+				$oCharge->AccountGroup		= $this->AccountGroup;
+				$oCharge->Account			= $this->Account;
+				$oCharge->Service			= NULL;
+				$oCharge->invoice_run_id	= NULL;
+				$oCharge->CreatedBy			= $iUserId;
+				$oCharge->CreatedOn			= date('Y-m-d');
+				$oCharge->ApprovedBy		= $iUserId;
+				$oCharge->ChargeType		= '';
+				$oCharge->Description		= 'Invoice Dispute (Invoice: #'.$this->Id.')';
+				$oCharge->ChargedOn			= date('Y-m-d');
+				$oCharge->Nature			= NATURE_CR;
+				$oCharge->Amount			= $this->Disputed - $fAmount;
+				$oCharge->Status			= CHARGE_APPROVED;
+				
+				$sStatus .= "This dispute was resolved by partial payment. ";
+				$sStatus .= "The Customer is required to pay the amount of $".sprintf("%01.4f", $fAmount).". ";
+				$sStatus .= "The Original disputed amount was: $".sprintf("%01.4f", $this->Disputed).". ";
+				$sStatus .= "The remaining amount of $".sprintf("%01.4f", $this->Disputed - $fAmount)." ";
+				$sStatus .= "was Credited towards this Account.";
+				break;
+				
+			case DISPUTE_RESOLVE_NO_PAYMENT:
+				// Generate a credit for Invoice.Disputed
+				$oCharge					= new Charge();
+				$oCharge->AccountGroup		= $this->AccountGroup;
+				$oCharge->Account			= $this->Account;
+				$oCharge->Service			= NULL;
+				$oCharge->invoice_run_id	= NULL;
+				$oCharge->CreatedBy			= $iUserId;
+				$oCharge->CreatedOn			= date('Y-m-d');
+				$oCharge->ApprovedBy		= $iUserId;
+				$oCharge->ChargeType		= '';
+				$oCharge->Description		= 'Invoice Dispute (Invoice: #'.$this->Id.')';
+				$oCharge->ChargedOn			= date('Y-m-d');
+				$oCharge->Nature			= NATURE_CR;
+				$oCharge->Amount			= $this->Disputed;
+				$oCharge->Status			= CHARGE_WAITING;
+				
+				$sStatus	.= "The full amount of the the dispute ($".sprintf("%01.4f", $this->Disputed).") ";
+				$sStatus	.= "was Credited towards this Account.";
+				break;
+				
+			default:
+				throw new Exception('Invalid Resolution');
+		}
+		
+		if ($oCharge)
+		{
+			// Not given, default value applied
+			$oCharge->Notes				= '';
+			$oCharge->global_tax_exempt	= 0;
+			
+			// Save the new charge
+			$oCharge->save();
+		}
+		
+		// Invoice.Disputed = 0
+		// if Balance > 0	Status = INVOICE_COMMITTED
+		// else				Status = INVOICE_SETTLED
+		$this->Disputed = 0;
+		$this->Status	= ($this->Balance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED;
+		$this->save();
+		
+		// Add a note
+		Note::createNote(SYSTEM_NOTE_TYPE, $sStatus, $iUserId, $this->Account);
 	}
 
 	protected function __set($strName, $mxdValue)
