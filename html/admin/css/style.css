@@ -3090,7 +3090,7 @@ h2.contact-view-notes-title
 	background-image	: url("../img/template/note_small.png");
 }
 
-td.contact-view-optionsnotes h2.Actions
+td.contact-view-notes h2.Actions
 {
 	background-image	: url("../img/template/action.png");
 }
@@ -3099,7 +3099,7 @@ h2.contact-view-details-title,
 h2.contact-view-options-title,
 h2.contact-view-notes-title,
 h2.contact-view-accounts-title,
-td.contact-view-optionsnotes h2.Actions
+td.contact-view-notes h2.Actions
 {
 	background-position	:left bottom;
 	background-repeat	:no-repeat;
@@ -3159,4 +3159,51 @@ td.contact-view-details tbody > tr > th:nth-child(1)
 {
 	width	: 25%;
 }
+
 /************************ END - Contact View - END ************************/
+
+/************************ START - Icon Button - START ************************/
+
+button.icon-button > img,
+button.icon-button > span
+{
+	vertical-align	: middle;
+}
+
+button.icon-button > img
+{
+	margin-right	: 0.25em;
+}
+
+/************************ END - Icon Button - END ************************/
+
+/************************ START - Contact View Popup - START ************************/
+
+div.contact-edit-table table td
+{
+	text-align	: left;
+}
+
+div.contact-edit-table table > tbody > tr > td,
+div.contact-edit-table table > tbody > tr > th.label
+{
+	vertical-align	: top;
+}
+
+div.contact-edit-table table td > ul.reset
+{
+	margin	: 0em;
+}
+
+div.contact-edit-buttons
+{
+	text-align	: center;
+}
+
+th.required
+{
+	width	: 1em;
+	color	: #cc0000;
+}
+
+/************************ END - Contact View Popup - END ************************/
