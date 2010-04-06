@@ -147,7 +147,7 @@ class HtmlTemplateActionsAndNotesList extends HtmlTemplate
 		
 		// Only include the Actions and Notes Creator component, if an accountId, serviceId or contactId has been specified, and now error has been raised
 		$bolIncludeCreatorComponent = ($bolUserHasPermissionToAddNotesAndActions && ($intAccountId || $intServiceId || $intContactId) && $strErrorMsg === NULL)? TRUE : FALSE;
-
+		
 		if ($bolIncludeCreatorComponent)
 		{
 			// Include the creator component

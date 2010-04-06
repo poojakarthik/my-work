@@ -105,6 +105,17 @@ class Contact extends ORM
 
 		return $arrAccounts;
 	}
+	
+	// Retrieve the notes for this contact, the cached list is returned if it is available and bForceLoad is false.
+	public function getNotes($bForceLoad=false)
+	{
+		if (!isset($this->aNotesCache) || $bForceLoad)
+		{
+			$this->aNotesCache	= Note::getForContact($this->Id);
+		}
+		
+		return $this->aNotesCache;
+	}
 
 	public function passwordIsValid($strPassword)
 	{

@@ -3068,3 +3068,95 @@ div.invoice-dispute-buttons
 
 /************************ END - Invoice View - END ************************/
 
+/************************ START - Contact View - START ************************/
+
+h2.contact-view-details-title
+{
+	background-image	: url("../img/template/contact_small.png");
+}
+
+h2.contact-view-options-title
+{
+	background-image	: url("../img/template/options_small.png");
+}
+
+h2.contact-view-accounts-title
+{
+	background-image	: url("../img/template/accounts_small.png");
+}
+
+h2.contact-view-notes-title
+{
+	background-image	: url("../img/template/note_small.png");
+}
+
+td.contact-view-optionsnotes h2.Actions
+{
+	background-image	: url("../img/template/action.png");
+}
+
+h2.contact-view-details-title,
+h2.contact-view-options-title,
+h2.contact-view-notes-title,
+h2.contact-view-accounts-title,
+td.contact-view-optionsnotes h2.Actions
+{
+	background-position	:left bottom;
+	background-repeat	:no-repeat;
+	height				:21px;
+	margin-bottom		:5px;
+	padding-left		:22px;
+}
+
+h2.contact-view-recentnotes-title
+{
+	background-position	:left bottom;
+	background-repeat	:no-repeat;
+	height				:21px;
+	margin-bottom		:5px;
+}
+
+table.contact-view
+{
+	width:	90%;
+}
+
+table.contact-view td
+{
+	vertical-align	: top;
+}
+
+td.contact-view-details-edit
+{
+	text-align	: right;
+}
+
+textarea.contact-view-notes-text
+{
+	border	: 1px solid #919191;
+	width	: 100%;
+}
+
+button.contact-view-notes-add
+{
+	float	: right;
+}
+
+table.contact-view-account td.overdue
+{
+	color		: #cc0000;
+	font-weight	: bold;
+}
+
+div.contact-view-account-add,
+td.contact-view-details button
+{
+	float			: right;
+	margin-right	: 0.5em;
+}
+
+td.contact-view-details tbody > tr > th:nth-child(1)
+{
+	width	: 25%;
+}
+/************************ END - Contact View - END ************************/

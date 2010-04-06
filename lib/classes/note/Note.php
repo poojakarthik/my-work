@@ -16,7 +16,8 @@ class Note extends ORM
 	const GENERAL_NOTE_TYPE_ID	= 1;
 	const SYSTEM_NOTE_TYPE_ID	= 7;
 	
-	protected	$_strTableName	= "Note";
+	protected	$_strTableName		= "Note";
+	static		$_sStaticTableName	= "Note";
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -131,6 +132,20 @@ class Note extends ORM
 		}
 	 	
 	 	return $objNote;
+	}
+	
+	public static function getForContact($iContactId)
+	{
+		$aNotes			= array();
+		$oSelect		= new StatementSelect(self::$_sStaticTableName, '*', 'Contact = <Contact>', 'Datetime DESC');
+		$iNumResults	= $oSelect->Execute(array('Contact' => $iContactId));
+		
+		while ($oNote = $oSelect->Fetch())
+		{
+			$aNotes[] = $oNote;
+		}
+		
+		return $aNotes;
 	}
 	
 	//------------------------------------------------------------------------//

@@ -1372,7 +1372,7 @@ Object.extend(ActionsAndNotes.List.prototype,
 				elmHeaderDiv.appendChild(elmLink);
 			}
 		}
-
+		
 		// Handle any associated Services
 		if (objItem.associatedServices && (j=objItem.associatedServices.length) > 0)
 		{
