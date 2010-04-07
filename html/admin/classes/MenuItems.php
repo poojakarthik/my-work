@@ -1600,7 +1600,7 @@ class MenuItems {
 		$this->strContextMenuLabel = "";
 		$this->strLabel = "Contact: $intContactId";
 
-		return self :: OLD_FRAMEWORK . "contact_view.php?Id={$intContactId}";
+		return self::NEW_FRAMEWORK."reflex.php/Contact/View/{$intContactId}/";
 	}
 
 	//------------------------------------------------------------------------//

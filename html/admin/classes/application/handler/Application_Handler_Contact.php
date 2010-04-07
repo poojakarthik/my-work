@@ -3,17 +3,18 @@
 class Application_Handler_Contact extends Application_Handler
 {
 	// View/Edit a contact
-	public function View($subPath)
+	public function View($aSubPath)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL));
 		
 		try
 		{
+			$iContactId			= (int)$aSubPath[0];
 			$aDetailsToRender	= array();
 			
 			// Get contact
-			$aDetailsToRender['oContact']	= Contact::getForId($_GET['Id']);
+			$aDetailsToRender['oContact']	= Contact::getForId($iContactId);
 			
 			// Get all note types
 			$aDetailsToRender['aNoteTypes']	= Note_Type::getAll();

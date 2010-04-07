@@ -98,8 +98,9 @@ class HtmlTemplate_ActionsAndNotesList extends FlexHtmlTemplate
 				"				<h2>Actions / Notes</h2>" .
 				"			</div>" .
 				"			<div class='section-header-options'>" .
-				"				<button onclick='document.getElementById(\"ActionsAndNotesCreatorContainer\").style.display = \"block\"; this.parentNode.removeChild(this);'>" .
-				"					New Action" .
+				"				<button class='icon-button' onclick='document.getElementById(\"ActionsAndNotesCreatorContainer\").style.display = \"block\"; this.parentNode.removeChild(this);'>" .
+				"					<img src='../admin/img/template/action_add.png'/>" .
+				"					<span>New Action</span>" .
 				" 				</button>" .
 				"			</div>" .
 				"		</div>";
@@ -139,8 +140,9 @@ class HtmlTemplate_ActionsAndNotesList extends FlexHtmlTemplate
 			$sHtml	.= "	<div id='ActionsAndNotesListContainer'></div>" .
 					"	</div>" .
 					"	<div class='section-footer'>
-							<button onclick=\"	Flex.ActionsAndNotesListPopup = ActionsAndNotes.List.createPopup($sPopupTitle, $sAATContextId, $sAATContextReferenceId, $sIncludeAllRelatableAATTypes, 99999); Flex.ActionsAndNotesListPopup.display();\">
-								View All
+							<button class='icon-button' onclick=\"	Flex.ActionsAndNotesListPopup = ActionsAndNotes.List.createPopup($sPopupTitle, $sAATContextId, $sAATContextReferenceId, $sIncludeAllRelatableAATTypes, 99999); Flex.ActionsAndNotesListPopup.display();\">
+								<img src='../admin/img/template/magnifier.png'/>" .
+								"<span>View All</span>
 							</button>
 						</div>
 						<script type='text/javascript'>

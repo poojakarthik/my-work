@@ -81,5 +81,6 @@ alert("init.js is being used");
 			childElements.item (i).style.color = "#FFFFFF";
 		}
 		
-		window.location = 'contact_view.php?Id=' + intCustomer;
+		//window.location = 'contact_view.php?Id=' + intCustomer;
+		window.location = '../admin/reflex.php/Contact/View/' + intCustomer + '/';
 	}

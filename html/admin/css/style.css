@@ -28,7 +28,6 @@ a
 	cursor : pointer;
 }
 
-
 /************************ START - Page Header - START *************************/
 div#header {
 	width: 100%;
@@ -3072,9 +3071,20 @@ div.invoice-dispute-buttons
 
 /************************ START - Contact View - START ************************/
 
+div#content > div > h1
+{
+	border-bottom	: 1px solid black;
+	color			: black;
+	font-size		: 1.8em;
+	margin-bottom	: 0.5em;
+	margin-top		: 0;
+	padding-bottom	: 0.2em;
+	padding-left	: 0.25em;
+}
+
 table.contact-view
 {
-	width:	90%;
+	width:	100%;
 }
 
 table.contact-view td
@@ -3231,23 +3241,31 @@ div.section
 div.section > div.section-header
 {
 	width			: 100%;
-	margin-bottom	: 0.5em;
-	border-bottom	: solid 1px black;
 	position		: relative;
 }
 
 div.section > div.section-content
 {
-	width	: 100%;	
+	background-color	: rgba(0, 0, 0, 0.05);
+	border-bottom		: 1px solid #000000;
+	border-top			: 1px solid #000000;
+	padding-bottom		: 0.25em;
+	padding-top			: 0.25em;
+	width				: 100%;
+}
+
+div.section > div.section-content.section-content-fitted
+{
+	background-color	: inherit;
+	border				: none;
+	padding				: 0em;
 }
 
 div.section > div.section-footer
 {
 	text-align	: right;
-	margin-top	: 0.5em;
 	padding-top	: 0.25em;
-	width		: 100%;	
-	border-top	: solid 1px black;
+	width		: 100%;
 }
 
 div.section > div.section-header > div.section-header-options
@@ -3291,5 +3309,6 @@ div.section > div.section-header > div.section-header-title
     -moz-border-radius		: 6px 6px 0 0;
 	-webkit-border-radius	: 6px 6px 0 0;
 }
+
 
 /************************ END - Generic Caption - END ************************/

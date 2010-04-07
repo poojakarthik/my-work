@@ -1,4 +1,6 @@
 <?php
+	// Redirect to framework 3 page, this one is deprecated
+	header("Location: ../admin/reflex.php/Contact/View/?Id={$_GET['Id']}");
 	
 	//----------------------------------------------------------------------------//
 	// (c) copyright 2006 VOIPTEL Pty Ltd

@@ -16,7 +16,9 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 
 	public function Render()
 	{
-		echo "<table class='contact-view'>"
+		$oContact	= $this->mxdDataToRender['oContact'];
+		echo "<h1>Contact &ndash; {$oContact->FirstName} {$oContact->LastName}</h1>" .
+			"<table class='contact-view'>"
 			. "	<tbody>"
 			. "		<tr>"
 			. "			<td>"
@@ -100,8 +102,9 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 							</table>".
 				"		</div>" .
 				"		<div class='section-footer'>" .
-				"			<button onclick='javascript: new Popup_Contact_Edit({$oContact->Id}, null, null, Popup_Contact_Edit._goToPage);'>" .
-				"				Edit Contact Details" .
+				"			<button class='icon-button' onclick='javascript: new Popup_Contact_Edit({$oContact->Id}, null, null, Popup_Contact_Edit._goToPage);'>" .
+				"				<img src='../admin/img/template/user_edit.png'/>" .
+				"				<span>Edit Contact Details</span>" .
 				"			</button>" .				
 				"		</div>" .
 				"	</div>";
@@ -124,7 +127,7 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 				"				<h2>Accounts</h2>" .
 				"			</div>" .			
 				"		</div>" .
-				"		<div class='section-content'>" .
+				"		<div class='section-content section-content-fitted'>" .
 				"			<table class='reflex contact-view-account'>" .
 				" 				<thead>" .
 				" 					<th>Account</th>" .
@@ -151,8 +154,9 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 			"				</table>".
 			"			</div>" .
 			"			<div class='section-footer'>" .
-			"				<button onclick='javascript: window.location=\"reflex.php/Account/Create/?Associated={$oAccount->Id}&Contact={$oContact->Id}\";'>" .
-			"					Add Associated Account" .
+			"				<button class='icon-button' onclick='javascript: window.location=\"reflex.php/Account/Create/?Associated={$oAccount->Id}&Contact={$oContact->Id}\";'>" .
+			"					<img src='../admin/img/template/accounts_small_add.png'/>" .
+			"					<span>Add Associated Account</span>" .
 			"				</button>" .				
 			"			</div>" .
 			"		</div>";
