@@ -327,6 +327,8 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 			<tbody>";
 		if(array_key_exists("Associated", $_GET))
 		{
+			// Check query string for primary contact
+			$iPrimaryContactId	= (isset($_GET['Contact']) ? $_GET['Contact'] : false);
 			
 			echo "
 			<tr>
@@ -345,7 +347,9 @@ class HtmlTemplate_Account_Create extends FlexHtmlTemplate
 					// Generate a dropdown menu of existing contacts
 					foreach ($this->mxdDataToRender['arrAssociatedContacts'] as $iId=>$oAssociatedContact)
 					{
-						echo "<option value='{$oAssociatedContact['Id']}'>{$oAssociatedContact['FirstName']} {$oAssociatedContact['LastName']}</option>\n";
+						// Pre-select the option if it is the primary contact given in the query string
+						$sSelected	= (($iPrimaryContactId && $iPrimaryContactId == $iId) ? 'selected' : '');
+						echo "<option value='{$oAssociatedContact['Id']}' $sSelected>{$oAssociatedContact['FirstName']} {$oAssociatedContact['LastName']}</option>\n";
 					}
 					
 					echo "
