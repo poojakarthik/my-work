@@ -152,39 +152,113 @@ var Reflex_Validation	=
 	 * These validation functions throw an exception if the given value is invalid.
 	 * They return true if valid and they return false if no value is given.
 	 */
-	nonEmptyString	: function(mValue)
-	{
-		if (mValue == null || mValue.toString() == '')
-		{
-			throw ('Value missing');
-		}
-		else 
-		{
-			return true;
-		}
-	},
-	
-	float	: function(mValue)
-	{
-		if (mValue.toString().match(/^\d+(\.\d+)?$/))
-		{
-			return true;
-		}
-		else
-		{
-			throw ('Invalid number');
-		}
-	},
-	
-	nonEmptyDigits	: function(mValue)
-	{
-		if (Reflex_Validation.digits(mValue))
-		{
-			return true;
-		}
-		else 
-		{
-			throw ('Invalid number');
-		}
-	}
+	Exception	:	{
+						digits	: function(mValue)
+						{
+							if (Reflex_Validation.digits(mValue))
+							{
+								return true;
+							}
+							else 
+							{
+								throw ('Invalid number');
+							}
+						},
+						
+						email	: function(strTest)
+						{
+							if (Reflex_Validation.email(strTest))
+							{
+								return true;
+							}
+							else
+							{
+								throw('Invalid email address');
+							}
+						},
+						
+						nonEmptyDigits	: function(mValue)
+						{
+							if ((mValue !== null) && (mValue.toString() !== '') && Reflex_Validation.digits(mValue))
+							{
+								return true;
+							}
+							else 
+							{
+								throw ('Invalid number');
+							}
+						},
+						
+						nonEmptyString	: function(mValue)
+						{
+							if (mValue == null || mValue.toString() == '')
+							{
+								throw ('Value missing');
+							}
+							else 
+							{
+								return true;
+							}
+						},
+						
+						float	: function(mValue)
+						{
+							if (mValue.toString().match(/^\d+(\.\d+)?$/))
+							{
+								return true;
+							}
+							else
+							{
+								throw ('Invalid number');
+							}
+						},
+						
+						fnnFixedLine	: function(strTest)
+						{
+							if (Reflex_Validation.fnnFixedLine(strTest))
+							{
+								return true;
+							}
+							else
+							{
+								throw ('Invalid fixed line number');
+							}
+						},
+						
+						fnnMobile		: function(strTest)
+						{
+							if (Reflex_Validation.fnnMobile(strTest))
+							{
+								return true;
+							}
+							else
+							{
+								throw ('Invalid mobile number');
+							}
+						},
+						
+						fnnInbound		: function(strTest)
+						{
+							if (Reflex_Validation.fnnInbound(strTest))
+							{
+								return true;
+							}
+							else
+							{
+								throw ('Invalid inbound number');
+							}
+						},
+						
+						fnnFax		: function(strTest)
+						{
+							if (Reflex_Validation.fnnInbound(strTest) || Reflex_Validation.fnnFixedLine(strTest))
+							{
+								return true;
+							}
+							else
+							{
+								throw ('Invalid fax number');
+							}
+						},
+					}
 };

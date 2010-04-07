@@ -3200,10 +3200,34 @@ div.contact-edit-buttons
 	text-align	: center;
 }
 
-th.required
+.contact-archived,
+.contact-available,
+span.contact-edit-attention
 {
-	width	: 1em;
+	font-weight	: bold;
+}
+
+span.contact-edit-attention,
+span.contact-archived,
+td.contact-view-details > table > tbody > tr > td.contact-archived
+{
 	color	: #cc0000;
+}
+
+span.contact-available,
+td.contact-view-details > table > tbody > tr > td.contact-available
+{
+	color	: #008000;
+}
+
+td.contact-edit-password > table
+{
+	margin-top	: 0.5em;
+}	
+
+td.contact-edit-password > table > tbody > tr > td
+{
+	padding	: 0em 0.5em 0em 0em;
 }
 
 /************************ END - Contact View Popup - END ************************/

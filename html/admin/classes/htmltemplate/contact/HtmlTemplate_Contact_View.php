@@ -6,8 +6,9 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
 		
-		$this->LoadJavascript("contact_edit");
-		$this->LoadJavascript("actions_and_notes");
+		$this->LoadJavascript('popup_contact_edit');
+		$this->LoadJavascript('actions_and_notes');
+		$this->LoadJavascript('reflex_validation');
 		
 		BreadCrumb()->Employee_Console();
 		BreadCrumb()->SetCurrentPage("View Contact Details");
@@ -21,8 +22,7 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 		. "			<td class='contact-view-details'>"
 		. $this->renderDetails($this->mxdDataToRender['oContact'])
 		. "			</td>"
-		. "			<td class='contact-view-optionsnotes'>"
-		. $this->renderOptions($this->mxdDataToRender['oContact']->Account)
+		. "			<td class='contact-view-notes'>"
 		. $this->renderRecentNotes($this->mxdDataToRender['oContact'])
 		. "			</td>"
 		. "		</tr>"
@@ -62,27 +62,17 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 							</tr>
 							<tr>
 								<th class='label'>Archived :</td>
-								<td>".($oContact->Archived ? 'Archived Contact' : 'Active Contact')."</td>
+								".($oContact->Archived ? "<td class='contact-archived'>Archived Contact" : "<td class='contact-available'>Active Contact")."</td>
 							</tr>
 						</tbody>
 					</table>
-					<button>
+					<button onclick='javascript: new Popup_Contact_Edit({$oContact->Id}, null, null, Popup_Contact_Edit._goToPage);'>
 						Edit Contact Details
 					</button>";
 		
 		return $sHtml;
 	}
 	
-	public static function renderOptions($iAccountId)
-	{
-		$sHtml 	= "	<h2 class='contact-view-options-title'>Contact Options</h2>" .
-				"	<ul>" .
-				"		<li><a onclick='javascript: alert(\"popup goes here\");'>Edit Contact Details</a></li>" .
-				"		<li><a href='/admin/flex.php/Account/InvoicesAndPayments/?Account.Id={$iAccountId}'>Make Payment</a></li>" .
-				"	</ul>";
-		return $sHtml;
-	}
-		
 	public static function renderRecentNotes($oContact)
 	{
 		$sHtml	= HtmlTemplate_ActionsAndNotesList::renderActionsAndNotesList($oContact->Account, null, $oContact->Id, true, 5, ACTION_ASSOCIATION_TYPE_CONTACT, $oContact->Id);

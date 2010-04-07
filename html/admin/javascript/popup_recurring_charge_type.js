@@ -224,17 +224,17 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 		}
 		
 		// Inputs
-		this.hInputs['Charge Code'].validate 				= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Charge Code'], 				Reflex_Validation.nonEmptyString);
-		this.hInputs['Description'].validate 				= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Description'],			 	Reflex_Validation.nonEmptyString);
-		this.hInputs['Recursion Charge'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recursion Charge'], 		Reflex_Validation.float);
-		this.hInputs['Recurring Frequency'].validate 		= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recurring Frequency'],		Reflex_Validation.nonEmptyDigits);
-		this.hInputs['Minimum Charge'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Minimum Charge'], 			Reflex_Validation.float);
-		this.hInputs['Cancellation Fee'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Cancellation Fee'], 		Reflex_Validation.float);
+		this.hInputs['Charge Code'].validate 				= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Charge Code'], 				Reflex_Validation.Exception.nonEmptyString);
+		this.hInputs['Description'].validate 				= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Description'],			 	Reflex_Validation.Exception.nonEmptyString);
+		this.hInputs['Recursion Charge'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recursion Charge'], 		Reflex_Validation.Exception.float);
+		this.hInputs['Recurring Frequency'].validate 		= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recurring Frequency'],		Reflex_Validation.Exception.nonEmptyDigits);
+		this.hInputs['Minimum Charge'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Minimum Charge'], 			Reflex_Validation.Exception.float);
+		this.hInputs['Cancellation Fee'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Cancellation Fee'], 		Reflex_Validation.Exception.float);
 		
 		// Selects
-		this.hInputs['Nature'].validate 					= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Nature'], 					Reflex_Validation.nonEmptyString);
-		this.hInputs['Recurring Frequency Type'].validate	= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recurring Frequency Type'],	Reflex_Validation.digits);
-		this.hInputs['Approval Process'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Approval Process'], 		Reflex_Validation.digits);
+		this.hInputs['Nature'].validate 					= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Nature'], 					Reflex_Validation.Exception.nonEmptyString);
+		this.hInputs['Recurring Frequency Type'].validate	= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recurring Frequency Type'],	Reflex_Validation.Exception.digits);
+		this.hInputs['Approval Process'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Approval Process'], 		Reflex_Validation.Exception.digits);
 		
 		for (var sName in this.hInputs)
 		{

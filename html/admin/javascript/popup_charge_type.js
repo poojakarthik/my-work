@@ -132,13 +132,24 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		}
 		
 		// Inputs
-		this.hInputs['Charge Code'].validate 	= Popup_Charge_Type._validateInput.bind(this.hInputs['Charge Code'], 	Reflex_Validation.nonEmptyString);
-		this.hInputs['Description'].validate 	= Popup_Charge_Type._validateInput.bind(this.hInputs['Description'], 	Reflex_Validation.nonEmptyString);
-		this.hInputs['Amount'].validate 		= Popup_Charge_Type._validateInput.bind(this.hInputs['Amount'],			Reflex_Validation.float);
+		this.hInputs['Charge Code'].validate 	= 	Popup_Charge_Type._validateInput.bind(
+														this.hInputs['Charge Code'], 	
+														Reflex_Validation.Exception.nonEmptyString
+													);
+		this.hInputs['Description'].validate 	= 	Popup_Charge_Type._validateInput.bind(
+														this.hInputs['Description'], 	
+														Reflex_Validation.Exception.nonEmptyString
+													);
+		this.hInputs['Amount'].validate 		= 	Popup_Charge_Type._validateInput.bind(
+														this.hInputs['Amount'],			
+														Reflex_Validation.Exception.float
+													);
 		
 		// Selects
-		this.hInputs['Nature'].validate 		= Popup_Charge_Type._validateInput.bind(this.hInputs['Nature'], 		Reflex_Validation.nonEmptyString);
-		
+		this.hInputs['Nature'].validate 		= 	Popup_Charge_Type._validateInput.bind(
+														this.hInputs['Nature'], 		
+														Reflex_Validation.Exception.nonEmptyString
+													);
 		for (var sName in this.hInputs)
 		{
 			this.hInputs[sName].observe('keyup', this.hInputs[sName].validate);
