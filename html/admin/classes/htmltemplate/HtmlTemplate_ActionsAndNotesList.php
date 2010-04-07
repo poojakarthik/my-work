@@ -91,48 +91,57 @@ class HtmlTemplate_ActionsAndNotesList extends FlexHtmlTemplate
 		// Only include the Actions and Notes Creator component, if an accountId, serviceId or contactId has been specified, and now error has been raised
 		$bIncludeCreatorComponent = ($bPermissionToAdd && ($iAccountId || $iServiceId || $iContactId) && $sErrorMsg === NULL)? TRUE : FALSE;
 		
+		$sHtml	= "	<div class='section'>" .
+				"		<div class='section-header'>" .
+				"			<div class='section-header-title'>" .
+				"				<img src='../admin/img/template/action.png'/>" .
+				"				<h2>Actions / Notes</h2>" .
+				"			</div>" .
+				"			<div class='section-header-options'>" .
+				"				<button onclick='document.getElementById(\"ActionsAndNotesCreatorContainer\").style.display = \"block\"; this.parentNode.removeChild(this);'>" .
+				"					New Action" .
+				" 				</button>" .
+				"			</div>" .
+				"		</div>";
+		
 		if ($bIncludeCreatorComponent)
 		{
 			// Include the creator component
-			$sHtml	.= "<div id='ActionsAndNotesHeader'>
-							<h2 class='Actions' style='float:left'>Actions / Notes</h2>
-							<input type='button' onclick='document.getElementById(\"ActionsAndNotesCreatorContainer\").style.display = \"block\"; this.parentNode.removeChild(this);' style='float:right' value='New Action'></input>
-							<div style='clear:both;float:none'></div>
-						</div>
-						<div id='ActionsAndNotesCreatorContainer' style='display:none;margin-bottom:0.5em'></div>\n";
-
+			$sHtml	.= "<div class='section-content'>
+							<div id='ActionsAndNotesCreatorContainer' style='display:none;margin-bottom:0.5em'></div>\n";
+			
 			$sJsToInitialiseTheCreatorComponent = "	Flex.EmbeddedActionsAndNotesCreator = ActionsAndNotes.Creator.createEmbeddedComponent(document.getElementById('ActionsAndNotesCreatorContainer'), $sAccountId, $sServiceId, $sContactId);
 													Flex.EmbeddedActionsAndNotesCreator.display();";
 		}
 		else
 		{
-			// Don't include the creator component
-			$sHtml	.= "<h2 class='Actions'>Actions / Notes</h2>\n";
+			$sHtml	.= "<div class='section-content'>";
 		}
 		
 		if ($sErrorMsg !== NULL)
 		{
 			// An error occurred
-			$sHtml	.= "<div class='GroupedContent'>
-							<div class='warning'>
-								The following error occurred when compiling this component -
-								<br />
-								<em>". htmlspecialchars($sErrorMsg) ."</em>
-								<br />
-								Please notify your system administrators.
+			$sHtml	.= "	<div class='GroupedContent'>
+								<div class='warning'>
+									The following error occurred when compiling this component -
+									<br />
+									<em>". htmlspecialchars($sErrorMsg) ."</em>
+									<br />
+									Please notify your systeam administrators.
+								</div>
 							</div>
-						</div>
-						<div class='SmallSeparator' style='clear:both'></div>\n";
+							<div class='SmallSeparator' style='clear:both'></div>
+						</div>\n";
 		}
 		else
 		{
 			// Create list container and javascript content
-			$sHtml	.= "<div id='ActionsAndNotesListContainer'></div>
-						<div style='clear:both;margin:0.25em 0em 0.5em 0em'>
-							<input type='button' value='View All' 
-								onclick=\"Flex.ActionsAndNotesListPopup = ActionsAndNotes.List.createPopup($sPopupTitle, $sAATContextId, $sAATContextReferenceId, $sIncludeAllRelatableAATTypes, 99999);
-										Flex.ActionsAndNotesListPopup.display();\" style='float:right'/>
-							<div style='clear:both;float:none'></div>
+			$sHtml	.= "	<div id='ActionsAndNotesListContainer'></div>" .
+					"	</div>" .
+					"	<div class='section-footer'>
+							<button onclick=\"	Flex.ActionsAndNotesListPopup = ActionsAndNotes.List.createPopup($sPopupTitle, $sAATContextId, $sAATContextReferenceId, $sIncludeAllRelatableAATTypes, 99999); Flex.ActionsAndNotesListPopup.display();\">
+								View All
+							</button>
 						</div>
 						<script type='text/javascript'>
 							Event.observe(window, 'load', 
@@ -148,7 +157,9 @@ class HtmlTemplate_ActionsAndNotesList extends FlexHtmlTemplate
 															});
 						
 								}, false)
-						</script>\n";
+						</script>
+					</div>
+				</div>\n";
 		}
 		
 		return $sHtml;

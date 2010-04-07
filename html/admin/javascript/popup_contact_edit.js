@@ -16,14 +16,11 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 	_buildUI	: function(oResponse)
 	{
 		if (typeof oResponse === 'undefined')
-		{
-			if (this.iContactId)
-			{
-				// We're and edit popup, Make AJAX Request to prepopulate the contacts details
-				var _getContact	= jQuery.json.jsonFunction(this._buildUI.bind(this), this._buildUI.bind(this), 'Contact', 'getForId');
-				_getContact(this.iContactId);
-				return;
-			}
+	{
+			// We're and edit popup, Make AJAX Request to prepopulate the contacts details
+			var _getContact	= jQuery.json.jsonFunction(this._buildUI.bind(this), this._buildUI.bind(this), 'Contact', 'getForId');
+			_getContact(this.iContactId);
+			return;
 		}
 		else if (oResponse.Success == false)
 		{
@@ -48,28 +45,8 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 												'Title :'
 											),
 											$T.td(
-												$T.select(
-													$T.option({value: 'MSTR'},
-														'Master'
-													),
-													$T.option({value: 'MR'},
-														'Mr.'
-													),
-													$T.option({value: 'MRS'},
-														'Mrs.'
-													),
-													$T.option({value: 'MS'},
-														'Ms.'
-													),
-													$T.option({value: 'MISS'},
-														'Miss'
-													),
-													$T.option({value: 'DR'},
-														'Dr.'
-													),
-													$T.option({value: 'PROF'},
-														'Prof.'
-													)
+												$T.select({class: 'contact-edit-title'}
+													// .. added below
 												)
 											)
 										),
@@ -148,7 +125,7 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 													$T.input({type: 'checkbox'}),
 													' Change Password'
 												),
-												$T.table({style: 'display: none;'},
+												$T.table(
 													$T.tbody(
 														$T.tr(
 															$T.td(
@@ -181,7 +158,7 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 														' Allow access to this Account only'
 													),
 													$T.li(
-														$T.input({type: 'radio', name: 'contact-edit-access', value: '1', checked: true}),
+														$T.input({type: 'radio', name: 'contact-edit-access', value: '1'}),
 														' Allow access to all Associated Accounts'
 													)
 												)
@@ -189,7 +166,7 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 										),
 										$T.tr(
 											$T.th({class: 'label'},
-												'Archive Status :'
+												'Status :'
 											),
 											$T.td(
 												$T.ul({class: 'reset'},
@@ -229,10 +206,6 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 		var oCancelButton = oContent.select( 'button' ).last();
 		oCancelButton.observe('click', this._showCancelConfirmation.bind(this));
 		
-		// Password checkbox event handler
-		var oPasswordCheckbox = oContent.select( 'td.contact-edit-password input[type="checkbox"]' ).first();
-		oPasswordCheckbox.observe('click', this._showPasswordForm.bind(this, oPasswordCheckbox));
-		
 		// Populate the d.o.b select options
 		var oDD		= oContent.select('select.contact-edit-dob-dd').first();
 		var oMM		= oContent.select('select.contact-edit-dob-mm').first();
@@ -243,6 +216,18 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 		
 		var iYear	= new Date().getFullYear();
 		Popup_Contact_Edit._populateNumberSelect(oYYYY, iYear - 150, iYear, 'YYYY');
+		
+		// Populate the title select
+		var oTitleSelect	= oContent.select('select.contact-edit-title').first();
+		
+		for (var i = 0; i < oResponse.aContactTitles.length; i++)
+		{
+			oTitleSelect.appendChild(
+				$T.option({value: oResponse.aContactTitles[i]},
+					oResponse.aContactTitles[i]
+				)
+			);
+		}
 		
 		// Setup input validate event handlers (selects first, then inputs)
 		var aInputs				= oContent.select('select, input');
@@ -283,7 +268,7 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 		aInputs[13].sFieldName	= 'Confirm Password';
 		aInputs[14].sFieldName	= 'AccountAccess-0';
 		aInputs[15].sFieldName	= 'AccountAccess-1';
-		aInputs[16].sFieldName	= 'Archived';
+		aInputs[16].sFieldName	= 'Status';
 		
 		for (var i = 0; i < aInputs.length; i++)
 		{
@@ -323,7 +308,7 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 													);
 		this.hInputs['Phone Number'].validate	=	Popup_Contact_Edit._validateInput.bind(
 														this.hInputs['Phone Number'], 		
-														Reflex_Validation.Exception.fnnFixedLine
+														Reflex_Validation.Exception.fnnFixedOrInbound
 													);
 		this.hInputs['Mobile Number'].validate	=	Popup_Contact_Edit._validateInput.bind(
 														this.hInputs['Mobile Number'], 		
@@ -331,7 +316,7 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 													);
 		this.hInputs['Fax Number'].validate		=	Popup_Contact_Edit._validateInput.bind(
 														this.hInputs['Fax Number'], 		
-														Reflex_Validation.Exception.fnnFax
+														Reflex_Validation.Exception.fnnFixedOrInbound
 													);
 		
 		for (var sName in this.hInputs)
@@ -343,32 +328,28 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 			}
 		}
 		
+		this.oContent	= oContent;
+		
 		// Pre populate the contacts data if available
-		if ((typeof oResponse !== 'undefined') && oResponse.oContact)
+		if ((typeof oResponse.oContact !== 'undefined'))
 		{
+			// Must be editing
 			this.oContact	= oResponse.oContact;
 			
-			aInputs[0].value	= this.oContact.Title;
-			aInputs[1].value	= this.oContact.dob_day;
-			aInputs[2].value	= this.oContact.dob_month;
-			aInputs[3].value	= this.oContact.dob_year;
-			aInputs[4].value	= this.oContact.FirstName;
-			aInputs[5].value	= this.oContact.LastName;
-			aInputs[6].value	= this.oContact.JobTitle;
-			aInputs[7].value	= this.oContact.Email;
-			aInputs[8].value	= this.oContact.Phone;
-			aInputs[9].value	= this.oContact.Mobile;
-			aInputs[10].value	= this.oContact.Fax;
+			this.hInputs['Title'].value				= this.oContact.Title;
+			this.hInputs['Day of Birth'].value		= this.oContact.dob_day;
+			this.hInputs['Month of Birth'].value	= this.oContact.dob_month;
+			this.hInputs['Year of Birth'].value		= this.oContact.dob_year;
+			this.hInputs['First Name'].value		= this.oContact.FirstName;
+			this.hInputs['Last Name'].value			= this.oContact.LastName;
+			this.hInputs['Job Title'].value			= this.oContact.JobTitle;
+			this.hInputs['Email Address'].value		= this.oContact.Email;
+			this.hInputs['Phone Number'].value		= this.oContact.Phone;
+			this.hInputs['Mobile Number'].value		= this.oContact.Mobile;
+			this.hInputs['Fax Number'].value		= this.oContact.Fax;
 			
 			// Account access (customer contact)
-			if (this.oContact.CustomerContact == 0)
-			{
-				aInputs[12].checked = true;
-			}
-			else
-			{
-				aInputs[13].checked = true;
-			}
+			this.hInputs['AccountAccess-' + this.oContact.CustomerContact].checked = true;
 			
 			// Archived
 			var oStatusSpan	= oContent.select('span.contact-edit-archive-status').first();
@@ -377,29 +358,40 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 			
 			if (this.oContact.Archived == 1)
 			{
-				aInputs[14].checked		= true;
-				oStatusSpan.innerHTML	= 'Currently Archived';
+				this.hInputs['Status'].checked	= true;
+				oStatusSpan.innerHTML			= 'Archived';
 				oStatusSpan.addClassName('contact-archived');
 			}
 			else
 			{
-				oStatusSpan.innerHTML	= 'Currently Available';
+				oStatusSpan.innerHTML	= 'Active';
 				oStatusSpan.addClassName('contact-available');
 			}
 			
+			// Set title
 			this.setTitle('Edit Contact Details');
+			
+			// Password checkbox event handler
+			var oPasswordCheckbox = oContent.select( 'td.contact-edit-password input[type="checkbox"]' ).first();
+			oPasswordCheckbox.observe('click', this._showPasswordForm.bind(this, oPasswordCheckbox));
+			this._showPasswordForm(oPasswordCheckbox);
 		}
 		else if ((this.iAccount !== null) && (this.iAccountGroup !== null))
 		{
-			// Create contact details object with just account and account group, for saving
+			// New contact, create contact details object with just account and account group, for saving
 			this.oContact	= 	{
 									Account			: this.iAccount,
 									AccountGroup	: this.iAccountGroup
 								};
+			
+			this.hInputs['AccountAccess-1'].checked = true;
+			
+			// Hide the checkbox and 'Change Password' text
+			oContent.select( 'td.contact-edit-password > div').first().style.display	= 'none';
+			
+			// Set title
 			this.setTitle('Add Contact');
 		}
-		
-		this.oContent	= oContent;
 		
 		this.setIcon('../admin/img/template/contact_small.png');
 		this.addCloseButton();
@@ -437,7 +429,7 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 		}
 		
 		// Check passwords match (if given)
-		if (this.hInputs['Change Password'].checked )
+		if (this.hInputs['Change Password'].checked || (this.iContactId == null))
 		{
 			if ((this.hInputs['Password'].value == '') && (this.hInputs['Confirm Password'].value == ''))
 			{
@@ -486,14 +478,14 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 									iMobile				: (this.hInputs['Mobile Number'].value == '') ? '' : this.hInputs['Mobile Number'].value,
 									iFax				: (this.hInputs['Fax Number'].value == '') ? '' : this.hInputs['Fax Number'].value,
 									iCustomerContact	: parseInt(this.hInputs['AccountAccess-0'].checked ? this.hInputs['AccountAccess-0'].value : this.hInputs['AccountAccess-1'].value),
-									iArchived			: this.hInputs['Archived'].checked ? 1 : 0,
+									iArchived			: this.hInputs['Status'].checked ? 1 : 0,
 									iAccountGroup		: this.oContact.AccountGroup,
 									iAccount			: this.oContact.Account,
 									iId					: this.oContact.Id
 								};
 		
 		// Only send password if 'Change Password' is checked
-		if (this.hInputs['Change Password'].checked)
+		if (this.hInputs['Change Password'].checked || (this.iContactId == null))
 		{
 			oContactDetails.sPassword	= this.hInputs['Password'].value;
 		}

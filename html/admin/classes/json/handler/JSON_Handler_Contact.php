@@ -22,20 +22,43 @@ class JSON_Handler_Contact extends JSON_Handler
 				throw(new JSON_Handler_DataReport_Exception('You do not have permission to view this contact.'));
 			}
 			
-			$oContact			= Contact::getForId($iContactId);
-			$oStdClassContact	= $oContact->toStdClass();
+			// Get array of contact titles
+			$aContactTitles			= Contact_Title::getAll();
+			$aStdClassContactTitles	= array();
 			
-			// Split DOB
-			$aDOB							= split( '-', $oContact->DOB );
-			$oStdClassContact->dob_day		= (int)$aDOB[2];
-			$oStdClassContact->dob_month	= (int)$aDOB[1];
-			$oStdClassContact->dob_year		= (int)$aDOB[0];
+			foreach ($aContactTitles as $iId => $oTitle)
+			{
+				$aStdClassContactTitles[]	= $oTitle->name;
+			}
 			
-			return 	array(
-						"Success"	=> true,
-						"oContact"	=> $oStdClassContact,
-						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
-					);
+			if (is_null($iContactId))
+			{
+				// Just return the titles
+				return 	array(
+							"Success"			=> true,
+							"aContactTitles"	=> $aStdClassContactTitles,
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						);
+			}
+			else
+			{
+				// Get the contact info
+				$oContact			= Contact::getForId($iContactId);
+				$oStdClassContact	= $oContact->toStdClass();
+				
+				// Split DOB
+				$aDOB							= split( '-', $oContact->DOB );
+				$oStdClassContact->dob_day		= (int)$aDOB[2];
+				$oStdClassContact->dob_month	= (int)$aDOB[1];
+				$oStdClassContact->dob_year		= (int)$aDOB[0];
+				
+				return 	array(
+							"Success"			=> true,
+							"oContact"			=> $oStdClassContact,
+							"aContactTitles"	=> $aStdClassContactTitles,
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						);
+			}
 		}
 		catch (JSON_Handler_Contact_Exception $oException)
 		{

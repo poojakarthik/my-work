@@ -10,16 +10,16 @@ class Application_Handler_Contact extends Application_Handler
 		
 		try
 		{
-			$aDetailsToRender					= array();
+			$aDetailsToRender	= array();
 			
 			// Get contact
-			$aDetailsToRender['oContact']		= Contact::getForId($_GET['Id']);
+			$aDetailsToRender['oContact']	= Contact::getForId($_GET['Id']);
 			
 			// Get all note types
-			$aDetailsToRender['aNoteTypes'] 	= Note_Type::getAll();
+			$aDetailsToRender['aNoteTypes']	= Note_Type::getAll();
 			
 			// Get accounts
-			$aAccounts							= $aDetailsToRender['oContact']->getAccounts(true);
+			$aAccounts	= $aDetailsToRender['oContact']->getAccounts(true);
 			
 			// Calculate account overdue amounts
 			foreach ($aAccounts as $oAccount)
@@ -28,6 +28,9 @@ class Application_Handler_Contact extends Application_Handler
 			}
 			
 			$aDetailsToRender['aAccounts']	= $aAccounts;
+			
+			// Get the contact titles list
+			$aDetailsToRender['aContactTitles']	= Contact_Title::getAll();
 			
 			// Load page_template
 			$this->LoadPage('contact_view', HTML_CONTEXT_DEFAULT, $aDetailsToRender);

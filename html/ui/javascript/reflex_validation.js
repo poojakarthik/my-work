@@ -249,7 +249,7 @@ var Reflex_Validation	=
 							}
 						},
 						
-						fnnFax		: function(strTest)
+						fnnFixedOrInbound	: function(strTest)
 						{
 							if (Reflex_Validation.fnnInbound(strTest) || Reflex_Validation.fnnFixedLine(strTest))
 							{
@@ -257,7 +257,7 @@ var Reflex_Validation	=
 							}
 							else
 							{
-								throw ('Invalid fax number');
+								throw ('Invalid phone number');
 							}
 						},
 					}

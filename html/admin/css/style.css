@@ -147,12 +147,14 @@ table.reflex > tbody > tr > td:last-child {
 }
 
 
-table.reflex caption div.caption_bar {
+table.reflex caption div.caption_bar
+{
 	width: 100%;
 	clear: both;
 }
 
-table.reflex caption div.caption_title{
+table.reflex caption div.caption_title
+{
 	float: left;
 	width: 25%;
 	height: 100%;
@@ -3070,52 +3072,6 @@ div.invoice-dispute-buttons
 
 /************************ START - Contact View - START ************************/
 
-h2.contact-view-details-title
-{
-	background-image	: url("../img/template/contact_small.png");
-}
-
-h2.contact-view-options-title
-{
-	background-image	: url("../img/template/options_small.png");
-}
-
-h2.contact-view-accounts-title
-{
-	background-image	: url("../img/template/accounts_small.png");
-}
-
-h2.contact-view-notes-title
-{
-	background-image	: url("../img/template/note_small.png");
-}
-
-td.contact-view-notes h2.Actions
-{
-	background-image	: url("../img/template/action.png");
-}
-
-h2.contact-view-details-title,
-h2.contact-view-options-title,
-h2.contact-view-notes-title,
-h2.contact-view-accounts-title,
-td.contact-view-notes h2.Actions
-{
-	background-position	:left bottom;
-	background-repeat	:no-repeat;
-	height				:21px;
-	margin-bottom		:5px;
-	padding-left		:22px;
-}
-
-h2.contact-view-recentnotes-title
-{
-	background-position	:left bottom;
-	background-repeat	:no-repeat;
-	height				:21px;
-	margin-bottom		:5px;
-}
-
 table.contact-view
 {
 	width:	90%;
@@ -3124,11 +3080,6 @@ table.contact-view
 table.contact-view td
 {
 	vertical-align	: top;
-}
-
-td.contact-view-details-edit
-{
-	text-align	: right;
 }
 
 textarea.contact-view-notes-text
@@ -3148,16 +3099,49 @@ table.contact-view-account td.overdue
 	font-weight	: bold;
 }
 
-div.contact-view-account-add,
-td.contact-view-details button
+table.contact-view-account,
+table.contact-view-details 
 {
-	float			: right;
-	margin-right	: 0.5em;
+	width	: 100%;
 }
 
-td.contact-view-details tbody > tr > th:nth-child(1)
+td.contact-view-notes #ActionsAndNotesListContainer > div.GroupedContent
 {
-	width	: 25%;
+	margin-left		: 0em;
+	margin-right	: 0em;
+}
+
+table.contact-view > tbody > tr > td
+{
+	width	: 50%;
+	padding	: 1em;
+}
+
+table.contact-view-details > tbody > tr > td,
+table.contact-view-details > tbody > tr > th
+{
+	padding	: 0.2em;
+}
+
+table.contact-view-details th:nth-child(1)
+{
+	text-align	: left;	
+	width		: 20%;
+}
+
+table.contact-view-details th:nth-child(2)
+{
+	width	: 1em;
+}
+
+table.contact-view-details 
+{
+	margin-left	: 1em;
+}
+
+span.contact-field-null
+{
+	font-style	: italic;
 }
 
 /************************ END - Contact View - END ************************/
@@ -3178,6 +3162,11 @@ button.icon-button > img
 /************************ END - Icon Button - END ************************/
 
 /************************ START - Contact View Popup - START ************************/
+
+div.contact-edit-table
+{
+	padding	: 0.5em;	
+}
 
 div.contact-edit-table table td
 {
@@ -3209,13 +3198,13 @@ span.contact-edit-attention
 
 span.contact-edit-attention,
 span.contact-archived,
-td.contact-view-details > table > tbody > tr > td.contact-archived
+table.contact-view-details > tbody > tr > td.contact-archived
 {
 	color	: #cc0000;
 }
 
 span.contact-available,
-td.contact-view-details > table > tbody > tr > td.contact-available
+table.contact-view-details > tbody > tr > td.contact-available
 {
 	color	: #008000;
 }
@@ -3231,3 +3220,76 @@ td.contact-edit-password > table > tbody > tr > td
 }
 
 /************************ END - Contact View Popup - END ************************/
+
+/************************ START - Section - START ************************/
+
+div.section
+{
+	width	: 100%;	
+}
+
+div.section > div.section-header
+{
+	width			: 100%;
+	margin-bottom	: 0.5em;
+	border-bottom	: solid 1px black;
+	position		: relative;
+}
+
+div.section > div.section-content
+{
+	width	: 100%;	
+}
+
+div.section > div.section-footer
+{
+	text-align	: right;
+	margin-top	: 0.5em;
+	padding-top	: 0.25em;
+	width		: 100%;	
+	border-top	: solid 1px black;
+}
+
+div.section > div.section-header > div.section-header-options
+{
+	display		: inline-block;
+	height		: 100%;
+	position	: absolute;
+	right		: 0em;
+	text-align	: right;
+	bottom		: 0.25em;
+}
+
+div.section > div.section-header > div.section-header-title > h2
+{
+	display			: inline;	
+	vertical-align	: middle;
+	font-size		: 1.1em;
+}
+
+div.section > div.section-header > div.section-header-title > img
+{
+	vertical-align	: middle;
+	margin-right	: 0.25em;
+}
+
+div.section > div.section-header > div.section-header-title
+{
+	height					: 100%;
+	color					: #eee;
+	background-color		: #1C1C1C;
+    background-image		: url('../img/template/background.png');
+    background-repeat		: repeat-x;
+	text-align				: center;
+	font-weight				: bold;
+	padding-top				: .4em;
+	padding-bottom			: .4em;
+	padding-left			: 1.5em;
+	padding-right			: 1.5em;
+    margin-left				: 8px;
+    display					: inline-block;
+    -moz-border-radius		: 6px 6px 0 0;
+	-webkit-border-radius	: 6px 6px 0 0;
+}
+
+/************************ END - Generic Caption - END ************************/

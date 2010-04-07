@@ -17,58 +17,94 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 	public function Render()
 	{
 		echo "<table class='contact-view'>"
-		. "	<tbody>"
-		. "		<tr>"
-		. "			<td class='contact-view-details'>"
-		. $this->renderDetails($this->mxdDataToRender['oContact'])
-		. "			</td>"
-		. "			<td class='contact-view-notes'>"
-		. $this->renderRecentNotes($this->mxdDataToRender['oContact'])
-		. "			</td>"
-		. "		</tr>"
-		. "		<tr>"
-		. "			<td colspan='2'>"
-		. $this->renderAccounts($this->mxdDataToRender['aAccounts'])
-		. '			</td>'
-		. '		</tr>'
-		. '	</tbody>'
-		. '</table>';
+			. "	<tbody>"
+			. "		<tr>"
+			. "			<td>"
+			. $this->renderDetails($this->mxdDataToRender['oContact'], $this->mxdDataToRender['aContactTitles'])
+			. $this->renderAccounts($this->mxdDataToRender['aAccounts'], $this->mxdDataToRender['oContact'])
+			. "			</td>"
+			. "			<td class='contact-view-notes'>"
+			. $this->renderRecentNotes($this->mxdDataToRender['oContact'])
+			. "			</td>"
+			. "		</tr>"
+			. "		</tr>"
+			. "	</tbody>"
+			. "</table>"; 
 	}
 	
-	public static function renderDetails($oContact)
+	public static function renderDetails($oContact, $aContactTitles)
 	{
-		$sHtml 	= "	<h2 class='contact-view-details-title'>Contact Details</h2>";
-		$sHtml 	.= "<table class='reflex'>
-						<tbody>
-							<tr>
-								<th class='label'>Full Name :</td>
-								<td>{$oContact->FirstName} {$oContact->LastName}</td>
-							</tr>
-							<tr>
-								<th class='label'>Date of Birth :</td>
-								<td>{$oContact->DOB}</td>
-							</tr>
-							<tr>
-								<th class='label'>Email Address :</td>
-								<td><a href='mailto:{$oContact->Email}'>{$oContact->Email}</a></td>
-							</tr>
-							<tr>
-								<th class='label'>Mobile Number :</td>
-								<td>{$oContact->Mobile}</td>
-							</tr>
-							<tr>
-								<th class='label'>Account Access :</td>
-								<td>".($oContact->CustomerContact ? 'All Associated Accounts' : 'Primary Account Only')."</td>
-							</tr>
-							<tr>
-								<th class='label'>Archived :</td>
-								".($oContact->Archived ? "<td class='contact-archived'>Archived Contact" : "<td class='contact-available'>Active Contact")."</td>
-							</tr>
-						</tbody>
-					</table>
-					<button onclick='javascript: new Popup_Contact_Edit({$oContact->Id}, null, null, Popup_Contact_Edit._goToPage);'>
-						Edit Contact Details
-					</button>";
+		// Work out title text
+		$sTitle	= '';
+		
+		foreach ($aContactTitles as $iId => $oTitle)
+		{
+			if ($oTitle->name == $oContact->Title)
+			{
+				$sTitle	= "{$oTitle->name} ";
+				break;
+			}
+		}
+		
+		// Reorganise date string
+		$aDate			= split('-', $oContact->DOB);
+		$sDate			= "{$aDate[2]}-{$aDate[1]}-{$aDate[0]}";		
+		$sNotSupplied	= "<span class='contact-field-null'>[ None ]</span>";
+		$sHtml			= "	<div class='section'>" .
+				"		<div class='section-header'>" .
+				"			<div class='section-header-title'>" .
+				"				<img src='../admin/img/template/contact_small.png'/>" .
+				"				<h2>Contact Details</h2>" .
+				"			</div>" .
+				"		</div>" .
+				"		<div class='section-content'>" .
+				"			<table class='contact-view-details'>
+								<tbody>
+									<tr>
+										<th>Full Name :</th>
+										<td>{$sTitle}{$oContact->FirstName} {$oContact->LastName}</td>
+									</tr>
+									<tr>
+										<th>Job Title :</th>
+										<td>".($oContact->JobTitle != '' ? $oContact->JobTitle : $sNotSupplied )."</td>
+									</tr>
+									<tr>
+										<th>Date of Birth :</th>
+										<td>$sDate</td>
+									</tr>
+									<tr>
+										<th>Email Address :</th>
+										<td><a href='mailto:{$oContact->Email}'>{$oContact->Email}</a></td>
+									</tr>
+									<tr>
+										<th>Phone Number :</th>
+										<td>".($oContact->Phone != '' ? $oContact->Phone : $sNotSupplied )."</td>
+									</tr>
+									<tr>
+										<th>Mobile Number :</th>
+										<td>".($oContact->Mobile != '' ? $oContact->Mobile : $sNotSupplied )."</td>
+									</tr>
+									<tr>
+										<th>Fax Number :</th>
+										<td>".($oContact->Fax != '' ? $oContact->Fax : $sNotSupplied )."</td>
+									</tr>
+									<tr>
+										<th>Account Access :</th>
+										<td>".($oContact->CustomerContact ? 'All Associated Accounts' : 'Primary Account Only')."</td>
+									</tr>
+									<tr>
+										<th>Status :</td>
+										".($oContact->Archived ? "<td class='contact-archived'>Archived" : "<td class='contact-available'>Active")."</td>
+									</tr>
+								</tbody>
+							</table>".
+				"		</div>" .
+				"		<div class='section-footer'>" .
+				"			<button onclick='javascript: new Popup_Contact_Edit({$oContact->Id}, null, null, Popup_Contact_Edit._goToPage);'>" .
+				"				Edit Contact Details" .
+				"			</button>" .				
+				"		</div>" .
+				"	</div>";
 		
 		return $sHtml;
 	}
@@ -79,40 +115,47 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 		return $sHtml;
 	}
 	
-	public static function renderAccounts($aAccounts)
+	public static function renderAccounts($aAccounts, $oContact)
 	{
-		$sHtml 	= "	<h2 class='contact-view-accounts-title'>Accounts</h2>";
-		$sHtml 	= "	<table class='reflex contact-view-account'>" .
-				"		<caption>" .
-				"			<div class='caption_bar'>" .
-				"				<div class='caption_title'>Accounts</div>" .
-				"			</div>" .
-				"		</caption>" .
-				" 		<thead>" .
-				" 			<th>Account</th>" .
-				"			<th>Business Name</th>" .
-				"			<th>Trading Name</th>" .
-				"			<th>Overdue Charges</th>" .
-				"		</thead>" .
-				"		<tbody class='alternating'>";
+		$sHtml	= "	<div class='section'>" .
+				"		<div class='section-header'>" .
+				"			<div class='section-header-title'>" .
+				"				<img src='../admin/img/template/accounts_small.png'/>" .
+				"				<h2>Accounts</h2>" .
+				"			</div>" .			
+				"		</div>" .
+				"		<div class='section-content'>" .
+				"			<table class='reflex contact-view-account'>" .
+				" 				<thead>" .
+				" 					<th>Account</th>" .
+				"					<th>Business Name</th>" .
+				"					<th>Trading Name</th>" .
+				"					<th>Overdue Charges</th>" .
+				"					<th></th>" .
+				"				</thead>" .
+				"				<tbody class='alternating'>";
 		
+		// Add a row for each account
 		foreach ($aAccounts as $oAccount)
 		{
 			$sHtml	.= "<tr>" .
-					"		<td>{$oAccount->Id}</td>" .
+					"		<td><a href='flex.php/Account/Overview/?Account.Id={$oAccount->Id}'>{$oAccount->Id}</a></td>" .
 					"		<td>{$oAccount->BusinessName}</td>" .
 					"		<td>{$oAccount->TradingName}</td>" .
 					"		<td class='overdue'>\${$oAccount->fOverdueAmount}</td>" .
+					" 		<td><a href='flex.php/Account/InvoicesAndPayments/?Account.Id={$oAccount->Id}'>Make Payment</a>" .
 					"	</tr>";
 		}
 		
-		$sHtml 	.= "	</tbody>
-				</table>
-				<div class='contact-view-account-add'>
-					<button>
-						Add Associated Account
-					</button>
-				</div>";
+		$sHtml 	.= "			</tbody>" .
+			"				</table>".
+			"			</div>" .
+			"			<div class='section-footer'>" .
+			"				<button onclick='javascript: window.location=\"reflex.php/Account/Create/?Associated={$oAccount->Id}&Contact={$oContact->Id}\";'>" .
+			"					Add Associated Account" .
+			"				</button>" .				
+			"			</div>" .
+			"		</div>";
 		
 		return $sHtml;
 	}
