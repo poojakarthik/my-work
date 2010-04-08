@@ -1,12 +1,11 @@
 
 var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, iContactId, iAccount, iAccountGroup, fnAfterSave)
+	initialize	: function($super, iContactId, iAccount, fnAfterSave)
 	{
 		$super(50);
 		this.iContactId		= iContactId;
 		this.iAccount		= iAccount;
-		this.iAccountGroup	= iAccountGroup;
 		this.oContact		= null;
 		this.fnAfterSave	= fnAfterSave;
 		this.hInputs		= {};
@@ -125,21 +124,19 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 													$T.input({type: 'checkbox'}),
 													' Change Password'
 												),
-												$T.table(
-													$T.tbody(
-														$T.tr(
-															$T.td(
-																'New Password'
-															),
-															$T.td(
+												$T.ul({class: 'reset'},
+													$T.li(
+														$T.ul({class: 'reset horizontal'},
+															$T.li('Password'),
+															$T.li(
 																$T.input({type: 'password'})
 															)
-														),
-														$T.tr(
-															$T.td(
-																'Confirm Password'
-															),
-															$T.td(
+														)
+													),
+													$T.li(
+														$T.ul({class: 'reset horizontal'},
+															$T.li('Confirm Password'),
+															$T.li(
 																$T.input({type: 'password'})
 															)
 														)
@@ -361,13 +358,10 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 			oPasswordCheckbox.observe('click', this._showPasswordForm.bind(this, oPasswordCheckbox));
 			this._showPasswordForm(oPasswordCheckbox);
 		}
-		else if ((this.iAccount !== null) && (this.iAccountGroup !== null))
+		else if (this.iAccount !== null)
 		{
 			// New contact, create contact details object with just account and account group, for saving
-			this.oContact	= 	{
-									Account			: this.iAccount,
-									AccountGroup	: this.iAccountGroup
-								};
+			this.oContact	= {Account	: this.iAccount};
 			
 			this.hInputs['AccountAccess-1'].checked = true;
 			
@@ -464,7 +458,6 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 									iFax				: (this.hInputs['Fax Number'].value == '') ? '' : this.hInputs['Fax Number'].value,
 									iCustomerContact	: parseInt(this.hInputs['AccountAccess-0'].checked ? this.hInputs['AccountAccess-0'].value : this.hInputs['AccountAccess-1'].value),
 									iArchived			: this.hInputs['Status'].value,
-									iAccountGroup		: this.oContact.AccountGroup,
 									iAccount			: this.oContact.Account,
 									iId					: this.oContact.Id
 								};
@@ -512,18 +505,18 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 	
 	_showPasswordForm	: function(oCheckbox)
 	{
-		var oTable	= this.oContent.select('td.contact-edit-password > table').first();
+		var oUL	= this.oContent.select('td.contact-edit-password > ul').first();
 		
 		if (oCheckbox.checked)
 		{
-			oTable.style.display	= 'block';
+			oUL.style.display	= 'block';
 		}
 		else
 		{
-			var aInputs				= this.oContent.select('td.contact-edit-password > table input');
-			aInputs[0].value		= '';
-			aInputs[1].value		= '';
-			oTable.style.display	= 'none';
+			var aInputs			= this.oContent.select('td.contact-edit-password ul > li > input');
+			aInputs[0].value	= '';
+			aInputs[1].value	= '';
+			oUL.style.display	= 'none';
 		}
 		
 			

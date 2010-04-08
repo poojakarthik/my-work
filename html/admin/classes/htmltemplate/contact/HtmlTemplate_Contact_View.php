@@ -102,7 +102,7 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 							</table>".
 				"		</div>" .
 				"		<div class='section-footer'>" .
-				"			<button class='icon-button' onclick='javascript: new Popup_Contact_Edit({$oContact->Id}, null, null, Popup_Contact_Edit._goToPage);'>" .
+				"			<button class='icon-button' onclick='javascript: new Popup_Contact_Edit({$oContact->Id}, null, Popup_Contact_Edit._goToPage);'>" .
 				"				<img src='../admin/img/template/user_edit.png'/>" .
 				"				<span>Edit Contact Details</span>" .
 				"			</button>" .				

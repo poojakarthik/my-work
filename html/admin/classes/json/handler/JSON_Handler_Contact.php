@@ -189,8 +189,11 @@ class JSON_Handler_Contact extends JSON_Handler
 			}
 			else
 			{
+				// Create an account object to the get the account group
+				$oAccount	= Account::getForId($oContactDetails->iAccount);
+				
 				// Update orm object
-				$oContact->AccountGroup		= $oContactDetails->iAccountGroup;
+				$oContact->AccountGroup		= $oAccount->AccountGroup;
 				$oContact->Account			= $oContactDetails->iAccount;
 				$oContact->Title			= $oContactDetails->sTitle;
 				$oContact->FirstName		= $oContactDetails->sFirstName;

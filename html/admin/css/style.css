@@ -3219,14 +3219,19 @@ table.contact-view-details > tbody > tr > td.contact-available
 	color	: #008000;
 }
 
-td.contact-edit-password > table
+td.contact-edit-password > ul.reset
 {
-	margin-top	: 0.5em;
+	padding-top	: 0.5em;
 }	
 
-td.contact-edit-password > table > tbody > tr > td
+td.contact-edit-password > ul.reset > li
 {
-	padding	: 0em 0.5em 0em 0em;
+	padding-bottom	: 0.25em;
+}
+
+td.contact-edit-password > ul.reset > li > ul.reset.horizontal > li:nth-child(1)
+{
+	width	: 9em;
 }
 
 /************************ END - Contact View Popup - END ************************/

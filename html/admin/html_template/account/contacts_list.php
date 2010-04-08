@@ -68,6 +68,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("account_contacts");
+		$this->LoadJavascript("reflex_validation");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -217,7 +218,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		{
 			// Include the AddContact button
 			$strAddContactHref = Href()->AddContact(DBO()->Account->Id->Value);
-			$this->Button("Add Contact", "window.location='$strAddContactHref'");
+			$this->Button("Add Contact", $strAddContactHref);
 			$bolHasButtons = TRUE;
 		}
 		
@@ -272,7 +273,7 @@ class HtmlTemplateAccountContactsList extends HtmlTemplate
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL))
 		{
 			$strAddContactHref = Href()->AddContact(DBO()->Account->Id->Value);
-			$this->Button("Add Contact", "window.location='$strAddContactHref'");
+			$this->Button("Add Contact", $strAddContactHref."Vixen.Popup.Close(this);");
 		}
 		$this->Button("Close", "Vixen.Popup.Close(this);");
 		echo "</div></div>\n";

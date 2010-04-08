@@ -1168,10 +1168,11 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function AddContact($intAccountId) {
+	function AddContact($iAccountId) {
 		$this->strLabel = "Add Contact";
 		$this->strContextMenuLabel = "";
-		return self :: OLD_FRAMEWORK . "contact_add.php?Account=$intAccountId";
+		//return self :: OLD_FRAMEWORK . "contact_add.php?Account=$iAccountId";
+		return "javascript: JsAutoLoader.loadScript('javascript/popup_contact_edit.js', function(){new Popup_Contact_Edit(null, {$iAccountId}, Popup_Contact_Edit._goToPage);});";
 	}
 
 	//------------------------------------------------------------------------//
