@@ -1164,17 +1164,17 @@
 		// add optional fields
 		$arrClean['BillAddress2']	= $arrAddress['BillAddress2'];
 		
-		// Trim all fields
+		// Normalise Whitespace (\s to ' ') and Trim all Fields
 		$strError	= "";
 		foreach ($arrClean as $strField=>$mixValue)
 		{
 			if ($mixValue === FALSE)
 			{
-				$strError .= "Mandatory Service Address Field '$strField' is Empty\n";
+				$strError .= "Mandatory Service Address Field '{$strField}' is Empty\n";
 			}
 			else
 			{
-				$arrClean[$strField]	= trim($mixValue);
+				$arrClean[$strField]	= trim(preg_replace("/\s/", ' ', $mixValue));
 			}
 		}
 		
