@@ -123,6 +123,20 @@
 		self::_addAttribute($xmlNegative, 'Location', 'Suffix');
 		
 		//--------------------------------------------------------------------//
+		// Invoice Object
+		//--------------------------------------------------------------------//
+		$aRateClasses	= Invoice_Export::getRateClasses();
+		
+		$xmlRateClasses	= self::_addElement($xmlInvoice, 'RateClasses');
+		foreach ($aRateClasses as $oRateClass)
+		{
+			$xmlRateClass	= self::_addElement($xmlRateClasses, 'RateClass');
+			self::_addAttribute($xmlRateClass, 'Id', $oRateClass->id);
+			self::_addElement($xmlRateClasses, 'Name', $oRateClass->name);
+			self::_addElement($xmlRateClasses, 'Code', $oRateClass->invoice_code);
+		}
+		
+		//--------------------------------------------------------------------//
 		// Account Information
 		//--------------------------------------------------------------------//
 		$xmlAccount	= self::_addElement($xmlInvoice, 'Account');
@@ -744,6 +758,7 @@
  		}
  		
  		$arrItem['TaxExempt']	= $arrCDR['TaxExempt'];
+ 		$arrItem['RateClass']	= $arrCDR['RateClass'];
  		return $arrItem;
  	}
  }
