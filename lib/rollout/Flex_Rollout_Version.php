@@ -136,5 +136,25 @@ abstract class Flex_Rollout_Version
 		} while(!$response || ($response[0] != 'y' && $response[0] != 'n'));
 		return $response[0] == 'y';
 	}
+	
+	public static function getRolloutVersionNumber($sClassName)
+	{
+		if (($iLastUnderscoreIndex = strrpos($sClassName, '_')) !== false)
+		{
+			$sVersion	= substr($sClassName, $iLastUnderscoreIndex + 1);
+			if (is_numeric(($sVersion = substr($sClassName, $iLastUnderscoreIndex + 1))))
+			{
+				return (int)$sVersion;
+			}
+			else
+			{
+				throw new Exception("'{$sClassName}' is not a valid Rollout Version Class Name (Version number not found)");
+			}
+		}
+		else
+		{
+			throw new Exception("'{$sClassName}' is not a valid Rollout Version Class Name (No underscores found)");
+		}
+	}
 }
 ?>

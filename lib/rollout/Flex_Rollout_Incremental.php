@@ -71,6 +71,8 @@ class Flex_Rollout_Incremental
 			try
 			{
 				// Try to rollout the script (if this fails, we must roll-back script & db changes)
+				$this->outputMessage("Performing Rollout v{$intVersion}...\n");
+				
 				$objRollout->rollout();
 
 				// Update the database_version table with the latest version number (insert a new record)
@@ -90,7 +92,9 @@ class Flex_Rollout_Incremental
 			catch (Exception $e)
 			{
 				$arrRollbackErrors = array();
-
+				
+				$this->outputMessage("Rolling back Rollout v{$intVersion}...\n");
+				
 				try
 				{
 					// Rollback the database changes
