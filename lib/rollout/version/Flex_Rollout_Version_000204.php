@@ -68,7 +68,7 @@ class Flex_Rollout_Version_000204 extends Flex_Rollout_Version
 							);
 		
 		// Perform Batch Rollout
-		$iRolloutVersionNumber	= 
+		$iRolloutVersionNumber	= self::getRolloutVersionNumber(__CLASS__);
 		$iStepNumber			= 0;
 		foreach ($aOperations as $aOperation)
 		{
@@ -77,7 +77,7 @@ class Flex_Rollout_Version_000204 extends Flex_Rollout_Version
 			$this->outputMessage("Applying {$iRolloutVersionNumber}.{$iStepNumber}: {$aOperation['sDescription']}...\n");
 			
 			// Attempt to apply changes
-			$oResult	= Data_Source::get($aOperation['sDataSourceName'])->query($aOperation);
+			$oResult	= Data_Source::get($aOperation['sDataSourceName'])->query($aOperation['sAlterSQL']);
 			if (PEAR::isError($oResult))
 			{
 				throw new Exception(__CLASS__ . " Failed to {$aOperation['sDescription']}. " . $oResult->getMessage() . " (DB Error: " . $oResult->getUserInfo() . ")");
