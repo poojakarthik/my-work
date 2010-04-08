@@ -71,7 +71,7 @@ class Flex_Rollout_Incremental
 			try
 			{
 				// Try to rollout the script (if this fails, we must roll-back script & db changes)
-				$this->outputMessage("Performing Rollout v{$intVersion}...\n");
+				self::outputMessage("Performing Rollout v{$intVersion}...\n");
 				
 				$objRollout->rollout();
 
@@ -93,7 +93,7 @@ class Flex_Rollout_Incremental
 			{
 				$arrRollbackErrors = array();
 				
-				$this->outputMessage("Rolling back Rollout v{$intVersion}...\n");
+				self::outputMessage("Rolling back Rollout v{$intVersion}...\n");
 				
 				try
 				{
@@ -682,6 +682,15 @@ Object.extend(CreditCardType,
 		$jsFile = fopen($strFilePath, "w");
 		fwrite($jsFile, $js);
 		fclose($jsFile);
+	}
+
+	public static function outputMessage($strMessage)
+	{
+		if ($fh = fopen('php://stdout','w'))
+		{
+			fwrite($fh, $strMessage);
+			fclose($fh);
+		}
 	}
 }
 
