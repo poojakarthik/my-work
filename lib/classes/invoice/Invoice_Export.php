@@ -507,6 +507,11 @@ class Invoice_Export
 		return $arrAccountSummary;
 	}
 	
+	public static function getRateClasses()
+	{
+		return Rate_Class::getAll();
+	}
+	
 	/**
 	 * _adjustmentRollup()
 	 *
@@ -784,10 +789,13 @@ class Invoice_Export
 					$arrColumns['RecordGroup']		= "RecordGroup.Description";
 					$arrColumns['TaxExempt']		= "RecordType.global_tax_exempt";
 					//$arrColumns['allow_cdr_hiding']	= "Rate.allow_cdr_hiding";
+					$arrColumns['RateClass']		= "Rate.rate_class_id";
  					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
  					(	
-						"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id JOIN Rate ON Rate.Id = CDR.Rate" .
-						", RecordType as RecordGroup",
+						"	CDR" .
+						"	JOIN RecordType ON (CDR.RecordType = RecordType.Id)" .
+						"	JOIN Rate ON (Rate.Id = CDR.Rate)" .
+						"	, RecordType as RecordGroup",
 						$arrColumns,
 						"$strWhereService AND " .
 						"RecordGroup.Id = RecordType.GroupId AND " .
