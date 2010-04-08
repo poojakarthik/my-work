@@ -60,6 +60,23 @@ class DirectDebit extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public static function getForAccountGroup($iAccountGroupId)
+	{
+		// Get result set
+		$oSelect	= new StatementSelect(self::$_strStaticTableName, "*", "AccountGroup = <AccountGroup> AND Archived = 0");
+		$oSelect->Execute(array('AccountGroup' => $iAccountGroupId));
+		
+		// Add to array and return
+		$aDirectDebits	= array();
+		
+		while ($aDirectDebit	= $oSelect->Fetch())
+		{
+			$aDirectDebits[]	= new self($aDirectDebit);
+		}
+		
+		return $aDirectDebits;
+	}
+
 	/**
 	 * _preparedStatement()
 	 *

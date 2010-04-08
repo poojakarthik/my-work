@@ -60,6 +60,23 @@ class Credit_Card extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public static function getForAccountGroup($iAccountGroupId)
+	{
+		// Get result set
+		$oSelect	= new StatementSelect(self::$_strStaticTableName, "*", "AccountGroup = <AccountGroup> AND Archived = 0");
+		$oSelect->Execute(array('AccountGroup' => $iAccountGroupId));
+		
+		// Add to array and return
+		$aCreditCards	= array();
+		
+		while ($aCreditCard	= $oSelect->Fetch())
+		{
+			$aCreditCards[]	= new self($aCreditCard);
+		}
+		
+		return $aCreditCards;
+	}
+
 	/**
 	 * _preparedStatement()
 	 *

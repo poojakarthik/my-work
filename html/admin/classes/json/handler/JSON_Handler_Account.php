@@ -53,63 +53,80 @@ class JSON_Handler_Account extends JSON_Handler
 	{
 		try
 		{
-
-			$aResult		= array();
-			
-			/*
-			 *
-			 * TODO: 
-			 * Need to retrieve CreditCards and DirectDebits
-			 * Merge into single array and return back to javascript
-			 * 
-			 */
-			 
-			$oAccountGroup  	= Account_Group::getForAccountId($iAccountId);
-			$oAccount			= Account::getForId($iAccountId);
+			$aResult						= array();
+			$oAccountGroup  				= Account_Group::getForAccountId($iAccountId);
+			$oAccount						= Account::getForId($iAccountId);
+			$bhasCreditControlPermission	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CONTROL);
 			
 			if(!$oAccountGroup)
 			{
-				throw new Exception('Invalid Account Id');
+				throw new JSON_Handler_Account_Exception('Invalid Account Id');
 			}
 			
+			// Get all Credit_Card for the accountgroup
+			$aCreditCards	= Credit_Card::getForAccountGroup($oAccountGroup->Id);
 			
-			$qryQuery		= new Query();
-			$resCreditCards	= $qryQuery->Execute("
-			SELECT *
-			FROM CreditCard
-			WHERE AccountGroup={$oAccountGroup->id} AND Archived = 0;");
-			
-			while ($arrCreditCard = $resCreditCards->fetch_assoc())
+			foreach ($aCreditCards as $oCreditCard)
 			{
-				$aResult['credit_cards'][]	= $arrCreditCard;
+				$oStdClassCreditCard	= $oCreditCard->toStdClass();
+				
+				// Get the card type name
+				$oStdClassCreditCard->card_type_name	= Constant_Group::getConstantGroup('credit_card_type')->getConstantName($oCreditCard->CardType);
+				
+				// Get the card number and cvv
+				$sCardNumber	= Decrypt($oCreditCard->CardNumber).'';
+				$sCVV			= (is_null($oCreditCard->CVV) ? '' : Decrypt($oCreditCard->CVV).'');
+				
+				// Hide card number and cvv if the user doesn't have sufficient priviledges
+				if (!$bhasCreditControlPermission)
+				{
+					$sCardNumber	= 	substr($sCardNumber, 0, 4).
+										preg_replace('/\d/', 'X', substr($sCardNumber, 4, strlen($sCardNumber) - 8)).
+										substr($sCardNumber, strlen($sCardNumber) - 4, 4);
+					$sCVV	= ($sCVV == '' ? 'Not Supplied' : 'Supplied');
+				}
+				
+				$oStdClassCreditCard->card_number	= $sCardNumber;
+				$oStdClassCreditCard->cvv			= $sCVV;
+				$aResult['credit_cards'][]			= $oStdClassCreditCard;
 			}
 			
-			$qryQuery		= new Query();
-			$resDirectDebits	= $qryQuery->Execute("
-			SELECT *
-			FROM DirectDebit
-			WHERE AccountGroup={$oAccountGroup->id} AND Archived = 0;");
+			// Get all DirectDebit for the accountgroup
+			$aDirectDebits	= DirectDebit::getForAccountGroup($oAccountGroup->Id);
 			
-			while ($arrDirectDebit = $resDirectDebits->fetch_assoc())
+			foreach ($aDirectDebits as $oDirectDebit)
 			{
-				$aResult['direct_debits'][]	= $arrDirectDebit;
+				$aResult['direct_debits'][]	= $oDirectDebit->toStdClass();
 			}
 			
-			return array(
-							"Success"					=> true,
-							"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : '',
-							"arrPaymentMethods"			=> $aResult,
-							"intSelectedPaymentMethod"	=> $oAccount->BillingType,
-						);
+			return 	array(
+						"Success"					=> true,
+						"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : '',
+						"aPaymentMethods"			=> $aResult,
+						"iSelectedPaymentMethod"	=> $oAccount->BillingType,
+					);
+		}
+		catch (JSON_Handler_Account_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage(),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
 		}
 		catch (Exception $e)
 		{
-			return array(
-							"Success"		=> false,
-							"ErrorMessage"	=> 'ERROR: '.$e->getMessage(),
-							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
-						);
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
 		}
+	}
+	
+	public function setPaymentMethod($iAccountId, $iBillingType, $mDetail)
+	{
+		// TODO: Update the account record, setting billing type and creditcard, directdebit depending on billing type
 	}
 	
 	public function getCostCentres($iAccountId)
@@ -233,4 +250,10 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 }
+
+class JSON_Handler_Account_Exception extends Exception
+{
+	// No changes
+}
+
 ?>
