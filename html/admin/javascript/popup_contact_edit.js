@@ -169,17 +169,12 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 												'Status :'
 											),
 											$T.td(
-												$T.ul({class: 'reset'},
-													$T.li(
-														'This Contact is ',
-														$T.span({class: 'contact-edit-archive-status'})
+												$T.select(
+													$T.option({value: 0},
+														'Active'
 													),
-													$T.li(
-														$T.input({type: 'checkbox'}),
-														$T.span({class: 'contact-edit-attention'},
-															' Archive'
-														),
-														' this Contact.'
+													$T.option({value: 1},
+														'Archived'
 													)
 												)
 											)
@@ -242,33 +237,35 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 		
 		aInputs[3].sFieldName	= 'Year of Birth';
 		aInputs[3].bRequired	= true;
-				
-		aInputs[4].sFieldName	= 'First Name';
-		aInputs[4].bRequired	= true;
-				
-		aInputs[5].sFieldName	= 'Last Name';
+		
+		aInputs[4].sFieldName	= 'Status';
+		aInputs[4].bRequired	= false;
+		
+		aInputs[5].sFieldName	= 'First Name';
 		aInputs[5].bRequired	= true;
 				
-		aInputs[6].sFieldName	= 'Job Title';
+		aInputs[6].sFieldName	= 'Last Name';
+		aInputs[6].bRequired	= true;
 				
-		aInputs[7].sFieldName	= 'Email Address';
-		aInputs[7].bRequired	= true;
+		aInputs[7].sFieldName	= 'Job Title';
 				
-		aInputs[8].sFieldName	= 'Phone Number';
-		aInputs[8].bRequired	= false;
+		aInputs[8].sFieldName	= 'Email Address';
+		aInputs[8].bRequired	= true;
 				
-		aInputs[9].sFieldName	= 'Mobile Number';
+		aInputs[9].sFieldName	= 'Phone Number';
 		aInputs[9].bRequired	= false;
 				
-		aInputs[10].sFieldName	= 'Fax Number';
+		aInputs[10].sFieldName	= 'Mobile Number';
 		aInputs[10].bRequired	= false;
+				
+		aInputs[11].sFieldName	= 'Fax Number';
+		aInputs[11].bRequired	= false;
 		
-		aInputs[11].sFieldName	= 'Change Password';
-		aInputs[12].sFieldName	= 'Password';
-		aInputs[13].sFieldName	= 'Confirm Password';
-		aInputs[14].sFieldName	= 'AccountAccess-0';
-		aInputs[15].sFieldName	= 'AccountAccess-1';
-		aInputs[16].sFieldName	= 'Status';
+		aInputs[12].sFieldName	= 'Change Password';
+		aInputs[13].sFieldName	= 'Password';
+		aInputs[14].sFieldName	= 'Confirm Password';
+		aInputs[15].sFieldName	= 'AccountAccess-0';
+		aInputs[16].sFieldName	= 'AccountAccess-1';
 		
 		for (var i = 0; i < aInputs.length; i++)
 		{
@@ -318,7 +315,11 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 														this.hInputs['Fax Number'], 		
 														Reflex_Validation.Exception.fnnFixedOrInbound
 													);
-		
+		this.hInputs['Status'].validate			=	Popup_Contact_Edit._validateInput.bind(
+														this.hInputs['Status'], 		
+														Reflex_Validation.Exception.nonEmptyDigits
+													);
+
 		for (var sName in this.hInputs)
 		{
 			if (typeof this.hInputs[sName].validate !== 'undefined')
@@ -347,26 +348,10 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 			this.hInputs['Phone Number'].value		= this.oContact.Phone;
 			this.hInputs['Mobile Number'].value		= this.oContact.Mobile;
 			this.hInputs['Fax Number'].value		= this.oContact.Fax;
+			this.hInputs['Status'].value			= this.oContact.Archived;
 			
 			// Account access (customer contact)
 			this.hInputs['AccountAccess-' + this.oContact.CustomerContact].checked = true;
-			
-			// Archived
-			var oStatusSpan	= oContent.select('span.contact-edit-archive-status').first();
-			oStatusSpan.removeClassName('archived');
-			oStatusSpan.removeClassName('available');
-			
-			if (this.oContact.Archived == 1)
-			{
-				this.hInputs['Status'].checked	= true;
-				oStatusSpan.innerHTML			= 'Archived';
-				oStatusSpan.addClassName('contact-archived');
-			}
-			else
-			{
-				oStatusSpan.innerHTML	= 'Active';
-				oStatusSpan.addClassName('contact-available');
-			}
 			
 			// Set title
 			this.setTitle('Edit Contact Details');
@@ -478,7 +463,7 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 									iMobile				: (this.hInputs['Mobile Number'].value == '') ? '' : this.hInputs['Mobile Number'].value,
 									iFax				: (this.hInputs['Fax Number'].value == '') ? '' : this.hInputs['Fax Number'].value,
 									iCustomerContact	: parseInt(this.hInputs['AccountAccess-0'].checked ? this.hInputs['AccountAccess-0'].value : this.hInputs['AccountAccess-1'].value),
-									iArchived			: this.hInputs['Status'].checked ? 1 : 0,
+									iArchived			: this.hInputs['Status'].value,
 									iAccountGroup		: this.oContact.AccountGroup,
 									iAccount			: this.oContact.Account,
 									iId					: this.oContact.Id
