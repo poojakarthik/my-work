@@ -88,7 +88,23 @@ class JSON_Handler_Account extends JSON_Handler
 				
 				$oStdClassCreditCard->card_number	= $sCardNumber;
 				$oStdClassCreditCard->cvv			= $sCVV;
-				$aResult['credit_cards'][]			= $oStdClassCreditCard;
+				
+				// Add expiry string & bExpired flag
+				$ExpiryMonth	= ($oCreditCard->ExpMonth < 10 ? "0{$oCreditCard->ExpMonth}" : $oCreditCard->ExpMonth);
+				$sExpiry		= "$ExpiryMonth/{$oCreditCard->ExpYear}";
+				$iExpiryTime	= strtotime(($ExpiryMonth + 1)."/01/{$oCreditCard->ExpYear}");
+				
+				if ($iExpiryTime <= time())
+				{
+					$oStdClassCreditCard->bExpired	= true;
+				}
+				else
+				{
+					$oStdClassCreditCard->bExpired	= false;
+				}
+				
+				$oStdClassCreditCard->expiry	= $sExpiry;
+				$aResult['credit_cards'][]		= $oStdClassCreditCard;
 			}
 			
 			// Get all DirectDebit for the accountgroup
@@ -103,7 +119,9 @@ class JSON_Handler_Account extends JSON_Handler
 						"Success"					=> true,
 						"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : '',
 						"aPaymentMethods"			=> $aResult,
-						"iSelectedPaymentMethod"	=> $oAccount->BillingType,
+						"iBillingType"				=> $oAccount->BillingType,
+						"iCreditCard"				=> $oAccount->CreditCard,
+						"iDirectDebit"				=> $oAccount->DirectDebit
 					);
 		}
 		catch (JSON_Handler_Account_Exception $oException)
@@ -124,9 +142,61 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 	
-	public function setPaymentMethod($iAccountId, $iBillingType, $mDetail)
+	public function setPaymentMethod($iAccountId, $iBillingType, $iBillingDetail)
 	{
-		// TODO: Update the account record, setting billing type and creditcard, directdebit depending on billing type
+		try
+		{
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_Account_Exception('You do not have permission to set the payment method');
+			}
+			
+			// Update billing type
+			$oAccount				= Account::getForId($iAccountId);
+			$oAccount->BillingType	= $iBillingType;
+			
+			// Reset detail values first
+			$oAccount->DirectDebit	= null;
+			$oAccount->CreditCard	= null;
+			
+			// Update proper detail field
+			switch ($iBillingType)
+			{
+				case 1:	// DirectDebit
+					$oAccount->DirectDebit	= $iBillingDetail;
+					break;
+				case 2:	// CreditCard
+					$oAccount->CreditCard	= $iBillingDetail;
+					break;
+				case 3:	// Invoice
+					// Nothing
+					break;
+			}
+			
+			$oAccount->save();
+			
+			// All good
+			return 	array(
+						"Success"	=> true,
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
+		catch (JSON_Handler_Account_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage(),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> "$iAccountId, $iBillingType, $iBillingDetail",
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
 	}
 	
 	public function getCostCentres($iAccountId)

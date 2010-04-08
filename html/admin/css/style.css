@@ -2908,8 +2908,7 @@ ul.datareport-legend span
 /************************ START - Change Payment Method - START ************************/
 div.payment-methods
 {
-	padding-top			: 20px;
-	padding-bottom		: 20px;
+	padding	: 0.5em;
 }
 
 div.payment-methods > table> thead > tr > td
@@ -2920,25 +2919,78 @@ div.payment-methods > table> thead > tr > td
 
 td.account-payment-methods-col-other
 {
-	width				: 25%;
+	width				: 16%;
 	text-align			: center;
 	font-size			: 1.6em !important;
 	margin-bottom		: 10px;
 }
+
 td.account-payment-methods-col-credit-cards,
 td.account-payment-methods-col-bank-accounts
 {
-	width				: 37.5%;
 	text-align			: center;
 	margin-bottom		: 10px;
 	border-left			: 1px solid #000000;
 }
 
+td.account-payment-methods-col-credit-cards
+{
+	width	: 34.5%;
+}
+
+td.account-payment-methods-col-bank-accounts
+{
+	width	: 40.5%;
+}
+
+div.payment-method-item,
+ul.payment-method-item
+{
+	cursor	: pointer;
+}
+
+div.payment-method-item.payment-method-item-highlight,
+ul.payment-method-item.payment-method-item-highlight
+{
+	background-color	: #FFFF99;
+}
 
 ul.account-payment-method > li
 {
 	vertical-align		: top;
 	padding-left		: 5px;
+}
+
+div.payment-methods > div.account-payment-methods-buttons
+{
+	text-align	: center;
+}
+
+span.payment-method-label-dd
+{
+	width	: 7.5em;
+}
+
+span.payment-method-label-cc
+{
+	width	: 4.5em;
+}
+
+ul.account-payment-method > li > div > span 
+{
+	display	: inline-block;
+}
+
+ul.account-payment-method > li > div > span.expired
+{
+	color		: #cc0000;
+	font-weight	: bold;
+}
+
+ul.account-payment-method > li > div > span.valid
+{
+	color		: #008000;
+	font-weight	: bold;
 }
 
 /************************ END - Change Payment Method - END ************************/
