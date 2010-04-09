@@ -260,5 +260,32 @@ var Reflex_Validation	=
 								throw ('Invalid phone number');
 							}
 						},
+						bsb	: function(sBSB)
+						{
+							sBSB			= String(sBSB).replace(/\s/g, '');
+							var regexBSB	= /^\d{3}[-]?\d{3}$/;
+							
+							if (regexBSB.test(sBSB))
+							{
+								return true;
+							}
+							else
+							{
+								throw ('Invalid BSB');
+							}
+						},
+						bankAccountNumber	: function(sNumber)
+						{
+							var regexAccountNumber	= /^\d{4,11}$/;
+							
+							if (regexAccountNumber.test(sNumber))
+							{
+								return true;
+							}
+							else
+							{
+								throw ('Invalid Account Number');
+							}
+						}
 					}
 };

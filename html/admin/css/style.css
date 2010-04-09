@@ -2906,15 +2906,20 @@ ul.datareport-legend span
 
 
 /************************ START - Change Payment Method - START ************************/
+
 div.payment-methods
 {
-	padding	: 0.5em;
+	padding	: 1em;
 }
-
+/*
 div.payment-methods > table> thead > tr > td
 {
-	font-size			: 1.6em !important;
 	text-indent			: 10px;
+}
+
+div.payment-methods > table> thead > tr > td span.payment-method-title
+{
+	font-size			: 1.6em;
 }
 
 td.account-payment-methods-col-other
@@ -2925,7 +2930,6 @@ td.account-payment-methods-col-other
 	margin-bottom		: 10px;
 }
 
-td.account-payment-methods-col-credit-cards,
 td.account-payment-methods-col-bank-accounts
 {
 	text-align			: center;
@@ -2933,26 +2937,29 @@ td.account-payment-methods-col-bank-accounts
 	border-left			: 1px solid #000000;
 }
 
-td.account-payment-methods-col-credit-cards
-{
-	width	: 34.5%;
-}
-
+td.account-payment-methods-col-credit-cards,
 td.account-payment-methods-col-bank-accounts
 {
-	width	: 40.5%;
+	width	: 50%;
 }
 
-div.payment-method-item,
-ul.payment-method-item
+td.account-payment-methods-col-bank-accounts > div,
+td.account-payment-methods-col-credit-cards > div
+{
+	text-align		: left;
+	margin-bottom	: 0.25em;
+}
+
+div.payment-method-item
 {
 	cursor	: pointer;
 }
 
-div.payment-method-item.payment-method-item-highlight,
-ul.payment-method-item.payment-method-item-highlight
+div.payment-method-item:hover
 {
-	background-color	: #FFFF99;
+	background-color		: #FFFF99;
+	-moz-border-radius		: 0.5em;
+	-webkit-border-radius	: 0.5em;
 }
 
 ul.account-payment-method > li
@@ -2966,31 +2973,91 @@ div.payment-methods > div.account-payment-methods-buttons
 	text-align	: center;
 }
 
-span.payment-method-label-dd
+span.payment-method-label
+{
+	font-weight	: bold;
+}
+
+span.payment-method-label.dd
 {
 	width	: 7.5em;
 }
 
-span.payment-method-label-cc
+span.payment-method-label.cc
 {
 	width	: 4.5em;
 }
-
-ul.account-payment-method > li > div > span 
+ul.payment-method-group > li > input[type="radio"]
 {
-	display	: inline-block;
+	margin-right	: 1em;
 }
 
-ul.account-payment-method > li > div > span.expired
+li.account-payment-method-item-details
+{
+	width	: 90%;
+}
+
+li.account-payment-method-item-details > div
+{
+	width		: 100%;
+	position	: relative;
+}
+
+li.account-payment-method-item-details > div > img.archive-payment-method
+{
+	position	: absolute;
+	right		: 0em;
+}
+*/
+
+div.payment-method-details-info span.label,
+div.payment-method-details-info span.value
+{
+	display		: inline-block;
+}
+
+div.payment-method-details-info span.label
+{
+	font-weight	: bold;
+}
+
+div.payment-method-details-info span.label.dd
+{
+	width	: 9em;
+}
+
+div.payment-method-details-info span.label.cc
+{
+	width	: 7em;
+}
+
+div.payment-method-details-info span.expired
 {
 	color		: #cc0000;
 	font-weight	: bold;
 }
 
-ul.account-payment-method > li > div > span.valid
+div.payment-method-details-info span.valid
 {
 	color		: #008000;
 	font-weight	: bold;
+}
+
+div.billing-type
+{
+	margin	: 0.5em;
+}
+
+div.billing-type > div.billing-type-summary
+{
+	margin-left	: 2em;
+	margin-top	: 0.5em;
+}
+
+div.payment-methods > div.payment-methods-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
 }
 
 /************************ END - Change Payment Method - END ************************/
@@ -3335,7 +3402,8 @@ div.section > div.section-header > div.section-header-options
 	bottom		: 0.25em;
 }
 
-div.section > div.section-header > div.section-header-title > h2
+div.section > div.section-header > div.section-header-title > h2,
+div.section > div.section-header > div.section-header-title > span
 {
 	display			: inline;	
 	vertical-align	: middle;
@@ -3369,3 +3437,31 @@ div.section > div.section-header > div.section-header-title
 
 
 /************************ END - Generic Caption - END ************************/
+
+/************************ START - Add Credit Card PopUp - START ************************/
+
+div.popup-add-credit-card
+{
+	padding	: 0.5em;
+}
+
+div.popup-add-credit-card > div.buttons
+{
+	text-align	: center;
+}
+
+/************************ END - Add Credit Card PopUp - END ************************/
+
+/************************ START - Add Direct Debit PopUp - START ************************/
+
+div.popup-add-direct-debit
+{
+	padding	: 0.5em;
+}
+
+div.popup-add-direct-debit > div.buttons
+{
+	text-align	: center;
+}
+
+/************************ END - Add Direct Debit PopUp - END ************************/
