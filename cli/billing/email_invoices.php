@@ -169,24 +169,21 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
  			if ($bolIncludePDF)
  			{
 				// PDF is included
-				/*$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.\n\n" .
-								"Did you know?\n\n" .
-								"-\tFor convenience, you can add your home account to your current business account and take advantage of the additional savings.\n" .
-								"-\tIf you are an ADSL Broadband customer and you are having connection issues, the first step in trouble shooting is to restart your modem? Simply turn your modem off and on again, then wait until it reboots. If the problem persists, please call us on {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']} and press option 1 to talk to one of our ADSL specialists.\n" .
-								"-\tThe more products you have with us the more you save! {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} can look after all your telecommunication needs. Mobiles, Wireless Broadband, ADSL, PABX’s, 1300 inbound numbers. Call {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']}.\n" .
-								"-\tCustomers can call you on a 1300 for the cost of a local call from anywhere in Australia?\n" .
-								"-\tMost of our monthly plan charges are charged in advance.\n" .
-								"-\tYou can download our terms and conditions by visiting {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']}\n\n" .
-								"Thank you for you business!\n\n" .
-								"The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']}\n" .
-								"The Small to Medium Business Telecommunications Specialists!";*/
-				$strContent	=	"Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.
+				$strContent	=	"
+Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.
 
-Please note there are some important changes to the dates service and equipment charges are applied to your account. For further information go to {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_exit_url']} or call our Business Service Centre Monday to Friday 8:30am to 5:30pm AEST.
+We hope you enjoyed the Easter break and had some rest and relaxation with family and friends.
+Just a friendly reminder that your billing date has changed and your account will be sent on the 11th of each month.
 
-Regards
-The team at {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']}
-";
+Should you have any questions regarding this please call our friendly business service centre .
+
+In the coming weeks {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} will be releasing an outstanding ADSL 2+ package.
+As you may be aware not all businesses will have access to ADSL 2+ yet, but if you are one of the lucky ones that qualify, email sales@{$arrCustomerGroups[$arrDetail['CustomerGroup']]['email_domain']} for a complimentary brochure.
+These plans will be one of the most competitive in the market and jam packed full of value for our long term customers.
+
+Best regards
+The {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Team\n";
+								//"The Small to Medium Business Telecommunications Specialists!";
  			}
  			else
  			{
