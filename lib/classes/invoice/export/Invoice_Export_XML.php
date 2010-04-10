@@ -132,8 +132,8 @@
 		{
 			$xmlRateClass	= self::_addElement($xmlRateClasses, 'RateClass');
 			self::_addAttribute($xmlRateClass, 'Id', $oRateClass->id);
-			self::_addElement($xmlRateClasses, 'Name', $oRateClass->name);
-			self::_addElement($xmlRateClasses, 'Code', $oRateClass->invoice_code);
+			self::_addElement($xmlRateClass, 'Name', $oRateClass->name);
+			self::_addElement($xmlRateClass, 'Code', $oRateClass->invoice_code);
 		}
 		
 		//--------------------------------------------------------------------//
