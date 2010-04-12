@@ -1,13 +1,14 @@
 
 var Popup_Account_Add_DirectDebit	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, iAccountId, fnOnSave)
+	initialize	: function($super, iAccountId, fnOnSave, fnOnCancel)
 	{
 		$super(35);
 		
 		this.hInputs	= {};
 		this.iAccountId	= iAccountId;
 		this.fnOnSave	= fnOnSave;
+		this.fnOnCancel	= fnOnCancel;
 		this._buildUI();
 	},
 	
@@ -74,7 +75,7 @@ var Popup_Account_Add_DirectDebit	= Class.create(Reflex_Popup,
 		oSaveButton.observe('click', this._save.bind(this));
 		
 		var oCancelButton	= oContent.select('button.icon-button').last();
-		oCancelButton.observe('click', this.hide.bind(this));	
+		oCancelButton.observe('click', this._cancel.bind(this));	
 		
 		// Setup input validate event handlers (selects first, then inputs)
 		var aInputs		= oContent.select('select, input');
@@ -154,12 +155,12 @@ var Popup_Account_Add_DirectDebit	= Class.create(Reflex_Popup,
 		}
 		
 		// Build request data
-			var oDetails	=	{
-									sBankName		: this.hInputs['Bank Name'].value,
-									sBSB			: this.hInputs['BSB #'].value.replace(/-/, ''),
-									sAccountNumber	: this.hInputs['Account #'].value,
-									sAccountName	: this.hInputs['Account Name'].value
-								};
+		var oDetails	=	{
+								sBankName		: this.hInputs['Bank Name'].value,
+								sBSB			: this.hInputs['BSB #'].value.replace(/-/, ''),
+								sAccountNumber	: this.hInputs['Account #'].value,
+								sAccountName	: this.hInputs['Account Name'].value
+							};
 		
 		// Create a Popup to show 'saving...' close it when save complete
 		this.oLoading = new Reflex_Popup.Loading('Saving...');
@@ -180,7 +181,7 @@ var Popup_Account_Add_DirectDebit	= Class.create(Reflex_Popup,
 			
 			if (this.fnOnSave)
 			{
-				this.fnOnSave();
+				this.fnOnSave(oResponse.oDirectDebit);
 			}
 		}
 		else if (oResponse.aValidationErrors)
@@ -215,13 +216,22 @@ var Popup_Account_Add_DirectDebit	= Class.create(Reflex_Popup,
 				Reflex_Popup.alert(oResponse.ERROR, oConfig);
 			}
 		}
+	},
+	
+	_cancel	: function()
+	{
+		if (typeof this.fnOnCancel !== 'undefined')
+		{
+			this.fnOnCancel();
+		}
+		
+		this.hide();
 	}
 });
 
 // Image paths
 Popup_Account_Add_DirectDebit.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
 Popup_Account_Add_DirectDebit.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
-
 
 Popup_Account_Add_DirectDebit._showValidationErrorPopup	= function(aErrors)
 {

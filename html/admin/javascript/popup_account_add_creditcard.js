@@ -1,12 +1,13 @@
 
 var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, iAccountId, fnOnSave)
+	initialize	: function($super, iAccountId, fnOnSave, fnOnCancel)
 	{
 		$super(35);
 		
 		this.iAccountId				= iAccountId;
 		this.fnOnSave				= fnOnSave;
+		this.fnOnCancel				= fnOnCancel;
 		this.hInputs				= {};
 		this.aCreditCardNumberRegex	= {};
 		this.aCreditCardCVVRegex	= {};
@@ -102,7 +103,7 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 			oSaveButton.observe('click', this._save.bind(this));
 			
 			var oCancelButton	= oContent.select('button.icon-button').last();
-			oCancelButton.observe('click', this.hide.bind(this));	
+			oCancelButton.observe('click', this._cancel.bind(this));	
 			
 			// Populate card type select & build card number & cvv regexes
 			var oCardTypeSelect		= oContent.select('select.popup-add-credit-card-type').first();
@@ -273,7 +274,7 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 			
 			if (this.fnOnSave)
 			{
-				this.fnOnSave();
+				this.fnOnSave(oResponse.oCreditCard);
 			}
 		}
 		else if (oResponse.aValidationErrors)
@@ -349,12 +350,21 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 		sCVV	= String(sCVV).replace(/\s/g, '');
 		return (iCreditCardType != undefined && this.aCreditCardCVVRegex[iCreditCardType] != undefined && this.aCreditCardCVVRegex[iCreditCardType].test(sCVV));
 	},
+	
+	_cancel	: function()
+	{
+		if (typeof this.fnOnCancel !== 'undefined')
+		{
+			this.fnOnCancel();
+		}
+		
+		this.hide();
+	}
 });
 
 // Image paths
 Popup_Account_Add_CreditCard.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
-Popup_Account_Add_CreditCard.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
-
+Popup_Account_Add_CreditCard.SAVE_IMAGE_SOURCE 		= '../admin/img/template/tick.png';
 
 //Credit Card types
 Popup_Account_Add_CreditCard.CREDIT_CARD_TYPE_VISA			= 1;

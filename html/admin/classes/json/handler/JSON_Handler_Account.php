@@ -93,15 +93,14 @@ class JSON_Handler_Account extends JSON_Handler
 					// Hide card number and cvv if the user doesn't have sufficient priviledges
 					if (!$bhasCreditControlPermission)
 					{
-						$sCardNumber	= 	substr($sCardNumber, 0, 4).
-											preg_replace('/\d/', 'X', substr($sCardNumber, 4, strlen($sCardNumber) - 8)).
-											substr($sCardNumber, strlen($sCardNumber) - 4, 4);
-						$sCVV	= ($sCVV == '' ? 'Not Supplied' : 'Supplied');
+						$sCardNumber	= $oCreditCard->getMaskedCardNumber($sCardNumber);
+						$sCVV			= ($sCVV == '' ? 'Not Supplied' : 'Supplied');
 					}
 					
 					$oStdClassCreditCard->card_number	= $sCardNumber;
 					$oStdClassCreditCard->cvv			= $sCVV;
 					
+					/*
 					// Add expiry string & bExpired flag
 					$ExpiryMonth	= ($oCreditCard->ExpMonth < 10 ? "0{$oCreditCard->ExpMonth}" : $oCreditCard->ExpMonth);
 					$sExpiry		= "$ExpiryMonth/{$oCreditCard->ExpYear}";
@@ -117,6 +116,8 @@ class JSON_Handler_Account extends JSON_Handler
 					}
 					
 					$oStdClassCreditCard->expiry	= $sExpiry;
+					*/
+					
 					$aResult[]						= $oStdClassCreditCard;
 				}
 			}
@@ -204,15 +205,14 @@ class JSON_Handler_Account extends JSON_Handler
 						// Hide card number and cvv if the user doesn't have sufficient priviledges
 						if (!$bhasCreditControlPermission)
 						{
-							$sCardNumber	= 	substr($sCardNumber, 0, 4).
-												preg_replace('/\d/', 'X', substr($sCardNumber, 4, strlen($sCardNumber) - 8)).
-												substr($sCardNumber, strlen($sCardNumber) - 4, 4);
-							$sCVV	= ($sCVV == '' ? 'Not Supplied' : 'Supplied');
+							$sCardNumber	= $oCreditCard->getMaskedCardNumber($sCardNumber);
+							$sCVV			= ($sCVV == '' ? 'Not Supplied' : 'Supplied');
 						}
 						
 						$oStdClassCreditCard->card_number	= $sCardNumber;
 						$oStdClassCreditCard->cvv			= $sCVV;
 						
+						/*
 						// Add expiry string & bExpired flag
 						$ExpiryMonth	= ($oCreditCard->ExpMonth < 10 ? "0{$oCreditCard->ExpMonth}" : $oCreditCard->ExpMonth);
 						$sExpiry		= "$ExpiryMonth/{$oCreditCard->ExpYear}";
@@ -228,6 +228,8 @@ class JSON_Handler_Account extends JSON_Handler
 						}
 						
 						$oStdClassCreditCard->expiry	= $sExpiry;
+						*/
+						
 						$oPaymentMethod					= $oStdClassCreditCard;
 					}
 				}
@@ -461,10 +463,30 @@ class JSON_Handler_Account extends JSON_Handler
 				// Everything looks OK -- Commit!
 				$oDataAccess->TransactionCommit();
 				
+				// Get the card type name
+				$oStdClassCreditCard					= $oCreditCard->toStdClass();
+				$oStdClassCreditCard->card_type_name	= Constant_Group::getConstantGroup('credit_card_type')->getConstantName($oCreditCard->CardType);
+				
+				// Mask the card number and cvv
+				$bhasCreditControlPermission	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_CONTROL);
+				$sCardNumber					= Decrypt($oCreditCard->CardNumber).'';
+				$sCVV							= (is_null($oCreditCard->CVV) ? '' : Decrypt($oCreditCard->CVV).'');
+				
+				// Hide card number and cvv if the user doesn't have sufficient priviledges
+				if (!$bhasCreditControlPermission)
+				{
+					$sCardNumber	= $oCreditCard->getMaskedCardNumber($sCardNumber);
+					$sCVV			= ($sCVV == '' ? 'Not Supplied' : 'Supplied');
+				}
+				
+				$oStdClassCreditCard->card_number	= $sCardNumber;
+				$oStdClassCreditCard->cvv			= $sCVV;
+				
 				// All good
 				return 	array(
-							"Success"	=> true,
-							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+							"Success"		=> true,
+							"oCreditCard"	=> $oStdClassCreditCard,
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 			}
 		}
@@ -583,8 +605,9 @@ class JSON_Handler_Account extends JSON_Handler
 				
 				// All good
 				return 	array(
-							"Success"	=> true,
-							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+							"Success"		=> true,
+							"oDirectDebit"	=> $oDirectDebit->toStdClass(),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 			}
 		}

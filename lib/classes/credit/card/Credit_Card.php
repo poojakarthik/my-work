@@ -125,5 +125,12 @@ class Credit_Card extends ORM_Cached
 			return $arrPreparedStatements[$strStatement];
 		}
 	}
+	
+	public static function getMaskedCardNumber($sNonMaskedNumber)
+	{
+		return substr($sNonMaskedNumber, 0, 4).
+			preg_replace('/\d/', 'X', substr($sNonMaskedNumber, 4, strlen($sNonMaskedNumber) - 8)).
+			substr($sNonMaskedNumber, strlen($sNonMaskedNumber) - 4, 4);;
+	}
 }
 ?>
