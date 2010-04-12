@@ -3307,111 +3307,41 @@ div.popup-add-direct-debit > div.buttons
 
 /************************ END - Add Direct Debit PopUp - END ************************/
 
-/************************ START - Change Payment Method - START ************************/
+/************************ START - Change Payment Method Popup - START ************************/
 
 div.payment-methods
 {
 	padding	: 1em;
 }
 
-/*
-div.payment-methods > table> thead > tr > td
+li.payment-method-details
 {
-	text-indent			: 10px;
+	background-color		: #FFFFFF;
+	-moz-border-radius		: 1em;
+	-webkit-border-radius	: 1em;
+	position				: relative;
 }
 
-div.payment-methods > table> thead > tr > td span.payment-method-title
+li.payment-method-billing-types
 {
-	font-size			: 1.6em;
+	width	: 40%;
 }
 
-td.account-payment-methods-col-other
+li.payment-method-details
 {
-	width				: 16%;
-	text-align			: center;
-	font-size			: 1.6em !important;
-	margin-bottom		: 10px;
+	width	: 58%;
+	border	: solid 1px #34446A;
 }
 
-td.account-payment-methods-col-bank-accounts
+li.payment-method-details > div
 {
-	text-align			: center;
-	margin-bottom		: 10px;
-	border-left			: 1px solid #000000;
+	padding	: 1em;
 }
 
-td.account-payment-methods-col-credit-cards,
-td.account-payment-methods-col-bank-accounts
+li.payment-method-billing-types > div
 {
-	width	: 50%;
+	padding-top	: 1em;
 }
-
-td.account-payment-methods-col-bank-accounts > div,
-td.account-payment-methods-col-credit-cards > div
-{
-	text-align		: left;
-	margin-bottom	: 0.25em;
-}
-
-div.payment-method-item
-{
-	cursor	: pointer;
-}
-
-div.payment-method-item:hover
-{
-	background-color		: #FFFF99;
-	-moz-border-radius		: 0.5em;
-	-webkit-border-radius	: 0.5em;
-}
-
-ul.account-payment-method > li
-{
-	vertical-align		: top;
-	padding-left		: 5px;
-}
-
-div.payment-methods > div.account-payment-methods-buttons
-{
-	text-align	: center;
-}
-
-span.payment-method-label
-{
-	font-weight	: bold;
-}
-
-span.payment-method-label.dd
-{
-	width	: 7.5em;
-}
-
-span.payment-method-label.cc
-{
-	width	: 4.5em;
-}
-ul.payment-method-group > li > input[type="radio"]
-{
-	margin-right	: 1em;
-}
-
-li.account-payment-method-item-details
-{
-	width	: 90%;
-}
-
-li.account-payment-method-item-details > div
-{
-	width		: 100%;
-	position	: relative;
-}
-
-li.account-payment-method-item-details > div > img.archive-payment-method
-{
-	position	: absolute;
-	right		: 0em;
-}
-*/
 
 div.payment-method-details-info span.label,
 div.payment-method-details-info span.value
@@ -3434,13 +3364,13 @@ div.payment-method-details-info span.label.cc
 	width	: 7em;
 }
 
-div.payment-method-details-info span.expired
+span.payment-method-credit-card-expired
 {
 	color		: #cc0000;
 	font-weight	: bold;
 }
 
-div.payment-method-details-info span.valid
+span.payment-method-credit-card-valid
 {
 	color		: #008000;
 	font-weight	: bold;
@@ -3448,12 +3378,27 @@ div.payment-method-details-info span.valid
 
 div.billing-type
 {
-	margin	: 0.5em;
+	margin		: 0.5em 0em 0.5em 0.5em;
+	cursor		: pointer;
+	border		: solid 1px transparent;
+	position	: relative;
+	right		: -1px;
+}
+
+div.billing-type-selected
+{
+	background-color		: #FFFFFF;
+	-moz-border-radius		: 1em 0em 0em 1em;
+	-webkit-border-radius	: 1em 0em 0em 1em;
+	border-color			: #34446A #FFFFFF #34446A #34446A;
+	border-style			: solid none solid solid;
+	border-width			: 1px medium 1px 1px;
+	z-index					: 999;
 }
 
 div.billing-type > div.billing-type-summary
 {
-	margin-left	: 2em;
+	margin-left	: 1.5em;
 	margin-top	: 0.5em;
 }
 
@@ -3463,10 +3408,113 @@ div.payment-methods > div.payment-methods-buttons
 	margin-top	: 0.5em;
 }
 
-div.billing-type-option > button.icon-button
+div.payment-methods > div.section > div.section-content > ul.reset.horizontal > li
 {
-	float	: right;
+	height			: 16em;
+	vertical-align	: top;
 }
 
-/************************ END - Change Payment Method - END ************************/
+li.payment-method-details > div > button.icon-button
+{
+	position	: absolute;
+	right		: 0.25em;
+	bottom		: 0.25em;
+}
 
+div.payment-method-details-description
+{
+	padding-bottom	: 0.5em;
+}
+
+/************************ END - Change Payment Method Popup - END ************************/
+
+/************************ START - Choose Payment Method Popup - START ************************/
+
+div.payment-methods-list
+{
+	padding	: 1em;
+}
+
+div.payment-methods-list > div.section > div.section-content
+{
+	height				: 30.5em;
+	overflow-y			: scroll;
+	border				: 1px solid black;
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
+}
+
+div.payment-methods-list > div.section > div.section-content > ul
+{
+	margin	: 0em;
+}
+
+div.payment-methods-list > div.section > div.section-content > ul > li:nth-child(even)
+{
+	background-color	: rgba(150, 150, 150, 0.2);
+}
+
+div.payment-methods-list > div.section > div.section-content > ul > li:hover
+{
+	background-color	: #D3E4ED;
+}
+
+div.payment-methods-list > div.payment-methods-list-buttons
+{
+	text-align	: center;
+	margin-top	: 0.5em;
+}
+
+span.payment-methods-list-item-label,
+span.payment-methods-list-item-value
+{
+	display		: inline-block;
+}
+
+span.payment-methods-list-item-label
+{
+	font-weight	: bold;
+}
+
+span.payment-methods-list-item-label.dd
+{
+	width	: 9em;
+}
+
+span.payment-methods-list-item-label.cc
+{
+	width	: 7em;
+}
+
+ul.payment-methods-list-item
+{
+	padding-bottom	: 0.5em;
+	padding-top		: 0.5em;
+}
+
+ul.payment-methods-list-item > li
+{
+	vertical-align	: top;
+	position		: relative;
+}
+
+ul.payment-methods-list-item > li > div > img.archive-payment
+{
+	cursor		: pointer;
+	position	: absolute;
+	right		: 0em;
+	top			: 0.15em;
+}
+
+li.payment-methods-list-item-details
+{
+	width	: 88%;
+	cursor	: pointer;
+}
+
+input[type="radio"].payment-methods-list-item-radio
+{
+	margin	: 0.5em;
+}                                                        
+
+/************************ END - Choose Payment Method Popup - END ************************/

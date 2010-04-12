@@ -99,26 +99,7 @@ class JSON_Handler_Account extends JSON_Handler
 					
 					$oStdClassCreditCard->card_number	= $sCardNumber;
 					$oStdClassCreditCard->cvv			= $sCVV;
-					
-					/*
-					// Add expiry string & bExpired flag
-					$ExpiryMonth	= ($oCreditCard->ExpMonth < 10 ? "0{$oCreditCard->ExpMonth}" : $oCreditCard->ExpMonth);
-					$sExpiry		= "$ExpiryMonth/{$oCreditCard->ExpYear}";
-					$iExpiryTime	= strtotime(($ExpiryMonth + 1)."/01/{$oCreditCard->ExpYear}");
-					
-					if ($iExpiryTime <= time())
-					{
-						$oStdClassCreditCard->bExpired	= true;
-					}
-					else
-					{
-						$oStdClassCreditCard->bExpired	= false;
-					}
-					
-					$oStdClassCreditCard->expiry	= $sExpiry;
-					*/
-					
-					$aResult[]						= $oStdClassCreditCard;
+					$aResult[]							= $oStdClassCreditCard;
 				}
 			}
 			
@@ -211,26 +192,7 @@ class JSON_Handler_Account extends JSON_Handler
 						
 						$oStdClassCreditCard->card_number	= $sCardNumber;
 						$oStdClassCreditCard->cvv			= $sCVV;
-						
-						/*
-						// Add expiry string & bExpired flag
-						$ExpiryMonth	= ($oCreditCard->ExpMonth < 10 ? "0{$oCreditCard->ExpMonth}" : $oCreditCard->ExpMonth);
-						$sExpiry		= "$ExpiryMonth/{$oCreditCard->ExpYear}";
-						$iExpiryTime	= strtotime(($ExpiryMonth + 1)."/01/{$oCreditCard->ExpYear}");
-						
-						if ($iExpiryTime <= time())
-						{
-							$oStdClassCreditCard->bExpired	= true;
-						}
-						else
-						{
-							$oStdClassCreditCard->bExpired	= false;
-						}
-						
-						$oStdClassCreditCard->expiry	= $sExpiry;
-						*/
-						
-						$oPaymentMethod					= $oStdClassCreditCard;
+						$oPaymentMethod						= $oStdClassCreditCard;
 					}
 				}
 				else

@@ -63,7 +63,7 @@ class Credit_Card extends ORM_Cached
 	public static function getForAccountGroup($iAccountGroupId)
 	{
 		// Get result set
-		$oSelect	= new StatementSelect(self::$_strStaticTableName, "*", "AccountGroup = <AccountGroup> AND Archived = 0");
+		$oSelect	= new StatementSelect(self::$_strStaticTableName, "*", "AccountGroup = <AccountGroup> AND Archived = 0", "created_on DESC");
 		$oSelect->Execute(array('AccountGroup' => $iAccountGroupId));
 		
 		// Add to array and return
