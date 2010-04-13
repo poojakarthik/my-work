@@ -162,6 +162,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 									)
 								);
 				break;
+				
 			case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
 				var oRadioConfig	= {type: 'radio', name: 'account-payment-method', value: oPaymentMethod.Id, class: 'payment-methods-list-item-radio'}
 				
@@ -317,32 +318,41 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 	_refresh	: function()
 	{
 		// Refresh the list of payment methods
-		this.oLoading	= new Reflex_Popup.Loading('Please Wait');
+		this.oLoading	= new Reflex_Popup.Loading('Please Wait...');
 		this.oLoading.display();
+		this._getPaymentMethods	= jQuery.json.jsonFunction(this._populateList.bind(this), this._populateList.bind(this), 'Account', 'getPaymentMethods');
 		this._getPaymentMethods(this.iAccountId, this.iBillingType);
 	},
 	
 	_populateList	: function(oResponse)
 	{
-		// Clear existing list items
-		var aLIs	= this.oContent.select('div.section-content > ul.reset > li');
-		
-		for (var i = 0; i < aLIs.length; i++)
+		if (oResponse.Success)
 		{
-			aLIs[i].remove();
-		}
-		
-		// Add the new data
-		if (oResponse.aPaymentMethods)
-		{
-			for (var i = 0; i < oResponse.aPaymentMethods.length; i++)
+			// Clear existing list items
+			var aTRs	= this.oContent.select('div.section-content > table.reflex > tbody > tr');
+			
+			for (var i = 0; i < aTRs.length; i++)
 			{
-				this._createPaymentMethod(oResponse.aPaymentMethods[i]);
+				aTRs[i].remove();
 			}
+			
+			// Add the new data
+			if (oResponse.aPaymentMethods)
+			{
+				for (var i = 0; i < oResponse.aPaymentMethods.length; i++)
+				{
+					this._createPaymentMethod(oResponse.aPaymentMethods[i]);
+				}
+			}
+			
+			this.oLoading.hide();
+			delete this.oLoading; 
 		}
-		
-		this.oLoading.hide();
-		delete this.oLoading; 
+		else
+		{
+			// AJAX Error
+			this._ajaxError(oResponse);
+		}
 	},
 	
 	_archive	: function(iId, bConfirmed)
@@ -368,20 +378,32 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		else
 		{
 			// Popup text
-			var sPopupText	= '';
+			var sPopupName	= '';
 			
 			switch (this.iBillingType)
 			{
 				case Popup_Account_Select_Payment_Method.BILLING_TYPE_DIRECT_DEBIT:
-					sPopupText	= 'Bank Account';
+					sPopupName	= 'Bank Account';
 					break;
 				case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
-					sPopupText	= 'Credit Card';
+					sPopupName	= 'Credit Card';
 					break;
 			}
 			
+			if (iId == this.iPaymentMethodId)
+			{
+				mPopupText	=	$T.div( 	
+									$T.div('This ' + sPopupName + ' is the currently used by this account.'),
+									$T.div('Are you sure you want to archive it?')
+								);
+			}
+			else
+			{
+				mPopupText	= 'Do you wish to Archive this ' + sPopupName + '?';
+			}
+			
 			// Show yes/no confirm Popup
-			Reflex_Popup.yesNoCancel('Do you wish to Archive this ' + sPopupText + '?', {fnOnYes: this._archive.bind(this, iId, true)});
+			Reflex_Popup.yesNoCancel(mPopupText, {fnOnYes: this._archive.bind(this, iId, true), iWidth: 30});
 		}
 	},
 	
@@ -393,7 +415,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		
 		if (oResponse.Success)
 		{
-			// Archive successfull, refresh the list
+			// Archive successful, refresh the list
 			this._refresh();
 		}
 		else

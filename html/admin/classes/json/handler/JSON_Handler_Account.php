@@ -201,13 +201,26 @@ class JSON_Handler_Account extends JSON_Handler
 				}
 			}
 			
+			switch ($oAccount->BillingType)
+			{
+				case 1:	// DirectDebit
+					$iBillingDetail	= $oAccount->DirectDebit;
+					break;
+				case 2:	// Credit_Card
+					$iBillingDetail	= $oAccount->CreditCard;
+					break;
+				default:
+					$iBillingDetail = false;
+			}
+			
 			return 	array(
-						"Success"					=> true,
-						"strDebug"					=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : '',
-						"iBillingType"				=> $oAccount->BillingType,
-						"oPaymentMethod"			=> $oPaymentMethod,
-						"bHasCreditCard" 			=> $bHasCreditCard,
-						"bHasBankAccount" 			=> $bHasBankAccount
+						"Success"			=> true,
+						"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : '',
+						"iBillingType"		=> $oAccount->BillingType,
+						"oPaymentMethod"	=> $oPaymentMethod,
+						"bHasCreditCard" 	=> $bHasCreditCard,
+						"bHasBankAccount" 	=> $bHasBankAccount,
+						"iBillingDetail"	=> $iBillingDetail
 					);
 		}
 		catch (JSON_Handler_Account_Exception $oException)
