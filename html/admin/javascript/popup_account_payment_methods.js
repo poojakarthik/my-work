@@ -181,7 +181,15 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		// Clear the details
 		this._clearDetails();
 		
-		if (this.hCachedMethods[iBillingType])
+		// Check if it has expired, applies to credit cards only
+		var bExpired	= false;
+		
+		if ((iBillingType == Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD) && this.hCachedMethods[iBillingType].bExpired)
+		{
+			bExpired	= true;
+		}
+		
+		if (this.hCachedMethods[iBillingType] && !bExpired)
 		{
 			// Got payment method details cached for the billing type, Show the details
 			this._updateDetails(iBillingType, this.hCachedMethods[iBillingType]);

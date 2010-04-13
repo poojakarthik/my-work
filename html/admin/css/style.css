@@ -3548,12 +3548,23 @@ ul.payment-methods-list-item > li > div > img.archive-payment
 li.payment-methods-list-item-details
 {
 	width	: 88%;
-	cursor	: pointer;
 }
 
 input[type="radio"].payment-methods-list-item-radio
 {
 	margin-top	: 0.25em;
 }                                                        
+
+div.payment-methods-list div.section-content > table.reflex td.payment-method-credit-card-expired
+{
+	color		: #cc0000;
+	font-weight	: bold;
+}
+
+div.payment-methods-list div.section-content > table.reflex td.payment-method-credit-card-valid
+{
+	color		: #008000;
+	font-weight	: bold;
+}
 
 /************************ END - Choose Payment Method Popup - END ************************/

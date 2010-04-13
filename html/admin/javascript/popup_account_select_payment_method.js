@@ -65,7 +65,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 										$T.div({class: 'section-content section-content-fitted'},
 											$T.table({class: 'reflex highlight-rows'},
 												$T.thead(
-													// TH's added later
+													// th's added later
 												),
 												$T.tbody({class: 'alternating'})
 											)
@@ -165,17 +165,16 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 			case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
 				var oRadioConfig	= {type: 'radio', name: 'account-payment-method', value: oPaymentMethod.Id, class: 'payment-methods-list-item-radio'}
 				
-				if (oPaymentMethod.Id == this.iPaymentMethodId)
-				{
-					oRadioConfig.checked	= true;
-				}
-				
 				// Check the expiry date on the credit card
 				Popup_Account_Select_Payment_Method._checkCreditCardExpiry(oPaymentMethod);
 				
-				if (oPaymentMethod.bExpired)
+				if (oPaymentMethod.Id == this.iPaymentMethodId && !oPaymentMethod.bExpired)
 				{
-					oRadioConfig.disabled	= true;
+					oRadioConfig.checked	= true;
+				} 
+				else if (oPaymentMethod.bExpired)
+				{
+					oRadioConfig.style = 'display: none;';
 				}
 				
 				oItem	= 	$T.tr(
@@ -184,7 +183,9 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 								$T.td(oPaymentMethod.card_type_name),
 								$T.td(oPaymentMethod.card_number),
 								$T.td(oPaymentMethod.cvv),
-								$T.td(oPaymentMethod.expiry),
+								$T.td({class: 'payment-method-credit-card-' + (oPaymentMethod.bExpired ? 'expired' : 'valid')},
+									oPaymentMethod.expiry
+								),
 								$T.td(Popup_Account_Select_Payment_Method._formatDate(oPaymentMethod.created_on)),
 								$T.td(
 									$T.img({class: 'archive-payment', src: Popup_Account_Select_Payment_Method.CANCEL_IMAGE_SOURCE, alt: '', title: 'Archive'})
@@ -196,6 +197,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		// Add click event to the archive image
 		var oArchiveImage	= oItem.select('img.archive-payment').first();
 		oArchiveImage.observe('click', this._archive.bind(this, oPaymentMethod.Id, false));
+		var oRadio	= oItem.select('td > input[type="radio"]').first();
 		
 		if ((this.iBillingType != Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD) || !oPaymentMethod.bExpired)
 		{
@@ -203,6 +205,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 			// Add click event to the details
 			var oRadio	= oItem.select('td > input[type="radio"]').first();
 			oItem.observe('click', this._paymentMethodClick.bind(this, oRadio));
+			oItem.style.cursor	= 'pointer';
 		}
 		
 		oTBody.appendChild(oItem);
