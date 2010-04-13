@@ -3,7 +3,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, iAccountId, iBillingType, iPaymentMethodId, fnOnSelection, fnOnCancel)
 	{
-		$super(30);
+		$super(50);
 		
 		this.iAccountId			= iAccountId;
 		this.iBillingType		= iBillingType;
@@ -63,7 +63,13 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 											)
 										),
 										$T.div({class: 'section-content section-content-fitted'},
-											$T.ul({class: 'reset'})
+											//$T.ul({class: 'reset'})
+											$T.table({class: 'reflex highlight-rows'},
+												$T.thead(
+													// th's added later
+												),
+												$T.tbody({class: 'alternating'})
+											)
 										)
 									),
 									$T.div({class: 'payment-methods-list-buttons'},
@@ -88,6 +94,32 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 			var oAddButton	= this.oContent.select('div.section-header-options > button.icon-button').first();
 			oAddButton.observe('click', this._addNewPaymentMethod.bind(this));
 			
+			// Add the table headings
+			var oTHead		= this.oContent.select('div.section-content > table.reflex > thead').first();
+			var aHeadings	= [];
+			
+			switch (this.iBillingType)
+			{
+				case Popup_Account_Select_Payment_Method.BILLING_TYPE_DIRECT_DEBIT:
+					aHeadings	= ['Account Name', 'BSB #', 'Account #', 'Bank Name', 'Added'];
+					break;
+				case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
+					aHeadings	= ['Name', 'Type', 'Number', 'CVV', 'Expires', 'Added'];
+					break;
+			}
+			
+			// First column for radio button
+			oTHead.appendChild($T.th());
+			
+			for (var i = 0; i < aHeadings.length; i++)
+			{
+				oTHead.appendChild($T.th(aHeadings[i]));
+			}
+			
+			// One more for the archive image column
+			oTHead.appendChild($T.th());
+			
+			// Add the payment methods from the ajax response
 			for (var i = 0; i < oResponse.aPaymentMethods.length; i++)
 			{
 				this._createPaymentMethod(oResponse.aPaymentMethods[i]);
@@ -106,7 +138,8 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 	
 	_createPaymentMethod	: function(oPaymentMethod)
 	{
-		var oUL		= this.oContent.select('div.section-content > ul.reset').first();
+		//var oUL		= this.oContent.select('div.section-content > ul.reset').first();
+		var oTBody		= this.oContent.select('div.section-content > table.reflex > tbody').first();
 		var oItem	= null;
 		
 		switch (this.iBillingType)
@@ -119,7 +152,19 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 					oRadioConfig.checked	= true;
 				}
 				
-				oItem	= 	$T.li(
+				oItem	= 	$T.tr(
+								$T.td($T.input(oRadioConfig)),
+								$T.td(oPaymentMethod.AccountName),
+								$T.td(oPaymentMethod.BSB),
+								$T.td(oPaymentMethod.AccountNumber),
+								$T.td(oPaymentMethod.BankName),
+								$T.td(oPaymentMethod.created_on),
+								$T.td(
+									$T.img({class: 'archive-payment', src: Popup_Account_Select_Payment_Method.CANCEL_IMAGE_SOURCE, alt: '', title: 'Archive'})
+								)
+							);
+				
+				/*oItem	= 	$T.li(
 								$T.ul({class: 'horizontal reset payment-methods-list-item'},
 									$T.li(
 										$T.input(oRadioConfig)
@@ -168,7 +213,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 										)
 									)
 								)
-							);
+							);*/
 				break;
 			case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
 				var oRadioConfig	= {type: 'radio', name: 'account-payment-method', value: oPaymentMethod.Id, class: 'payment-methods-list-item-radio'}
@@ -186,7 +231,20 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 					oRadioConfig.disabled	= true;
 				}
 				
-				oItem	= 	$T.li(
+				oItem	= 	$T.tr(
+								$T.td($T.input(oRadioConfig)),
+								$T.td(oPaymentMethod.Name),
+								$T.td(oPaymentMethod.card_type_name),
+								$T.td(oPaymentMethod.card_number),
+								$T.td(oPaymentMethod.cvv),
+								$T.td(oPaymentMethod.expiry),
+								$T.td(oPaymentMethod.created_on),
+								$T.td(
+									$T.img({class: 'archive-payment', src: Popup_Account_Select_Payment_Method.CANCEL_IMAGE_SOURCE, alt: '', title: 'Archive'})
+								)
+							);
+				
+				/*oItem	= 	$T.li(
 								$T.ul({class: 'horizontal reset payment-methods-list-item'},
 									$T.li(
 										$T.input(oRadioConfig)
@@ -243,7 +301,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 										)
 									)
 								)
-							); 
+							); */
 				break;
 		}
 		
@@ -255,12 +313,15 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		{
 			// Either a bank account or a valid credit card
 			// Add click event to the details
-			var oDetailsLI	= oItem.select('li.payment-methods-list-item-details').first();
-			var oRadio		= oItem.select('ul.payment-methods-list-item > li > input[type="radio"]').first();
-			oDetailsLI.observe('click', this._paymentMethodClick.bind(this, oRadio));
+//			var oDetailsLI	= oItem.select('li.payment-methods-list-item-details').first();
+//			var oRadio		= oItem.select('ul.payment-methods-list-item > li > input[type="radio"]').first();
+//			oDetailsLI.observe('click', this._paymentMethodClick.bind(this, oRadio));
+			var oRadio	= oItem.select('td > input[type="radio"]').first();
+			oItem.observe('click', this._paymentMethodClick.bind(this, oRadio));
 		}
 		
-		oUL.appendChild(oItem);
+		//oUL.appendChild(oItem);
+		oTBody.appendChild(oItem);
 		this.hPaymentMethods[oPaymentMethod.Id]	= oPaymentMethod;
 	},
 	

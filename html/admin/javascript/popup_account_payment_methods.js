@@ -66,7 +66,8 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 										$T.div({class: 'section-content'},
 											$T.ul({class: 'reset horizontal'},
 												$T.li({class: 'payment-method-billing-types'},
-													$T.div()
+													//$T.div()
+													$T.ul({class: 'reset'})
 												),
 												$T.li({class: 'payment-method-details'},
 													$T.div(
@@ -152,18 +153,20 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 	
 	_addBillingType	: function(iBillingType)
 	{
-		var oDom	= 	$T.div({class: 'billing-type'},
+		// Using divs
+		var sName	= Popup_Account_Payment_Methods.BILLING_TYPE_NAME[iBillingType];
+		var oDom	= 	$T.li({class: 'billing-type'},
 							$T.input({type: 'radio', name: 'billing-type-option', value: iBillingType}),
-							$T.span(Popup_Account_Payment_Methods.BILLING_TYPE_NAME[iBillingType])
+							$T.img({src: Popup_Account_Payment_Methods.BILLING_TYPE_IMAGE[iBillingType], alt: sName, title: sName}),
+							$T.span(sName)
 						);
-		
 		// Events
 		var oRadio	= oDom.select('input[type="radio"]').first();
 		oRadio.observe('click', this._billingTypeSelected.bind(this, oRadio));
 		oDom.observe('click', this._selectBillingType.bind(this, iBillingType));
 		
 		// Attach element
-		var oSectionContent	= this.oContent.select('li.payment-method-billing-types > div').first();
+		var oSectionContent	= this.oContent.select('li.payment-method-billing-types > ul.reset').first();
 		oSectionContent.appendChild(oDom);
 		
 		// Cache the radio
@@ -547,6 +550,12 @@ hDescription[Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT]	= 'Money o
 hDescription[Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD]	= 'Money owed is automatically charged to the following credit card.';
 hDescription[Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE]		= 'Money owed is to be paid upon recieving the invoice.';
 Popup_Account_Payment_Methods.BILLING_TYPE_DESCRIPTION					= hDescription;
+
+var hImage	= {};
+hImage[Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT]	= '../admin/img/template/bank_transfer.png';
+hImage[Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD]	= '../admin/img/template/credit_card.png';
+hImage[Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE]		= '../admin/img/template/money.png';
+Popup_Account_Payment_Methods.BILLING_TYPE_IMAGE				= hImage;
 
 Popup_Account_Payment_Methods._checkCreditCardExpiry	= function(oCreditCard)
 {
