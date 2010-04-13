@@ -435,6 +435,49 @@ class Application_Handler_Invoice extends Application_Handler
 		}
 	}
 	
+	public function PDF($subPath)
+	{
+		try
+		{
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
+			{
+				throw new Exception('You do not have permission to view this PDF.');
+			}
+			
+			if (!isset($subPath[0]))
+			{
+				throw new Exception('Invalid arguments passed to page');
+			}
+			
+			$iInvoiceId	= $subPath[0];
+			$oInvoice	= Invoice::getForId($iInvoiceId);
+			$iDate 		= strtotime("-1 month", strtotime($oInvoice->CreatedOn));
+			$iYear 		= (int)date("Y", $iDate);
+			$iMonth 	= (int)date("m", $iDate);
+			
+			// Try to pull the Invoice PDF
+			$sInvoice 	= GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iInvoiceId, $oInvoice->invoice_run_id);
+			
+			if (!$sInvoice)
+			{
+				throw new Exception("PDF Not Found");
+			}
+		
+			$sInvoiceFilename = GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $iInvoiceId, $oInvoice->invoice_run_id);
+	
+			header("Content-Type: application/pdf");
+			header("Content-Disposition: attachment; filename=\"$sInvoiceFilename\"");
+			echo $sInvoice;
+			exit;
+		}
+		catch (Exception $e)
+		{
+			$aDetailsToRender['Message'] = "An error occured when trying to retrieve the PDF";
+			$aDetailsToRender['ErrorMessage'] = $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
+		}
+	}
+	
 	public function InterimEligibilityReport($subPath)
 	{
 		// DEBUG
