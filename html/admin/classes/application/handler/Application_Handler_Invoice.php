@@ -444,26 +444,26 @@ class Application_Handler_Invoice extends Application_Handler
 				throw new Exception('You do not have permission to view this PDF.');
 			}
 			
-			if (!isset($subPath[0]))
+			if (!isset($subPath[0]) || !isset($_GET['Account']) || !isset($_GET['Invoice_Run_Id']) || !isset($_GET['Year']) || !isset($_GET['Month']))
 			{
 				throw new Exception('Invalid arguments passed to page');
 			}
 			
-			$iInvoiceId	= $subPath[0];
-			$oInvoice	= Invoice::getForId($iInvoiceId);
-			$iDate 		= strtotime("-1 month", strtotime($oInvoice->CreatedOn));
-			$iYear 		= (int)date("Y", $iDate);
-			$iMonth 	= (int)date("m", $iDate);
+			$iInvoiceId		= $subPath[0];
+			$iAccountId		= $_GET['Account'];
+			$iInvoiceRunId	= $_GET['Invoice_Run_Id'];
+			$iYear 			= $_GET['Year'];
+			$iMonth 		= $_GET['Month'];
 			
 			// Try to pull the Invoice PDF
-			$sInvoice 	= GetPDFContent($oInvoice->Account, $iYear, $iMonth, $iInvoiceId, $oInvoice->invoice_run_id);
+			$sInvoice 		= GetPDFContent($iAccountId, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);
 			
 			if (!$sInvoice)
 			{
 				throw new Exception("PDF Not Found");
 			}
 		
-			$sInvoiceFilename = GetPdfFilename($oInvoice->Account, $iYear, $iMonth, $iInvoiceId, $oInvoice->invoice_run_id);
+			$sInvoiceFilename = GetPdfFilename($iAccountId, $iYear, $iMonth, $iInvoiceId, $iInvoiceRunId);
 	
 			header("Content-Type: application/pdf");
 			header("Content-Disposition: attachment; filename=\"$sInvoiceFilename\"");

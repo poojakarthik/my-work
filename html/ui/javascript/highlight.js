@@ -17,23 +17,26 @@ function VixenHighlightClass()
 {
 	this.Unselect = function(strTableId)
 	{
-		// Remove all highlighting/selection from a table
-		for (var i=0; i < Vixen.table[strTableId].totalRows; i++)
+		if (Vixen.table[strTableId])
 		{
-			var elmRowUnselect = $ID(strTableId + '_' + i);
-			
-			// Change the class back to even/odd
-			if (elmRowUnselect.intRowIndex % 2)
+			// Remove all highlighting/selection from a table
+			for (var i=0; i < Vixen.table[strTableId].totalRows; i++)
 			{
-				elmRowUnselect.className = "Even";
+				var elmRowUnselect = $ID(strTableId + '_' + i);
+				
+				// Change the class back to even/odd
+				if (elmRowUnselect.intRowIndex % 2)
+				{
+					elmRowUnselect.className = "Even";
+				}
+				else
+				{
+					elmRowUnselect.className = "Odd";
+				}
+				// Deselect the row
+				Vixen.table[strTableId].row[i].selected = false;
+				Vixen.table[strTableId].row[i].primarySelected = false;
 			}
-			else
-			{
-				elmRowUnselect.className = "Odd";
-			}
-			// Deselect the row
-			Vixen.table[strTableId].row[i].selected = false;
-			Vixen.table[strTableId].row[i].primarySelected = false;
 		}
 	}
 	

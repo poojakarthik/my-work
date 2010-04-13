@@ -2147,13 +2147,13 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewInvoicePDF($intAccount, $intYear, $intMonth, $intInvoiceId, $intInvoiceRun = "") 
+	function ViewInvoicePDF($iAccount, $iYear, $iMonth, $iInvoiceId, $iInvoiceRun = "") 
 	{
 		$this->strContextMenuLabel = "";
 
-		$this->strLabel = "pdf acct: $intAccount, $intInvoiceId/$intInvoiceRun";
+		$this->strLabel = "pdf acct: $iAccount, $iInvoiceId/$iInvoiceRun";
 		//return self :: OLD_FRAMEWORK . "invoice_pdf.php?Account=$intAccount&Invoice=$intInvoiceId&invoice_run_id=$intInvoiceRun&Year=$intYear&Month=$intMonth";
-		return self :: NEW_FRAMEWORK . "reflex.php/Invoice/PDF/{$intInvoiceId}/";
+		return self :: NEW_FRAMEWORK . "reflex.php/Invoice/PDF/{$iInvoiceId}/?Account=$iAccount&Invoice_Run_Id=$iInvoiceRun&Year=$iYear&Month=$iMonth";
 	}
 
 	//------------------------------------------------------------------------//
