@@ -106,9 +106,9 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 			this.oChangeButton.observe('click', this._changePaymentMethodForBillingType.bind(this));
 			
 			// Add a radio option for each billing type
+			this._addBillingType(Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE);
 			this._addBillingType(Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT);
 			this._addBillingType(Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD);
-			this._addBillingType(Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE);
 			
 			// Select the current payment method
 			this.iCurrentBillingType	= oResponse.iBillingType;
@@ -310,7 +310,7 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 										'Added: '
 									),
 									$T.span({class: 'value'},
-										oPaymentMethod.created_on
+										Popup_Account_Payment_Methods._formatDate(oPaymentMethod.created_on)
 									)
 								)
 							);
@@ -367,7 +367,7 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 										'Added: '
 									),
 									$T.span({class: 'value'},
-										oPaymentMethod.created_on
+										Popup_Account_Payment_Methods._formatDate(oPaymentMethod.created_on)
 									)
 								)
 							);
@@ -445,7 +445,7 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		
 		// Load js file
 		JsAutoLoader.loadScript(
-			'javascript/popup_account_select_payment_method.js', 
+			['javascript/popup_account_select_payment_method.js','reflex_date_format.js'], 
 			fnShow.bind(this, iBillingType, iPreviousBillingType)
 		);
 	},
@@ -570,4 +570,7 @@ Popup_Account_Payment_Methods._checkCreditCardExpiry	= function(oCreditCard)
 	oCreditCard.bExpired	= !(year > curr_year || (year == curr_year && month >= curr_month));
 };
 
-
+Popup_Account_Payment_Methods._formatDate	= function(sDate)
+{
+	return Reflex_Date_Format.format('j/n/Y', Date.parse(sDate.replace(/-/g, '/')) / 1000);
+}

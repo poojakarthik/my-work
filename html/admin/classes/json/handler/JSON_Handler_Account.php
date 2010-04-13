@@ -230,6 +230,19 @@ class JSON_Handler_Account extends JSON_Handler
 	
 	public function setPaymentMethod($iAccountId, $iBillingType, $iBillingDetail)
 	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? 'There was an error accessing the database' : '',
+						"strDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
+					);
+		}
+		
 		try
 		{
 			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
@@ -239,6 +252,29 @@ class JSON_Handler_Account extends JSON_Handler
 			
 			// Update billing type
 			$oAccount				= Account::getForId($iAccountId);
+			
+			// Get the old billing type description
+			$sOldBillingType	= '';
+			
+			switch ($oAccount->BillingType)
+			{
+				case 1:	// DirectDebit
+					$oDirectDebit		= DirectDebit::getForId($oAccount->DirectDebit);
+					$sOldBillingType	= 	"Direct Debit from Bank Account\n".
+											"Account Name: {$oDirectDebit->AccountName}\n".
+											"Account Number: {$oDirectDebit->AccountNumber}";
+					break;
+				case 2:	// CreditCard
+					$oCreditCard		= Credit_Card::getForId($oAccount->CreditCard);
+					$sOldBillingType	= 	"Direct Debit from Credit Card\n".
+											"Card Name: {$oCreditCard->Name}\n".
+											"Card Number: XXXXXXXXXXXX".substr(Decrypt($oCreditCard->CardNumber), -4);
+					break;
+				case 3:	// Invoice
+					$sOldBillingType	= 'Invoice';
+					break;
+			}
+			
 			$oAccount->BillingType	= $iBillingType;
 			
 			// Reset detail values first
@@ -246,22 +282,37 @@ class JSON_Handler_Account extends JSON_Handler
 			$oAccount->CreditCard	= null;
 			
 			// Update proper detail field
+			$sNewBillingType	= '';
 			switch ($iBillingType)
 			{
 				case 1:	// DirectDebit
 					$oAccount->DirectDebit	= $iBillingDetail;
+					$oDirectDebit			= DirectDebit::getForId($iBillingDetail);
+					$sNewBillingType		= 	"Direct Debit from Bank Account\n".
+												"Account Name: {$oDirectDebit->AccountName}\n".
+												"Account Number: {$oDirectDebit->AccountNumber}";
 					break;
 				case 2:	// CreditCard
 					$oAccount->CreditCard	= $iBillingDetail;
+					$oCreditCard			= Credit_Card::getForId($iBillingDetail);
+					$sNewBillingType		= 	"Direct Debit from Credit Card\n".
+												"Card Name: {$oCreditCard->Name}\n".
+												"Card Number: XXXXXXXXXXXX".substr(Decrypt($oCreditCard->CardNumber), -4);
 					break;
 				case 3:	// Invoice
-					// Nothing
+					$sNewBillingType		= 'Invoice';
 					break;
 			}
 			
 			$oAccount->save();
 			
+			// Add a note
+			$sNote = "Payment method changed from:\n $sOldBillingType\n to $sNewBillingType";
+			Note::createNote(SYSTEM_NOTE_TYPE, $sNote, Flex::getUserId(), $iAccountId);				
+			
 			// All good
+			$oDataAccess->TransactionCommit();
+			
 			return 	array(
 						"Success"	=> true,
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
@@ -269,6 +320,8 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 		catch (JSON_Handler_Account_Exception $oException)
 		{
+			$oDataAccess->TransactionRollback();
+			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage(),
@@ -277,6 +330,8 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
+			$oDataAccess->TransactionRollback();
+			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',

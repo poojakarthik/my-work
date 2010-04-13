@@ -3324,13 +3324,15 @@ li.payment-method-details
 
 li.payment-method-billing-types
 {
-	width	: 40%;
+	width	: 45%;
 }
 
 li.payment-method-details
 {
-	width	: 58%;
-	border	: solid 1px #34446A;
+	width				: 55%;
+	border				: solid 1px #34446A;
+	-moz-box-sizing		: border-box;
+	-webkit-box-sizing	: border-box;
 }
 
 li.payment-method-details > div
@@ -3421,6 +3423,7 @@ li.billing-type-selected
 	background-color		: #FFFFFF;
 	border-color			: #34446A #FFFFFF #34446A #34446A;
 	z-index					: 999;
+	font-weight				: bold;
 }
 
 li.billing-type-selected:hover
@@ -3457,6 +3460,7 @@ li.payment-method-details > div > button.icon-button
 div.payment-method-details-description
 {
 	padding-bottom	: 0.5em;
+	font-style		: italic;
 }
 
 /************************ END - Change Payment Method Popup - END ************************/

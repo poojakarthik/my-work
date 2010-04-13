@@ -1196,7 +1196,7 @@ class MenuItems {
 		$this->strLabel = "Change Payment Method";
 		$this->strContextMenuLabel = "";
 		// return self :: OLD_FRAMEWORK . "account_payment.php?Id=$intAccountId";
-		return "javascript:JsAutoLoader.loadScript('javascript/popup_account_payment_methods.js', function(){new Popup_Account_Payment_Methods({$iAccountId})});";
+		return "javascript:JsAutoLoader.loadScript(['javascript/popup_account_payment_methods.js','reflex_date_format.js'], function(){new Popup_Account_Payment_Methods({$iAccountId})});";
 	}
 	
 	//------------------------------------------------------------------------//

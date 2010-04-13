@@ -63,10 +63,9 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 											)
 										),
 										$T.div({class: 'section-content section-content-fitted'},
-											//$T.ul({class: 'reset'})
 											$T.table({class: 'reflex highlight-rows'},
 												$T.thead(
-													// th's added later
+													// TH's added later
 												),
 												$T.tbody({class: 'alternating'})
 											)
@@ -138,8 +137,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 	
 	_createPaymentMethod	: function(oPaymentMethod)
 	{
-		//var oUL		= this.oContent.select('div.section-content > ul.reset').first();
-		var oTBody		= this.oContent.select('div.section-content > table.reflex > tbody').first();
+		var oTBody	= this.oContent.select('div.section-content > table.reflex > tbody').first();
 		var oItem	= null;
 		
 		switch (this.iBillingType)
@@ -152,68 +150,17 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 					oRadioConfig.checked	= true;
 				}
 				
-				oItem	= 	$T.tr(
-								$T.td($T.input(oRadioConfig)),
-								$T.td(oPaymentMethod.AccountName),
-								$T.td(oPaymentMethod.BSB),
-								$T.td(oPaymentMethod.AccountNumber),
-								$T.td(oPaymentMethod.BankName),
-								$T.td(oPaymentMethod.created_on),
-								$T.td(
-									$T.img({class: 'archive-payment', src: Popup_Account_Select_Payment_Method.CANCEL_IMAGE_SOURCE, alt: '', title: 'Archive'})
-								)
-							);
-				
-				/*oItem	= 	$T.li(
-								$T.ul({class: 'horizontal reset payment-methods-list-item'},
-									$T.li(
-										$T.input(oRadioConfig)
-									),
-									$T.li({class: 'payment-methods-list-item-details'},
-										$T.div(
-											$T.span({class: 'payment-methods-list-item-label dd'},
-												'Account Name: '
-											),
-											$T.span({class: 'payment-methods-list-item-value'},
-												oPaymentMethod.AccountName
-											),
-											$T.img({class: 'archive-payment', src: Popup_Account_Select_Payment_Method.CANCEL_IMAGE_SOURCE, alt: '', title: 'Archive'})
-										),
-										$T.div(
-											$T.span({class: 'payment-methods-list-item-label dd'},
-												'BSB #'
-											),
-											$T.span({class: 'payment-methods-list-item-value'},
-												oPaymentMethod.BSB
-											)
-										),
-										$T.div(
-											$T.span({class: 'payment-methods-list-item-label dd'},
-												'Account #'
-											),
-											$T.span({class: 'payment-methods-list-item-value'},
-												oPaymentMethod.AccountNumber
-											)
-										),
-										$T.div(
-											$T.span({class: 'payment-methods-list-item-label dd'},
-												'Bank Name: '
-											),
-											$T.span({class: 'payment-methods-list-item-value'},
-												oPaymentMethod.BankName
-											)
-										),
-										$T.div(
-											$T.span({class: 'payment-methods-list-item-label dd'},
-												'Added: '
-											),
-											$T.span({class: 'payment-methods-list-item-value'},
-												oPaymentMethod.created_on
-											)
-										)
+				oItem		= 	$T.tr(
+									$T.td($T.input(oRadioConfig)),
+									$T.td(oPaymentMethod.AccountName),
+									$T.td(oPaymentMethod.BSB),
+									$T.td(oPaymentMethod.AccountNumber),
+									$T.td(oPaymentMethod.BankName),
+									$T.td(Popup_Account_Select_Payment_Method._formatDate(oPaymentMethod.created_on)),
+									$T.td(
+										$T.img({class: 'archive-payment', src: Popup_Account_Select_Payment_Method.CANCEL_IMAGE_SOURCE, alt: '', title: 'Archive'})
 									)
-								)
-							);*/
+								);
 				break;
 			case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
 				var oRadioConfig	= {type: 'radio', name: 'account-payment-method', value: oPaymentMethod.Id, class: 'payment-methods-list-item-radio'}
@@ -238,70 +185,11 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 								$T.td(oPaymentMethod.card_number),
 								$T.td(oPaymentMethod.cvv),
 								$T.td(oPaymentMethod.expiry),
-								$T.td(oPaymentMethod.created_on),
+								$T.td(Popup_Account_Select_Payment_Method._formatDate(oPaymentMethod.created_on)),
 								$T.td(
 									$T.img({class: 'archive-payment', src: Popup_Account_Select_Payment_Method.CANCEL_IMAGE_SOURCE, alt: '', title: 'Archive'})
 								)
 							);
-				
-				/*oItem	= 	$T.li(
-								$T.ul({class: 'horizontal reset payment-methods-list-item'},
-									$T.li(
-										$T.input(oRadioConfig)
-									),
-									$T.li({class: 'payment-methods-list-item-details'},
-										$T.div(
-											$T.span({class: 'payment-methods-list-item-label cc'},
-												'Name: '
-											),
-											$T.span({class: 'payment-methods-list-item-value'},
-												oPaymentMethod.Name
-											),
-											$T.img({class: 'archive-payment', src: Popup_Account_Select_Payment_Method.CANCEL_IMAGE_SOURCE, alt: '', title: 'Archive'})
-										),
-										$T.div(
-											$T.span({class: 'payment-methods-list-item-label cc'},
-												'Type: '
-											),
-											$T.span({class: 'payment-methods-list-item-value'},
-												oPaymentMethod.card_type_name
-											)
-										),
-										$T.div(
-											$T.span({class: 'payment-methods-list-item-label cc'},
-												'Number: '
-											),
-											$T.span({class: 'payment-methods-list-item-value'},
-												oPaymentMethod.card_number
-											)
-										),
-										$T.div(
-											$T.span({class: 'payment-methods-list-item-label cc'},
-												'CVV: '
-											),
-											$T.span({class: 'payment-methods-list-item-value'},
-												oPaymentMethod.cvv
-											)
-										),
-										$T.div(
-											$T.span({class: 'payment-methods-list-item-label cc'},
-												'Expires: '
-											),
-											$T.span({class: 'payment-methods-list-item-value payment-method-credit-card-' + (oPaymentMethod.bExpired ? 'expired' : 'valid')},
-												oPaymentMethod.expiry
-											)
-										),
-										$T.div(
-											$T.span({class: 'payment-methods-list-item-label cc'},
-												'Added: '
-											),
-											$T.span({class: 'payment-methods-list-item-value'},
-												oPaymentMethod.created_on
-											)
-										)
-									)
-								)
-							); */
 				break;
 		}
 		
@@ -313,14 +201,10 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		{
 			// Either a bank account or a valid credit card
 			// Add click event to the details
-//			var oDetailsLI	= oItem.select('li.payment-methods-list-item-details').first();
-//			var oRadio		= oItem.select('ul.payment-methods-list-item > li > input[type="radio"]').first();
-//			oDetailsLI.observe('click', this._paymentMethodClick.bind(this, oRadio));
 			var oRadio	= oItem.select('td > input[type="radio"]').first();
 			oItem.observe('click', this._paymentMethodClick.bind(this, oRadio));
 		}
 		
-		//oUL.appendChild(oItem);
 		oTBody.appendChild(oItem);
 		this.hPaymentMethods[oPaymentMethod.Id]	= oPaymentMethod;
 	},
@@ -544,3 +428,8 @@ Popup_Account_Select_Payment_Method._checkCreditCardExpiry	= function(oCreditCar
 	oCreditCard.expiry		= (month < 10 ? '0' + month : month) + '/' + year;
 	oCreditCard.bExpired	= !(year > curr_year || (year == curr_year && month >= curr_month));
 };
+
+Popup_Account_Select_Payment_Method._formatDate	= function(sDate)
+{
+	return Reflex_Date_Format.format('j/n/Y', Date.parse(sDate.replace(/-/g, '/')) / 1000);
+}
