@@ -67,6 +67,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		// Load all java script specific to the page here
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("retractable");
+		$this->LoadJavascript("reflex_anchor");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -130,12 +131,15 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 //*/
 		
 		$qryQuery		= new Query();
+		$aInvoiceIds	= array();
+		
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
 			$bolIsSample = !is_numeric($dboInvoice->Status->Value);
 			
 			if (!$bolIsSample || $bolUserHasViewPerm)
 			{
+				$aInvoiceIds[] = $dboInvoice->Id->Value;
 			
 				// Build the links 
 				$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
@@ -197,12 +201,14 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				if ($bolUserHasViewPerm && $dboInvoice->CreatedOn->Value > $strCDRCutoffDate)
 				{
 					// Build the "View Invoice Details" link
-					$strViewInvoiceHref		= "javascript:JsAutoLoader.loadScript('javascript/popup_invoice_view.js', function(){new Popup_Invoice_View({$dboInvoice->Id->Value});});";
+					//$strViewInvoiceHref		= "JsAutoLoader.loadScript('javascript/popup_invoice_view.js', function(){new Popup_Invoice_View({$dboInvoice->Id->Value});});";
+					$strViewInvoiceHref		= "window.location.hash = '#Invoice/{$dboInvoice->Id->Value}/View/'";
+					//#Invoice/{$dboInvoice->Id->Value}/View/
 					$strViewInvoiceLabel	= "<a onclick=\"$strViewInvoiceHref\"><img src='img/template/invoice.png' title='View Invoice Details' /></a>";
 					
 					// Build the "Export Invoice as CSV" link
 					$strExportCSV = Href()->ExportInvoiceAsCSV($dboInvoice->Id->Value);
-					$strExportCSV = "<a href='$strExportCSV'><img src='img/template/export.png' title='Export as CSV' /></a>";
+					$strExportCSV = "<a name='test' href='$strExportCSV'><img src='img/template/export.png' title='Export as CSV' /></a>";
 				}
 	
 				// Calculate Invoice Amount
@@ -251,6 +257,32 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				Table()->InvoiceTable->AddIndex("invoice_run_id", $dboInvoice->invoice_run_id->Value);
 			}
 		}
+		
+		// Javascript that sets up anchor change listeners, for the 'invoice view' links
+		echo "
+		<script type='text/javascript'>
+			function anchorCallback(iInvoiceId)
+			{
+				JsAutoLoader.loadScript(
+					'javascript/popup_invoice_view.js', 
+					function()
+					{
+						new Popup_Invoice_View(iInvoiceId);
+					}
+				);
+			}
+			
+			var oAnchor	= Reflex_Anchor.getInstance();
+		";
+		
+		foreach ($aInvoiceIds as $iInvoiceId)
+		{
+			echo "oAnchor.registerCallback('Invoice/$iInvoiceId/View/', anchorCallback.curry($iInvoiceId), true);";
+		}
+		
+		echo "
+		</script>
+		";	
 		
 		if (Table()->InvoiceTable->RowCount() == 0)
 		{

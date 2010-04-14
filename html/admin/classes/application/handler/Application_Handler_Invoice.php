@@ -97,7 +97,7 @@ class Application_Handler_Invoice extends Application_Handler
 			BreadCrumb()->EmployeeConsole();
 			BreadCrumb()->AccountOverview($intAccountId, true);
 			BreadCrumb()->InvoicesAndPayments($intAccountId);
-			BreadCrumb()->ViewInvoice($intInvoiceId);
+			BreadCrumb()->ViewInvoice($intInvoiceId, $intAccountId);
 			BreadCrumb()->SetCurrentPage("Service: $fnn");
 			AppTemplateAccount::BuildContextMenu($intAccountId);
 			

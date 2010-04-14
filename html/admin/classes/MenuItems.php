@@ -2198,11 +2198,13 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewInvoice($intInvoice) {
-		$this->strContextMenuLabel = "";
-
-		$this->strLabel = "Invoice: $intInvoice";
-		return self :: OLD_FRAMEWORK . "invoice_view.php?Invoice=$intInvoice";
+	function ViewInvoice($iInvoice, $iAccountId) {
+		// The function now returns the url of the invoices and payments page 
+		// because the invoice view page is now a popup.
+		$this->strContextMenuLabel 	= "";
+		$this->strLabel 			= "Invoice: $iInvoice";
+		//return self :: OLD_FRAMEWORK . "invoice_view.php?Invoice=$iInvoice";
+		return self :: NEW_FRAMEWORK . "flex.php/Account/InvoicesAndPayments/?Account.Id={$iAccountId}#Invoice/{$iInvoice}/View/";
 	}
 
 	//------------------------------------------------------------------------//
