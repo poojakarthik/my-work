@@ -5,8 +5,6 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
-		
-		//$this->LoadJavascript("employee_message");
 	}
 
 	public function Render()
@@ -15,10 +13,16 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 
 		$this->renderAdjustments($this->mxdDataToRender['Adjustments']);
 
-		$this->renderCDRs($this->mxdDataToRender['CDRs'], $this->mxdDataToRender['RecordTypes'], $this->mxdDataToRender['filter'], $this->mxdDataToRender['Invoice']);
+		$this->renderCDRs(
+			$this->mxdDataToRender['CDRs'], 
+			$this->mxdDataToRender['RecordTypes'], 
+			$this->mxdDataToRender['filter'], 
+			$this->mxdDataToRender['Invoice'],
+			$this->mxdDataToRender['ServiceType']
+		);
 	}
 
-	private function tidyAmount($amount, $bolIsCredit=false)
+	public static function tidyAmount($amount, $bolIsCredit=false)
 	{
 		if ($bolIsCredit && ($amount > 0.000000))
 		{
@@ -35,7 +39,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		return $amount;
 	}
 	
-	private function tidyDateTime($strDateTime)
+	public static function tidyDateTime($strDateTime)
 	{
 		$parts = explode(' ', $strDateTime);
 		$date = explode('-', $parts[0]);
@@ -43,7 +47,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		return date('D, M d, Y h:i:s a', mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]));
 	}
 
-	private function renderCDRs($arrCDRs, $arrRecordTypes, $arrCurrentFilter, $arrInvoice)
+	public static function renderCDRs($arrCDRs, $arrRecordTypes, $arrCurrentFilter, $arrInvoice=null, $iServiceType)
 	{
 		$rt = $arrCurrentFilter['recordType'] === NULL ? NULL : intval($arrCurrentFilter['recordType']);
 
@@ -125,7 +129,16 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 			//$date = explode('-', $adjustment['StartDatetime']);
 			//$date  = date('l, M d, Y', mktime(0, 0, 0, $date[1], $date[2], $date[0]));
 			$nr++;
-			$url = Href()->ViewInvoicedCDR($arrInvoice['ServiceTotal'], $arrInvoice['InvoiceRunId'], $cdr['Id']);
+			
+			if (is_null($arrInvoice))
+			{
+				$url	= Href()->ViewCDRDetails($cdr['Id']); 
+			}
+			else
+			{
+				$url 	= Href()->ViewInvoicedCDR($arrInvoice['ServiceTotal'], $arrInvoice['InvoiceRunId'], $cdr['Id']);
+			}
+			
 			echo "
 		<tr$className>
 			<td>" . htmlspecialchars($nr) . "</td>
@@ -141,15 +154,15 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 
 				case RECORD_DISPLAY_DATA:
 					echo "
-			<td colspan=2>". htmlspecialchars($this->tidyDateTime($cdr['StartDatetime'])) ."</td>
+			<td colspan=2>". htmlspecialchars(self::tidyDateTime($cdr['StartDatetime'])) ."</td>
 			<td style='text-align:right'>{$cdr['Units']}</td>
 			<td>". GetConstantDescription($arrRecordTypes[$cdr['RecordTypeId']]['DisplayType'], 'DisplayTypeSuffix') ."</td>";
 					break;
 
 				default:
 					echo "
-			<td>" . htmlspecialchars($this->tidyDateTime($cdr['StartDatetime'])) . "</td>
-			<td>" . htmlspecialchars(($arrInvoice['ServiceType'] == SERVICE_TYPE_INBOUND) ? $cdr['Source'] : $cdr['Destination']) . "</td>
+			<td>" . htmlspecialchars(self::tidyDateTime($cdr['StartDatetime'])) . "</td>
+			<td>" . htmlspecialchars(($iServiceType == SERVICE_TYPE_INBOUND) ? $cdr['Source'] : $cdr['Destination']) . "</td>
 			<td style='text-align:right'>{$cdr['Units']}</td>
 			<td>". GetConstantDescription($arrRecordTypes[$cdr['RecordTypeId']]['DisplayType'], 'DisplayTypeSuffix') ."</td>";
 					break;
@@ -158,7 +171,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 			$bolIsCredit = ($cdr['Credit'] == 1)? true : false;
 			
 			echo "
-			<td class='amount'>" . htmlspecialchars($this->tidyAmount($cdr['Charge'], $bolIsCredit)) . "</td>
+			<td class='amount'>" . htmlspecialchars(self::tidyAmount($cdr['Charge'], $bolIsCredit)) . "</td>
 			<td><a href = \"$url\">View</a></td>
 		</tr>
 			";
@@ -175,9 +188,10 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		echo "
 	</tbody>
 </table>
-<br/>		";	}
+<br/>		";	
+	}
 
-	private function renderAdjustments($arrAdjustmentDetails)
+	public static function renderAdjustments($arrAdjustmentDetails)
 	{
 		echo "
 <table class='reflex'>
@@ -215,7 +229,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 			<td>" . htmlspecialchars($adjustment['Description']) . "</td>
 			<td><a href='" . Href()->ViewService($adjustment['ServiceId']) . "'>" . htmlspecialchars($adjustment['FNN']) . "</a></td>
 			<td>" . htmlspecialchars($date) . "</td>
-			<td class='amount'>" . htmlspecialchars($this->tidyAmount($adjustment['Amount'])) . "</td>
+			<td class='amount'>" . htmlspecialchars(self::tidyAmount($adjustment['Amount'])) . "</td>
 			<td class='" . ($adjustment['Nature'] == 'CR' ? 'amount-credit' : 'amount-debit') . "'>" . htmlspecialchars($adjustment['Nature'] == 'CR' ? 'Credit' : 'Debit') . "</td>
 		</tr>
 			";
@@ -224,7 +238,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		{
 			echo "
 		<tr>
-			<td colspan='7'>" . htmlspecialchars("The are no adjustments for this service and invoice.") . "</td>
+			<td colspan='7'>" . htmlspecialchars("There are no adjustments for this service and invoice.") . "</td>
 		</tr>
 			";
 		}

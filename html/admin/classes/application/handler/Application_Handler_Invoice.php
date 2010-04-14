@@ -51,13 +51,12 @@ class Application_Handler_Invoice extends Application_Handler
 	// View all the breakdown for a service on an invoice
 	public function Service($subPath)
 	{
+		$arrDetailsToRender	= array();
+		
 		try
 		{
 			$intServiceTotal = count($subPath) ? intval(array_shift($subPath)) : 0;
-
 			$intRecordType = 0;
-
-			
 			$db = Data_Source::get();
 			
 			$sqlServiceTotal = "
@@ -86,14 +85,15 @@ class Application_Handler_Invoice extends Application_Handler
 				throw new Exception("Failed to find service details for service total $intServiceTotal.");
 			}
 	
-			$intAccountId = $serviceDetails['AccountId'];
-			$intInvoiceId = $serviceDetails['InvoiceId'];
-			$intInvoiceRunId = $serviceDetails['InvoiceRunId'];
-			$intServiceId = $serviceDetails['ServiceId'];
-			$intServiceType = $serviceDetails['ServiceType'];
-			$fnn = $serviceDetails['FNN'];
-			$dataSource = $serviceDetails['DataSource'];
-
+			$intAccountId 		= $serviceDetails['AccountId'];
+			$intInvoiceId 		= $serviceDetails['InvoiceId'];
+			$intInvoiceRunId 	= $serviceDetails['InvoiceRunId'];
+			$intServiceId 		= $serviceDetails['ServiceId'];
+			$intServiceType 	= $serviceDetails['ServiceType'];
+			$fnn 				= $serviceDetails['FNN'];
+			$dataSource	 		= $serviceDetails['DataSource'];
+			$oService			= Service::getForId($intServiceId);
+			
 			BreadCrumb()->EmployeeConsole();
 			BreadCrumb()->AccountOverview($intAccountId, true);
 			BreadCrumb()->InvoicesAndPayments($intAccountId);
@@ -101,129 +101,34 @@ class Application_Handler_Invoice extends Application_Handler
 			BreadCrumb()->SetCurrentPage("Service: $fnn");
 			AppTemplateAccount::BuildContextMenu($intAccountId);
 			
-			$arrDetailsToRender = array();
-	
-			$arrDetailsToRender['Invoice'] = $serviceDetails;
-	
-	
+			$arrDetailsToRender['Invoice'] 		= $serviceDetails;
+			$arrDetailsToRender['ServiceType']	= $intServiceType;
 	
 			// Need to load up the Adjustments for the invoice
-			$aVisibleChargeTypes	= array(CHARGE_TYPE_VISIBILITY_VISIBLE);
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
-			{
-				$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_CREDIT_CONTROL;
-			}
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
-			{
-				$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_HIDDEN;
-			}
-	
-			$sqlAdjustments = "
-				SELECT c.Id as ChargeId, c.ChargeType ChargeType, c.Description Description, s.Id as ServiceId, s.FNN as FNN, ChargedOn as Date, c.Amount Amount, c.Nature as Nature
-				  FROM Service s JOIN Charge c ON (s.Id = c.Service) LEFT JOIN ChargeType ct ON (ct.Id = c.charge_type_id OR c.ChargeType = ct.ChargeType)
-				 WHERE c.invoice_run_id = $intInvoiceRunId
-			       AND c.Service = $intServiceId
-			       AND ct.charge_type_visibility_id IN (".implode(', ', $aVisibleChargeTypes).")
-			";
-	
-			$res = $db->query($sqlAdjustments);
+			$arrDetailsToRender['Adjustments']	= $oService->getCharges($intInvoiceRunId);
 			
-			if (PEAR::isError($res))
-			{
-				throw new Exception("Failed to load adjustments: $sqlAdjustments " . $res->getMessage());
-			}
-			$arrDetailsToRender['Adjustments'] = $res->fetchAll(MDB2_FETCHMODE_ASSOC);
-			
-			
-			
-	
 			// Need to load up the RecordTypes for filtering
-	
-			$sqlRecordTypes = " SELECT Id, Name, Description, DisplayType FROM RecordType WHERE ServiceType = $intServiceType ";
-	
-			$res = $db->query($sqlRecordTypes, array('integer', 'text', 'text', 'integer'));
+			$arrDetailsToRender['RecordTypes']	= Record_Type::getForServiceType($intServiceType);
 			
-			if (PEAR::isError($res))
-			{
-				throw new Exception("Failed to load call record types: " . $res->getMessage());
-			}
-			
-			// Use the id of each RecordType as the key into the array $arrDetailsToRender['RecordTypes'] for easier referal
-			$arrDetailsToRender['RecordTypes'] = KeyifyArray($res->fetchAll(MDB2_FETCHMODE_ASSOC), "Id");
-
-			// Need to load up the CDRs from the cdr_invoiced table for the current range of CDRs & record type
-			
-			$cdrDb = Data_Source::get($dataSource);
-
-			$offset = 0;
-			$limit = 30;
-
+			// Filter information
 			$arrDetailsToRender['filter'] = array(
 				'offset' => array_key_exists('offset', $_REQUEST) ? intval($_REQUEST['offset']) : 0,
 				'limit' => 30,
 				'recordType' => (array_key_exists('recordType', $_REQUEST) && $_REQUEST['recordType']) ? intval($_REQUEST['recordType']) : NULL,
 				'recordCount' => 0,
 			);
-
-			$alises = array('ChargeId', 'ChargeType', 'Description', 'FNN', 'Date', 'Amount', 'Nature');
-
-			if ($dataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
-			{
-				$sqlCdrs = "
-					SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\"
-					  FROM CDR c
-					 WHERE invoice_run_id = $intInvoiceRunId
-					   AND Account = $intAccountId
-				       AND c.Service = $intServiceId
-				";
-	
-				$sqlCountCdrs = "SELECT COUNT(*) FROM CDR c WHERE invoice_run_id = $intInvoiceRunId AND Account = $intAccountId AND c.Service = $intServiceId";
-	
-				if ($arrDetailsToRender['filter']['recordType'])
-				{
-					$sqlCdrs .= " AND c.RecordType = " . $arrDetailsToRender['filter']['recordType'] . " ";
-					$sqlCountCdrs .= " AND c.RecordType = " . $arrDetailsToRender['filter']['recordType'] . " ";
-				}
-	
-				$sqlCdrs .= " ORDER BY c.StartDatetime ASC LIMIT " . $arrDetailsToRender['filter']['limit'] . " OFFSET " . $arrDetailsToRender['filter']['offset'] . " ";
-			}
-			else
-			{
-				$sqlCdrs = "
-					SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\"
-					  FROM cdr_invoiced c
-					 WHERE invoice_run_id = $intInvoiceRunId
-					   AND account = $intAccountId
-				       AND c.service = $intServiceId
-				";
-	
-				$sqlCountCdrs = "SELECT COUNT(*) FROM cdr_invoiced c WHERE invoice_run_id = $intInvoiceRunId AND account = $intAccountId AND c.Service = $intServiceId";
-	
-				if ($arrDetailsToRender['filter']['recordType'])
-				{
-					$sqlCdrs .= " AND c.record_type = " . $arrDetailsToRender['filter']['recordType'] . " ";
-					$sqlCountCdrs .= " AND c.record_type = " . $arrDetailsToRender['filter']['recordType'] . " ";
-				}
-	
-				$sqlCdrs .= " ORDER BY c.start_date_time ASC LIMIT " . $arrDetailsToRender['filter']['limit'] . " OFFSET " . $arrDetailsToRender['filter']['offset'] . " ";
-			}
-
-			$res = $cdrDb->query($sqlCountCdrs);
-			if (PEAR::isError($res))
-			{
-				throw new Exception("Failed to count CDRs: " . $res->getMessage());
-			}
-			$arrDetailsToRender['filter']['recordCount'] = $res->fetchOne();
-
-			$res = $cdrDb->query($sqlCdrs);
-
-			if (PEAR::isError($res))
-			{
-				throw new Exception("Failed to load CDRs: " . $res->getMessage());
-			}
-
-			$arrDetailsToRender['CDRs'] = $res->fetchAll(MDB2_FETCHMODE_ASSOC);
-
+			
+			// Get the cdr information
+			$aCDRsResult	= 	$oService->getCDRs(
+									$intInvoiceRunId, 
+									$arrDetailsToRender['filter']['recordType'], 
+									$arrDetailsToRender['filter']['limit'], 
+									$arrDetailsToRender['filter']['offset']
+								);
+			
+			$arrDetailsToRender['CDRs']						= $aCDRsResult['CDRs'];
+			$arrDetailsToRender['filter']['recordCount']	= $aCDRsResult['recordCount'];
+			
 			$this->LoadPage('invoice_service', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}
 		catch (Exception $e)

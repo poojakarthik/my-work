@@ -465,6 +465,199 @@ class Service extends ORM
 		}
 	}
 	
+	public function getCDRs($iInvoiceRunId=null, $iRecordType=null, $iLimit=30, $iOffset=0)
+	{
+		$iAccountId	= $this->Account;
+		$iServiceId	= $this->Id;
+		
+		if ($iInvoiceRunId !== null)
+		{
+			// Get the data source for the service CDR data
+			$sDataSource	= CDR::getDataSourceForInvoiceRunCDRs($iInvoiceRunId);
+			$cdrDb 			= Data_Source::get($sDataSource);
+			
+			if ($sDataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
+			{
+				// MySQL Database, invoiced
+				$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\"";
+				$sCountSelect	= "SELECT COUNT(*) ";
+				$sCdrs			=	"FROM 	CDR c" .
+									"WHERE 	invoice_run_id = $iInvoiceRunId" .
+									"AND 	Account = $iAccountId" .
+								    "AND 	c.Service = $iServiceId" .
+								    "AND	c.Status in (".CDR_TEMP_INVOICE.", ".CDR_INVOICED.")";
+				
+				if ($iRecordType)
+				{
+					$sCdrs	.= " AND c.RecordType = " . $iRecordType . " ";
+				}
+	
+				$sCountCdrs	= "$sCountSelect $sCdrs";
+				$sCdrs		.= 	"ORDER BY c.StartDatetime ASC " .
+								"LIMIT ".$iLimit." OFFSET ".$iOffset." ";
+				$sCdrs		= "$sSelect $sCdrs";
+				
+				$oCountQuery	= new Query();
+				$oResultCount	= $oCountQuery->Execute($sCountCdrs);
+				
+				if (!$oResultCount)
+				{
+					throw new Exception('Failed to count CDRs (invoiced, default db). '.$oCountQuery->Error());
+				}
+				
+				$oCDRsQuery		= new Query();
+				$oResultCDRs	= $oCDRsQuery->Execute($sCdrs);
+				
+				if (!$oResultCDRs)
+				{
+					throw new Exception('Failed to retrieve CDRs (invoiced, default db). '.$oCDRsQuery->Error());
+				}
+				
+				$aResult['recordCount']	= $oResultCount->fetch_field();
+				$aResult['CDRs'] 		= array();
+				
+				while($aCDR = $oResultCDRs->fetch_assoc())
+				{
+					$aResult['CDRs'][]	= $aCDR;
+				}
+			}
+			else
+			{
+				// PostgreSQL Database, 
+				$sSelect		= "SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\" ";
+				$sCountSelect	= "SELECT	COUNT(*)";
+				/*
+				$sCdrs			= 	"FROM 	cdr_invoiced_$iInvoiceRunId c " .
+									"WHERE 	account = $iAccountId " .
+									"AND 	c.service = $iServiceId";
+									*/
+				$sCdrs			= 	"FROM 	cdr_invoiced c " .
+									"WHERE 	c.invoice_run_id = $iInvoiceRunId " .
+									"AND	account = $iAccountId " .
+									"AND 	c.service = $iServiceId";
+	
+				if ($iRecordType)
+				{
+					$sCdrs		.= " AND c.record_type = " . $iRecordType . " ";
+				}
+	
+				$sCountCdrs	= "$sCountSelect $sCdrs";
+				$sCdrs		.= 	"ORDER BY c.start_date_time ASC " .
+								"LIMIT ".$iLimit." OFFSET ".$iOffset." ";
+				$sCdrs		= "$sSelect $sCdrs";
+				
+				$oResultCount	= $cdrDb->query($sCountCdrs);
+				
+				if (PEAR::isError($oResultCount))
+				{
+					throw new Exception("Failed to count CDRs ($sCountCdrs): " . $oResultCount->getMessage());
+				}
+				
+				$oResultCDRs	= $cdrDb->query($sCdrs);
+				
+				if (PEAR::isError($oResultCDRs))
+				{
+					throw new Exception("Failed to load CDRs: " . $oResultCDRs->getMessage());
+				}
+		
+				$aResult['recordCount']	= $oResultCount->fetchOne();
+				$aResult['CDRs'] 		= $oResultCDRs->fetchAll(MDB2_FETCHMODE_ASSOC);
+			}
+		}
+		else
+		{
+			// MySQL Database, not invoiced
+			$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\"";
+			$sCountSelect	= "SELECT COUNT(*) ";
+			$sCdrs			=	"FROM 	CDR c " .
+								"WHERE 	Account = $iAccountId " .
+							    "AND 	c.Service = $iServiceId " .
+							    "AND	c.Status = ".CDR_RATED." ";
+			
+			if ($iRecordType)
+			{
+				$sCdrs	.= " AND c.RecordType = " . $iRecordType . " ";
+			}
+
+			$sCountCdrs	= "$sCountSelect $sCdrs";
+			$sCdrs		.= 	"ORDER BY c.StartDatetime ASC " .
+							"LIMIT ".$iLimit." OFFSET ".$iOffset." ";
+			$sCdrs		= "$sSelect $sCdrs";
+			
+			$oCountQuery	= new Query();
+			$oResultCount	= $oCountQuery->Execute($sCountCdrs);
+			
+			if (!$oResultCount)
+			{
+				throw new Exception('Failed to count CDRs (NOT invoiced, default db). '.$oCountQuery->Error());
+			}
+			
+			$oCDRsQuery		= new Query();
+			$oResultCDRs	= $oCDRsQuery->Execute($sCdrs);
+			
+			if (!$oResultCDRs)
+			{
+				throw new Exception('Failed to retrieve CDRs (NOT invoiced, default db). '.$oCDRsQuery->Error());
+			}
+			
+			$aResult['recordCount']	= $oResultCount->fetch_field();
+			$aResult['CDRs'] 		= array();
+			
+			while($aCDR = $oResultCDRs->fetch_assoc())
+			{
+				$aResult['CDRs'][]	= $aCDR;
+			}
+		}
+		
+		return $aResult;
+	}
+	
+	public function getCharges($iInvoiceRunId=null)
+	{
+		// Need to load up the Adjustments for the invoice
+		$aVisibleChargeTypes	= array(CHARGE_TYPE_VISIBILITY_VISIBLE);
+		
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
+		{
+			$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_CREDIT_CONTROL;
+		}
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+		{
+			$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_HIDDEN;
+		}
+
+		$sInvoiceRunId	= (is_null($iInvoiceRunId) ? 'is null' : "= {$iInvoiceRunId}");
+		$sQuery 		= "
+			SELECT 	c.Id as ChargeId, c.ChargeType ChargeType, c.Description Description, s.Id as ServiceId, s.FNN as FNN, ChargedOn as Date, c.Amount Amount, c.Nature as Nature
+			FROM 	Service s 
+			JOIN 	Charge c 
+			  			ON (s.Id = c.Service) 
+			LEFT JOIN ChargeType ct 
+			  			ON (ct.Id = c.charge_type_id OR c.ChargeType = ct.ChargeType)
+			WHERE 	c.invoice_run_id $sInvoiceRunId
+		   	AND 	c.Service = {$this->Id}
+		    AND 	ct.charge_type_visibility_id IN (".implode(', ', $aVisibleChargeTypes).")
+		";
+		
+		$oQuery		= new Query();
+		$oResult	= $oQuery->Execute($sQuery);
+		
+		if (!$oResult)
+		{
+			throw new Exception('Could not retrieve the adjustments for the service:: Error Message='.$oQuery->Error());
+		}
+		
+		// Add result into an array
+		$aCharges	= array();
+		
+		while ($oCharge = $oResult->fetch_assoc())
+		{
+			$aCharges[]	= $oCharge;
+		}
+		
+		return $aCharges;
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//

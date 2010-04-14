@@ -994,9 +994,10 @@ class MenuItems {
 	 * @method
 	 */
 	function FindCustomerOld() {
-		$this->strLabel = "Find Customer";
+		self::deprecatedMenuItem('FindCustomerOld', self::OLD_FRAMEWORK."contact_verify.php");
+		/*$this->strLabel = "Find Customer";
 		$this->strContextMenuLabel = "Find Customer (Old)";
-		return self :: OLD_FRAMEWORK . "contact_verify.php";
+		return self :: OLD_FRAMEWORK . "contact_verify.php";*/
 	}
 
 	//------------------------------------------------------------------------//
@@ -1084,9 +1085,10 @@ class MenuItems {
 	 * @method
 	 */
 	function EditContact($intId) {
-		$this->strLabel = "contact: $intId";
+		self::deprecatedMenuItem('EditContact', self::OLD_FRAMEWORK."contact_edit.php?Id=$intId");
+		/*$this->strLabel = "contact: $intId";
 		$this->strContextMenuLabel = "";
-		return self :: OLD_FRAMEWORK . "contact_edit.php?Id=$intId";
+		return self :: OLD_FRAMEWORK . "contact_edit.php?Id=$intId";*/
 	}
 
 	//------------------------------------------------------------------------//
@@ -1846,11 +1848,32 @@ class MenuItems {
 	 * @method
 	 */
 	function ViewCDR($intId) {
-		$this->strContextMenuLabel = "";
-
+		self::deprecatedMenuItem('ViewCDR', self::OLD_FRAMEWORK."cdr_view.php?Id=$intId");
+		/*$this->strContextMenuLabel = "";
 		$this->strLabel = "Record";
+		return self :: OLD_FRAMEWORK . "cdr_view.php?Id=$intId";*/
+	}
 
-		return self :: OLD_FRAMEWORK . "cdr_view.php?Id=$intId";
+	//------------------------------------------------------------------------//
+	// ViewCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewCDR()
+	 *
+	 * Compiles the Href to be executed when viewing cdr details
+	 *
+	 * Compiles the Href to be executed when viewing cdr details
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the cdr to view
+	 *
+	 * @return	string				Href to be executed when viewing cdr details
+	 *
+	 * @method
+	 */
+	function ViewCDRDetails($iId)
+	{
+		// TODO: Launch a popup to view cdr details
 	}
 
 	//------------------------------------------------------------------------//
@@ -2307,7 +2330,6 @@ class MenuItems {
 	 */
 	function ChangeOfLessee($intId) {
 		$this->strContextMenuLabel = "Change Lessee";
-
 		$this->strLabel = "change of lessee";
 		return self :: OLD_FRAMEWORK . "service_lessee.php?Service=$intId";
 	}
@@ -3632,6 +3654,23 @@ else
 				break;
 		}
 	}
-
+	
+	private function deprecatedMenuItem($sFunctionName, $sURL)
+	{
+		try
+		{
+			// Create an assertion
+			Flex::assert(
+				false, 
+				"In MenuItems.php, the function {$sFunctionName} was called, which returns {$sURL}.", 
+				null, 
+				"Deprecated Page (Framework 1) Accessed: MenuItems.php - {$sFunctionName}"
+			);
+		}
+		catch (Exception_Assertion $e)
+		{
+			// Do nothing, the assert function has sent the email already
+		}
+	}
 }
 ?>

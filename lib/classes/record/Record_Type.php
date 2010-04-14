@@ -60,6 +60,26 @@ class Record_Type extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 
+	public static function getForServiceType($iServiceType)
+	{
+		$oStatement	= self::_preparedStatement('selForServiceType');
+		$oStatement->Execute(array('ServiceType' => $iServiceType));
+		
+		$aRecordTypes	= array();
+		
+		while($aRecordType = $oStatement->Fetch())
+		{
+			$aRecordTypes[$aRecordType['Id']]	= 	array(
+														'Id'			=> $aRecordType['Id'],
+														'Name'			=> $aRecordType['Name'],
+														'Description'	=> $aRecordType['Description'],
+														'DisplayType'	=> $aRecordType['DisplayType']
+													);
+		}
+		
+		return $aRecordTypes;
+	}
+
 	/**
 	 * _preparedStatement()
 	 *
@@ -88,6 +108,9 @@ class Record_Type extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "name ASC");
+					break;
+				case 'selForServiceType':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "ServiceType = <ServiceType>");
 					break;
 				
 				// INSERTS
