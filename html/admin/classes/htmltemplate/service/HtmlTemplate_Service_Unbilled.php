@@ -10,7 +10,13 @@ class HtmlTemplate_Service_Unbilled extends FlexHtmlTemplate
 	public function Render()
 	{
 		HtmlTemplate_Invoice_Service::renderAdjustments($this->mxdDataToRender['Charges']);
-		//HtmlTemplate_Invoice_Service::renderCDRs($this->mxdDataToRender['CDRs'], $this->mxdDataToRender['RecordTypes'], $this->mxdDataToRender['filter'], $this->mxdDataToRender['Invoice']);
+		HtmlTemplate_Invoice_Service::renderCDRs(
+			$this->mxdDataToRender['CDRs'], 
+			$this->mxdDataToRender['RecordTypes'], 
+			$this->mxdDataToRender['filter'],
+			null,
+			$this->mxdDataToRender['ServiceType']
+		);
 	}
 }
 

@@ -2304,11 +2304,11 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewUnbilledCharges($intId) {
+	function ViewUnbilledCharges($iId) {
 		$this->strContextMenuLabel = "";
-
 		$this->strLabel = "view unbilled charges";
-		return self :: OLD_FRAMEWORK . "service_unbilled.php?Id=$intId";
+		//return self :: OLD_FRAMEWORK . "service_unbilled.php?Id=$iId";
+		return self::NEW_FRAMEWORK."reflex.php/Service/Unbilled/{$iId}";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2329,9 +2329,10 @@ class MenuItems {
 	 * @method
 	 */
 	function ChangeOfLessee($intId) {
-		$this->strContextMenuLabel = "Change Lessee";
+		self::deprecatedMenuItem('ChangeOfLessee', self::OLD_FRAMEWORK."service_lessee.php?Service=$intId");
+		/*$this->strContextMenuLabel = "Change Lessee";
 		$this->strLabel = "change of lessee";
-		return self :: OLD_FRAMEWORK . "service_lessee.php?Service=$intId";
+		return self :: OLD_FRAMEWORK . "service_lessee.php?Service=$intId";*/
 	}
 
 	//------------------------------------------------------------------------//
@@ -2950,9 +2951,10 @@ class MenuItems {
 	 * @method
 	 */
 	function AdvancedAccountSearch() {
-		$this->strContextMenuLabel = "Advanced Account Search";
+		self::deprecatedMenuItem('AdvancedAccountSearch', self::OLD_FRAMEWORK."account_list.php");
+		/*$this->strContextMenuLabel = "Advanced Account Search";
 		$this->strLabel = "Advanced Account Search";
-		return self :: OLD_FRAMEWORK . "account_list.php";
+		return self :: OLD_FRAMEWORK . "account_list.php";*/
 	}
 
 	//------------------------------------------------------------------------//
@@ -2969,9 +2971,10 @@ class MenuItems {
 	 * @method
 	 */
 	function AdvancedContactSearch() {
-		$this->strContextMenuLabel = "Advanced Contact Search";
+		self::deprecatedMenuItem('AdvancedContactSearch', self::OLD_FRAMEWORK."contact_list.php");
+		/*$this->strContextMenuLabel = "Advanced Contact Search";
 		$this->strLabel = "Advanced Contact Search";
-		return self :: OLD_FRAMEWORK . "contact_list.php";
+		return self :: OLD_FRAMEWORK . "contact_list.php";*/
 	}
 
 	//------------------------------------------------------------------------//
@@ -2988,9 +2991,10 @@ class MenuItems {
 	 * @method
 	 */
 	function AdvancedServiceSearch() {
-		$this->strContextMenuLabel = "Advanced Service Search";
+		self::deprecatedMenuItem('AdvancedServiceSearch', self::OLD_FRAMEWORK."service_list.php");
+		/*$this->strContextMenuLabel = "Advanced Service Search";
 		$this->strLabel = "Advanced Service Search";
-		return self :: OLD_FRAMEWORK . "service_list.php";
+		return self :: OLD_FRAMEWORK . "service_list.php";*/
 	}
 
 	//------------------------------------------------------------------------//
@@ -3007,9 +3011,10 @@ class MenuItems {
 	 * @method
 	 */
 	function ManageAdjustmentsOld() {
-		$this->strContextMenuLabel = "OLD - Approve and Decline Adjustments - OLD";
+		self::deprecatedMenuItem('ManageAdjustmentsOld', self::OLD_FRAMEWORK."charges_approve.php");
+		/*$this->strContextMenuLabel = "OLD - Approve and Decline Adjustments - OLD";
 		$this->strLabel = "Manage Adjustments";
-		return self :: OLD_FRAMEWORK . "charges_approve.php";
+		return self :: OLD_FRAMEWORK . "charges_approve.php";*/
 	}
 
 	/**
@@ -3645,8 +3650,9 @@ else
 				return self :: NEW_FRAMEWORK . "flex.php/Employee/Logout/";
 				break;
 			case "AdminConsole" :
-				$this->strLabel = "Admin Console";
-				return self :: OLD_FRAMEWORK . "console_admin.php";
+				self::deprecatedMenuItem('__call:AdminConsole', self::OLD_FRAMEWORK."console_admin.php");
+				/*$this->strLabel = "Admin Console";
+				return self :: OLD_FRAMEWORK . "console_admin.php";*/
 				break;
 			default;
 				return "[insert generic HREF here]";

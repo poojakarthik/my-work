@@ -238,7 +238,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		{
 			echo "
 		<tr>
-			<td colspan='7'>" . htmlspecialchars("There are no adjustments for this service and invoice.") . "</td>
+			<td colspan='7'>" . htmlspecialchars("There are no adjustments for this service.") . "</td>
 		</tr>
 			";
 		}

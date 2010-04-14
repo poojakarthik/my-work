@@ -26,25 +26,33 @@ class Application_Handler_Service extends Application_Handler
 			BreadCrumb()->ViewService($oService->Id, true);
 			BreadCrumb()->SetCurrentPage("View Unbilled Charges");
 			
+			// Update context menu
+			AppTemplateAccount::BuildContextMenu($oService->Account);
+			AppTemplateService::BuildContextMenu($oService->Account, $oService->Id, $oService->ServiceType);
+			
 			// Setup data for the page
 			$aDetailsToRender['Charges']		= $oService->getCharges();
 			$aDetailsToRender['RecordTypes']	= Record_Type::getForServiceType($oService->ServiceType);
+			$aDetailsToRender['ServiceType']	= $oService->ServiceType;
 			
 			// Filter information
-			$arrDetailsToRender['filter'] = array(
+			$aDetailsToRender['filter'] = array(
 				'offset' => array_key_exists('offset', $_REQUEST) ? intval($_REQUEST['offset']) : 0,
 				'limit' => 30,
 				'recordType' => (array_key_exists('recordType', $_REQUEST) && $_REQUEST['recordType']) ? intval($_REQUEST['recordType']) : NULL,
 				'recordCount' => 0,
 			);
 			
-			// Filter information
-			$arrDetailsToRender['filter'] = array(
-				'offset' => array_key_exists('offset', $_REQUEST) ? intval($_REQUEST['offset']) : 0,
-				'limit' => 30,
-				'recordType' => (array_key_exists('recordType', $_REQUEST) && $_REQUEST['recordType']) ? intval($_REQUEST['recordType']) : NULL,
-				'recordCount' => 0,
-			);
+			// Get the cdr information
+			$aCDRsResult	= 	$oService->getCDRs(
+									null, 
+									$aDetailsToRender['filter']['recordType'], 
+									$aDetailsToRender['filter']['limit'], 
+									$aDetailsToRender['filter']['offset']
+								);
+			
+			$aDetailsToRender['CDRs']					= $aCDRsResult['CDRs'];
+			$aDetailsToRender['filter']['recordCount']	= $aCDRsResult['recordCount'];
 			
 			$this->LoadPage('service_unbilled', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}

@@ -513,7 +513,8 @@ class Service extends ORM
 					throw new Exception('Failed to retrieve CDRs (invoiced, default db). '.$oCDRsQuery->Error());
 				}
 				
-				$aResult['recordCount']	= $oResultCount->fetch_field();
+				$oCountResult			= $oResultCount->fetch_row();
+				$aResult['recordCount']	= $oCountResult[0];
 				$aResult['CDRs'] 		= array();
 				
 				while($aCDR = $oResultCDRs->fetch_assoc())
@@ -600,7 +601,8 @@ class Service extends ORM
 				throw new Exception('Failed to retrieve CDRs (NOT invoiced, default db). '.$oCDRsQuery->Error());
 			}
 			
-			$aResult['recordCount']	= $oResultCount->fetch_field();
+			$oCountResult			= $oResultCount->fetch_row();
+			$aResult['recordCount']	= $oCountResult[0];
 			$aResult['CDRs'] 		= array();
 			
 			while($aCDR = $oResultCDRs->fetch_assoc())
