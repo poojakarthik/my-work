@@ -89,10 +89,15 @@
 				<div id="loginForm">
 				<h1>Flex Customer Management System</h1>
 				<div class="Seperator"/>
-				<?php 
+				<?php
+				if (isset($_SESSION['LoginFailed']) && $_SESSION['LoginFailed'])
+				{
+					unset($_SESSION['LoginFailed']);
+					echo "<div class='MsgError'>You did not enter correct login credentials. Please try again.</div>";
+				} 
+				
 				echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
 				?>
-				
 				<table>
 					<tr>
 					<td>

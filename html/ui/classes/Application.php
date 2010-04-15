@@ -773,6 +773,12 @@ class Application
 			}
 			else
 			{
+				if ($bolAttemptingLogIn)
+				{
+					// Set flag for the login page to let it know that login has failed, it will be unset by the page.
+					$_SESSION['LoginFailed']	= true;
+				}
+				
 				require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
 				die;
 			}
@@ -1196,6 +1202,66 @@ class Application
 		}
 		return (int)$id;
 	}
+	
+	//------------------------------------------------------------------------//
+	// Login
+	//------------------------------------------------------------------------//
+	/**
+	 * Login()
+	 *
+	 * Attempts a Session Authentication
+	 *
+	 * Attempts to Authenticate the Session (Identified by UserName and PassWord)
+	 * against an Employee
+	 *
+	 * @param	String		$strUserName		The UserName of the Attempted Authentication
+	 * @param	String		$strPassWord		The PassWord of the Attempted Authentication
+	 *
+	 * @return	Boolean
+	 *
+	 * @method
+	 */
+	public function Login ($sUserName, $sPassWord)
+	{
+		// Get the Id of the Employee (Identified by UserName and PassWord combination)
+		$oSelectStatement = new StatementSelect (
+			"Employee", 
+			"*", 
+			"UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", 
+			NULL, 
+			"1"
+		);
+
+		$oSelectStatement->Execute(Array("UserName"=>$sUserName, "PassWord"=>$sPassWord));
+
+		// If the employee could not be found, return false
+		if ($oSelectStatement->Count () <> 1)
+		{
+			$_SESSION['LoggedIn'] = FALSE;
+			return FALSE;
+		}
+
+		$currentUser = $oSelectStatement->Fetch();
+
+		// If data exists in the session but is for another user, clear it out
+		if (!array_key_exists('User', $_SESSION) || $_SESSION['User']['Id'] != $currentUser['Id'])
+		{
+			$_SESSION = array();
+		}
+
+		// If we reach this part of the Method, the session is authenticated.
+		// Therefore, we have to store the Authentication
+		$_SESSION['User'] = $currentUser;
+		$_SESSION['LoggedIn'] = TRUE;
+		$_SESSION['LoggedInTimestamp'] = time();
+		setcookie('LoggedInTimestamp', $_SESSION['LoggedInTimestamp']);
+
+		// Updating information
+		$_SESSION['SessionDuration'] = ($_SESSION['User']['Privileges'] == USER_PERMISSION_GOD ? (60 * 60 * 24 * 7) : (60 * 20));
+		$_SESSION['SessionExpire'] = time() + $_SESSION['SessionDuration'];
+		return TRUE;
+	}
+	
 
 	//----------------------------------------------------------------------------//
 	// __get
