@@ -10,7 +10,7 @@ var Employee	= Class.create
 		else
 		{
 			// New Employee
-			this.objProperties	= {};
+			this.oProperties	= {};
 		}
 	},
 	
@@ -29,25 +29,25 @@ var Employee	= Class.create
 		
 	},
 	
-	getPermissions	: function(fCallback, oResponse)
+	getPermissions	: function(fnCallback, oResponse)
 	{
 		if (oResponse)
 		{
 			// Process JSON Response
-			fCallback(oResponse.aOperationIds, oResponse.aOperationProfileIds);
+			fnCallback(oResponse.aOperationIds, oResponse.aOperationProfileIds);
 		}
-		else if (!this.objProperties.Id && this.objProperties.Id !== 0)
+		else if (!this.oProperties.Id && this.oProperties.Id !== 0)
 		{
 			// New Employee -- can't have any permissions yet
-			fCallback([], []);
+			fnCallback([], []);
 		}
 		else
 		{
 			// Make JSON Request
-			var iEmployeeId	= (this.objProperties.Id === undefined) ? null : this.objProperties.Id;
+			var iEmployeeId	= (this.oProperties.Id === undefined) ? null : this.oProperties.Id;
 			
-			var fncJSON	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this.getPermissions.bind(this, fCallback)), null, 'Employee', 'getPermissions');
-			fncJSON(iEmployeeId);
+			var fnJSON	= jQuery.json.jsonFunction(this.getPermissions.bind(this, fnCallback), null, 'Employee', 'getPermissions');
+			fnJSON(iEmployeeId);
 		}
 	},
 	
@@ -55,59 +55,59 @@ var Employee	= Class.create
 	{
 		this._refreshControls();
 		
-		return this.objPropertyControls;
+		return this.oPropertyControls;
 	},
 	
 	_refreshControls	: function()
 	{
-		if (!this.objPropertyControls)
+		if (!this.oPropertyControls)
 		{
-			this.objPropertyControls	= {};
-			for (strProperty in Employee.objProperties)
+			this.oPropertyControls	= {};
+			for (sProperty in Employee.oProperties)
 			{
-				this.objPropertyControls[strProperty]	= Control_Field.factory(Employee.objProperties[strProperty].strType, Employee.objProperties[strProperty].objDefinition);
+				this.oPropertyControls[sProperty]	= Control_Field.factory(Employee.oProperties[sProperty].sType, Employee.oProperties[sProperty].oDefinition);
 			}
 		}
 		
-		for (strProperty in this.objPropertyControls)
+		for (sProperty in this.oPropertyControls)
 		{
-			if (Object.keys(this.objProperties).length)
+			if (Object.keys(this.oProperties).length)
 			{
-				this.objPropertyControls[strProperty].setValue(this.objProperties[strProperty]);
+				this.oPropertyControls[sProperty].setValue(this.oProperties[sProperty]);
 			}
 			else
 			{
 				// FIXME: Default values instead?
-				this.objPropertyControls[strProperty].setValue('');
+				this.oPropertyControls[sProperty].setValue('');
 			}
 		}
 	},
 	
-	_load	: function(iEmployeeId, fncCallback, objResponse)
+	_load	: function(iEmployeeId, fnCallback, oResponse)
 	{
-		if (objResponse)
+		if (oResponse)
 		{
 			// Set properties
-			this.objProperties	= objResponse.objEmployee;
+			this.oProperties	= oResponse.objEmployee;
 			
 			// Callback
-			if (fncCallback)
+			if (fnCallback)
 			{
-				fncCallback(this);
+				fnCallback(this);
 			}
 		}
 		else
 		{
-			var fncJSON	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this.refresh.bind(this, fncCallback)), null, 'Employee', 'getForId');
-			fncJSON(iEmployeeId, true);
+			var fnJSON	= jQuery.json.jsonFunction(this._load.bind(this, iEmployeeId, fnCallback), null, 'Employee', 'getForId');
+			fnJSON(iEmployeeId, true);
 		}
 	},
 	
 	refresh	: function()
 	{
-		if (this.objProperties && this.objProperties.Id !== null && this.objProperties.Id !== undefined)
+		if (this.oProperties && this.oProperties.Id !== null && this.oProperties.Id !== undefined)
 		{
-			this._load(this.objProperties.Id, this._refreshControls.bind(this));
+			this._load(this.oProperties.Id, this._refreshControls.bind(this));
 		}
 	},
 	
@@ -124,154 +124,153 @@ var Employee	= Class.create
 //----------------------------------------------------------------------------//
 // Static Methods
 //----------------------------------------------------------------------------//
-Employee.getForId	= function(iEmployeeId, fncCallback)
+Employee.getForId	= function(iEmployeeId, fnCallback)
 {
-	return new Employee(iEmployeeId, fncCallback);
+	return new Employee(iEmployeeId, fnCallback);
 }
 //----------------------------------------------------------------------------//
 
 // Static Members
-Employee.objProperties	= {};
+Employee.oProperties	= {};
 
 // Id
-Employee.objProperties.Id				= {};
-//Employee.objProperties.Id.strType		= 'hidden';
-Employee.objProperties.Id.strType		= 'text';
+Employee.oProperties.Id			= {};
+Employee.oProperties.Id.sType	= 'text';
 
-Employee.objProperties.Id.objDefinition				= {};
-Employee.objProperties.Id.objDefinition.strLabel	= 'Id';
+Employee.oProperties.Id.oDefinition			= {};
+Employee.oProperties.Id.oDefinition.sLabel	= 'Id';
 
 // First Name
-Employee.objProperties.FirstName				= {};
-Employee.objProperties.FirstName.strType		= 'text';
+Employee.oProperties.FirstName			= {};
+Employee.oProperties.FirstName.sType	= 'text';
 
-Employee.objProperties.FirstName.objDefinition				= {};
-Employee.objProperties.FirstName.objDefinition.strLabel		= 'First Name';
-Employee.objProperties.FirstName.objDefinition.mixEditable	= true;
-Employee.objProperties.FirstName.objDefinition.mixMandatory	= true;
-Employee.objProperties.FirstName.objDefinition.mixAutoTrim	= true;
-Employee.objProperties.FirstName.objDefinition.intMaxLength	= 255;
+Employee.oProperties.FirstName.oDefinition				= {};
+Employee.oProperties.FirstName.oDefinition.sLabel		= 'First Name';
+Employee.oProperties.FirstName.oDefinition.mEditable	= true;
+Employee.oProperties.FirstName.oDefinition.mMandatory	= true;
+Employee.oProperties.FirstName.oDefinition.mAutoTrim	= true;
+Employee.oProperties.FirstName.oDefinition.iMaxLength	= 255;
 
 // Last Name
-Employee.objProperties.LastName				= {};
-Employee.objProperties.LastName.strType		= 'text';
+Employee.oProperties.LastName		= {};
+Employee.oProperties.LastName.sType	= 'text';
 
-Employee.objProperties.LastName.objDefinition				= {};
-Employee.objProperties.LastName.objDefinition.strLabel		= 'Last Name';
-Employee.objProperties.LastName.objDefinition.mixEditable	= true;
-Employee.objProperties.LastName.objDefinition.mixMandatory	= true;
-Employee.objProperties.LastName.objDefinition.mixAutoTrim	= true;
-Employee.objProperties.LastName.objDefinition.intMaxLength	= 255;
+Employee.oProperties.LastName.oDefinition				= {};
+Employee.oProperties.LastName.oDefinition.sLabel		= 'Last Name';
+Employee.oProperties.LastName.oDefinition.mEditable		= true;
+Employee.oProperties.LastName.oDefinition.mMandatory	= true;
+Employee.oProperties.LastName.oDefinition.mAutoTrim		= true;
+Employee.oProperties.LastName.oDefinition.iMaxLength	= 255;
 
 // Username
-Employee.objProperties.UserName				= {};
-Employee.objProperties.UserName.strType		= 'text';
+Employee.oProperties.UserName		= {};
+Employee.oProperties.UserName.sType	= 'text';
 
-Employee.objProperties.UserName.objDefinition				= {};
-Employee.objProperties.UserName.objDefinition.strLabel		= 'Username';
-Employee.objProperties.UserName.objDefinition.mixEditable	= true;
-Employee.objProperties.UserName.objDefinition.mixMandatory	= true;
-Employee.objProperties.UserName.objDefinition.mixAutoTrim	= true;
-Employee.objProperties.UserName.objDefinition.intMaxLength	= 31;
+Employee.oProperties.UserName.oDefinition				= {};
+Employee.oProperties.UserName.oDefinition.sLabel		= 'Username';
+Employee.oProperties.UserName.oDefinition.mEditable		= true;
+Employee.oProperties.UserName.oDefinition.mMandatory	= true;
+Employee.oProperties.UserName.oDefinition.mAutoTrim		= true;
+Employee.oProperties.UserName.oDefinition.iMaxLength	= 31;
 
 // Date of Birth
-Employee.objProperties.DOB				= {};
-Employee.objProperties.DOB.strType		= 'date-picker';
+Employee.oProperties.DOB			= {};
+Employee.oProperties.DOB.sType		= 'date-picker';
 
-Employee.objProperties.DOB.objDefinition				= {};
-Employee.objProperties.DOB.objDefinition.strLabel		= 'Date of Birth';
-Employee.objProperties.DOB.objDefinition.mixEditable	= true;
-Employee.objProperties.DOB.objDefinition.mixMandatory	= true;
-//Employee.objProperties.DOB.objDefinition.fncValidate	= Reflex_Validation.date.bind(Reflex_Validation);
+Employee.oProperties.DOB.oDefinition			= {};
+Employee.oProperties.DOB.oDefinition.sLabel		= 'Date of Birth';
+Employee.oProperties.DOB.oDefinition.mEditable	= true;
+Employee.oProperties.DOB.oDefinition.mMandatory	= true;
+//Employee.oProperties.DOB.oDefinition.fnValidate	= Reflex_Validation.date.bind(Reflex_Validation);
 
 // Email
-Employee.objProperties.Email				= {};
-Employee.objProperties.Email.strType		= 'text';
+Employee.oProperties.Email			= {};
+Employee.oProperties.Email.sType	= 'text';
 
-Employee.objProperties.Email.objDefinition				= {};
-Employee.objProperties.Email.objDefinition.strLabel		= 'Email';
-Employee.objProperties.Email.objDefinition.mixEditable	= true;
-Employee.objProperties.Email.objDefinition.mixMandatory	= true;
-Employee.objProperties.Email.objDefinition.mixAutoTrim	= true;
-Employee.objProperties.Email.objDefinition.intMaxLength	= 255;
-Employee.objProperties.Email.objDefinition.fncValidate	= Reflex_Validation.email.bind(Reflex_Validation);
+Employee.oProperties.Email.oDefinition				= {};
+Employee.oProperties.Email.oDefinition.sLabel		= 'Email';
+Employee.oProperties.Email.oDefinition.mEditable	= true;
+Employee.oProperties.Email.oDefinition.mMandatory	= true;
+Employee.oProperties.Email.oDefinition.mAutoTrim	= true;
+Employee.oProperties.Email.oDefinition.iMaxLength	= 255;
+Employee.oProperties.Email.oDefinition.fnValidate	= Reflex_Validation.email.bind(Reflex_Validation);
 
 // Extension
-Employee.objProperties.Extension				= {};
-Employee.objProperties.Extension.strType		= 'text';
+Employee.oProperties.Extension			= {};
+Employee.oProperties.Extension.sType	= 'text';
 
-Employee.objProperties.Extension.objDefinition				= {};
-Employee.objProperties.Extension.objDefinition.strLabel		= 'Extension';
-Employee.objProperties.Extension.objDefinition.mixEditable	= true;
-Employee.objProperties.Extension.objDefinition.mixAutoTrim	= true;
-Employee.objProperties.Extension.objDefinition.intMaxLength	= 15;
-Employee.objProperties.Extension.objDefinition.fncValidate	= Reflex_Validation.digits.bind(Reflex_Validation);
+Employee.oProperties.Extension.oDefinition				= {};
+Employee.oProperties.Extension.oDefinition.sLabel		= 'Extension';
+Employee.oProperties.Extension.oDefinition.mEditable	= true;
+Employee.oProperties.Extension.oDefinition.mAutoTrim	= true;
+Employee.oProperties.Extension.oDefinition.iMaxLength	= 15;
+Employee.oProperties.Extension.oDefinition.fnValidate	= Reflex_Validation.digits.bind(Reflex_Validation);
 
 // Phone
-Employee.objProperties.Phone				= {};
-Employee.objProperties.Phone.strType		= 'text';
+Employee.oProperties.Phone			= {};
+Employee.oProperties.Phone.sType	= 'text';
 
-Employee.objProperties.Phone.objDefinition				= {};
-Employee.objProperties.Phone.objDefinition.strLabel		= 'Phone';
-Employee.objProperties.Phone.objDefinition.mixEditable	= true;
-Employee.objProperties.Phone.objDefinition.mixAutoTrim	= function(strPhone){return strPhone.replace(/\s+/, '');};
-Employee.objProperties.Phone.objDefinition.intMaxLength	= 25;
-Employee.objProperties.Phone.objDefinition.fncValidate	= Reflex_Validation.fnnFixedLine.bind(Reflex_Validation);
+Employee.oProperties.Phone.oDefinition				= {};
+Employee.oProperties.Phone.oDefinition.sLabel		= 'Phone';
+Employee.oProperties.Phone.oDefinition.mEditable	= true;
+Employee.oProperties.Phone.oDefinition.mAutoTrim	= function(strPhone){return strPhone.replace(/\s+/, '');};
+Employee.oProperties.Phone.oDefinition.iMaxLength	= 25;
+Employee.oProperties.Phone.oDefinition.fnValidate	= Reflex_Validation.fnnFixedLine.bind(Reflex_Validation);
 
 // Mobile
-Employee.objProperties.Mobile				= {};
-Employee.objProperties.Mobile.strType		= 'text';
+Employee.oProperties.Mobile			= {};
+Employee.oProperties.Mobile.sType	= 'text';
 
-Employee.objProperties.Mobile.objDefinition					= {};
-Employee.objProperties.Mobile.objDefinition.strLabel		= 'Mobile';
-Employee.objProperties.Mobile.objDefinition.mixEditable		= true;
-Employee.objProperties.Mobile.objDefinition.mixAutoTrim		= function(strPhone){return strPhone.replace(/\s+/, '');};
-Employee.objProperties.Mobile.objDefinition.intMaxLength	= 25;
-Employee.objProperties.Mobile.objDefinition.fncValidate		= Reflex_Validation.fnnMobile.bind(Reflex_Validation);
+Employee.oProperties.Mobile.oDefinition				= {};
+Employee.oProperties.Mobile.oDefinition.sLabel		= 'Mobile';
+Employee.oProperties.Mobile.oDefinition.mEditable	= true;
+Employee.oProperties.Mobile.oDefinition.mAutoTrim	= function(strPhone){return strPhone.replace(/\s+/, '');};
+Employee.oProperties.Mobile.oDefinition.iMaxLength	= 25;
+Employee.oProperties.Mobile.oDefinition.fnValidate	= Reflex_Validation.fnnMobile.bind(Reflex_Validation);
 
 // Password
-Employee.objProperties.PassWord				= {};
-Employee.objProperties.PassWord.strType		= 'password';
+Employee.oProperties.PassWord		= {};
+Employee.oProperties.PassWord.sType	= 'password';
 
-Employee.objProperties.PassWord.objDefinition				= {};
-Employee.objProperties.PassWord.objDefinition.strLabel		= 'Password';
-Employee.objProperties.PassWord.objDefinition.mixEditable	= true;
-Employee.objProperties.PassWord.objDefinition.mixMandatory	= true;
-Employee.objProperties.PassWord.objDefinition.intMaxLength	= 40;
+Employee.oProperties.PassWord.oDefinition				= {};
+Employee.oProperties.PassWord.oDefinition.sLabel		= 'Password';
+Employee.oProperties.PassWord.oDefinition.mEditable		= true;
+Employee.oProperties.PassWord.oDefinition.mMandatory	= true;
+Employee.oProperties.PassWord.oDefinition.iMaxLength	= 40;
 
 // Password Confirmation
-Employee.objProperties.PassWordConfirm				= {};
-Employee.objProperties.PassWordConfirm.strType		= 'password';
+Employee.oProperties.PassWordConfirm		= {};
+Employee.oProperties.PassWordConfirm.sType	= 'password';
 
-Employee.objProperties.PassWordConfirm.objDefinition				= {};
-Employee.objProperties.PassWordConfirm.objDefinition.strLabel		= 'Confirm Password';
-Employee.objProperties.PassWordConfirm.objDefinition.mixEditable	= true;
-Employee.objProperties.PassWordConfirm.objDefinition.mixMandatory	= true;
-Employee.objProperties.PassWordConfirm.objDefinition.intMaxLength	= 40;
+Employee.oProperties.PassWordConfirm.oDefinition			= {};
+Employee.oProperties.PassWordConfirm.oDefinition.sLabel		= 'Confirm Password';
+Employee.oProperties.PassWordConfirm.oDefinition.mEditable	= true;
+Employee.oProperties.PassWordConfirm.oDefinition.mMandatory	= true;
+Employee.oProperties.PassWordConfirm.oDefinition.iMaxLength	= 40;
 
 // Role
-Employee.objProperties.user_role_id				= {};
-Employee.objProperties.user_role_id.strType		= 'select';
+Employee.oProperties.user_role_id		= {};
+Employee.oProperties.user_role_id.sType	= 'select';
 
-Employee.objProperties.user_role_id.objDefinition				= {};
-Employee.objProperties.user_role_id.objDefinition.strLabel		= 'Role';
-Employee.objProperties.user_role_id.objDefinition.mixEditable	= true;
-Employee.objProperties.user_role_id.objDefinition.mixMandatory	= true;
-Employee.objProperties.user_role_id.objDefinition.fncPopulate	= User_Role.getAllAsSelectOptions.bind(User_Role);
+Employee.oProperties.user_role_id.oDefinition				= {};
+Employee.oProperties.user_role_id.oDefinition.sLabel		= 'Role';
+Employee.oProperties.user_role_id.oDefinition.mEditable		= true;
+Employee.oProperties.user_role_id.oDefinition.mMandatory	= true;
+Employee.oProperties.user_role_id.oDefinition.fnPopulate	= User_Role.getAllAsSelectOptions.bind(User_Role);
 
 // is_god
-Employee.objProperties.is_god				= {};
-Employee.objProperties.is_god.strType		= 'checkbox';
+Employee.oProperties.is_god			= {};
+Employee.oProperties.is_god.sType	= 'checkbox';
 
-Employee.objProperties.is_god.objDefinition					= {};
-Employee.objProperties.is_god.objDefinition.strLabel		= 'GOD User';
-Employee.objProperties.is_god.objDefinition.mixMandatory	= true;
+Employee.oProperties.is_god.oDefinition				= {};
+Employee.oProperties.is_god.oDefinition.sLabel		= 'GOD User';
+Employee.oProperties.is_god.oDefinition.mMandatory	= true;
 
 // Archived
-Employee.objProperties.Archived				= {};
-Employee.objProperties.Archived.strType		= 'checkbox';
+Employee.oProperties.Archived		= {};
+Employee.oProperties.Archived.sType	= 'checkbox';
 
-Employee.objProperties.Archived.objDefinition				= {};
-Employee.objProperties.Archived.objDefinition.strLabel		= 'Archived';
-Employee.objProperties.Archived.objDefinition.mixEditable	= true;
-Employee.objProperties.Archived.objDefinition.mixMandatory	= true;
+Employee.oProperties.Archived.oDefinition				= {};
+Employee.oProperties.Archived.oDefinition.sLabel		= 'Archived';
+Employee.oProperties.Archived.oDefinition.mEditable		= true;
+Employee.oProperties.Archived.oDefinition.mMandatory	= true;

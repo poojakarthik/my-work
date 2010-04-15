@@ -1,28 +1,28 @@
 var Control_Field_Select	= Class.create(/* extends */ Control_Field, 
 {
-	initialize	: function($super, strLabel, strLabelSeparator)
+	initialize	: function($super, sLabel, sLabelSeparator)
 	{
 		// Parent
-		$super(strLabel, strLabelSeparator);
+		$super(sLabel, sLabelSeparator);
 		
 		// Create the DOM Elements
-		this.objControlOutput.domEdit				= document.createElement('select');
-		this.objControlOutput.domElement.appendChild(this.objControlOutput.domEdit);
-		this.objControlOutput.sEditDisplayDefault	= this.objControlOutput.domEdit.style.display;
+		this.oControlOutput.oEdit				= document.createElement('select');
+		this.oControlOutput.sEditDisplayDefault	= this.oControlOutput.oEdit.style.display;
+		this.oControlOutput.oElement.appendChild(this.oControlOutput.oEdit);
 		
-		this.objControlOutput.domLoading			= document.createElement('span');
-		this.objControlOutput.domLoading.innerHTML	= "<img src='../admin/img/template/loading.gif' style='width: 16px; height: 16px; margin-right: 0.25em;' title='Loading...' alt='' />Loading...";
-		this.objControlOutput.domElement.appendChild(this.objControlOutput.domLoading);
+		this.oControlOutput.oLoading			= document.createElement('span');
+		this.oControlOutput.oLoading.innerHTML	= "<img src='../admin/img/template/loading.gif' style='width: 16px; height: 16px; margin-right: 0.25em;' title='Loading...' alt='' />Loading...";
+		this.oControlOutput.oElement.appendChild(this.oControlOutput.oLoading);
 		
-		this.objControlOutput.domView				= document.createElement('span');
-		this.objControlOutput.domElement.appendChild(this.objControlOutput.domView);
-		this.objControlOutput.sViewDisplayDefault	= this.objControlOutput.domView.style.display;
+		this.oControlOutput.oView	= document.createElement('span');
+		this.oControlOutput.oElement.appendChild(this.oControlOutput.oView);
+		this.oControlOutput.sViewDisplayDefault	= this.oControlOutput.oView.style.display;
 		
 		// Not populated yet
-		this.bPopulated									= false;
-		this.objControlOutput.domEdit.style.display		= 'none';
-		this.objControlOutput.domView.style.display		= 'none';
-		this.objControlOutput.domLoading.style.display	= 'inline';
+		this.bPopulated								= false;
+		this.oControlOutput.oEdit.style.display		= 'none';
+		this.oControlOutput.oView.style.display		= 'none';
+		this.oControlOutput.oLoading.style.display	= 'inline';
 		
 		this.validate();
 		
@@ -31,31 +31,31 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	
 	getElementValue	: function()
 	{
-		return (this.objControlOutput.domEdit.selectedIndex >= 0) ? this.objControlOutput.domEdit.options[this.objControlOutput.domEdit.selectedIndex].value : null;
+		return (this.oControlOutput.oEdit.selectedIndex >= 0) ? this.oControlOutput.oEdit.options[this.oControlOutput.oEdit.selectedIndex].value : null;
 	},
 	
-	setElementValue	: function(mixValue)
+	setElementValue	: function(mValue)
 	{
-		//alert("Setting " + this.getLabel() + " Element Value to '" + mixValue + "'");
+		//alert("Setting " + this.getLabel() + " Element Value to '" + mValue + "'");
 		
 		// Set if the Contents have loaded, otherwise we will auto-set on population
 		if (this.bPopulated)
 		{
-			this.objControlOutput.domEdit.selectedIndex	= (!mixValue && mixValue !== 0) ? -1 : this._getIndexForValue(mixValue);
+			this.oControlOutput.oEdit.selectedIndex	= (!mValue && mValue !== 0) ? -1 : this._getIndexForValue(mValue);
 		}
 	},
 	
 	updateElementValue	: function()
 	{
-		mixValue	= this.getValue();
+		mValue	= this.getValue();
 		
-		this.setElementValue(mixValue);
-		this.objControlOutput.domView.innerHTML	= (this.objControlOutput.domEdit.selectedIndex >= 0) ? this.objControlOutput.domEdit.options[this.objControlOutput.domEdit.selectedIndex].innerHTML : '[ None ]';
+		this.setElementValue(mValue);
+		this.oControlOutput.oView.innerHTML	= (this.oControlOutput.oEdit.selectedIndex >= 0) ? this.oControlOutput.oEdit.options[this.oControlOutput.oEdit.selectedIndex].innerHTML : '[ None ]';
 	},
 	
-	setPopulateFunction	: function(fPopulateFunction, bPopulateImmediately)
+	setPopulateFunction	: function(fnPopulateFunction, bPopulateImmediately)
 	{
-		this.fPopulateFunction	= fPopulateFunction;
+		this.fnPopulateFunction	= fnPopulateFunction;
 		
 		// Populate
 		if (bPopulateImmediately || bPopulateImmediately === undefined || bPopulateImmediately === null)
@@ -70,18 +70,18 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		{
 			//alert("No options -- getting list...");
 			this.bPopulated									= false;
-			this.objControlOutput.domEdit.style.display		= 'none';
-			this.objControlOutput.domView.style.display		= 'none';
-			this.objControlOutput.domLoading.style.display	= 'inline';
+			this.oControlOutput.oEdit.style.display		= 'none';
+			this.oControlOutput.oView.style.display		= 'none';
+			this.oControlOutput.oLoading.style.display	= 'inline';
 			
 			// Remove any existing Options
-			for (var i = 0; i < this.objControlOutput.domEdit.options.length; i++)
+			for (var i = 0; i < this.oControlOutput.oEdit.options.length; i++)
 			{
-				this.objControlOutput.domEdit.remove(this.objControlOutput.domEdit.options[i]);
+				this.oControlOutput.oEdit.remove(this.oControlOutput.oEdit.options[i]);
 			}
 			
 			// Retrieve Options
-			this.fPopulateFunction(this.populate.bind(this));
+			this.fnPopulateFunction(this.populate.bind(this));
 		}
 		else
 		{
@@ -89,45 +89,45 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 			//alert("Populating Select with " + aOptions.length + " Options");
 			for (var i = 0; i < aOptions.length; i++)
 			{
-				this.objControlOutput.domEdit.add(aOptions[i], null);
+				this.oControlOutput.oEdit.add(aOptions[i], null);
 			}
 			
-			this.bPopulated									= true;
-			this.objControlOutput.domEdit.style.display		= this.objControlOutput.sEditDisplayDefault;
-			this.objControlOutput.domView.style.display		= this.objControlOutput.sViewDisplayDefault;
-			this.objControlOutput.domLoading.style.display	= 'none';
+			this.bPopulated								= true;
+			this.oControlOutput.oEdit.style.display		= this.oControlOutput.sEditDisplayDefault;
+			this.oControlOutput.oView.style.display		= this.oControlOutput.sViewDisplayDefault;
+			this.oControlOutput.oLoading.style.display	= 'none';
 			
 			this.updateElementValue();
 		}
 	},
 	
-	_getIndexForValue	: function(mixValue)
+	_getIndexForValue	: function(mValue)
 	{
-		for (var i = 0; i < this.objControlOutput.domEdit.options.length; i++)
+		for (var i = 0; i < this.oControlOutput.oEdit.options.length; i++)
 		{
-			if (mixValue == this.objControlOutput.domEdit.options[i].value)
+			if (mValue == this.oControlOutput.oEdit.options[i].value)
 			{
 				return i;
 			}
 		}
-		//alert("No Index for '" + mixValue + "'");
+		//alert("No Index for '" + mValue + "'");
 		return -1;
 	},
 	
 	addEventListeners	: function()
 	{
-		this.arrEventHandlers				= {};
-		this.arrEventHandlers.fncValidate	= this.validate.bind(this);
+		this.aEventHandlers				= {};
+		this.aEventHandlers.fnValidate	= this.validate.bind(this);
 		
-		//this.objControlOutput.domEdit.addEventListener('click'	, this.arrEventHandlers.fncValidate, false);
-		this.objControlOutput.domEdit.addEventListener('change'	, this.arrEventHandlers.fncValidate, false);
-		this.objControlOutput.domEdit.addEventListener('keyup'	, this.arrEventHandlers.fncValidate, false);
+		//this.oControlOutput.oEdit.addEventListener('click'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.addEventListener('change'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.addEventListener('keyup'	, this.aEventHandlers.fnValidate, false);
 	},
 	
 	removeEventListeners	: function()
 	{
-		//this.objControlOutput.domEdit.removeEventListener('click'	, this.arrEventHandlers.fncValidate, false);
-		this.objControlOutput.domEdit.removeEventListener('change'	, this.arrEventHandlers.fncValidate, false);
-		this.objControlOutput.domEdit.removeEventListener('keyup'	, this.arrEventHandlers.fncValidate, false);
+		//this.oControlOutput.oEdit.removeEventListener('click'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.removeEventListener('change'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.removeEventListener('keyup'	, this.aEventHandlers.fnValidate, false);
 	}
 });

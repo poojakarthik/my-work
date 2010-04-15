@@ -85,8 +85,8 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			
 			$this->LoadJavascript("user_role");
 			$this->LoadJavascript("employee");
-			$this->LoadJavascript("popup_employee");
-			
+			//$this->LoadJavascript("popup_employee");
+			$this->LoadJavascript("popup_employee_details");
 		}
 	}
 	
@@ -166,7 +166,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 			{
-				$strNewViewHref	= "new Popup_Employee(Control_Field.RENDER_MODE_VIEW, {$dboEmployee->Id->Value});";
+				$strNewViewHref	= "new Popup_Employee_Details(Control_Field.RENDER_MODE_VIEW, {$dboEmployee->Id->Value});";
 				$strView .= "<img onclick='$strNewViewHref' title='View Employee (NEW)' src='img/template/user_edit.png'></img>";
 			}
 			
@@ -236,7 +236,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 			{
-				$this->Button("Add Employee", "new Popup_Employee(Control_Field.RENDER_MODE_EDIT);");
+				$this->Button("Add Employee", "new Popup_Employee_Details(Control_Field.RENDER_MODE_EDIT);");
 			}
 			
 			echo "</div>\n";

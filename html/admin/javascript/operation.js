@@ -68,8 +68,6 @@ Operation.getAllIndexed	= function(fCallback, aResultSet)
 		}
 		
 		// Pass to Callback
-		//Reflex_Debug.asHTMLPopup(oResultSet);
-		//Reflex_Debug.asHTMLPopup(aResultSet);
 		fCallback(oResultSet);
 	}
 };

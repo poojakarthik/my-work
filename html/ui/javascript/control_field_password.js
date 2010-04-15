@@ -1,17 +1,17 @@
 var Control_Field_Password	= Class.create(/* extends */ Control_Field, 
 {
-	initialize	: function($super, strLabel, strLabelSeparator)
+	initialize	: function($super, sLabel, sLabelSeparator)
 	{
 		// Parent
-		$super(strLabel, strLabelSeparator);
+		$super(sLabel, sLabelSeparator);
 		
 		// Create the DOM Elements
-		this.objControlOutput.domEdit		= document.createElement('input');
-		this.objControlOutput.domEdit.type	= 'password';
-		this.objControlOutput.domElement.appendChild(this.objControlOutput.domEdit);
+		this.oControlOutput.oEdit		= document.createElement('input');
+		this.oControlOutput.oEdit.type	= 'password';
+		this.oControlOutput.oElement.appendChild(this.oControlOutput.oEdit);
 		
-		this.objControlOutput.domView		= document.createElement('span');
-		this.objControlOutput.domElement.appendChild(this.objControlOutput.domView);
+		this.oControlOutput.oView	= document.createElement('span');
+		this.oControlOutput.oElement.appendChild(this.oControlOutput.oView);
 		
 		this.validate();
 		
@@ -20,28 +20,28 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 	
 	getElementValue	: function()
 	{
-		return this.objControlOutput.domEdit.value;
+		return this.oControlOutput.oEdit.value;
 	},
 	
-	setElementValue	: function(mixValue)
+	setElementValue	: function(mValue)
 	{
-		this.objControlOutput.domEdit.value		= mixValue;
+		this.oControlOutput.oEdit.value		= mValue;
 	},
 	
 	updateElementValue	: function()
 	{
-		mixValue	= this.getValue();
+		mValue	= this.getValue();
 		
-		this.setElementValue(mixValue);
-		this.objControlOutput.domView.innerHTML	= (mixValue) ? '[ Password specified ]' : '[ No password specified ]';
+		this.setElementValue(mValue);
+		this.oControlOutput.oView.innerHTML	= (mValue) ? '[ Password specified ]' : '[ No password specified ]';
 	},
 
-	setRenderMode	: function($super, bolRenderMode)
+	setRenderMode	: function($super, oControlFieldPassword)
 	{
-		$super(bolRenderMode);
+		$super(oControlFieldPassword);
 		
-		//if (this.getRenderMode() !== bolRenderMode && bolRenderMode == Control_Field.RENDER_MODE_EDIT)
-		if (bolRenderMode == Control_Field.RENDER_MODE_EDIT)
+		//if (this.getRenderMode() !== oControlFieldPassword && oControlFieldPassword == Control_Field.RENDER_MODE_EDIT)
+		if (oControlFieldPassword == Control_Field.RENDER_MODE_EDIT)
 		{
 			this.setElementValue('');
 		}
@@ -49,45 +49,45 @@ var Control_Field_Password	= Class.create(/* extends */ Control_Field,
 		this.validate();
 	},
 	
-	setDependant	: function(objControlFieldPassword)
+	setDependant	: function(oControlFieldPassword)
 	{
-		if (objControlFieldPassword instanceof Control_Field_Password)
+		if (oControlFieldPassword instanceof Control_Field_Password)
 		{
-			this.objDependantControlField	= objControlFieldPassword;
+			this.oDependantControlField	= oControlFieldPassword;
 		}
 	},
 	
 	validateDependant	: function()
 	{
-		if (this.objDependantControlField)
+		if (this.oDependantControlField)
 		{
-			this.objDependantControlField.validate();
+			this.oDependantControlField.validate();
 		}
 	},
 	
 	addEventListeners	: function()
 	{
-		this.arrEventHandlers						= {};
-		this.arrEventHandlers.fncValidate			= this.validate.bind(this);
-		this.arrEventHandlers.fncValidateDependant	= this.validateDependant.bind(this);
+		this.aEventHandlers						= {};
+		this.aEventHandlers.fnValidate			= this.validate.bind(this);
+		this.aEventHandlers.fnValidateDependant	= this.validateDependant.bind(this);
 		
-		this.objControlOutput.domEdit.addEventListener('click'	, this.arrEventHandlers.fncValidate, false);
-		this.objControlOutput.domEdit.addEventListener('change'	, this.arrEventHandlers.fncValidate, false);
-		this.objControlOutput.domEdit.addEventListener('keyup'	, this.arrEventHandlers.fncValidate, false);
+		this.oControlOutput.oEdit.addEventListener('click'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.addEventListener('change'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.addEventListener('keyup'	, this.aEventHandlers.fnValidate, false);
 		
-		this.objControlOutput.domEdit.addEventListener('click'	, this.arrEventHandlers.fncValidateDependant, false);
-		this.objControlOutput.domEdit.addEventListener('change'	, this.arrEventHandlers.fncValidateDependant, false);
-		this.objControlOutput.domEdit.addEventListener('keyup'	, this.arrEventHandlers.fncValidateDependant, false);
+		this.oControlOutput.oEdit.addEventListener('click'	, this.aEventHandlers.fnValidateDependant, false);
+		this.oControlOutput.oEdit.addEventListener('change'	, this.aEventHandlers.fnValidateDependant, false);
+		this.oControlOutput.oEdit.addEventListener('keyup'	, this.aEventHandlers.fnValidateDependant, false);
 	},
 	
 	removeEventListeners	: function()
 	{
-		this.objControlOutput.domEdit.removeEventListener('click'	, this.arrEventHandlers.fncValidate, false);
-		this.objControlOutput.domEdit.removeEventListener('change'	, this.arrEventHandlers.fncValidate, false);
-		this.objControlOutput.domEdit.removeEventListener('keyup'	, this.arrEventHandlers.fncValidate, false);
+		this.oControlOutput.oEdit.removeEventListener('click'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.removeEventListener('change'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.removeEventListener('keyup'	, this.aEventHandlers.fnValidate, false);
 		
-		this.objControlOutput.domEdit.removeEventListener('click'	, this.arrEventHandlers.fncValidateDependant, false);
-		this.objControlOutput.domEdit.removeEventListener('change'	, this.arrEventHandlers.fncValidateDependant, false);
-		this.objControlOutput.domEdit.removeEventListener('keyup'	, this.arrEventHandlers.fncValidateDependant, false);
+		this.oControlOutput.oEdit.removeEventListener('click'	, this.aEventHandlers.fnValidateDependant, false);
+		this.oControlOutput.oEdit.removeEventListener('change'	, this.aEventHandlers.fnValidateDependant, false);
+		this.oControlOutput.oEdit.removeEventListener('keyup'	, this.aEventHandlers.fnValidateDependant, false);
 	}
 });

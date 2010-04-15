@@ -242,42 +242,42 @@ class Employee
 	public function getOperations()
 	{
 		// Calculate a list of all atomic Operations this profile includes
-		$strEffectiveDatetime	= Data_Source_Time::currentTimestamp();
-		$arrOperations			= array();
+		$sEffectiveDatetime	= Data_Source_Time::currentTimestamp();
+		$aOperations		= array();
 		
 		// Get Operations
-		$selOperationIds	= new StatementSelect("employee_operation", "operation_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = {$this->id}");
-		if ($selOperationIds->Execute($this->toArray()) === false)
+		$oOperationIds	= new StatementSelect("employee_operation", "operation_id", "'{$sEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = {$this->id}");
+		if ($oOperationIds->Execute($this->toArray()) === false)
 		{
-			throw new Exception($selOperationIds->Error());
+			throw new Exception($oOperationIds->Error());
 		}
-		while ($arrOperationId = $selOperationIds->Fetch())
+		while ($aOperationId = $oOperationIds->Fetch())
 		{
 			// Add this Operation to the list
-			$arrOperations[$arrOperationId['operation_id']]	= Operation::getForId($arrOperationId['operation_id']);
+			$aOperations[$aOperationId['operation_id']]	= Operation::getForId($aOperationId['operation_id']);
 		}
 		
-		return $arrOperations;
+		return $aOperations;
 	}
 	
 	public function getOperationProfiles()
 	{
 		// Calculate a list of all atomic Operations this profile includes
-		$strEffectiveDatetime	= Data_Source_Time::currentTimestamp();
-		$arrOperationProfiles	= array();
+		$sEffectiveDatetime	= Data_Source_Time::currentTimestamp();
+		$aOperationProfiles	= array();
 		
 		// Get Profiles
-		$selOperationProfileIds	= new StatementSelect("employee_operation_profile", "operation_profile_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = {$this->id}");
-		if ($selOperationProfileIds->Execute($this->toArray()) === false)
+		$oOperationProfileIds	= new StatementSelect("employee_operation_profile", "operation_profile_id", "'{$sEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = {$this->id}");
+		if ($oOperationProfileIds->Execute($this->toArray()) === false)
 		{
-			throw new Exception($selOperationProfileIds->Error());
+			throw new Exception($oOperationProfileIds->Error());
 		}
-		while ($arrOperationProfileId = $selOperationProfileIds->Fetch())
+		while ($aOperationProfileId = $oOperationProfileIds->Fetch())
 		{
-			$arrOperationProfiles[$arrOperationProfileId['operation_profile_id']]	= Operation_Profile::getForId($arrOperationProfileId['operation_profile_id']);
+			$aOperationProfiles[$aOperationProfileId['operation_profile_id']]	= Operation_Profile::getForId($aOperationProfileId['operation_profile_id']);
 		}
 		
-		return $arrOperationProfiles;
+		return $aOperationProfiles;
 	}
 	
 	//------------------------------------------------------------------------//

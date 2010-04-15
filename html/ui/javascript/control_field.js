@@ -1,24 +1,24 @@
 var Control_Field	= Class.create
 ({
-	initialize	: function(strLabel, strLabelSeparator)
+	initialize	: function(sLabel, sLabelSeparator)
 	{
-		this.strLabel			= strLabel;
-		this.strLabelSeparator	= (strLabelSeparator) ? strLabelSeparator : '&nbsp;:';
+		this.sLabel				= sLabel;
+		this.sLabelSeparator	= (sLabelSeparator) ? sLabelSeparator : '&nbsp;:';
 		
 		// Set a default value (this should be overwritten pretty much immediately)
-		this.mixDefaultValue	= '';
-		this.mixValue			= this.mixDefaultValue;
+		this.mDefaultValue	= '';
+		this.mValue			= this.mDefaultValue;
 		
 		// Create DOM Objects
-		this.objControlOutput				= {};
-		this.objControlOutput.domElement	= document.createElement('div');
+		this.oControlOutput				= {};
+		this.oControlOutput.oElement	= document.createElement('div');
 		
-		this.bolInit	= false;
+		this.bInit	= false;
 	},
 	
 	getElement	: function()
 	{
-		return this.objControlOutput.domElement;
+		return this.oControlOutput.oElement;
 	},
 	
 	getElementValue	: function()
@@ -38,18 +38,18 @@ var Control_Field	= Class.create
 	},
 	
 	// Value
-	setValue	: function(mixValue)
+	setValue	: function(mValue)
 	{
-		//alert(this.strLabel+" is being set to '" + mixValue + "'");
+		//alert(this.sLabel+" is being set to '" + mValue + "'");
 		
-		this.mixValue			= mixValue;
+		this.mValue	= mValue;
 		this.updateElementValue(true);
 		
 		// Make sure we update the Control(s)
 		this.validate();
 	},
 	
-	setElementValue	: function(mixValue)
+	setElementValue	: function(mValue)
 	{
 		throw "OO Error: Control_Field::setElementValue() is an unimplemented Virtual Method!";
 	},
@@ -59,49 +59,49 @@ var Control_Field	= Class.create
 		throw "OO Error: Control_Field::getElementValue() is an unimplemented Virtual Method!";
 	},
 	
-	getValue	: function(bolImplicitSave)
+	getValue	: function(bImplicitSave)
 	{
-		if (bolImplicitSave)
+		if (bImplicitSave)
 		{
 			this.save();
 		}
-		return this.mixValue;
+		return this.mValue;
 	},
 	
-	getLabel	: function(bolAppendSeparator)
+	getLabel	: function(bAppendSeparator)
 	{
-		return this.strLabel + (bolAppendSeparator ? this.strLabelSeparator : '');
+		return this.sLabel + (bAppendSeparator ? this.sLabelSeparator : '');
 	},
 	
 	// Visibility
-	setVisible	: function(mixVisible)
+	setVisible	: function(mVisible)
 	{
-		this.mixVisible	= mixVisible;
+		this.mVisible	= mVisible;
 		//this.updateElementValue();
 	},
 	
 	isVisible	: function()
 	{
-		if (typeof this.mixVisible == 'function')
+		if (typeof this.mVisible == 'function')
 		{
 			// Callback
-			return (this.mixVisible()) ? true : false;
+			return (this.mVisible()) ? true : false;
 		}
 		else
 		{
-			return (this.mixVisible) ? true : false;
+			return (this.mVisible) ? true : false;
 		}
 	},
 	
 	// Max Length
-	setMaxLength	: function(intMaxLength)
+	setMaxLength	: function(iMaxLength)
 	{
-		this.intMaxLength	= intMaxLength;
+		this.iMaxLength	= iMaxLength;
 	},
 	
 	getMaxLength	: function()
 	{
-		return this.intMaxLength;
+		return this.iMaxLength;
 	},
 	
 	// Population (SELECTs only)
@@ -115,53 +115,53 @@ var Control_Field	= Class.create
 		throw "OO Error: Control_Field::populate() is an unimplemented Virtual Method!";
 	},
 	
-	setAutoTrim	: function(mixAutoTrim)
+	setAutoTrim	: function(mAutoTrim)
 	{
-		this.mixAutoTrim	= mixAutoTrim;
+		this.mAutoTrim	= mAutoTrim;
 		this.validate();
 	},
 	
-	trim	: function(bolReturnValue)
+	trim	: function(bReturnValue)
 	{
 		// Perform Trim
-		var mixValue	= this.getElementValue();
-		if (typeof this.mixAutoTrim == 'function')
+		var mValue	= this.getElementValue();
+		if (typeof this.mAutoTrim == 'function')
 		{
 			// Callback
-			mixValue	= this.mixAutoTrim(mixValue);
+			mValue	= this.mAutoTrim(mValue);
 		}
-		else if (this.mixAutoTrim)
+		else if (this.mAutoTrim)
 		{
-			mixValue	= mixValue.replace(/(^\s*|\s*$)/g, '');
+			mValue	= mValue.replace(/(^\s*|\s*$)/g, '');
 		}
 		
 		// Return or set Value
-		if (bolReturnValue)
+		if (bReturnValue)
 		{
-			return mixValue;
+			return mValue;
 		}
 		else
 		{
-			this.setElementValue(mixValue);
+			this.setElementValue(mValue);
 		}
 	},
 
-	setEditable	: function(mixEditable)
+	setEditable	: function(mEditable)
 	{
-		this.mixEditable	= mixEditable;
+		this.mEditable	= mEditable;
 		this.validate();
 	},
 	
 	getEditable	: function()
 	{
-		if (typeof this.mixEditable == 'function')
+		if (typeof this.mEditable == 'function')
 		{
 			// Callback
-			return (this.mixEditable()) ? true : false;
+			return (this.mEditable()) ? true : false;
 		}
 		else
 		{
-			return (this.mixEditable) ? true : false;
+			return (this.mEditable) ? true : false;
 		}
 	},
 	
@@ -170,23 +170,23 @@ var Control_Field	= Class.create
 		return (this.getRenderMode() === Control_Field.RENDER_MODE_EDIT && this.getEditable()) ? true : false;
 	},
 
-	setRenderMode	: function(bolRenderMode)
+	setRenderMode	: function(bRenderMode)
 	{
-		this.bolRenderMode	= bolRenderMode;
+		this.bRenderMode	= bRenderMode;
 		
 		// Update Render Mode
 		if (this.isEditable())
 		{
-			this.objControlOutput.domEdit.removeClassName('hide');
-			this.objControlOutput.domView.addClassName('hide');
+			this.oControlOutput.oEdit.removeClassName('hide');
+			this.oControlOutput.oView.addClassName('hide');
 		}
 		else
 		{
-			this.objControlOutput.domEdit.addClassName('hide');
-			this.objControlOutput.domView.removeClassName('hide');
+			this.oControlOutput.oEdit.addClassName('hide');
+			this.oControlOutput.oView.removeClassName('hide');
 		}
 		
-		if (bolRenderMode == Control_Field.RENDER_MODE_EDIT)
+		if (bRenderMode == Control_Field.RENDER_MODE_EDIT)
 		{
 			this.setElementValue(this.getValue());
 		}
@@ -196,41 +196,41 @@ var Control_Field	= Class.create
 	
 	getRenderMode	: function()
 	{
-		return this.bolRenderMode;
+		return this.bRenderMode;
 	},
 	
-	setMandatory	: function(mixMandatory)
+	setMandatory	: function(mMandatory)
 	{
-		this.mixMandatory	= mixMandatory;
+		this.mMandatory	= mMandatory;
 		this.validate();
 	},
 	
 	isMandatory	: function()
 	{
-		if (typeof this.mixMandatory == 'function')
+		if (typeof this.mMandatory == 'function')
 		{
 			// Callback
-			return (this.mixMandatory()) ? true : false;
+			return (this.mMandatory()) ? true : false;
 		}
 		else
 		{
-			return (this.mixMandatory) ? true : false;
+			return (this.mMandatory) ? true : false;
 		}
 	},
 	
 	// Validation
-	setValidateFunction	: function(fncValidate)
+	setValidateFunction	: function(fnValidate)
 	{
-		this.fncValidate	= fncValidate;
+		this.fnValidate	= fnValidate;
 		this.validate();
 	},
 	
 	isValid	: function()
 	{
-		if (typeof this.fncValidate == 'function')
+		if (typeof this.fnValidate == 'function')
 		{
 			// Callback
-			return (this.fncValidate(this.getElementValue())) ? true : false;
+			return (this.fnValidate(this.getElementValue())) ? true : false;
 		}
 		else
 		{
@@ -240,48 +240,48 @@ var Control_Field	= Class.create
 	
 	validate	: function()
 	{
-		var mixReturn	= false;
+		var mReturn	= false;
 		
 		if (this.isEditable())
 		{
 			// Preprocess (trim)
 			this.trim();
 			
-			this.objControlOutput.domElement.removeClassName('invalid');
-			this.objControlOutput.domElement.removeClassName('valid');
-			this.objControlOutput.domElement.removeClassName('mandatory');
+			this.oControlOutput.oElement.removeClassName('invalid');
+			this.oControlOutput.oElement.removeClassName('valid');
+			this.oControlOutput.oElement.removeClassName('mandatory');
 			
-			var mixElementValue	= this.getElementValue();
-			if (mixElementValue)
+			var mElementValue	= this.getElementValue();
+			if (mElementValue)
 			{
 				if (this.isValid())
 				{
-					bolReturn	= true;
-					this.objControlOutput.domElement.addClassName('valid');
+					bReturn	= true;
+					this.oControlOutput.oElement.addClassName('valid');
 				}
 				else
 				{
-					this.objControlOutput.domElement.addClassName('invalid');
-					mixReturn	= "'"+mixElementValue+"' is not a valid "+this.getLabel();
+					this.oControlOutput.oElement.addClassName('invalid');
+					mReturn	= "'"+mElementValue+"' is not a valid "+this.getLabel();
 				}
 			}
 			else if (this.isMandatory())
 			{
-				this.objControlOutput.domElement.addClassName('mandatory');
-				mixReturn	= "No value supplied for mandatory field "+this.getLabel();
+				this.oControlOutput.oElement.addClassName('mandatory');
+				mReturn	= "No value supplied for mandatory field "+this.getLabel();
 			}
 			else
 			{
-				bolReturn	= true;
+				bReturn	= true;
 			}
 		}
 		else
 		{
-			bolReturn	= true;
+			bReturn	= true;
 		}
 		
 		//this.updateElementValue();
-		return bolReturn;
+		return bReturn;
 	},
 	
 	revert	: function()
@@ -289,11 +289,11 @@ var Control_Field	= Class.create
 		this.setElementValue(this.getValue());
 	},
 	
-	save	: function(bolCommit)
+	save	: function(bCommit)
 	{
 		if (this.validate())
 		{
-			if (bolCommit)
+			if (bCommit)
 			{
 				this.setValue(this.getElementValue());
 				return this.getValue();
@@ -305,47 +305,48 @@ var Control_Field	= Class.create
 		}
 	},
 	
-	generateInputTableRow	: function(bolRenderMode)
+	generateInputTableRow	: function(bRenderMode)
 	{
-		if (bolRenderMode !== undefined)
+		if (bRenderMode !== undefined)
 		{
-			this.setRenderMode(bolRenderMode);
+			this.setRenderMode(bRenderMode);
 		}
 		
 		// TODO: Replace styling with Classes
-		var objTR							= {};
-		objTR.objTH							= {};
-		objTR.objTD							= {};
-		objTR.objTD.objOutputDIV			= {};
-		objTR.objTD.objOutputDIV.objOutput	= {};
-		objTR.objTD.objDescription			= {};
+		// TODO: Redo with $T
+		var oTR						= {};
+		oTR.oTH						= {};
+		oTR.oTD						= {};
+		oTR.oTD.oOutputDIV			= {};
+		oTR.oTD.oOutputDIV.oOutput	= {};
+		oTR.oTD.oDescription		= {};
 		
-		objTR.domElement		= document.createElement('tr');
+		oTR.oElement	= document.createElement('tr');
 		
-		objTR.objTH.domElement						= document.createElement('th');
-		objTR.objTH.domElement.innerHTML			= this.getLabel(true);
-		objTR.domElement.appendChild(objTR.objTH.domElement);
+		oTR.oTH.oElement				= document.createElement('th');
+		oTR.oTH.oElement.innerHTML	= this.getLabel(true);
+		oTR.oElement.appendChild(oTR.oTH.oElement);
 		
-		objTR.objTD.domElement	= document.createElement('td');
-		objTR.domElement.appendChild(objTR.objTD.domElement);
+		oTR.oTD.oElement	= document.createElement('td');
+		oTR.oElement.appendChild(oTR.oTD.oElement);
 		
-		objTR.objTD.objOutputDIV.domElement	= document.createElement('div');
-		objTR.objTD.domElement.appendChild(objTR.objTD.objOutputDIV.domElement);
+		oTR.oTD.oOutputDIV.oElement	= document.createElement('div');
+		oTR.oTD.oElement.appendChild(oTR.oTD.oOutputDIV.oElement);
 		
-		objTR.objTD.objOutputDIV.objOutput.domElement	= this.getElement();
-		objTR.objTD.domElement.appendChild(objTR.objTD.objOutputDIV.objOutput.domElement);
+		oTR.oTD.oOutputDIV.oOutput.oElement	= this.getElement();
+		oTR.oTD.oElement.appendChild(oTR.oTD.oOutputDIV.oOutput.oElement);
 		
 		if (this.strDescription != undefined)
 		{
-			objTR.objTD.objDescription.domElement					= document.createElement('div')
-			objTR.objTD.objDescription.domElement.style.color		= "#666";
-			objTR.objTD.objDescription.domElement.style.fontStyle	= "italic";
-			objTR.objTD.objDescription.domElement.style.fontSize	= "0.8em";
-			objTR.objTD.objDescription.domElement.innerHTML			= this.strDescription;
-			objTR.objTD.domElement.appendChild(objTR.objTD.objDescription.domElement);
+			oTR.oTD.oDescription.oElement					= document.createElement('div')
+			oTR.oTD.oDescription.oElement.style.color		= "#666";
+			oTR.oTD.oDescription.oElement.style.fontStyle	= "italic";
+			oTR.oTD.oDescription.oElement.style.fontSize	= "0.8em";
+			oTR.oTD.oDescription.oElement.innerHTML			= this.strDescription;
+			oTR.oTD.oElement.appendChild(oTR.oTD.oDescription.oElement);
 		}
 		
-		return objTR;
+		return oTR;
 	}
 });
 
@@ -354,71 +355,71 @@ Control_Field.RENDER_MODE_VIEW	= false;
 Control_Field.RENDER_MODE_EDIT	= true;
 
 // Static Functions
-Control_Field.factory	= function(strType, objDefinition)
+Control_Field.factory	= function(sType, oDefinition)
 {
-	var objControlField;
+	var oControlField;
 	
 	// Determine type
-	switch (strType.toLowerCase())
+	switch (sType.toLowerCase())
 	{
 		case 'checkbox':
-			objControlField	= new Control_Field_Checkbox(objDefinition.strLabel);
+			oControlField	= new Control_Field_Checkbox(oDefinition.sLabel);
 			break;
 			
 		case 'date-picker':
-			objControlField	= new Control_Field_Date_Picker(objDefinition.strLabel);
+			oControlField	= new Control_Field_Date_Picker(oDefinition.sLabel);
 			break;
 			
 		case 'hidden':
-			objControlField	= new Control_Field_Hidden(objDefinition.strLabel);
+			oControlField	= new Control_Field_Hidden(oDefinition.sLabel);
 			break;
 			
 		case 'password_confirm':
 		case 'password-confirm':
 		case 'password confirm':
 		case 'passwordconfirm':
-			objControlField	= new Control_Field_Password_Confirm(objDefinition.strLabel);
-			objControlField.setMaxLength(objDefinition.intMaxLength ? objDefinition.intMaxLength : false);
+			oControlField	= new Control_Field_Password_Confirm(oDefinition.sLabel);
+			oControlField.setMaxLength(oDefinition.iMaxLength ? oDefinition.iMaxLength : false);
 			break;
 			
 		case 'password':
-			objControlField	= new Control_Field_Password(objDefinition.strLabel);
-			objControlField.setMaxLength(objDefinition.intMaxLength ? objDefinition.intMaxLength : false);
+			oControlField	= new Control_Field_Password(oDefinition.sLabel);
+			oControlField.setMaxLength(oDefinition.iMaxLength ? oDefinition.iMaxLength : false);
 			break;
 			
 		case 'radio-group':
 		case 'radio_group':
 		case 'radio group':
 		case 'radiogroup':
-			objControlField	= new Control_Field_RadioGroup(objDefinition.strLabel);
-			objControlField.setPopulateFunction(objDefinition.fncPopulate);
+			oControlField	= new Control_Field_RadioGroup(oDefinition.sLabel);
+			oControlField.setPopulateFunction(oDefinition.fnPopulate);
 			break;
 			
 		case 'select':
-			objControlField	= new Control_Field_Select(objDefinition.strLabel);
-			objControlField.setPopulateFunction(objDefinition.fncPopulate);
+			oControlField	= new Control_Field_Select(oDefinition.sLabel);
+			oControlField.setPopulateFunction(oDefinition.fnPopulate);
 			break;
 			
 		case 'text':
-			objControlField	= new Control_Field_Text(objDefinition.strLabel);
-			objControlField.setMaxLength(objDefinition.intMaxLength ? objDefinition.intMaxLength : false);
-			objControlField.setAutoTrim(objDefinition.mixAutoTrim ? objDefinition.mixAutoTrim : false);
+			oControlField	= new Control_Field_Text(oDefinition.sLabel);
+			oControlField.setMaxLength(oDefinition.iMaxLength ? oDefinition.iMaxLength : false);
+			oControlField.setAutoTrim(oDefinition.mAutoTrim ? oDefinition.mAutoTrim : false);
 			break;
 			
 		default:
-			throw "'" + strType + "' is not a valid Control_Field type!";
+			throw "'" + sType + "' is not a valid Control_Field type!";
 			break;
 	}
 	
 	// Set common properties
-	objControlField.setVisible(objDefinition.mixVisible ? objDefinition.mixVisible : false);
-	objControlField.setEditable(objDefinition.mixEditable ? objDefinition.mixEditable : false);
-	objControlField.setMandatory(objDefinition.mixMandatory ? objDefinition.mixMandatory : false);
+	oControlField.setVisible(oDefinition.mVisible ? oDefinition.mVisible : false);
+	oControlField.setEditable(oDefinition.mEditable ? oDefinition.mEditable : false);
+	oControlField.setMandatory(oDefinition.mMandatory ? oDefinition.mMandatory : false);
 	
-	if (objDefinition.fncValidate)
+	if (oDefinition.fnValidate)
 	{
-		objControlField.setValidateFunction(objDefinition.fncValidate);
+		oControlField.setValidateFunction(oDefinition.fnValidate);
 	}
 	
-	return objControlField;
+	return oControlField;
 };
