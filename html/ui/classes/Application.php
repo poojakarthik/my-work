@@ -184,7 +184,9 @@ class Application
 				ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
 			}
 
-			ContextMenu()->Admin->PaymentDownload();
+			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download'
+			//ContextMenu()->Admin->PaymentDownload();
+			
 			ContextMenu()->Admin->MoveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
 
@@ -404,7 +406,9 @@ class Application
 				ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
 			}
 
-			ContextMenu()->Admin->PaymentDownload();
+			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download''. rmctainsh 20100415
+			//ContextMenu()->Admin->PaymentDownload();
+			
 			ContextMenu()->Admin->MoveDelinquentCDRs();
 			ContextMenu()->Admin->DataReports();
 

@@ -77,6 +77,7 @@
 																	FROM		CustomerGroup cg
 																	WHERE		cg.Id = {$iCustomerGroup}
 																	LIMIT		1");
+					
 					if ($oCustomerGroupResult === false)
 					{
 						throw new Exception($qryQuery->Error());
@@ -112,6 +113,7 @@
 																	WHERE		p.PaymentType = {$intPaymentType}
 																				AND CAST(p.PaidOn AS DATE) = CAST('{$strPaidOn}' AS DATE)
 																				AND a.CustomerGroup = {$iCustomerGroup}");
+						
 						if ($oPaymentsResult === false)
 						{
 							throw new Exception($qryQuery->Error());
@@ -163,6 +165,7 @@
 				$resPayments		= $qryQuery->Execute(	"SELECT Payment.AccountGroup, Payment.Account, Account.BusinessName, Account.TradingName, CustomerGroup.external_name AS CustomerGroup, Payment.TXNReference, Payment.PaidOn, Payment.Amount " .
 															"FROM Payment JOIN Account ON Payment.Account = Account.Id JOIN CustomerGroup ON CustomerGroup.Id = Account.CustomerGroup " .
 															"WHERE PaymentType = {$intPaymentType} AND PaidOn = '{$strPaidOn}' AND Account.CustomerGroup IN ({$strCustomerGroups})");
+				
 				if ($resPayments === false)
 				{
 					//throw new Exception($qryQuery->Error());
