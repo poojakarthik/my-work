@@ -3103,9 +3103,10 @@ class MenuItems {
 	 * @method
 	 */
 	function PaymentDownload() {
-		$this->strContextMenuLabel = "Payment Download";
+		self::deprecatedMenuItem('PaymentDownload', self::OLD_FRAMEWORK."payment_download.php");
+		/*$this->strContextMenuLabel = "Payment Download";
 		$this->strLabel = "Payment Download";
-		return self :: OLD_FRAMEWORK . "payment_download.php";
+		return self :: OLD_FRAMEWORK . "payment_download.php";*/
 	}
 
 	//------------------------------------------------------------------------//
