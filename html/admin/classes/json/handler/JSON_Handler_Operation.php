@@ -82,6 +82,7 @@ class JSON_Handler_Operation extends JSON_Handler
 							$oStdClass->aPrerequisites[]	= $oOperationPrerequisite->prerequisite_operation_id;
 						}
 						
+						/*
 						// Get list of dependants
 						$aDependants			= $oOperation->getDependants();
 						$oStdClass->aDependants	= array();
@@ -89,10 +90,12 @@ class JSON_Handler_Operation extends JSON_Handler
 						{
 							$oStdClass->aDependants[]	= $oOperationPrerequisite->operation_id;
 						}
+						*/
 						
 						// Add to Result Set
 						$aResults[$iCount+$iOffset]	= $oStdClass;
 					}
+					
 					$iCount++;
 				}
 				

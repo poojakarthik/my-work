@@ -1,35 +1,38 @@
+
 var Operation_Tree	= Class.create
 ({
-	initialize	: function(sRenderHeirarchy, aSelected)
+	initialize	: function(sRenderHeirarchy, aSelected, fnDataSource, fnOnLoad)
 	{
-		// Create Tree Grid
-		this._oTreeGrid				= {};
-		this._oTreeGrid.oControl	= new Control_Tree_Grid();
+		this._bEditable	= false;
+		this.fnOnLoad	= fnOnLoad;
 		
-		this._oTreeGrid.oColumns									= {};
-		this._oTreeGrid.oColumns[Control_Tree_Grid.COLUMN_CHECK]	= {};
-		this._oTreeGrid.oColumns[Control_Tree_Grid.COLUMN_LABEL]	= {};
-		this._oTreeGrid.oControl.setColumns(this._oTreeGrid.oColumns);
+		// Create Reflex.Control.Tree
+		this.oControl	= new Reflex.Control.Tree();
+		this.oControl.setColumns(
+			{
+				'label'	: {sTitle: 'Operation'}
+			}
+		);
 		
-		this._oTreeGrid.oControl.addDataType(Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sName, Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sDescription, Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sIconSource, this.onSelectHandler.bind(this));
+		// Create loading element
+		this.oLoading	= 	$T.div({class: 'loading'},
+								$T.div(
+									$T.span(
+										$T.img({src: '../admin/img/template/loading.gif', alt: '', title: 'Loading'}),
+										'Retrieving list of Operations...'
+									)
+								)
+							);
+		this.oControl.getElement().appendChild(this.oLoading);
 		
-		this._oTreeGrid.oControl.getElement().style.overflowY	= 'hidden';
-		
-		this._oTreeGrid.oLoading						= {};
-		this._oTreeGrid.oLoading.domElement				= document.createElement('div');
-		this._oTreeGrid.oLoading.domElement.innerHTML	= "<div><span><img src='../admin/img/template/loading.gif' alt='' title='Loading' /> Retrieving list of Operations...</span></div>";
-		this._oTreeGrid.oLoading.domElement.addClassName('loading');
-		
-		this._oTreeGrid.oControl.getElement().appendChild(this._oTreeGrid.oLoading.domElement);
-		
-		// Set Selected Operations
-		this._aSelected	= [];
-		this.setSelected(aSelected);
-		
+		this.setSelected(aSelected, true);
 		this.setRenderHeirarchy(sRenderHeirarchy);
 		
-		// Load Operations
-		Operation.getAllIndexed(this._load.bind(this));
+		// Load Data
+		if (fnDataSource)
+		{
+			fnDataSource(this._load.bind(this));
+		}
 	},
 	
 	_load	: function(oResultSet)
@@ -43,24 +46,31 @@ var Operation_Tree	= Class.create
 			this._oOperationDetails[iOperationId].bSelected			= false;
 			this._oOperationDetails[iOperationId].aNodeInstances	= [];
 		}
+		
 		this._bLoaded	= true;
+		
+		// Load callback
+		if (this.fnOnLoad)
+		{
+			this.fnOnLoad();
+		}
 		
 		// Rebuild the Tree
 		this._buildTree();
 		
 		// Hide Loading screen
-		this._oTreeGrid.oControl.getElement().style.overflowY	= 'scroll';
-		this._oTreeGrid.oLoading.domElement.style.display		= 'none';
+		this.oControl.getElement().style.overflowY	= 'scroll';
+		this.oLoading.style.display					= 'none';
 	},
 	
 	getTreeGrid	: function()
 	{
-		return this._oTreeGrid.oControl;
+		return this.oControl;
 	},
 	
 	getElement	: function()
 	{
-		return this._oTreeGrid.oControl.getElement();
+		return this.oControl.getElement();
 	},
 	
 	setRenderHeirarchy	: function(sRenderHeirarchy)
@@ -94,9 +104,6 @@ var Operation_Tree	= Class.create
 	
 	_buildTree	: function()
 	{
-		// Remove the existing tree nodes
-		this._oTreeGrid.oControl.purgeChildren();
-		
 		// Rebuild the tree
 		for (iOperationId in this.oOperations)
 		{
@@ -107,7 +114,7 @@ var Operation_Tree	= Class.create
 					// Only Operations with no dependants
 					if (!this.oOperations[iOperationId].aDependants || !this.oOperations[iOperationId].aDependants.length)
 					{
-						this._oTreeGrid.oControl.appendChild(this._convertOperationToTreeNode(iOperationId));
+						this.oControl.getRootNode().addChild(this._convertOperationToTreeNode(iOperationId));
 					}
 					break;
 					
@@ -115,37 +122,34 @@ var Operation_Tree	= Class.create
 					// Only Operations with no prerequisites
 					if (!this.oOperations[iOperationId].aPrerequisites || !this.oOperations[iOperationId].aPrerequisites.length)
 					{
-						this._oTreeGrid.oControl.appendChild(this._convertOperationToTreeNode(iOperationId));
+						this.oControl.getRootNode().addChild(this._convertOperationToTreeNode(iOperationId));
 					}
 					break;
 				
 				default:
 					// All Operations
-					this._oTreeGrid.oControl.appendChild(this._convertOperationToTreeNode(iOperationId));
+					this.oControl.getRootNode().addChild(this._convertOperationToTreeNode(iOperationId));
 					break;
 			}
 		}
 		
 		// Render the Tree
-		this._oTreeGrid.oControl.render();
+		this.oControl.paint();
 	},
 	
 	_convertOperationToTreeNode	: function(iOperationId)
 	{
 		if (!this.oOperations[iOperationId])
 		{
-			throw "Operation with Id #"+iOperationId+" does not exist!";
+			throw "Operation with Id #" + iOperationId + " does not exist!";
 		}
 		
-		var oNodeContent	=	{}
-		oNodeContent[Control_Tree_Grid.COLUMN_LABEL]	= this.oOperations[iOperationId].name;
-		oNodeContent[Control_Tree_Grid.COLUMN_VALUE]	= iOperationId;
-		oNodeContent[Control_Tree_Grid.COLUMN_CHECK]	=	{
-																mValue		: iOperationId,
-																bChecked	: (this._aSelected.indexOf(iOperationId) > -1)
-															};
-		var oNode			= new Control_Tree_Grid_Node_Data(oNodeContent, Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sName);
-		
+		var oNode	= 	new Reflex.Control.Tree.Node.Checkable(
+							{label: this.oOperations[iOperationId].name},
+							iOperationId,
+							this._bEditable,
+							this.onSelectHandler.bind(this)
+						);
 		this._oOperationDetails[iOperationId].aNodeInstances.push(oNode);
 		
 		switch (this._sRenderHeirarchy)
@@ -156,9 +160,10 @@ var Operation_Tree	= Class.create
 				{
 					for (var i = 0; i < this.oOperations[iOperationId].aPrerequisites.length; i++)
 					{
-						oNode.appendChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aPrerequisites[i]));
+						oNode.addChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aPrerequisites[i]));
 					}
 				}
+				
 				break;
 				
 			case Operation_Tree.RENDER_HEIRARCHY_GROUPED:
@@ -167,11 +172,15 @@ var Operation_Tree	= Class.create
 				{
 					for (var i = 0; i < this.oOperations[iOperationId].aDependants.length; i++)
 					{
-						oNode.appendChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aDependants[i]));
+						oNode.addChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aDependants[i]));
 					}
 				}
+				
 				break;
 		}
+		
+		// Set the icon
+		oNode.setIcon(Operation_Tree.TREE_NODE_ICON_IMAGE);
 		
 		return oNode;
 	},
@@ -183,16 +192,23 @@ var Operation_Tree	= Class.create
 	
 	setEditable	: function(bEditable)
 	{
-		// Set Tree Editable
-		this._oTreeGrid.oControl.setEditable(bEditable);
+		// Set editable on all root node children (they will pass to their children)
+		var aChildren	= this.oControl.getRootNode().aChildren;
+		
+		for (var i = 0; i < aChildren.length; i++)
+		{
+			aChildren[i].setEditable(bEditable);
+		}
+		
+		this._bEditable	= bEditable;
 	},
 	
 	isEditable	: function()
 	{
-		return this._oTreeGrid.oControl.isEditable();
+		return this._bEditable;
 	},
 	
-	setOperationSelected	: function(iOperationId, bSelected)
+	setOperationSelected	: function(iOperationId, bSelected, bDisableSelected)
 	{
 		if (!this.oOperations[iOperationId] || !this._oOperationDetails[iOperationId])
 		{
@@ -202,9 +218,17 @@ var Operation_Tree	= Class.create
 		this._oOperationDetails[iOperationId].bSelected	= bSelected;
 		
 		// Update all Node instances
+		var oNode	= null;
+		
 		for (var i = 0; i < this._oOperationDetails[iOperationId].aNodeInstances.length; i++)
 		{
-			this._oOperationDetails[iOperationId].aNodeInstances[i].setSelected(bSelected, true);
+			oNode	= this._oOperationDetails[iOperationId].aNodeInstances[i]; 
+			oNode.setCheckedState(bSelected, true);
+			
+			if (bDisableSelected)
+			{
+				oNode.setEnabled(false);
+			}
 		}
 		
 		// Update all Prerequisites
@@ -212,7 +236,7 @@ var Operation_Tree	= Class.create
 		{
 			for (var i = 0; i < this.oOperations[iOperationId].aPrerequisites.length; i++)
 			{
-				this.setOperationSelected(this.oOperations[iOperationId].aPrerequisites[i], true);
+				this.setOperationSelected(this.oOperations[iOperationId].aPrerequisites[i], true, bDisableSelected);
 			}
 		}
 		
@@ -221,30 +245,36 @@ var Operation_Tree	= Class.create
 		{
 			for (var i = 0; i < this.oOperations[iOperationId].aDependants.length; i++)
 			{
-				this.setOperationSelected(this.oOperations[iOperationId].aDependants[i], false);
+				this.setOperationSelected(this.oOperations[iOperationId].aDependants[i], false, bDisableSelected);
 			}
 		}
 	},
 	
 	onSelectHandler	: function(oNode)
 	{
-		this.setOperationSelected(oNode.getValue(), oNode.isSelected());
+		this.setOperationSelected(oNode.getValue(), oNode.isChecked(), false);
 	},
 	
-	setSelected	: function(aSelected)
+	setSelected	: function(aSelected, bSelectOnly, bDisableSelected)
 	{
-		//Reflex_Debug.asHTMLPopup(aSelected);
-		
 		if (aSelected)
 		{
-			for (iOperationId in this.oOperations)
+			if (bSelectOnly)
 			{
-				this.setOperationSelected(iOperationId, aSelected.indexOf(parseInt(iOperationId)) > -1);
+				// Only select the given operations
+				for (var i = 0; i < aSelected.length; i++)
+				{
+					this.setOperationSelected(aSelected[i], true, bDisableSelected);
+				}
 			}
-		}
-		else
-		{
-			//alert("Setting "+aSelected+" selected Operations");
+			else
+			{
+				// Go through all operations and if it's not in the selected array deselect it, otherwise select.
+				for (iOperationId in this.oOperations)
+				{
+					this.setOperationSelected(iOperationId, aSelected.indexOf(parseInt(iOperationId)) > -1, bDisableSelected);
+				}
+			}
 		}
 	},
 	
@@ -264,7 +294,7 @@ var Operation_Tree	= Class.create
 	
 	render	: function()
 	{
-		this._oTreeGrid.oControl.render();
+		this.oControl.paint();
 	}
 });
 
@@ -272,8 +302,5 @@ Operation_Tree.RENDER_HEIRARCHY_NONE		= 'none';
 Operation_Tree.RENDER_HEIRARCHY_INCLUDES	= 'includes';
 Operation_Tree.RENDER_HEIRARCHY_GROUPED		= 'grouped';
 
+Operation_Tree.TREE_NODE_ICON_IMAGE			= '../admin/img/template/operation.png';
 
-Operation_Tree.TREE_GRID_DATATYPE_OPERATION					= {};
-Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sName			= 'operation';
-Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sDescription	= 'Operation';
-Operation_Tree.TREE_GRID_DATATYPE_OPERATION.sIconSource		= '../admin/img/template/operation.png';

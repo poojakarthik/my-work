@@ -205,51 +205,31 @@ Reflex.Control.Tree.Node	= Class.create
 		// Add Columns
 		for (sName in this.oVisibleColumns)
 		{
-			var	oColumnElement	= document.createElement('li');
-			oColumnElement.addClassName('reflex-tree-node-column');
-			oColumnElement.addClassName(this.oVisibleColumns[sName].sClassName);
+			var oColumnElement	= $T.li({class: 'reflex-tree-node-column ' + this.oVisibleColumns[sName].sClassName});
 			
 			if (sName === 'label')
 			{
-				// Label Column
-				var	oInsetElement		= document.createElement('span'),
-					oExpandContainer	= document.createElement('span'),
-					oIconContainer		= document.createElement('span'),
-					oTextElement		= document.createElement('span');
-				
-				oIconContainer.addClassName('reflex-tree-node-icon');
-				oIconContainer.appendChild(this.oIconElement);
-				
-				oInsetElement.setStyle({paddingLeft: (Math.max(0, this.getNodeDepth() - 1) * Reflex.Control.Tree.Node.NODE_INDENT_STEPPING_EM) + 'em'});
-				
-				oExpandContainer.addClassName('reflex-tree-node-expand');
-				if (this.aChildren.length > 0)
-				{
-					oExpandContainer.observe('click', this.toggleExpanded.bind(this));
-					oExpandContainer.addClassName('reflex-tree-node-expandable');
-					if (this.bExpanded)
-					{
-						oExpandContainer.addClassName('reflex-tree-node-expanded');
-					}
-				}
-				
-				oTextElement.innerHTML	= this.oData['label'] ? this.oData['label'].escapeHTML() : '[ No Label ]';
-				
-				oColumnElement.appendChild(oInsetElement);
-				oColumnElement.appendChild(oExpandContainer);
-				oColumnElement.appendChild(oIconContainer);
-				oColumnElement.appendChild(oTextElement);
-				
+				// Attach the label dom
+				this.paintLabel(oColumnElement, sName);
 				oColumnElement.addClassName('reflex-tree-node-label');
 				
 				// Must go first (doesn't make sense anywhere else)
 				this.oColumnsList.insertBefore(oColumnElement, this.oColumnsList.firstDescendant());
 			}
-			else
+			else 
 			{
-				// Data Column
-				oColumnElement.innerHTML	= "<span>"+(this.oData[sName] ? this.oData[sName].escapeHTML() : '')+"</span>";
-				this.oColumnsList.appendChild(oColumnElement);
+				if((typeof this.oData[sName] == 'object') && (typeof this.oData[sName].appendChild == 'function'))
+				{
+					// Data column (dom element)
+					oColumnElement.appendChild(this.oData[sName]);
+					this.oColumnsList.appendChild(oColumnElement);
+				}
+				else
+				{
+					// Data Column (text)
+					oColumnElement.innerHTML	= "<span>"+(this.oData[sName] ? this.oData[sName].escapeHTML() : '')+"</span>";
+					this.oColumnsList.appendChild(oColumnElement);
+				}
 			}
 		}
 		
@@ -258,6 +238,50 @@ Reflex.Control.Tree.Node	= Class.create
 		{
 			this.aChildren[i].paint(this.oVisibleColumns);
 		}
+	},
+	
+	paintLabel	: function(oColumnElement, sName)
+	{
+		// Attach each label element
+		oColumnElement.appendChild(this.getLabelInsetElement());
+		oColumnElement.appendChild(this.getLabelExpandContainer());
+		oColumnElement.appendChild(this.getLabelIconContainer());
+		oColumnElement.appendChild(this.getLabelTextElement());
+	},
+	
+	getLabelInsetElement	: function()
+	{
+		return $T.span({style: 'padding-left: ' + (Math.max(0, this.getNodeDepth() - 1) * Reflex.Control.Tree.Node.NODE_INDENT_STEPPING_EM) + 'em;'});
+	},
+	
+	getLabelExpandContainer	: function()
+	{
+		var oExpandContainer	= $T.span({class: 'reflex-tree-node-expand'});
+		
+		if (this.aChildren.length > 0)
+		{
+			oExpandContainer.observe('click', this.toggleExpanded.bind(this));
+			oExpandContainer.addClassName('reflex-tree-node-expandable');
+			
+			if (this.bExpanded)
+			{
+				oExpandContainer.addClassName('reflex-tree-node-expanded');
+			}
+		}
+		
+		return oExpandContainer;
+	},
+	
+	getLabelIconContainer	: function()
+	{
+		return	$T.span({class: 'reflex-tree-node-icon'},
+					this.oIconElement
+				);
+	},
+	
+	getLabelTextElement	: function()
+	{
+		return $T.span(this.oData['label'] ? this.oData['label'].escapeHTML() : '[ No Label ]');
 	}
 });
 

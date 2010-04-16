@@ -62,9 +62,33 @@ Operation.getAllIndexed	= function(fCallback, aResultSet)
 	{
 		// Index this Result Set with the Ids
 		var oResultSet	= {};
+		var oOperation	= null;
+		var hDependants	= {};
+		
 		for (iSequence in aResultSet)
 		{
-			oResultSet[aResultSet[iSequence].id]	= aResultSet[iSequence];
+			oOperation	= aResultSet[iSequence];
+			
+			// Add to the list of dependants for each prerequisite
+			for (var i = 0; i < oOperation.aPrerequisites.length; i++)
+			{
+				var iId	= oOperation.aPrerequisites[i];
+				
+				if (!hDependants[iId])
+				{
+					hDependants[iId]	= [];
+				}
+				
+				hDependants[iId].push(oOperation.id);
+			}
+			
+			oResultSet[oOperation.id]	= oOperation;
+		}
+		
+		// Add dependants to each operation
+		for (var iOperationId in oResultSet)
+		{
+			oResultSet[iOperationId].aDependants	= (hDependants[iOperationId] ? hDependants[iOperationId] : []);
 		}
 		
 		// Pass to Callback

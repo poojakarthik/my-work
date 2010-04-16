@@ -64,10 +64,14 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			$this->LoadJavascript("control_tab_group");
 			$this->LoadJavascript("control_tab");
 			
-			$this->LoadJavascript("control_tree_grid");
-			$this->LoadJavascript("control_tree_grid_node");
-			$this->LoadJavascript("control_tree_grid_node_root");
-			$this->LoadJavascript("control_tree_grid_node_data");
+			// new tree
+			$this->LoadJavascript("reflex_style");
+			$this->LoadJavascript("reflex_fx_reveal"); 
+			$this->LoadJavascript("reflex_control");
+			$this->LoadJavascript("reflex_control_tree");
+			$this->LoadJavascript("reflex_control_tree_node");
+			$this->LoadJavascript("reflex_control_tree_node_root");
+			$this->LoadJavascript("reflex_control_tree_node_checkable");
 			
 			$this->LoadJavascript("date_time_picker_dynamic");
 			
@@ -85,7 +89,6 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			
 			$this->LoadJavascript("user_role");
 			$this->LoadJavascript("employee");
-			//$this->LoadJavascript("popup_employee");
 			$this->LoadJavascript("popup_employee_details");
 		}
 	}

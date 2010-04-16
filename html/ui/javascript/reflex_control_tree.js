@@ -38,7 +38,7 @@ Reflex.Control.Tree	= Class.create(/* extends */Reflex.Control,
 			var sName	= Reflex.Control.Tree.sanitiseName(sColumnName);
 			this.oColumns[sName]	=	{
 											sName	: sName,
-											sTitle	: oColumns[sColumnName].sTitle ? oColumns[sColumnName].sTitle : sColumnName,
+											sTitle	: ((typeof oColumns[sColumnName].sTitle != 'undefined') && (oColumns[sColumnName].sTitle != null)) ? oColumns[sColumnName].sTitle : sColumnName,
 											fWidth	: oColumns[sColumnName].fWidth ? oColumns[sColumnName].fWidth : 'auto'
 										};
 		}
@@ -106,6 +106,16 @@ Reflex.Control.Tree	= Class.create(/* extends */Reflex.Control,
 		// Redraw the children!
 		this.oRootNode.setExpanded(true, !this.oRootNode.isExpanded());
 		this.oRootNode.paint(this.oColumns);
+	},
+	
+	setEditable	: function(bEditable)
+	{
+		this._isEditable	= bEditable;
+	},
+	
+	isEditable	: function()
+	{
+		return this._isEditable;
 	}
 });
 
@@ -139,7 +149,8 @@ Reflex.Control.Tree.normalisePercentages	= function(mPercentages)
 	for (i in oPercentages)
 	{
 		var fPercent	= parseFloat(oPercentages[i]);
-		fTotalPercent	+= (fPercent === 'NaN') ? 100 / iCount : fPercent;
+		oPercentages[i]	= isNaN(fPercent) ? 100 / iCount : fPercent;
+		fTotalPercent	+= oPercentages[i];
 	}
 	
 	var fRatio	= fTotalPercent / 100;

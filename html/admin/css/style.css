@@ -2444,6 +2444,12 @@ span.reflex-tree-node-icon img
 	margin-right	: 0.25em;
 }
 
+span.reflex-tree-node-checkable-checkbox > input[type="checkbox"]
+{
+	margin-top		: 0.15em;
+	margin-right	: 0.25em;
+}
+
 /******************************************************************************/
 
 

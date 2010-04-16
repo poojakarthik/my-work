@@ -1,3 +1,4 @@
+
 var Operation_Profile	= Class.create
 ({
 	initialize	: function(iId, fCallback)
@@ -28,7 +29,7 @@ var Operation_Profile	= Class.create
 	}
 });
 
-Operation_Profile._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_FULL_CACHING, {strObject: 'Operation_Profile', strMethod: 'getDataset'});
+Operation_Profile._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_FULL_CACHING, {strObject: 'Operation_Profile', strMethod: 'getRecords'});
 
 /* Static Methods */
 
@@ -42,7 +43,9 @@ Operation_Profile.getAll	= function(fCallback, iRecordCount, aResultSet)
 	if (iRecordCount === undefined || aResultSet === undefined)
 	{
 		// Make Request
-		this._oDataset.getRecords(Operation_Profile.getAll.bind(Operation_Profile, fCallback));
+		this._oDataset.getRecords(
+			Operation_Profile.getAll.bind(Operation_Profile, fCallback)
+		);
 	}
 	else
 	{
@@ -51,25 +54,72 @@ Operation_Profile.getAll	= function(fCallback, iRecordCount, aResultSet)
 	}
 };
 
+Operation_Profile.getAllChildOperations	= function(fnCallback, oResponse)
+{
+	if (typeof oResponse === 'undefined')
+	{
+		// Make Request
+		var fnGetAll	= 	jQuery.json.jsonFunction(
+								Operation_Profile.getAllChildOperations.curry(fnCallback),
+								null,
+								'Operation_Profile_Operation',
+								'getAll'
+							);
+		fnGetAll();
+	}
+	else if (oResponse.Success)
+	{
+		// Got response
+		if (fnCallback)
+		{
+			fnCallback(oResponse);
+		}
+	}
+};
+
 Operation_Profile.getAllIndexed	= function(fCallback, aResultSet)
 {
 	if (aResultSet === undefined)
 	{
 		// Make Request
-		Operation_Profile.getAll(Operation_Profile.getAllIndexed.bind(Operation_Profile, fCallback));
+		Operation_Profile.getAll(
+			Operation_Profile.getAllIndexed.bind(Operation_Profile, fCallback)
+		);
 	}
 	else
 	{
 		// Index this Result Set with the Ids
 		var oResultSet	= {};
+		var hDependants	= {};
+		var oProfile	= null;
+		
 		for (iSequence in aResultSet)
 		{
-			oResultSet[aResultSet[iSequence].id]	= aResultSet[iSequence];
+			oProfile				= aResultSet[iSequence];
+			oProfile.aPrerequisites	= oProfile.aDependants;
+			oResultSet[oProfile.id]	= oProfile;
+			
+			// Add to the list of dependants for each prerequisite
+			for (var i = 0; i < oProfile.aPrerequisites.length; i++)
+			{
+				var iId	= oProfile.aPrerequisites[i];
+				
+				if (!hDependants[iId])
+				{
+					hDependants[iId]	= [];
+				}
+				
+				hDependants[iId].push(oProfile.id);
+			}
+		}
+		
+		// Add dependants to each profile
+		for (var iProfileId in oResultSet)
+		{
+			oResultSet[iProfileId].aDependants	= (hDependants[iProfileId] ? hDependants[iProfileId] : []);
 		}
 		
 		// Pass to Callback
-		//Reflex_Debug.asHTMLPopup(oResultSet);
-		//Reflex_Debug.asHTMLPopup(aResultSet);
 		fCallback(oResultSet);
 	}
 };

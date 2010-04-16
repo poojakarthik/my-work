@@ -54,25 +54,36 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 			}
 			else
 			{
-				// Include Data
-				$iLimit		= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
-				$iOffset	= ($iLimit === null) ? null : max((int)$iOffset, 0);
+				$iLimit				= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
+				$iOffset			= ($iLimit === null) ? null : max((int)$iOffset, 0);
+				$aOperationProfiles	= Operation_Profile::getAll();
+				$aResults			= array();
+				$iCount				= 0;
 				
-				$qQuery	= new Query();
-				
-				// Retrieve list of Employees
-				$sGetAllSQL	= "SELECT * FROM operation_profile WHERE 1";
-				$sGetAllSQL	.= ($iLimit !== null) ? " LIMIT {$iLimit} OFFSET {$iOffset}" : '';
-				$rGetAll	= $qQuery->Execute($sGetAllSQL);
-				if ($rGetAll === false)
+				foreach ($aOperationProfiles as $iId => $oOperationProfile)
 				{
-					throw new Exception($qQuery->Error());
-				}
-				$aResults	= array();
-				$iCount		= 0;
-				while ($aResult = $rGetAll->fetch_assoc())
-				{
-					$aResults[$iCount+$iOffset]	= $aResult;
+					if ($iLimit && $iCount >= $iOffset + $iLimit)
+					{
+						// Break out, as there's no point in continuing
+						break;
+					}
+					elseif ($iCount >= $iOffset)
+					{
+						$oStdClass	= $oOperationProfile->toStdClass();
+						
+						// Get list of Dependants
+						$aDependants			= $oOperationProfile->getChildOperationProfiles();
+						$oStdClass->aDependants	= array();
+						
+						foreach ($aDependants as $oDependant)
+						{
+							$oStdClass->aDependants[]	= $oDependant->id;
+						}
+						
+						// Add to Result Set
+						$aResults[$iCount + $iOffset]	= $oStdClass;
+					}
+					
 					$iCount++;
 				}
 				
@@ -92,8 +103,8 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 			
 			return array(
 							"Success"	=> false,
-							"Message"	=> 'ERROR: '.$e->getMessage(),
-							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? 'ERROR: '.$e->getMessage() : 'There was an error accessing the database',
+							"strDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
 						);
 		}
 	}
