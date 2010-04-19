@@ -63,6 +63,45 @@ var Employee	= Class.create
 		}
 	},
 	
+	setPermissions	: function(aOperationProfileIds, aOperationIds, fnCallback, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Make ajax request
+			if (this.oProperties.Id !== 'undefined')
+			{
+				// Create json function
+				var fnJSON	= 	jQuery.json.jsonFunction(
+									this.setPermissions.bind(
+										this,
+										aOperationProfileIds, 
+										aOperationIds, 
+										fnCallback
+									), 
+									null, 
+									'Employee', 
+									'setPermissions'
+								);
+				fnJSON(this.oProperties.Id, aOperationProfileIds, aOperationIds);
+			}
+		}
+		else if(oResponse.Success)
+		{
+			//this.aOperationProfileIds 	= aOperationProfileIds;
+			//this.aOperationIds			= aOperationIds;
+			
+			if (fnCallback)
+			{
+				fnCallback(oResponse);
+			}
+		}
+		else
+		{
+			// AJAX Error
+			Reflex_Popup.alert(oResponse.Message ? oResponse.Message : '');
+		}
+	},
+	
 	getControls	: function()
 	{
 		this._refreshControls();

@@ -9,6 +9,9 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		this.iOperationTreeReadyCount	= 0;
 		this.hOperationProfileChildren	= [];
 		
+		this.oLoading	= new Reflex_Popup.Loading('Getting Permissions...');
+		this.oLoading.display();
+		
 		if (Number(iEmployeeId) > 0)
 		{
 			// Employee Id passed -- load permissions via JSON
@@ -28,6 +31,7 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 	
 	buildContent	: function(oEmployee)
 	{
+		// Cache employee
 		this.oEmployee	= oEmployee;
 		
 		// Build Content
@@ -89,6 +93,7 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		this.oEditButton.observe('click', this.setControlMode.bind(this, Control_Field.RENDER_MODE_EDIT));
 		this.oNewProfileButton.observe('click', this._createNewProfile.bind(this));
 		
+		// Initialise interface features
 		this.setFooterButtons([this.oEditButton, this.oCloseButton], true);
 		this.setControlMode(this.bRenderMode);
 		
@@ -144,59 +149,80 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		{
 			// Got child operations for profiles
 			this.hOperationProfileChildren	= oResponse.aOperations;
+			
+			// Set the tree values
 			this._selectDefaultTreeValues();
+			
+			// Hide loading popup
+			this.oLoading.hide();
+			delete this.oLoading;
 		}
 	},
 	
-	_save	: function()
+	_save	: function(event, oResponse)
 	{
-		var aOperationProfileIds	= this.oOperationProfilesTree.getSelected();
-		var aOperationIds			= this.oOperationsTree.getSelected(true);
-		var oOperationProfiles		= this.oOperationProfilesTree.oOperations;
-		var hPrerequisite			= {};
-		
-		// Flag all of the prerequisite profiles from each selected one
-		for (var i = 0; i < aOperationProfileIds.length; i++)
+		if (typeof oResponse == 'undefined')
 		{
-			var iOperationProfileId	= aOperationProfileIds[i];
+			var aOperationProfileIds	= this.oOperationProfilesTree.getSelected();
+			var aOperationIds			= this.oOperationsTree.getSelected(true);
+			var oOperationProfiles		= this.oOperationProfilesTree.oOperations;
+			var hPrerequisite			= {};
 			
-			if (iOperationProfileId != null)
+			// Flag all of the prerequisite profiles from each selected one
+			for (var i = 0; i < aOperationProfileIds.length; i++)
 			{
-				// For each prerequisite...
-				var aPrerequisites	= oOperationProfiles[iOperationProfileId].aPrerequisites;
+				var iOperationProfileId	= aOperationProfileIds[i];
 				
-				for (var j = 0; j < aPrerequisites.length; j++)
+				if (iOperationProfileId != null)
 				{
-					// See if it exists in the aOperationProfileIds, if so flag it as such
-					var sProfileId	= aPrerequisites[j].toString();
+					// For each prerequisite...
+					var aPrerequisites	= oOperationProfiles[iOperationProfileId].aPrerequisites;
 					
-					if (sProfileId != iOperationProfileId)
+					for (var j = 0; j < aPrerequisites.length; j++)
 					{
-						for (var k = 0; k < aOperationProfileIds.length; k++)
+						// See if it exists in the aOperationProfileIds, if so flag it as such
+						var sProfileId	= aPrerequisites[j].toString();
+						
+						if (sProfileId != iOperationProfileId)
 						{
-							if (aOperationProfileIds[k] == sProfileId)
+							for (var k = 0; k < aOperationProfileIds.length; k++)
 							{
-								hPrerequisite[sProfileId]	= true;
-								break;
+								if (aOperationProfileIds[k] == sProfileId)
+								{
+									hPrerequisite[sProfileId]	= true;
+									break;
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-
-		var sTest	= '';
-		
-		// For each operation profile id, ignore it if flagged as a prerequisite
-		for (var i = 0; i < aOperationProfileIds.length; i++)
-		{
-			if (!hPrerequisite[aOperationProfileIds[i]])
+	
+			// For each operation profile id, ignore it if flagged as a prerequisite
+			var aOperationProfileIdsToSave	= [];
+			
+			for (var i = 0; i < aOperationProfileIds.length; i++)
 			{
-				sTest	+= aOperationProfileIds[i];
+				if (!hPrerequisite[aOperationProfileIds[i]])
+				{
+					aOperationProfileIdsToSave.push(aOperationProfileIds[i]);
+				}
 			}
+			
+			// Show loading
+			this.oLoading	= new Reflex_Popup.Loading('Saving...');
+			this.oLoading.display();
+			
+			// Make the AJAX request
+			this.oEmployee.setPermissions(aOperationProfileIdsToSave, aOperationIds, this._save.bind(this, null));
 		}
-		
-		alert(sTest + "-----" + aOperationIds.join());
+		else
+		{
+			// Got response, close popup
+			this.oLoading.hide();
+			delete this.oLoading;
+			this.hide();
+		}
 	},
 	
 	_selectDefaultTreeValues	: function()

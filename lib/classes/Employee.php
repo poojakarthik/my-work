@@ -280,6 +280,14 @@ class Employee
 		return $aOperationProfiles;
 	}
 	
+	public function getForUserName($sUserName)
+	{
+		$oSelect	= new Statement_Select('Employee', 'Id', 'UserName = <UserName>');
+		$oSelect->Execute(array('UserName' => $sUserName));
+		$iId	= $oSelect->Fetch();
+		return $iId;
+	}
+	
 	//------------------------------------------------------------------------//
 	// getColumns
 	//------------------------------------------------------------------------//

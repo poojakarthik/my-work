@@ -62,9 +62,6 @@ class JSON_Handler_Contact extends JSON_Handler
 		}
 		catch (JSON_Handler_Contact_Exception $oException)
 		{
-			// Rollback database transaction
-			$oDataAccess->TransactionRollback();
-			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> $oException->getMessage(),
