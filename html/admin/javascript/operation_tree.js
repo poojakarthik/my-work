@@ -1,10 +1,11 @@
 
 var Operation_Tree	= Class.create
 ({
-	initialize	: function(sRenderHeirarchy, aSelected, fnDataSource, fnOnLoad)
+	initialize	: function(sRenderHeirarchy, aSelected, fnDataSource, fnOnLoad, fnOnCheck)
 	{
 		this._bEditable	= false;
 		this.fnOnLoad	= fnOnLoad;
+		this.fnOnCheck	= fnOnCheck;
 		
 		// Create Reflex.Control.Tree
 		this.oControl	= new Reflex.Control.Tree();
@@ -13,6 +14,7 @@ var Operation_Tree	= Class.create
 				'label'	: {sTitle: 'Operation'}
 			}
 		);
+		this.oControl.oHeader.hide();
 		
 		// Create loading element
 		this.oLoading	= 	$T.div({class: 'loading'},
@@ -49,14 +51,14 @@ var Operation_Tree	= Class.create
 		
 		this._bLoaded	= true;
 		
+		// Rebuild the Tree
+		this._buildTree();
+		
 		// Load callback
 		if (this.fnOnLoad)
 		{
 			this.fnOnLoad();
 		}
-		
-		// Rebuild the Tree
-		this._buildTree();
 		
 		// Hide Loading screen
 		this.oControl.getElement().style.overflowY	= 'scroll';
@@ -102,6 +104,11 @@ var Operation_Tree	= Class.create
 		}
 	},
 	
+	isLoaded	: function()
+	{
+		return this._bLoaded;
+	},
+	
 	_buildTree	: function()
 	{
 		// Rebuild the tree
@@ -112,10 +119,7 @@ var Operation_Tree	= Class.create
 			{
 				case Operation_Tree.RENDER_HEIRARCHY_INCLUDES:
 					// Only Operations with no dependants
-					if (!this.oOperations[iOperationId].aDependants || !this.oOperations[iOperationId].aDependants.length)
-					{
-						this.oControl.getRootNode().addChild(this._convertOperationToTreeNode(iOperationId));
-					}
+					this.oControl.getRootNode().addChild(this._convertOperationToTreeNode(iOperationId));
 					break;
 					
 				case Operation_Tree.RENDER_HEIRARCHY_GROUPED:
@@ -137,30 +141,39 @@ var Operation_Tree	= Class.create
 		this.oControl.paint();
 	},
 	
-	_convertOperationToTreeNode	: function(iOperationId)
+	_convertOperationToTreeNode	: function(iOperationId, oParentNodeOverride)
 	{
 		if (!this.oOperations[iOperationId])
 		{
 			throw "Operation with Id #" + iOperationId + " does not exist!";
 		}
 		
-		var oNode	= 	new Reflex.Control.Tree.Node.Checkable(
-							{label: this.oOperations[iOperationId].name},
-							iOperationId,
-							this._bEditable,
-							this.onSelectHandler.bind(this)
-						);
+		var oNode		= 	new Reflex.Control.Tree.Node.Checkable(
+								{label: this.oOperations[iOperationId].name},
+								iOperationId,
+								this._bEditable,
+								this.onSelectHandler.bind(this)
+							);
 		this._oOperationDetails[iOperationId].aNodeInstances.push(oNode);
 		
 		switch (this._sRenderHeirarchy)
 		{
 			case Operation_Tree.RENDER_HEIRARCHY_INCLUDES:
-				// Render all prerequisites
+				// Render all prerequisites, inline, not heirarchical
+				var oParentNode	= oNode;
+				
+				if (typeof oParentNodeOverride !== 'undefined')
+				{
+					// Disable the selection of this 2nd level node
+					oNode.setEnabled(false);
+					oParentNode	= oParentNodeOverride;
+				}
+				
 				if (this.oOperations[iOperationId].aPrerequisites && this.oOperations[iOperationId].aPrerequisites.length)
 				{
 					for (var i = 0; i < this.oOperations[iOperationId].aPrerequisites.length; i++)
 					{
-						oNode.addChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aPrerequisites[i]));
+						oParentNode.addChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aPrerequisites[i], oParentNode));
 					}
 				}
 				
@@ -208,7 +221,7 @@ var Operation_Tree	= Class.create
 		return this._bEditable;
 	},
 	
-	setOperationSelected	: function(iOperationId, bSelected, bDisableSelected)
+	setOperationSelected	: function(iOperationId, bSelected, bDisableNodes, bEnableNodes)
 	{
 		if (!this.oOperations[iOperationId] || !this._oOperationDetails[iOperationId])
 		{
@@ -223,9 +236,17 @@ var Operation_Tree	= Class.create
 		for (var i = 0; i < this._oOperationDetails[iOperationId].aNodeInstances.length; i++)
 		{
 			oNode	= this._oOperationDetails[iOperationId].aNodeInstances[i]; 
+			
+			// If enabling, do so before setCheckedState otherwise it won't do it
+			if(bEnableNodes)
+			{
+				oNode.setEnabled(true);
+			}
+			
 			oNode.setCheckedState(bSelected, true);
 			
-			if (bDisableSelected)
+			// If disabling, do so after setCheckedState otherwise it won't do it
+			if (bDisableNodes)
 			{
 				oNode.setEnabled(false);
 			}
@@ -236,7 +257,7 @@ var Operation_Tree	= Class.create
 		{
 			for (var i = 0; i < this.oOperations[iOperationId].aPrerequisites.length; i++)
 			{
-				this.setOperationSelected(this.oOperations[iOperationId].aPrerequisites[i], true, bDisableSelected);
+				this.setOperationSelected(this.oOperations[iOperationId].aPrerequisites[i], true, bDisableNodes);
 			}
 		}
 		
@@ -245,7 +266,7 @@ var Operation_Tree	= Class.create
 		{
 			for (var i = 0; i < this.oOperations[iOperationId].aDependants.length; i++)
 			{
-				this.setOperationSelected(this.oOperations[iOperationId].aDependants[i], false, bDisableSelected);
+				this.setOperationSelected(this.oOperations[iOperationId].aDependants[i], false, bDisableNodes);
 			}
 		}
 	},
@@ -253,10 +274,20 @@ var Operation_Tree	= Class.create
 	onSelectHandler	: function(oNode)
 	{
 		this.setOperationSelected(oNode.getValue(), oNode.isChecked(), false);
+		
+		if (this.fnOnCheck)
+		{
+			this.fnOnCheck();
+		}
 	},
 	
 	setSelected	: function(aSelected, bSelectOnly, bDisableSelected)
 	{
+		if (!this._bLoaded)
+		{
+			return;
+		}
+		
 		if (aSelected)
 		{
 			if (bSelectOnly)
@@ -278,14 +309,20 @@ var Operation_Tree	= Class.create
 		}
 	},
 	
-	getSelected	: function()
+	getSelected	: function(bEnabledNodesOnly)
 	{
 		var aSelected	= [];
 		for (iOperationId in this._oOperationDetails)
 		{
 			if (this._oOperationDetails[iOperationId].bSelected)
 			{
-				aSelected.push(iOperationId);
+				// Check if the first node is enabled, they either all will or all won't be
+				var bEnabled = this._oOperationDetails[iOperationId].aNodeInstances[0].isEnabled();
+				
+				if ((bEnabledNodesOnly && bEnabled) || !bEnabledNodesOnly)
+				{
+					aSelected.push(iOperationId);
+				}
 			}
 		}
 		
@@ -295,6 +332,14 @@ var Operation_Tree	= Class.create
 	render	: function()
 	{
 		this.oControl.paint();
+	},
+	
+	deSelectAll	: function()
+	{
+		for (iOperationId in this.oOperations)
+		{
+			this.setOperationSelected(iOperationId, false, false, true);
+		}
 	}
 });
 

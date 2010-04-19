@@ -3257,6 +3257,12 @@ div.section > div.section-header > div.section-header-title > span
 	font-size		: 1.1em;
 }
 
+div.reflex-popup-content div.section > div.section-header > div.section-header-title > h2,
+div.reflex-popup-content div.section > div.section-header > div.section-header-title > span
+{
+	font-size		: 0.9em;
+}
+
 div.section > div.section-header > div.section-header-title > img
 {
 	vertical-align	: middle;
@@ -3574,3 +3580,31 @@ div.payment-methods-list div.section-content > table.reflex td.payment-method-cr
 }
 
 /************************ END - Choose Payment Method Popup - END ************************/
+
+/************************ START - Employee Details Popup - START ************************/
+
+div.employee-details
+{
+	padding	: 1em;
+}
+
+/************************ END - Employee Details Popup - END ************************/
+
+/************************ START - Employee Details Permissions Popup - START ************************/
+
+div.employee-details-permissions
+{
+	padding	: 1em;
+}
+
+div.employee-details-permissions-profiles
+{
+	padding-bottom	: 1em;
+}
+
+div.employee-details-permissions div.reflex-tree
+{
+	height	: 15em;
+}
+
+/************************ END - Employee Details Popup - END ************************/

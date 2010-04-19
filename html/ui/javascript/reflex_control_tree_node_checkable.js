@@ -102,11 +102,20 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 	
 	setEnabled	: function(bEnabled)
 	{
-		if (!bEnabled)
+		if (bEnabled == false)
 		{
 			this.oCheckboxElement.hide();
 		}
+		else if (this.bEnabled == false)
+		{
+			this.oCheckboxElement.show();
+		}
 		
 		this.bEnabled	= bEnabled;
+	},
+	
+	isEnabled	: function()
+	{
+		return this.bEnabled;
 	}
 });

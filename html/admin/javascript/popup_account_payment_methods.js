@@ -34,29 +34,6 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		}
 		else if (oResponse.Success)
 		{
-			/*
-			// Hide the loading popup
-			this.oLoading.hide();
-			delete this.oLoading;
-			
-			// Update flags
-			this.bHasCreditCard		= oResponse.bHasCreditCard;
-			this.bHasBankAccount	= oResponse.bHasBankAccount;
-			
-			// No payment method returned, if Invoice is the current
-			if (oResponse.oPaymentMethod)
-			{
-				if (oResponse.iBillingType == Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD)
-				{
-					// Check the expiry date on the credit card
-					Popup_Account_Payment_Methods._checkCreditCardExpiry(oResponse.oPaymentMethod);
-				}
-				
-				// Update payment method cache
-				this.hCachedMethods[oResponse.iBillingType]	= oResponse.oPaymentMethod; 	 
-			}
-			*/
-			
 			this._updateCurrentPaymentMethod(false, oResponse);
 			
 			// Generate the payment method options and details elements

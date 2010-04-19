@@ -64,7 +64,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			$this->LoadJavascript("control_tab_group");
 			$this->LoadJavascript("control_tab");
 			
-			// new tree
+			// Tree control
 			$this->LoadJavascript("reflex_style");
 			$this->LoadJavascript("reflex_fx_reveal"); 
 			$this->LoadJavascript("reflex_control");
@@ -90,6 +90,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			$this->LoadJavascript("user_role");
 			$this->LoadJavascript("employee");
 			$this->LoadJavascript("popup_employee_details");
+			$this->LoadJavascript("popup_employee_details_permissions");
 		}
 	}
 	

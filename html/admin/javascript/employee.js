@@ -1,11 +1,20 @@
 var Employee	= Class.create
 ({
-	initialize	: function(iEmployeeId, fnCallback)
+	initialize	: function(iEmployeeId, fnCallback, bLoadPermissions)
 	{
 		if (iEmployeeId)
 		{
-			// Load via JSON
-			this._load(iEmployeeId, fnCallback)
+			// Only load details if a callback function provided
+			if (fnCallback)
+			{
+				this._bLoadPermissions	= bLoadPermissions;
+				this._load(iEmployeeId, fnCallback)
+			}
+			else
+			{
+				// Store the Id only
+				this.oProperties	= {Id: iEmployeeId};
+			}
 		}
 		else
 		{
@@ -33,8 +42,11 @@ var Employee	= Class.create
 	{
 		if (oResponse)
 		{
+			this.aOperationIds			= oResponse.aOperationIds;
+			this.aOperationProfileIds	= oResponse.aOperationProfileIds;
+			
 			// Process JSON Response
-			fnCallback(oResponse.aOperationIds, oResponse.aOperationProfileIds);
+			fnCallback(this);
 		}
 		else if (!this.oProperties.Id && this.oProperties.Id !== 0)
 		{
@@ -93,7 +105,15 @@ var Employee	= Class.create
 			// Callback
 			if (fnCallback)
 			{
-				fnCallback(this);
+				// Load permissions or callback, depending on setup
+				if (this._bLoadPermissions)
+				{
+					this.getPermissions(fnCallback);
+				}
+				else
+				{
+					fnCallback(this);
+				}
 			}
 		}
 		else
@@ -124,9 +144,9 @@ var Employee	= Class.create
 //----------------------------------------------------------------------------//
 // Static Methods
 //----------------------------------------------------------------------------//
-Employee.getForId	= function(iEmployeeId, fnCallback)
+Employee.getForId	= function(iEmployeeId, fnCallback, bLoadPermissions)
 {
-	return new Employee(iEmployeeId, fnCallback);
+	return new Employee(iEmployeeId, fnCallback, bLoadPermissions);
 }
 //----------------------------------------------------------------------------//
 

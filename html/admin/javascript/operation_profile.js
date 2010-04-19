@@ -29,7 +29,7 @@ var Operation_Profile	= Class.create
 	}
 });
 
-Operation_Profile._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_FULL_CACHING, {strObject: 'Operation_Profile', strMethod: 'getRecords'});
+Operation_Profile._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {strObject: 'Operation_Profile', strMethod: 'getRecords'});
 
 /* Static Methods */
 
