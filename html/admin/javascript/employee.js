@@ -87,9 +87,6 @@ var Employee	= Class.create
 		}
 		else if(oResponse.Success)
 		{
-			//this.aOperationProfileIds 	= aOperationProfileIds;
-			//this.aOperationIds			= aOperationIds;
-			
 			if (fnCallback)
 			{
 				fnCallback(oResponse);
@@ -106,17 +103,109 @@ var Employee	= Class.create
 	{
 		this._refreshControls();
 		
+		// Don't let the password properties through if not a new employee
+		if (!isNaN(this.oProperties.Id))
+		{
+			delete this.oPropertyControls['PassWord'];
+			delete this.oPropertyControls['PassWordConfirm'];
+		}
+		
 		return this.oPropertyControls;
+	},
+	
+	getPasswordControls	: function()
+	{
+		this._refreshControls();
+		
+		return	{
+					'PassWord'			: this.oPropertyControls.PassWord,
+					'PassWordConfirm'	: this.oPropertyControls.PassWordConfirm
+				};
+	},
+	
+	changePassword	: function(fnCallback, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Validate password and confirmation
+			var aValidationErrors		= [];
+			var sPasswordError			= Control_Field.getError(this.oPropertyControls.PassWord);
+			var sPassWordConfirmError	= Control_Field.getError(this.oPropertyControls.PassWordConfirm);
+			
+			if (sPasswordError)
+			{
+				aValidationErrors.push(sPasswordError);
+			}
+			
+			if (sPassWordConfirmError)
+			{
+				aValidationErrors.push(sPassWordConfirmError);
+			}
+			
+			if (aValidationErrors.length)
+			{
+				this.showValidationErrors(aValidationErrors);
+				return;
+			}
+			
+			// Show loading
+			this.oLoading	= new Reflex_Popup.Loading('Saving...');
+			this.oLoading.display();
+			
+			// Make ajax request
+			var fnChangePassword	=	jQuery.json.jsonFunction(
+											this.changePassword.bind(this, fnCallback), 
+											this.changePassword.bind(this), 
+											'Employee', 
+											'setPassword'
+										);
+			fnChangePassword(
+				this.oProperties.Id, 
+				this.oPropertyControls.PassWord.getValue(true),
+				this.oPropertyControls.PassWordConfirm.getValue(true)
+			);
+		}
+		else
+		{
+			this.oLoading.hide();
+			delete this.oLoading;			
+			
+			if (oResponse.Success)
+			{
+				// All good!
+				fnCallback(this);
+			}
+			else
+			{
+				// Error occurred, either validation or exception
+				if (oResponse.aValidationErrors)
+				{
+					this.showValidationErrors(oResponse.aValidationErrors);
+				}
+				else if (oResponse.Message)
+				{
+					Reflex_Popup.alert(oResponse.Message);
+				}
+				else
+				{
+					Reflex_Popup.alert('An error occured saving the employees password');
+				}
+			}
+		}
 	},
 	
 	_refreshControls	: function()
 	{
 		if (!this.oPropertyControls)
 		{
+			// Create a control for each property
 			this.oPropertyControls	= {};
+			var oProperty			= null;
+			
 			for (sProperty in Employee.oProperties)
 			{
-				this.oPropertyControls[sProperty]	= Control_Field.factory(Employee.oProperties[sProperty].sType, Employee.oProperties[sProperty].oDefinition);
+				oProperty							= Employee.oProperties[sProperty];
+				this.oPropertyControls[sProperty]	= Control_Field.factory(oProperty.sType, oProperty.oDefinition);
 			}
 		}
 		
@@ -132,6 +221,30 @@ var Employee	= Class.create
 				this.oPropertyControls[sProperty].setValue('');
 			}
 		}
+	},
+	
+	getValidProperties	: function(bIsSelf, bIsNewEmployee)
+	{
+		// Filter the properties depending on bIsSelf & bIsNewEmployee
+		if (typeof this.oValidProperties == 'undefined')
+		{
+			this.bIsSelf			= bIsSelf;
+			this.bIsNewEmployee		= bIsNewEmployee;
+			this.oValidProperties	= {};
+			
+			for (sProperty in Employee.oProperties)
+			{
+				oProperty	= Employee.oProperties[sProperty];
+				
+				if (((this.bIsSelf == oProperty.EDIT_MODE_SELF) 		|| (oProperty.EDIT_MODE_SELF == null)) && 
+					((this.bIsNewEmployee == oProperty.EDIT_MODE_NEW) 	|| (oProperty.EDIT_MODE_NEW == null)))
+				{
+					this.oValidProperties[sProperty]	= true;
+				}
+			}
+		}
+		
+		return this.oValidProperties;
 	},
 	
 	_load	: function(iEmployeeId, fnCallback, oResponse)
@@ -170,70 +283,64 @@ var Employee	= Class.create
 		}
 	},
 	
-	save	: function(fnCallback, oResponse)
+	save	: function(fnCallback)
 	{
-		if (typeof oResponse == 'undefined')
-		{
-			// Validate control values
-			var aValidationErrors	= [];
-			var oControl			= null;
-			var mValidationResult	= null;
-			for (var sName in this.oPropertyControls)
-			{
-				oControl			= this.oPropertyControls[sName];
-				mValidationResult	= oControl.validate();
+		// Validate control values
+		var aValidationErrors	= [];
+		var oControl			= null;
+		var sError				= null;
+		var oDetails			= {};
+		var oValidProperties	= this.getValidProperties();
 				
-				if (mValidationResult !== true)
-				{
-					aValidationErrors.push(mValidationResult);
-				}
-			}
+		for (var sName in oValidProperties)
+		{
+			oControl	= this.oPropertyControls[sName];
+			sError		= Control_Field.getError(oControl);
 			
-			// Return with errors if there were any, otherwise continue
-			if (aValidationErrors.length)
+			if (sError)
 			{
-				this.showValidationErrors(aValidationErrors);
-				return;
+				aValidationErrors.push(sError);
 			}
-			
-			// Show loading
-			this.oLoading	= new Reflex_Popup.Loading('Saving...');
-			this.oLoading.display();
-			
-			// Build employee details for json handler
-			var oDetails	= {
-				sUserName				: this.oPropertyControls['UserName'].getValue(true),
-				sFirstName				: this.oPropertyControls['FirstName'].getValue(true),
-				sLastName				: this.oPropertyControls['LastName'].getValue(true),
-				sDOB					: this.oPropertyControls['DOB'].getValue(true),
-				sEmail					: this.oPropertyControls['Email'].getValue(true),
-				sExtension				: this.oPropertyControls['Extension'].getValue(true),
-				sPhone					: this.oPropertyControls['Phone'].getValue(true),
-				sMobile					: this.oPropertyControls['Mobile'].getValue(true),
-				sPassword				: this.oPropertyControls['PassWord'].getValue(true),
-				sPasswordConfirm		: this.oPropertyControls['PassWordConfirm'].getValue(true),
-				iArchived				: (this.oPropertyControls['Archived'].getValue(true) ? 1 : 0),
-				iTicketingPermission	: this.oPropertyControls['ticketing_permission'].getValue(true),
-				iUserRoleId				: this.oPropertyControls['user_role_id'].getValue(true),
-				iPriviledges			: this.oPropertyControls['Privileges'].getValue(true)	// TODO REMOVE ME
+			else
+			{
+				oDetails['m' + sName]	= this.oPropertyControls[sName].getValue(true);
 			}
-			
-			// Make ajax request
-			var fnSave	= 	jQuery.json.jsonFunction(
-								this.save.bind(this, fnCallback),
-								this.save.bind(this, fnCallback), 
-								'Employee', 
-								'save'
-							);
-			fnSave(this.oProperties.Id, oDetails)
 		}
-		else if (oResponse.Success)
+		
+		// Extra check for archived, turn from boolean to integer
+		oDetails['mArchived']	= (oDetails['Archived'] ? 1 : 0); 
+		
+		// Return with errors if there were any, otherwise continue
+		if (aValidationErrors.length)
+		{
+			this.showValidationErrors(aValidationErrors);
+			return;
+		}
+		
+		// Show loading
+		this.oLoading	= new Reflex_Popup.Loading('Saving...');
+		this.oLoading.display();
+		
+		// Make ajax request
+		var fnSave	= 	jQuery.json.jsonFunction(
+							this.saveResponse.bind(this, fnCallback),
+							this.saveResponse.bind(this, fnCallback), 
+							'Employee', 
+							'save'
+						);
+		fnSave((this.oProperties.Id ? this.oProperties.Id : null), oDetails);
+	},
+	
+	saveResponse	: function(fnCallback, oResponse)
+	{
+		// Kill loading
+		this.oLoading.hide();
+		delete this.oLoading;
+		
+		if (oResponse.Success)
 		{
 			// All good!
-			fnCallback();
-			
-			this.oLoading.hide();
-			delete this.oLoading;
+			fnCallback(this);
 		}
 		else
 		{
@@ -293,8 +400,10 @@ Employee.oProperties.Id.oDefinition			= {};
 Employee.oProperties.Id.oDefinition.sLabel	= 'Id';
 
 // First Name
-Employee.oProperties.FirstName			= {};
-Employee.oProperties.FirstName.sType	= 'text';
+Employee.oProperties.FirstName						= {};
+Employee.oProperties.FirstName.sType				= 'text';
+Employee.oProperties.FirstName.EDIT_MODE_SELF		= false;
+Employee.oProperties.FirstName.EDIT_MODE_NEW		= null;
 
 Employee.oProperties.FirstName.oDefinition				= {};
 Employee.oProperties.FirstName.oDefinition.sLabel		= 'First Name';
@@ -304,8 +413,10 @@ Employee.oProperties.FirstName.oDefinition.mAutoTrim	= true;
 Employee.oProperties.FirstName.oDefinition.iMaxLength	= 255;
 
 // Last Name
-Employee.oProperties.LastName		= {};
-Employee.oProperties.LastName.sType	= 'text';
+Employee.oProperties.LastName					= {};
+Employee.oProperties.LastName.sType				= 'text';
+Employee.oProperties.LastName.EDIT_MODE_SELF	= false;
+Employee.oProperties.LastName.EDIT_MODE_NEW		= null;
 
 Employee.oProperties.LastName.oDefinition				= {};
 Employee.oProperties.LastName.oDefinition.sLabel		= 'Last Name';
@@ -315,8 +426,10 @@ Employee.oProperties.LastName.oDefinition.mAutoTrim		= true;
 Employee.oProperties.LastName.oDefinition.iMaxLength	= 255;
 
 // Username
-Employee.oProperties.UserName		= {};
-Employee.oProperties.UserName.sType	= 'text';
+Employee.oProperties.UserName					= {};
+Employee.oProperties.UserName.sType				= 'text';
+Employee.oProperties.UserName.EDIT_MODE_SELF	= false;
+Employee.oProperties.UserName.EDIT_MODE_NEW		= true;
 
 Employee.oProperties.UserName.oDefinition				= {};
 Employee.oProperties.UserName.oDefinition.sLabel		= 'Username';
@@ -326,8 +439,10 @@ Employee.oProperties.UserName.oDefinition.mAutoTrim		= true;
 Employee.oProperties.UserName.oDefinition.iMaxLength	= 31;
 
 // Date of Birth
-Employee.oProperties.DOB			= {};
-Employee.oProperties.DOB.sType		= 'date-picker';
+Employee.oProperties.DOB				= {};
+Employee.oProperties.DOB.sType			= 'date-picker';
+Employee.oProperties.DOB.EDIT_MODE_SELF	= false;
+Employee.oProperties.DOB.EDIT_MODE_NEW	= null;
 
 Employee.oProperties.DOB.oDefinition			= {};
 Employee.oProperties.DOB.oDefinition.sLabel		= 'Date of Birth';
@@ -336,8 +451,10 @@ Employee.oProperties.DOB.oDefinition.mMandatory	= true;
 //Employee.oProperties.DOB.oDefinition.fnValidate	= Reflex_Validation.date.bind(Reflex_Validation);
 
 // Email
-Employee.oProperties.Email			= {};
-Employee.oProperties.Email.sType	= 'text';
+Employee.oProperties.Email					= {};
+Employee.oProperties.Email.sType			= 'text';
+Employee.oProperties.Email.EDIT_MODE_SELF	= null;
+Employee.oProperties.Email.EDIT_MODE_NEW	= null;
 
 Employee.oProperties.Email.oDefinition				= {};
 Employee.oProperties.Email.oDefinition.sLabel		= 'Email';
@@ -348,8 +465,10 @@ Employee.oProperties.Email.oDefinition.iMaxLength	= 255;
 Employee.oProperties.Email.oDefinition.fnValidate	= Reflex_Validation.email.bind(Reflex_Validation);
 
 // Extension
-Employee.oProperties.Extension			= {};
-Employee.oProperties.Extension.sType	= 'text';
+Employee.oProperties.Extension					= {};
+Employee.oProperties.Extension.sType			= 'text';
+Employee.oProperties.Extension.EDIT_MODE_SELF	= null;
+Employee.oProperties.Extension.EDIT_MODE_NEW	= null;
 
 Employee.oProperties.Extension.oDefinition				= {};
 Employee.oProperties.Extension.oDefinition.sLabel		= 'Extension';
@@ -359,8 +478,10 @@ Employee.oProperties.Extension.oDefinition.iMaxLength	= 15;
 Employee.oProperties.Extension.oDefinition.fnValidate	= Reflex_Validation.digits.bind(Reflex_Validation);
 
 // Phone
-Employee.oProperties.Phone			= {};
-Employee.oProperties.Phone.sType	= 'text';
+Employee.oProperties.Phone					= {};
+Employee.oProperties.Phone.sType			= 'text';
+Employee.oProperties.Phone.EDIT_MODE_SELF	= null;
+Employee.oProperties.Phone.EDIT_MODE_NEW	= null;
 
 Employee.oProperties.Phone.oDefinition				= {};
 Employee.oProperties.Phone.oDefinition.sLabel		= 'Phone';
@@ -370,8 +491,10 @@ Employee.oProperties.Phone.oDefinition.iMaxLength	= 25;
 Employee.oProperties.Phone.oDefinition.fnValidate	= Reflex_Validation.fnnFixedLine.bind(Reflex_Validation);
 
 // Mobile
-Employee.oProperties.Mobile			= {};
-Employee.oProperties.Mobile.sType	= 'text';
+Employee.oProperties.Mobile					= {};
+Employee.oProperties.Mobile.sType			= 'text';
+Employee.oProperties.Mobile.EDIT_MODE_SELF	= null;
+Employee.oProperties.Mobile.EDIT_MODE_NEW	= null;
 
 Employee.oProperties.Mobile.oDefinition				= {};
 Employee.oProperties.Mobile.oDefinition.sLabel		= 'Mobile';
@@ -381,8 +504,10 @@ Employee.oProperties.Mobile.oDefinition.iMaxLength	= 25;
 Employee.oProperties.Mobile.oDefinition.fnValidate	= Reflex_Validation.fnnMobile.bind(Reflex_Validation);
 
 // Password
-Employee.oProperties.PassWord		= {};
-Employee.oProperties.PassWord.sType	= 'password';
+Employee.oProperties.PassWord					= {};
+Employee.oProperties.PassWord.sType				= 'password';
+Employee.oProperties.PassWord.EDIT_MODE_SELF	= false;
+Employee.oProperties.PassWord.EDIT_MODE_NEW		= true;
 
 Employee.oProperties.PassWord.oDefinition				= {};
 Employee.oProperties.PassWord.oDefinition.sLabel		= 'Password';
@@ -391,8 +516,10 @@ Employee.oProperties.PassWord.oDefinition.mMandatory	= true;
 Employee.oProperties.PassWord.oDefinition.iMaxLength	= 40;
 
 // Password Confirmation
-Employee.oProperties.PassWordConfirm		= {};
-Employee.oProperties.PassWordConfirm.sType	= 'password';
+Employee.oProperties.PassWordConfirm				= {};
+Employee.oProperties.PassWordConfirm.sType			= 'password';
+Employee.oProperties.PassWordConfirm.EDIT_MODE_SELF	= false;
+Employee.oProperties.PassWordConfirm.EDIT_MODE_NEW	= true;
 
 Employee.oProperties.PassWordConfirm.oDefinition			= {};
 Employee.oProperties.PassWordConfirm.oDefinition.sLabel		= 'Confirm Password';
@@ -401,8 +528,10 @@ Employee.oProperties.PassWordConfirm.oDefinition.mMandatory	= true;
 Employee.oProperties.PassWordConfirm.oDefinition.iMaxLength	= 40;
 
 // Role
-Employee.oProperties.user_role_id		= {};
-Employee.oProperties.user_role_id.sType	= 'select';
+Employee.oProperties.user_role_id					= {};
+Employee.oProperties.user_role_id.sType				= 'select';
+Employee.oProperties.user_role_id.EDIT_MODE_SELF	= false;
+Employee.oProperties.user_role_id.EDIT_MODE_NEW		= null;
 
 Employee.oProperties.user_role_id.oDefinition				= {};
 Employee.oProperties.user_role_id.oDefinition.sLabel		= 'Role';
@@ -419,24 +548,32 @@ Employee.oProperties.is_god.oDefinition.sLabel		= 'GOD User';
 Employee.oProperties.is_god.oDefinition.mMandatory	= true;
 
 // Archived
-Employee.oProperties.Archived		= {};
-Employee.oProperties.Archived.sType	= 'checkbox';
+Employee.oProperties.Archived					= {};
+Employee.oProperties.Archived.sType				= 'checkbox';
+Employee.oProperties.Archived.EDIT_MODE_SELF	= false;
+Employee.oProperties.Archived.EDIT_MODE_NEW		= false;
 
-Employee.oProperties.Archived.oDefinition				= {};
-Employee.oProperties.Archived.oDefinition.sLabel		= 'Archived';
-Employee.oProperties.Archived.oDefinition.mEditable		= true;
-//Employee.oProperties.Archived.oDefinition.mMandatory	= true;
+Employee.oProperties.Archived.oDefinition			= {};
+Employee.oProperties.Archived.oDefinition.sLabel	= 'Archived';
+Employee.oProperties.Archived.oDefinition.mEditable	= true;
 
-Employee.oProperties.ticketing_permission							= {};
-Employee.oProperties.ticketing_permission.sType						= 'select';
+// Ticketing Permission
+Employee.oProperties.ticketing_permission					= {};
+Employee.oProperties.ticketing_permission.sType				= 'select';
+Employee.oProperties.ticketing_permission.EDIT_MODE_SELF	= false;
+Employee.oProperties.ticketing_permission.EDIT_MODE_NEW		= null;
+
 Employee.oProperties.ticketing_permission.oDefinition				= {};
 Employee.oProperties.ticketing_permission.oDefinition.sLabel		= 'Ticketing System';
 Employee.oProperties.ticketing_permission.oDefinition.mEditable		= true;
 Employee.oProperties.ticketing_permission.oDefinition.mMandatory	= true;
 Employee.oProperties.ticketing_permission.oDefinition.fnPopulate	= Ticketing_User_Permission.getAllAsSelectOptions.bind(Ticketing_User_Permission);
 
-// TODO REMOVE ME
-Employee.oProperties.Privileges						= {};
-Employee.oProperties.Privileges.sType				= 'text';
+// TODO REMOVE ME:: Privileges
+Employee.oProperties.Privileges					= {};
+Employee.oProperties.Privileges.sType			= 'text';
+Employee.oProperties.Privileges.EDIT_MODE_SELF	= null;
+Employee.oProperties.Privileges.EDIT_MODE_NEW	= null;
+
 Employee.oProperties.Privileges.oDefinition			= {};
 Employee.oProperties.Privileges.oDefinition.sLabel	= 'ERROR This should not be seen';

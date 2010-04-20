@@ -1,23 +1,18 @@
+
 var Popup_Employee_Details	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, bRenderMode, mEmployee, bDisplayOnLoad)
+	initialize	: function($super, bRenderMode, mEmployee, bEditingSelf)
 	{
 		$super(40);
 		
-		this.bDisplayOnLoad				= (bDisplayOnLoad || bDisplayOnLoad === undefined) ? true : false;
 		this.bRenderMode				= bRenderMode;
-		this.hFieldTRs					= {};
 		this.oOperationProfiles			= {};
 		this.iOperationTreeReadyCount	= 0;
 		this.hOperationProfileChildren	= [];
+		this.bNewEmployee				= false;
+		this.bEditingSelf				= bEditingSelf ? true : false;
 		
-		if (mEmployee instanceof Employee)
-		{
-			// Employee object passed -- build immediately
-			this.oEmployee	= mEmployee;
-			this.buildContent();
-		}
-		else if (Number(mEmployee) > 0)
+		if (Number(mEmployee) > 0)
 		{
 			// Employee Id passed -- load via JSON
 			this.oEmployee	= Employee.getForId(mEmployee, this.buildContent.bind(this));
@@ -25,7 +20,8 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		else if (bRenderMode == Control_Field.RENDER_MODE_EDIT)
 		{
 			// New Employee
-			this.oEmployee	= new Employee();
+			this.oEmployee		= new Employee();
+			this.bNewEmployee	= true;
 			this.buildContent();
 		}
 		else
@@ -37,10 +33,33 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 	buildContent	: function()
 	{
 		// Get a hash of controls for editing the employees details
-		this.oControls	= this.oEmployee.getControls();
+		this.oControls	= this.oEmployee.getControls(this.bEditingSelf, this.bNewEmployee);
 		
 		// Build Content
 		this._oPage	= 	$T.div({class: 'employee-details'},
+							$T.div({class: 'section employee-details-credentials'},
+								$T.div({class: 'section-header'},
+									$T.div({class: 'section-header-title'},
+										$T.img({src: '../admin/img/template/view.png', alt: '', title: 'Credentials'}),
+										$T.span('Credentials')
+									),
+									$T.div({class: 'section-header-options'},
+										$T.button({class: 'icon-button employee-details-edit-password'},
+											$T.span('Change Password')
+										)
+									)
+								),
+								$T.div({class: 'section-content section-content-fitted'},
+									$T.div(
+										$T.table({class: 'input'},
+											$T.tbody({class: 'employee-details-credentials'}
+												// TR's added below
+											)
+										)
+									)
+								),
+								$T.div({class: 'section-footer employee-details-buttons'})
+							),
 							$T.div({class: 'section'},
 								$T.div({class: 'section-header'},
 									$T.div({class: 'section-header-title'},
@@ -55,17 +74,41 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 									)
 								),
 								$T.div({class: 'section-content section-content-fitted'},
-									this.buildContentDetails()
+									$T.div(
+										$T.table({class: 'input'},
+											$T.tbody({class: 'employee-details-details'}
+												// TR's added below
+											)
+										)
+									)
 								),
 								$T.div({class: 'section-footer employee-details-buttons'})
 							)
 						);
 		
+		// Manage permissions button
+		this.oManagePermissions	= this._oPage.select('button.employee-details-permissions').first();
+		
+		// Hide edit password button if a new employee
+		var oEditPassword	= this._oPage.select('button.employee-details-edit-password').first();
+		
+		if (this.bNewEmployee)
+		{
+			oEditPassword.hide();
+		}
+		else
+		{
+			// Bind click event
+			oEditPassword.observe('click', this._showEditPassword.bind(this));
+		}
+		
+		this.buildContentDetails();
+		
 		// Create buttons
 		this.oEditButton		= 	$T.button({class: 'icon-button'},
-									$T.img({src: '../admin/img/template/user_edit.png', alt: '', title: 'Edit'}),
-									$T.span('Edit')
-								);
+										$T.img({src: '../admin/img/template/user_edit.png', alt: '', title: 'Edit'}),
+										$T.span('Edit')
+									);
 		this.oCloseButton		= 	$T.button({class: 'icon-button'},
 										$T.span('Close')
 									);
@@ -99,42 +142,51 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		this.addCloseButton();
 		this.setIcon("../admin/img/template/user_edit.png");
 		this.setContent(this._oPage);
-		
-		if (this.bDisplayOnLoad)
-		{
-			this.display();
-		}
-		
+		this.display();		
 		return true;
 	},
 	
 	buildContentDetails	: function()
 	{
-		var oTabPage	= 	$T.div(
-								$T.table({class: 'input'},
-									$T.tbody(
-										// TR's added below
-									)
-								)
-							);
+		// Sort out which fields to display
+		var aCredentialsFields	= ['UserName', 'PassWord', 'PassWordConfirm'];
+		var aDetailsFields		= ['FirstName', 'LastName', 'DOB', 'Email', 'Extension', 'Phone', 'Mobile', 
+		                   		   'user_role_id', 'ticketing_permission', 'Archived'];
 		
-		// Add each desired control to the table, cache the rows for each field
-		var oTBody		= oTabPage.select('table > tbody').first();
-		var sFieldName	= null;
-		var oTR		 	= null;
+		// Display fields
+		var oCredentials	= this._oPage.select('tbody.employee-details-credentials').first();
+		var oDetails		= this._oPage.select('tbody.employee-details-details').first();
+		var sFieldName		= null;
+		var oControl		= null;
 		
-		for (var i = 0; i < Popup_Employee_Details.FIELDS.length; i++)
+		for (var i = 0; i < aCredentialsFields.length; i++)
 		{
-			sFieldName	= Popup_Employee_Details.FIELDS[i];
-			oTR			= this.oControls[sFieldName].generateInputTableRow().oElement;
-			oTBody.appendChild(oTR);
-			this.hFieldTRs[sFieldName]	= oTR;
+			sFieldName	= aCredentialsFields[i];
+			oControl	= this.oControls[sFieldName];
+			
+			if (oControl)
+			{
+				oCredentials.appendChild(oControl.generateInputTableRow().oElement);
+			}
+		}
+		
+		for (var i = 0; i < aDetailsFields.length; i++)
+		{	
+			sFieldName	= aDetailsFields[i];
+			oControl	= this.oControls[sFieldName];
+			
+			if (oControl)
+			{
+				oDetails.appendChild(oControl.generateInputTableRow().oElement);
+			}
 		}
 		
 		// Set Password Field Dependency
-		this.oControls.PassWord.setDependant(this.oControls.PassWordConfirm);
-		this.oControls.PassWordConfirm.setValidateFunction(this._passwordConfirm.bind(this));
-		return oTabPage;
+		if (this.bNewEmployee)
+		{
+			this.oControls.PassWord.setDependant(this.oControls.PassWordConfirm);
+			this.oControls.PassWordConfirm.setValidateFunction(this._passwordConfirm.bind(this));
+		}
 	},
 	
 	_passwordConfirm	: function()
@@ -142,18 +194,22 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		return (this.oControls.PassWordConfirm.getElementValue() === this.oControls.PassWord.getElementValue())
 	},
 	
-	_save	: function(event, oEmployee)
+	_save	: function(event)
 	{
-		if (typeof oEmployee == 'undefined')
-		{
-			this.oEmployee.save(this._save.bind(this));
-		}
-		else
-		{
-			this.hide();
-		}
+		this.oEmployee.save(this.hide.bind(this));
 	},
-
+	
+	_saveComplete	: function()
+	{
+		// Show permissions popup if a new employee
+		if (this.bNewEmployee)
+		{
+			this._managePermissions();
+		}
+		
+		this.hide();
+	},
+	
 	display		: function($super)
 	{
 		// If we have loaded, then display, otherwise automatically display once loaded
@@ -164,7 +220,6 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		}
 		else
 		{
-			this.bDisplayOnLoad	= true;
 			return false;
 		}
 	},
@@ -177,16 +232,18 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 				// Change footer buttons
 				this.setFooterButtons([this.oSaveButton, (this.oEmployee.oProperties.Id) ? this.oCancelEditButton : this.oCancelNewButton], true);
 				
-				// Show "Confirm Password"
-				this.hFieldTRs['PassWordConfirm'].style.display	= 'table-row';
+				// Hide manage permissions button
+				this.oManagePermissions.hide();
 				break;
 				
 			case Control_Field.RENDER_MODE_VIEW:
 				// Change footer buttons
 				this.setFooterButtons([this.oEditButton, this.oCloseButton], true);
 				
-				// Hide "Confirm Password"
-				this.hFieldTRs['PassWordConfirm'].style.display	= 'none';
+				if (!this.bNewEmployee)
+				{
+					this.oManagePermissions.show();
+				}
 				break;
 			
 			default:
@@ -194,56 +251,34 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		}
 		
 		// Call setRenderMode(bControlMode) on all controls
-		for (var i = 0; i < Popup_Employee_Details.FIELDS.length; i++)
+		var aValidFields	= this.oEmployee.getValidProperties(this.bEditingSelf, this.bNewEmployee);
+		
+		for (var sFieldName in this.oControls)
 		{
-			this.oControls[Popup_Employee_Details.FIELDS[i]].setRenderMode(bControlMode);
+			if (aValidFields[sFieldName])
+			{
+				this.oControls[sFieldName].setRenderMode(bControlMode);
+			}
+			else
+			{
+				this.oControls[sFieldName].setRenderMode(Control_Field.RENDER_MODE_VIEW);
+			}
 		}
 		
 		this.bRenderMode	= bControlMode;
 	},
 		
-	// Override
-	setFooterButtons	: function($super, aButtons)
-	{
-		var oSectionFooter	= this._oPage.select('div.employee-details-buttons').first();
-		
-		if (oSectionFooter)
-		{
-			// Remove existing
-			var aCurrentButtons	= oSectionFooter.select('button.icon-button');
-			
-			for (var i = 0; i < aCurrentButtons.length; i++)
-			{
-				aCurrentButtons[i].remove();
-			}
-			
-			// Add new
-			for (var i = 0; i < aButtons.length; i++)
-			{
-				oSectionFooter.appendChild(aButtons[i]);
-			}
-		}
-	},
-	
 	_managePermissions	: function()
 	{
 		new Popup_Employee_Details_Permissions(Control_Field.RENDER_MODE_VIEW, this.oEmployee.oProperties.Id);
+	},
+		
+	_showEditPassword	: function()
+	{
+		if (!this.bNewEmployee)
+		{
+			new Popup_Employee_Password_Change(this.oEmployee.oProperties.Id);
+		}
 	}
 });
-
-Popup_Employee_Details.FIELDS	=	[
-                         	 	 	'UserName', 
-                         	 	 	'FirstName', 
-                         	 	 	'LastName', 
-                         	 	 	'DOB', 
-                         	 	 	'Email', 
-                         	 	 	'Extension', 
-                         	 	 	'Phone', 
-                         	 	 	'Mobile', 
-                         	 	 	'PassWord', 
-                         	 	 	'PassWordConfirm', 
-                         	 	 	'user_role_id', 
-                         	 	 	'Archived',
-                         	 	 	'ticketing_permission'
-                         	 	 ];
 

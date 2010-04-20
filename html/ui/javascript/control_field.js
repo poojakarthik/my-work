@@ -63,14 +63,14 @@ var Control_Field	= Class.create
 	{
 		if (bImplicitSave)
 		{
-			this.save();
+			this.save(true);
 		}
 		return this.mValue;
 	},
 	
 	getLabel	: function(bAppendSeparator)
 	{
-		return this.sLabel + (bAppendSeparator ? this.sLabelSeparator : '');
+		return ((this.sLabel != '') ? this.sLabel + (bAppendSeparator ? this.sLabelSeparator : '') : '');
 	},
 	
 	// Visibility
@@ -238,9 +238,13 @@ var Control_Field	= Class.create
 		}
 	},
 	
-	validate	: function()
+	validate	: function(bSilentFail)
 	{
-		var mReturn	= false;
+		// Default to silent fail if not specifically set to false
+		if (bSilentFail !== false)
+		{
+			bSilentFail	= true;
+		}
 		
 		if (this.isEditable())
 		{
@@ -256,32 +260,38 @@ var Control_Field	= Class.create
 			{
 				if (this.isValid())
 				{
-					mReturn	= true;
 					this.oControlOutput.oElement.addClassName('valid');
 				}
 				else
 				{
 					this.oControlOutput.oElement.addClassName('invalid');
-					mReturn	= "'"+mElementValue+"' is not a valid "+this.getLabel();
+					
+					if (bSilentFail)
+					{
+						return false;
+					}
+					else
+					{
+						throw "'"+mElementValue+"' is not a valid "+this.getLabel();
+					}
 				}
 			}
 			else if (this.isMandatory())
 			{
 				this.oControlOutput.oElement.addClassName('mandatory');
-				mReturn	= "No value supplied for mandatory field "+this.getLabel();
+				
+				if (bSilentFail)
+				{
+					return false;
+				}
+				else
+				{
+					throw "No value supplied for mandatory field "+this.getLabel();
+				}
 			}
-			else
-			{
-				mReturn	= true;
-			}
-		}
-		else
-		{
-			mReturn	= true;
 		}
 		
-		//this.updateElementValue();
-		return mReturn;
+		return true;
 	},
 	
 	revert	: function()
@@ -354,6 +364,21 @@ var Control_Field	= Class.create
 Control_Field.RENDER_MODE_VIEW	= false;
 Control_Field.RENDER_MODE_EDIT	= true;
 
+Control_Field.getError	= function(oControl)
+{
+	try 
+	{
+		if (oControl.validate(false))
+		{
+			return null;
+		}
+	}
+	catch(ex)
+	{
+		return ex;
+	}
+};
+
 // Static Functions
 Control_Field.factory	= function(sType, oDefinition)
 {
@@ -405,7 +430,12 @@ Control_Field.factory	= function(sType, oDefinition)
 			oControlField.setMaxLength(oDefinition.iMaxLength ? oDefinition.iMaxLength : false);
 			oControlField.setAutoTrim(oDefinition.mAutoTrim ? oDefinition.mAutoTrim : false);
 			break;
-			
+		
+		case 'password_change':
+			oControlField	= new Control_Field_Password_Change(oDefinition.sLabel);
+			oControlField.setMaxLength(oDefinition.iMaxLength ? oDefinition.iMaxLength : false);
+			break;
+		
 		default:
 			throw "'" + sType + "' is not a valid Control_Field type!";
 			break;

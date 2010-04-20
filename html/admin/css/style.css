@@ -3593,6 +3593,11 @@ div.employee-validation-errors
 	padding	: 0.5em;
 }
 
+ul.employee-details-password-change > li > ul > li
+{
+	vertical-align	: top;
+}
+
 /************************ END - Employee Details Popup - END ************************/
 
 /************************ START - Employee Details Permissions Popup - START ************************/
@@ -3612,4 +3617,21 @@ div.employee-details-permissions div.reflex-tree
 	height	: 15em;
 }
 
-/************************ END - Employee Details Popup - END ************************/
+/************************ END - Employee Details Permissions Popup - END ************************/
+
+/************************ START - Employee Password Change Popup - START ************************/
+
+div.employee-password-change
+{
+	padding	: 1em;
+}
+
+div.employee-password-change table.input td,
+div.employee-password-change table.input th
+{
+	padding-bottom	: 0.5em;
+	padding-top		: 0.5em;
+}
+
+/************************ END - Employee Password Change Popup - END ************************/
+

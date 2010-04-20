@@ -90,6 +90,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			$this->LoadJavascript("ticketing_user_permission");
 			$this->LoadJavascript("employee");
 			$this->LoadJavascript("popup_employee_details");
+			$this->LoadJavascript("popup_employee_password_change");
 			$this->LoadJavascript("popup_employee_details_permissions");
 		}
 	}
@@ -163,6 +164,9 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		Table()->EmployeeTable->SetSortable(TRUE);
 		Table()->EmployeeTable->SetSortFields("FirstName", "LastName", "UserName", "Archived", null);
 		Table()->EmployeeTable->SetPageSize(24);
+		
+		$iAuthedUserId	= Flex::getUserId();
+		
 		foreach (DBL()->Employee as $dboEmployee)
 		{
 			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
@@ -170,8 +174,9 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 			{
-				$strNewViewHref	= "new Popup_Employee_Details(Control_Field.RENDER_MODE_VIEW, {$dboEmployee->Id->Value});";
-				$strView .= "<img onclick='$strNewViewHref' title='View Employee (NEW)' src='img/template/user_edit.png'></img>";
+				$bSelf			= ((/*!AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) && */($iAuthedUserId == $dboEmployee->Id->Value)) ? 'true' : 'false');
+				$strNewViewHref	= "new Popup_Employee_Details(Control_Field.RENDER_MODE_VIEW, {$dboEmployee->Id->Value}, $bSelf);";
+				$strView 		.= "<img onclick='$strNewViewHref' title='View Employee (NEW)' src='img/template/user_edit.png'></img>";
 			}
 			
 			$strArchivedLabel = "Active";
