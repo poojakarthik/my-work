@@ -16,7 +16,7 @@ class Employee
 {
 	const SYSTEM_EMPLOYEE_ID = USER_ID;
 	
-	private $id				= NULL;
+	/*private $id				= NULL;
 	private $firstName		= NULL;
 	private $lastName		= NULL;
 	private $username		= NULL;
@@ -34,7 +34,7 @@ class Employee
 	private $privileges		= NULL;
 	private $archived		= NULL;
 	private $userRoleId		= NULL;
-	private $isGod			= NULL;
+	private $isGod			= NULL;*/
 	
 	protected	$_arrOperations;
 
@@ -301,7 +301,7 @@ class Employee
 	 * @return		array	
 	 * @method
 	 */
-	protected static function getColumns()
+	/*protected static function getColumns()
 	{
 		return array(
 						"id"			=> "Id",
@@ -324,7 +324,7 @@ class Employee
 						"userRoleId"	=> "user_role_id",
 						"isGod"			=> "is_god",
 					);
-	}
+	}*/
 
 	//------------------------------------------------------------------------//
 	// init
@@ -340,13 +340,13 @@ class Employee
 	 * @return		void	
 	 * @method
 	 */
-	private function init($arrProperties)
+	/*private function init($arrProperties)
 	{
 		foreach($arrProperties as $name => $value)
 		{
 			$this->{self::tidyName($name)} = $value;
 		}
-	}
+	}*/
 
 	//------------------------------------------------------------------------//
 	// __get
@@ -362,14 +362,14 @@ class Employee
 	 * @return	void
 	 * @method
 	 */
-	public function __get($strName)
+	/*public function __get($strName)
 	{
 		if (property_exists($this, $strName) || (($strName = self::tidyName($strName)) && property_exists($this, $strName)))
 		{
 			return $this->{$strName};
 		}
 		return NULL;
-	}
+	}*/
 	
 	//------------------------------------------------------------------------//
 	// tidyName
@@ -386,14 +386,14 @@ class Employee
 	 * @return	string
 	 * @method
 	 */
-	private function tidyName($name)
+	/*private function tidyName($name)
 	{
 		$tidy = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
 		$tidy[0] = strtolower($tidy[0]);
 		return $tidy;
-	}
+	}*/
 	
-	public function toArray()
+	/*public function toArray()
 	{
 		$arrEmployee	= array();
 		$arrColumns		= self::getColumns();
@@ -402,7 +402,7 @@ class Employee
 			$arrEmployee[$strDBField]	= $this->__get($strVariableName);
 		}
 		return $arrEmployee;
-	}
+	}*/
 	
 }
 

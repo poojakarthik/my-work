@@ -142,9 +142,16 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		return (this.oControls.PassWordConfirm.getElementValue() === this.oControls.PassWord.getElementValue())
 	},
 	
-	_save	: function()
+	_save	: function(event, oEmployee)
 	{
-		alert('save');
+		if (typeof oEmployee == 'undefined')
+		{
+			this.oEmployee.save(this._save.bind(this));
+		}
+		else
+		{
+			this.hide();
+		}
 	},
 
 	display		: function($super)
@@ -236,6 +243,7 @@ Popup_Employee_Details.FIELDS	=	[
                          	 	 	'PassWord', 
                          	 	 	'PassWordConfirm', 
                          	 	 	'user_role_id', 
-                         	 	 	'Archived'
+                         	 	 	'Archived',
+                         	 	 	'ticketing_permission'
                          	 	 ];
 

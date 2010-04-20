@@ -3588,6 +3588,11 @@ div.employee-details
 	padding	: 1em;
 }
 
+div.employee-validation-errors
+{
+	padding	: 0.5em;
+}
+
 /************************ END - Employee Details Popup - END ************************/
 
 /************************ START - Employee Details Permissions Popup - START ************************/

@@ -170,13 +170,106 @@ var Employee	= Class.create
 		}
 	},
 	
-	save	: function()
+	save	: function(fnCallback, oResponse)
 	{
-		// Prepare Operations
-		// TODO
+		if (typeof oResponse == 'undefined')
+		{
+			// Validate control values
+			var aValidationErrors	= [];
+			var oControl			= null;
+			var mValidationResult	= null;
+			for (var sName in this.oPropertyControls)
+			{
+				oControl			= this.oPropertyControls[sName];
+				mValidationResult	= oControl.validate();
+				
+				if (mValidationResult !== true)
+				{
+					aValidationErrors.push(mValidationResult);
+				}
+			}
+			
+			// Return with errors if there were any, otherwise continue
+			if (aValidationErrors.length)
+			{
+				this.showValidationErrors(aValidationErrors);
+				return;
+			}
+			
+			// Show loading
+			this.oLoading	= new Reflex_Popup.Loading('Saving...');
+			this.oLoading.display();
+			
+			// Build employee details for json handler
+			var oDetails	= {
+				sUserName				: this.oPropertyControls['UserName'].getValue(true),
+				sFirstName				: this.oPropertyControls['FirstName'].getValue(true),
+				sLastName				: this.oPropertyControls['LastName'].getValue(true),
+				sDOB					: this.oPropertyControls['DOB'].getValue(true),
+				sEmail					: this.oPropertyControls['Email'].getValue(true),
+				sExtension				: this.oPropertyControls['Extension'].getValue(true),
+				sPhone					: this.oPropertyControls['Phone'].getValue(true),
+				sMobile					: this.oPropertyControls['Mobile'].getValue(true),
+				sPassword				: this.oPropertyControls['PassWord'].getValue(true),
+				sPasswordConfirm		: this.oPropertyControls['PassWordConfirm'].getValue(true),
+				iArchived				: (this.oPropertyControls['Archived'].getValue(true) ? 1 : 0),
+				iTicketingPermission	: this.oPropertyControls['ticketing_permission'].getValue(true),
+				iUserRoleId				: this.oPropertyControls['user_role_id'].getValue(true),
+				iPriviledges			: this.oPropertyControls['Privileges'].getValue(true)	// TODO REMOVE ME
+			}
+			
+			// Make ajax request
+			var fnSave	= 	jQuery.json.jsonFunction(
+								this.save.bind(this, fnCallback),
+								this.save.bind(this, fnCallback), 
+								'Employee', 
+								'save'
+							);
+			fnSave(this.oProperties.Id, oDetails)
+		}
+		else if (oResponse.Success)
+		{
+			// All good!
+			fnCallback();
+			
+			this.oLoading.hide();
+			delete this.oLoading;
+		}
+		else
+		{
+			// Error occurred, either validation or exception
+			if (oResponse.aValidationErrors)
+			{
+				this.showValidationErrors(oResponse.aValidationErrors);
+			}
+			else if (oResponse.Message)
+			{
+				Reflex_Popup.alert(oResponse.Message);
+			}
+			else
+			{
+				Reflex_Popup.alert('An error occured saving the employee information');
+			}
+		}
+	},
+	
+	showValidationErrors	: function(aValidationErrors)
+	{
+		// Create a UL to list the errors and then show a reflex alert
+		var oAlertDom	=	$T.div({class: 'employee-validation-errors'},
+								$T.div('There were errors in the employee information: '),
+								$T.ul(
+									// Added here...
+								)
+							);
+		var oUL	= oAlertDom.select('ul').first();
 		
-		// Save
-		// TODO
+		for (var i = 0; i < aValidationErrors.length; i++)
+		{
+			oUL.appendChild($T.li(aValidationErrors[i]));
+		}
+		
+		Reflex_Popup.alert(oAlertDom, {iWidth: 30});
 	}
 });
 
@@ -332,4 +425,18 @@ Employee.oProperties.Archived.sType	= 'checkbox';
 Employee.oProperties.Archived.oDefinition				= {};
 Employee.oProperties.Archived.oDefinition.sLabel		= 'Archived';
 Employee.oProperties.Archived.oDefinition.mEditable		= true;
-Employee.oProperties.Archived.oDefinition.mMandatory	= true;
+//Employee.oProperties.Archived.oDefinition.mMandatory	= true;
+
+Employee.oProperties.ticketing_permission							= {};
+Employee.oProperties.ticketing_permission.sType						= 'select';
+Employee.oProperties.ticketing_permission.oDefinition				= {};
+Employee.oProperties.ticketing_permission.oDefinition.sLabel		= 'Ticketing System';
+Employee.oProperties.ticketing_permission.oDefinition.mEditable		= true;
+Employee.oProperties.ticketing_permission.oDefinition.mMandatory	= true;
+Employee.oProperties.ticketing_permission.oDefinition.fnPopulate	= Ticketing_User_Permission.getAllAsSelectOptions.bind(Ticketing_User_Permission);
+
+// TODO REMOVE ME
+Employee.oProperties.Privileges						= {};
+Employee.oProperties.Privileges.sType				= 'text';
+Employee.oProperties.Privileges.oDefinition			= {};
+Employee.oProperties.Privileges.oDefinition.sLabel	= 'ERROR This should not be seen';

@@ -1,4 +1,4 @@
-var User_Role	= Class.create
+var Ticketing_User_Permission	= Class.create
 ({
 	initialize	: function(iId, fCallback)
 	{
@@ -6,7 +6,7 @@ var User_Role	= Class.create
 		{
 			// Load via JSON
 			this.iId	= iId;
-			User_Role._oDataset.getRecords(this._load.bind(this, fCallback));
+			Ticketing_User_Permission._oDataset.getRecords(this._load.bind(this, fCallback));
 		}
 		else
 		{
@@ -28,14 +28,14 @@ var User_Role	= Class.create
 	}
 });
 
-User_Role._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_FULL_CACHING, {strObject: 'User_Role', strMethod: 'getDataset'});
+Ticketing_User_Permission._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {strObject: 'Ticketing_User_Permission', strMethod: 'getDataset'});
 
-User_Role.getForId	= function(iId, fCallback)
+Ticketing_User_Permission.getForId	= function(iId, fCallback)
 {
-	return new User_Role(iId, fCallback);
+	return new Ticketing_User_Permission(iId, fCallback);
 }
 
-User_Role.getAll	= function(fCallback, iRecordCount, aResultSet)
+Ticketing_User_Permission.getAll	= function(fCallback, iRecordCount, aResultSet)
 {
 	if (iRecordCount === undefined || aResultSet === undefined)
 	{
@@ -49,19 +49,18 @@ User_Role.getAll	= function(fCallback, iRecordCount, aResultSet)
 	}
 };
 
-User_Role.getAllAsSelectOptions	= function(fCallback, oResponse)
+Ticketing_User_Permission.getAllAsSelectOptions	= function(fCallback, oResponse)
 {
 	if (!oResponse)
 	{
 		// Make Request
-		//alert("Making a Request for all 'User_Role's");
 		this.getAll(this.getAllAsSelectOptions.bind(this, fCallback));
 	}
 	else
 	{
 		// Create an Array of SELECT DOM Elements
-		//alert("Creating Options");
 		var aOptions	= [];
+		
 		for (i in oResponse)
 		{
 			var oOption	= 	$T.option({value: oResponse[i].id},

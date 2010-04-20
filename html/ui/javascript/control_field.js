@@ -256,7 +256,7 @@ var Control_Field	= Class.create
 			{
 				if (this.isValid())
 				{
-					bReturn	= true;
+					mReturn	= true;
 					this.oControlOutput.oElement.addClassName('valid');
 				}
 				else
@@ -272,16 +272,16 @@ var Control_Field	= Class.create
 			}
 			else
 			{
-				bReturn	= true;
+				mReturn	= true;
 			}
 		}
 		else
 		{
-			bReturn	= true;
+			mReturn	= true;
 		}
 		
 		//this.updateElementValue();
-		return bReturn;
+		return mReturn;
 	},
 	
 	revert	: function()
