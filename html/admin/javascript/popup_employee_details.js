@@ -16,11 +16,13 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		if (Number(iEmployeeId) > 0)
 		{
 			// Employee Id passed -- load via JSON
+			this.setTitle("Edit Employee");
 			this.oEmployee	= Employee.getForId(iEmployeeId, this.buildContent.bind(this));
 		}
 		else if (bRenderMode == Control_Field.RENDER_MODE_EDIT)
 		{
 			// New Employee
+			this.setTitle("Add Employee");
 			this.oEmployee		= new Employee();
 			this.bNewEmployee	= true;
 			this.buildContent();
@@ -140,7 +142,6 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		this.setControlMode(this.bRenderMode);
 		
 		// Update the Popup
-		this.setTitle("Employee");
 		this.addCloseButton();
 		this.setIcon("../admin/img/template/user_edit.png");
 		this.setContent(this._oPage);

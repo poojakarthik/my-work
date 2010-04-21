@@ -1950,6 +1950,7 @@ class MenuItems {
 							"popup_employee_details",
 							"popup_employee_password_change",
 							"popup_employee_details_permissions",
+							"popup_operation_profile_edit"
 						);
 		
 		$sSelf		= (($iId && (Flex::getUserId() == $iId)) ? 'true' : 'false');
@@ -1999,6 +2000,7 @@ class MenuItems {
 							"ticketing_user_permission",
 							"employee",
 							"popup_employee_details_permissions",
+							"popup_operation_profile_edit"
 						);
 		
 		$sPopup		= "var oPopup	= new Popup_Employee_Details_Permissions(Control_Field.RENDER_MODE_VIEW, {$iId});";

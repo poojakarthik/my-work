@@ -72,7 +72,7 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 			
 			if (this.bEnabled)
 			{
-				this.oCheckboxElement.show();
+				this.oCheckboxElement.style.visibility	= 'visible';
 			}
 		}
 		else 
@@ -80,7 +80,7 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 			if (this.oCheckboxElement.checked)
 			{
 				this.oElement.show();
-				this.oCheckboxElement.hide();
+				this.oCheckboxElement.style.visibility	= 'hidden';
 			}
 			else
 			{
@@ -104,11 +104,11 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 	{
 		if (bEnabled == false)
 		{
-			this.oCheckboxElement.hide();
+			this.oCheckboxElement.style.visibility	= 'hidden';
 		}
 		else if (this.bEnabled == false)
 		{
-			this.oCheckboxElement.show();
+			this.oCheckboxElement.style.visibility	= 'visible';
 		}
 		
 		this.bEnabled	= bEnabled;

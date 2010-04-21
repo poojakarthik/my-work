@@ -7,16 +7,17 @@ var Operation_Profile	= Class.create
 		{
 			// Load via JSON
 			this.iId	= iId;
-			Operation_Profile._oDataset.getRecords(this._load.bind(this, fCallback));
+			Operation_Profile.getAllIndexed(this._load.bind(this, fCallback));
 		}
 		else
 		{
-			// New Object -- this should never happen
+			// New Object
+			this.iId			= null;
 			this.oProperties	= {};
 		}
 	},
 	
-	_load	: function(fCallback, iRecordCount, aResultSet)
+	_load	: function(fCallback, aResultSet)
 	{
 		// Set properties
 		this.oProperties	= aResultSet[this.iId];
@@ -25,6 +26,72 @@ var Operation_Profile	= Class.create
 		if (fCallback)
 		{
 			fCallback(this);
+		}
+	},
+	
+	save	: function(aOperationProfileIds, aOperationIds, fnCallback)
+	{
+		var fnSave	= jQuery.json.jsonFunction(this._saveComplete.bind(this, fnCallback), this._saveComplete.bind(this), 'Operation_Profile', 'save');
+		fnSave(this.iId, aOperationProfileIds, aOperationIds);
+	},
+	
+	_saveComplete	: function(fnCallback, oResponse)
+	{
+		debugger;
+		if (oResponse.Success)
+		{
+			// All good
+			if (fnCallback)
+			{
+				fnCallback();
+			}
+		}
+		else
+		{
+			// AJAX Error
+			if (oReponse.Message)
+			{
+				Reflex_Popup.alert(oResponse.Message);
+			}
+			else
+			{
+				Reflex_Popup.alert('There was an error saving the profile.');
+			}
+		}
+	},
+	
+	getControls	: function()
+	{
+		this._refreshControls();
+		return this.oPropertyControls;
+	},
+	
+	_refreshControls	: function()
+	{
+		if (!this.oPropertyControls)
+		{
+			// Create a control for each property
+			this.oPropertyControls	= {};
+			var oProperty			= null;
+			
+			for (sProperty in Operation_Profile.oProperties)
+			{
+				oProperty							= Operation_Profile.oProperties[sProperty];
+				this.oPropertyControls[sProperty]	= Control_Field.factory(oProperty.sType, oProperty.oDefinition);
+			}
+		}
+		
+		for (sProperty in this.oPropertyControls)
+		{
+			if (Object.keys(this.oProperties).length)
+			{
+				this.oPropertyControls[sProperty].setValue(this.oProperties[sProperty]);
+			}
+			else
+			{
+				// FIXME: Default values instead?
+				this.oPropertyControls[sProperty].setValue('');
+			}
 		}
 	}
 });
@@ -123,3 +190,28 @@ Operation_Profile.getAllIndexed	= function(fCallback, aResultSet)
 		fCallback(oResultSet);
 	}
 };
+/*
+Operation_Profile.oProperties	= {};
+
+Operation_Profile.oProperties.LastName			= {};
+Operation_Profile.oProperties.LastName.sType	= 'text';
+
+Operation_Profile.oProperties.LastName.oDefinition				= {};
+Operation_Profile.oProperties.LastName.oDefinition.sLabel		= 'Last Name';
+Operation_Profile.oProperties.LastName.oDefinition.mEditable	= true;
+Operation_Profile.oProperties.LastName.oDefinition.mMandatory	= true;
+Operation_Profile.oProperties.LastName.oDefinition.mAutoTrim	= true;
+Operation_Profile.oProperties.LastName.oDefinition.iMaxLength	= 256;
+
+
+Operation_Profile.oProperties.LastName			= {};
+Operation_Profile.oProperties.LastName.sType	= 'text';
+
+Operation_Profile.oProperties.LastName.oDefinition				= {};
+Operation_Profile.oProperties.LastName.oDefinition.sLabel		= 'Last Name';
+Operation_Profile.oProperties.LastName.oDefinition.mEditable	= true;
+Operation_Profile.oProperties.LastName.oDefinition.mMandatory	= true;
+Operation_Profile.oProperties.LastName.oDefinition.mAutoTrim	= true;
+Operation_Profile.oProperties.LastName.oDefinition.iMaxLength	= 1024;
+*/
+

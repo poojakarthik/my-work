@@ -28,9 +28,6 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Send an Email to Devs
-			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
-			
 			return array(
 							"Success"	=> false,
 							"Message"	=> 'ERROR: '.$e->getMessage(),
@@ -88,22 +85,100 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 				}
 				
 				// If no exceptions were thrown, then everything worked
-				return array(
-								"Success"			=> true,
-								"arrRecords"		=> $aResults,
-								"intRecordCount"	=> ($iLimit === null) ? count($aResults) : self::_getRecordCount(),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
-							);
+				return 	array(
+							"Success"			=> true,
+							"arrRecords"		=> $aResults,
+							"intRecordCount"	=> ($iLimit === null) ? count($aResults) : self::_getRecordCount(),
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
 			}
 		}
 		catch (Exception $e)
 		{
-			// Send an Email to Devs
-			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error accessing the database',
+						"strDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
+					);
+		}
+	}
+	
+	public function save($iOperationProfileId, $sName, $sDescription, $aOperationProfileIds, $aOperationIds)
+	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? 'There was an error accessing the database' : '',
+						"sDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
+					);
+		}
+		
+		try
+		{
+			if (is_null($iOperationProfileId))
+			{
+				// Create new operation profile
+				$oOperationProfile	= new Operation_Profile();
+				
+				// Default values, not supplied by the interface
+				$oOperationProfile->status	= 1;
+			}
+			else
+			{
+				// Get operation profile
+				$oOperationProfile	= new Operation_Profile($iOperationProfileId);
+				
+				// Delete existing operation_profile_children records for the operation profile
+				$oOperationProfile->removeChildren();
+				
+				// Delete existing operation_profile_operation records for the operation profile
+				$oOperationProfile->removeOperations();
+			}
+			
+			$oOperationProfile->name		= $sName;
+			$oOperationProfile->description	= $sDescription;
+			$oOperationProfile->save();
+			
+			// Add new operation_profile_children records for the operation profile
+			foreach ($aOperationProfileIds as $iChildProfileId)
+			{
+				$oOperationProfileChildren								= new Operation_Profile_Children();
+				$oOperationProfileChildren->parent_operation_profile_id	= $oOperationProfile->id;
+				$oOperationProfileChildren->child_operation_profile_id	= $iChildProfileId;
+				$oOperationProfileChildren->save();
+			}
+			
+			// Add new operation_profile_operation records for the operation profile
+			foreach ($aOperationIds as $iOperationId)
+			{
+				$oOperationProfileOperation							= new Operation_Profile_Operation();
+				$oOperationProfileOperation->operation_profile_id	= $oOperationProfile->id;
+				$oOperationProfileOperation->operation_id			= $iOperationId;
+				$oOperationProfileOperation->save();
+			}
+			
+			// Commit transaction
+			$oDataAccess->TransactionCommit();
+			
+			// If no exceptions were thrown, then everything worked
+			return 	array(
+						"Success"	=> true,
+						"iId"		=> $oOperationProfile->id,
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
+		catch (Exception $e)
+		{
+			$oDataAccess->TransactionRollback();
 			
 			return array(
 							"Success"	=> false,
-							"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? 'ERROR: '.$e->getMessage() : 'There was an error accessing the database',
+							"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error accessing the database',
 							"strDebug"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
 						);
 		}

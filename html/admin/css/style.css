@@ -3685,3 +3685,48 @@ div.employee-password-change table.input th
 
 /************************ END - Employee Password Change Popup - END ************************/
 
+/************************ START - Operation Profile Edit Popup - START ************************/
+
+div.operation-profile-edit
+{
+	padding	: 1em;
+}
+
+div.operation-profile-edit-profiles,
+div.operation-profile-edit-details
+{
+	padding-bottom	: 1em;
+}
+
+div.operation-profile-edit div.reflex-tree
+{
+	height	: 15em;
+}
+
+div.operation-profile-edit-operations div.section-content div.reflex-tree,
+div.operation-profile-edit-profiles div.section-content div.reflex-tree
+{
+	background-color	: #FFFFFF;
+}
+
+div.operation-profile-edit-operations div.section-content,
+div.operation-profile-edit-profiles div.section-content
+{
+	position	: relative;
+}
+
+div.operation-profile-edit-empty,
+div.operation-profile-edit-operations-empty
+{
+	position			: absolute;
+	left				: 0em;
+	top					: 1em;
+	font-style			: italic;
+	opacity				: 0.75;
+	width				: 100%;
+	text-align			: center;
+	background-color	: inherit;
+}
+
+/************************ END - Operation Profile Edit Popup - END ************************/
+
