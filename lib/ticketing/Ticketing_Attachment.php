@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Attachment_Type.php';
+require_once dirname(__FILE__) . '/' . 'Ticketing_Attachment_Type.php';
 
 class Ticketing_Attachment
 {

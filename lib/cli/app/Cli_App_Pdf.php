@@ -133,7 +133,7 @@ class Cli_App_Pdf extends Cli
 			if (is_file($strSource))
 			{
 				// Store the destination file for the source file
-				$arrFiles[$strSource] = is_dir($strDestination) ? ($strDestination . DIRECTORY_SEPARATOR . basename($strSource) . ".pdf") : $strDestination;
+				$arrFiles[$strSource] = is_dir($strDestination) ? ($strDestination . '/' . basename($strSource) . ".pdf") : $strDestination;
 			}
 			else
 			{
@@ -141,7 +141,7 @@ class Cli_App_Pdf extends Cli
 				$arrSourceContents = scandir($strSource);
 				for ($i = 0, $l = count($arrSourceContents); $i < $l; $i++)
 				{
-					$strPath = $strSource . DIRECTORY_SEPARATOR . $arrSourceContents[$i];
+					$strPath = $strSource . '/' . $arrSourceContents[$i];
 					// Ignore directories (including source directory '.' and parent directory '..')
 					if (is_file($strPath))
 					{
@@ -157,7 +157,7 @@ class Cli_App_Pdf extends Cli
 						if (!in_array((int)basename($strPath, '.xml'), $arrIgnoreAccounts))
 						{
 							// Store the destination file for this source file
-							$arrFiles[$strPath] = $strDestination . DIRECTORY_SEPARATOR . $arrSourceContents[$i] . ".$instanceRef.pdf";
+							$arrFiles[$strPath] = $strDestination . '/' . $arrSourceContents[$i] . ".$instanceRef.pdf";
 						}
 						else
 						{
@@ -426,7 +426,7 @@ class Cli_App_Pdf extends Cli
 					}
 					$paths = ($first ? '' : $instanceRef.'.partial.pdf ' ) . implode(' ', $block);
 
-					$rd = realpath($archiveDir).DIRECTORY_SEPARATOR;
+					$rd = realpath($archiveDir).'/';
 					$mungeError = shell_exec("pdftk $paths cat output $instanceRef.$mungedFile 2>&1");
 					$first = FALSE;
 					if (!$first)

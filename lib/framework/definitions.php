@@ -1690,7 +1690,7 @@ foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
 }
 
 // Upload Status Codes (for php's HTTP POST upload mechanism)
-// The following File Upload related constants are already predefined in php, but their 
+// The following File Upload related constants are already predefined in php, but their
 // descriptions are not, which is why they are included here
 $GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_OK]			['Constant']	= 'UPLOAD_ERR_OK';
 $GLOBALS['*arrConstant']	['HTTPUploadStatus']	[UPLOAD_ERR_OK]			['Description']	= 'The file was successfully uploaded';

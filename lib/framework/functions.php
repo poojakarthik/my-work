@@ -876,7 +876,7 @@ function ListPDF($intAccount)
 
 	// Get the XML invoices...
 	// GLOB for xml/year directories
-	$arrYears = glob(PATH_INVOICE_PDFS .DIRECTORY_SEPARATOR."/xml/*", GLOB_ONLYDIR);
+	$arrYears = glob(PATH_INVOICE_PDFS .'/'."/xml/*", GLOB_ONLYDIR);
 
 	foreach($arrYears as $strYear)
 	{
@@ -895,7 +895,7 @@ function ListPDF($intAccount)
 	}
 
 	// GLOB for pdf/year directories - i.e. pdfs generated prior to the introduction of pdf generation by flex
-	$arrYears = glob(PATH_INVOICE_PDFS .DIRECTORY_SEPARATOR."/pdf/*", GLOB_ONLYDIR);
+	$arrYears = glob(PATH_INVOICE_PDFS .'/'."/pdf/*", GLOB_ONLYDIR);
 
 	foreach($arrYears as $strYear)
 	{

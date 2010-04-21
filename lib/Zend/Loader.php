@@ -61,7 +61,7 @@ class Zend_Loader
         }
 
         // autodiscover the path from the class name
-        $file = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+        $file = str_replace('_', '/', $class) . '.php';
         if (!empty($dirs)) {
             // use the autodiscovered path
             $dirPath = dirname($file);
@@ -73,7 +73,7 @@ class Zend_Loader
                     $dirs[$key] = $dirPath;
                 } else {
                     $dir = rtrim($dir, '\\/');
-                    $dirs[$key] = $dir . DIRECTORY_SEPARATOR . $dirPath;
+                    $dirs[$key] = $dir . '/' . $dirPath;
                 }
             }
             $file = basename($file);

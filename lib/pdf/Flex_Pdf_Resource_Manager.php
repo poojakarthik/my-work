@@ -2,10 +2,10 @@
 
 if (!defined('SHARED_BASE_PATH'))
 {
-	define("SHARED_BASE_PATH", realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR));
+	define("SHARED_BASE_PATH", realpath(dirname(__FILE__) . '/' . ".." . '/'));
 }
 
-define ('COMMON_RESOURCE_BASE_PATH', SHARED_BASE_PATH . DIRECTORY_SEPARATOR . 'template' . DIRECTORY_SEPARATOR . 'resource' .   DIRECTORY_SEPARATOR . 'common' . DIRECTORY_SEPARATOR);
+define ('COMMON_RESOURCE_BASE_PATH', SHARED_BASE_PATH . '/' . 'template' . '/' . 'resource' .   '/' . 'common' . '/');
 
 
 class Flex_Pdf_Resource_Manager
@@ -142,7 +142,7 @@ class Flex_Pdf_Resource_Manager
 				// Ensure the resources for the customer group and effective date have been loaded
 				$this->loadResources();
 
-				require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . "Flex_Database_Protocol.php");
+				require_once(dirname(__FILE__) . '/' . "Flex_Database_Protocol.php");
 
 				// Get the placeholder from the relative path
 				$placeholder = strtolower(substr($relativePath, 7));

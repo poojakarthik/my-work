@@ -301,7 +301,7 @@ class Zend_Loader_PluginLoader implements Zend_Loader_PluginLoader_Interface
             $paths = array_reverse($paths, true);
             foreach ($paths as $path) {
 
-                $classFile = str_replace('_', DIRECTORY_SEPARATOR, $name) . '.php';
+                $classFile = str_replace('_', '/', $name) . '.php';
                 $className = $prefix . $name;
 
                 if (class_exists($className, false)) {

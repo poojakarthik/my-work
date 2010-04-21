@@ -98,7 +98,7 @@ class Zend_Mail_Storage_Folder_Mbox extends Zend_Mail_Storage_Mbox implements Ze
             throw new Zend_Mail_Storage_Exception('no valid dirname given in params');
         }
 
-        $this->_rootdir = rtrim($params->dirname, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $this->_rootdir = rtrim($params->dirname, '/') . '/';
 
         $this->_buildFolderTree($this->_rootdir);
         $this->selectFolder(!empty($params->folder) ? $params->folder : 'INBOX');
@@ -139,7 +139,7 @@ class Zend_Mail_Storage_Folder_Mbox extends Zend_Mail_Storage_Mbox implements Ze
                 continue;
             }
             $absoluteEntry = $currentDir . $entry;
-            $globalName = $parentGlobalName . DIRECTORY_SEPARATOR . $entry;
+            $globalName = $parentGlobalName . '/' . $entry;
             if (is_file($absoluteEntry) && $this->_isMboxFile($absoluteEntry)) {
                 $parentFolder->$entry = new Zend_Mail_Storage_Folder($entry, $globalName);
                 continue;
@@ -149,7 +149,7 @@ class Zend_Mail_Storage_Folder_Mbox extends Zend_Mail_Storage_Mbox implements Ze
             }
             $folder = new Zend_Mail_Storage_Folder($entry, $globalName, false);
             $parentFolder->$entry = $folder;
-            $this->_buildFolderTree($absoluteEntry . DIRECTORY_SEPARATOR, $folder, $globalName);
+            $this->_buildFolderTree($absoluteEntry . '/', $folder, $globalName);
         }
 
         closedir($dh);
@@ -169,16 +169,16 @@ class Zend_Mail_Storage_Folder_Mbox extends Zend_Mail_Storage_Mbox implements Ze
         }
 
         $currentFolder = $this->_rootFolder;
-        $subname = trim($rootFolder, DIRECTORY_SEPARATOR);
+        $subname = trim($rootFolder, '/');
         while ($currentFolder) {
-            @list($entry, $subname) = @explode(DIRECTORY_SEPARATOR, $subname, 2);
+            @list($entry, $subname) = @explode('/', $subname, 2);
             $currentFolder = $currentFolder->$entry;
             if (!$subname) {
                 break;
             }
         }
 
-        if ($currentFolder->getGlobalName() != DIRECTORY_SEPARATOR . trim($rootFolder, DIRECTORY_SEPARATOR)) {
+        if ($currentFolder->getGlobalName() != '/' . trim($rootFolder, '/')) {
             /**
              * @see Zend_Mail_Storage_Exception
              */

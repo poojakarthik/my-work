@@ -175,7 +175,7 @@ function _LoadDirectoryListing($strPath)
 	}
 }
 
-$thisDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+$thisDir = dirname(__FILE__) . '/';
 require_once($thisDir.'classes/Application.php');
 require_once($thisDir.'classes/ApplicationTemplate.php');
 require_once($thisDir.'classes/BaseTemplate.php');

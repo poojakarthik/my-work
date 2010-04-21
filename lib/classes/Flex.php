@@ -102,7 +102,7 @@ final class Flex
 	// Returns the relative base path of the Framework for the applications
 	public static function relativeFrameworkBase()
 	{
-		return 'html'.DIRECTORY_SEPARATOR.'ui'.DIRECTORY_SEPARATOR;
+		return 'html'.'/'.'ui'.'/';
 	}
 
 	// Returns the absolute base path of the Framework for the applications
@@ -160,10 +160,10 @@ final class Flex
 			switch(session_name())
 			{
 				case self::FLEX_ADMIN_SESSION:
-					$relativeApplicationBase = 'html' . DIRECTORY_SEPARATOR . 'admin'.DIRECTORY_SEPARATOR;
+					$relativeApplicationBase = 'html' . '/' . 'admin'.'/';
 					break;
 				case self::FLEX_CUSTOMER_SESSION:
-					$relativeApplicationBase = 'html' . DIRECTORY_SEPARATOR . 'customer'.DIRECTORY_SEPARATOR;
+					$relativeApplicationBase = 'html' . '/' . 'customer'.'/';
 					break;
 				default:
 					$relativeApplicationBase = FALSE;
@@ -249,7 +249,7 @@ final class Flex
 		//TODO! Instead of having 1 loop which tests all 4 possible locations, It should be as 4 separate loops, because there is a precedence to the locations
 		foreach ($subDirs as $subDir)
 		{
-			$accumulatedPath .= $subDir . DIRECTORY_SEPARATOR;
+			$accumulatedPath .= $subDir . '/';
 
 			// Check the specific application for the class
 			// Classes specific to the web application (admin or customer) will be located here 
@@ -369,14 +369,14 @@ final class Flex
 		static $base;
 		if (!isset($base))
 		{
-			$base = realpath(dirname(__FILE__) . '/../../').DIRECTORY_SEPARATOR;
+			$base = realpath(dirname(__FILE__) . '/../../').'/';
 		}
 		return $base;
 	}
 
 	public static function getRelativeBase()
 	{
-		return "..". DIRECTORY_SEPARATOR ."..". DIRECTORY_SEPARATOR;
+		return "..". '/' ."..". '/';
 	}
 
 	public static function requireOnce()

@@ -55,9 +55,17 @@
 			$Style->Output ('xsl/content/datareport/scheduled.xsl');
 			exit;
 		}
-
-		// Generate on the fly
-		$selResult = $rptReport->Execute ($_POST ['select'], $_POST ['input'], $_POST ['limit']);
+		
+		try
+		{
+			// Generate on the fly
+			$selResult = $rptReport->Execute ($_POST ['select'], $_POST ['input'], $_POST ['limit']);
+		}
+		catch (Exception $oException)
+		{
+			echo nl2br("");
+			throw $oException;
+		}
 		if ($arrResult = $selResult->FetchAll())
 		{
 			// Load Report Application

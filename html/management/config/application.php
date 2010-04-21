@@ -87,13 +87,13 @@ require_once($strObLibDir."oblib.php");
 
 
 // load authentication class
-require_once (dirname(__FILE__).DIRECTORY_SEPARATOR."../classes/authentication/authentication.php");
+require_once (dirname(__FILE__).'/'."../classes/authentication/authentication.php");
 
 // load employee classes
-require_once (dirname(__FILE__).DIRECTORY_SEPARATOR."../classes/employee/authenticatedemployee.php");
-require_once (dirname(__FILE__).DIRECTORY_SEPARATOR."../classes/employee/authenticatedemployeeaudit.php");
-require_once (dirname(__FILE__).DIRECTORY_SEPARATOR."../classes/employee/authenticatedemployeeprivileges.php");
-require_once (dirname(__FILE__).DIRECTORY_SEPARATOR."../classes/permission/permission.php");
+require_once (dirname(__FILE__).'/'."../classes/employee/authenticatedemployee.php");
+require_once (dirname(__FILE__).'/'."../classes/employee/authenticatedemployeeaudit.php");
+require_once (dirname(__FILE__).'/'."../classes/employee/authenticatedemployeeprivileges.php");
+require_once (dirname(__FILE__).'/'."../classes/permission/permission.php");
 
 // Do Authentication
 $athAuthentication = new Authentication ();
@@ -164,7 +164,7 @@ foreach($arrConfig['Modules'] as $intModule=>$strLocation)
 	if (HasPermission($arrPage['Modules'], $intModule))
 	{
 		// load all files for the module
-		foreach (glob(dirname(__FILE__).DIRECTORY_SEPARATOR."../classes/$strLocation/*.php") as $strFile)
+		foreach (glob(dirname(__FILE__).'/'."../classes/$strLocation/*.php") as $strFile)
 		{
 			$strFile = realpath($strFile);
 			require_once $strFile;
@@ -177,14 +177,14 @@ foreach($arrConfig['Modules'] as $intModule=>$strLocation)
 //----------------------------------------------------------------------------//
 
 //style (intranet-specific)
-require_once (dirname(__FILE__).DIRECTORY_SEPARATOR."../classes/style/intranetstyle.php");
+require_once (dirname(__FILE__).'/'."../classes/style/intranetstyle.php");
 $Style = new IntranetStyle ($strWebDir, $athAuthentication);
 
 
 //----------------------------------------------------------------------------//
 // DOCUMENTATION
 //----------------------------------------------------------------------------//
-$strFile = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR."../classes/documentation/documentation.php");
+$strFile = realpath(dirname(__FILE__).'/'."../classes/documentation/documentation.php");
 require_once $strFile;
 $docDocumentation = new Documentation ();
 $docDocumentation = $Style->attachObject ($docDocumentation);

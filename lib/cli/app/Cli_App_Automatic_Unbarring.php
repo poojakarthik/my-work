@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../' . 'flex.require.php';
+require_once dirname(__FILE__) . '/' . '../../../' . 'flex.require.php';
 
 class Cli_App_Automatic_Unbarring extends Cli
 {

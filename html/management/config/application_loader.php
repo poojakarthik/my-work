@@ -54,7 +54,7 @@ if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Gecko') === FALSE && stristr ($_SERV
  * @variable
  * @package	framework
  */
- $thisDir = dirname(__FILE__).DIRECTORY_SEPARATOR;
+ $thisDir = dirname(__FILE__).'/';
  $strFrameworkDir		= $thisDir."../../../lib/framework/"; 
  
 //----------------------------------------------------------------//

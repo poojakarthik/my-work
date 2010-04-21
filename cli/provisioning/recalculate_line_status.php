@@ -49,7 +49,7 @@ if ($intServiceCount = $selServices->Execute())
 		$fltPercent	= round(($intCount / $intServiceCount) * 100, 1);
 		CliEcho(" * ($intCount/$intServiceCount {$fltPercent}% @ {$intSplit}s){$arrService['Account']}::{$arrService['FNN']}...", FALSE);
 		
-		// DETERMINE CURRENT SERVICE LINE STATUS
+		// DETERMINE CURRENT FULL SERVICE LINE STATUS
 		CliEcho("FS Current: {$arrService['LineStatus']}::{$arrService['LineStatusDate']}", FALSE);
 		if ($selResponses->Execute(Array('Service' => $arrService['Id'], 'Nature' => REQUEST_TYPE_NATURE_FULL_SERVICE)) !== FALSE)
 		{
@@ -123,7 +123,7 @@ if ($intServiceCount = $selServices->Execute())
 			throw new Exception($selResponses->Error());
 		}
 		/*
-		// DETERMINE CURRENT PROVISIONING LINE STATUS
+		// DETERMINE CURRENT PRESELECTION LINE STATUS
 		CliEcho("PS...", FALSE);
 		if ($selResponses->Execute(Array('Service' => $arrService['Id'], 'Nature' => REQUEST_TYPE_NATURE_PRESELECTION)) !== FALSE)
 		{

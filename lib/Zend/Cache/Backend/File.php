@@ -120,7 +120,7 @@ class Zend_Cache_Backend_File extends Zend_Cache_Backend implements Zend_Cache_B
         if (!is_null($this->_options['cache_dir'])) { // particular case for this option
             $this->setCacheDir($this->_options['cache_dir']);
         } else {
-            $this->setCacheDir(self::getTmpDir() . DIRECTORY_SEPARATOR, false);
+            $this->setCacheDir(self::getTmpDir() . '/', false);
         }
         if (isset($this->_options['file_name_prefix'])) { // particular case for this option
             if (!preg_match('~^[\w]+$~', $this->_options['file_name_prefix'])) {
@@ -149,8 +149,8 @@ class Zend_Cache_Backend_File extends Zend_Cache_Backend implements Zend_Cache_B
             Zend_Cache::throwException('cache_dir is not writable');
         }
         if ($trailingSeparator) {
-            // add a trailing DIRECTORY_SEPARATOR if necessary
-            $value = rtrim(realpath($value), '\\/') . DIRECTORY_SEPARATOR;
+            // add a trailing '/' if necessary
+            $value = rtrim(realpath($value), '\\/') . '/';
         }
         $this->_options['cache_dir'] = $value;
     }
@@ -533,7 +533,7 @@ class Zend_Cache_Backend_File extends Zend_Cache_Backend implements Zend_Cache_B
             }
             if ((is_dir($file)) and ($this->_options['hashed_directory_level']>0)) {
                 // Recursive call
-                $result = ($result) && ($this->_clean($file . DIRECTORY_SEPARATOR, $mode, $tags));
+                $result = ($result) && ($this->_clean($file . '/', $mode, $tags));
                 if ($mode=='all') {
                     // if mode=='all', we try to drop the structure too
                     @rmdir($file);
@@ -619,7 +619,7 @@ class Zend_Cache_Backend_File extends Zend_Cache_Backend implements Zend_Cache_B
         if ($this->_options['hashed_directory_level']>0) {
             $hash = hash('adler32', $id);
             for ($i=0 ; $i < $this->_options['hashed_directory_level'] ; $i++) {
-                $root = $root . $prefix . '--' . substr($hash, 0, $i + 1) . DIRECTORY_SEPARATOR;
+                $root = $root . $prefix . '--' . substr($hash, 0, $i + 1) . '/';
             }
         }
         return $root;

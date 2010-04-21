@@ -71,6 +71,21 @@ class Application_Handler_Developer extends Application_Handler
 																)
 													);
 			
+			$aScripts	= array	(
+									'reflex_control.js',
+									'reflex_control_textfield.js',
+									//'reflex_control_textarea.js',
+									//'reflex_control_fieldset.js',
+									'developer_controls.js',
+								);
+			$arrFunctions[]	= self::_stdClassFactory(
+														array	(
+																	'strName'	=> 'Form Controls',
+																	'strType'	=> self::URL_TYPE_JS,
+																	'strURL'	=> 'JsAutoLoader.loadScript(["'.implode('","', $aScripts).'"], function(){var oPopup = new Developer_Ticker(); oPopup.display();}, false);'
+																)
+													);
+			
 			$arrDetailsToRender = array();
 			$arrDetailsToRender['arrFunctions']		= $arrFunctions;
 			

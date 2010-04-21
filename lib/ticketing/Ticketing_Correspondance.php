@@ -1,15 +1,15 @@
 <?php
 
 // Ensure that we have the Ticketing_Ticket class
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Ticket.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Contact.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Attachment.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Customer_Group_Email.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Customer_Group_Config.php';
+require_once dirname(__FILE__) . '/' . 'Ticketing_Ticket.php';
+require_once dirname(__FILE__) . '/' . 'Ticketing_Contact.php';
+require_once dirname(__FILE__) . '/' . 'Ticketing_Attachment.php';
+require_once dirname(__FILE__) . '/' . 'Ticketing_Customer_Group_Email.php';
+require_once dirname(__FILE__) . '/' . 'Ticketing_Customer_Group_Config.php';
 
 
 // Ensure that we have the email notification class
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'Email_Notification.php';
+require_once dirname(__FILE__) . '/' . '..' . '/' . 'email' . '/' . 'Email_Notification.php';
 
 class Ticketing_Correspondance
 {
@@ -536,7 +536,7 @@ class Ticketing_Correspondance
 			return;
 		}
 
-		require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'Email_Notification.php';
+		require_once dirname(__FILE__) . '/' . '..' . '/' . 'email' . '/' . 'Email_Notification.php';
 
 		// Check that we have a valid recipient address for the acknowledgement
 		$emailAddress = $this->getContact()->email;

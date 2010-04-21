@@ -87,9 +87,9 @@ class Ticketing_Config
 		if ($path && file_exists($path) && is_dir($path))
 		{
 			$path = realpath($path);
-			if ($path[strlen($path) - 1] != DIRECTORY_SEPARATOR)
+			if ($path[strlen($path) - 1] != '/')
 			{
-				$path .= DIRECTORY_SEPARATOR;
+				$path .= '/';
 			}
 		}
 		else

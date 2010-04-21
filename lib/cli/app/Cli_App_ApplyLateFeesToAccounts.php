@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../' . 'flex.require.php';
+require_once dirname(__FILE__) . '/' . '../../../' . 'flex.require.php';
 VixenRequire('lib/classes/Employee.php');
 VixenRequire('lib/classes/note/Note.php');
 

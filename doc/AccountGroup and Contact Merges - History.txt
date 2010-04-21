@@ -18,13 +18,13 @@ There are 2 modelling 1
 SELECT * from Contact WHERE Id IN (CONTACT_1, CONTACT_2) ORDER BY Id;
 
 Merge AccountGroup DEPRECATED_ACCOUNT_GROUP into RECEIVING_ACCOUNT_GROUP
-merge_account_groups.php -d RECEIVING_ACCOUNT_GROUP -o DEPRECATED_ACCOUNT_GROUP -t	<<-- the t is for test mode.  It will rollback all changes
+php merge_account_groups.php -d RECEIVING_ACCOUNT_GROUP -o DEPRECATED_ACCOUNT_GROUP -t	<<-- the t is for test mode.  It will rollback all changes
 
 Merge Contact DEPRECTED_CONTACT into contact RECEIVING_CONTACT
-merge_contacts.php -d RECEIVING_CONTACT -o DEPRECTED_CONTACT -t						<<-- the t is for test mode.  It will rollback all changes
+php merge_contacts.php -d RECEIVING_CONTACT -o DEPRECTED_CONTACT -t						<<-- the t is for test mode.  It will rollback all changes
 
 
-
+uncontactable
 
 
 Merging accounts 1000168025 and 1000168667 into the same accountgroup as 1000168024 for Rob:
@@ -1428,7 +1428,7 @@ FROM Account WHERE AccountGroup IN (1000174931, 1000175041) ORDER BY Id;
 Check for Contacts
 SELECT * FROM Contact WHERE AccountGroup IN (1000174931, 1000175041) ORDER BY Id;
 
-There are 2 modelling 1
+There are 3 modelling 1
 
 SELECT * from Contact WHERE Id IN (CONTACT_1, CONTACT_2, CONTACT_3) ORDER BY Id;
 
@@ -1442,4 +1442,109 @@ Merge Contact 29692 into contact 27597
 merge_contacts.php -d 27597 -o 29692 -t						<<-- the t is for test mode.  It will rollback all changes
 -----------------------------------------------
 
+
+Accounts: Discovery Tours WA, Discovery Tours NQ (1), Discovery Tours NQ (2)
+-----------------------------------------------
+
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000178098, 1000177769, 1000171254) ORDER BY Id;
+
+	Account Groups are 1000171229 AND 1000177622
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000171229, 1000177622) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000171229, 1000177622) ORDER BY Id;
+
+There are 3 modelling 1
+
+SELECT * from Contact WHERE Id IN (22936, 31465, 32073) ORDER BY Id;
+
+Merge AccountGroup 1000177622 into 1000171229
+merge_account_groups.php -d 1000171229 -o 1000177622 -t	<<-- the t is for test mode.  It will rollback all changes
+
+-- There are 3 copies of the Contact -- merge all into one
+Merge Contact 31465 into contact 22936
+merge_contacts.php -d 22936 -o 31465 -t						<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 32073 into contact 22936
+merge_contacts.php -d 22936 -o 32073 -t						<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
+
+
+Accounts: NORGREG P/L (1), NORGREG P/L (2)
+-----------------------------------------------
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000160974, 1000160975) ORDER BY Id;
+
+	Account Groups are 1000160974 AND 1000160975
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000160974, 1000160975) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000160974, 1000160975) ORDER BY Id;
+
+There are 2 modelling 1
+
+SELECT * from Contact WHERE Id IN (12053, 12054) ORDER BY Id;
+
+Merge AccountGroup 1000160975 into 1000160974
+merge_account_groups.php -d 1000160974 -o 1000160975 -t	<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 12054 into contact 12053
+merge_contacts.php -d 12053 -o 12054 -t						<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
+
+
+Accounts: Torquay Sportspower & Drance International Pty Ltd
+-----------------------------------------------
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000177432, 1000166134) ORDER BY Id;
+
+	Account Groups are 1000166110 AND 1000177291
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000166110, 1000177291) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Merge AccountGroup 1000177291 into 1000166110
+php merge_account_groups.php -d 1000166110 -o 1000177291 -t	<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
+
+Accounts: GEMMADEN PTY LTD / The trustee for LEWIS TRADING TRUST & Gabby Mandurah
+-----------------------------------------------
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE Id IN (1000177247 , 1000178834) ORDER BY Id;
+
+	Account Groups are 1000177110 AND 1000178661
+
+Checking if there are any other accounts in these groups:
+SELECT Id, BusinessName, TradingName, ABN, ACN, Address1, Suburb, Postcode, State, PrimaryContact, CustomerGroup, AccountGroup, Archived
+FROM Account WHERE AccountGroup IN (1000177110, 1000178661) ORDER BY Id;
+
+	There are no other Accounts in either of these AccountGroups
+
+Check for Contacts
+SELECT * FROM Contact WHERE AccountGroup IN (1000177110, 1000178661) ORDER BY Id;
+
+There are 2 modelling 1
+
+SELECT * from Contact WHERE Id IN (30873, 33190) ORDER BY Id;
+
+Merge AccountGroup 1000178661 into 1000177110
+php merge_account_groups.php -d 1000177110 -o 1000178661 -t	<<-- the t is for test mode.  It will rollback all changes
+
+Merge Contact 33190 into contact 30873
+php merge_contacts.php -d 30873 -o 33190 -t						<<-- the t is for test mode.  It will rollback all changes
+-----------------------------------------------
 

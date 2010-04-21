@@ -192,8 +192,8 @@ class Ticketing_Attachment_Type
 
 	public function sendEmailNotification($objType)
 	{
-		require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'Email_Notification.php';
-		require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'dom' . DIRECTORY_SEPARATOR . 'Flex_Dom_Document.php';
+		require_once dirname(__FILE__) . '/' . '..' . '/' . 'email' . '/' . 'Email_Notification.php';
+		require_once dirname(__FILE__) . '/' . '..' . '/' . 'dom' . '/' . 'Flex_Dom_Document.php';
 
 		$email = new Email_Notification(EMAIL_NOTIFICATION_TICKETING_SYSTEM_ADMIN_MESSAGE);
 

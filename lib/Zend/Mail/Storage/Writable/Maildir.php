@@ -101,8 +101,8 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
         $fulldir = $this->_rootdir . '.' . $folder;
 
         // check if we got tricked and would create a dir outside of the rootdir or not as direct child
-        if (strpos($folder, DIRECTORY_SEPARATOR) !== false || strpos($folder, '/') !== false
-            || dirname($fulldir) . DIRECTORY_SEPARATOR != $this->_rootdir) {
+        if (strpos($folder, '/') !== false || strpos($folder, '/') !== false
+            || dirname($fulldir) . '/' != $this->_rootdir) {
             /**
              * @see Zend_Mail_Storage_Exception
              */
@@ -123,7 +123,7 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
             }
         }
 
-        if (!@mkdir($fulldir) || !@mkdir($fulldir . DIRECTORY_SEPARATOR . 'cur')) {
+        if (!@mkdir($fulldir) || !@mkdir($fulldir . '/' . 'cur')) {
             /**
              * @see Zend_Mail_Storage_Exception
              */
@@ -131,8 +131,8 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
             throw new Zend_Mail_Storage_Exception('error while creating new folder, may be created incompletly');
         }
 
-        mkdir($fulldir . DIRECTORY_SEPARATOR . 'new');
-        mkdir($fulldir . DIRECTORY_SEPARATOR . 'tmp');
+        mkdir($fulldir . '/' . 'new');
+        mkdir($fulldir . '/' . 'tmp');
 
         $localName = $parent ? substr($folder, strlen($parent) + 1) : $folder;
         $this->getFolders($parent)->$localName = new Zend_Mail_Storage_Folder($localName, $folder, true);
@@ -173,7 +173,7 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
             throw new Zend_Mail_Storage_Exception('delete children first');
         }
 
-        if ($name == 'INBOX' || $name == DIRECTORY_SEPARATOR || $name == '/') {
+        if ($name == 'INBOX' || $name == '/' || $name == '/') {
             /**
              * @see Zend_Mail_Storage_Exception
              */
@@ -190,7 +190,7 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
         }
 
         foreach (array('tmp', 'new', 'cur', '.') as $subdir) {
-            $dir = $this->_rootdir . '.' . $name . DIRECTORY_SEPARATOR . $subdir;
+            $dir = $this->_rootdir . '.' . $name . '/' . $subdir;
             if (!file_exists($dir)) {
                 continue;
             }
@@ -206,7 +206,7 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
                 if ($entry == '.' || $entry == '..') {
                     continue;
                 }
-                if (!unlink($dir . DIRECTORY_SEPARATOR . $entry)) {
+                if (!unlink($dir . '/' . $entry)) {
                     /**
                      * @see Zend_Mail_Storage_Exception
                      */
@@ -228,7 +228,7 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
 
         if (!rmdir($this->_rootdir . '.' . $name)) {
             // at least we should try to make it a valid maildir again
-            mkdir($this->_rootdir . '.' . $name . DIRECTORY_SEPARATOR . 'cur');
+            mkdir($this->_rootdir . '.' . $name . '/' . 'cur');
             /**
              * @see Zend_Mail_Storage_Exception
              */
@@ -280,7 +280,7 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
         // check if folder exists and has no children
         $folder = $this->getFolders($oldName);
 
-        if ($oldName == 'INBOX' || $oldName == DIRECTORY_SEPARATOR || $oldName == '/') {
+        if ($oldName == 'INBOX' || $oldName == '/' || $oldName == '/') {
             /**
              * @see Zend_Mail_Storage_Exception
              */
@@ -306,7 +306,7 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
 
         $olddir = $this->_rootdir . '.' . $folder;
         foreach (array('tmp', 'new', 'cur') as $subdir) {
-            $subdir = DIRECTORY_SEPARATOR . $subdir;
+            $subdir = '/' . $subdir;
             if (!file_exists($olddir . $subdir)) {
                 continue;
             }
@@ -320,7 +320,7 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
             }
         }
         // create a dummy if removing fails - otherwise we can't read it next time
-        mkdir($olddir . DIRECTORY_SEPARATOR . 'cur');
+        mkdir($olddir . '/' . 'cur');
         $this->removeFolder($oldName);
     }
 
@@ -361,9 +361,9 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
     protected function _createTmpFile($folder = 'INBOX')
     {
     	if ($folder == 'INBOX') {
-	        $tmpdir = $this->_rootdir . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
+	        $tmpdir = $this->_rootdir . '/' . 'tmp' . '/';
     	} else {
-	        $tmpdir = $this->_rootdir . '.' . $folder . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
+	        $tmpdir = $this->_rootdir . '.' . $folder . '/' . 'tmp' . '/';
 	    }
         if (!file_exists($tmpdir)) {
             if (!mkdir($tmpdir)) {
@@ -504,9 +504,9 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
         if ($size) {
             $info = ',S=' . $size . $info;
         }
-        $new_filename = $temp_file['dirname'] . DIRECTORY_SEPARATOR;
+        $new_filename = $temp_file['dirname'] . '/';
         $new_filename .= $recent ? 'new' : 'cur';
-        $new_filename .= DIRECTORY_SEPARATOR . $temp_file['uniq'] . $info;
+        $new_filename .= '/' . $temp_file['uniq'] . $info;
 
         // we're throwing any exception after removing our temp file and saving it to this variable instead
         $exception = null;
@@ -575,7 +575,7 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
         if ($size) {
             $info = ',S=' . $size . $info;
         }
-        $new_file = $temp_file['dirname'] . DIRECTORY_SEPARATOR . 'cur' . DIRECTORY_SEPARATOR . $temp_file['uniq'] . $info;
+        $new_file = $temp_file['dirname'] . '/' . 'cur' . '/' . $temp_file['uniq'] . $info;
 
         // we're throwing any exception after removing our temp file and saving it to this variable instead
         $exception = null;
@@ -627,7 +627,7 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
         $filedata = $this->_getFileData($id);
 
         // TODO: move file from new to cur
-        $new_filename = dirname($filedata['filename']) . DIRECTORY_SEPARATOR . "$filedata[uniq]$info";
+        $new_filename = dirname($filedata['filename']) . '/' . "$filedata[uniq]$info";
 
         if (!@rename($filedata['filename'], $new_filename)) {
             /**
@@ -753,7 +753,7 @@ class Zend_Mail_Storage_Writable_Maildir extends    Zend_Mail_Storage_Folder_Mai
 			}
 			
 			foreach (array('cur', 'new') as $subsubdir) {
-				$dirname = $this->_rootdir . $subdir . DIRECTORY_SEPARATOR . $subsubdir . DIRECTORY_SEPARATOR;
+				$dirname = $this->_rootdir . $subdir . '/' . $subsubdir . '/';
 				if (!file_exists($dirname)) {
 					continue;
 				}

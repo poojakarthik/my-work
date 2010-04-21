@@ -176,7 +176,7 @@ class Zend_Filter_Input
 
         foreach ($namespaces as $namespace) {
             $prefix = $namespace;
-            $path = str_replace('_', DIRECTORY_SEPARATOR, $prefix);
+            $path = str_replace('_', '/', $prefix);
             $this->addFilterPrefixPath($prefix, $path);
             $this->addValidatorPrefixPath($prefix, $path);
         }

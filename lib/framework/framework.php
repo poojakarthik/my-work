@@ -26,7 +26,7 @@
  *
  */
 
-$thisDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+$thisDir = dirname(__FILE__) . '/';
 require_once $thisDir.'../classes/Framework.php';
 require_once $thisDir.'../classes/ApplicationBaseClass.php';
 require_once $thisDir.'../classes/CarrierModule.php';

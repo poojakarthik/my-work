@@ -66,7 +66,7 @@ class Zend_Memory
 
         // For perfs reasons, we do not use the Zend_Loader::loadClass() method
         // (security controls are explicit)
-        require_once str_replace('_', DIRECTORY_SEPARATOR, $backendClass) . '.php';
+        require_once str_replace('_', '/', $backendClass) . '.php';
 
         $backendObject = new $backendClass($backendOptions);
 

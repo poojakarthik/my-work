@@ -42,7 +42,7 @@ class Cli_App_InvoiceXMLTest extends Cli
 				$arrSourceContents = scandir($strSource);
 				for ($i = 0, $l = count($arrSourceContents); $i < $l; $i++)
 				{
-					$strPath = $strSource . DIRECTORY_SEPARATOR . $arrSourceContents[$i];
+					$strPath = $strSource . '/' . $arrSourceContents[$i];
 					// Ignore non-xml files
 					if (substr($strPath, -4) != '.xml') continue;
 					// Ignore directories (including source directory '.' and parent directory '..')

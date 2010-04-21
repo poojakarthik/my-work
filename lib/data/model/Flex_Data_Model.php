@@ -9,7 +9,7 @@ class Flex_Data_Model
 		static $base;
 		if (!isset($base))
 		{
-			$base = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'type' . DIRECTORY_SEPARATOR;
+			$base = dirname(__FILE__) . '/' . 'type' . '/';
 		}
 		return $base . strtolower($tableName) . '.php';
 	}
@@ -118,7 +118,7 @@ class Flex_Data_Model
 		
 		foreach ($arrTableFiles as $strFile)
 		{
-			$strTableName = strtolower(str_replace(".php", "", str_replace(dirname($strFile). DIRECTORY_SEPARATOR, "", $strFile)));
+			$strTableName = strtolower(str_replace(".php", "", str_replace(dirname($strFile). '/', "", $strFile)));
 			if (!array_key_exists($strTableName, self::$cache))
 			{
 				// The table isn't currently cached

@@ -27,7 +27,7 @@
  *
  */
 
-$thisDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+$thisDir = dirname(__FILE__) . '/';
 require_once $thisDir.'classes/Page.php';
 require_once $thisDir.'classes/DBOFramework.php';
 require_once $thisDir.'classes/DBLFramework.php';

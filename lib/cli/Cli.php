@@ -1,6 +1,6 @@
 <?php
 
-//require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . "../email/Email_Notification.php";
+//require_once dirname(__FILE__) . '/' . "../email/Email_Notification.php";
 
 require_once(dirname(__FILE__).'/../classes/Flex.php');
 Flex::load();
@@ -82,7 +82,7 @@ abstract class Cli
 
 	public static final function execute($class)
 	{
-		$classFile = dirname(__FILE__) . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . $class . ".php";
+		$classFile = dirname(__FILE__) . '/' . "app" . '/' . $class . ".php";
 		try
 		{
 			if (file_exists($classFile))
@@ -285,7 +285,7 @@ abstract class Cli
 		static $strFlexBasePath;
 		if (!isset($strFlexBasePath))
 		{
-			$strFlexBasePath = realpath(dirname(__FILE__) . "/../../") . DIRECTORY_SEPARATOR;
+			$strFlexBasePath = realpath(dirname(__FILE__) . "/../../") . '/';
 		}
 		return $strFlexBasePath;
 	}

@@ -27,7 +27,7 @@
  */
  
  
-$thisDir = dirname(__FILE__).DIRECTORY_SEPARATOR;
+$thisDir = dirname(__FILE__).'/';
 require_once $thisDir.'../classes/PropertyToken.php';
 require_once $thisDir.'../classes/MenuToken.php';
 

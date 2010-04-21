@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../classes/Flex.php';
+require_once dirname(__FILE__) . '/' . '../../classes/Flex.php';
 Flex::load();
 
 class Cli_App_Ticketing_Email_Fetch extends Cli

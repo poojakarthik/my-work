@@ -1,9 +1,9 @@
 <?php
 
 // Ensure that we have the Ticketing_Ticket_Message class
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Correspondance.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Config.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Ticketing_Contact.php';
+require_once dirname(__FILE__) . '/' . 'Ticketing_Correspondance.php';
+require_once dirname(__FILE__) . '/' . 'Ticketing_Config.php';
+require_once dirname(__FILE__) . '/' . 'Ticketing_Contact.php';
 
 class Ticketing_Ticket
 {

@@ -86,6 +86,10 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 				$this->log("No invoice runs require barring at this time.");
 				return 0;
 			}
+			
+			// DEBUG
+			throw new Exception();
+			// DEBUG
 
 			$arrInvoiceRuns = array();
 			$intAbsoluteMax = 0;
@@ -98,12 +102,14 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 				$intAbsoluteMax = max($intAbsoluteMax, $invoiceRun['max_barrings_per_day']);
 			}
 			$arrInvoiceRunIds = array_keys($arrInvoiceRuns);
-
+			
+			/* Whoops! MySQL does an implicit COMMIT for DDL queries (which are used in ListStaggeredAutomaticBarringAccounts())
 			$this->log('Beginning database transaction.');
 			$db->beginTransaction();
 
 			$conConnection = DataAccess::getDataAccess();
 			$conConnection->TransactionStart();
+			*/
 
 			$this->log($arrArgs[self::SWITCH_LIST_RUN] ? "Listing accounts that would be barred" : "Listing accounts to be barred");
 
@@ -114,8 +120,17 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 			$arrGeneralErrors = array();
 
 			// Barring needs to be done on a per-invoicerun basis...
-
-			$mixResult = ListStaggeredAutomaticBarringAccounts($effectiveDate, $arrInvoiceRunIds);
+			try
+			{
+				$mixResult = ListStaggeredAutomaticBarringAccounts($effectiveDate, $arrInvoiceRunIds);
+			}
+			catch (Exception $eException)
+			{
+				// We might need to clean up some tables (manual ROLLBACK)
+				// TODO
+				
+				throw $eException;
+			}
 
 			$this->log($arrArgs[self::SWITCH_LIST_RUN] ? "Listed accounts that would be barred..." : "Listed accounts to be barred...");
 
@@ -129,6 +144,13 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 			$autoBarAccounts = array();
 
 			$intNrAccountsAutomaticallyBarred = 0;
+
+			$this->log('Beginning database transaction.');
+			$db->beginTransaction();
+
+			$conConnection = DataAccess::getDataAccess();
+			$conConnection->TransactionStart();
+			
 
 			if (!is_array($mixResult))
 			{

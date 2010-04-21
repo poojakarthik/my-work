@@ -15,7 +15,7 @@ class Cli_App_RawDeflate extends Cli
 		try
 		{
 			$this->log("Setting the include path for Zend.");
-			set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR);
+			set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/' . ".." . '/' . ".." . '/') . '/');
 
 			// Include the Zend library... 
 			$this->log("Including the Zend PDF library");
@@ -41,7 +41,7 @@ class Cli_App_RawDeflate extends Cli
 				$arrSourceContents = scandir($strSource);
 				for ($i = 0, $l = count($arrSourceContents); $i < $l; $i++)
 				{
-					$strPath = $strSource . DIRECTORY_SEPARATOR . $arrSourceContents[$i];
+					$strPath = $strSource . '/' . $arrSourceContents[$i];
 					// Ignore directories (including source directory '.' and parent directory '..')
 					if (is_file($strPath))
 					{

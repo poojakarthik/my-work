@@ -1,7 +1,7 @@
 <?php
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../' . 'flex.require.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../pdf/Flex_Pdf.php';
+require_once dirname(__FILE__) . '/' . '../../../' . 'flex.require.php';
+require_once dirname(__FILE__) . '/' . '../../pdf/Flex_Pdf.php';
 
 class Cli_App_LateNoticeRun extends Cli
 {
@@ -149,7 +149,7 @@ class Cli_App_LateNoticeRun extends Cli
 							$arrSummary[$strCustGroupName][$strLetterType]['emails'] = array();
 							$arrSummary[$strCustGroupName][$strLetterType]['prints'] = array();
 							$arrSummary[$strCustGroupName][$strLetterType]['errors'] = array();
-							$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = realpath(FILES_BASE_PATH) . DIRECTORY_SEPARATOR . $letterType . DIRECTORY_SEPARATOR . 'pdf' . DIRECTORY_SEPARATOR . $pathDate . DIRECTORY_SEPARATOR . $custGroupName;
+							$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = realpath(FILES_BASE_PATH) . '/' . $letterType . '/' . 'pdf' . '/' . $pathDate . '/' . $custGroupName;
 						}
 
 						$invoiceRunId = $arrDetails['Account']['invoice_run_id'];
@@ -195,7 +195,7 @@ class Cli_App_LateNoticeRun extends Cli
 											{
 												continue;
 											}
-											$xdirectory = $directory . DIRECTORY_SEPARATOR . $subDirectory;
+											$xdirectory = $directory . '/' . $subDirectory;
 											if (!file_exists($xdirectory))
 											{
 												$ok = @mkdir($xdirectory);
@@ -204,13 +204,13 @@ class Cli_App_LateNoticeRun extends Cli
 													$this->log("Failed to create directory for PDF output: $xdirectory", TRUE);
 												}
 											}
-											$directory = $xdirectory . DIRECTORY_SEPARATOR;
+											$directory = $xdirectory . '/';
 										}
-										$outputDirectory = realpath($directory) . DIRECTORY_SEPARATOR;
+										$outputDirectory = realpath($directory) . '/';
 									}
 									else
 									{
-										$outputDirectory = realpath($outputDirectory) . DIRECTORY_SEPARATOR;
+										$outputDirectory = realpath($outputDirectory) . '/';
 									}
 									$arrSummary[$strCustGroupName][$strLetterType]['output_directory'] = $outputDirectory;
 
@@ -413,7 +413,7 @@ class Cli_App_LateNoticeRun extends Cli
 					{
 						$letterType = strtolower(str_replace(' ', '_', $strLetterType));
 						$custGroup = strtolower(str_replace(' ', '_', $strCustGroupName));
-						$strTarPath = FILES_BASE_PATH . DIRECTORY_SEPARATOR . date('YmdHis', $now) . '.' .$letterType . '.' . $custGroup . '.tar';
+						$strTarPath = FILES_BASE_PATH . '/' . date('YmdHis', $now) . '.' .$letterType . '.' . $custGroup . '.tar';
 						$this->log("Moving generated $strLetterType PDFs for customer group $strCustGroupName to $strTarPath");
 
 						require_once "Archive/Tar.php";

@@ -1,7 +1,7 @@
 <?php
 
 // Include the parent class
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . "Flex_Dom_Object.php";
+require_once dirname(__FILE__) . '/' . "Flex_Dom_Object.php";
 
 
 /**

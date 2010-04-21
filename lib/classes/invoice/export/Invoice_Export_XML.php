@@ -123,7 +123,7 @@
 		self::_addAttribute($xmlNegative, 'Location', 'Suffix');
 		
 		//--------------------------------------------------------------------//
-		// Invoice Object
+		// Rate Classes
 		//--------------------------------------------------------------------//
 		$aRateClasses	= Invoice_Export::getRateClasses();
 		

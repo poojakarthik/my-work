@@ -1,7 +1,7 @@
 <?php
 
 // Ensure that the Zend folder (lib) is in the incoude path
-//set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR));
+//set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/' . ".." . '/'));
 
 // Load the Zend mail library (used for retrieving and parsing emails)
 //require_once 'Zend/Mail.php';
@@ -570,7 +570,7 @@ class Ticketing_Service
 		$attachmentDirPath = $xmlFilePath . '-attachments';
 		if (file_exists($attachmentDirPath) && is_dir($attachmentDirPath))
 		{
-			$attachmentFiles = glob($attachmentDirPath . DIRECTORY_SEPARATOR . '*.*');
+			$attachmentFiles = glob($attachmentDirPath . '/' . '*.*');
 			foreach($attachmentFiles as $attachmentFile)
 			{
 				if (is_file($attachmentFile))

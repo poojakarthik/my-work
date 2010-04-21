@@ -1,7 +1,7 @@
 <?php
 
 // Add the lib directory to the include path, as it is required for the Zend library
-set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR));
+set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/' . ".." . '/'));
 
 require_once "Flex_Pdf.php";
 require_once "Flex_Pdf_Style.php";

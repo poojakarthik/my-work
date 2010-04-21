@@ -6,7 +6,7 @@ abstract class Flex_Rollout_Version
 
 	public function getInstance($className)
 	{
-		require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'version' . DIRECTORY_SEPARATOR . $className . '.php';
+		require_once dirname(__FILE__) . '/' . 'version' . '/' . $className . '.php';
 		return new $className();
 	}
 

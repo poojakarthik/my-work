@@ -1,7 +1,7 @@
 <?php
 
 // Ensure that the Zend folder (lib) is in the incoude path
-set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR));
+set_include_path(get_include_path() . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/' . ".." . '/'));
 
 require_once 'Zend/Mail.php';
 

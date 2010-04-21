@@ -1,7 +1,7 @@
 <?php
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../' . 'flex.require.php';
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '../../../lib/dom/Flex_Dom_Document.php';
+require_once dirname(__FILE__) . '/' . '../../../' . 'flex.require.php';
+require_once dirname(__FILE__) . '/' . '../../../lib/dom/Flex_Dom_Document.php';
 
 class Cli_App_LateNoticeRunList extends Cli
 {

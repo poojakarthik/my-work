@@ -43,7 +43,7 @@
  * @class		DataAccess
  */
  
-$thisDir = dirname(__FILE__).DIRECTORY_SEPARATOR;
+$thisDir = dirname(__FILE__).'/';
 require_once $thisDir.'../data/model/Flex_Data_Model.php';
 require_once $thisDir.'../classes/DataAccess.php';
 require_once $thisDir.'../classes/DatabaseAccess.php';

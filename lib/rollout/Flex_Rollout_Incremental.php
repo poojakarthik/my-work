@@ -306,7 +306,7 @@ class Flex_Rollout_Incremental
 			$intAfter = -1;
 		}
 
-		$pattern = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'version' . DIRECTORY_SEPARATOR . 'Flex_Rollout_Version_*.php';
+		$pattern = dirname(__FILE__) . '/' . 'version' . '/' . 'Flex_Rollout_Version_*.php';
 		$arrVersions = array();
 		preg_match_all("/_([0-9]+)\.php$/m", implode("\n", glob($pattern)), $arrVersions);
 		$arrNewVersions = array();
@@ -482,7 +482,7 @@ class Flex_Rollout_Incremental
 			
 			// Build the database_constants.php file
 			$strTimeStamp	= date("H:i:s d/m/Y");
-			$strFilePath	= GetVixenBase() . 'lib' . DIRECTORY_SEPARATOR ."framework". DIRECTORY_SEPARATOR ."database_constants.php";
+			$strFilePath	= GetVixenBase() . 'lib' . '/' ."framework". '/' ."database_constants.php";
 			
 			// Make a backup of the current database_constants.php file
 			if (file_exists($strFilePath))
@@ -558,7 +558,7 @@ class Flex_Rollout_Incremental
 	 */
 	public static function RollbackDatabaseConstantsFile()
 	{
-		$strFilePath	= GetVixenBase() . 'lib' . DIRECTORY_SEPARATOR ."framework". DIRECTORY_SEPARATOR ."database_constants.php";
+		$strFilePath	= GetVixenBase() . 'lib' . '/' ."framework". '/' ."database_constants.php";
 		
 		// Check if there is a backup
 		if (file_exists("$strFilePath.bak"))
@@ -678,7 +678,7 @@ Object.extend(CreditCardType,
 	}
 });\n";
 
-		$strFilePath	= GetVixenBase() . 'html' . DIRECTORY_SEPARATOR ."ui". DIRECTORY_SEPARATOR ."javascript". DIRECTORY_SEPARATOR ."credit_card_type.js";
+		$strFilePath	= GetVixenBase() . 'html' . '/' ."ui". '/' ."javascript". '/' ."credit_card_type.js";
 		$jsFile = fopen($strFilePath, "w");
 		fwrite($jsFile, $js);
 		fclose($jsFile);

@@ -90,13 +90,13 @@ abstract class Zend_Cache
             $frontendClass = 'Zend_Cache_' . ($frontend != 'Core' ? 'Frontend_' : '') . $frontend;
             // For perfs reasons, we do not use the Zend_Loader::loadClass() method
             // (security controls are explicit)
-            require_once str_replace('_', DIRECTORY_SEPARATOR, $frontendClass) . '.php';
+            require_once str_replace('_', '/', $frontendClass) . '.php';
         } else {
             // we use a custom frontend
             $frontendClass = 'Zend_Cache_Frontend_' . $frontend;
             // To avoid security problems in this case, we use Zend_Loader to load the custom class
             require_once 'Zend/Loader.php';
-            $file = str_replace('_', DIRECTORY_SEPARATOR, $frontendClass) . '.php';
+            $file = str_replace('_', '/', $frontendClass) . '.php';
             if (!(Zend_Loader::isReadable($file))) {
                 self::throwException("file $file not found in include_path");
             }
@@ -109,13 +109,13 @@ abstract class Zend_Cache
             $backendClass = 'Zend_Cache_Backend_' . $backend;
             // For perfs reasons, we do not use the Zend_Loader::loadClass() method
             // (security controls are explicit)
-            require_once str_replace('_', DIRECTORY_SEPARATOR, $backendClass) . '.php';
+            require_once str_replace('_', '/', $backendClass) . '.php';
         } else {
             // we use a custom backend
             $backendClass = 'Zend_Cache_Backend_' . $backend;
             // To avoid security problems in this case, we use Zend_Loader to load the custom class
             require_once 'Zend/Loader.php';
-            $file = str_replace('_', DIRECTORY_SEPARATOR, $backendClass) . '.php';
+            $file = str_replace('_', '/', $backendClass) . '.php';
             if (!(Zend_Loader::isReadable($file))) {
                 self::throwException("file $file not found in include_path");
             }

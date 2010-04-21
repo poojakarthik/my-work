@@ -90,7 +90,7 @@ $arrDataReport['SQLTable']		= "
 		) AS ticket_completion_actions_made_by_user ON ticketing_user.id = ticket_completion_actions_made_by_user.user_id
 ";
 $arrDataReport['SQLWhere']		= "	ticketing_user.permission_id != (SELECT id FROM ticketing_user_permission WHERE const_name = 'TICKETING_USER_PERMISSION_NONE') /* Must have permission to use ticketing system */
-									AND Employee.Archived = 0 /* Only active ticketing users */
+									"/*AND Employee.Archived = 0 *//* Only active ticketing users */."
 
 									ORDER BY User ASC";
 $arrDataReport['SQLGroupBy']	= "";
