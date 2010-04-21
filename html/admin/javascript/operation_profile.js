@@ -190,28 +190,27 @@ Operation_Profile.getAllIndexed	= function(fCallback, aResultSet)
 		fCallback(oResultSet);
 	}
 };
-/*
+
 Operation_Profile.oProperties	= {};
 
-Operation_Profile.oProperties.LastName			= {};
-Operation_Profile.oProperties.LastName.sType	= 'text';
+Operation_Profile.oProperties.name			= {};
+Operation_Profile.oProperties.name.sType	= 'text';
 
-Operation_Profile.oProperties.LastName.oDefinition				= {};
-Operation_Profile.oProperties.LastName.oDefinition.sLabel		= 'Last Name';
-Operation_Profile.oProperties.LastName.oDefinition.mEditable	= true;
-Operation_Profile.oProperties.LastName.oDefinition.mMandatory	= true;
-Operation_Profile.oProperties.LastName.oDefinition.mAutoTrim	= true;
-Operation_Profile.oProperties.LastName.oDefinition.iMaxLength	= 256;
+Operation_Profile.oProperties.name.oDefinition				= {};
+Operation_Profile.oProperties.name.oDefinition.sLabel		= 'Name';
+Operation_Profile.oProperties.name.oDefinition.mEditable	= true;
+Operation_Profile.oProperties.name.oDefinition.mMandatory	= true;
+Operation_Profile.oProperties.name.oDefinition.mAutoTrim	= true;
+Operation_Profile.oProperties.name.oDefinition.iMaxLength	= 256;
 
 
-Operation_Profile.oProperties.LastName			= {};
-Operation_Profile.oProperties.LastName.sType	= 'text';
+Operation_Profile.oProperties.description		= {};
+Operation_Profile.oProperties.description.sType	= 'text';
 
-Operation_Profile.oProperties.LastName.oDefinition				= {};
-Operation_Profile.oProperties.LastName.oDefinition.sLabel		= 'Last Name';
-Operation_Profile.oProperties.LastName.oDefinition.mEditable	= true;
-Operation_Profile.oProperties.LastName.oDefinition.mMandatory	= true;
-Operation_Profile.oProperties.LastName.oDefinition.mAutoTrim	= true;
-Operation_Profile.oProperties.LastName.oDefinition.iMaxLength	= 1024;
-*/
+Operation_Profile.oProperties.description.oDefinition				= {};
+Operation_Profile.oProperties.description.oDefinition.sLabel		= 'Description';
+Operation_Profile.oProperties.description.oDefinition.mEditable		= true;
+Operation_Profile.oProperties.description.oDefinition.mMandatory	= true;
+Operation_Profile.oProperties.description.oDefinition.mAutoTrim		= true;
+Operation_Profile.oProperties.description.oDefinition.iMaxLength	= 1024;
 

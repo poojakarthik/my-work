@@ -1993,6 +1993,8 @@ class MenuItems {
 							"reflex_control_tree_node_root",
 							"reflex_control_tree_node_checkable",
 							"control_field",
+							"control_field_text",
+							"control_field_checkbox",
 							"operation",
 							"operation_profile",
 							"operation_tree",
