@@ -1,3 +1,4 @@
+
 var JsAutoLoader = {
 	loadedScripts : {},
 	
@@ -6,7 +7,10 @@ var JsAutoLoader = {
 	// funcOnLoadEventHandler will be executed as soon as the javascript file finishes loading
 	loadScript : function(mixScripts, funcOnLoadEventHandler, bolUseJavascriptPhp)
 	{
-		bolUseJavascriptPhp	= (bolUseJavascriptPhp === undefined) ? false : true;
+		// This was deprecated because it would pass through to following 'loadScript's a different value than what was passed in. rmctainsh 20100421
+		//bolUseJavascriptPhp	= (bolUseJavascriptPhp === undefined) ? false : true;
+		
+		bolUseJavascriptPhp	= (!bolUseJavascriptPhp ? false : true);
 		
 		// Make sure we're working with an array of scripts, then grab the next script to load
 		var arrScripts		= Object.isArray(mixScripts) ? mixScripts : [mixScripts];
@@ -93,6 +97,22 @@ var JsAutoLoader = {
 	
 	require	: function(mScripts, fnOnLoadCallback)
 	{
-		JsAutoLoader.loadScript(mScripts, fnOnLoadCallback, false);
+		JsAutoLoader.loadScript(mScripts, fnOnLoadCallback, true);
+	},
+	
+	registerPreLoadedScripts	: function()
+	{
+		var scripts = document.getElementsByTagName('head')[0].getElementsByTagName('script');
+		for (var i=0, j=scripts.length; i < j; i++)
+		{
+			var sSrc	= scripts[i].getAttribute('src');
+			sSrc		= sSrc.replace(/^(.*)(javascript(\/)(.*))$/, '$4');
+			JsAutoLoader.registerLoadedScript(sSrc);
+		}
 	}
 }
+
+window.addEventListener('load', function()
+{
+	JsAutoLoader.registerPreLoadedScripts();
+}, false);

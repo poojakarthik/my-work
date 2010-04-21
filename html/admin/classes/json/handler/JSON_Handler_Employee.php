@@ -289,6 +289,7 @@ class JSON_Handler_Employee extends JSON_Handler
 				$oEmployee->PabloSays 		= PABLO_TIP_POLITE;
 				$oEmployee->Archived 		= 0;
 				$oEmployee->is_god 			= 0;
+				$oEmployee->Privileges		= PERMISSION_PUBLIC; // TODO REMOVE ME
 				
 				// Validate username
 				if (Validation::IsNotEmptyString($oDetails->mUserName))
@@ -372,8 +373,10 @@ class JSON_Handler_Employee extends JSON_Handler
 
 			// Check that the password has been entered and confirmed, as appropriate
 			// Validate that the password has been submitted as a 2 value array
-			$bPasswordSet			= Validation::IsNotEmptyString($oDetails->mPassword);
-			$bPasswordConfirmSet	= Validation::IsNotEmptyString($oDetails->mPasswordConfirm);
+			$bPasswordSet			= Validation::IsNotEmptyString($oDetails->mPassWord);
+			$bPasswordConfirmSet	= Validation::IsNotEmptyString($oDetails->mPassWordConfirm);
+			
+			//return array('1'=>$bPasswordSet, '2' => $bPasswordConfirmSet);
 			
 			if ($bPasswordSet || $bPasswordConfirmSet)
 			{
@@ -385,17 +388,17 @@ class JSON_Handler_Employee extends JSON_Handler
 				}
 				
 				// Check that the values are the same
-				else if ($oDetails->mPassword != $oDetails->mPasswordConfirm)
+				else if ($oDetails->mPassWord != $oDetails->mPassWordConfirm)
 				{
 					$aValidationErrors[] = "Password does not match Password Confirmation.";
 				}
 				else
 				{
 					// Set the validated password value into the password property
-					$oDetails->mPassword	= sha1($oDetails->mPassword);
+					$oDetails->mPassWord	= sha1($oDetails->mPassWord);
 				}
 			}
-					
+			
 			if (count($aValidationErrors) > 0)
 			{
 				// There were validation errors, rollback db transaction and return the errors
@@ -420,14 +423,19 @@ class JSON_Handler_Employee extends JSON_Handler
 				$oEmployee->LastName		= $oDetails->mLastName;
 				$oEmployee->DOB				= $oDetails->mDOB;
 				$oEmployee->Archived		= $oDetails->mArchived;
-				$oEmployee->Privileges		= $oDetails->mPriviledges;
 				$oEmployee->user_role_id	= $oDetails->muser_role_id;
+				
+				// TODO REMOVE ME
+				if (Validation::IsNotEmptyString($oDetails->mPriviledges))
+				{
+					$oEmployee->Privileges	= $oDetails->mPriviledges;
+				}
 			}
 			
 			// Only set password if needed
 			if ($oDetails->bPassWordChange)
 			{
-				$oEmployee->PassWord	= $oDetails->mPassword;
+				$oEmployee->PassWord	= $oDetails->mPassWord;
 			}
 			
 			$oEmployee->save();
@@ -435,14 +443,6 @@ class JSON_Handler_Employee extends JSON_Handler
 			if (Flex_Module::isActive(FLEX_MODULE_TICKETING))
 			{
 				$currentUserTicketingPermission	= Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId());
-				if ($bUserIsSelf)
-				{
-					$displayUserTicketingPermission	= $currentUserTicketingPermission;
-				}
-				else
-				{
-					$displayUserTicketingPermission	= Ticketing_User::getPermissionForEmployeeId($oEmployee->Id);
-				}
 				
 				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || (!$bUserIsSelf && $currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN))
 				{
@@ -543,8 +543,9 @@ class JSON_Handler_Employee extends JSON_Handler
 			}
 
 			return 	array(
-						"Success"	=> true,
-						"sDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						"Success"		=> true,
+						"iEmployeeId"	=> $oEmployee->Id,
+						"sDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
 		catch (JSON_Handler_Employee_Exception $oException)

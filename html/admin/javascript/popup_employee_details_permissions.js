@@ -9,9 +9,6 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		this.iOperationTreeReadyCount	= 0;
 		this.hOperationProfileChildren	= [];
 		
-		this.oLoading	= new Reflex_Popup.Loading('Getting Permissions...');
-		this.oLoading.display();
-		
 		if (Number(iEmployeeId) > 0)
 		{
 			// Employee Id passed -- load permissions via JSON
@@ -44,7 +41,10 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 									)
 								),
 								$T.div({class: 'section-content section-content-fitted'},
-									this.buildContentOperationProfiles()
+									this.buildContentOperationProfiles(),
+									$T.div({class: 'employee-details-permissions-empty'},
+										'There are no profiles selected'
+									)
 								)
 							),
 							$T.div({class: 'section employee-details-permissions-operations'},
@@ -55,7 +55,10 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 									)
 								),
 								$T.div({class: 'section-content section-content-fitted'},
-									this.buildContentOperations()
+									this.buildContentOperations(),
+									$T.div({class: 'employee-details-permissions-operations-empty'},
+										'There are no permission overrides selected'
+									)
 								)
 							)
 						);
@@ -81,15 +84,15 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 										$T.span('Cancel')
 									);
 		this.oNewProfileButton	=	$T.button({class: 'icon-button'},
-										$T.img({src: '../admin/img/template/new.png', alt: '', title: 'Create Profile'}),
+										$T.img({src: '../admin/img/template/group_add.png', alt: '', title: 'Create Profile'}),
 										$T.span('Create Profile')
 									);
 
 		// Bind event handlers
 		this.oCancelEditButton.observe('click', this.setControlMode.bind(this, Control_Field.RENDER_MODE_VIEW));
-		this.oCancelNewButton.observe('click', this.hide.bind(this));
-		this.oCloseButton.observe('click', this.hide.bind(this));
-		this.oSaveButton.observe('click', this._save.bind(this));
+		this.oCancelNewButton.observe('click', this.hide.bind(this, false));
+		this.oCloseButton.observe('click', this.hide.bind(this, false));
+		this.oSaveButton.observe('click', this._saveButtonClick.bind(this));
 		this.oEditButton.observe('click', this.setControlMode.bind(this, Control_Field.RENDER_MODE_EDIT));
 		this.oNewProfileButton.observe('click', this._createNewProfile.bind(this));
 		
@@ -103,9 +106,13 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		this.setIcon("../admin/img/template/user_key.png");
 		this.setContent(this._oPage);
 		this.display();
+		
+		this.oLoading	= new Reflex_Popup.Loading('Getting Permissions...');
+		this.oLoading.display();
+		
 		return true;
 	},
-		
+	
 	buildContentOperationProfiles	: function()
 	{
 		// Create tree, given callback for when it has loaded all of the operations
@@ -159,7 +166,7 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_save	: function(event, oResponse)
+	_save	: function(oResponse)
 	{
 		if (typeof oResponse == 'undefined')
 		{
@@ -214,7 +221,7 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 			this.oLoading.display();
 			
 			// Make the AJAX request
-			this.oEmployee.setPermissions(aOperationProfileIdsToSave, aOperationIds, this._save.bind(this, null));
+			this.oEmployee.setPermissions(aOperationProfileIdsToSave, aOperationIds, this._save.bind(this));
 		}
 		else
 		{
@@ -227,6 +234,10 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 	
 	_selectDefaultTreeValues	: function()
 	{
+		// Clear trees 
+		this.oOperationProfilesTree.deSelectAll(false);
+		this.oOperationsTree.deSelectAll(true);
+		
 		// Select operation profiles
 		this.oOperationProfilesTree.setSelected(this.oEmployee.aOperationProfileIds, true);
 		
@@ -252,6 +263,8 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		
 		// Select specific operations
 		this.oOperationsTree.setSelected(this.oEmployee.aOperationIds, true);
+		
+		this._checkForNoPermissions(null, null, null, true);
 	},
 	
 	display		: function($super)
@@ -277,16 +290,16 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 				// Change footer buttons
 				this.setFooterButtons(
 					[
+					 	this.oNewProfileButton,
 					 	this.oSaveButton,
-					 	(this.oEmployee.oProperties.Id) ? this.oCancelEditButton : this.oCancelNewButton,
-					 	this.oNewProfileButton
+					 	(this.oEmployee.oProperties.Id) ? this.oCancelEditButton : this.oCancelNewButton
 					], 
 					true
 				);
 				
 				// Send Tree Grids into Edit mode
-				this.oOperationsTree.setEditable(true);
 				this.oOperationProfilesTree.setEditable(true);
+				this.oOperationsTree.setEditable(true);
 				break;
 				
 			case Control_Field.RENDER_MODE_VIEW:
@@ -294,13 +307,15 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 				this.setFooterButtons([this.oEditButton, this.oCloseButton], true);
 				
 				// Send Tree Grids into Read-Only mode
-				this.oOperationsTree.setEditable(false);
 				this.oOperationProfilesTree.setEditable(false);
+				this.oOperationsTree.setEditable(false);
 				break;
 			
 			default:
 				throw "Invalid Control Mode '" + bControlMode + "'";
 		}
+		
+		this.bRenderMode	= bControlMode;
 		
 		// Reset the Permissions Trees to saved values
 		this._selectDefaultTreeValues();
@@ -330,7 +345,7 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		var aOperationIds	= this.oOperationsTree.getSelected(true);
 		
 		// Clear operations tree 
-		this.oOperationsTree.deSelectAll();
+		this.oOperationsTree.deSelectAll(true);
 		
 		// Select profile child operations in the operations tree
 		this.oOperationsTree.setSelected(aChildOperations, true, true);
@@ -342,6 +357,71 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 	_createNewProfile	: function()
 	{
 		alert('create new profile');
+	},
+	
+	_checkForNoPermissions	: function(bOnClose, fnOnYes, fnOnNo, bNoPopup)
+	{
+		var aOperationIds			= null;
+		var aOperationProfileIds	= null;
+		
+		if (bOnClose)
+		{
+			aOperationProfileIds	= this.oEmployee.aOperationProfileIds;
+			aOperationIds			= this.oEmployee.aOperationIds;	
+		}
+		else
+		{
+			aOperationProfileIds	= this.oOperationProfilesTree.getSelected();
+			aOperationIds			= this.oOperationsTree.getSelected();
+		}
+		
+		var oProfilesEmpty	= this._oPage.select('div.employee-details-permissions-empty').first();
+		if ((aOperationProfileIds.length == 0) && (this.bRenderMode == Control_Field.RENDER_MODE_VIEW) && this.oOperationProfilesTree._bLoaded)
+		{
+			oProfilesEmpty.show();
+		}
+		else
+		{
+			oProfilesEmpty.hide();
+		}
+		
+		var oPermissionsEmpty	= this._oPage.select('div.employee-details-permissions-operations-empty').first();
+		if ((aOperationIds.length == 0) && (this.bRenderMode == Control_Field.RENDER_MODE_VIEW) && this.oOperationsTree._bLoaded)
+		{
+			oPermissionsEmpty.show();
+		}
+		else
+		{
+			oPermissionsEmpty.hide();
+		}
+		
+		if (aOperationProfileIds.length == 0 && aOperationIds.length == 0)
+		{
+			// None selected, show alert
+			if (!bNoPopup)
+			{
+				Reflex_Popup.yesNoCancel(
+					$T.div(
+						$T.div('You have not selected any permissions for this employee'),
+						$T.div('Are you sure you want to ' + (bOnClose ? 'close' : 'save') + '?')
+					),
+					{fnOnYes: fnOnYes, fnOnNo: fnOnNo}
+				);
+			}
+			
+			return false;
+		}
+		
+		return true;
+	},
+	
+	_saveButtonClick	: function()
+	{
+		if (this._checkForNoPermissions(false, this._save.bind(this)))
+		{
+			this._save();
+		}
+		
 	}
 });
 

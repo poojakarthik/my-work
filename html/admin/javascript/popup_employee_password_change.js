@@ -18,7 +18,6 @@ var Popup_Employee_Password_Change	= Class.create(Reflex_Popup,
 							$T.div({class: 'section'},
 								$T.div({class: 'section-header'},
 									$T.div({class: 'section-header-title'},
-										$T.img({src: '../admin/img/template/view.png', alt: '', title: 'New Password'}),
 										$T.span('New Password')
 									)
 								),
@@ -77,7 +76,7 @@ var Popup_Employee_Password_Change	= Class.create(Reflex_Popup,
 		// Update the Popup
 		this.setTitle("Change Employee Password");
 		this.addCloseButton();
-		this.setIcon("../admin/img/template/user_edit.png");
+		this.setIcon("../admin/img/template/key.png");
 		this.setContent(this._oPage);
 		this.display();		
 		return true;

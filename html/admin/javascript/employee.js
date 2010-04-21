@@ -339,6 +339,8 @@ var Employee	= Class.create
 		
 		if (oResponse.Success)
 		{
+			this.oProperties.Id	= oResponse.iEmployeeId;
+			
 			// All good!
 			fnCallback(this);
 		}
@@ -560,7 +562,7 @@ Employee.oProperties.Archived.oDefinition.mEditable	= true;
 // Ticketing Permission
 Employee.oProperties.ticketing_permission					= {};
 Employee.oProperties.ticketing_permission.sType				= 'select';
-Employee.oProperties.ticketing_permission.EDIT_MODE_SELF	= false;
+Employee.oProperties.ticketing_permission.EDIT_MODE_SELF	= null;
 Employee.oProperties.ticketing_permission.EDIT_MODE_NEW		= null;
 
 Employee.oProperties.ticketing_permission.oDefinition				= {};

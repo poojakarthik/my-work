@@ -1,7 +1,7 @@
 
 var Popup_Employee_Details	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, bRenderMode, mEmployee, bEditingSelf)
+	initialize	: function($super, bRenderMode, iEmployeeId, bEditingSelf, fnOnSave)
 	{
 		$super(40);
 		
@@ -11,11 +11,12 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		this.hOperationProfileChildren	= [];
 		this.bNewEmployee				= false;
 		this.bEditingSelf				= bEditingSelf ? true : false;
+		this.fnOnSave					= fnOnSave;
 		
-		if (Number(mEmployee) > 0)
+		if (Number(iEmployeeId) > 0)
 		{
 			// Employee Id passed -- load via JSON
-			this.oEmployee	= Employee.getForId(mEmployee, this.buildContent.bind(this));
+			this.oEmployee	= Employee.getForId(iEmployeeId, this.buildContent.bind(this));
 		}
 		else if (bRenderMode == Control_Field.RENDER_MODE_EDIT)
 		{
@@ -26,7 +27,7 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		}
 		else
 		{
-			throw "Invalid Employee reference '" + mEmployee + "'";
+			throw "Invalid Employee reference '" + iEmployeeId + "'";
 		}
 	},
 	
@@ -40,11 +41,12 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 							$T.div({class: 'section employee-details-credentials'},
 								$T.div({class: 'section-header'},
 									$T.div({class: 'section-header-title'},
-										$T.img({src: '../admin/img/template/view.png', alt: '', title: 'Credentials'}),
+										$T.img({src: '../admin/img/template/btn_unlocked.png', alt: '', title: 'Credentials'}),
 										$T.span('Credentials')
 									),
 									$T.div({class: 'section-header-options'},
 										$T.button({class: 'icon-button employee-details-edit-password'},
+											$T.img({src: '../admin/img/template/key.png', alt: '', title: 'Change Password'}),
 											$T.span('Change Password')
 										)
 									)
@@ -125,7 +127,7 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 										$T.span('Cancel')
 									);
 		var oPermissionsButton	= this._oPage.select('button.employee-details-permissions').first();
-		oPermissionsButton.observe('click', this._managePermissions.bind(this));
+		oPermissionsButton.observe('click', this._managePermissions.bind(this, Control_Field.RENDER_MODE_VIEW));
 		
 		// Bind event handlers
 		this.oCancelEditButton.observe('click', this.setControlMode.bind(this, Control_Field.RENDER_MODE_VIEW));
@@ -196,7 +198,7 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 	
 	_save	: function(event)
 	{
-		this.oEmployee.save(this.hide.bind(this));
+		this.oEmployee.save(this._saveComplete.bind(this));
 	},
 	
 	_saveComplete	: function()
@@ -204,10 +206,17 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		// Show permissions popup if a new employee
 		if (this.bNewEmployee)
 		{
-			this._managePermissions();
+			// Load the new employee then show the manage permissions popup
+			this.oEmployee._load(this.oEmployee.oProperties.Id, this._managePermissions.bind(this, Control_Field.RENDER_MODE_EDIT));
 		}
 		
 		this.hide();
+		
+		// Execute save callback
+		if (this.fnOnSave)
+		{
+			this.fnOnSave();
+		}
 	},
 	
 	display		: function($super)
@@ -268,9 +277,9 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		this.bRenderMode	= bControlMode;
 	},
 		
-	_managePermissions	: function()
+	_managePermissions	: function(sRenderMode)
 	{
-		new Popup_Employee_Details_Permissions(Control_Field.RENDER_MODE_VIEW, this.oEmployee.oProperties.Id);
+		new Popup_Employee_Details_Permissions(sRenderMode, this.oEmployee.oProperties.Id);
 	},
 		
 	_showEditPassword	: function()

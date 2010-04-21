@@ -1918,70 +1918,92 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function EditEmployee($intId, $strUserName) {
-		$this->strContextMenuLabel = "";
+	function EditEmployee($iId=false, $sUserName=false, $sJSCallback=false)
+	{
+		$this->strContextMenuLabel	= "";
 
-		$this->strLabel = "emp: $strUserName";
-
-		// Setup data to send
-
-		$arrData['Employee']['Id'] = $intId;
-
-		// Convert to JSON notation
-		$strJsonCode = Json()->encode($arrData);
-
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmployeeEditPopup\", \"medium\", \"Employee\", \"Employee\", \"Edit\", $strJsonCode)";
+		$this->strLabel	= "emp: ".($iId ? $sUserName : 'new');
+		
+		$aJSFiles	= 	array(
+							"dataset_ajax",
+							"reflex_validation",
+							"reflex_style",
+							"reflex_fx_reveal",
+							"reflex_control",
+							"reflex_control_tree",
+							"reflex_control_tree_node",
+							"reflex_control_tree_node_root",
+							"reflex_control_tree_node_checkable",
+							"date_time_picker_dynamic",
+							"control_field",
+							"control_field_text",
+							"control_field_password",
+							"control_field_checkbox",
+							"control_field_date_picker",
+							"control_field_select",
+							"operation",
+							"operation_profile",
+							"operation_tree",
+							"user_role",
+							"ticketing_user_permission",
+							"employee",
+							"popup_employee_details",
+							"popup_employee_password_change",
+							"popup_employee_details_permissions",
+						);
+		
+		$sSelf		= (($iId && (Flex::getUserId() == $iId)) ? 'true' : 'false');
+		$sId		= ($iId ? $iId : 'null');
+		$sRender	= ($iId ? 'Control_Field.RENDER_MODE_VIEW' : 'Control_Field.RENDER_MODE_EDIT');
+		$sCallback	= ($sJSCallback ? $sJSCallback : 'null');
+		$sPopup		= "var oPopup	= new Popup_Employee_Details({$sRender}, {$sId}, {$sSelf}, {$sCallback});";
+		$sLoad		= "JsAutoLoader.loadScript(['".implode(".js','", $aJSFiles).".js'], function() {{$sPopup}}, true);";
+		return "$sLoad";
 	}
-
-	//------------------------------------------------------------------------//
-	// ViewUserDetails
-	//------------------------------------------------------------------------//
+	
 	/**
-	 * ViewUserDetails()
+	 * ManageEmployeePermissions()
 	 *
-	 * Compiles the Href to be executed when the ViewUserDetails menu item is triggered
+	 * Compiles the Href to be executed when the ManageEmployeePermissions menu item is clicked
 	 *
-	 * Compiles the Href to be executed when the ViewUserDetails menu item is triggered
-	 * In this case the user is the currently logged in user
-	 * 
-	 * @return	string				Href to be execute the functionality
-	 *
-	 * @method
-	 */
-	function ViewUserDetails() {
-		$this->strContextMenuLabel = "View Employee details";
-
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmployeeEditPopup\", \"medium\", \"Employee\", \"Employee\", \"EmployeeDetails\", null)";
-	}
-
-	//------------------------------------------------------------------------//
-	// AddEmployee
-	//------------------------------------------------------------------------//
-	/**
-	 * AddEmployee()
-	 *
-	 * Compiles the Href to be executed when the AddEmployee menu item is clicked
-	 *
-	 * Compiles the Href to be executed when the AddEmployee menu item is clicked
+	 * Compiles the Href to be executed when the ManageEmployeePermissions menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @return	string				Href to be executed when the AddEmployee menu item is clicked
+	 * @param	int		$intId		id of the Employee to whose permissions to manage
+	 *
+	 * @return	string				Href to be executed when the ManageEmployeePermissions menu item is clicked
 	 *
 	 * @method
 	 */
-	function AddEmployee() {
-		$this->strContextMenuLabel = "";
+	function ManageEmployeePermissions($iId)
+	{
+		$this->strContextMenuLabel	= "";
 
-		$this->strLabel = "emp: new";
-
-		// Setup data to send
-
-		$arrData['Employee']['Id'] = -1;
-
-		// Convert to JSON notation
-		$strJsonCode = Json()->encode($arrData);
-
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{}AddPopup\", \"medium\", \"Employee\", \"Employee\", \"Create\", $strJsonCode)";
+		$this->strLabel	= "emp permissions: $iId";
+		
+		$aJSFiles	= 	array(
+							"dataset_ajax",
+							"reflex_validation",
+							"reflex_style",
+							"reflex_fx_reveal",
+							"reflex_control",
+							"reflex_control_tree",
+							"reflex_control_tree_node",
+							"reflex_control_tree_node_root",
+							"reflex_control_tree_node_checkable",
+							"control_field",
+							"operation",
+							"operation_profile",
+							"operation_tree",
+							"user_role",
+							"ticketing_user_permission",
+							"employee",
+							"popup_employee_details_permissions",
+						);
+		
+		$sPopup		= "var oPopup	= new Popup_Employee_Details_Permissions(Control_Field.RENDER_MODE_VIEW, {$iId});";
+		$sLoad		= "JsAutoLoader.loadScript(['".implode(".js','", $aJSFiles).".js'], function() {{$sPopup}}, true);";
+		return "$sLoad";
 	}
 
 	//------------------------------------------------------------------------//

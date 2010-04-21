@@ -680,9 +680,8 @@ class Page
 	 */
 	function RenderSearchField()
 	{
-		$strUserName = Flex::getDisplayName();
-		
-		$strUserPreferencesLink = Href()->ViewUserDetails();
+		$strUserName 			= Flex::getDisplayName();
+		$strUserPreferencesLink	= Href()->EditEmployee(Flex::getUserId(), $strUserName);
 		
 		$strLastConstraint	= (array_key_exists("QuickSearch_Constraint", $_COOKIE))? htmlspecialchars($_COOKIE['QuickSearch_Constraint'], ENT_QUOTES) : "";
 		$mixLastSearchType	= (array_key_exists("QuickSearch_SearchType", $_COOKIE))? $_COOKIE['QuickSearch_SearchType'] : "";
@@ -706,7 +705,7 @@ class Page
 		// The default menu links.
 		$mixMenuLinks = "
 		Logged in as: $strUserName
-		| <a onclick='$strUserPreferencesLink' >Preferences</a>
+		| <a onclick=\"$strUserPreferencesLink\">Preferences</a>
 		{$strDeveloperToolsLink}
 		| <a onclick='Vixen.Logout();'>Logout</a>";
 
@@ -733,7 +732,7 @@ class Page
 			<input type=\"hidden\" name=\"mixUsername\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['User'] . "\" />
 			<input type=\"hidden\" name=\"mixPassword\" value=\"" . $GLOBALS['**arrCustomerConfig']['KnowledgeBase']['Password'] . "\" />
 			| <a onclick=\"redirectOutput(this); var elemform = getElementById('kbform'); elemform.submit();\">Knowledge Base</a>	
-			| <a onclick='$strUserPreferencesLink' >Preferences</a>
+			| <a onclick=\"$strUserPreferencesLink\">Preferences</a>
 			{$strDeveloperToolsLink}
 			| <a onclick='Vixen.Logout();'>Logout</a>
 			</form>";

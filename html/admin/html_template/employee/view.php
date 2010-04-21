@@ -53,46 +53,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		$this->_intContext = $intContext;
 		$this->LoadJavascript("table_sort");
 		$this->LoadJavascript("employee_view");
-		
-		// Development
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
-		{
-			$this->LoadJavascript("dataset_ajax");
-			
-			$this->LoadJavascript("reflex_validation");
-			
-			$this->LoadJavascript("control_tab_group");
-			$this->LoadJavascript("control_tab");
-			
-			// Tree control
-			$this->LoadJavascript("reflex_style");
-			$this->LoadJavascript("reflex_fx_reveal"); 
-			$this->LoadJavascript("reflex_control");
-			$this->LoadJavascript("reflex_control_tree");
-			$this->LoadJavascript("reflex_control_tree_node");
-			$this->LoadJavascript("reflex_control_tree_node_root");
-			$this->LoadJavascript("reflex_control_tree_node_checkable");
-			
-			$this->LoadJavascript("date_time_picker_dynamic");
-			
-			$this->LoadJavascript("control_field");
-			$this->LoadJavascript("control_field_text");
-			$this->LoadJavascript("control_field_password");
-			$this->LoadJavascript("control_field_checkbox");
-			$this->LoadJavascript("control_field_date_picker");
-			$this->LoadJavascript("control_field_select");
-			
-			$this->LoadJavascript("operation");
-			$this->LoadJavascript("operation_profile");
-			$this->LoadJavascript("operation_tree");
-			
-			$this->LoadJavascript("user_role");
-			$this->LoadJavascript("ticketing_user_permission");
-			$this->LoadJavascript("employee");
-			$this->LoadJavascript("popup_employee_details");
-			$this->LoadJavascript("popup_employee_password_change");
-			$this->LoadJavascript("popup_employee_details_permissions");
-		}
+		$this->LoadJavascript("reflex_anchor");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -153,6 +114,37 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		echo "</div>\n";
 		echo "</div>\n";
 		echo "<!-- END HtmlTemplateEmployeeView -->\n";
+		
+		// Javascript that sets up anchor change listeners, for the 'page view' links. It also defines a callback
+		// for when the edit/add employee popup is finished
+		echo "
+		<script type='text/javascript'>
+			function refreshTable()
+			{
+				var oTable		= document.getElementById('EmployeeTable');
+				var sUrl		= window.location.toString().split('#')[0];
+				window.location	= sUrl;
+				//window.location	= sUrl + '?table_page=' + oTable.pageDisplay + '#Page/' + oTable.pageDisplay + '/View/';
+			}
+			
+			function anchorCallback(iPage)
+			{
+				Vixen.TableSort.showTablePage('EmployeeTable', iPage);
+			}
+			
+			window.addEventListener('load', function()
+			{
+				var oAnchor	= Reflex_Anchor.getInstance();
+				var oTable	= document.getElementById('EmployeeTable');
+				var iPages 	= Math.ceil((oTable.rows.length - 1) / oTable.pageSize);
+				
+				for (var i = 1; i <= iPages; i++)
+				{
+					oAnchor.registerCallback('Page/' + i + '/View/', anchorCallback.curry(i), true);
+				}
+			}, false);
+		</script>
+		";	
 	}
 	
 	
@@ -169,27 +161,27 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		
 		foreach (DBL()->Employee as $dboEmployee)
 		{
-			$strViewHref = Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value);
-			$strView = "<img onclick='$strViewHref' title='View Employee' src='img/template/view.png'></img>";
+			$sViewHref 	= Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value, 'refreshTable');
+			$sActions 	= "<img onclick=\"$sViewHref\" title='View Employee' src='img/template/user_edit.png'></img>";
 			
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 			{
-				$bSelf			= ((/*!AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) && */($iAuthedUserId == $dboEmployee->Id->Value)) ? 'true' : 'false');
-				$strNewViewHref	= "new Popup_Employee_Details(Control_Field.RENDER_MODE_VIEW, {$dboEmployee->Id->Value}, $bSelf);";
-				$strView 		.= "<img onclick='$strNewViewHref' title='View Employee (NEW)' src='img/template/user_edit.png'></img>";
+				$sPermissionsHref	= Href()->ManageEmployeePermissions($dboEmployee->Id->Value);
+				$sActions			.= "&nbsp;<img onclick=\"$sPermissionsHref\" src='../admin/img/template/operation.png'/>";
 			}
 			
-			$strArchivedLabel = "Active";
+			$sArchivedLabel 	= "Active";
+			
 			if ($dboEmployee->Archived->Value == 1)
 			{
-				$strArchivedLabel = "Archived";
+				$sArchivedLabel	= "Archived";
 			}
 			
 			Table()->EmployeeTable->AddRow(	$dboEmployee->FirstName->AsValue(),
 											$dboEmployee->LastName->AsValue(), 
 											$dboEmployee->UserName->AsValue(),
-											$strArchivedLabel,
-											$strView);
+											$sArchivedLabel,
+											$sActions);
 		}
 
 		Table()->EmployeeTable->Render();
@@ -212,26 +204,26 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 	 */
 	private function _RenderButtonBar($strArchivedValue)
 	{
-		static $formRendered, $strAddEmployee;
+		static $formRendered, $strEditEmployee;
 		if (!isset($formRendered))
 		{
-			$formRendered = FALSE;
-			$strAddEmployee = Href()->AddEmployee();
+			$formRendered 	= FALSE;
+			$strEditEmployee	= Href()->EditEmployee(false, false, 'refreshTable');
 		}
 
-		$bolCanCreateEmployees = AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolCanCreateEmployees 	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 
-		$strUpdateOtherCheckBox = "";
-		$strCheckBoxID = "";
+		$strUpdateOtherCheckBox	= "";
+		$strCheckBoxID 			= "";
 		if (!$formRendered)
 		{
 			$this->FormStart('Employee', 'Employee', 'EmployeeList');
-			$strCheckBoxID = "id='chbArchived'";
-			$strUpdateOtherCheckBox = "try { var cb = document.getElementById(\"chbArchivedFooter\"); if (cb.checked != this.checked) cb.checked = this.checked; } catch(e){}";
+			$strCheckBoxID 			= "id='chbArchived'";
+			$strUpdateOtherCheckBox	= "try { var cb = document.getElementById(\"chbArchivedFooter\"); if (cb.checked != this.checked) cb.checked = this.checked; } catch(e){}";
 		}
 		else
 		{
-			$strCheckBoxID = "id='chbArchivedFooter'";
+			$strCheckBoxID 			= "id='chbArchivedFooter'";
 			$strUpdateOtherCheckBox = "document.getElementById(\"chbArchived\").checked = this.checked;";
 		}
 
@@ -241,13 +233,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		if ($bolCanCreateEmployees)
 		{
 			echo "<div style='position: absolute; right: 0px; top: 3px;'>";
-			$this->Button("Add Employee", "window.location='$strAddEmployee'");
-			
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
-			{
-				$this->Button("Add Employee", "new Popup_Employee_Details(Control_Field.RENDER_MODE_EDIT);");
-			}
-			
+			$this->Button("Add Employee", $strEditEmployee);
 			echo "</div>\n";
 		}
 		

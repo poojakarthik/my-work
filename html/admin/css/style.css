@@ -3585,7 +3585,7 @@ div.payment-methods-list div.section-content > table.reflex td.payment-method-cr
 
 div.employee-details
 {
-	padding	: 1em;
+	padding	: 1em 1em 0.5em 1em;
 }
 
 div.employee-validation-errors
@@ -3596,6 +3596,11 @@ div.employee-validation-errors
 ul.employee-details-password-change > li > ul > li
 {
 	vertical-align	: top;
+}
+
+div.employee-details-credentials
+{
+	padding-bottom	: 1em;
 }
 
 /************************ END - Employee Details Popup - END ************************/
@@ -3615,6 +3620,51 @@ div.employee-details-permissions-profiles
 div.employee-details-permissions div.reflex-tree
 {
 	height	: 15em;
+}
+
+div.employee-details-permissions-operations div.section-content div.reflex-tree,
+div.employee-details-permissions-profiles div.section-content div.reflex-tree
+{
+	background-color	: #FFFFFF;
+}
+
+div.employee-details-permissions-operations div.section-content,
+div.employee-details-permissions-profiles div.section-content
+{
+	position	: relative;
+}
+
+div.employee-details-permissions-empty,
+div.employee-details-permissions-operations-empty
+{
+	position			: absolute;
+	left				: 0em;
+	top					: 1em;
+	font-style			: italic;
+	opacity				: 0.75;
+	width				: 100%;
+	text-align			: center;
+	background-color	: inherit;
+}
+
+div.operation-tree-loading
+{
+	margin-top	: 1em;
+	text-align	: center;
+	width		: 100%;
+}
+
+div.operation-tree-loading span,
+div.operation-tree-loading img
+{
+	vertical-align	: middle;
+}
+
+div.operation-tree-loading img
+{
+	width			: 16px;
+	height			: 16px;
+	padding-right	: 1em;
 }
 
 /************************ END - Employee Details Permissions Popup - END ************************/

@@ -18,11 +18,9 @@ var Operation_Tree	= Class.create
 		
 		// Create loading element
 		this.oLoading	= 	$T.div({class: 'loading'},
-								$T.div(
-									$T.span(
-										$T.img({src: '../admin/img/template/loading.gif', alt: '', title: 'Loading'}),
-										'Retrieving list of Operations...'
-									)
+								$T.div({class: 'operation-tree-loading'},
+									$T.img({src: '../admin/img/template/loading.gif', alt: '', title: 'Loading'}),
+									$T.span('Retrieving list of Operations...')
 								)
 							);
 		this.oControl.getElement().appendChild(this.oLoading);
@@ -257,7 +255,7 @@ var Operation_Tree	= Class.create
 		{
 			for (var i = 0; i < this.oOperations[iOperationId].aPrerequisites.length; i++)
 			{
-				this.setOperationSelected(this.oOperations[iOperationId].aPrerequisites[i], true, bDisableNodes);
+				this.setOperationSelected(this.oOperations[iOperationId].aPrerequisites[i], true, bDisableNodes, bEnableNodes);
 			}
 		}
 		
@@ -266,7 +264,7 @@ var Operation_Tree	= Class.create
 		{
 			for (var i = 0; i < this.oOperations[iOperationId].aDependants.length; i++)
 			{
-				this.setOperationSelected(this.oOperations[iOperationId].aDependants[i], false, bDisableNodes);
+				this.setOperationSelected(this.oOperations[iOperationId].aDependants[i], false, bDisableNodes, bEnableNodes);
 			}
 		}
 	},
@@ -334,11 +332,11 @@ var Operation_Tree	= Class.create
 		this.oControl.paint();
 	},
 	
-	deSelectAll	: function()
+	deSelectAll	: function(bEnableNodes)
 	{
 		for (iOperationId in this.oOperations)
 		{
-			this.setOperationSelected(iOperationId, false, false, true);
+			this.setOperationSelected(iOperationId, false, false, bEnableNodes);
 		}
 	}
 });
