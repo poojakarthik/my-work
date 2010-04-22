@@ -28,9 +28,6 @@ class JSON_Handler_Operation extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Send an Email to Devs
-			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
-			
 			return array(
 							"Success"	=> false,
 							"Message"	=> 'ERROR: '.$e->getMessage(),
@@ -82,16 +79,6 @@ class JSON_Handler_Operation extends JSON_Handler
 							$oStdClass->aPrerequisites[]	= $oOperationPrerequisite->prerequisite_operation_id;
 						}
 						
-						/*
-						// Get list of dependants
-						$aDependants			= $oOperation->getDependants();
-						$oStdClass->aDependants	= array();
-						foreach ($aDependants as $oOperationPrerequisite)
-						{
-							$oStdClass->aDependants[]	= $oOperationPrerequisite->operation_id;
-						}
-						*/
-						
 						// Add to Result Set
 						$aResults[$iCount+$iOffset]	= $oStdClass;
 					}
@@ -110,9 +97,6 @@ class JSON_Handler_Operation extends JSON_Handler
 		}
 		catch (Exception $e)
 		{
-			// Send an Email to Devs
-			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
-			
 			return array(
 							"Success"	=> false,
 							"Message"	=> 'ERROR: '.$e->getMessage(),

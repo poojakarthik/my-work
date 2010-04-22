@@ -15,7 +15,7 @@ class JSON_Handler_Operation_Profile_Operation extends JSON_Handler
 	{
 		try
 		{
-			$aOperationProfiles	= Operation_Profile::getAll();
+			$aOperationProfiles	= Operation_Profile::getAllActive();
 			$aResult			= array();
 			
 			foreach ($aOperationProfiles as $iId => $oOperationProfile)

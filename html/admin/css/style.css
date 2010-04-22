@@ -3693,29 +3693,49 @@ div.operation-profile-edit
 }
 
 div.operation-profile-edit-profiles,
-div.operation-profile-edit-details
+div.operation-profile-edit-details,
+div.operation-profile-edit-profiles-parents
 {
 	padding-bottom	: 1em;
 }
 
+div.operation-profile-edit-profiles,
+div.operation-profile-edit-profiles-parents
+{
+	width	: 50%;
+}
+
+div.operation-profile-edit-profiles
+{
+	float	: left;
+}
+
+div.operation-profile-edit-profiles-parents
+{
+	display	: inline-block;
+}
+
 div.operation-profile-edit div.reflex-tree
 {
-	height	: 15em;
+	height	: 11em;
 }
 
 div.operation-profile-edit-operations div.section-content div.reflex-tree,
-div.operation-profile-edit-profiles div.section-content div.reflex-tree
+div.operation-profile-edit-profiles div.section-content div.reflex-tree,
+div.operation-profile-edit-profiles-parents div.section-content div.reflex-tree
 {
 	background-color	: #FFFFFF;
 }
 
 div.operation-profile-edit-operations div.section-content,
-div.operation-profile-edit-profiles div.section-content
+div.operation-profile-edit-profiles div.section-content,
+div.operation-profile-edit-profiles-parents div.section-content
 {
 	position	: relative;
 }
 
 div.operation-profile-edit-empty,
+div.operation-profile-edit-parents-empty,
 div.operation-profile-edit-operations-empty
 {
 	position			: absolute;
@@ -3730,3 +3750,10 @@ div.operation-profile-edit-operations-empty
 
 /************************ END - Operation Profile Edit Popup - END ************************/
 
+/************************ START - Operation Profile List Page - START ************************/
+
+#PermissionProfileListContainer div.caption_title {
+	min-height:1.55em;
+}
+
+/************************ END - Operation Profile List Page - END ************************/

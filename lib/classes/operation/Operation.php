@@ -72,6 +72,11 @@ class Operation extends ORM_Enumerated
 		return Operation_Prerequisite::getOperationDependants($this->id);
 	}
 	
+	public function isActive()
+	{
+		return $this->status_id == STATUS_ACTIVE;
+	}
+	
 	protected static function getCacheName()
 	{
 		// It's safest to keep the cache name the same as the class name, to ensure uniqueness
@@ -153,7 +158,7 @@ class Operation extends ORM_Enumerated
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
 				case 'selAll':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "name ASC");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "status_id = ".STATUS_ACTIVE, "name ASC");
 					break;
 				
 				// INSERTS

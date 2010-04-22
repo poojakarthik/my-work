@@ -7,8 +7,6 @@ class HtmlTemplate_DataReport_List extends FlexHtmlTemplate
 		parent::__construct($intContext, $strId, $mxdDataToRender);
 		
 		$this->LoadJavascript('dataset_ajax');
-		//$this->LoadJavascript('pagination');
-		//$this->LoadJavascript('reflex_validation');
 		$this->LoadJavascript("page_datareport_list");
 		$this->LoadJavascript("popup_datareport");
 		

@@ -130,19 +130,35 @@ class JSON_Handler_Employee extends JSON_Handler
 				$aEmployeeOperationProfiles	= array();
 			}
 			
+			// Return full operation profile details, convert all to std classes
+			$aStdClassOperationProfiles	= array();
+			
+			foreach ($aEmployeeOperationProfiles as $iId => $oOperationProfile)
+			{
+				$oStdClass	= $oOperationProfile->toStdClass();
+				
+				// Get list of children profiles
+				$aChildren				= $oOperationProfile->getChildOperationProfiles();
+				$oStdClass->aChildren	= array();
+				
+				foreach ($aChildren as $oChild)
+				{
+					$oStdClass->aChildren[]	= $oChild->id;
+				}
+				
+				$aStdClassOperationProfiles[$iId]	= $oStdClass;
+			}
+			
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"Success"				=> true,
 							"aOperationIds"			=> array_keys($aEmployeeOperations),
-							"aOperationProfileIds"	=> array_keys($aEmployeeOperationProfiles),
+							"aOperationProfiles"	=> $aStdClassOperationProfiles,
 							"strDebug"				=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 		catch (Exception $e)
 		{
-			// Send an Email to Devs
-			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
-			
 			return 	array(
 						"Success"	=> false,
 						"Message"	=> 'ERROR: '.$e->getMessage(),

@@ -36,7 +36,19 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 		}
 	}
 	
-	public function getRecords($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getAll($bCountOnly=false, $iLimit=0, $iOffset=0)
+	{
+		$aOperationProfiles	= Operation_Profile::getAll();
+		return self::getRecords($aOperationProfiles, $bCountOnly, $iLimit, $iOffset);
+	}
+
+	public function getActive($bCountOnly=false, $iLimit=0, $iOffset=0)
+	{
+		$aOperationProfiles	= Operation_Profile::getAllActive();
+		return self::getRecords($aOperationProfiles, $bCountOnly, $iLimit, $iOffset);
+	}
+	
+	public function getRecords($aOperationProfiles, $bCountOnly=false, $iLimit=0, $iOffset=0)
 	{
 		try
 		{
@@ -53,7 +65,6 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 			{
 				$iLimit				= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
 				$iOffset			= ($iLimit === null) ? null : max((int)$iOffset, 0);
-				$aOperationProfiles	= Operation_Profile::getAll();
 				$aResults			= array();
 				$iCount				= 0;
 				
@@ -76,6 +87,8 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 						{
 							$oStdClass->aDependants[]	= $oDependant->id;
 						}
+						
+						$oStdClass->status_label	= ($oOperationProfile->isActive() ? 'Active' : 'Inactive'); 
 						
 						// Add to Result Set
 						$aResults[$iCount + $iOffset]	= $oStdClass;
@@ -103,7 +116,7 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 		}
 	}
 	
-	public function save($iOperationProfileId, $sName, $sDescription, $aOperationProfileIds, $aOperationIds)
+	public function save($iOperationProfileId, $sName, $sDescription, $iStatusId, $aOperationProfileIds, $aOperationIds)
 	{
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
@@ -125,19 +138,22 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 				// Create new operation profile
 				$oOperationProfile	= new Operation_Profile();
 				
-				// Default values, not supplied by the interface
-				$oOperationProfile->status	= 1;
+				// Default value, not supplied by the interface
+				$oOperationProfile->status_id	= 1;
 			}
 			else
 			{
 				// Get operation profile
-				$oOperationProfile	= new Operation_Profile($iOperationProfileId);
+				$oOperationProfile	= Operation_Profile::getForId($iOperationProfileId);
 				
 				// Delete existing operation_profile_children records for the operation profile
 				$oOperationProfile->removeChildren();
 				
 				// Delete existing operation_profile_operation records for the operation profile
 				$oOperationProfile->removeOperations();
+				
+				// Store new status
+				$oOperationProfile->status_id	= $iStatusId;
 			}
 			
 			$oOperationProfile->name		= $sName;
@@ -169,6 +185,7 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 			return 	array(
 						"Success"	=> true,
 						"iId"		=> $oOperationProfile->id,
+						'test'		=> $oOperationProfile,
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
@@ -207,7 +224,7 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 		$qQuery	= ($qQuery) ? $qQuery : new Query();
 		
 		// Get full list of Operation Profiles
-		$aOperationProfiles	= Operation_Profile::getAll();
+		$aOperationProfiles	= Operation_Profile::getAllActive();
 		
 		// Convert to stdClasses
 		$aReturn	= array();

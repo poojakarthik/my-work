@@ -1941,9 +1941,10 @@ class MenuItems {
 							"control_field_checkbox",
 							"control_field_date_picker",
 							"control_field_select",
-							"operation",
-							"operation_profile",
 							"operation_tree",
+							"operation",
+							"status",
+							"operation_profile",
 							"user_role",
 							"ticketing_user_permission",
 							"employee",
@@ -1994,10 +1995,11 @@ class MenuItems {
 							"reflex_control_tree_node_checkable",
 							"control_field",
 							"control_field_text",
-							"control_field_checkbox",
+							"control_field_select",
+							"operation_tree",
+							"status",
 							"operation",
 							"operation_profile",
-							"operation_tree",
 							"user_role",
 							"ticketing_user_permission",
 							"employee",
@@ -2008,6 +2010,13 @@ class MenuItems {
 		$sPopup		= "var oPopup	= new Popup_Employee_Details_Permissions(Control_Field.RENDER_MODE_VIEW, {$iId});";
 		$sLoad		= "JsAutoLoader.loadScript(['".implode(".js','", $aJSFiles).".js'], function() {{$sPopup}}, true);";
 		return "$sLoad";
+	}
+	
+	function ManagePermissionProfiles()
+	{
+		$this->strContextMenuLabel	= "Manage Permission Profiles";
+		$this->strLabel	= "Manage Permission Profiles";
+		return self::NEW_FRAMEWORK."reflex.php/Permission/ProfileList/";
 	}
 
 	//------------------------------------------------------------------------//

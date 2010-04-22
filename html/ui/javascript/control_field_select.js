@@ -69,7 +69,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		if (aOptions === undefined || aOptions === null)
 		{
 			//alert("No options -- getting list...");
-			this.bPopulated									= false;
+			this.bPopulated								= false;
 			this.oControlOutput.oEdit.style.display		= 'none';
 			this.oControlOutput.oView.style.display		= 'none';
 			this.oControlOutput.oLoading.style.display	= 'inline';
@@ -98,6 +98,7 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 			this.oControlOutput.oLoading.style.display	= 'none';
 			
 			this.updateElementValue();
+			this.validate();
 		}
 	},
 	

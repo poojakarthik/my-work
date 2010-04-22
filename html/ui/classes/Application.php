@@ -201,6 +201,10 @@ class Application
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
 			}
+			
+			// Permissions menu
+			ContextMenu()->Admin->Employees->Permissions->ManagePermissionProfiles();
+			
 			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 			{
 				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))
@@ -423,6 +427,10 @@ class Application
 			{
 				ContextMenu()->Admin->Employees->EmployeeMessageManagement();
 			}
+			
+			// Permissions menu
+			ContextMenu()->Admin->Employees->Permissions->ManagePermissionProfiles();
+			
 			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 			{
 				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SALES))

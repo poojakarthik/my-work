@@ -31,25 +31,51 @@ var Operation_Profile	= Class.create
 	
 	save	: function(aOperationProfileIds, aOperationIds, fnCallback)
 	{
+		var aValidationErrors	= [];
+		var oControl			= null;
+		var sError				= null;
+		var oDetails			= {};
+		
+		for (var sName in this.oPropertyControls)
+		{
+			oControl	= this.oPropertyControls[sName];
+			sError		= Control_Field.getError(oControl);
+			
+			if (sError)
+			{
+				aValidationErrors.push(sError);
+			}
+			else
+			{
+				oDetails[sName]	= this.oPropertyControls[sName].getValue(true);
+			}
+		}
+		
 		var fnSave	= jQuery.json.jsonFunction(this._saveComplete.bind(this, fnCallback), this._saveComplete.bind(this), 'Operation_Profile', 'save');
-		fnSave(this.iId, aOperationProfileIds, aOperationIds);
+		fnSave(
+			this.iId, 
+			oDetails['name'], 
+			oDetails['description'], 
+			parseInt(oDetails['status_id']), 
+			aOperationProfileIds, 
+			aOperationIds 
+		);
 	},
 	
 	_saveComplete	: function(fnCallback, oResponse)
 	{
-		debugger;
 		if (oResponse.Success)
 		{
 			// All good
 			if (fnCallback)
 			{
-				fnCallback();
+				fnCallback(oResponse);
 			}
 		}
 		else
 		{
 			// AJAX Error
-			if (oReponse.Message)
+			if (oResponse.Message)
 			{
 				Reflex_Popup.alert(oResponse.Message);
 			}
@@ -96,7 +122,10 @@ var Operation_Profile	= Class.create
 	}
 });
 
-Operation_Profile._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {strObject: 'Operation_Profile', strMethod: 'getRecords'});
+Operation_Profile._oDataset	= 	new Dataset_Ajax(
+									Dataset_Ajax.CACHE_MODE_NO_CACHING, 
+									{strObject: 'Operation_Profile', strMethod: 'getActive'}
+								);
 
 /* Static Methods */
 
@@ -144,6 +173,111 @@ Operation_Profile.getAllChildOperations	= function(fnCallback, oResponse)
 	}
 };
 
+Operation_Profile.getDependants	= function(oResultSet, iProfileId)
+{
+	var oProfile	= oResultSet[iProfileId];
+	var aDependants	= [iProfileId.toString()];
+	
+	for (var i = 0; i < oProfile.aDependants.length; i++)
+	{
+		var iId		= oProfile.aDependants[i];
+		aDependants	= aDependants.concat(Operation_Profile.getDependants(oResultSet, iId));
+	}
+	
+	return aDependants;
+};
+
+Operation_Profile.getAllDependantsIndexed	= function(iLowestProfileId, fnCallback, oResultSet)
+{
+	if (typeof oResultSet === 'undefined')
+	{
+		// Make Request
+		Operation_Profile.getAllIndexed(
+			Operation_Profile.getAllDependantsIndexed.bind(Operation_Profile, iLowestProfileId, fnCallback)
+		);
+	}
+	else
+	{
+		// Get all parent operations
+		var aParents	= Operation_Profile.getDependants(oResultSet, iLowestProfileId);
+		var oProfile	= null;
+		var oParents	= {};
+		
+		for (var i = 0; i < aParents.length; i++)
+		{
+			iProfileId	= aParents[i];
+			oProfile	= oResultSet[iProfileId];
+			
+			if (iProfileId != iLowestProfileId)
+			{
+				// Empty the prerequisites, their all treated as top level
+				oProfile.aPrerequisites	= [];
+				oParents[iProfileId]	= oProfile;
+			}
+		}
+		
+		fnCallback(oParents);
+	}
+}
+
+Operation_Profile.getAllPrerequisitesAndNonRelatedIndexed	= function(iHighestProfileId, fnCallback, oResultSet)
+{
+	if (typeof oResultSet === 'undefined')
+	{
+		// Make Request
+		Operation_Profile.getAllIndexed(
+			Operation_Profile.getAllPrerequisitesAndNonRelatedIndexed.bind(Operation_Profile, iHighestProfileId, fnCallback)
+		);
+	}
+	else
+	{
+		// Get all parent operations
+		var aParents	= Operation_Profile.getDependants(oResultSet, iHighestProfileId);
+		
+		// Check all other profiles prerequisites, if they are parents of iHighestProfileId or 
+		// iHighestProfileId itself, remove them
+		var oProfile	= null;
+		
+		for (var iProfileId in oResultSet)
+		{
+			sProfileId	= iProfileId.toString();
+			oProfile	= oResultSet[iProfileId];
+			
+			// Remove the profile if it is a dependant of iHighestProfileId
+			if ((iProfileId == iHighestProfileId) || (aParents.indexOf(sProfileId) > -1))
+			{
+				delete oResultSet[iProfileId];
+			}
+			else
+			{
+				// Remove any prerequisites that are dependants of iHighestProfileId
+				for (var i = 0; i < oProfile.aPrerequisites.length; i++)
+				{
+					var sPrerequisite	= oProfile.aPrerequisites[i].toString();
+					
+					if (aParents.indexOf(sPrerequisite) > 0)
+					{
+						oProfile.aPrerequisites.splice(i, 1);
+					}
+				}
+				
+				// Remove any dependants that are dependants of iHighestProfileId
+				for (var i = 0; i < oProfile.aDependants.length; i++)
+				{
+					var sDependant	= oProfile.aDependants[i].toString();
+					
+					if (aParents.indexOf(sDependant) > -1)
+					{
+						oProfile.aDependants.splice(i, 1);
+					}
+				}
+			}
+		}
+		
+		fnCallback(oResultSet);
+	}
+}
+
 Operation_Profile.getAllIndexed	= function(fCallback, aResultSet)
 {
 	if (aResultSet === undefined)
@@ -160,11 +294,10 @@ Operation_Profile.getAllIndexed	= function(fCallback, aResultSet)
 		var hDependants	= {};
 		var oProfile	= null;
 		
-		for (iSequence in aResultSet)
+		for (var iSequence in aResultSet)
 		{
 			oProfile				= aResultSet[iSequence];
 			oProfile.aPrerequisites	= oProfile.aDependants;
-			oResultSet[oProfile.id]	= oProfile;
 			
 			// Add to the list of dependants for each prerequisite
 			for (var i = 0; i < oProfile.aPrerequisites.length; i++)
@@ -178,6 +311,8 @@ Operation_Profile.getAllIndexed	= function(fCallback, aResultSet)
 				
 				hDependants[iId].push(oProfile.id);
 			}
+			
+			oResultSet[oProfile.id]	= oProfile;
 		}
 		
 		// Add dependants to each profile
@@ -191,8 +326,10 @@ Operation_Profile.getAllIndexed	= function(fCallback, aResultSet)
 	}
 };
 
+// Controls definition
 Operation_Profile.oProperties	= {};
 
+// Name
 Operation_Profile.oProperties.name			= {};
 Operation_Profile.oProperties.name.sType	= 'text';
 
@@ -200,10 +337,10 @@ Operation_Profile.oProperties.name.oDefinition				= {};
 Operation_Profile.oProperties.name.oDefinition.sLabel		= 'Name';
 Operation_Profile.oProperties.name.oDefinition.mEditable	= true;
 Operation_Profile.oProperties.name.oDefinition.mMandatory	= true;
-Operation_Profile.oProperties.name.oDefinition.mAutoTrim	= true;
+Operation_Profile.oProperties.name.oDefinition.mAutoTrim	= false;
 Operation_Profile.oProperties.name.oDefinition.iMaxLength	= 256;
 
-
+// Description
 Operation_Profile.oProperties.description		= {};
 Operation_Profile.oProperties.description.sType	= 'text';
 
@@ -211,6 +348,16 @@ Operation_Profile.oProperties.description.oDefinition				= {};
 Operation_Profile.oProperties.description.oDefinition.sLabel		= 'Description';
 Operation_Profile.oProperties.description.oDefinition.mEditable		= true;
 Operation_Profile.oProperties.description.oDefinition.mMandatory	= true;
-Operation_Profile.oProperties.description.oDefinition.mAutoTrim		= true;
+Operation_Profile.oProperties.description.oDefinition.mAutoTrim		= false;
 Operation_Profile.oProperties.description.oDefinition.iMaxLength	= 1024;
+
+// Status
+Operation_Profile.oProperties.status_id			= {};
+Operation_Profile.oProperties.status_id.sType	= 'select';
+
+Operation_Profile.oProperties.status_id.oDefinition				= {};
+Operation_Profile.oProperties.status_id.oDefinition.sLabel		= 'Status';
+Operation_Profile.oProperties.status_id.oDefinition.mEditable	= true;
+Operation_Profile.oProperties.status_id.oDefinition.mMandatory	= true;
+Operation_Profile.oProperties.status_id.oDefinition.fnPopulate	= Status.getAllAsSelectOptions.bind(Status);
 

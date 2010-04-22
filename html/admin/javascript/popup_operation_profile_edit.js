@@ -1,13 +1,13 @@
 var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, bRenderMode, iProfileId)
+	initialize	: function($super, bRenderMode, iProfileId, fnOnSave, aPrerequisites, aOperationIds)
 	{
 		$super(40);
 		
 		this.bRenderMode				= bRenderMode;
-		this.oOperationProfiles			= {};
-		this.iOperationTreeReadyCount	= 0;
+		this.iOperationTreeCount		= 0;
 		this.hOperationProfileChildren	= [];
+		this.fnOnSave					= fnOnSave;
 		
 		if (Number(iProfileId) > 0)
 		{
@@ -19,7 +19,19 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 		{
 			// New Profile
 			this.setTitle("Add Permission Profile");
-			this.buildContent(new Operation_Profile());
+			
+			// Cache the prerequisites and child operations
+			this.aOperationIds				= (aOperationIds ? aOperationIds : []);
+			var oOperationProfile			= new Operation_Profile();
+			oOperationProfile.oProperties	=	{
+													aPrerequisites	: (aPrerequisites ? aPrerequisites : []),
+													status_id		: 1, // STATUS_ACTIVE
+													name			: '',
+													description		: ''
+												};
+			
+			// Create interface
+			this.buildContent(oOperationProfile);
 		}
 		else
 		{
@@ -55,7 +67,7 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 								$T.div({class: 'section-header'},
 									$T.div({class: 'section-header-title'},
 										$T.img({src: '../admin/img/template/group_key.png', alt: '', title: 'Profiles'}),
-										$T.span('Profiles')
+										$T.span('Includes...')
 									)
 								),
 								$T.div({class: 'section-content section-content-fitted'},
@@ -65,6 +77,17 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 									)
 								)
 							),
+							$T.div({class: 'section operation-profile-edit-profiles-parents'},
+									$T.div({class: 'section-header'},
+										$T.div({class: 'section-header-title'},
+											$T.img({src: '../admin/img/template/group_key.png', alt: '', title: 'Profiles'}),
+											$T.span('Is a part of...')
+										)
+									),
+									$T.div({class: 'section-content section-content-fitted'},
+										this.buildContentParentOperationProfiles()
+									)
+								),
 							$T.div({class: 'section operation-profile-edit-operations'},
 								$T.div({class: 'section-header'},
 									$T.div({class: 'section-header-title'},
@@ -81,7 +104,7 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 							)
 						);
 		
-		var oDetailsTBody	= this._oPage.select('div.operation-profile-edit-details').first();
+		var oDetailsTBody	= this._oPage.select('tbody.operation-profile-edit-details').first();
 		for (var sFieldName in this.oControls)
 		{
 			oDetailsTBody.appendChild(this.oControls[sFieldName].generateInputTableRow().oElement);
@@ -127,43 +150,129 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 		
 		this.oLoading	= new Reflex_Popup.Loading('Getting Details...');
 		this.oLoading.display();
-		
-		return true;
 	},
 	
 	buildContentOperationProfiles	: function()
 	{
+		// Set up data function for the tree
+		var fnData	= Operation_Profile.getAllIndexed.bind(Operation_Profile);
+		
+		if (this.oOperationProfile.oProperties.id)
+		{
+			fnData	= Operation_Profile.getAllPrerequisitesAndNonRelatedIndexed.bind(Operation_Profile, this.oOperationProfile.oProperties.id);
+		}
+		
 		// Create tree, given callback for when it has loaded all of the operations
+		this.iOperationTreeCount++;
 		this.oOperationProfilesTree	= 	new Operation_Tree(
-											Operation_Tree.RENDER_HEIRARCHY_INCLUDES, 
+											Operation_Tree.RENDER_OPERATION_PROFILE, 
 											null,
-											Operation_Profile.getAllIndexed.bind(Operation_Profile),
+											fnData,
 											this._operationTreeReady.bind(this),
 											this._operationProfileChange.bind(this)
 										);
+		
 		return	$T.div(this.oOperationProfilesTree.getElement());
+	},
+	
+	buildContentParentOperationProfiles	: function()
+	{
+		var fnData	= null;
+		
+		// Only get data for the parent profiles tree if editing a profile, not if creating
+		if (this.oOperationProfile.oProperties.id)
+		{
+			fnData	= Operation_Profile.getAllDependantsIndexed.bind(Operation_Profile, this.oOperationProfile.oProperties.id),
+			this.iOperationTreeCount++;
+		}
+		
+		// Create tree, given callback for when it has loaded all of the operation profiles
+		this.oParentOperationProfilesTree	= 	new Operation_Tree(
+													Operation_Tree.RENDER_OPERATION_PROFILE, 
+													null,
+													fnData,
+													this._operationTreeReady.bind(this)
+												);
+		this.oParentOperationProfilesTree.setEditable(false);
+		
+		return	$T.div(this.oParentOperationProfilesTree.getElement());
 	},
 	
 	buildContentOperations	: function()
 	{
 		// Create tree, given callback for when it has loaded all of the operations
+		this.iOperationTreeCount++;
 		this.oOperationsTree	= 	new Operation_Tree(
-										Operation_Tree.RENDER_HEIRARCHY_GROUPED, 
+										Operation_Tree.RENDER_OPERATION, 
 										null,
 										Operation.getAllIndexed.bind(Operation),
 										this._operationTreeReady.bind(this)
 									);
+		
 		return	$T.div(this.oOperationsTree.getElement());
 	},
 	
+	display		: function($super)
+	{
+		// If we have loaded, then display, otherwise automatically display once loaded
+		if (this._oPage)
+		{
+			$super();
+			return true;
+		}
+		else
+		{
+			this.bDisplayOnLoad	= true;
+			return false;
+		}
+	},
+	
+	setControlMode	: function(bControlMode)
+	{
+		switch (bControlMode)
+		{
+			case Control_Field.RENDER_MODE_EDIT:
+				// Change footer buttons
+				this.setFooterButtons([this.oSaveButton, (this.oOperationProfile.oProperties.id) ? this.oCancelEditButton : this.oCancelNewButton], true);
+				
+				// Send Tree Grids into Edit mode
+				this.oOperationProfilesTree.setEditable(true);
+				this.oOperationsTree.setEditable(true);
+				break;
+				
+			case Control_Field.RENDER_MODE_VIEW:
+				// Change footer buttons
+				this.setFooterButtons([this.oEditButton, this.oCloseButton], true);
+				
+				// Send Tree Grids into Read-Only mode
+				this.oOperationProfilesTree.setEditable(false);
+				this.oOperationsTree.setEditable(false);
+				break;
+			
+			default:
+				throw "Invalid Control Mode '" + bControlMode + "'";
+		}
+		
+		this.bRenderMode	= bControlMode;
+		
+		for (var sFieldName in this.oControls)
+		{
+			this.oControls[sFieldName].setRenderMode(bControlMode);
+		}
+		
+		// Reset the Permissions Trees to saved values
+		this._selectDefaultTreeValues();
+	},
+		
 	_operationTreeReady	: function(oResponse)
 	{
 		if (typeof oResponse == 'undefined')
 		{
 			// Wait until both operation tree's are ready
-			if (this.iOperationTreeReadyCount < 1)
+			this.iOperationTreeCount--;
+			
+			if (this.iOperationTreeCount)
 			{
-				this.iOperationTreeReadyCount++;
 				return;
 			}
 			
@@ -174,7 +283,12 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 		{
 			// Got child operations for profiles
 			this.hOperationProfileChildren	= oResponse.aOperations;
-			this.aOperationIds				= (this.oOperationProfile.oProperties.id ? this.hOperationProfileChildren[this.oOperationProfile.oProperties.id] : []);
+			
+			// aOperationIds already set if creating a new profile
+			if (this.oOperationProfile.oProperties.id)
+			{
+				this.aOperationIds	= this.hOperationProfileChildren[this.oOperationProfile.oProperties.id];
+			}
 			
 			// Set the tree values
 			this._selectDefaultTreeValues();
@@ -248,6 +362,11 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 			this.oLoading.hide();
 			delete this.oLoading;
 			this.hide();
+			
+			if (this.fnOnSave)
+			{
+				this.fnOnSave();
+			}
 		}
 	},
 	
@@ -256,6 +375,9 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 		// Clear trees 
 		this.oOperationProfilesTree.deSelectAll(false);
 		this.oOperationsTree.deSelectAll(true);
+		
+		// Select all parent profiles
+		this.oParentOperationProfilesTree.selectAll(true);
 		
 		// Select operation profiles
 		var aPrerequisites	= this.oOperationProfile.oProperties.aPrerequisites;
@@ -269,11 +391,11 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 		{
 			iProfileId	= aPrerequisites[i];
 			
-			for (var iOperationId in this.hOperationProfileChildren[iProfileId])
+			if (this.hOperationProfileChildren[iProfileId])
 			{
-				if (!isNaN(this.hOperationProfileChildren[iProfileId][iOperationId]))
+				for (var i = 0; i < this.hOperationProfileChildren[iProfileId].length; i++)
 				{
-					aChildOperations.push(this.hOperationProfileChildren[iProfileId][iOperationId]);
+					aChildOperations.push(this.hOperationProfileChildren[iProfileId][i]);
 				}
 			}
 		}
@@ -285,53 +407,6 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 		this.oOperationsTree.setSelected(this.aOperationIds, true);
 		
 		this._checkForNoPermissions(null, null, null, true);
-	},
-	
-	display		: function($super)
-	{
-		// If we have loaded, then display, otherwise automatically display once loaded
-		if (this._oPage)
-		{
-			$super();
-			return true;
-		}
-		else
-		{
-			this.bDisplayOnLoad	= true;
-			return false;
-		}
-	},
-	
-	setControlMode	: function(bControlMode)
-	{
-		switch (bControlMode)
-		{
-			case Control_Field.RENDER_MODE_EDIT:
-				// Change footer buttons
-				this.setFooterButtons([this.oSaveButton, (this.oOperationProfile.oProperties.id) ? this.oCancelEditButton : this.oCancelNewButton], true);
-				
-				// Send Tree Grids into Edit mode
-				this.oOperationProfilesTree.setEditable(true);
-				this.oOperationsTree.setEditable(true);
-				break;
-				
-			case Control_Field.RENDER_MODE_VIEW:
-				// Change footer buttons
-				this.setFooterButtons([this.oEditButton, this.oCloseButton], true);
-				
-				// Send Tree Grids into Read-Only mode
-				this.oOperationProfilesTree.setEditable(false);
-				this.oOperationsTree.setEditable(false);
-				break;
-			
-			default:
-				throw "Invalid Control Mode '" + bControlMode + "'";
-		}
-		
-		this.bRenderMode	= bControlMode;
-		
-		// Reset the Permissions Trees to saved values
-		this._selectDefaultTreeValues();
 	},
 	
 	_operationProfileChange	: function()
@@ -369,8 +444,8 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 	
 	_checkForNoPermissions	: function(bOnClose, fnOnYes, fnOnNo, bNoPopup)
 	{
-		var aOperationIds			= null;
-		var aOperationProfileIds	= null;
+		var aOperationIds				= null;
+		var aOperationProfileIds		= null;
 		
 		if (bOnClose)
 		{

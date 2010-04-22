@@ -43,7 +43,15 @@ var Employee	= Class.create
 		if (oResponse)
 		{
 			this.aOperationIds			= oResponse.aOperationIds;
-			this.aOperationProfileIds	= oResponse.aOperationProfileIds;
+			this.hOperationProfiles		= jQuery.json.arrayAsObject(oResponse.aOperationProfiles);
+			this.aOperationProfileIds	= [];
+			
+			for (var iId in this.hOperationProfiles)
+			{
+				// Rename aChildren to aPrerequisites and record the id
+				this.hOperationProfiles[iId].aPrerequisites	= this.hOperationProfiles[iId].aChildren;
+				this.aOperationProfileIds.push(iId);
+			}
 			
 			// Process JSON Response
 			fnCallback(this);

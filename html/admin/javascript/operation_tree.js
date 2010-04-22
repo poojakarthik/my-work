@@ -23,7 +23,6 @@ var Operation_Tree	= Class.create
 									$T.span('Retrieving list of Operations...')
 								)
 							);
-		this.oControl.getElement().appendChild(this.oLoading);
 		
 		this.setSelected(aSelected, true);
 		this.setRenderHeirarchy(sRenderHeirarchy);
@@ -31,6 +30,7 @@ var Operation_Tree	= Class.create
 		// Load Data
 		if (fnDataSource)
 		{
+			this.oControl.getElement().appendChild(this.oLoading);
 			fnDataSource(this._load.bind(this));
 		}
 	},
@@ -78,18 +78,11 @@ var Operation_Tree	= Class.create
 		switch (sRenderHeirarchy)
 		{
 			// Valid
-			case Operation_Tree.RENDER_HEIRARCHY_INCLUDES:
-			case Operation_Tree.RENDER_HEIRARCHY_GROUPED:
-			case Operation_Tree.RENDER_HEIRARCHY_NONE:
+			case Operation_Tree.RENDER_OPERATION_PROFILE:
+			case Operation_Tree.RENDER_OPERATION:
 				this._sRenderHeirarchy	= sRenderHeirarchy;
 				break;
 			
-			// Invalid
-			case undefined:
-			case null:
-				this._sRenderHeirarchy	= Operation_Tree.RENDER_HEIRARCHY_NONE;
-				break;
-				
 			default:
 				throw "'"+sRenderHeirarchy+"' is not a valid Render Heirarchy";
 				break;
@@ -115,12 +108,12 @@ var Operation_Tree	= Class.create
 			// Render top-level Nodes
 			switch (this._sRenderHeirarchy)
 			{
-				case Operation_Tree.RENDER_HEIRARCHY_INCLUDES:
+				case Operation_Tree.RENDER_OPERATION_PROFILE:
 					// Only Operations with no dependants
 					this.oControl.getRootNode().addChild(this._convertOperationToTreeNode(iOperationId));
 					break;
 					
-				case Operation_Tree.RENDER_HEIRARCHY_GROUPED:
+				case Operation_Tree.RENDER_OPERATION:
 					// Only Operations with no prerequisites
 					if (!this.oOperations[iOperationId].aPrerequisites || !this.oOperations[iOperationId].aPrerequisites.length)
 					{
@@ -141,28 +134,25 @@ var Operation_Tree	= Class.create
 	
 	_convertOperationToTreeNode	: function(iOperationId, oParentNodeOverride)
 	{
-		if (!this.oOperations[iOperationId])
-		{
-			throw "Operation with Id #" + iOperationId + " does not exist!";
-		}
+		var oNode	= 	new Reflex.Control.Tree.Node.Checkable(
+							{label: this.oOperations[iOperationId].name},
+							iOperationId,
+							this._bEditable,
+							this.onSelectHandler.bind(this)
+						);
 		
-		var oNode		= 	new Reflex.Control.Tree.Node.Checkable(
-								{label: this.oOperations[iOperationId].name},
-								iOperationId,
-								this._bEditable,
-								this.onSelectHandler.bind(this)
-							);
 		this._oOperationDetails[iOperationId].aNodeInstances.push(oNode);
 		
 		switch (this._sRenderHeirarchy)
 		{
-			case Operation_Tree.RENDER_HEIRARCHY_INCLUDES:
+			case Operation_Tree.RENDER_OPERATION_PROFILE:
 				// Render all prerequisites, inline, not heirarchical
 				var oParentNode	= oNode;
 				
 				if (typeof oParentNodeOverride !== 'undefined')
 				{
-					// Disable the selection of this 2nd level node
+					// Disable the selection of this 2nd level node, preselect however, so it shows when not editable
+					oNode.setCheckedState(true, true);
 					oNode.setEnabled(false);
 					oParentNode	= oParentNodeOverride;
 				}
@@ -171,27 +161,36 @@ var Operation_Tree	= Class.create
 				{
 					for (var i = 0; i < this.oOperations[iOperationId].aPrerequisites.length; i++)
 					{
-						oParentNode.addChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aPrerequisites[i], oParentNode));
+						var iId	= this.oOperations[iOperationId].aPrerequisites[i];
+						
+						if (this.oOperations[iId])
+						{
+							oParentNode.addChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aPrerequisites[i], oParentNode));
+						}
 					}
 				}
 				
+				oNode.setIcon(Operation_Tree.TREE_NODE_PROFILE_IMAGE);
 				break;
 				
-			case Operation_Tree.RENDER_HEIRARCHY_GROUPED:
+			case Operation_Tree.RENDER_OPERATION:
 				// Render all dependants
 				if (this.oOperations[iOperationId].aDependants && this.oOperations[iOperationId].aDependants.length)
 				{
 					for (var i = 0; i < this.oOperations[iOperationId].aDependants.length; i++)
 					{
-						oNode.addChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aDependants[i]));
+						var iId	= this.oOperations[iOperationId].aDependants[i];
+						
+						if (this.oOperations[iId])
+						{
+							oNode.addChild(this._convertOperationToTreeNode(this.oOperations[iOperationId].aDependants[i]));
+						}
 					}
 				}
 				
+				oNode.setIcon(Operation_Tree.TREE_NODE_OPERATION_IMAGE);
 				break;
 		}
-		
-		// Set the icon
-		oNode.setIcon(Operation_Tree.TREE_NODE_ICON_IMAGE);
 		
 		return oNode;
 	},
@@ -223,7 +222,7 @@ var Operation_Tree	= Class.create
 	{
 		if (!this.oOperations[iOperationId] || !this._oOperationDetails[iOperationId])
 		{
-			throw "Operation with Id #"+iOperationId+" does not exist!";
+			throw "Operation with Id #" +  iOperationId + " does not exist!";
 		}
 		
 		this._oOperationDetails[iOperationId].bSelected	= bSelected;
@@ -338,12 +337,20 @@ var Operation_Tree	= Class.create
 		{
 			this.setOperationSelected(iOperationId, false, false, bEnableNodes);
 		}
+	},
+	
+	selectAll	: function(bEnableNodes)
+	{
+		for (iOperationId in this.oOperations)
+		{
+			this.setOperationSelected(iOperationId, true);
+		}
 	}
 });
 
-Operation_Tree.RENDER_HEIRARCHY_NONE		= 'none';
-Operation_Tree.RENDER_HEIRARCHY_INCLUDES	= 'includes';
-Operation_Tree.RENDER_HEIRARCHY_GROUPED		= 'grouped';
+Operation_Tree.RENDER_OPERATION_PROFILE		= 'operation_profile';
+Operation_Tree.RENDER_OPERATION				= 'operation';
 
-Operation_Tree.TREE_NODE_ICON_IMAGE			= '../admin/img/template/operation.png';
+Operation_Tree.TREE_NODE_PROFILE_IMAGE		= '../admin/img/template/contacts.png';
+Operation_Tree.TREE_NODE_OPERATION_IMAGE	= '../admin/img/template/operation.png';
 

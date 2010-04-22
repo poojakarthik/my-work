@@ -28,8 +28,14 @@ class Operation_Profile extends ORM_Cached
 			}
 			while ($arrSubProfileId = $selSubProfileIds->Fetch())
 			{
-				// Get the Operations for this Sub-Profile & merge with current list
-				$this->_arrOperations	= array_merge($this->_arrOperations, self::getForId($arrSubProfileId['child_operation_profile_id'])->getOperations());
+				// Verify that the profile is active
+				$oOperationProfile	= Operation_Profile::getForId($arrSubProfileId['child_operation_profile_id']);
+				
+				if ($oOperationProfile->isActive())
+				{
+					// Get the Operations for this Sub-Profile & merge with current list
+					$this->_arrOperations	= array_merge($this->_arrOperations, self::getForId($arrSubProfileId['child_operation_profile_id'])->getOperations());
+				}
 			}
 			
 			// Get Direct Operations
@@ -38,10 +44,17 @@ class Operation_Profile extends ORM_Cached
 			{
 				throw new Exception($selOperationIds->Error());
 			}
+			
 			while ($arrOperationId = $selOperationIds->Fetch())
 			{
-				// Add this Operation to the list
-				$this->_arrOperations[$arrOperationId['operation_id']]	= Operation::getForId($arrOperationId['operation_id']);
+				// Verify that the operation is active
+				$oOperation	= Operation::getForId($arrOperationId['operation_id']);
+				
+				if ($oOperation->isActive())
+				{
+					// Add this Operation to the list
+					$this->_arrOperations[$arrOperationId['operation_id']]	= Operation::getForId($arrOperationId['operation_id']);
+				}
 			}
 		}
 		return $this->_arrOperations;
@@ -60,8 +73,14 @@ class Operation_Profile extends ORM_Cached
 		}
 		while ($arrOperationId = $selOperationIds->Fetch())
 		{
-			// Add this Operation to the list
-			$arrOperations[$arrOperationId['operation_id']]	= Operation::getForId($arrOperationId['operation_id']);
+			// Verify that the operation is active
+			$oOperation	= Operation::getForId($arrOperationId['operation_id']);
+			
+			if ($oOperation->isActive())
+			{
+				// Add this Operation to the list
+				$arrOperations[$arrOperationId['operation_id']]	= Operation::getForId($arrOperationId['operation_id']);
+			}
 		}
 		
 		return $arrOperations;
@@ -80,11 +99,69 @@ class Operation_Profile extends ORM_Cached
 		}
 		while ($arrSubProfileId = $selSubProfileIds->Fetch())
 		{
-			// Get the Operations for this Sub-Profile & merge with current list
-			$arrOperationProfiles[$arrSubProfileId['child_operation_profile_id']]	= Operation_Profile::getForId($arrSubProfileId['child_operation_profile_id']);
+			// Verify that the profile is active
+			$oOperationProfile	= Operation_Profile::getForId($arrSubProfileId['child_operation_profile_id']);
+			
+			if ($oOperationProfile->isActive())
+			{
+				// Get the Operations for this Sub-Profile & merge with current list
+				$arrOperationProfiles[$arrSubProfileId['child_operation_profile_id']]	= Operation_Profile::getForId($arrSubProfileId['child_operation_profile_id']);
+			}
 		}
 		
 		return $arrOperationProfiles;
+	}
+	
+	public function removeChildren()
+	{
+		$oQuery		= new Query();
+		$sQuery 	= "	DELETE FROM operation_profile_children" .
+					"	WHERE	parent_operation_profile_id = {$this->id};";
+		$oResult	= $oQuery->Execute($sQuery);
+		
+		if ($oResult === false)
+		{
+			throw new Exception("Error deleting operation_profile_children: {$sQuery}");
+		}
+		
+		return $oResult;
+	}
+	
+	public function removeOperations()
+	{
+		$oQuery		= new Query();
+		$sQuery 	= "	DELETE FROM operation_profile_operation" .
+					"	WHERE	operation_profile_id = {$this->id};";
+		$oResult	= $oQuery->Execute($sQuery);
+		
+		if ($oResult === false)
+		{
+			throw new Exception("Error deleting operation_profile_operation: {$sQuery}");
+		}
+		
+		return $oResult;
+	}
+	
+	public function isActive()
+	{
+		return $this->status_id == STATUS_ACTIVE;
+	}
+	
+	public static function getAllActive($bolForceReload=false)
+	{
+		$aAll		= parent::getAll($bolForceReload, __CLASS__);
+		$aActive	= array();
+		
+		// Filter out non-active profiles
+		foreach ($aAll as $iId => $oOperationProfile)
+		{
+			if ($oOperationProfile->isActive())
+			{
+				$aActive[$iId]	= $oOperationProfile;
+			}
+		}
+		
+		return $aActive;
 	}
 	
 	protected static function getCacheName()

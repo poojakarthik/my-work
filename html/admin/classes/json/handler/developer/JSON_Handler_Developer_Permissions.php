@@ -95,7 +95,7 @@ class JSON_Handler_Developer_Permissions extends JSON_Handler
 			
 			// Get Operation Profiles
 			$arrOperationProfiles		= array();
-			$arrORMOperationProfiles	= Operation_Profile::getAll();
+			$arrORMOperationProfiles	= Operation_Profile::getAllActive();
 			foreach ($arrORMOperationProfiles as $intOperationProfileId=>$objORMOperationProfile)
 			{
 				$arrOperationProfiles[]	= $objORMOperationProfile->toStdClass();

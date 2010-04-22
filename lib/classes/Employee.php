@@ -318,10 +318,16 @@ class Employee extends ORM_Cached
 			{
 				throw new Exception($selOperationProfileIds->Error());
 			}
+			
 			while ($arrOperationProfileId = $selOperationProfileIds->Fetch())
 			{
 				// Get the Operations for this Sub-Profile & merge with current list
-				$this->_arrOperations	= array_merge($this->_arrOperations, Operation_Profile::getForId($arrOperationProfileId['operation_profile_id'])->getOperations());
+				$oOperationProfile	= Operation_Profile::getForId($arrOperationProfileId['operation_profile_id']);
+				
+				if ($oOperationProfile->isActive())
+				{
+					$this->_arrOperations	= array_merge($this->_arrOperations, $oOperationProfile->getOperations());
+				}
 			}
 			
 			// Get Direct Operations
@@ -330,10 +336,16 @@ class Employee extends ORM_Cached
 			{
 				throw new Exception($selOperationIds->Error());
 			}
+			
 			while ($arrOperationId = $selOperationIds->Fetch())
 			{
-				// Add this Operation to the list
-				$this->_arrOperations[$arrOperationId['operation_id']]	= Operation::getForId($arrOperationId['operation_id']);
+				$oOperation	= Operation::getForId($arrOperationId['operation_id']);
+				
+				if ($oOperation->isActive())
+				{
+					// Add this Operation to the list
+					$this->_arrOperations[$arrOperationId['operation_id']]	= $oOperation;
+				}
 			}
 		}
 		return $this->_arrOperations;
@@ -353,8 +365,13 @@ class Employee extends ORM_Cached
 		}
 		while ($aOperationId = $oOperationIds->Fetch())
 		{
-			// Add this Operation to the list
-			$aOperations[$aOperationId['operation_id']]	= Operation::getForId($aOperationId['operation_id']);
+			$oOperation	= Operation::getForId($aOperationId['operation_id']);
+			
+			if ($oOperation->isActive())
+			{
+				// Add this Operation to the list
+				$aOperations[$aOperationId['operation_id']]	= $oOperation;
+			}
 		}
 		
 		return $aOperations;
@@ -374,7 +391,12 @@ class Employee extends ORM_Cached
 		}
 		while ($aOperationProfileId = $oOperationProfileIds->Fetch())
 		{
-			$aOperationProfiles[$aOperationProfileId['operation_profile_id']]	= Operation_Profile::getForId($aOperationProfileId['operation_profile_id']);
+			$oOperationProfile	= Operation_Profile::getForId($aOperationProfileId['operation_profile_id']);
+			
+			if ($oOperationProfile->isActive())
+			{
+				$aOperationProfiles[$aOperationProfileId['operation_profile_id']]	= $oOperationProfile;
+			}
 		}
 		
 		return $aOperationProfiles;
