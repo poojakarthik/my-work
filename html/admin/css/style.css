@@ -3748,6 +3748,11 @@ div.operation-profile-edit-operations-empty
 	background-color	: inherit;
 }
 
+div.operation-profile-validation-errors
+{
+	padding	: 0.5em;
+}
+
 /************************ END - Operation Profile Edit Popup - END ************************/
 
 /************************ START - Operation Profile List Page - START ************************/

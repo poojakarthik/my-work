@@ -1918,11 +1918,11 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function EditEmployee($iId=false, $sUserName=false, $sJSCallback=false)
+	function EditEmployee($iId=false, $sUserName=false, $sJSCallback=false, $bEditingSelf=false)
 	{
 		$this->strContextMenuLabel	= "";
 
-		$this->strLabel	= "emp: ".($iId ? $sUserName : 'new');
+		$this->strLabel	= "Emp: ".($iId ? $sUserName : 'new');
 		
 		$aJSFiles	= 	array(
 							"dataset_ajax",
@@ -1954,7 +1954,7 @@ class MenuItems {
 							"popup_operation_profile_edit"
 						);
 		
-		$sSelf		= (($iId && (Flex::getUserId() == $iId)) ? 'true' : 'false');
+		$sSelf		= ($bEditingSelf ? 'true' : 'false');
 		$sId		= ($iId ? $iId : 'null');
 		$sRender	= ($iId ? 'Control_Field.RENDER_MODE_VIEW' : 'Control_Field.RENDER_MODE_EDIT');
 		$sCallback	= ($sJSCallback ? $sJSCallback : 'null');

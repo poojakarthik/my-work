@@ -274,8 +274,7 @@ class JSON_Handler_Employee extends JSON_Handler
 		{
 			$bAdminUser			= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 			$bProperAdminUser	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
-			$bUserIsSelf		= FALSE;
-	
+			
 			if ($iEmployeeId != AuthenticatedUser()->GetUserId())
 			{
 				if(!$bProperAdminUser)
@@ -285,7 +284,7 @@ class JSON_Handler_Employee extends JSON_Handler
 			}
 			else
 			{
-				$bUserIsSelf = TRUE;
+				throw new JSON_Handler_Employee_Exception('You can not edit your own details');
 			}
 	
 			$aValidationErrors 	= array();
@@ -294,8 +293,8 @@ class JSON_Handler_Employee extends JSON_Handler
 			if ($bCreateNew)
 			{
 				// Create new employee object
-				$oEmployee					= new Employee();
-				$oEmployee->DOB 			= GetCurrentDateForMySQL();
+				$oEmployee		= new Employee();
+				$oEmployee->DOB = GetCurrentDateForMySQL();
 
 				// Apply default values for non-nullable fields
 				$oEmployee->SessionId 		= "";
@@ -330,7 +329,7 @@ class JSON_Handler_Employee extends JSON_Handler
 				$oEmployee	= Employee::getForId($iEmployeeId);
 			}
 	
-			if (!$bUserIsSelf && $bAdminUser)
+			if ($bAdminUser)
 			{
 				$oDetails->mFirstName	= trim($oDetails->mFirstName);
 				
@@ -392,8 +391,6 @@ class JSON_Handler_Employee extends JSON_Handler
 			$bPasswordSet			= Validation::IsNotEmptyString($oDetails->mPassWord);
 			$bPasswordConfirmSet	= Validation::IsNotEmptyString($oDetails->mPassWordConfirm);
 			
-			//return array('1'=>$bPasswordSet, '2' => $bPasswordConfirmSet);
-			
 			if ($bPasswordSet || $bPasswordConfirmSet)
 			{
 				$oDetails->bPassWordChange	= true;
@@ -433,7 +430,7 @@ class JSON_Handler_Employee extends JSON_Handler
 			$oEmployee->Mobile		= $oDetails->mMobile;
 
 			// Only change the following through the admin console, not when editing self
-			if (!$bUserIsSelf && $bAdminUser)
+			if ($bAdminUser)
 			{
 				$oEmployee->FirstName		= $oDetails->mFirstName;
 				$oEmployee->LastName		= $oDetails->mLastName;
@@ -460,7 +457,7 @@ class JSON_Handler_Employee extends JSON_Handler
 			{
 				$currentUserTicketingPermission	= Ticketing_User::getPermissionForEmployeeId(AuthenticatedUser()->GetUserId());
 				
-				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || (!$bUserIsSelf && $currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN))
+				if (AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN) || ($currentUserTicketingPermission == TICKETING_USER_PERMISSION_ADMIN))
 				{
 					Ticketing_User::setPermissionForEmployeeId($oEmployee->Id, intval($oDetails->mticketing_permission));
 				}

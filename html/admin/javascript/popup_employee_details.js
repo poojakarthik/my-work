@@ -137,8 +137,7 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		this.oCloseButton.observe('click', this.hide.bind(this));
 		this.oSaveButton.observe('click', this._save.bind(this));
 		this.oEditButton.observe('click', this.setControlMode.bind(this, Control_Field.RENDER_MODE_EDIT));
-			
-		this.setFooterButtons([this.oEditButton, this.oCloseButton], true);
+		
 		this.setControlMode(this.bRenderMode);
 		
 		// Update the Popup
@@ -236,6 +235,16 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 	
 	setControlMode	: function(bControlMode)
 	{
+		// Can't change control/render mode if editing self, no editing allowed
+		if (this.bEditingSelf)
+		{
+			// Set to view mode
+			bControlMode	= Control_Field.RENDER_MODE_VIEW;
+			
+			// Hide manage permissions button
+			this.oManagePermissions.hide();
+		}
+		
 		switch (bControlMode)
 		{
 			case Control_Field.RENDER_MODE_EDIT:
@@ -248,9 +257,16 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 				
 			case Control_Field.RENDER_MODE_VIEW:
 				// Change footer buttons
-				this.setFooterButtons([this.oEditButton, this.oCloseButton], true);
+				if (this.bEditingSelf)
+				{
+					this.setFooterButtons([this.oCloseButton], true);
+				}
+				else
+				{
+					this.setFooterButtons([this.oEditButton, this.oCloseButton], true);
+				}
 				
-				if (!this.bNewEmployee)
+				if (!this.bNewEmployee && !this.bEditingSelf)
 				{
 					this.oManagePermissions.show();
 				}

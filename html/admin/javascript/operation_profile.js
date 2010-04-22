@@ -51,6 +51,17 @@ var Operation_Profile	= Class.create
 			}
 		}
 		
+		// Return with errors if there were any, otherwise continue
+		if (aValidationErrors.length)
+		{
+			this.showValidationErrors(aValidationErrors);
+			return;
+		}
+		
+		// Show loading
+		this.oLoading	= new Reflex_Popup.Loading('Saving...');
+		this.oLoading.display();
+		
 		var fnSave	= jQuery.json.jsonFunction(this._saveComplete.bind(this, fnCallback), this._saveComplete.bind(this), 'Operation_Profile', 'save');
 		fnSave(
 			this.iId, 
@@ -64,6 +75,10 @@ var Operation_Profile	= Class.create
 	
 	_saveComplete	: function(fnCallback, oResponse)
 	{
+		// Got response, hide loading
+		this.oLoading.hide();
+		delete this.oLoading;
+		
 		if (oResponse.Success)
 		{
 			// All good
@@ -119,6 +134,25 @@ var Operation_Profile	= Class.create
 				this.oPropertyControls[sProperty].setValue('');
 			}
 		}
+	},
+	
+	showValidationErrors	: function(aValidationErrors)
+	{
+		// Create a UL to list the errors and then show a reflex alert
+		var oAlertDom	=	$T.div({class: 'operation-profile-validation-errors'},
+								$T.div('There were errors in the profile information: '),
+								$T.ul(
+									// Added here...
+								)
+							);
+		var oUL	= oAlertDom.select('ul').first();
+		
+		for (var i = 0; i < aValidationErrors.length; i++)
+		{
+			oUL.appendChild($T.li(aValidationErrors[i]));
+		}
+		
+		Reflex_Popup.alert(oAlertDom, {iWidth: 30});
 	}
 });
 

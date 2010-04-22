@@ -349,23 +349,16 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 				}
 			}
 			
-			// Show loading
-			this.oLoading	= new Reflex_Popup.Loading('Saving...');
-			this.oLoading.display();
-			
 			// Make the AJAX request
 			this.oOperationProfile.save(aOperationProfileIdsToSave, aOperationIds, this._save.bind(this));
 		}
 		else
 		{
-			// Got response, close popup
-			this.oLoading.hide();
-			delete this.oLoading;
 			this.hide();
 			
 			if (this.fnOnSave)
 			{
-				this.fnOnSave();
+				this.fnOnSave(oResponse.iId);
 			}
 		}
 	},
@@ -384,18 +377,19 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 		this.oOperationProfilesTree.setSelected(aPrerequisites, true);
 		
 		// Build profile child operations array
-		var aChildOperations	= [];
-		var iProfileId			= null;
+		var aChildOperations		= [];
+		var aOperationProfileIds	= this.oOperationProfilesTree.getSelected();
+		var iProfileId				= null;
 		
-		for (var i = 0; i < aPrerequisites.length; i++)
+		for (var i = 0; i < aOperationProfileIds.length; i++)
 		{
-			iProfileId	= aPrerequisites[i];
+			iProfileId	= aOperationProfileIds[i];
 			
 			if (this.hOperationProfileChildren[iProfileId])
 			{
-				for (var i = 0; i < this.hOperationProfileChildren[iProfileId].length; i++)
+				for (var j = 0; j < this.hOperationProfileChildren[iProfileId].length; j++)
 				{
-					aChildOperations.push(this.hOperationProfileChildren[iProfileId][i]);
+					aChildOperations.push(this.hOperationProfileChildren[iProfileId][j]);
 				}
 			}
 		}

@@ -463,7 +463,7 @@ Employee.oProperties.DOB.oDefinition.mMandatory	= true;
 // Email
 Employee.oProperties.Email					= {};
 Employee.oProperties.Email.sType			= 'text';
-Employee.oProperties.Email.EDIT_MODE_SELF	= null;
+Employee.oProperties.Email.EDIT_MODE_SELF	= false;
 Employee.oProperties.Email.EDIT_MODE_NEW	= null;
 
 Employee.oProperties.Email.oDefinition				= {};
@@ -477,7 +477,7 @@ Employee.oProperties.Email.oDefinition.fnValidate	= Reflex_Validation.email.bind
 // Extension
 Employee.oProperties.Extension					= {};
 Employee.oProperties.Extension.sType			= 'text';
-Employee.oProperties.Extension.EDIT_MODE_SELF	= null;
+Employee.oProperties.Extension.EDIT_MODE_SELF	= false;
 Employee.oProperties.Extension.EDIT_MODE_NEW	= null;
 
 Employee.oProperties.Extension.oDefinition				= {};
@@ -490,7 +490,7 @@ Employee.oProperties.Extension.oDefinition.fnValidate	= Reflex_Validation.digits
 // Phone
 Employee.oProperties.Phone					= {};
 Employee.oProperties.Phone.sType			= 'text';
-Employee.oProperties.Phone.EDIT_MODE_SELF	= null;
+Employee.oProperties.Phone.EDIT_MODE_SELF	= false;
 Employee.oProperties.Phone.EDIT_MODE_NEW	= null;
 
 Employee.oProperties.Phone.oDefinition				= {};
@@ -503,7 +503,7 @@ Employee.oProperties.Phone.oDefinition.fnValidate	= Reflex_Validation.fnnFixedLi
 // Mobile
 Employee.oProperties.Mobile					= {};
 Employee.oProperties.Mobile.sType			= 'text';
-Employee.oProperties.Mobile.EDIT_MODE_SELF	= null;
+Employee.oProperties.Mobile.EDIT_MODE_SELF	= false;
 Employee.oProperties.Mobile.EDIT_MODE_NEW	= null;
 
 Employee.oProperties.Mobile.oDefinition				= {};
@@ -570,7 +570,7 @@ Employee.oProperties.Archived.oDefinition.mEditable	= true;
 // Ticketing Permission
 Employee.oProperties.ticketing_permission					= {};
 Employee.oProperties.ticketing_permission.sType				= 'select';
-Employee.oProperties.ticketing_permission.EDIT_MODE_SELF	= null;
+Employee.oProperties.ticketing_permission.EDIT_MODE_SELF	= false;
 Employee.oProperties.ticketing_permission.EDIT_MODE_NEW		= null;
 
 Employee.oProperties.ticketing_permission.oDefinition				= {};

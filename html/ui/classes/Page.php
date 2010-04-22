@@ -681,7 +681,7 @@ class Page
 	function RenderSearchField()
 	{
 		$strUserName 			= Flex::getDisplayName();
-		$strUserPreferencesLink	= Href()->EditEmployee(Flex::getUserId(), $strUserName);
+		$strUserPreferencesLink	= Href()->EditEmployee(Flex::getUserId(), $strUserName, false, true);
 		
 		$strLastConstraint	= (array_key_exists("QuickSearch_Constraint", $_COOKIE))? htmlspecialchars($_COOKIE['QuickSearch_Constraint'], ENT_QUOTES) : "";
 		$mixLastSearchType	= (array_key_exists("QuickSearch_SearchType", $_COOKIE))? $_COOKIE['QuickSearch_SearchType'] : "";

@@ -8,6 +8,7 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		this.iOperationTreeCount		= 0;
 		this.oOperationProfiles			= {};
 		this.hOperationProfileChildren	= [];
+		this.iNewOperationProfileId		= null;
 		
 		if (Number(iEmployeeId) > 0)
 		{
@@ -122,7 +123,9 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 											this._operationTreeReady.bind(this),
 											this._operationProfileChange.bind(this)
 										);		
-		return	$T.div(this.oOperationProfilesTree.getElement());
+		return	$T.div({class: 'employee-details-permissions-profiles-tree'},
+					this.oOperationProfilesTree.getElement()
+				);
 	},
 	
 	buildContentOperations	: function()
@@ -158,14 +161,21 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 			// Got child operations for profiles
 			this.hOperationProfileChildren	= oResponse.aOperations;
 			
-			// Set the tree values
-			this._selectDefaultTreeValues();
-			
-			if (this.oLoading)
+			if (this.iNewOperationProfileId)
 			{
-				// Hide loading popup
-				this.oLoading.hide();
-				delete this.oLoading;
+				this._selectNewOperationProfile();
+			}
+			else
+			{
+				// Set the tree values
+				this._selectDefaultTreeValues();
+				
+				if (this.oLoading)
+				{
+					// Hide loading popup
+					this.oLoading.hide();
+					delete this.oLoading;
+				}
 			}
 		}
 	},
@@ -242,18 +252,19 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		this.oOperationProfilesTree.deSelectAll(false);
 		this.oOperationsTree.deSelectAll(true);
 		
-		// Select operation profiles
+		// Set the employee's saved profiles & operations
 		this.oOperationProfilesTree.setSelected(this.oEmployee.aOperationProfileIds, true);
 		
 		// Build profile child operations array
 		var aChildOperations	= [];
+		var aOperationProileIds	= this.oOperationProfilesTree.getSelected();
 		var iProfileId			= null;
 		var oProfile			= null;
 		var iPrereqProfileId	= null;
 		
-		for (var i = 0; i < this.oEmployee.aOperationProfileIds.length; i++)
+		for (var i = 0; i < aOperationProileIds.length; i++)
 		{
-			iProfileId	= this.oEmployee.aOperationProfileIds[i];
+			iProfileId	= aOperationProileIds[i];
 			
 			// Add the profiles direct children
 			if (this.hOperationProfileChildren[iProfileId])
@@ -261,22 +272,6 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 				for (var j = 0; j < this.hOperationProfileChildren[iProfileId].length; j++)
 				{
 					aChildOperations.push(this.hOperationProfileChildren[iProfileId][j]);
-				}
-			}
-			
-			// Add the children of it's prerequisites 
-			oProfile	= this.oEmployee.hOperationProfiles[iProfileId];
-			
-			for (var j = 0; j < oProfile.aPrerequisites.length;	j++)
-			{
-				iPrereqProfileId	= oProfile.aPrerequisites[j];
-				
-				if (this.hOperationProfileChildren[iPrereqProfileId])
-				{
-					for (var k = 0; k < this.hOperationProfileChildren[iPrereqProfileId].length; k++)
-					{
-						aChildOperations.push(this.hOperationProfileChildren[iPrereqProfileId][k]);
-					}
 				}
 			}
 		}
@@ -288,6 +283,40 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		this.oOperationsTree.setSelected(this.oEmployee.aOperationIds, true);
 		
 		this._checkForNoPermissions(null, null, null, true);
+	},
+	
+	_selectNewOperationProfile	: function(oOperationProfile)
+	{
+		if (this.oLoading)
+		{
+			this.oLoading.hide();
+			delete this.oLoading;
+		}
+		
+		this.oOperationProfilesTree.deSelectAll(false);
+		this.oOperationsTree.deSelectAll(true);
+		this.oOperationProfilesTree.setSelected([this.iNewOperationProfileId], true);
+		
+		var aOperationProileIds	= this.oOperationProfilesTree.getSelected(); 
+		var aChildOperations	= [];
+		var iProfileId			= null;
+		
+		for (var i = 0; i < aOperationProileIds.length; i++)
+		{
+			iProfileId	= aOperationProileIds[i];
+			
+			if (this.hOperationProfileChildren[iProfileId])
+			{
+				for (var j = 0; j < this.hOperationProfileChildren[iProfileId].length; j++)
+				{
+					aChildOperations.push(this.hOperationProfileChildren[iProfileId][j]);
+				}
+			}
+		}
+		
+		this.oOperationsTree.setSelected(aChildOperations, true, true);
+		this._checkForNoPermissions(null, null, null, true);
+		this.iNewOperationProfileId	= null;
 	},
 	
 	display		: function($super)
@@ -388,13 +417,19 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		);
 	},
 	
-	_profileSaved	: function()
+	_profileSaved	: function(iOperationProfileId)
 	{
+		// Remove the profile tree
 		var oTreeContainer	= this._oPage.select('div.employee-details-permissions-profiles div.section-content').first();
-		var oTree			= oTreeContainer.select('div').first();
+		var oTree			= oTreeContainer.select('div.employee-details-permissions-profiles-tree').first();
 		oTree.remove();
+		
+		// Create a new profile tree, with the new profile
+		this.iNewOperationProfileId	= iOperationProfileId;
 		oTreeContainer.appendChild(this.buildContentOperationProfiles());
-		this.setControlMode(this.bRenderMode);
+		
+		// Make sure it's in the right render mode
+		this.oOperationProfilesTree.setEditable(this.bRenderMode);
 	},
 		
 	_checkForNoPermissions	: function(bOnClose, fnOnYes, fnOnNo, bNoPopup)
