@@ -331,7 +331,7 @@ class Employee extends ORM_Cached
 			}
 			
 			// Get Direct Operations
-			$selOperationIds	= new StatementSelect("employee_operation", "operation_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime employee_id = <Id>");
+			$selOperationIds	= new StatementSelect("employee_operation", "operation_id", "'{$strEffectiveDatetime}' BETWEEN start_datetime AND end_datetime AND employee_id = <Id>");
 			if ($selOperationIds->Execute($this->toArray()) === false)
 			{
 				throw new Exception($selOperationIds->Error());
@@ -408,6 +408,16 @@ class Employee extends ORM_Cached
 		$oSelect->Execute(array('UserName' => $sUserName));
 		$iId	= $oSelect->Fetch();
 		return $iId;
+	}
+	
+	public function getDataReports()
+	{
+		return DataReport::getForEmployeeId($this->Id);
+	}
+	
+	public function isGod()
+	{
+		return ($this->is_god == 1);
 	}
 	
 	//------------------------------------------------------------------------//

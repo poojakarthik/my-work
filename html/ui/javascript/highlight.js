@@ -154,6 +154,12 @@ function VixenHighlightClass()
 		for (strTable in arrTables)
 		{	
 			tblTarget 	= Vixen.table[strTable];
+			
+			if (!tblTarget)
+			{
+				continue;
+			}
+			
 			// bolSkip = FALSE;
 			// check for skip table
 			for (intTable=0; intTable < arrSkipTables.length; intTable++)

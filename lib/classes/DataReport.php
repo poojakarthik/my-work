@@ -193,6 +193,63 @@ class DataReport extends ORM_Cached
 		return $oResult;
 	}
 	
+	public function getEmployees()
+	{
+		return Data_Report_Employee::getForDataReportId($this->id);
+	}
+	
+	public function getOperationProfiles()
+	{
+		return Data_Report_Operation_Profile::getForDataReportId($this->id);
+	}
+	
+	public function UserHasPerm($iEmployeeId)
+	{
+		$oEmployee	= Employee::getForId($iEmployeeId);
+		
+		if ($oEmployee->isGod() ||
+			$this->employeeIsPermitted($iEmployeeId) || 
+			$this->containsPermittedProfile($oEmployee->getOperationProfiles()))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public function employeeIsPermitted($iEmployeeId)
+	{
+		$aEmployees	= $this->getEmployees();
+		return (array_key_exists($iEmployeeId, $aEmployees));
+	}
+	
+	public function containsPermittedProfile($aOperationProfiles)
+	{
+		$aSelfProfiles		= $this->getOperationProfiles();
+		$aMatchingProfiles	= array_intersect_key($aOperationProfiles, $aSelfProfiles);
+		return (count($aMatchingProfiles) > 0);
+	}
+	
+	public static function getForEmployeeId($iEmployeeId)
+	{
+		$oEmployee					= Employee::getForId($iEmployeeId);
+		$oEmployeeOperationProfiles	= $oEmployee->getOperationProfiles();
+		$aDataReports				= self::getAll();
+		$aPermitted					= array();
+		
+		foreach ($aDataReports as $iId => $oDataReport)
+		{
+			if ($oEmployee->isGod() ||
+				$oDataReport->employeeIsPermitted($iEmployeeId) || 
+				$oDataReport->containsPermittedProfile($oEmployeeOperationProfiles))
+			{
+				$aPermitted[$iId]	= $oDataReport;
+			}
+		}
+		
+		return $aPermitted;
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//

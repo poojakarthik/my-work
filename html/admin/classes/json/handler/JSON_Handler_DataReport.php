@@ -23,26 +23,24 @@ class JSON_Handler_DataReport extends JSON_Handler
 			}
 			
 			// Retrieve the datareports & convert response to std classes
-			$aDataReports 			= DataReport::getAll();
-			$aStdClassDataReports 	= array();
+			$aDataReports	= DataReport::getForEmployeeId(Flex::getUserId());
+			//$aDataReports	= DataReport::getAll(); // -- JUST for testing, REMOVE ME
 			
 			foreach ($aDataReports as $iId => $oDataReport)
 			{
-				if (AuthenticatedUser()->UserHasPerm($oDataReport->Priviledges))
+				$aDataReports[$iId]	= $oDataReport->toStdClass();
+				
+				// Not sure if this is still needed. rmctainsh
+				if ($oDataReport->Priviledges & PERMISSION_DEBUG)
 				{
-					$aStdClassDataReports[$iId]	= $oDataReport->toStdClass();
-					
-					if ($oDataReport->Priviledges & PERMISSION_DEBUG)
-					{
-						$aStdClassDataReports[$iId]->bHidden	= true;
-					}
+					$aDataReports[$iId]->bHidden	= true;
 				}
 			}
 			
 			// If no exceptions were thrown, then everything worked
 			return array(
 						"Success"	=> true,
-						"aRecords"	=> $aStdClassDataReports,
+						"aRecords"	=> $aDataReports,
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
@@ -78,10 +76,16 @@ class JSON_Handler_DataReport extends JSON_Handler
 			$oDataReport			= DataReport::getForId($iId);
 			$oStdClassDataReport	= $oDataReport->toStdClass();
 			
-			// Check permissions against the reports priviledges
+			// DEPRECATED: REMOVE ME: Check permissions against the reports priviledges (OLD PERMISSIONS)
 			if (!AuthenticatedUser()->UserHasPerm($oDataReport->Priviledges))
 			{
-				throw(new JSON_Handler_DataReport_Exception('User does not have permission to retrieve the report.'));
+				throw(new JSON_Handler_DataReport_Exception('You do not have permission to retrieve the report.'));
+			}
+			
+			// Check permission to access the report (NEW PERMISSION METHOD)
+			if (!$oDataReport->UserHasPerm(Flex::getUserId()))
+			{
+				throw(new JSON_Handler_DataReport_Exception('You do not have permission to retrieve the report.'));
 			}
 			
 			if ($oDataReport->RenderMode == REPORT_RENDER_EMAIL)
@@ -268,7 +272,7 @@ class JSON_Handler_DataReport extends JSON_Handler
 			// Get the report details
 			$oDataReport	= DataReport::getForId($aReportData->iId);
 			
-			// Check permissions against the reports priviledges
+			// DEPRECATED: REMOVE: Check permissions against the reports priviledges (OLD PERMISSION METHOD)
 			if (!AuthenticatedUser()->UserHasPerm($oDataReport->Priviledges))
 			{
 				throw(new JSON_Handler_DataReport_Exception('You do not have permission to execute the report'));
@@ -277,6 +281,12 @@ class JSON_Handler_DataReport extends JSON_Handler
 			// Check that the authenticated user has an email address
 			$iLoggedInUserId	= Flex::getUserId();
 			$oEmployee			= Employee::getForId(Flex::getUserId());	
+			
+			// Check permission to access the report (NEW PERMISSION METHOD)
+			if (!$oDataReport->UserHasPerm($iLoggedInUserId))
+			{
+				throw(new JSON_Handler_DataReport_Exception('You do not have permission to execute the report'));
+			}
 			
 			// Build an array of data to insert into 'DataReportSchedule' (for email), also used to generate the xls/csv file
 			$aInsertData 					= array();

@@ -1174,7 +1174,7 @@ class MenuItems {
 		$this->strLabel = "Add Contact";
 		$this->strContextMenuLabel = "";
 		//return self :: OLD_FRAMEWORK . "contact_add.php?Account=$iAccountId";
-		return "javascript: JsAutoLoader.loadScript('javascript/popup_contact_edit.js', function(){new Popup_Contact_Edit(null, {$iAccountId}, Popup_Contact_Edit._goToPage);});";
+		return "javascript: JsAutoLoader.loadScript('popup_contact_edit.js', function(){new Popup_Contact_Edit(null, {$iAccountId}, Popup_Contact_Edit._goToPage);}, true);";
 	}
 
 	//------------------------------------------------------------------------//
@@ -1198,7 +1198,7 @@ class MenuItems {
 		$this->strLabel = "Change Payment Method";
 		$this->strContextMenuLabel = "";
 		// return self :: OLD_FRAMEWORK . "account_payment.php?Id=$intAccountId";
-		return "javascript:JsAutoLoader.loadScript(['javascript/popup_account_payment_methods.js','reflex_date_format.js'], function(){new Popup_Account_Payment_Methods({$iAccountId})});";
+		return "javascript:JsAutoLoader.loadScript(['popup_account_payment_methods.js','reflex_date_format.js'], function(){new Popup_Account_Payment_Methods({$iAccountId})}, true);";
 	}
 	
 	//------------------------------------------------------------------------//

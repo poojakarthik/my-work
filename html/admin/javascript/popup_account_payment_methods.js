@@ -431,8 +431,9 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		
 		// Load js file
 		JsAutoLoader.loadScript(
-			['javascript/popup_account_select_payment_method.js','reflex_date_format.js'], 
-			fnShow.bind(this, iBillingType, iBillingTypeToSelect)
+			['popup_account_select_payment_method.js','reflex_date_format.js'], 
+			fnShow.bind(this, iBillingType, iBillingTypeToSelect),
+			true
 		);
 	},
 	

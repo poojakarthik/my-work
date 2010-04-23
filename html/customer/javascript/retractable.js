@@ -140,6 +140,11 @@ function VixenSlidingClass()
 		// Slide up any divs which are currently down
 		objTable = Vixen.table[strTableId];
 		
+		if (!objTable)
+		{
+			return;
+		}
+		
 		for (var i=0; i<=objTable.totalRows; i++)
 		{
 			var objRow = objTable.row[i];
@@ -163,7 +168,12 @@ function VixenSlidingClass()
 		strTargetId += "DIV-DETAIL";
 
 		objTable = Vixen.table[strTableId];
-
+		
+		if (!objTable)
+		{
+			return;
+		}
+		
 		if (objTable.collapseAll)
 		{
 			Vixen.Slide.CollapseAll(strTableId);
