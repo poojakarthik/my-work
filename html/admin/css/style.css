@@ -3647,6 +3647,10 @@ div.employee-details-permissions-operations-empty
 	background-color	: inherit;
 }
 
+/************************ END - Employee Details Permissions Popup - END ************************/
+
+/************************ START - Operation Tree - START ************************/
+
 div.operation-tree-loading
 {
 	margin-top	: 1em;
@@ -3667,7 +3671,12 @@ div.operation-tree-loading img
 	padding-right	: 1em;
 }
 
-/************************ END - Employee Details Permissions Popup - END ************************/
+span.operation-tree-profile-description
+{
+	padding-left	: 1em;
+}
+
+/************************ END - Operation Tree - END ************************/
 
 /************************ START - Employee Password Change Popup - START ************************/
 

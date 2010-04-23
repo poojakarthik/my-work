@@ -62,15 +62,23 @@ Reflex.Control.Tree	= Class.create(/* extends */Reflex.Control,
 		oWidths	= Reflex.Control.Tree.normalisePercentages(oWidths);
 		
 		var	oReflexStyle	= Reflex_Style.getInstance();
+		
 		for (sName in this.oColumns)
 		{
 			this.oColumns[sName].fWidth	= oWidths[sName];
 			
 			// Create a CSS Class for this Column
-			// FIXME: Namespacing conflict between trees
-			this.oColumns[sName].sClassName	= "-reflex-tree-column-"+sName;
-			oReflexStyle.addRule("li."+this.oColumns[sName].sClassName, "width: "+this.oColumns[sName].fWidth+"%;"+" min-width: "+this.oColumns[sName].fWidth+"%;"+" max-width: "+this.oColumns[sName].fWidth+"%");
+			this.oColumns[sName].sClassName	= ['-reflex-tree-column', sName, Reflex.Control.Tree.iColumnCSSClassCounter].join('-');
+			oReflexStyle.addRule(
+				"li." + this.oColumns[sName].sClassName, 
+				"width: " + this.oColumns[sName].fWidth + "%;" + 
+				" min-width: " + this.oColumns[sName].fWidth + "%;" + 
+				" max-width: " + this.oColumns[sName].fWidth + "%"
+			);
 		}
+		
+		// Increment so that if another tree is created on the same page the column width css doesn't conflict
+		Reflex.Control.Tree.iColumnCSSClassCounter++;
 		
 		this.paint();
 	},
@@ -123,6 +131,9 @@ Reflex.Control.Tree.sanitiseName	= function(sName)
 {
 	return sName.strip().toLowerCase().replace(/\W+/g, '-');
 };
+
+
+Reflex.Control.Tree.iColumnCSSClassCounter	= 0;
 
 Reflex.Control.Tree.normalisePercentages	= function(mPercentages)
 {

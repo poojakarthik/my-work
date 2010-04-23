@@ -288,3 +288,4 @@ Reflex.Control.Tree.Node	= Class.create
 Reflex.Control.Tree.Node.SLIDE_ANIMATION_DURATION	= 0.1;
 //Reflex.Control.Tree.Node.SLIDE_ANIMATION_DURATION	= 1.0;
 Reflex.Control.Tree.Node.NODE_INDENT_STEPPING_EM	= 0.75;
+

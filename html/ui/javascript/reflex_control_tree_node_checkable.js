@@ -7,7 +7,7 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 		this.fnOnCheck			= fnOnCheck;
 		this.mValue				= mValue;
 		this.oCheckboxElement	= $T.input({type: 'checkbox'});
-		this.oCheckboxElement.observe('click', this.checkedStateChanged.bind(this))
+		this.oCheckboxElement.observe('click', this._checkedStateChanged.bind(this));
 		this.setEditable(bEditable);
 		this.setEnabled(true);
 	},
@@ -21,7 +21,7 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 			
 			if (!bBypassCallback)
 			{
-				this.checkedStateChanged();
+				this._checkedStateChanged();
 			}
 		}
 	},
@@ -39,17 +39,30 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 			)
 		);
 		
-		// Add icon and text
+		// Add icon
 		oColumnElement.appendChild(this.getLabelIconContainer());
-		oColumnElement.appendChild(this.getLabelTextElement());
+		
+		// Add text, along with click event for toggling the checkbox
+		var oLabelTextElement	= this.getLabelTextElement();
+		oLabelTextElement.observe('click', this._toggleCheckedState.bind(this));
+		oColumnElement.appendChild(oLabelTextElement);
 	},
 	
-	checkedStateChanged	: function()
+	_checkedStateChanged	: function()
 	{
 		if (this.fnOnCheck)
 		{
 			// Call 'on check' callback
 			this.fnOnCheck(this);
+		}
+	},
+	
+	_toggleCheckedState	: function()
+	{
+		// Only allow if editable
+		if (this.bEditable)
+		{
+			this.setCheckedState(!this.isChecked());
 		}
 	},
 	

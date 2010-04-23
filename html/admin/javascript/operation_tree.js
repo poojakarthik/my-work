@@ -9,11 +9,28 @@ var Operation_Tree	= Class.create
 		
 		// Create Reflex.Control.Tree
 		this.oControl	= new Reflex.Control.Tree();
-		this.oControl.setColumns(
-			{
-				'label'	: {sTitle: 'Operation'}
-			}
-		);
+		
+		// Set the columns, single operation tree has description column added
+		switch (sRenderHeirarchy)
+		{
+			case Operation_Tree.RENDER_OPERATION_PROFILE:
+				this.oControl.setColumns(
+					{
+						'label'			: {sTitle: 'Operation'}
+					}
+				);
+				break;
+			
+			case Operation_Tree.RENDER_OPERATION:
+				this.oControl.setColumns(
+					{
+						'label'			: {sTitle: 'Operation'},
+						'description'	: {sTitle: 'Description'}
+					}
+				);
+				break;
+		}
+		
 		this.oControl.oHeader.hide();
 		
 		// Create loading element
@@ -134,12 +151,13 @@ var Operation_Tree	= Class.create
 	
 	_convertOperationToTreeNode	: function(iOperationId, oParentNodeOverride)
 	{
-		var oNode	= 	new Reflex.Control.Tree.Node.Checkable(
-							{label: this.oOperations[iOperationId].name},
-							iOperationId,
-							this._bEditable,
-							this.onSelectHandler.bind(this)
-						);
+		var oNode		= 	new Reflex.Control.Tree.Node.Checkable(
+								null,
+								iOperationId,
+								this._bEditable,
+								this.onSelectHandler.bind(this)
+							);
+		var oNodeData	= {label: this.oOperations[iOperationId].name};
 		
 		this._oOperationDetails[iOperationId].aNodeInstances.push(oNode);
 		
@@ -188,9 +206,24 @@ var Operation_Tree	= Class.create
 					}
 				}
 				
+				// Add description to the node data
+				oNodeData.description	= 	$T.span(
+												$T.span({class: 'operation-tree-profile-description'},
+													this.oOperations[iOperationId].description
+												)
+											);
+				
+				// Hide it to start with
+				oNodeData.description.select('span.operation-tree-profile-description').first().hide();
+				
+				// Add mouseover event so that it can be shown when the node is hovered
+				oNode.oElement.observe('mouseover', this._operationHover.bind(this, oNode, true));
+				oNode.oElement.observe('mouseout', this._operationHover.bind(this, oNode, false));
 				oNode.setIcon(Operation_Tree.TREE_NODE_OPERATION_IMAGE);
 				break;
 		}
+		
+		oNode.setData(oNodeData);
 		
 		return oNode;
 	},
@@ -345,6 +378,22 @@ var Operation_Tree	= Class.create
 		{
 			this.setOperationSelected(iOperationId, true);
 		}
+	},
+	
+	_operationHover	: function(oNode, bShow, event)
+	{
+		var oSpan	= oNode.oElement.select('span.operation-tree-profile-description').first(); 
+		
+		if (bShow)
+		{
+			oSpan.show();
+		}
+		else
+		{
+			oSpan.hide();
+		}
+		
+		event.stop();
 	}
 });
 
