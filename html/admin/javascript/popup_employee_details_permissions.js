@@ -282,6 +282,12 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 		// Select specific operations
 		this.oOperationsTree.setSelected(this.oEmployee.aOperationIds, true);
 		
+		if (this.bRenderMode == Control_Field.RENDER_MODE_VIEW)
+		{
+			// Expand the operations tree
+			this.oOperationsTree.oControl.expandAll();
+		}
+		
 		this._checkForNoPermissions(null, null, null, true);
 	},
 	

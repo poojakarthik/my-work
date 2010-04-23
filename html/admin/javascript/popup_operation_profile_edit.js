@@ -400,6 +400,12 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 		// Select specific operations children
 		this.oOperationsTree.setSelected(this.aOperationIds, true);
 		
+		if (this.bRenderMode == Control_Field.RENDER_MODE_VIEW)
+		{
+			// Expand the operations tree
+			this.oOperationsTree.oControl.expandAll();
+		}
+		
 		this._checkForNoPermissions(null, null, null, true);
 	},
 	

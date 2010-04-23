@@ -183,7 +183,7 @@ Reflex.Control.Tree.Node	= Class.create
 		// Expand/Contract Children
 		for (var i = 0, j = this.aChildren.length; i < j; i++)
 		{
-			this.aChildren[i].setExpandAll(bExpanded);
+			this.aChildren[i].setExpandedAll(bExpanded);
 		}
 		
 		// Expand/Contract Self

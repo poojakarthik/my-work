@@ -130,5 +130,21 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 	isEnabled	: function()
 	{
 		return this.bEnabled;
-	}
+	},
+	
+	// Override
+	setExpandedAll	: function(bExpanded)
+	{
+		if (this.bEditable || (!this.bEditable && this.isChecked()))
+		{
+			// Expand/Contract Children
+			for (var i = 0, j = this.aChildren.length; i < j; i++)
+			{
+				this.aChildren[i].setExpandedAll(bExpanded);
+			}
+			
+			// Expand/Contract Self
+			this.setExpanded(bExpanded);
+		}
+	},
 });

@@ -3770,4 +3770,9 @@ div.operation-profile-validation-errors
 	min-height:1.55em;
 }
 
+td.operation-profile-list-action > img
+{
+	cursor	: pointer;
+}
+
 /************************ END - Operation Profile List Page - END ************************/
