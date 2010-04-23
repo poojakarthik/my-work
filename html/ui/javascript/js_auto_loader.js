@@ -102,17 +102,41 @@ var JsAutoLoader = {
 	
 	registerPreLoadedScripts	: function()
 	{
-		var scripts = document.getElementsByTagName('head')[0].getElementsByTagName('script');
-		for (var i=0, j=scripts.length; i < j; i++)
+		var scripts	= document.getElementsByTagName('head')[0].getElementsByTagName('script');
+		for (var i = 0, j = scripts.length; i < j; i++)
 		{
 			var sSrc	= scripts[i].getAttribute('src');
 			sSrc		= sSrc.replace(/^(.*)(javascript(\/)(.*))$/, '$4');
-			JsAutoLoader.registerLoadedScript(sSrc);
+			
+			// Check for javascript.php source
+			if (sSrc.match(/javascript\.php/))
+			{
+				var aFiles	= sSrc.match(/File\[\]=([a-z_]*).js/i);
+				
+				if (aFiles)
+				{
+					// Load multiple File[]=file.js sources
+					for (var k = 0; k < aFiles.length; k++)
+					{
+						JsAutoLoader.registerLoadedScript(aFiles[k].split('File[]=')[0]);
+					}
+				}
+			}
+			else
+			{
+				// Loading single source
+				JsAutoLoader.registerLoadedScript(sSrc);
+			}
 		}
 	}
 }
 
-window.addEventListener('load', function()
-{
-	JsAutoLoader.registerPreLoadedScripts();
-}, false);
+// On load, register all of the scripts added by other means
+window.addEventListener(
+	'load', 
+	function()
+	{
+		JsAutoLoader.registerPreLoadedScripts();
+	}, 
+	false
+);
