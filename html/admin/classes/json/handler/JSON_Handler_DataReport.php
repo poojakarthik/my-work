@@ -41,9 +41,10 @@ class JSON_Handler_DataReport extends JSON_Handler
 			
 			// If no exceptions were thrown, then everything worked
 			return array(
-						"Success"	=> true,
-						"aRecords"	=> $aDataReports,
-						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						"Success"			=> true,
+						"aRecords"			=> $aDataReports,
+						"bEditPermission"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN),
+						"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 					);
 		}
 		catch (JSON_Handler_DataReport_Exception $oException)
@@ -257,6 +258,100 @@ class JSON_Handler_DataReport extends JSON_Handler
 						"Success"	=> false,
 						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
+	}
+	
+	public function getPermissionsForId($iDataReportId)
+	{
+		try
+		{
+			// Get the data report
+			$oDataReport	= DataReport::getForId($iDataReportId);
+			
+			// Get employee ids
+			$aEmployees		= $oDataReport->getEmployees();
+			$aEmployeeIds	= array();
+			foreach ($aEmployees as $iId => $oEmployee)
+			{
+				$aEmployeeIds[]	= $iId;
+			}
+			
+			// Get profile ids
+			$aProfiles		= $oDataReport->getOperationProfiles();
+			$aProfileIds	= array();
+			foreach ($aProfiles as $iId => $oProfile)
+			{
+				$aProfileIds[]	= $iId;
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return 	array(
+						"Success"				=> true,
+						"aEmployeeIds"			=> $aEmployeeIds,
+						"aOperationProfileIds"	=> $aProfileIds
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
+					);
+		}
+	}
+	
+	public function setPermissionsForId($iDataReportId, $aEmployeeIds, $aProfileIds)
+	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? 'There was an error accessing the database' : ''
+					);
+		}
+		
+		try
+		{
+			// Check permissions (TO BE DEPRECATED - rmctainsh)
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
+			{
+				throw(new JSON_Handler_DataReport_Exception('You do not have permission to edit the report permissions'));
+			}
+			
+			// Get the data report
+			$oDataReport	= DataReport::getForId($iDataReportId);
+			
+			// Update the permissions
+			$oDataReport->setEmployees($aEmployeeIds);
+			$oDataReport->setOperationProfiles($aProfileIds);
+			
+			// If no exceptions were thrown, then everything worked
+			$oDataAccess->TransactionCommit();
+			
+			return array("Success" => true);
+		}
+		catch (JSON_Handler_DataReport_Exception $oException)
+		{
+			// Rollback transaction
+			$oDataAccess->TransactionRollback();
+			
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			// Rollback transaction
+			$oDataAccess->TransactionRollback();
+			
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
 					);
 		}
 	}

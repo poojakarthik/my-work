@@ -3775,3 +3775,98 @@ td.operation-profile-list-action > img
 }
 
 /************************ END - Operation Profile List Page - END ************************/
+
+/************************ START - Data Report Permission Popup - START ************************/
+
+div.data-report-permissions
+{
+	padding	: 1em;
+}
+
+div.data-report-permissions-employees,
+div.operation-profile-edit-profiles
+{
+	padding-bottom	: 1em;
+}
+
+li.data-report-permissions-employee-to,
+li.data-report-permissions-employee-from
+{
+	width		: 50%;
+	text-align	: center;
+}
+
+li.data-report-permissions-employee-to > select,
+li.data-report-permissions-employee-from > select
+{
+	width	: 16em;
+}
+
+span.data-report-permissions-employee-name,
+img.data-report-permissions-employee-add,
+img.data-report-permissions-employee-remove
+{
+	vertical-align	: middle;
+}
+
+li.data-report-permissions-employee-from span.data-report-permissions-employee-name
+{
+	float	: left;
+}
+
+li.data-report-permissions-employee-from img.data-report-permissions-employee-remove
+{
+	display	: none;	
+}
+
+li.data-report-permissions-employee-from img.data-report-permissions-employee-add
+{
+	display	: inline;
+	float	: right;
+}
+
+li.data-report-permissions-employee-to img.data-report-permissions-employee-remove
+{
+	padding-right	: 1em;
+	display			: inline;
+	float			: left;
+}
+
+li.data-report-permissions-employee-to img.data-report-permissions-employee-add
+{
+	display	: none;
+}
+
+div.data-report-permissions-employee-clear
+{
+	float	: none;
+	clear	: both;
+}
+
+option.data-report-permissions-employee img.data-report-permissions-employee-add,
+option.data-report-permissions-employee img.data-report-permissions-employee-remove
+{
+	opacity	: 0.3;	
+}
+
+option.data-report-permissions-employee:hover img.data-report-permissions-employee-add,
+option.data-report-permissions-employee:hover img.data-report-permissions-employee-remove
+{
+	opacity	: 1;
+}
+
+div.data-report-permissions-profiles-tree > div.reflex-tree
+{
+	height		: 14em;
+	overflow-y	: scroll;
+}
+
+div.data-report-permissions-employee-list-title
+{
+	font-weight		: bold;
+	width			: 100;
+	text-align		: center;
+	padding-bottom	: 0.5em;
+}
+
+/************************ END - Data Report Permission Popup - END ************************/

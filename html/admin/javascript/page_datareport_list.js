@@ -44,7 +44,8 @@ var Page_DataReport_List = Class.create(
 												$T.tr(
 													$T.th('Report Name'),
 													$T.th('Type'),
-													$T.th('Report Summary')
+													$T.th('Report Summary'),
+													$T.th()
 												)
 											),
 											$T.tbody({class: 'alternating'}
@@ -62,7 +63,7 @@ var Page_DataReport_List = Class.create(
 			
 			for (var iId in aData)
 			{
-				oTBody.appendChild(this._createRow(aData[iId]));
+				oTBody.appendChild(this._createRow(aData[iId], oResponse.bEditPermission));
 			}
 			
 			// Attach content
@@ -75,7 +76,7 @@ var Page_DataReport_List = Class.create(
 		}
 	},
 	
-	_createRow	: function(oData)
+	_createRow	: function(oData, bEditPermission)
 	{
 		if (oData.Id != null)
 		{
@@ -110,6 +111,19 @@ var Page_DataReport_List = Class.create(
 			var oA	= oTR.select('a').first();
 			oA.observe('click', this._runReport.bind(this, oData.Id));
 			
+			if (bEditPermission)
+			{
+				// Add permission edit image
+				var oEditPermissionImage	= $T.img({class: 'pointer', src: Page_DataReport_List.EDIT_PERMISSION_IMAGE_SOURCE, alt: 'Edit Permission', title: 'Edit Permission'});
+				oEditPermissionImage.observe('click', this._editPermissions.bind(this, oData.Id));
+				oTR.appendChild($T.td(oEditPermissionImage));
+			}
+			else
+			{
+				// Blank cell
+				oTR.appendChild($T.td());
+			}
+			
 			return oTR;
 		}
 	},
@@ -117,12 +131,18 @@ var Page_DataReport_List = Class.create(
 	_runReport	: function(iId)
 	{
 		new Popup_DataReport(iId);
+	},
+	
+	_editPermissions	: function(iId)
+	{
+		new Popup_Data_Report_Permission(iId);
 	}
 });
 
 // Image constants
 Page_DataReport_List.INSTANT_REPORT_IMAGE_SOURCE	= '../admin/img/template/report_instant.png';
 Page_DataReport_List.EMAIL_REPORT_IMAGE_SOURCE		= '../admin/img/template/report_email.png';
+Page_DataReport_List.EDIT_PERMISSION_IMAGE_SOURCE	= '../admin/img/template/user_key.png';
 
 Page_DataReport_List.ajaxError	= function(oResponse)
 {

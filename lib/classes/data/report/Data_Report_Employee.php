@@ -73,6 +73,22 @@ class Data_Report_Employee extends ORM_Cached
 		
 		return $aResult;
 	}
+	
+	public static function removeForDataReportId($iDataReportId)
+	{
+		$sTable		= self::$_strStaticTableName;
+		$oQuery		= new Query();
+		$sQuery 	= "	DELETE FROM	{$sTable}" .
+					"	WHERE		data_report_id = {$iDataReportId};";
+		$oResult	= $oQuery->Execute($sQuery);
+		
+		if ($oResult === false)
+		{
+			throw new Exception("Error deleting from $sTable: {$sQuery}");
+		}
+		
+		return $oResult;
+	}
 
 	/**
 	 * _preparedStatement()

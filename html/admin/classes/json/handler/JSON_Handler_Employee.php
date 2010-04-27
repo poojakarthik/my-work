@@ -21,19 +21,19 @@ class JSON_Handler_Employee extends JSON_Handler
 			$aEmployee['ticketing_permission']	= Ticketing_User::getPermissionForEmployeeId($iEmployeeId);
 			
 			// If no exceptions were thrown, then everything worked
-			return array(
-							"Success"			=> true,
-							"objEmployee"		=> $aEmployee,
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
-						);
+			return	array(
+						"Success"		=> true,
+						"objEmployee"	=> $aEmployee,
+						"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
 		}
 		catch (Exception $e)
 		{
-			return array(
-							"Success"	=> false,
-							"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error getting the employee.'),
-							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
-						);
+			return	array(
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error getting the employee.'),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
 		}
 	}
 	
@@ -44,11 +44,11 @@ class JSON_Handler_Employee extends JSON_Handler
 			if ($bolCountOnly)
 			{
 				// Count Only
-				return array(
-								"Success"			=> true,
-								"intRecordCount"	=> self::_getRecordCount(),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
-							);
+				return	array(
+							"Success"			=> true,
+							"intRecordCount"	=> self::_getRecordCount(),
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
 			}
 			else
 			{
@@ -75,12 +75,12 @@ class JSON_Handler_Employee extends JSON_Handler
 				}
 				
 				// If no exceptions were thrown, then everything worked
-				return array(
-								"Success"			=> true,
-								"arrRecords"		=> $arrEmployees,
-								"intRecordCount"	=> ($intLimit === null) ? count($arrEmployees) : self::_getRecordCount(),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
-							);
+				return 	array(
+							"Success"			=> true,
+							"arrRecords"		=> $arrEmployees,
+							"intRecordCount"	=> ($intLimit === null) ? count($arrEmployees) : self::_getRecordCount(),
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
 			}
 		}
 		catch (Exception $e)
@@ -88,11 +88,11 @@ class JSON_Handler_Employee extends JSON_Handler
 			// Send an Email to Devs
 			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
 			
-			return array(
-							"Success"	=> false,
-							"Message"	=> 'ERROR: '.$e->getMessage(),
-							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
-						);
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> 'ERROR: '.$e->getMessage(),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+					);
 		}
 	}
 	
@@ -110,6 +110,37 @@ class JSON_Handler_Employee extends JSON_Handler
 		if ($arrCount = $resCount->fetch_assoc())
 		{
 			return $arrCount['employee_count'];
+		}
+	}
+	
+	public function getActive()
+	{
+		try
+		{
+			$aEmployees	= Employee::getAll();
+			$aStdClass	= array();
+			
+			foreach ($aEmployees as $iId => $oEmployee)
+			{
+				// Only add to array if not Archived
+				if ($oEmployee->Archived != 1)
+				{
+					$aStdClass[$iId]	= $oEmployee->toStdClass();
+				}
+			}
+			
+			// If no exceptions were thrown, then everything worked
+			return 	array(
+						"Success"		=> true,
+						"aEmployees"	=> $aStdClass
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error retrieving the data'
+					);
 		}
 	}
 	
@@ -150,12 +181,12 @@ class JSON_Handler_Employee extends JSON_Handler
 			}
 			
 			// If no exceptions were thrown, then everything worked
-			return array(
-							"Success"				=> true,
-							"aOperationIds"			=> array_keys($aEmployeeOperations),
-							"aOperationProfiles"	=> $aStdClassOperationProfiles,
-							"strDebug"				=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
-						);
+			return 	array(
+						"Success"				=> true,
+						"aOperationIds"			=> array_keys($aEmployeeOperations),
+						"aOperationProfiles"	=> $aStdClassOperationProfiles,
+						"strDebug"				=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
 		}
 		catch (Exception $e)
 		{

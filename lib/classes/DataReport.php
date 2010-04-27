@@ -203,6 +203,36 @@ class DataReport extends ORM_Cached
 		return Data_Report_Operation_Profile::getForDataReportId($this->id);
 	}
 	
+	public function setEmployees($aEmployeeIds)
+	{
+		// Remove existing
+		Data_Report_Employee::removeForDataReportId($this->id);
+		
+		// Add new
+		foreach ($aEmployeeIds as $iEmployeeId)
+		{
+			$oDataReportEmployee					= new Data_Report_Employee();
+			$oDataReportEmployee->data_report_id	= $this->id;
+			$oDataReportEmployee->employee_id		= $iEmployeeId;
+			$oDataReportEmployee->save();
+		}
+	}
+	
+	public function setOperationProfiles($aProfileIds)
+	{
+		// Remove existing
+		Data_Report_Operation_Profile::removeForDataReportId($this->id);
+		
+		// Add new
+		foreach ($aProfileIds as $iProfileId)
+		{
+			$oDataReportOperationProfile						= new Data_Report_Operation_Profile();
+			$oDataReportOperationProfile->data_report_id		= $this->id;
+			$oDataReportOperationProfile->operation_profile_id	= $iProfileId;
+			$oDataReportOperationProfile->save();
+		}
+	}
+	
 	public function userHasPermission($mEmployee)
 	{
 		if ($mEmployee instanceof Employee)
