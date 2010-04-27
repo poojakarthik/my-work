@@ -188,7 +188,7 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 		
 		// Create tree, given callback for when it has loaded all of the operation profiles
 		this.oParentOperationProfilesTree	= 	new Operation_Tree(
-													Operation_Tree.RENDER_OPERATION_PROFILE, 
+													Operation_Tree.RENDER_OPERATION_PROFILE_PARENTS, 
 													null,
 													fnData,
 													this._operationTreeReady.bind(this)

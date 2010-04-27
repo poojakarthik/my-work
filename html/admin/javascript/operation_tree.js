@@ -14,6 +14,7 @@ var Operation_Tree	= Class.create
 		switch (sRenderHeirarchy)
 		{
 			case Operation_Tree.RENDER_OPERATION_PROFILE:
+			case Operation_Tree.RENDER_OPERATION_PROFILE_PARENTS:
 				this.oControl.setColumns(
 					{
 						'label'			: {sTitle: 'Operation'}
@@ -96,6 +97,7 @@ var Operation_Tree	= Class.create
 		{
 			// Valid
 			case Operation_Tree.RENDER_OPERATION_PROFILE:
+			case Operation_Tree.RENDER_OPERATION_PROFILE_PARENTS:
 			case Operation_Tree.RENDER_OPERATION:
 				this._sRenderHeirarchy	= sRenderHeirarchy;
 				break;
@@ -125,6 +127,7 @@ var Operation_Tree	= Class.create
 			// Render top-level Nodes
 			switch (this._sRenderHeirarchy)
 			{
+				case Operation_Tree.RENDER_OPERATION_PROFILE_PARENTS:
 				case Operation_Tree.RENDER_OPERATION_PROFILE:
 					// Only Operations with no dependants
 					this.oControl.getRootNode().addChild(this._convertOperationToTreeNode(iOperationId));
@@ -163,6 +166,10 @@ var Operation_Tree	= Class.create
 		
 		switch (this._sRenderHeirarchy)
 		{
+			case Operation_Tree.RENDER_OPERATION_PROFILE_PARENTS:
+				// Change the node type to a standard node
+				oNode	= 	new Reflex.Control.Tree.Node();
+				
 			case Operation_Tree.RENDER_OPERATION_PROFILE:
 				// Render all prerequisites, inline, not heirarchical
 				var oParentNode	= oNode;
@@ -206,15 +213,19 @@ var Operation_Tree	= Class.create
 					}
 				}
 				
+				// If the operation has is_assignable = 0, disallow editing for the node
+				if (this.oOperations[iOperationId].is_assignable == 0)
+				{
+					oNode.setEditableFixed(false);
+				}
+				
 				// Add description to the node data
-				oNodeData.description	= 	$T.span(
-												$T.span({class: 'operation-tree-profile-description'},
-													this.oOperations[iOperationId].description
-												)
+				oNodeData.description	= 	$T.span({class: 'operation-tree-profile-description'},
+												this.oOperations[iOperationId].description
 											);
 				
 				// Hide it to start with
-				oNodeData.description.select('span.operation-tree-profile-description').first().hide();
+				oNodeData.description.style.visibility	= 'hidden';
 				
 				// Add mouseover event so that it can be shown when the node is hovered
 				oNode.oElement.observe('mouseover', this._operationHover.bind(this, oNode, true));
@@ -386,19 +397,20 @@ var Operation_Tree	= Class.create
 		
 		if (bShow)
 		{
-			oSpan.show();
+			oSpan.style.visibility	= 'visible';
 		}
 		else
 		{
-			oSpan.hide();
+			oSpan.style.visibility	= 'hidden';
 		}
 		
 		event.stop();
 	}
 });
 
-Operation_Tree.RENDER_OPERATION_PROFILE		= 'operation_profile';
-Operation_Tree.RENDER_OPERATION				= 'operation';
+Operation_Tree.RENDER_OPERATION_PROFILE			= 'operation_profile';
+Operation_Tree.RENDER_OPERATION_PROFILE_PARENTS	= 'operation_profile_parents';
+Operation_Tree.RENDER_OPERATION					= 'operation';
 
 Operation_Tree.TREE_NODE_PROFILE_IMAGE		= '../admin/img/template/contacts.png';
 Operation_Tree.TREE_NODE_OPERATION_IMAGE	= '../admin/img/template/operation.png';

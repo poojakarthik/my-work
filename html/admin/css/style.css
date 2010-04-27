@@ -23,7 +23,8 @@ div.clearing
 	clear	: both;
 }
 
-a
+a,
+.pointer
 {
 	cursor : pointer;
 }
@@ -2359,9 +2360,10 @@ ul.reflex-tree-node-columns > li.reflex-tree-node-column
 	white-space		: nowrap;
 }
 
-ul.reflex-tree-node-columns > li.reflex-tree-node-column:nth-child(n+2) > span
+ul.reflex-tree-node-columns > li.reflex-tree-node-column:nth-child(n+2)
 {
-	border-left	: 1px dotted #3f3f3f;
+	border-left			: 1px dotted #3f3f3f;
+	-moz-box-sizing		: border-box;
 }
 
 div.reflex-tree ul.reflex-tree-header
@@ -3669,6 +3671,8 @@ div.operation-tree-loading img
 span.operation-tree-profile-description
 {
 	padding-left	: 1em;
+	font-style		: italic;
+	opacity			: 0.75;
 }
 
 /************************ END - Operation Tree - END ************************/

@@ -6,6 +6,7 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 		$super(oData);
 		this.fnOnCheck			= fnOnCheck;
 		this.mValue				= mValue;
+		this.bEditableFixed		= false;
 		this.oCheckboxElement	= $T.input({type: 'checkbox'});
 		this.oCheckboxElement.observe('click', this._checkedStateChanged.bind(this));
 		this.setEditable(bEditable);
@@ -44,6 +45,7 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 		
 		// Add text, along with click event for toggling the checkbox
 		var oLabelTextElement	= this.getLabelTextElement();
+		oLabelTextElement.addClassName('pointer');
 		oLabelTextElement.observe('click', this._toggleCheckedState.bind(this));
 		oColumnElement.appendChild(oLabelTextElement);
 	},
@@ -78,6 +80,12 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 	
 	setEditable	: function(bEditable)
 	{
+		// Check for fixed editable value
+		if (this.bEditableFixed)
+		{
+			bEditable	= this.bEditable;
+		}
+		
 		// Update this nodes content
 		if (bEditable)
 		{
@@ -147,4 +155,10 @@ Reflex.Control.Tree.Node.Checkable	= Class.create(/* extends */Reflex.Control.Tr
 			this.setExpanded(bExpanded);
 		}
 	},
+	
+	setEditableFixed	: function(bEditable)
+	{
+		this.setEditable(bEditable);
+		this.bEditableFixed	= true;
+	}
 });
