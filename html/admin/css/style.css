@@ -3796,20 +3796,22 @@ li.data-report-permissions-employee-from
 	text-align	: center;
 }
 
-li.data-report-permissions-employee-to > select,
-li.data-report-permissions-employee-from > select
+li.data-report-permissions-employee-to > div > select,
+li.data-report-permissions-employee-from > div > select
 {
-	width	: 16em;
+	width	: 22em;
 }
 
 span.data-report-permissions-employee-name,
 img.data-report-permissions-employee-add,
-img.data-report-permissions-employee-remove
+img.data-report-permissions-employee-remove,
+span.data-report-permissions-employee-username
 {
 	vertical-align	: middle;
 }
 
-li.data-report-permissions-employee-from span.data-report-permissions-employee-name
+li.data-report-permissions-employee-from span.data-report-permissions-employee-name,
+li.data-report-permissions-employee-from span.data-report-permissions-employee-username
 {
 	float	: left;
 }
@@ -3857,8 +3859,9 @@ option.data-report-permissions-employee:hover img.data-report-permissions-employ
 
 div.data-report-permissions-profiles-tree > div.reflex-tree
 {
-	height		: 14em;
-	overflow-y	: scroll;
+	height				: 12em;
+	overflow-y			: scroll;
+	background-color	: #FFFFFF;
 }
 
 div.data-report-permissions-employee-list-title
@@ -3867,6 +3870,31 @@ div.data-report-permissions-employee-list-title
 	width			: 100;
 	text-align		: center;
 	padding-bottom	: 0.5em;
+}
+
+option.data-report-permissions-employee:hover
+{
+	background-color	: #ffffcc;
+}
+
+div.data-report-permissions-report-name
+{
+	font-weight		: bold;
+	font-size		: 1.25em;
+	text-align		: center;
+	padding-bottom	: 0.5em;
+}	
+
+span.data-report-permissions-employee-username
+{
+	font-style		: italic;
+	padding-left	: 0.25em;
+	color			: #888888;
+}
+
+div.data-report-permissions-employee-list-container
+{
+	overflow: hidden;
 }
 
 /************************ END - Data Report Permission Popup - END ************************/

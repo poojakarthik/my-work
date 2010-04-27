@@ -8,7 +8,7 @@ var Reflex_Sorter	=	Class.create(
 	
 	sort	: function(aDataSet)
 	{
-		this.quick_sort(aDataSet);
+		this.quickSort(aDataSet, 0, aDataSet.length);
 	},
 	
 	compare	: function(mA, mB)
@@ -17,7 +17,7 @@ var Reflex_Sorter	=	Class.create(
 		var oDefinition	= this.aFieldDefinitions[i];
 		var bResult		= null;
 		
-		while(bResult === null && oDefinition)
+		while (bResult === null && oDefinition)
 		{
 			var fnCompare	= (oDefinition.fnCompare ? oDefinition.fnCompare : Reflex_Sorter.greaterThan);
 			var bResult		= fnCompare(mA[oDefinition.sField], mB[oDefinition.sField]);
@@ -35,48 +35,58 @@ var Reflex_Sorter	=	Class.create(
 		return bResult;
 	},
 	
-	partition	: function(array, begin, end, pivot)
+	// Quick sort algorithm found here: http://en.literateprograms.org/Quicksort_%28JavaScript%29
+	quickSortPartition	: function(aArray, iBegin, iEnd, iPivot)
 	{
-		var piv=array[pivot];
-		this.swap(array, pivot, end-1);
-		var store=begin;
-		var ix;
-		for(ix=begin; ix<end-1; ++ix) {
-			if (!this.compare(array[ix], piv)) {
-				this.swap(array, store, ix);
-				++store;
+		var mPivot	= aArray[iPivot];
+		
+		this.quickSortSwap(aArray, iPivot, iEnd - 1);
+		
+		var iStore	= iBegin;
+		var ix		= null;
+		for (ix = iBegin; ix < iEnd - 1; ++ix) 
+		{
+			if (!this.compare(aArray[ix], mPivot)) 
+			{
+				this.quickSortSwap(aArray, iStore, ix);
+				++iStore;
 			}
 		}
-		this.swap(array, end-1, store);
-
-		return store;
+		
+		this.quickSortSwap(aArray, iEnd - 1, iStore);
+		
+		return iStore;
 	},
 
-	swap	: function(array, a, b)
+	// Quick sort algorithm found here: http://en.literateprograms.org/Quicksort_%28JavaScript%29
+	quickSortSwap	: function(aArray, iA, iB)
 	{
-		var tmp=array[a];
-		array[a]=array[b];
-		array[b]=tmp;
+		var mTmp	= aArray[iA];
+		aArray[iA]	= aArray[iB];
+		aArray[iB]	= mTmp;
 	},
 
-	qsort	: function(array, begin, end)
+	// Quick sort algorithm found here: http://en.literateprograms.org/Quicksort_%28JavaScript%29
+	quickSort	: function(aArray, iBegin, iEnd)
 	{
-		if(end-1>begin) {
-			var pivot=begin+Math.floor(Math.random()*(end-begin));
+		if (iEnd - 1 > iBegin) {
+			var iPivot	= iBegin + Math.floor(Math.random() * (iEnd - iBegin));
+			iPivot		= this.quickSortPartition(aArray, iBegin, iEnd, iPivot);
 
-			pivot=this.partition(array, begin, end, pivot);
-
-			this.qsort(array, begin, pivot);
-			this.qsort(array, pivot+1, end);
+			this.quickSort(aArray, iBegin, iPivot);
+			this.quickSort(aArray, iPivot + 1, iEnd);
 		}
-	},
-	
-	// Algorithm URL: http://en.literateprograms.org/Quicksort_%28JavaScript%29
-	quick_sort	: function(array)
-	{
-		this.qsort(array, 0, array.length);
 	}
 });
+
+/*
+ * Comparison functions for Reflex_Sorter
+ * 
+ * Add new common comparison function here. Each function must return one of 3 values:
+ *  - true	: If the result is true
+ *  - false	: If the result is false
+ *  - null	: If the result is neither true nor false 
+ */
 
 Reflex_Sorter.greaterThan	= function(mA, mB)
 {

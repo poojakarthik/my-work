@@ -115,7 +115,7 @@ var Page_DataReport_List = Class.create(
 			{
 				// Add permission edit image
 				var oEditPermissionImage	= $T.img({class: 'pointer', src: Page_DataReport_List.EDIT_PERMISSION_IMAGE_SOURCE, alt: 'Edit Permission', title: 'Edit Permission'});
-				oEditPermissionImage.observe('click', this._editPermissions.bind(this, oData.Id));
+				oEditPermissionImage.observe('click', this._editPermissions.bind(this, oData.Id, oData.Name));
 				oTR.appendChild($T.td(oEditPermissionImage));
 			}
 			else
@@ -133,9 +133,9 @@ var Page_DataReport_List = Class.create(
 		new Popup_DataReport(iId);
 	},
 	
-	_editPermissions	: function(iId)
+	_editPermissions	: function(iId, sName)
 	{
-		new Popup_Data_Report_Permission(iId);
+		new Popup_Data_Report_Permission(iId, sName);
 	}
 });
 

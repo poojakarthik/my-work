@@ -1,12 +1,14 @@
 
 var Popup_Data_Report_Permission	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, iDataReportId)
+	initialize	: function($super, iDataReportId, sReportName)
 	{
-		$super(40);
+		$super(50);
 		
 		this.iDataReportId			= iDataReportId;
+		this.sReportName			= sReportName;
 		this.iInterfaceReadyCount	= 0;
+		this.hEmployees				= {};
 		this._buildUI();
 	},
 	
@@ -31,6 +33,9 @@ var Popup_Data_Report_Permission	= Class.create(Reflex_Popup,
 			
 			// Build Content
 			this._oPage	= 	$T.div({class: 'data-report-permissions'},
+								$T.div({class: 'data-report-permissions-report-name'},
+									this.sReportName
+								),
 								$T.div({class: 'section data-report-permissions-employees'},
 									$T.div({class: 'section-header'},
 										$T.div({class: 'section-header-title'},
@@ -64,7 +69,8 @@ var Popup_Data_Report_Permission	= Class.create(Reflex_Popup,
 										$T.span('Save')
 									);
 			this.oCloseButton	= 	$T.button({class: 'icon-button'},
-										$T.span('Close')
+										$T.img({src: '../admin/img/template/delete.png', alt: '', title: 'Cancel'}),
+										$T.span('Cancel')
 									);
 			
 			// Bind event handlers
@@ -96,14 +102,13 @@ var Popup_Data_Report_Permission	= Class.create(Reflex_Popup,
 	{
 		if (typeof oResponse == 'undefined')
 		{
+			this.iInterfaceReadyCount++;
+			
+			// Create both employee lists & bind events
 			this.oEmployeeFromSelect	= $T.select({size: Popup_Data_Report_Permission.EMPLOYEE_LIST_SIZE});
 			this.oEmployeeToSelect		= $T.select({size: Popup_Data_Report_Permission.EMPLOYEE_LIST_SIZE});
 			
-			this.oEmployeeFromSelect.observe('click', this._moveEmployeeToRight.bind(this));
-			this.oEmployeeToSelect.observe('click', this._moveEmployeeToLeft.bind(this));
-			
-			this.iInterfaceReadyCount++;
-			
+			// Make AJAX request to get all employees
 			var fnGetEmployees	=	jQuery.json.jsonFunction(
 										this.buildContentEmployees.bind(this),
 										this._ajaxError.bind(this, true), 
@@ -117,61 +122,67 @@ var Popup_Data_Report_Permission	= Class.create(Reflex_Popup,
 							$T.div({class: 'data-report-permissions-employee-list-title'},
 								'Available'
 							),
-							this.oEmployeeFromSelect
+							$T.div({class: 'data-report-permissions-employee-list-container'},
+								this.oEmployeeFromSelect
+							)
 						),
 						$T.li({class: 'data-report-permissions-employee-to'},
 							$T.div({class: 'data-report-permissions-employee-list-title'},
 								'Permitted'
-							),this.oEmployeeToSelect
+							),
+							$T.div({class: 'data-report-permissions-employee-list-container'},
+								this.oEmployeeToSelect
+							)
 						)
 					);
 		}
 		else
 		{
-			// Got response, add employees to list
+			// Got employee list response
 			var oEmployees	= jQuery.json.arrayAsObject(oResponse.aEmployees);
-			this.hEmployees	= {};
-			var oEmployee	= null;
-			var aToSort		= [];
 			
+			// Put the employee objects into an array
+			var aToSort		= [];
 			for (var iId in oEmployees)
 			{
-				if (!isNaN(iId))
-				{
-					oEmployee	= oEmployees[iId];
-					
-					var oNewOption	= 	$T.option({class: 'data-report-permissions-employee', value: oEmployee.Id},
-											$T.img({class: 'data-report-permissions-employee-remove', src: Popup_Data_Report_Permission.REMOVE_IMAGE_SOURCE, alt: 'Remove', title: 'Remove'}),
-											$T.span({class: 'data-report-permissions-employee-name'},
-												oEmployee.FirstName + ' ' + oEmployee.LastName
-											),
-											$T.img({class: 'data-report-permissions-employee-add', src: Popup_Data_Report_Permission.ADD_IMAGE_SOURCE, alt: 'Add', title: 'Add'}),
-											$T.div({class: 'data-report-permissions-employee-clear'})
-										);
-					
-					this.oEmployeeFromSelect.appendChild(oNewOption);
-					
-					// Store the array index
-					oEmployee.iListIndex	= this.oEmployeeFromSelect.options.length - 1;
-					oEmployee.bSelected		= false;
-					
-					this.hEmployees[oEmployee.Id]	= oEmployee;
-					aToSort.push(oEmployee);
-				}
+				this.hEmployees[iId]	= oEmployees[iId];
+				aToSort.push(oEmployees[iId]);
 			}
 			
-			// TESTING
+			// Sort the array, by first name ascending then last name ascending
 			var oSorter	= 	new Reflex_Sorter(
 								[
-								 	{
-								 		sField		: 'FirstName',
-								 		fnCompare	: Reflex_Sorter.stringGreaterThan
-								 	}
+								 	{sField: 'LastName', fnCompare: Reflex_Sorter.stringGreaterThan},
+								 	{sField: 'FirstName', fnCompare: Reflex_Sorter.stringGreaterThan},
+								 	{sField: 'UserName', fnCompare: Reflex_Sorter.stringGreaterThan}
 			           	  	    ]
 							);
-			debugger;
 			oSorter.sort(aToSort);
-			// END TESTING
+			
+			// Create an option in the 'from' (Available) list for each employee in the sorted list
+			var oEmployee	= null;
+			var oNewOption	= null;
+			for (var i = 0; i < aToSort.length; i++)
+			{
+				oEmployee	= aToSort[i];
+				oNewOption	= 	$T.option({class: 'data-report-permissions-employee pointer', value: oEmployee.Id},
+									$T.img({class: 'data-report-permissions-employee-remove', src: Popup_Data_Report_Permission.REMOVE_IMAGE_SOURCE, alt: 'Remove', title: 'Remove'}),
+									$T.span({class: 'data-report-permissions-employee-name'},
+										(oEmployee.LastName != '' ? oEmployee.LastName + ', ' : '') + oEmployee.FirstName
+									),
+									$T.span({class: 'data-report-permissions-employee-username'},
+										'- ' + oEmployee.UserName
+									),
+									$T.img({class: 'data-report-permissions-employee-add', src: Popup_Data_Report_Permission.ADD_IMAGE_SOURCE, alt: 'Add', title: 'Add'}),
+									$T.div({class: 'data-report-permissions-employee-clear'})
+								);
+				oNewOption.observe('click', this._moveEmployee.bind(this, oNewOption));
+				this.oEmployeeFromSelect.appendChild(oNewOption);
+				
+				// Store the array index inside the employee object
+				oEmployee.iListIndex	= this.oEmployeeFromSelect.options.length - 1;
+				oEmployee.bSelected		= false;
+			}
 			
 			// Start the interface
 			this._interfaceReady();
@@ -379,46 +390,48 @@ var Popup_Data_Report_Permission	= Class.create(Reflex_Popup,
 		this._checkForNoPermissions(false, null, null, true);
 	},
 	
-	_moveEmployeeToRight	: function()
+	_moveEmployee	: function(oOptionToMove)
 	{
-		var oOptionToMove	= this.oEmployeeFromSelect.options[this.oEmployeeFromSelect.selectedIndex];
-		var iEmployeeId		= oOptionToMove.value;
-		var oEmployee		= this.hEmployees[iEmployeeId];
-		this.oEmployeeToSelect.appendChild(oOptionToMove);
-	},
-	
-	_moveEmployeeToLeft	: function()
-	{
-		var oOptionToMove	= this.oEmployeeToSelect.options[this.oEmployeeToSelect.selectedIndex];
 		var iEmployeeId		= oOptionToMove.value;
 		var oEmployee		= this.hEmployees[iEmployeeId];
 		
-		// Re-position the option in it's original spot
-		var aOptions		= this.oEmployeeFromSelect.options;
-		var oCurrentOption	= null;
-		var oPreviousOption	= null;
-		var bMoved			= false;
-		
-		for (var i = 0; i < aOptions.length; i++)
+		if (oEmployee.bSelected)
 		{
-			oCurrentOption	= aOptions[i];
-			iCurrentIndex	= this.hEmployees[oCurrentOption.value].iListIndex;
+			// Re-position the option in it's original spot in the 'from' (available) list
+			var aOptions		= this.oEmployeeFromSelect.options;
+			var oCurrentOption	= null;
+			var oPreviousOption	= null;
+			var bMoved			= false;
 			
-			if (oEmployee.iListIndex > iCurrentIndex)
+			for (var i = 0; i < aOptions.length; i++)
 			{
-				continue;
+				oCurrentOption	= aOptions[i];
+				iCurrentIndex	= this.hEmployees[oCurrentOption.value].iListIndex;
+				
+				if (oEmployee.iListIndex > iCurrentIndex)
+				{
+					continue;
+				}
+				else
+				{
+					this.oEmployeeFromSelect.insertBefore(oOptionToMove, oCurrentOption);
+					bMoved	= true;
+					break;
+				}
 			}
-			else
+			
+			if (!bMoved)
 			{
-				this.oEmployeeFromSelect.insertBefore(oOptionToMove, oCurrentOption);
-				bMoved	= true;
-				break;
+				this.oEmployeeFromSelect.appendChild(oOptionToMove);
 			}
+			
+			oEmployee.bSelected	= false;
 		}
-		
-		if (!bMoved)
+		else
 		{
-			this.oEmployeeFromSelect.appendChild(oOptionToMove);
+			// Move the option to the 'to' (Permitted) list
+			this.oEmployeeToSelect.appendChild(oOptionToMove);
+			oEmployee.bSelected	= true;
 		}
 	},
 	
@@ -427,6 +440,7 @@ var Popup_Data_Report_Permission	= Class.create(Reflex_Popup,
 		var oEmployee		= this.hEmployees[iEmployeeId];
 		var oOptionToMove	= this.oEmployeeFromSelect.options[oEmployee.iListIndex];
 		this.oEmployeeToSelect.appendChild(oOptionToMove);
+		oEmployee.bSelected	= true;
 	},
 	
 	_getSelectedEmployeeIds	: function()
