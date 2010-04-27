@@ -2887,11 +2887,6 @@ td.datareport-name
 	width	: 25%;
 }
 
-tr.datareport-hidden > td.datareport-name
-{
-	text-decoration	: line-through;
-}
-
 ul.datareport-legend
 {
 	margin	: 0em;

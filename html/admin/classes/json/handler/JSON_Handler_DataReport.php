@@ -23,17 +23,19 @@ class JSON_Handler_DataReport extends JSON_Handler
 			}
 			
 			// Retrieve the datareports & convert response to std classes
-			$aDataReports	= DataReport::getForEmployeeId(Flex::getUserId());
-			//$aDataReports	= DataReport::getAll(); // -- JUST for testing, REMOVE ME
+			$aDataReports	=	DataReport::getForEmployeeId(
+									Flex::getUserId(), 
+									AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)
+								);
 			
 			foreach ($aDataReports as $iId => $oDataReport)
 			{
 				$aDataReports[$iId]	= $oDataReport->toStdClass();
 				
 				// Not sure if this is still needed. rmctainsh
-				if ($oDataReport->Priviledges & PERMISSION_DEBUG)
+				if ($oDataReport->isDraft())
 				{
-					$aDataReports[$iId]->bHidden	= true;
+					$aDataReports[$iId]->bDraft	= true;
 				}
 			}
 			
@@ -82,8 +84,8 @@ class JSON_Handler_DataReport extends JSON_Handler
 				throw(new JSON_Handler_DataReport_Exception('You do not have permission to retrieve the report.'));
 			}
 			
-			// Check permission to access the report (NEW PERMISSION METHOD)
-			if (!$oDataReport->UserHasPerm(Flex::getUserId()))
+			// Check permission to access the report (NEW DATAREPORT PERMISSION METHOD)
+			if (!$oDataReport->userHasPermission(Flex::getUserId()))
 			{
 				throw(new JSON_Handler_DataReport_Exception('You do not have permission to retrieve the report.'));
 			}
@@ -282,8 +284,8 @@ class JSON_Handler_DataReport extends JSON_Handler
 			$iLoggedInUserId	= Flex::getUserId();
 			$oEmployee			= Employee::getForId(Flex::getUserId());	
 			
-			// Check permission to access the report (NEW PERMISSION METHOD)
-			if (!$oDataReport->UserHasPerm($iLoggedInUserId))
+			// Check permission to access the report (NEW DATAREPORT PERMISSION METHOD)
+			if (!$oDataReport->userHasPermission($iLoggedInUserId))
 			{
 				throw(new JSON_Handler_DataReport_Exception('You do not have permission to execute the report'));
 			}

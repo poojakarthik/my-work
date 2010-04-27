@@ -203,13 +203,23 @@ class DataReport extends ORM_Cached
 		return Data_Report_Operation_Profile::getForDataReportId($this->id);
 	}
 	
-	public function UserHasPerm($iEmployeeId)
+	public function userHasPermission($mEmployee)
 	{
-		$oEmployee	= Employee::getForId($iEmployeeId);
+		if ($mEmployee instanceof Employee)
+		{
+			$oEmployee	= $mEmployee;
+		}
+		else
+		{
+			$oEmployee	= Employee::getForId($mEmployee);
+		}		
 		
-		if ($oEmployee->isGod() ||
-			$this->employeeIsPermitted($iEmployeeId) || 
-			$this->containsPermittedProfile($oEmployee->getOperationProfiles()))
+		// Get the employee profiles that are permitted
+		$aMatchingProfiles	= array_intersect_key($oEmployee->getOperationProfiles(), $this->getOperationProfiles());
+		
+		if ($oEmployee->isGod() ||											// Check if god user
+			(array_key_exists($mEmployee->Id, $this->getEmployees())) ||	// Check if employee is permitted 
+			(count($aMatchingProfiles) > 0))								// Check if employee has permitted propfile
 		{
 			return true;
 		}
@@ -217,37 +227,59 @@ class DataReport extends ORM_Cached
 		return false;
 	}
 	
-	public function employeeIsPermitted($iEmployeeId)
-	{
-		$aEmployees	= $this->getEmployees();
-		return (array_key_exists($iEmployeeId, $aEmployees));
-	}
-	
-	public function containsPermittedProfile($aOperationProfiles)
-	{
-		$aSelfProfiles		= $this->getOperationProfiles();
-		$aMatchingProfiles	= array_intersect_key($aOperationProfiles, $aSelfProfiles);
-		return (count($aMatchingProfiles) > 0);
-	}
-	
-	public static function getForEmployeeId($iEmployeeId)
+	public static function getForEmployeeId($iEmployeeId, $bActiveAndDraft=false)
 	{
 		$oEmployee					= Employee::getForId($iEmployeeId);
 		$oEmployeeOperationProfiles	= $oEmployee->getOperationProfiles();
-		$aDataReports				= self::getAll();
+		$aDataReports				= ($bActiveAndDraft ? self::getActiveAndDraft() : self::getActive());
 		$aPermitted					= array();
 		
 		foreach ($aDataReports as $iId => $oDataReport)
 		{
-			if ($oEmployee->isGod() ||
-				$oDataReport->employeeIsPermitted($iEmployeeId) || 
-				$oDataReport->containsPermittedProfile($oEmployeeOperationProfiles))
+			if ($oDataReport->userHasPermission($oEmployee))
 			{
 				$aPermitted[$iId]	= $oDataReport;
 			}
 		}
 		
 		return $aPermitted;
+	}
+	
+	public static function getActive()
+	{
+		$aResult		= array();
+		$iActiveStatus	= Constant_Group::getConstantGroup('data_report_status')->getValue('DATA_REPORT_STATUS_ACTIVE');
+		$oSelect		= self::_preparedStatement('selByStatus');
+		$oSelect->Execute(array('data_report_status_id' => $iActiveStatus));
+		
+		while($aDataReport = $oSelect->Fetch())
+		{
+			$aResult[$aDataReport['Id']]	= new self($aDataReport);
+		}
+		
+		return $aResult;
+	}
+	
+	
+	public static function getActiveAndDraft()
+	{
+		$aResult			= array();
+		$iInactiveStatus	= Constant_Group::getConstantGroup('data_report_status')->getValue('DATA_REPORT_STATUS_INACTIVE');
+		$oSelect			= self::_preparedStatement('selByNotStatus');
+		$oSelect->Execute(array('data_report_status_id' => $iInactiveStatus));
+		
+		while($aDataReport = $oSelect->Fetch())
+		{
+			$aResult[$aDataReport['Id']]	= new self($aDataReport);
+		}
+		
+		return $aResult;
+	}
+	
+	public function isDraft()
+	{
+		$iDraftStatus	= Constant_Group::getConstantGroup('data_report_status')->getValue('DATA_REPORT_STATUS_DRAFT');
+		return ($this->data_report_status_id == $iDraftStatus);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -285,7 +317,13 @@ class DataReport extends ORM_Cached
 				case 'selAll':
 					$arrPreparedStatements[$sStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "Name");
 					break;
-				
+				case 'selByStatus':
+					$arrPreparedStatements[$sStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "data_report_status_id = <data_report_status_id>", "Name");
+					break;
+				case 'selByNotStatus':
+					$arrPreparedStatements[$sStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "data_report_status_id <> <data_report_status_id>", "Name");
+					break;
+					
 				// INSERTS
 				case 'insSelf':
 					$arrPreparedStatements[$sStatement]	= new StatementInsert(self::$_strStaticTableName);

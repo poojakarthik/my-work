@@ -93,11 +93,11 @@ var Page_DataReport_List = Class.create(
 					sTypeImage	= Page_DataReport_List.INSTANT_REPORT_IMAGE_SOURCE;
 					sTypeAlt	= 'Immediate';
 					break;
-					
 			}	
 			
 			var	oTR	=	$T.tr(
 							$T.td({class: 'datareport-name'},
+								$T.span(oData.bDraft ? '(DRAFT) ' : ''),
 								$T.a(oData.Name)
 							),
 							$T.td(
@@ -105,11 +105,6 @@ var Page_DataReport_List = Class.create(
 							),
 							$T.td(oData.Summary)
 						);
-			
-			if (oData.bHidden)
-			{
-				oTR.addClassName('datareport-hidden');
-			}
 			
 			// Attach click event to the name anchor
 			var oA	= oTR.select('a').first();
