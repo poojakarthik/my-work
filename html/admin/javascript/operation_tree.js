@@ -312,6 +312,22 @@ var Operation_Tree	= Class.create
 		}
 	},
 	
+	_checkDependants	: function(iOperationId, iLookForOperationId)
+	{
+		if (iOperationId == iLookForOperationId)
+		{
+			return true;
+		}
+		
+		for (var i = 0; i < this.oOperations[iOperationId].aDependants.length; i++)
+		{
+			if (this._checkDependants(this.oOperations[iOperationId].aDependants[i], iLookForOperationId))
+			{
+				return true;
+			}
+		}
+	},
+	
 	onSelectHandler	: function(oNode)
 	{
 		this.setOperationSelected(oNode.getValue(), oNode.isChecked(), false);
