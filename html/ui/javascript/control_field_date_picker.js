@@ -74,12 +74,15 @@ var Control_Field_Date_Picker	= Class.create(/* extends */ Control_Field,
 	{
 		if (this.oControlOutput.oHidden.value && this.oControlOutput.oHidden.value.length)
 		{
-			return Date.parseDate(this.oControlOutput.oHidden.value, 'Y-m-d').dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
+			var oDate	= Date.parseDate(this.oControlOutput.oHidden.value, 'Y-m-d');
+			
+			if (oDate && oDate.dateFormat)
+			{
+				return oDate.dateFormat(Control_Field_Date_Picker.DATE_FORMAT);
+			}
 		}
-		else
-		{
-			return "[ No date specified ]";
-		}
+		
+		return "[ No date specified ]";
 	},
 	
 	addEventListeners	: function()
