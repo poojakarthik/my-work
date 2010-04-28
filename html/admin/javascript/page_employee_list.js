@@ -396,7 +396,7 @@ var Page_Employee_List = Class.create(
 });
 
 Page_Employee_List.MAX_RECORDS_PER_PAGE		= 15;
-Page_Employee_List.EDIT_IMAGE_SOURCE		= '../admin/img/template/group_key.png';
+Page_Employee_List.EDIT_IMAGE_SOURCE		= '../admin/img/template/user_edit.png';
 Page_Employee_List.ADD_IMAGE_SOURCE			= '../admin/img/template/new.png';
 Page_Employee_List.PERMISSION_IMAGE_SOURCE	= '../admin/img/template/operation.png';
 
