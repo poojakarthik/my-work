@@ -54,7 +54,7 @@ class Log
 	 * specifies whether a \n should be automatically appended
 	 *
 	 * @param	string		$strMessage				Message to output
-	 * @param	[boolean	$bolAddNewLine]			
+	 * @param	[boolean	$bolAddNewLine]
 	 *
 	 * @return	void
 	 *
@@ -146,7 +146,7 @@ class Log
 				else
 				{
 					// Reference-based Log
-					self::registerLog($strLogAlias, self::$_strSystemLogType, &self::$_arrSystemConfig['Reference']);
+					self::registerLog($strLogAlias, self::$_strSystemLogType, self::$_arrSystemConfig['Reference']);
 				}
 			}
 		}
