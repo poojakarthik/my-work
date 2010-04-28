@@ -1167,7 +1167,7 @@ class Invoice extends ORM_Cached
 				}
 				else
 				{
-					// Check if the Service(s) have been invoiced on another Plan before 
+					// Check if the Service(s) have been invoiced on another Plan before
 					$oResult	= $qryQuery->Execute("SELECT st.RatePlan FROM ServiceTotal st JOIN InvoiceRun ir ON (ir.Id = st.invoice_run_id) WHERE st.Service IN ({$strServiceIds}) AND ir.BillingDate < '{$this->_objInvoiceRun->BillingDate}' AND st.RatePlan != {$arrPlanDetails['Id']} LIMIT 1");
 					if ($oResult === false)
 					{
@@ -1351,7 +1351,7 @@ class Invoice extends ORM_Cached
 			}
 		}
 		
-		$mProratedDiscountLimit	= self::prorate($mScaledDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->intProratePeriodStart, $this->intProratePeriodEnd, DATE_TRUNCATE_DAY, true, 0);
+		$mProratedDiscountLimit	= self::prorate($mScaledDiscountLimit, $iArrearsPeriodStart, $iArrearsPeriodEnd, $this->intProratePeriodStart, $this->intProratePeriodEnd, DATE_TRUNCATE_DAY, true);
 		$mProratedDiscountLimit	= ($sDiscountType === Discount::DISCOUNT_TYPE_UNITS) ? round($mProratedDiscountLimit) : $mProratedDiscountLimit;
 		
 		Log::getLog()->log("Prorated Discount Limit: {$mProratedDiscountLimit}");
