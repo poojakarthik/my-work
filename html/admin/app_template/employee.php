@@ -136,6 +136,29 @@ class AppTemplateEmployee extends ApplicationTemplate
 	 */
 	function EmployeeList()
 	{
+		//////////////////////////////
+		//////////////////////////////
+		// DEPRECATED FEATURE
+		try
+		{
+			// Create an assertion
+			Flex::assert(
+				false, 
+				"CLASS: AppTemplateEmployee, the function EmployeeList was called.", 
+				null, 
+				"Deprecated Function Accessed: AppTemplateEmployee::EmployeeList"
+			);
+		}
+		catch (Exception_Assertion $e)
+		{
+			// The assert function has sent the email already, redirect to the new version
+			header('Location: '.preg_replace("/flex.php\/.*$/", "reflex.php/Employee/EmployeeList/", $_SERVER['REQUEST_URI']));
+			die;
+		}
+		// DEPRECATED FEATURE
+		//////////////////////////////
+		//////////////////////////////
+		
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);

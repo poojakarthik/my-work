@@ -43,7 +43,7 @@ class JSON_Handler_Account extends JSON_Handler
 			
 			return array(
 							"Success"		=> false,
-							"ErrorMessage"	=> 'ERROR: '.$e->getMessage(),
+							"ErrorMessage"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : '',
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 		}

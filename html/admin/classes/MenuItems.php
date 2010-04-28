@@ -952,9 +952,10 @@ class MenuItems {
 	 * @method
 	 */
 	function EmployeeList() {
-		$this->strLabel = "List Employees";
+		self::deprecatedMenuItem('EmployeeList', self::NEW_FRAMEWORK."flex.php/Employee/EmployeeList/");
+		/*$this->strLabel = "List Employees";
 		$this->strContextMenuLabel = "";
-		return self :: NEW_FRAMEWORK . "flex.php/Employee/EmployeeList/";
+		return self :: NEW_FRAMEWORK . "flex.php/Employee/EmployeeList/";*/
 	}
 
 	//------------------------------------------------------------------------//

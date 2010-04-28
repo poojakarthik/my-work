@@ -23,15 +23,15 @@ class JSON_Handler_Operation extends JSON_Handler
 			return array(
 							"Success"			=> true,
 							"oOperation"		=> $aOperation,
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 		catch (Exception $e)
 		{
 			return array(
 							"Success"	=> false,
-							"Message"	=> 'ERROR: '.$e->getMessage(),
-							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error fetching the operation',
+							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 	}
@@ -46,7 +46,7 @@ class JSON_Handler_Operation extends JSON_Handler
 				return array(
 								"Success"			=> true,
 								"intRecordCount"	=> self::_getDatasetLength(),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
 			else
@@ -91,7 +91,7 @@ class JSON_Handler_Operation extends JSON_Handler
 								"Success"			=> true,
 								"arrRecords"		=> $aResults,
 								"intRecordCount"	=> ($iLimit === null) ? count($aResults) : self::_getDatasetLength(),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
 		}
@@ -99,8 +99,8 @@ class JSON_Handler_Operation extends JSON_Handler
 		{
 			return array(
 							"Success"	=> false,
-							"Message"	=> 'ERROR: '.$e->getMessage(),
-							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error getting the dataset',
+							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
 	}

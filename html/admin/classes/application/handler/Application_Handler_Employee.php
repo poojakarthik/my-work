@@ -37,12 +37,17 @@ class Application_Handler_Employee extends Application_Handler
 	{
 		try
 		{
+			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN))
+			{
+				throw new Exception('You do not have permission to view this page');
+			}
+			
 			$aDetailsToRender	= array();
 			$this->LoadPage('employee_list_all', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)
 		{
-			$aDetailsToRender['Message'] 		= "An error occured when trying to generate the Employee Message Management page";
+			$aDetailsToRender['Message'] 		= "An error occured when trying to generate the Employee List page";
 			$aDetailsToRender['ErrorMessage'] 	= $e->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
