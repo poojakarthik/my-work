@@ -2,7 +2,7 @@ var Popup_Employee_Details_Permissions	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, bRenderMode, iEmployeeId)
 	{
-		$super(40);
+		$super(50);
 		
 		this.bRenderMode				= bRenderMode;
 		this.iOperationTreeCount		= 0;

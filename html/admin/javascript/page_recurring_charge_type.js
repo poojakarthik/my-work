@@ -240,7 +240,7 @@ var Page_Recurring_Charge_Type = Class.create(
 								parseFloat(oData.CancellationFee).toFixed(2)
 							),
 							$T.td(oData.archived_label),
-							$T.td({class: 'charge-archive'}
+							$T.td({class: 'charge-archive pointer'}
 								// Place holder for archive button
 							)
 						);

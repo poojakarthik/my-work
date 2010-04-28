@@ -56,8 +56,7 @@ class JSON_Handler_Employee extends JSON_Handler
 				// Count Only
 				return	array(
 							"Success"			=> true,
-							"intRecordCount"	=> self::_getRecordCount($bReturnArchived),
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"intRecordCount"	=> self::_getRecordCount($bReturnArchived)
 						);
 			}
 			else
@@ -97,7 +96,7 @@ class JSON_Handler_Employee extends JSON_Handler
 		{
 			return 	array(
 						"Success"	=> false,
-						"Message"	=> 'ERROR: '.$e->getMessage()
+						"Message"	=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $e->getMessage() : 'There was an error retrieving the data'
 					);
 		}
 	}

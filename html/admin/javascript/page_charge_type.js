@@ -225,7 +225,7 @@ var Page_Charge_Type = Class.create(
 							$T.td(oData.charge_type_visibility_name),
 							$T.td(oData.automatic_only_label),
 							$T.td(oData.archived_label),
-							$T.td({class: 'charge-archive'}
+							$T.td({class: 'charge-archive pointer'}
 								// Place holder for archive button
 							)
 						);

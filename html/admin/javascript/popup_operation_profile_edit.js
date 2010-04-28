@@ -2,7 +2,7 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, bRenderMode, iProfileId, fnOnSave, aPrerequisites, aOperationIds)
 	{
-		$super(40);
+		$super(50);
 		
 		this.bRenderMode				= bRenderMode;
 		this.iOperationTreeCount		= 0;
@@ -503,8 +503,7 @@ var Popup_Operation_Profile_Edit	= Class.create(Reflex_Popup,
 		if (this._checkForNoPermissions(false, this._save.bind(this)))
 		{
 			this._save();
-		}
-		
+		}	
 	}
 });
 
