@@ -17,7 +17,11 @@ var JsAutoLoader = {
 		var	strScriptName	= arrScripts.shift();
 		var fncCallback		= (arrScripts.length > 0) ? JsAutoLoader.loadScript.bind(JsAutoLoader, arrScripts, funcOnLoadEventHandler, bolUseJavascriptPhp) : funcOnLoadEventHandler;
 		
-		//alert("Dynamically Loading JS File '" + strScriptName + "' (" + arrScripts.length + " JS files left to load: " + arrScripts + ")");
+		// Add .js to the end of the script name if it's missing
+		if (!strScriptName.match(/\.js$/))
+		{
+			strScriptName	+= '.js';
+		}
 		
 		// Retrieve the timestamp of when the user started their session
 		// This is used as a work around, to stop the browser from using a cached, old version of the script you want

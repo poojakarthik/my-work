@@ -173,6 +173,11 @@ var Dataset_Ajax	= Class.create
 	getCacheTimeout	: function()
 	{
 		return this._intCacheTimeout;
+	},
+	
+	setJSONDefinition	: function(oJSONDefinition)
+	{
+		this._objJSONDefinition	= oJSONDefinition;
 	}
 });
 

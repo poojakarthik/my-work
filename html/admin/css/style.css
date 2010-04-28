@@ -3796,22 +3796,42 @@ li.data-report-permissions-employee-from
 	text-align	: center;
 }
 
-li.data-report-permissions-employee-to > div > select,
-li.data-report-permissions-employee-from > div > select
+li.data-report-permissions-employee-to select,
+li.data-report-permissions-employee-from select
 {
-	width	: 22em;
+	width		: 22em;
+	margin-top	: 0em;
 }
 
-span.data-report-permissions-employee-name,
+li.data-report-permissions-employee-from div.section-header,
+li.data-report-permissions-employee-to div.section-header
+{
+	text-align	: left;
+}
+
+li.data-report-permissions-employee-from div.section-header > div.section-header-title,
+li.data-report-permissions-employee-to div.section-header > div.section-header-title 
+{
+	margin-left	: 1.7em;
+}
+
+div.data-report-permissions-employee-text
+{
+	display		: inline-block;
+	height		: 100%;
+	overflow	: hidden;
+	white-space	: nowrap;
+	width		: 18em;
+}
+
 img.data-report-permissions-employee-add,
 img.data-report-permissions-employee-remove,
-span.data-report-permissions-employee-username
+div.data-report-permissions-employee-text
 {
 	vertical-align	: middle;
 }
 
-li.data-report-permissions-employee-from span.data-report-permissions-employee-name,
-li.data-report-permissions-employee-from span.data-report-permissions-employee-username
+li.data-report-permissions-employee-from div.data-report-permissions-employee-text
 {
 	float	: left;
 }
@@ -3892,9 +3912,56 @@ span.data-report-permissions-employee-username
 	color			: #888888;
 }
 
-div.data-report-permissions-employee-list-container
+li.data-report-permissions-employee-from div.section-content-fitted,
+li.data-report-permissions-employee-to div.section-content-fitted
 {
 	overflow: hidden;
 }
 
 /************************ END - Data Report Permission Popup - END ************************/
+
+/************************ START - Employee List Page - START ************************/
+
+#EmployeeListContainer div.caption_title 
+{
+	min-height	: 1.55em;
+}
+
+#EmployeeListContainer div.caption_options > div 
+{
+	display	: inline-block;	
+}
+
+div.employee-list-show-archived
+{
+	float		: left;
+	margin-top	: 0.5em;
+}
+
+div.employee-list-show-archived > input,
+div.employee-list-show-archived > span
+{
+	vertical-align	: middle;
+}
+
+input.employee-list-show-archived
+{
+	margin-right	: 0.5em;
+}
+
+#EmployeeListContainer table.reflex tbody.alternating td.employee-archived
+{
+	color	: #cc0000;
+}
+
+#EmployeeListContainer table.reflex tbody.alternating td.employee-active
+{
+	color	: #008000;
+}
+
+td.employee-list-action > img
+{
+	padding-right	: 0.5em;
+}
+
+/************************ END - Employee List Page - END ************************/

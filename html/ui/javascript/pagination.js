@@ -65,9 +65,9 @@ var Pagination	= Class.create
 	},
 
 	// lastPage()
-	lastPage		: function()
+	lastPage		: function(bForceRefresh)
 	{
-		this.jumpToPage(Pagination.PAGE_LAST);
+		this.jumpToPage(Pagination.PAGE_LAST, bForceRefresh);
 	},
 
 	// jumpToPage()

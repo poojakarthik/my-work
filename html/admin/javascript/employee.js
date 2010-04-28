@@ -316,7 +316,7 @@ var Employee	= Class.create
 		}
 		
 		// Extra check for archived, turn from boolean to integer
-		oDetails['mArchived']	= (oDetails['Archived'] ? 1 : 0); 
+		oDetails['mArchived']	= (oDetails['mArchived'] ? 1 : 0); 
 		
 		// Return with errors if there were any, otherwise continue
 		if (aValidationErrors.length)

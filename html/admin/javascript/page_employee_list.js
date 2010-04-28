@@ -1,14 +1,18 @@
 
-var Page_Operation_Profile_List = Class.create(
+var Page_Employee_List = Class.create(
 {
 	initialize	: function(oContainerDiv, iMaxRecordsPerPage)
 	{
-		// Create DataSet & pagination object
+		// Create DataSet & pagination object (default to only active employees)
 		this.oDataset		= 	new Dataset_Ajax(
 									Dataset_Ajax.CACHE_MODE_NO_CACHING, 
-									{strObject: 'Operation_Profile', strMethod: 'getAll'}
+									Page_Employee_List.DATA_SET_DEFINITION_ACTIVE
 								);
-		this.oPagination	= new Pagination(this._updateTable.bind(this), Page_Operation_Profile_List.MAX_RECORDS_PER_PAGE, this.oDataset);
+		this.oPagination	= 	new Pagination(
+									this._updateTable.bind(this), 
+									Page_Employee_List.MAX_RECORDS_PER_PAGE,
+									this.oDataset
+								);
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
@@ -20,6 +24,12 @@ var Page_Operation_Profile_List = Class.create(
 													'No records'
 												),
 												$T.div({class: 'caption_options'},
+													$T.div({class: 'employee-list-show-archived'},
+														$T.input({type: 'checkbox', class: 'employee-list-show-archived'}),
+														$T.span({class: 'pointer'},
+															'Show Archived Employees'
+														)
+													),
 													$T.div(
 														$T.button(
 															$T.img({src: sButtonPathBase + 'first.png'})
@@ -39,8 +49,9 @@ var Page_Operation_Profile_List = Class.create(
 										),
 										$T.thead(
 											$T.tr(
-												$T.th('Name'),
-												$T.th('Description'),
+												$T.th('Given Name'),
+												$T.th('Surname'),
+												$T.th('Username'),
 												$T.th('Status'),
 												$T.th('Actions')
 											)
@@ -52,8 +63,8 @@ var Page_Operation_Profile_List = Class.create(
 											$T.tr(
 												$T.th({colspan: '11'},
 													$T.button({class: 'icon-button'},
-														$T.img({src: Page_Operation_Profile_List.ADD_IMAGE_SOURCE, alt: '', title: 'Add Permission Profile'}),
-														$T.span('Add Permission Profile')
+														$T.img({src: Page_Employee_List.ADD_IMAGE_SOURCE, alt: '', title: 'Add Employee'}),
+														$T.span('Add Employee')
 													)
 												)
 											)
@@ -113,7 +124,14 @@ var Page_Operation_Profile_List = Class.create(
 		
 		// Bind 'add' button event, making it create a popup which calls back to load the last page of data on completion
 		var oAddButton = this.oContentDiv.select('tfoot button').first();
-		oAddButton.observe('click', this._addProfile.bind(this));
+		oAddButton.observe('click', this._addEmployee.bind(this));
+		
+		// Bind 'Show archived...' events
+		var oArchivedCheckbox	= this.oContentDiv.select('input.employee-list-show-archived').first();
+		oArchivedCheckbox.observe('click', this._showArchivedEmployees.bind(this, oArchivedCheckbox));
+		
+		var oArchivedLabel	= this.oContentDiv.select('div.employee-list-show-archived > span.pointer').first();
+		oArchivedLabel.observe('click', this._toggleShowArchivedEmployees.bind(this, oArchivedCheckbox));
 		
 		// Attach content and get data
 		oContainerDiv.appendChild(this.oContentDiv);
@@ -163,13 +181,11 @@ var Page_Operation_Profile_List = Class.create(
 			oCaptionTitle.innerHTML	= 'Page '+ iCurrentPage +' of ' + oResultSet.intPageCount;
 			
 			// Add the rows
-			var aData 			= jQuery.json.arrayAsObject(oResultSet.arrResultSet);
-			var bAlternateRow	= true;
+			var aData	= jQuery.json.arrayAsObject(oResultSet.arrResultSet);
 			
 			for(var i in aData)
 			{
-				bAlternateRow = !bAlternateRow;
-				oTBody.appendChild(this._createTableRow(aData[i], bAlternateRow));
+				oTBody.appendChild(this._createTableRow(aData[i]));
 			}
 			
 			this._updatePagination();
@@ -183,24 +199,37 @@ var Page_Operation_Profile_List = Class.create(
 		}
 	},
 	
-	_createTableRow	: function(oData, bAlternateRow)
+	_createTableRow	: function(oData)
 	{
-		if (oData.id != null)
+		if (oData.Id != null)
 		{
-			var	oTR	=	$T.tr(
-							$T.td(oData.name),
-							$T.td(oData.description),
-							$T.td(oData.status_label),
-							$T.td({class: 'operation-profile-list-action'},
-								$T.img({src: Page_Operation_Profile_List.EDIT_IMAGE_SOURCE, alt: 'Edit', title: 'Edit'})
-							)
-						);
+			var bArchived	= parseInt(oData.Archived) == 1;
+			var	oTR			=	$T.tr(
+									$T.td(oData.FirstName),
+									$T.td(oData.LastName),
+									$T.td(oData.UserName),
+									$T.td({class: (bArchived ? 'employee-archived' : 'employee-active')},
+										bArchived ? 'Archived' : 'Active'
+									),
+									$T.td({class: 'employee-list-action'},
+										$T.img({class: 'pointer', src: Page_Employee_List.EDIT_IMAGE_SOURCE, alt: 'View Employee', title: 'View Employee'}),
+										$T.img({class: 'pointer', src: Page_Employee_List.PERMISSION_IMAGE_SOURCE, alt: 'View Permissions', title: 'View Permissions'})
+									)
+								);
 			
-			// Add click event to the 'edit' button
-			var oEditButton = oTR.select('td.operation-profile-list-action > img').first();
-			oEditButton.observe('click', this._editProfile.bind(this, oData.id));
+			// Add click event to the action buttons
+			var oEditButton = oTR.select('td.employee-list-action > img').first();
+			oEditButton.observe('click', this._editEmployee.bind(this, oData.Id));
+			
+			var oPermissionsButton	= oTR.select('td.employee-list-action > img').last();
+			oPermissionsButton.observe('click', this._editPermissions.bind(this, oData.Id));
 			
 			return oTR;
+		}
+		else
+		{
+			// Invalid, return empty row
+			return $T.tr();
 		}
 	},
 	
@@ -242,26 +271,134 @@ var Page_Operation_Profile_List = Class.create(
 		}
 	},
 	
-	_addProfile	: function()
+	_addEmployee	: function()
 	{
-		this._editProfile();
+		this._editEmployee(null);
 	},
 	
-	_editProfile	: function(iProfileId)
+	_editEmployee	: function(iEmployeeId)
 	{
-		new Popup_Operation_Profile_Edit(
-			(iProfileId ? false : true), 
-			iProfileId, 
-			this._profileSaved.bind(this, iProfileId)
+		// Function to launch employee details popup
+		var fnShowPopup	= function(iEmployeeId)
+		{
+			new Popup_Employee_Details(
+				(iEmployeeId !== null ? Control_Field.RENDER_MODE_VIEW : Control_Field.RENDER_MODE_EDIT), 
+				iEmployeeId,
+				false, 
+				this._employeeSaved.bind(this)
+			);
+		};
+		
+		// Load required js files and then show the edit employee popup
+		JsAutoLoader.loadScript(
+			[
+				"reflex_validation",
+				"reflex_style",
+				"reflex_fx_reveal",
+				"reflex_control",
+				"reflex_control_tree",
+				"reflex_control_tree_node",
+				"reflex_control_tree_node_root",
+				"reflex_control_tree_node_checkable",
+				"date_time_picker_dynamic",
+				"control_field",
+				"control_field_text",
+				"control_field_password",
+				"control_field_checkbox",
+				"control_field_date_picker",
+				"control_field_select",
+				"operation_tree",
+				"operation",
+				"status",
+				"operation_profile",
+				"user_role",
+				"ticketing_user_permission",
+				"employee",
+				"popup_employee_details",
+				"popup_employee_password_change",
+				"popup_employee_details_permissions",
+				"popup_operation_profile_edit"
+     	  	], 
+			fnShowPopup.bind(this, iEmployeeId), 
+			true
 		);
 	},
 	
-	_profileSaved	: function(iProfileId)
+	_editPermissions	: function(iEmployeeId)
 	{
+		// Function to launch employee details popup
+		var fnShowPopup	= function(iEmployeeId)
+		{
+			new Popup_Employee_Details_Permissions(Control_Field.RENDER_MODE_VIEW, iEmployeeId);
+		};
+		
+		// Load required js files and then show the edit employee popup
+		JsAutoLoader.loadScript(
+			[
+				"reflex_validation",
+				"reflex_style",
+				"reflex_fx_reveal",
+				"reflex_control",
+				"reflex_control_tree",
+				"reflex_control_tree_node",
+				"reflex_control_tree_node_root",
+				"reflex_control_tree_node_checkable",
+				"control_field",
+				"control_field_text",
+				"control_field_select",
+				"operation_tree",
+				"status",
+				"operation",
+				"operation_profile",
+				"user_role",
+				"ticketing_user_permission",
+				"employee",
+				"popup_employee_details_permissions",
+				"popup_operation_profile_edit"
+			], 
+			fnShowPopup.bind(this, iEmployeeId), 
+			true
+		);
+	},
+	
+	_showArchivedEmployees	: function(oCheckbox)
+	{
+		// Update the dataset json method definition and refresh the tables current page
+		if (oCheckbox.checked)
+		{
+			this.oDataset.setJSONDefinition(Page_Employee_List.DATA_SET_DEFINITION_ALL);
+		}
+		else
+		{
+			this.oDataset.setJSONDefinition(Page_Employee_List.DATA_SET_DEFINITION_ACTIVE);
+		}
+		
 		this.oPagination.getCurrentPage();
+	},
+	
+	_toggleShowArchivedEmployees	: function(oCheckbox)
+	{
+		oCheckbox.checked	= !oCheckbox.checked;
+		this._showArchivedEmployees(oCheckbox);
+	},
+	
+	_employeeSaved	: function(bEmployeeAdded)
+	{
+		if (bEmployeeAdded)
+		{
+			this.oPagination.lastPage(true);
+		}
+		else
+		{
+			this.oPagination.getCurrentPage();
+		}
 	}
 });
 
-Page_Operation_Profile_List.MAX_RECORDS_PER_PAGE	= 15;
-Page_Operation_Profile_List.EDIT_IMAGE_SOURCE		= '../admin/img/template/group_key.png';
-Page_Operation_Profile_List.ADD_IMAGE_SOURCE		= '../admin/img/template/new.png';
+Page_Employee_List.MAX_RECORDS_PER_PAGE		= 15;
+Page_Employee_List.EDIT_IMAGE_SOURCE		= '../admin/img/template/group_key.png';
+Page_Employee_List.ADD_IMAGE_SOURCE			= '../admin/img/template/new.png';
+Page_Employee_List.PERMISSION_IMAGE_SOURCE	= '../admin/img/template/operation.png';
+
+Page_Employee_List.DATA_SET_DEFINITION_ACTIVE	= {strObject: 'Employee', strMethod: 'getDataSetActiveEmployees'};
+Page_Employee_List.DATA_SET_DEFINITION_ALL		= {strObject: 'Employee', strMethod: 'getDataSetAllEmployees'};

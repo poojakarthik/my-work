@@ -2,7 +2,6 @@
 
 class Application_Handler_Employee extends Application_Handler
 {
-
 	// View all the Customer Statuses in a tabulated format
 	public function ManageDailyMessages($subPath)
 	{
@@ -31,6 +30,21 @@ class Application_Handler_Employee extends Application_Handler
 			$arrDetailsToRender['Message'] = "An error occured when trying to generate the Employee Message Management page";
 			$arrDetailsToRender['ErrorMessage'] = $e->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+		}
+	}
+	
+	public function EmployeeList($subPath)
+	{
+		try
+		{
+			$aDetailsToRender	= array();
+			$this->LoadPage('employee_list_all', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
+		}
+		catch (Exception $e)
+		{
+			$aDetailsToRender['Message'] 		= "An error occured when trying to generate the Employee Message Management page";
+			$aDetailsToRender['ErrorMessage'] 	= $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 	}
 }

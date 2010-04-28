@@ -37,79 +37,87 @@ class JSON_Handler_Employee extends JSON_Handler
 		}
 	}
 	
-	public function getRecords($bolCountOnly=false, $intLimit=0, $intOffset=0)
+	public function getDataSetActiveEmployees($bCountOnly=false, $iLimit=0, $iOffset=0)
+	{
+		return $this->getDataSet($bCountOnly, $iLimit, $iOffset, false);
+	}
+	
+	public function getDataSetAllEmployees($bCountOnly=false, $iLimit=0, $iOffset=0)
+	{
+		return $this->getDataSet($bCountOnly, $iLimit, $iOffset, true);
+	}
+	
+	public function getDataSet($bCountOnly=false, $iLimit=0, $iOffset=0, $bReturnArchived=false)
 	{
 		try
 		{
-			if ($bolCountOnly)
+			if ($bCountOnly)
 			{
 				// Count Only
 				return	array(
 							"Success"			=> true,
-							"intRecordCount"	=> self::_getRecordCount(),
+							"intRecordCount"	=> self::_getRecordCount($bReturnArchived),
 							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 			}
 			else
 			{
 				// Include Data
-				$intLimit	= (max($intLimit, 0) == 0) ? null : (int)$intLimit;
-				$intOffset	= ($intLimit === null) ? null : max((int)$intOffset, 0);
+				$iLimit		= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
+				$iOffset	= ($iLimit === null) ? null : max((int)$iOffset, 0);
 				
-				$qryQuery	= new Query();
+				$oQuery	= new Query();
 				
 				// Retrieve list of Employees
-				$strEmployeeSQL	= "SELECT * FROM Employee";
-				$strEmployeeSQL	.= ($intLimit !== null) ? " LIMIT {$intLimit} OFFSET {$intOffset}" : '';
-				$resEmployees	= $qryQuery->Execute($strEmployeeSQL);
-				if ($resEmployees === false)
+				$sEmployeeSQL	= "SELECT * FROM Employee WHERE Id > 0";
+				$sEmployeeSQL	.= ($bReturnArchived ? "" : " AND Archived = 0");
+				$sEmployeeSQL	.= ($iLimit !== null) ? " LIMIT {$iLimit} OFFSET {$iOffset}" : '';
+				$rEmployees	= $oQuery->Execute($sEmployeeSQL);
+				if ($rEmployees === false)
 				{
-					throw new Exception($qryQuery->Error());
+					throw new Exception($oQuery->Error());
 				}
-				$arrEmployees	= array();
-				$intCount		= 0;
-				while ($arrEmployee = $resEmployees->fetch_assoc())
+				$aEmployees	= array();
+				$iCount		= 0;
+				while ($aEmployee = $rEmployees->fetch_assoc())
 				{
-					$arrEmployees[$intCount+$intOffset]	= $arrEmployee;
-					$intCount++;
+					$arrEmployees[$iCount + $iOffset]	= $aEmployee;
+					$iCount++;
 				}
 				
 				// If no exceptions were thrown, then everything worked
 				return 	array(
 							"Success"			=> true,
 							"arrRecords"		=> $arrEmployees,
-							"intRecordCount"	=> ($intLimit === null) ? count($arrEmployees) : self::_getRecordCount(),
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"intRecordCount"	=> ($iLimit === null) ? count($aEmployees) : self::_getRecordCount($bReturnArchived)
 						);
 			}
 		}
 		catch (Exception $e)
 		{
-			// Send an Email to Devs
-			//SendEmail("rdavis@yellowbilling.com.au", "Exception in ".__CLASS__, $e->__toString(), CUSTOMER_URL_NAME.'.errors@yellowbilling.com.au');
-			
 			return 	array(
 						"Success"	=> false,
-						"Message"	=> 'ERROR: '.$e->getMessage(),
-						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						"Message"	=> 'ERROR: '.$e->getMessage()
 					);
 		}
 	}
 	
-	private static function _getRecordCount()
+	private static function _getRecordCount($bReturnArchived=false)
 	{
-		$qryQuery	= new Query();
+		$oQuery	= new Query();
 		
 		// Retrieve COUNT() of Employees
-		$strCountSQL	= "SELECT COUNT(Id) AS employee_count FROM Employee WHERE 1";
-		$resCount		= $qryQuery->Execute($strCountSQL);
-		if ($resCount === false)
+		$sCountSQL	= "SELECT COUNT(Id) AS employee_count FROM Employee WHERE Id > 0";
+		$sCountSQL	.= ($bReturnArchived ? "" : " AND Archived = 0");
+		$rCount		= $oQuery->Execute($sCountSQL);
+		
+		if ($rCount === false)
 		{
-			throw new Exception($qryQuery->Error());
+			throw new Exception($oQuery->Error());
 		}
-		if ($arrCount = $resCount->fetch_assoc())
+		if ($aCount = $rCount->fetch_assoc())
 		{
-			return $arrCount['employee_count'];
+			return $aCount['employee_count'];
 		}
 	}
 	

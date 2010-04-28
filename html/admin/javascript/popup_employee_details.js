@@ -215,7 +215,7 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		// Execute save callback
 		if (this.fnOnSave)
 		{
-			this.fnOnSave();
+			this.fnOnSave(this.bNewEmployee);
 		}
 	},
 	
