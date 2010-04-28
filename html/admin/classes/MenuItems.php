@@ -3198,7 +3198,7 @@ class MenuItems {
 	function ManageEmployees() {
 		$this->strContextMenuLabel = "Manage Employees";
 		$this->strLabel = "Employees";
-		return self :: NEW_FRAMEWORK . "flex.php/Employee/EmployeeList/";
+		return self :: NEW_FRAMEWORK . "reflex.php/Employee/EmployeeList/";
 	}
 
 	//------------------------------------------------------------------------//
