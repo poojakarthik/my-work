@@ -163,7 +163,7 @@ class Flex_Rollout_Version_000207 extends Flex_Rollout_Version
 																	
 																	CONSTRAINT	pk_customer_group_rebill_type_id				PRIMARY KEY	(id),
 																	CONSTRAINT	fk_customer_group_rebill_type_customer_group_id	FOREIGN KEY (customer_group_id)	REFERENCES CustomerGroup(Id)	ON UPDATE CASCADE	ON DELETE CASCADE,
-																	CONSTRAINT	fk_customer_group_rebill_type_rebill_type_id	FOREIGN KEY	(payment_method_id)	REFERENCES payment_method(id)	ON UPDATE CASCADE	ON DELETE CASCADE
+																	CONSTRAINT	fk_customer_group_rebill_type_rebill_type_id	FOREIGN KEY	(rebill_type_id)	REFERENCES rebill_type(id)		ON UPDATE CASCADE	ON DELETE CASCADE
 																) ENGINE=InnoDB;",
 									'sRollbackSQL'		=>	"	DROP TABLE	customer_group_rebill_type;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
