@@ -52,7 +52,7 @@
 	 * Constructor for the Application
 	 *
 	 * Constructor for the Application
-	 * 
+	 *
 	 * @param	array	$arrConfig				Configuration array
 	 *
 	 * @return			Application
@@ -128,7 +128,7 @@
  			$modModule	= new $arrModule['Module']($arrModule['Carrier'], $arrModule['customer_group']);
  			$this->_arrDirectDebitModules[$arrModule['customer_group']][$modModule->intBillingType]	= $modModule;
  			
- 			CliEcho("\t + ".Customer_Group::getForId($arrModule['customer_group'])->externalName." : ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".GetConstantDescription($modModule->intBillingType, 'BillingType'));	
+ 			CliEcho("\t + ".Customer_Group::getForId($arrModule['customer_group'])->externalName." : ".GetConstantDescription($arrModule['Carrier'], 'Carrier')." : ".GetConstantDescription($modModule->intBillingType, 'billing_type'));
  		}
  		
  		CliEcho();
@@ -492,7 +492,7 @@
 			
 			// while we have some payment left and an invoice to pay it against
 			while ($this->_arrCurrentPayment['Balance'] > 0.0 && ($arrInvoice = $selOutstandingInvoices->Fetch()))
-			{				
+			{
 				// set current invoice
 				$this->_arrCurrentInvoice = $arrInvoice;
 				
@@ -506,7 +506,7 @@
 					// set status
 					$this->_arrCurrentPayment['Status'] = PAYMENT_BAD_PROCESS;
 					
-					// don't try any more invoices					
+					// don't try any more invoices
 					break;
 				}
 				
@@ -660,7 +660,7 @@
 			}
 			
 			// set default status
-			$this->_arrCurrentPayment['Status'] = PAYMENT_PAYING; 
+			$this->_arrCurrentPayment['Status'] = PAYMENT_PAYING;
 			
 			// while we have some payment left and an invoice to pay it against
 			while ($this->_arrCurrentPayment['Balance'] > 0 && $arrInvoice = $selOutstandingInvoices->Fetch())
@@ -680,7 +680,7 @@
 					// set status
 					$this->_arrCurrentPayment['Status'] = PAYMENT_BAD_PROCESS;
 					
-					// don't try any more invoices					
+					// don't try any more invoices
 					break;
 				}
 				
@@ -722,7 +722,7 @@
 	 * Reverses a specified Payment
 	 *
 	 * Reverses a specified Payment
-	 * 
+	 *
 	 * @param	integer	$intPayment		the Id of the Payment to reverse
 	 * @param	integer	$intEmployee	optional Id of the Employee who reversed
 	 *
@@ -790,7 +790,7 @@
 	 *
 	 * Performs Direct Debits Payments, generating any files or performing any
 	 * other (eg SOAP) operations necessary
-	 * 
+	 *
 	 * @param	boolean	$bolForce			[optional]	TRUE: Direct Debits will run no matter what day it is in the Billing Cycle (not recommended)
 	 *
 	 * @return	array									['Success']		: TRUE on success, FALSE on error
@@ -809,7 +809,7 @@
 	 	// Are the Direct Debits due?
 		 CliEcho("* Retrieving list of CustomerGroups...");
 	 	if ($bolForce !== TRUE)
-	 	{		 	
+	 	{
 	 		// Retrieve Direct Debit Scheduling Details, and determine if today is the Invoice Due Date
 	 		$selSchedule	= new StatementSelect(	"InvoiceRun JOIN automatic_invoice_run_event ON InvoiceRun.Id = automatic_invoice_run_event.invoice_run_id",
 														"InvoiceRun.Id AS Id, InvoiceRun.Id AS invoice_run_id, InvoiceRun.BillingDate, automatic_invoice_run_event.scheduled_datetime, automatic_invoice_run_event.actioned_datetime, automatic_invoice_run_event.id AS id, InvoiceRun.customer_group_id",
@@ -892,7 +892,7 @@
 			 			continue;
 			 		}
 			 		
-			 		CliEcho("\t\t* ".GetConstantDescription($intBillingType, 'BillingType'));
+			 		CliEcho("\t\t* ".GetConstantDescription($intBillingType, 'billing_type'));
 			 		
 				 	// Get list of AccountGroups and debts to settle
 				 	if ($selAccountDebts->Execute(Array('CustomerGroup' => $intCustomerGroup, 'BillingType' => $intBillingType)))

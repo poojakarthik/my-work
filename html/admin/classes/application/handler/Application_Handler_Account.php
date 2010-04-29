@@ -75,7 +75,7 @@ class Application_Handler_Account extends Application_Handler
 			BreadCrumb()->Employee_Console();
 			if(array_key_exists("Associated", $_GET))
 			{
-				BreadCrumb()->AccountOverview((int)$_GET['Associated']);	
+				BreadCrumb()->AccountOverview((int)$_GET['Associated']);
 			}
 			BreadCrumb()->SetCurrentPage("Add Customer");
 			
@@ -109,7 +109,7 @@ class Application_Handler_Account extends Application_Handler
 				{
 					throw new Exception('The specified Associated Account is invalid.');
 				}
-			}			
+			}
 			if(!Validation::IsValidABN($_POST['Account']['ABN']) && !Validation::IsValidACN($_POST['Account']['ACN']))
 			{
 				throw new Exception('A valid ABN or ACN is required');
@@ -149,15 +149,15 @@ class Application_Handler_Account extends Application_Handler
 			//----------------------------------------------------------------//
 			
 			if(!array_key_exists('DisableLatePayment', $_POST['Account']))
-			{				
+			{
 				throw new Exception('No Late Payment option has been selected');
 			}
 			if(!array_key_exists('DeliveryMethod', $_POST['Account']))
-			{				
+			{
 				throw new Exception('No Delivery Method option has been selected');
 			}
 			if(!array_key_exists('BillingType', $_POST['Account']))
-			{				
+			{
 				throw new Exception('No Payment Method option has been selected');
 			}
 			if($_POST['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
@@ -176,7 +176,7 @@ class Application_Handler_Account extends Application_Handler
 				if(!array_key_exists('CardNumber', $_POST['CC']) || !CheckCC($_POST['CC']['CardNumber'], $_POST['CC']['CardType']))
 				{
 					throw new Exception('Invalid Credit Card Number');
-				}				
+				}
 				if(!array_key_exists('CardNumber', $_POST['CC']) || !Validation::IsValidInteger($_POST['CC']['CVV']))
 				{
 					throw new Exception('Invalid Credit Card CVV');
@@ -259,7 +259,7 @@ class Application_Handler_Account extends Application_Handler
 			// 2. Add Payment Method
 			//----------------------------------------------------------------//
 			
-			$intBillingType		= (array_key_exists((int)$_POST['Account']['BillingType'], $GLOBALS['*arrConstant']['BillingType'])) ? $_POST['Account']['BillingType'] : BILLING_TYPE_ACCOUNT;
+			$intBillingType		= (array_key_exists((int)$_POST['Account']['BillingType'], $GLOBALS['*arrConstant']['billing_type'])) ? $_POST['Account']['BillingType'] : BILLING_TYPE_ACCOUNT;
 			$intDirectDebitId	= null;
 			$intCreditCardId	= null;
 			
@@ -377,7 +377,7 @@ class Application_Handler_Account extends Application_Handler
 				default:
 					// No option detected.
 					$intPrimaryContactId = null;
-					break;				
+					break;
 			}
 			
 			//----------------------------------------------------------------//

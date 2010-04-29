@@ -67,7 +67,7 @@
 		 * Creates a new Account Group and an Associated Account
 		 *
 		 * Creates a new Account Group and an Associated Account. This method will
-		 * return the account that was created. From here, the Account Group is 
+		 * return the account that was created. From here, the Account Group is
 		 * derivative
 		 *
 		 * @param	AccountGroup				$acgAccountGroup			The AccountGroup where the Account will be added. (NULL = new account group)
@@ -189,10 +189,10 @@
 				'PrimaryContact'		=> ($cntContact !== null) ? $cntContact->Pull('Id')->getValue() : null,
 				'CustomerGroup'			=> $arrDetails ['Account']['CustomerGroup'],
 				'CreditCard'			=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD) ? $intCreditCard : null,
-				'DirectDebit'			=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT) ? $intDirectDebit : null, 
+				'DirectDebit'			=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT) ? $intDirectDebit : null,
 				'AccountGroup'			=> $acgAccountGroup->Pull ('Id')->getValue (),
 				'LastBilled'			=> null,
-				'BillingDate'			=> $intBillingDate, 
+				'BillingDate'			=> $intBillingDate,
 				'BillingFreq'			=> BILLING_DEFAULT_FREQ,
 				'BillingFreqType'		=> BILLING_DEFAULT_FREQ_TYPE,
 				'BillingMethod'			=> $arrDetails ['Account']['BillingMethod'],		// (CONSTANT) post or email.
@@ -220,8 +220,8 @@
 			$arrCustomerGroup	= $selCustomerGroup->Fetch();
 			$strCustomerGroup	= $arrCustomerGroup['internal_name'];
 		
-			$strBillingType		= GetConstantDescription($arrAccount['BillingType'], "BillingType");
-			$strBillingMethod	= GetConstantDescription($arrAccount['BillingMethod'], "delivery_method");			
+			$strBillingType		= GetConstantDescription($arrAccount['BillingType'], "billing_type");
+			$strBillingMethod	= GetConstantDescription($arrAccount['BillingMethod'], "delivery_method");
 
 			$strNote  = "Account created with the following details:\n";
 			$strNote .= "Business Name: {$arrAccount['BusinessName']}\n";
