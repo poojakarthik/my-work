@@ -43,7 +43,8 @@ class Flex_Rollout_Version_000207 extends Flex_Rollout_Version
 																	('Rebill'	, 'Rebill'	, 'PAYMENT_METHOD_REBILL');",
 									'sRollbackSQL'		=>	array
 															(
-																"	DELETE FROM payment_method WHERE const_name = 'PAYMENT_METHOD_REBILL'; ALTER TABLE payment_method AUTO_INCREMENT = 1;"
+																"	DELETE FROM payment_method WHERE const_name = 'PAYMENT_METHOD_REBILL';",
+																"	ALTER TABLE payment_method AUTO_INCREMENT = 1;"
 															),
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
@@ -174,7 +175,11 @@ class Flex_Rollout_Version_000207 extends Flex_Rollout_Version
 																	(name				, description		, const_name)
 																VALUES
 																	('Rebill Payout'	, 'Rebill Payout'	, 'PAYMENT_TYPE_REBILL_PAYOUT');",
-									'sRollbackSQL'		=>	"	DELETE FROM	payment_type WHERE const_name = 'PAYMENT_TYPE_REBILL_PAYOUT';",
+									'sRollbackSQL'		=>	array
+															(
+																"	DELETE FROM payment_type WHERE const_name = 'PAYMENT_TYPE_REBILL_PAYOUT';",
+																"	ALTER TABLE payment_type AUTO_INCREMENT = 1;"
+															),
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
