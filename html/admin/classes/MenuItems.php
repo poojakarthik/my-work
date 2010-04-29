@@ -1921,17 +1921,30 @@ class MenuItems {
 	 */
 	function EditEmployee($iId=false, $sUserName=false, $sJSCallback=false, $bEditingSelf=false)
 	{
-		$this->strContextMenuLabel = "";
-
-		$this->strLabel = "emp: $sUserName";
-
+		$this->strContextMenuLabel	= "";
+	
 		// Setup data to send
-		$aData['Employee']['Id'] = $iId;
-
-		// Convert to JSON notation
-		$sJsonCode = Json()->encode($aData);
-
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmployeeEditPopup\", \"medium\", \"Employee\", \"Employee\", \"Edit\", $sJsonCode)";
+		if ($bEditingSelf)
+		{
+			$this->strContextMenuLabel 	= "View Employee details";
+			$this->strLabel 			= "";
+			$sJsonCode					= 'null';
+			return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmployeeEditPopup\", \"medium\", \"Employee\", \"Employee\", \"EmployeeDetails\", null)";
+		}
+		else if ($iId)
+		{
+			$this->strLabel				= "emp: $sUserName";
+			$aData['Employee']['Id']	= $iId;
+			$sJsonCode					= Json()->encode($aData);
+			return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmployeeEditPopup\", \"medium\", \"Employee\", \"Employee\", \"Edit\", $sJsonCode)";
+		}
+		else
+		{
+			$this->strLabel				= "emp: new";
+			$aData['Employee']['Id']	= -1;
+			$sJsonCode					= Json()->encode($aData);
+			return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{}AddPopup\", \"medium\", \"Employee\", \"Employee\", \"Create\", $sJsonCode)";
+		}
 		
 		// Removed until permissions are released. rmctainsh 20100429
 		/*$this->strContextMenuLabel	= "";
