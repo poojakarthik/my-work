@@ -164,13 +164,14 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 			$sViewHref 	= Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value, 'refreshTable');
 			$sActions 	= "<img onclick=\"$sViewHref\" title='View Employee' src='img/template/user_edit.png'></img>";
 			
-			if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
+			// Removed until permissions release. rmctainsh 20100429
+			/*if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))
 			{
 				$sPermissionsHref	= Href()->ManageEmployeePermissions($dboEmployee->Id->Value);
 				$sActions			.= "&nbsp;<img onclick=\"$sPermissionsHref\" src='../admin/img/template/operation.png'/>";
-			}
+			}*/
 			
-			$sArchivedLabel 	= "Active";
+			$sArchivedLabel	= "Active";
 			
 			if ($dboEmployee->Archived->Value == 1)
 			{

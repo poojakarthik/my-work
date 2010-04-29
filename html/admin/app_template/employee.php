@@ -136,6 +136,8 @@ class AppTemplateEmployee extends ApplicationTemplate
 	 */
 	function EmployeeList()
 	{
+		// Removed until permissions release. rmctainsh 20100429
+		/*
 		//////////////////////////////
 		//////////////////////////////
 		// DEPRECATED FEATURE
@@ -158,6 +160,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 		// DEPRECATED FEATURE
 		//////////////////////////////
 		//////////////////////////////
+		*/
 		
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
