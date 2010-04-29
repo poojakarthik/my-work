@@ -116,11 +116,11 @@ class JSON_Handler_DataReport extends JSON_Handler
 					$sDocumentationField	= $aField['Documentation-Field'];
 					$oDocumentation			= Documentation::getForEntityAndField($aField['Documentation-Entity'], $sDocumentationField);
 					$aNewInput 				= 	array(
-												'sType'			=> $sType, 
-												'sLabel' 		=> $oDocumentation->Label,
-												'sFieldName'	=> $sDocumentationField,
-												'sName'			=> $sName
-											);
+													'sType'			=> $sType, 
+													'sLabel' 		=> $oDocumentation->Label,
+													'sFieldName'	=> $sDocumentationField,
+													'sName'			=> $sName
+												);
 					
 					if (array_key_exists('DBSelect', $aField))
 					{
