@@ -11,9 +11,9 @@
 /**
  * details
  *
- * HTML Template for the details of an Account.  Primarily those stored in the Account table 
+ * HTML Template for the details of an Account.  Primarily those stored in the Account table
  *
- * HTML Template for the details of an Account.  Primarily those stored in the Account table 
+ * HTML Template for the details of an Account.  Primarily those stored in the Account table
  *
  * @file		details.php
  * @language	PHP
@@ -233,7 +233,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		
 		// Don't include address and BillingType/BillingMethod details if this
-		// HtmlTemplate is being rendered on the InvoicesAndPayments page 
+		// HtmlTemplate is being rendered on the InvoicesAndPayments page
 		if (!DBO()->Account->InvoicesAndPaymentsPage->Value)
 		{
 			DBO()->Account->PostalAddress->RenderOutput();
@@ -243,7 +243,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 				DBO()->Account->Country->RenderOutput();
 			}
 			
-			DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("BillingType"), RENDER_OUTPUT);
+			DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("billing_type"), RENDER_OUTPUT);
 			DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("delivery_method"), RENDER_OUTPUT);
 		}
 		
@@ -252,7 +252,11 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	<div id="Account.Balance.Output" name="Account.Balance" class="DefaultOutput Currency"><?php DBO()->Account->Balance->Render('Currency2DecWithNegAsCR'); ?><?php
 		if (Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->CustomerGroup->Value) && AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 		{
-			echo Credit_Card_Payment::getPopupActionButton(DBO()->Account->Id->Value);
+			// Rebill Customers cannot Pay by Credit Card, unless the Account Balance is over $0 and the user is a Credit Management employee
+			if (DBO()->Account->BillingType->Value !== BILLING_TYPE_REBILL || (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT) && DBO()->Account->Balance->Value > 0.0))
+			{
+				echo Credit_Card_Payment::getPopupActionButton(DBO()->Account->Id->Value);
+			}
 		}
 	?></div>
 	<div id="Account.Balance.Label" class="DefaultLabel">
@@ -302,7 +306,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			DBO()->Account->DisableLatePayment = 0;
 		}
 		if (DBO()->Account->DisableLatePayment->Value < -1)
-		{	
+		{
 			DBO()->Account->DisableLatePayment->Value = abs(DBO()->Account->DisableLatePayment->Value);
 		}
 		DBO()->Account->DisableLatePayment->RenderOutput();
@@ -327,7 +331,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->automatic_invoice_action->Load();
 		if (DBO()->Account->last_automatic_invoice_action->Value != AUTOMATIC_INVOICE_ACTION_NONE)
 		{
-			DBO()->Account->last_automatic_invoice_action = 
+			DBO()->Account->last_automatic_invoice_action =
 				DBO()->automatic_invoice_action->name->Value . ' on ' .
 				OutputMask()->LongDateAndTime(DBO()->Account->last_automatic_invoice_action_datetime->Value);
 		}
@@ -341,7 +345,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->automatic_barring_status->Load();
 		if (DBO()->Account->automatic_barring_status->Value != AUTOMATIC_BARRING_STATUS_NONE)
 		{
-			DBO()->Account->automatic_barring_status = 
+			DBO()->Account->automatic_barring_status =
 				DBO()->automatic_barring_status->name->Value . ' on ' .
 				OutputMask()->LongDateAndTime(DBO()->Account->automatic_barring_datetime->Value);
 		}
@@ -510,7 +514,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		
 		// Don't include address and BillingMethod details if this
-		// HtmlTemplate is being rendered on the InvoicesAndPayments page 
+		// HtmlTemplate is being rendered on the InvoicesAndPayments page
 		if (!DBO()->Account->InvoicesAndPaymentsPage->Value)
 		{
 			DBO()->Account->Address1->RenderInput(CONTEXT_DEFAULT, FALSE, FALSE, Array("style:width"=>"330px"));
@@ -592,7 +596,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			$arrOptions[$strLatePaymentAmnesty] = "Exempt until ". date("jS F", strtotime($strLatePaymentAmnesty));
 		}
 		
-		// Sort the list 
+		// Sort the list
 		ksort($arrOptions);
 		
 		// Render the combobox
@@ -655,7 +659,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 </div>
 <?php
 	}
-	else 
+	else
 	{
 ?>
 <div class="DefaultElement">
@@ -712,7 +716,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<script type='text/javascript'>\$Const.SetConstantGroup('account_status', $jsonAccountStatuses);</script>";
 		
 		// Initialise the AccountDetails object
-		$strInvoicesAndPaymentsPage = (DBO()->Account->InvoicesAndPaymentsPage->Value) ? "true" : "false";		
+		$strInvoicesAndPaymentsPage = (DBO()->Account->InvoicesAndPaymentsPage->Value) ? "true" : "false";
 		$jsonObjAccount				= Json()->encode(DBO()->Account->_arrProperties);
 		$strJavascript = "Vixen.AccountDetails.InitialiseEdit($jsonObjAccount, '{$this->_strContainerDivId}', $strInvoicesAndPaymentsPage);";
 		echo "<script type='text/javascript'>$strJavascript</script>\n";
