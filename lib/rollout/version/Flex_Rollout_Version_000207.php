@@ -186,7 +186,7 @@ class Flex_Rollout_Version_000207 extends Flex_Rollout_Version
 								(
 									'sDescription'		=>	"Add the Payment.surcharge_charge_id Field",
 									'sAlterSQL'			=>	"	ALTER TABLE		Payment
-																ADD COLUMN		surcharge_charge_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Surcharge Charge'
+																ADD COLUMN		surcharge_charge_id	BIGINT	UNSIGNED	NULL	COMMENT '(FK) Surcharge Charge',
 																ADD CONSTRAINT	fk_payment_surcharge_charge_id	FOREIGN KEY	(surcharge_charge_id)	REFERENCES	Charge(Id)	ON UPDATE CASCADE	ON DELETE SET NULL;",
 									'sRollbackSQL'		=>	"	ALTER TABLE		Payment
 																DROP CONSTRAINT	fk_payment_surcharge_charge_id,
