@@ -162,7 +162,7 @@ class HtmlTemplateEmployeeView extends HtmlTemplate
 		foreach (DBL()->Employee as $dboEmployee)
 		{
 			$sViewHref 	= Href()->EditEmployee($dboEmployee->Id->Value, $dboEmployee->UserName->Value, 'refreshTable');
-			$sActions 	= "<img onclick=\"$sViewHref\" title='View Employee' src='img/template/user_edit.png'></img>";
+			$sActions 	= "<img onclick='$sViewHref' title='View Employee' src='img/template/user_edit.png'></img>";
 			
 			// Removed until permissions release. rmctainsh 20100429
 			/*if (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD))

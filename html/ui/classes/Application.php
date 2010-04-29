@@ -203,7 +203,7 @@ class Application
 			}
 			
 			// Permissions menu
-			ContextMenu()->Admin->Employees->Permissions->ManagePermissionProfiles();
+			//ContextMenu()->Admin->Employees->Permissions->ManagePermissionProfiles();
 			
 			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 			{
@@ -429,7 +429,7 @@ class Application
 			}
 			
 			// Permissions menu
-			ContextMenu()->Admin->Employees->Permissions->ManagePermissionProfiles();
+			//ContextMenu()->Admin->Employees->Permissions->ManagePermissionProfiles();
 			
 			if (Flex_Module::isActive(FLEX_MODULE_SALES_PORTAL))
 			{

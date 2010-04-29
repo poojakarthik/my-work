@@ -1921,7 +1921,20 @@ class MenuItems {
 	 */
 	function EditEmployee($iId=false, $sUserName=false, $sJSCallback=false, $bEditingSelf=false)
 	{
-		$this->strContextMenuLabel	= "";
+		$this->strContextMenuLabel = "";
+
+		$this->strLabel = "emp: $sUserName";
+
+		// Setup data to send
+		$aData['Employee']['Id'] = $iId;
+
+		// Convert to JSON notation
+		$sJsonCode = Json()->encode($aData);
+
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmployeeEditPopup\", \"medium\", \"Employee\", \"Employee\", \"Edit\", $sJsonCode)";
+		
+		// Removed until permissions are released. rmctainsh 20100429
+		/*$this->strContextMenuLabel	= "";
 
 		$this->strLabel	= "Emp: ".($iId ? $sUserName : 'new');
 		
@@ -1962,6 +1975,7 @@ class MenuItems {
 		$sPopup		= "var oPopup	= new Popup_Employee_Details({$sRender}, {$sId}, {$sSelf}, {$sCallback});";
 		$sLoad		= "JsAutoLoader.loadScript(['".implode(".js','", $aJSFiles).".js'], function() {{$sPopup}}, true);";
 		return "$sLoad";
+		*/
 	}
 	
 	/**
