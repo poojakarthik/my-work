@@ -10,8 +10,8 @@ Account_Create = Class.create({
 		// Load Constants
 		//----------------------------------------------------------------//
 	
-		// Flex.Constant.loadConstantGroup(['BillingType', 'account_status'], this._onConstantLoad.bind(this))
-		Flex.Constant.loadConstantGroup('BillingType', this._onConstantLoad.bind(this))
+		// Flex.Constant.loadConstantGroup(['billing_type', 'account_status'], this._onConstantLoad.bind(this))
+		Flex.Constant.loadConstantGroup('billing_type', this._onConstantLoad.bind(this))
 		
 		this.oForm					= oForm;
 		this.oForm.oAccountCreate	= this;
