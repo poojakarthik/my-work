@@ -83,7 +83,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
+	{
 		echo "<h2 class='Payment'>Payments</h2>\n";
 		
 		// Check if the user has admin privileges
@@ -306,7 +306,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		
 		Table()->PaymentTable->Render();
 		
-		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
+		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR) && ($objAccount->BillingType !== BILLING_TYPE_REBILL || ($objAccount->getBalance() > 0.0 && AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))))
 		{
 			// The user can add payments
 			echo "<div class='ButtonContainer'><div class='Right'>\n";

@@ -49,6 +49,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$bolUserHasOperatorPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$bolUserHasViewPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
 		$bolUserHasExternalPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
+		$bolUserHasCreditManagement	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		
 		$objAccount = Account::getForId($intAccountId);
 		
@@ -70,7 +71,12 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			ContextMenu()->Account->Services->Add_Services($intAccountId);
 			ContextMenu()->Account->Contacts->Add_Contact($intAccountId);
-			ContextMenu()->Account->Payments->Make_Payment($intAccountId);
+			
+			if ($objAccount->BillingType !== BILLING_TYPE_REBILL || ($objAccount->getBalance() > 0.0 && $bolUserHasCreditManagement))
+			{
+				ContextMenu()->Account->Payments->Make_Payment($intAccountId);
+			}
+			
 			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
 			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
 		}
@@ -106,7 +112,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * ViewServices()
 	 *
 	 * Performs the logic for viewing the Services belonging to this account
-	 * 
+	 *
 	 * Performs the logic for viewing the Services belonging to this account
 	 * This is a popup which will only ever be executed via an Ajax request
 	 * either	DBO()->Account->Id	must be specified
@@ -170,7 +176,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		$this->LoadPage('account_services');
 		return TRUE;
-	}	
+	}
 
 	//------------------------------------------------------------------------//
 	// ViewContacts
@@ -179,7 +185,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * ViewContacts()
 	 *
 	 * Performs the logic for viewing the Services belonging to this account
-	 * 
+	 *
 	 * Performs the logic for viewing the Services belonging to this account
 	 * This is a popup which will only ever be executed via an Ajax request
 	 * DBO()->Account->Id		Id of the Account to view the contacts of
@@ -210,7 +216,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		$this->LoadPage('account_contacts');
 		return TRUE;
-	}	
+	}
 
 	//------------------------------------------------------------------------//
 	// InvoicesAndPayments
@@ -219,7 +225,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * InvoicesAndPayments()
 	 *
 	 * Performs the logic for the invoices_and_payments.php webpage
-	 * 
+	 *
 	 * Performs the logic for the invoices_and_payments.php webpage
 	 *
 	 * @return		void
@@ -331,7 +337,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		$strRecChargeWhere = "RC.Account = <Account> AND (RC.recurring_charge_status_id IN ($intRecChargeStatusAwaitingApproval, $intRecChargeStatusActive, $intRecChargeStatusCompleted) OR (RC.recurring_charge_status_id = $intRecChargeStatusCancelled AND RC.ApprovedBy IS NOT NULL))";
 		
 		// I can't directly use a DBObject property or method as a parameter of another DBObject or DBList method
-		// On account of how the Property token works 
+		// On account of how the Property token works
 		DBL()->RecurringCharge->Where->Set($strRecChargeWhere, Array("Account"=>$intAccountId));
 		DBL()->RecurringCharge->OrderBy("StartedOn DESC, Id DESC");
 		DBL()->RecurringCharge->Load();
@@ -359,7 +365,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		//DEPRECATED! Old Notes Functionality
-		//Load the notes 
+		//Load the notes
 		//LoadNotes(DBO()->Account->Id->Value);
 
 		// Flag the Account as being shown in the InvoicesAndPayments Page
@@ -385,7 +391,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * Overview()
 	 *
 	 * Performs the logic for the Account Overview webpage
-	 * 
+	 *
 	 * Performs the logic for the Account Overview webpage
 	 *
 	 * @return		void
@@ -519,7 +525,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			"       I.Account = $intAccountId " .
 			"   AND I.Status = ". INVOICE_TEMP .
             "   AND ir.invoice_run_status_id = ". INVOICE_RUN_STATUS_TEMPORARY .
-            "   AND ir.invoice_run_type_id IN (". implode(",", $arrPermittedTypes) . ") " . 
+            "   AND ir.invoice_run_type_id IN (". implode(",", $arrPermittedTypes) . ") " .
 			"   AND ir.Id > (" .
 			"     SELECT MAX(Id) " .
 			"       FROM (" .
@@ -553,10 +559,10 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * RenderAccountServicesTable()
 	 *
 	 * Renders just the VixenTable storing the services belonging to the account
-	 * 
+	 *
 	 * Renders just the VixenTable storing the Account Services
-	 * It expects	DBO()->Account->Id 			The account Id 
-	 *				DBO()->TableContainer->Id	The id of the container div of the VixenTable 
+	 * It expects	DBO()->Account->Id 			The account Id
+	 *				DBO()->TableContainer->Id	The id of the container div of the VixenTable
 	 *											that displays the Services of the Account
 	 *
 	 * @return		void
@@ -586,7 +592,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * GetServices()
 	 *
 	 * Builds an array structure defining every service belonging to the account, and a history of their status, and their plan details
-	 * 
+	 *
 	 * Builds an array structure defining every service belonging to the account, and a history of their status, and their plan details
 	 * The history details when the service was activated(or created) and Closed(disconnected or archived)
 	 * It will always have at least one record
@@ -611,17 +617,17 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * 									['Status']
 	 * 									['LineStatus']
 	 * 									['LineStatusDate']
-	 * 
+	 *
 	 * @param	int		$intAccount		Id of the Account to retrieve the services of
 	 * @param	int		$intFilter		optional, Filter constant.  Defaults to SERVICE_ACTIVE
 	 * 									0 						:	Retrieve all Services
 	 * 									SERVICE_ACTIVE			:	Retrieve all Services with ClosedOn == NULL or ClosedOn >= NOW()
-	 * 									SERVICE_DISCONNECTED	:	Retrieve all Services with Status == SERVICE_DISCONNECTED AND ClosedOn in the past 
+	 * 									SERVICE_DISCONNECTED	:	Retrieve all Services with Status == SERVICE_DISCONNECTED AND ClosedOn in the past
 	 *									SERVICE_ARCHIVED		:	Retrieve all Services with Status == SERVICE_ARCHIVED AND ClosedOn in the past
 	 *
 	 * @return	mixed					FALSE:	On database error
 	 * 									Array:  $arrServices
-	 * 	
+	 *
 	 * @method
 	 */
 	function GetServices($intAccount, $intFilter=SERVICE_ACTIVE)
@@ -633,16 +639,16 @@ class AppTemplateAccount extends ApplicationTemplate
 		//DBL()->Service->Load();
 		
 		// Retrieve all the services belonging to the account
-		$strTables	= "	Service AS S 
-						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
-								FROM ServiceRatePlan AS SRP2 
+		$strTables	= "	Service AS S
+						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id
+								FROM ServiceRatePlan AS SRP2
 								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
 								ORDER BY SRP2.CreatedOn DESC
 								LIMIT 1
 								)
 						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
-						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
-								FROM ServiceRatePlan AS SRP4 
+						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id
+								FROM ServiceRatePlan AS SRP4
 								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
 								ORDER BY SRP4.CreatedOn DESC
 								LIMIT 1
@@ -651,13 +657,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		$arrColumns	= Array("Id" 						=> "S.Id",
 							"FNN"						=> "S.FNN",
 							"Indial100"					=> "S.Indial100",
-							"ServiceType"				=> "S.ServiceType", 
+							"ServiceType"				=> "S.ServiceType",
 							"Status"		 			=> "S.Status",
 							"LineStatus"				=> "S.LineStatus",
 							"LineStatusDate"			=> "S.LineStatusDate",
-							"CreatedOn"					=> "S.CreatedOn", 
+							"CreatedOn"					=> "S.CreatedOn",
 							"ClosedOn"					=> "S.ClosedOn",
-							"CreatedBy"					=> "S.CreatedBy", 
+							"CreatedBy"					=> "S.CreatedBy",
 							"ClosedBy"					=> "S.ClosedBy",
 							"NatureOfCreation"			=> "S.NatureOfCreation",
 							"NatureOfClosure"			=> "S.NatureOfClosure",
@@ -825,12 +831,12 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * RenderAccountDetailsForViewing()
 	 *
 	 * Renders the AccountDetails Html Template for viewing
-	 * 
+	 *
 	 * Renders the AccountDetails Html Template for viewing
-	 * It expects	DBO()->Account->Id 							account Id 
+	 * It expects	DBO()->Account->Id 							account Id
 	 *				DBO()->Account->InvoicesAndPaymentsPage		set to TRUE if the HtmlTemplate is to be rendered
-	 *															on the InvoicesAndPayments page 
-	 *				DBO()->Container->Id						id of the container div in which to place the 
+	 *															on the InvoicesAndPayments page
+	 *				DBO()->Container->Id						id of the container div in which to place the
 	 *															Rendered HtmlTemplate
 	 *
 	 * @return		void
@@ -864,12 +870,12 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * RenderAccountDetailsForEditing()
 	 *
 	 * Renders the AccountDetails Html Template for editing
-	 * 
+	 *
 	 * Renders the AccountDetails Html Template for editing
-	 * It expects	DBO()->Account->Id 							account Id 
+	 * It expects	DBO()->Account->Id 							account Id
 	 *				DBO()->Account->InvoicesAndPaymentsPage		set to TRUE if the HtmlTemplate is to be rendered
-	 *															on the InvoicesAndPayments page 
-	 *				DBO()->Container->Id						id of the container div in which to place the 
+	 *															on the InvoicesAndPayments page
+	 *				DBO()->Container->Id						id of the container div in which to place the
 	 *															Rendered HtmlTemplate
 	 * @return		void
 	 * @method
@@ -904,7 +910,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * SaveDetails()
 	 *
 	 * Handles the logic of validating and saving the details of an account
-	 * 
+	 *
 	 * Handles the logic of validating and saving the details of an account
 	 * This works with the HtmlTemplateAccountDetails object, when rendered in Edit mode (HTML_CONTEXT_EDIT)
 	 * It fires the OnAccountDetailsUpdate, OnAccountServicesUpdate and OnNewNote Events if relevent to the
@@ -955,8 +961,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Merge the Account data from the database with the newly defined details
 		DBO()->Account->LoadMerge();
 
-		// This will store the properties that have been changed and have to cascade 
-		// to tables other than the Account table, which I believe is only the 
+		// This will store the properties that have been changed and have to cascade
+		// to tables other than the Account table, which I believe is only the
 		// ServiceAddress table at the moment
 		$arrCascadingFields = Array();
 		
@@ -974,7 +980,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			$strChangesNote .= "Trading Name was changed from '". DBO()->CurrentAccount->TradingName->Value ."' to '" . DBO()->Account->TradingName->Value . "'\n";
 			$arrCascadingFields[] = "Trading Name";
-		}	
+		}
 		if (DBO()->Account->ABN->Value != DBO()->CurrentAccount->ABN->Value)
 		{
 			$strChangesNote .= "ABN was changed from ". DBO()->CurrentAccount->ABN->Value ." to " . DBO()->Account->ABN->Value . "\n";
@@ -1061,14 +1067,14 @@ class AppTemplateAccount extends ApplicationTemplate
 			{
 				$intCurrentValue = abs($intCurrentValue);
 			}
-			$strChangesNote .= "Charging of Late Payment Fee was changed from '". 
+			$strChangesNote .= "Charging of Late Payment Fee was changed from '".
 								DBO()->Account->DisableLatePayment->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
-								"' to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";	
+								"' to '" . DBO()->Account->DisableLatePayment->FormattedValue() . "'\n";
 		}
 		if (DBO()->Account->Sample->Value != DBO()->CurrentAccount->Sample->Value)
 		{
 			$intCurrentValue = DBO()->CurrentAccount->Sample->Value;
-			$strChangesNote .= "Sample was changed from '". 
+			$strChangesNote .= "Sample was changed from '".
 								DBO()->Account->Sample->FormattedValue(CONTEXT_DEFAULT, $intCurrentValue) .
 								"' to '" . DBO()->Account->Sample->FormattedValue() . "'\n";
 		}
@@ -1119,7 +1125,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			elseif (DBO()->Account->LatePaymentAmnesty->Value == $strEndOfTime)
 			{
 				// The account has been set to "Never send late notices"
-				$strNewSetting = "Never send late notices"; 
+				$strNewSetting = "Never send late notices";
 			}
 			else
 			{
@@ -1291,15 +1297,15 @@ class AppTemplateAccount extends ApplicationTemplate
 									break;
 							}
 						}
-					} 
+					}
 				case ACCOUNT_STATUS_CLOSED:
 				case ACCOUNT_STATUS_SUSPENDED:
 					$intModifiedServicesNewStatus = SERVICE_DISCONNECTED;
-					// If user has selected "Closed", "Debt Collection", "Suspended" for the account status, only Active services have their Status and 
+					// If user has selected "Closed", "Debt Collection", "Suspended" for the account status, only Active services have their Status and
 					// ClosedOn/CloseBy properties changed
-					// Active Services are those that have their Status set to Active or (their status is set to Disconnected and 
-					// their ClosedOn date is in the future (signifying a change of lessee) or today).  We don't have to worry about 
-					// the Services where their status is set to Disconnected and their ClosedOn Date is set to today, because that 
+					// Active Services are those that have their Status set to Active or (their status is set to Disconnected and
+					// their ClosedOn date is in the future (signifying a change of lessee) or today).  We don't have to worry about
+					// the Services where their status is set to Disconnected and their ClosedOn Date is set to today, because that
 					// is how we are going to update the records anyway.
 					
 					//$strWhere = "Account = <AccountId> AND (Status = <ServiceActive> OR (Status = <ServiceDisconnected> AND ClosedOn > NOW()))";
@@ -1341,8 +1347,8 @@ class AppTemplateAccount extends ApplicationTemplate
 					
 				case ACCOUNT_STATUS_ARCHIVED:
 					$intModifiedServicesNewStatus = SERVICE_ARCHIVED;
-					// If user has selected "Archived" for the account status only Active, Pending and Disconnected services have their Status and 
-					// ClosedOn/CloseBy properties changed						
+					// If user has selected "Archived" for the account status only Active, Pending and Disconnected services have their Status and
+					// ClosedOn/CloseBy properties changed
 					$strWhere = "Account = <AccountId> AND Status IN (<ServiceActive>, <ServicePending>, <ServiceDisconnected>) AND Id = (SELECT MAX(S2.Id) FROM Service AS S2 WHERE S2.Account = <AccountId> AND Service.FNN = S2.FNN) AND (ClosedOn IS NULL OR (ClosedOn >= CreatedOn))";
 					$arrWhere = Array("AccountId" => DBO()->Account->Id->Value, "ServiceActive" => SERVICE_ACTIVE, "ServicePending" => SERVICE_PENDING, "ServiceDisconnected" => SERVICE_DISCONNECTED);
 					
@@ -1551,7 +1557,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	 * DeleteRecord()
 	 *
 	 * Creates a generic Delete Popup for either a Payment, Adjustment or Recurring Adjustment record
-	 * 
+	 *
 	 * Creates a generic Delete Popup for either a Payment, Adjustment or Recurring Adjustment record
 	 *
 	 * @return		void
