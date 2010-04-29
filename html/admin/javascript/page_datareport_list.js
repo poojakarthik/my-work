@@ -111,6 +111,9 @@ var Page_DataReport_List = Class.create(
 			var oA	= oTR.select('a').first();
 			oA.observe('click', this._runReport.bind(this, oData.Id));
 			
+			// Disabled until permissions release. rmctainsh 20100429
+			bEditPermission	= false;
+			
 			if (bEditPermission)
 			{
 				// Add permission edit image

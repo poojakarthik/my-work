@@ -79,12 +79,6 @@ class JSON_Handler_DataReport extends JSON_Handler
 			$oDataReport			= DataReport::getForId($iId);
 			$oStdClassDataReport	= $oDataReport->toStdClass();
 			
-			// DEPRECATED: REMOVE ME: Check permissions against the reports priviledges (OLD PERMISSIONS)
-			if (!AuthenticatedUser()->UserHasPerm($oDataReport->Priviledges))
-			{
-				throw(new JSON_Handler_DataReport_Exception('You do not have permission to retrieve the report.'));
-			}
-			
 			// Check permission to access the report (NEW DATAREPORT PERMISSION METHOD)
 			if (!$oDataReport->userHasPermission(Flex::getUserId()))
 			{
@@ -316,7 +310,7 @@ class JSON_Handler_DataReport extends JSON_Handler
 		
 		try
 		{
-			// Check permissions (TO BE DEPRECATED - rmctainsh)
+			// Check permissions
 			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_SUPER_ADMIN))
 			{
 				throw(new JSON_Handler_DataReport_Exception('You do not have permission to edit the report permissions'));
@@ -368,12 +362,6 @@ class JSON_Handler_DataReport extends JSON_Handler
 			
 			// Get the report details
 			$oDataReport	= DataReport::getForId($aReportData->iId);
-			
-			// DEPRECATED: REMOVE: Check permissions against the reports priviledges (OLD PERMISSION METHOD)
-			if (!AuthenticatedUser()->UserHasPerm($oDataReport->Priviledges))
-			{
-				throw(new JSON_Handler_DataReport_Exception('You do not have permission to execute the report'));
-			}
 			
 			// Check that the authenticated user has an email address
 			$iLoggedInUserId	= Flex::getUserId();

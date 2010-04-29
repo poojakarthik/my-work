@@ -242,8 +242,19 @@ class DataReport extends ORM_Cached
 		else
 		{
 			$oEmployee	= Employee::getForId($mEmployee);
-		}		
+		}
 		
+		// TO DEPRECATED, temporary (OLD PERMISSIONS)
+		$iChecked	= $oEmployee->Privileges & $this->Priviledges;
+		if ($iChecked == $this->Priviledges)
+		{
+			return true;
+		}
+		
+		return false;
+		
+		// Removed until permissions release. rmctainsh 20100429
+		/*
 		// Get the employee profiles that are permitted
 		$aMatchingProfiles	= array_intersect_key($oEmployee->getOperationProfiles(), $this->getOperationProfiles());
 		
@@ -255,6 +266,7 @@ class DataReport extends ORM_Cached
 		}
 		
 		return false;
+		*/
 	}
 	
 	public static function getForEmployeeId($iEmployeeId, $bActiveAndDraft=false)
