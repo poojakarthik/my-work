@@ -11,6 +11,7 @@ class HtmlTemplate_Contact_View extends FlexHtmlTemplate
 		$this->LoadJavascript('reflex_validation');
 		
 		BreadCrumb()->Employee_Console();
+		BreadCrumb()->AccountOverview($mxdDataToRender['oContact']->Account, TRUE);
 		BreadCrumb()->SetCurrentPage("View Contact Details");
 	}
 
