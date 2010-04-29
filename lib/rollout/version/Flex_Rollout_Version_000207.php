@@ -158,7 +158,7 @@ class Flex_Rollout_Version_000207 extends Flex_Rollout_Version
 																(
 																	id					INT		UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
 																	customer_group_id	BIGINT				NOT NULL					COMMENT '(FK) Customer Group',
-																	rebill_type_id		BIGINT	UNSIGNED	NOT NULL					COMMENT '(FK) Payment Method',
+																	rebill_type_id		INT		UNSIGNED	NOT NULL					COMMENT '(FK) Rebill Type',
 																	surcharge_percent	DECIMAL(4,4)		NULL						COMMENT 'Rebill Type-level Surcharge for this Customer Group',
 																	
 																	CONSTRAINT	pk_customer_group_rebill_type_id				PRIMARY KEY	(id),
