@@ -1402,12 +1402,14 @@ $GLOBALS['*arrConstant']	['ServiceStateType']	['WA']	['Description']	= 'Western 
 
 
 // Billing Types
+/* DEPRECATED: Moved to the billing_type Table
 $GLOBALS['*arrConstant']	['BillingType']	[1]	['Constant']	= 'BILLING_TYPE_DIRECT_DEBIT';
 $GLOBALS['*arrConstant']	['BillingType']	[1]	['Description']	= 'Direct Debit';
 $GLOBALS['*arrConstant']	['BillingType']	[2]	['Constant']	= 'BILLING_TYPE_CREDIT_CARD';
 $GLOBALS['*arrConstant']	['BillingType']	[2]	['Description']	= 'Credit Card';
 $GLOBALS['*arrConstant']	['BillingType']	[3]	['Constant']	= 'BILLING_TYPE_ACCOUNT';
 $GLOBALS['*arrConstant']	['BillingType']	[3]	['Description']	= 'Account';
+*/
 
 // Billing Frequency Constants
 define("BILLING_FREQ_DAY"				, 1);

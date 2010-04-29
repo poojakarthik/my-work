@@ -4,20 +4,24 @@
  * Version 207 of database update.
  * This version: -
  *
- *	1:	Add the 'Rebill' Payment Method
- *	2:	Create the rebill_type Table
- *	3:	Create the rebill Table
- *	4:	Add the 'Motorpass' Rebill Type
- *	5:	Create the rebill_motorpass Table
+ *	1:	Add the 'Rebill' Payment Method	(this actually doesn't get used at the moment)
  *
- *	6:	Create the customer_group_payment_method Table
- *	7:	Popuplate the customer_group_payment_method Table
+ *	2:	Create the billing_type Table (this will be deprecated when we shift to payment_method)
+ *	3:	Populate the billing_type Table
  *
- *	8:	Create the customer_group_rebill_type Table
+ *	4:	Create the rebill_type Table
+ *	5:	Create the rebill Table
+ *	6:	Add the 'Motorpass' Rebill Type
+ *	7:	Create the rebill_motorpass Table
  *
- *	9:	Add the 'Rebill Payout' Payment Type
- *	10:	Add the Payment.surcharge_charge_id Field
- *	11:	Link up existing Payments to Surcharges
+ *	8:	Create the customer_group_payment_method Table
+ *	9:	Popuplate the customer_group_payment_method Table
+ *
+ *	10:	Create the customer_group_rebill_type Table
+ *
+ *	11:	Add the 'Rebill Payout' Payment Type
+ *	12:	Add the Payment.surcharge_charge_id Field
+ *	13:	Link up existing Payments to Surcharges
  *
  */
 
@@ -45,14 +49,44 @@ class Flex_Rollout_Version_000207 extends Flex_Rollout_Version
 								),
 								array
 								(
+									'sDescription'		=>	"Create the billing_type Table",
+									'sAlterSQL'			=>	"	CREATE TABLE	billing_type
+																(
+																	id					INT		UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
+																	name				VARCHAR(256)		NOT NULL					COMMENT 'Name of the Billing Type',
+																	description			VARCHAR(512)		NOT NULL					COMMENT 'Description of the Billing Type',
+																	const_name			VARCHAR(512)		NOT NULL					COMMENT 'Constant Alias of the Billing Type',
+																	system_name			VARCHAR(512)		NOT NULL					COMMENT 'System Name of the Billing Type',
+																	payment_method_id	BIGINT	UNSIGNED	NOT NULL					COMMENT '(FK) Payment Method',
+																	
+																	CONSTRAINT	pk_billing_type_id					PRIMARY KEY	(id),
+																	CONSTRAINT	fk_billing_type_payment_method_id	FOREIGN KEY	(payment_method_id)	REFERENCES payment_method(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																) ENGINE=InnoDB;",
+									'sRollbackSQL'		=>	"DROP TABLE	billing_type;",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Populate the billing_type Table",
+									'sAlterSQL'			=>	"	INSERT INTO	billing_type
+																	(id		, name							, description						, const_name					, system_name		, payment_method_id)
+																VALUES
+																	(1		, 'Direct Debit: EFT'			, 'Direct Debit via EFT'			, 'BILLING_TYPE_DIRECT_DEBIT'	, 'DIRECT_DEBIT'	, (SELECT id FROM payment_method WHERE const_name = 'PAYMENT_METHOD_DIRECT_DEBIT')),
+																	(2		, 'Direct Debit: Credit Card'	, 'Direct Debit via Credit Card'	, 'BILLING_TYPE_CREDIT_CARD'	, 'CREDIT_CARD'		, (SELECT id FROM payment_method WHERE const_name = 'PAYMENT_METHOD_DIRECT_DEBIT')),
+																	(3		, 'Account'						, 'Account Billing'					, 'BILLING_TYPE_ACCOUNT'		, 'ACCOUNT'			, (SELECT id FROM payment_method WHERE const_name = 'PAYMENT_METHOD_ACCOUNT')),
+																	(NULL	, 'Rebill'						, 'Rebill'							, 'BILLING_TYPE_REBILL'			, 'REBILL'			, (SELECT id FROM payment_method WHERE const_name = 'PAYMENT_METHOD_REBILL'));",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
 									'sDescription'		=>	"Create the rebill_type Table",
 									'sAlterSQL'			=>	"	CREATE TABLE	rebill_type
 																(
 																	id					INT		UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
-																	name				BIGINT				NOT NULL					COMMENT 'Name of the Rebill Type',
-																	description			BIGINT	UNSIGNED	NOT NULL					COMMENT 'Description of the Rebill Type',
-																	const_name			BIGINT	UNSIGNED	NOT NULL					COMMENT 'Constant Alias of the Rebill Type',
-																	system_name			BIGINT	UNSIGNED	NOT NULL					COMMENT 'System Name of the Rebill Type',
+																	name				VARCHAR(256)		NOT NULL					COMMENT 'Name of the Rebill Type',
+																	description			VARCHAR(512)		NOT NULL					COMMENT 'Description of the Rebill Type',
+																	const_name			VARCHAR(512)		NOT NULL					COMMENT 'Constant Alias of the Rebill Type',
+																	system_name			VARCHAR(512)		NOT NULL					COMMENT 'System Name of the Rebill Type',
 																	
 																	CONSTRAINT	pk_rebill_type_id	PRIMARY KEY	(id)
 																) ENGINE=InnoDB;",
