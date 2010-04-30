@@ -60,6 +60,21 @@ class Customer_Group_Payment_Method extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	
+	public static function getForCustomerGroup($iCustomerGroupId)
+	{
+		$oSelect	= self::_preparedStatement('selByCustomerGroupId');
+		$oSelect->Execute(array('customer_group_id' => $iCustomerGroupId));
+		$aPaymentMethods	= array();
+		
+		while ($aRecord = $oSelect->Fetch())
+		{
+			$iId					= $aRecord['payment_method_id'];
+			$aPaymentMethods[$iId]	= Payment_Method::getForId($iId);
+		}
+		
+		return $aPaymentMethods;
+	}
+	
 	/**
 	 * _preparedStatement()
 	 *
@@ -88,6 +103,9 @@ class Customer_Group_Payment_Method extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
+					break;
+				case 'selByCustomerGroupId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "customer_group_id = <customer_group_id>");
 					break;
 				
 				// INSERTS

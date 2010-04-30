@@ -3375,6 +3375,11 @@ div.payment-method-details-info span.label.cc
 	width	: 7em;
 }
 
+div.payment-method-details-info span.label.motorpass
+{
+	width	: 10em;
+}
+
 span.payment-method-credit-card-expired
 {
 	color		: #cc0000;
@@ -3965,3 +3970,18 @@ td.employee-list-action > img
 }
 
 /************************ END - Employee List Page - END ************************/
+
+/************************ START - Edit Rebill Popup - START ************************/
+
+div.popup-account-edit-rebill,
+div.rebill-validation-errors
+{
+	margin	: 0.5em;
+}
+
+div.popup-account-edit-rebill > div.buttons
+{
+	text-align	: center;
+}
+
+/************************ END - Edit Rebill Popup - END ************************/

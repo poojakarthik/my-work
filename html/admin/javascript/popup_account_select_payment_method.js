@@ -1,12 +1,17 @@
 
 var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, iAccountId, iBillingType, iPaymentMethodId, fnOnSelection, fnOnCancel)
+	initialize	: function($super, iAccountId, iMethodSubType, iPaymentMethodId, fnOnSelection, fnOnCancel)
 	{
+		if (!Popup_Account_Select_Payment_Method.HAS_CONSTANTS)
+		{
+			return;
+		}
+		
 		$super(50);
 		
 		this.iAccountId			= iAccountId;
-		this.iBillingType		= iBillingType;
+		this.iMethodSubType		= iMethodSubType;
 		this.iPaymentMethodId	= iPaymentMethodId;
 		this.fnOnSelection		= fnOnSelection;
 		this.fnOnCancel			= fnOnCancel;
@@ -22,7 +27,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		{
 			// Make request to get the current payment and information on other methods
 			this._getPaymentMethods	= jQuery.json.jsonFunction(this._buildUI.bind(this), this._buildUI.bind(this), 'Account', 'getPaymentMethods');
-			this._getPaymentMethods(this.iAccountId, this.iBillingType);
+			this._getPaymentMethods(this.iAccountId, this.iMethodSubType);
 		}
 		else if (oResponse.Success)
 		{
@@ -34,14 +39,14 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 			var sAddText		= 'Add a ';
 			var sSectionTitle	= '';
 			
-			switch (this.iBillingType)
+			switch (this.iMethodSubType)
 			{
-				case Popup_Account_Select_Payment_Method.BILLING_TYPE_DIRECT_DEBIT:
+				case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
 					this.setTitle("Choose Bank Account");
 					sAddText		+= 'Bank Account';
 					sSectionTitle	= 'Bank Accounts';
 					break;
-				case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
+				case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
 					this.setTitle("Choose Credit Card");
 					sAddText		+= 'Credit Card';
 					sSectionTitle	= 'Credit Cards';
@@ -73,11 +78,11 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 									),
 									$T.div({class: 'payment-methods-list-buttons'},
 										$T.button({class: 'icon-button'},
-											$T.img({src: Popup_Account_Payment_Methods.SAVE_IMAGE_SOURCE, alt: '', title: 'OK'}),
+											$T.img({src: Popup_Account_Select_Payment_Method.SAVE_IMAGE_SOURCE, alt: '', title: 'OK'}),
 											$T.span('OK')
 										),
 										$T.button({class: 'icon-button'},
-											$T.img({src: Popup_Account_Payment_Methods.CANCEL_IMAGE_SOURCE, alt: '', title: 'Cancel'}),
+											$T.img({src: Popup_Account_Select_Payment_Method.CANCEL_IMAGE_SOURCE, alt: '', title: 'Cancel'}),
 											$T.span('Cancel')
 										)
 									)
@@ -97,12 +102,12 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 			var oTHead		= this.oContent.select('div.section-content > table.reflex > thead').first();
 			var aHeadings	= [];
 			
-			switch (this.iBillingType)
+			switch (this.iMethodSubType)
 			{
-				case Popup_Account_Select_Payment_Method.BILLING_TYPE_DIRECT_DEBIT:
+				case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
 					aHeadings	= ['Account Name', 'BSB #', 'Account #', 'Bank Name', 'Added'];
 					break;
-				case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
+				case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
 					aHeadings	= ['Name', 'Type', 'Number', 'CVV', 'Expires', 'Added'];
 					break;
 			}
@@ -140,9 +145,9 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		var oTBody	= this.oContent.select('div.section-content > table.reflex > tbody').first();
 		var oItem	= null;
 		
-		switch (this.iBillingType)
+		switch (this.iMethodSubType)
 		{
-			case Popup_Account_Select_Payment_Method.BILLING_TYPE_DIRECT_DEBIT:
+			case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
 				var oRadioConfig	= {type: 'radio', name: 'account-payment-method', value: oPaymentMethod.Id, class: 'payment-methods-list-item-radio'};
 				
 				if (oPaymentMethod.Id == this.iPaymentMethodId)
@@ -163,7 +168,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 								);
 				break;
 				
-			case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
+			case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
 				var oRadioConfig	= {type: 'radio', name: 'account-payment-method', value: oPaymentMethod.Id, class: 'payment-methods-list-item-radio'}
 				
 				// Check the expiry date on the credit card
@@ -200,7 +205,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		oArchiveImage.observe('click', this._archive.bind(this, oPaymentMethod.Id, false));
 		var oRadio	= oItem.select('td > input[type="radio"]').first();
 		
-		if ((this.iBillingType != Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD) || !oPaymentMethod.bExpired)
+		if ((this.iMethodSubType != $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD) || !oPaymentMethod.bExpired)
 		{
 			// Either a bank account or a valid credit card
 			// Add click event to the details
@@ -240,7 +245,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 	{
 		// Check all radio buttons, find the checked one and save it's value
 		var aRadios			= this.oContent.select('input[type="radio"].payment-methods-list-item-radio');
-		var iBillingType	= null;
+		var iMethodSubType	= null;
 		var iBillingDetail	= null;
 		
 		for (var i = 0; i < aRadios.length; i++)
@@ -258,7 +263,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 			// Selection callback
 			if (typeof this.fnOnSelection !== 'undefined')
 			{
-				this.fnOnSelection(this.iBillingType, this.hPaymentMethods[iBillingDetail]);
+				this.fnOnSelection(this.hPaymentMethods[iBillingDetail]);
 			}
 			
 			this.hide();
@@ -274,7 +279,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		// Cancel callback
 		if (typeof this.fnOnCancel !== 'undefined')
 		{
-			this.fnOnCancel(this.iBillingType);
+			this.fnOnCancel();
 		}
 		
 		this.hide();
@@ -298,15 +303,15 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 			);
 		}
 		
-		switch (this.iBillingType)
+		switch (this.iMethodSubType)
 		{
-			case Popup_Account_Select_Payment_Method.BILLING_TYPE_DIRECT_DEBIT:
+			case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
 				JsAutoLoader.loadScript(
 					'javascript/popup_account_add_directdebit.js', 
 					fnShowDD.bind(this)
 				);
 				break;
-			case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
+			case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
 				JsAutoLoader.loadScript(
 					'javascript/popup_account_add_creditcard.js', 
 					fnShowCC.bind(this)
@@ -321,7 +326,7 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		this.oLoading	= new Reflex_Popup.Loading('Please Wait...');
 		this.oLoading.display();
 		this._getPaymentMethods	= jQuery.json.jsonFunction(this._populateList.bind(this), this._populateList.bind(this), 'Account', 'getPaymentMethods');
-		this._getPaymentMethods(this.iAccountId, this.iBillingType);
+		this._getPaymentMethods(this.iAccountId, this.iMethodSubType);
 	},
 	
 	_populateList	: function(oResponse)
@@ -360,12 +365,12 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		if (bConfirmed)
 		{
 			// Archive Confirmed, make AJAX request
-			switch (this.iBillingType)
+			switch (this.iMethodSubType)
 			{
-				case Popup_Account_Select_Payment_Method.BILLING_TYPE_DIRECT_DEBIT:
+				case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
 					this._archivePaymentMethod = jQuery.json.jsonFunction(this._archiveResponse.bind(this), this._ajaxError.bind(this), 'DirectDebit', 'archiveDirectDebit');
 					break;
-				case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
+				case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
 					this._archivePaymentMethod = jQuery.json.jsonFunction(this._archiveResponse.bind(this), this._ajaxError.bind(this), 'Credit_Card', 'archiveCreditCard');
 					break;
 			}
@@ -380,12 +385,12 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 			// Popup text
 			var sPopupName	= '';
 			
-			switch (this.iBillingType)
+			switch (this.iMethodSubType)
 			{
-				case Popup_Account_Select_Payment_Method.BILLING_TYPE_DIRECT_DEBIT:
+				case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
 					sPopupName	= 'Bank Account';
 					break;
-				case Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD:
+				case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
 					sPopupName	= 'Credit Card';
 					break;
 			}
@@ -431,16 +436,6 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 	}
 });
 
-// Billing types
-Popup_Account_Select_Payment_Method.BILLING_TYPE_DIRECT_DEBIT	= 1;
-Popup_Account_Select_Payment_Method.BILLING_TYPE_CREDIT_CARD	= 2;
-Popup_Account_Select_Payment_Method.BILLING_TYPE_INVOICE		= 3;
-
-// Image paths
-Popup_Account_Select_Payment_Method.CANCEL_IMAGE_SOURCE = '../admin/img/template/delete.png';
-Popup_Account_Select_Payment_Method.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
-Popup_Account_Select_Payment_Method.ADD_IMAGE_SOURCE	= '../admin/img/template/new.png';
-
 Popup_Account_Select_Payment_Method._checkCreditCardExpiry	= function(oCreditCard)
 {
 	month 	= parseInt(oCreditCard.ExpMonth);
@@ -458,3 +453,21 @@ Popup_Account_Select_Payment_Method._formatDate	= function(sDate)
 {
 	return Reflex_Date_Format.format('j/n/Y', Date.parse(sDate.replace(/-/g, '/')) / 1000);
 }
+
+//Check if $CONSTANT has correct constant groups loaded, if not this class won't work
+if (typeof Flex.Constant.arrConstantGroups.payment_method == 'undefined' ||
+	typeof Flex.Constant.arrConstantGroups.direct_debit_type == 'undefined')
+{
+		Popup_Account_Select_Payment_Method.HAS_CONSTANTS	= false;
+	throw ('Please load the "payment_method" & "direct_debit_type" constant groups before using Popup_Account_Select_Payment_Method');
+}
+else
+{
+	Popup_Account_Select_Payment_Method.HAS_CONSTANTS	= true;
+}
+
+// Image paths
+Popup_Account_Select_Payment_Method.CANCEL_IMAGE_SOURCE = '../admin/img/template/delete.png';
+Popup_Account_Select_Payment_Method.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
+Popup_Account_Select_Payment_Method.ADD_IMAGE_SOURCE	= '../admin/img/template/new.png';
+

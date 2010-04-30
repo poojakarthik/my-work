@@ -49,7 +49,7 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 	
-	public function getPaymentMethods($iAccountId, $iBillingType)
+	public function getPaymentMethods($iAccountId, $iPaymentMethodSubType)
 	{
 		try
 		{
@@ -64,7 +64,7 @@ class JSON_Handler_Account extends JSON_Handler
 			}
 			
 			// Check billing type to see what to return
-			if ($iBillingType == 1)
+			if ($iPaymentMethodSubType == DIRECT_DEBIT_TYPE_BANK_ACCOUNT)
 			{
 				// Get all DirectDebit for the accountgroup
 				$aDirectDebits	= DirectDebit::getForAccountGroup($oAccountGroup->Id);
@@ -74,7 +74,7 @@ class JSON_Handler_Account extends JSON_Handler
 					$aResult[]	= $oDirectDebit->toStdClass();
 				}
 			}
-			else if ($iBillingType == 2)
+			else if ($iPaymentMethodSubType == DIRECT_DEBIT_TYPE_CREDIT_CARD)
 			{
 				// Get all Credit_Card for the accountgroup
 				$aCreditCards	= Credit_Card::getForAccountGroup($oAccountGroup->Id);
@@ -141,20 +141,42 @@ class JSON_Handler_Account extends JSON_Handler
 				throw new JSON_Handler_Account_Exception('Invalid Account Id');
 			}
 			
-			$oPaymentMethod	= false;
+			$oPaymentMethod			= false;
+			$iPaymentMethod			= null;
+			$iPaymentMethodSubType	= null;
+			$aHasPaymentMethod		= 	array(
+											PAYMENT_METHOD_ACCOUNT		=> array(),
+											PAYMENT_METHOD_DIRECT_DEBIT	=> array(),
+											PAYMENT_METHOD_REBILL		=> array(),
+										);
+			
+			switch ($oAccount->BillingType)
+			{
+				case BILLING_TYPE_DIRECT_DEBIT:
+				case BILLING_TYPE_CREDIT_CARD:
+					$iPaymentMethod	= PAYMENT_METHOD_DIRECT_DEBIT;
+					break;
+				case BILLING_TYPE_ACCOUNT:
+					$iPaymentMethod	= PAYMENT_METHOD_ACCOUNT;
+					break;
+				case BILLING_TYPE_REBILL:
+					$iPaymentMethod	= PAYMENT_METHOD_REBILL;
+					break;
+			}
 			
 			// Get all DirectDebit for the accountgroup to see if there is any
 			$aDirectDebits	= DirectDebit::getForAccountGroup($oAccountGroup->Id);
 			
 			foreach ($aDirectDebits as $oDirectDebit)
 			{
-				$bHasBankAccount	= true;
+				$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_BANK_ACCOUNT]	 = true;
 				
-				if ($oAccount->BillingType == 1)
+				if ($oAccount->BillingType == BILLING_TYPE_DIRECT_DEBIT)
 				{
 					if ($oAccount->DirectDebit == $oDirectDebit->Id)
 					{
-						$oPaymentMethod	= $oDirectDebit->toStdClass();
+						$iPaymentMethodSubType	= DIRECT_DEBIT_TYPE_BANK_ACCOUNT;
+						$oPaymentMethod			= $oDirectDebit->toStdClass();
 					}
 				}
 				else
@@ -168,9 +190,9 @@ class JSON_Handler_Account extends JSON_Handler
 			
 			foreach ($aCreditCards as $oCreditCard)
 			{
-				$bHasCreditCard	= true;
-								
-				if ($oAccount->BillingType == 2)
+				$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_CREDIT_CARD]	 = true;
+				
+				if ($oAccount->BillingType == BILLING_TYPE_CREDIT_CARD)
 				{
 					if ($oAccount->CreditCard == $oCreditCard->Id)
 					{
@@ -193,6 +215,7 @@ class JSON_Handler_Account extends JSON_Handler
 						$oStdClassCreditCard->card_number	= $sCardNumber;
 						$oStdClassCreditCard->cvv			= $sCVV;
 						$oPaymentMethod						= $oStdClassCreditCard;
+						$iPaymentMethodSubType				= DIRECT_DEBIT_TYPE_CREDIT_CARD;
 					}
 				}
 				else
@@ -201,26 +224,48 @@ class JSON_Handler_Account extends JSON_Handler
 				}
 			}
 			
+			// Get the latest rebill for the account
+			$oRebill	= $oAccount->getRebill();
+			
+			if ($oRebill)
+			{
+				$aHasPaymentMethod[PAYMENT_METHOD_REBILL][$oRebill->rebill_type_id]	 = true;
+				
+				if ($oAccount->BillingType == BILLING_TYPE_REBILL)
+				{
+					$oRebillDetails					= $oRebill->getDetails();
+					$oPaymentMethod					= $oRebill->toStdClass();
+					$oPaymentMethod->account_number	= $oRebillDetails->account_number;
+					$iPaymentMethodSubType			= $oRebill->rebill_type_id;
+				}
+			}
+			
 			switch ($oAccount->BillingType)
 			{
-				case 1:	// DirectDebit
+				case BILLING_TYPE_DIRECT_DEBIT:
 					$iBillingDetail	= $oAccount->DirectDebit;
 					break;
-				case 2:	// Credit_Card
+				case BILLING_TYPE_CREDIT_CARD:
 					$iBillingDetail	= $oAccount->CreditCard;
+					break;
+				case BILLING_TYPE_REBILL:
+					$iBillingDetail	= $oPaymentMethod->id;
 					break;
 				default:
 					$iBillingDetail = false;
 			}
 			
+			// Get the available billing types for the accounts customer group
+			$aPaymentMethods	= $oAccount->getPaymentMethods();
+			
 			return 	array(
-						"Success"			=> true,
-						"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : '',
-						"iBillingType"		=> $oAccount->BillingType,
-						"oPaymentMethod"	=> $oPaymentMethod,
-						"bHasCreditCard" 	=> $bHasCreditCard,
-						"bHasBankAccount" 	=> $bHasBankAccount,
-						"iBillingDetail"	=> $iBillingDetail
+						"Success"				=> true,
+						"iPaymentMethod"		=> $iPaymentMethod,
+						"iPaymentMethodSubType"	=> $iPaymentMethodSubType,
+						"oPaymentMethod"		=> $oPaymentMethod,
+						"iBillingDetail"		=> $iBillingDetail,
+						"aPaymentMethods"		=> $aPaymentMethods,
+						"aHasPaymentMethod"		=> $aHasPaymentMethod
 					);
 		}
 		catch (JSON_Handler_Account_Exception $oException)
@@ -241,7 +286,7 @@ class JSON_Handler_Account extends JSON_Handler
 		}
 	}
 	
-	public function setPaymentMethod($iAccountId, $iBillingType, $iBillingDetail)
+	public function setPaymentMethod($iAccountId, $iPaymentMethodType, $iPaymentMethodSubType, $iBillingDetail)
 	{
 		// Start a new database transaction
 		$oDataAccess	= DataAccess::getDataAccess();
@@ -264,57 +309,129 @@ class JSON_Handler_Account extends JSON_Handler
 			}
 			
 			// Update billing type
-			$oAccount				= Account::getForId($iAccountId);
+			$oAccount	= Account::getForId($iAccountId);
 			
 			// Get the old billing type description
 			$sOldBillingType	= '';
 			
 			switch ($oAccount->BillingType)
 			{
-				case 1:	// DirectDebit
-					$oDirectDebit		= DirectDebit::getForId($oAccount->DirectDebit);
-					$sOldBillingType	= 	"Direct Debit from Bank Account\n".
-											"Account Name: {$oDirectDebit->AccountName}\n".
-											"Account Number: {$oDirectDebit->AccountNumber}";
+				case BILLING_TYPE_DIRECT_DEBIT:
+					$sAccountName	= 'Unknown';
+					$sAccountNumber	= 'Unknown';
+					
+					try
+					{
+						$oDirectDebit	= DirectDebit::getForId($oAccount->DirectDebit);
+						$sAccountName	= $oDirectDebit->AccountName;
+						$sAccountNumber	= $oDirectDebit->AccountNumber;
+					}
+					catch (Exception $e)
+					{
+						// No direct debit exists
+					}
+					
+					$sOldBillingType	= 	"Direct Debit via Bank Account\n".
+											"Account Name: {$sAccountName}\n".
+											"Account Number: {$sAccountNumber}";
 					break;
-				case 2:	// CreditCard
-					$oCreditCard		= Credit_Card::getForId($oAccount->CreditCard);
-					$sOldBillingType	= 	"Direct Debit from Credit Card\n".
-											"Card Name: {$oCreditCard->Name}\n".
-											"Card Number: XXXXXXXXXXXX".substr(Decrypt($oCreditCard->CardNumber), -4);
+				case BILLING_TYPE_CREDIT_CARD:
+					$sCardName		= 'Unknown';
+					$sCardNumber	= 'Unknown';
+					
+					try
+					{
+						$oCreditCard	= Credit_Card::getForId($oAccount->CreditCard);
+						$sCardName		= $oCreditCard->Name;
+						$sCardNumber	= "XXXXXXXXXXXX".substr(Decrypt($oCreditCard->CardNumber), -4);
+					}
+					catch (Exception $e)
+					{
+						// No credit card exists
+					}
+				
+					$sOldBillingType	= 	"Direct Debit via Credit Card\n".
+											"Card Name: {$sCardName}\n".
+											"Card Number: {$sCardNumber}";
 					break;
-				case 3:	// Invoice
+				case BILLING_TYPE_ACCOUNT:	// Invoice
 					$sOldBillingType	= 'Invoice';
+					break;
+				
+				case BILLING_TYPE_REBILL:
+					$oOldRebill			= Rebill::getForAccountId($oAccount->Id, true);
+					$oOldRebillDetails	= $oOldRebill->getDetails();
+					
+					switch ($oOldRebill->rebill_type_id)
+					{
+						case REBILL_TYPE_MOTORPASS:
+							$sOldBillingType	= 	"Rebill via Motorpass\n" .
+													"Account Number: {$oOldRebillDetails->account_number}";
+							break;
+					}
+					break; 
+			}
+			
+			// Determin the billing type (legacy concept) from the payment method and sub type
+			$iBillingType	= BILLING_TYPE_ACCOUNT;
+			
+			switch ($iPaymentMethodType)
+			{
+				case PAYMENT_METHOD_ACCOUNT:
+					$iBillingType	= BILLING_TYPE_ACCOUNT;
+					break;
+				case PAYMENT_METHOD_DIRECT_DEBIT:
+					switch ($iPaymentMethodSubType)
+					{
+						case DIRECT_DEBIT_TYPE_CREDIT_CARD:
+							$iBillingType	= BILLING_TYPE_CREDIT_CARD;
+							break;
+						case DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
+							$iBillingType	= BILLING_TYPE_DIRECT_DEBIT;
+							break;
+					}
+					break;
+				case PAYMENT_METHOD_REBILL:
+					$iBillingType	= BILLING_TYPE_REBILL;
 					break;
 			}
 			
 			$oAccount->BillingType	= $iBillingType;
 			
 			// Reset detail values first
-			$oAccount->DirectDebit	= null;
-			$oAccount->CreditCard	= null;
+			$oAccount->DirectDebit	= ($iBillingType == BILLING_TYPE_DIRECT_DEBIT ? $iBillingDetail : null);
+			$oAccount->CreditCard	= ($iBillingType == BILLING_TYPE_CREDIT_CARD ? $iBillingDetail : null);
 			
 			// Update proper detail field
+			$oDetails			= $oAccount->getPaymentMethodDetails();			 
 			$sNewBillingType	= '';
 			switch ($iBillingType)
 			{
-				case 1:	// DirectDebit
-					$oAccount->DirectDebit	= $iBillingDetail;
-					$oDirectDebit			= DirectDebit::getForId($iBillingDetail);
-					$sNewBillingType		= 	"Direct Debit from Bank Account\n".
-												"Account Name: {$oDirectDebit->AccountName}\n".
-												"Account Number: {$oDirectDebit->AccountNumber}";
+				case BILLING_TYPE_DIRECT_DEBIT:
+					$sNewBillingType	= 	"Direct Debit via Bank Account\n".
+											"Account Name: {$oDetails->AccountName}\n".
+											"Account Number: {$oDetails->AccountNumber}";
 					break;
-				case 2:	// CreditCard
-					$oAccount->CreditCard	= $iBillingDetail;
-					$oCreditCard			= Credit_Card::getForId($iBillingDetail);
-					$sNewBillingType		= 	"Direct Debit from Credit Card\n".
-												"Card Name: {$oCreditCard->Name}\n".
-												"Card Number: XXXXXXXXXXXX".substr(Decrypt($oCreditCard->CardNumber), -4);
+				case BILLING_TYPE_CREDIT_CARD:
+					$sNewBillingType	= 	"Direct Debit via Credit Card\n".
+											"Card Name: {$oDetails->Name}\n".
+											"Card Number: XXXXXXXXXXXX".substr(Decrypt($oDetails->CardNumber), -4);
 					break;
-				case 3:	// Invoice
-					$sNewBillingType		= 'Invoice';
+				case BILLING_TYPE_ACCOUNT:
+					$sNewBillingType	= 'Invoice';
 					break;
+				
+				case BILLING_TYPE_REBILL:
+					$oRebillTypeDetails	= $oDetails->getDetails();
+					
+					switch ($oDetails->rebill_type_id)
+					{
+						case REBILL_TYPE_MOTORPASS:
+							$sNewBillingType	= 	"Rebill via Motorpass\n" .
+													"Account Number: {$oRebillTypeDetails->account_number}";
+							break;
+					}
+					break; 
 			}
 			
 			$oAccount->save();
@@ -326,10 +443,7 @@ class JSON_Handler_Account extends JSON_Handler
 			// All good
 			$oDataAccess->TransactionCommit();
 			
-			return 	array(
-						"Success"	=> true,
-						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
-					);
+			return array("Success" => true);
 		}
 		catch (JSON_Handler_Account_Exception $oException)
 		{
@@ -488,6 +602,7 @@ class JSON_Handler_Account extends JSON_Handler
 				$oCreditCard->ExpMonth		= $oDetails->iExpiryMonth;
 				$oCreditCard->ExpYear		= $oDetails->iExpiryYear;
 				$oCreditCard->CVV			= Encrypt($oDetails->iCVV);
+				$oCreditCard->created_on	= date('Y-m-d H:i:s');
 				$oCreditCard->save();
 				
 				// Everything looks OK -- Commit!
@@ -628,6 +743,7 @@ class JSON_Handler_Account extends JSON_Handler
 				$oDirectDebit->BSB				= $oDetails->sBSB;
 				$oDirectDebit->AccountNumber	= $oDetails->sAccountNumber;
 				$oDirectDebit->AccountName		= $oDetails->sAccountName;
+				$oDirectDebit->created_on		= date('Y-m-d H:i:s');
 				$oDirectDebit->save();
 				
 				// Everything looks OK -- Commit!
@@ -767,7 +883,7 @@ class JSON_Handler_Account extends JSON_Handler
 				$oDataAccess->TransactionCommit();
 				
 				// Return successfully
-				return array(
+				return 	array(
 							"Success"		=> true,
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : '',
 							"iAccountId"	=> $iAccountId
@@ -782,6 +898,136 @@ class JSON_Handler_Account extends JSON_Handler
 						"Success"	=> false,
 						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database',
 						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
+		}
+	}
+	
+	public function getRebill($iAccountId)
+	{
+		try
+		{
+			$oRebill	= Rebill::getForAccountId($iAccountId);
+			$mResult	= ($oRebill ? $oRebill->toStdClass() : null);
+			
+			// Get the extra rebill type specific information
+			switch ($oRebill->rebill_type_id)
+			{
+				case REBILL_TYPE_MOTORPASS:
+					$oRebillMotorpass	= Rebill_Motorpass::getForRebillId($oRebill->id);
+					
+					// Add extra fields
+					$mResult->account_number	= $oRebillMotorpass->account_number;
+					break;
+			}
+			
+			return 	array(
+						"Success"	=> true,
+						"oRebill"	=> $mResult
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
+					);
+		}
+	}
+	
+	public function addRebill($iAccountId, $iRebillTypeId, $oDetails)
+	{
+		// Start a new database transaction
+		$oDataAccess	= DataAccess::getDataAccess();
+		
+		if (!$oDataAccess->TransactionStart())
+		{
+			// Failure!
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? 'Could not start database transaction.' : false,
+					);
+		}
+		
+		try
+		{
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
+			{
+				throw new JSON_Handler_Account_Exception('You do not have permission to add a rebill');
+			}
+			
+			$oCurrentRebill			= Rebill::getForAccountId($iAccountId);
+			$oCurrentRebillDetails	= false;
+			if ($oCurrentRebill)
+			{
+				$oCurrentRebillDetails	= $oCurrentRebill->getDetails();
+			}
+			
+			
+			// Create a new rebill
+			$oRebill						= new Rebill();
+			$oRebill->account_id			= $iAccountId;
+			$oRebill->rebill_type_id		= $iRebillTypeId;
+			$oRebill->created_employee_id	= Flex::getUserId();
+			$oRebill->created_timestamp		= date('Y-m-d H:i:s');
+			
+			// Set the extra rebill type specific information
+			switch ($iRebillTypeId)
+			{
+				case REBILL_TYPE_MOTORPASS:
+					// Check if a save is required
+					if ($oCurrentRebillDetails && ($oCurrentRebill->rebill_type_id == $iRebillTypeId) && ($oCurrentRebillDetails->account_number == $oDetails->account_number))
+					{
+						// No save required, the last rebill for the account is a motorpass with the same account number
+						// Return the last one
+						$oStdClassRebill					= $oCurrentRebill->toStdClass();
+						$oStdClassRebill->account_number	= $oCurrentRebillDetails->account_number;
+						
+						return 	array(
+									"Success"	=> true,
+									"bNoChange"	=> true,
+									"oRebill"	=> $oStdClassRebill
+								);
+					}
+					
+					// Save required, save the new rebill before creating the rebill_motorpass
+					$oRebill->save();
+					
+					// Save a new Rebill_Motorpass
+					$oRebillMotorpass					= new Rebill_Motorpass();
+					$oRebillMotorpass->rebill_id		= $oRebill->id;
+					$oRebillMotorpass->account_number	= $oDetails->account_number;
+					$oRebillMotorpass->save();
+					
+					// Return new details
+					$oStdClassRebill					= $oRebill->toStdClass();
+					$oStdClassRebill->account_number	= $oRebillMotorpass->account_number;
+					break;
+			}
+			
+			// Everything looks OK -- Commit!
+			$oDataAccess->TransactionCommit();
+			
+			return 	array(
+						"Success"	=> true,
+						"oRebill"	=> $oStdClassRebill
+					);
+		}
+		catch (JSON_Handler_Account_Exception $oException)
+		{
+			$oDataAccess->TransactionRollback();
+			
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			$oDataAccess->TransactionRollback();
+			
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $e->getMessage() : 'There was an error accessing the database'
 					);
 		}
 	}

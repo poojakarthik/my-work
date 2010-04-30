@@ -123,6 +123,11 @@ class Customer_Group
 		return null;
 	}
 	
+	public function getPaymentMethods()
+	{
+		return Customer_Group_Payment_Method::getForCustomerGroup($this->Id);
+	}
+	
 	//------------------------------------------------------------------------//
 	// getColumns
 	//------------------------------------------------------------------------//

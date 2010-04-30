@@ -1,15 +1,15 @@
 <?php
 /**
- * Billing_Type
+ * Rebill_Motorpass
  *
- * Represents a Record in the billing_type table
+ * This is a class that extends ORM_Cached
  *
- * @class	Billing_Type
+ * @class	Rebill_Motorpass
  */
-class Billing_Type extends ORM_Cached
+class Rebill_Motorpass extends ORM_Cached
 {
-	protected 			$_strTableName			= "billing_type";
-	protected static	$_strStaticTableName	= "billing_type";
+	protected 			$_strTableName			= "rebill_motorpass";
+	protected static	$_strStaticTableName	= "rebill_motorpass";
 	
 	protected static function getCacheName()
 	{
@@ -59,20 +59,29 @@ class Billing_Type extends ORM_Cached
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
-	
-	public function getPaymentMethod()
+
+	public static function getForRebillId($iRebillId)
 	{
-		return Payment_Method::getForId($this->payment_method_id);
+		$oSelect	= self::_preparedStatement('selByRebillId');
+		$oSelect->Execute(array('rebill_id' => $iRebillId));
+		if ($aRebillMotorpass = $oSelect->Fetch())
+		{
+			return new self($aRebillMotorpass);
+		}
+		else
+		{
+			return false;
+		}
 	}
-	
+
 	/**
 	 * _preparedStatement()
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
-	 * @param	string		$strStatement						Name of the statement
-	 *
-	 * @return	Statement										The requested Statement
+	 * @param	string		$strStatement	Name of the statement
+	 * 
+	 * @return	Statement					The requested Statement
 	 *
 	 * @method
 	 */
@@ -93,6 +102,9 @@ class Billing_Type extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
+					break;
+				case 'selByRebillId':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "rebill_id = <rebill_id>");
 					break;
 				
 				// INSERTS

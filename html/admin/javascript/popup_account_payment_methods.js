@@ -1,23 +1,41 @@
-
-
+/*
+ * THIS CLASS IS DEPRECATED, REPLACED BY popup_account_change_payment_method.js 
+ */
 var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 {
 	initialize	: function($super, iAccountId)
 	{
+		throw "Popup_Account_Payment_Methods is deprecated use Popup_Account_Change_Payment_Method instead";
+		return;
+	
+		if (!Popup_Account_Payment_Methods.HAS_CONSTANTS)
+		{
+			return;
+		}
+		
 		$super(48);
 		
-		this.iAccountId		= iAccountId;
+		this.iAccountId	= iAccountId;
 		
 		// Stores objects representing payment methods, hashed against the billing type
-		this.hCachedMethods	= {};
-		this.hCachedMethods[Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE]	= {Id: null};
+		this.hCachedMethods									= {};
+		this.hCachedMethods[$CONSTANT.BILLING_TYPE_ACCOUNT]	= {0: {Id: null}};
 		
 		// Stores radio buttons & summary divs, hashed by the billing type they represent
-		this.hBillingTypeRadios		= {};
-		this.hBillingTypeDom		= {};
+		this.hBillingTypeRadios											= {};
+		this.hBillingTypeRadios[$CONSTANT.BILLING_TYPE_DIRECT_DEBIT]	= {};
+		this.hBillingTypeRadios[$CONSTANT.BILLING_TYPE_CREDIT_CARD]		= {};
+		this.hBillingTypeRadios[$CONSTANT.BILLING_TYPE_ACCOUNT]			= {};
+		this.hBillingTypeRadios[$CONSTANT.BILLING_TYPE_REBILL]			= {};
 		
-		this.iCurrentBillingType	= null;
-		this.iSelectedBillingType	= null;
+		this.hBillingTypeDom										= {};
+		this.hBillingTypeDom[$CONSTANT.BILLING_TYPE_DIRECT_DEBIT]	= {};
+		this.hBillingTypeDom[$CONSTANT.BILLING_TYPE_CREDIT_CARD]	= {};
+		this.hBillingTypeDom[$CONSTANT.BILLING_TYPE_ACCOUNT]		= {};
+		this.hBillingTypeDom[$CONSTANT.BILLING_TYPE_REBILL]			= {};
+		
+		this.iSelectedBillingType		= null;
+		this.iSelectedSubBillingType	= null;
 		
 		this.oLoading	= new Reflex_Popup.Loading('Please Wait');
 		this.oLoading.display();
@@ -29,12 +47,17 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		if (typeof oResponse == 'undefined')
 		{
 			// Make request to get the current payment and information on other methods
-			this._getCurrentPaymentMethod	= jQuery.json.jsonFunction(this._buildUI.bind(this), this._buildUI.bind(this), 'Account', 'getCurrentPaymentMethod');
+			this._getCurrentPaymentMethod	= 	jQuery.json.jsonFunction(
+													this._buildUI.bind(this), 
+													this._buildUI.bind(this), 
+													'Account', 
+													'getCurrentPaymentMethod'
+												);
 			this._getCurrentPaymentMethod(this.iAccountId);
 		}
 		else if (oResponse.Success)
 		{
-			this._updateCurrentPaymentMethod(false, oResponse);
+			this._updateCurrentPaymentMethod(false, false, oResponse);
 			
 			// Generate the payment method options and details elements
 			this.oContent	= 	$T.div({class: 'payment-methods'},
@@ -86,14 +109,29 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 			this.oChangeButton	= this.oContent.select('li.payment-method-details > div > button.icon-button').first();
 			this.oChangeButton.observe('click', this._changePaymentMethodForBillingType.bind(this));
 			
-			// Add a radio option for each billing type
-			this._addBillingType(Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE);
-			this._addBillingType(Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT);
-			this._addBillingType(Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD);
+			// Add a radio option for each billing type (if the payment method is available)
+			if (oResponse.aPaymentMethods[$CONSTANT.PAYMENT_METHOD_ACCOUNT])
+			{
+				this._addBillingType($CONSTANT.BILLING_TYPE_ACCOUNT);
+			}
+			
+			if (oResponse.aPaymentMethods[$CONSTANT.PAYMENT_METHOD_DIRECT_DEBIT])
+			{
+				this._addBillingType($CONSTANT.BILLING_TYPE_DIRECT_DEBIT);
+				this._addBillingType($CONSTANT.BILLING_TYPE_CREDIT_CARD);
+			}
+			
+			if (oResponse.aPaymentMethods[$CONSTANT.PAYMENT_METHOD_REBILL])
+			{
+				// Rebill has sub billing types as well
+				for (var iRebillTypeId in Popup_Account_Payment_Methods.BILLING_TYPE_NAME[$CONSTANT.BILLING_TYPE_REBILL])
+				{
+					this._addBillingType($CONSTANT.BILLING_TYPE_REBILL, iRebillTypeId);
+				}
+			}
 			
 			// Select the current payment method
-			this.iCurrentBillingType	= oResponse.iBillingType;
-			this._selectBillingType(oResponse.iBillingType);
+			this._selectBillingType(oResponse.iBillingType, oResponse.iSubBillingType);
 			
 			// Display Popup
 			this.setTitle("Change Payment Method");
@@ -132,32 +170,43 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_addBillingType	: function(iBillingType)
+	_addBillingType	: function(iBillingType, iSubBillingType)
 	{
-		// Using divs
-		var sName	= Popup_Account_Payment_Methods.BILLING_TYPE_NAME[iBillingType];
+		// Default sub billing type is 0
+		iSubBillingType	= (iSubBillingType ? iSubBillingType : 0);
+		
+		var sName	= Popup_Account_Payment_Methods.BILLING_TYPE_NAME[iBillingType][iSubBillingType];
+		
+		// Special naming convention for rebill
+		if (iBillingType == $CONSTANT.BILLING_TYPE_REBILL)
+		{
+			sName	= 'Rebill via ' + sName; 
+		}
+		
 		var oDom	= 	$T.li({class: 'billing-type'},
-							$T.input({type: 'radio', name: 'billing-type-option', value: iBillingType}),
+							$T.input({type: 'radio', name: 'billing-type-option', value: iBillingType + ',' + iSubBillingType}),
 							$T.img({src: Popup_Account_Payment_Methods.BILLING_TYPE_IMAGE[iBillingType], alt: sName, title: sName}),
 							$T.span(sName)
 						);
 		// Events
 		var oRadio	= oDom.select('input[type="radio"]').first();
 		oRadio.observe('click', this._billingTypeSelected.bind(this, oRadio));
-		oDom.observe('click', this._selectBillingType.bind(this, iBillingType));
+		oDom.observe('click', this._selectBillingType.bind(this, iBillingType, iSubBillingType));
 		
 		// Attach element
 		var oSectionContent	= this.oContent.select('li.payment-method-billing-types > ul.reset').first();
 		oSectionContent.appendChild(oDom);
 		
 		// Cache the radio
-		this.hBillingTypeRadios[iBillingType]	= oRadio;
-		this.hBillingTypeDom[iBillingType]		= oDom;
+		this.hBillingTypeRadios[iBillingType][iSubBillingType]	= oRadio;
+		this.hBillingTypeDom[iBillingType][iSubBillingType]		= oDom;
 	},
 	
 	_billingTypeSelected	: function(oRadio)
 	{
-		var iBillingType 	= parseInt(oRadio.value);
+		var aSplit			= oRadio.value.split(',');
+		var iBillingType 	= parseInt(aSplit[0]);
+		var iSubBillingType	= parseInt(aSplit[1]);
 		
 		// Clear the details
 		this._clearDetails();
@@ -165,50 +214,40 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		// Check if it has expired, applies to credit cards only
 		var bExpired	= false;
 		
-		if (this.hCachedMethods[iBillingType] && (iBillingType == Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD) && this.hCachedMethods[iBillingType].bExpired)
+		if ((iBillingType == $CONSTANT.BILLING_TYPE_CREDIT_CARD) && 
+			this.hCachedMethods[iBillingType] && 
+			this.hCachedMethods[iBillingType][iSubBillingType] && 
+			this.hCachedMethods[iBillingType][iSubBillingType].bExpired)
 		{
 			bExpired	= true;
 		}
 		
-		if (this.hCachedMethods[iBillingType] && !bExpired)
+		if (this.hCachedMethods[iBillingType] && this.hCachedMethods[iBillingType][iSubBillingType] && !bExpired)
 		{
 			// Got payment method details cached for the billing type, Show the details
-			this._updateDetails(iBillingType, this.hCachedMethods[iBillingType]);
+			this._updateDetails(iBillingType, iSubBillingType, this.hCachedMethods[iBillingType][iSubBillingType]);
 		}
 		else 
 		{
 			// For the billing type (except invoice, it's always available) see if a 
 			// 'new payment method' or 'select payment method' popup is required
-			switch(iBillingType)
+			var	bHasCreditCard	= (iBillingType == $CONSTANT.BILLING_TYPE_CREDIT_CARD) && this.bHasCreditCard;
+			var	bHasBankAccount	= (iBillingType == $CONSTANT.BILLING_TYPE_DIRECT_DEBIT) && this.bHasBankAccount;
+			var bHasRebill		= (iBillingType == $CONSTANT.BILLING_TYPE_REBILL) && this.aHasRebill[iSubBillingType];
+			
+			if (bHasCreditCard || bHasBankAccount || bHasRebill)
 			{
-				case Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT:
-					if (this.bHasBankAccount)
-					{
-						// Show select bank account popup
-						this._showPaymentMethodSelectPopup(iBillingType, Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE);
-					}
-					else
-					{
-						// Show the add new bank account popup
-						this._showAddPaymentMethodPopup(iBillingType);
-					}
-					break;
-				case Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD:
-					if (this.bHasCreditCard)
-					{
-						// Show select credit card popup
-						this._showPaymentMethodSelectPopup(iBillingType, Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE);
-					}
-					else
-					{
-						// Show the add new credit card popup
-						this._showAddPaymentMethodPopup(iBillingType);
-					}
-					break;
+				// There are payment methods for the billing type. Show the select payment method popup
+				this._showPaymentMethodChangePopup(iBillingType, iSubBillingType, $CONSTANT.BILLING_TYPE_ACCOUNT, 0);
+			}
+			else
+			{
+				// Show 'add' payment method popup
+				this._showAddPaymentMethodPopup(iBillingType, iSubBillingType);
 			}
 		}
 		
-		if (iBillingType == Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE)
+		if (iBillingType == $CONSTANT.BILLING_TYPE_ACCOUNT)
 		{
 			// Remove it, not needed for 'Invoice'
 			this.oChangeButton.hide();
@@ -222,19 +261,20 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		// De-select previously selected option
 		if (this.iSelectedBillingType)
 		{
-			this.hBillingTypeDom[this.iSelectedBillingType].removeClassName('billing-type-selected');
+			this.hBillingTypeDom[this.iSelectedBillingType][this.iSelectedSubBillingType].removeClassName('billing-type-selected');
 		}
 		
 		// Select the new option
-		this.hBillingTypeDom[iBillingType].addClassName('billing-type-selected');
+		this.hBillingTypeDom[iBillingType][iSubBillingType].addClassName('billing-type-selected');
 		
 		// Record selected billing type
-		this.iSelectedBillingType	= iBillingType;
+		this.iSelectedBillingType		= iBillingType;
+		this.iSelectedSubBillingType	= iSubBillingType;
 	},
 	
-	_selectBillingType	: function(iBillingType)
+	_selectBillingType	: function(iBillingType, iSubBillingType)
 	{
-		var oRadio	= this.hBillingTypeRadios[iBillingType];
+		var oRadio	= this.hBillingTypeRadios[iBillingType][iSubBillingType];
 		
 		if (oRadio)
 		{
@@ -243,11 +283,11 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_updateDetails	: function(iBillingType, oPaymentMethod)
+	_updateDetails	: function(iBillingType, iSubBillingType, oPaymentMethod)
 	{
 		// Update the details, description
 		var oDescDiv		= this.oContent.select('li.payment-method-details > div > div.payment-method-details-description').first();
-		oDescDiv.innerHTML	= Popup_Account_Payment_Methods.BILLING_TYPE_DESCRIPTION[iBillingType];
+		oDescDiv.innerHTML	= Popup_Account_Payment_Methods.BILLING_TYPE_DESCRIPTION[iBillingType][iSubBillingType];
 		
 		// Update the details, info
 		var oInfoDiv	= this.oContent.select('li.payment-method-details > div > div.payment-method-details-info').first();
@@ -255,7 +295,7 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		
 		switch (iBillingType)
 		{
-			case Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT:
+			case $CONSTANT.BILLING_TYPE_DIRECT_DEBIT:
 				if (typeof oPaymentMethod.Id === 'undefined')
 				{
 					break;
@@ -304,7 +344,7 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 								)
 							);
 				break;
-			case Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD:
+			case $CONSTANT.BILLING_TYPE_CREDIT_CARD:
 				if (typeof oPaymentMethod.Id === 'undefined')
 				{
 					break;
@@ -361,8 +401,11 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 								)
 							);
 				break;
-			case Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE:
+			case $CONSTANT.BILLING_TYPE_ACCOUNT:
 				// Do nothing...
+				break;
+			case $CONSTANT.BILLING_TYPE_REBILL:
+				// ...
 				break;
 		}
 		
@@ -390,11 +433,17 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 			this.oLoading	= new Reflex_Popup.Loading('Saving...');
 			this.oLoading.display();
 			
-			this._setPaymentMethod	= jQuery.json.jsonFunction(this._saveResponse.bind(this), this._ajaxError.bind(this), 'Account', 'setPaymentMethod');
-			this._setPaymentMethod(
+			var fnSetPaymentMethod	= 	jQuery.json.jsonFunction(
+											this._saveResponse.bind(this), 
+											this._ajaxError.bind(this), 
+											'Account', 
+											'setPaymentMethod'
+										);
+			var oPaymentMethod		= this.hCachedMethods[this.iSelectedBillingType][this.iSelectedSubBillingType];
+			fnSetPaymentMethod(
 				this.iAccountId, 
 				this.iSelectedBillingType, 
-				this.hCachedMethods[this.iSelectedBillingType].Id
+				(oPaymentMethod.Id ? oPaymentMethod.Id : oPaymentMethod.id)
 			);
 		}
 		else
@@ -415,124 +464,170 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 		}
 	},
 	
-	_showPaymentMethodSelectPopup	: function(iBillingType, iBillingTypeToSelect)
+	_showPaymentMethodChangePopup	: function(iBillingType, iSubBillingType, iBillingTypeToSelect, iSubBillingTypeToSelect)
 	{
-		var fnShow	= function(iBillingType, iBillingTypeToSelect)
-		{
-			// Create the popup, giving it payment method details as well as cancel and selection callbacks
-			new Popup_Account_Select_Payment_Method(
-				this.iAccountId, 
-				iBillingType, 
-				(this.hCachedMethods[iBillingType] ? this.hCachedMethods[iBillingType].Id : null),
-				this._paymentMethodSelected.bind(this),
-				this._paymentMethodSelectCancelled.bind(this, iBillingTypeToSelect)
-			);
-		}
+		iBillingTypeToSelect	= (typeof iBillingTypeToSelect != 'undefined' ? iBillingTypeToSelect : iBillingType);
+		iSubBillingTypeToSelect	= (typeof iSubBillingTypeToSelect != 'undefined' ? iSubBillingTypeToSelect : iSubBillingType);
 		
-		// Load js file
-		JsAutoLoader.loadScript(
-			['popup_account_select_payment_method.js','reflex_date_format.js'], 
-			fnShow.bind(this, iBillingType, iBillingTypeToSelect),
-			true
-		);
+		switch (iBillingType)
+		{
+			case $CONSTANT.BILLING_TYPE_CREDIT_CARD:
+			case $CONSTANT.BILLING_TYPE_DIRECT_DEBIT:
+				// Show payment method select popup
+				var fnShow	= function(iBillingType, iBillingTypeToSelect)
+				{
+					// Create the popup, giving it payment method details as well as cancel and selection callbacks
+					new Popup_Account_Select_Payment_Method(
+						this.iAccountId, 
+						iBillingType, 
+						(this.hCachedMethods[iBillingType] ? this.hCachedMethods[iBillingType][iSubBillingType].Id : null),
+						this._paymentMethodSelected.bind(this, iBillingType, iSubBillingType),
+						this._paymentMethodSelectCancelled.bind(this, iBillingType, iSubBillingType, iBillingTypeToSelect, iSubBillingTypeToSelect)
+					);
+				}
+				
+				// Load js file
+				JsAutoLoader.loadScript(
+					'javascript/popup_account_select_payment_method.js', 
+					fnShow.bind(this, iBillingType, iBillingTypeToSelect)
+				);
+				
+				break;
+			case $CONSTANT.BILLING_TYPE_REBILL:
+				// Show the rebill edit popup
+				this._showRebillPopup(
+					iSubBillingType,
+					this._paymentMethodSelected.bind(this, iBillingType, iSubBillingType),
+					this._paymentMethodSelectCancelled.bind(this, iBillingType, iSubBillingType, $CONSTANT.BILLING_TYPE_ACCOUNT, 0)
+				);
+				break;
+		}
 	},
 	
-	_paymentMethodSelected	: function(iBillingType, oPaymentMethod)
+	_paymentMethodSelected	: function(iBillingType, iSubBillingType, oPaymentMethod)
 	{
-		if ((iBillingType == Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD) && (typeof oPaymentMethod.expiry === 'undefined'))
+		if ((iBillingType == $CONSTANT.BILLING_TYPE_CREDIT_CARD) && (typeof oPaymentMethod.expiry === 'undefined'))
 		{
 			// Check the credit cards expiry
 			Popup_Account_Payment_Methods._checkCreditCardExpiry(oPaymentMethod);
 		}
 	
-		this.hCachedMethods[iBillingType]	= oPaymentMethod;
-		this._selectBillingType(iBillingType);
+		// Cache the payment method
+		this.hCachedMethods[iBillingType]					= {};
+		this.hCachedMethods[iBillingType][iSubBillingType]	= oPaymentMethod;
+		
+		// Update bHas{Billing Type}
+		switch (iBillingType)
+		{
+			case $CONSTANT.BILLING_TYPE_CREDIT_CARD:
+				this.bHasCreditCard		= true;
+				break;
+				
+			case $CONSTANT.BILLING_TYPE_DIRECT_DEBIT:
+				this.bHasBankAccount	= true;
+				break;
+				
+			case $CONSTANT.BILLING_TYPE_REBILL:
+				this.aHasRebill[iSubBillingType]	= true;
+				break;
+		}
+		
+		this._selectBillingType(iBillingType, iSubBillingType);
 	},
 	
-	_paymentMethodSelectCancelled	: function(iBillingTypeToSelect, iBillingType)
+	_paymentMethodSelectCancelled	: function(iBillingType, iSubBillingType, iBillingTypeToSelect, iSubBillingTypeToSelect)
 	{
-		if (iBillingType != iBillingTypeToSelect)
+		if ((iBillingType != iBillingTypeToSelect) || (iSubBillingType && iSubBillingTypeToSelect))
 		{
-			this._refresh(iBillingTypeToSelect);
+			this._refresh(iBillingTypeToSelect, iSubBillingTypeToSelect);
 		}
 		else
 		{
-			this._refresh(iBillingType);
+			this._refresh(iBillingType, iSubBillingType);
 		}
 	},
 	
 	_changePaymentMethodForBillingType	: function()
 	{
 		// Check if there are any payment methods to change to, if not show add popup.
-		var	bCredit	= (this.iSelectedBillingType == Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD) && this.bHasCreditCard;
-		var	bDebit	= (this.iSelectedBillingType == Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT) && this.bHasBankAccount;
+		var	bHasCreditCard	= (this.iSelectedBillingType == $CONSTANT.BILLING_TYPE_CREDIT_CARD) && this.bHasCreditCard;
+		var	bHasBankAccount	= (this.iSelectedBillingType == $CONSTANT.BILLING_TYPE_DIRECT_DEBIT) && this.bHasBankAccount;
+		var bHasRebill		= (this.iSelectedBillingType == $CONSTANT.BILLING_TYPE_REBILL) && this.aHasRebill[this.iSelectedSubBillingType];
 		
-		if (bCredit || bDebit)
+		if (bHasCreditCard || bHasBankAccount || bHasRebill)
 		{
 			// There are payment methods for the billing type. Show the select payment method popup
-			this._showPaymentMethodSelectPopup(this.iSelectedBillingType, this.iSelectedBillingType);
+			this._showPaymentMethodChangePopup(this.iSelectedBillingType, this.iSelectedSubBillingType);
 		}
 		else
 		{
 			// Show 'add' payment method popup
-			this._showAddPaymentMethodPopup(this.iSelectedBillingType);
+			this._showAddPaymentMethodPopup(this.iSelectedBillingType, this.iSelectedSubBillingType);
 		}
 	},
 	
-	_showAddPaymentMethodPopup	: function(iBillingType)
+	_showAddPaymentMethodPopup	: function(iBillingType, iSubBillingType)
 	{
 		switch (iBillingType)
 		{
-			case Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD:
+			case $CONSTANT.BILLING_TYPE_CREDIT_CARD:
 				// Add credit card popup
-				var fnShowCC	= function(iBillingType, iBillingTypeToSelect)
+				var fnShowCC	= function(iBillingType, iSubBillingType, iBillingTypeToSelect, iSubBillingTypeToSelect)
 				{
 					new Popup_Account_Add_CreditCard(
 						this.iAccountId, 
-						this._paymentMethodSelected.bind(this, iBillingType),
-						this._paymentMethodSelectCancelled.bind(this, iBillingTypeToSelect, iBillingType)
+						this._paymentMethodSelected.bind(this, iBillingType, iSubBillingType),
+						this._paymentMethodSelectCancelled.bind(this, iBillingType, iSubBillingType, iBillingTypeToSelect, iSubBillingTypeToSelect)
 					);
 				}
 				
 				JsAutoLoader.loadScript(
 					'javascript/popup_account_add_creditcard.js', 
-					fnShowCC.bind(this, iBillingType, Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE)
+					fnShowCC.bind(this, iBillingType, iSubBillingType, $CONSTANT.BILLING_TYPE_ACCOUNT, 0)
 				);
 				break;
-			case Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT:
+			case $CONSTANT.BILLING_TYPE_DIRECT_DEBIT:
 				// Add bank account popup
-				var fnShowDD	= function(iBillingType, iBillingTypeToSelect)
+				var fnShowDD	= function(iBillingType, iSubBillingType, iBillingTypeToSelect, iSubBillingTypeToSelect)
 				{
 					new Popup_Account_Add_DirectDebit(
 						this.iAccountId, 
-						this._paymentMethodSelected.bind(this, iBillingType),
-						this._paymentMethodSelectCancelled.bind(this, iBillingTypeToSelect, iBillingType)
+						this._paymentMethodSelected.bind(this, iBillingType, iSubBillingType),
+						this._paymentMethodSelectCancelled.bind(this, iBillingType, iSubBillingType, iBillingTypeToSelect, iSubBillingTypeToSelect)
 					);
 				}
 				
 				JsAutoLoader.loadScript(
 					'javascript/popup_account_add_directdebit.js', 
-					fnShowDD.bind(this, iBillingType, Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE)
+					fnShowDD.bind(this, iBillingType, iSubBillingType, $CONSTANT.BILLING_TYPE_ACCOUNT, 0)
+				);
+				break;
+			case $CONSTANT.BILLING_TYPE_REBILL:
+				// Show the rebill edit popup
+				this._showRebillPopup(
+					iSubBillingType,
+					this._paymentMethodSelected.bind(this, iBillingType, iSubBillingType),
+					this._paymentMethodSelectCancelled.bind(this, iBillingType, iSubBillingType, $CONSTANT.BILLING_TYPE_ACCOUNT, 0)
 				);
 				break;
 		}
 	},
 	
-	_refresh	: function(iBillingTypeToSelect)
+	_refresh	: function(iBillingTypeToSelect, iSubBillingTypeToSelect)
 	{
 		// Refresh the current of payment method situation
 		this.oLoading	= new Reflex_Popup.Loading('Please Wait...');
 		this.oLoading.display();
 		this._refreshCurrentPaymentMethod	= 	jQuery.json.jsonFunction(
-													this._updateCurrentPaymentMethod.bind(this, iBillingTypeToSelect), 
-													this._updateCurrentPaymentMethod.bind(this, iBillingTypeToSelect), 
+													this._updateCurrentPaymentMethod.bind(this, iBillingTypeToSelect, iSubBillingTypeToSelect), 
+													this._updateCurrentPaymentMethod.bind(this, iBillingTypeToSelect, iSubBillingTypeToSelect), 
 													'Account', 
 													'getCurrentPaymentMethod'
 												);
 		this._refreshCurrentPaymentMethod(this.iAccountId);
 	},
 	
-	_updateCurrentPaymentMethod	: function(iBillingTypeToSelect, oResponse)
+	_updateCurrentPaymentMethod	: function(iBillingTypeToSelect, iSubBillingTypeToSelect, oResponse)
 	{
 		if (oResponse.Success)
 		{
@@ -541,24 +636,36 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 			delete this.oLoading;
 			
 			// Update flags
-			this.bHasCreditCard		= oResponse.bHasCreditCard;
-			this.bHasBankAccount	= oResponse.bHasBankAccount;
+			this.bHasCreditCard			= oResponse.bHasCreditCard;
+			this.bHasBankAccount		= oResponse.bHasBankAccount;
+			this.aHasRebill				= oResponse.aHasRebill;
+			this.hAvailableBillingTypes	= oResponse.aBillingTypes;
+			
+			// Get sub billing type (only for rebill currently)
+			oResponse.iSubBillingType	= 0;
+			if (oResponse.iBillingType == $CONSTANT.BILLING_TYPE_REBILL)
+			{
+				oResponse.iSubBillingType	= oResponse.oPaymentMethod.rebill_type_id;
+			}
 			
 			// No payment method returned, if Invoice is the current
 			if (oResponse.oPaymentMethod)
 			{
-				if (oResponse.iBillingType == Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD)
+				if (oResponse.iBillingType == $CONSTANT.BILLING_TYPE_CREDIT_CARD)
 				{
 					// Check the expiry date on the credit card
 					Popup_Account_Payment_Methods._checkCreditCardExpiry(oResponse.oPaymentMethod);
 				}
 				
 				// Update payment method cache
-				this.hCachedMethods[oResponse.iBillingType]	= oResponse.oPaymentMethod; 	 
+				this.hCachedMethods[oResponse.iBillingType]								= {};
+				this.hCachedMethods[oResponse.iBillingType][oResponse.iSubBillingType]	= oResponse.oPaymentMethod; 	 
 			}
 			else if (oResponse.iBillingDetail)
 			{
-				if (this.hCachedMethods[oResponse.iBillingType] && (this.hCachedMethods[oResponse.iBillingType].Id == oResponse.iBillingDetail))
+				if (this.hCachedMethods[oResponse.iBillingType] && 
+					this.hCachedMethods[oResponse.iBillingType][oResponse.iSubBillingType] && 
+					(this.hCachedMethods[oResponse.iBillingType][oResponse.iSubBillingType].Id == oResponse.iBillingDetail))
 				{
 					// There is no payment method but there is still billing type & detail recorded, remove the invalid payment method from the hash
 					this.hCachedMethods[oResponse.iBillingType]	= null;
@@ -568,7 +675,7 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 			// Select billing type if one is specified
 			if (iBillingTypeToSelect)
 			{
-				this._selectBillingType(iBillingTypeToSelect);
+				this._selectBillingType(iBillingTypeToSelect, iSubBillingTypeToSelect);
 			}
 		}
 		else
@@ -576,37 +683,67 @@ var Popup_Account_Payment_Methods	= Class.create(Reflex_Popup,
 			// AJAX error
 			this._ajaxError(oResponse);
 		}
+	},
+	
+	_showRebillPopup	: function(iSubBillingType, fnOnSelect, fnOnCancel)
+	{
+		var fnLoad	= function()
+		{
+			new Popup_Account_Edit_Rebill(this.iAccountId, iSubBillingType, fnOnSelect, fnOnCancel);
+		};
+		
+		JsAutoLoader.loadScript('javascript/popup_account_edit_rebill.js', fnLoad.bind(this));
 	}
 });
+
+// Check if $CONSTANT has billing_type constant group loaded, if not this class won't work
+if (typeof Flex.Constant.arrConstantGroups.billing_type == 'undefined' || 
+	typeof Flex.Constant.arrConstantGroups.rebill_type == 'undefined' || 
+	typeof Flex.Constant.arrConstantGroups.payment_method == 'undefined')
+{
+	Popup_Account_Payment_Methods.HAS_CONSTANTS	= false;
+	throw ('Please load the "billing_type" & "rebill_type" constant groups before including popup_account_payment_methods.js');
+}
+else
+{
+	Popup_Account_Payment_Methods.HAS_CONSTANTS	= true;
+}
 
 // Image paths
 Popup_Account_Payment_Methods.CANCEL_IMAGE_SOURCE 	= '../admin/img/template/delete.png';
 Popup_Account_Payment_Methods.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
 Popup_Account_Payment_Methods.EDIT_IMAGE_SOURCE		= '../admin/img/template/pencil.png';
 
-// Billing types
-Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT	= 1;
-Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD	= 2;
-Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE		= 3;
-
 // Billing type info
-var hName	= {};
-hName[Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE]		= 'Invoice';
-hName[Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD]	= 'Direct Debit via Credit Card';
-hName[Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT]	= 'Direct Debit via Bank Transfer';
-Popup_Account_Payment_Methods.BILLING_TYPE_NAME					= hName;
+var hName										= {};
+hName[$CONSTANT.BILLING_TYPE_DIRECT_DEBIT]		= {0: 'Direct Debit via Bank Transfer'};
+hName[$CONSTANT.BILLING_TYPE_CREDIT_CARD]		= {0: 'Direct Debit via Credit Card'};
+hName[$CONSTANT.BILLING_TYPE_ACCOUNT]			= {0: 'Account'};
+hName[$CONSTANT.BILLING_TYPE_REBILL]			= {};
 
-var hDescription	= {};
-hDescription[Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT]	= 'Money owed is automatically transferred from the following bank account.';
-hDescription[Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD]	= 'Money owed is automatically charged to the following credit card.';
-hDescription[Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE]		= 'Money owed is to be paid upon recieving the invoice.';
-Popup_Account_Payment_Methods.BILLING_TYPE_DESCRIPTION					= hDescription;
+Popup_Account_Payment_Methods.BILLING_TYPE_NAME	= hName;
 
-var hImage	= {};
-hImage[Popup_Account_Payment_Methods.BILLING_TYPE_DIRECT_DEBIT]	= '../admin/img/template/bank_transfer.png';
-hImage[Popup_Account_Payment_Methods.BILLING_TYPE_CREDIT_CARD]	= '../admin/img/template/credit_card.png';
-hImage[Popup_Account_Payment_Methods.BILLING_TYPE_INVOICE]		= '../admin/img/template/money.png';
-Popup_Account_Payment_Methods.BILLING_TYPE_IMAGE				= hImage;
+var hDescription										= {};
+hDescription[$CONSTANT.BILLING_TYPE_DIRECT_DEBIT]		= {0: 'Money owed is automatically transferred from the following bank account.'};
+hDescription[$CONSTANT.BILLING_TYPE_CREDIT_CARD]		= {0: 'Money owed is automatically charged to the following credit card.'};
+hDescription[$CONSTANT.BILLING_TYPE_ACCOUNT]			= {0: 'Money owed is to be paid upon recieving the invoice.'};
+hDescription[$CONSTANT.BILLING_TYPE_REBILL]				= {};
+
+Popup_Account_Payment_Methods.BILLING_TYPE_DESCRIPTION	= hDescription;
+
+// Add rebill_type constant values
+for (var iId in Flex.Constant.arrConstantGroups.rebill_type)
+{
+	hName[$CONSTANT.BILLING_TYPE_REBILL][iId]			= Flex.Constant.arrConstantGroups.rebill_type[iId].Name;
+	hDescription[$CONSTANT.BILLING_TYPE_REBILL][iId]	= Flex.Constant.arrConstantGroups.rebill_type[iId].Description;
+}
+
+var hImage											= {};
+hImage[$CONSTANT.BILLING_TYPE_DIRECT_DEBIT]			= '../admin/img/template/bank_transfer.png';
+hImage[$CONSTANT.BILLING_TYPE_CREDIT_CARD]			= '../admin/img/template/credit_card.png';
+hImage[$CONSTANT.BILLING_TYPE_ACCOUNT]				= '../admin/img/template/money.png';
+hImage[$CONSTANT.BILLING_TYPE_REBILL]				= '../admin/img/template/rebill.png';
+Popup_Account_Payment_Methods.BILLING_TYPE_IMAGE	= hImage;
 
 Popup_Account_Payment_Methods._checkCreditCardExpiry	= function(oCreditCard)
 {
@@ -625,3 +762,4 @@ Popup_Account_Payment_Methods._formatDate	= function(sDate)
 {
 	return Reflex_Date_Format.format('j/n/Y', Date.parse(sDate.replace(/-/g, '/')) / 1000);
 }
+

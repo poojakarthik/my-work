@@ -1199,7 +1199,26 @@ class MenuItems {
 		$this->strLabel = "Change Payment Method";
 		$this->strContextMenuLabel = "";
 		// return self :: OLD_FRAMEWORK . "account_payment.php?Id=$intAccountId";
-		return "javascript:JsAutoLoader.loadScript(['popup_account_payment_methods.js','reflex_date_format.js'], function(){new Popup_Account_Payment_Methods({$iAccountId})}, true);";
+		return "javascript:
+					Flex.Constant.loadConstantGroup(
+						['payment_method', 'rebill_type', 'direct_debit_type'], 
+						function()
+						{
+							JsAutoLoader.loadScript(
+								[
+									'javascript/popup_account_change_payment_method.js',
+									'../ui/javascript/reflex_date_format.js',
+									'../ui/javascript/reflex_validation.js',
+									'../ui/javascript/control_field.js',
+									'../ui/javascript/control_field_text.js'
+								],
+								function()
+								{
+									new Popup_Account_Change_Payment_Method({$iAccountId})
+								}
+							);
+						}
+					);";
 	}
 	
 	//------------------------------------------------------------------------//

@@ -455,6 +455,52 @@ ORDER BY FNN;";
 		return TRUE;
 	}
 	
+	// Gets the latest rebill for the account (if any)
+	public function getRebill()
+	{
+		return Rebill::getForAccountId($this->Id);
+	}
+	
+	// Gets the available payment methods for this accounts customer group
+	public function getPaymentMethods()
+	{
+		$oCustomerGroup	= Customer_Group::getForId($this->CustomerGroup);
+		return $oCustomerGroup->getPaymentMethods(); 
+	}
+	
+	public function getPaymentMethodDetails()
+	{
+		$oBillingType	= Billing_Type::getForId($this->BillingType);
+		$mPaymentMethod	= null;
+		
+		switch ($oBillingType->payment_method_id)
+		{
+			case PAYMENT_METHOD_ACCOUNT:
+				$mPaymentMethod	= PAYMENT_METHOD_ACCOUNT;
+				break;
+				
+			case PAYMENT_METHOD_DIRECT_DEBIT:
+				if ($this->CreditCard)
+				{
+					$mPaymentMethod	= Credit_Card::getForId($this->CreditCard);
+				}
+				else if ($this->DirectDebit)
+				{
+					$mPaymentMethod	= DirectDebit::getForId($this->DirectDebit);
+				}
+				break;
+				
+			case PAYMENT_METHOD_REBILL:
+				$mPaymentMethod	= Rebill::getForAccountId($this->Id);
+				break;
+				
+			default:
+				$mPaymentMethod	= PAYMENT_METHOD_ACCOUNT;
+		}
+		
+		return $mPaymentMethod;
+	}
+	
 	// Empties the cache
 	public static function emptyCache()
 	{
