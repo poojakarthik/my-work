@@ -12,16 +12,15 @@
  *	4:	Create the rebill_type Table
  *	5:	Create the rebill Table
  *	6:	Add the 'Motorpass' Rebill Type
- *	7:	Create the rebill_motorpass Table
  *
- *	8:	Create the customer_group_payment_method Table
- *	9:	Popuplate the customer_group_payment_method Table
+ *	7:	Create the customer_group_payment_method Table
+ *	8:	Popuplate the customer_group_payment_method Table
  *
- *	10:	Create the customer_group_rebill_type Table
+ *	9:	Create the customer_group_rebill_type Table
  *
- *	11:	Add the 'Rebill Payout' Payment Type
- *	12:	Add the Payment.surcharge_charge_id Field
- *	13:	Link up existing Payments to Surcharges
+ *	10:	Add the 'Rebill Payout' Payment Type
+ *	11:	Add the Payment.surcharge_charge_id Field
+ *	12:	Link up existing Payments to Surcharges
  *
  */
 
