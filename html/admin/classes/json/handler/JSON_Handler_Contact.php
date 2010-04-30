@@ -121,11 +121,6 @@ class JSON_Handler_Contact extends JSON_Handler
 			$aValidationErrors = array();
 			
 			// Check each required field and each fields value
-			if (!isset($oContactDetails->sTitle) || $oContactDetails->sTitle == '')
-			{
-				$aValidationErrors[]	= 'Title missing';
-			}
-			
 			if (!isset($oContactDetails->sFirstName) || $oContactDetails->sFirstName == '')
 			{
 				$aValidationErrors[]	= 'First Name missing';
