@@ -20,7 +20,7 @@ class Flex_Rollout_Version_000209 extends Flex_Rollout_Version
 							(
 								array
 								(
-									'sDescription'		=>	"Add the 'Retail Decisions' and 'Peoples Choice Communication' Carriers",
+									'sDescription'		=>	"Add the 'Rebiller' Carrier Type",
 									'sAlterSQL'			=>	"	INSERT INTO	carrier_type
 																	(name		, description		, const_name)
 																VALUES
