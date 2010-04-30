@@ -390,27 +390,30 @@
 				
 				$arrNormalised = array_merge($arrPayment, $arrNormalised);
 				$arrNormalised['Status']	= $intStatus;
-				if ($this->_ubiPayment->Execute($arrNormalised) === FALSE)
+				
+				// Save
+				$oPayment	= new Payment($arrNormalised);
+				if (!$oPayment->save())
 				{
 					$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
 				}
 				continue;
 			}
-			
-			// save the payment to DB
 			$arrNormalised = array_merge($arrPayment, $arrNormalised);
 			$arrNormalised['Status']	= PAYMENT_WAITING;
-			$intResult = $this->_ubiPayment->Execute($arrNormalised);
-			if($intResult === FALSE)
-			{
-				$this->_ubiPayment->Error();
-			}
-			elseif(!$intResult)
+			
+			// Save
+			$oPayment	= new Payment($arrNormalised);
+			if (!$oPayment->save())
 			{
 				$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']), FALSE);
 				$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
 			}
+			
 			$intPassed++;
+				
+			// Add Surcharges
+			$oPayment->applySurcharges();
 			
 			// Add Credit Card Surcharge
 			if ($arrNormalised['OriginType'] == PAYMENT_TYPE_CREDIT_CARD && (int)$arrNormalised['OriginId'])
