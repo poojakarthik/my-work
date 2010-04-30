@@ -212,6 +212,14 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 		// Populate the title select
 		var oTitleSelect	= oContent.select('select.contact-edit-title').first();
 		
+		// Start with 'None'
+		oTitleSelect.appendChild(
+			$T.option({value: ''},
+				'None'
+			)
+		);
+		
+		// Add rest of valid titles
 		for (var i = 0; i < oResponse.aContactTitles.length; i++)
 		{
 			oTitleSelect.appendChild(
@@ -224,7 +232,7 @@ var Popup_Contact_Edit	= Class.create(Reflex_Popup,
 		// Setup input validate event handlers (selects first, then inputs)
 		var aInputs				= oContent.select('select, input');
 		aInputs[0].sFieldName	= 'Title';
-		aInputs[0].bRequired	= true;
+		aInputs[0].bRequired	= false;
 				
 		aInputs[1].sFieldName	= 'Day of Birth';
 		aInputs[1].bRequired	= true;
