@@ -24,12 +24,13 @@ class Flex_Rollout_Version_000210 extends Flex_Rollout_Version
 									'sAlterSQL'			=>	"	CREATE TABLE	carrier_payment_type
 																(
 																	id					BIGINT	UNSIGNED	NOT NULL	AUTO_INCREMENT	COMMENT 'Unique Identifier',
-																	carrier_payment_id	BIGINT	UNSIGNED	NOT NULL					COMMENT '(FK) Carrier',
+																	carrier_payment_id	BIGINT				NOT NULL					COMMENT '(FK) Carrier',
 																	payment_type_id		BIGINT	UNSIGNED	NOT NULL					COMMENT '(FK) Payment Type',
 																	surcharge_percent	DECIMAL(4,4)		NULL						COMMENT 'Merchant Fee defined as a percentage of Payment value',
 																	
 																	CONSTRAINT	pk_carrier_payment_type_id					PRIMARY KEY	(id),
-																	CONSTRAINT	fk_carrier_payment_type_carrier_payment_id	FOREIGN KEY	(carrier_payment_id)	REFERENCES carrier_payment(id)	ON UPDATE CASCADE	ON DELETE RESTRICT
+																	CONSTRAINT	fk_carrier_payment_type_carrier_payment_id	FOREIGN KEY	(carrier_payment_id)	REFERENCES carrier_payment(id)	ON UPDATE CASCADE	ON DELETE RESTRICT,
+																	CONSTRAINT	fk_carrier_payment_type_payment_charge_id	FOREIGN KEY	(payment_type_id)		REFERENCES payment_type(id)		ON UPDATE CASCADE	ON DELETE RESTRICT
 																) ENGINE=InnoDB;",
 									'sRollbackSQL'		=>	"DROP TABLE	carrier_payment_type;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
