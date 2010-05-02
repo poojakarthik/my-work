@@ -1,15 +1,15 @@
 <?php
 /**
- * Payment
+ * Carrier_Payment_Type
  *
- * Represents a Record in the Payment table
+ * Represents a Record in the carrier_payment_merchant table
  *
- * @class	Payment
+ * @class	Carrier_Payment_Type
  */
-class Payment extends ORM_Cached
+class Carrier_Payment_Type extends ORM_Cached
 {
-	protected 			$_strTableName			= "Payment";
-	protected static	$_strStaticTableName	= "Payment";
+	protected 			$_strTableName			= "carrier_payment_merchant";
+	protected static	$_strStaticTableName	= "carrier_payment_merchant";
 	
 	protected static function getCacheName()
 	{
@@ -60,41 +60,9 @@ class Payment extends ORM_Cached
 	//				END - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - END
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	
-	public function applySurcharges()
+	public function calculateSurcharge($fAmount, $iPrecision=2)
 	{
-		// Get Payment Merchant details
-		$oCarrierPaymentType	= Carrier_Payment_Type::getForCarrierAndPaymentType($this->carrier, $this->PaymentType);
-		
-		// Calculate Surcharge
-		$fSurcharge	= $oCarrierPaymentType->calculateSurcharge($this->Amount);
-		
-		// Apply Charge
-		$oCharge	= null;
-		if ($fSurcharge > 0.0)
-		{
-			$oChargeType	= Charge_Type::getForCode('PMF');
-			
-			$oCharge					= new Charge();
-			
-			$oCharge->AccountGroup		= $this->AccountGroup;
-			$oCharge->Account			= $this->Account;
-			$oCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
-			$oCharge->CreatedOn			= date('Y-m-d');
-			$oCharge->ApprovedBy		= Employee::SYSTEM_EMPLOYEE_ID;
-			$oCharge->ChargeType		= $oChargeType->ChargeType;
-			$oCharge->charge_type_id	= $oChargeType->Id;
-			$oCharge->Description		= $oChargeType->Description.': '.$oPaymentMerchant->name;
-			$oCharge->ChargedOn			= $this->PaidOn;
-			$oCharge->Nature			= 'DR';
-			$oCharge->Amount			= round($fSurcharge, 2);
-			$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
-			$oCharge->LinkId			= $this->Id;
-			$oCharge->Status			= CHARGE_APPROVED;
-			
-			$oCharge->save();
-		}
-		
-		return $oCharge;
+		return round($fAmount * (float)$this->surcharge_percent, 2);
 	}
 	
 	/**

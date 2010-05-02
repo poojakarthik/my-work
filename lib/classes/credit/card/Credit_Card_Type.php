@@ -33,6 +33,9 @@ class Credit_Card_Type
 	public function calculateSurcharge($fltAmount)
 	{
 		return round((($fltAmount * 100) * $this->surcharge)/100, 2);
+		
+		// Some day we'll move Credit Card Type surcharges to the generic Carrier/Payment Merchant concept
+		// TODO
 	}
 
 	protected static function getColumns()
