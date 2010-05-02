@@ -65,6 +65,28 @@ class Carrier_Payment_Type extends ORM_Cached
 		return round($fAmount * (float)$this->surcharge_percent, 2);
 	}
 	
+	public static function getForCarrierAndPaymentType($mCarrier, $mPaymentType)
+	{
+		$iCarrierId		= ORM::extractId($mCarrier);
+		$iPaymentTypeId	= ORM::extractId($mPaymentType);
+		
+		$oStatement	= self::_preparedStatement('selForCarrierAndPaymentType');
+		if ($oStatement->Execute(array('carrier_id'=>$iCarrierId, 'payment_type_id'=>$iPaymentTypeId)) === false)
+		{
+			throw new Exception($oStatement->Error());
+		}
+		elseif ($aCarrierPaymentType = $oStatement->Fetch())
+		{
+			$oCarrierPaymentType				= new Carrier_Payment_Type($aCarrierPaymentType);
+			self::addToCache($oCarrierPaymentType);
+			return $oCarrierPaymentType;
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
 	/**
 	 * _preparedStatement()
 	 *
@@ -93,6 +115,9 @@ class Carrier_Payment_Type extends ORM_Cached
 					break;
 				case 'selAll':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
+					break;
+				case 'selForCarrierAndPaymentType':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "carrier = <carrier_id> AND PaymentType = <payment_type_id>", "id DESC", 1);
 					break;
 				
 				// INSERTS

@@ -174,13 +174,13 @@ abstract class ORM
 
 	public function __get($strName)
 	{
-		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
+		$strName	= $this->_getFieldName($strName);
 		return (array_key_exists($strName, $this->_arrProperties)) ? $this->_arrProperties[$strName] : NULL;
 	}
 
 	protected function __set($strName, $mxdValue)
 	{
-		$strName	= array_key_exists($strName, $this->_arrTidyNames) ? $this->_arrTidyNames[$strName] : $strName;
+		$strName	= $this->_getFieldName($strName);
 		
 		if (array_key_exists($strName, $this->_arrProperties))
 		{
@@ -202,6 +202,21 @@ abstract class ORM
 		{
 			$this->{$strName}	= $mxdValue;
 		}
+	}
+	
+	public function __isset($sName)
+	{
+		return isset($this->_arrProperties[$this->_getFieldName($sName)]);
+	}
+	
+	public function __unset($sName)
+	{
+		unset($this->_arrProperties[$this->_getFieldName($sName)]);
+	}
+	
+	protected function _getFieldName($sName)
+	{
+		return array_key_exists($sName, $this->_arrTidyNames) ? $this->_arrTidyNames[$sName] : $sName;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -327,6 +342,56 @@ abstract class ORM
 		}
 		
 		return $arrPostgres;
+	}
+	
+	public static function extractId($mORM)
+	{
+		if (is_object($mORM))
+		{
+			// Object (including ORM)
+			if (isset($mORM->id))
+			{
+				return $mORM->id;
+			}
+			elseif (isset($mORM->Id))
+			{
+				return $mORM->Id;
+			}
+			elseif (isset($mORM->ID))
+			{
+				return $mORM->ID;
+			}
+			elseif (isset($mORM->iD))
+			{
+				return $mORM->iD;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		elseif (is_array($mORM))
+		{
+			// Array representing a DB row
+			foreach ($mORM as $sKey=>$mValue)
+			{
+				if (strtolower($sKey) === 'id')
+				{
+					return $mValue;
+				}
+				return null;
+			}
+		}
+		elseif (is_numeric($mORM))
+		{
+			// Numeric (cast it to an integer)
+			return (int)$mORM;
+		}
+		else
+		{
+			// Unable to extract
+			return null;
+		}
 	}
 	
 	//------------------------------------------------------------------------//
