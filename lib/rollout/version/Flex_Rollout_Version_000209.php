@@ -25,7 +25,11 @@ class Flex_Rollout_Version_000209 extends Flex_Rollout_Version
 																	(name		, description		, const_name)
 																VALUES
 																	('Rebiller'	, 'Rebiller'		, 'CARRIER_TYPE_REBILLER');",
-									'sRollbackSQL'		=>	"DELETE FROM carrier_type WHERE const_name = 'CARRIER_TYPE_REBILLER';",
+									'sRollbackSQL'		=>	array
+															(
+																"DELETE FROM carrier_type WHERE const_name = 'CARRIER_TYPE_REBILLER';",
+																"ALTER TABLE carrier_type AUTO_INCREMENT = 1;"
+															),
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
 								array
@@ -36,7 +40,11 @@ class Flex_Rollout_Version_000209 extends Flex_Rollout_Version
 																VALUES
 																	('People\'s Choice'	, (SELECT id FROM carrier_type WHERE const_name = 'CARRIER_TYPE_SALES_CALL_CENTRE')	, 'People\'s Choice Communications'	, 'CARRIER_PEOPLES_CHOICE'),
 																	('Retail Decisions'	, (SELECT id FROM carrier_type WHERE const_name = 'CARRIER_TYPE_REBILLER')			, 'Retail Decisions'				, 'CARRIER_RETAIL_DECISIONS');",
-									'sRollbackSQL'		=>	"DELETE FROM	Carrier	WHERE const_name IN ('CARRIER_PEOPLES_CHOICE', 'CARRIER_RETAIL_DECISIONS');",
+									'sRollbackSQL'		=>	array
+															(
+																"DELETE FROM	Carrier	WHERE const_name IN ('CARRIER_PEOPLES_CHOICE', 'CARRIER_RETAIL_DECISIONS');",
+																"ALTER TABLE Carrier AUTO_INCREMENT = 1;"
+															),
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
 							);
