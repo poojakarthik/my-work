@@ -41,7 +41,7 @@ class Flex_Rollout_Version_000210 extends Flex_Rollout_Version
 									'sAlterSQL'			=>	"	INSERT INTO	ChargeType
 																	(ChargeType		, Description				, Nature	, Fixed	, automatic_only	, Amount	, Archived	, charge_type_visibility_id)
 																VALUES
-																	('PMF'			, 'Payment Merchant Fee'	, 'DR'		, 0		, 1					, 0.00		, 0			, (SELECT id FROM charge_type_visibility WHERE const_name 'CHARGE_TYPE_VISIBILITY_VISIBLE'));",
+																	('PMF'			, 'Payment Merchant Fee'	, 'DR'		, 0		, 1					, 0.00		, 0			, (SELECT id FROM charge_type_visibility WHERE const_name = 'CHARGE_TYPE_VISIBILITY_VISIBLE'));",
 									'sRollbackSQL'		=>	"DELETE FROM ChargeType WHERE ChargeType = 'PMF' AND automatic_only = 1;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
