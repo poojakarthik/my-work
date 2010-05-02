@@ -198,6 +198,17 @@
 		
 		self::_addAttribute($xmlPayment, 'DirectDebit', (in_array($arrCustomer['BillingType'], Array(BILLING_TYPE_CREDIT_CARD, BILLING_TYPE_DIRECT_DEBIT)) ? 1 : 0));
 		
+		$xmlPaymentMethod	= self::_addElement($xmlPayment, 'PaymentMethod');
+		self::_addAttribute($xmlPaymentMethod, 'Method', Payment_Method::getForId(Billing_Type::getForId((int)$arrCustomer['BillingType'])->payment_method_id)->const_name);
+		
+		$oAccount				= Account::getForId($arrInvoice['Account']);
+		$oPaymentMethodDetails	= $oAccount->getPaymentMethodDetails();
+		if (is_object($oPaymentMethodDetails))
+		{
+			$xmlPaymentMethodDetails	= self::_addElement($xmlPayment, 'Details');
+			self::_addAttribute($xmlPaymentMethodDetails, 'Type', get_class($oPaymentMethodDetails));
+		}
+		
 		//--------------------------------------------------------------------//
 		// Statement
 		//--------------------------------------------------------------------//
