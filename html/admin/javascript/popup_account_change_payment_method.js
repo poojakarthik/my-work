@@ -549,6 +549,64 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 		}
 	},
 	
+	_showAddPaymentMethodPopup	: function(iMethod, iSubType)
+	{
+		// Check payment method
+		switch (iMethod)
+		{
+			case $CONSTANT.PAYMENT_METHOD_DIRECT_DEBIT:
+				// Direct debit, check if credit or bank transfer
+				switch (iSubType)
+				{
+					case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
+						// Add credit card popup
+						var fnShowCC	= function(iMethod, iSubType, iMethodToSelect, iSubTypeToSelect)
+						{
+							new Popup_Account_Add_CreditCard(
+								this.iAccountId, 
+								this._paymentMethodSelected.bind(this, iMethod, iSubType),
+								this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, iMethodToSelect, iSubTypeToSelect)
+							);
+						}
+						
+						JsAutoLoader.loadScript(
+							'javascript/popup_account_add_creditcard.js', 
+							fnShowCC.bind(this, iMethod, iSubType, $CONSTANT.PAYMENT_METHOD_ACCOUNT, null)
+						);
+						
+						break;
+					case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
+						// Add bank account popup
+						var fnShowDD	= function(iMethod, iSubType, iMethodToSelect, iSubTypeToSelect)
+						{
+							new Popup_Account_Add_DirectDebit(
+								this.iAccountId, 
+								this._paymentMethodSelected.bind(this, iMethod, iSubType),
+								this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, iMethodToSelect, iSubTypeToSelect)
+							);
+						}
+						
+						JsAutoLoader.loadScript(
+							'javascript/popup_account_add_directdebit.js', 
+							fnShowDD.bind(this, iMethod, iSubType, $CONSTANT.PAYMENT_METHOD_ACCOUNT, null)
+						);
+						
+						break;
+				}
+				
+				break;
+				
+			case $CONSTANT.PAYMENT_METHOD_REBILL:
+				// Rebill, Show the rebill edit popup
+				this._showRebillPopup(
+					iSubType,
+					this._paymentMethodSelected.bind(this, iMethod, iSubType),
+					this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, $CONSTANT.BILLING_TYPE_ACCOUNT, 0)
+				);
+				break;
+		}
+	},
+	
 	_paymentMethodSelected	: function(iMethod, iSubType, oMethod)
 	{
 		if ((iMethod == $CONSTANT.PAYMENT_METHOD_DIRECT_DEBIT) && 
@@ -593,62 +651,6 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 		{
 			// Show 'add' payment method popup
 			this._showAddPaymentMethodPopup(this.iSelectedMethod, this.iSelectedSubType);
-		}
-	},
-	
-	_showAddPaymentMethodPopup	: function(iMethod, iSubType)
-	{
-		switch (iMethod)
-		{
-			case $CONSTANT.PAYMENT_METHOD_DIRECT_DEBIT:
-				switch (iMethod)
-				{
-					case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
-						// Add credit card popup
-						var fnShowCC	= function(iMethod, iSubType, iMethodToSelect, iSubTypeToSelect)
-						{
-							new Popup_Account_Add_CreditCard(
-								this.iAccountId, 
-								this._paymentMethodSelected.bind(this, iMethod, iSubType),
-								this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, iMethodToSelect, iSubTypeToSelect)
-							);
-						}
-						
-						JsAutoLoader.loadScript(
-							'javascript/popup_account_add_creditcard.js', 
-							fnShowCC.bind(this, iMethod, iSubType, $CONSTANT.BILLING_TYPE_ACCOUNT, 0)
-						);
-						
-						break;
-					case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
-						// Add bank account popup
-						var fnShowDD	= function(iMethod, iSubType, iMethodToSelect, iSubTypeToSelect)
-						{
-							new Popup_Account_Add_DirectDebit(
-								this.iAccountId, 
-								this._paymentMethodSelected.bind(this, iMethod, iSubType),
-								this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, iMethodToSelect, iSubTypeToSelect)
-							);
-						}
-						
-						JsAutoLoader.loadScript(
-							'javascript/popup_account_add_directdebit.js', 
-							fnShowDD.bind(this, iMethod, iSubType, $CONSTANT.BILLING_TYPE_ACCOUNT, 0)
-						);
-						
-						break;
-				}
-				
-				break;
-				
-			case $CONSTANT.PAYMENT_METHOD_REBILL:
-				// Show the rebill edit popup
-				this._showRebillPopup(
-					iSubType,
-					this._paymentMethodSelected.bind(this, iMethod, iSubType),
-					this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, $CONSTANT.BILLING_TYPE_ACCOUNT, 0)
-				);
-				break;
 		}
 	},
 	
