@@ -479,13 +479,13 @@ class Service extends ORM
 			if ($sDataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
 			{
 				// MySQL Database, invoiced
-				$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\"";
+				$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\" ";
 				$sCountSelect	= "SELECT COUNT(*) ";
-				$sCdrs			=	"FROM 	CDR c" .
-									"WHERE 	invoice_run_id = $iInvoiceRunId" .
-									"AND 	Account = $iAccountId" .
-								    "AND 	c.Service = $iServiceId" .
-								    "AND	c.Status in (".CDR_TEMP_INVOICE.", ".CDR_INVOICED.")";
+				$sCdrs			=	"FROM 	CDR c " .
+									"WHERE 	invoice_run_id = $iInvoiceRunId " .
+									"AND 	Account = $iAccountId " .
+								    "AND 	c.Service = $iServiceId " .
+								    "AND	c.Status in (".CDR_TEMP_INVOICE.", ".CDR_INVOICED.") ";
 				
 				if ($iRecordType)
 				{
@@ -526,7 +526,7 @@ class Service extends ORM
 			{
 				// PostgreSQL Database, 
 				$sSelect		= "SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\" ";
-				$sCountSelect	= "SELECT	COUNT(*)";
+				$sCountSelect	= "SELECT	COUNT(* )";
 				/*
 				$sCdrs			= 	"FROM 	cdr_invoiced_$iInvoiceRunId c " .
 									"WHERE 	account = $iAccountId " .
@@ -535,7 +535,7 @@ class Service extends ORM
 				$sCdrs			= 	"FROM 	cdr_invoiced c " .
 									"WHERE 	c.invoice_run_id = $iInvoiceRunId " .
 									"AND	account = $iAccountId " .
-									"AND 	c.service = $iServiceId";
+									"AND 	c.service = $iServiceId ";
 	
 				if ($iRecordType)
 				{
@@ -568,7 +568,7 @@ class Service extends ORM
 		else
 		{
 			// MySQL Database, not invoiced
-			$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\"";
+			$sSelect		= "SELECT c.Id as \"Id\", c.RecordType as \"RecordTypeId\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", c.Charge as \"Charge\", c.Credit as \"Credit\" ";
 			$sCountSelect	= "SELECT COUNT(*) ";
 			$sCdrs			=	"FROM 	CDR c " .
 								"WHERE 	Account = $iAccountId " .
