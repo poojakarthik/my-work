@@ -1215,7 +1215,9 @@ class MenuItems {
 								function()
 								{
 									new Popup_Account_Change_Payment_Method({$iAccountId})
-								}
+								},
+								false,
+								true
 							);
 						}
 					);";

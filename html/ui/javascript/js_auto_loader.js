@@ -5,17 +5,38 @@ var JsAutoLoader = {
 	// Dynamically loads a javascript file into the head of the dom
 	// strScriptName should include the ".js" extension, and can include a path
 	// funcOnLoadEventHandler will be executed as soon as the javascript file finishes loading
-	loadScript : function(mixScripts, funcOnLoadEventHandler, bolUseJavascriptPhp)
+	loadScript : function(mixScripts, funcOnLoadEventHandler, bolUseJavascriptPhp, bShowLoading)
 	{
-		// This was deprecated because it would pass through to following 'loadScript's a different value than what was passed in. rmctainsh 20100421
-		//bolUseJavascriptPhp	= (bolUseJavascriptPhp === undefined) ? false : true;
+		// If necessary, show the loading popup (only if not already shown)
+		if (bShowLoading && !this.oLoading)
+		{
+			this.oLoading	= new Reflex_Popup.Loading('Loading...');
+			this.oLoading.display();
+		}
 		
 		bolUseJavascriptPhp	= (!bolUseJavascriptPhp ? false : true);
+		
+		// This was deprecated because it would pass through to following 'loadScript's a different value than what was passed in. rmctainsh 20100421
+		//bolUseJavascriptPhp	= (bolUseJavascriptPhp === undefined) ? false : true;
 		
 		// Make sure we're working with an array of scripts, then grab the next script to load
 		var arrScripts		= Object.isArray(mixScripts) ? mixScripts : [mixScripts];
 		var	strScriptName	= arrScripts.shift();
-		var fncCallback		= (arrScripts.length > 0) ? JsAutoLoader.loadScript.bind(JsAutoLoader, arrScripts, funcOnLoadEventHandler, bolUseJavascriptPhp) : funcOnLoadEventHandler;
+		var fncCallback		= this.loadScriptComplete.bind(this, funcOnLoadEventHandler);
+		
+		if (arrScripts.length > 0)
+		{
+			fncCallback	=	JsAutoLoader.loadScript.bind(
+								JsAutoLoader, 
+								arrScripts, 
+								JsAutoLoader.loadScriptComplete.bind(
+									JsAutoLoader, 
+									funcOnLoadEventHandler
+								), 
+								bolUseJavascriptPhp, 
+								bShowLoading
+							);
+		}
 		
 		// Add .js to the end of the script name if it's missing
 		if (!strScriptName.match(/\.js$/))
@@ -91,6 +112,22 @@ var JsAutoLoader = {
 		
 		// Load the JS Script
 		head.appendChild(script);
+	},
+	
+	loadScriptComplete	: function(fnOnLoadEventHandler)
+	{
+		// Hide loading (if visible)
+		if (this.oLoading)
+		{
+			this.oLoading.hide();
+			delete this.oLoading;
+		}
+		
+		// Callback
+		if (fnOnLoadEventHandler)
+		{
+			fnOnLoadEventHandler();
+		}
 	},
 	
 	// This is used to register the fact that a script has been loaded into the dom

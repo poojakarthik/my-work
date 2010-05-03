@@ -258,6 +258,13 @@ class JSON_Handler_Account extends JSON_Handler
 			// Get the available billing types for the accounts customer group
 			$aPaymentMethods	= $oAccount->getPaymentMethods();
 			
+			if (is_null($iPaymentMethod) || is_null($iPaymentMethodSubType))
+			{
+				// Could not retrieve correct payment method details, maybe the cc/account was deleted, send back 'ACCOUNT'
+				$iPaymentMethod			= PAYMENT_METHOD_ACCOUNT;
+				$iPaymentMethodSubType	= null;
+			}
+			
 			return 	array(
 						"Success"				=> true,
 						"iPaymentMethod"		=> $iPaymentMethod,
@@ -360,14 +367,23 @@ class JSON_Handler_Account extends JSON_Handler
 				
 				case BILLING_TYPE_REBILL:
 					$oOldRebill			= Rebill::getForAccountId($oAccount->Id, true);
-					$oOldRebillDetails	= $oOldRebill->getDetails();
 					
-					switch ($oOldRebill->rebill_type_id)
+					if ($oOldRebill)
 					{
-						case REBILL_TYPE_MOTORPASS:
-							$sOldBillingType	= 	"Rebill via Motorpass\n" .
-													"Account Number: {$oOldRebillDetails->account_number}";
-							break;
+						$oOldRebillDetails	= $oOldRebill->getDetails();
+					
+						switch ($oOldRebill->rebill_type_id)
+						{
+							case REBILL_TYPE_MOTORPASS:
+								$sOldBillingType	= 	"Rebill via Motorpass\n" .
+														"Account Number: {$oOldRebillDetails->account_number}";
+								break;
+						}
+					}
+					else
+					{
+						// This will only happen if the old rebill doesn't exist, so it shouldn't happen
+						$sOldBillingType	= 	"Rebill (unknown)";
 					}
 					break; 
 			}

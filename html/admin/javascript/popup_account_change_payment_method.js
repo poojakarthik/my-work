@@ -39,7 +39,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 		this.iSelectedMethod	= null;
 		this.iSelectedSubType	= null;
 		
-		this.oLoading	= new Reflex_Popup.Loading('Please Wait');
+		this.oLoading	= new Reflex_Popup.Loading('Getting Payment Methods...');
 		this.oLoading.display();
 		this._buildUI();
 	},
@@ -177,7 +177,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 				// Update payment method cache
 				this.hMethods[iMethod][iSubType].oCache	= oMethod; 	 
 			}
-			else if (oResponse.iBillingDetail)
+			else if (oResponse.iBillingDetail && this.hMethods[iMethod][iSubType])
 			{
 				if (this.hMethods[iMethod][iSubType].oCache && (this.hMethods[iMethod][iSubType].Id == oResponse.iBillingDetail))
 				{
@@ -601,7 +601,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 				this._showRebillPopup(
 					iSubType,
 					this._paymentMethodSelected.bind(this, iMethod, iSubType),
-					this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, $CONSTANT.BILLING_TYPE_ACCOUNT, 0)
+					this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, $CONSTANT.PAYMENT_METHOD_ACCOUNT, null)
 				);
 				break;
 		}
