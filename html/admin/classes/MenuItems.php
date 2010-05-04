@@ -1895,7 +1895,7 @@ class MenuItems {
 	 */
 	function ViewCDRDetails($iId)
 	{
-		// TODO: Launch a popup to view cdr details
+		// TODO: Redirect to a page to view cdr details
 	}
 
 	//------------------------------------------------------------------------//

@@ -814,6 +814,9 @@
  			$strFileName .= " - " . date("d M Y h:i:s A");
  		}
  		
+ 		// Turn forward slashes into _
+ 		$strFileName	= preg_replace('/\//', '_', $strFileName);
+ 		
  		// Add file extension
  		if ($arrReport['Overrides']['Extension'])
  		{
@@ -832,8 +835,6 @@
 	 				break;
 	 		}
  		}
- 		
- 		//Debug($strFileName);
  		
  		return $strFileName;
  	}
