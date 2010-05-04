@@ -8,13 +8,13 @@ $arrDataReport['RenderMode']			= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']			= PERMISSION_OPERATOR;
 $arrDataReport['CreatedOn']				= date("Y-m-d");
 $arrDataReport['SQLTable']				= "	Payment p
-											JOIN 	Account a ON p.Account = a.Id 
+											JOIN 	Account a ON p.Account = a.Id
 											JOIN 	CustomerGroup cg ON cg.Id = a.CustomerGroup";
 $arrDataReport['SQLWhere']				= "	p.PaymentType = <PaymentType>
 											AND 	p.PaidOn = <PaymentDate>
 											AND 	(<CustomerGroup> = 0 OR a.CustomerGroup = <CustomerGroup>)";
 $arrDataReport['SQLGroupBy']			= "";
-$arrDataReport['data_report_status_id']	= Constant_Group::getConstantGroup('data_report_status')->getValue('DATA_REPORT_STATUS_DRAFT');
+$arrDataReport['data_report_status_id']	= DATA_REPORT_STATUS_DRAFT;
 
 // Documentation Reqs
 $arrDocReq[]					= "DataReport";
