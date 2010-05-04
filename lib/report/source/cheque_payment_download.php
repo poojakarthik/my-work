@@ -2,7 +2,7 @@
 //---------------------------------------------------------------------------//
 // CHEQUE PAYMENT DOWNLOAD
 //---------------------------------------------------------------------------//
-$arrDataReport['Name']			= "Cheque Payment Download";
+$arrDataReport['Name']			= "Payment Download: Cheques";
 $arrDataReport['Summary']		= "A list of cheque payments entered on a certain day.";
 $arrDataReport['RenderMode']	= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']	= PERMISSION_OPERATOR;
