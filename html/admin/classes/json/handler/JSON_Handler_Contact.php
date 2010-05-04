@@ -3,7 +3,7 @@
 class JSON_Handler_Contact extends JSON_Handler
 {
 	protected	$_JSONDebug		= '';
-	protected	$_aPermissions	= array(PERMISSION_OPERATOR);
+	protected	$_aPermissions	= array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL);
 	
 	public function __construct()
 	{
@@ -19,7 +19,7 @@ class JSON_Handler_Contact extends JSON_Handler
 			// Check user permissions
 			if (!AuthenticatedUser()->UserHasPerm($this->_aPermissions))
 			{
-				throw(new JSON_Handler_DataReport_Exception('You do not have permission to view this contact.'));
+				throw(new JSON_Handler_Contact_Exception('You do not have permission to view this contact.'));
 			}
 			
 			// Get array of contact titles
@@ -98,7 +98,7 @@ class JSON_Handler_Contact extends JSON_Handler
 			// Check user permissions
 			if (!AuthenticatedUser()->UserHasPerm($this->_aPermissions))
 			{
-				throw(new JSON_Handler_DataReport_Exception('You do not have permission to save contact details.'));
+				throw(new JSON_Handler_Contact_Exception('You do not have permission to save contact details.'));
 			}
 			
 			// Create a Contact object
