@@ -22,7 +22,7 @@ class Flex_Rollout_Version_000211 extends Flex_Rollout_Version
 									'sDescription'		=>	"Add the rebill_motorpass.account_name and card_expiry fields",
 									'sAlterSQL'			=>	"	ALTER TABLE	rebill_motorpass
 																ADD COLUMN	account_name		VARCHAR(256)	NOT NULL	COMMENT 'Motorpass Account Name',
-																ADD COLUMN	card_expiry_date	DATE			NOT NULL	COMMENT 'Expiry date for the Motorpass Card (day-of-month should be the last day in the month)';;",
+																ADD COLUMN	card_expiry_date	DATE			NOT NULL	COMMENT 'Expiry date for the Motorpass Card (day-of-month should be the last day in the month)';",
 									'sRollbackSQL'		=>	"	ALTER TABLE	rebill_motorpass
 																DROP COLUMN	account_name,
 																DROP COLUMN	card_expiry_date;",
