@@ -11,6 +11,7 @@
 
 // load application
 require_once('../../flex.require.php');
+Flex::load();
 
 //----------------------------------------------------------------------------//
 // TODO: Specify the DataReport here!  See report_skeleton.php for tut
