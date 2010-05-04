@@ -1893,9 +1893,11 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewCDRDetails($iId)
+	function ViewCDRDetails($iServiceId, $iCdrId)
 	{
-		// TODO: Redirect to a page to view cdr details
+		$this->strContextMenuLabel = "";
+		$this->strLabel = "Record";
+		return self :: NEW_FRAMEWORK . "reflex.php/Service/CDR/$iServiceId/$iCdrId";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2388,11 +2390,11 @@ class MenuItems {
 	 *
 	 * @method
 	 */
-	function ViewUnbilledCharges($iId) {
+	function ViewUnbilledCharges($iServiceId) {
 		$this->strContextMenuLabel = "";
-		$this->strLabel = "view unbilled charges";
+		$this->strLabel = "Unbilled Charges";
 		//return self :: OLD_FRAMEWORK . "service_unbilled.php?Id=$iId";
-		return self::NEW_FRAMEWORK."reflex.php/Service/Unbilled/{$iId}";
+		return self::NEW_FRAMEWORK."reflex.php/Service/Unbilled/{$iServiceId}";
 	}
 
 	//------------------------------------------------------------------------//

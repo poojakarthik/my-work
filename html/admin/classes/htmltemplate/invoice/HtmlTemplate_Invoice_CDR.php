@@ -5,14 +5,17 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
 		parent::__construct($intContext, $strId, $mxdDataToRender);
-		
-		//$this->LoadJavascript("employee_message");
 	}
 
 	public function Render()
 	{
-		$strUnitType = array_key_exists($this->mxdDataToRender['DisplayType'], $GLOBALS['*arrConstant']['DisplayTypeSuffix'])? $GLOBALS['*arrConstant']['DisplayTypeSuffix'][$this->mxdDataToRender['DisplayType']]['Description'] : "Unit(s)";
-		$strUnits = intval($this->mxdDataToRender['Units']) ." ". $strUnitType;
+		$this->renderCDRDetails($this->mxdDataToRender);
+	}	
+	
+	public static function renderCDRDetails($aDataToRender)
+	{
+		$strUnitType 	= array_key_exists($aDataToRender['DisplayType'], $GLOBALS['*arrConstant']['DisplayTypeSuffix'])? $GLOBALS['*arrConstant']['DisplayTypeSuffix'][$aDataToRender['DisplayType']]['Description'] : "Unit(s)";
+		$strUnits 		= intval($aDataToRender['Units']) ." ". $strUnitType;
 		
 		echo "
 <table class='reflex'>
@@ -33,43 +36,50 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 	<tbody>
 		<tr>
 			<td style=\"width: 20em;\">FNN: </td>
-			<td>" . htmlspecialchars($this->mxdDataToRender['FNN']) . "</td>
+			<td>" . htmlspecialchars($aDataToRender['FNN']) . "</td>
 		</tr>
 		<tr>
 			<td>CDR Id: </td>
-			<td>" . htmlspecialchars($this->mxdDataToRender['Id']) . "</td>
-		</tr>
+			<td>" . htmlspecialchars($aDataToRender['Id']) . "</td>
+		</tr>";
+		
+		if (isset($aDataToRender['InvoiceId']))
+		{
+			echo"
 		<tr>
 			<td>Invoice Number: </td>
-			<td>" . htmlspecialchars($this->mxdDataToRender['InvoiceId']) . "</td>
+			<td>" . htmlspecialchars($aDataToRender['InvoiceId']) . "</td>
 		</tr>
-		<tr>
+		<tr>";
+		}
+		
+		echo"
 			<td>File: </td>
-			<td>" . htmlspecialchars($this->mxdDataToRender['FileName']) . "</td>
+			<td>" . htmlspecialchars($aDataToRender['FileName']) . "</td>
 		</tr>
 		<tr>
 			<td>Carrier: </td>
-			<td>" . htmlspecialchars($this->mxdDataToRender['Carrier']) . "</td>
+			<td>" . htmlspecialchars($aDataToRender['Carrier']) . "</td>
 		</tr>
 		<tr>
 			<td>Carrier Reference: </td>
-			<td>" . htmlspecialchars($this->mxdDataToRender['CarrierRef']) . "</td>
+			<td>" . htmlspecialchars($aDataToRender['CarrierRef']) . "</td>
 		</tr>
 		<tr>
 			<td>Source: </td>
-			<td" . ($this->mxdDataToRender['Source'] ? '' : ' class="attention"') . ">" . htmlspecialchars($this->mxdDataToRender['Source'] ? $this->mxdDataToRender['Source'] : "Undefined") . "</td>
+			<td" . ($aDataToRender['Source'] ? '' : ' class="attention"') . ">" . htmlspecialchars($aDataToRender['Source'] ? $aDataToRender['Source'] : "Undefined") . "</td>
 		</tr>
 		<tr>
 			<td>Destination: </td>
-			<td" . ($this->mxdDataToRender['Destination'] ? '' : ' class="attention"') . ">" . htmlspecialchars($this->mxdDataToRender['Destination'] ? $this->mxdDataToRender['Destination'] : "Undefined") . "</td>
+			<td" . ($aDataToRender['Destination'] ? '' : ' class="attention"') . ">" . htmlspecialchars($aDataToRender['Destination'] ? $aDataToRender['Destination'] : "Undefined") . "</td>
 		</tr>
 		<tr>
 			<td>Start Date/Time: </td>
-			<td>". htmlspecialchars($this->tidyDateTime($this->mxdDataToRender['StartDatetime'])) . "</td>
+			<td>". htmlspecialchars(self::tidyDateTime($aDataToRender['StartDatetime'])) . "</td>
 		</tr>
 		<tr>
 			<td>End Date/Time: </td>
-			<td>". htmlspecialchars($this->tidyDateTime($this->mxdDataToRender['EndDatetime'])) . "</td>
+			<td>". htmlspecialchars(self::tidyDateTime($aDataToRender['EndDatetime'])) . "</td>
 		</tr>
 		<tr>
 			<td>Total Units: </td>
@@ -77,59 +87,66 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 		</tr>
 		<tr>
 			<td>Status: </td>
-			<td>". htmlspecialchars($this->mxdDataToRender['Status']) . "</td>
+			<td>". htmlspecialchars($aDataToRender['Status']) . "</td>
 		</tr>
 		<tr>
 			<td>Description: </td>
-			<td>". htmlspecialchars($this->mxdDataToRender['Description']) . "</td>
+			<td>". htmlspecialchars($aDataToRender['Description']) . "</td>
 		</tr>
 		<tr>
 			<td>Destination Code: </td>
-			<td>". htmlspecialchars($this->mxdDataToRender['DestinationCode']) . "</td>
+			<td>". htmlspecialchars($aDataToRender['DestinationCode']) . "</td>
 		</tr>
 		<tr>
 			<td>Record Type: </td>
-			<td>". htmlspecialchars($this->mxdDataToRender['RecordType']) . "</td>
+			<td>". htmlspecialchars($aDataToRender['RecordType']) . "</td>
 		</tr>
 		" . 
 		
 		(Flex::authenticatedUserIsGod() ? ("<tr>
 			<td>Cost: </td>
-			<td>". htmlspecialchars($this->tidyAmount($this->mxdDataToRender['Cost'])) . "</td>
+			<td>". htmlspecialchars(self::tidyAmount($aDataToRender['Cost'])) . "</td>
 		</tr>") : "")
 		
 		. "
 		<tr>
 			<td>Charge: </td>
-			<td>". htmlspecialchars($this->tidyAmount($this->mxdDataToRender['Charge'])) . "</td>
+			<td>". htmlspecialchars(self::tidyAmount($aDataToRender['Charge'])) . "</td>
 		</tr>
 		<tr>
 			<td>Rate: </td>
-			<td><a onclick='". Href()->ViewRate($this->mxdDataToRender['RateId']) ."' title='View Rate'>". htmlspecialchars($this->mxdDataToRender['Rate']) . "</a></td>
+			<td><a onclick='". Href()->ViewRate($aDataToRender['RateId']) ."' title='View Rate'>". htmlspecialchars($aDataToRender['Rate']) . "</a></td>
 		</tr>
 		<tr>
 			<td>Normalised On: </td>
-			<td class='" . ($this->mxdDataToRender['NormalisedOn'] ? '' : 'attention') . "'>". htmlspecialchars($this->mxdDataToRender['NormalisedOn'] ? $this->tidyDateTime($this->mxdDataToRender['NormalisedOn']) : 'Not Normalised') . "</td>
+			<td class='" . ($aDataToRender['NormalisedOn'] ? '' : 'attention') . "'>". htmlspecialchars($aDataToRender['NormalisedOn'] ? self::tidyDateTime($aDataToRender['NormalisedOn']) : 'Not Normalised') . "</td>
 		</tr>
 		<tr>
 			<td>Rated On: </td>
-			<td class='" . ($this->mxdDataToRender['RatedOn'] ? '' : 'attention') . "'>". htmlspecialchars($this->mxdDataToRender['RatedOn'] ? $this->tidyDateTime($this->mxdDataToRender['RatedOn']) : 'Not Rated') . "</td>
-		</tr>
+			<td class='" . ($aDataToRender['RatedOn'] ? '' : 'attention') . "'>". htmlspecialchars($aDataToRender['RatedOn'] ? self::tidyDateTime($aDataToRender['RatedOn']) : 'Not Rated') . "</td>
+		</tr>";
+		
+		if (isset($aDataToRender['InvoiceId']))
+		{
+			echo "
 		<tr>
 			<td>Invoice Run: </td>
-			<td>". htmlspecialchars($this->mxdDataToRender['InvoiceRunId']) . "</td>
-		</tr>
+			<td>". htmlspecialchars($aDataToRender['InvoiceRunId']) . "</td>
+		</tr>";
+		}
+		
+		echo "
 		<tr>
 			<td>Sequence Number: </td>
-			<td>". htmlspecialchars($this->mxdDataToRender['SequenceNo']) . "</td>
+			<td>". htmlspecialchars($aDataToRender['SequenceNo']) . "</td>
 		</tr>
 		<tr>
 			<td>Credit: </td>
-			<td class='" . ($this->mxdDataToRender['Credit'] == 1 ? 'amount-debit' : 'amount-credit') . "'>". htmlspecialchars($this->mxdDataToRender['Credit'] == 1 ? 'Credit' : 'Debit') . "</td>
+			<td class='" . ($aDataToRender['Credit'] == 1 ? 'amount-debit' : 'amount-credit') . "'>". htmlspecialchars($aDataToRender['Credit'] == 1 ? 'Credit' : 'Debit') . "</td>
 		</tr>
 		<tr>
 			<td>Raw CDR: </td>
-			<td><code>". htmlspecialchars($this->mxdDataToRender['RawCDR']) . "</code></td>
+			<td><code>". htmlspecialchars($aDataToRender['RawCDR']) . "</code></td>
 		</tr>
 	</tbody>
 </table>
@@ -152,7 +169,7 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 	}
 
 
-	private function tidyAmount($amount)
+	public static function tidyAmount($amount)
 	{
 		if (strpos($amount, '.') === FALSE)
 		{
@@ -163,7 +180,7 @@ class HtmlTemplate_Invoice_CDR extends FlexHtmlTemplate
 		return '$' . $amount;
 	}
 	
-	private function tidyDateTime($strDateTime)
+	public static function tidyDateTime($strDateTime)
 	{
 		$parts = explode(' ', $strDateTime);
 		$date = explode('-', $parts[0]);

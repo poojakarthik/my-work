@@ -18,7 +18,8 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 			$this->mxdDataToRender['RecordTypes'], 
 			$this->mxdDataToRender['filter'], 
 			$this->mxdDataToRender['Invoice'],
-			$this->mxdDataToRender['ServiceType']
+			$this->mxdDataToRender['ServiceType'],
+			$this->mxdDataToRender['ServiceType']['ServiceId']
 		);
 	}
 
@@ -47,7 +48,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		return date('D, M d, Y h:i:s a', mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]));
 	}
 
-	public static function renderCDRs($arrCDRs, $arrRecordTypes, $arrCurrentFilter, $arrInvoice=null, $iServiceType)
+	public static function renderCDRs($arrCDRs, $arrRecordTypes, $arrCurrentFilter, $arrInvoice=null, $iServiceType, $iServiceId)
 	{
 		$rt = $arrCurrentFilter['recordType'] === NULL ? NULL : intval($arrCurrentFilter['recordType']);
 
@@ -96,7 +97,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		$recordTypes .= '</select></span></form>';
 
 		echo "
-<table class='reflex highlight-rows'>
+<table class='reflex highlight-rows cdr-list'>
 	<caption>
 		<div id='caption_bar' class='caption_bar'>
 			<div id='caption_title' class='caption_title'>
@@ -126,13 +127,11 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 		foreach ($arrCDRs as $cdr)
 		{
 			$className = $className ? '' : ' class="alt"';
-			//$date = explode('-', $adjustment['StartDatetime']);
-			//$date  = date('l, M d, Y', mktime(0, 0, 0, $date[1], $date[2], $date[0]));
 			$nr++;
 			
 			if (is_null($arrInvoice))
 			{
-				$url	= Href()->ViewCDRDetails($cdr['Id']); 
+				$url	= Href()->ViewCDRDetails($iServiceId, $cdr['Id']); 
 			}
 			else
 			{

@@ -3985,3 +3985,12 @@ div.popup-account-edit-rebill > div.buttons
 }
 
 /************************ END - Edit Rebill Popup - END ************************/
+
+/************************ START - CDR List Table - START ************************/
+
+table.cdr-list div.caption_options form#cdrForm button
+{
+	margin	: 0em !important;
+}
+
+/************************ END - CDR List Table - END ************************/

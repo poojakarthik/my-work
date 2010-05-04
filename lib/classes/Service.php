@@ -468,8 +468,19 @@ class Service extends ORM
 	public function getCDRs($iInvoiceRunId=null, $iRecordType=null, $iLimit=30, $iOffset=0)
 	{
 		$iAccountId	= $this->Account;
-		$iServiceId	= $this->Id;
 		
+		// Get string (for WHERE clause) representing the related service ids
+		$aRelatedServices	= self::getFNNInstances($this->FNN, $iAccountId);
+		$aServiceIds		= array();
+		
+		foreach ($aRelatedServices as $aService)
+		{
+			$aServiceIds[]	= $aService['Id'];
+		}
+		
+		$sWhereServiceEquals	= implode(',', $aServiceIds);
+		
+		// Get the CDRs
 		if ($iInvoiceRunId !== null)
 		{
 			// Get the data source for the service CDR data
@@ -484,7 +495,7 @@ class Service extends ORM
 				$sCdrs			=	"FROM 	CDR c " .
 									"WHERE 	invoice_run_id = $iInvoiceRunId " .
 									"AND 	Account = $iAccountId " .
-								    "AND 	c.Service = $iServiceId " .
+								    "AND	c.Service in ($sWhereServiceEquals) ".
 								    "AND	c.Status in (".CDR_TEMP_INVOICE.", ".CDR_INVOICED.") ";
 				
 				if ($iRecordType)
@@ -492,10 +503,10 @@ class Service extends ORM
 					$sCdrs	.= " AND c.RecordType = " . $iRecordType . " ";
 				}
 	
-				$sCountCdrs	= "$sCountSelect $sCdrs";
-				$sCdrs		.= 	"ORDER BY c.StartDatetime ASC " .
+				$sCountCdrs		= "$sCountSelect $sCdrs";
+				$sCdrs			.= 	"ORDER BY c.StartDatetime ASC " .
 								"LIMIT ".$iLimit." OFFSET ".$iOffset." ";
-				$sCdrs		= "$sSelect $sCdrs";
+				$sCdrs			= "$sSelect $sCdrs";
 				
 				$oCountQuery	= new Query();
 				$oResultCount	= $oCountQuery->Execute($sCountCdrs);
@@ -526,27 +537,26 @@ class Service extends ORM
 			{
 				// PostgreSQL Database, 
 				$sSelect		= "SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\" ";
-				$sCountSelect	= "SELECT	COUNT(* )";
+				$sCountSelect	= "SELECT	COUNT(*)";
 				/*
 				$sCdrs			= 	"FROM 	cdr_invoiced_$iInvoiceRunId c " .
 									"WHERE 	account = $iAccountId " .
 									"AND 	c.service = $iServiceId";
 									*/
 				$sCdrs			= 	"FROM 	cdr_invoiced c " .
-									"WHERE 	c.invoice_run_id = $iInvoiceRunId " .
-									"AND	account = $iAccountId " .
-									"AND 	c.service = $iServiceId ";
+									"WHERE 	c.invoice_run_id = {$iInvoiceRunId} " .
+									"AND	account = {$iAccountId} " .
+									"AND	c.service in ({$sWhereServiceEquals}) ";
 	
 				if ($iRecordType)
 				{
 					$sCdrs		.= " AND c.record_type = " . $iRecordType . " ";
 				}
 	
-				$sCountCdrs	= "$sCountSelect $sCdrs";
-				$sCdrs		.= 	"ORDER BY c.start_date_time ASC " .
+				$sCountCdrs		= "$sCountSelect $sCdrs";
+				$sCdrs			.= 	"ORDER BY c.start_date_time ASC " .
 								"LIMIT ".$iLimit." OFFSET ".$iOffset." ";
-				$sCdrs		= "$sSelect $sCdrs";
-				
+				$sCdrs			= "$sSelect $sCdrs";
 				$oResultCount	= $cdrDb->query($sCountCdrs);
 				
 				if (PEAR::isError($oResultCount))
@@ -572,7 +582,7 @@ class Service extends ORM
 			$sCountSelect	= "SELECT COUNT(*) ";
 			$sCdrs			=	"FROM 	CDR c " .
 								"WHERE 	Account = $iAccountId " .
-							    "AND 	c.Service = $iServiceId " .
+							    "AND	c.Service in ({$sWhereServiceEquals}) ";
 							    "AND	c.Status = ".CDR_RATED." ";
 			
 			if ($iRecordType)
@@ -660,6 +670,11 @@ class Service extends ORM
 		return $aCharges;
 	}
 	
+	public function getRelatedServices()
+	{
+		
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//
@@ -695,7 +710,7 @@ class Service extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceRatePlan", "*", "Service = <service_id> AND <effective_datetime> BETWEEN StartDatetime AND EndDatetime", "CreatedOn DESC", 1);
 					break;
 				case 'selFNNInstances':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service", "*", "FNN = <FNN> AND (<AccountId> IS NULL OR Account = <AccountId>)", "Id ASC");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Service", "*", "FNN = <FNN> AND Account = <AccountId>", "Id ASC");
 					break;
 				case 'selServiceAddress':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"ServiceAddress", "*", "Service = <Id>");

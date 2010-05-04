@@ -201,9 +201,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				if ($bolUserHasViewPerm && $dboInvoice->CreatedOn->Value > $strCDRCutoffDate)
 				{
 					// Build the "View Invoice Details" link
-					//$strViewInvoiceHref		= "JsAutoLoader.loadScript('javascript/popup_invoice_view.js', function(){new Popup_Invoice_View({$dboInvoice->Id->Value});});";
 					$strViewInvoiceHref		= "window.location.hash = '#Invoice/{$dboInvoice->Id->Value}/View/'";
-					//#Invoice/{$dboInvoice->Id->Value}/View/
 					$strViewInvoiceLabel	= "<a onclick=\"$strViewInvoiceHref\"><img src='img/template/invoice.png' title='View Invoice Details' /></a>";
 					
 					// Build the "Export Invoice as CSV" link

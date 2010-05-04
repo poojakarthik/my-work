@@ -51,27 +51,26 @@ class Application_Handler_Invoice extends Application_Handler
 	// View all the breakdown for a service on an invoice
 	public function Service($subPath)
 	{
-		$arrDetailsToRender	= array();
+		$aDetailsToRender	= array();
 		
 		try
 		{
-			$intServiceTotal = count($subPath) ? intval(array_shift($subPath)) : 0;
-			$intRecordType = 0;
-			$db = Data_Source::get();
-			
-			$sqlServiceTotal = "
-				SELECT i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal, 
-						CASE WHEN (SELECT 'Still In CDR table' FROM CDR WHERE invoice_run_id = i.invoice_run_id LIMIT 1) = 'Still In CDR table' THEN '". FLEX_DATABASE_CONNECTION_DEFAULT ."' ELSE '". FLEX_DATABASE_CONNECTION_CDR ."' END AS DataSource
-				  FROM Invoice i, ServiceTotal t, Service s, Account a, InvoiceRun r 
-				 WHERE t.Id = $intServiceTotal 
-				   AND i.invoice_run_id = t.invoice_run_id 
-				   AND i.invoice_run_id = r.Id 
-				   AND i.Account = t.Account 
-				   AND s.Id = t.Service 
-				   AND a.Id = t.Account 
+			$iServiceTotal 	= count($subPath) ? intval(array_shift($subPath)) : 0;
+			$db 			= Data_Source::get();
+			$sServiceTotal	= "
+				SELECT 	i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, 
+						a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType,
+						t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal
+				FROM 	Invoice i, ServiceTotal t, Service s, Account a, InvoiceRun r 
+				WHERE 	t.Id = $iServiceTotal 
+				AND 	i.invoice_run_id = t.invoice_run_id 
+				AND 	i.invoice_run_id = r.Id 
+				AND 	i.Account = t.Account 
+				AND 	s.Id = t.Service 
+				AND 	a.Id = t.Account 
 			";
 	
-			$res = $db->query($sqlServiceTotal);
+			$res = $db->query($sServiceTotal);
 			
 			if (PEAR::isError($res))
 			{
@@ -82,60 +81,59 @@ class Application_Handler_Invoice extends Application_Handler
 	
 			if (!$serviceDetails)
 			{
-				throw new Exception("Failed to find service details for service total $intServiceTotal.");
+				throw new Exception("Failed to find service details for service total $iServiceTotal.");
 			}
 	
-			$intAccountId 		= $serviceDetails['AccountId'];
-			$intInvoiceId 		= $serviceDetails['InvoiceId'];
-			$intInvoiceRunId 	= $serviceDetails['InvoiceRunId'];
-			$intServiceId 		= $serviceDetails['ServiceId'];
-			$intServiceType 	= $serviceDetails['ServiceType'];
-			$fnn 				= $serviceDetails['FNN'];
-			$dataSource	 		= $serviceDetails['DataSource'];
-			$oService			= Service::getForId($intServiceId);
+			$iAccountId 	= $serviceDetails['AccountId'];
+			$iInvoiceId 	= $serviceDetails['InvoiceId'];
+			$iInvoiceRunId 	= $serviceDetails['InvoiceRunId'];
+			$iServiceId 	= $serviceDetails['ServiceId'];
+			$iServiceType 	= $serviceDetails['ServiceType'];
+			$fnn 			= $serviceDetails['FNN'];
+			$oService		= Service::getForId($iServiceId);
 			
 			BreadCrumb()->EmployeeConsole();
-			BreadCrumb()->AccountOverview($intAccountId, true);
-			BreadCrumb()->InvoicesAndPayments($intAccountId);
-			BreadCrumb()->ViewInvoice($intInvoiceId, $intAccountId);
+			BreadCrumb()->AccountOverview($iAccountId, true);
+			BreadCrumb()->InvoicesAndPayments($iAccountId);
+			BreadCrumb()->ViewInvoice($iInvoiceId, $iAccountId);
 			BreadCrumb()->SetCurrentPage("Service: $fnn");
-			AppTemplateAccount::BuildContextMenu($intAccountId);
+			AppTemplateAccount::BuildContextMenu($iAccountId);
 			
-			$arrDetailsToRender['Invoice'] 		= $serviceDetails;
-			$arrDetailsToRender['ServiceType']	= $intServiceType;
+			$aDetailsToRender['Invoice'] 		= $serviceDetails;
+			$aDetailsToRender['ServiceType']	= $iServiceType;
 	
 			// Need to load up the Adjustments for the invoice
-			$arrDetailsToRender['Adjustments']	= $oService->getCharges($intInvoiceRunId);
+			$aDetailsToRender['Adjustments']	= $oService->getCharges($iInvoiceRunId);
 			
 			// Need to load up the RecordTypes for filtering
-			$arrDetailsToRender['RecordTypes']	= Record_Type::getForServiceType($intServiceType);
+			$aDetailsToRender['RecordTypes']	= Record_Type::getForServiceType($iServiceType);
 			
 			// Filter information
-			$arrDetailsToRender['filter'] = array(
-				'offset' => array_key_exists('offset', $_REQUEST) ? intval($_REQUEST['offset']) : 0,
-				'limit' => 30,
-				'recordType' => (array_key_exists('recordType', $_REQUEST) && $_REQUEST['recordType']) ? intval($_REQUEST['recordType']) : NULL,
-				'recordCount' => 0,
+			$aDetailsToRender['filter']	= array(
+				'offset' 		=> array_key_exists('offset', $_REQUEST) ? intval($_REQUEST['offset']) : 0,
+				'limit'			=> 30,
+				'recordType'	=> (array_key_exists('recordType', $_REQUEST) && $_REQUEST['recordType']) ? intval($_REQUEST['recordType']) : NULL,
+				'recordCount'	=> 0,
 			);
 			
 			// Get the cdr information
 			$aCDRsResult	= 	$oService->getCDRs(
-									$intInvoiceRunId, 
-									$arrDetailsToRender['filter']['recordType'], 
-									$arrDetailsToRender['filter']['limit'], 
-									$arrDetailsToRender['filter']['offset']
+									$iInvoiceRunId, 
+									$aDetailsToRender['filter']['recordType'], 
+									$aDetailsToRender['filter']['limit'], 
+									$aDetailsToRender['filter']['offset']
 								);
 			
-			$arrDetailsToRender['CDRs']						= $aCDRsResult['CDRs'];
-			$arrDetailsToRender['filter']['recordCount']	= $aCDRsResult['recordCount'];
+			$aDetailsToRender['CDRs']					= $aCDRsResult['CDRs'];
+			$aDetailsToRender['filter']['recordCount']	= $aCDRsResult['recordCount'];
 			
-			$this->LoadPage('invoice_service', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			$this->LoadPage('invoice_service', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)
 		{
-			$arrDetailsToRender['Message'] = "An error occured when trying to load the Invoice Service details page";
-			$arrDetailsToRender['ErrorMessage'] = $e->getMessage();
-			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			$aDetailsToRender['Message'] = "An error occured when trying to load the Invoice Service details page";
+			$aDetailsToRender['ErrorMessage'] = $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 	}
 
@@ -150,193 +148,90 @@ class Application_Handler_Invoice extends Application_Handler
 
 			$db = Data_Source::get();
 			
-			$intServiceTotal = intval($subPath[0]);
-			$intInvoiceRunId = intval($subPath[1]);
-			$intCdrId = intval($subPath[2]);
-			
-			$sqlServiceTotal = "
-				SELECT i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal, 
-						CASE WHEN (SELECT 'Still In CDR table' FROM CDR WHERE invoice_run_id = i.invoice_run_id LIMIT 1) = 'Still In CDR table' THEN '". FLEX_DATABASE_CONNECTION_DEFAULT ."' ELSE '". FLEX_DATABASE_CONNECTION_CDR ."' END AS DataSource
-				  FROM Invoice i, ServiceTotal t, Service s, Account a, InvoiceRun r
-				 WHERE t.Id = $intServiceTotal 
-				   AND i.invoice_run_id = t.invoice_run_id 
-				   AND i.invoice_run_id = r.Id 
-				   AND i.Account = t.Account 
-				   AND s.Id = t.Service 
-				   AND a.Id = t.Account 
+			$iServiceTotal 	= intval($subPath[0]);
+			$iInvoiceRunId 	= intval($subPath[1]);
+			$iCdrId 		= intval($subPath[2]);
+			$sServiceTotal 	= "
+				SELECT	i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName,
+						a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal
+				FROM	Invoice i, ServiceTotal t, Service s, Account a, InvoiceRun r
+				WHERE	t.Id = $iServiceTotal 
+				AND 	i.invoice_run_id = t.invoice_run_id 
+				AND 	i.invoice_run_id = r.Id 
+				AND 	i.Account = t.Account 
+				AND 	s.Id = t.Service 
+				AND 	a.Id = t.Account 
 			";
 	
-			$res = $db->query($sqlServiceTotal);
+			$res	= $db->query($sServiceTotal);
 			
 			if (PEAR::isError($res))
 			{
-				throw new Exception("Failed to load service details: " . $res->getMessage());
+				throw new Exception("Failed to load service details:$sServiceTotal; " . $res->getMessage());
 			}
 	
-			$serviceDetails = $res->fetchRow(MDB2_FETCHMODE_ASSOC);
+			$serviceDetails	= $res->fetchRow(MDB2_FETCHMODE_ASSOC);
 	
 			if (!$serviceDetails)
 			{
-				throw new Exception("Failed to find service details for service total $intServiceTotal.");
+				throw new Exception("Failed to find service details for service total $iServiceTotal.");
 			}
 	
-			$intAccountId = $serviceDetails['AccountId'];
-			$intInvoiceId = $serviceDetails['InvoiceId'];
-			$intInvoiceRunId = $serviceDetails['InvoiceRunId'];
-			$intServiceId = $serviceDetails['ServiceId'];
-			$intServiceType = $serviceDetails['ServiceType'];
-			$fnn = $serviceDetails['FNN'];
-			$dataSource = $serviceDetails['DataSource'];
-
-			$cdrDb = Data_Source::get($dataSource);
-
+			$iAccountId 	= $serviceDetails['AccountId'];
+			$iInvoiceId 	= $serviceDetails['InvoiceId'];
+			$iInvoiceRunId 	= $serviceDetails['InvoiceRunId'];
+			$iServiceId 	= $serviceDetails['ServiceId'];
+			$iServiceType	= $serviceDetails['ServiceType'];
+			$fnn 			= $serviceDetails['FNN'];
+			
 			BreadCrumb()->EmployeeConsole();
-			BreadCrumb()->AccountOverview($intAccountId, true);
-			BreadCrumb()->InvoicesAndPayments($intAccountId);
-			BreadCrumb()->ViewInvoice($intInvoiceId, $intAccountId);
-			BreadCrumb()->ViewInvoiceService($intServiceTotal, $fnn);
-			BreadCrumb()->SetCurrentPage("Record Id: " . $intCdrId);
-			AppTemplateAccount::BuildContextMenu($intAccountId);
-
-			if ($dataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
-			{
-				$sqlCdr = "
-					SELECT t.Name as \"RecordType\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.EndDatetime as \"EndDatetime\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", t.DisplayType as \"DisplayType\", c.Charge as \"Charge\",
-						   c.File as \"FileId\", c.Carrier as \"CarrierId\", c.CarrierRef as \"CarrierRef\", c.Cost as \"Cost\", c.Status as \"Status\", c.DestinationCode as \"DestinationCode\", c.Rate as \"RateId\", c.NormalisedOn as \"NormalisedOn\", c.RatedOn as \"RatedOn\", c.SequenceNo as \"SequenceNo\", c.Credit as \"Credit\", c.CDR as \"RawCDR\"
-					  FROM CDR c INNER JOIN RecordType t ON c.RecordType = t.Id
-					 WHERE invoice_run_id = $intInvoiceRunId
-						AND c.Id = $intCdrId
-				";
-			}
-			else
-			{
-				$sqlCdr = "
-					SELECT t.name as \"RecordType\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.end_date_time as \"EndDatetime\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", t.display_type as \"DisplayType\", c.charge as \"Charge\",
-						   c.file as \"FileId\", c.carrier as \"CarrierId\", c.carrier_ref as \"CarrierRef\", c.cost as \"Cost\", c.status as \"Status\", c.destination_code as \"DestinationCode\", c.rate as \"RateId\", c.normalised_on as \"NormalisedOn\", c.rated_on as \"RatedOn\", c.sequence_no as \"SequenceNo\", c.credit as \"Credit\", c.cdr as \"RawCDR\"
-					  FROM cdr_invoiced c INNER JOIN record_type t ON c.record_type = t.id
-					 WHERE invoice_run_id = $intInvoiceRunId
-						AND c.id = $intCdrId
-				";
-			}
-
-			$res = $cdrDb->query($sqlCdr);
+			BreadCrumb()->AccountOverview($iAccountId, true);
+			BreadCrumb()->InvoicesAndPayments($iAccountId);
+			BreadCrumb()->ViewInvoice($iInvoiceId, $iAccountId);
+			BreadCrumb()->ViewInvoiceService($iServiceTotal, $fnn);
+			BreadCrumb()->SetCurrentPage("Record Id: " . $iCdrId);
+			AppTemplateAccount::BuildContextMenu($iAccountId);
 			
-			if (PEAR::isError($res))
-			{
-				throw new Exception("Failed to load CDR details: " . $res->getMessage() ." - Query: $sqlCdr");
-			}
+			$aCDR	= CDR::getCDRDetails($iCdrId, $iInvoiceRunId);
+			$status	= $GLOBALS['*arrConstant']['CDR'][$aCDR['Status']]['Description'];
 
-			$arrCDR = $res->fetchRow(MDB2_FETCHMODE_ASSOC);
-
-			if ($arrCDR['RateId'])
-			{
-				$sqlName = 'SELECT Name as "Name" FROM Rate WHERE Id = ' . $arrCDR['RateId'];
-				$res = $db->query($sqlName);
-				if (PEAR::isError($res))
-				{
-					throw new Exception("Failed to load Rate name: " . $res->getMessage());
-				}
-				$rateName = $res->fetchOne();
-			}
-			else
-			{
-				$rateName = '';
-			}
-
-			if ($arrCDR['CarrierId'])
-			{
-				$sqlName = 'SELECT Name as "Name" FROM Carrier WHERE Id = ' . $arrCDR['CarrierId'];
-				$res = $db->query($sqlName);
-				if (PEAR::isError($res))
-				{
-					throw new Exception("Failed to load Carrier name: " . $res->getMessage());
-				}
-				$carrierName = $res->fetchOne();
-			}
-			else
-			{
-				$carrierName = '';
-			}
-
-
-			if ($arrCDR['DestinationCode'])
-			{
-				$sqlName = 'SELECT Description as "Description" FROM Destination WHERE Code = ' . $arrCDR['DestinationCode'];
-				$res = $db->query($sqlName);
-				if (PEAR::isError($res))
-				{
-					throw new Exception("Failed to load Destination name: " . $res->getMessage());
-				}
-				$destination = $res->fetchOne() . ' (' . $arrCDR['DestinationCode'] . ')';
-			}
-			else
-			{
-				$destination = '';
-			}
-
-
-			if ($arrCDR['FileId'])
-			{
-				$sqlName = 'SELECT FileName as "FileName", Location as "FileLocation" FROM FileImport WHERE Id = ' . $arrCDR['FileId'];
-				$res = $db->query($sqlName);
-				if (PEAR::isError($res))
-				{
-					throw new Exception("Failed to load File name: " . $res->getMessage());
-				}
-				$arrFile = $res->fetchRow(MDB2_FETCHMODE_ASSOC);
-				$fileName = $arrFile['FileName'] . ' (' . $arrFile['FileLocation'] . ')';
-			}
-			else
-			{
-				$fileName = '';
-			}
-
-			$status = $GLOBALS['*arrConstant']['CDR'][$arrCDR['Status']]['Description'];
-
-			$arrDetailsToRender = array();
+			$aDetailsToRender	= array();
 			
-			$arrDetailsToRender['FNN'] 				= $fnn;
-			$arrDetailsToRender['Id'] 				= $intCdrId;
-			$arrDetailsToRender['InvoiceId'] 		= $intInvoiceId;
-			$arrDetailsToRender['FileName'] 		= $fileName;
-			$arrDetailsToRender['Carrier'] 			= $carrierName;
-			$arrDetailsToRender['CarrierRef'] 		= $arrCDR['CarrierRef'];
-			$arrDetailsToRender['Source'] 			= $arrCDR['Source'];#)
-			$arrDetailsToRender['Destination'] 		= $arrCDR['Destination'];#)
-			$arrDetailsToRender['StartDatetime'] 	= $arrCDR['StartDatetime'];#)
-			$arrDetailsToRender['EndDatetime'] 		= $arrCDR['EndDatetime'];#)
-			$arrDetailsToRender['Cost'] 			= $arrCDR['Cost'];
-			$arrDetailsToRender['Status'] 			= $status;
-			$arrDetailsToRender['Description'] 		= $arrCDR['Description'];#)
-			$arrDetailsToRender['DestinationCode'] 	= $destination;
-			$arrDetailsToRender['RecordType'] 		= $arrCDR['RecordType'];#)
-			$arrDetailsToRender['Charge'] 			= $arrCDR['Charge'];#)
-			$arrDetailsToRender['Rate'] 			= $rateName;
-			$arrDetailsToRender['RateId'] 			= $arrCDR['RateId'];
-			$arrDetailsToRender['NormalisedOn'] 	= $arrCDR['NormalisedOn'];
-			$arrDetailsToRender['RatedOn'] 			= $arrCDR['RatedOn'];
-			$arrDetailsToRender['InvoiceRunId'] 	= $intInvoiceRunId;
-			$arrDetailsToRender['SequenceNo'] 		= $arrCDR['SequenceNo'];
-			$arrDetailsToRender['Credit'] 			= $arrCDR['Credit'];
-			$arrDetailsToRender['RawCDR'] 			= $arrCDR['RawCDR'];
-			$arrDetailsToRender['Units'] 			= $arrCDR['Units'];
-			$arrDetailsToRender['DisplayType'] 		= $arrCDR['DisplayType'];
+			$aDetailsToRender['FNN'] 				= $fnn;
+			$aDetailsToRender['Id'] 				= $iCdrId;
+			$aDetailsToRender['InvoiceId'] 			= $iInvoiceId;
+			$aDetailsToRender['InvoiceRunId'] 		= $iInvoiceRunId;
+			$aDetailsToRender['Status'] 			= $status;
 			
-
-
-			$this->LoadPage('Invoice_CDR', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			$aDetailsToRender['FileName'] 			= $aCDR['FileName'];
+			$aDetailsToRender['Carrier'] 			= $aCDR['CarrierName'];
+			$aDetailsToRender['CarrierRef'] 		= $aCDR['CarrierRef'];
+			$aDetailsToRender['Source'] 			= $aCDR['Source'];
+			$aDetailsToRender['Destination'] 		= $aCDR['Destination'];
+			$aDetailsToRender['StartDatetime'] 		= $aCDR['StartDatetime'];
+			$aDetailsToRender['EndDatetime'] 		= $aCDR['EndDatetime'];
+			$aDetailsToRender['Cost'] 				= $aCDR['Cost'];
+			$aDetailsToRender['Description'] 		= $aCDR['Description'];
+			$aDetailsToRender['DestinationCode'] 	= $aCDR['DestinationCodeDescription'];
+			$aDetailsToRender['RecordType'] 		= $aCDR['RecordType'];
+			$aDetailsToRender['Charge'] 			= $aCDR['Charge'];
+			$aDetailsToRender['Rate'] 				= $aCDR['RateName'];
+			$aDetailsToRender['RateId'] 			= $aCDR['RateId'];
+			$aDetailsToRender['NormalisedOn'] 		= $aCDR['NormalisedOn'];
+			$aDetailsToRender['RatedOn'] 			= $aCDR['RatedOn'];
+			$aDetailsToRender['SequenceNo'] 		= $aCDR['SequenceNo'];
+			$aDetailsToRender['Credit'] 			= $aCDR['Credit'];
+			$aDetailsToRender['RawCDR'] 			= $aCDR['RawCDR'];
+			$aDetailsToRender['Units'] 				= $aCDR['Units'];
+			$aDetailsToRender['DisplayType'] 		= $aCDR['DisplayType'];
 			
-			return;
-			
-			$arrDetailsToRender['Message'] = "An error occured when trying to load the invoiced CDR details page";
-			$arrDetailsToRender['ErrorMessage'] = "No handler has been defined for this request.";
-			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			$this->LoadPage('Invoice_CDR', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)
 		{
-			$arrDetailsToRender['Message'] = "An error occured when trying to load the invoiced CDR details page";
-			$arrDetailsToRender['ErrorMessage'] = $e->getMessage();
-			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
+			$aDetailsToRender['Message'] = "An error occured when trying to load the invoiced CDR details page";
+			$aDetailsToRender['ErrorMessage'] = $e->getMessage();
+			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 	}
 	

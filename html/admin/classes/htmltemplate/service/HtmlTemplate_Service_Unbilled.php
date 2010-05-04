@@ -15,7 +15,8 @@ class HtmlTemplate_Service_Unbilled extends FlexHtmlTemplate
 			$this->mxdDataToRender['RecordTypes'], 
 			$this->mxdDataToRender['filter'],
 			null,
-			$this->mxdDataToRender['ServiceType']
+			$this->mxdDataToRender['ServiceType'],
+			$this->mxdDataToRender['ServiceId']
 		);
 	}
 }

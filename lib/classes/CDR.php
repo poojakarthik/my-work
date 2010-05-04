@@ -145,6 +145,99 @@ class CDR extends ORM
 		return $strDataSourceName;
 	}
 
+	public static function getCDRDetails($iCdrId, $iInvoiceRunId=null)
+	{
+		$rFlexDb	= Data_Source::get(FLEX_DATABASE_CONNECTION_DEFAULT);
+		$aResult	= array();
+		$rCDRDb		= null;
+		
+		// Check if the cdr is invoiced or not
+		if (is_null($iInvoiceRunId))
+		{
+			// MySQL Database, not invoiced
+			$rCDRDb	= Data_Source::get(FLEX_DATABASE_CONNECTION_DEFAULT);
+			$sCdr 	= "
+				SELECT	t.Name as \"RecordType\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.EndDatetime as \"EndDatetime\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", t.DisplayType as \"DisplayType\", c.Charge as \"Charge\",
+					   	c.File as \"FileId\", c.Carrier as \"CarrierId\", c.CarrierRef as \"CarrierRef\", c.Cost as \"Cost\", c.Status as \"Status\", c.DestinationCode as \"DestinationCode\", c.Rate as \"RateId\", c.NormalisedOn as \"NormalisedOn\", c.RatedOn as \"RatedOn\", c.SequenceNo as \"SequenceNo\", c.Credit as \"Credit\", c.CDR as \"RawCDR\"
+				FROM 	CDR c INNER JOIN RecordType t ON c.RecordType = t.Id
+				WHERE 	c.Id = $iCdrId
+			";
+		}
+		else
+		{
+			// Get the data source for the service CDR data
+			$sDataSource	= CDR::getDataSourceForInvoiceRunCDRs($iInvoiceRunId);
+			$rCDRDb 		= Data_Source::get($sDataSource);
+			
+			if ($sDataSource == FLEX_DATABASE_CONNECTION_DEFAULT)
+			{
+				// MySQL Database, invoiced
+				$sCdr = "
+					SELECT	t.Name as \"RecordType\", c.Description as \"Description\", c.Source as \"Source\", c.Destination as \"Destination\", c.EndDatetime as \"EndDatetime\", c.StartDatetime as \"StartDatetime\", c.Units as \"Units\", t.DisplayType as \"DisplayType\", c.Charge as \"Charge\",
+						   	c.File as \"FileId\", c.Carrier as \"CarrierId\", c.CarrierRef as \"CarrierRef\", c.Cost as \"Cost\", c.Status as \"Status\", c.DestinationCode as \"DestinationCode\", c.Rate as \"RateId\", c.NormalisedOn as \"NormalisedOn\", c.RatedOn as \"RatedOn\", c.SequenceNo as \"SequenceNo\", c.Credit as \"Credit\", c.CDR as \"RawCDR\"
+					FROM 	CDR c INNER JOIN RecordType t ON c.RecordType = t.Id
+					WHERE 	invoice_run_id = $iInvoiceRunId
+					AND 	c.Id = $iCdrId
+				";		
+			}
+			else
+			{
+				// PostgreSQL Database, 
+				$sCdr = "
+					SELECT 	t.name as \"RecordType\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.end_date_time as \"EndDatetime\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", t.display_type as \"DisplayType\", c.charge as \"Charge\",
+						   	c.file as \"FileId\", c.carrier as \"CarrierId\", c.carrier_ref as \"CarrierRef\", c.cost as \"Cost\", c.status as \"Status\", c.destination_code as \"DestinationCode\", c.rate as \"RateId\", c.normalised_on as \"NormalisedOn\", c.rated_on as \"RatedOn\", c.sequence_no as \"SequenceNo\", c.credit as \"Credit\", c.cdr as \"RawCDR\"
+					FROM 	cdr_invoiced c INNER JOIN record_type t ON c.record_type = t.id
+					WHERE 	invoice_run_id = $iInvoiceRunId
+					AND 	c.id = $iCdrId
+				";
+			}
+		}
+		
+		// Run the CDR query
+		$rCdr	= $rCDRDb->query($sCdr);
+		
+		if (PEAR::isError($rCdr))
+		{
+			throw new Exception("Failed to load CDR details: " . $rCdr->getMessage() ." - Query: $sCdr");
+		}
+
+		$aCDR	= $rCdr->fetchRow(MDB2_FETCHMODE_ASSOC);
+		
+		// Get more information for certain fields
+		$aCDR['RateName']					= '';
+		$aCDR['CarrierName']				= '';
+		$aCDR['DestinationCodeDescription']	= '';
+		$aCDR['FileName']					= '';
+		
+		// Rate name
+		if ($aCDR['RateId'])
+		{
+			$oRate				= Rate::getForId($aCDR['RateId']);
+			$aCDR['RateName']	= $oRate->Name;
+		}
+		
+		// Carrier name
+		if ($aCDR['CarrierId'])
+		{
+			$aCDR['CarrierName']	= Constant_Group::getConstantGroup('Carrier')->getConstantName($aCDR['CarrierId']);
+		}
+
+		// Destination code description
+		if ($aCDR['DestinationCode'])
+		{
+			$oDestination						= Destination::getForCode($aCDR['DestinationCode']);
+			$aCDR['DestinationCodeDescription'] = $oDestination->Description;
+		}
+
+		// File name
+		if ($aCDR['FileId'])
+		{
+			$oFileImport		= File_Import::getForId($aCDR['FileId']);
+			$aCDR['FileName']	= "{$oFileImport->FileName} ({$oFileImport->Location})";
+		}
+		
+		return $aCDR;
+	}
 	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
