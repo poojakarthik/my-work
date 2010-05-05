@@ -205,7 +205,7 @@
 		$oPaymentMethodDetails	= $oAccount->getPaymentMethodDetails();
 		if (is_object($oPaymentMethodDetails))
 		{
-			$xmlPaymentMethodDetails	= self::_addElement($xmlPayment, 'Details');
+			$xmlPaymentMethodDetails	= self::_addElement($xmlPaymentMethod, 'Details');
 			
 			$sClassName	= get_class((method_exists($oPaymentMethodDetails, 'getDetails')) ? $oPaymentMethodDetails->getDetails() : $oPaymentMethodDetails);
 			self::_addAttribute($xmlPaymentMethodDetails, 'Type', $sClassName);
