@@ -9,9 +9,12 @@ var Control_Field	= Class.create
 		this.mDefaultValue	= '';
 		this.mValue			= this.mDefaultValue;
 		
+		this.sValidationReason			= null;
+		this.bValidationStylingEnabled	= true;
+		
 		// Create DOM Objects
 		this.oControlOutput				= {};
-		this.oControlOutput.oElement	= document.createElement('div');
+		this.oControlOutput.oElement	= $T.div({class: 'control-field'});
 		
 		this.bInit	= false;
 	},
@@ -256,15 +259,22 @@ var Control_Field	= Class.create
 			this.oControlOutput.oElement.removeClassName('mandatory');
 			
 			var mElementValue	= this.getElementValue();
+			
 			if (mElementValue)
 			{
 				if (this.isValid())
 				{
-					this.oControlOutput.oElement.addClassName('valid');
+					if (this.bValidationStylingEnabled)
+					{
+						this.oControlOutput.oElement.addClassName('valid');
+					}
 				}
 				else
 				{
-					this.oControlOutput.oElement.addClassName('invalid');
+					if (this.bValidationStylingEnabled)
+					{
+						this.oControlOutput.oElement.addClassName('invalid');
+					}
 					
 					if (bSilentFail)
 					{
@@ -272,13 +282,16 @@ var Control_Field	= Class.create
 					}
 					else
 					{
-						throw "'"+mElementValue+"' is not a valid "+this.getLabel();
+						throw "'" + mElementValue + "' is not a valid " + this.getLabel() + "." + this.getValidationReason();
 					}
 				}
 			}
 			else if (this.isMandatory())
 			{
-				this.oControlOutput.oElement.addClassName('mandatory');
+				if (this.bValidationStylingEnabled)
+				{
+					this.oControlOutput.oElement.addClassName('mandatory');
+				}
 				
 				if (bSilentFail)
 				{
@@ -357,6 +370,26 @@ var Control_Field	= Class.create
 		}
 		
 		return oTR;
+	},
+	
+	setValidationReason	: function(sReason)
+	{
+		this.sValidationReason	= sReason;
+	},
+	
+	getValidationReason	: function()
+	{
+		if (this.sValidationReason)
+		{
+			return ' ' + this.sValidationReason;
+		}
+		
+		return '';
+	},
+	
+	disableValidationStyling	: function()
+	{
+		this.bValidationStylingEnabled	= false;
 	}
 });
 
@@ -419,7 +452,7 @@ Control_Field.factory	= function(sType, oDefinition)
 			oControlField	= new Control_Field_RadioGroup(oDefinition.sLabel);
 			oControlField.setPopulateFunction(oDefinition.fnPopulate);
 			break;
-			
+		
 		case 'select':
 			oControlField	= new Control_Field_Select(oDefinition.sLabel);
 			oControlField.setPopulateFunction(oDefinition.fnPopulate);
@@ -436,6 +469,11 @@ Control_Field.factory	= function(sType, oDefinition)
 			oControlField.setMaxLength(oDefinition.iMaxLength ? oDefinition.iMaxLength : false);
 			break;
 		
+		case 'combo_date':
+			oControlField	= new Control_Field_Combo_Date(oDefinition.sLabel, null, oDefinition.iFormat);
+			oControlField.setYearRange(oDefinition.iMinYear, oDefinition.iMaxYear);
+			break;
+			
 		default:
 			throw "'" + sType + "' is not a valid Control_Field type!";
 			break;
@@ -449,6 +487,11 @@ Control_Field.factory	= function(sType, oDefinition)
 	if (oDefinition.fnValidate)
 	{
 		oControlField.setValidateFunction(oDefinition.fnValidate);
+	}
+	
+	if (oDefinition.sValidationReason)
+	{
+		oControlField.setValidationReason(oDefinition.sValidationReason);
 	}
 	
 	return oControlField;

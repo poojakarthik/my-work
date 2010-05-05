@@ -1210,7 +1210,9 @@ class MenuItems {
 									'../ui/javascript/reflex_date_format.js',
 									'../ui/javascript/reflex_validation.js',
 									'../ui/javascript/control_field.js',
-									'../ui/javascript/control_field_text.js'
+									'../ui/javascript/control_field_text.js',
+									'../ui/javascript/control_field_select.js',
+									'../ui/javascript/control_field_combo_date.js'
 								],
 								function()
 								{

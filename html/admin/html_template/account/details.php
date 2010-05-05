@@ -243,8 +243,26 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 				DBO()->Account->Country->RenderOutput();
 			}
 			
-			DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("billing_type"), RENDER_OUTPUT);
-			DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("delivery_method"), RENDER_OUTPUT);
+			?>
+			<div class="DefaultElement">
+				<div id="Account.BillingType.Label" class="DefaultLabel">
+					<span> &nbsp;</span>
+					<span id="Account.BillingType.Label.Text">Payment Method : </span>
+				</div>
+				<div id="Account.BillingType.Output" name="Account.BillingType" class="DefaultOutput Default ">
+					<?php echo DBO()->Account->BillingType->BillingTypeName; ?>
+				</div>
+			</div>
+			<?php
+			
+			// DEPRECATED, Rebill billing type insufficiently described using this method
+			//DBO()->Account->BillingType->RenderCallback("GetConstantDescription", Array("billing_type"), RENDER_OUTPUT);
+			
+			// DEPRECATED, Delivery Method used to name it now
+			//DBO()->Account->BillingMethod->RenderCallback("GetConstantDescription", Array("delivery_method"), RENDER_OUTPUT);
+			
+			DBO()->Account->Delivery_Method	= DBO()->Account->BillingMethod->Value;
+			DBO()->Account->Delivery_Method->RenderCallback("GetConstantDescription", Array("delivery_method"), RENDER_OUTPUT);
 		}
 		
 ?>

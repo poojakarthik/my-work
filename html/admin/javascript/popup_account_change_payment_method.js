@@ -36,8 +36,14 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 			this.hMethods[$CONSTANT.PAYMENT_METHOD_REBILL][iId]	= this._createMethodObject();
 		}
 		
-		this.iSelectedMethod	= null;
-		this.iSelectedSubType	= null;
+		// Set the expiry check flag for credit card and motorpass
+		this.hMethods[$CONSTANT.PAYMENT_METHOD_DIRECT_DEBIT][$CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD].fnCheckExpiry	= Popup_Account_Change_Payment_Method._checkCreditCardExpiry;
+		this.hMethods[$CONSTANT.PAYMENT_METHOD_REBILL][$CONSTANT.REBILL_TYPE_MOTORPASS].fnCheckExpiry				= Popup_Account_Change_Payment_Method._checkMotorpassExpiry;
+		
+		this.iSelectedMethod			= null;
+		this.iSelectedSubType			= null;
+		this._bInitialLoadComplete		= false;
+		this._bShowExpiryNotification	= false;
 		
 		this.oLoading	= new Reflex_Popup.Loading('Getting Payment Methods...');
 		this.oLoading.display();
@@ -59,8 +65,6 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 		}
 		else if (oResponse.Success)
 		{
-			this._updateCurrentMethod(false, false, oResponse);
-			
 			// Generate the payment method options and details elements
 			this.oContent	= 	$T.div({class: 'payment-methods'},
 									$T.div({class: 'section'},
@@ -134,14 +138,24 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 			}
 			
 			// Select the current payment method
-			this._selectBillingType(oResponse.iPaymentMethod, oResponse.iPaymentMethodSubType);
+			//this._selectBillingType(oResponse.iPaymentMethod, oResponse.iPaymentMethodSubType);
+			this._updateCurrentMethod(oResponse.iPaymentMethod, oResponse.iPaymentMethodSubType, oResponse);
 			
 			// Display Popup
 			this.setTitle("Change Payment Method");
 			this.addCloseButton();
-			this.setIcon("../admin/img/template/payment.png");
+			this.setIcon(Popup_Account_Change_Payment_Method.PAYMENT_METHOD_IMAGE_SOURCE);
 			this.setContent(this.oContent);
 			this.display();
+			
+			if (this._bShowExpiryNotification)
+			{
+				this._showExpiryNotification(
+					oResponse.iPaymentMethod, 
+					oResponse.iPaymentMethodSubType, 
+					oResponse.oPaymentMethod
+				);
+			}
 		}
 		else
 		{
@@ -166,12 +180,15 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 			// No payment method returned, if Invoice is the current
 			if (oMethod)
 			{
-				if ((iMethod == $CONSTANT.PAYMENT_METHOD_DIRECT_DEBIT) && 
-					(iSubType == $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD) && 
-					(typeof oMethod.expiry === 'undefined'))
+				// Check for method expiry
+				if (this.hMethods[iMethod][iSubType].fnCheckExpiry)
 				{
-					// Check the expiry date on the credit card
-					Popup_Account_Change_Payment_Method._checkCreditCardExpiry(oMethod);
+					this.hMethods[iMethod][iSubType].fnCheckExpiry(oMethod);
+					
+					if (!this._bInitialLoadComplete && oMethod.bExpired)
+					{
+						this._bShowExpiryNotification	= true;
+					}
 				}
 				
 				// Update payment method cache
@@ -179,10 +196,27 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 			}
 			else if (oResponse.iBillingDetail && this.hMethods[iMethod][iSubType])
 			{
-				if (this.hMethods[iMethod][iSubType].oCache && (this.hMethods[iMethod][iSubType].Id == oResponse.iBillingDetail))
+				// Check if the current payment method (which is invalid) is cached, if so remove the method
+				var oCached	= null;
+				
+				for (var i in this.hMethods)
 				{
-					// There is no payment method but there is still billing type & detail recorded, remove the invalid payment method from the cache
-					this.hMethods[iMethod][iSubType].oCache	= null;
+					if (i == $CONSTANT.PAYMENT_METHOD_ACCOUNT)
+					{
+						continue;
+					}
+						
+					for (var j in this.hMethods[i])
+					{
+						oCached	= this.hMethods[i][j].oCache;
+						
+						if (oCached && (!this.aHasMethod[i][j] || (this.aHasMethod[i][j].indexOf(oCached.Id) === null)))
+						{
+							this.hMethods[i][j].oCache	= null;
+							iMethodToSelect				= $CONSTANT.PAYMENT_METHOD_ACCOUNT;
+							iSubTypeToSelect			= null;
+						}
+					}
 				}
 			}
 			
@@ -191,6 +225,8 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 			{
 				this._selectBillingType(iMethodToSelect, iSubTypeToSelect);
 			}
+			
+			this._bInitialLoadComplete	= true;
 		}
 		else
 		{
@@ -230,15 +266,16 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 		// Clear the details
 		this._clearDetails();
 		
-		if (this.hMethods[iMethod][iSubType].oCache && !this.hMethods[iMethod][iSubType].oCache.bExpired)
+		if (this.hMethods[iMethod][iSubType].oCache && 
+			(!this.hMethods[iMethod][iSubType].oCache.bExpired || !this._bInitialLoadComplete))
 		{
 			// Got payment method details cached for the billing type, Show the details
 			this._updateDetails(iMethod, iSubType, this.hMethods[iMethod][iSubType].oCache);
 		}
 		else 
 		{
-			// For the billing type (except invoice, it's always available) see if a 
-			// 'new payment method' or 'select payment method' popup is required
+			// For the billing type (except invoice, it's always available) see if a 'new payment method' or 
+			// 'select payment method' popup is required
 			if (this.aHasMethod[iMethod][iSubType])
 			{
 				// There are payment methods for the billing type. Show the select payment method popup
@@ -303,14 +340,14 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 				//
 				// DIRECT DEBIT
 				//
+				if (typeof oMethod.Id === 'undefined')
+				{
+					break;
+				}
+				
 				switch (iSubType)
 				{
 					case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
-						if (typeof oMethod.Id === 'undefined')
-						{
-							break;
-						}
-						
 						oDom	= 	$T.div(
 										$T.div(
 											$T.span({class: 'label dd'},
@@ -355,11 +392,6 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 									);
 						break;
 					case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
-						if (typeof oMethod.Id === 'undefined')
-						{
-							break;
-						}
-						
 						oDom	= 	$T.div(
 										$T.div(
 											$T.span({class: 'label cc'},
@@ -397,7 +429,7 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 											$T.span({class: 'label cc'},
 												'Expires: '
 											),
-											$T.span({class: 'payment-method-credit-card-' + (oMethod.bExpired ? 'expired' : 'valid') + ' value'},
+											$T.span({class: 'payment-method-' + (oMethod.bExpired ? 'expired' : 'valid') + ' value'},
 												oMethod.expiry
 											)
 										),
@@ -418,6 +450,11 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 				//
 				// REBILL
 				//
+				if (typeof oMethod.id === 'undefined')
+				{
+					break;
+				}
+				
 				switch (iSubType)
 				{
 					case $CONSTANT.REBILL_TYPE_MOTORPASS:
@@ -427,7 +464,23 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 												'Account Number: '
 											),
 											$T.span({class: 'value'},
-												oMethod.account_number
+												oMethod.oDetails.account_number
+											)
+										),
+										$T.div(
+											$T.span({class: 'label motorpass'},
+												'Account Name: '
+											),
+											$T.span({class: 'value'},
+												oMethod.oDetails.account_name
+											)
+										),
+										$T.div(
+											$T.span({class: 'label motorpass'},
+												'Card Expiry: '
+											),
+											$T.span({class: 'payment-method-' + (oMethod.bExpired ? 'expired' : 'valid') + ' value'},
+												oMethod.expiry
 											)
 										)
 									);
@@ -466,16 +519,6 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 	{
 		if (this.iSelectedMethod !== null)
 		{
-			this.oLoading	= new Reflex_Popup.Loading('Saving...');
-			this.oLoading.display();
-			
-			var fnSetPaymentMethod	= 	jQuery.json.jsonFunction(
-											this._saveResponse.bind(this), 
-											this._ajaxError.bind(this), 
-											'Account', 
-											'setPaymentMethod'
-										);
-			
 			var oMethod	= this.hMethods[this.iSelectedMethod][this.iSelectedSubType].oCache;
 			var iId		= null;
 			
@@ -485,12 +528,35 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 				{
 					iId	= oMethod.Id;
 				}
-				else if (oMethod && oMethod.id)
+				else if (oMethod.id)
 				{
 					iId	= oMethod.id;
 				}
 			}
+			else
+			{
+				// Somehow, nothing was selected... shouldn't happen
+				Reflex_Popup.alert('Please select a Payment Method.');
+				return;
+			}
 			
+			// Ensure the method hasn't expired
+			if (oMethod.bExpired)
+			{
+				Reflex_Popup.alert('The payment method you have chosen has expired, please choose another one.');
+				return;
+			}
+			
+			// Make ajax request
+			this.oLoading	= new Reflex_Popup.Loading('Saving...');
+			this.oLoading.display();
+			
+			var fnSetPaymentMethod	= 	jQuery.json.jsonFunction(
+											this._saveResponse.bind(this), 
+											this._ajaxError.bind(this), 
+											'Account', 
+											'setPaymentMethod'
+										);
 			fnSetPaymentMethod(this.iAccountId, this.iSelectedMethod, this.iSelectedSubType, iId);
 		}
 		else
@@ -516,9 +582,14 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 		iMethodToSelect		= (typeof iMethodToSelect != 'undefined' ? iMethodToSelect : iMethod);
 		iSubTypeToSelect	= (typeof iSubTypeToSelect != 'undefined' ? iSubTypeToSelect : iSubType);
 		
-		var fnOnSelect		= this._paymentMethodSelected.bind(this, iMethod, iSubType);
-		var fnOnCancel		= this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, iMethodToSelect, iSubTypeToSelect);
-		
+		var fnOnSelect		= 	this._paymentMethodSelected.bind(this, iMethod, iSubType);
+		var fnOnCancel		= 	this._paymentMethodSelectCancelled.bind(
+									this, 
+									iMethod, 
+									iSubType, 
+									iMethodToSelect, 
+									iSubTypeToSelect
+								);
 		switch (iMethod)
 		{
 			case $CONSTANT.PAYMENT_METHOD_DIRECT_DEBIT:
@@ -565,7 +636,13 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 							new Popup_Account_Add_CreditCard(
 								this.iAccountId, 
 								this._paymentMethodSelected.bind(this, iMethod, iSubType),
-								this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, iMethodToSelect, iSubTypeToSelect)
+								this._paymentMethodSelectCancelled.bind(
+									this, 
+									iMethod,
+									iSubType,
+									iMethodToSelect, 
+									iSubTypeToSelect
+								)
 							);
 						}
 						
@@ -582,7 +659,13 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 							new Popup_Account_Add_DirectDebit(
 								this.iAccountId, 
 								this._paymentMethodSelected.bind(this, iMethod, iSubType),
-								this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, iMethodToSelect, iSubTypeToSelect)
+								this._paymentMethodSelectCancelled.bind(
+									this, 
+									iMethod, 
+									iSubType, 
+									iMethodToSelect, 
+									iSubTypeToSelect
+								)
 							);
 						}
 						
@@ -601,7 +684,13 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 				this._showRebillPopup(
 					iSubType,
 					this._paymentMethodSelected.bind(this, iMethod, iSubType),
-					this._paymentMethodSelectCancelled.bind(this, iMethod, iSubType, $CONSTANT.PAYMENT_METHOD_ACCOUNT, null)
+					this._paymentMethodSelectCancelled.bind(
+						this, 
+						iMethod,
+						iSubType, 
+						$CONSTANT.PAYMENT_METHOD_ACCOUNT, 
+						null
+					)
 				);
 				break;
 		}
@@ -609,14 +698,12 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 	
 	_paymentMethodSelected	: function(iMethod, iSubType, oMethod)
 	{
-		if ((iMethod == $CONSTANT.PAYMENT_METHOD_DIRECT_DEBIT) && 
-			(iSubType == $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD) && 
-			(typeof oMethod.expiry === 'undefined'))
+		// Check for method expiry
+		if (this.hMethods[iMethod][iSubType].fnCheckExpiry)
 		{
-			// Check the credit cards expiry
-			Popup_Account_Change_Payment_Method._checkCreditCardExpiry(oMethod);
+			this.hMethods[iMethod][iSubType].fnCheckExpiry(oMethod);
 		}
-	
+		
 		// Cache the payment method
 		this.hMethods[iMethod][iSubType].oCache	= oMethod;
 		
@@ -645,7 +732,23 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 		if (this.aHasMethod[this.iSelectedMethod][this.iSelectedSubType])
 		{
 			// There are payment methods for the billing type. Show the select payment method popup
-			this._showPaymentMethodChangePopup(this.iSelectedMethod, this.iSelectedSubType);
+			var oMethod	= this.hMethods[this.iSelectedMethod][this.iSelectedSubType].oCache;
+			
+			if (oMethod && oMethod.bExpired)
+			{
+				// Fallback to account if the method has expired
+				this._showPaymentMethodChangePopup(
+					this.iSelectedMethod, 
+					this.iSelectedSubType, 
+					$CONSTANT.PAYMENT_METHOD_ACCOUNT, 
+					null
+				);
+			}
+			else
+			{
+				// Fallback to itself if the method is valid, or is not the current
+				this._showPaymentMethodChangePopup(this.iSelectedMethod, this.iSelectedSubType);
+			}
 		}
 		else
 		{
@@ -661,8 +764,16 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 		
 		// Refresh the current of payment method situation
 		this._refreshCurrentPaymentMethod	= 	jQuery.json.jsonFunction(
-													this._updateCurrentMethod.bind(this, iMethodToSelect, iSubTypeToSelect), 
-													this._updateCurrentMethod.bind(this, iMethodToSelect, iSubTypeToSelect), 
+													this._updateCurrentMethod.bind(
+														this, 
+														iMethodToSelect, 
+														iSubTypeToSelect
+													), 
+													this._updateCurrentMethod.bind(
+														this, 
+														iMethodToSelect, 
+														iSubTypeToSelect
+													), 
 													'Account', 
 													'getCurrentPaymentMethod'
 												);
@@ -717,13 +828,64 @@ var Popup_Account_Change_Payment_Method	= Class.create(Reflex_Popup,
 		};
 	},
 	
-	_createMethodObject	: function()
+	_createMethodObject	: function(bCheckExpiry)
 	{
 		return	{
 			oCache			: null,
 			oRadio			: null,
-			oSummaryElement	: null
+			oSummaryElement	: null,
+			fnCheckExpiry	: null
 		};
+	},
+	
+	_showExpiryNotification	: function(iMethod, iSubType, oMethod)
+	{
+		var sNoLabel	= null;
+		var oMsg		= 	$T.div(
+								$T.p('There is a problem with the current payment method:'),
+								$T.p('The ' + hDisplay[iMethod][iSubType].sName + ' has expired (on ' + oMethod.expiry + ').')
+							);
+		switch (iMethod)
+		{
+			case $CONSTANT.PAYMENT_METHOD_DIRECT_DEBIT:
+				switch (iSubType)
+				{
+					case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
+						sNoLabel	= 'Choose another Credit Card';
+					break;
+				}
+				break;
+			case $CONSTANT.PAYMENT_METHOD_REBILL:
+				switch (iSubType)
+				{
+					case $CONSTANT.REBILL_TYPE_MOTORPASS:
+						sNoLabel	= 'Update Motorpass Details';
+					break;
+				}
+				break;
+		}
+		
+		Reflex_Popup.yesNoCancel(
+			oMsg, 
+			{
+				fnOnYes				: null,
+				fnOnNo				: 	this._showPaymentMethodChangePopup.bind(
+											this, 
+											iMethod, 
+											iSubType, 
+											$CONSTANT.PAYMENT_METHOD_ACCOUNT, 
+											null
+										),
+				fnOnCancel			: this.hide.bind(this),
+				bShowCancel			: true,
+				sYesIconSource		: Popup_Account_Change_Payment_Method.PAYMENT_METHOD_IMAGE_SOURCE,
+				sYesLabel			: 'Choose another Method',
+				sNoIconSource		: hDisplay[iMethod][iSubType].sImage,
+				sNoLabel			: sNoLabel,
+				sCancelIconSource	: Popup_Account_Change_Payment_Method.CANCEL_IMAGE_SOURCE,
+				sCancelLabel		: 'Cancel'
+			}
+		);
 	}
 });
 
@@ -741,9 +903,10 @@ else
 }
 
 // Image paths
-Popup_Account_Change_Payment_Method.CANCEL_IMAGE_SOURCE = '../admin/img/template/delete.png';
-Popup_Account_Change_Payment_Method.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
-Popup_Account_Change_Payment_Method.EDIT_IMAGE_SOURCE	= '../admin/img/template/pencil.png';
+Popup_Account_Change_Payment_Method.CANCEL_IMAGE_SOURCE 		= '../admin/img/template/delete.png';
+Popup_Account_Change_Payment_Method.SAVE_IMAGE_SOURCE 			= '../admin/img/template/tick.png';
+Popup_Account_Change_Payment_Method.EDIT_IMAGE_SOURCE			= '../admin/img/template/pencil.png';
+Popup_Account_Change_Payment_Method.PAYMENT_METHOD_IMAGE_SOURCE	= "../admin/img/template/payment.png";
 
 var hDisplay	= {};
 hDisplay[$CONSTANT.PAYMENT_METHOD_ACCOUNT]	= {};
@@ -776,16 +939,28 @@ Popup_Account_Change_Payment_Method.DISPLAY_DETAILS	= hDisplay;
 
 Popup_Account_Change_Payment_Method._checkCreditCardExpiry	= function(oCreditCard)
 {
-	month 	= parseInt(oCreditCard.ExpMonth);
-	year 	= parseInt(oCreditCard.ExpYear);
-	
-	var d 			= new Date();
-	var curr_month 	= d.getMonth() + 1;
-	var curr_year	= d.getFullYear();
-	
-	oCreditCard.expiry		= (month < 10 ? '0' + month : month) + '/' + year;
-	oCreditCard.bExpired	= !(year > curr_year || (year == curr_year && month >= curr_month));
+	iMonth 	= parseInt(oCreditCard.ExpMonth);
+	iYear 	= parseInt(oCreditCard.ExpYear);
+	Popup_Account_Change_Payment_Method._checkPaymentMethodExpiry(iMonth, iYear, oCreditCard);
 };
+
+Popup_Account_Change_Payment_Method._checkMotorpassExpiry	= function(oRebill)
+{
+	var aSplit	= oRebill.oDetails.card_expiry_date.split('-');
+	iYear 		= parseInt(aSplit[0]);
+	iMonth 		= parseInt(aSplit[1]);
+	Popup_Account_Change_Payment_Method._checkPaymentMethodExpiry(iMonth, iYear, oRebill);
+};
+
+Popup_Account_Change_Payment_Method._checkPaymentMethodExpiry	= function(iMonth, iYear, oMethod)
+{
+	var d 			= new Date();
+	var iCurrMonth 	= d.getMonth() + 1;
+	var iCurrYear	= d.getFullYear();
+	
+	oMethod.expiry		= (iMonth < 10 ? '0' + iMonth : iMonth) + '/' + iYear;
+	oMethod.bExpired	= !(iYear > iCurrYear || (iYear == iCurrYear && iMonth >= iCurrMonth));
+}
 
 Popup_Account_Change_Payment_Method._formatDate	= function(sDate)
 {

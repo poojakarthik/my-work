@@ -359,7 +359,11 @@ textarea[disabled]
 
 input.required, 
 select.required, 
-textarea.required{
+textarea.required,
+.control-field.required input, 
+.control-field.required select, 
+.control-field.required textarea 
+{
 	background: #fff;
 	color: #111;
 	border: .1em solid #da8;
@@ -367,7 +371,11 @@ textarea.required{
 
 input.invalid, 
 select.invalid, 
-textarea.invalid {
+textarea.invalid,
+.control-field.invalid input, 
+.control-field.invalid select,
+.control-field.invalid textarea
+{
 	background: #ffecf0;
 	color: #111;
 	border: .1em solid #d30;
@@ -375,12 +383,17 @@ textarea.invalid {
 
 input.valid, 
 select.valid, 
-textarea.valid {
+textarea.valid,
+.control-field.valid input, 
+.control-field.valid select, 
+.control-field.valid textarea 
+{
 	background: #ecfff0;
 	color: #111;
 	/* border: .1em solid #3d0; */
 	border-color:   #33DD00;
 }
+
 /********************* END - Reflex Input Controls - END **********************/
 
 /************************** START - Buttons - START ***************************/
@@ -3380,13 +3393,13 @@ div.payment-method-details-info span.label.motorpass
 	width	: 10em;
 }
 
-span.payment-method-credit-card-expired
+span.payment-method-expired
 {
 	color		: #cc0000;
 	font-weight	: bold;
 }
 
-span.payment-method-credit-card-valid
+span.payment-method-valid
 {
 	color		: #008000;
 	font-weight	: bold;
@@ -3579,6 +3592,11 @@ div.payment-methods-list div.section-content > table.reflex td.payment-method-cr
 {
 	color		: #008000;
 	font-weight	: bold;
+}
+
+td.payment-methods-list-no-records-row
+{
+	font-style	: italic;
 }
 
 /************************ END - Choose Payment Method Popup - END ************************/
@@ -3982,6 +4000,35 @@ div.rebill-validation-errors
 div.popup-account-edit-rebill > div.buttons
 {
 	text-align	: center;
+}
+
+ul.control-field-combo-date > li
+{
+	padding-right	: 0.25em;
+}
+
+ul.control-field-combo-date
+{
+	margin	: 0em;
+}
+
+div.control-field-combo-date-day,
+div.control-field-combo-date-month,
+div.control-field-combo-date-year
+{
+	display			: inline-block;
+	vertical-align	: top;
+}
+
+div.control-field-combo-date-day,
+div.control-field-combo-date-month
+{
+	width	: 4em;
+}
+
+div.control-field-combo-date-year
+{
+	width	: 5em;
 }
 
 /************************ END - Edit Rebill Popup - END ************************/

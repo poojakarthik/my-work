@@ -26,7 +26,12 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		if (typeof oResponse == 'undefined')
 		{
 			// Make request to get the current payment and information on other methods
-			this._getPaymentMethods	= jQuery.json.jsonFunction(this._buildUI.bind(this), this._buildUI.bind(this), 'Account', 'getPaymentMethods');
+			this._getPaymentMethods	=	jQuery.json.jsonFunction(
+											this._buildUI.bind(this), 
+											this._buildUI.bind(this), 
+											'Account', 
+											'getPaymentMethods'
+										);
 			this._getPaymentMethods(this.iAccountId, this.iMethodSubType);
 		}
 		else if (oResponse.Success)
@@ -100,33 +105,40 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 			
 			// Add the table headings
 			var oTHead		= this.oContent.select('div.section-content > table.reflex > thead').first();
-			var aHeadings	= [];
+			this.aHeadings	= [];
 			
 			switch (this.iMethodSubType)
 			{
 				case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
-					aHeadings	= ['Account Name', 'BSB #', 'Account #', 'Bank Name', 'Added'];
+					this.aHeadings	= ['Account Name', 'BSB #', 'Account #', 'Bank Name', 'Added'];
 					break;
 				case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
-					aHeadings	= ['Name', 'Type', 'Number', 'CVV', 'Expires', 'Added'];
+					this.aHeadings	= ['Name', 'Type', 'Number', 'CVV', 'Expires', 'Added'];
 					break;
 			}
 			
 			// First column for radio button
 			oTHead.appendChild($T.th());
 			
-			for (var i = 0; i < aHeadings.length; i++)
+			for (var i = 0; i < this.aHeadings.length; i++)
 			{
-				oTHead.appendChild($T.th(aHeadings[i]));
+				oTHead.appendChild($T.th(this.aHeadings[i]));
 			}
 			
 			// One more for the archive image column
 			oTHead.appendChild($T.th());
 			
 			// Add the payment methods from the ajax response
-			for (var i = 0; i < oResponse.aPaymentMethods.length; i++)
+			if (oResponse.aPaymentMethods.length)
 			{
-				this._createPaymentMethod(oResponse.aPaymentMethods[i]);
+				for (var i = 0; i < oResponse.aPaymentMethods.length; i++)
+				{
+					this._createPaymentMethod(oResponse.aPaymentMethods[i]);
+				}
+			}
+			else
+			{
+				this._addNoRecordsRow(this.aHeadings.length);
 			}
 			
 			this.setIcon("../admin/img/template/payment.png");
@@ -138,6 +150,31 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 			// AJAX Error
 			this._ajaxError(oResponse, true);
 		}
+	},
+	
+	_addNoRecordsRow	: function(iColumnCount)
+	{
+		var oTBody	= this.oContent.select('div.section-content > table.reflex > tbody').first();
+		var sText 	= '';
+		
+		switch (this.iMethodSubType)
+		{
+			case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
+				sText	= 'There are no Bank Accounts to choose from';
+				break;
+			
+			case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
+				sText	= 'There are no Credit Cards to choose from';
+				break;
+		}
+		
+		oTBody.appendChild(
+			$T.tr(        
+				$T.td({class: 'payment-methods-list-no-records-row', colspan: iColumnCount + 2},
+					sText
+				)
+			)
+		);
 	},
 	
 	_createPaymentMethod	: function(oPaymentMethod)
@@ -270,7 +307,19 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 		}
 		else
 		{
-			Reflex_Popup.alert('Please select a payment method.', {iWidth: 20});
+			// Get method name
+			var sMethodName	= '';
+			switch (this.iMethodSubType)
+			{
+				case $CONSTANT.DIRECT_DEBIT_TYPE_BANK_ACCOUNT:
+					sMethodName	= 'Bank Account';
+					break;
+				case $CONSTANT.DIRECT_DEBIT_TYPE_CREDIT_CARD:
+					sMethodName	= 'Credit Card';
+					break;
+			}
+			
+			Reflex_Popup.alert('Please select a ' + sMethodName + '.', {iWidth: 20});
 		}
 	},
 	
@@ -342,12 +391,16 @@ var Popup_Account_Select_Payment_Method	= Class.create(Reflex_Popup,
 			}
 			
 			// Add the new data
-			if (oResponse.aPaymentMethods)
+			if (oResponse.aPaymentMethods && oResponse.aPaymentMethods.length)
 			{
 				for (var i = 0; i < oResponse.aPaymentMethods.length; i++)
 				{
 					this._createPaymentMethod(oResponse.aPaymentMethods[i]);
 				}
+			}
+			else
+			{
+				this._addNoRecordsRow(this.aHeadings.length);
 			}
 			
 			this.oLoading.hide();

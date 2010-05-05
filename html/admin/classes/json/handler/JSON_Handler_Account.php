@@ -169,8 +169,15 @@ class JSON_Handler_Account extends JSON_Handler
 			
 			foreach ($aDirectDebits as $oDirectDebit)
 			{
-				$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_BANK_ACCOUNT]	 = true;
+				// Store the direct debits id in aHasPaymentMethods
+				if (!isset($aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_BANK_ACCOUNT]))
+				{
+					$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_BANK_ACCOUNT]	 = array();
+				}
 				
+				$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_BANK_ACCOUNT][]	= $oDirectDebit->Id;
+				
+				// Check if it is the current method
 				if ($oAccount->BillingType == BILLING_TYPE_DIRECT_DEBIT)
 				{
 					if ($oAccount->DirectDebit == $oDirectDebit->Id)
@@ -190,8 +197,15 @@ class JSON_Handler_Account extends JSON_Handler
 			
 			foreach ($aCreditCards as $oCreditCard)
 			{
-				$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_CREDIT_CARD]	 = true;
+				// Store the credit cards id in aHasPaymentMethods
+				if (!isset($aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_CREDIT_CARD]))
+				{
+					$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_CREDIT_CARD]	 = array();
+				}
 				
+				$aHasPaymentMethod[PAYMENT_METHOD_DIRECT_DEBIT][DIRECT_DEBIT_TYPE_CREDIT_CARD][]	= $oCreditCard->Id;
+				
+				// Check if it is the current method
 				if ($oAccount->BillingType == BILLING_TYPE_CREDIT_CARD)
 				{
 					if ($oAccount->CreditCard == $oCreditCard->Id)
@@ -235,7 +249,8 @@ class JSON_Handler_Account extends JSON_Handler
 				{
 					$oRebillDetails					= $oRebill->getDetails();
 					$oPaymentMethod					= $oRebill->toStdClass();
-					$oPaymentMethod->account_number	= $oRebillDetails->account_number;
+					$oPaymentMethod->oDetails		= $oRebillDetails->toStdClass();
+					$oPaymentMethod->Id				= $oPaymentMethod->id;
 					$iPaymentMethodSubType			= $oRebill->rebill_type_id;
 				}
 			}
@@ -376,7 +391,9 @@ class JSON_Handler_Account extends JSON_Handler
 						{
 							case REBILL_TYPE_MOTORPASS:
 								$sOldBillingType	= 	"Rebill via Motorpass\n" .
-														"Account Number: {$oOldRebillDetails->account_number}";
+														"Account Number: {$oOldRebillDetails->account_number}\n" .
+														"Account Name: {$oOldRebillDetails->account_name}\n" .
+														"Card Expiry: {$oOldRebillDetails->card_expiry_date}";
 								break;
 						}
 					}
@@ -444,7 +461,9 @@ class JSON_Handler_Account extends JSON_Handler
 					{
 						case REBILL_TYPE_MOTORPASS:
 							$sNewBillingType	= 	"Rebill via Motorpass\n" .
-													"Account Number: {$oRebillTypeDetails->account_number}";
+													"Account Number: {$oRebillTypeDetails->account_number}\n" .
+													"Account Name: {$oRebillTypeDetails->account_name}\n" .
+													"Card Expiry: {$oRebillTypeDetails->card_expiry_date}";
 							break;
 					}
 					break; 
@@ -925,15 +944,9 @@ class JSON_Handler_Account extends JSON_Handler
 			$oRebill	= Rebill::getForAccountId($iAccountId);
 			$mResult	= ($oRebill ? $oRebill->toStdClass() : null);
 			
-			// Get the extra rebill type specific information
-			switch ($oRebill->rebill_type_id)
+			if ($oRebill)
 			{
-				case REBILL_TYPE_MOTORPASS:
-					$oRebillMotorpass	= Rebill_Motorpass::getForRebillId($oRebill->id);
-					
-					// Add extra fields
-					$mResult->account_number	= $oRebillMotorpass->account_number;
-					break;
+				$mResult->oDetails	= $oRebill->getDetails()->toStdClass();
 			}
 			
 			return 	array(
@@ -971,13 +984,14 @@ class JSON_Handler_Account extends JSON_Handler
 				throw new JSON_Handler_Account_Exception('You do not have permission to add a rebill');
 			}
 			
+			$aErrors	= array();
+			
 			$oCurrentRebill			= Rebill::getForAccountId($iAccountId);
 			$oCurrentRebillDetails	= false;
 			if ($oCurrentRebill)
 			{
 				$oCurrentRebillDetails	= $oCurrentRebill->getDetails();
 			}
-			
 			
 			// Create a new rebill
 			$oRebill						= new Rebill();
@@ -990,13 +1004,54 @@ class JSON_Handler_Account extends JSON_Handler
 			switch ($iRebillTypeId)
 			{
 				case REBILL_TYPE_MOTORPASS:
-					// Check if a save is required
-					if ($oCurrentRebillDetails && ($oCurrentRebill->rebill_type_id == $iRebillTypeId) && ($oCurrentRebillDetails->account_number == $oDetails->account_number))
+					// Validate card expiry date & convert it to the proper format so it can be compared to the 
+					// existing card_expiry_date field (if need be)
+					$iTime	= strtotime($oDetails->card_expiry_date);
+					
+					if ($iTime === false)
+					{
+						$aErrors[]	= 'Invalid Card Expiry Date';
+					}
+					
+					$sLastDayInMonth			= date('t', $iTime);
+					$iExpiryDate				= strtotime($oDetails->card_expiry_date.'-'.$sLastDayInMonth);
+					$oDetails->card_expiry_date	= date('Y-m-d', $iExpiryDate);
+					
+					// Validate input
+					if (!isset($oDetails->account_name) || $oDetails->account_name == '')
+					{
+						$aErrors[]	= 'Account Name missing';
+					}
+					
+					if (!isset($oDetails->account_number) || $oDetails->account_number == '')
+					{
+						$aErrors[]	= 'Invalid Account Number';
+					}
+					
+					if (count($aErrors) > 0)
+					{
+						// Validation errors found, rollback transaction and return the errors
+						$oDataAccess->TransactionRollback();
+				
+						return 	array(
+									"Success"			=> false,
+									"aValidationErrors"	=> $aErrors
+								);
+					}
+					
+					// No validation errors continue!
+					
+					// Check if a save is required (check if the rebill_motorpass details are the same, if so then no save needed)
+					if ($oCurrentRebillDetails && 
+						($oCurrentRebill->rebill_type_id == $iRebillTypeId) && 
+						($oCurrentRebillDetails->account_number == $oDetails->account_number) &&
+						($oCurrentRebillDetails->account_name == $oDetails->account_name) &&
+						($oCurrentRebillDetails->card_expiry_date == $oDetails->card_expiry_date))
 					{
 						// No save required, the last rebill for the account is a motorpass with the same account number
 						// Return the last one
-						$oStdClassRebill					= $oCurrentRebill->toStdClass();
-						$oStdClassRebill->account_number	= $oCurrentRebillDetails->account_number;
+						$oStdClassRebill			= $oCurrentRebill->toStdClass();
+						$oStdClassRebill->oDetails	= $oCurrentRebillDetails->toStdClass();
 						
 						return 	array(
 									"Success"	=> true,
@@ -1012,11 +1067,14 @@ class JSON_Handler_Account extends JSON_Handler
 					$oRebillMotorpass					= new Rebill_Motorpass();
 					$oRebillMotorpass->rebill_id		= $oRebill->id;
 					$oRebillMotorpass->account_number	= $oDetails->account_number;
+					$oRebillMotorpass->account_name		= $oDetails->account_name;
+					$oRebillMotorpass->card_expiry_date	= $oDetails->card_expiry_date;
+					
 					$oRebillMotorpass->save();
 					
 					// Return new details
-					$oStdClassRebill					= $oRebill->toStdClass();
-					$oStdClassRebill->account_number	= $oRebillMotorpass->account_number;
+					$oStdClassRebill			= $oRebill->toStdClass();
+					$oStdClassRebill->oDetails	= $oRebillMotorpass->toStdClass();
 					break;
 			}
 			

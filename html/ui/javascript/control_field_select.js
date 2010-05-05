@@ -36,8 +36,6 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	
 	setElementValue	: function(mValue)
 	{
-		//alert("Setting " + this.getLabel() + " Element Value to '" + mValue + "'");
-		
 		// Set if the Contents have loaded, otherwise we will auto-set on population
 		if (this.bPopulated)
 		{
@@ -119,16 +117,13 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	{
 		this.aEventHandlers				= {};
 		this.aEventHandlers.fnValidate	= this.validate.bind(this);
-		
-		//this.oControlOutput.oEdit.addEventListener('click'	, this.aEventHandlers.fnValidate, false);
-		this.oControlOutput.oEdit.addEventListener('change'	, this.aEventHandlers.fnValidate, false);
-		this.oControlOutput.oEdit.addEventListener('keyup'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.observe('change',	this.aEventHandlers.fnValidate);
+		this.oControlOutput.oEdit.observe('keyup', 	this.aEventHandlers.fnValidate);
 	},
 	
 	removeEventListeners	: function()
 	{
-		//this.oControlOutput.oEdit.removeEventListener('click'	, this.aEventHandlers.fnValidate, false);
-		this.oControlOutput.oEdit.removeEventListener('change'	, this.aEventHandlers.fnValidate, false);
-		this.oControlOutput.oEdit.removeEventListener('keyup'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.stopObserving('change', 	this.aEventHandlers.fnValidate);
+		this.oControlOutput.oEdit.stopObserving('keyup', 	this.aEventHandlers.fnValidate);
 	}
 });

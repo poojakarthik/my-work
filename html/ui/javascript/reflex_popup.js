@@ -118,18 +118,21 @@ Object.extend(Reflex_Popup, {
 	yesNoCancel	: function(mContent, oConfig)
 	{
 		// Config Defaults
-		oConfig	 				= (typeof oConfig !== 'undefined') 			? oConfig 					: {};
-		oConfig.sTitle 			= oConfig.sTitle 							? oConfig.sTitle 			: Reflex_Popup.DEFAULT_YESNOCANCEL_TITLE;
-		oConfig.iWidth 			= (parseInt(oConfig.iWidth)) 				? oConfig.iWidth			: Reflex_Popup.DEFAULT_ALERT_WIDTH;
-		oConfig.sIconSource 	= oConfig.sIconSource 						? oConfig.sIconSource 		: Reflex_Popup.DEFAULT_ALERT_ICON_SOURCE;
-		oConfig.sYesLabel 		= oConfig.sYesLabel 						? oConfig.sYesLabel			: Reflex_Popup.DEFAULT_YESNOCANCEL_YES_LABEL;
-		oConfig.sNoLabel 		= oConfig.sNoLabel 							? oConfig.sNoLabel			: Reflex_Popup.DEFAULT_YESNOCANCEL_NO_LABEL;
-		oConfig.sCancelLabel 	= oConfig.sCancelLabel 						? oConfig.sCancelLabel		: Reflex_Popup.DEFAULT_YESNOCANCEL_CANCEL_LABEL;
-		oConfig.bShowCancel 	= oConfig.bShowCancel 						? oConfig.bShowCancel		: false;
-		oConfig.fnOnYes 		= typeof oConfig.fnOnYes === 'function' 	? oConfig.fnOnYes 			: null;
-		oConfig.fnOnNo 			= typeof oConfig.fnOnNo === 'function' 		? oConfig.fnOnNo 			: null;
-		oConfig.fnOnCancel 		= typeof oConfig.fnOnCancel === 'function' 	? oConfig.fnOnCancel 		: null;
-		oConfig.bOverrideStyle	= oConfig.bOverrideStyle					? oConfig.bOverrideStyle	: false; 
+		oConfig	 					= (typeof oConfig !== 'undefined') 			? oConfig 					: {};
+		oConfig.sTitle 				= oConfig.sTitle 							? oConfig.sTitle 			: Reflex_Popup.DEFAULT_YESNOCANCEL_TITLE;
+		oConfig.iWidth 				= (parseInt(oConfig.iWidth)) 				? oConfig.iWidth			: Reflex_Popup.DEFAULT_ALERT_WIDTH;
+		oConfig.sIconSource 		= oConfig.sIconSource 						? oConfig.sIconSource 		: Reflex_Popup.DEFAULT_ALERT_ICON_SOURCE;
+		oConfig.sYesLabel 			= oConfig.sYesLabel 						? oConfig.sYesLabel			: Reflex_Popup.DEFAULT_YESNOCANCEL_YES_LABEL;
+		oConfig.sNoLabel 			= oConfig.sNoLabel 							? oConfig.sNoLabel			: Reflex_Popup.DEFAULT_YESNOCANCEL_NO_LABEL;
+		oConfig.sCancelLabel 		= oConfig.sCancelLabel 						? oConfig.sCancelLabel		: Reflex_Popup.DEFAULT_YESNOCANCEL_CANCEL_LABEL;
+		oConfig.bShowCancel 		= oConfig.bShowCancel 						? oConfig.bShowCancel		: false;
+		oConfig.fnOnYes 			= typeof oConfig.fnOnYes === 'function' 	? oConfig.fnOnYes 			: null;
+		oConfig.fnOnNo 				= typeof oConfig.fnOnNo === 'function' 		? oConfig.fnOnNo 			: null;
+		oConfig.fnOnCancel 			= typeof oConfig.fnOnCancel === 'function' 	? oConfig.fnOnCancel 		: null;
+		oConfig.bOverrideStyle		= oConfig.bOverrideStyle					? oConfig.bOverrideStyle	: false; 
+		oConfig.sYesIconSource		= oConfig.sYesIconSource 					? oConfig.sYesIconSource	: null;
+		oConfig.sNoIconSource		= oConfig.sNoIconSource 					? oConfig.sNoIconSource		: null;
+		oConfig.sCancelIconSource	= oConfig.sCancelIconSource 				? oConfig.sCancelIconSource	: null;
 		
 		var oPopup	= new Reflex_Popup(oConfig.iWidth);
 		oPopup.setTitle(oConfig.sTitle);
@@ -137,12 +140,37 @@ Object.extend(Reflex_Popup, {
 		
 		// Create footer buttons
 		var aFooterButtons	= [];
-		var oYesButton 		= 	$T.button(
+		
+		// Yes
+		if (oConfig.sYesIconSource)
+		{
+			var oYesButton 	= 	$T.button({class: 'icon-button'},
+									$T.img({src: oConfig.sYesIconSource}),
+									$T.span(oConfig.sYesLabel.escapeHTML())
+								);
+		}
+		else
+		{
+			var oYesButton 	= 	$T.button(
 									oConfig.sYesLabel.escapeHTML()
 								);
-		var oNoButton 		= 	$T.button(
+		}
+		
+		// No
+		if (oConfig.sNoIconSource)
+		{
+			var oNoButton 	= 	$T.button({class: 'icon-button'},
+									$T.img({src: oConfig.sNoIconSource}),
+									$T.span(oConfig.sNoLabel.escapeHTML())
+								);
+		}
+		else
+		{
+			var oNoButton 	= 	$T.button(
 									oConfig.sNoLabel.escapeHTML()
 								);
+		}
+		
 		aFooterButtons.push(oYesButton);
 		aFooterButtons.push(oNoButton);
 		
@@ -163,9 +191,20 @@ Object.extend(Reflex_Popup, {
 		// Add the cancel button and it's event handler if specified
 		if (oConfig.bShowCancel)
 		{
-			var oCancelButton = $T.button(
-									oConfig.sCancelLabel.escapeHTML()
-								);
+			if (oConfig.sCancelIconSource)
+			{
+				var oCancelButton	= 	$T.button({class: 'icon-button'},
+											$T.img({src: oConfig.sCancelIconSource}),
+											$T.span(oConfig.sCancelLabel.escapeHTML())
+										);
+			}
+			else
+			{
+				var oCancelButton	= 	$T.button(
+											oConfig.sCancelLabel.escapeHTML()
+										);
+			}
+			
 			aFooterButtons.push(oCancelButton);
 			oCancelButton.observe('click', fnClosePopup.curry(oPopup, oConfig.fnOnCancel));
 		}

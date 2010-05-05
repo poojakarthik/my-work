@@ -467,6 +467,20 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBO()->ActionList->IncludeAllRelatableAATTypes = true;
 		DBO()->ActionList->MaxRecordsPerPage = 5;
 		
+		// Billing Type is now 'Payment Method' and is determined differently for rebill methods
+		if (DBO()->Account->BillingType->Value == BILLING_TYPE_REBILL)
+		{
+			// Get rebill information
+			$oRebill		= Rebill::getForAccountId(DBO()->Account->Id->Value);
+			$sRebillType	= Constant_Group::getConstantGroup('rebill_type')->getConstantName($oRebill->rebill_type_id);
+			DBO()->Account->BillingType->BillingTypeName	= "Rebill via {$sRebillType}";
+		}
+		else
+		{
+			// Use billing type name
+			DBO()->Account->BillingType->BillingTypeName	= Constant_Group::getConstantGroup('billing_type')->getConstantDescription(DBO()->Account->BillingType->Value);
+		}
+		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_overview');
 

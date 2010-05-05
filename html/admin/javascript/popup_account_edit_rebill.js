@@ -53,7 +53,7 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 												)
 											)
 										),
-										$T.tbody(
+										$T.tbody({class: 'popup-account-edit-rebill-fields'}
 											// Rows will vary depending on rebill_type_id
 										)
 									),
@@ -87,9 +87,9 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 				oField		= hFields[sFieldName];
 				oControl	= Control_Field.factory(oField.sType, oField.oDefinition);
 				
-				if (this.oRebill && (typeof this.oRebill[sFieldName] != 'undefined'))
+				if (this.oRebill && (typeof this.oRebill.oDetails[sFieldName] != 'undefined'))
 				{
-					oControl.setValue(this.oRebill[sFieldName]);
+					oControl.setValue(this.oRebill.oDetails[sFieldName]);
 				}
 				else
 				{
@@ -127,6 +127,10 @@ var Popup_Account_Edit_Rebill	= Class.create(Reflex_Popup,
 		else if (oResponse.ERROR)
 		{
 			Reflex_Popup.alert(oResponse.ERROR, oConfig);
+		}
+		else if (oResponse.aValidationErrors)
+		{
+			Popup_Account_Edit_Rebill.showValidationErrors(oResponse.aValidationErrors);
 		}
 	},
 	
@@ -234,11 +238,11 @@ Popup_Account_Edit_Rebill.showValidationErrors	= function(aErrors)
 	Reflex_Popup.alert(oAlertDom, {iWidth: 30});
 }
 
-Popup_Account_Edit_Rebill.validateAccountNumber	= function(iMaxLength, sValue)
+Popup_Account_Edit_Rebill.validateWithLength	= function(fnValidate, iLength, sValue)
 {
-	if (Reflex_Validation.digits(sValue))
+	if ((fnValidate === null) || fnValidate(sValue))
 	{
-		if (sValue.length > iMaxLength)
+		if (sValue.length > iLength)
 		{
 			return false;
 		}
@@ -249,6 +253,31 @@ Popup_Account_Edit_Rebill.validateAccountNumber	= function(iMaxLength, sValue)
 	{
 		return false;
 	}
+};
+
+Popup_Account_Edit_Rebill.getDaysInMonth	= function(iMonth, iYear)
+{
+	var oDate	= new Date(iYear, iMonth, 0);
+	return oDate.getDate();
+};
+
+Popup_Account_Edit_Rebill.validateCardExpiry	= function(sValue)
+{
+	var aSplit	= sValue.split(Control_Field_Combo_Date.DATE_SEPARATOR);
+	var oDate	= new Date();
+	var iNow	= oDate.getTime();
+	oDate.setFullYear(parseInt(aSplit[0]));
+	oDate.setMonth(parseInt(aSplit[1]) - 1);
+	
+	// No day, use the end of the month
+	oDate.setDate(Popup_Account_Edit_Rebill.getDaysInMonth(oDate.getMonth() + 1, oDate.getFullYear()));
+	
+	if (oDate.getTime() > iNow)
+	{
+		return true;
+	}
+	
+	return false;
 };
 
 //Check if $CONSTANT has correct constant groups loaded, if not this class won't work
@@ -271,9 +300,10 @@ Popup_Account_Edit_Rebill.SAVE_IMAGE_SOURCE 	= '../admin/img/template/tick.png';
 // Editing fields
 Popup_Account_Edit_Rebill.FIELDS									= {};
 
-// Motorpass
+// rebill_motorpass
 Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS]	= {};
 
+// rebill_motorpass.account_number
 Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number		= {};
 Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.sType	= 'text';
 
@@ -281,8 +311,31 @@ Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number
 Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.oDefinition.sLabel		= 'Account Number';
 Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.oDefinition.mEditable	= true;
 Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.oDefinition.mMandatory	= true;
-//Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.oDefinition.iMaxLength	= 9;
-Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.oDefinition.fnValidate	= Popup_Account_Edit_Rebill.validateAccountNumber.curry(9) 
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_number.oDefinition.fnValidate	= Popup_Account_Edit_Rebill.validateWithLength.curry(Reflex_Validation.digits, 9); 
 
+// rebill_motorpass.account_name
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name			= {};
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.sType	= 'text';
+
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.oDefinition				= {};
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.oDefinition.sLabel		= 'Account Name';
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.oDefinition.mEditable	= true;
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.oDefinition.mMandatory	= true;
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].account_name.oDefinition.fnValidate	= Popup_Account_Edit_Rebill.validateWithLength.curry(null, 256);
+
+// rebill_motorpass.card_expiry_date_mm
+var oNow	= new Date();
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date			= {};
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.sType	= 'combo_date';
+
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition						= {};
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.sLabel				= 'Card Expiry Month';
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.mEditable			= true;
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.mMandatory			= true;
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.iMinYear				= oNow.getFullYear();
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.iMaxYear				= oNow.getFullYear() + 10;
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.fnValidate			= Popup_Account_Edit_Rebill.validateCardExpiry;
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.sValidationReason	= 'It must be in the future.';
+Popup_Account_Edit_Rebill.FIELDS[$CONSTANT.REBILL_TYPE_MOTORPASS].card_expiry_date.oDefinition.iFormat				= Control_Field_Combo_Date.FORMAT_M_Y;
 
 
