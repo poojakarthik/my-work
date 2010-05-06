@@ -52,7 +52,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 	 * EmailPDFInvoice()
 	 *
 	 * Performs the logic for emailing pdf invoices to customers
-	 * 
+	 *
 	 * Performs the logic for emailing pdf invoices to customers
 	 *
 	 * @return		void
@@ -63,7 +63,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		AuthenticatedUser()->PermissionOrDie(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL));
 		
 		// Set up some variables to use
 		$arrEmails			= Array(); // List of emails from Other Email address box
@@ -77,15 +77,15 @@ class AppTemplateInvoice extends ApplicationTemplate
 		$intAccount			= DBO()->Account->Id->Value;
 		
 		// check if the form was submitted
-		if (SubmittedForm('EmailPDFInvoice', 'Email Invoice')) 
-		{		
+		if (SubmittedForm('EmailPDFInvoice', 'Email Invoice'))
+		{
 			foreach (DBO()->Email as $strPropertyName=>$mixProperty)
 			{
 				// Using the custom email box
 				if ($strPropertyName == "Extra" && $mixProperty->Value != '')
 				{
 					// Load the email to the emails array
-					$arrEmails[] = $mixProperty->Value; 
+					$arrEmails[] = $mixProperty->Value;
 				}
 
 				// Using the checkboxes
@@ -184,10 +184,10 @@ class AppTemplateInvoice extends ApplicationTemplate
 	 * ExportAsCSV()
 	 *
 	 * Performs the logic for exporting an invoice in CSV format, to the user
-	 * 
+	 *
 	 * Performs the logic for exporting an invoice in CSV format, to the user
 	 * This function expects DBO()->Invoice->Id to be set
-	 * 
+	 *
 	 * @return		void
 	 * @method
 	 */
@@ -221,7 +221,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 		$strCallDetailsCSV = "";
 		$arrColumnNames = Array("ServiceType", "FNN", "Source", "Call Type", "Start Time", "Called Party", "Duration", "Units", "Charge (\$)", "Description");
 		$arrColumnOrder = Array("ServiceType", "FNN", "Source", "Call Type", "Start Time", "Called Party", "Duration", "UnitType", "Charge", "Description");
-		$arrBlankRecord = Array(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL); 
+		$arrBlankRecord = Array(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 		
 		// Add the head record to the CSV file
 		$strCallDetailsCSV = MakeCSVLine($arrColumnNames);
@@ -232,7 +232,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 		// Add each call (CDR) to the CSV file
 		foreach ($cdrs as $arrCDR)
 		{
-			if (($intLastFNN !== NULL) && ($intLastFNN != $arrCDR['FNN'])) 
+			if (($intLastFNN !== NULL) && ($intLastFNN != $arrCDR['FNN']))
 			{
 				// The FNN has changed.  Stick in a blank record
 				$strCallDetailsCSV .= MakeCSVLine($arrBlankRecord);
@@ -259,7 +259,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 						
 			$strCallDetailsCSV .= MakeCSVLine($arrCDR, $arrColumnOrder);
 			
-			// Update the details used for spacing 
+			// Update the details used for spacing
 			$intLastFNN = $arrCDR['FNN'];
 		}
 		

@@ -83,7 +83,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
+	{
 		$bolUserHasOperatorPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR);
 		$bolUserHasViewPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW);
 		$bolUserHasExternalPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_EXTERNAL);
@@ -107,22 +107,22 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			$arrSampleInvoices = ListPDFSamples(DBO()->Account->Id->Value);
 			foreach ($arrSampleInvoices as $strInvoiceRun => $strSampleType)
 			{
-				// If the strInvoiceRun value is shorter than a 8, it must be an Id. We should load the InvoiceRun for that so that we can 
+				// If the strInvoiceRun value is shorter than a 8, it must be an Id. We should load the InvoiceRun for that so that we can
 				// display the link for it.
 				$strPdfHref		= Href()->ViewInvoicePdf(DBO()->Account->Id->Value, 0, 0, 0, $strInvoiceRun);
 				$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View $strSampleType Sample PDF Invoice' /></a>";
-				$strInvoiceRunDate = is_numeric(substr($strInvoiceRun, 0, 8)) 
-										? substr($strInvoiceRun, 6, 2) . '-' . substr($strInvoiceRun, 4, 2) . '-' .substr($strInvoiceRun, 0, 4) 
+				$strInvoiceRunDate = is_numeric(substr($strInvoiceRun, 0, 8))
+										? substr($strInvoiceRun, 6, 2) . '-' . substr($strInvoiceRun, 4, 2) . '-' .substr($strInvoiceRun, 0, 4)
 										: "Unknown";
 	
 				// Add this row to Invoice table
 				Table()->InvoiceTable->AddRow(  $strInvoiceRunDate,
-												$strSampleType, 
-												"N/A", 
+												$strSampleType,
 												"N/A",
 												"N/A",
-												'Sample', 
-												$strPdfLabel, 
+												"N/A",
+												'Sample',
+												$strPdfLabel,
 												"&nbsp;",
 												"&nbsp;",
 												"&nbsp;");
@@ -141,7 +141,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			{
 				$aInvoiceIds[] = $dboInvoice->Id->Value;
 			
-				// Build the links 
+				// Build the links
 				$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
 				$intYear = (int)date("Y", $intDate);
 				$intMonth = (int)date("m", $intDate);
@@ -165,10 +165,10 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 					$strPdfHref 	= Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, $dboInvoice->invoice_run_id->Value);
 					$strPdfLabel 	= "<a href='$strPdfHref'><img src='img/template/pdf_small.png' title='View PDF Invoice' /></a>";
 					
-					// Build "Email invoice pdf" link, if the user has OPERATOR privileges
+					// Build "Email invoice pdf" link, if the user has OPERATOR or OPERATOR_EXTERNAL privileges
 					if (!$bolIsSample)
 					{
-						if ($bolUserHasOperatorPerm)
+						if ($bolUserHasOperatorPerm || $bolUserHasExternalPerm)
 						{
 							$strEmailHref	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, $dboInvoice->invoice_run_id->Value);
 							$strEmailLabel	= "<img src='img/template/email.png' title='Email PDF Invoice' onclick='$strEmailHref'></img>";
@@ -219,12 +219,12 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 	
 				// Add this row to Invoice table
 				Table()->InvoiceTable->AddRow(  $strCreatedOnFormatted,
-												$dboInvoice->Id->Value, 
-												"<span class='Currency'>". $dboInvoice->Amount->FormattedValue() ."</span>", 
+												$dboInvoice->Id->Value,
+												"<span class='Currency'>". $dboInvoice->Amount->FormattedValue() ."</span>",
 												"<span class='Currency'>". $dboInvoice->AppliedAmount->FormattedValue() ."</span>",
 												"<span class='Currency'>". $dboInvoice->Balance->FormattedValue() ."</span>",
-												($bolIsSample ? $dboInvoice->Status->Value : GetConstantDescription($dboInvoice->Status->Value, "InvoiceStatus")), 
-												$strPdfLabel, 
+												($bolIsSample ? $dboInvoice->Status->Value : GetConstantDescription($dboInvoice->Status->Value, "InvoiceStatus")),
+												$strPdfLabel,
 												$strEmailLabel,
 												$strViewInvoiceLabel,
 												$strExportCSV);
@@ -262,7 +262,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			function anchorCallback(iInvoiceId)
 			{
 				JsAutoLoader.loadScript(
-					'javascript/popup_invoice_view.js', 
+					'javascript/popup_invoice_view.js',
 					function()
 					{
 						new Popup_Invoice_View(iInvoiceId);
@@ -280,7 +280,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		
 		echo "
 		</script>
-		";	
+		";
 		
 		if (Table()->InvoiceTable->RowCount() == 0)
 		{
