@@ -137,7 +137,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		{
 			$bolIsSample = !is_numeric($dboInvoice->Status->Value);
 			
-			if (!$bolIsSample || $bolUserHasViewPerm)
+			if (!$bolIsSample || $bolUserHasViewPerm || $bolUserHasExternalPerm)
 			{
 				$aInvoiceIds[] = $dboInvoice->Id->Value;
 			
@@ -158,7 +158,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 				}
 				$arrInvoiceRun	= $resInvoiceRun->fetch_assoc();
 	
-				if ($bolUserHasViewPerm && InvoicePDFExists($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, intval($dboInvoice->invoice_run_id->Value)))
+				if (($bolUserHasExternalPerm || $bolUserHasViewPerm) && InvoicePDFExists($dboInvoice->Account->Value, $intYear, $intMonth, $dboInvoice->Id->Value, intval($dboInvoice->invoice_run_id->Value)))
 				{
 					// The pdf exists
 					// Build "view invoice pdf" link
