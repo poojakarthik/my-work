@@ -57,9 +57,10 @@ class JSON_Handler_Operation extends JSON_Handler
 				
 				
 				// Retrieve list of Operations
-				$oOperations	= Operation::getAll();
-				$aResults		= array();
-				$iCount			= 0;
+				$oLoggedInEmployee	= Employee::getForId(Flex::getUserId());
+				$oOperations		= Operation::getAll();
+				$aResults			= array();
+				$iCount				= 0;
 				foreach ($oOperations as $iOperationId=>$oOperation)
 				{
 					if ($iLimit && $iCount >= $iOffset+$iLimit)
@@ -69,18 +70,22 @@ class JSON_Handler_Operation extends JSON_Handler
 					}
 					elseif ($iCount >= $iOffset)
 					{
-						$oStdClass	= $oOperation->toStdClass();
-						
-						// Get list of prerequisites
-						$aPrerequisites				= $oOperation->getPrerequisites();
-						$oStdClass->aPrerequisites	= array();
-						foreach ($aPrerequisites as $oOperationPrerequisite)
+						if ($oOperation->is_assignable == 1 || $oLoggedInEmployee->isGod())
 						{
-							$oStdClass->aPrerequisites[]	= $oOperationPrerequisite->prerequisite_operation_id;
+							// The operation is assignable (or the employee is god)
+							$oStdClass	= $oOperation->toStdClass();
+							
+							// Get list of prerequisites
+							$aPrerequisites				= $oOperation->getPrerequisites();
+							$oStdClass->aPrerequisites	= array();
+							foreach ($aPrerequisites as $oOperationPrerequisite)
+							{
+								$oStdClass->aPrerequisites[]	= $oOperationPrerequisite->prerequisite_operation_id;
+							}
+							
+							// Add to Result Set
+							$aResults[$iCount+$iOffset]	= $oStdClass;
 						}
-						
-						// Add to Result Set
-						$aResults[$iCount+$iOffset]	= $oStdClass;
 					}
 					
 					$iCount++;

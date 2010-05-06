@@ -3623,6 +3623,27 @@ div.employee-details-credentials
 	padding-bottom	: 1em;
 }
 
+tbody.employee-details-credentials div.control-field
+{
+	float	: left;
+}
+
+div.employee-details-is-god
+{
+	-moz-border-radius	: 4px 4px 4px 4px;
+	border				: 1px solid #34446A;
+	background-color	: #ffffff;
+	font-weight			: bold;
+	padding				: 0.05em 0.25em;
+	float				: right;
+}
+
+div.employee-details-is-god > img
+{
+	vertical-align	: middle;
+	margin-right	: 0.25em;
+}
+
 /************************ END - Employee Details Popup - END ************************/
 
 /************************ START - Employee Details Permissions Popup - START ************************/

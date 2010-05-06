@@ -1,7 +1,7 @@
 
 var Popup_Employee_Details	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, bRenderMode, iEmployeeId, bEditingSelf, fnOnSave)
+	initialize	: function($super, bRenderMode, iEmployeeId, bDisableEditing, fnOnSave)
 	{
 		$super(40);
 		
@@ -10,7 +10,7 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		this.iOperationTreeReadyCount	= 0;
 		this.hOperationProfileChildren	= [];
 		this.bNewEmployee				= false;
-		this.bEditingSelf				= bEditingSelf ? true : false;
+		this.bDisableEditing			= bDisableEditing ? true : false;
 		this.fnOnSave					= fnOnSave;
 		
 		if (Number(iEmployeeId) > 0)
@@ -36,7 +36,7 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 	buildContent	: function()
 	{
 		// Get a hash of controls for editing the employees details
-		this.oControls	= this.oEmployee.getControls(this.bEditingSelf, this.bNewEmployee);
+		this.oControls	= this.oEmployee.getControls(this.bDisableEditing, this.bNewEmployee);
 		
 		// Build Content
 		this._oPage	= 	$T.div({class: 'employee-details'},
@@ -90,8 +90,10 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 							)
 						);
 		
-		// Manage permissions button
 		this.oManagePermissions	= this._oPage.select('button.employee-details-permissions').first();
+		//this.oGodUserLabel		= this._oPage.select('div.employee-details-is-god').first();
+		this.oManagePermissions.hide();
+		//this.oGodUserLabel.hide();
 		
 		// Hide edit password button if a new employee
 		var oEditPassword	= this._oPage.select('button.employee-details-edit-password').first();
@@ -160,7 +162,7 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		var oDetails		= this._oPage.select('tbody.employee-details-details').first();
 		var sFieldName		= null;
 		var oControl		= null;
-		
+		var oRow			= null;
 		for (var i = 0; i < aCredentialsFields.length; i++)
 		{
 			sFieldName	= aCredentialsFields[i];
@@ -168,7 +170,20 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 			
 			if (oControl)
 			{
-				oCredentials.appendChild(oControl.generateInputTableRow().oElement);
+				oRow	= oControl.generateInputTableRow().oElement;
+				
+				if (sFieldName && this.oEmployee.oProperties.is_god)
+				{
+					//debugger;
+					oRow.select('td').last().appendChild(
+						$T.div({class: 'employee-details-is-god'},
+							$T.img({src: '../admin/img/template/lightning.png'}),
+							'God User'
+						)
+					);
+				}
+				
+				oCredentials.appendChild(oRow);
 			}
 		}
 		
@@ -236,13 +251,22 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 	setControlMode	: function(bControlMode)
 	{
 		// Can't change control/render mode if editing self, no editing allowed
-		if (this.bEditingSelf)
+		if (this.bDisableEditing)
 		{
 			// Set to view mode
 			bControlMode	= Control_Field.RENDER_MODE_VIEW;
-			
+		}
+		
+		if (this.bDisableEditing || this.oEmployee.oProperties.is_god || this.oEmployee.oProperties.is_logged_in_employee)
+		{
 			// Hide manage permissions button
 			this.oManagePermissions.hide();
+			
+			/*if (this.oEmployee.oProperties.is_god)
+			{
+				// God user, show as such
+				this.oGodUserLabel.show();
+			}*/
 		}
 		
 		switch (bControlMode)
@@ -257,7 +281,7 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 				
 			case Control_Field.RENDER_MODE_VIEW:
 				// Change footer buttons
-				if (this.bEditingSelf)
+				if (this.bDisableEditing)
 				{
 					this.setFooterButtons([this.oCloseButton], true);
 				}
@@ -266,7 +290,7 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 					this.setFooterButtons([this.oEditButton, this.oCloseButton], true);
 				}
 				
-				if (!this.bNewEmployee && !this.bEditingSelf)
+				if (!this.bNewEmployee && !this.bDisableEditing && !this.oEmployee.oProperties.is_god && !this.oEmployee.oProperties.is_logged_in_employee)
 				{
 					this.oManagePermissions.show();
 				}
@@ -277,7 +301,7 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 		}
 		
 		// Call setRenderMode(bControlMode) on all controls
-		var aValidFields	= this.oEmployee.getValidProperties(this.bEditingSelf, this.bNewEmployee);
+		var aValidFields	= this.oEmployee.getValidProperties(this.bDisableEditing, this.bNewEmployee);
 		
 		for (var sFieldName in this.oControls)
 		{

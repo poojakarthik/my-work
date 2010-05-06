@@ -49,9 +49,9 @@ var Page_Employee_List = Class.create(
 										),
 										$T.thead(
 											$T.tr(
+												$T.th('Username'),
 												$T.th('Given Name'),
 												$T.th('Surname'),
-												$T.th('Username'),
 												$T.th('Status'),
 												$T.th('Actions')
 											)
@@ -205,9 +205,9 @@ var Page_Employee_List = Class.create(
 		{
 			var bArchived	= parseInt(oData.Archived) == 1;
 			var	oTR			=	$T.tr(
+									$T.td(oData.UserName),				
 									$T.td(oData.FirstName),
 									$T.td(oData.LastName),
-									$T.td(oData.UserName),
 									$T.td({class: (bArchived ? 'employee-archived' : 'employee-active')},
 										bArchived ? 'Archived' : 'Active'
 									),
@@ -222,7 +222,17 @@ var Page_Employee_List = Class.create(
 			oEditButton.observe('click', this._editEmployee.bind(this, oData.Id));
 			
 			var oPermissionsButton	= oTR.select('td.employee-list-action > img').last();
-			oPermissionsButton.observe('click', this._editPermissions.bind(this, oData.Id));
+			
+			// Hide the permissions button if the row represents the logged in employee (or a god user)
+			if (oData.is_logged_in_employee || parseInt(oData.is_god))
+			{
+				oPermissionsButton.hide();
+			}
+			else
+			{
+				// Not god, or logged in employee, add click event
+				oPermissionsButton.observe('click', this._editPermissions.bind(this, oData.Id));
+			}
 			
 			return oTR;
 		}

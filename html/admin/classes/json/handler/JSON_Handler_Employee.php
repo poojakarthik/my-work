@@ -20,6 +20,16 @@ class JSON_Handler_Employee extends JSON_Handler
 			$aEmployee							= $oEmployee->toArray();
 			$aEmployee['ticketing_permission']	= Ticketing_User::getPermissionForEmployeeId($iEmployeeId);
 			
+			// Add 'is_logged_in_employee' flag
+			if ($iEmployeeId == Flex::getUserId())
+			{
+				$aEmployee['is_logged_in_employee']	= true;
+			}
+			else
+			{
+				$aEmployee['is_logged_in_employee']	= false;
+			}
+			
 			// If no exceptions were thrown, then everything worked
 			return	array(
 						"Success"		=> true,
@@ -80,6 +90,15 @@ class JSON_Handler_Employee extends JSON_Handler
 				$iCount		= 0;
 				while ($aEmployee = $rEmployees->fetch_assoc())
 				{
+					if ((int)$aEmployee['Id'] == Flex::getUserId())
+					{
+						$aEmployee['is_logged_in_employee']	= true;
+					}
+					else
+					{
+						$aEmployee['is_logged_in_employee']	= false;
+					}
+					
 					$arrEmployees[$iCount + $iOffset]	= $aEmployee;
 					$iCount++;
 				}

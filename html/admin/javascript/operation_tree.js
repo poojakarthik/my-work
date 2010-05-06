@@ -213,12 +213,6 @@ var Operation_Tree	= Class.create
 					}
 				}
 
-				// If the operation has is_assignable = 0, disallow editing for the node
-				if (this.oOperations[iOperationId].is_assignable == 0)
-				{
-					oNode.setEditableFixed(false);
-				}
-
 				// Add description to the node data
 				oNodeData.description	= 	$T.span({class: 'operation-tree-profile-description'},
 												this.oOperations[iOperationId].description
