@@ -411,12 +411,11 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 		
 		// Update the human readable sentence
 		var oResult	= this.oContent.select('div.recurring-charge-type-definition-result').first();
-		var sResult	= (sChargeNature == Popup_Recurring_Charge_Type.NATURE_DEBIT ? 'Debit' : 'Credit') + ' $' + fCharge;
+		var sResult	= (sChargeNature == Popup_Recurring_Charge_Type.NATURE_DEBIT ? 'Debit' : 'Credit') + ' $' + fCharge + ' every ' + iChargePeriod + ' ' + sTimeLabel + (iChargePeriod != 1 ? 's' : '');
 		
 		if (iContinuing == Popup_Recurring_Charge_Type.CONTINUING_TOTAL)
 		{
-			sResult	+=	' every ' + iChargePeriod + ' ' + sTimeLabel + (iChargePeriod != 1 ? 's' : '') +
-						' over ' + iPeriodsOver + ' ' + sTimeLabel + sTimeSuffix +
+			sResult	+=	' over ' + iPeriodsOver + ' ' + sTimeLabel + sTimeSuffix +
 						' until a Total of $' + fTotal + ' is charged.';
 		}
 		else
