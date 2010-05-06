@@ -140,8 +140,24 @@ class JSON_Handler_Contact extends JSON_Handler
 			{
 				$aValidationErrors[]	= 'Email address missing';
 			}
+			else
+			{
+				$aContactsWithEmail	= Contact::getForEmailAddress($oContactDetails->sEmail);
+				
+				// Remove self from the array
+				if ($oContact->Id && array_key_exists($oContact->Id, $aContactsWithEmail))
+				{
+					unset($aContactsWithEmail[$oContact->Id]);
+				}
+				
+				// Are there any instances remaining?
+				if (count($aContactsWithEmail))
+				{
+					$aValidationErrors[]	= "Email address is already in use";
+				}
+			}
 			
-			if (!is_numeric($oContactDetails->iPhone) && !is_numeric($oContactDetails->iMobile == ''))
+			if (!is_numeric($oContactDetails->iPhone) && !is_numeric($oContactDetails->iMobile))
 			{
 				$aValidationErrors[]	= 'Phone number and mobile number missing, one of them is required.';
 			}
