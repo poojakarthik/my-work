@@ -58,16 +58,16 @@ class Application_Handler_Invoice extends Application_Handler
 			$iServiceTotal 	= count($subPath) ? intval(array_shift($subPath)) : 0;
 			$db 			= Data_Source::get();
 			$sServiceTotal	= "
-				SELECT 	i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, 
+				SELECT 	i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId,
 						a.BusinessName as BusinessName, a.TradingName as TradingName, s.ServiceType as ServiceType,
 						t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal
-				FROM 	Invoice i, ServiceTotal t, Service s, Account a, InvoiceRun r 
-				WHERE 	t.Id = $iServiceTotal 
-				AND 	i.invoice_run_id = t.invoice_run_id 
-				AND 	i.invoice_run_id = r.Id 
-				AND 	i.Account = t.Account 
-				AND 	s.Id = t.Service 
-				AND 	a.Id = t.Account 
+				FROM 	Invoice i, ServiceTotal t, Service s, Account a, InvoiceRun r
+				WHERE 	t.Id = $iServiceTotal
+				AND 	i.invoice_run_id = t.invoice_run_id
+				AND 	i.invoice_run_id = r.Id
+				AND 	i.Account = t.Account
+				AND 	s.Id = t.Service
+				AND 	a.Id = t.Account
 			";
 	
 			$res = $db->query($sServiceTotal);
@@ -118,9 +118,9 @@ class Application_Handler_Invoice extends Application_Handler
 			
 			// Get the cdr information
 			$aCDRsResult	= 	$oService->getCDRs(
-									$iInvoiceRunId, 
-									$aDetailsToRender['filter']['recordType'], 
-									$aDetailsToRender['filter']['limit'], 
+									$iInvoiceRunId,
+									$aDetailsToRender['filter']['recordType'],
+									$aDetailsToRender['filter']['limit'],
 									$aDetailsToRender['filter']['offset']
 								);
 			
@@ -155,12 +155,12 @@ class Application_Handler_Invoice extends Application_Handler
 				SELECT	i.Id AS InvoiceId, t.Account as AccountId, t.FNN as FNN, t.Service as ServiceId, a.BusinessName as BusinessName,
 						a.TradingName as TradingName, s.ServiceType as ServiceType, t.invoice_run_id as InvoiceRunId, t.Id ServiceTotal
 				FROM	Invoice i, ServiceTotal t, Service s, Account a, InvoiceRun r
-				WHERE	t.Id = $iServiceTotal 
-				AND 	i.invoice_run_id = t.invoice_run_id 
-				AND 	i.invoice_run_id = r.Id 
-				AND 	i.Account = t.Account 
-				AND 	s.Id = t.Service 
-				AND 	a.Id = t.Account 
+				WHERE	t.Id = $iServiceTotal
+				AND 	i.invoice_run_id = t.invoice_run_id
+				AND 	i.invoice_run_id = r.Id
+				AND 	i.Account = t.Account
+				AND 	s.Id = t.Service
+				AND 	a.Id = t.Account
 			";
 	
 			$res	= $db->query($sServiceTotal);
@@ -239,7 +239,7 @@ class Application_Handler_Invoice extends Application_Handler
 	{
 		try
 		{
-			if (!AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR_VIEW))
+			if (!AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR_VIEW, PERMISSION_OPERATOR_EXTERNAL)))
 			{
 				throw new Exception('You do not have permission to view this PDF.');
 			}
@@ -331,7 +331,7 @@ class Application_Handler_Invoice extends Application_Handler
 				// Filename
 				// TODO?
 				
-				// Parse the Report	
+				// Parse the Report
 				$oCSVImportFile	= new File_CSV();
 				$oCSVImportFile->setColumns(array_values(self::$_aInterimEligibilityColumns));
 				$oCSVImportFile->importFile($sSubmittedEligibilityReportPath, true);
@@ -590,7 +590,7 @@ class Application_Handler_Invoice extends Application_Handler
 									$bAccountHasAdjustments	= true;
 								}
 							}
-							$iAccountsAdjustmentsAdded	+= ($bAccountHasAdjustments) ? 1 : 0; 
+							$iAccountsAdjustmentsAdded	+= ($bAccountHasAdjustments) ? 1 : 0;
 							
 							$iAccountsInvoiced++;
 							$iServicesInvoiced	+= count($aAccount['aWhitelist']);
@@ -916,7 +916,7 @@ ORDER BY	account_id,
 				{
 					$aAccounts[$aService['account_id']]['bAdjustmentEligible']	= true;
 				}
-			} 
+			}
 		}
 		
 		// Check Account-level Eligibility
