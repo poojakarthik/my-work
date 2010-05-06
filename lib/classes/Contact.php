@@ -12,7 +12,7 @@ class Contact extends ORM
 
 	public function getName()
 	{
-		return (($this->title && !$this->firstName && $this->lastName) ? $this->title . ' ' : '') . // Output a title if we have a title and surname but no christian name 
+		return (($this->title && !$this->firstName && $this->lastName) ? $this->title . ' ' : '') . // Output a title if we have a title and surname but no christian name
 				($this->firstName ? $this->firstName : '') . // Output a christian name if we have one
 				($this->firstName && $this->lastName ? ' ' : '') . // If we have both christian and surname, put a space between them
 				($this->lastName ? $this->lastName : '') . // If we have a surname, output it
@@ -23,8 +23,8 @@ class Contact extends ORM
 	{
 		// Note: Email address should be unique, so only fetch the first record
 		$selContacts = new StatementSelect(
-			"Contact", 
-			"*", 
+			"Contact",
+			"*",
 			$where);
 		if (($outcome = $selContacts->Execute($arrWhere)) === FALSE)
 		{
@@ -124,8 +124,23 @@ class Contact extends ORM
 
 	public static function isEmailInUse($strEmailAddress)
 	{
+		return (bool)count(self::getForEmailAddress($strEmailAddress));
+	}
+	
+	public static function getForEmailAddress($strEmailAddress)
+	{
 		$selContactByEmail	= self::_preparedStatement('selContactByEmail');
-		return $selContactByEmail->Execute(Array('Email' => trim($strEmailAddress), 'IncludeArchived' => 0));
+		if (false === $selContactByEmail->Execute(Array('Email' => trim($strEmailAddress), 'IncludeArchived' => 0)))
+		{
+			throw new Exception($selContactByEmail->Error());
+		}
+		
+		$aContacts	= array();
+		while ($aContact = $selContactByEmail->Fetch())
+		{
+			$aContacts[$aContact['Id']]	= new Contact($aContact);
+		}
+		return $aContacts;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -137,9 +152,9 @@ class Contact extends ORM
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
-	 * 
+	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
@@ -160,7 +175,7 @@ class Contact extends ORM
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Contact", "*", "Id = <Id>", NULL, 1);
 					break;
 				case 'selContactByEmail':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Contact", "*", "Email LIKE <Email> AND (<IncludeArchived> = 1 OR Archived = 0)", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Contact", "*", "Email LIKE <Email> AND (<IncludeArchived> = 1 OR Archived = 0)");
 					break;
 				
 				// INSERTS
