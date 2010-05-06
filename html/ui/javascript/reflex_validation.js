@@ -148,6 +148,32 @@ var Reflex_Validation	=
 		return true;
 	},
 	
+	stringOfLength	: function(iMinLength, iMaxLength, sValue)
+	{
+		iMinLength	= (iMinLength ? iMinLength : null);
+		iMaxLength	= (iMaxLength ? iMaxLength : null);
+		
+		if (((iMinLength === null) || (sValue.length >= iMinLength)) && 
+			((iMaxLength === null) || (sValue.length <= iMaxLength)))
+		{
+			return true;
+		}
+		
+		return false;
+	},
+	
+	float	: function(mValue)
+	{
+		if (mValue.toString().match(/^\d+(\.\d+)?$/))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	},
+	
 	/*
 	 * These validation functions throw an exception if the given value is invalid.
 	 * They return true if valid and they return false if no value is given.

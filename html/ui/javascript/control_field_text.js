@@ -13,6 +13,8 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oView	= document.createElement('span');
 		this.oControlOutput.oElement.appendChild(this.oControlOutput.oView);
 		
+		this._aOnChangeCallbacks	= [];
+		
 		this.validate();
 		
 		this.addEventListeners();
@@ -24,7 +26,7 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 	},
 	
 	setElementValue	: function(mValue)
-	{	
+	{
 		this.oControlOutput.oEdit.value	= mValue;
 	},
 	
@@ -38,18 +40,33 @@ var Control_Field_Text	= Class.create(/* extends */ Control_Field,
 	
 	addEventListeners	: function()
 	{
-		this.aEventHandlers				= {};
-		this.aEventHandlers.fnValidate	= this.validate.bind(this);
+		this.aEventHandlers					= {};
+		this.aEventHandlers.fnValueChange	= this._valueChange.bind(this);
 		
-		this.oControlOutput.oEdit.addEventListener('click'	, this.aEventHandlers.fnValidate, false);
-		this.oControlOutput.oEdit.addEventListener('change'	, this.aEventHandlers.fnValidate, false);
-		this.oControlOutput.oEdit.addEventListener('keyup'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.observe('click'	, this.aEventHandlers.fnValueChange);
+		this.oControlOutput.oEdit.observe('change'	, this.aEventHandlers.fnValueChange);
+		this.oControlOutput.oEdit.observe('keyup'	, this.aEventHandlers.fnValueChange);
 	},
 	
 	removeEventListeners	: function()
 	{
-		this.oControlOutput.oEdit.removeEventListener('click'	, this.aEventHandlers.fnValidate, false);
-		this.oControlOutput.oEdit.removeEventListener('change'	, this.aEventHandlers.fnValidate, false);
-		this.oControlOutput.oEdit.removeEventListener('keyup'	, this.aEventHandlers.fnValidate, false);
+		this.oControlOutput.oEdit.stopObserving('click'		, this.aEventHandlers.fnValueChange);
+		this.oControlOutput.oEdit.stopObserving('change'	, this.aEventHandlers.fnValueChange);
+		this.oControlOutput.oEdit.stopObserving('keyup'		, this.aEventHandlers.fnValueChange);
+	},
+	
+	addOnChangeCallback	: function(fnCallback)
+	{
+		this._aOnChangeCallbacks.push(fnCallback);
+	},
+	
+	_valueChange	: function()
+	{
+		this.validate();
+		
+		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
+		{
+			this._aOnChangeCallbacks[i]();
+		}
 	}
 });

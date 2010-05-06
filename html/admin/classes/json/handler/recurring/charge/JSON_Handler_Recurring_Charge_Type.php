@@ -52,6 +52,8 @@ class JSON_Handler_Recurring_Charge_Type extends JSON_Handler
 				$aRecurringChargeTypes = Recurring_Charge_Type::searchFor($aFilterData, null, $iLimit, $iOffset);
 				$aStdClassChargeTypes = array();
 				
+				$aTest	= array();
+				
 				foreach ($aRecurringChargeTypes as $iId => $oRecurringChargeType)
 				{
 					$aStdClassRecurringChargeTypes[$iId] = $oRecurringChargeType->toStdClass();
@@ -99,8 +101,7 @@ class JSON_Handler_Recurring_Charge_Type extends JSON_Handler
 				return array(
 							"Success"			=> true,
 							"arrRecords"		=> $aStdClassRecurringChargeTypes,
-							"intRecordCount"	=> ($oPaginationDetails !== null)? $oPaginationDetails->totalRecordCount : count($aStdClassRecurringChargeTypes),
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+							"intRecordCount"	=> ($oPaginationDetails !== null)? $oPaginationDetails->totalRecordCount : count($aStdClassRecurringChargeTypes)
 						);
 			}
 		}
@@ -278,7 +279,7 @@ class JSON_Handler_Recurring_Charge_Type extends JSON_Handler
 				// Validation errors found, rollback transaction and return errors
 				$oDataAccess->TransactionRollback();
 				
-				return array(
+				return 	array(
 							"Success"			=> false,
 							"aValidationErrors"	=> $aValidationErrors,
 							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''

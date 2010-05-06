@@ -5,153 +5,150 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 	{
 		$super(55);
 		
-		this.fnOnClose = fnOnClose;
+		this.fnOnClose					= fnOnClose;
+		this.hControls					= {};
+		this._bCancellationFeeVisible	= false;
 		this._buildUI();
 	},
 	
 	_buildUI	: function()
 	{
 		// Build UI
-		var oContent 	=	$T.div({class: 'charge-type'},
-								$T.div({class: 'charge-type-table'},
-									$T.table({class: 'reflex'},
-										$T.caption(
-											$T.div({class: 'caption_bar'},						
-												$T.div({class: 'caption_title'},
-													'Details'
+		this.oContent 	=	$T.div({class: 'recurring-charge-type'},
+								$T.div({class: 'section'},
+									$T.div({class: 'section-header'},
+										$T.div({class: 'section-header-title'},
+											'Details'
+										)
+									),
+									$T.div({class: 'section-content section-content-fitted'},
+										$T.table({class: 'input recurring-charge-type-properties'},
+											$T.colgroup(
+												$T.col({style: 'width: 23%'}),
+												$T.col({style: 'width: 77%'})
+											),
+											$T.tbody(
+												$T.tr(
+													$T.th({class: 'label'},
+														'Charge Code :'
+													),
+													$T.td(
+														$T.div({class: 'recurring-charge-type-charge-code'}
+															// Control added later
+														)	
+													)
+												),
+												$T.tr(
+													$T.th({class: 'label'},
+														'Description :'	
+													),
+													$T.td({class: 'recurring-charge-type-description'}
+														// Control added later
+													)
+												),
+												$T.tr(
+													$T.th({class: 'label'},
+														'Approval Process :'
+													),
+													$T.td({class: 'recurring-charge-type-approval-process'}
+														// Control added later
+													)
 												)
 											)
-										),
-										$T.colgroup(
-											$T.col(),
-											$T.col()
-										),
-										$T.tbody(
-											$T.tr(
-												$T.th({class: 'label'},
-													'Charge Code :'
-												),
-												$T.td(
-													$T.input({type:'text'})
-												)
+										)
+									)
+								),
+								$T.div({class: 'section'},
+									$T.div({class: 'section-header'},
+										$T.div({class: 'section-header-title'},
+											'Charge'
+										)
+									),
+									$T.div({class: 'section-content section-content-fitted'},
+										$T.table({class: 'input input-no-fixed-width'},
+											$T.colgroup(
+												$T.col({style: 'width: 23%'}),
+												$T.col({style: 'width: 77%'})
 											),
-											$T.tr(
-												$T.th({class: 'label'},
-													'Description :'	
-												),
-												$T.td(
-													$T.input({type:'text'})
-												)
-											),
-											$T.tr(
-												$T.th({class: 'label'},
-													'Recursion Charge ($):'	
-												),
-												$T.td(
-													$T.input({type:'text', value: '0.00'})
-												)
-											),
-											$T.tr(
-												$T.th({class: 'label'},
-													'Nature :'
-												),
-												$T.td(
-													$T.select(
-														$T.option({value:'DR'},
-															'Debit'
-														),
-														$T.option({value:'CR'},
-															'Credit'
-														)
-													)
-												)
-											),
-											$T.tr(
-												$T.th({class: 'label'},
-													'Recurring Frequency :'
-												),
-												$T.td (
-													$T.input({type: 'text'}),
-													$T.select(
-														$T.option({value: Popup_Recurring_Charge_Type.BILLING_FREQ_MONTH},
-															'Months'
-														)
-													)
-												)
-											),
-											$T.tr(
-												$T.th({class: 'label'},
-													'Minimum Charge ($):'	
-												),
-												$T.td(
-													$T.input({type:'text', value: '0.00'})
-												)
-											),
-											$T.tr(
-												$T.th({class: 'label'},
-													'Cancellation Fee ($):'	
-												),
-												$T.td(
-													$T.input({type:'text', value: '0.00'})
-												)
-											),
-											$T.tr({class: 'charge-type-checkbox'},
-												$T.th({class: 'label'},
-													'Continuation :'
-												),
-												$T.td(
-													$T.input({type: 'checkbox'}),
-													$T.span({style: 'display: none'},
-														'Will keep charging when the minimum charge is reached.'
+											$T.tbody(
+												$T.tr(
+													$T.th({class: 'label'},
+														'Definition :'
 													),
-													$T.span('Will stop charging when the minimum charge is reached.')
-												)
-											),
-											/*$T.tr({class: 'charge-type-checkbox'},
-												$T.th({class: 'label'},
-													'Unique Charge :'
-												),
-												$T.td(
-													$T.input({type: 'checkbox'}),
-													$T.span({style: 'display: none'},
-														'This is a unique adjustment.'
-													),
-													$T.span(
-														$T.span('This is '),
-														$T.span({style: 'font-weight: bold;'},
-															'not'
+													$T.td(
+														$T.table({class: 'recurring-charge-type-definition'},
+															$T.tbody(
+																$T.tr(
+																	$T.td({class: 'recurring-charge-type-definition-symbol'},
+																		'$'
+																	),
+																	$T.td({class: 'recurring-charge-type-definition-charge'}
+																		// Control added later
+																	),
+																	$T.td({class: 'recurring-charge-type-definition-naturepertime'},
+																		$T.ul({class: 'reset horizontal'},
+																			$T.li({class: 'recurring-charge-type-definition-nature'}
+																				// Control added later
+																			),
+																			$T.li('per'),
+																			$T.li({class: 'recurring-charge-type-definition-period'}
+																				// Control added later
+																			),
+																			$T.li({class: 'recurring-charge-type-definition-period-type'}
+																				// Control added later
+																			)
+																		)
+																	)
+																),
+																$T.tr({class: 'recurring-charge-type-definition-over-row'},
+																	$T.td({class: 'recurring-charge-type-definition-symbol'},
+																		'over'
+																	),
+																	$T.td({class: 'recurring-charge-type-definition-time'}
+																		// Control added later
+																	),
+																	$T.td({class: 'recurring-charge-type-definition-time-label'}
+																		// Control added later
+																	)
+																),
+																$T.tr({class: 'recurring-charge-type-definition-total-row'},
+																	$T.td({class: 'recurring-charge-type-definition-symbol'},
+																		'$'
+																	),
+																	$T.td({class: 'recurring-charge-type-definition-total'}
+																		// Control added later
+																	),
+																	$T.td({class: 'recurring-charge-type-definition-continuing'},
+																		$T.div({class: 'recurring-charge-type-definition-continuing'}
+																			// Control added later
+																		)
+																	)
+																)
+															)
 														),
-														' a unique adjustment.'
+														$T.div({class: 'recurring-charge-type-definition-result'})
 													)
-												)
-											),*/
-											$T.tr({class: 'charge-type-checkbox'},
-												$T.th({class: 'label'},
-													'Fixation :'
 												),
-												$T.td(
-													$T.input({type: 'checkbox'}),
-													$T.span({style: 'display: none'},
-														'Can ',
-														$T.span({style: 'font-weight: bold;'},
-															'not'
-														),
-														' be changed at application time.'
+												$T.tr(
+													$T.th({class: 'label'},
+														'Fixed :'
 													),
-													$T.span('Can be changed at application time.')
-												)
-											),
-											$T.tr(
-												$T.th({class: 'label'},
-													'Approval Process :'
+													$T.td({class: 'recurring-charge-type-fixed'}
+														// Control added later
+													)
 												),
-												$T.td(
-													$T.select(
-														$T.option({value: Popup_Recurring_Charge_Type.NO_APPROVAL_REQUIRED},
-															'Requests for the recurring adjustment are automatically approved'
-														),
-														$T.option({value: Popup_Recurring_Charge_Type.APPROVAL_REQUIRED},
-															'Requests for the recurring adjustment have to go through the approval process'
+												$T.tr(
+													$T.th({class: 'label'},
+														'Cancellation Fee :'
+													),
+													$T.td({class: 'recurring-charge-type-cancellation-fee'},
+														$T.ul({class: 'reset horizontal'},
+															$T.li({class: 'recurring-charge-type-cancellation-fee-checkbox'},
+																$T.input({type: 'checkbox'})
+															),
+															$T.li({class: 'recurring-charge-type-cancellation-fee'}
+																// Control added later	
+															)
 														)
 													)
 												)
@@ -172,143 +169,95 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 							);
 		
 		// Set the save buttons event handler
-		var oSaveButton	= oContent.select( 'button' ).first();
+		var oSaveButton		= this.oContent.select( 'button' ).first();
 		oSaveButton.observe('click', this._saveChanges.bind(this));
 		
 		// Set the cancel buttons event handler
-		var oCancelButton = oContent.select( 'button' ).last();
+		var oCancelButton	= this.oContent.select( 'button' ).last();
 		oCancelButton.observe('click', this._showCancelConfirmation.bind(this));
 		
-		// Set the checkbox label update event handlers
-		var aCheckboxTRs 	= oContent.select( 'tr.charge-type-checkbox' );
-		var checkbox 		= null;
+		// Set the click event for the cancellation fee checkbox
+		var oCheckbox		= this.oContent.select('li.recurring-charge-type-cancellation-fee-checkbox > input[type="checkbox"]').first();
+		oCheckbox.observe('click', this._showCancellationFeeInput.bind(this));
 		
-		for (var i = 0; i < aCheckboxTRs.length; i++)
-		{
-			var checkbox = aCheckboxTRs[i].select( 'input[type="checkbox"]' ).first();
-			checkbox.observe('click', this._updateCheckboxLabel.bind(this, aCheckboxTRs[i]));
-		}
-		
-		// Setup validation handlers
-		this.hInputs 			= {};		
-		var aInputs 			= oContent.select('input, select');
-		aInputs[0].sFieldName 	= 'Charge Code';
-		aInputs[0].bRequired	= true;
-		aInputs[1].sFieldName 	= 'Description';
-		aInputs[1].bRequired	= true;
-		aInputs[2].sFieldName 	= 'Recursion Charge';
-		aInputs[2].bRequired	= true;
-		aInputs[3].sFieldName 	= 'Recurring Frequency';
-		aInputs[3].bRequired	= true;
-		aInputs[4].sFieldName 	= 'Minimum Charge';
-		aInputs[4].bRequired	= true;
-		aInputs[5].sFieldName 	= 'Cancellation Fee';
-		aInputs[5].bRequired	= true;
-		aInputs[6].sFieldName 	= 'Continuation';
-		aInputs[6].bRequired	= true;
-		aInputs[7].sFieldName 	= 'Fixation';
-		aInputs[7].bRequired	= true;
-		aInputs[8].sFieldName 	= 'Nature';
-		aInputs[8].bRequired	= true;
-		aInputs[9].sFieldName 	= 'Recurring Frequency Type';
-		aInputs[9].bRequired	= true;
-		aInputs[10].sFieldName 	= 'Approval Process';
-		aInputs[10].bRequired	= true;
-		
-		for (var i = 0; i < aInputs.length; i++)
-		{
-			if (typeof aInputs[i].sFieldName !== 'undefined')
-			{
-				this.hInputs[aInputs[i].sFieldName] = aInputs[i];
-			}
-		}
-		
-		// Inputs
-		this.hInputs['Charge Code'].validate 				= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Charge Code'], 				Reflex_Validation.Exception.nonEmptyString);
-		this.hInputs['Description'].validate 				= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Description'],			 	Reflex_Validation.Exception.nonEmptyString);
-		this.hInputs['Recursion Charge'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recursion Charge'], 		Reflex_Validation.Exception.float);
-		this.hInputs['Recurring Frequency'].validate 		= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recurring Frequency'],		Reflex_Validation.Exception.nonEmptyDigits);
-		this.hInputs['Minimum Charge'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Minimum Charge'], 			Reflex_Validation.Exception.float);
-		this.hInputs['Cancellation Fee'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Cancellation Fee'], 		Reflex_Validation.Exception.float);
-		
-		// Selects
-		this.hInputs['Nature'].validate 					= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Nature'], 					Reflex_Validation.Exception.nonEmptyString);
-		this.hInputs['Recurring Frequency Type'].validate	= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Recurring Frequency Type'],	Reflex_Validation.Exception.digits);
-		this.hInputs['Approval Process'].validate 			= Popup_Recurring_Charge_Type._validateInput.bind(this.hInputs['Approval Process'], 		Reflex_Validation.Exception.digits);
-		
-		for (var sName in this.hInputs)
-		{
-			this.hInputs[sName].observe('keyup', this.hInputs[sName].validate);
-			this.hInputs[sName].observe('change', this.hInputs[sName].validate);
-		}
-		
-		this.oContent = oContent; 
+		this._attachControls();
+		this._calculateTotal();
+		this._showCancellationFeeInput();
 		
 		this.setTitle('Add Recurring Adjustment Type');
 		this.setIcon('../admin/img/template/charge_small.png');
-		this.setContent(oContent);
+		this.setContent(this.oContent);
 		this.display();
-		
-		// Run initial validation to show required fields
-		this._isValid();
 	},
 	
-	_isValid	: function()
+	_attachControls	: function()
 	{
-		// Build an array of error messages, after running all validation functions
-		var aErrors	= [];
-		var mError 	= null;
-		var oInput 	= null;
+		var oField		= null;
+		var oControl	= null;
+		var sSelector	= null;
 		
-		for (var sName in this.hInputs)
+		for (var sFieldName in Popup_Recurring_Charge_Type.FIELDS)
 		{
-			oInput = this.hInputs[sName];
+			oField							= Popup_Recurring_Charge_Type.FIELDS[sFieldName];
+			oField.oDefinition.mEditable	= true;
+			oControl						= Control_Field.factory(oField.sType, oField.oDefinition);
 			
-			if (typeof oInput.validate !== 'undefined')
+			if (typeof oField.mDefault != 'undefined')
 			{
-				mError = oInput.validate();
-				
-				if (mError != null)
-				{
-					aErrors.push(mError);
-				}
+				oControl.setValue(oField.mDefault);
 			}
+			
+			oControl.addOnChangeCallback(this._calculateTotal.bind(this, sFieldName));
+			oControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+			sSelector						= oField.sElement + '.recurring-charge-type-' + sFieldName;
+			this.oContent.select(sSelector).first().appendChild(oControl.getElement());
+			this.hControls[sFieldName]		= oControl;
 		}
-		
-		return aErrors;
 	},
 	
 	_saveChanges	: function()
 	{
-		// Validate the data
-		var aValidationErrors = this._isValid();
+		// Validate fields
+		var aValidationErrors	= [];
+		var oDetails			= {};
+		
+		for (var sFieldName in this.hControls)
+		{
+			try
+			{
+				// If valid, record the value
+				this.hControls[sFieldName].validate(false);
+			}
+			catch (ex)
+			{
+				aValidationErrors.push(ex);
+			}
+		}
 		
 		if (aValidationErrors.length)
 		{
-			Popup_Recurring_Charge_Type._showValidationErrorPopup(aValidationErrors);
+			Popup_Recurring_Charge_Type.showValidationErrors(aValidationErrors);
 			return;
 		}
 		
 		// Build request data
-		var oRequestData = 	{
-							iId					: null,
-							sChargeType			: this.hInputs['Charge Code'].value, 
-							sDescription		: this.hInputs['Description'].value, 
-							fRecursionCharge	: parseFloat(this.hInputs['Recursion Charge'].value),
-							iRecurringFreqType	: parseInt(this.hInputs['Recurring Frequency Type'].value),
-							iRecurringFreq		: parseInt(this.hInputs['Recurring Frequency'].value),
-							fMinCharge			: parseFloat(this.hInputs['Minimum Charge'].value),
-							fCancellationFee	: parseFloat(this.hInputs['Cancellation Fee'].value),
-							sNature				: this.hInputs['Nature'].value, 
-							bContinuable		: this.hInputs['Continuation'].checked,
-							//bUniqueCharge		: this.hInputs['Unique Charge'].checked,
-							bFixed				: this.hInputs['Fixation'].checked,
-							iApprovalRequired	: parseInt(this.hInputs['Approval Process'].value)
-						};
+		var oRequestData =	{
+								iId					: null,
+								sChargeType			: this.hControls['charge-code'].getValue(true), 
+								sDescription		: this.hControls['description'].getValue(true), 
+								fRecursionCharge	: parseFloat(this.hControls['definition-charge'].getValue(true)),
+								iRecurringFreqType	: parseInt(this.hControls['definition-period-type'].getValue(true)),
+								iRecurringFreq		: parseInt(this.hControls['definition-period'].getValue(true)),
+								fMinCharge			: parseFloat(this.hControls['definition-total'].getValue(true)),
+								fCancellationFee	: (this._bCancellationFeeVisible ? parseFloat(this.hControls['cancellation-fee'].getValue(true)) : 0),
+								sNature				: this.hControls['definition-nature'].getValue(true), 
+								bContinuable		: parseInt(this.hControls['definition-continuing'].getValue(true)),
+								bFixed				: parseInt(this.hControls['fixed'].getValue(true)),
+								iApprovalRequired	: parseInt(this.hControls['approval-process'].getValue(true))
+							};
 		
-		var oSavePopup = new Reflex_Popup.Loading('Saving...');
-		oSavePopup.display();
-		this.oSavingOverlay = oSavePopup;
+		this.oLoading = new Reflex_Popup.Loading('Saving...');
+		this.oLoading.display();
 		
 		// Make AJAX request
 		this._saveChargeType = 	jQuery.json.jsonFunction(
@@ -322,6 +271,10 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 	
 	_saveComplete	: function(oResponse)
 	{
+		// Hide loading
+		this.oLoading.hide();
+		delete this.oLoading;
+		
 		if (oResponse.Success)
 		{
 			// On close callback
@@ -329,9 +282,6 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 			{
 				this.fnOnClose();
 			}
-			
-			// Hide saving overlay
-			this.oSavingOverlay.hide();
 			
 			// Hide this
 			this.hide();
@@ -341,26 +291,18 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 		}
 		else
 		{
-			if (oResponse.Message)
-			{
-				Reflex_Popup.alert(oResponse.Message);
-			}
-			
-			// Hide saving overlay
-			this.oSavingOverlay.hide();
-			
-			// Show validation errors
-			if (oResponse.aValidationErrors)
-			{
-				Popup_Recurring_Charge_Type._showValidationErrorPopup(oResponse.aValidationErrors);
-			}
+			this._saveError(oResponse);
 		}
 	},
 	
 	_saveError	: function(oResponse)
 	{
-		// Hide saving overlay
-		this.oSavingOverlay.hide();
+		// Hide loading
+		if (this.oLoading)
+		{
+			this.oLoading.hide();
+			delete this.oLoading;
+		}
 		
 		if (oResponse.Message)
 		{
@@ -370,6 +312,10 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 		{
 			Reflex_Popup.alert(oResponse.ERROR, {sTitle: 'Error'});
 		}
+		else if (oResponse.aValidationErrors)
+		{
+			Popup_Recurring_Charge_Type.showValidationErrors(oResponse.aValidationErrors);
+		}
 	},
 	
 	_showCancelConfirmation	: function()
@@ -377,21 +323,129 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 		Reflex_Popup.yesNoCancel('Are you sure you want to cancel and revert all changes?', {sTitle: 'Revert Changes', fnOnYes: this.hide.bind(this)});
 	},
 	
-	_updateCheckboxLabel	: function(oTR)
+	_calculateTotal	: function(sEditedFieldName)
 	{
-		var oOnSpan 	= oTR.select('td > span').first();
-		var oOffSpan 	= oTR.select('td > span').last();
-		var oCheckbox 	= oTR.select('input[type="checkbox"]').first();
+		// Get the values
+		var fCharge			= parseFloat(this.hControls['definition-charge'].getElementValue()).toFixed(2);
+		var sChargeNature	= this.hControls['definition-nature'].getElementValue();
+		var iChargePeriod	= parseInt(this.hControls['definition-period'].getElementValue());
+		var iPeriodType		= parseInt(this.hControls['definition-period-type'].getElementValue());
+		var iPeriodsOver	= parseInt(this.hControls['definition-time'].getElementValue());
+		var fTotal			= parseFloat(this.hControls['definition-total'].getElementValue()).toFixed(2);
+		var iContinuing		= parseInt(this.hControls['definition-continuing'].getElementValue());
 		
-		if (oCheckbox.checked)
+		if (isNaN(fCharge))
 		{
-			oOnSpan.show();
-			oOffSpan.hide();
+			fCharge	= 0;
+			this.hControls['definition-charge'].setValue(fCharge);
+		}
+		
+		if (isNaN(fTotal))
+		{
+			fTotal	= 0;
+			this.hControls['definition-total'].setValue(fTotal);
+		}
+		
+		if (isNaN(iPeriodsOver))
+		{
+			iPeriodsOver	= 1;
+		}
+		
+		// Don't allow 0 for charge period
+		if (isNaN(iChargePeriod) || (iChargePeriod == 0))
+		{
+			iChargePeriod	= 1;
+		}
+		
+		this.hControls['definition-period'].setValue(iChargePeriod);
+		this.hControls['definition-time'].setValue(iPeriodsOver);
+		
+		var iPeriodCount	= iPeriodsOver / iChargePeriod;
+		
+		switch (sEditedFieldName)
+		{
+			case 'definition-total':
+				if (fTotal)
+				{
+					// Update charge amount
+					fCharge	= (fTotal / iPeriodCount).toFixed(2);
+					
+					if (isNaN(fCharge))
+					{
+						fCharge	= 0;
+					}
+					
+					this.hControls['definition-charge'].setValue(fCharge);
+					break;
+				}
+			default:
+				// Update total
+				fTotal	= (iPeriodCount * fCharge).toFixed(2);
+				
+				if (isNaN(fTotal))
+				{
+					fTotal	= 0;
+				}
+				
+				this.hControls['definition-total'].setValue(fTotal);
+		}
+		
+		// Update the time period label
+		var sTimeLabel	= '';
+		var sTimeSuffix	= (iPeriodsOver != 1 ? 's' : '');
+		switch (iPeriodType)
+		{
+			case Popup_Recurring_Charge_Type.BILLING_FREQ_DAY:
+				sTimeLabel	= 'Day';
+				break;
+			case Popup_Recurring_Charge_Type.BILLING_FREQ_MONTH:
+				sTimeLabel	= 'Month';
+				break;
+			case Popup_Recurring_Charge_Type.BILLING_FREQ_HALF_MONTH:
+				sTimeLabel	= 'Half Month';
+				break;
+		}
+		
+		var oTimeLabel			= this.oContent.select('td.recurring-charge-type-definition-time-label').first();
+		oTimeLabel.innerHTML	= sTimeLabel + sTimeSuffix;
+		
+		// Update the human readable sentence
+		var oResult	= this.oContent.select('div.recurring-charge-type-definition-result').first();
+		var sResult	= (sChargeNature == Popup_Recurring_Charge_Type.NATURE_DEBIT ? 'Debit' : 'Credit') + ' $' + fCharge;
+		
+		if (iContinuing == Popup_Recurring_Charge_Type.CONTINUING_TOTAL)
+		{
+			sResult	+=	' every ' + iChargePeriod + ' ' + sTimeLabel + (iChargePeriod != 1 ? 's' : '') +
+						' over ' + iPeriodsOver + ' ' + sTimeLabel + sTimeSuffix +
+						' until a Total of $' + fTotal + ' is charged.';
 		}
 		else
 		{
-			oOffSpan.show();
-			oOnSpan.hide();
+			sResult	+=	' until explicitly cancelled, with a minimum period of ' + 
+						iPeriodsOver + ' ' + sTimeLabel + sTimeSuffix + ' and charge of $' + fTotal;
+		}
+		
+		oResult.innerHTML	= sResult;
+	},
+	
+	_showCancellationFeeInput	: function()
+	{
+		var oCheckbox	= this.oContent.select('li.recurring-charge-type-cancellation-fee-checkbox > input[type="checkbox"]').first();
+		var oInputLI	= this.oContent.select('li.recurring-charge-type-cancellation-fee').first();
+		var oControl	= this.hControls['cancellation-fee'];
+		
+		if (oCheckbox.checked)
+		{
+			oInputLI.show();
+			oControl.setMandatory(true);
+			this._bCancellationFeeVisible	= true;
+		}
+		else
+		{
+			oInputLI.hide();
+			oControl.setMandatory(false);
+			oControl.setValue('');
+			this._bCancellationFeeVisible	= false;
 		}
 	}
 });
@@ -406,57 +460,228 @@ Popup_Recurring_Charge_Type.BILLING_FREQ_HALF_MONTH	= 3;
 Popup_Recurring_Charge_Type.APPROVAL_REQUIRED		= 1;
 Popup_Recurring_Charge_Type.NO_APPROVAL_REQUIRED	= 0;
 
-Popup_Recurring_Charge_Type._showValidationErrorPopup	= function(aErrors)
+Popup_Recurring_Charge_Type.CONTINUING_TOTAL		= 0;
+Popup_Recurring_Charge_Type.CONTINUING_MINIMUM		= 1;
+
+Popup_Recurring_Charge_Type.FIXED_NO				= 0;
+Popup_Recurring_Charge_Type.FIXED_YES				= 1;
+
+Popup_Recurring_Charge_Type.NATURE_DEBIT			= 'DR';
+Popup_Recurring_Charge_Type.NATURE_CREDIT			= 'CR';
+
+Popup_Recurring_Charge_Type.showValidationErrors	= function(aErrors)
 {
-	// Build UL of error messages
-	var oValidationErrors = $T.ul();
+	// Create a UL to list the errors and then show a reflex alert
+	var oAlertDom	=	$T.div({class: 'rebill-validation-errors'},
+							$T.div('There were errors in the rebill information: '),
+							$T.ul(
+								// Added here...
+							)
+						);
+	var oUL	= oAlertDom.select('ul').first();
 	
 	for (var i = 0; i < aErrors.length; i++)
 	{
-		oValidationErrors.appendChild(
-							$T.li(aErrors[i])
-						);
+		oUL.appendChild($T.li(aErrors[i]));
 	}
 	
-	// Show a popup containing the list
-	Reflex_Popup.alert(
-					$T.div({style: 'margin: 0.5em'},
-						'The following errors have occured: ',
-						oValidationErrors
-					),
-					{
-						iWidth	: 30,
-						sTitle	: 'Validation Errors'
-					}
-				);
+	Reflex_Popup.alert(oAlertDom, {iWidth: 30});
 }
 
-Popup_Recurring_Charge_Type._validateInput	= function(fnValidate)
+Popup_Recurring_Charge_Type.getApprovalProcessOptions	= function(fnCallback)
 {
-	// This is to be bound to the scope of an input
-	try
-	{
-		this.removeClassName('valid');
-		this.removeClassName('invalid');
-		
-		// Check required validation first
-		if (this.bRequired && (this.value == '' || this.value === null))
-		{
-			throw('Required field');
-		}
-		else
-		{
-			if (fnValidate(this.value))
-			{
-				this.addClassName('valid');
-			}
-			
-			return null;
-		}
-	}
-	catch (e)
-	{
-		this.addClassName('invalid');
-		return this.sFieldName + ': ' + e; 
-	}
+	fnCallback(
+		[
+	 	 	$T.option({value: Popup_Recurring_Charge_Type.APPROVAL_REQUIRED},
+	 	 		'Requests for the recurring adjustment have to go through the approval process'
+	 	 	),
+			$T.option({value: Popup_Recurring_Charge_Type.NO_APPROVAL_REQUIRED},
+				'Requests for the recurring adjustment are automatically approved'
+			)
+		]
+	);
 };
+
+Popup_Recurring_Charge_Type.getNatureOptions	= function(fnCallback)
+{
+	fnCallback(
+		[
+		  	$T.option({value: Popup_Recurring_Charge_Type.NATURE_DEBIT},
+		  		Popup_Recurring_Charge_Type.NATURE_DEBIT
+	  	 	),
+	 		$T.option({value: Popup_Recurring_Charge_Type.NATURE_CREDIT},
+	 			Popup_Recurring_Charge_Type.NATURE_CREDIT
+	 		)
+	 	]
+	);
+};
+
+Popup_Recurring_Charge_Type.getPerTimeOptions	= function(fnCallback)
+{
+	fnCallback(
+		[
+		  	$T.option({value: Popup_Recurring_Charge_Type.BILLING_FREQ_MONTH},
+				'Months'
+			)
+	 	]
+	);
+};
+
+Popup_Recurring_Charge_Type.getContinuingOptions	= function(fnCallback)
+{
+	fnCallback(
+		[
+		  	$T.option({value: Popup_Recurring_Charge_Type.CONTINUING_TOTAL},
+		  		'Total'
+	 		),
+	 		$T.option({value: Popup_Recurring_Charge_Type.CONTINUING_MINIMUM},
+	 			'Minimum'
+	 		)
+	 	]
+	);
+};
+
+Popup_Recurring_Charge_Type.getFixedOptions	= function(fnCallback)
+{
+	fnCallback(
+		[
+		  	$T.option({value: Popup_Recurring_Charge_Type.FIXED_YES},
+	  			'Fixed - cannot change any part of the charge definition when applying.'
+	  		),
+	  		$T.option({value: Popup_Recurring_Charge_Type.FIXED_NO},
+	  			'Not Fixed - can change parts of the charge definition when applying.'
+	  		)
+	 	]
+	);
+};
+
+// Control field definitions
+Popup_Recurring_Charge_Type.FIELDS							= {};
+Popup_Recurring_Charge_Type.FIELDS['charge-code']			= 	{
+																	sElement	: 'div',
+																	sType		: 'text',
+																	mDefault	: '',
+																	oDefinition	:	{
+																						sLabel		: 'Charge Code',
+																						fnValidate	: Reflex_Validation.stringOfLength.curry(null, 6),
+																						mMandatory	: true
+																					}
+																};
+Popup_Recurring_Charge_Type.FIELDS['description']			= 	{
+																	sElement	: 'td',
+																	sType		: 'text',
+																	mDefault	: '',
+																	oDefinition	:	{
+																						sLabel		: 'Description',
+																						fnValidate	: Reflex_Validation.stringOfLength.curry(null, 255),
+																						mMandatory	: true
+																					}
+																};
+Popup_Recurring_Charge_Type.FIELDS['approval-process']		=	{
+																	sElement	: 'td',
+																	sType		: 'select',
+																	mDefault	: Popup_Recurring_Charge_Type.APPROVAL_REQUIRED,
+																	oDefinition	:	{
+																						sLabel		: 'Approval Process',
+																						fnValidate	: null,
+																						fnPopulate	: Popup_Recurring_Charge_Type.getApprovalProcessOptions,
+																						mMandatory	: true
+																					}
+																};
+Popup_Recurring_Charge_Type.FIELDS['definition-charge']		= 	{
+																	sElement	: 'td',
+																	sType		: 'text',
+																	mDefault	: '0.00',
+																	oDefinition	:	{
+																						sLabel		: 'Charge Amount',
+																						fnValidate	: null,
+																						mMandatory	: true
+																					}
+																};
+Popup_Recurring_Charge_Type.FIELDS['definition-nature']		= 	{
+																	sElement	: 'li',
+																	sType		: 'select',
+																	mDefault	: Popup_Recurring_Charge_Type.NATURE_DEBIT,
+																	oDefinition	:	{
+																						sLabel		: 'Charge Nature',
+																						fnValidate	: null,
+																						fnPopulate	: Popup_Recurring_Charge_Type.getNatureOptions,
+																						mMandatory	: true
+																					}
+																};
+Popup_Recurring_Charge_Type.FIELDS['definition-period']		= 	{
+																	sElement	: 'li',
+																	sType		: 'text',
+																	mDefault	: '1',
+																	oDefinition	:	{
+																						sLabel		: 'Charge Period',
+																						fnValidate	: null,
+																						mMandatory	: true
+																					}
+																};
+Popup_Recurring_Charge_Type.FIELDS['definition-period-type']	= 	{
+																		sElement	: 'li',
+																		sType		: 'select',
+																		mDefault	: Popup_Recurring_Charge_Type.BILLING_FREQ_MONTH,
+																		oDefinition	:	{
+																							sLabel		: 'Charge Period Type',
+																							fnValidate	: null,
+																							fnPopulate	: Popup_Recurring_Charge_Type.getPerTimeOptions,
+																							mMandatory	: true
+																						}
+																	};
+Popup_Recurring_Charge_Type.FIELDS['definition-time']		= 	{
+																	sElement	: 'td',
+																	sType		: 'text',
+																	mDefault	: '1',
+																	oDefinition	:	{
+																						sLabel		: 'Charge Total Period',
+																						fnValidate	: null,
+																						mMandatory	: true
+																					}
+																};
+Popup_Recurring_Charge_Type.FIELDS['definition-total']		= 	{
+																	sElement	: 'td',
+																	sType		: 'text',
+																	oDefinition	:	{
+																						sLabel		: 'Charge Sum',
+																						fnValidate	: null,
+																						mMandatory	: true
+																					}
+																};
+Popup_Recurring_Charge_Type.FIELDS['definition-continuing']	= 	{
+																	sElement	: 'div',
+																	sType		: 'select',
+																	mDefault	: Popup_Recurring_Charge_Type.CONTINUING_TOTAL,
+																	oDefinition	:	{
+																						sLabel		: 'Charge Continuation',
+																						fnValidate	: null,
+																						fnPopulate	: Popup_Recurring_Charge_Type.getContinuingOptions,
+																						mMandatory	: true
+																					}
+																};
+Popup_Recurring_Charge_Type.FIELDS['fixed']					= 	{
+																	sElement	: 'td',
+																	sType		: 'select',
+																	mDefault	: Popup_Recurring_Charge_Type.FIXED_YES,
+																	oDefinition	:	{
+																						sLabel		: 'Fixed',
+																						fnValidate	: null,
+																						fnPopulate	: Popup_Recurring_Charge_Type.getFixedOptions,
+																						mMandatory	: true
+																					}
+																};
+Popup_Recurring_Charge_Type.FIELDS['cancellation-fee']		= 	{
+																	sElement	: 'li',
+																	sType		: 'text',
+																	oDefinition	:	{
+																						sLabel		: 'Cancellation Fee',
+																						fnValidate	: Reflex_Validation.float,
+																						mMandatory	: false
+																					}
+																};
+
+
+
+
+

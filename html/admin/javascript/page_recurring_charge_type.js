@@ -132,7 +132,7 @@ var Page_Recurring_Charge_Type = Class.create(
 	
 	_showAddPopup	: function()
 	{
-		new Popup_Recurring_Charge_Type(this.oPagination.lastPage.bind(this.oPagination));
+		new Popup_Recurring_Charge_Type(this.oPagination.lastPage.bind(this.oPagination, true));
 	},
 	
 	_updateTable	: function(oResultSet)
@@ -219,7 +219,7 @@ var Page_Recurring_Charge_Type = Class.create(
 							$T.td(oData.ChargeType),
 							$T.td(oData.Description),
 							$T.td({class: 'charge-amount-number'},
-								parseFloat(oData.RecursionCharge).toFixed(2)
+								Page_Recurring_Charge_Type.roundAmount(parseFloat(oData.RecursionCharge))
 							),
 							$T.td({class: sNatureTDClass},
 								oData.Nature
@@ -234,10 +234,10 @@ var Page_Recurring_Charge_Type = Class.create(
 							),
 							$T.td(oData.Continuable ? '(Continuing)' : ''),
 							$T.td({class: 'recurring-charge-min-charge'},
-								parseFloat(oData.MinCharge).toFixed(2)
+								Page_Recurring_Charge_Type.roundAmount(parseFloat(oData.MinCharge))
 							),
 							$T.td({class: 'recurring-charge-cancel-fee'},
-								parseFloat(oData.CancellationFee).toFixed(2)
+								Page_Recurring_Charge_Type.roundAmount(parseFloat(oData.CancellationFee))
 							),
 							$T.td(oData.archived_label),
 							$T.td({class: 'charge-archive pointer'}
@@ -330,37 +330,50 @@ var Page_Recurring_Charge_Type = Class.create(
 			return;
 		}
 		
-		var fnArchiveComplete = function(oResponse)
-		{
-			if (oResponse.Success)
-			{
-				// Refresh the current page
-				this.oPagination.getCurrentPage();
-			}
-			else
-			{
-				// Hide loading & show error popup
-				this.oLoadingOverlay.hide();
-				delete this.oLoadingOverlay;
-				
-				if (oResponse.Message)
-				{
-					Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
-				}
-			}
-		}
-		
 		this.oLoadingOverlay	= new Reflex_Popup.Loading('Archiving...');
 		this.oLoadingOverlay.display();
 		
 		// Archive confirmed do the AJAX request
 		var fnArchive = jQuery.json.jsonFunction(
-							fnArchiveComplete.bind(this), 
+							this._archiveComplete.bind(this), 
 							this._archiveFailed.bind(this), 
 							'Recurring_Charge_Type', 
 							'archive'
 						);
 		fnArchive(iId);
+	},
+	
+	_archiveComplete	: function(oResponse)
+	{
+		if (oResponse.Success)
+		{
+			// Handler for getPageCount
+			var fnPageCountCallback	= function(iPageCount)
+			{
+				if (this.oPagination.intCurrentPage > (iPageCount - 1))
+				{
+					this.oPagination.lastPage(true);
+				}
+				else
+				{
+					this.oPagination.getCurrentPage();
+				}
+			}
+			
+			// Refresh the current page, or move to the last, if this page is empty
+			this.oPagination.getPageCount(fnPageCountCallback.bind(this), true);
+		}
+		else
+		{
+			// Hide loading & show error popup
+			this.oLoadingOverlay.hide();
+			delete this.oLoadingOverlay;
+			
+			if (oResponse.Message)
+			{
+				Reflex_Popup.alert(oResponse.Message, {sTitle: 'Error'});
+			}
+		}
 	},
 	
 	_archiveFailed	: function(oResponse)
@@ -379,6 +392,11 @@ var Page_Recurring_Charge_Type = Class.create(
 	}
 });
 
-Page_Recurring_Charge_Type.MAX_RECORDS_PER_PAGE	= 25;
+Page_Recurring_Charge_Type.roundAmount	= function(fAmount)
+{
+	return (Math.round(fAmount * 100) / 100).toFixed(2);
+}
+
+Page_Recurring_Charge_Type.MAX_RECORDS_PER_PAGE	= 15;
 Page_Recurring_Charge_Type.ARCHIVE_IMAGE_SOURCE	= '../admin/img/template/delete.png';
 Page_Recurring_Charge_Type.ADD_IMAGE_SOURCE		= '../admin/img/template/new.png';

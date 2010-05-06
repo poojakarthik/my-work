@@ -4041,3 +4041,125 @@ table.cdr-list div.caption_options form#cdrForm button
 }
 
 /************************ END - CDR List Table - END ************************/
+
+/************************ START - Recurring Charge Type Popup - START ************************/
+
+td.recurring-charge-type-definition-naturepertime > ul.reset,
+td.recurring-charge-type-cancellation-fee > ul.reset
+{
+	margin	: 0em;
+}
+
+td.recurring-charge-type-definition-naturepertime > ul.reset > li,
+td.recurring-charge-type-cancellation-fee > ul.reset > li
+{
+	vertical-align	: middle;
+	padding-right	: 0.5em;
+}
+
+table.recurring-charge-type-definition > tbody > tr > td.recurring-charge-type-definition-time-label
+{
+	vertical-align	: middle;
+}
+
+table.recurring-charge-type-definition
+{
+	border-spacing	: 0em;
+}
+
+table.recurring-charge-type-definition > tbody > tr > td
+{
+	padding-left	: 0.25em;
+}
+
+td.recurring-charge-type-definition-charge,
+td.recurring-charge-type-definition-time,
+td.recurring-charge-type-definition-total
+{
+	width	: 6em;
+}
+
+li.recurring-charge-type-definition-period
+{
+	width	: 4em;
+}
+
+td.recurring-charge-type-definition-charge,
+td.recurring-charge-type-definition-time,
+td.recurring-charge-type-definition-total
+{
+	padding-right	: 0.5em;	
+}
+
+td.recurring-charge-type-definition-symbol
+{
+	font-weight	: bold;
+	text-align	: right;
+}
+
+tr.recurring-charge-type-definition-over-row > td
+{
+	padding-bottom	: 0.25em;
+}
+
+tr.recurring-charge-type-definition-total-row > td
+{
+	padding-top	: 0.25em;
+}
+
+tr.recurring-charge-type-definition-total-row > td.recurring-charge-type-definition-symbol,
+tr.recurring-charge-type-definition-total-row > td.recurring-charge-type-definition-total
+{
+	border-top	: solid 2px #666;
+}
+
+tr.recurring-charge-type-definition-total-row > td.recurring-charge-type-definition-continuing
+{
+	border-top	: solid 2px transparent;
+}
+
+table.recurring-charge-type-definition > tbody > tr > td.recurring-charge-type-definition-symbol
+{
+	vertical-align	: middle;
+}
+
+div.recurring-charge-type-definition-continuing
+{
+	width	: 7em;
+}
+
+div.recurring-charge-type-definition-result
+{
+	padding-top		: 1em;
+	padding-bottom	: 1em;
+	font-style		: italic;
+	line-height		: 1.6em;
+}
+
+table.recurring-charge-type-definition
+{
+	margin-top	: 0.5em;
+	margin-left	: 0.5em;
+}
+
+table.recurring-charge-type-definition > tbody > tr > td input[type="text"]
+{
+	text-align	: right;
+}
+
+div.recurring-charge-type-charge-code
+{
+	width	: 5em;
+}
+
+div.recurring-charge-type
+{
+	margin	: 0.5em;
+}
+
+div.recurring-charge-type > div.section
+{
+	padding-bottom	: 0.5em;
+}
+
+/************************ END - Recurring Charge Type Popup - END ************************/

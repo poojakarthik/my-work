@@ -62,6 +62,11 @@ var Control_Field	= Class.create
 		throw "OO Error: Control_Field::getElementValue() is an unimplemented Virtual Method!";
 	},
 	
+	addOnChangeCallback	: function()
+	{
+		throw "OO Error: Control_Field::addOnChangeCallback() is an unimplemented Virtual Method!";
+	},
+	
 	getValue	: function(bImplicitSave)
 	{
 		if (bImplicitSave)

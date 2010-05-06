@@ -24,6 +24,8 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		this.oControlOutput.oView.style.display		= 'none';
 		this.oControlOutput.oLoading.style.display	= 'inline';
 		
+		this._aOnChangeCallbacks	= [];
+		
 		this.validate();
 		
 		this.addEventListeners();
@@ -115,15 +117,30 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	
 	addEventListeners	: function()
 	{
-		this.aEventHandlers				= {};
-		this.aEventHandlers.fnValidate	= this.validate.bind(this);
-		this.oControlOutput.oEdit.observe('change',	this.aEventHandlers.fnValidate);
-		this.oControlOutput.oEdit.observe('keyup', 	this.aEventHandlers.fnValidate);
+		this.aEventHandlers					= {};
+		this.aEventHandlers.fnValueChange	= this._valueChange.bind(this);
+		this.oControlOutput.oEdit.observe('change',	this.aEventHandlers.fnValueChange);
+		this.oControlOutput.oEdit.observe('keyup', 	this.aEventHandlers.fnValueChange);
 	},
 	
 	removeEventListeners	: function()
 	{
-		this.oControlOutput.oEdit.stopObserving('change', 	this.aEventHandlers.fnValidate);
-		this.oControlOutput.oEdit.stopObserving('keyup', 	this.aEventHandlers.fnValidate);
+		this.oControlOutput.oEdit.stopObserving('change', 	this.aEventHandlers.fnValueChange);
+		this.oControlOutput.oEdit.stopObserving('keyup', 	this.aEventHandlers.fnValueChange);
+	},
+	
+	addOnChangeCallback	: function(fnCallback)
+	{
+		this._aOnChangeCallbacks.push(fnCallback);
+	},
+	
+	_valueChange	: function()
+	{
+		this.validate();
+		
+		for (var i = 0; i < this._aOnChangeCallbacks.length; i++)
+		{
+			this._aOnChangeCallbacks[i]();
+		}
 	}
 });

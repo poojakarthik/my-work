@@ -127,7 +127,7 @@ var Page_Charge_Type = Class.create(
 	
 	_showAddPopup	: function()
 	{
-		new Popup_Charge_Type(this.oPagination.lastPage.bind(this.oPagination));
+		new Popup_Charge_Type(this.oPagination.lastPage.bind(this.oPagination, true));
 	},
 	
 	_updateTable	: function(oResultSet)
@@ -302,34 +302,47 @@ var Page_Charge_Type = Class.create(
 			return;
 		}
 		
-		var fnArchiveComplete = function(oResponse)
-		{
-			if (oResponse.Success)
-			{
-				// Refresh the current page
-				this.oPagination.getCurrentPage();
-			}
-			else
-			{
-				// Hide loading & show error popup
-				this.oLoadingOverlay.hide();
-				delete this.oLoadingOverlay;
-				
-				Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error'});
-			}
-		}
-		
 		this.oLoadingOverlay	= new Reflex_Popup.Loading('Archiving...');
 		this.oLoadingOverlay.display();
 		
 		// Archive confirmed do the AJAX request
 		var fnArchive = jQuery.json.jsonFunction(
-							fnArchiveComplete.bind(this), 
+							this._archiveComplete.bind(this), 
 							this._archiveFailed.bind(this), 
 							'Charge_Type', 
 							'archive'
 						);
 		fnArchive(iId);
+	},
+	
+	_archiveComplete	: function(oResponse)
+	{
+		if (oResponse.Success)
+		{
+			// Handler for getPageCount
+			var fnPageCountCallback	= function(iPageCount)
+			{
+				if (this.oPagination.intCurrentPage > (iPageCount - 1))
+				{
+					this.oPagination.lastPage(true);
+				}
+				else
+				{
+					this.oPagination.getCurrentPage();
+				}
+			}
+			
+			// Refresh the current page, or move to the last, if this page is empty
+			this.oPagination.getPageCount(fnPageCountCallback.bind(this), true);
+		}
+		else
+		{
+			// Hide loading & show error popup
+			this.oLoadingOverlay.hide();
+			delete this.oLoadingOverlay;
+			
+			Reflex_Popup.alert((oResponse.Message ? oResponse.Message : ''), {sTitle: 'Error'});
+		}
 	},
 	
 	_archiveFailed	: function(oResponse)
