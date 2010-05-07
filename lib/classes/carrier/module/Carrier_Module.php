@@ -64,9 +64,14 @@ class Carrier_Module extends ORM_Cached
 	
 	public static function getForCarrierModuleType($mCarrierModuleType, $bIncludeInactive=false)
 	{
-		$oStatement	= self::_preparedStatement('selForCarrierModuleType');
+		return self::getForCarrierModuleTypeAndCustomerGroup($mCarrierModuleType, null, $bIncludeInactive);
+	}
+	
+	public static function getForCarrierModuleTypeAndCustomerGroup($mCarrierModuleType, $iCustomerGroupId=null, $bIncludeInactive=false)
+	{
+		$oStatement	= self::_preparedStatement('selForCarrierModuleTypeAndCustomerGroup');
 		
-		if (false === $oStatement->Execute(array('carrier_module_type_id'=>ORM::extractId($mCarrierModuleType), 'include_inactive'=>(($bIncludeInactive) ? 1 : 0))))
+		if (false === $oStatement->Execute(array('carrier_module_type_id'=>ORM::extractId($mCarrierModuleType), 'customer_group_id'=>$iCustomerGroupId, 'include_inactive'=>(($bIncludeInactive) ? 1 : 0))))
 		{
 			throw new Exception($oStatement->Error());
 		}
@@ -120,7 +125,7 @@ class Carrier_Module extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
 					break;
 				case 'selForCarrierModuleType':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "Type = <carrier_module_type_id> AND (<include_inactive> = 0 OR Active = 1)");
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "Type = <carrier_module_type_id> AND (ISNULL(<customer_group_id>) OR <customer_group_id> = customer_group) AND (<include_inactive> = 0 OR Active = 1)");
 					break;
 				
 				// INSERTS

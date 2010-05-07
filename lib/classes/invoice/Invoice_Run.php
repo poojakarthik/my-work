@@ -755,27 +755,40 @@ class Invoice_Run
 	/**
 	 * export()
 	 *
-	 * Exports an Invoice Run to XML
-	 *
-	 * Exports an Invoice Run to XML.  The path used is [FILES_BASE_PATH]/invoices/xml/[Invoice_Run.Id]/[Invoice.Id].xml
+	 * Exports an Invoice Run to various formats
 	 *
 	 * @return		void
 	 *
 	 * @constructor
 	 */
-	public function export()
+	public function export($bExportInvoices=true)
 	{
-		// Select all Invoices for this Invoice Run
-		$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
-		if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
+		// Export Invoice Run as a whole
+		// TODO: One day, we should move Invoice_Export to Invoice_Run_Export
+		$aCarrierModules	= Invoice_Run_Export::getModulesForCustomerGroup($this->customer_group_id);
+		foreach ($aCarrierModules as $oCarrierModule)
 		{
-			throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
+			$oInvoiceRunExportClass	= $oCarrierModule->Module;
+			$oInvoiceRunExport		= new $oInvoiceRunExportClass($this);
+			
+			$oInvoiceRunExport->export();
 		}
-		while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
+		
+		// Export individual Invoices
+		if ($bExportInvoices)
 		{
-			// Export the Invoice
-			$objInvoice = new Invoice($arrInvoice);
-			$objInvoice->export();
+			// Select all Invoices for this Invoice Run
+			$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
+			if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
+			{
+				throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
+			}
+			while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
+			{
+				// Export the Invoice
+				$objInvoice = new Invoice($arrInvoice);
+				$objInvoice->export();
+			}
 		}
 	}
 
@@ -1297,9 +1310,9 @@ class Invoice_Run
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON InvoiceRun.Id = Invoice.invoice_run_id", "InvoiceRun.Id AS InvoiceRunId, SUM(Invoice.Balance) AS TotalBalance", "InvoiceRun.Id <= <invoice_run_id> AND InvoiceRun.customer_group_id = <customer_group_id> AND InvoiceRun.invoice_run_type_id = ". INVOICE_RUN_TYPE_LIVE ." AND InvoiceRun.invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED, "InvoiceRun.Id DESC", "", "InvoiceRun.Id");
 					break;
 				case 'selCheckTemporaryInvoiceRun':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"InvoiceRun", 
-																					"Id", 
-																					"(invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." OR (<Account> IS NOT NULL AND (SELECT COUNT(Id) FROM Invoice WHERE invoice_run_id = InvoiceRun.Id AND Account = <Account>) > 0 AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL."))) AND invoice_run_status_id != ".INVOICE_RUN_STATUS_COMMITTED." AND (customer_group_id <=> <CustomerGroup> OR <CustomerGroup> IS NULL)", 
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"InvoiceRun",
+																					"Id",
+																					"(invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." OR (<Account> IS NOT NULL AND (SELECT COUNT(Id) FROM Invoice WHERE invoice_run_id = InvoiceRun.Id AND Account = <Account>) > 0 AND invoice_run_type_id IN (".INVOICE_RUN_TYPE_INTERIM.", ".INVOICE_RUN_TYPE_FINAL."))) AND invoice_run_status_id != ".INVOICE_RUN_STATUS_COMMITTED." AND (customer_group_id <=> <CustomerGroup> OR <CustomerGroup> IS NULL)",
 																					null,
 																					1);
 					break;
