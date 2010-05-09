@@ -22,7 +22,7 @@ class Flex_Rollout_Version_000212 extends Flex_Rollout_Version
 								(
 									'sDescription'		=>	"Add the Motorpass Billing Input and Output Resource Type",
 									'sAlterSQL'			=>	"	INSERT INTO	resource_type
-																	(name								, description						, const_name		, resource_type_nature_id)
+																	(name								, description						, const_name		, resource_type_nature)
 																VALUES
 																	('Motorpass Invoice Payout File'	, 'Motorpass Invoice Payout File'	, 'RESOURCE_TYPE_FILE_IMPORT_PAYMENT_MOTORPASS_INVOICE_PAYOUT'	, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_IMPORT_FILE' LIMIT 1)),
 																	('Motorpass Billing Export File'	, 'Motorpass Billing Export File'	, 'RESOURCE_TYPE_FILE_EXPORT_INVOICE_RUN_MOTORPASS'				, (SELECT id FROM resource_type_nature WHERE const_name = 'RESOURCE_TYPE_NATURE_EXPORT_FILE' LIMIT 1));",
