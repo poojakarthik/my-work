@@ -75,7 +75,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 		{
 			throw new Exception($oQuery->Error());
 		}
-		$iInvoices	= 0;
+		$iInvoiceCount	= 0;
 		while ($aInvoice = $mInvoicesResult->fetch_assoc())
 		{
 			if ($aAccountIds === null || in_array($aInvoice['account_id'], $aAccountIds))
@@ -89,7 +89,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 									$fBillingAmount,
 									''
 								);
-				$iInvoices++;
+				$iInvoiceCount++;
 			}
 		}
 		
@@ -97,10 +97,11 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 		$aData[]	=	array
 						(
 							'99',
-							$sSenderCode,
-							$sReceiverCode,
 							date('d/m/Y', $iFileTimestamp),
-							date('H:i', $iFileTimestamp)
+							date('H:i', $iFileTimestamp),
+							date('d/m/Y', strtotime($this->_oInvoiceRun->BillingDate)),
+							date('d/m/Y', strtotime($this->_oInvoiceRun->BillingDate)),
+							$iInvoiceCount
 						);
 		
 		// Convert Array of Arrays into a CSV
@@ -113,8 +114,10 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 			unset($sField);
 			fwrite($rOutputFile, implode(',', $aData)."\n");
 		}
-		
 		fclose($rOutputFile);
+		
+		// Return the number of Invoices that were exported
+		return $iInvoiceCount;
 	}
 	
 	private function _makeFileName()
