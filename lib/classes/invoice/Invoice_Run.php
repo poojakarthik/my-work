@@ -761,33 +761,17 @@ class Invoice_Run
 	 *
 	 * @constructor
 	 */
-	public function export($bExportInvoices=true)
+	public function export($aAccounts=null, $aExportModules=null)
 	{
 		// Export Invoice Run as a whole
-		// TODO: One day, we should move Invoice_Export to Invoice_Run_Export
 		$aCarrierModules	= Invoice_Run_Export::getModulesForCustomerGroup($this->customer_group_id);
 		foreach ($aCarrierModules as $oCarrierModule)
 		{
-			$oInvoiceRunExportClass	= $oCarrierModule->Module;
-			$oInvoiceRunExport		= new $oInvoiceRunExportClass($this);
-			
-			$oInvoiceRunExport->export();
-		}
-		
-		// Export individual Invoices
-		if ($bExportInvoices)
-		{
-			// Select all Invoices for this Invoice Run
-			$selInvoicesByInvoiceRun	= self::_preparedStatement('selInvoicesByInvoiceRun');
-			if ($selInvoicesByInvoiceRun->Execute(Array('invoice_run_id' => $this->Id)) === FALSE)
+			$sInvoiceRunExportClass	= $oCarrierModule->Module;
+			if ($aExportModules === null || in_array($sInvoiceRunExportClass, $aExportModules))
 			{
-				throw new Exception("DB ERROR: ".$selInvoicesByInvoiceRun->Error());
-			}
-			while ($arrInvoice = $selInvoicesByInvoiceRun->Fetch())
-			{
-				// Export the Invoice
-				$objInvoice = new Invoice($arrInvoice);
-				$objInvoice->export();
+				$oInvoiceRunExport		= new $sInvoiceRunExportClass($this, $oCarrierModule);
+				$oInvoiceRunExport->export((is_array($aAccounts) ? $aAccounts : null));
 			}
 		}
 	}

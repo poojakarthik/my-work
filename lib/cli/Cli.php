@@ -659,6 +659,12 @@ abstract class Cli
 		}
 		return constant($contsantName);
 	}
+	
+	public static function _validClassName($sClassName)
+	{
+		require_once(dirname(__FILE__).'/../classes/Flex.php');
+		return Flex::autoload($sClassName);
+	}
 }
 
 //********************************************************************************************

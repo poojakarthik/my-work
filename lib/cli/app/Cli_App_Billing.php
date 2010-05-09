@@ -20,6 +20,7 @@ class Cli_App_Billing extends Cli
 	const	SWITCH_ACCOUNT_ID		= "a";
 	const	SWITCH_SKIP_PREBILLING	= "k";
 	const	SWITCH_FAKE_DATE		= "d";
+	const	SWITCH_EXPORT_MODULE	= 'e';
 	
 	const	FLEX_FRONTEND_HOST				= "10.50.50.131";
 	const	FLEX_FRONTEND_USERNAME			= "ybs-admin";
@@ -76,17 +77,22 @@ class Cli_App_Billing extends Cli
 						throw new Exception("You must supply an Invoice Run Id when running EXPORT!");
 					}
 					
-					if ($this->_arrArgs[self::SWITCH_ACCOUNT_ID])
+					$sExportModule	= $this->_arrArgs[self::SWITCH_EXPORT_MODULE];
+					
+					$oInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), true);
+					
+					$iInvoiceId	= (int)$this->_arrArgs[self::SWITCH_ACCOUNT_ID];
+					if ($iInvoiceId)
 					{
 						// Exporting a single Invoice
+						$oInvoiceRun->export(array($iInvoiceId), ($sExportModule) ? array($sExportModule) : null);
 					}
 					else
 					{
 						// Exporting a whole Invoice Run
-						$objInvoiceRun	= new Invoice_Run(Array('Id' => $this->_arrArgs[self::SWITCH_INVOICE_RUN]), TRUE);
-						$objInvoiceRun->export();
-						Log::getLog()->log($this->_copyXML($objInvoiceRun->Id));
+						$oInvoiceRun->export(null, ($sExportModule) ? array($sExportModule) : null);
 					}
+					Log::getLog()->log($this->_copyXML($oInvoiceRun->Id));
 					break;
 				
 				case 'REPORTS':
@@ -636,6 +642,13 @@ class Cli_App_Billing extends Cli
 				self::ARG_DESCRIPTION	=> "Forces Billing to think that today is a given date",
 				self::ARG_DEFAULT		=> NULL,
 				self::ARG_VALIDATION	=> 'Cli::_validDate("%1$s")'
+			),
+			
+			self::SWITCH_EXPORT_MODULE => array(
+				self::ARG_REQUIRED		=> FALSE,
+				self::ARG_DESCRIPTION	=> "Invoice Export Module (only applicable to EXPORT)",
+				self::ARG_DEFAULT		=> NULL,
+				self::ARG_VALIDATION	=> 'Cli::_validClassName("%1$s")'
 			),
 		);
 	}

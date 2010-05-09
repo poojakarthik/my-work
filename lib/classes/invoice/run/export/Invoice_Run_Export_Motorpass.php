@@ -3,23 +3,33 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 {
 	const	OUTPUT_RELATIVE_PATH	= 'motorpass/';
 	
-	public static function export($mInvoiceRun, $aInvoices=null)
+	public function export($aAccountIds=null)
 	{
-		$oInvoiceRun	= ($mInvoiceRun instanceof ORM) ? $mInvoiceRun : Invoice_Run::getForId(ORM::extractId($mInvoiceRun));
-		
 		$sOutputPath	= FILES_BASE_PATH
 						.self::OUTPUT_BASE_PATH
 						.self::OUTPUT_RELATIVE_PATH
-						.$oInvoiceRun->Id.'/'
-						.self::_makeFileName($oInvoiceRun);
+						.$this->_oInvoiceRun->Id.'/'
+						.$this->_makeFileName();
 		@mkdir(dirname($sOutputPath));
 		
 		$rOutputFile	= fopen($sOutputPath, 'w');
 		
 		$aLines	= array();
 		
+		// Config
+		$sReceiverCode	= $this->_oCarrierModule->getConfig()->ReceiverCode;
+		$sSenderCode	= $this->_oCarrierModule->getConfig()->SenderCode;
+		$iFileTimestamp	= time();
+		
 		// Header
-		fwrite($rOutputFile, "00,TBLU,RED,".date('d/m/Y').",".date('H:i')."\n");
+		$aData[]	=	array
+						(
+							'00',
+							$sSenderCode,
+							$sReceiverCode,
+							date('d/m/Y', $iFileTimestamp),
+							date('H:i', $iFileTimestamp)
+						);
 		
 		// Content
 		$oQuery	= new Query();
@@ -39,7 +49,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 																						SELECT		id
 																						FROM		account_history
 																						WHERE		account_id = i.Account
-																									AND change_timestamp < '{$oInvoiceRun->billing_period_end_datetime}'
+																									AND change_timestamp < '{$this->_oInvoiceRun->billing_period_end_datetime}'
 																						ORDER BY	change_timestamp DESC
 																						LIMIT		1
 																					)
@@ -52,28 +62,46 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 																				SELECT		id
 																				FROM		rebill
 																				WHERE		account_id = i.Account
-																							AND created_timestamp < '{$oInvoiceRun->billing_period_end_datetime}'
+																							AND created_timestamp < '{$this->_oInvoiceRun->billing_period_end_datetime}'
 																				ORDER BY	created_timestamp DESC
 																				LIMIT		1
 																			)
 															)
 										JOIN rebill_motorpass rm ON (rm.rebill_id = r.id)
 							
-							WHERE		i.invoice_run_id = {$oInvoiceRun->Id}";
+							WHERE		i.invoice_run_id = {$this->_oInvoiceRun->Id}";
 		
-		if (($mInvoicesResult = $oQuery->Execute($sGetInvoicesSQL)) === false)
+		if (($mInvoicesResult = $oQuery->Execute($sInvoicesSQL)) === false)
 		{
 			throw new Exception($oQuery->Error());
 		}
+		$iInvoices	= 0;
 		while ($aInvoice = $mInvoicesResult->fetch_assoc())
 		{
-			$fBillingAmount	= round($aInvoice['invoice_total']+$aInvoice['invoice_tax'], 2);
-			fwrite($rOutputFile, "{$aInvoice['invoice_id']},{$aInvoice['motorpass_account_number']},{$fBillingAmount},");
+			if ($aAccountIds === null || in_array($aInvoice['account_id'], $aAccountIds))
+			{
+				$fBillingAmount	= round($aInvoice['invoice_total']+$aInvoice['invoice_tax'], 2);
+				
+				$aData[]	=	array
+								(
+									$aInvoice['invoice_id'],
+									$aInvoice['motorpass_account_number'],
+									$fBillingAmount,
+									''
+								);
+				$iInvoices++;
+			}
 		}
 		
 		// Footer
-		// HACKHACKHACK: Using TBLU and RED here!!!
-		fwrite($rOutputFile, "00,TBLU,RED,".date('d/m/Y').",".date('H:i')."\n");
+		$aData[]	=	array
+						(
+							'99',
+							$sSenderCode,
+							$sReceiverCode,
+							date('d/m/Y', $iFileTimestamp),
+							date('H:i', $iFileTimestamp)
+						);
 		
 		// Convert Array of Arrays into a CSV
 		foreach ($aLines as $aData)
@@ -89,11 +117,11 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 		fclose($rOutputFile);
 	}
 	
-	private static function _makeFileName($oInvoiceRun)
+	private function _makeFileName()
 	{
 		// Naming convention:
 		// <CUSTOMERGROUP>_BILLING_<YYYYMMDD>_<HHMMSS>.TXT
-		return	strtoupper(preg_replace("/[^A-Z0-9]/i", '', Customer_Group::getForId($oInvoiceRun->customer_group_id)->externalName))
+		return	strtoupper(preg_replace("/[^A-Z0-9]/i", '', Customer_Group::getForId($this->_oInvoiceRun->customer_group_id)->externalName))
 				.'_BILLING_'
 				.date("Ymd")
 				.date("His")

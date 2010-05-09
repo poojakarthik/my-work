@@ -920,7 +920,8 @@ class Invoice extends ORM_Cached
 	 */
 	public function export()
 	{
-		Invoice_Export_XML::export($this->toArray());
+		$oInvoiceRun	= new Invoice_Run(array('Id'=>$this->invoice_run_id), true);
+		$oInvoiceRun->export(array($this->Id));
 	}
 
 	//------------------------------------------------------------------------//

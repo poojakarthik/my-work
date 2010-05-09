@@ -3,9 +3,18 @@ abstract class Invoice_Run_Export
 {
 	const	OUTPUT_BASE_PATH	= 'invoice/';
 	
-	abstract public function export($mInvoiceRun, $aInvoiceIds=null);
+	protected	$_oInvoiceRun;
+	protected	$_oCarrierModule;
 	
-	//abstract public static function deliver($mInvoiceRun);
+	public function __construct($mInvoiceRun, $mCarrierModule)
+	{
+		$this->_oInvoiceRun		= ($mInvoiceRun		instanceof Invoice_Run)		? $mInvoiceRun		: new Invoice_Run(array('Id'=>ORM::extractId($mInvoiceRun)), true);
+		$this->_oCarrierModule	= ($mCarrierModule	instanceof Carrier_Module)	? $mCarrierModule	: Carrier_Module::getForId(ORM::extractId($mCarrierModule));
+	}
+	
+	abstract function export($aAccountIds=null);
+	
+	//abstract public function deliver($mInvoiceRun);
 	
 	public static function getModulesForCustomerGroup($mCustomerGroup)
 	{
