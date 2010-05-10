@@ -63,38 +63,43 @@ class Payment extends ORM_Cached
 	public function applySurcharges()
 	{
 		// Get Payment Merchant details
-		$oCarrierPaymentType	= Carrier_Payment_Type::getForCarrierAndPaymentType($this->carrier, $this->PaymentType);
-		
-		// Calculate Surcharge
-		$fSurcharge	= $oCarrierPaymentType->calculateSurcharge($this->Amount);
-		
-		// Apply Charge
-		$oCharge	= null;
-		if ($fSurcharge > 0.0)
+		if ($oCarrierPaymentType = Carrier_Payment_Type::getForCarrierAndPaymentType($this->carrier, $this->PaymentType))
 		{
-			$oChargeType	= Charge_Type::getForCode('PMF');
+			// Calculate Surcharge
+			$fSurcharge	= $oCarrierPaymentType->calculateSurcharge($this->Amount);
 			
-			$oCharge					= new Charge();
+			// Apply Charge
+			$oCharge	= null;
+			if ($fSurcharge > 0.0)
+			{
+				$oChargeType	= Charge_Type::getForCode('PMF');
+				
+				$oCharge					= new Charge();
+				
+				$oCharge->AccountGroup		= $this->AccountGroup;
+				$oCharge->Account			= $this->Account;
+				$oCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
+				$oCharge->CreatedOn			= date('Y-m-d');
+				$oCharge->ApprovedBy		= Employee::SYSTEM_EMPLOYEE_ID;
+				$oCharge->ChargeType		= $oChargeType->ChargeType;
+				$oCharge->charge_type_id	= $oChargeType->Id;
+				$oCharge->Description		= $oChargeType->Description.': '.$oPaymentMerchant->name;
+				$oCharge->ChargedOn			= $this->PaidOn;
+				$oCharge->Nature			= 'DR';
+				$oCharge->Amount			= round($fSurcharge, 2);
+				$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
+				$oCharge->LinkId			= $this->Id;
+				$oCharge->Status			= CHARGE_APPROVED;
+				
+				$oCharge->save();
+			}
 			
-			$oCharge->AccountGroup		= $this->AccountGroup;
-			$oCharge->Account			= $this->Account;
-			$oCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
-			$oCharge->CreatedOn			= date('Y-m-d');
-			$oCharge->ApprovedBy		= Employee::SYSTEM_EMPLOYEE_ID;
-			$oCharge->ChargeType		= $oChargeType->ChargeType;
-			$oCharge->charge_type_id	= $oChargeType->Id;
-			$oCharge->Description		= $oChargeType->Description.': '.$oPaymentMerchant->name;
-			$oCharge->ChargedOn			= $this->PaidOn;
-			$oCharge->Nature			= 'DR';
-			$oCharge->Amount			= round($fSurcharge, 2);
-			$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
-			$oCharge->LinkId			= $this->Id;
-			$oCharge->Status			= CHARGE_APPROVED;
-			
-			$oCharge->save();
+			return $oCharge;
 		}
-		
-		return $oCharge;
+		else
+		{
+			return null;
+		}
 	}
 	
 	/**
