@@ -2,7 +2,7 @@
 //---------------------------------------------------------------------------//
 // PAYMENT DOWNLOAD
 //---------------------------------------------------------------------------//
-$arrDataReport['Name']					= "Dun and Bradstreet";
+$arrDataReport['Name']					= "Dun & Bradstreet Report";
 $arrDataReport['Summary']				= "A list of Accounts to be Referred to Dun and Bradstreet";
 $arrDataReport['RenderMode']			= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']			= PERMISSION_CREDIT_MANAGEMENT;
@@ -20,15 +20,6 @@ $arrDataReport['data_report_status_id']	= DATA_REPORT_STATUS_DRAFT;
 $arrDocReq[]					= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
-/*// Data Report XLS Types
-$GLOBALS['*arrConstant']	['XLSType']	[500]	['Constant']	= 'EXCEL_TYPE_CURRENCY';
-$GLOBALS['*arrConstant']	['XLSType']	[500]	['Description']	= 'Currency';
-$GLOBALS['*arrConstant']	['XLSType']	[501]	['Constant']	= 'EXCEL_TYPE_INTEGER';
-$GLOBALS['*arrConstant']	['XLSType']	[501]	['Description']	= 'Integer';
-$GLOBALS['*arrConstant']	['XLSType']	[502]	['Constant']	= 'EXCEL_TYPE_PERCENTAGE';
-$GLOBALS['*arrConstant']	['XLSType']	[502]	['Description']	= 'Percentage';
-$GLOBALS['*arrConstant']	['XLSType']	[503]	['Constant']	= 'EXCEL_TYPE_FNN';
-$GLOBALS['*arrConstant']	['XLSType']	[503]	['Description']	= 'FNN';*/
 
 // SQL Select
 $arrSQLSelect['Account Number']	['Value']	= "a.id";
