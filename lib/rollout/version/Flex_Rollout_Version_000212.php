@@ -6,6 +6,7 @@
  *
  *	1:	Add the Motorpass Billing Input and Output Resource Types
  *	2:	Add the 'Invoice Run Export' Carrier Module Type
+ *	3:	Add the 'Yellow Billing Services' Carrier
  *
  */
 
@@ -36,7 +37,17 @@ class Flex_Rollout_Version_000212 extends Flex_Rollout_Version
 																	(name					, description				, const_name)
 																VALUES
 																	('Invoice Run Export'	, 'Invoice Run Export'		, 'MODULE_TYPE_INVOICE_RUN_EXPORT');",
-									'sRollbackSQL'		=>	"	DELETE FROM	resource_type	WHERE const_name IN ('MODULE_TYPE_INVOICE_RUN_EXPORT');;",
+									'sRollbackSQL'		=>	"	DELETE FROM	resource_type	WHERE const_name IN ('MODULE_TYPE_INVOICE_RUN_EXPORT');",
+									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
+								),
+								array
+								(
+									'sDescription'		=>	"Add the 'Invoice Run Export' Carrier Module Type",
+									'sAlterSQL'			=>	"	INSERT INTO	Carrier
+																	(Name				, carrier_type																, description						, const_name)
+																VALUES
+																	('Yellow Billing'	, (SELECT id FROM carrier_type WHERE const_name = 'CARRIER_TYPE_TELECOM')	, 'Yellow Billing Services Pty Ltd'	, 'CARRIER_YELLOW_BILLING');",
+									'sRollbackSQL'		=>	"	DELETE FROM	Carrier	WHERE const_name IN ('CARRIER_YELLOW_BILLING');",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								)
 							);
