@@ -645,6 +645,7 @@ class Cli_App_Billing extends Cli
 			),
 			
 			self::SWITCH_EXPORT_MODULE => array(
+				self::ARG_LABEL			=> "EXPORT_MODULE",
 				self::ARG_REQUIRED		=> FALSE,
 				self::ARG_DESCRIPTION	=> "Invoice Export Module (only applicable to EXPORT)",
 				self::ARG_DEFAULT		=> NULL,
