@@ -117,7 +117,7 @@ class Carrier_Payment_Type extends ORM_Cached
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1");
 					break;
 				case 'selForCarrierAndPaymentType':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "carrier = <carrier_id> AND PaymentType = <payment_type_id>", "id DESC", 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "carrier_id = <carrier_id> AND payment_type_id = <payment_type_id>", "id DESC", 1);
 					break;
 				
 				// INSERTS
