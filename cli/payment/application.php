@@ -393,7 +393,11 @@
 				
 				// Save
 				$oPayment	= new Payment($arrNormalised);
-				if (!$oPayment->save())
+				try
+				{
+					$oPayment->save();
+				}
+				catch (Exception $oException)
 				{
 					$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
 				}
@@ -404,7 +408,11 @@
 			
 			// Save
 			$oPayment	= new Payment($arrNormalised);
-			if (!$oPayment->save())
+			try
+			{
+				$oPayment->save();
+			}
+			catch (Exception $oException)
 			{
 				$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']), FALSE);
 				$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
