@@ -2,14 +2,14 @@
 /**
  * Carrier_Payment_Type
  *
- * Represents a Record in the carrier_payment_merchant table
+ * Represents a Record in the carrier_payment_type table
  *
  * @class	Carrier_Payment_Type
  */
 class Carrier_Payment_Type extends ORM_Cached
 {
-	protected 			$_strTableName			= "carrier_payment_merchant";
-	protected static	$_strStaticTableName	= "carrier_payment_merchant";
+	protected 			$_strTableName			= "carrier_payment_type";
+	protected static	$_strStaticTableName	= "carrier_payment_type";
 	
 	protected static function getCacheName()
 	{
