@@ -7,7 +7,7 @@ Flex::load();
 
 /*
  * Base class for command line applications
- * 
+ *
  */
 
 abstract class Cli
@@ -42,8 +42,8 @@ abstract class Cli
 	{
 		$this->_arrCommandLineArguments = $this->getCommandLineArguments();
 
-		if (array_key_exists(self::SWITCH_LOG, $this->_arrCommandLineArguments) 
-		 || array_key_exists(self::SWITCH_VERBOSE, $this->_arrCommandLineArguments) 
+		if (array_key_exists(self::SWITCH_LOG, $this->_arrCommandLineArguments)
+		 || array_key_exists(self::SWITCH_VERBOSE, $this->_arrCommandLineArguments)
 		 || array_key_exists(self::SWITCH_SILENT, $this->_arrCommandLineArguments))
 		{
 			echo "Invalid implementation. The following command line switches are reserved: " . self::SWITCH_LOG . ", " . self::SWITCH_VERBOSE . " and " . self::SWITCH_SILENT;
@@ -51,7 +51,7 @@ abstract class Cli
 		}
 
 		$this->_arrCommandLineArguments[self::SWITCH_LOG] = array(
-			self::ARG_LABEL			=> "LOG_FILE", 
+			self::ARG_LABEL			=> "LOG_FILE",
 			self::ARG_REQUIRED		=> FALSE,
 			self::ARG_DESCRIPTION	=> "is a writable file location to write log messages to [optional, default is no logging]",
 			self::ARG_DEFAULT		=> FALSE,
@@ -130,7 +130,7 @@ abstract class Cli
 		return $commandLineArguments;
 	}
 
-	abstract protected function run(); 
+	abstract protected function run();
 
 	protected function showUsage($error="", $supressNewLine=FALSE)
 	{
@@ -208,7 +208,7 @@ abstract class Cli
 
 		for ($i = 0, $l = count($arrArgv); $i < $l; $i++)
 		{
-			// If the arg is only a parameter switch, 
+			// If the arg is only a parameter switch,
 			// add it to the next value and continue to that value
 			if (strlen($arrArgv[$i]) <= 2 && $arrArgv[$i][0] == "-" && $i < $l - 1)
 			{
@@ -216,11 +216,11 @@ abstract class Cli
 				if ($arrArgv[$i+1][0] != '-')
 				{
 					$arrArgv[$i+1] = $arrArgv[$i] . $arrArgv[$i+1];
-					continue; 
+					continue;
 				}
 			}
 		
-			// If the value does not start with a switch, show the usage message 
+			// If the value does not start with a switch, show the usage message
 			if (strlen($arrArgv[$i]) < 2 || $arrArgv[$i][0] != "-")
 			{
 				$this->showUsage("Invalid arguments passed.");
@@ -346,7 +346,7 @@ abstract class Cli
 	protected function log($message, $isError=FALSE, $suppressNewLine=FALSE, $alwaysEcho=FALSE)
 	{
 		if (!$alwaysEcho && !$this->logVerbose && !$isError) return;
-		if (!$this->logSilent || $alwaysEcho) 
+		if (!$this->logSilent || $alwaysEcho)
 		{
 			$output = $message . ($suppressNewLine ? "" : "\n");
 			if ($fh = fopen('php://stdout','w'))
@@ -489,7 +489,7 @@ abstract class Cli
 			}
 			
 			if (is_file($file))
-			{		
+			{
 				throw new Exception("Unreadable file specified: '$file'");
 			}
 			else
@@ -545,7 +545,7 @@ abstract class Cli
 			{
 				$base = basename($path);
 				$path = dirname($path);
-				// If this is the base part of the path and it's a file, ignore it 
+				// If this is the base part of the path and it's a file, ignore it
 				// as we want to know if the directory is writable.
 				if ($first && strpos($base, '.') !== FALSE)
 				{
@@ -663,7 +663,18 @@ abstract class Cli
 	public static function _validClassName($sClassName)
 	{
 		require_once(dirname(__FILE__).'/../classes/Flex.php');
-		return Flex::autoload($sClassName);
+		try
+		{
+			// Check if the Class exists (will autoload automagically)
+			if (class_exists($sClassName))
+			{
+				return $sClassName;
+			}
+		}
+		catch (Exception $oException)
+		{
+			throw new Exception("Class '{$sClassName}' not found and cannot be autloaded");
+		}
 	}
 }
 
