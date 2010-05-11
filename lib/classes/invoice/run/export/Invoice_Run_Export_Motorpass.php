@@ -34,7 +34,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 		// Content
 		$oQuery	= new Query();
 		
-		$sInvoicesSQL	= "	SELECT		i.Id				AS invoice_id
+		$sInvoicesSQL	= "	SELECT		i.Id				AS invoice_id,
 										i.Account			AS account_id,
 										i.Total				AS invoice_total,
 										i.Tax				AS invoice_tax,
