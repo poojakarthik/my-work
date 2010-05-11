@@ -1,6 +1,6 @@
 <?php
 
-// Note: Suppress errors whilst loading application as there may well be some if the 
+// Note: Suppress errors whilst loading application as there may well be some if the
 // database model files have not yet been generated.
 $_SESSION = array();
 // Load Flex.php
@@ -42,7 +42,7 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 			// that the baring should have started, that it has not completed, that it has not been run already today,
 			// that it should happen today and that it should happen on or before the current time.
 			// If so, we should load the invoice run id, the customer group for it and the max number of accounts to bar per day.
-			$barDate = $arrArgs[self::SWITCH_LIST_RUN] 
+			$barDate = $arrArgs[self::SWITCH_LIST_RUN]
 				? 'FROM_DAYS(TO_DAYS(NOW()) + (CASE WHEN listing_time_of_day < barring_time_of_day THEN 0 ELSE 1 END))'
 				: 'DATE(NOW())';
 			
@@ -50,26 +50,26 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 			$previousDay = $thisDay - 1;
 			if (!$previousDay) $previousDay = 7;
 			
-			$dayMatch = $arrArgs[self::SWITCH_LIST_RUN] 
+			$dayMatch = $arrArgs[self::SWITCH_LIST_RUN]
 				? "((listing_time_of_day < barring_time_of_day AND apc.barring_days LIKE '%$thisDay%') OR (listing_time_of_day >= barring_time_of_day AND apc.barring_days LIKE '%$previousDay%'))"
 				: "apc.barring_days LIKE '%$thisDay%'";
 			
 			$strSQL = "
-				SELECT  
-					ir.Id AS \"invoice_run_id\",  
-					ir.customer_group_id AS \"customer_group_id\",  
-					apc.max_barrings_per_day,  
-					CASE WHEN ap.commencement_date_vip <= $barDate THEN 1 ELSE 0 END AS \"bar_vip\", 
-					CASE WHEN ap.commencement_date_first <= $barDate THEN 1 ELSE 0 END AS \"bar_first\", 
-					CASE WHEN ap.commencement_date_normal <= $barDate THEN 1 ELSE 0 END AS \"bar_normal\" 
-				FROM InvoiceRun ir, automated_invoice_run_process ap, automated_invoice_run_process_config apc 
-				WHERE apc.enabled = 1 
+				SELECT
+					ir.Id AS \"invoice_run_id\",
+					ir.customer_group_id AS \"customer_group_id\",
+					apc.max_barrings_per_day,
+					CASE WHEN ap.commencement_date_vip <= $barDate THEN 1 ELSE 0 END AS \"bar_vip\",
+					CASE WHEN ap.commencement_date_first <= $barDate THEN 1 ELSE 0 END AS \"bar_first\",
+					CASE WHEN ap.commencement_date_normal <= $barDate THEN 1 ELSE 0 END AS \"bar_normal\"
+				FROM InvoiceRun ir, automated_invoice_run_process ap, automated_invoice_run_process_config apc
+				WHERE apc.enabled = 1
 				  AND (ap.commencement_date_normal <= $barDate OR ap.commencement_date_first <= $barDate OR ap.commencement_date_vip <= $barDate)
 				  AND ap.completed_date IS NULL
 				  AND (ap.last_" . ($arrArgs[self::SWITCH_LIST_RUN] ? "listing" : "processed") . "_date IS NULL OR ap.last_" . ($arrArgs[self::SWITCH_LIST_RUN] ? "listing" : "processed") . "_date < DATE(NOW()))
 				  AND $dayMatch
-				  AND apc." . ($arrArgs[self::SWITCH_LIST_RUN] ? "list" : "barr") . "ing_time_of_day < TIME(NOW()) 
-				  AND ir.id = ap.invoice_run_id 
+				  AND apc." . ($arrArgs[self::SWITCH_LIST_RUN] ? "list" : "barr") . "ing_time_of_day < TIME(NOW())
+				  AND ir.id = ap.invoice_run_id
 				  AND (ir.customer_group_id = apc.customer_group_id OR (ir.customer_group_id IS NULL AND apc.customer_group_id IS NULL))
 				";
 
@@ -88,7 +88,7 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 			}
 			
 			// DEBUG
-			throw new Exception();
+			//throw new Exception();
 			// DEBUG
 
 			$arrInvoiceRuns = array();
@@ -261,7 +261,7 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 						$arrFNNs = array();
 						foreach($barOutcome[$accountId]['NOT_BARRED'] as $intServiceId => $arrDetails)
 						{
-							$arrFNNs[] = $arrDetails['FNN'] ." ($intServiceId)"; 
+							$arrFNNs[] = $arrDetails['FNN'] ." ($intServiceId)";
 							$manualBars[$customerGroupName][] = $accountId . ',' . $arrDetails['FNN'];
 						}
 						$barSummary[$customerGroupName][$accountId]['manual'] = $arrFNNs;
@@ -552,7 +552,7 @@ class Cli_App_Staggered_Automatic_Barring extends Cli
 			$this->log('Sending error report via email.');
 			$subject = '[ERROR]'. ($arrArgs[self::SWITCH_TEST_RUN] ? ' [TEST]' : '') .' Automatic barring' . ($arrArgs[self::SWITCH_LIST_RUN] ? ' list' : '') . ' failed - Database transaction rolled back at ' . date('Y-m-d H:i:s');
 			$body = array();
-			$body[] = 'The staggered automatic account barring' . ($arrArgs[self::SWITCH_LIST_RUN] ? ' list' : '') . ' process failed. The database transaction was rolled back. The following error details are available: -'; 
+			$body[] = 'The staggered automatic account barring' . ($arrArgs[self::SWITCH_LIST_RUN] ? ' list' : '') . ' process failed. The database transaction was rolled back. The following error details are available: -';
 			$body[] = '';
 			$body[] = $exception->getMessage();
 			if (count($report))
