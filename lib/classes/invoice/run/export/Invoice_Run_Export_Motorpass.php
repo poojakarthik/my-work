@@ -25,7 +25,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 		$iFileTimestamp	= time();
 		
 		// Header
-		$aData[]	=	array
+		$aLines[]	=	array
 						(
 							'00',
 							$sSenderCode,
@@ -85,7 +85,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 			{
 				$fBillingAmount	= round($aInvoice['invoice_total']+$aInvoice['invoice_tax'], 2);
 				
-				$aData[]	=	array
+				$aLines[]	=	array
 								(
 									$aInvoice['invoice_id'],
 									$aInvoice['motorpass_account_number'],
@@ -97,7 +97,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 		}
 		
 		// Footer
-		$aData[]	=	array
+		$aLines[]	=	array
 						(
 							'99',
 							date('d/m/Y', $iFileTimestamp),

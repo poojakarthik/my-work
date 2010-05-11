@@ -1,7 +1,7 @@
 <?php
 abstract class Invoice_Run_Export
 {
-	const	OUTPUT_BASE_PATH	= 'invoice/';
+	const	OUTPUT_BASE_PATH	= 'invoices/';
 	
 	protected	$_oInvoiceRun;
 	protected	$_oCarrierModule;
