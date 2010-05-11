@@ -767,11 +767,11 @@ class Invoice_Run
 	
 		// Export Invoice Run as a whole
 		$aCarrierModules	= Invoice_Run_Export::getModulesForCustomerGroup($this->customer_group_id);
-		
+		/*
 		Log::getLog()->log(print_r($aAccounts, true));
 		Log::getLog()->log(print_r($aExportModules, true));
 		Log::getLog()->log(print_r($aCarrierModules, true));
-		
+		*/
 		foreach ($aCarrierModules as $oCarrierModule)
 		{
 			$sInvoiceRunExportClass	= $oCarrierModule->Module;
