@@ -9,6 +9,20 @@ class Carrier_Module_Config_Set
 	private function __construct($mCarrierModule)
 	{
 		$this->_oCarrierModule	= ($mCarrierModule instanceof Carrier_Module) ? $mCarrierModule : Carrier_Module::getForId(ORM::extractId($mCarrierModule));
+		
+		// Load Fields
+		$this->reload();
+	}
+	
+	public function reload()
+	{
+		$aFields	= Carrier_Module_Config::getForCarrierModule($this->_oCarrierModule);
+		
+		$this->_aFields	= array();
+		foreach ($aFields as $oCarrierModuleConfig)
+		{
+			$this->_aFields[$oCarrierModuleConfig->Name]	= $oCarrierModuleConfig;
+		}
 	}
 	
 	private function _getPropertyParsed($sProperty)
