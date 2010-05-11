@@ -138,9 +138,9 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 		Debug($selInvoices->Error());
 		return FALSE;
 	}
-	while ($arrInvoice = $selInvoices->Fetch()) 
+	while ($arrInvoice = $selInvoices->Fetch())
 	{
-		// Get the account number from the invoice, then find the account's email address 			
+		// Get the account number from the invoice, then find the account's email address
 		if ($selAccountEmail->Execute($arrInvoice) === FALSE)
 		{
 			Debug($selAccountEmail->Error());
@@ -172,14 +172,14 @@ function EmailInvoices($arrInvoiceRun, $bolIncludePDF=FALSE)
 				$strContent	=	"
 Your {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Invoice for Account number {$arrInvoice['Account']} dated {$strFullInvoiceDate} is attached.
 
-We hope you enjoyed the Easter break and had some rest and relaxation with family and friends.
-Just a friendly reminder that your billing date has changed and your account will be sent on the 11th of each month.
+Should you have any questions regarding your account, please email to  contact@{$arrCustomerGroups[$arrDetail['CustomerGroup']]['email_domain']} or call our Business Service Centre between 8.30am and 5.30pm Monday to Friday EST on {$arrCustomerGroups[$arrDetail['CustomerGroup']]['customer_service_phone']}.  We are happy to hear from you!
 
-Should you have any questions regarding this please call our friendly business service centre .
+In the meantime we are excited to release our ADSL2+ range of plans.
+The lucky customers who can access ADSL2+ can now have super fast and most importantly more reliable internet than ever before.
+If you would like to know if you are in an ADSL2+ area or would like a brochure detailing these exciting new offers email sales@{$arrCustomerGroups[$arrDetail['CustomerGroup']]['email_domain']}
+Thank you for your continued business.
 
-In the coming weeks {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} will be releasing an outstanding ADSL 2+ package.
-As you may be aware not all businesses will have access to ADSL 2+ yet, but if you are one of the lucky ones that qualify, email sales@{$arrCustomerGroups[$arrDetail['CustomerGroup']]['email_domain']} for a complimentary brochure.
-These plans will be one of the most competitive in the market and jam packed full of value for our long term customers.
+We look forward to talking with you soon.
 
 Best regards
 The {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Team\n";
@@ -238,7 +238,7 @@ The {$arrCustomerGroups[$arrDetail['CustomerGroup']]['external_name']} Team\n";
 	 				}
  				}
  				
-				$strBody = $mimMime->get();				
+				$strBody = $mimMime->get();
 				$strHeaders = $mimMime->headers($arrHeaders);
 	 			$emlMail =& Mail::factory('mail');
 	 			
