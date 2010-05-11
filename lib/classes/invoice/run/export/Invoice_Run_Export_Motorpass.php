@@ -10,9 +10,12 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 						.self::OUTPUT_RELATIVE_PATH
 						.$this->_oInvoiceRun->Id.'/'
 						.$this->_makeFileName();
-		@mkdir(dirname($sOutputPath));
+		@mkdir(dirname($sOutputPath), 0777, true);
 		
-		$rOutputFile	= fopen($sOutputPath, 'w');
+		if (!is_resource($rOutputFile = fopen($sOutputPath, 'w')))
+		{
+			throw new Exception("Unable to open export file @ '{$sOutputPath}'");
+		}
 		
 		$aLines	= array();
 		
