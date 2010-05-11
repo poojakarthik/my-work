@@ -47,7 +47,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 							FROM		Invoice i
 										JOIN account_history ah ON	(
 																		i.Account = ah.account_id
-																		AND change_timestamp < ''
+																		AND change_timestamp < '{$this->_oInvoiceRun->billing_period_end_datetime}'
 																		AND ah.id =	(
 																						SELECT		id
 																						FROM		account_history
@@ -59,7 +59,7 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 																	)
 										JOIN rebill r ON	(
 																i.Account = r.account_id
-																AND r.created_timestamp < ''
+																AND r.created_timestamp < '{$this->_oInvoiceRun->billing_period_end_datetime}'
 																AND r.rebill_type_id = (SELECT id FROM rebill_type WHERE system_name = 'MOTORPASS' LIMIT 1)
 																AND r.id =	(
 																				SELECT		id
