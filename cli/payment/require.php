@@ -36,6 +36,7 @@ VixenRequire($strModuleDir."module_billexpress.php");
 VixenRequire($strModuleDir."module_bpay_westpac.php");
 VixenRequire($strModuleDir."module_securepay.php");
 VixenRequire($strModuleDir."module_directentryreport.php");
+VixenRequire($strModuleDir."module_motorpass.php");
 
 $strDirectDebitDir	= "cli/payment/directdebit/";
 VixenRequire($strApplicationDir."Payment_DirectDebit.php");
