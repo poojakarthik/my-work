@@ -95,5 +95,3 @@ $arrSQLFields['billing_date']	= 	array
 $arrDataReport['SQLFields'] 	= serialize($arrSQLFields);
 
 ?>
-
-?>
