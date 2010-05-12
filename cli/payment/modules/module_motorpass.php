@@ -100,9 +100,14 @@
  		//----------------------------------------------------------------------
  		
  		// Validate Normalised Data
- 		if (!$this->Validate() || $fBillingAmount <= 0)
+ 		if (!$this->Validate())
  		{
 			$this->_Append('Status', PAYMENT_CANT_NORMALISE_INVALID);
+ 		}
+ 		elseif ($fBillingAmount <= 0)
+ 		{
+			// We can only pay-out Debit Invoices
+ 			$this->_Append('Status', PAYMENT_CANT_NORMALISE_INVALID);
  		}
  		
  		// DEBUG: Force it to be Invalid so that we can verify the data
