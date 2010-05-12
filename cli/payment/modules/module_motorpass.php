@@ -74,8 +74,8 @@
  		$this->_Append('PaymentType', PAYMENT_TYPE_REBILL_PAYOUT);
  		
  		// Amount
- 		$mixValue	= (float)$this->_FetchRaw('BillingAmount') + (float)$this->_FetchRaw('Fee');
- 		$this->_Append('Amount', $mixValue);
+ 		$fBillingAmount	= (float)$this->_FetchRaw('BillingAmount') + (float)$this->_FetchRaw('Fee');
+ 		$this->_Append('Amount', $fBillingAmount);
  		
  		// Transaction Reference Number
  		$mixValue	= $this->_FetchRaw('ClientReferenceNo');
@@ -100,7 +100,7 @@
  		//----------------------------------------------------------------------
  		
  		// Validate Normalised Data
- 		if (!$this->Validate())
+ 		if (!$this->Validate() || $fBillingAmount <= 0)
  		{
 			$this->_Append('Status', PAYMENT_CANT_NORMALISE_INVALID);
  		}
