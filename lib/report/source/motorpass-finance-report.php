@@ -60,6 +60,7 @@ $arrSQLSelect['Invoice #']					['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['Billed Amount']				['Value']	= "(i.Total + i.Tax)";
 $arrSQLSelect['Billed Amount']				['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Billed Amount']				['Total']	= EXCEL_TOTAL_SUM;
 
 $arrSQLSelect['Customer Group']				['Value']	= "cg.external_name";
 
@@ -68,9 +69,11 @@ $arrSQLSelect['Motorpass Account #']		['Type']	= EXCEL_TYPE_INTEGER;
 
 $arrSQLSelect['ReD Program Admin Fee']		['Value']	= "19.99";
 $arrSQLSelect['ReD Program Admin Fee']		['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['ReD Program Admin Fee']		['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['Payment Surcharge Amount']	['Value']	= "ROUND((i.Total + i.Tax) * cpt.surcharge_percent, 2)";
+$arrSQLSelect['Payment Surcharge Amount']	['Value']	= "IF((i.Total + i.Tax) > 0, ROUND((i.Total + i.Tax) * cpt.surcharge_percent, 2), NULL)";
 $arrSQLSelect['Payment Surcharge Amount']	['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Payment Surcharge Amount']	['Total']	= EXCEL_TOTAL_SUM;
 
 $arrDataReport['SQLSelect'] 				= serialize($arrSQLSelect);
 
