@@ -111,7 +111,7 @@
  		}
  		
  		// DEBUG: Force it to be Invalid so that we can verify the data
-		$this->_Append('Status', PAYMENT_CANT_NORMALISE_INVALID);
+		//$this->_Append('Status', PAYMENT_CANT_NORMALISE_INVALID);
  		
  		return $this->_Output();
  	}
