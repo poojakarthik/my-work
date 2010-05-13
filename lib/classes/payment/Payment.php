@@ -74,27 +74,27 @@ class Payment extends ORM_Cached
 			{
 				$oChargeType	= Charge_Type::getByCode('PMF');
 				
-				$oCharge						= new Charge();
+				$oCharge					= new Charge();
 				
-				$oCharge->AccountGroup			= $this->AccountGroup;
-				$oCharge->Account				= $this->Account;
-				$oCharge->CreatedBy				= Employee::SYSTEM_EMPLOYEE_ID;
-				$oCharge->CreatedOn				= date('Y-m-d');
-				$oCharge->ApprovedBy			= Employee::SYSTEM_EMPLOYEE_ID;
-				$oCharge->ChargeType			= $oChargeType->ChargeType;
-				$oCharge->charge_type_id		= $oChargeType->Id;
-				$oCharge->Description			= $oCarrierPaymentType->description
-												.' Surcharge for Payment on '.date('d/m/Y', strtotime($this->PaidOn))
-												.' of $'.(number_format($this->Amount, 2, '.', ''))
-												.' @ '.round($oCarrierPaymentType->surcharge_percent * 100, 2).'%';
-				$oCharge->ChargedOn				= $this->PaidOn;
-				$oCharge->Nature				= 'DR';
-				$oCharge->Amount				= round($fSurcharge, 2);
-				$oCharge->LinkType				= CHARGE_LINK_PAYMENT;
-				$oCharge->LinkId				= $this->Id;
-				$oCharge->Status				= CHARGE_APPROVED;
-				$oCharge->Notes					= '';
-				$oCharge->global_taxt_exempt	= 0;
+				$oCharge->AccountGroup		= $this->AccountGroup;
+				$oCharge->Account			= $this->Account;
+				$oCharge->CreatedBy			= Employee::SYSTEM_EMPLOYEE_ID;
+				$oCharge->CreatedOn			= date('Y-m-d');
+				$oCharge->ApprovedBy		= Employee::SYSTEM_EMPLOYEE_ID;
+				$oCharge->ChargeType		= $oChargeType->ChargeType;
+				$oCharge->charge_type_id	= $oChargeType->Id;
+				$oCharge->Description		= $oCarrierPaymentType->description
+											.' Surcharge for Payment on '.date('d/m/Y', strtotime($this->PaidOn))
+											.' of $'.(number_format($this->Amount, 2, '.', ''))
+											.' @ '.round($oCarrierPaymentType->surcharge_percent * 100, 2).'%';
+				$oCharge->ChargedOn			= $this->PaidOn;
+				$oCharge->Nature			= 'DR';
+				$oCharge->Amount			= round($fSurcharge, 2);
+				$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
+				$oCharge->LinkId			= $this->Id;
+				$oCharge->Status			= CHARGE_APPROVED;
+				$oCharge->Notes				= '';
+				$oCharge->global_tax_exempt	= 0;
 				
 				$oCharge->save();
 			}
