@@ -83,7 +83,10 @@ class Payment extends ORM_Cached
 				$oCharge->ApprovedBy		= Employee::SYSTEM_EMPLOYEE_ID;
 				$oCharge->ChargeType		= $oChargeType->ChargeType;
 				$oCharge->charge_type_id	= $oChargeType->Id;
-				$oCharge->Description		= $oCarrierPaymentType->description.' Surcharge for Payment on '.date('d/m/Y', strtotime($this->PaidOn)).' of $'.(number_format($this->Amount, 2, '.', '')).' @ '.round($oCarrierPaymentType->surcharge_percent * 100, 2).'%';
+				$oCharge->Description		= $oCarrierPaymentType->description
+											.' Surcharge for Payment on '.date('d/m/Y', strtotime($this->PaidOn))
+											.' of $'.(number_format($this->Amount, 2, '.', ''))
+											.' @ '.round($oCarrierPaymentType->surcharge_percent * 100, 2).'%';
 				$oCharge->ChargedOn			= $this->PaidOn;
 				$oCharge->Nature			= 'DR';
 				$oCharge->Amount			= round($fSurcharge, 2);
