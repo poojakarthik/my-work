@@ -72,7 +72,7 @@ class Payment extends ORM_Cached
 			$oCharge	= null;
 			if ($fSurcharge > 0.0)
 			{
-				$oChargeType	= Charge_Type::getForCode('PMF');
+				$oChargeType	= Charge_Type::getByCode('PMF');
 				
 				$oCharge					= new Charge();
 				
