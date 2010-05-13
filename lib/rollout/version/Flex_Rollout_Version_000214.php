@@ -19,7 +19,7 @@ class Flex_Rollout_Version_000214 extends Flex_Rollout_Version
 							(
 								array
 								(
-									'sDescription'		=>	"Add the Yellow Billing Invoice XML Resource Type",
+									'sDescription'		=>	"Add the carrier_payment_type.description Field",
 									'sAlterSQL'			=>	"	ALTER TABLE	carrier_payment_type
 																ADD COLUMN	description		VARCHAR(128)	NOT NULL	COMMENT 'Description of the Payment Type/Carrier combination';",
 									'sRollbackSQL'		=>	"	ALTER TABLE	carrier_payment_type
