@@ -3,7 +3,7 @@
  * CollectionModuleFOpen
  *
  * fopen() File Wrapper Collection Base Module
- * 
+ *
  * @class	CollectionModuleFOpen
  */
  abstract class CollectionModuleFOpen extends CollectionModuleBase
@@ -102,7 +102,7 @@
 	 * _getDownloadPaths()
 	 *
 	 * Gets a full list of all files to download
-	 * 
+	 *
 	 * @return		array							Array of files to download
 	 *
 	 * @method
@@ -241,7 +241,7 @@
 								}
 							}
 						}
-						CliEcho();
+						//CliEcho();
 					}
 					else
 					{
@@ -265,9 +265,9 @@
 	 * GetFileType()
 	 *
 	 * Determines the FileImport type for a given file
-	 * 
+	 *
 	 * @param	array	$arrDownloadFile				FileDownload properties
-	 * 
+	 *
 	 * @return	mixed									array: FileImport Type; NULL: Unrecognised type
 	 *
 	 * @method
