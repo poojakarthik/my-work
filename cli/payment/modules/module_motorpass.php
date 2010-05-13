@@ -54,7 +54,7 @@
  		{
  			// Get the File Effective Date (convert DDMMYYYY to YYYY-MM-DD)
  			$sDateDDMMYYYY		= $aRegexMatches['Date'];
- 			$this->_sFileDate	= substr($aRegexMatches['Date'], 6, 2).'-'.substr($aRegexMatches['Date'], 3, 2).'-'.substr($aRegexMatches['Date'], 0, 2);
+ 			$this->_sFileDate	= substr($aRegexMatches['Date'], 6, 4).'-'.substr($aRegexMatches['Date'], 3, 2).'-'.substr($aRegexMatches['Date'], 0, 2);
  			
  			return PAYMENT_CANT_NORMALISE_HEADER;
  		}
