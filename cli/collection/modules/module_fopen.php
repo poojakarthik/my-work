@@ -88,12 +88,12 @@
 				}
 				else
 				{
-					return "Error saving to local path '{$arrCurrentFile['LocalPath']}': ".error_get_last();
+					return "Error saving to local path '{$arrCurrentFile['LocalPath']}': ".print_r(error_get_last(), true);
 				}
 			}
 			else
 			{
-				return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}': ".error_get_last();
+				return "Error downloading from the remote path '{$arrCurrentFile['RemotePath']}': ".print_r(error_get_last(), true);
 			}
 		}
  	}
