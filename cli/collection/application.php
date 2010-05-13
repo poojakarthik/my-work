@@ -52,7 +52,7 @@ class ApplicationCollection extends ApplicationBaseClass
 	 * Constructor for the Collection Application
 	 *
 	 * Constructor for the Collection Application
-	 * 
+	 *
 	 * @param	array	$arrConfig				Configuration array
 	 *
 	 * @return			ApplicationCollection
@@ -88,7 +88,7 @@ class ApplicationCollection extends ApplicationBaseClass
 	 *
 	 * @method
 	 */
-	function Collect()
+	function Collect($iCarrierToCollect=null)
 	{
 		// Statements
 		$arrCols				= Array();
@@ -104,6 +104,12 @@ class ApplicationCollection extends ApplicationBaseClass
 		$arrFiles	= array();
 		foreach ($this->_arrModules as $intCarrier=>&$arrFileTypes)
 		{
+			// Are we restricting this run to a single Carrier?
+			if (isset($iCarrierToCollect) && $intCarrier !== $iCarrierToCollect)
+			{
+				continue;
+			}
+			
 			CliEcho("\t * Provider: ".GetConstantDescription($intCarrier, 'Carrier'));
 			foreach ($arrFileTypes as $intResourceType=>&$modModule)
 			{
@@ -331,8 +337,8 @@ class ApplicationCollection extends ApplicationBaseClass
 	 * Imports a file into Flex using information from a passed CarrierModule
 	 *
 	 * Imports a file into Flex using information from a passed CarrierModule
-	 * 
-	 * 
+	 *
+	 *
 	 *
 	 * @return	mixed								integer: Insert Id; string: Error message
 	 *
@@ -352,7 +358,7 @@ class ApplicationCollection extends ApplicationBaseClass
 	 * Imports a file into Flex
 	 *
 	 * Imports a file into Flex
-	 * 
+	 *
 	 * @param	string	$strFilePath					Full Path to the file to be imported
 	 * @param	integer	$intFileType					The FileImport type for the file
 	 * @param	integer	$intCarrier						The Carrier from where this file originated
