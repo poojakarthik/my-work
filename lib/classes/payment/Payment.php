@@ -93,6 +93,7 @@ class Payment extends ORM_Cached
 				$oCharge->LinkType			= CHARGE_LINK_PAYMENT;
 				$oCharge->LinkId			= $this->Id;
 				$oCharge->Status			= CHARGE_APPROVED;
+				$oCharge->Notes				= '';
 				
 				$oCharge->save();
 			}
