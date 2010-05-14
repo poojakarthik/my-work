@@ -2,7 +2,7 @@
 //---------------------------------------------------------------------------//
 // Motorpass Exception Reporting - Payment Method and Plan Misalignment
 //---------------------------------------------------------------------------//
-$arrDataReport['Name']					= "Exception Reporting – Payment Method and Plan Misalignment";
+$arrDataReport['Name']					= "Exception Reporting: Payment Method and Plan Misalignment";
 $arrDataReport['Summary']				= "Shows accounts which do not have Rebill as their payment method but do have a Rebill plans, as well as accounts which are set to Rebill which do not have Rebill plans.";
 $arrDataReport['RenderMode']			= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']			= PERMISSION_OPERATOR;
@@ -46,7 +46,7 @@ $arrDocReq[]					= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL TABLE
-$arrDataReport['SQLTable']	= "	FROM 	Account a
+$arrDataReport['SQLTable']	= "	Account a
 								JOIN	billing_type bt
 											ON bt.id = a.BillingType
 								JOIN	payment_method pm

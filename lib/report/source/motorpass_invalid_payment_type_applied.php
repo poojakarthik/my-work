@@ -2,7 +2,7 @@
 //---------------------------------------------------------------------------//
 // Motorpass Exception Reporting - Invalid Payment Type Applied
 //---------------------------------------------------------------------------//
-$arrDataReport['Name']					= "Exception Reporting – Invalid Payment Type Applied";
+$arrDataReport['Name']					= "Exception Reporting: Invalid Payment Type Applied";
 $arrDataReport['Summary']				= "Shows account & payment details where the payment method is Rebill where a non-Rebill payment has been applied.";
 $arrDataReport['RenderMode']			= REPORT_RENDER_INSTANT;
 $arrDataReport['Priviledges']			= PERMISSION_OPERATOR;
