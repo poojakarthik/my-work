@@ -128,9 +128,9 @@ class Invoice_Run_Export_Motorpass extends Invoice_Run_Export
 		// Naming convention:
 		// <CUSTOMERGROUP>_BILLING_<YYYYMMDD>_<HHMMSS>.TXT
 		return	strtoupper(preg_replace("/[^A-Z0-9]/i", '', Customer_Group::getForId($this->_oInvoiceRun->customer_group_id)->externalName))
-				.'_BILLING_'
-				.date("Ymd")
-				.date("His")
+				.'_BILLING'
+				.'_'.date("Ymd")
+				.'_'.date("His")
 				.'.TXT';
 	}
 }
