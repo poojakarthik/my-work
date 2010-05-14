@@ -9,6 +9,7 @@ $arrDataReport['Priviledges']			= PERMISSION_OPERATOR;
 $arrDataReport['CreatedOn']				= date("Y-m-d");
 $arrDataReport['SQLWhere'] 				= "	pm.const_name = 'PAYMENT_METHOD_REBILL'
 											AND pt.const_name <> 'PAYMENT_TYPE_REBILL_PAYOUT'
+											AND p.Status <> 250
 											AND	((p.File IS NULL AND (p.PaidOn BETWEEN <StartDate> AND <EndDate>)) OR (p.File IS NOT NULL AND (fi.ImportedOn BETWEEN <StartDate> AND <EndDate>)))
 											ORDER BY a.Id";
 $arrDataReport['SQLGroupBy'] 			= "";
