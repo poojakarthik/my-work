@@ -9,7 +9,7 @@ class Cli_App_LateNoticeRun extends Cli
 	const SWITCH_TEST_RUN = "t";
 	const SWITCH_SAMPLE = "p";
 	
-	const	EMAIL_BILLING_NOTIFICATIONS	= 'billing-notifications@yellowbilling.com.au';
+	const	EMAIL_BILLING_NOTIFICATIONS	= 'ybs-admin@ybs.net.au';
 
 	private $runDateTime = '';
 
@@ -77,7 +77,7 @@ class Cli_App_LateNoticeRun extends Cli
 
 				$sendEmail = TRUE;
 
-				// Notices were generated iff the results contain an 
+				// Notices were generated iff the results contain an
 				if ($mixResult === FALSE)
 				{
 					$message = "ERROR: Generating " . $strLetterType . "s failed, unexpectedly";
@@ -162,7 +162,7 @@ class Cli_App_LateNoticeRun extends Cli
 						switch ($arrDetails['Account']['DeliveryMethod'])
 						{
 							case DELIVERY_METHOD_POST:
-								// We need to generate the pdf for the XML and save it to the 
+								// We need to generate the pdf for the XML and save it to the
 								// files/type/pdf/date/cust_group/account.pdf storage
 								// Need to add a note of this to the email
 								$this->log("Generating print PDF $strLetterType for account ". $arrDetails['Account']['AccountId']);
@@ -191,7 +191,7 @@ class Cli_App_LateNoticeRun extends Cli
 										foreach($outputDirectories as $subDirectory)
 										{
 											// If root directory on linux/unix
-											if (!$subDirectory) 
+											if (!$subDirectory)
 											{
 												continue;
 											}
@@ -602,11 +602,11 @@ class Cli_App_LateNoticeRun extends Cli
 		$fileContents = file_get_contents($pathToXMLFile);
 
 		$pdfTemplate = new Flex_Pdf_Template(
-						$custGroupId, 
-						$effectiveDate, 
-						$documentTypeId, 
-						$fileContents, 
-						$targetMedia, 
+						$custGroupId,
+						$effectiveDate,
+						$documentTypeId,
+						$fileContents,
+						$targetMedia,
 						TRUE);
 
 		$pdf = $pdfTemplate->createDocument();
