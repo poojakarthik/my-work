@@ -23,7 +23,7 @@ class Cli_App_Pdf extends Cli
 
 		try
 		{
-			// Include the application... 
+			// Include the application...
 			$this->requireOnce("flex.require.php");
 
 			// The arguments are present and in a valid format if we get past this point.
@@ -239,7 +239,10 @@ class Cli_App_Pdf extends Cli
 					}
 				}
 
-				$custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"])->id;
+				if (($custGroupId = Customer_Group::getForConstantName($docProps["CustomerGroup"])->id) === null)
+				{
+					throw new Exception("Customer Group '{$docProps["CustomerGroup"]}' does not exist");
+				}
 				if ($arrArgs[self::SWITCH_CUSTOMER_GROUP_ID] !== FALSE)
 				{
 					if ($custGroupId != $arrArgs[self::SWITCH_CUSTOMER_GROUP_ID])
@@ -304,7 +307,7 @@ class Cli_App_Pdf extends Cli
 						continue 2;
 				}
 
-				// Check that we are processing xml files of the intended media type 
+				// Check that we are processing xml files of the intended media type
 				if ($arrArgs[self::SWITCH_SOURCE_MEDIA] !== FALSE)
 				{
 					if ($targetMedia != $arrArgs[self::SWITCH_SOURCE_MEDIA])
@@ -349,11 +352,11 @@ class Cli_App_Pdf extends Cli
 				// Create the PDF template
 				$this->startErrorCatching();
 				$pdfTemplate = new Flex_Pdf_Template(
-								$custGroupId, 
-								$effectiveDate, 
-								$documentTypeId, 
-								$fileContents, 
-								$targetMedia, 
+								$custGroupId,
+								$effectiveDate,
+								$documentTypeId,
+								$fileContents,
+								$targetMedia,
 								TRUE);
 				$this->dieIfErred();
 
@@ -540,7 +543,7 @@ class Cli_App_Pdf extends Cli
 		{
 			$this->showUsage("ERROR: " . $exception->getMessage());
 		}
-	} 
+	}
 
 	function getCommandLineArguments()
 	{
@@ -551,7 +554,8 @@ class Cli_App_Pdf extends Cli
 				self::ARG_REQUIRED 	=> FALSE,
 				self::ARG_DESCRIPTION => "is the name of the 'c'ustomer group to create the PDF file for (from database) [optional, default taken from XML file]",
 				self::ARG_DEFAULT 	=> FALSE,
-				self::ARG_VALIDATION 	=> 'Cli::_validConstant("%1$s", "CUSTOMER_GROUP_")'
+				//self::ARG_VALIDATION 	=> 'Cli::_validConstant("%1$s", "CUSTOMER_GROUP_")'
+				self::ARG_VALIDATION 	=> 'Cli::_validString("%1$s")'
 			),
 
 			self::SWITCH_DOCUMENT_TYPE_ID => array(
@@ -588,7 +592,7 @@ class Cli_App_Pdf extends Cli
 			),
 		
 			self::SWITCH_SOURCE_MEDIA => array(
-				self::ARG_LABEL 		=> "SOURCE_MEDIA", 
+				self::ARG_LABEL 		=> "SOURCE_MEDIA",
 				self::ARG_REQUIRED 	=> FALSE,
 				self::ARG_DESCRIPTION => "if specified, only XML documents originally intended for the 'm'edia are processed (EMAIL or PRINT)",
 				self::ARG_DEFAULT 	=> FALSE,
@@ -596,7 +600,7 @@ class Cli_App_Pdf extends Cli
 			),
 
 			self::SWITCH_OUTPUT_MEDIA => array(
-				self::ARG_LABEL 		=> "OUTPUT_MEDIA", 
+				self::ARG_LABEL 		=> "OUTPUT_MEDIA",
 				self::ARG_REQUIRED 	=> FALSE,
 				self::ARG_DESCRIPTION => "is the 'o'utput media for the PDF document (EMAIL or PRINT) [optional, default taken from XML file]",
 				self::ARG_DEFAULT 	=> FALSE,
@@ -618,7 +622,7 @@ class Cli_App_Pdf extends Cli
 			),
 			
 			self::SWITCH_IGNORE_ACCOUNTS => array(
-				self::ARG_LABEL 		=> "IGNORE_ACCOUNTS", 
+				self::ARG_LABEL 		=> "IGNORE_ACCOUNTS",
 				self::ARG_REQUIRED 		=> FALSE,
 				self::ARG_DESCRIPTION 	=> "if set, ignores a space-delimited list of Accounts (encapsulated in quotes for multiple Accounts)",
 				self::ARG_DEFAULT 		=> FALSE,
@@ -626,7 +630,7 @@ class Cli_App_Pdf extends Cli
 			),
 			
 			self::SWITCH_RESUME_RUN => array(
-				self::ARG_LABEL 		=> "RESUME_RUN", 
+				self::ARG_LABEL 		=> "RESUME_RUN",
 				self::ARG_REQUIRED 		=> FALSE,
 				self::ARG_DESCRIPTION 	=> "attempts to continue an incomplete export run",
 				self::ARG_DEFAULT 		=> FALSE,

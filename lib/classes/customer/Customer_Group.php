@@ -12,7 +12,7 @@
  *
  * @class	Customer_Group
  */
-class Customer_Group 
+class Customer_Group
 {
 	private $id								= NULL;
 	private $internalName					= NULL;
@@ -60,7 +60,7 @@ class Customer_Group
 	 * __construct()
 	 *
 	 * constructor
-	 * 
+	 *
 	 * constructor
 	 *
 	 * @param		array	$arrProperties 	Optional.  Associative array defining a customer group with keys for each field of the CustomerGroup table
@@ -113,19 +113,27 @@ class Customer_Group
 		$arrCustomerGroups	= self::listAll();
 		foreach ($arrCustomerGroups as $intCustomerGroupId=>$objCustomerGroup)
 		{
-			$strCustomerGroupConstant	= 'CUSTOMER_GROUP_'.strtoupper(str_replace(' ', '_', $objCustomerGroup->internal_name));
-			//throw new Exception($strCustomerGroupConstant.' vs '.$strConstantName);
-			if ($strCustomerGroupConstant === $strConstantName)
+			if ($objCustomerGroup->getConstantName() === $strConstantName || $objCustomerGroup->getConstantName() === strstr($strConstantName, 'CUSTOMER_GROUP_'))
 			{
 				return $objCustomerGroup;
 			}
 		}
 		return null;
 	}
+
+	public function getConstantName()
+	{
+		return self::_makeConstantName($this->internalName);
+	}
 	
 	public function getPaymentMethods()
 	{
 		return Customer_Group_Payment_Method::getForCustomerGroup($this->Id);
+	}
+	
+	private static function _makeConstantName($sInternalName)
+	{
+		return 'CUSTOMER_GROUP_'.strtoupper(str_replace(' ', '_', $sInternalName));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -135,10 +143,10 @@ class Customer_Group
 	 * getColumns()
 	 *
 	 * Returns array defining the columns of the CustomerGroup table
-	 * 
+	 *
 	 * Returns array defining the columns of the CustomerGroup table
 	 *
-	 * @return		array	
+	 * @return		array
 	 * @method
 	 */
 	protected static function getColumns()
@@ -184,7 +192,7 @@ class Customer_Group
 	 * init()
 	 *
 	 * Initialises the Customer_Group object
-	 * 
+	 *
 	 * Initialises the Customer_Group object
 	 *
 	 * @param		array	$arrProperties		assoc array modelling record of CustomerGroup table
@@ -212,10 +220,10 @@ class Customer_Group
 	 * __get()
 	 *
 	 * accessor method
-	 * 
+	 *
 	 * accessor method
 	 *
-	 * @param	string	$strName	name of property to get. in either of the formats xxxYyyZzz or xxx_yyy_zzz 
+	 * @param	string	$strName	name of property to get. in either of the formats xxxYyyZzz or xxx_yyy_zzz
 	 * @return	void
 	 * @method
 	 */
@@ -240,7 +248,7 @@ class Customer_Group
 	 * tidyName()
 	 *
 	 * Converts a string from xxx_yyy_zzz to xxxYyyZzz
-	 * 
+	 *
 	 * Converts a string from xxx_yyy_zzz to xxxYyyZzz
 	 * If the string is already in the xxxYxxZzz format, then it will not be changed
 	 *

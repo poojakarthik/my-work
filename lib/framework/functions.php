@@ -1471,7 +1471,7 @@ function EmailAddressValid ($strEmail)
 		// length. Labels may contain letters, digits and hyphens, however must not
 		// begin or end with a hyphen
 
-		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0. 
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 		// if (!ereg("^[^@]{1,64}@[^@]{1,255}$", $strEmailAddress)) {
 		if (!preg_match("/^[^@]{1,64}@[^@]{1,255}$/", $strEmailAddress))
 		{
@@ -1484,7 +1484,7 @@ function EmailAddressValid ($strEmail)
 		$arrLocal = explode(".", $arrEmail [0]);
 
 		for ($i = 0; $i < sizeof($arrLocal); $i++) {
-			// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0. 
+			// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 			// if (!ereg("^(([A-Za-z0-9!#$%&'*+/=?^_`{|}~-][A-Za-z0-9!#$%&'*+/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$", $arrLocal [$i])) {
 			if (!preg_match("/^(([A-Za-z0-9!#$%&'*+\/=?^_`{|}~-][A-Za-z0-9!#$%&'*+\/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$/", $arrLocal [$i]))
 			{
@@ -3568,7 +3568,7 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 			AccountGroupId bigint(20) unsigned NOT NULL,
 			CustomerGroupId bigint(20) unsigned NOT NULL,
 			CustomerGroupName VARCHAR(255) DEFAULT '',
-			TotalOutstanding decimal(13,4) NOT NULL, 
+			TotalOutstanding decimal(13,4) NOT NULL,
 			Overdue decimal(13,4) NOT NULL,
 			EligibleOverdue decimal(13,4) NOT NULL,
 			TotalFromOverdueInvoices decimal(13,4) NOT NULL,
@@ -4430,7 +4430,8 @@ function CreateDefaultPaymentTerms($customerGroupId)
 			break;
 		}
 
-		$dom->Document->CustomerGroup->setValue(GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup'));
+		//$dom->Document->CustomerGroup->setValue(GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup'));
+		$dom->Document->CustomerGroup->setValue(Customer_Group::getForId($arrAccount['CustomerGroup'])->getConstantName());
 		$dom->Document->CreationDate->setValue(date("Y-m-d H:i:s"));
 		$dom->Document->DeliveryMethod->setValue($strDeliveryMethod);
 
@@ -4441,7 +4442,8 @@ function CreateDefaultPaymentTerms($customerGroupId)
 
 		$dom->Document->Account->Id = $arrAccount['AccountId'];
 		$dom->Document->Account->Name = $arrAccount['BusinessName'];
-		$dom->Document->Account->CustomerGroup = GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup');
+		//$dom->Document->Account->CustomerGroup = GetConstantName($arrAccount['CustomerGroup'], 'CustomerGroup');
+		$dom->Document->Account->CustomerGroup = Customer_Group::getForId($arrAccount['CustomerGroup'])->getConstantName();
 		$dom->Document->Account->Email->setValue($arrAccount['Email']);
 		$dom->Document->Account->Addressee->setValue($arrAccount['BusinessName']);
 		$dom->Document->Account->AddressLine1;
