@@ -921,7 +921,7 @@ class Invoice extends ORM_Cached
 	public function export()
 	{
 		$oInvoiceRun	= new Invoice_Run(array('Id'=>$this->invoice_run_id), true);
-		$oInvoiceRun->export(array($this->Id));
+		$oInvoiceRun->export(array($this->Account));
 	}
 
 	//------------------------------------------------------------------------//

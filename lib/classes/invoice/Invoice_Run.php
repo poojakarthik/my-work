@@ -763,7 +763,7 @@ class Invoice_Run
 	 */
 	public function export($aAccounts=null, $aExportModules=null)
 	{
-		Log::getLog()->log(" * Exporting Invoice Run {$this->Id}".((is_array($aAccounts) && count($aAccounts)) ? " (Accounts: )".implode(', ', $aAccounts) : '')."...");
+		Log::getLog()->log(" * Exporting Invoice Run {$this->Id}".((is_array($aAccounts) && count($aAccounts)) ? " (Accounts: ".implode(', ', $aAccounts) : '').")...");
 	
 		// Export Invoice Run as a whole
 		$aCarrierModules	= Invoice_Run_Export::getModulesForCustomerGroup($this->customer_group_id);
