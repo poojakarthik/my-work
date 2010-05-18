@@ -252,7 +252,7 @@ var Popup_Account_Add_CreditCard	= Class.create(Reflex_Popup,
 								iCardNumber		: this.hInputs['Credit Card Number'].value,
 								iExpiryMonth	: parseInt(this.hInputs['Expiration Date-MM'].value),
 								iExpiryYear		: parseInt(this.hInputs['Expiration Date-YYYY'].value),
-								iCVV			: parseInt(this.hInputs['CVV #'].value)
+								iCVV			: this.hInputs['CVV #'].value
 							};
 
 		// Create a Popup to show 'saving...' close it when save complete
