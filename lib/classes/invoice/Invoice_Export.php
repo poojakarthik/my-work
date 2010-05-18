@@ -238,10 +238,10 @@ class Invoice_Export
 					// Perform "Roll-Ups"
 					$aAdjustmentItemisation	= self::_adjustmentRollup($aAdjustmentItemisation);
 					
-					$arrCategories['Service Charges & Credits']['Itemisation']	= $aAdjustmentItemisation;
-					$arrCategories['Service Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
-					$arrCategories['Service Charges & Credits']['TotalCharge']	= $fltAdjustmentsTotal;
-					$arrCategories['Service Charges & Credits']['Records']		= count($aAdjustmentItemisation);
+					$arrCategories['Service Charges & Discounts']['Itemisation']	= $aAdjustmentItemisation;
+					$arrCategories['Service Charges & Discounts']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+					$arrCategories['Service Charges & Discounts']['TotalCharge']	= $fltAdjustmentsTotal;
+					$arrCategories['Service Charges & Discounts']['Records']		= count($aAdjustmentItemisation);
 					
 					$fltRatedTotal	+= $fltAdjustmentsTotal;
 				}
@@ -385,7 +385,7 @@ class Invoice_Export
 	 * Returns the Account Summary and Itemisation as an associative array for a given Invoice
 	 * 
 	 * @param	array	$arrInvoice						Invoice Details
-	 * @param	boolean	$bolAdjustments		[optional]	TRUE	: Include 'Service Charges & Credits'
+	 * @param	boolean	$bolAdjustments		[optional]	TRUE	: Include 'Service Charges & Discounts'
 	 * 													FALSE	: Do not add Adjustments
 	 * @param	boolean	$bolPlanAdjustments	[optional]	TRUE	: Include 'Plan Charges' and 'Plan Credits'
 	 * 													FALSE	: Do not add Plan Adjustments
@@ -427,14 +427,14 @@ class Invoice_Export
 			{
 				while ($arrSummary = $selAccountSummaryCharges->Fetch())
 				{
-					$arrAccountSummary['Service Charges & Credits']['TotalCharge']	= number_format($arrSummary['Total'], 2, '.', '');
-					$arrAccountSummary['Service Charges & Credits']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+					$arrAccountSummary['Service Charges & Discounts']['TotalCharge']	= number_format($arrSummary['Total'], 2, '.', '');
+					$arrAccountSummary['Service Charges & Discounts']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 				}
 			}
 		}
 		
 		// Account Charges and Credits
-		$arrAccountSummary['Account Charges & Credits']	= self::getAccountAdjustments($arrInvoice);
+		$arrAccountSummary['Account Charges & Discounts']	= self::getAccountAdjustments($arrInvoice);
 		
 		if ($bolPlanAdjustments)
 		{
@@ -836,7 +836,7 @@ class Invoice_Export
 					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
 					(
 	 					"Charge",
-						"SUM(Amount) AS Charge, 'Service Charges & Credits' AS RecordType, COUNT(Id) AS Records, Nature",
+						"SUM(Amount) AS Charge, 'Service Charges & Discounts' AS RecordType, COUNT(Id) AS Records, Nature",
 						"$strWhereService AND invoice_run_id = <invoice_run_id>",
 						"Nature",
 						2,
