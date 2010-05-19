@@ -9,6 +9,9 @@ class HtmlTemplate_Recurring_Charge_Management extends FlexHtmlTemplate
 		$this->LoadJavascript('dataset_ajax');
 		$this->LoadJavascript('pagination');
 		$this->LoadJavascript('recurring_charge_management');
+		
+		BreadCrumb()->Employee_Console();
+		BreadCrumb()->SetCurrentPage("Manage Recurring Charge Requests");
 	}
 
 	public function Render()

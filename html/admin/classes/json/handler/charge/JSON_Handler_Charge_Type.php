@@ -14,7 +14,25 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
+	// This function wraps around getTypes and supplies CHARGE_MODEL_CHARGE as the charge_model_id
 	public function getChargeTypes($bCountOnly=false, $iLimit=0, $iOffset=0)
+	{
+		return self::getTypes($bCountOnly, $iLimit, $iOffset, CHARGE_MODEL_CHARGE);
+	}
+	
+	// This function wraps around getTypes and supplies CHARGE_MODEL_ADJUSTMENT as the charge_model_id
+	public function getAdjustmentTypes($bCountOnly=false, $iLimit=0, $iOffset=0)
+	{
+		return self::getTypes($bCountOnly, $iLimit, $iOffset, CHARGE_MODEL_ADJUSTMENT);
+	}
+	
+	// This function wraps around getTypes and supplies nothing (all charge models) as the charge_model_id
+	public function getAllTypes($bCountOnly=false, $iLimit=0, $iOffset=0)
+	{
+		return self::getTypes($bCountOnly, $iLimit, $iOffset);
+	}
+	
+	public function getTypes($bCountOnly=false, $iLimit=0, $iOffset=0, $iChargeModel=false)
 	{
 		try
 		{
@@ -26,11 +44,14 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 			
 			// Build filter data for the 'searchFor' function
 			$aFilterData = 	array(
-								array(
-									'Type' 	=> 'ChargeType|Archived', 
-									'Value'	=> 0
-								)
+								array('Type' => 'ChargeType|Archived', 'Value' => 0)
 							);
+			
+			// Add charge model filter if necessary
+			if ($iChargeModel !== false)
+			{
+				$aFilterData[]	= array('Type' => 'ChargeType|charge_model_id', 'Value' => $iChargeModel);
+			}
 			
 			if ($bCountOnly)
 			{
@@ -231,11 +252,12 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 				$oDataAccess->TransactionCommit();
 				
 				// Validation passed, update the object and save
-				$oChargeType->ChargeType 	= $oChargeTypeDetails->sChargeType;
-				$oChargeType->Description 	= $oChargeTypeDetails->sDescription;
-				$oChargeType->Nature 		= $oChargeTypeDetails->sNature;
-				$oChargeType->Fixed 		= (int)$oChargeTypeDetails->bFixed;
-				$oChargeType->Amount 		= $oChargeTypeDetails->fAmount;
+				$oChargeType->ChargeType 		= $oChargeTypeDetails->sChargeType;
+				$oChargeType->Description 		= $oChargeTypeDetails->sDescription;
+				$oChargeType->Nature 			= $oChargeTypeDetails->sNature;
+				$oChargeType->Fixed 			= (int)$oChargeTypeDetails->bFixed;
+				$oChargeType->Amount 			= $oChargeTypeDetails->fAmount;
+				$oChargeType->charge_model_id	= $oChargeTypeDetails->iChargeModel;
 				$oChargeType->save();
 				
 				return array(

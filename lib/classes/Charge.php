@@ -17,6 +17,7 @@ class Charge extends ORM_Cached
 	protected static	$_strStaticTableName	= "Charge";
 
 	const SEARCH_CONSTRAINT_CHARGE_STATUS	= "Charge|Status";
+	const SEARCH_CONSTRAINT_CHARGE_MODEL_ID	= "Charge|charge_model_id";
 
 	const ORDER_BY_ACCOUNT_NAME		= "Account|accountName";
 	const ORDER_BY_ACCOUNT_ID		= "Charge|Account";
@@ -89,7 +90,8 @@ class Charge extends ORM_Cached
 				switch ($arrConstraint['Type'])
 				{
 					case self::SEARCH_CONSTRAINT_CHARGE_STATUS:
-						$arrWhereClauseParts[] = self::_prepareSearchConstraint(str_replace( '|', '.', self::SEARCH_CONSTRAINT_CHARGE_STATUS), $arrConstraint['Value']);
+					case self::SEARCH_CONSTRAINT_CHARGE_MODEL_ID:
+						$arrWhereClauseParts[] = self::_prepareSearchConstraint(str_replace( '|', '.', $arrConstraint['Type']), $arrConstraint['Value']);
 						break;
 				}
 			}
@@ -178,7 +180,7 @@ class Charge extends ORM_Cached
 		// Create the proper query
 		$selCharges = new StatementSelect($strFromClause, $strSelectClause, $strWhereClause, $strOrderByClause, $strLimitClause);
 		
-		
+		//throw new Exception($selCharges->_strQuery);
 		
 		
 		if ($selCharges->Execute() === FALSE)
@@ -256,7 +258,7 @@ class Charge extends ORM_Cached
 				$strNote .= "\nReason:\n{$strReason}";
 			}
 			
-			Action::createAction('Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction('Adjustment Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the Charge record
@@ -292,7 +294,7 @@ class Charge extends ORM_Cached
 						"Requested on: {$strCreatedOn} by {$strCreatedByEmployeeName}\n".
 						"Amount (inc GST): \${$strChargeAmount} {$strNature}";
 			
-			Action::createAction('Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction('Adjustment Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the Charge record
@@ -332,6 +334,20 @@ class Charge extends ORM_Cached
 		return $strDesc;
 	}
 	
+	//--------------------------------//
+	// OVERRIDES
+	//--------------------------------//
+	
+	public function save()
+	{
+		// Check for required charge_model_id, set to default (CHARGE) if not set
+		if (!isset($this->charge_model_id))
+		{
+			$this->charge_model_id	= CHARGE_MODEL_CHARGE;
+		}
+		
+		parent::save();
+	}
 
 	//---------------------------------------------------------------------------------------------------------------------------------//
 	//				START - FUNCTIONS REQUIRED WHEN INHERITING FROM ORM_Cached UNTIL WE START USING PHP 5.3 - START

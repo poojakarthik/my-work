@@ -22,6 +22,7 @@ class Charge_Type extends ORM_Cached
 	const SEARCH_CONSTRAINT_CHARGE_TYPE_NATURE			= "ChargeType|Nature";
 	const SEARCH_CONSTRAINT_CHARGE_TYPE_AUTOMATIC_ONLY	= "ChargeType|Automatic_Only";
 	const SEARCH_CONSTRAINT_CHARGE_TYPE_VISIBILITY_ID	= "ChargeType|Visibility_Id";
+	const SEARCH_CONSTRAINT_CHARGE_TYPE_CHARGE_MODEL_ID	= "ChargeType|charge_model_id";
 
 	const ORDER_BY_CHARGE_TYPE							= "ChargeType|ChargeType";
 	const ORDER_BY_DESCRIPTION							= "ChargeType|Description";
@@ -98,6 +99,7 @@ class Charge_Type extends ORM_Cached
 					case self::SEARCH_CONSTRAINT_CHARGE_TYPE_NATURE:
 					case self::SEARCH_CONSTRAINT_CHARGE_TYPE_AUTOMATIC_ONLY:
 					case self::SEARCH_CONSTRAINT_CHARGE_TYPE_VISIBILITY_ID:
+					case self::SEARCH_CONSTRAINT_CHARGE_TYPE_CHARGE_MODEL_ID:
 						$aWhereClauseParts[] = self::_prepareSearchConstraint(str_replace( '|', '.', $aConstraint['Type']), $aConstraint['Value']);
 						break;
 				}

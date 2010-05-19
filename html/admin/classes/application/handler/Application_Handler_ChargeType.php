@@ -11,7 +11,8 @@ class Application_Handler_ChargeType extends Application_Handler
 		// Build List of Charge Types
 		try
 		{
-			$aDetailsToRender	= array();
+			$aDetailsToRender					= array();
+			$aDetailsToRender['iChargeModel']	= CHARGE_MODEL_CHARGE;
 			$this->LoadPage('charge_type_list', HTML_CONTEXT_DEFAULT, $aDetailsToRender);
 		}
 		catch (Exception $e)

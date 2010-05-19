@@ -3178,6 +3178,44 @@ class MenuItems {
 	}
 
 	//------------------------------------------------------------------------//
+	// ManageAdjustmentRequests
+	//------------------------------------------------------------------------//
+	/**
+	 * ManageAdjustmentRequests()
+	 *
+	 * Compiles the Href to be executed when the ManageAdjustmentRequests menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ManageAdjustmentRequests menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ManageAdjustmentRequests() {
+		$this->strContextMenuLabel = "Manage Adjustment Requests";
+		$this->strLabel = "Manage Adjustment Requests";
+		return self::NEW_FRAMEWORK . "reflex.php/Adjustment/ManageRequests/";
+	}
+
+	//------------------------------------------------------------------------//
+	// ManageAdjustmentTypes
+	//------------------------------------------------------------------------//
+	/**
+	 * ManageAdjustmentTypes()
+	 *
+	 * Compiles the Href to be executed when the ManageAdjustmentTypes menu item is triggered
+	 *
+	 * Compiles the Href to be executed when the ManageAdjustmentTypes menu item is triggered
+	 * 
+	 * @return	string					Href to trigger the functionality
+	 * @method
+	 */
+	function ManageAdjustmentTypes() {
+		$this->strContextMenuLabel = "Manage Adjustment Types";
+		$this->strLabel = "Manage Adjustment Types";
+		return self::NEW_FRAMEWORK . "reflex.php/Adjustment/ManageTypes/";
+	}
+
+	//------------------------------------------------------------------------//
 	// PaymentDownload
 	//------------------------------------------------------------------------//
 	/**

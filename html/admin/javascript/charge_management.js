@@ -1,13 +1,35 @@
 var Charge_Management = Class.create
 ({
-	initialize	: function(elmContainerDiv, intMaxRecordsPerPage)
+	initialize	: function(elmContainerDiv, intMaxRecordsPerPage, iChargeModel)
 	{
 		var intCacheMode = Dataset_Ajax.CACHE_MODE_NO_CACHING;
-
+		
+		// Get the JSON Handler method using the iChargeModel
+		var sMethod	= '';
+		
+		switch(iChargeModel)
+		{
+			case $CONSTANT.CHARGE_MODEL_CHARGE:
+				sMethod	= 'getChargesAwaitingApproval';
+				break;
+			case $CONSTANT.CHARGE_MODEL_ADJUSTMENT:
+				sMethod	= 'getAdjustmentsAwaitingApproval';
+				break;
+			default:
+				sMethod	= 'getAllAwaitingApproval';
+		}
+		
 		// Init Dataset & Pagination
 		this.intMaxRecordsPerPage = intMaxRecordsPerPage;
-		this.objDataset		= new Dataset_Ajax(intCacheMode, {strObject: 'Charge', strMethod: 'getChargesAwaitingApproval'});
-		this.objPagination	= new Pagination(this._updateTable.bind(this), this.intMaxRecordsPerPage, this.objDataset);
+		this.objDataset		= 	new Dataset_Ajax(
+									intCacheMode, 
+									{strObject: 'Charge', strMethod: sMethod}
+								);
+		this.objPagination	= 	new Pagination(
+									this._updateTable.bind(this), 
+									this.intMaxRecordsPerPage, 
+									this.objDataset
+								);
 		this._objCharges	= {};
 
 		// This will store the list of charges (just their ids) to be either approved or declined, in a single submit to the server
@@ -444,7 +466,7 @@ var Charge_Management = Class.create
 			var objTD				= document.createElement('td');
 			objTD.colSpan			= this._objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.childNodes.length;
 			objTD.appendChild(document.createTextNode('There are no records to display'));
-			objTD.style.textAlign	= 'center';
+			objTD.style.textAlign	= 'left';
 			objTR.appendChild(objTD);
 			
 			this._objPage.objTable.objTBODY.domElement.appendChild(objTR);

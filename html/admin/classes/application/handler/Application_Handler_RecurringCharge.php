@@ -11,9 +11,6 @@ class Application_Handler_RecurringCharge extends Application_Handler
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
 		
-		BreadCrumb()->Employee_Console();
-		BreadCrumb()->SetCurrentPage("Manage Recurring Charge Requests");
-		
 		try
 		{
 			$intDefaultLimit = self::MAX_RECORDS_PER_PAGE;

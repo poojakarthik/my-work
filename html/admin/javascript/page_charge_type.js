@@ -1,11 +1,35 @@
 
 var Page_Charge_Type = Class.create(
 {
-	initialize	: function(oContainerDiv, iMaxRecordsPerPage)
+	initialize	: function(oContainerDiv, iChargeModel)
 	{
+		// Get the JSON Handler method using the iChargeModel
+		var sMethod	= '';
+		
+		switch(iChargeModel)
+		{
+			case $CONSTANT.CHARGE_MODEL_CHARGE:
+				sMethod	= 'getChargeTypes';
+				break;
+			case $CONSTANT.CHARGE_MODEL_ADJUSTMENT:
+				sMethod	= 'getAdjustmentTypes';
+				break;
+			default:
+				sMethod	= 'getAllTypes';
+		}
+	
+		this._iChargeModel	= iChargeModel;
+		
 		// Create DataSet & pagination object
-		this.oDataset		= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {strObject: 'Charge_Type', strMethod: 'getChargeTypes'});
-		this.oPagination	= new Pagination(this._updateTable.bind(this), Page_Charge_Type.MAX_RECORDS_PER_PAGE, this.oDataset);
+		this.oDataset		= 	new Dataset_Ajax(
+									Dataset_Ajax.CACHE_MODE_NO_CACHING, 
+									{strObject: 'Charge_Type', strMethod: sMethod}
+								);
+		this.oPagination	= 	new Pagination(
+									this._updateTable.bind(this),
+									Page_Charge_Type.MAX_RECORDS_PER_PAGE, 
+									this.oDataset
+								);
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';
@@ -127,7 +151,7 @@ var Page_Charge_Type = Class.create(
 	
 	_showAddPopup	: function()
 	{
-		new Popup_Charge_Type(this.oPagination.lastPage.bind(this.oPagination, true));
+		new Popup_Charge_Type(this.oPagination.lastPage.bind(this.oPagination, true), this._iChargeModel);
 	},
 	
 	_updateTable	: function(oResultSet)

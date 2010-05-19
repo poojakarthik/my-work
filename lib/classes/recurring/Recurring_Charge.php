@@ -317,7 +317,7 @@ class Recurring_Charge extends ORM_Cached
 											"Type: {$objPayoutCharge->chargeType} - {$objPayoutCharge->description} ({$strNature})\n".
 											"Amount (Inc GST): \${$strPayoutAmount} {$strNature}";
 				
-				Action::createAction('Charge Requested', $strActionExtraDetails, $objPayoutCharge->account, $objPayoutCharge->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+				Action::createAction('Adjustment Requested', $strActionExtraDetails, $objPayoutCharge->account, $objPayoutCharge->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 			}
 		}
 		
@@ -672,7 +672,7 @@ class Recurring_Charge extends ORM_Cached
 				$strNote .= "\nReason:\n{$strReason}";
 			}
 			
-			Action::createAction('Recurring Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction('Recurring Adjustment Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the RecurringCharge record
@@ -714,7 +714,7 @@ class Recurring_Charge extends ORM_Cached
 						"Minimum charge (inc GST): \${$strMinCharge} {$strNature}\n".
 						"Recurring charge (inc GST): {$strRecursionChargeDescription}";
 			
-			Action::createAction('Recurring Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction('Recurring Adjustment Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the RecurringCharge record

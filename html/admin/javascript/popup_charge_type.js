@@ -1,11 +1,12 @@
 
 var Popup_Charge_Type	= Class.create(Reflex_Popup,
 {
-	initialize	: function($super, fnOnClose)
+	initialize	: function($super, fnOnClose, iChargeModel)
 	{
 		$super(40);
 		
-		this.fnOnClose = fnOnClose;
+		this.fnOnClose 		= fnOnClose;
+		this._iChargeModel	= iChargeModel;
 		this._buildUI();
 	},
 	
@@ -210,7 +211,8 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 							sDescription	: this.hInputs['Description'].value, 
 							fAmount			: parseFloat(this.hInputs['Amount'].value), 
 							sNature			: this.hInputs['Nature'].value, 
-							bFixed			: this.hInputs['Fixation'].checked
+							bFixed			: this.hInputs['Fixation'].checked,
+							iChargeModel	: this._iChargeModel
 						};
 		
 		var oSavePopup = new Reflex_Popup.Loading('Saving...');

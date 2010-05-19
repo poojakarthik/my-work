@@ -1097,6 +1097,7 @@
 		$arrDefaultCharge ['Amount']			= 0.0;
 		$arrDefaultCharge ['global_tax_exempt']	= ($bolTaxExempt) ? TRUE : FALSE;
 		$arrDefaultCharge ['Status']			= CHARGE_APPROVED;
+		$arrDefaultCharge ['charge_model_id']	= CHARGE_MODEL_CHARGE;
 		$arrCharge = array_merge($arrDefaultCharge, $arrCharge);
 		
 		// set date

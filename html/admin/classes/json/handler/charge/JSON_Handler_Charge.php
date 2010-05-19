@@ -13,7 +13,22 @@ class JSON_Handler_Charge extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getChargesAwaitingApproval($bolCountOnly=false, $intLimit=0, $intOffset=0)
+	public function getChargesAwaitingApproval($bCountOnly=false, $iLimit=0, $iOffset=0)
+	{
+		return self::getRecords($bCountOnly, $iLimit, $iOffset, CHARGE_MODEL_CHARGE);
+	}
+	
+	public function getAdjustmentsAwaitingApproval($bCountOnly=false, $iLimit=0, $iOffset=0)
+	{
+		return self::getRecords($bCountOnly, $iLimit, $iOffset, CHARGE_MODEL_ADJUSTMENT);
+	}
+	
+	public function getAllAwaitingApproval($bCountOnly=false, $iLimit=0, $iOffset=0)
+	{
+		return self::getRecords($bCountOnly, $iLimit, $iOffset);
+	}
+	
+	public function getRecords($bCountOnly=false, $iLimit=0, $iOffset=0, $iChargeModel=false)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
@@ -21,79 +36,86 @@ class JSON_Handler_Charge extends JSON_Handler
 		try
 		{
 			// Set the filter constraints (only retrieve the adjusments that are awaiting approval)
-			$arrFilter = array('chargeStatus'	=> array(	'Type'	=> Charge::SEARCH_CONSTRAINT_CHARGE_STATUS,
-															'Value'	=> CHARGE_WAITING
-														)
-							);
+			$aFilter = 	array(
+							array(
+								'Type'	=> Charge::SEARCH_CONSTRAINT_CHARGE_STATUS,
+								'Value'	=> CHARGE_WAITING
+							)
+						);
+			
+			// Add charge model filter if necessary
+			if ($iChargeModel !== false)
+			{
+				$aFilter[]	= array('Type' => Charge::SEARCH_CONSTRAINT_CHARGE_MODEL_ID, 'Value' => $iChargeModel);
+			}
 			
 			// Order by the createdOn timestamp ascending
-			$arrSort = array(Charge::ORDER_BY_CREATED_ON => true);
+			$aSort = array(Charge::ORDER_BY_CREATED_ON => true);
 			
-			if ($bolCountOnly)
+			if ($bCountOnly)
 			{
 				// Count Only
 				return array(
 								"Success"			=> true,
-								"intRecordCount"	=> Charge::searchFor($arrFilter, $arrSort, null, null, true),
+								"intRecordCount"	=> Charge::searchFor($aFilter, $aSort, null, null, true),
 								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
 			else
 			{
 				// Include Data
-				$intLimit	= (max($intLimit, 0) == 0) ? self::MAX_LIMIT : (int)$intLimit;
-				$intLimit	= ($intLimit > self::MAX_LIMIT)? self::MAX_LIMIT : $intLimit;
-				
-				$intOffset	= ($intLimit === null) ? 0 : max((int)$intOffset, 0);
+				$iLimit		= (max($iLimit, 0) == 0) ? self::MAX_LIMIT : (int)$iLimit;
+				$iLimit		= ($iLimit > self::MAX_LIMIT)? self::MAX_LIMIT : $iLimit;
+				$iOffset	= ($iLimit === null) ? 0 : max((int)$iOffset, 0);
 				
 				// Retrieve the charges
-				$arrCharges = Charge::searchFor($arrFilter, $arrSort, $intLimit, $intOffset);
+				$aCharges	= Charge::searchFor($aFilter, $aSort, $iLimit, $iOffset);
 				
-				$objPaginationDetails = Charge::getLastSearchPaginationDetails();
+				$oPaginationDetails	= Charge::getLastSearchPaginationDetails();
 				
 				// Create a friendly/formatted version of each charge record, and its related details
-				$arrEmployeeCache		= array();
-				$arrChargesFormatted	= array();
-				$intCount = 0;
-				foreach ($arrCharges as $objCharge)
+				$aEmployeeCache		= array();
+				$aChargesFormatted	= array();
+				$iCount 			= 0;
+				foreach ($aCharges as $oCharge)
 				{
-					if (!array_key_exists($objCharge->createdBy, $arrEmployeeCache))
+					if (!array_key_exists($oCharge->createdBy, $aEmployeeCache))
 					{
-						$arrEmployeeCache[$objCharge->createdBy] = Employee::getForId($objCharge->createdBy);
+						$aEmployeeCache[$oCharge->createdBy] = Employee::getForId($oCharge->createdBy);
 					}
 					
-					$arrCharge							= $objCharge->toArray(true);
-					$arrCharge['amountIncGstFormatted']	= number_format(AddGST($objCharge->amount), 2, '.', '');
-					$arrCharge['amountIncGst']			= AddGST($objCharge->amount);
-					$arrCharge['natureFormatted']		= ($objCharge->nature == NATURE_DR)? 'Debit' : 'Credit';
-					$arrCharge['accountViewHref']		= Href()->InvoicesAndPayments($objCharge->account);
-					$arrCharge['accountName']			= $objCharge->accountName;
-					$arrCharge['serviceViewHref']		= ($objCharge->service != null)? Href()->ViewService($objCharge->service) : null;
-					$arrCharge['serviceFNN']			= $objCharge->serviceFNN;
-					$arrCharge['createdByEmployeeName']	= $arrEmployeeCache[$objCharge->createdBy]->getName();
-					$arrCharge['createdOnFormated']		= date('d-m-Y', strtotime($objCharge->createdOn));
+					$aCharge							= $oCharge->toArray(true);
+					$aCharge['amountIncGstFormatted']	= number_format(AddGST($oCharge->amount), 2, '.', '');
+					$aCharge['amountIncGst']			= AddGST($oCharge->amount);
+					$aCharge['natureFormatted']			= ($oCharge->nature == NATURE_DR)? 'Debit' : 'Credit';
+					$aCharge['accountViewHref']			= Href()->InvoicesAndPayments($oCharge->account);
+					$aCharge['accountName']				= $oCharge->accountName;
+					$aCharge['serviceViewHref']			= ($oCharge->service != null)? Href()->ViewService($oCharge->service) : null;
+					$aCharge['serviceFNN']				= $oCharge->serviceFNN;
+					$aCharge['createdByEmployeeName']	= $aEmployeeCache[$oCharge->createdBy]->getName();
+					$aCharge['createdOnFormated']		= date('d-m-Y', strtotime($oCharge->createdOn));
 					
-					$arrChargesFormatted[$intCount+$intOffset] = $arrCharge;
-					$intCount++;
+					$aChargesFormatted[$iCount+$iOffset] = $aCharge;
+					$iCount++;
 				}
 				
 				
 				// If no exceptions were thrown, then everything worked
-				return array(
-								"Success"			=> true,
-								"arrRecords"		=> $arrChargesFormatted,
-								"intRecordCount"	=> ($objPaginationDetails !== null)? $objPaginationDetails->totalRecordCount : count($arrChargesFormatted),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
-							);
+				return 	array(
+							"Success"			=> true,
+							"arrRecords"		=> $aChargesFormatted,
+							"intRecordCount"	=> ($oPaginationDetails !== null)? $oPaginationDetails->totalRecordCount : count($aChargesFormatted),
+							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						);
 			}
 		}
 		catch (Exception $e)
 		{
-			return array(
-							"Success"	=> false,
-							"Message"	=> 'ERROR: '.$e->getMessage(),
-							"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
-						);
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> 'ERROR: '.$e->getMessage(),
+						"strDebug"	=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+					);
 		}
 	}
 	

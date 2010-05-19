@@ -178,10 +178,15 @@ class Application
 		{
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
 			{
-				ContextMenu()->Admin->Charges->ManageChargeRequests();
-				ContextMenu()->Admin->Charges->ManageRecurringChargeRequests();
-				ContextMenu()->Admin->Charges->ManageSingleChargeTypes();
-				ContextMenu()->Admin->Charges->ManageRecurringChargeTypes();
+				// Manage Charges
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageChargeRequests();
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageRecurringChargeRequests();
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageSingleChargeTypes();
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageRecurringChargeTypes();
+				
+				// Manage Adjustments
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Adjustments->ManageAdjustmentRequests();
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Adjustments->ManageAdjustmentTypes();
 			}
 
 			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download'
@@ -404,10 +409,15 @@ class Application
 		{
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
 			{
-				ContextMenu()->Admin->Charges->ManageChargeRequests();
-				ContextMenu()->Admin->Charges->ManageRecurringChargeRequests();
-				ContextMenu()->Admin->Charges->ManageSingleChargeTypes();
-				ContextMenu()->Admin->Charges->ManageRecurringChargeTypes();
+				// Manage Charges
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageChargeRequests();
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageRecurringChargeRequests();
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageSingleChargeTypes();
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Charges->ManageRecurringChargeTypes();
+				
+				// Manage Adjustments
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Adjustments->ManageAdjustmentRequests();
+				ContextMenu()->Admin->Charges_and_Adjustments->Manage_Adjustments->ManageAdjustmentTypes();
 			}
 
 			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download''. rmctainsh 20100415
