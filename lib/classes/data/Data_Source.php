@@ -30,7 +30,7 @@ class Data_Source
 		{
 			// Don't specify the name of the data source.  It will be anonomous
 			$objMDB2 = MDB2::connect(self::dsnForName($strDataSourceName), $options);
-			if (PEAR::isError($objMDB2))
+			if (PEAR::isError($objMDB2) || MDB2::isError())
 			{
 				throw new Exception("Failed to connect to data source $strDataSourceName: " . $objMDB2->getMessage());
 			}
@@ -39,7 +39,7 @@ class Data_Source
 		else
 		{
 			// Implement a 'singleton' function replacement.
-			// The MDB2 'singleton' function provides one connection per database, rather than 
+			// The MDB2 'singleton' function provides one connection per database, rather than
 			// one per user per database. This would make the admin and flex users share a connection
 			// with the privileges of whichever connected first.
 			if (!array_key_exists($strDataSourceName, $arrRequestedDSNs))
