@@ -71,8 +71,8 @@ abstract class ModuleService
 	protected $_bolPlanDetailsLoaded	= NULL;
 	
 	protected $_arrRateGroupDetails		= NULL;
-	protected $_arrAdjustments			= NULL;
-	protected $_arrRecurringAdjustments	= NULL;
+	protected $_arrCharges			= NULL;
+	protected $_arrRecurringCharges	= NULL;
 	protected $_arrCostCentre			= NULL;
 	
 /******************************************************************************/
@@ -331,10 +331,10 @@ abstract class ModuleService
 		return TRUE;
 	}
 	
-	function LoadAdjustmentDetails()
+	function LoadChargeDetails()
 	{
 		//TODO!
-		$this->_strErrorMsg = "LoadAdjustmentDetails() functionality has not been implemented yet";
+		$this->_strErrorMsg = "LoadChargeDetails() functionality has not been implemented yet";
 		return FALSE;
 	}
 	

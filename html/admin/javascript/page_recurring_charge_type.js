@@ -66,8 +66,8 @@ var Page_Recurring_Charge_Type = Class.create(
 											$T.tr(
 												$T.th({colspan: '11'},
 													$T.button(
-														$T.img({src: Page_Recurring_Charge_Type.ADD_IMAGE_SOURCE, alt: '', title: 'Add Adjustment Type'}),
-														$T.span('Add Recurring Adjustment Type')
+														$T.img({src: Page_Recurring_Charge_Type.ADD_IMAGE_SOURCE, alt: '', title: 'Add Charge Type'}),
+														$T.span('Add Recurring Charge Type')
 													)
 												)
 											)
@@ -317,7 +317,7 @@ var Page_Recurring_Charge_Type = Class.create(
 		{
 			Reflex_Popup.yesNoCancel(
 				$T.div(
-					$T.p('Archiving this Recurring Adjustment Type will make it unavailable for use.'),
+					$T.p('Archiving this Recurring Charge Type will make it unavailable for use.'),
 					$T.p('Are you sure you want to archive it?')
 				),
 				{

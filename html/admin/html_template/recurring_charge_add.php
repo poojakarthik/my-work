@@ -6,18 +6,18 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// recurring_adjustment_add.php
+// recurring_charge_add.php
 //----------------------------------------------------------------------------//
 /**
- * recurring_adjustment_add
+ * recurring_charge_add
  *
- * HTML Template for the Add Recurring Adjustment HTML object
+ * HTML Template for the Add Recurring Charge HTML object
  *
- * HTML Template for the Add Recurring Adjustment HTML object
+ * HTML Template for the Add Recurring Charge HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
- * which displays the form used to add a recurring adjustment.
+ * which displays the form used to add a recurring charge.
  *
- * @file		recurring_adjustment_add.php
+ * @file		recurring_charge_add.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
@@ -29,21 +29,21 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateRecurringAdjustmentAdd
+// HtmlTemplateRecurringChargeAdd
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateRecurringAdjustmentAdd
+ * HtmlTemplateRecurringChargeAdd
  *
- * HTML Template class for the Add Recurring Adjustment HTML object
+ * HTML Template class for the Add Recurring Charge HTML object
  *
- * HTML Template class for the Add Recurring Adjustment HTML object
- * displays the form used to add a recurring adjustment
+ * HTML Template class for the Add Recurring Charge HTML object
+ * displays the form used to add a recurring charge
  *
  * @package	ui_app
- * @class	HtmlTemplateRecurringAdjustmentAdd
+ * @class	HtmlTemplateRecurringChargeAdd
  * @extends	HtmlTemplate
  */
-class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
+class HtmlTemplateRecurringChargeAdd extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// __construct
@@ -66,7 +66,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		// Load all java script specific to the page here
-		$this->LoadJavascript("recurring_adjustment_add");
+		$this->LoadJavascript("recurring_charge_add");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -83,7 +83,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$this->FormStart("AddRecurringAdjustment", "Adjustment", "AddRecurring");
+		$this->FormStart("AddRecurringCharge", "Charge", "AddRecurring");
 		
 		// Include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		DBO()->Account->Id->RenderHidden();
@@ -113,9 +113,9 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		
 		// Create a combobox containing all the charge types
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Adjustment :</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Charge :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='ChargeTypeCombo' style='width:100%' onchange='Vixen.RecurringAdjustmentAdd.DeclareChargeType(this.value)'>\n";
+		echo "      <select id='ChargeTypeCombo' style='width:100%' onchange='Vixen.RecurringChargeAdd.DeclareChargeType(this.value)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId = $dboChargeType->Id->Value;
@@ -247,7 +247,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Times to Charge :</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <input type='text' id='TimesToCharge' value='' style='padding-left:3px;width:165px' onkeyup='Vixen.RecurringAdjustmentAdd.TimesChargedChanged(event)'></input>\n";
+		echo "      <input type='text' id='TimesToCharge' value='' style='padding-left:3px;width:165px' onkeyup='Vixen.RecurringChargeAdd.TimesChargedChanged(event)'></input>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
 		
@@ -275,8 +275,8 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "
 <div>
 	<div style='float:right'>
-		<input type='button' style='display:none;' id='AddAdjustmentSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_AddRecurringAdjustment', 'Add Adjustment', 'Adjustment', 'AddRecurring', 'Popup', 'AddRecurringAdjustmentPopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
-		<input type='button' value='Submit Request' id='RecurringAdjustment_submitRequestButton' onclick='Vixen.RecurringAdjustmentAdd.SubmitRequest()'></input>
+		<input type='button' style='display:none;' id='AddChargeSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_AddRecurringCharge', 'Add Charge', 'Charge', 'AddRecurring', 'Popup', 'AddRecurringChargePopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
+		<input type='button' value='Submit Request' id='RecurringCharge_submitRequestButton' onclick='Vixen.RecurringChargeAdd.SubmitRequest()'></input>
 		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
 	</div>
 	<div style='float:none;clear:both'></div>
@@ -288,7 +288,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		$strJsonCode = Json()->encode($arrChargeTypes);
 
 		$intCurrentChargeTypeId = DBO()->RecurringChargeType->Id->Value;
-		echo "<script type='text/javascript'>Vixen.RecurringAdjustmentAdd.InitialiseForm($strJsonCode, $intCurrentChargeTypeId);</script>\n";
+		echo "<script type='text/javascript'>Vixen.RecurringChargeAdd.InitialiseForm($strJsonCode, $intCurrentChargeTypeId);</script>\n";
 				
 		$this->FormEnd();
 	}

@@ -184,7 +184,7 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 		this._calculateTotal();
 		this._showCancellationFeeInput();
 		
-		this.setTitle('Add Recurring Adjustment Type');
+		this.setTitle('Add Recurring Charge Type');
 		this.setIcon('../admin/img/template/charge_small.png');
 		this.setContent(this.oContent);
 		this.display();
@@ -287,7 +287,7 @@ var Popup_Recurring_Charge_Type	= Class.create(Reflex_Popup,
 			this.hide();
 			
 			// Confirmation
-			Reflex_Popup.alert('Adjustment Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
+			Reflex_Popup.alert('Charge Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
 		}
 		else
 		{
@@ -492,10 +492,10 @@ Popup_Recurring_Charge_Type.getApprovalProcessOptions	= function(fnCallback)
 	fnCallback(
 		[
 	 	 	$T.option({value: Popup_Recurring_Charge_Type.APPROVAL_REQUIRED},
-	 	 		'Requests for the recurring adjustment have to go through the approval process'
+	 	 		'Requests for the recurring charge have to go through the approval process'
 	 	 	),
 			$T.option({value: Popup_Recurring_Charge_Type.NO_APPROVAL_REQUIRED},
-				'Requests for the recurring adjustment are automatically approved'
+				'Requests for the recurring charge are automatically approved'
 			)
 		]
 	);

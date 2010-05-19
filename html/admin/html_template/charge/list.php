@@ -6,19 +6,19 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// adjustment_list.php
+// charge_list.php
 //----------------------------------------------------------------------------//
 /**
- * adjustment_list
+ * charge_list
  *
- * HTML Template for the Adjustment List HTML object
+ * HTML Template for the Charge List HTML object
  *
- * HTML Template for the Adjustment List HTML object
+ * HTML Template for the Charge List HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
- * which displays all adjustments relating to an account and can be embedded in
+ * which displays all charges relating to an account and can be embedded in
  * various Page Templates
  *
- * @file		adjustment_list.php
+ * @file		charge_list.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
@@ -30,21 +30,21 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateAdjustmentList
+// HtmlTemplateChargeList
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateAdjustmentList
+ * HtmlTemplateChargeList
  *
- * HTML Template class for the Adjustment List HTML object
+ * HTML Template class for the Charge List HTML object
  *
- * HTML Template class for the Adjustment List HTML object
- * Lists all adjustments related to an account
+ * HTML Template class for the Charge List HTML object
+ * Lists all charges related to an account
  *
  * @package	ui_app
- * @class	HtmlTemplateAdjustmentList
+ * @class	HtmlTemplateChargeList
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAdjustmentList extends HtmlTemplate
+class HtmlTemplateChargeList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// __construct
@@ -84,7 +84,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		echo "<h2 class='Adjustment'>Adjustments</h2>\n";
+		echo "<h2 class='Charge'>Charges</h2>\n";
 
 		// Check if the user has admin privileges
 		$bolHasProperAdminPerm		= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
@@ -97,17 +97,17 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		// define the table's header
 		if ($bolUserCanDeleteCharges)
 		{
-			// User has admin permisions and can therefore delete an adjustment
-			Table()->AdjustmentTable->SetHeader("Date", "Code","Amount ($)", "&nbsp;", "&nbsp;");
-			//Table()->AdjustmentTable->SetWidth("20%", "29%", "3%", "38%", "10%");
-			Table()->AdjustmentTable->SetAlignment("left", "left", "right", "left", "right");
+			// User has admin permisions and can therefore delete an charge
+			Table()->ChargeTable->SetHeader("Date", "Code","Amount ($)", "&nbsp;", "&nbsp;");
+			//Table()->ChargeTable->SetWidth("20%", "29%", "3%", "38%", "10%");
+			Table()->ChargeTable->SetAlignment("left", "left", "right", "left", "right");
 		}
 		else
 		{
-			// User cannot delete adjustments
-			Table()->AdjustmentTable->SetHeader("Date", "Code","Amount ($)", "&nbsp;");
-			//Table()->AdjustmentTable->SetWidth("20%", "29%", "3%", "48%");
-			Table()->AdjustmentTable->SetAlignment("left", "left", "right", "left");
+			// User cannot delete charges
+			Table()->ChargeTable->SetHeader("Date", "Code","Amount ($)", "&nbsp;");
+			//Table()->ChargeTable->SetWidth("20%", "29%", "3%", "48%");
+			Table()->ChargeTable->SetAlignment("left", "left", "right", "left");
 		
 		}
 		
@@ -127,33 +127,33 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			// add the row
 			if ($bolUserCanDeleteCharges)
 			{
-				$strDeleteAdjustmentHref = Href()->DeleteAdjustment($dboCharge->Id->Value);
+				$strDeleteChargeHref = Href()->DeleteCharge($dboCharge->Id->Value);
 				
 				// Only charges having status = waiting or approved can be deleted
 				if ($dboCharge->Status->Value == CHARGE_WAITING)
 				{
-					// build the "Cancel Adjustment Request" link
-					$strDeleteAdjustmentLabel = "<img src='img/template/delete.png' title='Cancel Adjustment Request' onclick='$strDeleteAdjustmentHref'></img>";
+					// build the "Cancel Charge Request" link
+					$strDeleteChargeLabel = "<img src='img/template/delete.png' title='Cancel Charge Request' onclick='$strDeleteChargeHref'></img>";
 				}
 				elseif (($dboCharge->Status->Value == CHARGE_APPROVED) || ($dboCharge->Status->Value == CHARGE_TEMP_INVOICE))
 				{
-					// build the "Delete Adjustment" link
-					$strDeleteAdjustmentLabel = "<img src='img/template/delete.png' title='Delete Adjustment' onclick='$strDeleteAdjustmentHref'></img>";
+					// build the "Delete Charge" link
+					$strDeleteChargeLabel = "<img src='img/template/delete.png' title='Delete Charge' onclick='$strDeleteChargeHref'></img>";
 				}
 				else
 				{
-					$strDeleteAdjustmentLabel = "&nbsp;";
+					$strDeleteChargeLabel = "&nbsp;";
 				}
 				
-				Table()->AdjustmentTable->AddRow($strChargedOnFormatted,
+				Table()->ChargeTable->AddRow($strChargedOnFormatted,
 												$strChargeTypeField,
 												$dboCharge->Amount->AsCallback("AddGST"),
 												$strNature,
-												$strDeleteAdjustmentLabel);
+												$strDeleteChargeLabel);
 			}
 			else
 			{
-				Table()->AdjustmentTable->AddRow($strChargedOnFormatted,
+				Table()->ChargeTable->AddRow($strChargedOnFormatted,
 												$strChargeTypeField,
 												$dboCharge->Amount->AsCallback("AddGST"),
 												$strNature);
@@ -198,62 +198,62 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 				$strToolTipHtml .= $dboCharge->Notes->AsOutput();
 			}
 			
-			Table()->AdjustmentTable->SetToolTip($strToolTipHtml);
+			Table()->ChargeTable->SetToolTip($strToolTipHtml);
 			
 			// Add indexes
-			Table()->AdjustmentTable->AddIndex("invoice_run_id", $dboCharge->invoice_run_id->Value);
+			Table()->ChargeTable->AddIndex("invoice_run_id", $dboCharge->invoice_run_id->Value);
 			if ($dboCharge->LinkType->Value == CHARGE_LINK_PAYMENT)
 			{
 				// This charge relates directly to a payment
-				Table()->AdjustmentTable->AddIndex("PaymentId", $dboCharge->LinkId->Value);
+				Table()->ChargeTable->AddIndex("PaymentId", $dboCharge->LinkId->Value);
 			} 
 			elseif ($dboCharge->LinkType->Value == CHARGE_LINK_RECURRING)
 			{
-				// This charge relates directly to a recurring adjustment
-				Table()->AdjustmentTable->AddIndex("RecurringAdjustmentId", $dboCharge->LinkId->Value);
+				// This charge relates directly to a recurring charge
+				Table()->ChargeTable->AddIndex("RecurringChargeId", $dboCharge->LinkId->Value);
 			}
 		}
 
 		if (DBL()->Charge->RecordCount() == 0)
 		{
-			// There are no adjustments to stick in this table
-			Table()->AdjustmentTable->AddRow("<span class='DefaultOutputSpan Default'>No adjustments to display</span>");
-			Table()->AdjustmentTable->SetRowAlignment("left");
+			// There are no charges to stick in this table
+			Table()->ChargeTable->AddRow("<span class='DefaultOutputSpan Default'>No charges to display</span>");
+			Table()->ChargeTable->SetRowAlignment("left");
 			if ($bolHasProperAdminPerm)
 			{
-				Table()->AdjustmentTable->SetRowColumnSpan(5);
+				Table()->ChargeTable->SetRowColumnSpan(5);
 			}
 			else
 			{
-				Table()->AdjustmentTable->SetRowColumnSpan(4);
+				Table()->ChargeTable->SetRowColumnSpan(4);
 			}
 		}
 		else
 		{
 			// Link other tables to this one
-			Table()->AdjustmentTable->LinkTable("InvoiceTable", "invoice_run_id");
-			Table()->AdjustmentTable->LinkTable("RecurringAdjustmentTable", "RecurringAdjustmentId");
+			Table()->ChargeTable->LinkTable("InvoiceTable", "invoice_run_id");
+			Table()->ChargeTable->LinkTable("RecurringChargeTable", "RecurringChargeId");
 			
 			// The current implementation of the highlighting of associated records cannot handle this link
-			//Table()->AdjustmentTable->LinkTable("PaymentTable", "PaymentId");
+			//Table()->ChargeTable->LinkTable("PaymentTable", "PaymentId");
 			
-			Table()->AdjustmentTable->RowHighlighting = TRUE;
+			Table()->ChargeTable->RowHighlighting = TRUE;
 		}
 
-		Table()->AdjustmentTable->Render();
+		Table()->ChargeTable->Render();
 		
-		// Button to add an adjustment
+		// Button to add an charge
 		if ($bolUserHasOperatorPerm)
 		{
-			// The user can add adjustments
-			$strHref = Href()->AddAdjustment(DBO()->Account->Id->Value);
+			// The user can add charges
+			$strHref = Href()->AddCharge(DBO()->Account->Id->Value);
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
-			$this->Button("Request Adjustment", $strHref);
+			$this->Button("Request Charge", $strHref);
 			echo "</div></div>\n";
 		}
 		else
 		{
-			// The user can not add adjustments
+			// The user can not add charges
 			// This separator is added for spacing reasons
 			echo "<div class='SmallSeperator'></div>\n";
 		}

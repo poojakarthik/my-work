@@ -40,7 +40,7 @@ class HtmlTemplate_DataReport_List extends FlexHtmlTemplate
 	Event.observe(window, 'load', 
 		function()
 		{
-			objAdjustmentType = new Page_DataReport_List(\$ID('DataReportListContainer'));
+			var oDataReportList = new Page_DataReport_List(\$ID('DataReportListContainer'));
 		}, false)
 </script>\n";
 

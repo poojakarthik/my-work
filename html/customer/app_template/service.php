@@ -151,7 +151,7 @@ class AppTemplateService extends ApplicationTemplate
 		// calculate the Start Record value for the limit clause of the sql query to pull the CDRs from the database
 		$intStartRecord = ($intRequestedPage - 1) * MAX_RECORDS_PER_PAGE;
 		
-		// Retrieve all unbilled adjustments for the service, but only if the first page is being displayed
+		// Retrieve all unbilled charges for the service, but only if the first page is being displayed
 		if ($intRequestedPage == 1)
 		{
 			$strWhere  = "(Account = ". DBO()->Service->Account->Value .")";

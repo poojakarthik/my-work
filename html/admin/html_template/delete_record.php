@@ -15,7 +15,7 @@
  *
  * HTML Template for the Delete Record HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
- * which displays the form used to delete a Payment, Adjustment, or recurring adjustment
+ * which displays the form used to delete a Payment, Charge, or recurring charge
  *
  * @file		delete_record.php
  * @language	PHP
@@ -113,23 +113,23 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 				DBO()->Payment->PaymentType->RenderCallback("GetConstantDescription", Array("payment_type"), RENDER_OUTPUT);
 				DBO()->Payment->Id->RenderHidden();
 				break;
-			case "Adjustment":
+			case "Charge":
 				// Display the description for the delete operation
 				$intChargeStatus = DBO()->Charge->Status->Value;
 				
 				switch ($intChargeStatus)
 				{
 					case CHARGE_WAITING:
-						$strPrompt = "This is currently just a request for adjustment.  It has not yet been approved.  Are you sure you want to cancel the request?";
+						$strPrompt = "This is currently just a request for charge.  It has not yet been approved.  Are you sure you want to cancel the request?";
 						break;
 						
 					case CHARGE_APPROVED:
 					case CHARGE_TEMP_INVOICE:
-						$strPrompt = "Are you sure you want to delete this Adjustment?";
+						$strPrompt = "Are you sure you want to delete this Charge?";
 						break;
 					
 					default:
-						echo "Can't delete/cancel adjustments with status: ". GetConstantDescription($intChargeStatus, 'ChargeStatus') ." ({$intChargeStatus})";
+						echo "Can't delete/cancel charges with status: ". GetConstantDescription($intChargeStatus, 'ChargeStatus') ." ({$intChargeStatus})";
 						break 2;
 				}
 				
@@ -142,7 +142,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 				DBO()->Charge->Amount->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 				DBO()->Charge->Id->RenderHidden();
 				break;
-			case "RecurringAdjustment":
+			case "RecurringCharge":
 				// Display the description for the delete operation
 				
 				$objRecurringChargeStatus = Recurring_Charge_Status::getForId(DBO()->RecurringCharge->recurring_charge_status_id->Value);
@@ -150,24 +150,24 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 				switch ($objRecurringChargeStatus->systemName)
 				{
 					case 'AWAITING_APPROVAL':
-						$strPrompt = "This is currently just a request for a recurring adjustment.  It has not yet been approved.  Are you sure you want to cancel this request?";
+						$strPrompt = "This is currently just a request for a recurring charge.  It has not yet been approved.  Are you sure you want to cancel this request?";
 						break;
 						
 					case 'ACTIVE':
 						if (DBO()->RecurringCharge->TotalCharged->Value < DBO()->RecurringCharge->MinCharge->Value)
 						{
 							// The minimum charge has not be reached yet
-							$strPrompt = "Are you sure you want to cancel this recurring adjustment?";
+							$strPrompt = "Are you sure you want to cancel this recurring charge?";
 						}
 						else
 						{
 							// The minimum charge of this been reached
-							$strPrompt = "This is a continuable recurring adjustment which has satisfied the minimum charge.  Are you sure you want to discontinue this recurring adjustment?";
+							$strPrompt = "This is a continuable recurring charge which has satisfied the minimum charge.  Are you sure you want to discontinue this recurring charge?";
 						}
 						break;
 					
 					default:
-						echo "Can't cancel recurring adjustments with status: {$objRecurringChargeStatus->name}";
+						echo "Can't cancel recurring charges with status: {$objRecurringChargeStatus->name}";
 						break 2;
 				}
 				
@@ -186,7 +186,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 					
 					// The recurring charge is a debit.  A charge will be made to cover the remaining minimum cost, and cancellation fee
 					echo "<div class='ContentSeparator'></div>";
-					DBO()->DeleteRecord->Description->RenderArbitrary("WARNING: Cancelling this recurring adjustment will produce a final adjustment to settle the outstanding minimum charge amount, plus any cancellation fee.");
+					DBO()->DeleteRecord->Description->RenderArbitrary("WARNING: Cancelling this recurring charge will produce a final charge to settle the outstanding minimum charge amount, plus any cancellation fee.");
 					echo "<div class='ContentSeparator'></div>";
 
 					DBO()->RecurringCharge->MinCharge->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);

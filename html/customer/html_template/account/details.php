@@ -131,17 +131,17 @@
 			<TD>" . "$" . number_format(Framework()->GetOverdueBalance(DBO()->Account->Id->Value), 2, '.', '') . "</TD>
 		</TR>";
 
-		$strUnbilledAdjustments = "$" . number_format(DBO()->Account->UnbilledAdjustments->Value, 2, '.', '');
+		$strUnbilledCharges = "$" . number_format(DBO()->Account->UnbilledCharges->Value, 2, '.', '');
 		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
-		// if(eregi("-",$strUnbilledAdjustments))
-		if(preg_match("/-/",$strUnbilledAdjustments))
+		// if(eregi("-",$strUnbilledCharges))
+		if(preg_match("/-/",$strUnbilledCharges))
 		{
-			$strUnbilledAdjustments = str_replace("-","",$strUnbilledAdjustments) . " CR";
+			$strUnbilledCharges = str_replace("-","",$strUnbilledCharges) . " CR";
 		}
 		print "
 		<TR>
 			<TD>Unbilled Debits &amp; Credits: </TD>
-			<TD>$strUnbilledAdjustments</TD>
+			<TD>$strUnbilledCharges</TD>
 		</TR>
 		<TR>
 			<TD>Unbilled Calls: </TD>
@@ -186,31 +186,31 @@
 		DBO()->Account->CustomerBalance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
 		
-		$strUnbilledAdjustments = DBO()->Account->UnbilledAdjustments->Value;
-		if($strUnbilledAdjustments == "0")
+		$strUnbilledCharges = DBO()->Account->UnbilledCharges->Value;
+		if($strUnbilledCharges == "0")
 		{
-			$strUnbilledAdjustments = "$0.00";
+			$strUnbilledCharges = "$0.00";
 		}
-		if($strUnbilledAdjustments != "0")
+		if($strUnbilledCharges != "0")
 		{
-			$strUnbilledAdjustments = "$" . number_format($strUnbilledAdjustments, 2, '.', '');
+			$strUnbilledCharges = "$" . number_format($strUnbilledCharges, 2, '.', '');
 		}
 		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
-		// if(eregi("-",$strUnbilledAdjustments))
-		if(preg_match("/-/",$strUnbilledAdjustments))
+		// if(eregi("-",$strUnbilledCharges))
+		if(preg_match("/-/",$strUnbilledCharges))
 		{
-			$strUnbilledAdjustments = str_replace("-","",$strUnbilledAdjustments) . " CR";
+			$strUnbilledCharges = str_replace("-","",$strUnbilledCharges) . " CR";
 		}
 		echo "
 		<div class='DefaultElement'>
-		   <div id='Account.UnbilledAdjustments.Output' name='Account.UnbilledAdjustments' class='DefaultOutput Currency '>$strUnbilledAdjustments</div>
-		   <div id='Account.UnbilledAdjustments.Label' class='DefaultLabel'>
+		   <div id='Account.UnbilledCharges.Output' name='Account.UnbilledCharges' class='DefaultOutput Currency '>$strUnbilledCharges</div>
+		   <div id='Account.UnbilledCharges.Label' class='DefaultLabel'>
 			  <span> &nbsp;</span>
-			  <span id='Account.UnbilledAdjustments.Label.Text'>Unbilled Debits & Credits : </span>
+			  <span id='Account.UnbilledCharges.Label.Text'>Unbilled Debits & Credits : </span>
 
 		   </div>
 		</div>";
-		//DBO()->Account->UnbilledAdjustments->RenderOutput();
+		//DBO()->Account->UnbilledCharges->RenderOutput();
 		DBO()->Account->UnbilledCDRs->RenderOutput();
 		
 

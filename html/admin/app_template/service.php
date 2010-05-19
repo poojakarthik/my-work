@@ -97,8 +97,8 @@ class AppTemplateService extends ApplicationTemplate
 			ContextMenu()->Service->Edit_Service($intServiceId);
 			ContextMenu()->Service->Plan->Change_Plan($intServiceId);	
 			ContextMenu()->Service->Move_Service($intServiceId);
-			ContextMenu()->Service->Adjustments->Add_Adjustment($intAccountId, $intServiceId);
-			ContextMenu()->Service->Adjustments->Add_Recurring_Adjustment($intAccountId, $intServiceId);
+			ContextMenu()->Service->Charges->Add_Charge($intAccountId, $intServiceId);
+			ContextMenu()->Service->Charges->Add_Recurring_Charge($intAccountId, $intServiceId);
 			if ($intServiceType == SERVICE_TYPE_LAND_LINE)
 			{
 				// Only Landlines can be provisioned at this stage
@@ -207,10 +207,10 @@ class AppTemplateService extends ApplicationTemplate
 			DBO()->FutureRatePlan->Load();
 		}
 		
-		// Calculate unbilled charges (this includes all unbilled Adjustments(charges) and CDRs for the service)
-		$fltUnbilledAdjustments					= UnbilledServiceChargeTotal(DBO()->Service->Id->Value);
+		// Calculate unbilled charges (this includes all unbilled Charges(charges) and CDRs for the service)
+		$fltUnbilledCharges					= UnbilledServiceChargeTotal(DBO()->Service->Id->Value);
 		$fltUnbilledCDRs						= UnbilledServiceCDRTotal(DBO()->Service->Id->Value);
-		DBO()->Service->TotalUnbilledCharges 	= AddGST($fltUnbilledAdjustments + $fltUnbilledCDRs);
+		DBO()->Service->TotalUnbilledCharges 	= AddGST($fltUnbilledCharges + $fltUnbilledCDRs);
 		
 		//DEPRECATED! Old Notes Functionality
 		// Load the notes

@@ -101,7 +101,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			return FALSE;
 		}
 		
-		// Retrieve all unbilled adjustments for the account
+		// Retrieve all unbilled charges for the account
 		$strWhere  = "(Account = ". DBO()->Account->Id->Value .")";
 		$strWhere .= " AND (Status = ". CHARGE_APPROVED .")";
 		DBL()->Charge->Where->SetString($strWhere);

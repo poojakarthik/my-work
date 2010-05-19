@@ -1,18 +1,18 @@
 <?php
 
-class Application_Handler_Adjustment extends Application_Handler
+class Application_Handler_Charge extends Application_Handler
 {
 	const MAX_RECORDS_PER_PAGE = 25;
 	
 
 	// Lists sales
-	public function ManageAdjustmentRequests($subPath)
+	public function ManageChargeRequests($subPath)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
 		
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->SetCurrentPage("Manage Adjustment Requests");
+		BreadCrumb()->SetCurrentPage("Manage Charge Requests");
 		
 		try
 		{
@@ -23,11 +23,11 @@ class Application_Handler_Adjustment extends Application_Handler
 			$detailsToRender = array();
 			$detailsToRender['Limit']	= $intDefaultLimit;
 			
-			$this->LoadPage('adjustment_management', HTML_CONTEXT_DEFAULT, $detailsToRender);
+			$this->LoadPage('charge_management', HTML_CONTEXT_DEFAULT, $detailsToRender);
 		}
 		catch (Exception $e)
 		{
-			$arrDetailsToRender['Message'] = "An error occured while trying to build the \"Manage Adjustment Requests\" page";
+			$arrDetailsToRender['Message'] = "An error occured while trying to build the \"Manage Charge Requests\" page";
 			$arrDetailsToRender['ErrorMessage'] = $e->getMessage();
 			$this->LoadPage('error_page', HTML_CONTEXT_DEFAULT, $arrDetailsToRender);
 		}

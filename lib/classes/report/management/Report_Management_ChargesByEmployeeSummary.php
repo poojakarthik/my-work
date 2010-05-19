@@ -1,15 +1,15 @@
 <?php
 //----------------------------------------------------------------------------//
-// Report_Management_AdjustmentsByEmployeeSummary
+// Report_Management_ChargesByEmployeeSummary
 //----------------------------------------------------------------------------//
 /**
- * Report_Management_AdjustmentsByEmployeeSummary
+ * Report_Management_ChargesByEmployeeSummary
  *
- * Adjustments By Employee Summary Management Report
+ * Charges By Employee Summary Management Report
  *
- * @class	Report_Management_AdjustmentsByEmployeeSummary
+ * @class	Report_Management_ChargesByEmployeeSummary
  */
-class Report_Management_AdjustmentsByEmployeeSummary extends Report_Management
+class Report_Management_ChargesByEmployeeSummary extends Report_Management
 {
 	//------------------------------------------------------------------------//
 	// run
@@ -38,10 +38,10 @@ class Report_Management_AdjustmentsByEmployeeSummary extends Report_Management
 		$arrCols['Mean']		= "AVG(Charge.Amount)";
 		$arrCols['TotalCharge']	= "SUM(Charge.Amount)";
 		$arrCols['Nature']		= "Charge.Nature";
-		$selAdjustments	= new StatementSelect("Charge JOIN Employee ON Charge.CreatedBy = Employee.Id", $arrCols, "invoice_run_id = <invoice_run_id>", "Charge.Nature", NULL, "Charge.CreatedBy, Charge.Description");
+		$selCharges	= new StatementSelect("Charge JOIN Employee ON Charge.CreatedBy = Employee.Id", $arrCols, "invoice_run_id = <invoice_run_id>", "Charge.Nature", NULL, "Charge.CreatedBy, Charge.Description");
 		
 		// Create Workbook
-		$strFilename = $strReportBasePath."Adjustments_by_Employee_Summary.xls";
+		$strFilename = $strReportBasePath."Charges_by_Employee_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -49,12 +49,12 @@ class Report_Management_AdjustmentsByEmployeeSummary extends Report_Management
 		$arrFormat = self::_initExcelFormats($wkbWorkbook);
 		
 		// Create Worksheet & Header
-		$wksWorksheet =& $wkbWorkbook->addWorksheet("Adjustments by Employee Summary");
+		$wksWorksheet =& $wkbWorkbook->addWorksheet("Charges by Employee Summary");
 		$wksWorksheet->setLandscape();
 		$wksWorksheet->hideGridlines();
 		$wksWorksheet->fitToPages(1, 99);
 		
-		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($arrProfitData['ThisMonth']['BillingDate'])))." Adjustment by Employee Summary for {$strCustomerName}");
+		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($arrProfitData['ThisMonth']['BillingDate'])))." Charge by Employee Summary for {$strCustomerName}");
 		$wksWorksheet->writeString(0, 2, $strPageTitle, $arrFormat['PageTitle']);
 		
 		$wksWorksheet->writeString(3, 0, "Bill Date"		, $arrFormat['TextBold']);
@@ -72,13 +72,13 @@ class Report_Management_AdjustmentsByEmployeeSummary extends Report_Management
 		}
 		
 		// Breakdown	
-		$selAdjustments->Execute($arrProfitData['ThisMonth']);
-		$arrAdjustments = $selAdjustments->FetchAll();
+		$selCharges->Execute($arrProfitData['ThisMonth']);
+		$arrCharges = $selCharges->FetchAll();
 		
 		$arrEmployees = Array();
-		foreach ($arrAdjustments as $arrAdjustment)
+		foreach ($arrCharges as $arrCharge)
 		{
-			$arrEmployees[$arrAdjustment['Employee']][$arrAdjustment['Nature']][$arrAdjustment['Description']]	= $arrAdjustment;
+			$arrEmployees[$arrCharge['Employee']][$arrCharge['Nature']][$arrCharge['Description']]	= $arrCharge;
 		}
 		
 		$intRow = 6;

@@ -36,7 +36,7 @@
  * Facilitates the "Rate Group Override" popup
  *
  * @package	ui_app
- * @class	VixenValidateAdjustmentClass
+ * @class	VixenValidateChargeClass
  * 
  */
 function VixenRateGroupOverrideClass()
@@ -52,7 +52,7 @@ function VixenRateGroupOverrideClass()
 	
 
 //----------------------------------------------------------------------------//
-// The following is code from the validate_adjustment.js file.  This object
+// The following is code from the validate_charge.js file.  This object
 // will work similarly to it
 //----------------------------------------------------------------------------//
  

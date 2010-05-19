@@ -92,8 +92,8 @@ class AppTemplateContact extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Charge(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Charge(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
 		if ($bolUserHasAdminPerm)
@@ -279,8 +279,8 @@ class AppTemplateContact extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Account->Invoice_and_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->List_Services(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->Make_Payment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Charge(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Add_Recurring_Charge(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->View_Service_Notes(DBO()->Service->Id->Value);
 		ContextMenu()->Contact_Retrieve->Notes->Add_Service_Note(DBO()->Service->Id->Value);
 		if ($bolUserHasAdminPerm)

@@ -90,7 +90,7 @@ function VixenServiceEditClass()
 								break;
 							case SERVICE_ARCHIVED:
 								strMsg += 	"<br /><br />You have chosen to <strong>archive</strong> a currently <strong>active</strong> service." +
-											"<br />This will prohibit all outstanding CDRs, adjustments and recurring adjustments from being invoiced.";
+											"<br />This will prohibit all outstanding CDRs, charges and recurring charges from being invoiced.";
 								break;
 						}
 						break;
@@ -103,7 +103,7 @@ function VixenServiceEditClass()
 								break;
 							case SERVICE_ARCHIVED:
 								strMsg += 	"<br /><br />You have chosen to <strong>archive</strong> a currently <strong>disconnected</strong> service." +
-											"<br />This will prohibit all outstanding CDRs, adjustments and recurring adjustments from being invoiced.";
+											"<br />This will prohibit all outstanding CDRs, charges and recurring charges from being invoiced.";
 								break;
 						}
 						break;
@@ -113,11 +113,11 @@ function VixenServiceEditClass()
 						{
 							case SERVICE_ACTIVE:
 								strMsg += 	"<br /><br />You have chosen to <strong>activate</strong> a currently <strong>archived</strong> service." +
-											"<br /><strong>WARNING:</strong> All outstanding unbilled CDRs, adjustments and recurring adjustments currently associated with this archived service will not be eligible for billing";
+											"<br /><strong>WARNING:</strong> All outstanding unbilled CDRs, charges and recurring charges currently associated with this archived service will not be eligible for billing";
 								break;
 							case SERVICE_DISCONNECTED:
 								strMsg += 	"<br /><br />You have chosen to upgrade the status of the service from <strong>archived</strong> to <strong>disconnected</strong>." +
-											"<br /><strong>WARNING:</strong> All outstanding unbilled CDRs, adjustments and recurring adjustments currently associated with this archived service will not be eligible for billing";
+											"<br /><strong>WARNING:</strong> All outstanding unbilled CDRs, charges and recurring charges currently associated with this archived service will not be eligible for billing";
 								break;
 						}
 						break;

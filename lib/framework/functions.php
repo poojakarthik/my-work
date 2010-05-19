@@ -2444,9 +2444,9 @@ function UnbilledServiceCDRTotal($intService, $bolDontIncludeCreditCDRs = FALSE)
 /**
  * UnbilledServiceChargeTotal()
  *
- * Calculates the Unbilled Adjustment Total for a Service
+ * Calculates the Unbilled Charge Total for a Service
  *
- * Calculates the Unbilled Adjustment Total for a Service.  Only includes Approved Adjustments
+ * Calculates the Unbilled Charge Total for a Service.  Only includes Approved Charges
  *
  * @param		integer	$intService					Service to generate total for
  *
@@ -2456,7 +2456,7 @@ function UnbilledServiceCDRTotal($intService, $bolDontIncludeCreditCDRs = FALSE)
  */
 function UnbilledServiceChargeTotal($intService)
 {
-	// Get Adjustment Total
+	// Get Charge Total
 	$selChargeTotal = new StatementSelect("Charge", "SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS TotalCharged", "Service = <Service> AND Status = ".CHARGE_APPROVED);
 	$selChargeTotal->Execute(Array('Service' => $intService));
 	$selChargeTotal = $selChargeTotal->Fetch();
@@ -2472,7 +2472,7 @@ function UnbilledServiceChargeTotal($intService)
  *
  * Calculates the Unbilled CDR Total for an Account
  *
- * Calculates the Unbilled CDR Total for an Account.  Does not account for Adjustments
+ * Calculates the Unbilled CDR Total for an Account.  Does not account for Charges
  *
  * @param		integer	$intAccount					Account to generate total for
  * @param		bool	$bolDontIncludeCreditCDRs	optional, Set to TRUE if you don't want to include Credit CDRs in the total

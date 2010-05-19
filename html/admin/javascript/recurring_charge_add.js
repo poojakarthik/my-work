@@ -5,18 +5,18 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// recurring_adjustment_add.js
+// recurring_charge_add.js
 //----------------------------------------------------------------------------//
 /**
- * recurring_adjustment_add
+ * recurring_charge_add
  *
- * javascript required to validate a new recurring adjustment
+ * javascript required to validate a new recurring charge
  *
- * javascript required to validate a new recurring adjustment
- * This class is currently used by the "Add Recurring Adjustment" popup
+ * javascript required to validate a new recurring charge
+ * This class is currently used by the "Add Recurring Charge" popup
  * 
  *
- * @file		recurring_adjustment_add.php
+ * @file		recurring_charge_add.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
@@ -27,21 +27,21 @@
  */
 
 //----------------------------------------------------------------------------//
-// VixenRecurringAdjustmentAddClass
+// VixenRecurringChargeAddClass
 //----------------------------------------------------------------------------//
 /**
- * VixenRecurringAdjustmentAddClass
+ * VixenRecurringChargeAddClass
  *
- * Encapsulates all validation and inserting/updating of recurring adjustments
+ * Encapsulates all validation and inserting/updating of recurring charges
  *
- * Encapsulates all validation and inserting/updating of recurring adjustments
+ * Encapsulates all validation and inserting/updating of recurring charges
  * 
  *
  * @package	ui_app
- * @class	VixenRecurringAdjustmentAddClass
+ * @class	VixenRecurringChargeAddClass
  * 
  */
-function VixenRecurringAdjustmentAddClass()
+function VixenRecurringChargeAddClass()
 {
 	this.elmRecursionCharge			= null;
 	this.elmMinCharge				= null;
@@ -120,7 +120,7 @@ function VixenRecurringAdjustmentAddClass()
 		this.objDetailNodes.Continuable		= $ID("RecurringChargeType.Continuable.Output");
 		this.objDetailNodes.ApprovalRequired	= $ID("RecurringChargeType.ApprovalRequired")
 
-		this.elmSubmitButton = $ID("RecurringAdjustment_submitRequestButton");
+		this.elmSubmitButton = $ID("RecurringCharge_submitRequestButton");
 
 		this.elmStartDateSnapCombo			= $ID("RecurringCharge.SnapToDayOfMonth");
 		if (this.elmStartDateSnapCombo != null)
@@ -130,10 +130,10 @@ function VixenRecurringAdjustmentAddClass()
 		}
 
 		//add event listeners
-		this.elmRecursionCharge.onkeyup		= function(){Vixen.RecurringAdjustmentAdd.RecursionChargeChanged()};
-		this.elmRecursionCharge.onblur		= function(){Vixen.RecurringAdjustmentAdd.RecursionChargeLostFocus()};
-		this.elmMinCharge.onkeyup			= function(){Vixen.RecurringAdjustmentAdd.MinChargeChanged()};
-		this.elmMinCharge.onblur			= function(){Vixen.RecurringAdjustmentAdd.MinChargeLostFocus()};
+		this.elmRecursionCharge.onkeyup		= function(){Vixen.RecurringChargeAdd.RecursionChargeChanged()};
+		this.elmRecursionCharge.onblur		= function(){Vixen.RecurringChargeAdd.RecursionChargeLostFocus()};
+		this.elmMinCharge.onkeyup			= function(){Vixen.RecurringChargeAdd.MinChargeChanged()};
+		this.elmMinCharge.onblur			= function(){Vixen.RecurringChargeAdd.MinChargeLostFocus()};
 
 		this.DeclareChargeType(intCurrentChargeTypeId);
 
@@ -516,29 +516,29 @@ function VixenRecurringAdjustmentAddClass()
 		
 		if (!bolConfirmed)
 		{
-			// Check if the adjustment is a debit or credit
+			// Check if the charge is a debit or credit
 			var strMsg = "";
 			var strMsgTitle = "";
 			
 			if (objChargeType.ApprovalRequired)
 			{
-				// The Recurring Adjustment is subject to approval
-				strMsgTitle = "Request Recurring Adjustment";
+				// The Recurring Charge is subject to approval
+				strMsgTitle = "Request Recurring Charge";
 				
 				if (objChargeType.Nature == "CR")
 				{
-					// Credit adjustment
+					// Credit charge
 					strMsg = "<strong>Please Note:</strong>" +
 							"<ol>" +
-							"   <li>You are requesting a Recurring Credit Adjustment for approval</li>" +
+							"   <li>You are requesting a Recurring Credit Charge for approval</li>" +
 							"   <li>The credit request can take up to 28 days to be assessed</li>" +
 							"</ol>" +
 							"Are you sure you want to submit this request?";
 				}
 				else if (objChargeType.Nature == "DR")
 				{
-					// Debit adjustment
-					strMsg = "You are requesting a Recurring Debit Adjustment." +
+					// Debit charge
+					strMsg = "You are requesting a Recurring Debit Charge." +
 							"<br /><br />Are you sure you want to submit this request?";
 				}
 				else
@@ -550,20 +550,20 @@ function VixenRecurringAdjustmentAddClass()
 			}
 			else
 			{
-				// The Recurring Adjustment is automatically approved
-				strMsgTitle = "Recurring Adjustment";
+				// The Recurring Charge is automatically approved
+				strMsgTitle = "Recurring Charge";
 				
 				if (objChargeType.Nature == "CR")
 				{
-					// Credit adjustment
-					strMsg = "You are creating a Recurring Credit Adjustment that will be automatically approved.  " +
-							"<br /><br />Are you sure you want to create this recurring adjustment?";
+					// Credit charge
+					strMsg = "You are creating a Recurring Credit Charge that will be automatically approved.  " +
+							"<br /><br />Are you sure you want to create this recurring charge?";
 				}
 				else if (objChargeType.Nature == "DR")
 				{
-					// Debit adjustment
-					strMsg = "You are creating a Recurring Debit Adjustment that will be automatically approved.  " +
-							"<br /><br />Are you sure you want to create this recurring adjustment?";
+					// Debit charge
+					strMsg = "You are creating a Recurring Debit Charge that will be automatically approved.  " +
+							"<br /><br />Are you sure you want to create this recurring charge?";
 				}
 				else
 				{
@@ -573,17 +573,17 @@ function VixenRecurringAdjustmentAddClass()
 				}
 			}
 		
-			Vixen.Popup.Confirm(strMsg, function(){Vixen.RecurringAdjustmentAdd.SubmitRequest(true)}, null, null, "Yes", "No", strMsgTitle);
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.RecurringChargeAdd.SubmitRequest(true)}, null, null, "Yes", "No", strMsgTitle);
 			return;
 		}
 		
-		var elmRealSubmitButton = $ID("AddAdjustmentSubmitButton");
+		var elmRealSubmitButton = $ID("AddChargeSubmitButton");
 		elmRealSubmitButton.click();
 	}
 }
 
 // instanciate the objects
-if (Vixen.RecurringAdjustmentAdd == undefined)
+if (Vixen.RecurringChargeAdd == undefined)
 {
-	Vixen.RecurringAdjustmentAdd = new VixenRecurringAdjustmentAddClass;
+	Vixen.RecurringChargeAdd = new VixenRecurringChargeAddClass;
 }

@@ -34,24 +34,24 @@
 $this->Page->SetLayout('popup_layout');
 
 // Set the name
-if (DBO()->DeleteRecord->Method->Value == "DeleteAdjustment")
+if (DBO()->DeleteRecord->Method->Value == "DeleteCharge")
 {
-	// Check if the adjustment is associated with a service
+	// Check if the charge is associated with a service
 	$intServiceId = DBO()->Charge->Service->Value;
 	if ($intServiceId != NULL)
 	{
 		$objService = Service::getForId($intServiceId);
-		$this->Page->SetName("Adjustment - Service: {$objService->FNN}");
+		$this->Page->SetName("Charge - Service: {$objService->FNN}");
 	}
 }
-elseif (DBO()->DeleteRecord->Method->Value == "DeleteRecurringAdjustment")
+elseif (DBO()->DeleteRecord->Method->Value == "DeleteRecurringCharge")
 {
-	// Check if the recurring adjustment is associated with a service
+	// Check if the recurring charge is associated with a service
 	$intServiceId = DBO()->RecurringCharge->Service->Value;
 	if ($intServiceId != NULL)
 	{
 		$objService = Service::getForId($intServiceId);
-		$this->Page->SetName("Recurring Adjustment - Service: {$objService->FNN}");
+		$this->Page->SetName("Recurring Charge - Service: {$objService->FNN}");
 	}
 }
 else

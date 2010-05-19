@@ -105,7 +105,7 @@ class Cli_App_Recurring_Charges extends Cli
 								$this->log("\t{$strCharge}");
 							}
 							
-							// Check how many adjustments were created
+							// Check how many charges were created
 							$intChargeCount = count($arrInstallmentCharges);
 							if ($intChargeCount > 1)
 							{
@@ -142,7 +142,7 @@ class Cli_App_Recurring_Charges extends Cli
 						$this->log("\tNot due for charge generation");
 					}
 					
-					// Check if the RecurringAdjustment has satisfied the requirements for completion, but is still Active (a continuable recurring charge)
+					// Check if the RecurringCharge has satisfied the requirements for completion, but is still Active (a continuable recurring charge)
 					if ($objRecCharge->recurringChargeStatusId == $intRecurringChargeStatusActive && $objRecCharge->hasSatisfiedRequirementsForCompletion())
 					{
 						// It has and it is

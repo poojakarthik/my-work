@@ -1,16 +1,16 @@
 //----------------------------------------------------------------------------//
-// validate_adjustment.js
+// validate_charge.js
 //----------------------------------------------------------------------------//
 /**
- * validate_adjustment
+ * validate_charge
  *
- * javascript required to validate a new adjustment
+ * javascript required to validate a new charge
  *
- * javascript required to validate a new adjustment
- * This class is currently used by the "Add Adjustment" popup
+ * javascript required to validate a new charge
+ * This class is currently used by the "Add Charge" popup
  * 
  *
- * @file		validate_adjustment.js
+ * @file		validate_charge.js
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
@@ -21,21 +21,21 @@
  */
 
 //----------------------------------------------------------------------------//
-// VixenValidateAdjustmentClass
+// VixenValidateChargeClass
 //----------------------------------------------------------------------------//
 /**
- * VixenValidateAdjustmentClass
+ * VixenValidateChargeClass
  *
- * Encapsulates all validation and inserting/updating of adjustments
+ * Encapsulates all validation and inserting/updating of charges
  *
- * Encapsulates all validation and inserting/updating of adjustments
+ * Encapsulates all validation and inserting/updating of charges
  * 
  *
  * @package	ui_app
- * @class	VixenValidateAdjustmentClass
+ * @class	VixenValidateChargeClass
  * 
  */
-function VixenValidateAdjustmentClass()
+function VixenValidateChargeClass()
 {
 	//------------------------------------------------------------------------//
 	// _objChargeTypeData
@@ -156,7 +156,7 @@ function VixenValidateAdjustmentClass()
 	{
 		if (!bolConfirmed)
 		{
-			// Check if the adjustment is a debit or credit
+			// Check if the charge is a debit or credit
 			var intChargeTypeId = $ID('Charge.charge_type_id').value;
 			var strMsg = "";
 			if (this._objChargeTypeData[intChargeTypeId].Nature == "CR")
@@ -164,7 +164,7 @@ function VixenValidateAdjustmentClass()
 				// Credit adjustmemt
 				strMsg = "<strong>Please Note:</strong>" +
 						"<ol>" +
-						"   <li>You are requesting a Credit Adjustment for approval</li>" +
+						"   <li>You are requesting a Credit Charge for approval</li>" +
 						"   <li>Ensure you have <strong>NOT</strong> notified the customer that this credit is approved</li>" +
 						"   <li>The credit request can take up to 28 days to be assessed</li>" +
 						"</ol>" +
@@ -172,8 +172,8 @@ function VixenValidateAdjustmentClass()
 			}
 			else if (this._objChargeTypeData[intChargeTypeId].Nature == "DR")
 			{
-				// Debit adjustment
-				strMsg = "You are requesting a Debit Adjustment." +
+				// Debit charge
+				strMsg = "You are requesting a Debit Charge." +
 						"<br /><br />Are you sure you want to submit this request?";
 			}
 			else
@@ -183,17 +183,17 @@ function VixenValidateAdjustmentClass()
 				return;
 			}
 		
-			Vixen.Popup.Confirm(strMsg, function(){Vixen.ValidateAdjustment.SubmitRequest(true)}, null, null, "Yes", "No", "Request Adjustment");
+			Vixen.Popup.Confirm(strMsg, function(){Vixen.ValidateCharge.SubmitRequest(true)}, null, null, "Yes", "No", "Request Charge");
 			return;
 		}
 		
-		var elmRealSubmitButton = $ID("AddAdjustmentSubmitButton");
+		var elmRealSubmitButton = $ID("AddChargeSubmitButton");
 		elmRealSubmitButton.click();
 	}
 }
 
 // instantiate the object if it hasn't already been instantiated
-if (Vixen.ValidateAdjustment == undefined)
+if (Vixen.ValidateCharge == undefined)
 {
-	Vixen.ValidateAdjustment = new VixenValidateAdjustmentClass;
+	Vixen.ValidateCharge = new VixenValidateChargeClass;
 }

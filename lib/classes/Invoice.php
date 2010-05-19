@@ -296,7 +296,7 @@ class Invoice extends ORM_Cached
 			$fltPreChargeCreditTotal	= $this->Credits;
 			$fltPreChargeTaxTotal		= $this->Tax;
 			
-			// Mark Account Adjustments
+			// Mark Account Charges
 			$arrWhere	= Array('Account' => $objAccount->Id, 'BillingPeriodEnd'=>$this->billing_period_end_datetime);
 			$arrData	= Array('Status' => CHARGE_TEMP_INVOICE, 'invoice_run_id' => $this->invoice_run_id);
 			$updMarkAccountCharges	= self::_preparedStatement('updMarkAccountCharges');

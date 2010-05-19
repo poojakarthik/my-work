@@ -1511,7 +1511,7 @@ h2.Plan,
 h2.Date,
 h2.Address,
 h2.Payment,
-h2.Adjustment,
+h2.Charge,
 h2.PDF,
 h2.Provisioning,
 h2.Archive,
@@ -1566,7 +1566,7 @@ h2.Email
 	background-image:		url('img/template/email.gif');
 }
 
-h2.Adjustment
+h2.Charge
 {
 	background-image:		url('img/template/charge.gif');
 }

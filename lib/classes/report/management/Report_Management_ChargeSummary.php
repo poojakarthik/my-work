@@ -1,15 +1,15 @@
 <?php
 //----------------------------------------------------------------------------//
-// Report_Management_AdjustmentSummary
+// Report_Management_ChargeSummary
 //----------------------------------------------------------------------------//
 /**
- * Report_Management_AdjustmentSummary
+ * Report_Management_ChargeSummary
  *
- * Adjustment Summary Management Report
+ * Charge Summary Management Report
  *
- * @class	Report_Management_AdjustmentSummary
+ * @class	Report_Management_ChargeSummary
  */
-class Report_Management_AdjustmentSummary extends Report_Management
+class Report_Management_ChargeSummary extends Report_Management
 {
 	//------------------------------------------------------------------------//
 	// run
@@ -34,12 +34,12 @@ class Report_Management_AdjustmentSummary extends Report_Management
 		$arrCols['DebitTotal']			= "SUM(CASE WHEN Nature = 'DR' THEN Amount ELSE 0 END)";
 		$arrCols['CreditCount']			= "COUNT(CASE WHEN Nature = 'CR' THEN Id ELSE NULL END)";
 		$arrCols['DebitCount']			= "COUNT(CASE WHEN Nature = 'DR' THEN Id ELSE NULL END)";
-		$selAdjustmentSummary	= new StatementSelect("Charge", $arrCols, "invoice_run_id = <invoice_run_id>");
+		$selChargeSummary	= new StatementSelect("Charge", $arrCols, "invoice_run_id = <invoice_run_id>");
 		
 		$arrCols = Array();
 		$arrCols['Nature']				= "Charge.Nature";
 		$arrCols['Description']			= "Charge.Description";
-		$arrCols['TotalAdjustments']	= "COUNT(Charge.Id)";
+		$arrCols['TotalCharges']	= "COUNT(Charge.Id)";
 		$arrCols['MinCharge']			= "MIN(Charge.Amount)";
 		$arrCols['MaxCharge']			= "MAX(Charge.Amount)";
 		$arrCols['TotalCharge']			= "SUM(Charge.Amount)";
@@ -47,7 +47,7 @@ class Report_Management_AdjustmentSummary extends Report_Management
 
 		
 		// Create Workbook
-		$strFilename = $strReportBasePath."Adjustment_Summary.xls";
+		$strFilename = $strReportBasePath."Charge_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -55,12 +55,12 @@ class Report_Management_AdjustmentSummary extends Report_Management
 		$arrFormat = self::_initExcelFormats($wkbWorkbook);
 		
 		// Create Worksheet & Header
-		$wksWorksheet =& $wkbWorkbook->addWorksheet("Adjustment Summary");
+		$wksWorksheet =& $wkbWorkbook->addWorksheet("Charge Summary");
 		$wksWorksheet->setLandscape();
 		$wksWorksheet->hideGridlines();
 		$wksWorksheet->fitToPages(1, 99);
 		
-		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($arrProfitData['ThisMonth']['BillingDate'])))." Adjustment Summary for {$strCustomerName}");
+		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($arrProfitData['ThisMonth']['BillingDate'])))." Charge Summary for {$strCustomerName}");
 		$wksWorksheet->writeString(0, 2, $strPageTitle, $arrFormat['PageTitle']);
 		
 		$wksWorksheet->writeString(3, 0, "Bill Date"		, $arrFormat['TextBold']);
@@ -82,7 +82,7 @@ class Report_Management_AdjustmentSummary extends Report_Management
 		$wksWorksheet->writeString(2, 4, "Last Month"		, $arrFormat['TitleItalic']);
 		$wksWorksheet->writeString(2, 5, "% Change"			, $arrFormat['TitleItalic']);
 		
-		$wksWorksheet->writeString(7, 0, "Adjustment Summary"	, $arrFormat['Title']);
+		$wksWorksheet->writeString(7, 0, "Charge Summary"	, $arrFormat['Title']);
 		$wksWorksheet->writeString(7, 3, "This Month"			, $arrFormat['TitleItalic']);
 		$wksWorksheet->writeString(7, 4, "Last Month"			, $arrFormat['TitleItalic']);
 		$wksWorksheet->writeString(7, 5, "% Change"				, $arrFormat['TitleItalic']);
@@ -96,12 +96,12 @@ class Report_Management_AdjustmentSummary extends Report_Management
 		$wksWorksheet->setColumn(4, 4, 3 * $fltExcelWidthRatio);
 		$wksWorksheet->setColumn(5, 5, 3 * $fltExcelWidthRatio);
 		
-		// Create Adjustments Summary		
+		// Create Charges Summary		
 		$wksWorksheet->writeString(8, 0, "Total Credits"			, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(9, 0, "Total Debits"				, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(10, 0, "Credit Total Value"		, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(11, 0, "Debit Total Value"		, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(12, 0, "Adjustment Total Value"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(12, 0, "Charge Total Value"	, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(13, 0, "Mean Credit Value"		, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(14, 0, "Mean Debit Value"		, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(15, 0, "Mean Customer Total"		, $arrFormat['TextBold']);
@@ -113,26 +113,26 @@ class Report_Management_AdjustmentSummary extends Report_Management
 			$wksWorksheet->writeString(4, $intCol, date("F Y", strtotime("-1 month", strtotime($arrData['BillingDate']))));
 			$wksWorksheet->writeString(5, $intCol, $arrData['invoice_run_id']);
 	
-			$selAdjustmentSummary->Execute($arrData);
-			$arrAdjustmentSummary = $selAdjustmentSummary->Fetch();
-			$arrAdjustmentSummary['AdjustmentTotalValue']	= $arrAdjustmentSummary['DebitTotal'] - $arrAdjustmentSummary['CreditTotal'];
-			$arrAdjustmentSummary['MeanCreditValue']		= ($arrAdjustmentSummary['CreditCount']) ? $arrAdjustmentSummary['CreditTotal'] / $arrAdjustmentSummary['CreditCount'] : 'N/A';
-			$arrAdjustmentSummary['MeanDebitValue']			= ($arrAdjustmentSummary['DebitCount']) ? $arrAdjustmentSummary['DebitTotal'] / $arrAdjustmentSummary['DebitCount'] : 'N/A';
-			$arrAdjustmentSummary['MeanCustomerTotal']		= $arrAdjustmentSummary['AdjustmentTotalValue'] / $arrData['InvoiceCount'];
+			$selChargeSummary->Execute($arrData);
+			$arrChargeSummary = $selChargeSummary->Fetch();
+			$arrChargeSummary['ChargeTotalValue']	= $arrChargeSummary['DebitTotal'] - $arrChargeSummary['CreditTotal'];
+			$arrChargeSummary['MeanCreditValue']		= ($arrChargeSummary['CreditCount']) ? $arrChargeSummary['CreditTotal'] / $arrChargeSummary['CreditCount'] : 'N/A';
+			$arrChargeSummary['MeanDebitValue']			= ($arrChargeSummary['DebitCount']) ? $arrChargeSummary['DebitTotal'] / $arrChargeSummary['DebitCount'] : 'N/A';
+			$arrChargeSummary['MeanCustomerTotal']		= $arrChargeSummary['ChargeTotalValue'] / $arrData['InvoiceCount'];
 			
-			$wksWorksheet->writeNumber(8, $intCol, $arrAdjustmentSummary['CreditCount']				, $arrFormat['Integer']);
-			$wksWorksheet->writeNumber(9, $intCol, $arrAdjustmentSummary['DebitCount']				, $arrFormat['Integer']);
-			$wksWorksheet->writeNumber(10, $intCol, $arrAdjustmentSummary['CreditTotal']			, $arrFormat['Currency']);
-			$wksWorksheet->writeNumber(11, $intCol, $arrAdjustmentSummary['DebitTotal']				, $arrFormat['Currency']);
-			$wksWorksheet->writeNumber(12, $intCol, $arrAdjustmentSummary['AdjustmentTotalValue']	, $arrFormat['Currency']);
-			$wksWorksheet->writeNumber(13, $intCol, $arrAdjustmentSummary['MeanCreditValue']		, $arrFormat['Currency']);
-			$wksWorksheet->writeNumber(14, $intCol, $arrAdjustmentSummary['MeanDebitValue']			, $arrFormat['Currency']);
-			$wksWorksheet->writeNumber(15, $intCol, $arrAdjustmentSummary['MeanCustomerTotal']		, $arrFormat['Currency']);
+			$wksWorksheet->writeNumber(8, $intCol, $arrChargeSummary['CreditCount']				, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber(9, $intCol, $arrChargeSummary['DebitCount']				, $arrFormat['Integer']);
+			$wksWorksheet->writeNumber(10, $intCol, $arrChargeSummary['CreditTotal']			, $arrFormat['Currency']);
+			$wksWorksheet->writeNumber(11, $intCol, $arrChargeSummary['DebitTotal']				, $arrFormat['Currency']);
+			$wksWorksheet->writeNumber(12, $intCol, $arrChargeSummary['ChargeTotalValue']	, $arrFormat['Currency']);
+			$wksWorksheet->writeNumber(13, $intCol, $arrChargeSummary['MeanCreditValue']		, $arrFormat['Currency']);
+			$wksWorksheet->writeNumber(14, $intCol, $arrChargeSummary['MeanDebitValue']			, $arrFormat['Currency']);
+			$wksWorksheet->writeNumber(15, $intCol, $arrChargeSummary['MeanCustomerTotal']		, $arrFormat['Currency']);
 			
 			$intCol++;
 		}
 		
-		// Write Adjustment Summary '% Change' Fields
+		// Write Charge Summary '% Change' Fields
 		for ($i = 9; $i <= 16; $i++)
 		{
 			$wksWorksheet->writeFormula($i-1, 5, "=IF(AND(D$i <> 0, NOT(D$i = \"N/A\")), (D$i - E$i) / ABS(D$i), \"N/A\")", $arrFormat['Percentage']);
@@ -149,7 +149,7 @@ class Report_Management_AdjustmentSummary extends Report_Management
 			$arrTypes[$arrType['Description']]['Nature']			= $arrType['Nature'];
 			$arrTypes[$arrType['Description']]['MaxCharge']			= max($arrTypes[$arrType['Description']]['MaxCharge'], $arrType['MaxCharge']);
 			$arrTypes[$arrType['Description']]['TotalCharge']		+= $arrType['TotalCharge'];
-			$arrTypes[$arrType['Description']]['TotalAdjustments']	+= $arrType['TotalAdjustments'];
+			$arrTypes[$arrType['Description']]['TotalCharges']	+= $arrType['TotalCharges'];
 			
 			if (isset($arrTypes[$arrType['Description']]['MinCharge']))
 			{
@@ -161,16 +161,16 @@ class Report_Management_AdjustmentSummary extends Report_Management
 			}
 		}
 		
-		$arrAdjustments = Array();
+		$arrCharges = Array();
 		foreach ($arrTypes as $strDescription=>$arrType)
 		{
-			@$arrType['MeanCharge']	= $arrType['TotalCharge'] / $arrType['TotalAdjustments'];
-			$arrAdjustments[$arrType['Nature']][]	= $arrType;
+			@$arrType['MeanCharge']	= $arrType['TotalCharge'] / $arrType['TotalCharges'];
+			$arrCharges[$arrType['Nature']][]	= $arrType;
 		}
 		
 		// Render
 		$intRow = 15;
-		foreach ($arrAdjustments as $strNature=>$arrTypes)
+		foreach ($arrCharges as $strNature=>$arrTypes)
 		{
 			switch ($strNature)
 			{
@@ -209,7 +209,7 @@ class Report_Management_AdjustmentSummary extends Report_Management
 				// Add to Worksheet
 				$intRow++;
 				$wksWorksheet->writeString($intRow, 0, $arrType['Description']);
-				$wksWorksheet->writeNumber($intRow, 1, $arrType['TotalAdjustments']	, $arrFormat['Integer']);
+				$wksWorksheet->writeNumber($intRow, 1, $arrType['TotalCharges']	, $arrFormat['Integer']);
 				$wksWorksheet->writeNumber($intRow, 2, $arrType['MinCharge']		, $arrFormat['Currency']);
 				$wksWorksheet->writeNumber($intRow, 3, $arrType['MaxCharge']		, $arrFormat['Currency']);
 				$wksWorksheet->writeNumber($intRow, 4, $arrType['MeanCharge']		, $arrFormat['Currency']);

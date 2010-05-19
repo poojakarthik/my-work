@@ -81,8 +81,8 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 					throw new Exception_Invoice_Interim_NotAllowed("You are not permitted to generate ".(($intInvoiceRunType === INVOICE_RUN_TYPE_FINAL) ? 'a ' : 'an ').GetConstantDescription($intInvoiceRunType, 'invoice_run_type').", as there there has already been ".(($arrInterimInvoiceRun['invoice_run_type_id'] === INVOICE_RUN_TYPE_FINAL) ? 'a ' : 'an ').GetConstantDescription($arrInterimInvoiceRun['invoice_run_type_id'], 'invoice_run_type')." generated today.");
 				}
 				
-				// Adjustment Totals
-				$arrAdjustmentTotals	= array(
+				// Charge Totals
+				$arrChargeTotals	= array(
 													'CR'	=> array(
 																		'Count'	=> 0,
 																		'Total'	=> 0.0
@@ -92,18 +92,18 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 																		'Total'	=> 0.0
 																	)
 												);
-				$resAdjustmentTotals	= $qryQuery->Execute(	"SELECT Charge.Nature, COUNT(Charge.Id) AS Count, SUM(Charge.Amount) AS Total " .
+				$resChargeTotals	= $qryQuery->Execute(	"SELECT Charge.Nature, COUNT(Charge.Id) AS Count, SUM(Charge.Amount) AS Total " .
 																"FROM Charge LEFT JOIN Service ON Service.Id = Charge.Service LEFT JOIN service_status ON service_status.id = Service.Status " .
 																"WHERE Charge.Account = {$intAccount} AND Charge.Status IN (".CHARGE_APPROVED.", ".CHARGE_TEMP_INVOICE.") AND (service_status.can_invoice = 1 OR Charge.Service IS NULL) AND ChargeType NOT IN ('PCR', 'PCAD', 'PCAR', 'PDCR') " .
 																"GROUP BY Charge.Nature");
-				if ($resAdjustmentTotals === false)
+				if ($resChargeTotals === false)
 				{
 					throw new Exception($qryQuery->Error());
 				}
-				while ($arrAdjustmentTotal = $resAdjustmentTotals->fetch_assoc())
+				while ($arrChargeTotal = $resChargeTotals->fetch_assoc())
 				{
-					$arrAdjustmentTotals[$arrAdjustmentTotal['Nature']]['Count']	= $arrAdjustmentTotal['Count'];
-					$arrAdjustmentTotals[$arrAdjustmentTotal['Nature']]['Total']	= $arrAdjustmentTotal['Total'];
+					$arrChargeTotals[$arrChargeTotal['Nature']]['Count']	= $arrChargeTotal['Count'];
+					$arrChargeTotals[$arrChargeTotal['Nature']]['Total']	= $arrChargeTotal['Total'];
 				}
 				
 				// CDR Totals
@@ -164,10 +164,10 @@ class JSON_Handler_Invoice_Interim extends JSON_Handler
 							"intAccountId"				=> $intAccount,
 							"bolInvoiceCDRCredits"		=> (bool)$arrInvoiceCDRCredits['invoice_cdr_credits'],
 							
-							"intAdjustmentCreditCount"	=> $arrAdjustmentTotals['CR']['Count'],
-							"fltAdjustmentCreditTotal"	=> round($arrAdjustmentTotals['CR']['Total'], 2),
-							"intAdjustmentDebitCount"	=> $arrAdjustmentTotals['DR']['Count'],
-							"fltAdjustmentDebitTotal"	=> round($arrAdjustmentTotals['DR']['Total'], 2),
+							"intChargeCreditCount"	=> $arrChargeTotals['CR']['Count'],
+							"fltChargeCreditTotal"	=> round($arrChargeTotals['CR']['Total'], 2),
+							"intChargeDebitCount"	=> $arrChargeTotals['DR']['Count'],
+							"fltChargeDebitTotal"	=> round($arrChargeTotals['DR']['Total'], 2),
 							
 							"intCDRCreditCount"			=> $arrCDRTotals['CR']['Count'],
 							"fltCDRCreditTotal"			=> round($arrCDRTotals['CR']['Total'], 2),

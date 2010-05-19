@@ -7,16 +7,16 @@
 
 
 //----------------------------------------------------------------------------//
-// payment_terms.php
+// invoice_run_events.php
 //----------------------------------------------------------------------------//
 /**
- * adjustment
+ * invoice_run_events
  *
  * contains all ApplicationTemplate extended classes relating to Invoice Run Events functionality
  *
  * contains all ApplicationTemplate extended classes relating to Invoice Run Events functionality
  *
- * @file		adjustment.php
+ * @file		invoice_run_events.php
  * @language	PHP
  * @package		framework
  * @author		Hadrian Oliver

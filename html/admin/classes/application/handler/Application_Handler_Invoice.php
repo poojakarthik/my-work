@@ -102,8 +102,8 @@ class Application_Handler_Invoice extends Application_Handler
 			$aDetailsToRender['Invoice'] 		= $serviceDetails;
 			$aDetailsToRender['ServiceType']	= $iServiceType;
 	
-			// Need to load up the Adjustments for the invoice
-			$aDetailsToRender['Adjustments']	= $oService->getCharges($iInvoiceRunId);
+			// Need to load up the Charges for the invoice
+			$aDetailsToRender['Charges']	= $oService->getCharges($iInvoiceRunId);
 			
 			// Need to load up the RecordTypes for filtering
 			$aDetailsToRender['RecordTypes']	= Record_Type::getForServiceType($iServiceType);
@@ -372,55 +372,55 @@ class Application_Handler_Invoice extends Application_Handler
 							
 							// Daily Rate
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']],
-															(float)$aService['aAdjustments']['daily_rate'],
-															"Daily Rate mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']]."'; Calculated: '".(float)$aService['aAdjustments']['daily_rate']."')");
+															(float)$aService['aCharges']['daily_rate'],
+															"Daily Rate mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['DAILY_RATE']]."'; Calculated: '".(float)$aService['aCharges']['daily_rate']."')");
 							
 							// Plan Charge
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE']],
-															(float)$aService['aAdjustments']['plan_charge'],
-															"Plan Charge mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE']]."'; Calculated: '".(float)$aService['aAdjustments']['plan_charge']."')");
+															(float)$aService['aCharges']['plan_charge'],
+															"Plan Charge mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE']]."'; Calculated: '".(float)$aService['aCharges']['plan_charge']."')");
 							
 							// Plan Charge Days
 							self::_compareInterimEligible(	(int)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DAYS']],
-															(int)$aService['aAdjustments']['plan_charge_days'],
-															"Plan Charge Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DAYS']]."'; Calculated: '".(int)$aService['aAdjustments']['plan_charge_days']."')");
+															(int)$aService['aCharges']['plan_charge_days'],
+															"Plan Charge Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DAYS']]."'; Calculated: '".(int)$aService['aCharges']['plan_charge_days']."')");
 							
 							// Plan Charge Description
 							self::_compareInterimEligible(	(string)$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']],
-															(string)$aService['aAdjustments']['plan_charge_description'],
-															"Plan Charge Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']]."'; Calculated: '".$aService['aAdjustments']['plan_charge_description']."')",
+															(string)$aService['aCharges']['plan_charge_description'],
+															"Plan Charge Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']]."'; Calculated: '".$aService['aCharges']['plan_charge_description']."')",
 															false);
 							
 							// Interim Plan Credit
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']],
-															(float)$aService['aAdjustments']['interim_plan_credit'],
-															"Interim Plan Credit mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']]."'; Calculated: '".(float)$aService['aAdjustments']['interim_plan_credit']."')");
+															(float)$aService['aCharges']['interim_plan_credit'],
+															"Interim Plan Credit mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']]."'; Calculated: '".(float)$aService['aCharges']['interim_plan_credit']."')");
 							
 							// Interim Plan Credit Days
 							self::_compareInterimEligible(	(int)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DAYS']],
-															(int)$aService['aAdjustments']['interim_plan_credit_days'],
-															"Interim Plan Credit Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DAYS']]."'; Calculated: '".(int)$aService['aAdjustments']['interim_plan_credit_days']."')");
+															(int)$aService['aCharges']['interim_plan_credit_days'],
+															"Interim Plan Credit Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DAYS']]."'; Calculated: '".(int)$aService['aCharges']['interim_plan_credit_days']."')");
 							
 							// Interim Plan Credit Description
 							self::_compareInterimEligible(	(string)$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']],
-															(string)$aService['aAdjustments']['interim_plan_credit_description'],
-															"Interim Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aService['aAdjustments']['interim_plan_credit_description']."')",
+															(string)$aService['aCharges']['interim_plan_credit_description'],
+															"Interim Plan Credit Description mismatch (Supplied: '".$aImportService[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']]."'; Calculated: '".$aService['aCharges']['interim_plan_credit_description']."')",
 															false);
 							
 							// Production Plan Credit
 							self::_compareInterimEligible(	(float)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']],
-															(float)$aService['aAdjustments']['production_plan_credit'],
-															"Production Plan Credit mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']]."'; Calculated: '".(float)$aService['aAdjustments']['production_plan_credit']."')");
+															(float)$aService['aCharges']['production_plan_credit'],
+															"Production Plan Credit mismatch (Supplied: '".(float)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']]."'; Calculated: '".(float)$aService['aCharges']['production_plan_credit']."')");
 							
 							// Production Plan Credit Days
 							self::_compareInterimEligible(	(int)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']],
-															(int)$aService['aAdjustments']['production_plan_credit_days'],
-															"Production Plan Credit Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']]."'; Calculated: '".(int)$aService['aAdjustments']['production_plan_credit_days']."')");
+															(int)$aService['aCharges']['production_plan_credit_days'],
+															"Production Plan Credit Days mismatch (Supplied: '".(int)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']]."'; Calculated: '".(int)$aService['aCharges']['production_plan_credit_days']."')");
 							
 							// Production Plan Credit Description
 							self::_compareInterimEligible(	(string)$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']],
-															(string)$aService['aAdjustments']['production_plan_credit_description'],
-															"Production Plan Credit Description mismatch (Supplied: '{$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]}'; Calculated: '{$aService['aAdjustments']['production_plan_credit_description']}')",
+															(string)$aService['aCharges']['production_plan_credit_description'],
+															"Production Plan Credit Description mismatch (Supplied: '{$aImportService[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]}'; Calculated: '{$aService['aCharges']['production_plan_credit_description']}')",
 															false);
 							
 							// Everthing appears to match -- add to Action list
@@ -473,11 +473,11 @@ class Application_Handler_Invoice extends Application_Handler
 				$iAccountsInvoiced			= 0;
 				$iAccountsIgnored			= 0;
 				$iAccountsFailed			= 0;
-				$iAccountsAdjustmentsAdded	= 0;
+				$iAccountsChargesAdded	= 0;
 				$iServicesInvoiced			= 0;
 				$iServicesIgnored			= 0;
 				$iServicesFailed			= 0;
-				$iServicesAdjustmentsAdded	= 0;
+				$iServicesChargesAdded	= 0;
 				$fTotalPlanCharge			= 0.0;
 				$fTotalInterimPlanCredit	= 0.0;
 				$fTotalProductionPlanCredit	= 0.0;
@@ -533,10 +533,10 @@ class Application_Handler_Invoice extends Application_Handler
 						}
 						try
 						{
-							// Add the Adjustments for each Service
+							// Add the Charges for each Service
 							foreach($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
 							{
-								self::applyInterimInvoiceAdjustments($aServices["{$iAccountId}.{$sFNN}"]);
+								self::applyInterimInvoiceCharges($aServices["{$iAccountId}.{$sFNN}"]);
 							}
 							
 							// Generate an Interim Invoice for this Account
@@ -565,32 +565,32 @@ class Application_Handler_Invoice extends Application_Handler
 							$oFlexDataAccess->TransactionCommit();
 							
 							// Add to Processing Report (all Services that had Debits/Credits added)
-							$bAccountHasAdjustments	= false;
+							$bAccountHasCharges	= false;
 							foreach($aAccount['aWhitelist'] as $sFNN=>$bWhitelisted)
 							{
 								$sServiceKey	= "{$iAccountId}.{$sFNN}";
-								if ($aServices[$sServiceKey]['aAdjustments']['plan_charge'])
+								if ($aServices[$sServiceKey]['aCharges']['plan_charge'])
 								{
 									$oCSVProcessingReport->addRow(array	(
 																			self::$_aInterimProcessingColumns['ACCOUNT_ID']							=> $iAccountId,
 																			self::$_aInterimProcessingColumns['SERVICE_FNN']						=> $sFNN,
-																			self::$_aInterimProcessingColumns['PLAN_CHARGE']						=> number_format($aServices[$sServiceKey]['aAdjustments']['plan_charge'], 2, '.', ''),
-																			self::$_aInterimProcessingColumns['PLAN_CHARGE_DESCRIPTION']			=> $aServices[$sServiceKey]['aAdjustments']['plan_charge_description'],
-																			self::$_aInterimProcessingColumns['INTERIM_PLAN_CREDIT']				=> number_format($aServices[$sServiceKey]['aAdjustments']['interim_plan_credit'], 2, '.', ''),
-																			self::$_aInterimProcessingColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']	=> $aServices[$sServiceKey]['aAdjustments']['interim_plan_credit_description'],
-																			self::$_aInterimProcessingColumns['PRODUCTION_PLAN_CREDIT']				=> number_format($aServices[$sServiceKey]['aAdjustments']['production_plan_credit'], 2, '.', ''),
-																			self::$_aInterimProcessingColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']	=> $aServices[$sServiceKey]['aAdjustments']['production_plan_credit_description'],
+																			self::$_aInterimProcessingColumns['PLAN_CHARGE']						=> number_format($aServices[$sServiceKey]['aCharges']['plan_charge'], 2, '.', ''),
+																			self::$_aInterimProcessingColumns['PLAN_CHARGE_DESCRIPTION']			=> $aServices[$sServiceKey]['aCharges']['plan_charge_description'],
+																			self::$_aInterimProcessingColumns['INTERIM_PLAN_CREDIT']				=> number_format($aServices[$sServiceKey]['aCharges']['interim_plan_credit'], 2, '.', ''),
+																			self::$_aInterimProcessingColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']	=> $aServices[$sServiceKey]['aCharges']['interim_plan_credit_description'],
+																			self::$_aInterimProcessingColumns['PRODUCTION_PLAN_CREDIT']				=> number_format($aServices[$sServiceKey]['aCharges']['production_plan_credit'], 2, '.', ''),
+																			self::$_aInterimProcessingColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']	=> $aServices[$sServiceKey]['aCharges']['production_plan_credit_description'],
 																		));
 									
-									$fTotalPlanCharge			+= $aServices[$sServiceKey]['aAdjustments']['plan_charge'];
-									$fTotalInterimPlanCredit	+= $aServices[$sServiceKey]['aAdjustments']['interim_plan_credit'];
-									$fTotalProductionPlanCredit	+= $aServices[$sServiceKey]['aAdjustments']['production_plan_credit'];
-									$iServicesAdjustmentsAdded++;
+									$fTotalPlanCharge			+= $aServices[$sServiceKey]['aCharges']['plan_charge'];
+									$fTotalInterimPlanCredit	+= $aServices[$sServiceKey]['aCharges']['interim_plan_credit'];
+									$fTotalProductionPlanCredit	+= $aServices[$sServiceKey]['aCharges']['production_plan_credit'];
+									$iServicesChargesAdded++;
 									
-									$bAccountHasAdjustments	= true;
+									$bAccountHasCharges	= true;
 								}
 							}
-							$iAccountsAdjustmentsAdded	+= ($bAccountHasAdjustments) ? 1 : 0;
+							$iAccountsChargesAdded	+= ($bAccountHasCharges) ? 1 : 0;
 							
 							$iAccountsInvoiced++;
 							$iServicesInvoiced	+= count($aAccount['aWhitelist']);
@@ -631,7 +631,7 @@ class Application_Handler_Invoice extends Application_Handler
 					$oProcessingEmailNotification->addAttachment($oCSVExceptionsReport->save(), $sExceptionsReportFileName, 'text/csv');
 					
 					$sReportsSummary	.= "
-			<li><strong>Processing Report</strong><em> ({$sProcessingReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services had Interim Invoice Adjustments added to them</li>
+			<li><strong>Processing Report</strong><em> ({$sProcessingReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services had Interim Invoice Charges added to them</li>
 			<li><strong>Exceptions Report</strong><em> ({$sExceptionsReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services failed in processing and the reasons why</li>
 			<li><strong>Submitted Interim Eligibility Report</strong><em> ({$sSubmittedEligibilityReportFileName})</em> &mdash;&nbsp;The Report you submitted to initiate this process</li>
 			<li><strong>Current Interim Eligibility Report</strong><em> ({$sCurrentEligibilityReportFileName})</em> &mdash;&nbsp;Current version of the Interim Eligibility Report</li>
@@ -640,7 +640,7 @@ class Application_Handler_Invoice extends Application_Handler
 				else
 				{
 					$sReportsSummary	.= "
-			<li><strong>Processing Report</strong><em> ({$sProcessingReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services had Interim Invoice Adjustments added to them</li>
+			<li><strong>Processing Report</strong><em> ({$sProcessingReportFileName})</em> &mdash;&nbsp;Lists which Accounts/Services had Interim Invoice Charges added to them</li>
 			<li><strong>Submitted Interim Eligibility Report</strong><em> ({$sSubmittedEligibilityReportFileName})</em> &mdash;&nbsp;The Report you submitted to initiate this process</li>
 ";
 				}
@@ -683,16 +683,16 @@ class Application_Handler_Invoice extends Application_Handler
 					</table>
 				</td>
 				<td rowspan='2' style='vertical-align: top; border-left: 1px solid #111; padding: 1em;'>
-					<h2 style='font-size: 1.2em;'>Adjustments Summary</h2>
+					<h2 style='font-size: 1.2em;'>Charges Summary</h2>
 					<table style='font-family: Calibri,Arial,sans-serif; margin-left: 0.5em; font-family: inherit;'>
 						<tbody>
 							<tr>
-								<th style='text-align: left;' >Accounts with Adjustments&nbsp;:&nbsp;</th>
-								<td>{$iAccountsAdjustmentsAdded}</td>
+								<th style='text-align: left;' >Accounts with Charges&nbsp;:&nbsp;</th>
+								<td>{$iAccountsChargesAdded}</td>
 							</tr>
 							<tr>
-								<th style='text-align: left;' >Services with Adjustments&nbsp;:&nbsp;</th>
-								<td>{$iServicesAdjustmentsAdded}</td>
+								<th style='text-align: left;' >Services with Charges&nbsp;:&nbsp;</th>
+								<td>{$iServicesChargesAdded}</td>
 							</tr>
 							<tr>
 								<th style='text-align: left;' >Total Plan Charge Value&nbsp;:&nbsp;</th>
@@ -902,19 +902,19 @@ ORDER BY	account_id,
 		$aAccounts	= array();
 		while ($aService = $rResult->fetch_assoc())
 		{
-			$aService['aAdjustments']	= self::calculateInterimInvoiceAdjustments($aService);
+			$aService['aCharges']	= self::calculateInterimInvoiceCharges($aService);
 			
-			$aAccounts[$aService['account_id']]	= (array_key_exists($aService['account_id'], $aAccounts)) ? $aAccounts[$aService['account_id']] : array('aServices'=>array(), 'bAdjustmentEligible'=>false);
+			$aAccounts[$aService['account_id']]	= (array_key_exists($aService['account_id'], $aAccounts)) ? $aAccounts[$aService['account_id']] : array('aServices'=>array(), 'bChargeEligible'=>false);
 			
 			// Add to Account's list of Services
 			$aAccounts[$aService['account_id']]['aServices'][$aService['fnn']]	= $aService;
 			
-			// If this Service will receive Interim Adjustments, then this Account is eligible for 1st Interim Invoicing
-			if (!$aAccounts[$aService['account_id']]['bAdjustmentEligible'])
+			// If this Service will receive Interim Charges, then this Account is eligible for 1st Interim Invoicing
+			if (!$aAccounts[$aService['account_id']]['bChargeEligible'])
 			{
-				if	($aService['aAdjustments']['plan_charge'])
+				if	($aService['aCharges']['plan_charge'])
 				{
-					$aAccounts[$aService['account_id']]['bAdjustmentEligible']	= true;
+					$aAccounts[$aService['account_id']]['bChargeEligible']	= true;
 				}
 			}
 		}
@@ -922,8 +922,8 @@ ORDER BY	account_id,
 		// Check Account-level Eligibility
 		foreach ($aAccounts as $iAccount=>$aAccount)
 		{
-			// Add Services if at least one of the Account's Services will receive an Interim Adjustment
-			if ($aAccount['bAdjustmentEligible'])
+			// Add Services if at least one of the Account's Services will receive an Interim Charge
+			if ($aAccount['bChargeEligible'])
 			{
 				foreach ($aAccount['aServices'] as $sFNN=>$aService)
 				{
@@ -935,9 +935,9 @@ ORDER BY	account_id,
 		return $aServices;
 	}
 	
-	public static function calculateInterimInvoiceAdjustments($aService)
+	public static function calculateInterimInvoiceCharges($aService)
 	{
-		$aAdjustments	=	array
+		$aCharges	=	array
 							(
 								'daily_rate'							=> 0.0,
 								'plan_charge'							=> 0.0,
@@ -971,45 +971,45 @@ ORDER BY	account_id,
 			
 			$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			
-			$aAdjustments['billing_period_start']	= date("Y-m-d H:i:s", $iLastInvoiceDate);
-			$aAdjustments['billing_period_end']		= date("Y-m-d H:i:s", $iBillingPeriodEndDate);
-			$aAdjustments['billing_period_days']	= $iBillingPeriodDays;
+			$aCharges['billing_period_start']	= date("Y-m-d H:i:s", $iLastInvoiceDate);
+			$aCharges['billing_period_end']		= date("Y-m-d H:i:s", $iBillingPeriodEndDate);
+			$aCharges['billing_period_days']	= $iBillingPeriodDays;
 			
 			// Tidy Plan Charge
 			$iProratePeriodDays	= floor(Flex_Date::periodLength($iServiceInvoiceFromDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			
-			$aAdjustments['daily_rate']			= $fPlanCharge / $iBillingPeriodDays;
-			$aAdjustments['plan_charge_days']	= $iProratePeriodDays;
+			$aCharges['daily_rate']			= $fPlanCharge / $iBillingPeriodDays;
+			$aCharges['plan_charge_days']	= $iProratePeriodDays;
 			
 			$fltProratedAmount				= ($fPlanCharge / $iBillingPeriodDays) * $iProratePeriodDays;
-			$aAdjustments['plan_charge']	= round($fltProratedAmount, 2);
+			$aCharges['plan_charge']	= round($fltProratedAmount, 2);
 			
-			$aAdjustments['plan_charge_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iServiceInvoiceFromDate, $iBillingPeriodEndDate);
+			$aCharges['plan_charge_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iServiceInvoiceFromDate, $iBillingPeriodEndDate);
 			
 			// Interim Invoice Credit
 			$iProratePeriodDays	= floor(Flex_Date::periodLength($iServiceInvoiceFromDate, $iDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			//$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			
-			$aAdjustments['interim_plan_credit_days']	= $iProratePeriodDays;
+			$aCharges['interim_plan_credit_days']	= $iProratePeriodDays;
 			
 			$fltProratedAmount						= ($fPlanCharge / $iBillingPeriodDays) * $iProratePeriodDays;
-			$aAdjustments['interim_plan_credit']	= round($fltProratedAmount, 2);
+			$aCharges['interim_plan_credit']	= round($fltProratedAmount, 2);
 			
-			$aAdjustments['interim_plan_credit_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iServiceInvoiceFromDate, $iDate);
+			$aCharges['interim_plan_credit_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iServiceInvoiceFromDate, $iDate);
 			
 			// Production Invoice Credit
 			$iProratePeriodDays	= floor(Flex_Date::periodLength($iDate + Flex_Date::SECONDS_IN_DAY, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			//$iBillingPeriodDays	= floor(Flex_Date::periodLength($iLastInvoiceDate, $iBillingPeriodEndDate, 'd') / Flex_Date::SECONDS_IN_DAY);
 			
-			$aAdjustments['production_plan_credit_days']	= $iProratePeriodDays;
+			$aCharges['production_plan_credit_days']	= $iProratePeriodDays;
 			
 			$fltProratedAmount						= ($fPlanCharge / $iBillingPeriodDays) * $iProratePeriodDays;
-			$aAdjustments['production_plan_credit']	= round($fltProratedAmount, 2);
+			$aCharges['production_plan_credit']	= round($fltProratedAmount, 2);
 			
-			$aAdjustments['production_plan_credit_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iDate + Flex_Date::SECONDS_IN_DAY, $iBillingPeriodEndDate);
+			$aCharges['production_plan_credit_description']	= Invoice::buildPlanChargeDescription($aService['rate_plan_name'], Charge_Type::getByCode('PCAR')->Description, $iDate + Flex_Date::SECONDS_IN_DAY, $iBillingPeriodEndDate);
 		}
 		
-		return $aAdjustments;
+		return $aCharges;
 	}
 	
 	public static function buildInterimEligibilityReport($aServices)
@@ -1033,19 +1033,19 @@ ORDER BY	account_id,
 			$aOutput[self::$_aInterimEligibilityColumns['CURRENT_PLAN']]						= $aService['rate_plan_name'];
 			$aOutput[self::$_aInterimEligibilityColumns['REQUIRES_CDR']]						= ($aService['cdr_required']) ? 'Yes' : 'No';
 			$aOutput[self::$_aInterimEligibilityColumns['MONTHLY_PLAN_FEE']]					= number_format((float)$aService['plan_charge'], 2, '.', '');
-			$aOutput[self::$_aInterimEligibilityColumns['DAILY_RATE']]							= (float)$aService['aAdjustments']['daily_rate'];
-			$aOutput[self::$_aInterimEligibilityColumns['PLAN_CHARGE']]							= number_format((float)$aService['aAdjustments']['plan_charge'], 2, '.', '');
-			$aOutput[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DAYS']]					= $aService['aAdjustments']['plan_charge_days'];
-			$aOutput[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']]				= $aService['aAdjustments']['plan_charge_description'];
-			$aOutput[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']]					= number_format((float)$aService['aAdjustments']['interim_plan_credit'], 2, '.', '');
-			$aOutput[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DAYS']]			= $aService['aAdjustments']['interim_plan_credit_days'];
-			$aOutput[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']]		= $aService['aAdjustments']['interim_plan_credit_description'];
-			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']]				= number_format((float)$aService['aAdjustments']['production_plan_credit'], 2, '.', '');
-			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']]			= $aService['aAdjustments']['production_plan_credit_days'];
-			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]	= $aService['aAdjustments']['production_plan_credit_description'];
-			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_START']]			= $aService['aAdjustments']['billing_period_start'];
-			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_END']]			= $aService['aAdjustments']['billing_period_end'];
-			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_DAYS']]			= $aService['aAdjustments']['billing_period_days'];
+			$aOutput[self::$_aInterimEligibilityColumns['DAILY_RATE']]							= (float)$aService['aCharges']['daily_rate'];
+			$aOutput[self::$_aInterimEligibilityColumns['PLAN_CHARGE']]							= number_format((float)$aService['aCharges']['plan_charge'], 2, '.', '');
+			$aOutput[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DAYS']]					= $aService['aCharges']['plan_charge_days'];
+			$aOutput[self::$_aInterimEligibilityColumns['PLAN_CHARGE_DESCRIPTION']]				= $aService['aCharges']['plan_charge_description'];
+			$aOutput[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT']]					= number_format((float)$aService['aCharges']['interim_plan_credit'], 2, '.', '');
+			$aOutput[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DAYS']]			= $aService['aCharges']['interim_plan_credit_days'];
+			$aOutput[self::$_aInterimEligibilityColumns['INTERIM_PLAN_CREDIT_DESCRIPTION']]		= $aService['aCharges']['interim_plan_credit_description'];
+			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT']]				= number_format((float)$aService['aCharges']['production_plan_credit'], 2, '.', '');
+			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DAYS']]			= $aService['aCharges']['production_plan_credit_days'];
+			$aOutput[self::$_aInterimEligibilityColumns['PRODUCTION_PLAN_CREDIT_DESCRIPTION']]	= $aService['aCharges']['production_plan_credit_description'];
+			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_START']]			= $aService['aCharges']['billing_period_start'];
+			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_END']]			= $aService['aCharges']['billing_period_end'];
+			//$aOutput[self::$_aInterimEligibilityColumns['DEBUG_BILLING_PERIOD_DAYS']]			= $aService['aCharges']['billing_period_days'];
 			
 			// Add the CSV
 			$oCSVFile->addRow($aOutput);
@@ -1055,10 +1055,10 @@ ORDER BY	account_id,
 		return $oCSVFile;
 	}
 	
-	public static function applyInterimInvoiceAdjustments($aService)
+	public static function applyInterimInvoiceCharges($aService)
 	{
-		// Skip Adjustments with no value
-		if (!(float)$aService['aAdjustments']['plan_charge'])
+		// Skip Charges with no value
+		if (!(float)$aService['aCharges']['plan_charge'])
 		{
 			return;
 		}
@@ -1086,10 +1086,10 @@ ORDER BY	account_id,
 			$oPlanCharge->ApprovedBy		= Employee::SYSTEM_EMPLOYEE_ID;
 			$oPlanCharge->ChargeType		= 'PCAR';
 			$oPlanCharge->charge_type_id	= $aChargeTypes['PCAR']->Id;
-			$oPlanCharge->Description		= $aService['aAdjustments']['plan_charge_description'];
+			$oPlanCharge->Description		= $aService['aCharges']['plan_charge_description'];
 			$oPlanCharge->ChargedOn			= date("Y-m-d");
 			$oPlanCharge->Nature			= 'DR';
-			$oPlanCharge->Amount			= $aService['aAdjustments']['plan_charge'];
+			$oPlanCharge->Amount			= $aService['aCharges']['plan_charge'];
 			$oPlanCharge->Status			= CHARGE_APPROVED;
 			$oPlanCharge->Notes				= '1st Interim Invoice Plan Debit';
 			$oPlanCharge->global_tax_exempt	= false;
@@ -1107,10 +1107,10 @@ ORDER BY	account_id,
 			$oInterimPlanCredit->ApprovedBy			= Employee::SYSTEM_EMPLOYEE_ID;
 			$oInterimPlanCredit->ChargeType			= 'PCAR';
 			$oInterimPlanCredit->charge_type_id		= $aChargeTypes['PCAR']->Id;
-			$oInterimPlanCredit->Description		= $aService['aAdjustments']['interim_plan_credit_description'];
+			$oInterimPlanCredit->Description		= $aService['aCharges']['interim_plan_credit_description'];
 			$oInterimPlanCredit->ChargedOn			= date("Y-m-d");
 			$oInterimPlanCredit->Nature				= 'CR';
-			$oInterimPlanCredit->Amount				= abs($aService['aAdjustments']['interim_plan_credit']);
+			$oInterimPlanCredit->Amount				= abs($aService['aCharges']['interim_plan_credit']);
 			$oInterimPlanCredit->Status				= CHARGE_APPROVED;
 			$oInterimPlanCredit->Notes				= '1st Interim Invoice Plan Credit';
 			$oInterimPlanCredit->global_tax_exempt	= false;
@@ -1128,10 +1128,10 @@ ORDER BY	account_id,
 			$oProductionPlanCredit->ApprovedBy			= Employee::SYSTEM_EMPLOYEE_ID;
 			$oProductionPlanCredit->ChargeType			= 'PCAR';
 			$oProductionPlanCredit->charge_type_id		= $aChargeTypes['PCAR']->Id;
-			$oProductionPlanCredit->Description			= $aService['aAdjustments']['production_plan_credit_description'];
+			$oProductionPlanCredit->Description			= $aService['aCharges']['production_plan_credit_description'];
 			$oProductionPlanCredit->ChargedOn			= date("Y-m-d", strtotime("+1 day", time()));
 			$oProductionPlanCredit->Nature				= 'CR';
-			$oProductionPlanCredit->Amount				= abs($aService['aAdjustments']['production_plan_credit']);
+			$oProductionPlanCredit->Amount				= abs($aService['aCharges']['production_plan_credit']);
 			$oProductionPlanCredit->Status				= CHARGE_APPROVED;
 			$oProductionPlanCredit->Notes				= '1st Production Invoice Plan Credit';
 			$oProductionPlanCredit->global_tax_exempt	= false;
@@ -1140,7 +1140,7 @@ ORDER BY	account_id,
 		}
 		catch (Exception $eException)
 		{
-			throw new Exception("There was an error adding the Interim Adjustments: ".$eException->getMessage());
+			throw new Exception("There was an error adding the Interim Charges: ".$eException->getMessage());
 		}
 	}
 	

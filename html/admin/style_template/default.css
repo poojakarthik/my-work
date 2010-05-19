@@ -624,7 +624,7 @@ h2.Plan,
 h2.Date,
 h2.Address,
 h2.Payment,
-h2.Adjustment,
+h2.Charge,
 h2.PDF,
 h2.Provisioning,
 h2.ProvisioningHistory,
@@ -691,7 +691,7 @@ h2.Email
 	background-image:              url('img/template/email.png');
 }
 
-h2.Adjustment
+h2.Charge
 {
 	background-image:              url('img/template/charge_small.png');
 }

@@ -61,8 +61,8 @@ var Page_Charge_Type = Class.create(
 											$T.tr(
 												$T.th({colspan: '9'},
 													$T.button(
-														$T.img({src: Page_Charge_Type.ADD_IMAGE_SOURCE, alt: '', title: 'Add Adjustment Type'}),
-														$T.span('Add Adjustment Type')
+														$T.img({src: Page_Charge_Type.ADD_IMAGE_SOURCE, alt: '', title: 'Add Charge Type'}),
+														$T.span('Add Charge Type')
 													)
 												)
 											)
@@ -290,7 +290,7 @@ var Page_Charge_Type = Class.create(
 		if (!bConfirmed)
 		{
 			Reflex_Popup.yesNoCancel(	$T.div(
-											$T.p('Archiving this Adjustment Type will make it unavailable for use.'),
+											$T.p('Archiving this Charge Type will make it unavailable for use.'),
 											$T.p('Are you sure you want to archive it?')
 										),
 										{

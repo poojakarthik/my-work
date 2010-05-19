@@ -321,7 +321,7 @@ function VixenPaymentPopupClass()
 					strMsg = 	strCreditCard + " payments incur a " + strSurchargePercentage +"% surcharge." +
 								"<br />The payment of $" + fltAmount.toFixed(2) +" will incur a surcharge of $"+ fltSurcharge.toFixed(2) + "."+
 								"<br /><span class='Green'>The amount to be entered into the EFTPOS machine is $" + fltTotal.toFixed(2) + "</span>"+
-								"<br />The surcharge will be automatically added as a debit adjustment." +
+								"<br />The surcharge will be automatically added as a debit charge." +
 								"<br /><br />Are you sure you want to commit this payment of $"+ fltTotal.toFixed(2) +"?";
 				}
 				else

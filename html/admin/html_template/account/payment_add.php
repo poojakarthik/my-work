@@ -37,7 +37,7 @@
  * HTML Template class for the Make Payment HTML object
  *
  * HTML Template class for the Make Payment HTML object
- * displays the form used to add an adjustment
+ * displays the form used to add an charge
  *
  * @package	ui_app
  * @class	HtmlTemplateAccountPaymentAdd

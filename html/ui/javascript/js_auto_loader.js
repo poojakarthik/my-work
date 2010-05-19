@@ -53,22 +53,20 @@ var JsAutoLoader = {
 			sessionTimestamp = Math.floor(Math.random()*1000000);
 		}
 	
-		var head = document.getElementsByTagName('head').item(0);
-		var strSource;
+		var head		= document.getElementsByTagName('head').item(0);
+		var strSource	= null;
 		if (bolUseJavascriptPhp)
 		{
-			strSource = "javascript.php?File[]="+ strScriptName +"&v="+ sessionTimestamp;
+			strSource	= "javascript.php?File[]="+ strScriptName +"&v="+ sessionTimestamp;
 		}
 		else
 		{
-			strSource = strScriptName +"?v="+ sessionTimestamp;
+			strSource	= strScriptName +"?v="+ sessionTimestamp;
 		}
 		
-		//alert("JS Autoload URI: " + strSource);
-		
 		// Check if the script has already been requested
-		var scripts = head.getElementsByTagName('script');
-		for (var i=0, j=scripts.length; i < j; i++)
+		var scripts	= head.getElementsByTagName('script');
+		for (var i = 0, j = scripts.length; i < j; i++)
 		{
 			if (scripts[i].hasAttribute('src') && scripts[i].getAttribute('src').match(strScriptName) != null)
 			{
@@ -77,21 +75,18 @@ var JsAutoLoader = {
 				{
 					if (this.loadedScripts[strScriptName] != undefined)
 					{
-						//alert(strScriptName + " is already loaded -- calling Callback...");
-						
 						// This script should be loaded, so run the funcOnLoadEventHandler function, in global scope
 						// wrapping it in a timeout will give it global scope
 						setTimeout(fncCallback, 1);
 					}
 					else
 					{
-						//alert(strScriptName + " is already loading -- creating event listener for Callback...");
-						
 						// The script element has been included in the header, but has not finished loading yet
 						// add the funcOnLoadEventHandler to it as an event listener
 						Event.startObserving(scripts[i], "load", fncCallback, true);
 					}
 				}
+				
 				return;
 			}
 		}
@@ -106,8 +101,6 @@ var JsAutoLoader = {
 		if (fncCallback != undefined)
 		{
 			Event.startObserving(script, "load", fncCallback, true);
-			
-			//alert(strScriptName + " is now loading -- creating event listener for Callback...");
 		}
 		
 		// Load the JS Script
@@ -133,7 +126,7 @@ var JsAutoLoader = {
 	// This is used to register the fact that a script has been loaded into the dom
 	registerLoadedScript : function(strScriptName)
 	{
-		this.loadedScripts[strScriptName] = true;
+		this.loadedScripts[strScriptName]	= true;
 	},
 	
 	require	: function(mScripts, fnOnLoadCallback)

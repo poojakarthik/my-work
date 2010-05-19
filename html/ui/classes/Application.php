@@ -178,10 +178,10 @@ class Application
 		{
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
 			{
-				ContextMenu()->Admin->Adjustments->ManageAdjustmentRequests();
-				ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentRequests();
-				ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
-				ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
+				ContextMenu()->Admin->Charges->ManageChargeRequests();
+				ContextMenu()->Admin->Charges->ManageRecurringChargeRequests();
+				ContextMenu()->Admin->Charges->ManageSingleChargeTypes();
+				ContextMenu()->Admin->Charges->ManageRecurringChargeTypes();
 			}
 
 			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download'
@@ -404,10 +404,10 @@ class Application
 		{
 			if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
 			{
-				ContextMenu()->Admin->Adjustments->ManageAdjustmentRequests();
-				ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentRequests();
-				ContextMenu()->Admin->Adjustments->ManageSingleAdjustmentTypes();
-				ContextMenu()->Admin->Adjustments->ManageRecurringAdjustmentTypes();
+				ContextMenu()->Admin->Charges->ManageChargeRequests();
+				ContextMenu()->Admin->Charges->ManageRecurringChargeRequests();
+				ContextMenu()->Admin->Charges->ManageSingleChargeTypes();
+				ContextMenu()->Admin->Charges->ManageRecurringChargeTypes();
 			}
 
 			// Payment Download has been moved to 2 data reports 'Payment Download' & 'Cheque Payment Download''. rmctainsh 20100415

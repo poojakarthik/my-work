@@ -230,10 +230,10 @@ class Recurring_Charge extends ORM_Cached
 		return 100;
 	}
 
-	// This will cancel the RecurringCharge (or request for recurring adjustment), and generate a payout adjustment if one is required.
+	// This will cancel the RecurringCharge (or request for recurring charge), and generate a payout charge if one is required.
 	// If the Minimum Charge has been met, then the RecurringCharge will be flagged as having been completed
-	// If a payout adjustment is required, then it will return the object created (this object will have been saved)
-	// This will log the "Adjustment Request" action, if a payout adjustment is created, and a note declaring the cancelation of the RecurringAdjustment,
+	// If a payout charge is required, then it will return the object created (this object will have been saved)
+	// This will log the "Charge Request" action, if a payout charge is created, and a note declaring the cancelation of the RecurringCharge,
 	// but only if $bolGenerateAppropriateActionsAndNotes is set to true
 	public function setToCancelled($intEmployeeId=null, $bolLogAppropriateActionsAndNotes=true, $strAdditionalNotes=null)
 	{
@@ -246,16 +246,16 @@ class Recurring_Charge extends ORM_Cached
 		$intRecChargeStatusActive			= Recurring_Charge_Status::getIdForSystemName('ACTIVE');
 		$intRecChargeStatusCancelled		= Recurring_Charge_Status::getIdForSystemName('CANCELLED');
 		
-		// Verify that the RecurringAdjustment is eligible for cancellation, based on the status
+		// Verify that the RecurringCharge is eligible for cancellation, based on the status
 		switch ($this->recurringChargeStatusId)
 		{
 			case $intRecChargeStatusAwaitingApproval:
-				// Set up vars pertaining to the fact that this is cancelling a request for a Recurring Adjustment
-				$strActionPastTense = "Cancelled recurring adjustment that was pending approval";
+				// Set up vars pertaining to the fact that this is cancelling a request for a Recurring Charge
+				$strActionPastTense = "Cancelled recurring charge that was pending approval";
 				break;
 				
 			case $intRecChargeStatusActive:
-				// The RecurringAdjustment is currently active.
+				// The RecurringCharge is currently active.
 
 				// Check if it has satisfied the requirements for completion
 				if ($this->hasSatisfiedRequirementsForCompletion())
@@ -265,22 +265,22 @@ class Recurring_Charge extends ORM_Cached
 					return NULL;
 				}
 
-				// Set up vars pertaining to the fact that this is cancelling a request for a Recurring Adjustment
-				$strActionPastTense = "Cancelled recurring adjustment";
+				// Set up vars pertaining to the fact that this is cancelling a request for a Recurring Charge
+				$strActionPastTense = "Cancelled recurring charge";
 
 				break;
 				
 			default:
 				$objCurrentStatus = Recurring_Charge_Status::getForId($this->recurring_charge_status_id);
-				throw new Exception("Cannot cancel recurring adjustment when status is set to: {$objCurrentStatus->name}");
+				throw new Exception("Cannot cancel recurring charge when status is set to: {$objCurrentStatus->name}");
 				break;
 		}
 		
 		
-		// Check if a payout adjustment should be made
+		// Check if a payout charge should be made
 		if ($this->recurringChargeStatusId == $intRecChargeStatusActive && $this->nature == NATURE_DR && !$this->hasReachedMinimumCharge())
 		{
-			// Create a payout adjustment
+			// Create a payout charge
 			$fltAmount = ($this->minCharge - $this->totalCharged) + $this->cancellationFee;
 			
 			$objPayoutCharge = new Charge();
@@ -310,14 +310,14 @@ class Recurring_Charge extends ORM_Cached
 			
 			if ($bolLogAppropriateActionsAndNotes)
 			{
-				// Log the request for adjustment
+				// Log the request for charge
 				$strNature				= ($objPayoutCharge->nature == NATURE_DR)? "Debit" : "Credit";
 				$strPayoutAmount		= number_format(AddGST($objPayoutCharge->amount), 2, '.', '');
-				$strActionExtraDetails	= 	"Payout for cancellation of recurring adjustment\n".
+				$strActionExtraDetails	= 	"Payout for cancellation of recurring charge\n".
 											"Type: {$objPayoutCharge->chargeType} - {$objPayoutCharge->description} ({$strNature})\n".
 											"Amount (Inc GST): \${$strPayoutAmount} {$strNature}";
 				
-				Action::createAction('Adjustment Requested', $strActionExtraDetails, $objPayoutCharge->account, $objPayoutCharge->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+				Action::createAction('Charge Requested', $strActionExtraDetails, $objPayoutCharge->account, $objPayoutCharge->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 			}
 		}
 		
@@ -348,7 +348,7 @@ class Recurring_Charge extends ORM_Cached
 			if (isset($objPayoutCharge))
 			{
 				$strPayoutAmount = number_format(AddGST($objPayoutCharge->amount), 2, '.', '');
-				$strNote .= "\nA payout adjustment has been requested for \${$strPayoutAmount}";
+				$strNote .= "\nA payout charge has been requested for \${$strPayoutAmount}";
 			}
 			
 			$strAdditionalNotes = trim($strAdditionalNotes);
@@ -592,13 +592,13 @@ class Recurring_Charge extends ORM_Cached
 		// Check that the requirements for Completion have been met
 		if (!$this->hasSatisfiedRequirementsForCompletion())
 		{
-			throw new Exception("Cannot set recurring adjustment to COMPLETED because it has not satisfied the requirements for completion");
+			throw new Exception("Cannot set recurring charge to COMPLETED because it has not satisfied the requirements for completion");
 		}
 		
 		if ($this->recurringChargeStatusId != $intRecChargeStatusActive)
 		{
 			$objCurrentStatus = Recurring_Charge_Status::getForId($this->recurringChargeStatusId);
-			throw new Exception("Cannot set recurring adjustment to COMPLETED because it is not currently active.  Its current status is: {$objCurrentStatus->name}");
+			throw new Exception("Cannot set recurring charge to COMPLETED because it is not currently active.  Its current status is: {$objCurrentStatus->name}");
 		}
 		
 		if ($bolLogNote)
@@ -613,7 +613,7 @@ class Recurring_Charge extends ORM_Cached
 			$strMinCharge			= number_format(AddGST($this->minCharge), 2, ".", "");
 			$strTotalCharged		= number_format(AddGST($this->totalCharged), 2, ".", "");
 			
-			$strNote = 	"Recurring Adjustment has been completed and discontinued (id: {$this->id})\n".
+			$strNote = 	"Recurring Charge has been completed and discontinued (id: {$this->id})\n".
 						"Type: {$this->chargeType} - {$this->description} ({$strNature})\n".
 						"Originally configured on: {$strCreatedOn} by $strCreatedByEmployeeName\n".
 						"Minimum charge (inc GST): \${$strMinCharge} {$strNature}\n".
@@ -645,12 +645,12 @@ class Recurring_Charge extends ORM_Cached
 		if ($this->recurringChargeStatusId != $intRecChargeStatusAwaitingApproval)
 		{
 			$objCurrentStatus = Recurring_Charge_Status::getForId($this->recurringChargeStatusId);
-			throw new Exception("Cannot decline the request for recurring adjustment because it isn't currently awaiting approval.  Its current status is: {$objCurrentStatus->name}");
+			throw new Exception("Cannot decline the request for recurring charge because it isn't currently awaiting approval.  Its current status is: {$objCurrentStatus->name}");
 		}
 		
 		if ($bolLogAction)
 		{
-			// Log the 'Recurring Adjustment Request Outcome' action, having taken place
+			// Log the 'Recurring Charge Request Outcome' action, having taken place
 			$objCreatedByEmployee		= Employee::getForId($this->createdBy);
 			$strCreatedOn				= date('d-m-Y', strtotime($this->createdOn));
 			$strCreatedByEmployeeName	= $objCreatedByEmployee->getName();
@@ -660,7 +660,7 @@ class Recurring_Charge extends ORM_Cached
 			$strMinCharge					= number_format(AddGST($this->minCharge), 2, '.', '');
 			$strRecursionChargeDescription	= $this->getRecursionChargeDescription(true);
 			
-			$strNote = 	"Request for the recurring adjustment has been REJECTED.\n".
+			$strNote = 	"Request for the recurring charge has been REJECTED.\n".
 						"Type: {$this->chargeType} - {$this->description} ({$strNature}) (id: {$this->id})\n".
 						"Requested on: {$strCreatedOn} by {$strCreatedByEmployeeName}\n".
 						"Minimum charge (inc GST): \${$strMinCharge} {$strNature}\n".
@@ -672,7 +672,7 @@ class Recurring_Charge extends ORM_Cached
 				$strNote .= "\nReason:\n{$strReason}";
 			}
 			
-			Action::createAction('Recurring Adjustment Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction('Recurring Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the RecurringCharge record
@@ -693,12 +693,12 @@ class Recurring_Charge extends ORM_Cached
 		if ($this->recurringChargeStatusId != $intRecChargeStatusAwaitingApproval)
 		{
 			$objCurrentStatus = Recurring_Charge_Status::getForId($this->recurringChargeStatusId);
-			throw new Exception("Cannot approve the request for recurring adjustment because it isn't currently awaiting approval.  Its current status is: {$objCurrentStatus->name}");
+			throw new Exception("Cannot approve the request for recurring charge because it isn't currently awaiting approval.  Its current status is: {$objCurrentStatus->name}");
 		}
 		
 		if ($bolLogAction)
 		{
-			// Log the 'Recurring Adjustment Request Outcome' action, having taken place
+			// Log the 'Recurring Charge Request Outcome' action, having taken place
 			$objCreatedByEmployee		= Employee::getForId($this->createdBy);
 			$strCreatedOn				= date('d-m-Y', strtotime($this->createdOn));
 			$strCreatedByEmployeeName	= $objCreatedByEmployee->getName();
@@ -708,13 +708,13 @@ class Recurring_Charge extends ORM_Cached
 			$strMinCharge					= number_format(AddGST($this->minCharge), 2, '.', '');
 			$strRecursionChargeDescription	= $this->getRecursionChargeDescription(true);
 			
-			$strNote = 	"Request for the recurring adjustment has been APPROVED.\n".
+			$strNote = 	"Request for the recurring charge has been APPROVED.\n".
 						"Type: {$this->chargeType} - {$this->description} ({$strNature}) (id: {$this->id})\n".
 						"Requested on: {$strCreatedOn} by {$strCreatedByEmployeeName}\n".
 						"Minimum charge (inc GST): \${$strMinCharge} {$strNature}\n".
 						"Recurring charge (inc GST): {$strRecursionChargeDescription}";
 			
-			Action::createAction('Recurring Adjustment Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction('Recurring Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the RecurringCharge record
@@ -782,7 +782,7 @@ class Recurring_Charge extends ORM_Cached
 		return $strDescription;
 	}
 	
-	// Builds a description which can be used to identify the recurring adjustment
+	// Builds a description which can be used to identify the recurring charge
 	public function getIdentifyingDescription($bolIncludeGST, $bolIncludeAccountAndServiceIds=false, $bolIncludeRecChargeId=false, $bolIncludeStartDate=false, $bolIncludeCreationDate=false, $intDecPlaces=2)
 	{
 		$strRecChargeDescription	= $this->getRecursionChargeDescription($bolIncludeGST, $intDecPlaces);
@@ -877,7 +877,7 @@ class Recurring_Charge extends ORM_Cached
 	}
 
 	
-	// Returns TRUE if the RecurringAdjustment needs to create installment adjustments pending as of today (NOW())
+	// Returns TRUE if the RecurringCharge needs to create installment charges pending as of today (NOW())
 	// It is a precondition that $this->recurringChargeStatusId == ACTIVE and if the minimum number of installments has already been made, then 
 	// the recurring charge must be continuable
 	// THIS FUNCTION DOES NOT USE RecurringCharge.LastChargedOn to check if the next installment to make, is greater then LastChargedOn and <= TODAY
@@ -926,7 +926,7 @@ class Recurring_Charge extends ORM_Cached
 	}
 	
 	// Generates however many installment charges are pending, for the date in question
-	// Multiple charges might need to be created for the one recurring adjustment
+	// Multiple charges might need to be created for the one recurring charge
 	// Whatever charges are created will be returned in an array
 	// If none are created, then the array will be empty
 	// This will actually save the Charge records, and also update the RecurringCharge record appropriately (and charge_recurring_charge).

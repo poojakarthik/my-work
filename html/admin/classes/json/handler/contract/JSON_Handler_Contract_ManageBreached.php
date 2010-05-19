@@ -65,7 +65,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 			$objServiceRatePlan	= new Service_Rate_Plan(Array('Id'=>$intContractId), TRUE);
 			$objService			= new Service(Array('Id'=>$objServiceRatePlan->Service), TRUE);
 			
-			// Add Exit Fee Adjustment
+			// Add Exit Fee Charge
 			$fltExitFee	= round((float)$fltExitFee, 2);
 			if ($fltExitFee > 0.0)
 			{
@@ -97,7 +97,7 @@ class JSON_Handler_Contract_ManageBreached extends JSON_Handler
 				$objServiceRatePlan->exit_fee_charge_id	= $objExitCharge->Id;
 			}
 			
-			// Add Payout Adjustment
+			// Add Payout Charge
 			$fltPayoutFee	= round((float)$fltPayoutFee, 2);
 			if ($fltPayoutFee > 0.0)
 			{

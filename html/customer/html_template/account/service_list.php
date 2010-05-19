@@ -122,7 +122,7 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 			
 			
 			// Calculate the total unbilled charges for this service (inc GST)
-			// Note that we are not including service adjustments in this calculation, just unbilled CDRs relating to the service, that aren't credit CDRs
+			// Note that we are not including service charges in this calculation, just unbilled CDRs relating to the service, that aren't credit CDRs
 			$dboService->TotalUnbilled = AddGST(UnbilledServiceCDRTotal($dboService->Id->Value, TRUE));
 
 			// build the "View Unbilled Charges for Service" link
@@ -219,7 +219,7 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 			
 			
 			// Calculate the total unbilled charges for this service (inc GST)
-			// Note that we are not including service adjustments in this calculation, just unbilled CDRs relating to the service, that aren't credit CDRs
+			// Note that we are not including service charges in this calculation, just unbilled CDRs relating to the service, that aren't credit CDRs
 			$dboService->TotalUnbilled = AddGST(UnbilledServiceCDRTotal($dboService->Id->Value, TRUE));
 
 			// build the "View Unbilled Charges for Service" link

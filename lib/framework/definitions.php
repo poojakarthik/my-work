@@ -427,15 +427,15 @@ $GLOBALS['*arrConstant']	['ChargeStatus']	[105]	['Description']	= 'Deleted';
 $GLOBALS['*arrConstant']	['ChargeLink']		[500]	['Constant']	= 'CHARGE_LINK_PAYMENT';
 $GLOBALS['*arrConstant']	['ChargeLink']		[500]	['Description']	= 'Payment Surcharge';
 $GLOBALS['*arrConstant']	['ChargeLink']		[501]	['Constant']	= 'CHARGE_LINK_RECURRING';
-$GLOBALS['*arrConstant']	['ChargeLink']		[501]	['Description']	= 'Recurring Adjustment';
+$GLOBALS['*arrConstant']	['ChargeLink']		[501]	['Description']	= 'Recurring Charge';
 $GLOBALS['*arrConstant']	['ChargeLink']		[502]	['Constant']	= 'CHARGE_LINK_RECURRING_CANCEL';
-$GLOBALS['*arrConstant']	['ChargeLink']		[502]	['Description']	= 'Recurring Adjustment Cancellation';
+$GLOBALS['*arrConstant']	['ChargeLink']		[502]	['Description']	= 'Recurring Charge Cancellation';
 $GLOBALS['*arrConstant']	['ChargeLink']		[503]	['Constant']	= 'CHARGE_LINK_OVERCHARGE_CREDIT';
 $GLOBALS['*arrConstant']	['ChargeLink']		[503]	['Description']	= 'Invoice Overcharge Credit';
 $GLOBALS['*arrConstant']	['ChargeLink']		[504]	['Constant']	= 'CHARGE_LINK_CDR_CREDIT';
 $GLOBALS['*arrConstant']	['ChargeLink']		[504]	['Description']	= 'CDR Credit';
 $GLOBALS['*arrConstant']	['ChargeLink']		[505]	['Constant']	= 'CHARGE_LINK_CHARGE';
-$GLOBALS['*arrConstant']	['ChargeLink']		[505]	['Description']	= 'Adjustment Negation';
+$GLOBALS['*arrConstant']	['ChargeLink']		[505]	['Description']	= 'Charge Negation';
 
 
 // Credit Card Constants

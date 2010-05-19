@@ -1,4 +1,4 @@
-var Adjustment_Management = Class.create
+var Recurring_Charge_Management = Class.create
 ({
 	initialize	: function(elmContainerDiv, intMaxRecordsPerPage)
 	{
@@ -6,12 +6,12 @@ var Adjustment_Management = Class.create
 
 		// Init Dataset & Pagination
 		this.intMaxRecordsPerPage = intMaxRecordsPerPage;
-		this.objDataset		= new Dataset_Ajax(intCacheMode, {strObject: 'Adjustment', strMethod: 'getAdjustmentsAwaitingApproval'});
+		this.objDataset		= new Dataset_Ajax(intCacheMode, {strObject: 'Recurring_Charge', strMethod: 'getRecurringChargesAwaitingApproval'});
 		this.objPagination	= new Pagination(this._updateTable.bind(this), this.intMaxRecordsPerPage, this.objDataset);
-		this._objCharges	= {};
+		this._objRecCharges	= {};
 
-		// This will store the list of charges (just their ids) to be either approved or declined, in a single submit to the server
-		this._arrChargeIdsToBeActioned = new Array();
+		// This will store the list of recurring charges (just their ids) to be either approved or declined, in a single submit to the server
+		this._arrRecChargeIdsToBeActioned = new Array();
 		
 		this._bolIsSubmitting = false;
 
@@ -155,7 +155,7 @@ var Adjustment_Management = Class.create
 		objPage.objTable.objCaption.objCaptionBar.objOptions = {};
 		objPage.objTable.objCaption.objCaptionBar.objOptions.domElement = document.createElement('div');
 		objPage.objTable.objCaption.objCaptionBar.objOptions.domElement.className = 'caption_options';
-
+		
 		var elmDiv = document.createElement('div');
 		elmDiv.style.cssFloat = 'none';
 		elmDiv.style.clear = 'both';
@@ -186,36 +186,43 @@ var Adjustment_Management = Class.create
 		objPage.objTable.objTHEAD.objSelector.domElement		= document.createElement('th');
 		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objSelector.domElement);
 
-		// Charge Description column
-		objPage.objTable.objTHEAD.objChargeDescription = {};
-		objPage.objTable.objTHEAD.objChargeDescription.domElement = document.createElement('th');
-		objPage.objTable.objTHEAD.objChargeDescription.domElement.appendChild(document.createTextNode('Charge Type'));
-		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objChargeDescription.domElement);
+		// RecCharge Description column
+		objPage.objTable.objTHEAD.objRecChargeDescription = {};
+		objPage.objTable.objTHEAD.objRecChargeDescription.domElement = document.createElement('th');
+		objPage.objTable.objTHEAD.objRecChargeDescription.domElement.appendChild(document.createTextNode('Charge Type'));
+		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objRecChargeDescription.domElement);
 
-		// Charge Amount column
-		objPage.objTable.objTHEAD.objChargeAmount = {};
-		objPage.objTable.objTHEAD.objChargeAmount.domElement = document.createElement('th');
-		objPage.objTable.objTHEAD.objChargeAmount.domElement.innerHTML = 'Amount ($&nbsp;inc&nbsp;GST)';
-		objPage.objTable.objTHEAD.objChargeAmount.domElement.style.textAlign = 'right';
-		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objChargeAmount.domElement);
+		// RecCharge MinCharge column
+		objPage.objTable.objTHEAD.objRecChargeMinCharge = {};
+		objPage.objTable.objTHEAD.objRecChargeMinCharge.domElement = document.createElement('th');
+		objPage.objTable.objTHEAD.objRecChargeMinCharge.domElement.innerHTML = 'Min Charge ($&nbsp;inc&nbsp;GST)';
+		objPage.objTable.objTHEAD.objRecChargeMinCharge.domElement.style.textAlign = 'right';
+		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objRecChargeMinCharge.domElement);
 
-		// Charge Nature column
-		objPage.objTable.objTHEAD.objChargeNature = {};
-		objPage.objTable.objTHEAD.objChargeNature.domElement = document.createElement('th');
-		objPage.objTable.objTHEAD.objChargeNature.domElement.appendChild(document.createTextNode('Nature'));
-		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objChargeNature.domElement);
+		// RecCharge RecursionCharge column
+		objPage.objTable.objTHEAD.objRecChargeRecursionCharge = {};
+		objPage.objTable.objTHEAD.objRecChargeRecursionCharge.domElement = document.createElement('th');
+		objPage.objTable.objTHEAD.objRecChargeRecursionCharge.domElement.appendChild(document.createTextNode('Rec Charge'));
+		objPage.objTable.objTHEAD.objRecChargeRecursionCharge.domElement.style.textAlign = 'right';
+		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objRecChargeRecursionCharge.domElement);
 
-		// Account Id column
-		objPage.objTable.objTHEAD.objAccountId = {};
-		objPage.objTable.objTHEAD.objAccountId.domElement = document.createElement('th');
-		objPage.objTable.objTHEAD.objAccountId.domElement.appendChild(document.createTextNode('Account Id'));
-		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objAccountId.domElement);
+		// RecCharge Nature column
+		objPage.objTable.objTHEAD.objRecChargeNature = {};
+		objPage.objTable.objTHEAD.objRecChargeNature.domElement = document.createElement('th');
+		objPage.objTable.objTHEAD.objRecChargeNature.domElement.appendChild(document.createTextNode('Nature'));
+		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objRecChargeNature.domElement);
 
-		// Account Name column
-		objPage.objTable.objTHEAD.objAccountName = {};
-		objPage.objTable.objTHEAD.objAccountName.domElement = document.createElement('th');
-		objPage.objTable.objTHEAD.objAccountName.domElement.appendChild(document.createTextNode('Name'));
-		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objAccountName.domElement);
+		// RecCharge Period column
+		objPage.objTable.objTHEAD.objRecChargePeriod = {};
+		objPage.objTable.objTHEAD.objRecChargePeriod.domElement = document.createElement('th');
+		objPage.objTable.objTHEAD.objRecChargePeriod.domElement.appendChild(document.createTextNode('Charged'));
+		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objRecChargePeriod.domElement);
+
+		// Account column
+		objPage.objTable.objTHEAD.objAccount = {};
+		objPage.objTable.objTHEAD.objAccount.domElement = document.createElement('th');
+		objPage.objTable.objTHEAD.objAccount.domElement.appendChild(document.createTextNode('Account'));
+		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objAccount.domElement);
 
 		// Service FNN column
 		objPage.objTable.objTHEAD.objServiceFNN = {};
@@ -223,17 +230,24 @@ var Adjustment_Management = Class.create
 		objPage.objTable.objTHEAD.objServiceFNN.domElement.appendChild(document.createTextNode('Service'));
 		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objServiceFNN.domElement);
 
-		// RequestedBy column
-		objPage.objTable.objTHEAD.objRequestedBy = {};
-		objPage.objTable.objTHEAD.objRequestedBy.domElement = document.createElement('th');
-		objPage.objTable.objTHEAD.objRequestedBy.domElement.appendChild(document.createTextNode('Requested By'));
-		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objRequestedBy.domElement);
-
 		// RequestedOn column
 		objPage.objTable.objTHEAD.objRequestedOn = {};
 		objPage.objTable.objTHEAD.objRequestedOn.domElement = document.createElement('th');
-		objPage.objTable.objTHEAD.objRequestedOn.domElement.appendChild(document.createTextNode('Requested On'));
+		objPage.objTable.objTHEAD.objRequestedOn.domElement.appendChild(document.createTextNode('Requested'));
 		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objRequestedOn.domElement);
+
+		// First Installment ChargedOn column
+		objPage.objTable.objTHEAD.objFirstChargedOn = {};
+		objPage.objTable.objTHEAD.objFirstChargedOn.domElement = document.createElement('th');
+		objPage.objTable.objTHEAD.objFirstChargedOn.domElement.appendChild(document.createTextNode('First Charge'));
+		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objFirstChargedOn.domElement);
+
+		// Final Installment ChargedOn column
+		objPage.objTable.objTHEAD.objFinalChargedOn = {};
+		objPage.objTable.objTHEAD.objFinalChargedOn.domElement = document.createElement('th');
+		objPage.objTable.objTHEAD.objFinalChargedOn.domElement.appendChild(document.createTextNode('Final Charge'));
+		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objFinalChargedOn.domElement);
+
 
 		// Actions column
 		objPage.objTable.objTHEAD.objActions = {};
@@ -299,22 +313,22 @@ var Adjustment_Management = Class.create
 		objPopup.domCancelButton.innerHTML = 'No';
 		Event.startObserving(objPopup.domCancelButton, 'click', this._closeConfirmationPopup.bind(this), false);
 		
-		// Charge Approval Confirmation buttons
-		objPopup.domApproveChargesConfirmButton = document.createElement('button');
-		objPopup.domApproveChargesConfirmButton.innerHTML = 'Yes';
-		Event.startObserving(objPopup.domApproveChargesConfirmButton, 'click', this._approveCharges.bind(this), false);
+		// RecCharge Approval Confirmation buttons
+		objPopup.domApproveRecChargesConfirmButton = document.createElement('button');
+		objPopup.domApproveRecChargesConfirmButton.innerHTML = 'Yes';
+		Event.startObserving(objPopup.domApproveRecChargesConfirmButton, 'click', this._approveRecCharges.bind(this), false);
 		
-		// Charge Decline Confirmation buttons
-		objPopup.domDeclineChargesConfirmButton = document.createElement('button');
-		objPopup.domDeclineChargesConfirmButton.innerHTML = 'Yes';
-		Event.startObserving(objPopup.domDeclineChargesConfirmButton, 'click', this._declineCharges.bind(this), false);
+		// RecCharge Decline Confirmation buttons
+		objPopup.domDeclineRecChargesConfirmButton = document.createElement('button');
+		objPopup.domDeclineRecChargesConfirmButton.innerHTML = 'Yes';
+		Event.startObserving(objPopup.domDeclineRecChargesConfirmButton, 'click', this._declineRecCharges.bind(this), false);
 		
 		// Prompt
 		objPopup.objPrompt = {}
 		objPopup.objPrompt.domElement = document.createElement('div');
 		objPopup.objPrompt.domElement.style.marginBottom = '0.5em';
 		objPopup.objPrompt.domElement.innerHTML = '[INSERT PROMPT HERE]';
-		
+
 		// Summary
 		objPopup.objSummary = {}
 		objPopup.objSummary.elmTable = document.createElement('table');
@@ -325,7 +339,7 @@ var Adjustment_Management = Class.create
 		objPopup.objSummary.objTotalCharges.elmRow = document.createElement('tr');
 		objPopup.objSummary.objTotalCharges.elmTitle = document.createElement('td');
 		objPopup.objSummary.objTotalCharges.elmTitle.className = 'title';
-		objPopup.objSummary.objTotalCharges.elmTitle.appendChild(document.createTextNode('Total Adjustments :'));
+		objPopup.objSummary.objTotalCharges.elmTitle.appendChild(document.createTextNode('Total Recurring Charges :'));
 		objPopup.objSummary.objTotalCharges.elmValue = document.createElement('td');
 		objPopup.objSummary.objTotalCharges.elmRow.appendChild(objPopup.objSummary.objTotalCharges.elmTitle);
 		objPopup.objSummary.objTotalCharges.elmRow.appendChild(objPopup.objSummary.objTotalCharges.elmValue);
@@ -335,7 +349,7 @@ var Adjustment_Management = Class.create
 		objPopup.objSummary.objTotalChargeTypes.elmRow = document.createElement('tr');
 		objPopup.objSummary.objTotalChargeTypes.elmTitle = document.createElement('td');
 		objPopup.objSummary.objTotalChargeTypes.elmTitle.className = 'title';
-		objPopup.objSummary.objTotalChargeTypes.elmTitle.appendChild(document.createTextNode('Total Adjustment Types :'));
+		objPopup.objSummary.objTotalChargeTypes.elmTitle.appendChild(document.createTextNode('Total Recurring Charge Types :'));
 		objPopup.objSummary.objTotalChargeTypes.elmValue = document.createElement('td');
 		objPopup.objSummary.objTotalChargeTypes.elmRow.appendChild(objPopup.objSummary.objTotalChargeTypes.elmTitle);
 		objPopup.objSummary.objTotalChargeTypes.elmRow.appendChild(objPopup.objSummary.objTotalChargeTypes.elmValue);
@@ -355,7 +369,7 @@ var Adjustment_Management = Class.create
 		objPopup.objSummary.objTotalCredits.elmRow = document.createElement('tr');
 		objPopup.objSummary.objTotalCredits.elmTitle = document.createElement('td');
 		objPopup.objSummary.objTotalCredits.elmTitle.className = 'title';
-		objPopup.objSummary.objTotalCredits.elmTitle.appendChild(document.createTextNode('Total Credits :'));
+		objPopup.objSummary.objTotalCredits.elmTitle.appendChild(document.createTextNode('Total Minimum Credits :'));
 		objPopup.objSummary.objTotalCredits.elmValue = document.createElement('td');
 		objPopup.objSummary.objTotalCredits.elmRow.appendChild(objPopup.objSummary.objTotalCredits.elmTitle);
 		objPopup.objSummary.objTotalCredits.elmRow.appendChild(objPopup.objSummary.objTotalCredits.elmValue);
@@ -365,7 +379,7 @@ var Adjustment_Management = Class.create
 		objPopup.objSummary.objTotalDebits.elmRow = document.createElement('tr');
 		objPopup.objSummary.objTotalDebits.elmTitle = document.createElement('td');
 		objPopup.objSummary.objTotalDebits.elmTitle.className = 'title';
-		objPopup.objSummary.objTotalDebits.elmTitle.appendChild(document.createTextNode('Total Debits :'));
+		objPopup.objSummary.objTotalDebits.elmTitle.appendChild(document.createTextNode('Total Minimum Debits :'));
 		objPopup.objSummary.objTotalDebits.elmValue = document.createElement('td');
 		objPopup.objSummary.objTotalDebits.elmRow.appendChild(objPopup.objSummary.objTotalDebits.elmTitle);
 		objPopup.objSummary.objTotalDebits.elmRow.appendChild(objPopup.objSummary.objTotalDebits.elmValue);
@@ -376,7 +390,7 @@ var Adjustment_Management = Class.create
 		objPopup.objSummary.elmTable.appendChild(objPopup.objSummary.objTotalAccounts.elmRow);
 		objPopup.objSummary.elmTable.appendChild(objPopup.objSummary.objTotalCredits.elmRow);
 		objPopup.objSummary.elmTable.appendChild(objPopup.objSummary.objTotalDebits.elmRow);
-		
+
 		
 		// Reason for declining the charge(s)
 		objPopup.objReasonForDecline = {};
@@ -405,7 +419,7 @@ var Adjustment_Management = Class.create
 		
 		objPopup.popPopup = new Reflex_Popup(40);
 		objPopup.popPopup.setTitle('Are you sure you want to do that?');
-		objPopup.popPopup.setFooterButtons([objPopup.domDeclineChargesConfirmButton, objPopup.domApproveChargesConfirmButton, objPopup.domCancelButton], true);
+		objPopup.popPopup.setFooterButtons([objPopup.domDeclineRecChargesConfirmButton, objPopup.domApproveRecChargesConfirmButton, objPopup.domCancelButton], true);
 		objPopup.popPopup.setContent(objPopup.objBody.domElement);
 		
 		this._objConfirmationPopup = objPopup;
@@ -420,16 +434,16 @@ var Adjustment_Management = Class.create
 		this._objPage.objDebugConsole.domElement.innerHTML	+= "Updating Table content...<br />";
 		
 		// Formally destroy all event listeners
-		this._removeChargeEventListeners();
+		this._removeRecChargeEventListeners();
 		
 		while (this._objPage.objTable.objTBODY.domElement.firstChild)
 		{
 			this._objPage.objTable.objTBODY.domElement.removeChild(this._objPage.objTable.objTBODY.domElement.firstChild);
 		}
 
-		// Keep a temporary reference to the old page of charges, so you can check if any of them are still selected
-		var objOldCharges = this._objCharges;
-		this._objCharges = {};
+		// Keep a temporary reference to the old page of recurring charges, so you can check if any of them are still selected
+		var objOldRecCharges = this._objRecCharges;
+		this._objRecCharges = {};
 
 		// Update content
 		if (!objResultSet || objResultSet.intTotalResults == 0 || objResultSet.arrResultSet.length == 0)
@@ -454,17 +468,19 @@ var Adjustment_Management = Class.create
 			var intCurrentPage = objResultSet.intCurrentPage + 1;
 			this._objPage.objTable.objCaption.objCaptionBar.objTitle.domElement.innerHTML = 'Page '+ intCurrentPage +' of ' + objResultSet.intPageCount;
 			
-			var elmTR, elmTD, strChargeDescription, elmAnchor, intId, elmImage;
+			var elmTR, elmTD, strRecChargeDescription, elmAnchor, intId, elmImage, elmSpan;
 			
 			var bolAlternateRow = true;
 			
+			var strChargePeriodDescription;
+			
 			for (var i in objResultSet.arrResultSet)
 			{
-				// Store relevent details/elements regarding the charge
+				// Store relevent details/elements regarding the recurring charge
 				intId = objResultSet.arrResultSet[i].id;
-				this._objCharges[intId] = {};
-				this._objCharges[intId].objCharge = {};
-				this._objCharges[intId].objCharge = objResultSet.arrResultSet[i];
+				this._objRecCharges[intId] = {};
+				this._objRecCharges[intId].objRecCharge = {};
+				this._objRecCharges[intId].objRecCharge = objResultSet.arrResultSet[i];
 
 				elmTR	= document.createElement('tr');
 				
@@ -474,60 +490,71 @@ var Adjustment_Management = Class.create
 				{
 					elmTR.className += ' alt';
 				}
-				
+
 				// The selector
-				this._objCharges[intId].objSelector = {};
-				this._objCharges[intId].objSelector.domElement = document.createElement('input');
-				this._objCharges[intId].objSelector.domElement.type = 'checkbox';
+				this._objRecCharges[intId].objSelector = {};
+				this._objRecCharges[intId].objSelector.domElement = document.createElement('input');
+				this._objRecCharges[intId].objSelector.domElement.type = 'checkbox';
 
 				// If the charge was previously in the list, then retain the selector value
-				if (objOldCharges[intId] != undefined)
+				if (objOldRecCharges[intId] != undefined)
 				{
-					this._objCharges[intId].objSelector.domElement.checked = objOldCharges[intId].objSelector.domElement.checked;
+					this._objRecCharges[intId].objSelector.domElement.checked = objOldRecCharges[intId].objSelector.domElement.checked;
 				}
 
 				elmTD = document.createElement('td');
-				elmTD.appendChild(this._objCharges[intId].objSelector.domElement);
+				elmTD.appendChild(this._objRecCharges[intId].objSelector.domElement);
 				elmTR.appendChild(elmTD);
 				
-				// The Charge Description
-				strChargeDescription = objResultSet.arrResultSet[i].description +" ("+ objResultSet.arrResultSet[i].chargeType +")";
+				// The RecCharge Description
+				strRecChargeDescription = objResultSet.arrResultSet[i].description +" ("+ objResultSet.arrResultSet[i].chargeType +")";
 				elmTD = document.createElement('td');
-				elmTD.appendChild(document.createTextNode(strChargeDescription));
-				if (objResultSet.arrResultSet[i].notes != "")
-				{
-					// The charge has a comment attached to it
-					this._objCharges[intId].objCommentLink = {};
-					this._objCharges[intId].objCommentLink.domElement = document.createElement('a');
-					this._objCharges[intId].objCommentLink.domElement.appendChild(document.createTextNode('(Notes)'));
-					elmTD.appendChild(document.createTextNode(' '));
-					elmTD.appendChild(this._objCharges[intId].objCommentLink.domElement);
-				}
-				
+				elmTD.appendChild(document.createTextNode(strRecChargeDescription));
 				elmTR.appendChild(elmTD);
 
-				// The Charge Amount (inc GST formatted to 2 dec places)
+				// The RecCharge MinCharge (inc GST formatted to 2 dec places)
 				elmTD = document.createElement('td');
 				elmTD.style.textAlign = 'right';
-				elmTD.appendChild(document.createTextNode(objResultSet.arrResultSet[i].amountIncGstFormatted));
+				elmTD.appendChild(document.createTextNode(objResultSet.arrResultSet[i].minChargeIncGstFormatted));
+				elmTR.appendChild(elmTD);
+				
+				// The RecCharge RecursionCharge (inc GST formatted to 2 dec places)
+				elmTD = document.createElement('td');
+				elmTD.style.textAlign = 'right';
+				elmTD.appendChild(document.createTextNode(objResultSet.arrResultSet[i].recursionChargeIncGstFormatted));
 				elmTR.appendChild(elmTD);
 				
 				// Nature
 				elmTD = document.createElement('td');
 				elmTD.appendChild(document.createTextNode(objResultSet.arrResultSet[i].natureFormatted));
 				elmTR.appendChild(elmTD);
+
+				// In Advance / In Arrears - period - times to charge
+				strChargePeriodDescription = 'In&nbsp;'+ objResultSet.arrResultSet[i].inAdvanceFormatted +' every ';
+				if (objResultSet.arrResultSet[i].recurringFreq != 1)
+				{
+					strChargePeriodDescription += objResultSet.arrResultSet[i].recurringFreq +"&nbsp;";
+				}
+				strChargePeriodDescription += objResultSet.arrResultSet[i].frequencyTypeFormatted +' ('+ objResultSet.arrResultSet[i].timesToCharge +'&nbsp;times)';
 				
-				// Account Id
+				if (objResultSet.arrResultSet[i].hasPartialFinalCharge)
+				{
+					// The final installment charge is a partial one
+					strChargePeriodDescription += " Final Charge: $"+ objResultSet.arrResultSet[i].partialFinalChargeInGSTFormatted;
+				}
+				
+				elmTD = document.createElement('td');
+				elmTD.innerHTML = strChargePeriodDescription;
+				elmTR.appendChild(elmTD);
+
+				// Account
 				elmAnchor = document.createElement('a');
 				elmAnchor.href = objResultSet.arrResultSet[i].accountViewHref;
-				elmAnchor.title = "View Account";
+				elmAnchor.title = "Invoices and Payments";
 				elmAnchor.appendChild(document.createTextNode(objResultSet.arrResultSet[i].account));
 				elmTD = document.createElement('td');
 				elmTD.appendChild(elmAnchor);
-				elmTR.appendChild(elmTD);
-				
-				// Account Name
-				elmTD = document.createElement('td');
+				elmTD.appendChild(document.createElement('br'));
 				elmTD.appendChild(document.createTextNode(objResultSet.arrResultSet[i].accountName));
 				elmTR.appendChild(elmTD);
 				
@@ -543,14 +570,44 @@ var Adjustment_Management = Class.create
 				}
 				elmTR.appendChild(elmTD);
 				
-				// RequestedBy
-				elmTD = document.createElement('td');
-				elmTD.appendChild(document.createTextNode(objResultSet.arrResultSet[i].createdByEmployeeName));
-				elmTR.appendChild(elmTD);
-				
 				// RequestedOn
 				elmTD = document.createElement('td');
 				elmTD.appendChild(document.createTextNode(objResultSet.arrResultSet[i].createdOnFormated));
+				elmTD.appendChild(document.createElement('br'));
+				elmTD.appendChild(document.createTextNode("("+ objResultSet.arrResultSet[i].createdByEmployeeName +")"));
+				if (objResultSet.arrResultSet[i].startedOn != objResultSet.arrResultSet[i].createdOn)
+				{
+					// The official starting date is different to the createdOn date (if creating recurring charges on the 29th - 31st of the month, we snap them to the 28th or 1st of next month)
+					elmTD.appendChild(document.createElement('br'));
+					elmTD.appendChild(document.createTextNode("(Starts "+ objResultSet.arrResultSet[i].startedOnFormated +")"));
+					
+				}
+				
+				elmTR.appendChild(elmTD);
+
+				// Proposed date for First Installment
+				elmTD = document.createElement('td');
+				elmTD.appendChild(document.createTextNode(objResultSet.arrResultSet[i].chargedOnForFirstInstallmentFormatted));
+				elmTR.appendChild(elmTD);
+
+				// Proposed date for Last Installment
+				elmTD = document.createElement('td');
+				elmTD.appendChild(document.createTextNode(objResultSet.arrResultSet[i].chargedOnForFinalInstallmentFormatted));
+				if (objResultSet.arrResultSet[i].continuable != 0)
+				{
+					// The recurring charge will continue after this time
+					elmTD.appendChild(document.createElement('br'));
+					elmTD.appendChild(document.createTextNode('(continuable)'));
+				}
+				if (objResultSet.arrResultSet[i].hasPartialFinalCharge)
+				{
+					// The last installment charge will be less than the normal installment charge
+					elmSpan = document.createElement('span');
+					elmSpan.appendChild(document.createTextNode("($"+ objResultSet.arrResultSet[i].partialFinalChargeInGSTFormatted +")"));
+					elmSpan.style.color = '#FF0000';
+					elmTD.appendChild(document.createElement('br'));
+					elmTD.appendChild(elmSpan);
+				}
 				elmTR.appendChild(elmTD);
 				
 				// Actions (store references to these elements in the _objChares object)
@@ -560,8 +617,8 @@ var Adjustment_Management = Class.create
 				elmAnchor = document.createElement('a');
 				elmAnchor.appendChild(elmImage);
 				
-				this._objCharges[intId].objApprove = {};
-				this._objCharges[intId].objApprove.domElement = elmAnchor;
+				this._objRecCharges[intId].objApprove = {};
+				this._objRecCharges[intId].objApprove.domElement = elmAnchor;
 				
 				elmImage = document.createElement('img');
 				elmImage.src = 'img/template/decline.png';
@@ -569,27 +626,27 @@ var Adjustment_Management = Class.create
 				elmAnchor = document.createElement('a');
 				elmAnchor.appendChild(elmImage);
 				
-				this._objCharges[intId].objDecline = {};
-				this._objCharges[intId].objDecline.domElement = elmAnchor;
+				this._objRecCharges[intId].objDecline = {};
+				this._objRecCharges[intId].objDecline.domElement = elmAnchor;
 				
 				elmTD = document.createElement('td');
 				elmTD.setAttribute('nowrap', 'nowrap');
 				elmTD.style.textAlign = 'right';
 				
-				elmTD.appendChild(this._objCharges[intId].objApprove.domElement);
-				elmTD.appendChild(this._objCharges[intId].objDecline.domElement);
+				elmTD.appendChild(this._objRecCharges[intId].objApprove.domElement);
+				elmTD.appendChild(this._objRecCharges[intId].objDecline.domElement);
 
 				elmTR.appendChild(elmTD);
 				
 				this._objPage.objTable.objTBODY.domElement.appendChild(elmTR);
 
-				this._objCharges[intId].objRow = {};
-				this._objCharges[intId].objRow.domElement = elmTR;
+				this._objRecCharges[intId].objRow = {};
+				this._objRecCharges[intId].objRow.domElement = elmTR;
 			}
 		}
 
 		// Register all event listeners
-		this._createChargeEventListeners();
+		this._createRecChargeEventListeners();
 		
 		// Update pagination navigation
 		this._updatePagination();
@@ -625,89 +682,87 @@ var Adjustment_Management = Class.create
 		}
 	},
 	
-	_removeChargeEventListeners : function()
+	_removeRecChargeEventListeners : function()
 	{
-		for (var i in this._objCharges)
+		for (var i in this._objRecCharges)
 		{
-			Event.stopObserving(this._objCharges[i].objApprove.domElement, 'click', this._objCharges[i].objApprove.fncOnclick, false);
-			Event.stopObserving(this._objCharges[i].objDecline.domElement, 'click', this._objCharges[i].objDecline.fncOnclick, false);
-			if (this._objCharges[i].objCommentLink != undefined)
-			{
-				Event.stopObserving(this._objCharges[i].objCommentLink.domElement, 'click', this._objCharges[i].objCommentLink.fncOnclick, false);
-			}
+			Event.stopObserving(this._objRecCharges[i].objApprove.domElement, 'click', this._objRecCharges[i].objApprove.fncOnclick, false);
+			Event.stopObserving(this._objRecCharges[i].objDecline.domElement, 'click', this._objRecCharges[i].objDecline.fncOnclick, false);
 		}
 	},
 	
-	_createChargeEventListeners : function()
+	_createRecChargeEventListeners : function()
 	{
-		for (var i in this._objCharges)
+		for (var i in this._objRecCharges)
 		{
-			this._objCharges[i].objApprove.fncOnclick = this.approveCharge.bind(this, i);
-			this._objCharges[i].objDecline.fncOnclick = this.declineCharge.bind(this, i);
-			if (this._objCharges[i].objCommentLink != undefined)
-			{
-				this._objCharges[i].objCommentLink.fncOnclick = this.showChargeNote.bind(this, i);
-				Event.startObserving(this._objCharges[i].objCommentLink.domElement, 'click', this._objCharges[i].objCommentLink.fncOnclick, false);
-			}
-
-			Event.startObserving(this._objCharges[i].objApprove.domElement, 'click', this._objCharges[i].objApprove.fncOnclick, false);
-			Event.startObserving(this._objCharges[i].objDecline.domElement, 'click', this._objCharges[i].objDecline.fncOnclick, false);
+			this._objRecCharges[i].objApprove.fncOnclick = this.approveRecCharge.bind(this, i);
+			this._objRecCharges[i].objDecline.fncOnclick = this.declineRecCharge.bind(this, i);			
+			
+			Event.startObserving(this._objRecCharges[i].objApprove.domElement, 'click', this._objRecCharges[i].objApprove.fncOnclick, false);
+			Event.startObserving(this._objRecCharges[i].objDecline.domElement, 'click', this._objRecCharges[i].objDecline.fncOnclick, false);
 		}
 	},
 	
-	showChargeNote : function(intChargeId)
+	approveRecCharge : function(intRecChargeId)
 	{
-		$Alert(this._objCharges[intChargeId].objCharge.notes, null, null, 'modal');
+		if (!this._objRecCharges[intRecChargeId])
+		{
+			$Alert('The charge could not be found');
+			return;
+		}
+		
+		// Update the list of charges to action
+		this._arrRecChargeIdsToBeActioned = new Array();
+		this._arrRecChargeIdsToBeActioned.push(intRecChargeId);
+		
+		this._promptUser(Recurring_Charge_Management.APPROVE_CHARGES);
 	},
 	
-	approveCharge : function(intChargeId)
+	declineRecCharge : function(intRecChargeId)
 	{
-		// Update the list of charges to action
-		this._arrChargeIdsToBeActioned = new Array();
-		this._arrChargeIdsToBeActioned.push(intChargeId);
+		if (!this._objRecCharges[intRecChargeId])
+		{
+			$Alert('The charge could not be found');
+			return;
+		}
 		
-		this._promptUser(Adjustment_Management.APPROVE_CHARGES);
-	},
-	
-	declineCharge : function(intChargeId)
-	{
 		// Update the list of charges to action
-		this._arrChargeIdsToBeActioned = new Array();
-		this._arrChargeIdsToBeActioned.push(intChargeId);
+		this._arrRecChargeIdsToBeActioned = new Array();
+		this._arrRecChargeIdsToBeActioned.push(intRecChargeId);
 		
-		this._promptUser(Adjustment_Management.DECLINE_CHARGES);
+		this._promptUser(Recurring_Charge_Management.DECLINE_CHARGES);
 	},
 	
 	approveSelected : function()
 	{
 		// Update the list of charges to action
-		this._arrChargeIdsToBeActioned = new Array();
+		this._arrRecChargeIdsToBeActioned = new Array();
 		
-		for (var i in this._objCharges)
+		for (var i in this._objRecCharges)
 		{
-			if (this._objCharges[i].objSelector.domElement.checked)
+			if (this._objRecCharges[i].objSelector.domElement.checked)
 			{
-				this._arrChargeIdsToBeActioned.push(this._objCharges[i].objCharge.id);
+				this._arrRecChargeIdsToBeActioned.push(this._objRecCharges[i].objRecCharge.id);
 			}
 		}
 		
-		this._promptUser(Adjustment_Management.APPROVE_CHARGES);
+		this._promptUser(Recurring_Charge_Management.APPROVE_CHARGES);
 	},
 	
 	declineSelected : function()
 	{
 		// Update the list of charges to action
-		this._arrChargeIdsToBeActioned = new Array();
+		this._arrRecChargeIdsToBeActioned = new Array();
 		
-		for (var i in this._objCharges)
+		for (var i in this._objRecCharges)
 		{
-			if (this._objCharges[i].objSelector.domElement.checked)
+			if (this._objRecCharges[i].objSelector.domElement.checked)
 			{
-				this._arrChargeIdsToBeActioned.push(this._objCharges[i].objCharge.id);
+				this._arrRecChargeIdsToBeActioned.push(this._objRecCharges[i].objRecCharge.id);
 			}
 		}
 		
-		this._promptUser(Adjustment_Management.DECLINE_CHARGES);
+		this._promptUser(Recurring_Charge_Management.DECLINE_CHARGES);
 	},
 	
 	_promptUser : function(action)
@@ -717,15 +772,14 @@ var Adjustment_Management = Class.create
 			$Alert('Another submittion is pending with the server, please wait for it to finish');
 			return;
 		}
-
-		var intChargeCount = this._arrChargeIdsToBeActioned.length;
 		
-		if (intChargeCount == 0)
+		var intRecChargeCount = this._arrRecChargeIdsToBeActioned.length;		
+		
+		if (intRecChargeCount == 0)
 		{
-			$Alert('Please select at least one adjustment');
+			$Alert('Please select at least one recurring charge');
 			return;
 		}
-
 
 		var strPrompt = "hello";
 		var strPopupTitle = "hello";
@@ -734,81 +788,81 @@ var Adjustment_Management = Class.create
 		
 		var elmTitle = document.createElement('span');
 		var elmTitleImage = document.createElement('img');
-
+		
 		// Calculate all the totals for the summary
 		var fltTotalCredits = 0.0;
 		var fltTotalDebits = 0.0;
-		var intChargeTypeCount = 0;
-		var objChargeTypes = {};
+		var intRecChargeTypeCount = 0;
+		var objRecChargeTypes = {};
 		var intAccountCount = 0;
 		var objAccounts = {};
-		var i, j, objCharge, objChargeData;
+		var i, j, objRecCharge, objRecChargeData;
 
-		for (i=0, j=intChargeCount; i<j; i++)
+		for (i=0, j=intRecChargeCount; i<j; i++)
 		{
-			objCharge = this._objCharges[this._arrChargeIdsToBeActioned[i]];
+			objRecCharge = this._objRecCharges[this._arrRecChargeIdsToBeActioned[i]];
 			
 			// Highlight the selected row
-			objCharge.objRow.domElement.setAttribute('selected', 'selected');
+			objRecCharge.objRow.domElement.setAttribute('selected', 'selected');
 
-			objChargeData = objCharge.objCharge;
+			objRecChargeData = objRecCharge.objRecCharge;
 			
-			if (objChargeTypes[objChargeData.chargeType] === undefined)
+			if (objRecChargeTypes[objRecChargeData.chargeType] === undefined)
 			{
-				// This charge type hasn't been encountered yet
-				intChargeTypeCount++;
-				objChargeTypes[objChargeData.chargeType] = objChargeData.chargeType;
+				// This rec charge type hasn't been encountered yet
+				intRecChargeTypeCount++;
+				objRecChargeTypes[objRecChargeData.chargeType] = objRecChargeData.chargeType;
 			}
 
-			if (objAccounts[objChargeData.account] === undefined)
+			if (objAccounts[objRecChargeData.account] === undefined)
 			{
 				// This account hasn't been encountered yet
 				intAccountCount++;
-				objAccounts[objChargeData.account] = objChargeData.account;
+				objAccounts[objRecChargeData.account] = objRecChargeData.account;
 			}
 			
-			if (objChargeData.nature == 'CR')
+			if (objRecChargeData.nature == 'CR')
 			{
-				// Credit Adjustment
-				fltTotalCredits += objChargeData.amountIncGst;
+				// Credit recurring Charge
+				fltTotalCredits += objRecChargeData.minChargeIncGst;
 			}
 			else
 			{
-				// Debit Adjustment
-				fltTotalDebits += objChargeData.amountIncGst;
+				// Debit recurrin Charge
+				fltTotalDebits += objRecChargeData.minChargeIncGst;
 			}
 		}
 		
-		objPopup.objSummary.objTotalCharges.elmValue.innerHTML = intChargeCount;
-		objPopup.objSummary.objTotalChargeTypes.elmValue.innerHTML = intChargeTypeCount;
+		objPopup.objSummary.objTotalCharges.elmValue.innerHTML = intRecChargeCount;
+		objPopup.objSummary.objTotalChargeTypes.elmValue.innerHTML = intRecChargeTypeCount;
 		objPopup.objSummary.objTotalAccounts.elmValue.innerHTML = intAccountCount;
 		objPopup.objSummary.objTotalCredits.elmValue.innerHTML = '$' + fltTotalCredits.toFixed(2);
 		objPopup.objSummary.objTotalDebits.elmValue.innerHTML = '$' + fltTotalDebits.toFixed(2);
 		
 		
-		if (action == Adjustment_Management.APPROVE_CHARGES)
+		if (action == Recurring_Charge_Management.APPROVE_CHARGES)
 		{
 			// User wants to approve some charges
 			objPopup.objReasonForDecline.domElement.style.display = 'none';
-			objPopup.domApproveChargesConfirmButton.style.display = 'inline';
-			objPopup.domDeclineChargesConfirmButton.style.display = 'none';
+			objPopup.domApproveRecChargesConfirmButton.style.display = 'inline';
+			objPopup.domDeclineRecChargesConfirmButton.style.display = 'none';
 			
-			strPrompt = "Are you sure you want to approve these adjustment requests?";
-			strPopupTitle = "Approve Adjustment Requests";
+			strPrompt = "Are you sure you want to approve these recurring charge requests?";
+			strPopupTitle = "Approve Recurring Charge Requests";
 			
 			elmTitleImage.src = 'img/template/approve.png';
 			elmTitleImage.alt = 'Approve';
 		}
-		else if (action == Adjustment_Management.DECLINE_CHARGES)
+		else if (action == Recurring_Charge_Management.DECLINE_CHARGES)
 		{
 			// User wants to decline some charges
 			objPopup.objReasonForDecline.domElmTextarea.value = '';
 			objPopup.objReasonForDecline.domElement.style.display = 'block';
-			objPopup.domApproveChargesConfirmButton.style.display = 'none';
-			objPopup.domDeclineChargesConfirmButton.style.display = 'inline';
+			objPopup.domApproveRecChargesConfirmButton.style.display = 'none';
+			objPopup.domDeclineRecChargesConfirmButton.style.display = 'inline';
 
-			strPrompt = "Are you sure you want to reject these adjustment requests?";
-			strPopupTitle = "Reject Adjustment Requests";
+			strPrompt = "Are you sure you want to reject these recurring charge requests?";
+			strPopupTitle = "Reject Recurring Charge Requests";
 
 			elmTitleImage.src = 'img/template/decline.png';
 			elmTitleImage.alt = 'Reject';
@@ -818,6 +872,7 @@ var Adjustment_Management = Class.create
 			$Alert('Unknown action: '+ action);
 			return;
 		}
+		
 		elmTitle.appendChild(elmTitleImage);
 		elmTitle.appendChild(document.createTextNode(strPopupTitle));
 		objPopup.popPopup.setTitleElement(elmTitle);
@@ -826,7 +881,7 @@ var Adjustment_Management = Class.create
 		objPopup.popPopup.display();
 	},
 	
-	_approveCharges : function()
+	_approveRecCharges : function()
 	{
 		if (this._bolIsSubmitting)
 		{
@@ -836,15 +891,15 @@ var Adjustment_Management = Class.create
 		// Prepare details to send to the server
 		// (Nothing really to do here)
 		
-		var jsonFunc = jQuery.json.jsonFunction(this._approveChargesResponse.bind(this), null, "Adjustment", "approveAdjustmentRequests");
+		var jsonFunc = jQuery.json.jsonFunction(this._approveRecChargesResponse.bind(this), null, "Recurring_Charge", "approveRecurringChargeRequests");
 		
 		this._bolIsSubmitting = true;
 		
-		jsonFunc(this._arrChargeIdsToBeActioned);
+		jsonFunc(this._arrRecChargeIdsToBeActioned);
 		Vixen.Popup.ShowPageLoadingSplash("Processing", null, null, null, 100);
 	},
 
-	_approveChargesResponse : function(objResponse)
+	_approveRecChargesResponse : function(objResponse)
 	{
 		this._bolIsSubmitting = false;
 		Vixen.Popup.ClosePageLoadingSplash();
@@ -856,11 +911,11 @@ var Adjustment_Management = Class.create
 			var strMessage = "";
 			if (objResponse.intSuccessCount == 1)
 			{
-				strMessage = "The adjustment request has been approved";
+				strMessage = "The recurring charge request has been approved";
 			}
 			else
 			{
-				strMessage = "The adjustment requests have been approved";
+				strMessage = "The recurring charge requests have been approved";
 			}
 			
 			$Alert(strMessage);
@@ -870,11 +925,11 @@ var Adjustment_Management = Class.create
 		}
 		else
 		{
-			$Alert("Approving the adjustment requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
+			$Alert("Approving the recurring charge requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
 		}
 	},
 	
-	_declineCharges : function()
+	_declineRecCharges : function()
 	{
 		if (this._bolIsSubmitting)
 		{
@@ -890,15 +945,15 @@ var Adjustment_Management = Class.create
 			return;
 		}
 		
-		var jsonFunc = jQuery.json.jsonFunction(this._declineChargesResponse.bind(this), null, "Adjustment", "rejectAdjustmentRequests");
+		var jsonFunc = jQuery.json.jsonFunction(this._declineRecChargesResponse.bind(this), null, "Recurring_Charge", "rejectRecurringChargeRequests");
 		
 		this._bolIsSubmitting = true;
 		
-		jsonFunc(this._arrChargeIdsToBeActioned, strReason);
+		jsonFunc(this._arrRecChargeIdsToBeActioned, strReason);
 		Vixen.Popup.ShowPageLoadingSplash("Processing", null, null, null, 100);
 	},
 	
-	_declineChargesResponse : function(objResponse)
+	_declineRecChargesResponse : function(objResponse)
 	{
 		this._bolIsSubmitting = false;
 		Vixen.Popup.ClosePageLoadingSplash();
@@ -910,11 +965,11 @@ var Adjustment_Management = Class.create
 			var strMessage = "";
 			if (objResponse.intSuccessCount == 1)
 			{
-				strMessage = "The adjustment request has been rejected";
+				strMessage = "The recurring charge request has been rejected";
 			}
 			else
 			{
-				strMessage = "The adjustment requests have been rejected";
+				strMessage = "The recurring charge requests have been rejected";
 			}
 			
 			$Alert(strMessage);
@@ -924,7 +979,7 @@ var Adjustment_Management = Class.create
 		}
 		else
 		{
-			$Alert("Rejecting the adjustment requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
+			$Alert("Rejecting the recurring charge requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
 		}
 	},
 	
@@ -938,38 +993,38 @@ var Adjustment_Management = Class.create
 	
 	selectAll : function()
 	{
-		if (this._objCharges)
+		if (this._objRecCharges)
 		{
-			for (var i in this._objCharges)
+			for (var i in this._objRecCharges)
 			{
-				this._objCharges[i].objSelector.domElement.checked = true;
+				this._objRecCharges[i].objSelector.domElement.checked = true;
 			}
 		}
 	},
 	
 	selectNone : function()
 	{
-		if (this._objCharges)
+		if (this._objRecCharges)
 		{
-			for (var i in this._objCharges)
+			for (var i in this._objRecCharges)
 			{
-				this._objCharges[i].objSelector.domElement.checked = false;
+				this._objRecCharges[i].objSelector.domElement.checked = false;
 			}
 		}
 	},
 	
 	_closeConfirmationPopup : function()
 	{
-		// Unselect each charge that is selected
-		for (var i in this._objCharges)
+		// Unselect each recurring charge that is selected
+		for (var i in this._objRecCharges)
 		{
-			this._objCharges[i].objRow.domElement.setAttribute('selected', '');
+			this._objRecCharges[i].objRow.domElement.setAttribute('selected', '');
 		}
-		
+	
 		this._objConfirmationPopup.popPopup.hide();
 	},
 	
 });
 
-Adjustment_Management.APPROVE_CHARGES = 'APPROVE_CHARGES';
-Adjustment_Management.DECLINE_CHARGES = 'DECLINE_CHARGES';
+Recurring_Charge_Management.APPROVE_CHARGES = 'APPROVE_CHARGES';
+Recurring_Charge_Management.DECLINE_CHARGES = 'DECLINE_CHARGES';

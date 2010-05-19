@@ -11,11 +11,11 @@
 /**
  * add
  *
- * HTML Template for the Add Adjustment HTML object
+ * HTML Template for the Add Charge HTML object
  *
- * HTML Template for the Add Adjustment HTML object
+ * HTML Template for the Add Charge HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
- * which displays the form used to add an adjustment.
+ * which displays the form used to add an charge.
  *
  * @file		add.php
  * @language	PHP
@@ -29,21 +29,21 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateAdjustmentAdd
+// HtmlTemplateChargeAdd
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateAdjustmentAdd
+ * HtmlTemplateChargeAdd
  *
- * HTML Template class for the Add Adjustment HTML object
+ * HTML Template class for the Add Charge HTML object
  *
- * HTML Template class for the Add Adjustment HTML object
- * displays the form used to add an adjustment
+ * HTML Template class for the Add Charge HTML object
+ * displays the form used to add an charge
  *
  * @package	ui_app
- * @class	HtmlTemplateAdjustmentAdd
+ * @class	HtmlTemplateChargeAdd
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAdjustmentAdd extends HtmlTemplate
+class HtmlTemplateChargeAdd extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -82,7 +82,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		$this->_strContainerDivId = $strId;
 		
 		// Load all java script specific to the page here
-		$this->LoadJavascript("validate_adjustment");
+		$this->LoadJavascript("validate_charge");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -102,20 +102,20 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolUserHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		
-		// Currently anyone can create credit adjustments
+		// Currently anyone can create credit charges
 		// Originally the user required either the Proper Admin permission or the Credit Management permission
-		//$bolCanCreateCreditAdjustments = ($bolUserHasProperAdminPerm || $bolUserHasCreditManagementPerm);
-		$bolCanCreateCreditAdjustments = TRUE;
+		//$bolCanCreateCreditCharges = ($bolUserHasProperAdminPerm || $bolUserHasCreditManagementPerm);
+		$bolCanCreateCreditCharges = TRUE;
 		
 		// Only apply the output mask if the DBO()->Charge is not invalid
 		$bolApplyOutputMask = !DBO()->Charge->IsInvalid();
 
-		$this->FormStart("AddAdjustment", "Adjustment", "Add");
+		$this->FormStart("AddCharge", "Charge", "Add");
 		
-		if (!$bolCanCreateCreditAdjustments)
+		if (!$bolCanCreateCreditCharges)
 		{
-			// The user cannot create credit adjustments because they don't have the required permissions
-			echo "<div class='MsgNotice'>You do not have the required permissions to create credit adjustments</div>";
+			// The user cannot create credit charges because they don't have the required permissions
+			echo "<div class='MsgNotice'>You do not have the required permissions to create credit charges</div>";
 		}
 		
 		echo "<div class='GroupedContent'>\n";
@@ -145,9 +145,9 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		
 		// create a combobox containing all the charge types
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Adjustment:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Charge:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='Charge.charge_type_id' name='Charge.charge_type_id' style='width:100%' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
+		echo "      <select id='Charge.charge_type_id' name='Charge.charge_type_id' style='width:100%' onchange='Vixen.ValidateCharge.DeclareChargeType(this)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId = $dboChargeType->Id->Value;
@@ -238,8 +238,8 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "
 <div>
 	<div style='float:right'>
-		<input type='button' style='display:none;' id='AddAdjustmentSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_AddAdjustment', 'Add Adjustment', 'Adjustment', 'Add', 'Popup', 'AddAdjustmentPopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
-		<input type='button' value='Submit Request' onclick='Vixen.ValidateAdjustment.SubmitRequest()'></input>
+		<input type='button' style='display:none;' id='AddChargeSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_AddCharge', 'Add Charge', 'Charge', 'Add', 'Popup', 'AddChargePopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
+		<input type='button' value='Submit Request' onclick='Vixen.ValidateCharge.SubmitRequest()'></input>
 		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
 	</div>
 	<div style='float:none;clear:both'></div>
@@ -250,7 +250,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		$strJsonCode = Json()->encode($arrChargeTypes);
 		
 		// Set the charge types in the javascript object that handles interactions with this popup window
-		echo "<script type='text/javascript'>Vixen.ValidateAdjustment.SetChargeTypes($strJsonCode);</script>\n";
+		echo "<script type='text/javascript'>Vixen.ValidateCharge.SetChargeTypes($strJsonCode);</script>\n";
 
 		// give the ChargeTypeCombo initial focus
 		echo "<script type='text/javascript'>document.getElementById('Charge.charge_type_id').focus();</script>\n";

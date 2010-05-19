@@ -70,14 +70,14 @@ var Invoice	= Class.create
 		"		</thead>\n" + 
 		"		<tbody>\n" + 
 		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Debit Adjustments</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intAdjustmentDebitCount + "</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>$" + (new Number(objResponse.fltAdjustmentDebitTotal)).toFixed(2) + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:left;'>Debit Charges</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intChargeDebitCount + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>$" + (new Number(objResponse.fltChargeDebitTotal)).toFixed(2) + "</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
-		"				<td style='vertical-align:top;text-align:left;'>Credit Adjustments</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intAdjustmentCreditCount + "</td>\n" + 
-		"				<td style='vertical-align:top;text-align:right;'>" + ((objResponse.fltAdjustmentCreditTotal > 0) ? "- " : "") + "$" + (new Number(objResponse.fltAdjustmentCreditTotal)).toFixed(2) + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:left;'>Credit Charges</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>" + objResponse.intChargeCreditCount + "</td>\n" + 
+		"				<td style='vertical-align:top;text-align:right;'>" + ((objResponse.fltChargeCreditTotal > 0) ? "- " : "") + "$" + (new Number(objResponse.fltChargeCreditTotal)).toFixed(2) + "</td>\n" + 
 		"			</tr>\n" + 
 		"			<tr>\n" + 
 		"				<td style='vertical-align:top;text-align:left;'>Debit CDRs</td>\n" + 

@@ -1,6 +1,6 @@
 <?php
 
-class HtmlTemplate_Adjustment_Management extends FlexHtmlTemplate
+class HtmlTemplate_Charge_Management extends FlexHtmlTemplate
 {
 	public function __construct($intContext=NULL, $strId=NULL, $mxdDataToRender=NULL)
 	{
@@ -8,7 +8,7 @@ class HtmlTemplate_Adjustment_Management extends FlexHtmlTemplate
 		
 		$this->LoadJavascript('dataset_ajax');
 		$this->LoadJavascript('pagination');
-		$this->LoadJavascript('adjustment_management');
+		$this->LoadJavascript('charge_management');
 	}
 
 	public function Render()
@@ -16,12 +16,12 @@ class HtmlTemplate_Adjustment_Management extends FlexHtmlTemplate
 		$intMaxPageSize = $this->mxdDataToRender['Limit'];
 		
 		echo "
-<div id='ManageAdjustmentsContainer'></div>
+<div id='ManageChargesContainer'></div>
 <script type='text/javascript'>
 	Event.observe(window, 'load', 
 		function()
 		{
-			objAdjustmentManagement = new Adjustment_Management(\$ID('ManageAdjustmentsContainer'), $intMaxPageSize);
+			objChargeManagement = new Charge_Management(\$ID('ManageChargesContainer'), $intMaxPageSize);
 		}, false)
 </script>\n";
 

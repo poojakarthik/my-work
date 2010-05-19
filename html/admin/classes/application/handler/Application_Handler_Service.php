@@ -2,7 +2,7 @@
 
 class Application_Handler_Service extends Application_Handler
 {
-	// View all unbilled adjustments and charges to the service
+	// View all unbilled charges and charges to the service
 	public function Unbilled($subPath)
 	{
 		// Check user permissions

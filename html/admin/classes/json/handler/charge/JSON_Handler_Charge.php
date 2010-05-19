@@ -1,6 +1,6 @@
 <?php
 
-class JSON_Handler_Adjustment extends JSON_Handler
+class JSON_Handler_Charge extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
 	
@@ -13,7 +13,7 @@ class JSON_Handler_Adjustment extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getAdjustmentsAwaitingApproval($bolCountOnly=false, $intLimit=0, $intOffset=0)
+	public function getChargesAwaitingApproval($bolCountOnly=false, $intLimit=0, $intOffset=0)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
@@ -99,7 +99,7 @@ class JSON_Handler_Adjustment extends JSON_Handler
 	
 	// If any of the charges can't be approved, then none of them are
 	// As soon as we implement Nested transactions, then we can fix this so it will approve the ones it can, and won't approve the others
-	public function approveAdjustmentRequests($arrChargeIds)
+	public function approveChargeRequests($arrChargeIds)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
@@ -109,7 +109,7 @@ class JSON_Handler_Adjustment extends JSON_Handler
 		{
 			if (count($arrChargeIds) == 0)
 			{
-				throw new Exception('No adjustment requests have been specified, to approve');
+				throw new Exception('No charge requests have been specified, to approve');
 			}
 			
 			$arrChargesApproved	= array();
@@ -135,7 +135,7 @@ class JSON_Handler_Adjustment extends JSON_Handler
 					{
 						$strChargeIdentifier = $objCharge->getIdentifyingDescription(true, true, false);
 					}
-					throw new Exception("Failed to approve Adjustment Request '$strChargeIdentifier'.  Reason: ". $e->getMessage());
+					throw new Exception("Failed to approve Charge Request '$strChargeIdentifier'.  Reason: ". $e->getMessage());
 				}
 			}
 			
@@ -162,7 +162,7 @@ class JSON_Handler_Adjustment extends JSON_Handler
 	
 	// If any of the charges can't be approved, then none of them are
 	// As soon as we implement Nested transactions, then we can fix this so it will approve the ones it can, and won't approve the others
-	public function rejectAdjustmentRequests($arrChargeIds, $strReason)
+	public function rejectChargeRequests($arrChargeIds, $strReason)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
@@ -173,14 +173,14 @@ class JSON_Handler_Adjustment extends JSON_Handler
 		{
 			if (count($arrChargeIds) == 0)
 			{
-				throw new Exception('No adjustment requests have been specified, to reject');
+				throw new Exception('No charge requests have been specified, to reject');
 			}
 			
 			$strReason = trim($strReason);
 			
 			if ($strReason == '')
 			{
-				throw new Exception('No reason has been supplied as to why these adjustments are being rejected');
+				throw new Exception('No reason has been supplied as to why these charges are being rejected');
 			}
 			
 			$arrChargesRejected	= array();
@@ -206,7 +206,7 @@ class JSON_Handler_Adjustment extends JSON_Handler
 					{
 						$strChargeIdentifier = $objCharge->getIdentifyingDescription(true, true, false);
 					}
-					throw new Exception("Failed to reject Adjustment Request '$strChargeIdentifier'.  Reason: ". $e->getMessage());
+					throw new Exception("Failed to reject Charge Request '$strChargeIdentifier'.  Reason: ". $e->getMessage());
 				}
 			}
 

@@ -274,7 +274,7 @@ class Credit_Card_Payment
 		{
 			// Store details of the payment in the credit_card_payment_history table
 			// Apply the payment to the account
-			// Add an adjustment to the account for the credit card surcharge
+			// Add an charge to the account for the credit card surcharge
 			TransactionStart();
 			$account->applyPayment($employeeId, $contact, $time, $fltTotal, $txnId, $purchaseOrderNo, PAYMENT_TYPE_CREDIT_CARD, $strCardNumber, $cardType, $surcharge);
 			TransactionCommit();

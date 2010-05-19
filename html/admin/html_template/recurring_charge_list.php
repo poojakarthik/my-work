@@ -6,19 +6,19 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// recurring_adjustment_list.php
+// recurring_charge_list.php
 //----------------------------------------------------------------------------//
 /**
- * recurring_adjustment_list
+ * recurring_charge_list
  *
- * HTML Template for the Recurring Adjustment List HTML object
+ * HTML Template for the Recurring Charge List HTML object
  *
- * HTML Template for the Recurring Adjustment List HTML object
+ * HTML Template for the Recurring Charge List HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
- * which displays all recurring adjustments relating to an account and can be embedded in
+ * which displays all recurring charges relating to an account and can be embedded in
  * various Page Templates
  *
- * @file		recurring_adjustment_list.php
+ * @file		recurring_charge_list.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
@@ -30,21 +30,21 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateRecurringAdjustmentList
+// HtmlTemplateRecurringChargeList
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateRecurringAdjustmentList
+ * HtmlTemplateRecurringChargeList
  *
- * HTML Template class for the Recurring Adjustment List HTML object
+ * HTML Template class for the Recurring Charge List HTML object
  *
- * HTML Template class for the Recurring Adjustment List HTML object
- * Lists all adjustments related to an account
+ * HTML Template class for the Recurring Charge List HTML object
+ * Lists all charges related to an account
  *
  * @package	ui_app
- * @class	HtmlTemplateRecurringAdjustmentList
+ * @class	HtmlTemplateRecurringChargeList
  * @extends	HtmlTemplate
  */
-class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
+class HtmlTemplateRecurringChargeList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// __construct
@@ -83,7 +83,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		echo "<h2 class='Adjustment'>Recurring Adjustments</h2>\n";
+		echo "<h2 class='Charge'>Recurring Charges</h2>\n";
 
 		// Check if the user has admin privileges
 		$bolHasAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
@@ -91,20 +91,20 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		
-		$bolCanCancelRecurringAdjustments	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		$bolCanCancelRecurringCharges	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 		
 		// define the table's header
-		if ($bolCanCancelRecurringAdjustments)
+		if ($bolCanCancelRecurringCharges)
 		{
-			// User has admin permisions and can therefore delete an adjustment
-			Table()->RecurringAdjustmentTable->SetHeader("Date", "Description", "Status", "&nbsp;");
-			Table()->RecurringAdjustmentTable->SetAlignment("left", "left", "left", "center");
+			// User has admin permisions and can therefore delete an charge
+			Table()->RecurringChargeTable->SetHeader("Date", "Description", "Status", "&nbsp;");
+			Table()->RecurringChargeTable->SetAlignment("left", "left", "left", "center");
 		}
 		else
 		{
-			// User cannot delete adjustments
-			Table()->RecurringAdjustmentTable->SetHeader("Date", "Description", "Status");
-			Table()->RecurringAdjustmentTable->SetAlignment("left", "left", "left");
+			// User cannot delete charges
+			Table()->RecurringChargeTable->SetHeader("Date", "Description", "Status");
+			Table()->RecurringChargeTable->SetAlignment("left", "left", "left");
 		}
 		
 		// add the rows
@@ -118,29 +118,29 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			
 			$strStartedOnFormatted = date("d-m-Y", strtotime($dboRecurringCharge->StartedOn->Value));
 			
-			if ($bolCanCancelRecurringAdjustments)
+			if ($bolCanCancelRecurringCharges)
 			{
-				$strCancelRecurringAdjustmentHref = Href()->CancelRecurringAdjustment($dboRecurringCharge->Id->Value);
+				$strCancelRecurringChargeHref = Href()->CancelRecurringCharge($dboRecurringCharge->Id->Value);
 				
-				// Check if the Recurring Adjustment (or request for Recurring Adjustment) can be Cancelled
+				// Check if the Recurring Charge (or request for Recurring Charge) can be Cancelled
 				if ($objRecurringChargeStatus->id == Recurring_Charge_Status::getIdForSystemName('AWAITING_APPROVAL'))
 				{
-					$strCancelRecurringAdjustmentLabel = "<img src='img/template/delete.png' title='Cancel Recurring Adjustment Request' onclick='$strCancelRecurringAdjustmentHref'></img>";
+					$strCancelRecurringChargeLabel = "<img src='img/template/delete.png' title='Cancel Recurring Charge Request' onclick='$strCancelRecurringChargeHref'></img>";
 				}
 				elseif ($objRecurringChargeStatus->id == Recurring_Charge_Status::getIdForSystemName('ACTIVE'))
 				{
-					$strCancelRecurringAdjustmentLabel = "<img src='img/template/delete.png' title='Cancel Recurring Adjustment' onclick='$strCancelRecurringAdjustmentHref'></img>";
+					$strCancelRecurringChargeLabel = "<img src='img/template/delete.png' title='Cancel Recurring Charge' onclick='$strCancelRecurringChargeHref'></img>";
 				}
 				else
 				{
-					$strCancelRecurringAdjustmentLabel = "&nbsp;";
+					$strCancelRecurringChargeLabel = "&nbsp;";
 				}
 				
-				Table()->RecurringAdjustmentTable->AddRow($strStartedOnFormatted, $strChargeTypeDescription, $strRecurringChargeStatus, $strCancelRecurringAdjustmentLabel);
+				Table()->RecurringChargeTable->AddRow($strStartedOnFormatted, $strChargeTypeDescription, $strRecurringChargeStatus, $strCancelRecurringChargeLabel);
 			}
 			else
 			{
-				Table()->RecurringAdjustmentTable->AddRow($strStartedOnFormatted, $strChargeTypeDescription, $strRecurringChargeStatus);
+				Table()->RecurringChargeTable->AddRow($strStartedOnFormatted, $strChargeTypeDescription, $strRecurringChargeStatus);
 			}
 			
 			// Add tooltip
@@ -186,7 +186,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			}
 			else
 			{
-				// Recurring Adjustment is charged in arrears
+				// Recurring Charge is charged in arrears
 				if ($dboRecurringCharge->LastChargedOn->Value == $dboRecurringCharge->StartedOn->Value)
 				{
 					// The LastChargedOn does not truely represent the last time the account was charged
@@ -262,47 +262,47 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			$dboRecurringCharge->EndDate = $strEndTime;
 			$strToolTipHtml .= $dboRecurringCharge->EndDate->AsOutput();
 			
-			Table()->RecurringAdjustmentTable->SetToolTip($strToolTipHtml);
+			Table()->RecurringChargeTable->SetToolTip($strToolTipHtml);
 			
 			// Add Indexes
-			Table()->RecurringAdjustmentTable->AddIndex("RecurringAdjustmentId", $dboRecurringCharge->Id->Value);
+			Table()->RecurringChargeTable->AddIndex("RecurringChargeId", $dboRecurringCharge->Id->Value);
 		}
 		
 		if (DBL()->RecurringCharge->RecordCount() == 0)
 		{
-			// There are no adjustments to stick in this table
-			Table()->RecurringAdjustmentTable->AddRow("<span>No recurring adjustments to display</span>");
-			Table()->RecurringAdjustmentTable->SetRowAlignment("left");
+			// There are no charges to stick in this table
+			Table()->RecurringChargeTable->AddRow("<span>No recurring charges to display</span>");
+			Table()->RecurringChargeTable->SetRowAlignment("left");
 			if ($bolHasAdminPerm)
 			{
-				Table()->RecurringAdjustmentTable->SetRowColumnSpan(3);
+				Table()->RecurringChargeTable->SetRowColumnSpan(3);
 			}
 			else
 			{
-				Table()->RecurringAdjustmentTable->SetRowColumnSpan(2);
+				Table()->RecurringChargeTable->SetRowColumnSpan(2);
 			}
 		}
 		else
 		{
 			// Link other tables to this one
-			Table()->RecurringAdjustmentTable->LinkTable("AdjustmentTable", "RecurringAdjustmentId");
-			Table()->RecurringAdjustmentTable->RowHighlighting = TRUE;
+			Table()->RecurringChargeTable->LinkTable("ChargeTable", "RecurringChargeId");
+			Table()->RecurringChargeTable->RowHighlighting = TRUE;
 		}
 
-		Table()->RecurringAdjustmentTable->Render();
+		Table()->RecurringChargeTable->Render();
 		
-		// Button to add a recurring adjustment
+		// Button to add a recurring charge
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_OPERATOR))
 		{
-			// The user can add recurring adjustments
-			$strHref = Href()->AddRecurringAdjustment(DBO()->Account->Id->Value);
+			// The user can add recurring charges
+			$strHref = Href()->AddRecurringCharge(DBO()->Account->Id->Value);
 			echo "<div class='ButtonContainer'><div class='Right'>\n";
-			$this->Button("Request Recurring Adjustment", $strHref);
+			$this->Button("Request Recurring Charge", $strHref);
 			echo "</div></div>\n";
 		}
 		else
 		{
-			// The user can not add recurring adjustments
+			// The user can not add recurring charges
 			// This separator is added for spacing reasons
 			echo "<div class='SmallSeperator'></div>\n";
 		}

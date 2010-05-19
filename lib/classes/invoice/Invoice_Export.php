@@ -214,57 +214,57 @@ class Invoice_Export
 			// Only if this is a non-Indial or is the Primary FNN
 			if ($arrService['Primary'])
 			{
-				// Get Adjustments
+				// Get Charges
 				$arrItemised			= self::_preparedStatementMultiService('selItemisedCharges', $arrService, $arrInvoice);
-				$aAdjustmentItemisation	= array();
+				$aChargeItemisation	= array();
 				if (count($arrItemised))
 				{
-					$fltAdjustmentsTotal	= 0.0;
+					$fltChargesTotal	= 0.0;
 					
-					// Convert each Adjustment to a CDR
+					// Convert each Charge to a CDR
 					foreach ($arrItemised as $arrCharge)
 					{
 						$arrCDR	= Array();
 						$arrCDR['Charge']		= ($arrCharge['Nature'] == NATURE_CR) ? 0 - $arrCharge['Charge'] : $arrCharge['Charge'];
-						$fltAdjustmentsTotal	+= $arrCDR['Charge'];
+						$fltChargesTotal	+= $arrCDR['Charge'];
 						
 						$arrCDR['Units']		= 1;
 						$arrCDR['Description']	= ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
 						$arrCDR['TaxExempt']	= $arrCharge['TaxExempt'];
 						
-						$aAdjustmentItemisation[]	= $arrCDR;
+						$aChargeItemisation[]	= $arrCDR;
 					}
 					
 					// Perform "Roll-Ups"
-					$aAdjustmentItemisation	= self::_adjustmentRollup($aAdjustmentItemisation);
+					$aChargeItemisation	= self::_chargeRollup($aChargeItemisation);
 					
-					$arrCategories['Service Charges & Discounts']['Itemisation']	= $aAdjustmentItemisation;
+					$arrCategories['Service Charges & Discounts']['Itemisation']	= $aChargeItemisation;
 					$arrCategories['Service Charges & Discounts']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
-					$arrCategories['Service Charges & Discounts']['TotalCharge']	= $fltAdjustmentsTotal;
-					$arrCategories['Service Charges & Discounts']['Records']		= count($aAdjustmentItemisation);
+					$arrCategories['Service Charges & Discounts']['TotalCharge']	= $fltChargesTotal;
+					$arrCategories['Service Charges & Discounts']['Records']		= count($aChargeItemisation);
 					
-					$fltRatedTotal	+= $fltAdjustmentsTotal;
+					$fltRatedTotal	+= $fltChargesTotal;
 				}
 				
 				// Get Plan Charges
 				$fltPlanChargeTotal			= 0.0;
-				$arrPlanChargeAdjustments	= self::_preparedStatementMultiService('selPlanChargeAdjustments', $arrService, $arrInvoice);
+				$arrPlanChargeCharges	= self::_preparedStatementMultiService('selPlanChargeCharges', $arrService, $arrInvoice);
 				$arrPlanChargeItemisation	= array();
-				foreach ($arrPlanChargeAdjustments as $arrAdjustment)
+				foreach ($arrPlanChargeCharges as $arrCharge)
 				{
-					// Format Plan Adjustment as CDR
+					// Format Plan Charge as CDR
 					$arrCDR	= Array();
-					$arrCDR['Charge']			= ($arrAdjustment['Nature'] == 'CR') ? 0 - $arrAdjustment['Charge'] : $arrAdjustment['Charge'];
+					$arrCDR['Charge']			= ($arrCharge['Nature'] == 'CR') ? 0 - $arrCharge['Charge'] : $arrCharge['Charge'];
 					$arrCDR['Units']			= 1;
-					$arrCDR['Description']		= ($arrAdjustment['ChargeType']) ? ($arrAdjustment['ChargeType']." - ".$arrAdjustment['Description']) : $arrAdjustment['Description'];
-					$arrCDR['TaxExempt']		= $arrAdjustment['TaxExempt'];
+					$arrCDR['Description']		= ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
+					$arrCDR['TaxExempt']		= $arrCharge['TaxExempt'];
 					$arrPlanChargeItemisation[]	= $arrCDR;
 					
 					$fltPlanChargeTotal			+= $arrCDR['Charge'];
 				}
 				
 				// Perform "Roll-Ups"
-				$arrPlanChargeItemisation	= self::_adjustmentRollup($arrPlanChargeItemisation);
+				$arrPlanChargeItemisation	= self::_chargeRollup($arrPlanChargeItemisation);
 				
 				// Add to Service Array
 				if (count($arrPlanChargeItemisation))
@@ -279,23 +279,23 @@ class Invoice_Export
 				
 				// Get Plan Usage/Credits
 				$fltPlanCreditTotal			= 0.0;
-				$arrPlanUsageAdjustments	= self::_preparedStatementMultiService('selPlanUsageAdjustments', $arrService, $arrInvoice);
+				$arrPlanUsageCharges	= self::_preparedStatementMultiService('selPlanUsageCharges', $arrService, $arrInvoice);
 				$arrPlanCreditItemisation	= array();
-				foreach ($arrPlanUsageAdjustments as $arrAdjustment)
+				foreach ($arrPlanUsageCharges as $arrCharge)
 				{
-					// Format Plan Adjustment as CDR
+					// Format Plan Charge as CDR
 					$arrCDR	= Array();
-					$arrCDR['Charge']			= ($arrAdjustment['Nature'] == 'CR') ? 0 - $arrAdjustment['Charge'] : $arrAdjustment['Charge'];
+					$arrCDR['Charge']			= ($arrCharge['Nature'] == 'CR') ? 0 - $arrCharge['Charge'] : $arrCharge['Charge'];
 					$arrCDR['Units']			= 1;
-					$arrCDR['Description']		= ($arrAdjustment['ChargeType']) ? ($arrAdjustment['ChargeType']." - ".$arrAdjustment['Description']) : $arrAdjustment['Description'];
-					$arrCDR['TaxExempt']		= $arrAdjustment['TaxExempt'];
+					$arrCDR['Description']		= ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
+					$arrCDR['TaxExempt']		= $arrCharge['TaxExempt'];
 					$arrPlanCreditItemisation[]	= $arrCDR;
 					
 					$fltPlanCreditTotal			+= $arrCDR['Charge'];
 				}
 				
 				// Perform "Roll-Ups"
-				$arrPlanCreditItemisation	= self::_adjustmentRollup($arrPlanCreditItemisation);
+				$arrPlanCreditItemisation	= self::_chargeRollup($arrPlanCreditItemisation);
 				
 				// Add to Service Array
 				if (count($arrPlanCreditItemisation))
@@ -324,54 +324,54 @@ class Invoice_Export
 	}
  	
   	//------------------------------------------------------------------------//
-	// getAccountAdjustments()
+	// getAccountCharges()
 	//------------------------------------------------------------------------//
 	/**
-	 * getAccountAdjustments()
+	 * getAccountCharges()
 	 *
-	 * Returns a CDR array of Account Adjustments
+	 * Returns a CDR array of Account Charges
 	 *
-	 * Returns a CDR array of Account Adjustments
+	 * Returns a CDR array of Account Charges
 	 * 
 	 * @param	array	$arrInvoice						Invoice Details
 	 *
-	 * @return	array									Account Adjustments Array
+	 * @return	array									Account Charges Array
 	 *
 	 * @method
 	 */
-	public static function getAccountAdjustments($arrInvoice)
+	public static function getAccountCharges($arrInvoice)
 	{
-		$arrAdjustments			= array();
+		$arrCharges			= array();
 		$fltAccountChargeTotal	= 0.0;
-		$selAccountAdjustments	= self::_preparedStatement('selAccountAdjustments');
-		$aAdjustmentItemisation	= array();
-		if ($selAccountAdjustments->Execute($arrInvoice) === FALSE)
+		$selAccountCharges	= self::_preparedStatement('selAccountCharges');
+		$aChargeItemisation	= array();
+		if ($selAccountCharges->Execute($arrInvoice) === FALSE)
 		{
-			throw new Exception($selAccountAdjustments->Error());
+			throw new Exception($selAccountCharges->Error());
 		}
 		else
 		{
-			while ($arrAdjustment = $selAccountAdjustments->Fetch())
+			while ($arrCharge = $selAccountCharges->Fetch())
 			{
 				$arrCDR						= array();
-				$arrCDR['Description']		= ($arrAdjustment['ChargeType']) ? ($arrAdjustment['ChargeType']." - ".$arrAdjustment['Description']) : $arrAdjustment['Description'];
+				$arrCDR['Description']		= ($arrCharge['ChargeType']) ? ($arrCharge['ChargeType']." - ".$arrCharge['Description']) : $arrCharge['Description'];
 				$arrCDR['Units']			= 1;
-				$arrCDR['Charge']			= $arrAdjustment['Amount'];
-				$arrCDR['TaxExempt']		= $arrAdjustment['TaxExempt'];
-				$aAdjustmentItemisation[]	= $arrCDR;
+				$arrCDR['Charge']			= $arrCharge['Amount'];
+				$arrCDR['TaxExempt']		= $arrCharge['TaxExempt'];
+				$aChargeItemisation[]	= $arrCDR;
 				$fltAccountChargeTotal		+= $arrCDR['Charge'];
 			}
 		}
 		
 		// Perform "Roll-Ups"
-		$aAdjustmentItemisation	= self::_adjustmentRollup($aAdjustmentItemisation);
+		$aChargeItemisation	= self::_chargeRollup($aChargeItemisation);
 		
-		$arrAdjustments['Itemisation']	= $aAdjustmentItemisation;
-		$arrAdjustments['DisplayType']	= RECORD_DISPLAY_S_AND_E;
-		$arrAdjustments['TotalCharge']	= $fltAccountChargeTotal;
-		$arrAdjustments['Records']		= count($arrAdjustments['Itemisation']);
+		$arrCharges['Itemisation']	= $aChargeItemisation;
+		$arrCharges['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+		$arrCharges['TotalCharge']	= $fltAccountChargeTotal;
+		$arrCharges['Records']		= count($arrCharges['Itemisation']);
 		
-		return $arrAdjustments;
+		return $arrCharges;
 	}
  	
   	//------------------------------------------------------------------------//
@@ -385,10 +385,10 @@ class Invoice_Export
 	 * Returns the Account Summary and Itemisation as an associative array for a given Invoice
 	 * 
 	 * @param	array	$arrInvoice						Invoice Details
-	 * @param	boolean	$bolAdjustments		[optional]	TRUE	: Include 'Service Charges & Discounts'
-	 * 													FALSE	: Do not add Adjustments
-	 * @param	boolean	$bolPlanAdjustments	[optional]	TRUE	: Include 'Plan Charges' and 'Plan Credits'
-	 * 													FALSE	: Do not add Plan Adjustments
+	 * @param	boolean	$bolCharges		[optional]	TRUE	: Include 'Service Charges & Discounts'
+	 * 													FALSE	: Do not add Charges
+	 * @param	boolean	$bolPlanCharges	[optional]	TRUE	: Include 'Plan Charges' and 'Plan Credits'
+	 * 													FALSE	: Do not add Plan Charges
 	 * @param	boolean	$bolGST				[optional]	TRUE	: Add GST Total as the final element (default)
 	 * 													FALSE	: Do not add GST Total
 	 *
@@ -396,7 +396,7 @@ class Invoice_Export
 	 *
 	 * @method
 	 */
-	public static function getAccountCharges($arrInvoice, $bolAdjustments = TRUE, $bolPlanAdjustments = TRUE, $bolGST = TRUE)
+	public static function getAccountCharges($arrInvoice, $bolCharges = TRUE, $bolPlanCharges = TRUE, $bolGST = TRUE)
 	{
 		$arrAccountSummary	= Array();
 		
@@ -416,7 +416,7 @@ class Invoice_Export
 		}
 		
 		// Add Other Charges and Credits
-		if ($bolAdjustments)
+		if ($bolCharges)
 		{
 			$selAccountSummaryCharges	= self::_preparedStatement('selAccountSummaryCharges');
 			if (($mixResult = $selAccountSummaryCharges->Execute($arrInvoice)) === FALSE)
@@ -434,9 +434,9 @@ class Invoice_Export
 		}
 		
 		// Account Charges and Credits
-		$arrAccountSummary['Account Charges & Discounts']	= self::getAccountAdjustments($arrInvoice);
+		$arrAccountSummary['Account Charges & Discounts']	= self::getAccountCharges($arrInvoice);
 		
-		if ($bolPlanAdjustments)
+		if ($bolPlanCharges)
 		{
 			// Plan Charges
 			$selPlanChargeSummary	= self::_preparedStatement('selPlanChargeSummary');
@@ -463,7 +463,7 @@ class Invoice_Export
 			}
 			
 			// Perform "Roll-Ups"
-			$arrAccountSummary['Plan Charges']['Itemisation']	= self::_adjustmentRollup($arrAccountSummary['Plan Charges']['Itemisation']);
+			$arrAccountSummary['Plan Charges']['Itemisation']	= self::_chargeRollup($arrAccountSummary['Plan Charges']['Itemisation']);
 			$arrAccountSummary['Plan Charges']['Records']		= count($arrAccountSummary['Plan Charges']['Itemisation']);
 			
 			// Plan Usage/Credit
@@ -492,7 +492,7 @@ class Invoice_Export
 			}
 			
 			// Perform "Roll-Ups"
-			$arrAccountSummary['Plan Usage']['Itemisation']	= self::_adjustmentRollup($arrAccountSummary['Plan Usage']['Itemisation']);
+			$arrAccountSummary['Plan Usage']['Itemisation']	= self::_chargeRollup($arrAccountSummary['Plan Usage']['Itemisation']);
 			$arrAccountSummary['Plan Usage']['Records']		= count($arrAccountSummary['Plan Usage']['Itemisation']);
 		}
 		
@@ -513,17 +513,17 @@ class Invoice_Export
 	}
 	
 	/**
-	 * _adjustmentRollup()
+	 * _chargeRollup()
 	 *
-	 * Removes Credit/Debit pairs in an array of Adjustments
+	 * Removes Credit/Debit pairs in an array of Charges
 	 * 
-	 * @param	array		$aAdjustments					Array of Adjustments
+	 * @param	array		$aCharges					Array of Charges
 	 * 
-	 * @return	array										Array of Adjustments without CR/DR Pairs
+	 * @return	array										Array of Charges without CR/DR Pairs
 	 *
 	 * @method
 	 */
-	private static function _adjustmentRollup($aAdjustments)
+	private static function _chargeRollup($aCharges)
 	{
 		/*
 		static	$rLogFile;
@@ -533,63 +533,63 @@ class Invoice_Export
 		}
 		*/
 		
-		$aAdjustmentKeys		= array_keys($aAdjustments);
-		$aAdjustmentPairKeys	= array_keys($aAdjustments);
+		$aChargeKeys		= array_keys($aCharges);
+		$aChargePairKeys	= array_keys($aCharges);
 		
-		$aCleanAdjustments	= array();
-		foreach ($aAdjustmentKeys as $mAdjustmentIndex)
+		$aCleanCharges	= array();
+		foreach ($aChargeKeys as $mChargeIndex)
 		{
-			$aAdjustment	= &$aAdjustments[$mAdjustmentIndex];
+			$aCharge	= &$aCharges[$mChargeIndex];
 			
 			// Have we already matched against something?
-			if (!array_key_exists('Matched', $aAdjustment))
+			if (!array_key_exists('Matched', $aCharge))
 			{
 				// Search for a mate
-				foreach ($aAdjustmentPairKeys as $mPairAdjustmentIndex)
+				foreach ($aChargePairKeys as $mPairChargeIndex)
 				{
 					// Don't match against myself -- though that should be impossible...
-					if ($mAdjustmentIndex === $mPairAdjustmentIndex)
+					if ($mChargeIndex === $mPairChargeIndex)
 					{
 						continue;
 					}
 					
-					$aPairAdjustment	= &$aAdjustments[$mPairAdjustmentIndex];
+					$aPairCharge	= &$aCharges[$mPairChargeIndex];
 					/*
-					fwrite($rLogFile, "\n'{$aAdjustment['Description']}' vs '{$aPairAdjustment['Description']}'\n");
-					fwrite($rLogFile, "\n'".(float)$aAdjustment['Charge']."' + '".(float)$aPairAdjustment['Charge']."' === '".((float)$aAdjustment['Charge'] + (float)$aPairAdjustment['Charge'])."'\n");
+					fwrite($rLogFile, "\n'{$aCharge['Description']}' vs '{$aPairCharge['Description']}'\n");
+					fwrite($rLogFile, "\n'".(float)$aCharge['Charge']."' + '".(float)$aPairCharge['Charge']."' === '".((float)$aCharge['Charge'] + (float)$aPairCharge['Charge'])."'\n");
 					*/
 					// Check if Description is the same (which includes ChargeType) && that the Amounts negate eachother
-					// Additionally, we cannot have already matched against this Adjustment
-					if (!array_key_exists('Matched', $aPairAdjustment) && ($aAdjustment['Description'] === $aPairAdjustment['Description']) && (round((float)$aAdjustment['Charge'] + (float)$aPairAdjustment['Charge'], 4) == 0.0))
+					// Additionally, we cannot have already matched against this Charge
+					if (!array_key_exists('Matched', $aPairCharge) && ($aCharge['Description'] === $aPairCharge['Description']) && (round((float)$aCharge['Charge'] + (float)$aPairCharge['Charge'], 4) == 0.0))
 					{
 						// Perfect Pair -- Mark as matched
-						$aAdjustment['Matched']		= $mPairAdjustmentIndex;
-						$aPairAdjustment['Matched']	= $mAdjustmentIndex;
-						unset($aAdjustment);
-						unset($aPairAdjustment);
+						$aCharge['Matched']		= $mPairChargeIndex;
+						$aPairCharge['Matched']	= $mChargeIndex;
+						unset($aCharge);
+						unset($aPairCharge);
 						continue 2;
 					}
-					unset($aPairAdjustment);
+					unset($aPairCharge);
 				}
 				
 				// No mate has been found -- Add to the "clean" array
-				$aCleanAdjustments[]	= $aAdjustments[$mAdjustmentIndex];
+				$aCleanCharges[]	= $aCharges[$mChargeIndex];
 			}
-			unset($aAdjustment);
+			unset($aCharge);
 		}
 		/*
-		if (count($aAdjustments) == 3)
+		if (count($aCharges) == 3)
 		{*//*
-			//throw new Exception(print_r($aAdjustments, true));
+			//throw new Exception(print_r($aCharges, true));
 			if ($rLogFile)
 			{
-				fwrite($rLogFile, "\n".print_r($aAdjustments, true)."\n");
-				fwrite($rLogFile, "\n".print_r($aCleanAdjustments, true)."\n");
+				fwrite($rLogFile, "\n".print_r($aCharges, true)."\n");
+				fwrite($rLogFile, "\n".print_r($aCleanCharges, true)."\n");
 			}/*
 		}
 		*/
-		// Return an array of Adjustments without CR/DR Pairs
-		return $aCleanAdjustments;
+		// Return an array of Charges without CR/DR Pairs
+		return $aCleanCharges;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -676,7 +676,7 @@ class Invoice_Export
 																					NULL,
 																					"Account.Id");
 					break;
-				case 'selAccountAdjustments':
+				case 'selAccountCharges':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"ChargeType, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
 																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND Service IS NULL AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR')");
@@ -863,7 +863,7 @@ class Invoice_Export
 					);
 	 				break;
 	 				
-	 			case 'selPlanChargeAdjustments':
+	 			case 'selPlanChargeCharges':
 	 				$arrColumns['Charge']				= "Amount";
 					$arrColumns['Description']			= "Description";
 					$arrColumns['ChargeType']			= "ChargeType";
@@ -877,7 +877,7 @@ class Invoice_Export
 					);
 	 				break;
 	 				
-	 			case 'selPlanUsageAdjustments':
+	 			case 'selPlanUsageCharges':
 	 				$arrColumns['Charge']				= "Amount";
 					$arrColumns['Description']			= "Description";
 					$arrColumns['ChargeType']			= "ChargeType";

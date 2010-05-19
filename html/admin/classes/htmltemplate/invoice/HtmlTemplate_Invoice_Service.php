@@ -11,7 +11,7 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 	{
 		$this->renderInvoiceDetails($this->mxdDataToRender['Invoice']);
 
-		$this->renderAdjustments($this->mxdDataToRender['Adjustments']);
+		$this->renderCharges($this->mxdDataToRender['Charges']);
 
 		$this->renderCDRs(
 			$this->mxdDataToRender['CDRs'], 
@@ -190,14 +190,14 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 <br/>		";	
 	}
 
-	public static function renderAdjustments($arrAdjustmentDetails)
+	public static function renderCharges($arrChargeDetails)
 	{
 		echo "
 <table class='reflex'>
 	<caption>
 		<div id='caption_bar' class='caption_bar'>
 			<div id='caption_title' class='caption_title'>
-				Adjustments
+				Charges
 			</div>
 			<div id='caption_options' class='caption_options'>
 			</div>
@@ -209,35 +209,35 @@ class HtmlTemplate_Invoice_Service extends FlexHtmlTemplate
 			<th>Code</th>
 			<th>Description</th>
 			<th>Service</th>
-			<th>Adjustment Date</th>
+			<th>Charge Date</th>
 			<th class='amount'>Amount</th>
 			<th>Nature</th>
 		</tr>
 	</thead>
 	<tbody>";
 
-		foreach ($arrAdjustmentDetails as $adjustment)
+		foreach ($arrChargeDetails as $charge)
 		{
-			$date = explode('-', $adjustment['Date']);
+			$date = explode('-', $charge['Date']);
 			$date  = date('l, M d, Y', mktime(0, 0, 0, $date[1], $date[2], $date[0]));
 			$className = $className ? '' : ' class="alt"';
 			echo "
 		<tr$className>
-			<td>" . htmlspecialchars($adjustment['ChargeId']) . "</td>
-			<td>" . htmlspecialchars($adjustment['ChargeType']) . "</td>
-			<td>" . htmlspecialchars($adjustment['Description']) . "</td>
-			<td><a href='" . Href()->ViewService($adjustment['ServiceId']) . "'>" . htmlspecialchars($adjustment['FNN']) . "</a></td>
+			<td>" . htmlspecialchars($charge['ChargeId']) . "</td>
+			<td>" . htmlspecialchars($charge['ChargeType']) . "</td>
+			<td>" . htmlspecialchars($charge['Description']) . "</td>
+			<td><a href='" . Href()->ViewService($charge['ServiceId']) . "'>" . htmlspecialchars($charge['FNN']) . "</a></td>
 			<td>" . htmlspecialchars($date) . "</td>
-			<td class='amount'>" . htmlspecialchars(self::tidyAmount($adjustment['Amount'])) . "</td>
-			<td class='" . ($adjustment['Nature'] == 'CR' ? 'amount-credit' : 'amount-debit') . "'>" . htmlspecialchars($adjustment['Nature'] == 'CR' ? 'Credit' : 'Debit') . "</td>
+			<td class='amount'>" . htmlspecialchars(self::tidyAmount($charge['Amount'])) . "</td>
+			<td class='" . ($charge['Nature'] == 'CR' ? 'amount-credit' : 'amount-debit') . "'>" . htmlspecialchars($charge['Nature'] == 'CR' ? 'Credit' : 'Debit') . "</td>
 		</tr>
 			";
 		}
-		if (!count($arrAdjustmentDetails))
+		if (!count($arrChargeDetails))
 		{
 			echo "
 		<tr>
-			<td colspan='7'>" . htmlspecialchars("There are no adjustments for this service.") . "</td>
+			<td colspan='7'>" . htmlspecialchars("There are no charges for this service.") . "</td>
 		</tr>
 			";
 		}

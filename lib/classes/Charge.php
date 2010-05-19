@@ -231,12 +231,12 @@ class Charge extends ORM_Cached
 		if ($this->status != CHARGE_WAITING)
 		{
 			$strCurrentSatus = GetConstantDescription($this->status, 'ChargeStatus');
-			throw new Exception("Cannot decline the request for adjustment because it isn't currently awaiting approval.  Its current status is: $strCurrentSatus");
+			throw new Exception("Cannot decline the request for charge because it isn't currently awaiting approval.  Its current status is: $strCurrentSatus");
 		}
 		
 		if ($bolLogAction)
 		{
-			// Log the 'Adjustment Request Outcome' action, having taken place
+			// Log the 'Charge Request Outcome' action, having taken place
 			$objCreatedByEmployee		= Employee::getForId($this->createdBy);
 			$strCreatedOn				= date('d-m-Y', strtotime($this->createdOn));
 			$strCreatedByEmployeeName	= $objCreatedByEmployee->getName();
@@ -245,7 +245,7 @@ class Charge extends ORM_Cached
 
 			$strChargeAmount = number_format(AddGST($this->amount), 2, '.', ''); 
 			
-			$strNote = 	"Request for adjustment has been REJECTED.\n".
+			$strNote = 	"Request for charge has been REJECTED.\n".
 						"Type: {$this->chargeType} - {$this->description} ({$strNature}) (id: {$this->id})\n".
 						"Requested on: {$strCreatedOn} by {$strCreatedByEmployeeName}\n".
 						"Amount (inc GST): \${$strChargeAmount} {$strNature}";
@@ -256,7 +256,7 @@ class Charge extends ORM_Cached
 				$strNote .= "\nReason:\n{$strReason}";
 			}
 			
-			Action::createAction('Adjustment Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction('Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the Charge record
@@ -273,12 +273,12 @@ class Charge extends ORM_Cached
 		if ($this->status != CHARGE_WAITING)
 		{
 			$strCurrentSatus = GetConstantDescription($this->status, 'ChargeStatus');
-			throw new Exception("Cannot approve the request for adjustment because it isn't currently awaiting approval.  Its current status is: $strCurrentSatus");
+			throw new Exception("Cannot approve the request for charge because it isn't currently awaiting approval.  Its current status is: $strCurrentSatus");
 		}
 		
 		if ($bolLogAction)
 		{
-			// Log the 'Adjustment Request Outcome' action, having taken place
+			// Log the 'Charge Request Outcome' action, having taken place
 			$objCreatedByEmployee		= Employee::getForId($this->createdBy);
 			$strCreatedOn				= date('d-m-Y', strtotime($this->createdOn));
 			$strCreatedByEmployeeName	= $objCreatedByEmployee->getName();
@@ -287,12 +287,12 @@ class Charge extends ORM_Cached
 
 			$strChargeAmount = number_format(AddGST($this->amount), 2, '.', ''); 
 			
-			$strNote = 	"Request for adjustment has been APPROVED.\n".
+			$strNote = 	"Request for charge has been APPROVED.\n".
 						"Type: {$this->chargeType} - {$this->description} ({$strNature}) (id: {$this->id})\n".
 						"Requested on: {$strCreatedOn} by {$strCreatedByEmployeeName}\n".
 						"Amount (inc GST): \${$strChargeAmount} {$strNature}";
 			
-			Action::createAction('Adjustment Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction('Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the Charge record
@@ -301,7 +301,7 @@ class Charge extends ORM_Cached
 		$this->save();
 	}
 
-	// Builds a description which can be used to identify the adjustment
+	// Builds a description which can be used to identify the charge
 	public function getIdentifyingDescription($bolIncludeAccountAndServiceIds=false, $bolIncludeChargedOnDate=false, $bolIncludeChargeId=false)
 	{
 		$strAmountFormatted = number_format(AddGST($this->amount), 2, '.', '');

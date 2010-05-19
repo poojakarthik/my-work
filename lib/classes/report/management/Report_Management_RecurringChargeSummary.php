@@ -1,15 +1,15 @@
 <?php
 //----------------------------------------------------------------------------//
-// Report_Management_RecurringAdjustmentSummary
+// Report_Management_RecurringChargeSummary
 //----------------------------------------------------------------------------//
 /**
- * Report_Management_RecurringAdjustmentSummary
+ * Report_Management_RecurringChargeSummary
  *
- * Recurring Adjustment Summary Management Report
+ * Recurring Charge Summary Management Report
  *
- * @class	Report_Management_RecurringAdjustmentSummary
+ * @class	Report_Management_RecurringChargeSummary
  */
-class Report_Management_RecurringAdjustmentSummary extends Report_Management
+class Report_Management_RecurringChargeSummary extends Report_Management
 {
 	//------------------------------------------------------------------------//
 	// run
@@ -55,7 +55,7 @@ class Report_Management_RecurringAdjustmentSummary extends Report_Management
 												"RecurringCharge.ChargeType");
 		
 		// Create Workbook
-		$strFilename = $strReportBasePath."Recurring_Adjustment_Summary.xls";
+		$strFilename = $strReportBasePath."Recurring_Charge_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -63,12 +63,12 @@ class Report_Management_RecurringAdjustmentSummary extends Report_Management
 		$arrFormat = self::_initExcelFormats($wkbWorkbook);
 		
 		// Create Worksheet & Header
-		$wksWorksheet =& $wkbWorkbook->addWorksheet("Recurring Adjustment Summary");
+		$wksWorksheet =& $wkbWorkbook->addWorksheet("Recurring Charge Summary");
 		$wksWorksheet->setLandscape();
 		$wksWorksheet->hideGridlines();
 		$wksWorksheet->fitToPages(1, 99);
 		
-		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($arrProfitData['ThisMonth']['BillingDate'])))." Recurring Adjustment Summary for {$strCustomerName}");
+		$strPageTitle = strtoupper(date("F", strtotime("-1 month", strtotime($arrProfitData['ThisMonth']['BillingDate'])))." Recurring Charge Summary for {$strCustomerName}");
 		$wksWorksheet->writeString(0, 4, $strPageTitle, $arrFormat['PageTitle']);
 		
 		$wksWorksheet->writeString(3, 0, "Bill Date"		, $arrFormat['TextBold']);
@@ -92,13 +92,13 @@ class Report_Management_RecurringAdjustmentSummary extends Report_Management
 		$wksWorksheet->writeString(2, 9, "Last Month"		, $arrFormat['TitleItalic']);
 		$wksWorksheet->writeString(2, 10, "% Change"			, $arrFormat['TitleItalic']);
 		
-		$wksWorksheet->writeString(7, 0, "Recurring Adjustment Summary"	, $arrFormat['Title']);
+		$wksWorksheet->writeString(7, 0, "Recurring Charge Summary"	, $arrFormat['Title']);
 		$wksWorksheet->writeString(7, 8, "This Month"			, $arrFormat['TitleItalic']);
 		$wksWorksheet->writeString(7, 9, "Last Month"			, $arrFormat['TitleItalic']);
 		$wksWorksheet->writeString(7, 10, "% Change"				, $arrFormat['TitleItalic']);
 		
-		$wksWorksheet->writeString(8, 0, "Total Active Adjustments"	, $arrFormat['TextBold']);
-		$wksWorksheet->writeString(9, 0, "Total New Adjustments"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(8, 0, "Total Active Charges"	, $arrFormat['TextBold']);
+		$wksWorksheet->writeString(9, 0, "Total New Charges"	, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(10, 0, "Total Charged"			, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(11, 0, "Total Finished"			, $arrFormat['TextBold']);
 		$wksWorksheet->writeString(12, 0, "Total Cancelled"			, $arrFormat['TextBold']);
@@ -108,7 +108,7 @@ class Report_Management_RecurringAdjustmentSummary extends Report_Management
 			$wksWorksheet->writeFormula($i-1, 10, "=IF(AND(I$i <> 0, NOT(I$i = \"N/A\")), (I$i - J$i) / ABS(I$i), \"N/A\")", $arrFormat['Percentage']);
 		}
 		
-		$wksWorksheet->writeString(14, 0, "Recurring Adjustment Breakdown"	, $arrFormat['Title']);
+		$wksWorksheet->writeString(14, 0, "Recurring Charge Breakdown"	, $arrFormat['Title']);
 		$wksWorksheet->writeString(15, 0, "Account"				, $arrFormat['ColTitle']);
 		$wksWorksheet->writeString(15, 1, "Service"				, $arrFormat['ColTitle']);
 		$wksWorksheet->writeString(15, 2, "Type"				, $arrFormat['ColTitle']);
@@ -121,7 +121,7 @@ class Report_Management_RecurringAdjustmentSummary extends Report_Management
 		$wksWorksheet->writeString(15, 9, "Total Value"			, $arrFormat['ColTitle']);
 		$wksWorksheet->writeString(15, 10, "Last Charged On"	, $arrFormat['ColTitle']);
 	
-		// Create Adjustments Summary		
+		// Create Charges Summary		
 		$intCol = 8;
 		foreach ($arrProfitData as $arrData)
 		{
@@ -137,7 +137,7 @@ class Report_Management_RecurringAdjustmentSummary extends Report_Management
 			$selTotalCharged->Execute($arrData);
 			$arrTotalCharged	= $selTotalCharged->Fetch();
 			
-			// Recurring Adjustment Summary
+			// Recurring Charge Summary
 			$wksWorksheet->writeNumber(8, $intCol, $intActiveCharge					, $arrFormat['Integer']);
 			$wksWorksheet->writeNumber(9, $intCol, $intNewCharges					, $arrFormat['Integer']);
 			$wksWorksheet->writeNumber(10, $intCol, $arrTotalCharged['Total']		, $arrFormat['Currency']);

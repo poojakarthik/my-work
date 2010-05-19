@@ -210,7 +210,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
                 }
             }
 			
-			// This is used to link credit card surcharge adjustments to the payments they correspond to
+			// This is used to link credit card surcharge charges to the payments they correspond to
 			Table()->PaymentTable->AddIndex("PaymentId", $dboPayment->Id->Value);
 
 			// Set the drop down detail, if there is anything to put in it
@@ -296,11 +296,11 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		}
 		else
 		{
-			// Link this table to the invoice table, and the adjustments table
+			// Link this table to the invoice table, and the charges table
 			Table()->PaymentTable->LinkTable("InvoiceTable", "invoice_run_id");
 			
 			// The current implementation of the highlight functionality cannot handle the recursive table links
-			//Table()->PaymentTable->LinkTable("AdjustmentTable", "PaymentId");
+			//Table()->PaymentTable->LinkTable("ChargeTable", "PaymentId");
 			Table()->PaymentTable->RowHighlighting = TRUE;
 		}
 		

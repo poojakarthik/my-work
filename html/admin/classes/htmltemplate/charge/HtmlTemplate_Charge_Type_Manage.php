@@ -13,7 +13,7 @@ class HtmlTemplate_Charge_Type_Manage extends FlexHtmlTemplate
 		$this->LoadJavascript("popup_charge_type");
 		
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->SetCurrentPage("Manage Single Adjustment Types");
+		BreadCrumb()->SetCurrentPage("Manage Single Charge Types");
 	}
 
 	public function Render()
@@ -24,7 +24,7 @@ class HtmlTemplate_Charge_Type_Manage extends FlexHtmlTemplate
 	Event.observe(window, 'load', 
 		function()
 		{
-			objAdjustmentType = new Page_Charge_Type(\$ID('ChargeTypeContainer'));
+			objChargeType = new Page_Charge_Type(\$ID('ChargeTypeContainer'));
 		}, false)
 </script>\n";
 

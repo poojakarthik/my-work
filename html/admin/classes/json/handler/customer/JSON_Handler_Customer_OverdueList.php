@@ -6,7 +6,7 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 	
 	// returns an array of details
 	// I should probably just get this to return an array of account ids, and then use the Account class to grab extra details
-	// This doesn't yet factor in unbilled credit adjustments and disputed amounts
+	// This doesn't yet factor in unbilled credit charges and disputed amounts
 	private function _getOverdueAccounts()
 	{
 		$strEffectiveDate = getCurrentISODate();

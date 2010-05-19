@@ -291,9 +291,9 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		}
 		else
 		{
-			// Link this table to the Payments table and the Adjustments table
+			// Link this table to the Payments table and the Charges table
 			Table()->InvoiceTable->LinkTable("PaymentTable", "invoice_run_id");
-			Table()->InvoiceTable->LinkTable("AdjustmentTable", "invoice_run_id");
+			Table()->InvoiceTable->LinkTable("ChargeTable", "invoice_run_id");
 			Table()->InvoiceTable->RowHighlighting = TRUE;
 		}
 		

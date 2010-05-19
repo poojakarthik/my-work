@@ -22,7 +22,7 @@ class HtmlTemplate_Employee_List extends FlexHtmlTemplate
 	Event.observe(window, 'load', 
 		function()
 		{
-			objAdjustmentType = new Page_Employee_List(\$ID('EmployeeListContainer'));
+			var oEmployeeList = new Page_Employee_List(\$ID('EmployeeListContainer'));
 		}, false)
 </script>\n";
 

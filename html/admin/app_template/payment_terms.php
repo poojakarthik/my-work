@@ -10,13 +10,13 @@
 // payment_terms.php
 //----------------------------------------------------------------------------//
 /**
- * adjustment
+ * payment_terms
  *
  * contains all ApplicationTemplate extended classes relating to Payment Terms functionality
  *
  * contains all ApplicationTemplate extended classes relating to Payment Terms functionality
  *
- * @file		adjustment.php
+ * @file		payment_terms.php
  * @language	PHP
  * @package		framework
  * @author		Hadrian Oliver

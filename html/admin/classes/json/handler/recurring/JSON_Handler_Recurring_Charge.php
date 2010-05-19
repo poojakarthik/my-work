@@ -1,6 +1,6 @@
 <?php
 
-class JSON_Handler_Recurring_Adjustment extends JSON_Handler
+class JSON_Handler_Recurring_Charge extends JSON_Handler
 {
 	protected	$_JSONDebug	= '';
 	
@@ -13,7 +13,7 @@ class JSON_Handler_Recurring_Adjustment extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getRecurringAdjustmentsAwaitingApproval($bolCountOnly=false, $intLimit=0, $intOffset=0)
+	public function getRecurringChargesAwaitingApproval($bolCountOnly=false, $intLimit=0, $intOffset=0)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
@@ -133,7 +133,7 @@ class JSON_Handler_Recurring_Adjustment extends JSON_Handler
 	
 	// If any of the recurring charges can't be approved, then none of them are
 	// As soon as we implement Nested transactions, then we can fix this so it will approve the ones it can, and won't approve the others
-	public function approveRecurringAdjustmentRequests($arrRecChargeIds)
+	public function approveRecurringChargeRequests($arrRecChargeIds)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
@@ -144,7 +144,7 @@ class JSON_Handler_Recurring_Adjustment extends JSON_Handler
 			
 			if (count($arrRecChargeIds) == 0)
 			{
-				throw new Exception('No recurring adjustment requests have been specified, to approve');
+				throw new Exception('No recurring charge requests have been specified, to approve');
 			}
 			
 			$arrRecChargesApproved	= array();
@@ -170,7 +170,7 @@ class JSON_Handler_Recurring_Adjustment extends JSON_Handler
 					{
 						$strRecChargeIdentifier = $objRecCharge->getIdentifyingDescription(true, true, false, true, true);
 					}
-					throw new Exception("Failed to approve Recurring Adjustment Request '$strRecChargeIdentifier'.  Reason: ". $e->getMessage());
+					throw new Exception("Failed to approve Recurring Charge Request '$strRecChargeIdentifier'.  Reason: ". $e->getMessage());
 				}
 			}
 			
@@ -197,7 +197,7 @@ class JSON_Handler_Recurring_Adjustment extends JSON_Handler
 	
 	// If any of the charges can't be approved, then none of them are
 	// As soon as we implement Nested transactions, then we can fix this so it will approve the ones it can, and won't approve the others
-	public function rejectRecurringAdjustmentRequests($arrRecChargeIds, $strReason)
+	public function rejectRecurringChargeRequests($arrRecChargeIds, $strReason)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
@@ -208,14 +208,14 @@ class JSON_Handler_Recurring_Adjustment extends JSON_Handler
 
 			if (count($arrRecChargeIds) == 0)
 			{
-				throw new Exception('No recurring adjustment requests have been specified, to reject');
+				throw new Exception('No recurring charge requests have been specified, to reject');
 			}
 			
 			$strReason = trim($strReason);
 			
 			if ($strReason == '')
 			{
-				throw new Exception('No reason has been supplied as to why these recurring adjustments are being rejected');
+				throw new Exception('No reason has been supplied as to why these recurring charges are being rejected');
 			}
 			
 			$arrRecChargesRejected	= array();
@@ -241,7 +241,7 @@ class JSON_Handler_Recurring_Adjustment extends JSON_Handler
 					{
 						$strRecChargeIdentifier = $objRecCharge->getIdentifyingDescription(true, true, false, true, true);
 					}
-					throw new Exception("Failed to reject Recurring Adjustment Request '$strRecChargeIdentifier'.  Reason: ". $e->getMessage());
+					throw new Exception("Failed to reject Recurring Charge Request '$strRecChargeIdentifier'.  Reason: ". $e->getMessage());
 				}
 			}
 

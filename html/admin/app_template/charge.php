@@ -7,16 +7,16 @@
 
 
 //----------------------------------------------------------------------------//
-// adjustment.php
+// charge.php
 //----------------------------------------------------------------------------//
 /**
- * adjustment
+ * charge
  *
- * contains all ApplicationTemplate extended classes relating to Adjustment functionality
+ * contains all ApplicationTemplate extended classes relating to Charge functionality
  *
- * contains all ApplicationTemplate extended classes relating to Adjustment functionality
+ * contains all ApplicationTemplate extended classes relating to Charge functionality
  *
- * @file		adjustment.php
+ * @file		charge.php
  * @language	PHP
  * @package		framework
  * @author		Joel Dawkins
@@ -27,22 +27,22 @@
  */
 
 //----------------------------------------------------------------------------//
-// AppTemplateAdjustment
+// AppTemplateCharge
 //----------------------------------------------------------------------------//
 /**
- * AppTemplateAdjustment
+ * AppTemplateCharge
  *
- * The AppTemplateAdjustment class
+ * The AppTemplateCharge class
  *
- * The AppTemplateAdjustment class.  This incorporates all logic for all pages
- * relating to Adjustments
+ * The AppTemplateCharge class.  This incorporates all logic for all pages
+ * relating to Charges
  *
  *
  * @package	ui_app
- * @class	AppTemplateAdjustment
+ * @class	AppTemplateCharge
  * @extends	ApplicationTemplate
  */
-class AppTemplateAdjustment extends ApplicationTemplate
+class AppTemplateCharge extends ApplicationTemplate
 {
 	//------------------------------------------------------------------------//
 	// Add
@@ -50,11 +50,11 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	/**
 	 * Add()
 	 *
-	 * Performs the logic for the Add Adjustment popup window (Used to request an adjustment)
+	 * Performs the logic for the Add Charge popup window (Used to request an charge)
 	 * 
-	 * Performs the logic for the Add Adjustment popup window (Used to request an adjustment)
-	 * Note that regardless of whether or not the charge is a credit or debit adjustment, and regardless
-	 * of the user's permission level, no manually requested adjustments (using this function) are automatically approved.
+	 * Performs the logic for the Add Charge popup window (Used to request an charge)
+	 * Note that regardless of whether or not the charge is a credit or debit charge, and regardless
+	 * of the user's permission level, no manually requested charges (using this function) are automatically approved.
 	 *
 	 * @return		void
 	 * @method
@@ -67,8 +67,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 
-		//$bolCanCreateCreditAdjustments = ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
-		$bolCanCreateCreditAdjustments = TRUE;
+		//$bolCanCreateCreditCharges = ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		$bolCanCreateCreditCharges = TRUE;
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -77,14 +77,14 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			return TRUE;
 		}
 		
-		// Adjustments can not be added if the account is pending activation
+		// Charges can not be added if the account is pending activation
 		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
 		{
-			Ajax()->AddCommand("Alert", "The account is pending activation.  Adjustments cannot be requested at this time.");
+			Ajax()->AddCommand("Alert", "The account is pending activation.  Charges cannot be requested at this time.");
 			return TRUE;
 		}
 		
-		// Check if the adjustment relates to a particular service
+		// Check if the charge relates to a particular service
 		if (DBO()->Service->Id->Value)
 		{
 			// A service has been specified.  Load it, to check that it actually exists
@@ -99,12 +99,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);
 			if ($objService->GetStatus() == SERVICE_PENDING)
 			{
-				Ajax()->AddCommand("Alert", "This service is pending activation.  Adjustments cannot be requested at this time.");
+				Ajax()->AddCommand("Alert", "This service is pending activation.  Charges cannot be requested at this time.");
 				return TRUE;
 			}
 			elseif (!$objService->IsCurrentlyActive())
 			{
-				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Adjustments can only be requested for active services.");
+				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Charges can only be requested for active services.");
 				return TRUE;
 			}
 		}
@@ -113,10 +113,10 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		DBL()->ChargeTypesAvailable->Archived = 0;
 		DBL()->ChargeTypesAvailable->automatic_only = 0;
 		
-		// Only proper admins and credit management can create credit adjustments
-		if (!$bolCanCreateCreditAdjustments)
+		// Only proper admins and credit management can create credit charges
+		if (!$bolCanCreateCreditCharges)
 		{
-			// The user can only create debit adjustments
+			// The user can only create debit charges
 			DBL()->ChargeTypesAvailable->Nature = 'DR';
 		}
 		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
@@ -125,7 +125,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		
 		if (DBL()->ChargeTypesAvailable->RecordCount() == 0)
 		{
-			Ajax()->AddCommand("Alert", "There are currently no adjustment types defined");
+			Ajax()->AddCommand("Alert", "There are currently no charge types defined");
 			return TRUE;
 		}
 
@@ -144,8 +144,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		DBL()->AccountInvoices->Load();
 
 
-		// check if an adjustment is being submitted
-		if (SubmittedForm('AddAdjustment', 'Add Adjustment'))
+		// check if an charge is being submitted
+		if (SubmittedForm('AddCharge', 'Add Charge'))
 		{
 			// Load the relating Account and ChargeType records
 			DBO()->ChargeType->Load();
@@ -159,7 +159,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// Check that the charge amount is not negative
 				if (floatval(DBO()->Charge->Amount->Value < 0))
 				{
-					Ajax()->AddCommand("Alert", "ERROR: The Adjustment cannot be a negative value");
+					Ajax()->AddCommand("Alert", "ERROR: The Charge cannot be a negative value");
 					return TRUE;
 				}
 				
@@ -180,7 +180,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				$dboUser 					= GetAuthenticatedUserDBObject();
 				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
 				
-				// Date the adjustment was created (the current date)
+				// Date the charge was created (the current date)
 				$strCurrentDate = GetCurrentDateForMySQL();
 				DBO()->Charge->CreatedOn	= $strCurrentDate;
 				DBO()->Charge->ChargedOn	= $strCurrentDate;
@@ -192,11 +192,11 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				
 				DBO()->Charge->Notes		= trim(DBO()->Charge->Notes->Value);
 				
-				// Check if the user has permission to create a credit adjustment, if the adjustment is a credit
-				if (DBO()->Charge->Nature->Value == 'CR' && !$bolCanCreateCreditAdjustments)
+				// Check if the user has permission to create a credit charge, if the charge is a credit
+				if (DBO()->Charge->Nature->Value == 'CR' && !$bolCanCreateCreditCharges)
 				{
-					// The user does not have the required permissions to create a credit adjustment
-					Ajax()->AddCommand("Alert", "ERROR: You do not have permission to request credit adjustments");
+					// The user does not have the required permissions to create a credit charge
+					Ajax()->AddCommand("Alert", "ERROR: You do not have permission to request credit charges");
 					return TRUE;
 				}
 				
@@ -206,39 +206,39 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					DBO()->Charge->Invoice = NULL;
 				}
 				
-				// Set the status to CHARGE_WAITING (no adjustments are automatically approved)
+				// Set the status to CHARGE_WAITING (no charges are automatically approved)
 				DBO()->Charge->Status = CHARGE_WAITING;
 
 				$arrData = DBO()->Charge->AsArray();
 
-				// Save the adjustment to the charge table of the vixen database
+				// Save the charge to the charge table of the vixen database
 				TransactionStart();
 				$intChargeId = Framework()->AddCharge($arrData);
 
 				if ($intChargeId === FALSE)
 				{
-					// The adjustment did not save
+					// The charge did not save
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Requesting the adjustment failed, unexpectedly");
+					Ajax()->AddCommand("Alert", "ERROR: Requesting the charge failed, unexpectedly");
 					return TRUE;
 				}
 				else
 				{
-					// The adjustment was successfully saved
+					// The charge was successfully saved
 					
-					// Log the 'Adjustment Request' action
+					// Log the 'Charge Request' action
 					try
 					{
 						$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
 						if (DBO()->Service->Id->Value)
 						{
-							// The recurring adjustment is being applied to a specific service
+							// The recurring charge is being applied to a specific service
 							$intAccountId = NULL;
 							$intServiceId = DBO()->Service->Id->Value;
 						}
 						else
 						{
-							// The recurring adjustment is being applied to an account
+							// The recurring charge is being applied to an account
 							$intAccountId = DBO()->Account->Id->Value;
 							$intServiceId = NULL;
 						}
@@ -250,12 +250,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 													"Amount (Inc GST): \${$strAmount} {$strNature}";
 						
 						// Log the action
-						Action::createAction('Adjustment Requested', $strActionExtraDetails, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+						Action::createAction('Charge Requested', $strActionExtraDetails, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 					}
 					catch (Exception $e)
 					{
 						TransactionRollback();
-						Ajax()->AddCommand("Alert", "ERROR: Requesting the adjustment failed, while trying to log the action.");
+						Ajax()->AddCommand("Alert", "ERROR: Requesting the charge failed, while trying to log the action.");
 						return TRUE;
 					}
 					
@@ -263,21 +263,21 @@ class AppTemplateAdjustment extends ApplicationTemplate
 
 					TransactionCommit();
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "The request for adjustment has been successfully logged.");
+					Ajax()->AddCommand("AlertReload", "The request for charge has been successfully logged.");
 					return TRUE;
 				}
 			}
 			else
 			{
 				// Something was invalid
-				Ajax()->RenderHtmlTemplate("AdjustmentAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-				Ajax()->AddCommand("Alert", "ERROR: Adjustment details are incorrect. Invalid fields are highlighted");
+				Ajax()->RenderHtmlTemplate("ChargeAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+				Ajax()->AddCommand("Alert", "ERROR: Charge details are incorrect. Invalid fields are highlighted");
 				return TRUE;
 			}
 		}
 		
 		// All required data has been retrieved from the database so now load the page template
-		$this->LoadPage('adjustment_add');
+		$this->LoadPage('charge_add');
 
 		return TRUE;
 	}
@@ -288,9 +288,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	/**
 	 * AddRecurring()
 	 *
-	 * Performs the logic for the Add Recurring Adjustment popup window
+	 * Performs the logic for the Add Recurring Charge popup window
 	 * 
-	 * Performs the logic for the Add Recurring Adjustment popup window
+	 * Performs the logic for the Add Recurring Charge popup window
 	 *
 	 * @return		void
 	 * @method
@@ -309,14 +309,14 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			return TRUE;
 		}
 
-		// Adjustments can not be added if the account is pending activation
+		// Charges can not be added if the account is pending activation
 		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
 		{
-			Ajax()->AddCommand("Alert", "The account is pending activation.  Adjustments cannot be requested at this time.");
+			Ajax()->AddCommand("Alert", "The account is pending activation.  Charges cannot be requested at this time.");
 			return TRUE;
 		}
 
-		// Check if the adjustment relates to a particular service
+		// Check if the charge relates to a particular service
 		if (DBO()->Service->Id->Value)
 		{
 			// A service has been specified.  Load it, to check that it actually exists
@@ -330,12 +330,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);
 			if ($objService->GetStatus() == SERVICE_PENDING)
 			{
-				Ajax()->AddCommand("Alert", "This service is pending activation.  Adjustments cannot be requested at this time.");
+				Ajax()->AddCommand("Alert", "This service is pending activation.  Charges cannot be requested at this time.");
 				return TRUE;
 			}
 			elseif (!$objService->IsCurrentlyActive())
 			{
-				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Adjustments can only be requested for active services.");
+				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Charges can only be requested for active services.");
 				return TRUE;
 			}
 			
@@ -349,12 +349,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 
 		if (DBL()->ChargeTypesAvailable->RecordCount() == 0)
 		{
-			Ajax()->AddCommand("Alert", "There are currently no recurring adjustment types defined");
+			Ajax()->AddCommand("Alert", "There are currently no recurring charge types defined");
 			return TRUE;
 		}
 
-		// check if an adjustment is being submitted
-		if (SubmittedForm('AddRecurringAdjustment', 'Add Adjustment'))
+		// check if an charge is being submitted
+		if (SubmittedForm('AddRecurringCharge', 'Add Charge'))
 		{
 			// Load the relating Account and ChargeType records
 			DBO()->RecurringChargeType->Load();
@@ -410,7 +410,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				$intCurrentYear						= intval(date("Y", $intNow));
 				DBO()->RecurringCharge->CreatedOn	= $strCurrentDate;
 
-				// I'm pretty sure I should just leave this even though the adjustment will be pending approval
+				// I'm pretty sure I should just leave this even though the charge will be pending approval
 				// StartedOn, is the date that the recurring charge should have started on 
 				if ($intCurrentDay >= 29 && $intCurrentDay <= 31)
 				{
@@ -510,42 +510,42 @@ class AppTemplateAdjustment extends ApplicationTemplate
 
 				TransactionStart();
 				
-				// Save the recurring adjustment to the charge table
+				// Save the recurring charge to the charge table
 				if (!DBO()->RecurringCharge->Save())
 				{
-					// The recurring adjustment did not save
+					// The recurring charge did not save
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Submitting the Recurring Adjustment Request failed, unexpectedly.");
+					Ajax()->AddCommand("Alert", "ERROR: Submitting the Recurring Charge Request failed, unexpectedly.");
 					return TRUE;
 				}
 				else
 				{
-					// The recurring adjustment was successfully saved
+					// The recurring charge was successfully saved
 					
-					// Log the 'Recurring Adjustment Request' action
+					// Log the 'Recurring Charge Request' action
 					try
 					{
 						$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
 						if (DBO()->Service->Id->Value)
 						{
-							// The recurring adjustment is being applied to a specific service
+							// The recurring charge is being applied to a specific service
 							$intAccountId = NULL;
 							$intServiceId = DBO()->Service->Id->Value;
 						}
 						else
 						{
-							// The recurring adjustment is being applied to an account
+							// The recurring charge is being applied to an account
 							$intAccountId = DBO()->Account->Id->Value;
 							$intServiceId = NULL;
 						}
 						
 						// Log the action
-						Action::createAction('Recurring Adjustment Requested', $strNote, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+						Action::createAction('Recurring Charge Requested', $strNote, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 						
 						// If the RecurringChargeType doesn't require approval, then flag it as being approved
 						if (!DBO()->RecurringChargeType->approval_required->Value)
 						{
-							// The Recurring Adjustment can be automatically approved
+							// The Recurring Charge can be automatically approved
 							$objRecurringCharge = Recurring_Charge::getForId(DBO()->RecurringCharge->Id->Value);
 							$objRecurringCharge->setToApproved(Employee::SYSTEM_EMPLOYEE_ID, true);
 						}
@@ -554,7 +554,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					catch (Exception $e)
 					{
 						TransactionRollback();
-						Ajax()->AddCommand("Alert", "ERROR: Submitting the Recurring Adjustment Request failed, while trying to log the action.");
+						Ajax()->AddCommand("Alert", "ERROR: Submitting the Recurring Charge Request failed, while trying to log the action.");
 						return TRUE;
 					}
 
@@ -563,7 +563,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					
 					
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "The Recurring Adjustment Request has been successfully logged.");
+					Ajax()->AddCommand("AlertReload", "The Recurring Charge Request has been successfully logged.");
 					
 					return TRUE;
 				}
@@ -571,33 +571,33 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			else
 			{
 				// Something was invalid
-				Ajax()->RenderHtmlTemplate("RecurringAdjustmentAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-				Ajax()->AddCommand("Alert", "ERROR: The Recurring Adjustment Request could not be submitted.  Invalid fields have been reset and highlighted");
+				Ajax()->RenderHtmlTemplate("RecurringChargeAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
+				Ajax()->AddCommand("Alert", "ERROR: The Recurring Charge Request could not be submitted.  Invalid fields have been reset and highlighted");
 				return TRUE;
 			}
 		}
 		
 		// All required data has been retrieved from the database so now load the page template
-		$this->LoadPage('recurring_adjustment_add');
+		$this->LoadPage('recurring_charge_add');
 
 		return TRUE;
 	}
 	
 	//------------------------------------------------------------------------//
-	// DeleteAdjustment
+	// DeleteCharge
 	//------------------------------------------------------------------------//
 	/**
-	 * DeleteAdjustment()
+	 * DeleteCharge()
 	 *
-	 * Performs Delete Adjustment functionality
+	 * Performs Delete Charge functionality
 	 * 
-	 * Performs Delete Adjustment functionality
+	 * Performs Delete Charge functionality
 	 *
 	 * @return		void
 	 * @method
 	 *
 	 */
-	function DeleteAdjustment()
+	function DeleteCharge()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
@@ -605,11 +605,11 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		
-		$bolCanDeleteAdjustments	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		$bolCanDeleteCharges	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 		
-		if (!$bolCanDeleteAdjustments)
+		if (!$bolCanDeleteCharges)
 		{
-			Ajax()->AddCommand("Alert", "You do not have the required permissions to delete an adjustment");
+			Ajax()->AddCommand("Alert", "You do not have the required permissions to delete an charge");
 			return TRUE;
 		}
 		
@@ -619,36 +619,36 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			
 			if (!DBO()->Charge->Load())
 			{
-				throw new Exception("The adjustment with id: ". DBO()->Charge->Id->Value ." could not be found");
+				throw new Exception("The charge with id: ". DBO()->Charge->Id->Value ." could not be found");
 			}
 
-			// Deleting Adjustments can not be done while a live invoice run is outstanding
+			// Deleting Charges can not be done while a live invoice run is outstanding
 			$objAccount = Account::getForId(DBO()->Charge->Account->Value);
 			if (Invoice_Run::checkTemporary($objAccount->customerGroup, $objAccount->id))
 			{
 				throw new Exception("This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			}
 			
-			$intAdjustmentId			= DBO()->Charge->Id->Value;
+			$intChargeId			= DBO()->Charge->Id->Value;
 			$intOriginalChargeStatus	= DBO()->Charge->Status->Value;
 			
 			switch ($intOriginalChargeStatus)
 			{
 				case CHARGE_WAITING:
-					$strActionDescriptionPastTense		= "Cancelled request for adjusment";
-					$strActionDescriptionPresentTense	= "Cancelling request for adjustment";
-					$strActionDescriptionFutureTense	= "Cancel request for adjustment";
+					$strActionDescriptionPastTense		= "Cancelled request for charge";
+					$strActionDescriptionPresentTense	= "Cancelling request for charge";
+					$strActionDescriptionFutureTense	= "Cancel request for charge";
 					break;
 					
 				case CHARGE_APPROVED:
 				case CHARGE_TEMP_INVOICE:
-					$strActionDescriptionPastTense		= "Deleted adjustment";
-					$strActionDescriptionPresentTense	= "Deleting adjustment";
-					$strActionDescriptionFutureTense	= "Delete adjustment";
+					$strActionDescriptionPastTense		= "Deleted charge";
+					$strActionDescriptionPresentTense	= "Deleting charge";
+					$strActionDescriptionFutureTense	= "Delete charge";
 					break;
 				
 				default:
-					throw new Exception("The adjustment can not be deleted due to its status (charge status: {$intOriginalChargeStatus})");
+					throw new Exception("The charge can not be deleted due to its status (charge status: {$intOriginalChargeStatus})");
 					break;
 			}
 			
@@ -665,7 +665,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				throw new Exception("Failed to {$strActionDescriptionFutureTense}");
 			}
 			
-			// The Adjustment was successfully 'Deleted'
+			// The Charge was successfully 'Deleted'
 			
 			// Record the system note (and include the user's note, if they defined one)
 			$strUserNote		= trim(DBO()->Note->Note->Value);
@@ -676,7 +676,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			$intEmployeeId		= AuthenticatedUser()->_arrUser['Id'];
 			
 			
-			$strNote = 	"{$strActionDescriptionPastTense} (id: $intAdjustmentId)\n".
+			$strNote = 	"{$strActionDescriptionPastTense} (id: $intChargeId)\n".
 						"Type: {$strChargeType} ({$strNature})\n".
 						"Amount (Inc GST): \${$strAmount} {$strNature}\n".
 						"Created: $strCreatedOn";
@@ -706,20 +706,20 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	}
 
 	//------------------------------------------------------------------------//
-	// DeleteRecurringAdjustment
+	// DeleteRecurringCharge
 	//------------------------------------------------------------------------//
 	/**
-	 * DeleteRecurringAdjustment()
+	 * DeleteRecurringCharge()
 	 *
-	 * Performs Delete Recurring Adjustment functionality
+	 * Performs Delete Recurring Charge functionality
 	 * 
-	 * Performs Delete Recurring Adjustment functionality
+	 * Performs Delete Recurring Charge functionality
 	 *
 	 * @return		void
 	 * @method
 	 *
 	 */
-	function DeleteRecurringAdjustment()
+	function DeleteRecurringCharge()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
@@ -727,11 +727,11 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		
-		$bolCanDeleteAdjustments	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		$bolCanDeleteCharges	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 		
-		if (!$bolCanDeleteAdjustments)
+		if (!$bolCanDeleteCharges)
 		{
-			Ajax()->AddCommand("Alert", "You do not have the required permissions to cancel recurring adjustments");
+			Ajax()->AddCommand("Alert", "You do not have the required permissions to cancel recurring charges");
 			return TRUE;
 		}
 
@@ -741,7 +741,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 
 			$objRecurringCharge = Recurring_Charge::getForId(DBO()->RecurringCharge->Id->Value);
 
-			// Deleting Recurring Adjustments can not be done while billing is in progress
+			// Deleting Recurring Charges can not be done while billing is in progress
 			$objAccount = Account::getForId($objRecurringCharge->account);
 			if (Invoice_Run::checkTemporary($objAccount->customerGroup, $objAccount->id))
 			{
@@ -751,9 +751,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
 
 			$strActionPassedTense	= ($objRecurringCharge->hasSatisfiedRequirementsForCompletion())? 'Discontinued' : 'Cancelled';
-			$strSubjectOfTheAction	= ($objRecurringCharge->recurringChargeStatusId == Recurring_Charge_Status::getIdForSystemName('AWAITING_APPROVAL'))? 'Recurring Adjustment Request' : 'Recurring Adjustment';
+			$strSubjectOfTheAction	= ($objRecurringCharge->recurringChargeStatusId == Recurring_Charge_Status::getIdForSystemName('AWAITING_APPROVAL'))? 'Recurring Charge Request' : 'Recurring Charge';
 
-			// Cancell the recurring adjustment
+			// Cancell the recurring charge
 			$objRecurringCharge->setToCancelled($intEmployeeId, true, trim(DBO()->Note->Note->Value));
 			
 			

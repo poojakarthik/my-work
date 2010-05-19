@@ -626,7 +626,7 @@ class Service extends ORM
 	
 	public function getCharges($iInvoiceRunId=null)
 	{
-		// Need to load up the Adjustments for the invoice
+		// Need to load up the Charges for the invoice
 		$aVisibleChargeTypes	= array(CHARGE_TYPE_VISIBILITY_VISIBLE);
 		
 		if (AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT))
@@ -656,7 +656,7 @@ class Service extends ORM
 		
 		if (!$oResult)
 		{
-			throw new Exception('Could not retrieve the adjustments for the service:: Error Message='.$oQuery->Error());
+			throw new Exception('Could not retrieve the charges for the service:: Error Message='.$oQuery->Error());
 		}
 		
 		// Add result into an array

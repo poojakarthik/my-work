@@ -608,9 +608,9 @@
 	/**
 	 * GetUnbilledCharges()
 	 *
-	 * Determines the current unbilled charges (adjustments) for a specified account
+	 * Determines the current unbilled charges (charges) for a specified account
 	 *
-	 * Determines the current unbilled charges (adjustments) for a specified account
+	 * Determines the current unbilled charges (charges) for a specified account
 	 * Return amount includes GST.  Excludes Plan Charges.
 	 * 
 	 *
@@ -1197,7 +1197,7 @@
 					$insCredit->Execute($arrCredit);
 					
 					// Append appriate message to the list of messages for the system note
-					$arrReversedCharges[] = "A new adjustment has been created to credit the Account: {$arrCredit['Account']} for the invoiced payment surcharge of \$". number_format(AddGST($arrCredit['Amount']), 2, ".", "");
+					$arrReversedCharges[] = "A new charge has been created to credit the Account: {$arrCredit['Account']} for the invoiced payment surcharge of \$". number_format(AddGST($arrCredit['Amount']), 2, ".", "");
 					$bolChargesReversed = TRUE;
 					
 					break;
@@ -1211,7 +1211,7 @@
 					$ubiSurcharge->Execute($arrSurcharge);
 					
 					// Append appriate message to the list of messages for the system note
-					$arrReversedCharges[] = "The yet-to-be-invoiced surcharge adjustment of \$". number_format(AddGST($arrSurcharge['Amount']), 2, ".", "") ." has been deleted from Account: {$arrSurcharge['Account']}";
+					$arrReversedCharges[] = "The yet-to-be-invoiced surcharge charge of \$". number_format(AddGST($arrSurcharge['Amount']), 2, ".", "") ." has been deleted from Account: {$arrSurcharge['Account']}";
 					$bolChargesReversed = TRUE;
 					break;
 			}

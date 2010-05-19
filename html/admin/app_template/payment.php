@@ -192,7 +192,7 @@ class AppTemplatePayment extends ApplicationTemplate
 			}
 			
 			// The payment was successfully saved
-			// If it was a credit card payment, then add an adjustment for the credit card surcharge
+			// If it was a credit card payment, then add an charge for the credit card surcharge
 			if (DBO()->Payment->PaymentType->Value == PAYMENT_TYPE_CREDIT_CARD && DBO()->Payment->ChargeSurcharge->Value)
 			{
 				// Add the Credit Card Surcharge
@@ -202,7 +202,7 @@ class AppTemplatePayment extends ApplicationTemplate
 				{
 					// Adding the Credit Card Surcharge failed.  Rollback the transaction
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Saving the payment failed, unexpectedly.  Failed during creation of the Credit Card Surcharge adjustment.");
+					Ajax()->AddCommand("Alert", "ERROR: Saving the payment failed, unexpectedly.  Failed during creation of the Credit Card Surcharge charge.");
 					return TRUE;
 				}
 				
@@ -220,12 +220,12 @@ class AppTemplatePayment extends ApplicationTemplate
 						$strAccountName = trim($arrAccount['TradingName']);
 					}
 					
-					$strCreditCardMsg = "<br />The Credit Card surcharge has been added as an adjustment to Account: {$arrAccount[Id]} $strAccountName";
+					$strCreditCardMsg = "<br />The Credit Card surcharge has been added as an charge to Account: {$arrAccount[Id]} $strAccountName";
 				}
 				else
 				{
 					// The payment was applied to a single account
-					$strCreditCardMsg = "<br />The Credit Card surcharge has been added as an adjustment";
+					$strCreditCardMsg = "<br />The Credit Card surcharge has been added as an charge";
 				}
 			}
 			
@@ -268,7 +268,7 @@ class AppTemplatePayment extends ApplicationTemplate
 			//TODO! Add an appropriate System Note
 			// Note: A payment can be added to an entire AccountGroup, in which case you should add the note to each Account within the group, and 
 			// specify in the note that it has been applied to the entire group.
-			// You should also detail the Credit Card Surcharge adjustment, if one was created, and discuss how this has affected the payment amount
+			// You should also detail the Credit Card Surcharge charge, if one was created, and discuss how this has affected the payment amount
 			// You can retrieve the new payment amount by reloading the DBO()->Payment object as it will now have an ID
 			
 			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);

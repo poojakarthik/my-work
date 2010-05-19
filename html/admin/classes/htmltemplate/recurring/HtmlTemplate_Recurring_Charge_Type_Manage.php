@@ -18,7 +18,7 @@ class HtmlTemplate_Recurring_Charge_Type_Manage extends FlexHtmlTemplate
 		$this->LoadJavascript('popup_recurring_charge_type');
 		
 		BreadCrumb()->Employee_Console();
-		BreadCrumb()->SetCurrentPage("Manage Recurring Adjustment Types");
+		BreadCrumb()->SetCurrentPage("Manage Recurring Charge Types");
 	}
 
 	public function Render()
@@ -29,7 +29,7 @@ class HtmlTemplate_Recurring_Charge_Type_Manage extends FlexHtmlTemplate
 	Event.observe(window, 'load', 
 		function()
 		{
-			objAdjustmentType = new Page_Recurring_Charge_Type(\$ID('RecurringChargeTypeContainer'));
+			objChargeType = new Page_Recurring_Charge_Type(\$ID('RecurringChargeTypeContainer'));
 		}, false)
 </script>\n";
 

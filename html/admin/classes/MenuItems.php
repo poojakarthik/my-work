@@ -2644,27 +2644,27 @@ class MenuItems {
 	}
 
 	//------------------------------------------------------------------------//
-	// AddAdjustment
+	// AddCharge
 	//------------------------------------------------------------------------//
 	/**
-	 * AddAdjustment()
+	 * AddCharge()
 	 *
-	 * Compiles the javascript to be executed when the AddAdjustment menu item is clicked
+	 * Compiles the javascript to be executed when the AddCharge menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the AddAdjustment menu item is clicked
+	 * Compiles the javascript to be executed when the AddCharge menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intAccountId		id of the account that the Adjustment will be added to
-	 * @param	int		$intServiceId		[optional] id of the service that the adjustment is associated with
+	 * @param	int		$intAccountId		id of the account that the Charge will be added to
+	 * @param	int		$intServiceId		[optional] id of the service that the charge is associated with
 	 *
-	 * @return	string				action to be executed when the AddAdjustment menu item is clicked
+	 * @return	string				action to be executed when the AddCharge menu item is clicked
 	 *
 	 * @method
 	 */
-	function AddAdjustment($intAccountId, $intServiceId = NULL) {
-		$this->strContextMenuLabel = "Request Adjustment";
+	function AddCharge($intAccountId, $intServiceId = NULL) {
+		$this->strContextMenuLabel = "Request Charge";
 
-		$this->strLabel = "Request Adjustment";
+		$this->strLabel = "Request Charge";
 
 		// Setup data to send
 		$arrData['Account']['Id'] = $intAccountId;
@@ -2673,31 +2673,31 @@ class MenuItems {
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", \"Request Adjustment\", \"Adjustment\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddChargePopupId\", \"medium\", \"Request Charge\", \"Charge\", \"Add\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
-	// AddRecurringAdjustment
+	// AddRecurringCharge
 	//------------------------------------------------------------------------//
 	/**
-	 * AddRecurringAdjustment()
+	 * AddRecurringCharge()
 	 *
-	 * Compiles the javascript to be executed when the AddRecurringAdjustment menu item is clicked
+	 * Compiles the javascript to be executed when the AddRecurringCharge menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the AddRecurringAdjustment menu item is clicked
+	 * Compiles the javascript to be executed when the AddRecurringCharge menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intAccountId		id of the account that the Adjustment will be added to
-	 * @param	int		$intServiceId		[optional] id of the service that the adjustment is associated with
+	 * @param	int		$intAccountId		id of the account that the Charge will be added to
+	 * @param	int		$intServiceId		[optional] id of the service that the charge is associated with
 	 *
-	 * @return	string						action to be executed when the AddRecurringAdjustment menu item is clicked
+	 * @return	string						action to be executed when the AddRecurringCharge menu item is clicked
 	 *
 	 * @method
 	 */
-	function AddRecurringAdjustment($intAccountId, $intServiceId = NULL) {
-		$this->strContextMenuLabel = "Request Recurring Adjustment";
+	function AddRecurringCharge($intAccountId, $intServiceId = NULL) {
+		$this->strContextMenuLabel = "Request Recurring Charge";
 
-		$this->strLabel = "Request Recurring Adjustment";
+		$this->strLabel = "Request Recurring Charge";
 
 		// Setup data to send
 		$arrData['Account']['Id'] = $intAccountId;
@@ -2706,7 +2706,7 @@ class MenuItems {
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringAdjustmentPopupId\", \"medium\", \"Request Recurring Adjustment\", \"Adjustment\", \"AddRecurring\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringChargePopupId\", \"medium\", \"Request Recurring Charge\", \"Charge\", \"AddRecurring\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -2838,65 +2838,65 @@ class MenuItems {
 	}
 
 	//------------------------------------------------------------------------//
-	// DeleteAdjustment
+	// DeleteCharge
 	//------------------------------------------------------------------------//
 	/**
-	 * DeleteAdjustment()
+	 * DeleteCharge()
 	 *
-	 * Compiles the javascript to be executed when the DeleteAdjustment menu item is clicked
+	 * Compiles the javascript to be executed when the DeleteCharge menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the DeleteAdjustment menu item is clicked
+	 * Compiles the javascript to be executed when the DeleteCharge menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intAdjustmentId		id of the adjustment to delete
+	 * @param	int		$intChargeId		id of the charge to delete
 	 *
-	 * @return	string							action to be executed when the DeleteAdjustment menu item is clicked
+	 * @return	string							action to be executed when the DeleteCharge menu item is clicked
 	 *
 	 * @method
 	 */
-	function DeleteAdjustment($intAdjustmentId) {
+	function DeleteCharge($intChargeId) {
 		$this->strContextMenuLabel = "";
-		$this->strLabel = "delete adjustment: $intAdjustmentId";
+		$this->strLabel = "delete charge: $intChargeId";
 
 		// Setup data to send
-		$arrData['DeleteRecord']['RecordType'] = "Adjustment";
-		$arrData['Charge']['Id'] = $intAdjustmentId;
+		$arrData['DeleteRecord']['RecordType'] = "Charge";
+		$arrData['Charge']['Id'] = $intChargeId;
 
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteAdjustmentPopupId\", \"medium\", \"Adjustment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteChargePopupId\", \"medium\", \"Charge\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
-	// CancelRecurringAdjustment
+	// CancelRecurringCharge
 	//------------------------------------------------------------------------//
 	/**
-	 * CancelRecurringAdjustment()
+	 * CancelRecurringCharge()
 	 *
-	 * Compiles the javascript to be executed when the CancelRecurringAdjustment menu item is clicked
+	 * Compiles the javascript to be executed when the CancelRecurringCharge menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the CancelRecurringAdjustment menu item is clicked
+	 * Compiles the javascript to be executed when the CancelRecurringCharge menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intRecurringAdjustmentId		id of the recurring adjustment to Cancel
+	 * @param	int		$intRecurringChargeId		id of the recurring charge to Cancel
 	 *
-	 * @return	string									action to be executed when the CancelRecurringAdjustment menu item is clicked
+	 * @return	string									action to be executed when the CancelRecurringCharge menu item is clicked
 	 *
 	 * @method
 	 */
-	function CancelRecurringAdjustment($intRecurringAdjustmentId) {
+	function CancelRecurringCharge($intRecurringChargeId) {
 		$this->strContextMenuLabel = "";
-		$this->strLabel = "cancel recurring adjustment: $intRecurringAdjustmentId";
+		$this->strLabel = "cancel recurring charge: $intRecurringChargeId";
 
 		// Setup data to send
-		$arrData['DeleteRecord']['RecordType'] = "RecurringAdjustment";
-		$arrData['RecurringCharge']['Id'] = $intRecurringAdjustmentId;
+		$arrData['DeleteRecord']['RecordType'] = "RecurringCharge";
+		$arrData['RecurringCharge']['Id'] = $intRecurringChargeId;
 
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteRecurringAdjustmentPopupId\", \"medium\", \"Recurring Adjustment\", \"Account\", \"DeleteRecord\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteRecurringChargePopupId\", \"medium\", \"Recurring Charge\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//
@@ -3086,94 +3086,94 @@ class MenuItems {
 	}
 
 	//------------------------------------------------------------------------//
-	// ManageAdjustments
+	// ManageCharges
 	//------------------------------------------------------------------------//
 	/**
-	 * ManageAdjustments()
+	 * ManageCharges()
 	 *
-	 * Compiles the Href to be executed when the ManageAdjustments menu item is triggered
+	 * Compiles the Href to be executed when the ManageCharges menu item is triggered
 	 *
-	 * Compiles the Href to be executed when the ManageAdjustments menu item is triggered
+	 * Compiles the Href to be executed when the ManageCharges menu item is triggered
 	 * 
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ManageAdjustmentsOld() {
-		self::deprecatedMenuItem('ManageAdjustmentsOld', self::OLD_FRAMEWORK."charges_approve.php");
-		/*$this->strContextMenuLabel = "OLD - Approve and Decline Adjustments - OLD";
-		$this->strLabel = "Manage Adjustments";
+	function ManageChargesOld() {
+		self::deprecatedMenuItem('ManageChargesOld', self::OLD_FRAMEWORK."charges_approve.php");
+		/*$this->strContextMenuLabel = "OLD - Approve and Decline Charges - OLD";
+		$this->strLabel = "Manage Charges";
 		return self :: OLD_FRAMEWORK . "charges_approve.php";*/
 	}
 
 	/**
-	 * ManageAdjustmentRequests()
+	 * ManageChargeRequests()
 	 *
-	 * Compiles the Href to be executed when the ManageAdjustmentRequests menu item is triggered
+	 * Compiles the Href to be executed when the ManageChargeRequests menu item is triggered
 	 *
-	 * Compiles the Href to be executed when the ManageAdjustmentRequests menu item is triggered
+	 * Compiles the Href to be executed when the ManageChargeRequests menu item is triggered
 	 * 
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ManageAdjustmentRequests() {
-		$this->strContextMenuLabel = "Manage Adjustment Requests";
-		$this->strLabel = "Manage Adjustment Requests";
-		return self::NEW_FRAMEWORK . "reflex.php/Adjustment/ManageAdjustmentRequests/";
+	function ManageChargeRequests() {
+		$this->strContextMenuLabel = "Manage Charge Requests";
+		$this->strLabel = "Manage Charge Requests";
+		return self::NEW_FRAMEWORK . "reflex.php/Charge/ManageChargeRequests/";
 	}
 
 
 	/**
-	 * ManageRecurringAdjustmentRequests()
+	 * ManageRecurringChargeRequests()
 	 *
-	 * Compiles the Href to be executed when the ManageRecurringAdjustmentRequests menu item is triggered
+	 * Compiles the Href to be executed when the ManageRecurringChargeRequests menu item is triggered
 	 *
-	 * Compiles the Href to be executed when the ManageRecurringAdjustmentRequests menu item is triggered
+	 * Compiles the Href to be executed when the ManageRecurringChargeRequests menu item is triggered
 	 * 
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ManageRecurringAdjustmentRequests() {
-		$this->strContextMenuLabel = "Manage Recurring Adjustment Requests";
-		$this->strLabel = "Manage Recurring Adjustment Requests";
-		return self::NEW_FRAMEWORK . "reflex.php/RecurringAdjustment/ManageRecurringAdjustmentRequests/";
+	function ManageRecurringChargeRequests() {
+		$this->strContextMenuLabel = "Manage Recurring Charge Requests";
+		$this->strLabel = "Manage Recurring Charge Requests";
+		return self::NEW_FRAMEWORK . "reflex.php/RecurringCharge/ManageRecurringChargeRequests/";
 	}
 
 
 	//------------------------------------------------------------------------//
-	// ManageSingleAdjustmentTypes
+	// ManageSingleChargeTypes
 	//------------------------------------------------------------------------//
 	/**
-	 * ManageSingleAdjustmentTypes()
+	 * ManageSingleChargeTypes()
 	 *
-	 * Compiles the Href to be executed when the ManageSingleAdjustmentTypes menu item is triggered
+	 * Compiles the Href to be executed when the ManageSingleChargeTypes menu item is triggered
 	 *
-	 * Compiles the Href to be executed when the ManageSingleAdjustmentTypes menu item is triggered
+	 * Compiles the Href to be executed when the ManageSingleChargeTypes menu item is triggered
 	 * 
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ManageSingleAdjustmentTypes() {
-		$this->strContextMenuLabel = "Manage Single Adjustment Types";
-		$this->strLabel = "Manage Single Adjustment Types";
+	function ManageSingleChargeTypes() {
+		$this->strContextMenuLabel = "Manage Single Charge Types";
+		$this->strLabel = "Manage Single Charge Types";
 		return self::NEW_FRAMEWORK . "reflex.php/ChargeType/Manage/";
 	}
 
 	//------------------------------------------------------------------------//
-	// ManageRecurringAdjustmentTypes
+	// ManageRecurringChargeTypes
 	//------------------------------------------------------------------------//
 	/**
-	 * ManageRecurringAdjustmentTypes()
+	 * ManageRecurringChargeTypes()
 	 *
-	 * Compiles the Href to be executed when the ManageRecurringAdjustmentTypes menu item is triggered
+	 * Compiles the Href to be executed when the ManageRecurringChargeTypes menu item is triggered
 	 *
-	 * Compiles the Href to be executed when the ManageRecurringAdjustmentTypes menu item is triggered
+	 * Compiles the Href to be executed when the ManageRecurringChargeTypes menu item is triggered
 	 * 
 	 * @return	string					Href to trigger the functionality
 	 * @method
 	 */
-	function ManageRecurringAdjustmentTypes() {
-		$this->strContextMenuLabel = "Manage Recurring Adjustment Types";
-		$this->strLabel = "Manage Recurring Adjustment Types";
+	function ManageRecurringChargeTypes() {
+		$this->strContextMenuLabel = "Manage Recurring Charge Types";
+		$this->strLabel = "Manage Recurring Charge Types";
 		return self::NEW_FRAMEWORK . "reflex.php/RecurringChargeType/Manage/";
 	}
 

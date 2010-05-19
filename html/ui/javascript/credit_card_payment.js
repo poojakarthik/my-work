@@ -819,7 +819,7 @@ alert(outcome);
 		terms.appendChild(termsText);
 		panel.appendChild(terms);
 		// terms.style.width = "25em";
-		// adjustment to make the terms scroll box similar width as its parent div.
+		// charge to make the terms scroll box similar width as its parent div.
 		terms.style.width = "405";
 		terms.style.height = "30em";
 		terms.style.overflow = "auto";

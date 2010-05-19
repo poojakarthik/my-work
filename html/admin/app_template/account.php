@@ -77,8 +77,8 @@ class AppTemplateAccount extends ApplicationTemplate
 				ContextMenu()->Account->Payments->Make_Payment($intAccountId);
 			}
 			
-			ContextMenu()->Account->Adjustments->Add_Adjustment($intAccountId);
-			ContextMenu()->Account->Adjustments->Add_Recurring_Adjustment($intAccountId);
+			ContextMenu()->Account->Charges->Add_Charge($intAccountId);
+			ContextMenu()->Account->Charges->Add_Recurring_Charge($intAccountId);
 		}
 		if ($bolUserHasOperatorPerm || $bolUserHasExternalPerm)
 		{
@@ -348,8 +348,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Calculate the Account Overdue Amount
 		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
 		
-		// Calculate the Account's total unbilled adjustments
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		// Calculate the Account's total unbilled charges
+		DBO()->Account->TotalUnbilledCharges = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 		
 		// Load all contacts, with the primary being listed first, and then those belonging to this account specifically, then those belonging to the account group who can access this account
 		if (DBO()->Account->PrimaryContact->Value)
@@ -431,8 +431,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Calculate the Account Overdue Amount
 		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance($intAccountId);
 		
-		// Calculate the Account's total unbilled adjustments
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges($intAccountId);
+		// Calculate the Account's total unbilled charges
+		DBO()->Account->TotalUnbilledCharges = $this->Framework->GetUnbilledCharges($intAccountId);
 		
 		// Make sure the contact specified belongs to the AccountGroup
 		$intPrimaryContactId		= DBO()->Account->PrimaryContact->Value;
@@ -866,10 +866,10 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Load the account
 		DBO()->Account->LoadMerge();
 		
-		// Calculate the Balance, Amount Overdue, and the Total Un-billed adjustments
+		// Calculate the Balance, Amount Overdue, and the Total Un-billed charges
 		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
 		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		DBO()->Account->TotalUnbilledCharges = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 		
 		// Render the AccountDetails HtmlTemplate for Viewing
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_VIEW, DBO()->Container->Id->Value);
@@ -1570,9 +1570,9 @@ class AppTemplateAccount extends ApplicationTemplate
 	/**
 	 * DeleteRecord()
 	 *
-	 * Creates a generic Delete Popup for either a Payment, Adjustment or Recurring Adjustment record
+	 * Creates a generic Delete Popup for either a Payment, Charge or Recurring Charge record
 	 *
-	 * Creates a generic Delete Popup for either a Payment, Adjustment or Recurring Adjustment record
+	 * Creates a generic Delete Popup for either a Payment, Charge or Recurring Charge record
 	 *
 	 * @return		void
 	 * @method
@@ -1586,9 +1586,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		$bolHasAdminPerm			= AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
-		$bolCanDeleteAdjustments			= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		$bolCanDeleteCharges			= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 		$bolCanReversePayments				= $bolHasAdminPerm;
-		$bolCanCancelRecurringAdjustments	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		$bolCanCancelRecurringCharges	= ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 
 
 		// Check what sort of record is being deleted
@@ -1605,25 +1605,25 @@ class AppTemplateAccount extends ApplicationTemplate
 				DBO()->Payment->Load();
 				DBO()->Account->Id = DBO()->Payment->Account->Value;
 				break;
-			case "Adjustment":
-				if (!$bolCanDeleteAdjustments)
+			case "Charge":
+				if (!$bolCanDeleteCharges)
 				{
-					Ajax()->AddCommand("Alert", "You do not have the required permissions to delete an adjustment");
+					Ajax()->AddCommand("Alert", "You do not have the required permissions to delete an charge");
 					return TRUE;
 				}
-				DBO()->DeleteRecord->Application = "Adjustment";
-				DBO()->DeleteRecord->Method = "DeleteAdjustment";
+				DBO()->DeleteRecord->Application = "Charge";
+				DBO()->DeleteRecord->Method = "DeleteCharge";
 				DBO()->Charge->Load();
 				DBO()->Account->Id = DBO()->Charge->Account->Value;
 				break;
-			case "RecurringAdjustment":
-				if (!$bolCanCancelRecurringAdjustments)
+			case "RecurringCharge":
+				if (!$bolCanCancelRecurringCharges)
 				{
-					Ajax()->AddCommand("Alert", "You do not have the required permissions to cancel a recurring adjustment");
+					Ajax()->AddCommand("Alert", "You do not have the required permissions to cancel a recurring charge");
 					return TRUE;
 				}
-				DBO()->DeleteRecord->Application = "Adjustment";
-				DBO()->DeleteRecord->Method = "DeleteRecurringAdjustment";
+				DBO()->DeleteRecord->Application = "Charge";
+				DBO()->DeleteRecord->Method = "DeleteRecurringCharge";
 				DBO()->RecurringCharge->Load();
 				DBO()->Account->Id = DBO()->RecurringCharge->Account->Value;
 				break;

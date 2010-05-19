@@ -118,8 +118,8 @@ class AppTemplateConsole extends ApplicationTemplate
 		}
 		DBO()->Account->Overdue = $fltOverdue;
 		
-		// Calculate the Account's total unbilled adjustments (inc GST)
-		DBO()->Account->UnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		// Calculate the Account's total unbilled charges (inc GST)
+		DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 		
 		// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
@@ -1423,8 +1423,8 @@ class AppTemplateConsole extends ApplicationTemplate
 	}
 	DBO()->Account->Overdue = $fltOverdue;
 	
-	// Calculate the Account's total unbilled adjustments (inc GST)
-	DBO()->Account->UnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+	// Calculate the Account's total unbilled charges (inc GST)
+	DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 	
 	// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
 	DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
@@ -1605,8 +1605,8 @@ class AppTemplateConsole extends ApplicationTemplate
 		}
 		DBO()->Account->Overdue = $fltOverdue;
 		
-		// Calculate the Account's total unbilled adjustments (inc GST)
-		DBO()->Account->UnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		// Calculate the Account's total unbilled charges (inc GST)
+		DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 		
 		// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
@@ -1838,8 +1838,8 @@ class AppTemplateConsole extends ApplicationTemplate
 		}
 		DBO()->Account->Overdue = $fltOverdue;
 		
-		// Calculate the Account's total unbilled adjustments (inc GST)
-		DBO()->Account->UnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		// Calculate the Account's total unbilled charges (inc GST)
+		DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 		
 		// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));

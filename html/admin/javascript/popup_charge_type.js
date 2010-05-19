@@ -158,7 +158,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		
 		this.oContent = oContent; 
 		
-		this.setTitle('Add Adjustment Type');
+		this.setTitle('Add Charge Type');
 		this.setIcon('../admin/img/template/charge_small.png');
 		this.setContent(oContent);
 		this.display();
@@ -239,7 +239,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 			this.hide();
 			
 			// Confirmation
-			Reflex_Popup.alert('Adjustment Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
+			Reflex_Popup.alert('Charge Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
 		}
 		else
 		{
