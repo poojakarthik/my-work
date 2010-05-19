@@ -59,7 +59,7 @@ class Flex_Rollout_Version_000215 extends Flex_Rollout_Version
 								(
 									'sDescription'		=>	"Add the Charge.charge_model_id Field",
 									'sAlterSQL'			=>	"	ALTER TABLE	Charge
-																ADD COLUMN		charge_model_id	INT	UNSIGNED	NOT NULL	COMMENT '(FK) Charge Model',
+																ADD COLUMN		charge_model_id	INT	UNSIGNED	NULL	COMMENT '(FK) Charge Model',
 																ADD CONSTRAINT	fk_charge_charge_model_id	FOREIGN KEY	(charge_model_id)	REFERENCES	charge_model(id)	ON UPDATE CASCADE	ON DELETE RESTRICT;",
 									'sRollbackSQL'		=>	"	ALTER TABLE	Charge
 																DROP CONSTRAINT	fk_charge_charge_model_id,
@@ -74,18 +74,18 @@ class Flex_Rollout_Version_000215 extends Flex_Rollout_Version
 																WHERE	1;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
-								/*array
+								array
 								(
 									'sDescription'		=>	"Set the Charge.charge_model_id Field to NOT NULL",
 									'sAlterSQL'			=>	"	ALTER TABLE	Charge
 																MODIFY COLUMN	charge_model_id	INT	UNSIGNED	NOT NULL	COMMENT '(FK) Charge Model';",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),*/
+								),
 								array
 								(
 									'sDescription'		=>	"Add the ChargeType.charge_model_id Field",
 									'sAlterSQL'			=>	"	ALTER TABLE	ChargeType
-																ADD COLUMN		charge_model_id	INT	UNSIGNED	NOT NULL	COMMENT '(FK) Charge Model',
+																ADD COLUMN		charge_model_id	INT	UNSIGNED	NULL	COMMENT '(FK) Charge Model',
 																ADD CONSTRAINT	fk_charge_type_charge_model_id	FOREIGN KEY	(charge_model_id)	REFERENCES	charge_model(id)	ON UPDATE CASCADE	ON DELETE RESTRICT;",
 									'sRollbackSQL'		=>	"	ALTER TABLE	ChargeType
 																DROP CONSTRAINT	fk_charge_type_charge_model_id,
@@ -100,13 +100,13 @@ class Flex_Rollout_Version_000215 extends Flex_Rollout_Version
 																WHERE	1;",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
 								),
-								/*array
+								array
 								(
 									'sDescription'		=>	"Set the ChargeType.charge_model_id Field to NOT NULL",
 									'sAlterSQL'			=>	"	ALTER TABLE	ChargeType
 																MODIFY COLUMN	charge_model_id	INT	UNSIGNED	NOT NULL	COMMENT '(FK) Charge Model';",
 									'sDataSourceName'	=> FLEX_DATABASE_CONNECTION_ADMIN
-								),*/
+								),
 								array
 								(
 									'sDescription'		=>	"Add the Invoice.charge_total, .charge_tax, .adjustment_total and .adjustment_tax Fields",
