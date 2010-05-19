@@ -258,7 +258,7 @@ class Charge extends ORM_Cached
 				$strNote .= "\nReason:\n{$strReason}";
 			}
 			
-			Action::createAction('Adjustment Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction('Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the Charge record
@@ -294,7 +294,7 @@ class Charge extends ORM_Cached
 						"Requested on: {$strCreatedOn} by {$strCreatedByEmployeeName}\n".
 						"Amount (inc GST): \${$strChargeAmount} {$strNature}";
 			
-			Action::createAction('Adjustment Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction('Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the Charge record

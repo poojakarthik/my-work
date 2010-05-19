@@ -250,7 +250,7 @@ class AppTemplateCharge extends ApplicationTemplate
 													"Amount (Inc GST): \${$strAmount} {$strNature}";
 						
 						// Log the action
-						Action::createAction('Adjustment Requested', $strActionExtraDetails, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+						Action::createAction('Charge Requested', $strActionExtraDetails, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 					}
 					catch (Exception $e)
 					{
@@ -540,7 +540,7 @@ class AppTemplateCharge extends ApplicationTemplate
 						}
 						
 						// Log the action
-						Action::createAction('Recurring Adjustment Requested', $strNote, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+						Action::createAction('Recurring Charge Requested', $strNote, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 						
 						// If the RecurringChargeType doesn't require approval, then flag it as being approved
 						if (!DBO()->RecurringChargeType->approval_required->Value)
