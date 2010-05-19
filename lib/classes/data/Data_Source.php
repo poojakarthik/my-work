@@ -30,7 +30,7 @@ class Data_Source
 		{
 			// Don't specify the name of the data source.  It will be anonomous
 			$objMDB2 = MDB2::connect(self::dsnForName($strDataSourceName), $options);
-			if (PEAR::isError($objMDB2) || MDB2::isError())
+			if (PEAR::isError($objMDB2) || MDB2::isError($objMDB2))
 			{
 				throw new Exception("Failed to connect to data source $strDataSourceName: " . $objMDB2->getMessage());
 			}
