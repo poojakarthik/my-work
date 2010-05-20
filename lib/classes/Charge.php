@@ -238,16 +238,16 @@ class Charge extends ORM_Cached
 		
 		if ($bolLogAction)
 		{
-			// Log the 'Charge Request Outcome' action, having taken place
+			// Log the 'Charge/Adjustment Request Outcome' action, having taken place
 			$objCreatedByEmployee		= Employee::getForId($this->createdBy);
 			$strCreatedOn				= date('d-m-Y', strtotime($this->createdOn));
 			$strCreatedByEmployeeName	= $objCreatedByEmployee->getName();
 			
-			$strNature = ($this->nature == NATURE_DR)? "Debit" : "Credit";
-
-			$strChargeAmount = number_format(AddGST($this->amount), 2, '.', ''); 
+			$strNature 			= ($this->nature == NATURE_DR)? "Debit" : "Credit";
+			$strChargeAmount 	= number_format(AddGST($this->amount), 2, '.', ''); 
+			$sChargeModel		= Constant_Group::getConstantGroup('charge_model')->getConstantName($this->charge_model_id);
 			
-			$strNote = 	"Request for charge has been REJECTED.\n".
+			$strNote = 	"Request for {$sChargeModel} has been REJECTED.\n".
 						"Type: {$this->chargeType} - {$this->description} ({$strNature}) (id: {$this->id})\n".
 						"Requested on: {$strCreatedOn} by {$strCreatedByEmployeeName}\n".
 						"Amount (inc GST): \${$strChargeAmount} {$strNature}";
@@ -258,7 +258,7 @@ class Charge extends ORM_Cached
 				$strNote .= "\nReason:\n{$strReason}";
 			}
 			
-			Action::createAction('Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction("{$sChargeModel} Request Outcome", $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the Charge record
@@ -280,21 +280,21 @@ class Charge extends ORM_Cached
 		
 		if ($bolLogAction)
 		{
-			// Log the 'Charge Request Outcome' action, having taken place
+			// Log the 'Charge/Adjustment Request Outcome' action, having taken place
 			$objCreatedByEmployee		= Employee::getForId($this->createdBy);
 			$strCreatedOn				= date('d-m-Y', strtotime($this->createdOn));
 			$strCreatedByEmployeeName	= $objCreatedByEmployee->getName();
 			
-			$strNature = ($this->nature == NATURE_DR)? "Debit" : "Credit";
-
-			$strChargeAmount = number_format(AddGST($this->amount), 2, '.', ''); 
+			$strNature 			= ($this->nature == NATURE_DR)? "Debit" : "Credit";
+			$strChargeAmount 	= number_format(AddGST($this->amount), 2, '.', ''); 
+			$sChargeModel		= Constant_Group::getConstantGroup('charge_model')->getConstantName($this->charge_model_id);
 			
-			$strNote = 	"Request for charge has been APPROVED.\n".
+			$strNote = 	"Request for {$sChargeModel} has been APPROVED.\n".
 						"Type: {$this->chargeType} - {$this->description} ({$strNature}) (id: {$this->id})\n".
 						"Requested on: {$strCreatedOn} by {$strCreatedByEmployeeName}\n".
 						"Amount (inc GST): \${$strChargeAmount} {$strNature}";
 			
-			Action::createAction('Charge Request Outcome', $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+			Action::createAction("{$sChargeModel} Request Outcome", $strNote, $this->account, $this->service, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
 		}
 
 		// Update the Charge record

@@ -30,8 +30,8 @@
  *
  */
 
-// set the page title
-$sChargeModel	= (DBO()->ChargeModel == CHARGE_MODEL_ADJUSTMENT ? 'Adjustment' : 'Charge');
+// Set the page title
+$sChargeModel	= Constant_Group::getConstantGroup('charge_model')->getConstantName(DBO()->ChargeModel->Id->Value);
 
 if (DBO()->Service->Id->Value)
 {
@@ -42,10 +42,10 @@ else
 	$this->Page->SetName("Request {$sChargeModel}");
 }
 
-// set the layout template for the page.
+// Set the layout template for the page.
 $this->Page->SetLayout('popup_layout');
 
-// add the Html Objects to their respective columns
+// Add the Html Objects to their respective columns
 $this->Page->AddObject('ChargeAdd', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "AddChargeDiv");
 
 ?>

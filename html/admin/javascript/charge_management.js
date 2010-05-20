@@ -5,19 +5,26 @@ var Charge_Management = Class.create
 		var intCacheMode = Dataset_Ajax.CACHE_MODE_NO_CACHING;
 		
 		// Get the JSON Handler method using the iChargeModel
-		var sMethod	= '';
+		var sMethod			= '';
+		var sChargeModel	= '';
 		
 		switch(iChargeModel)
 		{
 			case $CONSTANT.CHARGE_MODEL_CHARGE:
-				sMethod	= 'getChargesAwaitingApproval';
+				sMethod			= 'getChargesAwaitingApproval';
+				sChargeModel	= 'Charge';
 				break;
 			case $CONSTANT.CHARGE_MODEL_ADJUSTMENT:
-				sMethod	= 'getAdjustmentsAwaitingApproval';
+				sMethod			= 'getAdjustmentsAwaitingApproval';
+				sChargeModel	= 'Adjustment';
 				break;
 			default:
-				sMethod	= 'getAllAwaitingApproval';
+				sMethod			= 'getAllAwaitingApproval';
+				sChargeModel	= 'Charge';
 		}
+		
+		this._iChargeModel	= iChargeModel;
+		this._sChargeModel	= sChargeModel;
 		
 		// Init Dataset & Pagination
 		this.intMaxRecordsPerPage = intMaxRecordsPerPage;
@@ -211,7 +218,7 @@ var Charge_Management = Class.create
 		// Charge Description column
 		objPage.objTable.objTHEAD.objChargeDescription = {};
 		objPage.objTable.objTHEAD.objChargeDescription.domElement = document.createElement('th');
-		objPage.objTable.objTHEAD.objChargeDescription.domElement.appendChild(document.createTextNode('Charge Type'));
+		objPage.objTable.objTHEAD.objChargeDescription.domElement.appendChild(document.createTextNode(this._sChargeModel + ' Type'));
 		objPage.objTable.objTHEAD.objColumnTitlesTR.domElement.appendChild(objPage.objTable.objTHEAD.objChargeDescription.domElement);
 
 		// Charge Amount column
@@ -347,7 +354,7 @@ var Charge_Management = Class.create
 		objPopup.objSummary.objTotalCharges.elmRow = document.createElement('tr');
 		objPopup.objSummary.objTotalCharges.elmTitle = document.createElement('td');
 		objPopup.objSummary.objTotalCharges.elmTitle.className = 'title';
-		objPopup.objSummary.objTotalCharges.elmTitle.appendChild(document.createTextNode('Total Charges :'));
+		objPopup.objSummary.objTotalCharges.elmTitle.appendChild(document.createTextNode('Total ' + this._sChargeModel + 's :'));
 		objPopup.objSummary.objTotalCharges.elmValue = document.createElement('td');
 		objPopup.objSummary.objTotalCharges.elmRow.appendChild(objPopup.objSummary.objTotalCharges.elmTitle);
 		objPopup.objSummary.objTotalCharges.elmRow.appendChild(objPopup.objSummary.objTotalCharges.elmValue);
@@ -357,7 +364,7 @@ var Charge_Management = Class.create
 		objPopup.objSummary.objTotalChargeTypes.elmRow = document.createElement('tr');
 		objPopup.objSummary.objTotalChargeTypes.elmTitle = document.createElement('td');
 		objPopup.objSummary.objTotalChargeTypes.elmTitle.className = 'title';
-		objPopup.objSummary.objTotalChargeTypes.elmTitle.appendChild(document.createTextNode('Total Charge Types :'));
+		objPopup.objSummary.objTotalChargeTypes.elmTitle.appendChild(document.createTextNode('Total ' + this._sChargeModel + ' Types :'));
 		objPopup.objSummary.objTotalChargeTypes.elmValue = document.createElement('td');
 		objPopup.objSummary.objTotalChargeTypes.elmRow.appendChild(objPopup.objSummary.objTotalChargeTypes.elmTitle);
 		objPopup.objSummary.objTotalChargeTypes.elmRow.appendChild(objPopup.objSummary.objTotalChargeTypes.elmValue);
@@ -744,7 +751,7 @@ var Charge_Management = Class.create
 		
 		if (intChargeCount == 0)
 		{
-			$Alert('Please select at least one charge');
+			$Alert('Please select at least one ' + this._sChargeModel);
 			return;
 		}
 
@@ -815,8 +822,8 @@ var Charge_Management = Class.create
 			objPopup.domApproveChargesConfirmButton.style.display = 'inline';
 			objPopup.domDeclineChargesConfirmButton.style.display = 'none';
 			
-			strPrompt = "Are you sure you want to approve these charge requests?";
-			strPopupTitle = "Approve Charge Requests";
+			strPrompt = "Are you sure you want to approve these " + this._sChargeModel + " requests?";
+			strPopupTitle = "Approve " + this._sChargeModel + " Requests";
 			
 			elmTitleImage.src = 'img/template/approve.png';
 			elmTitleImage.alt = 'Approve';
@@ -829,8 +836,8 @@ var Charge_Management = Class.create
 			objPopup.domApproveChargesConfirmButton.style.display = 'none';
 			objPopup.domDeclineChargesConfirmButton.style.display = 'inline';
 
-			strPrompt = "Are you sure you want to reject these charge requests?";
-			strPopupTitle = "Reject Charge Requests";
+			strPrompt = "Are you sure you want to reject these " + this._sChargeModel + " requests?";
+			strPopupTitle = "Reject " + this._sChargeModel + " Requests";
 
 			elmTitleImage.src = 'img/template/decline.png';
 			elmTitleImage.alt = 'Reject';
@@ -862,7 +869,7 @@ var Charge_Management = Class.create
 		
 		this._bolIsSubmitting = true;
 		
-		jsonFunc(this._arrChargeIdsToBeActioned);
+		jsonFunc(this._arrChargeIdsToBeActioned, this._iChargeModel);
 		Vixen.Popup.ShowPageLoadingSplash("Processing", null, null, null, 100);
 	},
 
@@ -878,11 +885,11 @@ var Charge_Management = Class.create
 			var strMessage = "";
 			if (objResponse.intSuccessCount == 1)
 			{
-				strMessage = "The charge request has been approved";
+				strMessage = "The " + this._sChargeModel + " request has been approved";
 			}
 			else
 			{
-				strMessage = "The charge requests have been approved";
+				strMessage = "The " + this._sChargeModel + " requests have been approved";
 			}
 			
 			$Alert(strMessage);
@@ -892,7 +899,7 @@ var Charge_Management = Class.create
 		}
 		else
 		{
-			$Alert("Approving the charge requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
+			$Alert("Approving the " + this._sChargeModel + " requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
 		}
 	},
 	
@@ -916,7 +923,7 @@ var Charge_Management = Class.create
 		
 		this._bolIsSubmitting = true;
 		
-		jsonFunc(this._arrChargeIdsToBeActioned, strReason);
+		jsonFunc(this._arrChargeIdsToBeActioned, strReason, this._iChargeModel);
 		Vixen.Popup.ShowPageLoadingSplash("Processing", null, null, null, 100);
 	},
 	
@@ -932,11 +939,11 @@ var Charge_Management = Class.create
 			var strMessage = "";
 			if (objResponse.intSuccessCount == 1)
 			{
-				strMessage = "The charge request has been rejected";
+				strMessage = "The " + this._sChargeModel + " request has been rejected";
 			}
 			else
 			{
-				strMessage = "The charge requests have been rejected";
+				strMessage = "The " + this._sChargeModel + " requests have been rejected";
 			}
 			
 			$Alert(strMessage);
@@ -946,7 +953,7 @@ var Charge_Management = Class.create
 		}
 		else
 		{
-			$Alert("Rejecting the charge requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
+			$Alert("Rejecting the " + this._sChargeModel + " requests, failed" + ((objResponse.errorMessage != undefined)? "<br />" + objResponse.errorMessage : ""), null, null, 'modal');
 		}
 	},
 	

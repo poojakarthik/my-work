@@ -563,9 +563,6 @@ class AppTemplateCharge extends ApplicationTemplate
 	
 	public static function addCharge($objAjax, $iChargeModel=CHARGE_MODEL_CHARGE)
 	{
-		$sChargeModel		= ($iChargeModel == CHARGE_MODEL_ADJUSTMENT ? 'Adjustment' : 'Charge');
-		$sChargeModelLower	= ($iChargeModel == CHARGE_MODEL_ADJUSTMENT ? 'adjustment' : 'charge');
-		
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
@@ -573,6 +570,7 @@ class AppTemplateCharge extends ApplicationTemplate
 		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 		//$bolCanCreateCreditCharges = ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
 		$bolCanCreateCreditCharges	= TRUE;
+		$sChargeModel				= Constant_Group::getConstantGroup('charge_model')->getConstantName($iChargeModel);
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -630,7 +628,7 @@ class AppTemplateCharge extends ApplicationTemplate
 		
 		if (DBL()->ChargeTypesAvailable->RecordCount() == 0)
 		{
-			Ajax()->AddCommand("Alert", "There are currently no {$sChargeModelLower} types defined");
+			Ajax()->AddCommand("Alert", "There are currently no {$sChargeModel} types defined");
 			return TRUE;
 		}
 
@@ -647,6 +645,9 @@ class AppTemplateCharge extends ApplicationTemplate
 		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->AccountInvoices->SetLimit(6);
 		DBL()->AccountInvoices->Load();
+		
+		// Set the charge_model_id
+		DBO()->ChargeModel->Id	= $iChargeModel;
 
 		// check if an charge is being submitted
 		if (SubmittedForm("Add{$sChargeModel}", "Add {$sChargeModel}"))
@@ -700,7 +701,7 @@ class AppTemplateCharge extends ApplicationTemplate
 				if (DBO()->Charge->Nature->Value == 'CR' && !$bolCanCreateCreditCharges)
 				{
 					// The user does not have the required permissions to create a credit charge
-					Ajax()->AddCommand("Alert", "ERROR: You do not have permission to request credit {$sChargeModelLower}s");
+					Ajax()->AddCommand("Alert", "ERROR: You do not have permission to request credit {$sChargeModel}s");
 					return TRUE;
 				}
 				
@@ -726,7 +727,7 @@ class AppTemplateCharge extends ApplicationTemplate
 				{
 					// The charge did not save
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Requesting the {$sChargeModelLower} failed, unexpectedly");
+					Ajax()->AddCommand("Alert", "ERROR: Requesting the {$sChargeModel} failed, unexpectedly");
 					return TRUE;
 				}
 				else
@@ -762,7 +763,7 @@ class AppTemplateCharge extends ApplicationTemplate
 					catch (Exception $e)
 					{
 						TransactionRollback();
-						Ajax()->AddCommand("Alert", "ERROR: Requesting the {$sChargeModelLower} failed, while trying to log the action. ".$e->getMessage());
+						Ajax()->AddCommand("Alert", "ERROR: Requesting the {$sChargeModel} failed, while trying to log the action. ".$e->getMessage());
 						return TRUE;
 					}
 					
@@ -770,7 +771,7 @@ class AppTemplateCharge extends ApplicationTemplate
 
 					TransactionCommit();
 					Ajax()->AddCommand("ClosePopup", $objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "The request for {$sChargeModelLower} has been successfully logged.");
+					Ajax()->AddCommand("AlertReload", "The request for {$sChargeModel} has been successfully logged.");
 					return TRUE;
 				}
 			}
@@ -783,7 +784,6 @@ class AppTemplateCharge extends ApplicationTemplate
 			}
 		}
 		
-		DBO()->ChargeModel	= $iChargeModel;
 		return TRUE;
 	}
 }

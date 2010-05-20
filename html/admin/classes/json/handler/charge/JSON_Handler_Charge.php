@@ -121,43 +121,45 @@ class JSON_Handler_Charge extends JSON_Handler
 	
 	// If any of the charges can't be approved, then none of them are
 	// As soon as we implement Nested transactions, then we can fix this so it will approve the ones it can, and won't approve the others
-	public function approveChargeRequests($arrChargeIds)
+	public function approveChargeRequests($aChargeIds, $iChargeModel=CHARGE_MODEL_CHARGE)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
-
 		TransactionStart();
+		
 		try
 		{
-			if (count($arrChargeIds) == 0)
+			$sChargeModel	= Constant_Group::getConstantGroup('charge_model')->getConstantName($iChargeModel);
+			
+			if (count($aChargeIds) == 0)
 			{
-				throw new Exception('No charge requests have been specified, to approve');
+				throw new Exception("No {$sChargeModel} requests have been specified, to approve");
 			}
 			
-			$arrChargesApproved	= array();
-			$intEmployeeId		= Flex::getUserId();
+			$aChargesApproved	= array();
+			$iEmployeeId		= Flex::getUserId();
 
-			foreach ($arrChargeIds as $intChargeId)
+			foreach ($aChargeIds as $iChargeId)
 			{
-				$objCharge = null;
+				$oCharge = null;
 				try
 				{
-					$objCharge = Charge::getForId(intval($intChargeId));
+					$oCharge = Charge::getForId(intval($iChargeId));
 					
 					// Approve the charge (this will also log the action having taken place)
-					$objCharge->setToApproved($intEmployeeId, true);
+					$oCharge->setToApproved($iEmployeeId, true);
 
 					// Add to the list of approved charges
-					$arrChargesApproved[] = $objCharge;
+					$aChargesApproved[] = $oCharge;
 				}
 				catch (Exception $e)
 				{
-					$strChargeIdentifier = "Charge.Id: $intChargeId";
-					if ($objCharge != null)
+					$sChargeIdentifier = "Charge.Id: $iChargeId";
+					if ($oCharge != null)
 					{
-						$strChargeIdentifier = $objCharge->getIdentifyingDescription(true, true, false);
+						$sChargeIdentifier = $oCharge->getIdentifyingDescription(true, true, false);
 					}
-					throw new Exception("Failed to approve Charge Request '$strChargeIdentifier'.  Reason: ". $e->getMessage());
+					throw new Exception("Failed to approve {$sChargeModel} Request '$sChargeIdentifier'.  Reason: ". $e->getMessage());
 				}
 			}
 			
@@ -166,7 +168,7 @@ class JSON_Handler_Charge extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"success"			=> true,
-							"intSuccessCount"	=> count($arrChargesApproved),
+							"intSuccessCount"	=> count($aChargesApproved),
 							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
@@ -184,51 +186,52 @@ class JSON_Handler_Charge extends JSON_Handler
 	
 	// If any of the charges can't be approved, then none of them are
 	// As soon as we implement Nested transactions, then we can fix this so it will approve the ones it can, and won't approve the others
-	public function rejectChargeRequests($arrChargeIds, $strReason)
+	public function rejectChargeRequests($aChargeIds, $sReason, $iChargeModel=CHARGE_MODEL_CHARGE)
 	{
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
-		
 		TransactionStart();
 		
 		try
 		{
-			if (count($arrChargeIds) == 0)
+			$sChargeModel	= Constant_Group::getConstantGroup('charge_model')->getConstantName($iChargeModel);
+			
+			if (count($aChargeIds) == 0)
 			{
-				throw new Exception('No charge requests have been specified, to reject');
+				throw new Exception("No {$sChargeModel} requests have been specified, to reject");
 			}
 			
-			$strReason = trim($strReason);
+			$sReason = trim($sReason);
 			
-			if ($strReason == '')
+			if ($sReason == '')
 			{
-				throw new Exception('No reason has been supplied as to why these charges are being rejected');
+				throw new Exception("No reason has been supplied as to why these {$sChargeModel}s are being rejected");
 			}
 			
-			$arrChargesRejected	= array();
-			$intEmployeeId		= Flex::getUserId();
+			$aChargesRejected	= array();
+			$iEmployeeId		= Flex::getUserId();
 			
-			foreach ($arrChargeIds as $intChargeId)
+			foreach ($aChargeIds as $iChargeId)
 			{
-				$objCharge = null;
+				$oCharge = null;
 				try
 				{
-					$objCharge = Charge::getForId(intval($intChargeId));
+					$oCharge = Charge::getForId(intval($iChargeId));
 					
 					// Reject the charge (this will also log the action having taken place)
-					$objCharge->setToDeclined($intEmployeeId, true, $strReason);
+					$oCharge->setToDeclined($iEmployeeId, true, $sReason);
 					
 					// Add to the list of rejected charges
-					$arrChargesRejected[] = $objCharge;
+					$aChargesRejected[] = $oCharge;
 				}
 				catch (Exception $e)
 				{
-					$strChargeIdentifier = "Charge.Id: $intChargeId";
-					if ($objCharge != null)
+					$sChargeIdentifier = "Charge.Id: $iChargeId";
+					if ($oCharge != null)
 					{
-						$strChargeIdentifier = $objCharge->getIdentifyingDescription(true, true, false);
+						$sChargeIdentifier = $oCharge->getIdentifyingDescription(true, true, false);
 					}
-					throw new Exception("Failed to reject Charge Request '$strChargeIdentifier'.  Reason: ". $e->getMessage());
+					throw new Exception("Failed to reject {$sChargeModel} Request '$sChargeIdentifier'.  Reason: ". $e->getMessage());
 				}
 			}
 
@@ -237,7 +240,7 @@ class JSON_Handler_Charge extends JSON_Handler
 			// If no exceptions were thrown, then everything worked
 			return array(
 							"success"			=> true,
-							"intSuccessCount"	=> count($arrChargesRejected),
+							"intSuccessCount"	=> count($aChargesRejected),
 							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 		}

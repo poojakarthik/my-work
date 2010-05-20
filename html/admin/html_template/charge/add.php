@@ -110,15 +110,14 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		// Only apply the output mask if the DBO()->Charge is not invalid
 		$bolApplyOutputMask = !DBO()->Charge->IsInvalid();
 
-		$sChargeModel		= (DBO()->ChargeModel == CHARGE_MODEL_ADJUSTMENT ? 'Adjustment' : 'Charge');
-		$sChargeModelLower	= (DBO()->ChargeModel == CHARGE_MODEL_ADJUSTMENT ? 'adjustment' : 'charge');
+		$sChargeModel	= Constant_Group::getConstantGroup('charge_model')->getConstantName(DBO()->ChargeModel->Id->Value);
 		
 		$this->FormStart("Add{$sChargeModel}", "{$sChargeModel}", "Add");
 		
 		if (!$bolCanCreateCreditCharges)
 		{
 			// The user cannot create credit charges because they don't have the required permissions
-			echo "<div class='MsgNotice'>You do not have the required permissions to create credit {$sChargeModelLower}s</div>";
+			echo "<div class='MsgNotice'>You do not have the required permissions to create credit {$sChargeModel}s</div>";
 		}
 		
 		echo "<div class='GroupedContent'>\n";
@@ -188,15 +187,19 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		if (!DBO()->ChargeType->Id->Value)
 		{
 			reset($arrChargeTypes);
-			DBO()->ChargeType->Id = key($arrChargeTypes);
-			DBO()->Charge->Amount = $arrChargeTypes[DBO()->ChargeType->Id->Value]['Amount'];
+			DBO()->ChargeType->Id	= key($arrChargeTypes);
+			DBO()->Charge->Amount	= $arrChargeTypes[DBO()->ChargeType->Id->Value]['Amount'];
 		}
+		
 		DBO()->ChargeType->Id->RenderHidden();
-		$intChargeTypeId = DBO()->ChargeType->Id->Value;
+		$intChargeTypeId	= DBO()->ChargeType->Id->Value;
 		
 		// display the charge code when the Charge Type has been selected
 		DBO()->ChargeType->ChargeType = $arrChargeTypes[$intChargeTypeId]['ChargeType'];
-		DBO()->ChargeType->ChargeType->RenderOutput();
+		echo "	<div class='DefaultElement'>
+		  			<div class='DefaultLabel'>&nbsp;&nbsp;{$sChargeModel} Type:</div>
+		   			<div class='DefaultOutput'>".DBO()->ChargeType->ChargeType->Value."</div class='DefaultOutput'>
+				<div class='DefaultElement'>";
 		
 		// display the description
 		DBO()->ChargeType->Description = $arrChargeTypes[$intChargeTypeId]['Description'];
