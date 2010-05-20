@@ -501,6 +501,58 @@ ORDER BY FNN;";
 		return $mPaymentMethod;
 	}
 	
+	public function getUnbilledAdjustments($bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=true)
+	{
+		$iIncludeCreditAdjustments	= ($bIncludeCreditAdjustments) ? 1 : 0;
+		$iIncludeDebitAdjustments	= ($bIncludeDebitAdjustments) ? 1 : 0;
+		
+		// This query uses a logarithm workaround to simulate a PRODUCT() aggregate function
+		// Defined at: http://codeidol.com/sql/sql-hack/Number-Crunching/Multiply-Across-a-Result-Set/
+		// Essentially says that to replicate a PRODUCT() aggregate function, use EXP(SUM(LN(rate))) to get the compound rate
+		$oQuery		= new Query();
+		$mResult	= $oQuery->Execute("	SELECT		COALESCE(
+															SUM(
+																COALESCE(
+																	IF(
+																		c.Nature = 'CR',
+																		0 - c.Amount,
+																		c.Amount
+																	), 0
+																)
+																*
+																IF(
+																	c.global_tax_exempt = 1,
+																	1,
+																	(
+																		SELECT		COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
+																		FROM		tax_type tt
+																		WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+																					AND tt.global = 1
+																	)
+																)
+															), 0
+														)																						AS unbilled_adjustments
+											FROM		Charge c
+											WHERE		c.Account = 1000160069
+														AND c.Status IN (101, 102)	/* Approved or Temp Invoice */
+														AND c.charge_model_id IN (SELECT id FROM charge_model WHERE system_name = 'ADJUSTMENT')
+														AND
+														(
+															(1 = 1 AND c.Nature = 'CR')
+															OR
+															(0 = 1 AND c.Nature = 'DR')
+														)");
+		if ($mResult === false)
+		{
+			throw new Exception($oQuery->Error());
+		}
+		else
+		{
+			$aResult	= $mResult->fetch_assoc();
+			return (float)$aResult['unbilled_adjustments'];
+		}
+	}
+	
 	public function getOverdueBalance($sDueDate, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
 	{
 		return max(0.0, $this->getAccountBalance($sDueDate, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments));

@@ -517,7 +517,7 @@
 	 *
 	 * Determines the current Overdue Balance for a specified account
 	 * = past due invoice balance - disputed balance - unbilled credits
-	 * Return amount includes GST
+	 * Return amount includes tax
 	 *
 	 *
 	 * @param	integer		$intAccount		The account to determine the overdue balance total for
@@ -533,46 +533,27 @@
 	 }
 	
 	//------------------------------------------------------------------------//
-	// GetUnbilledCharges()
+	// GetUnbilledAdjustments()
 	//------------------------------------------------------------------------//
 	/**
-	 * GetUnbilledCharges()
+	 * GetUnbilledAdjustments()
 	 *
-	 * Determines the current unbilled charges (charges) for a specified account
+	 * Determines the current unbilled adjustments (charge.charge_model_id = CHARGE_MODEL_ADJUSTMENT) for a specified account
 	 *
-	 * Determines the current unbilled charges (charges) for a specified account
-	 * Return amount includes GST.  Excludes Plan Charges.
+	 * Determines the current unbilled adjustments (charge.charge_model_id = CHARGE_MODEL_ADJUSTMENT) for a specified account
+	 * Return amount includes tax.
 	 *
 	 *
 	 * @param	integer		$intAccount		The account to determine the unbilled charges total for
 	 *
-	 * @return	mixed						float: unbilled charges total
+	 * @return	mixed						float: unbilled adjustments total
 	 * 										FALSE: an error occurred
 	 *
 	 * @method
 	 */
-	 function GetUnbilledCharges($intAccount)
+	 function GetUnbilledAdjustments($intAccount, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=true)
 	 {
-		// get balance of unbilled debits & unbilled approved credits
-		$this->_selAccountUnbilledCharges->Execute(Array('Account' => $intAccount));
-		$arrCharges = $this->_selAccountUnbilledCharges->FetchAll();
-
-		foreach($arrCharges as $arrCharge)
-		{
-			if ($arrCharge['Nature'] == 'DR')
-			{
-				$fltUnbilledDebits		= (float)$arrCharge['Amount'];
-				$fltUnbilledDebits		= AddGST($fltUnbilledDebits);
-			}
-			else
-			{
-				$fltUnbilledCredits		= (float)$arrCharge['Amount'];
-				$fltUnbilledCredits		= AddGST($fltUnbilledCredits);
-			}
-		}
-		
-		// return the balance
-		return $fltUnbilledDebits - $fltUnbilledCredits;
+	 	return Account::getForId($intAccount)->getUnbilledAdjustments($bIncludeCreditAdjustments, $bIncludeDebitAdjustments);
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -593,8 +574,9 @@
 	 *
 	 * @method
 	 */
-	 function GetDistputedBalance($intAccount)
+	/* function GetDistputedBalance($intAccount)
 	 {
+	 	throw new Exception('DEPRECATED');
 	 	if ($this->_selDisputedBalance->Execute(Array('Account' => $intAccount)) === FALSE)
 	 	{
 			// ERROR
@@ -603,7 +585,7 @@
 	 	
 	 	$arrDisputedBalance = $this->_selDisputedBalance->Fetch();
 	 	return (float)$arrDisputedBalance['DisputedBalance'];
-	 }
+	 }*/
 	
  	//------------------------------------------------------------------------//
 	// GetInvoiceTotal()

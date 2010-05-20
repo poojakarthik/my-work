@@ -119,7 +119,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->Account->Overdue = $fltOverdue;
 		
 		// Calculate the Account's total unbilled charges (inc GST)
-		DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledAdjustments(DBO()->Account->Id->Value);
 		
 		// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
@@ -149,7 +149,7 @@ class AppTemplateConsole extends ApplicationTemplate
 
 		$this->LoadPage('pay');
 
-		return TRUE;	 	
+		return TRUE;
 	 }
 	 
 	 
@@ -249,7 +249,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			// Return an array with results to our page.
 			DBO()->FAQ->View = $arrFAQResults;
 			$this->LoadPage('faq_view');
-			return TRUE;	
+			return TRUE;
 		}
 
 		// view all faqs
@@ -264,7 +264,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			$resCountResults = $dbConnection->execute("SELECT FOUND_ROWS()");
 			list($intTotalResults) = $dbConnection->fetch_array($resCountResults);
 
-			// links 
+			// links
 			list($intNext,$mixLinksDisplay) = MakePagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?all=1");
 
 			DBO()->Total->Search = "$intTotalResults";
@@ -274,7 +274,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			DBO()->FAQ->All = $arrCustomerFAQ;
 
 			$this->LoadPage('faq_all');
-			return TRUE;	
+			return TRUE;
 		}
 
 		// search faqs
@@ -341,7 +341,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			$resCountResults = $dbConnection->execute("SELECT FOUND_ROWS()");
 			list($intTotalResults) = $dbConnection->fetch_array($resCountResults);
 
-			// links 
+			// links
 			list($intNext,$mixLinksDisplay) = MakePagination($intStart,$intResultsPerPage,$intTotalResults,"./flex.php/Console/FAQ/?s=");
 
 			// Return an array with results to our page.
@@ -352,7 +352,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			DBO()->Search->Pages = "$mixLinksDisplay";
 			//echo "<hr>$intNext,$mixLinksDisplay,$intStart,$intResultsPerPage,$intTotalResults<hr>";
 			$this->LoadPage('faq');
-			return TRUE;	
+			return TRUE;
 
 		}
 
@@ -452,14 +452,14 @@ class AppTemplateConsole extends ApplicationTemplate
 			$mixDate = date("Y-m-d H:i:s", time());
 			$mixSelect = "
 			SELECT *
-			FROM survey 
+			FROM survey
 			WHERE id NOT IN (	SELECT survey_id
 						FROM survey_completed
 						WHERE contact_id = \"" . DBO()->Contact->Id->Value . "\"
 					)
 			AND customer_group_id = \"" . DBO()->Account->CustomerGroup->Value . "\"
 			AND NOW() BETWEEN start_date AND end_date
-			ORDER BY id ASC 
+			ORDER BY id ASC
 			LIMIT 1";
 			$arrSurvey = $dbConnection->fetchone("$mixSelect");
 			if($arrSurvey)
@@ -470,8 +470,8 @@ class AppTemplateConsole extends ApplicationTemplate
 				}
 				
 				$mixSelect = "SELECT sq.*, sqo.*
-				FROM survey_question AS sq 
-				INNER JOIN survey_question_option AS sqo 
+				FROM survey_question AS sq
+				INNER JOIN survey_question_option AS sqo
 				ON sq.id = sqo.survey_question_id
 				WHERE sq.survey_id = \"$id\"
 				ORDER BY sqo.survey_question_id,sqo.survey_question_option_response_type_id";
@@ -480,7 +480,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				$arrSurvey = $dbConnection->fetch("$mixSelect",$array=true);
 	
 				$arrInputTypes = array(
-					"1" => "<select [REPLACE]>", 
+					"1" => "<select [REPLACE]>",
 					"2" => "<input type='checkbox' [REPLACE]>",
 					"3" => "<input type='radio' [REPLACE]>",
 					"4" => "<textarea [REPLACE]>",
@@ -488,7 +488,7 @@ class AppTemplateConsole extends ApplicationTemplate
 				);
 	
 				$arrEndInputTypes = array(
-					"1" => "</select>", 
+					"1" => "</select>",
 					"2" => "",
 					"3" => "",
 					"4" => "</textarea>",
@@ -673,8 +673,8 @@ class AppTemplateConsole extends ApplicationTemplate
 			// This portion of the code also uses the results to check which fields are required and matches it against the input.
 			$mixSelect = "
 			SELECT sq.*, sqo.*
-			FROM survey_question AS sq 
-			INNER JOIN survey_question_option AS sqo 
+			FROM survey_question AS sq
+			INNER JOIN survey_question_option AS sqo
 			ON sq.id = sqo.survey_question_id
 			WHERE sq.survey_id = \"$_POST[intSurveyId]\"
 			ORDER BY sqo.survey_question_id,sqo.survey_question_option_response_type_id";
@@ -716,7 +716,7 @@ class AppTemplateConsole extends ApplicationTemplate
 					// Its an answer to an option.
 					if($survey_question_option_response_type_id)
 					{
-						$mixQuerie[$intQueryCount++] = "INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id) 
+						$mixQuerie[$intQueryCount++] = "INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id)
 						VALUES (\"$survey_question_id\", \"$option_name\", \"[replace_survey_completed_id]\");";
 						$mixQuerie[$intQueryCount++] = "INSERT INTO survey_completed_response_option(survey_question_option_id, option_text, survey_completed_response_id)
 						VALUES (\"$id\", \"$mixAnswerInput\", LAST_INSERT_ID());";
@@ -725,7 +725,7 @@ class AppTemplateConsole extends ApplicationTemplate
 							echo "
 							<TR>
 								<TD COLSPAN=\"9\">
-								INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id) 
+								INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id)
 								VALUES (\"$survey_question_id\", \"$option_name\", SC_id);<BR>
 								INSERT INTO survey_completed_response_option(survey_question_option_id, option_text, survey_completed_response_id)
 								VALUES (\"$id\", \"$mixAnswerInput\", LAST_INSERT_ID());<br>\n</TD>
@@ -735,14 +735,14 @@ class AppTemplateConsole extends ApplicationTemplate
 					// Its an answer
 					else
 					{
-						$mixQuerie[$intQueryCount++] = "INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id) 
+						$mixQuerie[$intQueryCount++] = "INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id)
 						VALUES (\"$survey_question_id\", \"$mixAnswerInput\", \"[replace_survey_completed_id]\");";
 						if($bolSurveyDebugMode)
 						{
 							echo "
 							<TR>
 								<TD COLSPAN=\"9\">
-								INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id) 
+								INSERT INTO survey_completed_response(survey_question_id, response_text, survey_completed_id)
 								VALUES (\"$survey_question_id\", \"$mixAnswerInput\", SC_id);<br>\n</TD>
 							</TR>";
 						}
@@ -875,16 +875,16 @@ class AppTemplateConsole extends ApplicationTemplate
 		//DBL()->Service->Load();
 		
 		// Retrieve all the services belonging to the account
-		$strTables	= "	Service AS S 
-						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id 
-								FROM ServiceRatePlan AS SRP2 
+		$strTables	= "	Service AS S
+						LEFT JOIN ServiceRatePlan AS SRP1 ON S.Id = SRP1.Service AND SRP1.Id = (SELECT SRP2.Id
+								FROM ServiceRatePlan AS SRP2
 								WHERE SRP2.Service = S.Id AND NOW() BETWEEN SRP2.StartDatetime AND SRP2.EndDatetime
 								ORDER BY SRP2.CreatedOn DESC
 								LIMIT 1
 								)
 						LEFT JOIN RatePlan AS RP1 ON SRP1.RatePlan = RP1.Id
-						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id 
-								FROM ServiceRatePlan AS SRP4 
+						LEFT JOIN ServiceRatePlan AS SRP3 ON S.Id = SRP3.Service AND SRP3.Id = (SELECT SRP4.Id
+								FROM ServiceRatePlan AS SRP4
 								WHERE SRP4.Service = S.Id AND SRP4.StartDatetime BETWEEN NOW() AND SRP4.EndDatetime
 								ORDER BY SRP4.CreatedOn DESC
 								LIMIT 1
@@ -892,13 +892,13 @@ class AppTemplateConsole extends ApplicationTemplate
 						LEFT JOIN RatePlan AS RP2 ON SRP3.RatePlan = RP2.Id";
 		$arrColumns	= Array("Id" 						=> "S.Id",
 							"FNN"						=> "S.FNN",
-							"ServiceType"				=> "S.ServiceType", 
+							"ServiceType"				=> "S.ServiceType",
 							"Status"		 			=> "S.Status",
 							"LineStatus"				=> "S.LineStatus",
 							"LineStatusDate"			=> "S.LineStatusDate",
-							"CreatedOn"					=> "S.CreatedOn", 
+							"CreatedOn"					=> "S.CreatedOn",
 							"ClosedOn"					=> "S.ClosedOn",
-							"CreatedBy"					=> "S.CreatedBy", 
+							"CreatedBy"					=> "S.CreatedBy",
 							"ClosedBy"					=> "S.ClosedBy",
 							"NatureOfCreation"			=> "S.NatureOfCreation",
 							"NatureOfClosure"			=> "S.NatureOfClosure",
@@ -1174,13 +1174,13 @@ class AppTemplateConsole extends ApplicationTemplate
 					$arrFieldsList['Diversions Required'] = $_POST['intDiversionsRequired'];
 					$arrFieldsList['Diversion From Number'] = $_POST['intDiversionFromNumber'];
 					$arrFieldsList['Diversion To Number'] = $_POST['intDiversionToNumber'] . "\n";
-					break; 
+					break;
 
 					case "3":
 					while(@list($key,$value)=each($_POST['intFaultLine'])) {
 						$arrFieldsList["FNN $key"] = "$value";
 					}
-					break; 
+					break;
 					
 					case "4":
 						
@@ -1236,13 +1236,13 @@ class AppTemplateConsole extends ApplicationTemplate
 							$arrFieldsList['Inbound Answering Point'] = $_POST['mixInboundAnsweringPoint'];
 							$arrFieldsList['Inbound New Plan'] = $_POST['mixInboundNewPlan'] . "\n";
 						}
-					break; 
+					break;
 					
 					case "5":
 					while(@list($key,$value)=each($_POST['intFaultLine'])) {
 						$arrFieldsList["FNN $key"] = "$value";
 					}
-					break; 
+					break;
 
 					default:
 					// Unable to determine request type..?
@@ -1330,7 +1330,7 @@ class AppTemplateConsole extends ApplicationTemplate
 			}
 			$this->LoadPage('support');
 			return TRUE;
-		}	 	
+		}
 	 }
 
 
@@ -1341,7 +1341,7 @@ class AppTemplateConsole extends ApplicationTemplate
  * EditConfirm()
  *
  * Displays a confirmation to the user
- * 
+ *
  * Displays a confirmation to the user
  *
  * @return		void
@@ -1424,7 +1424,7 @@ class AppTemplateConsole extends ApplicationTemplate
 	DBO()->Account->Overdue = $fltOverdue;
 	
 	// Calculate the Account's total unbilled charges (inc GST)
-	DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+	DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledAdjustments(DBO()->Account->Id->Value);
 	
 	// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
 	DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
@@ -1458,7 +1458,7 @@ class AppTemplateConsole extends ApplicationTemplate
 
 	if(array_key_exists('intUpdateAccountId', $_POST))
 	{
-		$strFoundInputError=FALSE; 
+		$strFoundInputError=FALSE;
 
 		// If no error was found, continue with processing.
 		if(!$strFoundInputError){
@@ -1525,7 +1525,7 @@ class AppTemplateConsole extends ApplicationTemplate
 	 * Edit()
 	 *
 	 * Allow user to modfy account,contact and billing details.
-	 * 
+	 *
 	 * Allow user to modfy account,contact and billing details.
 	 *
 	 * @return		void
@@ -1606,7 +1606,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->Account->Overdue = $fltOverdue;
 		
 		// Calculate the Account's total unbilled charges (inc GST)
-		DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledAdjustments(DBO()->Account->Id->Value);
 		
 		// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
@@ -1762,7 +1762,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		}
 
 		$this->LoadPage('edit');
-		return TRUE;	 	
+		return TRUE;
 	 }
 	 
 	 
@@ -1839,7 +1839,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->Account->Overdue = $fltOverdue;
 		
 		// Calculate the Account's total unbilled charges (inc GST)
-		DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		DBO()->Account->UnbilledCharges = $this->Framework->GetUnbilledAdjustments(DBO()->Account->Id->Value);
 		
 		// Calculate the total unbilled CDRs for the account (inc GST), omitting Credit CDRs
 		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value, TRUE));
@@ -1867,7 +1867,7 @@ class AppTemplateConsole extends ApplicationTemplate
 	 * Logout()
 	 *
 	 * Performs the logic for logging out the user
-	 * 
+	 *
 	 * Performs the logic for logging out the user
 	 *
 	 * @return		void
@@ -2083,10 +2083,10 @@ class AppTemplateConsole extends ApplicationTemplate
 	}
 
 
-	/* 
+	/*
 	 * Function Setup();
 	 *
-	 * Function sets a new email address and allows user to set his/her password for the first time 
+	 * Function sets a new email address and allows user to set his/her password for the first time
 	 * This function will only work if they have not logged in before, otherwise we assume this has already been done...
 	 */
 	function Setup()
@@ -2177,10 +2177,10 @@ class AppTemplateConsole extends ApplicationTemplate
 				// $intCustomerEnteredABN = $_POST['mixABN'];
 				// $intABNInDB = $strCustAccount->ABN;
 
-				/* 
+				/*
 				 * Format the ABN in the database and the users input so it contains numbers only! no spaces or dashs..
 				 *
-				 * Because not all customers have an abn: 
+				 * Because not all customers have an abn:
 				 * 1. Its not required they enter an abn
 				 * 2. So no level of security is lost, whatever they enter must match whatever is in the database. e.g. blank or a number.
 				 *

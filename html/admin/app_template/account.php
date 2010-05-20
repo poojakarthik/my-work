@@ -353,7 +353,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
 		
 		// Calculate the Account's total unbilled charges
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledAdjustments(DBO()->Account->Id->Value);
 		
 		// Load all contacts, with the primary being listed first, and then those belonging to this account specifically, then those belonging to the account group who can access this account
 		if (DBO()->Account->PrimaryContact->Value)
@@ -436,7 +436,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance($intAccountId);
 		
 		// Calculate the Account's total unbilled charges
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges($intAccountId);
+		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledAdjustments($intAccountId);
 		
 		// Make sure the contact specified belongs to the AccountGroup
 		$intPrimaryContactId		= DBO()->Account->PrimaryContact->Value;
@@ -873,7 +873,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Calculate the Balance, Amount Overdue, and the Total Un-billed charges
 		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
 		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledAdjustments(DBO()->Account->Id->Value);
 		
 		// Render the AccountDetails HtmlTemplate for Viewing
 		Ajax()->RenderHtmlTemplate("AccountDetails", HTML_CONTEXT_VIEW, DBO()->Container->Id->Value);
