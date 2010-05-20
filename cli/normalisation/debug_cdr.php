@@ -2,6 +2,8 @@
 
 // require stuff
 require_once('../../flex.require.php');
+require_once('../../lib/classes/Flex.php');
+Flex::load();
 
 $arrConfig	= LoadApplication();
 $appNormalisation	= new ApplicationNormalise($arrConfig);
