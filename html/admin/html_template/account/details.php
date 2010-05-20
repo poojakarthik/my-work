@@ -285,7 +285,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 <?php
 
 		DBO()->Account->Overdue->RenderOutput();
-		DBO()->Account->TotalUnbilledCharges->RenderOutput();
+		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
 		
 		if (DBO()->Account->Sample->Value === NULL)
 		{

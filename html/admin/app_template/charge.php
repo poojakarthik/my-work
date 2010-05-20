@@ -571,9 +571,8 @@ class AppTemplateCharge extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
 		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
-
 		//$bolCanCreateCreditCharges = ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
-		$bolCanCreateCreditCharges = TRUE;
+		$bolCanCreateCreditCharges	= TRUE;
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -785,7 +784,6 @@ class AppTemplateCharge extends ApplicationTemplate
 		}
 		
 		DBO()->ChargeModel	= $iChargeModel;
-		
 		return TRUE;
 	}
 }

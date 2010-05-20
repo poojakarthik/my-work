@@ -210,7 +210,7 @@ class AppTemplateService extends ApplicationTemplate
 		// Calculate unbilled charges (this includes all unbilled Charges(charges) and CDRs for the service)
 		$fltUnbilledCharges					= UnbilledServiceChargeTotal(DBO()->Service->Id->Value);
 		$fltUnbilledCDRs						= UnbilledServiceCDRTotal(DBO()->Service->Id->Value);
-		DBO()->Service->TotalUnbilledCharges 	= AddGST($fltUnbilledCharges + $fltUnbilledCDRs);
+		DBO()->Service->TotalUnbilledAdjustments 	= AddGST($fltUnbilledCharges + $fltUnbilledCDRs);
 		
 		//DEPRECATED! Old Notes Functionality
 		// Load the notes

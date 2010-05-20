@@ -229,7 +229,7 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		
 		DBO()->Service->ForceInvoiceRender->RenderOutput();
 		
-		DBO()->Service->TotalUnbilledCharges->RenderOutput();
+		DBO()->Service->TotalUnbilledAdjustments->RenderOutput();
 		// Display the current rate plan, if there is one
 		if (DBO()->CurrentRatePlan->Id->Value)
 		{
