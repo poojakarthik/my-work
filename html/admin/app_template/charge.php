@@ -61,225 +61,13 @@ class AppTemplateCharge extends ApplicationTemplate
 	 */
 	function Add()
 	{
-		// Check user authorization and permissions
-		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
-		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
-		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
-
-		//$bolCanCreateCreditCharges = ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
-		$bolCanCreateCreditCharges = TRUE;
-
-		// The account should already be set up as a DBObject
-		if (!DBO()->Account->Load())
+		if (self::addCharge($this->_objAjax, CHARGE_MODEL_CHARGE))
 		{
-			Ajax()->AddCommand("Alert", "ERROR: The account with account id: '". DBO()->Account->Id->value ."' could not be found");
-			return TRUE;
-		}
-		
-		// Charges can not be added if the account is pending activation
-		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
-		{
-			Ajax()->AddCommand("Alert", "The account is pending activation.  Charges cannot be requested at this time.");
-			return TRUE;
-		}
-		
-		// Check if the charge relates to a particular service
-		if (DBO()->Service->Id->Value)
-		{
-			// A service has been specified.  Load it, to check that it actually exists
-			if (!DBO()->Service->Load())
-			{
-				Ajax()->AddCommand("Alert", "ERROR: The service with service id: '". DBO()->Service->Id->value ."' could not be found");
-				return TRUE;
-			}
+			// All required data has been retrieved from the database so now load the page template
+			$this->LoadPage('charge_add');
 			
-			// It is assumed that this is the newest most record modelling this service for the account
-			// that the service belongs to.  Check that the service is currently active
-			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);
-			if ($objService->GetStatus() == SERVICE_PENDING)
-			{
-				Ajax()->AddCommand("Alert", "This service is pending activation.  Charges cannot be requested at this time.");
-				return TRUE;
-			}
-			elseif (!$objService->IsCurrentlyActive())
-			{
-				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  Charges can only be requested for active services.");
-				return TRUE;
-			}
+			return true;
 		}
-
-		// Load all charge types that aren't archived and aren't flagged as automatic_only
-		DBL()->ChargeTypesAvailable->Archived = 0;
-		DBL()->ChargeTypesAvailable->automatic_only = 0;
-		
-		// Only proper admins and credit management can create credit charges
-		if (!$bolCanCreateCreditCharges)
-		{
-			// The user can only create debit charges
-			DBL()->ChargeTypesAvailable->Nature = 'DR';
-		}
-		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
-		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description ASC, ChargeType ASC");
-		DBL()->ChargeTypesAvailable->Load();
-		
-		if (DBL()->ChargeTypesAvailable->RecordCount() == 0)
-		{
-			Ajax()->AddCommand("Alert", "There are currently no charge types defined");
-			return TRUE;
-		}
-
-		// load the last 6 invoices with the most recent being first (Committed Live, Interim and Final invoices only)
-		$arrWhere = array("AccountId" => DBO()->Account->Id->Value);
-		$strWhere = "	Account = <AccountId>
-						AND invoice_run_id IN (	SELECT id 
-												FROM InvoiceRun
-												WHERE invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ." 
-												AND invoice_run_type_id IN (". INVOICE_RUN_TYPE_LIVE .", ". INVOICE_RUN_TYPE_INTERIM .", ".INVOICE_RUN_TYPE_FINAL .")
-											)";
-		DBL()->AccountInvoices->SetTable("Invoice");
-		DBL()->AccountInvoices->Where->Set($strWhere, $arrWhere);
-		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
-		DBL()->AccountInvoices->SetLimit(6);
-		DBL()->AccountInvoices->Load();
-
-
-		// check if an charge is being submitted
-		if (SubmittedForm('AddCharge', 'Add Charge'))
-		{
-			// Load the relating Account and ChargeType records
-			DBO()->ChargeType->Load();
-
-			// Define all the required properties for the Charge record
-			if ((!DBO()->Account->IsInvalid()) && (!DBO()->Charge->IsInvalid()) && (!DBO()->ChargeType->IsInvalid()))
-			{
-				// if the charge amount has a leading dollar sign then strip it off
-				DBO()->Charge->Amount = ltrim(trim(DBO()->Charge->Amount->Value), '$');
-				
-				// Check that the charge amount is not negative
-				if (floatval(DBO()->Charge->Amount->Value < 0))
-				{
-					Ajax()->AddCommand("Alert", "ERROR: The Charge cannot be a negative value");
-					return TRUE;
-				}
-				
-				// Remove GST from this amount
-				DBO()->Charge->Amount = RemoveGST(DBO()->Charge->Amount->Value);
-				
-				// Account details
-				DBO()->Charge->Account		= DBO()->Account->Id->Value;
-				DBO()->Charge->AccountGroup	= DBO()->Account->AccountGroup->Value;
-				
-				// Service details
-				if (DBO()->Service->Id->Value)
-				{
-					DBO()->Charge->Service	= DBO()->Service->Id->Value;
-				}
-				
-				// User's details
-				$dboUser 					= GetAuthenticatedUserDBObject();
-				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
-				
-				// Date the charge was created (the current date)
-				$strCurrentDate = GetCurrentDateForMySQL();
-				DBO()->Charge->CreatedOn	= $strCurrentDate;
-				DBO()->Charge->ChargedOn	= $strCurrentDate;
-				
-				// Details regarding the type of charge
-				DBO()->Charge->ChargeType	= DBO()->ChargeType->ChargeType->Value;
-				DBO()->Charge->Description	= DBO()->ChargeType->Description->Value;
-				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
-				
-				DBO()->Charge->Notes		= trim(DBO()->Charge->Notes->Value);
-				
-				// Check if the user has permission to create a credit charge, if the charge is a credit
-				if (DBO()->Charge->Nature->Value == 'CR' && !$bolCanCreateCreditCharges)
-				{
-					// The user does not have the required permissions to create a credit charge
-					Ajax()->AddCommand("Alert", "ERROR: You do not have permission to request credit charges");
-					return TRUE;
-				}
-				
-				// if DBO()->Charge->Invoice->Value == 0 then set it to NULL;
-				if (!DBO()->Charge->Invoice->Value)
-				{
-					DBO()->Charge->Invoice = NULL;
-				}
-				
-				// Set the status to CHARGE_WAITING (no charges are automatically approved)
-				DBO()->Charge->Status = CHARGE_WAITING;
-
-				$arrData = DBO()->Charge->AsArray();
-
-				// Save the charge to the charge table of the vixen database
-				TransactionStart();
-				$intChargeId = Framework()->AddCharge($arrData);
-
-				if ($intChargeId === FALSE)
-				{
-					// The charge did not save
-					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Requesting the charge failed, unexpectedly");
-					return TRUE;
-				}
-				else
-				{
-					// The charge was successfully saved
-					
-					// Log the 'Charge Request' action
-					try
-					{
-						$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
-						if (DBO()->Service->Id->Value)
-						{
-							// The recurring charge is being applied to a specific service
-							$intAccountId = NULL;
-							$intServiceId = DBO()->Service->Id->Value;
-						}
-						else
-						{
-							// The recurring charge is being applied to an account
-							$intAccountId = DBO()->Account->Id->Value;
-							$intServiceId = NULL;
-						}
-						
-						$strNature				= (DBO()->Charge->Nature->Value == 'CR')? "Credit" : "Debit";
-						$strAmount				= number_format(AddGST(DBO()->Charge->Amount->Value), 2, '.', '');
-						$strChargeType			= DBO()->Charge->ChargeType->Value ." - ". DBO()->Charge->Description->Value;
-						$strActionExtraDetails	= 	"Type: {$strChargeType} ({$strNature})\n".
-													"Amount (Inc GST): \${$strAmount} {$strNature}";
-						
-						// Log the action
-						Action::createAction('Charge Requested', $strActionExtraDetails, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
-					}
-					catch (Exception $e)
-					{
-						TransactionRollback();
-						Ajax()->AddCommand("Alert", "ERROR: Requesting the charge failed, while trying to log the action.");
-						return TRUE;
-					}
-					
-					
-
-					TransactionCommit();
-					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", "The request for charge has been successfully logged.");
-					return TRUE;
-				}
-			}
-			else
-			{
-				// Something was invalid
-				Ajax()->RenderHtmlTemplate("ChargeAdd", HTML_CONTEXT_DEFAULT, $this->_objAjax->strContainerDivId, $this->_objAjax);
-				Ajax()->AddCommand("Alert", "ERROR: Charge details are incorrect. Invalid fields are highlighted");
-				return TRUE;
-			}
-		}
-		
-		// All required data has been retrieved from the database so now load the page template
-		$this->LoadPage('charge_add');
-
-		return TRUE;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -772,6 +560,233 @@ class AppTemplateCharge extends ApplicationTemplate
 		Ajax()->AddCommand("AlertReload", "Successfully $strActionPassedTense the $strSubjectOfTheAction");
 		return TRUE;
 	}
+	
+	public static function addCharge($objAjax, $iChargeModel=CHARGE_MODEL_CHARGE)
+	{
+		$sChargeModel		= ($iChargeModel == CHARGE_MODEL_ADJUSTMENT ? 'Adjustment' : 'Charge');
+		$sChargeModelLower	= ($iChargeModel == CHARGE_MODEL_ADJUSTMENT ? 'adjustment' : 'charge');
+		
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		$bolUserHasProperAdminPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN);
+		$bolHasCreditManagementPerm	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
 
+		//$bolCanCreateCreditCharges = ($bolUserHasProperAdminPerm || $bolHasCreditManagementPerm);
+		$bolCanCreateCreditCharges = TRUE;
+
+		// The account should already be set up as a DBObject
+		if (!DBO()->Account->Load())
+		{
+			Ajax()->AddCommand("Alert", "ERROR: The account with account id: '". DBO()->Account->Id->value ."' could not be found");
+			return TRUE;
+		}
+		
+		// Charges can not be added if the account is pending activation
+		if (DBO()->Account->Archived->Value == ACCOUNT_STATUS_PENDING_ACTIVATION)
+		{
+			Ajax()->AddCommand("Alert", "The account is pending activation.  {$sChargeModel}s cannot be requested at this time.");
+			return TRUE;
+		}
+		
+		// Check if the charge relates to a particular service
+		if (DBO()->Service->Id->Value)
+		{
+			// A service has been specified.  Load it, to check that it actually exists
+			if (!DBO()->Service->Load())
+			{
+				Ajax()->AddCommand("Alert", "ERROR: The service with service id: '". DBO()->Service->Id->value ."' could not be found");
+				return TRUE;
+			}
+			
+			// It is assumed that this is the newest most record modelling this service for the account
+			// that the service belongs to.  Check that the service is currently active
+			$objService = ModuleService::GetServiceById(DBO()->Service->Id->Value, DBO()->Service->RecordType->Value);
+			if ($objService->GetStatus() == SERVICE_PENDING)
+			{
+				Ajax()->AddCommand("Alert", "This service is pending activation.  {$sChargeModel}s cannot be requested at this time.");
+				return TRUE;
+			}
+			elseif (!$objService->IsCurrentlyActive())
+			{
+				Ajax()->AddCommand("Alert", "This service is not currently active on this account.  {$sChargeModel}s can only be requested for active services.");
+				return TRUE;
+			}
+		}
+
+		// Load all charge types that aren't archived and aren't flagged as automatic_only
+		DBL()->ChargeTypesAvailable->Archived 			= 0;
+		DBL()->ChargeTypesAvailable->automatic_only		= 0;
+		DBL()->ChargeTypesAvailable->charge_model_id	= $iChargeModel;
+		
+		// Only proper admins and credit management can create credit charges
+		if (!$bolCanCreateCreditCharges)
+		{
+			// The user can only create debit charges
+			DBL()->ChargeTypesAvailable->Nature = 'DR';
+		}
+		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
+		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description ASC, ChargeType ASC");
+		DBL()->ChargeTypesAvailable->Load();
+		
+		if (DBL()->ChargeTypesAvailable->RecordCount() == 0)
+		{
+			Ajax()->AddCommand("Alert", "There are currently no {$sChargeModelLower} types defined");
+			return TRUE;
+		}
+
+		// load the last 6 invoices with the most recent being first (Committed Live, Interim and Final invoices only)
+		$arrWhere = array("AccountId" => DBO()->Account->Id->Value);
+		$strWhere = "	Account = <AccountId>
+						AND invoice_run_id IN (	SELECT id 
+												FROM InvoiceRun
+												WHERE invoice_run_status_id = ". INVOICE_RUN_STATUS_COMMITTED ." 
+												AND invoice_run_type_id IN (". INVOICE_RUN_TYPE_LIVE .", ". INVOICE_RUN_TYPE_INTERIM .", ".INVOICE_RUN_TYPE_FINAL .")
+											)";
+		DBL()->AccountInvoices->SetTable("Invoice");
+		DBL()->AccountInvoices->Where->Set($strWhere, $arrWhere);
+		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
+		DBL()->AccountInvoices->SetLimit(6);
+		DBL()->AccountInvoices->Load();
+
+		// check if an charge is being submitted
+		if (SubmittedForm("Add{$sChargeModel}", "Add {$sChargeModel}"))
+		{
+			// Load the relating Account and ChargeType records
+			DBO()->ChargeType->Load();
+
+			// Define all the required properties for the Charge record
+			if ((!DBO()->Account->IsInvalid()) && (!DBO()->Charge->IsInvalid()) && (!DBO()->ChargeType->IsInvalid()))
+			{
+				// if the charge amount has a leading dollar sign then strip it off
+				DBO()->Charge->Amount = ltrim(trim(DBO()->Charge->Amount->Value), '$');
+				
+				// Check that the charge amount is not negative
+				if (floatval(DBO()->Charge->Amount->Value < 0))
+				{
+					Ajax()->AddCommand("Alert", "ERROR: The {$sChargeModel} cannot be a negative value");
+					return TRUE;
+				}
+				
+				// Remove GST from this amount
+				DBO()->Charge->Amount = RemoveGST(DBO()->Charge->Amount->Value);
+				
+				// Account details
+				DBO()->Charge->Account		= DBO()->Account->Id->Value;
+				DBO()->Charge->AccountGroup	= DBO()->Account->AccountGroup->Value;
+				
+				// Service details
+				if (DBO()->Service->Id->Value)
+				{
+					DBO()->Charge->Service	= DBO()->Service->Id->Value;
+				}
+				
+				// User's details
+				$dboUser 					= GetAuthenticatedUserDBObject();
+				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
+				
+				// Date the charge was created (the current date)
+				$strCurrentDate = GetCurrentDateForMySQL();
+				DBO()->Charge->CreatedOn	= $strCurrentDate;
+				DBO()->Charge->ChargedOn	= $strCurrentDate;
+				
+				// Details regarding the type of charge
+				DBO()->Charge->ChargeType	= DBO()->ChargeType->ChargeType->Value;
+				DBO()->Charge->Description	= DBO()->ChargeType->Description->Value;
+				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
+				
+				DBO()->Charge->Notes		= trim(DBO()->Charge->Notes->Value);
+				
+				// Check if the user has permission to create a credit charge, if the charge is a credit
+				if (DBO()->Charge->Nature->Value == 'CR' && !$bolCanCreateCreditCharges)
+				{
+					// The user does not have the required permissions to create a credit charge
+					Ajax()->AddCommand("Alert", "ERROR: You do not have permission to request credit {$sChargeModelLower}s");
+					return TRUE;
+				}
+				
+				// if DBO()->Charge->Invoice->Value == 0 then set it to NULL;
+				if (!DBO()->Charge->Invoice->Value)
+				{
+					DBO()->Charge->Invoice = NULL;
+				}
+				
+				// Set the status to CHARGE_WAITING (no charges are automatically approved)
+				DBO()->Charge->Status = CHARGE_WAITING;
+				
+				// Set the charge_model_id
+				DBO()->Charge->charge_model_id = $iChargeModel;
+				
+				$arrData = DBO()->Charge->AsArray();
+				
+				// Save the charge to the charge table of the vixen database
+				TransactionStart();
+				$intChargeId = Framework()->AddCharge($arrData);
+
+				if ($intChargeId === FALSE)
+				{
+					// The charge did not save
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Requesting the {$sChargeModelLower} failed, unexpectedly");
+					return TRUE;
+				}
+				else
+				{
+					// The charge was successfully saved
+					
+					// Log the 'Charge Request' action
+					try
+					{
+						$intEmployeeId = AuthenticatedUser()->_arrUser['Id'];
+						if (DBO()->Service->Id->Value)
+						{
+							// The recurring charge is being applied to a specific service
+							$intAccountId = NULL;
+							$intServiceId = DBO()->Service->Id->Value;
+						}
+						else
+						{
+							// The recurring charge is being applied to an account
+							$intAccountId = DBO()->Account->Id->Value;
+							$intServiceId = NULL;
+						}
+						
+						$strNature				= (DBO()->Charge->Nature->Value == 'CR')? "Credit" : "Debit";
+						$strAmount				= number_format(AddGST(DBO()->Charge->Amount->Value), 2, '.', '');
+						$strChargeType			= DBO()->Charge->ChargeType->Value ." - ". DBO()->Charge->Description->Value;
+						$strActionExtraDetails	= 	"Type: {$strChargeType} ({$strNature})\n".
+													"Amount (Inc GST): \${$strAmount} {$strNature}";
+						
+						// Log the action
+						Action::createAction("{$sChargeModel} Requested", $strActionExtraDetails, $intAccountId, $intServiceId, null, $intEmployeeId, Employee::SYSTEM_EMPLOYEE_ID);
+					}
+					catch (Exception $e)
+					{
+						TransactionRollback();
+						Ajax()->AddCommand("Alert", "ERROR: Requesting the {$sChargeModelLower} failed, while trying to log the action. ".$e->getMessage());
+						return TRUE;
+					}
+					
+					
+
+					TransactionCommit();
+					Ajax()->AddCommand("ClosePopup", $objAjax->strId);
+					Ajax()->AddCommand("AlertReload", "The request for {$sChargeModelLower} has been successfully logged.");
+					return TRUE;
+				}
+			}
+			else
+			{
+				// Something was invalid
+				Ajax()->RenderHtmlTemplate("ChargeAdd", HTML_CONTEXT_DEFAULT, $objAjax->strContainerDivId, $this->_objAjax);
+				Ajax()->AddCommand("Alert", "ERROR: {$sChargeModel} details are incorrect. Invalid fields are highlighted");
+				return TRUE;
+			}
+		}
+		
+		DBO()->ChargeModel	= $iChargeModel;
+		
+		return TRUE;
+	}
 }
 ?>

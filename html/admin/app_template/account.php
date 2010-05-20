@@ -77,8 +77,12 @@ class AppTemplateAccount extends ApplicationTemplate
 				ContextMenu()->Account->Payments->Make_Payment($intAccountId);
 			}
 			
-			ContextMenu()->Account->Charges->Add_Charge($intAccountId);
-			ContextMenu()->Account->Charges->Add_Recurring_Charge($intAccountId);
+			// Charges
+			ContextMenu()->Account->Charges_and_Adjustments->Charges->Add_Charge($intAccountId);
+			ContextMenu()->Account->Charges_and_Adjustments->Charges->Add_Recurring_Charge($intAccountId);
+			
+			// Adjustments
+			ContextMenu()->Account->Charges_and_Adjustments->Adjustments->Add_Adjustment($intAccountId);
 		}
 		if ($bolUserHasOperatorPerm || $bolUserHasExternalPerm)
 		{

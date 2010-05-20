@@ -1059,54 +1059,56 @@
 	 *
 	 * @method
 	 */
-	 function AddCharge($arrCharge, $bolTaxExempt=FALSE)
+	 function AddCharge($aCharge, $bTaxExempt=FALSE)
 	 {
 		// make sure we have enough data to insert...
-		if ($arrCharge['Account'] === NULL)
+		if ($aCharge['Account'] === NULL)
 		{
 			// not enough data to define ownership
 			return FALSE;
 		}
 		
 		// Grab ownership data
-		if (!$arrCharge['Account'] || !$arrCharge['AccountGroup'])
+		if (!$aCharge['Account'] || !$aCharge['AccountGroup'])
 		{
-			if ($this->_selFindChargeOwner->Execute($arrCharge) === FALSE)
+			if ($this->_selFindChargeOwner->Execute($aCharge) === FALSE)
 			{
 				return FALSE;
 			}
-			$arrResponse = $this->_selFindChargeOwner->Fetch();
+			
+			$aResponse	= $this->_selFindChargeOwner->Fetch();
 			
 			// Only use data we need
-			if (!$arrCharge['Account'])
+			if (!$aCharge['Account'])
 			{
-				$arrCharge['Account'] = $arrResponse['Account'];
+				$aCharge['Account']	= $aResponse['Account'];
 			}
-			if (!$arrCharge['AccountGroup'])
+			
+			if (!$aCharge['AccountGroup'])
 			{
-				$arrCharge['AccountGroup'] = $arrResponse['AccountGroup'];
+				$aCharge['AccountGroup']	= $aResponse['AccountGroup'];
 			}
 		}
 		
-		// merge with default data
-		$arrDefaultCharge ['Nature']			= 'DR';
-		$arrDefaultCharge ['Invoice']			= NULL;
-		$arrDefaultCharge ['Notes']				= "";
-		$arrDefaultCharge ['Description']		= "";
-		$arrDefaultCharge ['ChargeType']		= "";
-		$arrDefaultCharge ['Amount']			= 0.0;
-		$arrDefaultCharge ['global_tax_exempt']	= ($bolTaxExempt) ? TRUE : FALSE;
-		$arrDefaultCharge ['Status']			= CHARGE_APPROVED;
-		$arrDefaultCharge ['charge_model_id']	= CHARGE_MODEL_CHARGE;
-		$arrCharge = array_merge($arrDefaultCharge, $arrCharge);
+		// Merge with default data
+		$aDefaultCharge['Nature']				= 'DR';
+		$aDefaultCharge['Invoice']				= NULL;
+		$aDefaultCharge['Notes']				= "";
+		$aDefaultCharge['Description']			= "";
+		$aDefaultCharge['ChargeType']			= "";
+		$aDefaultCharge['Amount']				= 0.0;
+		$aDefaultCharge['global_tax_exempt']	= ($bTaxExempt) ? TRUE : FALSE;
+		$aDefaultCharge['Status']				= CHARGE_APPROVED;
+		$aCharge 								= array_merge($aDefaultCharge, $aCharge);
 		
-		// set date
-		$arrCharge ['CreatedOn']			= new MySQLFunction("NOW()");
+		// Set date
+		$aCharge ['CreatedOn']	= date('Y-m-d');
 		
 		// Insert into DB
-		$insId = $this->_insCharge->Execute($arrCharge);
+		$oCharge	= new Charge($aCharge);
+		$oCharge->save();
 		
-		return $insId;
+		return $oCharge->Id;
 	 }
 	 
 	 

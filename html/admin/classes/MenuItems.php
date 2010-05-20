@@ -2710,6 +2710,39 @@ class MenuItems {
 	}
 
 	//------------------------------------------------------------------------//
+	// AddAdjustment
+	//------------------------------------------------------------------------//
+	/**
+	 * AddAdjustment()
+	 *
+	 * Compiles the javascript to be executed when the AddAdjustment menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the AddAdjustment menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAccountId		id of the account that the Adjustment will be added to
+	 * @param	int		$intServiceId		[optional] id of the service that the Adjustment is associated with
+	 *
+	 * @return	string				action to be executed when the AddAdjustment menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddAdjustment($intAccountId, $intServiceId = NULL) {
+		$this->strContextMenuLabel = "Request Adjustment";
+
+		$this->strLabel = "Request Adjustment";
+
+		// Setup data to send
+		$arrData['Account']['Id'] = $intAccountId;
+		$arrData['Service']['Id'] = $intServiceId;
+
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", \"Request Adjustment\", \"Adjustment\", \"Add\", $strJsonCode)";
+	}
+
+	//------------------------------------------------------------------------//
 	// MakePayment
 	//------------------------------------------------------------------------//
 	/**

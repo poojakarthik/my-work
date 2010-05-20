@@ -31,13 +31,15 @@
  */
 
 // set the page title
+$sChargeModel	= (DBO()->ChargeModel == CHARGE_MODEL_ADJUSTMENT ? 'Adjustment' : 'Charge');
+
 if (DBO()->Service->Id->Value)
 {
-	$this->Page->SetName('Request Service Charge - Service: '. DBO()->Service->FNN->Value);
+	$this->Page->SetName("Request Service {$sChargeModel} - Service: ". DBO()->Service->FNN->Value);
 }
 else
 {
-	$this->Page->SetName('Request Charge');
+	$this->Page->SetName("Request {$sChargeModel}");
 }
 
 // set the layout template for the page.

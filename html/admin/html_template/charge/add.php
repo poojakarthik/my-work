@@ -110,12 +110,15 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		// Only apply the output mask if the DBO()->Charge is not invalid
 		$bolApplyOutputMask = !DBO()->Charge->IsInvalid();
 
-		$this->FormStart("AddCharge", "Charge", "Add");
+		$sChargeModel		= (DBO()->ChargeModel == CHARGE_MODEL_ADJUSTMENT ? 'Adjustment' : 'Charge');
+		$sChargeModelLower	= (DBO()->ChargeModel == CHARGE_MODEL_ADJUSTMENT ? 'adjustment' : 'charge');
+		
+		$this->FormStart("Add{$sChargeModel}", "{$sChargeModel}", "Add");
 		
 		if (!$bolCanCreateCreditCharges)
 		{
 			// The user cannot create credit charges because they don't have the required permissions
-			echo "<div class='MsgNotice'>You do not have the required permissions to create credit charges</div>";
+			echo "<div class='MsgNotice'>You do not have the required permissions to create credit {$sChargeModelLower}s</div>";
 		}
 		
 		echo "<div class='GroupedContent'>\n";
@@ -145,7 +148,7 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		
 		// create a combobox containing all the charge types
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Charge:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;{$sChargeModel}:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='Charge.charge_type_id' name='Charge.charge_type_id' style='width:100%' onchange='Vixen.ValidateCharge.DeclareChargeType(this)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
@@ -238,7 +241,7 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		echo "
 <div>
 	<div style='float:right'>
-		<input type='button' style='display:none;' id='AddChargeSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_AddCharge', 'Add Charge', 'Charge', 'Add', 'Popup', 'AddChargePopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
+		<input type='button' style='display:none;' id='AddChargeSubmitButton' value='Apply Changes' onclick=\"Vixen.Ajax.SendForm('VixenForm_Add{$sChargeModel}', 'Add {$sChargeModel}', '{$sChargeModel}', 'Add', 'Popup', 'Add{$sChargeModel}PopupId', 'medium', '{$this->_strContainerDivId}')\"></input>
 		<input type='button' value='Submit Request' onclick='Vixen.ValidateCharge.SubmitRequest()'></input>
 		<input type='button' value='Cancel' onclick='Vixen.Popup.Close(this)'></input>
 	</div>
