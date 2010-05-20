@@ -86,7 +86,7 @@
 		{
 			error_reporting(0);
 		}
-	 	/*$this->_errErrorHandler = new ErrorHandler(); 	
+	 	/*$this->_errErrorHandler = new ErrorHandler();
 		set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
 		set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));*/
 		
@@ -146,7 +146,7 @@
 			case '_selDisputedBalance':
 				if (!isset($_selDisputedBalance))
 				{
-					//TODO!flame! is this right?		
+					//TODO!flame! is this right?
 				 	$_selDisputedBalance = new StatementSelect(	"Invoice",
 				 														"SUM(Disputed) AS DisputedBalance",
 				 														"Account = <Account> AND Status = ".INVOICE_DISPUTED);
@@ -266,7 +266,7 @@
 				 	$arrData['Service']			= NULL;
 				 	$arrData['Employee']		= NULL;
 				 	$arrData['Datetime']		= new MySQLFunction("NOW()");
-				 	$arrData['NoteType']		= NULL;			
+				 	$arrData['NoteType']		= NULL;
 					$_insAddNote			= new StatementInsert("Note", $arrData);
 				}
 				return $_insAddNote;
@@ -318,7 +318,7 @@
 				}
 				return $_selFNNInUse;
 		
-			default: 
+			default:
 				return null;
 		}
 	}
@@ -450,7 +450,7 @@
 	 * Adds a string to the application log
 	 *
 	 * Adds a string to the application log
-	 * 
+	 *
 	 * @param	string	$strText		Text to be added to the log
 	 * @param	bool	$bolNewLine		optional TRUE: Append a new line character to the end of the string
 	 *
@@ -493,36 +493,18 @@
 	 *
 	 * Determines the current Account Balance for a specified account
 	 * Return value includes tax.
-	 * 
+	 *
 	 *
 	 * @param	integer		$intAccount		The account to determine the balance total for
-	 * 
+	 *
 	 * @return	mixed						float: account balance total
 	 * 										FALSE: an error occurred
 	 *
 	 * @method
 	 */
-	 function GetAccountBalance($intAccount)
-	 {	 								
-	 	// Get sum of invoice balances
-	 	if ($this->_selAccountBalance->Execute(Array('Account' => $intAccount)) === FALSE)
-	 	{
-			// ERROR
-			return FALSE;
-	 	}
-	 	$arrAccountBalance = $this->_selAccountBalance->Fetch();
-	 	$fltAccountBalance = (float)$arrAccountBalance['AccountBalance'];
-	 	
-	 	// Get sum of account payment balances
-	 	if ($this->_selAccountPayments->Execute((Array('Account' => $intAccount))) === FALSE)
-	 	{
-			// ERROR
-			return FALSE;
-	 	}
-	 	$arrAccountPayments = $this->_selAccountPayments->Fetch();
-	 	$fltAccountBalance -= (float)$arrAccountPayments['TotalBalance'];
-	 	
-	 	return $fltAccountBalance;
+	 function GetAccountBalance($intAccount, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	 {
+		return Account::getForId($intAccount)->getAccountBalance(null, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments);
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -539,67 +521,15 @@
 	 *
 	 *
 	 * @param	integer		$intAccount		The account to determine the overdue balance total for
-	 * 
+	 *
 	 * @return	mixed						float: account balance total
 	 * 										FALSE: an error occurred
 	 *
 	 * @method
 	 */
-	 function GetOverdueBalance($intAccount)
-	 {	 						
-	 	// get balance of any invoice that is past due
-		if ($this->_selAccountOverdueBalance->Execute(Array('Account' => $intAccount)) === FALSE)
-	 	{
-			// ERROR
-			return FALSE;
-	 	}
-	 	
-		// set overdue balance
-	 	$arrOverdueBalance = $this->_selAccountOverdueBalance->Fetch();
-		if ($arrOverdueBalance)
-		{
-	 		$fltOverdueBalance = (float)$arrOverdueBalance['OverdueBalance'];
-		}
-		else
-		{
-			$fltOverdueBalance = 0;
-		}
-		
-		// get disputed balance of any invoices (does this include tax?????)
-		if ($this->_selDisputedBalance->Execute(Array('Account' => $intAccount)) === FALSE)
-	 	{
-			// ERROR
-			return FALSE;
-	 	}
-	 	
-		// remove disputed balance from overdue balance
-	 	/*$arrDisputedBalance = $this->_selDisputedBalance->Fetch();
-		if ($arrDisputedBalance)
-		{
-	 		$fltOverdueBalance -= (float)$arrDisputedBalance['DisputedBalance'];
-		}*/
-
-		// get balance of unbilled debits & unbilled approved credits (does NOT include tax)
-		$this->_selAccountUnbilledCharges->Execute(Array('Account' => $intAccount));
-		$arrCharges = $this->_selAccountUnbilledCharges->FetchAll();
-
-		foreach($arrCharges as $arrCharge)
-		{
-			if ($arrCharge['Nature'] == 'DR')
-			{
-				//$fltUnbilledDebits		= (float)$arrCharge['Amount'];
-			}
-			else
-			{
-				$fltUnbilledCredits		= (float)$arrCharge['Amount'];
-			}
-		}
-		
-		// remove unbilled credits from overdue balance
-		$fltOverdueBalance -= max(0, AddGST($fltUnbilledCredits));
-		
-		// return the balance
-		return max(0, $fltOverdueBalance);
+	 function GetOverdueBalance($intAccount, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	 {
+	 	return Account::getForId($intAccount)->getAccountBalance(date('Y-m-d'), $bIncludeCreditAdjustments, $bIncludeDebitAdjustments);
 	 }
 	
 	//------------------------------------------------------------------------//
@@ -612,17 +542,17 @@
 	 *
 	 * Determines the current unbilled charges (charges) for a specified account
 	 * Return amount includes GST.  Excludes Plan Charges.
-	 * 
+	 *
 	 *
 	 * @param	integer		$intAccount		The account to determine the unbilled charges total for
-	 * 
+	 *
 	 * @return	mixed						float: unbilled charges total
 	 * 										FALSE: an error occurred
 	 *
 	 * @method
 	 */
 	 function GetUnbilledCharges($intAccount)
-	 {	 						
+	 {
 		// get balance of unbilled debits & unbilled approved credits
 		$this->_selAccountUnbilledCharges->Execute(Array('Account' => $intAccount));
 		$arrCharges = $this->_selAccountUnbilledCharges->FetchAll();
@@ -643,7 +573,7 @@
 		
 		// return the balance
 		return $fltUnbilledDebits - $fltUnbilledCredits;
-	 }	
+	 }
 	 
 	//------------------------------------------------------------------------//
 	// GetDistputedBalance()
@@ -654,17 +584,17 @@
 	 * Determines the current Disputed Balance for a specified account
 	 *
 	 * Determines the current Disputed Balance for a specified account
-	 * 
+	 *
 	 *
 	 * @param	integer		$intAccount		The account to determine the disputed balance total for
-	 * 
+	 *
 	 * @return	mixed						float: account balance total
 	 * 										FALSE: an error occurred
 	 *
 	 * @method
 	 */
 	 function GetDistputedBalance($intAccount)
-	 {	 								
+	 {
 	 	if ($this->_selDisputedBalance->Execute(Array('Account' => $intAccount)) === FALSE)
 	 	{
 			// ERROR
@@ -685,10 +615,10 @@
 	 *
 	 * Determine the total of an invoice before having generated one
 	 * Returns inc tax total
-	 * 
+	 *
 	 *
 	 * @param	integer		$intAccount		The account to determine the invoice total for
-	 * 
+	 *
 	 * @return	mixed						float: invoice total (ex. tax)
 	 * 										FALSE: an error occurred
 	 *
@@ -696,7 +626,9 @@
 	 */
 	 function GetInvoiceTotal($intAccount)
 	 {
-		// zero out totals
+		throw new Exception("DEPRECATED: 2010-05-19");
+	 	
+	 	// zero out totals
 		$fltDebits			= 0.0;
 		$fltTotalCharge		= 0.0;
 		$fltTotalCredits	= 0.0;
@@ -856,14 +788,14 @@
 	 * finds a service based on the FNN
 	 *
 	 * finds a service based on the FNN
-	 * 
 	 *
-	 * @return	bool					
+	 *
+	 * @return	bool
 	 *
 	 * @method
 	 */
 	 function FindServiceByFNN($strFNN, $strDate=NULL, $intAccount=NULL)
-	 {		
+	 {
 		if ($strDate == NULL)
 		{
 			$strDate = date("Y-m-d", time());
@@ -878,7 +810,7 @@
 			$intResult = $this->_selFindOwnerAccount->Execute(Array('fnn' => $strFNN, 'Account' => $intAccount));
 			if ($intResult !== FALSE)
 			{
-				$arrResult = $this->_selFindOwnerAccount->Fetch();		
+				$arrResult = $this->_selFindOwnerAccount->Fetch();
 			}
 		}
 		else
@@ -886,7 +818,7 @@
 	 		$intResult = $this->_selFindOwner->Execute(Array('fnn' => $strFNN, 'date' => $strDate));
 			if ($intResult !== FALSE)
 			{
-				$arrResult = $this->_selFindOwner->Fetch();		
+				$arrResult = $this->_selFindOwner->Fetch();
 			}
 	 	}
 		
@@ -906,7 +838,7 @@
 				$intResult = $this->_selFindOwnerAccountIndial100->Execute($arrParams);
 				if ($intResult !== FALSE)
 				{
-					$arrResult = $this->_selFindOwnerAccountIndial100->Fetch();		
+					$arrResult = $this->_selFindOwnerAccountIndial100->Fetch();
 				}
 			}
 			else
@@ -914,7 +846,7 @@
 	 			$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
 				if ($intResult !== FALSE)
 				{
-					$arrResult = $this->_selFindOwnerIndial100->Fetch();		
+					$arrResult = $this->_selFindOwnerIndial100->Fetch();
 				}
 	 		}
 	 		
@@ -937,7 +869,7 @@
 	 * UnRates a CDR
 	 *
 	 * UnRates a CDR
-	 *	 
+	 *
 	 * @param	int		$intCDR		Id of the CDR to unrate
 	 * @param	int		$intStatus	optional to set for the unrated CDR
 	 *
@@ -974,7 +906,7 @@
 	 	}
 		
 	 	while($arrCDR = $selCDR->Fetch())
-	 	{	 	
+	 	{
 		 	// Uncapped or Capped
 			$arrColumns = Array();
 		 	if ($arrCDR['Uncapped'])
@@ -1016,11 +948,11 @@
 	 * Find the record type from a Service Type & Record Code
 	 *
 	 * Find the record type from a Service Type & Record Code
-	 * 
+	 *
 	 *
 	 * @param	int		intServiceType		Service Type Constant
 	 * @param	string	strRecordCode		Vixen Record Type Code
-	 * @return	int		Record Type Id					
+	 * @return	int		Record Type Id
 	 *
 	 * @method
 	 */
@@ -1049,10 +981,10 @@
 	/**
 	 * AddCharge()
 	 *
-	 * Adds a charge 
+	 * Adds a charge
 	 *
 	 * Adds a charge
-	 * 
+	 *
 	 * @param	array	$arrCharge			data for a Charge record you need at least 'Account' specified to find the owner
 	 * @param	bool	$bolTaxExempt		Optional, defaults to FALSE
 	 * @return	mixed						on success it returns the id of the new charge record. On failure it returns FALSE
@@ -1121,7 +1053,7 @@
 	 * Reverses a specified Payment
 	 *
 	 * Reverses a specified Payment
-	 * 
+	 *
 	 * @param	integer	$intPayment		the Id of the Payment to reverse
 	 * @param	integer	$intEmployee	optional Id of the Employee who reversed
 	 *
@@ -1297,7 +1229,7 @@
 	 * @param	bool	$bolGetNoteId		optional	defaults to FALSE, if set to TRUE then the Id of the created note is returned, else a boolean is returned reporting on whether or not the insert worked
 	 *
 	 * @return	mix			WHEN $bolGetNoteId == FALSE then function returns TRUE if the note insert worked, else returns FALSE
-	 * 						WHEN $bolGetNoteId == TRUE  then function returns the Id of the inserted note record, else returns FALSE if unsuccessful 
+	 * 						WHEN $bolGetNoteId == TRUE  then function returns the Id of the inserted note record, else returns FALSE if unsuccessful
 	 */
 	 function AddNote($strContent, $intType, $intEmployee, $intAccountGroup, $intAccount, $intService=NULL, $intContact=NULL, $bolGetNoteId=FALSE)
 	 {
@@ -1344,10 +1276,10 @@
 	 *
 	 * @param	integer	$intService		The Service to enable ELB on
 	 *
-	 * @return	boolean					Pass/Fail				
+	 * @return	boolean					Pass/Fail
 	 */
 	 function EnableELB($intService)
-	 {	 	
+	 {
 	 	// Check for ELB in table
 	 	$arrWhere = Array();
 	 	$arrWhere['Service']	= $intService;
@@ -1374,7 +1306,7 @@
 	 			}
 	 		}
 	 		
-	 		return TRUE;	 		
+	 		return TRUE;
 	 	}
 	 }
 	 
@@ -1392,7 +1324,7 @@
 	 *
 	 * @param	integer	$intService		The Service to disable ELB on
 	 *
-	 * @return	boolean					Pass/Fail				
+	 * @return	boolean					Pass/Fail
 	 */
 	 function DisableELB($intService)
 	 {
@@ -1418,7 +1350,7 @@
 	 * @param	integer	$strDatetime			The Datetime to own on
 	 * @param	boolean	$bolDateOnly			Date comparison only (instead of Datetime)
 	 *
-	 * @return	mixed							Array of Owner Details or String Error				
+	 * @return	mixed							Array of Owner Details or String Error
 	 */
 	 function FindFNNOwner($strFNN, $strDatetime, $bolDateOnly=FALSE)
 	 {
@@ -1454,7 +1386,7 @@
 	 		return "FNN '$strFNN' not found in Flex!";
 	 	}
 	 	
-	 	// Return Owner Details	 	
+	 	// Return Owner Details
 	 	return $this->_selFindOwner->Fetch();
 	 }
 	 
@@ -1475,7 +1407,7 @@
 	 * @return	mixed							TRUE if the FNN is/has been in use since $strDate, or is scheduled to be used
 	 * 											beyond this date
 	 * 											FALSE if the FNN isn't in use and is not scheduled to be used
-	 * 											String if there is an error				
+	 * 											String if there is an error
 	 */
 	 function IsFNNInUse($strFNN, $bolIsIndial, $strDate)
 	 {
