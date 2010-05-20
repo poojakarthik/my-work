@@ -553,14 +553,14 @@ ORDER BY FNN;";
 		}
 	}
 	
-	public function getOverdueBalance($sDueDate, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	public function getAccountBalance($bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
 	{
-		return max(0.0, $this->getAccountBalance($sDueDate, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments));
+		return max(0.0, $this->getOverdueBalance('9999-12-31', $bIncludeCreditAdjustments, $bIncludeDebitAdjustments));
 	}
 	
-	public function getAccountBalance($sDueDate=null, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	public function getOverdueBalance($sDueDate=null, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
 	{
-		$sDueDate					= (is_int($iDueDate = strtotime($sDueDate))) ? date("Y-m-d", $iDueDate) : '9999-12-31';
+		$sDueDate					= (is_int($iDueDate = strtotime($sDueDate))) ? date("Y-m-d", $iDueDate) : date('Y-m-d');
 		$iIncludeCreditAdjustments	= ($bIncludeCreditAdjustments) ? 1 : 0;
 		$iIncludeDebitAdjustments	= ($bIncludeDebitAdjustments) ? 1 : 0;
 		
@@ -603,7 +603,7 @@ ORDER BY FNN;";
 																			OR
 																			({$iIncludeDebitAdjustments} = 1 AND c.Nature = 'DR')
 																		)
-														)																															AS account_balance
+														)																															AS balance
 											
 											FROM		Account a
 														LEFT JOIN Invoice i ON	(
@@ -628,7 +628,7 @@ ORDER BY FNN;";
 		else
 		{
 			$aResult	= $mResult->fetch_assoc();
-			return (float)$aResult['account_balance'];
+			return (float)$aResult['balance'];
 		}
 	}
 	

@@ -327,7 +327,7 @@ class Invoice extends ORM_Cached
 			Log::getLog()->log($arrAccountChargeTotals);
 			
 			// Calculate Preliminary Invoice Values
-			$this->AccountBalance	= $GLOBALS['fwkFramework']->GetAccountBalance($objAccount->Id);
+			$this->AccountBalance	= $this->_objAccount->getAccountBalance(false, false);	// We don't want to include Adjustments as they are handled elsewhere
 			if ($this->AccountBalance === FALSE)
 			{
 				throw new Exception("Unable to calculate Account Balance for {$objAccount->Id}");
@@ -370,12 +370,37 @@ class Invoice extends ORM_Cached
 			$this->Credits	+= $arrAccountChargeTotals['CR'][0] + $arrAccountChargeTotals['CR'][1];
 			$this->Tax		+= self::calculateGlobalTaxComponent($arrAccountChargeTotals['DR'][0], $this->intInvoiceDatetime) - self::calculateGlobalTaxComponent($arrAccountChargeTotals['CR'][0], $this->intInvoiceDatetime);
 			Log::getLog()->log("Final Account Charges END");
-	
+			
 			// Recalculate Final Invoice Values
 			$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
 			$this->Balance			= $this->Total + $this->Tax;
 			$this->TotalOwing		= $this->Balance + $this->AccountBalance;
-	
+			
+			// Get Adjustments
+			$selAdjustmentTotals	= self::_preparedStatement('selAdjustmentTotals');
+			if ($selAdjustmentTotals->Execute(Array('account_id' => $objAccount->Id, 'invoice_run_id' => $this->invoice_run_id)) === FALSE)
+			{
+				// Database Error -- throw Exception
+				throw new Exception("DB ERROR: ".$selAdjustmentTotals->Error());
+			}
+			$aAdjustmentTotals	= Array();
+			if ($aAdjustmentTotals = $selAdjustmentTotals->Fetch())
+			{
+				// Tax is calculated by the query for us
+				$this->adjustment_total	= (float)$aAdjustmentTotals['adjustment_total'];
+				$this->adjustment_tax	= (float)$aAdjustmentTotals['adjustment_tax'];
+			}
+			else
+			{
+				$this->adjustment_total	= 0.0;
+				$this->adjustment_tax	= 0.0;
+			}
+			
+			// HACKHACKHACK	: Calculate the Charge Total/Tax by subtracting the Adjustment Totals from the overall Totals
+			//				Technically correct, but just... dirty...
+			$this->charge_total	= $this->Total - $this->adjustment_total;
+			$this->charge_tax	= $this->Tax - $this->adjustment_tax;
+			
 			// Determine Delivery Method
 			$objAccountStatus	= Account_Status::getForId($objAccount->Archived);
 			$objDeliveryMethod	= Delivery_Method::getForId($objAccount->BillingMethod);
@@ -1742,6 +1767,33 @@ class Invoice extends ORM_Cached
 					break;
 				case 'selLastInvoiceDatetime':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("Invoice JOIN InvoiceRun ON Invoice.invoice_run_id = InvoiceRun.Id", "InvoiceRun.BillingDate", "Invoice.Account = <Account>", "InvoiceRun.BillingDate DESC, InvoiceRun.Id DESC", 1);
+					break;
+				case 'selAdjustmentTotals':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge c", /* FINISH ME!!! */
+																					"	COALESCE(
+																							SUM(
+																								COALESCE(
+																									IF(
+																										c.Nature = 'CR',
+																										0 - c.Amount,
+																										c.Amount
+																									), 0
+																								)
+																							), 0
+																						)																						AS adjustment_total,
+																						COALESCE(
+																							IF(
+																								c.global_tax_exempt = 1,
+																								0,
+																								(
+																									SELECT		COALESCE(EXP(SUM(LN(tt.rate_percentage))), 1)
+																									FROM		tax_type tt
+																									WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+																												AND tt.global = 1
+																								)
+																							), 0
+																						)																						AS unbilled_adjustments",
+																					"c.Account = <account_id> AND c.Status = ".CHARGE_TEMP_INVOICE." AND c.charge_model_id = ".CHARGE_MODEL_ADJUSTMENT." AND c.invoice_run_id = <invoice_run_id>");
 					break;
 
 

@@ -504,7 +504,7 @@
 	 */
 	 function GetAccountBalance($intAccount, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
 	 {
-		return Account::getForId($intAccount)->getAccountBalance(null, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments);
+		return Account::getForId($intAccount)->getAccountBalance($bIncludeCreditAdjustments, $bIncludeDebitAdjustments);
 	 }
 	 
 	//------------------------------------------------------------------------//
