@@ -7,6 +7,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		
 		this.fnOnClose 		= fnOnClose;
 		this._iChargeModel	= iChargeModel;
+		this._sChargeModel	= Flex.Constant.arrConstantGroups.charge_model[this._iChargeModel].Name;
 		this._buildUI();
 	},
 	
@@ -30,7 +31,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 										$T.tbody(
 											$T.tr(
 												$T.th({class: 'label'},
-													'Charge Code :'
+														this._sChargeModel + ' Code :'
 												),
 												$T.td(
 													$T.input({type:'text'})
@@ -113,7 +114,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		// Setup validation handlers
 		this.hInputs 			= {};
 		var aInputs 			= oContent.select('input, select');
-		aInputs[0].sFieldName 	= 'Charge Code';
+		aInputs[0].sFieldName 	= this._sChargeModel + ' Code';
 		aInputs[0].bRequired	= true;
 		aInputs[1].sFieldName 	= 'Description';
 		aInputs[1].bRequired	= true;
@@ -133,8 +134,8 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		}
 		
 		// Inputs
-		this.hInputs['Charge Code'].validate 	= 	Popup_Charge_Type._validateInput.bind(
-														this.hInputs['Charge Code'], 	
+		this.hInputs[this._sChargeModel + ' Code'].validate 	= 	Popup_Charge_Type._validateInput.bind(
+														this.hInputs[this._sChargeModel + ' Code'], 	
 														Reflex_Validation.Exception.nonEmptyString
 													);
 		this.hInputs['Description'].validate 	= 	Popup_Charge_Type._validateInput.bind(
@@ -159,7 +160,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		
 		this.oContent = oContent; 
 		
-		this.setTitle('Add Charge Type');
+		this.setTitle('Add ' + this._sChargeModel + ' Type');
 		this.setIcon('../admin/img/template/charge_small.png');
 		this.setContent(oContent);
 		this.display();
@@ -207,7 +208,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 		// Build request data
 		var oRequestData =	{
 							iId				: null,
-							sChargeType		: this.hInputs['Charge Code'].value, 
+							sChargeType		: this.hInputs[this._sChargeModel + ' Code'].value, 
 							sDescription	: this.hInputs['Description'].value, 
 							fAmount			: parseFloat(this.hInputs['Amount'].value), 
 							sNature			: this.hInputs['Nature'].value, 
@@ -241,7 +242,7 @@ var Popup_Charge_Type	= Class.create(Reflex_Popup,
 			this.hide();
 			
 			// Confirmation
-			Reflex_Popup.alert('Charge Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
+			Reflex_Popup.alert(this._sChargeModel + ' Type \'' + oResponse.sChargeType + '\' succesfully added', {sTitle: 'Save Successful'});
 		}
 		else
 		{

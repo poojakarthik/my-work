@@ -208,16 +208,18 @@ class JSON_Handler_Charge_Type extends JSON_Handler
 				$oChargeType->automatic_only				= 0;
 			}
 			
+			$sChargeModel	= Constant_Group::getConstantGroup('charge_model')->getConstantName($oChargeTypeDetails->iChargeModel);
+			
 			// Validate input
 			$aValidationErrors = array();
 			
 			if (!isset($oChargeTypeDetails->sChargeType) || $oChargeTypeDetails->sChargeType == '')
 			{
-				$aValidationErrors[] = 'Charge Code missing';
+				$aValidationErrors[] = "{$sChargeModel} Code missing";
 			}
 			else if($oExisting = Charge_Type::getByCode($oChargeTypeDetails->sChargeType))
 			{
-				$aValidationErrors[] = 'Charge Code already in use';
+				$aValidationErrors[] = "{$sChargeModel} Code already in use";
 			}
 			
 			if (!isset($oChargeTypeDetails->sDescription) || $oChargeTypeDetails->sDescription == '')

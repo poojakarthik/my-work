@@ -4,21 +4,26 @@ var Page_Charge_Type = Class.create(
 	initialize	: function(oContainerDiv, iChargeModel)
 	{
 		// Get the JSON Handler method using the iChargeModel
-		var sMethod	= '';
+		var sMethod			= '';
+		var sChargeModel	= '';
 		
 		switch(iChargeModel)
 		{
 			case $CONSTANT.CHARGE_MODEL_CHARGE:
-				sMethod	= 'getChargeTypes';
+				sMethod			= 'getChargeTypes';
+				sChargeModel	= 'Charge';
 				break;
 			case $CONSTANT.CHARGE_MODEL_ADJUSTMENT:
-				sMethod	= 'getAdjustmentTypes';
+				sMethod			= 'getAdjustmentTypes';
+				sChargeModel	= 'Adjustment';
 				break;
 			default:
-				sMethod	= 'getAllTypes';
+				sMethod		= 'getAllTypes';
+				sChargeModel	= 'Charge';
 		}
 	
 		this._iChargeModel	= iChargeModel;
+		this._sChargeModel	= sChargeModel;
 		
 		// Create DataSet & pagination object
 		this.oDataset		= 	new Dataset_Ajax(
@@ -86,7 +91,7 @@ var Page_Charge_Type = Class.create(
 												$T.th({colspan: '9'},
 													$T.button(
 														$T.img({src: Page_Charge_Type.ADD_IMAGE_SOURCE, alt: '', title: 'Add Charge Type'}),
-														$T.span('Add Charge Type')
+														$T.span('Add ' + this._sChargeModel + ' Type')
 													)
 												)
 											)
