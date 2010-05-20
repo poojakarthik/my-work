@@ -197,8 +197,10 @@ class HtmlTemplateChargeAdd extends HtmlTemplate
 		// display the charge code when the Charge Type has been selected
 		DBO()->ChargeType->ChargeType = $arrChargeTypes[$intChargeTypeId]['ChargeType'];
 		echo "	<div class='DefaultElement'>
-		  			<div class='DefaultLabel'>&nbsp;&nbsp;{$sChargeModel} Type:</div>
-		   			<div class='DefaultOutput'>".DBO()->ChargeType->ChargeType->Value."</div class='DefaultOutput'>
+		  			<div id='ChargeType.ChargeType.Label' class='DefaultLabel'>&nbsp;&nbsp;{$sChargeModel} Type:</div>
+		   			<div id='ChargeType.ChargeType.Output' class='DefaultOutput'>
+		   				".DBO()->ChargeType->ChargeType->Value."
+		   			</div class='DefaultOutput'>
 				<div class='DefaultElement'>";
 		
 		// display the description
