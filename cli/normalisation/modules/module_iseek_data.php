@@ -3,7 +3,7 @@
  * NormalisationModuleIseekData
  *
  * Normalisation module for iSeek Data batch files
- * 
+ *
  * @class	NormalisationModuleIseekData
  */
 class NormalisationModuleIseekData extends NormalisationModule
@@ -18,7 +18,7 @@ class NormalisationModuleIseekData extends NormalisationModule
 	 * __construct()
 	 *
 	 * Constructor for the Normalising Module
-	 * 
+	 *
 	 * @constructor
 	 */
 	function __construct($intCarrier)
@@ -33,7 +33,7 @@ class NormalisationModuleIseekData extends NormalisationModule
 		$this->_intStartRow = 1;
 		
 		// define the carrier CDR format
-		$arrDefine['username']				['Index']		= 0;	// FNN/MSN of the Modem SIM 
+		$arrDefine['username']				['Index']		= 0;	// FNN/MSN of the Modem SIM
 		$arrDefine['ip']					['Index']		= 1;	// IP Address
 		$arrDefine['qos']					['Index']		= 2;	// Quality of Service (ignore)
 		$arrDefine['uptxoctets']			['Index']		= 3;	// Uploaded Data in Octects/Bytes
@@ -47,14 +47,14 @@ class NormalisationModuleIseekData extends NormalisationModule
 	 * Normalise()
 	 *
 	 * Normalises raw data from the CDR
-	 * 
+	 *
 	 * @param	array		arrCDR		Array returned from SELECT query on CDR
 	 *
 	 * @return	array					Normalised Data, ready for direct UPDATE
 	 * 									into DB
 	 *
 	 * @method
-	 */	
+	 */
 	function Normalise($arrCDR)
 	{
 		// set up CDR
@@ -81,6 +81,41 @@ class NormalisationModuleIseekData extends NormalisationModule
 		//--------------------------------------------------------------------//
 		// add fields to CDR
 		//--------------------------------------------------------------------//
+		
+		// Destination Code & Description (only if we have a context)
+		if ($this->_intContext > 0)
+		{
+			// There is technically no way to determine destination, so we're just retrieving the fallback Destination
+			$arrDestinationCode	= $this->FindDestination(DONKEY);
+			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
+			
+			$strDescription	= ($arrDestinationCode['bolUnknownDestination']) ? '' : $arrDestinationCode['Description'];
+			$this->_AppendCDR('Description', $strDescription);
+		}
+		
+		// CarrierRef
+		$this->_AppendCDR('CarrierRef', $this->_GenerateUID());
+		
+		// Cost (Don't get a Cost, so hack it in)
+		$this->_AppendCDR('Cost', 0.0);
+		
+		$intFileTimestamp	= strtotime($arrCDR['FileName']);
+		
+		// StartDatetime
+		$strStartDatetime	= date("Y-m-d H:i:s", $intFileTimestamp - self::USAGE_WINDOW_SECONDS);
+		$this->_AppendCDR('StartDatetime', $strStartDatetime);
+		
+		// EndDatetime
+		$intDuration	= (int)$this->_FetchRawCDR('seconds');
+		$strEndDatetime	= date("Y-m-d H:i:s", $intFileTimestamp - self::USAGE_WINDOW_SECONDS + $intDuration);
+		$this->_AppendCDR('EndDatetime', $strEndDatetime);
+		
+		// Units
+		// FIXME: This won't be what we want when we actually start supporting normal ADSL
+		$intUploadedOctets		= (int)$this->_FetchRawCDR('uptxoctets');
+		$intDownloadedOctets	= (int)$this->_FetchRawCDR('downrxoctets');
+		$intTotalUnits			= ceil(($intUploadedOctets + $intDownloadedOctets) / self::OCTETS_TO_KILOBYTES_DIVISOR);
+		$this->_AppendCDR('Units', $intTotalUnits);
 		try
 		{
 			$arrUsername	= array();
@@ -125,45 +160,7 @@ class NormalisationModuleIseekData extends NormalisationModule
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
 		
-		// Destination Code & Description (only if we have a context)
-		if ($this->_intContext > 0)
-		{
-			// There is technically no way to determine destination, so we're just retrieving the fallback Destination
-			$arrDestinationCode	= $this->FindDestination(DONKEY);
-			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
-			
-			$strDescription	= ($arrDestinationCode['bolUnknownDestination']) ? '' : $arrDestinationCode['Description'];
-			$this->_AppendCDR('Description', $strDescription);
-		}
-		
-		// CarrierRef
-		$this->_AppendCDR('CarrierRef', $this->_GenerateUID());
-		
-		// Cost (Don't get a Cost, so hack it in)
-		$this->_AppendCDR('Cost', 0.0);
-		
-		$intFileTimestamp	= strtotime($arrCDR['FileName']);
-		
-		// StartDatetime
-		$strStartDatetime	= date("Y-m-d H:i:s", $intFileTimestamp - self::USAGE_WINDOW_SECONDS);
-		$this->_AppendCDR('StartDatetime', $strStartDatetime);
-		
-		// EndDatetime
-		$intDuration	= (int)$this->_FetchRawCDR('seconds');
-		$strEndDatetime	= date("Y-m-d H:i:s", $intFileTimestamp - self::USAGE_WINDOW_SECONDS + $intDuration);
-		$this->_AppendCDR('EndDatetime', $strEndDatetime);
-		
-		// Units
-		// FIXME: This won't be what we want when we actually start supporting normal ADSL
-		$intUploadedOctets		= (int)$this->_FetchRawCDR('uptxoctets');
-		$intDownloadedOctets	= (int)$this->_FetchRawCDR('downrxoctets');
-		$intTotalUnits			= ceil(($intUploadedOctets + $intDownloadedOctets) / self::OCTETS_TO_KILOBYTES_DIVISOR);
-		$this->_AppendCDR('Units', $intTotalUnits);
-		
 		//--------------------------------------------------------------------//
-		
-		// Apply Ownership
-		$this->ApplyOwnership();
 		
 		// Validation of Normalised data
 		$this->Validate();
