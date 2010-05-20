@@ -501,6 +501,11 @@ ORDER BY FNN;";
 		return $mPaymentMethod;
 	}
 	
+	public function getOverdueBalance($sDueDate, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	{
+		return max(0.0, $this->getAccountBalance($sDueDate, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments));
+	}
+	
 	public function getAccountBalance($sDueDate=null, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
 	{
 		$sDueDate					= (is_int($iDueDate = strtotime($sDueDate))) ? date("Y-m-d", $iDueDate) : '9999-12-31';
