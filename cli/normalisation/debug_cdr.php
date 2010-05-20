@@ -17,7 +17,7 @@ if ($argc > 1)
 if ($intCDR)
 {
 	// get CDR
-	$selCDR = new StatementSelect("CDR JOIN FileImport ON CDR.File = FileImport.Id", "CDR.*, FileImport.FileType AS FileType", "CDR.Id = <Id>");
+	$selCDR = new StatementSelect("CDR JOIN FileImport ON CDR.File = FileImport.Id", "CDR.*, FileImport.FileType AS FileType, FileImport.FileName AS FileName", "CDR.Id = <Id>");
 	if (!$selCDR->Execute(Array('Id' => $intCDR)))
 	{
 		CliEcho("Invalid CDR record requested.  Please double-check the Id ($intCDR).\n");
