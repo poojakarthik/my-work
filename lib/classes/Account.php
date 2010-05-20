@@ -62,7 +62,7 @@ class Account
 	 * returns array of Service objects defining the current service records associated with this account, for active services (based on the status)
 	 *
 	 * returns array of Service objects defining the current service records associated with this account, for active services (based on the status)
-	 * 
+	 *
 	 * @return	array of Service objects
 	 */
 	public function listActiveServices()
@@ -76,7 +76,7 @@ class Account
 	 * returns array of Service objects defining the current service records associated with this account
 	 *
 	 * returns array of Service objects defining the current service records associated with this account
-	 * 
+	 *
 	 * @param	array	$arrStatuses	Defines the services to retrieve based on the statuses
 	 * 									(Optional, defaults to NULL, in which services of all statuses will be retrieved)
 	 *
@@ -197,7 +197,7 @@ ORDER BY FNN;";
 
 	/**
 	 * Applies a payment to an account
-	 * 
+	 *
 	 * *** THIS HAS ONLY BEEN TESTED FOR CREDIT CARD PAYMENTS ***
 	 */
 	public function applyPayment($intEmployeeId, $contact, $time, $totalAmount, $txnId, $strUniqueReference, $paymentType, $creditCardNumber=NULL, $creditCardType=NULL, $surcharge=NULL)
@@ -308,7 +308,7 @@ ORDER BY FNN;";
 	 */
 	public function getLastInvoiceDate($strEffectiveDate=null, $bolProductionInvoiceRunsOnly=false)
 	{
-		$strEffectiveDate	= strtotime($strEffectiveDate) ? date("Y-m-d", strtotime($strEffectiveDate)) : date("Y-m-d"); 
+		$strEffectiveDate	= strtotime($strEffectiveDate) ? date("Y-m-d", strtotime($strEffectiveDate)) : date("Y-m-d");
 		
 		$selPaymentTerms	= self::_preparedStatement('selPaymentTerms');
 
@@ -349,8 +349,8 @@ ORDER BY FNN;";
 	private static function getFor($where, $arrWhere, $bolAsArray=FALSE)
 	{
 		$selUsers = new StatementSelect(
-			"Account", 
-			self::getColumns(), 
+			"Account",
+			self::getColumns(),
 			$where);
 		if (($outcome = $selUsers->Execute($arrWhere)) === FALSE)
 		{
@@ -393,21 +393,21 @@ ORDER BY FNN;";
 		$arrValues = array();
 		foreach($arrColumns as $strColumn)
 		{
-			if ($strColumn == 'id') 
+			if ($strColumn == 'id')
 			{
 				continue;
 			}
 			$arrValues[$strColumn] = $this->{$strColumn};
 		}
 		return $arrValues;
-	} 
+	}
 
 	//	$intEmployeeId is used for the account_history record which records the state of the account
 	//		Setting this to NULL will make it use the system employee id (Account_History::SYSTEM_ACTION_EMPLOYEE_ID)
-	//	
+	//
 	//	$bRecordInHistory should almost always be TRUE.
 	//		The only exception is Account Creation where we need an Account Id in order to save our Primary Contact
-	//		
+	//
 	public function save($intEmployeeId=NULL, $bRecordInHistory=true)
 	{
 		if ($this->_saved)
@@ -425,7 +425,7 @@ ORDER BY FNN;";
 			{
 				throw new Exception("DB ERROR: ".$ubiSelf->Error());
 			}
-		} 
+		}
 		else
 		{
 			// Insert
@@ -465,7 +465,7 @@ ORDER BY FNN;";
 	public function getPaymentMethods()
 	{
 		$oCustomerGroup	= Customer_Group::getForId($this->CustomerGroup);
-		return $oCustomerGroup->getPaymentMethods(); 
+		return $oCustomerGroup->getPaymentMethods();
 	}
 	
 	public function getPaymentMethodDetails()
@@ -499,6 +499,80 @@ ORDER BY FNN;";
 		}
 		
 		return $mPaymentMethod;
+	}
+	
+	public function getAccountBalance($sDueDate=null, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	{
+		$sDueDate					= (is_int($iDueDate = strtotime($sDueDate))) ? date("Y-m-d", $iDueDate) : '9999-12-31';
+		$iIncludeCreditAdjustments	= ($bIncludeCreditAdjustments) ? 1 : 0;
+		$iIncludeDebitAdjustments	= ($bIncludeDebitAdjustments) ? 1 : 0;
+		
+		// This query uses a logarithm workaround to simulate a PRODUCT() aggregate function
+		// Defined at: http://codeidol.com/sql/sql-hack/Number-Crunching/Multiply-Across-a-Result-Set/
+		// Essentially says that to replicate a PRODUCT() aggregate function, use EXP(SUM(LN(rate))) to get the compound rate
+		$oQuery		= new Query();
+		$mResult	= $oQuery->Execute("	SELECT		COALESCE(SUM(i.Balance), 0)
+														+
+														(
+															SELECT		COALESCE(
+																			SUM(
+																				COALESCE(
+																					IF(
+																						c.Nature = 'CR',
+																						0 - c.Amount,
+																						c.Amount
+																					), 0
+																				)
+																				*
+																				IF(
+																					c.global_tax_exempt = 1,
+																					1,
+																					(
+																						SELECT		COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
+																						FROM		tax_type tt
+																						WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+																									AND tt.global = 1
+																					)
+																				)
+																			), 0
+																		)
+															FROM		Charge c
+															WHERE		c.Account = a.Id
+																		AND c.Status IN (101, 102)	/* Approved or Temp Invoice */
+																		AND c.charge_model_id IN (SELECT id FROM charge_model WHERE system_name = 'ADJUSTMENT')
+																		AND
+																		(
+																			({$iIncludeCreditAdjustments} = 1 AND c.Nature = 'CR')
+																			OR
+																			({$iIncludeDebitAdjustments} = 1 AND c.Nature = 'DR')
+																		)
+														)																															AS account_balance
+											
+											FROM		Account a
+														LEFT JOIN Invoice i ON	(
+																					a.Id = i.Account
+																					AND i.Status != 106	/* Ignore Written Off */
+																					AND i.DueOn < '{$sDueDate}'
+																				)
+														LEFT JOIN InvoiceRun ir ON	(
+																						i.invoice_run_id = ir.Id
+																					)
+											
+											WHERE		a.Id = {$this->Id}
+														AND
+														(
+															ir.Id IS NULL
+															OR ir.invoice_run_status_id = (SELECT id FROM invoice_run_status WHERE const_name = 'INVOICE_RUN_STATUS_COMMITTED')
+														);");
+		if ($mResult === false)
+		{
+			throw new Exception($oQuery->Error());
+		}
+		else
+		{
+			$aResult	= $oQuery->fetch_assoc();
+			return (float)$aResult['account_balance'];
+		}
 	}
 	
 	// Empties the cache
@@ -594,7 +668,7 @@ ORDER BY FNN;";
 	 * Returns an associative array modelling the Database Record
 	 *
 	 * Returns an associative array modelling the Database Record
-	 * 
+	 *
 	 * @return	array										DB Record
 	 *
 	 * @method
@@ -613,9 +687,9 @@ ORDER BY FNN;";
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
-	 * 
+	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
@@ -639,6 +713,9 @@ ORDER BY FNN;";
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("InvoiceRun JOIN Invoice ON Invoice.invoice_run_id = InvoiceRun.Id", "BillingDate", "Invoice.Account = <Account> AND InvoiceRun.BillingDate < <EffectiveDate> AND (invoice_run_type_id = ".INVOICE_RUN_TYPE_LIVE." OR <ProductionOnly> = 0) AND invoice_run_status_id = ".INVOICE_RUN_STATUS_COMMITTED, "BillingDate DESC", 1);
 					break;
 				case 'selPaymentTerms':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect("payment_terms", "*", "customer_group_id = <customer_group_id>", "id DESC", 1);
+					break;
+				case 'selAccountBalance':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("payment_terms", "*", "customer_group_id = <customer_group_id>", "id DESC", 1);
 					break;
 				
