@@ -570,7 +570,7 @@ ORDER BY FNN;";
 		}
 		else
 		{
-			$aResult	= $oQuery->fetch_assoc();
+			$aResult	= $mResult->fetch_assoc();
 			return (float)$aResult['account_balance'];
 		}
 	}
