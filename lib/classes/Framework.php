@@ -1101,6 +1101,7 @@
 					$arrCredit['Description']		= "Payment Reversal: ". $arrCredit['Description'];
 					$arrCredit['Status']			= CHARGE_APPROVED;
 					$arrCredit['invoice_run_id']	= NULL;
+					$arrCredit['charge_model_id']	= CHARGE_MODEL_CHARGE;
 					unset($arrCredit['Id']);
 					$insCredit->Execute($arrCredit);
 					
