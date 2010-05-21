@@ -324,6 +324,59 @@ class Invoice_Export
 	}
  	
   	//------------------------------------------------------------------------//
+	// getAccountAdjustments()
+	//------------------------------------------------------------------------//
+	/**
+	 * getAccountAdjustments()
+	 *
+	 * Returns a CDR array of Account Adjustments
+	 *
+	 * Returns a CDR array of Account Adjustments
+	 *
+	 * @param	array	$arrInvoice						Invoice Details
+	 *
+	 * @return	array									Account Adjustments Array
+	 *
+	 * @method
+	 */
+	public static function getAccountAdjustments($aInvoice)
+	{
+		$aAdjustments				= array();
+		$fAccountAdjustmentTotal	= 0.0;
+		$selAccountAdjustments		= self::_preparedStatement('selAccountAdjustments');
+		$aAdjustmentItemisation		= array();
+		if ($selAccountAdjustments->Execute($aInvoice) === FALSE)
+		{
+			throw new Exception($selAccountAdjustments->Error());
+		}
+		else
+		{
+			while ($aAdjustment = $selAccountAdjustments->Fetch())
+			{
+				$aCDR						= array();
+				$aCDR['Description']		= ($aAdjustment['ChargeType']) ? ($aAdjustment['ChargeType']." - ".$aAdjustment['Description']) : $aAdjustment['Description'];
+				$aCDR['Units']				= 1;
+				$aCDR['Charge']				= $arrCharge['Amount'];
+				$aCDR['TaxExempt']			= $arrCharge['TaxExempt'];
+				$aChargeItemisation[]		= $aCDR;
+				
+				$fAccountAdjustmentTotal	+= $aCDR['Charge'];
+			}
+		}
+		
+		// Perform "Roll-Ups"
+		$aChargeItemisation	= self::_chargeRollup($aChargeItemisation);
+		
+		// Totals
+		$aAdjustments['Itemisation']	= $aChargeItemisation;
+		$aAdjustments['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+		$aAdjustments['TotalCharge']	= $fAccountAdjustmentTotal;
+		$aAdjustments['Records']		= count($aAdjustments['Itemisation']);
+		
+		return $aAdjustments;
+	}
+ 	
+  	//------------------------------------------------------------------------//
 	// getAccountCharges()
 	//------------------------------------------------------------------------//
 	/**
@@ -666,7 +719,7 @@ class Invoice_Export
 				case 'selAccountSummaryCharges':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Total, COUNT(Id) AS Records",
-																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND Service IS NOT NULL");
+																					"Account = <Account> AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND Service IS NOT NULL AND charge_model_id = ".CHARGE_MODEL_CHARGE);
 					break;
 				case 'selCustomerData':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Account LEFT JOIN Invoice ON Account.Id = Invoice.Account",
@@ -679,17 +732,22 @@ class Invoice_Export
 				case 'selAccountCharges':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"ChargeType, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
-																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND Service IS NULL AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR')");
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND Service IS NULL AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND charge_model_id = ".CHARGE_MODEL_CHARGE);
 					break;
 				case 'selPlanChargeSummary':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"ChargeType, Service, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
-																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR')");
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCAD', 'PCAR') AND charge_model_id = ".CHARGE_MODEL_CHARGE);
 					break;
 				case 'selPlanUsageSummary':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
 																					"ChargeType, Service, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
-																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCR', 'PDCR')");
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND ChargeType IN ('PCR', 'PDCR') AND charge_model_id = ".CHARGE_MODEL_CHARGE);
+					break;
+				case 'selAccountAdjustments':
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge",
+																					"ChargeType, (CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS Amount, Description, global_tax_exempt AS TaxExempt",
+																					"invoice_run_id = <invoice_run_id> AND Account = <Account> AND charge_model_id = ".CHARGE_MODEL_ADJUSTMENT);
 					break;
 				
 				default:
@@ -816,7 +874,7 @@ class Invoice_Export
 					(
 						"Charge",
 						$arrColumns,
-						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR')"
+						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR') AND charge_model_id = ".CHARGE_MODEL_CHARGE
 					);
 	 				break;
 	 				
@@ -837,7 +895,7 @@ class Invoice_Export
 					(
 	 					"Charge",
 						"SUM(Amount) AS Charge, 'Service Charges & Discounts' AS RecordType, COUNT(Id) AS Records, Nature",
-						"$strWhereService AND invoice_run_id = <invoice_run_id>",
+						"$strWhereService AND invoice_run_id = <invoice_run_id> AND charge_model_id = ".CHARGE_MODEL_CHARGE,
 						"Nature",
 						2,
 						"Nature"
@@ -873,7 +931,7 @@ class Invoice_Export
 					(
 						"Charge",
 						$arrColumns,
-						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR')"
+						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR') AND charge_model_id = ".CHARGE_MODEL_CHARGE
 					);
 	 				break;
 	 				
@@ -887,7 +945,7 @@ class Invoice_Export
 					(
 						"Charge",
 						$arrColumns,
-						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCR', 'PDCR')"
+						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCR', 'PDCR') AND charge_model_id = ".CHARGE_MODEL_CHARGE
 					);
 	 				break;
 	 			
