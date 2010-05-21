@@ -356,8 +356,8 @@ class Invoice_Export
 				$aCDR						= array();
 				$aCDR['Description']		= ($aAdjustment['ChargeType']) ? ($aAdjustment['ChargeType']." - ".$aAdjustment['Description']) : $aAdjustment['Description'];
 				$aCDR['Units']				= 1;
-				$aCDR['Charge']				= $arrCharge['Amount'];
-				$aCDR['TaxExempt']			= $arrCharge['TaxExempt'];
+				$aCDR['Charge']				= $aAdjustment['Amount'];
+				$aCDR['TaxExempt']			= $aAdjustment['TaxExempt'];
 				$aChargeItemisation[]		= $aCDR;
 				
 				$fAccountAdjustmentTotal	+= $aCDR['Charge'];
