@@ -561,7 +561,7 @@ ORDER BY FNN;";
 	
 	public function getAccountBalance($bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
 	{
-		return $this->_getBalance('9999-12-31', $bIncludeCreditAdjustments, $bIncludeDebitAdjustments);
+		return $this->_getBalance(Data_Source_Time::END_OF_TIME, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments);
 	}
 	
 	protected function _getBalance($sDueDate, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)

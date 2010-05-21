@@ -3,6 +3,9 @@
 // Wraps up time functionality, queried from a datasource
 class Data_Source_Time
 {
+	const	START_OF_TIME	= '0000-00-00 00:00:00';
+	const	END_OF_TIME		= '9999-12-31 23:59:59';
+	
 	private static $_arrCachedTimestamps = array();
 	
 	public static function formatTime($strISODateTime, $strFormat)
@@ -62,7 +65,7 @@ class Data_Source_Time
 		return substr($strTime, 0, 10);
 	}
 
-	// Returns the current time of day, from the data source (HH:MM:SS)	
+	// Returns the current time of day, from the data source (HH:MM:SS)
 	public static function currentTimeOfDay($objDataSource=NULL, $bolForceRefresh=FALSE, $bolUpdateCache=FALSE)
 	{
 		$strTime = self::currentTimestamp($objDataSource, $bolForceRefresh, $bolUpdateCache);
