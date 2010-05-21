@@ -417,26 +417,27 @@ class AppTemplateCharge extends ApplicationTemplate
 				throw new Exception("This action is temporarily unavailable because a related, live invoice run is currently outstanding");
 			}
 			
-			$intChargeId			= DBO()->Charge->Id->Value;
+			$intChargeId				= DBO()->Charge->Id->Value;
 			$intOriginalChargeStatus	= DBO()->Charge->Status->Value;
+			$sChargeModel				= Constant_Group::getConstantGroup('charge_model')->getConstantName(DBO()->Charge->charge_model_id->Value);
 			
 			switch ($intOriginalChargeStatus)
 			{
 				case CHARGE_WAITING:
-					$strActionDescriptionPastTense		= "Cancelled request for charge";
-					$strActionDescriptionPresentTense	= "Cancelling request for charge";
-					$strActionDescriptionFutureTense	= "Cancel request for charge";
+					$strActionDescriptionPastTense		= "Cancelled request for {$sChargeModel}";
+					$strActionDescriptionPresentTense	= "Cancelling request for {$sChargeModel}";
+					$strActionDescriptionFutureTense	= "Cancel request for {$sChargeModel}";
 					break;
 					
 				case CHARGE_APPROVED:
 				case CHARGE_TEMP_INVOICE:
-					$strActionDescriptionPastTense		= "Deleted charge";
-					$strActionDescriptionPresentTense	= "Deleting charge";
-					$strActionDescriptionFutureTense	= "Delete charge";
+					$strActionDescriptionPastTense		= "Deleted {$sChargeModel}";
+					$strActionDescriptionPresentTense	= "Deleting {$sChargeModel}";
+					$strActionDescriptionFutureTense	= "Delete {$sChargeModel}";
 					break;
 				
 				default:
-					throw new Exception("The charge can not be deleted due to its status (charge status: {$intOriginalChargeStatus})");
+					throw new Exception("The {$sChargeModel} can not be deleted due to its status ({$sChargeModel} status: {$intOriginalChargeStatus})");
 					break;
 			}
 			

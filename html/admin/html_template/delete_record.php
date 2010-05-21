@@ -142,6 +142,40 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 				DBO()->Charge->Amount->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 				DBO()->Charge->Id->RenderHidden();
 				break;
+			case "Adjustment":
+				// Display the description for the delete operation
+				$intChargeStatus = DBO()->Charge->Status->Value;
+				
+				switch ($intChargeStatus)
+				{
+					case CHARGE_WAITING:
+						$strPrompt = "This is currently just a request for Adjustment.  It has not yet been approved.  Are you sure you want to cancel the request?";
+						break;
+						
+					case CHARGE_APPROVED:
+					case CHARGE_TEMP_INVOICE:
+						$strPrompt = "Are you sure you want to delete this Adjustment?";
+						break;
+					
+					default:
+						echo "Can't delete/cancel Adjustments with status: ". GetConstantDescription($intChargeStatus, 'ChargeStatus') ." ({$intChargeStatus})";
+						break 2;
+				}
+				
+				echo $strPrompt;
+				echo "<div class='ContentSeparator'></div>";
+				DBO()->Charge->CreatedOn->RenderOutput();
+				echo "	<div class='DefaultElement'>
+		  			<div id='Charge.ChargeType.Label' class='DefaultLabel'>&nbsp;&nbsp;Adjustment Type:</div>
+		   			<div id='Charge.ChargeType.Output' class='DefaultOutput'>
+		   				".DBO()->Charge->ChargeType->Value."
+		   			</div class='DefaultOutput'>
+				<div class='DefaultElement'>";				
+				DBO()->Charge->Description->RenderOutput();
+				DBO()->Charge->Nature->RenderOutput();
+				DBO()->Charge->Amount->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
+				DBO()->Charge->Id->RenderHidden();
+				break;
 			case "RecurringCharge":
 				// Display the description for the delete operation
 				

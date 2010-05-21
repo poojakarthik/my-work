@@ -18,6 +18,7 @@ class Charge extends ORM_Cached
 
 	const SEARCH_CONSTRAINT_CHARGE_STATUS	= "Charge|Status";
 	const SEARCH_CONSTRAINT_CHARGE_MODEL_ID	= "Charge|charge_model_id";
+	const SEARCH_CONSTRAINT_ACCOUNT_ID		= "Account|Id";
 
 	const ORDER_BY_ACCOUNT_NAME		= "Account|accountName";
 	const ORDER_BY_ACCOUNT_ID		= "Charge|Account";
@@ -26,6 +27,8 @@ class Charge extends ORM_Cached
 	const ORDER_BY_DESCRIPTION		= "Charge|Description";
 	const ORDER_BY_CREATED_ON		= "Charge|CreatedOn";
 	const ORDER_BY_NATURE			= "Charge|Nature";
+	const ORDER_BY_ID				= "Charge|Id";
+	const ORDER_BY_CHARGED_ON		= "Charge|ChargedOn";
 
 	// This will store the pagination details of the last call to searchFor
 	private static $lastSearchPaginationDetails = null;
@@ -91,6 +94,7 @@ class Charge extends ORM_Cached
 				{
 					case self::SEARCH_CONSTRAINT_CHARGE_STATUS:
 					case self::SEARCH_CONSTRAINT_CHARGE_MODEL_ID:
+					case self::SEARCH_CONSTRAINT_ACCOUNT_ID:
 						$arrWhereClauseParts[] = self::_prepareSearchConstraint(str_replace( '|', '.', $arrConstraint['Type']), $arrConstraint['Value']);
 						break;
 				}
@@ -111,6 +115,8 @@ class Charge extends ORM_Cached
 					case self::ORDER_BY_DESCRIPTION:
 					case self::ORDER_BY_CREATED_ON:
 					case self::ORDER_BY_NATURE:
+					case self::ORDER_BY_ID:
+					case self::ORDER_BY_CHARGED_ON:
 						$arrOrderByParts[] = str_replace('|', '.', $strColumn) . ($bolAsc ? " ASC" : " DESC");
 						break;
 					default:

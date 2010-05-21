@@ -54,6 +54,16 @@ elseif (DBO()->DeleteRecord->Method->Value == "DeleteRecurringCharge")
 		$this->Page->SetName("Recurring Charge - Service: {$objService->FNN}");
 	}
 }
+else if (DBO()->DeleteRecord->Method->Value == "DeleteAdjustment")
+{
+	// Check if the charge is associated with a service
+	$intServiceId = DBO()->Charge->Service->Value;
+	if ($intServiceId != NULL)
+	{
+		$objService = Service::getForId($intServiceId);
+		$this->Page->SetName("Adjustment - Service: {$objService->FNN}");
+	}
+}
 else
 {
 	// Just use the predefined name

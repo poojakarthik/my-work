@@ -12,7 +12,7 @@ var Control_Tab_Group	= Class.create
 	 *	@param	boolean	bolEmbedded					TRUE	: Embedded in page
 	 *												FALSE	: Sole element in a Popup
 	 */
-	initialize	: function(objDIVContainer, bolEmbedded)
+	initialize	: function(objDIVContainer, bolEmbedded, fnOnTabChange)
 	{
 		// Parameter defaults 
 		bolEmbedded			= (bolEmbedded || bolEmbedded == undefined || bolEmbedded == null) ? true : false;
@@ -20,6 +20,7 @@ var Control_Tab_Group	= Class.create
 		
 		this._oTabs			= {};
 		this._aTabOrder		= [];
+		this._fnOnTabChange	= fnOnTabChange;
 		
 		// Container
 		this.objContainer						= {};
@@ -131,6 +132,12 @@ var Control_Tab_Group	= Class.create
 					this._oTabs[this._aTabOrder[i]].getButton().removeClassName('selected');
 				}
 			}
+		}
+		
+		// Tab change callback
+		if (this._fnOnTabChange)
+		{
+			this._fnOnTabChange(this.oSelectedTab);
 		}
 		
 		return bSwitched;

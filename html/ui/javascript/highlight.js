@@ -27,11 +27,11 @@ function VixenHighlightClass()
 				// Change the class back to even/odd
 				if (elmRowUnselect.intRowIndex % 2)
 				{
-					elmRowUnselect.className = "Even";
+					elmRowUnselect.className = "Odd";
 				}
 				else
 				{
-					elmRowUnselect.className = "Odd";
+					elmRowUnselect.className = "Even";
 				}
 				// Deselect the row
 				Vixen.table[strTableId].row[i].selected = false;
@@ -77,7 +77,7 @@ function VixenHighlightClass()
 		else
 		{
 			// Row is not selected. Change the class back to even/odd
-			elmRow.className = (intRow % 2)? "Even" : "Odd";
+			elmRow.className = (intRow % 2)? "Odd" : "Even";
 		}
 	}
 	
@@ -89,9 +89,9 @@ function VixenHighlightClass()
 			var elmRow = $ID(strTableId + '_' + i);
 			elmRow.intRowIndex = i;
 			
-			elmRow.addEventListener('mousedown', MouseDownHandler, TRUE);
-			elmRow.addEventListener('mouseover', MouseOverHandler, TRUE);
-			elmRow.addEventListener('mouseout', MouseOutHandler, TRUE);
+			elmRow.observe('mousedown', MouseDownHandler);
+			elmRow.observe('mouseover', MouseOverHandler);
+			elmRow.observe('mouseout', MouseOutHandler);
 		}
 	}
 	

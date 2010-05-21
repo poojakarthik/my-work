@@ -267,7 +267,10 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 ?>
 <div class="DefaultElement">
-	<div id="Account.Balance.Output" name="Account.Balance" class="DefaultOutput Currency"><?php DBO()->Account->Balance->Render('Currency2DecWithNegAsCR'); ?><?php
+	<div id="Account.Balance.Output" name="Account.Balance" class="DefaultOutput Currency">
+	<?php 
+		DBO()->Account->Balance->Render('Currency2DecWithNegAsCR'); 
+		
 		if (Credit_Card_Payment::availableForCustomerGroup(DBO()->Account->CustomerGroup->Value) && AuthenticatedUser()->UserHasPerm(array(PERMISSION_OPERATOR, PERMISSION_OPERATOR_EXTERNAL)))
 		{
 			// Rebill Customers cannot Pay by Credit Card, unless the Account Balance is over $0 and the user is a Credit Management employee

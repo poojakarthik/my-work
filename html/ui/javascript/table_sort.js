@@ -339,7 +339,7 @@ if (Vixen.TableSort == undefined)
 			for (var i = 0, l = sortedValues.length; i < l; i++)
 			{
 				// Apply the appropriate style class to the row (odd/even) 
-				var strClass = (i % 2) ? Vixen.TableSort.ROW_EVEN : Vixen.TableSort.ROW_ODD;
+				var strClass = (i % 2) ? Vixen.TableSort.ROW_ODD : Vixen.TableSort.ROW_EVEN;
 				sortedValues[i][1].className = sortedValues[i][1].className.replace(Vixen.TableSort.ODD_EVEN_REG, strClass);
 				// Append this row to the end of the table 
 				table.tBodies[0].appendChild(sortedValues[i][1]);

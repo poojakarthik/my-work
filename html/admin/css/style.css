@@ -4184,3 +4184,73 @@ div.recurring-charge-type > div.section
 }
 
 /************************ END - Recurring Charge Type Popup - END ************************/
+
+/************************ START - Component Account Charge List - START ************************/
+
+div#ChargeListContainer
+{
+	/*padding-bottom	: 2em;*/
+}
+
+div.component-account-charge-list > table.Listing th, 
+div.component-account-charge-list > table.Listing td 
+{
+	vertical-align   : top;
+}
+
+div.component-account-charge-list > table.Listing th
+{
+	text-align	: left;
+}
+
+div.component-account-charge-list > table.Listing th.amount,
+div.component-account-charge-list > table.Listing td.delete
+{
+	text-align	: right;
+}
+
+div.component-account-charge-list > table.Listing
+{
+	width	: 100%;
+}
+
+div.component-account-charge-list-title
+{
+	margin-bottom	: 0.25em;
+}
+
+div.component-account-charge-list-title > img
+{
+	vertical-align	: middle;
+	padding-right	: 0.4em;
+}
+
+div.component-account-charge-list-title > span
+{
+	vertical-align	: middle;
+	font-size		: 12pt;
+	font-weight		: bold;
+}
+
+div#ChargeListContainer div.tab-row
+{
+	background-color	: #FFFFFF;
+}
+
+td.component-account-charge-list-loading
+{
+	font-style	: italic;
+}
+
+td.component-account-charge-list-nodata,
+td.component-account-charge-list-loading
+{
+	color	: rgba(50, 50, 50, 0.8)
+}
+
+div#ChargeListContainer > div.component-account-charge-list div.tab-page
+{
+	padding	: 0.25em;
+}
+
+/************************ END - Component Account Charge List - END ************************/

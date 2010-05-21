@@ -254,6 +254,117 @@ class JSON_Handler_Charge extends JSON_Handler
 							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 		}
-	}	
+	}
+	
+	public function getForAccount($iAccountId)
+	{
+		$bUserIsGod	= Employee::getForId(Flex::getUserId())->isGod();
+		
+		try
+		{
+			if (!AuthenticatedUser()->userHasPerm(PERMISSION_OPERATOR_VIEW))
+			{
+				throw new JSON_Handler_Charge_Exception('You do not have permission to view charges'); 
+			}
+			
+			// Permissions checks
+			$bUserIsGod					= Employee::getForId(Flex::getUserId())->isGod();
+			$bUserIsCreditManagement	= AuthenticatedUser()->UserHasPerm(PERMISSION_CREDIT_MANAGEMENT);
+			$bolUserCanDeleteCharges	= AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_ADMIN) || $bUserIsCreditManagement;
+			
+			// Build the list of columns to use for the Charge DBL (as it is pulling this information from 2 tables)
+			$aVisibleChargeTypes	= array(CHARGE_TYPE_VISIBILITY_VISIBLE);
+			if ($bUserIsCreditManagement)
+			{
+				$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_CREDIT_CONTROL;
+			}
+			
+			if ($bUserIsGod)
+			{
+				$aVisibleChargeTypes[]	= CHARGE_TYPE_VISIBILITY_HIDDEN;
+			}
+			
+			// Get Charge set
+			$aCharges	=	Charge::searchFor(
+								array(	// Search constraints
+									array(
+										'Type' 	=> Charge::SEARCH_CONSTRAINT_ACCOUNT_ID, 
+										'Value' => $iAccountId
+									),
+									array(
+										'Type'	=> Charge::SEARCH_CONSTRAINT_CHARGE_STATUS,
+										'Value'	=> array(CHARGE_WAITING, CHARGE_APPROVED, CHARGE_TEMP_INVOICE, CHARGE_INVOICED)
+									)
+								), 
+								array(	// Order by fields
+									Charge::ORDER_BY_CHARGED_ON	=> false,
+									Charge::ORDER_BY_ID			=> false
+								)
+							);
+			
+			$aStdClassCharges	= array();
+			
+			foreach ($aCharges as $oCharge)
+			{
+				$oStdClassCharge	= $oCharge->toStdClass();
+				
+				// Verify that the charge type is NULL or has the correct visibility
+				$oChargeType	= Charge_Type::getForId($oCharge->charge_type_id);
+				
+				if (!$oChargeType)
+				{
+					$oChargeType	= Charge_Type::getByCode($oCharge->ChargeType);
+				}
+				
+				if (!$oChargeType->Id || in_array($oChargeType->charge_type_visibility_id, $aVisibleChargeTypes))
+				{
+					// Get human readable versions of createdby, approvedby and status
+					if ($oStdClassCharge->Status == CHARGE_APPROVED)
+					{
+						$oStdClassCharge->approved_by_label	= Employee::getForId($oCharge->ApprovedBy)->getName();
+					}
+					
+					if (!$bUserIsGod)
+					{
+						$oStdClassCharge->service_id	= $oStdClassCharge->Service;
+					}
+					
+					$oStdClassCharge->charge_on_label	= date('d-m-Y', strtotime($oCharge->ChargedOn));
+					$oStdClassCharge->serviceFNN		= $oCharge->serviceFNN;
+					$oStdClassCharge->created_by_label	= Employee::getForId($oCharge->CreatedBy)->getName();
+					$oStdClassCharge->status_label		= Constant_Group::getConstantGroup('ChargeStatus')->getConstantName($oStdClassCharge->Status);
+					$oStdClassCharge->amount_inc_gst	= number_format(AddGST($oStdClassCharge->Amount), 2, '.', '');
+					$aStdClassCharges[]					= $oStdClassCharge;
+				}
+			}
+			
+			return 	array(
+						"Success"		=> true,
+						"aCharges"		=> $aStdClassCharges,
+						"bCanDelete"	=> $bolUserCanDeleteCharges,
+						"bUserIsGod"	=> $bUserIsGod
+					);
+		}
+		catch (JSON_Handler_Charge_Exception $oException)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> $oException->getMessage()
+					);
+		}
+		catch (Exception $e)
+		{
+			return 	array(
+						"Success"	=> false,
+						"Message"	=> ($bUserIsGod ? $e->getMessage() : 'There was an error getting charges from the database')
+					);
+		}
+	}
 }
+
+class JSON_Handler_Charge_Exception extends Exception
+{
+	// No changes
+}
+
 ?>

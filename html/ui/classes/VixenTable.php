@@ -940,7 +940,7 @@ class VixenTable
 		foreach ($this->_arrRows AS $objRow)
 		{
 			$intRow++;
-			$strClass = ($intRow % 2) ? 'Even' : 'Odd';
+			$strClass = ($intRow % 2) ? 'Odd' : 'Even';
 			$strStyle = "";
 			
 			if (isset($objRow['OnClick']))

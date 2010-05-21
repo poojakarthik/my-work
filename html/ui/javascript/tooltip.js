@@ -182,8 +182,8 @@ function VixenTooltipClass()
 			// Add some behaviour to the row
 			var elmRow = $ID(strTableId + '_' + i);
 			elmRow.intRowIndex = i;
-			elmRow.addEventListener('mouseover', MouseOverHandler, TRUE);
-			elmRow.addEventListener('mouseout', MouseOutHandler, TRUE);
+			elmRow.observe('mouseover', MouseOverHandler);
+			elmRow.observe('mouseout', MouseOutHandler);
 		}
 	}
 	
