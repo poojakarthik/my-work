@@ -222,15 +222,6 @@
 				}
 				return $_selGetCDR;
 		
-			case '_insCharge':
-				if (!isset($_insCharge))
-				{
-					$arrColumns						= DataAccess::getDataAccess()->FetchClean("Charge");
-					$arrColumns ['CreatedOn']		= new MySQLFunction("NOW()");
-					$_insCharge				= new StatementInsert("Charge", $arrColumns);
-				}
-				return $_insCharge;
-		
 			case '_selFindChargeOwner':
 				if (!isset($_selFindChargeOwner))
 				{
