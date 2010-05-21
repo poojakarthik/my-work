@@ -1782,14 +1782,24 @@ class Invoice extends ORM_Cached
 																							), 0
 																						)																						AS adjustment_total,
 																						COALESCE(
-																							IF(
-																								c.global_tax_exempt = 1,
-																								0,
-																								(
-																									SELECT		COALESCE(EXP(SUM(LN(tt.rate_percentage))), 1)
-																									FROM		tax_type tt
-																									WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
-																												AND tt.global = 1
+																							SUM(
+																								COALESCE(
+																									IF(
+																										c.Nature = 'CR',
+																										0 - c.Amount,
+																										c.Amount
+																									), 0
+																								)
+																								*
+																								IF(
+																									c.global_tax_exempt = 1,
+																									0,
+																									(
+																										SELECT		COALESCE(EXP(SUM(LN(tt.rate_percentage))), 1)
+																										FROM		tax_type tt
+																										WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+																													AND tt.global = 1
+																									)
 																								)
 																							), 0
 																						)																						AS adjustment_tax",
