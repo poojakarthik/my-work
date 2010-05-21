@@ -1792,7 +1792,7 @@ class Invoice extends ORM_Cached
 																												AND tt.global = 1
 																								)
 																							), 0
-																						)																						AS unbilled_adjustments",
+																						)																						AS adjustment_tax",
 																					"c.Account = <account_id> AND c.Status = ".CHARGE_TEMP_INVOICE." AND c.charge_model_id = ".CHARGE_MODEL_ADJUSTMENT." AND c.invoice_run_id = <invoice_run_id>");
 					break;
 

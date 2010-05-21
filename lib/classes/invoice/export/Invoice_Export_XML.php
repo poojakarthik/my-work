@@ -152,6 +152,30 @@
 		self::_addElement($xmlAccount, 'State', strtoupper($arrCustomer['State']));
 		
 		//--------------------------------------------------------------------//
+		// Adjustments
+		//--------------------------------------------------------------------//
+		$aAdjustments	= Invoice_Export::getAccountAdjustments($arrInvoice);
+		$xmlAdjustments	= self::_addElement($xmlInvoice, 'Adjustments');
+		
+		foreach ($aAdjustments['Itemisation'] as $aItem)
+		{
+			$xmlItem	= self::_addElement($xmlAdjustments, 'Item');
+			self::_addElement($xmlItem, 'Description', $aItem['Description']);
+			self::_addElement($xmlItem, 'Items', $aItem['Units']);
+			self::_addElement($xmlItem, 'Charge', number_format($aItem['Charge'], 2, '.', ''));
+			
+			$arrItem	= self::_itemiseCDR($aItem, RECORD_DISPLAY_S_AND_E);
+			foreach ($arrItem as $strField=>$mixValue)
+			{
+				self::_addElement($xmlItem, $strField, $mixValue);
+			}
+		}
+		
+		$xmlAdjustmentTax	= self::_addElement($xmlAdjustments, 'Item');
+		self::_addElement($xmlAdjustmentTax, 'Description', 'GST Total');
+		self::_addElement($xmlAdjustmentTax, 'Charge', number_format($arrInvoice['adjustment_tax'], 2, '.', ''));
+		
+		//--------------------------------------------------------------------//
 		// Account Summary & Itemisation
 		//--------------------------------------------------------------------//
 		$arrAccountCategories	= Invoice_Export::getAccountSummary($arrInvoice);
@@ -223,6 +247,7 @@
 		$xmlStatement	= self::_addElement($xmlInvoice, 'Statement');
 		self::_addElement($xmlStatement, 'OpeningBalance', number_format($arrLastInvoice['TotalOwing'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'Payments', number_format(max($arrLastInvoice['TotalOwing'] - $arrInvoice['AccountBalance'], 0.0), 2, '.', ''));
+		self::_addElement($xmlStatement, 'Adjustments', number_format($arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'OutstandingBalance', number_format($arrInvoice['AccountBalance'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'OverdueBalance', number_format($arrCustomer['OverdueBalance'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'NewCharges', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', ''));
