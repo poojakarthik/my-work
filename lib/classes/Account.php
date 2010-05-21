@@ -553,14 +553,19 @@ ORDER BY FNN;";
 		}
 	}
 	
-	public function getAccountBalance($bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
-	{
-		return max(0.0, $this->getOverdueBalance('9999-12-31', $bIncludeCreditAdjustments, $bIncludeDebitAdjustments));
-	}
-	
 	public function getOverdueBalance($sDueDate=null, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
 	{
-		$sDueDate					= (is_int($iDueDate = strtotime($sDueDate))) ? date("Y-m-d", $iDueDate) : date('Y-m-d');
+		$sDueDate	= (is_int($iDueDate = strtotime($sDueDate))) ? date("Y-m-d", $iDueDate) : date('Y-m-d');
+		return max(0.0, $this->_getBalance($sDueDate, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments));
+	}
+	
+	public function getAccountBalance($bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	{
+		return $this->_getBalance('9999-12-31', $bIncludeCreditAdjustments, $bIncludeDebitAdjustments);
+	}
+	
+	protected function _getBalance($sDueDate, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	{
 		$iIncludeCreditAdjustments	= ($bIncludeCreditAdjustments) ? 1 : 0;
 		$iIncludeDebitAdjustments	= ($bIncludeDebitAdjustments) ? 1 : 0;
 		
