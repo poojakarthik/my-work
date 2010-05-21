@@ -63,14 +63,14 @@ class AppTemplateAccount extends ApplicationTemplate
 	{
 		// Check user authorization
 		AuthenticatedUser()->CheckClientAuth();
-				
+		
 		// Load the account
 		if (!DBO()->Account->Load())
 		{
 			// Could not load the account
 			BreadCrumb()->Console();
 			BreadCrumb()->SetCurrentPage("Error");
-			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
+			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}

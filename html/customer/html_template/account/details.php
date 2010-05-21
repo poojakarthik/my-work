@@ -150,7 +150,7 @@
 
 		
 		$BillingMethod = DBO()->Account->BillingMethod->Value;
-		$strDescriptionOfMethod = $GLOBALS['*arrConstant']['BillingMethod'][$BillingMethod]['Description'];
+		$strDescriptionOfMethod = $GLOBALS['*arrConstant']['delivery_method'][$BillingMethod]['Description'];
 		print "
 		<TR>
 			<TD>Billing Method: </TD>
