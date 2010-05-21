@@ -552,7 +552,7 @@ class Invoice_Export
 		// Add GST Element
 		if ($bolGST)
 		{
-			$arrAccountSummary['GST Total']['TotalCharge']	= number_format($arrInvoice['Tax'], 2, '.', '');
+			$arrAccountSummary['GST Total']['TotalCharge']	= number_format($arrInvoice['charge_tax'], 2, '.', '');
 			$arrAccountSummary['GST Total']['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 		}
 		
