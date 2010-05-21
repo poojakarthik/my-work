@@ -8,7 +8,8 @@
  */
 class Flex_Config extends ORM
 {
-	protected	$_strTableName	= "flex_config";
+	protected			$_strTableName			= "flex_config";
+	protected static	$_strStaticTableName	= "flex_config";
 	
 	static protected	$_objInstance;
 	
@@ -92,20 +93,20 @@ class Flex_Config extends ORM
 			{
 				// SELECTS
 				case 'selById':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"Charge", "*", "Id = <Id>", NULL, 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "id = <Id>", NULL, 1);
 					break;
 				case 'selCurrentConfig':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect(	"flex_config", "*", "1", "id DESC", 1);
+					$arrPreparedStatements[$strStatement]	= new StatementSelect(self::$_strStaticTableName, "*", "1", "id DESC", 1);
 					break;
 				
 				// INSERTS
 				case 'insSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementInsert("Charge");
+					$arrPreparedStatements[$strStatement]	= new StatementInsert(self::$_strStaticTableName);
 					break;
 				
 				// UPDATE BY IDS
 				case 'ubiSelf':
-					$arrPreparedStatements[$strStatement]	= new StatementUpdateById("Charge");
+					$arrPreparedStatements[$strStatement]	= new StatementUpdateById(self::$_strStaticTableName);
 					break;
 				
 				// UPDATES

@@ -3226,6 +3226,7 @@ function AddCreditCardSurcharge($intPayment)
 			$arrCharge['Status']			= CHARGE_APPROVED;
 			$arrCharge['LinkType']			= CHARGE_LINK_PAYMENT;
 			$arrCharge['LinkId']			= $intPayment;
+			$arrCharge['charge_model_id']	= CHARGE_MODEL_CHARGE;
 			$mixResult = $insCharge->Execute($arrCharge);
 			//Debug($arrCharge);
 			return (bool)($mixResult !== FALSE);

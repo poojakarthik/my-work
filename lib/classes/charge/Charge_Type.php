@@ -326,6 +326,11 @@ class Charge_Type extends ORM_Cached
 		// Set the Defaults
 		$this->charge_type_visibility_id = (Charge_Type_Visibility::getForId($this->charge_type_visibility_id)) ? $this->charge_type_visibility_id : Charge_Type_Visibility::getForSystemName('VISIBLE');
 		
+		if (!isset($this->charge_model_id))
+		{
+			$this->charge_model_id	= CHARGE_MODEL_CHARGE;
+		}
+		
 		parent::save();
 	}
 	
