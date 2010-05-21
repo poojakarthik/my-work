@@ -533,7 +533,7 @@ ORDER BY FNN;";
 															), 0
 														)																						AS unbilled_adjustments
 											FROM		Charge c
-											WHERE		c.Account = 1000160069
+											WHERE		c.Account = {$this->Id}
 														AND c.Status IN (101, 102)	/* Approved or Temp Invoice */
 														AND c.charge_model_id IN (SELECT id FROM charge_model WHERE system_name = 'ADJUSTMENT')
 														AND
