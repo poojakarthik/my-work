@@ -6,7 +6,7 @@
  * Invoice_Export
  *
  * Handles preparation for Invoice Export
- * 
+ *
  * Handles preparation for Invoice Export
  *
  * @class	Invoice_Export
@@ -22,7 +22,7 @@ class Invoice_Export
 	 * Returns the Invoice Data from the Xth last Invoice
 	 *
 	 * Returns the Invoice Data from the Xth last Invoice
-	 * 
+	 *
 	 * @param	array	$arrInvoice					The current Invoice to work from
 	 * @param	integer	$intPeriodsAgo				The number of billing periods ago to check (eg. 1 will return the last Invoice)
 	 *
@@ -65,7 +65,7 @@ class Invoice_Export
 	 * Returns the Account's Customer Data
 	 *
 	 * Returns the Account's Customer Data
-	 * 
+	 *
 	 * @param	array	$arrInvoice					Invoice Details
 	 *
 	 * @return	array								Customer Data Array
@@ -73,7 +73,7 @@ class Invoice_Export
 	 * @method
 	 */
 	public static function getCustomerData($arrInvoice)
-	{		
+	{
 		// Retrieve the Customer Data
 		$selCustomerData	= self::_preparedStatement('selCustomerData');
 		if ($selCustomerData->Execute($arrInvoice) === FALSE)
@@ -101,9 +101,9 @@ class Invoice_Export
 	 * Gets a list of Services that have been Invoiced this run
 	 *
 	 * Gets a list of Services that have been Invoiced this run
-	 * 
+	 *
 	 * @param	array	$arrInvoice						Invoice Details
-	 * 
+	 *
 	 * @return	array									Account Summary Array
 	 *
 	 * @method
@@ -332,7 +332,7 @@ class Invoice_Export
 	 * Returns a CDR array of Account Charges
 	 *
 	 * Returns a CDR array of Account Charges
-	 * 
+	 *
 	 * @param	array	$arrInvoice						Invoice Details
 	 *
 	 * @return	array									Account Charges Array
@@ -375,15 +375,15 @@ class Invoice_Export
 	}
  	
   	//------------------------------------------------------------------------//
-	// getAccountCharges()
+	// getAccountSummary()
 	//------------------------------------------------------------------------//
 	/**
-	 * getAccountCharges()
+	 * getAccountSummary()
 	 *
 	 * Returns the Account Summary and Itemisation as an associative array for a given Invoice
 	 *
 	 * Returns the Account Summary and Itemisation as an associative array for a given Invoice
-	 * 
+	 *
 	 * @param	array	$arrInvoice						Invoice Details
 	 * @param	boolean	$bolCharges		[optional]	TRUE	: Include 'Service Charges & Discounts'
 	 * 													FALSE	: Do not add Charges
@@ -396,7 +396,7 @@ class Invoice_Export
 	 *
 	 * @method
 	 */
-	public static function getAccountCharges($arrInvoice, $bolCharges = TRUE, $bolPlanCharges = TRUE, $bolGST = TRUE)
+	public static function getAccountSummary($arrInvoice, $bolCharges = TRUE, $bolPlanCharges = TRUE, $bolGST = TRUE)
 	{
 		$arrAccountSummary	= Array();
 		
@@ -516,9 +516,9 @@ class Invoice_Export
 	 * _chargeRollup()
 	 *
 	 * Removes Credit/Debit pairs in an array of Charges
-	 * 
+	 *
 	 * @param	array		$aCharges					Array of Charges
-	 * 
+	 *
 	 * @return	array										Array of Charges without CR/DR Pairs
 	 *
 	 * @method
@@ -601,9 +601,9 @@ class Invoice_Export
 	 * Access a Static Cache of Prepared Statements for this Class
 	 *
 	 * Access a Static Cache of Prepared Statements for this Class
-	 * 
+	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
@@ -710,7 +710,7 @@ class Invoice_Export
 	 *
 	 * Creates and executes a Bill Printing Query, summing values for all of the services
 	 * passed in
-	 * 
+	 *
 	 * @param	string	$strStatement	Name of the statement
 	 * @param	array	$arrService		MySQL resultset from _selService with additional 'Id' array
 	 * @param	array	$arrParams		WHERE parameters
@@ -761,9 +761,9 @@ class Invoice_Export
 	 				
 	 			case 'selItemisedRecordTypes':
 	 				$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
-						(	
+						(
 							"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
-							"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
+							"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType",
 							"$strWhereService AND " .
 							"RecordGroup.Id = RecordType.GroupId AND " .
 							"RecordGroup.Itemised = 1 AND " .
@@ -791,7 +791,7 @@ class Invoice_Export
 					//$arrColumns['allow_cdr_hiding']	= "Rate.allow_cdr_hiding";
 					$arrColumns['RateClass']		= "Rate.rate_class_id";
  					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
- 					(	
+ 					(
 						"	CDR" .
 						"	JOIN RecordType ON (CDR.RecordType = RecordType.Id)" .
 						"	JOIN Rate ON (Rate.Id = CDR.Rate)" .
@@ -813,7 +813,7 @@ class Invoice_Export
 					$arrColumns['Nature']				= "Nature";
 					$arrColumns['TaxExempt']			= "global_tax_exempt";
 					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
-					(	
+					(
 						"Charge",
 						$arrColumns,
 						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType NOT IN ('PCAD', 'PCAR', 'PCR', 'PDCR')"
@@ -870,7 +870,7 @@ class Invoice_Export
 					$arrColumns['Nature']				= "Nature";
 					$arrColumns['TaxExempt']			= "global_tax_exempt";
 					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
-					(	
+					(
 						"Charge",
 						$arrColumns,
 						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCAD', 'PCAR')"
@@ -884,7 +884,7 @@ class Invoice_Export
 					$arrColumns['Nature']				= "Nature";
 					$arrColumns['TaxExempt']			= "global_tax_exempt";
 					$arrPreparedStatements[$strStatement][$intCount] = new StatementSelect
-					(	
+					(
 						"Charge",
 						$arrColumns,
 						"$strWhereService AND invoice_run_id = <invoice_run_id> AND ChargeType IN ('PCR', 'PDCR')"

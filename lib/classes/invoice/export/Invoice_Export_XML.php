@@ -70,7 +70,7 @@
 	 * Exports an Invoice to XML
 	 *
 	 * Exports an Invoice to XML
-	 * 
+	 *
 	 * @param		array		$arrInvoice							Associative array of details for this Invoice
 	 * @param		boolean		$bolDebug				[optional]	TRUE	: Doesn't write to file, returns XML data
 	 * 																FALSE	: Writes to file, returns boolean (default)
@@ -88,7 +88,7 @@
 		$arrCustomer	= Invoice_Export::getCustomerData($arrInvoice);
 		
 		// Init our XML Document
-		$domDocument				= new DOMDocument('1.0'); 
+		$domDocument				= new DOMDocument('1.0');
 		$domDocument->formatOutput	= TRUE;
 		
 		//--------------------------------------------------------------------//
@@ -154,7 +154,7 @@
 		//--------------------------------------------------------------------//
 		// Account Summary & Itemisation
 		//--------------------------------------------------------------------//
-		$arrAccountCategories	= Invoice_Export::getAccountCharges($arrInvoice);
+		$arrAccountCategories	= Invoice_Export::getAccountSummary($arrInvoice);
 		$xmlItemisation	= self::_addElement($xmlInvoice, 'Charges');
 		
 		// Charge Itemisation
@@ -651,7 +651,7 @@
 	 * Adds an Element to the $domDocument XML Schema
 	 *
 	 * Adds an Element to the $domDocument XML Schema
-	 * 
+	 *
 	 * @param	element	&$xmlParent					The Parent DOMNode for this Element
 	 * @param	array	$strName					The name of this Element
 	 * @param	array	$mixValue		[optional]	The value of this Element
@@ -685,7 +685,7 @@
 	 * Adds an Attribute to the specified XML Element
 	 *
 	 * Adds an Attribute to the specified XML Element
-	 * 
+	 *
 	 * @param	element	&$xmlParent					The Parent DOMNode for this Attribute
 	 * @param	array	$strName					The name of this Attribute
 	 * @param	array	$mixValue					The value of this Attribute
@@ -717,7 +717,7 @@
 	 * Converts a CDR Record to an Itemised Item, based on it's DisplayType
 	 *
 	 * Converts a CDR Record to an Itemised Item, based on it's DisplayType
-	 * 
+	 *
 	 * @param	element	&$xmlParent					The Parent DOMNode for this Attribute
 	 * @param	array	$strName					The name of this Attribute
 	 * @param	array	$mixValue					The value of this Attribute
