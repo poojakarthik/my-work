@@ -179,15 +179,14 @@ class Invoice_Export
 				$arrWhere['RecordGroup']		= $arrRecordType['GroupId'];
 				$arrRecordType['Itemisation']	= self::_preparedStatementMultiService('selItemisedCalls', $arrService, $arrWhere);
 				
-				// Add Record Type to Service Array
-				$arrCategories[$arrRecordType['RecordGroup']]	= $arrRecordType;
-				
 				// Calculate Rated Total
 				$fltCDRTotal	= 0.0;
+				$fUnitsTotal	= 0.0;
 				foreach ($arrRecordType['Itemisation'] as $intIndex=>$arrCDR)
 				{
 					$fltRatedTotal	+= $arrCDR['Charge'];
 					$fltCDRTotal	+= $arrCDR['Charge'];
+					$fUnitsTotal	+= ($arrCDR['Credit'] == 1 ? -1 : 1) * $arrCDR['Units'];
 					
 					// Should we hide this CDR?
 					if ($arrCDR['allow_cdr_hiding'] && $arrCDR['Charge'] === 0.0 && $arrService['allow_cdr_hiding'])
@@ -197,6 +196,10 @@ class Invoice_Export
 					}
 				}
 				//Cli_App_Billing::debug("CDR Total for {$arrService['FNN']}: \${$fltCDRTotal}");
+				$arrRecordType['UnitsTotal']	= $fUnitsTotal;
+				
+				// Add Record Type to Service Array
+				$arrCategories[$arrRecordType['RecordGroup']]	= $arrRecordType;
 			}
 			
 			// Handle ServiceTotals for non-Indials

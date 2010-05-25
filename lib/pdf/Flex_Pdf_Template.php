@@ -262,7 +262,7 @@ class Flex_Pdf_Template
 		$this->_strEffectiveDate = $strEffectiveDate;
 		$this->_intCustomerGroupId = $intCustomerGroupId;
 		$this->_intTargetMedia = $intTargetMedia;
-
+		
 		// If there is data to load, load it
 		if ($strXmlData != NULL)
 		{
@@ -363,19 +363,19 @@ class Flex_Pdf_Template
 				throw $e;
 			}
 		}
-
+		
 		// Initialize style...
 		$this->_initializeStyle();
-
+		
 		// Load page order...
 		$this->_loadPageOrder();
-
+		
 		// Load page order...
 		$this->loadPageWrapContents();
-
+		
 		// Load pages...
 		$this->_loadPages();
-
+		
 		//fwrite($f = fopen("output.xml", "w+b"), $this->_domDocument->saveXML());
 		//fclose($f);
 	}
@@ -534,9 +534,10 @@ class Flex_Pdf_Template
 
 		foreach ($pageWrapContents as $pageWrapContent)
 		{
+			//echo("loadPageWrapContents::".$pageWrapContent->getAttribute("identifier")."\n");
 			$this->arrPageWrapContentNodes[$pageWrapContent->getAttribute("identifier")] = $pageWrapContent;
 		}
-
+		
 		// Load up the page wrap contents
 		foreach ($this->arrPageWrapContentNodes as $identifier => $pageWrapContent)
 		{
@@ -570,6 +571,7 @@ class Flex_Pdf_Template
 		if (!array_key_exists($identifier, $this->_arrPageWrapContents) && array_key_exists($identifier, $this->arrPageWrapContentNodes))
 		{
 			$pageWrapContentNode = $this->arrPageWrapContentNodes[$identifier];
+			//echo("registerPageWrapContentNode:: ".($parent->id ? $parent->id : 'TEMPLATE')." -> {$identifier}\n");
 			$this->_arrPageWrapContents[$identifier] = new Flex_Pdf_Template_Page_Wrap_Content($pageWrapContentNode, $parent);
 		}
 		return $this->_arrPageWrapContents[$identifier];

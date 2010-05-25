@@ -191,7 +191,6 @@
 			self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrCategory['DisplayType'], 'DisplayType'));
 			
 			$xmlItemisationItems	= self::_addElement($xmlItemisationType, 'Items');
-			
 			if ($arrCategory['Itemisation'])
 			{
 				foreach ($arrCategory['Itemisation'] as $arrCDR)
@@ -320,6 +319,7 @@
 				self::_addAttribute($xmlItemisationType, 'GrandTotal', number_format($arrChargeType['TotalCharge'], 2, '.', ''));
 				self::_addAttribute($xmlItemisationType, 'Records', count($arrChargeType['Itemisation']));
 				self::_addAttribute($xmlItemisationType, 'RenderType', GetConstantName($arrChargeType['DisplayType'], 'DisplayType'));
+				self::_addAttribute($xmlItemisationType, 'UnitsTotal', $arrChargeType['UnitsTotal']);
 				
 				// Charge Itemisation
 				$xmlItemisationItems	= self::_addElement($xmlItemisationType, 'Items');

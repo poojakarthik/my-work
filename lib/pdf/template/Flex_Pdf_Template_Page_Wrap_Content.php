@@ -156,8 +156,10 @@ class Flex_Pdf_Template_Page_Wrap_Content extends Flex_Pdf_Template_Element
 					break;
 
 				case "PAGE-WRAP-INCLUDE":
+					//echo("Flex_Pdf_Template_Page_Wrap_Content::initializeContents:: ".$node->getAttribute("content")."\n");
 					$this->getTemplate()->registerPageWrapContentNode($node->getAttribute("content"), $this);
 					$child = new Flex_Pdf_Template_Page_Wrap_Include($node, $this);
+					//echo("Flex_Pdf_Template_Page_Wrap_Content::initializeContents:: COMPLETE (".$node->getAttribute("content").")\n");
 					break;
 
 				default:
