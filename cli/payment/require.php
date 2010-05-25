@@ -48,4 +48,7 @@ VixenRequire($strDirectDebitDir."australiandirectentry/file/Payment_DirectDebit_
 VixenRequire('lib/classes/customer/Customer_Group.php');
 VixenRequire('lib/classes/Employee.php');
 
+require_once("Mail.php");
+require_once("Mail/mime.php");
+
 ?>
