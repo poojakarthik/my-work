@@ -1,7 +1,9 @@
 <?php
 
 // Framework & Application
-require_once("../../flex.require.php");
+require_once('../../lib/classes/Flex.php');
+Flex::load();
+
 $arrConfig		= LoadApplication();
 $appPayments	= new ApplicationPayment($arrConfig);
 
