@@ -72,9 +72,7 @@ LEFT JOIN
 
 		$strWhere	= "(a.LatePaymentAmnesty IS NULL OR a.LatePaymentAmnesty < config.effective_date) AND vip = 0 AND tio_reference_number IS NULL";
 		
-		// We probably don't want to run this check here
-		//$strGroupBy	= "a.Id HAVING EligibleOverdue >= minBalanceToPursue AND TotalOutstanding >= minBalanceToPursue AND EligibleOverdue > (TotalFromEligibleOverdueInvoices * 0.25)";
-		$strGroupBy		= 'a.Id';
+		$strGroupBy	= "a.Id HAVING EligibleOverdue >= minBalanceToPursue AND TotalOutstanding >= minBalanceToPursue AND EligibleOverdue > (TotalFromEligibleOverdueInvoices * 0.25)";
 		
 		$strOrderBy	= "a.Id ASC";
 		
