@@ -3619,9 +3619,9 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		'AccountGroupId'					=> "a.AccountGroup",
 		'CustomerGroupId'					=> "cg.Id",
 		'CustomerGroupName'					=> "cg.external_name",
-		'TotalOutstanding'					=> "SUM(i_overdue.Balance - i_overdue.Disputed)",
-		'Overdue'							=> "SUM(IF(i_overdue.DueOn < config.effective_date, i_overdue.Balance - i_overdue.Disputed, 0))",
-		'EligibleOverdue'					=> "SUM(IF(i_overdue.DueOn < config.effective_date AND i_overdue.CreatedOn <= i_barring.CreatedOn, i_overdue.Balance - i_overdue.Disputed, 0))",
+		'TotalOutstanding'					=> "SUM(i_overdue.Balance - i_overdue.Disputed) + COALESCE(aua.adjustment_total, 0)",
+		'Overdue'							=> "SUM(IF(i_overdue.DueOn < config.effective_date, i_overdue.Balance - i_overdue.Disputed, 0)) + COALESCE(aua.adjustment_total, 0)",
+		'EligibleOverdue'					=> "SUM(IF(i_overdue.DueOn < config.effective_date AND i_overdue.CreatedOn <= i_barring.CreatedOn, i_overdue.Balance - i_overdue.Disputed, 0)) + COALESCE(aua.adjustment_total, 0)",
 		'TotalFromOverdueInvoices'			=> "SUM(IF(i_overdue.DueOn < config.effective_date AND ((i_overdue.Balance - i_overdue.Disputed) > 0), i_overdue.Total + i_overdue.Tax, 0))",
 		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF(i_overdue.DueOn < config.effective_date AND ((i_overdue.Balance - i_overdue.Disputed) > 0) AND i_overdue.CreatedOn <= i_barring.CreatedOn, i_overdue.Total + i_overdue.Tax, 0))",
 		'minBalanceToPursue'				=> "pt.minimum_balance_to_pursue",
@@ -3641,6 +3641,38 @@ JOIN credit_control_status ccs ON (ccs.id = a.credit_control_status AND ccs.can_
 JOIN automatic_barring_status ab_s ON (ab_s.id = a.automatic_barring_status AND ab_s.const_name != 'AUTOMATIC_BARRING_STATUS_BARRED')
 JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
 JOIN payment_terms pt ON (pt.id = (SELECT id FROM payment_terms WHERE customer_group_id = cg.Id ORDER BY id DESC LIMIT 1))
+JOIN
+(
+	SELECT		c.Account																						AS account_id,
+				COALESCE(
+					SUM(
+						COALESCE(
+							IF(
+								c.Nature = 'CR',
+								0 - c.Amount,
+								c.Amount
+							), 0
+						)
+						*
+						IF(
+							c.global_tax_exempt = 1,
+							1,
+							(
+								SELECT		COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
+								FROM		tax_type tt
+								WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+											AND tt.global = 1
+							)
+						)
+					), 0
+				)																								AS adjustment_total
+	FROM		Charge c
+	WHERE		c.Status IN (101, 102)	/* Approved or Temp Invoice */
+				AND c.charge_model_id IN (SELECT id FROM charge_model WHERE system_name = 'ADJUSTMENT')
+				AND c.Nature = 'CR'
+				AND c.ChargedOn >= {$strEffectiveDate}
+	GROUP BY	c.Account
+) /* account_unbilled_adjustments */ aua ON (a.Id = aua.account_id)
 
 JOIN Invoice i_overdue ON (i_overdue.Account = a.Id AND i_overdue.Status NOT IN (100, 106))
 JOIN InvoiceRun ir_overdue ON (i_overdue.invoice_run_id = ir_overdue.Id)
@@ -3984,10 +4016,10 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		'DisableLatePayment'				=> "a.DisableLatePayment",
 		'InvoiceId'							=> "i_latepayment.Id",
 		'CreatedOn'							=> "i_latepayment.CreatedOn",
-		'OutstandingNotOverdue'				=> "SUM(IF(config.effective_date <= i_overdue.DueOn, i_overdue.Balance - i_overdue.Disputed, 0))",
-		'Overdue'							=> "SUM(IF(config.effective_date > i_overdue.DueOn, i_overdue.Balance - i_overdue.Disputed, 0))",
-		'EligibleOverdue'					=> "SUM(IF(config.effective_date > i_overdue.DueOn AND i_overdue.CreatedOn <= i_latepayment.CreatedOn, i_overdue.Balance - i_overdue.Disputed, 0))",
-		'TotalOutstanding'					=> "SUM(i_overdue.Balance - i_overdue.Disputed)",
+		'OutstandingNotOverdue'				=> "SUM(IF(config.effective_date <= i_overdue.DueOn, i_overdue.Balance - i_overdue.Disputed, 0)) + COALESCE(aua.adjustment_total, 0)",
+		'Overdue'							=> "SUM(IF(config.effective_date > i_overdue.DueOn, i_overdue.Balance - i_overdue.Disputed, 0)) + COALESCE(aua.adjustment_total, 0)",
+		'EligibleOverdue'					=> "SUM(IF(config.effective_date > i_overdue.DueOn AND i_overdue.CreatedOn <= i_latepayment.CreatedOn, i_overdue.Balance - i_overdue.Disputed, 0)) + COALESCE(aua.adjustment_total, 0)",
+		'TotalOutstanding'					=> "SUM(i_overdue.Balance - i_overdue.Disputed) + COALESCE(aua.adjustment_total, 0)",
 		'TotalFromOverdueInvoices'			=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed) > 0, i_overdue.Total + i_overdue.Tax, 0))",
 		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed) > 0 AND i_overdue.CreatedOn <= i_latepayment.CreatedOn, i_overdue.Total + i_overdue.Tax, 0))",
 		'minBalanceToPursue'				=> "pt.minimum_balance_to_pursue"
@@ -4007,6 +4039,38 @@ JOIN account_status a_s ON (a_s.id = a.Archived AND a_s.send_late_notice = 1)
 JOIN credit_control_status ccs ON (ccs.id = a.credit_control_status AND ccs.send_late_notice = 1)
 JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
 JOIN payment_terms pt ON (pt.id = (SELECT id FROM payment_terms WHERE customer_group_id = cg.Id ORDER BY id DESC LIMIT 1))
+JOIN
+(
+	SELECT		c.Account																						AS account_id,
+				COALESCE(
+					SUM(
+						COALESCE(
+							IF(
+								c.Nature = 'CR',
+								0 - c.Amount,
+								c.Amount
+							), 0
+						)
+						*
+						IF(
+							c.global_tax_exempt = 1,
+							1,
+							(
+								SELECT		COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
+								FROM		tax_type tt
+								WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+											AND tt.global = 1
+							)
+						)
+					), 0
+				)																								AS adjustment_total
+	FROM		Charge c
+	WHERE		c.Status IN (101, 102)	/* Approved or Temp Invoice */
+				AND c.charge_model_id IN (SELECT id FROM charge_model WHERE system_name = 'ADJUSTMENT')
+				AND c.Nature = 'CR'
+				AND c.ChargedOn >= {$strEffectiveDate}
+	GROUP BY	c.Account
+) /* account_unbilled_adjustments */ aua ON (a.Id = aua.account_id)
 
 JOIN Invoice i_overdue ON (i_overdue.Account = a.Id AND i_overdue.Status NOT IN (100, 106))
 JOIN InvoiceRun ir_overdue ON (i_overdue.invoice_run_id = ir_overdue.Id)

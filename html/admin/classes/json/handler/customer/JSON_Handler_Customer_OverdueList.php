@@ -12,14 +12,17 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 		$strEffectiveDate = "'".getCurrentISODate()."'";
 	
 		// Find all Accounts that fit the requirements for Late Notice generation
-		$arrColumns = Array(	'invoice_run_id'		=> "MAX(ir_overdue.Id)",
-								'AccountId'				=> "a.Id",
-								'BusinessName'			=> "a.BusinessName",
-								'TradingName'			=> "a.TradingName",
-								'AccountStatus'			=> "a.Archived",
-								'CustomerGroup'			=> "a.CustomerGroup",
-								'Overdue'				=> "SUM(CASE WHEN {$strEffectiveDate} > i_overdue.DueOn THEN i_overdue.Balance END) + COALESCE(aua.adjustment_total, 0)",
-								'TotalOutstanding'		=> "SUM(i_overdue.Balance) + aua.adjustment_total");
+		$arrColumns = Array(	'invoice_run_id'			=> "MAX(ir_overdue.Id)",
+								'AccountId'					=> "a.Id",
+								'BusinessName'				=> "a.BusinessName",
+								'TradingName'				=> "a.TradingName",
+								'AccountStatus'				=> "a.Archived",
+								'CustomerGroup'				=> "a.CustomerGroup",
+								'Overdue'					=> "SUM(IF(config.effective_date > i_overdue.DueOn, i_overdue.Balance - i_overdue.Disputed, 0)) + COALESCE(aua.adjustment_total, 0)",
+								'TotalOutstanding'			=> "SUM(i_overdue.Balance - i_overdue.Disputed) + COALESCE(aua.adjustment_total, 0)",
+								'minBalanceToPursue'		=> "pt.minimum_balance_to_pursue",
+								'TotalFromOverdueInvoices'	=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed) > 0, i_overdue.Total + i_overdue.Tax, 0))"
+						);
 		
 		$strTables	= "
 (
@@ -72,12 +75,15 @@ LEFT JOIN
 
 		$strWhere	= "(a.LatePaymentAmnesty IS NULL OR a.LatePaymentAmnesty < config.effective_date) AND vip = 0 AND tio_reference_number IS NULL";
 		
-		$strGroupBy	= "a.Id HAVING EligibleOverdue >= minBalanceToPursue AND TotalOutstanding >= minBalanceToPursue AND EligibleOverdue > (TotalFromEligibleOverdueInvoices * 0.25)";
+		$strGroupBy	= "a.Id HAVING Overdue >= minBalanceToPursue AND TotalOutstanding >= minBalanceToPursue AND Overdue > (TotalFromOverdueInvoices * 0.25)";
+		//$strGroupBy	= 'a.Id';
 		
 		$strOrderBy	= "a.Id ASC";
 		
+		$sLimit		= '2000';
+		$sLimit		= null;
 		
-		$selOverdue = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "2000", $strGroupBy);
+		$selOverdue = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, $sLimit, $strGroupBy);
 		if (($intRecCount = $selOverdue->Execute()) === FALSE)
 		{
 			throw new Exception("Failed to retrieve overdue accounts - ". $selOverdue->Error());

@@ -778,9 +778,6 @@ ORDER BY FNN;";
 				case 'selPaymentTerms':
 					$arrPreparedStatements[$strStatement]	= new StatementSelect("payment_terms", "*", "customer_group_id = <customer_group_id>", "id DESC", 1);
 					break;
-				case 'selAccountBalance':
-					$arrPreparedStatements[$strStatement]	= new StatementSelect("payment_terms", "*", "customer_group_id = <customer_group_id>", "id DESC", 1);
-					break;
 				
 				// INSERTS
 				case 'insSelf':
