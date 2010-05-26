@@ -18,7 +18,7 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 								'TradingName'			=> "a.TradingName",
 								'AccountStatus'			=> "a.Archived",
 								'CustomerGroup'			=> "a.CustomerGroup",
-								'Overdue'				=> "SUM(CASE WHEN {$strEffectiveDate} > i_overdue.DueOn THEN i_overdue.Balance END) + aua.adjustment_total",
+								'Overdue'				=> "SUM(CASE WHEN {$strEffectiveDate} > i_overdue.DueOn THEN i_overdue.Balance END) + COALESCE(aua.adjustment_total, 0)",
 								'TotalOutstanding'		=> "SUM(i_overdue.Balance) + aua.adjustment_total");
 		
 		$strTables	= "
@@ -31,7 +31,13 @@ JOIN account_status a_s ON (a_s.id = a.Archived AND a_s.send_late_notice = 1)
 JOIN credit_control_status ccs ON (ccs.id = a.credit_control_status AND ccs.send_late_notice = 1)
 JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
 JOIN payment_terms pt ON (pt.id = (SELECT id FROM payment_terms WHERE customer_group_id = cg.Id ORDER BY id DESC LIMIT 1))
-JOIN
+
+JOIN Invoice i_overdue ON (i_overdue.Account = a.Id AND i_overdue.Status NOT IN (100, 106))
+JOIN InvoiceRun ir_overdue ON (i_overdue.invoice_run_id = ir_overdue.Id)
+JOIN invoice_run_type irt_overdue ON (irt_overdue.id = ir_overdue.invoice_run_type_id AND irt_overdue.const_name IN ('INVOICE_RUN_TYPE_LIVE', 'INVOICE_RUN_TYPE_FINAL', 'INVOICE_RUN_TYPE_INTERIM'))
+JOIN invoice_run_status irs_overdue ON (irs_overdue.id = ir_overdue.invoice_run_status_id AND irs_overdue.const_name = 'INVOICE_RUN_STATUS_COMMITTED')
+
+LEFT JOIN
 (
 	SELECT		c.Account																						AS account_id,
 				COALESCE(
@@ -62,12 +68,7 @@ JOIN
 				AND c.Nature = 'CR'
 				AND c.ChargedOn >= {$strEffectiveDate}
 	GROUP BY	c.Account
-) /* account_unbilled_adjustments */ aua ON (a.Id = aua.account_id)
-
-JOIN Invoice i_overdue ON (i_overdue.Account = a.Id AND i_overdue.Status NOT IN (100, 106))
-JOIN InvoiceRun ir_overdue ON (i_overdue.invoice_run_id = ir_overdue.Id)
-JOIN invoice_run_type irt_overdue ON (irt_overdue.id = ir_overdue.invoice_run_type_id AND irt_overdue.const_name IN ('INVOICE_RUN_TYPE_LIVE', 'INVOICE_RUN_TYPE_FINAL', 'INVOICE_RUN_TYPE_INTERIM'))
-JOIN invoice_run_status irs_overdue ON (irs_overdue.id = ir_overdue.invoice_run_status_id AND irs_overdue.const_name = 'INVOICE_RUN_STATUS_COMMITTED')";
+) /* account_unbilled_adjustments */ aua ON (a.Id = aua.account_id)";
 
 		$strWhere	= "(a.LatePaymentAmnesty IS NULL OR a.LatePaymentAmnesty < config.effective_date) AND vip = 0 AND tio_reference_number IS NULL";
 		
