@@ -9,53 +9,75 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 	// This doesn't yet factor in unbilled credit charges and disputed amounts
 	private function _getOverdueAccounts()
 	{
-		$strEffectiveDate = getCurrentISODate();
+		$strEffectiveDate = "'".getCurrentISODate()."'";
 	
 		// Find all Accounts that fit the requirements for Late Notice generation
-		$arrColumns = Array(	'invoice_run_id'		=> "MAX(CASE WHEN '$strEffectiveDate' <= Invoice.DueOn THEN 0 ELSE Invoice.invoice_run_id END)",
-								'AccountId'				=> "Invoice.Account",
-								'BusinessName'			=> "Account.BusinessName",
-								'TradingName'			=> "Account.TradingName",
-								'AccountStatus'			=> "Account.Archived",
-								'CustomerGroup'			=> "Account.CustomerGroup",
-								'Overdue'				=> "SUM(CASE WHEN '$strEffectiveDate' > Invoice.DueOn THEN Invoice.Balance END)",
-								'TotalOutstanding'		=> "SUM(Invoice.Balance)");
-	
-		$strTables	= "Invoice INNER JOIN Account ON Invoice.Account = Account.Id AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < '$strEffectiveDate')";
-	
-		$arrApplicableAccountStatuses = array(ACCOUNT_STATUS_ACTIVE, ACCOUNT_STATUS_CLOSED);
-		$arrApplicableInvoiceStatuses = array(INVOICE_COMMITTED, INVOICE_DISPUTED, INVOICE_PRINT);
-		$strApplicableAccountStatuses = implode(", ", $arrApplicableAccountStatuses);
-		$strApplicableInvoiceStatuses = implode(", ", $arrApplicableInvoiceStatuses);
+		$arrColumns = Array(	'invoice_run_id'		=> "MAX(ir_overdue.Id)",
+								'AccountId'				=> "a.Id",
+								'BusinessName'			=> "a.BusinessName",
+								'TradingName'			=> "a.TradingName",
+								'AccountStatus'			=> "a.Archived",
+								'CustomerGroup'			=> "a.CustomerGroup",
+								'Overdue'				=> "SUM(CASE WHEN {$strEffectiveDate} > i_overdue.DueOn THEN i_overdue.Balance END) + aua.adjustment_total",
+								'TotalOutstanding'		=> "SUM(i_overdue.Balance) + aua.adjustment_total");
 		
-		// I don't think this needs to be so complicated for this one
-		/*$strWhere = "Account.Id IN (
-										SELECT DISTINCT(Account.Id) 
-										FROM InvoiceRun 
-										JOIN Invoice
-										  ON Invoice.Status IN ($strApplicableInvoiceStatuses) 
-										 AND InvoiceRun.Id = Invoice.invoice_run_id
-										JOIN Account 
-										  ON Account.Id = Invoice.Account
-									         AND Account.Archived IN ($strApplicableAccountStatuses)
-									         AND (Account.LatePaymentAmnesty IS NULL OR Account.LatePaymentAmnesty < '$strEffectiveDate')
-									)";
-		*/
-		$strWhere = "Account.Archived IN ($strApplicableAccountStatuses) AND Invoice.Status IN ($strApplicableInvoiceStatuses)";
-		//$pt = GetPaymentTerms(NULL);
-	
-		$strOrderBy	= "Account.Archived ASC, Invoice.Account ASC";
-		$strGroupBy	= "Invoice.Account HAVING Overdue >= (SELECT minimum_balance_to_pursue FROM payment_terms WHERE customer_group_id = CustomerGroup ORDER BY id DESC LIMIT 1)";/*. $pt['minimum_balance_to_pursue'];*/
-	
+		$strTables	= "
+(
+	SELECT	{$strEffectiveDate} AS effective_date
+) config
+JOIN Account a
+JOIN Contact c ON (c.Id = a.PrimaryContact)
+JOIN account_status a_s ON (a_s.id = a.Archived AND a_s.send_late_notice = 1)
+JOIN credit_control_status ccs ON (ccs.id = a.credit_control_status AND ccs.send_late_notice = 1)
+JOIN CustomerGroup cg ON (a.CustomerGroup = cg.Id)
+JOIN payment_terms pt ON (pt.id = (SELECT id FROM payment_terms WHERE customer_group_id = cg.Id ORDER BY id DESC LIMIT 1))
+JOIN
+(
+	SELECT		c.Account																						AS account_id,
+				COALESCE(
+					SUM(
+						COALESCE(
+							IF(
+								c.Nature = 'CR',
+								0 - c.Amount,
+								c.Amount
+							), 0
+						)
+						*
+						IF(
+							c.global_tax_exempt = 1,
+							1,
+							(
+								SELECT		COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
+								FROM		tax_type tt
+								WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+											AND tt.global = 1
+							)
+						)
+					), 0
+				)																								AS adjustment_total
+	FROM		Charge c
+	WHERE		c.Status IN (101, 102)	/* Approved or Temp Invoice */
+				AND c.charge_model_id IN (SELECT id FROM charge_model WHERE system_name = 'ADJUSTMENT')
+				AND c.Nature = 'CR'
+				AND c.ChargedOn >= {$strEffectiveDate}
+	GROUP BY	c.Account
+) /* account_unbilled_adjustments */ aua ON (a.Id = aua.account_id)
+
+JOIN Invoice i_overdue ON (i_overdue.Account = a.Id AND i_overdue.Status NOT IN (100, 106))
+JOIN InvoiceRun ir_overdue ON (i_overdue.invoice_run_id = ir_overdue.Id)
+JOIN invoice_run_type irt_overdue ON (irt_overdue.id = ir_overdue.invoice_run_type_id AND irt_overdue.const_name IN ('INVOICE_RUN_TYPE_LIVE', 'INVOICE_RUN_TYPE_FINAL', 'INVOICE_RUN_TYPE_INTERIM'))
+JOIN invoice_run_status irs_overdue ON (irs_overdue.id = ir_overdue.invoice_run_status_id AND irs_overdue.const_name = 'INVOICE_RUN_STATUS_COMMITTED')";
+
+		$strWhere	= "(a.LatePaymentAmnesty IS NULL OR a.LatePaymentAmnesty < config.effective_date) AND vip = 0 AND tio_reference_number IS NULL";
 		
-		// DEBUG: Output the query that gets run
-		/*
-		$select = array();
-		foreach($arrColumns as $alias => $column) $select[] = "$column '$alias'";
-		echo "\n\nSELECT " . implode(",\n       ", $select) . "\nFROM $strTables\nWHERE $strWhere\nGROUP BY $strGroupBy\nORDER BY $strOrderBy\n\n";
-		return FALSE;
-		*/
-	
+		// We probably don't want to run this check here
+		//$strGroupBy	= "a.Id HAVING EligibleOverdue >= minBalanceToPursue AND TotalOutstanding >= minBalanceToPursue AND EligibleOverdue > (TotalFromEligibleOverdueInvoices * 0.25)";
+		$strGroupBy		= 'a.Id';
+		
+		$strOrderBy	= "a.Id ASC";
+		
+		
 		$selOverdue = new StatementSelect($strTables, $arrColumns, $strWhere, $strOrderBy, "2000", $strGroupBy);
 		if (($intRecCount = $selOverdue->Execute()) === FALSE)
 		{
