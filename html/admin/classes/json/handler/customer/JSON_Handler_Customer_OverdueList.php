@@ -69,7 +69,7 @@ LEFT JOIN
 	WHERE		c.Status IN (101, 102)	/* Approved or Temp Invoice */
 				AND c.charge_model_id IN (SELECT id FROM charge_model WHERE system_name = 'ADJUSTMENT')
 				AND c.Nature = 'CR'
-				AND c.ChargedOn >= {$strEffectiveDate}
+				AND c.ChargedOn <= {$strEffectiveDate}
 	GROUP BY	c.Account
 ) /* account_unbilled_adjustments */ aua ON (a.Id = aua.account_id)";
 
