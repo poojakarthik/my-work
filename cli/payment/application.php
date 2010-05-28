@@ -473,78 +473,98 @@
 		
 		foreach($arrPayments as $arrPayment)
 		{
-			$this->_rptPaymentReport->AddMessageVariables(MSG_PROCESS_LINE, Array('<Id>' => $arrPayment['Id']), TRUE, FALSE);
-			
-			// set current payment
-			$this->_arrCurrentPayment = $arrPayment;
-			
-			// get a list of outstanding invoices for this account group
-			//		(and account if we have one in $arrPayment) sorted oldest invoice first
-			$arrWhere = Array();
-			$arrWhere['AccountGroup'] 	= $arrPayment['AccountGroup'];
-			$arrWhere['Account'] 		= $arrPayment['Account'];
-			if ($arrWhere['Account'])
+			// Run each Payment in a Transaction, so that any errors will cause a Rollback
+			if (DataAccess::getDataAccess()->TransactionStart() === false)
 			{
-				$selOutstandingInvoices = $this->_selAccountInvoices;
-			}
-			else
-			{
-				$selOutstandingInvoices = $this->_selAccountGroupInvoices;
+				throw new Exception("Unable to start a Transaction for Payment #{$arrPayment['Id']}");
 			}
 			
-			if (($intCount2 = $selOutstandingInvoices->Execute($arrWhere)) === FALSE)
+			try
 			{
-				Debug($selOutstandingInvoices->Error());
-				continue;
-			}
-			
-			// set default status
-			$this->_arrCurrentPayment['Status'] = PAYMENT_PAYING;
-			
-			// while we have some payment left and an invoice to pay it against
-			while ($this->_arrCurrentPayment['Balance'] > 0.0 && ($arrInvoice = $selOutstandingInvoices->Fetch()))
-			{
-				// set current invoice
-				$this->_arrCurrentInvoice = $arrInvoice;
+				$this->_rptPaymentReport->AddMessageVariables(MSG_PROCESS_LINE, Array('<Id>' => $arrPayment['Id']), TRUE, FALSE);
 				
-				// apply payment against the invoice
-				$fltBalance = $this->_PayInvoice();
-				if ($fltBalance === FALSE)
+				// set current payment
+				$this->_arrCurrentPayment = $arrPayment;
+				
+				// get a list of outstanding invoices for this account group
+				//		(and account if we have one in $arrPayment) sorted oldest invoice first
+				$arrWhere = Array();
+				$arrWhere['AccountGroup'] 	= $arrPayment['AccountGroup'];
+				$arrWhere['Account'] 		= $arrPayment['Account'];
+				if ($arrWhere['Account'])
 				{
-					// something went wrong
-					$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE.MSG_FAIL.MSG_REASON, Array('<Id>' => $arrInvoice['Id']));
+					$selOutstandingInvoices = $this->_selAccountInvoices;
+				}
+				else
+				{
+					$selOutstandingInvoices = $this->_selAccountGroupInvoices;
+				}
+				
+				if (($intCount2 = $selOutstandingInvoices->Execute($arrWhere)) === FALSE)
+				{
+					//Debug($selOutstandingInvoices->Error());
+					//continue;
+					throw new Exception($selOutstandingInvoices->Error());
+				}
+				
+				// set default status
+				$this->_arrCurrentPayment['Status'] = PAYMENT_PAYING;
+				
+				// while we have some payment left and an invoice to pay it against
+				while ($this->_arrCurrentPayment['Balance'] > 0.0 && ($arrInvoice = $selOutstandingInvoices->Fetch()))
+				{
+					// set current invoice
+					$this->_arrCurrentInvoice = $arrInvoice;
 					
-					// set status
-					$this->_arrCurrentPayment['Status'] = PAYMENT_BAD_PROCESS;
+					// apply payment against the invoice
+					$fltBalance = $this->_PayInvoice();
+					if ($fltBalance === FALSE)
+					{
+						// something went wrong
+						$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE.MSG_FAIL.MSG_REASON, Array('<Id>' => $arrInvoice['Id']));
+						
+						// set status
+						$this->_arrCurrentPayment['Status'] = PAYMENT_BAD_PROCESS;
+						
+						// don't try any more invoices
+						break;
+					}
 					
-					// don't try any more invoices
-					break;
+					// update payment table
+					if ($this->_ubiPayment->Execute($this->_arrCurrentPayment) === FALSE)
+					{
+						//Debug($this->_ubiPayment->Error());
+						//continue;
+						throw new Exception($this->_ubiPayment->Error());
+					}
+					
+					$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE.MSG_OK, Array('<Id>' => $arrInvoice['Id']), TRUE, FALSE);
 				}
 				
-				// update payment table
-				if ($this->_ubiPayment->Execute($this->_arrCurrentPayment) === FALSE)
+				// check if we have spent all our money
+				if ($this->_arrCurrentPayment['Balance'] == 0)
 				{
-					Debug($this->_ubiPayment->Error());
-					continue;
+					$this->_arrCurrentPayment['Status'] = PAYMENT_FINISHED;
+					
+					// update payment table
+					if ($this->_ubiPayment->Execute($this->_arrCurrentPayment) === FALSE)
+					{
+						//Debug($this->_ubiPayment->Error());
+						//continue;
+						throw new Exception($this->_ubiPayment->Error());
+					}
 				}
 				
-				$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE.MSG_OK, Array('<Id>' => $arrInvoice['Id']), TRUE, FALSE);
+				DataAccess::getDataAccess()->TransactionCommit();
+				$this->_intProcessPassed++;
 			}
-			
-			// check if we have spent all our money
-			if ($this->_arrCurrentPayment['Balance'] == 0)
+			catch (Exception $oException)
 			{
-				$this->_arrCurrentPayment['Status'] = PAYMENT_FINISHED;
+				// Rollback Transaction
+				DataAccess::getDataAccess()->TransactionRollback();
 				
-				// update payment table
-				if ($this->_ubiPayment->Execute($this->_arrCurrentPayment) === FALSE)
-				{
-					Debug($this->_ubiPayment->Error());
-					continue;
-				}
+				Debug($oException->getMessage());
 			}
-			
-			$this->_intProcessPassed++;
 		}
 		return $intCount;
 	 }
@@ -602,13 +622,15 @@
 		$arrInvoicePayment['Amount']			= $fltPayment;
 		if ($this->_insInvoicePayment->Execute($arrInvoicePayment) === FALSE)
 		{
-			Debug($this->_insInvoicePayment->Error());
+			//Debug($this->_insInvoicePayment->Error());
+			throw new Exception($this->_insInvoicePayment->Error());
 		}
 		
 		// update the invoice
 		if ($this->_ubiInvoice->Execute($this->_arrCurrentInvoice) === FALSE)
 		{
-			Debug($this->_ubiInvoice->Error());
+			//Debug($this->_ubiInvoice->Error());
+			throw new Exception($this->_ubiInvoice->Error());
 		}
 		
 		// save the balance
