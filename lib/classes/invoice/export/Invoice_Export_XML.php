@@ -250,6 +250,7 @@
 		self::_addElement($xmlStatement, 'OutstandingBalance', number_format($arrInvoice['AccountBalance'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'OverdueBalance', number_format($arrCustomer['OverdueBalance'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'NewCharges', number_format($arrInvoice['charge_total'] + $arrInvoice['charge_tax'], 2, '.', ''));
+		self::_addElement($xmlStatement, 'InvoiceTotal', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'TotalOwing', number_format($arrInvoice['TotalOwing'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'BillingPeriodStart', $strBillingPeriodStart);
 		self::_addElement($xmlStatement, 'BillingPeriodEnd', $strBillingPeriodEnd);
