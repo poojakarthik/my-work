@@ -3493,7 +3493,7 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 		'AccountGroupId'			=> "Account.AccountGroup",
 		'CustomerGroupId'			=> "Account.CustomerGroup",
 		'CustomerGroupName'			=> "CustomerGroup.external_name",
-		'Overdue'					=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END)",
+		'Overdue'					=> "SUM(CASE WHEN $strEffectiveDate > Invoice.DueOn THEN Invoice.Balance - Invoice.Disputed END) + COALESCE(aua.adjustment_total, 0)",
 		'TotalFromOverdueInvoices'	=> "SUM(CASE WHEN ($strEffectiveDate > Invoice.DueOn) AND ((Invoice.Balance - Invoice.Disputed) > 0) THEN Invoice.Total ELSE 0 END)",
 		'minBalanceToPursue'		=> "payment_terms.minimum_balance_to_pursue",
 	);
@@ -3508,7 +3508,40 @@ function ListAutomaticUnbarringAccounts($intEffectiveTime)
 		ON Account.Id = Service.Account
 		JOIN CustomerGroup
 		ON CustomerGroup.Id = Account.CustomerGroup
-		JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)";
+		JOIN payment_terms ON payment_terms.id = (SELECT MAX(id) FROM payment_terms WHERE payment_terms.customer_group_id = Account.CustomerGroup)
+		
+		LEFT JOIN
+		(
+			SELECT		c.Account																						AS account_id,
+						COALESCE(
+							SUM(
+								COALESCE(
+									IF(
+										c.Nature = 'CR',
+										0 - c.Amount,
+										c.Amount
+									), 0
+								)
+								*
+								IF(
+									c.global_tax_exempt = 1,
+									1,
+									(
+										SELECT		COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
+										FROM		tax_type tt
+										WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+													AND tt.global = 1
+									)
+								)
+							), 0
+						)																								AS adjustment_total
+			FROM		Charge c
+			WHERE		c.Status IN (101, 102)	/* Approved or Temp Invoice */
+						AND c.charge_model_id IN (SELECT id FROM charge_model WHERE system_name = 'ADJUSTMENT')
+						AND c.Nature = 'CR'
+						AND c.ChargedOn <= {$strEffectiveDate}
+			GROUP BY	c.Account
+) /* account_unbilled_adjustments */ aua ON (Account.Id = aua.account_id)";
 
 	$strWhere	= "";
 
@@ -3622,8 +3655,8 @@ function ListStaggeredAutomaticBarringAccounts($intEffectiveTime, $arrInvoiceRun
 		'TotalOutstanding'					=> "SUM(i_overdue.Balance - i_overdue.Disputed) + COALESCE(aua.adjustment_total, 0)",
 		'Overdue'							=> "SUM(IF(i_overdue.DueOn < config.effective_date, i_overdue.Balance - i_overdue.Disputed, 0)) + COALESCE(aua.adjustment_total, 0)",
 		'EligibleOverdue'					=> "SUM(IF(i_overdue.DueOn < config.effective_date AND i_overdue.CreatedOn <= i_barring.CreatedOn, i_overdue.Balance - i_overdue.Disputed, 0)) + COALESCE(aua.adjustment_total, 0)",
-		'TotalFromOverdueInvoices'			=> "SUM(IF(i_overdue.DueOn < config.effective_date AND ((i_overdue.Balance - i_overdue.Disputed) > 0), i_overdue.Total + i_overdue.Tax, 0))",
-		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF(i_overdue.DueOn < config.effective_date AND ((i_overdue.Balance - i_overdue.Disputed) > 0) AND i_overdue.CreatedOn <= i_barring.CreatedOn, i_overdue.Total + i_overdue.Tax, 0))",
+		'TotalFromOverdueInvoices'			=> "SUM(IF(i_overdue.DueOn < config.effective_date AND ((i_overdue.Balance - i_overdue.Disputed) + COALESCE(aua.adjustment_total, 0) > 0), i_overdue.Total + i_overdue.Tax, 0))",
+		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF(i_overdue.DueOn < config.effective_date AND ((i_overdue.Balance - i_overdue.Disputed) + COALESCE(aua.adjustment_total, 0) > 0) AND i_overdue.CreatedOn <= i_barring.CreatedOn, i_overdue.Total + i_overdue.Tax, 0))",
 		'minBalanceToPursue'				=> "pt.minimum_balance_to_pursue",
 	);
 
@@ -4021,8 +4054,8 @@ function ListLatePaymentAccounts($intAutomaticInvoiceActionType, $intEffectiveDa
 		'Overdue'							=> "SUM(IF(config.effective_date > i_overdue.DueOn, i_overdue.Balance - i_overdue.Disputed, 0)) + COALESCE(aua.adjustment_total, 0)",
 		'EligibleOverdue'					=> "SUM(IF(config.effective_date > i_overdue.DueOn AND i_overdue.CreatedOn <= i_latepayment.CreatedOn, i_overdue.Balance - i_overdue.Disputed, 0)) + COALESCE(aua.adjustment_total, 0)",
 		'TotalOutstanding'					=> "SUM(i_overdue.Balance - i_overdue.Disputed) + COALESCE(aua.adjustment_total, 0)",
-		'TotalFromOverdueInvoices'			=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed) > 0, i_overdue.Total + i_overdue.Tax, 0))",
-		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed) > 0 AND i_overdue.CreatedOn <= i_latepayment.CreatedOn, i_overdue.Total + i_overdue.Tax, 0))",
+		'TotalFromOverdueInvoices'			=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed + COALESCE(aua.adjustment_total, 0)) > 0, i_overdue.Total + i_overdue.Tax, 0))",
+		'TotalFromEligibleOverdueInvoices'	=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed + COALESCE(aua.adjustment_total, 0)) > 0 AND i_overdue.CreatedOn <= i_latepayment.CreatedOn, i_overdue.Total + i_overdue.Tax, 0))",
 		'minBalanceToPursue'				=> "pt.minimum_balance_to_pursue"
 	);
 

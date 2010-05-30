@@ -21,7 +21,7 @@ class JSON_Handler_Customer_OverdueList extends JSON_Handler
 								'Overdue'					=> "SUM(IF(config.effective_date > i_overdue.DueOn, i_overdue.Balance - i_overdue.Disputed, 0)) + COALESCE(aua.adjustment_total, 0)",
 								'TotalOutstanding'			=> "SUM(i_overdue.Balance - i_overdue.Disputed) + COALESCE(aua.adjustment_total, 0)",
 								'minBalanceToPursue'		=> "pt.minimum_balance_to_pursue",
-								'TotalFromOverdueInvoices'	=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed) > 0, i_overdue.Total + i_overdue.Tax, 0))"
+								'TotalFromOverdueInvoices'	=> "SUM(IF(config.effective_date > i_overdue.DueOn AND (i_overdue.Balance - i_overdue.Disputed + COALESCE(aua.adjustment_total, 0)) > 0, i_overdue.Total + i_overdue.Tax, 0))"
 						);
 		
 		$strTables	= "
