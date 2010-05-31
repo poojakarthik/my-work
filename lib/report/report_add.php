@@ -59,7 +59,7 @@ $insDataReport = new StatementInsert("DataReport");
 
 echo "\nImporting report: '{$arrDataReport['Name']}' from {$strFilename}... ";
 
-if (!$insDataReport->Execute($arrDataReport))
+if ($insDataReport->Execute($arrDataReport) === false)
 {
 	TransactionRollback();
 	echo "FAIL!!!\n";
