@@ -5,7 +5,7 @@
 $arrDataReport['Name']					= "Dun & Bradstreet Report";
 $arrDataReport['Summary']				= "A list of Accounts to be Referred to Dun and Bradstreet";
 $arrDataReport['RenderMode']			= REPORT_RENDER_INSTANT;
-$arrDataReport['Priviledges']			= PERMISSION_CREDIT_MANAGEMENT;
+$arrDataReport['Priviledges']			= 2147483648;
 $arrDataReport['CreatedOn']				= date("Y-m-d");
 $arrDataReport['SQLTable']				= "	Account a
 											JOIN (CustomerGroup c, Contact co, Invoice i,credit_control_status cc )
