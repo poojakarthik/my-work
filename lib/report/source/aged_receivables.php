@@ -14,7 +14,40 @@ $arrDataReport['SQLTable']		= "	Invoice i
 									JOIN Account a ON (i.Account = a.Id)
 									JOIN CustomerGroup cg ON (cg.Id = a.CustomerGroup)
 									JOIN Contact c ON a.PrimaryContact = c.Id
-									LEFT JOIN credit_control_status ccs ON (ccs.id = a.credit_control_status)";
+									LEFT JOIN credit_control_status ccs ON (ccs.id = a.credit_control_status)
+									
+									LEFT JOIN
+									(
+										SELECT		c.Account																						AS account_id,
+													COALESCE(
+														SUM(
+															COALESCE(
+																IF(
+																	c.Nature = 'CR',
+																	0 - c.Amount,
+																	c.Amount
+																), 0
+															)
+															*
+															IF(
+																c.global_tax_exempt = 1,
+																1,
+																(
+																	SELECT		COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
+																	FROM		tax_type tt
+																	WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+																				AND tt.global = 1
+																)
+															)
+														), 0
+													)																								AS adjustment_total
+										FROM		Charge c
+										WHERE		c.Status IN (101, 102)	/* Approved or Temp Invoice */
+													AND c.charge_model_id IN (SELECT id FROM charge_model WHERE system_name = 'ADJUSTMENT')
+													AND c.Nature = 'CR'
+													AND c.ChargedOn <= CURDATE()
+										GROUP BY	c.Account
+									) /* account_unbilled_adjustments */ aua ON (a.Id = aua.account_id)";
 $arrDataReport['SQLWhere']		= "	(
 										(<ShowArchived> = 1)
 										OR (<ShowArchived> = 0 AND a.Archived != 1)
@@ -59,31 +92,31 @@ $arrSQLSelect['Credit Control Status']		['Value']	= "ccs.name";
 
 $arrSQLSelect['TIO Reference Number']		['Value']	= "a.tio_reference_number";
 
-$arrSQLSelect['Outstanding Not Overdue']	['Value']	= "SUM(IF(CURDATE() <= i.DueOn AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['Outstanding Not Overdue']	['Value']	= "SUM(IF(CURDATE() <= i.DueOn AND i.Status NOT IN (106, 105, 100), i.Balance, 0))  + COALESCE(aua.adjustment_total, 0)";
 $arrSQLSelect['Outstanding Not Overdue']	['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Outstanding Not Overdue']	['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['1-29 Days Overdue']			['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 1 DAY) AND ADDDATE(i.DueOn, INTERVAL 29 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['1-29 Days Overdue']			['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 1 DAY) AND ADDDATE(i.DueOn, INTERVAL 29 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
 $arrSQLSelect['1-29 Days Overdue']			['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['1-29 Days Overdue']			['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['30-59 Days Overdue']			['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 30 DAY) AND ADDDATE(i.DueOn, INTERVAL 59 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['30-59 Days Overdue']			['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 30 DAY) AND ADDDATE(i.DueOn, INTERVAL 59 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
 $arrSQLSelect['30-59 Days Overdue']			['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['30-59 Days Overdue']			['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['60-89 Days Overdue']			['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 60 DAY) AND ADDDATE(i.DueOn, INTERVAL 89 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['60-89 Days Overdue']			['Value']	= "SUM(IF(CURDATE() BETWEEN ADDDATE(i.DueOn, INTERVAL 60 DAY) AND ADDDATE(i.DueOn, INTERVAL 89 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
 $arrSQLSelect['60-89 Days Overdue']			['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['60-89 Days Overdue']			['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['90+ Days Overdue']			['Value']	= "SUM(IF(CURDATE() >= ADDDATE(i.DueOn, INTERVAL 90 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['90+ Days Overdue']			['Value']	= "SUM(IF(CURDATE() >= ADDDATE(i.DueOn, INTERVAL 90 DAY) AND i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
 $arrSQLSelect['90+ Days Overdue']			['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['90+ Days Overdue']			['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['Total Overdue']				['Value']	= "SUM(IF(CURDATE() > i.DueOn AND i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['Total Overdue']				['Value']	= "SUM(IF(CURDATE() > i.DueOn AND i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
 $arrSQLSelect['Total Overdue']				['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Total Overdue']				['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['Total Outstanding']			['Value']	= "SUM(IF(i.Status NOT IN (106, 105, 100), i.Balance, 0))";
+$arrSQLSelect['Total Outstanding']			['Value']	= "SUM(IF(i.Status NOT IN (106, 105, 100), i.Balance, 0)) + COALESCE(aua.adjustment_total, 0)";
 $arrSQLSelect['Total Outstanding']			['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Total Outstanding']			['Total']	= EXCEL_TOTAL_SUM;
 

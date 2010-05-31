@@ -9,11 +9,44 @@ $arrDataReport['Priviledges']			= PERMISSION_CREDIT_MANAGEMENT;
 $arrDataReport['CreatedOn']				= date("Y-m-d");
 $arrDataReport['SQLTable']				= "	Account a
 											JOIN (CustomerGroup c, Contact co, Invoice i,credit_control_status cc )
-											ON (c.Id = a.CustomerGroup  AND co.Id = a.PrimaryContact AND i.Account = a.Id AND cc.id = a.credit_control_status)";
-$arrDataReport['SQLWhere']				= "	i.Balance>0
+											ON (c.Id = a.CustomerGroup  AND co.Id = a.PrimaryContact AND i.Account = a.Id AND cc.id = a.credit_control_status)
+											
+											LEFT JOIN
+											(
+												SELECT		c.Account																						AS account_id,
+															COALESCE(
+																SUM(
+																	COALESCE(
+																		IF(
+																			c.Nature = 'CR',
+																			0 - c.Amount,
+																			c.Amount
+																		), 0
+																	)
+																	*
+																	IF(
+																		c.global_tax_exempt = 1,
+																		1,
+																		(
+																			SELECT		COALESCE(EXP(SUM(LN(1 + tt.rate_percentage))), 1)
+																			FROM		tax_type tt
+																			WHERE		c.ChargedOn BETWEEN tt.start_datetime AND tt.end_datetime
+																						AND tt.global = 1
+																		)
+																	)
+																), 0
+															)																								AS adjustment_total
+												FROM		Charge c
+												WHERE		c.Status IN (101, 102)	/* Approved or Temp Invoice */
+															AND c.charge_model_id IN (SELECT id FROM charge_model WHERE system_name = 'ADJUSTMENT')
+															AND c.Nature = 'CR'
+															AND c.ChargedOn <= CURDATE()
+												GROUP BY	c.Account
+											) /* account_unbilled_adjustments */ aua ON (a.Id = aua.account_id)";
+$arrDataReport['SQLWhere']				= "	i.Balance > 0
 											AND cc.const_name = 'CREDIT_CONTROL_STATUS_SENDING_TO_DEBT_COLLECTION'
 											AND a.tio_reference_number IS NULL";
-$arrDataReport['SQLGroupBy']			= " i.Account";
+$arrDataReport['SQLGroupBy']			= " i.Account HAVING `Balance Due` > 0";
 $arrDataReport['data_report_status_id']	= DATA_REPORT_STATUS_DRAFT;
 
 // Documentation Reqs
@@ -57,7 +90,7 @@ $arrSQLSelect['Email']			['Value']	= "co.EMail";
 
 $arrSQLSelect['Date of Debt']	['Value']	= "MIN(i.createdOn)";
 
-$arrSQLSelect['Balance Due']	['Value']	= "SUM(i.Balance)";
+$arrSQLSelect['Balance Due']	['Value']	= "SUM(i.Balance) + COALESCE(aua.adjustment_total, 0)";
 $arrSQLSelect['Balance Due']	['Type']	= EXCEL_TYPE_CURRENCY;
 
 $arrDataReport['SQLSelect'] 	= serialize($arrSQLSelect);
