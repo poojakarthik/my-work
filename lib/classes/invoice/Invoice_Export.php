@@ -361,17 +361,17 @@ class Invoice_Export
 				$aCDR['Units']				= 1;
 				$aCDR['Charge']				= $aAdjustment['Amount'];
 				$aCDR['TaxExempt']			= $aAdjustment['TaxExempt'];
-				$aChargeItemisation[]		= $aCDR;
+				$aAdjustmentItemisation[]		= $aCDR;
 				
 				$fAccountAdjustmentTotal	+= $aCDR['Charge'];
 			}
 		}
 		
 		// Perform "Roll-Ups"
-		$aChargeItemisation	= self::_chargeRollup($aChargeItemisation);
+		$aAdjustmentItemisation	= self::_chargeRollup($aAdjustmentItemisation);
 		
 		// Totals
-		$aAdjustments['Itemisation']	= $aChargeItemisation;
+		$aAdjustments['Itemisation']	= $aAdjustmentItemisation;
 		$aAdjustments['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 		$aAdjustments['TotalCharge']	= $fAccountAdjustmentTotal;
 		$aAdjustments['Records']		= count($aAdjustments['Itemisation']);
