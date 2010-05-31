@@ -55,6 +55,7 @@ $arrDataReport['SQLWhere']		= "	(
 $arrDataReport['SQLGroupBy']	= "	i.Account
 						
 						HAVING		SUM(i.Balance) > 0";
+$arrDataReport['data_report_status_id']	= DATA_REPORT_STATUS_DRAFT;
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
