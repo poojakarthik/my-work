@@ -612,12 +612,12 @@ ORDER BY FNN;";
 																		)
 														)
 														-
-														IF({$iIncludePayments} = 0, 0,	(
+														IF({$iIncludePayments} = 0, 0,	COALESCE((
 																							SELECT	SUM(p.Balance)	AS balance
 																							FROM	Payment p
 																							WHERE	p.Status IN (101, 103, 150)
 																									AND p.Account = a.Id
-																						)
+																						), 0)
 																					)																															AS balance
 											
 											FROM		Account a
