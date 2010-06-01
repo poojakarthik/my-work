@@ -554,21 +554,22 @@ ORDER BY FNN;";
 		}
 	}
 	
-	public function getOverdueBalance($sDueDate=null, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	public function getOverdueBalance($sDueDate=null, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false, $bIncludePayments=true)
 	{
 		$sDueDate	= (is_int($iDueDate = strtotime($sDueDate))) ? date("Y-m-d", $iDueDate) : date('Y-m-d');
-		return max(0.0, $this->_getBalance($sDueDate, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments));
+		return max(0.0, $this->_getBalance($sDueDate, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments, $bIncludePayments));
 	}
 	
-	public function getAccountBalance($bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	public function getAccountBalance($bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false, $bIncludePayments=true)
 	{
-		return $this->_getBalance(Data_Source_Time::END_OF_TIME, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments);
+		return $this->_getBalance(Data_Source_Time::END_OF_TIME, $bIncludeCreditAdjustments, $bIncludeDebitAdjustments, $bIncludePayments);
 	}
 	
-	protected function _getBalance($sDueDate, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	protected function _getBalance($sDueDate, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false, $bIncludePayments=true)
 	{
-		$iIncludeCreditAdjustments	= ($bIncludeCreditAdjustments) ? 1 : 0;
-		$iIncludeDebitAdjustments	= ($bIncludeDebitAdjustments) ? 1 : 0;
+		$iIncludeCreditAdjustments	= ($bIncludeCreditAdjustments)	? 1 : 0;
+		$iIncludeDebitAdjustments	= ($bIncludeDebitAdjustments)	? 1 : 0;
+		$iIncludePayments			= ($bIncludePayments)			? 1 : 0;
 		
 		// This query uses a logarithm workaround to simulate a PRODUCT() aggregate function
 		// Defined at: http://codeidol.com/sql/sql-hack/Number-Crunching/Multiply-Across-a-Result-Set/
@@ -609,7 +610,15 @@ ORDER BY FNN;";
 																			OR
 																			({$iIncludeDebitAdjustments} = 1 AND c.Nature = 'DR')
 																		)
-														)																															AS balance
+														)
+														-
+														IF({$iIncludePayments} = 0, 0,	(
+																							SELECT	SUM(p.Balance)	AS balance
+																							FROM	Payment p
+																							WHERE	p.Status IN (101, 103, 150)
+																									AND p.Account = a.Id
+																						)
+																					)																															AS balance
 											
 											FROM		Account a
 														LEFT JOIN Invoice i ON	(

@@ -493,9 +493,9 @@
 	 *
 	 * @method
 	 */
-	 function GetAccountBalance($intAccount, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	 function GetAccountBalance($intAccount, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false, $bIncludePayments=true)
 	 {
-		return Account::getForId($intAccount)->getAccountBalance($bIncludeCreditAdjustments, $bIncludeDebitAdjustments);
+		return Account::getForId($intAccount)->getAccountBalance($bIncludeCreditAdjustments, $bIncludeDebitAdjustments, $bIncludePayments);
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -518,9 +518,9 @@
 	 *
 	 * @method
 	 */
-	 function GetOverdueBalance($intAccount, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false)
+	 function GetOverdueBalance($intAccount, $bIncludeCreditAdjustments=true, $bIncludeDebitAdjustments=false, $bIncludePayments=true)
 	 {
-	 	return Account::getForId($intAccount)->getOverdueBalance(date('Y-m-d'), $bIncludeCreditAdjustments, $bIncludeDebitAdjustments);
+	 	return Account::getForId($intAccount)->getOverdueBalance(date('Y-m-d'), $bIncludeCreditAdjustments, $bIncludeDebitAdjustments, $bIncludePayments);
 	 }
 	
 	//------------------------------------------------------------------------//

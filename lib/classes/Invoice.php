@@ -327,7 +327,7 @@ class Invoice extends ORM_Cached
 			Log::getLog()->log($arrAccountChargeTotals);
 			
 			// Calculate Preliminary Invoice Values
-			$this->AccountBalance	= $this->_objAccount->getAccountBalance(false, false);	// We don't want to include Adjustments as they are handled elsewhere
+			$this->AccountBalance	= $this->_objAccount->getAccountBalance(false, false, true);	// We don't want to include Adjustments as they are handled elsewhere, but we do want outstanding Payments
 			if ($this->AccountBalance === FALSE)
 			{
 				throw new Exception("Unable to calculate Account Balance for {$objAccount->Id}");
