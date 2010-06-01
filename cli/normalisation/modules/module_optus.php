@@ -287,7 +287,7 @@ class NormalisationModuleOptus extends NormalisationModule
 			// If no match found, look for a general Juridiction match in the form of JURISDICTION
 			if ($arrDestinationCode === false)
 			{
-				$arrDestinationCode 			= $this->_findDestination($mixCarrierCode);
+				$arrDestinationCode 			= $this->_findDestination($iJurisdiction);
 			}
 			
 			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
