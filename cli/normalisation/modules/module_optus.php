@@ -282,12 +282,12 @@ class NormalisationModuleOptus extends NormalisationModule
 			$iProviderClass 			= (int)$this->_FetchRawCDR('ProviderClass');
 			
 			// First, look for a combination of Juristiction/Provider Class in the form of JURISDICTION:PROVIDER_CLASS
-			$arrDestinationCode 			= $this->_findDestination("{$iJurisdiction}:{$iProviderClass}", true, true);
+			$arrDestinationCode	= $this->_findDestination("{$iJurisdiction}:{$iProviderClass}", true, true);
 			
 			// If no match found, look for a general Juridiction match in the form of JURISDICTION
 			if ($arrDestinationCode === false)
 			{
-				$arrDestinationCode 			= $this->_findDestination($iJurisdiction);
+				$arrDestinationCode	= $this->_findDestination($iJurisdiction);
 			}
 			
 			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);

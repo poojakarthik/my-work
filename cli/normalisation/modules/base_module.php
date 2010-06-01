@@ -1000,7 +1000,7 @@ abstract class NormalisationModule extends CarrierModule
 		static	$oGetUnknownDestination;
 		
 		// Check for exact match destination
-		if ($this->_selFindDestination->Execute(array("Carrier"=>$this->intBaseCarrier, "CarrierCode"=>$mCarrierCode, "Context"=>$this->_intContext)) === false)
+		if ($this->_selFindDestination->Execute(array("Carrier"=>$this->intBaseCarrier, "CarrierCode"=>(string)$mCarrierCode, "Context"=>$this->_intContext)) === false)
 		{
 			throw new Exception($this->_selFindDestination->Error());
 		}
