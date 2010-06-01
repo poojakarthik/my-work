@@ -43,7 +43,7 @@
  * @package		vixen
  * @class		<ClassName||InstanceName>
  */
-abstract class NormalisationModule extends CarrierModule 
+abstract class NormalisationModule extends CarrierModule
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -59,7 +59,7 @@ abstract class NormalisationModule extends CarrierModule
 	 *
 	 * @property
 	 */
-	protected $_intContext; 
+	protected $_intContext;
 	
 	//------------------------------------------------------------------------//
 	// _arrRawData
@@ -76,7 +76,7 @@ abstract class NormalisationModule extends CarrierModule
 	 * @property
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	protected $_arrRawData; 
+	protected $_arrRawData;
 
 	//------------------------------------------------------------------------//
 	// _arrNormalisedData
@@ -93,7 +93,7 @@ abstract class NormalisationModule extends CarrierModule
 	 * @property
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	protected $_arrNormalisedData; 
+	protected $_arrNormalisedData;
 	
 	//------------------------------------------------------------------------//
 	// rptNormalisationReport
@@ -209,7 +209,7 @@ abstract class NormalisationModule extends CarrierModule
 	 * @type		StatementSelect
 	 *
 	 * @property
-	 */	
+	 */
 	protected $_selFindOwner;
 
 	//------------------------------------------------------------------------//
@@ -383,14 +383,14 @@ abstract class NormalisationModule extends CarrierModule
 	 * Normalises raw data from the CDR
 	 *
 	 * Normalises raw data from the CDR
-	 * 
+	 *
 	 * @param	array		arrCDR		Array returned from SELECT query on CDR
 	 *
 	 * @return	array					Normalised Data, ready for direct UPDATE
 	 * 									into DB
 	 *
 	 * @method
-	 */	
+	 */
 	abstract function Normalise($arrCDR);
 	
 	//------------------------------------------------------------------------//
@@ -402,13 +402,13 @@ abstract class NormalisationModule extends CarrierModule
 	 * Removes +61 from FNNs
 	 *
 	 * Removes the +61 from the start of an FNN, replacing it with a 0
-	 * 
+	 *
 	 * @param	string		$strFNN		FNN to be parsed
 	 *
 	 * @return	string					Modified FNN
 	 *
 	 * @method
-	 */	
+	 */
 	public static function RemoveAusCode($strFNN)
 	{
 		if (strpos($strFNN, '+61') === 0)
@@ -435,15 +435,15 @@ abstract class NormalisationModule extends CarrierModule
 	 * 													131888		(13-numbers)
 	 * 													1800513454	(1800-numbers)
 	 * 													1900451354	(1900-numbers)
-	 * 													
-	 * 
+	 *
+	 *
 	 * @param	string		$strFNN		FNN to be parsed
 	 *
 	 * @return	boolean					true	: FNN is valid
 	 * 									false	: FNN is not valid
 	 *
 	 * @method
-	 */	
+	 */
 	protected function IsValidFNN($strFNN)
 	{
 		return IsValidFNN($strFNN);
@@ -458,10 +458,10 @@ abstract class NormalisationModule extends CarrierModule
 	 * Split a Raw CDR record into an array
 	 *
 	 * Split a Raw CDR record into an array
-	 * 
+	 *
 	 * @param	string		strCDR		CDR record
 	 *
-	 * @return	VOID					
+	 * @return	VOID
 	 *
 	 * @method
 	 */
@@ -512,9 +512,9 @@ abstract class NormalisationModule extends CarrierModule
 	 * Validate contents of Raw CDR record
 	 *
 	 * Validate contents of Raw CDR record
-	 * 
 	 *
-	 * @return	bool	TRUE if record is valid, FALSE otherwise				
+	 *
+	 * @return	bool	TRUE if record is valid, FALSE otherwise
 	 *
 	 * @method
 	 */
@@ -548,10 +548,10 @@ abstract class NormalisationModule extends CarrierModule
 	 * Fetch a field from the raw CDR
 	 *
 	 * Fetch a field from the raw CDR
-	 * 
+	 *
 	 * @param	string		strKey		field key
 	 *
-	 * @return	VOID					
+	 * @return	VOID
 	 *
 	 * @method
 	 */
@@ -569,10 +569,10 @@ abstract class NormalisationModule extends CarrierModule
 	 * Create a new default CDR record
 	 *
 	 * Create a new default CDR record
-	 * 
+	 *
 	 *
 	  * @param	array		arrCDR	CDR array
-	 * @return	VOID					
+	 * @return	VOID
 	 *
 	 * @method
 	 */
@@ -603,11 +603,11 @@ abstract class NormalisationModule extends CarrierModule
 	 * Add a field to the output CDR
 	 *
 	 * Add a field to the output CDR
-	 * 
+	 *
 	 * @param	string		strKey		field key
 	 * @param	mixed		mixValue	field value
 	 *
-	 * @return	VOID					
+	 * @return	VOID
 	 *
 	 * @method
 	 */
@@ -626,10 +626,10 @@ abstract class NormalisationModule extends CarrierModule
 	 *
 	 * Update Status of the output CDR
 	 * will not update status if the CDR already has an error status (other than CDR_BAD_OWNER)
-	 * 
+	 *
 	 * @param	int		intStatus		Status Constant
 	 *
-	 * @return	bool					
+	 * @return	bool
 	 *
 	 * @method
 	 */
@@ -659,9 +659,9 @@ abstract class NormalisationModule extends CarrierModule
 	 * Output CDR
 	 *
 	 * Output CDR
-	 * 
 	 *
-	 * @return	array					
+	 *
+	 * @return	array
 	 *
 	 * @method
 	 */
@@ -679,10 +679,10 @@ abstract class NormalisationModule extends CarrierModule
 	 * Output an error CDR
 	 *
 	 * Output an error CDR
-	 * 
+	 *
 	 * @param	int		intStatus		status to set in CDR
 	 *
-	 * @return	array					
+	 * @return	array
 	 *
 	 * @method
 	 */
@@ -702,10 +702,10 @@ abstract class NormalisationModule extends CarrierModule
 	 * Applies ownership based on the FNN
 	 *
 	 * Applies ownership based on the FNN
-	 * 
+	 *
 	 * @param	bool	$bolOwnerNow		[optional]	Get current owner of the FNN (default: FALSE)
 	 *
-	 * @return	bool					
+	 * @return	bool
 	 *
 	 * @method
 	 */
@@ -768,9 +768,9 @@ abstract class NormalisationModule extends CarrierModule
 	 * Applies the current or most recent owner based on the FNN
 	 *
 	 * Applies the current or most recent owner based on the FNN
-	 * 
 	 *
-	 * @return	bool					
+	 *
+	 * @return	bool
 	 *
 	 * @method
 	 */
@@ -816,7 +816,7 @@ abstract class NormalisationModule extends CarrierModule
 	 * Applies ownership based on the FNN
 	 *
 	 * Applies ownership based on the FNN
-	 * 
+	 *
 	 * @param	array	$arrCDR		Associative Array result for a CDR from the database
 	 *
 	 * @return	mixed				Associative Array of normalised data
@@ -862,10 +862,10 @@ abstract class NormalisationModule extends CarrierModule
 	 * Find the Vixen record type from a Carrier Record type code
 	 *
 	 * Find the Vixen record type from a Carrier Record type code
-	 * 
+	 *
 	 *
 	 * @param	mixed	mixCarrierCode		Carrier Record type code
-	 * @return	string	Record Type Code					
+	 * @return	string	Record Type Code
 	 *
 	 * @method
 	 */
@@ -899,11 +899,11 @@ abstract class NormalisationModule extends CarrierModule
 	 * Find the record type from a Service Type & Record Code
 	 *
 	 * Find the record type from a Service Type & Record Code
-	 * 
+	 *
 	 *
 	 * @param	int		intServiceType		Service Type Constant
 	 * @param	string	strRecordCode		Vixen Record Type Code
-	 * @return	int		Record Type Id					
+	 * @return	int		Record Type Id
 	 *
 	 * @method
 	 */
@@ -937,16 +937,19 @@ abstract class NormalisationModule extends CarrierModule
 	 * Find the Destination Details from a Carrier Destination code
 	 *
 	 * Find the Destination Details from a Carrier Destination code
-	 * 
+	 *
 	 *
 	 * @param	mixed	mixCarrierCode		Carrier Destination code
 	 * @param	bool	bolDontError		TRUE = Don't add an error to the CDR if destination not found
-	 * @return	array	Destination Details, Code & Description		
+	 * @return	array	Destination Details, Code & Description
 	 *
 	 * @method
 	 */
 	 protected function FindDestination($mixCarrierCode, $bolDontError=FALSE)
 	 {
+	 	// This is now handled by a reimplementation
+	 	return $this->_findDestination($mixCarrierCode);
+	 	/*
 	 	static	$selUnknownDestination;
 	 	
 		//CliEcho("Finding Destination Translation for Carrier {$this->intBaseCarrier} with Code '{$mixCarrierCode}' in Context {$this->_intContext}");
@@ -966,8 +969,8 @@ abstract class NormalisationModule extends CarrierModule
 	 	}
 	 	
 		// No translation data -- Use the 'Unknown Destination' Destination for this Context
-		$selUnknownDestination	= ($selUnknownDestination) ? $selUnknownDestination : new StatementSelect(	"destination_context JOIN Destination ON destination_context.fallback_destination_id = Destination.Id", 
-																											"Destination.*", 
+		$selUnknownDestination	= ($selUnknownDestination) ? $selUnknownDestination : new StatementSelect(	"destination_context JOIN Destination ON destination_context.fallback_destination_id = Destination.Id",
+																											"Destination.*",
 																											"destination_context.id = <Context>");
 		if ($selUnknownDestination->Execute(array('Context'=>$this->_intContext)) === false)
 		{
@@ -989,7 +992,54 @@ abstract class NormalisationModule extends CarrierModule
 		
 		// Return false if there was no match
 	 	return false;
+	 	*/
 	 }
+	 
+	protected function _findDestination($mCarrierCode, $bExactMatchOnly=false, $bSilentFail=false)
+	{
+		static	$oGetUnknownDestination;
+		
+		// Check for exact match destination
+		if ($this->_selFindDestination->Execute(array("Carrier"=>$this->intBaseCarrier, "CarrierCode"=>$mCarrierCode, "Context"=>$this->_intContext)) === false)
+		{
+			throw new Exception($this->_selFindDestination->Error());
+		}
+		if ($aDestination = $this->_selFindDestination->Fetch())
+		{
+			return $aDestination;
+		}
+		
+		// Check for Unknown Destination
+		if (!$bExactMatchOnly)
+		{
+			$oGetUnknownDestination	= ($oGetUnknownDestination) ? $oGetUnknownDestination : new StatementSelect(	"destination_context JOIN Destination ON destination_context.fallback_destination_id = Destination.Id",
+																													"Destination.*",
+																													"destination_context.id = <Context>");
+			if ($oGetUnknownDestination->Execute(array('Context'=>$this->_intContext)) === false)
+			{
+				throw new Exception($oGetUnknownDestination->Error());
+			}
+			if ($aUnknownDestination = $oGetUnknownDestination->Fetch())
+			{
+				$aUnknownDestination['bolUnknownDestination']	= true;
+				return $aUnknownDestination;
+			}
+			else
+			{
+	 			throw new Exception("No Default Destination found for Context {$this->_intContext}!");
+			}
+		}
+		
+		// No Destination -- Error
+		if ($bSilentFail)
+		{
+			return false;
+		}
+		else
+		{
+	 		throw new Exception("No Destination found for Context {$this->_intContext}! (Code: '{$mCarrierCode}'; Carrier: {$this->intBaseCarrier}; )");
+		}
+	}
 
 	//------------------------------------------------------------------------//
 	// _GenerateUID
@@ -1000,9 +1050,9 @@ abstract class NormalisationModule extends CarrierModule
 	 * Generate a Unique ID for a CDR record
 	 *
 	 * Generate a Unique ID for a CDR record
-	 * 
 	 *
-	 * @return	string					
+	 *
+	 * @return	string
 	 *
 	 * @method
 	 */
@@ -1020,9 +1070,9 @@ abstract class NormalisationModule extends CarrierModule
 	 * Check if an FNN is an Inbound Service
 	 *
 	 * Check if an FNN is an Inbound Service
-	 * 
+	 *
 	 * @param	string	strFNN		FNN to check
-	 * @return	bool					
+	 * @return	bool
 	 *
 	 * @method
 	 */
@@ -1048,7 +1098,7 @@ abstract class NormalisationModule extends CarrierModule
 	 * Check if this CDR is a credit, and changes normalised data to suit.
 	 * Must be called after Cost and Units are set.
 	 *
-	 * @return	bool					
+	 * @return	bool
 	 *
 	 * @method
 	 */

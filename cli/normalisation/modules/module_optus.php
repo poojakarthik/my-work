@@ -203,14 +203,14 @@ class NormalisationModuleOptus extends NormalisationModule
 	 * Normalises raw data from the CDR
 	 *
 	 * Normalises raw data from the CDR
-	 * 
+	 *
 	 * @param	array		arrCDR		Array returned from SELECT query on CDR
 	 *
 	 * @return	mixed					Normalised Data (Array, ready for direct UPDATE
 	 * 									into DB. Returns an error code (constant) on failure
 	 *
 	 * @method
-	 */	
+	 */
 	function Normalise($arrCDR)
 	{
 		// set up CDR
@@ -269,14 +269,27 @@ class NormalisationModuleOptus extends NormalisationModule
 		// RecordType
 		$mixCarrierCode					= (int)$this->_FetchRawCDR('TypeIdUsage');
 		$strRecordCode 					= $this->FindRecordCode((string)$mixCarrierCode);
-		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
+		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode);
 		$this->_AppendCDR('RecordType', $mixValue);
 		
 		// DestinationCode & Description (only if we have a context)
 		if ($this->_intContext > 0)
 		{
-			$mixCarrierCode 				= (int)$this->_FetchRawCDR('Jurisdiction');
-			$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+			// SPEEDi Records have two fields that when combined can represent a unique Destination/Call Subtype
+			// Jurisdiction: Call Sub-Type
+			$iJurisdiction 				= (int)$this->_FetchRawCDR('Jurisdiction');
+			// Provider Class: Telephony Network (kinda)
+			$iProviderClass 			= (int)$this->_FetchRawCDR('ProviderClass');
+			
+			// First, look for a combination of Juristiction/Provider Class in the form of JURISDICTION:PROVIDER_CLASS
+			$arrDestinationCode 			= $this->_findDestination("{$iJurisdiction}:{$iProviderClass}", true, true);
+			
+			// If no match found, look for a general Juridiction match in the form of JURISDICTION
+			if ($arrDestinationCode === false)
+			{
+				$arrDestinationCode 			= $this->_findDestination($mixCarrierCode);
+			}
+			
 			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
 			
 			// Determine Description
@@ -398,7 +411,7 @@ class NormalisationModuleOptus extends NormalisationModule
 	 * Returns the Raw Destination Code from the CDR
 	 *
 	 * Returns the Raw Destination Code from the CDR
-	 * 
+	 *
 	 *
 	 * @return	mixed					Raw Destination Code
 	 *
@@ -418,7 +431,7 @@ class NormalisationModuleOptus extends NormalisationModule
 	 * Returns the Raw Description from the CDR
 	 *
 	 * Returns the Raw Description from the CDR
-	 * 
+	 *
 	 *
 	 * @return	mixed					Raw Description
 	 *
@@ -438,7 +451,7 @@ class NormalisationModuleOptus extends NormalisationModule
 	 * Returns the Raw RawRecord Type from the CDR
 	 *
 	 * Returns the Raw RawRecord Type from the CDR
-	 * 
+	 *
 	 *
 	 * @return	mixed					Raw RawRecord Type
 	 *
@@ -454,6 +467,6 @@ class NormalisationModuleOptus extends NormalisationModule
 	// Constants for NormalisationModuleOptus
 	//------------------------------------------------------------------------//
 	
-	// define any constants here that will only ever be used internaly by 
+	// define any constants here that will only ever be used internaly by
 	// the module. Prefix the constants with the module name.
 ?>
