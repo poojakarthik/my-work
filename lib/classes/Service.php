@@ -12,7 +12,7 @@
  * @class	Service
  */
 class Service extends ORM
-{	
+{
 	protected	$_strTableName	= "Service";
 
 	//------------------------------------------------------------------------//
@@ -266,7 +266,7 @@ class Service extends ORM
 				throw new Exception($updCDRs->Error());
 			}
 			
-			// Only update the Carrier and CarrierPreselect fields of the Service record, 
+			// Only update the Carrier and CarrierPreselect fields of the Service record,
 			// if the new plan comes into affect at the beging of the current billing period
 			$arrUpdate = Array(	"Carrier"			=> $objNewRatePlan->CarrierFullService,
 								"CarrierPreselect"	=> $objNewRatePlan->CarrierPreselection);
@@ -297,7 +297,7 @@ class Service extends ORM
 	 * Retrieves a Service object, based on the Service record id passed
 	 *
 	 * Retrieves a Service object, based on the Service record id passed
-	 * 
+	 *
 	 * @param	integer		$intServiceId							id of the service record
 	 * @param	bool		$bolSilentFail							if FALSE, it will throw an exception, if the record can't be found (defaults to false)
 	 * 																if TRUE, it will return NULL if the record can't be found
@@ -305,7 +305,7 @@ class Service extends ORM
 	 * 																	Note, that this might not be the newest most record modelling this service, if the service has been moved to another account
 	 * 																	by means of a Change of Lessee, or Change of Account action.
 	 * 																if FALSE, then the record with id = $intServiceId is returned
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
@@ -319,7 +319,7 @@ class Service extends ORM
 		if ($bolGetNewestRecordModellingService)
 		{
 			// Retrieve the newest service record modelling this service (FNN) on the account that $intServiceId is associated with
-			$strQuery = "SELECT s.* ". 
+			$strQuery = "SELECT s.* ".
 						"FROM Service AS s INNER JOIN Service AS s2 ON (s.FNN = s2.FNN AND s.Account = s2.Account) ".
 						"WHERE s2.Id = $intServiceId ".
 						"ORDER BY s.Id DESC ".
@@ -364,9 +364,9 @@ class Service extends ORM
 	 *
 	 * Handles Service related tasks that have to be carried out when a sale item associated with the service, is cancelled
 	 * It is assumed the service is currently active or pending activation
-	 * 
+	 *
 	 * @param	integer		$intEmployeeId		id of the employee who actioned the cancellation
-	 * 
+	 *
 	 * @return	void
 	 *
 	 * @method
@@ -405,11 +405,11 @@ class Service extends ORM
 	 *
 	 * Gets all Services which have the given FNN
 	 * This does not consider FNNs in an indial 100 range, which aren't the primary FNN of the indial100
-	 * 
+	 *
 	 * @param	string	$strFNN						The FNN to match
 	 * @param	int		[ $intAccountId ]			Defaults to NULL.  If set to an account id, then only FNN Instances, associated with the account, will be returned
-	 * @param	boolean	[ $bolAsArray ]				TRUE: Return arrays of Services; FALSE: Return Service Objects 
-	 * 
+	 * @param	boolean	[ $bolAsArray ]				TRUE: Return arrays of Services; FALSE: Return Service Objects
+	 *
 	 * @return	array
 	 *
 	 * @method
@@ -441,7 +441,7 @@ class Service extends ORM
 	 * getServiceAddress()
 	 *
 	 * Gets the Service Address details for this Service
-	 * 
+	 *
 	 * @return	Service_Address
 	 *
 	 * @method
@@ -535,7 +535,7 @@ class Service extends ORM
 			}
 			else
 			{
-				// PostgreSQL Database, 
+				// PostgreSQL Database,
 				$sSelect		= "SELECT c.id as \"Id\", c.record_type as \"RecordTypeId\", c.description as \"Description\", c.source as \"Source\", c.destination as \"Destination\", c.start_date_time as \"StartDatetime\", c.units as \"Units\", c.charge as \"Charge\", c.credit as \"Credit\" ";
 				$sCountSelect	= "SELECT	COUNT(*)";
 				/*
@@ -582,7 +582,7 @@ class Service extends ORM
 			$sCountSelect	= "SELECT COUNT(*) ";
 			$sCdrs			=	"FROM 	CDR c " .
 								"WHERE 	Account = $iAccountId " .
-							    "AND	c.Service in ({$sWhereServiceEquals}) ";
+							    "AND	c.Service in ({$sWhereServiceEquals}) " .
 							    "AND	c.Status = ".CDR_RATED." ";
 			
 			if ($iRecordType)
@@ -619,6 +619,8 @@ class Service extends ORM
 			{
 				$aResult['CDRs'][]	= $aCDR;
 			}
+			
+			throw new Exception($sCdrs);
 		}
 		
 		return $aResult;
@@ -641,10 +643,10 @@ class Service extends ORM
 		$sInvoiceRunId	= (is_null($iInvoiceRunId) ? 'is null' : "= {$iInvoiceRunId}");
 		$sQuery 		= "
 			SELECT 	c.Id as ChargeId, c.ChargeType ChargeType, c.Description Description, s.Id as ServiceId, s.FNN as FNN, ChargedOn as Date, c.Amount Amount, c.Nature as Nature
-			FROM 	Service s 
-			JOIN 	Charge c 
-			  			ON (s.Id = c.Service) 
-			LEFT JOIN ChargeType ct 
+			FROM 	Service s
+			JOIN 	Charge c
+			  			ON (s.Id = c.Service)
+			LEFT JOIN ChargeType ct
 			  			ON (ct.Id = c.charge_type_id OR c.ChargeType = ct.ChargeType)
 			WHERE 	c.invoice_run_id $sInvoiceRunId
 		   	AND 	c.Service = {$this->Id}
@@ -684,9 +686,9 @@ class Service extends ORM
 	 * Access a Static Cache of Prepared Statements used by this Class
 	 *
 	 * Access a Static Cache of Prepared Statements used by this Class
-	 * 
+	 *
 	 * @param	string		$strStatement						Name of the statement
-	 * 
+	 *
 	 * @return	Statement										The requested Statement
 	 *
 	 * @method
