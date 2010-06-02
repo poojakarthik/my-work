@@ -372,8 +372,9 @@ class Invoice extends ORM_Cached
 			Log::getLog()->log("Final Account Charges END");
 			
 			// Recalculate Final Invoice Values
+			//$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
 			$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
-			$this->Tax				= round($this->Tax, 2);
+			$this->Tax				= ceil($this->Tax * 100) / 100;
 			$this->Balance			= $this->Total + $this->Tax;
 			$this->TotalOwing		= $this->Balance + $this->AccountBalance;
 			
