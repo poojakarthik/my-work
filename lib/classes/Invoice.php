@@ -389,8 +389,10 @@ class Invoice extends ORM_Cached
 			if ($aAdjustmentTotals = $selAdjustmentTotals->Fetch())
 			{
 				// Tax is calculated by the query for us
-				$this->adjustment_total	= round((float)$aAdjustmentTotals['adjustment_total'], 2);
-				$this->adjustment_tax	= round((float)$aAdjustmentTotals['adjustment_tax'], 2);
+				//$this->adjustment_total	= round((float)$aAdjustmentTotals['adjustment_total'], 2);
+				//$this->adjustment_tax	= round((float)$aAdjustmentTotals['adjustment_tax'], 2);
+				$this->adjustment_total	= ceil((float)$aAdjustmentTotals['adjustment_total'] * 100) / 100;
+				$this->adjustment_tax	= ceild((float)$aAdjustmentTotals['adjustment_tax'] * 100) / 100;
 			}
 			else
 			{
