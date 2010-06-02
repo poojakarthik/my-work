@@ -583,7 +583,7 @@ class Service extends ORM
 			$sCdrs			=	"FROM 	CDR c " .
 								"WHERE 	Account = $iAccountId " .
 							    "AND	c.Service in ({$sWhereServiceEquals}) " .
-							    "AND	c.Status = ".CDR_RATED." ";
+							    "AND	c.Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") ";
 			
 			if ($iRecordType)
 			{
