@@ -266,6 +266,8 @@
 				self::_addElement($xmlInvoiceRounded, $sField, Invoice::roundOut($mValue, 2));
 			}
 		}
+		self::_addElement($xmlInvoiceRecord, 'LastTotalOwing', $arrLastInvoice['TotalOwing']);
+		self::_addElement($xmlInvoiceRounded, 'LastTotalOwing', Invoice::roundOut($arrLastInvoice['TotalOwing'], 2));
 		
 		//--------------------------------------------------------------------//
 		// Cost Centre Summary
