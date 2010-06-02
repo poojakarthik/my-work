@@ -375,8 +375,8 @@ class Invoice extends ORM_Cached
 			//$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
 			//$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
 			//$this->Tax				= ceil($this->Tax * 100) / 100;
-			$this->Total			= round($this->Debits - $this->Credits, 2);
-			$this->Tax				= round($this->Tax, 2);
+			$this->Total			= Invoice::roundAbsolute($this->Debits - $this->Credits, 2);
+			$this->Tax				= Invoice::roundAbsolute($this->Tax, 2);
 			$this->Balance			= $this->Total + $this->Tax;
 			$this->TotalOwing		= $this->Balance + $this->AccountBalance;
 			
@@ -391,8 +391,8 @@ class Invoice extends ORM_Cached
 			if ($aAdjustmentTotals = $selAdjustmentTotals->Fetch())
 			{
 				// Tax is calculated by the query for us
-				$this->adjustment_total	= round((float)$aAdjustmentTotals['adjustment_total'], 2);
-				$this->adjustment_tax	= round((float)$aAdjustmentTotals['adjustment_tax'], 2);
+				$this->adjustment_total	= Invoice::roundAbsolute((float)$aAdjustmentTotals['adjustment_total'], 2);
+				$this->adjustment_tax	= Invoice::roundAbsolute((float)$aAdjustmentTotals['adjustment_tax'], 2);
 				//$this->adjustment_total	= ceil((float)$aAdjustmentTotals['adjustment_total'] * 100) / 100;
 				//$this->adjustment_tax	= ceil((float)$aAdjustmentTotals['adjustment_tax'] * 100) / 100;
 			}
@@ -953,6 +953,21 @@ class Invoice extends ORM_Cached
 	{
 		$oInvoiceRun	= new Invoice_Run(array('Id'=>$this->invoice_run_id), true);
 		$oInvoiceRun->export(array($this->Account));
+	}
+	
+	/**
+	 * roundAbsolute()
+	 *
+	 * Similar to native round(), but will invert the rounding rule for negative values
+	 *
+	 * @return		mixed
+	 *
+	 * @method
+	 */
+	public static function roundAbsolute($mValue, $iPrecision=0)
+	{
+		$fRoundAbsolute	= round(abs($mValue), $iPrecision);
+		return ($mValue > 0.0) ? 0.0 - $fRoundAbsolute : $fRoundAbsolute;
 	}
 
 	//------------------------------------------------------------------------//
