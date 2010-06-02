@@ -967,7 +967,7 @@ class Invoice extends ORM_Cached
 	public static function roundAbsolute($mValue, $iPrecision=0)
 	{
 		$fRoundAbsolute	= round(abs($mValue), $iPrecision);
-		return ($mValue > 0.0) ? 0.0 - $fRoundAbsolute : $fRoundAbsolute;
+		return ($mValue < 0.0) ? 0.0 - $fRoundAbsolute : $fRoundAbsolute;
 	}
 
 	//------------------------------------------------------------------------//
