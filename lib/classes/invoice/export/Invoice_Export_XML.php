@@ -255,7 +255,7 @@
 		self::_addElement($xmlStatement, 'BillingPeriodStart', $strBillingPeriodStart);
 		self::_addElement($xmlStatement, 'BillingPeriodEnd', $strBillingPeriodEnd);
 		self::_addElement($xmlStatement, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
-		
+		/*
 		$xmlInvoiceRecord	= self::_addElement($xmlStatement, 'Invoice');
 		$xmlInvoiceRounded	= self::_addElement($xmlStatement, 'InvoiceRounded');
 		foreach ($arrInvoice as $sField=>$mValue)
@@ -268,7 +268,7 @@
 		}
 		self::_addElement($xmlInvoiceRecord, 'LastTotalOwing', $arrLastInvoice['TotalOwing']);
 		self::_addElement($xmlInvoiceRounded, 'LastTotalOwing', Invoice::roundOut($arrLastInvoice['TotalOwing'], 2));
-		
+		*/
 		//--------------------------------------------------------------------//
 		// Cost Centre Summary
 		//--------------------------------------------------------------------//
