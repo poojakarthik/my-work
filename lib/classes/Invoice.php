@@ -392,7 +392,7 @@ class Invoice extends ORM_Cached
 				//$this->adjustment_total	= round((float)$aAdjustmentTotals['adjustment_total'], 2);
 				//$this->adjustment_tax	= round((float)$aAdjustmentTotals['adjustment_tax'], 2);
 				$this->adjustment_total	= ceil((float)$aAdjustmentTotals['adjustment_total'] * 100) / 100;
-				$this->adjustment_tax	= ceild((float)$aAdjustmentTotals['adjustment_tax'] * 100) / 100;
+				$this->adjustment_tax	= ceil((float)$aAdjustmentTotals['adjustment_tax'] * 100) / 100;
 			}
 			else
 			{
