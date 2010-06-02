@@ -373,6 +373,7 @@ class Invoice extends ORM_Cached
 			
 			// Recalculate Final Invoice Values
 			$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
+			$this->Tax				= round($this->Tax, 2);
 			$this->Balance			= $this->Total + $this->Tax;
 			$this->TotalOwing		= $this->Balance + $this->AccountBalance;
 			
