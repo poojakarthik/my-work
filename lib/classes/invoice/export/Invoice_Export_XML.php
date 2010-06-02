@@ -247,8 +247,8 @@
 		self::_addElement($xmlStatement, 'OpeningBalance', number_format(Invoice::roundOut($arrLastInvoice['TotalOwing'], 2), 2, '.', ''));
 		self::_addElement($xmlStatement, 'Payments', number_format(max(Invoice::roundOut($arrLastInvoice['TotalOwing'], 2) - Invoice::roundOut($arrInvoice['AccountBalance'], 2), 0.0), 2, '.', ''));
 		self::_addElement($xmlStatement, 'Adjustments', number_format($arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', ''));
-		self::_addElement($xmlStatement, 'OutstandingBalance', number_format(Invoice::roundOut(Invoice::roundOut($arrInvoice['AccountBalance'], 2) + $arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2), 2, '.', ''));
-		self::_addElement($xmlStatement, 'OverdueBalance', number_format(Invoice::roundOut(Invoice::roundOut($arrCustomer['OverdueBalance'], 2) + $arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2), 2, '.', ''));
+		self::_addElement($xmlStatement, 'OutstandingBalance', number_format(Invoice::roundOut($arrInvoice['AccountBalance'], 2) + $arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', ''));
+		self::_addElement($xmlStatement, 'OverdueBalance', number_format(Invoice::roundOut($arrCustomer['OverdueBalance'], 2) + $arrInvoice['adjustment_total'] + $arrInvoice['adjustment_tax'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'NewCharges', number_format($arrInvoice['charge_total'] + $arrInvoice['charge_tax'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'InvoiceTotal', number_format($arrInvoice['Total'] + $arrInvoice['Tax'], 2, '.', ''));
 		self::_addElement($xmlStatement, 'TotalOwing', number_format(Invoice::roundOut($arrInvoice['TotalOwing'], 2), 2, '.', ''));
