@@ -262,8 +262,8 @@
 		{
 			if (is_numeric($mValue))
 			{
-				self::_addElement($xmlInvoiceRecord, $mValue);
-				self::_addElement($xmlInvoiceRounded, Invoice::roundOut($mValue, 2));
+				self::_addElement($xmlInvoiceRecord, $sField, $mValue);
+				self::_addElement($xmlInvoiceRounded, $sField, Invoice::roundOut($mValue, 2));
 			}
 		}
 		
