@@ -620,7 +620,7 @@ class Service extends ORM
 				$aResult['CDRs'][]	= $aCDR;
 			}
 			
-			throw new Exception($sCdrs);
+			//throw new Exception($sCdrs);
 		}
 		
 		return $aResult;
