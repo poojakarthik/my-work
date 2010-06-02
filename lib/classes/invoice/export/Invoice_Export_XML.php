@@ -256,6 +256,17 @@
 		self::_addElement($xmlStatement, 'BillingPeriodEnd', $strBillingPeriodEnd);
 		self::_addElement($xmlStatement, 'DueDate', date("j M y", strtotime($arrInvoice['DueOn'])));
 		
+		$xmlInvoiceRecord	= self::_addElement($xmlStatement, 'Invoice');
+		$xmlInvoiceRounded	= self::_addElement($xmlStatement, 'InvoiceRounded');
+		foreach ($arrInvoice as $sField=>$mValue)
+		{
+			if (is_numeric($mValue))
+			{
+				self::_addElement($xmlInvoiceRecord, $mValue);
+				self::_addElement($xmlInvoiceRounded, Invoice::roundOut($mValue, 2));
+			}
+		}
+		
 		//--------------------------------------------------------------------//
 		// Cost Centre Summary
 		//--------------------------------------------------------------------//
