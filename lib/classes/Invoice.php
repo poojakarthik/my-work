@@ -373,8 +373,10 @@ class Invoice extends ORM_Cached
 			
 			// Recalculate Final Invoice Values
 			//$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
-			$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
-			$this->Tax				= ceil($this->Tax * 100) / 100;
+			//$this->Total			= ceil(($this->Debits - $this->Credits) * 100) / 100;
+			//$this->Tax				= ceil($this->Tax * 100) / 100;
+			$this->Total			= round($this->Debits - $this->Credits, 2);
+			$this->Tax				= round($this->Tax, 2);
 			$this->Balance			= $this->Total + $this->Tax;
 			$this->TotalOwing		= $this->Balance + $this->AccountBalance;
 			
@@ -389,10 +391,10 @@ class Invoice extends ORM_Cached
 			if ($aAdjustmentTotals = $selAdjustmentTotals->Fetch())
 			{
 				// Tax is calculated by the query for us
-				//$this->adjustment_total	= round((float)$aAdjustmentTotals['adjustment_total'], 2);
-				//$this->adjustment_tax	= round((float)$aAdjustmentTotals['adjustment_tax'], 2);
-				$this->adjustment_total	= ceil((float)$aAdjustmentTotals['adjustment_total'] * 100) / 100;
-				$this->adjustment_tax	= ceil((float)$aAdjustmentTotals['adjustment_tax'] * 100) / 100;
+				$this->adjustment_total	= round((float)$aAdjustmentTotals['adjustment_total'], 2);
+				$this->adjustment_tax	= round((float)$aAdjustmentTotals['adjustment_tax'], 2);
+				//$this->adjustment_total	= ceil((float)$aAdjustmentTotals['adjustment_total'] * 100) / 100;
+				//$this->adjustment_tax	= ceil((float)$aAdjustmentTotals['adjustment_tax'] * 100) / 100;
 			}
 			else
 			{
