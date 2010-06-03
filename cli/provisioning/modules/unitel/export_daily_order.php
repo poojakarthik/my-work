@@ -1,4 +1,4 @@
-HIl<?php
+<?php
 //----------------------------------------------------------------------------//
 // (c) copyright 2008 VOIPTEL Pty Ltd
 //
@@ -69,9 +69,9 @@ HIl<?php
 	 * Constructor
 	 *
 	 * Constructor
-	 * 
+	 *
 	 * @param	integer	$intCarrier				The Carrier using this Module
-	 * 
+	 *
 	 * @return	ExportBase
 	 *
 	 * @method
@@ -461,15 +461,15 @@ HIl<?php
 	 * Exports a ProvisioningRequest Record to a format accepted by the Carrier
 	 *
 	 * Exports a ProvisioningRequest Record to a format accepted by the Carrier
-	 * 
+	 *
 	 * @param	array	$arrRequest		Request to Export
-	 * 
+	 *
 	 * @return	array					Modified Request
 	 *
 	 * @method
 	 */
  	function Output($arrRequest)
- 	{ 		
+ 	{
  		//--------------------------------------------------------------------//
  		// RENDER
  		//--------------------------------------------------------------------//
@@ -604,7 +604,7 @@ HIl<?php
 	 * Builds the output file/email for delivery to Carrier
 	 *
 	 * Builds the output file/email for delivery to Carrier
-	 * 
+	 *
 	 * @return	array					'Pass'			: TRUE/FALSE
 	 * 									'Description'	: Error message
 	 *
