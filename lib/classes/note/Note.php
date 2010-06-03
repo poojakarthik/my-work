@@ -148,6 +148,29 @@ class Note extends ORM
 		return $aNotes;
 	}
 	
+	public static function getForId($iId, $bSilentFail=false)
+	{
+		try
+		{
+			$oNote = new Note(array('Id'=>$iId), true);
+		}
+		catch (Exception_ORM_LoadById $e)
+		{
+			// The record could not be found
+			if ($bSilentFail)
+			{
+				return null;
+			}
+			else
+			{
+				throw $e;
+			}
+		}
+		
+		// The object could be created
+		return $oNote;
+	}
+	
 	//------------------------------------------------------------------------//
 	// _preparedStatement
 	//------------------------------------------------------------------------//

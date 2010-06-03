@@ -13,17 +13,22 @@ class JSON_Handler_Recurring_Charge extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getRecurringChargesAwaitingApproval($bolCountOnly=false, $intLimit=0, $intOffset=0)
+	public function getRecurringChargesAwaitingApproval($bolCountOnly=false, $intLimit=0, $intOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
+		//
+		//	NOTE: 	Sorting & Filtering is not supported by this (Dataset_Ajax) method. rmctainsh 20100527
+		//
+		
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
 		
 		try
 		{
 			// Set the filter constraints (only retrieve the recurring adjusments that are awaiting approval)
-			$arrFilter = array('recurringChargeStatus'	=> array(	'Type'	=> Recurring_Charge::SEARCH_CONSTRAINT_RECURRING_CHARGE_STATUS_ID,
-																	'Value'	=> Recurring_Charge_Status::getIdForSystemName('AWAITING_APPROVAL')
-														)
+			$arrFilter = array('recurringChargeStatus'	=> 	array(
+																'Type'	=> Recurring_Charge::SEARCH_CONSTRAINT_RECURRING_CHARGE_STATUS_ID,
+																'Value'	=> Recurring_Charge_Status::getIdForSystemName('AWAITING_APPROVAL')
+															)
 							);
 			
 			// Order by the createdOn timestamp ascending
@@ -33,9 +38,9 @@ class JSON_Handler_Recurring_Charge extends JSON_Handler
 			{
 				// Count Only
 				return array(
-								"Success"			=> true,
-								"intRecordCount"	=> Recurring_Charge::searchFor($arrFilter, $arrSort, null, null, true),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+								"Success"		=> true,
+								"iRecordCount"	=> Recurring_Charge::searchFor($arrFilter, $arrSort, null, null, true),
+								"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
 			else
@@ -114,10 +119,10 @@ class JSON_Handler_Recurring_Charge extends JSON_Handler
 				
 				// If no exceptions were thrown, then everything worked
 				return array(
-								"Success"			=> true,
-								"arrRecords"		=> $arrRecChargesFormatted,
-								"intRecordCount"	=> ($objPaginationDetails !== null)? $objPaginationDetails->totalRecordCount : count($arrRecChargesFormatted),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+								"Success"		=> true,
+								"aRecords"		=> $arrRecChargesFormatted,
+								"iRecordCount"	=> ($objPaginationDetails !== null)? $objPaginationDetails->totalRecordCount : count($arrRecChargesFormatted),
+								"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
 		}

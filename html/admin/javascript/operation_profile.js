@@ -158,7 +158,7 @@ var Operation_Profile	= Class.create
 
 Operation_Profile._oDataset	= 	new Dataset_Ajax(
 									Dataset_Ajax.CACHE_MODE_NO_CACHING, 
-									{strObject: 'Operation_Profile', strMethod: 'getActive'}
+									{sObject: 'Operation_Profile', sMethod: 'getActive'}
 								);
 
 /* Static Methods */

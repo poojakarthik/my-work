@@ -47,17 +47,17 @@ class JSON_Handler_Employee extends JSON_Handler
 		}
 	}
 	
-	public function getDataSetActiveEmployees($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getDataSetActiveEmployees($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
-		return $this->getDataSet($bCountOnly, $iLimit, $iOffset, false);
+		return $this->getDataSet($bCountOnly, $iLimit, $iOffset, $oFieldsToSort, false);
 	}
 	
-	public function getDataSetAllEmployees($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getDataSetAllEmployees($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
-		return $this->getDataSet($bCountOnly, $iLimit, $iOffset, true);
+		return $this->getDataSet($bCountOnly, $iLimit, $iOffset, $oFieldsToSort, true);
 	}
 	
-	public function getDataSet($bCountOnly=false, $iLimit=0, $iOffset=0, $bReturnArchived=false)
+	public function getDataSet($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $bReturnArchived=false)
 	{
 		try
 		{
@@ -65,8 +65,8 @@ class JSON_Handler_Employee extends JSON_Handler
 			{
 				// Count Only
 				return	array(
-							"Success"			=> true,
-							"intRecordCount"	=> self::_getRecordCount($bReturnArchived)
+							"Success"		=> true,
+							"iRecordCount"	=> self::_getRecordCount($bReturnArchived)
 						);
 			}
 			else
@@ -78,10 +78,28 @@ class JSON_Handler_Employee extends JSON_Handler
 				$oQuery	= new Query();
 				
 				// Retrieve list of Employees
-				$sEmployeeSQL	= "SELECT * FROM Employee WHERE Id > 0";
-				$sEmployeeSQL	.= ($bReturnArchived ? "" : " AND Archived = 0");
+				$sEmployeeSQL	= "SELECT * FROM Employee";
+				$sEmployeeSQL	.= " WHERE Id > 0 ".($bReturnArchived ? "" : " AND Archived = 0");
+				
+				// Build ORDER BY clause
+				if (is_object($oFieldsToSort))
+				{
+					$aFieldsToSort	= get_object_vars($oFieldsToSort);
+					$aOrderBy		= '';
+					foreach($aFieldsToSort as $sField => $sDirection)
+					{
+						$aOrderBy[]	= "{$sField} {$sDirection}";
+					}
+					
+					if (count($aOrderBy) > 0)
+					{
+						$sEmployeeSQL	.= " ORDER BY ".implode(', ', $aOrderBy);
+					}
+				}
+				
 				$sEmployeeSQL	.= ($iLimit !== null) ? " LIMIT {$iLimit} OFFSET {$iOffset}" : '';
-				$rEmployees	= $oQuery->Execute($sEmployeeSQL);
+				$rEmployees		= $oQuery->Execute($sEmployeeSQL);
+				
 				if ($rEmployees === false)
 				{
 					throw new Exception($oQuery->Error());
@@ -105,9 +123,10 @@ class JSON_Handler_Employee extends JSON_Handler
 				
 				// If no exceptions were thrown, then everything worked
 				return 	array(
-							"Success"			=> true,
-							"arrRecords"		=> $arrEmployees,
-							"intRecordCount"	=> ($iLimit === null) ? count($aEmployees) : self::_getRecordCount($bReturnArchived)
+							"Success"		=> true,
+							"aRecords"		=> $arrEmployees,
+							"iRecordCount"	=> ($iLimit === null) ? count($aEmployees) : self::_getRecordCount($bReturnArchived),
+							"mDebug"		=> $aFieldsToSort
 						);
 			}
 		}

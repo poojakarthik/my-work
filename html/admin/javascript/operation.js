@@ -28,7 +28,10 @@ var Operation	= Class.create
 	}
 });
 
-Operation._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {strObject: 'Operation', strMethod: 'getDataset'});
+Operation._oDataset	=	new Dataset_Ajax(
+							Dataset_Ajax.CACHE_MODE_NO_CACHING, 
+							{sObject: 'Operation', sMethod: 'getDataset'}
+						);
 
 /* Static Methods */
 

@@ -1,0 +1,393 @@
+
+/*
+ * Filter
+ * 
+ * Controls filtering of given Dataset_Ajax and Pagination objects.
+ * 
+ * You can specify which field alias' to filter on and what type of value is expected (see the 
+ * FILTER_TYPE class constants for more info).
+ * 
+*/
+var Filter	= Class.create
+({
+	initialize	: function(oDataSetAjax, oPagination, fnFilterUpdateCallback)
+	{
+		this._oDataSetAjax				= oDataSetAjax;
+		this._oPagination				= oPagination;
+		this._hFilters					= {};
+		this._hControls					= {};
+		this._fnFilterUpdateCallback	= fnFilterUpdateCallback;
+		document.body.observe('click', this._hideFilterOptions.bind(this));
+	},
+	
+	/*
+	 * oDefinition structure
+	 * 	- iType: 	FILTER_TYPE constant
+	 *  - oOption: 	Control_Field.factory definition object
+	 */
+	addFilter	: function(sField, oDefinition)
+	{
+		this._hFilters[sField]	= {iType: oDefinition.iType};
+		
+		switch (oDefinition.iType)
+		{
+			case Filter.FILTER_TYPE_VALUE:
+				this._hFilters[sField].mValue			= null;
+				this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				break;
+			case Filter.FILTER_TYPE_SET:
+				this._hFilters[sField].aValues			= [];
+				this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				break;
+			case Filter.FILTER_TYPE_RANGE:
+				this._hFilters[sField].oOptionsElement	= $T.div();
+				
+				if (oDefinition.bFrom)
+				{
+					this._hFilters[sField].mFrom	= null;
+					this._hFilters[sField].oOptionsElement.appendChild(
+						$T.div(
+							$T.span(oDefinition.sFrom + ' :'),
+							this._createOption(sField, oDefinition.oOption)
+						)
+					);
+				}
+				
+				if (oDefinition.bTo)
+				{
+					this._hFilters[sField].mTo	= null;
+					this._hFilters[sField].oOptionsElement.appendChild(
+						$T.div(
+							$T.span(oDefinition.sTo + ' :'),
+							this._createOption(sField, oDefinition.oOption)
+						)
+					);
+				}
+				break;
+			case Filter.FILTER_TYPE_CONTAINS:
+				this._hFilters[sField].sContains		= null;
+				this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				break;
+			case Filter.FILTER_TYPE_ENDS_WITH:
+				this._hFilters[sField].sEndsWith		= null;
+				this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				break;
+			case Filter.FILTER_TYPE_STARTS_WITH:
+				this._hFilters[sField].sStartsWith		= null;
+				this._hFilters[sField].oOptionsElement	= this._createOption(sField, oDefinition.oOption);
+				break;
+		}
+	},
+	
+	clearFilterValue	: function(sField)
+	{
+		this.setFilterValue(sField);
+	},
+	
+	setFilterValue	: function(sField)
+	{
+		var oFilter	= this._hFilters[sField];
+		var bClear	= arguments.length == 1;
+		switch (oFilter.iType)
+		{
+			case Filter.FILTER_TYPE_VALUE:
+				oFilter.mValue	= (bClear ? null : arguments[1]);
+				oFilter.sValue	= (bClear ? null : arguments[2]);
+				break;
+			case Filter.FILTER_TYPE_SET:
+				oFilter.aValues		= (bClear ? null : arguments[1]);
+				oFilter.aStrValues	= (bClear ? null : arguments[2]);
+				break;
+			case Filter.FILTER_TYPE_RANGE:
+				oFilter.mFrom	= (bClear ? null : arguments[1]);
+				oFilter.mTo		= (bClear ? null : arguments[2]);
+				oFilter.sFrom	= (bClear ? null : arguments[3]);
+				oFilter.sTo		= (bClear ? null : arguments[4]);
+				break;
+			case Filter.FILTER_TYPE_CONTAINS:
+				oFilter.sContains	= (bClear ? null : arguments[1]);
+				break;
+			case Filter.FILTER_TYPE_ENDS_WITH:
+				oFilter.sEndsWith	= (bClear ? null : arguments[1]);
+				break;
+			case Filter.FILTER_TYPE_STARTS_WITH:
+				oFilter.sStartsWith	= (bClear ? null : arguments[1]);
+				break;
+		}
+		
+		if (this._fnFilterUpdateCallback)
+		{
+			this._fnFilterUpdateCallback(sField);
+		}
+	},
+	
+	getFilterValue	: function(sField, bRaw)
+	{
+		var oFilter	= this._hFilters[sField];
+		var mValue	= null;
+		switch (oFilter.iType)
+		{
+			case Filter.FILTER_TYPE_VALUE:
+				mValue	= (bRaw ? oFilter.mValue : oFilter.sValue);
+				break;
+			case Filter.FILTER_TYPE_SET:
+				mValue	= (bRaw ? oFilter.aValues : oFilter.aStrValues.join(', '));
+				break;
+			case Filter.FILTER_TYPE_RANGE:
+				if (oFilter.mFrom !== null || oFilter.mTo !== null)
+				{
+					var sFrom	= (oFilter.sFrom ? oFilter.sFrom : '?');
+					var sTo		= (oFilter.sTo ? oFilter.sTo : '?');
+					mValue		= (bRaw ? {mFrom: oFilter.mFrom, mTo: oFilter.mTo} : sFrom + ' to ' + sTo);
+				}
+				else
+				{
+					mValue	= null;
+				}
+				break;
+			case Filter.FILTER_TYPE_CONTAINS:
+				mValue	= oFilter.sContains;
+				break;
+			case Filter.FILTER_TYPE_ENDS_WITH:
+				mValue	= oFilter.sEndsWith;
+				break;
+			case Filter.FILTER_TYPE_STARTS_WITH:
+				mValue	= oFilter.sStartsWith;
+				break;
+		}
+		
+		return mValue;
+	},
+	
+	refreshData	: function(bCancelRefresh)
+	{
+		var hFilters	= {};
+		var oFilter		= null;
+		for (var sField in this._hFilters)
+		{
+			oFilter	= this._hFilters[sField];
+			
+			switch (oFilter.iType)
+			{
+				case Filter.FILTER_TYPE_VALUE:
+					if (oFilter.mValue !== null)
+					{
+						hFilters[sField]	= {};
+						hFilters[sField]	= oFilter.mValue;
+					}
+					break;
+				case Filter.FILTER_TYPE_SET:
+					if (oFilter.aValues.length !== null)
+					{
+						hFilters[sField]				= {};
+						hFilters[sField].aValues	= [];
+						for (var i = 0; i < oFilter.aValues.length; i++)
+						{
+							hFilters[sField].aValues.push(oFilter.aValues[i]);
+						}
+					}
+					break;
+				case Filter.FILTER_TYPE_RANGE:
+					if (oFilter.mFrom !== null || oFilter.mTo != null)
+					{
+						hFilters[sField]		= {};
+						hFilters[sField].mFrom	= oFilter.mFrom;
+						hFilters[sField].mTo	= oFilter.mTo;
+					}
+					break;
+				case Filter.FILTER_TYPE_CONTAINS:
+					if (oFilter.mValue !== null)
+					{
+						hFilters[sField]			= {};
+						hFilters[sField].sContains	= oFilter.sContains;
+					}
+					break;
+				case Filter.FILTER_TYPE_ENDS_WITH:
+					if (oFilter.mValue !== null)
+					{
+						hFilters[sField]			= {};
+						hFilters[sField].sEndsWith	= oFilter.sEndsWith;
+					}
+					break;
+				case Filter.FILTER_TYPE_STARTS_WITH:
+					if (oFilter.mValue !== null)
+					{
+						hFilters[sField]				= {};
+						hFilters[sField].sStartsWith	= oFilter.sStartsWith;
+					}
+					break;
+			}
+		}
+		
+		this._oDataSetAjax.setFilter(hFilters);
+		
+		if (!bCancelRefresh)
+		{
+			this._oPagination.getCurrentPage();
+		}
+	},
+	
+	registerFilterIcon	: function(sField, oIcon, sLabel)
+	{
+		oIcon.observe('click', this._showFilterOptions.bind(this, sField, sLabel));
+	},
+	
+	_showFilterOptions	: function(sField, sLabel, oEvent)
+	{
+		if (!this._oFilterOptionsElement)
+		{
+			this._oFilterOptionsElement	= 	$T.div({class: 'filter-overlay-options'},
+												$T.div({class: 'filter-overlay-options-content'}),
+												$T.div({class: 'filter-overlay-options-buttons'},
+													$T.button({class: 'icon-button'},
+														$T.span('Use')
+													),
+													$T.button({class: 'icon-button'},
+														$T.span('Cancel')
+													)
+												)
+											);
+			document.body.appendChild(this._oFilterOptionsElement);
+			
+			// Attach button events
+			var oUseButton		= this._oFilterOptionsElement.select('button.icon-button').first();
+			oUseButton.observe('click', this._useCurrentFilterOptions.bind(this));
+			var oCancelButton	= this._oFilterOptionsElement.select('button.icon-button').last();
+			oCancelButton.observe('click', this._hideFilterOptions.bind(this, null));
+		}
+		
+		var oContent		= this._oFilterOptionsElement.select('div.filter-overlay-options-content').first();
+		oContent.innerHTML	= '';
+		
+		this._oFilterOptionsElement.style.left	= oEvent.clientX + 'px';
+		this._oFilterOptionsElement.style.top	= oEvent.clientY + 'px';
+		this._oFilterOptionsElement.sField		= sField;
+		
+		oContent.appendChild(this._hFilters[sField].oOptionsElement);
+		
+		this._oFilterOptionsElement.show();
+		oEvent.stop();
+	},
+	
+	_hideFilterOptions	: function(oEvent)
+	{
+		if (!this._oFilterOptionsElement)
+		{
+			// Cancel if the options element overlay hasn't been created
+			return;
+		}
+		
+		if (oEvent)
+		{
+			// From click event, check that the target of the event does not belong within the options overlay
+			if (oEvent.explicitOriginalTarget != this._oFilterOptionsElement)
+			{
+				var oParent	= oEvent.explicitOriginalTarget.parentNode;
+				while (oParent && (oParent != document.body))
+				{
+					if (oParent == this._oFilterOptionsElement)
+					{
+						return;
+					}
+					
+					oParent	= oParent.parentNode;
+				}
+				
+				this._oFilterOptionsElement.hide();
+			}
+		}
+		else
+		{
+			// No event, called explicitly
+			this._oFilterOptionsElement.hide();
+		}
+	},
+	
+	_createOption	: function(sField, oOptionDefinition)
+	{
+		// Create the control field and cache it
+		var oControl	= Control_Field.factory(oOptionDefinition.sType, oOptionDefinition.oDefinition);
+		oControl.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		
+		if (!this._hControls[sField])
+		{
+			this._hControls[sField]	= [];
+		}
+		
+		this._hControls[sField].push(oControl);
+		return oControl.getElement();
+	},
+	
+	_useCurrentFilterOptions	: function()
+	{
+		var sField		= this._oFilterOptionsElement.sField;
+		var aControls	= this._hControls[sField];
+		var oFilter		= this._hFilters[sField];
+		
+		// Check for validation errors in the controls
+		var aErrors		= [];
+		
+		for (var i = 0; i < aControls.length; i++)
+		{
+			try
+			{
+				aControls[i].validate(false);
+			}
+			catch (ex)
+			{
+				aErrors.push(ex);
+			}
+		}
+		
+		if (aErrors.length)
+		{
+			// Create a UL to list the errors and then show a reflex alert
+			var oAlertDom	=	$T.div({class: 'filter-validation-errors'},
+									$T.div('There were errors in the filter input: '),
+									$T.ul(
+										// Added here...
+									)
+								);
+			var oUL	= oAlertDom.select('ul').first();
+			
+			for (var i = 0; i < aErrors.length; i++)
+			{
+				oUL.appendChild($T.li(aErrors[i]));
+			}
+			
+			Reflex_Popup.alert(oAlertDom, {iWidth: 30});
+			return;
+		}
+		
+		switch (oFilter.iType)
+		{
+			case Filter.FILTER_TYPE_RANGE:
+				var mFrom	= aControls[0].getElementValue();
+				var sFrom	= (mFrom && aControls[0].getElementText ? aControls[0].getElementText() : mFrom);
+				var mTo		= (aControls[1] ? aControls[1].getElementValue() : null);
+				var sTo		= (mTo && aControls[1].getElementText ? aControls[1].getElementText() : mTo);
+				this.setFilterValue(sField, mFrom, mTo, sFrom, sTo);
+				break;
+			case Filter.FILTER_TYPE_VALUE:
+			case Filter.FILTER_TYPE_SET:	
+				// NOTE: There is no Control_Field that currently supports an array returned from getElementValue() so this will break.
+			case Filter.FILTER_TYPE_CONTAINS:
+			case Filter.FILTER_TYPE_ENDS_WITH:
+			case Filter.FILTER_TYPE_STARTS_WITH:
+				var mValue	= aControls[0].getElementValue();
+				var sValue	= (aControls[0].getElementText ? aControls[0].getElementText() : mValue);
+				this.setFilterValue(sField, mValue, sValue);
+				break;
+		}
+		
+		this._hideFilterOptions();
+		this.refreshData();
+	}
+});
+
+Filter.FILTER_TYPE_VALUE		= 1;	// e.g. x = 1
+Filter.FILTER_TYPE_SET			= 2;	// e.g. x IN (1,2,3)
+Filter.FILTER_TYPE_RANGE		= 3;	// e.g. x BETWEEN 1 AND 3
+Filter.FILTER_TYPE_CONTAINS		= 4;	// e.g. x LIKE '%1%'
+Filter.FILTER_TYPE_ENDS_WITH	= 5;	// e.g. x LIKE '%1'
+Filter.FILTER_TYPE_STARTS_WITH	= 6;	// e.g. x LIKE '1%'

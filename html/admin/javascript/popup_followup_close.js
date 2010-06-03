@@ -1,0 +1,157 @@
+
+var Popup_FollowUp_Close	= Class.create(Reflex_Popup,
+{
+	initialize	: function($super, iFollowUpId, iFollowUpRecurringId, iFollowUpRecurringIteration, fnOnFinish)
+	{
+		$super(30);
+		
+		this._iFollowUpId					= iFollowUpId;
+		this._iFollowUpRecurringId			= iFollowUpRecurringId;
+		this._iFollowUpRecurringIteration	= iFollowUpRecurringIteration;
+		this._fnOnFinish					= fnOnFinish;
+		
+		if (this._iFollowUpId)
+		{
+			this._sType	= 'Follow-Up';
+		}
+		else if (this._iFollowUpRecurringId)
+		{
+			this._sType	= 'Recurring Follow-Up';	
+		}
+		else
+		{
+			Reflex_Popup.alert('ERROR: This should not occur, follow-up has neither id or recurring id.');
+			return;
+		}
+		
+		this._buildUI();
+	},
+	
+	_buildUI	: function(oResponse)
+	{
+		// Create the list of closures
+		var oSelect			= new Control_Field_Select('Reason');
+		oSelect.setPopulateFunction(FollowUp_Closure.getAllAsSelectOptions);
+		oSelect.setVisible(true);
+		oSelect.setEditable(true);
+		oSelect.setMandatory(true);
+		oSelect.setRenderMode(Control_Field.RENDER_MODE_EDIT);
+		this._oSelect	= oSelect;
+		
+		// Build content
+		this._oContent	= 	$T.div({class: 'popup-followup-close'},
+								$T.div({class: 'popup-followup-close-reason'},
+									$T.div('Please choose a reason for closing this ' + this._sType + ':'),
+									$T.div({class: 'popup-followup-close-reason-list'},
+										oSelect.getElement()
+									)
+								),
+								$T.div({class: 'popup-followup-close-buttons'},
+									$T.button({class: 'icon-button'},
+										$T.span('Close ' + this._sType)
+									),
+									$T.button({class: 'icon-button'},
+										$T.span('Cancel')
+									)
+								)
+							);
+		
+		// Button events
+		var oCloseButton	= this._oContent.select('div.popup-followup-close-buttons > button.icon-button').first();
+		oCloseButton.observe('click', this._doClose.bind(this));
+		
+		var oCancelButton	= this._oContent.select('div.popup-followup-close-buttons > button.icon-button').last();
+		oCancelButton.observe('click', this.hide.bind(this));
+					
+		// Popup setup
+		this.setTitle('Close ' + this._sType);
+		this.setIcon(Popup_FollowUp_Close.ICON_IMAGE_SOURCE);
+		this.setContent(this._oContent);
+		this.display();
+	},
+	
+	_ajaxError	: function(bHideOnClose, oResponse)
+	{
+		if (this.oLoading)
+		{
+			this.oLoading.hide();
+			delete this.oLoading;
+		}
+		
+		var oConfig	= {sTitle: 'Error', fnOnClose: (bHideOnClose ? this.hide.bind(this) : null)};
+		
+		if (oResponse.Message)
+		{
+			Reflex_Popup.alert(oResponse.Message, oConfig);
+		}
+		else if (oResponse.ERROR)
+		{
+			Reflex_Popup.alert(oResponse.ERROR, oConfig);
+		}
+	},
+	
+	_doClose	: function(oEvent, oResponse)
+	{
+		if (typeof oResponse == 'undefined')
+		{
+			// Make the close request
+			if (this._oSelect.validate())
+			{
+				// Show loading
+				this.oLoading	= new Reflex_Popup.Loading('Closing ' + this._sType + '...');
+				this.oLoading.display();
+				
+				var iFollowUpClosureId	= this._oSelect.getElementValue(); 
+				
+				if (this._iFollowUpId)
+				{
+					var fnJSON	= 	jQuery.json.jsonFunction(
+										this._doClose.bind(this, null), 
+										this._ajaxError.bind(this), 
+										'FollowUp', 
+										'closeFollowUp'
+									);
+					fnJSON(this._iFollowUpId, iFollowUpClosureId);
+				}
+				else if (this._iFollowUpRecurringId)
+				{
+					var fnJSON	= 	jQuery.json.jsonFunction(
+										this._doClose.bind(this, null), 
+										this._ajaxError.bind(this), 
+										'FollowUp', 
+										'closeRecurringFollowUpIteration'
+									);
+					fnJSON(this._iFollowUpRecurringId, iFollowUpClosureId, this._iFollowUpRecurringIteration);
+				}
+			}
+			else
+			{
+				Reflex_Popup.alert('Please choose a reason before closing the ' + this._sType);
+			}
+		}
+		else if (oResponse.Success)
+		{
+			// Success, handle response
+			if (this.oLoading)
+			{
+				this.oLoading.hide();
+				delete this.oLoading;
+			}
+			
+			if (this._fnOnFinish)
+			{
+				this._fnOnFinish();
+			}
+			
+			this.hide();
+		}
+		else
+		{
+			// Error
+			this._ajaxError(oResponse);
+		}
+	}
+});
+
+// Image paths
+Popup_FollowUp_Close.ICON_IMAGE_SOURCE 		= '../admin/img/template/delete.png';

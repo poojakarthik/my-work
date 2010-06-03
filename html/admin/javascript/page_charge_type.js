@@ -28,7 +28,7 @@ var Page_Charge_Type = Class.create(
 		// Create DataSet & pagination object
 		this.oDataset		= 	new Dataset_Ajax(
 									Dataset_Ajax.CACHE_MODE_NO_CACHING, 
-									{strObject: 'Charge_Type', strMethod: sMethod}
+									{sObject: 'Charge_Type', sMethod: sMethod}
 								);
 		this.oPagination	= 	new Pagination(
 									this._updateTable.bind(this),

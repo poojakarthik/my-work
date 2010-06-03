@@ -175,7 +175,7 @@ class Charge_Type extends ORM_Cached
 				
 		if ($oRecords->Execute() === FALSE)
 		{
-			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oCharges->Error());
+			throw new Exception("Failed to retrieve records for '{self::$_strStaticTableName} Search' query - ". $oRecords->Error());
 		}
 		
 		// Create the ChargeType objects

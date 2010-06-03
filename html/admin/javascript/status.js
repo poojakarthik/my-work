@@ -28,7 +28,10 @@ var Status	= Class.create
 	}
 });
 
-Status._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {strObject: 'Status', strMethod: 'getDataset'});
+Status._oDataset	=	new Dataset_Ajax(
+							Dataset_Ajax.CACHE_MODE_NO_CACHING, 
+							{sObject: 'Status', sMethod: 'getDataset'}
+						);
 
 Status.getForId	= function(iId, fCallback)
 {

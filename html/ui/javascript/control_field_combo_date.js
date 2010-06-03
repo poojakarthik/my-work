@@ -294,17 +294,20 @@ var Control_Field_Combo_Date	= Class.create(/* extends */ Control_Field,
 		var aSplit	= mValue.split('-');
 		var sDate	= mValue;
 		var iMonth	= parseInt(aSplit[1]);
-		var sMonth	= (iMonth < 10 ? '0' + iMonth : iMonth);
+		var sMonth	= (isNaN(iMonth) ? '?' : (iMonth < 10 ? '0' + iMonth : iMonth));
+		var iYear	= parseInt(aSplit[0]);
+		var sYear	= (isNaN(iYear) ? '?' : iYear);
 		
 		switch (this.iFormat)
 		{
 			case Control_Field_Combo_Date.FORMAT_D_M_Y:
 				var iDay	= parseInt(aSplit[2]);
-				sDate		= (iDay < 10 ? '0' + iDay : iDay) + '/' + sMonth + '/' + aSplit[0];
+				var sDay	= (isNaN(iDay) ? '?' : (iDay < 10 ? '0' + iDay : iDay))
+				sDate		= sDay + '/' + sMonth + '/' + sYear;
 				break;
 			
 			case Control_Field_Combo_Date.FORMAT_M_Y:
-				sDate	= sMonth + '/' + aSplit[0];
+				sDate	= sMonth + '/' + sYear;
 				break;
 		}
 		

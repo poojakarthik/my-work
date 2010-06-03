@@ -28,7 +28,10 @@ var Ticketing_User_Permission	= Class.create
 	}
 });
 
-Ticketing_User_Permission._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {strObject: 'Ticketing_User_Permission', strMethod: 'getDataset'});
+Ticketing_User_Permission._oDataset	=	new Dataset_Ajax(
+											Dataset_Ajax.CACHE_MODE_NO_CACHING, 
+											{sObject: 'Ticketing_User_Permission', sMethod: 'getDataset'}
+										);
 
 Ticketing_User_Permission.getForId	= function(iId, fCallback)
 {

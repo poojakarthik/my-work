@@ -6,8 +6,15 @@ var Recurring_Charge_Management = Class.create
 
 		// Init Dataset & Pagination
 		this.intMaxRecordsPerPage = intMaxRecordsPerPage;
-		this.objDataset		= new Dataset_Ajax(intCacheMode, {strObject: 'Recurring_Charge', strMethod: 'getRecurringChargesAwaitingApproval'});
-		this.objPagination	= new Pagination(this._updateTable.bind(this), this.intMaxRecordsPerPage, this.objDataset);
+		this.objDataset		= 	new Dataset_Ajax(
+									intCacheMode, 
+									{sObject: 'Recurring_Charge', sMethod: 'getRecurringChargesAwaitingApproval'}
+								);
+		this.objPagination	= 	new Pagination(
+									this._updateTable.bind(this), 
+									this.intMaxRecordsPerPage, 
+									this.objDataset
+								);
 		this._objRecCharges	= {};
 
 		// This will store the list of recurring charges (just their ids) to be either approved or declined, in a single submit to the server

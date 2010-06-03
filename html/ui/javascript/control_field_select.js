@@ -68,7 +68,6 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 	{
 		if (aOptions === undefined || aOptions === null)
 		{
-			//alert("No options -- getting list...");
 			this.bPopulated								= false;
 			this.oControlOutput.oEdit.style.display		= 'none';
 			this.oControlOutput.oView.style.display		= 'none';
@@ -86,7 +85,6 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		else
 		{
 			// Set Options
-			//alert("Populating Select with " + aOptions.length + " Options");
 			for (var i = 0; i < aOptions.length; i++)
 			{
 				this.oControlOutput.oEdit.add(aOptions[i], null);
@@ -142,5 +140,10 @@ var Control_Field_Select	= Class.create(/* extends */ Control_Field,
 		{
 			this._aOnChangeCallbacks[i]();
 		}
+	},
+	
+	getElementText	: function()
+	{
+		return ((this.oControlOutput.oEdit.selectedIndex >= 0) ? this.oControlOutput.oEdit.options[this.oControlOutput.oEdit.selectedIndex].innerHTML : null);
 	}
 });

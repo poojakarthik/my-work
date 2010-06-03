@@ -399,6 +399,47 @@ Employee.getForId	= function(iEmployeeId, fnCallback, bLoadPermissions)
 }
 //----------------------------------------------------------------------------//
 
+
+Employee.getAll	= function(fCallback, aResultSet)
+{
+	if (typeof aResultSet == 'undefined')
+	{
+		// Make Request
+		var fnGetAll	= jQuery.json.jsonFunction(Employee.getAll.bind(Employee, fCallback), null, 'Employee', 'getActive');
+		fnGetAll();
+	}
+	else
+	{
+		// Pass Response to Callback
+		fCallback(aResultSet.aEmployees);
+	}
+};
+
+Employee.getAllAsSelectOptions	= function(fCallback, oResponse)
+{
+	if (!oResponse)
+	{
+		// Make Request
+		this.getAll(this.getAllAsSelectOptions.bind(this, fCallback));
+	}
+	else
+	{
+		// Create an Array of OPTION DOM Elements
+		var aOptions	= [];
+		for (i in oResponse)
+		{
+			aOptions.push(
+				$T.option({value: oResponse[i].Id},
+					oResponse[i].FirstName + ' ' + oResponse[i].LastName
+				)
+			);		
+		}
+		
+		// Pass to Callback
+		fCallback(aOptions);
+	}
+};
+
 // Static Members
 Employee.oProperties	= {};
 
@@ -537,17 +578,20 @@ Employee.oProperties.PassWordConfirm.oDefinition.mEditable	= true;
 Employee.oProperties.PassWordConfirm.oDefinition.mMandatory	= true;
 Employee.oProperties.PassWordConfirm.oDefinition.iMaxLength	= 40;
 
-// Role
-Employee.oProperties.user_role_id					= {};
-Employee.oProperties.user_role_id.sType				= 'select';
-Employee.oProperties.user_role_id.EDIT_MODE_SELF	= false;
-Employee.oProperties.user_role_id.EDIT_MODE_NEW		= null;
+if (typeof User_Role != 'undefined')
+{
+	// Role
+	Employee.oProperties.user_role_id					= {};
+	Employee.oProperties.user_role_id.sType				= 'select';
+	Employee.oProperties.user_role_id.EDIT_MODE_SELF	= false;
+	Employee.oProperties.user_role_id.EDIT_MODE_NEW		= null;
 
-Employee.oProperties.user_role_id.oDefinition				= {};
-Employee.oProperties.user_role_id.oDefinition.sLabel		= 'Role';
-Employee.oProperties.user_role_id.oDefinition.mEditable		= true;
-Employee.oProperties.user_role_id.oDefinition.mMandatory	= true;
-Employee.oProperties.user_role_id.oDefinition.fnPopulate	= User_Role.getAllAsSelectOptions.bind(User_Role);
+	Employee.oProperties.user_role_id.oDefinition				= {};
+	Employee.oProperties.user_role_id.oDefinition.sLabel		= 'Role';
+	Employee.oProperties.user_role_id.oDefinition.mEditable		= true;
+	Employee.oProperties.user_role_id.oDefinition.mMandatory	= true;
+	Employee.oProperties.user_role_id.oDefinition.fnPopulate	= User_Role.getAllAsSelectOptions.bind(User_Role);
+}
 
 // is_god
 Employee.oProperties.is_god			= {};
@@ -567,17 +611,20 @@ Employee.oProperties.Archived.oDefinition			= {};
 Employee.oProperties.Archived.oDefinition.sLabel	= 'Archived';
 Employee.oProperties.Archived.oDefinition.mEditable	= true;
 
-// Ticketing Permission
-Employee.oProperties.ticketing_permission					= {};
-Employee.oProperties.ticketing_permission.sType				= 'select';
-Employee.oProperties.ticketing_permission.EDIT_MODE_SELF	= false;
-Employee.oProperties.ticketing_permission.EDIT_MODE_NEW		= null;
+if (typeof Ticketing_User_Permission != 'undefined')
+{
+	// Ticketing Permission
+	Employee.oProperties.ticketing_permission					= {};
+	Employee.oProperties.ticketing_permission.sType				= 'select';
+	Employee.oProperties.ticketing_permission.EDIT_MODE_SELF	= false;
+	Employee.oProperties.ticketing_permission.EDIT_MODE_NEW		= null;
 
-Employee.oProperties.ticketing_permission.oDefinition				= {};
-Employee.oProperties.ticketing_permission.oDefinition.sLabel		= 'Ticketing System';
-Employee.oProperties.ticketing_permission.oDefinition.mEditable		= true;
-Employee.oProperties.ticketing_permission.oDefinition.mMandatory	= true;
-Employee.oProperties.ticketing_permission.oDefinition.fnPopulate	= Ticketing_User_Permission.getAllAsSelectOptions.bind(Ticketing_User_Permission);
+	Employee.oProperties.ticketing_permission.oDefinition				= {};
+	Employee.oProperties.ticketing_permission.oDefinition.sLabel		= 'Ticketing System';
+	Employee.oProperties.ticketing_permission.oDefinition.mEditable		= true;
+	Employee.oProperties.ticketing_permission.oDefinition.mMandatory	= true;
+	Employee.oProperties.ticketing_permission.oDefinition.fnPopulate	= Ticketing_User_Permission.getAllAsSelectOptions.bind(Ticketing_User_Permission);
+}
 
 // TODO REMOVE ME:: Privileges
 Employee.oProperties.Privileges					= {};

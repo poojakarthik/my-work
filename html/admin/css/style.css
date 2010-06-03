@@ -1721,7 +1721,8 @@ table.input tbody tr td
 	vertical-align		: top;
 }
 
-table.input tbody tr td .hide
+table.input tbody tr td .hide,
+div .hide
 {
 	display				: none;
 }
@@ -4254,3 +4255,161 @@ div#ChargeListContainer > div.component-account-charge-list div.tab-page
 }
 
 /************************ END - Component Account Charge List - END ************************/
+
+/************************ START - Follow-Up Management Page - START ************************/
+
+div.followup-category-validation-errors
+{
+	padding	: 0.5em;
+}
+
+div.followup-list > table.reflex thead th > span
+{
+	vertical-align	: middle;
+	padding-right	: 1em;
+}
+
+div.followup-list > table.reflex thead th > img
+{
+	vertical-align	: middle;
+	cursor			: pointer;
+}
+
+div.followup-list > table.reflex thead th.followup-list-filter
+{
+	font-style	: italic;
+	font-size	: 0.85em;
+}
+
+div.followup-list > table.reflex thead th.followup-list-filter > img,
+div.followup-list > table.reflex thead th.followup-list-filter > span
+{
+	vertical-align	: middle;
+}
+
+div.followup-list > table.reflex thead th.followup-list-filter > span
+{
+	margin-left	: 0.25em;
+}
+
+div.followup-list > table.reflex thead th.followup-list-filter > img
+{
+	padding-left	: 0.5em;
+	width			: 1.25em;
+	height			: 1.25em;
+	cursor			: pointer;
+}
+
+th.followup-list-header > img
+{
+	padding-right	: 0.5em;
+}
+
+span.followup-list-header-sort
+{
+	cursor	: pointer;
+}
+
+th.followup-list-header-multiline
+{
+	width	: 15%;
+}
+
+#FollowUpListContainer div.caption_title
+{
+	min-height	: 1.55em;
+}
+
+ul.followup-list-actions
+{
+	margin	: 0em;
+}
+
+ul.followup-list-actions > li
+{
+	padding-right	: 0.5em;
+}
+
+div.followup-list-duedate-edit > img,
+div.followup-list-duedate-edit > span
+{
+	vertical-align	: middle;
+}
+
+div.followup-list-duedate-edit > img
+{
+	padding-left	: 0.5em;
+	cursor			: pointer;
+}
+
+/************************ END - Follow-Up Management Page - END ************************/
+
+/************************ START - Filter Class - START ************************/
+
+div.filter-overlay-options
+{
+	position			: absolute;
+	padding				: 0.5em;
+	background-color	: #ffffff;
+	border				: solid 1px black;
+	-moz-box-sizing		: border-box;
+}
+
+div.filter-validation-errors
+{
+	padding	: 0.5em;
+}
+
+/************************ END - Filter Class - END ************************/
+
+/************************ START - Popup Follow-Up Close - START ************************/
+
+div.popup-followup-close
+{
+	margin	: 0.5em;
+}
+
+div.popup-followup-close-buttons
+{
+	text-align	: center;
+}
+
+div.popup-followup-close-reason-list select
+{
+	width	: 100%;
+}
+
+/************************ END - Popup Follow-Up Close - END ************************/
+
+/************************ START - Popup Follow-Up Reassign - START ************************/
+
+div.popup-followup-reassign
+{
+	margin	: 0.5em;
+}
+
+div.popup-followup-reassign-buttons
+{
+	text-align	: center;
+}
+
+div.popup-followup-reassign-reason-list select
+{
+	width	: 100%;
+}
+
+/************************ END - Popup Follow-Up Reassign - END ************************/
+
+/************************ START - Popup Follow-Up Due Date - START ************************/
+
+div.popup-followup-due-date-select
+{
+	margin	: 1em;
+}
+
+div.popup-followup-due-date-buttons
+{
+	text-align	: center;
+}
+
+/************************ END - Popup Follow-Up Due Date - END ************************/

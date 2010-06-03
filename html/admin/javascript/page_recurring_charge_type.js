@@ -4,8 +4,15 @@ var Page_Recurring_Charge_Type = Class.create(
 	initialize	: function(oContainerDiv, iMaxRecordsPerPage)
 	{
 		// Create DataSet & pagination object
-		this.oDataset		= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {strObject: 'Recurring_Charge_Type', strMethod: 'getAll'});
-		this.oPagination	= new Pagination(this._updateTable.bind(this), Page_Recurring_Charge_Type.MAX_RECORDS_PER_PAGE, this.oDataset);
+		this.oDataset		=	new Dataset_Ajax(
+									Dataset_Ajax.CACHE_MODE_NO_CACHING, 
+									{sObject: 'Recurring_Charge_Type', sMethod: 'getAll'}
+								);
+		this.oPagination	= 	new Pagination(
+									this._updateTable.bind(this), 
+									Page_Recurring_Charge_Type.MAX_RECORDS_PER_PAGE, 
+									this.oDataset
+								);
 		
 		// Create the page HTML
 		var sButtonPathBase	= '../admin/img/template/resultset_';

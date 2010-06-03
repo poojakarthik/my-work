@@ -174,7 +174,6 @@ var Popup_Employee_Details	= Class.create(Reflex_Popup,
 				
 				if (sFieldName && this.oEmployee.oProperties.is_god)
 				{
-					//debugger;
 					oRow.select('td').last().appendChild(
 						$T.div({class: 'employee-details-is-god'},
 							$T.img({src: '../admin/img/template/lightning.png'}),

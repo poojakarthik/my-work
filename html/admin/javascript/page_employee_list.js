@@ -410,5 +410,5 @@ Page_Employee_List.EDIT_IMAGE_SOURCE		= '../admin/img/template/user_edit.png';
 Page_Employee_List.ADD_IMAGE_SOURCE			= '../admin/img/template/new.png';
 Page_Employee_List.PERMISSION_IMAGE_SOURCE	= '../admin/img/template/operation.png';
 
-Page_Employee_List.DATA_SET_DEFINITION_ACTIVE	= {strObject: 'Employee', strMethod: 'getDataSetActiveEmployees'};
-Page_Employee_List.DATA_SET_DEFINITION_ALL		= {strObject: 'Employee', strMethod: 'getDataSetAllEmployees'};
+Page_Employee_List.DATA_SET_DEFINITION_ACTIVE	= {sObject: 'Employee', sMethod: 'getDataSetActiveEmployees'};
+Page_Employee_List.DATA_SET_DEFINITION_ALL		= {sObject: 'Employee', sMethod: 'getDataSetAllEmployees'};

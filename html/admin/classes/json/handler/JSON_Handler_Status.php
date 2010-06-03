@@ -11,8 +11,12 @@ class JSON_Handler_Status extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getDataset($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getDataset($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
+		//
+		//	NOTE: 	Sorting & Filtering is not supported by this (Dataset_Ajax) method. rmctainsh 20100527
+		//
+		
 		try
 		{
 			if ($bCountOnly)
@@ -52,10 +56,10 @@ class JSON_Handler_Status extends JSON_Handler
 				
 				// If no exceptions were thrown, then everything worked
 				return 	array(
-							"Success"			=> true,
-							"arrRecords"		=> $aResultSet,
-							"intRecordCount"	=> ($iLimit === null) ? count($aResultSet) : self::_getDatasetLength(),
-							"strDebug"			=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
+							"Success"		=> true,
+							"aRecords"		=> $aResultSet,
+							"iRecordCount"	=> ($iLimit === null) ? count($aResultSet) : self::_getDatasetLength(),
+							"strDebug"		=> AuthenticatedUser()->UserHasPerm(PERMISSION_GOD) ? $this->_JSONDebug : ''
 						);
 			}
 		}

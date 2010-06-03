@@ -184,7 +184,253 @@
  		return "s";
 	}
 	
-
+	public static function generateWhere($aAliases=array(), $aConstraints=null)
+	{
+		$aWhereParts	= array();
+		$aResult		= array('sClause' => '','aValues' => array());
+		
+		if ($aConstraints)
+		{
+			foreach($aConstraints as $sAlias => $mValue)
+			{
+				if (isset($aAliases[$sAlias]))
+				{
+					$sAlias	= $aAliases[$sAlias];
+				}
+				
+				self::processWhereConstraint($sAlias, $mValue, $aWhereParts, $aResult); 
+				
+				/*if (is_array($mValue))
+				{
+					// AND (array of constraints)
+					foreach ($mValue as $mVal)
+					{
+						self::processWhereConstraint($sAlias, $mVal, $aWhereParts, $aResult); 
+					}
+				}
+				else if (is_object($mValue))
+				{
+					if ($mValue->mFrom || $mValue->mTo)
+					{
+						// Range of values
+						if ($mValue->mFrom && $mValue->mTo)
+						{
+							// BETWEEN
+							$sFromAlias							= "{$sAlias}0";
+							$sToAlias							= "{$sAlias}1";
+							$aResult['aValues'][$sFromAlias]	= $mValue->mFrom;
+							$aResult['aValues'][$sToAlias]		= $mValue->mTo;
+							$aWhereParts[]						= "{$sAlias} BETWEEN <{$sFromAlias}> AND <{$sToAlias}>";
+						}
+						else if ($mValue->mFrom)
+						{
+							// > (Greater than)
+							$sValueAlias						= $sAlias;
+							$aResult['aValues'][$sValueAlias]	= $mValue->mFrom;
+							$aWhereParts[]						= "{$sAlias} > <{$sValueAlias}>";
+						}
+						else if ($mValue->mTo)
+						{
+							// < (Less than)
+							$sValueAlias						= $sAlias;
+							$aResult['aValues'][$sValueAlias]	= $mValue->mTo;
+							$aWhereParts[]						= "{$sAlias} < <{$sValueAlias}>";
+						}
+					}
+					else if ($mValue->sStartsWith)
+					{
+						// LIKE, starting with...
+						$sValueAlias						= $sAlias;
+						$aResult['aValues'][$sValueAlias]	= "'{$mValue->sStartsWith}%'";
+						$aWhereParts[]						= "{$sAlias} LIKE <{$sValueAlias}>";
+					}
+					else if ($mValue->sEndsWith)
+					{
+						// LIKE, ending with...
+						$sValueAlias						= $sAlias;
+						$aResult['aValues'][$sValueAlias]	= "'%{$mValue->sEndsWith}'";
+						$aWhereParts[]						= "{$sAlias} LIKE <{$sValueAlias}>";
+					}
+					else if ($mValue->sContains)
+					{
+						// LIKE, containing...
+						$sValueAlias						= $sAlias;
+						$aResult['aValues'][$sValueAlias]	= "'%{$mValue->sContains}%'";
+						$aWhereParts[]						= "{$sAlias} LIKE <{$sValueAlias}>";
+					}
+					else if ($mValue->aValues)
+					{
+						// An array of values, convert to IN (?,?,?)
+						$iValueIndex	= 0;
+						$aValueAliases	= array();
+						foreach ($mValue->aValues as $mVal)
+						{
+							$sValueAlias						= "{$sAlias}{$iValueIndex}";
+							$aResult['aValues'][$sValueAlias]	= $mVal;
+							$aValueAliases[]					= "<{$sValueAlias}>";
+							$iValueIndex++;
+						}
+						
+						$aWhereParts[]	= "{$sAlias} IN (".implode(', ', $aValueAliases).")";
+					}
+				}
+				else if (strtolower($mValue) == 'null')
+				{
+					// Value is a null comparison
+					$sValueAlias						= $sAlias;
+					$aResult['aValues'][$sValueAlias]	= $mValue;
+					$aWhereParts[]						= "{$sAlias} IS NULL";
+				}
+				else
+				{
+					// Value is a single value
+					$sValueAlias						= $sAlias;
+					$aResult['aValues'][$sValueAlias]	= $mValue;
+					$aWhereParts[]						= "{$sAlias} = <{$sValueAlias}>";
+				}*/
+			}
+		}
+		
+		$aResult['sClause']	= implode(' AND ', $aWhereParts);
+		return $aResult;
+	}
+	
+	private static function processWhereConstraint($sAlias, $mValue, &$aWhereParts, &$aResult, $sPlaceHolderSuffix='')
+	{
+		if (is_array($mValue))
+		{
+			// AND (array of constraints)
+			$iSuffix	= 1;
+			foreach ($mValue as $mVal)
+			{
+				self::processWhereConstraint($sAlias, $mVal, $aWhereParts, $aResult, $iSuffix);
+				$iSuffix++; 
+			}
+		}
+		else if (is_object($mValue))
+		{
+			if ($mValue->mFrom || $mValue->mTo)
+			{
+				// Range of values
+				if ($mValue->mFrom && $mValue->mTo)
+				{
+					// BETWEEN
+					$sFromPlaceHolder						= "{$sAlias}{$sPlaceHolderSuffix}0";
+					$sToPlaceHolder							= "{$sAlias}{$sPlaceHolderSuffix}1";
+					$aResult['aValues'][$sFromPlaceHolder]	= $mValue->mFrom;
+					$aResult['aValues'][$sToPlaceHolder]	= $mValue->mTo;
+					$aWhereParts[]							= "{$sAlias} BETWEEN <{$sFromPlaceHolder}> AND <{$sToPlaceHolder}>";
+				}
+				else if ($mValue->mFrom)
+				{
+					// > (Greater than)
+					$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+					$aResult['aValues'][$sPlaceHolder]	= $mValue->mFrom;
+					$aWhereParts[]						= "{$sAlias} > <{$sPlaceHolder}>";
+				}
+				else if ($mValue->mTo)
+				{
+					// < (Less than)
+					$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+					$aResult['aValues'][$sPlaceHolder]	= $mValue->mTo;
+					$aWhereParts[]						= "{$sAlias} < <{$sPlaceHolder}>";
+				}
+			}
+			else if ($mValue->sStartsWith)
+			{
+				// LIKE, starting with...
+				$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+				$aResult['aValues'][$sPlaceHolder]	= "'{$mValue->sStartsWith}%'";
+				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
+			}
+			else if ($mValue->sEndsWith)
+			{
+				// LIKE, ending with...
+				$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+				$aResult['aValues'][$sPlaceHolder]	= "'%{$mValue->sEndsWith}'";
+				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
+			}
+			else if ($mValue->sContains)
+			{
+				// LIKE, containing...
+				$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+				$aResult['aValues'][$sPlaceHolder]	= "'%{$mValue->sContains}%'";
+				$aWhereParts[]						= "{$sAlias} LIKE <{$sPlaceHolder}>";
+			}
+			else if ($mValue->aValues && count($mValue->aValues) > 0)
+			{
+				// An array of values, convert to IN (?,?,?)
+				$iValueIndex	= 0;
+				$aPlaceHolders	= array();
+				foreach ($mValue->aValues as $mVal)
+				{
+					$sPlaceHolder						= "{$sAlias}{$sPlaceHolderSuffix}{$iValueIndex}";
+					$aResult['aValues'][$sPlaceHolder]	= $mVal;
+					$aPlaceHolders[]					= "<{$sPlaceHolder}>";
+					$iValueIndex++;
+				}
+				
+				$aWhereParts[]	= "{$sAlias} IN (".implode(', ', $aPlaceHolders).")";
+			}
+		}
+		else if (strtolower($mValue) == 'null')
+		{
+			// Value is a null comparison
+			$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+			$aResult['aValues'][$sPlaceHolder]	= $mValue;
+			$aWhereParts[]						= "{$sAlias} IS NULL";
+		}
+		else
+		{
+			// Value is a single value
+			$sPlaceHolder						= $sAlias.$sPlaceHolderSuffix;
+			$aResult['aValues'][$sPlaceHolder]	= $mValue;
+			$aWhereParts[]						= "{$sAlias} = <{$sPlaceHolder}>";
+		}
+	}
+	
+	public static function generateOrderBy($aAliases=array(), $aOrderBy=null)
+	{
+		$sOrderBy	= '';
+		
+		if ($aOrderBy && is_array($aOrderBy))
+		{
+			$aSortFields	= array();
+			foreach ($aOrderBy as $sAlias => $sDirection)
+			{
+				if (isset($aAliases[$sAlias]))
+				{
+					$sAlias	= $aAliases[$sAlias];
+				}
+				
+				$aSortFields[]	= "{$sAlias} {$sDirection}";
+			}
+			
+			if (count($aSortFields))
+			{
+				$sOrderBy	= implode(', ', $aSortFields);
+			}
+		}
+		
+		return $sOrderBy;
+	}
+	
+	public static function generateLimit($iLimit=null, $iOffset=null)
+	{
+		$sLimit	= '';
+		
+		if ($iLimit !== NULL)
+		{
+			$sLimit	= intval($iLimit);
+			
+			if ($iOffset !== NULL)
+			{
+				$sLimit	.= " OFFSET ". intval($iOffset);
+			}
+		}
+		
+		return $sLimit;
+	}
 }
 
 ?>

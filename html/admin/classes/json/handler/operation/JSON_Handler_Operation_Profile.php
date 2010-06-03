@@ -36,37 +36,41 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 		}
 	}
 	
-	public function getAll($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getAll($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
 		$aOperationProfiles	= Operation_Profile::getAll();
-		return self::getRecords($aOperationProfiles, $bCountOnly, $iLimit, $iOffset);
+		return self::getRecords($aOperationProfiles, $bCountOnly, $iLimit, $iOffset, $oFieldsToSort);
 	}
 
-	public function getActive($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getActive($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
 		$aOperationProfiles	= Operation_Profile::getAllActive();
-		return self::getRecords($aOperationProfiles, $bCountOnly, $iLimit, $iOffset);
+		return self::getRecords($aOperationProfiles, $bCountOnly, $iLimit, $iOffset, $oFieldsToSort);
 	}
 	
-	public function getRecords($aOperationProfiles, $bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getRecords($aOperationProfiles, $bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
+		//
+		//	NOTE: 	Sorting & Filtering is not supported by this (Dataset_Ajax) method. rmctainsh 20100527
+		//
+		
 		try
 		{
 			if ($bCountOnly)
 			{
 				// Count Only
-				return array(
-								"Success"			=> true,
-								"intRecordCount"	=> self::_getRecordCount(),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
-							);
+				return 	array(
+							"Success"		=> true,
+							"iRecordCount"	=> self::_getRecordCount(),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+						);
 			}
 			else
 			{
-				$iLimit				= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
-				$iOffset			= ($iLimit === null) ? null : max((int)$iOffset, 0);
-				$aResults			= array();
-				$iCount				= 0;
+				$iLimit		= (max($iLimit, 0) == 0) ? null : (int)$iLimit;
+				$iOffset	= ($iLimit === null) ? null : max((int)$iOffset, 0);
+				$aResults	= array();
+				$iCount		= 0;
 				
 				foreach ($aOperationProfiles as $iId => $oOperationProfile)
 				{
@@ -99,10 +103,10 @@ class JSON_Handler_Operation_Profile extends JSON_Handler
 				
 				// If no exceptions were thrown, then everything worked
 				return 	array(
-							"Success"			=> true,
-							"arrRecords"		=> $aResults,
-							"intRecordCount"	=> ($iLimit === null) ? count($aResults) : self::_getRecordCount(),
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
+							"Success"		=> true,
+							"aRecords"		=> $aResults,
+							"iRecordCount"	=> ($iLimit === null) ? count($aResults) : self::_getRecordCount(),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_PROPER_GOD)) ? $this->_JSONDebug : ''
 						);
 			}
 		}

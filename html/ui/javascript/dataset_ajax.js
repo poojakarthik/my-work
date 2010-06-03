@@ -3,140 +3,140 @@
 */
 var Dataset_Ajax	= Class.create
 ({
-	initialize	: function(intCacheMode, objJSONDefinition)
+	initialize	: function(iCacheMode, oJSONDefinition)
 	{
-		this._objJSONDefinition	= objJSONDefinition;
-		
-		this._strRecordSetUniquenessHash	= null;
+		this._oJSONDefinition			= oJSONDefinition;
+		this._sRecordSetUniquenessHash	= null;
+		this._hSort						= null;
+		this._hFilter					= null;
 		
 		// Caching Details
-		this.setCacheMode(intCacheMode);
-		this._arrRecordCache		= null;
-		this._intRecordCount		= null;
-		this._intCacheTimeout		= Dataset_Ajax.CACHE_TIMEOUT_DEFAULT;
-		this._intLastCachedOn		= null;
+		this.setCacheMode(iCacheMode);
+		this._aRecordCache		= null;
+		this._iRecordCount		= null;
+		this._iCacheTimeout		= Dataset_Ajax.CACHE_TIMEOUT_DEFAULT;
+		this._iLastCachedOn		= null;
 	},
 	
-	getRecords	: function(fncCallback, intLimit, intOffset)
+	getRecords	: function(fCallback, iLimit, iOffset)
 	{
-		intLimit	= Math.max(0, (intLimit >= 0) ? intLimit : 0);
-		intOffset	= Math.max(0, (intOffset >= 0) ? intOffset : 0);
+		iLimit	= Math.max(0, (iLimit >= 0) ? iLimit : 0);
+		iOffset	= Math.max(0, (iOffset >= 0) ? iOffset : 0);
 		
 		// Do we need to update the cache?
-		var intTime		= (new Date()).getTime();
-		var fncJsonFunc	= 	jQuery.json.jsonFunction(
+		var iTime		= (new Date()).getTime();
+		var fJsonFunc	= 	jQuery.json.jsonFunction(
 								jQuery.json.handleResponse.curry(
-									this._getRecords.bind(this, fncCallback, intLimit, intOffset)
+									this._getRecords.bind(this, fCallback, iLimit, iOffset)
 								), 
 								null, 
-								this._objJSONDefinition.strObject, 
-								this._objJSONDefinition.strMethod
+								this._oJSONDefinition.sObject, 
+								this._oJSONDefinition.sMethod
 							);
 	
-		if (this._intCacheMode == Dataset_Ajax.CACHE_MODE_NO_CACHING)
+		if (this._iCacheMode == Dataset_Ajax.CACHE_MODE_NO_CACHING)
 		{
 			// Yes -- AJAX just this range
-			fncJsonFunc(false, intLimit, intOffset);
+			fJsonFunc(false, iLimit, iOffset, this._hSort, this._hFilter);
 		}
-		else if (this._arrRecordCache == null || !this._intLastCachedOn || (this._intCacheTimeout && this._intCacheTimeout > (intTime - this._intLastCachedOn)))
+		else if (this._aRecordCache == null || !this._iLastCachedOn || (this._iCacheTimeout && this._iCacheTimeout > (iTime - this._iLastCachedOn)))
 		{
 			// Yes -- AJAX full result set
-			fncJsonFunc();
+			fJsonFunc(false, null, null, this._hSort, this._hFilter);
 		}
 		else
 		{
 			// No -- already cached
-			this._getRecords(fncCallback, intLimit, intOffset);
+			this._getRecords(fCallback, iLimit, iOffset);
 		}
 	},
 	
-	_getRecords	: function(fncCallback, intLimit, intOffset, objResponse)
+	_getRecords	: function(fCallback, iLimit, iOffset, oResponse)
 	{
-		if (objResponse)
+		if (oResponse)
 		{
-			//alert("Setting Cache...");
-			this._setCache(objResponse);
+			this._setCache(oResponse);
 		}
 		
-		intLimit	= (intLimit > 0) ? intLimit : Object.keys(this._arrRecordCache).length;
-		//alert("Record Cache Length: " + this._arrRecordCache.length);
-		//alert("Record Cache Keys Length: " + Object.keys(this._arrRecordCache).length);
-		//alert("Offset: " + intOffset);
-		//alert("Limit: " + intLimit);
+		iLimit	= (iLimit > 0) ? iLimit : Object.keys(this._aRecordCache).length;
 		
 		// Choose our results
-		var arrResultSet	= {};
-		for (var i = intOffset, j = (intOffset + intLimit); i <= j; i++)
+		var aResultSet	= {};
+		for (var i = iOffset, j = (iOffset + iLimit); i <= j; i++)
 		{
-			if (this._arrRecordCache[i])
+			if (this._aRecordCache[i])
 			{
-				arrResultSet[i]	= this._arrRecordCache[i];
+				aResultSet[i]	= this._aRecordCache[i];
 			}
 		}
 		
 		// Empty our cache if it's no longer needed
-		if (this._intCacheMode == Dataset_Ajax.CACHE_MODE_NO_CACHING)
+		if (this._iCacheMode == Dataset_Ajax.CACHE_MODE_NO_CACHING)
 		{
 			this.emptyCache();
 		}
 		
-		//alert("Dataset with " + Object.keys(arrResultSet).length + " records returned, sending to callback...");
 		// "Return" the Results via callback
-		fncCallback(this._intRecordCount, arrResultSet);
+		fCallback(this._iRecordCount, aResultSet);
 	},
 	
-	getRecordCount	: function(fncCallback, bolForceRefresh)
+	getRecordCount	: function(fCallback, bForceRefresh)
 	{
-		bolForceRefresh	= (bolForceRefresh == undefined) ? false : bolForceRefresh;
+		bForceRefresh	= (bForceRefresh == undefined) ? false : bForceRefresh;
 		
-		if (bolForceRefresh || !this._intRecordCount)
+		if (bForceRefresh || !this._iRecordCount)
 		{
-			var fncJsonFunc	= jQuery.json.jsonFunction(jQuery.json.handleResponse.curry(this._getRecordCount.bind(this, fncCallback)), null, this._objJSONDefinition.strObject, this._objJSONDefinition.strMethod);
-			fncJsonFunc(true);
+			var fJsonFunc	=	jQuery.json.jsonFunction(
+									jQuery.json.handleResponse.curry(
+										this._getRecordCount.bind(this, fCallback)
+									), 
+									null, 
+									this._oJSONDefinition.sObject, 
+									this._oJSONDefinition.sMethod
+								);
+			fJsonFunc(true, null, null, this._hSort, this._hFilter);
 		}
 		else
 		{
-			fncCallback(this._intRecordCount);
+			fCallback(this._iRecordCount);
 		}
 	},
 	
-	_getRecordCount	: function(fncCallback, objResponse)
+	_getRecordCount	: function(fCallback, oResponse)
 	{
-		this._intRecordCount	= objResponse.intRecordCount;
-		fncCallback(this._intRecordCount);
+		this._iRecordCount	= oResponse.iRecordCount;
+		fCallback(this._iRecordCount);
 	},
 	
-	_setCache	: function(objResponse)
+	_setCache	: function(oResponse)
 	{
 		var oRecords	= {};
-		if (Object.isArray(objResponse.arrRecords))
+		if (Object.isArray(oResponse.aRecords))
 		{
 			// Convert to an Object
-			for (var i = 0, j = objResponse.arrRecords.length; i < j; i++)
+			for (var i = 0, j = oResponse.aRecords.length; i < j; i++)
 			{
-				oRecords[i]	= objResponse.arrRecords[i];
+				oRecords[i]	= oResponse.aRecords[i];
 			}
 		}
 		else
 		{
-			oRecords	= objResponse.arrRecords;
+			oRecords	= oResponse.aRecords;
 		}
 		
-		//this._arrRecordCache	= (this.getCacheMode() == Dataset_Ajax.CACHE_MODE_NO_CACHING) ? null : objResponse.arrRecords;
-		this._arrRecordCache	= oRecords;
-		this._intRecordCount	= objResponse.intRecordCount;
-		
-		this._intLastCachedOn	= (new Date()).getTime();
+		this._aRecordCache	= oRecords;
+		this._iRecordCount	= oResponse.iRecordCount;
+		this._iLastCachedOn	= (new Date()).getTime();
 	},
 	
 	emptyCache	: function()
 	{
-		this._arrCache	= null;
+		this._aCache	= null;
 	},
 	
-	setCacheMode	: function(intCacheMode)
+	setCacheMode	: function(iCacheMode)
 	{
-		switch (intCacheMode)
+		switch (iCacheMode)
 		{
 			// LEGAL VALUES
 			case Dataset_Ajax.CACHE_MODE_NO_CACHING:
@@ -154,30 +154,40 @@ var Dataset_Ajax	= Class.create
 				break;
 			
 			default:
-				throw "'" + intCacheMode + "' is not a valid Dataset Cache Mode";
+				throw "'" + iCacheMode + "' is not a valid Dataset Cache Mode";
 				break;
 		}
-		this._intCacheMode	= intCacheMode;
+		this._iCacheMode	= iCacheMode;
 	},
 	
 	getCacheMode	: function()
 	{
-		return this._intCacheMode;
+		return this._iCacheMode;
 	},
 	
-	setCacheTimeout	: function(intCacheTimeout)
+	setCacheTimeout	: function(iCacheTimeout)
 	{
-		this._intCacheTimeout	= (intCacheTimeout > 0) ? Math.max(intCacheTimeout, Dataset_Ajax.CACHE_TIMEOUT_MINIMUM) * 1000 : null;
+		this._iCacheTimeout	= (iCacheTimeout > 0) ? Math.max(iCacheTimeout, Dataset_Ajax.CACHE_TIMEOUT_MINIMUM) * 1000 : null;
 	},
 	
 	getCacheTimeout	: function()
 	{
-		return this._intCacheTimeout;
+		return this._iCacheTimeout;
 	},
 	
 	setJSONDefinition	: function(oJSONDefinition)
 	{
-		this._objJSONDefinition	= oJSONDefinition;
+		this._oJSONDefinition	= oJSONDefinition;
+	},
+	
+	setSortingFields	: function(hFieldsToSort)
+	{
+		this._hSort	= hFieldsToSort;
+	},
+	
+	setFilter	: function(hFilter)
+	{
+		this._hFilter	= hFilter;
 	}
 });
 

@@ -6,7 +6,7 @@ var Page_Operation_Profile_List = Class.create(
 		// Create DataSet & pagination object
 		this.oDataset		= 	new Dataset_Ajax(
 									Dataset_Ajax.CACHE_MODE_NO_CACHING, 
-									{strObject: 'Operation_Profile', strMethod: 'getAll'}
+									{sObject: 'Operation_Profile', sMethod: 'getAll'}
 								);
 		this.oPagination	= new Pagination(this._updateTable.bind(this), Page_Operation_Profile_List.MAX_RECORDS_PER_PAGE, this.oDataset);
 		

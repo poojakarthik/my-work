@@ -13,23 +13,27 @@ class JSON_Handler_Charge extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getChargesAwaitingApproval($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getChargesAwaitingApproval($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
-		return self::getRecords($bCountOnly, $iLimit, $iOffset, CHARGE_MODEL_CHARGE);
+		return self::getRecords($bCountOnly, $iLimit, $iOffset, $oFieldsToSort, CHARGE_MODEL_CHARGE);
 	}
 	
-	public function getAdjustmentsAwaitingApproval($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getAdjustmentsAwaitingApproval($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
-		return self::getRecords($bCountOnly, $iLimit, $iOffset, CHARGE_MODEL_ADJUSTMENT);
+		return self::getRecords($bCountOnly, $iLimit, $iOffset, $oFieldsToSort, CHARGE_MODEL_ADJUSTMENT);
 	}
 	
-	public function getAllAwaitingApproval($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getAllAwaitingApproval($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
-		return self::getRecords($bCountOnly, $iLimit, $iOffset);
+		return self::getRecords($bCountOnly, $iLimit, $iOffset, $oFieldsToSort);
 	}
 	
-	public function getRecords($bCountOnly=false, $iLimit=0, $iOffset=0, $iChargeModel=false)
+	public function getRecords($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $iChargeModel=false)
 	{
+		//
+		//	NOTE: 	Sorting & Filtering is not supported by this (Dataset_Ajax) method. rmctainsh 20100527
+		//
+		
 		// Check user permissions
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_CREDIT_MANAGEMENT);
 		
@@ -55,11 +59,11 @@ class JSON_Handler_Charge extends JSON_Handler
 			if ($bCountOnly)
 			{
 				// Count Only
-				return array(
-								"Success"			=> true,
-								"intRecordCount"	=> Charge::searchFor($aFilter, $aSort, null, null, true),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
-							);
+				return 	array(
+							"Success"		=> true,
+							"iRecordCount"	=> Charge::searchFor($aFilter, $aSort, null, null, true),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+						);
 			}
 			else
 			{
@@ -102,10 +106,10 @@ class JSON_Handler_Charge extends JSON_Handler
 				
 				// If no exceptions were thrown, then everything worked
 				return 	array(
-							"Success"			=> true,
-							"arrRecords"		=> $aChargesFormatted,
-							"intRecordCount"	=> ($oPaginationDetails !== null)? $oPaginationDetails->totalRecordCount : count($aChargesFormatted),
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+							"Success"		=> true,
+							"aRecords"		=> $aChargesFormatted,
+							"iRecordCount"	=> ($oPaginationDetails !== null)? $oPaginationDetails->totalRecordCount : count($aChargesFormatted),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 			}
 		}

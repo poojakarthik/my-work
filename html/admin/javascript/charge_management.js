@@ -30,7 +30,7 @@ var Charge_Management = Class.create
 		this.intMaxRecordsPerPage = intMaxRecordsPerPage;
 		this.objDataset		= 	new Dataset_Ajax(
 									intCacheMode, 
-									{strObject: 'Charge', strMethod: sMethod}
+									{sObject: 'Charge', sMethod: sMethod}
 								);
 		this.objPagination	= 	new Pagination(
 									this._updateTable.bind(this), 

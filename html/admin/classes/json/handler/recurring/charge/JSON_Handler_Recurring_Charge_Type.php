@@ -14,8 +14,12 @@ class JSON_Handler_Recurring_Charge_Type extends JSON_Handler
 		Log::setDefaultLog('JSON_Handler_Debug');
 	}
 	
-	public function getAll($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getAll($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
+		//
+		//	NOTE: 	Sorting & Filtering is not supported by this (Dataset_Ajax) method. rmctainsh 20100527
+		//
+		
 		try
 		{
 			// Check user permissions
@@ -36,9 +40,9 @@ class JSON_Handler_Recurring_Charge_Type extends JSON_Handler
 			{
 				// Count Only
 				return array(
-							"Success"			=> true,
-							"intRecordCount"	=> Recurring_Charge_Type::searchFor($aFilterData, null, null, null, true),
-							"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+							"Success"		=> true,
+							"iRecordCount"	=> Recurring_Charge_Type::searchFor($aFilterData, null, null, null, true),
+							"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 						);
 			}
 			else
@@ -99,9 +103,9 @@ class JSON_Handler_Recurring_Charge_Type extends JSON_Handler
 				
 				// If no exceptions were thrown, then everything worked
 				return array(
-							"Success"			=> true,
-							"arrRecords"		=> $aStdClassRecurringChargeTypes,
-							"intRecordCount"	=> ($oPaginationDetails !== null)? $oPaginationDetails->totalRecordCount : count($aStdClassRecurringChargeTypes)
+							"Success"		=> true,
+							"aRecords"		=> $aStdClassRecurringChargeTypes,
+							"iRecordCount"	=> ($oPaginationDetails !== null)? $oPaginationDetails->totalRecordCount : count($aStdClassRecurringChargeTypes)
 						);
 			}
 		}

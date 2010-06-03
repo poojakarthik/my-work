@@ -423,7 +423,7 @@ String.leftPad = function (val, size, ch) {
 
 
 // DateChooser constructor
-function DateChooser(mixInput, start, end, format, isTimeChooser, isDateChooser, useCalendar, defaultYear, defaultMonth, defaultDay)
+function DateChooser(mixInput, start, end, format, isTimeChooser, isDateChooser, useCalendar, defaultYear, defaultMonth, defaultDay, bStatic, bNeverHide)
 {
 	if (mixInput.id)
 	{
@@ -460,6 +460,10 @@ function DateChooser(mixInput, start, end, format, isTimeChooser, isDateChooser,
 	this._defaultMonth = defaultMonth;
 	this._defaultDay = defaultDay;
 	this._format = format;
+	
+	this._bStatic		= bStatic;
+	this.bNeverHide 	= bNeverHide;
+	
 	this.initializeDate();
 	this._isTimeChooser = isTimeChooser;
 	this._isDateChooser = isDateChooser;
@@ -517,7 +521,7 @@ DateChooser.showChooser = function(inputId, start, end, format, isTimeChooser, i
 
 DateChooser.checkClick = function(event)
 {
-	if (DateChooser.currentChooser == null)
+	if (DateChooser.currentChooser == null || DateChooser.currentChooser.bNeverHide)
 	{
 		return;
 	}
@@ -652,7 +656,8 @@ DateChooser.prototype = {
 
 	// Hides the chooser
 	hide: function() {
-		if (this._isVisible)
+		debugger;
+		if (this._isVisible && !this.bNeverHide)
 		{
 			this._isVisible = false;
 			this._div.parentNode.removeChild(this._div);

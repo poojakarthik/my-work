@@ -28,7 +28,10 @@ var User_Role	= Class.create
 	}
 });
 
-User_Role._oDataset	= new Dataset_Ajax(Dataset_Ajax.CACHE_MODE_NO_CACHING, {strObject: 'User_Role', strMethod: 'getDataset'});
+User_Role._oDataset	= 	new Dataset_Ajax(
+							Dataset_Ajax.CACHE_MODE_NO_CACHING, 
+							{sObject: 'User_Role', sMethod: 'getDataset'}
+						);
 
 User_Role.getForId	= function(iId, fCallback)
 {

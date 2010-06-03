@@ -36,17 +36,21 @@ class JSON_Handler_Operation extends JSON_Handler
 		}
 	}
 	
-	public function getDataset($bCountOnly=false, $iLimit=0, $iOffset=0)
+	public function getDataset($bCountOnly=false, $iLimit=0, $iOffset=0, $oFieldsToSort=null, $oFilter=null)
 	{
+		//
+		//	NOTE: 	Sorting & Filtering is not supported by this (Dataset_Ajax) method, even though $oFieldsToSort is handled as a parameter. rmctainsh 20100527
+		//
+		
 		try
 		{
 			if ($bCountOnly)
 			{
 				// Count Only
 				return array(
-								"Success"			=> true,
-								"intRecordCount"	=> self::_getDatasetLength(),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+								"Success"		=> true,
+								"iRecordCount"	=> self::_getDatasetLength(),
+								"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
 			else
@@ -93,10 +97,10 @@ class JSON_Handler_Operation extends JSON_Handler
 				
 				// If no exceptions were thrown, then everything worked
 				return array(
-								"Success"			=> true,
-								"arrRecords"		=> $aResults,
-								"intRecordCount"	=> ($iLimit === null) ? count($aResults) : self::_getDatasetLength(),
-								"strDebug"			=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
+								"Success"		=> true,
+								"aRecords"		=> $aResults,
+								"iRecordCount"	=> ($iLimit === null) ? count($aResults) : self::_getDatasetLength(),
+								"strDebug"		=> (AuthenticatedUser()->UserHasPerm(PERMISSION_GOD)) ? $this->_JSONDebug : ''
 							);
 			}
 		}

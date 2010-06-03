@@ -3,7 +3,29 @@ var Developer_DatasetPagination	= Class.create
 	initialize	: function(intCacheMode)
 	{
 		// Init Dataset & Pagination
-		this.objDataset		= new Dataset_Ajax(intCacheMode, {strObject: 'Employee', strMethod: 'getRecords'});
+		this.objDataset		= new Dataset_Ajax(intCacheMode, {sObject: 'Employee', sMethod: 'getDataSet'});
+		this.objDataset.setSortingFields(
+			{
+				'FirstName'	: 'DESC',
+				'LastName'	: 'DESC'
+			}
+		);
+		
+		// Testing for followup search
+		/*this.objDataset		= new Dataset_Ajax(intCacheMode, {sObject: 'FollowUp', sMethod: 'getDataSet'});
+		this.objDataset.setFilter(
+			{
+				due_datetime			: {mFrom: '2010/01/01', mTo: '2010/08/01'},
+				followup_category_id	: [1,2]
+			}
+		);
+		this.objDataset.setSortingFields(
+			{
+				due_datetime	: 'ASC'
+			}
+		);*/
+		// End Testing for followup search
+		
 		this.objPagination	= new Pagination(this._updateTable.bind(this), 20, this.objDataset);
 		
 		// Init Popup	
