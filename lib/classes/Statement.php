@@ -19,7 +19,7 @@
  abstract class Statement extends DatabaseAccess
  {
   	//------------------------------------------------------------------------//
-	// stmtSqlStatement	
+	// stmtSqlStatement
 	//------------------------------------------------------------------------//
 	/**
 	 * stmtSqlStatement
@@ -36,7 +36,7 @@
 	protected $_stmtSqlStatment;
 	
 	//------------------------------------------------------------------------//
-	// arrPlaceholders	
+	// arrPlaceholders
 	//------------------------------------------------------------------------//
 	/**
 	 * arrPlaceholders
@@ -53,7 +53,7 @@
 	private $_arrPlaceholders;
 	
 	//------------------------------------------------------------------------//
-	// strTable	
+	// strTable
 	//------------------------------------------------------------------------//
 	/**
 	 * strTable
@@ -82,7 +82,7 @@
 	 * @return		void
 	 *
 	 * @method
-	 */ 
+	 */
 	 function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	 {
 	 	$this->aProfiling['fPreparationStart']	= microtime(true);
@@ -97,11 +97,11 @@
 	 * Prepares the Statement
 	 *
 	 * @return		void
-	 * 
+	 *
 	 * @param		string	$sQuery
 	 *
 	 * @method
-	 */ 
+	 */
 	 protected function _prepare($sQuery)
 	 {
 		$this->Trace("Query: {$sQuery}");
@@ -142,15 +142,15 @@
 	 * 				"b" - Binary
 	 *
 	 * @param		mixed	$mixData		Data to be checked
-	 * 
+	 *
 	 * @return		string					"s" : String
 	 * 										"i" : Integer
 	 * 										"d" : Float/Double
 	 * 										"b" : Binary
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
-	function GetDBInputType($mixData) 
+	 */
+	function GetDBInputType($mixData)
 	{
 		// Special case for mysql functions
 		
@@ -184,6 +184,33 @@
  		return "s";
 	}
 	
+	/**
+	 * Wraps the Statement's Execute around lock-checking logic
+	 */
+	protected function _execute()
+	{
+		// Execute
+		if ($this->_stmtSqlStatment->execute())
+		{
+			// Pass
+			return true;
+		}
+		elseif ($this->_stmtSqlStatment->errno == DatabaseAccess::ER_LOCK_DEADLOCK)
+		{
+			// Failure -- Deadlock
+			throw new Exception_Database_Deadlock($this->Error());
+		}
+		elseif ($this->_stmtSqlStatment->errno == DatabaseAccess::ER_LOCK_WAIT_TIMEOUT)
+		{
+			// Failure -- Lock wait timeout
+			throw new Exception_Database_LockTimeout($this->Error());
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	public static function generateWhere($aAliases=array(), $aConstraints=null)
 	{
 		$aWhereParts	= array();
@@ -198,14 +225,14 @@
 					$sAlias	= $aAliases[$sAlias];
 				}
 				
-				self::processWhereConstraint($sAlias, $mValue, $aWhereParts, $aResult); 
+				self::processWhereConstraint($sAlias, $mValue, $aWhereParts, $aResult);
 				
 				/*if (is_array($mValue))
 				{
 					// AND (array of constraints)
 					foreach ($mValue as $mVal)
 					{
-						self::processWhereConstraint($sAlias, $mVal, $aWhereParts, $aResult); 
+						self::processWhereConstraint($sAlias, $mVal, $aWhereParts, $aResult);
 					}
 				}
 				else if (is_object($mValue))
@@ -304,7 +331,7 @@
 			foreach ($mValue as $mVal)
 			{
 				self::processWhereConstraint($sAlias, $mVal, $aWhereParts, $aResult, $iSuffix);
-				$iSuffix++; 
+				$iSuffix++;
 			}
 		}
 		else if (is_object($mValue))

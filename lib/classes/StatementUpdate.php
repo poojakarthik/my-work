@@ -42,9 +42,9 @@
 	/**
 	 * intAffectedRows
 	 *
-	 * Keeps a count of the number of affected rows in the version query 
+	 * Keeps a count of the number of affected rows in the version query
 	 *
-	 * Keeps a count of the number of affected rows in the version query 
+	 * Keeps a count of the number of affected rows in the version query
 	 *
 	 * @type	<type>
 	 *
@@ -73,7 +73,7 @@
 	 *										array as passed to the execute method), to produce a
 	 *										WHERE clause like "Foo = <Foo> AND Bar = <Bar>" using
 	 *										the array keys.
-	 * @param		array	arrColumns		optional Associative array of the columns 
+	 * @param		array	arrColumns		optional Associative array of the columns
 	 * 										you want to update, where the keys are the column names.
 	 * 										If you want to update everything, ignore
 	 * 										this parameter
@@ -82,7 +82,7 @@
 	 * @return		void
 	 *
 	 * @method
-	 */ 
+	 */
 	 function __construct($strTable, $mixWhere, $arrColumns = null, $intLimit = null)
 	 {
 		parent::__construct();
@@ -185,13 +185,13 @@
 	 * 										MUST use the same aliases as used when the object was
 	 * 										created.  Key string is the alias (ignoring the <>'s)
 	 * 										, and the Value is the value to be inserted.
-	 * 
+	 *
 	 * @return		mixed					int			: number of Affected Rows
 	 * 										bool FALSE	: Update failed
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
+	 */
 	 function Execute($arrData, $arrWhere)
 	 {
 	 	$aExecutionProfile	= array();
@@ -247,7 +247,7 @@
 		 	{
 				$strType .= $arrColumnValue["Type"];
 				$arrParams[] = $arrData[$strColumnName];
-		 	}		
+		 	}
 	 	}
 		
 	 	// Bind the WHERE data to our mysqli_stmt
@@ -299,7 +299,7 @@
 	 		}
 	 	}
 		
-		$mixResult = $this->_stmtSqlStatment->execute();
+		$mixResult = $this->_execute();
 
 		$this->Debug($mixResult);
 	 	// Run the Statement

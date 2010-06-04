@@ -47,16 +47,16 @@
 	 * Constructor for StatementInsert object
 	 *
 	 * @param		string	strTable		Name of the table to insert into
-	 * @param		array	arrColumns		optional Associative array of the columns 
+	 * @param		array	arrColumns		optional Associative array of the columns
 	 * 										you want to insert, where the keys are the column names.
 	 * 										If you want to insert everything, ignore
 	 * 										this parameter
-	 * @param		bool	bolWithId		Set TRUE to force the Id field to be inserted 
+	 * @param		bool	bolWithId		Set TRUE to force the Id field to be inserted
 	 *
 	 * @return		void
 	 *
 	 * @method
-	 */ 
+	 */
 	 function __construct($strTable, $arrColumns = NULL, $bolWithId = NULL, $strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	 {
 		parent::__construct($strConnectionType);
@@ -118,7 +118,7 @@
 			{
 				$arrInsertValues[]	= '?';
 			}
-		}	
+		}
 		$strInsertValues 	= implode(',', $arrInsertValues);
 		
 		// Compile the query
@@ -140,13 +140,13 @@
 	 *
 	 * @param		array	arrData			Associative array of the data to be inserted
 	 * 										If a field is not set, it is assumed to be null
-	 * 
+	 *
 	 * @return		mixed					int	: Insert Id
 	 * 										false	: Insert failed
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
+	 */
 	 function Execute($arrData)
 	 {
 	 	$aExecutionProfile	= array();
@@ -252,13 +252,13 @@
 	 	}
 
 	 	// Run the Statement
-	 	$mixResult = $this->_stmtSqlStatment->execute();
+	 	$mixResult = $this->_execute();
 	 	
 	 	$this->Debug($mixResult);
 	 	if ($mixResult)
 		{
 			// If the execution worked, we want to get the insert id for this statement
-			$this->intInsertId = $this->db->refMysqliConnection->insert_id;	
+			$this->intInsertId = $this->db->refMysqliConnection->insert_id;
 			if ((int)$this->db->refMysqliConnection->insert_id < 1)
 			{
 				//Debug("WTF! Last Insert Id is apparently '{$this->db->refMysqliConnection->insert_id}'");

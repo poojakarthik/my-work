@@ -31,7 +31,7 @@
 	 * @return		void
 	 *
 	 * @method
-	 */ 
+	 */
 	 function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	 {
 	 	$this->intSQLMode =SQL_QUERY;
@@ -49,10 +49,10 @@
 	 * Executes the Query
 	 *
 	 * @param		string	strQuery		string containing a full SQL query
-	 * 
+	 *
 	 * @return		bool
 	 * @method
-	 */ 
+	 */
 	 function Execute($strQuery)
 	 {
 	 	$this->Trace($strQuery);
@@ -62,6 +62,22 @@
 	 	
 	 	// run query
 	 	$mixResult = mysqli_query($this->db->refMysqliConnection, $strQuery);
+	 	
+	 	// Handle Locking issues
+	 	if ($mixResult === false)
+	 	{
+			// Execute
+			if ($this->db->refMysqliConnection->errno == DatabaseAccess::ER_LOCK_DEADLOCK)
+			{
+				// Failure -- Deadlock
+				throw new Exception_Database_Deadlock($this->Error());
+			}
+			elseif ($this->db->refMysqliConnection->errno == DatabaseAccess::ER_LOCK_WAIT_TIMEOUT)
+			{
+				// Failure -- Lock wait timeout
+				throw new Exception_Database_LockTimeout($this->Error());
+			}
+	 	}
 	 	
 	 	// Profiling
 	 	if ($mixResult instanceof MySQLi_Result)
@@ -88,7 +104,7 @@
 		return $mixResult;
 	 }
 	 
-	 // Returns the number of records affected by the last INSERT, UPDATE, REPLACE or DELETE query executed 
+	 // Returns the number of records affected by the last INSERT, UPDATE, REPLACE or DELETE query executed
 	 function AffectedRows()
 	 {
 	 	return mysqli_affected_rows($this->db->refMysqliConnection);

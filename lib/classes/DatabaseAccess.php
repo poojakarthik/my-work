@@ -16,12 +16,16 @@
  * @prefix		db
  *
  * @package		framework
- * @class		DatabaseAccess 
+ * @class		DatabaseAccess
  */
  abstract class DatabaseAccess
  {
+ 	// MySQL Errors
+ 	const	ER_LOCK_WAIT_TIMEOUT	= 1205;
+ 	const	ER_LOCK_DEADLOCK		= 1213;
+ 	
  	//------------------------------------------------------------------------//
-	// intSQLMode	
+	// intSQLMode
 	//------------------------------------------------------------------------//
 	/**
 	 * intSQLMode
@@ -37,7 +41,7 @@
 	protected $intSQLMode;
 	
  	//------------------------------------------------------------------------//
-	// db	
+	// db
 	//------------------------------------------------------------------------//
 	/**
 	 * db
@@ -72,7 +76,7 @@
 	 * @return		void
 	 *
 	 * @method
-	 */ 
+	 */
 	function __construct($strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
 		// make global database object available
@@ -94,7 +98,7 @@
 	 * @return		void
 	 *
 	 * @method
-	 */ 
+	 */
 	function Trace($strString)
 	{
 		return Trace("(".get_class($this).")\n".$strString, 'MySQL');
@@ -112,16 +116,16 @@
 	 * column name or something else (eg. SQL function or alias)
 	 *
 	 * @param		string	$strColumn		ColumnName to be checked
-	 * 
+	 *
 	 * @return		boolean					true	: string is a ColumnName
 	 * 										false	: string is not a ColumnName
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
+	 */
 	function IsColumnName($strColumn)
 	{
-		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0. 
+		// The ereg function has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 6.0.0.
 		// return (eregi("A-Z0-9", $strColumn) == strlen($strColumn)) ? true : false;
 		return (preg_match("/^[A-Z0-9]+$/i", $strColumn)) ? true : false;
 	}
@@ -139,12 +143,12 @@
 	 * Replaces the string with a ?
 	 *
 	 * @param		string	$strColumn		ColumnName to be checked
-	 * 
+	 *
 	 * @return		array					Indexed Array of aliases.
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
+	 */
 	function FindAlias(&$strString)
 	{
 		$arrAliases = array();
@@ -176,13 +180,13 @@
 	 * Strips the table from a string in "TableName.ColumnName" format
 	 *
 	 * @param		string	$strText		String to parse
-	 * 
+	 *
 	 * @return		string					Stripped table name
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
-	function StripTable($strText) 
+	 */
+	function StripTable($strText)
 	{
 		$strText = substr($strText, 0, (strpos($strText, ".") + 1));
 		if ($strText == "")
@@ -204,14 +208,14 @@
 	 * Determines if a passed array is associative or not
 	 *
 	 * @param		array	$arrArray		Array to be checked
-	 * 
+	 *
 	 * @return		boolean					true	: Associative array
 	 * 										false	: Indexed array
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
-	function IsAssociativeArray($arrArray) 
+	 */
+	function IsAssociativeArray($arrArray)
 	{
 		return IsAssociativeArray($arrArray);
 	}
@@ -229,7 +233,7 @@
 	 * @return		string					SQL Error Message
 	 *
 	 * @method
-	 */ 
+	 */
 	function Error()
 	{
 		if (mysqli_error($this->db->refMysqliConnection))
@@ -256,7 +260,7 @@
 	 * @param		mixed					Data returned from the MySQLi Execute function
 	 *
 	 * @method
-	 */ 
+	 */
 	function Debug()
 	{
 		if (defined("USER_NAME") && (USER_NAME != "Intranet_app"))
@@ -280,16 +284,16 @@
 	 *
 	 * @param		string	$strJoiner		optional joiner 'AND' or 'OR'. defaults to 'AND'
 	 *										If $mixWhere is an array, $strJoiner
-	 *										is used to join the array elements					 
+	 *										is used to join the array elements
 	 *
 	 * @param		string	$strOperator	optional operator '=', '<', '>', 'LIKE' etc. defaults to '='
 	 *										If $mixWhere is an array, $strOperator
-	 *										is used as an operator with the array elements					 
+	 *										is used as an operator with the array elements
 	 *
 	 * @return		string					SQL WHERE clause (including the WHERE keyword)
 	 *
 	 * @method
-	 */ 
+	 */
 	function PrepareWhere($mixWhere, $strJoiner = 'AND', $strOperator = '=')
 	{
 		// set default operator

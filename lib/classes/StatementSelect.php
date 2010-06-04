@@ -50,7 +50,7 @@
 	 * @property
 	 * @see	<MethodName()||typePropertyName>
 	 */
- 	private $_datMetaData = Array();	
+ 	private $_datMetaData = Array();
 	
 	//------------------------------------------------------------------------//
 	// _bolObLib
@@ -108,7 +108,7 @@
 	 * @return		void
 	 *
 	 * @method
-	 */ 
+	 */
 	function __construct($strTables, $mixColumns, $mixWhere = "", $strOrder = "", $strLimit = "", $strGroupBy = "", $strConnectionType=FLEX_DATABASE_CONNECTION_DEFAULT)
 	{
 		parent::__construct($strConnectionType);
@@ -151,7 +151,7 @@
 			// If arrColumns is associative, then add keys and values with "AS" between them
 			reset($mixColumns);
 			
-		 	// Add the columns 	
+		 	// Add the columns
 		 	while (isset(current($mixColumns)))
 		 	{
 		 		$strQuery .= current($mixColumns);
@@ -177,7 +177,7 @@
  			// If it's an indexed array
 			reset($mixColumns);
 			
-		 	// Add the columns 	
+		 	// Add the columns
 		 	foreach($mixColumns as $strColumn)
 		 	{
 		 		$strQuery .= "$strColumn, ";
@@ -209,26 +209,26 @@
 	 	// Add the GROUP BY clause
 	 	if ($strGroupBy != "")
 	 	{
-			$strQuery .= "GROUP BY " . $strGroupBy . "\n";	
+			$strQuery .= "GROUP BY " . $strGroupBy . "\n";
 	 	}
 	 	
 	 	// Add the ORDER BY clause
 	 	if ($strOrder != "")
 	 	{
-			$strQuery .= "ORDER BY " . $strOrder . "\n";	
+			$strQuery .= "ORDER BY " . $strOrder . "\n";
 	 	}
 	 	
 	 	// Add the LIMIT clause
 	 	if ($strLimit != "")
 	 	{
-			$strQuery .= "LIMIT " . $strLimit . "\n";	
+			$strQuery .= "LIMIT " . $strLimit . "\n";
 	 	}
 	 	
 	 	// Find all the placeholders and replace them with question marks
 
 	 	// This removes comments from the query (comments only have to be removed if placeholders are in the comments, and I'm thinking this won't ever be the case)
 	 	// Only uncomment this line if it is needed for old queries.  Going forward I would discourage the use of placeholders in comments in prepared statements
-	 	//$strQuery = preg_replace("/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:--.*))/", '', $strQuery); 
+	 	//$strQuery = preg_replace("/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:--.*))/", '', $strQuery);
 
 	 	$this->_arrPlaceholders = $this->FindAlias($strQuery);
 	 	
@@ -248,11 +248,11 @@
 	 *
 	 * @param		boolean	bolObLib		TRUE: We are using ObLib
 	 *										FALSE: We are not using ObLib
-	 * 
+	 *
 	 * @return		void
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
+	 */
 	 public function useObLib ($bolObLib)
 	 {
 	 	$this->_bolObLib = ($bolObLib === TRUE);
@@ -270,7 +270,7 @@
 	 *
 	 * @return		Array
 	 * @method
-	 */ 
+	 */
 	 public function MetaData ()
 	 {
 		return $this->_datMetaData;
@@ -290,11 +290,11 @@
 	 * 										MUST use the same aliases as used when the object was
 	 * 										created.  Key string is the alias (ignoring the <>'s)
 	 * 										, and the Value is the value to be inserted.
-	 * 
+	 *
 	 * @return		int		number of rows
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
+	 */
 	 function Execute($arrWhere = Array())
 	 {
 	 	$aExecutionProfile	= array();
@@ -353,7 +353,7 @@
 	 	$this->_stmtSqlStatment->free_result();
 	 	
 	 	// Run the Statement
-	 	$mixResult = $this->_stmtSqlStatment->execute();
+	 	$mixResult = $this->_execute();
 	 	$this->Debug($mixResult);
 	 	if(!$mixResult)
 	 	{
@@ -398,11 +398,11 @@
 	 *
 	 * Counts how many rows were returned by the last execution
 	 *
-	 * @return		integer							Returns a number (0..*) with the number of 
+	 * @return		integer							Returns a number (0..*) with the number of
 	 *										rows returned by this query
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
+	 */
 	function Count()
 	{
 		return $this->_stmtSqlStatment->num_rows;
@@ -427,7 +427,7 @@
 	 * 										or FALSE if there was no next row
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
+	 */
 	function Fetch (&$oblobjPushObject=null)
 	{
 		// Firstly, if we have a row to pull ... pull it (and put it into $this->_arrBoundResults)
@@ -512,7 +512,7 @@
 	 * 										Key is the ColumnName, value is its value
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
-	 */ 
+	 */
 	function FetchAll()
 	{
 	 	// Retrieve the remaining rows of data from the resultset
